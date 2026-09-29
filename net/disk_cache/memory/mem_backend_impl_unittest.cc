@@ -120,7 +120,7 @@ TEST_F(MemBackendImplTest, MemoryConsumer) {
   }
 
   // 3. Simulate critical memory pressure (10% limit).
-  SimulateMemoryLimitAndRelease(10);
+  SimulateMemoryLimitAndRelease(base::MemoryLimit::FromPercent(10));
 
   // Only the most recent entry (key9) should remain.
   for (int i = 0; i < 9; ++i) {

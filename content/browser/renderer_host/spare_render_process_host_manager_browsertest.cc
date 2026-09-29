@@ -1386,7 +1386,7 @@ struct StatefulMemoryPressureTestParams {
   bool keep_one_alive;
   bool use_critical_memory_pressure_threshold;
   bool kill_spare_on_memory_pressure;
-  int memory_limit;
+  base::MemoryLimit memory_limit;
   size_t expected_spares_after_pressure;
 };
 
@@ -1496,7 +1496,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // Step-up replenishment: Relieving memory pressure back to 100% allows the
   // pool to recover back to `initial_spares`.
-  memory_override.SetLimit(100);
+  memory_override.SetLimit(base::MemoryLimit::Default());
   if (spare_manager.GetSpares().empty()) {
     spare_manager.WarmupSpare(browser_context());
   }
@@ -1520,7 +1520,7 @@ INSTANTIATE_TEST_SUITE_P(
             /*keep_one_alive=*/true,
             /*use_critical_memory_pressure_threshold=*/false,
             /*kill_spare_on_memory_pressure=*/true,
-            /*memory_limit=*/50,
+            /*memory_limit=*/base::MemoryLimit::FromPercent(50),
             /*expected_spares_after_pressure=*/1u},
         // Standard multi-spare with keep_one_alive: 25% limit clamps to 1
         // spare.
@@ -1529,7 +1529,7 @@ INSTANTIATE_TEST_SUITE_P(
             /*keep_one_alive=*/true,
             /*use_critical_memory_pressure_threshold=*/false,
             /*kill_spare_on_memory_pressure=*/true,
-            /*memory_limit=*/25,
+            /*memory_limit=*/base::MemoryLimit::FromPercent(25),
             /*expected_spares_after_pressure=*/1u},
         // Standard multi-spare with keep_one_alive: 0% limit trims all to 0.
         StatefulMemoryPressureTestParams{
@@ -1537,7 +1537,7 @@ INSTANTIATE_TEST_SUITE_P(
             /*keep_one_alive=*/true,
             /*use_critical_memory_pressure_threshold=*/false,
             /*kill_spare_on_memory_pressure=*/true,
-            /*memory_limit=*/0,
+            /*memory_limit=*/base::MemoryLimit::FromPercent(0),
             /*expected_spares_after_pressure=*/0u},
         // Aggressive mode (keep_one_alive disabled): 25% limit scales to 0
         // spares.
@@ -1546,7 +1546,7 @@ INSTANTIATE_TEST_SUITE_P(
             /*keep_one_alive=*/false,
             /*use_critical_memory_pressure_threshold=*/false,
             /*kill_spare_on_memory_pressure=*/true,
-            /*memory_limit=*/25,
+            /*memory_limit=*/base::MemoryLimit::FromPercent(25),
             /*expected_spares_after_pressure=*/0u},
         // Main toggle disabled: killing disabled keeps all 2 spares at 0%
         // limit.
@@ -1555,7 +1555,7 @@ INSTANTIATE_TEST_SUITE_P(
             /*keep_one_alive=*/true,
             /*use_critical_memory_pressure_threshold=*/false,
             /*kill_spare_on_memory_pressure=*/false,
-            /*memory_limit=*/0,
+            /*memory_limit=*/base::MemoryLimit::FromPercent(0),
             /*expected_spares_after_pressure=*/2u},
         // Critical-only mode: moderate pressure (50%) does not trim.
         StatefulMemoryPressureTestParams{
@@ -1563,7 +1563,7 @@ INSTANTIATE_TEST_SUITE_P(
             /*keep_one_alive=*/true,
             /*use_critical_memory_pressure_threshold=*/true,
             /*kill_spare_on_memory_pressure=*/true,
-            /*memory_limit=*/50,
+            /*memory_limit=*/base::MemoryLimit::FromPercent(50),
             /*expected_spares_after_pressure=*/2u},
         // Critical-only mode: critical pressure (0%) trims to 0.
         StatefulMemoryPressureTestParams{
@@ -1571,7 +1571,7 @@ INSTANTIATE_TEST_SUITE_P(
             /*keep_one_alive=*/false,
             /*use_critical_memory_pressure_threshold=*/true,
             /*kill_spare_on_memory_pressure=*/true,
-            /*memory_limit=*/0,
+            /*memory_limit=*/base::MemoryLimit::FromPercent(0),
             /*expected_spares_after_pressure=*/0u},
         // Single spare with keep_one_alive: 50% limit keeps 1 spare.
         StatefulMemoryPressureTestParams{
@@ -1579,7 +1579,7 @@ INSTANTIATE_TEST_SUITE_P(
             /*keep_one_alive=*/true,
             /*use_critical_memory_pressure_threshold=*/false,
             /*kill_spare_on_memory_pressure=*/true,
-            /*memory_limit=*/50,
+            /*memory_limit=*/base::MemoryLimit::FromPercent(50),
             /*expected_spares_after_pressure=*/1u},
         // Single spare without keep_one_alive: 50% limit trims to 0 spares.
         StatefulMemoryPressureTestParams{
@@ -1587,7 +1587,7 @@ INSTANTIATE_TEST_SUITE_P(
             /*keep_one_alive=*/false,
             /*use_critical_memory_pressure_threshold=*/false,
             /*kill_spare_on_memory_pressure=*/true,
-            /*memory_limit=*/50,
+            /*memory_limit=*/base::MemoryLimit::FromPercent(50),
             /*expected_spares_after_pressure=*/0u}));
 
 }  // namespace content

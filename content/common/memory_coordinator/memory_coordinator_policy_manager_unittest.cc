@@ -102,31 +102,39 @@ TEST_F(MemoryCoordinatorPolicyManagerTest, AggregateMemoryLimit) {
 
   // Both policies request a limit. They should be multiplied together.
   // Initial limit is 100%. Changes to 80%.
-  EXPECT_CALL(host, UpdateConsumers(ElementsAre(
-                        MemoryConsumerUpdate{kConsumerId, 80, false})));
-  policy1.manager().UpdateConsumers(&policy1,
-                                    {{kChildId, {kConsumerId, 80, false}}});
+  EXPECT_CALL(host,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(80), false})));
+  policy1.manager().UpdateConsumers(
+      &policy1,
+      {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(80), false}}});
   Mock::VerifyAndClearExpectations(&host);
 
   // policy1=80%, policy2=50% -> 40%.
-  EXPECT_CALL(host, UpdateConsumers(ElementsAre(
-                        MemoryConsumerUpdate{kConsumerId, 40, false})));
-  policy2.manager().UpdateConsumers(&policy2,
-                                    {{kChildId, {kConsumerId, 50, false}}});
+  EXPECT_CALL(host,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(40), false})));
+  policy2.manager().UpdateConsumers(
+      &policy2,
+      {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(50), false}}});
   Mock::VerifyAndClearExpectations(&host);
 
   // policy1=90%, policy2=50% -> 45%.
-  EXPECT_CALL(host, UpdateConsumers(ElementsAre(
-                        MemoryConsumerUpdate{kConsumerId, 45, false})));
-  policy1.manager().UpdateConsumers(&policy1,
-                                    {{kChildId, {kConsumerId, 90, false}}});
+  EXPECT_CALL(host,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(45), false})));
+  policy1.manager().UpdateConsumers(
+      &policy1,
+      {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(90), false}}});
   Mock::VerifyAndClearExpectations(&host);
 
   // policy1=90%, policy2=100% -> 90%.
-  EXPECT_CALL(host, UpdateConsumers(ElementsAre(
-                        MemoryConsumerUpdate{kConsumerId, 90, false})));
-  policy2.manager().UpdateConsumers(&policy2,
-                                    {{kChildId, {kConsumerId, 100, false}}});
+  EXPECT_CALL(host,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(90), false})));
+  policy2.manager().UpdateConsumers(
+      &policy2,
+      {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(100), false}}});
   Mock::VerifyAndClearExpectations(&host);
 
   // Clean up.
@@ -153,17 +161,21 @@ TEST_F(MemoryCoordinatorPolicyManagerTest, AggregateMemoryLimit_Boosting) {
                                         kTestTraits1, kChildId);
 
   // policy1 requests 150%. Changes from 100% to 150%.
-  EXPECT_CALL(host, UpdateConsumers(ElementsAre(
-                        MemoryConsumerUpdate{kConsumerId, 150, false})));
-  policy1.manager().UpdateConsumers(&policy1,
-                                    {{kChildId, {kConsumerId, 150, false}}});
+  EXPECT_CALL(host,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(150), false})));
+  policy1.manager().UpdateConsumers(
+      &policy1,
+      {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(150), false}}});
   Mock::VerifyAndClearExpectations(&host);
 
   // policy2 requests 80%. Multiplied together (150% * 80%) = 120%.
-  EXPECT_CALL(host, UpdateConsumers(ElementsAre(
-                        MemoryConsumerUpdate{kConsumerId, 120, false})));
-  policy2.manager().UpdateConsumers(&policy2,
-                                    {{kChildId, {kConsumerId, 80, false}}});
+  EXPECT_CALL(host,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(120), false})));
+  policy2.manager().UpdateConsumers(
+      &policy2,
+      {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(80), false}}});
   Mock::VerifyAndClearExpectations(&host);
 
   // Clean up.
@@ -191,23 +203,28 @@ TEST_F(MemoryCoordinatorPolicyManagerTest, RemovePolicyClearsData) {
     MemoryCoordinatorPolicyRegistration reg1(policy_manager(), policy1);
 
     // policy1 requests 50%. Changes from 100% to 50%.
-    EXPECT_CALL(host, UpdateConsumers(ElementsAre(
-                          MemoryConsumerUpdate{kConsumerId, 50, false})));
-    policy1.manager().UpdateConsumers(&policy1,
-                                      {{kChildId, {kConsumerId, 50, false}}});
+    EXPECT_CALL(host,
+                UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                    kConsumerId, base::MemoryLimit::FromPercent(50), false})));
+    policy1.manager().UpdateConsumers(
+        &policy1,
+        {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(50), false}}});
     Mock::VerifyAndClearExpectations(&host);
 
     // policy2 requests 80%. Multiplied together (50% * 80%) = 40%.
-    EXPECT_CALL(host, UpdateConsumers(ElementsAre(
-                          MemoryConsumerUpdate{kConsumerId, 40, false})));
-    policy2.manager().UpdateConsumers(&policy2,
-                                      {{kChildId, {kConsumerId, 80, false}}});
+    EXPECT_CALL(host,
+                UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                    kConsumerId, base::MemoryLimit::FromPercent(40), false})));
+    policy2.manager().UpdateConsumers(
+        &policy2,
+        {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(80), false}}});
     Mock::VerifyAndClearExpectations(&host);
 
     // Removing policy1 should clear its 50% request, so the limit should become
     // 80% (from policy2). Changes from 40% to 80%.
-    EXPECT_CALL(host, UpdateConsumers(ElementsAre(
-                          MemoryConsumerUpdate{kConsumerId, 80, false})));
+    EXPECT_CALL(host,
+                UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                    kConsumerId, base::MemoryLimit::FromPercent(80), false})));
   }
   Mock::VerifyAndClearExpectations(&host);
 
@@ -257,13 +274,15 @@ TEST_F(MemoryCoordinatorPolicyManagerTest, SetMemoryLimitOverride) {
   // Set override.
   EXPECT_CALL(
       host, SetOverrideLimit(kConsumerId, base::MemoryLimit::FromPercent(42)));
-  policy_manager().SetMemoryLimitOverride(kConsumerId, 42);
+  policy_manager().SetMemoryLimitOverride(kConsumerId,
+                                          base::MemoryLimit::FromPercent(42));
   Mock::VerifyAndClearExpectations(&host);
 
   // Update override.
   EXPECT_CALL(
       host, SetOverrideLimit(kConsumerId, base::MemoryLimit::FromPercent(24)));
-  policy_manager().SetMemoryLimitOverride(kConsumerId, 24);
+  policy_manager().SetMemoryLimitOverride(kConsumerId,
+                                          base::MemoryLimit::FromPercent(24));
   Mock::VerifyAndClearExpectations(&host);
 
   // Clear override. Reverts to default (100%).
@@ -290,7 +309,8 @@ TEST_F(MemoryCoordinatorPolicyManagerTest, SetMemoryLimitOverride_Persistence) {
   // Since host is already added, it should receive the IPC immediately.
   EXPECT_CALL(
       host, SetOverrideLimit(kConsumerId, base::MemoryLimit::FromPercent(42)));
-  policy_manager().SetMemoryLimitOverride(kConsumerId, 42);
+  policy_manager().SetMemoryLimitOverride(kConsumerId,
+                                          base::MemoryLimit::FromPercent(42));
   Mock::VerifyAndClearExpectations(&host);
 
   // Adding consumer to an out-of-process host should NOT send a duplicate
@@ -317,7 +337,8 @@ TEST_F(MemoryCoordinatorPolicyManagerTest,
   const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
 
   // Set override BEFORE adding host.
-  policy_manager().SetMemoryLimitOverride(kConsumerId, 42);
+  policy_manager().SetMemoryLimitOverride(kConsumerId,
+                                          base::MemoryLimit::FromPercent(42));
 
   // Adding host should immediately send the override.
   EXPECT_CALL(
@@ -350,7 +371,8 @@ TEST_F(MemoryCoordinatorPolicyManagerTest,
   const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
 
   // Set override BEFORE adding host.
-  policy_manager().SetMemoryLimitOverride(kConsumerId, 42);
+  policy_manager().SetMemoryLimitOverride(kConsumerId,
+                                          base::MemoryLimit::FromPercent(42));
 
   // Adding in-process host.
   EXPECT_CALL(
@@ -420,14 +442,17 @@ TEST_F(MemoryCoordinatorPolicyManagerTest, UpdateConsumers_MultipleProcesses) {
   MockPolicy policy(policy_manager());
   MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
 
-  EXPECT_CALL(host1, UpdateConsumers(ElementsAre(
-                         MemoryConsumerUpdate{kConsumerId1, 50, true})));
-  EXPECT_CALL(host2, UpdateConsumers(ElementsAre(
-                         MemoryConsumerUpdate{kConsumerId2, 80, false})));
+  EXPECT_CALL(host1,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId1, base::MemoryLimit::FromPercent(50), true})));
+  EXPECT_CALL(host2,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId2, base::MemoryLimit::FromPercent(80), false})));
 
-  policy.manager().UpdateConsumers(&policy,
-                                   {{kChildId1, {kConsumerId1, 50, true}},
-                                    {kChildId2, {kConsumerId2, 80, false}}});
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId1, {kConsumerId1, base::MemoryLimit::FromPercent(50), true}},
+       {kChildId2, {kConsumerId2, base::MemoryLimit::FromPercent(80), false}}});
 
   Mock::VerifyAndClearExpectations(&host1);
   Mock::VerifyAndClearExpectations(&host2);
@@ -477,8 +502,9 @@ TEST_F(MemoryCoordinatorPolicyManagerTest, UpdateConsumers_Filter) {
   MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
 
   // Update only consumers with kTraits1.
-  EXPECT_CALL(host1, UpdateConsumers(ElementsAre(
-                         MemoryConsumerUpdate{kConsumerId1, 50, true})));
+  EXPECT_CALL(host1,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId1, base::MemoryLimit::FromPercent(50), true})));
   EXPECT_CALL(host2, UpdateConsumers(_)).Times(0);
 
   policy.manager().UpdateConsumers(
@@ -489,7 +515,7 @@ TEST_F(MemoryCoordinatorPolicyManagerTest, UpdateConsumers_Filter) {
         return traits.supports_memory_limit ==
                base::MemoryConsumerTraits::SupportsMemoryLimit::kYes;
       },
-      50, true);
+      base::MemoryLimit::FromPercent(50), true);
 
   Mock::VerifyAndClearExpectations(&host1);
   Mock::VerifyAndClearExpectations(&host2);
@@ -631,13 +657,16 @@ TEST_F(MemoryCoordinatorPolicyObserverTest, MultipleProcesses) {
   MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
 
   // Update limit for both.
-  EXPECT_CALL(host1, UpdateConsumers(ElementsAre(
-                         MemoryConsumerUpdate{kConsumerId1, 50, false})));
-  EXPECT_CALL(host2, UpdateConsumers(ElementsAre(
-                         MemoryConsumerUpdate{kConsumerId2, 70, false})));
-  policy.manager().UpdateConsumers(&policy,
-                                   {{kChildId1, {kConsumerId1, 50, false}},
-                                    {kChildId2, {kConsumerId2, 70, false}}});
+  EXPECT_CALL(host1,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId1, base::MemoryLimit::FromPercent(50), false})));
+  EXPECT_CALL(host2,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId2, base::MemoryLimit::FromPercent(70), false})));
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId1, {kConsumerId1, base::MemoryLimit::FromPercent(50), false}},
+       {kChildId2, {kConsumerId2, base::MemoryLimit::FromPercent(70), false}}});
   Mock::VerifyAndClearExpectations(&host1);
   Mock::VerifyAndClearExpectations(&host2);
 
@@ -690,15 +719,19 @@ TEST_F(MemoryCoordinatorPolicyObserverTest, SameConsumerIdDifferentChild) {
   MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
 
   // Each group can have its own limit even if they share the same ID.
-  EXPECT_CALL(host1, UpdateConsumers(ElementsAre(
-                         MemoryConsumerUpdate{kConsumerId, 40, false})));
-  policy.manager().UpdateConsumers(&policy,
-                                   {{kChildId1, {kConsumerId, 40, false}}});
+  EXPECT_CALL(host1,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(40), false})));
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId1, {kConsumerId, base::MemoryLimit::FromPercent(40), false}}});
 
-  EXPECT_CALL(host2, UpdateConsumers(ElementsAre(
-                         MemoryConsumerUpdate{kConsumerId, 60, false})));
-  policy.manager().UpdateConsumers(&policy,
-                                   {{kChildId2, {kConsumerId, 60, false}}});
+  EXPECT_CALL(host2,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(60), false})));
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId2, {kConsumerId, base::MemoryLimit::FromPercent(60), false}}});
 
   Mock::VerifyAndClearExpectations(&host1);
   Mock::VerifyAndClearExpectations(&host2);
@@ -739,14 +772,18 @@ TEST_F(MemoryCoordinatorPolicyObserverTest, MultipleConsumersSameChild) {
   MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
 
   ::testing::InSequence seq;
-  EXPECT_CALL(host, UpdateConsumers(ElementsAre(
-                        MemoryConsumerUpdate{kConsumerId1, 50, false})));
-  EXPECT_CALL(host, UpdateConsumers(ElementsAre(
-                        MemoryConsumerUpdate{kConsumerId2, 80, false})));
-  policy.manager().UpdateConsumers(&policy,
-                                   {{kChildId, {kConsumerId1, 50, false}}});
-  policy.manager().UpdateConsumers(&policy,
-                                   {{kChildId, {kConsumerId2, 80, false}}});
+  EXPECT_CALL(host,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId1, base::MemoryLimit::FromPercent(50), false})));
+  EXPECT_CALL(host,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId2, base::MemoryLimit::FromPercent(80), false})));
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId, {kConsumerId1, base::MemoryLimit::FromPercent(50), false}}});
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId, {kConsumerId2, base::MemoryLimit::FromPercent(80), false}}});
 
   EXPECT_CALL(policy, OnConsumerGroupRemoved(kConsumerId1, kChildId));
   policy_manager().OnConsumerGroupRemoved(kConsumerId1, kChildId);
@@ -774,10 +811,12 @@ TEST_F(MemoryCoordinatorPolicyManagerTest,
   MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
 
   // Set an initial limit.
-  EXPECT_CALL(host, UpdateConsumers(ElementsAre(
-                        MemoryConsumerUpdate{kConsumerId, 50, false})));
-  policy.manager().UpdateConsumers(&policy,
-                                   {{kChildId, {kConsumerId, 50, false}}});
+  EXPECT_CALL(host,
+              UpdateConsumers(ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(50), false})));
+  policy.manager().UpdateConsumers(
+      &policy,
+      {{kChildId, {kConsumerId, base::MemoryLimit::FromPercent(50), false}}});
   Mock::VerifyAndClearExpectations(&host);
 
   // Adding a diagnostic observer should immediately notify the current limit.

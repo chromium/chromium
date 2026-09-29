@@ -9,6 +9,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/memory_limit.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromecast/browser/renderer_prelauncher.h"
@@ -65,9 +66,9 @@ class LRURendererCacheTest : public testing::Test {
     lru_cache_->SetFactoryForTesting(&factory_);
   }
 
-  void SetMemoryLimit(int percentage) {
+  void SetMemoryLimit(base::MemoryLimit memory_limit) {
     memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
-        percentage, task_environment_.QuitClosure());
+        memory_limit, task_environment_.QuitClosure());
     task_environment_.RunUntilQuit();
   }
 
@@ -77,8 +78,8 @@ class LRURendererCacheTest : public testing::Test {
     task_environment_.RunUntilQuit();
   }
 
-  void SimulateMemoryLimitAndRelease(int percentage) {
-    SetMemoryLimit(percentage);
+  void SimulateMemoryLimitAndRelease(base::MemoryLimit memory_limit) {
+    SetMemoryLimit(memory_limit);
     ReleaseMemory();
   }
 
@@ -337,7 +338,7 @@ TEST_F(LRURendererCacheTest, MemoryConsumer_Stateful) {
   // OnUpdateMemoryLimit should NOT evict anything.
   EXPECT_CALL(*p1, Destroy()).Times(0);
   EXPECT_CALL(*p2, Destroy()).Times(0);
-  SetMemoryLimit(50);
+  SetMemoryLimit(base::MemoryLimit::FromPercent(50));
   // Cache still has 2 renderers.
 
   // OnReleaseMemory should now perform the eviction.
@@ -346,7 +347,7 @@ TEST_F(LRURendererCacheTest, MemoryConsumer_Stateful) {
   // Cache: [ 1 ]
 
   // Further reduce memory limit to 0%.
-  SetMemoryLimit(0);
+  SetMemoryLimit(base::MemoryLimit::FromPercent(0));
   EXPECT_EVICTION(p1);
   ReleaseMemory();
   // Cache: []
@@ -369,12 +370,12 @@ TEST_F(LRURendererCacheTest, MemoryConsumer_NonStateful) {
 
   // Set memory limit to 50% (approx. MODERATE allocation). Non-stateful doesn't
   // care.
-  SetMemoryLimit(50);
+  SetMemoryLimit(base::MemoryLimit::FromPercent(50));
   ReleaseMemory();
   // Cache still has 1 renderer.
 
   // Set memory limit to 0% (approx. CRITICAL allocation).
-  SetMemoryLimit(0);
+  SetMemoryLimit(base::MemoryLimit::FromPercent(0));
   EXPECT_EVICTION(p1);
   ReleaseMemory();
   // Cache is cleared.

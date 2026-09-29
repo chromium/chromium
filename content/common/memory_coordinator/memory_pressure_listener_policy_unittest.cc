@@ -84,25 +84,34 @@ TEST_F(MemoryPressureListenerPolicyTest, ResponseToPressure) {
   MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
 
   // Moderate pressure: 50% limit and release memory.
-  EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(
-                        MemoryConsumerUpdate{kConsumerId1, 50, true},
-                        MemoryConsumerUpdate{kConsumerId2, 50, true})));
+  EXPECT_CALL(
+      host, UpdateConsumers(UnorderedElementsAre(
+                MemoryConsumerUpdate{kConsumerId1,
+                                     base::MemoryLimit::FromPercent(50), true},
+                MemoryConsumerUpdate{
+                    kConsumerId2, base::MemoryLimit::FromPercent(50), true})));
   base::MemoryPressureListener::SimulatePressureNotification(
       base::MEMORY_PRESSURE_LEVEL_MODERATE);
   Mock::VerifyAndClearExpectations(&host);
 
   // Critical pressure: 0% limit and release memory.
-  EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(
-                        MemoryConsumerUpdate{kConsumerId1, 0, true},
-                        MemoryConsumerUpdate{kConsumerId2, 0, true})));
+  EXPECT_CALL(host,
+              UpdateConsumers(UnorderedElementsAre(
+                  MemoryConsumerUpdate{kConsumerId1,
+                                       base::MemoryLimit::FromPercent(0), true},
+                  MemoryConsumerUpdate{
+                      kConsumerId2, base::MemoryLimit::FromPercent(0), true})));
   base::MemoryPressureListener::SimulatePressureNotification(
       base::MEMORY_PRESSURE_LEVEL_CRITICAL);
   Mock::VerifyAndClearExpectations(&host);
 
   // No pressure: 100% limit and release memory.
-  EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(
-                        MemoryConsumerUpdate{kConsumerId1, 100, true},
-                        MemoryConsumerUpdate{kConsumerId2, 100, true})));
+  EXPECT_CALL(
+      host, UpdateConsumers(UnorderedElementsAre(
+                MemoryConsumerUpdate{kConsumerId1, base::MemoryLimit::Default(),
+                                     true},
+                MemoryConsumerUpdate{kConsumerId2, base::MemoryLimit::Default(),
+                                     true})));
   base::MemoryPressureListener::SimulatePressureNotification(
       base::MEMORY_PRESSURE_LEVEL_NONE);
   Mock::VerifyAndClearExpectations(&host);
@@ -156,15 +165,16 @@ TEST_F(MemoryPressureListenerPolicyTest, Persistence) {
 
     // A consumer added AFTER the pressure event should immediately receive the
     // limit that was set.
-    EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(
-                          MemoryConsumerUpdate{kConsumerId, 50, true})));
+    EXPECT_CALL(host,
+                UpdateConsumers(UnorderedElementsAre(MemoryConsumerUpdate{
+                    kConsumerId, base::MemoryLimit::FromPercent(50), true})));
     policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
                                           kTestTraits, kChildId);
     Mock::VerifyAndClearExpectations(&host);
 
     // Removing the policy should reset the limit to default (100%).
-    EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(
-                          MemoryConsumerUpdate{kConsumerId, 100, false})));
+    EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(MemoryConsumerUpdate{
+                          kConsumerId, base::MemoryLimit::Default(), false})));
   }
   Mock::VerifyAndClearExpectations(&host);
 
@@ -199,8 +209,9 @@ TEST_F(MemoryPressureListenerPolicyTest,
 
   // When feature is disabled, MemoryCache is skipped, but other consumer is
   // updated.
-  EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(
-                        MemoryConsumerUpdate{kOtherConsumerId, 50, true})));
+  EXPECT_CALL(
+      host, UpdateConsumers(UnorderedElementsAre(MemoryConsumerUpdate{
+                kOtherConsumerId, base::MemoryLimit::FromPercent(50), true})));
   base::MemoryPressureListener::SimulatePressureNotification(
       base::MEMORY_PRESSURE_LEVEL_MODERATE);
   Mock::VerifyAndClearExpectations(&host);
@@ -237,9 +248,13 @@ TEST_F(MemoryPressureListenerPolicyTest,
 
   // When feature is enabled, MemoryCache is included along with other
   // consumers.
-  EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(
-                        MemoryConsumerUpdate{kMemoryCacheId, 50, true},
-                        MemoryConsumerUpdate{kOtherConsumerId, 50, true})));
+  EXPECT_CALL(
+      host,
+      UpdateConsumers(UnorderedElementsAre(
+          MemoryConsumerUpdate{kMemoryCacheId,
+                               base::MemoryLimit::FromPercent(50), true},
+          MemoryConsumerUpdate{kOtherConsumerId,
+                               base::MemoryLimit::FromPercent(50), true})));
   base::MemoryPressureListener::SimulatePressureNotification(
       base::MEMORY_PRESSURE_LEVEL_MODERATE);
   Mock::VerifyAndClearExpectations(&host);

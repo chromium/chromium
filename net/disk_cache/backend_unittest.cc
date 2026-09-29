@@ -213,10 +213,10 @@ class DiskCacheBackendTest : public DiskCacheTestWithCache {
                      net::BackendType backend_type,
                      bool expect_limit);
 
-  void UpdateLimitAndReleaseMemory(int percentage) {
+  void UpdateLimitAndReleaseMemory(base::MemoryLimit memory_limit) {
     base::RunLoop run_loop;
     test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
-        percentage, base::DoNothing());
+        memory_limit, base::DoNothing());
     test_memory_consumer_registry_.NotifyReleaseMemoryAsync(
         run_loop.QuitClosure());
     run_loop.Run();
@@ -958,12 +958,12 @@ TEST_F(DiskCacheBackendTest, MemoryListensToMemoryPressure) {
   EXPECT_GT(CalculateSizeOfAllEntries(), 0.8 * kLimit);
 
   // Signal low-memory of various sorts, and see how small it gets.
-  UpdateLimitAndReleaseMemory(50);
+  UpdateLimitAndReleaseMemory(base::MemoryLimit::FromPercent(50));
   EXPECT_LT(CalculateSizeOfAllEntries(), 0.5 * kLimit);
 
   // At 10% memory limit, the new policy (linear interpolation between 10% and
   // 50% of max_size_) sets a limit of ~18%.
-  UpdateLimitAndReleaseMemory(10);
+  UpdateLimitAndReleaseMemory(base::MemoryLimit::FromPercent(10));
   EXPECT_LT(CalculateSizeOfAllEntries(), 0.2 * kLimit);
 }
 

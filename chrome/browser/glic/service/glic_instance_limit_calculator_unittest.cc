@@ -4,6 +4,7 @@
 
 #include "chrome/browser/glic/service/glic_instance_limit_calculator.h"
 
+#include "base/memory_coordinator/memory_limit.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -40,8 +41,8 @@ TEST_F(GlicInstanceLimitCalculatorTest, ZeroPercentageReturnsCriticalLimit) {
   SetUpFeatures(
       {.baseline_limit = 15, .moderate_limit = 8, .critical_limit = 2});
 
-  constexpr int kZeroPercentage = 0;
-  EXPECT_EQ(CalculateAwakeInstancesLimit(15, kZeroPercentage), 2u);
+  EXPECT_EQ(CalculateAwakeInstancesLimit(15, base::MemoryLimit::FromPercent(0)),
+            2u);
 }
 
 TEST_F(GlicInstanceLimitCalculatorTest, FiftyPercentageReturnsModerateLimit) {
@@ -49,8 +50,8 @@ TEST_F(GlicInstanceLimitCalculatorTest, FiftyPercentageReturnsModerateLimit) {
   SetUpFeatures(
       {.baseline_limit = 15, .moderate_limit = 8, .critical_limit = 1});
 
-  constexpr int kFiftyPercentage = 50;
-  EXPECT_EQ(CalculateAwakeInstancesLimit(15, kFiftyPercentage), 8u);
+  EXPECT_EQ(
+      CalculateAwakeInstancesLimit(15, base::MemoryLimit::FromPercent(50)), 8u);
 }
 
 TEST_F(GlicInstanceLimitCalculatorTest, HundredPercentageReturnsBaselineLimit) {
@@ -58,8 +59,9 @@ TEST_F(GlicInstanceLimitCalculatorTest, HundredPercentageReturnsBaselineLimit) {
   SetUpFeatures(
       {.baseline_limit = 15, .moderate_limit = 8, .critical_limit = 1});
 
-  constexpr int kHundredPercentage = 100;
-  EXPECT_EQ(CalculateAwakeInstancesLimit(15, kHundredPercentage), 15u);
+  EXPECT_EQ(
+      CalculateAwakeInstancesLimit(15, base::MemoryLimit::FromPercent(100)),
+      15u);
 }
 
 TEST_F(GlicInstanceLimitCalculatorTest,
@@ -69,8 +71,8 @@ TEST_F(GlicInstanceLimitCalculatorTest,
   SetUpFeatures(
       {.baseline_limit = 15, .moderate_limit = 8, .critical_limit = 2});
 
-  constexpr int kQuarterPercentage = 25;
-  EXPECT_EQ(CalculateAwakeInstancesLimit(15, kQuarterPercentage), 5u);
+  EXPECT_EQ(
+      CalculateAwakeInstancesLimit(15, base::MemoryLimit::FromPercent(25)), 5u);
 }
 
 TEST_F(GlicInstanceLimitCalculatorTest,
@@ -81,8 +83,9 @@ TEST_F(GlicInstanceLimitCalculatorTest,
   SetUpFeatures(
       {.baseline_limit = 15, .moderate_limit = 8, .critical_limit = 2});
 
-  constexpr int kThreeQuarterPercentage = 75;
-  EXPECT_EQ(CalculateAwakeInstancesLimit(15, kThreeQuarterPercentage), 12u);
+  EXPECT_EQ(
+      CalculateAwakeInstancesLimit(15, base::MemoryLimit::FromPercent(75)),
+      12u);
 }
 
 TEST_F(GlicInstanceLimitCalculatorTest, ExtrapolationAboveHundredPercent) {
@@ -92,12 +95,14 @@ TEST_F(GlicInstanceLimitCalculatorTest, ExtrapolationAboveHundredPercent) {
       {.baseline_limit = 15, .moderate_limit = 8, .critical_limit = 2});
 
   // At 200%: 8 + (200 - 50) * 0.14 = 8 + 21 = 29.
-  constexpr int kTwoHundredPercentage = 200;
-  EXPECT_EQ(CalculateAwakeInstancesLimit(15, kTwoHundredPercentage), 29u);
+  EXPECT_EQ(
+      CalculateAwakeInstancesLimit(15, base::MemoryLimit::FromPercent(200)),
+      29u);
 
   // At 150%: 8 + (150 - 50) * 0.14 = 8 + 14 = 22.
-  constexpr int kOneHundredFiftyPercentage = 150;
-  EXPECT_EQ(CalculateAwakeInstancesLimit(15, kOneHundredFiftyPercentage), 22u);
+  EXPECT_EQ(
+      CalculateAwakeInstancesLimit(15, base::MemoryLimit::FromPercent(150)),
+      22u);
 }
 
 TEST_F(GlicInstanceLimitCalculatorTest, MonotonicityClampingPreventsInversion) {
@@ -109,8 +114,8 @@ TEST_F(GlicInstanceLimitCalculatorTest, MonotonicityClampingPreventsInversion) {
   SetUpFeatures(
       {.baseline_limit = 15, .moderate_limit = 8, .critical_limit = 50});
 
-  constexpr int kZeroPercentage = 0;
-  EXPECT_EQ(CalculateAwakeInstancesLimit(15, kZeroPercentage), 8u);
+  EXPECT_EQ(CalculateAwakeInstancesLimit(15, base::MemoryLimit::FromPercent(0)),
+            8u);
 }
 
 }  // namespace glic

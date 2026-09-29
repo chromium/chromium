@@ -248,7 +248,8 @@ TEST_F(DiscardableSharedMemoryManagerTest, OnModerateMemoryPressure) {
   // Manager time must be after all segment unlock times for eviction to work.
   task_environment_.FastForwardBy(base::Seconds(1));
 
-  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(50);
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+      base::MemoryLimit::FromPercent(50));
   test_memory_consumer_registry_.NotifyReleaseMemory();
   manager_->FlushMemoryPressureTaskRunnerForTesting(
       task_environment_.QuitClosure());
@@ -285,7 +286,8 @@ TEST_F(DiscardableSharedMemoryManagerTest, OnCriticalMemoryPressure) {
   // Manager time must be after all segment unlock times for eviction to work.
   task_environment_.FastForwardBy(base::Seconds(1));
 
-  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(0);
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+      base::MemoryLimit::FromPercent(0));
   test_memory_consumer_registry_.NotifyReleaseMemory();
   manager_->FlushMemoryPressureTaskRunnerForTesting(
       task_environment_.QuitClosure());
@@ -369,7 +371,8 @@ TEST_F(DiscardableSharedMemoryManagerTest,
   task_environment_.FastForwardBy(base::Seconds(1));
 
   // Limit update to 50% alone should NOT evict memory immediately.
-  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(50);
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+      base::MemoryLimit::FromPercent(50));
   manager_->FlushMemoryPressureTaskRunnerForTesting(
       task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
@@ -388,7 +391,8 @@ TEST_F(DiscardableSharedMemoryManagerTest,
   EXPECT_TRUE(memory2.IsMemoryResident());
 
   // Relieving pressure should restore the limit, but not re-allocate memory.
-  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(100);
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+      base::MemoryLimit::Default());
   test_memory_consumer_registry_.NotifyReleaseMemory();
   manager_->FlushMemoryPressureTaskRunnerForTesting(
       task_environment_.QuitClosure());
@@ -396,7 +400,8 @@ TEST_F(DiscardableSharedMemoryManagerTest,
   EXPECT_EQ(memory2.mapped_size(), manager_->GetBytesAllocated());
 
   // Critical pressure (0% limit) should reduce limit and release all segments.
-  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(0);
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+      base::MemoryLimit::FromPercent(0));
   test_memory_consumer_registry_.NotifyReleaseMemory();
   manager_->FlushMemoryPressureTaskRunnerForTesting(
       task_environment_.QuitClosure());

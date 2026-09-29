@@ -48,23 +48,9 @@ class BASE_EXPORT MemoryLimit {
   static constexpr MemoryLimit FromPercent(int percent) {
     return MemoryLimit(percent);
   }
-
-  // Implicit constructor to facilitate phased migration from raw int across
-  // Chromium.
-  // TODO(crbug.com/441951621): Make constructor private after call site
-  // migration is complete.
-  constexpr MemoryLimit(int percent) : percent_(percent) {
-    // Memory limits cannot be negative. Uses CHECK instead of CHECK_GE to avoid
-    // including base/check_op.h in this header for this single use case.
-    CHECK(percent >= 0);
-  }
-
-  // Disallow floating point conversions to prevent silent truncation of ratios
-  // (e.g., passing 0.5 becoming 0% / critical pressure).
-  // TODO(crbug.com/441951621): Remove once the implicit int constructor is
-  // made explicit/private.
-  MemoryLimit(float) = delete;
-  MemoryLimit(double) = delete;
+  // Disallow floating-point percentages to avoid silent truncation.
+  static MemoryLimit FromPercent(float) = delete;
+  static MemoryLimit FromPercent(double) = delete;
 
   constexpr int percent() const { return percent_; }
   constexpr double ratio() const { return percent_ / 100.0; }
@@ -82,17 +68,16 @@ class BASE_EXPORT MemoryLimit {
   constexpr bool operator==(const MemoryLimit&) const = default;
   constexpr auto operator<=>(const MemoryLimit&) const = default;
 
-  // Heterogeneous comparisons with int to facilitate phased migration from raw
-  // int without operator ambiguity.
-  // TODO(crbug.com/441951621): Remove when migration to MemoryLimit is
-  // complete.
-  constexpr bool operator==(int other) const { return percent_ == other; }
-  constexpr auto operator<=>(int other) const { return percent_ <=> other; }
-
  private:
   static constexpr int kDefaultPercent = 100;
   static constexpr int kModeratePressurePercent = 50;
   static constexpr int kCriticalPressurePercent = 0;
+
+  constexpr explicit MemoryLimit(int percent) : percent_(percent) {
+    // Memory limits cannot be negative. Uses CHECK instead of CHECK_GE to avoid
+    // including base/check_op.h in this header for this single use case.
+    CHECK(percent >= 0);
+  }
 
   int percent_ = kDefaultPercent;
 };

@@ -254,7 +254,8 @@ TEST_F(BrowserMemoryCoordinatorBridgeTest, BrowserNotification) {
   EXPECT_CALL(consumer, OnReleaseMemory()).WillOnce([&]() {
     release_memory_future.SetValue();
   });
-  registry_host->coordinator()->UpdateConsumers({{kConsumerId, 100, true}});
+  registry_host->coordinator()->UpdateConsumers(
+      {{kConsumerId, base::MemoryLimit::Default(), true}});
 
   // Wait for the Mojo call to reach the child and trigger the consumer.
   EXPECT_TRUE(release_memory_future.Wait());
@@ -291,9 +292,10 @@ TEST_F(BrowserMemoryCoordinatorBridgeTest,
                              ChildProcessId) { return true; }));
   MemoryCoordinatorPolicyRegistration local_policy_reg(
       coordinator().policy_manager(), local_policy);
-  local_policy.SetLimit(50, /*release_memory=*/false);
+  local_policy.SetLimit(base::MemoryLimit::FromPercent(50),
+                        /*release_memory=*/false);
   EXPECT_TRUE(local_policy_future.Wait());
-  EXPECT_EQ(consumer.memory_limit(), 50);
+  EXPECT_EQ(consumer.memory_limit(), base::MemoryLimit::FromPercent(50));
 
   // 3. Browser sets an override to 80%. It must bypass the local policy
   // (resulting in 80%, NOT 50% * 80% = 40%).
@@ -301,9 +303,10 @@ TEST_F(BrowserMemoryCoordinatorBridgeTest,
   EXPECT_CALL(consumer, OnUpdateMemoryLimit()).WillOnce([&]() {
     override_future.SetValue();
   });
-  registry_host->coordinator()->SetOverrideLimit(kConsumerId, 80);
+  registry_host->coordinator()->SetOverrideLimit(
+      kConsumerId, base::MemoryLimit::FromPercent(80));
   EXPECT_TRUE(override_future.Wait());
-  EXPECT_EQ(consumer.memory_limit(), 80);
+  EXPECT_EQ(consumer.memory_limit(), base::MemoryLimit::FromPercent(80));
 
   // 4. Browser clears override (passing browser policy limit 100%).
   // Child limit must revert to the local policy limit (50%).
@@ -311,9 +314,10 @@ TEST_F(BrowserMemoryCoordinatorBridgeTest,
   EXPECT_CALL(consumer, OnUpdateMemoryLimit()).WillOnce([&]() {
     clear_override_future.SetValue();
   });
-  registry_host->coordinator()->ClearOverrideLimit(kConsumerId, 100);
+  registry_host->coordinator()->ClearOverrideLimit(
+      kConsumerId, base::MemoryLimit::Default());
   EXPECT_TRUE(clear_override_future.Wait());
-  EXPECT_EQ(consumer.memory_limit(), 50);
+  EXPECT_EQ(consumer.memory_limit(), base::MemoryLimit::FromPercent(50));
 
   // Cleanup.
   registry().RemoveMemoryConsumer(kConsumerName, &consumer);

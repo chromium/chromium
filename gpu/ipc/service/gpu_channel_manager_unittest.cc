@@ -287,10 +287,11 @@ class GpuChannelManagerStatefulTest : public StatefulMemoryPressureFeature,
 TEST_F(GpuChannelManagerStatefulTest, OnUpdateMemoryLimitStateful) {
   // Send async notification for memory limit update and ensure it completes.
   test_memory_consumer_registry().NotifyUpdateMemoryLimitAsync(
-      50, task_environment().QuitClosure());
+      base::MemoryLimit::FromPercent(50), task_environment().QuitClosure());
   task_environment().RunUntilQuit();
 
-  EXPECT_EQ(channel_manager()->memory_limit(), 50);
+  EXPECT_EQ(channel_manager()->memory_limit(),
+            base::MemoryLimit::FromPercent(50));
 }
 
 }  // namespace gpu

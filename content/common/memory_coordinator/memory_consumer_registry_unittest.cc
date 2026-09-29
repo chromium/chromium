@@ -137,7 +137,7 @@ TEST_F(MemoryConsumerRegistryTest, InheritMemoryLimit) {
 
   registry().AddMemoryConsumer(kConsumerName, kTestTraits1, &consumer1);
 
-  const int kNewLimit = 50;
+  constexpr base::MemoryLimit kNewLimit = base::MemoryLimit::FromPercent(50);
   EXPECT_CALL(consumer1, OnUpdateMemoryLimit());
   entries().front().host->UpdateConsumers({{kConsumerId, kNewLimit, false}});
   EXPECT_EQ(consumer1.memory_limit(), kNewLimit);
@@ -232,7 +232,8 @@ TEST_F(MemoryConsumerRegistryTest, ReentrantRemovalDuringLimitUpdate) {
   // consumer. Since it was the last consumer, the group is destroyed. Then it
   // should NOT crash when attempting to call ReleaseMemory on the destroyed
   // group.
-  entries().front().host->UpdateConsumers({{kConsumerId, 50, true}});
+  entries().front().host->UpdateConsumers(
+      {{kConsumerId, base::MemoryLimit::FromPercent(50), true}});
 
   // Verify it was called and successfully removed itself without crashing!
   EXPECT_TRUE(consumer.limit_updated());
@@ -251,7 +252,8 @@ TEST_F(MemoryConsumerRegistryTest, ReentrantRemovalDuringLimitUpdateOnly) {
   ASSERT_EQ(registry().size(), 1u);
 
   // Trigger update with limit ONLY.
-  entries().front().host->UpdateConsumers({{kConsumerId, 50, false}});
+  entries().front().host->UpdateConsumers(
+      {{kConsumerId, base::MemoryLimit::FromPercent(50), false}});
 
   // Verify it was called and successfully removed itself without crashing!
   EXPECT_TRUE(consumer.limit_updated());
@@ -269,7 +271,8 @@ TEST_F(MemoryConsumerRegistryTest, ReentrantRemovalDuringOverrideLimit) {
   ASSERT_EQ(registry().size(), 1u);
 
   // Trigger override limit update.
-  entries().front().host->SetOverrideLimit(kConsumerId, 50);
+  entries().front().host->SetOverrideLimit(kConsumerId,
+                                           base::MemoryLimit::FromPercent(50));
 
   EXPECT_TRUE(consumer.limit_updated());
   ASSERT_EQ(registry().size(), 0u);
@@ -286,7 +289,8 @@ TEST_F(MemoryConsumerRegistryTest, ReentrantRemovalDuringClearOverrideLimit) {
   ASSERT_EQ(registry().size(), 1u);
 
   // Trigger clear override limit update.
-  entries().front().host->ClearOverrideLimit(kConsumerId, 100);
+  entries().front().host->ClearOverrideLimit(kConsumerId,
+                                             base::MemoryLimit::Default());
 
   EXPECT_TRUE(consumer.limit_updated());
   ASSERT_EQ(registry().size(), 0u);

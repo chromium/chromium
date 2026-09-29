@@ -933,7 +933,7 @@ size_t SpareRenderProcessHostManagerImpl::GetTargetSpareRPHCount() const {
 
   // Preserve 1 spare if keep-one-alive policy is active.
   if (base::FeatureList::IsEnabled(kSpareRPHKeepOneAliveOnMemoryPressure) &&
-      memory_limit() > 0) {
+      memory_limit() > base::MemoryLimit::FromPercent(0)) {
     target = std::max(size_t{1}, target);
   }
 

@@ -980,7 +980,8 @@ TEST_P(PrerenderHostRegistryLimitGroupTest, StatefulNumberLimit) {
   // Set memory limit to 50%.
   {
     base::RunLoop run_loop;
-    test_registry_.NotifyUpdateMemoryLimitAsync(50, run_loop.QuitClosure());
+    test_registry_.NotifyUpdateMemoryLimitAsync(
+        base::MemoryLimit::FromPercent(50), run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -1037,7 +1038,8 @@ TEST_F(PrerenderHostRegistryLegacyMemoryControlsTest,
 
   {
     base::RunLoop run_loop;
-    test_registry_.NotifyUpdateMemoryLimitAsync(80, base::DoNothing());
+    test_registry_.NotifyUpdateMemoryLimitAsync(
+        base::MemoryLimit::FromPercent(80), base::DoNothing());
     test_registry_.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
     run_loop.Run();
   }
@@ -1097,7 +1099,8 @@ TEST_P(PrerenderHostRegistryLimitGroupTest, StatefulNumberLimit_Critical) {
   // any new prerenders from starting.
   {
     base::RunLoop run_loop;
-    test_registry_.NotifyUpdateMemoryLimitAsync(0, base::DoNothing());
+    test_registry_.NotifyUpdateMemoryLimitAsync(
+        base::MemoryLimit::FromPercent(0), base::DoNothing());
     test_registry_.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
     run_loop.Run();
   }
@@ -1116,7 +1119,8 @@ TEST_P(PrerenderHostRegistryLimitGroupTest, StatefulNumberLimit_Critical) {
   // Reset memory limit back to 100% for subsequent tests.
   {
     base::RunLoop run_loop;
-    test_registry_.NotifyUpdateMemoryLimitAsync(100, base::DoNothing());
+    test_registry_.NotifyUpdateMemoryLimitAsync(base::MemoryLimit::Default(),
+                                                base::DoNothing());
     test_registry_.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
     run_loop.Run();
   }
@@ -1135,7 +1139,8 @@ TEST_F(PrerenderHostRegistryTest, MemoryControlsDisabled_NoOp) {
   // must be completely ignored as a no-op, avoiding CancelAllHosts.
   {
     base::RunLoop run_loop;
-    test_registry_.NotifyUpdateMemoryLimitAsync(0, base::DoNothing());
+    test_registry_.NotifyUpdateMemoryLimitAsync(
+        base::MemoryLimit::FromPercent(0), base::DoNothing());
     test_registry_.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
     run_loop.Run();
   }
@@ -1159,7 +1164,8 @@ TEST_P(PrerenderHostRegistryLimitGroupTest, StatefulActiveEviction) {
 
   {
     base::RunLoop run_loop;
-    test_registry_.NotifyUpdateMemoryLimitAsync(50, base::DoNothing());
+    test_registry_.NotifyUpdateMemoryLimitAsync(
+        base::MemoryLimit::FromPercent(50), base::DoNothing());
     test_registry_.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
     run_loop.Run();
   }
@@ -1226,7 +1232,8 @@ TEST_P(PrerenderHostRegistryLimitGroupTest,
 
   {
     base::RunLoop run_loop;
-    test_registry_.NotifyUpdateMemoryLimitAsync(50, base::DoNothing());
+    test_registry_.NotifyUpdateMemoryLimitAsync(
+        base::MemoryLimit::FromPercent(50), base::DoNothing());
     test_registry_.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
     run_loop.Run();
   }
@@ -1273,7 +1280,8 @@ TEST_P(PrerenderHostRegistryLimitGroupTest,
   // Set memory limit to 50% (scaled limit becomes 2 * 50% = 1).
   {
     base::RunLoop run_loop;
-    test_registry_.NotifyUpdateMemoryLimitAsync(50, base::DoNothing());
+    test_registry_.NotifyUpdateMemoryLimitAsync(
+        base::MemoryLimit::FromPercent(50), base::DoNothing());
     test_registry_.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
     run_loop.Run();
   }
@@ -1326,7 +1334,8 @@ TEST_P(PrerenderHostRegistryStatefulPerGroupTest, ScalingBehavior_AllGroups) {
   // Set memory limit to 50%.
   {
     base::RunLoop run_loop;
-    test_registry_.NotifyUpdateMemoryLimitAsync(50, run_loop.QuitClosure());
+    test_registry_.NotifyUpdateMemoryLimitAsync(
+        base::MemoryLimit::FromPercent(50), run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -1382,7 +1391,8 @@ TEST_P(PrerenderHostRegistryStatefulPerGroupTest,
   // Trigger critical memory pressure (0%)
   {
     base::RunLoop run_loop;
-    test_registry_.NotifyUpdateMemoryLimitAsync(0, base::DoNothing());
+    test_registry_.NotifyUpdateMemoryLimitAsync(
+        base::MemoryLimit::FromPercent(0), base::DoNothing());
     test_registry_.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
     run_loop.Run();
   }

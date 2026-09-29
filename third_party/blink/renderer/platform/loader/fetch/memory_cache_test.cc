@@ -34,6 +34,7 @@
 #include <variant>
 
 #include "base/memory_coordinator/memory_coordinator_features.h"
+#include "base/memory_coordinator/memory_limit.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -418,7 +419,7 @@ TEST_F(MemoryCacheStrongReferenceTest, ChangeMemoryCacheSizeStateful) {
   // OnUpdateMemoryLimit() clamps max_size to current size (resource->size()),
   // preventing growth without immediate eviction.
   test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
-      0, task_environment_.QuitClosure());
+      base::MemoryLimit::FromPercent(0), task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
   EXPECT_EQ(MemoryCache::Get()->strong_references_max_size_, resource->size());
   EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 1u);
@@ -433,7 +434,7 @@ TEST_F(MemoryCacheStrongReferenceTest, ChangeMemoryCacheSizeStateful) {
   // Relax memory limit back to 100%. Under stateful mode, OnUpdateMemoryLimit()
   // expands max_size back to baseline.
   test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
-      100, task_environment_.QuitClosure());
+      base::MemoryLimit::Default(), task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
   EXPECT_EQ(MemoryCache::Get()->strong_references_max_size_, baseline);
 }
@@ -454,7 +455,7 @@ TEST_F(MemoryCacheStrongReferenceTest, ChangeMemoryCacheSizeStateless) {
 
   // In stateless mode, OnUpdateMemoryLimit does nothing.
   test_memory_consumer_registry_.NotifyUpdateMemoryLimitAsync(
-      0, task_environment_.QuitClosure());
+      base::MemoryLimit::FromPercent(0), task_environment_.QuitClosure());
   task_environment_.RunUntilQuit();
   EXPECT_EQ(MemoryCache::Get()->strong_references_max_size_, baseline);
   EXPECT_EQ(MemoryCache::Get()->strong_references_.size(), 1u);

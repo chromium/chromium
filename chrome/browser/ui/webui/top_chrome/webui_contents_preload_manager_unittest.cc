@@ -72,7 +72,7 @@ class WebUIContentsPreloadManagerTest : public ChromeRenderViewHostTestHarness {
   }
   void TearDown() override {
     test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
-        base::MemoryConsumer::kDefaultMemoryLimit);
+        base::MemoryLimit::Default());
     preload_candidate_selector_ = nullptr;
     // The mock object does not expect itself to leak outside of the test.
     // Clearing it from the preload manager to destroy it.
@@ -125,7 +125,8 @@ TEST_F(WebUIContentsPreloadManagerTest, PreloadedContentsIsNotNullAfterWarmup) {
 TEST_F(WebUIContentsPreloadManagerTest, NoPreloadUnderHeavyMemoryPressure) {
   // Don't preload if the memory pressure is moderate or higher.
   preload_manager();
-  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(50);
+  test_memory_consumer_registry_.NotifyUpdateMemoryLimit(
+      base::MemoryLimit::FromPercent(50));
   std::unique_ptr<content::BrowserContext> browser_context =
       std::make_unique<TestingProfile>();
   test_api().MaybePreloadForBrowserContext(browser_context.get());

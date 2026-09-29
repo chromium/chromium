@@ -534,7 +534,8 @@ TEST_F(SSLClientSessionCacheTest, MemoryPressure) {
   }
 
   // Memory pressure critical should clear the cache.
-  SimulateMemoryLimitAndRelease(task_environment, 0);
+  SimulateMemoryLimitAndRelease(task_environment,
+                                base::MemoryLimit::FromPercent(0));
   EXPECT_EQ(0u, cache.max_size());
   EXPECT_EQ(0u, cache.size());
 
@@ -547,7 +548,7 @@ TEST_F(SSLClientSessionCacheTest, MemoryPressure) {
   }
 
   // Memory pressure none should restore the original size limit.
-  SimulateMemoryLimitAndRelease(task_environment, 100);
+  SimulateMemoryLimitAndRelease(task_environment, base::MemoryLimit::Default());
   EXPECT_EQ(10u, cache.max_size());
   EXPECT_EQ(0u, cache.size());
 

@@ -9,6 +9,7 @@
 
 #include "base/at_exit.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory_coordinator/memory_limit.h"
 #include "base/memory_coordinator/test_memory_consumer_registry.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -183,19 +184,19 @@ TEST_P(FrameEvictionManagerTest, ScalableEvictionLimits) {
   FrameEvictionManager* manager = FrameEvictionManager::GetInstance();
 
   // Trigger 50% limit, which should bring us exactly to the baseline.
-  test_registry.NotifyUpdateMemoryLimit(50);
+  test_registry.NotifyUpdateMemoryLimit(base::MemoryLimit::FromPercent(50));
   size_t baseline = manager->GetMaxNumberOfSavedFrames();
 
   // Trigger 100% limit, which should bring us to baseline * 2.
-  test_registry.NotifyUpdateMemoryLimit(100);
+  test_registry.NotifyUpdateMemoryLimit(base::MemoryLimit::Default());
   EXPECT_EQ(manager->GetMaxNumberOfSavedFrames(), baseline * 2);
 
   // Trigger 25% limit, which should clamp to baseline.
-  test_registry.NotifyUpdateMemoryLimit(25);
+  test_registry.NotifyUpdateMemoryLimit(base::MemoryLimit::FromPercent(25));
   EXPECT_EQ(manager->GetMaxNumberOfSavedFrames(), baseline);
 
   // Trigger 75% limit, which should be baseline * 2 * 75 / 100.
-  test_registry.NotifyUpdateMemoryLimit(75);
+  test_registry.NotifyUpdateMemoryLimit(base::MemoryLimit::FromPercent(75));
   EXPECT_EQ(manager->GetMaxNumberOfSavedFrames(), baseline * 2 * 75 / 100);
 }
 
@@ -208,11 +209,11 @@ TEST_P(FrameEvictionManagerTest, ScalableEvictionReleaseMemory) {
   FrameEvictionManager* manager = FrameEvictionManager::GetInstance();
 
   // Get the baseline.
-  test_registry.NotifyUpdateMemoryLimit(50);
+  test_registry.NotifyUpdateMemoryLimit(base::MemoryLimit::FromPercent(50));
   size_t baseline = manager->GetMaxNumberOfSavedFrames();
 
   // Reset to 100% to start with 2x baseline capacity.
-  test_registry.NotifyUpdateMemoryLimit(100);
+  test_registry.NotifyUpdateMemoryLimit(base::MemoryLimit::Default());
   EXPECT_EQ(manager->GetMaxNumberOfSavedFrames(), baseline * 2);
 
   // Add more frames than the capacity.
@@ -229,7 +230,7 @@ TEST_P(FrameEvictionManagerTest, ScalableEvictionReleaseMemory) {
 
   // Lower limit to 50% (target capacity becomes baseline, but effective
   // capacity remains 2x baseline).
-  test_registry.NotifyUpdateMemoryLimit(50);
+  test_registry.NotifyUpdateMemoryLimit(base::MemoryLimit::FromPercent(50));
   EXPECT_EQ(manager->GetMaxNumberOfSavedFrames(), baseline * 2);
 
   // Verify we still have 2x baseline frames.

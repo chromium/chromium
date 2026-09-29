@@ -69,7 +69,8 @@ TEST_F(UniqueFontSelectorTest, StatefulMemoryPressure_Enabled) {
   // Update limit to 50%.
   {
     base::RunLoop run_loop;
-    test_registry.NotifyUpdateMemoryLimitAsync(50, run_loop.QuitClosure());
+    test_registry.NotifyUpdateMemoryLimitAsync(
+        base::MemoryLimit::FromPercent(50), run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -112,7 +113,8 @@ TEST_F(UniqueFontSelectorTest, StatefulMemoryPressure_Disabled_Critical) {
   // Update limit to 0% (critical) and release memory.
   {
     base::RunLoop run_loop;
-    test_registry.NotifyUpdateMemoryLimitAsync(0, base::DoNothing());
+    test_registry.NotifyUpdateMemoryLimitAsync(
+        base::MemoryLimit::FromPercent(0), base::DoNothing());
     test_registry.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
     run_loop.Run();
   }
@@ -144,7 +146,8 @@ TEST_F(UniqueFontSelectorTest, StatefulMemoryPressure_Disabled_NonCritical) {
   // Update limit to 80% (non-critical) and release memory.
   {
     base::RunLoop run_loop;
-    test_registry.NotifyUpdateMemoryLimitAsync(80, base::DoNothing());
+    test_registry.NotifyUpdateMemoryLimitAsync(
+        base::MemoryLimit::FromPercent(80), base::DoNothing());
     test_registry.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
     run_loop.Run();
   }

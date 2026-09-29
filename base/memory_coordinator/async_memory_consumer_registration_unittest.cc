@@ -78,7 +78,8 @@ TEST_F(AsyncMemoryConsumerRegistrationTest, RegisterOnAnotherSequence) {
 
   {
     consumer.AsyncCall(&TestAsyncMemoryConsumer::ExpectOnUpdateMemoryLimitCall);
-    registry.NotifyUpdateMemoryLimitAsync(22, task_environment_.QuitClosure());
+    registry.NotifyUpdateMemoryLimitAsync(MemoryLimit::FromPercent(22),
+                                          task_environment_.QuitClosure());
     task_environment_.RunUntilQuit();
   }
 

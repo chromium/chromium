@@ -43,7 +43,8 @@ TEST_F(PlainTextPainterTest, MemoryPressure) {
   // Update limit to critical (0) and release memory.
   {
     base::RunLoop run_loop;
-    test_registry.NotifyUpdateMemoryLimitAsync(0, base::DoNothing());
+    test_registry.NotifyUpdateMemoryLimitAsync(
+        base::MemoryLimit::FromPercent(0), base::DoNothing());
     test_registry.NotifyReleaseMemoryAsync(run_loop.QuitClosure());
     run_loop.Run();
   }

@@ -81,11 +81,11 @@ TEST_F(LastResortGCPolicyTest, Enabled_NoTimer) {
   // requested, and finally the memory limit is restored immediately because
   // there is no delay.
   EXPECT_CALL(consumer, OnUpdateMemoryLimit()).WillOnce([&]() {
-    EXPECT_EQ(consumer.memory_limit(), 0);
+    EXPECT_EQ(consumer.memory_limit(), base::MemoryLimit::FromPercent(0));
   });
   EXPECT_CALL(consumer, OnReleaseMemory());
   EXPECT_CALL(consumer, OnUpdateMemoryLimit()).WillOnce([&]() {
-    EXPECT_EQ(consumer.memory_limit(), 100);
+    EXPECT_EQ(consumer.memory_limit(), base::MemoryLimit::Default());
   });
 
   policy.OnV8HeapLastResortGC();
@@ -111,7 +111,7 @@ TEST_F(LastResortGCPolicyTest, Enabled_Timer) {
   // requested. After the correct delay, the memory limit is restored
   // immediately because there is no delay.
   EXPECT_CALL(consumer, OnUpdateMemoryLimit()).WillOnce([&]() {
-    EXPECT_EQ(consumer.memory_limit(), 0);
+    EXPECT_EQ(consumer.memory_limit(), base::MemoryLimit::FromPercent(0));
   });
   EXPECT_CALL(consumer, OnReleaseMemory());
 
@@ -123,7 +123,7 @@ TEST_F(LastResortGCPolicyTest, Enabled_Timer) {
   Mock::VerifyAndClearExpectations(&consumer);
 
   EXPECT_CALL(consumer, OnUpdateMemoryLimit()).WillOnce([&]() {
-    EXPECT_EQ(consumer.memory_limit(), 100);
+    EXPECT_EQ(consumer.memory_limit(), base::MemoryLimit::Default());
   });
   FastForwardBy(base::Seconds(1));
 }
@@ -150,7 +150,7 @@ TEST_F(LastResortGCPolicyTest, Persistence) {
 
   base::MemoryConsumerRegistration registration(
       "Consumer", kTraitsWithReleaseGC, &consumer);
-  EXPECT_EQ(consumer.memory_limit(), 0);
+  EXPECT_EQ(consumer.memory_limit(), base::MemoryLimit::FromPercent(0));
 }
 
 }  // namespace content

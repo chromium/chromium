@@ -82,15 +82,16 @@ TEST_F(PredicateMemoryCoordinatorPolicyTest, Persistence) {
           }));
   MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
 
-  policy.SetLimit(50, true);
+  policy.SetLimit(base::MemoryLimit::FromPercent(50), true);
 
   // A consumer added AFTER the limit was set should immediately receive it if
   // it matches the predicate.
   const std::string kConsumerName1 = "consumer1";
   const uint32_t kConsumerId1 = base::PersistentHash(kConsumerName1);
 
-  EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(
-                        MemoryConsumerUpdate{kConsumerId1, 50, true})));
+  EXPECT_CALL(host,
+              UpdateConsumers(UnorderedElementsAre(MemoryConsumerUpdate{
+                  kConsumerId1, base::MemoryLimit::FromPercent(50), true})));
   policy_manager().OnConsumerGroupAdded(kConsumerId1, kConsumerName1,
                                         kTestTraits, kChildId);
   Mock::VerifyAndClearExpectations(&host);
@@ -139,17 +140,23 @@ TEST_F(PredicateMemoryCoordinatorPolicyTest, SetLimit) {
   MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
 
   // Updating the limit should update all matching existing consumers.
-  EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(
-                        MemoryConsumerUpdate{kConsumerId1, 50, true},
-                        MemoryConsumerUpdate{kConsumerId2, 50, true})));
-  policy.SetLimit(50, true);
+  EXPECT_CALL(
+      host, UpdateConsumers(UnorderedElementsAre(
+                MemoryConsumerUpdate{kConsumerId1,
+                                     base::MemoryLimit::FromPercent(50), true},
+                MemoryConsumerUpdate{
+                    kConsumerId2, base::MemoryLimit::FromPercent(50), true})));
+  policy.SetLimit(base::MemoryLimit::FromPercent(50), true);
   Mock::VerifyAndClearExpectations(&host);
 
   // Resetting the limit should update all matching existing consumers.
-  EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(
-                        MemoryConsumerUpdate{kConsumerId1, 100, false},
-                        MemoryConsumerUpdate{kConsumerId2, 100, false})));
-  policy.SetLimit(100, false);
+  EXPECT_CALL(
+      host, UpdateConsumers(UnorderedElementsAre(
+                MemoryConsumerUpdate{kConsumerId1, base::MemoryLimit::Default(),
+                                     false},
+                MemoryConsumerUpdate{kConsumerId2, base::MemoryLimit::Default(),
+                                     false})));
+  policy.SetLimit(base::MemoryLimit::Default(), false);
   Mock::VerifyAndClearExpectations(&host);
 
   policy_manager().OnConsumerGroupRemoved(kConsumerId1, kChildId);
@@ -181,16 +188,17 @@ TEST_F(PredicateMemoryCoordinatorPolicyTest, ChangeReleaseMemory) {
   MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
 
   // Initial set limit.
-  EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(
-                        MemoryConsumerUpdate{kConsumerId, 50, false})));
-  policy.SetLimit(50, false);
+  EXPECT_CALL(host,
+              UpdateConsumers(UnorderedElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(50), false})));
+  policy.SetLimit(base::MemoryLimit::FromPercent(50), false);
   Mock::VerifyAndClearExpectations(&host);
 
   // If the limit is the same but release_memory changes, the limit update
   // should be std::nullopt.
   EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(MemoryConsumerUpdate{
                         kConsumerId, std::nullopt, true})));
-  policy.SetLimit(50, true);
+  policy.SetLimit(base::MemoryLimit::FromPercent(50), true);
   Mock::VerifyAndClearExpectations(&host);
 
   policy_manager().OnConsumerGroupRemoved(kConsumerId, kChildId);
@@ -248,7 +256,7 @@ TEST_F(PredicateMemoryCoordinatorPolicyTest, ObserverLifecycle) {
   {
     PredicateMemoryCoordinatorPolicy policy(policy_manager(), predicate);
     MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
-    policy.SetLimit(50, false);
+    policy.SetLimit(base::MemoryLimit::FromPercent(50), false);
 
     EXPECT_CALL(host, UpdateConsumers(_)).Times(1);
     policy_manager().OnConsumerGroupAdded(kConsumerId, kConsumerName,
@@ -315,45 +323,54 @@ TEST_F(PredicateMemoryCoordinatorPolicyTest,
 
   // Critical pressure (limit 0, release true): all should be notified
   // initially.
-  EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(
-                        MemoryConsumerUpdate{kStatefulId, 0, true},
-                        MemoryConsumerUpdate{kStatelessId, 0, true})));
-  policy.SetLimit(0, true);
+  EXPECT_CALL(host,
+              UpdateConsumers(UnorderedElementsAre(
+                  MemoryConsumerUpdate{kStatefulId,
+                                       base::MemoryLimit::FromPercent(0), true},
+                  MemoryConsumerUpdate{
+                      kStatelessId, base::MemoryLimit::FromPercent(0), true})));
+  policy.SetLimit(base::MemoryLimit::FromPercent(0), true);
   Mock::VerifyAndClearExpectations(&host);
 
   // Simulate repeated critical pressure: stateless consumer notified.
   // Stateful is skipped.
   EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(MemoryConsumerUpdate{
                         kStatelessId, std::nullopt, true})));
-  policy.SetLimit(0, true);
+  policy.SetLimit(base::MemoryLimit::FromPercent(0), true);
   Mock::VerifyAndClearExpectations(&host);
 
   // Transition to Moderate pressure (limit 50, release true): all should be
   // notified.
-  EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(
-                        MemoryConsumerUpdate{kStatefulId, 50, true},
-                        MemoryConsumerUpdate{kStatelessId, 50, true})));
-  policy.SetLimit(50, true);
+  EXPECT_CALL(
+      host, UpdateConsumers(UnorderedElementsAre(
+                MemoryConsumerUpdate{kStatefulId,
+                                     base::MemoryLimit::FromPercent(50), true},
+                MemoryConsumerUpdate{
+                    kStatelessId, base::MemoryLimit::FromPercent(50), true})));
+  policy.SetLimit(base::MemoryLimit::FromPercent(50), true);
   Mock::VerifyAndClearExpectations(&host);
 
   // Simulate repeated moderate pressure: stateless consumer notified.
   // Stateful is skipped.
   EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(MemoryConsumerUpdate{
                         kStatelessId, std::nullopt, true})));
-  policy.SetLimit(50, true);
+  policy.SetLimit(base::MemoryLimit::FromPercent(50), true);
   Mock::VerifyAndClearExpectations(&host);
 
   // Stop pressure (limit 100, release true): all should be reset to 100%.
-  EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(
-                        MemoryConsumerUpdate{kStatefulId, 100, true},
-                        MemoryConsumerUpdate{kStatelessId, 100, true})));
-  policy.SetLimit(100, true);
+  EXPECT_CALL(
+      host,
+      UpdateConsumers(UnorderedElementsAre(
+          MemoryConsumerUpdate{kStatefulId, base::MemoryLimit::Default(), true},
+          MemoryConsumerUpdate{kStatelessId, base::MemoryLimit::Default(),
+                               true})));
+  policy.SetLimit(base::MemoryLimit::Default(), true);
   Mock::VerifyAndClearExpectations(&host);
 
   // Simulate repeated no pressure: should NOT notify because limit is 100 (not
   // under pressure).
   EXPECT_CALL(host, UpdateConsumers(_)).Times(0);
-  policy.SetLimit(100, true);
+  policy.SetLimit(base::MemoryLimit::Default(), true);
   Mock::VerifyAndClearExpectations(&host);
 
   policy_manager().OnConsumerGroupRemoved(kStatefulId, kChildId);
@@ -395,9 +412,10 @@ TEST_F(PredicateMemoryCoordinatorPolicyTest,
   MemoryCoordinatorPolicyRegistration registration(policy_manager(), policy);
 
   // Initial critical pressure.
-  EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(
-                        MemoryConsumerUpdate{kStatefulId, 0, true})));
-  policy.SetLimit(0, true);
+  EXPECT_CALL(host,
+              UpdateConsumers(UnorderedElementsAre(MemoryConsumerUpdate{
+                  kStatefulId, base::MemoryLimit::FromPercent(0), true})));
+  policy.SetLimit(base::MemoryLimit::FromPercent(0), true);
   Mock::VerifyAndClearExpectations(&host);
 
   // Because kStatefulMemoryPressure is disabled, even though traits say
@@ -405,7 +423,7 @@ TEST_F(PredicateMemoryCoordinatorPolicyTest,
   // receive repeated release updates.
   EXPECT_CALL(host, UpdateConsumers(UnorderedElementsAre(MemoryConsumerUpdate{
                         kStatefulId, std::nullopt, true})));
-  policy.SetLimit(0, true);
+  policy.SetLimit(base::MemoryLimit::FromPercent(0), true);
   Mock::VerifyAndClearExpectations(&host);
 
   policy_manager().OnConsumerGroupRemoved(kStatefulId, kChildId);

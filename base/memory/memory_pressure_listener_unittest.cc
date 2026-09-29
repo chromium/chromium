@@ -155,19 +155,19 @@ TEST(MemoryPressureListenerTest, MemoryLimit) {
   RegisteredMockMemoryPressureListener listener;
 
   EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_NONE);
-  EXPECT_EQ(listener.GetMemoryLimit(), 100);
+  EXPECT_EQ(listener.GetMemoryLimit(), MemoryLimit::Default());
 
   MemoryPressureListenerRegistry::NotifyMemoryPressure(
       MEMORY_PRESSURE_LEVEL_MODERATE);
 
   EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_MODERATE);
-  EXPECT_EQ(listener.GetMemoryLimit(), 50);
+  EXPECT_EQ(listener.GetMemoryLimit(), MemoryLimit::FromPercent(50));
 
   MemoryPressureListenerRegistry::NotifyMemoryPressure(
       MEMORY_PRESSURE_LEVEL_CRITICAL);
 
   EXPECT_EQ(listener.memory_pressure_level(), MEMORY_PRESSURE_LEVEL_CRITICAL);
-  EXPECT_EQ(listener.GetMemoryLimit(), 0);
+  EXPECT_EQ(listener.GetMemoryLimit(), MemoryLimit::FromPercent(0));
 }
 
 TEST(MemoryPressureListenerTest, RepeatedNotifications) {

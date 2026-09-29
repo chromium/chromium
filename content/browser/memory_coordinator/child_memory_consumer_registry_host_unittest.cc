@@ -201,9 +201,10 @@ TEST_F(ChildMemoryConsumerRegistryHostTest, UpdateConsumers) {
   ASSERT_TRUE(host);
 
   EXPECT_CALL(mock_coordinator,
-              UpdateConsumers(testing::ElementsAre(
-                  MemoryConsumerUpdate{kConsumerId, 50, true})));
-  host->UpdateConsumers({{kConsumerId, 50, true}});
+              UpdateConsumers(testing::ElementsAre(MemoryConsumerUpdate{
+                  kConsumerId, base::MemoryLimit::FromPercent(50), true})));
+  host->UpdateConsumers(
+      {{kConsumerId, base::MemoryLimit::FromPercent(50), true}});
   coordinator_receiver.FlushForTesting();
 
   EXPECT_CALL(controller_, OnConsumerGroupRemoved(_, _));
