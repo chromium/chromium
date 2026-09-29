@@ -55,6 +55,7 @@ class PingConfigurator : public update_client::Configurator {
   std::string GetChannel() const override;
   std::string GetLang() const override;
   std::string GetOSLongName() const override;
+  std::string GetDeviceFormFactor() const override;
   base::flat_map<std::string, std::string> ExtraRequestParams() const override;
   std::string GetDownloadPreference() const override;
   scoped_refptr<update_client::NetworkFetcherFactory> GetNetworkFetcherFactory()
@@ -148,6 +149,11 @@ std::string PingConfigurator::GetLang() const {
 std::string PingConfigurator::GetOSLongName() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return std::string(version_info::GetOSType());
+}
+
+std::string PingConfigurator::GetDeviceFormFactor() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return {};
 }
 
 base::flat_map<std::string, std::string> PingConfigurator::ExtraRequestParams()

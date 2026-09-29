@@ -71,6 +71,7 @@ struct OS {
   std::string version;
   std::string service_pack;
   std::string arch;
+  std::string device_form_factor;
 };
 
 struct Updater {

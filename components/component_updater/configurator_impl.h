@@ -64,6 +64,9 @@ class ConfiguratorImpl {
   // Returns the OS's long name like "Windows", "Mac OS X", etc.
   std::string GetOSLongName() const;
 
+  // Returns the device's form factor name like "desktop", "phone", etc.
+  std::string GetDeviceFormFactor() const;
+
   // Parameters added to each url request. It can be empty if none are needed.
   // Returns a map of name-value pairs that match ^[-_a-zA-Z0-9]$ regex.
   base::flat_map<std::string, std::string> ExtraRequestParams() const;

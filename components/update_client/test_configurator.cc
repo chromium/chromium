@@ -139,6 +139,11 @@ std::string TestConfigurator::GetOSLongName() const {
   return "Fake Operating System";
 }
 
+std::string TestConfigurator::GetDeviceFormFactor() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return std::string();
+}
+
 base::flat_map<std::string, std::string> TestConfigurator::ExtraRequestParams()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

@@ -85,6 +85,9 @@ std::string ProtocolSerializerJSON::Serialize(
   if (!request.os.service_pack.empty()) {
     os_node.Set("sp", request.os.service_pack);
   }
+  if (!request.os.device_form_factor.empty()) {
+    os_node.Set("deviceformfactor", request.os.device_form_factor);
+  }
   request_node.Set("os", std::move(os_node));
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)

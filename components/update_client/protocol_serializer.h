@@ -39,6 +39,7 @@ protocol_request::Request MakeProtocolRequest(
     const std::string& browser_version,
     const std::string& channel,
     const std::string& os_long_name,
+    const std::string& device_form_factor,
     const std::string& download_preference,
     std::optional<bool> domain_joined,
     const base::flat_map<std::string, std::string>& additional_attributes,

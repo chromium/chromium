@@ -155,6 +155,11 @@ std::string ActivityReporterConfigurator::GetOSLongName() const {
   return std::string{version_info::GetOSType()};
 }
 
+std::string ActivityReporterConfigurator::GetDeviceFormFactor() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return {};
+}
+
 base::flat_map<std::string, std::string>
 ActivityReporterConfigurator::ExtraRequestParams() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

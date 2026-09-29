@@ -394,6 +394,10 @@ is running within. It has the following members:
      *   "x86": x86
      *   "x86_64": x86-64
      *   "x64": x64
+ *   `deviceformfactor`: The form factor of the device that the client is running
+     within (e.g. "desktop", "phone", "tablet", "tv", etc.), or "" if unknown.
+     The device form factor should be transmitted in a canonical form.
+     Formatting varies across implementations. Default: "".
 
 #### `app` Objects (Update Check Request)
 Each managed application is represented by exactly one `app` object. It has the

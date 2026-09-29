@@ -56,6 +56,7 @@ class IOSConfigurator : public update_client::Configurator {
   std::string GetChannel() const override;
   std::string GetLang() const override;
   std::string GetOSLongName() const override;
+  std::string GetDeviceFormFactor() const override;
   base::flat_map<std::string, std::string> ExtraRequestParams() const override;
   std::string GetDownloadPreference() const override;
   scoped_refptr<update_client::NetworkFetcherFactory> GetNetworkFetcherFactory()
@@ -155,6 +156,10 @@ std::string IOSConfigurator::GetLang() const {
 
 std::string IOSConfigurator::GetOSLongName() const {
   return configurator_impl_.GetOSLongName();
+}
+
+std::string IOSConfigurator::GetDeviceFormFactor() const {
+  return configurator_impl_.GetDeviceFormFactor();
 }
 
 base::flat_map<std::string, std::string> IOSConfigurator::ExtraRequestParams()

@@ -96,6 +96,7 @@ class TestConfigurator : public Configurator {
   std::string GetChannel() const override;
   std::string GetLang() const override;
   std::string GetOSLongName() const override;
+  std::string GetDeviceFormFactor() const override;
   base::flat_map<std::string, std::string> ExtraRequestParams() const override;
   std::string GetDownloadPreference() const override;
   scoped_refptr<NetworkFetcherFactory> GetNetworkFetcherFactory() override;

@@ -57,9 +57,9 @@ TEST(SerializeRequestJSON, Serialize) {
 
     const auto request = std::make_unique<ProtocolSerializerJSON>()->Serialize(
         MakeProtocolRequest(false, "{15160585-8ADE-4D3C-839B-1281A6035D1F}",
-                            "prod_id", "1.0", "channel", "OS", "cacheable",
-                            std::nullopt, {{"extra", "params"}}, {},
-                            std::move(apps)));
+                            "prod_id", "1.0", "channel", "OS", "form_factor",
+                            "cacheable", std::nullopt, {{"extra", "params"}},
+                            {}, std::move(apps)));
     static constexpr char regex[] =
         R"({"request":{"@os":"\w+","@updater":"prod_id",)"
         R"("acceptformat":"crx3,download,puff,run,xz,zucc",)"
@@ -82,7 +82,8 @@ TEST(SerializeRequestJSON, Serialize) {
         R"("sse3":(true|false),"sse41":(true|false),"sse42":(true|false),)"
         R"("ssse3":(true|false)},)"
         R"("ismachine":false,)"
-        R"("os":{"arch":"[_,-.\w]+","platform":"OS",)"
+        R"("os":{"arch":"[_,-.\w]+","deviceformfactor":"form_factor",)"
+        R"("platform":"OS",)"
         R"(("sp":"[\s\w]+",)?"version":"[+-.\w]+"},"prodchannel":"channel",)"
         R"("prodversion":"1.0","protocol":"4.0","requestid":"{[-\w]{36}}",)"
         R"("sessionid":"{[-\w]{36}}","updaterchannel":"channel",)"
@@ -101,7 +102,7 @@ TEST(SerializeRequestJSON, Serialize) {
 
     const auto request = std::make_unique<ProtocolSerializerJSON>()->Serialize(
         MakeProtocolRequest(false, "{15160585-8ADE-4D3C-839B-1281A6035D1F}", "",
-                            "", "", "", "", std::nullopt, {}, {},
+                            "", "", "", "", "", std::nullopt, {}, {},
                             std::move(apps)));
 
     static constexpr char regex[] =
@@ -118,13 +119,13 @@ TEST(SerializeRequestJSON, DownloadPreference) {
   const auto serializer = std::make_unique<ProtocolSerializerJSON>();
   auto request = serializer->Serialize(
       MakeProtocolRequest(false, "{15160585-8ADE-4D3C-839B-1281A6035D1F}", "",
-                          "", "", "", "", std::nullopt, {}, {}, {}));
+                          "", "", "", "", "", std::nullopt, {}, {}, {}));
   EXPECT_FALSE(RE2::PartialMatch(request, R"("dlpref":)")) << request;
 
   // Verifies that |download_preference| is serialized.
-  request = serializer->Serialize(
-      MakeProtocolRequest(false, "{15160585-8ADE-4D3C-839B-1281A6035D1F}", "",
-                          "", "", "", "cacheable", std::nullopt, {}, {}, {}));
+  request = serializer->Serialize(MakeProtocolRequest(
+      false, "{15160585-8ADE-4D3C-839B-1281A6035D1F}", "", "", "", "", "",
+      "cacheable", std::nullopt, {}, {}, {}));
   EXPECT_TRUE(RE2::PartialMatch(request, R"("dlpref":"cacheable")")) << request;
 }
 
@@ -136,7 +137,7 @@ TEST(SerializeRequestJSON, UpdaterStateAttributes) {
 
   const auto request = serializer->Serialize(MakeProtocolRequest(
       true, "{15160585-8ADE-4D3C-839B-1281A6035D1F}", "prod_id", "1.0",
-      "channel", "OS", "cacheable", true, {{"extra", "params"}},
+      "channel", "OS", "form_factor", "cacheable", true, {{"extra", "params"}},
       {{"ismachine", "1"},
        {"name", "Omaha"},
        {"version", "1.2.3.4"},
@@ -155,7 +156,8 @@ TEST(SerializeRequestJSON, UpdaterStateAttributes) {
       R"("sse3":(true|false),"sse41":(true|false),"sse42":(true|false),)"
       R"("ssse3":(true|false)},)"
       R"("ismachine":true,)"
-      R"("os":{"arch":"[,-.\w]+","platform":"OS",("sp":"[\s\w]+",)?)"
+      R"("os":{"arch":"[,-.\w]+","deviceformfactor":"form_factor",)"
+      R"("platform":"OS",("sp":"[\s\w]+",)?)"
       R"("version":"[+-.\w]+"},"prodchannel":"channel","prodversion":"1.0",)"
       R"("protocol":"4.0","requestid":"{[-\w]{36}}","sessionid":"{[-\w]{36}}",)"
       R"("updaterchannel":"channel",)"
@@ -174,17 +176,17 @@ TEST(SerializeRequestJSON, DomainJoined) {
   const auto serializer = std::make_unique<ProtocolSerializerJSON>();
   std::string request = serializer->Serialize(
       MakeProtocolRequest(false, "{15160585-8ADE-4D3C-839B-1281A6035D1F}", "",
-                          "", "", "", "", std::nullopt, {}, {}, {}));
+                          "", "", "", "", "", std::nullopt, {}, {}, {}));
   EXPECT_FALSE(RE2::PartialMatch(request, R"("domainjoined")")) << request;
 
   request = serializer->Serialize(
       MakeProtocolRequest(false, "{15160585-8ADE-4D3C-839B-1281A6035D1F}", "",
-                          "", "", "", "", true, {}, {}, {}));
+                          "", "", "", "", "", true, {}, {}, {}));
   EXPECT_TRUE(RE2::PartialMatch(request, R"("domainjoined":true)")) << request;
 
   request = serializer->Serialize(
       MakeProtocolRequest(false, "{15160585-8ADE-4D3C-839B-1281A6035D1F}", "",
-                          "", "", "", "", false, {}, {}, {}));
+                          "", "", "", "", "", false, {}, {}, {}));
   EXPECT_TRUE(RE2::PartialMatch(request, R"("domainjoined":false)")) << request;
 }
 

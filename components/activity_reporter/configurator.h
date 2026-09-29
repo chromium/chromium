@@ -51,6 +51,7 @@ class ActivityReporterConfigurator final : public update_client::Configurator {
   std::string GetChannel() const override;
   std::string GetLang() const override;
   std::string GetOSLongName() const override;
+  std::string GetDeviceFormFactor() const override;
   base::flat_map<std::string, std::string> ExtraRequestParams() const override;
   std::string GetDownloadPreference() const override;
   scoped_refptr<update_client::NetworkFetcherFactory> GetNetworkFetcherFactory()

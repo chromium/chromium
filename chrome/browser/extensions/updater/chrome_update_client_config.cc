@@ -261,6 +261,11 @@ std::string ChromeUpdateClientConfig::GetOSLongName() const {
   return impl_.GetOSLongName();
 }
 
+std::string ChromeUpdateClientConfig::GetDeviceFormFactor() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return impl_.GetDeviceFormFactor();
+}
+
 base::flat_map<std::string, std::string>
 ChromeUpdateClientConfig::ExtraRequestParams() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

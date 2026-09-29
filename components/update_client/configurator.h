@@ -85,6 +85,9 @@ class Configurator : public base::RefCountedThreadSafe<Configurator> {
   // Returns the OS's long name like "Windows", "Mac OS X", etc.
   virtual std::string GetOSLongName() const = 0;
 
+  // Returns the device's form factor name like "desktop", "phone", etc.
+  virtual std::string GetDeviceFormFactor() const = 0;
+
   // Parameters added to each url request. It can be empty if none are needed.
   // Returns a map of name-value pairs that match ^[-_a-zA-Z0-9]$ regex.
   virtual base::flat_map<std::string, std::string> ExtraRequestParams()

@@ -104,6 +104,11 @@ std::string ConfiguratorImpl::GetOSLongName() const {
   return std::string(version_info::GetOSType());
 }
 
+std::string ConfiguratorImpl::GetDeviceFormFactor() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return std::string();
+}
+
 base::flat_map<std::string, std::string> ConfiguratorImpl::ExtraRequestParams()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

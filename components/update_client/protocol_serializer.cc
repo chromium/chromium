@@ -108,6 +108,7 @@ protocol_request::Request MakeProtocolRequest(
     const std::string& browser_version,
     const std::string& channel,
     const std::string& os_long_name,
+    const std::string& device_form_factor,
     const std::string& download_preference,
     std::optional<bool> domain_joined,
     const base::flat_map<std::string, std::string>& additional_attributes,
@@ -160,6 +161,7 @@ protocol_request::Request MakeProtocolRequest(
   request.os.version = GetOSVersion();
   request.os.service_pack = GetServicePack();
   request.os.arch = GetArchitecture();
+  request.os.device_form_factor = device_form_factor;
 
   if (!updater_state_attributes.empty()) {
     request.updater = std::make_optional<protocol_request::Updater>();
