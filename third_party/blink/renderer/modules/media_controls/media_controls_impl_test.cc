@@ -1616,6 +1616,55 @@ TEST_F(MediaControlsImplTest, DoubleTouchChangesTimeWhenZoomed) {
   EXPECT_EQ(30, MediaControls().MediaElement().currentTime());
 }
 
+TEST_F(MediaControlsImplTest, TimelineDoesNotSeekWhenNotSeekable) {
+  double duration = 60;
+  LoadMediaWithDuration(duration);
+  EnsureSizing();
+  MediaControls().MediaElement().setCurrentTime(30);
+  test::RunPendingTasks();
+  ASSERT_EQ(30, MediaControls().MediaElement().currentTime());
+
+  // Non-seekable finite streaming media returns [0.0, 0.0].
+  WebMediaPlayer()->seekable_ = WebTimeRanges(0.0, 0.0);
+
+  MediaControlTimelineElement* timeline = TimelineElement();
+  timeline->setValueAsNumber(15, ASSERT_NO_EXCEPTION);
+  timeline->DispatchInputEvent();
+  EXPECT_EQ(30, MediaControls().MediaElement().currentTime());
+
+  timeline->setValueAsNumber(0, ASSERT_NO_EXCEPTION);
+  timeline->DispatchInputEvent();
+  EXPECT_EQ(30, MediaControls().MediaElement().currentTime());
+}
+
+TEST_F(MediaControlsImplTest, DoubleTouchDoesNotChangeTimeWhenNotSeekable) {
+  double duration = 60;
+  LoadMediaWithDuration(duration);
+  EnsureSizing();
+  MediaControls().MediaElement().setCurrentTime(5);
+  test::RunPendingTasks();
+  ASSERT_EQ(5, MediaControls().MediaElement().currentTime());
+
+  // Non-seekable finite streaming media returns [0.0, 0.0].
+  WebMediaPlayer()->seekable_ = WebTimeRanges(0.0, 0.0);
+
+  DOMRect* videoRect = MediaControls().MediaElement().GetBoundingClientRect();
+  ASSERT_LT(0, videoRect->width());
+  gfx::PointF leftOfCenter(videoRect->left() + (videoRect->width() / 2) - 5,
+                           videoRect->top() + 5);
+  gfx::PointF rightOfCenter(videoRect->left() + (videoRect->width() / 2) + 5,
+                            videoRect->top() + 5);
+
+  // Double-tapping left at t=5s clamps to 0.0, which must still be ignored.
+  GestureDoubleTapAt(leftOfCenter);
+  test::RunPendingTasks();
+  EXPECT_EQ(5, MediaControls().MediaElement().currentTime());
+
+  GestureDoubleTapAt(rightOfCenter);
+  test::RunPendingTasks();
+  EXPECT_EQ(5, MediaControls().MediaElement().currentTime());
+}
+
 TEST_F(MediaControlsImplTest, HideControlsDefersStyleCalculationOnPlaying) {
   MediaControls().MediaElement().SetBooleanAttribute(html_names::kControlsAttr,
                                                      false);

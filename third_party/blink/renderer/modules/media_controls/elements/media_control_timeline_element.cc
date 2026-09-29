@@ -182,8 +182,9 @@ void MediaControlTimelineElement::DefaultEventHandler(Event& event) {
 
   // FIXME: This will need to take the timeline offset into consideration
   // once that concept is supported, see https://crbug.com/312699
-  if (MediaElement().seekable()->Contain(time))
+  if (MediaElement().CanSeekTo(time)) {
     MediaElement().setCurrentTime(time);
+  }
 
   // Provide immediate feedback (without waiting for media to seek) to make it
   // easier for user to seek to a precise time.

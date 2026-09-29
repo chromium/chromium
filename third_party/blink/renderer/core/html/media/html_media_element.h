@@ -259,6 +259,7 @@ class CORE_EXPORT HTMLMediaElement
   TimeRanges* played();
   WebTimeRanges SeekableInternal() const;
   TimeRanges* seekable() const;
+  bool CanSeekTo(double time) const;
   bool ended() const;
   bool Autoplay() const;
   bool Loop() const;

@@ -1851,6 +1851,9 @@ void MediaControlsImpl::MaybeJump(int seconds) {
   // Update the current time.
   double new_time = std::max(0.0, MediaElement().currentTime() + seconds);
   new_time = std::min(new_time, MediaElement().duration());
+  if (!MediaElement().CanSeekTo(new_time)) {
+    return;
+  }
   MediaElement().setCurrentTime(new_time);
 
   // Show the arrow animation.
