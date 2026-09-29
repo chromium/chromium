@@ -40,7 +40,9 @@ const char kDeleteFileError[] = "DeleteFileError.";
 
 static bool DatabaseIsEmpty(sql::Database* db) {
   static constexpr char kSelectCountSql[] = "SELECT COUNT(*) FROM cdm_storage";
-  CHECK(db->IsSQLValid(kSelectCountSql), base::NotFatalUntil::M160);
+  // TODO(crbug.com/566537872): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(db->IsSQLValid(kSelectCountSql));
 
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kSelectCountSql));
