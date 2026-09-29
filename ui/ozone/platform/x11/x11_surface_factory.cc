@@ -139,21 +139,20 @@ class GLOzoneEGLX11 : public GLOzoneEGL {
  private:
   std::unique_ptr<NativePixmapGLBinding> ImportNativePixmap(
       scoped_refptr<gfx::NativePixmap> pixmap,
-      viz::SharedImageFormat plane_format,
+      viz::SharedImageFormat format,
       std::optional<int> plane_index,
-      gfx::Size plane_size,
+      gfx::Size size,
       const gfx::ColorSpace& color_space,
       GLenum target,
       GLuint texture_id) override {
     switch (GetNativePixmapSupportType()) {
       case NativePixmapSupportType::kDMABuf: {
-        return NativePixmapEGLBinding::Create(pixmap, plane_format, plane_index,
-                                              plane_size, color_space, target,
-                                              texture_id);
+        return NativePixmapEGLBinding::Create(pixmap, format, plane_index, size,
+                                              color_space, target, texture_id);
       }
       case NativePixmapSupportType::kX11Pixmap: {
-        return NativePixmapEGLX11Binding::Create(
-            pixmap, plane_format, plane_size, target, texture_id);
+        return NativePixmapEGLX11Binding::Create(pixmap, format, size, target,
+                                                 texture_id);
       }
       default:
         return nullptr;

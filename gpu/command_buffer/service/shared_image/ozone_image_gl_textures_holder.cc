@@ -24,25 +24,6 @@ namespace gpu {
 
 namespace {
 
-// Returns SharedImageFormat for given `format` and `plane_index`.
-viz::SharedImageFormat GetFormatForPlane(viz::SharedImageFormat format,
-                                         int plane_index) {
-  DCHECK(format.IsValidPlaneIndex(plane_index));
-  int num_channels = format.NumChannelsInPlane(plane_index);
-  DCHECK_LE(num_channels, 2);
-  switch (format.channel_format()) {
-    case viz::SharedImageFormat::ChannelFormat::k8:
-      return num_channels == 2 ? viz::SinglePlaneFormat::kRG_88
-                               : viz::SinglePlaneFormat::kR_8;
-    case viz::SharedImageFormat::ChannelFormat::k10:
-    case viz::SharedImageFormat::ChannelFormat::k16:
-    case viz::SharedImageFormat::ChannelFormat::k16F:
-      return num_channels == 2 ? viz::SinglePlaneFormat::kRG_1616
-                               : viz::SinglePlaneFormat::kR_16;
-  }
-  NOTREACHED();
-}
-
 // Create a NativePixmapGLBinding for the given `pixmap`. On failure, returns
 // nullptr.
 std::unique_ptr<ui::NativePixmapGLBinding> GetBinding(
@@ -60,28 +41,16 @@ std::unique_ptr<ui::NativePixmapGLBinding> GetBinding(
     LOG(FATAL) << "Failed to get GLOzone.";
   }
 
-  // Get the plane format and plane size using utility methods for multiplanar
-  // formats.
-  viz::SharedImageFormat plane_format = format;
-  gfx::Size plane_size;
   // The `buffer_plane_index` is unset for single-planar formats and
   // multi-planar with external sampler, and only set for per-plane multi-planar
   // textures.
   std::optional<int> buffer_plane_index;
-  if (format.is_single_plane() || format.PrefersExternalSampler()) {
-    plane_size = size;
-    buffer_plane_index = std::nullopt;
-  } else {
-    plane_format = GetFormatForPlane(format, plane_index);
-    plane_size = format.GetPlaneSize(plane_index, size);
+  if (format.is_multi_plane() && !format.PrefersExternalSampler()) {
     buffer_plane_index = plane_index;
   }
 
   // The target should be GL_TEXTURE_2D unless external sampling is being
-  // used, which in this context is equivalent to the passed-in buffer format
-  // being multiplanar (if using per-plane sampling of a multiplanar texture,
-  // the buffer format passed in here must be the single-planar format of the
-  // plane).
+  // used.
   if (format.PrefersExternalSampler()) {
     target = GL_TEXTURE_EXTERNAL_OES;
   } else {
@@ -99,9 +68,8 @@ std::unique_ptr<ui::NativePixmapGLBinding> GetBinding(
   api->glTexParameteriFn(target, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
   std::unique_ptr<ui::NativePixmapGLBinding> np_gl_binding =
-      gl_ozone->ImportNativePixmap(pixmap, plane_format, buffer_plane_index,
-                                   plane_size, color_space, target,
-                                   gl_texture_service_id);
+      gl_ozone->ImportNativePixmap(pixmap, format, buffer_plane_index, size,
+                                   color_space, target, gl_texture_service_id);
   if (!np_gl_binding) {
     DLOG(ERROR) << "Failed to create NativePixmapGLBinding.";
     api->glDeleteTexturesFn(1, &gl_texture_service_id);

@@ -41,6 +41,26 @@ namespace {
 /* Reserve 0 for the invalid format specifier */
 #define DRM_FORMAT_INVALID 0
 
+// Returns SharedImageFormat for given multiplanar `format` and `plane_index`.
+viz::SharedImageFormat GetFormatForPlane(viz::SharedImageFormat format,
+                                         int plane_index) {
+  DCHECK(format.is_multi_plane());
+  DCHECK(format.IsValidPlaneIndex(plane_index));
+  int num_channels = format.NumChannelsInPlane(plane_index);
+  DCHECK_LE(num_channels, 2);
+  switch (format.channel_format()) {
+    case viz::SharedImageFormat::ChannelFormat::k8:
+      return num_channels == 2 ? viz::SinglePlaneFormat::kRG_88
+                               : viz::SinglePlaneFormat::kR_8;
+    case viz::SharedImageFormat::ChannelFormat::k10:
+    case viz::SharedImageFormat::ChannelFormat::k16:
+    case viz::SharedImageFormat::ChannelFormat::k16F:
+      return num_channels == 2 ? viz::SinglePlaneFormat::kRG_1616
+                               : viz::SinglePlaneFormat::kR_16;
+  }
+  NOTREACHED();
+}
+
 }  // namespace
 
 NativePixmapEGLBinding::NativePixmapEGLBinding(const gfx::Size& size,
@@ -60,16 +80,16 @@ bool NativePixmapEGLBinding::IsSharedImageFormatSupported(
 // static
 std::unique_ptr<NativePixmapGLBinding> NativePixmapEGLBinding::Create(
     scoped_refptr<gfx::NativePixmap> pixmap,
-    viz::SharedImageFormat plane_format,
+    viz::SharedImageFormat format,
     std::optional<int> plane_index,
-    gfx::Size plane_size,
+    gfx::Size size,
     const gfx::ColorSpace& color_space,
     GLenum target,
     GLuint texture_id) {
   DCHECK_GT(texture_id, 0u);
 
-  auto binding = std::make_unique<NativePixmapEGLBinding>(
-      plane_size, plane_format, plane_index);
+  auto binding =
+      std::make_unique<NativePixmapEGLBinding>(size, format, plane_index);
 
   if (!binding->InitializeFromNativePixmap(std::move(pixmap), color_space,
                                            target, texture_id)) {
@@ -90,8 +110,10 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
     GLenum target,
     GLuint texture_id) {
   DCHECK(!pixmap_);
-  if (GetFourCCFormatFromSharedImageFormat(format_) == DRM_FORMAT_INVALID) {
-    LOG(ERROR) << "Unsupported format: " << format_.ToString();
+  viz::SharedImageFormat format =
+      plane_index_ ? GetFormatForPlane(format_, *plane_index_) : format_;
+  if (GetFourCCFormatFromSharedImageFormat(format) == DRM_FORMAT_INVALID) {
+    LOG(ERROR) << "Unsupported format: " << format.ToString();
     return false;
   }
 
@@ -100,19 +122,22 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
     return false;
   }
 
+  gfx::Size plane_size =
+      plane_index_ ? format_.GetPlaneSize(*plane_index_, size_) : size_;
+
   // Note: If eglCreateImageKHR is successful for a EGL_LINUX_DMA_BUF_EXT
   // target, the EGL will take a reference to the dma_buf.
   std::vector<EGLint> attrs;
   attrs.push_back(EGL_WIDTH);
-  attrs.push_back(size_.width());
+  attrs.push_back(plane_size.width());
   attrs.push_back(EGL_HEIGHT);
-  attrs.push_back(size_.height());
+  attrs.push_back(plane_size.height());
   attrs.push_back(EGL_LINUX_DRM_FOURCC_EXT);
-  attrs.push_back(GetFourCCFormatFromSharedImageFormat(format_));
+  attrs.push_back(GetFourCCFormatFromSharedImageFormat(format));
 
-  if (format_ == viz::MultiPlaneFormat::kNV12 ||
-      format_ == viz::MultiPlaneFormat::kYV12 ||
-      format_ == viz::MultiPlaneFormat::kP010) {
+  if (format == viz::MultiPlaneFormat::kNV12 ||
+      format == viz::MultiPlaneFormat::kYV12 ||
+      format == viz::MultiPlaneFormat::kP010) {
     // TODO(b/233667677): Since https://crrev.com/c/3855381, the only NV12
     // quads that we allow to be promoted to overlays are those that don't use
     // the BT.2020 primaries and that don't use full range. Furthermore, since

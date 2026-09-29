@@ -107,50 +107,19 @@ std::unique_ptr<ui::NativePixmapGLBinding> CreateAndBindImage(
     return nullptr;
   }
 
-  if (!should_split_planes) {
-    auto native_pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
-        frame->coded_size(), viz::MultiPlaneFormat::kNV12,
-        std::move(gpu_memory_buffer_handle).native_pixmap_handle());
-    DCHECK(native_pixmap->AreDmaBufFdsValid());
-
-    // Import the NativePixmap into GL. The imported pixmap can be externally
-    // sampled i.e. does not provide per-plane textures but provides a unified
-    // single texture object.
-    return GetCurrentGLOzone().ImportNativePixmap(
-        std::move(native_pixmap), viz::MultiPlaneFormat::kNV12,
-        /*plane_index=*/std::nullopt, frame->coded_size(), gfx::ColorSpace(),
-        target, texture_id);
-  }
-
-  base::CheckedNumeric<int> uv_width(0);
-  base::CheckedNumeric<int> uv_height(0);
-
-  if (plane == 1) {
-    uv_width = GetNV12PlaneDimension<int>(frame->coded_size().width(), plane);
-    uv_height = GetNV12PlaneDimension<int>(frame->coded_size().height(), plane);
-
-    if (!uv_width.IsValid() || !uv_height.IsValid()) {
-      LOG(ERROR) << "Could not compute the UV plane's dimensions";
-      return nullptr;
-    }
-  }
-
-  const gfx::Size plane_size =
-      plane ? gfx::Size(uv_width.ValueOrDie(), uv_height.ValueOrDie())
-            : frame->coded_size();
-
-  const auto plane_format =
-      plane ? viz::SinglePlaneFormat::kRG_88 : viz::SinglePlaneFormat::kR_8;
-
   auto native_pixmap = base::MakeRefCounted<gfx::NativePixmapDmaBuf>(
-      plane_size, plane_format,
+      frame->coded_size(), viz::MultiPlaneFormat::kNV12,
       std::move(gpu_memory_buffer_handle).native_pixmap_handle());
   DCHECK(native_pixmap->AreDmaBufFdsValid());
 
-  // Import the NativePixmap into GL.
+  // Import the NativePixmap into GL. If `should_split_planes` is false, the
+  // imported pixmap can be externally sampled i.e. does not provide per-plane
+  // textures but provides a unified single texture object.
+  std::optional<int> plane_index =
+      should_split_planes ? std::optional<int>(plane) : std::nullopt;
   return GetCurrentGLOzone().ImportNativePixmap(
-      std::move(native_pixmap), plane_format, plane, plane_size,
-      gfx::ColorSpace(), target, texture_id);
+      std::move(native_pixmap), viz::MultiPlaneFormat::kNV12, plane_index,
+      frame->coded_size(), gfx::ColorSpace(), target, texture_id);
 }
 
 }  // namespace
