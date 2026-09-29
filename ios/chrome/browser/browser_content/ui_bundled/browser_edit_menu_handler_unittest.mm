@@ -425,6 +425,8 @@ TEST_F(BrowserEditMenuHandlerTest, CheckCustomizedMenuDescription) {
       &template_url_data, DefaultSearchManager::FROM_USER);
   SearchWithMediator* search_with_mediator = [[SearchWithMediator alloc]
       initWithTemplateURLService:template_url_service
+           aimEligibilityService:nullptr
+            cobrowseBrowserAgent:nullptr
                        incognito:NO];
   search_with_mediator.sceneHandler = scene_handler;
 
@@ -509,6 +511,8 @@ TEST_F(BrowserEditMenuHandlerTest, SearchWithButtonTitle_Adjacent) {
 
   SearchWithMediator* search_with_mediator = [[SearchWithMediator alloc]
       initWithTemplateURLService:template_url_service
+           aimEligibilityService:nullptr
+            cobrowseBrowserAgent:nullptr
                        incognito:NO];
 
   EXPECT_NSEQ([search_with_mediator buttonTitle], @"Google Search");
@@ -531,6 +535,8 @@ TEST_F(BrowserEditMenuHandlerTest, SearchWithButtonTitle_Default) {
 
   SearchWithMediator* search_with_mediator = [[SearchWithMediator alloc]
       initWithTemplateURLService:template_url_service
+           aimEligibilityService:nullptr
+            cobrowseBrowserAgent:nullptr
                        incognito:NO];
 
   EXPECT_NSEQ([search_with_mediator buttonTitle], @"Search with Google");

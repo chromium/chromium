@@ -25,12 +25,6 @@ class TemplateURLService;
           cobrowseBrowserAgent:(CobrowseBrowserAgent*)cobrowseBrowserAgent
                      incognito:(BOOL)incognito NS_DESIGNATED_INITIALIZER;
 
-// Convenience initializer when aimEligibilityService or cobrowseBrowserAgent
-// are not available.
-- (instancetype)initWithTemplateURLService:
-                    (TemplateURLService*)templateURLService
-                                 incognito:(BOOL)incognito;
-
 - (instancetype)init NS_UNAVAILABLE;
 
 // Disconnects the mediator.

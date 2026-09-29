@@ -99,15 +99,6 @@ void LogSelectedNumberChar(NSUInteger textLength) {
   return self;
 }
 
-- (instancetype)initWithTemplateURLService:
-                    (TemplateURLService*)templateURLService
-                                 incognito:(BOOL)incognito {
-  return [self initWithTemplateURLService:templateURLService
-                    aimEligibilityService:nullptr
-                     cobrowseBrowserAgent:nullptr
-                                incognito:incognito];
-}
-
 - (void)shutdown {
   _templateURLService = nullptr;
   _aimEligibilityService = nullptr;
