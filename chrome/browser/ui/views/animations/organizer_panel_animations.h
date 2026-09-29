@@ -28,6 +28,10 @@ class OrganizerPanelAnimations : public CachingBrowserAnimationProvider {
   // The percentage of the panel that should be visible.
   DECLARE_CLASS_BROWSER_ANIMATION_SEQUENCE(kVisibleWidth);
 
+  // How opaque the background of the panel is when flying out for
+  // expand-on-hover. This may not apply in all browser modes.
+  DECLARE_CLASS_BROWSER_ANIMATION_SEQUENCE(kBackgroundOpacity);
+
   // CachingBrowserAnimationProvider:
   GroupInfos GenerateAnimations() const override;
 };

@@ -21,11 +21,14 @@ DEFINE_CLASS_BROWSER_ANIMATION_MOTION(OrganizerPanelAnimations, kHide);
 
 DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(OrganizerPanelAnimations,
                                         kVisibleWidth);
+DEFINE_CLASS_BROWSER_ANIMATION_SEQUENCE(OrganizerPanelAnimations,
+                                        kBackgroundOpacity);
 
 OrganizerPanelAnimations::OrganizerPanelAnimations() {
   // The collapsed state is the "home" state for most animations, so use that
   // as the default.
-  SetSequenceParams(kOrganizerPanel, Default(kVisibleWidth, 0.0, true));
+  SetSequenceParams(kOrganizerPanel, Default(kVisibleWidth, 0.0, true),
+                    Default(kBackgroundOpacity, 0.0, true));
 
   SetHistogramName(kOrganizerPanel, "Projects.ProjectsPanel");
 
@@ -39,12 +42,25 @@ OrganizerPanelAnimations::~OrganizerPanelAnimations() = default;
 
 OrganizerPanelAnimations::GroupInfos
 OrganizerPanelAnimations::GenerateAnimations() const {
-  return Groups(
-      Group(kOrganizerPanel,
-            Motion(kShow, TotalDurationMs(browser_animations::kFlyoutShowMs),
-                   browser_animations::kFlyoutTween,
-                   Animate(kVisibleWidth, FromValue(0.0), ToValue(1.0))),
-            Motion(kHide, TotalDurationMs(browser_animations::kFlyoutHideMs),
-                   browser_animations::kFlyoutTween,
-                   Animate(kVisibleWidth, FromValue(1.0), ToValue(0.0)))));
+  return Groups(Group(
+      kOrganizerPanel,
+      Motion(
+          kShow, TotalDurationMs(browser_animations::kFlyoutShowMs),
+          browser_animations::kFlyoutTween,
+          Animate(kVisibleWidth, FromValue(0.0), ToValue(1.0)),
+          Sequence(
+              kBackgroundOpacity, StartingValue(0.0),
+              Transition::kStartAtOldValue,
+              Segment(StartMs(0), EndMs(browser_animations::kFlyoutFadeMs),
+                      ToValue(1.0), browser_animations::kFlyoutFadeInTween))),
+      Motion(kHide, TotalDurationMs(browser_animations::kFlyoutHideMs),
+             browser_animations::kFlyoutTween,
+             Animate(kVisibleWidth, FromValue(1.0), ToValue(0.0)),
+             Sequence(
+                 kBackgroundOpacity, StartingValue(1.0),
+                 Transition::kStartAtOldValue,
+                 Segment(StartMs(browser_animations::kFlyoutHideMs -
+                                 browser_animations::kFlyoutFadeMs),
+                         EndMs(browser_animations::kFlyoutHideMs), ToValue(0.0),
+                         browser_animations::kFlyoutFadeOutTween)))));
 }

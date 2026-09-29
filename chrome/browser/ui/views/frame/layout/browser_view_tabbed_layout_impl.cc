@@ -155,6 +155,7 @@ struct BrowserViewTabbedLayoutImpl::OrganizerPanelAnimation {
   // These are animation parameters used when the panel is in a tray that
   // overlays the vertical tab strip and simulates being in the tab strip.
   bool blend_with_vertical_tabs = false;
+  double tab_strip_background_opacity = 0.0;
   double tab_strip_extra_size = 0.0;
   double tab_strip_corners = 0.0;
 };
@@ -240,6 +241,11 @@ struct BrowserViewTabbedLayoutImpl::TransientLayoutData {
           std::min(bottom_corner, organizer_panel_animation.tab_strip_corners);
     }
     return bottom_corner;
+  }
+
+  double vertical_tabs_background_base_opacity() const {
+    return std::max(vertical_tab_strip_animation.expand_on_hover_opacity,
+                    organizer_panel_animation.tab_strip_background_opacity);
   }
 
   int organizer_tray_top() const {
@@ -579,9 +585,9 @@ BrowserViewTabbedLayoutImpl::CalculateHorizontalLayout(
 BrowserViewTabbedLayoutImpl::OrganizerPanelAnimation
 BrowserViewTabbedLayoutImpl::CalculateOrganizerPanelAnimation() const {
   OrganizerPanelAnimation anim;
+  const auto* const animations = delegate().GetAnimationController();
   anim.reveal_amount =
-      delegate()
-          .GetAnimationController()
+      animations
           ->GetCurrentValue(OrganizerPanelAnimations::kOrganizerPanel,
                             OrganizerPanelAnimations::kVisibleWidth)
           .value_or(0.0);
@@ -594,6 +600,11 @@ BrowserViewTabbedLayoutImpl::CalculateOrganizerPanelAnimation() const {
     anim.blend_with_vertical_tabs = true;
     anim.panel_opacity = std::min(1.0, anim.reveal_amount * 2.0);
     anim.shadow_opacity = std::max(0.0, anim.reveal_amount * 2.0 - 1.0);
+    anim.tab_strip_background_opacity =
+        animations
+            ->GetCurrentValue(OrganizerPanelAnimations::kOrganizerPanel,
+                              OrganizerPanelAnimations::kBackgroundOpacity)
+            .value_or(0.0);
     anim.tab_strip_extra_size = 0.5 - std::abs(0.5 - anim.reveal_amount);
     anim.tab_strip_corners = 1.0 - anim.reveal_amount * 2.0;
   }
@@ -1609,9 +1620,11 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
       // visible fade. This isn't perfect, but hopefully with glass
       // expand-on-hover it will improve.
       auto vertical_tabs_background_color = frame_color;
+      const double flyover_background_base_opacity =
+          layout_data_->vertical_tabs_background_base_opacity();
       vertical_tabs_background_color.opacity = static_cast<float>(
-          (1.0 - animation.expand_on_hover_opacity) * frame_color.opacity +
-          animation.expand_on_hover_opacity * flyover_panel_opacity);
+          (1.0 - flyover_background_base_opacity) * frame_color.opacity +
+          flyover_background_base_opacity * flyover_panel_opacity);
       vertical_tabs_background->SetPrimaryColor(vertical_tabs_background_color);
     } else {
       vertical_tabs_background->SetPrimaryColor(frame_color);
