@@ -616,7 +616,7 @@ public abstract class ToolbarLayout extends FrameLayout
      * @param drawable The icon for the button.
      * @param description The content description for the button.
      * @param listener The {@link OnClickListener} to use for clicks to the button.
-     * @param {@link ButtonType} of the button.
+     * @param type The {@link ButtonType} of the button.
      */
     protected void addCustomActionButton(
             Drawable drawable, String description, OnClickListener listener, int type) {
@@ -767,16 +767,18 @@ public abstract class ToolbarLayout extends FrameLayout
     }
 
     /**
-     * @return Whether or not the toolbar is incognito branded.
-     * @see {@link ToolbarDataProvider#isIncognitoBranded()}
+     * Returns whether or not the toolbar is incognito branded.
+     *
+     * @see ToolbarDataProvider#isIncognitoBranded()
      */
     protected boolean isIncognitoBranded() {
         return mToolbarDataProvider.isIncognitoBranded();
     }
 
     /**
-     * @return Whether or not the toolbar is off the record.
-     * @see {@link ToolbarDataProvider#isOffTheRecord()}
+     * Returns whether or not the toolbar is off the record.
+     *
+     * @see ToolbarDataProvider#isOffTheRecord()
      */
     protected boolean isOffTheRecord() {
         return mToolbarDataProvider.isOffTheRecord();
