@@ -39,6 +39,7 @@ android_resources("java_resources") {
     "java/res/drawable/glic_menu_end_icon_needs_review.xml",
     "java/res/drawable/glic_menu_end_icon_standard.xml",
     "java/res/drawable/glic_menu_move_item_icon.xml",
+    "java/res/drawable/glic_mic_permission_dialog_illustration.xml",
     "java/res/drawable/glic_promo_logo.xml",
     "java/res/drawable/ic_hourglass_empty_24dp.xml",
     "java/res/drawable/ic_move_item_24dp.xml",
