@@ -103,6 +103,15 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         /* primaryColor= */ null,
                         /* fileIdHash= */ null);
 
+        NtpBackgroundDataThemeCollection dataFromDesktop =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.DESKTOP,
+                        info1,
+                        /* backgroundImageInfo= */ null,
+                        /* bitmap= */ null,
+                        Color.RED,
+                        /* fileIdHash= */ null);
+
         // equals() and hashCode() compare theme identity and ignore primaryColor.
         assertEquals(data1, data2);
         assertEquals(data1, data3);
@@ -111,6 +120,11 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
         assertEquals(data1.hashCode(), data2.hashCode());
         assertEquals(data1.hashCode(), data3.hashCode());
         assertEquals(data1.hashCode(), dataNullColor.hashCode());
+
+        // The device the image came from is not part of the theme identity.
+        assertEquals(data1, dataFromDesktop);
+        assertEquals(data1.hashCode(), dataFromDesktop.hashCode());
+        assertTrue(data1.hasSameThemeAndColor(dataFromDesktop));
 
         // hasSameThemeAndColor() additionally requires primaryColor to match.
         assertTrue(data1.hasSameThemeAndColor(data2));

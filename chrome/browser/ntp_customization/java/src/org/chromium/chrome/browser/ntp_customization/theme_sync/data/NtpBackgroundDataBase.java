@@ -93,8 +93,12 @@ public class NtpBackgroundDataBase {
     @Override
     public boolean equals(@Nullable Object obj) {
         if (obj instanceof NtpBackgroundDataBase other) {
-            return mPlatformType == other.getPlatformType()
-                    && getBackgroundType() == other.getBackgroundType();
+            // A theme is identified by what it looks like, not by the device it came from. The
+            // sync payload carries no platform of origin, so the same background reaches this
+            // device tagged ANDROID when it is replayed through sync and tagged DESKTOP or IOS
+            // when it is listed as a cross device history entry. Comparing the platform would
+            // make those two copies distinct and show the same background twice.
+            return getBackgroundType() == other.getBackgroundType();
         }
         return false;
     }
@@ -107,6 +111,9 @@ public class NtpBackgroundDataBase {
      * collections so that color updates merge into the existing history entry), this method also
      * checks whether the primary color matches. Callers that decide whether to re-apply a theme or
      * recreate the activity should use this method so that color-only updates are applied.
+     *
+     * <p>Neither method compares the platform type: it records where an entry came from, not what
+     * the theme looks like.
      */
     public boolean hasSameThemeAndColor(@Nullable Object obj) {
         return equals(obj);
@@ -114,7 +121,7 @@ public class NtpBackgroundDataBase {
 
     @Override
     public int hashCode() {
-        return Objects.hash(mPlatformType, getBackgroundType());
+        return Objects.hash(getBackgroundType());
     }
 
     /** Returns the image bitmap of this background data. */

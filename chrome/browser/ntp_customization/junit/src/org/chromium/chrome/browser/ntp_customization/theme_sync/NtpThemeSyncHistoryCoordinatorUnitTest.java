@@ -304,60 +304,41 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
     public void testPrepareToShow_WithLocalAndRemoteHistory() {
         // Save local history.
         NtpBackgroundDataCustomizedColor localColor =
-                new NtpBackgroundDataCustomizedColor(
-                        mContext,
-                        PlatformType.ANDROID,
-                        /* primaryColorLight= */ Color.BLUE,
-                        /* primaryColorDark= */ Color.BLUE,
-                        /* ntpBackgroundColorLight= */ Color.WHITE,
-                        /* ntpBackgroundColorDark= */ Color.BLACK);
-
+                createCustomizedColorImpl(PlatformType.ANDROID, Color.BLUE);
         mNtpBackgroundDataManager.saveUserSelectedBackgroundTypeToSharedPreference(localColor);
 
         // Save remote history (different from local).
-        NtpBackgroundDataCustomizedColor remoteColor =
-                new NtpBackgroundDataCustomizedColor(
-                        mContext,
-                        PlatformType.IOS,
-                        /* primaryColorLight= */ Color.CYAN,
-                        /* primaryColorDark= */ Color.CYAN,
-                        /* ntpBackgroundColorLight= */ Color.WHITE,
-                        /* ntpBackgroundColorDark= */ Color.BLACK);
-        mNtpBackgroundDataManager.saveRemoteSyncDataToSharedPreference(remoteColor);
-        RobolectricUtil.runAllBackgroundAndUi();
+        saveRemoteCustomizedColorImpl(PlatformType.IOS, Color.CYAN);
 
         // Save another remote history which is duplicate of local.
-        NtpBackgroundDataCustomizedColor remoteDuplicateColor =
-                new NtpBackgroundDataCustomizedColor(
-                        mContext,
-                        PlatformType.IOS,
-                        /* primaryColorLight= */ Color.BLUE,
-                        /* primaryColorDark= */ Color.BLUE,
-                        /* ntpBackgroundColorLight= */ Color.WHITE,
-                        /* ntpBackgroundColorDark= */ Color.BLACK);
-        mNtpBackgroundDataManager.saveRemoteSyncDataToSharedPreference(remoteDuplicateColor);
-        RobolectricUtil.runAllBackgroundAndUi();
+        saveRemoteCustomizedColorImpl(PlatformType.IOS, Color.BLUE);
 
         when(mNtpCustomizationConfigManager.getNtpBackgroundData()).thenReturn(localColor);
 
         mCoordinator.prepareToShow();
 
-        List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
-        // Should contain: Default, Local history (blue), Remote history (blue), Orange, Violet.
-        assertEquals(5, dataList.size());
-        assertEquals(NtpBackgroundType.DEFAULT, dataList.get(0).getBackgroundType());
-        assertEquals(localColor, dataList.get(1));
-        assertEquals(remoteDuplicateColor, dataList.get(2));
-        assertEquals(
-                NtpThemeColorId.NTP_COLORS_ORANGE,
-                ((NtpBackgroundDataColor) dataList.get(3)).getThemeColorId());
-        assertEquals(
-                NtpThemeColorId.NTP_COLORS_VIOLET,
-                ((NtpBackgroundDataColor) dataList.get(4)).getThemeColorId());
+        // Should contain: Default, Local history (blue), Remote history (cyan), Orange, Violet.
+        // The remote blue entry is the same theme as the local one, so it is skipped and the next
+        // remote entry is shown in its place.
+        assertShowingListWithCustomizedColorsImpl(Color.BLUE, Color.CYAN);
+        assertEquals(localColor, mCoordinator.getDataShowingListForTesting().get(1));
 
         // Highlighted index should be 1 (local history)
         assertEquals(
                 1, (int) mPropertyModel.get(NtpThemeSyncHistoryProperties.HIGHLIGHTED_ITEM_INDEX));
+    }
+
+    @Test
+    public void testPrepareToShow_SameThemeOnTwoRemotePlatforms() {
+        // The same theme is the latest selection on both an iOS device and a desktop. Each
+        // platform keeps its own history list, so the theme is stored twice.
+        saveRemoteCustomizedColorImpl(PlatformType.IOS, Color.BLUE);
+        saveRemoteCustomizedColorImpl(PlatformType.DESKTOP, Color.BLUE);
+
+        mCoordinator.prepareToShow();
+
+        // Should contain: Default, the theme once, Orange, Violet.
+        assertShowingListWithCustomizedColorsImpl(Color.BLUE);
     }
 
     @Test
@@ -1218,6 +1199,43 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
             }
         }
         return -1;
+    }
+
+    private NtpBackgroundDataCustomizedColor createCustomizedColorImpl(
+            @PlatformType int platformType, int primaryColor) {
+        return new NtpBackgroundDataCustomizedColor(
+                mContext,
+                platformType,
+                /* primaryColorLight= */ primaryColor,
+                /* primaryColorDark= */ primaryColor,
+                /* ntpBackgroundColorLight= */ Color.WHITE,
+                /* ntpBackgroundColorDark= */ Color.BLACK);
+    }
+
+    private void saveRemoteCustomizedColorImpl(@PlatformType int platformType, int primaryColor) {
+        NtpBackgroundDataCustomizedColor remoteColor =
+                createCustomizedColorImpl(platformType, primaryColor);
+        mNtpBackgroundDataManager.saveRemoteSyncDataToSharedPreference(remoteColor);
+        RobolectricUtil.runAllBackgroundAndUi();
+    }
+
+    private void assertShowingListWithCustomizedColorsImpl(int... expectedPrimaryColors) {
+        List<NtpBackgroundDataBase> dataList = mCoordinator.getDataShowingListForTesting();
+        assertEquals(expectedPrimaryColors.length + 3, dataList.size());
+        assertEquals(NtpBackgroundType.DEFAULT, dataList.get(0).getBackgroundType());
+        for (int i = 0; i < expectedPrimaryColors.length; i++) {
+            assertEquals(
+                    expectedPrimaryColors[i],
+                    ((NtpBackgroundDataCustomizedColor) dataList.get(i + 1))
+                            .getPrimaryColorLight());
+        }
+        int defaultColorOffset = expectedPrimaryColors.length + 1;
+        assertEquals(
+                NtpThemeColorId.NTP_COLORS_ORANGE,
+                ((NtpBackgroundDataColor) dataList.get(defaultColorOffset)).getThemeColorId());
+        assertEquals(
+                NtpThemeColorId.NTP_COLORS_VIOLET,
+                ((NtpBackgroundDataColor) dataList.get(defaultColorOffset + 1)).getThemeColorId());
     }
 
     private NtpThemeSyncHistoryRecyclerViewAdaptor getAdapterImpl(

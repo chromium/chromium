@@ -290,11 +290,13 @@ public class NtpThemeSyncHistoryCoordinator {
             NtpBackgroundDataGroup remoteDataGroup = mNtpBackgroundDataGroups[i];
             if (remoteDataGroup == null || remoteDataGroup.isEmpty()) continue;
 
-            // Finds the first remote data which isn't in the local history.
+            // Finds the first remote data which isn't shown yet.
             for (NtpBackgroundDataBase data : remoteDataGroup) {
-                // Checks if the current remote data exists in the local history.
-                int index = localGroup.indexOf(data);
-                if (index == -1) {
+                // mDataShowingList already contains the local history and any entries added for
+                // the previous platforms: the same theme can be the latest selection on several
+                // platforms, and each platform has its own history list, so it would otherwise be
+                // added once per platform.
+                if (!mDataShowingList.contains(data)) {
                     // Adds the data and stops here.
                     addBackgroundDataFromOtherPlatforms(data);
                     break;
@@ -360,6 +362,12 @@ public class NtpThemeSyncHistoryCoordinator {
             buildDefaultForThemeCollectionData(themeCollectionData);
             // Updates the data after the information is completed.
             mNtpBackgroundDataManager.updateRemoteSyncDataToSharedPreference(themeCollectionData);
+        }
+
+        // The download runs while the rest of the list is being built, so another platform may
+        // have contributed the same theme in the meantime.
+        if (mDataShowingList.contains(themeCollectionData)) {
+            return;
         }
 
         mDataShowingList.add(themeCollectionData);

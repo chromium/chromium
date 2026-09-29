@@ -73,8 +73,10 @@ public class NtpBackgroundDataColorUnitTest {
 
         assertEquals(data1, data2);
         assertNotEquals(data1, data3);
-        assertNotEquals(data1, data4);
+        // The same Chrome color is the same theme wherever it was selected.
+        assertEquals(data1, data4);
         assertEquals(data1.hashCode(), data2.hashCode());
+        assertEquals(data1.hashCode(), data4.hashCode());
     }
 
     @Test
