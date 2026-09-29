@@ -28,6 +28,8 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
+#include "base/timer/timer.h"
+#include "ui/accessibility/platform/ax_platform.h"
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder_win.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder_win_uia.h"
@@ -70,6 +72,10 @@ void WaitForNoGhostAXPlatformNodeWin() {
     return;
   }
 
+  // Pump the message loop periodically so `RunUntil` re-evaluates the ghost
+  // count as COM references are released on background UIA threads.
+  base::RepeatingTimer timer;
+  timer.Start(FROM_HERE, base::Milliseconds(10), base::DoNothing());
   EXPECT_TRUE(base::test::RunUntil([&] { return get_ghost_count() == 0u; }))
       << "Timed out waiting for Windows accessibility event test teardown; "
       << get_ghost_count()
@@ -148,6 +154,12 @@ void DumpAccessibilityEventsViewsTestBase::SetUp() {
   } else {
     disabled_features.emplace_back(::features::kAccessibilityTreeForViews);
   }
+#if BUILDFLAG(IS_WIN)
+  // Without this, uiautomationcore.dll retains COM references to
+  // AXPlatformNodeWin objects when Views HWNDs are destroyed at test teardown.
+  // This prevents `ghost_nodes` going to 0.
+  enabled_features.emplace_back(::features::kUiaDisconnectRootProviders);
+#endif
 
   ChooseFeatures(&enabled_features, &disabled_features);
 
@@ -237,6 +249,7 @@ void DumpAccessibilityEventsViewsTestBase::PostRunTestOnMainThread() {
 #if BUILDFLAG(IS_WIN)
   // Let COM/UIA releases finish after browser windows close and before
   // gtest's platform-node leak listener.
+  ui::AXPlatform::GetInstance().DisableActiveUiaProvider();
   WaitForNoGhostAXPlatformNodeWin();
 #endif
 }
