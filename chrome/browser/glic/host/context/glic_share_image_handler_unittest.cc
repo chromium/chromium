@@ -431,40 +431,7 @@ TEST_F(GlicShareImageHandlerTest,
   histogram_tester_.ExpectTotalCount("Glic.TabContext.ShareImageResult", 0);
 }
 
-TEST_F(GlicShareImageHandlerTest, OnReceivedImageUsesNewConversationByDefault) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      features::kGlicShareImageNoNewConversation);
-
-  tabs::MockTabInterface mock_tab;
-  std::unique_ptr<content::WebContents> web_contents =
-      content::WebContentsTester::CreateTestWebContents(
-          profile_, content::SiteInstance::Create(profile_));
-  content::WebContentsTester::For(web_contents.get())
-      ->NavigateAndCommit(GURL("https://example.com"));
-  ON_CALL(mock_tab, GetContents())
-      .WillByDefault(testing::Return(web_contents.get()));
-
-  SetTabHandle(mock_tab.GetHandle());
-  SetShareInProgress(true);
-  SetRenderFrameHostId(web_contents->GetPrimaryMainFrame()->GetGlobalId());
-
-  EXPECT_CALL(*mock_service_, Invoke(testing::_))
-      .WillOnce([](GlicInvokeOptions options) {
-        EXPECT_TRUE(std::holds_alternative<NewConversation>(
-            options.target.conversation));
-        return base::WeakPtr<GlicInstance>();
-      });
-
-  std::vector<uint8_t> thumbnail_data = {1, 2, 3};
-  OnReceivedImage(thumbnail_data, gfx::Size(10, 10), gfx::Size(10, 10),
-                  "image/png", {});
-}
-
 TEST_F(GlicShareImageHandlerTest, OnReceivedImageWithNoNewConversationFeature) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kGlicShareImageNoNewConversation);
-
   tabs::MockTabInterface mock_tab;
   std::unique_ptr<content::WebContents> web_contents =
       content::WebContentsTester::CreateTestWebContents(

@@ -5945,7 +5945,7 @@
       "vollick@google.com",
       "//chrome/browser/glic/OWNERS"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 180
   },
   {
     "name": "glic-spark-settings-accessible-labels",
