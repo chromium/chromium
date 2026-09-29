@@ -27,6 +27,7 @@ source_set("coordinator") {
     "//components/personal_context/core:prefs",
     "//components/personal_context/first_run",
     "//components/prefs",
+    "//components/strings",
     "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/browser/autofill/atmemory/public",
     "//ios/chrome/browser/autofill/atmemory/ui",
@@ -43,6 +44,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/shared/ui/table_view:utils",
     "//ios/web/public",
+    "//ui/base",
     "//url",
   ]
 }

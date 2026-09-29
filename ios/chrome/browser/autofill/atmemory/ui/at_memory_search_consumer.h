@@ -37,6 +37,9 @@ enum class AtMemoryErrorType {
 // Sets search results to display in the UI.
 - (void)setSearchResults:(NSArray<AtMemorySearchItem*>*)searchResults;
 
+// Sets the list of subtitles to rotate through in the zero-state empty view.
+- (void)setZeroStateSubtitles:(NSArray<NSString*>*)subtitles;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_ATMEMORY_UI_AT_MEMORY_SEARCH_CONSUMER_H_

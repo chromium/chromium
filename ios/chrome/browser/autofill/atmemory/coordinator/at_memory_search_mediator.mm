@@ -22,6 +22,7 @@
 #import "components/autofill/core/browser/suggestions/suggestion_type.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/personal_context/first_run/personal_context_first_run_service.h"
+#import "components/strings/grit/components_strings.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_commands.h"
 #import "ios/chrome/browser/autofill/atmemory/public/at_memory_fill_commands.h"
@@ -31,6 +32,7 @@
 #import "ios/chrome/browser/autofill/public/autofill_settings_navigator.h"
 #import "ios/web/public/web_state.h"
 #import "services/metrics/public/cpp/ukm_source_id.h"
+#import "ui/base/l10n/l10n_util_mac.h"
 #import "url/origin.h"
 
 namespace {
@@ -38,6 +40,21 @@ namespace {
 // The UMA histogram to log AtMemory notice interactions.
 constexpr std::string_view kNoticeInteractionsHistogram =
     "PersonalContext.AtMemory.NoticeInteractions";
+
+// Follow-up zero-state example subtitles shown in random order after the
+// initial zero-state subtitle.
+NSArray<NSString*>* GetZeroStateExampleSubtitles() {
+  return @[
+    l10n_util::GetNSString(
+        IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE_ORDER_NUMBER),
+    l10n_util::GetNSString(
+        IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE_FLIGHT_CONFIRMATION_CODE),
+    l10n_util::GetNSString(
+        IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE_TRACKING_NUMBER),
+    l10n_util::GetNSString(
+        IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE_HOTEL_ADDRESS),
+  ];
+}
 
 }  // namespace
 
@@ -158,6 +175,7 @@ constexpr std::string_view kNoticeInteractionsHistogram =
   }
   _consumer = consumer;
 
+  [_consumer setZeroStateSubtitles:GetZeroStateExampleSubtitles()];
   [_consumer setNoticeVisible:_noticeIsVisible];
 
   if (_noticeIsVisible && !_noticeShownMetricLogged) {
