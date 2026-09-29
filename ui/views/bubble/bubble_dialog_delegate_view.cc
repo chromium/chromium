@@ -636,6 +636,10 @@ std::unique_ptr<FrameView> BubbleDialogDelegate::CreateFrameView(
     border->set_md_shadow_elevation(shadow_config_.elevation.value());
   }
   border->set_avoid_shadow_overlap(shadow_config_.avoid_overlap_shadow);
+  if (border_style_.insets.has_value()) {
+    border->set_insets(border_style_.insets.value());
+  }
+  border->set_draw_border_stroke(border_style_.draw_border_stroke);
 
   if (GetParams().round_corners) {
     border->set_rounded_corners(gfx::RoundedCornersF(GetCornerRadius()));

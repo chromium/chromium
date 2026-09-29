@@ -403,6 +403,26 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
     shadow_config_.shadow_type = shadow;
   }
 
+  //////////////////////////////////////////////////////////////////////////////
+  // Border style:
+  //
+  // Bubbles may optionally customize the insets and stroke of their border.
+
+  struct BorderStyle {
+    // Explicit border insets. A null value yields the default BubbleBorder
+    // insets, which are derived from the shadow and elevation.
+    std::optional<gfx::Insets> insets = std::nullopt;
+    // Whether to draw the border stroke. If null, the stroke is drawn only when
+    // the bubble has a shadow (i.e. GetShadow() is not NO_SHADOW) and no custom
+    // ShadowConfiguration::elevation is set.
+    std::optional<bool> draw_border_stroke = std::nullopt;
+  };
+
+  const BorderStyle& border_style() const { return border_style_; }
+  // Must be called before the bubble's widget is created (i.e. before
+  // CreateBubble()). Calling it afterwards has no effect.
+  void set_border_style(const BorderStyle& style) { border_style_ = style; }
+
   // Call this method to inform BubbleDialogDelegate that the return value of
   // GetAnchorRect() has changed. You only need to do this if you have
   // overridden GetAnchorRect() - if you are using an anchor view or anchor rect
@@ -709,6 +729,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
 
   BubbleBorder::Arrow arrow_ = BubbleBorder::NONE;
   ShadowConfiguration shadow_config_;
+  BorderStyle border_style_;
   ui::ColorVariant color_ = ui::kColorBubbleBackground;
   raw_ptr<Widget> anchor_widget_ = nullptr;
   ui::SafeElementReference anchor_tracked_element_;

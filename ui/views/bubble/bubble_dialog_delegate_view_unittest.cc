@@ -248,6 +248,46 @@ TEST_F(BubbleDialogDelegateViewTest, CreateDelegate) {
   EXPECT_TRUE(bubble_observer.widget_closed());
 }
 
+TEST_F(BubbleDialogDelegateViewTest, BorderStyleInsetsAppliedToBorder) {
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  TestBubbleDialogDelegateView* bubble_delegate =
+      new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
+  const gfx::Insets kInsets = gfx::Insets::VH(3, 7);
+  bubble_delegate->set_border_style(
+      {.insets = kInsets, .draw_border_stroke = true});
+  EXPECT_EQ(kInsets, bubble_delegate->border_style().insets);
+  EXPECT_EQ(true, bubble_delegate->border_style().draw_border_stroke);
+
+  Widget* bubble_widget =
+      BubbleDialogDelegateView::CreateBubble(bubble_delegate);
+  bubble_widget->Show();
+
+  BubbleBorder* border = bubble_delegate->GetBubbleFrameView()->bubble_border();
+  EXPECT_EQ(kInsets, border->GetInsets());
+  bubble_widget->CloseNow();
+}
+
+TEST_F(BubbleDialogDelegateViewTest, DefaultBorderStyleKeepsDefaultInsets) {
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  TestBubbleDialogDelegateView* bubble_delegate =
+      new TestBubbleDialogDelegateView(anchor_widget->GetContentsView());
+  EXPECT_FALSE(bubble_delegate->border_style().insets.has_value());
+  EXPECT_FALSE(bubble_delegate->border_style().draw_border_stroke.has_value());
+
+  Widget* bubble_widget =
+      BubbleDialogDelegateView::CreateBubble(bubble_delegate);
+  bubble_widget->Show();
+
+  BubbleBorder* border = bubble_delegate->GetBubbleFrameView()->bubble_border();
+  // A border with the same arrow/shadow and no explicit insets.
+  BubbleBorder expected_border(border->arrow(), border->shadow());
+  expected_border.set_visible_arrow(border->visible_arrow());
+  EXPECT_EQ(expected_border.GetInsets(), border->GetInsets());
+  bubble_widget->CloseNow();
+}
+
 TEST_F(BubbleDialogDelegateViewTest, CreateBubbleWithUniquePtrAndCallback) {
   std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
