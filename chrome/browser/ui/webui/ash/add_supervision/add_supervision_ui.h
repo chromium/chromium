@@ -109,8 +109,6 @@ class AddSupervisionUI : public ui::MojoWebUIController,
   bool CloseDialog() override;
   void SetCloseOnEscape(bool) override;
 
-  static void SetUpForTest(signin::IdentityManager* identity_manager);
-
   // Instantiates the implementor of the mojom::AddSupervisionHandler mojo
   // interface passing the pending receiver that will be internally bound.
   void BindInterface(
@@ -126,7 +124,6 @@ class AddSupervisionUI : public ui::MojoWebUIController,
 
   GURL supervision_url_;
 
-  static signin::IdentityManager* test_identity_manager_;
   bool allow_non_google_url_for_tests_ = false;
 
   WEB_UI_CONTROLLER_TYPE_DECL();

@@ -10,13 +10,17 @@
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_metrics_recorder.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/confirm_signout_dialog.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
@@ -56,23 +60,39 @@ class AddSupervisionBrowserTest : public InProcessBrowserTest {
 
   ~AddSupervisionBrowserTest() override = default;
 
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    IdentityTestEnvironmentProfileAdaptor::
+        SetIdentityTestEnvironmentFactoriesOnBrowserContext(context);
+  }
+
   void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
     embedded_test_server()->StartAcceptingConnections();
-    // TODO(danan):  See if this is possible to do this instead using
+    identity_test_env_adaptor_ =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(
+            browser()->GetProfile());
+    signin::IdentityTestEnvironment* identity_test_env =
+        identity_test_env_adaptor_->identity_test_env();
+    // TODO(danan): See if this is possible to do instead using
     // FakeGaia.IssueOAuthToken().
-    identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
-    identity_test_env_->MakePrimaryAccountAvailable(
-        "example@gmail.com", signin::ConsentLevel::kSync);
+    identity_test_env->MakePrimaryAccountAvailable("example@gmail.com",
+                                                   signin::ConsentLevel::kSync);
     // This makes the identity manager return the string "access_token" for the
     // access token.
-    identity_test_env_->SetAutomaticIssueOfAccessTokens(true);
-    AddSupervisionUI::SetUpForTest(identity_test_env_->identity_manager());
+    identity_test_env->SetAutomaticIssueOfAccessTokens(true);
 
     // Set start_time_ so that the DCHECK(!start_time_.is_null()) in
     // AddSupervisionMetricsRecorder::RecordUserTime() doesn't throw.
     AddSupervisionMetricsRecorder::GetInstance()
         ->RecordAddSupervisionEnrollment(
             AddSupervisionMetricsRecorder::EnrollmentState::kInitiated);
+  }
+
+  void TearDownOnMainThread() override {
+    // The adaptor must be destroyed before the profile's IdentityManager.
+    identity_test_env_adaptor_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -102,7 +122,8 @@ class AddSupervisionBrowserTest : public InProcessBrowserTest {
   }
 
  private:
-  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
+  std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
+      identity_test_env_adaptor_;
 };
 
 IN_PROC_BROWSER_TEST_F(AddSupervisionBrowserTest, URLParameters) {

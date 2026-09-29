@@ -104,6 +104,7 @@ source_set("browser_tests") {
     "//base/test:test_support",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
+    "//chrome/browser/signin:identity_test_support",
     "//chrome/browser/ui",
     "//chrome/browser/ui/webui/ash/add_supervision",
     "//chrome/browser/ui/webui/ash/add_supervision:mojo_bindings",

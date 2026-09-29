@@ -29,6 +29,7 @@ specific_include_rules = {
   ".*browsertest\\.cc": [
     "+chrome/browser/browser_process.h",
     "+chrome/browser/global_features.h",
+    "+chrome/browser/signin/identity_test_environment_profile_adaptor.h",
     "+chrome/browser/ui/tabs/tab_strip_model.h",
   ],
 }

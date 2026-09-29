@@ -174,9 +174,6 @@ AddSupervisionUIConfig::CreateWebUIController(content::WebUI* web_ui,
 
 // AddSupervisionUI implementations.
 
-// static
-signin::IdentityManager* AddSupervisionUI::test_identity_manager_ = nullptr;
-
 AddSupervisionUI::AddSupervisionUI(content::WebUI* web_ui,
                                    const std::string& app_locale)
     : ui::MojoWebUIController(web_ui) {
@@ -203,19 +200,13 @@ void AddSupervisionUI::SetCloseOnEscape(bool enabled) {
   AddSupervisionDialog::SetCloseOnEscape(enabled);
 }
 
-// static
-void AddSupervisionUI::SetUpForTest(signin::IdentityManager* identity_manager) {
-  test_identity_manager_ = identity_manager;
-}
-
 void AddSupervisionUI::BindInterface(
     mojo::PendingReceiver<add_supervision::mojom::AddSupervisionHandler>
         receiver) {
   const AccountId& account_id =
       CHECK_DEREF(AnnotatedAccountId::Get(Profile::FromWebUI(web_ui())));
   signin::IdentityManager* identity_manager =
-      test_identity_manager_ ? test_identity_manager_
-                             : IdentityManagerProvider::Get().Find(account_id);
+      IdentityManagerProvider::Get().Find(account_id);
   supervised_user::SupervisedUserService* supervised_user_service =
       SupervisedUserServiceProvider::Get().Find(account_id);
 
