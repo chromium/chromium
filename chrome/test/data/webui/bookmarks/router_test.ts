@@ -3,11 +3,12 @@
 // found in the LICENSE file.
 
 import type {BookmarksAppElement, SelectFolderAction, StartSearchAction} from 'chrome://bookmarks/bookmarks.js';
-import {BookmarksApiProxyImpl, BookmarksRouter, CrRouter, getDisplayedList, PermanentFolderType, Store} from 'chrome://bookmarks/bookmarks.js';
+import {BookmarksApiProxyImpl, BookmarksRouter, BrowserProxyImpl, CrRouter, getDisplayedList, PermanentFolderType, Store} from 'chrome://bookmarks/bookmarks.js';
 import {assertDeepEquals, assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
+import {TestBookmarksBrowserProxy} from './test_browser_proxy.js';
 import {TestStore} from './test_store.js';
 import {createFolder, createItem, createRoot, getAllFoldersOpenState, testTree} from './test_util.js';
 
@@ -169,6 +170,11 @@ suite('URL preload', function() {
   setup(function() {
     testBookmarksApiProxy = new TestBookmarksApiProxy();
     BookmarksApiProxyImpl.setInstance(testBookmarksApiProxy);
+    // Use a fake BrowserProxy so that the prefs fetched during initialization
+    // (incognito availability, can edit) resolve immediately rather than
+    // arriving asynchronously from the browser, which would restart the
+    // router's debounced URL update at an unpredictable time.
+    BrowserProxyImpl.setInstance(new TestBookmarksBrowserProxy());
   });
 
   teardown(function() {
@@ -194,6 +200,9 @@ suite('URL preload', function() {
           '1',
           [
             createFolder('11', []),
+            createFolder(
+                'folder-uuid-12', [createItem('121')],
+                {legacy: {id: BigInt(12)}}),
           ],
           {
             permanentFolderType: PermanentFolderType.kBookmarkBar,
@@ -222,6 +231,17 @@ suite('URL preload', function() {
     const state = Store.getInstance().data;
     assertEquals('2', state.selectedFolder);
     assertDeepEquals(['21'], getDisplayedList(state));
+  });
+
+  test('loading a legacy folder id URL selects that folder', async function() {
+    // The browser opens the bookmark manager using the legacy numeric id
+    // (e.g. from the bookmark bar context menu).
+    await setupWithUrl('/?id=12');
+    const state = Store.getInstance().data;
+    assertEquals('folder-uuid-12', state.selectedFolder);
+    assertDeepEquals(['121'], getDisplayedList(state));
+    await microtasksFinished();
+    assertEquals('chrome://bookmarks/?id=folder-uuid-12', window.location.href);
   });
 
   test(
