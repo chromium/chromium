@@ -37,8 +37,6 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
-import org.chromium.base.supplier.ObservableSuppliers;
-import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.FlyoutProperties;
@@ -72,7 +70,6 @@ public class AtMemoryBottomSheetViewTest {
 
     private Context mContext;
     private AtMemoryBottomSheetView mView;
-    private SettableNonNullObservableSupplier<Boolean> mBackPressStateChangedSupplier;
 
     @Before
     public void setUp() {
@@ -81,7 +78,6 @@ public class AtMemoryBottomSheetViewTest {
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
 
-        mBackPressStateChangedSupplier = ObservableSuppliers.createNonNull(false);
         mView = new AtMemoryBottomSheetView(mContext);
     }
 
