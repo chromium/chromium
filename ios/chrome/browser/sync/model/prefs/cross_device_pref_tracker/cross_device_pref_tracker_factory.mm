@@ -20,10 +20,6 @@
 // static
 sync_preferences::CrossDevicePrefTracker*
 CrossDevicePrefTrackerFactory::GetForProfile(ProfileIOS* profile) {
-  // The factory configuration ensures this is only called for the original
-  // profile.
-  CHECK(!profile->IsOffTheRecord());
-
   return GetInstance()
       ->GetServiceForProfileAs<sync_preferences::CrossDevicePrefTracker>(
           profile, /*create=*/true);
@@ -48,6 +44,9 @@ CrossDevicePrefTrackerFactory::~CrossDevicePrefTrackerFactory() = default;
 std::unique_ptr<KeyedService>
 CrossDevicePrefTrackerFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
+  // The factory configuration ensures this is only called for the original
+  // profile.
+  CHECK(!profile->IsOffTheRecord());
   if (!base::FeatureList::IsEnabled(
           sync_preferences::features::kEnableCrossDevicePrefTracker)) {
     return nullptr;
