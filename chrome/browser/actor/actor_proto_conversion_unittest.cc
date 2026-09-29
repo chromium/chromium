@@ -10,6 +10,7 @@
 #include "base/test/gmock_expected_support.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/actor/tools/file_upload_tool_request.h"
 #include "chrome/browser/actor/tools/script_tool_request.h"
 #include "components/actor/core/actor_features.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -56,6 +57,22 @@ optimization_guide::proto::Actions CreateActionsWithScriptTool(
     script_action->mutable_document_identifier()->set_serialized_token(
         *document_identifier);
   }
+  return actions;
+}
+
+// Returns an Actions proto holding a single ClickToUploadAction with a valid
+// target but no files; tests add the files they need.
+optimization_guide::proto::Actions CreateActionsWithClickToUpload(
+    int32_t tab_id) {
+  optimization_guide::proto::Actions actions;
+  optimization_guide::proto::ClickToUploadAction* upload_action =
+      actions.add_actions()->mutable_click_to_upload();
+  upload_action->set_tab_id(tab_id);
+  optimization_guide::proto::ActionTarget* target =
+      upload_action->mutable_target();
+  target->set_content_node_id(42);
+  target->mutable_document_identifier()->set_serialized_token(
+      base::UnguessableToken::Create().ToString());
   return actions;
 }
 
@@ -448,6 +465,66 @@ TEST_F(ActorProtoConversionTest,
   EXPECT_THAT(BuildToolRequest(actions),
               base::test::ErrorIs(testing::Pair(
                   0u, mojom::ActionResultCode::kArgumentsInvalid)));
+}
+
+TEST_F(ActorProtoConversionTest,
+       BuildToolRequest_ClickToUpload_CreatesRequestWithFiles) {
+  base::test::ScopedFeatureList file_upload_feature;
+  file_upload_feature.InitAndEnableFeature(kGlicActorFileUploadTool);
+
+  optimization_guide::proto::Actions actions =
+      CreateActionsWithClickToUpload(/*tab_id=*/100);
+  optimization_guide::proto::ClickToUploadAction::File* file =
+      actions.mutable_actions(0)->mutable_click_to_upload()->add_files();
+  file->set_download_url("https://example.com/download?id=1");
+  file->set_file_name("resume.pdf");
+
+  BuildToolRequestResult requests = BuildToolRequest(actions);
+  ASSERT_TRUE(requests.has_value());
+  ASSERT_EQ(requests.value().size(), 1u);
+
+  ToolRequest& created_request = *requests.value().front();
+  EXPECT_EQ(FileUploadToolRequest::kName, created_request.Name());
+
+  const FileUploadToolRequest& upload_request =
+      static_cast<const FileUploadToolRequest&>(created_request);
+  EXPECT_EQ(100, upload_request.GetTabHandle().raw_value());
+  ASSERT_EQ(1u, upload_request.files().size());
+  const FileUploadSource& source = upload_request.files().front();
+  EXPECT_EQ(FileUploadSource::Type::kUrl, source.type);
+  EXPECT_EQ(GURL("https://example.com/download?id=1"), source.url);
+  EXPECT_EQ("resume.pdf", source.file_name);
+}
+
+TEST_F(ActorProtoConversionTest,
+       BuildToolRequest_ClickToUpload_MissingDownloadUrl_ReturnsError) {
+  base::test::ScopedFeatureList file_upload_feature;
+  file_upload_feature.InitAndEnableFeature(kGlicActorFileUploadTool);
+
+  optimization_guide::proto::Actions actions =
+      CreateActionsWithClickToUpload(/*tab_id=*/100);
+  // A file with only display metadata cannot be fetched.
+  actions.mutable_actions(0)
+      ->mutable_click_to_upload()
+      ->add_files()
+      ->set_file_name("resume.pdf");
+
+  EXPECT_THAT(BuildToolRequest(actions),
+              base::test::ErrorIs(testing::Pair(
+                  0u, mojom::ActionResultCode::kArgumentsInvalid)));
+}
+
+TEST_F(ActorProtoConversionTest,
+       BuildToolRequest_ClickToUpload_NoFiles_ReturnsError) {
+  base::test::ScopedFeatureList file_upload_feature;
+  file_upload_feature.InitAndEnableFeature(kGlicActorFileUploadTool);
+
+  optimization_guide::proto::Actions actions =
+      CreateActionsWithClickToUpload(/*tab_id=*/100);
+
+  EXPECT_THAT(BuildToolRequest(actions),
+              base::test::ErrorIs(testing::Pair(
+                  0u, mojom::ActionResultCode::kFileUploadEmptyFileList)));
 }
 
 void CanConvertAnyProto(

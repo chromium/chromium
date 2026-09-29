@@ -6,13 +6,14 @@
 #define CHROME_BROWSER_ACTOR_TOOLS_FILE_UPLOAD_TOOL_REQUEST_H_
 
 #include <iosfwd>
+#include <string>
 #include <string_view>
 #include <vector>
 
-#include "base/files/file_path.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "components/actor/core/shared_types.h"
 #include "components/tabs/public/tab_interface.h"
+#include "url/gurl.h"
 
 namespace actor {
 
@@ -22,11 +23,16 @@ class ToolRequestVisitorFunctor;
 // additional upload sources in future iterations.
 struct FileUploadSource {
   enum class Type {
-    kLocalPath,
+    // The file contents are fetched from `url` by the browser and staged in a
+    // temporary location before being handed to the renderer.
+    kUrl,
   };
 
-  Type type = Type::kLocalPath;
-  base::FilePath local_path;
+  explicit FileUploadSource(GURL url, std::string file_name = std::string());
+
+  Type type = Type::kUrl;
+  GURL url;
+  std::string file_name;
 };
 
 // Tool request to upload one or more files to a web page by interacting with

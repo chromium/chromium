@@ -11,8 +11,12 @@
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
+#include "net/base/url_util.h"
 
 namespace actor {
+
+FileUploadSource::FileUploadSource(GURL url, std::string file_name)
+    : url(std::move(url)), file_name(std::move(file_name)) {}
 
 FileUploadToolRequest::FileUploadToolRequest(
     tabs::TabHandle tab_handle,
@@ -57,27 +61,36 @@ ToolRequest::CreateToolResult FileUploadToolRequest::CreateTool(
   }
 
   for (const auto& file : files_) {
-    if (file.type == FileUploadSource::Type::kLocalPath) {
-      if (file.local_path.empty() || !file.local_path.IsAbsolute() ||
-          file.local_path.ReferencesParent()) {
-        return CreateToolResult(
-            nullptr,
-            MakeResult(mojom::ActionResultCode::kFileUploadUnauthorizedFile,
-                       /*requires_page_stabilization=*/false,
-                       "Invalid or unauthorized local file path"));
-      }
+    switch (file.type) {
+      case FileUploadSource::Type::kUrl:
+        // Only URLs the browser can fetch over the network are accepted;
+        // notably this excludes file:// and other local schemes.
+        if (!file.url.is_valid() || !file.url.SchemeIsHTTPOrHTTPS() ||
+            net::IsLocalhost(file.url)) {
+          return CreateToolResult(
+              nullptr,
+              MakeResult(mojom::ActionResultCode::kFileUploadUnauthorizedFile,
+                         /*requires_page_stabilization=*/false,
+                         "Invalid or unauthorized file URL"));
+        }
+        break;
     }
   }
 
   return CreateToolResult(std::make_unique<FileUploadTool>(
                               task_id, tool_delegate, *tab, target_, files_),
-                          nullptr);
+                          MakeOkResult(/*requires_page_stabilization=*/false));
 }
 
 std::ostream& operator<<(std::ostream& out,
                          const FileUploadSource& file_source) {
-  if (file_source.type == FileUploadSource::Type::kLocalPath) {
-    out << "LocalPath(<redacted>)";
+  switch (file_source.type) {
+    case FileUploadSource::Type::kUrl:
+      // Only the origin is logged; the full URL may contain sensitive data
+      // such as capability tokens in the path or query.
+      out << "Url(" << file_source.url.DeprecatedGetOriginAsURL().spec()
+          << "<redacted>)";
+      break;
   }
   return out;
 }
