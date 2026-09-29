@@ -343,7 +343,12 @@ public class AccountMenuMediatorTest {
         // When profile data updates for another account, identity card is not updated.
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
         mAccountManagerTestRule.updateAccount(TestAccounts.ACCOUNT2);
-        assertEquals(initialProfileData, item.model.get(IdentityCardProperties.PROFILE_DATA));
+        DisplayableProfileData profileData = item.model.get(IdentityCardProperties.PROFILE_DATA);
+        // TODO(crbug.com/485508396): Instead assert that the instance is unchanged once adding an
+        // account no longer regenerates DisplayableProfileData for other accounts.
+        assertEquals(initialProfileData.getAccountId(), profileData.getAccountId());
+        assertEquals(initialProfileData.getFullName(), profileData.getFullName());
+        assertEquals(initialProfileData.getAccountEmail(), profileData.getAccountEmail());
 
         // When profile data updates for the primary account, identity card is updated.
         AccountInfo updatedAccount =

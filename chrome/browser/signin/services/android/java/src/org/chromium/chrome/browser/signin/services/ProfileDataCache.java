@@ -26,7 +26,6 @@ import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
 import org.chromium.base.ServiceLoaderUtil;
@@ -52,7 +51,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
 
 /**
  * Fetches and caches Google Account profile images and full names for the accounts on the device.
@@ -74,6 +72,9 @@ public class ProfileDataCache
 
         /**
          * Notifies that an account's profile data has been updated.
+         *
+         * <p>Note: This may be called for the primary account before the full account list is
+         * loaded, i.e. before the {@link ProfileDataCache#getAccounts()} Promise is fulfilled.
          *
          * @param profileData The profile data that has been updated.
          */
@@ -98,7 +99,8 @@ public class ProfileDataCache
     private final Map<CoreAccountId, BadgeConfig> mPerAccountBadgeConfig = new HashMap<>();
     private final Drawable mPlaceholderImage;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
-    private final AccountsCache mAccountsCache = new AccountsCache();
+    private final Map<CoreAccountId, DisplayableProfileData> mAccountsCache = new LinkedHashMap<>();
+    private Promise<List<DisplayableProfileData>> mAccountsPromise = new Promise<>();
     private final boolean mAiTierRingEnabled;
     private final @Nullable SubscriptionEligibilityService mSubscriptionEligibilityService;
     private final @Px int mRingThicknessPx;
@@ -272,11 +274,15 @@ public class ProfileDataCache
      * <p>Accounts data are populated from {@link IdentityManager}. To observe changes to accounts,
      * implement {@link Observer#onAccountsUpdated}.
      *
+     * <p>Note: {@link #getById} may return cached profile data for an already-known account (such
+     * as the primary account) before this Promise is fulfilled. Once fulfilled, the returned
+     * Promise holds a snapshot of the accounts at the time of the call.
+     *
      * @return A {@link Promise} containing the list of cached {@link DisplayableProfileData}
      *     accounts.
      */
     public Promise<List<DisplayableProfileData>> getAccounts() {
-        return mAccountsCache.getAll();
+        return mAccountsPromise;
     }
 
     /**
@@ -288,16 +294,19 @@ public class ProfileDataCache
      * the account still cannot be found afterwards, an {@link IllegalArgumentException} is thrown -
      * this means data for this account is not available.
      *
+     * <p>Note: This method may succeed for an already-known account (such as the primary account)
+     * even before the {@link #getAccounts()} Promise is fulfilled.
+     *
      * @param accountId The account ID for which to get the profile data.
      * @throws IllegalArgumentException if the account is not found.
      * @return The {@link DisplayableProfileData} for the given account ID.
      */
     public DisplayableProfileData getById(CoreAccountId accountId) {
-        if (!mAccountsCache.isLoaded() || !mAccountsCache.contains(accountId)) {
+        if (!mAccountsCache.containsKey(accountId)) {
             updateCache();
         }
 
-        var profileData = mAccountsCache.getByAccountId(accountId);
+        var profileData = mAccountsCache.get(accountId);
         if (profileData == null) {
             throw new IllegalArgumentException("Account not found");
         }
@@ -343,7 +352,8 @@ public class ProfileDataCache
         var accountInfo = findAccountInfo(accountId);
         if (accountInfo != null) {
             var displayableProfileData = toDisplayableProfileData(accountInfo);
-            mAccountsCache.putAccount(accountInfo.getId(), displayableProfileData);
+            mAccountsCache.put(accountInfo.getId(), displayableProfileData);
+            refreshAccountsPromiseIfFulfilled();
             fireOnProfileDataUpdated(displayableProfileData);
         }
     }
@@ -431,29 +441,33 @@ public class ProfileDataCache
             return;
         }
         var displayableProfileData = toDisplayableProfileData(accountInfo);
-        mAccountsCache.putAccount(accountInfo.getId(), displayableProfileData);
+        mAccountsCache.put(accountInfo.getId(), displayableProfileData);
+        refreshAccountsPromiseIfFulfilled();
         fireOnProfileDataUpdated(displayableProfileData);
     }
 
     /** Checks if the cache contains profile data for the given account ID. */
     public boolean hasProfileDataForTesting(CoreAccountId accountId) {
-        return mAccountsCache.getByAccountId(accountId) != null;
+        return mAccountsCache.containsKey(accountId);
     }
 
     private void updateCache() {
         final @Nullable List<AccountInfo> coreAccounts = getCoreAccountsIfLoaded();
         final @Nullable AccountInfo primaryAccountInfo = getPrimaryAccountInfo();
 
-        if (coreAccounts == null && primaryAccountInfo == null) {
+        // If the full account list is not loaded yet, cache the primary account (if present)
+        // for getById() lookups, but do not fulfill the getAccounts() Promise.
+        if (coreAccounts == null) {
+            if (primaryAccountInfo != null) {
+                var profileData = toDisplayableProfileData(primaryAccountInfo);
+                mAccountsCache.put(primaryAccountInfo.getId(), profileData);
+                fireOnProfileDataUpdated(profileData);
+            }
             return;
         }
 
-        // Primary account can be set before list of all accounts is loaded. To avoid that case, we
-        // need to add primary account to the list of all accounts manually. That makes potential
-        // duplicate on the list, but it will be handled by the updateCache(List<AccountInfo>)
-        // method.
-        final var allAccounts =
-                coreAccounts != null ? new ArrayList<>(coreAccounts) : new ArrayList<AccountInfo>();
+        // The primary account can be set before it appears in the loaded coreAccounts list.
+        final var allAccounts = new ArrayList<>(coreAccounts);
         if (primaryAccountInfo != null) {
             allAccounts.add(primaryAccountInfo);
         }
@@ -463,10 +477,8 @@ public class ProfileDataCache
     private void updateCache(List<AccountInfo> accounts) {
         var displayableAccounts = new LinkedHashMap<CoreAccountId, DisplayableProfileData>();
         for (AccountInfo account : accounts) {
-            // Accounts list is combined from accounts with refresh tokens and the primary account
-            // at the last position. Because list of accounts is manually combined, there is a
-            // chance that the primary account is duplicated. We want to use computeIfAbsent here to
-            // avoid overriding the existing entry and double avatar generation.
+            // Use computeIfAbsent to avoid overriding existing entries and redundant avatar
+            // generation.
             displayableAccounts.computeIfAbsent(
                     account.getId(),
                     id -> {
@@ -476,16 +488,29 @@ public class ProfileDataCache
                                 extendedAccountInfo != null ? extendedAccountInfo : account);
                     });
         }
-        mAccountsCache.setAccounts(displayableAccounts);
+        mAccountsCache.clear();
+        mAccountsCache.putAll(displayableAccounts);
+        List<DisplayableProfileData> allAccounts = new ArrayList<>(mAccountsCache.values());
+        if (!mAccountsPromise.isFulfilled()) {
+            mAccountsPromise.fulfill(allAccounts);
+        } else {
+            mAccountsPromise = Promise.fulfilled(allAccounts);
+        }
 
-        mAccountsCache
-                .getAll()
-                .then((Callback<List<DisplayableProfileData>>) this::fireOnAccountsUpdated);
+        fireOnAccountsUpdated(allAccounts);
         // TODO(crbug.com/485130949): Remove that callback after implementation of
         // onAccountsUpdated() in all UIs. (Blocked by crbug.com/480239119)
-        mAccountsCache
-                .getAll()
-                .then((Callback<List<DisplayableProfileData>>) this::fireOnProfileDataUpdated);
+        fireOnProfileDataUpdated(allAccounts);
+    }
+
+    /**
+     * Keeps the {@link #getAccounts()} Promise in sync after a single cache entry changes. Does
+     * nothing until the full account list has been loaded.
+     */
+    private void refreshAccountsPromiseIfFulfilled() {
+        if (mAccountsPromise.isFulfilled()) {
+            mAccountsPromise = Promise.fulfilled(new ArrayList<>(mAccountsCache.values()));
+        }
     }
 
     private DisplayableProfileData toDisplayableProfileData(AccountInfo accountInfo) {
@@ -592,6 +617,8 @@ public class ProfileDataCache
             if (mIdentityManager.areRefreshTokensLoaded()) {
                 return mIdentityManager.getExtendedAccountInfoForAccountsWithRefreshToken();
             }
+            // TODO(crbug.com/566138426): Refresh tokens are never loaded if the device account
+            // fetch fails, so the getAccounts() Promise stays pending indefinitely.
             return null;
         } else {
             var accounts = mAccountManagerFacade.getAccounts();
@@ -737,58 +764,6 @@ public class ProfileDataCache
             if (mIdentityManager.areRefreshTokensLoaded()) {
                 updateCache(mIdentityManager.getExtendedAccountInfoForAccountsWithRefreshToken());
             }
-        }
-    }
-
-    private static final class AccountsCache {
-
-        private Promise<Map<CoreAccountId, DisplayableProfileData>> mAccounts = new Promise<>();
-
-        private Promise<List<DisplayableProfileData>> getAll() {
-            if (mAccounts.isFulfilled()) {
-                return Promise.fulfilled(new ArrayList<>(mAccounts.getResult().values()));
-            } else {
-                return mAccounts.then(
-                        (Function<
-                                        Map<CoreAccountId, DisplayableProfileData>,
-                                        List<DisplayableProfileData>>)
-                                accounts -> new ArrayList<>(accounts.values()));
-            }
-        }
-
-        private void setAccounts(Map<CoreAccountId, DisplayableProfileData> accounts) {
-            if (mAccounts.isFulfilled()) {
-                mAccounts = Promise.fulfilled(accounts);
-            } else {
-                mAccounts.fulfill(accounts);
-            }
-        }
-
-        private void putAccount(CoreAccountId accountId, DisplayableProfileData profileData) {
-            if (mAccounts.isFulfilled()) {
-                final var accounts = mAccounts.getResult();
-                accounts.put(accountId, profileData);
-                mAccounts = Promise.fulfilled(accounts);
-            } else {
-                final var accounts = new LinkedHashMap<CoreAccountId, DisplayableProfileData>();
-                accounts.put(accountId, profileData);
-                mAccounts.fulfill(accounts);
-            }
-        }
-
-        private @Nullable DisplayableProfileData getByAccountId(CoreAccountId accountId) {
-            if (mAccounts.isFulfilled()) {
-                return mAccounts.getResult().get(accountId);
-            }
-            return null;
-        }
-
-        private boolean contains(final CoreAccountId accountId) {
-            return getByAccountId(accountId) != null;
-        }
-
-        private boolean isLoaded() {
-            return mAccounts.isFulfilled();
         }
     }
 }

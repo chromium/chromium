@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.signin.services;
 
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -472,19 +473,60 @@ public class ProfileDataCacheUnitTest {
                 ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
                         RuntimeEnvironment.application.getApplicationContext(),
                         mAccountManagerTestRule.getIdentityManager());
-        var accounts = profileDataCache.getAccounts().getResult();
+        Assert.assertFalse(profileDataCache.getAccounts().isFulfilled());
         var profileData = profileDataCache.getById(TestAccounts.TEST_ACCOUNT_NO_NAME.getId());
 
-        Assert.assertEquals(1, accounts.size());
         Assert.assertEquals(
                 TestAccounts.TEST_ACCOUNT_NO_NAME.getEmail(), profileData.getAccountEmail());
         Assert.assertEquals(TestAccounts.TEST_ACCOUNT_NO_NAME.getId(), profileData.getAccountId());
     }
 
     @Test
+    public void testAccountsPromiseIsFulfilledOnlyWhenAccountsAreLoaded() {
+        var updateBlocker = mAccountManagerTestRule.blockGetAccountsUpdate();
+        mAccountManagerTestRule.blockExtendedAccountInfoUpdate();
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
+        mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT1);
+        // Create a new ProfileDataCache to ensure that the accounts are not ready.
+        var profileDataCache =
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
+                        RuntimeEnvironment.application.getApplicationContext(),
+                        mAccountManagerTestRule.getIdentityManager());
+        profileDataCache.addObserver(mObserverMock);
+
+        // The primary account resolves while the account list is still loading.
+        Assert.assertFalse(profileDataCache.getAccounts().isFulfilled());
+        Assert.assertEquals(
+                TestAccounts.ACCOUNT1.getId(),
+                profileDataCache.getById(TestAccounts.ACCOUNT1.getId()).getAccountId());
+
+        // Lookups of an already-cached account are retrieved from the cache without refreshing it.
+        profileDataCache.getById(TestAccounts.ACCOUNT1.getId());
+        verify(mObserverMock, never()).onAccountsUpdated(any());
+        verify(mObserverMock, never()).onProfileDataUpdated(any());
+
+        // Once the account list is loaded, the Promise is fulfilled.
+        updateBlocker.close();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        Assert.assertTrue(profileDataCache.getAccounts().isFulfilled());
+        Assert.assertEquals(2, profileDataCache.getAccounts().getResult().size());
+        verify(mObserverMock, atLeastOnce()).onAccountsUpdated(any());
+    }
+
+    @Test
+    public void testAccountsPromiseIsFulfilledWhenThereAreNoAccounts() {
+        RobolectricUtil.runAllBackgroundAndUi();
+        Assert.assertTrue(mProfileDataCache.getAccounts().isFulfilled());
+        Assert.assertTrue(mProfileDataCache.getAccounts().getResult().isEmpty());
+    }
+
+    @Test
     public void testUpdateShouldPutInCacheBothPrimaryAndCoreAccounts() {
         var updateBlocker = mAccountManagerTestRule.blockGetAccountsUpdate();
         mAccountManagerTestRule.blockExtendedAccountInfoUpdate();
+        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         // Create a new ProfileDataCache to ensure that the accounts are not ready.
         mProfileDataCache =
                 ProfileDataCache.createWithDefaultImageSizeAndNoBadge(
@@ -492,7 +534,6 @@ public class ProfileDataCacheUnitTest {
                         mAccountManagerTestRule.getIdentityManager());
 
         updateBlocker.close();
-        mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mAccountManagerTestRule.getIdentityManager().setPrimaryAccount(TestAccounts.ACCOUNT2);
         Assert.assertFalse(mProfileDataCache.getAccounts().isFulfilled());
 
