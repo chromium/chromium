@@ -39,6 +39,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/content_settings_types.mojom-shared.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "components/permissions/content_setting_permission_context_base.h"
@@ -820,6 +821,129 @@ IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
       permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND, 1);
   OtpEventExpectBucketCount(
       ContentSettingsType::MEDIASTREAM_CAMERA,
+      permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND, 1);
+}
+
+// Regression test for https://crbug.com/553394270.
+// A tab that is repeatedly covered and uncovered by another window must still
+// have its one time grant revoked once it is genuinely hidden for the one time
+// permission timeout.
+IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
+                       GeolocationRevokedInBackgroundAfterOcclusionCycles) {
+  ASSERT_NO_FATAL_FAILURE(
+      Initialize(INITIALIZATION_DEFAULT, GetGeolocationGurl()));
+  content::WebContents* tab_a =
+      current_browser()->GetTabStripModel()->GetWebContentsAt(0);
+
+  // A popup window covers `Tab A` and is closed again. Window occlusion is not
+  // computed in this test environment, so it is simulated on the contents.
+  tab_a->WasOccluded();
+  ASSERT_EQ(content::Visibility::OCCLUDED, tab_a->GetVisibility());
+  tab_a->WasShown();
+
+  // Request geolocation permission, expect prompt and grant it once.
+  WatchPositionAndExpectGrantedPermission(
+      permissions::PermissionRequestManager::ACCEPT_ONCE, true);
+
+  auto* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
+  const ContentSettingsType geolocation_type =
+      content_settings::GeolocationContentSettingsType();
+  const content_settings::PermissionSettingsInfo* permission_info =
+      content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+          geolocation_type);
+  ASSERT_TRUE(permission_info->delegate().IsAnyPermissionAllowed(
+      hcsm->GetPermissionSetting(GetGeolocationGurl(), GetGeolocationGurl(),
+                                 geolocation_type)));
+
+  // Another cover/uncover cycle. An occluded tab still counts as being in the
+  // foreground, so the expiry must not run while the tab is merely covered.
+  tab_a->WasOccluded();
+  task_runner_->FastForwardBy(permissions::kOneTimePermissionTimeout);
+  EXPECT_TRUE(permission_info->delegate().IsAnyPermissionAllowed(
+      hcsm->GetPermissionSetting(GetGeolocationGurl(), GetGeolocationGurl(),
+                                 geolocation_type)));
+  tab_a->WasShown();
+
+  // The user switches to another tab, which genuinely hides `Tab A`.
+  ASSERT_NO_FATAL_FAILURE(
+      Initialize(INITIALIZATION_NEWTAB, GetDifferentOriginUrl()));
+  ASSERT_EQ(content::Visibility::HIDDEN, tab_a->GetVisibility());
+
+  // Fast forward time to expire the permission in the background.
+  task_runner_->FastForwardBy(permissions::kOneTimePermissionTimeout);
+
+  // Foreground `Tab A` again and inspect the permission without requesting it
+  // again.
+  current_browser()->GetTabStripModel()->ActivateTabAt(0);
+  ASSERT_EQ(content::Visibility::VISIBLE, tab_a->GetVisibility());
+  EXPECT_TRUE(
+      permission_info->delegate().IsUndecided(hcsm->GetPermissionSetting(
+          GetGeolocationGurl(), GetGeolocationGurl(), geolocation_type)));
+
+  OtpEventExpectBucketCount(
+      geolocation_type,
+      permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND, 1);
+}
+
+// Regression test for https://crbug.com/553394270.
+// An occluded tab counts as being in the foreground. Going from HIDDEN back to
+// OCCLUDED therefore stops a pending background expiry, and hiding the tab
+// again restarts it.
+IN_PROC_BROWSER_TEST_F(OneTimePermissionInteractiveUiTest,
+                       GeolocationExpiryStoppedWhenHiddenTabBecomesOccluded) {
+  ASSERT_NO_FATAL_FAILURE(
+      Initialize(INITIALIZATION_DEFAULT, GetGeolocationGurl()));
+  content::WebContents* tab_a =
+      current_browser()->GetTabStripModel()->GetWebContentsAt(0);
+
+  // Request geolocation permission, expect prompt and grant it once.
+  WatchPositionAndExpectGrantedPermission(
+      permissions::PermissionRequestManager::ACCEPT_ONCE, true);
+
+  auto* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
+  const ContentSettingsType geolocation_type =
+      content_settings::GeolocationContentSettingsType();
+  const content_settings::PermissionSettingsInfo* permission_info =
+      content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+          geolocation_type);
+  ASSERT_TRUE(permission_info->delegate().IsAnyPermissionAllowed(
+      hcsm->GetPermissionSetting(GetGeolocationGurl(), GetGeolocationGurl(),
+                                 geolocation_type)));
+
+  // The browser window gets covered by another window and is then minimized,
+  // which hides the tab and starts the expiry. Visibility is not driven by the
+  // window manager in this test environment, so it is simulated on the
+  // contents.
+  tab_a->WasOccluded();
+  tab_a->WasHidden();
+  ASSERT_EQ(content::Visibility::HIDDEN, tab_a->GetVisibility());
+  task_runner_->FastForwardBy(permissions::kOneTimePermissionTimeout -
+                              base::Seconds(1));
+  ASSERT_TRUE(permission_info->delegate().IsAnyPermissionAllowed(
+      hcsm->GetPermissionSetting(GetGeolocationGurl(), GetGeolocationGurl(),
+                                 geolocation_type)));
+
+  // The window is restored before the timeout elapses, but is still covered by
+  // the other window. The tab counts as being in the foreground again, so the
+  // pending expiry must be stopped.
+  tab_a->WasOccluded();
+  ASSERT_EQ(content::Visibility::OCCLUDED, tab_a->GetVisibility());
+  task_runner_->FastForwardBy(permissions::kOneTimePermissionTimeout);
+  EXPECT_TRUE(permission_info->delegate().IsAnyPermissionAllowed(
+      hcsm->GetPermissionSetting(GetGeolocationGurl(), GetGeolocationGurl(),
+                                 geolocation_type)));
+
+  // Hiding the tab again restarts the expiry, which now runs to completion.
+  tab_a->WasHidden();
+  task_runner_->FastForwardBy(permissions::kOneTimePermissionTimeout);
+  EXPECT_TRUE(
+      permission_info->delegate().IsUndecided(hcsm->GetPermissionSetting(
+          GetGeolocationGurl(), GetGeolocationGurl(), geolocation_type)));
+
+  OtpEventExpectBucketCount(
+      geolocation_type,
       permissions::OneTimePermissionEvent::EXPIRED_IN_BACKGROUND, 1);
 }
 
