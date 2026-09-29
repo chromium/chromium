@@ -131,16 +131,29 @@ Description of the patches:
 
   This patch allows exporting protobuf symbols in Linux .so libraries, so
   that protobuf can be built as a component (see http://crrev.com/179806).
+  Obsoleted upstream by `PROTOBUF_EXPORT` and `PROTOC_EXPORT` in `port_def.inc`,
+  which already emit `__attribute__((visibility("default")))` when
+  `PROTOBUF_USE_DLLS` and `LIBPROTOBUF_EXPORTS` / `LIBPROTOC_EXPORTS` are
+  defined:
+  https://github.com/protocolbuffers/protobuf/blob/3f17acbf7ffbda81db8be17505554c726e558bb2/src/google/protobuf/port_def.inc#L332-L366.
 
 - 0008-uninline_get_empty_string.patch
+
+  Uninlines `GetEmptyStringAlreadyInited()` (`PROTOBUF_NOINLINE`) to reduce
+  binary size across generated protobuf code. Upstreaming is tracked in
+  https://crbug.com/567566717.
+
 - 0010-uninline-generated-code.patch
 
-  These patches uninline some functions, resulting in a significant reduction
-  (somewhere between 500 KB and 1 MB) of binary size.
+  Uninlines generated `Swap()` methods (`PROTOBUF_NOINLINE`) to reduce binary
+  size. Obsoleted upstream because generated move-assignment now calls
+  `InternalSwap(&from)` directly rather than `Swap(&from)`:
+  https://github.com/protocolbuffers/protobuf/blob/3f17acbf7ffbda81db8be17505554c726e558bb2/src/google/protobuf/compiler/cpp/message.cc#L2173-L2181.
 
 - 0022-Allow-deprecated-fields.patch
 
   Allows deprecated fields to be used without extra C++ compiler warnings.
+  Upstreaming a variant is tracked in https://crbug.com/567566374.
 
 - 0029-make-initializers-optimizable.patch
 
@@ -155,24 +168,27 @@ Description of the patches:
   running.)
 
   Later updated to patch out PROTOBUF_DESCRIPTOR_WEAK_MESSAGES_ALLOWED code
-  which was not optimizable.
+  which was not optimizable. Upstreaming a variant is tracked in
+  https://crbug.com/567566400.
 
 - 0031-workaround-cfi-unrelated-cast.patch
 
   A workaround for Clang's Control Flow Integrity check for casting pointers to
-  memory that his not yet initialized to be of that type for empty arrays, does
+  memory that is not yet initialized to be of that type for empty arrays, does
   not work, and still fails. This patch removes the workaround and instead
   disables cfi-unrelated-cast for the affected methods and simplifies them.
 
   See https://github.com/protocolbuffers/protobuf/issues/10186.
   See https://bugs.chromium.org/p/chromium/issues/detail?id=1294200#c26.
+  Options for simplifying or upstreaming this patch are tracked in
+  https://crbug.com/567655098.
 
 - 0039-generate-mediapipe-anylite.patch
 
   Workaround to allow generating protobuf code compatible with
   third_party/mediapipe. This replaces checked-in precompiled .pb.cc files. See
-  https://crbug.com/332939935, which when/if resolved should make this patch
-  obsolete.
+  https://crbug.com/332939935 and https://crbug.com/567654677 for options to
+  eliminate or simplify this patch.
 
 - 0042-fix-undefined-protobuf-custom-vtable.patch
 
@@ -185,9 +201,15 @@ Description of the patches:
   Remove parts of protoc's main.cc that aren't necessary for Chromium (languages
   such as C#, PHP, Ruby, etc.).
 
+  The plan is to keep this patch as-is because trimming unused language
+  generators from `protoc` is specific to Chromium's build and avoids compiling
+  71 additional generator `.cc` files. See `patches/0044-trim-protoc-main.md`
+  for details.
+
 - 0045-string-resize.patch
 
   Replaces usage of absl internal string routines with std::string::resize().
+  Upstreaming a variant is tracked in https://crbug.com/567567472.
 
 - 0051-export-template-define.patch
 
@@ -201,7 +223,8 @@ Description of the patches:
   //third_party/abseil-cpp/BUILD.gn), on top of which, Protobuf's usage is
   buggy. PlacementNew copies RepeatedFields wholesale via memcp, which triggers
   false positive out-of-bounds reads. See
-  https://github.com/google/sanitizers/wiki/AddressSanitizerContainerOverflow
+  https://github.com/google/sanitizers/wiki/AddressSanitizerContainerOverflow.
+  Upstreaming is tracked in https://crbug.com/567566785.
 
 - 0058-fix-messagelite-clear-declaration.patch
 
@@ -216,13 +239,10 @@ Description of the patches:
 
   The OSS version of protobuf bundles generated .pb.{cc,h} files for full
   versions of well-known types (including any.proto) and assumes they are
-  built together with protobuf.  Chrome does not use protobuf_full in
+  built together with protobuf. Chrome does not use protobuf_full in
   production, and thus does not use the bundled WKTs, instead generating lite
-  versions.  These versions can reside in a different component, and that's why
-  those symbols need to be exported.
-
-  See go/chrome-protobuf-wkt for an overview of how protobuf WKTs are supported
-  in Chrome. Upstreamed in
+  versions. These versions can reside in a different component, and that's why
+  those symbols need to be exported. Upstreamed in
   https://github.com/protocolbuffers/protobuf/commit/4fa81d0204609137eefbba7b88cccec4c90ee228.
 
 - 0061-fix-invalid-enum-class-export.patch
@@ -251,6 +271,11 @@ Description of the patches:
   it a part of protobuf as we would get a dependency cycle. Not exporting
   symbols allows us to use it as a separate target.
 
+  The plan is to keep this patch as-is because `time_util` is compiled outside
+  the `protobuf_lite` component and would otherwise fail with
+  `-Winconsistent-dllimport` on Windows component builds. See
+  `patches/0064-time-util-no-export.md` for details.
+
 - 0065-gzip-stream-no-export.patch
 
   Do not export symbols in gzip_stream.h.
@@ -259,12 +284,18 @@ Description of the patches:
   zlib, so instead of making Chromium's protobuf depend on zlib, the utility is
   compiled as a separate target, and not exported.
 
+  The plan is to keep this patch as-is because `io_gzip_stream` is compiled
+  outside the `protobuf_lite` component and would otherwise fail with
+  `-Winconsistent-dllimport` on Windows component builds. See
+  `patches/0065-gzip-stream-no-export.md` for details.
+
 - 0067-disable-early-nodiscard.patch
 
   Disables PROTOBUF_FUTURE_ADD_EARLY_NODISCARD in port_def.inc as well as
   [[nodiscard]] on generated message and enum methods in message.cc and enum.cc
   to prevent cascading [[nodiscard]] compilation errors across Chromium and
-  third-party callers (e.g. MediaPipe).
+  third-party callers (e.g. MediaPipe). Options for simplifying or eliminating
+  this patch are tracked in https://crbug.com/567654954.
 
 - 0068-remove-arena-heavy-includes.patch
 
@@ -272,7 +303,10 @@ Description of the patches:
   and removes unused `AbslStringify`, `ArenaPtrContainerHash`, and
   `AbslHashValue` implementations on `Arena::UniquePtr` and `Arena::Ptr` to
   avoid massive compile size and build time bloat across every translation unit
-  that includes `.pb.h`.
+  that includes `.pb.h`. Obsoleted in practice because `io/coded_stream.h`
+  transitively includes `absl/strings/cord.h`, which already pulls
+  `absl/strings/str_format.h` and `absl/hash/hash.h` into every `.pb.h`:
+  https://github.com/protocolbuffers/protobuf/blob/3f17acbf7ffbda81db8be17505554c726e558bb2/src/google/protobuf/io/coded_stream.h#L113.
 
 - 0069-remove-btree-map-includes.patch
 
@@ -280,7 +314,8 @@ Description of the patches:
   defining `LargeRepBase` in `extension_set.h` (with inline size tracking) and
   moving `LargeMap` into `extension_set.cc`. Keeps `ExtensionSet::Size()` inline
   and simplifies LargeMap iteration. Eliminates btree_map template overhead
-  across all translation units that include `.pb.h`.
+  across all translation units that include `.pb.h`. Upstreaming is tracked in
+  https://crbug.com/567608581.
 
 - 0070-fix-deprecated-get-enum-in-message.patch
 
@@ -288,7 +323,8 @@ Description of the patches:
   Reflection::GetRepeatedEnum in message.h (deprecated upstream for removal in
   Q1 2027 in favor of GetEnumValue / GetRepeatedEnumValue) to avoid
   -Wdeprecated-declarations compilation errors across remaining third-party
-  callers (fuzztest, tflite, ink).
+  callers (fuzztest, tflite, ink). Options for simplifying or eliminating this
+  patch are tracked in https://crbug.com/567655036.
 
 - 0071-remove-log-include-from-descriptor-h.patch
 
