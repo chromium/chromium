@@ -109,15 +109,12 @@ std::unique_ptr<JSONObject> ScriptHasPaidContent(
   }
   // The JSON provided by some websites has trailing commas, which is not
   // strictly valid JSON. We can allow this by using
-  std::unique_ptr<JSONValue> json_value =
-      ParsePaidContentJSON(script_element.textContent());
-  if (!json_value || json_value->GetType() != JSONValue::kTypeObject) {
+  std::unique_ptr<JSONObject> script_obj =
+      JSONObject::From(ParsePaidContentJSON(script_element.textContent()));
+  if (!script_obj) {
     // JSON parsing failed or it's not an object.
     return nullptr;
   }
-  // We know it's an object, so we can safely cast and transfer ownership.
-  std::unique_ptr<JSONObject> script_obj = std::unique_ptr<JSONObject>(
-      static_cast<JSONObject*>(json_value.release()));
 
   // check for "schema.org" in "@context"
   JSONValue* context_value = script_obj->Get("@context");
@@ -180,22 +177,16 @@ bool PaidContent::QueryPaidElements(Document& document) {
     bool has_part_found = false;
 
     // Check for hasPart with isAccessibleForFree=false and a cssSelector
-    JSONValue* hasPart_val = script_obj->Get("hasPart");
-    if (hasPart_val) {
-      auto hasPart_type = hasPart_val->GetType();
-      if (hasPart_type == JSONValue::kTypeArray) {
-        JSONArray* hasPart_array = JSONArray::Cast(hasPart_val);
-        for (unsigned j = 0; j < hasPart_array->size(); j++) {
-          JSONValue* hasPart_obj_val = hasPart_array->at(j);
-          if (hasPart_obj_val->GetType() == JSONValue::kTypeObject) {
-            JSONObject* hasPart_obj = JSONObject::Cast(hasPart_obj_val);
-            has_part_found |= AppendHasPartElements(document, *hasPart_obj);
-          }
+    const JSONValue* hasPart_val = script_obj->Get("hasPart");
+    if (const JSONArray* hasPart_array = JSONArray::Cast(hasPart_val)) {
+      for (const JSONValue& hasPart_obj_val : *hasPart_array) {
+        if (const JSONObject* hasPart_obj =
+                JSONObject::Cast(&hasPart_obj_val)) {
+          has_part_found |= AppendHasPartElements(document, *hasPart_obj);
         }
-      } else if (hasPart_type == JSONValue::kTypeObject) {
-        JSONObject* hasPart_obj = JSONObject::Cast(hasPart_val);
-        has_part_found |= AppendHasPartElements(document, *hasPart_obj);
       }
+    } else if (const JSONObject* hasPart_obj = JSONObject::Cast(hasPart_val)) {
+      has_part_found |= AppendHasPartElements(document, *hasPart_obj);
     }
 
     // Assume that pages will only use either ld+json or microdata.
@@ -210,7 +201,7 @@ bool PaidContent::QueryPaidElements(Document& document) {
 }
 
 bool PaidContent::AppendHasPartElements(Document& document,
-                                        JSONObject& hasPart_obj) {
+                                        const JSONObject& hasPart_obj) {
   if (ObjectValuePresentAndEquals(hasPart_obj, "@type", "WebPageElement") &&
       ObjectValuePresentAndFalse(hasPart_obj, kIsAccessibleForFree)) {
     JSONValue* selector_val = hasPart_obj.Get("cssSelector");

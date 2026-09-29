@@ -33,7 +33,7 @@ class PaidContent final {
   HeapHashMap<WeakMember<Document>, bool> check_microdata_;
 
   // Appends elements found by the cssSelector in the hasPart object.
-  bool AppendHasPartElements(Document& document, JSONObject& hasPart_obj);
+  bool AppendHasPartElements(Document& document, const JSONObject& hasPart_obj);
 
   // List of nodes marked as isAccessibleForFree=false.
   HeapVector<Member<Element>> paid_elements_;
