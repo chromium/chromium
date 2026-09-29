@@ -164,9 +164,9 @@ bool HeadsUpDisplayLayerImpl::WillDraw(
 void HeadsUpDisplayLayerImpl::DidDraw(
     viz::ClientResourceProvider* resource_provider) {
   LayerImpl::DidDraw(resource_provider);
-  // We always clear `placeholder_quad_` as drawing may get skipped and
+  // We always clear `hud_quad_id_` as drawing may get skipped and
   // `UpdateHudTexture` might not get called.
-  placeholder_quad_ = nullptr;
+  hud_quad_id_ = 0;
 }
 
 void HeadsUpDisplayLayerImpl::AppendQuads(
@@ -183,12 +183,19 @@ void HeadsUpDisplayLayerImpl::AppendQuads(
   // because we don't have a ResourceId for it yet, and ValidateQuadResources()
   // would fail. UpdateHudTexture() happens after all quads are appended for all
   // layers.
+  // EffectTreeLayerListIterator traverses layers from front-to-back, meaning
+  // the top-most layer (the HUD layer) is visited first. Therefore, it appends
+  // its quad first to the initially empty quad_list, which naturally places it
+  // at the beginning (begin()).
   gfx::Rect quad_rect(internal_content_bounds_);
   auto* quad = render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
   quad->SetNew(shared_quad_state, quad_rect, quad_rect, SkColors::kTransparent,
                false);
   ValidateQuadResources(quad);
-  placeholder_quad_ = quad;
+
+  // Save the pointer value and use it to find this DrawQuad in
+  // UpdateHudTexture() later.
+  hud_quad_id_ = reinterpret_cast<uintptr_t>(quad);
 }
 
 void HeadsUpDisplayLayerImpl::UpdateHudTexture(
@@ -197,11 +204,11 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
     viz::ClientResourceProvider* resource_provider,
     const RasterCapabilities& raster_caps,
     const viz::CompositorRenderPassList& list) {
-  viz::DrawQuad* hud_quad = placeholder_quad_;
-  // The `placeholder_quad_` is only valid for the currently drawing RenderPass,
+  uintptr_t hud_quad_id = hud_quad_id_;
+  // The `hud_quad_id_` is only valid for the currently drawing RenderPass,
   // and we need to get a new pointer for the next frame. It would become
   // dangling after drawing completes.
-  placeholder_quad_ = nullptr;
+  hud_quad_id_ = 0;
 
   if (draw_mode == DRAW_MODE_RESOURCELESS_SOFTWARE) {
     return;
@@ -381,23 +388,23 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
   // it will be exported by then.
   in_flight_resource_ = std::move(pool_resource);
 
-  // This iterates over the RenderPass list of quads to find the HUD quad, which
-  // will always be in the root RenderPass.
+  // The HUD quad is always the first DrawQuad in the root RenderPass.
   auto& render_pass = list.back();
-  for (auto it = render_pass->quad_list.begin();
-       it != render_pass->quad_list.end(); ++it) {
-    if (*it == hud_quad) {
-      const viz::SharedQuadState* sqs = hud_quad->shared_quad_state;
-      gfx::Rect quad_rect = hud_quad->rect;
-      gfx::Rect visible_rect = hud_quad->visible_rect;
+  if (hud_quad_id && render_pass->quad_list.size()) {
+    auto it = render_pass->quad_list.begin();
+    uintptr_t it_ptr_t = reinterpret_cast<uintptr_t>(*it);
+    if (it_ptr_t == hud_quad_id) {
+      const viz::SharedQuadState* sqs = it->shared_quad_state;
+      gfx::Rect quad_rect = it->rect;
+      gfx::Rect visible_rect = it->visible_rect;
 
       auto* quad =
           render_pass->quad_list.ReplaceExistingElement<viz::TextureDrawQuad>(
               it);
 
       // The acquired resource's size could be bigger than actually needed due
-      // to reuse. In this case, only use the part of the texture that is within
-      // the bounds.
+      // to reuse. In this case, only use the part of the texture that is
+      // within the bounds.
       gfx::PointF uv_bottom_right(internal_content_bounds_.width(),
                                   internal_content_bounds_.height());
 
@@ -410,7 +417,6 @@ void HeadsUpDisplayLayerImpl::UpdateHudTexture(
                    gfx::ProtectedVideoType::kClear,
                    /*is_tex_coords_normalized=*/false);
       ValidateQuadResources(quad);
-      break;
     }
   }
 }
