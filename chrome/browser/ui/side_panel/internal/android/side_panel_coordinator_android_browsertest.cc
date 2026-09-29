@@ -993,9 +993,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
       coordinator_->SidePanelUIBase::IsSidePanelEntryShowing(entry_key));
 }
 
-IN_PROC_BROWSER_TEST_F(
-    SidePanelCoordinatorAndroidBrowserTest,
-    MaybeShowEntryOnTabStripModelChanged_SwitchTabs_NewActiveTabHasNoEntry_ClosesSidePanel) {
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
+                       TestTabSwitch_NewActiveTabHasNoEntry_ClosesSidePanel) {
   // Arrange: Open 2 tabs.
   tabs::TabInterface* first_tab = tab_list_->GetActiveTab();
   tabs::TabInterface* second_tab =
@@ -1031,7 +1030,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SidePanelCoordinatorAndroidBrowserTest,
-    MaybeShowEntryOnTabStripModelChanged_SwitchTabs_BothTabsHaveActiveEntries_ReplacesSidePanelContent) {
+    TestTabSwitch_BothTabsHaveActiveEntries_ReplacesSidePanelContent) {
   // Arrange: Open 2 tabs.
   tabs::TabInterface* first_tab = tab_list_->GetActiveTab();
   tabs::TabInterface* second_tab =
@@ -1099,7 +1098,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SidePanelCoordinatorAndroidBrowserTest,
-    MaybeShowEntryOnTabStripModelChanged_SwitchTabs_BothTabsHaveActiveEntries_BothTabsAlsoCallShowOnActiveTabChange_ReplacesSidePanelContent) {
+    TestTabSwitch_BothTabsHaveActiveEntries_BothTabsAlsoCallShowOnActiveTabChange_ReplacesSidePanelContent) {
   // Arrange: Open 2 tabs.
   tabs::TabInterface* first_tab = tab_list_->GetActiveTab();
   tabs::TabInterface* second_tab =
@@ -1181,7 +1180,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SidePanelCoordinatorAndroidBrowserTest,
-    MaybeShowEntryOnTabStripModelChanged_SwitchTabs_WindowScopedEntryShowing_NewTabHasNoActiveEntry_KeepsWindowScopedEntry) {
+    TestTabSwitch_WindowScopedEntryShowing_NewTabHasNoActiveEntry_KeepsWindowScopedEntry) {
   // Arrange: Open 2 tabs.
   tabs::TabInterface* first_tab = tab_list_->GetActiveTab();
   tabs::TabInterface* second_tab =
@@ -1216,7 +1215,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SidePanelCoordinatorAndroidBrowserTest,
-    MaybeShowEntryOnTabStripModelChanged_SwitchTabs_WindowScopedEntryShowing_NewTabHasActiveTabScopedEntry_ShowsTabScopedEntry) {
+    TestTabSwitch_WindowScopedEntryShowing_NewTabHasActiveTabScopedEntry_ShowsTabScopedEntry) {
   // Arrange: Open 2 tabs.
   tabs::TabInterface* first_tab = tab_list_->GetActiveTab();
   tabs::TabInterface* second_tab =
@@ -1287,7 +1286,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SidePanelCoordinatorAndroidBrowserTest,
-    MaybeShowEntryOnTabStripModelChanged_SwitchTabs_TabScopedActive_SwitchToTabAndShowWindowScoped_SwitchBack_RestoresTabScoped) {
+    TestTabSwitch_TabScopedActive_SwitchToTabAndShowWindowScoped_SwitchBack_RestoresTabScoped) {
   // Arrange: Open 2 tabs.
   tabs::TabInterface* first_tab = tab_list_->GetActiveTab();
   tabs::TabInterface* second_tab =
@@ -1353,7 +1352,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SidePanelCoordinatorAndroidBrowserTest,
-    MaybeShowEntryOnTabStripModelChanged_CloseTab_WindowScopedEntryShowing_KeepsWindowScopedEntry) {
+    TestTabSwitch_CloseTab_WindowScopedEntryShowing_KeepsWindowScopedEntry) {
   // Arrange: Open 2 tabs.
   tabs::TabInterface* first_tab = tab_list_->GetActiveTab();
   tabs::TabInterface* second_tab =
@@ -1386,7 +1385,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SidePanelCoordinatorAndroidBrowserTest,
-    MaybeShowEntryOnTabStripModelChanged_CloseTab_NewActiveTabHasNoEntry_ClosesSidePanel) {
+    TestTabSwitch_CloseTab_NewActiveTabHasNoEntry_ClosesSidePanel) {
   // Arrange: Open 2 tabs.
   tabs::TabInterface* first_tab = tab_list_->GetActiveTab();
   tabs::TabInterface* second_tab =
@@ -1417,7 +1416,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     SidePanelCoordinatorAndroidBrowserTest,
-    MaybeShowEntryOnTabStripModelChanged_CloseTab_NewActiveTabHasActiveEntry_OpensSidePanel) {
+    TestTabSwitch_CloseTab_NewActiveTabHasActiveEntry_OpensSidePanel) {
   // Arrange: Open the 1st tab and show an entry.
   tabs::TabInterface* first_tab = tab_list_->GetActiveTab();
   auto* first_registry = SidePanelRegistry::From(first_tab);
@@ -1447,26 +1446,8 @@ IN_PROC_BROWSER_TEST_F(
       coordinator_->SidePanelUIBase::IsSidePanelEntryShowing(first_entry_key));
 }
 
-IN_PROC_BROWSER_TEST_F(
-    SidePanelCoordinatorAndroidBrowserTest,
-    MaybeShowEntryOnTabStripModelChanged_NullRegistry_DoesNotCrash) {
-  // Arrange
-
-  // Act
-  // Simulates a tab change to a tab with no WebContents or TabInterface,
-  // which causes GetSidePanelRegistryFromWebContents to return nullptr.
-  // This verifies that `MaybeShowEntryOnTabStripModelChanged` handles
-  // a null registry gracefully.
-  coordinator_->SidePanelUIBase::OnActiveTabChanged(nullptr, nullptr, false);
-
-  // Assert
-  // The fact that this doesn't crash is the primary assertion.
-  EXPECT_FALSE(coordinator_->IsSidePanelShowing());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    SidePanelCoordinatorAndroidBrowserTest,
-    MaybeShowEntryOnTabStripModelChanged_InsufficientSpace_Blocked) {
+IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
+                       TestTabSwitch_InsufficientSpace_Blocked) {
   // Arrange: Open 2 tabs, both with their own entries.
   tabs::TabInterface* tab_1 = tab_list_->GetActiveTab();
   tabs::TabInterface* tab_2 =
@@ -1889,8 +1870,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(coordinator_->IsSidePanelShowing());
 
   // Act: Switch back to the original tab.
-  // This should trigger restoration automatically via
-  // MaybeShowEntryOnTabStripModelChanged.
+  // This should trigger restoration automatically via OnTabSelected().
   tab_list_->ActivateTab(tab_with_entry->GetHandle());
   WaitUntilOpened(coordinator_);
 
@@ -2659,7 +2639,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorAndroidBrowserTest,
   coordinator_->SimulateAutoCloseConditionForTesting();
 
   // 4. Switch back to Tab A.
-  // This triggers MaybeShowEntryOnTabStripModelChanged -> Show() -> AddEntry().
+  // This triggers OnTabSelected() -> Show() -> AddEntry().
   tab_list_->ActivateTab(tab_1->GetHandle());
 
   // Assert: The panel cannot show because the window is small.

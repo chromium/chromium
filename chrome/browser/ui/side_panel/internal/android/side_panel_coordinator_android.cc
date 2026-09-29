@@ -418,11 +418,72 @@ void SidePanelCoordinatorAndroid::OnTabSelected(TabAndroid* old_tab,
   SPLOG("OnTabSelected - old_tab: " << old_tab << ", new_tab: " << new_tab);
   CHECK(new_tab);
 
-  SidePanelRegistry* old_contextual_registry =
-      old_tab ? SidePanelRegistry::From(old_tab) : nullptr;
+  // If the side panel is showing, check if we should:
+  // (1) replace the current UI content by calling `Show()`, or
+  // (2) close the side panel by calling `Close()`.
+  //
+  // For (1), don't call `Close()` then `Show()`, which will cause janky UI.
+  if (IsSidePanelShowing() && state_ != SidePanelState::kClosing) {
+    std::optional<UniqueKey> new_active_key = GetNewActiveKeyOnTabChanged();
+
+    if (new_active_key) {
+      Show(*new_active_key, SidePanelOpenTrigger::kTabChanged,
+           /*suppress_animations=*/true);
+    } else {
+      UniqueKey key = GetCurrentKeyNonNull();
+
+      if (old_tab && old_tab->GetHandle() == key.tab_handle) {
+        Close(SidePanelEntryHideReason::kBackgrounded,
+              /*suppress_animations=*/true);
+      }
+
+      // If there is no active entry in the new tab's registry, check if there
+      // is a deferred entry saved in the tracker for this tab or this window.
+      // This handles cases where a side panel was hidden due to constraints
+      // like insufficient space.
+      //
+      // `Show()` handles `has_insufficient_space_ == true`, and adds the
+      // entry to `SidePanelDeferredEntryTracker` if needed.
+      std::optional<UniqueKey> key_to_show =
+          deferred_entry_tracker_.GetTabOrWindowScopedEntry(
+              new_tab->GetHandle());
+      if (key_to_show) {
+        // Suppress animations to avoid jarring UX during tab switches, and
+        // use SidePanelOpenTrigger::kWindowResized as the trigger to match
+        // the close reason that originally deferred this entry.
+        Show(*key_to_show, SidePanelOpenTrigger::kWindowResized,
+             /*suppress_animations=*/true);
+      }
+    }
+
+    return;
+  }
+
+  // If the side panel isn't showing, check if we should show it.
   SidePanelRegistry* new_contextual_registry = SidePanelRegistry::From(new_tab);
-  MaybeShowEntryOnTabStripModelChanged(old_contextual_registry,
-                                       new_contextual_registry);
+  std::optional<SidePanelEntry*> new_active_entry =
+      new_contextual_registry ? new_contextual_registry->GetActiveEntry()
+                              : std::nullopt;
+  if (new_active_entry) {
+    UniqueKey key{new_tab->GetHandle(), (*new_active_entry)->key()};
+    Show(key, SidePanelOpenTrigger::kTabChanged, /*suppress_animations=*/true);
+  } else {
+    // If there is no active entry in the new tab's registry, check if there
+    // is a deferred entry saved in the tracker for this tab or this window.
+    // This handles cases where a side panel was hidden due to constraints
+    // like insufficient space.
+    // `Show()` handles `has_insufficient_space_ == true`, and adds the entry
+    // to `SidePanelDeferredEntryTracker` if needed.
+    std::optional<UniqueKey> key_to_show =
+        deferred_entry_tracker_.GetTabOrWindowScopedEntry(new_tab->GetHandle());
+    if (key_to_show) {
+      // Suppress animations to avoid jarring UX during tab switches, and use
+      // SidePanelOpenTrigger::kWindowResized as the trigger to match the close
+      // reason that originally deferred this entry.
+      Show(*key_to_show, SidePanelOpenTrigger::kWindowResized,
+           /*suppress_animations=*/true);
+    }
+  }
 }
 
 void SidePanelCoordinatorAndroid::OnTabWillBeDestroyed(TabAndroid* tab) {
@@ -710,6 +771,13 @@ void SidePanelCoordinatorAndroid::PopulateSidePanel(
   }
 }
 
+void SidePanelCoordinatorAndroid::MaybeShowEntryOnTabStripModelChanged(
+    SidePanelRegistry* old_contextual_registry,
+    SidePanelRegistry* new_contextual_registry) {
+  NOTREACHED()
+      << "On Android, active tab changes are handled via OnTabSelected().";
+}
+
 void SidePanelCoordinatorAndroid::StartOpeningPanel(
     SidePanelEntry* entry,
     const UniqueKey& unique_key,
@@ -915,86 +983,6 @@ void SidePanelCoordinatorAndroid::CompletePendingContentReplacementForTab(
   if (pending_replaced_entry_ &&
       pending_replaced_entry_->key.tab_handle == tab->GetHandle()) {
     CompletePendingContentReplacement();
-  }
-}
-
-void SidePanelCoordinatorAndroid::MaybeShowEntryOnTabStripModelChanged(
-    SidePanelRegistry* old_contextual_registry,
-    SidePanelRegistry* new_contextual_registry) {
-  SPLOG("MaybeShowEntryOnTabStripModelChanged - old_contextual_registry: "
-        << old_contextual_registry
-        << ", new_contextual_registry: " << new_contextual_registry);
-
-  // If the side panel is showing, check if we should:
-  // (1) replace the current UI content by calling `Show()`, or
-  // (2) close the side panel by calling `Close()`.
-  //
-  // For (1), don't call `Close()` then `Show()`, which will cause janky UI.
-  if (IsSidePanelShowing() && state_ != SidePanelState::kClosing) {
-    std::optional<UniqueKey> new_active_key = GetNewActiveKeyOnTabChanged();
-
-    if (new_active_key) {
-      Show(*new_active_key, SidePanelOpenTrigger::kTabChanged,
-           /*suppress_animations=*/true);
-    } else {
-      UniqueKey key = GetCurrentKeyNonNull();
-
-      if (old_contextual_registry &&
-          old_contextual_registry->GetTabInterface().GetHandle() ==
-              key.tab_handle) {
-        Close(SidePanelEntryHideReason::kBackgrounded,
-              /*suppress_animations=*/true);
-      }
-
-      if (new_contextual_registry) {
-        // If there is no active entry in the new tab's registry, check if there
-        // is a deferred entry saved in the tracker for this tab or this window.
-        // This handles cases where a side panel was hidden due to constraints
-        // like insufficient space.
-        //
-        // `Show()` handles `has_insufficient_space_ == true`, and adds the
-        // entry to `SidePanelDeferredEntryTracker` if needed.
-        std::optional<UniqueKey> key_to_show =
-            deferred_entry_tracker_.GetTabOrWindowScopedEntry(
-                new_contextual_registry->GetTabInterface().GetHandle());
-        if (key_to_show) {
-          // Suppress animations to avoid jarring UX during tab switches, and
-          // use SidePanelOpenTrigger::kWindowResized as the trigger to match
-          // the close reason that originally deferred this entry.
-          Show(*key_to_show, SidePanelOpenTrigger::kWindowResized,
-               /*suppress_animations=*/true);
-        }
-      }
-    }
-
-    return;
-  }
-
-  // If the side panel isn't showing, check if we should show it.
-  std::optional<SidePanelEntry*> new_active_entry =
-      new_contextual_registry ? new_contextual_registry->GetActiveEntry()
-                              : std::nullopt;
-  if (new_active_entry) {
-    UniqueKey key{new_contextual_registry->GetTabInterface().GetHandle(),
-                  (*new_active_entry)->key()};
-    Show(key, SidePanelOpenTrigger::kTabChanged, /*suppress_animations=*/true);
-  } else if (new_contextual_registry) {
-    // If there is no active entry in the new tab's registry, check if there
-    // is a deferred entry saved in the tracker for this tab or this window.
-    // This handles cases where a side panel was hidden due to constraints
-    // like insufficient space.
-    // `Show()` handles `has_insufficient_space_ == true`, and adds the entry
-    // to `SidePanelDeferredEntryTracker` if needed.
-    std::optional<UniqueKey> key_to_show =
-        deferred_entry_tracker_.GetTabOrWindowScopedEntry(
-            new_contextual_registry->GetTabInterface().GetHandle());
-    if (key_to_show) {
-      // Suppress animations to avoid jarring UX during tab switches, and use
-      // SidePanelOpenTrigger::kWindowResized as the trigger to match the close
-      // reason that originally deferred this entry.
-      Show(*key_to_show, SidePanelOpenTrigger::kWindowResized,
-           /*suppress_animations=*/true);
-    }
   }
 }
 
