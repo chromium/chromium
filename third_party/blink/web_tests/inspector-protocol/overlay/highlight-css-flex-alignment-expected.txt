@@ -137,7 +137,7 @@ flex-start{
       ],
       "isHorizontalFlow": true,
       "isReverse": false,
-      "alignItemsStyle": "flex-start",
+      "alignItemsStyle": "flow-start",
       "mainGap": 0,
       "crossGap": 0,
       "flexContainerHighlightConfig": {
@@ -314,7 +314,7 @@ flex-end{
       ],
       "isHorizontalFlow": true,
       "isReverse": false,
-      "alignItemsStyle": "flex-end",
+      "alignItemsStyle": "flow-end",
       "mainGap": 0,
       "crossGap": 0,
       "flexContainerHighlightConfig": {

@@ -25,7 +25,7 @@ Found 34 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] <select multiple=""><option>1 - border-left-color
   assert_equals: expected "rgb(0, 0, 0)" but got "rgb(118, 118, 118)"
 [FAIL] <select multiple=""><option>1 - align-items
-  assert_equals: expected "normal" but got "flex-start"
+  assert_equals: expected "normal" but got "flow-start"
 [FAIL] <select multiple=""><option>1 - white-space
   assert_equals: expected "normal" but got "nowrap"
 [FAIL] <select multiple=""><option>1 - background-color

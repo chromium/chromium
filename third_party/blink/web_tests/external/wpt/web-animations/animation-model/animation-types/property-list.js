@@ -10,19 +10,25 @@ const gCSSProperties1 = {
   'align-content': {
     // https://drafts.csswg.org/css-align/#propdef-align-content
     types: [
-      { type: 'discrete' , options: [ [ 'flex-start', 'flex-end' ] ] }
+      { type: 'discrete' , options: [
+        [ 'flex-start', 'flex-end', 'flow-start', 'flow-end' ]
+      ] }
     ]
   },
   'align-items': {
     // https://drafts.csswg.org/css-align/#propdef-align-items
     types: [
-      { type: 'discrete', options: [ [ 'flex-start', 'flex-end' ] ] }
+      { type: 'discrete', options: [
+        [ 'flex-start', 'flex-end', 'flow-start', 'flow-end' ]
+      ] }
     ]
   },
   'align-self': {
     // https://drafts.csswg.org/css-align/#propdef-align-self
     types: [
-      { type: 'discrete', options: [ [ 'flex-start', 'flex-end' ] ] }
+      { type: 'discrete', options: [
+        [ 'flex-start', 'flex-end', 'flow-start', 'flow-end' ]
+      ] }
     ]
   },
   'anchor-name': {

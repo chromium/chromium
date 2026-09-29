@@ -179,17 +179,17 @@ test(function() {
     var alignContentCenter = document.getElementById("alignContentCenter");
     checkValues(alignContentCenter, "alignContent", "align-content", "", "center");
     var alignContentFlexStart = document.getElementById("alignContentFlexStart");
-    checkValues(alignContentFlexStart, "alignContent", "align-content", "", "flex-start");
+    checkValues(alignContentFlexStart, "alignContent", "align-content", "", "flow-start");
     var alignContentFlexEnd = document.getElementById("alignContentFlexEnd");
-    checkValues(alignContentFlexEnd, "alignContent", "align-content", "", "flex-end");
+    checkValues(alignContentFlexEnd, "alignContent", "align-content", "", "flow-end");
     var alignContentUnsafeEnd = document.getElementById("alignContentUnsafeEnd");
     checkValues(alignContentUnsafeEnd, "alignContent", "align-content", "", "unsafe end");
     var alignContentUnsafeCenter = document.getElementById("alignContentUnsafeCenter");
     checkValues(alignContentUnsafeCenter, "alignContent", "align-content", "", "unsafe center");
     var alignContentUnsafeFlexStart = document.getElementById("alignContentUnsafeFlexStart");
-    checkValues(alignContentUnsafeFlexStart, "alignContent", "align-content", "", "unsafe flex-start");
+    checkValues(alignContentUnsafeFlexStart, "alignContent", "align-content", "", "unsafe flow-start");
     var alignContentSafeFlexEnd = document.getElementById("alignContentSafeFlexEnd");
-    checkValues(alignContentSafeFlexEnd, "alignContent", "align-content", "", "safe flex-end");
+    checkValues(alignContentSafeFlexEnd, "alignContent", "align-content", "", "safe flow-end");
 }, "Test getting align-content values previously set through CSS.");
 
 test(function() {
@@ -241,7 +241,7 @@ test(function() {
     checkValues(element, "alignContent", "align-content",  "unsafe start", "unsafe start");
 
     element.style.alignContent = "safe flex-end";
-    checkValues(element, "alignContent", "align-content",  "safe flex-end", "safe flex-end");
+    checkValues(element, "alignContent", "align-content",  "safe flex-end", "safe flow-end");
 
     element.style.alignContent = "unsafe end";
     checkValues(element, "alignContent", "align-content",  "unsafe end", "unsafe end");
@@ -264,7 +264,7 @@ test(function() {
     checkValues(element, "alignContent", "align-content",  "normal", "normal");
 
     element.style.alignContent = "flex-end";
-    checkValues(element, "alignContent", "align-content",  "flex-end", "flex-end");
+    checkValues(element, "alignContent", "align-content",  "flex-end", "flow-end");
 }, "Test getting and setting align-content through JS");
 
 test(function() {

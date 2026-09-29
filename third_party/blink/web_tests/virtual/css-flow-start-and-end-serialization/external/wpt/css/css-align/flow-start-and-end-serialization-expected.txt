@@ -1,4 +1,20 @@
 This is a testharness.js-based test.
-All subtests passed and are omitted for brevity.
-See https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/writing_web_tests.md#Text-Test-Baselines for details.
+[FAIL] align-content uses flow-start and flow-end computed serialization
+  assert_equals: expected "flow-start" but got "flex-start"
+[FAIL] justify-content uses flow-start and flow-end computed serialization
+  assert_equals: expected "flow-start" but got "flex-start"
+[FAIL] align-items uses flow-start and flow-end computed serialization
+  assert_equals: expected "flow-start" but got "flex-start"
+[FAIL] justify-items uses flow-start and flow-end computed serialization
+  assert_equals: expected "flow-start" but got "flex-start"
+[FAIL] align-self uses flow-start and flow-end computed serialization
+  assert_equals: expected "flow-start" but got "flex-start"
+[FAIL] justify-self uses flow-start and flow-end computed serialization
+  assert_equals: expected "flow-start" but got "flex-start"
+[FAIL] place-content inherits flow-start and flow-end computed serialization
+  assert_equals: expected "flow-start flow-end" but got "flex-start flex-end"
+[FAIL] place-items inherits flow-start and flow-end computed serialization
+  assert_equals: expected "flow-start flow-end" but got "flex-start flex-end"
+[FAIL] place-self inherits flow-start and flow-end computed serialization
+  assert_equals: expected "flow-start flow-end" but got "flex-start flex-end"
 Harness: the test ran to completion.

@@ -198,9 +198,9 @@ test(function() {
     var justifyContentRight = document.getElementById("justifyContentRight");
     checkValues(justifyContentRight, "justifyContent", "justify-content", "", "right");
     var justifyContentFlexStart = document.getElementById("justifyContentFlexStart");
-    checkValues(justifyContentFlexStart, "justifyContent", "justify-content", "", "flex-start");
+    checkValues(justifyContentFlexStart, "justifyContent", "justify-content", "", "flow-start");
     var justifyContentFlexEnd = document.getElementById("justifyContentFlexEnd");
-    checkValues(justifyContentFlexEnd, "justifyContent", "justify-content", "", "flex-end");
+    checkValues(justifyContentFlexEnd, "justifyContent", "justify-content", "", "flow-end");
     var justifyContentUnsafeEnd = document.getElementById("justifyContentUnsafeEnd");
     checkValues(justifyContentUnsafeEnd, "justifyContent", "justify-content", "", "unsafe end");
     var justifyContentUnsafeCenter = document.getElementById("justifyContentUnsafeCenter");
@@ -210,9 +210,9 @@ test(function() {
     var justifyContentUnsafeLeft = document.getElementById("justifyContentUnsafeLeft");
     checkValues(justifyContentUnsafeLeft, "justifyContent", "justify-content", "", "unsafe left");
     var justifyContentUnsafeFlexStart = document.getElementById("justifyContentUnsafeFlexStart");
-    checkValues(justifyContentUnsafeFlexStart, "justifyContent", "justify-content", "", "unsafe flex-start");
+    checkValues(justifyContentUnsafeFlexStart, "justifyContent", "justify-content", "", "unsafe flow-start");
     var justifyContentSafeFlexEnd = document.getElementById("justifyContentSafeFlexEnd");
-    checkValues(justifyContentSafeFlexEnd, "justifyContent", "justify-content", "", "safe flex-end");
+    checkValues(justifyContentSafeFlexEnd, "justifyContent", "justify-content", "", "safe flow-end");
 }, "Test getting justify-content values previously set through CSS.");
 
 test(function() {
@@ -274,7 +274,7 @@ test(function() {
     checkValues(element, "justifyContent", "justify-content",  "unsafe start", "unsafe start");
 
     element.style.justifyContent = "safe flex-end";
-    checkValues(element, "justifyContent", "justify-content",  "safe flex-end", "safe flex-end");
+    checkValues(element, "justifyContent", "justify-content",  "safe flex-end", "safe flow-end");
 
     element.style.justifyContent = " unsafe right";
     checkValues(element, "justifyContent", "justify-content",  "unsafe right", "unsafe right");
@@ -291,7 +291,7 @@ test(function() {
     checkValues(element, "justifyContent", "justify-content",  "normal", "normal");
 
     element.style.justifyContent = "flex-end";
-    checkValues(element, "justifyContent", "justify-content",  "flex-end", "flex-end");
+    checkValues(element, "justifyContent", "justify-content",  "flex-end", "flow-end");
 }, "Test getting and setting justify-content through JS");
 
 test(function() {

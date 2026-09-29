@@ -5149,7 +5149,7 @@
       "external/wpt/css/css-align/flow-start-and-end-serialization.html"
     ],
     "args": [
-      "--enable-blink-features=CSSFlowStartAndEndSerialization"
+      "--disable-blink-features=CSSFlowStartAndEndSerialization"
     ],
     "owners": [
       "celestepan@microsoft.com"

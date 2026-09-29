@@ -35,8 +35,8 @@ shouldBeEqualToString("getComputedStyle(parent, '').getPropertyValue('justify-it
 shouldBeEqualToString("getComputedStyle(parent, '').getPropertyValue('align-items')", "stretch");
 
 var childOfDefaultParent = document.getElementById("childOfDefaultParent");
-shouldBeEqualToString("getComputedStyle(childOfDefaultParent, '').getPropertyValue('justify-self')", "unsafe flex-end");
-shouldBeEqualToString("getComputedStyle(childOfDefaultParent, '').getPropertyValue('align-self')", "safe flex-start");
+shouldBeEqualToString("getComputedStyle(childOfDefaultParent, '').getPropertyValue('justify-self')", "unsafe flow-end");
+shouldBeEqualToString("getComputedStyle(childOfDefaultParent, '').getPropertyValue('align-self')", "safe flow-start");
 
 var childOfParentId = document.getElementById("childOfParentId");
 shouldBeEqualToString("getComputedStyle(childOfParentId, '').getPropertyValue('justify-self')", "center");
