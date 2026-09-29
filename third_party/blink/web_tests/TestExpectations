@@ -919,7 +919,6 @@ crbug.com/1066577 external/wpt/css/css-lists/counter-reset-reversed-list-item-st
 crbug.com/1066577 external/wpt/css/css-lists/counter-reset-reversed-siblings-003.html [ Failure ]
 crbug.com/947844 external/wpt/css/css-lists/list-item-definition.html [ Failure ]
 crbug.com/40110559 external/wpt/css/css-lists/marker-counter.html [ Failure ]
-crbug.com/40110559 external/wpt/css/css-lists/marker-quotes.html [ Failure ]
 
 # [css-counter-styles-3]
 crbug.com/1176323 external/wpt/css/css-counter-styles/counter-style-at-rule/prefix-suffix-syntax.html [ Failure ]

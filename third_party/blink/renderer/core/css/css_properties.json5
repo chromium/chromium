@@ -5425,6 +5425,7 @@
       converter: "ConvertQuotes",
       keywords: ["auto", "none"],
       typedom_types: ["Keyword"],
+      valid_for_marker: true,
       valid_for_page_context: true,
       invalidate: ["layout", "paint"],
     },
