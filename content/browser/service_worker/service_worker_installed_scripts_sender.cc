@@ -284,7 +284,9 @@ void ServiceWorkerInstalledScriptsSender::Abort(
       if (owner_->context()) {
         scoped_refptr<ServiceWorkerRegistration> registration =
             owner_->context()->GetLiveRegistration(owner_->registration_id());
-        CHECK(registration, base::NotFatalUntil::M159);
+        // TODO(crbug.com/565911382): CHECK-exclusion: Convert to a CHECK once
+        // we are confident it won't be triggered.
+        DCHECK(registration);
         // Check if the registation is still alive. The registration may have
         // already been deleted while this service worker was running.
         if (!registration->is_uninstalled()) {
