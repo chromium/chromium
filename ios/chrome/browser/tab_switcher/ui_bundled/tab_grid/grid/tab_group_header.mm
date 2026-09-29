@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/tab_group_header.h"
 
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_group_edition_delegate.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_groups/tab_groups_constants.h"
@@ -226,10 +228,9 @@ CGFloat GetVerticalInsetForConstraints() {
 
 // Shows the edition menu for the group.
 - (void)displayEditionMenu {
-  if ([self.tabGroupHeaderDelegate
-          respondsToSelector:@selector(tabGroupHeaderDidTapTitle:)]) {
-    [self.tabGroupHeaderDelegate tabGroupHeaderDidTapTitle:self];
-  }
+  base::RecordAction(
+      base::UserMetricsAction("TabGroup.TitleButton.EditionViewOpened"));
+  [self.tabGroupHeaderDelegate tabGroupHeaderDidTapTitle:self];
 }
 
 @end

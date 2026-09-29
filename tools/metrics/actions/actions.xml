@@ -39214,6 +39214,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGroup.TitleButton.EditionViewOpened">
+  <owner>achara@google.com</owner>
+  <owner>bling-meridian@google.com</owner>
+  <description>
+    User opened the TabGroup edition view by tapping the TabGroup title button.
+    iOS only.
+  </description>
+</action>
+
 <action name="TabGroupConfirmation.CloseTabFullGroup.Abort">
   <owner>skym@chromium.org</owner>
   <owner>clank-tab-dev@google.com</owner>
