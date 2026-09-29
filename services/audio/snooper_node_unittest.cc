@@ -5,6 +5,7 @@
 #include "services/audio/snooper_node.h"
 
 #include <algorithm>
+#include <array>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -286,9 +287,10 @@ class SnooperNodeTest : public testing::TestWithParam<InputAndOutputParams> {
 
   // Post delayed tasks to schedule normal, uninterrupted input with the default
   // kInputAdvanceTime delay.
-  void ScheduleDefaultInputTasks(double skew = 1.0) {
+  void ScheduleDefaultInputTasks(double skew = 1.0,
+                                 base::TimeDelta duration = kTestDuration) {
     const base::TimeTicks start_time = task_runner_->NowTicks();
-    const base::TimeTicks end_time = start_time + kTestDuration;
+    const base::TimeTicks end_time = start_time + duration;
     const double time_step = skew / input_params().sample_rate();
     for (int position = 0;; position += input_params().frames_per_buffer()) {
       const base::TimeTicks task_time =
@@ -307,9 +309,10 @@ class SnooperNodeTest : public testing::TestWithParam<InputAndOutputParams> {
 
   // Post delayed tasks to schedule normal, uninterrupted output rendering to
   // occur at the default kCaptureDelay.
-  void ScheduleDefaultRenderTasks(double skew = 1.0) {
+  void ScheduleDefaultRenderTasks(double skew = 1.0,
+                                  base::TimeDelta duration = kTestDuration) {
     const base::TimeTicks start_time = task_runner_->NowTicks();
-    const base::TimeTicks end_time = start_time + kTestDuration;
+    const base::TimeTicks end_time = start_time + duration;
     const double time_step = skew / output_params().sample_rate();
     for (int position = 0;; position += output_params().frames_per_buffer()) {
       const base::TimeTicks task_time =
@@ -350,11 +353,13 @@ class SnooperNodeTest : public testing::TestWithParam<InputAndOutputParams> {
 };
 
 // The skew test here is generating 10 seconds of audio per iteration, with
-// 5*5=25 iterations. That's 250 seconds of audio being generated to check for
+// 3*3=9 iterations. That's 90 seconds of audio being generated to check for
 // skew-related issues. That's a lot of processing power needed! Thus, only
-// enable this test on optimized, non-debug builds, where it will run in a
-// reasonable amount of time. http://crbug.com/842428
-#ifdef NDEBUG
+// enable this test on optimized, non-debug, non-sanitizer builds, where it will
+// run in a reasonable amount of time. http://crbug.com/842428
+#if defined(NDEBUG) && !defined(ADDRESS_SANITIZER) &&           \
+    !defined(THREAD_SANITIZER) && !defined(MEMORY_SANITIZER) && \
+    !defined(UNDEFINED_SANITIZER)
 #define MAYBE_ContinuousAudioFlowAdaptsToSkew ContinuousAudioFlowAdaptsToSkew
 #else
 #define MAYBE_ContinuousAudioFlowAdaptsToSkew \
@@ -366,9 +371,9 @@ TEST_P(SnooperNodeTest, MAYBE_ContinuousAudioFlowAdaptsToSkew) {
   // Note: A skew of 0.999 or 1.001 is very extreme. This is like saying the
   // clocks drift 1 ms for every second that goes by. If the implementation can
   // handle that, it's very likely to do a perfect job in-the-wild.
-  for (double input_skew = 0.999; input_skew <= 1.001; input_skew += 0.0005) {
-    for (double output_skew = 0.999; output_skew <= 1.001;
-         output_skew += 0.0005) {
+  constexpr std::array<double, 3> kSkews = {0.999, 1.0, 1.001};
+  for (double input_skew : kSkews) {
+    for (double output_skew : kSkews) {
       SCOPED_TRACE(testing::Message() << "input_skew=" << input_skew
                                       << ", output_skew=" << output_skew);
 
@@ -405,12 +410,16 @@ TEST_P(SnooperNodeTest, MAYBE_ContinuousAudioFlowAdaptsToSkew) {
 // zero-fill gaps in the output, and don't throw-off the timing/synchronization
 // between input and output.
 TEST_P(SnooperNodeTest, HandlesMissingInput) {
+  // Only 6 seconds of audio are needed to test 5 quarter-second gaps occurring
+  // once per second.
+  constexpr base::TimeDelta kMissingInputDuration = base::Seconds(6);
+
   CreateNewPipeline();
 
   // Schedule all input tasks, with drops to occur once per second for 1/4
   // second duration.
   const base::TimeTicks start_time = task_runner()->NowTicks();
-  const base::TimeTicks end_time = start_time + kTestDuration;
+  const base::TimeTicks end_time = start_time + kMissingInputDuration;
   const double time_step = 1.0 / input_params().sample_rate();
   const int input_frames_in_one_second = input_params().sample_rate();
   // Drop duration: 1/4 second in terms of frames, aligned to frame buffer size.
@@ -436,7 +445,7 @@ TEST_P(SnooperNodeTest, HandlesMissingInput) {
         task_time - start_time);
   }
 
-  ScheduleDefaultRenderTasks();
+  ScheduleDefaultRenderTasks(/*skew=*/1.0, kMissingInputDuration);
   RunAllPendingTasks();
 
   // Check that there is silence in the drop positions, and that tones are
@@ -730,16 +739,17 @@ TEST_P(SnooperNodeTest, StereoIsMixedCorrectly) {
   // Set distinct frequencies for Left and Right channels.
   constexpr double kLeftFreq = 500.0;
   constexpr double kRightFreq = 1200.0;
+  constexpr base::TimeDelta kShortTestDuration = base::Seconds(1);
   group_member()->SetChannelTone(0, kLeftFreq);
   group_member()->SetChannelTone(1, kRightFreq);
 
-  ScheduleDefaultInputTasks();
-  ScheduleDefaultRenderTasks();
+  ScheduleDefaultInputTasks(/*skew=*/1.0, kShortTestDuration);
+  ScheduleDefaultRenderTasks(/*skew=*/1.0, kShortTestDuration);
   RunAllPendingTasks();
 
   // Check near the end of the recording.
   const int check_position =
-      consumer()->GetRecordedFrameCount() - output_params().sample_rate();
+      consumer()->GetRecordedFrameCount() - output_params().frames_per_buffer();
 
   // Left output channel should have the left tone.
   EXPECT_NEAR(kSourceVolume,

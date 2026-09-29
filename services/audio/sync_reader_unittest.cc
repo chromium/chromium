@@ -172,7 +172,7 @@ class SyncReaderTest : public ::testing::Test {
         base::BindRepeating(&NoLog), params_, socket_.get(),
         std::move(mock_audio_glitch_counter_ptr_));
     CHECK(reader_->IsValid());
-    reader_->set_max_wait_timeout_for_test(base::Milliseconds(999));
+    reader_->set_max_wait_timeout_for_test(kMaxWaitTimeout);
     shmem_ = reader_->TakeSharedMemoryRegion().Map();
     CHECK(shmem_.IsValid());
     buffer_ = shmem_.GetMemoryAs<media::AudioOutputBuffer>();
@@ -187,10 +187,18 @@ class SyncReaderTest : public ::testing::Test {
     auto shmem = std::move(shmem_);
   }
 
-  const int kSampleRate = 44100;
-  const int kFramesPerBuffer = 1;
+  static constexpr int kSampleRate = 44100;
+  static constexpr int kFramesPerBuffer = 1;
+  static constexpr base::TimeDelta kMaxWaitTimeout = base::Milliseconds(999);
+  static constexpr base::TimeDelta kShortWaitTimeout = base::Milliseconds(2);
   const AudioParameters params_;
   std::unique_ptr<base::CancelableSyncSocket> socket_;
+
+  void ReadAndExpectTimeout(AudioBus* output_bus, bool is_mixing) {
+    reader_->set_max_wait_timeout_for_test(kShortWaitTimeout);
+    EXPECT_FALSE(reader_->Read(output_bus, is_mixing));
+    reader_->set_max_wait_timeout_for_test(kMaxWaitTimeout);
+  }
 
  private:
   std::unique_ptr<MockOutputGlitchCounter> mock_audio_glitch_counter_ptr_;
@@ -219,7 +227,7 @@ TEST_F(SyncReaderTest, CallsGlitchCounter) {
     EXPECT_CALL(*mock_output_glitch_counter_,
                 ReportMissedCallback(/*missed_callback = */ false,
                                      /*is_mixing = */ false));
-    reader_->Read(output_bus.get(), false);
+    EXPECT_TRUE(reader_->Read(output_bus.get(), false));
   }
 
   {
@@ -235,7 +243,7 @@ TEST_F(SyncReaderTest, CallsGlitchCounter) {
     EXPECT_CALL(*mock_output_glitch_counter_,
                 ReportMissedCallback(/*missed_callback = */ false,
                                      /*is_mixing = */ true));
-    reader_->Read(output_bus.get(), true);
+    EXPECT_TRUE(reader_->Read(output_bus.get(), true));
   }
 
   {
@@ -252,7 +260,7 @@ TEST_F(SyncReaderTest, CallsGlitchCounter) {
     EXPECT_CALL(*mock_output_glitch_counter_,
                 ReportMissedCallback(/*missed_callback = */ true,
                                      /*is_mixing = */ false));
-    reader_->Read(output_bus.get(), false);
+    ReadAndExpectTimeout(output_bus.get(), false);
   }
 
   {
@@ -269,7 +277,7 @@ TEST_F(SyncReaderTest, CallsGlitchCounter) {
     EXPECT_CALL(*mock_output_glitch_counter_,
                 ReportMissedCallback(/*missed_callback = */ true,
                                      /*is_mixing = */ true));
-    reader_->Read(output_bus.get(), true);
+    ReadAndExpectTimeout(output_bus.get(), true);
   }
 }
 
@@ -311,7 +319,7 @@ TEST_F(SyncReaderTest, PropagatesGlitchInfo) {
     uint32_t buffer_index = 321;
     EXPECT_EQ(socket_->Send(base::byte_span_from_ref(buffer_index)),
               sizeof(buffer_index));
-    reader_->Read(output_bus.get(), false);
+    ReadAndExpectTimeout(output_bus.get(), false);
   }
 
   {
@@ -338,7 +346,7 @@ TEST_F(SyncReaderTest, PropagatesGlitchInfo) {
     uint32_t buffer_index = 2;
     EXPECT_EQ(socket_->Send(base::byte_span_from_ref(buffer_index)),
               sizeof(buffer_index));
-    reader_->Read(output_bus.get(), false);
+    EXPECT_TRUE(reader_->Read(output_bus.get(), false));
   }
 
   {
