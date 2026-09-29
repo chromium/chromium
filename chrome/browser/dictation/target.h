@@ -80,14 +80,6 @@ class Target {
   virtual void PasteIntoNode(const std::u16string& text);
   virtual std::optional<std::u16string_view> GetTextPrecedingSelection();
 
-  // The test RenderWidgetHostView always reports that it has focus, so tests
-  // use this to simulate the widget not having native focus, e.g. while the
-  // user is interacting with the Dictation UI. A virtual `HasNativeFocus`
-  // won't work since it's called from `~Target`.
-  void set_has_native_focus_for_testing(bool has_native_focus) {
-    has_native_focus_for_testing_ = has_native_focus;
-  }
-
  private:
   // The stream may produce multiple updates while the last composition we sent
   // to the renderer is in progress. We sequence our calls to the renderer so
@@ -122,18 +114,6 @@ class Target {
   // Called when the currently executing operations completes.
   void OnOperationComplete(base::OnceClosure on_commit_complete);
 
-  // Sites with dynamic contenteditables (e.g. Google Keep) disable editability
-  // while the page is blurred, which happens as soon as the user interacts with
-  // the Dictation UI or switches tabs. Since neither an IME commit nor a paste
-  // can write to a non-editable element, we tell the renderer that the page is
-  // focused for as long as we're writing to it, and then restore the page's
-  // real focus state.
-  void AcquirePageFocus();
-  void RestorePageFocus();
-
-  // Whether the target's widget has native (platform) focus.
-  bool HasNativeFocus() const;
-
   // Formats transcription text for insertion into the target element.
   std::u16string FormatTextForInsertion(const std::u16string& text);
 
@@ -148,12 +128,6 @@ class Target {
 
   bool is_waiting_on_operation_completion_ = false;
   std::optional<QueuedOperation> queued_operation_;
-
-  // Whether we've told the renderer that the page is focused in order to write
-  // to the target. See `AcquirePageFocus`.
-  bool holding_page_focus_ = false;
-
-  std::optional<bool> has_native_focus_for_testing_;
 
   base::WeakPtrFactory<Target> weak_factory_{this};
 };

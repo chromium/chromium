@@ -13,8 +13,6 @@ namespace dictation {
 
 BASE_FEATURE(kDictation, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDictationRefocusBeforeCommit, base::FEATURE_ENABLED_BY_DEFAULT);
-
 const base::FeatureParam<bool> kDictationEvalMode{&kDictation, "eval_mode",
                                                   false};
 
