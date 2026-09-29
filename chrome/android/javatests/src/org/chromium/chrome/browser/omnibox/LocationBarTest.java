@@ -30,6 +30,7 @@ import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Matchers;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -115,6 +116,13 @@ public class LocationBarTest {
                     TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
                     LocaleManager.getInstance().setDelegateForTest(mLocaleManagerDelegate);
                 });
+    }
+
+    @After
+    public void tearDown() {
+        if (mOmnibox != null && mOmnibox.getFocus()) {
+            mOmnibox.clearFocus();
+        }
     }
 
     private String getHostUrl() {
@@ -519,6 +527,7 @@ public class LocationBarTest {
         assertFalse(mKeyboardDelegate.isKeyboardShowing(mUrlBar));
 
         mOmnibox.requestFocus();
+        mOmnibox.waitAnimationsComplete();
         mOmnibox.checkFocus(true);
         mOmnibox.clearFocus();
         mOmnibox.checkFocus(false);
@@ -532,6 +541,7 @@ public class LocationBarTest {
         startActivityNormally();
 
         mOmnibox.requestFocus();
+        mOmnibox.waitAnimationsComplete();
         mOmnibox.checkFocus(true);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mActivity.getOnBackPressedDispatcher().onBackPressed());
@@ -568,6 +578,7 @@ public class LocationBarTest {
 
         mActivityTestRule.loadUrl(getOriginalNativeNtpUrl());
         mOmnibox.requestFocus();
+        mOmnibox.waitAnimationsComplete();
         onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));
     }
 
