@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityMan
 import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -53,6 +54,7 @@ import java.util.function.Supplier;
 @NullMarked
 class BottomControlsMediator
         implements BrowserControlsStateProvider.Observer,
+                FullscreenManager.Observer,
                 KeyboardVisibilityDelegate.KeyboardVisibilityListener,
                 LayoutStateObserver,
                 TabObscuringHandler.Observer,
@@ -167,6 +169,7 @@ class BottomControlsMediator
         controlsStacker.getBrowserControls().addObserver(this);
         mBrowserControlsVisibilityDelegate = browserControlsVisibilityDelegate;
         mFullscreenManager = fullscreenManager;
+        mFullscreenManager.addObserver(this);
         mLayerType = layerType;
         mContentDelegateSupplier = contentDelegateSupplier;
         mTabObscuringHandler = tabObscuringHandler;
@@ -257,6 +260,7 @@ class BottomControlsMediator
         mCallbackController.destroy();
         getBrowserControls().removeObserver(this);
         mBottomControlsStacker.removeLayer(this);
+        mFullscreenManager.removeObserver(this);
         mWindowAndroid.getKeyboardDelegate().removeKeyboardVisibilityListener(this);
         if (mLayoutStateProvider != null) {
             mLayoutStateProvider.removeObserver(this);
@@ -301,6 +305,20 @@ class BottomControlsMediator
     @Override
     public void keyboardVisibilityChanged(boolean isShowing) {
         mIsKeyboardVisible = isShowing;
+        updateCompositedViewVisibility();
+        updateAndroidViewVisibility();
+    }
+
+    // FullscreenManager.Observer
+
+    @Override
+    public void onEnterFullscreen(Tab tab, FullscreenOptions options) {
+        updateCompositedViewVisibility();
+        updateAndroidViewVisibility();
+    }
+
+    @Override
+    public void onExitFullscreen(Tab tab) {
         updateCompositedViewVisibility();
         updateAndroidViewVisibility();
     }
