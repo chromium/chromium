@@ -120,9 +120,10 @@ TEST_F(StartupInfoBarObserverTest, IgnoresNonInsertionTabStripChanges) {
 
   // Simulate a change other than kInserted.
   TabStripSelectionChange selection;
-  TabStripModelChange change;
 
-  observer->OnTabStripModelChanged(tab_strip_model(), change, selection);
+  observer->OnTabStripModelChanged(
+      tab_strip_model(),
+      TabStripModelChange(TabStripModelChange::SelectionOnly()), selection);
 
   // Callback shouldn't trigger and observer should still be alive since the
   // change wasn't kInserted.

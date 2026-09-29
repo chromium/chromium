@@ -504,8 +504,9 @@ TEST_P(MultiContentsViewDropTargetControllerParamTest,
   selection.old_contents = reinterpret_cast<content::WebContents*>(1);
   selection.new_contents = reinterpret_cast<content::WebContents*>(2);
 
-  controller().OnTabStripModelChanged(&tab_strip_model, TabStripModelChange(),
-                                      selection);
+  controller().OnTabStripModelChanged(
+      &tab_strip_model,
+      TabStripModelChange(TabStripModelChange::SelectionOnly()), selection);
   FastForward(kDropTargetAnimationDuration);
 
   // The drop target should be hidden.

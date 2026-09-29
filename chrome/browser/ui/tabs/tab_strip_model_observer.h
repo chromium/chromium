@@ -54,7 +54,9 @@ class WebContents;
 ////////////////////////////////////////////////////////////////////////////////
 class TabStripModelChange {
  public:
+  // LINT.IfChange(Type)
   enum Type { kSelectionOnly, kInserted, kRemoved, kMoved, kReplaced };
+  // LINT.ThenChange(:Delta)
 
   struct RemovedTab {
     RemovedTab(tabs::TabInterface* tab,
@@ -80,6 +82,10 @@ class TabStripModelChange {
     raw_ptr<content::WebContents> contents = nullptr;
     int index;
 
+    void WriteIntoTrace(perfetto::TracedValue context) const;
+  };
+
+  struct SelectionOnly {
     void WriteIntoTrace(perfetto::TracedValue context) const;
   };
 
@@ -177,7 +183,7 @@ class TabStripModelChange {
     void WriteIntoTrace(perfetto::TracedValue context) const;
   };
 
-  TabStripModelChange();
+  explicit TabStripModelChange(SelectionOnly delta);
   explicit TabStripModelChange(Insert delta);
   explicit TabStripModelChange(Remove delta);
   explicit TabStripModelChange(Replace delta);
@@ -186,7 +192,7 @@ class TabStripModelChange {
   TabStripModelChange& operator=(const TabStripModelChange&) = delete;
   ~TabStripModelChange();
 
-  Type type() const { return type_; }
+  Type type() const { return static_cast<Type>(delta_.index()); }
   const Insert* GetInsert() const;
   const Remove* GetRemove() const;
   const Move* GetMove() const;
@@ -195,11 +201,9 @@ class TabStripModelChange {
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
-  using Delta = std::variant<Insert, Remove, Move, Replace>;
-
-  TabStripModelChange(Type type, Delta delta);
-
-  const Type type_ = kSelectionOnly;
+  // LINT.IfChange(Delta)
+  using Delta = std::variant<SelectionOnly, Insert, Remove, Move, Replace>;
+  // LINT.ThenChange(:Type)
 
   Delta delta_;
 };

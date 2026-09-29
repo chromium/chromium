@@ -4311,8 +4311,8 @@ TabStripSelectionChange TabStripModel::SetSelection(
       }
     }
 
-    TabStripModelChange change;
-    OnChange(change, selection);
+    OnChange(TabStripModelChange(TabStripModelChange::SelectionOnly()),
+             selection);
   }
 
   return selection;
@@ -4594,8 +4594,8 @@ split_tabs::SplitTabId TabStripModel::AddToSplitImpl(
     TabStripSelectionChange selection(
         GetActiveTab(), old_selection_model.GetListSelectionModel());
     selection.new_model = selection_model().GetListSelectionModel();
-    TabStripModelChange change;
-    OnChange(change, selection);
+    OnChange(TabStripModelChange(TabStripModelChange::SelectionOnly()),
+             selection);
   }
 
   NotifySplitTabCreated(split_id, tabs_with_indices, reason, visual_data);
@@ -4625,13 +4625,13 @@ void TabStripModel::RemoveSplitImpl(
   if (old_selection_model != selection_model_) {
     TabStripSelectionChange selection(
         GetActiveTab(), old_selection_model.GetListSelectionModel());
-    TabStripModelChange change;
     selection.new_tab = GetActiveTab();
     selection.new_contents = GetActiveWebContents();
     selection.new_model = selection_model().GetListSelectionModel();
     selection.reason = TabStripModelObserver::CHANGE_REASON_NONE;
 
-    OnChange(change, selection);
+    OnChange(TabStripModelChange(TabStripModelChange::SelectionOnly()),
+             selection);
   }
 
   NotifySplitTabRemoved(split_id, tabs_with_indices, reason);
