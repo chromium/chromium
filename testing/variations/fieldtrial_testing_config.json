@@ -16626,6 +16626,24 @@
             ]
         }
     ],
+    "SecurePaymentConfirmationCredentialDiscoveryMode": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "mode": "hybrid"
+                    },
+                    "enable_features": [
+                        "SecurePaymentConfirmationCredentialDiscoveryMode"
+                    ]
+                }
+            ]
+        }
+    ],
     "SegmentationPlatformURLVisitResumptionRanker": [
         {
             "platforms": [
