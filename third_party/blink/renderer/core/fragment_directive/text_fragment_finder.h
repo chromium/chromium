@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/editing/relocatable_position.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_anchor_metrics.h"
 #include "third_party/blink/renderer/core/fragment_directive/text_fragment_selector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -28,7 +29,7 @@ class Document;
 class CORE_EXPORT TextFragmentFinder
     : public GarbageCollected<TextFragmentFinder> {
  public:
-  class Client {
+  class Client : public GarbageCollectedMixin {
    public:
     virtual void DidFindMatch(const RangeInFlatTree& range, bool is_unique) = 0;
     virtual void NoMatchFound() = 0;
@@ -122,7 +123,7 @@ class CORE_EXPORT TextFragmentFinder
   // Runs the match steps in a loop, advancing one step per iteration.
   void DriveStateMachine();
 
-  const raw_ref<Client, UnprotectedInRelease | DanglingUntriaged> client_;
+  Member<Client> client_;
   const TextFragmentSelector selector_;
   Member<Range> range_;
 

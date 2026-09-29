@@ -13,6 +13,7 @@ TextAnnotationSelector::TextAnnotationSelector(
 void TextAnnotationSelector::Trace(Visitor* visitor) const {
   visitor->Trace(finder_);
   AnnotationSelector::Trace(visitor);
+  TextFragmentFinder::Client::Trace(visitor);
 }
 
 String TextAnnotationSelector::Serialize() const {

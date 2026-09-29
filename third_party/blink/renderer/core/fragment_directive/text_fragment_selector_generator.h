@@ -59,7 +59,7 @@ class CORE_EXPORT TextFragmentSelectorGenerator final
     pending_generate_selector_callback_ = std::move(callback);
   }
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
   // Temporary diagnostic metric recorded to help explain discrepancies in
   // other metrics.

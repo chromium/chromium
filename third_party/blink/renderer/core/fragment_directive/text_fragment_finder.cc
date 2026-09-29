@@ -366,7 +366,7 @@ TextFragmentFinder::TextFragmentFinder(Client& client,
                                        const TextFragmentSelector& selector,
                                        Range* range,
                                        FindBufferRunnerType runner_type)
-    : client_(client), selector_(selector), range_(range) {
+    : client_(&client), selector_(selector), range_(range) {
   DCHECK(!selector_.Start().empty());
   DCHECK(selector_.Type() != TextFragmentSelector::SelectorType::kInvalid);
   if (runner_type == TextFragmentFinder::FindBufferRunnerType::kAsynchronous) {
@@ -426,6 +426,7 @@ void TextFragmentFinder::OnMatchComplete() {
 }
 
 void TextFragmentFinder::Trace(Visitor* visitor) const {
+  visitor->Trace(client_);
   visitor->Trace(range_);
   visitor->Trace(range_end_search_start_);
   visitor->Trace(potential_match_);

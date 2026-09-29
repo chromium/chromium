@@ -42,8 +42,14 @@ class MockTextFragmentFinder : public TextFragmentFinder {
   }
 };
 
-class MockTextFragmentFinderClient : public TextFragmentFinder::Client {
+class MockTextFragmentFinderClient final
+    : public GarbageCollected<MockTextFragmentFinderClient>,
+      public TextFragmentFinder::Client {
  public:
+  void Trace(Visitor* visitor) const override {
+    TextFragmentFinder::Client::Trace(visitor);
+  }
+
   MOCK_METHOD(void,
               DidFindMatch,
               (const RangeInFlatTree& match, bool is_unique),
@@ -81,35 +87,36 @@ TEST_F(TextFragmentFinderTest, DOMMutation) {
                                 "First paragraph", "", "button text",
                                 "prefix to unique");
 
-  MockTextFragmentFinderClient client;
+  MockTextFragmentFinderClient* client =
+      MakeGarbageCollected<MockTextFragmentFinderClient>();
 
   MockTextFragmentFinder* finder = MakeGarbageCollected<MockTextFragmentFinder>(
-      client, selector, &GetDocument(),
+      *client, selector, &GetDocument(),
       TextFragmentFinder::FindBufferRunnerType::kSynchronous,
       /*manual_step_through=*/true);
-  EXPECT_CALL(client, DidFindMatch(_, _)).Times(0);
+  EXPECT_CALL(*client, DidFindMatch(_, _)).Times(0);
 
   {
-    EXPECT_CALL(client, NoMatchFound()).Times(0);
+    EXPECT_CALL(*client, NoMatchFound()).Times(0);
     finder->FindMatch();
     finder->FindPrefix();
-    Mock::VerifyAndClearExpectations(&client);
+    Mock::VerifyAndClearExpectations(client);
   }
 
   {
-    EXPECT_CALL(client, NoMatchFound()).Times(0);
+    EXPECT_CALL(*client, NoMatchFound()).Times(0);
     finder->FindTextStart();
-    Mock::VerifyAndClearExpectations(&client);
+    Mock::VerifyAndClearExpectations(client);
   }
 
   {
-    EXPECT_CALL(client, NoMatchFound()).Times(1);
+    EXPECT_CALL(*client, NoMatchFound()).Times(1);
     Node* input = GetDocument().getElementById(AtomicString("input"));
     input->remove();
     GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
     finder->FindSuffix();
-    Mock::VerifyAndClearExpectations(&client);
+    Mock::VerifyAndClearExpectations(client);
   }
 }
 
@@ -125,16 +132,17 @@ TEST_F(TextFragmentFinderTest, TextMatchInDocument) {
   TextFragmentSelector selector(TextFragmentSelector::SelectorType::kExact,
                                 "First paragraph", "", "", "");
 
-  MockTextFragmentFinderClient client;
+  MockTextFragmentFinderClient* client =
+      MakeGarbageCollected<MockTextFragmentFinderClient>();
 
   MockTextFragmentFinder* finder = MakeGarbageCollected<MockTextFragmentFinder>(
-      client, selector, &GetDocument(),
+      *client, selector, &GetDocument(),
       TextFragmentFinder::FindBufferRunnerType::kSynchronous);
 
-  EXPECT_CALL(client, NoMatchFound()).Times(0);
-  EXPECT_CALL(client, DidFindMatch(_, true)).Times(1);
+  EXPECT_CALL(*client, NoMatchFound()).Times(0);
+  EXPECT_CALL(*client, DidFindMatch(_, true)).Times(1);
   finder->FindMatch();
-  Mock::VerifyAndClearExpectations(&client);
+  Mock::VerifyAndClearExpectations(client);
 }
 
 // Tests that a text match is found in the given range.
@@ -163,16 +171,17 @@ TEST_F(TextFragmentFinderTest, TextMatchInRange) {
   TextFragmentSelector selector(TextFragmentSelector::SelectorType::kExact,
                                 "First paragraph start text",
                                 "Second paragraph", "", "");
-  MockTextFragmentFinderClient client;
+  MockTextFragmentFinderClient* client =
+      MakeGarbageCollected<MockTextFragmentFinderClient>();
 
   MockTextFragmentFinder* finder = MakeGarbageCollected<MockTextFragmentFinder>(
-      client, selector, new_range,
+      *client, selector, new_range,
       TextFragmentFinder::FindBufferRunnerType::kSynchronous);
 
-  EXPECT_CALL(client, NoMatchFound()).Times(0);
-  EXPECT_CALL(client, DidFindMatch(_, true)).Times(1);
+  EXPECT_CALL(*client, NoMatchFound()).Times(0);
+  EXPECT_CALL(*client, DidFindMatch(_, true)).Times(1);
   finder->FindMatch();
-  Mock::VerifyAndClearExpectations(&client);
+  Mock::VerifyAndClearExpectations(client);
 }
 
 // Tests that a selector whose start term is in the search range but end term
@@ -199,16 +208,17 @@ TEST_F(TextFragmentFinderTest, TextEndMatchNotInRange) {
 
   TextFragmentSelector selector(TextFragmentSelector::SelectorType::kExact,
                                 "Second paragraph", "Third paragraph", "", "");
-  MockTextFragmentFinderClient client;
+  MockTextFragmentFinderClient* client =
+      MakeGarbageCollected<MockTextFragmentFinderClient>();
 
   MockTextFragmentFinder* finder = MakeGarbageCollected<MockTextFragmentFinder>(
-      client, selector, new_range,
+      *client, selector, new_range,
       TextFragmentFinder::FindBufferRunnerType::kSynchronous);
 
-  EXPECT_CALL(client, NoMatchFound()).Times(1);
-  EXPECT_CALL(client, DidFindMatch(_, _)).Times(0);
+  EXPECT_CALL(*client, NoMatchFound()).Times(1);
+  EXPECT_CALL(*client, DidFindMatch(_, _)).Times(0);
   finder->FindMatch();
-  Mock::VerifyAndClearExpectations(&client);
+  Mock::VerifyAndClearExpectations(client);
 }
 
 // Tests that a range end term matches a valid occurrence that overlaps an
@@ -223,16 +233,17 @@ TEST_F(TextFragmentFinderTest, TextEndMatchOverlap) {
 
   TextFragmentSelector selector(TextFragmentSelector::SelectorType::kExact,
                                 "he came", "and a", "", "");
-  MockTextFragmentFinderClient client;
+  MockTextFragmentFinderClient* client =
+      MakeGarbageCollected<MockTextFragmentFinderClient>();
 
   MockTextFragmentFinder* finder = MakeGarbageCollected<MockTextFragmentFinder>(
-      client, selector, &GetDocument(),
+      *client, selector, &GetDocument(),
       TextFragmentFinder::FindBufferRunnerType::kSynchronous);
 
-  EXPECT_CALL(client, NoMatchFound()).Times(0);
-  EXPECT_CALL(client, DidFindMatch(_, _)).Times(1);
+  EXPECT_CALL(*client, NoMatchFound()).Times(0);
+  EXPECT_CALL(*client, DidFindMatch(_, _)).Times(1);
   finder->FindMatch();
-  Mock::VerifyAndClearExpectations(&client);
+  Mock::VerifyAndClearExpectations(client);
 }
 
 // Tests that inline node boundaries are not treated as word boundaries
@@ -246,16 +257,17 @@ TEST_F(TextFragmentFinderTest, TextNodeBoundaryNotWordBoundary) {
 
   TextFragmentSelector selector(TextFragmentSelector::SelectorType::kExact, "o",
                                 "", "", "");
-  MockTextFragmentFinderClient client;
+  MockTextFragmentFinderClient* client =
+      MakeGarbageCollected<MockTextFragmentFinderClient>();
 
   MockTextFragmentFinder* finder = MakeGarbageCollected<MockTextFragmentFinder>(
-      client, selector, &GetDocument(),
+      *client, selector, &GetDocument(),
       TextFragmentFinder::FindBufferRunnerType::kSynchronous);
 
-  EXPECT_CALL(client, NoMatchFound()).Times(1);
-  EXPECT_CALL(client, DidFindMatch(_, _)).Times(0);
+  EXPECT_CALL(*client, NoMatchFound()).Times(1);
+  EXPECT_CALL(*client, DidFindMatch(_, _)).Times(0);
   finder->FindMatch();
-  Mock::VerifyAndClearExpectations(&client);
+  Mock::VerifyAndClearExpectations(client);
 }
 
 // Tests that a text match is not found in the given range even though it is in
@@ -282,16 +294,17 @@ TEST_F(TextFragmentFinderTest, TextMatchNotFoundBeforeRange) {
 
   TextFragmentSelector selector(TextFragmentSelector::SelectorType::kExact,
                                 "First paragraph start text", "", "", "");
-  MockTextFragmentFinderClient client;
+  MockTextFragmentFinderClient* client =
+      MakeGarbageCollected<MockTextFragmentFinderClient>();
 
   MockTextFragmentFinder* finder = MakeGarbageCollected<MockTextFragmentFinder>(
-      client, selector, range,
+      *client, selector, range,
       TextFragmentFinder::FindBufferRunnerType::kSynchronous);
 
-  EXPECT_CALL(client, NoMatchFound()).Times(1);
-  EXPECT_CALL(client, DidFindMatch(_, _)).Times(0);
+  EXPECT_CALL(*client, NoMatchFound()).Times(1);
+  EXPECT_CALL(*client, DidFindMatch(_, _)).Times(0);
   finder->FindMatch();
-  Mock::VerifyAndClearExpectations(&client);
+  Mock::VerifyAndClearExpectations(client);
 }
 
 // Tests that a text match is not found in the given range even though it is in
@@ -318,16 +331,17 @@ TEST_F(TextFragmentFinderTest, TextMatchNotFoundAfterRange) {
 
   TextFragmentSelector selector(TextFragmentSelector::SelectorType::kExact,
                                 "Third paragraph start text", "", "", "");
-  MockTextFragmentFinderClient client;
+  MockTextFragmentFinderClient* client =
+      MakeGarbageCollected<MockTextFragmentFinderClient>();
 
   MockTextFragmentFinder* finder = MakeGarbageCollected<MockTextFragmentFinder>(
-      client, selector, range,
+      *client, selector, range,
       TextFragmentFinder::FindBufferRunnerType::kSynchronous);
 
-  EXPECT_CALL(client, NoMatchFound()).Times(1);
-  EXPECT_CALL(client, DidFindMatch(_, _)).Times(0);
+  EXPECT_CALL(*client, NoMatchFound()).Times(1);
+  EXPECT_CALL(*client, DidFindMatch(_, _)).Times(0);
   finder->FindMatch();
-  Mock::VerifyAndClearExpectations(&client);
+  Mock::VerifyAndClearExpectations(client);
 }
 
 // Tests that when there are multiple text matches in the page, and the first
@@ -356,18 +370,19 @@ TEST_F(TextFragmentFinderTest, TextDidFindMatchInRange) {
 
   TextFragmentSelector selector(TextFragmentSelector::SelectorType::kExact,
                                 "Paragraph start text", "", "", "");
-  MockTextFragmentFinderClient client;
+  MockTextFragmentFinderClient* client =
+      MakeGarbageCollected<MockTextFragmentFinderClient>();
 
   MockTextFragmentFinder* finder = MakeGarbageCollected<MockTextFragmentFinder>(
-      client, selector, range,
+      *client, selector, range,
       TextFragmentFinder::FindBufferRunnerType::kSynchronous);
 
-  EXPECT_CALL(client, NoMatchFound()).Times(0);
+  EXPECT_CALL(*client, NoMatchFound()).Times(0);
   bool is_unique_expected = false;
-  EXPECT_CALL(client, DidFindMatch(RangeContainedBy(p1), is_unique_expected))
+  EXPECT_CALL(*client, DidFindMatch(RangeContainedBy(p1), is_unique_expected))
       .Times(1);
   finder->FindMatch();
-  Mock::VerifyAndClearExpectations(&client);
+  Mock::VerifyAndClearExpectations(client);
 }
 
 // Tests that a text match is found within a defined suffix in the given range.
@@ -393,16 +408,17 @@ TEST_F(TextFragmentFinderTest, TextMatchWithSuffixInRange) {
 
   TextFragmentSelector selector(TextFragmentSelector::SelectorType::kExact,
                                 "First paragraph", "", "", "start text");
-  MockTextFragmentFinderClient client;
+  MockTextFragmentFinderClient* client =
+      MakeGarbageCollected<MockTextFragmentFinderClient>();
 
   MockTextFragmentFinder* finder = MakeGarbageCollected<MockTextFragmentFinder>(
-      client, selector, new_range,
+      *client, selector, new_range,
       TextFragmentFinder::FindBufferRunnerType::kSynchronous);
 
-  EXPECT_CALL(client, NoMatchFound()).Times(0);
-  EXPECT_CALL(client, DidFindMatch(_, true)).Times(1);
+  EXPECT_CALL(*client, NoMatchFound()).Times(0);
+  EXPECT_CALL(*client, DidFindMatch(_, true)).Times(1);
   finder->FindMatch();
-  Mock::VerifyAndClearExpectations(&client);
+  Mock::VerifyAndClearExpectations(client);
 }
 
 // Tests that a text match is not found when the defined prefix is not in the
@@ -430,16 +446,17 @@ TEST_F(TextFragmentFinderTest, TextMatchWithPrefixNotInRange) {
   TextFragmentSelector selector(TextFragmentSelector::SelectorType::kExact,
                                 "Second paragraph", "", "snippet of text",
                                 "start text");
-  MockTextFragmentFinderClient client;
+  MockTextFragmentFinderClient* client =
+      MakeGarbageCollected<MockTextFragmentFinderClient>();
 
   MockTextFragmentFinder* finder = MakeGarbageCollected<MockTextFragmentFinder>(
-      client, selector, new_range,
+      *client, selector, new_range,
       TextFragmentFinder::FindBufferRunnerType::kSynchronous);
 
-  EXPECT_CALL(client, NoMatchFound()).Times(1);
-  EXPECT_CALL(client, DidFindMatch(_, _)).Times(0);
+  EXPECT_CALL(*client, NoMatchFound()).Times(1);
+  EXPECT_CALL(*client, DidFindMatch(_, _)).Times(0);
   finder->FindMatch();
-  Mock::VerifyAndClearExpectations(&client);
+  Mock::VerifyAndClearExpectations(client);
 }
 
 // Tests that a text match is not found before the defined surfix which is not
@@ -466,16 +483,17 @@ TEST_F(TextFragmentFinderTest, TextMatchWithSuffixNotInRange) {
 
   TextFragmentSelector selector(TextFragmentSelector::SelectorType::kExact,
                                 "snippet of text", "", "", "Second paragraph");
-  MockTextFragmentFinderClient client;
+  MockTextFragmentFinderClient* client =
+      MakeGarbageCollected<MockTextFragmentFinderClient>();
 
   MockTextFragmentFinder* finder = MakeGarbageCollected<MockTextFragmentFinder>(
-      client, selector, new_range,
+      *client, selector, new_range,
       TextFragmentFinder::FindBufferRunnerType::kSynchronous);
 
-  EXPECT_CALL(client, NoMatchFound()).Times(1);
-  EXPECT_CALL(client, DidFindMatch(_, _)).Times(0);
+  EXPECT_CALL(*client, NoMatchFound()).Times(1);
+  EXPECT_CALL(*client, DidFindMatch(_, _)).Times(0);
   finder->FindMatch();
-  Mock::VerifyAndClearExpectations(&client);
+  Mock::VerifyAndClearExpectations(client);
 }
 
 // Test that if the range contains partial text of a node, the text should match
@@ -502,16 +520,17 @@ TEST_F(TextFragmentFinderTest, TextMatchPartialNodeNotInRange) {
 
   TextFragmentSelector selector(TextFragmentSelector::SelectorType::kExact,
                                 "First paragraph", "", "", "");
-  MockTextFragmentFinderClient client;
+  MockTextFragmentFinderClient* client =
+      MakeGarbageCollected<MockTextFragmentFinderClient>();
 
   MockTextFragmentFinder* finder = MakeGarbageCollected<MockTextFragmentFinder>(
-      client, selector, new_range,
+      *client, selector, new_range,
       TextFragmentFinder::FindBufferRunnerType::kSynchronous);
 
-  EXPECT_CALL(client, NoMatchFound()).Times(1);
-  EXPECT_CALL(client, DidFindMatch(_, _)).Times(0);
+  EXPECT_CALL(*client, NoMatchFound()).Times(1);
+  EXPECT_CALL(*client, DidFindMatch(_, _)).Times(0);
   finder->FindMatch();
-  Mock::VerifyAndClearExpectations(&client);
+  Mock::VerifyAndClearExpectations(client);
 }
 
 }  // namespace blink

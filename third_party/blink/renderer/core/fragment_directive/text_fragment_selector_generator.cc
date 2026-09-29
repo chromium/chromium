@@ -167,6 +167,7 @@ void TextFragmentSelectorGenerator::Trace(Visitor* visitor) const {
   visitor->Trace(suffix_iterator_);
   visitor->Trace(range_start_iterator_);
   visitor->Trace(range_end_iterator_);
+  TextFragmentFinder::Client::Trace(visitor);
 }
 
 void TextFragmentSelectorGenerator::RecordSelectorStateUma() const {
