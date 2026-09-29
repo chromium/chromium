@@ -706,7 +706,7 @@ std::optional<gfx::ImageSkia> AshNotificationView::GetDragImage() {
   // Add the drop shadow.
   return gfx::ImageSkiaOperations::CreateImageWithDropShadow(
       drag_image_with_background,
-      ui::Shadow::MakeShadowValues(drag_drop::kDragImageElevation));
+      ui::decoration::Shadow::MakeShadowValues(drag_drop::kDragImageElevation));
 }
 
 void AshNotificationView::AttachDropData(ui::OSExchangeData* data) {

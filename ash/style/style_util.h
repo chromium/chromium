@@ -129,8 +129,8 @@ class ASH_EXPORT StyleUtil {
   CreateAshStyleTooltipView();
 
   // Creates a shadow colors map with given color provider.
-  static ui::Shadow::ElevationToColorsMap CreateShadowElevationToColorsMap(
-      const ui::ColorProvider* color_provider);
+  static ui::decoration::Shadow::ElevationToColorsMap
+  CreateShadowElevationToColorsMap(const ui::ColorProvider* color_provider);
 
  private:
   StyleUtil() = default;

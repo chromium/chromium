@@ -10,16 +10,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/compositor/layer_owner.h"
+#include "ui/decoration/decoration.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/views_export.h"
-
-namespace gfx {
-class RoundedCornersF;
-}  // namespace gfx
-
-namespace ui {
-class Shadow;
-}  // namespace ui
 
 namespace views {
 
@@ -38,8 +32,8 @@ class VIEWS_EXPORT ViewShadow : public ViewObserver {
   void SetRoundedCornerRadius(int corner_radius);
   void SetRoundedCorners(const gfx::RoundedCornersF& radii);
 
-  ui::Shadow* shadow() { return shadow_.get(); }
-  const ui::Shadow* shadow() const { return shadow_.get(); }
+  ui::Decoration* decoration() { return decoration_.get(); }
+  const ui::Decoration* decoration() const { return decoration_.get(); }
 
  private:
   // ViewObserver:
@@ -47,7 +41,7 @@ class VIEWS_EXPORT ViewShadow : public ViewObserver {
   void OnViewIsDeleting(View* view) override;
 
   raw_ptr<View> view_;
-  std::unique_ptr<ui::Shadow> shadow_;
+  std::unique_ptr<ui::Decoration> decoration_;
 
   base::ScopedObservation<View, ViewObserver> view_observation_{this};
 };

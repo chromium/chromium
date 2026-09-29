@@ -4,22 +4,24 @@
 
 #include "ui/decoration/shadow.h"
 
-#include "base/check.h"
+#include <algorithm>
+#include <cmath>
+#include <memory>
+#include <optional>
+#include <utility>
+
 #include "base/check_op.h"
-#include "ui/base/resource/resource_bundle.h"
-#include "ui/compositor/layer_nine_patch.h"
-#include "ui/compositor/layer_not_drawn.h"
-#include "ui/compositor/scoped_layer_animation_settings.h"
-#include "ui/decoration/decoration_util.h"
+#include "base/time/time.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 
-namespace ui {
+namespace ui::decoration {
 
 namespace {
 
-// Duration for opacity animation in milliseconds.
-constexpr int kShadowAnimationDurationMs = 100;
+// Duration for opacity animation.
+constexpr base::TimeDelta kShadowAnimationDuration = base::Milliseconds(100);
 
 constexpr Shadow::ElevationColors kDefaultMdShadowColors = {
     SkColorSetA(SK_ColorBLACK, 0x3d),
@@ -44,12 +46,9 @@ constexpr Shadow::ElevationColors GetDefaultElevationColors(
   }
 }
 
-bool IsValidRoundedCorners(const gfx::RoundedCornersF& radii) {
-  return radii.upper_left() >= 0.0f && radii.upper_right() >= 0.0f &&
-         radii.lower_right() >= 0.0f && radii.lower_left() >= 0.0f;
-}
-
 }  // namespace
+
+DEFINE_SAFE_CAST_TARGET(Shadow)
 
 // static
 gfx::ShadowValues Shadow::MakeShadowValues(
@@ -74,33 +73,12 @@ gfx::ShadowValues Shadow::MakeShadowValues(
   }
 }
 
-Shadow::Shadow() : shadow_layer_owner_(this) {}
+Shadow::Shadow(int elevation, Style style, ElevationToColorsMap color_map)
+    : elevation_(elevation), style_(style), color_map_(std::move(color_map)) {
+  DCHECK_GE(elevation_, 0);
+}
 
 Shadow::~Shadow() = default;
-
-void Shadow::Init(int elevation) {
-  DCHECK_GE(elevation, 0);
-  elevation_ = elevation;
-  SetLayer(std::make_unique<ui::LayerNotDrawn>());
-  layer()->SetName("Shadow Parent Container");
-  RecreateShadowLayer();
-}
-
-void Shadow::SetContentBounds(const gfx::Rect& content_bounds) {
-  // The layer's bounds should change with the content bounds accordingly. Need
-  // to recalculate the layer bounds if the layer bounds were modified after the
-  // content bounds were last set. When the window moves but doesn't change
-  // size, this is a no-op. (The origin stays the same in this case.)
-  if (content_bounds == content_bounds_ &&
-      (!layer() || layer()->bounds() == last_layer_bounds_)) {
-    return;
-  }
-
-  content_bounds_ = content_bounds;
-  if (layer()) {
-    UpdateShadowAppearance();
-  }
-}
 
 void Shadow::SetElevation(int elevation) {
   DCHECK_GE(elevation, 0);
@@ -109,47 +87,7 @@ void Shadow::SetElevation(int elevation) {
   }
 
   elevation_ = elevation;
-  if (!layer()) {
-    return;
-  }
-
-  // Stop waiting for any as yet unfinished implicit animations.
-  StopObservingImplicitAnimations();
-
-  // The old shadow layer is the new fading out layer.
-  DCHECK(shadow_layer());
-  fading_layer_owner_.Reset(shadow_layer_owner_.ReleaseLayer());
-  RecreateShadowLayer();
-  shadow_layer()->SetOpacity(0.f);
-
-  {
-    // Observe the fade out animation so we can clean up the layer when done.
-    ui::ScopedLayerAnimationSettings settings(fading_layer()->GetAnimator());
-    settings.AddObserver(this);
-    settings.SetTransitionDuration(
-        base::Milliseconds(kShadowAnimationDurationMs));
-    fading_layer()->SetOpacity(0.f);
-  }
-
-  {
-    // We don't care to observe this one.
-    ui::ScopedLayerAnimationSettings settings(shadow_layer()->GetAnimator());
-    settings.SetTransitionDuration(
-        base::Milliseconds(kShadowAnimationDurationMs));
-    shadow_layer()->SetOpacity(1.f);
-  }
-}
-
-void Shadow::SetRoundedCorners(const gfx::RoundedCornersF& radii) {
-  CHECK(IsValidRoundedCorners(radii));
-  if (rounded_corners_ == radii) {
-    return;
-  }
-
-  rounded_corners_ = radii;
-  if (layer()) {
-    UpdateShadowAppearance();
-  }
+  NotifyDecorationChanged(kShadowAnimationDuration);
 }
 
 void Shadow::SetStyle(Style style) {
@@ -158,98 +96,48 @@ void Shadow::SetStyle(Style style) {
   }
 
   style_ = style;
-  if (layer()) {
-    UpdateShadowAppearance();
-  }
+  NotifyDecorationChanged();
 }
 
 void Shadow::SetColorMap(const ElevationToColorsMap& color_map) {
   color_map_ = color_map;
-  if (layer()) {
-    UpdateShadowAppearance();
-  }
+  NotifyDecorationChanged();
 }
 
-void Shadow::OnImplicitAnimationsCompleted() {
-  std::unique_ptr<ui::Layer> to_be_deleted = fading_layer_owner_.ReleaseLayer();
-  // The size needed for layer() may be smaller now that |fading_layer()| is
-  // removed.
-  UpdateShadowAppearance();
-}
-
-// -----------------------------------------------------------------------------
-// Shadow::ShadowLayerOwner:
-
-Shadow::ShadowLayerOwner::ShadowLayerOwner(Shadow* owner,
-                                           std::unique_ptr<Layer> layer)
-    : LayerOwner(std::move(layer)), owner_shadow_(owner) {}
-
-Shadow::ShadowLayerOwner::~ShadowLayerOwner() = default;
-
-std::unique_ptr<Layer> Shadow::ShadowLayerOwner::RecreateLayer() {
-  auto result = ui::LayerOwner::RecreateLayer();
-  // Now update the newly recreated shadow layer with the correct nine patch
-  // image details.
-  owner_shadow_->details_ = std::nullopt;
-  owner_shadow_->UpdateShadowAppearance();
-  return result;
-}
-
-// -----------------------------------------------------------------------------
-// Shadow:
-
-void Shadow::RecreateShadowLayer() {
-  shadow_layer_owner_.Reset(std::make_unique<ui::LayerNinePatch>());
-  shadow_layer()->SetName("Shadow");
-  shadow_layer()->SetVisible(true);
-  shadow_layer()->SetFillsBoundsOpaquely(false);
-  layer()->Add(shadow_layer());
-
-  details_ = std::nullopt;
-  UpdateShadowAppearance();
-}
-
-void Shadow::UpdateShadowAppearance() {
-  // It is necessary to reset the layer bounds when content bounds are empty
-  // before returning; otherwise, if the content was previously non-empty, the
-  // shadow layers will retain their previous dimensions and remain visible as
-  // a stale, orphaned shadow.
-  if (content_bounds_.IsEmpty()) {
-    ClearLayerBounds();
-    return;
-  }
+std::optional<DecorationSource::Details> Shadow::GetDetails(
+    const gfx::Rect& content_bounds,
+    const gfx::RoundedCornersF& rounded_corners) {
+  CHECK(!content_bounds.IsEmpty());
 
   const int smaller_dimension =
-      std::min(content_bounds_.width(), content_bounds_.height());
-
-  // Corner radii cannot exceed half of the smaller dimension of the content
-  // bounds. Clamp each corner radius to avoid invalid ninebox geometry.
+      std::min(content_bounds.width(), content_bounds.height());
   const float max_radius = std::floor(smaller_dimension / 2.0f);
-  const gfx::RoundedCornersF size_adjusted_rounded_corners(
-      std::min(rounded_corners_.upper_left(), max_radius),
-      std::min(rounded_corners_.upper_right(), max_radius),
-      std::min(rounded_corners_.lower_right(), max_radius),
-      std::min(rounded_corners_.lower_left(), max_radius));
 
   // The ninebox assumption breaks down when the content is too small for the
   // desired elevation. The height/width of |blur_region| will be 4 * elevation
-  // (see Shadow::MakeShadowValues), so cap elevation at the most we can handle.
-  const bool is_pill_shaped =
-      (max_radius == size_adjusted_rounded_corners.upper_left() ||
-       max_radius == size_adjusted_rounded_corners.upper_right() ||
-       max_radius == size_adjusted_rounded_corners.lower_right() ||
-       max_radius == size_adjusted_rounded_corners.lower_left());
+  // (see `Shadow::MakeShadowValues`), so cap elevation at the most we can
+  // handle.
+  const bool is_pill_shaped = (max_radius == rounded_corners.upper_left() ||
+                               max_radius == rounded_corners.upper_right() ||
+                               max_radius == rounded_corners.lower_right() ||
+                               max_radius == rounded_corners.lower_left());
   const int max_safe_elevation =
       is_pill_shaped
           ? smaller_dimension / 4
-          : (smaller_dimension -
-             2 * std::max({size_adjusted_rounded_corners.upper_left(),
-                           size_adjusted_rounded_corners.upper_right(),
-                           size_adjusted_rounded_corners.lower_right(),
-                           size_adjusted_rounded_corners.lower_left()})) /
+          : (smaller_dimension - 2 * std::max({rounded_corners.upper_left(),
+                                               rounded_corners.upper_right(),
+                                               rounded_corners.lower_right(),
+                                               rounded_corners.lower_left()})) /
                 4;
   const int size_adjusted_elevation = std::min(max_safe_elevation, elevation_);
   CHECK_GE(size_adjusted_elevation, 0);
+
+  // Do not generate or set nine-patch details if the shadow has never had a
+  // positive elevation set. This keeps the decoration layer unconfigured and
+  // avoids unnecessary image allocations for zero-elevation shadows.
+  if (size_adjusted_elevation == 0 && !details_.has_value()) {
+    return std::nullopt;
+  }
 
   auto iter = color_map_.find(elevation_);
   const gfx::ShadowValues values = MakeShadowValues(
@@ -257,79 +145,24 @@ void Shadow::UpdateShadowAppearance() {
       iter != color_map_.end() ? std::make_optional(iter->second)
                                : std::nullopt,
       is_pill_shaped);
-  const auto& details =
-      decoration::ShadowDetails::Get(size_adjusted_rounded_corners, values);
+  const auto& details = ShadowDetails::Get(rounded_corners, values);
 
-  const gfx::Insets aperture_insets = details.aperture_insets;
+  details_ = details;
 
-  // Update |shadow_layer()| if details changed and it has been updated in
-  // the past (|details_| is set), or elevation is non-zero.
-  if (details != details_ && (details_ || size_adjusted_elevation)) {
-    shadow_layer()->UpdateNinePatchLayerImage(details.nine_patch_image);
-    // The ninebox grid is defined in terms of the image size. The shadow blurs
-    // in both inward and outward directions from the edge of the contents (and
-    // rounded corners if any), so the aperture goes further inside the image
-    // than the shadow margins (which represent exterior blur).
-    gfx::Rect aperture(details.nine_patch_image.size());
-    aperture.Inset(aperture_insets);
-    shadow_layer()->UpdateNinePatchLayerAperture(aperture);
-    details_ = details;
-  }
+  // The content is opaque everywhere except where its own rounded corners are
+  // drawn on top of it, so exclude those from the occluded region.
+  gfx::Rect occlusion_rect(content_bounds.size());
+  occlusion_rect.Inset(GetInsetsForRoundedCorners(rounded_corners));
 
-  // Shadow margins are negative, so this expands outwards from
-  // |content_bounds_|.
-  const gfx::Insets margins = details.margins;
-  gfx::Rect new_layer_bounds = content_bounds_;
-  new_layer_bounds.Inset(margins);
-  gfx::Rect shadow_layer_bounds(new_layer_bounds.size());
-
-  // When there's an old shadow fading out, the bounds of layer() have to be
-  // big enough to encompass both shadows.
-  if (fading_layer()) {
-    const gfx::Rect old_layer_bounds = layer()->bounds();
-    gfx::Rect combined_layer_bounds = old_layer_bounds;
-    combined_layer_bounds.Union(new_layer_bounds);
-    layer()->SetBounds(combined_layer_bounds);
-
-    // If this is reached via SetContentBounds, we might hypothetically need
-    // to change the size of the fading layer, but the fade is so fast it's
-    // not really an issue.
-    gfx::Rect fading_layer_bounds(fading_layer()->bounds());
-    fading_layer_bounds.Offset(old_layer_bounds.origin() -
-                               combined_layer_bounds.origin());
-    fading_layer()->SetBounds(fading_layer_bounds);
-
-    shadow_layer_bounds.Offset(new_layer_bounds.origin() -
-                               combined_layer_bounds.origin());
-  } else {
-    layer()->SetBounds(new_layer_bounds);
-  }
-
-  last_layer_bounds_ = layer()->bounds();
-
-  shadow_layer()->SetBounds(shadow_layer_bounds);
-
-  // Occlude the region inside the bounding box. Occlusion uses shadow layer
-  // space. See nine_patch_layer.h for more context on what's going on here.
-  gfx::Rect occlusion_bounds(shadow_layer_bounds.size());
-  gfx::Insets corner_insets =
-      decoration::GetInsetsForRoundedCorners(size_adjusted_rounded_corners);
-  occlusion_bounds.Inset(-margins + corner_insets);
-  shadow_layer()->UpdateNinePatchOcclusion(occlusion_bounds);
-
-  // The border is the same inset as the aperture.
-  shadow_layer()->UpdateNinePatchLayerBorder(
-      gfx::Rect(aperture_insets.left(), aperture_insets.top(),
-                aperture_insets.width(), aperture_insets.height()));
+  return Details{
+      .appearance =
+          {
+              .nine_patch_image = details.nine_patch_image,
+              .aperture_insets = details.aperture_insets,
+              .margins = details.margins,
+          },
+      .occlusion_rect = occlusion_rect,
+  };
 }
 
-void Shadow::ClearLayerBounds() {
-  layer()->SetBounds(gfx::Rect());
-  shadow_layer()->SetBounds(gfx::Rect());
-  if (fading_layer()) {
-    fading_layer()->SetBounds(gfx::Rect());
-  }
-  last_layer_bounds_ = gfx::Rect();
-}
-
-}  // namespace ui
+}  // namespace ui::decoration

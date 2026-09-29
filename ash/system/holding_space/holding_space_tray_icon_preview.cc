@@ -32,6 +32,7 @@
 #include "ui/compositor/layer_textured.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/decoration/decoration.h"
 #include "ui/decoration/shadow.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -670,9 +671,8 @@ void HoldingSpaceTrayIconPreview::CreateLayer(
   new_layer->SetName(kClassName);
   new_layer->SetTransform(initial_transform);
 
-  shadow_ = std::make_unique<ui::Shadow>();
-  shadow_->Init(kElevation);
-  new_layer->Add(shadow_->layer());
+  shadow_decoration_ = ui::Decoration::CreateShadow(kElevation);
+  new_layer->Add(shadow_decoration_->layer());
 
   background_layer_ = std::make_unique<ui::LayerSolidColor>();
   background_layer_->SetName(kBackgroundLayerName);
@@ -692,7 +692,7 @@ void HoldingSpaceTrayIconPreview::CreateLayer(
 void HoldingSpaceTrayIconPreview::DestroyLayer() {
   if (layer())
     layer_owner_.ReleaseLayer();
-  shadow_.reset();
+  shadow_decoration_.reset();
   background_layer_.reset();
   image_layer_owner_->DestroyLayer();
   progress_indicator_->DestroyLayer();
@@ -730,8 +730,8 @@ void HoldingSpaceTrayIconPreview::UpdateLayerBounds() {
   const float radius = std::min(size.height(), size.width()) / 2.f;
   const gfx::Rect content_bounds(size);
 
-  shadow_->SetRoundedCorners(gfx::RoundedCornersF(radius));
-  shadow_->SetContentBounds(content_bounds);
+  shadow_decoration_->SetContentBounds(content_bounds);
+  shadow_decoration_->SetRoundedCorners(gfx::RoundedCornersF(radius));
 
   background_layer_->SetBounds(content_bounds);
   background_layer_->SetRoundedCornerRadius(gfx::RoundedCornersF(radius));
