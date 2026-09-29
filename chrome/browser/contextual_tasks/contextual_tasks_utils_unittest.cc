@@ -20,8 +20,10 @@
 #include "components/contextual_search/contextual_search_session_handle.h"
 #include "components/contextual_search/mock_contextual_search_context_controller.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
+#include "components/contextual_search/pref_names.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/mock_aim_eligibility_service.h"
+#include "components/omnibox/common/composebox_features.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -328,6 +330,41 @@ TEST_F(ContextualTasksUtilsTest,
   EXPECT_TRUE(IsTabSharingEligible(nullptr));
   EXPECT_TRUE(IsTabSharingEligible(profile_.get()));
 }
+
+TEST_F(ContextualTasksUtilsTest, CanShareTabContext_NullProfile) {
+  EXPECT_FALSE(CanShareTabContext(nullptr));
+}
+
+TEST_F(ContextualTasksUtilsTest,
+       CanShareTabContext_ForceEntryPointEligibility) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(kContextualTasksForceEntryPointEligibility);
+  EXPECT_TRUE(CanShareTabContext(profile_.get()));
+
+  profile_->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kDisabled));
+  EXPECT_FALSE(CanShareTabContext(profile_.get()));
+}
+
+TEST_F(ContextualTasksUtilsTest, CreateImageEncodingOptions) {
+  lens::ImageEncodingOptions options = CreateImageEncodingOptions();
+  EXPECT_GT(options.max_size, 0);
+  EXPECT_GT(options.max_height, 0);
+  EXPECT_GT(options.max_width, 0);
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ContextualTasksUtilsTest, RemoveTabUnderline_ClosedTabDoesNotCrash) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(omnibox::kContextManagementInComposebox);
+  // Passing an unmapped/closed tab ID and browser window interface should
+  // safely resolve without crashing.
+  RemoveTabUnderline(999999, browser_window_.get());
+  RemoveTabUnderline(999999, nullptr);
+}
+#endif
 
 TEST_F(ContextualTasksUtilsTest, ShouldUseDarkMode_NullProfile) {
   EXPECT_FALSE(ShouldUseDarkMode(nullptr));

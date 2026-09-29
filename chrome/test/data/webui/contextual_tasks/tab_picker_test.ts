@@ -305,4 +305,34 @@ suite('TabPickerTest', () => {
     assertTrue(app.$.tabMenu.open);
     assertFalse(app.$.tabMenu.getDialog().hasAttribute('unbounded'));
   });
+
+  test(
+      'Tab selection remains sticky across menu close and reopen', async () => {
+        app.$.shareTabsTrigger.click();
+        await microtasksFinished();
+
+        const items =
+            app.$.tabMenu.querySelectorAll<HTMLButtonElement>('.dropdown-item');
+        const [item0] = items;
+        assert(item0);
+
+        item0.click();
+        await microtasksFinished();
+
+        assertTrue(isVisible(item0.querySelector('.share-tabs-check')));
+
+        app.$.tabMenu.close();
+        await microtasksFinished();
+        assertFalse(app.$.tabMenu.open);
+
+        app.$.shareTabsTrigger.click();
+        await microtasksFinished();
+        assertTrue(app.$.tabMenu.open);
+
+        const reopenedItems =
+            app.$.tabMenu.querySelectorAll<HTMLButtonElement>('.dropdown-item');
+        const [reopenedItem0] = reopenedItems;
+        assert(reopenedItem0);
+        assertTrue(isVisible(reopenedItem0.querySelector('.share-tabs-check')));
+      });
 });

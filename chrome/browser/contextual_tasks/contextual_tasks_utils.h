@@ -5,11 +5,17 @@
 #ifndef CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UTILS_H_
 #define CHROME_BROWSER_CONTEXTUAL_TASKS_CONTEXTUAL_TASKS_UTILS_H_
 
+#include <optional>
 #include <vector>
 
+#include "base/functional/callback.h"
+#include "base/functional/callback_helpers.h"
+#include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "components/contextual_search/contextual_search_context_controller.h"
+#include "components/contextual_search/contextual_search_types.h"
+#include "components/lens/lens_bitmap_processing.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/omnibox_proto/model_mode.pb.h"
 #include "third_party/omnibox_proto/tool_mode.pb.h"
@@ -21,8 +27,13 @@ namespace content {
 class WebContents;
 }  // namespace content
 
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 namespace contextual_search {
 enum class ContextualSearchSource;
+class ContextualSearchMetricsRecorder;
 class ContextualSearchSessionHandle;
 }  // namespace contextual_search
 
@@ -65,6 +76,55 @@ void RecordInnerFrameContentsHttpResponseCode(int http_status_code,
 // Returns true if tab sharing and tab input capabilities are supported
 // for the given profile (checking AIM and Fusebox eligibility).
 bool IsTabSharingEligible(Profile* profile);
+
+// Returns true if tab sharing is eligible and context sharing is enabled for
+// the given profile.
+bool CanShareTabContext(Profile* profile);
+
+// Creates the image encoding options used for uploading images and tab
+// viewports.
+lens::ImageEncodingOptions CreateImageEncodingOptions();
+
+// Records metrics when a tab is added as context.
+void RecordTabAddedMetric(
+    tabs::TabInterface* tab,
+    contextual_search::ContextualSearchMetricsRecorder* metrics_recorder,
+    bool is_tab_suggestion_chip,
+    BrowserWindowInterface* browser_window_interface = nullptr);
+
+#if !BUILDFLAG(IS_ANDROID)
+using TabContextSnapshotCallback = base::OnceCallback<void(
+    const base::UnguessableToken& context_token,
+    std::unique_ptr<lens::ContextualInputData> page_content_data)>;
+
+// Captures page context for the given `tab_id` and uploads it to
+// `session_handle` (or snapshots it via `on_snapshot` when `delay_upload` is
+// true). Creates a context token on `session_handle`, invokes
+// `on_token_created`, initiates async page context extraction via
+// TabContextualizationController, underlines the tab strip if enabled, and on
+// completion checks `is_token_valid` before starting upload or snapshotting.
+// If `on_context_uploaded` is provided, it is invoked after upload/snapshot.
+// Returns the created context token on success, or an error.
+base::expected<base::UnguessableToken,
+               contextual_search::ContextUploadErrorType>
+CaptureAndUploadTabContext(
+    int32_t tab_id,
+    contextual_search::ContextualSearchSessionHandle* session_handle,
+    bool delay_upload = false,
+    base::RepeatingClosure on_context_uploaded = base::DoNothing(),
+    BrowserWindowInterface* browser_window_interface = nullptr,
+    base::RepeatingCallback<bool(const base::UnguessableToken&)>
+        is_token_valid = base::NullCallback(),
+    TabContextSnapshotCallback on_snapshot = base::NullCallback(),
+    base::OnceCallback<void(const base::UnguessableToken&)> on_token_created =
+        base::NullCallback());
+
+// Removes the local tab underline for `tab_id` if context management is
+// enabled.
+void RemoveTabUnderline(
+    int32_t tab_id,
+    BrowserWindowInterface* browser_window_interface = nullptr);
+#endif
 
 // Returns true if the given URL is valid to show as a suggested tab.
 // `profile` and `site_exclusion_detail` must be non-null.

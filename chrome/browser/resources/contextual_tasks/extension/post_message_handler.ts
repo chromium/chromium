@@ -257,6 +257,10 @@ export class ExtensionPostMessageHandler {
 // handler instance.
 let instance: ExtensionPostMessageHandler|null = null;
 
+// Documents must load post_message_entrypoint.js, which calls this. Loading
+// post_message_handler.js directly from a document is a no-op: the module
+// only exports, so the frame never binds Mojo and never handshakes with the
+// Search page, with no error to show for it.
 export function initExtensionPostMessaging(
     browserProxy?: ExtensionBrowserProxy): ExtensionPostMessageHandler {
   if (!instance) {
