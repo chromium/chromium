@@ -451,6 +451,10 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
             if (i < titles.size() - 1) {
                 final int finalIndex = i;
                 view.setOnClickListener((View v) -> navigateToTitle(title, finalIndex));
+            } else {
+                // The current page title is focusable but not interactive, so don't draw the
+                // default focus highlight on it, which looks like a text selection.
+                view.setDefaultFocusHighlightEnabled(false);
             }
 
             mContainer.addView(view);

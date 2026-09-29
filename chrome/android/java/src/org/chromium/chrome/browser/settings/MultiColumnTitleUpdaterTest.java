@@ -854,4 +854,27 @@ public class MultiColumnTitleUpdaterTest {
         // recyclerView's width is 0.
         assertTrue(marginStart > 0);
     }
+
+    @Test
+    @DisableFeatures({ChromeFeatureList.SETTINGS_IN_TAB, ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP})
+    public void testTitles_focusHighlightOnlyOnClickableTitles() {
+        List<MultiColumnSettings.Title> titles = new ArrayList<>();
+        titles.add(
+                new MultiColumnSettings.Title("uuid1", createTitleSupplier("Appearance"), 0, null));
+        titles.add(new MultiColumnSettings.Title("uuid2", createTitleSupplier("Theme"), 1, null));
+        mMultiColumnSettings.setFakeTitles(titles);
+
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater(/* shownInTab= */ false);
+        updater.onTitleUpdated();
+
+        // Clickable parent title keeps the focus highlight for keyboard users.
+        View parentTitle = mContainer.getChildAt(0);
+        assertTrue(parentTitle.isClickable());
+        assertTrue(parentTitle.getDefaultFocusHighlightEnabled());
+
+        // The current title stays focusable, but has no focus highlight.
+        View currentTitle = mContainer.getChildAt(2);
+        assertTrue(currentTitle.isFocusable());
+        assertFalse(currentTitle.getDefaultFocusHighlightEnabled());
+    }
 }
