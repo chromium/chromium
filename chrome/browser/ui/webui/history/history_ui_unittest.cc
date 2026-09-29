@@ -10,6 +10,8 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/webui/history/browsing_history_handler.h"
+#include "chrome/browser/ui/webui/theme_source.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/user_education/webui/user_education.mojom.h"
 #include "content/public/browser/web_contents.h"
@@ -31,6 +33,7 @@ class HistoryUITest : public testing::Test {
   ~HistoryUITest() override = default;
 
   content::TestWebUI* web_ui() { return &web_ui_; }
+  Profile* profile() { return &profile_; }
 
  protected:
   void SetUp() override {
@@ -56,6 +59,11 @@ TEST_F(HistoryUITest, InstantiationAndBindPageHandler) {
   mojo::Remote<history::mojom::PageHandler> handler_remote;
   history_ui->BindInterface(handler_remote.BindNewPipeAndPassReceiver());
   EXPECT_NE(history_ui->GetBrowsingHistoryHandlerForTesting(), nullptr);
+}
+
+TEST_F(HistoryUITest, ThemeSourceProperties) {
+  ThemeSource theme_source(profile());
+  EXPECT_EQ(theme_source.GetSource(), chrome::kChromeUIThemeHost);
 }
 
 #if BUILDFLAG(IS_ANDROID)

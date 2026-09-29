@@ -1386,7 +1386,10 @@ source_set("core") {
   }
 
   if (!is_android || is_desktop_android) {
-    deps += [ "//chrome/browser/ui/webui/discards" ]
+    deps += [
+      "//chrome/browser/ui/webui/discards",
+      "//ui/webui/resources/cr_components/color_change_listener:mojom",
+    ]
   }
 
   if (enable_dice_support) {
@@ -1924,7 +1927,6 @@ source_set("core") {
       "//chrome/browser/extensions:chrome_extensions_browser_client",
       "//chrome/browser/guest_view",
       "//extensions/components/javascript_dialog_extensions_client",
-      "//ui/webui/resources/cr_components/color_change_listener:mojom",
     ]
   } else if (is_android) {
     deps += [ "//chrome/browser/android/guest_view" ]

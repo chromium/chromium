@@ -13,8 +13,10 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/cr_components/history_clusters/history_clusters_util.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/url_constants.h"
 #include "components/user_education/webui/user_education.mojom.h"
+#include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -139,6 +141,8 @@ void PopulatePlatformDataSource(content::WebUIDataSource* source,
 
 void InitializePlatformHandlers(content::WebUI* web_ui,
                                 content::WebUIDataSource* /*source*/) {
+  Profile* profile = Profile::FromWebUI(web_ui);
+  content::URLDataSource::Add(profile, std::make_unique<ThemeSource>(profile));
   web_ui->RegisterMessageCallback(kObserveManagedUIMessage, base::DoNothing());
 }
 
