@@ -141,6 +141,7 @@ source_set("tabs_impl") {
     # TODO(crbug.com/489548570): Remove "side_panel/internal/android:dev"
     # from release builds. We need it in tests.
     "//chrome/browser/ui/side_panel/internal/android:dev",
+    "//components/client_hints/browser",
     "//components/download/content/factory",
     "//components/download/content/public",
     "//components/external_intents/android",

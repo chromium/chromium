@@ -650,6 +650,7 @@ if (!is_android) {
       "//chrome/browser/vr",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications/isolated_web_apps:isolated_web_apps_no_pwa_core_deps",
+      "//components/client_hints/browser",
       "//components/content_settings/core/browser",
       "//components/contextual_tasks/public",
       "//components/download/content/factory",

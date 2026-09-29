@@ -193,6 +193,7 @@
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/client_hints/browser/client_hints_web_contents_observer.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
@@ -953,6 +954,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   web_contents_top_sites_observer_ =
       std::make_unique<history::WebContentsTopSitesObserver>(
           tab.GetContents(), TopSitesFactory::GetForProfile(profile).get());
+
+  client_hints_web_contents_observer_ =
+      std::make_unique<client_hints::ClientHintsWebContentsObserver>(
+          tab.GetContents());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1306,6 +1311,10 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   web_contents_top_sites_observer_ =
       std::make_unique<history::WebContentsTopSitesObserver>(
           new_contents, TopSitesFactory::GetForProfile(profile).get());
+
+  client_hints_web_contents_observer_ =
+      std::make_unique<client_hints::ClientHintsWebContentsObserver>(
+          new_contents);
 }
 
 customize_chrome::SidePanelController*

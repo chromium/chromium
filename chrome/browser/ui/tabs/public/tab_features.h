@@ -148,6 +148,10 @@ namespace enterprise_reporting {
 class SaasUsageNavigationObserver;
 }  // namespace enterprise_reporting
 
+namespace client_hints {
+class ClientHintsWebContentsObserver;
+}  // namespace client_hints
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -914,6 +918,9 @@ class TabFeatures {
 
   std::unique_ptr<history::WebContentsTopSitesObserver>
       web_contents_top_sites_observer_;
+
+  std::unique_ptr<client_hints::ClientHintsWebContentsObserver>
+      client_hints_web_contents_observer_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

@@ -77,6 +77,7 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
+#include "components/client_hints/browser/client_hints_web_contents_observer.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/download/content/factory/navigation_monitor_factory.h"
 #include "components/download/content/public/download_navigation_observer.h"
@@ -391,6 +392,10 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   web_contents_top_sites_observer_ =
       std::make_unique<history::WebContentsTopSitesObserver>(
           web_contents, TopSitesFactory::GetForProfile(profile).get());
+
+  client_hints_web_contents_observer_ =
+      std::make_unique<client_hints::ClientHintsWebContentsObserver>(
+          web_contents);
 }
 
 TabFeatures::~TabFeatures() = default;

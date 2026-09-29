@@ -6,19 +6,18 @@
 
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/client_hints_controller_delegate.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "ui/gfx/geometry/size_f.h"
 
 namespace client_hints {
 
 ClientHintsWebContentsObserver::ClientHintsWebContentsObserver(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<ClientHintsWebContentsObserver>(
-          *web_contents) {}
+    : content::WebContentsObserver(web_contents) {}
 
 ClientHintsWebContentsObserver::~ClientHintsWebContentsObserver() = default;
 
@@ -53,7 +52,5 @@ void ClientHintsWebContentsObserver::UpdateVisibleMainFrameViewportSize() {
         visible_main_frame_viewport_size);
   }
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ClientHintsWebContentsObserver);
 
 }  // namespace client_hints

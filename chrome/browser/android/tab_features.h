@@ -33,6 +33,10 @@ namespace actor::ui {
 class ActorUiTabControllerInterface;
 }  // namespace actor::ui
 
+namespace client_hints {
+class ClientHintsWebContentsObserver;
+}  // namespace client_hints
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -259,6 +263,8 @@ class TabFeatures {
       download_navigation_observer_;
   std::unique_ptr<history::WebContentsTopSitesObserver>
       web_contents_top_sites_observer_;
+  std::unique_ptr<client_hints::ClientHintsWebContentsObserver>
+      client_hints_web_contents_observer_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

@@ -6,17 +6,15 @@
 #define COMPONENTS_CLIENT_HINTS_BROWSER_CLIENT_HINTS_WEB_CONTENTS_OBSERVER_H_
 
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 namespace client_hints {
 
 // This class tracks the viewport size of the visible main frame. This value is
 // used when the viewport size is not directly available, such as for prefetch
 // requests and for tab restore.
-class ClientHintsWebContentsObserver
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<ClientHintsWebContentsObserver> {
+class ClientHintsWebContentsObserver : public content::WebContentsObserver {
  public:
+  explicit ClientHintsWebContentsObserver(content::WebContents* web_contents);
   ~ClientHintsWebContentsObserver() override;
 
   ClientHintsWebContentsObserver(const ClientHintsWebContentsObserver&) =
@@ -29,12 +27,7 @@ class ClientHintsWebContentsObserver
   void PrimaryMainFrameWasResized(bool width_changed) override;
 
  private:
-  explicit ClientHintsWebContentsObserver(content::WebContents* web_contents);
-  friend class content::WebContentsUserData<ClientHintsWebContentsObserver>;
-
   void UpdateVisibleMainFrameViewportSize();
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace client_hints
