@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
+#include "chrome/browser/ui/views/toolbar/test_support/app_menu_test_accessor.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/user_education/views/help_bubble_view.h"
@@ -16,7 +17,6 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
-#include "ui/views/controls/menu/menu_item_view.h"
 #include "url/gurl.h"
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTabId);
@@ -49,16 +49,19 @@ class MemorySaverIphUiTest : public InteractiveFeaturePromoTest {
   }
 
  private:
-  // Pretend to have 1GB of memory, to ensure the memory saver promo will
-  // show.
+  // Pretend to have 64GB of memory by default, so background memory threshold
+  // notifications never prematurely trigger the promo during test execution.
   base::test::ScopedAmountOfPhysicalMemoryOverride
-      scoped_amount_of_physical_memory_override_{base::GiB(1)};
+      scoped_amount_of_physical_memory_override_{base::GiB(64)};
 };
 
 // Check that the memory saver mode in-product help promo is shown when
 // a tab threshold is reached and dismisses correctly when the app menu
 // button is pushed.
 IN_PROC_BROWSER_TEST_F(MemorySaverIphUiTest, ShowPromoOnTabThreshold) {
+  // Override to 8GB so the device is below the 16GB cap for promo eligibility.
+  base::test::ScopedAmountOfPhysicalMemoryOverride memory_override(
+      base::GiB(8));
   RunTestSequence(
       TriggerMemorySaverPromo(), PressButton(kToolbarAppMenuButtonElementId),
       WaitForHide(
@@ -75,7 +78,8 @@ IN_PROC_BROWSER_TEST_F(MemorySaverIphUiTest, PromoCustomActionClicked) {
                   true),
       CheckResult([manager]() { return manager->IsMemorySaverModeActive(); },
                   false),
-      TriggerMemorySaverPromo(), PressDefaultPromoButton(),
+      MaybeShowPromo(feature_engagement::kIPHMemorySaverModeFeature),
+      PressDefaultPromoButton(),
       CheckResult([manager]() { return manager->IsMemorySaverModeDefault(); },
                   false),
       CheckResult([manager]() { return manager->IsMemorySaverModeActive(); },
@@ -84,27 +88,16 @@ IN_PROC_BROWSER_TEST_F(MemorySaverIphUiTest, PromoCustomActionClicked) {
 
 // Check that the performance menu item is alerted when the memory saver
 // promo is shown and the app menu button is clicked
-// TODO(crbug.com/438937135): Times out on mac-ready-rel bots.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_AlertMenuItemWhenPromoShown DISABLED_AlertMenuItemWhenPromoShown
-#else
-#define MAYBE_AlertMenuItemWhenPromoShown AlertMenuItemWhenPromoShown
-#endif
-IN_PROC_BROWSER_TEST_F(MemorySaverIphUiTest,
-                       MAYBE_AlertMenuItemWhenPromoShown) {
-  RunTestSequence(TriggerMemorySaverPromo(),
-                  // This is required because normally this would happen when
-                  // the button is pressed, but pages loading in the background
-                  // can cause the render view to be focused, which can cause
-                  // focus to pop back to the web view while the app menu is
-                  // trying to show, which can in turn cause the menu to close.
-                  ActivateSurface(kBrowserViewElementId),
-                  PressButton(kToolbarAppMenuButtonElementId),
-                  WaitForShow(AppMenuModel::kMoreToolsMenuItem),
-                  CheckViewProperty(AppMenuModel::kMoreToolsMenuItem,
-                                    &views::MenuItemView::is_alerted, true),
-                  SelectMenuItem(AppMenuModel::kMoreToolsMenuItem),
-                  WaitForShow(ToolsMenuModel::kPerformanceMenuItem),
-                  CheckViewProperty(ToolsMenuModel::kPerformanceMenuItem,
-                                    &views::MenuItemView::is_alerted, true));
+IN_PROC_BROWSER_TEST_F(MemorySaverIphUiTest, AlertMenuItemWhenPromoShown) {
+  RunTestSequence(
+      MaybeShowPromo(feature_engagement::kIPHMemorySaverModeFeature),
+      PressButton(kToolbarAppMenuButtonElementId),
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      CheckResult(
+          [this]() {
+            return AppMenuTestAccessor(browser()).IsElementIdAlerted(
+                ToolsMenuModel::kPerformanceMenuItem);
+          },
+          true));
 }
