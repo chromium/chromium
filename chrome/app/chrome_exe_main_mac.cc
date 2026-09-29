@@ -128,7 +128,8 @@ namespace {
 __attribute__((used)) const char kGrossPaddingForCrbug1300598[216 * 1024] = {};
 #endif
 
-[[noreturn]] void FatalError(const char* format, ...) {
+[[clang::not_tail_called]] [[noreturn]] void FatalError(const char* format,
+                                                        ...) {
   va_list valist;
   va_start(valist, format);
   char message[4096];

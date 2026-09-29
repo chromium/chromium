@@ -32,8 +32,8 @@ void abort_report_np(const char* fmt, ...) __abortlike __printflike(1, 2);
 namespace content::aperitif {
 namespace {
 
-[[noreturn]] [[gnu::format(printf, 1, 2)]] void FatalError(const char* format,
-                                                           ...) {
+[[clang::not_tail_called]] [[noreturn]] [[gnu::format(printf, 1, 2)]] void
+FatalError(const char* format, ...) {
   va_list valist;
   va_start(valist, format);
   char message[4096];
