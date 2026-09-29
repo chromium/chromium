@@ -147,13 +147,28 @@ void WebSocketClient::OnConnectionError(const std::string& message,
                                         int net_error,
                                         int response_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Called when the WebSocket opening handshake fails, i.e. the connection to
+  // the server could not be established. Unrelated to the secure channel
+  // handshake.
   logger_->LogError(
       FROM_HERE, base::StrCat({"PrivateAI service connection failed ", message,
                                " (net error:", base::NumberToString(net_error),
                                ", response code:",
                                base::NumberToString(response_code), ")"}));
 
-  ClosePipe(TransportError::kError);
+  // Net error codes are negative, while the NetErrorCodes enum used for the
+  // histogram contains their absolute values.
+  base::UmaHistogramSparse("PrivateAi.Client.WebSocketConnectionError.NetError",
+                           -net_error);
+  // `response_code` is -1 if no HTTP response was received, e.g. because of a
+  // network error.
+  if (response_code > 0) {
+    base::UmaHistogramSparse(
+        "PrivateAi.Client.WebSocketConnectionError.ResponseCode",
+        response_code);
+  }
+
+  ClosePipe(TransportError::kConnectionFailed);
 }
 
 void WebSocketClient::OnDropChannel(bool was_clean,

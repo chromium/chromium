@@ -172,6 +172,38 @@ reviewer.
   </summary>
 </histogram>
 
+<histogram name="PrivateAi.Client.WebSocketConnectionError.NetError"
+    enum="NetErrorCodes" expires_after="2027-03-28">
+  <owner>lamzin@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <summary>
+    Records the net error code when the WebSocket opening handshake with the
+    Private AI server fails, i.e. the WebSocket connection cannot be
+    established, e.g. because of a DNS, proxy or TLS error. For example,
+    ERR_FAILED is recorded if the server responded to the handshake with an
+    unexpected HTTP status code, see
+    PrivateAi.Client.WebSocketConnectionError.ResponseCode. Recorded every time
+    the WebSocket opening handshake fails. Errors on an established WebSocket
+    connection are not recorded here. Unrelated to the secure channel handshake.
+  </summary>
+</histogram>
+
+<histogram name="PrivateAi.Client.WebSocketConnectionError.ResponseCode"
+    enum="HttpResponseCode" expires_after="2027-03-28">
+  <owner>lamzin@google.com</owner>
+  <owner>arabm@google.com</owner>
+  <owner>dullweber@chromium.org</owner>
+  <summary>
+    Records the HTTP response code when the WebSocket opening handshake with the
+    Private AI server fails after an HTTP response was received, e.g. because
+    the server rejected the upgrade request with a status code other than 101.
+    Not recorded if no HTTP response was received, e.g. because of a network
+    error; see PrivateAi.Client.WebSocketConnectionError.NetError for these
+    failures.
+  </summary>
+</histogram>
+
 <histogram name="PrivateAi.Client.WebSocketSessionDuration.ClosedByServer"
     units="ms" expires_after="2027-02-14">
   <owner>nikhiljakhar@google.com</owner>

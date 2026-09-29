@@ -29,6 +29,11 @@ class Transport {
     kDeserializationError,
     // An error occurred on the client. Socket is now closed.
     kError,
+    // The WebSocket opening handshake failed, i.e. the connection to the server
+    // could not be established, e.g. because of a network error or an
+    // unexpected HTTP response to the upgrade request. Unrelated to the secure
+    // channel handshake. Socket is now closed.
+    kConnectionFailed,
   };
 
   // Callback for when a response is received for a request.

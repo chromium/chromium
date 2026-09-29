@@ -138,6 +138,7 @@ class WebSocketClientTest : public ::testing::Test {
 };
 
 TEST_F(WebSocketClientTest, ConnectionFailure) {
+  base::HistogramTester histogram_tester;
   client_.Send(oak::session::v1::SessionRequest());
 
   EXPECT_TRUE(network_context_.create_called_);
@@ -150,7 +151,37 @@ TEST_F(WebSocketClientTest, ConnectionFailure) {
 
   const auto& result = future_.Get();
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error(), Transport::TransportError::kError);
+  EXPECT_EQ(result.error(), Transport::TransportError::kConnectionFailed);
+
+  histogram_tester.ExpectUniqueSample(
+      "PrivateAi.Client.WebSocketConnectionError.NetError", -net::ERR_FAILED,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "PrivateAi.Client.WebSocketConnectionError.ResponseCode", 500, 1);
+}
+
+TEST_F(WebSocketClientTest, ConnectionFailureWithoutResponse) {
+  base::HistogramTester histogram_tester;
+  client_.Send(oak::session::v1::SessionRequest());
+
+  ASSERT_TRUE(network_context_.pending_handshake_client_.is_valid());
+  mojo::Remote<network::mojom::WebSocketHandshakeClient> handshake_client(
+      std::move(network_context_.pending_handshake_client_));
+
+  // The network service reports a response code of -1 if no HTTP response was
+  // received.
+  handshake_client->OnFailure("Name not resolved", net::ERR_NAME_NOT_RESOLVED,
+                              -1);
+
+  const auto& result = future_.Get();
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error(), Transport::TransportError::kConnectionFailed);
+
+  histogram_tester.ExpectUniqueSample(
+      "PrivateAi.Client.WebSocketConnectionError.NetError",
+      -net::ERR_NAME_NOT_RESOLVED, 1);
+  histogram_tester.ExpectTotalCount(
+      "PrivateAi.Client.WebSocketConnectionError.ResponseCode", 0);
 }
 
 TEST_F(WebSocketClientTest, ChannelDropped) {
@@ -167,6 +198,8 @@ TEST_F(WebSocketClientTest, ChannelDropped) {
       "PrivateAi.Client.WebSocketSessionDuration.ClosedByServer", 1);
   histogram_tester.ExpectUniqueSample("PrivateAi.Client.WebSocketCloseCode",
                                       1000, 1);
+  histogram_tester.ExpectTotalCount(
+      "PrivateAi.Client.WebSocketConnectionError.NetError", 0);
 }
 
 TEST_F(WebSocketClientTest, SuccessfulResponse) {
