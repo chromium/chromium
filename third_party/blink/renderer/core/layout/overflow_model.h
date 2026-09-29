@@ -133,12 +133,6 @@ class BoxVisualOverflowModel {
     contents_visual_overflow_.Unite(rect);
   }
 
-  void Move(LayoutUnit dx, LayoutUnit dy) {
-    PhysicalOffset offset(dx, dy);
-    self_visual_overflow_.Move(offset);
-    contents_visual_overflow_.Move(offset);
-  }
-
   void SetHasSubpixelVisualEffectOutsets(bool b) {
     has_subpixel_visual_effect_outsets_ = b;
   }

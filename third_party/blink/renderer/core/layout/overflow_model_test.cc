@@ -114,18 +114,5 @@ TEST_F(BoxOverflowModelTest, AddContentsVisualOverflowEmpty) {
             visual_overflow_.ContentsVisualOverflowRect());
 }
 
-TEST_F(BoxOverflowModelTest, MoveAffectsSelfVisualOverflow) {
-  visual_overflow_.Move(LayoutUnit(500), LayoutUnit(100));
-  EXPECT_EQ(PhysicalRect(500, 100, 100, 100),
-            visual_overflow_.SelfVisualOverflowRect());
-}
-
-TEST_F(BoxOverflowModelTest, MoveAffectsContentsVisualOverflow) {
-  visual_overflow_.AddContentsVisualOverflow(PhysicalRect(0, 0, 10, 10));
-  visual_overflow_.Move(LayoutUnit(500), LayoutUnit(100));
-  EXPECT_EQ(PhysicalRect(500, 100, 10, 10),
-            visual_overflow_.ContentsVisualOverflowRect());
-}
-
 }  // anonymous namespace
 }  // namespace blink

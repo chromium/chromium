@@ -835,13 +835,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
 
   PhysicalRect BoundingBoxRelativeToFirstFragment() const override;
 
-  bool HasSelfVisualOverflow() const {
-    NOT_DESTROYED();
-    return VisualOverflowIsSet() &&
-           !PhysicalBorderBoxRect().Contains(
-               overflow_->visual_overflow->SelfVisualOverflowRect());
-  }
-
   bool HasVisualOverflow() const {
     NOT_DESTROYED();
     return VisualOverflowIsSet();
