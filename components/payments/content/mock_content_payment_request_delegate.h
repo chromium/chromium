@@ -8,7 +8,7 @@
 #include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/payment_request.h"
 #include "components/payments/content/payment_ui_observer.h"
-#include "components/payments/content/web_payments_web_data_service.h"
+#include "components/payments/core/web_payments_web_data_service.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #include "testing/gmock/include/gmock/gmock.h"
 

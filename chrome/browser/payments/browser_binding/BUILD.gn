@@ -17,8 +17,8 @@ source_set("browser_bound_key_deleter") {
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",
-    "//components/payments/content:utils",
     "//components/payments/content/browser_binding",
+    "//components/payments/core",
     "//components/webdata_services",
     "//content/public/browser",
   ]
@@ -55,6 +55,7 @@ source_set("unittests") {
     "//base/test:test_support",
     "//components/payments/content:test_support",
     "//components/payments/content/browser_binding:test_support",
+    "//components/payments/core",
     "//components/webauthn/core/browser:test_support",
     "//content/test:test_support",
     "//third_party/blink/public:blink_headers",

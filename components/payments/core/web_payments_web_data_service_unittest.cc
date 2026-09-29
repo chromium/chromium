@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/payments/content/web_payments_web_data_service.h"
+#include "components/payments/core/web_payments_web_data_service.h"
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/bind.h"

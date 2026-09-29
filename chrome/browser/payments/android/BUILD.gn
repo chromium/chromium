@@ -16,6 +16,7 @@ source_set("service_worker_payment_app_bridge") {
     "//components/payments/content",
     "//components/payments/content:utils",
     "//components/payments/content/android",
+    "//components/payments/core",
     "//content/public/browser",
     "//services/metrics/public/cpp:metrics_cpp",
     "//third_party/blink/public/common",

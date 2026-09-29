@@ -6,8 +6,8 @@
 #define COMPONENTS_PAYMENTS_CONTENT_MOCK_WEB_PAYMENTS_WEB_DATA_SERVICE_H_
 
 #include "base/time/time.h"
-#include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/browser_bound_key_metadata.h"
+#include "components/payments/core/web_payments_web_data_service.h"
 #include "components/webdata/common/web_database_service.h"
 #include "components/webdata_services/web_data_service_wrapper.h"
 #include "components/webdata_services/web_data_service_wrapper_factory.h"

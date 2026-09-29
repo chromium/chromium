@@ -157,8 +157,6 @@ static_library("utils") {
     "service_worker_payment_app_finder.h",
     "ssl_validity_checker.cc",
     "ssl_validity_checker.h",
-    "web_payments_web_data_service.cc",
-    "web_payments_web_data_service.h",
   ]
 
   deps = [
@@ -178,7 +176,6 @@ static_library("utils") {
     "//components/webdata/common",
     "//content/public/browser",
     "//net",
-    "//sql",
     "//third_party/blink/public:blink_headers",
     "//ui/base",
   ]
@@ -202,7 +199,6 @@ static_library("test_support") {
   deps = [
     ":utils",
     "//base/test:test_support",
-    "//components/os_crypt/browser:test_support",
     "//components/payments/core",
     "//components/webdata/common",
     "//components/webdata_services",
@@ -252,7 +248,6 @@ source_set("payment_content_unit_tests") {
     "secure_payment_confirmation_service_unittest.cc",
     "secure_payment_confirmation_validation_unittest.cc",
     "service_worker_payment_app_finder_unittest.cc",
-    "web_payments_web_data_service_unittest.cc",
   ]
 
   if (!is_android) {
@@ -301,7 +296,6 @@ source_set("payment_content_unit_tests") {
     "//net:test_support",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/network:test_support",
-    "//sql",
     "//testing/gtest",
     "//third_party/blink/public:blink_headers",
     "//third_party/icu",

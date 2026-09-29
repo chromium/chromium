@@ -5,7 +5,7 @@
 #include "components/webdata_services/web_data_service_wrapper_factory.h"
 
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/payments/content/web_payments_web_data_service.h"
+#include "components/payments/core/web_payments_web_data_service.h"
 #include "components/webdata_services/web_data_service_wrapper.h"
 #include "content/public/browser/browser_context.h"
 
