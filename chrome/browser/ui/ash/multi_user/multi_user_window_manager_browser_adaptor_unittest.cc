@@ -36,8 +36,9 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
 #include "base/strings/string_util.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
 #include "chrome/browser/ash/login/users/scoped_account_id_annotator.h"
@@ -178,12 +179,10 @@ class MultiUserWindowManagerBrowserAdaptorTest : public ChromeAshTestBase {
     CHECK(user_manager_->FindUser(account_id));
     SwitchActiveUser(account_id);
 
-    base::TimeTicks now = base::TimeTicks::Now();
-    while (ash::MultiUserWindowManager::Get()->IsAnimationRunningForTest()) {
-      // This should never take longer then a second.
-      ASSERT_GE(1000, (base::TimeTicks::Now() - now).InMilliseconds());
-      base::RunLoop().RunUntilIdle();
-    }
+    base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(1));
+    ASSERT_TRUE(base::test::RunUntil([] {
+      return !ash::MultiUserWindowManager::Get()->IsAnimationRunningForTest();
+    }));
   }
 
   // Return the window with the given index.
