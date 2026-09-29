@@ -13,16 +13,13 @@ include_rules = [
   # this list.
   "+chrome/browser/extensions/chrome_test_extension_loader.h",
   "+chrome/browser/extensions/mixin_based_extension_apitest.h",
+  "+chrome/browser/feedback/system_logs/log_sources",
   "+chrome/browser/policy/extension_force_install_mixin.h",
   "+chrome/browser/profiles/profile.h",
   "+chrome/common",
 ]
 
 specific_include_rules = {
-  # Only tests need these //chrome dependencies.
-  ".*_(unittest|browsertest|apitest|uitest)\\.cc": [
-    "+chrome/browser/feedback/system_logs/log_sources",
-  ],
   "system_log_apitest\\.cc": [
     "+chrome/browser/ash/login",
     "+chrome/browser/ash/policy/core",

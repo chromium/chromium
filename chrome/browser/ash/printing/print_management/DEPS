@@ -12,16 +12,13 @@ include_rules = [
   # directory basis. See //tools/chromeos/gen_deps.sh for details.
   "+chrome/browser/ash/printing",
   "+chrome/browser/chromeos/printing",
+  "+chrome/browser/printing",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/ash/system_web_apps",
   "+chrome/browser/ui/browser_window/public",
 ]
 
 specific_include_rules = {
-  # Only tests need these //chrome dependencies.
-  ".*_(unittest|browsertest|apitest|uitest)\\.cc": [
-    "+chrome/browser/printing",
-  ],
   # Only the keyed-service factory needs the Profile-keyed HistoryService
   # factory: it DependsOn() it to order service construction, which
   # ash::HistoryServiceProvider cannot express. Everything else in this

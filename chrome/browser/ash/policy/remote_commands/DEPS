@@ -33,6 +33,7 @@ include_rules = [
   "+chrome/browser/device_identity",
   "+chrome/browser/enterprise/remote_commands/extension_update_check_job.h",
   "+chrome/browser/policy/messaging_layer/proto/synced",
+  "+chrome/browser/policy/messaging_layer/public",
   "+chrome/browser/profiles",
   "+chrome/browser/support_tool",
   "+chrome/browser/ui/ash/login",
@@ -42,10 +43,6 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # Only tests need these //chrome dependencies.
-  ".*_(unittest|browsertest|apitest|uitest)\\.cc": [
-    "+chrome/browser/policy/messaging_layer/public",
-  ],
   ".*unittest\\.cc": [
     "+chrome/browser/prefs",
   ],

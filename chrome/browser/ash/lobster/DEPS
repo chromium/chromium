@@ -12,6 +12,7 @@ include_rules = [
   # Whenever possible, avoid adding new //chrome dependencies to this list.
   "+chrome/browser/ash/login/users/fake_chrome_user_manager.h",
   "+chrome/browser/ash/magic_boost",
+  "+chrome/browser/feedback",
   "+chrome/browser/manta",
   "+chrome/browser/profiles",
   "+chrome/browser/ui/webui/ash/lobster",
@@ -27,10 +28,6 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # Only tests need these //chrome dependencies.
-  ".*_(unittest|browsertest|apitest|uitest)\\.cc": [
-    "+chrome/browser/feedback",
-  ],
   # Exceptionally allow using g_browser_process for the profile keyed service.
   "lobster_service_provider\\.cc": [
     "+chrome/browser/browser_process.h",
