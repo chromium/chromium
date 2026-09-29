@@ -11,6 +11,9 @@ import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.scrollTo;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.Intents.intending;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
@@ -19,6 +22,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -27,16 +31,21 @@ import static org.junit.Assert.assertTrue;
 import static org.chromium.base.test.util.Batch.PER_CLASS;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.app.Activity;
+import android.app.Instrumentation.ActivityResult;
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Build;
+import android.provider.Settings;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Espresso;
+import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.filters.MediumTest;
 import androidx.test.runner.lifecycle.Stage;
@@ -50,6 +59,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
@@ -472,6 +482,66 @@ public class SettingsPageTest {
 
         // Verify Autofill and passwords is highlighted.
         onView(autofillInHeader).check(matches(isHighlighted()));
+    }
+
+    /** Regression test for https://crbug.com/565417618 under SettingsInTabUrlNav. */
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testExternalActivityPreferenceKeepsHighlight_urlNav() {
+        // The test requires an emulator wide enough to use two-column mode.
+        Resources res = mActivityTestRule.getActivity().getResources();
+        int minWidth = res.getDimensionPixelSize(R.dimen.settings_min_multi_column_screen_width);
+        int screenWidth = res.getDisplayMetrics().widthPixels;
+        Assume.assumeTrue("Test requires two-column mode.", screenWidth >= minWidth);
+        Assume.assumeTrue(
+                "Test requires the notification settings row.",
+                PackageManagerUtils.canResolveActivity(
+                        new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)));
+
+        mActivityTestRule.loadUrl("chrome-native://settings/");
+
+        int searchEngineTitle = R.string.search_engine_settings;
+        int notificationsTitle = R.string.prefs_notifications;
+        onViewWaiting(withText(searchEngineTitle)).check(matches(isDisplayed()));
+
+        var headerRecyclerViewMatcher =
+                allOf(withId(R.id.recycler_view), isDescendantOfA(withId(R.id.preferences_header)));
+
+        // Open Search engine in the detail pane.
+        onView(headerRecyclerViewMatcher)
+                .perform(scrollTo(hasDescendant(withText(searchEngineTitle))));
+        var searchEngineInHeader =
+                allOf(
+                        isDescendantOfA(withId(R.id.preferences_header)),
+                        withText(searchEngineTitle));
+        onView(searchEngineInHeader).perform(click());
+        onView(searchEngineInHeader).check(matches(isHighlighted()));
+
+        Intents.init();
+        try {
+            // Stub the Android notification settings activity.
+            intending(hasAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS))
+                    .respondWith(new ActivityResult(Activity.RESULT_OK, null));
+
+            onView(headerRecyclerViewMatcher)
+                    .perform(scrollTo(hasDescendant(withText(notificationsTitle))));
+            var notificationsInHeader =
+                    allOf(
+                            isDescendantOfA(withId(R.id.preferences_header)),
+                            withText(notificationsTitle));
+            onView(notificationsInHeader).perform(click());
+            intended(hasAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS));
+
+            // The detail pane didn't change, so neither should the highlight.
+            onView(notificationsInHeader).check(matches(not(isHighlighted())));
+            onView(headerRecyclerViewMatcher)
+                    .perform(scrollTo(hasDescendant(withText(searchEngineTitle))));
+            onView(searchEngineInHeader).check(matches(isHighlighted()));
+        } finally {
+            Intents.release();
+        }
     }
 
     @Test

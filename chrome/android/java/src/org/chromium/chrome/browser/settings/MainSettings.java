@@ -342,6 +342,17 @@ public class MainSettings extends ChromeBaseSettingsFragment
         }
     }
 
+    /**
+     * Handles a click on a main menu row that opens an external activity. The detail pane doesn't
+     * change, so under SettingsInTabUrlNav the highlight keeps tracking the page that is shown.
+     */
+    private void onExternalActivityPreferenceClicked(Preference preference) {
+        // TODO(crbug.com/565417618): Remove the legacy path once SettingsInTabUrlNav launches.
+        if (!ChromeFeatureList.sSettingsInTabUrlNav.isEnabled()) {
+            onPreferenceSelected(preference);
+        }
+    }
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
@@ -430,7 +441,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
             Preference notifications = findPreference(PREF_NOTIFICATIONS);
             notifications.setOnPreferenceClickListener(
                     preference -> {
-                        onPreferenceSelected(preference);
+                        onExternalActivityPreferenceClicked(preference);
                         startActivity(intent);
                         // We handle the click so the default action isn't triggered.
                         return true;
@@ -727,7 +738,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
         passwordsPreference.setProfile(getProfile());
         passwordsPreference.setOnPreferenceClickListener(
                 preference -> {
-                    onPreferenceSelected(preference);
+                    onExternalActivityPreferenceClicked(preference);
                     showPasswordSettings(
                             getActivity(),
                             getProfile(),
