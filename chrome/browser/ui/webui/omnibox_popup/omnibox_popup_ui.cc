@@ -7,6 +7,7 @@
 #include <atomic>
 #include <string_view>
 
+#include "base/strings/strcat.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/contextual_search/contextual_search_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -284,7 +285,10 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
     default_resource = IDR_OMNIBOX_POPUP_OMNIBOX_POPUP_FULL_HTML;
   }
   webui::SetupWebUIDataSource(source, kOmniboxPopupResources, default_resource);
-  webui::EnableTrustedTypesCSP(source);
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::TrustedTypes,
+      base::StrCat(
+          {webui::kDefaultTrustedTypesPolicies, " composebox-input;"}));
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::MediaSrc,
       "media-src blob: data: 'self';");

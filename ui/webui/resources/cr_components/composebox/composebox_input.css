@@ -351,6 +351,11 @@
   color: transparent;
 }
 
+#mirror .aim-chip span {
+  position: relative;
+  top: -2px;
+}
+
 :host-context([webui-rounded-icons]) {
   #aimIcon {
     -webkit-mask-image: url(//resources/cr_components/searchbox/icons/search_spark.svg);

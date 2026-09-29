@@ -105,6 +105,7 @@ build_webui("build") {
   ts_definitions = [
     "//tools/typescript/definitions/chrome_histograms.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
   ]
   ts_deps = [
     "//third_party/lit/v3_0:build_ts",

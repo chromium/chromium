@@ -13,6 +13,7 @@ import {getCss} from './composebox_input.css.js';
 import {getHtml} from './composebox_input.html.js';
 
 const ZERO_SPACE_STRING: string = '\u200b';
+export const NON_BREAKING_SPACE = '\u00A0';
 
 export const CHIP_CLASS = 'aim-chip';
 export const CHIP_LABEL_CLASS = 'chip-label';
@@ -21,6 +22,48 @@ export const CHIP_DATASET_ID = 'chipId';
 export const CHIP_DATASET_TEXT = 'chipText';
 export const CHIP_DATASET_EMOJI = 'chipEmoji';
 export const CHIP_DATASET_ICON_URL = 'chipIconUrl';
+
+let chipPolicy: Pick<TrustedTypePolicy, 'createHTML'>|undefined;
+
+export const chipSanitizer = new Sanitizer({
+  elements: [
+    {
+      name: 'span',
+      attributes: [
+        'class',
+        'contenteditable',
+        'tabindex',
+        'title',
+        'data-chip-id',
+        'data-chip-text',
+        'data-chip-emoji',
+        'data-chip-icon-url',
+      ],
+    },
+    {
+      name: 'img',
+      attributes: ['src', 'class', 'alt'],
+    },
+  ],
+});
+
+function ensureChipPolicy(): void {
+  if (window.trustedTypes && !chipPolicy) {
+    chipPolicy = window.trustedTypes.createPolicy('composebox-input', {
+      createHTML: (untrustedHtml: string) => {
+        const tempContainer = document.createElement('div');
+        tempContainer.setHTML(untrustedHtml, {sanitizer: chipSanitizer});
+        return tempContainer.innerHTML;
+      },
+    });
+  }
+}
+
+export function getChipPolicyForTesting():
+    Pick<TrustedTypePolicy, 'createHTML'>|undefined {
+  ensureChipPolicy();
+  return chipPolicy;
+}
 
 export interface ComposeboxChip {
   id?: string;
@@ -132,8 +175,9 @@ export class ComposeboxInputElement extends I18nMixinLit
 
     if (changedProperties.has('input')) {
       if (this.composeboxSkillsEnabled) {
-        const text = this.input || '';
-        if (text !== getPlainText(this.$.input)) {
+        const text = (this.input || '').replaceAll(NON_BREAKING_SPACE, ' ');
+        const plainText = getPlainText(this.$.input);
+        if (text !== plainText && text.trim() !== plainText.trim()) {
           if (text === '') {
             this.$.input.replaceChildren();
           } else {
@@ -411,6 +455,30 @@ export class ComposeboxInputElement extends I18nMixinLit
     this.isRtl_ = window.getComputedStyle(this).direction === 'rtl';
   }
 
+  insertSkillChip(chip: ComposeboxChip) {
+    const chipElement = createChipElement(chip);
+    const rawHtml = `${chipElement.outerHTML}&nbsp;`;
+    let trustedHtml: TrustedHTML|string = rawHtml;
+    if (window.trustedTypes) {
+      ensureChipPolicy();
+      trustedHtml = chipPolicy!.createHTML(rawHtml);
+    }
+    this.$.input.focus();
+    const sel = this.shadowRoot.getSelection();
+    const isSelectionInside =
+        !!sel && sel.rangeCount > 0 && this.$.input.contains(sel.anchorNode);
+    if (!isSelectionInside) {
+      setCaretToEnd(this.$.input, this.shadowRoot);
+    }
+    // Temporarily switch to 'true' so that Blink does not strip HTML tags
+    // (such as .aim-chip spans) during execCommand('insertHTML'), while still
+    // preserving the native undo/redo stack. Revert immediately to
+    // 'plaintext-only' to keep user input and paste operations unformatted.
+    this.$.input.contentEditable = 'true';
+    document.execCommand('insertHTML', false, trustedHtml as unknown as string);
+    this.$.input.contentEditable = 'plaintext-only';
+  }
+
   private updateMirrorAndCaret_() {
     if (!this.disableCaretColorAnimation) {
       this.updateMirror_();
@@ -583,7 +651,7 @@ export class ComposeboxInputElement extends I18nMixinLit
 function getCaretCharacterOffsetWithin(
     element: HTMLElement, shadowRoot?: ShadowRoot|null): number {
   let caretOffset = 0;
-  const sel = getSelectionIn(shadowRoot);
+  const sel = shadowRoot?.getSelection() ?? window.getSelection();
   if (sel && sel.rangeCount > 0) {
     const range = sel.getRangeAt(0);
     try {
@@ -598,13 +666,6 @@ function getCaretCharacterOffsetWithin(
   return caretOffset;
 }
 
-function getSelectionIn(shadowRoot?: ShadowRoot|null): Selection|null {
-  return (shadowRoot && 'getSelection' in shadowRoot ?
-              (shadowRoot as unknown as Document).getSelection() :
-              null) ??
-      window.getSelection();
-}
-
 /**
  * Selects the contents of `element`, or places the caret at the end of it if
  * `collapseToEnd` is true.
@@ -612,7 +673,7 @@ function getSelectionIn(shadowRoot?: ShadowRoot|null): Selection|null {
 function selectContents(
     element: HTMLElement, shadowRoot?: ShadowRoot|null,
     collapseToEnd: boolean = false) {
-  const sel = getSelectionIn(shadowRoot);
+  const sel = shadowRoot?.getSelection() ?? window.getSelection();
   if (sel) {
     const range = document.createRange();
     range.selectNodeContents(element);
@@ -737,10 +798,18 @@ function getPlainText(container: Node): string {
     }
   }
   traverse(container);
-  return result;
+  return result.replaceAll(NON_BREAKING_SPACE, ' ');
 }
 
 declare global {
+  interface SetHtmlOptions {
+    sanitizer?: Sanitizer|SanitizerConfig;
+  }
+
+  interface Element {
+    setHTML(html: string, options?: SetHtmlOptions): void;
+  }
+
   interface HTMLElementTagNameMap {
     'cr-composebox-input': ComposeboxInputElement;
   }
