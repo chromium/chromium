@@ -2086,7 +2086,7 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                                  Comparator(LESS_THAN, 3), 90, 360);
     config.used =
         EventConfig("autofill_card_info_retrieval_suggestion_accepted",
-                    kAlwaysTrue, 90, 360);
+                    Comparator(EQUAL, 0), 90, 360);
 
     // This promo blocks specific promos in the same session.
     config.session_rate_impact.type = SessionRateImpact::Type::EXPLICIT;
