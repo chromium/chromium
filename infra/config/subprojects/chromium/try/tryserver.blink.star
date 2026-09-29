@@ -122,9 +122,6 @@ _rebaseline_builder(
 # (tests content shell) to avoid coupling their build configurations.
 try_.builder(
     name = "linux-wpt-chromium-rel",
-    description_html = "Runs {} against Chrome.".format(
-        linkify("https://web-platform-tests.org", "web platform tests"),
-    ),
     mirrors = ["ci/linux-wpt-chromium-rel"],
     builder_config_settings = builder_config.try_settings(
         retry_failed_shards = False,

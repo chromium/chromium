@@ -292,7 +292,6 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "mac-gpu-rel-compilator",
     branch_selector = branches.selector.MAC_BRANCHES,
-    description_html = "compilator for mac-gpu-rel.",
     cpu = cpu.ARM64,
     contact_team_email = "chrome-gpu-infra@google.com",
     main_list_view = "try",
@@ -300,9 +299,6 @@ try_.compilator_builder(
 
 try_.builder(
     name = "mac-libfuzzer-asan-rel",
-    # TODO(crbug.com/41492669): Can delete this description when it's
-    # automatically generated.
-    description_html = "Trybot of {}.".format(linkify_builder("ci", "Libfuzzer Upload Mac ASan")),
     executable = "recipe:chromium/fuzz",
     mirrors = ["ci/Libfuzzer Upload Mac ASan"],
     gn_args = gn_args.config(
@@ -373,7 +369,6 @@ try_.builder(
 try_.builder(
     name = "mac14-arm64-rel",
     branch_selector = branches.selector.MAC_BRANCHES,
-    description_html = "Compiles and runs MacOS 14 tests on ARM machines",
     mirrors = [
         "ci/mac-arm64-rel",
         "ci/mac14-arm64-rel-tests",
@@ -398,7 +393,6 @@ try_.builder(
 try_.builder(
     name = "mac15-arm64-rel",
     branch_selector = branches.selector.MAC_BRANCHES,
-    description_html = "Compiles and runs MacOS 15 tests on ARM machines",
     mirrors = [
         "ci/mac-arm64-rel",
         "ci/mac15-arm64-rel-tests",
@@ -471,7 +465,6 @@ try_.builder(
 try_.builder(
     name = "mac14-tests",
     branch_selector = branches.selector.MAC_BRANCHES,
-    description_html = "Runs default MacOS 14 tests on try.",
     mirrors = [
         "ci/Mac Builder",
         "ci/mac14-tests",
@@ -490,7 +483,6 @@ try_.builder(
 try_.builder(
     name = "mac15-x64-rel-tests",
     branch_selector = branches.selector.MAC_BRANCHES,
-    description_html = "Runs default MacOS 15 tests on try.",
     mirrors = [
         "ci/Mac Builder",
         "ci/mac15-x64-rel-tests",
@@ -509,7 +501,6 @@ try_.builder(
 try_.builder(
     name = "mac26-x64-rel-tests",
     branch_selector = branches.selector.MAC_BRANCHES,
-    description_html = "Runs default MacOS 26 tests on try.",
     mirrors = [
         "ci/Mac Builder",
         "ci/mac26-x64-rel-tests",
@@ -527,7 +518,6 @@ try_.builder(
 
 try_.builder(
     name = "mac-no-initial-webui-rel",
-    description_html = "Mirror of Mac No Initial WebUI CI builder",
     mirrors = [
         "ci/mac-arm64-rel",
         "ci/mac-no-initial-webui-rel",
@@ -1020,7 +1010,6 @@ shared_gpu.try_.mac_optional_builder(
 
 try_.builder(
     name = "mac-separate-renderer-rel",
-    description_html = "Runs separate renderer tests on Mac, mirroring mac-separate-renderer-fyi-rel.",
     mirrors = [
         "ci/mac-separate-renderer-fyi-rel",
     ],

@@ -65,7 +65,6 @@ shared_gpu.try_.linux_rate_limited_builder(
         branches.selector.ANDROID_BRANCHES,
         branches.selector.DESKTOP_BRANCHES,
     ],
-    description_html = "Runs Chromium presubmit tests on Dawn CLs",
     mirrors = [
         "ci/Dawn Chromium Presubmit",
     ],
@@ -139,7 +138,6 @@ shared_gpu.try_.linux_optional_builder(
 shared_gpu.try_.mac_optional_builder(
     name = "dawn-mac-arm64-deps-rel",
     branch_selector = branches.selector.MAC_BRANCHES,
-    description_html = "Runs Dawn tests on Apple silicon at Chromium's pinned Dawn revision",
     mirrors = [
         "ci/Dawn Mac arm64 DEPS Builder",
         "ci/Dawn Mac arm64 DEPS Release (Apple M2)",
@@ -267,7 +265,6 @@ shared_gpu.try_.linux_rate_limited_builder(
 
 shared_gpu.try_.linux_manual_builder(
     name = "android-dawn-arm64-exp-rel",
-    description_html = "Runs ToT Dawn tests on experimental Pixel 6 configs",
     mirrors = [
         "ci/Dawn Android arm64 Builder",
         "ci/Dawn Android arm64 Experimental Release (Pixel 6)",
@@ -280,7 +277,6 @@ shared_gpu.try_.linux_manual_builder(
 
 shared_gpu.try_.linux_manual_builder(
     name = "android-dawn-arm64-p10-rel",
-    description_html = "Runs ToT Dawn tests on Pixel 10 devices",
     mirrors = [
         "ci/Dawn Android arm64 Builder",
         "ci/Dawn Android arm64 Release (Pixel 10)",
@@ -293,7 +289,6 @@ shared_gpu.try_.linux_manual_builder(
 
 shared_gpu.try_.linux_manual_builder(
     name = "android-dawn-arm64-s24-rel",
-    description_html = "Runs ToT Dawn tests on Samsung S24 devices",
     mirrors = [
         "ci/Dawn Android arm64 Builder",
         "ci/Dawn Android arm64 Release (Samsung S24)",
@@ -307,7 +302,6 @@ shared_gpu.try_.linux_manual_builder(
 
 shared_gpu.try_.linux_manual_builder(
     name = "linux-dawn-intel-exp-rel",
-    description_html = "Runs ToT Dawn tests on experimental Linux/Intel configs",
     mirrors = [
         "ci/Dawn Linux x64 Builder",
         "ci/Dawn Linux x64 Experimental Release (Intel UHD 630)",
@@ -320,7 +314,6 @@ shared_gpu.try_.linux_manual_builder(
 
 shared_gpu.try_.linux_manual_builder(
     name = "linux-dawn-nvidia-1660-exp-rel",
-    description_html = "Runs ToT Dawn tests on experimental Linux/GTX 1660 configs",
     mirrors = [
         "ci/Dawn Linux x64 Builder",
         "ci/Dawn Linux x64 Experimental Release (NVIDIA GTX 1660)",
@@ -350,7 +343,6 @@ shared_gpu.try_.linux_rate_limited_builder(
 
 shared_gpu.try_.mac_rate_limited_builder(
     name = "mac-arm64-dawn-rel",
-    description_html = "Runs Dawn tests on Apple silicon on Dawn ToT",
     mirrors = [
         "ci/Dawn Mac arm64 Builder",
         "ci/Dawn Mac arm64 Release (Apple M2)",
@@ -381,7 +373,6 @@ shared_gpu.try_.mac_rate_limited_builder(
 
 shared_gpu.try_.linux_manual_builder(
     name = "dawn-try-linux-x64-intel-uhd770-rel",
-    description_html = "Runs ToT Dawn tests on 12th gen Intel CPUs with UHD 770 GPUs",
     mirrors = [
         "ci/Dawn Linux x64 Builder",
         "ci/Dawn Linux x64 Release (Intel UHD 770)",
@@ -430,7 +421,6 @@ shared_gpu.try_.mac_manual_builder(
 
 shared_gpu.try_.mac_manual_builder(
     name = "dawn-try-mac-arm64-m2-exp",
-    description_html = "Manual-only trybot for running ToT Dawn tests on experimental M2 machines",
     mirrors = [
         "ci/Dawn Mac arm64 Builder",
         "ci/Dawn Mac arm64 Experimental Release (Apple M2)",
@@ -507,7 +497,6 @@ shared_gpu.try_.win_manual_builder(
 
 shared_gpu.try_.win_manual_builder(
     name = "dawn-try-win-x64-intel-uhd770-rel",
-    description_html = "Runs ToT Dawn tests on 12th gen Intel CPUs with UHD 770 GPUs",
     mirrors = [
         "ci/Dawn Win10 x64 Builder",
         "ci/Dawn Win10 x64 Release (Intel UHD 770)",
@@ -524,7 +513,6 @@ shared_gpu.try_.win_manual_builder(
 
 shared_gpu.try_.win_manual_builder(
     name = "dawn-try-win-x64-nvidia-exp",
-    description_html = "Runs ToT Dawn tests on experimental NVIDIA configs",
     mirrors = [
         "ci/Dawn Win10 x64 Builder",
         "ci/Dawn Win10 x64 Experimental Release (NVIDIA)",
@@ -549,7 +537,6 @@ shared_gpu.try_.win_manual_builder(
 
 shared_gpu.try_.win_manual_builder(
     name = "dawn-try-win-x86-nvidia-exp",
-    description_html = "Runs ToT Dawn tests on experimental Win/NVIDIA/x86 configs",
     mirrors = [
         "ci/Dawn Win10 x86 Builder",
         "ci/Dawn Win10 x86 Experimental Release (NVIDIA)",

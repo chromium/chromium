@@ -113,7 +113,6 @@ try_.builder(
 try_.orchestrator_builder(
     name = "android-desktop-x64-rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
-    description_html = "Run Chromium tests on Android Desktop emulators.",
     mirrors = [
         "ci/android-desktop-x64-compile-rel",
         "ci/android-desktop-x64-rel-15-tests",
@@ -154,7 +153,6 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "android-desktop-x64-rel-compilator",
     branch_selector = branches.selector.ANDROID_BRANCHES,
-    description_html = "Compilator builder for android-desktop-x64-rel",
     main_list_view = "try",
 )
 

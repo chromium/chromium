@@ -109,7 +109,6 @@ shared_gpu.try_.mac_rate_limited_builder(
 
 shared_gpu.try_.win_rate_limited_builder(
     name = "win-angle-chromium-arm64-try",
-    description_html = "Builds and tests ANGLE on arm64 Windows using ToT ANGLE and a known good Chromium revision.",
     mirrors = [
         "ci/win-angle-chromium-arm64-builder",
         "ci/win11-angle-chromium-arm64-qualcomm-snapdragonxelite",

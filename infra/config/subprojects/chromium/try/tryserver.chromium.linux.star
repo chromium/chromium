@@ -143,7 +143,6 @@ try_.builder(
 
 try_.builder(
     name = "linux-annotator-rel",
-    description_html = "Runs tests for the Network Traffic Annotation Auditor on Linux, mirroring linux-annotator-rel.",
     mirrors = ["ci/linux-annotator-rel"],
     gn_args = gn_args.config(
         configs = [
@@ -380,10 +379,6 @@ try_.builder(
 
 try_.builder(
     name = "linux-surface-embed-rel",
-    description_html = (
-        "Runs web_tests and wpt_tests using surface embed " +
-        "against complete desktop Chrome browser."
-    ),
     mirrors = ["ci/linux-surface-embed-rel"],
     gn_args = "ci/linux-surface-embed-rel",
     contact_team_email = "chrome-webium-product-eng@google.com",
@@ -1104,7 +1099,6 @@ try_.builder(
 
 try_.builder(
     name = "linux-no-initial-webui-rel",
-    description_html = "Mirror of Linux No Initial WebUI CI builder",
     mirrors = [
         "ci/Linux Builder",
         "ci/linux-no-initial-webui-rel",
@@ -1293,7 +1287,6 @@ try_.builder(
 
 try_.builder(
     name = "linux-separate-renderer-rel",
-    description_html = "Runs separate renderer tests on Linux, mirroring linux-separate-renderer-fyi-rel.",
     mirrors = [
         "ci/linux-separate-renderer-fyi-rel",
     ],

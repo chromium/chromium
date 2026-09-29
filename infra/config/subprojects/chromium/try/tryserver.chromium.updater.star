@@ -6,7 +6,6 @@
 load("@chromium-luci//builders.star", "cpu", "os")
 load("@chromium-luci//consoles.star", "consoles")
 load("@chromium-luci//gn_args.star", "gn_args")
-load("@chromium-luci//html.star", "linkify")
 load("@chromium-luci//try.star", "try_")
 load("//lib/siso.star", "siso")
 load("//lib/try_constants.star", "try_constants")
@@ -29,7 +28,6 @@ consoles.list_view(
     name = "tryserver.chromium.updater",
 )
 
-_UPDATER_LINK = linkify("https://chromium.googlesource.com/chromium/src/+/main/docs/updater/design_doc.md", "Chromium updater")
 _LOCATION_FILTER = ["chrome/updater/.+", "chrome/enterprise_companion/.+"]
 
 def updater_linux_builder(*, name, **kwargs):
@@ -49,7 +47,6 @@ def updater_windows_builder(*, name, **kwargs):
 
 updater_linux_builder(
     name = "linux-updater-try-builder-dbg",
-    description_html = _UPDATER_LINK + " Linux x64 debug builder.",
     mirrors = [
         "ci/linux-updater-builder-dbg",
         "ci/linux-updater-tester-dbg",
@@ -68,7 +65,6 @@ updater_linux_builder(
 
 updater_linux_builder(
     name = "linux-updater-try-builder-rel",
-    description_html = _UPDATER_LINK + " Linux x64 release builder.",
     mirrors = [
         "ci/linux-updater-builder-rel",
         "ci/linux-updater-tester-rel",
@@ -88,7 +84,6 @@ updater_linux_builder(
 
 updater_mac_builder(
     name = "mac-updater-try-builder-dbg",
-    description_html = _UPDATER_LINK + " macOS 13 arm64 debug builder.",
     mirrors = [
         "ci/mac-updater-builder-arm64-dbg",
         "ci/mac13-arm64-updater-tester-dbg",
@@ -109,7 +104,6 @@ updater_mac_builder(
 
 updater_mac_builder(
     name = "mac-updater-try-builder-rel",
-    description_html = _UPDATER_LINK + " macOS 13 x64 release builder.",
     mirrors = [
         "ci/mac-updater-builder-rel",
         "ci/mac13-x64-updater-tester-rel",
@@ -130,7 +124,6 @@ updater_mac_builder(
 
 updater_windows_builder(
     name = "win-arm64-updater-rel",
-    description_html = _UPDATER_LINK + " Windows 11 arm64 release builder.",
     mirrors = [
         "ci/win-arm64-updater-builder-rel",
         "ci/win11-arm64-updater-tester-rel",
@@ -150,7 +143,6 @@ updater_windows_builder(
 
 updater_windows_builder(
     name = "win-updater-try-builder-dbg",
-    description_html = _UPDATER_LINK + " Windows 10 x64 debug builder.",
     mirrors = [
         "ci/win-updater-builder-dbg",
         "ci/win10-updater-tester-dbg",
@@ -169,7 +161,6 @@ updater_windows_builder(
 
 updater_windows_builder(
     name = "win-updater-try-builder-rel",
-    description_html = _UPDATER_LINK + " Windows 10 x64 release builder.",
     mirrors = [
         "ci/win-updater-builder-rel",
         "ci/win10-updater-tester-rel",

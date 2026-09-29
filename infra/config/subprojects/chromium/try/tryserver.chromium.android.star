@@ -295,7 +295,6 @@ try_.builder(
 try_.builder(
     name = "android-15-x64-rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
-    description_html = "Run Chromium tests on Android 15 emulator.",
     mirrors = [
         "ci/android-15-x64-rel",
     ],
@@ -313,7 +312,6 @@ try_.builder(
     name = "android-15-tablet-landscape-x64-rel",
     # TODO(crbug.com/376748979 ): Enable on branches once tests are stable
     # branch_selector = branches.selector.ANDROID_BRANCHES,
-    description_html = "Run Chromium tests on Android 15 tablet landscape emulator.",
     mirrors = [
         "ci/android-15-tablet-landscape-x64-rel",
     ],
@@ -331,7 +329,6 @@ try_.builder(
     name = "android-15-tablet-x64-rel",
     # TODO(crbug.com/376748979 ): Enable on branches once tests are stable
     # branch_selector = branches.selector.ANDROID_BRANCHES,
-    description_html = "Run Chromium tests on Android 15 tablet emulator.",
     mirrors = [
         "ci/android-15-tablet-x64-rel",
     ],
@@ -364,7 +361,6 @@ try_.builder(
 try_.builder(
     name = "android-16-x64-rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
-    description_html = "Run Chromium tests on Android 16 emulator.",
     mirrors = [
         "ci/android-16-x64-rel",
     ],
@@ -395,7 +391,6 @@ try_.builder(
 
 try_.builder(
     name = "android-16-x64-leakcanary-rel",
-    description_html = "Try builder mirroring android-16-x64-leakcanary-rel CI builder.",
     mirrors = [
         "ci/android-16-x64-leakcanary-rel",
     ],
@@ -542,7 +537,6 @@ try_.builder(
 
 try_.builder(
     name = "android-bfcache-rel",
-    description_html = "Tests the back/forward-cache feature on chromium",
     mirrors = [
         "ci/android-bfcache-rel",
     ],
@@ -800,7 +794,6 @@ try_.builder(
 
 try_.builder(
     name = "android-cronet-x64-dbg-14-tests",
-    description_html = "Tests Cronet against Android 14",
     mirrors = [
         "ci/android-cronet-x64-dbg",
         "ci/android-cronet-x64-dbg-14-tests",
@@ -812,7 +805,6 @@ try_.builder(
 
 try_.builder(
     name = "android-cronet-x64-dbg-15-tests",
-    description_html = "Tests Cronet against Android 15",
     mirrors = [
         "ci/android-cronet-x64-dbg",
         "ci/android-cronet-x64-dbg-15-tests",
@@ -824,7 +816,6 @@ try_.builder(
 
 try_.builder(
     name = "android-cronet-x64-dbg-16-tests",
-    description_html = "Tests Cronet against Android 16",
     mirrors = [
         "ci/android-cronet-x64-dbg",
         "ci/android-cronet-x64-dbg-16-tests",
@@ -1114,7 +1105,6 @@ try_.builder(
 try_.orchestrator_builder(
     name = "android-x64-rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
-    description_html = "Run Chromium tests on Android emulators.",
     mirrors = [
         "ci/android-12l-x64-rel-cq",
         "ci/android-16-x64-rel",
@@ -1156,7 +1146,6 @@ try_.orchestrator_builder(
 try_.compilator_builder(
     name = "android-x64-rel-compilator",
     branch_selector = branches.selector.ANDROID_BRANCHES,
-    description_html = "Compilator builder for android-x64-rel",
     contact_team_email = "clank-engprod@google.com",
     main_list_view = "try",
 )
