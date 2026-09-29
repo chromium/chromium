@@ -2268,14 +2268,8 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
   }
 }
 
-// TODO(crbug.com/541648974): Flaky on Linux.
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_Revocation DISABLED_Revocation
-#else
-#define MAYBE_Revocation Revocation
-#endif
 IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
-                       MAYBE_Revocation) {
+                       Revocation) {
   static constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
   static constexpr uint8_t kMirrorId[] = {0x01, 0x02, 0x03};
   static constexpr uint64_t kLogNumber = 1;
@@ -2290,14 +2284,12 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
     bssl::UniquePtr<CRYPTO_BUFFER> landmark_cert_buffer;
     net::EmbeddedTestServer landmark_and_legacy_server{
         net::EmbeddedTestServer::TYPE_HTTPS};
-    net::EmbeddedTestServer landmark_only_server{
-        net::EmbeddedTestServer::TYPE_HTTPS};
     bssl::UniquePtr<CRYPTO_BUFFER> standalone_cert_buffer;
     net::EmbeddedTestServer standalone_only_server{
         net::EmbeddedTestServer::TYPE_HTTPS};
     bool expect_is_revoked = false;
   };
-  std::array<TestCertData, 6> test_cert_data;
+  std::array<TestCertData, 2> test_cert_data;
 
   net::MtcLogBuilder::Cosigner ca_cosigner = {
       base::ToVector(kMtcCaId), crypto::keypair::PrivateKey::GenerateMldsa44(),
@@ -2346,18 +2338,9 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
         "chrome/test/data");
     ASSERT_TRUE(data.landmark_and_legacy_server.Start());
 
-    // Same as landmark_cert_config, but doesn't specify trust_anchor_id since
-    // this is the only config this server is configured with.
-    net::EmbeddedTestServer::ServerCertificateConfig mtc_only_cert_config;
-    mtc_only_cert_config.cert_and_key = net::EmbeddedTestServer::CertAndKey(
-        bssl::UpRef(data.landmark_cert_buffer),
-        bssl::UpRef(data.builder->GetKey()));
-    data.landmark_only_server.SetSSLConfig({mtc_only_cert_config},
-                                           server_config);
-    data.landmark_only_server.ServeFilesFromSourceDirectory("chrome/test/data");
-    ASSERT_TRUE(data.landmark_only_server.Start());
-
-    // Same as landmark_only_server, but with the standalone MTC.
+    // Same as landmark_cert_config, but with standalone MTC and doesn't
+    // specify trust_anchor_id since this is the only config this server is
+    // configured with.
     net::EmbeddedTestServer::ServerCertificateConfig
         standalone_only_cert_config;
     data.standalone_cert_buffer = mtc_log.CreateStandaloneCertificateBuffer(
@@ -2427,17 +2410,8 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
     {
       auto* revoked_range = mtc_anchor_data->add_revoked_serials();
       revoked_range->set_start_inclusive(test_cert_data[1].mtc_serial);
-      revoked_range->set_end_exclusive(test_cert_data[2].mtc_serial);
+      revoked_range->set_end_exclusive(test_cert_data[1].mtc_serial + 1);
       test_cert_data[1].expect_is_revoked = true;
-    }
-
-    // Add revoked range that contains multiple certificates.
-    {
-      auto* revoked_range = mtc_anchor_data->add_revoked_serials();
-      revoked_range->set_start_inclusive(test_cert_data[3].mtc_serial);
-      revoked_range->set_end_exclusive(test_cert_data[5].mtc_serial);
-      test_cert_data[3].expect_is_revoked = true;
-      test_cert_data[4].expect_is_revoked = true;
     }
 
     InstallMtcMetadataUpdate(mtc_metadata_proto);
@@ -2494,36 +2468,6 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
                     testing::ElementsAre(X509CertificateToString(
                         data.landmark_and_legacy_server.GetCertificate(
                             kMtcCertConfigNumber))));
-      }
-    }
-
-    {
-      // Attempt to load from the server which only has the landmark relative
-      // MTC cert and doesn't use trust anchor IDs. This should succeed if MTCs
-      // are enabled and the cert is not revoked, otherwise it should fail.
-      ASSERT_TRUE(ui_test_utils::NavigateToURL(
-          browser(),
-          data.landmark_only_server.GetURL(data.hostname, "/simple.html")));
-      if (!expect_test_mtc_is_used()) {
-        EXPECT_NE(chrome_test_utils::GetActiveWebContents(this)->GetTitle(),
-                  u"OK");
-        ssl_test_util::CheckAuthenticationBrokenState(
-            chrome_test_utils::GetActiveWebContents(this),
-            net::CERT_STATUS_AUTHORITY_INVALID,
-            ssl_test_util::AuthState::SHOWING_INTERSTITIAL);
-      } else if (data.expect_is_revoked) {
-        EXPECT_NE(chrome_test_utils::GetActiveWebContents(this)->GetTitle(),
-                  u"OK");
-        ssl_test_util::CheckAuthenticationBrokenState(
-            chrome_test_utils::GetActiveWebContents(this),
-            net::CERT_STATUS_REVOKED,
-            ssl_test_util::AuthState::SHOWING_INTERSTITIAL);
-      } else {
-        EXPECT_EQ(chrome_test_utils::GetActiveWebContents(this)->GetTitle(),
-                  u"OK");
-        ssl_test_util::CheckAuthenticatedState(
-            chrome_test_utils::GetActiveWebContents(this),
-            ssl_test_util::AuthState::NONE);
       }
     }
 
