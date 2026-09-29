@@ -55,7 +55,6 @@ UndoWindow::UndoWindow(gfx::NativeView parent, AssistiveDelegate* delegate)
   set_parent_window(parent);
   set_margins(gfx::Insets(kPadding));
   SetArrow(views::BubbleBorder::Arrow::BOTTOM_LEFT);
-  set_clamp_to_work_area(true);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
 

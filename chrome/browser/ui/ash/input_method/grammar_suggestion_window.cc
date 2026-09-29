@@ -49,7 +49,6 @@ GrammarSuggestionWindow::GrammarSuggestionWindow(gfx::NativeView parent,
                                 kGrammarPaddingSize, kGrammarPaddingSize));
 
   SetArrow(views::BubbleBorder::Arrow::BOTTOM_LEFT);
-  set_clamp_to_work_area(true);
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal));
 

@@ -76,13 +76,8 @@ ContextualNudge::ContextualNudge(views::View* anchor,
   TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosAnnotation1,
                                         *label_);
 
-  views::BubbleDialogDelegateView::CreateBubble(this);
-
-  // TODO(sanchit.abrol@microsoft.com): Move back among the other setters after
-  // the platform default setting is moved from
-  // |BubbleDialogDelegateView::CreateBubble| to being the default value at
-  // bubble construction.
   set_adjust_if_offscreen(false);
+  views::BubbleDialogDelegateView::CreateBubble(this);
 
   // Text box for shelf nudge should be ignored for collision detection.
   CollisionDetectionUtils::IgnoreWindowForCollisionDetection(

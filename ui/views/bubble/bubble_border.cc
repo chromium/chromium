@@ -431,6 +431,39 @@ gfx::Rect BubbleBorder::GetBounds(const gfx::Rect& anchor_rect,
   return contents_bounds;
 }
 
+void BubbleBorder::AdjustBoundsToFitAvailableBounds(
+    gfx::Rect& bounds,
+    const gfx::Rect& available_bounds) const {
+  if (!visible_arrow_) {
+    bounds.AdjustToFit(available_bounds);
+    return;
+  }
+
+  const gfx::Insets border_insets(ShouldDrawStroke() ? kBorderThicknessDip : 0);
+  const gfx::Insets insets = GetInsets();
+  const gfx::Insets shadow_insets = insets - border_insets;
+  gfx::Insets clamping_insets = insets;
+  if (IsVerticalArrow(arrow_)) {
+    clamping_insets.set_left(shadow_insets.left() + kVisibleArrowBuffer +
+                             kVisibleArrowRadius);
+    clamping_insets.set_right(shadow_insets.right() + kVisibleArrowBuffer +
+                              kVisibleArrowRadius);
+  } else {
+    clamping_insets.set_top(shadow_insets.top() + kVisibleArrowBuffer +
+                            kVisibleArrowRadius);
+    clamping_insets.set_bottom(shadow_insets.bottom() + kVisibleArrowBuffer +
+                               kVisibleArrowRadius);
+  }
+
+  gfx::Rect inner_bounds = bounds;
+  inner_bounds.Inset(clamping_insets);
+  inner_bounds.AdjustToFit(available_bounds);
+  inner_bounds.Inset(-clamping_insets);
+
+  visible_arrow_rect_ += inner_bounds.origin() - bounds.origin();
+  bounds = inner_bounds;
+}
+
 // static
 gfx::Vector2d BubbleBorder::GetContentsBoundsOffsetToPlaceVisibleArrow(
     BubbleBorder::Arrow arrow,

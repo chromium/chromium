@@ -218,6 +218,13 @@ class VIEWS_EXPORT BubbleBorder : public Border {
   virtual gfx::Rect GetBounds(const gfx::Rect& anchor_rect,
                               const gfx::Size& contents_size) const;
 
+  // Clamps `bounds` to fit within `available_bounds` (in screen coordinates),
+  // excluding visible arrow, shadow, and corner buffer insets when a visible
+  // arrow is present.
+  void AdjustBoundsToFitAvailableBounds(
+      gfx::Rect& bounds,
+      const gfx::Rect& available_bounds) const;
+
   // Overridden from Border:
   void Paint(const View& view, gfx::Canvas* canvas) override;
   gfx::Insets GetInsets() const override;

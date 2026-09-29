@@ -463,6 +463,7 @@ BubbleDialogDelegate::BubbleDialogDelegate(BubbleAnchor anchor,
                                            bool autosize)
     : arrow_(arrow),
       shadow_config_({.shadow_type = shadow}),
+      adjust_if_offscreen_(PlatformStyle::kAdjustBubbleIfOffscreen),
       autosize_(autosize),
       close_on_deactivate_pins_(std::make_unique<CloseOnDeactivatePin::Pins>()),
       bubble_created_time_(base::TimeTicks::Now()) {
@@ -548,7 +549,6 @@ Widget* BubbleDialogDelegate::CreateBubbleInternal(
 
   Widget* const bubble_widget = CreateBubbleWidget(delegate, ownership);
 
-  delegate->set_adjust_if_offscreen(PlatformStyle::kAdjustBubbleIfOffscreen);
   delegate->SizeToContents();
   delegate->bubble_widget_observer_ =
       std::make_unique<BubbleWidgetObserver>(delegate, bubble_widget);
@@ -1049,14 +1049,9 @@ gfx::Rect BubbleDialogDelegate::GetBubbleBounds() {
   }
 #endif
 
-  gfx::Rect bounds = GetBubbleFrameView()->GetUpdatedWindowBounds(
+  return GetBubbleFrameView()->GetUpdatedWindowBounds(
       anchor_rect, arrow(), GetWidget()->client_view()->GetPreferredSize({}),
       adjust_to_fix_available_bounds);
-  if (clamp_to_work_area_) {
-    bounds.AdjustToFit(
-        GetBubbleFrameView()->GetAvailableScreenBounds(anchor_rect));
-  }
-  return bounds;
 }
 
 ax::mojom::Role BubbleDialogDelegate::GetAccessibleWindowRole() {
@@ -1093,11 +1088,6 @@ gfx::Rect BubbleDialogDelegate::GetDesiredBubbleBounds() {
       GetWindowSizeForClientSize(GetWidget(), bubble_bounds.size());
   bubble_bounds.set_size(actual_size);
 #endif
-
-  if (clamp_to_work_area_ && GetBubbleFrameView()) {
-    bubble_bounds.AdjustToFit(
-        GetBubbleFrameView()->GetAvailableScreenBounds(GetAnchorRect()));
-  }
 
   return bubble_bounds;
 }

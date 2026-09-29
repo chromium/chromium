@@ -1774,29 +1774,55 @@ TEST_F(BubbleDialogDelegateViewTest, SizeToContentsDuringDestruction) {
   bubble_widget->CloseNow();
 }
 
-TEST_F(BubbleDialogDelegateViewTest, ClampToWorkArea) {
+TEST_F(BubbleDialogDelegateViewTest, AdjustIfOffscreenClampsToWorkArea) {
+#if BUILDFLAG(IS_OZONE)
+  if (!ui::OzonePlatform::GetInstance()
+           ->GetPlatformProperties()
+           .supports_global_screen_coordinates) {
+    GTEST_SKIP();
+  }
+#endif
   std::unique_ptr<Widget> anchor_widget = CreateTestWidget(
       Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
   TestBubbleDialogDelegateView* bubble_delegate =
       new TestBubbleDialogDelegateView(nullptr);
   bubble_delegate->set_parent_window(anchor_widget->GetNativeView());
-  bubble_delegate->set_clamp_to_work_area(true);
   const gfx::Rect work_area{800, 600};
   bubble_delegate->set_available_screen_bounds_callback(base::BindRepeating(
       [](const gfx::Rect& work_area, const gfx::Rect&) { return work_area; },
       work_area));
 
+  bubble_delegate->set_adjust_if_offscreen(true);
   Widget* bubble_widget =
       BubbleDialogDelegateView::CreateBubble(bubble_delegate);
   bubble_widget->Show();
 
-  // Set an anchor rect outside the work area; the bubble bounds should be
-  // clamped to fit within `work_area`.
+  // Set an anchor rect outside the work area; when `adjust_if_offscreen()` is
+  // true, the bubble bounds should be clamped to `work_area`.
   bubble_delegate->SetAnchorRect({900, 700, 10, 10});
   EXPECT_TRUE(work_area.Contains(bubble_delegate->GetBubbleBounds()));
   EXPECT_TRUE(work_area.Contains(bubble_widget->GetWindowBoundsInScreen()));
 
   bubble_widget->CloseNow();
+
+  // When `adjust_if_offscreen()` is false, the bubble bounds should not be
+  // clamped to `work_area`.
+  auto* unadjusted_delegate = new TestBubbleDialogDelegateView(nullptr);
+  unadjusted_delegate->set_parent_window(anchor_widget->GetNativeView());
+  unadjusted_delegate->set_available_screen_bounds_callback(base::BindRepeating(
+      [](const gfx::Rect& work_area, const gfx::Rect&) { return work_area; },
+      work_area));
+  unadjusted_delegate->set_adjust_if_offscreen(false);
+  Widget* unadjusted_widget =
+      BubbleDialogDelegateView::CreateBubble(unadjusted_delegate);
+  unadjusted_widget->Show();
+
+  unadjusted_delegate->SetAnchorRect({900, 700, 10, 10});
+  EXPECT_FALSE(work_area.Contains(unadjusted_delegate->GetBubbleBounds()));
+  EXPECT_FALSE(
+      work_area.Contains(unadjusted_widget->GetWindowBoundsInScreen()));
+
+  unadjusted_widget->CloseNow();
 }
 
 }  // namespace views

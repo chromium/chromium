@@ -201,8 +201,6 @@ SuggestionWindowView::SuggestionWindowView(gfx::NativeView parent,
   SetCanActivate(false);
   set_parent_window(parent);
   set_margins(gfx::Insets());
-  set_adjust_if_offscreen(true);
-  set_clamp_to_work_area(true);
 
   completion_view_ = AddChildView(
       std::make_unique<CompletionSuggestionView>(base::BindRepeating(

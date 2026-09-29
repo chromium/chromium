@@ -867,7 +867,16 @@ BubbleBorder::Arrow BubbleFrameView::GetArrow() const {
 }
 
 void BubbleFrameView::SetDisplayVisibleArrow(bool display_visible_arrow) {
+  if (bubble_border_->visible_arrow() == display_visible_arrow) {
+    return;
+  }
   bubble_border_->set_visible_arrow(display_visible_arrow);
+  if (GetWidget() && GetWidget()->widget_delegate()) {
+    if (auto* bubble_delegate =
+            GetWidget()->widget_delegate()->AsBubbleDialogDelegate()) {
+      bubble_delegate->SizeToContents();
+    }
+  }
 }
 
 bool BubbleFrameView::GetDisplayVisibleArrow() const {
@@ -982,7 +991,16 @@ gfx::Rect BubbleFrameView::GetUpdatedWindowBounds(
     SchedulePaint();
   }
 
-  return bubble_border_->GetBounds(anchor_rect, size);
+  gfx::Rect bounds = bubble_border_->GetBounds(anchor_rect, size);
+  if (adjust_to_fit_available_bounds &&
+      BubbleBorder::has_arrow(delegate_arrow)) {
+    const gfx::Rect available_bounds = GetAvailableScreenBounds(anchor_rect);
+    if (!available_bounds.IsEmpty()) {
+      bubble_border_->AdjustBoundsToFitAvailableBounds(bounds,
+                                                       available_bounds);
+    }
+  }
+  return bounds;
 }
 
 void BubbleFrameView::UpdateInputProtectorTimeStamp() {
