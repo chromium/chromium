@@ -187,12 +187,24 @@ protocol::DispatchResponse ExtensionsHandler::TriggerAction(
 
   BrowserWindowInterface* browser =
       extensions::browser_window_util::GetBrowserForTabContents(*web_contents);
+  if (browser == nullptr) {
+    return protocol::Response::ServerError(
+        "Tab target is not attached to a browser window.");
+  }
 
   ExtensionsContainer* extension_container =
       ExtensionsContainer::From(*browser);
+  if (extension_container == nullptr) {
+    return protocol::Response::ServerError(
+        "Browser window does not support extension actions.");
+  }
 
   ToolbarActionViewModel* extension_model =
       extension_container->GetActionForId(extension_id);
+  if (extension_model == nullptr) {
+    return protocol::Response::ServerError(
+        "No action found for the provided extension id.");
+  }
 
   extension_model->ExecuteUserAction(
       ExtensionActionViewModel::InvocationSource::kCdp);

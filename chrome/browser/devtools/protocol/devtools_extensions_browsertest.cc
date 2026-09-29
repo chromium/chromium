@@ -28,6 +28,7 @@
 #include "components/search_engines/template_url_starter_pack_data.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
@@ -629,5 +630,48 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
 
   EXPECT_FALSE(trigger_result->FindDict("error"));
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
+                       TriggerActionFailsForUnknownExtension) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
+
+  scoped_refptr<content::DevToolsAgentHost> page_host =
+      content::DevToolsAgentHost::GetOrCreateForTab(
+          browser()->tab_strip_model()->GetActiveWebContents());
+  base::DictValue trigger_extension_params;
+  trigger_extension_params.Set("id", "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+  trigger_extension_params.Set("targetId", page_host->GetId());
+  const base::DictValue* trigger_result = SendCommandSync(
+      "Extensions.triggerAction", std::move(trigger_extension_params));
+
+  EXPECT_FALSE(trigger_result);
+  ASSERT_TRUE(error());
+  EXPECT_EQ(*error()->FindString("message"),
+            "No action found for the provided extension id.");
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsExtensionsProtocolTest,
+                       TriggerActionFailsForTabWithoutBrowser) {
+  scoped_refptr<const extensions::Extension> extension =
+      InstallExtensionFromPath("popup_action");
+  ASSERT_TRUE(extension);
+
+  // A WebContents that is not in any tab strip has no browser window.
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->GetProfile()));
+  scoped_refptr<content::DevToolsAgentHost> page_host =
+      content::DevToolsAgentHost::GetOrCreateForTab(web_contents.get());
+  base::DictValue trigger_extension_params;
+  trigger_extension_params.Set("id", extension->id());
+  trigger_extension_params.Set("targetId", page_host->GetId());
+  const base::DictValue* trigger_result = SendCommandSync(
+      "Extensions.triggerAction", std::move(trigger_extension_params));
+
+  EXPECT_FALSE(trigger_result);
+  ASSERT_TRUE(error());
+  EXPECT_EQ(*error()->FindString("message"),
+            "Tab target is not attached to a browser window.");
 }
 }  // namespace
