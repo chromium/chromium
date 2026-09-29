@@ -463,6 +463,11 @@ class AutofillField : public FormFieldData {
     return autofill_source_profile_guid_;
   }
 
+  void set_was_filled_with_bnpl(bool was_filled_with_bnpl) {
+    was_filled_with_bnpl_ = was_filled_with_bnpl;
+  }
+  bool was_filled_with_bnpl() const { return was_filled_with_bnpl_; }
+
   void set_autofilled_type(std::optional<FieldType> autofilled_type) {
     autofilled_type_ = std::move(autofilled_type);
   }
@@ -690,6 +695,9 @@ class AutofillField : public FormFieldData {
 
   // Denotes whether this field triggered a custom JS autofill.
   bool did_trigger_javascript_autofill_ = false;
+
+  // Whether the field was ever filled using a BNPL virtual credit card.
+  bool was_filled_with_bnpl_ = false;
 
   // Field types that the ML model is able to output.
   // Assigned by the model when it has classified the field.

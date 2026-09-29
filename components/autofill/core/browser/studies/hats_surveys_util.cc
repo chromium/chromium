@@ -128,11 +128,15 @@ HatsSurveyStringData CollectPersonalizationAndTrustFillingData(
   size_t num_manually_filled = 0;
   FieldTypeSet all_field_types;
   FillingProductSet filling_products_used;
+  bool is_bnpl_used = false;
 
   for (const std::unique_ptr<AutofillField>& field : submitted_form) {
     all_field_types.insert_all(field->Type().GetTypes());
     if (field->filling_product() != FillingProduct::kNone) {
       filling_products_used.insert(field->filling_product());
+    }
+    if (field->was_filled_with_bnpl()) {
+      is_bnpl_used = true;
     }
 
     const autofill_metrics::FieldFillingStatus status =
@@ -197,6 +201,7 @@ HatsSurveyStringData CollectPersonalizationAndTrustFillingData(
           {"AutofillAi entity types used",
            ListToString(autofill_ai_entity_types_used,
                         &EntityType::name_as_string)},
+          {"BNPL used", is_bnpl_used ? "true" : "false"},
           {"Time since last Autofill use",
            submitted_form.last_filling_timestamp()
                .transform([](base::TimeTicks time) {

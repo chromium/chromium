@@ -783,6 +783,8 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
           "AutofillAi entity record types used",
           // For each filling using AutofillAi, the entity type that was filled.
           "AutofillAi entity types used",
+          // Indicates whether a BNPL virtual card was used to fill any field.
+          "BNPL used",
           // Time between form submission and the last Autofill use, in seconds.
           "Time since last Autofill use",
       };

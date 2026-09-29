@@ -7738,6 +7738,7 @@ TEST_F(BrowserAutofillManagerTest,
       {"Filling products used", "Address"},
       {"AutofillAi entity record types used", ""},
       {"AutofillAi entity types used", ""},
+      {"BNPL used", "false"},
       {"Time since last Autofill use", "42"}};
   EXPECT_CALL(autofill_client(), TriggerPersonalizationAndTrustSurveys(
                                      Not(FillingProduct::kAddress), _))
@@ -7798,6 +7799,7 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
       {"Filling products used", "Address"},
       {"AutofillAi entity record types used", ""},
       {"AutofillAi entity types used", ""},
+      {"BNPL used", "false"},
       {"Time since last Autofill use", "0"}};
 
   // AutofillAi was not used, should trigger Address survey.
@@ -7853,6 +7855,7 @@ TEST_F(BrowserAutofillManagerTest_MockAutofillAi,
       {"Filling products used", "Address, AutofillAi"},
       {"AutofillAi entity record types used", "PersonalContext"},
       {"AutofillAi entity types used", "Passport"},
+      {"BNPL used", "false"},
       {"Time since last Autofill use", "0"}};
   EXPECT_CALL(autofill_client(), TriggerPersonalizationAndTrustSurveys(
                                      Not(FillingProduct::kAutofillAi), _))
@@ -7895,6 +7898,56 @@ TEST_F(BrowserAutofillManagerTest, PersonalizationAndTrust_CreditCard) {
       {"Filling products used", "CreditCard"},
       {"AutofillAi entity record types used", ""},
       {"AutofillAi entity types used", ""},
+      {"BNPL used", "false"},
+      {"Time since last Autofill use", "0"}};
+  EXPECT_CALL(autofill_client(), TriggerPersonalizationAndTrustSurveys(
+                                     Not(FillingProduct::kCreditCard), _))
+      .Times(0);
+  EXPECT_CALL(autofill_client(), TriggerPersonalizationAndTrustSurveys(
+                                     FillingProduct::kCreditCard,
+                                     Not(expected_field_filling_stats_data)))
+      .Times(0);
+  EXPECT_CALL(autofill_client(), TriggerPersonalizationAndTrustSurveys(
+                                     FillingProduct::kCreditCard,
+                                     expected_field_filling_stats_data));
+
+  FormSubmitted(response_data);
+}
+
+// Tests that the personalization survey records when a credit card form was
+// filled using a BNPL virtual card.
+TEST_F(BrowserAutofillManagerTest, PersonalizationAndTrust_CreditCard_Bnpl) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillPersonalizationAndTrustCreditCardSurvey);
+
+  CreditCard bnpl_card = test::GetCreditCard();
+  bnpl_card.set_issuer_id(
+      ConvertToBnplIssuerIdString(BnplIssuer::IssuerId::kBnplAffirm));
+  bnpl_card.set_is_bnpl_card(true);
+  personal_data().payments_data_manager().AddCreditCard(bnpl_card);
+
+  const FormData form =
+      test::GetFormData({.fields = {{.role = CREDIT_CARD_NAME_FULL,
+                                     .autocomplete_attribute = "cc-name"},
+                                    {.role = CREDIT_CARD_NUMBER,
+                                     .autocomplete_attribute = "cc-number"}}});
+
+  FormsSeen({form});
+  const FormData response_data =
+      AutofillFormAndGetResults(form, form.fields()[0], bnpl_card.guid());
+
+  const HatsSurveyStringData expected_field_filling_stats_data = {
+      {"All field types", "CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER"},
+      {"Total number of fields in form", "2"},
+      {"Number of correctly filled fields", "2"},
+      {"Number of fields that were submitted empty without filling", "0"},
+      {"Number of fields that were modified after filling", "0"},
+      {"Number of fields that were cleared after filling", "0"},
+      {"Number of fields that were manually filled without filling", "0"},
+      {"Filling products used", "CreditCard"},
+      {"AutofillAi entity record types used", ""},
+      {"AutofillAi entity types used", ""},
+      {"BNPL used", "true"},
       {"Time since last Autofill use", "0"}};
   EXPECT_CALL(autofill_client(), TriggerPersonalizationAndTrustSurveys(
                                      Not(FillingProduct::kCreditCard), _))
@@ -7957,6 +8010,7 @@ TEST_F(BrowserAutofillManagerTest,
       {"Filling products used", "Address, OneTimePassword"},
       {"AutofillAi entity record types used", ""},
       {"AutofillAi entity types used", ""},
+      {"BNPL used", "false"},
       {"Time since last Autofill use", "0"}};
 
   // OTP was used and should take precedence over Address.

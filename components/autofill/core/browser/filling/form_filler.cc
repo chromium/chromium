@@ -1332,6 +1332,11 @@ void FormFiller::UpdateCacheOnFill(
           std::get<const AutofillProfile*>(augmented_filling_payload.variant)
               ->guid());
     }
+    if (filling_product == FillingProduct::kCreditCard &&
+        std::get<const CreditCard*>(augmented_filling_payload.variant)
+            ->is_bnpl_card()) {
+      field->set_was_filled_with_bnpl(true);
+    }
   }
 }
 
