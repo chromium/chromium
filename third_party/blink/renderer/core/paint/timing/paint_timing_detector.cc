@@ -24,7 +24,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
-#include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
+#include "third_party/blink/renderer/core/paint/timing/element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_manager.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
@@ -175,7 +175,7 @@ void PaintTimingDetector::NotifyBackgroundImagePaint(
   }
 
   auto& paint_timing = PaintTiming::From(object->GetDocument());
-  paint_timing.GetImageElementTiming()->NotifyBackgroundImagePaint(
+  paint_timing.GetElementTiming()->NotifyBackgroundImagePaint(
       node, style_image, current_paint_chunk_properties, image_border);
 
   if (!IsBackgroundImageContentful(*object, image)) {
@@ -200,7 +200,7 @@ void PaintTimingDetector::NotifyImagePaint(
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
     const gfx::Rect& image_border) {
   auto& paint_timing = PaintTiming::From(object.GetDocument());
-  paint_timing.GetImageElementTiming()->NotifyImagePaint(
+  paint_timing.GetElementTiming()->NotifyImagePaint(
       object, media_timing, current_paint_chunk_properties, image_border);
 
   if (IgnorePaintTimingScope::ShouldIgnore()) {
@@ -258,8 +258,7 @@ void PaintTimingDetector::NotifyBackgroundImageFinished(
 void PaintTimingDetector::NotifyImageRemoved(
     const LayoutObject& object,
     const ImageResourceContent* cached_image) {
-  paint_timing_->GetImageElementTiming()->NotifyImageRemoved(object,
-                                                             cached_image);
+  paint_timing_->GetElementTiming()->NotifyImageRemoved(object, cached_image);
   image_paint_timing_detector_->NotifyImageRemoved(object, cached_image);
 }
 

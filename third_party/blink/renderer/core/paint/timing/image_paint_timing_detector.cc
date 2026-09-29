@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/timing/effective_visual_size_result.h"
-#include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_calculator.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_manager.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"

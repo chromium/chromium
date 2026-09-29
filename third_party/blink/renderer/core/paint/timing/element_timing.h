@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_IMAGE_ELEMENT_TIMING_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_IMAGE_ELEMENT_TIMING_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_ELEMENT_TIMING_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_ELEMENT_TIMING_H_
 
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -27,21 +27,28 @@ class ImageResourceContent;
 class PropertyTreeStateOrAlias;
 class StyleImage;
 
-// ImageElementTiming is responsible for tracking the paint timings for <img>
-// elements for a given window.
-class CORE_EXPORT ImageElementTiming final
-    : public GarbageCollected<ImageElementTiming>,
-      public PaintTimingClient {
+// ElementTiming is responsible for tracking the paint timing and emitting
+// performance entries for image and text elements marked with a "elementtiming"
+// or "containertiming" attribute.
+//
+// TODO(crbug.com/559075199): Decouple `ContainerTiming` from this class.
+class CORE_EXPORT ElementTiming final : public GarbageCollected<ElementTiming>,
+                                        public PaintTimingClient {
  public:
   // The maximum amount of characters included in Element Timing and Largest
   // Contentful Paint for inline images.
   static constexpr const unsigned kInlineImageMaxChars = 100;
 
-  ImageElementTiming(LocalDOMWindow&, const ImagePaintTimingDetector&);
-  ImageElementTiming(const ImageElementTiming&) = delete;
-  ImageElementTiming& operator=(const ImageElementTiming&) = delete;
+  ElementTiming(LocalDOMWindow&, const ImagePaintTimingDetector&);
+  ElementTiming(const ElementTiming&) = delete;
+  ElementTiming& operator=(const ElementTiming&) = delete;
 
-  static ImageElementTiming& From(LocalDOMWindow&);
+  static ElementTiming& From(LocalDOMWindow&);
+
+  // Checks whether an element or layout object is explicitly marked with the
+  // 'elementtiming' attribute.
+  static bool IsExplicitlyRegisteredForElementTiming(const Element*);
+  static bool IsExplicitlyRegisteredForElementTiming(const LayoutObject&);
 
   // PaintTimingClient:
   void OnFramePresented(const HeapVector<Member<ImageRecord>>&,
@@ -71,12 +78,12 @@ class CORE_EXPORT ImageElementTiming final
   HeapVector<Member<ElementTimingInfo>> TakeElementTimingsOnPaintFinished();
 
  private:
-  friend class ImageElementTimingTest;
+  friend class ElementTimingTest;
 
   // Only valid at paint time: the answer comes from the tracker, which the
   // pre-paint walk populates.
   bool ContributesToContainerTiming(Element*);
-  bool NeededForTiming(const LayoutObject&);
+  bool IsNeededForTiming(const LayoutObject&);
 
   void EnsureContainerTiming();
   bool IsContainerTimingEnabled();
@@ -89,7 +96,7 @@ class CORE_EXPORT ImageElementTiming final
       const gfx::Rect& image_border,
       const StyleImage*);
 
-  void QueueElementTimingInfoForReporingIfNeeded(
+  void QueueElementTimingInfoForReportingIfNeeded(
       Node& generating_node,
       const LayoutObject&,
       const ImageResourceContent&,
@@ -111,4 +118,4 @@ class CORE_EXPORT ImageElementTiming final
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_IMAGE_ELEMENT_TIMING_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_TIMING_ELEMENT_TIMING_H_

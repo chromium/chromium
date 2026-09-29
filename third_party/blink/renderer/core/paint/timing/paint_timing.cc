@@ -27,8 +27,8 @@
 #include "third_party/blink/renderer/core/loader/progress_tracker.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/paint/timing/element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/element_timing_info.h"
-#include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/largest_contentful_paint_manager.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_client.h"
@@ -273,9 +273,9 @@ void PaintTiming::MarkPaintTimingInternal() {
   HeapVector<Member<ImageRecord>> image_records =
       paint_timing_detector_->GetImagePaintTimingDetector()
           .TakeImageRecordsOnPaintFinished();
-  CHECK(image_element_timing_);
+  CHECK(element_timing_);
   HeapVector<Member<ElementTimingInfo>> image_element_timings =
-      image_element_timing_->TakeElementTimingsOnPaintFinished();
+      element_timing_->TakeElementTimingsOnPaintFinished();
 
   // Non-specced behavior: take the list of animated images that are ready for
   // the first animated frame timestamp. LCP uses this timestamp for metrics.
@@ -655,7 +655,7 @@ void PaintTiming::SetPaintTimingInfoForPaintTimingRecords(
 void PaintTiming::Trace(Visitor* visitor) const {
   visitor->Trace(paint_timing_detector_);
   visitor->Trace(fmp_detector_);
-  visitor->Trace(image_element_timing_);
+  visitor->Trace(element_timing_);
   visitor->Trace(text_element_timing_);
   visitor->Trace(largest_contentful_paint_manager_);
   visitor->Trace(callback_manager_);
@@ -673,7 +673,7 @@ PaintTiming::PaintTiming(Document& document)
   // isn't guaranteed since it's created lazily.
   if (LocalDOMWindow* window = document.domWindow()) {
     text_element_timing_ = MakeGarbageCollected<TextElementTiming>(*window);
-    image_element_timing_ = MakeGarbageCollected<ImageElementTiming>(
+    element_timing_ = MakeGarbageCollected<ElementTiming>(
         *window, paint_timing_detector_->GetImagePaintTimingDetector());
     largest_contentful_paint_manager_ =
         MakeGarbageCollected<LargestContentfulPaintManager>(
@@ -682,7 +682,7 @@ PaintTiming::PaintTiming(Document& document)
     // other specs in https://w3c.github.io/paint-timing/#mark-paint-timing.
     AddClient(largest_contentful_paint_manager_);
     AddClient(text_element_timing_);
-    AddClient(image_element_timing_);
+    AddClient(element_timing_);
   }
 }
 

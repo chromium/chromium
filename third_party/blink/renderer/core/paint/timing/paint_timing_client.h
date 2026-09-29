@@ -42,7 +42,7 @@ class PaintTimingClient : public GarbageCollectedMixin {
   // and text records.
   //
   // TODO(crbug.com/535432431): Remove the ElementTimingInfo vector once
-  // ImageElementTiming uses ImagePaintTimingDetector.
+  // ElementTiming uses ImagePaintTimingDetector.
   virtual void OnFramePresented(const HeapVector<Member<ImageRecord>>&,
                                 const HeapVector<Member<TextRecord>>&,
                                 const HeapVector<Member<ElementTimingInfo>>&,

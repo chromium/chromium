@@ -17,7 +17,7 @@ namespace blink {
 class LocalFrame;
 class PropertyTreeStateOrAlias;
 
-// Class containing methods shared between ImageElementTiming and
+// Class containing methods shared between ElementTiming and
 // TextElementTiming.
 class ElementTimingUtils {
   STATIC_ONLY(ElementTimingUtils);

@@ -12,7 +12,6 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/timing/element_timing_utils.h"
-#include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_record.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/platform/graphics/paint/float_clip_rect.h"

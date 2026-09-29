@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html/loading_attribute.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
-#include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
+#include "third_party/blink/renderer/core/paint/timing/element_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/image_paint_timing_detector.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
@@ -201,7 +201,7 @@ void LargestContentfulPaintCalculator::UpdateWebExposedLargestContentfulImage(
   const String& image_string = url.GetString();
   const String& image_url =
       url.ProtocolIsData()
-          ? image_string.substr(0, ImageElementTiming::kInlineImageMaxChars)
+          ? image_string.substr(0, ElementTiming::kInlineImageMaxChars)
           : image_string;
   // Do not expose element attribution from shadow trees.
   Element* image_element =

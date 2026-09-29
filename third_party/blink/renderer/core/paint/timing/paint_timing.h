@@ -31,10 +31,10 @@
 namespace blink {
 class AnimationFrameTimingInfo;
 struct DOMPaintTimingInfo;
+class ElementTiming;
 struct ElementTimingInfo;
 class LargestContentfulPaintManager;
 class ImageRecord;
-class ImageElementTiming;
 class LocalFrame;
 class PaintTimingClient;
 class PaintTimingDetector;
@@ -226,7 +226,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
     return *paint_timing_detector_.Get();
   }
 
-  ImageElementTiming* GetImageElementTiming() { return image_element_timing_; }
+  ElementTiming* GetElementTiming() { return element_timing_; }
 
   // Adds a `PaintTimingClient` to observe contentful paints. The client must
   // not have been previously added.
@@ -415,7 +415,7 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   base::TimeTicks lcp_mouse_over_dispatch_time_;
 
   Member<PaintTimingDetector> paint_timing_detector_;
-  Member<ImageElementTiming> image_element_timing_;
+  Member<ElementTiming> element_timing_;
   Member<TextElementTiming> text_element_timing_;
   Member<LargestContentfulPaintManager> largest_contentful_paint_manager_;
   Member<FirstMeaningfulPaintDetector> fmp_detector_;

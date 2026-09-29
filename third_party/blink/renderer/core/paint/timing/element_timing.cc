@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
+#include "third_party/blink/renderer/core/paint/timing/element_timing.h"
 
 #include <optional>
 
@@ -39,9 +39,9 @@
 
 namespace blink {
 
-namespace internal {
-
-bool IsExplicitlyRegisteredForElementTiming(const Element* element) {
+// static
+bool ElementTiming::IsExplicitlyRegisteredForElementTiming(
+    const Element* element) {
   if (!element) {
     return false;
   }
@@ -53,14 +53,13 @@ bool IsExplicitlyRegisteredForElementTiming(const Element* element) {
   return element->FastHasAttribute(html_names::kElementtimingAttr);
 }
 
-// "CORE_EXPORT" is needed to make this function visible to tests.
-bool CORE_EXPORT
-IsExplicitlyRegisteredForElementTiming(const LayoutObject& layout_object) {
+// static
+bool ElementTiming::IsExplicitlyRegisteredForElementTiming(
+    const LayoutObject& layout_object) {
   const auto* element = DynamicTo<Element>(layout_object.GeneratingNode());
 
   return IsExplicitlyRegisteredForElementTiming(element);
 }
-}  // namespace internal
 
 AtomicString ImagePaintString() {
   DEFINE_STATIC_LOCAL(const AtomicString, kImagePaint, ("image-paint"));
@@ -68,16 +67,15 @@ AtomicString ImagePaintString() {
 }
 
 // static
-ImageElementTiming& ImageElementTiming::From(LocalDOMWindow& window) {
-  return CHECK_DEREF(
-      PaintTiming::From(*window.document()).GetImageElementTiming());
+ElementTiming& ElementTiming::From(LocalDOMWindow& window) {
+  return CHECK_DEREF(PaintTiming::From(*window.document()).GetElementTiming());
 }
 
-ImageElementTiming::ImageElementTiming(LocalDOMWindow& window,
-                                       const ImagePaintTimingDetector& detector)
+ElementTiming::ElementTiming(LocalDOMWindow& window,
+                             const ImagePaintTimingDetector& detector)
     : window_(&window), image_paint_timing_detector_(&detector) {}
 
-void ImageElementTiming::NotifyImagePaint(
+void ElementTiming::NotifyImagePaint(
     const LayoutObject& layout_object,
     const MediaTiming& media_timing,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
@@ -94,7 +92,7 @@ void ImageElementTiming::NotifyImagePaint(
     if (!RuntimeEnabledFeatures::AllImagesPaintedSentToElementTimingEnabled()) {
       return;
     }
-    if (NeededForTiming(layout_object)) {
+    if (IsNeededForTiming(layout_object)) {
       UseCounter::Count(layout_object.GetDocument(),
                         WebFeature::kImageElementTimingNotImageOrVideoNode);
     }
@@ -113,7 +111,7 @@ void ImageElementTiming::NotifyImagePaint(
                              nullptr);
 }
 
-void ImageElementTiming::NotifyBackgroundImagePaint(
+void ElementTiming::NotifyBackgroundImagePaint(
     Node& generating_node,
     const StyleImage& background_image,
     const PropertyTreeStateOrAlias& current_paint_chunk_properties,
@@ -128,7 +126,7 @@ void ImageElementTiming::NotifyBackgroundImagePaint(
                              image_border, &background_image);
 }
 
-void ImageElementTiming::NotifyImagePaintedInternal(
+void ElementTiming::NotifyImagePaintedInternal(
     Node& generating_node,
     const LayoutObject& layout_object,
     const MediaTiming& media_timing,
@@ -137,7 +135,8 @@ void ImageElementTiming::NotifyImagePaintedInternal(
     const StyleImage* style_image) {
   auto* cached_image = DynamicTo<ImageResourceContent>(media_timing);
   // TODO(crbug.com/537185406): First video frame is not yet supported for
-  // Element Timing. Fix this once ImageElementTiming is a PaintTiming client.
+  // element timing. Fix this once `ElementTiming` uses the `ImageRecord`s from
+  // ImagePaintTimingDetector.
   if (!cached_image) {
     return;
   }
@@ -166,12 +165,12 @@ void ImageElementTiming::NotifyImagePaintedInternal(
       style_image ? image_paint_timing_detector_->LoadTime(*style_image)
                   : image_paint_timing_detector_->LoadTime(&layout_object,
                                                            cached_image);
-  QueueElementTimingInfoForReporingIfNeeded(
+  QueueElementTimingInfoForReportingIfNeeded(
       generating_node, layout_object, *cached_image,
       current_paint_chunk_properties, image_border, load_time);
 }
 
-void ImageElementTiming::QueueElementTimingInfoForReporingIfNeeded(
+void ElementTiming::QueueElementTimingInfoForReportingIfNeeded(
     Node& generating_node,
     const LayoutObject& layout_object,
     const ImageResourceContent& cached_image,
@@ -180,7 +179,7 @@ void ImageElementTiming::QueueElementTimingInfoForReporingIfNeeded(
     base::TimeTicks load_time) {
   // If this content isn't needed for element timing or container timing,
   // there's nothing to do.
-  if (!NeededForTiming(layout_object)) {
+  if (!IsNeededForTiming(layout_object)) {
     return;
   }
 
@@ -230,11 +229,11 @@ void ImageElementTiming::QueueElementTimingInfoForReporingIfNeeded(
 }
 
 HeapVector<Member<ElementTimingInfo>>
-ImageElementTiming::TakeElementTimingsOnPaintFinished() {
+ElementTiming::TakeElementTimingsOnPaintFinished() {
   return std::move(element_timings_);
 }
 
-void ImageElementTiming::OnFramePresented(
+void ElementTiming::OnFramePresented(
     const HeapVector<Member<ImageRecord>>&,
     const HeapVector<Member<TextRecord>>&,
     const HeapVector<Member<ElementTimingInfo>>& element_timings,
@@ -244,8 +243,7 @@ void ImageElementTiming::OnFramePresented(
   CHECK(performance);
 
   for (ElementTimingInfo* painted_image : element_timings) {
-    if (internal::IsExplicitlyRegisteredForElementTiming(
-            painted_image->element)) {
+    if (IsExplicitlyRegisteredForElementTiming(painted_image->element)) {
       performance->AddElementTiming(
           ImagePaintString(), painted_image->url, painted_image->rect,
           paint_timing_info, painted_image->response_end,
@@ -260,8 +258,8 @@ void ImageElementTiming::OnFramePresented(
   }
 }
 
-void ImageElementTiming::NotifyImageRemoved(const LayoutObject& layout_object,
-                                            const ImageResourceContent* image) {
+void ElementTiming::NotifyImageRemoved(const LayoutObject& layout_object,
+                                       const ImageResourceContent* image) {
   if (paint_timing::ShouldIgnoreImageContentForPaintTiming(layout_object,
                                                            image)) {
     return;
@@ -269,30 +267,30 @@ void ImageElementTiming::NotifyImageRemoved(const LayoutObject& layout_object,
   recorded_images_.erase(MediaRecordId::GenerateHash(&layout_object, image));
 }
 
-void ImageElementTiming::EnsureContainerTiming() {
+void ElementTiming::EnsureContainerTiming() {
   if (container_timing_) {
     return;
   }
   container_timing_ = ContainerTiming::From(*window_);
 }
 
-bool ImageElementTiming::ContributesToContainerTiming(Element* element) {
+bool ElementTiming::ContributesToContainerTiming(Element* element) {
   return element && IsContainerTimingEnabled() &&
          ContainerTiming::ContributesToContainerTiming(element);
 }
 
-bool ImageElementTiming::NeededForTiming(const LayoutObject& layout_object) {
+bool ElementTiming::IsNeededForTiming(const LayoutObject& layout_object) {
   auto* element = DynamicTo<Element>(layout_object.GeneratingNode());
-  return internal::IsExplicitlyRegisteredForElementTiming(element) ||
+  return IsExplicitlyRegisteredForElementTiming(element) ||
          ContributesToContainerTiming(element);
 }
 
-bool ImageElementTiming::IsContainerTimingEnabled() {
+bool ElementTiming::IsContainerTimingEnabled() {
   WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
   return performance ? performance->IsContainerTimingEnabled() : false;
 }
 
-void ImageElementTiming::Trace(Visitor* visitor) const {
+void ElementTiming::Trace(Visitor* visitor) const {
   visitor->Trace(window_);
   visitor->Trace(element_timings_);
   visitor->Trace(container_timing_);

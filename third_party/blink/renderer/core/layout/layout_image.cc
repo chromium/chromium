@@ -82,7 +82,7 @@ void LayoutImage::InsertedIntoTree() {
   // its parent.
   //
   // TODO(crbug.com/535432431): This may no longer be necessary once
-  // ImageElementTiming is a PaintTiming client.
+  // ElementTiming is a PaintTiming client.
   if (!GetNode() && GetDocument().domWindow() && image_content &&
       image_content->IsLoaded()) {
     PaintTimingDetector::From(GetDocument())

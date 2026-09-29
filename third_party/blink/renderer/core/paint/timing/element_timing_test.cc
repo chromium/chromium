@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/paint/timing/image_element_timing.h"
+#include "third_party/blink/renderer/core/paint/timing/element_timing.h"
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -23,11 +23,6 @@ using testing::IsEmpty;
 
 namespace blink {
 
-namespace internal {
-extern bool IsExplicitlyRegisteredForElementTiming(
-    const LayoutObject& layout_object);
-}
-
 namespace {
 
 // Simple matcher for matching the id of a `PerformanceElementTiming` entry.
@@ -38,8 +33,8 @@ MATCHER_P(ForId, id, "") {
 
 }  // namespace
 
-class ImageElementTimingTest : public PaintTimingTestBase,
-                               public PaintTestConfigurations {
+class ElementTimingTest : public PaintTimingTestBase,
+                          public PaintTestConfigurations {
  protected:
   // Returns true if the LayoutObject/Image with the given hash was recorded,
   // meaning it was processed. Note that this does not mean it an entry will be
@@ -49,12 +44,12 @@ class ImageElementTimingTest : public PaintTimingTestBase,
   }
 
   bool IsRecorded(const LayoutObject* object, const MediaTiming* timing) {
-    return ImageElementTiming::From(*GetDocument().domWindow())
+    return ElementTiming::From(*GetDocument().domWindow())
         .recorded_images_.Contains(MediaRecordId::GenerateHash(object, timing));
   }
 
   unsigned RecordedImagesSize() {
-    return ImageElementTiming::From(*GetDocument().domWindow())
+    return ElementTiming::From(*GetDocument().domWindow())
         .recorded_images_.size();
   }
 
@@ -69,9 +64,9 @@ class ImageElementTimingTest : public PaintTimingTestBase,
   }
 };
 
-INSTANTIATE_PAINT_TEST_SUITE_P(ImageElementTimingTest);
+INSTANTIATE_PAINT_TEST_SUITE_P(ElementTimingTest);
 
-TEST_P(ImageElementTimingTest, TestIsExplicitlyRegisteredForElementTiming) {
+TEST_P(ElementTimingTest, TestIsExplicitlyRegisteredForElementTiming) {
   SetMainFrameBodyContent(R"HTML(
     <img id="missing-attribute" style='width: 100px; height: 100px;'/>
     <img id="unset-attribute" elementtiming
@@ -85,34 +80,34 @@ TEST_P(ImageElementTimingTest, TestIsExplicitlyRegisteredForElementTiming) {
 
   LayoutObject* without_attribute = GetLayoutObjectById("missing-attribute");
   bool actual =
-      internal::IsExplicitlyRegisteredForElementTiming(*without_attribute);
+      ElementTiming::IsExplicitlyRegisteredForElementTiming(*without_attribute);
   EXPECT_FALSE(actual) << "Nodes without an 'elementtiming' attribute should "
                           "not be explicitly registered.";
 
   LayoutObject* with_undefined_attribute =
       GetLayoutObjectById("unset-attribute");
-  actual = internal::IsExplicitlyRegisteredForElementTiming(
+  actual = ElementTiming::IsExplicitlyRegisteredForElementTiming(
       *with_undefined_attribute);
   EXPECT_TRUE(actual) << "Nodes with undefined 'elementtiming' attribute "
                          "should be explicitly registered.";
 
   LayoutObject* with_empty_attribute = GetLayoutObjectById("empty-attribute");
-  actual =
-      internal::IsExplicitlyRegisteredForElementTiming(*with_empty_attribute);
+  actual = ElementTiming::IsExplicitlyRegisteredForElementTiming(
+      *with_empty_attribute);
   EXPECT_TRUE(actual) << "Nodes with an empty 'elementtiming' attribute "
                          "should be explicitly registered.";
 
   LayoutObject* with_explicit_element_timing =
       GetLayoutObjectById("valid-attribute");
-  actual = internal::IsExplicitlyRegisteredForElementTiming(
+  actual = ElementTiming::IsExplicitlyRegisteredForElementTiming(
       *with_explicit_element_timing);
   EXPECT_TRUE(actual) << "Nodes with a non-empty 'elementtiming' attribute "
                          "should be explicitly registered.";
 }
 
-TEST_P(ImageElementTimingTest, IgnoresUnmarkedElement) {
+TEST_P(ElementTimingTest, IgnoresUnmarkedElement) {
   // Tests that, if the 'elementtiming' attribute is missing, the element is
-  // ignored by `ImageElementTiming`.
+  // ignored by `ElementTiming`.
   SetMainFrameBodyContent(R"HTML(
     <img id="target" style='width: 100px; height: 100px;'/>
   )HTML");
@@ -122,7 +117,7 @@ TEST_P(ImageElementTimingTest, IgnoresUnmarkedElement) {
   EXPECT_THAT(GetElementTimingEntries(), IsEmpty());
 }
 
-TEST_P(ImageElementTimingTest, ImageInsideSVG) {
+TEST_P(ElementTimingTest, ImageInsideSVG) {
   SetMainFrameBodyContent(R"HTML(
     <svg>
       <foreignObject width="100" height="100">
@@ -139,7 +134,7 @@ TEST_P(ImageElementTimingTest, ImageInsideSVG) {
   EXPECT_THAT(GetElementTimingEntries(), ElementsAre(ForId("target")));
 }
 
-TEST_P(ImageElementTimingTest, ImageInsideNonRenderedSVG) {
+TEST_P(ElementTimingTest, ImageInsideNonRenderedSVG) {
   SetMainFrameBodyContent(R"HTML(
     <svg mask="url(#mask)">
       <mask id="mask">
@@ -160,7 +155,7 @@ TEST_P(ImageElementTimingTest, ImageInsideNonRenderedSVG) {
   EXPECT_THAT(GetElementTimingEntries(), IsEmpty());
 }
 
-TEST_P(ImageElementTimingTest, ImageRemoved) {
+TEST_P(ElementTimingTest, ImageRemoved) {
   SetMainFrameBodyContent(R"HTML(
     <img elementtiming="will-be-removed" id="target"
          style='width: 100px; height: 100px;'/>
@@ -176,7 +171,7 @@ TEST_P(ImageElementTimingTest, ImageRemoved) {
   EXPECT_EQ(RecordedImagesSize(), 0u);
 }
 
-TEST_P(ImageElementTimingTest, SVGImageRemoved) {
+TEST_P(ElementTimingTest, SVGImageRemoved) {
   SetMainFrameBodyContent(R"HTML(
     <svg>
       <image elementtiming="svg-will-be-removed" id="target"
@@ -194,7 +189,7 @@ TEST_P(ImageElementTimingTest, SVGImageRemoved) {
   EXPECT_EQ(RecordedImagesSize(), 0u);
 }
 
-TEST_P(ImageElementTimingTest, BackgroundImageRemoved) {
+TEST_P(ElementTimingTest, BackgroundImageRemoved) {
   SetMainFrameBodyContent(R"HTML(
     <style>
       #target {
@@ -217,7 +212,7 @@ TEST_P(ImageElementTimingTest, BackgroundImageRemoved) {
   EXPECT_EQ(RecordedImagesSize(), 0u);
 }
 
-TEST_P(ImageElementTimingTest, LateAddedElementTimingBeforePaint) {
+TEST_P(ElementTimingTest, LateAddedElementTimingBeforePaint) {
   SetMainFrameBodyContent(R"HTML(
     <img id="target" style='width: 100px; height: 100px;'/>
   )HTML");
@@ -237,7 +232,7 @@ TEST_P(ImageElementTimingTest, LateAddedElementTimingBeforePaint) {
   EXPECT_THAT(GetElementTimingEntries(), ElementsAre(ForId("target")));
 }
 
-TEST_P(ImageElementTimingTest, LateAddedElementTimingAfterPaint) {
+TEST_P(ElementTimingTest, LateAddedElementTimingAfterPaint) {
   SetBodyInnerHTML(R"HTML(
     <div id="to-be-removed">Text</div>
     <img id="target" style='width: 100px; height: 100px;'/>
@@ -263,7 +258,7 @@ TEST_P(ImageElementTimingTest, LateAddedElementTimingAfterPaint) {
   EXPECT_THAT(GetElementTimingEntries(), IsEmpty());
 }
 
-TEST_P(ImageElementTimingTest, VideoImage_DefaultPosterIgnored) {
+TEST_P(ElementTimingTest, VideoImage_DefaultPosterIgnored) {
   GetDocument().GetSettings()->SetDefaultVideoPosterURL(
       AtomicString(SIMPLE_IMAGE));
   SetBodyInnerHTML(R"HTML(
@@ -275,8 +270,7 @@ TEST_P(ImageElementTimingTest, VideoImage_DefaultPosterIgnored) {
   EXPECT_THAT(GetElementTimingEntries(), IsEmpty());
 }
 
-TEST_P(ImageElementTimingTest,
-       VideoImage_ExplicitPosterRecordedWhenDefaultSet) {
+TEST_P(ElementTimingTest, VideoImage_ExplicitPosterRecordedWhenDefaultSet) {
   GetDocument().GetSettings()->SetDefaultVideoPosterURL(
       AtomicString(SIMPLE_IMAGE));
   SetBodyInnerHTML(R"HTML(
