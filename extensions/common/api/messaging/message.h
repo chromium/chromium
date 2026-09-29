@@ -114,6 +114,7 @@ class Message {
                : mojom::SerializationFormat::kStructuredClone;
   }
   bool user_gesture() const { return user_gesture_; }
+  void set_user_gesture(bool user_gesture) { user_gesture_ = user_gesture; }
   bool from_privileged_context() const { return from_privileged_context_; }
 
  private:

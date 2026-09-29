@@ -5,7 +5,10 @@
 #include "extensions/browser/api/messaging/message_port.h"
 
 #include <optional>
+#include <utility>
 
+#include "content/public/browser/render_frame_host.h"
+#include "extensions/common/api/messaging/message.h"
 #include "extensions/common/api/messaging/port_context.h"
 
 namespace extensions {
@@ -66,6 +69,34 @@ void MessagePort::ClosePort(bool close_channel,
 void MessagePort::PostMessage(Message message) {
   if (!weak_channel_delegate_) {
     return;
+  }
+  // Verify `message.user_gesture()` against the sending frame's browser-side
+  // `HasTransientUserActivation()` state so a compromised frame renderer cannot
+  // arbitrarily forge `user_gesture` set to `true` over Mojo. Unlike
+  // `messaging_util::GetMessageMetadata()` in the renderer, this check does not
+  // query `LastActivationWasRestricted()` because `content::RenderFrameHost`
+  // does not expose `RenderFrameHostImpl::user_activation_state_`'s restricted
+  // state. Additionally, a compromised renderer can still spoof unrestricted
+  // frame user activation via `blink::mojom::LocalFrameHost`'s
+  // `UpdateUserActivationState()` IPC until browser-first user activation
+  // tracking (https://crbug.com/848778) is implemented.
+  if (message.user_gesture()) {
+    // `receivers_.current_context()` is the context
+    // `MessagePort::AddReceiver()` bound to the `mojom::MessagePortHost`
+    // receiver this call arrived on, which identifies the endpoint that sent
+    // `message`. Only frame senders are checked. Service worker senders are not
+    // checked: their gesture is synthesized in the renderer by
+    // `ExtensionInteractionProvider::Scope::ForWorker()` and is not tracked by
+    // the browser, so there is no browser-side state to verify it against.
+    const auto& [sender_process_id, sender_port_context] =
+        receivers_.current_context();
+    if (sender_port_context.is_for_render_frame()) {
+      content::RenderFrameHost* sender_frame = content::RenderFrameHost::FromID(
+          sender_process_id, sender_port_context.frame->routing_id);
+      if (!sender_frame || !sender_frame->HasTransientUserActivation()) {
+        message.set_user_gesture(false);
+      }
+    }
   }
   weak_channel_delegate_->PostMessage(port_id_, std::move(message));
 }
