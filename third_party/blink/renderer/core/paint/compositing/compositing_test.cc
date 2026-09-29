@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/containers/span.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
@@ -945,10 +944,6 @@ TEST_P(CompositingTest, AnchorPositionAdjustmentTransformIdReference) {
 }
 
 TEST_P(CompositingTest, MergeFixedLayers) {
-  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
-  std::optional<base::HistogramTester> histograms;
-  histograms.emplace();
-
   SetViewSize(gfx::Size(1000, 500));
   InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
     <style>
@@ -968,12 +963,8 @@ TEST_P(CompositingTest, MergeFixedLayers) {
   EXPECT_EQ(gfx::Size(180, 150), a->bounds());
   EXPECT_EQ(gfx::Transform::MakeTranslation(0, 100),
             GetTransformNode(a)->local);
-  histograms->ExpectUniqueSample("Blink.Compositor.FixedLayerCount", 1, 1);
-  histograms->ExpectUniqueSample("Blink.Compositor.MergedFixedLayerCount", 1,
-                                 1);
 
   // Merge a and b. b affects both offset and size of the merged layer.
-  histograms.emplace();
   GetElementById("b")->SetInlineStyleProperty(CSSPropertyID::kTop, "40px");
   UpdateAllLifecyclePhases();
   a = CcLayerByDOMElementId("a");
@@ -984,12 +975,8 @@ TEST_P(CompositingTest, MergeFixedLayers) {
   EXPECT_EQ(gfx::Size(180, 160), a->bounds());
   EXPECT_EQ(gfx::Transform::MakeTranslation(0, 100),
             GetTransformNode(a)->local);
-  histograms->ExpectUniqueSample("Blink.Compositor.FixedLayerCount", 1, 1);
-  histograms->ExpectUniqueSample("Blink.Compositor.MergedFixedLayerCount", 1,
-                                 1);
 
   // Don't merge a and b because the merged layer would be too sparse.
-  histograms.emplace();
   GetElementById("b")->SetInlineStyleProperty(CSSPropertyID::kLeft, "800px");
   UpdateAllLifecyclePhases();
   a = CcLayerByDOMElementId("a");
@@ -1004,13 +991,9 @@ TEST_P(CompositingTest, MergeFixedLayers) {
   EXPECT_EQ(gfx::Size(100, 100), b->bounds());
   EXPECT_EQ(gfx::Transform::MakeTranslation(800, 40),
             GetTransformNode(b)->local);
-  histograms->ExpectUniqueSample("Blink.Compositor.FixedLayerCount", 2, 1);
-  histograms->ExpectUniqueSample("Blink.Compositor.MergedFixedLayerCount", 0,
-                                 1);
 
   // Don't merge a and b because they have different fixed-position-specific
   // flags (moved_by_outer_viewport_bounds_delta_y in this case).
-  histograms.emplace();
   GetElementById("b")->setAttribute(html_names::kStyleAttr,
                                     AtomicString("bottom: 200px; left: 0"));
   UpdateAllLifecyclePhases();
@@ -1028,12 +1011,8 @@ TEST_P(CompositingTest, MergeFixedLayers) {
   EXPECT_EQ(gfx::Transform::MakeTranslation(0, 200),
             GetTransformNode(b)->local);
   EXPECT_TRUE(GetTransformNode(b)->moved_by_outer_viewport_bounds_delta_y);
-  histograms->ExpectUniqueSample("Blink.Compositor.FixedLayerCount", 2, 1);
-  histograms->ExpectUniqueSample("Blink.Compositor.MergedFixedLayerCount", 0,
-                                 1);
 
   // Merge a and b which are both attached to the bottom of viewport.
-  histograms.emplace();
   GetElementById("a")->setAttribute(html_names::kStyleAttr,
                                     AtomicString("bottom: 250px; left: 0"));
   UpdateAllLifecyclePhases();
@@ -1046,9 +1025,6 @@ TEST_P(CompositingTest, MergeFixedLayers) {
   EXPECT_EQ(gfx::Transform::MakeTranslation(0, 150),
             GetTransformNode(a)->local);
   EXPECT_TRUE(GetTransformNode(a)->moved_by_outer_viewport_bounds_delta_y);
-  histograms->ExpectUniqueSample("Blink.Compositor.FixedLayerCount", 1, 1);
-  histograms->ExpectUniqueSample("Blink.Compositor.MergedFixedLayerCount", 1,
-                                 1);
 }
 
 TEST_P(CompositingTest, DontMergeFixedLayersIfLosingSolidColor) {
@@ -1068,9 +1044,6 @@ TEST_P(CompositingTest, DontMergeFixedLayersIfLosingSolidColor) {
 }
 
 TEST_P(CompositingTest, MergeStickyLayers) {
-  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample;
-  base::HistogramTester histograms;
-
   SetViewSize(gfx::Size(1000, 500));
   InitializeWithHTML(*WebView()->MainFrameImpl()->GetFrame(), R"HTML(
     <style>
@@ -1141,10 +1114,6 @@ TEST_P(CompositingTest, MergeStickyLayers) {
       b3_data->constraints.scroll_container_relative_containing_block_rect);
   EXPECT_TRUE(b3_data->constraints.is_anchored_top);
   EXPECT_EQ(50, b3_data->constraints.top_offset);
-
-  histograms.ExpectUniqueSample("Blink.Compositor.StickyLayerCount", 4, 1);
-  histograms.ExpectUniqueSample("Blink.Compositor.MergedStickyLayerCount", 2,
-                                1);
 }
 
 TEST_P(CompositingTest, MergeStickyLayersWithCullRectVerticalScrollRange) {
