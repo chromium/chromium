@@ -1047,6 +1047,15 @@ MP4 file with SMPTE ST 2094-50 timed metadata track using cdsc track reference.
 #### agtm-metadata-rndr-track.mp4
 MP4 file with SMPTE ST 2094-50 timed metadata track using rndr track reference.
 
+#### staircase-pq-av1-st-2094-50-rndr.mp4
+A PQ AV1 video of a staircase gradient with 8 steps. A black box moves across
+the otherwise unchanging background at 1 step per second. A SMPTE ST 2094-50
+timed metadata track (using an rndr track reference) changes the metadata each
+second so that the step that the black box is currently on is white (by
+changing the HDR reference white, with tone mapping done by clamping). The
+samples of the timed metadata track are at the start of the file, before all
+of the video samples.
+
 #### av1-I-frame-320x240-agtm
 Same as av1-I-frame-320x240 but with an AGTM ITU_T35 metadata OBU added.
 

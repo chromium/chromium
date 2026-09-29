@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cmath>
 #include <memory>
 #include <string>
 #include <utility>
@@ -50,6 +51,7 @@
 #include "media/mojo/services/gpu_mojo_media_client_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_space.h"
+#include "ui/gfx/hdr_metadata.h"
 #include "ui/gfx/switches.h"
 
 using ::testing::_;
@@ -344,6 +346,23 @@ class FFmpegDemuxerTest : public testing::Test {
     WaitableMessageLoopEvent event;
     demuxer_->Seek(seek_target, event.GetPipelineStatusCB());
     event.RunAndWaitForStatus(PIPELINE_OK);
+  }
+
+  // Reads a single buffer from `stream`, which must succeed.
+  scoped_refptr<DecoderBuffer> ReadBuffer(DemuxerStream* stream) {
+    scoped_refptr<DecoderBuffer> buffer;
+    base::RunLoop run_loop;
+    stream->Read(1, base::BindLambdaForTesting(
+                        [&](DemuxerStream::Status status,
+                            DemuxerStream::DecoderBufferVector buffers) {
+                          CHECK_EQ(status, DemuxerStream::kOk);
+                          CHECK_EQ(buffers.size(), 1u);
+                          buffer = std::move(buffers[0]);
+                          run_loop.Quit();
+                        }));
+    run_loop.Run();
+    task_environment_.RunUntilIdle();
+    return buffer;
   }
 
   int64_t GetExpectedMemoryUsage(int number_of_buffers, int data_size) const {
@@ -1973,6 +1992,49 @@ TEST_F(FFmpegDemuxerTest, AgtmMetadataMp4RndrTrack) {
   DemuxerStream* video = GetStream(DemuxerStream::VIDEO);
   Read(video, FROM_HERE, 40, 100000, true, DemuxerStream::Status::kOk,
        base::TimeDelta(), true);
+}
+
+// All of the metadata samples are at the start of the file, so seeking to the
+// middle of the file skips over them. Seeking discards all cached metadata, so
+// verify that the metadata that applies to the frames that are read after
+// seeking is demuxed again and attached to them.
+TEST_F(FFmpegDemuxerTest, AgtmMetadataMp4Seek) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {features::kHdrAgtm, kFFmpegDemuxerIT35MetadataTrack}, {});
+  CreateDemuxer("staircase-pq-av1-st-2094-50-rndr.mp4");
+  InitializeDemuxer();
+  DemuxerStream* video = GetStream(DemuxerStream::VIDEO);
+
+  // Reads a buffer from `video`, and verifies that it is the keyframe at
+  // `timestamp_us` with the AGTM metadata `serialized_agtm`.
+  auto read_and_verify = [&](int64_t timestamp_us,
+                             base::span<const uint8_t> serialized_agtm) {
+    scoped_refptr<DecoderBuffer> buffer = ReadBuffer(video);
+    ASSERT_TRUE(buffer);
+    EXPECT_TRUE(buffer->is_key_frame());
+    EXPECT_EQ(buffer->timestamp().InMicroseconds(), timestamp_us);
+    ASSERT_TRUE(buffer->side_data());
+    ASSERT_TRUE(buffer->side_data()->hdr_metadata.HasAgtm());
+
+    gfx::HDRMetadata expected;
+    expected.SetSerializedAgtm(serialized_agtm);
+    ASSERT_TRUE(expected.HasAgtm());
+    EXPECT_EQ(buffer->side_data()->hdr_metadata.GetAgtm(), expected.GetAgtm());
+  };
+
+  // Reading resumes at the keyframe at 161/30 seconds, which is in the
+  // metadata sample for [5, 6).
+  Seek(base::Seconds(6));
+  read_and_verify(
+      std::lround(161.0 * base::Time::kMicrosecondsPerSecond / 30),
+      std::to_array<uint8_t>({0x00, 0xc0, 0x03, 0xf7, 0x59, 0xdc, 0x04}));
+
+  // Seeking back to the start resumes at the first keyframe, which is in the
+  // metadata sample for [0, 1).
+  Seek(base::TimeDelta());
+  read_and_verify(
+      0, std::to_array<uint8_t>({0x00, 0xc0, 0x00, 0x05, 0xea, 0x60, 0x04}));
 }
 
 #endif  // BUILDFLAG(ENABLE_AV1_DECODER)

@@ -378,9 +378,9 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
 
   // The timed metadata tracks and the render streams that reference them.
   //
-  // Nothing prunes the metadata that these accumulate, so they grow for the
-  // duration of playback, and are invisible to IsMaxMemoryUsageReached(),
-  // however adjacent samples are deduped.
+  // The metadata that these accumulate is only discarded when seeking, so they
+  // grow for the duration of linear playback, and are invisible to
+  // IsMaxMemoryUsageReached(), however adjacent samples are deduped.
   MetadataTrackMap metadata_tracks_;
 
   // |streams_| mirrors the AVStream array in AVFormatContext. It contains
