@@ -2523,6 +2523,9 @@ crbug.com/567254391 virtual/webnn-service-with-gpu/external/wpt/webnn/conformanc
 crbug.com/567254391 virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/triangular.https.any.html?npu [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+external/wpt/html/rendering/non-replaced-elements/form-controls/align-content.tentative.html [ Failure ]
+external/wpt/webdriver/tests/bidi/emulation/set_media_features_override/invalid.py [ Failure ]
+external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_descriptor_response/invalid.py [ Timeout ]
 crbug.com/567295011 external/wpt/css/css-grid/grid-lanes/item-placement/column-negative-margin-003.html [ Failure ]
 crbug.com/567295007 external/wpt/css/css-inline/text-box-trim/text-box-trim-fieldset-001.html [ Failure ]
 crbug.com/567170334 external/wpt/css/css-viewport/zoom/translate-matrix-zoom-anim-accumulate.html [ Failure ]
@@ -2592,7 +2595,7 @@ crbug.com/552761891 external/wpt/css/css-borders/corner-shape/corner-shape-box-s
 crbug.com/552761891 external/wpt/css/css-borders/corner-shape/corner-shape-outline-offset-bevel.html [ Failure ]
 crbug.com/552761891 external/wpt/css/css-borders/corner-shape/corner-shape-outline-offset-elliptical.html [ Failure ]
 crbug.com/552713154 external/wpt/webdriver/tests/bidi/input/perform_actions/duration.py [ Failure Pass ]
-crbug.com/552713154 external/wpt/webdriver/tests/classic/perform_actions/duration.py [ Failure  Timeout Crash ]
+crbug.com/552713154 external/wpt/webdriver/tests/classic/perform_actions/duration.py [ Crash Failure Timeout ]
 crbug.com/552539605 external/wpt/svg/linking/reftests/svgview-and-xywh.html [ Failure ]
 crbug.com/552539605 external/wpt/svg/linking/reftests/svgview-spaces-around-semicolon.html [ Failure ]
 crbug.com/552539605 external/wpt/svg/linking/reftests/svgview-spaces.html [ Failure ]
@@ -2696,8 +2699,8 @@ crbug.com/495814731 external/wpt/css/css-text/text-autospace/text-autospace-ideo
 crbug.com/494337200 external/wpt/svg/struct/reftests/use-foreignObject.html [ Failure ]
 crbug.com/494337166 external/wpt/webdriver/tests/classic/add_cookie/add.py [ Failure ]
 crbug.com/494337166 external/wpt/webdriver/tests/classic/delete_all_cookies/delete.py [ Failure ]
-crbug.com/494337166 external/wpt/webdriver/tests/classic/delete_cookie/delete.py [ Failure  Timeout Crash ]
-crbug.com/494337166 external/wpt/webdriver/tests/classic/element_click/click.py [ Failure  Timeout Crash ]
+crbug.com/494337166 external/wpt/webdriver/tests/classic/delete_cookie/delete.py [ Crash Failure Timeout ]
+crbug.com/494337166 external/wpt/webdriver/tests/classic/element_click/click.py [ Crash Failure Timeout ]
 crbug.com/494337166 external/wpt/webdriver/tests/classic/element_click/interactability.py [ Failure ]
 crbug.com/494337166 external/wpt/webdriver/tests/classic/execute_async_script/execute_async.py [ Failure ]
 crbug.com/494337166 external/wpt/webdriver/tests/classic/execute_script/execute.py [ Failure ]
@@ -2705,7 +2708,7 @@ crbug.com/494337166 external/wpt/webdriver/tests/classic/get_active_element/get.
 crbug.com/494337166 external/wpt/webdriver/tests/classic/get_computed_label/get.py [ Failure ]
 crbug.com/494337166 external/wpt/webdriver/tests/classic/get_computed_role/get.py [ Failure ]
 crbug.com/494337166 external/wpt/webdriver/tests/classic/get_element_css_value/get.py [ Failure ]
-crbug.com/494337166 external/wpt/webdriver/tests/classic/get_element_rect/get.py [ Failure  Timeout Crash ]
+crbug.com/494337166 external/wpt/webdriver/tests/classic/get_element_rect/get.py [ Crash Failure Timeout ]
 crbug.com/494337166 [ Android ] external/wpt/webdriver/tests/classic/get_element_rect/user_prompts.py [ Failure ]
 crbug.com/494337166 external/wpt/webdriver/tests/classic/get_named_cookie/get.py [ Failure ]
 crbug.com/494337166 external/wpt/webdriver/tests/classic/get_page_source/source.py [ Failure ]
@@ -8858,7 +8861,7 @@ crbug.com/466779984 [ Win10.20h2 ] http/tests/inspector-protocol/fetch/legacy/re
 crbug.com/521335938 [ Mac ] external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Skip Timeout ]
 
 # Gardener 2026-06-12
-crbug.com/523199907 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/create/type.py [ Failure Pass  Timeout Crash ]
+crbug.com/523199907 [ Linux ] external/wpt/webdriver/tests/bidi/browsing_context/create/type.py [ Crash Failure Pass Timeout ]
 
 # Gardener 2026-06-15
 crbug.com/523408974 [ Mac15-arm64 ] inspector-protocol/layout-fonts/lang-fallback.js [ Failure Pass ]
@@ -9127,7 +9130,7 @@ crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetoo
 crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_service/simulate_service.py [ Failure Pass ]
 crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_mouse_drag.py [ Failure Pass ]
 crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/input/perform_actions/pointer_mouse_multiclick.py [ Failure Pass ]
-crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Failure Pass  Timeout Crash ]
+crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/cookies.py [ Crash Failure Pass Timeout ]
 crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_response/credentials.py [ Failure Pass ]
 crbug.com/565447575 [ Linux ] external/wpt/webdriver/tests/bidi/network/continue_with_auth/invalid.py [ Failure Pass ]
 crbug.com/559885106 [ Linux ] external/wpt/webdriver/tests/classic/new_session/unhandled_prompt_behavior.py [ Failure Pass ]

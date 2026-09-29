@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] An easing on a keyframe with no value for the target property is not applied
+  assert_equals: width at 0ms should be 100px, interpolated linearly, because the easing on the keyframe with no width is discarded expected "100px" but got "150px"
+Harness: the test ran to completion.
+

@@ -17,7 +17,7 @@ dictionary ScrollTimelineOptions {
 
 [Exposed=Window]
 interface ScrollTimeline : AnimationTimeline {
-  constructor(ViewTimelineOptions options);
+  constructor(optional ScrollTimelineOptions options = {});
   readonly attribute Element? source;
   readonly attribute ScrollAxis axis;
 };
@@ -30,7 +30,7 @@ dictionary ViewTimelineOptions {
 
 [Exposed=Window]
 interface ViewTimeline : ScrollTimeline {
-  constructor(optional ViewTimelineOptions options = {});
+  constructor(ViewTimelineOptions options);
   readonly attribute Element subject;
   readonly attribute CSSNumericValue startOffset;
   readonly attribute CSSNumericValue endOffset;
