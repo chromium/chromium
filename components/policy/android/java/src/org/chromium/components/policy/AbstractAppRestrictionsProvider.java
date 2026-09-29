@@ -17,6 +17,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
@@ -179,17 +180,18 @@ public abstract class AbstractAppRestrictionsProvider extends PolicyProvider {
      * Restrictions to be used during tests. Subsequent attempts to retrieve the restrictions will
      * return the provided bundle instead.
      *
-     * Chrome and WebView tests are set up to use annotations for policy testing and reset the
-     * restrictions to an empty bundle if nothing is specified. To stop using a test bundle,
-     * provide {@code null} as value instead.
+     * <p>Chrome and WebView tests are set up to use annotations for policy testing and reset the
+     * restrictions to an empty bundle if nothing is specified. To stop using a test bundle, provide
+     * {@code null} as value instead.
      */
     @VisibleForTesting
-    public static void setTestRestrictions(Bundle policies) {
+    public static void setTestRestrictions(@Nullable Bundle policies) {
         Log.d(
                 TAG,
                 "Test Restrictions: %s",
                 (policies == null ? null : policies.keySet().toArray()));
         sTestRestrictions = policies;
+        ResettersForTesting.register(() -> sTestRestrictions = null);
     }
 
     /** Returns whether any restrictions were set using {@link #setTestRestrictions}. */
