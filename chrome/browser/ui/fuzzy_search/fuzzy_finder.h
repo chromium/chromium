@@ -29,7 +29,7 @@ struct FuzzySearchResult {
 // for a user query.
 class FuzzyFinder {
  public:
-  explicit FuzzyFinder(std::vector<FuzzySearchItem*> searchable_items);
+  explicit FuzzyFinder(std::vector<raw_ptr<FuzzySearchItem>> searchable_items);
 
   FuzzyFinder(const FuzzyFinder&) = delete;
   FuzzyFinder& operator=(const FuzzyFinder&) = delete;
@@ -85,7 +85,7 @@ class FuzzyFinder {
                         std::u16string_view candidate,
                         std::vector<gfx::Range>* match_ranges = nullptr);
 
-  std::vector<FuzzySearchItem*> searchable_items_;
+  std::vector<raw_ptr<FuzzySearchItem>> searchable_items_;
 
   // Scratch buffers instantiated once upon FuzzyFinder construction and reused
   // across candidate alignments to eliminate dynamic heap allocations during

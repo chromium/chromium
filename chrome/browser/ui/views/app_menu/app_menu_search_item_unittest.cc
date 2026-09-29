@@ -180,7 +180,7 @@ TEST(AppMenuSearchItemTest, IntegratesWithFuzzyFinder) {
                          .SetSecondaryText(u"File")
                          .Build();
 
-  std::vector<FuzzySearchItem*> searchable_items = {search_item.get()};
+  std::vector<raw_ptr<FuzzySearchItem>> searchable_items = {search_item.get()};
   FuzzyFinder finder(std::move(searchable_items));
 
   auto title_results = finder.Find(u"Window", /*max_results=*/5);

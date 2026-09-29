@@ -55,9 +55,9 @@ class FakeFuzzySearchItem : public FuzzySearchItem {
 class FuzzyFinderTest : public testing::Test {
  public:
   // Helper to create and manage the lifetime of FakeFuzzySearchItems.
-  std::vector<FuzzySearchItem*> CreateItems(
+  std::vector<raw_ptr<FuzzySearchItem>> CreateItems(
       const std::vector<ItemData>& items_data) {
-    std::vector<FuzzySearchItem*> raw_items;
+    std::vector<raw_ptr<FuzzySearchItem>> raw_items;
     raw_items.reserve(items_data.size());
     for (const auto& data : items_data) {
       storage_.push_back(std::make_unique<FakeFuzzySearchItem>(

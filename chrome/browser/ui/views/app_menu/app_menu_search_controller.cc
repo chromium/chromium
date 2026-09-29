@@ -114,7 +114,7 @@ void AppMenuSearchController::InitializeSearchIndex() {
   FlattenHierarchyRecursive(menu_root_, AppMenuSearchItem::Type::kAction,
                             /*context=*/u"");
 
-  std::vector<FuzzySearchItem*> raw_items;
+  std::vector<raw_ptr<FuzzySearchItem>> raw_items;
   raw_items.reserve(search_items_.size());
   for (const auto& item : search_items_) {
     raw_items.push_back(item.get());

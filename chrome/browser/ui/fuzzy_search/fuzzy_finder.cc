@@ -87,7 +87,7 @@ enum class MatchStep : uint8_t {
 
 }  // namespace
 
-FuzzyFinder::FuzzyFinder(std::vector<FuzzySearchItem*> searchable_items)
+FuzzyFinder::FuzzyFinder(std::vector<raw_ptr<FuzzySearchItem>> searchable_items)
     : searchable_items_(std::move(searchable_items)) {}
 
 FuzzyFinder::~FuzzyFinder() = default;
