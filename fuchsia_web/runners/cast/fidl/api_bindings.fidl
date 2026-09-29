@@ -10,6 +10,8 @@ using fuchsia.web;
 
 /// Provides Cast platform API binding scripts and methods for connecting those
 /// scripts with Agent backends.
+///
+/// The server closes the channel with a `ZX_OK` epitaph on clean teardown.
 @discoverable
 closed protocol ApiBindings {
     /// Gets the list of bindings to early-inject into the page at load time.

@@ -29,7 +29,7 @@ namespace {
 bool IsChannelClosed(const zx::channel& channel) {
   zx_signals_t observed = 0u;
   zx_status_t status =
-      channel.wait_one(ZX_ERR_PEER_CLOSED, zx::time(), &observed);
+      channel.wait_one(ZX_CHANNEL_PEER_CLOSED, zx::time(), &observed);
   return status == ZX_OK;
 }
 
@@ -133,6 +133,7 @@ void WebContentRunner::CreateWebInstanceAndContext(WebInstanceConfig config) {
   ZX_LOG_IF(ERROR, result != ZX_OK, result)
       << "fdio_service_connect_at(web.Context)";
   context_.set_error_handler([](zx_status_t status) {
-    ZX_LOG(ERROR, status) << "Connection to web.Context lost.";
+    ZX_LOG_IF(ERROR, status != ZX_OK, status)
+        << "Connection to web.Context lost.";
   });
 }

@@ -4,6 +4,10 @@
 
 library chromium.cast;
 
+/// Provides application context and lifecycle notifications for a Cast
+/// component instance.
+///
+/// The server closes the channel with a `ZX_OK` epitaph on clean teardown.
 @discoverable
 closed protocol ApplicationContext {
     /// Returns `session_id` to use in the AudioConsumer API. May return 0

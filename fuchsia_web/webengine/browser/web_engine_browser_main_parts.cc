@@ -319,8 +319,8 @@ void WebEngineBrowserMainParts::WillRunMainMessageLoop(
 void WebEngineBrowserMainParts::PostMainMessageLoopRun() {
   // Context and FrameHost channels may still be active. Close them here so
   // that they are torn-down before their dependent resources.
-  context_bindings_.CloseAll();
-  frame_host_bindings_.CloseAll();
+  context_bindings_.CloseAll(ZX_OK);
+  frame_host_bindings_.CloseAll(ZX_OK);
 
   // These resources must be freed while a MessageLoop is still available, so
   // that they may post cleanup tasks during teardown.

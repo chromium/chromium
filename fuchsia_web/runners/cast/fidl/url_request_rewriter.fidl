@@ -7,6 +7,8 @@ library chromium.cast;
 using fuchsia.web;
 
 /// Provides URL request rewriting rules from the Agent.
+///
+/// The server closes the channel with a `ZX_OK` epitaph on clean teardown.
 @discoverable
 closed protocol UrlRequestRewriteRulesProvider {
     /// Returns a set of URL request rewriting rules. The first call must always
