@@ -85,6 +85,7 @@
 #include "gpu/command_buffer/service/vertex_attrib_manager.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_preferences.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
@@ -2070,6 +2071,8 @@ class GLES2DecoderImpl : public GLES2Decoder, public ErrorStateClient {
 
   // Returns false if a GL error occurred. textures_set is always modified
   // appropriately to indicate whether textures were set, even on failure.
+  // Callers must call RestoreStateForTextures() whenever textures_set is true,
+  // including when this returns false.
   bool PrepareTexturesForRender(bool* textures_set, const char* function_name);
   void RestoreStateForTextures();
 
@@ -9624,12 +9627,15 @@ void GLES2DecoderImpl::RestoreStateForTextures() {
         if (!texture_ref ||
             !texture_manager()->CanRenderWithSampler(
                 texture_ref, sampler_state)) {
+          // PrepareTexturesForRender() may have bound a black texture to the
+          // target matching the sampler type (if it exited early on an earlier
+          // sampler, rebinding the tracked texture is a no-op). Rebind the
+          // sampler's target rather than texture_unit.bind_target, which may
+          // be a different target bound more recently on this unit.
           api()->glActiveTextureFn(GL_TEXTURE0 + texture_unit_index);
-          // Get the texture_ref info that was previously bound here.
-          texture_ref =
-              texture_unit.GetInfoForTarget(texture_unit.bind_target);
-          api()->glBindTextureFn(texture_unit.bind_target,
-                                 texture_ref ? texture_ref->service_id() : 0);
+          api()->glBindTextureFn(
+              GetBindTargetForSamplerType(uniform_info->type),
+              texture_ref ? texture_ref->service_id() : 0);
           continue;
         }
       }
@@ -9993,7 +9999,15 @@ ALWAYS_INLINE error::Error GLES2DecoderImpl::DoMultiDrawArrays(
   // normally but just to pass OpenGL ES 2 conformance where there's no
   // basevertex and baseinstance support.
   {
-    bool textures_set;
+    bool textures_set = false;
+    // PrepareTexturesForRender() can replace texture bindings even when it
+    // fails, so restore them on every exit path to keep the driver's bindings
+    // in sync with the tracked state.
+    absl::Cleanup restore_textures = [this, &textures_set] {
+      if (textures_set) {
+        RestoreStateForTextures();
+      }
+    };
     if (!PrepareTexturesForRender(&textures_set, function_name)) {
       return error::kNoError;
     }
@@ -10035,9 +10049,7 @@ ALWAYS_INLINE error::Error GLES2DecoderImpl::DoMultiDrawArrays(
           transform_feedback_vertices);
     }
 
-    if (textures_set) {
-      RestoreStateForTextures();
-    }
+    std::move(restore_textures).Invoke();
     // only reset base vertex and base instance shader variable when it's
     // possibly non-zero
     if (option == DrawArraysOption::UseBaseInstance) {
@@ -10252,20 +10264,30 @@ ALWAYS_INLINE error::Error GLES2DecoderImpl::DoMultiDrawElements(
   // normally But just to pass OpenGL ES 2 conformance where there's no
   // basevertex and baseinstance support.
   {
-    bool textures_set;
+    bool textures_set = false;
+    // PrepareTexturesForRender() can replace texture bindings even when it
+    // fails, so restore them on every exit path to keep the driver's bindings
+    // in sync with the tracked state.
+    absl::Cleanup restore_textures = [this, &textures_set] {
+      if (textures_set) {
+        RestoreStateForTextures();
+      }
+    };
     if (!PrepareTexturesForRender(&textures_set, function_name)) {
       return error::kNoError;
     }
     ApplyDirtyState();
+    if (!ValidateAndAdjustDrawBuffers(function_name)) {
+      return error::kNoError;
+    }
     // TODO(gman): Refactor to hide these details in BufferManager or
     // VertexAttribManager.
+    // There must be no early return between unbinding the element array buffer
+    // here and rebinding it after the draw loop.
     bool used_client_side_array = false;
     if (element_array_buffer->IsClientSideArray()) {
       used_client_side_array = true;
       api()->glBindBufferFn(GL_ELEMENT_ARRAY_BUFFER, 0);
-    }
-    if (!ValidateAndAdjustDrawBuffers(function_name)) {
-      return error::kNoError;
     }
     if (state_.enable_flags.primitive_restart_fixed_index &&
         feature_info_->feature_flags().emulate_primitive_restart_fixed_index) {
@@ -10320,9 +10342,7 @@ ALWAYS_INLINE error::Error GLES2DecoderImpl::DoMultiDrawElements(
       api()->glBindBufferFn(GL_ELEMENT_ARRAY_BUFFER,
                             element_array_buffer->service_id());
     }
-    if (textures_set) {
-      RestoreStateForTextures();
-    }
+    std::move(restore_textures).Invoke();
     // only reset base vertex and base instance shader variable when it's
     // possibly non-zero
     if (option == DrawElementsOption::UseBaseVertexBaseInstance) {

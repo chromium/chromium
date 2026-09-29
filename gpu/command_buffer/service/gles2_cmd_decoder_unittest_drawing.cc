@@ -605,6 +605,267 @@ TEST_P(GLES2DecoderWithShaderTest, DrawArraysBadTextureUsesBlack) {
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 
+// Regression test for crbug.com/536617330: the black texture is bound to the
+// sampler's target, so that is the target that must be restored, even when a
+// different target was bound to the unit more recently.
+TEST_P(GLES2DecoderWithShaderTest, DrawArraysBadTextureRestoresSamplerTarget) {
+  DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);
+  DoTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 3, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+               shared_memory_id_, kSharedMemoryOffset);
+  EXPECT_CALL(*gl_, GenTextures(_, _))
+      .WillOnce(SetArgPointee<1>(kNewServiceId))
+      .RetiresOnSaturation();
+  GenHelper<cmds::GenTexturesImmediate>(kNewClientId);
+  DoBindTexture(GL_TEXTURE_CUBE_MAP, kNewClientId, kNewServiceId);
+  {
+    InSequence sequence;
+    EXPECT_CALL(*gl_, ActiveTexture(GL_TEXTURE0))
+        .Times(1)
+        .RetiresOnSaturation();
+    EXPECT_CALL(
+        *gl_, BindTexture(GL_TEXTURE_2D, TestHelper::kServiceBlackTexture2dId))
+        .Times(1)
+        .RetiresOnSaturation();
+    EXPECT_CALL(*gl_, DrawArrays(GL_TRIANGLES, 0, kNumVertices))
+        .Times(1)
+        .RetiresOnSaturation();
+    EXPECT_CALL(*gl_, ActiveTexture(GL_TEXTURE0))
+        .Times(1)
+        .RetiresOnSaturation();
+    EXPECT_CALL(*gl_, BindTexture(GL_TEXTURE_2D, kServiceTextureId))
+        .Times(1)
+        .RetiresOnSaturation();
+    EXPECT_CALL(*gl_, ActiveTexture(GL_TEXTURE0))
+        .Times(1)
+        .RetiresOnSaturation();
+  }
+  SetupExpectationsForApplyingDefaultDirtyState();
+  cmds::DrawArrays cmd;
+  cmd.Init(GL_TRIANGLES, 0, kNumVertices);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_NO_ERROR, GetGLError());
+}
+
+namespace {
+
+// Expects the texture on unit 0 to be replaced with the black texture and then
+// rebound, and the client's active texture unit to be restored, without any
+// draw call in between.
+void ExpectBlackTextureBoundThenRestored(MockGLInterface* gl,
+                                         GLuint service_texture_id,
+                                         GLenum active_texture) {
+  InSequence sequence;
+  EXPECT_CALL(*gl, ActiveTexture(GL_TEXTURE0)).Times(1).RetiresOnSaturation();
+  EXPECT_CALL(*gl,
+              BindTexture(GL_TEXTURE_2D, TestHelper::kServiceBlackTexture2dId))
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl, ActiveTexture(GL_TEXTURE0)).Times(1).RetiresOnSaturation();
+  EXPECT_CALL(*gl, BindTexture(GL_TEXTURE_2D, service_texture_id))
+      .Times(1)
+      .RetiresOnSaturation();
+  EXPECT_CALL(*gl, ActiveTexture(active_texture))
+      .Times(1)
+      .RetiresOnSaturation();
+}
+
+}  // namespace
+
+// Regression tests for crbug.com/536617330. The program samples unit 0 before
+// unit 1, so the black texture substituted for unit 0 is already bound when the
+// draw is rejected because of the texture on unit 1.
+class GLES2DecoderTwoSamplerTest : public GLES2DecoderWithShaderTest {
+ public:
+  void SetUp() override {
+    GLES2DecoderTestBase::SetUp();
+
+    static AttribInfo attribs[] = {
+        {kAttrib1Name, kAttrib1Size, kAttrib1Type, kAttrib1Location},
+        {kAttrib2Name, kAttrib2Size, kAttrib2Type, kAttrib2Location},
+        {kAttrib3Name, kAttrib3Size, kAttrib3Type, kAttrib3Location},
+    };
+    static UniformInfo uniforms[] = {
+        {"sampler0", 1, GL_SAMPLER_2D, kSampler0FakeLocation,
+         kSampler0RealLocation, -1},
+        {"sampler1", 1, GL_SAMPLER_2D, kSampler1FakeLocation,
+         kSampler1RealLocation, -1},
+    };
+    SetupShader(attribs, std::size(attribs), uniforms, std::size(uniforms),
+                client_program_id_, kServiceProgramId, client_vertex_shader_id_,
+                kServiceVertexShaderId, client_fragment_shader_id_,
+                kServiceFragmentShaderId);
+
+    EXPECT_CALL(*gl_, UseProgram(kServiceProgramId))
+        .Times(1)
+        .RetiresOnSaturation();
+    cmds::UseProgram use_program_cmd;
+    use_program_cmd.Init(client_program_id_);
+    EXPECT_EQ(error::kNoError, ExecuteCmd(use_program_cmd));
+
+    // Point sampler1 at texture unit 1. sampler0 keeps the default unit 0.
+    EXPECT_CALL(*gl_, Uniform1i(kSampler1RealLocation, 1))
+        .Times(1)
+        .RetiresOnSaturation();
+    cmds::Uniform1i uniform_cmd;
+    uniform_cmd.Init(kSampler1FakeLocation, 1);
+    EXPECT_EQ(error::kNoError, ExecuteCmd(uniform_cmd));
+    EXPECT_EQ(GL_NO_ERROR, GetGLError());
+  }
+
+ protected:
+  static constexpr GLint kSampler0FakeLocation = 0;
+  static constexpr GLint kSampler0RealLocation = 3;
+  static constexpr GLint kSampler1FakeLocation = 1;
+  static constexpr GLint kSampler1RealLocation = 5;
+  static constexpr GLuint kFBOClientTextureId = 4100;
+  static constexpr GLuint kFBOServiceTextureId = 4101;
+
+  // Binds an unrenderable texture to unit 0 and, to unit 1, a texture that is
+  // also the color attachment of the bound framebuffer. Leaves unit 1 active.
+  void SetupBlackTextureThenFeedbackLoop() {
+    // This is an NPOT texture without mips, so it gets replaced by black.
+    DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);
+    DoTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 3, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                 shared_memory_id_, kSharedMemoryOffset);
+
+    EXPECT_CALL(*gl_, ActiveTexture(GL_TEXTURE1))
+        .Times(1)
+        .RetiresOnSaturation();
+    cmds::ActiveTexture active_texture_cmd;
+    active_texture_cmd.Init(GL_TEXTURE1);
+    EXPECT_EQ(error::kNoError, ExecuteCmd(active_texture_cmd));
+
+    EXPECT_CALL(*gl_, GenTextures(_, _))
+        .WillOnce(SetArgPointee<1>(kFBOServiceTextureId))
+        .RetiresOnSaturation();
+    GenHelper<cmds::GenTexturesImmediate>(kFBOClientTextureId);
+    DoBindTexture(GL_TEXTURE_2D, kFBOClientTextureId, kFBOServiceTextureId);
+    DoTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                 shared_memory_id_, kSharedMemoryOffset);
+    DoBindFramebuffer(GL_FRAMEBUFFER, client_framebuffer_id_,
+                      kServiceFramebufferId);
+    DoFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D,
+                           kFBOClientTextureId, kFBOServiceTextureId, 0,
+                           GL_NO_ERROR);
+    EXPECT_CALL(*gl_, CheckFramebufferStatusEXT(GL_FRAMEBUFFER))
+        .WillOnce(Return(GL_FRAMEBUFFER_COMPLETE))
+        .RetiresOnSaturation();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(Service,
+                         GLES2DecoderTwoSamplerTest,
+                         ::testing::Bool());
+
+TEST_P(GLES2DecoderTwoSamplerTest,
+       DrawArraysFeedbackLoopAfterBlackTextureRestoresTextures) {
+  SetupBlackTextureThenFeedbackLoop();
+  ExpectBlackTextureBoundThenRestored(gl_.get(), kServiceTextureId,
+                                      GL_TEXTURE1);
+  EXPECT_CALL(*gl_, DrawArrays(_, _, _)).Times(0);
+  cmds::DrawArrays cmd;
+  cmd.Init(GL_TRIANGLES, 0, kNumVertices);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
+}
+
+TEST_P(GLES2DecoderTwoSamplerTest,
+       DrawElementsFeedbackLoopAfterBlackTextureRestoresTextures) {
+  SetupIndexBuffer();
+  SetupBlackTextureThenFeedbackLoop();
+  ExpectBlackTextureBoundThenRestored(gl_.get(), kServiceTextureId,
+                                      GL_TEXTURE1);
+  EXPECT_CALL(*gl_, DrawElements(_, _, _, _)).Times(0);
+  cmds::DrawElements cmd;
+  cmd.Init(GL_TRIANGLES, kValidIndexRangeCount, GL_UNSIGNED_SHORT,
+           kValidIndexRangeStart * 2);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
+}
+
+// Regression tests for crbug.com/536617330: ValidateAndAdjustDrawBuffers()
+// rejects the draw after the black texture was bound.
+class GLES3DecoderDrawBufferTypeMismatchTest
+    : public GLES3DecoderWithShaderTest {
+ protected:
+  void SetupBlackTextureAndDrawBufferTypeMismatch() {
+    // Back both uniform blocks of the default program, or the draw is
+    // rejected before any texture is bound.
+    DoBindBuffer(GL_UNIFORM_BUFFER, client_buffer_id_, kServiceBufferId);
+    DoBufferData(GL_UNIFORM_BUFFER, 32);
+    for (GLuint index : {0u, 1u}) {
+      EXPECT_CALL(*gl_,
+                  BindBufferBase(GL_UNIFORM_BUFFER, index, kServiceBufferId))
+          .Times(1)
+          .RetiresOnSaturation();
+      cmds::BindBufferBase bind_cmd;
+      bind_cmd.Init(GL_UNIFORM_BUFFER, index, client_buffer_id_);
+      EXPECT_EQ(error::kNoError, ExecuteCmd(bind_cmd));
+      EXPECT_EQ(GL_NO_ERROR, GetGLError());
+    }
+
+    // This texture has no mips, so it gets replaced by black.
+    DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);
+    DoTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 3, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE,
+                 shared_memory_id_, kSharedMemoryOffset);
+
+    // The program writes float output to an unsigned integer color buffer.
+    DoBindFramebuffer(GL_FRAMEBUFFER, client_framebuffer_id_,
+                      kServiceFramebufferId);
+    DoBindRenderbuffer(GL_RENDERBUFFER, client_renderbuffer_id_,
+                       kServiceRenderbufferId);
+    DoRenderbufferStorage(GL_RENDERBUFFER, GL_RGBA8UI, 1, 1, GL_NO_ERROR);
+    DoFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                              GL_RENDERBUFFER, client_renderbuffer_id_,
+                              kServiceRenderbufferId, GL_NO_ERROR);
+    GetFramebuffer(client_framebuffer_id_)
+        ->MarkAttachmentAsCleared(group().renderbuffer_manager(), nullptr,
+                                  GL_COLOR_ATTACHMENT0, true);
+    EXPECT_CALL(*gl_, CheckFramebufferStatusEXT(GL_DRAW_FRAMEBUFFER))
+        .WillOnce(Return(GL_FRAMEBUFFER_COMPLETE))
+        .RetiresOnSaturation();
+    SetupExpectationsForApplyingDirtyState(false,   // Framebuffer is RGB
+                                           false,   // Framebuffer has depth
+                                           false,   // Framebuffer has stencil
+                                           0x1111,  // color bits
+                                           false,   // depth mask
+                                           false,   // depth enabled
+                                           0,       // front stencil mask
+                                           0,       // back stencil mask
+                                           false);  // stencil enabled
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(Service,
+                         GLES3DecoderDrawBufferTypeMismatchTest,
+                         ::testing::Bool());
+
+TEST_P(GLES3DecoderDrawBufferTypeMismatchTest,
+       DrawArraysAfterBlackTextureRestoresTextures) {
+  SetupBlackTextureAndDrawBufferTypeMismatch();
+  ExpectBlackTextureBoundThenRestored(gl_.get(), kServiceTextureId,
+                                      GL_TEXTURE0);
+  EXPECT_CALL(*gl_, DrawArrays(_, _, _)).Times(0);
+  cmds::DrawArrays cmd;
+  cmd.Init(GL_TRIANGLES, 0, kNumVertices);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
+}
+
+TEST_P(GLES3DecoderDrawBufferTypeMismatchTest,
+       DrawElementsAfterBlackTextureRestoresTextures) {
+  SetupIndexBuffer();
+  SetupBlackTextureAndDrawBufferTypeMismatch();
+  ExpectBlackTextureBoundThenRestored(gl_.get(), kServiceTextureId,
+                                      GL_TEXTURE0);
+  EXPECT_CALL(*gl_, DrawElements(_, _, _, _)).Times(0);
+  cmds::DrawElements cmd;
+  cmd.Init(GL_TRIANGLES, kValidIndexRangeCount, GL_UNSIGNED_SHORT,
+           kValidIndexRangeStart * 2);
+  EXPECT_EQ(error::kNoError, ExecuteCmd(cmd));
+  EXPECT_EQ(GL_INVALID_OPERATION, GetGLError());
+}
+
 TEST_P(GLES2DecoderWithShaderTest, DrawArraysMissingAttributesFails) {
   DoEnableVertexAttribArray(1);
 
