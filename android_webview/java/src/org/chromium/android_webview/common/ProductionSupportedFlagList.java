@@ -1530,6 +1530,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 GpuFeatures.VULKAN_IMAGINATION_MSAA,
                 "Enables Ganesh/Vulkan MSAA support on Imagination (PowerVR) GPUs."),
+        Flag.baseFeature(
+                MediaFeatures.AUDIO_RENDERER_MIXER_IMMEDIATE_PAUSE,
+                "Immediately pauses the underlying audio output stream on explicit media"
+                        + " player pauses instead of waiting for the 10-second mixer pause delay."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };

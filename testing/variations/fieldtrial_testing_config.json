@@ -1539,6 +1539,22 @@
             ]
         }
     ],
+    "AudioRendererMixerImmediatePause": [
+        {
+            "platforms": [
+                "android",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AudioRendererMixerImmediatePause"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutoPictureInPictureSurveys_VideoConferencing": [
         {
             "platforms": [
