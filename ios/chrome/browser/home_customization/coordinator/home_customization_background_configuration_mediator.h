@@ -10,6 +10,9 @@
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_configuration_mutator.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 
+namespace feature_engagement {
+class Tracker;
+}
 namespace image_fetcher {
 class ImageFetcher;
 }
@@ -31,7 +34,8 @@ class UserUploadedImageManager;
 // required. `homeBackgroundImageService` can be null if loading gallery images
 // is not required. `userUploadedImageManager` can be null if this mediator will
 // not have to deal with user uploaded images. `prefService` is used to read
-// ephemeral theme configuration data.
+// ephemeral theme configuration data. `tracker` is used to track whether the
+// "New" badge on backgrounds has been shown.
 - (instancetype)
     initWithBackgroundCustomizationService:
         (HomeBackgroundCustomizationService*)backgroundCustomizationService
@@ -42,6 +46,7 @@ class UserUploadedImageManager;
                   userUploadedImageManager:
                       (UserUploadedImageManager*)userUploadedImageManager
                                prefService:(PrefService*)prefService
+                  featureEngagementTracker:(feature_engagement::Tracker*)tracker
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

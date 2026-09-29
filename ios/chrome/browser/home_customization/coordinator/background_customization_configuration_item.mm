@@ -39,6 +39,7 @@
 @synthesize accessibilityValue = _accessibilityValue;
 @synthesize backgroundColor = _backgroundColor;
 @synthesize isCustomColor = _isCustomColor;
+@synthesize showNewBadge = _showNewBadge;
 
 - (instancetype)initWithUserUploadedImagePath:(NSString*)imagePath
                            framingCoordinates:

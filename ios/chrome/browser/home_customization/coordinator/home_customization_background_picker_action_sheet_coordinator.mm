@@ -102,7 +102,8 @@ CGFloat const kSheetCornerRadius = 30;
                                     imageFetcher:imageFetcher
                       homeBackgroundImageService:homeBackgroundImageService
                         userUploadedImageManager:nil
-                                     prefService:self.profile->GetPrefs()];
+                                     prefService:self.profile->GetPrefs()
+                        featureEngagementTracker:nullptr];
   _backgroundConfigurationMediator.delegate = self.presentationDelegate;
 
   [self

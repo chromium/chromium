@@ -2691,6 +2691,19 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHiOSBackgroundNewBadge.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = kAlwaysAvailable;
+    config.session_rate = kNoRestrictions;
+    config.used = EventConfig("ios_background_badge_used", Comparator(EQUAL, 0),
+                              kMaxStoragePeriod, kMaxStoragePeriod);
+    config.trigger =
+        EventConfig("ios_background_badge_trigger", Comparator(LESS_THAN, 1),
+                    kMaxStoragePeriod, kMaxStoragePeriod);
+    return config;
+  }
+
   if (kIPHiOSPromoPasswordManagerWidgetFeature.name == feature->name) {
     // A config to allow a user to be shown the Password Manager widget promo in
     // the Password Manager. The promo will be shown for a maximum of three

@@ -119,7 +119,7 @@ const CGFloat kNewFeatureBadgeCenterXOffset = 6.0;
   // The view holding the default search engine logo.
   UIView* _logoView;
 
-  // The new badge displayed on ephemeral background cells.
+  // The new badge displayed on new backgrounds.
   NewFeatureBadgeView* _newBadgeView;
 }
 
@@ -305,10 +305,7 @@ const CGFloat kNewFeatureBadgeCenterXOffset = 6.0;
   self.accessibilityLabel = option.accessibilityName;
   self.accessibilityValue = option.accessibilityValue;
 
-  // The ephemeral backgrounds are considered as "New" and the the badge should
-  // be shown.
-  _newBadgeView.hidden =
-      option.backgroundStyle != HomeCustomizationBackgroundStyle::kEphemeral;
+  _newBadgeView.hidden = !option.showNewBadge;
   if (option.animatedBackgroundPath.length > 0) {
     [_backgroundImageView
         setAnimatedBackgroundPath:option.animatedBackgroundPath

@@ -68,6 +68,9 @@ class GURL;
 @property(readonly, nonatomic)
     NSDictionary<NSString*, UIColor*>* darkModeColorProvider;
 
+// Whether the "New" badge should be shown on the background cell.
+@property(nonatomic, assign) BOOL showNewBadge;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_HOME_CUSTOMIZATION_UI_BACKGROUND_CUSTOMIZATION_CONFIGURATION_H_
