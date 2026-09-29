@@ -33,6 +33,7 @@
 #include <utility>
 
 #include "services/network/public/mojom/url_loader_factory.mojom-blink.h"
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 
 namespace blink {
 
@@ -42,7 +43,7 @@ ResourceLoaderOptions::ResourceLoaderOptions(const DOMWrapperWorld* world)
       synchronous_policy(kRequestAsynchronously),
       parser_disposition(kParserInserted),
       cache_aware_loading_enabled(kNotCacheAwareLoadingEnabled),
-      world_for_csp_(world) {}
+      world_for_csp_(world && world->IsIsolatedWorld() ? world : nullptr) {}
 
 ResourceLoaderOptions::ResourceLoaderOptions(
     const ResourceLoaderOptions& other) = default;

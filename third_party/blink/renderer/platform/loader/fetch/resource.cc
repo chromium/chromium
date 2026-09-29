@@ -199,18 +199,6 @@ constexpr base::MemoryConsumerTraits kResourceTraits(
     // Re-decoding from the encoded payload is computationally expensive.
     base::MemoryConsumerTraits::RecreateMemoryCost::kExpensive);
 
-// Returns true if `world1` and `world2` represent the same execution world.
-// A null `DOMWrapperWorld` pointer represents the default/main world.
-bool AreSameWorld(const DOMWrapperWorld* world1,
-                  const DOMWrapperWorld* world2) {
-  if (world1 == world2) {
-    return true;
-  }
-  const bool world1_is_main = !world1 || world1->IsMainWorld();
-  const bool world2_is_main = !world2 || world2->IsMainWorld();
-  return world1_is_main && world2_is_main;
-}
-
 }  // namespace
 
 static inline base::Time Now() {
@@ -906,7 +894,7 @@ Resource::MatchStatus Resource::CanReuse(const FetchParameters& params) const {
           kPreventExtensionResourceFetchAcrossIsolatedWorlds) &&
       CommonSchemeRegistry::IsExtensionScheme(
           current_request.Url().Protocol().Ascii()) &&
-      !AreSameWorld(options_.WorldForCsp(), new_options.WorldForCsp())) {
+      options_.WorldForCsp() != new_options.WorldForCsp()) {
     return MatchStatus::kCrossWorldExtensionResourceMismatch;
   }
 
@@ -920,7 +908,7 @@ Resource::MatchStatus Resource::CanReuse(const FetchParameters& params) const {
   if (base::FeatureList::IsEnabled(
           kPreventCrossWorldServiceWorkerResourceReuse) &&
       GetResponse().WasFetchedViaServiceWorker() &&
-      !AreSameWorld(options_.WorldForCsp(), new_options.WorldForCsp())) {
+      options_.WorldForCsp() != new_options.WorldForCsp()) {
     return MatchStatus::kCrossWorldServiceWorkerResourceMismatch;
   }
 

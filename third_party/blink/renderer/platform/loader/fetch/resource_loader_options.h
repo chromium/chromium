@@ -83,6 +83,7 @@ struct PLATFORM_EXPORT ResourceLoaderOptions final {
 
   // The world in which this request initiated. This will be used for CSP checks
   // if specified. If null, the CSP bound to the FetchContext is used.
+  // Always `nullptr` for a main world.
   const DOMWrapperWorld* WorldForCsp() const { return world_for_csp_.Get(); }
 
   FetchInitiatorInfo initiator_info;

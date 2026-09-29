@@ -58,7 +58,9 @@ class CORE_EXPORT CSSFontFaceSrcValue : public CSSValue {
       : CSSValue(kFontFaceSrcClass), local_resource_(local_resource) {}
   CSSFontFaceSrcValue(cssvalue::CSSURIValue* src_value,
                       const DOMWrapperWorld* world)
-      : CSSValue(kFontFaceSrcClass), src_value_(src_value), world_(world) {}
+      : CSSValue(kFontFaceSrcClass),
+        src_value_(src_value),
+        world_(world && world->IsIsolatedWorld() ? world : nullptr) {}
 
   // Returns the local() resource name. Only usable if IsLocal() returns true.
   const String& LocalResource() const { return local_resource_; }

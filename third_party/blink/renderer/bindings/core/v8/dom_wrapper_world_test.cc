@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
+
 #include <memory>
 #include <utility>
 
@@ -13,8 +15,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_initializer.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread.h"
 #include "third_party/blink/renderer/core/workers/worker_backing_thread_startup_data.h"
-#include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_loader_options.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -59,6 +61,13 @@ TEST(DOMWrapperWorldTest, MainWorld) {
   DOMWrapperWorld& main_world = DOMWrapperWorld::MainWorld(isolate);
   EXPECT_TRUE(main_world.IsMainWorld());
   EXPECT_EQ(main_world.GetWorldId(), DOMWrapperWorld::kMainWorldId);
+
+  // Main world pointer should be normalized to nullptr in
+  // ResourceLoaderOptions.
+  ResourceLoaderOptions options_main(&main_world);
+  EXPECT_EQ(options_main.WorldForCsp(), nullptr);
+  ResourceLoaderOptions options_null(nullptr);
+  EXPECT_EQ(options_null.WorldForCsp(), nullptr);
 }
 
 TEST(DOMWrapperWorldTest, IsolatedWorlds) {
@@ -76,6 +85,11 @@ TEST(DOMWrapperWorldTest, IsolatedWorlds) {
       DOMWrapperWorld::EnsureIsolatedWorld(isolate, used_isolated_world_id + 2);
   EXPECT_TRUE(isolated_world1->IsIsolatedWorld());
   EXPECT_TRUE(isolated_world2->IsIsolatedWorld());
+
+  // Isolated world pointer should be preserved in ResourceLoaderOptions.
+  ResourceLoaderOptions options_isolated(isolated_world1);
+  EXPECT_EQ(options_isolated.WorldForCsp(), isolated_world1);
+
   EXPECT_TRUE(DOMWrapperWorld::NonMainWorldsExistInMainThread());
 
   EXPECT_EQ(NumberOfWorlds(isolate), initial_worlds->size() + 2);
