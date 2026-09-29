@@ -141,7 +141,6 @@ external/wpt/css/css-writing-modes/sizing-orthog-htb-*
 external/wpt/css/css-writing-modes/wm-propagation-*
 external/wpt/css/filter-effects/drop-shadow-currentcolor-dynamic-003.html
 external/wpt/css/mediaqueries/test_media_queries.html
-external/wpt/css/motion/offset-path-*
 external/wpt/css/selectors/focus-visible-024.html
 external/wpt/css/selectors/focus-visible-025.html
 external/wpt/css/selectors/user-invalid-form-submission-invalidation.html

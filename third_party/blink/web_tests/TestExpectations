@@ -3688,8 +3688,6 @@ crbug.com/356913465 [ Mac13-arm64 ] virtual/threaded/external/wpt/css/css-backgr
 crbug.com/356913465 [ Mac13 ] virtual/threaded/external/wpt/css/css-backgrounds/background-gradient-interpolation-003.html [ Failure ]
 crbug.com/356913465 [ Linux ] virtual/threaded/external/wpt/css/css-backgrounds/background-gradient-interpolation-003.html [ Failure ]
 crbug.com/356913465 [ Win ] virtual/threaded/external/wpt/css/css-backgrounds/background-gradient-interpolation-003.html [ Failure ]
-crbug.com/356913453 external/wpt/css/motion/offset-path-shape-circle-008.html [ Failure ]
-crbug.com/356913453 external/wpt/css/motion/offset-path-shape-ellipse-007.html [ Failure ]
 crbug.com/356955226 virtual/fedcm-accounts-push/external/wpt/fedcm/fedcm-accounts-push/fedcm-identity-create-store-collect.tentative.sub.https.html [ Timeout ]
 crbug.com/356955226 virtual/fedcm-accounts-push/external/wpt/fedcm/fedcm-accounts-push/fedcm-identity-discovery.tentative.sub.https.html [ Timeout ]
 crbug.com/353583104 [ Win11-arm64 ] external/wpt/html/semantics/embedded-content/media-elements/preserves-pitch.html [ Timeout ]
@@ -3828,7 +3826,6 @@ crbug.com/626703 [ Win11-arm64 ] external/wpt/resource-timing/iframe-sequence-of
 crbug.com/626703 external/wpt/css/css-transforms/backface-visibility-hidden-003.html [ Failure ]
 crbug.com/626703 virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-visibility-hidden-003.html [ Failure ]
 crbug.com/626703 virtual/backface-visibility-interop/external/wpt/css/css-transforms/backface-visibility-hidden-004.html [ Failure ]
-crbug.com/626703 external/wpt/css/motion/offset-path-ray-022.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/white-space-collapse-discard-001.xht [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/white-space-collapse-preserve-breaks-001.xht [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/white-space-trim-discard-inner-001.xht [ Failure ]
@@ -3881,10 +3878,6 @@ crbug.com/626703 external/wpt/css/css-text/line-breaking/line-breaking-atomic-02
 crbug.com/626703 external/wpt/css/css-text/line-breaking/line-breaking-atomic-025.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/line-breaking/line-breaking-atomic-026.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/line-breaking/line-breaking-atomic-027.html [ Failure ]
-crbug.com/626703 [ Mac ] external/wpt/css/motion/offset-path-url-003.html [ Failure ]
-crbug.com/626703 external/wpt/css/motion/offset-path-url-008.html [ Failure ]
-crbug.com/626703 external/wpt/css/motion/offset-path-url-009.html [ Failure ]
-crbug.com/626703 external/wpt/css/motion/offset-path-url-010.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/css/css-highlight-api/painting/custom-highlight-painting-prioritization-003.html [ Failure ]
 crbug.com/626703 external/wpt/mathml/presentation-markup/operators/embellished-op-1-4.html [ Failure ]
 crbug.com/626703 external/wpt/mathml/presentation-markup/operators/embellished-op-1-5.html [ Failure ]
@@ -4057,6 +4050,15 @@ crbug.com/626703 external/wpt/fetch/content-type/response.window.html [ Timeout 
 crbug.com/356498699 external/wpt/webdriver/tests/bidi/browsing_context/navigation_failed/navigation_failed.py [ Failure ]
 crbug.com/626703 external/wpt/webdriver/tests/bidi/browsing_context/user_prompt_closed/user_prompt_closed.py [ Failure Pass ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/element_clear/clear.py [ Failure ]
+
+# CSS motion offset path tests
+crbug.com/626703 external/wpt/css/motion/offset-path-ray-022.html [ Failure ]
+crbug.com/356913453 external/wpt/css/motion/offset-path-shape-circle-008.html [ Failure ]
+crbug.com/356913453 external/wpt/css/motion/offset-path-shape-ellipse-007.html [ Failure ]
+crbug.com/626703 [ Mac ] external/wpt/css/motion/offset-path-url-003.html [ Failure ]
+crbug.com/626703 external/wpt/css/motion/offset-path-url-008.html [ Failure ]
+crbug.com/626703 external/wpt/css/motion/offset-path-url-009.html [ Failure ]
+crbug.com/626703 external/wpt/css/motion/offset-path-url-010.html [ Failure ]
 
 # Some WebXR tests that have become flaky
 crbug.com/343470120 external/wpt/webxr/xrSession_requestAnimationFrame_getViewerPose.https.html [ Failure Pass ]
