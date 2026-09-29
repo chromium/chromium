@@ -1,4 +1,16 @@
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [Fruit Selector] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [Fruit Selector] class_name=android.widget.EditText
 === END INITIAL PAGE LOAD ===
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 TYPE_VIEW_TEXT_SELECTION_CHANGED class_name=android.widget.EditText [0, 0] on [Fruit Selector] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [Fruit Selector] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [expanded, 3 autocomplete options available.] class_name=android.widget.EditText
 TYPE_WINDOW_STATE_CHANGED [contentTypes=PANE_APPEARED] text=[] on [expanded, 3 autocomplete options available.] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED [contentTypes=EXPANDED] on [expanded, 3 autocomplete options available.] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [expanded, 3 autocomplete options available.] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [expanded, 3 autocomplete options available.] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.ListView [contentTypes=SUBTREE] on class_name=android.widget.ListView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Apple] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Apple] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [expanded, 3 autocomplete options available.] class_name=android.widget.EditText
 TYPE_VIEW_ACCESSIBILITY_FOCUSED class_name=android.view.View on [Apple] class_name=android.view.View
