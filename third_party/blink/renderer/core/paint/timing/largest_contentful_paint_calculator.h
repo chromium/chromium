@@ -183,8 +183,6 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
 
   void Trace(Visitor* visitor) const;
 
-  void SetDelegateForTest(Delegate* delegate) { delegate_ = delegate; }
-
  private:
   bool UpdateMetricsIfLargestImagePaintChanged();
   bool UpdateMetricsIfLargestTextPaintChanged();
