@@ -146,7 +146,7 @@ void TipsService::OnFeaturesProcessed(
     }
   }
 
-  std::optional<TipsNotificationsFeatureType> best_tip;
+  TipsFeature* best_feature = nullptr;
   std::optional<TipFeatureRank> best_rank;
 
   // Evaluate eligibility for each registered feature and apply the centralized
@@ -159,13 +159,17 @@ void TipsService::OnFeaturesProcessed(
         if (!best_rank ||
             static_cast<int>(rank) < static_cast<int>(*best_rank)) {
           best_rank = rank;
-          best_tip = feature->GetFeatureType();
+          best_feature = feature.get();
         }
       }
     }
   }
 
-  std::move(callback).Run(best_tip);
+  if (best_feature) {
+    std::move(callback).Run(best_feature->GetNotificationData());
+  } else {
+    std::move(callback).Run(std::nullopt);
+  }
 }
 
 }  // namespace tips

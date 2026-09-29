@@ -21,6 +21,7 @@ source_set("features") {
 
   deps = [
     "//base",
+    "//chrome/app:generated_resources",
     "//components/browsing_data/core",
     "//components/prefs",
     "//components/safe_browsing/core/common:safe_browsing_prefs",

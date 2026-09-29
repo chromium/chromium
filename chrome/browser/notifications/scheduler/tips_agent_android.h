@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/android/jni_android.h"
+#include "chrome/browser/notifications/scheduler/public/notification_data.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
 #include "chrome/browser/notifications/scheduler/public/tips_agent.h"
 #include "chrome/browser/tips/core/tips_types.h"
@@ -43,7 +44,7 @@ class TipsAgentAndroid : public notifications::TipsAgent {
 
   static void OnBestTipChosen(
       notifications::NotificationScheduleService* service,
-      std::optional<tips::TipsNotificationsFeatureType> best_tip);
+      std::optional<notifications::NotificationData> data);
 
   TipsAgentAndroid();
   ~TipsAgentAndroid() override;

@@ -12,6 +12,7 @@
 #include "chrome/browser/tips/core/tips_prefs.h"
 #include "chrome/browser/tips/core/tips_types.h"
 #include "chrome/browser/tips/core/tips_utils.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/public/features.h"
@@ -65,7 +66,9 @@ bool QuickDeleteTip::IsEligible(
 }
 
 notifications::NotificationData QuickDeleteTip::GetNotificationData() const {
-  return GetTipsNotificationData(GetFeatureType());
+  return CreateTipsNotificationData(
+      GetFeatureType(), IDS_TIPS_NOTIFICATIONS_QUICK_DELETE_TITLE,
+      IDS_TIPS_NOTIFICATIONS_QUICK_DELETE_SUBTITLE);
 }
 
 }  // namespace tips

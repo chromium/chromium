@@ -292,17 +292,15 @@ void TipsAgentAndroid::OnGetClientOverview(
 // static
 void TipsAgentAndroid::OnBestTipChosen(
     notifications::NotificationScheduleService* service,
-    std::optional<tips::TipsNotificationsFeatureType> best_tip) {
-  if (!best_tip.has_value() || !service) {
+    std::optional<notifications::NotificationData> data) {
+  if (!data.has_value() || !service) {
     return;
   }
 
   notifications::ScheduleParams schedule_params = GetCurrentScheduleParams();
 
-  notifications::NotificationData data =
-      tips::GetTipsNotificationData(*best_tip);
   service->Schedule(std::make_unique<notifications::NotificationParams>(
-      notifications::SchedulerClientType::kTips, std::move(data),
+      notifications::SchedulerClientType::kTips, std::move(*data),
       std::move(schedule_params)));
 }
 

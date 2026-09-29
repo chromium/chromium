@@ -105,5 +105,28 @@ TEST(NotificationTipsUtilsTest, GetTipsNotificationData) {
   }
 }
 
+TEST(NotificationTipsUtilsTest, CreateTipsNotificationData) {
+  notifications::NotificationData data = CreateTipsNotificationData(
+      TipsNotificationsFeatureType::kEnhancedSafeBrowsing,
+      IDS_TIPS_NOTIFICATIONS_ENHANCED_SAFE_BROWSING_TITLE,
+      IDS_TIPS_NOTIFICATIONS_ENHANCED_SAFE_BROWSING_SUBTITLE);
+
+  EXPECT_EQ(data.title,
+            l10n_util::GetStringUTF16(
+                IDS_TIPS_NOTIFICATIONS_ENHANCED_SAFE_BROWSING_TITLE));
+  EXPECT_EQ(data.message,
+            l10n_util::GetStringUTF16(
+                IDS_TIPS_NOTIFICATIONS_ENHANCED_SAFE_BROWSING_SUBTITLE));
+  EXPECT_EQ(data.custom_data[notifications::kTipsNotificationsFeatureType],
+            base::NumberToString(static_cast<int>(
+                TipsNotificationsFeatureType::kEnhancedSafeBrowsing)));
+  ASSERT_EQ(data.buttons.size(), 1u);
+  EXPECT_EQ(data.buttons[0].type, notifications::ActionButtonType::kHelpful);
+  EXPECT_EQ(data.buttons[0].id, notifications::kDefaultHelpfulButtonId);
+  EXPECT_EQ(
+      data.buttons[0].text,
+      l10n_util::GetStringUTF16(IDS_TIPS_NOTIFICATIONS_HELPFUL_BUTTON_TEXT));
+}
+
 }  // namespace
 }  // namespace tips

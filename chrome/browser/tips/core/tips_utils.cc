@@ -17,6 +17,8 @@
 namespace tips {
 namespace {
 
+// TODO(crbug.com/559296862): Deprecate GetTipsNotificationsFeatureTypeMap after
+// tips self service is launched and the legacy segmentation flow is removed.
 const std::map<TipsNotificationsFeatureType, std::pair<int, int>>&
 GetTipsNotificationsFeatureTypeMap() {
   static const base::NoDestructor<
@@ -55,15 +57,13 @@ GetTipsNotificationsFeatureTypeMap() {
 
 }  // namespace
 
-notifications::NotificationData GetTipsNotificationData(
-    TipsNotificationsFeatureType feature_type) {
-  const auto& map = GetTipsNotificationsFeatureTypeMap();
-  const auto it = map.find(feature_type);
-  DCHECK(it != map.end());
-
+notifications::NotificationData CreateTipsNotificationData(
+    TipsNotificationsFeatureType feature_type,
+    int title_id,
+    int subtitle_id) {
   notifications::NotificationData data;
-  data.title = l10n_util::GetStringUTF16(it->second.first);
-  data.message = l10n_util::GetStringUTF16(it->second.second);
+  data.title = l10n_util::GetStringUTF16(title_id);
+  data.message = l10n_util::GetStringUTF16(subtitle_id);
   data.custom_data[notifications::kTipsNotificationsFeatureType] =
       base::NumberToString(static_cast<int>(feature_type));
   data.buttons.clear();
@@ -74,6 +74,17 @@ notifications::NotificationData GetTipsNotificationData(
       l10n_util::GetStringUTF16(IDS_TIPS_NOTIFICATIONS_HELPFUL_BUTTON_TEXT);
   data.buttons.emplace_back(std::move(open_chrome_button));
   return data;
+}
+
+// TODO(crbug.com/559296862): Deprecate GetTipsNotificationData after tips self
+// service is launched and the legacy segmentation flow is removed.
+notifications::NotificationData GetTipsNotificationData(
+    TipsNotificationsFeatureType feature_type) {
+  const auto& map = GetTipsNotificationsFeatureTypeMap();
+  const auto it = map.find(feature_type);
+  DCHECK(it != map.end());
+  return CreateTipsNotificationData(feature_type, it->second.first,
+                                    it->second.second);
 }
 
 #if BUILDFLAG(IS_ANDROID)

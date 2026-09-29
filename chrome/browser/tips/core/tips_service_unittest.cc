@@ -22,6 +22,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/notifications/scheduler/public/notification_params.h"
+#include "chrome/browser/notifications/scheduler/public/notification_scheduler_constant.h"
 #include "chrome/browser/tips/core/tips_feature.h"
 #include "chrome/browser/tips/core/tips_prefs.h"
 #include "chrome/browser/tips/core/tips_service_test_base.h"
@@ -62,7 +63,10 @@ class MockTipsFeature : public TipsFeature {
     return is_eligible_;
   }
   notifications::NotificationData GetNotificationData() const override {
-    return notifications::NotificationData();
+    notifications::NotificationData data;
+    data.custom_data[notifications::kTipsNotificationsFeatureType] =
+        base::NumberToString(static_cast<int>(type_));
+    return data;
   }
 
   mutable std::map<std::string, float> last_signal_values_;
@@ -86,10 +90,12 @@ TEST_F(TipsServiceTest, DetermineBestTip_NoDatabaseClient) {
       std::vector<SignalDefinition>{UserAction("SomeAction", 7)},
       /*is_eligible=*/true));
 
-  std::optional<TipsNotificationsFeatureType> result;
+  std::optional<notifications::NotificationData> result;
   service_->DetermineBestTip(base::BindOnce(
-      [](std::optional<TipsNotificationsFeatureType>* out,
-         std::optional<TipsNotificationsFeatureType> res) { *out = res; },
+      [](std::optional<notifications::NotificationData>* out,
+         std::optional<notifications::NotificationData> res) {
+        *out = std::move(res);
+      },
       &result));
   EXPECT_FALSE(result.has_value());
 }
@@ -122,13 +128,13 @@ TEST_F(TipsServiceTest, DetermineBestTip_DatabaseFailure) {
       std::vector<SignalDefinition>{UserAction("SomeAction", 7)},
       /*is_eligible=*/true));
 
-  std::optional<TipsNotificationsFeatureType> result;
+  std::optional<notifications::NotificationData> result;
   base::RunLoop run_loop;
   service_->DetermineBestTip(base::BindOnce(
-      [](std::optional<TipsNotificationsFeatureType>* out,
+      [](std::optional<notifications::NotificationData>* out,
          base::OnceClosure quit,
-         std::optional<TipsNotificationsFeatureType> res) {
-        *out = res;
+         std::optional<notifications::NotificationData> res) {
+        *out = std::move(res);
         std::move(quit).Run();
       },
       &result, run_loop.QuitClosure()));
@@ -177,13 +183,13 @@ TEST_F(TipsServiceTest, VerifyMetadataConstruction) {
       },
       /*is_eligible=*/true));
 
-  std::optional<TipsNotificationsFeatureType> result;
+  std::optional<notifications::NotificationData> result;
   base::RunLoop run_loop;
   service_->DetermineBestTip(base::BindOnce(
-      [](std::optional<TipsNotificationsFeatureType>* out,
+      [](std::optional<notifications::NotificationData>* out,
          base::OnceClosure quit,
-         std::optional<TipsNotificationsFeatureType> res) {
-        *out = res;
+         std::optional<notifications::NotificationData> res) {
+        *out = std::move(res);
         std::move(quit).Run();
       },
       &result, run_loop.QuitClosure()));

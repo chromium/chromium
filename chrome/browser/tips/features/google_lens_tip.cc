@@ -12,6 +12,7 @@
 #include "chrome/browser/tips/core/tips_prefs.h"
 #include "chrome/browser/tips/core/tips_types.h"
 #include "chrome/browser/tips/core/tips_utils.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/public/features.h"
 
@@ -72,7 +73,9 @@ bool GoogleLensTip::IsEligible(
 }
 
 notifications::NotificationData GoogleLensTip::GetNotificationData() const {
-  return GetTipsNotificationData(GetFeatureType());
+  return CreateTipsNotificationData(
+      GetFeatureType(), IDS_TIPS_NOTIFICATIONS_GOOGLE_LENS_TITLE,
+      IDS_TIPS_NOTIFICATIONS_GOOGLE_LENS_SUBTITLE);
 }
 
 }  // namespace tips

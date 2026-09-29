@@ -13,6 +13,13 @@
 
 namespace tips {
 
+// Constructs and returns the NotificationData object for the requested feature
+// using the provided title and subtitle string resource IDs.
+notifications::NotificationData CreateTipsNotificationData(
+    TipsNotificationsFeatureType feature_type,
+    int title_id,
+    int subtitle_id);
+
 // Constructs and returns the NotificationData object for the requested feature.
 // This mainly contains UI information and an enum representing the feature
 // type. |feature_type| the feature in question to create a data object for.
