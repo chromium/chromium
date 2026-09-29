@@ -126,9 +126,20 @@ constexpr float kMaxPageNumberWidthRatio = 0.30f;
 // text beside it on the same line, such as a superscript.
 constexpr float kSmallTextFontSizeRatio = 0.85f;
 
-// Tolerance used when comparing font sizes, so that sizes that differ only by
-// floating point imprecision compare as equal.
-constexpr float kFontSizeEpsilon = 0.01f;
+// Maximum number of characters in a text run for it to be considered a
+// superscript or subscript. Superscripts and subscripts are short markers or
+// expressions (e.g., footnote numbers, citations, or chemical indices), not
+// full phrases or sentences.
+constexpr size_t kMaxSuperOrSubScriptCharCount = 8;
+
+// Vertical tolerance (as a fraction of the host run's height) allowed when
+// checking whether a superscript or subscript run stays near the host run's
+// vertical span.
+constexpr float kSuperOrSubScriptVerticalToleranceRatio = 0.10f;
+
+// Tolerance used for comparisons, so that values that differ only by floating
+// point imprecision compare as equal.
+constexpr float kComparisonEpsilon = 0.01f;
 
 // As defined in ISO 32000-1:2008, section 9.6.4: "Font Subsets".
 // For a font subset, the PostScript name shall begin with 6 uppercase letters
@@ -175,9 +186,20 @@ bool DoBoundsOverlapOnLine(float top1,
     return false;
   }
 
-  // See if it falls within the line (within the threshold).
-  float coverage = (clamped_bottom - clamped_top) / height2;
+  // See if it falls within the line (within the threshold). Measure against
+  // the shorter box when the enhancements flag is enabled so a smaller raised
+  // or lowered run still counts as sharing the line with its taller neighbor.
+  float reference_height =
+      features::IsPdfAccessibilityHeuristicEnhancementsEnabled()
+          ? std::min(height1, height2)
+          : height2;
+  float coverage = (clamped_bottom - clamped_top) / reference_height;
   constexpr float kLineCoverageThreshold = 0.25f;
+  if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+    // Include an exact 25% overlap, with epsilon tolerance for floating-point
+    // rounding from PDF point-to-pixel scaling.
+    return (coverage + kComparisonEpsilon) >= kLineCoverageThreshold;
+  }
   return coverage > kLineCoverageThreshold;
 }
 
@@ -709,6 +731,13 @@ bool AreRunsOnSameLine(const chrome_pdf::AccessibilityTextRunInfo& run1,
                                run2.bounds.y(), run2.bounds.height());
 }
 
+const chrome_pdf::AccessibilityTextRunInfo* GetRunBeforeIndex(
+    base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs,
+    size_t index) {
+  return (index > 0 && index < text_runs.size()) ? &text_runs[index - 1]
+                                                 : nullptr;
+}
+
 const chrome_pdf::AccessibilityTextRunInfo* GetRunAfterIndex(
     base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs,
     size_t index) {
@@ -722,6 +751,138 @@ TextRunContext GetTextRunContext(const PageLayoutData& layout,
       .next_run = GetRunAfterIndex(layout.text_runs, text_run_index),
       .chars = GetTextRunChars(layout, text_run_index),
   };
+}
+
+// Symbols conventionally used as footnote or reference markers. Unlike other
+// punctuation, they carry content when set as a super or subscript.
+bool IsFootnoteMarkerSymbol(base_icu::UChar32 code_point) {
+  switch (code_point) {
+    case '*':
+    case 0x00A7:  // Section sign.
+    case 0x00B6:  // Pilcrow sign.
+    case 0x2020:  // Dagger.
+    case 0x2021:  // Double dagger.
+    case 0x2217:  // Asterisk.
+      return true;
+    default:
+      return false;
+  }
+}
+
+// Returns whether `chars` can read as a superscript or subscript. Superscripts
+// and subscripts are short and carry letters, digits, or footnote marker
+// symbols. A run of only separators, such as a comma between two words, is
+// geometrically indistinguishable from a super or subscript but is not one.
+bool CanBeSuperOrSubScriptText(
+    base::span<const chrome_pdf::AccessibilityCharInfo> chars) {
+  if (chars.size() > kMaxSuperOrSubScriptCharCount) {
+    return false;
+  }
+
+  return std::ranges::any_of(chars, [](const auto& char_info) {
+    auto code_point =
+        static_cast<base_icu::UChar32>(char_info.unicode_character);
+    return u_isalnum(code_point) || IsFootnoteMarkerSymbol(code_point);
+  });
+}
+
+// Checks whether `candidate` is positioned and sized like a superscript or
+// subscript relative to `host` on the same visual line.
+ax::mojom::TextPosition ClassifySuperOrSubScriptRelativeToHost(
+    const chrome_pdf::AccessibilityTextRunInfo& candidate,
+    const chrome_pdf::AccessibilityTextRunInfo& host) {
+  if (candidate.style.font_size <= 0.0f || host.style.font_size <= 0.0f ||
+      candidate.bounds.height() <= 0.0f || host.bounds.height() <= 0.0f) {
+    return ax::mojom::TextPosition::kNone;
+  }
+
+  // Must be substantially smaller in font size and on the same visual line as
+  // the host run.
+  if (candidate.style.font_size >=
+          host.style.font_size * kSmallTextFontSizeRatio ||
+      !AreRunsOnSameLine(candidate, host)) {
+    return ax::mojom::TextPosition::kNone;
+  }
+
+  // Must be horizontally adjacent to the host run, so that smaller text in a
+  // separate column, sidebar, or table cell on the same visual line is not
+  // misclassified.
+  const float horizontal_gap =
+      std::max(candidate.bounds.x() - host.bounds.right(),
+               host.bounds.x() - candidate.bounds.right());
+  if (horizontal_gap > host.bounds.height()) {
+    return ax::mojom::TextPosition::kNone;
+  }
+
+  const float candidate_top = candidate.bounds.y();
+  const float candidate_bottom = candidate.bounds.bottom();
+  const float candidate_mid = candidate.bounds.CenterPoint().y();
+
+  const float host_top = host.bounds.y();
+  const float host_bottom = host.bounds.bottom();
+  const float host_mid = host.bounds.CenterPoint().y();
+  const float tolerance =
+      host.bounds.height() * kSuperOrSubScriptVerticalToleranceRatio;
+
+  // Superscript: vertical center sits above the host's vertical center, and
+  // bottom does not sink significantly below the host's bottom.
+  if (candidate_mid < host_mid && candidate_bottom <= host_bottom + tolerance) {
+    return ax::mojom::TextPosition::kSuperscript;
+  }
+
+  // Subscript: vertical center sits below the host's vertical center, the top
+  // does not rise significantly above the host's top, and the bottom drops past
+  // the host's bottom. Bounds come from glyph boxes, so a run that merely sets
+  // smaller type on the host's baseline, such as an acronym in small caps,
+  // shares the host's bottom edge and is not a subscript.
+  if (candidate_mid > host_mid && candidate_top >= host_top - tolerance &&
+      candidate_bottom > host_bottom) {
+    return ax::mojom::TextPosition::kSubscript;
+  }
+
+  return ax::mojom::TextPosition::kNone;
+}
+
+// Returns whether the run at `text_run_index` reads as a superscript or a
+// subscript relative to the run beside it on the same visual line, or `kNone`.
+// `chars` are the characters of that run.
+ax::mojom::TextPosition GetTextPosition(
+    base::span<const chrome_pdf::AccessibilityTextRunInfo> text_runs,
+    size_t text_run_index,
+    base::span<const chrome_pdf::AccessibilityCharInfo> chars) {
+  if (!features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+    return ax::mojom::TextPosition::kNone;
+  }
+
+  if (!CanBeSuperOrSubScriptText(chars)) {
+    return ax::mojom::TextPosition::kNone;
+  }
+
+  const chrome_pdf::AccessibilityTextRunInfo& run = text_runs[text_run_index];
+
+  // Check against the preceding run first (e.g., "x²", "H₂O", "word¹"), then
+  // against the following run (e.g., "¹Footnote text" at the start of a line).
+  const chrome_pdf::AccessibilityTextRunInfo* previous_run =
+      GetRunBeforeIndex(text_runs, text_run_index);
+  if (previous_run) {
+    ax::mojom::TextPosition position =
+        ClassifySuperOrSubScriptRelativeToHost(run, *previous_run);
+    if (position != ax::mojom::TextPosition::kNone) {
+      return position;
+    }
+  }
+
+  const chrome_pdf::AccessibilityTextRunInfo* next_run =
+      GetRunAfterIndex(text_runs, text_run_index);
+  if (next_run) {
+    ax::mojom::TextPosition position =
+        ClassifySuperOrSubScriptRelativeToHost(run, *next_run);
+    if (position != ax::mojom::TextPosition::kNone) {
+      return position;
+    }
+  }
+
+  return ax::mojom::TextPosition::kNone;
 }
 
 // Returns the header or footer role that `run_context.run` qualifies for, or
@@ -796,13 +957,13 @@ HeaderFooterRole GetHeaderFooterRole(
     return HeaderFooterRole::kNone;
   }
 
-  // A bare digit in a margin is a page number, unless it is much smaller than
-  // the text beside it on the same line. That marks a superscript footnote
-  // marker, which belongs to the body content, so leave it unclassified.
+  // A bare digit in a margin is a page number, unless it is a superscript or
+  // subscript marker relative to the text beside it on the same line, which
+  // belongs to the body content, so leave it unclassified.
   if (page_number_kind == PageNumberKind::kPureNumber) {
-    if (current_run.style.font_size > 0.0f && has_same_line_neighbor &&
-        current_run.style.font_size <
-            next_run->style.font_size * kSmallTextFontSizeRatio) {
+    if (next_run &&
+        ClassifySuperOrSubScriptRelativeToHost(current_run, *next_run) !=
+            ax::mojom::TextPosition::kNone) {
       return HeaderFooterRole::kNone;
     }
     return is_in_top_margin ? HeaderFooterRole::kHeader
@@ -815,7 +976,7 @@ HeaderFooterRole GetHeaderFooterRole(
     // content spilling into the margin. Page numbers are exempt.
     bool is_strictly_smaller =
         current_run.style.font_size <
-        (page_properties.median_font_size - kFontSizeEpsilon);
+        (page_properties.median_font_size - kComparisonEpsilon);
     if (!is_strictly_smaller && !is_page_number) {
       return HeaderFooterRole::kNone;
     }
@@ -1129,18 +1290,21 @@ bool BreakParagraph(uint32_t text_run_index,
   return heading_classifier != next_classifier;
 }
 
-// Returns whether `style` differs from the style of the in-progress static
-// text node, which requires starting a new one so that text runs of different
-// styles (e.g. bold vs regular) are not merged into a single static text node.
+// Returns whether `style` or `text_position` differs from the in-progress
+// static text node, which requires starting a new one so that text runs of
+// different styles (e.g. bold vs regular, or superscript vs normal) are not
+// merged into a single static text node.
 bool BreaksStaticTextNode(const StaticTextState& static_text_state,
-                          const chrome_pdf::AccessibilityTextStyleInfo& style) {
+                          const chrome_pdf::AccessibilityTextStyleInfo& style,
+                          ax::mojom::TextPosition text_position) {
   if (!static_text_state.node || !static_text_state.style) {
     return false;
   }
   // `style` is only ever set when the flag is enabled.
   CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
   return !PdfAccessibilityTreeBuilder::AreStylesEquivalent(
-      *static_text_state.style, style);
+             *static_text_state.style, style) ||
+         static_text_state.text_position != text_position;
 }
 
 void BuildStaticNode(StaticTextState* static_text_state) {
@@ -1153,6 +1317,7 @@ void BuildStaticNode(StaticTextState* static_text_state) {
   }
   static_text_state->node = nullptr;
   static_text_state->style.reset();
+  static_text_state->text_position.reset();
 }
 
 void ConnectPreviousAndNextOnLine(ui::AXNodeData* previous_on_line_node,
@@ -1207,6 +1372,9 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
   ui::AXNodeData* previous_on_line_node = nullptr;
   StaticTextState static_text_state;
   HeadingClassifier current_heading_classifier = HeadingClassifier::kNone;
+  // Whether the current block opened with a superscript footnote marker. Set
+  // when the block is created, so it is never stale.
+  bool block_starts_with_superscript_marker = false;
   LineHelper line_helper(builder_->text_runs());
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   bool ocr_block = false;
@@ -1246,6 +1414,10 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
     if (!block_node) {
       block_node = CreateBlockLevelNode(run_context, page_properties,
                                         &current_heading_classifier);
+      block_starts_with_superscript_marker =
+          GetTextPosition(builder_->text_runs(), text_run_index,
+                          run_context.chars) ==
+          ax::mojom::TextPosition::kSuperscript;
       builder_->page_node()->child_ids.push_back(block_node->id);
       block_nodes.push_back(block_node);
 
@@ -1293,9 +1465,12 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
           (builder_->highlights())[current_highlight_index_++], block_node,
           &previous_on_line_node, &text_run_index);
     } else {
-      // A style change starts a new static text node, which ends any heading
-      // the current block was classified as.
-      if (BreaksStaticTextNode(static_text_state, text_run.style)) {
+      // A style or text position change starts a new static text node, which
+      // ends any heading the current block was classified as.
+      if (BreaksStaticTextNode(
+              static_text_state, text_run.style,
+              GetTextPosition(builder_->text_runs(), text_run_index,
+                              run_context.chars))) {
         current_heading_classifier = HeadingClassifier::kNone;
       }
       ui::AXNodeData* inline_text_box_node =
@@ -1304,8 +1479,13 @@ void PdfAccessibilityTreeBuilderHeuristic::BuildPageTree() {
       if (previous_on_line_node) {
         ConnectPreviousAndNextOnLine(previous_on_line_node,
                                      inline_text_box_node);
-        UpdateHeaderFooterRoleForSameLineRun(run_context, page_properties,
-                                             block_node);
+        // The re-check resolves lines whose opening run was ambiguous. A line
+        // opening with a footnote marker is already known to be footnote
+        // content, so later runs must not promote it to a header or footer.
+        if (!block_starts_with_superscript_marker) {
+          UpdateHeaderFooterRoleForSameLineRun(run_context, page_properties,
+                                               block_node);
+        }
       } else {
         line_helper.StartNewLine(text_run_index);
       }
@@ -1455,8 +1635,12 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::AddTextRunToNode(
   chrome_pdf::PageCharacterIndex page_char_index = {
       builder_->page_index(),
       builder_->text_run_start_indices()[text_run_index]};
+  ax::mojom::TextPosition text_position =
+      GetTextPosition(builder_->text_runs(), text_run_index,
+                      base::span(builder_->chars())
+                          .subspan(page_char_index.char_index, text_run.len));
 
-  if (BreaksStaticTextNode(*static_text_state, text_run.style)) {
+  if (BreaksStaticTextNode(*static_text_state, text_run.style, text_position)) {
     BuildStaticNode(static_text_state);
   }
 
@@ -1470,6 +1654,12 @@ ui::AXNodeData* PdfAccessibilityTreeBuilderHeuristic::AddTextRunToNode(
       static_text_state->node = builder_->CreateStaticTextNodeWithStyle(
           page_char_index, text_run.style);
       static_text_state->style = text_run.style;
+      static_text_state->text_position = text_position;
+      if (text_position != ax::mojom::TextPosition::kNone) {
+        static_text_state->node->AddIntAttribute(
+            ax::mojom::IntAttribute::kTextPosition,
+            static_cast<int32_t>(text_position));
+      }
     } else {
       static_text_state->node = builder_->CreateStaticTextNode(page_char_index);
     }

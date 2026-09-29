@@ -18,6 +18,7 @@
 #include "base/memory/raw_span.h"
 #include "pdf/accessibility_structs.h"
 #include "services/screen_ai/buildflags/buildflags.h"
+#include "ui/accessibility/ax_enums.mojom-forward.h"
 
 namespace chrome_pdf {
 struct AccessibilityCharInfo;
@@ -77,7 +78,7 @@ struct TextRunContext {
 };
 
 // Tracks the in-progress static text node being accumulated across consecutive
-// text runs with matching style.
+// text runs with matching style and text position.
 struct StaticTextState {
   StaticTextState();
   ~StaticTextState();
@@ -90,6 +91,9 @@ struct StaticTextState {
 
   // The text style of `node` when style tracking is active.
   std::optional<chrome_pdf::AccessibilityTextStyleInfo> style;
+
+  // Whether `node` is superscript or subscript, when style tracking is active.
+  std::optional<ax::mojom::TextPosition> text_position;
 };
 
 // Computed page-specific metrics, styling properties, and classification
