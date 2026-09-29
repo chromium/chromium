@@ -790,7 +790,7 @@ TEST_F(WidgetAXManagerTest, DiesOnUnhandledEventRouting) {
   WidgetAXManagerTestApi api(manager());
   api.Enable();
 
-  EXPECT_DEATH(
+  EXPECT_CHECK_DEATH_WITH(
       {
         manager()->OnEvent(widget()->GetRootView()->GetViewAccessibility(),
                            ax::mojom::Event::kMouseMoved);
