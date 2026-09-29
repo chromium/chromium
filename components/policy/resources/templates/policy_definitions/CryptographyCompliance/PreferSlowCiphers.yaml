@@ -16,10 +16,15 @@ desc: |-
 
   This policy only affects TLS 1.3 and QUIC; it does not affect earlier versions of TLS.
 
+  This policy can be set for the machine and for the user. If set for the user, this policy only affects network requests initiated by the user profile, and may not affect network requests made by <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> to carry out browser-wide background tasks; those are controlled by the machine-level value. If this policy is set at both the machine level and the user level, the machine-level value applies, unless the policy precedence order has been changed by the <ph name="CLOUD_USER_POLICY_OVERRIDES_CLOUD_MACHINE_POLICY_POLICY_NAME">CloudUserPolicyOverridesCloudMachinePolicy</ph> policy.
+
+  For versions 156 and below, this policy is machine-wide only.
+
 example_value: cnsa
 features:
   dynamic_refresh: true
-  per_profile: false
+  per_profile: true
+  uses_machine_and_user_values: true
 items:
 - caption: Prefer ciphers satisfying the requirements of CNSA 1.0 and 2.0
   name: CNSA

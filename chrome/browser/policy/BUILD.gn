@@ -355,7 +355,10 @@ source_set("policy_specific_browser_tests") {
     "//chrome/browser/component_updater",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/media/webrtc",
+    "//chrome/browser/net",
+    "//chrome/browser/policy",
     "//chrome/browser/preloading:prefs",
+    "//chrome/browser/profiles:misc",
     "//chrome/browser/ui/autofill",
     "//chrome/common",
     "//chrome/test:test_support",
@@ -364,6 +367,7 @@ source_set("policy_specific_browser_tests") {
     "//components/content_settings/core/common",
     "//components/heap_profiling/in_process",
     "//components/policy/core/common",
+    "//components/policy/core/common:test_support",
     "//components/prefs",
     "//components/proxy_config",
     "//components/safe_browsing:buildflags",
@@ -374,6 +378,9 @@ source_set("policy_specific_browser_tests") {
     "//components/unified_consent",
     "//content/test:test_support",
     "//media",
+    "//services/cert_verifier/public/mojom",
+    "//services/network:test_support",
+    "//services/network/public/mojom",
     "//testing/gmock",
   ]
 

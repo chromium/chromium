@@ -194,7 +194,7 @@ void SSLConfigServiceManager::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kEncryptedClientHelloEnabled, true);
   // The following two prefs for SSL compliance policies are used here as
   // local_state prefs, but the same pref names are also used as Profile prefs
-  // in certain Profiles. Their value is only used if managed.
+  // in every Profile. Their value is only used if managed.
   registry->RegisterStringPref(prefs::kPreferSlowKexAlgorithms, std::string());
   registry->RegisterStringPref(prefs::kPreferSlowCiphers, std::string());
 }
