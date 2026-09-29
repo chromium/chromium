@@ -78,28 +78,6 @@ struct ScopedIOSurfaceLock {
   const IOSurfaceLockOptions options_;
 };
 
-// Returns planar format for given multiplanar `format`.
-viz::SharedImageFormat GetFormatForPlane(viz::SharedImageFormat format,
-                                         int plane) {
-  DCHECK(format.is_multi_plane());
-  DCHECK(format.IsValidPlaneIndex(plane));
-
-  // IOSurfaceBacking does not support external sampler use cases.
-  int num_channels = format.NumChannelsInPlane(plane);
-  DCHECK_LE(num_channels, 2);
-  switch (format.channel_format()) {
-    case viz::SharedImageFormat::ChannelFormat::k8:
-      return num_channels == 2 ? viz::SinglePlaneFormat::kRG_88
-                               : viz::SinglePlaneFormat::kR_8;
-    case viz::SharedImageFormat::ChannelFormat::k10:
-    case viz::SharedImageFormat::ChannelFormat::k16:
-    case viz::SharedImageFormat::ChannelFormat::k16F:
-      return num_channels == 2 ? viz::SinglePlaneFormat::kRG_1616
-                               : viz::SinglePlaneFormat::kR_16;
-  }
-  NOTREACHED();
-}
-
 wgpu::Texture CreateWGPUTexture(wgpu::SharedTextureMemory shared_texture_memory,
                                 SharedImageUsageSet shared_image_usage,
                                 const gfx::Size& io_surface_size,
@@ -1691,27 +1669,20 @@ bool IOSurfaceImageBacking::IOSurfaceBackingEGLStateBeginAccess(
     std::vector<std::unique_ptr<gl::ScopedEGLSurfaceIOSurface>> egl_surfaces;
     for (int plane_index = 0; plane_index < format().NumberOfPlanes();
          plane_index++) {
-      viz::SharedImageFormat plane_format;
-      if (format().is_single_plane()) {
-        plane_format = format();
-        // See comments in IOSurfaceImageBackingFactory::CreateSharedImage about
-        // RGBA versus BGRA when using Skia Ganesh GL backend or ANGLE.
-        if (io_surface_format_ == 'BGRA') {
-          if (plane_format == viz::SinglePlaneFormat::kRGBA_8888) {
-            plane_format = viz::SinglePlaneFormat::kBGRA_8888;
-          } else if (plane_format == viz::SinglePlaneFormat::kRGBX_8888) {
-            plane_format = viz::SinglePlaneFormat::kBGRX_8888;
-          }
+      viz::SharedImageFormat buffer_format = format();
+      // See comments in IOSurfaceImageBackingFactory::CreateSharedImage about
+      // RGBA versus BGRA when using Skia Ganesh GL backend or ANGLE.
+      if (io_surface_format_ == 'BGRA') {
+        if (buffer_format == viz::SinglePlaneFormat::kRGBA_8888) {
+          buffer_format = viz::SinglePlaneFormat::kBGRA_8888;
+        } else if (buffer_format == viz::SinglePlaneFormat::kRGBX_8888) {
+          buffer_format = viz::SinglePlaneFormat::kBGRX_8888;
         }
-      } else {
-        // For multiplanar formats (without external sampler) get planar buffer
-        // format.
-        plane_format = GetFormatForPlane(format(), plane_index);
       }
 
       auto egl_surface = gl::ScopedEGLSurfaceIOSurface::Create(
           egl_state->egl_display_, egl_state->GetGLTarget(), io_surface_.get(),
-          plane_index, plane_format);
+          plane_index, buffer_format);
       if (!egl_surface) {
         LOG(ERROR) << "Failed to create ScopedEGLSurfaceIOSurface.";
         EndAccess(readonly);
