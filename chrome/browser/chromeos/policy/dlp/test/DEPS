@@ -11,7 +11,7 @@ include_rules = [
   # refactor chromeos codes in //chrome to break these dependencies; see
   # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
   # this list.
-  "+chrome/browser/ash/login/users",
+  "+chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h",
   "+chrome/browser/ash/policy/dlp",
   "+chrome/browser/chromeos/policy/dlp",
   "+chrome/browser/enterprise/data_controls/dlp_reporting_manager.h",

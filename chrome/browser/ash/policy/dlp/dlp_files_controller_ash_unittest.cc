@@ -125,6 +125,9 @@ constexpr char kRemoteAppId[] = "remoteApp";
 constexpr char kBorealisAppId[] = "borealisApp";
 constexpr char kBruschettaAppId[] = "bruschettaApp";
 
+// Placeholder for the Crostini mount name, which depends on the profile.
+constexpr char kCrostiniMountName[] = "crostini";
+
 constexpr char kRuleName1[] = "rule #1";
 constexpr char kRuleName2[] = "rule #2";
 constexpr char kRuleName3[] = "rule #3";
@@ -158,6 +161,12 @@ GURL ToGURL(const base::FilePath& root, const std::string& path) {
   return GURL(base::StrCat({url::kFileSystemScheme, ":",
                             file_manager::util::GetFilesAppOrigin().Serialize(),
                             abs_path}));
+}
+
+std::string ResolveMountName(Profile* profile, const std::string& mount_name) {
+  return mount_name == kCrostiniMountName
+             ? file_manager::util::GetCrostiniMountPointName(profile)
+             : mount_name;
 }
 
 struct FilesTransferInfo {
@@ -1448,7 +1457,7 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple("removable",
                         "MyUSB/path/in/removable/filename",
                         data_controls::Component::kUsb),
-        std::make_tuple("crostini_test_termina_penguin",
+        std::make_tuple(kCrostiniMountName,
                         "path/in/crostini/filename",
                         data_controls::Component::kCrostini),
         std::make_tuple("drivefs-84675c855b63e12f384d45f033826980",
@@ -1494,7 +1503,8 @@ TEST_P(DlpFilesExternalDestinationTest, IsFilesTransferRestricted_Component) {
       .Times(::testing::AnyNumber());
 
   auto dst_url = mount_points_->CreateExternalFileSystemURL(
-      blink::StorageKey(), mount_name, base::FilePath(path));
+      blink::StorageKey(), ResolveMountName(profile(), mount_name),
+      base::FilePath(path));
   ASSERT_TRUE(dst_url.is_valid());
 
   files_controller_->IsFilesTransferRestricted(
@@ -1534,7 +1544,8 @@ TEST_P(DlpFilesExternalDestinationTest, FileDownloadBlocked) {
       .Times(::testing::AnyNumber());
 
   auto dst_url = mount_points_->CreateExternalFileSystemURL(
-      blink::StorageKey(), mount_name, base::FilePath(path));
+      blink::StorageKey(), ResolveMountName(profile(), mount_name),
+      base::FilePath(path));
   ASSERT_TRUE(dst_url.is_valid());
 
   EXPECT_CALL(*fpnm_, ShowDlpBlockedFiles(
@@ -1568,7 +1579,8 @@ TEST_P(DlpFilesExternalDestinationTest, FilePromptForDownload) {
       .WillOnce(testing::Return(DlpRulesManager::Level::kReport));
 
   auto dst_url = mount_points_->CreateExternalFileSystemURL(
-      blink::StorageKey(), mount_name, base::FilePath(path));
+      blink::StorageKey(), ResolveMountName(profile(), mount_name),
+      base::FilePath(path));
   ASSERT_TRUE(dst_url.is_valid());
 
   // Block
@@ -2564,7 +2576,7 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple("removable",
                         "MyUSB/path/in/removable",
                         data_controls::Component::kUsb),
-        std::make_tuple("crostini_test_termina_penguin",
+        std::make_tuple(kCrostiniMountName,
                         "path/in/crostini",
                         data_controls::Component::kCrostini),
         std::make_tuple("drivefs-84675c855b63e12f384d45f033826980",
@@ -2575,7 +2587,8 @@ INSTANTIATE_TEST_SUITE_P(
 TEST_P(DlpFilesControllerAshComponentsTest, MapFilePathToPolicyComponentTest) {
   auto [mount_name, path, expected_component] = GetParam();
   auto url = mount_points_->CreateExternalFileSystemURL(
-      blink::StorageKey(), mount_name, base::FilePath(path));
+      blink::StorageKey(), ResolveMountName(profile(), mount_name),
+      base::FilePath(path));
   EXPECT_EQ(
       files_controller_->MapFilePathToPolicyComponent(profile(), url.path()),
       expected_component);

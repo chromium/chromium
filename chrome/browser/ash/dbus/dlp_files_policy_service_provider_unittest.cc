@@ -13,7 +13,6 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_files_test_base.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/services/service_provider_test_helper.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "dbus/object_path.h"
@@ -54,17 +53,21 @@ class DlpFilesPolicyServiceProviderTest
   void SetUp() override {
     DlpFilesTestBase::SetUp();
 
-    profile_ = TestingProfile::Builder().Build();
-
     EXPECT_CALL(*rules_manager(), IsFilesPolicyEnabled)
         .WillRepeatedly(testing::Return(true));
     EXPECT_CALL(*rules_manager(), GetReportingManager())
         .WillRepeatedly(::testing::Return(nullptr));
     files_controller_ = std::make_unique<
         testing::StrictMock<policy::MockDlpFilesControllerAsh>>(
-        *rules_manager(), profile_.get());
+        *rules_manager(), profile());
     EXPECT_CALL(*rules_manager(), GetDlpFilesController())
         .WillRepeatedly(::testing::Return(files_controller_.get()));
+  }
+
+  void TearDown() override {
+    // `files_controller_` points at the profile owned by the base fixture.
+    files_controller_.reset();
+    DlpFilesTestBase::TearDown();
   }
 
   template <class ResponseProtoType>
@@ -94,7 +97,6 @@ class DlpFilesPolicyServiceProviderTest
     return response;
   }
 
-  std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<DlpFilesPolicyServiceProvider> dlp_policy_service_;
   ServiceProviderTestHelper dbus_service_test_helper_;
 

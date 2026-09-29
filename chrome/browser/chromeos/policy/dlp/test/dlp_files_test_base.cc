@@ -4,12 +4,25 @@
 
 #include "chrome/browser/chromeos/policy/dlp/test/dlp_files_test_base.h"
 
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/user_manager/test_helper.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
+#include "components/session_manager/test/user_session_test_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 
 namespace policy {
-#include "google_apis/gaia/gaia_id.h"
+
+namespace {
+
+constexpr AccountId::Literal kAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("test@example.com",
+                                            GaiaId::Literal("12345"));
+
+}  // namespace
 
 DlpFilesTestBase::DlpFilesTestBase()
     : task_environment_(std::make_unique<content::BrowserTaskEnvironment>()) {}
@@ -19,34 +32,34 @@ DlpFilesTestBase::DlpFilesTestBase(
 DlpFilesTestBase::~DlpFilesTestBase() = default;
 
 void DlpFilesTestBase::SetUp() {
-  AccountId account_id =
-      AccountId::FromUserEmailGaiaId("test@example.com", GaiaId("12345"));
+  auto* browser_process = TestingBrowserProcess::GetGlobal();
+  user_session_test_environment_ =
+      std::make_unique<ash::test::UserSessionTestEnvironment>(
+          browser_process->local_state(),
+          std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+              browser_process));
+  ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kAccountId));
+  user_session_test_environment_->LogIn(kAccountId);
 
-  auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-  {
-    auto testing_profile = std::make_unique<TestingProfile>();
-    testing_profile->SetIsNewProfile(true);
-    profile_ = std::move(testing_profile);
-  }
-  user_manager->AddUserWithAffiliationAndTypeAndProfile(
-      account_id,
-      /*is_affiliated=*/false, user_manager::UserType::kRegular,
-      profile_.get());
-  user_manager->UserLoggedIn(
-      account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
-  user_manager->SimulateUserProfileLoad(account_id);
-  user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-      std::move(user_manager));
+  auto* testing_profile =
+      static_cast<TestingProfile*>(Profile::FromBrowserContext(
+          ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+              kAccountId)));
+  ASSERT_TRUE(testing_profile);
+  testing_profile->SetIsNewProfile(true);
+  profile_ = testing_profile;
+
   policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
-      profile_.get(), base::BindRepeating(&DlpFilesTestBase::SetDlpRulesManager,
-                                          base::Unretained(this)));
+      profile_, base::BindRepeating(&DlpFilesTestBase::SetDlpRulesManager,
+                                    base::Unretained(this)));
   ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
   ASSERT_TRUE(rules_manager_);
 }
 
 void DlpFilesTestBase::TearDown() {
-  user_manager_.reset();
-  profile_.reset();
+  rules_manager_ = nullptr;
+  profile_ = nullptr;
+  user_session_test_environment_.reset();
 }
 
 std::unique_ptr<KeyedService> DlpFilesTestBase::SetDlpRulesManager(

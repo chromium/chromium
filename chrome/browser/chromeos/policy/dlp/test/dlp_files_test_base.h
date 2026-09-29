@@ -5,11 +5,16 @@
 #ifndef CHROME_BROWSER_CHROMEOS_POLICY_DLP_TEST_DLP_FILES_TEST_BASE_H_
 #define CHROME_BROWSER_CHROMEOS_POLICY_DLP_TEST_DLP_FILES_TEST_BASE_H_
 
+#include <memory>
+
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/chromeos/policy/dlp/test/mock_dlp_rules_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
+
+namespace ash::test {
+class UserSessionTestEnvironment;
+}  // namespace ash::test
 
 namespace content {
 class BrowserContext;
@@ -36,13 +41,14 @@ class DlpFilesTestBase : public testing::Test {
   std::unique_ptr<KeyedService> SetDlpRulesManager(
       content::BrowserContext* context);
 
-  Profile* profile() { return profile_.get(); }
+  Profile* profile() { return profile_; }
   MockDlpRulesManager* rules_manager() { return rules_manager_; }
 
  private:
   std::unique_ptr<content::BrowserTaskEnvironment> task_environment_;
-  std::unique_ptr<Profile> profile_;
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+  raw_ptr<Profile> profile_ = nullptr;
   raw_ptr<MockDlpRulesManager, DanglingUntriaged> rules_manager_ = nullptr;
 };
 
