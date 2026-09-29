@@ -263,7 +263,8 @@ void SwitchToNormalMode() {
 
 // Verifies the UMA metric for page loads before a tab eviction by loading
 // some tabs, forcing a tab eviction, then checking the histogram.
-- (void)testPageLoadCountBeforeEvictedTab {
+// TODO(crbug.com/567493402): Flaky on ios-simulator.
+- (void)DISABLED_testPageLoadCountBeforeEvictedTab {
   [ChromeEarlGrey resetTabUsageRecorder];
   const GURL url1 = self.testServer->GetURL("/memory_usage.html");
   // This test opens three tabs.
