@@ -68,26 +68,31 @@ import java.util.Set;
         WebContentHairlineContainer webContentHairlineContainer =
                 (WebContentHairlineContainer) webContentHairlineContainerStub.inflate();
 
+        Runnable updateWebContentHairlineContainerRunnable =
+                () ->
+                        updateWebContentHairlineContainer(
+                                browserControlsStateProvider,
+                                sideUiStateProvider,
+                                webContentHairlineContainer,
+                                topControlsStacker);
+
         mWebContentHairlineControlsObserver =
-                new WebContentHairlineControlsObserver(
-                        browserControlsStateProvider,
-                        sideUiStateProvider,
-                        webContentHairlineContainer,
-                        topControlsStacker);
+                new WebContentHairlineControlsObserver(updateWebContentHairlineContainerRunnable);
         browserControlsStateProvider.addObserver(mWebContentHairlineControlsObserver);
-        mWebContentHairlineControlsObserver.updateWebContentHairlineContainer();
 
         mWebContentHairlineAdjuster =
                 new WebContentHairlineAdjuster(
                         sideUiStateProvider,
                         webContentHairlineContainer,
-                        mWebContentHairlineControlsObserver::updateWebContentHairlineContainer);
+                        updateWebContentHairlineContainerRunnable);
         sideUiStateProvider.addObserver(mWebContentHairlineAdjuster);
 
         mWebContentHairlineIncognitoObserver =
                 new WebContentHairlineIncognitoObserver(webContentHairlineContainer);
         mIncognitoStateProvider.addIncognitoStateObserverAndTrigger(
                 mWebContentHairlineIncognitoObserver);
+
+        updateWebContentHairlineContainerRunnable.run();
     }
 
     @Override
@@ -98,31 +103,62 @@ import java.util.Set;
     }
 
     /**
+     * Updates the {@link WebContentHairlineContainer}'s top margin and top hairline visibility to
+     * account for the current top controls and side UI state.
+     */
+    private static void updateWebContentHairlineContainer(
+            BrowserControlsStateProvider browserControlsStateProvider,
+            SideUiStateProvider sideUiStateProvider,
+            WebContentHairlineContainer webContentHairlineContainer,
+            TopControlsStacker topControlsStacker) {
+        int topVisibleContentOffset =
+                (int) browserControlsStateProvider.getTopVisibleContentOffset();
+
+        // When the bookmarks bar is showing, its layer bakes in the hairline height, causing the
+        // visible content offset to extend past the top of the hairline. Subtract the hairline
+        // height so the container aligns with the top of the hairline stroke. This caused a bug
+        // where the rounded corner was not aligned with the top controls hairline.
+        // See crbug.com/539662382.
+        // TODO(crbug.com/532218047): Once the toolbar refactor is complete, this logic should be
+        //  safe to remove.
+        if (!ChromeFeatureList.sToolbarProgressBarRefactor.isEnabled()
+                && topControlsStacker.isLayerAtBottom(TopControlType.BOOKMARK_BAR)) {
+            int hairlineHeight = browserControlsStateProvider.getTopControlsHairlineHeight();
+            topVisibleContentOffset = Math.max(0, topVisibleContentOffset - hairlineHeight);
+        }
+
+        // Hides the top hairline, if needed.
+        boolean hideTopHairline =
+                !ChromeFeatureList.sSidePanelTopHairlineRefactorAndroid.isEnabled()
+                        || topVisibleContentOffset == 0
+                        || !sideUiStateProvider.isAnySideUiShowing();
+        webContentHairlineContainer
+                .getTopHairline()
+                .setVisibility(hideTopHairline ? View.INVISIBLE : View.VISIBLE);
+
+        // Adjusts the top margin based on how far the content is offset.
+        MarginLayoutParams layoutParams =
+                (MarginLayoutParams) webContentHairlineContainer.getLayoutParams();
+        layoutParams.topMargin = topVisibleContentOffset;
+        webContentHairlineContainer.setLayoutParams(layoutParams);
+    }
+
+    /**
      * Implementation of {@link BrowserControlsStateProvider.Observer} that updates the height of
      * the side hairlines and the visibility of the top hairline based on top controls changes.
      */
     private static final class WebContentHairlineControlsObserver
             implements BrowserControlsStateProvider.Observer {
 
-        private final BrowserControlsStateProvider mBrowserControlsStateProvider;
-        private final SideUiStateProvider mSideUiStateProvider;
-        private final WebContentHairlineContainer mWebContentHairlineContainer;
-        private final TopControlsStacker mTopControlsStacker;
+        private final Runnable mUpdateWebContentHairlineContainerRunnable;
 
-        WebContentHairlineControlsObserver(
-                BrowserControlsStateProvider browserControlsStateProvider,
-                SideUiStateProvider sideUiStateProvider,
-                WebContentHairlineContainer webContentHairlineContainer,
-                TopControlsStacker topControlsStacker) {
-            mBrowserControlsStateProvider = browserControlsStateProvider;
-            mSideUiStateProvider = sideUiStateProvider;
-            mWebContentHairlineContainer = webContentHairlineContainer;
-            mTopControlsStacker = topControlsStacker;
+        WebContentHairlineControlsObserver(Runnable updateWebContentHairlineContainerRunnable) {
+            mUpdateWebContentHairlineContainerRunnable = updateWebContentHairlineContainerRunnable;
         }
 
         @Override
         public void onTopControlsHeightChanged(int topControlsHeight, int topControlsMinHeight) {
-            updateWebContentHairlineContainer();
+            mUpdateWebContentHairlineContainerRunnable.run();
         }
 
         @Override
@@ -135,41 +171,7 @@ import java.util.Set;
                 boolean bottomControlsMinHeightChanged,
                 boolean requestNewFrame,
                 boolean isVisibilityForced) {
-            updateWebContentHairlineContainer();
-        }
-
-        /* package */ void updateWebContentHairlineContainer() {
-            int topVisibleContentOffset =
-                    (int) mBrowserControlsStateProvider.getTopVisibleContentOffset();
-
-            // When the bookmarks bar is showing, its layer bakes in the hairline height, causing
-            // the visible content offset to extend past the top of the hairline. Subtract the
-            // hairline height so the container aligns with the top of the hairline stroke. This
-            // caused a bug where the rounded corner was not aligned with the top controls hairline.
-            // See crbug.com/539662382.
-            // TODO(crbug.com/532218047): Once the toolbar refactor is complete, this logic should
-            //  be safe to remove.
-            if (!ChromeFeatureList.sToolbarProgressBarRefactor.isEnabled()
-                    && mTopControlsStacker != null
-                    && mTopControlsStacker.isLayerAtBottom(TopControlType.BOOKMARK_BAR)) {
-                int hairlineHeight = mBrowserControlsStateProvider.getTopControlsHairlineHeight();
-                topVisibleContentOffset = Math.max(0, topVisibleContentOffset - hairlineHeight);
-            }
-
-            // Hides the top hairline, if needed.
-            boolean hideTopHairline =
-                    !ChromeFeatureList.sSidePanelTopHairlineRefactorAndroid.isEnabled()
-                            || topVisibleContentOffset == 0
-                            || !mSideUiStateProvider.isAnySideUiShowing();
-            mWebContentHairlineContainer
-                    .getTopHairline()
-                    .setVisibility(hideTopHairline ? View.INVISIBLE : View.VISIBLE);
-
-            // Adjusts the top margin based on how far the content is offset.
-            MarginLayoutParams layoutParams =
-                    (MarginLayoutParams) mWebContentHairlineContainer.getLayoutParams();
-            layoutParams.topMargin = topVisibleContentOffset;
-            mWebContentHairlineContainer.setLayoutParams(layoutParams);
+            mUpdateWebContentHairlineContainerRunnable.run();
         }
     }
 
@@ -181,17 +183,17 @@ import java.util.Set;
 
         private final SideUiStateProvider mSideUiStateProvider;
         private final WebContentHairlineContainer mWebContentHairlineContainer;
-        private final Runnable mUpdateContainerForTopControls;
+        private final Runnable mUpdateWebContentHairlineContainerRunnable;
 
         WebContentHairlineAdjuster(
                 SideUiStateProvider sideUiStateProvider,
                 WebContentHairlineContainer webContentHairlineContainer,
-                Runnable updateContainerForTopControls) {
+                Runnable updateWebContentHairlineContainerRunnable) {
             super(webContentHairlineContainer);
 
             mSideUiStateProvider = sideUiStateProvider;
             mWebContentHairlineContainer = webContentHairlineContainer;
-            mUpdateContainerForTopControls = updateContainerForTopControls;
+            mUpdateWebContentHairlineContainerRunnable = updateWebContentHairlineContainerRunnable;
         }
 
         @Override
@@ -232,7 +234,7 @@ import java.util.Set;
 
             // The top hairline's visibility depends on whether any side UI is showing, so it needs
             // to be refreshed whenever the side UI specs change.
-            mUpdateContainerForTopControls.run();
+            mUpdateWebContentHairlineContainerRunnable.run();
         }
     }
 

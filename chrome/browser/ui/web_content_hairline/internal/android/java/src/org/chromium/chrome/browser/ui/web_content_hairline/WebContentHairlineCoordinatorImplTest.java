@@ -123,10 +123,7 @@ public class WebContentHairlineCoordinatorImplTest {
 
     @Test
     public void testTopControlsHeightChangedUpdatesMargin() {
-        ArgumentCaptor<BrowserControlsStateProvider.Observer> observerCaptor =
-                ArgumentCaptor.forClass(BrowserControlsStateProvider.Observer.class);
-        verify(mBrowserControlsStateProvider).addObserver(observerCaptor.capture());
-        BrowserControlsStateProvider.Observer observer = observerCaptor.getValue();
+        BrowserControlsStateProvider.Observer observer = captureBrowserControlsObserver();
 
         // 1. Non-zero offset and side UI showing: show top hairline.
         when(mSideUiStateProvider.isAnySideUiShowing()).thenReturn(true);
@@ -146,10 +143,7 @@ public class WebContentHairlineCoordinatorImplTest {
 
     @Test
     public void testControlsOffsetChangedUpdatesMargin() {
-        ArgumentCaptor<BrowserControlsStateProvider.Observer> observerCaptor =
-                ArgumentCaptor.forClass(BrowserControlsStateProvider.Observer.class);
-        verify(mBrowserControlsStateProvider).addObserver(observerCaptor.capture());
-        BrowserControlsStateProvider.Observer observer = observerCaptor.getValue();
+        BrowserControlsStateProvider.Observer observer = captureBrowserControlsObserver();
 
         // 1. Non-zero offset and side UI showing: show top hairline.
         when(mSideUiStateProvider.isAnySideUiShowing()).thenReturn(true);
@@ -169,10 +163,7 @@ public class WebContentHairlineCoordinatorImplTest {
 
     @Test
     public void testSideUiSpecsChangedUpdatesTopHairline() {
-        ArgumentCaptor<SideUiObserver> observerCaptor =
-                ArgumentCaptor.forClass(SideUiObserver.class);
-        verify(mSideUiStateProvider).addObserver(observerCaptor.capture());
-        SideUiObserver observer = observerCaptor.getValue();
+        SideUiObserver observer = captureSideUiObserver();
 
         when(mSideUiStateProvider.isAnySideUiShowing()).thenReturn(true);
         when(mBrowserControlsStateProvider.getTopVisibleContentOffset()).thenReturn(100f);
@@ -194,10 +185,7 @@ public class WebContentHairlineCoordinatorImplTest {
 
     @Test
     public void testHairlineVisibilityChangesDuringTransitions() {
-        ArgumentCaptor<SideUiObserver> observerCaptor =
-                ArgumentCaptor.forClass(SideUiObserver.class);
-        verify(mSideUiStateProvider).addObserver(observerCaptor.capture());
-        SideUiObserver observer = observerCaptor.getValue();
+        SideUiObserver observer = captureSideUiObserver();
 
         // 1. Assert initially INVISIBLE.
         assertEquals(View.INVISIBLE, mLeftHairline.getVisibility());
@@ -243,10 +231,7 @@ public class WebContentHairlineCoordinatorImplTest {
 
     @Test
     public void testHairlineVisibilityForVerticalTabs() {
-        ArgumentCaptor<SideUiObserver> observerCaptor =
-                ArgumentCaptor.forClass(SideUiObserver.class);
-        verify(mSideUiStateProvider).addObserver(observerCaptor.capture());
-        SideUiObserver observer = observerCaptor.getValue();
+        SideUiObserver observer = captureSideUiObserver();
 
         when(mBrowserControlsStateProvider.getTopVisibleContentOffset()).thenReturn(100f);
         when(mSideUiStateProvider.isSideUiShowing(SideUiId.VERTICAL_TABS)).thenReturn(true);
@@ -267,10 +252,7 @@ public class WebContentHairlineCoordinatorImplTest {
     @Test
     @DisableFeatures(ChromeFeatureList.SIDE_PANEL_TOP_HAIRLINE_REFACTOR_ANDROID)
     public void testTopHairlineHiddenWhenFeatureDisabled() {
-        ArgumentCaptor<BrowserControlsStateProvider.Observer> observerCaptor =
-                ArgumentCaptor.forClass(BrowserControlsStateProvider.Observer.class);
-        verify(mBrowserControlsStateProvider).addObserver(observerCaptor.capture());
-        BrowserControlsStateProvider.Observer observer = observerCaptor.getValue();
+        BrowserControlsStateProvider.Observer observer = captureBrowserControlsObserver();
 
         // Even with non-zero offset and side UI showing, if the feature is disabled,
         // the top hairline must remain INVISIBLE.
@@ -284,10 +266,7 @@ public class WebContentHairlineCoordinatorImplTest {
 
     @Test
     public void testControlsOffsetChangedUpdatesMargin_whenBookmarkBarIsShowing() {
-        ArgumentCaptor<BrowserControlsStateProvider.Observer> observerCaptor =
-                ArgumentCaptor.forClass(BrowserControlsStateProvider.Observer.class);
-        verify(mBrowserControlsStateProvider).addObserver(observerCaptor.capture());
-        BrowserControlsStateProvider.Observer observer = observerCaptor.getValue();
+        BrowserControlsStateProvider.Observer observer = captureBrowserControlsObserver();
 
         when(mSideUiStateProvider.isAnySideUiShowing()).thenReturn(true);
         when(mTopControlsStacker.isLayerAtBottom(TopControlType.BOOKMARK_BAR)).thenReturn(true);
@@ -301,5 +280,19 @@ public class WebContentHairlineCoordinatorImplTest {
                 100 - HAIRLINE_HEIGHT,
                 mLayoutParams.topMargin);
         assertEquals(View.VISIBLE, mTopHairline.getVisibility());
+    }
+
+    private BrowserControlsStateProvider.Observer captureBrowserControlsObserver() {
+        ArgumentCaptor<BrowserControlsStateProvider.Observer> observerCaptor =
+                ArgumentCaptor.forClass(BrowserControlsStateProvider.Observer.class);
+        verify(mBrowserControlsStateProvider).addObserver(observerCaptor.capture());
+        return observerCaptor.getValue();
+    }
+
+    private SideUiObserver captureSideUiObserver() {
+        ArgumentCaptor<SideUiObserver> observerCaptor =
+                ArgumentCaptor.forClass(SideUiObserver.class);
+        verify(mSideUiStateProvider).addObserver(observerCaptor.capture());
+        return observerCaptor.getValue();
     }
 }
