@@ -28,6 +28,7 @@ import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.SuggestionSpan;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsetsController;
 import android.view.inputmethod.CorrectionInfo;
@@ -923,8 +924,18 @@ public class ImeAdapterImplTest {
         anchorInfo.insertionMarker.height = 10;
         adapter.updateCursorAnchorInfo(anchorInfo);
 
-        verify(mContainerView, times(shouldExpectRequestRectangleOnScreen ? 1 : 0))
-                .requestRectangleOnScreen(any(Rect.class));
+        int expectedCalls = shouldExpectRequestRectangleOnScreen ? 1 : 0;
+        // Matches the API selection in ImeAdapterImpl#updateCursorAnchorInfo().
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.BAKLAVA
+                && Build.VERSION.SDK_INT_FULL >= Build.VERSION_CODES_FULL.BAKLAVA_1) {
+            verify(mContainerView, times(expectedCalls))
+                    .requestRectangleOnScreen(
+                            any(Rect.class),
+                            eq(false),
+                            eq(View.RECTANGLE_ON_SCREEN_REQUEST_SOURCE_TEXT_CURSOR));
+        } else {
+            verify(mContainerView, times(expectedCalls)).requestRectangleOnScreen(any(Rect.class));
+        }
     }
 
     @Test
