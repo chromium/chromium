@@ -19,13 +19,13 @@ namespace blink {
 Focusable* Focusable::Create(const V8UnionCSSPseudoElementOrElement* target) {
   CHECK(target);
   if (target->IsCSSPseudoElement()) {
-    return MakeGarbageCollected<Focusable>(
-        base::PassKey<Focusable>(), /*shadow_host=*/nullptr,
-        /*element=*/nullptr, target->GetAsCSSPseudoElement());
+    return MakeGarbageCollected<Focusable>(base::PassKey<Focusable>(),
+                                           /*shadow_host=*/nullptr,
+                                           *target->GetAsCSSPseudoElement());
   }
-  return MakeGarbageCollected<Focusable>(
-      base::PassKey<Focusable>(), /*shadow_host=*/nullptr,
-      target->GetAsElement(), /*pseudo_element=*/nullptr);
+  return MakeGarbageCollected<Focusable>(base::PassKey<Focusable>(),
+                                         /*shadow_host=*/nullptr,
+                                         *target->GetAsElement());
 }
 
 // static
@@ -67,27 +67,30 @@ Focusable* Focusable::CreateFromElement(Element& element,
   // `CSSPseudoElement::From()` returns nullptr for pseudo-elements that the
   // CSSPseudoElement interface does not support (e.g. `::scroll-button()` or
   // `::column::scroll-marker`), which are tracked directly instead.
-  CSSPseudoElement* css_pseudo_element =
-      pseudo_element ? CSSPseudoElement::From(pseudo_element) : nullptr;
-  Element* focusable_element = nullptr;
-  if (!css_pseudo_element) {
-    focusable_element = pseudo_element ? pseudo_element : originating_element;
+  if (pseudo_element) {
+    if (CSSPseudoElement* css_pseudo_element =
+            CSSPseudoElement::From(pseudo_element)) {
+      return MakeGarbageCollected<Focusable>(base::PassKey<Focusable>(),
+                                             shadow_host, *css_pseudo_element);
+    }
   }
+  // TODO(crbug.com/565786176): Replace this with `CHECK(!pseudo_element)` once
+  // all focusable pseudo-elements can be represented as CSSPseudoElement.
+  Element& focusable_element =
+      pseudo_element ? *pseudo_element : *originating_element;
   return MakeGarbageCollected<Focusable>(base::PassKey<Focusable>(),
-                                         shadow_host, focusable_element,
-                                         css_pseudo_element);
+                                         shadow_host, focusable_element);
 }
 
 Focusable::Focusable(base::PassKey<Focusable>,
                      Element* shadow_host,
-                     Element* element,
-                     CSSPseudoElement* pseudo_element)
-    : shadow_host_(shadow_host),
-      element_(element),
-      pseudo_element_(pseudo_element) {
-  // See the member comments in the header.
-  DCHECK_NE(!!element_, !!pseudo_element_);
-}
+                     Element& element)
+    : shadow_host_(shadow_host), element_(&element) {}
+
+Focusable::Focusable(base::PassKey<Focusable>,
+                     Element* shadow_host,
+                     CSSPseudoElement& pseudo_element)
+    : shadow_host_(shadow_host), pseudo_element_(&pseudo_element) {}
 
 Element* Focusable::target() const {
   if (shadow_host_) {

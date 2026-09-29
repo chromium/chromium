@@ -26,16 +26,18 @@ class CORE_EXPORT Focusable final : public ScriptWrappable {
   static Focusable* CreateFromElement(Element& element,
                                       const TreeScope& caller_scope);
 
-  // Exactly one of `element` and `pseudo_element` must be set. See the member
-  // comments below.
+  // See the member comments below.
+  Focusable(base::PassKey<Focusable>, Element* shadow_host, Element& element);
   Focusable(base::PassKey<Focusable>,
             Element* shadow_host,
-            Element* element,
-            CSSPseudoElement* pseudo_element);
+            CSSPseudoElement& pseudo_element);
 
   Element* shadowHost() const { return shadow_host_.Get(); }
   Element* target() const;
   CSSPseudoElement* pseudoElement() const {
+    // `pseudo_element_` (like `element_`) is still set when `shadow_host_` is,
+    // since `focus()` needs it (see the member comments below), so this has to
+    // check `shadow_host_` to avoid exposing it.
     return shadow_host_ ? nullptr : pseudo_element_.Get();
   }
 
@@ -52,6 +54,12 @@ class CORE_EXPORT Focusable final : public ScriptWrappable {
   // that is exposed, i.e. what `DocumentOrShadowRoot.activeElement` returns in
   // that case. `target` and `pseudoElement` are null whenever this is set, so
   // that nothing inside the shadow tree is exposed.
+  //
+  // `element_` or `pseudo_element_` is still set in that case, since `focus()`
+  // focuses the focusable item itself, not the shadow host. Focusing the shadow
+  // host instead would focus the host itself, nothing at all, or (with
+  // `delegatesFocus`) whatever element in the shadow tree the host delegates
+  // focus to, none of which is necessarily the focusable item.
   //
   // This is computed once, when the Focusable is created, and doesn't change
   // afterwards (just like `Event.target`), even if the focusable item moves or
