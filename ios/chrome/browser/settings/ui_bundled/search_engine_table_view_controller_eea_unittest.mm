@@ -208,9 +208,9 @@ TEST_F(SearchEngineTableViewControllerEEATest, EditingMode) {
   CheckPrepopulatedItem(prepopulated_search_engine_[2], /*checked=*/false,
                         /*section=*/0,
                         /*row=*/2, /*enabled=*/false);
-  CheckCustomItem(custom_search_engine_[0], /*checked=*/false, /*section=*/1,
-                  /*row=*/0, /*enabled=*/true);
   CheckCustomItem(custom_search_engine_[1], /*checked=*/false, /*section=*/1,
+                  /*row=*/0, /*enabled=*/true);
+  CheckCustomItem(custom_search_engine_[0], /*checked=*/false, /*section=*/1,
                   /*row=*/1, /*enabled=*/true);
 
   // Disable editing mode
@@ -225,9 +225,9 @@ TEST_F(SearchEngineTableViewControllerEEATest, EditingMode) {
   CheckPrepopulatedItem(prepopulated_search_engine_[2], /*checked=*/false,
                         /*section=*/0,
                         /*row=*/2, /*enabled=*/true);
-  CheckCustomItem(custom_search_engine_[0], /*checked=*/false, /*section=*/1,
-                  /*row=*/0, /*enabled=*/true);
   CheckCustomItem(custom_search_engine_[1], /*checked=*/false, /*section=*/1,
+                  /*row=*/0, /*enabled=*/true);
+  CheckCustomItem(custom_search_engine_[0], /*checked=*/false, /*section=*/1,
                   /*row=*/1, /*enabled=*/true);
 }
 

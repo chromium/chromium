@@ -31,7 +31,7 @@ const char kQuickenSiteSearchExpiryForTesting[] =
     "quicken-site-search-expiry-for-testing";
 
 BASE_FEATURE(kVisitCustomSearchOnUndefaulting,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kIgnoreSearchProviderOverrides, base::FEATURE_ENABLED_BY_DEFAULT);
 
