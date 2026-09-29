@@ -46,6 +46,7 @@ class PopupNoticeView : public PopupInteractiveRowView {
       std::u16string_view link_text,
       std::u16string_view accept_button_text,
       std::u16string_view accept_button_a11y_label,
+      std::u16string_view a11y_instructions,
       base::RepeatingClosure on_link_clicked,
       std::string_view notice_interaction_histogram_name);
 

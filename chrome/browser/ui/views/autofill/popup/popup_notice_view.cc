@@ -120,6 +120,7 @@ PopupNoticeView::PopupNoticeView(
     std::u16string_view link_text,
     std::u16string_view accept_button_text,
     std::u16string_view accept_button_a11y_label,
+    std::u16string_view a11y_instructions,
     base::RepeatingClosure on_link_clicked,
     std::string_view notice_interaction_histogram_name)
     : controller_(std::move(controller)),
@@ -132,6 +133,7 @@ PopupNoticeView::PopupNoticeView(
   CHECK(!subtitle_text.empty());
   CHECK(!link_text.empty());
   CHECK(!accept_button_text.empty());
+  CHECK(!a11y_instructions.empty());
   CHECK(!notice_interaction_histogram_name_.empty());
 
   auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -173,7 +175,9 @@ PopupNoticeView::PopupNoticeView(
       base::JoinString({title_text, subtitle_text, link_text}, u" ");
   const size_t full_text_length = full_text.length();
   GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
-  GetViewAccessibility().SetName(full_text, ax::mojom::NameFrom::kAttribute);
+  GetViewAccessibility().SetName(
+      base::JoinString({full_text, a11y_instructions}, u". "),
+      ax::mojom::NameFrom::kAttribute);
   description_->SetText(std::move(full_text));
   description_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
   description_->SetDefaultTextStyle(views::style::STYLE_BODY_5);
@@ -451,6 +455,8 @@ std::unique_ptr<PopupNoticeView> CreatePersonalContextNoticeView(
       IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON);
   std::u16string accept_button_a11y_label = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON_A11Y_LABEL);
+  std::u16string a11y_instructions =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_POPUP_NOTICE_A11Y_INSTRUCTIONS);
   if (controller) {
     if (controller->GetMainFillingProduct() == FillingProduct::kAtMemory &&
         !IsLoggingDisabledByPolicy(controller.get())) {
@@ -475,7 +481,8 @@ std::unique_ptr<PopupNoticeView> CreatePersonalContextNoticeView(
   return std::make_unique<PopupNoticeView>(
       a11y_selection_delegate, announce_callback, std::move(controller),
       line_number, title_text, subtitle_text, link_text, accept_button_text,
-      accept_button_a11y_label, std::move(on_link_clicked), histogram_name);
+      accept_button_a11y_label, a11y_instructions, std::move(on_link_clicked),
+      histogram_name);
 }
 
 std::unique_ptr<PopupNoticeView> CreateAutofillAiPrivateInferenceNoticeView(
@@ -494,6 +501,8 @@ std::unique_ptr<PopupNoticeView> CreateAutofillAiPrivateInferenceNoticeView(
       IDS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_PRIMARY_BUTTON_TEXT);
   const std::u16string accept_button_a11y_label = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_PRIMARY_BUTTON_A11Y_LABEL);
+  const std::u16string a11y_instructions =
+      l10n_util::GetStringUTF16(IDS_AUTOFILL_POPUP_NOTICE_A11Y_INSTRUCTIONS);
 
   auto on_link_clicked = base::BindRepeating(
       [](base::WeakPtr<AutofillPopupController> controller) {
@@ -516,7 +525,7 @@ std::unique_ptr<PopupNoticeView> CreateAutofillAiPrivateInferenceNoticeView(
   return std::make_unique<PopupNoticeView>(
       a11y_selection_delegate, announce_callback, std::move(controller),
       line_number, title_text, subtitle_text, link_text, accept_button_text,
-      accept_button_a11y_label, std::move(on_link_clicked),
+      accept_button_a11y_label, a11y_instructions, std::move(on_link_clicked),
       "Autofill.Ai.PrivateInferenceNoticeInteractions");
 }
 

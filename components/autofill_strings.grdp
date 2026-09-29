@@ -2101,6 +2101,9 @@ You can remove this suggestion from Chrome. Your original source won't be delete
     <message name="IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_OK_BUTTON_A11Y_LABEL" translateable="false" is_accessibility_with_no_ui="true" desc="Accessibility label for a standard acknowledgment button label to dismiss the informational notice. Clicking the button will close only the notice row, but not the whole popup.">
       OK, close notice
     </message>
+    <message name="IDS_AUTOFILL_POPUP_NOTICE_A11Y_INSTRUCTIONS" translateable="false" is_accessibility_with_no_ui="true" desc="Accessibility instructions for navigating between the notice link and the acknowledgment button in the Autofill popup using left or right arrow keys.">
+      Use left or right arrow keys to navigate the notice.
+    </message>
     <message name="IDS_AUTOFILL_AI_PRIVATE_INFERENCE_NOTICE_LINK_TEXT" desc="Link text for the private inference notice in Autofill AI popup.">
       Manage settings
     </message>

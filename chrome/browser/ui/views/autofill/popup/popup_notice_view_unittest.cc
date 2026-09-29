@@ -60,6 +60,7 @@ constexpr char16_t kTestLink[] = u"Test Link";
 constexpr char16_t kTestAcceptButton[] = u"Test Accept Button";
 constexpr char16_t kTestAcceptButtonA11yLabel[] =
     u"Test Accept Button A11y Label";
+constexpr char16_t kTestA11yInstructions[] = u"Test A11y Instructions";
 constexpr char kTestHistogram[] = "Test.NoticeInteractions";
 
 class PopupNoticeViewTest : public ChromeViewsTestBase {
@@ -82,7 +83,7 @@ class PopupNoticeViewTest : public ChromeViewsTestBase {
         mock_a11y_selection_delegate_, mock_announce_callback_.Get(),
         controller().GetWeakPtr(), kNoticePosition, kTestTitle, kTestContext,
         kTestLink, kTestAcceptButton, kTestAcceptButtonA11yLabel,
-        mock_on_link_clicked_.Get(), kTestHistogram));
+        kTestA11yInstructions, mock_on_link_clicked_.Get(), kTestHistogram));
 
     // Assign manual bounds so the widget has a physical size.
     // In test env, this is required to position child views
@@ -238,7 +239,8 @@ class PopupNoticeViewTest : public ChromeViewsTestBase {
 };
 
 // Tests that the notice view is initialized with correct description, link,
-// and accept button texts, and that the kShown metric is recorded.
+// and accept button texts, that the kShown metric is recorded, and that the
+// accessible name includes navigation instructions.
 TEST_F(PopupNoticeViewTest, InitialStateAndHistogramShown) {
   base::HistogramTester histogram_tester;
   ShowView();
@@ -248,6 +250,11 @@ TEST_F(PopupNoticeViewTest, InitialStateAndHistogramShown) {
   EXPECT_TRUE(VerifyDescription(kTestTitle, kTestContext, kTestLink));
   EXPECT_TRUE(VerifyLink(kTestLink));
   EXPECT_TRUE(VerifyAcceptButton(kTestAcceptButton));
+
+  ui::AXNodeData node_data;
+  view().GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            u"Test Title Test Context Test Link. Test A11y Instructions");
 }
 
 // Tests that clicking the accept button marks the notice as acknowledged in
@@ -581,8 +588,10 @@ TEST_F(PopupNoticeViewTest, CreatePersonalContextNoticeViewAmbientAutofill) {
 
   ui::AXNodeData node_data;
   view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  EXPECT_FALSE(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName)
-                   .empty());
+  EXPECT_NE(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName)
+                .find(l10n_util::GetStringUTF16(
+                    IDS_AUTOFILL_POPUP_NOTICE_A11Y_INSTRUCTIONS)),
+            std::u16string::npos);
 }
 
 // Tests that Personal Context Notice view is created with proper histograms
@@ -610,6 +619,13 @@ TEST_F(PopupNoticeViewTest,
       test_api(*view).description()->GetText().find(l10n_util::GetStringUTF16(
           IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_SUBTITLE_WITH_LOGGING)),
       std::u16string::npos);
+
+  ui::AXNodeData node_data;
+  view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_NE(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName)
+                .find(l10n_util::GetStringUTF16(
+                    IDS_AUTOFILL_POPUP_NOTICE_A11Y_INSTRUCTIONS)),
+            std::u16string::npos);
 }
 
 // Tests that Personal Context Notice view is created with proper texts for
@@ -634,6 +650,13 @@ TEST_F(PopupNoticeViewTest,
       test_api(*view).description()->GetText().find(l10n_util::GetStringUTF16(
           IDS_AUTOFILL_POPUP_PERSONAL_CONTEXT_NOTICE_SUBTITLE)),
       std::u16string::npos);
+
+  ui::AXNodeData node_data;
+  view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  EXPECT_NE(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName)
+                .find(l10n_util::GetStringUTF16(
+                    IDS_AUTOFILL_POPUP_NOTICE_A11Y_INSTRUCTIONS)),
+            std::u16string::npos);
 }
 
 // Tests that Autofill AI Private Inference Notice view is created with valid
@@ -652,8 +675,10 @@ TEST_F(PopupNoticeViewTest, CreateAutofillAiPrivateInferenceNoticeViewCreated) {
 
   ui::AXNodeData node_data;
   view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
-  EXPECT_FALSE(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName)
-                   .empty());
+  EXPECT_NE(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName)
+                .find(l10n_util::GetStringUTF16(
+                    IDS_AUTOFILL_POPUP_NOTICE_A11Y_INSTRUCTIONS)),
+            std::u16string::npos);
 }
 
 // Tests that clicking the link in the Autofill AI Private Inference Notice view
