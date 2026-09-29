@@ -375,15 +375,6 @@ bool Canvas2DResourceProvider::IsValid() const {
   return !IsGpuContextLost() && GetSkSurface();
 }
 
-void Canvas2DResourceProvider::TransferBackFromWebGPU(
-    const gpu::SyncToken& webgpu_write_sync_token) {
-  if (IsGpuContextLost()) {
-    return;
-  }
-
-  resource()->EndExternalWrite(webgpu_write_sync_token);
-}
-
 gpu::SharedImageUsageSet Canvas2DResourceProvider::GetSharedImageUsageFlags()
     const {
   return image_pool_->GetImageInfo().usage;

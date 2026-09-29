@@ -232,13 +232,6 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
 
   void SetResourceRecyclingEnabled(bool value);
 
-  // Signals that the ongoing transfer of this resource to WebGPU has completed,
-  // passing the token that should be waited on to ensure that the service-side
-  // operations of the WebGPU write have completed. Ensures that the next read
-  // of this resource (whether via raster or the compositor) waits on this
-  // token.
-  void TransferBackFromWebGPU(const gpu::SyncToken& webgpu_write_sync_token);
-
   virtual void RasterRecord(cc::PaintRecord last_recording);
   gpu::raster::RasterInterface* RasterInterface() const;
   bool IsGraphite() const;
