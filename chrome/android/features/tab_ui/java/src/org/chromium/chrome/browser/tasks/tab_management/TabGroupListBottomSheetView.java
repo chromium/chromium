@@ -61,7 +61,7 @@ public class TabGroupListBottomSheetView implements BottomSheetContent {
         mRecyclerView = mContentView.findViewById(R.id.tab_group_parity_recycler_view);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
         mRecyclerView.addOnScrollListener(
-                new BottomSheetRecyclerScrollListener(bottomSheetController));
+                new BottomSheetRecyclerScrollListener(bottomSheetController, this));
         mBottomsheetController = bottomSheetController;
         mShowNewGroupRow = showNewGroupRow;
     }

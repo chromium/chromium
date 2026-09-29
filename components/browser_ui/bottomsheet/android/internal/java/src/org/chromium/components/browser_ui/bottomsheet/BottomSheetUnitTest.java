@@ -192,6 +192,38 @@ public class BottomSheetUnitTest {
         return sheet;
     }
 
+    /** Builds a sheet whose container has been laid out to the given height before init(). */
+    private BottomSheet buildSheetWithContainerHeight(boolean isLargeFormFactor, int height) {
+        BottomSheet sheet = inflateAndAttachSheet(isLargeFormFactor);
+        mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, height);
+        installSharedTestViews(sheet);
+        initSheet(sheet, isLargeFormFactor);
+        return sheet;
+    }
+
+    /**
+     * Builds a mock sheet content with the given large form factor opt-in and height ratios.
+     *
+     * @param supportsLargeFormFactor Whether the content opts in to the desktop popup treatment.
+     * @param halfRatio The half height ratio, or a {@link HeightMode} constant.
+     * @param fullRatio The full height ratio, or a {@link HeightMode} constant.
+     */
+    private BottomSheetContent buildContent(
+            boolean supportsLargeFormFactor, float halfRatio, float fullRatio) {
+        BottomSheetContent content = mock(BottomSheetContent.class);
+        doReturn(supportsLargeFormFactor).when(content).supportsLargeFormFactor();
+        doReturn(halfRatio).when(content).getHalfHeightRatio();
+        doReturn(fullRatio).when(content).getFullHeightRatio();
+        doReturn(MAX_HEIGHT_RATIO).when(content).getMaxResizeContentHeightRatio();
+        doReturn(HeightMode.DISABLED).when(content).getPeekHeight();
+        doReturn(new View(mActivity)).when(content).getContentView();
+        doReturn(android.R.string.ok).when(content).getSheetFullHeightAccessibilityStringId();
+        doReturn(android.R.string.ok).when(content).getSheetHalfHeightAccessibilityStringId();
+        doReturn(android.R.string.copy).when(content).getSheetClosedAccessibilityStringId();
+        doReturn(android.R.string.copy).when(content).getSheetHiddenAccessibilityStringId();
+        return content;
+    }
+
     private void setupBottomSheetForKeyboardTest() {
         BottomSheet.setSmallScreenForTesting(false);
         when(mSheetContent.getFullHeightRatio()).thenReturn((float) HeightMode.RESIZE_CONTENT);
@@ -1764,38 +1796,6 @@ public class BottomSheetUnitTest {
     // it protects so a future refactor that collapses the modes fails loudly rather than
     // silently changing layout.
     // -----------------------------------------------------------------------------------------
-
-    /**
-     * Builds a mock sheet content with the given large form factor opt-in and height ratios.
-     *
-     * @param supportsLargeFormFactor Whether the content opts in to the desktop popup treatment.
-     * @param halfRatio The half height ratio, or a {@link HeightMode} constant.
-     * @param fullRatio The full height ratio, or a {@link HeightMode} constant.
-     */
-    private BottomSheetContent buildContent(
-            boolean supportsLargeFormFactor, float halfRatio, float fullRatio) {
-        BottomSheetContent content = mock(BottomSheetContent.class);
-        doReturn(supportsLargeFormFactor).when(content).supportsLargeFormFactor();
-        doReturn(halfRatio).when(content).getHalfHeightRatio();
-        doReturn(fullRatio).when(content).getFullHeightRatio();
-        doReturn(MAX_HEIGHT_RATIO).when(content).getMaxResizeContentHeightRatio();
-        doReturn(HeightMode.DISABLED).when(content).getPeekHeight();
-        doReturn(new View(mActivity)).when(content).getContentView();
-        doReturn(android.R.string.ok).when(content).getSheetFullHeightAccessibilityStringId();
-        doReturn(android.R.string.ok).when(content).getSheetHalfHeightAccessibilityStringId();
-        doReturn(android.R.string.copy).when(content).getSheetClosedAccessibilityStringId();
-        doReturn(android.R.string.copy).when(content).getSheetHiddenAccessibilityStringId();
-        return content;
-    }
-
-    /** Builds a sheet whose container has been laid out to the given height before init(). */
-    private BottomSheet buildSheetWithContainerHeight(boolean isLargeFormFactor, int height) {
-        BottomSheet sheet = inflateAndAttachSheet(isLargeFormFactor);
-        mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, height);
-        installSharedTestViews(sheet);
-        initSheet(sheet, isLargeFormFactor);
-        return sheet;
-    }
 
     @Test
     public void testSheetLayoutMode_Standard() {
