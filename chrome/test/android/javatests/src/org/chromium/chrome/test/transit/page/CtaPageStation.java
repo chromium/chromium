@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.CoreMatchers.allOf;
 
 import static org.chromium.base.test.transit.ViewSpec.viewSpec;
+import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNativeNtpUrl;
 
 import android.app.Activity;
 import android.os.SystemClock;
@@ -19,6 +20,7 @@ import android.view.View;
 
 import androidx.test.platform.app.InstrumentationRegistry;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.transit.OptionalViewElement;
 import org.chromium.base.test.transit.TripBuilder;
@@ -47,8 +49,11 @@ import org.chromium.chrome.test.transit.ntp.IncognitoNewTabPageStation;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.omnibox.FakeOmniboxSuggestions;
 import org.chromium.chrome.test.transit.omnibox.OmniboxFacility;
+import org.chromium.chrome.test.transit.signin.SignedOutAccountMenuFacility;
 import org.chromium.chrome.test.transit.tab_search.TabSearchOverlayFacility;
 import org.chromium.chrome.test.util.TabStripUtils;
+import org.chromium.components.signin.SigninFeatureMap;
+import org.chromium.components.signin.SigninFeatures;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 
 import java.util.function.Supplier;
@@ -71,6 +76,7 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
     public final OptionalViewElement<View> optionalToolbarMicButtonElement;
     public final OptionalViewElement<View> homeButtonElement;
     public final OptionalViewElement<View> tabSearchButtonElement;
+    public final OptionalViewElement<View> signinButtonElement;
     // TODO(crbug.com/477035792): Temporarily nullable while the toolbar is being migrated.
     public final @Nullable ViewElement<ToolbarControlContainer> toolbarElement;
     public final ViewElement<View> tabSwitcherButtonElement;
@@ -123,6 +129,10 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
         // The tab search button is only intended to appear on desktop.
         tabSearchButtonElement =
                 declareOptionalView(TAB_SEARCH_BUTTON, ViewElement.unscopedOption());
+
+        // The sign-in button only appears when the toolbar sign-in button feature is enabled.
+        signinButtonElement =
+                declareOptionalView(withId(R.id.signin_button), ViewElement.unscopedOption());
     }
 
     /**
@@ -157,6 +167,17 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
         recheckActiveConditions();
 
         return menuButtonElement.clickTo().enterFacility(new PageAppMenuFacility<>());
+    }
+
+    /**
+     * Opens the account menu popup by clicking the toolbar sign-in button on desktop while signed
+     * out.
+     */
+    public SignedOutAccountMenuFacility openSignedOutAccountMenu() {
+        assert DeviceInfo.isDesktop() : "The account menu is only available on desktop";
+        assert SigninFeatureMap.isEnabled(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU)
+                : "The account menu requires SIGNIN_BUTTON_PROFILE_MENU";
+        return signinButtonElement.clickTo().enterFacility(new SignedOutAccountMenuFacility());
     }
 
     /** Opens the Tab Search overlay by clicking the tab search button. */
@@ -335,6 +356,12 @@ public class CtaPageStation extends BasePageStation<ChromeTabbedActivity> {
     /** Loads a |url| leading to a web page in the same tab and waits to transition. */
     public WebPageStation loadWebPageProgrammatically(String url) {
         return loadPageProgrammatically(url, WebPageStation.newBuilder());
+    }
+
+    /** Loads the regular NTP in the same tab and waits to transition. */
+    public RegularNewTabPageStation loadNtp() {
+        return loadPageProgrammatically(
+                getOriginalNativeNtpUrl(), RegularNewTabPageStation.newBuilder());
     }
 
     public WebPageStation loadAboutBlank() {

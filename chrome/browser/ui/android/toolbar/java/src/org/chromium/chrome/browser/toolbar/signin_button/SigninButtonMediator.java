@@ -413,7 +413,7 @@ final class SigninButtonMediator
     }
 
     /** Whether taps on the button open the account menu instead of starting the sign-in flow. */
-    private boolean isAccountMenuEnabled() {
+    static boolean isAccountMenuEnabled() {
         return DeviceInfo.isDesktop()
                 && SigninFeatureMap.isEnabled(SigninFeatures.SIGNIN_BUTTON_PROFILE_MENU);
     }
