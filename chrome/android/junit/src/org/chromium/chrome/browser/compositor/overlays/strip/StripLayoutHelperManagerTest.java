@@ -1342,24 +1342,10 @@ public class StripLayoutHelperManagerTest {
         // Verify initial state.
         assertFalse("Tab should not be loading initially.", stripTab.isLoading());
 
-        // 1. Test onLoadStarted with toDifferentDocument = false (ignored when fix is disabled,
-        // triggers when fix is enabled or on desktop).
+        // 1. Test onLoadStarted with toDifferentDocument = false (always ignored).
         observer.onLoadStarted(tab, false);
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_STRIP_STOP_SPINNER_ON_LOAD_STOP)
-                || DeviceInfo.isDesktop()) {
-            assertTrue(
-                    "Tab should start loading for same-document navigation when fix is enabled.",
-                    stripTab.isLoading());
-            // Reset state for next test.
-            observer.onLoadStopped(tab, false);
-            ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
-            assertFalse("Tab should stop loading.", stripTab.isLoading());
-        } else {
-            assertFalse(
-                    "Tab should not start loading for same-document navigation when fix is"
-                            + " disabled.",
-                    stripTab.isLoading());
-        }
+        assertFalse(
+                "Tab should not start loading for same-document navigation.", stripTab.isLoading());
 
         // 2. Test onLoadStarted with toDifferentDocument = true (should trigger).
         observer.onLoadStarted(tab, true);
@@ -1446,6 +1432,15 @@ public class StripLayoutHelperManagerTest {
         observer.onDocumentLoadedInPrimaryMainFrame(tab);
         ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
         assertFalse(stripTab.isLoading());
+
+        // 4. Test same-document navigations never show the spinner (b/562909544).
+        clearInvocations(callback);
+        observer.onLoadStarted(tab, false);
+        assertFalse("Same-document navigation should not show the spinner.", stripTab.isLoading());
+        observer.onLoadStopped(tab, false);
+        ShadowLooper.runUiThreadTasksIncludingDelayedTasks();
+        assertFalse(stripTab.isLoading());
+        verify(callback, never()).loadStateChanged(tabId);
     }
 
     @Test

@@ -1667,7 +1667,9 @@ public class StripLayoutHelperManager
 
                     @Override
                     public void onLoadStarted(Tab tab, boolean toDifferentDocument) {
-                        if (!isSpinnerFixEnabled() && !toDifferentDocument) return;
+                        // Same-document navigations (e.g. pushState/fragment changes) should not
+                        // show a spinner; doing so replaces the favicon and causes it to flash.
+                        if (!toDifferentDocument) return;
                         StripLayoutHelper helper = getStripLayoutHelper(tab.isIncognitoBranded());
                         helper.tabLoadStarted(tab.getId());
                     }
