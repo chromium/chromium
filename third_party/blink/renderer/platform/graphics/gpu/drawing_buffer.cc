@@ -302,6 +302,7 @@ DrawingBuffer::DrawingBuffer(
 DrawingBuffer::~DrawingBuffer() {
   DCHECK(destruction_in_progress_);
   color_buffer_pool_.reset();
+  software_resource_pool_.reset();
   if (layer_) {
     layer_->ClearClient();
     layer_ = nullptr;
@@ -368,7 +369,9 @@ void DrawingBuffer::SetIsInHiddenPage(bool hidden) {
       TRACE_EVENT0("gpu", "ReleaseBuffers");
       color_buffer_pool_->Clear();
     }
-    recycled_software_resources_.clear();
+    if (software_resource_pool_) {
+      software_resource_pool_->Clear();
+    }
   }
 
   // Make sure to interrupt pixel local storage.
@@ -421,6 +424,8 @@ void DrawingBuffer::SetDrawBuffer(GLenum draw_buffer) {
 void DrawingBuffer::SetSharedImageInterfaceProviderForSoftwareRenderingTest(
     std::unique_ptr<WebGraphicsSharedImageInterfaceProvider> sii_provider) {
   shared_image_interface_provider_for_bitmap_test_ = std::move(sii_provider);
+  software_resource_pool_.reset();
+  software_sii_provider_.reset();
 }
 
 WebGraphicsSharedImageInterfaceProvider*
@@ -431,7 +436,7 @@ DrawingBuffer::GetSharedImageInterfaceProviderForBitmap() {
   return SharedGpuContext::SharedImageInterfaceProvider();
 }
 
-DrawingBuffer::SoftwareResource
+scoped_refptr<gpu::ClientImage>
 DrawingBuffer::CreateOrRecycleSoftwareResource() {
   const viz::SharedImageFormat format = viz::SinglePlaneFormat::kBGRA_8888;
   const gfx::ColorSpace& color_space =
@@ -439,43 +444,31 @@ DrawingBuffer::CreateOrRecycleSoftwareResource() {
   // Must call GetSharedImageInterfaceProvider first so all base::WeakPtr
   // restored in |resource.sii_provider| is updated.
   auto* sii_provider = GetSharedImageInterfaceProviderForBitmap();
-
-  auto it = std::remove_if(
-      recycled_software_resources_.begin(), recycled_software_resources_.end(),
-      [&](const SoftwareResource& resource) {
-        return resource.shared_image->size() != size_ ||
-               resource.shared_image->color_space() != color_space ||
-               !resource.sii_provider;
-      });
-  recycled_software_resources_.Shrink(
-      static_cast<wtf_size_t>(it - recycled_software_resources_.begin()));
-
-  if (!recycled_software_resources_.empty()) {
-    SoftwareResource recycled = std::move(recycled_software_resources_.back());
-    recycled_software_resources_.pop_back();
-    return recycled;
+  if (!sii_provider) {
+    return nullptr;
   }
-
-  // There are no resources to recycle so allocate a new one.
   auto* shared_image_interface = sii_provider->SharedImageInterface();
   if (!shared_image_interface) {
-    return SoftwareResource();
+    return nullptr;
   }
   // glReadPixels always read with bottom-Left origin regardless of framebuffer
   // flip extension, so keep shared image the same so we don't need to flip
   // here.
-  auto shared_image =
-      shared_image_interface->CreateSharedImageForSoftwareCompositor(
-          {format, size_, color_space, kBottomLeft_GrSurfaceOrigin,
-           kPremul_SkAlphaType, gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
-           "DrawingBufferBitmap"});
-  auto sync_token = shared_image->creation_sync_token();
-  shared_image_interface->VerifySyncToken(sync_token);
+  gpu::ImageInfo info(size_, format, gpu::SHARED_IMAGE_USAGE_CPU_WRITE_ONLY,
+                      color_space, kBottomLeft_GrSurfaceOrigin,
+                      kPremul_SkAlphaType, std::nullopt, /*is_software=*/true);
 
-  SoftwareResource resource = {std::move(shared_image), sync_token,
-                               sii_provider->GetWeakPtr()};
+  if (software_sii_provider_.get() != sii_provider ||
+      !software_resource_pool_) {
+    software_resource_pool_.reset();
+    software_sii_provider_ = sii_provider->GetWeakPtr();
+    software_resource_pool_ = gpu::SharedImagePool<>::Create(
+        info, shared_image_interface, "DrawingBufferBitmap");
+  } else {
+    software_resource_pool_->Reconfigure(info);
+  }
 
-  return resource;
+  return software_resource_pool_->GetImage();
 }
 
 bool DrawingBuffer::PrepareTransferableResource(
@@ -504,30 +497,34 @@ bool DrawingBuffer::PrepareTransferableResource(
   } else {
     // Populate the TransferableResource with a SharedImage for the software
     // compositor.
-    SoftwareResource resource = CreateOrRecycleSoftwareResource();
-    if (!resource.shared_image) {
+    scoped_refptr<gpu::ClientImage> resource =
+        CreateOrRecycleSoftwareResource();
+    if (!resource || !resource->GetSharedImage()) {
       return false;
     }
 
-    auto mapping = resource.shared_image->Map();
+    auto mapping = resource->GetSharedImage()->Map();
+    if (!mapping) {
+      return false;
+    }
 
-    ReadBackFramebuffer(mapping->GetMemoryForPlane(0),
-                        resource.shared_image->format(), kPremul_SkAlphaType,
-                        kBottomLeft_GrSurfaceOrigin, kBackBuffer);
+    ReadBackFramebuffer(
+        mapping->GetMemoryForPlane(0), resource->GetSharedImage()->format(),
+        kPremul_SkAlphaType, kBottomLeft_GrSurfaceOrigin, kBackBuffer);
 
     *out_resource = viz::TransferableResource::Make(
-        resource.shared_image,
+        resource->GetSharedImage(),
         viz::TransferableResource::ResourceSource::kDrawingBuffer,
-        resource.sync_token);
+        resource->GetSyncToken());
 
     out_resource->hdr_metadata = hdr_metadata_;
 
     // This holds a ref on the DrawingBuffer that will keep it alive until the
     // mailbox is released (and while the release callback is running). It also
     // owns the resource.
-    *out_release_callback =
-        base::BindOnce(&DrawingBuffer::MailboxReleasedSoftware,
-                       weak_factory_.GetWeakPtr(), std::move(resource));
+    *out_release_callback = base::BindOnce(
+        &DrawingBuffer::MailboxReleasedSoftware, weak_factory_.GetWeakPtr(),
+        software_resource_pool_->GetWeakPtr(), std::move(resource));
 
     contents_changed_ = false;
     if (preserve_drawing_buffer_ == kDiscard) {
@@ -564,6 +561,9 @@ DrawingBuffer::CheckForDestructionAndChangeAndResolveIfNeeded(
   if (gl_->GetGraphicsResetStatusKHR() != GL_NO_ERROR) {
     if (color_buffer_pool_) {
       color_buffer_pool_->Clear();
+    }
+    if (software_resource_pool_) {
+      software_resource_pool_->Clear();
     }
     return kDestroyedOrLost;
   }
@@ -712,16 +712,17 @@ void DrawingBuffer::MailboxReleasedGpu(scoped_refptr<ColorBuffer> color_buffer,
   }
 }
 
-void DrawingBuffer::MailboxReleasedSoftware(SoftwareResource resource,
-                                            const gpu::SyncToken& sync_token,
-                                            bool lost_resource) {
-  if (destruction_in_progress_ || lost_resource || is_hidden_ ||
-      resource.shared_image->size() != size_) {
-    // Just delete the SoftwareResource.
+void DrawingBuffer::MailboxReleasedSoftware(
+    base::WeakPtr<gpu::SharedImagePool<>> pool,
+    scoped_refptr<gpu::ClientImage> resource,
+    const gpu::SyncToken& sync_token,
+    bool lost_resource) {
+  resource->SetReleaseSyncToken(sync_token);
+  if (destruction_in_progress_ || lost_resource || is_hidden_ || !pool) {
     return;
   }
 
-  recycled_software_resources_.push_back(std::move(resource));
+  pool->ReleaseImage(std::move(resource));
 }
 
 scoped_refptr<StaticBitmapImage> DrawingBuffer::TransferToStaticBitmapImage() {
@@ -1275,6 +1276,9 @@ base::ByteSize DrawingBuffer::EstimatedSizeInBytes() const {
   if (color_buffer_pool_) {
     result += color_buffer_pool_->EstimatedSizeInBytes();
   }
+  if (software_resource_pool_) {
+    result += software_resource_pool_->EstimatedSizeInBytes();
+  }
   for (const auto& buffer : exported_color_buffers_) {
     result += buffer->EstimatedSizeInBytes();
   }
@@ -1320,6 +1324,10 @@ void DrawingBuffer::OnMemoryDump(
 
   if (color_buffer_pool_) {
     color_buffer_pool_->OnMemoryDump(pmd, dump_base_name);
+  }
+  if (software_resource_pool_) {
+    software_resource_pool_->OnMemoryDump(
+        pmd, dump_base_name + "/software_resource_pool");
   }
 
   int i = 0;
@@ -1395,6 +1403,9 @@ void DrawingBuffer::BeginDestruction() {
   if (color_buffer_pool_) {
     color_buffer_pool_->Clear();
   }
+  if (software_resource_pool_) {
+    software_resource_pool_->Clear();
+  }
 
   // If the drawing buffer is being destroyed due to a real context loss these
   // calls will be ineffective, but won't be harmful.
@@ -1442,6 +1453,10 @@ bool DrawingBuffer::ReallocateDefaultFramebuffer(const gfx::Size& size,
         info, sii, "WebGLDrawingBuffer", max_pool_size);
   } else {
     color_buffer_pool_->Reconfigure(info);
+  }
+
+  if (software_resource_pool_) {
+    software_resource_pool_->Clear();
   }
 
   // Recreate back_color_buffer_.
@@ -1687,7 +1702,6 @@ bool DrawingBuffer::ResizeFramebufferInternal(GLenum requested_format,
     } while (!adjusted_size.IsEmpty());
 
     size_ = adjusted_size;
-    recycled_software_resources_.clear();
 
     if (adjusted_size.IsEmpty())
       return false;
@@ -1705,7 +1719,6 @@ void DrawingBuffer::SetColorSpace(PredefinedColorSpace predefined_color_space) {
   color_space_ = color_space;
 
   ScopedStateRestorer scoped_state_restorer(this);
-  recycled_software_resources_.clear();
   if (!ReallocateDefaultFramebuffer(size_, /*only_reallocate_color=*/true)) {
     // TODO(https://crbug.com/1208480): What is the correct behavior is we fail
     // to re-allocate the buffer.
@@ -1721,7 +1734,6 @@ void DrawingBuffer::SetHdrMetadata(const gfx::HDRMetadata& hdr_metadata) {
   hdr_metadata_ = hdr_metadata;
 
   ScopedStateRestorer scoped_state_restorer(this);
-  recycled_software_resources_.clear();
   if (!ReallocateDefaultFramebuffer(size_, /*only_reallocate_color=*/true)) {
     DLOG(ERROR) << "Failed to allocate color buffer with new HDR metadata.";
   }

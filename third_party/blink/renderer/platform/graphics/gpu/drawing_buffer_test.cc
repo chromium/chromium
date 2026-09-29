@@ -1162,4 +1162,83 @@ TEST_F(DrawingBufferDeleteBuffersInBackgroundTest,
   EXPECT_TRUE(drawing_buffer_->HasMultisampleRenderbufferForTesting());
   EXPECT_TRUE(drawing_buffer_->HasDepthStencilBufferForTesting());
 }
+
+TEST_F(DrawingBufferTest, SoftwareCompositorResourceRecycling) {
+  // Create a software SII provider.
+  auto sw_sii = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+  auto sw_sii_provider =
+      std::make_unique<TestWebGraphicsSharedImageInterfaceProvider>(sw_sii);
+
+  // Re-initialize drawing buffer with GPU compositing disabled.
+  drawing_buffer_->BeginDestruction();
+
+  Platform::WebGLContextInfo context_info;
+  context_info.using_gpu_compositing = false;
+
+  auto gl = std::make_unique<GLES2InterfaceForTests>();
+  auto provider =
+      std::make_unique<WebGraphicsContext3DProviderForTests>(std::move(gl));
+  GLES2InterfaceForTests* gl_ptr =
+      static_cast<GLES2InterfaceForTests*>(provider->ContextGL());
+
+  gfx::Size initial_size(kInitialWidth, kInitialHeight);
+  drawing_buffer_ = DrawingBufferForTests::Create(
+      std::move(provider), std::move(sw_sii_provider), context_info, gl_ptr,
+      initial_size, DrawingBuffer::kPreserve, kDisableMultisampling);
+  ASSERT_NE(drawing_buffer_, nullptr);
+
+  viz::TransferableResource resource1;
+  viz::ReleaseCallback release_callback1;
+
+  // Prepare a transferable resource for software compositor.
+  EXPECT_FALSE(drawing_buffer_->MarkContentsChanged());
+  EXPECT_TRUE(drawing_buffer_->PrepareTransferableResource(&resource1,
+                                                           &release_callback1));
+  EXPECT_EQ(1u, sw_sii->shared_image_count());
+  EXPECT_EQ(0, drawing_buffer_->RecycledSoftwareResourceCount());
+
+  // Return the resource from the compositor; it should be recycled into the
+  // pool.
+  std::move(release_callback1).Run(gpu::SyncToken(), false /* lost_resource */);
+  EXPECT_EQ(1, drawing_buffer_->RecycledSoftwareResourceCount());
+  EXPECT_EQ(1u, sw_sii->shared_image_count());
+
+  // Next frame should reuse the recycled software resource without allocating a
+  // new one.
+  viz::TransferableResource resource2;
+  viz::ReleaseCallback release_callback2;
+  EXPECT_TRUE(drawing_buffer_->MarkContentsChanged());
+  EXPECT_TRUE(drawing_buffer_->PrepareTransferableResource(&resource2,
+                                                           &release_callback2));
+  EXPECT_EQ(0, drawing_buffer_->RecycledSoftwareResourceCount());
+  EXPECT_EQ(1u, sw_sii->shared_image_count());
+  EXPECT_EQ(resource1.mailbox(), resource2.mailbox());
+
+  // Replace software SII provider while resource2 is still in flight,
+  // which invalidates the previous pool.
+  auto sw_sii2 = base::MakeRefCounted<gpu::TestSharedImageInterface>();
+  auto sw_sii_provider2 =
+      std::make_unique<TestWebGraphicsSharedImageInterfaceProvider>(sw_sii2);
+  drawing_buffer_->SetSharedImageInterfaceProviderForSoftwareRenderingTest(
+      std::move(sw_sii_provider2));
+
+  // Prepare a resource with the new provider.
+  viz::TransferableResource resource3;
+  viz::ReleaseCallback release_callback3;
+  EXPECT_TRUE(drawing_buffer_->MarkContentsChanged());
+  EXPECT_TRUE(drawing_buffer_->PrepareTransferableResource(&resource3,
+                                                           &release_callback3));
+  EXPECT_EQ(1u, sw_sii2->shared_image_count());
+
+  // Returning the resource from the old provider should not crash or be added
+  // to the new pool.
+  std::move(release_callback2).Run(gpu::SyncToken(), false /* lost_resource */);
+  EXPECT_EQ(0, drawing_buffer_->RecycledSoftwareResourceCount());
+
+  // Returning the resource from the current provider should recycle cleanly.
+  std::move(release_callback3).Run(gpu::SyncToken(), false /* lost_resource */);
+  EXPECT_EQ(1, drawing_buffer_->RecycledSoftwareResourceCount());
+
+  drawing_buffer_->BeginDestruction();
+}
 }  // namespace blink

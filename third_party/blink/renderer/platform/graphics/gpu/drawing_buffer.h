@@ -360,28 +360,12 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
     return !!depth_stencil_buffer_;
   }
 
-  struct SoftwareResource {
-    SoftwareResource(
-        scoped_refptr<gpu::ClientSharedImage> shared_image,
-        gpu::SyncToken sync_token,
-        base::WeakPtr<blink::WebGraphicsSharedImageInterfaceProvider>
-            sii_provider)
-        : shared_image(std::move(shared_image)),
-          sync_token(std::move(sync_token)),
-          sii_provider(sii_provider) {}
-    SoftwareResource() = default;
-
-    // Explicitly move-only.
-    SoftwareResource(SoftwareResource&&) = default;
-    SoftwareResource& operator=(SoftwareResource&&) = default;
-
-    scoped_refptr<gpu::ClientSharedImage> shared_image;
-    gpu::SyncToken sync_token;
-    base::WeakPtr<blink::WebGraphicsSharedImageInterfaceProvider> sii_provider;
-  };
-  // Resources that were released by the compositor and can be used again by
-  // this DrawingBuffer.
-  Vector<SoftwareResource> recycled_software_resources_;
+  int RecycledSoftwareResourceCountForTesting() const {
+    return software_resource_pool_
+               ? static_cast<int>(
+                     software_resource_pool_->GetPoolSizeForTesting())
+               : 0;
+  }
 
  private:
   friend class ScopedRGBEmulationForBlitFramebuffer;
@@ -553,7 +537,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                                        const gpu::SyncToken&,
                                        bool lost_resource);
   void MailboxReleasedGpu(scoped_refptr<ColorBuffer>, bool lost_resource);
-  void MailboxReleasedSoftware(SoftwareResource,
+  void MailboxReleasedSoftware(base::WeakPtr<gpu::SharedImagePool<>>,
+                               scoped_refptr<gpu::ClientImage>,
                                const gpu::SyncToken&,
                                bool lost_resource);
 
@@ -566,7 +551,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
 
   void ClearCcLayer();
 
-  SoftwareResource CreateOrRecycleSoftwareResource();
+  scoped_refptr<gpu::ClientImage> CreateOrRecycleSoftwareResource();
 
   // Updates the current size of the buffer, ensuring that
   // s_currentResourceUsePixels is updated.
@@ -723,12 +708,17 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   std::unique_ptr<gpu::SharedImagePool<ColorBuffer>> color_buffer_pool_;
   base::flat_set<scoped_refptr<ColorBuffer>> exported_color_buffers_;
 
+  // Software resources that were released by the compositor and can be used
+  // again by this DrawingBuffer.
+  std::unique_ptr<gpu::SharedImagePool<>> software_resource_pool_;
+
   bool opengl_flip_y_extension_;
 
   const gl::GpuPreference requested_gpu_;
 
   std::unique_ptr<WebGraphicsSharedImageInterfaceProvider>
       shared_image_interface_provider_for_bitmap_test_;
+  base::WeakPtr<WebGraphicsSharedImageInterfaceProvider> software_sii_provider_;
 
   base::WeakPtrFactory<DrawingBuffer> weak_factory_;
 };

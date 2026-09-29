@@ -486,8 +486,14 @@ class DrawingBufferForTests : public DrawingBuffer {
 
   raw_ptr<bool> live_;
 
-  int RecycledSoftwareResourceCount() {
-    return recycled_software_resources_.size();
+  void SetSharedImageInterfaceProviderForSoftwareRenderingTest(
+      std::unique_ptr<WebGraphicsSharedImageInterfaceProvider> sii_provider) {
+    DrawingBuffer::SetSharedImageInterfaceProviderForSoftwareRenderingTest(
+        std::move(sii_provider));
+  }
+
+  int RecycledSoftwareResourceCount() const {
+    return DrawingBuffer::RecycledSoftwareResourceCountForTesting();
   }
 
   bool HasBackColorBufferForTesting() const {
