@@ -71,8 +71,7 @@ customElements.define(TestError5Element.is, TestError5Element);
 // Case1.6: Class with
 //  1) Inconsistent DOM name suffix.
 //  2) Incorrect order method definition order
-//  3) Usage of incorrect dollar sign notation.
-//  4) Usage of CustomEvent type without a type parameter.
+//  3) Usage of CustomEvent type without a type parameter.
 export class TestError6Element extends CrLitElement {
   override render() {
     return '';
@@ -108,8 +107,6 @@ export class TestError6Element extends CrLitElement {
 
   override updated() {
     super.updated();
-
-    this.$['hello-button'].focus();
   }
 
   override firstUpdated() {}
@@ -296,7 +293,6 @@ export class TestNoError3Element extends CrLitElement {
         {bubbles: true, composed: true, cancelable: true, detail: 'bar'}));
 
     this.fire('bar-updated', 'bar');
-    this.$.helloOtherButton.focus();
   }
 
   // Test case where CustomEvent is used with a function parameter.

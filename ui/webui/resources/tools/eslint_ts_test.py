@@ -315,7 +315,6 @@ class EslintTsTest(unittest.TestCase):
     _EXPECTED_INCORRECT_DOM_NAME_SUFFIX_ERROR = (
       'DOM name \'%(domName)s\' should not end with the \'-element\' suffix'
     )
-    _EXPECTED_INCORRECT_DOLLAR_SIGN_NOTATION_ERROR = 'Use camelCase instead of dash-case for DOM ids, change this.$[\'%(dashCaseName)s\'] to this.$.%(camelCaseName)s'
     _EXPECTED_MISSING_CUSTOM_ELEMENTS_DEFINE_ERROR = (
       "Missing customElements.define(%(className)s.is, %(className)s) call"
     )
@@ -379,11 +378,6 @@ class EslintTsTest(unittest.TestCase):
         'className': 'TestError6Element',
         'expectedOrder': '[is, styles, render, properties, constructor, connectedCallback, disconnectedCallback, willUpdate, firstUpdated, updated]',
         'actualOrder': '[render, styles, is, properties, disconnectedCallback, connectedCallback, constructor, willUpdate, updated, firstUpdated]',
-      },
-      _EXPECTED_INCORRECT_DOLLAR_SIGN_NOTATION_ERROR
-      % {
-        'dashCaseName': 'hello-button',
-        'camelCaseName': 'helloButton',
       },
       _EXPECTED_MISSING_CUSTOM_EVENT_TYPE_PARAMETER_ERROR
       % {
@@ -520,11 +514,6 @@ class EslintTsTest(unittest.TestCase):
       % {
         'className': 'TestNoError3Element',
         'domName': 'test-no-error3',
-      },
-      _EXPECTED_INCORRECT_DOLLAR_SIGN_NOTATION_ERROR
-      % {
-        'dashCaseName': 'hello-other-button',
-        'camelCaseName': 'helloOtherButton',
       },
       _EXPECTED_MISSING_CUSTOM_EVENT_TYPE_PARAMETER_ERROR
       % {

@@ -30,13 +30,12 @@ interface OrderEntry {
 }
 
 type Options = [];
-type MessageIds =
-    'htmlImportInTsFile'|'inconsistentClassName'|'inconsistentFilename'|
-    'incorrectClassNameSuffix'|'incorrectDollarSignNotation'|
-    'incorrectDomNameSuffix'|'incorrectFilenameSuffix'|
-    'incorrectMethodDefinitionOrder'|'invalidDollarSignProperty'|
-    'missingCustomElementRegistration'|'missingCustomEventTypeParameter'|
-    'missingStaticIsGetter'|'missingSuperCalls'|'missingTagNameRegistration';
+type MessageIds = 'htmlImportInTsFile'|'inconsistentClassName'|
+    'inconsistentFilename'|'incorrectClassNameSuffix'|'incorrectDomNameSuffix'|
+    'incorrectFilenameSuffix'|'incorrectMethodDefinitionOrder'|
+    'invalidDollarSignProperty'|'missingCustomElementRegistration'|
+    'missingCustomEventTypeParameter'|'missingStaticIsGetter'|
+    'missingSuperCalls'|'missingTagNameRegistration';
 
 // Necessary info to track about each CrLitElement subclass definition
 // encountered in the current file.
@@ -115,19 +114,6 @@ class ClassInfo {
         isIdentifier(arg0.property) && arg0.property.name === 'is';
     const arg1Correct = isIdentifier(arg1) && arg1.name === this.name;
     this.hasCustomElementRegistration = arg0Correct && arg1Correct;
-  }
-
-  runDollarSignNotationCheck(node: TSESTree.MemberExpression) {
-    assert.ok(isLiteral(node.property));
-    const dashCaseName = node.property.value as string;
-    this.context.report({
-      node,
-      messageId: 'incorrectDollarSignNotation',
-      data: {
-        dashCaseName,
-        camelCaseName: dashCaseToCamelCase(dashCaseName),
-      },
-    });
   }
 
   runCustomEventTypeParameterCheck(node: TSESTree.TSTypeReference) {
@@ -444,8 +430,6 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
           'Naming of class/dom pair {{className}} ↔ {{domName}} is inconsistent.',
       inconsistentFilename:
           'Naming of file/{{referenceType}} pair {{filename}} ↔ {{referenceName}} is inconsistent.',
-      incorrectDollarSignNotation:
-          'Use camelCase instead of dash-case for DOM ids, change this.$[\'{{dashCaseName}}\'] to this.$.{{camelCaseName}}.',
       incorrectMethodDefinitionOrder:
           'Inconsistent method definition order in class {{className}}. Expected [{{expectedOrder}}], found [{{actualOrder}}].',
       missingSuperCalls:
@@ -560,14 +544,6 @@ export const litElementStructureRule = ESLintUtils.RuleCreator.withoutDocs<
 
         assert.ok(isIdentifier(node.property));
         currentClassInfo.superCallCalled.add(node.property.name);
-      },
-      ['MemberExpression[object.object.type="ThisExpression"][object.property.name="$"][property.type="Literal"]'](
-          node: TSESTree.MemberExpression) {
-        if (!hasLitImport || !currentClassInfo) {
-          return;
-        }
-
-        currentClassInfo.runDollarSignNotationCheck(node);
       },
       ['MethodDefinition > FunctionExpression TSTypeReference[typeName.name="CustomEvent"]:not([typeArguments])'](
           node: TSESTree.TSTypeReference) {
