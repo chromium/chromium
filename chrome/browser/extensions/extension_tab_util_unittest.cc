@@ -22,6 +22,7 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/mojom/context_type.mojom.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -438,6 +439,21 @@ TEST_F(ChromeExtensionNavigationTest, PrepareURLForNavigationOnFeedback) {
   ASSERT_TRUE(non_extension_url.has_value());
   EXPECT_EQ(GURL(ash::kChromeUIOSFeedbackUrl), *non_extension_url);
 #endif
+}
+
+// Verifies that ExtensionTabUtil::OpenOptionsPageFromWebContents returns false
+// when invoked from a standalone WebContents without a BrowserWindowInterface.
+TEST_F(ChromeExtensionNavigationTest,
+       OpenOptionsPageFromWebContents_StandaloneWebContents) {
+  auto extension = ExtensionBuilder("options_ext")
+                       .SetManifestKey("options_page", "options.html")
+                       .Build();
+  ASSERT_TRUE(OptionsPageInfo::HasOptionsPage(extension.get()));
+  std::unique_ptr<content::WebContents> web_contents(
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr));
+
+  EXPECT_FALSE(ExtensionTabUtil::OpenOptionsPageFromWebContents(
+      extension.get(), web_contents.get()));
 }
 
 }  // namespace extensions

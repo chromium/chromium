@@ -1222,7 +1222,9 @@ bool ExtensionTabUtil::OpenOptionsPageFromWebContents(
   const bool open_in_tab = ShouldOpenInTab(extension);
   BrowserWindowInterface* browser =
       browser_window_util::GetBrowserForTabContents(*web_contents);
-  CHECK(browser);
+  if (!browser) {
+    return false;
+  }
   return WindowControllerFromBrowser(browser)->OpenOptionsPage(extension, *url,
                                                                open_in_tab);
 }
