@@ -757,7 +757,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ComponentUpdater.PlatformRuntime.ProcessHeadersStatus"
     enum="PlatformRuntimeProcessHeadersStatus" expires_after="2027-03-07">
   <owner>quarz@chromium.org</owner>
-  <owner>src/chrome/common/platform_runtime/OWNERS</owner>
+  <owner>src/chrome/services/platform_runtime/OWNERS</owner>
   <summary>
     The outcome of one invocation of the Platform Runtime library in the utility
     process. Recorded by the browser once per refresh, currently every few
@@ -768,7 +768,7 @@ chromium-metrics-reviews@google.com.
 <histogram name="ComponentUpdater.PlatformRuntime.RefreshTimedOut"
     enum="BooleanTimedOut" expires_after="2027-03-07">
   <owner>quarz@chromium.org</owner>
-  <owner>src/chrome/common/platform_runtime/OWNERS</owner>
+  <owner>src/chrome/services/platform_runtime/OWNERS</owner>
   <summary>
     Whether a Platform Runtime refresh gave up waiting for the utility process
     instead of receiving a reply. Recorded once per refresh attempt that reaches
@@ -778,13 +778,15 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ComponentUpdater.PlatformRuntime.RequestHeaderIntegrityResult"
-    enum="PlatformRuntimeIntegrityResult" expires_after="2027-03-07">
+<histogram name="ComponentUpdater.PlatformRuntime.RequestHeaderApplyResult"
+    enum="PlatformRuntimeApplyResult" expires_after="2027-03-07">
   <owner>quarz@chromium.org</owner>
-  <owner>src/chrome/common/platform_runtime/OWNERS</owner>
+  <owner>src/chrome/services/platform_runtime/OWNERS</owner>
   <summary>
-    Counts the different outcomes when processing request headers for integrity
-    checks.
+    Whether the most recently distributed Platform Runtime header block was
+    applied to an outgoing request or redirect, in whichever process issues it.
+    Subsampled: recorded for a random 1% of requests, so absolute counts are not
+    meaningful, only the relative bucket proportions.
   </summary>
 </histogram>
 
