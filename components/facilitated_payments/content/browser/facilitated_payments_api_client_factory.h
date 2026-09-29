@@ -5,8 +5,13 @@
 #ifndef COMPONENTS_FACILITATED_PAYMENTS_CONTENT_BROWSER_FACILITATED_PAYMENTS_API_CLIENT_FACTORY_H_
 #define COMPONENTS_FACILITATED_PAYMENTS_CONTENT_BROWSER_FACILITATED_PAYMENTS_API_CLIENT_FACTORY_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "content/public/browser/global_routing_id.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace payments::facilitated {
 
@@ -16,6 +21,9 @@ namespace payments::facilitated {
 // `facilitated_payments_api_client_android.cc`.
 FacilitatedPaymentsApiClientCreator GetFacilitatedPaymentsApiClientCreator(
     content::GlobalRenderFrameHostId render_frame_host_id);
+
+FacilitatedPaymentsApiClientCreator GetFacilitatedPaymentsApiClientCreator(
+    base::WeakPtr<content::WebContents> web_contents);
 
 }  // namespace payments::facilitated
 

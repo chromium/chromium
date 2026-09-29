@@ -170,6 +170,11 @@ void NativeAccountLinkingHandler::ShowAccountLinkingPrompt() {
       base::BindOnce(&NativeAccountLinkingHandler::OnDismissed, GetWeakPtr()));
 }
 
+void NativeAccountLinkingHandler::Reset() {
+  api_client_.reset();
+  action_token_.clear();
+}
+
 void NativeAccountLinkingHandler::DismissPrompt() {
   if (ui_state_ == UiState::kHidden) {
     return;

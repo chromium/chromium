@@ -54,7 +54,7 @@ ChromeFacilitatedPaymentsClient::ChromeFacilitatedPaymentsClient(
   pix_account_linking_manager_ =
       std::make_unique<payments::facilitated::PixAccountLinkingManager>(
           this, payments::facilitated::GetFacilitatedPaymentsApiClientCreator(
-                    web_contents->GetPrimaryMainFrame()->GetGlobalId()));
+                    web_contents->GetWeakPtr()));
   RegisterAllowlists();
 }
 
