@@ -26,12 +26,17 @@ ${this.loadState_ === 'loaded' && this.topic ? html`
   <div id="header" class="${this.isScrolled_ ? 'scrolled' : ''}">
     <div class="title-row">
       <h1 id="title">${this.topic.title}</h1>
-      <!-- TODO(crbug.com/558572977): Use internationalized strings once GRD -->
-      <!-- strings are added. -->
-      <cr-button id="openRelatedTabs" class="tonal-button"
-          ?hidden="${!this.hasOpenableUrls_()}"
-          @click="${this.onOpenRelatedTabsClick_}">
-        Open related tabs
+      <cr-button id="sitesButton" class="tonal-button"
+          aria-haspopup="dialog" ?hidden="${this.sites_.length === 0}"
+          @click="${this.onSitesButtonClick_}">
+        <span id="siteFavicons" aria-hidden="true">
+          ${this.getButtonFaviconUrls_().map(url => html`
+            <span class="favicon"
+                style="background-image: ${this.getFavicon_(url)}">
+            </span>
+          `)}
+        </span>
+        ${this.getSitesLabel_()}
       </cr-button>
     </div>
     <cr-tabs id="tabs" .tabNames="${this.tabNames_}"
@@ -44,9 +49,14 @@ ${this.loadState_ === 'loaded' && this.topic ? html`
        entry in TOPIC_DETAILS_TABS, in the same order. -->
   <cr-page-selector id="panels" .selected="${this.selectedTab_}">
     <topic-summary-panel role="tabpanel" aria-label="${this.tabNames_[0]}"
-        .topic="${this.topic}">
+        .topic="${this.topic}"
+        @open-related-tabs="${this.onOpenRelatedTabs_}">
     </topic-summary-panel>
   </cr-page-selector>
+
+  <topic-sites-dialog id="sitesDialog" .topic="${this.topic}"
+      @open-related-tabs="${this.onOpenRelatedTabs_}">
+  </topic-sites-dialog>
 ` : ''}
 </div>
 <!--_html_template_end_-->`;

@@ -6,17 +6,21 @@ import 'chrome://context-hub/topics/topic_details.js';
 import 'chrome://context-hub/topics/topics_view.js';
 
 import {browserProxyFactory, PageHandlerRemote} from 'chrome://context-hub/context_hub.mojom-webui.js';
-import type {Topic} from 'chrome://context-hub/context_hub.mojom-webui.js';
+import type {Topic, TopicVisit} from 'chrome://context-hub/context_hub.mojom-webui.js';
 import type {TopicCardElement} from 'chrome://context-hub/topics/topic_card.js';
 import type {TopicDetailsElement} from 'chrome://context-hub/topics/topic_details.js';
 import {getSuggestedPrompts, TOPIC_DETAILS_TABS} from 'chrome://context-hub/topics/topic_details.js';
-import {BADGE_BACKGROUND_COLORS, DEFAULT_ICON, getBackgroundColorForTopic, getBadgePath, getBadgeShapeForTopic, getOpenableUrls, toTopicItem} from 'chrome://context-hub/topics/topic_utils.js';
+import type {TopicSitesDialogElement} from 'chrome://context-hub/topics/topic_sites_dialog.js';
+import {BADGE_BACKGROUND_COLORS, DEFAULT_ICON, getBackgroundColorForTopic, getBadgePath, getBadgeShapeForTopic, getDisplayDomain, getOpenableUrls, getTopicSites, MAX_TOPIC_SITES, toTopicItem} from 'chrome://context-hub/topics/topic_utils.js';
 import type {BadgeShape} from 'chrome://context-hub/topics/topic_utils.js';
 import type {TopicsViewElement} from 'chrome://context-hub/topics/topics_view.js';
+import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
+import {TestOpenWindowProxy} from 'chrome://webui-test/test_open_window_proxy.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 // U+1F4C1 FILE FOLDER.
@@ -104,6 +108,33 @@ suite('TopicUtils', () => {
     }));
     assertDeepEquals(
         ['https://a.com/', 'http://b.com/'], getOpenableUrls(item));
+  });
+
+  test('getTopicSites keeps web URLs once each, capped', () => {
+    const item = toTopicItem(createTopic({
+      visits: [
+        {url: 'https://a.com/', title: 'A'},
+        {url: 'chrome://history', title: 'History'},
+        {url: 'https://a.com/', title: 'A again'},
+        {url: 'http://b.com/', title: 'B'},
+      ],
+    }));
+    assertDeepEquals(['A', 'B'], getTopicSites(item).map(site => site.title));
+
+    const visits: TopicVisit[] = [];
+    for (let i = 0; i < MAX_TOPIC_SITES + 5; i++) {
+      visits.push({url: `https://site${i}.com/`, title: `Site ${i}`});
+    }
+    const sites = getTopicSites(toTopicItem(createTopic({visits})));
+    assertEquals(MAX_TOPIC_SITES, sites.length);
+    assertEquals('Site 0', sites[0]!.title);
+  });
+
+  test('getDisplayDomain drops www and handles bad URLs', () => {
+    assertEquals('example.com', getDisplayDomain('https://www.example.com/a'));
+    assertEquals(
+        'news.example.com', getDisplayDomain('http://news.example.com'));
+    assertEquals('', getDisplayDomain('not a url'));
   });
 
   test('getSuggestedPrompts prefers titles, drops empties and caps', () => {
@@ -200,6 +231,7 @@ suite('TopicsView', () => {
 
 suite('TopicDetails', () => {
   let handler: TestMock<PageHandlerRemote>&PageHandlerRemote;
+  let openWindowProxy: TestOpenWindowProxy;
   let details: TopicDetailsElement;
 
   setup(() => {
@@ -211,6 +243,8 @@ suite('TopicDetails', () => {
     handler.setResultFor('getTopic', Promise.resolve({topic: createTopic()}));
     handler.setResultFor(
         'openUrlsInTabGroup', Promise.resolve({success: true}));
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
   });
 
   teardown(() => {
@@ -226,6 +260,19 @@ suite('TopicDetails', () => {
 
   function query(selector: string): HTMLElement|null {
     return details.shadowRoot.querySelector<HTMLElement>(selector);
+  }
+
+  function queryPanel(selector: string): HTMLElement|null {
+    return query('topic-summary-panel')!.shadowRoot!.querySelector<HTMLElement>(
+        selector);
+  }
+
+  function getSitesDialog(): TopicSitesDialogElement {
+    return query('#sitesDialog') as TopicSitesDialogElement;
+  }
+
+  function getCrDialog(): CrDialogElement {
+    return getSitesDialog().shadowRoot.querySelector('cr-dialog')!;
   }
 
   test('fetches the topic named in the URL and renders it', async () => {
@@ -269,7 +316,7 @@ suite('TopicDetails', () => {
 
   test('opens only the web URLs of the topic in a tab group', async () => {
     await createDetails('?id=topic-1');
-    const button = query('#openRelatedTabs')!;
+    const button = queryPanel('#openRelatedTabs')!;
     assertFalse(button.hidden);
     button.click();
 
@@ -279,12 +326,105 @@ suite('TopicDetails', () => {
         ['https://example.com/page-1', 'http://example.com/page-2'], urls);
   });
 
-  test('hides open related tabs when nothing can be opened', async () => {
+  test('hides the site buttons when nothing can be opened', async () => {
     handler.setResultFor('getTopic', Promise.resolve({
       topic: createTopic({visits: [{url: 'chrome://history', title: ''}]}),
     }));
     await createDetails('?id=topic-1');
-    assertTrue(query('#openRelatedTabs')!.hidden);
+    assertTrue(queryPanel('#openRelatedTabs')!.hidden);
+    assertTrue(query('#sitesButton')!.hidden);
+  });
+
+  test('sites button counts the sites and shows their favicons', async () => {
+    await createDetails('?id=topic-1');
+    const button = query('#sitesButton')!;
+    assertFalse(button.hidden);
+    assertEquals('2 sites', button.textContent.trim());
+    assertEquals(2, button.querySelectorAll('.favicon').length);
+  });
+
+  test('sites button caps the count and the favicons', async () => {
+    const visits: TopicVisit[] = [];
+    for (let i = 0; i < MAX_TOPIC_SITES + 5; i++) {
+      visits.push({url: `https://site${i}.com/`, title: `Site ${i}`});
+    }
+    handler.setResultFor(
+        'getTopic', Promise.resolve({topic: createTopic({visits})}));
+    await createDetails('?id=topic-1');
+
+    const button = query('#sitesButton')!;
+    assertEquals(`${MAX_TOPIC_SITES} sites`, button.textContent.trim());
+    assertEquals(3, button.querySelectorAll('.favicon').length);
+  });
+
+  test('sites button opens the sites dialog', async () => {
+    await createDetails('?id=topic-1');
+    assertFalse(getCrDialog().open);
+
+    query('#sitesButton')!.click();
+    await microtasksFinished();
+    assertTrue(getCrDialog().open);
+
+    const dialog = getSitesDialog();
+    assertEquals(
+        'Topic title',
+        dialog.shadowRoot.querySelector('#title')!.textContent.trim());
+    const rows = dialog.shadowRoot.querySelectorAll<HTMLElement>('.site');
+    assertDeepEquals(
+        ['Page 1', 'Page 2'],
+        Array.from(rows).map(
+            row => row.querySelector('.site-title')!.textContent.trim()));
+    assertEquals(
+        'example.com', rows[0]!.querySelector('.site-domain')!.textContent);
+  });
+
+  test('sites dialog shows an untitled site by its domain once', async () => {
+    const visits = [{url: 'https://www.example.com/', title: ''}];
+    handler.setResultFor(
+        'getTopic', Promise.resolve({topic: createTopic({visits})}));
+    await createDetails('?id=topic-1');
+
+    const row = getSitesDialog().shadowRoot.querySelector('.site')!;
+    assertEquals(
+        'example.com', row.querySelector('.site-title')!.textContent.trim());
+    assertFalse(!!row.querySelector('.site-domain'));
+  });
+
+  test('clicking a site opens it in a new tab', async () => {
+    await createDetails('?id=topic-1');
+    query('#sitesButton')!.click();
+    await microtasksFinished();
+
+    getSitesDialog().shadowRoot.querySelectorAll<HTMLElement>(
+                                   '.site')[1]!.click();
+    assertEquals(
+        'http://example.com/page-2',
+        await openWindowProxy.whenCalled('openUrl'));
+    assertTrue(getCrDialog().open);
+  });
+
+  test('open all tabs opens the related tabs and closes', async () => {
+    await createDetails('?id=topic-1');
+    query('#sitesButton')!.click();
+    await microtasksFinished();
+
+    getSitesDialog().shadowRoot.querySelector<HTMLElement>(
+                                   '#openAllTabs')!.click();
+    const [label, urls] = await handler.whenCalled('openUrlsInTabGroup');
+    assertEquals('Topic title', label);
+    assertDeepEquals(
+        ['https://example.com/page-1', 'http://example.com/page-2'], urls);
+    assertFalse(getCrDialog().open);
+  });
+
+  test('ok closes the sites dialog', async () => {
+    await createDetails('?id=topic-1');
+    query('#sitesButton')!.click();
+    await microtasksFinished();
+
+    getSitesDialog().shadowRoot.querySelector<HTMLElement>('#ok')!.click();
+    assertFalse(getCrDialog().open);
+    assertEquals(0, handler.getCallCount('openUrlsInTabGroup'));
   });
 
   test('has one panel per tab', async () => {

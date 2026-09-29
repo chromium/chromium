@@ -83,6 +83,40 @@ export function getOpenableUrls(topic: TopicItem): string[] {
   return topic.visits.map(visit => visit.url).filter(isWebUrl);
 }
 
+// The most sites the topic details page lists, on its sites button and in the
+// sites dialog.
+export const MAX_TOPIC_SITES = 10;
+
+// Returns the sites the topic details page lists for `topic`: its visits that
+// can be opened in a tab, one per URL, capped to `MAX_TOPIC_SITES`.
+// TODO(crbug.com/558572977): Return the most recent sites once visits carry
+// their visit time. Until then this keeps the order the backend sent them in.
+export function getTopicSites(topic: TopicItem): TopicVisit[] {
+  const seenUrls = new Set<string>();
+  const sites: TopicVisit[] = [];
+  for (const visit of topic.visits) {
+    if (sites.length === MAX_TOPIC_SITES) {
+      break;
+    }
+    if (!isWebUrl(visit.url) || seenUrls.has(visit.url)) {
+      continue;
+    }
+    seenUrls.add(visit.url);
+    sites.push(visit);
+  }
+  return sites;
+}
+
+// Returns the host of `url` without a leading "www.", for display, or an
+// empty string if `url` can't be parsed.
+export function getDisplayDomain(url: string): string {
+  try {
+    return new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return '';
+  }
+}
+
 export type BadgeShape = 'cloud'|'flower'|'circle'|'diamond';
 
 const BADGE_SHAPES: readonly BadgeShape[] = [

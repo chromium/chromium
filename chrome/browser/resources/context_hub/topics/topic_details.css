@@ -79,8 +79,42 @@ topic-hero {
   overflow-wrap: break-word;
 }
 
-#openRelatedTabs {
+#sitesButton {
   flex-shrink: 0;
+  height: 40px;
+  padding-block: 8px;
+  padding-inline: 8px 16px;
+  white-space: nowrap;
+}
+
+/* inline-flex, since cr-button lays out its label in an inline box and a
+ * block-level box would push the label onto its own line. */
+#siteFavicons {
+  display: inline-flex;
+  margin-inline-end: 8px;
+  vertical-align: middle;
+}
+
+/* The ring and fill are the button's color, so a favicon hides the one it
+ * overlaps without adding a visible outline. The 2px ring leaves exactly 16px
+ * for the favicon. The small radius keeps square favicons' corners from being
+ * clipped. */
+#siteFavicons .favicon {
+  --site-favicon-ring-color: var(--color-button-background-tonal,
+      var(--cr-fallback-color-secondary-container));
+  background-color: var(--site-favicon-ring-color);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 16px;
+  border: 2px solid var(--site-favicon-ring-color);
+  border-radius: 6px;
+  box-sizing: border-box;
+  height: 20px;
+  width: 20px;
+}
+
+#siteFavicons .favicon + .favicon {
+  margin-inline-start: -6px;
 }
 
 #tabs {

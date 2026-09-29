@@ -7,20 +7,27 @@ import '//resources/cr_elements/cr_page_selector/cr_page_selector.js';
 import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 import '/strings.m.js';
 import './topic_hero.js';
+import './topic_sites_dialog.js';
 import './topic_summary_panel.js';
 
 import {FocusOutlineManager} from '//resources/js/focus_outline_manager.js';
+import {getFaviconForPageURL} from '//resources/js/icon.js';
 import {OpenWindowProxyImpl} from '//resources/js/open_window_proxy.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 
 import {browserProxyFactory} from '../context_hub.mojom-webui.js';
 
 import {getCss} from './topic_details.css.js';
 import {getHtml} from './topic_details.html.js';
-import {getOpenableUrls, isCrIcon, isTopicsEnabled, toTopicItem} from './topic_utils.js';
-import type {TopicItem} from './topic_utils.js';
+import type {TopicSitesDialogElement} from './topic_sites_dialog.js';
+import {getOpenableUrls, getTopicSites, isCrIcon, isTopicsEnabled, toTopicItem} from './topic_utils.js';
+import type {TopicItem, TopicVisit} from './topic_utils.js';
 
 const MAX_URLS_TO_OPEN = 10;
+
+// How many favicons the sites button shows next to its label.
+const MAX_SITES_BUTTON_FAVICONS = 3;
 
 // Matches the cap `PageHandler::OpenGlicPanel()` applies browser-side.
 const MAX_SUGGESTED_PROMPTS = 3;
@@ -67,6 +74,7 @@ export class TopicDetailsElement extends CrLitElement {
       isScrolled_: {type: Boolean},
       loadState_: {type: String},
       selectedTab_: {type: Number},
+      sites_: {type: Array},
       tabNames_: {type: Array},
     };
   }
@@ -79,6 +87,9 @@ export class TopicDetailsElement extends CrLitElement {
   // opened) or couldn't be fetched.
   protected accessor loadState_: TopicDetailsLoadState = 'loading';
   protected accessor selectedTab_: number = 0;
+  // What the sites button counts and the sites dialog lists. Derived from
+  // `topic`.
+  protected accessor sites_: TopicVisit[] = [];
   // A copy, since `cr-tabs` takes a mutable array.
   protected accessor tabNames_: string[] = [...TOPIC_DETAILS_TABS];
 
@@ -92,6 +103,13 @@ export class TopicDetailsElement extends CrLitElement {
     // Shows focus rings on keyboard navigation only, e.g. in `cr-tabs`.
     FocusOutlineManager.forDocument(document);
     this.initTopic_();
+  }
+
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('topic')) {
+      this.sites_ = this.topic ? getTopicSites(this.topic) : [];
+    }
   }
 
   private async initTopic_() {
@@ -171,12 +189,32 @@ export class TopicDetailsElement extends CrLitElement {
     this.selectedTab_ = e.detail.value;
   }
 
-
-  protected hasOpenableUrls_(): boolean {
-    return !!this.topic && getOpenableUrls(this.topic).length > 0;
+  // The first few sites' favicons are shown on the sites button.
+  protected getButtonFaviconUrls_(): string[] {
+    return this.sites_.slice(0, MAX_SITES_BUTTON_FAVICONS)
+        .map(site => site.url);
   }
 
-  protected async onOpenRelatedTabsClick_() {
+  protected getFavicon_(url: string): string {
+    return getFaviconForPageURL(url, /*isSyncedUrlForHistoryUi=*/ false);
+  }
+
+  // TODO(crbug.com/558572977): Use internationalized (plural) strings once GRD
+  // strings are added.
+  protected getSitesLabel_(): string {
+    const count = this.sites_.length;
+    return count === 1 ? '1 site' : `${count} sites`;
+  }
+
+  protected onSitesButtonClick_() {
+    this.shadowRoot.querySelector<TopicSitesDialogElement>('#sitesDialog')
+        ?.showModal();
+  }
+
+  // Opens the topic's related tabs in a tab group. Used by both the summary
+  // panel's "Open related tabs" button and the sites dialog's "Open all tabs"
+  // button.
+  protected async onOpenRelatedTabs_() {
     if (!this.topic) {
       return;
     }

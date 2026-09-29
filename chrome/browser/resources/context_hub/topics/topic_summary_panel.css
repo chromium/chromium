@@ -4,8 +4,10 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
  * #import=//resources/cr_elements/cr_shared_vars.css.js
  * #scheme=relative
+ * #include=cr-hidden-style-lit
  * #css_wrapper_metadata_end */
 
 :host {
@@ -16,6 +18,10 @@
   color: var(--cr-primary-text-color);
   font-size: 15px;
   line-height: 24px;
-  margin: 0 0 28px;
+  margin: 0 0 16px;
   overflow-wrap: break-word;
+}
+
+#openRelatedTabs {
+  margin-block-end: 28px;
 }
