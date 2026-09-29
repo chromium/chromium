@@ -233,10 +233,10 @@ def verify_inputs(depline, sources, abs_build_root):
     return False
 
 
-def PrepareRustEnvForExecution(env):
-    """Converts values stored in the `env` dictionary to absolute paths, and
+def PrepareRustEnvForExecution(env: dict[str, str]) -> None:
+    """Converts values stored in the `env` dictionary to absolute paths,
     merges in system environment variables (with target-specific variables
-    taking precedence)."""
+    taking precedence), and prepends the active Python directory to PATH."""
     for k, v in env.items():
         # Paths need to be relative at gn/ninja level (for compatibility with
         # distributed builds), but it's okay to use absolute paths below gn/ninja
@@ -253,6 +253,9 @@ def PrepareRustEnvForExecution(env):
     # Merge in os.environ. Keys already in env take precedence over os.environ.
     for k, v in os.environ.items():
         env.setdefault(k, v)
+
+    python_dir = os.path.dirname(os.path.abspath(sys.executable))
+    env['PATH'] = python_dir + os.pathsep + env.get('PATH', os.defpath)
 
 
 def _SaveRustEnvAndFlags(path, rustenv, rustflags):
