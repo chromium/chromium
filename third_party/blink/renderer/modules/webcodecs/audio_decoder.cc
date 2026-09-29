@@ -41,8 +41,9 @@ bool VerifyDescription(const AudioDecoderConfig& config,
                        String* js_error_message) {
   // https://www.w3.org/TR/webcodecs-flac-codec-registration
   // https://www.w3.org/TR/webcodecs-vorbis-codec-registration
-  if ((config.codec() == "flac" || config.codec() == "vorbis") &&
-      !config.hasDescription()) {
+  const bool is_flac_or_vorbis =
+      config.codec() == "flac" || config.codec() == "vorbis";
+  if (is_flac_or_vorbis && !config.hasDescription()) {
     *js_error_message = "Invalid config; description is required.";
     return false;
   }
@@ -64,7 +65,21 @@ bool VerifyDescription(const AudioDecoderConfig& config,
     // which is called before `VerifyDescription()`.
     CHECK(desc_wrapper.data());
 
+    if (is_flac_or_vorbis && desc_wrapper.empty()) {
+      *js_error_message = "Invalid config; description must not be empty.";
+      return false;
+    }
+
     if (config.codec() == "opus") {
+      if (desc_wrapper.empty()) {
+        *js_error_message =
+            config.numberOfChannels() > 2
+                ? "Invalid config; description must not be empty."
+                : "Invalid config; description must not be empty (omit "
+                  "description if not needed).";
+        return false;
+      }
+
       // A size of 19 bytes corresponds to the minimum length of an Opus
       // Identification Header for a standard mono or stereo stream.
       constexpr size_t kMinDescriptionSize = 19;

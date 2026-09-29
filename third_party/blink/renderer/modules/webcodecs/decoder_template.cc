@@ -682,8 +682,9 @@ void DecoderTemplate<Traits>::OnInitializeDone(media::DecoderStatus status) {
     } else if (status.code() ==
                media::DecoderStatus::Codes::kUnsupportedConfig) {
       error_message =
-          "Unsupported configuration. Check isConfigSupported() prior to "
-          "calling configure().";
+          "Unsupported configuration. Check isConfigSupported() and "
+          "separately verify the description (if required) prior to calling "
+          "configure().";
     } else {
       error_message = "Decoder initialization error.";
     }
