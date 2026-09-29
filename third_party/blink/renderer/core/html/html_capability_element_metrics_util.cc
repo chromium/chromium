@@ -87,6 +87,12 @@ void RecordPermissionElementInvalidStyleReason(const QualifiedName& tag_name,
       reason);
 }
 
+void RecordGeolocationRequestInitiationFlow(
+    CapabilityElementGeolocationRequestFlow flow) {
+  base::UmaHistogramEnumeration(
+      "Blink.CapabilityElement.Geolocation.RequestInitiationFlow", flow);
+}
+
 void RecordGeolocationRequestResult(CapabilityElementGeolocationResult result) {
   base::UmaHistogramEnumeration(
       "Blink.CapabilityElement.Geolocation.RequestResult", result);

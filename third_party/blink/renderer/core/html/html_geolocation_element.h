@@ -65,6 +65,8 @@ class CORE_EXPORT HTMLGeolocationElement final
                            RequestLocationAfterClickAndPermissionChanged);
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
                            GeolocationRequestInProgress);
+  FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest,
+                           MetricsRequestInitiationFlow);
   FRIEND_TEST_ALL_PREFIXES(HTMLGeolocationElementTest, MetricsResultAndLatency);
 
   // HTMLCapabilityElementBase:
@@ -94,6 +96,10 @@ class CORE_EXPORT HTMLGeolocationElement final
   bool ShouldShowInProgressAppearance();
   void RequestGeolocation();
   void ClearWatch();
+  // Indicates whether autolocate should be forced regardless of whether it was
+  // previously triggered. kYes is used when permission was granted via a user
+  // prompt/click flow, whereas kNo is used for automatic triggers on load or
+  // lifecycle updates.
   enum class ForceAutolocate { kNo, kYes };
   void MaybeTriggerAutolocate(ForceAutolocate);
   void UpdateText();

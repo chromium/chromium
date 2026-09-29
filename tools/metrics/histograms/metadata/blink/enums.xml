@@ -139,6 +139,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//third_party/blink/renderer/core/html/html_capability_element_metrics_util.h:CapabilityElementGeolocationPositionErrorReason) -->
 
+<!-- LINT.IfChange(CapabilityElementGeolocationRequestFlow) -->
+
+<enum name="CapabilityElementGeolocationRequestFlow">
+  <int value="0" label="Click with permission already granted"/>
+  <int value="1" label="Click with prompt granted"/>
+  <int value="2" label="Autolocate on load"/>
+</enum>
+
+<!-- LINT.ThenChange(//third_party/blink/renderer/core/html/html_capability_element_metrics_util.h:CapabilityElementGeolocationRequestFlow) -->
+
 <!-- LINT.IfChange(CapabilityElementGeolocationResult) -->
 
 <enum name="CapabilityElementGeolocationResult">

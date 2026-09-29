@@ -64,6 +64,18 @@ void RecordPermissionElementInvalidStyleReason(const QualifiedName& tag_name,
 // These values are used for histograms. Entries should not be renumbered and
 // numeric values should never be reused.
 //
+// LINT.IfChange(CapabilityElementGeolocationRequestFlow)
+enum class CapabilityElementGeolocationRequestFlow {
+  kClickWithPermissionAlreadyGranted = 0,
+  kClickWithPromptGranted = 1,
+  kAutolocateOnLoad = 2,
+  kMaxValue = kAutolocateOnLoad,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:CapabilityElementGeolocationRequestFlow)
+
+// These values are used for histograms. Entries should not be renumbered and
+// numeric values should never be reused.
+//
 // LINT.IfChange(CapabilityElementGeolocationResult)
 enum class CapabilityElementGeolocationResult {
   kSuccess = 0,
@@ -83,6 +95,9 @@ enum class CapabilityElementGeolocationPositionErrorReason {
   kMaxValue = kTimeout,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/blink/enums.xml:CapabilityElementGeolocationPositionErrorReason)
+
+void RecordGeolocationRequestInitiationFlow(
+    CapabilityElementGeolocationRequestFlow flow);
 
 void RecordGeolocationRequestResult(CapabilityElementGeolocationResult result);
 

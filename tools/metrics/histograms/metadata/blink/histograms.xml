@@ -689,6 +689,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.CapabilityElement.Geolocation.RequestInitiationFlow"
+    enum="CapabilityElementGeolocationRequestFlow" expires_after="2027-04-01">
+  <owner>tungnh@chromium.org</owner>
+  <owner>ravjit@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records how a location query is initiated from a geolocation element:
+    whether by a user click with permission already granted, a user click
+    requiring a permission prompt that was granted, or autolocate on page load.
+    Recorded once per geolocation request when the request is initiated.
+  </summary>
+</histogram>
+
 <histogram name="Blink.CapabilityElement.Geolocation.RequestResult"
     enum="CapabilityElementGeolocationResult" expires_after="2027-04-01">
   <owner>tungnh@chromium.org</owner>
