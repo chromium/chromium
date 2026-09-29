@@ -425,19 +425,19 @@ std::optional<int> MaybeFindRowColumn(ui::BrowserAccessibility* start_node,
   }
 
   if (want_col_bounds || want_table_bounds) {
-    want_row_index = forwards ? table_info->row_count - 1 : 0;
+    want_row_index = forwards ? table_info->dom_row_count - 1 : 0;
   }
 
   if (want_row_bounds || want_table_bounds) {
-    want_col_index = forwards ? table_info->col_count - 1 : 0;
+    want_col_index = forwards ? table_info->dom_col_count - 1 : 0;
   }
 
   // This causes the caller to stop its search and indicate appropriately when
   // trying to move past a boundary.
   if (want_row_index < 0 ||
-      static_cast<size_t>(want_row_index) >= table_info->row_count ||
+      static_cast<size_t>(want_row_index) >= table_info->dom_row_count ||
       want_col_index < 0 ||
-      static_cast<size_t>(want_col_index) >= table_info->col_count) {
+      static_cast<size_t>(want_col_index) >= table_info->dom_col_count) {
     return ui::kInvalidAXNodeID;
   }
 

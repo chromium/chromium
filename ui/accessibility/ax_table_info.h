@@ -28,10 +28,10 @@ class AX_EXPORT AXTableInfo {
  public:
   struct CellData {
     raw_ptr<AXNode, DanglingUntriaged> cell;
-    size_t col_index;
-    size_t row_index;
-    size_t col_span;
-    size_t row_span;
+    size_t dom_col_index;
+    size_t dom_row_index;
+    size_t dom_col_span;
+    size_t dom_row_span;
     size_t aria_col_index;
     size_t aria_row_index;
   };
@@ -55,11 +55,11 @@ class AX_EXPORT AXTableInfo {
 
   // The real row count, guaranteed to be at least as large as the
   // maximum row index of any cell.
-  size_t row_count = 0;
+  size_t dom_row_count = 0;
 
   // The real column count, guaranteed to be at least as large as the
   // maximum column index of any cell.
-  size_t col_count = 0;
+  size_t dom_col_count = 0;
 
   // List of column header nodes IDs for each column index.
   std::vector<std::vector<AXNodeID>> col_headers;

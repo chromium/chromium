@@ -128,8 +128,8 @@ TEST_F(AXTableInfoTest, SimpleTable) {
   table_info = GetTableInfo(&tree, tree.root());
   EXPECT_TRUE(table_info);
 
-  EXPECT_EQ(2u, table_info->row_count);
-  EXPECT_EQ(2u, table_info->col_count);
+  EXPECT_EQ(2u, table_info->dom_row_count);
+  EXPECT_EQ(2u, table_info->dom_col_count);
 
   EXPECT_EQ(2U, table_info->row_headers.size());
   EXPECT_EQ(0U, table_info->row_headers[0].size());
@@ -269,8 +269,8 @@ TEST_F(AXTableInfoTest, ComputedTableSizeIncludesSpans) {
   AXTree tree(initial_state);
 
   AXTableInfo* table_info = GetTableInfo(&tree, tree.root());
-  EXPECT_EQ(4u, table_info->row_count);
-  EXPECT_EQ(6u, table_info->col_count);
+  EXPECT_EQ(4u, table_info->dom_row_count);
+  EXPECT_EQ(6u, table_info->dom_col_count);
 
   EXPECT_EQ(2u, table_info->row_nodes.size());
   EXPECT_EQ(2, table_info->row_nodes[0]->id());
@@ -291,8 +291,8 @@ TEST_F(AXTableInfoTest, AuthorRowAndColumnCountsAreRespected) {
   AXTree tree(initial_state);
 
   AXTableInfo* table_info = GetTableInfo(&tree, tree.root());
-  EXPECT_EQ(8u, table_info->row_count);
-  EXPECT_EQ(9u, table_info->col_count);
+  EXPECT_EQ(8u, table_info->dom_row_count);
+  EXPECT_EQ(9u, table_info->dom_col_count);
 
   EXPECT_EQ(1u, table_info->row_nodes.size());
   EXPECT_EQ(2, table_info->row_nodes[0]->id());
@@ -311,8 +311,8 @@ TEST_F(AXTableInfoTest, TableInfoRecomputedOnlyWhenTableChanges) {
   AXTree tree(initial_state);
 
   AXTableInfo* table_info = GetTableInfo(&tree, tree.root());
-  EXPECT_EQ(1u, table_info->row_count);
-  EXPECT_EQ(1u, table_info->col_count);
+  EXPECT_EQ(1u, table_info->dom_row_count);
+  EXPECT_EQ(1u, table_info->dom_col_count);
 
   // Table info is cached.
   AXTableInfo* table_info_2 = GetTableInfo(&tree, tree.root());
@@ -324,8 +324,8 @@ TEST_F(AXTableInfoTest, TableInfoRecomputedOnlyWhenTableChanges) {
   EXPECT_TRUE(tree.Unserialize(update));
 
   AXTableInfo* table_info_3 = GetTableInfo(&tree, tree.root());
-  EXPECT_EQ(1u, table_info_3->row_count);
-  EXPECT_EQ(2u, table_info_3->col_count);
+  EXPECT_EQ(1u, table_info_3->dom_row_count);
+  EXPECT_EQ(2u, table_info_3->dom_col_count);
 
   EXPECT_EQ(1u, table_info->row_nodes.size());
   EXPECT_EQ(2, table_info->row_nodes[0]->id());
@@ -420,8 +420,8 @@ TEST_F(AXTableInfoTest, SkipsGenericAndIgnoredNodes) {
   table_info = GetTableInfo(&tree, tree.root());
   EXPECT_TRUE(table_info);
 
-  EXPECT_EQ(2u, table_info->row_count);
-  EXPECT_EQ(2u, table_info->col_count);
+  EXPECT_EQ(2u, table_info->dom_row_count);
+  EXPECT_EQ(2u, table_info->dom_col_count);
 
   EXPECT_EQ(5, table_info->cell_ids[0][0]);
   EXPECT_EQ(6, table_info->cell_ids[0][1]);
@@ -1182,8 +1182,8 @@ TEST_F(AXTableInfoTest, TableChanges) {
   AXTableInfo* table_info = GetTableInfo(&tree, tree.root());
   EXPECT_TRUE(table_info);
 
-  EXPECT_EQ(1u, table_info->row_count);
-  EXPECT_EQ(2u, table_info->col_count);
+  EXPECT_EQ(1u, table_info->dom_row_count);
+  EXPECT_EQ(2u, table_info->dom_col_count);
 
   // Update the tree to remove the table role.
   AXTreeUpdate update = initial_state;
@@ -1360,8 +1360,8 @@ TEST_F(AXTableInfoTest, RowColumnSpanChanges) {
   AXTableInfo* table_info = GetTableInfo(&tree, tree.root());
   ASSERT_TRUE(table_info);
 
-  EXPECT_EQ(1u, table_info->row_count);
-  EXPECT_EQ(2u, table_info->col_count);
+  EXPECT_EQ(1u, table_info->dom_row_count);
+  EXPECT_EQ(2u, table_info->dom_col_count);
 
   EXPECT_EQ("|3 |10|\n", table_info->ToString());
 
@@ -1376,8 +1376,8 @@ TEST_F(AXTableInfoTest, RowColumnSpanChanges) {
 
   table_info = GetTableInfo(&tree, tree.root());
   ASSERT_TRUE(table_info);
-  EXPECT_EQ(2u, table_info->row_count);
-  EXPECT_EQ(2u, table_info->col_count);
+  EXPECT_EQ(2u, table_info->dom_row_count);
+  EXPECT_EQ(2u, table_info->dom_col_count);
   EXPECT_EQ(
       "|3 |10|\n"
       "|5 |0 |\n",
@@ -1395,8 +1395,8 @@ TEST_F(AXTableInfoTest, RowColumnSpanChanges) {
 
   table_info = GetTableInfo(&tree, tree.root());
   ASSERT_TRUE(table_info);
-  EXPECT_EQ(3u, table_info->row_count);
-  EXPECT_EQ(2u, table_info->col_count);
+  EXPECT_EQ(3u, table_info->dom_row_count);
+  EXPECT_EQ(2u, table_info->dom_col_count);
   EXPECT_EQ(
       "|3 |10|\n"
       "|7 |7 |\n"
@@ -1415,8 +1415,8 @@ TEST_F(AXTableInfoTest, RowColumnSpanChanges) {
 
   table_info = GetTableInfo(&tree, tree.root());
   ASSERT_TRUE(table_info);
-  EXPECT_EQ(5u, table_info->row_count);
-  EXPECT_EQ(3u, table_info->col_count);
+  EXPECT_EQ(5u, table_info->dom_row_count);
+  EXPECT_EQ(3u, table_info->dom_col_count);
   EXPECT_EQ(
       "|3 |10|0 |\n"
       "|7 |7 |0 |\n"
@@ -1433,8 +1433,8 @@ TEST_F(AXTableInfoTest, RowColumnSpanChanges) {
 
   table_info = GetTableInfo(&tree, tree.root());
   ASSERT_TRUE(table_info);
-  EXPECT_EQ(3u, table_info->row_count);
-  EXPECT_EQ(3u, table_info->col_count);
+  EXPECT_EQ(3u, table_info->dom_row_count);
+  EXPECT_EQ(3u, table_info->dom_col_count);
   EXPECT_EQ(
       "|7|7|0|\n"
       "|9|9|9|\n"

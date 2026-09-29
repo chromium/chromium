@@ -1435,7 +1435,7 @@ std::optional<int> AXNode::GetTableDomColCount() const {
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
     return std::nullopt;
-  return static_cast<int>(table_info->col_count);
+  return static_cast<int>(table_info->dom_col_count);
 }
 
 std::optional<int> AXNode::GetTableDomRowCount() const {
@@ -1443,7 +1443,7 @@ std::optional<int> AXNode::GetTableDomRowCount() const {
   const AXTableInfo* table_info = GetAncestorTableInfo();
   if (!table_info)
     return std::nullopt;
-  return static_cast<int>(table_info->row_count);
+  return static_cast<int>(table_info->dom_row_count);
 }
 
 std::optional<int> AXNode::GetTableAriaColCount() const {
@@ -1504,9 +1504,9 @@ AXNode* AXNode::GetTableCellFromCoords(int row_index, int col_index) const {
 
   // There is a table but the given coordinates are outside the table.
   if (row_index < 0 ||
-      static_cast<size_t>(row_index) >= table_info->row_count ||
+      static_cast<size_t>(row_index) >= table_info->dom_row_count ||
       col_index < 0 ||
-      static_cast<size_t>(col_index) >= table_info->col_count) {
+      static_cast<size_t>(col_index) >= table_info->dom_col_count) {
     return nullptr;
   }
 
@@ -1532,8 +1532,8 @@ AXNode* AXNode::GetTableCellFromAriaCoords(int aria_row_index,
   // So while we do need to check many of the internal rows/columns, we can do
   // some skipping around, and don't need to continue to search if we are past
   // the specified row/column.
-  for (size_t row = 0; row < table_info->row_count; ++row) {
-    for (size_t col = 0; col < table_info->col_count; ++col) {
+  for (size_t row = 0; row < table_info->dom_row_count; ++row) {
+    for (size_t col = 0; col < table_info->dom_col_count; ++col) {
       AXNode* node = tree_->GetFromId(table_info->cell_ids[row][col]);
       CHECK(node);
 
@@ -1578,8 +1578,10 @@ std::vector<AXNodeID> AXNode::GetTableColHeaderNodeIds(int col_index) const {
   if (!table_info)
     return std::vector<AXNodeID>();
 
-  if (col_index < 0 || static_cast<size_t>(col_index) >= table_info->col_count)
+  if (col_index < 0 ||
+      static_cast<size_t>(col_index) >= table_info->dom_col_count) {
     return std::vector<AXNodeID>();
+  }
 
   return std::vector<AXNodeID>(
       table_info->col_headers[static_cast<size_t>(col_index)]);
@@ -1591,8 +1593,10 @@ std::vector<AXNodeID> AXNode::GetTableRowHeaderNodeIds(int row_index) const {
   if (!table_info)
     return std::vector<AXNodeID>();
 
-  if (row_index < 0 || static_cast<size_t>(row_index) >= table_info->row_count)
+  if (row_index < 0 ||
+      static_cast<size_t>(row_index) >= table_info->dom_row_count) {
     return std::vector<AXNodeID>();
+  }
 
   return std::vector<AXNodeID>(
       table_info->row_headers[static_cast<size_t>(row_index)]);
@@ -1754,7 +1758,7 @@ std::optional<int> AXNode::GetTableCellDomColIndex() const {
   if (!index)
     return std::nullopt;
 
-  return static_cast<int>(table_info->cell_data_vector[*index].col_index);
+  return static_cast<int>(table_info->cell_data_vector[*index].dom_col_index);
 }
 
 std::optional<int> AXNode::GetTableCellDomRowIndex() const {
@@ -1774,7 +1778,7 @@ std::optional<int> AXNode::GetTableCellDomRowIndex() const {
   if (!index)
     return std::nullopt;
 
-  return static_cast<int>(table_info->cell_data_vector[*index].row_index);
+  return static_cast<int>(table_info->cell_data_vector[*index].dom_row_index);
 }
 
 std::optional<int> AXNode::GetTableCellDomColSpan() const {
@@ -1851,8 +1855,9 @@ std::optional<int> AXNode::GetTableCellAriaRowIndex() const {
 
 std::vector<AXNodeID> AXNode::GetTableCellColHeaderNodeIds() const {
   const AXTableInfo* table_info = GetAncestorTableInfo();
-  if (!table_info || table_info->col_count <= 0)
+  if (!table_info || table_info->dom_col_count == 0u) {
     return std::vector<AXNodeID>();
+  }
 
   // If this node is not a cell, then return the headers for the first column.
   int col_index = GetTableCellDomColIndex().value_or(0);
@@ -1869,8 +1874,9 @@ void AXNode::GetTableCellColHeaders(std::vector<AXNode*>* col_headers) const {
 
 std::vector<AXNodeID> AXNode::GetTableCellRowHeaderNodeIds() const {
   const AXTableInfo* table_info = GetAncestorTableInfo();
-  if (!table_info || table_info->row_count <= 0)
+  if (!table_info || table_info->dom_row_count == 0u) {
     return std::vector<AXNodeID>();
+  }
 
   // If this node is not a cell, then return the headers for the first row.
   int row_index = GetTableCellDomRowIndex().value_or(0);
