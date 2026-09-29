@@ -3751,7 +3751,9 @@ bool IndexKeyCursorImpl::LoadCurrentRow(Status* s) {
   }
 
   current_key_ = index_data_key.DecodeUserKey();
-  CHECK(current_key_.IsValid(), base::NotFatalUntil::M158);
+  // TODO(crbug.com/564999886): CHECK-exclusion: Convert to a CHECK once we are
+  // confident it won't be triggered.
+  DCHECK(current_key_.IsValid());
 
   slice = std::string_view(iterator_->Value());
   int64_t index_data_version;
