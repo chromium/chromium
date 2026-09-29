@@ -45,7 +45,7 @@ class ShadowFrameView : public views::View {
 
   // Sets the shadow corners individually. These should be the corners in
   // screen space - i.e. already mirrored for RtL.
-  void SetShadowCorners(const gfx::RoundedCornersF& corners);
+  void SetShadowCornerRadii(const gfx::RoundedCornersF& corners);
 
  protected:
   // views::View:

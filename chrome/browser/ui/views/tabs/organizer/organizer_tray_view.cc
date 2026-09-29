@@ -8,6 +8,7 @@
 
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
@@ -150,12 +151,20 @@ OrganizerTrayView::OrganizerTrayView(BrowserWindowInterface& browser,
 
 OrganizerTrayView::~OrganizerTrayView() = default;
 
-void OrganizerTrayView::UpdatePanelClip() {
+void OrganizerTrayView::UpdatePanelClipAndShadow() {
   if (!background() || !panel_view_) {
     return;
   }
   const auto* const bg = background()->AsA<CustomCornersBackground>();
   bg->ClipViewToBackground(panel_view_);
+
+  const auto corners = *bg->GetRoundedCornerRadii();
+  shadow_frame_->SetShadowCornerRadii(corners);
+  // Corners are already mirrored for RTL. Decide how strong the shadow should
+  // be by how close the lower trailing corner is to its full size.
+  const double key_corner =
+      base::i18n::IsRTL() ? corners.lower_left() : corners.lower_right();
+  shadow_frame_->SetShadowOpacity(key_corner / bg->default_radius());
 }
 
 bool OrganizerTrayView::IsPositionInWindowCaption(const gfx::Point& point) {

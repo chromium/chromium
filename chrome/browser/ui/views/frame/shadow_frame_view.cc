@@ -69,7 +69,8 @@ void ShadowFrameView::SetShadowCornerRadius(int corner_radius) {
   }
 }
 
-void ShadowFrameView::SetShadowCorners(const gfx::RoundedCornersF& corners) {
+void ShadowFrameView::SetShadowCornerRadii(
+    const gfx::RoundedCornersF& corners) {
   if (corners_ == corners) {
     return;
   }

@@ -49,7 +49,7 @@ class OrganizerTrayView : public views::FlexLayoutView,
   int target_width() const { return target_width_; }
 
   // Updates the organizer panel clip if present.
-  void UpdatePanelClip();
+  void UpdatePanelClipAndShadow();
 
   // Used to enable dragging.
   bool IsPositionInWindowCaption(const gfx::Point& point);

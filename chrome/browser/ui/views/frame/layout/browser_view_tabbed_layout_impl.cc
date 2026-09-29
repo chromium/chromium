@@ -1790,7 +1790,7 @@ void BrowserViewTabbedLayoutImpl::DoPostLayoutVisualAdjustments(
     }
 
     views().organizer_tray->layer()->SetOpacity(anim.panel_opacity);
-    views().organizer_tray->UpdatePanelClip();
+    views().organizer_tray->UpdatePanelClipAndShadow();
   }
 
   auto* const toolbar_background =
