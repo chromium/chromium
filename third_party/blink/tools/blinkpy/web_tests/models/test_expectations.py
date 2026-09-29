@@ -28,7 +28,6 @@
 """A helper class for reading in and dealing with tests expectations for web tests."""
 
 import bisect
-import copy
 import logging
 import re
 from collections import defaultdict
@@ -122,6 +121,23 @@ def _exp_order(exp: typ_types.ExpectationType):
     return meaningful, formatted_line
 
 
+def _copy_expectation(
+        line: typ_types.ExpectationType) -> typ_types.ExpectationType:
+    """Creates a fast defensive copy of an Expectation or _NotExpectation line.
+
+    This avoids the significant recursive reflection overhead of copy.deepcopy.
+    All primitive and immutable attributes (str, int, bool, frozenset) are
+    shared, while any mutable container attributes (list, set, dict) in __dict__
+    are shallow-copied so caller mutations do not corrupt internal state.
+    """
+    exp = line.__class__.__new__(line.__class__)
+    exp.__dict__.update({
+        k: v.copy() if isinstance(v, (list, set, dict)) else v
+        for k, v in line.__dict__.items()
+    })
+    return exp
+
+
 class TestExpectations:
     def __init__(self, port, expectations_dict=None):
         self._port = port
@@ -208,7 +224,7 @@ class TestExpectations:
             lines.pop()
 
     def get_updated_lines(self, path):
-        return copy.deepcopy(self._reset_lines(path))
+        return [_copy_expectation(line) for line in self._reset_lines(path)]
 
     def _reset_lines(self, path):
         """This method returns the Expectation instances for each line
@@ -380,8 +396,8 @@ class TestExpectations:
 
     def get_expectations_from_file(self, path, test_name):
         idx = list(self._expectations_dict.keys()).index(path)
-        return copy.deepcopy(
-            self._expectations[idx].individual_exps.get(test_name) or [])
+        exps = self._expectations[idx].individual_exps.get(test_name) or []
+        return [_copy_expectation(exp) for exp in exps]
 
     @staticmethod
     def _override_or_fallback_expectations(override, fallback):

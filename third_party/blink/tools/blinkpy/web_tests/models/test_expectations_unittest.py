@@ -33,7 +33,8 @@ import unittest
 
 from blinkpy.common.host_mock import MockHost
 from blinkpy.web_tests.models.test_expectations import (
-    TestExpectations, SystemConfigurationEditor, ParseError)
+    TestExpectations, SystemConfigurationEditor, ParseError, _NotExpectation,
+    _copy_expectation)
 from blinkpy.web_tests.models.typ_types import ResultType, Expectation
 from functools import reduce
 
@@ -890,6 +891,141 @@ class MiscTests(Base):
             '# results: [ Failure ]\nfailures/expected/text.html [ Failure ]')
         self.assert_exp_list('failures/expected/text.html',
                              {ResultType.Failure, ResultType.Skip})
+
+    def test_get_updated_lines(self):
+        port = MockHost().port_factory.get('test-win-win7')
+        raw_expectations = ('# tags: [ Mac Win ]\n'
+                            '# results: [ Failure Pass ]\n'
+                            '\n'
+                            '[ mac ] test1 [ Failure ]\n')
+        expectations_dict = OrderedDict()
+        expectations_dict['/tmp/TestExpectations'] = raw_expectations
+        test_expectations = TestExpectations(port, expectations_dict)
+
+        # Add a marker _NotExpectation to verify it is also defensively copied.
+        marker = _NotExpectation('# marker', 0)
+        test_expectations.add_expectations('/tmp/TestExpectations', [marker])
+
+        lines = test_expectations.get_updated_lines('/tmp/TestExpectations')
+        self.assertEqual(len(lines), 6)
+        self.assertEqual(lines[3].test, 'test1')
+        self.assertEqual(lines[3].lineno, 4)
+        self.assertIsInstance(lines[3].raw_tags, list)
+        self.assertIsInstance(lines[3].raw_results, list)
+
+        # Mutate the returned Expectation object to verify defensive copying.
+        lines[3].test = 'mutated_test'
+        lines[3].lineno = 999
+        lines[3].raw_tags.append('Win')
+        lines[3].raw_results.append('Pass')
+        # Mutate the returned _NotExpectation object.
+        lines[5].lineno = 888
+        lines.pop()
+
+        # Verify subsequent calls return fresh, isolated objects.
+        lines2 = test_expectations.get_updated_lines('/tmp/TestExpectations')
+        self.assertEqual(len(lines2), 6)
+        self.assertIsNot(lines[3], lines2[3])
+        self.assertIsNot(lines2[5], marker)
+        self.assertEqual(lines2[3].test, 'test1')
+        self.assertEqual(lines2[3].lineno, 4)
+        self.assertEqual(lines2[3].raw_tags, ['mac'])
+        self.assertEqual(lines2[3].raw_results, ['Failure'])
+        self.assertEqual(lines2[3].to_string(), '[ mac ] test1 [ Failure ]')
+        self.assertEqual(lines2[5].lineno, 0)
+        self.assertIsNotNone(test_expectations.get_expectations('test1'))
+
+        # Test expectation with set-backed raw_tags/raw_results.
+        prog_exp = Expectation(
+            test='test2',
+            tags=['mac'],
+            results={ResultType.Failure},
+        )
+        # Force lazy evaluation of properties so _raw_tags and _raw_results are
+        # initialized in __dict__.
+        self.assertIsNotNone(prog_exp.raw_tags)
+        self.assertIsNotNone(prog_exp.raw_results)
+        self.assertIsInstance(prog_exp._raw_tags, set)
+        self.assertIsInstance(prog_exp._raw_results, set)
+        test_expectations.add_expectations('/tmp/TestExpectations', [prog_exp])
+        lines3 = test_expectations.get_updated_lines('/tmp/TestExpectations')
+        added_line = [line for line in lines3 if line.test == 'test2'][0]
+        self.assertIsInstance(added_line._raw_tags, set)
+        self.assertIsInstance(added_line._raw_results, set)
+        added_line.raw_tags.add('Win')
+        added_line.raw_results.add('Pass')
+        lines4 = test_expectations.get_updated_lines('/tmp/TestExpectations')
+        added_line2 = [line for line in lines4 if line.test == 'test2'][0]
+        self.assertIsNot(added_line, added_line2)
+        self.assertNotIn('Win', added_line2.raw_tags)
+        self.assertNotIn('Pass', added_line2.raw_results)
+
+    def test_get_expectations_from_file(self):
+        port = MockHost().port_factory.get('test-win-win7')
+        raw_expectations = ('# tags: [ Mac Win ]\n'
+                            '# results: [ Failure Crash Pass ]\n'
+                            '\n'
+                            '[ mac ] test1 [ Failure ]\n'
+                            '[ win ] test1 [ Crash ]\n')
+        expectations_dict = OrderedDict()
+        expectations_dict['/tmp/TestExpectations'] = raw_expectations
+        test_expectations = TestExpectations(port, expectations_dict)
+
+        # Nonexistent test returns an empty list.
+        self.assertEqual(
+            test_expectations.get_expectations_from_file(
+                '/tmp/TestExpectations', 'nonexistent_test'), [])
+
+        # Multiple expectations for the same test.
+        exps = test_expectations.get_expectations_from_file(
+            '/tmp/TestExpectations', 'test1')
+        self.assertEqual(len(exps), 2)
+        exp0, exp1 = exps[0], exps[1]
+        self.assertEqual(exp0.test, 'test1')
+        self.assertEqual(exp1.test, 'test1')
+        exp0.test = 'mutated_test'
+        exp0.lineno = 999
+        exp0.raw_tags.append('Win')
+        exp0.raw_results.append('Pass')
+        exp1.raw_tags.append('Linux')
+
+        exps2 = test_expectations.get_expectations_from_file(
+            '/tmp/TestExpectations', 'test1')
+        self.assertEqual(len(exps2), 2)
+        self.assertIsNot(exp0, exps2[0])
+        self.assertIsNot(exp1, exps2[1])
+        self.assertEqual(exps2[0].test, 'test1')
+        self.assertEqual(exps2[0].lineno, 4)
+        self.assertEqual(exps2[0].raw_tags, ['mac'])
+        self.assertEqual(exps2[0].raw_results, ['Failure'])
+        self.assertEqual(exps2[0].to_string(), '[ mac ] test1 [ Failure ]')
+        self.assertEqual(exps2[1].test, 'test1')
+        self.assertEqual(exps2[1].lineno, 5)
+        self.assertEqual(exps2[1].raw_tags, ['win'])
+        self.assertEqual(exps2[1].raw_results, ['Crash'])
+        self.assertEqual(exps2[1].to_string(), '[ win ] test1 [ Crash ]')
+
+    def test_copy_expectation_handles_all_mutable_attributes(self):
+        exp = Expectation(
+            test='test1',
+            tags=['mac'],
+            results={ResultType.Failure},
+        )
+        # Force lazy evaluation of properties so _raw_tags and _raw_results are
+        # populated in __dict__.
+        self.assertIsNotNone(exp.raw_tags)
+        self.assertIsNotNone(exp.raw_results)
+        copied = _copy_expectation(exp)
+        has_mutable = False
+        for name, value in exp.__dict__.items():
+            if isinstance(value, (list, set, dict)):
+                has_mutable = True
+                copied_value = getattr(copied, name)
+                self.assertIsNot(
+                    value, copied_value,
+                    f'Mutable attribute {name} was not defensively copied.')
+                self.assertEqual(value, copied_value)
+        self.assertTrue(has_mutable)
 
 
 class RemoveExpectationsTest(Base):
