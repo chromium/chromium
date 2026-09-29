@@ -7,7 +7,6 @@ package org.chromium.ui.accessibility;
 import android.app.Activity;
 
 import org.chromium.base.ActivityState;
-import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -18,21 +17,19 @@ public class ApplicationStatusAccessibilityStateVisibilityManager
         implements AccessibilityStateVisibilityManager {
     private final ApplicationStatus.ActivityStateListener mActivityStateListener =
             this::onActivityStateChange;
-    private final ApplicationStatus.ApplicationStateListener mApplicationStateListener =
-            this::onApplicationStateChange;
 
     private @Nullable Observer mObserver;
+    private boolean mHasVisibleActivities;
 
     @Override
     public void setObserver(@Nullable Observer observer) {
         if (mObserver != null) {
             ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
-            ApplicationStatus.unregisterApplicationStateListener(mApplicationStateListener);
         }
         mObserver = observer;
         if (mObserver != null) {
             ApplicationStatus.registerStateListenerForAllActivities(mActivityStateListener);
-            ApplicationStatus.registerApplicationStateListener(mApplicationStateListener);
+            mHasVisibleActivities = ApplicationStatus.hasVisibleActivities();
         }
     }
 
@@ -42,20 +39,10 @@ public class ApplicationStatusAccessibilityStateVisibilityManager
         }
 
         if (newState == ActivityState.RESUMED) {
-            mObserver.onAnyActivityMadeVisible();
-        }
-    }
-
-    private void onApplicationStateChange(int newState) {
-        if (mObserver == null) {
-            return;
-        }
-
-        if (newState != ApplicationState.HAS_RUNNING_ACTIVITIES
-                && newState != ApplicationState.HAS_PAUSED_ACTIVITIES) {
+            mObserver.onActivityOrApplicationForegrounded();
+        } else if (mHasVisibleActivities && !ApplicationStatus.hasVisibleActivities()) {
             mObserver.onApplicationBackgrounded();
-        } else if (newState == ApplicationState.HAS_RUNNING_ACTIVITIES) {
-            mObserver.onApplicationForegrounded();
         }
+        mHasVisibleActivities = ApplicationStatus.hasVisibleActivities();
     }
 }

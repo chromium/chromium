@@ -11,25 +11,27 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 public interface AccessibilityStateVisibilityManager {
     /** Observer for visibility changes. */
-    public interface Observer {
+    interface Observer {
         /**
-         * Called when an activity is foregrounded. In multi-window mode, this enables updating the
-         * accessibility state when an additional Chromium window is brought to the foreground after
+         * Called when either the application is foregrounded or an Activity belonging to the
+         * application is foregrounded.
+         *
+         * <p>Calling the method when an Activity has been foregrounded but Chromium is already in
+         * the foreground enables updating accessibility state when Chromium is running in
+         * multi-window mode and an additional Chromium window is brought to the foreground after
          * modifying accessibility settings in the settings app.
          *
-         * This method initiates recomputing accessibility settings. Calling {@link
-         * onActivityMadeVisible()} should be called whenever an activity is foregrounded in order
-         * to trigger requerying accessibility settings more frequently. Calling {@link
-         * onActivityMadeVisible()} only when the app is foregrounded is acceptable.
+         * <p>This method initiates recomputing accessibility settings. {@link
+         * onActivityOrApplicationForegrounded()} should be called whenever an activity is
+         * foregrounded in order to trigger requerying accessibility settings more frequently.
+         * Calling {@link onActivityOrApplicationForegrounded()} only when the app is foregrounded
+         * is acceptable.
          */
-        void onAnyActivityMadeVisible();
+        void onActivityOrApplicationForegrounded();
 
         /** Called when the application is moved to the background. */
         void onApplicationBackgrounded();
-
-        /** Called when the application is moved to the foreground. */
-        void onApplicationForegrounded();
     }
 
-    public void setObserver(@Nullable Observer observer);
+    void setObserver(@Nullable Observer observer);
 }

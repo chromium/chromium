@@ -770,11 +770,9 @@ class AccessibilityStateDelegateImpl
 
     @Override
     public void registerObservers() {
-        assert mState == null || !mHasRegisteredObservers
-                : "AccessibilityState has been called to register observers, but observers have"
-                        + " already been registered, or, a client has already queried the state."
-                        + " Observers should only be registered once during browser init and before"
-                        + " any client queries.";
+        if (mHasRegisteredObservers) {
+            return;
+        }
 
         ContentResolver contentResolver = ContextUtils.getApplicationContext().getContentResolver();
         mAnimationDurationScaleObserver =
@@ -884,7 +882,9 @@ class AccessibilityStateDelegateImpl
     }
 
     @Override
-    public void onAnyActivityMadeVisible() {
+    public void onActivityOrApplicationForegrounded() {
+        registerObservers();
+
         // AccessibilityStateDelegateImpl does not register an observer for properties such as
         // {@link getFontWeightAdjustment()}. Recompute the properties now.
         processServicesChange();
@@ -896,13 +896,6 @@ class AccessibilityStateDelegateImpl
         // If Chrome is sent to the background, we will unregister observers, and re-register the
         // observers when Chrome is brought back to the foreground.
         unregisterObservers();
-    }
-
-    @Override
-    public void onApplicationForegrounded() {
-        if (mState == null || !mHasRegisteredObservers) {
-            registerObservers();
-        }
     }
 
     private void unregisterObservers() {

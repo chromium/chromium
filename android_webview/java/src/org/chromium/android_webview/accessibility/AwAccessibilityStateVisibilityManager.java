@@ -53,8 +53,7 @@ public class AwAccessibilityStateVisibilityManager
         }
 
         if (appState == AppState.FOREGROUND) {
-            mObserver.onApplicationForegrounded();
-            mObserver.onAnyActivityMadeVisible();
+            mObserver.onActivityOrApplicationForegrounded();
         } else {
             mObserver.onApplicationBackgrounded();
         }
