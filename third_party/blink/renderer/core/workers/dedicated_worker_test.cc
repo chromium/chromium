@@ -238,15 +238,6 @@ class DedicatedWorkerThreadForTest final : public DedicatedWorkerThread {
     PostCrossThreadTask(*GetParentTaskRunnerForTesting(), FROM_HERE,
                         CrossThreadBindOnce(std::move(quit_closure)));
   }
-
-  void InitializeGlobalScope(KURL script_url) {
-    EXPECT_TRUE(IsCurrentThread());
-    To<DedicatedWorkerGlobalScope>(GlobalScope())
-        ->Initialize(script_url, network::mojom::ReferrerPolicy::kDefault,
-                     Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-                     DocumentPolicy::DocumentPolicyBundle{},
-                     nullptr /* response_origin_trial_tokens */);
-  }
 };
 
 class DedicatedWorkerObjectProxyForTest final
@@ -273,11 +264,23 @@ class DedicatedWorkerObjectProxyForTest final
     DedicatedWorkerObjectProxy::CountWebDXFeature(feature);
   }
 
+  void WaitUntilDidEvaluateTopLevelScript() {
+    did_evaluate_top_level_script_.Run();
+  }
+
+  void DidEvaluateTopLevelScript(
+      bool success,
+      const JavaScriptFrameworkDetectionResult& result) override {
+    did_evaluate_top_level_script_.Quit();
+    DedicatedWorkerObjectProxy::DidEvaluateTopLevelScript(success, result);
+  }
+
  private:
   std::bitset<static_cast<size_t>(WebFeature::kMaxValue) + 1>
       reported_features_;
   std::bitset<static_cast<size_t>(WebDXFeature::kMaxValue) + 1>
       reported_webdx_features_;
+  base::RunLoop did_evaluate_top_level_script_;
 };
 
 class DedicatedWorkerMessagingProxyForTest
@@ -330,10 +333,11 @@ class DedicatedWorkerMessagingProxyForTest
     SetScriptURLForTesting(script_url);
     auto params = CreateGlobalScopeCreationParamsForTest();
     params->creator_document_policy.policy = std::move(creator_policy);
-    StartWorker(std::move(params));
+    StartWorker(/*source_code=*/"", std::move(params));
   }
 
   void StartWorker(
+      const String& source_code,
       std::unique_ptr<GlobalScopeCreationParams> params = nullptr) {
     if (!params) {
       params = CreateGlobalScopeCreationParamsForTest();
@@ -345,18 +349,11 @@ class DedicatedWorkerMessagingProxyForTest
             WorkerBackingThreadStartupData::AtomicsWaitMode::kAllow),
         WorkerObjectProxy().token());
 
-    PostCrossThreadTask(
-        *GetDedicatedWorkerThread()->GetTaskRunner(TaskType::kInternalTest),
-        FROM_HERE,
-        CrossThreadBindOnce(
-            &DedicatedWorkerThreadForTest::InitializeGlobalScope,
-            CrossThreadUnretained(GetDedicatedWorkerThread()), script_url_));
-  }
-
-  void EvaluateClassicScript(const String& source) {
-    GetWorkerThread()->EvaluateClassicScript(script_url_, source,
-                                             nullptr /* cached_meta_data */,
-                                             v8_inspector::V8StackTraceId());
+    // `DedicatedWorkerGlobalScope::Initialize()` is called upon worker
+    // top-level script evaluation.
+    RunWorkerToplevelScriptForTesting(*GetWorkerThread(),
+                                      SecurityOrigin::Create(script_url_).get(),
+                                      source_code, script_url_);
   }
 
   DedicatedWorkerThreadForTest* GetDedicatedWorkerThread() {
@@ -421,6 +418,7 @@ void DedicatedWorkerTest::SetUp() {
         return proxy;
       });
   worker_object_->UpdateStateIfNeeded();
+  worker_object_->EmulateStartForTesting();
 }
 
 void DedicatedWorkerTest::TearDown() {
@@ -454,33 +452,17 @@ void DedicatedWorkerTest::RunOnWorkerThread(
 }
 
 void DedicatedWorkerTest::StartWorker(
+    const String& source_code,
     std::unique_ptr<GlobalScopeCreationParams> params) {
-  WorkerMessagingProxy()->StartWorker(std::move(params));
+  WorkerMessagingProxy()->StartWorker(source_code, std::move(params));
 }
-
-void DedicatedWorkerTest::EvaluateClassicScript(const String& source_code) {
-  WorkerMessagingProxy()->EvaluateClassicScript(source_code);
-}
-
-namespace {
-
-void PostExitRunLoopTaskOnParent(WorkerThread* worker_thread,
-                                 CrossThreadOnceClosure quit_closure) {
-  PostCrossThreadTask(*worker_thread->GetParentTaskRunnerForTesting(),
-                      FROM_HERE, CrossThreadBindOnce(std::move(quit_closure)));
-}
-
-}  // anonymous namespace
 
 void DedicatedWorkerTest::WaitUntilWorkerIsRunning() {
-  base::RunLoop loop;
-  PostCrossThreadTask(
-      *GetWorkerThread()->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
-      CrossThreadBindOnce(&PostExitRunLoopTaskOnParent,
-                          CrossThreadUnretained(GetWorkerThread()),
-                          CrossThreadBindOnce(loop.QuitClosure())));
-
-  loop.Run();
+  // Wait for the top-level script evaluation and
+  // `DedicatedWorkerGlobalScope::Initialize()`, to avoid race conditions.
+  static_cast<DedicatedWorkerObjectProxyForTest&>(
+      WorkerMessagingProxy()->WorkerObjectProxy())
+      .WaitUntilDidEvaluateTopLevelScript();
 }
 
 TEST_F(DedicatedWorkerTest, PendingActivity_NoActivityAfterContextDestroyed) {
@@ -495,9 +477,8 @@ TEST_F(DedicatedWorkerTest, PendingActivity_NoActivityAfterContextDestroyed) {
 
 TEST_F(DedicatedWorkerTest, UseCounter) {
   Page::InsertOrdinaryPageForTesting(&GetPage());
-  const String source_code = "// Do nothing";
   StartWorker();
-  EvaluateClassicScript(source_code);
+  WaitUntilWorkerIsRunning();
 
   // This feature is randomly selected.
   const WebFeature kFeature1 = WebFeature::kRequestFileSystem;
@@ -683,10 +664,7 @@ TEST_F(DedicatedWorkerTest,
 }
 
 TEST_F(DedicatedWorkerTest, DispatchMessageEventOnWorkerGlobalScope) {
-  // Script must run for the worker global scope to dispatch messages.
-  const String source_code = "// Do nothing";
   StartWorker();
-  EvaluateClassicScript(source_code);
 
   AtomicString event_type;
   base::RunLoop run_loop_1;
@@ -741,11 +719,12 @@ TEST_F(DedicatedWorkerTest, TopLevelFrameSecurityOrigin) {
       ->GetExecutionContext()
       ->GetSecurityContext()
       .SetSecurityOriginForTesting(security_origin);
-  StartWorker(WorkerObject()->CreateGlobalScopeCreationParams(
-      script_url, network::mojom::ReferrerPolicy::kDefault,
-      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
-      DocumentPolicy::DocumentPolicyBundle{}, mojo::NullReceiver(),
-      mojo::NullReceiver()));
+  StartWorker("", WorkerObject()->CreateGlobalScopeCreationParams(
+                      script_url, network::mojom::ReferrerPolicy::kDefault,
+                      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+                      DocumentPolicy::DocumentPolicyBundle{},
+                      mojo::NullReceiver(), mojo::NullReceiver()));
+  WaitUntilWorkerIsRunning();
   base::RunLoop run_loop;
 
   PostCrossThreadTask(
@@ -794,10 +773,7 @@ TEST_F(DedicatedWorkerTest, TopLevelFrameSecurityOrigin) {
 
 TEST_F(DedicatedWorkerTest,
        DispatchMessageEventOnWorkerGlobalScope_CannotDeserialize) {
-  // Script must run for the worker global scope to dispatch messages.
-  const String source_code = "// Do nothing";
   StartWorker();
-  EvaluateClassicScript(source_code);
 
   AtomicString event_type;
   base::RunLoop run_loop_1;
@@ -856,7 +832,6 @@ TEST_F(DedicatedWorkerTest, PostCustomEventWithString) {
   ScriptState* script_state = v8_scope.GetScriptState();
 
   StartWorker();
-  EvaluateClassicScript("");
   WaitUntilWorkerIsRunning();
 
   base::RunLoop run_loop;
@@ -886,7 +861,6 @@ TEST_F(DedicatedWorkerTest, PostCustomEventWithNumber) {
   ScriptState* script_state = v8_scope.GetScriptState();
 
   StartWorker();
-  EvaluateClassicScript("");
   WaitUntilWorkerIsRunning();
 
   base::RunLoop run_loop;
@@ -934,7 +908,6 @@ TEST_F(DedicatedWorkerTest, PostCustomEventBeforeWorkerStarts) {
       v8_scope.GetExceptionState());
 
   StartWorker();
-  EvaluateClassicScript("");
   WaitUntilWorkerIsRunning();
   run_loop.Run();
   ASSERT_NE(event, nullptr);
@@ -953,7 +926,6 @@ TEST_F(DedicatedWorkerTest, PostCustomEventWithPort) {
   ScriptState* script_state = v8_scope.GetScriptState();
 
   StartWorker();
-  EvaluateClassicScript("");
   WaitUntilWorkerIsRunning();
 
   MessageChannel* channel =
@@ -982,7 +954,6 @@ TEST_F(DedicatedWorkerTest, PostCustomEventCannotDeserialize) {
   ScriptState* script_state = v8_scope.GetScriptState();
 
   StartWorker();
-  EvaluateClassicScript("");
   WaitUntilWorkerIsRunning();
 
   auto* worker_thread = GetWorkerThread();
@@ -1013,7 +984,6 @@ TEST_F(DedicatedWorkerTest, PostCustomEventNoMessage) {
   ScriptState* script_state = v8_scope.GetScriptState();
 
   StartWorker();
-  EvaluateClassicScript("");
   WaitUntilWorkerIsRunning();
 
   base::RunLoop run_loop;

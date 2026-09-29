@@ -31,8 +31,8 @@ class DedicatedWorkerTest : public PageTestBase {
   DedicatedWorkerMessagingProxyForTest* WorkerMessagingProxy();
   DedicatedWorkerThreadForTest* GetWorkerThread();
 
-  void StartWorker(std::unique_ptr<GlobalScopeCreationParams> params = nullptr);
-  void EvaluateClassicScript(const String& source_code);
+  void StartWorker(const String& source_code = "",
+                   std::unique_ptr<GlobalScopeCreationParams> params = nullptr);
   void WaitUntilWorkerIsRunning();
 
   void RunOnWorkerThread(CrossThreadOnceFunction<void(ExecutionContext*)> task);

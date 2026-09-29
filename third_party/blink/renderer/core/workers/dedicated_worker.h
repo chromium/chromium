@@ -148,6 +148,10 @@ class CORE_EXPORT DedicatedWorker final
       mojom::blink::FrameLifecycleState state) override;
   void Trace(Visitor*) const override;
 
+  // Emulate necessary parts of `Start()` for testing. This does NOT actually
+  // start the worker.
+  void EmulateStartForTesting();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(DedicatedWorkerTest, TopLevelFrameSecurityOrigin);
 

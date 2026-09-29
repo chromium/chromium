@@ -156,8 +156,7 @@ TEST_F(V8DetailedMemoryReporterImplWorkerTest, GetV8MemoryUsage) {
     globalThis.root = {
       array: new Uint8Array(1000000)
     };)JS";
-  StartWorker();
-  EvaluateClassicScript(source_code);
+  StartWorker(source_code);
   WaitUntilWorkerIsRunning();
   V8DetailedMemoryReporterImpl reporter;
   // We expect to see two isolates: the main isolate and the worker isolate.

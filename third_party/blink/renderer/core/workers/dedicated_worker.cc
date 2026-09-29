@@ -339,6 +339,10 @@ void DedicatedWorker::Start() {
   // Continue in OnScriptLoadStarted() or OnScriptLoadStartFailed().
 }
 
+void DedicatedWorker::EmulateStartForTesting() {
+  start_time_ = base::TimeTicks::Now();
+}
+
 void DedicatedWorker::terminate() {
   DCHECK(!GetExecutionContext() || GetExecutionContext()->IsContextThread());
   context_proxy_->TerminateGlobalScope();
