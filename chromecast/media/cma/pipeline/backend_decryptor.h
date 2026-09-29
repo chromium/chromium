@@ -45,11 +45,11 @@ class BackendDecryptor : public StreamDecryptor,
   bool decrypt_success_;
   bool wait_eos_;
 
-  // |task_runner_| should have a longer life than |decryptor_|.
+  // |decrypt_cb_| and |task_runner_| should have a longer life than
+  // |decryptor_|.
+  DecryptCB decrypt_cb_;
   std::unique_ptr<TaskRunnerImpl> task_runner_;
   std::unique_ptr<MediaPipelineBackend::AudioDecryptor> decryptor_;
-
-  DecryptCB decrypt_cb_;
 };
 
 }  // namespace media
