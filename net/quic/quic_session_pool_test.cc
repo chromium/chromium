@@ -885,6 +885,75 @@ TEST_P(QuicSessionPoolTest, CreateAsyncQuicSession) {
   socket_data.ExpectAllWriteDataConsumed();
 }
 
+TEST_P(QuicSessionPoolTest, JobCompleteTimeSuccess) {
+  base::HistogramTester histogram_tester;
+  Initialize();
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsOk());
+
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSessionPool.JobCompleteTime.Success", 1);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSessionPool.JobCompleteTime.Failure", 0);
+}
+
+TEST_P(QuicSessionPoolTest, JobCompleteTimeFailure) {
+  base::HistogramTester histogram_tester;
+  Initialize();
+
+  MockQuicData socket_data(version_);
+  socket_data.AddConnect(SYNCHRONOUS, ERR_ADDRESS_IN_USE);
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  RequestBuilder builder(this);
+  EXPECT_EQ(ERR_IO_PENDING, builder.CallRequest());
+  EXPECT_THAT(callback_.WaitForResult(), IsError(ERR_ADDRESS_IN_USE));
+
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSessionPool.JobCompleteTime.Success", 0);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSessionPool.JobCompleteTime.Failure", 1);
+}
+
+TEST_P(QuicSessionPoolTest, JobCompleteTimeSyncSuccess) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(net::features::kAsyncQuicSession);
+  base::HistogramTester histogram_tester;
+  Initialize();
+  pool_->set_has_quic_ever_worked_on_current_network(true);
+  ProofVerifyDetailsChromium verify_details = DefaultProofVerifyDetails();
+  crypto_client_stream_factory_.AddProofVerifyDetails(&verify_details);
+
+  MockQuicData socket_data(version_);
+  socket_data.AddReadPauseForever();
+  client_maker_.SetEncryptionLevel(quic::ENCRYPTION_ZERO_RTT);
+  socket_data.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  crypto_client_stream_factory_.set_handshake_mode(
+      MockCryptoClientStream::ZERO_RTT);
+  host_resolver_->set_synchronous_mode(true);
+  host_resolver_->rules()->AddIPLiteralRule(kDefaultServerHostName,
+                                            "192.168.0.1", "");
+
+  RequestBuilder builder(this);
+  EXPECT_EQ(OK, builder.CallRequest());
+
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSessionPool.JobCompleteTime.Success", 1);
+  histogram_tester.ExpectTotalCount(
+      "Net.QuicSessionPool.JobCompleteTime.Failure", 0);
+}
+
 // This test uses synchronous QUIC session creation
 TEST_P(QuicSessionPoolTest, SyncCreateZeroRtt) {
   base::test::ScopedFeatureList scoped_feature_list;

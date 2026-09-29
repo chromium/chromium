@@ -1020,6 +1020,8 @@ int QuicSessionPool::RequestSession(
     active_jobs_[session_key] = std::move(job);
     return rv;
   }
+
+  job->RecordCompleteTime(rv);
   if (rv == OK) {
     auto it = active_sessions_.find(session_key);
     CHECK(it != active_sessions_.end());
@@ -1793,6 +1795,8 @@ void QuicSessionPool::OnJobComplete(
     Job* job,
     std::optional<base::TimeTicks> proxy_connect_start_time,
     int rv) {
+  job->RecordCompleteTime(rv);
+
   if (proxy_connect_start_time) {
     HttpProxyConnectJob::EmitConnectLatency(
         NextProto::kProtoQUIC, ProxyServer::Scheme::SCHEME_QUIC,

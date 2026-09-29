@@ -6,6 +6,8 @@
 
 #include "base/debug/dump_without_crashing.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/network_change_notifier.h"
@@ -123,5 +125,13 @@ void QuicSessionPool::Job::OnQuicSessionCreationComplete(int rv) {
 
 void QuicSessionPool::Job::UpdatePriority(RequestPriority old_priority,
                                           RequestPriority new_priority) {}
+
+void QuicSessionPool::Job::RecordCompleteTime(int rv) const {
+  CHECK_NE(rv, ERR_IO_PENDING);
+  base::UmaHistogramMediumTimes(
+      base::StrCat({"Net.QuicSessionPool.JobCompleteTime.",
+                    rv == OK ? "Success" : "Failure"}),
+      base::TimeTicks::Now() - creation_time_);
+}
 
 }  // namespace net

@@ -7699,6 +7699,18 @@ chromium-metrics-reviews@google.com.
   <token key="SuccessOrFailure" variants="SuccessOrFailure"/>
 </histogram>
 
+<histogram name="Net.QuicSessionPool.JobCompleteTime.{SuccessOrFailure}"
+    units="ms" expires_after="2027-09-28">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    The time from when a QuicSessionPool::Job is created to when it completes.
+    Recorded when a QuicSessionPool::Job completes synchronously or
+    asynchronously.
+  </summary>
+  <token key="SuccessOrFailure" variants="SuccessOrFailure"/>
+</histogram>
+
 <histogram name="Net.QuicStreamFactory.AttemptMigrationBeforeHandshake"
     enum="BooleanAttempted" expires_after="2027-02-02">
   <owner>dschinazi@chromium.org</owner>
