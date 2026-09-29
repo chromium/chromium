@@ -12,7 +12,6 @@
 #include "base/auto_reset.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
-#include "base/containers/span_writer.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
@@ -569,23 +568,16 @@ MediaFoundationAudioDecoder::PumpOutput(PumpState pump_state) {
     audio_buffer =
         AudioBuffer::CreateBuffer(kSampleFormatF32, channel_layout_,
                                   channel_count_, sample_rate_, frames, pool_);
-    CHECK_EQ(audio_buffer->channels()[0u].size(),
-             frames * channel_count_ * sizeof(float));
-    auto channel_data = base::SpanWriter<uint8_t>(audio_buffer->channels()[0u]);
     auto dts_source = destination;
-    for (uint64_t i = 0; i < frames; i++) {
-      for (uint64_t ch = 0; ch < channel_count_; ch++) {
-        auto dts_bytes = dts_source.take_first<3u>();
-        auto a = static_cast<int8_t>(dts_bytes[0u]);
-        auto b = static_cast<int8_t>(dts_bytes[1u]);
-        auto c = static_cast<int8_t>(dts_bytes[2u]);
-        int32_t pcmi = (int32_t{a} << 8) & 0xff00;
-        pcmi |= (int32_t{b} << 16) & 0xff0000;
-        pcmi |= (int32_t{c} << 24) & 0xff000000;
-        CHECK(channel_data.Write(base::byte_span_from_ref(
-            base::allow_nonunique_obj,
-            SignedInt32SampleTypeTraits::ToFloat(pcmi))));
-      }
+    for (float& sample : audio_buffer->interleaved_data_cast<float>()) {
+      auto dts_bytes = dts_source.take_first<3u>();
+      auto a = static_cast<int8_t>(dts_bytes[0u]);
+      auto b = static_cast<int8_t>(dts_bytes[1u]);
+      auto c = static_cast<int8_t>(dts_bytes[2u]);
+      int32_t pcmi = (int32_t{a} << 8) & 0xff00;
+      pcmi |= (int32_t{b} << 16) & 0xff0000;
+      pcmi |= (int32_t{c} << 24) & 0xff000000;
+      sample = SignedInt32SampleTypeTraits::ToFloat(pcmi);
     }
   }
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
