@@ -47,6 +47,40 @@ namespace {
 
 const char kTestKeySystem[] = "org.chromium.externalclearkey.mediafoundation";
 
+#if BUILDFLAG(IS_WIN)
+class MockMediaFoundationInterfaceFactory
+    : public media::mojom::InterfaceFactory {
+ public:
+  void CreateAudioDecoder(
+      mojo::PendingReceiver<media::mojom::AudioDecoder>) override {}
+  void CreateVideoDecoder(
+      mojo::PendingReceiver<media::mojom::VideoDecoder>,
+      mojo::PendingRemote<media::mojom::VideoDecoder>) override {}
+  void CreateAudioEncoder(
+      mojo::PendingReceiver<media::mojom::AudioEncoder>) override {}
+  void CreateDefaultRenderer(
+      const std::string&,
+      mojo::PendingReceiver<media::mojom::Renderer>) override {}
+  void CreateCdm(const media::CdmConfig&, CreateCdmCallback) override {}
+  void CreateMediaFoundationRenderer(
+      mojo::PendingRemote<media::mojom::MediaLog>,
+      mojo::PendingReceiver<media::mojom::Renderer>,
+      mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
+          extension_receiver) override {
+    extension_receiver_ = std::move(extension_receiver);
+  }
+
+  mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
+  TakeExtensionReceiver() {
+    return std::move(extension_receiver_);
+  }
+
+ private:
+  mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
+      extension_receiver_;
+};
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace
 
 class MediaInterfaceProxyTest : public RenderViewHostTestHarness {
@@ -251,6 +285,60 @@ TEST_F(MediaInterfaceProxyTest,
 
   MediaPlayerId player_id(main_rfh()->GetGlobalId(), 1);
   EXPECT_TRUE(AudibilityBypassTracker::ClaimGrant(player_id));
+}
+
+TEST_F(MediaInterfaceProxyTest,
+       MediaFoundationRendererExtension_DisconnectInFlightDoesNotCrashDCHECK) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      media::kMediaFoundationClearPlayback);
+
+  MockMediaFoundationInterfaceFactory mock_factory;
+  mojo::Receiver<media::mojom::InterfaceFactory> factory_receiver(
+      &mock_factory);
+  SetMediaFoundationInterfaceFactoryRemote(
+      factory_receiver.BindNewPipeAndPassRemote());
+
+  auto factory = GetMediaInterfaceFactory();
+  ASSERT_TRUE(factory.is_bound());
+
+  mojo::PendingRemote<media::mojom::MediaLog> media_log_remote;
+  auto media_log_receiver = media_log_remote.InitWithNewPipeAndPassReceiver();
+  mojo::PendingRemote<media::mojom::Renderer> renderer_remote;
+  auto renderer_receiver = renderer_remote.InitWithNewPipeAndPassReceiver();
+  mojo::Remote<media::mojom::MediaFoundationRendererExtension> extension_remote;
+
+  factory->CreateMediaFoundationRenderer(
+      std::move(media_log_remote), std::move(renderer_receiver),
+      extension_remote.BindNewPipeAndPassReceiver());
+  base::RunLoop().RunUntilIdle();
+
+  // The utility process receives the extension receiver.
+  auto utility_extension_receiver = mock_factory.TakeExtensionReceiver();
+  ASSERT_TRUE(utility_extension_receiver.is_valid());
+
+  // Call SetOutputRect on extension_remote. The request travels to the browser
+  // proxy.
+  base::MockCallback<
+      media::mojom::MediaFoundationRendererExtension::SetOutputRectCallback>
+      set_output_rect_cb;
+  base::RunLoop run_loop;
+  EXPECT_CALL(set_output_rect_cb, Run(false)).WillOnce([&](bool) {
+    run_loop.Quit();
+  });
+
+  extension_remote->SetOutputRect(gfx::Rect(0, 0, 1920, 1080),
+                                  set_output_rect_cb.Get());
+
+  // Drop the utility extension receiver without responding, simulating a crash
+  // or hardware DRM reset in the utility process while SetOutputRect is in
+  // flight.
+  utility_extension_receiver.reset();
+
+  // Run the loop: without WrapCallbackWithDefaultInvokeIfNotRun, Mojo would hit
+  // FATAL DCHECK(!connected). With the fix, the callback runs safely with
+  // false.
+  run_loop.Run();
 }
 #endif  // BUILDFLAG(IS_WIN)
 
