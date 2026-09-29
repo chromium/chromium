@@ -179,15 +179,10 @@ class ClosePromoButton : public views::ImageButton {
     constexpr float kCloseButtonFocusRingHaloThickness = 1.25f;
     views::FocusRing::Get(this)->SetHaloThickness(
         kCloseButtonFocusRingHaloThickness);
-  }
-
-  void OnThemeChanged() override {
-    views::ImageButton::OnThemeChanged();
-    const auto* color_provider = GetColorProvider();
-    views::InkDrop::Get(this)->SetBaseColor(color_provider->GetColor(
-        delegate_->GetHelpBubbleCloseButtonInkDropColorId()));
     views::FocusRing::Get(this)->SetColorId(
         delegate_->GetHelpBubbleForegroundColorId());
+    views::InkDrop::Get(this)->SetBaseColor(
+        delegate_->GetHelpBubbleCloseButtonInkDropColorId());
   }
 
  private:
