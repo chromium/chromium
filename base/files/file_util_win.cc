@@ -179,6 +179,14 @@ DWORD ReturnLastErrorOrSuccessOnNotFound() {
              : error_code;
 }
 
+// Returns whether reparse point traversal should be prevented during
+// recursive deletion. If FeatureList is not yet initialized, falls back to
+// true (the default state of features::kPreventReparsePointTraversal).
+bool PreventReparsePointTraversal() {
+  return !FeatureList::GetInstance() ||
+         FeatureList::IsEnabled(features::kPreventReparsePointTraversal);
+}
+
 // Deletes all files and directories in a path.
 // Returns ERROR_SUCCESS on success or the Windows error code corresponding to
 // the first error encountered. ERROR_FILE_NOT_FOUND and ERROR_PATH_NOT_FOUND
@@ -206,8 +214,7 @@ DWORD DeleteFileRecursive(const FilePath& path,
       if (recursive) {
         // Use `IsLink` to ensure fresh data is used to determine whether or not
         // `current` is a mount point or similar.
-        if (!FeatureList::IsEnabled(features::kPreventReparsePointTraversal) ||
-            !IsLink(current)) {
+        if (!PreventReparsePointTraversal() || !IsLink(current)) {
           this_result = DeleteFileRecursive(current, pattern, true);
           DCHECK_NE(static_cast<LONG>(this_result), ERROR_FILE_NOT_FOUND);
           DCHECK_NE(static_cast<LONG>(this_result), ERROR_PATH_NOT_FOUND);
@@ -373,9 +380,7 @@ DWORD DoDeleteFile(const FilePath& path, bool recursive) {
                : ReturnLastErrorOrSuccessOnNotFound();
   }
 
-  if (recursive &&
-      (!FeatureList::IsEnabled(features::kPreventReparsePointTraversal) ||
-       !IsLink(path))) {
+  if (recursive && (!PreventReparsePointTraversal() || !IsLink(path))) {
     const DWORD error_code =
         DeleteFileRecursive(path, FILE_PATH_LITERAL("*"), true);
     DCHECK_NE(static_cast<LONG>(error_code), ERROR_FILE_NOT_FOUND);
