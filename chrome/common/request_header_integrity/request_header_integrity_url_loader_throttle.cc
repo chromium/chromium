@@ -5,28 +5,26 @@
 #include "chrome/common/request_header_integrity/request_header_integrity_url_loader_throttle.h"
 
 #include <algorithm>
-#include <optional>
 #include <string>
 #include <vector>
 
 #include "base/base64.h"
-#include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/hash/sha1.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/common/channel_info.h"
-#include "chrome/common/platform_runtime/platform_runtime_impl.h"
 #include "chrome/common/request_header_integrity/chrome_companero_loader.h"
+#include "chrome/common/request_header_integrity/platform_runtime_headers.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/google/core/common/google_util.h"
-#include "content/public/common/content_switches.h"
 #include "google_apis/google_api_keys.h"
+#include "net/http/http_request_headers.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/http_request_headers_update_params.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -68,23 +66,16 @@ namespace request_header_integrity {
 
 namespace {
 
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// These values are persisted to UMA logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class PlatformRuntimeIntegrityResult {
-  // kComponentUnavailable = 0, // OBSOLETE.
-  kLibraryUnavailable = 1,
-  kSuccess = 2,
-  kFailure = 3,
-  kMaxValue = kFailure,
-};
-#endif
-
 BASE_FEATURE(kRequestHeaderIntegrity, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Seed for header integrity (empty for unbranded builds).
 constexpr char kIntegritySeed[] = "";
+#endif
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_ANDROID)
+// Fraction of requests for which the Platform Runtime apply result is recorded.
+constexpr double kApplyResultSamplingRate = 0.01;
 #endif
 
 // Returns extended, stable, beta, dev, or canary if a channel is available,
@@ -128,68 +119,21 @@ void AddRequestIntegrityHeaderNamesToVector(
   }
 }
 
-void SetHeader(void* headers, const char* name, const char* value) {
-  if (!name || !value) {
-    return;
-  }
-  static_cast<net::HttpRequestHeaders*>(headers)->SetHeader(name, value);
-}
-
-bool GetHeader(void* headers,
-               const char* name,
-               char* value_buf,
-               size_t value_buf_size) {
-  if (!name || !value_buf || value_buf_size == 0) {
-    return false;
-  }
-  auto* req_headers = static_cast<net::HttpRequestHeaders*>(headers);
-  std::optional<std::string> value = req_headers->GetHeader(name);
-  if (!value) {
-    return false;
-  }
-  // SAFETY: This is a callback implementing the C-style GetHeaderFunction API.
-  // The raw pointer and size are wrapped in a base::span and use bounds-safe
-  // operations for all copying.
-  auto value_span = UNSAFE_BUFFERS(base::span(value_buf, value_buf_size));
-  size_t copy_len = std::min(value->length(), value_buf_size - 1);
-  value_span.first(copy_len).copy_from(base::span(*value).first(copy_len));
-  value_span[copy_len] = '\0';
-  return true;
-}
-
-void ProcessRequestHeaders(net::HttpRequestHeaders* headers, const GURL& url) {
-  // Don't process request headers in non-browser processes since the Platform
-  // Runtime component is not loaded there, and only main frame requests need
-  // header processing.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kProcessType)) {
-    return;
-  }
-  platform_runtime::PlatformRuntimeImpl* runtime =
-      platform_runtime::PlatformRuntimeImpl::GetInstance();
-  CHECK(runtime);
-  scoped_refptr<platform_runtime::PlatformRuntimeLibrary> loaded_lib =
-      runtime->GetLoadedLibrary();
-  if (!loaded_lib) {
+void ApplyPlatformRuntimeHeaders(net::HttpRequestHeaders* headers) {
+#if !BUILDFLAG(IS_ANDROID)
+  // PlatformRuntimeHost does not run on Android, so no headers are ever
+  // published there.
+  [[maybe_unused]] const PlatformRuntimeApplyResult result =
+      PlatformRuntimeHeaders::GetInstance().Apply(headers);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // This runs for every request and redirect in every process, so only a
+  // random subset is recorded to keep metrics off the hot path.
+  if (base::ShouldRecordSubsampledMetric(kApplyResultSamplingRate)) {
     base::UmaHistogramEnumeration(
-        "ComponentUpdater.PlatformRuntime.RequestHeaderIntegrityResult",
-        PlatformRuntimeIntegrityResult::kLibraryUnavailable);
-#endif
-    return;
+        "ComponentUpdater.PlatformRuntime.RequestHeaderApplyResult", result);
   }
-
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  bool result = loaded_lib->ProcessRequestHeaders(headers, GetHeader, SetHeader,
-                                                  url.spec().c_str());
-  base::UmaHistogramEnumeration(
-      "ComponentUpdater.PlatformRuntime.RequestHeaderIntegrityResult",
-      result ? PlatformRuntimeIntegrityResult::kSuccess
-             : PlatformRuntimeIntegrityResult::kFailure);
-#else
-  loaded_lib->ProcessRequestHeaders(headers, GetHeader, SetHeader,
-                                    url.spec().c_str());
-#endif
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 using ResourceType = RequestHeaderIntegrityURLLoaderThrottle::ResourceType;
@@ -246,7 +190,7 @@ void RequestHeaderIntegrityURLLoaderThrottle::WillStartRequest(
     AddRequestIntegrityHeaders(&(request->cors_exempt_headers),
                                *companero_loader_, resource_type_);
   }
-  ProcessRequestHeaders(&(request->cors_exempt_headers), request->url);
+  ApplyPlatformRuntimeHeaders(&(request->cors_exempt_headers));
 }
 
 void RequestHeaderIntegrityURLLoaderThrottle::WillRedirectRequest(
@@ -262,8 +206,8 @@ void RequestHeaderIntegrityURLLoaderThrottle::WillRedirectRequest(
     AddRequestIntegrityHeaderNamesToVector(
         &headers_update_params->removed_headers, *companero_loader_);
   }
-  ProcessRequestHeaders(&headers_update_params->modified_cors_exempt_headers,
-                        redirect_info->new_url);
+  ApplyPlatformRuntimeHeaders(
+      &headers_update_params->modified_cors_exempt_headers);
 }
 
 // static
@@ -318,7 +262,7 @@ void RequestHeaderIntegrityURLLoaderThrottle::
     AddRequestIntegrityHeaderNamesToVector(
         &removed_headers, ChromeCompaneroLoader::GetInstance());
   }
-  ProcessRequestHeaders(&cors_exempt_headers, url);
+  ApplyPlatformRuntimeHeaders(&cors_exempt_headers);
 }
 
 }  // namespace request_header_integrity

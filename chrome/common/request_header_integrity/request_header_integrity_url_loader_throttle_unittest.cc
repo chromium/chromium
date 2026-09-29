@@ -7,12 +7,15 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/rand_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/common/request_header_integrity/chrome_companero_loader.h"
+#include "chrome/common/request_header_integrity/platform_runtime_headers.h"
 #include "net/http/http_request_headers.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/cpp/http_request_headers_update_params.h"
@@ -387,6 +390,113 @@ TEST_F(RequestHeaderIntegrityURLLoaderThrottleWithCompaneroTest,
   histograms.ExpectUniqueSample(kSubresourceHistogram, true, 2);
   histograms.ExpectTotalCount(kMainResourceHistogram, 0);
 }
+
+// Platform Runtime headers are not applied on Android.
+#if !BUILDFLAG(IS_ANDROID)
+constexpr char kPlatformRuntimeValue[] = "platform_runtime_value";
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+constexpr char kApplyResultHistogram[] =
+    "ComponentUpdater.PlatformRuntime.RequestHeaderApplyResult";
+#endif
+
+// Covers applying the Platform Runtime headers on the redirect and prefetch
+// paths.
+class RequestHeaderIntegrityURLLoaderThrottlePlatformRuntimeTest
+    : public RequestHeaderIntegrityURLLoaderThrottleWithCompaneroTest {
+ protected:
+  void SetUp() override {
+    RequestHeaderIntegrityURLLoaderThrottleWithCompaneroTest::SetUp();
+    PlatformRuntimeHeaders::GetInstance().ResetForTesting();
+  }
+
+  void TearDown() override {
+    PlatformRuntimeHeaders::GetInstance().ResetForTesting();
+    RequestHeaderIntegrityURLLoaderThrottleWithCompaneroTest::TearDown();
+  }
+
+  void SetPlatformRuntimeHeader(std::string_view name, std::string_view value) {
+    net::HttpRequestHeaders headers;
+    headers.SetHeader(name, value);
+    PlatformRuntimeHeaders::GetInstance().Set(headers);
+  }
+
+ private:
+  // The apply result histogram is subsampled; record every sample here.
+  base::MetricsSubSampler::ScopedAlwaysSampleForTesting always_sample_;
+};
+
+TEST_F(RequestHeaderIntegrityURLLoaderThrottlePlatformRuntimeTest,
+       RedirectToGoogleAppliesPlatformRuntimeHeaders) {
+  base::HistogramTester histograms;
+  SetPlatformRuntimeHeader(kTestHeaderName, kPlatformRuntimeValue);
+
+  net::RedirectInfo redirect_info;
+  redirect_info.new_url = GURL("https://www.google.com/");
+  network::mojom::URLResponseHead response_head;
+  bool defer = false;
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  throttle().WillRedirectRequest(&redirect_info, response_head, &defer,
+                                 &headers_update_params);
+
+  // The Platform Runtime value replaces the one the throttle attached.
+  EXPECT_EQ(kPlatformRuntimeValue,
+            headers_update_params.modified_cors_exempt_headers.GetHeader(
+                kTestHeaderName));
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  histograms.ExpectUniqueSample(kApplyResultHistogram,
+                                PlatformRuntimeApplyResult::kApplied, 1);
+#endif
+}
+
+TEST_F(RequestHeaderIntegrityURLLoaderThrottlePlatformRuntimeTest,
+       RedirectToNonGoogleStripsAndDoesNotReaddPlatformRuntimeHeaders) {
+  base::HistogramTester histograms;
+  SetPlatformRuntimeHeader(kTestHeaderName, kPlatformRuntimeValue);
+
+  net::RedirectInfo redirect_info;
+  redirect_info.new_url = GURL("https://www.somesite.com/");
+  network::mojom::URLResponseHead response_head;
+  bool defer = false;
+  network::HttpRequestHeadersUpdateParams headers_update_params;
+  throttle().WillRedirectRequest(&redirect_info, response_head, &defer,
+                                 &headers_update_params);
+
+  // The integrity headers are stripped and not added back.
+  EXPECT_THAT(headers_update_params.removed_headers,
+              testing::Contains(kTestHeaderName));
+  EXPECT_TRUE(headers_update_params.modified_cors_exempt_headers.IsEmpty());
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  histograms.ExpectUniqueSample(kApplyResultHistogram,
+                                PlatformRuntimeApplyResult::kNotApplicable, 1);
+#endif
+}
+
+TEST_F(RequestHeaderIntegrityURLLoaderThrottlePlatformRuntimeTest,
+       PrefetchAppliesPlatformRuntimeHeaders) {
+  constexpr char kPrefetchHeaderName[] = "X-Prefetch-Integrity-Header";
+  base::HistogramTester histograms;
+  SetPlatformRuntimeHeader(kPrefetchHeaderName, kPlatformRuntimeValue);
+
+  // The prefetch path reads the process-wide ChromeCompaneroLoader rather
+  // than the test one, so seed a header that an earlier hop attached.
+  std::vector<std::string> removed_headers;
+  net::HttpRequestHeaders cors_exempt_headers;
+  cors_exempt_headers.SetHeader(kPrefetchHeaderName, "original_value");
+
+  RequestHeaderIntegrityURLLoaderThrottle::
+      ModifyRequestIntegrityHeadersForPrefetch(GURL("https://www.google.com/"),
+                                               removed_headers,
+                                               cors_exempt_headers);
+
+  EXPECT_TRUE(removed_headers.empty());
+  EXPECT_EQ(kPlatformRuntimeValue,
+            cors_exempt_headers.GetHeader(kPrefetchHeaderName));
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  histograms.ExpectUniqueSample(kApplyResultHistogram,
+                                PlatformRuntimeApplyResult::kApplied, 1);
+#endif
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace request_header_integrity
