@@ -123,6 +123,21 @@ class GlicWebDragAndDropBrowserTest extends ApiTestFixtureBase {
     assertEquals(0, state.droppedTypesCount);
     assertEquals(0, state.droppedFilesCount);
   }
+
+  async testWebToGlicHyperlinkDragRejected() {
+    let dragEntered = false;
+    window.addEventListener('dragenter', () => {
+      dragEntered = true;
+    });
+
+    const {state} = this.setupWebDragDropHandlers();
+
+    await this.advanceToNextStep();
+
+    assertFalse(dragEntered);
+    assertFalse(state.wasDropped);
+    assertFalse(state.wasInvoked);
+  }
 }
 
 testMain([GlicWebDragAndDropBrowserTest]);

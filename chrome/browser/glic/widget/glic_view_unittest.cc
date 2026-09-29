@@ -64,11 +64,17 @@ TEST_F(GlicViewTest, CanDragEnter) {
       base::FilePath(FILE_PATH_LITERAL("test.txt")));
   EXPECT_TRUE(glic_view->CanDragEnter(nullptr, drop_data, ops));
 
-  // DropData with URL should be accepted.
+  // DropData with file_contents (e.g., web image drag) should be accepted.
   drop_data.filenames.clear();
+  drop_data.file_contents = {1, 2, 3, 4};
+  EXPECT_TRUE(glic_view->CanDragEnter(nullptr, drop_data, ops));
+
+  // DropData with URL alone (e.g., hyperlink without image bytes) should be
+  // rejected.
+  drop_data.file_contents.clear();
   drop_data.url_infos.emplace_back(GURL("https://example.com"),
                                    std::u16string());
-  EXPECT_TRUE(glic_view->CanDragEnter(nullptr, drop_data, ops));
+  EXPECT_FALSE(glic_view->CanDragEnter(nullptr, drop_data, ops));
 
   // DropData with text should be rejected.
   drop_data.url_infos.clear();
@@ -79,11 +85,23 @@ TEST_F(GlicViewTest, CanDragEnter) {
   drop_data.text.reset();
   drop_data.html = u"<b>test html</b>";
   EXPECT_FALSE(glic_view->CanDragEnter(nullptr, drop_data, ops));
+}
 
-  // DropData with image file_contents should be accepted.
-  drop_data.html.reset();
-  drop_data.file_contents = {0x89, 'P', 'N', 'G'};
-  EXPECT_TRUE(glic_view->CanDragEnter(nullptr, drop_data, ops));
+TEST_F(GlicViewTest, CanDragEnter_WebDragDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kGlicDragAndDropFileUpload},
+      /*disabled_features=*/{features::kGlicWebDragAndDropFileUpload});
+
+  auto glic_view =
+      std::make_unique<GlicView>(profile(), gfx::Size(800, 600), nullptr);
+
+  content::DropData drop_data;
+  drop_data.file_contents = {1, 2, 3, 4};
+  blink::DragOperationsMask ops = blink::kDragOperationCopy;
+
+  // Should be rejected because kGlicWebDragAndDropFileUpload is disabled.
+  EXPECT_FALSE(glic_view->CanDragEnter(nullptr, drop_data, ops));
 }
 
 TEST_F(GlicViewTest, CanDragEnter_Disabled) {

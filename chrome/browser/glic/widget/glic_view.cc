@@ -94,13 +94,15 @@ bool GlicView::CanDragEnter(content::WebContents* source,
   if (!base::FeatureList::IsEnabled(features::kGlicDragAndDropFileUpload)) {
     return false;
   }
-  // Check for local files, URLs, or image contents.
+  // Check for local files or in-memory web image/file contents.
+  // TODO(crbug.com/567183211): Temporarily reject non-file web drags (such as
+  // text and links) until extended drag-and-drop payload types are supported.
   bool has_files = !data.filenames.empty() || !data.file_system_files.empty();
-  bool has_web_data = !data.url_infos.empty() || !data.file_contents.empty();
+  bool has_file_contents = !data.file_contents.empty();
 
   return has_files ||
-         (has_web_data && base::FeatureList::IsEnabled(
-                              features::kGlicWebDragAndDropFileUpload));
+         (has_file_contents && base::FeatureList::IsEnabled(
+                                   features::kGlicWebDragAndDropFileUpload));
 }
 
 void GlicView::ContentsZoomChange(bool zoom_in) {

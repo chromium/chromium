@@ -241,7 +241,8 @@ enum class GlicDragAndDropValidationResult {
   kTargetWebContentsDestroyed = 6,
   kSourceFrameNavigatedBeforeContextFetched = 7,
   kContextFetchFailed = 8,
-  kMaxValue = kContextFetchFailed,
+  kUnsupportedContentType = 9,
+  kMaxValue = kUnsupportedContentType,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicDragAndDropValidationResult)
 

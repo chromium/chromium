@@ -267,6 +267,7 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Target WebContents destroyed"/>
   <int value="7" label="Source frame navigated before context fetched"/>
   <int value="8" label="Context fetch failed"/>
+  <int value="9" label="Unsupported content type"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/metrics_types.h:GlicDragAndDropValidationResult) -->

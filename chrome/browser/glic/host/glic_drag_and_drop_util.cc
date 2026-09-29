@@ -279,6 +279,15 @@ void StartDragAndDropInvoke(content::WebContents* target_web_contents,
     return;
   }
 
+  // TODO(crbug.com/567183211): Temporarily reject non-file web drags (such as
+  // text and links) until extended drag-and-drop payload types are supported.
+  if (drop_data.file_contents.empty()) {
+    base::UmaHistogramEnumeration(
+        "Glic.DragAndDrop.ValidationResult",
+        GlicDragAndDropValidationResult::kUnsupportedContentType);
+    return;
+  }
+
   if (!drop_data.drag_id) {
     base::UmaHistogramEnumeration(
         "Glic.DragAndDrop.ValidationResult",

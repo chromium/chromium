@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
+#include "chrome/browser/glic/host/glic_drag_and_drop_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/service/glic_instance_impl.h"
 #include "chrome/browser/glic/service/metrics/glic_invoke_metrics.h"
@@ -32,7 +33,6 @@
 #include "content/public/common/drop_data.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -261,6 +261,54 @@ IN_PROC_BROWSER_TEST_P(GlicWebDragAndDropBrowserTest,
   ASSERT_TRUE(simulator.SimulateDrop(host_relative_point));
 
   ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_P(GlicWebDragAndDropBrowserTest,
+                       testWebToGlicHyperlinkDragRejected) {
+  base::HistogramTester histogram_tester;
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * glic_instance,
+                       OpenGlicForActiveTab());
+  Host* glic_host = &glic_instance->host();
+  PrepareGuestForDrag(*glic_host);
+  gfx::Point host_relative_point = GetGuestCenterInHost(*glic_host);
+
+  base::UnguessableToken drag_id = base::UnguessableToken::Create();
+
+  auto data = std::make_unique<ui::OSExchangeData>();
+  data->SetString(u"Wikipedia hyperlink");
+  data->SetURL(GURL("https://en.wikipedia.org/wiki/Main_Page"),
+               u"Wikipedia hyperlink");
+  data->SetChromeDragId(drag_id);
+
+  drag_and_drop_test_utils::DragAndDropSimulator simulator(
+      glic_host->webui_contents());
+  ASSERT_TRUE(
+      simulator.SimulateDragEnter(host_relative_point, std::move(data)));
+  ASSERT_TRUE(simulator.SimulateDrop(host_relative_point));
+
+  // Drain any pending hit-test and renderer round-trips before checking guest
+  // drag state.
+  ASSERT_TRUE(content::ExecJs(glic_host->GetGuestMainFrame(), ""));
+
+  // Also verify that if StartDragAndDropInvoke is reached directly with a
+  // hyperlink DropData (empty `file_contents`), it rejects the payload with
+  // `kUnsupportedContentType` and never records `Glic.InvokeResult.WebDragDrop`
+  // (`kClipboardMissingMetadata`).
+  content::DropData hyperlink_drop_data;
+  hyperlink_drop_data.text = u"Wikipedia hyperlink";
+  hyperlink_drop_data.url_infos.emplace_back(
+      GURL("https://en.wikipedia.org/wiki/Main_Page"), u"Wikipedia hyperlink");
+  hyperlink_drop_data.drag_id = drag_id;
+  StartDragAndDropInvoke(glic_host->webui_contents(), hyperlink_drop_data);
+
+  ContinueJsTest();
+
+  histogram_tester.ExpectTotalCount("Glic.InvokeResult.WebDragDrop", 0);
+  histogram_tester.ExpectUniqueSample("Glic.DragAndDrop.ContentType",
+                                      GlicDragAndDropContentType::kUrl, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Glic.DragAndDrop.ValidationResult",
+      GlicDragAndDropValidationResult::kUnsupportedContentType, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
