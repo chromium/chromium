@@ -10,10 +10,14 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "google_apis/gaia/core_account_id.h"
+
+inline constexpr char kDiceLinkedAccountsLatencyNewProfileOAuthMultiLogin[] =
+    "Signin.Dice.LinkedAccounts.Latency.NewProfileOAuthMultiLogin";
 
 namespace content {
 class WebContents;
@@ -73,8 +77,11 @@ class DiceInterceptedSessionStartupHelper
   // accounts.
   void StartupReconcilor(signin::IdentityManager* identity_manager);
 
-  // Called when multilogin completes.
-  void OnSetAccountInCookieCompleted(signin::SetAccountsInCookieResult result);
+  // Called when multilogin completes. `timer` was started right before the
+  // multilogin call and `num_accounts` is the number of accounts sent.
+  void OnSetAccountInCookieCompleted(base::ElapsedTimer timer,
+                                     size_t num_accounts,
+                                     signin::SetAccountsInCookieResult result);
 
   // Entry point to move the intercepted tab to the new/target profile.
   // This method synchronously disconnects all observers to avoid receiving

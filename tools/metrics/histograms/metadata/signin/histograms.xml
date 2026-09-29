@@ -2003,6 +2003,25 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram
+    name="Signin.Dice.LinkedAccounts.Latency.NewProfileOAuthMultiLogin{AccountCount}"
+    units="ms" expires_after="2027-02-07">
+  <owner>msalama@chromium.org</owner>
+  <owner>chrome-signin-desktop-team@google.com</owner>
+  <summary>
+    Records the time taken by OAuthMultiLogin in the new profile to populate web
+    cookies for all moved accounts in multi-account DICE Linked Accounts
+    sessions ({AccountCount}). Recorded when OAuthMultiLogin completes in
+    DiceInterceptedSessionStartupHelper.
+  </summary>
+  <token key="AccountCount">
+    <variant name="" summary="all multi-account sessions"/>
+    <variant name=".2Accounts" summary="sessions with 2 accounts"/>
+    <variant name=".3Accounts" summary="sessions with 3 accounts"/>
+    <variant name=".4PlusAccounts" summary="sessions with 4 or more accounts"/>
+  </token>
+</histogram>
+
 <histogram name="Signin.Dice.LinkedAccounts.Latency.TotalSessionDuration"
     units="ms" expires_after="2027-04-01">
   <owner>msalama@chromium.org</owner>

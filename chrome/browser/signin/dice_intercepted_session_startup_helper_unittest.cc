@@ -12,11 +12,13 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/core/browser/account_reconcilor.h"
@@ -31,6 +33,7 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "net/base/network_change_notifier.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -140,7 +143,9 @@ class DiceInterceptedSessionStartupHelperTest : public testing::Test {
 };
 
 TEST_F(DiceInterceptedSessionStartupHelperTest,
-       NewProfile_SingleAccount_MultiloginSuccess) {
+       NewProfile_SingleAccount_MultiloginSuccess_NoLatencyRecorded) {
+  base::HistogramTester histogram_tester;
+
   AccountInfo initiator_info = identity_test_env()->MakePrimaryAccountAvailable(
       "alice@example.com", signin::ConsentLevel::kSignin);
 
@@ -162,10 +167,15 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
   EXPECT_THAT(*auth_header,
               testing::HasSubstr(initiator_info.GetGaiaId().ToString()));
   EXPECT_THAT(*auth_header, testing::Not(testing::HasSubstr(",")));
+
+  histogram_tester.ExpectTotalCount(
+      kDiceLinkedAccountsLatencyNewProfileOAuthMultiLogin, 0);
 }
 
 TEST_F(DiceInterceptedSessionStartupHelperTest,
-       NewProfile_MultiAccount_InitiatorSentFirst) {
+       NewProfile_MultiAccount_InitiatorSentFirst_LatencyRecorded) {
+  base::HistogramTester histogram_tester;
+
   AccountInfo initiator_info = identity_test_env()->MakePrimaryAccountAvailable(
       "alice@example.com", signin::ConsentLevel::kSignin);
   AccountInfo secondary_info1 =
@@ -205,10 +215,27 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
   std::string_view first_account = accounts_str.substr(0, first_comma);
   EXPECT_THAT(first_account,
               testing::HasSubstr(initiator_info.GetGaiaId().ToString()));
+
+  histogram_tester.ExpectTotalCount(
+      kDiceLinkedAccountsLatencyNewProfileOAuthMultiLogin, 1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat(
+          {kDiceLinkedAccountsLatencyNewProfileOAuthMultiLogin, ".3Accounts"}),
+      1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat(
+          {kDiceLinkedAccountsLatencyNewProfileOAuthMultiLogin, ".2Accounts"}),
+      0);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({kDiceLinkedAccountsLatencyNewProfileOAuthMultiLogin,
+                    ".4PlusAccounts"}),
+      0);
 }
 
 TEST_F(DiceInterceptedSessionStartupHelperTest,
-       ExistingProfile_StartupReconcilor) {
+       ExistingProfile_StartupReconcilor_NoLatencyRecorded) {
+  base::HistogramTester histogram_tester;
+
   AccountInfo initiator_info = identity_test_env()->MakePrimaryAccountAvailable(
       "alice@example.com", signin::ConsentLevel::kSignin);
   AccountInfo secondary_info =
@@ -230,4 +257,7 @@ TEST_F(DiceInterceptedSessionStartupHelperTest,
   EXPECT_TRUE(future.Wait());
 
   EXPECT_FALSE(last_multilogin_request_.has_value());
+
+  histogram_tester.ExpectTotalCount(
+      kDiceLinkedAccountsLatencyNewProfileOAuthMultiLogin, 0);
 }
