@@ -132,6 +132,7 @@ class OomInterventionTabHelper;
 class PluginObserverAndroid;
 class PolicyAuditorBridge;
 class RevokedPermissionsTabHelper;
+class SearchEngineTabHelper;
 class SecurityStateEventObserver;
 class SoundContentSettingObserver;
 class StorageAccessAPITabHelper;
@@ -272,6 +273,7 @@ class TabFeatures {
       chained_back_navigation_tracker_;
   std::unique_ptr<MediaStateObserver> media_state_observer_;
   std::unique_ptr<FileSystemAccessTabHelper> file_system_access_tab_helper_;
+  std::unique_ptr<SearchEngineTabHelper> search_engine_tab_helper_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;

@@ -153,6 +153,7 @@ source_set("tabs_impl") {
     "//chrome/browser/task_manager",
     "//chrome/browser/ui/contextual_search",
     "//chrome/browser/ui/safety_hub",
+    "//chrome/browser/ui/search_engines",
     "//chrome/browser/ui/side_panel",
     "//chrome/browser/ui/side_panel/android",
     "//chrome/browser/ui/tabs:page_context_eligibility_helper",

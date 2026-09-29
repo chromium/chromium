@@ -71,6 +71,7 @@
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service.h"
 #include "chrome/browser/ui/safety_hub/revoked_permissions_service_factory.h"
+#include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
 #include "chrome/browser/ui/side_panel/android/android_side_panel_enabled_fn.h"
 #include "chrome/browser/ui/side_panel/internal/android/dev/side_panel_tab_scoped_dev_feature.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
@@ -411,6 +412,10 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
 
   file_system_access_tab_helper_ =
       std::make_unique<FileSystemAccessTabHelper>(web_contents);
+
+  search_engine_tab_helper_ =
+      GetUserDataFactory().CreateInstance<SearchEngineTabHelper>(*tab, *tab,
+                                                                 web_contents);
 }
 
 TabFeatures::~TabFeatures() = default;

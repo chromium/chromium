@@ -15,6 +15,7 @@
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_fetcher.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -41,6 +42,8 @@ bool IsFormSubmit(NavigationEntry* entry) {
 
 }  // namespace
 
+DEFINE_USER_DATA(SearchEngineTabHelper);
+
 // static
 void SearchEngineTabHelper::BindOpenSearchDescriptionDocumentHandler(
     content::RenderFrameHost* rfh,
@@ -55,7 +58,9 @@ void SearchEngineTabHelper::BindOpenSearchDescriptionDocumentHandler(
   if (!web_contents) {
     return;
   }
-  auto* tab_helper = SearchEngineTabHelper::FromWebContents(web_contents);
+  tabs::TabInterface* const tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  auto* tab_helper = tab ? SearchEngineTabHelper::From(tab) : nullptr;
   if (!tab_helper) {
     return;
   }
@@ -63,6 +68,11 @@ void SearchEngineTabHelper::BindOpenSearchDescriptionDocumentHandler(
 }
 
 SearchEngineTabHelper::~SearchEngineTabHelper() = default;
+
+// static
+SearchEngineTabHelper* SearchEngineTabHelper::From(tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
 
 void SearchEngineTabHelper::DidFinishNavigation(
     content::NavigationHandle* handle) {
@@ -106,9 +116,10 @@ std::u16string SearchEngineTabHelper::GenerateKeywordFromNavigationEntry(
   return TemplateURL::GenerateKeyword(url);
 }
 
-SearchEngineTabHelper::SearchEngineTabHelper(WebContents* web_contents)
+SearchEngineTabHelper::SearchEngineTabHelper(tabs::TabInterface& tab,
+                                             WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<SearchEngineTabHelper>(*web_contents) {
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {
   DCHECK(web_contents);
 
   favicon::CreateContentFaviconDriverForWebContents(web_contents);
@@ -259,5 +270,3 @@ void SearchEngineTabHelper::GenerateKeywordIfNecessary(
   // any OpenSearch document derived engines, which outrank this one.
   url_service->Add(std::make_unique<TemplateURL>(data));
 }
-
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SearchEngineTabHelper);

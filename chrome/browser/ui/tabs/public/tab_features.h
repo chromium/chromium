@@ -82,6 +82,7 @@ class RecordReplayPageActionController;
 class RevokedPermissionsTabHelper;
 class SadTabHelper;
 class SearchEngineChoiceTabHelper;
+class SearchEngineTabHelper;
 class SearchPromotionNavigationObserver;
 class SecurityStateEventObserver;
 class SharedHighlightingPromo;
@@ -926,6 +927,8 @@ class TabFeatures {
       chained_back_navigation_tracker_;
 
   std::unique_ptr<FileSystemAccessTabHelper> file_system_access_tab_helper_;
+
+  std::unique_ptr<SearchEngineTabHelper> search_engine_tab_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

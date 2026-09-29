@@ -13,6 +13,7 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/chrome_test_path_utils.h"
@@ -20,6 +21,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -32,6 +34,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "third_party/blink/public/common/features.h"
+#include "ui/base/unowned_user_data/user_data_factory.h"
 
 using net::test_server::BasicHttpResponse;
 using net::test_server::HttpRequest;
@@ -146,15 +149,9 @@ IN_PROC_BROWSER_TEST_F(SearchEngineTabHelperBrowserTest,
 
 class TestSearchEngineTabHelper : public SearchEngineTabHelper {
  public:
-  static void CreateForWebContents(content::WebContents* contents) {
-    if (FromWebContents(contents)) {
-      return;
-    }
-    contents->SetUserData(
-        UserDataKey(), std::make_unique<TestSearchEngineTabHelper>(contents));
-  }
-  explicit TestSearchEngineTabHelper(content::WebContents* web_contents)
-      : SearchEngineTabHelper(web_contents) {}
+  TestSearchEngineTabHelper(tabs::TabInterface& tab,
+                            content::WebContents* web_contents)
+      : SearchEngineTabHelper(tab, web_contents) {}
   ~TestSearchEngineTabHelper() override = default;
 
   std::u16string GenerateKeywordFromNavigationEntry(
@@ -217,7 +214,12 @@ class SearchEngineTabHelperPrerenderingBrowserTest
             content::WebContents::CreateParams(browser()->GetProfile()));
     ASSERT_TRUE(owned_web_contents.get());
 
-    TestSearchEngineTabHelper::CreateForWebContents(owned_web_contents.get());
+    ui::UserDataFactory::ScopedOverride scoped_override =
+        tabs::TabFeatures::GetUserDataFactoryForTesting().AddOverrideForTesting(
+            base::BindRepeating([](tabs::TabInterface& tab) {
+              return std::make_unique<TestSearchEngineTabHelper>(
+                  tab, tab.GetContents());
+            }));
     ASSERT_FALSE(owned_web_contents.get()->IsLoading());
     browser()->tab_strip_model()->AppendWebContents(
         std::move(owned_web_contents), true);
