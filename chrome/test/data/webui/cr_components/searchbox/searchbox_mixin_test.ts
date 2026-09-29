@@ -3799,4 +3799,160 @@ suite('SearchboxMixinVirtualFocusTest', () => {
         assertEquals('', element.getInputElement().inputElement.value);
         assertDeepEquals(kDefaultSelection, element.selection);
       });
+
+  test(
+      'Shift+Delete removes virtually focused match in ZPS and typed queries',
+      async () => {
+        element.virtualFocusEnabledOverride = true;
+        const mockInput = element.getInputElement();
+
+        // 1. Zero-prefix state (allowedToBeDefaultMatch: false):
+        const zpsMatches = [
+          createSearchMatchForTesting({
+            allowedToBeDefaultMatch: false,
+            supportsDeletion: true,
+            fillIntoEdit: 'zps 0',
+            destinationUrl: 'https://example.com/zps0',
+          }),
+          createSearchMatchForTesting({
+            allowedToBeDefaultMatch: false,
+            supportsDeletion: true,
+            fillIntoEdit: 'zps 1',
+            destinationUrl: 'https://example.com/zps1',
+          }),
+        ];
+        element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
+          input: '',
+          matches: zpsMatches,
+        }));
+        await microtasksFinished();
+
+        // ArrowDown to select first ZPS match (selection.line = 0, while legacy
+        // selectedMatchIndex remains -1).
+        mockInput.inputElement.dispatchEvent(createKeyboardEvent('ArrowDown'));
+        await microtasksFinished();
+        assertEquals(0, element.selection.line);
+
+        const zpsDeleteEvent = createKeyboardEvent('Delete', {shiftKey: true});
+        mockInput.inputElement.dispatchEvent(zpsDeleteEvent);
+        await microtasksFinished();
+
+        assertTrue(zpsDeleteEvent.defaultPrevented);
+        const zpsArgs =
+            await testProxy.handler.whenCalled('deleteAutocompleteMatch');
+        assertEquals(0, zpsArgs.line);
+        assertEquals('https://example.com/zps0', zpsArgs.url);
+
+        // 2. Typed query where match 0 has allowedToBeDefaultMatch: true, and
+        // user arrows down to match 1:
+        testProxy.handler.reset();
+        await simulateUserTextInput(mockInput, 'typed');
+        const typedMatch0 = createSearchMatchForTesting({
+          allowedToBeDefaultMatch: true,
+          supportsDeletion: true,
+          fillIntoEdit: 'typed 0',
+          destinationUrl: 'https://example.com/typed0',
+        });
+        const typedMatch1 = createSearchMatchForTesting({
+          allowedToBeDefaultMatch: false,
+          supportsDeletion: true,
+          fillIntoEdit: 'typed 1',
+          destinationUrl: 'https://example.com/typed1',
+        });
+        element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
+          input: 'typed',
+          matches: [typedMatch0, typedMatch1],
+        }));
+        await microtasksFinished();
+        assertEquals(0, element.selection.line);
+
+        // ArrowDown to match 1.
+        mockInput.inputElement.dispatchEvent(createKeyboardEvent('ArrowDown'));
+        await microtasksFinished();
+        assertEquals(1, element.selection.line);
+
+        const typedDeleteEvent =
+            createKeyboardEvent('Delete', {shiftKey: true});
+        mockInput.inputElement.dispatchEvent(typedDeleteEvent);
+        await microtasksFinished();
+
+        assertTrue(typedDeleteEvent.defaultPrevented);
+        const typedArgs =
+            await testProxy.handler.whenCalled('deleteAutocompleteMatch');
+        assertEquals(1, typedArgs.line);
+        assertEquals('https://example.com/typed1', typedArgs.url);
+      });
+
+  test(
+      'post-deletion clamps selection on last match and resets when all ' +
+          'matches are deleted',
+      async () => {
+        element.virtualFocusEnabledOverride = true;
+        const mockInput = element.getInputElement();
+
+        const match0 = createSearchMatchForTesting({
+          allowedToBeDefaultMatch: false,
+          supportsDeletion: true,
+          fillIntoEdit: 'history 0',
+          destinationUrl: 'https://example.com/0',
+        });
+        const match1 = createSearchMatchForTesting({
+          allowedToBeDefaultMatch: false,
+          supportsDeletion: true,
+          fillIntoEdit: 'history 1',
+          destinationUrl: 'https://example.com/1',
+        });
+        element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
+          input: '',
+          matches: [match0, match1],
+        }));
+        await microtasksFinished();
+
+        // ArrowDown twice to select the last match (line 1) and delete it via
+        // Shift+Delete.
+        mockInput.inputElement.dispatchEvent(createKeyboardEvent('ArrowDown'));
+        await microtasksFinished();
+        mockInput.inputElement.dispatchEvent(createKeyboardEvent('ArrowDown'));
+        await microtasksFinished();
+        assertEquals(1, element.selection.line);
+        assertEquals('history 1', mockInput.inputElement.value);
+
+        mockInput.inputElement.dispatchEvent(
+            createKeyboardEvent('Delete', {shiftKey: true}));
+        await testProxy.handler.whenCalled('deleteAutocompleteMatch');
+
+        // Backend returns only match0; selection clamps to line 0.
+        element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
+          input: '',
+          matches: [match0],
+        }));
+        await microtasksFinished();
+
+        assertDeepEquals(element.selection, {
+          line: 0,
+          state: SelectionLineState.kNormal,
+          actionIndex: 0,
+        });
+        assertEquals('history 0', mockInput.inputElement.value);
+
+        // Delete the last remaining match (line 0).
+        testProxy.handler.reset();
+        mockInput.inputElement.dispatchEvent(
+            createKeyboardEvent('Delete', {shiftKey: true}));
+        await testProxy.handler.whenCalled('deleteAutocompleteMatch');
+
+        // Backend returns empty matches; selection resets to kDefaultSelection.
+        element.onAutocompleteResultChanged(createAutocompleteResultForTesting({
+          queryId: element.activeQueryId,
+          input: '',
+          matches: [],
+        }));
+        await microtasksFinished();
+
+        assertDeepEquals(kDefaultSelection, element.selection);
+      });
 });
