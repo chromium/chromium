@@ -150,6 +150,8 @@ component("ash") {
     "accessibility/magnifier/partial_magnifier_controller.h",
     "accessibility/mouse_keys/mouse_keys_controller.cc",
     "accessibility/mouse_keys/mouse_keys_controller.h",
+    "accessibility/mouse_locator/mouse_shake_detector.cc",
+    "accessibility/mouse_locator/mouse_shake_detector.h",
     "accessibility/scoped_a11y_override_window_setter.cc",
     "accessibility/scoped_a11y_override_window_setter.h",
     "accessibility/sticky_keys/sticky_keys_controller.cc",
