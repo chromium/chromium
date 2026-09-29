@@ -17,7 +17,6 @@
 #include "ui/base/models/image_model.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
-#include "ui/color/color_provider.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
@@ -40,6 +39,9 @@ std::u16string GetUserNameForDisplay(
 PasskeyDetailView::PasskeyDetailView(
     const device::PublicKeyCredentialUserEntity& user) {
   constexpr size_t kHeight = 40, kMargin = 16;
+
+  SetBorder(views::CreateSolidSidedBorder(gfx::Insets::TLBR(1, 0, 1, 0),
+                                          ui::kColorSeparator));
 
   auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>());
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
@@ -64,13 +66,6 @@ PasskeyDetailView::PasskeyDetailView(
   label->SetElideBehavior(gfx::ELIDE_EMAIL);
   label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
   layout->SetFlexForView(label, 1);
-}
-
-void PasskeyDetailView::OnThemeChanged() {
-  View::OnThemeChanged();
-  SetBorder(views::CreateSolidSidedBorder(
-      gfx::Insets::TLBR(1, 0, 1, 0),
-      GetColorProvider()->GetColor(ui::kColorSeparator)));
 }
 
 BEGIN_METADATA(PasskeyDetailView)
