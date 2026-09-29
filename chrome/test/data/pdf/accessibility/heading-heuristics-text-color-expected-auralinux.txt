@@ -2,11 +2,11 @@
 ++[landmark] name='Page 1'
 ++++[paragraph]
 ++++++[static] name='This is body text line one. This is body text line two. '
-++++[heading]
+++++[heading] name='Heading By Color'
 ++++++[static] name='Heading By Color '
 ++++[paragraph]
 ++++++[static] name='Body text below color heading. '
-++++[heading]
+++++[heading] name='Larger Heading By Color'
 ++++++[static] name='Larger Heading By Color '
 ++++[paragraph]
 ++++++[static] name='Body text below larger color heading. Body text with inline colored text in a paragraph. Body text with inline larger colored text in a paragraph. Trailing body text.'

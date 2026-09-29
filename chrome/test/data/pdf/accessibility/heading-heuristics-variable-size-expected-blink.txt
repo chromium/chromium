@@ -1,25 +1,25 @@
 pdfRoot name='PDF document containing 1 page' restriction=readOnly
 ++region name='Page 1' restriction=readOnly isPageBreakingObject=true
-++++heading restriction=readOnly
+++++heading name='Large Font Size Heading' restriction=readOnly
 ++++++staticText name='Large Font Size Heading ' restriction=readOnly
 ++++++++inlineTextBox name='Large Font Size Heading ' restriction=readOnly
 ++++paragraph restriction=readOnly
 ++++++staticText name='This is body text line one. This is body text line two. ' restriction=readOnly
 ++++++++inlineTextBox name='This is body text line one. ' restriction=readOnly
 ++++++++inlineTextBox name='This is body text line two. ' restriction=readOnly
-++++heading restriction=readOnly
+++++heading name='Medium Bold Heading' restriction=readOnly
 ++++++staticText name='Medium Bold Heading ' restriction=readOnly
 ++++++++inlineTextBox name='Medium Bold Heading ' restriction=readOnly
 ++++paragraph restriction=readOnly
 ++++++staticText name='Body text below medium bold heading. ' restriction=readOnly
 ++++++++inlineTextBox name='Body text below medium bold heading. ' restriction=readOnly
-++++heading restriction=readOnly
+++++heading name='Medium Font Name Heading' restriction=readOnly
 ++++++staticText name='Medium Font Name Heading ' restriction=readOnly
 ++++++++inlineTextBox name='Medium Font Name Heading ' restriction=readOnly
 ++++paragraph restriction=readOnly
 ++++++staticText name='Body text below medium name heading. ' restriction=readOnly
 ++++++++inlineTextBox name='Body text below medium name heading. ' restriction=readOnly
-++++heading restriction=readOnly
+++++heading name='MEDIUM ALL CAPS HEADING' restriction=readOnly
 ++++++staticText name='MEDIUM ALL CAPS HEADING ' restriction=readOnly
 ++++++++inlineTextBox name='MEDIUM ALL CAPS HEADING ' restriction=readOnly
 ++++paragraph restriction=readOnly

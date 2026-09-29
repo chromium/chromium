@@ -5,9 +5,13 @@
 #include "components/pdf/renderer/pdf_accessibility_tree_builder.h"
 
 #include <cmath>
+#include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
+#include "base/containers/flat_map.h"
+#include "base/containers/span.h"
 #include "base/i18n/break_iterator.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
@@ -135,6 +139,28 @@ bool IsValidFontWeight(float font_weight) {
   return font_weight <= kMaxValidBoldValue && font_weight >= 0;
 }
 
+// Appends, in tree order, the names of the static text nodes under `node`.
+// Popup notes are skipped since their text is not part of the page content.
+void AppendStaticTextDescendants(
+    const ui::AXNodeData& node,
+    const base::flat_map<ui::AXNodeID, const ui::AXNodeData*>& nodes_by_id,
+    std::string& text) {
+  CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
+  for (ui::AXNodeID child_id : node.child_ids) {
+    auto it = nodes_by_id.find(child_id);
+    if (it == nodes_by_id.end()) {
+      continue;
+    }
+    const ui::AXNodeData& child = *it->second;
+    if (child.role == ax::mojom::Role::kStaticText &&
+        child.HasStringAttribute(ax::mojom::StringAttribute::kName)) {
+      text += child.GetStringAttribute(ax::mojom::StringAttribute::kName);
+    } else if (child.role != ax::mojom::Role::kNote) {
+      AppendStaticTextDescendants(child, nodes_by_id, text);
+    }
+  }
+}
+
 }  // namespace
 
 namespace pdf {
@@ -165,6 +191,7 @@ PdfAccessibilityTreeBuilder::PdfAccessibilityTreeBuilder(
       root_node_(root_node),
       container_obj_(container_obj),
       nodes_(nodes),
+      first_node_index_(nodes->size()),
       node_id_to_page_char_index_(node_id_to_page_char_index),
       node_id_to_annotation_info_(node_id_to_annotation_info) {
   page_node_ = CreateAndAppendNode(ax::mojom::Role::kRegion,
@@ -208,6 +235,10 @@ void PdfAccessibilityTreeBuilder::BuildPageTree() {
         .BuildPageTree();
   } else {
     PdfAccessibilityTreeBuilderHeuristic(*this).BuildPageTree();
+  }
+
+  if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+    NameHeadingsFromContents();
   }
 }
 
@@ -286,6 +317,38 @@ bool PdfAccessibilityTreeBuilder::IsBoldStyle(
 float PdfAccessibilityTreeBuilder::GetFontWeight(
     const chrome_pdf::AccessibilityTextStyleInfo& style) {
   return IsValidFontWeight(style.font_weight) ? style.font_weight : 0.0f;
+}
+
+void PdfAccessibilityTreeBuilder::NameHeadingsFromContents() {
+  CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
+  auto page_nodes = base::span(*nodes_).subspan(first_node_index_);
+
+  const auto nodes_by_id =
+      base::MakeFlatMap<ui::AXNodeID, const ui::AXNodeData*>(
+          page_nodes, /*comp=*/{},
+          [](const std::unique_ptr<ui::AXNodeData>& node) {
+            return std::make_pair(node->id, node.get());
+          });
+
+  for (const std::unique_ptr<ui::AXNodeData>& node : page_nodes) {
+    if (node->role != ax::mojom::Role::kHeading) {
+      continue;
+    }
+
+    std::string text;
+    AppendStaticTextDescendants(*node, nodes_by_id, text);
+
+    // Text runs routinely carry padding spaces used for glyph positioning. They
+    // belong in the text, but in a name they only add silence when a screen
+    // reader announces the heading.
+    base::TrimWhitespaceASCII(text, base::TRIM_ALL, &text);
+    if (text.empty()) {
+      continue;
+    }
+
+    node->SetNameFrom(ax::mojom::NameFrom::kContents);
+    node->SetNameChecked(text);
+  }
 }
 
 void PdfAccessibilityTreeBuilder::AddFontWeightAttributes(

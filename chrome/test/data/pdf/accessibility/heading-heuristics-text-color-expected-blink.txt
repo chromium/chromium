@@ -4,13 +4,13 @@ pdfRoot name='PDF document containing 1 page' restriction=readOnly
 ++++++staticText name='This is body text line one. This is body text line two. ' restriction=readOnly
 ++++++++inlineTextBox name='This is body text line one. ' restriction=readOnly
 ++++++++inlineTextBox name='This is body text line two. ' restriction=readOnly
-++++heading restriction=readOnly
+++++heading name='Heading By Color' restriction=readOnly
 ++++++staticText name='Heading By Color ' restriction=readOnly
 ++++++++inlineTextBox name='Heading By Color ' restriction=readOnly
 ++++paragraph restriction=readOnly
 ++++++staticText name='Body text below color heading. ' restriction=readOnly
 ++++++++inlineTextBox name='Body text below color heading. ' restriction=readOnly
-++++heading restriction=readOnly
+++++heading name='Larger Heading By Color' restriction=readOnly
 ++++++staticText name='Larger Heading By Color ' restriction=readOnly
 ++++++++inlineTextBox name='Larger Heading By Color ' restriction=readOnly
 ++++paragraph restriction=readOnly

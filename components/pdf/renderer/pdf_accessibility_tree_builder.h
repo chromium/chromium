@@ -114,6 +114,15 @@ class PdfAccessibilityTreeBuilder {
   void AddWordStartsAndEnds(ui::AXNodeData* inline_text_box);
   ui::AXNodeData* CreateStaticTextNode();
 
+  // Names each heading on this page from the text of its static text
+  // descendants, including text nested in links and highlights.
+  //
+  // Per the ARIA specification, `role=heading` declares
+  // `nameFrom: [contents, author]` with `nameRequired: true`. Nothing
+  // downstream computes names from contents for PDF nodes, so it is done here
+  // once the page tree is complete.
+  void NameHeadingsFromContents();
+
   const bool mark_headings_using_heuristic_;
   std::vector<uint32_t> text_run_start_indices_;
   const raw_ref<const std::vector<chrome_pdf::AccessibilityTextRunInfo>>
@@ -131,6 +140,8 @@ class PdfAccessibilityTreeBuilder {
   raw_ptr<ui::AXNodeData> page_node_;
   raw_ptr<blink::WebAXObject> container_obj_;
   raw_ptr<std::vector<std::unique_ptr<ui::AXNodeData>>> nodes_;
+  // Index in `nodes_` of this page's first node.
+  const size_t first_node_index_;
   raw_ptr<std::map<int32_t, chrome_pdf::PageCharacterIndex>>
       node_id_to_page_char_index_;
   raw_ptr<std::map<int32_t, PdfAccessibilityTree::AnnotationInfo>>

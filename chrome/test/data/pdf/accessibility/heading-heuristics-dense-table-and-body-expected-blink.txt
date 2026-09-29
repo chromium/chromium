@@ -1,6 +1,6 @@
 pdfRoot name='PDF document containing 1 page' restriction=readOnly
 ++region name='Page 1' restriction=readOnly isPageBreakingObject=true
-++++heading restriction=readOnly
+++++heading name='Section 1: Overview' restriction=readOnly
 ++++++staticText name='Section 1: Overview ' restriction=readOnly
 ++++++++inlineTextBox name='Section 1: Overview ' restriction=readOnly
 ++++paragraph restriction=readOnly
