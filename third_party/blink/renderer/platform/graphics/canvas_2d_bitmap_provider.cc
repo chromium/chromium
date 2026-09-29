@@ -25,7 +25,6 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_image_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
-#include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
@@ -181,17 +180,6 @@ void Canvas2DBitmapProvider::ApplyAnimatedImageFrameIndexesForId(
       delegate_->GetAnimatedImageFrameIndexes(id));
 }
 
-void Canvas2DBitmapProvider::ClearAtCreation() {
-  MemoryManagedPaintRecorder recorder(Size(), nullptr);
-  if (GetAlphaType() == kOpaque_SkAlphaType) {
-    recorder.getRecordingCanvas().clear(SkColors::kBlack);
-  } else {
-    recorder.getRecordingCanvas().clear(SkColors::kTransparent);
-  }
-
-  RasterRecord(recorder.ReleaseMainRecording());
-}
-
 void Canvas2DBitmapProvider::RasterRecord(cc::PaintRecord last_recording) {
   if (!skia_canvas_) {
     skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
@@ -240,12 +228,12 @@ std::unique_ptr<Canvas2DBitmapProvider> Canvas2DBitmapProvider::CreateWithClear(
   if (!surface) {
     return nullptr;
   }
-  auto provider =
-      base::WrapUnique<Canvas2DBitmapProvider>(new Canvas2DBitmapProvider(
-          std::move(surface), size, format, alpha_type, color_space,
-          hdr_metadata, delegate));
-  provider->ClearAtCreation();
-  return provider;
+  surface->getCanvas()->clear(
+      alpha_type == kOpaque_SkAlphaType ? SkColors::kBlack
+                                        : SkColors::kTransparent);
+  return base::WrapUnique<Canvas2DBitmapProvider>(new Canvas2DBitmapProvider(
+      std::move(surface), size, format, alpha_type, color_space, hdr_metadata,
+      delegate));
 }
 
 std::unique_ptr<Canvas2DBitmapProvider>

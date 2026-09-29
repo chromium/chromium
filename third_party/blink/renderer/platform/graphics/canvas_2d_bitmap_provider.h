@@ -102,11 +102,6 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
                          const gfx::HDRMetadata& hdr_metadata,
                          CanvasResourceProviderDelegate* delegate);
 
-  // Should only be called from static Create*() methods.
-  // TODO(crbug.com/352263194): Eliminate this method by inlining its body at
-  // callsites.
-  void ClearAtCreation();
-
   // CanvasMemoryDumpClient implementation.
   void OnMemoryDump(base::trace_event::ProcessMemoryDump*) override;
   size_t GetSize() const override;
