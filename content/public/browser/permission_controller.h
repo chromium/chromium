@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_BROWSER_PERMISSION_CONTROLLER_H_
 #define CONTENT_PUBLIC_BROWSER_PERMISSION_CONTROLLER_H_
 
+#include <memory>
+
 #include "base/containers/id_map.h"
 #include "base/supports_user_data.h"
 #include "base/types/id_type.h"
@@ -43,6 +45,16 @@ class CONTENT_EXPORT PermissionController
   using SubscriptionsMap =
       base::IDMap<std::unique_ptr<PermissionResultSubscription>,
                   SubscriptionId>;
+
+  // Owns a permission result subscription and removes it from the
+  // PermissionController on destruction.
+  //
+  // The handle is sequence affine and must be destroyed on the sequence that
+  // created it. It tolerates the PermissionController being destroyed first.
+  class CONTENT_EXPORT PermissionSubscription {
+   public:
+    virtual ~PermissionSubscription() = default;
+  };
 
   ~PermissionController() override = default;
 
@@ -130,19 +142,17 @@ class CONTENT_EXPORT PermissionController
   // permission_controller_delegate.
   // Only one of |render_process_host| and |render_frame_host| should be set,
   // or neither. RenderProcessHost will be inferred from |render_frame_host|.
-  virtual SubscriptionId SubscribeToPermissionResultChange(
+  //
+  // The returned handle unsubscribes on destruction, so callers should store it
+  // for as long as they want to receive notifications.
+  [[nodiscard]] virtual std::unique_ptr<PermissionSubscription>
+  SubscribeToPermissionResultChange(
       blink::mojom::PermissionDescriptorPtr permission_descriptor,
       RenderProcessHost* render_process_host,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       bool should_include_device_status,
       const base::RepeatingCallback<void(PermissionResult)>& callback) = 0;
-
-  // Unsubscribe permission status result. This function will remove
-  // subscription from subscriptions list and call
-  // permission_controller_delegate to remove related data in the delegate.
-  virtual void UnsubscribeFromPermissionResultChange(
-      SubscriptionId subscription_id) = 0;
 
   // Returns `true` if a document subscribed to
   // `PermissionStatus.onchange` listener or `PermissionStatus.AddEventListener`

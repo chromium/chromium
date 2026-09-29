@@ -159,11 +159,6 @@ class PerformanceManagerTabHelper
   void OnNotificationPermissionResultChange(
       content::PermissionResult permission_result);
 
-  // Unsubscribe from changes to the current main frame's notification
-  // permission status, or no-op if there is no subscription.
-  void MaybeUnsubscribeFromNotificationPermissionStatusChange(
-      content::PermissionController* permission_controller);
-
   // Returns the FrameNodeImpl* associated with `render_frame_host`. This
   // CHECKs that it exists.
   FrameNodeImpl* GetExistingFrameNode(
@@ -191,8 +186,8 @@ class PerformanceManagerTabHelper
 
   // Subscription to current main frame's notification permission status. May be
   // null.
-  content::PermissionController::SubscriptionId
-      permission_controller_subscription_id_;
+  std::unique_ptr<content::PermissionController::PermissionSubscription>
+      permission_controller_subscription_;
 
   raw_ptr<DestructionObserver> destruction_observer_ = nullptr;
   base::ObserverList<Observer,

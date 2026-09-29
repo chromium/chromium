@@ -122,7 +122,6 @@ SetShapeServiceImpl::SetShapeServiceImpl(
 
 SetShapeServiceImpl::~SetShapeServiceImpl() {
   ResetShapeAndWidgetObservation();
-  UnsubscribeFromWindowManagementPermissionChanges();
 }
 
 void SetShapeServiceImpl::Bind(
@@ -255,7 +254,7 @@ void SetShapeServiceImpl::OnWindowManagementPermissionChanged(
 }
 
 void SetShapeServiceImpl::SubscribeToWindowManagementPermissionChanges() {
-  if (permission_subscription_id_) {
+  if (permission_subscription_) {
     return;
   }
 
@@ -263,7 +262,7 @@ void SetShapeServiceImpl::SubscribeToWindowManagementPermissionChanges() {
       render_frame_host().GetBrowserContext()->GetPermissionController();
   url::Origin origin = render_frame_host().GetLastCommittedOrigin();
 
-  permission_subscription_id_ = controller->SubscribeToPermissionResultChange(
+  permission_subscription_ = controller->SubscribeToPermissionResultChange(
       content::PermissionDescriptorUtil::
           CreatePermissionDescriptorForPermissionType(
               blink::PermissionType::WINDOW_MANAGEMENT),
@@ -275,15 +274,7 @@ void SetShapeServiceImpl::SubscribeToWindowManagementPermissionChanges() {
 }
 
 void SetShapeServiceImpl::UnsubscribeFromWindowManagementPermissionChanges() {
-  if (!permission_subscription_id_) {
-    return;
-  }
-
-  render_frame_host()
-      .GetBrowserContext()
-      ->GetPermissionController()
-      ->UnsubscribeFromPermissionResultChange(*permission_subscription_id_);
-  permission_subscription_id_.reset();
+  permission_subscription_.reset();
 }
 
 views::Widget* SetShapeServiceImpl::GetWidget() {

@@ -37,7 +37,8 @@ void AddNotifyListenerObserver(PermissionController* permission_controller,
       std::move(callback));
 }
 
-PermissionController::SubscriptionId SubscribeToPermissionResultChange(
+std::unique_ptr<PermissionController::PermissionSubscription>
+SubscribeToPermissionResultChange(
     PermissionController* permission_controller,
     blink::mojom::PermissionDescriptorPtr permission_descriptor,
     RenderProcessHost* render_process_host,

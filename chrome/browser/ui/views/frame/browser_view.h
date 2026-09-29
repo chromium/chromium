@@ -1386,8 +1386,8 @@ class BrowserView : public BrowserWindow,
   class PipExclusionObserverImpl;
   std::unique_ptr<PipExclusionObserverImpl> pip_exclusion_observer_;
 #endif
-  std::optional<content::PermissionController::SubscriptionId>
-      window_management_subscription_id_;
+  std::unique_ptr<content::PermissionController::PermissionSubscription>
+      window_management_subscription_;
 
   std::optional<bool> resizable_from_web_api_;
 

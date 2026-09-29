@@ -95,7 +95,8 @@ class CONTENT_EXPORT KeySystemSupportImpl final
   bool are_permissions_initialized_ = false;
   mojo::Receiver<blink::mojom::RendererPreferenceWatcher>
       preference_watcher_receiver_{this};
-  PermissionController::SubscriptionId permission_subscription_id_;
+  std::unique_ptr<PermissionController::PermissionSubscription>
+      permission_subscription_;
 
   base::WeakPtrFactory<KeySystemSupportImpl> weak_ptr_factory_{this};
 };

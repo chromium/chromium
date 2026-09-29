@@ -76,13 +76,6 @@ FrameSensorProviderProxy::FrameSensorProviderProxy(
 }
 
 FrameSensorProviderProxy::~FrameSensorProviderProxy() {
-  if (permission_subscription_id_) {
-    auto* permission_controller =
-        render_frame_host().GetBrowserContext()->GetPermissionController();
-    permission_controller->UnsubscribeFromPermissionResultChange(
-        permission_subscription_id_);
-  }
-
   // Notify the delegate for each active connection that is being cleared.
   auto* delegate = GetContentClient()->browser()->GetSensorDelegate();
   if (delegate) {
@@ -167,8 +160,8 @@ void FrameSensorProviderProxy::GetSensor(device::mojom::SensorType type,
   bool initially_suspended = false;
 
   if (ShouldTrackSensorConnection()) {
-    if (!permission_subscription_id_) {
-      permission_subscription_id_ =
+    if (!permission_subscription_) {
+      permission_subscription_ =
           permission_controller->SubscribeToPermissionResultChange(
               content::PermissionDescriptorUtil::
                   CreatePermissionDescriptorForPermissionType(

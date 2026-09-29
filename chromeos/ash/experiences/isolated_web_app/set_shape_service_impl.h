@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_ASH_EXPERIENCES_ISOLATED_WEB_APP_SET_SHAPE_SERVICE_IMPL_H_
 #define CHROMEOS_ASH_EXPERIENCES_ISOLATED_WEB_APP_SET_SHAPE_SERVICE_IMPL_H_
 
-#include <optional>
 #include <vector>
 
 #include "base/component_export.h"
@@ -95,9 +94,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_ISOLATED_WEB_APP)
 
   mojo::Receiver<blink::mojom::SetShapeService> receiver_{this};
 
-  // The ID set when a WINDOW_MANAGEMENT subscription is active.
-  std::optional<content::PermissionController::SubscriptionId>
-      permission_subscription_id_;
+  // Non-null while a WINDOW_MANAGEMENT subscription is active. Unsubscribes on
+  // destruction.
+  std::unique_ptr<content::PermissionController::PermissionSubscription>
+      permission_subscription_;
 
   base::ScopedObservation<views::Widget, views::WidgetObserver>
       widget_observation_{this};

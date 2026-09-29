@@ -99,7 +99,8 @@ class FrameSensorProviderProxy final
   void UpdateSensorSessionControllers();
 
   mojo::RemoteSet<device::mojom::SensorClientController> client_controllers_;
-  PermissionController::SubscriptionId permission_subscription_id_;
+  std::unique_ptr<PermissionController::PermissionSubscription>
+      permission_subscription_;
   std::optional<bool> is_suspended_;
 
   base::WeakPtrFactory<FrameSensorProviderProxy> weak_factory_{this};

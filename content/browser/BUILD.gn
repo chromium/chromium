@@ -1415,6 +1415,8 @@ source_set("browser") {
     "permissions/permission_service_context.h",
     "permissions/permission_service_impl.cc",
     "permissions/permission_service_impl.h",
+    "permissions/permission_subscription_impl.cc",
+    "permissions/permission_subscription_impl.h",
     "picture_in_picture/document_picture_in_picture_navigation_throttle.cc",
     "picture_in_picture/document_picture_in_picture_navigation_throttle.h",
     "picture_in_picture/document_picture_in_picture_window_controller_impl.cc",

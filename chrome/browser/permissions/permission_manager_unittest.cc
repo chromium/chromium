@@ -204,8 +204,8 @@ TEST_P(PermissionManagerTest, SubscribeWithPermissionDelegation) {
   content::PermissionController* permission_controller =
       GetBrowserContext()->GetPermissionController();
 
-  content::PermissionController::SubscriptionId subscription_id =
-      content::SubscribeToPermissionResultChange(
+  std::unique_ptr<content::PermissionController::PermissionSubscription>
+      subscription = content::SubscribeToPermissionResultChange(
           permission_controller,
           content::PermissionDescriptorUtil::
               CreatePermissionDescriptorForPermissionType(
@@ -243,8 +243,6 @@ TEST_P(PermissionManagerTest, SubscribeWithPermissionDelegation) {
   EXPECT_EQ(PermissionStatus::GRANTED,
             permission_controller->GetPermissionStatusForCurrentDocument(
                 geolocation_permission_descriptor, child));
-
-  permission_controller->UnsubscribeFromPermissionResultChange(subscription_id);
 }
 
 class PermissionManagerPwcTest : public ChromeRenderViewHostTestHarness {
@@ -413,8 +411,8 @@ TEST_P(PermissionManagerPwcGeolocationTest,
       content::PermissionResult(blink::mojom::PermissionStatus::GRANTED,
                                 content::PermissionStatusSource::UNSPECIFIED));
 
-  content::PermissionController::SubscriptionId subscription_id =
-      content::SubscribeToPermissionResultChange(
+  std::unique_ptr<content::PermissionController::PermissionSubscription>
+      subscription = content::SubscribeToPermissionResultChange(
           permission_controller(),
           content::PermissionDescriptorUtil::
               CreatePermissionDescriptorForPermissionType(
@@ -422,9 +420,7 @@ TEST_P(PermissionManagerPwcGeolocationTest,
           /*render_process_host=*/nullptr, pwc_main_rfh(), test_url(),
           /*should_include_device_status=*/false, base::DoNothing());
 
-  EXPECT_TRUE(subscription_id);
-  permission_controller()->UnsubscribeFromPermissionResultChange(
-      subscription_id);
+  EXPECT_TRUE(subscription);
 }
 
 TEST_P(PermissionManagerPwcGeolocationTest,

@@ -313,14 +313,9 @@ NFCHost::NFCHost(WebContents* web_contents)
       suspended_(web_contents->GetVisibility() != Visibility::VISIBLE),
       main_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {
   CHECK(web_contents);
-
-  permission_controller_ =
-      web_contents->GetBrowserContext()->GetPermissionController();
 }
 
-NFCHost::~NFCHost() {
-  Close();
-}
+NFCHost::~NFCHost() = default;
 
 void NFCHost::GetNFC(RenderFrameHost* render_frame_host,
                      mojo::PendingReceiver<device::mojom::NFC> receiver) {
@@ -361,21 +356,24 @@ void NFCHost::GetNFC(RenderFrameHost* render_frame_host,
     return;
   }
 
-  if (!subscription_id_) {
+  if (!permission_subscription_) {
     // base::Unretained() is safe here because the subscription is canceled when
     // this object is destroyed.
-    subscription_id_ =
-        permission_controller_->SubscribeToPermissionResultChange(
-            content::PermissionDescriptorUtil::
-                CreatePermissionDescriptorForPermissionType(
-                    blink::PermissionType::NFC),
-            /*render_process_host=*/nullptr, render_frame_host,
-            render_frame_host->GetMainFrame()
-                ->GetLastCommittedOrigin()
-                .GetURL(),
-            /*should_include_device_status=*/false,
-            base::BindRepeating(&NFCHost::OnPermissionResultChange,
-                                base::Unretained(this)));
+    permission_subscription_ =
+        web_contents()
+            ->GetBrowserContext()
+            ->GetPermissionController()
+            ->SubscribeToPermissionResultChange(
+                content::PermissionDescriptorUtil::
+                    CreatePermissionDescriptorForPermissionType(
+                        blink::PermissionType::NFC),
+                /*render_process_host=*/nullptr, render_frame_host,
+                render_frame_host->GetMainFrame()
+                    ->GetLastCommittedOrigin()
+                    .GetURL(),
+                /*should_include_device_status=*/false,
+                base::BindRepeating(&NFCHost::OnPermissionResultChange,
+                                    base::Unretained(this)));
   }
 
   // Release any old receiver and rebind to the new primary main frame.
@@ -418,9 +416,7 @@ void NFCHost::OnPermissionResultChange(PermissionResult permission_result) {
 }
 
 void NFCHost::Close() {
-  permission_controller_->UnsubscribeFromPermissionResultChange(
-      subscription_id_);
-  subscription_id_ = PermissionController::SubscriptionId();
+  permission_subscription_.reset();
   ClearState();
 }
 

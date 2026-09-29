@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/permissions/permission_service_impl.h"
+#include "content/browser/permissions/permission_subscription_impl.h"
 #include "content/browser/permissions/permission_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -44,9 +45,9 @@ struct PermissionServiceContext::DocumentPermissionServiceContextHolder
 DOCUMENT_USER_DATA_KEY_IMPL(
     PermissionServiceContext::DocumentPermissionServiceContextHolder);
 
-class PermissionServiceContext::PermissionSubscription {
+class PermissionServiceContext::ObserverSubscription {
  public:
-  PermissionSubscription(
+  ObserverSubscription(
       blink::mojom::PermissionName permission_name,
       blink::mojom::PermissionStatusWithDetailsPtr last_known_status,
       PermissionServiceContext* context,
@@ -56,23 +57,18 @@ class PermissionServiceContext::PermissionSubscription {
         context_(context),
         observer_(std::move(observer)) {
     observer_.set_disconnect_handler(base::BindOnce(
-        &PermissionSubscription::OnConnectionError, base::Unretained(this)));
+        &ObserverSubscription::OnConnectionError, base::Unretained(this)));
   }
-  PermissionSubscription(const PermissionSubscription&) = delete;
-  PermissionSubscription& operator=(const PermissionSubscription&) = delete;
+  ObserverSubscription(const ObserverSubscription&) = delete;
+  ObserverSubscription& operator=(const ObserverSubscription&) = delete;
 
-  ~PermissionSubscription() {
-    CHECK(id_, base::NotFatalUntil::M159);
-    BrowserContext* browser_context = context_->GetBrowserContext();
-    if (browser_context) {
-      PermissionControllerImpl::FromBrowserContext(browser_context)
-          ->UnsubscribeFromPermissionResultChange(id_);
-    }
-  }
+  // `subscription_` unsubscribes from the PermissionController on destruction.
+  ~ObserverSubscription() = default;
 
   void OnConnectionError() {
-    CHECK(id_, base::NotFatalUntil::M159);
-    context_->ObserverHadConnectionError(id_);
+    CHECK(subscription_, base::NotFatalUntil::M159);
+    context_->ObserverHadConnectionError(
+        static_cast<PermissionSubscriptionImpl*>(subscription_.get())->id());
   }
 
   void StoreResultAtBFCacheEntry() {
@@ -109,9 +105,13 @@ class PermissionServiceContext::PermissionSubscription {
     }
   }
 
-  void set_id(PermissionController::SubscriptionId id) { id_ = id; }
+  void set_subscription(
+      std::unique_ptr<PermissionController::PermissionSubscription>
+          subscription) {
+    subscription_ = std::move(subscription);
+  }
 
-  base::WeakPtr<PermissionSubscription> GetWeakPtr() {
+  base::WeakPtr<ObserverSubscription> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -120,14 +120,14 @@ class PermissionServiceContext::PermissionSubscription {
   blink::mojom::PermissionStatusWithDetailsPtr last_known_status_;
   const raw_ptr<PermissionServiceContext> context_;
   mojo::Remote<blink::mojom::PermissionObserver> observer_;
-  PermissionController::SubscriptionId id_;
+  std::unique_ptr<PermissionController::PermissionSubscription> subscription_;
 
   // Optional variable to store the last status before the corresponding
   // RenderFrameHost enters BFCache, and will be cleared when the
   // RenderFrameHost is restored from BFCache. Non-empty value indicates that
   // the RenderFrameHost is in BFCache.
   blink::mojom::PermissionStatusWithDetailsPtr status_at_bf_cache_entry_;
-  base::WeakPtrFactory<PermissionSubscription> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ObserverSubscription> weak_ptr_factory_{this};
 };
 
 // static
@@ -192,7 +192,7 @@ void PermissionServiceContext::CreateSubscription(
     return;
   }
 
-  auto subscription = std::make_unique<PermissionSubscription>(
+  auto subscription = std::make_unique<ObserverSubscription>(
       permission->name, last_known_status.Clone(), this, std::move(observer));
 
   subscription->OnPermissionStatusChanged(current_result);
@@ -204,15 +204,19 @@ void PermissionServiceContext::CreateSubscription(
   }
 
   GURL requesting_origin(origin.Serialize());
-  auto subscription_id =
-      PermissionControllerImpl::FromBrowserContext(browser_context)
-          ->SubscribeToPermissionResultChange(
-              permission->Clone(), render_process_host_, render_frame_host_,
-              requesting_origin, should_include_device_status,
-              base::BindRepeating(
-                  &PermissionSubscription::OnPermissionStatusChanged,
-                  subscription->GetWeakPtr()));
-  subscription->set_id(subscription_id);
+  std::unique_ptr<PermissionController::PermissionSubscription>
+      permission_subscription =
+          PermissionControllerImpl::FromBrowserContext(browser_context)
+              ->SubscribeToPermissionResultChange(
+                  permission->Clone(), render_process_host_, render_frame_host_,
+                  requesting_origin, should_include_device_status,
+                  base::BindRepeating(
+                      &ObserverSubscription::OnPermissionStatusChanged,
+                      subscription->GetWeakPtr()));
+  PermissionController::SubscriptionId subscription_id =
+      static_cast<PermissionSubscriptionImpl*>(permission_subscription.get())
+          ->id();
+  subscription->set_subscription(std::move(permission_subscription));
   subscriptions_[subscription_id] = std::move(subscription);
 }
 

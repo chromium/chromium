@@ -93,8 +93,10 @@ class CONTENT_EXPORT GeolocationServiceImpl
 
   void OnProxyDisconnected(GeolocationProxy* proxy);
 
-  // Used to subscribe to permission status changes.
-  PermissionController::SubscriptionId subscription_id_;
+  // Used to subscribe to permission status changes. Assigning a new
+  // subscription releases the previous one.
+  std::unique_ptr<PermissionController::PermissionSubscription>
+      permission_subscription_;
 
   // Tracks the origin for which a granted permission is being observed. Used to
   // terminate access upon permission revocation.

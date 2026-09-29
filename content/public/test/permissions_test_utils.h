@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_TEST_PERMISSIONS_TEST_UTILS_H_
 #define CONTENT_PUBLIC_TEST_PERMISSIONS_TEST_UTILS_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/types/optional_ref.h"
@@ -49,9 +50,9 @@ void AddNotifyListenerObserver(PermissionController* permission_controller,
 // to
 // //content embedders in tests.
 //
-// PermissionController::UnsubscribeFromPermissionResultChange can be used to
-// unsubscribe.
-PermissionController::SubscriptionId SubscribeToPermissionResultChange(
+// The returned handle unsubscribes on destruction.
+[[nodiscard]] std::unique_ptr<PermissionController::PermissionSubscription>
+SubscribeToPermissionResultChange(
     PermissionController* permission_controller,
     blink::mojom::PermissionDescriptorPtr permission_descriptor,
     RenderProcessHost* render_process_host,

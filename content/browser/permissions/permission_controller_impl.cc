@@ -16,6 +16,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/browser/permissions/permission_service_context.h"
+#include "content/browser/permissions/permission_subscription_impl.h"
 #include "content/browser/permissions/permission_util.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -858,7 +859,7 @@ void PermissionControllerImpl::PermissionResultChange(
   }
 }
 
-PermissionController::SubscriptionId
+std::unique_ptr<PermissionController::PermissionSubscription>
 PermissionControllerImpl::SubscribeToPermissionResultChange(
     blink::mojom::PermissionDescriptorPtr permission_descriptor,
     RenderProcessHost* render_process_host,
@@ -899,7 +900,7 @@ PermissionControllerImpl::SubscribeToPermissionResultChange(
     delegate->SetSubscriptions(&subscriptions_);
     delegate->OnPermissionStatusChangeSubscriptionAdded(id);
   }
-  return id;
+  return std::make_unique<PermissionSubscriptionImpl>(GetWeakPtr(), id);
 }
 
 void PermissionControllerImpl::UnsubscribeFromPermissionResultChange(
@@ -980,6 +981,10 @@ void PermissionControllerImpl::NotifyEventListener() {
   if (onchange_listeners_callback_for_tests_) {
     onchange_listeners_callback_for_tests_.Run();
   }
+}
+
+base::WeakPtr<PermissionControllerImpl> PermissionControllerImpl::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace content

@@ -34,15 +34,7 @@ bool IsValidKeySystemCapabilities(KeySystemCapabilities capabilities) {
 KeySystemSupportImpl::KeySystemSupportImpl(RenderFrameHost* render_frame_host)
     : DocumentUserData(render_frame_host) {}
 
-KeySystemSupportImpl::~KeySystemSupportImpl() {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(IS_FUCHSIA)
-  render_frame_host()
-      .GetBrowserContext()
-      ->GetPermissionController()
-      ->UnsubscribeFromPermissionResultChange(permission_subscription_id_);
-#endif
-}
+KeySystemSupportImpl::~KeySystemSupportImpl() = default;
 
 void KeySystemSupportImpl::SetGetKeySystemCapabilitiesUpdateCbForTesting(
     GetKeySystemCapabilitiesUpdateCB get_support_cb_for_testing) {
@@ -146,7 +138,7 @@ void KeySystemSupportImpl::SetUpPermissionListeners() {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
     BUILDFLAG(IS_FUCHSIA)
   // Setup permission listeners.
-  permission_subscription_id_ =
+  permission_subscription_ =
       render_frame_host()
           .GetBrowserContext()
           ->GetPermissionController()
@@ -162,7 +154,7 @@ void KeySystemSupportImpl::SetUpPermissionListeners() {
                       OnProtectedMediaIdentifierPermissionUpdated,
                   weak_ptr_factory_.GetWeakPtr()));
 
-  if (permission_subscription_id_.is_null()) {
+  if (!permission_subscription_) {
     LOG(ERROR) << "Could not subscribe to permissions changes for "
                   "PROTECTED_MEDIA_IDENTIFIER";
     // Since we cannot observe changes to PROTECTED_MEDIA_IDENTIFIER, revert

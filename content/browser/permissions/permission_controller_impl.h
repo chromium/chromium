@@ -11,6 +11,7 @@
 #include "base/containers/id_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/types/optional_ref.h"
 #include "content/browser/permissions/permission_overrides.h"
 #include "content/common/content_export.h"
@@ -89,16 +90,14 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
 
   // Only one of |render_process_host| and |render_frame_host| should be set,
   // or neither. RenderProcessHost will be inferred from |render_frame_host|.
-  SubscriptionId SubscribeToPermissionResultChange(
+  [[nodiscard]] std::unique_ptr<PermissionSubscription>
+  SubscribeToPermissionResultChange(
       blink::mojom::PermissionDescriptorPtr permission_descriptor,
       RenderProcessHost* render_process_host,
       RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       bool should_include_device_status,
       const base::RepeatingCallback<void(PermissionResult)>& callback) override;
-
-  void UnsubscribeFromPermissionResultChange(
-      SubscriptionId subscription_id) override;
 
   SubscriptionId SubscribeToContentSettingsTypeChange(
       ContentSettingsType content_settings_type,
@@ -125,9 +124,30 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
     exclusion_area_bounds_for_tests_ = bounds.CopyAsOptional();
   }
 
+  base::WeakPtr<PermissionControllerImpl> GetWeakPtr();
+
  private:
   friend class PermissionControllerImplTest;
   friend class PermissionServiceImpl;
+
+  friend class PermissionSubscriptionImpl;
+
+  // MediaStreamManager needs to call UnsubscribeFromPermissionResultChange
+  // because it creates its subscriptions on the UI thread but tracks their ids
+  // in DeviceRequest on the IO thread.
+  //
+  // TODO(crbug.com/40056329): Give MediaStreamManager a UI-thread-owned map of
+  // handles keyed by request label, then drop Release() and this friendship.
+  friend class MediaStreamManager;
+
+  // Unsubscribe permission status result. This function will remove
+  // subscription from subscriptions list and call
+  // permission_controller_delegate to remove related data in the delegate.
+  //
+  // Prefer destroying the PermissionSubscription returned by
+  // SubscribeToPermissionResultChange(). This exists for callers that cannot
+  // hold the handle, and is what the handle itself calls.
+  void UnsubscribeFromPermissionResultChange(SubscriptionId subscription_id);
 
   // Updates CookieManager content settings. Currently this is only used for
   // Storage Access permissions. This method can be used for extra processing
@@ -231,6 +251,8 @@ class CONTENT_EXPORT PermissionControllerImpl : public PermissionController {
   SubscriptionId::Generator subscription_id_generator_;
 
   raw_ptr<BrowserContext> browser_context_;
+
+  base::WeakPtrFactory<PermissionControllerImpl> weak_factory_{this};
 };
 
 }  // namespace content

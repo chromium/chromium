@@ -164,6 +164,7 @@ void PerformanceManagerTabHelper::TearDownAndSelfDelete() {
     nodes.push_back(std::move(frame_node));
   }
 
+  permission_controller_subscription_.reset();
   nodes.push_back(std::move(page_node_));
 
   frames_.clear();
@@ -175,9 +176,6 @@ void PerformanceManagerTabHelper::TearDownAndSelfDelete() {
     destruction_observer_->OnPerformanceManagerTabHelperDestroying(
         web_contents());
   }
-
-  MaybeUnsubscribeFromNotificationPermissionStatusChange(
-      web_contents()->GetBrowserContext()->GetPermissionController());
 
   // Unsubscribe from the associated WebContents.
   Observe(nullptr);
@@ -521,15 +519,12 @@ std::optional<blink::mojom::PermissionStatus> PerformanceManagerTabHelper::
   content::PermissionController* permission_controller =
       web_contents()->GetBrowserContext()->GetPermissionController();
   if (!permission_controller) {
-    CHECK(permission_controller_subscription_id_.is_null());
+    CHECK(!permission_controller_subscription_);
     return std::nullopt;
   }
 
-  // Cancel previous change subscription.
-  MaybeUnsubscribeFromNotificationPermissionStatusChange(permission_controller);
-
-  // Create new change subscription.
-  permission_controller_subscription_id_ =
+  // Assigning the handle cancels the previous change subscription.
+  permission_controller_subscription_ =
       permission_controller->SubscribeToPermissionResultChange(
           content::PermissionDescriptorUtil::
               CreatePermissionDescriptorForPermissionType(
@@ -556,18 +551,6 @@ std::optional<blink::mojom::PermissionStatus> PerformanceManagerTabHelper::
 void PerformanceManagerTabHelper::OnNotificationPermissionResultChange(
     content::PermissionResult permission_result) {
   page_node_->OnNotificationPermissionStatusChange(permission_result.status);
-}
-
-void PerformanceManagerTabHelper::
-    MaybeUnsubscribeFromNotificationPermissionStatusChange(
-        content::PermissionController* permission_controller) {
-  if (permission_controller_subscription_id_.is_null()) {
-    return;
-  }
-
-  CHECK(permission_controller);
-  permission_controller->UnsubscribeFromPermissionResultChange(
-      permission_controller_subscription_id_);
 }
 
 void PerformanceManagerTabHelper::FrameReceivedUserActivation(

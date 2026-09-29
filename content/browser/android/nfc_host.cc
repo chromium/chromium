@@ -30,14 +30,9 @@ base::AtomicSequenceNumber g_unique_id;
 NFCHost::NFCHost(WebContents* web_contents)
     : WebContentsObserver(web_contents) {
   CHECK(web_contents, base::NotFatalUntil::M159);
-
-  permission_controller_ =
-      web_contents->GetBrowserContext()->GetPermissionController();
 }
 
-NFCHost::~NFCHost() {
-  Close();
-}
+NFCHost::~NFCHost() = default;
 
 void NFCHost::GetNFC(RenderFrameHost* render_frame_host,
                      mojo::PendingReceiver<device::mojom::NFC> receiver) {
@@ -79,21 +74,24 @@ void NFCHost::GetNFC(RenderFrameHost* render_frame_host,
     return;
   }
 
-  if (!subscription_id_) {
+  if (!permission_subscription_) {
     // base::Unretained() is safe here because the subscription is canceled when
     // this object is destroyed.
-    subscription_id_ =
-        permission_controller_->SubscribeToPermissionResultChange(
-            PermissionDescriptorUtil::
-                CreatePermissionDescriptorForPermissionType(
-                    blink::PermissionType::NFC),
-            /*render_process_host=*/nullptr, render_frame_host,
-            render_frame_host->GetMainFrame()
-                ->GetLastCommittedOrigin()
-                .GetURL(),
-            /*should_include_device_status=*/false,
-            base::BindRepeating(&NFCHost::OnPermissionResultChange,
-                                base::Unretained(this)));
+    permission_subscription_ =
+        web_contents()
+            ->GetBrowserContext()
+            ->GetPermissionController()
+            ->SubscribeToPermissionResultChange(
+                PermissionDescriptorUtil::
+                    CreatePermissionDescriptorForPermissionType(
+                        blink::PermissionType::NFC),
+                /*render_process_host=*/nullptr, render_frame_host,
+                render_frame_host->GetMainFrame()
+                    ->GetLastCommittedOrigin()
+                    .GetURL(),
+                /*should_include_device_status=*/false,
+                base::BindRepeating(&NFCHost::OnPermissionResultChange,
+                                    base::Unretained(this)));
   }
 
   if (!nfc_provider_) {
@@ -144,9 +142,7 @@ void NFCHost::OnPermissionResultChange(PermissionResult permission_result) {
 
 void NFCHost::Close() {
   nfc_provider_.reset();
-  permission_controller_->UnsubscribeFromPermissionResultChange(
-      subscription_id_);
-  subscription_id_ = PermissionController::SubscriptionId();
+  permission_subscription_.reset();
 }
 
 }  // namespace content

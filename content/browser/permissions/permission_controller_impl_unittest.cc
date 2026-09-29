@@ -17,6 +17,7 @@
 #include "base/types/optional_ref.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/features.h"
+#include "content/browser/permissions/permission_subscription_impl.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/browser/permission_descriptor_util.h"
@@ -426,18 +427,24 @@ TEST_P(PermissionControllerImplTestWithApproxLocation,
                                PermissionStatus::DENIED);
 
   base::MockCallback<PermissionResultCallback> geo_callback;
-  permission_controller()->SubscribeToPermissionResultChange(
-      PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
-          PermissionType::GEOLOCATION),
-      nullptr, nullptr, kUrl,
-      /*should_include_device_status=*/false, geo_callback.Get());
+  std::unique_ptr<PermissionController::PermissionSubscription>
+      geo_subscription =
+          permission_controller()->SubscribeToPermissionResultChange(
+              PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      PermissionType::GEOLOCATION),
+              nullptr, nullptr, kUrl,
+              /*should_include_device_status=*/false, geo_callback.Get());
 
   base::MockCallback<PermissionResultCallback> sync_callback;
-  permission_controller()->SubscribeToPermissionResultChange(
-      PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
-          PermissionType::BACKGROUND_SYNC),
-      nullptr, nullptr, kUrl,
-      /*should_include_device_status=*/false, sync_callback.Get());
+  std::unique_ptr<PermissionController::PermissionSubscription>
+      sync_subscription =
+          permission_controller()->SubscribeToPermissionResultChange(
+              PermissionDescriptorUtil::
+                  CreatePermissionDescriptorForPermissionType(
+                      PermissionType::BACKGROUND_SYNC),
+              nullptr, nullptr, kUrl,
+              /*should_include_device_status=*/false, sync_callback.Get());
 
   // Geolocation should change status, so subscriber is updated.
   EXPECT_CALL(
@@ -473,25 +480,29 @@ TEST_F(PermissionControllerImplTest,
                                PermissionType::BACKGROUND_SYNC,
                                PermissionStatus::DENIED);
 
-  PermissionControllerImpl::SubscriptionId first_id, second_id;
+  std::unique_ptr<PermissionController::PermissionSubscription>
+      first_subscription;
+  std::unique_ptr<PermissionController::PermissionSubscription>
+      second_subscription;
   int callback_count = 0;
 
   // Each callback unsubscribes the other one, so exactly one of them runs no
   // matter which order they are dispatched in.
-  auto subscribe = [&](PermissionControllerImpl::SubscriptionId* peer_id) {
+  auto subscribe = [&](std::unique_ptr<
+                       PermissionController::PermissionSubscription>*
+                           peer_subscription) {
     return permission_controller()->SubscribeToPermissionResultChange(
         PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
             PermissionType::BACKGROUND_SYNC),
         nullptr, nullptr, kUrl,
         /*should_include_device_status=*/false,
-        base::BindLambdaForTesting([&, peer_id](PermissionResult) {
+        base::BindLambdaForTesting([&, peer_subscription](PermissionResult) {
           ++callback_count;
-          permission_controller()->UnsubscribeFromPermissionResultChange(
-              *peer_id);
+          peer_subscription->reset();
         }));
   };
-  first_id = subscribe(&second_id);
-  second_id = subscribe(&first_id);
+  first_subscription = subscribe(&second_subscription);
+  second_subscription = subscribe(&first_subscription);
 
   SetPermissionOverrideAndWait(kTestOrigin, kTestOrigin,
                                PermissionType::BACKGROUND_SYNC,
@@ -504,13 +515,15 @@ TEST_F(PermissionControllerImplTest,
 // Shutdown() is the last point at which subscriptions can be torn down.
 TEST_F(PermissionControllerImplTest, ShutdownUnsubscribes) {
   base::MockCallback<base::RepeatingCallback<void(PermissionResult)>> callback;
-  PermissionController::SubscriptionId id =
+  std::unique_ptr<PermissionController::PermissionSubscription> subscription =
       permission_controller()->SubscribeToPermissionResultChange(
           PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
               PermissionType::GEOLOCATION),
           /*render_process_host=*/nullptr, /*render_frame_host=*/nullptr,
           GURL(kTestUrl),
           /*should_include_device_status=*/false, callback.Get());
+  PermissionController::SubscriptionId id =
+      static_cast<PermissionSubscriptionImpl*>(subscription.get())->id();
 
   ASSERT_FALSE(subscriptions().IsEmpty());
   ASSERT_EQ(mock_manager()->subscriptions(), &subscriptions());
@@ -534,7 +547,7 @@ TEST_F(PermissionControllerImplTest, BrowserContextShutdownUnsubscribes) {
   browser_context.SetPermissionControllerDelegate(std::move(owned_delegate));
 
   base::MockCallback<base::RepeatingCallback<void(PermissionResult)>> callback;
-  PermissionController::SubscriptionId id =
+  std::unique_ptr<PermissionController::PermissionSubscription> subscription =
       PermissionControllerImpl::FromBrowserContext(&browser_context)
           ->SubscribeToPermissionResultChange(
               PermissionDescriptorUtil::
@@ -543,6 +556,8 @@ TEST_F(PermissionControllerImplTest, BrowserContextShutdownUnsubscribes) {
               /*render_process_host=*/nullptr, /*render_frame_host=*/nullptr,
               GURL(kTestUrl),
               /*should_include_device_status=*/false, callback.Get());
+  PermissionController::SubscriptionId id =
+      static_cast<PermissionSubscriptionImpl*>(subscription.get())->id();
 
   EXPECT_CALL(*delegate, UnsubscribeFromPermissionResultChange(id));
   browser_context.NotifyWillBeDestroyed();

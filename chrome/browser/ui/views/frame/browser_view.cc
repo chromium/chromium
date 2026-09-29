@@ -2129,14 +2129,7 @@ void BrowserView::OnTabDetached(content::WebContents* contents,
   }
 
   // This is to unsubscribe the Window Management permission subscriber.
-  if (window_management_subscription_id_) {
-    contents->GetPrimaryMainFrame()
-        ->GetBrowserContext()
-        ->GetPermissionController()
-        ->UnsubscribeFromPermissionResultChange(
-            window_management_subscription_id_.value());
-    window_management_subscription_id_.reset();
-  }
+  window_management_subscription_.reset();
 
   // We need to reset the current tab contents to null before it gets
   // freed. This is because the focus manager performs some operations
@@ -2783,7 +2776,7 @@ void BrowserView::SetWindowManagementPermissionSubscriptionForUnframedMode(
 
   // It is safe to bind base::Unretained(this) because WebContents is
   // owned by BrowserView.
-  window_management_subscription_id_ =
+  window_management_subscription_ =
       controller->SubscribeToPermissionResultChange(
           content::PermissionDescriptorUtil::
               CreatePermissionDescriptorForPermissionType(
@@ -2995,7 +2988,7 @@ void BrowserView::DidFinishNavigation(
     return;
   }
 
-  if (AppUsesUnframedMode() && !window_management_subscription_id_) {
+  if (AppUsesUnframedMode() && !window_management_subscription_) {
     SetWindowManagementPermissionSubscriptionForUnframedMode(
         navigation_handle->GetWebContents());
   }

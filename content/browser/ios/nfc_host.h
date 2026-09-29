@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_IOS_NFC_HOST_H_
 #define CONTENT_BROWSER_IOS_NFC_HOST_H_
 
-#include "base/memory/raw_ptr.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -69,11 +68,8 @@ class NFCHost : public WebContentsObserver, public device::mojom::NFC {
   void HandlePendingMakeReadOnlyOperation();
   void PendingMakeReadOnlyOperationComplete(device::mojom::NDEFErrorType error);
 
-  // The permission controller for this browser context.
-  raw_ptr<PermissionController> permission_controller_;
-
-  // Permission change subscription ID provided by |permission_controller_|.
-  PermissionController::SubscriptionId subscription_id_;
+  std::unique_ptr<PermissionController::PermissionSubscription>
+      permission_subscription_;
 
   mojo::Receiver<device::mojom::NFC> receiver_{this};
   mojo::Remote<device::mojom::RawNFCClient> client_remote_;

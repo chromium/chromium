@@ -5,6 +5,9 @@
 #ifndef CONTENT_PUBLIC_TEST_MOCK_PERMISSION_CONTROLLER_H_
 #define CONTENT_PUBLIC_TEST_MOCK_PERMISSION_CONTROLLER_H_
 
+#include <memory>
+
+#include "base/memory/weak_ptr.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_result.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -93,7 +96,7 @@ class MockPermissionController : public PermissionController {
               ResetPermission,
               (blink::PermissionType permission, const url::Origin& origin));
   MOCK_METHOD(
-      SubscriptionId,
+      std::unique_ptr<PermissionSubscription>,
       SubscribeToPermissionResultChange,
       (blink::mojom::PermissionDescriptorPtr permission_descriptor,
        RenderProcessHost* render_process_host,
@@ -104,6 +107,13 @@ class MockPermissionController : public PermissionController {
   MOCK_METHOD(void,
               UnsubscribeFromPermissionResultChange,
               (SubscriptionId subscription_id));
+
+  // Creates a PermissionSubscription backed by this mock controller that will
+  // invoke UnsubscribeFromPermissionResultChange(`id`) when destroyed.
+  std::unique_ptr<PermissionSubscription> CreateSubscription(SubscriptionId id);
+
+ private:
+  base::WeakPtrFactory<MockPermissionController> weak_factory_{this};
 };
 
 }  // namespace content

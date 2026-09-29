@@ -277,7 +277,9 @@ TEST_F(PerformanceManagerTabHelperTest, NotificationPermission) {
                         blink::PermissionType::NOTIFICATIONS),
                     testing::_, testing::_, testing::_, testing::_, testing::_))
         .WillOnce(testing::DoAll(testing::SaveArg<2>(&rfh_arg_2),
-                                 testing::Return(kFirstSubscriptionId)));
+                                 testing::Return(testing::ByMove(
+                                     permission_controller->CreateSubscription(
+                                         kFirstSubscriptionId)))));
 
     content::NavigationSimulator::NavigateAndCommitFromBrowser(
         web_contents(), GURL(kParentUrl));
@@ -311,9 +313,11 @@ TEST_F(PerformanceManagerTabHelperTest, NotificationPermission) {
                     PermissionDescriptorToPermissionTypeMatcher(
                         blink::PermissionType::NOTIFICATIONS),
                     testing::_, testing::_, testing::_, testing::_, testing::_))
-        .WillOnce(testing::DoAll(testing::SaveArg<1>(&rph_arg),
-                                 testing::SaveArg<5>(&callback_arg),
-                                 testing::Return(kSecondSubscriptionId)));
+        .WillOnce(testing::DoAll(
+            testing::SaveArg<1>(&rph_arg), testing::SaveArg<5>(&callback_arg),
+            testing::Return(
+                testing::ByMove(permission_controller->CreateSubscription(
+                    kSecondSubscriptionId)))));
 
     content::NavigationSimulator::NavigateAndCommitFromBrowser(
         web_contents(), GURL(kCousinFreddyUrl));

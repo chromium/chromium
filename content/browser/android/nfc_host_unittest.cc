@@ -78,7 +78,8 @@ TEST_F(NFCHostTest, GetNFCTwice) {
                   /*render_process_host=*/nullptr, main_rfh(),
                   main_rfh()->GetMainFrame()->GetLastCommittedOrigin().GetURL(),
                   /*should_include_device_status*/ false, _))
-      .WillOnce(Return(kSubscriptionId));
+      .WillOnce(Return(testing::ByMove(
+          mock_permission_controller().CreateSubscription(kSubscriptionId))));
 
   mojo::Remote<device::mojom::NFC> nfc1, nfc2;
   contents()->GetNFC(static_cast<RenderFrameHostImpl*>(main_rfh()),

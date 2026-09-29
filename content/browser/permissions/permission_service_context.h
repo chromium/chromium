@@ -101,7 +101,7 @@ class CONTENT_EXPORT PermissionServiceContext
   }
 
  private:
-  class PermissionSubscription;
+  class ObserverSubscription;
   struct DocumentPermissionServiceContextHolder;
   friend class PermissionServiceContextTest;
 
@@ -113,7 +113,7 @@ class CONTENT_EXPORT PermissionServiceContext
   const raw_ptr<RenderProcessHost> render_process_host_;
   mojo::UniqueReceiverSet<blink::mojom::PermissionService> services_;
   std::unordered_map<PermissionController::SubscriptionId,
-                     std::unique_ptr<PermissionSubscription>>
+                     std::unique_ptr<ObserverSubscription>>
       subscriptions_;
 
   std::set<blink::PermissionType> onchange_event_listeners_;
