@@ -32,6 +32,14 @@ pub(crate) const CANCEL_POLL_INTERVAL_MCUS: usize = 1024;
 /// or an async cancellation token — the crate need not know about any of them.
 /// Use [`NeverCancel`] when no cancellation is wanted; it is a zero-cost no-op
 /// and the decoder's default.
+///
+/// Cancellation always returns `DecodeErrors::Cancelled`, including in
+/// non-strict mode. It is not a recoverable-EOF condition. The same decoder and
+/// output buffer may be retried after replacing or clearing the check. Stable
+/// baseline rows remain valid; a progressive preview whose rendering was
+/// interrupted is marked unavailable until a later render completes. Header
+/// parsing checks cancellation at marker boundaries and while buffering large
+/// marker bodies.
 pub trait CancelCheck: Send + Sync {
     /// Returns `true` to cancel decoding as soon as possible.
     ///

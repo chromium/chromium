@@ -30,9 +30,10 @@ see additional documentation in the library.
 ### Incremental input
 
 `JpegDecoder` can be retried on the same decoder when the underlying reader can
-see more bytes later. Callers should treat `DecodeErrors::is_recoverable_eof()`
-as the signal to feed more input and retry; any other error is a hard decode
-failure.
+see more bytes later. Call `set_incremental_mode(true)` before scan decoding to
+make scan EOF recoverable in non-strict mode. Callers should treat
+`DecodeErrors::is_recoverable_eof()` as the signal to feed more input and retry;
+any other error is a hard decode failure.
 
 After `decode_headers()` succeeds, `info()` and `output_buffer_size()` are
 available. During `decode_into()`, the same decoder and output buffer must be
@@ -40,12 +41,13 @@ kept across retries. If scan decoding returns recoverable EOF,
 `decoded_output_bytes()` and `decoded_scanlines()` report the stable prefix of
 the output buffer that can be displayed or copied before retrying.
 
-By default, row checkpoints are recorded only after a previous scan decode
-attempt, so one-shot decoding keeps the lowest-overhead path. Call
-`set_incremental_mode(true)` before the first `decode_into()` attempt when the
-caller expects input to arrive incrementally; this records checkpoints during
-baseline Huffman scans and enables progressive preview preservation on the first
-progressive decode attempt.
+Without incremental mode, non-strict scan EOF preserves the legacy behavior:
+decoding succeeds with best-effort output for the truncated image. Strict mode
+and explicit incremental mode return an error on scan EOF. Incremental mode
+also records checkpoints during baseline Huffman scans and enables progressive
+preview preservation on the first progressive decode attempt. Header EOF
+remains recoverable regardless of this setting because scan decoding has not
+started yet.
 
 Fine-grained row checkpoints currently apply within baseline Huffman scan
 bodies, including baseline multi-SOS / non-interleaved images. Those images may

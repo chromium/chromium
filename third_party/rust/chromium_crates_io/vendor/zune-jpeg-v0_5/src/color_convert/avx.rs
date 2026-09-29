@@ -88,14 +88,27 @@ pub fn ycbcr_to_rgb_avx2(
 ) {
     // call this in another function to tell RUST to vectorize this
     // storing
+    // SAFETY: Runtime dispatch selects this converter only when AVX2 is available.
+    // Direct test calls perform the same feature check.
     unsafe {
-        ycbcr_to_rgb_avx2_1(y, cb, cr, out, offset);
+        ycbcr_to_rgb_avx2_1::<false>(y, cb, cr, out, offset);
+    }
+}
+
+#[inline(always)]
+pub fn ycbcr_to_bgr_avx2(
+    y: &[i16; 16], cb: &[i16; 16], cr: &[i16; 16], out: &mut [u8], offset: &mut usize
+) {
+    // SAFETY: Runtime dispatch selects this converter only when AVX2 is available.
+    // Direct test calls perform the same feature check.
+    unsafe {
+        ycbcr_to_rgb_avx2_1::<true>(y, cb, cr, out, offset);
     }
 }
 
 #[inline]
 #[target_feature(enable = "avx2")]
-unsafe fn ycbcr_to_rgb_avx2_1(
+unsafe fn ycbcr_to_rgb_avx2_1<const BGR: bool>(
     y: &[i16; 16], cb: &[i16; 16], cr: &[i16; 16], out: &mut [u8], offset: &mut usize
 ) {
     // check if we have enough space to write.
@@ -106,6 +119,10 @@ unsafe fn ycbcr_to_rgb_avx2_1(
     r = _mm256_packus_epi16(r, _mm256_setzero_si256());
     g = _mm256_packus_epi16(g, _mm256_setzero_si256());
     b = _mm256_packus_epi16(b, _mm256_setzero_si256());
+
+    if BGR {
+        core::mem::swap(&mut r, &mut b);
+    }
 
     r = _mm256_permute4x64_epi64::<{ shuffle(3, 1, 2, 0) }>(r);
     g = _mm256_permute4x64_epi64::<{ shuffle(3, 1, 2, 0) }>(g);
@@ -239,15 +256,28 @@ unsafe fn ycbcr_to_rgb_baseline_no_clamp(
 pub fn ycbcr_to_rgba_avx2(
     y: &[i16; 16], cb: &[i16; 16], cr: &[i16; 16], out: &mut [u8], offset: &mut usize
 ) {
+    // SAFETY: Runtime dispatch selects this converter only when AVX2 is available.
+    // Direct test calls perform the same feature check.
     unsafe {
-        ycbcr_to_rgba_unsafe(y, cb, cr, out, offset);
+        ycbcr_to_rgba_unsafe::<false>(y, cb, cr, out, offset);
+    }
+}
+
+#[inline(always)]
+pub fn ycbcr_to_bgra_avx2(
+    y: &[i16; 16], cb: &[i16; 16], cr: &[i16; 16], out: &mut [u8], offset: &mut usize
+) {
+    // SAFETY: Runtime dispatch selects this converter only when AVX2 is available.
+    // Direct test calls perform the same feature check.
+    unsafe {
+        ycbcr_to_rgba_unsafe::<true>(y, cb, cr, out, offset);
     }
 }
 
 #[inline]
 #[target_feature(enable = "avx2")]
 #[rustfmt::skip]
-unsafe fn ycbcr_to_rgba_unsafe(
+unsafe fn ycbcr_to_rgba_unsafe<const BGRA: bool>(
     y: &[i16; 16], cb: &[i16; 16], cr: &[i16; 16],
     out: &mut [u8],
     offset: &mut usize,
@@ -256,7 +286,11 @@ unsafe fn ycbcr_to_rgba_unsafe(
     // check if we have enough space to write.
     let tmp:& mut [u8; 64] = out.get_mut(*offset..*offset + 64).expect("Slice to small cannot write").try_into().unwrap();
 
-    let (r, g, b) = ycbcr_to_rgb_baseline_no_clamp(y, cb, cr);
+    let (mut r, g, mut b) = ycbcr_to_rgb_baseline_no_clamp(y, cb, cr);
+
+    if BGRA {
+        core::mem::swap(&mut r, &mut b);
+    }
 
     // set alpha channel to 255 for opaque
 
@@ -303,19 +337,7 @@ const fn shuffle(z: i32, y: i32, x: i32, w: i32) -> i32 {
 mod safety_tests {
     use super::*;
 
-    /// Demonstrates buffer overflow in `ycbcr_to_rgb_avx2`.
-    ///
-    /// The function takes a `&mut [u8]` output slice but performs no bounds
-    /// check. It writes 48 bytes via raw pointer stores
-    /// (`_mm256_storeu_si256` and `_mm_storeu_si128`) starting at
-    /// `out.as_mut_ptr()` regardless of the output's length.
-    ///
-    /// Note: although `ycbcr_to_rgb_avx2` is `pub`, the containing
-    /// `color_convert` module is private (`mod color_convert;` in lib.rs),
-    /// so this is NOT a soundness hole in the crate's public API. It is a
-    /// crate-internal footgun: a `safe`-callable function that performs
-    /// unchecked OOB writes when misused. AddressSanitizer detects the
-    /// overflow when the function is called with a too-small slice.
+    /// The safe wrapper must reject an undersized destination before any SIMD store.
     #[test]
     #[should_panic]
     fn ycbcr_to_rgb_avx2_oob_write() {
@@ -332,13 +354,8 @@ mod safety_tests {
         ycbcr_to_rgb_avx2(&y, &cb, &cr, &mut out, &mut offset);
     }
 
-    /// `ycbcr_to_rgb_avx2` used to ignore the `offset` argument when computing the
-    /// write address. It always wrote to the *start* of `out` rather than
-    /// at `out[*offset..]`, even though it then increments `*offset` by 48.
-    /// The sibling `ycbcr_to_rgba_avx2` function does the right thing
-    /// (writes at `out[*offset..*offset+64]`).
     #[test]
-    fn ycbcr_to_rgb_avx2_ignores_offset() {
+    fn ycbcr_to_rgb_avx2_honors_offset() {
         if !is_x86_feature_detected!("avx2") {
             return;
         }
@@ -348,9 +365,6 @@ mod safety_tests {
         let mut out = vec![0xAAu8; 100];
         let mut offset = 50usize;
         ycbcr_to_rgb_avx2(&y, &cb, &cr, &mut out, &mut offset);
-        // Function writes at out.as_mut_ptr() (offset 0) regardless of `offset`.
-        // The first 48 bytes of `out` are now overwritten; bytes 50..98 are still 0xAA.
-        // This demonstrates the function ignores its `offset` argument.
         assert_eq!(out[0], 0xAA, "function wrote at start of buffer (offset 0)");
         assert_ne!(
             out[50], 0xAA,

@@ -2876,7 +2876,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 
 [[package]]
 name = "zune-jpeg"
-version = "0.5.16-rc1"
+version = "0.5.16-rc2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "zune-core",

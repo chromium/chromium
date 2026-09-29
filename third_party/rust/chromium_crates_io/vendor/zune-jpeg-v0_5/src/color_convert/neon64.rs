@@ -39,6 +39,8 @@ const C_2: u64 = u64::from_ne_bytes([
 unsafe fn ycbcr_to_rgb_baseline_no_clamp(
     y: &[i16; 16], cb: &[i16; 16], cr: &[i16; 16]
 ) -> (uint8x16_t, uint8x16_t, uint8x16_t) {
+    // SAFETY: Each input contains the 16 i16 values loaded below, and this module
+    // is compiled only for AArch64 targets where NEON is available.
     unsafe {
         // NEON has 32 registers, so it is good idea to utilize a lot of variables at once
 
@@ -128,9 +130,30 @@ pub fn ycbcr_to_rgb_neon(
     // check if we have enough space to write.
     let out: &mut [u8; 48] = out.get_mut(*offset..*offset + 48).expect("Slice to small cannot write").try_into().unwrap();
 
+    // SAFETY: `out` is a validated 48-byte destination, and `vst3q_u8` writes
+    // exactly three interleaved 16-byte vectors.
     unsafe {
         let (r, g, b) = ycbcr_to_rgb_baseline_no_clamp(y, cb, cr);
         vst3q_u8(out.as_mut_ptr(), uint8x16x3_t(r, g, b));
+    }
+    *offset += 48;
+}
+
+#[inline(always)]
+pub fn ycbcr_to_bgr_neon(
+    y: &[i16; 16], cb: &[i16; 16], cr: &[i16; 16], out: &mut [u8], offset: &mut usize
+) {
+    let out: &mut [u8; 48] = out
+        .get_mut(*offset..*offset + 48)
+        .expect("Slice to small cannot write")
+        .try_into()
+        .unwrap();
+
+    // SAFETY: `out` is a validated 48-byte destination, and `vst3q_u8` writes
+    // exactly three interleaved 16-byte vectors.
+    unsafe {
+        let (r, g, b) = ycbcr_to_rgb_baseline_no_clamp(y, cb, cr);
+        vst3q_u8(out.as_mut_ptr(), uint8x16x3_t(b, g, r));
     }
     *offset += 48;
 }
@@ -142,9 +165,30 @@ pub fn ycbcr_to_rgba_neon(
     // check if we have enough space to write.
     let out: &mut [u8; 64] = out.get_mut(*offset..*offset + 64).expect("Slice to small cannot write").try_into().unwrap();
 
+    // SAFETY: `out` is a validated 64-byte destination, and `vst4q_u8` writes
+    // exactly four interleaved 16-byte vectors.
     unsafe {
         let (r, g, b) = ycbcr_to_rgb_baseline_no_clamp(y, cb, cr);
         vst4q_u8(out.as_mut_ptr(), uint8x16x4_t(r, g, b, vdupq_n_u8(255)));
+    }
+    *offset += 64;
+}
+
+#[inline(always)]
+pub fn ycbcr_to_bgra_neon(
+    y: &[i16; 16], cb: &[i16; 16], cr: &[i16; 16], out: &mut [u8], offset: &mut usize
+) {
+    let out: &mut [u8; 64] = out
+        .get_mut(*offset..*offset + 64)
+        .expect("Slice to small cannot write")
+        .try_into()
+        .unwrap();
+
+    // SAFETY: `out` is a validated 64-byte destination, and `vst4q_u8` writes
+    // exactly four interleaved 16-byte vectors.
+    unsafe {
+        let (r, g, b) = ycbcr_to_rgb_baseline_no_clamp(y, cb, cr);
+        vst4q_u8(out.as_mut_ptr(), uint8x16x4_t(b, g, r, vdupq_n_u8(255)));
     }
     *offset += 64;
 }

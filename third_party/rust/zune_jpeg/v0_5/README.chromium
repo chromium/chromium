@@ -1,7 +1,7 @@
 Name: zune-jpeg
 URL: https://crates.io/crates/zune-jpeg
-Version: 0.5.16-rc1
-Revision: 3ed8d75a9bc6fcbaac4e789c7154a9960817c37d
+Version: 0.5.16-rc2
+Revision: c93e77f5652f76fa77bf7a3823f360f65ceaab6f
 Update Mechanism: Manual (https://crbug.com/449898466)
 License: Apache-2.0
 License File: //third_party/rust/chromium_crates_io/vendor/zune-jpeg-v0_5/LICENSE-APACHE

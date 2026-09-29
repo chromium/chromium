@@ -17,7 +17,7 @@ use zune_core::log::{error, trace, warn};
 
 use crate::bitstream::BitStream;
 use crate::components::SampleRatios;
-use crate::decoder::{HeaderAppendStateSnapshot, MAX_COMPONENTS};
+use crate::decoder::{HeaderAppendStateSnapshot, McuDecodeOutput, MAX_COMPONENTS};
 use crate::errors::DecodeErrors;
 use crate::marker::Marker;
 use crate::mcu_prog::get_marker;
@@ -29,30 +29,38 @@ use crate::JpegDecoder;
 pub const DCT_BLOCK: usize = 64;
 
 struct McuWidthContext<'a, B: BitStream> {
-    mcu_width: usize,
+    mcu_width:      usize,
     // Current MCU row, used when indexing progressive scratch buffers and checkpoints.
-    mcu_row: usize,
+    mcu_row:        usize,
     // First MCU column to decode in this row; non-zero when resuming from a restart checkpoint.
-    start_col: usize,
+    start_col:      usize,
     // Number of output bytes already committed before this MCU row.
     pixels_written: usize,
     // Shared coefficient scratch block reused for each decoded data unit.
-    tmp: &'a mut [i32; 64],
+    tmp:            &'a mut [i32; 64],
     // Entropy decoder state for the current scan.
-    stream: &'a mut B,
+    stream:         &'a mut B,
     // Full-image coefficient buffers for multi-SOS baseline scans.
-    progressive: &'a mut [Vec<i16>; MAX_COMPONENTS],
+    progressive:    &'a mut [Vec<i16>; MAX_COMPONENTS],
+    // True when decoding the final data-unit row of the current scan.
+    is_last_row:    bool
 }
 
 impl<T: ZByteReaderTrait> JpegDecoder<T> {
     /// Check for existence of DC and AC Huffman Tables
     pub(crate) fn check_tables<B: BitStream>(&mut self) -> Result<(), DecodeErrors> {
         // check that dc and AC tables exist outside the hot path
-        for component in &self.components {
+        let z_order = self.z_order;
+        for &component_index in &z_order[..usize::from(self.num_scans)] {
+            let Some(component) = self.components.get(component_index) else {
+                return Err(DecodeErrors::Format(format!(
+                    "Invalid component index {component_index} in scan"
+                )));
+            };
             let _ = B::get_dc_ac_tables(
                 &mut self.entropy_tables,
                 component.dc_huff_table,
-                component.ac_huff_table,
+                component.ac_huff_table
             )?;
         }
         Ok(())
@@ -62,7 +70,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
     ///
     /// This is the main decoder loop for the library, the hot path.
     pub(crate) fn decode_mcu_ycbcr_baseline<B: BitStream>(
-        &mut self, pixels: &mut [u8],
+        &mut self, output: &mut McuDecodeOutput<'_, '_>
     ) -> Result<(), DecodeErrors> {
         // Move the persistent multi-SOS coefficient buffer out of `self` so
         // the inner decoder can borrow it mutably while still calling methods
@@ -70,8 +78,14 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
         // `decode_into` retries, which is what lets scan checkpoints stay
         // allocation-free.
         let mut progressive_mcus = core::mem::take(&mut self.progressive_mcus_buffer);
-        let result = self.decode_mcu_ycbcr_baseline_inner::<B>(pixels, &mut progressive_mcus);
+        let mut upsampler_scratch = core::mem::take(&mut self.upsampler_scratch);
+        let result = self.decode_mcu_ycbcr_baseline_inner::<B>(
+            output,
+            &mut progressive_mcus,
+            &mut upsampler_scratch,
+        );
         self.progressive_mcus_buffer = progressive_mcus;
+        self.upsampler_scratch = upsampler_scratch;
         result
     }
 
@@ -91,7 +105,8 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
     )]
     #[inline(never)]
     fn decode_mcu_ycbcr_baseline_inner<B: BitStream>(
-        &mut self, pixels: &mut [u8], progressive_mcus: &mut [Vec<i16>; MAX_COMPONENTS],
+        &mut self, output: &mut McuDecodeOutput<'_, '_>,
+        progressive_mcus: &mut [Vec<i16>; MAX_COMPONENTS], upsampler_scratch_space: &mut Vec<i16>,
     ) -> Result<(), DecodeErrors> {
         setup_component_params(self)?;
 
@@ -142,8 +157,6 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
 
         let mut stream = B::new();
 
-        self.check_tables::<B>()?;
-
         let mut tmp = [0_i32; DCT_BLOCK];
 
         let comp_len = self.components.len();
@@ -153,15 +166,20 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
         // must not be re-zeroed. On a fresh decode they are (re-)allocated.
         let resuming = self.scan_checkpoint().is_some();
 
+        let raw_mode = output.is_raw();
+
         for (pos, comp) in self.components.iter_mut().enumerate() {
             // Allocate only needed components.
             //
             // For special colorspaces i.e YCCK and CMYK, just allocate all of the needed
             // components.
-            if min(
-                self.options.jpeg_get_out_colorspace().num_components() - 1,
-                pos,
-            ) == pos
+            //
+            // Raw output needs every component regardless of output colorspace.
+            if raw_mode
+                || min(
+                    self.options.jpeg_get_out_colorspace().num_components() - 1,
+                    pos
+                ) == pos
                 || comp_len == 4
             // Special colorspace
             {
@@ -226,7 +244,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
             stream.restore_snapshot(checkpoint.bitstream_state);
         }
 
-        let is_hv = usize::from(self.is_interleaved);
+        let is_hv = usize::from(self.is_interleaved && !raw_mode);
         let upsampler_scratch_size = is_hv
             * self
                 .components
@@ -235,47 +253,55 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                 .max()
                 .unwrap_or(0)
             * 8;
-        let mut upsampler_scratch_space = vec![0; upsampler_scratch_size];
+        upsampler_scratch_space.clear();
+        upsampler_scratch_space.resize(upsampler_scratch_size, 0);
 
         'sos: loop {
-            trace!(
-                "Baseline decoding of components: {:?}",
-                &self.z_order[..usize::from(self.num_scans)]
-            );
+            // Later scans may use Huffman tables defined by inter-scan DHT markers.
+            self.check_tables::<B>()?;
 
-            trace!("Decoding MCU width: {mcu_width}, height: {mcu_height}");
-
-            // Consume the resume position once into locals so later SOS scans
-            // start at row 0, and so we don't mutate the loop's range bound
-            // from inside the loop below.
-            let current_resume_row = resume_row;
-            let current_resume_col = resume_col;
-            resume_row = 0;
-            resume_col = 0;
-
-            let scan_du_height = if all_components_in_first_scan {
+            let scan_mcu_height = if all_components_in_first_scan {
                 mcu_height
             } else {
-                let k = self.z_order.first().copied().unwrap_or(0);
-                if let Some(comp) = self.components.get(k) {
-                    (self.info.height as usize * comp.vertical_sample).div_ceil(self.v_max * 8)
+                let component_index = self.z_order.first().copied().unwrap_or(0);
+                if let Some(component) = self.components.get(component_index) {
+                    (self.info.height as usize * component.vertical_sample).div_ceil(self.v_max * 8)
                 } else {
                     mcu_height
                 }
             };
 
+            trace!(
+                "Baseline decoding of components: {:?}",
+                &self.z_order[..usize::from(self.num_scans)]
+            );
+
+            trace!("Decoding MCU width: {mcu_width}, height: {scan_mcu_height}");
+
+            let scan_start_row = resume_row;
+            let scan_start_col = resume_col;
+            resume_row = 0;
+            resume_col = 0;
+
             let mut cancel = self.cancel_debounced(mcu_width);
-            for i in current_resume_row..scan_du_height {
-                let start_col = if i == current_resume_row {
-                    current_resume_col
-                } else {
-                    0
-                };
+            for i in scan_start_row..scan_mcu_height {
+                let start_col = if i == scan_start_row { scan_start_col } else { 0 };
+                if cancel.is_cancelled() {
+                    return Err(DecodeErrors::Cancelled);
+                }
                 if stream.overread_by() > 0 {
-                    // The bitstream reader has exhausted available data.
-                    // Return a recoverable error so the caller can feed more
-                    // bytes and retry (incremental decoding).
-                    return Err(DecodeErrors::ExhaustedData);
+                    if self.scan_eof_is_error() {
+                        return Err(DecodeErrors::ExhaustedData);
+                    }
+                    if all_components_in_first_scan {
+                        if let Some(remaining) =
+                            output.pixels_mut().and_then(|pixels| pixels.get_mut(pixels_written..))
+                        {
+                            remaining.fill(128);
+                        }
+                        return Ok(());
+                    }
+                    break 'sos;
                 }
 
                 // Per-row checkpoint: save bitstream state at the start of
@@ -304,27 +330,29 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                         start_col,
                         pixels_written,
                         dc_predictions,
-                        bs_state,
+                        bs_state
                     )?;
                 }
 
                 // decode a whole MCU width,
                 // this takes into account interleaved components.
-                let mut mcu_width_context = McuWidthContext {
-                    mcu_width,
-                    mcu_row: i,
-                    start_col,
-                    pixels_written,
-                    tmp: &mut tmp,
-                    stream: &mut stream,
-                    progressive: &mut *progressive_mcus,
-                };
                 if cancel.is_cancelled() {
                     return Err(DecodeErrors::Cancelled);
                 }
-                let terminate = if all_components_in_first_scan {
-                    self.decode_mcu_width::<false, B>(&mut mcu_width_context)?
-                } else {
+                let terminate_result = {
+                    let mut mcu_width_context = McuWidthContext {
+                        mcu_width,
+                        mcu_row: i,
+                        start_col,
+                        pixels_written,
+                        tmp: &mut tmp,
+                        stream: &mut stream,
+                        progressive: &mut *progressive_mcus,
+                        is_last_row: i + 1 >= scan_mcu_height,
+                    };
+                    if all_components_in_first_scan {
+                        self.decode_mcu_width::<false, B>(&mut mcu_width_context)
+                    } else {
                     /* NB: (cae). This code was added due to the issue at https://github.com/etemesi254/zune-image/issues/277
                     *
                     * There is a particular set of images that interleave the start of scan (SOS) with the MCU,
@@ -342,22 +370,120 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                     *
                     */
 
-                    self.decode_mcu_width::<true, B>(&mut mcu_width_context)?
+                        self.decode_mcu_width::<true, B>(&mut mcu_width_context)
+                    }
                 };
+
+                let terminate = match terminate_result {
+                    Ok(terminate) => terminate,
+                    Err(e) if e.is_recoverable_eof() && !self.scan_eof_is_error() => {
+                        error!("{e}");
+                        if all_components_in_first_scan {
+                            match output {
+                                McuDecodeOutput::Pixels(pixels) => {
+                                    let output_stride = width
+                                        * self.options.jpeg_get_out_colorspace().num_components();
+                                    self.post_process(
+                                        pixels,
+                                        output_stride,
+                                        i,
+                                        mcu_height,
+                                        width,
+                                        padded_width,
+                                        &mut pixels_written,
+                                        upsampler_scratch_space,
+                                    )?;
+                                    self.pixels_decoded = pixels_written;
+                                    if let Some(remaining) = pixels.get_mut(pixels_written..) {
+                                        remaining.fill(128);
+                                    }
+                                }
+                                McuDecodeOutput::RawPlanes(raw_planes) => {
+                                    self.copy_raw_planes_for_mcu_stripe(i, raw_planes)?;
+                                }
+                                McuDecodeOutput::Scanlines(_) => return Err(e),
+                            }
+                        } else if let Some(pixels) = output.pixels_mut() {
+                            pixels.fill(128);
+                        }
+                        return Ok(());
+                    }
+                    Err(e) => return Err(e)
+                };
+
+                // A pull request must not publish a row assembled after the
+                // entropy reader exhausted visible input.
+                if output.requested_output_stripe().is_some() && stream.overread_by() > 0 {
+                    return Err(DecodeErrors::ExhaustedData);
+                }
+                if output.requests_raw_output()
+                    && matches!(terminate, McuContinuation::Terminate)
+                    && !*stream.seen_eoi()
+                {
+                    return Err(DecodeErrors::ExhaustedData);
+                }
 
                 // process that width up until it's impossible. This is faster than allocation the
                 // full components, which we skipped earlier.
                 if all_components_in_first_scan {
-                    self.post_process(
-                        pixels,
-                        i,
-                        mcu_height,
-                        width,
-                        padded_width,
-                        &mut pixels_written,
-                        &mut upsampler_scratch_space,
-                    )?;
-                    self.pixels_decoded = pixels_written;
+                    let pull_row_ready = output.requested_output_stripe().is_some();
+                    if pull_row_ready {
+                        let dc_predictions = core::array::from_fn(|idx| {
+                            self.components
+                                .get(idx)
+                                .map_or((0, 0), |component| (component.dc_pred, component.dc_diff))
+                        });
+                        self.checkpoint_scan_with_bitstream(
+                            i + 1,
+                            0,
+                            pixels_written,
+                            dc_predictions,
+                            stream.snapshot_state()
+                        )?;
+                    }
+
+                    match output {
+                        McuDecodeOutput::Pixels(pixels) => {
+                            let output_stride =
+                                width * self.options.jpeg_get_out_colorspace().num_components();
+                            self.post_process(
+                                pixels,
+                                output_stride,
+                                i,
+                                mcu_height,
+                                width,
+                                padded_width,
+                                &mut pixels_written,
+                                upsampler_scratch_space,
+                            )?;
+                            self.pixels_decoded = pixels_written;
+                        }
+                        McuDecodeOutput::RawPlanes(raw_planes) => {
+                            self.copy_raw_planes_for_mcu_stripe(i, raw_planes)?;
+                        }
+                        McuDecodeOutput::Scanlines(scanlines) => {
+                            if scanlines.requested_stripe != i {
+                                return Err(DecodeErrors::FormatStatic(
+                                    "converted scanline output advanced out of sequence"
+                                ));
+                            }
+                            let mut stripe_written = 0;
+                            self.post_process(
+                                scanlines.pixels,
+                                scanlines.stride,
+                                i,
+                                mcu_height,
+                                width,
+                                padded_width,
+                                &mut stripe_written,
+                                upsampler_scratch_space,
+                            )?;
+                            scanlines.rows_written = stripe_written / scanlines.stride;
+                        }
+                    }
+                    if pull_row_ready {
+                        return Ok(());
+                    }
                     // This row's coefficient buffers can be reused next, so
                     // any checkpoint inside the row is no longer valid.
                     self.invalidate_scan_checkpoint();
@@ -381,7 +507,10 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                     }
                     McuContinuation::Terminate => {
                         warn!("Got terminate signal, will not process further");
-                        if let Some(v) = pixels.get_mut(pixels_written..) {
+                        if let Some(v) = output
+                            .pixels_mut()
+                            .and_then(|p| p.get_mut(pixels_written..))
+                        {
                             v.fill(128);
                         }
                         return Ok(());
@@ -419,7 +548,10 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                         break;
                     }
                     Err(e) if e.is_recoverable_eof() => {
-                        return Err(e);
+                        if self.scan_eof_is_error() {
+                            return Err(e);
+                        }
+                        break;
                     }
                     Err(e) => {
                         if self.options.strict_mode() {
@@ -440,7 +572,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
         // This catches the case where the final MCU row consumed data past EOF
         // (e.g. a 0xFF at the boundary was misinterpreted as byte-stuffing)
         // without a subsequent row to detect it.
-        if stream.overread_by() > 0 {
+        if stream.overread_by() > 0 && self.scan_eof_is_error() {
             return Err(DecodeErrors::ExhaustedData);
         }
 
@@ -470,7 +602,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
         }
 
         if !all_components_in_first_scan {
-            self.finish_baseline_decoding(progressive_mcus, mcu_width, pixels)?;
+            self.finish_baseline_decoding(progressive_mcus, mcu_width, output)?;
         }
 
         // it may happen that some images don't have the whole buffer
@@ -488,7 +620,10 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                     trace!("Found marker {_m:?}");
                 }
                 Err(e) if e.is_recoverable_eof() => {
-                    return Err(e);
+                    if self.scan_eof_is_error() {
+                        return Err(e);
+                    }
+                    error!("{e}");
                 }
                 Err(e) => {
                     if self.options.strict_mode() {
@@ -501,6 +636,8 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
 
         trace!("Finished decoding image");
 
+        output.mark_source_complete();
+
         Ok(())
     }
 
@@ -510,12 +647,14 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
     #[allow(clippy::too_many_lines)]
     #[allow(clippy::cast_sign_loss)]
     pub(crate) fn finish_baseline_decoding(
-        &mut self, block: &[Vec<i16>; MAX_COMPONENTS], _mcu_width: usize, pixels: &mut [u8],
+        &mut self, block: &[Vec<i16>; MAX_COMPONENTS], _mcu_width: usize,
+        output: &mut McuDecodeOutput<'_, '_>
     ) -> Result<(), DecodeErrors> {
         let mcu_height = self.mcu_y;
 
         // Size of our output image(width*height)
-        let is_hv = usize::from(self.is_interleaved);
+        let raw_mode = output.is_raw();
+        let is_hv = usize::from(self.is_interleaved && !raw_mode);
         let upsampler_scratch_size = is_hv
             * self
                 .components
@@ -531,18 +670,31 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
 
         for (pos, comp) in self.components.iter_mut().enumerate() {
             // Mark only needed components for computing output colors.
-            comp.needed = min(
-                self.options.jpeg_get_out_colorspace().num_components() - 1,
-                pos,
-            ) == pos
+            //
+            // Raw output needs every component regardless of output colorspace.
+            comp.needed = raw_mode
+                || min(
+                    self.options.jpeg_get_out_colorspace().num_components() - 1,
+                    pos
+                ) == pos
                 || self.input_colorspace == ColorSpace::YCCK
                 || self.input_colorspace == ColorSpace::CMYK;
         }
 
         let mut pixels_written = 0;
+        let stripe_start = output.requested_output_stripe().unwrap_or(0);
+        let stripe_end = if output.requested_output_stripe().is_some() {
+            core::cmp::min(stripe_start + 1, mcu_height)
+        } else {
+            mcu_height
+        };
 
         // dequantize and idct have been performed, only color convert.
-        for i in 0..mcu_height {
+        let mut cancel = self.cancel_debounced(self.mcu_x);
+        for i in stripe_start..stripe_end {
+            if cancel.is_cancelled() {
+                return Err(DecodeErrors::Cancelled);
+            }
             // All the data is already in the right order, we just need to be able to pass it to
             // the post_process & upsample method. That expects all the data to be stored as one
             // row of MCUs in each component's `raw_coeff`.
@@ -567,22 +719,53 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
             }
 
             // process that whole stripe of MCUs
-            self.post_process(
-                pixels,
-                i,
-                mcu_height,
-                width,
-                padded_width,
-                &mut pixels_written,
-                &mut upsampler_scratch_space,
-            )?;
+            match output {
+                McuDecodeOutput::Pixels(pixels) => self.post_process(
+                    pixels,
+                    width * self.options.jpeg_get_out_colorspace().num_components(),
+                    i,
+                    mcu_height,
+                    width,
+                    padded_width,
+                    &mut pixels_written,
+                    &mut upsampler_scratch_space
+                )?,
+                McuDecodeOutput::RawPlanes(raw_planes) => {
+                    self.copy_raw_planes_for_mcu_stripe(i, raw_planes)?;
+                }
+                McuDecodeOutput::Scanlines(scanlines) => {
+                    let mut stripe_written = 0;
+                    self.post_process(
+                        scanlines.pixels,
+                        scanlines.stride,
+                        i,
+                        mcu_height,
+                        width,
+                        padded_width,
+                        &mut stripe_written,
+                        &mut upsampler_scratch_space
+                    )?;
+                    scanlines.rows_written = stripe_written / scanlines.stride;
+                }
+            }
         }
+
+        output.mark_source_complete();
 
         return Ok(());
     }
 
+    pub(crate) fn render_buffered_baseline_stripe(
+        &mut self, output: &mut McuDecodeOutput<'_, '_>
+    ) -> Result<(), DecodeErrors> {
+        let block = core::mem::take(&mut self.progressive_mcus_buffer);
+        let result = self.finish_baseline_decoding(&block, 0, output);
+        self.progressive_mcus_buffer = block;
+        result
+    }
+
     fn decode_mcu_width<const PROGRESSIVE: bool, B: BitStream>(
-        &mut self, context: &mut McuWidthContext<'_, B>,
+        &mut self, context: &mut McuWidthContext<'_, B>
     ) -> Result<McuContinuation, DecodeErrors> {
         let is_one_by_one = !self.scan_subsampled;
 
@@ -609,7 +792,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
     // the scan. The difference was ~1% or a bit more.
     #[allow(clippy::too_many_lines)]
     fn inner_decode_mcu_width<const PROGRESSIVE: bool, const SAMPLED: bool, B: BitStream>(
-        &mut self, context: &mut McuWidthContext<'_, B>,
+        &mut self, context: &mut McuWidthContext<'_, B>
     ) -> Result<McuContinuation, DecodeErrors> {
         // Destructure the context into local bindings up front. Reading the
         // hot loop through `context.<field>` keeps the optimizer from
@@ -623,6 +806,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
         let tmp: &mut [i32; 64] = &mut *context.tmp;
         let stream: &mut B = &mut *context.stream;
         let progressive: &mut [Vec<i16>; MAX_COMPONENTS] = &mut *context.progressive;
+        let is_last_row = context.is_last_row;
 
         let z_order = self.z_order;
         let z_scans = &z_order[..usize::from(self.num_scans)];
@@ -669,7 +853,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                 let (dc_table, ac_table) = B::get_dc_ac_tables(
                     &mut self.entropy_tables,
                     component.dc_huff_table % MAX_COMPONENTS,
-                    component.ac_huff_table % MAX_COMPONENTS,
+                    component.ac_huff_table % MAX_COMPONENTS
                 )?;
 
                 let qt_table = &component.quantization_table;
@@ -726,7 +910,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                                 qt_table,
                                 tmp,
                                 &mut component.dc_pred,
-                                &mut component.dc_diff,
+                                &mut component.dc_diff
                             )
                         } else {
                             // We do not touch tmp so there is no need to reset it.
@@ -734,7 +918,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                                 &mut self.stream,
                                 dc_table,
                                 ac_table,
-                                &mut component.dc_diff,
+                                &mut component.dc_diff
                             )
                         };
 
@@ -818,11 +1002,11 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
             }
         }
 
-        self.check_stream_marker_after_mcu_width(stream)
+        self.check_stream_marker_after_mcu_width(stream, is_last_row)
     }
 
     fn check_stream_marker_after_mcu_width<B: BitStream>(
-        &mut self, stream: &mut B,
+        &mut self, stream: &mut B, is_last_row: bool,
     ) -> Result<McuContinuation, DecodeErrors> {
         // After all interleaved components, that's an MCU
         // handle stream markers
@@ -834,7 +1018,21 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
         //
         // But libjpeg-turbo allows it because of some weird reason. so I'll also
         // allow it because of some weird reason.
+        let bits_left = stream.bits_left();
         if let Some(m) = stream.marker() {
+            let ends_scan = matches!(
+                m,
+                Marker::SOS
+                    | Marker::DAC
+                    | Marker::DHT
+                    | Marker::DQT
+                    | Marker::DRI
+                    | Marker::COM
+                    | Marker::APP(_)
+            );
+            if ends_scan && !is_last_row && bits_left > 0 {
+                return Ok(McuContinuation::Ok);
+            }
             if *m == Marker::EOI {
                 // acknowledge and ignore EOI marker.
                 stream.marker().take();
@@ -869,6 +1067,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                 trace!("Found inter-scan marker {m:?}");
                 return Ok(McuContinuation::InterScanMarker(m));
             } else if let Marker::DNL = m {
+                self.check_cancelled()?;
                 // DNL appears right after the last entropy-coded row. It
                 // carries the actual line count for images whose SOF height
                 // was 0. Only act on it when we were expecting one; otherwise
@@ -889,7 +1088,8 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                     // (parsing it would silently corrupt info.height).\n                    // Swallow the segment body so the stream stays consistent.
                     if self.options.strict_mode() {
                         return Err(DecodeErrors::Format(format!(
-                            "Marker {:?} found where not expected", m
+                            "Marker {:?} found where not expected",
+                            m
                         )));
                     }
                     error!("Unexpected DNL marker in Huffman stream, possibly corrupt jpeg");
@@ -936,7 +1136,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
     /// * `Ok(false)` - Found EOI, decoding complete
     /// * `Err(_)` - Error (too many markers, unexpected marker in strict mode, etc.)
     fn advance_to_next_sos<B: BitStream>(
-        &mut self, first_marker: Marker, stream: &mut B,
+        &mut self, first_marker: Marker, stream: &mut B
     ) -> Result<bool, DecodeErrors> {
         // Limit iterations to prevent DoS from malicious files.
         const MAX_INTER_SCAN_MARKERS: usize = 64;
@@ -944,7 +1144,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
         let inter_scan_snapshot = if self.scan_checkpoint().is_some() {
             Some((
                 HeaderAppendStateSnapshot::capture(self),
-                self.capture_scan_header_state(),
+                self.capture_scan_header_state()
             ))
         } else {
             None
@@ -953,12 +1153,12 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
         // Keep the previous scan checkpoint valid until the next SOS is fully
         // parsed. If input ends between scans, rollback marker side effects so
         // the retry can resume from that checkpoint and parse the markers again.
-        macro_rules! restore_inter_scan_on_eof {
+        macro_rules! restore_inter_scan_on_suspend {
             ($result:expr) => {
                 match $result {
                     Ok(value) => value,
                     Err(e) => {
-                        if e.is_recoverable_eof() {
+                        if e.is_recoverable_eof() || matches!(e, DecodeErrors::Cancelled) {
                             if let Some((append_snapshot, header_snapshot)) = &inter_scan_snapshot {
                                 append_snapshot.rollback(self);
                                 self.restore_scan_header_state(header_snapshot);
@@ -971,16 +1171,17 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
         }
 
         // Parse the first marker that triggered this call
-        restore_inter_scan_on_eof!(self.parse_marker_inner(first_marker));
+        restore_inter_scan_on_suspend!(self.parse_marker_inner(first_marker));
         stream.reset();
         B::reset_arith_tables(&mut self.entropy_tables);
 
         for _ in 0..MAX_INTER_SCAN_MARKERS {
-            let marker = restore_inter_scan_on_eof!(get_marker(&mut self.stream, stream));
+            restore_inter_scan_on_suspend!(self.check_cancelled());
+            let marker = restore_inter_scan_on_suspend!(get_marker(&mut self.stream, stream));
 
             match marker {
                 Marker::SOS => {
-                    restore_inter_scan_on_eof!(self.parse_marker_inner(Marker::SOS));
+                    restore_inter_scan_on_suspend!(self.parse_marker_inner(Marker::SOS));
                     self.invalidate_scan_checkpoint();
                     stream.reset();
                     B::reset_arith_tables(&mut self.entropy_tables);
@@ -994,11 +1195,11 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                 }
                 Marker::DAC | Marker::DHT | Marker::DQT | Marker::DRI | Marker::COM => {
                     trace!("Parsing inter-scan marker {marker:?}");
-                    restore_inter_scan_on_eof!(self.parse_marker_inner(marker));
+                    restore_inter_scan_on_suspend!(self.parse_marker_inner(marker));
                 }
                 Marker::APP(_) => {
                     trace!("Parsing inter-scan APP marker {marker:?}");
-                    restore_inter_scan_on_eof!(self.parse_marker_inner(marker));
+                    restore_inter_scan_on_suspend!(self.parse_marker_inner(marker));
                 }
                 other => {
                     if self.options.strict_mode() {
@@ -1008,11 +1209,11 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                     }
                     // Non-strict: skip unknown marker
                     warn!("Skipping unexpected marker {other:?} between scans");
-                    let length = restore_inter_scan_on_eof!(
+                    let length = restore_inter_scan_on_suspend!(
                         self.stream.get_u16_be_err().map_err(DecodeErrors::IoErrors)
                     );
                     if length >= 2 {
-                        restore_inter_scan_on_eof!(
+                        restore_inter_scan_on_suspend!(
                             self.stream
                                 .skip((length - 2) as usize)
                                 .map_err(DecodeErrors::IoErrors)
@@ -1023,7 +1224,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
         }
 
         Err(DecodeErrors::FormatStatic(
-            "Too many markers between scans (exceeded limit of 64)",
+            "Too many markers between scans (exceeded limit of 64)"
         ))
     }
 
@@ -1073,10 +1274,19 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
     }
     #[allow(clippy::too_many_lines, clippy::too_many_arguments)]
     pub(crate) fn post_process(
-        &mut self, pixels: &mut [u8], i: usize, mcu_height: usize, width: usize,
-        padded_width: usize, pixels_written: &mut usize, upsampler_scratch_space: &mut [i16],
+        &mut self, pixels: &mut [u8], output_stride: usize, i: usize, mcu_height: usize,
+        width: usize, padded_width: usize, pixels_written: &mut usize,
+        upsampler_scratch_space: &mut [i16]
     ) -> Result<(), DecodeErrors> {
         let out_colorspace_components = self.options.jpeg_get_out_colorspace().num_components();
+        let row_bytes = width
+            .checked_mul(out_colorspace_components)
+            .ok_or(DecodeErrors::FormatStatic("output row size overflow"))?;
+        if output_stride < row_bytes {
+            return Err(DecodeErrors::FormatStatic(
+                "output stride is smaller than the converted row width"
+            ));
+        }
 
         let mut px = *pixels_written;
         // indicates whether image is vertically up-sampled
@@ -1097,7 +1307,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
         let mut color_conv_function =
             |num_iters: usize, samples: [&[i16]; 4]| -> Result<(), DecodeErrors> {
                 for (pos, output) in pixels[px..]
-                    .chunks_exact_mut(width * out_colorspace_components)
+                    .chunks_exact_mut(output_stride)
                     .take(num_iters)
                     .enumerate()
                 {
@@ -1117,11 +1327,11 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                         self.color_convert_16,
                         self.input_colorspace,
                         self.options.jpeg_get_out_colorspace(),
-                        output,
+                        &mut output[..row_bytes],
                         width,
-                        padded_width,
+                        padded_width
                     )?;
-                    px += width * out_colorspace_components;
+                    px += output_stride;
                 }
                 Ok(())
             };
@@ -1135,7 +1345,7 @@ impl<T: ZByteReaderTrait> JpegDecoder<T> {
                     mcu_height,
                     i,
                     upsampler_scratch_space,
-                    is_vertically_sampled,
+                    is_vertically_sampled
                 )?;
             }
 

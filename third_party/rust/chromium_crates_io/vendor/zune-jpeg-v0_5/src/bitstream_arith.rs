@@ -563,15 +563,22 @@ impl BitStreamArithmetic {
     }
 }
 
-/// Minimal snapshot for arithmetic bitstream — only captures enough to detect
-/// whether the stream was exhausted. True per-MCU resume is not feasible for
-/// arithmetic coding due to statistical context coupling.
+/// Arithmetic bitstream registers captured at a stable pull-row boundary.
+/// Statistical contexts remain in `EntropyTables` and are preserved separately
+/// by the borrowing raw-output session.
 #[derive(Clone, Copy)]
 pub(crate) struct ArithBitstreamState {
-    pub(crate) marker:      Option<Marker>,
-    pub(crate) overread_by: usize,
-    pub(crate) seen_eoi:    bool,
-    pub(crate) eob_run:     i32
+    initialized:         bool,
+    a:                   u32,
+    c:                   u32,
+    ct:                  u8,
+    marker:              Option<Marker>,
+    successive_low_mask: i16,
+    spec_start:          u8,
+    spec_end:            u8,
+    overread_by:         usize,
+    seen_eoi:            bool,
+    eob_run:             i32
 }
 
 impl BitStream for BitStreamArithmetic {
@@ -708,19 +715,30 @@ impl BitStream for BitStreamArithmetic {
     #[inline(always)]
     fn save_state(&self) -> ArithBitstreamState {
         ArithBitstreamState {
-            marker:      self.marker,
-            overread_by: self.overread_by,
-            seen_eoi:    self.seen_eoi,
-            eob_run:     self.eob_run
+            initialized:         self.initialized,
+            a:                   self.a,
+            c:                   self.c,
+            ct:                  self.ct,
+            marker:              self.marker,
+            successive_low_mask: self.successive_low_mask,
+            spec_start:          self.spec_start,
+            spec_end:            self.spec_end,
+            overread_by:         self.overread_by,
+            seen_eoi:            self.seen_eoi,
+            eob_run:             self.eob_run
         }
     }
 
-    /// Arithmetic restore is a no-op for the A/C/CT registers — those are
-    /// only reset via `reset()` at RST/scan boundaries. This restores the
-    /// marker/EOF detection state only.
     #[inline(always)]
     fn restore_state(&mut self, state: ArithBitstreamState) {
+        self.initialized = state.initialized;
+        self.a = state.a;
+        self.c = state.c;
+        self.ct = state.ct;
         self.marker = state.marker;
+        self.successive_low_mask = state.successive_low_mask;
+        self.spec_start = state.spec_start;
+        self.spec_end = state.spec_end;
         self.overread_by = state.overread_by;
         self.seen_eoi = state.seen_eoi;
         self.eob_run = state.eob_run;

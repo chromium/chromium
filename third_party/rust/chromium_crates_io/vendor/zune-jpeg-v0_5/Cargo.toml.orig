@@ -1,6 +1,6 @@
 [package]
 name = "zune-jpeg"
-version = "0.5.16-rc1"
+version = "0.5.16-rc2"
 rust-version = "1.77.1"
 authors = ["caleb <etemesicaleb@gmail.com>"]
 edition = "2021"
