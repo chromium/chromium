@@ -3,12 +3,18 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
+#include <string>
 
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/bind.h"
 #include "base/json/values_util.h"
+#include "base/location.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_mock_clock_override.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -18,6 +24,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/fake_user_manager_delegate.h"
@@ -120,6 +127,19 @@ class TokenHandleStoreTest : public ::testing::Test {
             const AccountId& account_id,
             base::OnceCallback<void(std::optional<bool>)> continuation) {
           std::move(continuation).Run(user_has_gaia_password);
+        };
+    return std::make_unique<TokenHandleStoreImpl>(
+        std::move(known_user),
+        base::BindLambdaForTesting(std::move(does_user_have_gaia_password)));
+  }
+
+  std::unique_ptr<TokenHandleStore> CreateTokenHandleStoreWithAsyncGaiaPassword(
+      std::unique_ptr<user_manager::KnownUser> known_user) {
+    auto does_user_have_gaia_password =
+        [](const AccountId& account_id,
+           base::OnceCallback<void(std::optional<bool>)> continuation) {
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE, base::BindOnce(std::move(continuation), true));
         };
     return std::make_unique<TokenHandleStoreImpl>(
         std::move(known_user),
@@ -596,6 +616,53 @@ TEST_F(TokenHandleStoreIsReauthRequiredTest,
   EXPECT_FALSE(future1.IsReady());
 }
 
+TEST_F(TokenHandleStoreIsReauthRequiredTest,
+       ReentrantIsReauthRequiredDoesNotDropTheNewlyQueuedCallback) {
+  auto injected_known_user =
+      std::make_unique<user_manager::KnownUser>(local_state());
+  injected_known_user->SetStringPref(account_id_, kTokenHandlePref, kFakeToken);
+  injected_known_user->SetStringPref(account_id_, kTokenHandleStatusPref,
+                                     kTokenHandleStatusValid);
+  std::unique_ptr<TokenHandleStore> token_handle_store =
+      CreateTokenHandleStoreWithAsyncGaiaPassword(
+          std::move(injected_known_user));
+  const GURL& url = GaiaUrls::GetInstance()->oauth2_token_info_url();
+
+  int outer_reply_count = 0;
+  TokenValidationFuture reentrant_future;
+
+  token_handle_store->IsReauthRequired(
+      account_id_, GetSharedURLLoaderFactory(),
+      base::BindLambdaForTesting([&](const AccountId& account_id,
+                                     const std::string& token,
+                                     bool reauth_required) {
+        ++outer_reply_count;
+        token_handle_store->IsReauthRequired(account_id_,
+                                             GetSharedURLLoaderFactory(),
+                                             reentrant_future.GetCallback());
+      }));
+
+  url_loader_factory_.WaitForRequest(url);
+  url_loader_factory_.SimulateResponseForPendingRequest(
+      url.spec(), GetValidTokenInfoResponse(kFakeEmail, /*expires_in=*/1000),
+      net::HTTP_OK, network::TestURLLoaderFactory::kMostRecentMatch);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return outer_reply_count == 1; }));
+  EXPECT_FALSE(reentrant_future.IsReady());
+
+  // Simulate the network response for the re-entrant check. Its checker should
+  // remain alive and pending rather than being deleted by the first check.
+  url_loader_factory_.WaitForRequest(url);
+  url_loader_factory_.SimulateResponseForPendingRequest(
+      url.spec(), GetValidTokenInfoResponse(kFakeEmail, /*expires_in=*/1000),
+      net::HTTP_OK, network::TestURLLoaderFactory::kMostRecentMatch);
+
+  EXPECT_TRUE(reentrant_future.Wait());
+  EXPECT_EQ(account_id_, reentrant_future.Get<AccountId>());
+  EXPECT_EQ(kFakeToken, reentrant_future.Get<std::string>());
+  EXPECT_FALSE(reentrant_future.Get<bool>());
+  EXPECT_EQ(1, outer_reply_count);
+}
+
 class TokenHandleStoreMaybeFetchTokenHandleTest
     : public TokenHandleStoreIsReauthRequiredTest {
  public:
@@ -655,6 +722,48 @@ TEST_F(TokenHandleStoreMaybeFetchTokenHandleTest,
             *known_user->FindStringPath(account_id_, kTokenHandlePref));
   EXPECT_EQ(kTokenHandleStatusValid,
             *known_user->FindStringPath(account_id_, kTokenHandleStatusPref));
+}
+
+TEST_F(TokenHandleStoreMaybeFetchTokenHandleTest,
+       StaleTokenHandleDefersPendingCheckUntilNewHandleIsFetched) {
+  auto injected_known_user =
+      std::make_unique<user_manager::KnownUser>(local_state());
+  injected_known_user->SetStringPref(account_id_, kTokenHandlePref, kFakeToken);
+  injected_known_user->SetStringPref(account_id_, kTokenHandleStatusPref,
+                                     kTokenHandleStatusStale);
+  std::unique_ptr<TokenHandleStore> token_handle_store =
+      CreateTokenHandleStore(std::move(injected_known_user));
+  const GURL& url = GaiaUrls::GetInstance()->oauth2_token_info_url();
+
+  int reply_count = 0;
+  std::string replied_token;
+  bool replied_reauth_required = true;
+  token_handle_store->IsReauthRequired(
+      account_id_, GetSharedURLLoaderFactory(),
+      base::BindLambdaForTesting([&](const AccountId& account_id,
+                                     const std::string& token,
+                                     bool reauth_required) {
+        ++reply_count;
+        replied_token = token;
+        replied_reauth_required = reauth_required;
+      }));
+
+  url_loader_factory_.WaitForRequest(url);
+  url_loader_factory_.SimulateResponseForPendingRequest(
+      url.spec(), GetValidTokenInfoResponse(kFakeEmail, /*expires_in=*/1000),
+      net::HTTP_OK, network::TestURLLoaderFactory::kMostRecentMatch);
+
+  token_handle_store->MaybeFetchTokenHandle(
+      &token_handle_mapping_store_, GetSharedURLLoaderFactory(), account_id_,
+      kFakeAccessToken, kFakeRefreshTokenHash);
+  url_loader_factory_.WaitForRequest(url);
+  url_loader_factory_.SimulateResponseForPendingRequest(
+      url.spec(), GetTokenInfoFetchResponse(kFakeEmail, kFakeOtherToken),
+      net::HTTP_OK, network::TestURLLoaderFactory::kMostRecentMatch);
+
+  ASSERT_TRUE(base::test::RunUntil([&]() { return reply_count == 1; }));
+  EXPECT_EQ(kFakeOtherToken, replied_token);
+  EXPECT_FALSE(replied_reauth_required);
 }
 
 class TokenHandleStoreHistogramTest

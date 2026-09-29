@@ -39,6 +39,8 @@ class TokenHandleStoreFactory {
   TokenHandleStore* GetTokenHandleStore();
 
  private:
+  friend class TokenHandleStoreFactoryTest;
+
   // Functor that determines if a given `account_id` has a gaia password.
   // The class maintains the invariant that at any given time, there is at most
   // one request in flight for a given `account_id`.

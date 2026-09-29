@@ -91,10 +91,9 @@ class TokenHandleStoreImpl : public TokenHandleStore {
                                const TokenHandleChecker::Status& status,
                                std::optional<bool> user_has_gaia_password);
 
-  // We schedule the delete for `account_id`'s token handle checker and fetcher
-  // to give a chance for the stack to unwind. Otherwise we might return to
-  // invalid memory, causing a use-after-free.
-  void ScheduleCheckerDelete(const AccountId& account_id);
+  // We schedule the delete for `account_id`'s token handle fetcher to give a
+  // chance for the stack to unwind. Otherwise we might return to invalid
+  // memory, causing a use-after-free.
   void ScheduleFetcherDelete(const AccountId& account_id);
 
   // Checks if token handle is explicitly marked as valid for `account_id`.

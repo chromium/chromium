@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ash/login/signin/token_handle_store_impl.h"
 
-#include <algorithm>
+#include <utility>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -311,21 +313,18 @@ void TokenHandleStoreImpl::ReplyToTokenHandleCheck(
                                kTokenHandleStatusInvalid);
   }
 
-  std::ranges::for_each(
-      pending_callbacks_[account_id], [&](TokenValidationCallback& callback) {
-        std::move(callback).Run(account_id, token,
-                                /*reauth_required=*/is_reauth_required);
-      });
+  if (auto it = pending_checks_.find(account_id); it != pending_checks_.end()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+        FROM_HERE, std::move(it->second));
+    pending_checks_.erase(it);
+  }
 
-  pending_callbacks_[account_id].clear();
-
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(&TokenHandleStoreImpl::ScheduleCheckerDelete,
-                                weak_factory_.GetWeakPtr(), account_id));
-}
-
-void TokenHandleStoreImpl::ScheduleCheckerDelete(const AccountId& account_id) {
-  pending_checks_.erase(account_id);
+  std::vector<TokenValidationCallback> callbacks =
+      std::exchange(pending_callbacks_[account_id], {});
+  for (auto& callback : callbacks) {
+    std::move(callback).Run(account_id, token,
+                            /*reauth_required=*/is_reauth_required);
+  }
 }
 
 void TokenHandleStoreImpl::ScheduleFetcherDelete(const AccountId& account_id) {
