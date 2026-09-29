@@ -15,15 +15,12 @@ include_rules = [
   "+chrome/browser/ash/file_manager",
   "+chrome/browser/download",
   "+chrome/browser/profiles/profile.h",
+  "+chrome/browser/search/background",
   "+chrome/grit",
   "+chrome/test/base",
 ]
 
 specific_include_rules = {
-  # Only tests need these //chrome dependencies.
-  ".*_(unittest|browsertest|apitest|uitest)\\.cc": [
-    "+chrome/browser/search/background",
-  ],
   # Only used to install a TestingFactory for the test.
   "sensor_page_handler_unittest\\.cc": [
     "+chrome/browser/search_engines",

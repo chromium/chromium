@@ -43,7 +43,9 @@ include_rules = [
   "+chrome/browser/net",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
+  "+chrome/browser/sessions",
   "+chrome/browser/signin",
+  "+chrome/browser/ssl",
   "+chrome/browser/sync",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/aura/accessibility",
@@ -63,11 +65,6 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # Only tests need these //chrome dependencies.
-  ".*_(unittest|browsertest|apitest|uitest)\\.cc": [
-    "+chrome/browser/sessions",
-    "+chrome/browser/ssl",
-  ],
   ".*test\\..*": [
     "+chrome/browser/ash/policy/test_support",
     "+chrome/browser/extensions/browsertest_util.h",
