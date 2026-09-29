@@ -204,6 +204,48 @@ ScopedOrtSessionOptions CreateBaseSessionOptions(
   return session_options;
 }
 
+// Applies the session config entries required by `ep_name`. No-op for an EP
+// that is not in `kKnownEPs`.
+void ApplyEpConfigEntries(const OrtApi* ort_api,
+                          OrtSessionOptions* session_options,
+                          std::string_view ep_name) {
+  const auto ep_it = kKnownEPs.find(ep_name);
+  if (ep_it == kKnownEPs.end()) {
+    return;
+  }
+  for (const auto& [key, value] : ep_it->second.config_entries) {
+    CHECK_STATUS(ort_api->AddSessionConfigEntry(session_options, key.c_str(),
+                                                value.c_str()));
+  }
+}
+
+// Binds `target_ort_device` directly, bypassing the auto EP selection policy,
+// pins the session to that EP, and applies the EP's required config entries.
+// Shared by every path that targets a single specific device.
+void BindToTargetDevice(const OrtApi* ort_api,
+                        OrtSessionOptions* session_options,
+                        std::string_view ep_name,
+                        const OrtEnv* env,
+                        const OrtEpDevice* target_ort_device) {
+  CHECK_STATUS(ort_api->SessionOptionsAppendExecutionProvider_V2(
+      session_options, const_cast<OrtEnv*>(env), &target_ort_device,
+      /*num_ep_devices=*/1, /*ep_option_keys=*/nullptr,
+      /*ep_option_vals=*/nullptr, /*num_ep_options=*/0));
+
+  // Disable CPU EP fallback to ensure the session lands on the expected EP
+  // device.
+  CHECK_STATUS(ort_api->AddSessionConfigEntry(
+      session_options, kOrtSessionOptionsDisableCPUEPFallback, "1"));
+
+  // Setting the intra-op thread count to 1 stops ORT from eagerly spawning an
+  // intra-op thread pool per session. That pool only executes CPU kernels
+  // during graph execution, which never happens here since CPU EP fallback is
+  // disabled above.
+  CHECK_STATUS(ort_api->SetIntraOpNumThreads(session_options, 1));
+
+  ApplyEpConfigEntries(ort_api, session_options, ep_name);
+}
+
 // Builds the session options shared by both the GPU-process dispatch session
 // and the Compiler-process compile/warmup sessions.
 ScopedOrtSessionOptions CreateSessionOptionsForTargetDevice(
@@ -211,39 +253,25 @@ ScopedOrtSessionOptions CreateSessionOptionsForTargetDevice(
     const OrtEnv* env,
     const OrtEpDevice* target_ort_device) {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
-
   ScopedOrtSessionOptions session_options = CreateBaseSessionOptions(ep_name);
-
-  // Directly bind the target device to the session options, bypassing the
-  // auto EP selection policy.
-  CHECK_STATUS(ort_api->SessionOptionsAppendExecutionProvider_V2(
-      session_options.get(), const_cast<OrtEnv*>(env), &target_ort_device,
-      /*num_ep_devices=*/1, /*ep_option_keys=*/nullptr,
-      /*ep_option_vals=*/nullptr, /*num_ep_options=*/0));
-
-  // Disable CPU EP fallback to ensure the session will be created on the
-  // expected EP device.
-  CHECK_STATUS(ort_api->AddSessionConfigEntry(
-      session_options.get(), kOrtSessionOptionsDisableCPUEPFallback, "1"));
-
-  // Setting the intra-op thread count to 1 stops ORT from spawning an intra-op
-  // thread pool, which it otherwise creates eagerly per session. The pool is
-  // only used to execute CPU kernels during graph execution, which never
-  // happens here since CPU EP fallback is disabled above.
-  CHECK_STATUS(ort_api->SetIntraOpNumThreads(session_options.get(), 1));
-
-  auto ep_it = kKnownEPs.find(ep_name);
-  if (ep_it != kKnownEPs.end()) {
-    for (const auto& [key, value] : ep_it->second.config_entries) {
-      CHECK_STATUS(ort_api->AddSessionConfigEntry(session_options.get(),
-                                                  key.c_str(), value.c_str()));
-    }
-  }
-
+  BindToTargetDevice(ort_api, session_options.get(), ep_name, env,
+                     target_ort_device);
   return session_options;
 }
 
 }  // namespace
+
+ScopedOrtSessionOptions CreateTrivialModelSessionOptions(
+    const OrtEnv* env,
+    const OrtEpDevice* ep_device) {
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+  ScopedOrtSessionOptions session_options;
+  CHECK_STATUS(ort_api->CreateSessionOptions(
+      ScopedOrtSessionOptions::Receiver(session_options).get()));
+  BindToTargetDevice(ort_api, session_options.get(),
+                     ort_api->EpDevice_EpName(ep_device), env, ep_device);
+  return session_options;
+}
 
 // static
 base::expected<scoped_refptr<SessionOptions>, std::string>
@@ -266,24 +294,13 @@ SessionOptions::Create(mojom::CreateContextOptionsPtr context_options,
   ScopedOrtSessionOptions session_options =
       CreateBaseSessionOptions(ort_api->EpDevice_EpName(first_selected_device));
 
-  // Apply required session configs for selected EPs.
+  // Apply required session configs for each distinct selected EP.
   std::set<std::string_view> processed_ep_names;
   for (const auto* ep_device : selected_ep_devices) {
     CHECK(ep_device);
     std::string_view ep_name = ort_api->EpDevice_EpName(ep_device);
-    // Skip if we've already processed this EP.
-    if (processed_ep_names.contains(ep_name)) {
-      continue;
-    }
-    processed_ep_names.insert(ep_name);
-
-    const auto ep_it = kKnownEPs.find(ep_name);
-    if (ep_it == kKnownEPs.end()) {
-      continue;
-    }
-    for (const auto& [key, value] : ep_it->second.config_entries) {
-      CHECK_STATUS(ort_api->AddSessionConfigEntry(session_options.get(),
-                                                  key.c_str(), value.c_str()));
+    if (processed_ep_names.insert(ep_name).second) {
+      ApplyEpConfigEntries(ort_api, session_options.get(), ep_name);
     }
   }
 

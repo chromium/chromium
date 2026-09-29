@@ -935,12 +935,14 @@ base::expected<void, std::string> Environment::WarmupEpDeviceForCompilerProcess(
   auto* platform_functions = PlatformFunctions::GetInstance();
   const OrtCompileApi* ort_compile_api = platform_functions->ort_compile_api();
 
-  // Create the session options on the target device.
-  auto session_options =
-      SessionOptions::CreateForCompilation(target_device, this);
+  // Create minimal session options bound to the target device.
+  const OrtEpDevice* target_ort_device = FindRegisteredEpDevice(target_device);
+  CHECK(target_ort_device);
+  ScopedOrtSessionOptions session_options =
+      CreateTrivialModelSessionOptions(env_.get(), target_ort_device);
   ScopedOrtModelCompilationOptions compile_options;
   CHECK_STATUS(ort_compile_api->CreateModelCompilationOptionsFromSessionOptions(
-      env_.get(), session_options->get(),
+      env_.get(), session_options.get(),
       ScopedOrtModelCompilationOptions::Receiver(compile_options).get()));
   CHECK_STATUS(ort_compile_api->ModelCompilationOptions_SetInputModelFromBuffer(
       compile_options.get(), kTrivialModel, sizeof(kTrivialModel)));

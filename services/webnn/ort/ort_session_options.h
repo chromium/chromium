@@ -83,6 +83,15 @@ class SessionOptions final : public base::RefCountedThreadSafe<SessionOptions> {
   const mojom::CreateContextOptionsPtr context_options_;
 };
 
+// Builds a minimal session options for the internal `kTrivialModel`, used to
+// obtain an EP's device allocator or to warm up an EP. It binds `ep_device`
+// directly and keeps only functionally required configs, deliberately omitting
+// the debug switches and consumer-side hardening that the full session options
+// carry, which are irrelevant for this internal constant model.
+ScopedOrtSessionOptions CreateTrivialModelSessionOptions(
+    const OrtEnv* env,
+    const OrtEpDevice* ep_device);
+
 }  // namespace ort
 
 }  // namespace webnn

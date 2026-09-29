@@ -8,12 +8,12 @@
 
 #include "base/logging.h"
 #include "services/webnn/ort/environment.h"
+#include "services/webnn/ort/ort_session_options.h"
 #include "services/webnn/ort/ort_status.h"
 #include "services/webnn/ort/platform_functions_ort.h"
 #include "services/webnn/ort/trivial_model.h"
 #include "services/webnn/public/cpp/execution_providers_info.h"
 #include "third_party/windows_app_sdk_headers/src/inc/abi/winml/winml/onnxruntime_c_api.h"
-#include "third_party/windows_app_sdk_headers/src/inc/abi/winml/winml/onnxruntime_session_options_config_keys.h"
 
 namespace webnn::ort {
 
@@ -51,21 +51,12 @@ scoped_refptr<DeviceAllocator> DeviceAllocator::Create(
   // TODO(crbug.com/519646879): Remove the trivial session once WinML ships
   // ORT 1.27+, which supports getting a shared allocator directly from
   // OrtEnv without creating a session.
-  ScopedOrtSessionOptions cloned_session_options;
-  CHECK_STATUS(ort_api->CloneSessionOptions(
-      session_options->get(),
-      ScopedOrtSessionOptions::Receiver(cloned_session_options).get()));
-  // Model compilation is normally disabled in the GPU process when
-  // `features::kWebNNCompilerProcess` is active, but `kTrivialModel` contains
-  // uncompiled operators and would fail to compile without it, so re-enable it
-  // here temporarily.
-  CHECK_STATUS(ort_api->AddSessionConfigEntry(
-      cloned_session_options.get(), kOrtSessionOptionsDisableModelCompile,
-      "0"));
+  ScopedOrtSessionOptions trivial_session_options =
+      CreateTrivialModelSessionOptions(env->get(), first_selected_device);
   ScopedOrtSession trivial_session;
   CHECK_STATUS(ort_api->CreateSessionFromArray(
       env->get(), kTrivialModel, sizeof(kTrivialModel),
-      cloned_session_options.get(),
+      trivial_session_options.get(),
       ScopedOrtSession::Receiver(trivial_session).get()));
   CHECK(trivial_session.get());
 
