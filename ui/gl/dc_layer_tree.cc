@@ -644,12 +644,33 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
       hr = background_color_visual_->SetContent(nullptr);
       CHECK_EQ(hr, S_OK);
     } else {
-      const D2D_MATRIX_3X2_F matrix =
-          TransformToD2D_MATRIX_3X2_F(gfx::TransformBetweenRects(
-              gfx::RectF(kSolidColorSurfaceSize), gfx::RectF(quad_rect_)));
-      hr = Microsoft::WRL::ComPtr<IDCompositionVisual>(background_color_visual_)
-               ->SetTransform(matrix);
-      CHECK_EQ(hr, S_OK);
+      if (quad_rect_changed) {
+        const bool needs_scale =
+            quad_rect_.width() != kSolidColorSurfaceSize.width() ||
+            quad_rect_.height() != kSolidColorSurfaceSize.height();
+        if (needs_scale) {
+          const float scale_x =
+              static_cast<float>(quad_rect_.width()) /
+              static_cast<float>(kSolidColorSurfaceSize.width());
+          const float scale_y =
+              static_cast<float>(quad_rect_.height()) /
+              static_cast<float>(kSolidColorSurfaceSize.height());
+          const D2D_MATRIX_3X2_F matrix =
+              D2D1::Matrix3x2F::Scale(scale_x, scale_y);
+          hr = Microsoft::WRL::ComPtr<IDCompositionVisual>(
+                   background_color_visual_)
+                   ->SetTransform(matrix);
+          CHECK_EQ(hr, S_OK);
+        } else {
+          hr = background_color_visual_->SetTransform(nullptr);
+          CHECK_EQ(hr, S_OK);
+        }
+
+        hr = background_color_visual_->SetOffsetX(quad_rect_.x());
+        CHECK_EQ(hr, S_OK);
+        hr = background_color_visual_->SetOffsetY(quad_rect_.y());
+        CHECK_EQ(hr, S_OK);
+      }
 
       hr =
           background_color_visual_->SetContent(background_color_content_.Get());
