@@ -233,6 +233,7 @@ specific_include_rules = {
   ".*test\\.cc": [
     # Allowed to access user_manager in test code to set up testing environment
     # close to the production.
+    "+components/session_manager/test/user_session_test_environment.h",
     "+components/user_manager",
   ]
 }

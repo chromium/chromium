@@ -37,10 +37,10 @@
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/session_manager/session_manager_types.h"
-#include "components/user_manager/fake_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/known_user.h"
-#include "components/user_manager/scoped_user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/base_event_utils.h"
@@ -55,8 +55,9 @@ namespace {
 
 using ::cryptohome::KeyLabel;
 
-constexpr char kTestAccount[] = "user@test.com";
-constexpr GaiaId::Literal kFakeGaia("fake_gaia");
+constexpr AccountId::Literal kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("user@test.com",
+                                            GaiaId::Literal("fake_gaia"));
 constexpr char kExpectedPassword[] = "qwerty";
 constexpr char kExpectedPin[] = "150504";
 
@@ -77,6 +78,10 @@ class LocalAuthenticationRequestControllerImplTest : public LoginTestBase {
 
   // LoginScreenTest:
   void SetUp() override {
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(local_state());
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kTestAccountId));
+
     LoginTestBase::SetUp();
 
     CryptohomeMiscClient::InitializeFake();
@@ -85,14 +90,8 @@ class LocalAuthenticationRequestControllerImplTest : public LoginTestBase {
         FakeCryptohomeMiscClient::GetStubSystemSalt());
     UserDataAuthClient::InitializeFake();
     SystemSaltGetter::Initialize();
-    test_account_id_ = AccountId::FromUserEmailGaiaId(kTestAccount, kFakeGaia);
 
-    SetExpectedCredentialsWithDbusClient(test_account_id_, kExpectedPassword);
-
-    fake_user_manager_.Reset(
-        std::make_unique<user_manager::FakeUserManager>(local_state()));
-    fake_user_manager_->AddGaiaUser(test_account_id_,
-                                    user_manager::UserType::kRegular);
+    SetExpectedCredentialsWithDbusClient(kTestAccountId, kExpectedPassword);
   }
 
   void TearDown() override {
@@ -103,11 +102,11 @@ class LocalAuthenticationRequestControllerImplTest : public LoginTestBase {
       local_authentication_request_widget->Close(false /* validation success */,
                                                  nullptr);
     }
-    fake_user_manager_.Reset();
     SystemSaltGetter::Shutdown();
     UserDataAuthClient::Shutdown();
     CryptohomeMiscClient::Shutdown();
     LoginTestBase::TearDown();
+    user_session_test_environment_.reset();
   }
 
   void SetExpectedCredentialsWithDbusClient(const AccountId& account_id,
@@ -156,7 +155,7 @@ class LocalAuthenticationRequestControllerImplTest : public LoginTestBase {
   void StartLocalAuthenticationRequest() {
     // Configure the user context.
     std::unique_ptr<UserContext> user_context = std::make_unique<UserContext>(
-        user_manager::UserType::kRegular, test_account_id_);
+        user_manager::UserType::kRegular, kTestAccountId);
 
     user_context->SetAuthSessionIds(session_ids_.first, session_ids_.second);
 
@@ -200,9 +199,8 @@ class LocalAuthenticationRequestControllerImplTest : public LoginTestBase {
 
   base::test::ScopedFeatureList scoped_features_;
 
-  // Container object for the fake user manager for tests.
-  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
-      fake_user_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
 
   // Number of times the view was dismissed with close button.
   int close_action_ = 0;
@@ -210,12 +208,8 @@ class LocalAuthenticationRequestControllerImplTest : public LoginTestBase {
   // Number of times the view was dismissed after successful validation.
   int successful_validation_ = 0;
 
-  // Test account id.
-  AccountId test_account_id_;
-
   // Auth session ids.
   std::pair<std::string, std::string> session_ids_;
-
 };
 
 // Tests local authentication dialog showing/hiding and focus behavior for
@@ -425,6 +419,10 @@ class LocalAuthenticationWithPinControllerImplTest
 
   // LoginScreenTest:
   void SetUp() override {
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(local_state());
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kTestAccountId));
+
     NoSessionAshTestBase::SetUp();
 
     CryptohomeMiscClient::InitializeFake();
@@ -433,16 +431,11 @@ class LocalAuthenticationWithPinControllerImplTest
         FakeCryptohomeMiscClient::GetStubSystemSalt());
     UserDataAuthClient::InitializeFake();
     SystemSaltGetter::Initialize();
-    test_account_id_ = AccountId::FromUserEmailGaiaId(kTestAccount, kFakeGaia);
 
     SetExpectedCredentialsWithDbusClient();
-    fake_user_manager_.Reset(
-        std::make_unique<user_manager::FakeUserManager>(local_state()));
-    fake_user_manager_->AddGaiaUser(test_account_id_,
-                                    user_manager::UserType::kRegular);
 
     user_manager::KnownUser known_user(Shell::Get()->local_state());
-    known_user.SetStringPref(test_account_id_, prefs::kQuickUnlockPinSalt,
+    known_user.SetStringPref(kTestAccountId, prefs::kQuickUnlockPinSalt,
                              GetStubSystemSaltString());
 
     EXPECT_FALSE(IsDialogVisible());
@@ -463,11 +456,11 @@ class LocalAuthenticationWithPinControllerImplTest
     EXPECT_FALSE(IsDialogVisible());
 
     test_api_.reset();
-    fake_user_manager_.Reset();
     SystemSaltGetter::Shutdown();
     UserDataAuthClient::Shutdown();
     CryptohomeMiscClient::Shutdown();
     NoSessionAshTestBase::TearDown();
+    user_session_test_environment_.reset();
   }
 
   void SetExpectedCredentialsWithDbusClient() {
@@ -475,7 +468,7 @@ class LocalAuthenticationWithPinControllerImplTest
     test_api->set_enable_auth_check(true);
 
     const auto cryptohome_id =
-        cryptohome::CreateAccountIdentifierFromAccountId(test_account_id_);
+        cryptohome::CreateAccountIdentifierFromAccountId(kTestAccountId);
 
     test_api->AddExistingUser(cryptohome_id);
 
@@ -545,7 +538,7 @@ class LocalAuthenticationWithPinControllerImplTest
   void StartLocalAuthenticationRequest() {
     // Configure the user context.
     std::unique_ptr<UserContext> user_context = std::make_unique<UserContext>(
-        user_manager::UserType::kRegular, test_account_id_);
+        user_manager::UserType::kRegular, kTestAccountId);
 
     user_context->SetAuthSessionIds(session_ids_.first, session_ids_.second);
 
@@ -668,21 +661,17 @@ class LocalAuthenticationWithPinControllerImplTest
 
   base::test::ScopedFeatureList scoped_features_;
 
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+
   // Number of times the view was dismissed with close button.
   int close_action_ = 0;
 
   // Number of times the view was dismissed after successful validation.
   int successful_validation_ = 0;
 
-  // Test account id.
-  AccountId test_account_id_;
-
   // Auth session ids.
   std::pair<std::string, std::string> session_ids_;
-
-  // Container object for the fake user manager for tests.
-  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
-      fake_user_manager_;
 
   // Access the authentication parameters using auth_params_.
   const AuthenticationParams auth_params_ = GetParam();

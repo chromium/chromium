@@ -32,9 +32,9 @@
 #include "chromeos/ash/components/login/auth/public/cryptohome_key_constants.h"
 #include "chromeos/ash/components/login/auth/public/key.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/session_manager/session_manager_types.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/events/base_event_utils.h"
@@ -48,8 +48,9 @@ namespace {
 
 using ::cryptohome::KeyLabel;
 
-constexpr char kTestAccount[] = "user@test.com";
-constexpr GaiaId::Literal kFakeGaia("fake_gaia");
+constexpr AccountId::Literal kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("user@test.com",
+                                            GaiaId::Literal("fake_gaia"));
 constexpr char kExpectedPassword[] = "qwerty";
 
 class LocalAuthenticationRequestControllerImplPixelTest
@@ -76,6 +77,10 @@ class LocalAuthenticationRequestControllerImplPixelTest
   }
 
   void SetUp() override {
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(local_state());
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kTestAccountId));
+
     AshTestBase::SetUp();
     UpdateDisplay("600x800");
     auto* dark_light_mode_controller = DarkLightModeControllerImpl::Get();
@@ -90,16 +95,7 @@ class LocalAuthenticationRequestControllerImplPixelTest
     UserDataAuthClient::InitializeFake();
     SystemSaltGetter::Initialize();
 
-    test_account_id_ = AccountId::FromUserEmailGaiaId(kTestAccount, kFakeGaia);
-
-    SetExpectedCredentialsWithDbusClient(test_account_id_, kExpectedPassword);
-
-    auto fake_user_manager =
-        std::make_unique<user_manager::FakeUserManager>(local_state());
-    fake_user_manager->AddGaiaUser(test_account_id_,
-                                   user_manager::UserType::kRegular);
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
+    SetExpectedCredentialsWithDbusClient(kTestAccountId, kExpectedPassword);
   }
 
   void TearDown() override {
@@ -110,11 +106,11 @@ class LocalAuthenticationRequestControllerImplPixelTest
       local_authentication_request_widget->Close(false /* validation success */,
                                                  nullptr);
     }
-    scoped_user_manager_.reset();
     SystemSaltGetter::Shutdown();
     UserDataAuthClient::Shutdown();
     CryptohomeMiscClient::Shutdown();
     AshTestBase::TearDown();
+    user_session_test_environment_.reset();
   }
 
   void SetExpectedCredentialsWithDbusClient(const AccountId& account_id,
@@ -163,7 +159,7 @@ class LocalAuthenticationRequestControllerImplPixelTest
   void StartLocalAuthenticationRequest() {
     // Configure the user context.
     std::unique_ptr<UserContext> user_context = std::make_unique<UserContext>(
-        user_manager::UserType::kRegular, test_account_id_);
+        user_manager::UserType::kRegular, kTestAccountId);
 
     user_context->SetAuthSessionIds(session_ids_.first, session_ids_.second);
 
@@ -214,20 +210,17 @@ class LocalAuthenticationRequestControllerImplPixelTest
 
   base::test::ScopedFeatureList scoped_features_;
 
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+
   // Number of times the view was dismissed with close button.
   int close_action_ = 0;
 
   // Number of times the view was dismissed after successful validation.
   int successful_validation_ = 0;
 
-  // Test account id.
-  AccountId test_account_id_;
-
   // Auth session ids.
   std::pair<std::string, std::string> session_ids_;
-
-  // Container object for the fake user manager for tests.
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

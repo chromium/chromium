@@ -20,8 +20,9 @@
 #include "chromeos/ash/components/osauth/impl/request/webauthn_auth_request.h"
 #include "chromeos/ash/components/osauth/public/auth_parts.h"
 #include "chromeos/ash/components/osauth/public/request/auth_request.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/user_manager/fake_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -35,6 +36,8 @@ namespace {
 
 constexpr char kUserEmail[] = "expected_email@example.com";
 constexpr GaiaId::Literal kFakeGaia("fake_gaia");
+constexpr AccountId::Literal kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId(kUserEmail, kFakeGaia);
 constexpr char kExpectedPassword[] = "expected_password";
 constexpr char kExpectedPin[] = "123456";
 constexpr char kExpectedSalt[] = "test salt";
@@ -63,12 +66,17 @@ class ActiveSessionAuthControllerTest
                                       std::unique_ptr<WebAuthNCallback>>;
 
   void SetUp() override {
-    InitializeUserManager();
-    AddUserToUserManager();
     SystemSaltGetter::Initialize();
     CryptohomeMiscClient::InitializeFake();
     UserDataAuthClient::InitializeFake();
     auth_parts_ = AuthParts::Create(local_state());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(local_state());
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kTestAccountId));
+    user_session_test_environment_->LogIn(kTestAccountId);
+    ASSERT_FALSE(
+        user_manager::UserManager::Get()->IsUserCryptohomeDataEphemeral(
+            kTestAccountId));
 
     NoSessionAshTestBase::SetUp();
 
@@ -78,30 +86,13 @@ class ActiveSessionAuthControllerTest
 
   void TearDown() override {
     Shell::Get()->session_controller()->ClearUserSessionsForTest();
-
-    auth_parts_.reset();
-    user_manager_->Destroy();
-    user_manager_.reset();
-    SystemSaltGetter::Shutdown();
-    CryptohomeMiscClient::Shutdown();
-    UserDataAuthClient::Shutdown();
-
     NoSessionAshTestBase::TearDown();
-  }
 
-  void InitializeUserManager() {
-    user_manager_ =
-        std::make_unique<user_manager::FakeUserManager>(local_state());
-    user_manager_->Initialize();
-  }
-
-  void AddUserToUserManager() {
-    account_id_ = AccountId::FromUserEmailGaiaId(kUserEmail, kFakeGaia);
-    user_manager_->AddGaiaUser(account_id_, user_manager::UserType::kRegular);
-    user_manager_->UserLoggedIn(
-        account_id_,
-        user_manager::FakeUserManager::GetFakeUsernameHash(account_id_));
-    ASSERT_FALSE(user_manager_->IsUserCryptohomeDataEphemeral(account_id_));
+    user_session_test_environment_.reset();
+    auth_parts_.reset();
+    UserDataAuthClient::Shutdown();
+    CryptohomeMiscClient::Shutdown();
+    SystemSaltGetter::Shutdown();
   }
 
   std::string HashPassword(const std::string& unhashed_password) {
@@ -214,16 +205,16 @@ class ActiveSessionAuthControllerTest
   }
 
  protected:
-  AccountId account_id_;
-  std::unique_ptr<user_manager::FakeUserManager> user_manager_;
   std::unique_ptr<AuthParts> auth_parts_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
 };
 
 // Tests that the StartAuthSession call to cryptohome includes the correct
 // account id.
 TEST_P(ActiveSessionAuthControllerTest,
        StartAuthSessionCalledWithCorrectAccountIdAndReturnsPasswordFactor) {
-  AddGaiaPassword(account_id_, kExpectedPassword);
+  AddGaiaPassword(kTestAccountId, kExpectedPassword);
 
   auto* controller = static_cast<ActiveSessionAuthControllerImpl*>(
       Shell::Get()->active_session_auth_controller());
@@ -250,8 +241,8 @@ TEST_P(ActiveSessionAuthControllerTest,
 // Tests that the ListAuthFactors call to cryptohome includes the correct
 // account id and returns the password and pin factors.
 TEST_P(ActiveSessionAuthControllerTest, StartAuthSessionReturnsPasswordAndPin) {
-  AddGaiaPassword(account_id_, kExpectedPassword);
-  AddCryptohomePin(account_id_, kExpectedPin);
+  AddGaiaPassword(kTestAccountId, kExpectedPassword);
+  AddCryptohomePin(kTestAccountId, kExpectedPin);
 
   auto* controller = static_cast<ActiveSessionAuthControllerImpl*>(
       Shell::Get()->active_session_auth_controller());
@@ -274,7 +265,7 @@ TEST_P(ActiveSessionAuthControllerTest, StartAuthSessionReturnsPasswordAndPin) {
 // correct account id and password, and that the `OnAuthComplete` callback
 // is called with correct parameters.
 TEST_P(ActiveSessionAuthControllerTest, SubmitPassword) {
-  AddGaiaPassword(account_id_, kExpectedPassword);
+  AddGaiaPassword(kTestAccountId, kExpectedPassword);
 
   auto* controller = static_cast<ActiveSessionAuthControllerImpl*>(
       Shell::Get()->active_session_auth_controller());
@@ -311,7 +302,7 @@ TEST_P(ActiveSessionAuthControllerTest, SubmitPassword) {
 // correct account id and password, and that the `OnAuthComplete` callback
 // is not called with wrong credentials.
 TEST_P(ActiveSessionAuthControllerTest, WrongPassword) {
-  AddGaiaPassword(account_id_, kExpectedPassword);
+  AddGaiaPassword(kTestAccountId, kExpectedPassword);
 
   auto* controller = static_cast<ActiveSessionAuthControllerImpl*>(
       Shell::Get()->active_session_auth_controller());
@@ -348,11 +339,11 @@ TEST_P(ActiveSessionAuthControllerTest, WrongPassword) {
 // correct account id and pin, and that the `OnAuthComplete` callback
 // is called with the correct credentials.
 TEST_P(ActiveSessionAuthControllerTest, SubmitPin) {
-  AddGaiaPassword(account_id_, kExpectedPassword);
-  AddCryptohomePin(account_id_, kExpectedPin);
+  AddGaiaPassword(kTestAccountId, kExpectedPassword);
+  AddCryptohomePin(kTestAccountId, kExpectedPin);
 
   user_manager::KnownUser known_user(Shell::Get()->local_state());
-  known_user.SetStringPref(account_id_, prefs::kQuickUnlockPinSalt,
+  known_user.SetStringPref(kTestAccountId, prefs::kQuickUnlockPinSalt,
                            kExpectedSalt);
 
   auto* controller = static_cast<ActiveSessionAuthControllerImpl*>(
@@ -388,11 +379,11 @@ TEST_P(ActiveSessionAuthControllerTest, SubmitPin) {
 // account id and pin, and that the `OnAuthComplete` callback
 // is not called with a wrong credentials error reply.
 TEST_P(ActiveSessionAuthControllerTest, WrongPin) {
-  AddGaiaPassword(account_id_, kExpectedPassword);
-  AddCryptohomePin(account_id_, kExpectedPin);
+  AddGaiaPassword(kTestAccountId, kExpectedPassword);
+  AddCryptohomePin(kTestAccountId, kExpectedPin);
 
   user_manager::KnownUser known_user(Shell::Get()->local_state());
-  known_user.SetStringPref(account_id_, prefs::kQuickUnlockPinSalt,
+  known_user.SetStringPref(kTestAccountId, prefs::kQuickUnlockPinSalt,
                            kExpectedSalt);
 
   auto* controller = static_cast<ActiveSessionAuthControllerImpl*>(
@@ -428,12 +419,12 @@ TEST_P(ActiveSessionAuthControllerTest, WrongPin) {
 // correctly formed when pin and password authentication are both
 // tried.
 TEST_P(ActiveSessionAuthControllerTest, BadPinThenGoodPassword) {
-  AddGaiaPassword(account_id_, kExpectedPassword);
-  AddCryptohomePin(account_id_, kExpectedPin);
+  AddGaiaPassword(kTestAccountId, kExpectedPassword);
+  AddCryptohomePin(kTestAccountId, kExpectedPin);
   const std::string bad_pin = "bad_pin";
 
   user_manager::KnownUser known_user(Shell::Get()->local_state());
-  known_user.SetStringPref(account_id_, prefs::kQuickUnlockPinSalt,
+  known_user.SetStringPref(kTestAccountId, prefs::kQuickUnlockPinSalt,
                            kExpectedSalt);
 
   auto* controller = static_cast<ActiveSessionAuthControllerImpl*>(
@@ -483,12 +474,12 @@ TEST_P(ActiveSessionAuthControllerTest, BadPinThenGoodPassword) {
 
 // Check the format and content of pin lockout status message.
 TEST_P(ActiveSessionAuthControllerTest, PinLockoutMessage) {
-  AddGaiaPassword(account_id_, kExpectedPassword);
-  AddCryptohomePin(account_id_, kExpectedPin);
+  AddGaiaPassword(kTestAccountId, kExpectedPassword);
+  AddCryptohomePin(kTestAccountId, kExpectedPin);
   const std::string bad_pin = "bad_pin";
 
   user_manager::KnownUser known_user(Shell::Get()->local_state());
-  known_user.SetStringPref(account_id_, prefs::kQuickUnlockPinSalt,
+  known_user.SetStringPref(kTestAccountId, prefs::kQuickUnlockPinSalt,
                            kExpectedSalt);
 
   auto* controller = static_cast<ActiveSessionAuthControllerImpl*>(
@@ -518,7 +509,7 @@ TEST_P(ActiveSessionAuthControllerTest, PinLockoutMessage) {
 // Tests that the OnAuthCancel callback is called with the correct
 // parameters.
 TEST_P(ActiveSessionAuthControllerTest, OnAuthCancel) {
-  AddGaiaPassword(account_id_, kExpectedPassword);
+  AddGaiaPassword(kTestAccountId, kExpectedPassword);
 
   auto* controller = static_cast<ActiveSessionAuthControllerImpl*>(
       Shell::Get()->active_session_auth_controller());
@@ -549,7 +540,7 @@ TEST_P(ActiveSessionAuthControllerTest, OnAuthCancel) {
 // Tests that the dialog is not shown if the user has no authentication factors.
 TEST_P(ActiveSessionAuthControllerTest, WithoutAnyFactor) {
   auto account_identifier =
-        cryptohome::CreateAccountIdentifierFromAccountId(account_id_);
+      cryptohome::CreateAccountIdentifierFromAccountId(kTestAccountId);
 
   FakeUserDataAuthClient::TestApi::Get()->AddExistingUser(account_identifier);
 
@@ -567,15 +558,15 @@ TEST_P(ActiveSessionAuthControllerTest, WithoutAnyFactor) {
 // Validate PIN status with PIN only.
 TEST_P(ActiveSessionAuthControllerTest, PinOnlyLockoutMessage) {
   auto account_identifier =
-      cryptohome::CreateAccountIdentifierFromAccountId(account_id_);
+      cryptohome::CreateAccountIdentifierFromAccountId(kTestAccountId);
 
   FakeUserDataAuthClient::TestApi::Get()->AddExistingUser(account_identifier);
 
-  AddCryptohomePin(account_id_, kExpectedPin);
+  AddCryptohomePin(kTestAccountId, kExpectedPin);
   const std::string bad_pin = "bad_pin";
 
   user_manager::KnownUser known_user(Shell::Get()->local_state());
-  known_user.SetStringPref(account_id_, prefs::kQuickUnlockPinSalt,
+  known_user.SetStringPref(kTestAccountId, prefs::kQuickUnlockPinSalt,
                            kExpectedSalt);
 
   auto* controller = static_cast<ActiveSessionAuthControllerImpl*>(
@@ -607,14 +598,14 @@ TEST_P(ActiveSessionAuthControllerTest, PinOnlyLockoutMessage) {
 // is called with the correct credentials.
 TEST_P(ActiveSessionAuthControllerTest, PinOnlySubmit) {
   auto account_identifier =
-      cryptohome::CreateAccountIdentifierFromAccountId(account_id_);
+      cryptohome::CreateAccountIdentifierFromAccountId(kTestAccountId);
 
   FakeUserDataAuthClient::TestApi::Get()->AddExistingUser(account_identifier);
 
-  AddCryptohomePin(account_id_, kExpectedPin);
+  AddCryptohomePin(kTestAccountId, kExpectedPin);
 
   user_manager::KnownUser known_user(Shell::Get()->local_state());
-  known_user.SetStringPref(account_id_, prefs::kQuickUnlockPinSalt,
+  known_user.SetStringPref(kTestAccountId, prefs::kQuickUnlockPinSalt,
                            kExpectedSalt);
 
   auto* controller = static_cast<ActiveSessionAuthControllerImpl*>(

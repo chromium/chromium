@@ -17,8 +17,8 @@
 #include "base/time/time.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
 #include "components/account_id/account_id.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/account_id/account_id_literal.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/views/test/views_test_utils.h"
@@ -30,8 +30,9 @@ namespace ash {
 
 namespace {
 
-constexpr char kTestAccount[] = "user@test.com";
-constexpr GaiaId::Literal kFakeGaia("fake_gaia");
+constexpr AccountId::Literal kTestAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("user@test.com",
+                                            GaiaId::Literal("fake_gaia"));
 constexpr char16_t kTitle[] = u"title";
 constexpr char16_t kDescription[] = u"description";
 
@@ -45,25 +46,19 @@ class ActiveSessionAuthViewUnitTest : public AshTestBase {
 
  protected:
   void SetUp() override {
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(local_state());
+    ASSERT_TRUE(user_session_test_environment_->AddRegularUser(kTestAccountId));
+
     AshTestBase::SetUp();
 
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
     widget_->Show();
 
-    auto fake_user_manager =
-        std::make_unique<user_manager::FakeUserManager>(local_state());
-
-    AccountId account_id =
-        AccountId::FromUserEmailGaiaId(kTestAccount, kFakeGaia);
-    fake_user_manager->AddGaiaUser(account_id,
-                                   user_manager::UserType::kRegular);
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
-
     container_view_ =
         widget_->SetContentsView(std::make_unique<ActiveSessionAuthView>(
-            account_id, kTitle, kDescription,
+            kTestAccountId, kTitle, kDescription,
             AuthFactorSet{AuthInputType::kPassword, AuthInputType::kPin}));
     test_api_ =
         std::make_unique<ActiveSessionAuthView::TestApi>(container_view_);
@@ -91,9 +86,9 @@ class ActiveSessionAuthViewUnitTest : public AshTestBase {
     mock_observer_ = std::make_unique<MockActiveSessionAuthViewObserver>();
     container_view_->AddObserver(mock_observer_.get());
 
-    CHECK(close_button_->GetVisible());
-    CHECK(test_api_header_->GetView()->GetVisible());
-    CHECK(test_api_auth_container_->GetView()->GetVisible());
+    ASSERT_TRUE(close_button_->GetVisible());
+    ASSERT_TRUE(test_api_header_->GetView()->GetVisible());
+    ASSERT_TRUE(test_api_auth_container_->GetView()->GetVisible());
   }
 
   void TearDown() override {
@@ -110,10 +105,12 @@ class ActiveSessionAuthViewUnitTest : public AshTestBase {
     mock_observer_.reset();
     container_view_ = nullptr;
     widget_.reset();
-    scoped_user_manager_.reset();
     AshTestBase::TearDown();
+    user_session_test_environment_.reset();
   }
 
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<MockActiveSessionAuthViewObserver> mock_observer_;
   std::unique_ptr<AuthInputRowView::TestApi> test_api_pin_input_;
@@ -126,7 +123,6 @@ class ActiveSessionAuthViewUnitTest : public AshTestBase {
   std::unique_ptr<ActiveSessionAuthView::TestApi> test_api_;
   raw_ptr<views::Button> close_button_;
   raw_ptr<ActiveSessionAuthView> container_view_ = nullptr;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
 // Verify close observer.
