@@ -15,7 +15,6 @@ import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -146,7 +145,11 @@ public class DisplayCutoutTabHelper implements UserData {
 
         @Override
         public boolean isShortEdgesCutoutModeEnabled() {
-            return ChromeFeatureList.sWebAppShortEdgesCutoutMode.isEnabled();
+            Activity activity = getAttachedActivity();
+            if (!(activity instanceof BaseCustomTabActivity baseCustomTabActivity)) return false;
+            return baseCustomTabActivity.getIntentDataProvider().isWebappOrWebApkActivity()
+                    && BaseCustomTabActivity.isShortEdgesCutoutModeEnabledForDisplayMode(
+                            getDisplayMode());
         }
 
         /**

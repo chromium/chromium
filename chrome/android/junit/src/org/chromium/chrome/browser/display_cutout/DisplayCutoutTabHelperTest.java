@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.display_cutout;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -18,7 +21,12 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
+import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeManager;
@@ -42,6 +50,7 @@ public class DisplayCutoutTabHelperTest {
     @Mock private EdgeToEdgeManager mManagerB;
     @Mock private EdgeToEdgeStateProvider mProviderA;
     @Mock private EdgeToEdgeStateProvider mProviderB;
+    @Mock private BrowserServicesIntentDataProvider mIntentDataProvider;
 
     @Before
     public void setUp() {
@@ -57,6 +66,89 @@ public class DisplayCutoutTabHelperTest {
 
         when(mWindowAndroidNonCct.getActivity())
                 .thenReturn(new WeakReference<>(mNonCustomTabActivity));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
+    public void testStandaloneShortEdgesRequiresParam() {
+        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidA);
+        when(mActivityA.getIntentDataProvider()).thenReturn(mIntentDataProvider);
+        when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.WEBAPP);
+        when(mIntentDataProvider.getResolvedDisplayMode()).thenReturn(DisplayMode.STANDALONE);
+        DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate delegate =
+                new DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate(mTab);
+
+        assertFalse(delegate.isShortEdgesCutoutModeEnabled());
+        ChromeFeatureList.sWebAppShortEdgesCutoutModeStandalone.setForTesting(true);
+        assertTrue(delegate.isShortEdgesCutoutModeEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
+    public void testFullscreenShortEdgesDoesNotRequireParam() {
+        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidA);
+        when(mActivityA.getIntentDataProvider()).thenReturn(mIntentDataProvider);
+        when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.WEBAPP);
+        when(mIntentDataProvider.getResolvedDisplayMode()).thenReturn(DisplayMode.FULLSCREEN);
+        DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate delegate =
+                new DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate(mTab);
+
+        assertTrue(delegate.isShortEdgesCutoutModeEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
+    public void testTwaFullscreenDoesNotUseShortEdges() {
+        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidA);
+        when(mActivityA.getIntentDataProvider()).thenReturn(mIntentDataProvider);
+        when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
+        when(mIntentDataProvider.getResolvedDisplayMode()).thenReturn(DisplayMode.FULLSCREEN);
+        DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate delegate =
+                new DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate(mTab);
+
+        assertEquals(DisplayMode.FULLSCREEN, delegate.getDisplayMode());
+        assertFalse(delegate.isShortEdgesCutoutModeEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
+    public void testTwaStandaloneDoesNotUseShortEdgesWithParam() {
+        ChromeFeatureList.sWebAppShortEdgesCutoutModeStandalone.setForTesting(true);
+        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidA);
+        when(mActivityA.getIntentDataProvider()).thenReturn(mIntentDataProvider);
+        when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.TRUSTED_WEB_ACTIVITY);
+        when(mIntentDataProvider.getResolvedDisplayMode()).thenReturn(DisplayMode.STANDALONE);
+        DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate delegate =
+                new DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate(mTab);
+
+        assertEquals(DisplayMode.STANDALONE, delegate.getDisplayMode());
+        assertFalse(delegate.isShortEdgesCutoutModeEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
+    public void testMinimalUiDoesNotUseShortEdges() {
+        ChromeFeatureList.sWebAppShortEdgesCutoutModeStandalone.setForTesting(true);
+        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidA);
+        when(mActivityA.getIntentDataProvider()).thenReturn(mIntentDataProvider);
+        when(mIntentDataProvider.getActivityType()).thenReturn(ActivityType.WEBAPP);
+        when(mIntentDataProvider.getResolvedDisplayMode()).thenReturn(DisplayMode.MINIMAL_UI);
+        DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate delegate =
+                new DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate(mTab);
+
+        assertFalse(delegate.isShortEdgesCutoutModeEnabled());
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
+    public void testBrowserDisplayModeDoesNotUseShortEdges() {
+        ChromeFeatureList.sWebAppShortEdgesCutoutModeStandalone.setForTesting(true);
+        // A tab in a regular browser activity reports DisplayMode.BROWSER.
+        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroidNonCct);
+        DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate delegate =
+                new DisplayCutoutTabHelper.ChromeDisplayCutoutDelegate(mTab);
+
+        assertFalse(delegate.isShortEdgesCutoutModeEnabled());
     }
 
     @Test

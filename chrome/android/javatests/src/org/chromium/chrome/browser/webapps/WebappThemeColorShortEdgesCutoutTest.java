@@ -46,6 +46,10 @@ public class WebappThemeColorShortEdgesCutoutTest {
     private static final int PAGE_THEME_COLOR = Color.RED;
     private static final int UPDATED_PAGE_THEME_COLOR = Color.BLUE;
 
+    /** Opts standalone webapps into the short-edges cutout mode, which is off by default. */
+    private static final String SHORT_EDGES_CUTOUT_MODE_STANDALONE =
+            ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE + ":enable_standalone/true";
+
     @Rule public final WebappActivityTestRule mActivityTestRule = new WebappActivityTestRule();
 
     @Test
@@ -53,7 +57,7 @@ public class WebappThemeColorShortEdgesCutoutTest {
     @Feature({"Webapps"})
     @MaxAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
-    @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
+    @EnableFeatures(SHORT_EDGES_CUTOUT_MODE_STANDALONE)
     public void testThemeColorTransitionsWithViewportFitChanges() throws Exception {
         String pageWithThemeColorUrl =
                 mActivityTestRule
@@ -106,10 +110,7 @@ public class WebappThemeColorShortEdgesCutoutTest {
     @LargeTest
     @Feature({"Webapps"})
     @MinAndroidSdkLevel(Build.VERSION_CODES.VANILLA_ICE_CREAM)
-    @EnableFeatures({
-        ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE,
-        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
-    })
+    @EnableFeatures({SHORT_EDGES_CUTOUT_MODE_STANDALONE, ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
     public void testThemeColorTransitionsWithViewportFitChanges_EdgeToEdgeEverywhere()
             throws Exception {
         String pageWithThemeColorUrl =

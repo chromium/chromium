@@ -86,6 +86,10 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP) // crbug.com/463649037
 public class WebappNavigationTest {
+    /** Opts standalone webapps into the short-edges cutout mode, which is off by default. */
+    private static final String SHORT_EDGES_CUTOUT_MODE_STANDALONE =
+            ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE + ":enable_standalone/true";
+
     public final WebappActivityTestRule mActivityTestRule = new WebappActivityTestRule();
 
     public MockCertVerifierRuleAndroid mCertVerifierRule =
@@ -210,7 +214,7 @@ public class WebappNavigationTest {
     // Keep testing this flow without E2E everywhere after its feature flag is cleaned up.
     @MaxAndroidSdkLevel(Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
     @Features.DisableFeatures({ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
-    @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
+    @EnableFeatures(SHORT_EDGES_CUTOUT_MODE_STANDALONE)
     public void testRegularLinkOffOriginShortEdgesCutoutMode() throws Exception {
         runOffOriginShortEdgesCutoutModeTest(DisplayMode.STANDALONE);
     }
@@ -294,10 +298,7 @@ public class WebappNavigationTest {
     @Feature({"Webapps"})
     @Restriction(DeviceFormFactor.PHONE)
     @MinAndroidSdkLevel(Build.VERSION_CODES.VANILLA_ICE_CREAM)
-    @EnableFeatures({
-        ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE,
-        ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE
-    })
+    @EnableFeatures({SHORT_EDGES_CUTOUT_MODE_STANDALONE, ChromeFeatureList.EDGE_TO_EDGE_EVERYWHERE})
     public void testRegularLinkOffOriginShortEdgesCutoutMode_EdgeToEdgeEverywhere()
             throws Exception {
         WebappActivity activity = runWebappActivityAndWaitForIdle(mActivityTestRule.createIntent());

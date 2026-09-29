@@ -2409,6 +2409,10 @@ public abstract class ChromeFeatureList {
             newIntCachedFeatureParam(
                     ANDROID_TIPS_NOTIFICATIONS_V2, "max_tips_opt_in_promo_show_count", 2);
 
+    public static final BooleanCachedFeatureParam sWebAppShortEdgesCutoutModeStandalone =
+            newBooleanCachedFeatureParam(
+                    WEB_APP_SHORT_EDGES_CUTOUT_MODE, "enable_standalone", false);
+
     /** All {@link CachedFeatureParam}s of features in this FeatureList */
     public static final List<CachedFeatureParam<?>> sParamsCached =
             List.of(
@@ -2508,7 +2512,8 @@ public abstract class ChromeFeatureList {
                     sTouchToSearchCalloutIph,
                     sTouchToSearchCalloutSnippetAsSubtitle,
                     sUseChimeAndroidSdkAlwaysRegister,
-                    sWebApkMinShellApkVersionValue
+                    sWebApkMinShellApkVersionValue,
+                    sWebAppShortEdgesCutoutModeStandalone
                     // keep-sorted end
                     );
 

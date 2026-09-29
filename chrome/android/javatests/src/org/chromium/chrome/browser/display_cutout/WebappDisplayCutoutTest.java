@@ -29,6 +29,10 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class WebappDisplayCutoutTest {
+    /** Opts standalone webapps into the short-edges cutout mode, which is off by default. */
+    private static final String SHORT_EDGES_CUTOUT_MODE_STANDALONE =
+            ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE + ":enable_standalone/true";
+
     @Rule public WebappDisplayCutoutTestRule mTestRule = new WebappDisplayCutoutTestRule();
 
     /** Test that a safe area is not applied when we have viewport-fit=cover and a normal webapp. */
@@ -74,12 +78,12 @@ public class WebappDisplayCutoutTest {
 
     /**
      * Test that a safe area is applied when we have viewport-fit=cover and a standalone display
-     * mode with the short-edges cutout feature enabled.
+     * mode with the short-edges cutout feature and its standalone parameter enabled.
      */
     @Test
     @LargeTest
     @WebappDisplayCutoutTestRule.TestConfiguration(displayMode = DisplayMode.STANDALONE)
-    @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
+    @EnableFeatures(SHORT_EDGES_CUTOUT_MODE_STANDALONE)
     // Tablets and desktop run the webapp in a windowed container where SHORT_EDGES never applies.
     @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testViewportFitWebapp_Standalone() throws TimeoutException {
@@ -91,13 +95,13 @@ public class WebappDisplayCutoutTest {
     }
 
     /**
-     * Test that a standalone webapp with the short-edges cutout feature enabled does not draw under
-     * the cutout when the page never opts in via viewport-fit=cover.
+     * Test that a standalone webapp opted into the short-edges cutout mode does not draw under the
+     * cutout when the page never opts in via viewport-fit=cover.
      */
     @Test
     @LargeTest
     @WebappDisplayCutoutTestRule.TestConfiguration(displayMode = DisplayMode.STANDALONE)
-    @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
+    @EnableFeatures(SHORT_EDGES_CUTOUT_MODE_STANDALONE)
     // Tablets and desktop run the webapp in a windowed container where SHORT_EDGES never applies.
     @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testViewportFitWebapp_Standalone_DefaultViewportFit() throws TimeoutException {
@@ -109,13 +113,13 @@ public class WebappDisplayCutoutTest {
     }
 
     /**
-     * Test that a standalone webapp with the short-edges cutout feature enabled updates the window
+     * Test that a standalone webapp opted into the short-edges cutout mode updates the window
      * layout when the page dynamically changes viewport-fit via JavaScript after load.
      */
     @Test
     @LargeTest
     @WebappDisplayCutoutTestRule.TestConfiguration(displayMode = DisplayMode.STANDALONE)
-    @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
+    @EnableFeatures(SHORT_EDGES_CUTOUT_MODE_STANDALONE)
     // Tablets and desktop run the webapp in a windowed container where SHORT_EDGES never applies.
     @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testViewportFitWebapp_Standalone_DynamicViewportFit() throws TimeoutException {
@@ -169,6 +173,24 @@ public class WebappDisplayCutoutTest {
     // Tablets and desktop run the webapp in a windowed container where SHORT_EDGES never applies.
     @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP)
     public void testViewportFitWebapp_Standalone_FeatureDisabled() throws TimeoutException {
+        mTestRule.setViewportFit(DisplayCutoutTestRule.VIEWPORT_FIT_COVER);
+
+        mTestRule.waitForSafeArea(DisplayCutoutTestRule.TEST_SAFE_AREA_WITHOUT_CUTOUT);
+        mTestRule.waitForLayoutInDisplayCutoutMode(
+                WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT);
+    }
+
+    /**
+     * Test that a standalone webapp keeps the pre-flag behavior when the short-edges cutout feature
+     * is enabled without its standalone parameter, which is the default experiment configuration.
+     */
+    @Test
+    @LargeTest
+    @WebappDisplayCutoutTestRule.TestConfiguration(displayMode = DisplayMode.STANDALONE)
+    @EnableFeatures(ChromeFeatureList.WEB_APP_SHORT_EDGES_CUTOUT_MODE)
+    // Tablets and desktop run the webapp in a windowed container where SHORT_EDGES never applies.
+    @DisableIf.Device(DeviceFormFactor.TABLET_OR_DESKTOP)
+    public void testViewportFitWebapp_Standalone_StandaloneParamDisabled() throws TimeoutException {
         mTestRule.setViewportFit(DisplayCutoutTestRule.VIEWPORT_FIT_COVER);
 
         mTestRule.waitForSafeArea(DisplayCutoutTestRule.TEST_SAFE_AREA_WITHOUT_CUTOUT);

@@ -831,6 +831,13 @@ const FeatureEntry::FeatureVariation kAndroidSidePanelDevFeatureVariations[] = {
     {"Window Scoped", kAndroidSidePanelDevFeatureWindowScoped, nullptr},
     {"Tab Scoped", kAndroidSidePanelDevFeatureTabScoped, nullptr}};
 
+const FeatureEntry::FeatureParam kWebAppShortEdgesCutoutModeStandalone[] = {
+    {"enable_standalone", "true"}};
+
+const FeatureEntry::FeatureVariation kWebAppShortEdgesCutoutModeVariations[] = {
+    {"(Standalone also enabled)", kWebAppShortEdgesCutoutModeStandalone,
+     nullptr}};
+
 const FeatureEntry::FeatureParam
     kEnableSwipeToSwitchPaneEmphasizedMaxDuration250ms[] = {
         {"use_emphasized_interpolator", "true"},
@@ -13027,7 +13034,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"web-app-short-edges-cutout-mode",
      flag_descriptions::kWebAppShortEdgesCutoutModeName,
      flag_descriptions::kWebAppShortEdgesCutoutModeDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kWebAppShortEdgesCutoutMode)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         chrome::android::kWebAppShortEdgesCutoutMode,
+         kWebAppShortEdgesCutoutModeVariations,
+         "WebAppShortEdgesCutoutMode")},
 
     {"compositor-view-remeasure-fix",
      flag_descriptions::kCompositorViewRemeasureFixName,

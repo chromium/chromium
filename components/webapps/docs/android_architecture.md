@@ -462,10 +462,11 @@ There are two paths that enable drawing into the cutout area:
     `viewport-fit` value.
 
 - **Non-immersive edge-to-edge, deferred to `DisplayCutoutController`** (behind
-  the `WebAppShortEdgesCutoutMode` feature):
+  the `WebAppShortEdgesCutoutMode` feature and its default-off
+  `enable_standalone` parameter):
 
-  - With the feature enabled, `display: standalone` webapps no longer draw
-    edge-to-edge unconditionally at activity creation:
+  - With the feature and parameter enabled, `display: standalone` webapps no
+    longer draw edge-to-edge unconditionally at activity creation:
     `WebappActivity#shouldDrawEdgeToEdgeOnCreate` returns false, so the activity
     starts with the default (non-edge-to-edge) window layout.
   - Instead, `DisplayCutoutController` takes over once the page's `viewport-fit`
@@ -476,8 +477,9 @@ There are two paths that enable drawing into the cutout area:
   - The controller also reacts to dynamic changes: if a page updates its
     `viewport-fit` meta tag via JavaScript after load, the window layout is
     updated accordingly.
-  - With the feature disabled, standalone webapps keep the legacy behavior of
-    drawing edge-to-edge on creation regardless of `viewport-fit`.
+  - With the feature disabled or `enable_standalone` false, standalone webapps
+    keep the legacy behavior of drawing edge-to-edge on creation regardless of
+    `viewport-fit` when edge-to-edge everywhere is enabled.
 
 ### TWA Launch Parameters
 

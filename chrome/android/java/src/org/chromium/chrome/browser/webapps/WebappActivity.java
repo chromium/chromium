@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browserservices.intents.WebappIntentUtils;
 import org.chromium.chrome.browser.customtabs.BaseCustomTabActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.ui.util.ColorUtils;
 
@@ -39,9 +38,28 @@ public class WebappActivity extends BaseCustomTabActivity {
 
     private static @Nullable BrowserServicesIntentDataProvider sIntentDataProviderForTesting;
 
+    /**
+     * Provider built before {@link #performPreInflationStartup()} so that the edge-to-edge
+     * decisions below can read the display mode, along with the intent it was parsed from. It is
+     * handed back to the {@link #buildIntentDataProvider} call for that same intent, so the intent
+     * is only parsed once. {@code mBuiltStartupIntentDataProvider} is tracked separately because
+     * parsing an invalid intent legitimately yields a null provider.
+     */
+    private @Nullable BrowserServicesIntentDataProvider mStartupIntentDataProvider;
+
+    private @Nullable Intent mStartupIntent;
+    private boolean mBuiltStartupIntentDataProvider;
+
     @Override
     protected @Nullable BrowserServicesIntentDataProvider buildIntentDataProvider(
             Intent intent, @CustomTabsIntent.ColorScheme int colorScheme) {
+        if (mBuiltStartupIntentDataProvider && intent == mStartupIntent) {
+            BrowserServicesIntentDataProvider provider = mStartupIntentDataProvider;
+            mStartupIntentDataProvider = null;
+            mStartupIntent = null;
+            mBuiltStartupIntentDataProvider = false;
+            return provider;
+        }
         if (intent == null) return null;
 
         if (sIntentDataProviderForTesting != null) {
@@ -73,25 +91,49 @@ public class WebappActivity extends BaseCustomTabActivity {
         ResettersForTesting.register(() -> sIntentDataProviderForTesting = null);
     }
 
-    // When sWebAppShortEdgesCutoutMode is enabled, intentionally skip the activity-level
-    // edge-to-edge token at creation time and let DisplayCutoutController acquire it later,
-    // only after the page declares viewport-fit=cover. Drawing edge-to-edge unconditionally on
-    // create would push standalone PWAs under the status bar even when the page never opted in.
+    /**
+     * Whether this webapp uses the short-edges cutout mode, where {@link
+     * org.chromium.components.browser_ui.display_cutout.DisplayCutoutController} owns the
+     * edge-to-edge state instead of the activity. See {@link
+     * BaseCustomTabActivity#isShortEdgesCutoutModeEnabledForDisplayMode} for the display modes this
+     * applies to.
+     */
+    private boolean isShortEdgesCutoutModeEnabledForApp() {
+        BrowserServicesIntentDataProvider provider = getIntentDataProvider();
+        if (provider == null) {
+            if (!mBuiltStartupIntentDataProvider) {
+                // The color scheme is unused when parsing a webapp intent, and the night mode
+                // controller this activity would read it from does not exist this early.
+                mStartupIntent = getIntent();
+                mStartupIntentDataProvider =
+                        buildIntentDataProvider(
+                                mStartupIntent, CustomTabsIntent.COLOR_SCHEME_LIGHT);
+                mBuiltStartupIntentDataProvider = true;
+            }
+            provider = mStartupIntentDataProvider;
+        }
+        return provider != null
+                && isShortEdgesCutoutModeEnabledForDisplayMode(provider.getResolvedDisplayMode());
+    }
+
+    // In short-edges cutout mode, intentionally skip the activity-level edge-to-edge token at
+    // creation time and let DisplayCutoutController acquire it later, only after the page declares
+    // viewport-fit=cover. Drawing edge-to-edge unconditionally on create would push webapps under
+    // the status bar even when the page never opted in.
     @Override
     protected boolean shouldDrawEdgeToEdgeOnCreate() {
-        return !ChromeFeatureList.sWebAppShortEdgesCutoutMode.isEnabled()
-                && super.shouldDrawEdgeToEdgeOnCreate();
+        return !isShortEdgesCutoutModeEnabledForApp() && super.shouldDrawEdgeToEdgeOnCreate();
     }
 
     @Override
     protected boolean canColorStatusBarWithEdgeToEdgeHelper() {
-        return ChromeFeatureList.sWebAppShortEdgesCutoutMode.isEnabled()
+        return isShortEdgesCutoutModeEnabledForApp()
                 || super.canColorStatusBarWithEdgeToEdgeHelper();
     }
 
     @Override
     protected boolean canSetTransparentStatusBarWithoutDelegate() {
-        return ChromeFeatureList.sWebAppShortEdgesCutoutMode.isEnabled();
+        return isShortEdgesCutoutModeEnabledForApp();
     }
 
     @Override
