@@ -254,6 +254,9 @@ const char kCastMojoBrokerPath[] = "cast-mojo-broker-path";
 // Allows specifying the base::ASSETS dir for Cast via commandline.
 const char kCastAssetsDir[] = "cast-assets-dir";
 
+const char kHomeEnvOverride[] = "home-env-override";
+
+
 }  // namespace switches
 
 namespace chromecast {

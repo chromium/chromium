@@ -52,6 +52,7 @@ cast_source_set("cast_starboard_runtime_main") {
     "//base",
     "//chromecast/app",
     "//content/public/app",
+    "//chromecast/base:chromecast_switches",
   ]
 }
 

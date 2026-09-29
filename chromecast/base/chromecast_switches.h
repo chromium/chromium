@@ -121,6 +121,8 @@ extern const char kCastMojoBrokerPath[];
 // Allows specifying the base::ASSETS dir for Cast via commandline.
 extern const char kCastAssetsDir[];
 
+extern const char kHomeEnvOverride[];
+
 }  // namespace switches
 
 namespace chromecast {

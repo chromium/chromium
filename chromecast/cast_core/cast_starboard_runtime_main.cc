@@ -23,12 +23,12 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "chromecast/app/cast_main_delegate.h"
+#include "chromecast/base/chromecast_switches.h"
 #include "chromecast/cast_core/child_log_process.h"
 #include "content/public/app/content_main.h"
 
 namespace {
 
-constexpr char kHomeEnvOverride[] = "home-env-override";
 constexpr char kRuntimeHomeSubdirUsedFile[] = ".dirty";
 constexpr char kParametersKey[] = "parameters";
 constexpr char kArgvKey[] = "argv";
@@ -62,8 +62,8 @@ class JSONArgsParser {
 
     // JSON must be the following format. All keys and values are strings.
     // {"parameters":{"argv":["arg1", ...]}}
-    std::optional<base::DictValue> root =
-        base::JSONReader::ReadDict(argv[1], base::JSON_PARSE_CHROMIUM_EXTENSIONS);
+    std::optional<base::DictValue> root = base::JSONReader::ReadDict(
+        argv[1], base::JSON_PARSE_CHROMIUM_EXTENSIONS);
 
     if (!root) {
       return false;
@@ -114,11 +114,13 @@ int main(int argc, const char** argv) {
   content::ContentMainParams params(&delegate);
 
   base::CommandLine temp_cmd(args.argc(), args.argv());
-  std::string home_override = temp_cmd.GetSwitchValueASCII(kHomeEnvOverride);
+  std::string home_override =
+      temp_cmd.GetSwitchValueASCII(switches::kHomeEnvOverride);
   if (!home_override.empty()) {
-    const char * maybe_home = getenv("HOME");
-    LOG(INFO) << "HOME variable was previously \"" << (maybe_home ? maybe_home : "[UNSET]")
-              << "\"; overriding to \"" << home_override << "\".";
+    const char* maybe_home = getenv("HOME");
+    LOG(INFO) << "HOME variable was previously \""
+              << (maybe_home ? maybe_home : "[UNSET]") << "\"; overriding to \""
+              << home_override << "\".";
     setenv("HOME", home_override.c_str(), 1);
 
     base::FilePath home_directory(home_override);
