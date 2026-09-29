@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_COMPOSEBOX_MENU_UI_COMPOSEBOX_MENU_ITEM_TYPE_H_
 #define IOS_CHROME_BROWSER_COMPOSEBOX_MENU_UI_COMPOSEBOX_MENU_ITEM_TYPE_H_
 
+#import "ios/chrome/browser/composebox/public/composebox_model_option.h"
+
 enum class ComposeboxMenuItemType {
   kUnknown = 0,
   kAIM,
@@ -24,5 +26,8 @@ enum class ComposeboxMenuItemType {
   kAttachmentDrive,
   kAttachmentSharedTabs,
 };
+
+// Maps a model option to its corresponding menu item type.
+ComposeboxMenuItemType MenuItemTypeForModel(ComposeboxModelOption option);
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_MENU_UI_COMPOSEBOX_MENU_ITEM_TYPE_H_

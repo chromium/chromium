@@ -18,6 +18,7 @@ source_set("ui") {
     "composebox_menu_item.h",
     "composebox_menu_item.mm",
     "composebox_menu_item_type.h",
+    "composebox_menu_item_type.mm",
     "composebox_menu_list_cell.h",
     "composebox_menu_list_cell.mm",
     "composebox_menu_mutator.h",
