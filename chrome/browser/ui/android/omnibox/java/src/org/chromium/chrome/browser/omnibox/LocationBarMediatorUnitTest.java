@@ -5194,6 +5194,22 @@ public class LocationBarMediatorUnitTest {
     }
 
     @Test
+    @Config(qualifiers = "sw600dp")
+    public void testMaybeShowOrClearCursorInLocationBar_clearsUnfocusedStandbySessionOnNavigation() {
+        DeviceInput.setSupportsAlphabeticKeyboardForTesting(true);
+        doReturn(GURL.emptyGURL()).when(mLocationBarDataProvider).getCurrentGurl();
+
+        mTabletMediator.maybeShowOrClearCursorInLocationBar();
+        assertTrue(mTabletMediator.isUrlBarFocusedWithoutAnimation());
+
+        doReturn(JUnitTestGURLs.ABOUT_BLANK).when(mLocationBarDataProvider).getCurrentGurl();
+        mTabletMediator.maybeShowOrClearCursorInLocationBar();
+
+        assertFalse(mTabletMediator.isUrlBarFocusedWithoutAnimation());
+        assertFalse(mSessionState.isSessionActive());
+    }
+
+    @Test
     public void testOnUrlChanged_tabChanging_preservesDraftingNoFocusSession() {
         OmniboxCapabilities.setIsDesktopPlatformForTesting(true);
         beginInput(

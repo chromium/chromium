@@ -941,7 +941,7 @@ public class LocationBarMediator
      * away from the NTP should clear this focus before filling the current tab's URL.
      */
     /*package */ void clearUrlBarCursorWithoutFocusAnimations() {
-        if (mUrlCoordinator.hasFocus() && mUrlFocusedWithoutAnimations) {
+        if (mUrlFocusedWithoutAnimations) {
             // If we did not run the focus animations, then the user has not typed any text.
             // So, clear the focus and accept whatever URL the page is currently attempting to
             // display, given that the current tab is not displaying the NTP.
@@ -3177,6 +3177,7 @@ public class LocationBarMediator
      */
     @Override
     public void endInput() {
+        mUrlFocusedWithoutAnimations = false;
         if (mAutocompleteCoordinator == null || mCurrentInput == null || mIsReparenting) return;
 
         FuseboxSessionState state = FuseboxSessionState.from(mLocationBarDataProvider);

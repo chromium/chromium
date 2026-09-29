@@ -1845,11 +1845,7 @@ public class ToolbarManager
                 };
 
         findToolbarManagerSupplier.onAvailable(
-                mCallbackController.makeCancelable(
-                        findToolbarManager -> {
-                            mFindToolbarManager = findToolbarManager;
-                            mFindToolbarManager.addObserver(mFindToolbarObserver);
-                        }));
+                mCallbackController.makeCancelable(this::setFindToolbarManager));
 
         Callback<@Nullable Profile> profileObserver =
                 new Callback<@Nullable Profile>() {

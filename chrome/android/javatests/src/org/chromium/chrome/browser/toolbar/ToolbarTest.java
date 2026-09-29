@@ -289,10 +289,12 @@ public class ToolbarTest {
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @Feature({"Omnibox"})
     public void testFindInPageDismissedOnOmniboxFocus() {
-        findInPageFromMenu();
         OmniboxTestUtils omnibox = new OmniboxTestUtils(mActivity);
+        omnibox.clearFocus();
+        findInPageFromMenu();
         omnibox.requestFocus();
         waitForFindInPageVisibility(false);
+        omnibox.clearFocus();
     }
 
     @Test

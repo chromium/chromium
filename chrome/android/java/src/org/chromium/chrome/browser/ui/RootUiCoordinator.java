@@ -2510,6 +2510,9 @@ public class RootUiCoordinator
                 };
 
         manager.addObserver(mFindToolbarObserver);
+        if (mToolbarManager != null) {
+            mToolbarManager.setFindToolbarManager(manager);
+        }
         return manager;
     }
 
