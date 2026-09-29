@@ -107,7 +107,6 @@ try/fuchsia-clang-tidy-rel
 try/fuchsia-code-coverage
 try/fuchsia-deterministic-dbg
 try/fuchsia-x64-accessibility-rel
-try/ios-angle-try-intel
 try/ios-blink-rel-fyi
 try/ios-catalyst
 try/ios-device

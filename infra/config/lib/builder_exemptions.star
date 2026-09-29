@@ -183,7 +183,6 @@ exempted_from_contact_builders = {
         "fuchsia-code-coverage",
         "fuchsia-deterministic-dbg",
         "fuchsia-x64-accessibility-rel",
-        "ios-angle-try-intel",
         "ios-blink-rel-fyi",
         "ios-catalyst",
         "ios-device",
