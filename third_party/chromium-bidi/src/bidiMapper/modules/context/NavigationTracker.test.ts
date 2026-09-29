@@ -513,6 +513,103 @@ describe('NavigationTracker', () => {
 
         assert.isNull(navigationTracker.downloadWillBegin());
       });
+
+      it('BackForwardCacheRestore matches pending navigation and finishes on commit', () => {
+        // First navigation to `SOME_URL` with `LOADER_ID`.
+        navigationTracker.frameStartedNavigating(
+          SOME_URL,
+          LOADER_ID,
+          'differentDocument',
+        );
+        const firstNavigationId = navigationTracker.currentNavigationId;
+        assertNavigationEvent(
+          ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
+          firstNavigationId,
+          SOME_URL,
+        );
+        navigationTracker.frameNavigated(SOME_URL, LOADER_ID);
+        assertNavigationEvent(
+          ChromiumBidi.BrowsingContext.EventNames.NavigationCommitted,
+          firstNavigationId,
+          SOME_URL,
+        );
+        navigationTracker.loadPageEvent(LOADER_ID);
+        assertNoNavigationEvents();
+
+        // Second navigation to `ANOTHER_URL` with `ANOTHER_LOADER_ID`.
+        navigationTracker.frameStartedNavigating(
+          ANOTHER_URL,
+          ANOTHER_LOADER_ID,
+          'differentDocument',
+        );
+        const secondNavigationId = navigationTracker.currentNavigationId;
+        assertNavigationEvent(
+          ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
+          secondNavigationId,
+          ANOTHER_URL,
+        );
+        navigationTracker.frameNavigated(ANOTHER_URL, ANOTHER_LOADER_ID);
+        assertNavigationEvent(
+          ChromiumBidi.BrowsingContext.EventNames.NavigationCommitted,
+          secondNavigationId,
+          ANOTHER_URL,
+        );
+        navigationTracker.loadPageEvent(ANOTHER_LOADER_ID);
+        assertNoNavigationEvents();
+
+        // Traverse history back to `SOME_URL`: `frameStartedNavigating` uses a new
+        // navigation token, while `frameNavigated` reports the original `LOADER_ID`
+        // with `BackForwardCacheRestore`.
+        navigationTracker.frameStartedNavigating(
+          SOME_URL,
+          'HISTORY_NAVIGATION_TOKEN',
+          'historyDifferentDocument',
+        );
+        const bfcacheNavigationId = navigationTracker.currentNavigationId;
+        assert.notEqual(bfcacheNavigationId, firstNavigationId);
+        assert.notEqual(bfcacheNavigationId, secondNavigationId);
+        assertNavigationEvent(
+          ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
+          bfcacheNavigationId,
+          SOME_URL,
+        );
+
+        navigationTracker.frameNavigated(
+          SOME_URL,
+          LOADER_ID,
+          undefined,
+          'BackForwardCacheRestore',
+        );
+        assertNavigationEvent(
+          ChromiumBidi.BrowsingContext.EventNames.NavigationCommitted,
+          bfcacheNavigationId,
+          SOME_URL,
+        );
+        assert.equal(
+          navigationTracker.currentNavigationId,
+          bfcacheNavigationId,
+        );
+        assert.equal(navigationTracker.url, SOME_URL);
+
+        // Subsequent navigation should not fail or abort the BFCache navigation.
+        navigationTracker.frameStartedNavigating(
+          YET_ANOTHER_URL,
+          'NEXT_LOADER_ID',
+          'differentDocument',
+        );
+        const nextNavigationId = navigationTracker.currentNavigationId;
+        assertNavigationEvent(
+          ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
+          nextNavigationId,
+          YET_ANOTHER_URL,
+        );
+        navigationTracker.frameNavigated(YET_ANOTHER_URL, 'NEXT_LOADER_ID');
+        assertNavigationEvent(
+          ChromiumBidi.BrowsingContext.EventNames.NavigationCommitted,
+          nextNavigationId,
+          YET_ANOTHER_URL,
+        );
+      });
     });
   });
 });

@@ -20,16 +20,14 @@ HISTORY_LENGTH = 2
 
 
 @pytest.mark.asyncio
-async def test_traverse_history(websocket, context_id):
+async def test_traverse_history(websocket, context_id, html):
     urls = []
     for i in range(HISTORY_LENGTH + 1):
-        # TODO: use `html` fixture instead.
-        #  https://github.com/GoogleChromeLabs/chromium-bidi/issues/2376
-        url = f"data:text/html,{i}"
+        url = html(f"<h2>{i}</h2>")
         urls.append(url)
         await goto_url(websocket, context_id, url)
 
-    await subscribe(websocket, ["browsingContext.load"])
+    await subscribe(websocket, ["browsingContext.navigationCommitted"])
 
     await traverse_history(websocket, context_id, -2)
     await assert_href_equals(websocket, urls[HISTORY_LENGTH - 2])
@@ -88,6 +86,7 @@ async def test_traverse_history_iframe(websocket, iframe_id):
 
 async def assert_href_equals(websocket, href):
     response = await read_JSON_message(websocket)
+    assert response["method"] == "browsingContext.navigationCommitted"
     assert response["params"]["url"] == href
 
 

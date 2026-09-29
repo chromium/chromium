@@ -309,17 +309,23 @@ export class NavigationTracker {
   #getNavigationForFrameNavigated(
     url: string,
     loaderId: string,
+    navigationType?: Protocol.Page.NavigationType,
   ): NavigationState {
-    if (this.#loaderIdToNavigationsMap.has(loaderId)) {
+    if (
+      navigationType !== 'BackForwardCacheRestore' &&
+      this.#loaderIdToNavigationsMap.has(loaderId)
+    ) {
       return this.#loaderIdToNavigationsMap.get(loaderId)!;
     }
 
     if (
       this.#pendingNavigation !== undefined &&
-      this.#pendingNavigation.loaderId === undefined
+      (this.#pendingNavigation.loaderId === undefined ||
+        navigationType === 'BackForwardCacheRestore')
     ) {
-      // This can be a pending navigation to `about:blank` created by a command. Use the
-      // pending navigation in this case.
+      // Uses the pending navigation for `about:blank` commands (where `loaderId` is
+      // not yet set) or BFCache restores (where `Page.frameNavigated` reports the
+      // restored document's original `loaderId`).
       return this.#pendingNavigation;
     }
     // Create a new pending navigation.
@@ -329,7 +335,12 @@ export class NavigationTracker {
   /**
    * @param {string} unreachableUrl indicated the navigation is actually failed.
    */
-  frameNavigated(url: string, loaderId: string, unreachableUrl?: string): void {
+  frameNavigated(
+    url: string,
+    loaderId: string,
+    unreachableUrl?: string,
+    navigationType?: Protocol.Page.NavigationType,
+  ): void {
     this.#logger?.(LogType.debug)?.(`frameNavigated ${url}`);
 
     if (unreachableUrl !== undefined) {
@@ -344,7 +355,11 @@ export class NavigationTracker {
       return;
     }
 
-    const navigation = this.#getNavigationForFrameNavigated(url, loaderId);
+    const navigation = this.#getNavigationForFrameNavigated(
+      url,
+      loaderId,
+      navigationType,
+    );
 
     if (navigation !== this.#lastCommittedNavigation) {
       // Even though the `lastCommittedNavigation` is navigated, it still can be waiting
@@ -359,6 +374,11 @@ export class NavigationTracker {
     this.#loaderIdToNavigationsMap.set(loaderId, navigation);
     navigation.start();
     navigation.frameNavigated();
+    if (navigationType === 'BackForwardCacheRestore') {
+      // BFCache restores do not emit `load` lifecycle events, so mark the
+      // navigation state as finished on commit.
+      navigation.load();
+    }
 
     this.#lastCommittedNavigation = navigation;
     if (this.#pendingNavigation === navigation) {
