@@ -212,6 +212,22 @@ namespace {
 constexpr char kOriginTrialPublicKeyForTesting[] =
     "dRCs+TocuKkocNKa0AtZ4awrt9XKH2SQCI6o4FY6BNA=";
 
+constexpr char kExtensionId1[] = "iegclhlplifhodhkoafiokenjoapiobj";
+constexpr char kKey1[] =
+    "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjzv7dI7Ygyh67VHE1DdidudpYf8P"
+    "Ffv8iucWvzO+3xpF/Dm5xNo7aQhPNiEaNfHwJQ7lsp4gc+C+4bbaVewBFspTruoSJhZc5uEf"
+    "qxwovJwN+v1/SUFXTXQmQBv6gs0qZB4gBbl4caNQBlqrFwAMNisnu1V6UROna8rOJQ90D7Nv"
+    "7TCwoVPKBfVshpFjdDOTeBg4iLctO3S/06QYqaTDrwVceSyHkVkvzBY6tc6mnYX0RZu78J9i"
+    "L8bdqwfllOhs69cqoHHgrLdI6JdOyiuh6pBP6vxMlzSKWJ3YTNjaQTPwfOYaLMuzdl0v+Ydz"
+    "afIzV9zwe4Xiskk+5JNGt8b2rQIDAQAB";
+
+constexpr char kExtensionId2[] = "jjeoclcdfjddkdjokiejckgcildcflpp";
+constexpr char kKey2[] =
+    "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC+uU63MD6T82Ldq5wjrDFn5mGmPnnnj"
+    "WZBWxYXfpG4kVf0s+p24VkXwTXsxeI12bRm8/ft9sOq0XiLfgQEh5JrVUZqvFlaZYoS+g"
+    "iZfUqzKFGMLa4uiSMDnvv+byxrqAepKz5G8XX/q5Wm5cvpdjwgiu9z9iM768xJy+Ca/G5"
+    "qQwIDAQAB";
+
 // Observer that listens for messages from chrome.test.sendMessage to allow them
 // to be used to trigger browser initiated navigations from the javascript for
 // testing purposes.
@@ -877,6 +893,14 @@ class ExtensionWebRequestApiTestWithContextTypeMV3
   ExtensionWebRequestApiTestWithContextTypeMV3& operator=(
       const ExtensionWebRequestApiTestWithContextTypeMV3&) = delete;
   ~ExtensionWebRequestApiTestWithContextTypeMV3() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ExtensionWebRequestApiTestWithContextType::SetUpCommandLine(command_line);
+    // In MV3, `webRequestBlocking` is restricted to policy-installed or
+    // allowlisted extensions. Allowlist the test extension ID.
+    command_line->AppendSwitchASCII(
+        extensions::switches::kAllowlistedExtensionID, kExtensionId1);
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1758,24 +1782,18 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 
 // Tests redirects around workers. To test service workers, the HTTPS test
 // server is used.
-// TODO(crbug.com/40255652): test is flaky on linux-chromeos-rel.
-// TODO(crbug.com/40259518): test is flaky on Mac10.14.
-// TODO(crbug.com/40282182): test is flaky on linux tests.
-// TODO(crbug.com/393555373): test is flaky on Windows.
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
-    BUILDFLAG(IS_WIN)
-#define MAYBE_WebRequestRedirectsWorkers DISABLED_WebRequestRedirectsWorkers
-#else
-#define MAYBE_WebRequestRedirectsWorkers WebRequestRedirectsWorkers
-#endif
-IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
-                       MAYBE_WebRequestRedirectsWorkers) {
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextTypeMV3,
+                       WebRequestRedirectsWorkers) {
+  // Start the standard embedded test server for normal test resources.
   ASSERT_TRUE(StartEmbeddedTestServer());
+
+  // Start an HTTPS embedded test server because service workers require HTTPS.
   net::EmbeddedTestServer https_test_server(
       net::EmbeddedTestServer::TYPE_HTTPS);
   https_test_server.ServeFilesFromDirectory(test_data_dir_);
   ASSERT_TRUE(https_test_server.Start());
 
+  // Pass the base URL of the HTTPS test server to the test extension.
   GURL base_url =
       https_test_server.GetURL("/webrequest/test_redirects_workers/page/");
   base::DictValue custom_args;
@@ -1785,6 +1803,184 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   ASSERT_TRUE(RunExtensionTest("webrequest/test_redirects_workers",
                                {.custom_arg = config_string.c_str()}))
       << message_;
+}
+
+// Tests that when an extension injects a script into `example.com` to register
+// a same-origin service worker (`example.com/script.js`) and attempts to
+// intercept `script.js` via `webRequest` to replace it with its own arbitrary
+// script code (either via redirect to an extension resource or via redirect to
+// a `data:` URL), the registration is rejected with a `SecurityError`
+// (`net::ERR_UNSAFE_REDIRECT`) because service worker script fetches disallow
+// redirects. Also verifies that no service worker registration is created.
+IN_PROC_BROWSER_TEST_P(
+    ExtensionWebRequestApiTestWithContextTypeMV3,
+    InterceptWorkerScriptViaWebRequestFailsWithRedirectError) {
+  UseHttpsTestServer();
+  net::EmbeddedTestServer::ServerCertificateConfig cert_config;
+  cert_config.dns_names = {"example.com"};
+  embedded_test_server()->SetSSLConfig(cert_config);
+  // Register a default handler on `embedded_test_server()` so that `/script.js`
+  // and `/script_data.js` would serve valid JavaScript if not intercepted.
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url == "/script.js" ||
+            request.relative_url == "/script_data.js") {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->set_code(net::HTTP_OK);
+          response->set_content_type("text/javascript");
+          response->set_content("// legitimate server service worker script");
+          return response;
+        }
+        return nullptr;
+      }));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Set up an extension that injects a script into `example.com` to register
+  // `/script.js` and `/script_data.js`, while intercepting those requests with
+  // a blocking `webRequest.onBeforeRequest` listener to substitute arbitrary
+  // script code.
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(base::StringPrintf(
+      R"({
+        "name": "WebRequest SW Script Replacement Tester",
+        "version": "1.0",
+        "manifest_version": 3,
+        "key": "%s",
+        "permissions": ["webRequest", "webRequestBlocking"],
+        "host_permissions": ["*://example.com/*"],
+        "background": {
+          "service_worker": "background.js"
+        },
+        "content_scripts": [{
+          "matches": ["*://example.com/*"],
+          "js": ["content_script.js"],
+          "run_at": "document_idle"
+        }],
+        "web_accessible_resources": [{
+          "resources": ["sw_replacement.js"],
+          "matches": ["*://example.com/*"]
+        }]
+      })",
+      kKey1));
+
+  // Register a blocking `webRequest.onBeforeRequest` listener in the background
+  // service worker to redirect `/script.js` to an extension resource and
+  // `/script_data.js` to a `data:` URL, then notify the C++ test runner once
+  // the listener is active.
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
+    chrome.webRequest.onBeforeRequest.addListener(
+        details => {
+          if (details.url.endsWith('/script.js')) {
+            return {redirectUrl: chrome.runtime.getURL('sw_replacement.js')};
+          }
+          if (details.url.endsWith('/script_data.js')) {
+            return {
+              redirectUrl:
+                  "data:text/javascript,self.addEventListener('fetch',()=>{});"
+            };
+          }
+          return {};
+        },
+        {urls: ['*://example.com/script.js', '*://example.com/script_data.js']},
+        ['blocking']);
+    chrome.test.sendMessage('ready');
+  )");
+
+  // Write a replacement extension script to disk so the `webRequest` redirect
+  // target exists as a valid web-accessible file rather than encountering a 404
+  // error. The service worker event listeners should not execute if the test
+  // passes because redirected service worker script loads are rejected
+  // immediately. If run then they ensure the replacement activates immediately
+  // and intercepts fetches, which would fail the test.
+  test_dir.WriteFile(FILE_PATH_LITERAL("sw_replacement.js"), R"(
+    // Activate immediately once installed.
+    self.addEventListener('install', () => self.skipWaiting());
+
+    // Claim existing clients upon activation.
+    self.addEventListener('activate', event => {
+      event.waitUntil(self.clients.claim());
+    });
+
+    // Intercept fetch requests to return replacement content.
+    self.addEventListener('fetch', event => {
+      event.respondWith(new Response('INTERCEPTED_BY_REPLACEMENT'));
+    });
+  )");
+
+  // The injected content script attempts service worker registrations whose
+  // network requests are intercepted and redirected by `webRequest` (to an
+  // extension resource or `data:` URL), and forwards the registration outcomes
+  // to the C++ test runner via `chrome.test.sendMessage()`.
+  test_dir.WriteFile(FILE_PATH_LITERAL("content_script.js"), R"(
+    (async () => {
+      // Helper to register a service worker path and return either
+      // 'REGISTERED' or the resulting error name and message string.
+      async function tryRegister(path) {
+        try {
+          await navigator.serviceWorker.register(path);
+          return 'REGISTERED';
+        } catch (err) {
+          return err.name + ': ' + err.message;
+        }
+      }
+
+      // Attempt to register a service worker redirected to an extension
+      // resource via webRequest.
+      const extRedirect = await tryRegister('/script.js');
+
+      // Attempt to register a service worker redirected to a data: URL via
+      // webRequest.
+      const dataRedirect = await tryRegister('/script_data.js');
+
+      // Forward both registration outcomes back to the C++ test runner.
+      chrome.test.sendMessage(
+          'extRedirect=' + extRedirect + '|dataRedirect=' + dataRedirect);
+    })();
+  )");
+
+  // Load the extension and wait for the background service worker to register
+  // its `webRequest.onBeforeRequest` listener before navigating to
+  // `example.com`.
+  ExtensionTestMessageListener ready_listener("ready");
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  {
+    SCOPED_TRACE("Waiting for web request listener registration");
+    ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+  }
+
+  content::WebContents* web_contents = GetActiveWebContents();
+  const GURL page_url = embedded_test_server()->GetURL(
+      /*hostname=*/"example.com", /*relative_url=*/"/empty.html");
+  ExtensionTestMessageListener result_listener;
+  ASSERT_TRUE(NavigateToURL(web_contents, page_url));
+  {
+    SCOPED_TRACE(
+        "Waiting for injected script web request interception results");
+    ASSERT_TRUE(result_listener.WaitUntilSatisfied());
+  }
+
+  // Verify that both replacement attempts were rejected because service worker
+  // script loads forbid redirects.
+  const std::string& result_message = result_listener.message();
+  EXPECT_THAT(result_message,
+              ::testing::HasSubstr("extRedirect=SecurityError:"));
+  EXPECT_THAT(result_message,
+              ::testing::HasSubstr("dataRedirect=SecurityError:"));
+  EXPECT_THAT(
+      result_message,
+      ::testing::HasSubstr(
+          "The script resource is behind a redirect, which is disallowed."));
+
+  // Confirm that no service worker registration or
+  // `navigator.serviceWorker.controller` was created.
+  EXPECT_EQ(false, content::EvalJs(web_contents,
+                                   "navigator.serviceWorker.getRegistration()"
+                                   ".then(reg => Boolean(reg))"));
+  EXPECT_EQ(false, content::EvalJs(web_contents,
+                                   "!!navigator.serviceWorker.controller"));
 }
 
 // TODO(crbug.com/40916455): test is flaky on multiple platforms.
@@ -9915,26 +10111,6 @@ IN_PROC_BROWSER_TEST_F(WebRequestProxyingWebTransportCrashTest,
 }
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-namespace {
-
-constexpr char kExtensionId1[] = "iegclhlplifhodhkoafiokenjoapiobj";
-constexpr char kKey1[] =
-    "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjzv7dI7Ygyh67VHE1DdidudpYf8P"
-    "Ffv8iucWvzO+3xpF/Dm5xNo7aQhPNiEaNfHwJQ7lsp4gc+C+4bbaVewBFspTruoSJhZc5uEf"
-    "qxwovJwN+v1/SUFXTXQmQBv6gs0qZB4gBbl4caNQBlqrFwAMNisnu1V6UROna8rOJQ90D7Nv"
-    "7TCwoVPKBfVshpFjdDOTeBg4iLctO3S/06QYqaTDrwVceSyHkVkvzBY6tc6mnYX0RZu78J9i"
-    "L8bdqwfllOhs69cqoHHgrLdI6JdOyiuh6pBP6vxMlzSKWJ3YTNjaQTPwfOYaLMuzdl0v+Ydz"
-    "afIzV9zwe4Xiskk+5JNGt8b2rQIDAQAB";
-
-constexpr char kExtensionId2[] = "jjeoclcdfjddkdjokiejckgcildcflpp";
-constexpr char kKey2[] =
-    "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC+uU63MD6T82Ldq5wjrDFn5mGmPnnnj"
-    "WZBWxYXfpG4kVf0s+p24VkXwTXsxeI12bRm8/ft9sOq0XiLfgQEh5JrVUZqvFlaZYoS+g"
-    "iZfUqzKFGMLa4uiSMDnvv+byxrqAepKz5G8XX/q5Wm5cvpdjwgiu9z9iM768xJy+Ca/G5"
-    "qQwIDAQAB";
-
-}  // namespace
 
 class ExtensionWebRequestFileUrlRedirectApiTest
     : public ExtensionWebRequestApiTest {

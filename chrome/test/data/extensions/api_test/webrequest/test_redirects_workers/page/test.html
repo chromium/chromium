@@ -37,7 +37,7 @@ async function runServiceWorkerTest(workerUrl, subresourceUrl) {
   try {
     registration = await navigator.serviceWorker.register(workerUrl);
     const worker = registration.installing;
-    await wait_for_state(worker, 'activated');
+    await waitForState(worker, 'activated');
     worker.postMessage(subresourceUrl);
     const result = await new Promise(resolve => {
       navigator.serviceWorker.onmessage = event => {

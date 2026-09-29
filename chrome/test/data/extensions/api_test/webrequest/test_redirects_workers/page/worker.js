@@ -9,7 +9,9 @@ function test(subresourceUrl) {
 
   return fetch(subresourceUrl)
       .then(
-          () => self.location.href,
+          response => response.ok ?
+              self.location.href :
+              `Error: ${subresourceUrl} returned ${response.status}`,
           () => `Error: failed to fetch ${subresourceUrl}`);
 }
 

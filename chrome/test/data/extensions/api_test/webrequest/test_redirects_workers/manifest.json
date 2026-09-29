@@ -1,13 +1,18 @@
 {
   "name": "test_redirects_workers",
   "version": "1.0",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "description":
       "Tests the webRequest API redirects to data: URLs around workers.",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjzv7dI7Ygyh67VHE1DdidudpYf8PFfv8iucWvzO+3xpF/Dm5xNo7aQhPNiEaNfHwJQ7lsp4gc+C+4bbaVewBFspTruoSJhZc5uEfqxwovJwN+v1/SUFXTXQmQBv6gs0qZB4gBbl4caNQBlqrFwAMNisnu1V6UROna8rOJQ90D7Nv7TCwoVPKBfVshpFjdDOTeBg4iLctO3S/06QYqaTDrwVceSyHkVkvzBY6tc6mnYX0RZu78J9iL8bdqwfllOhs69cqoHHgrLdI6JdOyiuh6pBP6vxMlzSKWJ3YTNjaQTPwfOYaLMuzdl0v+YdzafIzV9zwe4Xiskk+5JNGt8b2rQIDAQAB",
   "permissions": ["webRequest", "webRequestBlocking",
-                  "tabs", "<all_urls>"],
+                  "tabs", "scripting"],
+  "host_permissions": ["<all_urls>"],
   "background": {
-    "scripts": ["test_redirects_workers.js"],
-    "persistent": true
-  }
+    "service_worker": "test_redirects_workers.js"
+  },
+  "web_accessible_resources": [{
+    "resources": ["page/worker.js"],
+    "matches": ["<all_urls>"]
+  }]
 }
