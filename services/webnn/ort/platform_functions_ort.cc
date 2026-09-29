@@ -33,26 +33,6 @@ constexpr base::wcstring_view kOnnxRuntimeLibraryName = L"onnxruntime.dll";
 PlatformFunctions* PlatformFunctions::g_instance_ = nullptr;
 
 // static
-bool PlatformFunctions::InitializeFromCommandLine() {
-  CHECK(!g_instance_);
-
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebNNOrtLibraryPathForTesting)) {
-    return false;
-  }
-
-  base::FilePath base_path =
-      base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
-          switches::kWebNNOrtLibraryPathForTesting);
-  if (base_path.empty()) {
-    LOG(ERROR) << "[WebNN] The specified ONNX Runtime library path is empty.";
-    return false;
-  }
-
-  return InitializeFromPath(base_path.Append(kOnnxRuntimeLibraryName));
-}
-
-// static
 bool PlatformFunctions::InitializeWinML() {
   CHECK(!g_instance_);
 
@@ -74,8 +54,11 @@ bool PlatformFunctions::EnsureInitialized() {
   // The static local with a lambda initializer guarantees thread-safe
   // one-time initialization per the C++ standard ([stmt.dcl]).
   static bool initialized = []() {
-    if (InitializeFromCommandLine()) {
-      return true;
+    base::FilePath base_path =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
+            switches::kWebNNOrtLibraryPathForTesting);
+    if (!base_path.empty()) {
+      return InitializeFromPath(base_path.Append(kOnnxRuntimeLibraryName));
     }
     return InitializeWinML();
   }();

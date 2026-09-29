@@ -53,11 +53,6 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) PlatformFunctions {
                     const OrtCompileApi* ort_compile_api,
                     const OrtInteropApi* ort_interop_api);
 
-  // Tries to load onnxruntime.dll from the path specified by the
-  // `kWebNNOrtLibraryPathForTesting` command-line switch. Returns false if
-  // the switch is not set or the library cannot be loaded.
-  static bool InitializeFromCommandLine();
-
   // Tries to load onnxruntime.dll from the WinML package. Returns false if
   // the Windows version is too old or the WinML package cannot be loaded.
   static bool InitializeWinML();
