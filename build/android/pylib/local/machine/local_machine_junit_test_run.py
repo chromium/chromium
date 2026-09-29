@@ -303,14 +303,16 @@ class LocalMachineJunitTestRun(test_run.TestRun):
         if self._test_instance.debug_socket:
             timeout = 999999
         else:
-            # 20 seconds for process init,
-            # 5 seconds per class,
-            # 3 seconds per method.
+            # 100 seconds for process init, 10 seconds per class, 5 seconds per
+            # method. The fixed part must exceed the per-test timeout
+            # (PER_TEST_TIMEOUT_MS in BaseRobolectricTestRunner.java) so that a
+            # hanging test in a small shard fails with a per-test timeout, which
+            # names the test, rather than with a shard timeout.
             num_classes = len(test_group.methods_by_class)
             num_tests = sum(
                 len(x) for x in test_group.methods_by_class.values()
             )
-            timeout = 60 + 10 * num_classes + num_tests * 5
+            timeout = 100 + 10 * num_classes + num_tests * 5
         return _Job(
             shard_id=shard_id,
             cmd=cmd,

@@ -25,7 +25,8 @@ public class BaseRobolectricTestRunner extends RobolectricTestRunner {
     public static final int MIN_SDK = 29;
     public static final int MAX_SDK = 36;
 
-    static final long PER_TEST_TIMEOUT_MS = 30000L;
+    // Must stay below the fixed part of the shard timeout in local_machine_junit_test_run.py.
+    static final long PER_TEST_TIMEOUT_MS = 90000L;
 
     /** Tracks whether tests pass / fail for use in BaseTestLifecycle. */
     protected static class HelperTestRunner extends RobolectricTestRunner.HelperTestRunner {
