@@ -21,7 +21,6 @@ import android.app.ActivityManager.AppTask;
 import android.content.Context;
 import android.graphics.Insets;
 import android.graphics.Rect;
-import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Build.VERSION_CODES;
 import android.util.Pair;
@@ -40,6 +39,7 @@ import org.chromium.base.Promise;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
+import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.customtabs.PopupCreator;
@@ -621,7 +621,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
         // in Robolectric tests. This class is also used by native unit tests run on emulators, and
         // for those tests, the decor View bounds won't be correctly mocked. If your emulator tests
         // rely on decor View bounds, please create Java integration tests or C++ browser tests.
-        if (isRobolectricTest()) {
+        if (BuildConfig.IS_ROBOLECTRIC) {
             when(mockDecorView.getLeft()).thenReturn(0);
             when(mockDecorView.getTop()).thenReturn(0);
             when(mockDecorView.getRight()).thenReturn(windowBoundsInPx.width());
@@ -669,9 +669,5 @@ public final class ChromeAndroidTaskUnitTestSupport {
                         .build();
         var maxWindowMetrics = new WindowMetrics(fullScreenWindowBoundsInPx, maxWindowInsets);
         when(mockWindowManager.getMaximumWindowMetrics()).thenReturn(maxWindowMetrics);
-    }
-
-    private static boolean isRobolectricTest() {
-        return "robolectric".equals(Build.FINGERPRINT);
     }
 }
