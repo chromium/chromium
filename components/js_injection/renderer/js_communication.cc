@@ -205,6 +205,19 @@ void JsCommunication::DidClearWindowObject() {
     }
   }
 
+  // Release any V8 global objects held by existing old bindings before swapping
+  // them out. This explicitly breaks the strong reference cycle between the old
+  // global window object and the C++ bindings, allowing V8 and cppgc to collect
+  // the old context immediately.
+  v8::Isolate* isolate_for_release =
+      web_frame->GetAgentGroupScheduler()->Isolate();
+  v8::HandleScope handle_scope_for_release(isolate_for_release);
+  for (const auto& js_binding : js_bindings_) {
+    if (js_binding) {
+      js_binding->ReleaseV8GlobalObjects();
+    }
+  }
+
   js_bindings_.swap(js_bindings);
   if (client_remote_ && base::FeatureList::IsEnabled(kLazyBindJsInjection)) {
     client_remote_->OnWindowObjectCleared();
@@ -213,9 +226,17 @@ void JsCommunication::DidClearWindowObject() {
 
 void JsCommunication::WillReleaseScriptContext(v8::Local<v8::Context> context,
                                                int32_t world_id) {
+  v8::Isolate* isolate =
+      render_frame()->GetWebFrame()->GetAgentGroupScheduler()->Isolate();
+  v8::HandleScope handle_scope(isolate);
   for (const auto& js_binding : js_bindings_) {
     if (js_binding && js_binding->world_id() == world_id) {
-      js_binding->ReleaseV8GlobalObjects();
+      v8::Local<v8::Object> wrapper;
+      if (js_binding->GetWrapper(isolate).ToLocal(&wrapper)) {
+        if (wrapper->GetCreationContextChecked() == context) {
+          js_binding->ReleaseV8GlobalObjects();
+        }
+      }
     }
   }
 }
