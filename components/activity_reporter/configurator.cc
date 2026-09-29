@@ -18,7 +18,6 @@
 #include "base/version.h"
 #include "base/version_info/channel.h"
 #include "base/version_info/version_info.h"
-#include "build/build_config.h"
 #include "components/activity_reporter/constants.h"
 #include "components/policy/core/common/management/platform_management_service.h"
 #include "components/update_client/activity_data_service.h"
@@ -28,10 +27,6 @@
 #include "components/update_client/protocol_handler.h"
 #include "ui/base/device_form_factor.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/device_info.h"
-#endif
 
 namespace activity_reporter {
 
@@ -148,11 +143,6 @@ std::string ActivityReporterConfigurator::GetLang() const {
 
 std::string ActivityReporterConfigurator::GetOSLongName() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#if BUILDFLAG(IS_ANDROID)
-  if (base::android::device_info::is_desktop()) {
-    return "Android Desktop";
-  }
-#endif
   return std::string{version_info::GetOSType()};
 }
 
