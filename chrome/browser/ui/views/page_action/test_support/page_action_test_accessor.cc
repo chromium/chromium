@@ -174,26 +174,6 @@ bool PageActionTestAccessor::EvaluateWebUI(
       }
     }
   }
-  // TODO(crbug.com/526715177): Remove this fallback once support for
-  // TrackedElements in page actions is implemented.
-  content::WebContents* contents = GetWebContents();
-  if (contents) {
-    const int action_id_int = static_cast<int>(
-        webui_toolbar::ActionIdToMojomPageActionId(action_id_));
-    const std::string script = base::StringPrintf(
-        R"((() => {
-          %s
-          const el = findDeep(document.body,
-                              e => e.state?.pageActionId === %d);
-          if (!el) return false;
-          return (%s)(el);
-        })())",
-        kFindDeepJS, action_id_int, std::string(element_predicate_js).c_str());
-    content::EvalJsResult result = content::EvalJs(contents, script);
-    if (result.is_bool()) {
-      return result.ExtractBool();
-    }
-  }
   return false;
 }
 
