@@ -2523,9 +2523,9 @@ crbug.com/567254391 virtual/webnn-service-with-gpu/external/wpt/webnn/conformanc
 crbug.com/567254391 virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/triangular.https.any.html?npu [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/html/rendering/non-replaced-elements/form-controls/align-content.tentative.html [ Failure ]
-external/wpt/webdriver/tests/bidi/emulation/set_media_features_override/invalid.py [ Failure ]
-external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_descriptor_response/invalid.py [ Timeout ]
+crbug.com/567625057 external/wpt/html/rendering/non-replaced-elements/form-controls/align-content.tentative.html [ Failure ]
+crbug.com/567611264 external/wpt/webdriver/tests/bidi/emulation/set_media_features_override/invalid.py [ Failure ]
+crbug.com/567611264 external/wpt/webdriver/tests/bidi/external/bluetooth/simulate_descriptor_response/invalid.py [ Timeout ]
 crbug.com/567295011 external/wpt/css/css-grid/grid-lanes/item-placement/column-negative-margin-003.html [ Failure ]
 crbug.com/567295007 external/wpt/css/css-inline/text-box-trim/text-box-trim-fieldset-001.html [ Failure ]
 crbug.com/567170334 external/wpt/css/css-viewport/zoom/translate-matrix-zoom-anim-accumulate.html [ Failure ]
