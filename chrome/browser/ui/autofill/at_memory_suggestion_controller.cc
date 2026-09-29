@@ -10,7 +10,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/android/autofill/at_memory_bottom_sheet_bridge.h"
-#include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "components/autofill/core/browser/suggestions/suggestion_hiding_reason.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/common/autofill_util.h"
@@ -139,7 +138,6 @@ void AtMemorySuggestionController::Show(
     std::u16string search_bar_initial_value) {
   ui_session_id_ = session_id;
   suggestions_ = std::move(suggestions);
-  trigger_source_ = trigger_source;
 
   if (!bridge_) {
     if (!web_contents_ || !web_contents_->GetTopLevelNativeWindow()) {

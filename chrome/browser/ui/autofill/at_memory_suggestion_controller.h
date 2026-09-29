@@ -101,8 +101,6 @@ class AtMemorySuggestionController : public AutofillSuggestionController {
   PopupControllerCommon controller_common_;
   std::optional<UiSessionId> ui_session_id_;
   std::vector<Suggestion> suggestions_;
-  AutofillSuggestionTriggerSource trigger_source_ =
-      AutofillSuggestionTriggerSource::kUnspecified;
   std::unique_ptr<AtMemoryBottomSheetBridge> bridge_;
 
   base::WeakPtrFactory<AtMemorySuggestionController>
