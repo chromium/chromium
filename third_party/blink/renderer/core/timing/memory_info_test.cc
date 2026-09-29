@@ -72,7 +72,7 @@ class MemoryInfoTest : public testing::Test {
   void CheckValues(MemoryInfo* info, MemoryInfo::Precision precision) {
     // Check that used <= total <= limit.
 
-    // TODO(npm): add a check usedJSHeapSize <= totalJSHeapSize once it always
+    // TODO: add a check usedJSHeapSize <= totalJSHeapSize once it always
     // holds. See https://crbug.com/849322
     EXPECT_LE(info->totalJSHeapSize(), info->jsHeapSizeLimit());
     if (precision == MemoryInfo::Precision::kBucketized) {
@@ -83,8 +83,8 @@ class MemoryInfoTest : public testing::Test {
     } else {
       // Check that the precise values are not heavily rounded.
       // Note: these checks are potentially flaky but in practice probably never
-      // flaky. If this is noticed to be flaky, disable test and assign bug to
-      // npm@.
+      // flaky. If this is noticed to be flaky, disable test and file a bug in
+      // the Blink>PerformanceAPIs component.
       EXPECT_NE(0u, info->totalJSHeapSize() % kModForBucketizationCheck);
       EXPECT_NE(0u, info->usedJSHeapSize() % kModForBucketizationCheck);
       EXPECT_NE(0u, info->jsHeapSizeLimit() % kModForBucketizationCheck);
@@ -148,7 +148,7 @@ TEST_F(MemoryInfoTest, Bucketized) {
   // The old bucketized values must be equal to the new bucketized values.
   CheckEqual(bucketized_memory, bucketized_memory2);
 
-  // TODO(npm): The bucketized MemoryInfo is very hard to change reliably. One
+  // TODO: The bucketized MemoryInfo is very hard to change reliably. One
   // option is to do something such as:
   // for (int i = 0; i < kNumArrayBuffersForLargeAlloc; i++)
   //   objects.push_back(v8::ArrayBuffer::New(isolate, 1));

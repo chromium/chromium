@@ -7359,7 +7359,7 @@ TEST_F(WebViewTest, InputDelayReported) {
       "PageLoad.InteractiveTiming.InputTimestamp3", 170, 1);
 }
 
-// TODO(npm): Improve this test to receive real input sequences and avoid hacks.
+// TODO: Improve this test to receive real input sequences and avoid hacks.
 // Check that first input delay is correctly reported to the document when the
 // first input is a pointer down event, and we receive a pointer up event.
 TEST_F(WebViewTest, PointerDownUpFirstInputDelay) {

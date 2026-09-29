@@ -244,8 +244,8 @@ IN_PROC_BROWSER_TEST_F(FedCmAccountSelectionViewBrowserTest,
                        DetachForInsertion) {
   Show();
   browser()->GetTabStripModel()->DetachAndDeleteWebContentsAt(0);
-  // TODO(npm): it would be better if the dialog actually moves with the
-  // corresponding tab, instead of being altogether deleted.
+  // TODO(crbug.com/567569639): it would be better if the dialog actually moves
+  // with the corresponding tab, instead of being altogether deleted.
   EXPECT_FALSE(GetDialog());
 }
 

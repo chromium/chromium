@@ -295,7 +295,7 @@ void PerformanceObserver::observe(ScriptState* script_state,
     }
     if (entry_type == PerformanceEntry::kEvent &&
         observer_init->hasDurationThreshold()) {
-      // TODO(npm): should we do basic validation (like negative values etc?).
+      // TODO: should we do basic validation (like negative values etc?).
       duration_threshold_ = std::max(16.0, observer_init->durationThreshold());
     }
     filter_options_ |= entry_type;

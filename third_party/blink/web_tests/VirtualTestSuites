@@ -1150,7 +1150,6 @@
     ],
     "owners": [
       "cbiesinger@chromium.org",
-      "npm@chromium.org",
       "goto@chromium.org"
     ],
     "expires": "Dec 1, 2026"
@@ -1170,7 +1169,6 @@
       "--enable-features=FedCmWellKnownEndpointValidation,FedCmPreservePortsForTesting"
     ],
     "owners": [
-      "npm@chromium.org",
       "cbiesinger@chromium.org",
       "goto@chromium.org"
     ],
@@ -1191,7 +1189,6 @@
       "--enable-features=FedCmIdPRegistration"
     ],
     "owners": [
-      "npm@chromium.org",
       "cbiesinger@chromium.org",
       "goto@chromium.org"
     ],
@@ -3032,8 +3029,7 @@
   {
     "prefix": "single-renderer-process",
     "owners": [
-      "nrosenthal@chromium.org",
-      "npm@chromium.org"
+      "nrosenthal@chromium.org"
     ],
     "platforms": [
       "Linux",

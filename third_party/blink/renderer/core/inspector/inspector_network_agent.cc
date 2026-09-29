@@ -1801,7 +1801,7 @@ void InspectorNetworkAgent::DidFinishLoading(
   if (monotonic_finish_time.is_null())
     monotonic_finish_time = base::TimeTicks::Now();
 
-  // TODO(npm): Use base::TimeTicks in Network.h.
+  // TODO: Use base::TimeTicks in Network.h.
   GetFrontend()->loadingFinished(
       request_id, monotonic_finish_time.since_origin().InSecondsF(),
       encoded_data_length);

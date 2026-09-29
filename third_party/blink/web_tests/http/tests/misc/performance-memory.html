@@ -14,7 +14,7 @@ test(() => {
   assert_true(memoryInfo.totalJSHeapSize != undefined, 'performance.memory.totalJSHeapSize is defined');
   assert_true(memoryInfo.usedJSHeapSize != undefined, 'performance.memory.usedJSHeapSize is defined');
   assert_greater_than_equal(memoryInfo.jsHeapSizeLimit, memoryInfo.totalJSHeapSize, "jsHeapSizeLimit should be no less than totalJSHeapSize", {});
-  // TODO(npm): memoryInfo.totalJSHeapSize should be greater than or equal to
+  // TODO: memoryInfo.totalJSHeapSize should be greater than or equal to
   // memoryInfo.totalJSHeapSize, but this is not always the case.
   // See https://crbug.com/849322.
 });

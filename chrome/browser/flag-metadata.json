@@ -5076,7 +5076,7 @@
   },
   {
     "name": "fedcm-nonce-in-params",
-    "owners": [ "sureshpotti@microsoft.com", "npm@chromium.org", "web-identity-eng@google.com" ],
+    "owners": [ "sureshpotti@microsoft.com", "web-identity-eng@google.com" ],
      "expiry_milestone": 165
    },
   {
@@ -5086,12 +5086,12 @@
   },
   {
     "name": "fedcm-web-identity-subdomain",
-    "owners": [ "sureshpotti@microsoft.com", "npm@chromium.org", "web-identity-eng@google.com" ],
+    "owners": [ "sureshpotti@microsoft.com", "web-identity-eng@google.com" ],
     "expiry_milestone": 165
   },
   {
     "name": "fedcm-well-known-endpoint-validation",
-    "owners": [ "sureshpotti@microsoft.com", "npm@chromium.org", "web-identity-eng@google.com" ],
+    "owners": [ "sureshpotti@microsoft.com", "web-identity-eng@google.com" ],
      "expiry_milestone": 165
    },
   {

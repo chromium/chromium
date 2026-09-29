@@ -168,7 +168,7 @@ inline void CheckGlobalPropertyMatches(
     result.detected_versions[JavaScriptFramework::kVue] =
         kNoFrameworkVersionDetected;
   }
-  // TODO(npm): Add check for window.React.Component, not just window.React.
+  // TODO: Add check for window.React.Component, not just window.React.
   if (IsFrameworkVariableUsed(context, kReactData)) {
     result.detected_versions[JavaScriptFramework::kReact] =
         kNoFrameworkVersionDetected;

@@ -1297,7 +1297,7 @@ void WindowPerformance::ReportEventTimingToPerformanceTimeline(
     NotifyObserversOfEntry(*entry);
   }
 
-  // TODO(npm): is 104 a reasonable buffering threshold or should it be
+  // TODO: is 104 a reasonable buffering threshold or should it be
   // relaxed?
   if (entry->duration() >= PerformanceObserver::kDefaultDurationThreshold) {
     AddToEventTimingBuffer(*entry);

@@ -44,7 +44,7 @@ std::optional<base::TimeTicks> MergeLargestContentfulPaintValues(
 
 static uint64_t ToIntegerMilliseconds(base::TimeDelta duration,
                                       bool cross_origin_isolated_capability) {
-  // TODO(npm): add histograms to understand when/why |duration| is sometimes
+  // TODO: add histograms to understand when/why |duration| is sometimes
   // negative.
   // TODO(crbug.com/1063989): stop clamping when it is not needed (i.e. for
   // methods which do not expose the timestamp to a web perf API).
