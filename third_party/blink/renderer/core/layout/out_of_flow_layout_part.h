@@ -271,6 +271,9 @@ class CORE_EXPORT OutOfFlowLayoutPart {
     // True if the element overflows the inset-modified containing block.
     bool overflows_containing_block = false;
 
+    // True if the default anchor resolves to an acceptable anchor box.
+    bool has_default_anchor = false;
+
     Member<Element> accessibility_anchor;
     Member<GCedHeapHashSet<Member<Element>>> display_locks_affected_by_anchors;
 

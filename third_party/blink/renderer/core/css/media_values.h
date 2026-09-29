@@ -206,6 +206,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues>,
   // CSSLengthResolver override.
   void ReferenceTreeScope() const override {}
   void ReferenceAnchor() const override {}
+  void ReferenceDefaultAnchor() const override {}
   void ReferenceSibling() const override {}
   void ReferenceElementDependentRandom() const override {}
 

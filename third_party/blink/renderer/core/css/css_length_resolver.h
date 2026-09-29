@@ -69,6 +69,10 @@ class CORE_EXPORT CSSLengthResolver {
   // https://drafts.csswg.org/css-anchor-position-1/
   virtual void ReferenceAnchor() const = 0;
 
+  // Called when anchor() or anchor-size() functions reference the default
+  // anchor.
+  virtual void ReferenceDefaultAnchor() const = 0;
+
   // Called when sibling-index() or sibling-count() functions are evaluated.
   // Used to mark the resulting style as not cacheable in the MPC.
   virtual void ReferenceSibling() const = 0;

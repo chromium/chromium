@@ -5392,14 +5392,13 @@
       getter: "GetPositionVisibility",
       type_name: "PositionVisibility",
       converter: "ConvertPositionVisibility",
-      // TODO(crbug.com/332933527): Support anchor-valid.
-      keywords: ["always", "anchor-visible", "anchors-visible", "no-overflow"],
+      keywords: ["always", "anchor-valid", "anchor-visible", "anchors-visible", "no-overflow"],
       typedom_types: ["Keyword"],
       // TODO(crbug.com/526682332): When PositionVisibilitySingularValues is enabled:
       // - remove typedom_keywords (typedom will fall back to keywords)
-      // - update devtools_keywords to ["always", "anchor-visible", "no-overflow"]
-      typedom_keywords: ["always", "anchors-visible", "no-overflow"],
-      devtools_keywords: ["always", "anchors-visible", "no-overflow"],
+      // - update devtools_keywords to ["always", "anchor-valid", "anchor-visible", "no-overflow"]
+      typedom_keywords: ["always", "anchor-valid", "anchors-visible", "no-overflow"],
+      devtools_keywords: ["always", "anchor-valid", "anchors-visible", "no-overflow"],
       invalidate: ["layout", "paint"],
     },
     {

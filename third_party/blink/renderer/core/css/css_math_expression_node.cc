@@ -4072,6 +4072,9 @@ std::optional<LayoutUnit> CSSMathExpressionAnchorQuery::EvaluateQuery(
     const AnchorQuery& query,
     const CSSLengthResolver& length_resolver) const {
   length_resolver.ReferenceAnchor();
+  if (query.AnchorSpecifier().IsDefault()) {
+    length_resolver.ReferenceDefaultAnchor();
+  }
   if (AnchorEvaluator* anchor_evaluator =
           length_resolver.GetAnchorEvaluator()) {
     return anchor_evaluator->Evaluate(query,

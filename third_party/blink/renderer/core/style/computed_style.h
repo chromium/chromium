@@ -1573,6 +1573,13 @@ class ComputedStyle final : public ComputedStyleBase {
     return DefaultAnchorData(PositionAnchor(), GetPositionArea());
   }
 
+  bool ReferencesDefaultAnchor() const {
+    return !GetPositionArea().IsNone() ||
+           AlignSelf().GetComputedPosition() == ItemPosition::kAnchorCenter ||
+           JustifySelf().GetComputedPosition() == ItemPosition::kAnchorCenter ||
+           HasDefaultAnchorFunctions();
+  }
+
   // Clear utility functions.
   bool HasClear() const { return Clear() != EClear::kNone; }
   EClear UnresolvedClear() const { return Clear(); }

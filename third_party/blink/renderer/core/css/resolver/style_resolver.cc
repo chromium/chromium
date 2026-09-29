@@ -472,6 +472,9 @@ void ApplyLengthConversionFlags(StyleResolverState& state) {
   if (flags & static_cast<Flags>(Flag::kAnchorRelative)) {
     builder.SetHasAnchorFunctions();
   }
+  if (flags & static_cast<Flags>(Flag::kDefaultAnchorRelative)) {
+    builder.SetHasDefaultAnchorFunctions();
+  }
   if (flags & static_cast<Flags>(Flag::kLogicalDirectionRelative)) {
     builder.SetHasLogicalDirectionRelativeUnits();
   }

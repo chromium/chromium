@@ -580,6 +580,10 @@ void CSSToLengthConversionData::ReferenceAnchor() const {
   SetFlag(Flag::kAnchorRelative);
 }
 
+void CSSToLengthConversionData::ReferenceDefaultAnchor() const {
+  SetFlag(Flag::kDefaultAnchorRelative);
+}
+
 void CSSToLengthConversionData::ReferenceSibling() const {
   SetFlag(Flag::kSiblingRelative);
 }

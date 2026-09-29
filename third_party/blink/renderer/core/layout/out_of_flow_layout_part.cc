@@ -439,7 +439,6 @@ void UpdatePositionVisibilityAfterLayout(
     const OutOfFlowLayoutPart::OffsetInfo& offset_info,
     const BlockNode& node,
     const AnchorMap* anchor_map) {
-  // TODO(crbug.com/332933527): Support anchors-valid.
   PaintLayer* layer = node.GetLayoutBox()->Layer();
   CHECK(layer);
   bool has_no_overflow_visibility =
@@ -447,6 +446,15 @@ void UpdatePositionVisibilityAfterLayout(
   layer->SetInvisibleForPositionVisibility(
       LayerPositionVisibility::kNoOverflow,
       has_no_overflow_visibility && offset_info.overflows_containing_block);
+
+  bool has_anchor_valid_visibility =
+      RuntimeEnabledFeatures::CSSPositionVisibilityAnchorValidEnabled() &&
+      node.Style().HasPositionVisibility(PositionVisibility::kAnchorValid);
+  bool is_invisible_for_anchor_valid =
+      node.Style().ReferencesDefaultAnchor() && !offset_info.has_default_anchor;
+  layer->SetInvisibleForPositionVisibility(
+      LayerPositionVisibility::kAnchorValid,
+      has_anchor_valid_visibility && is_invisible_for_anchor_valid);
 
   if (!anchor_map) {
     return;
@@ -2467,6 +2475,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   })();
 
   OffsetInfo offset_info;
+  offset_info.has_default_anchor = has_default_anchor;
   LogicalOofDimensions& node_dimensions = offset_info.node_dimensions;
   offset_info.inline_size_depends_on_min_max_sizes = ComputeOofInlineDimensions(
       node_info.node, node_info.break_token, candidate_style, space, imcb,

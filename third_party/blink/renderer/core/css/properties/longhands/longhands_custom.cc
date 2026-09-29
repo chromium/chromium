@@ -273,10 +273,7 @@ void PositionAnchor::ApplyValue(StyleResolverState& state,
 
 // https://drafts.csswg.org/css-anchor-position-1/#position-visibility
 // position-visibility:
-//   always | [ anchor-valid | anchor-visible ] || no-overflow
-// TODO(crbug.com/332933527): Support anchor-valid. For now,
-// we only support the modified grammar:
-//   position-visibility: always | [ anchor-visible | anchors-visible ] ||
+//   always | anchor-valid || [ anchor-visible | anchors-visible ] ||
 //   no-overflow
 const CSSValue* PositionVisibility::ParseSingleValue(
     CSSParserTokenStream& stream,
@@ -288,49 +285,54 @@ const CSSValue* PositionVisibility::ParseSingleValue(
 
   bool singular_enabled =
       RuntimeEnabledFeatures::PositionVisibilitySingularValuesEnabled();
-  auto consume_anchor_ident = [&stream, singular_enabled]() {
-    if (singular_enabled) {
-      return css_parsing_utils::ConsumeIdent<CSSValueID::kAnchorVisible,
-                                             CSSValueID::kAnchorsVisible,
-                                             CSSValueID::kAnchorValid>(stream);
-    }
-    return css_parsing_utils::ConsumeIdent<CSSValueID::kAnchorsVisible>(stream);
-  };
+  bool anchor_valid_enabled =
+      RuntimeEnabledFeatures::CSSPositionVisibilityAnchorValidEnabled();
 
-  CSSIdentifierValue* anchor_ident = consume_anchor_ident();
-  CSSIdentifierValue* no_overflow =
-      css_parsing_utils::ConsumeIdent<CSSValueID::kNoOverflow>(stream);
-  if (!anchor_ident) {
-    anchor_ident = consume_anchor_ident();
+  CSSIdentifierValue* anchor_valid = nullptr;
+  CSSIdentifierValue* anchor_visible = nullptr;
+  CSSIdentifierValue* no_overflow = nullptr;
+
+  while (!stream.AtEnd()) {
+    CSSValueID id = stream.Peek().Id();
+    if (anchor_valid_enabled && !anchor_valid &&
+        id == CSSValueID::kAnchorValid) {
+      anchor_valid = css_parsing_utils::ConsumeIdent(stream);
+      context.Count(WebFeature::kCSSValuePositionVisibilityAnchorValid);
+    } else if (!anchor_visible && (id == CSSValueID::kAnchorVisible ||
+                                   id == CSSValueID::kAnchorsVisible)) {
+      if (!singular_enabled && id == CSSValueID::kAnchorVisible) {
+        return nullptr;
+      }
+      anchor_visible = css_parsing_utils::ConsumeIdent(stream);
+      if (id == CSSValueID::kAnchorVisible) {
+        context.Count(WebFeature::kCSSValuePositionVisibilityAnchorVisible);
+      } else {
+        context.Count(WebFeature::kCSSValuePositionVisibilityAnchorsVisible);
+        if (singular_enabled) {
+          anchor_visible =
+              CSSIdentifierValue::Create(CSSValueID::kAnchorVisible);
+        }
+      }
+    } else if (!no_overflow && id == CSSValueID::kNoOverflow) {
+      no_overflow =
+          css_parsing_utils::ConsumeIdent<CSSValueID::kNoOverflow>(stream);
+    } else {
+      // Leave any remaining tokens (e.g. `!important` or invalid tokens) for
+      // the caller to handle.
+      break;
+    }
   }
 
-  if (!anchor_ident && !no_overflow) {
+  if (!anchor_valid && !anchor_visible && !no_overflow) {
     return nullptr;
   }
 
-  if (anchor_ident) {
-    switch (anchor_ident->GetValueID()) {
-      case CSSValueID::kAnchorVisible:
-        context.Count(WebFeature::kCSSValuePositionVisibilityAnchorVisible);
-        break;
-      case CSSValueID::kAnchorsVisible:
-        context.Count(WebFeature::kCSSValuePositionVisibilityAnchorsVisible);
-        if (singular_enabled) {
-          anchor_ident = CSSIdentifierValue::Create(CSSValueID::kAnchorVisible);
-        }
-        break;
-      case CSSValueID::kAnchorValid:
-        context.Count(WebFeature::kCSSValuePositionVisibilityAnchorValid);
-        // TODO(crbug.com/332933527): Support anchor-valid.
-        return nullptr;
-      default:
-        NOTREACHED();
-    }
-  }
-
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  if (anchor_ident) {
-    list->Append(*anchor_ident);
+  if (anchor_valid) {
+    list->Append(*anchor_valid);
+  }
+  if (anchor_visible) {
+    list->Append(*anchor_visible);
   }
   if (no_overflow) {
     list->Append(*no_overflow);
@@ -349,6 +351,10 @@ const CSSValue* PositionVisibility::CSSValueFromComputedStyleInternal(
   }
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
+  if (EnumHasFlags(position_visibility,
+                   blink::PositionVisibility::kAnchorValid)) {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kAnchorValid));
+  }
   if (EnumHasFlags(position_visibility,
                    blink::PositionVisibility::kAnchorVisible)) {
     list->Append(*CSSIdentifierValue::Create(

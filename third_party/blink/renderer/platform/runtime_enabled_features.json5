@@ -1912,6 +1912,12 @@
       status: "test",
     },
     {
+      // Support for `position-visibility: anchor-valid`.
+      // See crbug.com/333421963.
+      name: "CSSPositionVisibilityAnchorValid",
+      status: "experimental",
+    },
+    {
       // The @private rule declares lexically-scoped custom properties that are
       // visible only within the enclosing style rule and the elements it
       // matches, with their names rewritten so they are never observable as
