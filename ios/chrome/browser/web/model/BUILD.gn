@@ -210,6 +210,7 @@ source_set("unit_tests") {
     "//ios/chrome/test:test_support",
     "//ios/net",
     "//ios/net:test_support",
+    "//ios/testing:block_swizzler",
     "//ios/web",
     "//ios/web/public/security",
     "//ios/web/public/test",

@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_insertion/model/tab_insertion_browser_agent.h"
 #import "ios/chrome/browser/web/model/blocked_popup_tab_helper.h"
+#import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -98,6 +99,12 @@ class StubAppLauncherTabHelperDelegate : public AppLauncherTabHelperDelegate {
 class WebStateDelegateBrowserAgentTest : public PlatformTest {
  public:
   WebStateDelegateBrowserAgentTest() {
+    // Ensure RequestToLaunchApp() treats the application as active on device
+    // bots.
+    application_state_swizzler_ = std::make_unique<ScopedBlockSwizzler>(
+        [UIApplication class], @selector(applicationState), ^{
+          return UIApplicationStateActive;
+        });
     profile_ = TestProfileIOS::Builder().Build();
     browser_ = std::make_unique<TestBrowser>(profile_.get());
     TabInsertionBrowserAgent::CreateForBrowser(browser_.get());
@@ -149,6 +156,7 @@ class WebStateDelegateBrowserAgentTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<ScopedBlockSwizzler> application_state_swizzler_;
   std::unique_ptr<TestProfileIOS> profile_;
   StubAppLauncherTabHelperDelegate app_launcher_delegate_;
   WebStateDelegateTestAppLauncherPresentationProvider*
@@ -190,16 +198,8 @@ TEST_F(WebStateDelegateBrowserAgentTest, CreateNewWebStateAndPopup) {
 // from background opener WebStates) while a call-prompt app launch (e.g.
 // facetime-audio:) is pending in the active WebState, and allowed again once
 // the launch resolves.
-// TODO(crbug.com/40166678): The test fails on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_DropWindowRequestsDuringCallPromptLaunch \
-  DropWindowRequestsDuringCallPromptLaunch
-#else
-#define MAYBE_DropWindowRequestsDuringCallPromptLaunch \
-  DISABLED_DropWindowRequestsDuringCallPromptLaunch
-#endif
 TEST_F(WebStateDelegateBrowserAgentTest,
-       MAYBE_DropWindowRequestsDuringCallPromptLaunch) {
+       DropWindowRequestsDuringCallPromptLaunch) {
   web::WebState* opener_web_state = InsertNewWebState(GURL(kURL1));
   AttachAppLauncherTabHelper(opener_web_state);
   web::WebState* active_web_state = InsertNewWebState(GURL(kURL1));
@@ -237,16 +237,8 @@ TEST_F(WebStateDelegateBrowserAgentTest,
 // suspended and there is nothing to spoof; dropping the requests would instead
 // orphan tabs, since a page that launches an app and then closes itself gets
 // no second chance to call `window.close()`.
-// TODO(crbug.com/40166678): The test fails on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_AllowWindowRequestsDuringNonPromptLaunch \
-  AllowWindowRequestsDuringNonPromptLaunch
-#else
-#define MAYBE_AllowWindowRequestsDuringNonPromptLaunch \
-  DISABLED_AllowWindowRequestsDuringNonPromptLaunch
-#endif
 TEST_F(WebStateDelegateBrowserAgentTest,
-       MAYBE_AllowWindowRequestsDuringNonPromptLaunch) {
+       AllowWindowRequestsDuringNonPromptLaunch) {
   WebStateList* web_state_list = browser_->GetWebStateList();
   web::WebState* active_web_state = InsertNewWebState(GURL(kURL1));
   AppLauncherTabHelper* tab_helper =

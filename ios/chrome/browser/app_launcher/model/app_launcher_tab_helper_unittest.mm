@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/testing/scoped_block_swizzler.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -162,6 +163,13 @@ class AppLauncherTabHelperTest : public PlatformTest {
  protected:
   void SetUp() override {
     PlatformTest::SetUp();
+    // Ensure RequestToLaunchApp() treats the application as active on device
+    // bots.
+    application_state_swizzler_ = std::make_unique<ScopedBlockSwizzler>(
+        [UIApplication class], @selector(applicationState), ^{
+          return UIApplicationStateActive;
+        });
+
     TestProfileIOS::Builder builder;
     builder.AddTestingFactory(
         ReadingListModelFactory::GetInstance(),
@@ -183,6 +191,11 @@ class AppLauncherTabHelperTest : public PlatformTest {
     tab_helper_ = AppLauncherTabHelper::FromWebState(&web_state_);
     tab_helper_->SetDelegate(&delegate_);
     tab_helper_->SetBrowserPresentationProvider(browser_presentation_provider_);
+  }
+
+  void TearDown() override {
+    application_state_swizzler_.reset();
+    PlatformTest::TearDown();
   }
 
   [[nodiscard]] bool TestShouldAllowRequest(
@@ -264,6 +277,7 @@ class AppLauncherTabHelperTest : public PlatformTest {
   }
 
   web::WebTaskEnvironment task_environment;
+  std::unique_ptr<ScopedBlockSwizzler> application_state_swizzler_;
   std::unique_ptr<TestProfileIOS> profile_;
   web::FakeWebState web_state_;
   bool incognito_ = false;
@@ -495,13 +509,7 @@ TEST_F(AppLauncherTabHelperTest,
 
 // Test that IsCallPromptLaunchPending() returns true only while a call-prompt
 // URL launch (e.g. facetime-audio:) is pending completion.
-// TODO(crbug.com/40166678): The test fails on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_IsCallPromptLaunchPending IsCallPromptLaunchPending
-#else
-#define MAYBE_IsCallPromptLaunchPending DISABLED_IsCallPromptLaunchPending
-#endif
-TEST_F(AppLauncherTabHelperTest, MAYBE_IsCallPromptLaunchPending) {
+TEST_F(AppLauncherTabHelperTest, IsCallPromptLaunchPending) {
   delegate_.SetShouldCompleteAppLaunchImmediately(false);
   EXPECT_FALSE(tab_helper_->IsCallPromptLaunchPending());
 
@@ -552,16 +560,7 @@ TEST_F(AppLauncherTabHelperTest, ShouldAllowResponseWhenNoAppLaunchPending) {
 
 // Test that ShouldAllowResponse() waits for any pending app launch and scene
 // activation before allowing a navigation response to commit.
-// TODO(crbug.com/40166678): The test fails on device.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_ShouldAllowResponseWhileAppLaunchPending \
-  ShouldAllowResponseWhileAppLaunchPending
-#else
-#define MAYBE_ShouldAllowResponseWhileAppLaunchPending \
-  DISABLED_ShouldAllowResponseWhileAppLaunchPending
-#endif
-TEST_F(AppLauncherTabHelperTest,
-       MAYBE_ShouldAllowResponseWhileAppLaunchPending) {
+TEST_F(AppLauncherTabHelperTest, ShouldAllowResponseWhileAppLaunchPending) {
   delegate_.SetShouldCompleteAppLaunchImmediately(false);
 
   EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
