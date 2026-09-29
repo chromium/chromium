@@ -335,6 +335,121 @@ IN_PROC_BROWSER_TEST_F(ActorOpenKnownPageToolBrowserTest,
             ntp_url);
 }
 
+// Ensures that when a query misses Stage 1 (Open Tabs) by title/URL substring
+// but resolves to a History entry whose URL is equivalent to an open background
+// tab after stripping `#ref` fragments, the tool activates the existing
+// background tab instead of navigating the active tab.
+IN_PROC_BROWSER_TEST_F(ActorOpenKnownPageToolBrowserTest,
+                       TestDeduplicationActivatesBackgroundTabIgnoringRef) {
+  // Tab 0 (background): open at `example.com/title1.html` (no <title>, so its
+  // title defaults to the URL and does not match "DocumentationPortal").
+  const GURL open_tab_url =
+      embedded_https_test_server().GetURL("example.com", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), open_tab_url));
+
+  // History entry points to the same document with a fragment, and has a title
+  // that matches "DocumentationPortal".
+  const GURL history_url = embedded_https_test_server().GetURL(
+      "example.com", "/title1.html#section-2");
+  AddHistoryEntry(history_url, u"DocumentationPortal");
+
+  // Tab 1 (foreground/active): open at a different page.
+  const GURL active_url =
+      embedded_https_test_server().GetURL("example.com", "/title2.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), active_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_EQ(browser()->GetTabStripModel()->active_index(), 1);
+
+  std::unique_ptr<ToolRequest> action =
+      std::make_unique<OpenKnownPageToolRequest>("DocumentationPortal");
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectOkResult(result);
+
+  // Should have switched to Tab 0 without reloading it or navigating Tab 1.
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), 2);
+  EXPECT_EQ(browser()->GetTabStripModel()->active_index(), 0);
+  EXPECT_EQ(browser()->GetTabStripModel()->GetActiveWebContents()->GetURL(),
+            open_tab_url);
+}
+
+// Ensures that when a query resolves via History/Bookmarks to a URL that is
+// equivalent (ignoring `#ref` fragments) to the currently active tab and no
+// background tab matches, the tool returns `kPageSearchAlreadyOnMatchingTab`
+// rather than reloading the active tab.
+IN_PROC_BROWSER_TEST_F(
+    ActorOpenKnownPageToolBrowserTest,
+    TestDeduplicationReturnsAlreadyOnMatchingTabWhenActiveTabEquivalent) {
+  // Active tab is already on `example.com/title1.html` (whose title does not
+  // contain "DocumentationPortal").
+  const GURL active_url =
+      embedded_https_test_server().GetURL("example.com", "/title1.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), active_url));
+
+  const GURL history_url = embedded_https_test_server().GetURL(
+      "example.com", "/title1.html#section-2");
+  AddHistoryEntry(history_url, u"DocumentationPortal");
+
+  std::unique_ptr<ToolRequest> action =
+      std::make_unique<OpenKnownPageToolRequest>("DocumentationPortal");
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kPageSearchAlreadyOnMatchingTab);
+
+  EXPECT_EQ(browser()->GetTabStripModel()->GetActiveWebContents()->GetURL(),
+            active_url);
+}
+
+// Ensures that when both the active tab and one or more background tabs match
+// the resolved page URL (ignoring `#ref` fragments), the tool prioritizes the
+// active tab and returns `kPageSearchAlreadyOnMatchingTab` rather than
+// switching to a background tab.
+IN_PROC_BROWSER_TEST_F(
+    ActorOpenKnownPageToolBrowserTest,
+    TestDeduplicationPrioritizesActiveTabOverMatchingBackgroundTab) {
+  // Tab 0 (background): open at `example.com/title1.html#section-1`.
+  const GURL background_url_1 = embedded_https_test_server().GetURL(
+      "example.com", "/title1.html#section-1");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), background_url_1));
+
+  // Tab 1 (active): also open at `example.com/title1.html` (whose title does
+  // not contain "DocumentationPortal").
+  const GURL active_url =
+      embedded_https_test_server().GetURL("example.com", "/title1.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), active_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_EQ(browser()->GetTabStripModel()->active_index(), 1);
+
+  // Tab 2 (background): open at `example.com/title1.html#section-3`.
+  const GURL background_url_2 = embedded_https_test_server().GetURL(
+      "example.com", "/title1.html#section-3");
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), background_url_2, WindowOpenDisposition::NEW_BACKGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_EQ(browser()->GetTabStripModel()->count(), 3);
+  ASSERT_EQ(browser()->GetTabStripModel()->active_index(), 1);
+
+  const GURL history_url = embedded_https_test_server().GetURL(
+      "example.com", "/title1.html#section-2");
+  AddHistoryEntry(history_url, u"DocumentationPortal");
+
+  std::unique_ptr<ToolRequest> action =
+      std::make_unique<OpenKnownPageToolRequest>("DocumentationPortal");
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  ExpectErrorResult(result,
+                    mojom::ActionResultCode::kPageSearchAlreadyOnMatchingTab);
+
+  // Active tab must remain Tab 1 and its URL must remain untouched.
+  EXPECT_EQ(browser()->GetTabStripModel()->count(), 3);
+  EXPECT_EQ(browser()->GetTabStripModel()->active_index(), 1);
+  EXPECT_EQ(browser()->GetTabStripModel()->GetActiveWebContents()->GetURL(),
+            active_url);
+}
+
 }  // namespace
 
 }  // namespace actor

@@ -150,6 +150,54 @@ TEST(PageSearchUtilsUrlTest, FilterCategoriesAreIndependent) {
   EXPECT_FALSE(IsAllowedMatchUrl(GURL("chrome://newtab"), none));
 }
 
+TEST(PageSearchUtilsUrlTest, AreUrlsEquivalentForDeduplication) {
+  // Exact matches and fragment-only differences.
+  EXPECT_TRUE(AreUrlsEquivalentForDeduplication(
+      GURL("https://example.com/page"), GURL("https://example.com/page")));
+  EXPECT_TRUE(AreUrlsEquivalentForDeduplication(
+      GURL("https://example.com/page"), GURL("https://example.com/page#top")));
+  EXPECT_TRUE(AreUrlsEquivalentForDeduplication(
+      GURL("https://example.com/page#section1"),
+      GURL("https://example.com/page#section2")));
+  EXPECT_TRUE(AreUrlsEquivalentForDeduplication(
+      GURL("https://example.com/page?q=test#top"),
+      GURL("https://example.com/page?q=test#bottom")));
+
+  // Any query parameter differences do NOT deduplicate.
+  EXPECT_FALSE(
+      AreUrlsEquivalentForDeduplication(GURL("https://example.com/page?utm=1"),
+                                        GURL("https://example.com/page")));
+  EXPECT_FALSE(AreUrlsEquivalentForDeduplication(
+      GURL("https://example.com/docs"),
+      GURL("https://example.com/docs?session=123")));
+  EXPECT_FALSE(AreUrlsEquivalentForDeduplication(
+      GURL("https://www.youtube.com/watch?v=abc&feature=share"),
+      GURL("https://www.youtube.com/watch?v=abc")));
+  EXPECT_FALSE(AreUrlsEquivalentForDeduplication(
+      GURL("https://example.com/view?page=2&id=10"),
+      GURL("https://example.com/view?id=10&page=2")));
+
+  // Distinct content-identifying parameters do NOT deduplicate.
+  EXPECT_FALSE(AreUrlsEquivalentForDeduplication(
+      GURL("https://www.youtube.com/watch?v=abc"),
+      GURL("https://www.youtube.com/watch?v=xyz")));
+  EXPECT_FALSE(AreUrlsEquivalentForDeduplication(
+      GURL("https://www.google.com/search?q=cats"),
+      GURL("https://www.google.com/search?q=dogs")));
+  EXPECT_FALSE(AreUrlsEquivalentForDeduplication(
+      GURL("https://example.com/issue?id=100"),
+      GURL("https://example.com/issue?id=200")));
+
+  // Different paths, hosts, schemes, or invalid URLs do NOT deduplicate.
+  EXPECT_FALSE(AreUrlsEquivalentForDeduplication(
+      GURL("https://example.com/page1"), GURL("https://example.com/page2")));
+  EXPECT_FALSE(AreUrlsEquivalentForDeduplication(
+      GURL("http://example.com/page"), GURL("https://example.com/page")));
+  EXPECT_FALSE(AreUrlsEquivalentForDeduplication(
+      GURL("https://example.com/page"), GURL()));
+  EXPECT_FALSE(AreUrlsEquivalentForDeduplication(GURL(), GURL()));
+}
+
 class PageSearchUtilsTest : public testing::Test {
  public:
   PageSearchUtilsTest() = default;

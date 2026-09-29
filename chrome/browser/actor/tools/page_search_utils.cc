@@ -89,6 +89,13 @@ bool IsAllowedMatchUrl(const GURL& url, UrlMatchFilter filter) {
          std::ranges::contains(kNewTabPageHosts, url.host());
 }
 
+bool AreUrlsEquivalentForDeduplication(const GURL& a, const GURL& b) {
+  if (!a.is_valid() || !b.is_valid()) {
+    return false;
+  }
+  return a.EqualsIgnoringRef(b);
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 std::vector<TabMatch> FindMatchingTabs(BrowserWindowInterface* browser,
                                        std::string_view query,

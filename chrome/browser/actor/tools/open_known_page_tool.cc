@@ -26,6 +26,7 @@
 #include "chrome/common/actor/action_result.h"
 #include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace actor {
@@ -159,6 +160,46 @@ void OpenKnownPageTool::OnHistoryMatches(
                      MakeResult(mojom::ActionResultCode::kTabWentAway,
                                 /*requires_page_stabilization=*/false,
                                 "The active tab is no longer present."));
+    return;
+  }
+
+  // Before navigating `active_tab` to `chosen_page->url`, check whether an
+  // open tab in this window is already on an equivalent page (ignoring `#ref`
+  // fragments). Return early before constructing `navigate_tool_` so
+  // `GetObservationDelayer()` does not wait on a navigation that `Invoke()`
+  // will not execute.
+  //
+  // If the active tab already matches, stay on it rather than switching to a
+  // background tab or reloading.
+  const GURL& active_url = active_tab->GetContents()->GetLastCommittedURL();
+  if (IsAllowedMatchUrl(active_url) &&
+      AreUrlsEquivalentForDeduplication(active_url, chosen_page->url)) {
+    PostResponseTask(
+        std::move(callback),
+        MakeResult(
+            mojom::ActionResultCode::kPageSearchAlreadyOnMatchingTab,
+            /*requires_page_stabilization=*/false,
+            absl::StrFormat("The active tab already matches \"%s\".", query_)));
+    return;
+  }
+
+  for (int i = 0; i < tab_strip_model->count(); ++i) {
+    tabs::TabInterface* tab = tab_strip_model->GetTabAtIndex(i);
+    if (tab == active_tab) {
+      continue;
+    }
+    content::WebContents* contents = tab ? tab->GetContents() : nullptr;
+    if (!contents) {
+      continue;
+    }
+    const GURL& committed_url = contents->GetLastCommittedURL();
+    if (!IsAllowedMatchUrl(committed_url) ||
+        !AreUrlsEquivalentForDeduplication(committed_url, chosen_page->url)) {
+      continue;
+    }
+    matched_tab_ =
+        TabMatch{tab->GetHandle(), committed_url, contents->GetTitle()};
+    ValidateDestinationUrl(matched_tab_->url, std::move(callback));
     return;
   }
 

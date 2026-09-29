@@ -75,6 +75,10 @@ struct TabMatch {
 bool IsAllowedMatchUrl(const GURL& url,
                        UrlMatchFilter filter = UrlMatchFilter::All());
 
+// Returns true if `a` and `b` are valid URLs that refer to the same underlying
+// page ignoring `#ref` fragments.
+bool AreUrlsEquivalentForDeduplication(const GURL& a, const GURL& b);
+
 #if !BUILDFLAG(IS_ANDROID)
 // Searches open tabs in `browser` in tab-strip order.
 // Returns all tabs with an allowed committed URL (see `IsAllowedMatchUrl`)
