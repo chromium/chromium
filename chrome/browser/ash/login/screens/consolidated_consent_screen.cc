@@ -260,7 +260,7 @@ void ConsolidatedConsentScreen::ShowImpl() {
   data.Set("isTosHidden", enterprise_util::IsProfileAffiliated(profile));
 
   // ToS URLs.
-  const std::string& locale = application_locale_storage_->Get();
+  const std::string locale(application_locale_storage_->GetTag().tag_string());
   data.Set("googleEulaUrl", GetTosHost(locale, ToS::GOOGLE_EULA));
   data.Set("crosEulaUrl", GetTosHost(locale, ToS::CROS_EULA));
   data.Set("arcTosUrl", GetTosHost(locale, ToS::ARC));

@@ -385,7 +385,8 @@ void LocaleSwitchScreen::OnRequestFailure() {
 void LocaleSwitchScreen::SwitchLocale() {
   language::ConvertToActualUILocale(&locale_);
 
-  if (locale_.empty() || locale_ == application_locale_storage_->Get()) {
+  if (locale_.empty() ||
+      locale_ == application_locale_storage_->GetTag().tag_string()) {
     exit_callback_.Run(Result::kNoSwitchNeeded);
     return;
   }

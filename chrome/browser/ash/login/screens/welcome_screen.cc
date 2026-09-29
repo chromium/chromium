@@ -228,7 +228,8 @@ void WelcomeScreen::UpdateLanguageList() {
 void WelcomeScreen::SetApplicationLocaleAndInputMethod(
     const std::string& locale,
     const std::string& input_method) {
-  const std::string& app_locale = application_locale_storage_->Get();
+  std::string_view app_locale =
+      application_locale_storage_->GetTag().tag_string();
   if (app_locale == locale || locale.empty()) {
     // If the locale doesn't change, set input method directly.
     SetInputMethod(input_method);
@@ -256,7 +257,8 @@ std::string WelcomeScreen::GetInputMethod() const {
 
 void WelcomeScreen::SetApplicationLocale(const std::string& locale,
                                          const bool is_from_ui) {
-  const std::string& app_locale = application_locale_storage_->Get();
+  std::string_view app_locale =
+      application_locale_storage_->GetTag().tag_string();
   if (app_locale == locale || locale.empty()) {
     if (selected_language_code_.empty())
       UpdateLanguageList();
@@ -656,7 +658,8 @@ void WelcomeScreen::OnLanguageListResolved(
     const std::string& new_selected_language) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (new_language_list_locale != application_locale_storage_->Get()) {
+  if (new_language_list_locale !=
+      application_locale_storage_->GetTag().tag_string()) {
     UpdateLanguageList();
     return;
   }

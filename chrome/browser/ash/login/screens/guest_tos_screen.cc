@@ -80,7 +80,7 @@ GuestTosScreen::~GuestTosScreen() = default;
 void GuestTosScreen::ShowImpl() {
   if (!view_)
     return;
-  const std::string& locale = application_locale_storage_->Get();
+  const std::string locale(application_locale_storage_->GetTag().tag_string());
   view_->Show(GetGoogleEulaOnlineUrl(locale), GetCrosEulaOnlineUrl(locale));
 }
 

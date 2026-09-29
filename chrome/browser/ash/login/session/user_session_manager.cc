@@ -979,9 +979,9 @@ void UserSessionManager::SetFirstLoginPrefs(
     const std::string& public_session_locale,
     const std::string& public_session_input_method) {
   VLOG(1) << "Setting first login prefs";
-  InitLocaleAndInputMethodsForNewUser(application_locale_storage_->Get(), this,
-                                      profile, public_session_locale,
-                                      public_session_input_method);
+  InitLocaleAndInputMethodsForNewUser(
+      std::string(application_locale_storage_->GetTag().tag_string()), this,
+      profile, public_session_locale, public_session_input_method);
 
   // Turn on the feature of the low battery sound for all users on the device
   // when a new user login.
@@ -1056,7 +1056,7 @@ bool UserSessionManager::RespectLocalePreference(
     pref_locale = *account_locale;
   }
   if (pref_locale.empty()) {
-    pref_locale = application_locale_storage_->Get();
+    pref_locale = application_locale_storage_->GetTag().tag_string();
   }
   DCHECK(!pref_locale.empty());
   VLOG(1) << "RespectLocalePreference: "

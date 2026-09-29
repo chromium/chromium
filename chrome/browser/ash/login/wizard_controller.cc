@@ -2403,7 +2403,7 @@ void WizardController::OnUpdateScreenExit(UpdateScreen::Result result) {
 
 void WizardController::OnUpdateCompleted() {
   // Install language packs based on the user selected language.
-  const std::string locale = application_locale_storage_->Get();
+  const std::string locale(application_locale_storage_->GetTag().tag_string());
   language_packs::LanguagePackManager::UpdatePacksForOobe(locale,
                                                           base::DoNothing());
 

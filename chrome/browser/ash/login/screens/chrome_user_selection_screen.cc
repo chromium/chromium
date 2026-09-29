@@ -187,14 +187,15 @@ void ChromeUserSelectionScreen::SetPublicSessionLocales(
   // Construct the list of available locales. This list consists of the
   // recommended locales, followed by all others.
   base::ListValue available_locales = GetUILanguageList(
-      application_locale_storage_->Get(), &recommended_locales, std::string(),
+      std::string(application_locale_storage_->GetTag().tag_string()),
+      &recommended_locales, std::string(),
       input_method::InputMethodManager::Get());
 
   // Set the initially selected locale to the first recommended locale that is
   // actually available or the current UI locale if none of them are available.
-  const std::string default_locale =
-      FindMostRelevantLocale(recommended_locales, available_locales,
-                             application_locale_storage_->Get());
+  const std::string default_locale = FindMostRelevantLocale(
+      recommended_locales, available_locales,
+      std::string(application_locale_storage_->GetTag().tag_string()));
 
   // Set a flag to indicate whether the list of recommended locales contains at
   // least two entries. This is used to decide whether the public session pod

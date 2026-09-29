@@ -902,10 +902,10 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
               : &public_session_recommended_locales_[account_id];
       std::string selected_locale;
       bool has_multiple_locales;
-      auto available_locales =
-          GetPublicSessionLocales(application_locale_storage_->Get(),
-                                  public_session_recommended_locales,
-                                  &selected_locale, &has_multiple_locales);
+      auto available_locales = GetPublicSessionLocales(
+          std::string(application_locale_storage_->GetTag().tag_string()),
+          public_session_recommended_locales, &selected_locale,
+          &has_multiple_locales);
       user_info.public_account_info->available_locales =
           lock_screen_utils::FromListValueToLocaleItem(
               std::move(available_locales));

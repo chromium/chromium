@@ -723,7 +723,8 @@ void DemoSession::ShowSplashScreen(base::FilePath image_path) {
 }
 
 void DemoSession::ConfigureAndStartSplashScreen() {
-  const std::string current_locale = application_locale_storage_->Get();
+  const std::string current_locale(
+      application_locale_storage_->GetTag().tag_string());
   base::FilePath localized_image_path = components_->resources_component_path()
                                             .Append(kSplashScreensPath)
                                             .Append(current_locale + ".jpg");

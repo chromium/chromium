@@ -230,7 +230,8 @@ void LocaleSwitchNotification::Show(
   const std::u16string body = l10n_util::GetStringFUTF16(
       IDS_LOCALE_SWITCH_NOTIFICATION_TEXT,
       l10n_util::GetDisplayNameForLocale(
-          new_locale, /*display_locale=*/application_locale_storage->Get(),
+          new_locale, /*display_locale=*/
+          application_locale_storage->GetTag().tag_string(),
           /*is_for_ui=*/true));
 
   const std::u16string accept_label = l10n_util::GetStringUTF16(
