@@ -260,8 +260,7 @@ void AffiliationDatabase::GetAllAffiliationsAndBranding(
             GURL(statement.ColumnStringView(2)),
         },
         GURL(statement.ColumnString(3)));
-    results->back().last_update_time =
-        base::Time::FromInternalValue(statement.ColumnInt64(4));
+    results->back().last_update_time = statement.ColumnTime(4);
   }
 }
 

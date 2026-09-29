@@ -43,8 +43,7 @@ std::map<FormPrimaryKey, std::vector<PasswordNote>> StatementToPasswordNotes(
       continue;
     }
 
-    base::Time date_created = base::Time::FromDeltaSinceWindowsEpoch(
-        base::Microseconds(s->ColumnInt64(3)));
+    base::Time date_created = s->ColumnTime(3);
     bool hide_by_default = s->ColumnBool(4);
 
     std::vector<PasswordNote>& notes = results[FormPrimaryKey(s->ColumnInt(0))];

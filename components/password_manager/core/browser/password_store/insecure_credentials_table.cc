@@ -25,8 +25,7 @@ std::vector<InsecureCredential> StatementToInsecureCredential(
     std::string signon_realm = s->ColumnString(1);
     std::u16string username = s->ColumnString16(2);
     InsecureType insecurity_type = static_cast<InsecureType>(s->ColumnInt64(3));
-    base::Time create_time = base::Time::FromDeltaSinceWindowsEpoch(
-        (base::Microseconds(s->ColumnInt64(4))));
+    base::Time create_time = s->ColumnTime(4);
     bool is_muted = !!s->ColumnInt64(5);
     bool trigger_notification_from_backend = !!s->ColumnInt64(6);
     InsecureCredential issue(
@@ -107,8 +106,7 @@ bool InsecureCredentialsTable::InsertOrReplace(FormPrimaryKey parent_key,
                      "VALUES (?, ?, ?, ?, ?)"));
   s.BindInt(0, parent_key.value());
   s.BindInt(1, static_cast<int>(type));
-  s.BindInt64(2,
-              metadata.create_time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  s.BindTime(2, metadata.create_time);
   s.BindBool(3, metadata.is_muted.value());
   s.BindBool(4, metadata.trigger_notification_from_backend.value());
 
