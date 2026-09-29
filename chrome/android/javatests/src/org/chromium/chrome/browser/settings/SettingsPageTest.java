@@ -18,11 +18,15 @@ import static androidx.test.espresso.matcher.ViewMatchers.hasDescendant;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isFocused;
+import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.instanceOf;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -64,6 +68,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
@@ -71,6 +76,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -357,6 +363,67 @@ public class SettingsPageTest {
                 .check(matches(isDisplayed()));
         onViewWaiting(allOf(withText("Microsoft Bing"), isDisplayed()))
                 .check(matches(isDisplayed()));
+    }
+
+    /**
+     * Regression test for crbug.com/566132507: after a theme change, the toolbar back arrow on a
+     * nested detail page should return to its parent page instead of navigating the tab away from
+     * settings. Without SettingsInTabUrlNav this fails, because the TAB_HISTORY back press handler
+     * outranks the settings page's NATIVE_PAGE handler, so nested-page back depends on fragment
+     * callback registration order.
+     */
+    @Test
+    @MediumTest
+    @Restriction({
+        DeviceFormFactor.ONLY_TABLET,
+        // Automotive devices do not support display rotation.
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
+    })
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testThemeSwitchInSingleColumnThenToolbarBackOnNestedPage() {
+        ensureActivityOrientation(Configuration.ORIENTATION_PORTRAIT);
+        mActivityTestRule.loadUrl("chrome-native://settings/");
+        ensureSingleColumnMode();
+
+        // Open Privacy and security, then its nested Delete browsing data page.
+        var matcher =
+                allOf(
+                        withId(R.id.recycler_view),
+                        hasDescendant(withText(R.string.prefs_privacy_security)));
+        onViewWaiting(matcher)
+                .perform(scrollTo(hasDescendant(withText(R.string.prefs_privacy_security))));
+        onViewWaiting(allOf(withText(R.string.prefs_privacy_security), isDisplayed()))
+                .perform(click());
+        onViewWaiting(allOf(withText(R.string.clear_browsing_data_title), isDisplayed()))
+                .perform(click());
+        onViewWaiting(allOf(withText(R.string.clear_cookies_and_site_data_title), isDisplayed()))
+                .check(matches(isDisplayed()));
+
+        recreateActivityForThemeChange();
+        ensureSingleColumnMode();
+        onViewWaiting(allOf(withText(R.string.clear_cookies_and_site_data_title), isDisplayed()))
+                .check(matches(isDisplayed()));
+
+        // Tap the toolbar back arrow. Privacy and security should be shown in the same tab.
+        onViewWaiting(
+                        allOf(
+                                withContentDescription(R.string.back),
+                                isDescendantOfA(withId(R.id.action_bar)),
+                                isDisplayed()))
+                .perform(click());
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    var activity = mActivityTestRule.getActivity();
+                    Tab tab = activity.getActivityTab();
+                    Criteria.checkThat(
+                            "Tab should still show settings",
+                            tab != null && tab.getNativePage() instanceof SettingsPage,
+                            is(true));
+                    var hostFragment = SettingsHostFragment.get(activity);
+                    Criteria.checkThat(hostFragment, notNullValue());
+                    Criteria.checkThat(
+                            hostFragment.getMainFragment(), instanceOf(PrivacySettings.class));
+                });
     }
 
     /** Regression test for https://crbug.com/535695748. */
