@@ -96,7 +96,7 @@
 #include "chrome/browser/glic/widget/glic_side_panel_ui_android.h"
 #else
 #include "chrome/browser/glic/host/context/glic_focused_tab_manager.h"
-#include "chrome/browser/glic/public/service/glic_activity_manager.h"
+#include "chrome/browser/glic/public/service/legacy_glic_activity_manager.h"
 #include "chrome/browser/glic/widget/glic_floating_ui.h"
 #include "chrome/browser/glic/widget/glic_inactive_side_panel_ui.h"
 #include "chrome/browser/glic/widget/glic_side_panel_ui.h"
@@ -1882,7 +1882,7 @@ void GlicInstanceImpl::OnTabAddedToTask(
   }
 
 #if !BUILDFLAG(IS_ANDROID)
-  if (auto* activity_manager = GlicActivityManager::Get(profile_)) {
+  if (auto* activity_manager = LegacyGlicActivityManager::Get(profile_)) {
     activity_manager->OnTabAddedToTask(task_id);
   }
 #endif

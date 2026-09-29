@@ -20,7 +20,7 @@
 #include "chrome/browser/glic/glic_profile_manager.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/public/service/glic_activity_manager.h"
+#include "chrome/browser/glic/public/service/legacy_glic_activity_manager.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/mock_glic_keyed_service.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
@@ -88,7 +88,7 @@ class TestGlicSplitButtonDelegate : public glic::GlicSplitButtonDelegate {
       bubble_.reset();
     }
     Profile* profile = browser_->GetProfile();
-    auto* manager = glic::GlicActivityManager::Get(profile);
+    auto* manager = glic::LegacyGlicActivityManager::Get(profile);
     if (manager && controller_) {
       bubble_ = std::make_unique<ActorTaskListBubble>(
           profile, browser_, manager->actor_task_list_bubble_rows(),
@@ -255,8 +255,8 @@ class ActorTaskListBubbleControllerTest : public ChromeViewsTestBase {
 TEST_F(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
   actor::ActorKeyedService* actor_service =
       actor::ActorKeyedService::Get(profile_);
-  glic::GlicActivityManager* manager =
-      &mock_glic_keyed_service_->activity_manager();
+  glic::LegacyGlicActivityManager* manager =
+      &mock_glic_keyed_service_->legacy_activity_manager();
   actor::TaskId task_id = actor_service->CreateTask(
       actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
   actor_service->GetTask(task_id)->Pause(true);
@@ -269,7 +269,7 @@ TEST_F(ActorTaskListBubbleControllerTest, ShowBubbleRecordsHistogram) {
   histogram_tester.ExpectBucketCount("Actor.Ui.TaskListBubble.Rows", 1, 1);
 
   // Close the bubble so IsActorTaskListBubbleShowing() becomes false. Now that
-  // GlicActivityManager is a real instance wired to GlicKeyedService,
+  // LegacyGlicActivityManager is a real instance wired to GlicKeyedService,
   // subsequent task mutations in the loop below would otherwise trigger
   // OnStateUpdate() -> ShowBubble() on each intermediate task while the
   // bubble is open, recording premature intermediate histogram samples.
@@ -310,8 +310,8 @@ TEST_F(ActorTaskListBubbleControllerTest,
 
   actor::ActorKeyedService* actor_service =
       actor::ActorKeyedService::Get(profile_);
-  glic::GlicActivityManager* manager =
-      &mock_glic_keyed_service_->activity_manager();
+  glic::LegacyGlicActivityManager* manager =
+      &mock_glic_keyed_service_->legacy_activity_manager();
   actor::TaskId task_id = actor_service->CreateTask(
       actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
   actor_service->GetTask(task_id)->Pause(true);
@@ -337,8 +337,8 @@ TEST_F(ActorTaskListBubbleControllerTest,
 
   actor::ActorKeyedService* actor_service =
       actor::ActorKeyedService::Get(profile_);
-  glic::GlicActivityManager* manager =
-      &mock_glic_keyed_service_->activity_manager();
+  glic::LegacyGlicActivityManager* manager =
+      &mock_glic_keyed_service_->legacy_activity_manager();
   actor::TaskId task_id = actor_service->CreateTask(
       actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
   actor_service->GetTask(task_id)->Pause(true);
@@ -363,8 +363,8 @@ TEST_F(ActorTaskListBubbleControllerTest,
 
   actor::ActorKeyedService* actor_service =
       actor::ActorKeyedService::Get(profile_);
-  glic::GlicActivityManager* manager =
-      &mock_glic_keyed_service_->activity_manager();
+  glic::LegacyGlicActivityManager* manager =
+      &mock_glic_keyed_service_->legacy_activity_manager();
   actor::TaskId task_id = actor_service->CreateTask(
       actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
   actor_service->GetTask(task_id)->Pause(true);
@@ -384,8 +384,8 @@ TEST_F(ActorTaskListBubbleControllerTest,
 TEST_F(ActorTaskListBubbleControllerTest, ShowBubble_DelayedWhenIconHidden) {
   actor::ActorKeyedService* actor_service =
       actor::ActorKeyedService::Get(profile_);
-  glic::GlicActivityManager* manager =
-      &mock_glic_keyed_service_->activity_manager();
+  glic::LegacyGlicActivityManager* manager =
+      &mock_glic_keyed_service_->legacy_activity_manager();
   actor::TaskId task_id = actor_service->CreateTask(
       actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
   actor_service->GetTask(task_id)->Pause(true);
@@ -413,8 +413,8 @@ TEST_F(ActorTaskListBubbleControllerTest,
        ShowBubble_NotDelayedWhenIconVisible) {
   actor::ActorKeyedService* actor_service =
       actor::ActorKeyedService::Get(profile_);
-  glic::GlicActivityManager* manager =
-      &mock_glic_keyed_service_->activity_manager();
+  glic::LegacyGlicActivityManager* manager =
+      &mock_glic_keyed_service_->legacy_activity_manager();
   actor::TaskId task_id = actor_service->CreateTask(
       actor::TestTaskSourceInfo(), actor::NoEnterprisePolicyChecker());
   actor_service->GetTask(task_id)->Pause(true);

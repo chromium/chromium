@@ -20,7 +20,7 @@
 #include "chrome/browser/glic/browser_ui/glic_split_button_delegate.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
-#include "chrome/browser/glic/public/service/glic_activity_manager.h"
+#include "chrome/browser/glic/public/service/legacy_glic_activity_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
 #include "chrome/common/chrome_features.h"
@@ -42,10 +42,10 @@ int GetPriorityForTaskState(actor::ActorTask::State task_state,
   // 2. Processed tasks needing attention
   // 3. Remaining tasks that need processing
   // 4. All other tasks
-  return glic::GlicActivityManager::RequiresAttention(task_state)
+  return glic::LegacyGlicActivityManager::RequiresAttention(task_state)
              ? (requires_processing ? 1 : 2)
-         : glic::GlicActivityManager::RequiresTaskProcessing(task_state,
-                                                             feature_mode)
+         : glic::LegacyGlicActivityManager::RequiresTaskProcessing(task_state,
+                                                                   feature_mode)
              ? 3
              : 4;
 }
@@ -58,7 +58,7 @@ bool ShouldShowConsentOverride(
                     state == actor::ActorTask::State::kReflecting)) {
     return false;
   }
-  return glic::GlicActivityManager::RequiresAttention(state) &&
+  return glic::LegacyGlicActivityManager::RequiresAttention(state) &&
          interrupt_reason == actor::ActorTask::InterruptReason::
                                  kWaitingForExperimentalTriggeringConsent;
 }
@@ -89,7 +89,7 @@ std::string GetRowSubtitle(
     return l10n_util::GetStringUTF8(
         IDS_ACTOR_TASK_LIST_BUBBLE_ROW_TAB_CLOSED_SUBTITLE);
   }
-  if (glic::GlicActivityManager::RequiresAttention(state)) {
+  if (glic::LegacyGlicActivityManager::RequiresAttention(state)) {
     return l10n_util::GetStringUTF8(
         IDS_ACTOR_TASK_LIST_BUBBLE_ROW_CHECK_TASK_SUBTITLE);
   }
@@ -161,7 +161,7 @@ ActorTaskListBubbleController::GetActorTaskRowsForBubble(
     }
 #endif
 
-    if (!has_tab && glic::GlicActivityManager::IsActiveExperimentalTask(
+    if (!has_tab && glic::LegacyGlicActivityManager::IsActiveExperimentalTask(
                         task_state.value(), feature_mode)) {
       // Treat experimental triggering tasks as having a tab even if they don't
       // have one associated yet. This ensures they are clickable and can bring
@@ -176,7 +176,7 @@ ActorTaskListBubbleController::GetActorTaskRowsForBubble(
     std::string subtitle = GetRowSubtitle(task_state.value(), has_tab,
                                           feature_mode, task_interrupt_reason);
     bool needs_review =
-        glic::GlicActivityManager::RequiresAttention(task_state.value());
+        glic::LegacyGlicActivityManager::RequiresAttention(task_state.value());
 
     std::string title =
         is_waiting_for_consent
@@ -225,7 +225,8 @@ ActorTaskListBubbleController::ActorTaskListBubbleController(
       scoped_unowned_user_data_(browser_window->GetUnownedUserDataHost(),
                                 *this) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
-  if (auto* manager = glic::GlicActivityManager::Get(browser_->GetProfile())) {
+  if (auto* manager =
+          glic::LegacyGlicActivityManager::Get(browser_->GetProfile())) {
     bubble_state_change_callback_subscription_.push_back(
         manager->RegisterTaskListBubbleStateChange(
             base::BindRepeating(&ActorTaskListBubbleController::OnStateUpdate,
@@ -268,7 +269,7 @@ void ActorTaskListBubbleController::ShowBubbleImpl(bool is_start_notification) {
     return;
   }
 
-  auto* manager = glic::GlicActivityManager::Get(browser_->GetProfile());
+  auto* manager = glic::LegacyGlicActivityManager::Get(browser_->GetProfile());
   if (!manager) {
     return;
   }
@@ -369,7 +370,7 @@ void ActorTaskListBubbleController::OnTaskRowClicked(actor::TaskId task_id) {
   }
   // Regardless of tab navigation, process the row and close the bubble when
   // done.
-  if (auto* activity_manager = glic::GlicActivityManager::Get(profile)) {
+  if (auto* activity_manager = glic::LegacyGlicActivityManager::Get(profile)) {
     activity_manager->ProcessRowInTaskListBubble(task_id);
   }
   CloseBubble();

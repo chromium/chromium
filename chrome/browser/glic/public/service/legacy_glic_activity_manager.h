@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_GLIC_PUBLIC_SERVICE_GLIC_ACTIVITY_MANAGER_H_
-#define CHROME_BROWSER_GLIC_PUBLIC_SERVICE_GLIC_ACTIVITY_MANAGER_H_
+#ifndef CHROME_BROWSER_GLIC_PUBLIC_SERVICE_LEGACY_GLIC_ACTIVITY_MANAGER_H_
+#define CHROME_BROWSER_GLIC_PUBLIC_SERVICE_LEGACY_GLIC_ACTIVITY_MANAGER_H_
 
 #include <string_view>
 #include <vector>
@@ -27,15 +27,15 @@ class Profile;
 namespace glic {
 
 // Centralized Profile-scoped manager for Glic Actor tasks.
-class GlicActivityManager {
+class LegacyGlicActivityManager {
  public:
-  // Returns the GlicActivityManager instance associated with `profile`, or
-  // nullptr if GlicKeyedService is not available for this profile.
-  static GlicActivityManager* Get(Profile* profile);
+  // Returns the LegacyGlicActivityManager instance associated with `profile`,
+  // or nullptr if GlicKeyedService is not available for this profile.
+  static LegacyGlicActivityManager* Get(Profile* profile);
 
-  GlicActivityManager(Profile* profile,
-                      actor::ActorKeyedService* actor_service);
-  ~GlicActivityManager();
+  LegacyGlicActivityManager(Profile* profile,
+                            actor::ActorKeyedService* actor_service);
+  ~LegacyGlicActivityManager();
 
   // Called whenever actor task state updates.
   void OnActorTaskStateUpdate(actor::TaskId task_id);
@@ -152,4 +152,4 @@ class GlicActivityManager {
 
 }  // namespace glic
 
-#endif  // CHROME_BROWSER_GLIC_PUBLIC_SERVICE_GLIC_ACTIVITY_MANAGER_H_
+#endif  // CHROME_BROWSER_GLIC_PUBLIC_SERVICE_LEGACY_GLIC_ACTIVITY_MANAGER_H_

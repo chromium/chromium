@@ -8,7 +8,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/glic/browser_ui/activity_list_bubble/glic_activity_list_bubble_controller.h"
-#include "chrome/browser/glic/public/service/glic_activity_manager.h"
+#include "chrome/browser/glic/public/service/legacy_glic_activity_manager.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/common/chrome_features.h"
@@ -41,7 +41,7 @@ const int kLayoutInteriorMarginTop = 4;
 const int kLayoutInteriorMarginRight = 8;
 
 const gfx::VectorIcon& GetRowIcon(actor::ActorTask::State state) {
-  if (glic::GlicActivityManager::RequiresAttention(state)) {
+  if (glic::LegacyGlicActivityManager::RequiresAttention(state)) {
     return features::IsRoundedIconsEnabled() ? kHourglassIcon
                                              : kHourglassOldIcon;
   }
