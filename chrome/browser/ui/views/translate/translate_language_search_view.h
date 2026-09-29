@@ -40,10 +40,13 @@ class TranslateLanguageSearchView : public views::View,
 
   // views::View:
   void RequestFocus() override;
+  bool OnKeyPressed(const ui::KeyEvent& event) override;
 
   // views::TextfieldController:
   void ContentsChanged(views::Textfield* sender,
                        const std::u16string& new_contents) override;
+  bool HandleKeyEvent(views::Textfield* sender,
+                      const ui::KeyEvent& key_event) override;
 
   void ResetLanguageIndex(int language_index);
   void CreateLanguageHoverButton(int language_index);
@@ -52,6 +55,7 @@ class TranslateLanguageSearchView : public views::View,
   void UpdateLanguageList(const std::u16string& query);
   void OnLanguageButtonPressed(int language_index);
   void ClearLanguageList();
+  std::vector<views::View*> GetLanguageButtons() const;
 
   // Helper method to get the index of a language by its code.
 

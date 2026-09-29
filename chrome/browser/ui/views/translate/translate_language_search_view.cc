@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/translate/translate_language_search_view.h"
 
+#include <algorithm>
+
 #include "base/i18n/string_search.h"
 #include "chrome/browser/ui/translate/translate_bubble_model.h"
 #include "chrome/browser/ui/views/controls/hover_button.h"
@@ -12,6 +14,8 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/events/event.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -20,12 +24,36 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 
 namespace {
 constexpr int kMaxVisibleHeight = 250;
+
+bool HasModifierKeys(const ui::KeyEvent& event) {
+  return event.IsShiftDown() || event.IsControlDown() || event.IsAltDown() ||
+         event.IsAltGrDown() || event.IsCommandDown();
+}
+
+void HandleDownArrowKey(const std::vector<views::View*>& buttons,
+                        size_t index) {
+  if (index + 1 < buttons.size()) {
+    buttons[index + 1]->RequestFocus();
+  }
+}
+
+void HandleUpArrowKey(const std::vector<views::View*>& buttons,
+                      size_t index,
+                      views::View* search_field) {
+  if (index > 0) {
+    buttons[index - 1]->RequestFocus();
+  } else {
+    search_field->RequestFocus();
+  }
+}
 }  // namespace
 
 TranslateLanguageSearchView::TranslateLanguageSearchView(
@@ -66,6 +94,7 @@ TranslateLanguageSearchView::TranslateLanguageSearchView(
   scroll_view_->ClipHeightTo(0, kMaxVisibleHeight);
   scroll_view_->SetHorizontalScrollBarMode(
       views::ScrollView::ScrollBarMode::kDisabled);
+  scroll_view_->SetAllowKeyboardScrolling(false);
 
   list_view_ = scroll_view_->SetContents(
       views::Builder<views::BoxLayoutView>()
@@ -85,15 +114,60 @@ void TranslateLanguageSearchView::RequestFocus() {
   }
 }
 
+bool TranslateLanguageSearchView::OnKeyPressed(const ui::KeyEvent& event) {
+  if (HasModifierKeys(event) ||
+      (event.key_code() != ui::VKEY_DOWN && event.key_code() != ui::VKEY_UP)) {
+    return false;
+  }
+
+  std::vector<views::View*> buttons = GetLanguageButtons();
+  auto it = std::ranges::find(buttons, GetFocusManager()->GetFocusedView());
+  if (it == buttons.end()) {
+    return false;
+  }
+
+  size_t index = static_cast<size_t>(std::distance(buttons.begin(), it));
+  if (event.key_code() == ui::VKEY_DOWN) {
+    HandleDownArrowKey(buttons, index);
+  } else {
+    HandleUpArrowKey(buttons, index, search_field_);
+  }
+  return true;
+}
+
 void TranslateLanguageSearchView::ContentsChanged(
     views::Textfield* sender,
     const std::u16string& new_contents) {
   UpdateLanguageList(new_contents);
 }
 
+bool TranslateLanguageSearchView::HandleKeyEvent(
+    views::Textfield* /*sender*/,
+    const ui::KeyEvent& key_event) {
+  // Intercept VKEY_DOWN events on the search_field to move the focus
+  // to the first language (before views::Textfield consumes the event).
+  // Do not intercept VKEY_UP events on the search_field (keep the focus on it).
+  if (key_event.type() != ui::EventType::kKeyPressed ||
+      HasModifierKeys(key_event) || key_event.key_code() != ui::VKEY_DOWN) {
+    return false;
+  }
+
+  std::vector<views::View*> buttons = GetLanguageButtons();
+  if (buttons.empty()) {
+    return false;
+  }
+
+  buttons.front()->RequestFocus();
+  return true;
+}
+
 void TranslateLanguageSearchView::ResetLanguageIndex(int language_index) {
   search_field_->SetText(model_->GetTargetLanguageNameAt(language_index));
   UpdateLanguageList(std::u16string(search_field_->GetText()));
+  // Whenever the "Reset" button is disabled, the Focus Manager tries to
+  // move the focus to the Done button. However, the focus should be placed in
+  // the search_field.
+  RequestFocus();
 }
 
 void TranslateLanguageSearchView::CreateLanguageHoverButton(
@@ -145,6 +219,11 @@ void TranslateLanguageSearchView::UpdateLanguageList(
 
 void TranslateLanguageSearchView::OnLanguageButtonPressed(int language_index) {
   search_field_->SetText(model_->GetTargetLanguageNameAt(language_index));
+  // When a language button is selected, ClearLanguageList() removes the
+  // focused button from the view hierarchy, causing the Focus Manager to clear
+  // focus (nullptr). Place focus back in search_field_ so keyboard focus is
+  // not lost.
+  RequestFocus();
   ClearLanguageList();
   on_language_selected_.Run(language_index);
 }
@@ -152,6 +231,19 @@ void TranslateLanguageSearchView::OnLanguageButtonPressed(int language_index) {
 void TranslateLanguageSearchView::ClearLanguageList() {
   list_view_->RemoveAllChildViews();
   list_view_->InvalidateLayout();
+}
+
+std::vector<views::View*> TranslateLanguageSearchView::GetLanguageButtons()
+    const {
+  std::vector<views::View*> buttons;
+  for (views::View* child : list_view_->children()) {
+    // Only return language buttons so that non-interactive items (like
+    // labels and separators) are skipped during keyboard navigation.
+    if (views::AsViewClass<HoverButton>(child)) {
+      buttons.push_back(child);
+    }
+  }
+  return buttons;
 }
 
 BEGIN_METADATA(TranslateLanguageSearchView)
