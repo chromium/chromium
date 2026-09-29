@@ -11,7 +11,7 @@
 }
 </style>
 <canvas id="canvas" width="200" height="200" content=drawable>
-  <div id="child"></div>
+  <div drawable id="child"></div>
 </canvas>
 
 <script>
@@ -112,6 +112,7 @@ promise_test(async t => {
   nestedCanvas.width = 100;
   nestedCanvas.height = 100;
   const childDiv = document.createElement('div');
+  childDiv.setAttribute('drawable', '');
   childDiv.style.width = '100px';
   childDiv.style.height = '100px';
   nestedCanvas.appendChild(childDiv);
