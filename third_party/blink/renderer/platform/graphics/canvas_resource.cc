@@ -381,22 +381,6 @@ void CanvasResourceSharedImage::WaitSyncToken(
   }
 }
 
-std::unique_ptr<gpu::RasterScopedAccess> CanvasResourceSharedImage::BeginAccess(
-    bool readonly) {
-  return GetSharedImage()->BeginRasterAccess(RasterInterface(),
-                                             acquire_sync_token_, readonly);
-}
-
-void CanvasResourceSharedImage::EndAccess(
-    std::unique_ptr<gpu::RasterScopedAccess> access) {
-  CHECK(!GetSharedImage()->is_software());
-  DCHECK(!is_cross_thread());
-
-  auto sync_token = gpu::RasterScopedAccess::EndAccess(std::move(access));
-  SetReleaseSyncToken(sync_token);
-  GetSharedImage()->UpdateDestructionSyncToken(sync_token);
-}
-
 void CanvasResourceSharedImage::NotifyResourceLost() {
   DCHECK(!is_cross_thread());
   resource_is_lost_ = true;

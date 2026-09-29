@@ -185,8 +185,6 @@ class PLATFORM_EXPORT CanvasResourceSharedImage final : public CanvasResource {
   const gpu::SyncToken& acquire_sync_token() const {
     return acquire_sync_token_;
   }
-  std::unique_ptr<gpu::RasterScopedAccess> BeginAccess(bool readonly);
-  void EndAccess(std::unique_ptr<gpu::RasterScopedAccess> access);
 
   void NotifyResourceLost() final;
 
