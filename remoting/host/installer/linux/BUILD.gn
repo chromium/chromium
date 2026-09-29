@@ -9,9 +9,10 @@ import("//remoting/host/installer/credits.gni")
 import("//remoting/remoting_locales.gni")
 import("//remoting/remoting_options.gni")
 
-# The Debian package can't be built in component builds since it doesn't
-# package the shared libraries.
-if (enable_me2me_host && target_cpu == "x64" && !is_component_build) {
+# The Debian package is only built for Chrome-branded builds. It also can't be
+# built in component builds since it doesn't package the shared libraries.
+if (is_chrome_branded && enable_me2me_host && target_cpu == "x64" &&
+    !is_component_build) {
   remoting_credits("credits") {
     gn_target = "//remoting/host/installer/linux:remoting_me2me_host_archive"
   }
