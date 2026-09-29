@@ -112,7 +112,6 @@
 #include "third_party/blink/public/common/unique_name/unique_name_helper.h"
 #include "ui/base/ui_base_switches.h"
 #include "ui/gfx/codec/png_codec.h"
-#include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -781,7 +780,7 @@ void WebTestControlHost::ResetBrowserAfterWebTest() {
         network::mojom::CookieDeletionFilter::New(), base::DoNothing());
   }
 
-  ui::SelectFileDialog::SetFactory(nullptr);
+  fake_file_dialog_factory_.reset();
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     if (writable_directory_for_tests_.IsValid()) {
@@ -1606,9 +1605,7 @@ void WebTestControlHost::GetWritableDirectory(
 
 void WebTestControlHost::SetFilePathForMockFileDialog(
     const base::FilePath& path) {
-  ui::SelectFileDialog::SetFactory(
-      std::make_unique<FakeSelectFileDialogFactory>(
-          std::vector<base::FilePath>{path}));
+  fake_file_dialog_factory_.emplace(std::vector<base::FilePath>{path});
 }
 
 void WebTestControlHost::CreateSubresourceFilterRulesetFile(

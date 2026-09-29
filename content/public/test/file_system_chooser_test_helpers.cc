@@ -4,6 +4,8 @@
 
 #include "content/public/test/file_system_chooser_test_helpers.h"
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
@@ -220,6 +222,24 @@ ui::SelectFileDialog* FakeSelectFileDialogFactory::Create(
     std::unique_ptr<ui::SelectFilePolicy> policy) {
   return new FakeSelectFileDialog(result_, out_params_, listener,
                                   std::move(policy));
+}
+
+ScopedSelectFileDialogFactory::ScopedSelectFileDialogFactory(
+    std::vector<base::FilePath> result,
+    SelectFileDialogParams* out_params) {
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeSelectFileDialogFactory>(std::move(result),
+                                                    out_params));
+}
+ScopedSelectFileDialogFactory::ScopedSelectFileDialogFactory(
+    std::vector<ui::SelectedFileInfo> result,
+    SelectFileDialogParams* out_params) {
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeSelectFileDialogFactory>(std::move(result),
+                                                    out_params));
+}
+ScopedSelectFileDialogFactory::~ScopedSelectFileDialogFactory() {
+  ui::SelectFileDialog::SetFactory(nullptr);
 }
 
 ObservableSelectFileDialogFactory::ObservableSelectFileDialogFactory(

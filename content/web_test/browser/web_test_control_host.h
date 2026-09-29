@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <queue>
 #include <set>
@@ -31,6 +32,7 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/test/file_system_chooser_test_helpers.h"
 #include "content/web_test/browser/leak_detector.h"
 #include "content/web_test/browser/web_test_tracing_controller.h"
 #include "content/web_test/common/web_test.mojom.h"
@@ -464,6 +466,8 @@ class WebTestControlHost : public WebContentsObserver,
       non_associated_receiver_bindings_;
 
   base::ScopedTempDir writable_directory_for_tests_;
+
+  std::optional<ScopedSelectFileDialogFactory> fake_file_dialog_factory_;
 
   std::optional<WebTestTracingController> tracing_controller_;
 

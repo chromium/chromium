@@ -76,6 +76,25 @@ class FakeSelectFileDialogFactory : public ui::SelectFileDialogFactory {
   raw_ptr<SelectFileDialogParams, DanglingUntriaged> out_params_;
 };
 
+// Sets FakeSelectFileDialogFactory for the duration of this object's lifetime.
+// Note that this class assumes exclusive ownership of the global factory state
+// and resets it to nullptr upon destruction because ui::SelectFileDialog does
+// not support querying or restoring an existing factory. Callers must not nest
+// or overlap the lifetimes of ScopedSelectFileDialogFactory instances.
+class ScopedSelectFileDialogFactory {
+ public:
+  explicit ScopedSelectFileDialogFactory(
+      std::vector<base::FilePath> result,
+      SelectFileDialogParams* out_params = nullptr);
+  explicit ScopedSelectFileDialogFactory(
+      std::vector<ui::SelectedFileInfo> result,
+      SelectFileDialogParams* out_params = nullptr);
+  ~ScopedSelectFileDialogFactory();
+  ScopedSelectFileDialogFactory(const ScopedSelectFileDialogFactory&) = delete;
+  ScopedSelectFileDialogFactory& operator=(
+      const ScopedSelectFileDialogFactory&) = delete;
+};
+
 // A dialog that signals when it is created and/or destroyed to an observer.
 class ObservableSelectFileDialogFactory : public ui::SelectFileDialogFactory {
  public:
