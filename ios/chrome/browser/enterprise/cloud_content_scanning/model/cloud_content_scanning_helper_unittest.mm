@@ -15,6 +15,7 @@
 #import "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #import "components/enterprise/connectors/core/analysis_settings.h"
 #import "components/enterprise/connectors/core/common.h"
+#import "components/enterprise/connectors/core/features.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/background_cloud_scanner_manager.h"
 #import "ios/chrome/browser/enterprise/cloud_content_scanning/model/background_cloud_scanner_manager_factory.h"
@@ -370,6 +371,17 @@ TEST_F(CloudContentScanningHelperTest, PrepareCloudContentScanningNonBlocking) {
 // all active scans.
 TEST_F(CloudContentScanningHelperTest,
        PrepareCloudContentScanningNonBlockingLifetime) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  // `kEnableCancelUploadOnContentAnalysis` is enabled here even though it is
+  // disabled by default on iOS: it makes cancelling a pending scan report an
+  // "unscanned file" event, which needs ConnectorsService and the
+  // ReportingEventRouter. That reporting is what makes the teardown order below
+  // non-trivial, so the test would not cover much without it.
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{enterprise_connectors::
+                                kEnableCancelUploadOnContentAnalysis},
+      /*disabled_features=*/{});
+
   // Set up the policy pref to enable non-blocking scans.
   SetUpAnalysisConnectorPolicy(kNonBlockingAnalysisSettingsPref);
 

@@ -60,6 +60,7 @@ source_set("model") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "background_cloud_scanner_manager_unittest.mm",
     "cloud_content_scanning_helper_unittest.mm",
     "files_request_handler_ios_unittest.mm",
     "ios_cloud_binary_upload_service_unittest.mm",

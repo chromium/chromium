@@ -29,6 +29,7 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+#import "url/gurl.h"
 
 namespace enterprise_connectors {
 
@@ -120,6 +121,17 @@ class FilesRequestHandlerIOSTest : public PlatformTest {
         IOSReportingEventRouterFactory::GetForProfile(profile_.get()));
     connectors_service_ =
         ConnectorsServiceFactory::GetForProfile(profile_.get());
+
+    // `FilesRequestHandlerBase`'s destructor reports a cancellation when
+    // `kEnableCancelUploadOnContentAnalysis` is enabled, which reads these
+    // getters. They return references, so without a default action gmock
+    // aborts the test process instead of failing the test.
+    ON_CALL(content_analysis_info_, url())
+        .WillByDefault(testing::ReturnRef(url_));
+    ON_CALL(content_analysis_info_, tab_url())
+        .WillByDefault(testing::ReturnRef(url_));
+    ON_CALL(content_analysis_info_, settings())
+        .WillByDefault(testing::ReturnRef(settings_));
   }
 
   // Enables the file download connector by setting the appropriate pref.
@@ -139,6 +151,7 @@ class FilesRequestHandlerIOSTest : public PlatformTest {
   MockContentAnalysisInfoBase content_analysis_info_;
   MockBinaryUploadService upload_service_;
   AnalysisSettings settings_;
+  GURL url_{"https://example.com"};
   base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

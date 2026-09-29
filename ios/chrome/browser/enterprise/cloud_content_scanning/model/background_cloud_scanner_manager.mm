@@ -62,6 +62,29 @@ BackgroundCloudScannerManager::BackgroundCloudScannerManager(
 
 BackgroundCloudScannerManager::~BackgroundCloudScannerManager() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // The scanners must have been destroyed by Shutdown(), see the comment there.
+  DCHECK(scanners_.empty());
+  DCHECK(scanners_pending_deletion_.empty());
+}
+
+void BackgroundCloudScannerManager::Shutdown() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  is_shutdown_ = true;
+
+  // Destroy the pending scans here rather than in the destructor. Destroying a
+  // scan cancels its in-flight request, which synchronously reports an
+  // "unscanned file" audit event and thus needs to access ConnectorsService and
+  // ReportingEventRouter through their factories. KeyedServices are only
+  // deleted after the profile has been marked as destroyed, so doing this in
+  // the destructor would hit a NOTREACHED() in DependencyManager. At Shutdown()
+  // time, the profile is still alive and the services this manager depends on
+  // have not been shut down yet (they are shut down after their dependents).
+  scanners_.clear();
+  scanners_pending_deletion_.clear();
+
+  upload_service_ = nullptr;
+  connectors_service_ = nullptr;
+  router_ = nullptr;
 }
 
 void BackgroundCloudScannerManager::StartScanner(
@@ -69,6 +92,10 @@ void BackgroundCloudScannerManager::StartScanner(
     const GURL& url,
     const base::FilePath& file_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Scans can't be started once the profile is being torn down.
+  if (is_shutdown_) {
+    return;
+  }
   auto scanner = base::WrapUnique(new BackgroundCloudScanner(
       std::move(info), connectors_service_, router_, upload_service_, url,
       file_path,
@@ -93,17 +120,44 @@ void BackgroundCloudScannerManager::RemoveScanner(
                    [scanner](const std::unique_ptr<BackgroundCloudScanner>& s) {
                      return s.get() == scanner;
                    });
-  if (it != scanners_.end()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
-                                                               std::move(*it));
-    scanners_.erase(it);
+  if (it == scanners_.end()) {
+    return;
   }
+
+  // The scanner can't be deleted synchronously since it is still running the
+  // callback this is called from. Park it in `scanners_pending_deletion_`
+  // instead of handing it over to DeleteSoon() so that it stays owned by this
+  // manager: if the profile is destroyed before the task below runs, Shutdown()
+  // destroys the scanner while the services it reports to are still alive.
+  scanners_pending_deletion_.push_back(std::move(*it));
+  scanners_.erase(it);
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&BackgroundCloudScannerManager::DeletePendingScanners,
+                     GetWeakPtr()));
+}
+
+void BackgroundCloudScannerManager::DeletePendingScanners() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  scanners_pending_deletion_.clear();
 }
 
 base::WeakPtr<BackgroundCloudScannerManager>
 BackgroundCloudScannerManager::GetWeakPtr() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+size_t BackgroundCloudScannerManager::GetScannerCountForTesting() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return scanners_.size();
+}
+
+size_t BackgroundCloudScannerManager::GetPendingDeletionCountForTesting()
+    const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return scanners_pending_deletion_.size();
 }
 
 }  // namespace enterprise_connectors
