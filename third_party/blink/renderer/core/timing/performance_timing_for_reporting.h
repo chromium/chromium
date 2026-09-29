@@ -101,7 +101,7 @@ class CORE_EXPORT PerformanceTimingForReporting final
   // not useful, this function can be removed.
   uint64_t FirstMeaningfulPaintCandidate() const;
 
-  LargestContentfulPaintDetailsForReporting
+  const LargestContentfulPaintDetailsForReporting&
   LargestContentfulPaintDetailsForMetrics() const {
     return largest_contentful_paint_details_for_metrics_;
   }

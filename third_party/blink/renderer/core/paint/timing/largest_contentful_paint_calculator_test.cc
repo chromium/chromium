@@ -563,23 +563,23 @@ TEST_F(LargestContentfulPaintCalculatorTest, MulitiplePendingImages) {
 }
 
 TEST_F(LargestContentfulPaintCalculatorTest, OutOfLifecyclePaintsIgnored) {
+  auto* client = MakeGarbageCollected<PaintTimingRecordObserverClient>();
+  GetPaintTiming().AddClient(client);
+
   SetMainFrameBodyContent(R"HTML(
     <!DOCTYPE html>
     <img id='large' width=100 height=300 />
   )HTML");
 
-  // Set the content as pending to force the image to be stored as the largest
-  // pending image if it gets painted.
-  SetImageContent("large", 100, 300, 800, ImageStatus::kPending);
+  SetImageContent("large", 100, 300, 800);
 
   // Paint outside of the normal lifecycle. This should be ignored by
   // paint timing.
   PaintRecordBuilder builder;
   GetFrameView().PaintOutsideOfLifecycle(builder.Context(), PaintFlag::kNoFlag,
                                          CullRect::Infinite());
-  EXPECT_EQ(GetLargestContentfulPaintCalculator()
-                ->LargestPaintedOrPendingImageForTest(),
-            nullptr);
+  EXPECT_EQ(client->ImageFirstPaintCount(), 0u);
+  EXPECT_EQ(client->PaintedImageRecordCount(), 0u);
   trace_analyzer::Stop();
 }
 

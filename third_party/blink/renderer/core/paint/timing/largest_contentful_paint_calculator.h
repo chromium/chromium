@@ -183,14 +183,6 @@ class CORE_EXPORT LargestContentfulPaintCalculator final
 
   void Trace(Visitor* visitor) const;
 
-  ImageRecord* LargestPaintedOrPendingImageForTest() const {
-    return LargestPaintedOrPendingImage();
-  }
-  ImageRecord* LargestPaintedImageForTest() const {
-    return largest_painted_image_;
-  }
-  TextRecord* LargestTextForTest() const { return largest_text_; }
-
   void SetDelegateForTest(Delegate* delegate) { delegate_ = delegate; }
 
  private:

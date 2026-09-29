@@ -394,4 +394,9 @@ ImagePaintTimingDetector::TakeAnimatedImageRecordsOnPaintFinished() {
   return std::move(animated_images_queued_for_first_frame_time_);
 }
 
+bool ImagePaintTimingDetector::HasPersistentImageStateForTest() const {
+  return !pending_images_.empty() || !recorded_images_.empty() ||
+         !image_finished_times_.empty();
+}
+
 }  // namespace blink
