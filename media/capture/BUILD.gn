@@ -277,6 +277,7 @@ test("capture_unittests") {
     "video/video_capture_device_client_unittest.cc",
     "video/video_capture_device_unittest.cc",
     "video/video_capture_metrics_unittest.cc",
+    "video/video_capture_system_impl_unittest.cc",
     "video_capture_types_unittest.cc",
   ]
 

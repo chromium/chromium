@@ -21,9 +21,9 @@ using ScopedCaptureTrace =
 namespace {
 
 // Compares two VideoCaptureFormat by checking smallest frame_size area, then
-// by width, and then by _largest_ frame_rate. Used to order a
-// VideoCaptureFormats vector so that the first entry for a given resolution has
-// the largest frame rate.
+// by width, then by _largest_ frame_rate, and finally by pixel_format. Used to
+// order a VideoCaptureFormats vector so that the first entry for a given
+// resolution has the largest frame rate.
 bool IsCaptureFormatSmaller(const media::VideoCaptureFormat& format1,
                             const media::VideoCaptureFormat& format2) {
   DCHECK(format1.frame_size.GetCheckedArea().IsValid());
@@ -31,6 +31,9 @@ bool IsCaptureFormatSmaller(const media::VideoCaptureFormat& format1,
   if (format1.frame_size.GetCheckedArea().ValueOrDefault(0) ==
       format2.frame_size.GetCheckedArea().ValueOrDefault(0)) {
     if (format1.frame_size.width() == format2.frame_size.width()) {
+      if (format1.frame_rate == format2.frame_rate) {
+        return format1.pixel_format < format2.pixel_format;
+      }
       return format1.frame_rate > format2.frame_rate;
     }
     return format1.frame_size.width() > format2.frame_size.width();
@@ -155,6 +158,12 @@ void VideoCaptureSystemImpl::DevicesInfoReady(
 
 VideoCaptureDeviceFactory* VideoCaptureSystemImpl::GetFactory() {
   return factory_.get();
+}
+
+// static
+void VideoCaptureSystemImpl::ConsolidateCaptureFormatsForTesting(
+    media::VideoCaptureFormats* formats) {
+  ConsolidateCaptureFormats(formats);
 }
 
 }  // namespace media

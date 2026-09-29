@@ -30,6 +30,9 @@ class CAPTURE_EXPORT VideoCaptureSystemImpl : public VideoCaptureSystem {
 
   VideoCaptureDeviceFactory* GetFactory() override;
 
+  static void ConsolidateCaptureFormatsForTesting(
+      media::VideoCaptureFormats* formats);
+
  private:
   using DeviceEnumQueue = std::list<DeviceInfoCallback>;
 
