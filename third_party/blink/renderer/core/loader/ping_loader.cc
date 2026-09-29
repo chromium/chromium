@@ -85,8 +85,9 @@ bool SendBeaconCommon(const ScriptState& state,
     request.SetSkipServiceWorker(state.World().IsIsolatedWorld());
   }
   beacon.Serialize(request);
-  FetchParameters params(std::move(request),
-                         ResourceLoaderOptions(&state.World()));
+  FetchParameters params(
+      std::move(request),
+      ResourceLoaderOptions::CreateForTargetWorld(&state.World()));
   // The spec says:
   //  - If mimeType is not null:
   //   - If mimeType value is a CORS-safelisted request-header value for the

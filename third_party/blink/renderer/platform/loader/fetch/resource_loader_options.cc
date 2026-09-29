@@ -37,13 +37,44 @@
 
 namespace blink {
 
-ResourceLoaderOptions::ResourceLoaderOptions(const DOMWrapperWorld* world)
+ResourceLoaderOptions::ResourceLoaderOptions(
+    const DOMWrapperWorld* target_world,
+    const DOMWrapperWorld* world_for_csp)
     : data_buffering_policy(kBufferData),
       content_security_policy_option(network::mojom::CSPDisposition::CHECK),
       synchronous_policy(kRequestAsynchronously),
       parser_disposition(kParserInserted),
       cache_aware_loading_enabled(kNotCacheAwareLoadingEnabled),
-      world_for_csp_(world && world->IsIsolatedWorld() ? world : nullptr) {}
+      target_world_(target_world),
+      world_for_csp_(world_for_csp) {
+  if (target_world_) {
+    // Isolated World Resource.
+    CHECK(target_world_->IsIsolatedWorld());
+    CHECK_EQ(target_world_, world_for_csp_);
+  } else if (world_for_csp_) {
+    // Main World Resource with isolated world CSP.
+    CHECK(world_for_csp_->IsIsolatedWorld());
+  }
+}
+
+ResourceLoaderOptions::ResourceLoaderOptions(
+    const DOMWrapperWorld* world_for_csp)
+    : ResourceLoaderOptions(/*target_world=*/nullptr,
+                            world_for_csp && world_for_csp->IsIsolatedWorld()
+                                ? world_for_csp
+                                : nullptr) {}
+
+ResourceLoaderOptions ResourceLoaderOptions::CreateForTargetWorld(
+    const DOMWrapperWorld* target_world) {
+  if (target_world && target_world->IsIsolatedWorld()) {
+    // Isolated World Resource.
+    return ResourceLoaderOptions(/*target_world=*/target_world,
+                                 /*world_for_csp=*/target_world);
+  }
+  // Main World Resource.
+  return ResourceLoaderOptions(/*target_world=*/nullptr,
+                               /*world_for_csp=*/nullptr);
+}
 
 ResourceLoaderOptions::ResourceLoaderOptions(
     const ResourceLoaderOptions& other) = default;

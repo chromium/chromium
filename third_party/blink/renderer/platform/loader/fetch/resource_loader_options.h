@@ -72,18 +72,99 @@ struct PLATFORM_EXPORT ResourceLoaderOptions final {
   // resource_loader_options.cc because they require the full definition of
   // URLLoaderFactory for |url_loader_factory| data member, and we'd like
   // to avoid to include huge url_loader_factory.mojom-blink.h.
-  explicit ResourceLoaderOptions(const DOMWrapperWorld* world);
+
+  // Constructor for Main World Resources.
+  // `target_world_` is set to null.
+  // `world_for_csp_` is set to `world_for_csp` which can be a main world or
+  // an isolated world, and used for Content Security Policy checks.
+  explicit ResourceLoaderOptions(const DOMWrapperWorld* world_for_csp);
+
+  // Constructor for an Isolated World Resource or Main World Resource.
+  //
+  // If `target_world` is an isolated world, this is an Isolated World Resource:
+  // `target_world_` and `world_for_csp_` are set to non-null `target_world`.
+  //
+  // If `target_world` is null or a main world, this is a Main World Resource,
+  // and is equivalent to `ResourceLoaderOptions(nullptr)`.
+  static ResourceLoaderOptions CreateForTargetWorld(
+      const DOMWrapperWorld* target_world);
+
   ResourceLoaderOptions(const ResourceLoaderOptions& other);
   ResourceLoaderOptions& operator=(const ResourceLoaderOptions& other);
   ResourceLoaderOptions(ResourceLoaderOptions&& other);
   ResourceLoaderOptions& operator=(ResourceLoaderOptions&& other);
   ~ResourceLoaderOptions();
 
-  void Trace(Visitor* visitor) const { visitor->Trace(world_for_csp_); }
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(target_world_);
+    visitor->Trace(world_for_csp_);
+  }
+
+  // ------------------------------------------------------------------------
+  // All resources/requests are divided into two categories in terms of
+  // `DOMWrapperWorld` handling, by `TargetWorld()`:
+  //
+  // 1. Isolated World Resources: `TargetWorld()` is a non-null isolated world.
+  //    Resources requested directly by isolated world JavaScript execution APIs
+  //    that don't/must not interact with Document DOM directly.
+  //    These resources are consumed directly by the privileged isolated world
+  //    JavaScript context.
+  //    These resources must be invisible to the main world or the page, namely:
+  //    - Must not interact with DOM.
+  //    - Must not be intercepted by ServiceWorker.
+  //
+  //    Only the following APIs belong to Isolated World Resources, but only
+  //    when evaluated in an isolated world.
+  //    - Fetch API: `fetch()`
+  //    - `XMLHttpRequest`
+  //    - dynamic `import()` (and its transitive module graph)
+  //    - `EventSource`
+  //    - `navigator.sendBeacon()`
+  //    (Note: If they are evaluated in a main world, then they are Main World
+  //    Resources -- see below)
+  //
+  //    Isolated World Resources are always created by `CreateForTargetWorld()`.
+  //
+  // 2. Main World Resources: `TargetWorld()` is nullptr.
+  //    All other resources are Main World Resources.
+  //
+  //    Main World Resources can interact with/can be triggered by Document DOM
+  //    mutations. In other words, if a request is associated with, is triggered
+  //    by, or interacts with DOM, then it means the requests can be observed by
+  //    the main world, and thus should be a Main World Resource.
+  //
+  //    Main World Resources include (but are not limited to):
+  //    - `<img>`, `<script>`, `<link rel=preload>`, `<link rel=modulepreload>`
+  //      (APIs triggered by DOM)
+  //    - Fetch API, `XMLHttpRequest`, dynamic `import()`, `EventSource`, and
+  //      `navigator.sendBeacon()` executed in a main world (APIs not triggered
+  //      by DOM)
+  //
+  //    Note that Main World Resources can still obey the Content Security
+  //    Policy of an isolated world (`WorldForCsp()` can be a non-null, while
+  //    `TargetWorld()` is null).
+  //    An example is the requests triggered by DOM mutations made by content
+  //    scripts.
+  //
+  // To keep the resources of these two categories separated, MemoryCache and
+  // other components should be partitioned using `TargetWorld()` or should be
+  // disabled for Isolated World Resources.
+  //
+  // The world where the loaded resource data is consumed or executed.
+  // Always `nullptr` for a main world (indicating a Main World Resource).
+  // If non-null, this is an Isolated World Resource and `TargetWorld()` is
+  // an isolated world.
+  const DOMWrapperWorld* TargetWorld() const { return target_world_.Get(); }
 
   // The world in which this request initiated. This will be used for CSP checks
   // if specified. If null, the CSP bound to the FetchContext is used.
   // Always `nullptr` for a main world.
+  //
+  // For Main World Resources, `WorldForCsp()` can be either
+  // null (main world CSP) or a non-null isolated world (isolated world CSP,
+  // e.g. an image request by `<img>` injected by a content script).
+  // For Isolated World Resources, `WorldForCsp()` must be a non-null isolated
+  // world and equal to `TargetWorld()`.
   const DOMWrapperWorld* WorldForCsp() const { return world_for_csp_.Get(); }
 
   FetchInitiatorInfo initiator_info;
@@ -110,6 +191,12 @@ struct PLATFORM_EXPORT ResourceLoaderOptions final {
       unsupported_image_mime_types;
 
  private:
+  // Internal centralized constructor.
+  ResourceLoaderOptions(const DOMWrapperWorld* target_world,
+                        const DOMWrapperWorld* world_for_csp);
+
+  Member<const DOMWrapperWorld> target_world_;
+
   Member<const DOMWrapperWorld> world_for_csp_;
 };
 

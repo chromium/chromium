@@ -1221,7 +1221,8 @@ void FetchLoaderBase::PerformHTTPFetch(ExceptionState& exception_state) {
   // mode is |include|, or |HTTPRequest|'s credentials mode is |same-origin|
   // and the |CORS flag| is unset, and unset otherwise."
 
-  ResourceLoaderOptions resource_loader_options(world_);
+  ResourceLoaderOptions resource_loader_options =
+      ResourceLoaderOptions::CreateForTargetWorld(world_);
   resource_loader_options.initiator_info.name =
       fetch_initiator_type_names::kFetch;
   resource_loader_options.data_buffering_policy = kDoNotBufferData;
@@ -1264,7 +1265,8 @@ void FetchLoaderBase::PerformDataFetch() {
   // We intentionally skip 'setExternalRequestStateFromRequestorAddressSpace',
   // as 'data:' can never be external.
 
-  ResourceLoaderOptions resource_loader_options(world_);
+  ResourceLoaderOptions resource_loader_options =
+      ResourceLoaderOptions::CreateForTargetWorld(world_);
   resource_loader_options.data_buffering_policy = kDoNotBufferData;
 
   CreateLoader(std::move(request), resource_loader_options);

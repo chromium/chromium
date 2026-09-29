@@ -2748,4 +2748,83 @@ TEST_P(ResourceFetcherTest, PreloadMatchServiceWorkerWorldMismatch) {
   EXPECT_NE(preload_resource, load_resource);
 }
 
+// Main World Resources (Main World CSP).
+TEST_P(ResourceFetcherTest, MainWorldResourceWithMainWorldCsp) {
+  KURL url("http://127.0.0.1:8000/foo.js");
+  platform_->GetURLLoaderMockFactory()->RegisterURL(url, WebURLResponse(), "");
+  FetchParameters params{ResourceRequest(url),
+                         ResourceLoaderOptions(/*world_for_csp=*/nullptr)};
+  EXPECT_FALSE(params.Options().TargetWorld());
+  EXPECT_FALSE(params.Options().WorldForCsp());
+
+  auto* fetcher = CreateFetcher();
+  Resource* resource = MockResource::Fetch(params, fetcher, nullptr);
+  ASSERT_TRUE(resource);
+  EXPECT_FALSE(resource->GetResourceRequest().GetSkipServiceWorker());
+  EXPECT_FALSE(resource->Options().TargetWorld());
+  EXPECT_FALSE(resource->Options().WorldForCsp());
+}
+
+// Main World Resources (Main World CSP), via `CreateForTargetWorld(nullptr)`.
+TEST_P(ResourceFetcherTest, MainWorldResourceWithNullCreateForTargetWorld) {
+  KURL url("http://127.0.0.1:8000/foo.js");
+  platform_->GetURLLoaderMockFactory()->RegisterURL(url, WebURLResponse(), "");
+  FetchParameters params{ResourceRequest(url),
+                         ResourceLoaderOptions::CreateForTargetWorld(nullptr)};
+  EXPECT_FALSE(params.Options().TargetWorld());
+  EXPECT_FALSE(params.Options().WorldForCsp());
+
+  auto* fetcher = CreateFetcher();
+  Resource* resource = MockResource::Fetch(params, fetcher, nullptr);
+  ASSERT_TRUE(resource);
+  EXPECT_FALSE(resource->GetResourceRequest().GetSkipServiceWorker());
+  EXPECT_FALSE(resource->Options().TargetWorld());
+  EXPECT_FALSE(resource->Options().WorldForCsp());
+}
+
+// Main World Resources (Isolated World CSP) should obey isolated world CSP
+// while still intercepted by ServiceWorker.
+TEST_P(ResourceFetcherTest, MainWorldResourceWithIsolatedWorldCsp) {
+  KURL url("http://127.0.0.1:8000/foo.js");
+  platform_->GetURLLoaderMockFactory()->RegisterURL(url, WebURLResponse(), "");
+  DOMWrapperWorld* isolated_world = DOMWrapperWorld::EnsureIsolatedWorld(
+      /*v8::Isolate=*/nullptr, blink::kIsolatedWorldIdLimit - 1);
+  FetchParameters params{
+      ResourceRequest(url),
+      ResourceLoaderOptions(/*world_for_csp=*/isolated_world)};
+  EXPECT_FALSE(params.Options().TargetWorld());
+  EXPECT_EQ(params.Options().WorldForCsp(), isolated_world);
+
+  auto* fetcher = CreateFetcher();
+  Resource* resource = MockResource::Fetch(params, fetcher, nullptr);
+  ASSERT_TRUE(resource);
+  EXPECT_FALSE(resource->GetResourceRequest().GetSkipServiceWorker());
+  EXPECT_FALSE(resource->Options().TargetWorld());
+  EXPECT_EQ(resource->Options().WorldForCsp(), isolated_world);
+}
+
+// Isolated World Resources (Isolated World CSP) should obey isolated world CSP
+// and should skip ServiceWorker.
+TEST_P(ResourceFetcherTest, IsolatedWorldResourceWithIsolatedWorldCsp) {
+  KURL url("http://127.0.0.1:8000/foo.js");
+  platform_->GetURLLoaderMockFactory()->RegisterURL(url, WebURLResponse(), "");
+  DOMWrapperWorld* isolated_world = DOMWrapperWorld::EnsureIsolatedWorld(
+      /*v8::Isolate=*/nullptr, blink::kIsolatedWorldIdLimit - 1);
+  FetchParameters params{
+      ResourceRequest(url),
+      ResourceLoaderOptions::CreateForTargetWorld(isolated_world)};
+  EXPECT_EQ(params.Options().TargetWorld(), isolated_world);
+  EXPECT_EQ(params.Options().WorldForCsp(), isolated_world);
+
+  auto* fetcher = CreateFetcher();
+  Resource* resource = MockResource::Fetch(params, fetcher, nullptr);
+  ASSERT_TRUE(resource);
+  // TODO(crbug.com/563000235): the `SkipServiceWorker` flag should be set in
+  // `ResourceFetcher` in a centralized way after https://crrev.com/c/8391786
+  // and thus `GetSkipServiceWorker()` should be true.
+  EXPECT_FALSE(resource->GetResourceRequest().GetSkipServiceWorker());
+  EXPECT_EQ(resource->Options().TargetWorld(), isolated_world);
+  EXPECT_EQ(resource->Options().WorldForCsp(), isolated_world);
+}
+
 }  // namespace blink

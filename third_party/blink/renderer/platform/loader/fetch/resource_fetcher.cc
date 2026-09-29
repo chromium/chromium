@@ -1385,6 +1385,10 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   resource_request.SetInspectorId(identifier);
   resource_request.SetFromOriginDirtyStyleSheet(
       params.IsFromOriginDirtyStyleSheet());
+
+  // TODO(crbug.com/563000235): Centralize `SetSkipServiceWorker()` call here
+  // for Isolated World Resources.
+
   TRACE_EVENT_BEGIN(TRACE_DISABLED_BY_DEFAULT("network"), "ResourceLoad",
                     perfetto::NamedTrack("BlinkResourceID", identifier), "url",
                     resource_request.Url());
@@ -3241,6 +3245,12 @@ void ResourceFetcher::RevalidateStaleResource(Resource* stale_resource) {
   // requests.
   ResourceRequest request;
   request.CopyHeadFrom(stale_resource->GetResourceRequest());
+  if (stale_resource->Options().TargetWorld()) {
+    // Do not revalidate Isolated World Resources, to limit the triggering
+    // points of Isolated World Resources to simplify security considerations.
+    // Perhaps such revalidation is safe, but prioritizing the safety for now.
+    return;
+  }
   FetchParameters params(
       std::move(request),
       ResourceLoaderOptions(stale_resource->Options().WorldForCsp()));

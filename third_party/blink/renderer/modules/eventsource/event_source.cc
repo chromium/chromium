@@ -171,7 +171,8 @@ void EventSource::Connect() {
     request.SetEventSourceLastEventId(parser_->LastEventId());
   }
 
-  ResourceLoaderOptions resource_loader_options(world_);
+  ResourceLoaderOptions resource_loader_options =
+      ResourceLoaderOptions::CreateForTargetWorld(world_.Get());
   resource_loader_options.data_buffering_policy = kDoNotBufferData;
 
   probe::WillSendEventSourceRequest(&execution_context);

@@ -173,7 +173,8 @@ void ModuleScriptLoader::FetchInternal(
   // moduleType.</spec>
   SetFetchDestinationFromModuleType(resource_request, module_request);
 
-  ResourceLoaderOptions options(&request_world);
+  ResourceLoaderOptions options =
+      ResourceLoaderOptions::CreateForTargetWorld(&request_world);
 
   // <spec step="11">Set request's initiator type to "script".</spec>
   options.initiator_info.name = fetch_initiator_type_names::kScript;
