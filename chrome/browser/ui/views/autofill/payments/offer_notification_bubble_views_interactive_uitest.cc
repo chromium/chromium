@@ -155,14 +155,8 @@ class OfferNotificationBubbleViewsInteractiveUiTest
 // TODO(crbug.com/40228302): Split parameterized tests that are
 // applicable for only one offer type.
 
-// TODO(crbug.com/416010106): Flaky failures.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_GPayCardLinked DISABLED_GPayCardLinked
-#else
-#define MAYBE_GPayCardLinked GPayCardLinked
-#endif
 INSTANTIATE_TEST_SUITE_P(
-    MAYBE_GPayCardLinked,
+    GPayCardLinked,
     OfferNotificationBubbleViewsInteractiveUiTest,
     testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
         "GPayCardLinked",
@@ -170,27 +164,15 @@ INSTANTIATE_TEST_SUITE_P(
     }),
     &GetTestName);
 
-// TODO(crbug.com/416010106): Flaky failures.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_GPayPromoCode DISABLED_GPayPromoCode
-#else
-#define MAYBE_GPayPromoCode GPayPromoCode
-#endif
 INSTANTIATE_TEST_SUITE_P(
-    MAYBE_GPayPromoCode,
+    GPayPromoCode,
     OfferNotificationBubbleViewsInteractiveUiTest,
     testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
         "GPayPromoCode", AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER}),
     &GetTestName);
 
-// TODO(crbug.com/416010106): Flaky failures.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_WalletDirectOffer DISABLED_WalletDirectOffer
-#else
-#define MAYBE_WalletDirectOffer WalletDirectOffer
-#endif
 INSTANTIATE_TEST_SUITE_P(
-    MAYBE_WalletDirectOffer,
+    WalletDirectOffer,
     OfferNotificationBubbleViewsInteractiveUiTest,
     testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
         "WalletDirectOffer",
@@ -208,14 +190,8 @@ class OfferNotificationBubbleViewsInteractiveUiTestNoTestingConfig
   }
 };
 
-// TODO(crbug.com/416010106): Flaky failures.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_GPayPromoCode DISABLED_GPayPromoCode
-#else
-#define MAYBE_GPayPromoCode GPayPromoCode
-#endif
 INSTANTIATE_TEST_SUITE_P(
-    MAYBE_GPayPromoCode,
+    GPayPromoCode,
     OfferNotificationBubbleViewsInteractiveUiTestNoTestingConfig,
     testing::Values(OfferNotificationBubbleViewsInteractiveUiTestData{
         "GPayPromoCode", AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER}),
@@ -310,14 +286,8 @@ IN_PROC_BROWSER_TEST_P(
 // 5. Switches to the blank site. Makes sure the bubble and icon will be gone.
 // 6. Switches to merchant site 2. Makes sure the icon is visible but the bubble
 // is not, since we have shown the offer bubble in the tab of merchant site 1.
-// TODO(crbug.com/416010106): Flaky failures.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_CrossTabTracking DISABLED_CrossTabTracking
-#else
-#define MAYBE_CrossTabTracking CrossTabTracking
-#endif
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       MAYBE_CrossTabTracking) {
+                       CrossTabTracking) {
   SetUpOfferDataWithDomains(test_offer_type_,
                             {GetUrl("www.merchantsite1.test", "/"),
                              GetUrl("www.merchantsite2.test", "/")});
@@ -379,14 +349,8 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
 }
 
 // Tests that bubble behaves correctly after user dismisses it.
-// TODO(crbug.com/416010106): Flaky failures.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_DismissBubble DISABLED_DismissBubble
-#else
-#define MAYBE_DismissBubble DismissBubble
-#endif
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       MAYBE_DismissBubble) {
+                       DismissBubble) {
   // Applies to card-linked offers only, as promo code offers do not have an OK
   // button.
   if (test_offer_type_ !=
@@ -410,14 +374,8 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
   EXPECT_FALSE(IsIconVisible());
 }
 
-// TODO(crbug.com/416010106): Flaky failures.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ShowGPayPromoCodeBubble DISABLED_ShowGPayPromoCodeBubble
-#else
-#define MAYBE_ShowGPayPromoCodeBubble ShowGPayPromoCodeBubble
-#endif
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       MAYBE_ShowGPayPromoCodeBubble) {
+                       ShowGPayPromoCodeBubble) {
   // Applies to GPay promo code offers only.
   if (test_offer_type_ != AutofillOfferData::OfferType::GPAY_PROMO_CODE_OFFER) {
     return;
@@ -445,14 +403,8 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
       GURL(GetDefaultTestDetailsUrlString()));
 }
 
-// TODO(crbug.com/416010106): Flaky failures.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ShowWalletDirectOfferBubble DISABLED_ShowWalletDirectOfferBubble
-#else
-#define MAYBE_ShowWalletDirectOfferBubble ShowWalletDirectOfferBubble
-#endif
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       MAYBE_ShowWalletDirectOfferBubble) {
+                       ShowWalletDirectOfferBubble) {
   // Applies to Wallet direct offers only.
   if (test_offer_type_ != AutofillOfferData::OfferType::WALLET_DIRECT_OFFER) {
     return;
@@ -481,17 +433,8 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
       GURL(GetDefaultTestDetailsUrlString()));
 }
 
-// TODO(crbug.com/416010106): Flaky failures.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_ReshowOfferNotificationBubble_OfferDeletedBetweenShows \
-  DISABLED_ReshowOfferNotificationBubble_OfferDeletedBetweenShows
-#else
-#define MAYBE_ReshowOfferNotificationBubble_OfferDeletedBetweenShows \
-  ReshowOfferNotificationBubble_OfferDeletedBetweenShows
-#endif
-IN_PROC_BROWSER_TEST_P(
-    OfferNotificationBubbleViewsInteractiveUiTest,
-    MAYBE_ReshowOfferNotificationBubble_OfferDeletedBetweenShows) {
+IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
+                       ReshowOfferNotificationBubble_OfferDeletedBetweenShows) {
   ShowBubbleForOfferAndVerify();
   ASSERT_TRUE(GetOfferNotificationBubbleViews());
   ASSERT_TRUE(IsIconVisible());
@@ -541,14 +484,8 @@ IN_PROC_BROWSER_TEST_P(
   }
 }
 
-// TODO(crbug.com/416010106): Flaky failures.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_IconViewAccessibleName DISABLED_IconViewAccessibleName
-#else
-#define MAYBE_IconViewAccessibleName IconViewAccessibleName
-#endif
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
-                       MAYBE_IconViewAccessibleName) {
+                       IconViewAccessibleName) {
   ShowBubbleForOfferAndVerify();
   EXPECT_EQ(GetOfferNotificationPageActionView()->GetAccessibleName(),
             l10n_util::GetStringUTF16(

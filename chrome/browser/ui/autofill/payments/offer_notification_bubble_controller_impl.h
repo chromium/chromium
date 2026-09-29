@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_OFFER_NOTIFICATION_BUBBLE_CONTROLLER_IMPL_H_
 #define CHROME_BROWSER_UI_AUTOFILL_PAYMENTS_OFFER_NOTIFICATION_BUBBLE_CONTROLLER_IMPL_H_
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -76,6 +77,10 @@ class OfferNotificationBubbleControllerImpl
   void OnBubbleDiscarded() override {}
   BubbleType GetBubbleType() const override;
   base::WeakPtr<BubbleControllerBase> GetBubbleControllerBaseWeakPtr() override;
+
+  // Makes the bubble show in the active tab even if its browser window is not
+  // active, so that tests don't race other tests for window activation.
+  static base::AutoReset<bool> IgnoreWindowActivationForTesting();
 
  protected:
   explicit OfferNotificationBubbleControllerImpl(

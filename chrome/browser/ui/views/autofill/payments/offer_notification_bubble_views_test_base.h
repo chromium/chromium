@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
@@ -158,6 +159,9 @@ class OfferNotificationBubbleViewsTestBase
   net::EmbeddedTestServer https_server_;
   content::ContentMockCertVerifier cert_verifier_;
   base::test::ScopedFeatureList feature_list_;
+  base::AutoReset<bool> ignore_window_activation_for_testing_{
+      OfferNotificationBubbleControllerImpl::
+          IgnoreWindowActivationForTesting()};
 };
 
 }  // namespace autofill

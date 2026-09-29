@@ -39,6 +39,10 @@
 
 namespace autofill {
 
+namespace {
+bool g_ignore_window_activation_for_testing = false;
+}  // namespace
+
 OfferNotificationBubbleControllerImpl::
     ~OfferNotificationBubbleControllerImpl() = default;
 
@@ -262,7 +266,17 @@ OfferNotificationBubbleControllerImpl::GetBubbleControllerBaseWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+// static
+base::AutoReset<bool>
+OfferNotificationBubbleControllerImpl::IgnoreWindowActivationForTesting() {
+  return base::AutoReset<bool>(&g_ignore_window_activation_for_testing, true);
+}
+
 bool OfferNotificationBubbleControllerImpl::IsWebContentsActive() {
+  if (g_ignore_window_activation_for_testing) {
+    return tab_interface_->IsActivated();
+  }
+
   BrowserWindowInterface* active_browser =
       GlobalBrowserCollection::GetInstance()->GetActiveBrowser();
   if (!active_browser) {
