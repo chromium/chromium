@@ -40,8 +40,6 @@ def _ValidateDelta(root, delta):
   transitive closure of a mojom's input dependencies all at once.
   """
 
-  translate.is_running_backwards_compatibility_check_hack = True
-
   # First build a map of all files covered by the delta
   affected_files = set()
   old_files = {}

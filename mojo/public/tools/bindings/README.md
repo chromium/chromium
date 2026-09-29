@@ -99,12 +99,11 @@ for message parameters.
 | `array<T>`                    | Array of any Mojom type *T*; for example, `array<uint8>` or `array<array<string>>`.
 | `array<T, N>`                 | Fixed-length array of any Mojom type *T*. The parameter *N* must be an integral constant.
 | `map<S, T>`                   | Associated array mapping values of type *S* to values of type *T*. *S* may be a `string`, `enum`, or numeric type.
-| `handle`                      | Generic Mojo handle. May be any type of handle, including a wrapped native platform handle.
 | `handle<message_pipe>`        | Generic message pipe handle.
 | `handle<shared_buffer>`       | Shared buffer handle.
 | `handle<data_pipe_producer>`  | Data pipe producer handle.
 | `handle<data_pipe_consumer>`  | Data pipe consumer handle.
-| `handle<platform>`            | A native platform/OS handle.
+| `handle<platform>`            | A native platform/OS handle (e.g. file descriptor, Windows HANDLE, Mach port).
 | *`pending_remote<InterfaceType>`*             | Any user-defined Mojom interface type. This is sugar for a strongly-typed message pipe handle which should eventually be used to make outgoing calls on the interface.
 | *`pending_receiver<InterfaceType>`*            | A pending receiver for any user-defined Mojom interface type. This is sugar for a more strongly-typed message pipe handle which is expected to receive request messages and should therefore eventually be bound to an implementation of the interface.
 | *`pending_associated_remote<InterfaceType>`*  | An associated interface handle. See [Associated Interfaces](#associated-interfaces)
@@ -1135,7 +1134,7 @@ TypeName = BasicTypeName
 BasicTypeName = Identifier | "associated" Identifier | HandleType | NumericType
 NumericType = "bool" | "int8" | "uint8" | "int16" | "uint16" | "int32"
             | "uint32" | "int64" | "uint64" | "float" | "double"
-HandleType = "handle" | "handle" "<" SpecificHandleType ">"
+HandleType = "handle" "<" SpecificHandleType ">"
 SpecificHandleType = "message_pipe"
                    | "shared_buffer"
                    | "data_pipe_consumer"

@@ -15,6 +15,7 @@ import os
 import re
 
 from collections import OrderedDict
+from mojom.error import Error
 from mojom.generate import generator
 from mojom.generate import module as mojom
 from mojom.parse import ast
@@ -324,7 +325,48 @@ def _ProcessElements(scope, elements, operations_by_type):
       operations_by_type[element_type](element)
 
 
-def _MapKind(typename):
+### DO NOT ADD ENTRIES TO THIS LIST. ###
+# Untyped `handle` has some remaining uses for legacy IPC and associated tests,
+# but is not otherwise allowed: crbug.com/41351792
+_UNTYPED_HANDLE_ALLOWLIST = frozenset(
+  {
+    'x:bindings_unittests.mojom.HandleService',
+    'x:golden.Primary',
+    'x:mojo.native.SerializedHandle',
+    'x:mojo.test.ConformanceTestInterface',
+    'x:mojo.test.HandleUnion',
+    'x:mojo.test.MapValueTypes',
+    'x:mojo.test.MoveOnlyStructWithTraits',
+    'x:mojo.test.NoDefaultFieldValues',
+    'x:mojo.test.Struct2',
+    'x:mojo.test.StructOfNullables',
+    'x:mojo.test.serialization_death.mojom.BadStruct',
+    'x:parser_unittests.mojom.Handles',
+    'x:parser_unittests.mojom.NestedHandles',
+    'x:parser_unittests.mojom.WithHandles',
+    'x:regression_tests.HandlesHandleNameCollisionStruct',
+    'x:regression_tests.HandlesNameCollisionInterface',
+    'x:test.mojom.UntypedHandleInterfaceForUnitTests',
+    'x:test.mojom.UntypedHandleStructForUnitTests',
+    'x:test.mojom.UntypedHandleUnionForUnitTests',
+  }
+)
+### DO NOT ADD ENTRIES TO THIS LIST. ###
+
+
+def _MapKind(typename, enclosing_kind=None):
+  """Maps an AST typename to a kind spec.
+
+  Args:
+    typename: {ast.Typename|ast.Identifier} The typename to map.
+    enclosing_kind: {mojom.Struct|mojom.Union|mojom.Interface|None} The kind
+        whose field or method parameter uses `typename`, if any. Untyped
+        `handle` is only permitted if this kind is in
+        _UNTYPED_HANDLE_ALLOWLIST.
+
+  Returns:
+    {str} The kind spec for `typename`.
+  """
   map_to_kind = {
     'bool': 'b',
     'int8': 'i8',
@@ -348,7 +390,7 @@ def _MapKind(typename):
 
   if isinstance(typename, ast.Typename):
     opt = '?' if typename.nullable else ''
-    return f'{opt}{_MapKind(typename.identifier)}'
+    return f'{opt}{_MapKind(typename.identifier, enclosing_kind)}'
 
   assert isinstance(typename, ast.Identifier), (
     f'Got {type(typename)} ({repr(typename)})'
@@ -357,16 +399,28 @@ def _MapKind(typename):
 
   if isinstance(ident, ast.Array):
     size = ident.fixed_size or ''
-    return f'a{size}:{_MapKind(ident.value_type)}'
+    return f'a{size}:{_MapKind(ident.value_type, enclosing_kind)}'
   if isinstance(ident, (ast.Map, ast.HashMap)):
     prefix = 'hm' if isinstance(ident, ast.HashMap) else 'm'
-    return f'{prefix}[{_MapKind(ident.key_type)}][{_MapKind(ident.value_type)}]'
+    return f'{prefix}[{_MapKind(ident.key_type, enclosing_kind)}][{_MapKind(ident.value_type, enclosing_kind)}]'
   if isinstance(ident, ast.Remote):
     t = 'rmt' if not ident.associated else 'rma'
-    return f'{t}:{_MapKind(ident.interface)}'
+    return f'{t}:{_MapKind(ident.interface, enclosing_kind)}'
   if isinstance(ident, ast.Receiver):
     t = 'rcv' if not ident.associated else 'rca'
-    return f'{t}:{_MapKind(ident.interface)}'
+    return f'{t}:{_MapKind(ident.interface, enclosing_kind)}'
+  if ident.id == 'handle' and not (
+    enclosing_kind and enclosing_kind.spec in _UNTYPED_HANDLE_ALLOWLIST
+  ):
+    location = (
+      f' (in {enclosing_kind.qualified_name})' if enclosing_kind else ''
+    )
+    raise Error(
+      ident.filename,
+      f"Untyped 'handle' is disallowed{location}; please specify a subtype "
+      "such as 'handle<platform>' or 'handle<message_pipe>'",
+      lineno=ident.start.line,
+    )
   if ident.id in map_to_kind:
     return map_to_kind[ident.id]
   return f'x:{ident.id}'
@@ -745,7 +799,7 @@ def _StructField(module, parsed_field, struct):
   field.kind = _Kind(
     module,
     module.kinds,
-    _MapKind(parsed_field.typename),
+    _MapKind(parsed_field.typename, struct),
     (module.mojom_namespace, struct.mojom_name),
   )
   field.ordinal = parsed_field.ordinal.value if parsed_field.ordinal else None
@@ -776,7 +830,7 @@ def _UnionField(module, parsed_field, union):
   field.kind = _Kind(
     module,
     module.kinds,
-    _MapKind(parsed_field.typename),
+    _MapKind(parsed_field.typename, union),
     (module.mojom_namespace, union.mojom_name),
   )
   field.ordinal = parsed_field.ordinal.value if parsed_field.ordinal else None
@@ -811,7 +865,7 @@ def _Parameter(module, parsed_param, interface):
   parameter.kind = _Kind(
     module,
     module.kinds,
-    _MapKind(parsed_param.typename),
+    _MapKind(parsed_param.typename, interface),
     (module.mojom_namespace, interface.mojom_name),
   )
   parameter.ordinal = (
@@ -861,13 +915,13 @@ def _Method(module, parsed_method, interface):
     success_kind = _Kind(
       module,
       module.kinds,
-      _MapKind(result_type.success_type),
+      _MapKind(result_type.success_type, interface),
       (module.mojom_namespace, interface.mojom_name),
     )
     failure_kind = _Kind(
       module,
       module.kinds,
-      _MapKind(result_type.failure_type),
+      _MapKind(result_type.failure_type, interface),
       (module.mojom_namespace, interface.mojom_name),
     )
     result_response = mojom.Result(method, success_kind, failure_kind)
