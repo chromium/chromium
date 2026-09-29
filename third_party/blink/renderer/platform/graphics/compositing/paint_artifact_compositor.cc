@@ -122,6 +122,7 @@ void PaintArtifactCompositor::Trace(Visitor* visitor) const {
   visitor->Trace(painted_scroll_translations_);
   visitor->Trace(synthesized_clip_cache_);
   visitor->Trace(range_dependent_scrolls_);
+  PropertyTreeManagerClient::Trace(visitor);
 }
 
 void PaintArtifactCompositor::SetTracksRasterInvalidations(bool should_track) {

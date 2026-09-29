@@ -115,7 +115,7 @@ class PLATFORM_EXPORT PaintArtifactCompositor final
   PaintArtifactCompositor& operator=(const PaintArtifactCompositor&) = delete;
   ~PaintArtifactCompositor() override;
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
   struct ViewportProperties {
     STACK_ALLOCATED();

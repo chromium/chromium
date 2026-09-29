@@ -11,6 +11,7 @@
 #include "cc/layers/layer_collections.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
@@ -44,7 +45,7 @@ class TransformPaintPropertyNode;
 using StackTransformPaintPropertyNodeVector =
     HeapVector<Member<const TransformPaintPropertyNode>, 32>;
 
-class PropertyTreeManagerClient {
+class PropertyTreeManagerClient : public GarbageCollectedMixin {
  public:
   virtual ~PropertyTreeManagerClient() = default;
   virtual SynthesizedClip& CreateOrReuseSynthesizedClipLayer(
