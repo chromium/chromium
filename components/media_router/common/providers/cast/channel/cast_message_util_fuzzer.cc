@@ -59,9 +59,17 @@ base::Value MakeValue(const JunkValue& junk) {
   return base::Value(MakeDict(junk));
 }
 
-template <typename Field, typename T = typename Field::value_type>
-std::vector<T> MakeVector(const Field& field) {
-  return std::vector<T>(field.cbegin(), field.cend());
+template <typename Field>
+std::vector<std::string> MakeStringVector(const Field& field) {
+  std::vector<std::string> result;
+  for (const std::string& elem : field) {
+    // base::Value DCHECKs this property, but proto2 does not enforce it.
+    // https://github.com/google/libprotobuf-mutator/blob/master/README.md#utf-8-strings
+    if (base::IsStringUTF8AllowingNoncharacters(elem)) {
+      result.push_back(elem);
+    }
+  }
+  return result;
 }
 
 }  // namespace
@@ -80,19 +88,25 @@ DEFINE_PROTO_FUZZER(const fuzzable::cast_channel::fuzz::CastMessageUtilInputs&
   switch (input_union.input_case()) {
     case CastMessageUtilInputs::kCreateLaunchRequestInput: {
       const auto& input = input_union.create_launch_request_input();
+      if (!base::IsStringUTF8AllowingNoncharacters(input.app_id()) ||
+          !base::IsStringUTF8AllowingNoncharacters(input.locale())) {
+        break;
+      }
       std::optional<base::Value> app_params;
       if (input.has_app_params()) {
         app_params = MakeValue(input.app_params());
       }
-      CreateLaunchRequest(input.source_id(), input.request_id(), input.app_id(),
-                          input.locale(),
-                          MakeVector(input.supported_app_types()), app_params);
+      CreateLaunchRequest(
+          input.source_id(), input.request_id(), input.app_id(), input.locale(),
+          MakeStringVector(input.supported_app_types()), app_params);
       break;
     }
     case CastMessageUtilInputs::kCreateStopRequestInput: {
       const auto& input = input_union.create_stop_request_input();
-      CreateStopRequest(input.source_id(), input.request_id(),
-                        input.session_id());
+      if (base::IsStringUTF8AllowingNoncharacters(input.session_id())) {
+        CreateStopRequest(input.source_id(), input.request_id(),
+                          input.session_id());
+      }
       break;
     }
     case CastMessageUtilInputs::kCreateCastMessageInput: {
@@ -143,17 +157,22 @@ DEFINE_PROTO_FUZZER(const fuzzable::cast_channel::fuzz::CastMessageUtilInputs&
     }
     case CastMessageUtilInputs::kCreateVirtualConnectionRequestInput: {
       const auto& input = input_union.create_virtual_connection_request_input();
-      CreateVirtualConnectionRequest(
-          input.source_id(), input.destination_id(),
-          static_cast<VirtualConnectionType>(input.connection_type()),
-          input.user_agent(), input.browser_version());
+      if (base::IsStringUTF8AllowingNoncharacters(input.user_agent()) &&
+          base::IsStringUTF8AllowingNoncharacters(input.browser_version())) {
+        CreateVirtualConnectionRequest(
+            input.source_id(), input.destination_id(),
+            static_cast<VirtualConnectionType>(input.connection_type()),
+            input.user_agent(), input.browser_version());
+      }
       break;
     }
     case CastMessageUtilInputs::kCreateGetAppAvailabilityRequestInput: {
       const auto& input =
           input_union.create_get_app_availability_request_input();
-      CreateGetAppAvailabilityRequest(input.source_id(), input.request_id(),
-                                      input.app_id());
+      if (base::IsStringUTF8AllowingNoncharacters(input.app_id())) {
+        CreateGetAppAvailabilityRequest(input.source_id(), input.request_id(),
+                                        input.app_id());
+      }
       break;
     }
     case CastMessageUtilInputs::kGetRequestIdFromResponseInput: {
@@ -174,7 +193,8 @@ DEFINE_PROTO_FUZZER(const fuzzable::cast_channel::fuzz::CastMessageUtilInputs&
     case CastMessageUtilInputs::kParseMessageTypeFromPayloadInput: {
       const auto& input = input_union.parse_message_type_from_payload_input();
       base::DictValue payload = MakeDict(input.payload());
-      if (input.has_type()) {
+      if (input.has_type() &&
+          base::IsStringUTF8AllowingNoncharacters(input.type())) {
         payload.Set("type", input.type());
       }
       ParseMessageTypeFromPayload(payload);
