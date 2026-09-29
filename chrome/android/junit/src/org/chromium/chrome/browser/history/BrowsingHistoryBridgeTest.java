@@ -193,7 +193,9 @@ public class BrowsingHistoryBridgeTest {
 
     @Test
     public void testQueryHistoryWithOptions() {
-        QueryOptions options = new QueryOptions("org.chromium.app", "example.com", "client_123");
+        QueryOptions options =
+                new QueryOptions(
+                        "org.chromium.app", "example.com", List.of("client_123", "client_456"));
         mBrowsingHistoryBridge.queryHistory("search query", options);
 
         verify(mNativeMocks)
@@ -203,7 +205,7 @@ public class BrowsingHistoryBridgeTest {
                         eq("search query"),
                         eq("org.chromium.app"),
                         eq("example.com"),
-                        eq("client_123"));
+                        eq(List.of("client_123", "client_456")));
     }
 
     @Test

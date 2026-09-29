@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.history;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,6 +23,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -53,29 +53,57 @@ class FilterSheetCoordinator implements View.OnLayoutChangeListener {
 
     /** Data class for individual item in the filter list. */
     public static class FilterItem {
-        public final @Nullable String id;
+        private final List<String> mIds;
         public final @Nullable Drawable icon;
         public final CharSequence label;
 
-        public FilterItem(@Nullable String id, @Nullable Drawable icon, CharSequence label) {
-            this.id = id;
+        public static final FilterItem INVALID_ITEM = new FilterItem();
+
+        /** Creates an invalid empty item. */
+        private FilterItem() {
+            mIds = Collections.emptyList();
+            this.icon = null;
+            this.label = "";
+        }
+
+        /** Creates an item representing a single ID. */
+        public FilterItem(String id, @Nullable Drawable icon, CharSequence label) {
+            this(List.of(id), icon, label);
+        }
+
+        /** Creates an item representing a list of one or more IDs. */
+        public FilterItem(List<String> ids, @Nullable Drawable icon, CharSequence label) {
+            assert !ids.isEmpty() : "Filter item needs at least one id.";
+            mIds = List.copyOf(ids);
             this.icon = icon;
             this.label = label;
         }
 
+        /** Returns the ID for a single-ID item. */
+        public String getId() {
+            assert mIds.size() == 1 : "Use getIds() for multi-id items.";
+            return mIds.get(0);
+        }
+
+        /** Returns the IDs for an item. */
+        public List<String> getIds() {
+            assert !mIds.isEmpty();
+            return mIds;
+        }
+
         /** Return whether the filter item object is valid. */
         public boolean isValid() {
-            return id != null;
+            return !mIds.isEmpty();
         }
 
         @Override
         public boolean equals(Object o) {
-            return o instanceof FilterItem other && TextUtils.equals(id, other.id);
+            return o instanceof FilterItem other && Objects.equals(mIds, other.mIds);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hashCode(id);
+            return Objects.hashCode(mIds);
         }
     }
 
@@ -210,15 +238,15 @@ class FilterSheetCoordinator implements View.OnLayoutChangeListener {
         mBaseView.removeOnLayoutChangeListener(this);
     }
 
-    void clickItemForTesting(String id) {
-        mMediator.clickItemForTesting(id); // IN-TEST
+    void clickItemForTesting(FilterItem item) {
+        mMediator.clickItemForTesting(item); // IN-TEST
     }
 
     void clickCloseButtonForTesting() {
         mCloseButtonModel.get(FilterSheetProperties.CLOSE_BUTTON_CALLBACK).onClick(null); // IN-TEST
     }
 
-    @Nullable String getCurrentItemIdForTesting() {
-        return mMediator.getCurrentItemIdForTesting(); // IN-TEST
+    @Nullable FilterItem getCurrentItemForTesting() {
+        return mMediator.getCurrentItemForTesting(); // IN-TEST
     }
 }

@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.history;
 
 import static org.chromium.build.NullUtil.assertNonNull;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.history.FilterSheetCoordinator.CloseCallback;
@@ -45,9 +43,7 @@ class FilterSheetMediator {
     private PropertyModel generateListItem(FilterItem info) {
         PropertyModel model =
                 new PropertyModel.Builder(FilterSheetProperties.LIST_ITEM_KEYS)
-                        .with(FilterSheetProperties.ID, info.id)
-                        .with(FilterSheetProperties.ICON, info.icon)
-                        .with(FilterSheetProperties.LABEL, info.label)
+                        .with(FilterSheetProperties.ITEM, info)
                         .with(FilterSheetProperties.SELECTED, false)
                         .build();
         model.set(FilterSheetProperties.CLICK_LISTENER, v -> handleClick(model));
@@ -60,18 +56,15 @@ class FilterSheetMediator {
             mSelectedModel = null;
         }
         if (currentItem != null) {
-            assert currentItem.id != null : "Filter item id should be non-null.";
-            mSelectedModel = getModelForId(currentItem.id);
+            mSelectedModel = getModelForItem(currentItem);
             if (mSelectedModel == null) return;
             mSelectedModel.set(FilterSheetProperties.SELECTED, true);
         }
     }
 
-    @VisibleForTesting
-    void handleClick(PropertyModel model) {
+    private void handleClick(PropertyModel model) {
         PropertyModel prevModel = mSelectedModel;
 
-        String id = model.get(FilterSheetProperties.ID);
         boolean toFullHistory = prevModel != null && prevModel == model;
 
         if (prevModel != null) prevModel.set(FilterSheetProperties.SELECTED, false);
@@ -81,29 +74,24 @@ class FilterSheetMediator {
         } else {
             mSelectedModel = model;
             mSelectedModel.set(FilterSheetProperties.SELECTED, true);
-            FilterItem item =
-                    new FilterItem(
-                            id,
-                            model.get(FilterSheetProperties.ICON),
-                            model.get(FilterSheetProperties.LABEL));
-            mCloseCallback.onFilterItemUpdated(item);
+            mCloseCallback.onFilterItemUpdated(model.get(FilterSheetProperties.ITEM));
         }
     }
 
-    private @Nullable PropertyModel getModelForId(String id) {
+    private @Nullable PropertyModel getModelForItem(FilterItem filterItem) {
         for (MVCListAdapter.ListItem item : mModelList) {
-            if (id.equals(item.model.get(FilterSheetProperties.ID))) {
+            if (filterItem.equals(item.model.get(FilterSheetProperties.ITEM))) {
                 return item.model;
             }
         }
         return null;
     }
 
-    void clickItemForTesting(String id) {
-        handleClick(assertNonNull(getModelForId(id)));
+    void clickItemForTesting(FilterItem item) {
+        handleClick(assertNonNull(getModelForItem(item)));
     }
 
-    @Nullable String getCurrentItemIdForTesting() {
-        return mSelectedModel != null ? mSelectedModel.get(FilterSheetProperties.ID) : null;
+    @Nullable FilterItem getCurrentItemForTesting() {
+        return mSelectedModel != null ? mSelectedModel.get(FilterSheetProperties.ITEM) : null;
     }
 }

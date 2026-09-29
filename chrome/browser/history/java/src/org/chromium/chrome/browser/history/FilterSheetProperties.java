@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.history;
 
-import android.graphics.drawable.Drawable;
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
@@ -16,10 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 /** Property model properties for filter sheet UI. */
 @NullMarked
 class FilterSheetProperties {
-    public static final ReadableObjectPropertyKey<String> ID = new ReadableObjectPropertyKey<>();
-    public static final ReadableObjectPropertyKey<Drawable> ICON =
-            new ReadableObjectPropertyKey<>();
-    public static final ReadableObjectPropertyKey<CharSequence> LABEL =
+    public static final ReadableObjectPropertyKey<FilterSheetCoordinator.FilterItem> ITEM =
             new ReadableObjectPropertyKey<>();
     public static final WritableObjectPropertyKey<View.OnClickListener> CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
@@ -28,7 +24,7 @@ class FilterSheetProperties {
             new ReadableObjectPropertyKey<>();
 
     /** Property keys for a list item. */
-    public static final PropertyKey[] LIST_ITEM_KEYS = {ID, ICON, LABEL, CLICK_LISTENER, SELECTED};
+    public static final PropertyKey[] LIST_ITEM_KEYS = {ITEM, CLICK_LISTENER, SELECTED};
 
     /** Property keys for the close button. */
     public static final PropertyKey[] CLOSE_BUTTON_KEY = {CLOSE_BUTTON_CALLBACK};

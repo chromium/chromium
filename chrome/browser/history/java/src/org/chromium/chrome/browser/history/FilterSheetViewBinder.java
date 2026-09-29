@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.history.FilterSheetCoordinator.FilterItem;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -16,15 +17,13 @@ import org.chromium.ui.modelutil.PropertyModel;
 @NullMarked
 class FilterSheetViewBinder {
     static void bind(PropertyModel model, View view, PropertyKey key) {
-        if (FilterSheetProperties.ICON == key) {
+        if (FilterSheetProperties.ITEM == key) {
+            FilterItem item = model.get(FilterSheetProperties.ITEM);
             ImageView icon = view.findViewById(R.id.start_icon);
-            var drawable = model.get(FilterSheetProperties.ICON);
-            icon.setImageDrawable(drawable);
-            icon.setVisibility(drawable != null ? View.VISIBLE : View.GONE);
+            icon.setImageDrawable(item.icon);
+            icon.setVisibility(item.icon != null ? View.VISIBLE : View.GONE);
             icon.setScaleType(ImageView.ScaleType.FIT_CENTER);
-        } else if (FilterSheetProperties.LABEL == key) {
-            ((TextView) view.findViewById(R.id.title))
-                    .setText(model.get(FilterSheetProperties.LABEL));
+            ((TextView) view.findViewById(R.id.title)).setText(item.label);
             view.findViewById(R.id.description).setVisibility(View.GONE);
         } else if (FilterSheetProperties.SELECTED == key) {
             ImageView checkMark = view.findViewById(R.id.end_button);

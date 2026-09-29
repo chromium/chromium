@@ -93,7 +93,7 @@ void BrowsingHistoryBridge::QueryHistory(
     const std::u16string& query,
     const std::optional<std::string>& app_id,
     const std::optional<std::string>& hostname_suffix,
-    const std::optional<std::string>& client_id) {
+    const std::vector<std::string>& client_ids) {
   j_query_result_obj_.Reset(env, j_result_obj);
   query_history_continuation_.Reset();
 
@@ -107,9 +107,7 @@ void BrowsingHistoryBridge::QueryHistory(
   if (hostname_suffix.has_value()) {
     options.hostname_suffix = *hostname_suffix;
   }
-  if (client_id.has_value()) {
-    options.client_ids.push_back(*client_id);
-  }
+  options.client_ids = client_ids;
   browsing_history_service_->QueryHistory(query, options);
 }
 

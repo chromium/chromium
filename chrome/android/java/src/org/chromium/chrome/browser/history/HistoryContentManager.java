@@ -1015,7 +1015,6 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
     }
 
     static class AppInfoCache {
-        private static final FilterItem EMPTY_INFO = new FilterItem(null, null, "");
         private @Nullable HashMap<String, FilterItem> mAppInfoMap;
         private PackageManager mPackageManager;
 
@@ -1035,9 +1034,9 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
                     appInfo = new FilterItem(appId, icon, label);
                 } catch (NameNotFoundException e) {
                     // Can happen if the corresponding app was uninstalled, or unavailable for any
-                    // reason. Map it with an empty info so it won't be queried again till next
+                    // reason. Map it with an invalid info so it won't be queried again till next
                     // time history UI is launched.
-                    appInfo = EMPTY_INFO;
+                    appInfo = FilterItem.INVALID_ITEM;
                 }
                 mAppInfoMap.put(appId, appInfo);
             }

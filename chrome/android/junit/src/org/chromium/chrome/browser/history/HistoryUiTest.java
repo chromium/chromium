@@ -813,9 +813,9 @@ public class HistoryUiTest {
 
         List<FilterItem> hosts = mContentManager.getHostInfoListForTests();
         Assert.assertEquals(2, hosts.size());
-        Assert.assertEquals("www.example.com", hosts.get(0).id);
+        Assert.assertEquals("www.example.com", hosts.get(0).getId());
         Assert.assertEquals("www.example.com", hosts.get(0).label.toString());
-        Assert.assertEquals("news.other.org", hosts.get(1).id);
+        Assert.assertEquals("news.other.org", hosts.get(1).getId());
         Assert.assertEquals("news.other.org", hosts.get(1).label.toString());
         Assert.assertTrue(mContentManager.hasHostFilterList());
     }

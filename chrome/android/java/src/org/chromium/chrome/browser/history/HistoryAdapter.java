@@ -43,6 +43,7 @@ import org.chromium.ui.text.ChromeClickableSpan;
 import org.chromium.ui.text.SpanApplier;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -164,7 +165,8 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
     private void executeQuery() {
         mHistoryProvider.queryHistory(
-                mQueryText, new QueryOptions(mAppId, mHostName, /* clientId= */ null));
+                mQueryText,
+                new QueryOptions(mAppId, mHostName, /* clientIds= */ Collections.emptyList()));
     }
 
     /** Starts loading the first set of browsing history items. */
@@ -592,43 +594,37 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     }
 
     void updateAppFilter(@Nullable FilterItem appInfo) {
-        if (appInfo == null) {
-            setAppId(null);
-            resetAppFilterChip();
-            mShowSourceApp = mManager.showAppFilter();
-        } else {
-            setAppId(appInfo.id);
-            mAppFilterChip.getPrimaryTextView().setText(appInfo.label);
-            mAppFilterChip.setSelected(true);
-            mAppFilterChip.setIcon(R.drawable.ic_check_googblue_24dp, true);
-            mShowSourceApp = false;
-        }
+        setAppId(appInfo == null ? null : appInfo.getId());
+        mShowSourceApp = appInfo == null && mManager.showAppFilter();
+        updateFilterChip(mAppFilterChip, appInfo, R.string.history_filter_by_app);
         search(mQueryText);
     }
 
     void resetAppFilterChip() {
-        mAppFilterChip.getPrimaryTextView().setText(R.string.history_filter_by_app);
-        mAppFilterChip.setSelected(false);
-        mAppFilterChip.setIcon(ChipView.INVALID_ICON_ID, false);
+        updateFilterChip(mAppFilterChip, null, R.string.history_filter_by_app);
     }
 
     void updateHostFilter(@Nullable FilterItem hostInfo) {
-        if (hostInfo == null) {
-            setHostName(null);
-            resetHostFilterChip();
-        } else {
-            setHostName(hostInfo.id);
-            mHostFilterChip.getPrimaryTextView().setText(hostInfo.label);
-            mHostFilterChip.setSelected(true);
-            mHostFilterChip.setIcon(R.drawable.ic_check_googblue_24dp, true);
-        }
+        setHostName(hostInfo == null ? null : hostInfo.getId());
+        updateFilterChip(mHostFilterChip, hostInfo, R.string.history_filter_by_host);
         search(mQueryText);
     }
 
     void resetHostFilterChip() {
-        mHostFilterChip.getPrimaryTextView().setText(R.string.history_filter_by_host);
-        mHostFilterChip.setSelected(false);
-        mHostFilterChip.setIcon(ChipView.INVALID_ICON_ID, false);
+        updateFilterChip(mHostFilterChip, null, R.string.history_filter_by_host);
+    }
+
+    private static void updateFilterChip(
+            ChipView chip, @Nullable FilterItem item, @StringRes int defaultTextId) {
+        if (item == null) {
+            chip.getPrimaryTextView().setText(defaultTextId);
+            chip.setSelected(false);
+            chip.setIcon(ChipView.INVALID_ICON_ID, false);
+        } else {
+            chip.getPrimaryTextView().setText(item.label);
+            chip.setSelected(true);
+            chip.setIcon(R.drawable.ic_check_googblue_24dp, true);
+        }
     }
 
     private void updateFilterChipsVisibility() {
