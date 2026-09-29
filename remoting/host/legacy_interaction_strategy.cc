@@ -51,7 +51,33 @@
 #include "remoting/host/win/mouse_cursor_monitor_win.h"
 #endif
 
+#if defined(REMOTING_USE_X11)
+#include "third_party/webrtc/modules/desktop_capture/linux/x11/shared_x_display.h"
+#endif
+
 namespace remoting {
+
+namespace {
+
+// Returns a copy of `options`. On X11, the copy uses a new X11 Display.
+//
+// Workaround for http://crbug.com/1361502: X11 capturers and mouse cursor
+// monitors work more reliably when each instance uses a separate X11
+// connection. This also provides an X11 Display in the multi-process host,
+// where `options` is received from the network process and doesn't have one.
+webrtc::DesktopCaptureOptions CopyWithNewXDisplay(
+    const webrtc::DesktopCaptureOptions& options) {
+  webrtc::DesktopCaptureOptions result = options;
+#if defined(REMOTING_USE_X11)
+  result.set_x_display(webrtc::SharedXDisplay::CreateDefault());
+  if (result.x_display()) {
+    result.x_display()->IgnoreXServerGrabs();
+  }
+#endif  // REMOTING_USE_X11
+  return result;
+}
+
+}  // namespace
 
 LegacyInteractionStrategy::~LegacyInteractionStrategy() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
@@ -101,15 +127,6 @@ std::unique_ptr<DesktopCapturer> LegacyInteractionStrategy::CreateVideoCapturer(
   capture_task_runner = video_capture_task_runner_;
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
-#if defined(REMOTING_USE_X11)
-  // Workaround for http://crbug.com/1361502: Run each capturer (and
-  // mouse-cursor-monitor) on a separate X11 Display.
-  auto new_options = webrtc::DesktopCaptureOptions::CreateDefault();
-  options_.desktop_capture_options()->set_x_display(
-      std::move(new_options.x_display()));
-  options_.desktop_capture_options()->x_display()->IgnoreXServerGrabs();
-#endif  // REMOTING_USE_X11
-
   auto creator = base::BindOnce(
       [](webrtc::DesktopCaptureOptions options,
          webrtc::ScreenId id) -> std::unique_ptr<remoting::DesktopCapturer> {
@@ -125,7 +142,7 @@ std::unique_ptr<DesktopCapturer> LegacyInteractionStrategy::CreateVideoCapturer(
         }
         return nullptr;
       },
-      *options_.desktop_capture_options(), id);
+      CopyWithNewXDisplay(*options_.desktop_capture_options()), id);
   std::unique_ptr<DesktopCapturer> desktop_capturer;
   if (options_.capture_video_on_dedicated_thread()) {
     desktop_capturer = std::move(creator).Run();
@@ -170,7 +187,7 @@ LegacyInteractionStrategy::CreateMouseCursorMonitor() {
         return webrtc::MouseCursorMonitor::Create(options);
 #endif  // BUILDFLAG(IS_CHROMEOS)
       },
-      *options_.desktop_capture_options());
+      CopyWithNewXDisplay(*options_.desktop_capture_options()));
   return std::make_unique<WebrtcMouseCursorMonitorAdaptor>(
       std::make_unique<MouseCursorMonitorProxy>(video_capture_task_runner_,
                                                 std::move(creator)),
