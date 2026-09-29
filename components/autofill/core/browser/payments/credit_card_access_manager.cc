@@ -1251,22 +1251,41 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
   const bool should_wait_for_preflight = ShouldWaitForPreflightCallResponse(
       get_unmask_details_returned, risk_based_auth_available);
 
-  if (risk_based_auth_available) {
-    // Preflight call response time metrics should only be logged if the user is
-    // verifiable.
+  // These metrics describe the state of the preflight call at the time the card
+  // was chosen, so they are logged before the wait rather than after it.
+  // Preflight call metrics should only be logged if the user is verifiable.
 #if !BUILDFLAG(IS_IOS)
-    if (is_user_verifiable_.value_or(false)) {
+  if (is_user_verifiable_.value_or(false)) {
+    const autofill_metrics::PreflightCallEvent preflight_call_event =
+        get_unmask_details_returned
+            ? autofill_metrics::PreflightCallEvent::
+                  kPreflightCallReturnedBeforeCardChosen
+            : autofill_metrics::PreflightCallEvent::
+                  kCardChosenBeforePreflightCallReturned;
+    const bool is_user_opted_in =
+        GetOrCreateFidoAuthenticator()->IsUserOptedIn();
+
+    if (risk_based_auth_available) {
       autofill_metrics::LogPreflightCallResponseReceivedOnCardSelection(
-          get_unmask_details_returned
-              ? autofill_metrics::PreflightCallEvent::
-                    kPreflightCallReturnedBeforeCardChosen
-              : autofill_metrics::PreflightCallEvent::
-                    kCardChosenBeforePreflightCallReturned,
-          GetOrCreateFidoAuthenticator()->IsUserOptedIn(),
+          preflight_call_event, is_user_opted_in,
           CreditCard::RecordType::kMaskedServerCard);
     }
+
+    // `UserPerceivedLatencyOnCardSelection` records whether the user had to
+    // wait for the preflight call response after choosing a card. It has to be
+    // logged whenever the flow can block on that response, so that it stays
+    // paired with the `.Duration` histogram (and `.TimedOutCvcFallback` for
+    // legacy flows) that OnStopWaitingForUnmaskDetails() emits. The risk-based
+    // flow only blocks once card-on-device verification is enforced; before
+    // that it starts authenticating immediately.
+    if (!risk_based_auth_available || IsCardOnDeviceVerificationEnforced()) {
+      autofill_metrics::LogUserPerceivedLatencyOnCardSelection(
+          preflight_call_event, is_user_opted_in);
+    }
+  }
 #endif
 
+  if (risk_based_auth_available) {
     // The progress dialog covers both the wait for the preflight call response
     // and the risk-based authentication that follows it.
     waiting_for_preflight_call_response_ = should_wait_for_preflight;
@@ -1286,19 +1305,6 @@ void CreditCardAccessManager::FetchMaskedServerCard() {
                       .GetRiskBasedAuthenticator()
                       ->AsWeakPtr()));
   } else {
-    // Latency metrics should only be logged if the user is verifiable.
-#if !BUILDFLAG(IS_IOS)
-    if (is_user_verifiable_.value_or(false)) {
-      autofill_metrics::LogUserPerceivedLatencyOnCardSelection(
-          get_unmask_details_returned
-              ? autofill_metrics::PreflightCallEvent::
-                    kPreflightCallReturnedBeforeCardChosen
-              : autofill_metrics::PreflightCallEvent::
-                    kCardChosenBeforePreflightCallReturned,
-          GetOrCreateFidoAuthenticator()->IsUserOptedIn());
-    }
-#endif
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     // On desktop, show the verify pending dialog for opted-in user, unless it
     // is already known that selected card requires CVC.
