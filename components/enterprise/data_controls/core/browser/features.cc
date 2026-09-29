@@ -11,7 +11,7 @@ BASE_FEATURE(kEnableDownloadDataControls, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDataControlsSearchWith, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kDataControlsGlic, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDataControlsGlic, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDataControlsUrlRegexAndSizeAttributes,
              base::FEATURE_DISABLED_BY_DEFAULT);

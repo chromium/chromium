@@ -33,7 +33,7 @@ BASE_FEATURE(kEnableEncryptedFileUpload, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kDlpScanPastedImages, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls enabling bulk data entry support in Glic actuation logic.
-BASE_FEATURE(kGlicBulkDataEntrySupport, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicBulkDataEntrySupport, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)
 // Controls whether WebProtect download on Clank is enabled.
