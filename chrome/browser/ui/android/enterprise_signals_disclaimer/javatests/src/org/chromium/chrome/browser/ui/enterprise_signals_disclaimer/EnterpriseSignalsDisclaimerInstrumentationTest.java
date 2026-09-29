@@ -189,12 +189,12 @@ public class EnterpriseSignalsDisclaimerInstrumentationTest {
                     final var profile = ProfileManager.getLastUsedRegularProfile();
                     return new EnterpriseSignalsDisclaimerController(
                             IdentityServicesProvider.get().getSigninManager(profile),
-                            bottomSheetController(),
-                            modalDialogManager(),
                             activity(),
                             profile,
                             url -> {},
-                            EnterpriseSignalsDisclaimerCoordinator::new);
+                            EnterpriseSignalsDisclaimerCoordinator::new,
+                            EnterpriseSignalsDisclaimerController.createDefaultHostFactory(
+                                    bottomSheetController(), modalDialogManager()));
                 });
     }
 

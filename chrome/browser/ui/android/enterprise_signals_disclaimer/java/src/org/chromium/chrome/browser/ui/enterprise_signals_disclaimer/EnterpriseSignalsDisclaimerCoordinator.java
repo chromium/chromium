@@ -4,54 +4,51 @@
 
 package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 
-import static org.chromium.build.NullUtil.assertNonNull;
-
 import android.content.Context;
 import android.view.View;
 
-import org.chromium.base.Callback;
-import org.chromium.base.TimeUtils;
+import androidx.annotation.IntDef;
+
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerHost.DismissalCause;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
-import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
- * Coordinator for the enterprise signals disclaimer bottom sheet. The disclaimer is shown on
- * startup and on primary account change for managed enterprise users who have not acknowledged the
- * disclaimer previously.
+ * Coordinator for the enterprise signals disclaimer UI.
+ *
+ * <p>This coordinator is only responsible for rendering the disclaimer content and notifying the
+ * embedder, via {@link Delegate}, about the disclaimer being shown and about the user interaction.
+ * Hosting the view returned by {@link #getView()} (e.g. in a bottom sheet or a modal dialog) and
+ * acting on the user's decision is the responsibility of the embedder.
  */
 @NullMarked
-public class EnterpriseSignalsDisclaimerCoordinator
-        implements EnterpriseSignalsDisclaimerMediator.Delegate, View.OnAttachStateChangeListener {
-    /** Delegate for the enterprise signals disclaimer. */
-    public interface Delegate {
-        /**
-         * Opens the info page for the given URL.
-         *
-         * @param url The URL of the webpage to show.
-         */
-        void showInfoPage(String url);
+class EnterpriseSignalsDisclaimerCoordinator implements View.OnAttachStateChangeListener {
+    /** How the embedder is going to present the disclaimer. Affects the rendered layout. */
+    @IntDef({PresentationMode.MODAL_DIALOG, PresentationMode.BOTTOM_SHEET})
+    @Target(ElementType.TYPE_USE)
+    @Retention(RetentionPolicy.SOURCE)
+    @interface PresentationMode {
+        int MODAL_DIALOG = 0;
+        int BOTTOM_SHEET = 1;
     }
 
-    private static final long UNSET_TIME = -1;
+    /** Delegate for the enterprise signals disclaimer. */
+    interface Delegate extends EnterpriseSignalsDisclaimerMediator.Delegate {
+        /** Called the first time the disclaimer view is attached to a window. */
+        void onShown();
+    }
 
     private final EnterpriseSignalsDisclaimerMediator mMediator;
     private final PropertyModelChangeProcessor mModelChangeProcessor;
-    private final EnterpriseSignalsDisclaimerHost mDisclaimerHost;
     private final Delegate mDelegate;
-    private final MetricsHelper mMetricsHelper;
     private final EnterpriseSignalsDisclaimerView mView;
     private boolean mIsDestroyed;
-    private @Nullable Runnable mOnDestroyCallback;
-    private long mShownAtUptimeMillis = UNSET_TIME;
-    private @Nullable @MetricsHelper.ShownOn Integer mShownOn;
-    private @Nullable Callback<@DismissalCause Integer> mOnDismissedCallback;
 
     /**
      * Constructs an {@link EnterpriseSignalsDisclaimerCoordinator}.
@@ -59,119 +56,51 @@ public class EnterpriseSignalsDisclaimerCoordinator
      * <p>This class should only be instantiated for a managed account.
      *
      * @param context The Android {@link Context}.
-     * @param bottomSheetController The {@link BottomSheetController} for showing the bottom sheet.
-     * @param modalDialogManager The {@link ModalDialogManager} for showing the modal dialog.
-     * @param signinManager The {@link SigninManager} for checking management status and fetching
-     *     the profile picture.
+     * @param identityManager The {@link IdentityManager} used to fetch the account information.
      * @param account The account the disclaimer is shown for.
+     * @param presentationMode How the embedder is going to present the disclaimer.
      * @param delegate The {@link Delegate} for embedder interactions.
-     * @param onDestroyCallback Callback to be invoked when the coordinator is destroyed.
-     * @param metricsHelper The {@link MetricsHelper} for recording interaction metrics.
-     * @param onDismissedCallback Callback to be invoked with the {@link DismissalCause} when the
-     *     disclaimer is dismissed.
      */
-    public EnterpriseSignalsDisclaimerCoordinator(
+    EnterpriseSignalsDisclaimerCoordinator(
             Context context,
-            BottomSheetController bottomSheetController,
-            ModalDialogManager modalDialogManager,
             IdentityManager identityManager,
             CoreAccountInfo account,
-            Delegate delegate,
-            Runnable onDestroyCallback,
-            MetricsHelper metricsHelper,
-            Callback<@DismissalCause Integer> onDismissedCallback) {
-        mOnDestroyCallback = onDestroyCallback;
+            @PresentationMode int presentationMode,
+            Delegate delegate) {
         mDelegate = delegate;
-        mMetricsHelper = metricsHelper;
-        mOnDismissedCallback = onDismissedCallback;
-
-        // For the large form factors a modal dialog will be displayed, while smaller screens will
-        // get a bottom sheet.
-        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            mView = new EnterpriseSignalsDisclaimerView(context, /* isDialog= */ true);
-            mDisclaimerHost =
-                    new ModalDialogDisclaimerHost(
-                            modalDialogManager, mView, this::onDialogDismissed);
-        } else {
-            mView = new EnterpriseSignalsDisclaimerView(context, /* isDialog= */ false);
-            mDisclaimerHost =
-                    new BottomSheetDisclaimerHost(
-                            bottomSheetController,
-                            mView,
-                            mView::getScrollViewScrollY,
-                            this::onDialogDismissed);
-        }
+        mView =
+                new EnterpriseSignalsDisclaimerView(
+                        context, /* isDialog= */ presentationMode == PresentationMode.MODAL_DIALOG);
 
         mView.addOnAttachStateChangeListener(this);
 
         mMediator =
                 new EnterpriseSignalsDisclaimerMediator(
-                        context, identityManager, account, /* delegate= */ this);
+                        context, identityManager, account, delegate);
         mModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
                         mMediator.getModel(), mView, EnterpriseSignalsDisclaimerViewBinder::bind);
     }
 
-    /**
-     * Attempts to show the enterprise signals disclaimer. If the dialog cannot be shown it will be
-     * put in a queue and shown whenever possible.
-     */
-    public void show(@MetricsHelper.ShownOn int shownOn) {
-        assert !mIsDestroyed;
-        mShownOn = shownOn;
-        mDisclaimerHost.show();
+    /** Returns the root view of the disclaimer, to be hosted by the embedder. */
+    View getView() {
+        return mView;
     }
 
-    /**
-     * @return true if dialog is being shown or is in queue, false otherwise.
-     */
-    public boolean isActive() {
-        return !mIsDestroyed && mDisclaimerHost.isActive();
+    /** Returns the vertical scroll offset of the disclaimer content. */
+    int getVerticalScrollOffset() {
+        return mView.getScrollViewScrollY();
     }
 
-    private void onDialogDismissed(@DismissalCause int dismissalCause) {
-        mMetricsHelper.recordResult(dismissalCause);
-        if (mShownAtUptimeMillis != UNSET_TIME) {
-            MetricsHelper.recordTimeToUserAction(TimeUtils.uptimeMillis() - mShownAtUptimeMillis);
-            mShownAtUptimeMillis = UNSET_TIME;
-        }
-        if (mOnDismissedCallback != null) {
-            mOnDismissedCallback.onResult(dismissalCause);
-            mOnDismissedCallback = null;
-        }
-        destroy();
-    }
-
-    /** Destroys the coordinator, hiding the sheet and cleaning up resources. */
-    public void destroy() {
+    /** Destroys the coordinator, cleaning up resources. Does not affect the hosting UI. */
+    void destroy() {
         if (mIsDestroyed) {
             return;
         }
         mIsDestroyed = true;
         mView.removeOnAttachStateChangeListener(this);
-        mDisclaimerHost.destroy();
         mModelChangeProcessor.destroy();
         mMediator.destroy();
-        if (mOnDestroyCallback != null) {
-            mOnDestroyCallback.run();
-            mOnDestroyCallback = null;
-        }
-    }
-
-    // EnterpriseSignalsDisclaimerMediator.Delegate implementation.
-    @Override
-    public void showInfoPage(String url) {
-        mDelegate.showInfoPage(url);
-    }
-
-    @Override
-    public void onAccept() {
-        mDisclaimerHost.dismiss(DismissalCause.TAPPED_ACCEPT);
-    }
-
-    @Override
-    public void onDecline() {
-        mDisclaimerHost.dismiss(DismissalCause.TAPPED_SIGN_OUT);
     }
 
     // View.OnAttachStateChangeListener implementation.
@@ -181,8 +110,7 @@ public class EnterpriseSignalsDisclaimerCoordinator
             return;
         }
 
-        MetricsHelper.recordShown(assertNonNull(mShownOn));
-        mShownAtUptimeMillis = TimeUtils.uptimeMillis();
+        mDelegate.onShown();
         view.removeOnAttachStateChangeListener(this);
     }
 
