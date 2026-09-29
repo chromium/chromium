@@ -147,8 +147,6 @@ SK_API void SkLog_FileLine(const char* file,
 
 #define SK_SUPPORT_LEGACY_GRAPHITE_RRECT_BLUR
 
-#define SK_LEGACY_GRAPHITE_READ_PIXELS_BOTTOM_LEFT_BEHAVIOR
-
 #define SK_DISABLE_GRAPHITE_NONINTEGRAL_VARYINGS_FLAT_INTERPOLATION
 
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
