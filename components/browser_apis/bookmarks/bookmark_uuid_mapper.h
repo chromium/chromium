@@ -54,6 +54,17 @@ struct BookmarkIdTupleHash {
   }
 };
 
+// Where a bookmark node is stored. Part of each node's API UUID is derived
+// from this, so nodes that share a native UUID in different storages get
+// different API UUIDs. Each value maps to a fixed prefix in
+// bookmark_uuid_mapper.cc; adding a value requires adding a new prefix there.
+enum class BookmarkStorage {
+  // Local or syncable nodes, i.e. BookmarkModel's kLocalOrSyncableNodes.
+  kLocal,
+  // Account nodes, i.e. BookmarkModel's kAccountNodes.
+  kAccount,
+};
+
 // Manages the indirection layer between external API UUIDs and underlying
 // bookmark model identities (BookmarkIdTuple).
 //
@@ -65,11 +76,13 @@ struct BookmarkIdTupleHash {
 // Key Invariants:
 // 1. 1:1 Bi-directional Mapping: Every BookmarkIdTuple maps to exactly one API
 //    UUID, and every API UUID maps to at most one BookmarkIdTuple.
-// 2. UUIDs are never recycled from the underlying BookmarkNode. A new UUID is
-//    generated for each BookmarkIdTuple.
-// 3. Local Disambiguation: If a local node's native GUID collides with an
-//    account node or an existing API UUID, a unique random V4 API UUID is
-//    assigned to the local node without modifying the underlying storage model.
+// 2. API UUIDs are never the node's native UUID. They are derived from the
+//    node's storage and native UUID, so the same node gets the same API UUID
+//    across sessions and clients may persist them. See
+//    bookmark_uuid_mapper.cc for the reasoning.
+// 3. Storage disambiguation: nodes in different storages that share a native
+//    UUID (e.g. the local and account bookmark bars) get different API UUIDs,
+//    without modifying the underlying storage model.
 class BookmarkUuidMapper {
  public:
   BookmarkUuidMapper();
@@ -83,9 +96,11 @@ class BookmarkUuidMapper {
   bool HasOverrideFor(const bookmarks::BookmarkNode* node) const;
 
   // Returns the API UUID for `node`. If an API UUID or explicit override has
-  // already been assigned, returns it. Otherwise assigns and returns a unique
-  // API UUID (generating a unique random V4 UUID).
-  base::Uuid GetUuidFor(const bookmarks::BookmarkNode* node);
+  // already been assigned, returns it. Otherwise derives one that is stable
+  // across sessions (see invariant 2), assigns it and returns it.
+  // `storage` must be the storage `node` is in.
+  base::Uuid GetUuidFor(const bookmarks::BookmarkNode* node,
+                        BookmarkStorage storage);
 
   // Returns the underlying BookmarkIdTuple associated with `api_uuid` if
   // mapped.
@@ -111,7 +126,6 @@ class BookmarkUuidMapper {
   void SetUuidOverride(const BookmarkIdTuple& tuple,
                        const base::Uuid& api_uuid);
   bool HasOverrideFor(const BookmarkIdTuple& tuple) const;
-  base::Uuid GetUuidFor(const BookmarkIdTuple& tuple);
   void RemoveNode(const BookmarkIdTuple& tuple);
 
   std::unordered_map<BookmarkIdTuple, base::Uuid, BookmarkIdTupleHash>

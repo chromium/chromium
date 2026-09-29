@@ -22,7 +22,6 @@ DefaultBookmarksView::DefaultBookmarksView(
   CHECK(model_);
   CHECK(model_->loaded());
   model_observation_.Observe(model_);
-  RegisterAccountNodeOverrides();
   translator_.Init();
 }
 
@@ -104,34 +103,16 @@ mojom::PermanentFolderType DefaultBookmarksView::GetPermanentFolderType(
   return mojom::PermanentFolderType::kUnknown;
 }
 
-// For signed-in profiles with account bookmark storage enabled, assign unique
-// UUID overrides to account permanent folders so they do not collide with local
-// permanent folder UUIDs. We infer signed-in status by checking if
-// account_bookmark_bar_node() exists.
-void DefaultBookmarksView::RegisterAccountNodeOverrides() {
-  if (!model_->account_bookmark_bar_node()) {
-    return;
-  }
-
-  if (!uuid_mapper_.HasOverrideFor(model_->account_bookmark_bar_node())) {
-    if (model_->account_bookmark_bar_node()) {
-      uuid_mapper_.SetUuidOverride(model_->account_bookmark_bar_node(),
-                                   base::Uuid::GenerateRandomV4());
-    }
-    if (model_->account_other_node()) {
-      uuid_mapper_.SetUuidOverride(model_->account_other_node(),
-                                   base::Uuid::GenerateRandomV4());
-    }
-    if (model_->account_mobile_node()) {
-      uuid_mapper_.SetUuidOverride(model_->account_mobile_node(),
-                                   base::Uuid::GenerateRandomV4());
-    }
-  }
-}
-
 base::Uuid DefaultBookmarksView::GetUuid(const bookmarks::BookmarkNode* node) {
   CHECK(node);
-  return uuid_mapper_.GetUuidFor(node);
+  const bool in_account_storage =
+      model_->GetNodeByUuid(
+          node->uuid(),
+          bookmarks::BookmarkModel::NodeTypeForUuidLookup::kAccountNodes) ==
+      node;
+  return uuid_mapper_.GetUuidFor(node, in_account_storage
+                                           ? BookmarkStorage::kAccount
+                                           : BookmarkStorage::kLocal);
 }
 
 bool DefaultBookmarksView::IsSynced(const bookmarks::BookmarkNode* node) const {
@@ -194,7 +175,6 @@ void DefaultBookmarksView::RemoveNodes(
 }
 
 void DefaultBookmarksView::BookmarkModelLoaded(bool ids_reassigned) {
-  RegisterAccountNodeOverrides();
   translator_.Init();
 }
 
@@ -219,10 +199,6 @@ void DefaultBookmarksView::BookmarkNodeAdded(
     const bookmarks::BookmarkNode* parent,
     size_t index,
     bool added_by_user) {
-  // If account permanent folders were created dynamically (e.g., user signed in
-  // or enabled bookmark sync during an active session), register their
-  // overrides.
-  RegisterAccountNodeOverrides();
   std::vector<mojom::BookmarksEventPtr> events;
   events.push_back(translator_.CreateAddedEvent(parent, index));
   Notify(std::move(events));
