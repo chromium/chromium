@@ -685,7 +685,7 @@ void CacheStorageCache::Match(blink::mojom::FetchAPIRequestPtr request,
                               CacheStorageSchedulerPriority priority,
                               int64_t trace_id,
                               ResponseCallback callback) {
-  if (backend_state_ == BACKEND_CLOSED) {
+  if (IsClosingOrClosed()) {
     std::move(callback).Run(
         MakeErrorStorage(ErrorStorageType::kMatchBackendClosed), nullptr);
     return;
@@ -706,7 +706,7 @@ void CacheStorageCache::MatchAll(
     blink::mojom::CacheQueryOptionsPtr match_options,
     int64_t trace_id,
     ResponsesCallback callback) {
-  if (backend_state_ == BACKEND_CLOSED) {
+  if (IsClosingOrClosed()) {
     std::move(callback).Run(
         MakeErrorStorage(ErrorStorageType::kMatchAllBackendClosed),
         std::vector<blink::mojom::FetchAPIResponsePtr>());
@@ -731,7 +731,7 @@ void CacheStorageCache::WriteSideData(ErrorCallback callback,
                                       int64_t trace_id,
                                       scoped_refptr<net::IOBuffer> buffer,
                                       int buf_len) {
-  if (backend_state_ == BACKEND_CLOSED) {
+  if (IsClosingOrClosed()) {
     scheduler_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -760,7 +760,7 @@ void CacheStorageCache::BatchOperation(
   // and success paths.
   std::optional<std::string> message;
 
-  if (backend_state_ == BACKEND_CLOSED) {
+  if (IsClosingOrClosed()) {
     scheduler_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(
@@ -857,6 +857,17 @@ void CacheStorageCache::BatchDidGetBucketSpaceRemaining(
               perfetto::Flow::Global(trace_id), "operations",
               CacheStorageTracedValue(operations));
 
+  if (IsClosingOrClosed()) {
+    scheduler_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            CacheStorageVerboseError::New(
+                MakeErrorStorage(ErrorStorageType::kBatchBackendClosed),
+                std::move(message))));
+    return;
+  }
+
   base::CheckedNumeric<uint64_t> safe_space_required = space_required;
   base::CheckedNumeric<uint64_t> safe_space_required_with_side_data;
   safe_space_required_with_side_data = safe_space_required + side_data_size;
@@ -947,7 +958,7 @@ void CacheStorageCache::Keys(blink::mojom::FetchAPIRequestPtr request,
                              blink::mojom::CacheQueryOptionsPtr options,
                              int64_t trace_id,
                              RequestsCallback callback) {
-  if (backend_state_ == BACKEND_CLOSED) {
+  if (IsClosingOrClosed()) {
     std::move(callback).Run(
         MakeErrorStorage(ErrorStorageType::kKeysBackendClosed), nullptr);
     return;
@@ -964,8 +975,10 @@ void CacheStorageCache::Keys(blink::mojom::FetchAPIRequestPtr request,
 }
 
 void CacheStorageCache::Close(base::OnceClosure callback) {
+  DCHECK(!close_requested_);
   DCHECK_NE(BACKEND_CLOSED, backend_state_)
       << "Was CacheStorageCache::Close() called twice?";
+  close_requested_ = true;
 
   auto id = scheduler_->CreateId();
   scheduler_->ScheduleOperation(
@@ -977,7 +990,7 @@ void CacheStorageCache::Close(base::OnceClosure callback) {
 }
 
 void CacheStorageCache::Size(SizeCallback callback) {
-  if (backend_state_ == BACKEND_CLOSED) {
+  if (IsClosingOrClosed()) {
     // TODO(jkarlin): Delete caches that can't be initialized.
     scheduler_task_runner_->PostTask(FROM_HERE,
                                      base::BindOnce(std::move(callback), 0));
@@ -994,11 +1007,13 @@ void CacheStorageCache::Size(SizeCallback callback) {
 }
 
 void CacheStorageCache::GetSizeThenClose(SizeCallback callback) {
-  if (backend_state_ == BACKEND_CLOSED) {
+  if (IsClosingOrClosed()) {
     scheduler_task_runner_->PostTask(FROM_HERE,
                                      base::BindOnce(std::move(callback), 0));
     return;
   }
+
+  close_requested_ = true;
 
   auto id = scheduler_->CreateId();
   scheduler_->ScheduleOperation(
@@ -1557,6 +1572,15 @@ void CacheStorageCache::WriteSideDataDidGetBucketSpaceRemaining(
               "CacheStorageCache::WriteSideDataDidGetBucketSpaceRemaining",
               perfetto::Flow::Global(trace_id));
 
+  if (IsClosingOrClosed()) {
+    scheduler_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            MakeErrorStorage(ErrorStorageType::kWriteSideDataBackendClosed)));
+    return;
+  }
+
   if (!space_remaining.has_value() || space_remaining.value() < buf_len) {
     scheduler_task_runner_->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
@@ -1772,6 +1796,15 @@ void CacheStorageCache::Put(blink::mojom::FetchAPIRequestPtr request,
                             blink::mojom::FetchAPIResponsePtr response,
                             int64_t trace_id,
                             ErrorCallback callback) {
+  if (IsClosingOrClosed()) {
+    scheduler_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            std::move(callback),
+            MakeErrorStorage(ErrorStorageType::kPutImplBackendClosed)));
+    return;
+  }
+
   auto put_context = cache_entry_handler_->CreatePutContext(
       std::move(request), std::move(response), trace_id);
   auto id = scheduler_->CreateId();
@@ -2226,7 +2259,7 @@ void CacheStorageCache::GetAllMatchedEntries(
     blink::mojom::CacheQueryOptionsPtr options,
     int64_t trace_id,
     CacheEntriesCallback callback) {
-  if (backend_state_ == BACKEND_CLOSED) {
+  if (IsClosingOrClosed()) {
     std::move(callback).Run(
         MakeErrorStorage(ErrorStorageType::kKeysBackendClosed), {});
     return;
