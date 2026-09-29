@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.media.ui;
 
+import android.app.Activity;
 import android.os.Build;
 
 import androidx.test.filters.MediumTest;
@@ -43,6 +44,8 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.ScreenOrientationDelegate;
+import org.chromium.content_public.browser.ScreenOrientationProvider;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
@@ -69,6 +72,25 @@ public class FullscreenVideoPictureInPictureControllerTest {
     private static final String VIDEO_ID = "video";
     private static final long PIP_TIMEOUT_MS = 10000L;
 
+    /**
+     * Keeps fullscreen video from locking the orientation, which would rotate phones to landscape.
+     * If PiP is requested while that rotation is still running, Android S/T can abort the PiP
+     * transition without ever calling onPictureInPictureModeChanged(true). The Activity then keeps
+     * reporting isInPictureInPictureMode() for the rest of the batch. See crbug.com/566384602.
+     */
+    private static final ScreenOrientationDelegate NO_ORIENTATION_LOCK_DELEGATE =
+            new ScreenOrientationDelegate() {
+                @Override
+                public boolean canUnlockOrientation(Activity activity, int defaultOrientation) {
+                    return true;
+                }
+
+                @Override
+                public boolean canLockOrientation() {
+                    return false;
+                }
+            };
+
     @Rule
     public AutoResetCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.autoResetCtaActivityRule();
@@ -79,10 +101,16 @@ public class FullscreenVideoPictureInPictureControllerTest {
     public void setUp() {
         mActivityTestRule.startOnWebPage(mActivityTestRule.getTestServer().getURL(TEST_PATH));
         mActivity = mActivityTestRule.getActivity();
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        ScreenOrientationProvider.getInstance()
+                                .setOrientationDelegate(NO_ORIENTATION_LOCK_DELEGATE));
     }
 
     @After
     public void tearDown() throws Exception {
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> ScreenOrientationProvider.getInstance().setOrientationDelegate(null));
         if (mActivity != null) {
             boolean wasInPip =
                     ThreadUtils.runOnUiThreadBlocking(

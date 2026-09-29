@@ -173,6 +173,9 @@ public class FullscreenVideoPictureInPictureController {
     /** Was pip dismissed while the screen was off? */
     private boolean mDismissPending;
 
+    /** Is a dismiss deferred because pip was entered very recently? */
+    private boolean mIsDismissDeferred;
+
     /** Should media be suspended if the activity stops, i.e. was the pip window closed? */
     private boolean mShouldSuspendMediaOnStop;
 
@@ -677,6 +680,11 @@ public class FullscreenVideoPictureInPictureController {
             return;
         }
 
+        // If a dismiss is already deferred, then let it close PiP.  Otherwise, a later request that
+        // arrives before it runs, such as the WebContents reporting that it left fullscreen right
+        // after we were told that the tab left fullscreen, would record its own reason instead.
+        if (mIsDismissDeferred) return;
+
         // If we just entered PiP, then re-post this.  There are corner cases where we exit PiP via
         // some other way, then re-enter it that might go wrong if we don't cancel this, but all of
         // these cases are very questionable.  The important thing is that, once
@@ -685,9 +693,13 @@ public class FullscreenVideoPictureInPictureController {
         // try to pro-rate the exit delay; it's short and arbitrary anyway.
         if (SystemClock.elapsedRealtime() - mLastOnEnteredTimeMillis < MIN_EXIT_DELAY_MILLIS) {
             Log.i(TAG, "Posting deferred callback to dismiss activity.");
+            mIsDismissDeferred = true;
             PostTask.postDelayedTask(
                     TaskTraits.UI_USER_BLOCKING,
-                    () -> dismissActivityIfNeeded(activity, reason),
+                    () -> {
+                        mIsDismissDeferred = false;
+                        dismissActivityIfNeeded(activity, reason);
+                    },
                     MIN_EXIT_DELAY_MILLIS);
             return;
         }

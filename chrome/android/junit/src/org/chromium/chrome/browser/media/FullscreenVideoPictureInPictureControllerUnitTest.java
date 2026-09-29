@@ -41,6 +41,7 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureController.MetricsEndReason;
 import org.chromium.chrome.browser.media.FullscreenVideoPictureInPictureController.PipEntered;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.MediaSession;
@@ -206,6 +207,39 @@ public class FullscreenVideoPictureInPictureControllerUnitTest {
                 TimeUnit.MILLISECONDS);
         runUntilIdle();
         verify(mActivity, times(1)).moveTaskToBack(true);
+    }
+
+    /**
+     * A dismiss that arrives while another one is deferred should not preempt it, so that the first
+     * reason is the one that's recorded.
+     */
+    @Test
+    public void deferredDismissIsNotPreemptedByLaterDismiss() {
+        // Do not call `enterPip()`, because we do not want to advance the clock.
+        mController.onEnteredPictureInPictureMode();
+        verify(mFullscreenManager).addObserver(mFullscreenObserverCaptor.capture());
+        verify(mWebContents).addObserver(mWebContentsObserverCaptor.capture());
+        HistogramWatcher watcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                FullscreenVideoPictureInPictureController.EXIT_REASON_HISTOGRAM,
+                                MetricsEndReason.LEFT_FULLSCREEN)
+                        .build();
+
+        // Leaving fullscreen right after entering pip defers the dismiss.
+        mFullscreenObserverCaptor.getValue().onExitFullscreen(mTab);
+        verify(mActivity, times(0)).moveTaskToBack(true);
+
+        // The WebContents reports that it left fullscreen too, after the minimum delay has passed
+        // but before the deferred dismiss has run.
+        ShadowSystemClock.advanceBy(
+                FullscreenVideoPictureInPictureController.MIN_EXIT_DELAY_MILLIS + 10L,
+                TimeUnit.MILLISECONDS);
+        mWebContentsObserverCaptor.getValue().hasEffectivelyFullscreenVideoChange(false);
+
+        runUntilIdle();
+        verify(mActivity, times(1)).moveTaskToBack(true);
+        watcher.assertExpected();
     }
 
     /** Stash will pause the video, then restart it when un-stashed. */
