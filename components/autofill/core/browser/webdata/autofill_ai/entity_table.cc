@@ -71,6 +71,12 @@ constexpr char kUseDate[] = "use_date";
 constexpr char kDateModified[] = "date_modified";
 }  // namespace entities_metadata
 
+namespace wallet_metadata {
+constexpr char kTableName[] = "autofill_ai_entities_metadata_wallet";
+constexpr char kEntityGuid[] = "entity_guid";
+constexpr char kManagementUrl[] = "management_url";
+}  // namespace wallet_metadata
+
 std::optional<EntityInstance::RecordType> ToSafeRecordType(
     std::underlying_type_t<EntityInstance::RecordType> underlying_record_type) {
   switch (EntityInstance::RecordType record_type =
@@ -133,8 +139,15 @@ bool EntityTable::CreateTablesIfNecessary() {
          {entities_metadata::kUseDate, "INTEGER DEFAULT 0"},
          {entities_metadata::kDateModified, "INTEGER NOT NULL"}});
   };
+  auto create_wallet_metadata_table = [&] {
+    return CreateTableIfNotExists(
+        db(), /*table_name=*/wallet_metadata::kTableName,
+        /*column_names_and_types=*/
+        {{wallet_metadata::kEntityGuid, "TEXT NOT NULL PRIMARY KEY"},
+         {wallet_metadata::kManagementUrl, "TEXT NOT NULL"}});
+  };
   return create_attributes_table() && create_entities_table() &&
-         create_entities_metadata_table();
+         create_entities_metadata_table() && create_wallet_metadata_table();
 }
 
 // There are two types of migration:
@@ -225,6 +238,15 @@ bool EntityTable::MigrateToVersion(int version,
       // does not introduce any backwards-incompatible schema changes.
       return MigrateToVersion157CleanupOrphanedEntityChildData();
     }
+    case 158: {
+      // In this version, `autofill_ai_entities_metadata_wallet` table was added
+      // to store Wallet-specific metadata such as `management_url`.
+      return CreateTableIfNotExists(
+          db(), /*table_name=*/"autofill_ai_entities_metadata_wallet",
+          /*column_names_and_types=*/
+          {{"entity_guid", "TEXT NOT NULL PRIMARY KEY"},
+           {"management_url", "TEXT NOT NULL"}});
+    }
   }
   return true;
 }
@@ -314,6 +336,18 @@ bool EntityTable::AddEntityMetadata(
   return s.Run();
 }
 
+bool EntityTable::AddWalletMetadata(
+    const EntityInstance::EntityId& guid,
+    const EntityInstance::WalletRecordTypePayload& payload) {
+  sql::Statement s;
+  sql::CachedInsertBuilder(
+      SQL_FROM_HERE, *db(), s, wallet_metadata::kTableName,
+      {wallet_metadata::kEntityGuid, wallet_metadata::kManagementUrl});
+  s.BindString(0, *guid);
+  s.BindString(1, payload.management_url);
+  return s.Run();
+}
+
 bool EntityTable::RemoveEntityMetadata(const EntityInstance::EntityId& guid) {
   return sql::DeleteWhereColumnEq(*db(), entities_metadata::kTableName,
                                   entities_metadata::kEntityGuid, *guid);
@@ -364,6 +398,13 @@ bool EntityTable::AddEntityInstance(const EntityInstance& entity) {
   if (!AddEntityMetadata(entity.metadata())) {
     return false;
   }
+  if (const auto* wallet_payload =
+          std::get_if<EntityInstance::WalletRecordTypePayload>(
+              &entity.record_type_data())) {
+    if (!AddWalletMetadata(entity.guid(), *wallet_payload)) {
+      return false;
+    }
+  }
   return transaction.Commit();
 }
 
@@ -405,6 +446,8 @@ bool EntityTable::RemoveEntityInstance(const EntityInstance::EntityId& guid) {
                                   *guid) &&
          sql::DeleteWhereColumnEq(*db(), entities_metadata::kTableName,
                                   entities_metadata::kEntityGuid, *guid) &&
+         sql::DeleteWhereColumnEq(*db(), wallet_metadata::kTableName,
+                                  wallet_metadata::kEntityGuid, *guid) &&
          transaction.Commit();
 }
 
@@ -531,6 +574,29 @@ EntityTable::LoadMetadata() const {
   return metadata_records;
 }
 
+std::map<EntityInstance::EntityId, EntityInstance::WalletRecordTypePayload>
+EntityTable::LoadWalletMetadata() const {
+  std::map<EntityInstance::EntityId, EntityInstance::WalletRecordTypePayload>
+      wallet_metadata_records;
+  sql::Statement s;
+  sql::CachedSelectBuilder(
+      SQL_FROM_HERE, *db(), s, wallet_metadata::kTableName,
+      {wallet_metadata::kEntityGuid, wallet_metadata::kManagementUrl});
+
+  while (s.Step()) {
+    EntityInstance::EntityId entity_guid(s.ColumnString(0));
+    std::string management_url = s.ColumnString(1);
+    wallet_metadata_records.emplace(
+        std::move(entity_guid),
+        EntityInstance::WalletRecordTypePayload{.management_url =
+                                                    std::move(management_url)});
+  }
+  if (!s.Succeeded()) {
+    return {};
+  }
+  return wallet_metadata_records;
+}
+
 std::map<EntityInstance::EntityId,
          std::map<std::string, std::vector<EntityTable::AttributeRecord>>>
 EntityTable::LoadAttributes() const {
@@ -601,6 +667,10 @@ std::vector<EntityInstance> EntityTable::GetEntityInstances(
   std::map<EntityInstance::EntityId, EntityInstance::EntityMetadata>
       metadata_records = LoadMetadata();
 
+  // Collects all Wallet-specific metadata, keyed by the owning entity's GUID.
+  std::map<EntityInstance::EntityId, EntityInstance::WalletRecordTypePayload>
+      wallet_metadata_records = LoadWalletMetadata();
+
   // These statement builders must be kept separate in order to take advantage
   // of the SQL statement cache.
   sql::Statement s;
@@ -640,12 +710,18 @@ std::vector<EntityInstance> EntityTable::GetEntityInstances(
     if (!attributes || !metadata) {
       continue;
     }
+    auto wallet_metadata = wallet_metadata_records.extract(guid);
+    // Note that `ValidateInstance` drops the Wallet data if the entity type
+    // does not match. This can only occur if the data in the DB is corrupted.
+    std::optional<EntityInstance::WalletRecordTypePayload> wallet_payload =
+        wallet_metadata ? std::optional(std::move(wallet_metadata.mapped()))
+                        : std::nullopt;
     if (std::optional<EntityInstance> e = ValidateInstance(
             type_name, std::move(guid), std::move(nickname),
             metadata.mapped().date_modified, metadata.mapped().use_count,
             metadata.mapped().use_date, underlying_record_type,
-            std::move(attributes.mapped()), are_attributes_read_only,
-            std::move(frecency_override))) {
+            std::move(wallet_payload), std::move(attributes.mapped()),
+            are_attributes_read_only, std::move(frecency_override))) {
       entities.push_back(*std::move(e));
     }
   }
@@ -663,6 +739,7 @@ std::optional<EntityInstance> EntityTable::ValidateInstance(
     int64_t use_count,
     base::Time use_date,
     std::underlying_type_t<EntityInstance::RecordType> underlying_record_type,
+    std::optional<EntityInstance::WalletRecordTypePayload> wallet_payload,
     std::map<std::string, std::vector<AttributeRecord>> attribute_records,
     EntityInstance::AreAttributesReadOnly are_attributes_read_only,
     std::string frecency_override) const {
@@ -723,13 +800,17 @@ std::optional<EntityInstance> EntityTable::ValidateInstance(
     return std::nullopt;
   }
 
+  // Construct a `RecordTypeData` object which matches the given entity type.
+  // If inconsistent `RecordTypeData` has been read from disk, it is ignored
+  // (e.g. if a `wallet_payload` is provided for a non-Wallet entity).
   auto record_type_data = [&] -> EntityInstance::RecordTypeData {
     switch (*record_type) {
       case EntityInstance::RecordType::kLocal:
         return EntityInstance::LocalRecordTypePayload{};
       case EntityInstance::RecordType::kServerWallet:
-        // TODO(crbug.com/560061580): Read the management URL from the DB.
-        return EntityInstance::WalletRecordTypePayload{.management_url = ""};
+        return std::move(wallet_payload)
+            .value_or(
+                EntityInstance::WalletRecordTypePayload{.management_url = ""});
       case EntityInstance::RecordType::kPersonalContext:
         // pContext entities are not stored in `EntityTable`.
         NOTREACHED();

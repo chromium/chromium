@@ -2359,4 +2359,31 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion157ToCurrent) {
     }
   }
 }
+
+// Version 159 adds the autofill_ai_entities_metadata_wallet table.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion158ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_158.sql")));
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(158, VersionFromConnection(&connection));
+    EXPECT_FALSE(
+        connection.DoesTableExist("autofill_ai_entities_metadata_wallet"));
+  }
+
+  DoMigration();
+
+  {
+    sql::Database connection(sql::test::kTestTag);
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    EXPECT_EQ(WebDatabase::kCurrentVersionNumber,
+              VersionFromConnection(&connection));
+    EXPECT_TRUE(
+        connection.DoesTableExist("autofill_ai_entities_metadata_wallet"));
+    EXPECT_TRUE(connection.DoesColumnExist(
+        "autofill_ai_entities_metadata_wallet", "entity_guid"));
+    EXPECT_TRUE(connection.DoesColumnExist(
+        "autofill_ai_entities_metadata_wallet", "management_url"));
+  }
+}
 }  // anonymous namespace
