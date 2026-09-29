@@ -13,6 +13,10 @@ aioquic==1.2.0+chromium.1 \
     --hash=sha256:e2c23c2c0b376208fe138c0bdb3ba572257d51d788837807250b0ce6444d3fa1 \
     --hash=sha256:e53155d0542f8968ea03005785cf384af1f29ae1a04864af711d6c02690b6958 \
     --hash=sha256:f99f43c4961c885581513d603af5172660314007eace52523e05464d1c03b41d
+altgraph==0.17.4 \
+    --hash=sha256:642743b4750de17e655e6711601b077bc6598dbfa3ba5fa2b2a35ce12b508dff \
+    --hash=sha256:77cc041f8bb8163564a613ca13f05a72d5f42bb38d65876addf23034272acf48
+    # via macholib
 ansicon==1.89.0 \
     --hash=sha256:f1def52d17f65c2c9682cf8370c03f541f410c1752d6a14029f97318e4b9dfec \
     --hash=sha256:fb05675d792eecc5b6d3ff19400664a7f2bacf2626f4e49fd5beedf602423743
@@ -470,6 +474,9 @@ libcst==1.1.0 \
     # via
     #   google-cloud-pubsub
     #   pytype
+macholib==1.16.3 \
+    --hash=sha256:0e315d7583d38b8c77e815b1ecbdbf504a8258d8b3e17b61165c6feb60d18f2c \
+    --hash=sha256:37302c7b6fc59bbd979a2e7217d95754b1969f9830af8cf6b6cfab08ee21b9e6
 mako==1.2.3 \
     --hash=sha256:6204c5aa05616e48f8eb00363d9b3eabe1d661f71db4d5d728b0ea776239b043 \
     --hash=sha256:aabd35c02c95486717b84d08632c0b81781cf218f3ccd0ffb0b45dde43dcb193

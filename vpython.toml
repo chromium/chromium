@@ -140,5 +140,7 @@ dependencies = [
   'toml==0.10.2',
   'markupsafe==2.0.1',
   'apipkg==1.5',
-  'mako==1.2.3'
+  'mako==1.2.3',
+  # Used by //components/crash/content/tools/generate_breakpad_symbols.py
+  'macholib==1.16.3'
 ]

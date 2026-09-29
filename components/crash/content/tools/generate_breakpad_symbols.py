@@ -111,37 +111,16 @@ def GetSharedLibraryDependenciesAndroid(binary):
   return _GetSharedLibraryDependenciesAndroidOrChromeOS(binary)
 
 
-def GetDeveloperDirMac():
-  """Finds a good DEVELOPER_DIR value to run Mac dev tools.
-
-  It checks the existing DEVELOPER_DIR and `xcode-select -p` and uses
-  one of those if the folder exists, and falls back to one of the
-  existing system folders with dev tools.
-
-  Returns:
-    (string) path to assign to DEVELOPER_DIR env var.
-  """
-  candidate_paths = []
-  if 'DEVELOPER_DIR' in os.environ:
-    candidate_paths.append(os.environ['DEVELOPER_DIR'])
-  candidate_paths.extend([
-      subprocess.check_output(['xcode-select', '-p']).decode('utf-8').strip(),
-      # Most Mac bots have an Xcode installed at the default location.
-      '/Applications/Xcode.app',
-      # Mac 10.13 bots don't have any Xcode installed, but have CLI tools as a
-      # temporary workaround.
-      '/Library/Developer/CommandLineTools',
-  ])
-  for path in candidate_paths:
-    if os.path.exists(path):
-      return path
-  print('WARNING: no value found for DEVELOPER_DIR. Some commands may fail.')
-
-
 def GetSharedLibraryDependenciesMac(binary, exe_path):
   """Return absolute paths to all shared library dependencies of the binary.
 
   This implementation assumes that we're running on a Mac system."""
+  # Imported here so that other platforms, which may run this script outside
+  # vpython, don't need macholib.
+  from macholib import mach_o
+  from macholib.MachO import MachO
+  from macholib.ptypes import sizeof
+
   # realpath() serves two purposes:
   # 1. If an executable is linked against a framework, it links against
   #    Framework.framework/Framework, which is a symlink to
@@ -151,73 +130,37 @@ def GetSharedLibraryDependenciesMac(binary, exe_path):
   #    "foo.dylib" in the current directory, dirname() would return an empty
   #    string, causing "@loader_path/foo" to incorrectly expand to "/foo".
   loader_path = os.path.dirname(os.path.realpath(binary))
-  env = os.environ.copy()
-
-  SRC_ROOT_PATH = os.path.join(os.path.dirname(__file__), '../../../..')
-  otool_path = os.path.join(SRC_ROOT_PATH, 'build', 'mac_files',
-                            'xcode_binaries', 'Contents', 'Developer',
-                            'Toolchains', 'XcodeDefault.xctoolchain', 'usr',
-                            'bin', 'otool')
-  try:
-    otool = subprocess.check_output([otool_path, '-lm', binary],
-                                    env=env).decode('utf-8').splitlines()
-  except OSError as e:
-    if e.errno not in (errno.ENOENT, errno.EBADARCH):
-      raise
-
-    # Xcode 27 and newer are ARM-only, so a hermetic toolchain staged by an
-    # arm64 builder has no x86_64 slice. Cross-compiling for x64 packages it
-    # into the test isolate anyway, where an Intel tester cannot exec it.
-    if e.errno == errno.EBADARCH:
-      print('WARNING: %s cannot run on this machine; falling back to the '
-            'otool on PATH.' % otool_path,
-            file=sys.stderr)
-
-    otool_path = 'otool'
-    developer_dir = GetDeveloperDirMac()
-    if developer_dir:
-      env['DEVELOPER_DIR'] = developer_dir
-    otool = subprocess.check_output([otool_path, '-lm', binary],
-                                    env=env).decode('utf-8').splitlines()
 
   rpaths = []
-  dylib_id = None
-  for idx, line in enumerate(otool):
-    if line.find('cmd LC_RPATH') != -1:
-      m = re.match(r' *path (.*) \(offset .*\)$', otool[idx + 2])
-      rpath = m.group(1)
+  dylibs = []
+  for header in MachO(binary).headers:
+    for load_cmd, cmd, data in header.commands:
+      if load_cmd.cmd != mach_o.LC_RPATH:
+        continue
+      # `cmd.path` is an offset from the start of the load command, while
+      # `data` holds only the bytes after the fixed-size command structs.
+      offset = (cmd.path - sizeof(load_cmd.__class__) - sizeof(cmd.__class__))
+      rpath = data[offset:data.find(b'\0', offset)].decode('utf-8')
       rpath = rpath.replace('@loader_path', loader_path)
       rpath = rpath.replace('@executable_path', exe_path)
       rpaths.append(rpath)
-    elif line.find('cmd LC_ID_DYLIB') != -1:
-      m = re.match(r' *name (.*) \(offset .*\)$', otool[idx + 2])
-      dylib_id = m.group(1)
+    dylibs.extend(name for _, _, name in header.walkRelocatables())
   # `man dyld` says that @rpath is resolved against a stack of LC_RPATHs from
   # all executable images leading to the load of the current module. This is
   # intentionally not implemented here, since we require that every .dylib
   # contains all the rpaths it needs on its own, without relying on rpaths of
   # the loading executables.
 
-  otool = subprocess.check_output([otool_path, '-Lm', binary],
-                                  env=env).decode('utf-8').splitlines()
-  lib_re = re.compile(r'\t(.*) \(compatibility .*\)$')
   deps = []
-  for line in otool:
-    m = lib_re.match(line)
-    if m:
-      # For frameworks and shared libraries, `otool -L` prints the LC_ID_DYLIB
-      # as the first line. Filter that out.
-      if m.group(1) == dylib_id:
-        continue
-      dep = Resolve(m.group(1), exe_path, loader_path, rpaths)
-      if dep:
-        deps.append(os.path.normpath(dep))
-      else:
-        print(('ERROR: failed to resolve %s, exe_path %s, loader_path %s, '
-               'rpaths %s' %
-               (m.group(1), exe_path, loader_path, ', '.join(rpaths))),
-              file=sys.stderr)
-        sys.exit(1)
+  for dylib in dylibs:
+    dep = Resolve(dylib, exe_path, loader_path, rpaths)
+    if dep:
+      deps.append(os.path.normpath(dep))
+    else:
+      print(('ERROR: failed to resolve %s, exe_path %s, loader_path %s, '
+             'rpaths %s' % (dylib, exe_path, loader_path, ', '.join(rpaths))),
+            file=sys.stderr)
+      sys.exit(1)
   return deps
 
 
