@@ -1347,6 +1347,15 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Failure"/>
 </enum>
 
+<!-- LINT.IfChange(SigninHybridPasskeyEngagement) -->
+
+<enum name="SigninHybridPasskeyEngagement">
+  <int value="0" label="Scan detected"/>
+  <int value="1" label="No scan detected"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/webauthn/chrome_authenticator_request_delegate.h:SigninHybridPasskeyEngagement) -->
+
 <!-- LINT.IfChange(SigninHybridPasskeyOutcome) -->
 
 <enum name="SigninHybridPasskeyOutcome">

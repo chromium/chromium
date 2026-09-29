@@ -31,6 +31,7 @@ class MockWebAuthnCredentialsDelegate : public WebAuthnCredentialsDelegate {
               GetCableQrString,
               (),
               (const, override));
+  MOCK_METHOD(void, OnPasskeyQrCodeSuggestionShown, (), (override));
   MOCK_METHOD(void,
               SelectPasskey,
               (const std::string&,

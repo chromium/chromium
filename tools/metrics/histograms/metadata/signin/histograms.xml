@@ -2503,6 +2503,27 @@ prefs when the profile is loaded.  -->
 
 </histogram>
 
+<histogram name="Signin.HybridPasskey.InlineQrEngagement"
+    enum="SigninHybridPasskeyEngagement" expires_after="2027-04-01">
+  <owner>msalama@google.com</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Recorded once per WebAuthn request on the Chrome sign-in page in which the
+    hybrid passkey QR code was shown inline in the Autofill dropdown. The sample
+    is emitted when the request ends or when the user restarts it. Requests in
+    which the QR code was only ever shown in the WebAuthn modal dialog are not
+    recorded.
+
+    &quot;Scan detected&quot; means the browser received a BLE advert from the
+    user's phone during the request. &quot;No scan detected&quot; means it did
+    not; usually the user ignored the QR code, but this also covers a code that
+    was scanned whose advert never reached the browser.
+
+    The same QR code is shown in the Autofill dropdown and in the modal dialog,
+    so a scan cannot be attributed to one surface or the other.
+  </summary>
+</histogram>
+
 <histogram name="Signin.HybridPasskey.Outcome"
     enum="SigninHybridPasskeyOutcome" expires_after="2027-04-01">
   <owner>msalama@google.com</owner>

@@ -267,7 +267,21 @@ PasswordAutofillManager::GetWebauthnInlineQrCodeSuggestion() const {
 
 void PasswordAutofillManager::OnSuggestionsShown(
     base::span<const Suggestion> suggestions,
-    const SuggestionUiMetadata& metadata) {}
+    const SuggestionUiMetadata& metadata) {
+  const bool shows_passkey_qr_code =
+      std::ranges::any_of(suggestions, [](const Suggestion& suggestion) {
+        return suggestion.type ==
+               autofill::SuggestionType::kWebauthnPasskeyQrCode;
+      });
+  if (!shows_passkey_qr_code) {
+    return;
+  }
+  if (WebAuthnCredentialsDelegate* credentials_delegate =
+          password_client_->GetWebAuthnCredentialsDelegateForDriver(
+              password_manager_driver_)) {
+    credentials_delegate->OnPasskeyQrCodeSuggestionShown();
+  }
+}
 
 void PasswordAutofillManager::OnSuggestionsHidden(
     autofill::SuggestionHidingReason reason) {

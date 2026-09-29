@@ -226,6 +226,10 @@ bool IsChromeSigninPage(content::RenderFrameHost* rfh) {
       web_contents ? DiceTabHelper::FromWebContents(web_contents) : nullptr;
   return tab_helper && tab_helper->IsChromeSigninPage();
 }
+
+constexpr char kHybridPasskeyEngagementHistogram[] =
+    "Signin.HybridPasskey.InlineQrEngagement";
+
 #endif
 
 }  // namespace
@@ -302,6 +306,7 @@ ChromeAuthenticatorRequestDelegate::~ChromeAuthenticatorRequestDelegate() {
   }
   MaybeRecordHybridPasskeyOutcome(
       HybridPasskeyTerminationReason::kOtherFailure);
+  MaybeRecordHybridPasskeyEngagement();
 #endif
 
   if (g_observer) {
@@ -866,6 +871,7 @@ void ChromeAuthenticatorRequestDelegate::OnStartOver() {
   // outcome for the prior attempt before resetting for the new attempt.
   MaybeRecordHybridPasskeyOutcome(
       HybridPasskeyTerminationReason::kUserCancelled);
+  MaybeRecordHybridPasskeyEngagement();
 #endif
   dialog_model_->generation++;
   if (g_observer) {
@@ -1320,6 +1326,9 @@ void ChromeAuthenticatorRequestDelegate::SetHybridPasskeyStageFromCableEvent(
       hybrid_passkey_stage_ = HybridPasskeySessionStage::kPhoneReady;
       break;
   }
+  // Tracked separately because recording an outcome resets
+  // `hybrid_passkey_stage_`.
+  hybrid_passkey_scanned_ = true;
 }
 
 void ChromeAuthenticatorRequestDelegate::MaybeRecordHybridPasskeyOutcome(
@@ -1386,5 +1395,25 @@ void ChromeAuthenticatorRequestDelegate::MaybeRecordHybridPasskeyOutcome(
     return;
   }
   base::UmaHistogramEnumeration("Signin.HybridPasskey.Outcome", outcome);
+}
+
+void ChromeAuthenticatorRequestDelegate::
+    OnHybridPasskeyQrCodeShownInAutofill() {
+  hybrid_passkey_qr_shown_ = true;
+}
+
+void ChromeAuthenticatorRequestDelegate::MaybeRecordHybridPasskeyEngagement() {
+  // Consume the state so that the sample cannot be emitted twice for the same
+  // attempt, e.g. by `OnStartOver()` and then by the destructor, and so that a
+  // scan never carries over into the next attempt.
+  const bool qr_shown = std::exchange(hybrid_passkey_qr_shown_, false);
+  const bool scanned = std::exchange(hybrid_passkey_scanned_, false);
+  if (!qr_shown || !is_chrome_signin_request_) {
+    return;
+  }
+  base::UmaHistogramEnumeration(kHybridPasskeyEngagementHistogram,
+                                scanned
+                                    ? HybridPasskeyEngagement::kScanDetected
+                                    : HybridPasskeyEngagement::kNoScanDetected);
 }
 #endif

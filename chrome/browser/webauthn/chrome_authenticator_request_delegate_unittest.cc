@@ -1503,6 +1503,156 @@ TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest,
 
   histogram_tester_.ExpectTotalCount("Signin.HybridPasskey.Outcome", 0);
 }
+
+class ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest
+    : public ChromeAuthenticatorRequestDelegateHybridPasskeyOutcomeTest {
+ protected:
+  static constexpr char kEngagement[] =
+      "Signin.HybridPasskey.InlineQrEngagement";
+
+  using Engagement =
+      ChromeAuthenticatorRequestDelegate::HybridPasskeyEngagement;
+
+  // The only signal that arms the engagement metric.
+  void ShowInlineQrCode(ChromeAuthenticatorRequestDelegate* delegate) {
+    delegate->OnHybridPasskeyQrCodeShownInAutofill();
+  }
+
+  void ScanQrCode(ChromeAuthenticatorRequestDelegate* delegate) {
+    delegate->OnCableEventForTesting(
+        device::cablev2::Event::kBLEAdvertReceived);
+  }
+};
+
+TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
+       ScanWithoutInlineQrEmitsNoSample) {
+  MockCableDiscoveryFactory discovery_factory;
+  std::unique_ptr<ChromeAuthenticatorRequestDelegate> delegate =
+      CreateDelegate(&discovery_factory);
+
+  // A scan can occur in an attempt that never showed the inline QR code, for
+  // example one that reached a QR code only through the WebAuthn modal.
+  ScanQrCode(delegate.get());
+  delegate.reset();
+
+  histogram_tester_.ExpectTotalCount(kEngagement, 0);
+}
+
+TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
+       RepeatedInlineSignalsEmitOneSample) {
+  MockCableDiscoveryFactory discovery_factory;
+  std::unique_ptr<ChromeAuthenticatorRequestDelegate> delegate =
+      CreateDelegate(&discovery_factory);
+
+  // The dropdown may be re-shown several times within a single attempt.
+  ShowInlineQrCode(delegate.get());
+  ShowInlineQrCode(delegate.get());
+  ShowInlineQrCode(delegate.get());
+
+  delegate.reset();
+
+  histogram_tester_.ExpectUniqueSample(kEngagement, Engagement::kNoScanDetected,
+                                       1);
+}
+
+TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
+       ScanDetectedBucket) {
+  MockCableDiscoveryFactory discovery_factory;
+  std::unique_ptr<ChromeAuthenticatorRequestDelegate> delegate =
+      CreateDelegate(&discovery_factory);
+
+  ShowInlineQrCode(delegate.get());
+  ScanQrCode(delegate.get());
+  delegate->OnCableEventForTesting(device::cablev2::Event::kPhoneConnected);
+  delegate->OnCableEventForTesting(device::cablev2::Event::kReady);
+  delegate->OnTransactionSuccessful(
+      content::AuthenticatorRequestClientDelegate::RequestSource::
+          kWebAuthentication,
+      device::FidoRequestType::kGetAssertion,
+      device::AuthenticatorType::kPhone);
+  delegate.reset();
+
+  histogram_tester_.ExpectUniqueSample(kEngagement, Engagement::kScanDetected,
+                                       1);
+}
+
+TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
+       NoScanDetectedBucket) {
+  MockCableDiscoveryFactory discovery_factory;
+  std::unique_ptr<ChromeAuthenticatorRequestDelegate> delegate =
+      CreateDelegate(&discovery_factory);
+
+  // No cable event ever arrives, whether because the user ignored the QR code
+  // or because they scanned it and the advert never reached us.
+  ShowInlineQrCode(delegate.get());
+  delegate.reset();
+
+  histogram_tester_.ExpectUniqueSample(kEngagement, Engagement::kNoScanDetected,
+                                       1);
+}
+
+TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
+       StartOverEmitsOneSamplePerAttempt) {
+  MockCableDiscoveryFactory discovery_factory;
+  std::unique_ptr<ChromeAuthenticatorRequestDelegate> delegate =
+      CreateDelegate(&discovery_factory);
+
+  base::MockCallback<base::RepeatingClosure> start_over_callback;
+  delegate->RegisterActionCallbacks(
+      /*cancel_callback=*/base::DoNothing(),
+      /*immediate_not_found_callback=*/base::DoNothing(),
+      start_over_callback.Get(),
+      /*account_preselected_callback=*/base::DoNothing(),
+      /*password_selected_callback=*/base::DoNothing(),
+      /*request_callback=*/base::DoNothing(),
+      /*cancel_ui_timeout_callback=*/base::DoNothing(),
+      /*bluetooth_adapter_power_on_callback=*/base::DoNothing(),
+      /*request_ble_permission_callback=*/base::DoNothing());
+
+  // First attempt: the QR code is shown in the Autofill dropdown and never
+  // scanned.
+  ShowInlineQrCode(delegate.get());
+
+  EXPECT_CALL(start_over_callback, Run());
+  delegate->OnStartOver();
+
+  histogram_tester_.ExpectUniqueSample(kEngagement, Engagement::kNoScanDetected,
+                                       1);
+
+  // Second attempt: the QR code is shown again and scanned.
+  ShowInlineQrCode(delegate.get());
+  ScanQrCode(delegate.get());
+  delegate.reset();
+
+  histogram_tester_.ExpectBucketCount(kEngagement, Engagement::kScanDetected,
+                                      1);
+  histogram_tester_.ExpectTotalCount(kEngagement, 2);
+}
+
+TEST_F(ChromeAuthenticatorRequestDelegateHybridPasskeyEngagementTest,
+       NotChromeSigninRequestDoesNotRecordEngagement) {
+  std::unique_ptr<content::WebContents> non_signin_web_contents =
+      CreateTestWebContents();
+  MockCableDiscoveryFactory discovery_factory;
+  auto delegate = std::make_unique<ChromeAuthenticatorRequestDelegate>(
+      non_signin_web_contents->GetPrimaryMainFrame());
+  delegate->SetRelyingPartyId("example.com");
+  delegate->ConfigureDiscoveries(
+      url::Origin::Create(GURL("https://example.com")), "https://example.com",
+      content::AuthenticatorRequestClientDelegate::RequestSource::
+          kWebAuthentication,
+      device::FidoRequestType::kGetAssertion,
+      device::ResidentKeyRequirement::kRequired,
+      device::UserVerificationRequirement::kRequired,
+      /*cmtg_key_requested=*/false,
+      /*user_name=*/std::nullopt,
+      /*is_enclave_authenticator_available=*/false, &discovery_factory);
+
+  ShowInlineQrCode(delegate.get());
+  delegate.reset();
+
+  histogram_tester_.ExpectTotalCount(kEngagement, 0);
+}
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace

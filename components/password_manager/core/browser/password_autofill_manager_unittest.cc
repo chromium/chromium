@@ -2032,6 +2032,29 @@ TEST_F(PasswordAutofillManagerTest, WebAuthnSuggestionsLogMetrics) {
   }
 }
 
+TEST_F(PasswordAutofillManagerTest,
+       ShowingPasskeyQrCodeSuggestionNotifiesCredentialsDelegate) {
+  TestPasswordManagerClient client;
+  NiceMock<MockAutofillClient> autofill_client;
+  InitializePasswordAutofillManager(&client, &autofill_client);
+
+  // A dropdown that does not contain the QR code suggestion is not reported.
+  EXPECT_CALL(*webauthn_credentials_delegate_, OnPasskeyQrCodeSuggestionShown)
+      .Times(0);
+  std::vector<Suggestion> suggestions = {
+      Suggestion(autofill::SuggestionType::kPasswordEntry)};
+  password_autofill_manager_->OnSuggestionsShown(suggestions,
+                                                 /*metadata=*/{});
+  testing::Mock::VerifyAndClearExpectations(
+      webauthn_credentials_delegate_.get());
+
+  // A dropdown that does contain it is reported once, when it is shown.
+  EXPECT_CALL(*webauthn_credentials_delegate_, OnPasskeyQrCodeSuggestionShown);
+  suggestions.emplace_back(autofill::SuggestionType::kWebauthnPasskeyQrCode);
+  password_autofill_manager_->OnSuggestionsShown(suggestions,
+                                                 /*metadata=*/{});
+}
+
 // Test that the AutofillSuggestionAvailability is set according to the popup
 // availability.
 TEST_F(PasswordAutofillManagerTest,
