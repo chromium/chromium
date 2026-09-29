@@ -102,15 +102,17 @@ found in the LICENSE file.
 
             <include
                 layout="@layout/fusebox_list_item"
-                android:id="@+id/fusebox_pick_file_button"
+                android:id="@+id/fusebox_pick_file_button_accordion"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/listItemHeight"/>
+                android:layout_height="?attr/listItemHeight"
+                android:visibility="gone"/>
 
             <include
                 layout="@layout/fusebox_list_item"
-                android:id="@+id/fusebox_pick_drive_button"
+                android:id="@+id/fusebox_pick_drive_button_accordion"
                 android:layout_width="match_parent"
-                android:layout_height="?attr/listItemHeight"/>
+                android:layout_height="?attr/listItemHeight"
+                android:visibility="gone"/>
 
             <View
                 style="@style/Fusebox.PopupMenu.Divider"

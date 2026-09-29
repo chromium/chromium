@@ -526,6 +526,14 @@ public class OmniboxFeatures {
     }
 
     /**
+     * Returns whether the popup has a pinned section between the attachments and the "More options"
+     * button, which holds the pinned current tab and pinned tools.
+     */
+    public static boolean hasFuseboxPinnedSection() {
+        return sOmniboxFuseboxPopupVariations.isEnabled() && !shouldUseScrollableCarousel();
+    }
+
+    /**
      * Checks whether the fusebox is enabled for the current combination of context, device and flag
      * state, disabling the fusebox on unsupported device and experience configurations.
      */

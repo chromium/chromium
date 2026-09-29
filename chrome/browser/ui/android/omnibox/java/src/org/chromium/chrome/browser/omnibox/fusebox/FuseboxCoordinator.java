@@ -233,10 +233,7 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
 
     /** Returns where the "add current tab" button should be placed within the popup. */
     static @CurrentTabPlacement int resolveCurrentTabPlacement() {
-        if (!OmniboxFeatures.sOmniboxFuseboxPopupVariations.isEnabled()
-                || OmniboxFeatures.shouldUseScrollableCarousel()) {
-            return CurrentTabPlacement.WITH_ATTACHMENTS;
-        }
+        if (!OmniboxFeatures.hasFuseboxPinnedSection()) return CurrentTabPlacement.WITH_ATTACHMENTS;
         return OmniboxFeatures.shouldPutCurrentTabFirst()
                 ? CurrentTabPlacement.ABOVE_ATTACHMENTS
                 : CurrentTabPlacement.BELOW_ATTACHMENTS;

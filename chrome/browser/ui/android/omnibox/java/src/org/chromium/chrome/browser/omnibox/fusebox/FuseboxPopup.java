@@ -166,8 +166,20 @@ class FuseboxPopup {
         mTabButton = contentView.findViewById(R.id.fusebox_pick_tabs_button);
         mCameraButton = contentView.findViewById(R.id.fusebox_camera_button);
         mGalleryButton = contentView.findViewById(R.id.fusebox_pick_picture_button);
-        mFileButton = contentView.findViewById(R.id.fusebox_pick_file_button);
-        mDriveButton = contentView.findViewById(R.id.fusebox_pick_drive_button);
+        // Only the carousel layouts have file/drive copies. The vertical layout relies on the
+        // accordion copies, which directly follow it.
+        boolean fileAndDriveInCarousel =
+                currentTabPlacement == CurrentTabPlacement.WITH_ATTACHMENTS && useCarousel;
+        mFileButton =
+                contentView.findViewById(
+                        fileAndDriveInCarousel
+                                ? R.id.fusebox_pick_file_button
+                                : R.id.fusebox_pick_file_button_accordion);
+        mDriveButton =
+                contentView.findViewById(
+                        fileAndDriveInCarousel
+                                ? R.id.fusebox_pick_drive_button
+                                : R.id.fusebox_pick_drive_button_accordion);
         mMoreOptionsButton = contentView.findViewById(R.id.fusebox_more_options_button);
         mAccordionContainer = contentView.findViewById(R.id.fusebox_accordion_container);
         mToolsDivider = contentView.findViewById(R.id.fusebox_tools_divider);

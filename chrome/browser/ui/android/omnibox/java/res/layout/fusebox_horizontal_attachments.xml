@@ -35,4 +35,16 @@ found in the LICENSE file.
         layout="@layout/fusebox_horizontal_attachment_item"
         style="@style/Fusebox.CarouselItem.Weighted"
         android:id="@+id/fusebox_pick_tabs_button"/>
+
+    <include
+        layout="@layout/fusebox_horizontal_attachment_item"
+        style="@style/Fusebox.CarouselItem.Weighted"
+        android:id="@+id/fusebox_pick_file_button"
+        android:visibility="gone"/>
+
+    <include
+        layout="@layout/fusebox_horizontal_attachment_item"
+        style="@style/Fusebox.CarouselItem.Weighted"
+        android:id="@+id/fusebox_pick_drive_button"
+        android:visibility="gone"/>
 </LinearLayout>

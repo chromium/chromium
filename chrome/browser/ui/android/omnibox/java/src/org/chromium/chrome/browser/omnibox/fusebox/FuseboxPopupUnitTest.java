@@ -342,6 +342,41 @@ public class FuseboxPopupUnitTest {
     }
 
     @Test
+    public void fileAndDrive_groupedCarousel_resolvesCarouselSlots() {
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ true,
+                /* useCarousel= */ true,
+                /* useScrollableCarousel= */ false,
+                CurrentTabPlacement.WITH_ATTACHMENTS);
+        assertEquals(R.id.fusebox_pick_file_button, mFuseboxPopup.mFileButton.getId());
+        assertEquals(R.id.fusebox_pick_drive_button, mFuseboxPopup.mDriveButton.getId());
+        assertEquals(mFuseboxPopup.mAttachmentsContainer, mFuseboxPopup.mFileButton.getParent());
+    }
+
+    @Test
+    public void fileAndDrive_notGrouped_resolvesAccordionSlots() {
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ true,
+                /* useCarousel= */ true,
+                /* useScrollableCarousel= */ false,
+                CurrentTabPlacement.BELOW_ATTACHMENTS);
+        assertEquals(R.id.fusebox_pick_file_button_accordion, mFuseboxPopup.mFileButton.getId());
+        assertEquals(R.id.fusebox_pick_drive_button_accordion, mFuseboxPopup.mDriveButton.getId());
+        assertEquals(mFuseboxPopup.mAccordionContainer, mFuseboxPopup.mFileButton.getParent());
+    }
+
+    @Test
+    public void fileAndDrive_groupedVertical_resolvesAccordionSlots() {
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ false,
+                /* useCarousel= */ false,
+                /* useScrollableCarousel= */ false,
+                CurrentTabPlacement.WITH_ATTACHMENTS);
+        assertEquals(R.id.fusebox_pick_file_button_accordion, mFuseboxPopup.mFileButton.getId());
+        assertEquals(R.id.fusebox_pick_drive_button_accordion, mFuseboxPopup.mDriveButton.getId());
+    }
+
+    @Test
     public void currentTabPlacement_belowAttachments_resolvesPinnedSlotWithoutDivider() {
         recreateFuseboxPopup(
                 /* isBottomSheet= */ false,

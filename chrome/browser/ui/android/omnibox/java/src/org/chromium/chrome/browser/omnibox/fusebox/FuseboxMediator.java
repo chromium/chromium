@@ -733,16 +733,6 @@ import java.util.function.Supplier;
         addTabAttachment(tab, FuseboxAttachmentButtonType.CURRENT_TAB);
     }
 
-    /**
-     * Returns whether the popup has a pinned section between the attachments and the "More options"
-     * button, which holds the pinned current tab and pinned tools.
-     */
-    private boolean hasPinnedSection() {
-        return OmniboxFeatures.sOmniboxFuseboxPopupVariations.isEnabled()
-                && !OmniboxFeatures.shouldUseScrollableCarousel()
-                && !mIsDesktopPlatform;
-    }
-
     private void updateModelForRecentTabs() {
         if (!isInInputSession() || !mIsDesktopPlatform) return;
         var selector = mTabModelSelectorSupplier.get();
@@ -1389,7 +1379,7 @@ import java.util.function.Supplier;
         List<PopupButtonData> toolButtonDataList = new ArrayList<>();
         List<PopupButtonData> pinnedToolButtonDataList = new ArrayList<>();
         if (!mIsDesktopPlatform) {
-            if (hasPinnedSection()) {
+            if (OmniboxFeatures.hasFuseboxPinnedSection()) {
                 pinnedToolButtonDataList.add(createAiModeToolButtonData());
             } else {
                 toolButtonDataList.add(createAiModeToolButtonData());
