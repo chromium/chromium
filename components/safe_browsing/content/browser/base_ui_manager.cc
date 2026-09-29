@@ -435,12 +435,9 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
       resource.navigation_id.has_value() &&
       report_sent_navigation_ids_.contains(resource.navigation_id.value());
   if (resource.threat_type != SB_THREAT_TYPE_SAFE &&
-      resource.threat_type != SB_THREAT_TYPE_BILLING &&
       resource.threat_type != SB_THREAT_TYPE_MANAGED_POLICY_BLOCK &&
       resource.threat_type != SB_THREAT_TYPE_MANAGED_POLICY_WARN &&
       !already_reported) {
-    // TODO(vakh): crbug/883462: The reports for SB_THREAT_TYPE_BILLING should
-    // be disabled for M70 but enabled for a later release (M71?).
     if (base::FeatureList::IsEnabled(
             safe_browsing::kCreateWarningShownClientSafeBrowsingReports)) {
       CreateAndSendClientSafeBrowsingWarningShownReport(resource);
