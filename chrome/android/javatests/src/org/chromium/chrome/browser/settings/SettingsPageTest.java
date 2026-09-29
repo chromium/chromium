@@ -70,6 +70,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -878,7 +879,12 @@ public class SettingsPageTest {
                 .check(doesNotExist());
     }
 
-    /** Regression test for https://crbug.com/549509308. */
+    /**
+     * Regression test for https://crbug.com/549509308.
+     *
+     * <p>TODO(crbug.com/521895796): Remove once SettingsInTabUrlNav is enabled by default, in favor
+     * of {@link #testSearchBoxAlignmentInPortrait_urlNav()}.
+     */
     @Test
     @MediumTest
     @Restriction({
@@ -886,40 +892,9 @@ public class SettingsPageTest {
         // Automotive devices do not support display rotation.
         DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
     })
+    @DisableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
     public void testSearchBoxAlignmentInPortrait() {
-        // Ensure portrait.
-        ensureActivityOrientation(Configuration.ORIENTATION_PORTRAIT);
-
-        // Load settings.
-        mActivityTestRule.loadUrl("chrome-native://settings/");
-        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
-
-        // Capture search_box screen bounds.
-        Rect searchBoxBounds = getViewScreenBounds(R.id.search_box);
-
-        // Tap on search box to enter search state.
-        onViewWaiting(withId(R.id.search_box)).perform(click());
-        onViewWaiting(withId(R.id.search_query_container)).check(matches(isDisplayed()));
-
-        // Verify search_query_container matches search_box horizontal screen bounds.
-        Rect queryBounds = getViewScreenBounds(R.id.search_query_container);
-        assertEquals(
-                "Search query container should align horizontally with search box",
-                searchBoxBounds.left,
-                queryBounds.left);
-        assertEquals(
-                "Search query container should match search box width",
-                searchBoxBounds.width(),
-                queryBounds.width());
-
-        // Type "Theme" in search query.
-        onViewWaiting(withId(R.id.search_query)).perform(replaceText("Theme"), closeSoftKeyboard());
-
-        // Wait for search results to appear and click "Theme".
-        onViewWaiting(allOf(withId(android.R.id.title), withText(R.string.theme_settings)))
-                .check(matches(isDisplayed()));
-        onView(allOf(withId(android.R.id.title), withText(R.string.theme_settings)))
-                .perform(click());
+        Rect searchBoxBounds = openThemeSettingsFromSearchInPortrait();
 
         // Simulate theme switch / activity recreation.
         mActivityTestRule.recreateActivity();
@@ -930,21 +905,83 @@ public class SettingsPageTest {
         // Exit search state back to MainSettings.
         Espresso.pressBack();
 
-        // Tap on search box again.
+        tapSearchBoxAndAssertQueryAlignment(searchBoxBounds, "after navigating back");
+    }
+
+    /**
+     * Regression test for https://crbug.com/549509308, with URL navigation.
+     *
+     * <p>Search is not part of the URL, so it does not survive activity recreation: the page is
+     * rebuilt from the committed URL, chrome://settings.
+     */
+    @Test
+    @MediumTest
+    @Restriction({
+        DeviceFormFactor.ONLY_TABLET,
+        // Automotive devices do not support display rotation.
+        DeviceRestriction.RESTRICTION_TYPE_NON_AUTO,
+    })
+    @EnableFeatures(ChromeFeatureList.SETTINGS_IN_TAB_URL_NAV)
+    public void testSearchBoxAlignmentInPortrait_urlNav() {
+        Rect searchBoxBounds = openThemeSettingsFromSearchInPortrait();
+
+        // Simulate theme switch / activity recreation.
+        mActivityTestRule.recreateActivity();
+
+        // Search is closed, leaving MainSettings.
+        onViewWaiting(withId(R.id.search_box)).check(matches(isDisplayed()));
+        onView(withId(R.id.search_query_container)).check(matches(not(isDisplayed())));
+
+        tapSearchBoxAndAssertQueryAlignment(searchBoxBounds, "after activity recreation");
+    }
+
+    /**
+     * Loads settings in portrait, enters search, and opens ThemeSettings from the search results.
+     *
+     * @return The screen bounds of the search box before entering search.
+     */
+    private Rect openThemeSettingsFromSearchInPortrait() {
+        // Ensure portrait.
+        ensureActivityOrientation(Configuration.ORIENTATION_PORTRAIT);
+
+        // Load settings.
+        mActivityTestRule.loadUrl("chrome-native://settings/");
+        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+
+        // Capture search_box screen bounds.
+        Rect searchBoxBounds = getViewScreenBounds(R.id.search_box);
+
+        tapSearchBoxAndAssertQueryAlignment(searchBoxBounds, "on entering search");
+
+        // Type "Theme" in search query.
+        onViewWaiting(withId(R.id.search_query)).perform(replaceText("Theme"), closeSoftKeyboard());
+
+        // Wait for search results to appear and click "Theme".
+        onViewWaiting(allOf(withId(android.R.id.title), withText(R.string.theme_settings)))
+                .check(matches(isDisplayed()));
+        onView(allOf(withId(android.R.id.title), withText(R.string.theme_settings)))
+                .perform(click());
+
+        return searchBoxBounds;
+    }
+
+    /**
+     * Taps the search box to enter search state, and verifies that search_query_container matches
+     * the given search_box horizontal screen bounds.
+     */
+    private void tapSearchBoxAndAssertQueryAlignment(Rect searchBoxBounds, String when) {
         onViewWaiting(withId(R.id.search_box)).perform(click());
         onViewWaiting(withId(R.id.search_query_container)).check(matches(isDisplayed()));
 
-        // Verify search_query_container still matches search_box horizontal screen bounds.
-        Rect queryBoundsAfterBack = getViewScreenBounds(R.id.search_query_container);
+        Rect queryBounds = getViewScreenBounds(R.id.search_query_container);
         assertEquals(
-                "Search query container should align horizontally with search box after navigating"
-                        + " back",
+                "Search query container should align horizontally with search box " + when,
                 searchBoxBounds.left,
-                queryBoundsAfterBack.left);
+                queryBounds.left);
         assertEquals(
-                "Search query container should match search box width after navigating back",
+                "Search query container should match search box width " + when,
                 searchBoxBounds.width(),
-                queryBoundsAfterBack.width());
+                queryBounds.width());
     }
 
     /** Regression test for https://crbug.com/548848118. */
