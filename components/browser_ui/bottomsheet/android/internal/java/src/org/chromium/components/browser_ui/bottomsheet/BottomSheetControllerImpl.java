@@ -563,7 +563,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     }
 
     public void endAnimationsForTesting() {
-        assumeNonNull(mBottomSheet).endAnimations();
+        assumeNonNull(mBottomSheet).endAnimationsForTesting();
     }
 
     @VisibleForTesting

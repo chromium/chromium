@@ -15,10 +15,14 @@ import org.chromium.build.annotations.NullMarked;
 @JNINamespace("browser_ui")
 @NullMarked
 public final class BottomSheetFeatureMap extends FeatureMap {
+    public static final String BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN =
+            "BottomSheetDeferContentSwapOnHidden";
     public static final String BOTTOM_SHEET_TYPES = "BottomSheetTypes";
 
     private static final BottomSheetFeatureMap sInstance = new BottomSheetFeatureMap();
 
+    public static final MutableFlagWithSafeDefault sBottomSheetDeferContentSwapOnHidden =
+            newMutableFlagWithSafeDefault(BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN, true);
     public static final MutableFlagWithSafeDefault sBottomSheetTypes =
             newMutableFlagWithSafeDefault(BOTTOM_SHEET_TYPES, false);
 

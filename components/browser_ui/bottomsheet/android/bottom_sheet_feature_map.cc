@@ -18,6 +18,7 @@ namespace {
 // components/browser_ui/bottomsheet/android/features.h or in other
 // locations in the code base.
 const base::Feature* const kFeaturesExposedToJava[] = {
+    &kBottomSheetDeferContentSwapOnHidden,
     &kBottomSheetTypes,
 };
 

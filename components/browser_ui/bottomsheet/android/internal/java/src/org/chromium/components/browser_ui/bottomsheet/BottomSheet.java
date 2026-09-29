@@ -78,6 +78,12 @@ class BottomSheet extends BottomSheetView
     /** The desired height of a content that has just been shown or whose height was invalidated. */
     private static final float HEIGHT_UNSPECIFIED = -1.0f;
 
+    /**
+     * The maximum number of settle animations {@link #endAnimationsForTesting()} ends, in case
+     * observers keep starting new ones.
+     */
+    static final int MAX_ANIMATIONS_ENDED_FOR_TESTING = 8;
+
     /** A means of reporting an exception/stack without crashing. */
     private static @Nullable Callback<Throwable> sExceptionReporter;
 
@@ -251,10 +257,17 @@ class BottomSheet extends BottomSheetView
         endAnimations();
     }
 
-    /** Immediately end all animations and null the animators. */
+    /**
+     * Ends the current settle animation. An animation started while ending it is kept; see {@link
+     * #endAnimationsForTesting()}.
+     */
     void endAnimations() {
-        if (mSettleAnimator != null) mSettleAnimator.end();
-        mSettleAnimator = null;
+        ValueAnimator animator = mSettleAnimator;
+        if (animator == null) return;
+        animator.end();
+        // Ending the animation can synchronously start a new one, e.g. the next content's opening
+        // animation once the sheet is hidden. Don't drop it.
+        if (mSettleAnimator == animator) mSettleAnimator = null;
     }
 
     /** @return Whether the sheet is in the process of hiding. */
@@ -601,6 +614,18 @@ class BottomSheet extends BottomSheetView
     }
 
     /**
+     * Resets the target state once the sheet has settled. Observers may have started a new settle
+     * animation while being notified, e.g. for the next content once the sheet is hidden. Keep its
+     * target state.
+     */
+    private void resetTargetSheetStateIfSettled() {
+        if (!BottomSheetFeatureMap.sBottomSheetDeferContentSwapOnHidden.isEnabled()
+                || !isRunningSettleAnimation()) {
+            mMediator.setTargetSheetState(SheetState.NONE);
+        }
+    }
+
+    /**
      * Creates the sheet's animation to a target state.
      *
      * @param targetState The target state.
@@ -634,7 +659,7 @@ class BottomSheet extends BottomSheetView
                             // mCurrentOffsetPx and view translation.
                             setSheetOffsetFromBottom(getSheetHeightForState(targetState), reason);
                         }
-                        mMediator.setTargetSheetState(SheetState.NONE);
+                        resetTargetSheetStateIfSettled();
                     }
                 });
 
@@ -996,7 +1021,7 @@ class BottomSheet extends BottomSheetView
         } else {
             setSheetOffsetFromBottom(getSheetHeightForState(state), reason);
             setInternalCurrentState(getTargetSheetState(), reason);
-            mMediator.setTargetSheetState(SheetState.NONE);
+            resetTargetSheetStateIfSettled();
         }
     }
 
@@ -1697,6 +1722,16 @@ class BottomSheet extends BottomSheetView
 
     Rect getVisibleViewportRectForTesting() {
         return mVisibleViewportRect;
+    }
+
+    /** Ends settle animations until none is left, including ones started while ending another. */
+    void endAnimationsForTesting() {
+        for (int i = 0; mSettleAnimator != null; i++) {
+            if (i == MAX_ANIMATIONS_ENDED_FOR_TESTING) {
+                throw new IllegalStateException("Settle animations keep restarting.");
+            }
+            endAnimations();
+        }
     }
 
     /**

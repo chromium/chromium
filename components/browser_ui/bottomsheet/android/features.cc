@@ -8,6 +8,11 @@
 
 namespace browser_ui {
 
+// Kill switch for the fixes to how the bottom sheet hides one content and shows
+// the next queued content.
+BASE_FEATURE(kBottomSheetDeferContentSwapOnHidden,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kBottomSheetTypes, base::FEATURE_DISABLED_BY_DEFAULT);
 
 }  // namespace browser_ui

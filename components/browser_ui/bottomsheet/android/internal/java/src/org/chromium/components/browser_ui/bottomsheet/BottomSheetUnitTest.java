@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -58,6 +59,8 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -67,6 +70,9 @@ import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.util.ColorUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Unit tests for {@link BottomSheet}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -1422,6 +1428,152 @@ public class BottomSheetUnitTest {
         assertEquals(SheetState.HALF, mBottomSheet.getTargetSheetState());
         mBottomSheet.endAnimations();
         assertEquals(SheetState.HALF, mBottomSheet.getSheetState());
+    }
+
+    @Test
+    @EnableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testEndAnimations_KeepsAnimationStartedWhileEnding() {
+        doTestEndAnimationsKeepsAnimationStartedWhileEnding();
+    }
+
+    @Test
+    @DisableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testEndAnimations_DeferContentSwapDisabled_KeepsAnimationStartedWhileEnding() {
+        doTestEndAnimationsKeepsAnimationStartedWhileEnding();
+    }
+
+    @Test
+    @EnableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testSettleAnimationEnd_KeepsTargetStateOfAnimationStartedByObserver() {
+        // The end of the hide animation must not reset the target state of the animation to FULL
+        // that an observer started while being notified of HIDDEN.
+        assertEquals(List.of(SheetState.FULL), getTargetStatesWhenReopenedToFull());
+        assertEquals(SheetState.NONE, mBottomSheet.getTargetSheetState());
+    }
+
+    @Test
+    @DisableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testSettleAnimationEnd_DeferContentSwapDisabled_ResetsTargetState() {
+        assertEquals(List.of(SheetState.NONE), getTargetStatesWhenReopenedToFull());
+    }
+
+    @Test
+    @EnableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testNonAnimatedStateChange_KeepsTargetStateOfAnimationStartedByObserver() {
+        hideWithoutAnimationWhileObserverReopensToFull();
+
+        assertEquals(SheetState.SCROLLING, mBottomSheet.getSheetState());
+        assertEquals(SheetState.FULL, mBottomSheet.getTargetSheetState());
+        mBottomSheet.endAnimations();
+        assertEquals(SheetState.FULL, mBottomSheet.getSheetState());
+        assertEquals(SheetState.NONE, mBottomSheet.getTargetSheetState());
+    }
+
+    @Test
+    @DisableFeatures(BottomSheetFeatureMap.BOTTOM_SHEET_DEFER_CONTENT_SWAP_ON_HIDDEN)
+    public void testNonAnimatedStateChange_DeferContentSwapDisabled_ResetsTargetState() {
+        hideWithoutAnimationWhileObserverReopensToFull();
+
+        assertEquals(SheetState.SCROLLING, mBottomSheet.getSheetState());
+        assertEquals(SheetState.NONE, mBottomSheet.getTargetSheetState());
+    }
+
+    @Test
+    public void testEndAnimationsForTesting_ThrowsIfObserversKeepStartingAnimations() {
+        mBottomSheet.showContent(buildContent(/* supportsLargeFormFactor= */ false, 0.5f, 1.0f));
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+        int[] settleCount = new int[1];
+        // Reopens the sheet when hidden and hides it when opened, forever.
+        mBottomSheet.addObserver(
+                new BottomSheetObserver() {
+                    @Override
+                    public void onSheetStateChanged(
+                            @SheetState int newState, @StateChangeReason int reason) {
+                        if (newState != SheetState.HIDDEN && newState != SheetState.FULL) return;
+                        settleCount[0]++;
+                        mBottomSheet.setSheetState(
+                                newState == SheetState.HIDDEN ? SheetState.FULL : SheetState.HIDDEN,
+                                /* animate= */ true);
+                    }
+                });
+        mBottomSheet.setSheetState(SheetState.HIDDEN, true);
+
+        // endAnimations() only ends the current animation.
+        mBottomSheet.endAnimations();
+        assertEquals(1, settleCount[0]);
+        assertEquals(SheetState.SCROLLING, mBottomSheet.getSheetState());
+
+        assertThrows(IllegalStateException.class, mBottomSheet::endAnimationsForTesting);
+        assertEquals(1 + BottomSheet.MAX_ANIMATIONS_ENDED_FOR_TESTING, settleCount[0]);
+    }
+
+    private void doTestEndAnimationsKeepsAnimationStartedWhileEnding() {
+        mBottomSheet.showContent(buildContent(/* supportsLargeFormFactor= */ false, 0.5f, 1.0f));
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+        reopenSheetOnceWhenHidden(SheetState.FULL);
+
+        mBottomSheet.setSheetState(SheetState.HIDDEN, true);
+        // Ending the hide animation synchronously starts the animation back to FULL.
+        mBottomSheet.endAnimations();
+
+        assertEquals(SheetState.SCROLLING, mBottomSheet.getSheetState());
+
+        // The animation back to FULL was kept, so ending it settles the sheet.
+        mBottomSheet.endAnimations();
+
+        assertEquals(SheetState.FULL, mBottomSheet.getSheetState());
+        assertEquals(SheetState.NONE, mBottomSheet.getTargetSheetState());
+        assertEquals(
+                mBottomSheet.getSheetHeightForState(SheetState.FULL),
+                mBottomSheet.getCurrentOffsetPx(),
+                MathUtils.EPSILON);
+    }
+
+    /**
+     * Hides the sheet with an animation that an observer follows with an animation back to FULL,
+     * ends all animations and returns the target states seen when the sheet reached FULL.
+     */
+    private List<Integer> getTargetStatesWhenReopenedToFull() {
+        mBottomSheet.showContent(buildContent(/* supportsLargeFormFactor= */ false, 0.5f, 1.0f));
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+        reopenSheetOnceWhenHidden(SheetState.FULL);
+        List<Integer> targetStatesWhenFull = new ArrayList<>();
+        mBottomSheet.addObserver(
+                new BottomSheetObserver() {
+                    @Override
+                    public void onSheetStateChanged(
+                            @SheetState int newState, @StateChangeReason int reason) {
+                        if (newState != SheetState.FULL) return;
+                        targetStatesWhenFull.add(mBottomSheet.getTargetSheetState());
+                    }
+                });
+
+        mBottomSheet.setSheetState(SheetState.HIDDEN, true);
+        mBottomSheet.endAnimationsForTesting();
+        return targetStatesWhenFull;
+    }
+
+    /** Hides the sheet without animation while an observer starts an animation back to FULL. */
+    private void hideWithoutAnimationWhileObserverReopensToFull() {
+        mBottomSheet.showContent(buildContent(/* supportsLargeFormFactor= */ false, 0.5f, 1.0f));
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+        reopenSheetOnceWhenHidden(SheetState.FULL);
+
+        mBottomSheet.setSheetState(SheetState.HIDDEN, false);
+    }
+
+    /** Adds an observer that animates the sheet to {@code state} the first time it is hidden. */
+    private void reopenSheetOnceWhenHidden(@SheetState int state) {
+        mBottomSheet.addObserver(
+                new BottomSheetObserver() {
+                    @Override
+                    public void onSheetStateChanged(
+                            @SheetState int newState, @StateChangeReason int reason) {
+                        if (newState != SheetState.HIDDEN) return;
+                        mBottomSheet.removeObserver(this);
+                        mBottomSheet.setSheetState(state, /* animate= */ true);
+                    }
+                });
     }
 
     @Test
