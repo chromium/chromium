@@ -395,8 +395,17 @@ views::ProposedLayout VerticalTabStripRegionView::CalculateProposedLayout(
   const auto vertical_padding = GetLayoutConstant(
       LayoutConstant::kVerticalTabStripUncollapsedVerticalPadding);
 
+  const bool blending_with_organizer_tray =
+      !organizer_panel_view_ && organizer_panel_show_percent_ > 0.0;
+  const int blend_target_width = state_controller_->IsCollapsed()
+                                     ? kCollapsedWidth
+                                     : state_controller_->GetUncollapsedWidth();
+
   views::SizeBounds button_available_size = size_bounds;
-  if (button_available_size.width().is_bounded()) {
+  if (blending_with_organizer_tray) {
+    button_available_size.set_width(blend_target_width -
+                                    2 * horizontal_padding);
+  } else if (button_available_size.width().is_bounded()) {
     button_available_size.set_width(button_available_size.width() -
                                     2 * horizontal_padding);
   }
@@ -427,10 +436,12 @@ views::ProposedLayout VerticalTabStripRegionView::CalculateProposedLayout(
   layout.child_layouts.push_back(
       {.child_view = top_button_container_.get(),
        .visible = true,
-       .bounds =
-           gfx::Rect(horizontal_padding, 0,
-                     std::max(0, available.width() - 2 * horizontal_padding),
-                     button_size.height())});
+       .bounds = gfx::Rect(
+           horizontal_padding, 0,
+           blending_with_organizer_tray
+               ? button_size.width()
+               : std::max(0, available.width() - 2 * horizontal_padding),
+           button_size.height())});
   available.Inset(gfx::Insets::TLBR(button_size.height(), 0, 0, 0));
 
   // Just so that there's never a zero-size tabstrip.
@@ -438,6 +449,9 @@ views::ProposedLayout VerticalTabStripRegionView::CalculateProposedLayout(
 
   // Lay out the contents and organizer panels (if present) in the remaining
   // space. A region that is entirely slid out of the visible area is hidden.
+  if (blending_with_organizer_tray) {
+    available.set_width(blend_target_width);
+  }
   gfx::Rect contents_bounds = available;
   gfx::Rect organizer_bounds = available;
   const int adjustment =
