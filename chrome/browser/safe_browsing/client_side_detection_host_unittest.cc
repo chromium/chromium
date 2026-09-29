@@ -4606,8 +4606,21 @@ class ClientSideDetectionHostScamDetectionTest
       std::optional<IntelligentScanInfo::NoInfoReason> expected_no_info_reason,
       std::optional<std::string> expected_llama_forced_trigger_info_trigger_url,
       bool returned_is_phishing,
+      IntelligentScanVerdict returned_intelligent_scan_verdict) {
+    SetSendClientReportPhishingRequestCallback(
+        has_expected_brand_and_intent, expected_no_info_reason,
+        expected_llama_forced_trigger_info_trigger_url, returned_is_phishing,
+        returned_intelligent_scan_verdict,
+        has_expected_brand_and_intent ? example_scam_score_ : std::nullopt);
+  }
+
+  void SetSendClientReportPhishingRequestCallback(
+      bool has_expected_brand_and_intent,
+      std::optional<IntelligentScanInfo::NoInfoReason> expected_no_info_reason,
+      std::optional<std::string> expected_llama_forced_trigger_info_trigger_url,
+      bool returned_is_phishing,
       IntelligentScanVerdict returned_intelligent_scan_verdict,
-      std::optional<float> expected_scam_score = std::nullopt) {
+      std::optional<float> expected_scam_score) {
     EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(_, _, _))
         .Times(1)
         .WillOnce([=, this](std::unique_ptr<ClientPhishingRequest> request,
