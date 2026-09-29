@@ -470,6 +470,24 @@ TEST_P(RequestManagerTest, SimpleCaptureTest) {
   DoLoop();
 }
 
+// A CameraModule response is structurally valid even when the declared entry
+// type and byte-vector length do not match the native type required by the tag.
+// RequestManager must not read an int32_t from a one-byte allocation.
+TEST_P(RequestManagerTest, MalformedPartialResultCountMetadata) {
+  auto static_metadata = GetFakeStaticMetadata(/*partial_result_count=*/1);
+  auto& partial_count = static_metadata->entries->at(0);
+  ASSERT_EQ(
+      partial_count->tag,
+      cros::mojom::CameraMetadataTag::ANDROID_REQUEST_PARTIAL_RESULT_COUNT);
+  partial_count->type = cros::mojom::EntryType::TYPE_BYTE;
+  partial_count->count = 1;
+  partial_count->data = std::vector<uint8_t>{1};
+
+  request_manager_->SetUpStreamsAndBuffers(
+      capture_params_, std::move(static_metadata),
+      PrepareCaptureStream(/*max_buffers=*/1));
+}
+
 // Test that the RequestManager submits a captured result only after all
 // partial metadata are received.
 TEST_P(RequestManagerTest, PartialResultTest) {

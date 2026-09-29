@@ -6,8 +6,11 @@
 #define MEDIA_CAPTURE_VIDEO_CHROMEOS_CAMERA_METADATA_UTILS_H_
 
 #include <algorithm>
+#include <type_traits>
 
 #include "base/compiler_specific.h"
+#include "base/logging.h"
+#include "base/numerics/checked_math.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/video/chromeos/mojom/camera_metadata.mojom.h"
 
@@ -44,8 +47,15 @@ CAPTURE_EXPORT base::span<T> GetMetadataEntryAsSpan(
   if (entry == nullptr) {
     return {};
   }
+  base::CheckedNumeric<size_t> expected_bytes = (*entry)->count;
+  expected_bytes *= sizeof(T);
+  if ((*entry)->type != entry_type_of<std::remove_const_t<T>>::value ||
+      !expected_bytes.IsValid() ||
+      expected_bytes.ValueOrDie() != (*entry)->data.size()) {
+    LOG(WARNING) << "Invalid encoding for tag " << static_cast<int>(tag);
+    return {};
+  }
   auto& data = (*entry)->data;
-  CHECK_EQ(data.size() % sizeof(T), 0u);
   return UNSAFE_TODO(
       {reinterpret_cast<T*>(data.data()), data.size() / sizeof(T)});
 }

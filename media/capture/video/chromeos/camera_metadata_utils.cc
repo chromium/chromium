@@ -18,6 +18,10 @@ const cros::mojom::EntryType entry_type_of<bool>::value =
     cros::mojom::EntryType::TYPE_BYTE;
 
 template <>
+const cros::mojom::EntryType entry_type_of<char>::value =
+    cros::mojom::EntryType::TYPE_BYTE;
+
+template <>
 const cros::mojom::EntryType entry_type_of<uint8_t>::value =
     cros::mojom::EntryType::TYPE_BYTE;
 

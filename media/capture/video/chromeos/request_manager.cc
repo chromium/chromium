@@ -175,12 +175,11 @@ void RequestManager::SetUpStreamsAndBuffers(
 
   // The partial result count metadata is optional; defaults to 1 in case it
   // is not set in the static metadata.
-  const cros::mojom::CameraMetadataEntryPtr* partial_count = GetMetadataEntry(
+  base::span<int32_t> partial_count = GetMetadataEntryAsSpan<int32_t>(
       static_metadata,
       cros::mojom::CameraMetadataTag::ANDROID_REQUEST_PARTIAL_RESULT_COUNT);
-  if (partial_count) {
-    partial_result_count_ =
-        *UNSAFE_TODO(reinterpret_cast<int32_t*>((*partial_count)->data.data()));
+  if (partial_count.size() == 1u) {
+    partial_result_count_ = partial_count[0];
   }
 
   auto pipeline_depth = GetMetadataEntryAsSpan<uint8_t>(
