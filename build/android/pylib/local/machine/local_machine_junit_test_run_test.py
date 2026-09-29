@@ -15,7 +15,7 @@ class LocalMachineJunitTestRunTests(unittest.TestCase):
     def testGroupTests(self):
         # Tests grouping tests when classes_per_job is exceeded.
         # All tests are from same class so should be in a single job.
-        MAX_TESTS_PER_JOB = 3
+        TARGET_TESTS_PER_JOB = 3
         json_config = {
             'configs': {
                 'config1': {
@@ -29,7 +29,7 @@ class LocalMachineJunitTestRunTests(unittest.TestCase):
             }
         }
         actual = local_machine_junit_test_run.GroupTests(
-            json_config, MAX_TESTS_PER_JOB
+            json_config, TARGET_TESTS_PER_JOB
         )
 
         expected = [
@@ -137,9 +137,21 @@ class LocalMachineJunitTestRunTests(unittest.TestCase):
             MagicMock(), test_instance
         )
 
-        with patch('multiprocessing.cpu_count', return_value=16):
+        mock_vm_64gb = MagicMock(available=64 * (1024**3))
+        with (
+            patch('multiprocessing.cpu_count', return_value=16),
+            patch('psutil.virtual_memory', return_value=mock_vm_64gb),
+        ):
             self.assertEqual(obj._ChooseNumWorkers(32), 16)
             self.assertEqual(obj._ChooseNumWorkers(8), 8)
+
+        # Memory constraint caps workers below cpu_count (12GB // 2GB = 6)
+        mock_vm_12gb = MagicMock(available=12 * (1024**3))
+        with (
+            patch('multiprocessing.cpu_count', return_value=16),
+            patch('psutil.virtual_memory', return_value=mock_vm_12gb),
+        ):
+            self.assertEqual(obj._ChooseNumWorkers(32), 6)
 
         # Debug socket forces 1 worker
         test_instance.debug_socket = '8701'
@@ -153,10 +165,16 @@ class LocalMachineJunitTestRunTests(unittest.TestCase):
 
         # Values less than 1 fall back to auto-select
         test_instance.shards = 0
-        with patch('multiprocessing.cpu_count', return_value=16):
+        with (
+            patch('multiprocessing.cpu_count', return_value=16),
+            patch('psutil.virtual_memory', return_value=mock_vm_64gb),
+        ):
             self.assertEqual(obj._ChooseNumWorkers(32), 16)
         test_instance.shards = -1
-        with patch('multiprocessing.cpu_count', return_value=16):
+        with (
+            patch('multiprocessing.cpu_count', return_value=16),
+            patch('psutil.virtual_memory', return_value=mock_vm_64gb),
+        ):
             self.assertEqual(obj._ChooseNumWorkers(32), 16)
 
 

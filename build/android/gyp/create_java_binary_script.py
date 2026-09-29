@@ -53,6 +53,7 @@ parser.add_argument('--classpath')
 # Test_runner parses the classpath for sharding junit tests.
 known_args, unknown_args = parser.parse_known_args(sys.argv[1:])
 
+{extra_flags}
 if known_args.jvm_args:
   jvm_arguments = known_args.jvm_args.strip('"').split()
   java_cmd.extend(jvm_arguments)
@@ -66,7 +67,6 @@ else:
 if known_args.classpath:
   classpath += [known_args.classpath]
 
-{extra_flags}
 java_cmd += ['-classpath', ':'.join(classpath), \"{main_class}\"]
 java_cmd.extend(extra_program_args)
 java_cmd.extend(jar_arguments)
