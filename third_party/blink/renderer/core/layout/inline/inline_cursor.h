@@ -9,6 +9,7 @@
 
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/stack_allocated.h"
@@ -271,10 +272,7 @@ class CORE_EXPORT InlineCursor {
   // creates a cursor without the root.
   bool HasRoot() const { return fragment_items_; }
 
-  const FragmentItems& Items() const {
-    DCHECK(fragment_items_);
-    return *fragment_items_;
-  }
+  const FragmentItems& Items() const { return CHECK_DEREF(fragment_items_); }
 
   // Returns the |PhysicalBoxFragment| that owns |Items|.
   const PhysicalBoxFragment& ContainerFragment() const {
