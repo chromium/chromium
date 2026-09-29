@@ -657,6 +657,11 @@ export class ContentController {
     this.nodeStore_.setDomNode(textNode, nodeId);
     const isOverline = this.contentBrowserProxy_.isOverline(nodeId);
     const shouldBold = this.contentBrowserProxy_.shouldBold(nodeId);
+    const isPdf = this.visualBrowserProxy_.isPdf();
+    const isSuperscript =
+        isPdf && this.contentBrowserProxy_.isSuperscript(nodeId);
+    const isSubscript = isPdf && !isSuperscript &&
+        this.contentBrowserProxy_.isSubscript(nodeId);
 
     // When creating text nodes, save the first text node id. We need this
     // node id to call InitAXPosition in playSpeech. If it's not saved here,
@@ -668,17 +673,29 @@ export class ContentController {
       this.speechController_.initializeSpeechTree(textNode);
     }
 
-    if (!shouldBold && !isOverline) {
+    if (!shouldBold && !isOverline && !isSuperscript && !isSubscript) {
       return textNode;
     }
 
-    const htmlTag = shouldBold ? 'b' : 'span';
-    const parentElement = document.createElement(htmlTag);
-    if (isOverline) {
-      parentElement.style.textDecoration = 'overline';
+    let node: Node = textNode;
+    if (shouldBold || isOverline) {
+      const htmlTag = shouldBold ? 'b' : 'span';
+      const parentElement = document.createElement(htmlTag);
+      if (isOverline) {
+        parentElement.style.textDecoration = 'overline';
+      }
+      parentElement.appendChild(node);
+      node = parentElement;
     }
-    parentElement.appendChild(textNode);
-    return parentElement;
+    // Superscripts and subscripts are wrapped rather than given an html tag by
+    // getHtmlTag so that the text node itself, and not an element, stays mapped
+    // to the AXNode.
+    if (isSuperscript || isSubscript) {
+      const supOrSub = document.createElement(isSuperscript ? 'sup' : 'sub');
+      supOrSub.appendChild(node);
+      node = supOrSub;
+    }
+    return node;
   }
 
   updateLinks(shadowRoot?: ShadowRoot) {

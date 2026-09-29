@@ -612,6 +612,47 @@ TEST_F(ReadAnythingNodeUtilsTest, GetHtmlTagForPdf_StaticTextReturnsEmptyTag) {
   EXPECT_EQ(a11y::GetHtmlTagForPDF(&node, "span"), "");
 }
 
+TEST_F(ReadAnythingNodeUtilsTest, GetHtmlTagForPdf_StaticTextScriptHasNoTag) {
+  base::test::ScopedFeatureList feature_list(
+      features::kPdfAccessibilityHeuristicEnhancements);
+
+  // Superscripts and subscripts are wrapped by the WebUI around the text node
+  // itself, so the static text node must keep an empty tag. Otherwise reading
+  // mode builds an element and recurses into the node's inline text boxes,
+  // which it does not render, dropping the text.
+  ui::AXNodeData sup_data = test::TextNode(2);
+  sup_data.role = ax::mojom::Role::kStaticText;
+  sup_data.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
+  ui::AXTree sup_tree;
+  ui::AXNode sup_node(&sup_tree, nullptr, 2, 0);
+  sup_node.SetData(std::move(sup_data));
+  EXPECT_EQ(a11y::GetHtmlTagForPDF(&sup_node, "span"), "");
+
+  ui::AXNodeData sub_data = test::TextNode(3);
+  sub_data.role = ax::mojom::Role::kStaticText;
+  sub_data.SetTextPosition(ax::mojom::TextPosition::kSubscript);
+  ui::AXTree sub_tree;
+  ui::AXNode sub_node(&sub_tree, nullptr, 3, 0);
+  sub_node.SetData(std::move(sub_data));
+  EXPECT_EQ(a11y::GetHtmlTagForPDF(&sub_node, "span"), "");
+}
+
+TEST_F(ReadAnythingNodeUtilsTest, IsSubscript) {
+  ui::AXNodeData data = test::TextNode(2);
+  ui::AXTree tree;
+  ui::AXNode node(&tree, nullptr, 2, 0);
+  node.SetData(data);
+  EXPECT_FALSE(a11y::IsSubscript(&node));
+
+  data.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
+  node.SetData(data);
+  EXPECT_FALSE(a11y::IsSubscript(&node));
+
+  data.SetTextPosition(ax::mojom::TextPosition::kSubscript);
+  node.SetData(data);
+  EXPECT_TRUE(a11y::IsSubscript(&node));
+}
+
 TEST_F(ReadAnythingNodeUtilsTest, GetHtmlTagForPdf_ContentInfoReturnsBr) {
   const std::u16string ending_text =
       l10n_util::GetStringUTF16(IDS_PDF_OCR_RESULT_END);

@@ -478,6 +478,51 @@ suite('ContentController', () => {
       assertEquals('overline', root.style.textDecoration);
     });
 
+    test('builds a superscript text node', () => {
+      visualBrowserProxy.pdf = true;
+      const text = '1';
+      contentBrowserProxy.textContentMap = {[contentBrowserProxy.rootId]: text};
+      contentBrowserProxy.isSuperscriptMap = {
+        [contentBrowserProxy.rootId]: true,
+      };
+
+      const root = contentController.updateContent();
+
+      assertTrue(!!root);
+      assertEquals('SUP', root.nodeName);
+      assertEquals(text, root.textContent);
+    });
+
+    test('builds a subscript text node', () => {
+      visualBrowserProxy.pdf = true;
+      const text = '2';
+      contentBrowserProxy.textContentMap = {[contentBrowserProxy.rootId]: text};
+      contentBrowserProxy.isSubscriptMap = {[contentBrowserProxy.rootId]: true};
+
+      const root = contentController.updateContent();
+
+      assertTrue(!!root);
+      assertEquals('SUB', root.nodeName);
+      assertEquals(text, root.textContent);
+    });
+
+    test('does not wrap superscript or subscript when not a PDF', () => {
+      visualBrowserProxy.pdf = false;
+      const text = '1';
+      contentBrowserProxy.textContentMap = {[contentBrowserProxy.rootId]: text};
+      contentBrowserProxy.isSuperscriptMap = {
+        [contentBrowserProxy.rootId]: true,
+      };
+      contentBrowserProxy.isSubscriptMap = {[contentBrowserProxy.rootId]: true};
+
+      const root = contentController.updateContent();
+
+      assertTrue(root instanceof Text);
+      assertEquals(text, root.textContent);
+      assertEquals(0, contentBrowserProxy.getCallCount('isSuperscript'));
+      assertEquals(0, contentBrowserProxy.getCallCount('isSubscript'));
+    });
+
     test('builds an element with a text child', () => {
       const parentId = 10;
       const childId = 11;
@@ -720,6 +765,24 @@ suite('ContentController', () => {
       assertEquals('B', root.nodeName);
       assertEquals(text, root.textContent);
       assertEquals('overline', root.style.textDecoration);
+    });
+
+    test('builds a bolded superscript text node', () => {
+      visualBrowserProxy.pdf = true;
+      const text = '1';
+      contentBrowserProxy.textContentMap = {[contentBrowserProxy.rootId]: text};
+      contentBrowserProxy.shouldBoldMap = {[contentBrowserProxy.rootId]: true};
+      contentBrowserProxy.isSuperscriptMap = {
+        [contentBrowserProxy.rootId]: true,
+      };
+
+      const root = contentController.updateContent();
+
+      assertTrue(root instanceof HTMLElement);
+      assertEquals('SUP', root.nodeName);
+      assertTrue(!!root.firstElementChild);
+      assertEquals('B', root.firstElementChild.nodeName);
+      assertEquals(text, root.textContent);
     });
 
     test('builds child elements with different text directions', () => {

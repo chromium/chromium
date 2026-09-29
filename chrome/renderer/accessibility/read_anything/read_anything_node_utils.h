@@ -25,6 +25,9 @@ static constexpr int kMinPrefixLength = 40;
 // Returns whether the given node represents a superscript.
 bool IsSuperscript(const ui::AXNode* ax_node);
 
+// Returns whether the given node represents a subscript.
+bool IsSubscript(const ui::AXNode* ax_node);
+
 // Returns whether the given node is a text node displayed by read anything.
 bool IsTextForReadAnything(const ui::AXNode* ax_node,
                            bool is_pdf,

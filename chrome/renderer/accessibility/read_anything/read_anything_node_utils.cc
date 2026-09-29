@@ -22,6 +22,11 @@ bool IsSuperscript(const ui::AXNode* ax_node) {
          ax::mojom::TextPosition::kSuperscript;
 }
 
+bool IsSubscript(const ui::AXNode* ax_node) {
+  return ax_node->data().GetTextPosition() ==
+         ax::mojom::TextPosition::kSubscript;
+}
+
 bool IsTextForReadAnything(const ui::AXNode* node, bool is_pdf, bool is_docs) {
   if (!node) {
     return false;

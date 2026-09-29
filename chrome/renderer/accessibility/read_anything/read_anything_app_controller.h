@@ -299,6 +299,8 @@ class ReadAnythingAppController
   bool IsSpeechTreeInitialized();
   bool ShouldBold(ui::AXNodeID ax_node_id) const;
   bool IsOverline(ui::AXNodeID ax_node_id) const;
+  bool IsSuperscript(ui::AXNodeID ax_node_id) const;
+  bool IsSubscript(ui::AXNodeID ax_node_id) const;
   bool IsLeafNode(ui::AXNodeID ax_node_id) const;
   bool IsReadAnythingPinned() const;
   void OnConnected();

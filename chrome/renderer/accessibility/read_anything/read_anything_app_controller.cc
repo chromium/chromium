@@ -1332,6 +1332,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("getAltText", &ReadAnythingAppController::GetAltText)
       .SetMethod("shouldBold", &ReadAnythingAppController::ShouldBold)
       .SetMethod("isOverline", &ReadAnythingAppController::IsOverline)
+      .SetMethod("isSuperscript", &ReadAnythingAppController::IsSuperscript)
+      .SetMethod("isSubscript", &ReadAnythingAppController::IsSubscript)
       .SetMethod("isLeafNode", &ReadAnythingAppController::IsLeafNode)
       .SetMethod("onConnected", &ReadAnythingAppController::OnConnected)
       .SetMethod("onCopy", &ReadAnythingAppController::OnCopy)
@@ -1990,6 +1992,36 @@ bool ReadAnythingAppController::IsOverline(ui::AXNodeID ax_node_id) const {
     return false;
   }
   return ax_node->HasTextStyle(ax::mojom::TextStyle::kOverline);
+}
+
+bool ReadAnythingAppController::IsSuperscript(ui::AXNodeID ax_node_id) const {
+  // Outside of PDFs, superscripts already come with a <sup> html tag, so
+  // wrapping the text node again would nest the markup.
+  if (!model_.is_pdf() ||
+      !features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+    return false;
+  }
+  ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
+  DCHECK(ax_node);
+  if (!ax_node) {
+    return false;
+  }
+  return a11y::IsSuperscript(ax_node);
+}
+
+bool ReadAnythingAppController::IsSubscript(ui::AXNodeID ax_node_id) const {
+  // Outside of PDFs, subscripts already come with a <sub> html tag, so
+  // wrapping the text node again would nest the markup.
+  if (!model_.is_pdf() ||
+      !features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+    return false;
+  }
+  ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
+  DCHECK(ax_node);
+  if (!ax_node) {
+    return false;
+  }
+  return a11y::IsSubscript(ax_node);
 }
 
 bool ReadAnythingAppController::IsLeafNode(ui::AXNodeID ax_node_id) const {

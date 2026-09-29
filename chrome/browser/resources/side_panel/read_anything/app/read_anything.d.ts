@@ -256,6 +256,12 @@ declare namespace chrome {
     // Returns true if the element has overline text styling.
     function isOverline(nodeId: number): boolean;
 
+    // Returns true if the text node should be rendered as a superscript.
+    function isSuperscript(nodeId: number): boolean;
+
+    // Returns true if the text node should be rendered as a subscript.
+    function isSubscript(nodeId: number): boolean;
+
     // Returns true if the element is a leaf node.
     function isLeafNode(nodeId: number): boolean;
 

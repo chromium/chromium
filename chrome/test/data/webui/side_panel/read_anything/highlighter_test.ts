@@ -110,6 +110,81 @@ suite('Highlighter', () => {
     assertFullNodeIsHighlighted(id2, text2);
   });
 
+  test(
+      'sentence highlight with wrapped superscript and subscript text nodes',
+      () => {
+        audioBrowserProxy.highlightGranularity =
+            audioBrowserProxy.sentenceHighlighting;
+        const paragraph = document.createElement('p');
+        const text1 = 'H';
+        const textNode1 = document.createTextNode(text1);
+        paragraph.appendChild(textNode1);
+
+        // Match createTextNode_ by mapping the inner text node in nodeStore
+        // while wrapping it in <sub> / <sup> in the DOM.
+        const sub = document.createElement('sub');
+        const text2 = '2';
+        const subTextNode = document.createTextNode(text2);
+        sub.appendChild(subTextNode);
+        paragraph.appendChild(sub);
+
+        const text3 = 'O.';
+        const textNode3 = document.createTextNode(text3);
+        paragraph.appendChild(textNode3);
+
+        const sup = document.createElement('sup');
+        const text4 = '1';
+        const supTextNode = document.createTextNode(text4);
+        sup.appendChild(supTextNode);
+        paragraph.appendChild(sup);
+
+        const id1 = 10;
+        const id2 = 11;
+        const id3 = 12;
+        const id4 = 13;
+        nodeStore.setDomNode(textNode1, id1);
+        nodeStore.setDomNode(subTextNode, id2);
+        nodeStore.setDomNode(textNode3, id3);
+        nodeStore.setDomNode(supTextNode, id4);
+
+        const segments = [
+          {
+            node: ReadAloudNode.create(textNode1)!,
+            start: 0,
+            length: text1.length,
+          },
+          {
+            node: ReadAloudNode.create(subTextNode)!,
+            start: 0,
+            length: text2.length,
+          },
+          {
+            node: ReadAloudNode.create(textNode3)!,
+            start: 0,
+            length: text3.length,
+          },
+          {
+            node: ReadAloudNode.create(supTextNode)!,
+            start: 0,
+            length: text4.length,
+          },
+        ];
+        readAloudModel.setCurrentTextSegments(segments);
+
+        highlighter.highlightCurrentGranularity(
+            segments,
+            /*scrollIntoView=*/ false,
+            /*shouldUpdateSentenceHighlight=*/ true);
+
+        assertTrue(highlighter.hasCurrentGranularity());
+        assertFullNodeIsHighlighted(id1, text1);
+        assertFullNodeIsHighlighted(id2, text2);
+        assertFullNodeIsHighlighted(id3, text3);
+        assertFullNodeIsHighlighted(id4, text4);
+        assertEquals(sub, (nodeStore.getDomNode(id2) as Element).parentElement);
+        assertEquals(sup, (nodeStore.getDomNode(id4) as Element).parentElement);
+      });
+
   test('with auto highlighting and rate of 2, sentence highlight used', () => {
     audioBrowserProxy.highlightGranularity = audioBrowserProxy.autoHighlighting;
     audioBrowserProxy.speechRate = 2;

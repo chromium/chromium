@@ -1987,6 +1987,77 @@ TEST_F(ReadAnythingAppControllerTest, IsOverline) {
   EXPECT_EQ(false, controller().IsOverline(3));
 }
 
+TEST_F(ReadAnythingAppControllerTest, IsSuperscriptAndIsSubscript_Pdf) {
+  base::test::ScopedFeatureList feature_list(
+      features::kPdfAccessibilityHeuristicEnhancements);
+  model().set_is_pdf(true);
+
+  ui::AXNodeData sup_node;
+  sup_node.id = 2;
+  sup_node.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
+
+  ui::AXNodeData sub_node;
+  sub_node.id = 3;
+  sub_node.SetTextPosition(ax::mojom::TextPosition::kSubscript);
+
+  ui::AXNodeData normal_node;
+  normal_node.id = 4;
+
+  SendUpdateWithNodes(
+      {std::move(sup_node), std::move(sub_node), std::move(normal_node)});
+  OnAXTreeDistilled(tree_id_, {});
+
+  EXPECT_TRUE(controller().IsSuperscript(2));
+  EXPECT_FALSE(controller().IsSuperscript(3));
+  EXPECT_FALSE(controller().IsSuperscript(4));
+
+  EXPECT_FALSE(controller().IsSubscript(2));
+  EXPECT_TRUE(controller().IsSubscript(3));
+  EXPECT_FALSE(controller().IsSubscript(4));
+}
+
+TEST_F(ReadAnythingAppControllerTest, IsSuperscriptAndIsSubscript_NotPdf) {
+  base::test::ScopedFeatureList feature_list(
+      features::kPdfAccessibilityHeuristicEnhancements);
+  model().set_is_pdf(false);
+
+  ui::AXNodeData sup_node;
+  sup_node.id = 2;
+  sup_node.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
+
+  ui::AXNodeData sub_node;
+  sub_node.id = 3;
+  sub_node.SetTextPosition(ax::mojom::TextPosition::kSubscript);
+
+  SendUpdateWithNodes({std::move(sup_node), std::move(sub_node)});
+  OnAXTreeDistilled(tree_id_, {});
+
+  EXPECT_FALSE(controller().IsSuperscript(2));
+  EXPECT_FALSE(controller().IsSubscript(3));
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       IsSuperscriptAndIsSubscript_FeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kPdfAccessibilityHeuristicEnhancements);
+  model().set_is_pdf(true);
+
+  ui::AXNodeData sup_node;
+  sup_node.id = 2;
+  sup_node.SetTextPosition(ax::mojom::TextPosition::kSuperscript);
+
+  ui::AXNodeData sub_node;
+  sub_node.id = 3;
+  sub_node.SetTextPosition(ax::mojom::TextPosition::kSubscript);
+
+  SendUpdateWithNodes({std::move(sup_node), std::move(sub_node)});
+  OnAXTreeDistilled(tree_id_, {});
+
+  EXPECT_FALSE(controller().IsSuperscript(2));
+  EXPECT_FALSE(controller().IsSubscript(3));
+}
+
 TEST_F(ReadAnythingAppControllerTest, GetTextDirection) {
   ui::AXNodeData node1;
   node1.id = 2;

@@ -142,6 +142,8 @@ export class DomReadAloudNode extends ReadAloudNode {
 
   // Returns true if the DOM node associated with this ReadAloudNode is
   // part of a superscript (i.e., inside a <sup> tag).
+  // TODO(crbug.com/467180032): Add an equivalent isSubscript method to ensure
+  // subscripts in PDFs are segmented properly.
   isSuperscript(): boolean {
     // Don't recalculate whether this node is a superscript if we've already
     // checked.

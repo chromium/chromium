@@ -45,6 +45,8 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
   languageMap: {[key: number]: string} = {};
   childrenMap: {[key: number]: number[]} = {1: [2]};
   isOverlineMap: {[key: number]: boolean} = {};
+  isSuperscriptMap: {[key: number]: boolean} = {};
+  isSubscriptMap: {[key: number]: boolean} = {};
   shouldBoldMap: {[key: number]: boolean} = {};
   imageBitmap: SkiaImageBitmap|null = null;
   axTreeAnchorsVal: Record<string, AxTreeAnchorMetadata[]> = {};
@@ -88,6 +90,8 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
       'getLanguage',
       'getChildren',
       'isOverline',
+      'isSuperscript',
+      'isSubscript',
       'shouldBold',
       'getImageBitmap',
       'getAxTreeAnchors',
@@ -247,6 +251,16 @@ export class TestContentBrowserProxy extends TestBrowserProxy implements
   isOverline(nodeId: number): boolean {
     this.methodCalled('isOverline', nodeId);
     return this.isOverlineMap[nodeId] || false;
+  }
+
+  isSuperscript(nodeId: number): boolean {
+    this.methodCalled('isSuperscript', nodeId);
+    return this.isSuperscriptMap[nodeId] || false;
+  }
+
+  isSubscript(nodeId: number): boolean {
+    this.methodCalled('isSubscript', nodeId);
+    return this.isSubscriptMap[nodeId] || false;
   }
 
   shouldBold(nodeId: number): boolean {

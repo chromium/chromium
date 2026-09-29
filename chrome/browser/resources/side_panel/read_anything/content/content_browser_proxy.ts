@@ -75,6 +75,8 @@ export interface ContentBrowserProxy {
   isGoogleDocs(): boolean;
   isLeafNode(nodeId: number): boolean;
   isOverline(nodeId: number): boolean;
+  isSuperscript(nodeId: number): boolean;
+  isSubscript(nodeId: number): boolean;
   shouldBold(nodeId: number): boolean;
   requiresDistillation(): boolean;
 
@@ -190,6 +192,14 @@ export class ContentBrowserProxyImpl implements ContentBrowserProxy {
 
   isOverline(nodeId: number): boolean {
     return chrome.readingMode.isOverline(nodeId);
+  }
+
+  isSuperscript(nodeId: number): boolean {
+    return chrome.readingMode.isSuperscript(nodeId);
+  }
+
+  isSubscript(nodeId: number): boolean {
+    return chrome.readingMode.isSubscript(nodeId);
   }
 
   shouldBold(nodeId: number): boolean {

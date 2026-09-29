@@ -1604,6 +1604,38 @@ suite('ReadAloudModel', () => {
         assertTextEmpty();
       });
 
+  test(
+      'getCurrentTextSegments PDF-style wrapped superscript text node combined with preceding sentence',
+      async () => {
+        const paragraph = document.createElement('p');
+        paragraph.appendChild(
+            document.createTextNode('And I am almost there.'));
+
+        // PDFs wrap the superscript text node directly in a <sup> tag.
+        const superscript = document.createElement('sup');
+        superscript.appendChild(document.createTextNode('1'));
+        paragraph.appendChild(superscript);
+
+        paragraph.appendChild(document.createTextNode(
+            ' People gon\' come here from everywhere.'));
+
+        document.body.appendChild(paragraph);
+        await microtasksFinished();
+        getReadAloudModel().init(ReadAloudNode.create(document.body)!);
+
+        assertEquals(
+            'And I am almost there. 1',
+            getReadAloudModel().getCurrentTextContent().trim());
+
+        getReadAloudModel().moveSpeechForward();
+        assertEquals(
+            'People gon\' come here from everywhere.',
+            getReadAloudModel().getCurrentTextContent().trim());
+
+        getReadAloudModel().moveSpeechForward();
+        assertTextEmpty();
+      });
+
 
   test(
       'getHighlightForCurrentSegmentIndex returns correct nodess', async () => {
