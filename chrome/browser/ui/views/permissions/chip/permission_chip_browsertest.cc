@@ -8,6 +8,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
@@ -528,7 +529,15 @@ IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest, DisplayQuietChipAbusiveTest) {
   EXPECT_FALSE(delegate.IsRequestInProgress());
 }
 
-IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest, ClickOnQuietChipAbusiveTest) {
+// TODO(crbug.com/40063728): Flaky on Linux due to a race condition with the
+// auto-ignore timer.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ClickOnQuietChipAbusiveTest DISABLED_ClickOnQuietChipAbusiveTest
+#else
+#define MAYBE_ClickOnQuietChipAbusiveTest ClickOnQuietChipAbusiveTest
+#endif
+IN_PROC_BROWSER_TEST_F(PermissionChipBrowserTest,
+                       MAYBE_ClickOnQuietChipAbusiveTest) {
   auto& delegate = *test::MockPermissionRequestManager::CreateForWebContents(
       GURL("https://test.origin"), {permissions::RequestType::kNotifications},
       true, QuietUiReason::kTriggeredDueToAbusiveRequests, web_contents_);

@@ -33,6 +33,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/types/optional_ref.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/secure_dns_config.h"
@@ -2267,8 +2268,14 @@ IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
   }
 }
 
+// TODO(crbug.com/541648974): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_Revocation DISABLED_Revocation
+#else
+#define MAYBE_Revocation Revocation
+#endif
 IN_PROC_BROWSER_TEST_P(PKIMetadataComponentChromeRootStoreMtcMetadataTest,
-                       Revocation) {
+                       MAYBE_Revocation) {
   static constexpr uint8_t kMtcCaId[] = {0x09, 0x08, 0x07};
   static constexpr uint8_t kMirrorId[] = {0x01, 0x02, 0x03};
   static constexpr uint64_t kLogNumber = 1;
