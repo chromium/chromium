@@ -13,12 +13,14 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram_macros.h"
@@ -84,6 +86,56 @@ bool VerifyDataSize(const VAImage* image) {
   }
   return base::strict_cast<size_t>(image->data_size) >= min_size;
 }
+
+// RAII helper to map and unmap a DMA-buf with page-alignment and bounds checks.
+class ScopedDmaBufMapping {
+ public:
+  ScopedDmaBufMapping(int fd, size_t size, off_t offset) : size_(size) {
+    if (fd < 0 || size == 0) {
+      return;
+    }
+    // `offset` must be non-negative and page-aligned according to POSIX mmap.
+    if (!base::IsValueInRangeForNumericType<size_t>(offset)) {
+      return;
+    }
+    const size_t offset_as_size_t = static_cast<size_t>(offset);
+    if (offset_as_size_t % base::GetPageSize() != 0) {
+      return;
+    }
+    if (!base::CheckAdd(offset_as_size_t, size).IsValid<size_t>()) {
+      return;
+    }
+    void* addr = mmap(nullptr, size, PROT_READ, MAP_SHARED, fd, offset);
+    if (addr == MAP_FAILED) {
+      return;
+    }
+    addr_ = addr;
+  }
+
+  ~ScopedDmaBufMapping() {
+    if (addr_) {
+      const int ret = munmap(std::exchange(addr_, nullptr).get(), size_);
+      DPCHECK(ret == 0);
+    }
+  }
+
+  ScopedDmaBufMapping(const ScopedDmaBufMapping&) = delete;
+  ScopedDmaBufMapping& operator=(const ScopedDmaBufMapping&) = delete;
+
+  bool IsValid() const { return addr_ != nullptr; }
+
+  base::span<const uint8_t> span() const {
+    CHECK(IsValid());
+    // SAFETY: `addr_` is non-null and points to a memory region of `size_`
+    // bytes mapped from a DMA-buf.
+    return UNSAFE_BUFFERS(
+        base::span(static_cast<const uint8_t*>(addr_.get()), size_));
+  }
+
+ private:
+  raw_ptr<void> addr_ = nullptr;
+  size_t size_ = 0;
+};
 
 }  // namespace
 
@@ -225,20 +277,14 @@ void VaapiMjpegDecodeAccelerator::Decoder::DecodeFromDmaBufTask(
   // permission, e.g. when it comes from camera driver.
   DCHECK(src_dmabuf_fd.is_valid());
   DCHECK_GT(src_size, 0u);
-  void* src_addr = mmap(nullptr, src_size, PROT_READ, MAP_SHARED,
-                        src_dmabuf_fd.get(), src_offset);
-  if (src_addr == MAP_FAILED) {
+  ScopedDmaBufMapping mapping(src_dmabuf_fd.get(), src_size, src_offset);
+  if (!mapping.IsValid()) {
     VPLOGF(1) << "Failed to map input DMA buffer";
     error_cb_.Run(task_id, UNREADABLE_INPUT);
     return;
   }
-  UNSAFE_TODO(base::span<const uint8_t> src_image(
-      static_cast<const uint8_t*>(src_addr), src_size));
 
-  DecodeImpl(task_id, src_image, std::move(dst_frame));
-
-  const int ret = munmap(src_addr, src_size);
-  DPCHECK(ret == 0);
+  DecodeImpl(task_id, mapping.span(), std::move(dst_frame));
 }
 
 void VaapiMjpegDecodeAccelerator::Decoder::DecodeImpl(
@@ -398,53 +444,86 @@ bool VaapiMjpegDecodeAccelerator::Decoder::OutputPictureLibYuv(
 
   DCHECK(scoped_image);
   const VAImage* image = scoped_image->image();
-  DCHECK(VerifyDataSize(image));
+  if (!VerifyDataSize(image)) {
+    VLOGF(1) << "Invalid VAImage data size";
+    return false;
+  }
   const gfx::Size src_size(base::strict_cast<int>(image->width),
                            base::strict_cast<int>(image->height));
   DCHECK(gfx::Rect(src_size).Contains(crop_rect));
 
   // Wrap |image| into VideoFrame.
-  std::vector<size_t> strides(image->num_planes);
-  for (size_t i = 0; i < image->num_planes; ++i) {
-    if (!base::CheckedNumeric<size_t>(UNSAFE_TODO(image->pitches[i]))
-             .AssignIfValid(UNSAFE_TODO(&strides[i]))) {
-      VLOGF(1) << "Invalid VAImage stride " << UNSAFE_TODO(image->pitches[i])
-               << " for plane " << i;
+  const size_t num_planes = base::strict_cast<size_t>(image->num_planes);
+  const auto pitches_span = base::span(image->pitches);
+  const auto offsets_span = base::span(image->offsets);
+  if (num_planes > pitches_span.size() || num_planes > offsets_span.size()) {
+    VLOGF(1) << "Invalid number of planes: " << image->num_planes;
+    return false;
+  }
+  std::vector<size_t> strides(num_planes);
+  for (size_t i = 0; i < num_planes; ++i) {
+    if (!base::CheckedNumeric<size_t>(pitches_span[i])
+             .AssignIfValid(&strides[i])) {
+      VLOGF(1) << "Invalid VAImage stride " << pitches_span[i] << " for plane "
+               << i;
       return false;
     }
   }
   uint8_t* data_ptr = static_cast<uint8_t*>(scoped_image->va_buffer()->data());
-  // SAFETY: We take the size and the data pointer from the same `VAImage`
-  // It is responsibility of VA API for them to be valid.
+  // SAFETY: We take the size and the data pointer from the same `VAImage`.
+  // It is the responsibility of the VA API for them to be valid.
   auto data_span = UNSAFE_BUFFERS(base::span(data_ptr, image->data_size));
 
   scoped_refptr<VideoFrame> src_frame;
   switch (image->format.fourcc) {
     case VA_FOURCC_YUY2:
     case VA_FOURCC('Y', 'U', 'Y', 'V'): {
+      if (num_planes != VideoFrame::NumPlanes(PIXEL_FORMAT_YUY2)) {
+        VLOGF(1) << "Invalid number of planes for YUY2: " << image->num_planes;
+        return false;
+      }
       auto layout = VideoFrameLayout::CreateWithStrides(PIXEL_FORMAT_YUY2,
                                                         src_size, strides);
       if (!layout.has_value()) {
         VLOGF(1) << "Failed to create video frame layout";
         return false;
       }
+      const size_t plane_size = layout->planes()[0].size;
+      if (offsets_span[0] > data_span.size() ||
+          plane_size > data_span.size() - offsets_span[0]) {
+        VLOGF(1) << "Plane 0 does not fit in image buffer";
+        return false;
+      }
       src_frame = VideoFrame::WrapExternalDataWithLayout(
           *layout, crop_rect, crop_rect.size(),
-          data_span.subspan(image->offsets[0]), base::TimeDelta());
+          data_span.subspan(offsets_span[0], plane_size), base::TimeDelta());
       break;
     }
     case VA_FOURCC_I420: {
+      if (num_planes != VideoFrame::NumPlanes(PIXEL_FORMAT_I420)) {
+        VLOGF(1) << "Invalid number of planes for I420: " << image->num_planes;
+        return false;
+      }
       auto layout = VideoFrameLayout::CreateWithStrides(PIXEL_FORMAT_I420,
                                                         src_size, strides);
       if (!layout.has_value()) {
         VLOGF(1) << "Failed to create video frame layout";
         return false;
       }
+      for (size_t i = 0; i < layout->planes().size(); ++i) {
+        const size_t plane_size = layout->planes()[i].size;
+        if (offsets_span[i] > data_span.size() ||
+            plane_size > data_span.size() - offsets_span[i]) {
+          VLOGF(1) << "Plane " << i << " does not fit in image buffer";
+          return false;
+        }
+      }
       src_frame = VideoFrame::WrapExternalYuvDataWithLayout(
           *layout, crop_rect, crop_rect.size(),
-          data_span.subspan(image->offsets[0]),
-          data_span.subspan(image->offsets[1]),
-          data_span.subspan(image->offsets[2]), base::TimeDelta());
+          data_span.subspan(offsets_span[0], layout->planes()[0].size),
+          data_span.subspan(offsets_span[1], layout->planes()[1].size),
+          data_span.subspan(offsets_span[2], layout->planes()[2].size),
+          base::TimeDelta());
       break;
     }
     default:
