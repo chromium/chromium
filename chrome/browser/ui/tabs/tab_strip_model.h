@@ -923,7 +923,7 @@ class TabStripModel {
       const content::WebContents* contents) const;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(TabStripModelTest, GetIndicesClosedByCommand);
+  FRIEND_TEST_ALL_PREFIXES(TabStripModelTest, HasIndicesClosedByCommand);
   // Temporary private API.
   FRIEND_TEST_ALL_PREFIXES(TabStripModelTest, FindGroupIdFor);
 
@@ -1119,11 +1119,9 @@ class TabStripModel {
   // increasing order.
   std::vector<int> GetIndicesForCommand(int index) const;
 
-  // Returns a vector of indices of the tabs that will close when executing the
-  // command `id` for the tab at `index`. The returned indices are sorted in
-  // descending order.
-  std::vector<int> GetIndicesClosedByCommand(int index,
-                                             ContextMenuCommand id) const;
+  // Returns whether any tab would close when executing the command `id`
+  // (CommandCloseTabsToRight or CommandCloseOtherTabs) for the tab at `index`.
+  bool HasIndicesClosedByCommand(int index, ContextMenuCommand id) const;
 
   std::vector<tabs::TabInterface*> GetTabsForCommand(int index) const;
   std::vector<tabs::TabInterface*> GetTabsClosedByCommand(
