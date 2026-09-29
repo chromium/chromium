@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/functional/bind.h"
+#import "base/test/ios/wait_util.h"
 #import "base/test/test_future.h"
 #import "base/values.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -45,6 +46,17 @@ class SendTabToSelfTextFragmentSelectorGeneratorTest : public PlatformTest {
 
   web::WebState* web_state() { return web_state_.get(); }
 
+  void ScrollTo(int y) {
+    web::test::ExecuteJavaScript(
+        [NSString stringWithFormat:@"window.scrollTo(0, %d);", y], web_state());
+    ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+        base::test::ios::kWaitForJSCompletionTimeout, ^{
+          return [web::test::ExecuteJavaScript(
+              [NSString stringWithFormat:@"window.scrollY >= %d;", y],
+              web_state()) isEqual:@YES];
+        }));
+  }
+
   std::optional<SendTabToSelfTextFragment> GenerateTextFragment() {
     base::test::TestFuture<std::optional<SendTabToSelfTextFragment>> future;
     SendTabToSelfTextFragmentSelectorGenerator::GetInstance()->GetTextFragment(
@@ -58,8 +70,9 @@ class SendTabToSelfTextFragmentSelectorGeneratorTest : public PlatformTest {
   std::unique_ptr<web::WebState> web_state_;
 };
 
-// Tests the happy path: `GetTextFragment` successfully generates a fragment
-// when the center of the viewport contains valid text.
+// Tests the happy path: `GetTextFragment` skips generation when the page is not
+// scrolled and succeeds when the center of the scrolled viewport contains valid
+// text.
 //
 // This test implicitly validates two critical pieces of the integration:
 // 1. `document.caretRangeFromPoint` correctly identifies the text node at the
@@ -73,11 +86,20 @@ TEST_F(SendTabToSelfTextFragmentSelectorGeneratorTest, GetTextFragmentSuccess) {
   // point (200, 200) falls exactly on the text node.
   NSString* html =
       @"<html><body style='margin: 0; padding: 0;'>"
-       "<p style='width: 400px; height: 400px; font-size: 20px;'>"
+       "<p style='width: 100%; height: 2000px; font-size: 20px;'>"
        "  This is some sample text that covers the viewport center."
        "</p>"
        "</body></html>";
   web::test::LoadHtml(html, web_state());
+
+  // Verify generation is skipped when the page has not been scrolled.
+  std::optional<SendTabToSelfTextFragment> unscrolled_result =
+      GenerateTextFragment();
+  ASSERT_TRUE(unscrolled_result.has_value());
+  EXPECT_EQ(TextFragmentGenerationStatus::kPageNotScrolled,
+            unscrolled_result->status);
+
+  ScrollTo(100);
 
   std::optional<SendTabToSelfTextFragment> result = GenerateTextFragment();
 
@@ -101,7 +123,9 @@ TEST_F(SendTabToSelfTextFragmentSelectorGeneratorTest, GetTextFragmentSuccess) {
 TEST_F(SendTabToSelfTextFragmentSelectorGeneratorTest,
        GetTextFragmentNoTextAtCenter) {
   // Load an empty page with no content to select.
-  web::test::LoadHtml(@"<html><body></body></html>", web_state());
+  web::test::LoadHtml(@"<html><body style='height: 2000px;'></body></html>",
+                      web_state());
+  ScrollTo(100);
 
   std::optional<SendTabToSelfTextFragment> result = GenerateTextFragment();
 
@@ -129,10 +153,11 @@ TEST_F(SendTabToSelfTextFragmentSelectorGeneratorTest,
   NSString* html = [NSString
       stringWithFormat:
           @"<html><body style='margin: 0;'>"
-           "<div id='giant' style='height: 1000px; width: 1000px;'>%@</div>"
+           "<div id='giant' style='height: 2000px; width: 1000px;'>%@</div>"
            "</body></html>",
           divChildren];
   web::test::LoadHtml(html, web_state());
+  ScrollTo(100);
 
   std::optional<SendTabToSelfTextFragment> result = GenerateTextFragment();
 
@@ -156,9 +181,10 @@ TEST_F(SendTabToSelfTextFragmentSelectorGeneratorTest,
                     "png;base64,"
                     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42m"
                     "P8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJccc==' "
-                    "style='width: 1000px; height: 1000px;'>"
+                    "style='width: 1000px; height: 2000px;'>"
                     "</body></html>";
   web::test::LoadHtml(html, web_state());
+  ScrollTo(100);
 
   std::optional<SendTabToSelfTextFragment> result = GenerateTextFragment();
 
@@ -180,13 +206,14 @@ TEST_F(SendTabToSelfTextFragmentSelectorGeneratorTest,
   // Load a page with multiple layers of inline and block elements enclosing
   // the target text.
   NSString* html = @"<html><body style='margin: 0;'>"
-                    "<div style='width: 400px; height: 400px;'>"
+                    "<div style='width: 100%; height: 2000px;'>"
                     "  <section><span><article><b>"
                     "    Target text in deep nesting."
                     "  </b></article></span></section>"
                     "</div>"
                     "</body></html>";
   web::test::LoadHtml(html, web_state());
+  ScrollTo(100);
 
   std::optional<SendTabToSelfTextFragment> result = GenerateTextFragment();
 
@@ -244,13 +271,14 @@ TEST_F(SendTabToSelfTextFragmentSelectorGeneratorTest,
   // The center point might fall directly between spans or inside one.
   NSString* html =
       @"<html><body style='margin: 0; padding: 0; font-size: 20px;'>"
-       "<div style='width: 400px; height: 400px;'>"
+       "<div style='width: 100%; height: 2000px;'>"
        "  <span>First part.</span>"
        "  <span>Second part.</span>"
        "  <span>Third part.</span>"
        "</div>"
        "</body></html>";
   web::test::LoadHtml(html, web_state());
+  ScrollTo(100);
 
   std::optional<SendTabToSelfTextFragment> result = GenerateTextFragment();
 

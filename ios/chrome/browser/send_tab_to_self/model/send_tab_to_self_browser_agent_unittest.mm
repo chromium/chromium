@@ -1244,5 +1244,23 @@ TEST_F(SendTabToSelfBrowserAgentScrollPositionTest,
   histogram_tester_.ExpectTotalCount(kGenerationTimeHistogram, 1);
 }
 
+// Tests that `kPageNotScrolled` is recorded when the fragment status is
+// `kPageNotScrolled`.
+TEST_F(SendTabToSelfBrowserAgentScrollPositionTest,
+       PageNotScrolledRecordedWhenPageNotScrolled) {
+  AppendNewWebState(url_);
+
+  HandleTextFragmentGenerated(
+      url_, kTitle, kDeviceID, kDeviceName, ShareEntryPoint::kShareSheet,
+      send_tab_to_self::PageContext(), base::DoNothing(),
+      base::TimeTicks::Now() - base::Milliseconds(100),
+      CreateTextFragment(TextFragmentGenerationStatus::kPageNotScrolled));
+
+  histogram_tester_.ExpectUniqueSample(
+      kGenerationOutcomeHistogram,
+      ScrollPositionGenerationOutcome::kPageNotScrolled, 1);
+  histogram_tester_.ExpectTotalCount(kGenerationTimeHistogram, 1);
+}
+
 }  // namespace
 }  // namespace send_tab_to_self

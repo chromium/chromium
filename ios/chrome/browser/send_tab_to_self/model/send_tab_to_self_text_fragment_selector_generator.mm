@@ -23,6 +23,29 @@ constexpr char kScriptName[] = "send_tab_to_self_fragments";
 constexpr char kGetLinkToTextFunction[] = "stts.getLinkToText";
 constexpr char kScrollToTextFragmentFunction[] = "stts.scrollToTextFragment";
 
+// LINT.IfChange(ParseStatus)
+// Converts the numeric status from JavaScript to TextFragmentGenerationStatus,
+// safely mapping unexpected values to kExecutionFailed.
+TextFragmentGenerationStatus ParseStatus(double status_value) {
+  switch (static_cast<int>(status_value)) {
+    case 0:
+      return TextFragmentGenerationStatus::kSuccess;
+    case 1:
+      return TextFragmentGenerationStatus::kInvalidSelection;
+    case 2:
+      return TextFragmentGenerationStatus::kAmbiguous;
+    case 3:
+      return TextFragmentGenerationStatus::kTimeout;
+    case 4:
+      return TextFragmentGenerationStatus::kExecutionFailed;
+    case 100:
+      return TextFragmentGenerationStatus::kPageNotScrolled;
+    default:
+      return TextFragmentGenerationStatus::kExecutionFailed;
+  }
+}
+// LINT.ThenChange(//ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_text_fragment_selector_generator.h:TextFragmentGenerationStatus)
+
 // Translates the JS-layer result into a SendTabToSelfTextFragment struct.
 void OnGetTextFragmentResult(
     base::OnceCallback<void(std::optional<SendTabToSelfTextFragment>)> callback,
@@ -45,8 +68,7 @@ void OnGetTextFragmentResult(
   }
 
   SendTabToSelfTextFragment result;
-  result.status = static_cast<TextFragmentGenerationStatus>(
-      static_cast<int>(*status_double));
+  result.status = ParseStatus(*status_double);
 
   const base::DictValue* fragment = dict->FindDict("fragment");
   if (fragment) {

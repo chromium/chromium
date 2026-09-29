@@ -16,18 +16,23 @@ class WebState;
 }  // namespace web
 
 // Enum representing the possible status codes returned by the
-// text-fragments-polyfill library. To be kept in sync with the
-// `GenerateFragmentStatus` enum in that library.
+// text-fragments-polyfill library and Send Tab To Self. To be kept in sync with
+// the `SendTabToSelfFragmentStatus` in `send_tab_to_self_fragments.ts`.
 //
 // These values are serialized as numbers in the `status` field of the
 // dictionary returned by `GetTextFragment`.
+// LINT.IfChange(TextFragmentGenerationStatus)
 enum class TextFragmentGenerationStatus {
   kSuccess = 0,
   kInvalidSelection = 1,
   kAmbiguous = 2,
   kTimeout = 3,
   kExecutionFailed = 4,
+  // Custom Send Tab To Self statuses start at 100 to leave space for
+  // text-fragments-polyfill library statuses (0-99).
+  kPageNotScrolled = 100,
 };
+// LINT.ThenChange(//ios/chrome/browser/send_tab_to_self/model/resources/send_tab_to_self_fragments.ts:SendTabToSelfFragmentStatus, //ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_text_fragment_selector_generator.mm:ParseStatus)
 
 // Struct representing a generated text fragment.
 struct SendTabToSelfTextFragment {

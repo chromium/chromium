@@ -22,11 +22,30 @@ function isValidElement(element: Element): boolean {
   return !isRootElement && !hasTooManyChildren;
 }
 
+// LINT.IfChange(SendTabToSelfFragmentStatus)
+/**
+ * Status codes for text fragment generation in Send Tab To Self.
+ * Values 0-99 are reserved for `GenerateFragmentStatus` from
+ * text-fragments-polyfill. Values 100+ are Send Tab To Self specific statuses.
+ */
+const SendTabToSelfFragmentStatus = {
+  ...GenerateFragmentStatus,
+  PAGE_NOT_SCROLLED: 100,
+} as const;
+// LINT.ThenChange(//ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_text_fragment_selector_generator.h:TextFragmentGenerationStatus)
+
 /**
  * Attempts to generate a text fragment for the target reading position in the
  * viewport.
  */
 function getLinkToTextForReadingPosition() {
+  // If the page is not scrolled, do not generate a scroll position selector.
+  // Use a small threshold (<= 1) to account for subpixel scroll offsets on
+  // high-DPI displays.
+  if (window.scrollY <= 1) {
+    return {status: SendTabToSelfFragmentStatus.PAGE_NOT_SCROLLED};
+  }
+
   // Use visualViewport if available to target the visible area (e.g. when
   // pinch-zoomed). Add offset because caretRangeFromPoint expects layout
   // viewport coordinates.

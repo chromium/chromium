@@ -187,6 +187,7 @@ void ShowPostSendSnackbar(
 // Matches Blink metrics for:
 // - `kMainFrameChanged`: WebState navigated or changed URL during generation.
 // - `kRendererTimeout`: Generator timed out or returned no fragment.
+// - `kPageNotScrolled`: Page was not scrolled (scrollY <= 1).
 // - `kEmptySelector`: Generation succeeded but produced an empty selector.
 // - `kLinkGenerationError`: Polyfill reported invalid selection, ambiguous
 //   match, or execution failure.
@@ -230,6 +231,10 @@ void RecordScrollPositionResult(
       send_tab_to_self::RecordScrollPositionSelectorLength(
           fragment->text_start.length() + fragment->text_end.length() +
           fragment->prefix.length() + fragment->suffix.length());
+      return;
+    case TextFragmentGenerationStatus::kPageNotScrolled:
+      send_tab_to_self::RecordScrollPositionGenerationOutcome(
+          send_tab_to_self::ScrollPositionGenerationOutcome::kPageNotScrolled);
       return;
     case TextFragmentGenerationStatus::kTimeout:
       send_tab_to_self::RecordScrollPositionGenerationOutcome(
