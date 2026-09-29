@@ -10,6 +10,7 @@
 #include <ostream>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "ui/display/manager/display_manager_export.h"
 #include "ui/display/types/display_constants.h"
@@ -218,27 +219,31 @@ class DISPLAY_MANAGER_EXPORT TouchDeviceManager {
  private:
   friend class test::TouchDeviceManagerTestApi;
 
-  void AssociateInternalDevices(std::vector<ManagedDisplayInfo*>* displays,
-                                std::vector<ui::TouchscreenDevice>* devices);
-
-  void AssociateDevicesWithCollision(
-      std::vector<ManagedDisplayInfo*>* displays,
+  void AssociateInternalDevices(
+      std::vector<raw_ptr<ManagedDisplayInfo>>* displays,
       std::vector<ui::TouchscreenDevice>* devices);
 
-  void AssociateFromHistoricalData(std::vector<ManagedDisplayInfo*>* displays,
-                                   std::vector<ui::TouchscreenDevice>* devices);
+  void AssociateDevicesWithCollision(
+      std::vector<raw_ptr<ManagedDisplayInfo>>* displays,
+      std::vector<ui::TouchscreenDevice>* devices);
 
-  void AssociateUsbDevices(std::vector<ManagedDisplayInfo*>* displays,
+  void AssociateFromHistoricalData(
+      std::vector<raw_ptr<ManagedDisplayInfo>>* displays,
+      std::vector<ui::TouchscreenDevice>* devices);
+
+  void AssociateUsbDevices(std::vector<raw_ptr<ManagedDisplayInfo>>* displays,
                            std::vector<ui::TouchscreenDevice>* devices);
 
-  void AssociateSameSizeDevices(std::vector<ManagedDisplayInfo*>* displays,
-                                std::vector<ui::TouchscreenDevice>* devices);
+  void AssociateSameSizeDevices(
+      std::vector<raw_ptr<ManagedDisplayInfo>>* displays,
+      std::vector<ui::TouchscreenDevice>* devices);
 
-  void AssociateToSingleDisplay(std::vector<ManagedDisplayInfo*>* displays,
-                                std::vector<ui::TouchscreenDevice>* devices);
+  void AssociateToSingleDisplay(
+      std::vector<raw_ptr<ManagedDisplayInfo>>* displays,
+      std::vector<ui::TouchscreenDevice>* devices);
 
   void AssociateAnyRemainingDevices(
-      std::vector<ManagedDisplayInfo*>* displays,
+      std::vector<raw_ptr<ManagedDisplayInfo>>* displays,
       std::vector<ui::TouchscreenDevice>* devices);
 
   void Associate(ManagedDisplayInfo* display,

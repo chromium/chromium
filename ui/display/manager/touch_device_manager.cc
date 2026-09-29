@@ -11,6 +11,7 @@
 
 #include "base/hash/hash.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "ui/display/manager/managed_display_info.h"
@@ -23,7 +24,7 @@ namespace display {
 
 namespace {
 
-using ManagedDisplayInfoList = std::vector<ManagedDisplayInfo*>;
+using ManagedDisplayInfoList = std::vector<raw_ptr<ManagedDisplayInfo>>;
 using DeviceList = std::vector<ui::TouchscreenDevice>;
 
 constexpr char kFallbackTouchDeviceName[] = "fallback_touch_device_name";
@@ -137,7 +138,7 @@ ManagedDisplayInfo* GetBestMatchForDevice(
       touch_associations.at(identifier);
   // Iterate over each active display to see which one was most recently
   // associated with the touch device identified by |identifier|.
-  for (auto* display : *displays) {
+  for (ManagedDisplayInfo* display : *displays) {
     // We do not want to match anything to the internal display.
     if (IsInternalDisplayId(display->id()))
       continue;
