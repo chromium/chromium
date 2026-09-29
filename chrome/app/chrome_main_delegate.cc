@@ -1175,6 +1175,8 @@ void ChromeMainDelegate::SetupTracing() {
 }
 
 std::optional<int> ChromeMainDelegate::BasicStartupComplete() {
+  crash_reporter::InitializeCrashKeys();
+
 #if BUILDFLAG(IS_CHROMEOS)
   ash::BootTimesRecorder::Get()->SaveChromeMainStats();
 #endif
@@ -1545,8 +1547,6 @@ void ChromeMainDelegate::PreSandboxStartup() {
     metrics::SystemProfileUserStream::Get().Initialize();
   }
 #endif
-
-  crash_reporter::InitializeCrashKeys();
 
 #if BUILDFLAG(IS_POSIX)
   ChromeCrashReporterClient::Create();
