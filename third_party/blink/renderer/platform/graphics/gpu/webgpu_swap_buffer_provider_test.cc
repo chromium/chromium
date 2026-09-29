@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer_test_helpers.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_cpp.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_native_test_support.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 
 using testing::_;
 using testing::Return;
@@ -94,8 +95,13 @@ class MockWebGPUInterface : public gpu::webgpu::WebGPUInterfaceStub {
   uint64_t token_id_ = 42;
 };
 
-class FakeProviderClient : public WebGPUSwapBufferProvider::Client {
+class FakeProviderClient final : public GarbageCollected<FakeProviderClient>,
+                                 public WebGPUSwapBufferProvider::Client {
  public:
+  void Trace(Visitor* visitor) const override {
+    WebGPUSwapBufferProvider::Client::Trace(visitor);
+  }
+
   void OnTextureTransferred() override {
     DCHECK(texture);
     texture = nullptr;
@@ -155,7 +161,7 @@ class WebGPUSwapBufferProviderForTests : public WebGPUSwapBufferProvider {
 
  private:
   raw_ptr<bool> alive_;
-  raw_ptr<FakeProviderClient> client_;
+  Persistent<FakeProviderClient> client_;
   wgpu::TextureDescriptor texture_desc_;
   wgpu::DawnTextureInternalUsageDescriptor texture_internal_usage_;
 };
@@ -163,6 +169,10 @@ class WebGPUSwapBufferProviderForTests : public WebGPUSwapBufferProvider {
 }  // anonymous namespace
 
 class WebGPUSwapBufferProviderTest : public testing::Test {
+ public:
+  WebGPUSwapBufferProviderTest()
+      : client_(MakeGarbageCollected<FakeProviderClient>()) {}
+
  protected:
   static constexpr wgpu::TextureFormat kFormat =
       wgpu::TextureFormat::RGBA8Unorm;
@@ -225,8 +235,8 @@ class WebGPUSwapBufferProviderTest : public testing::Test {
         std::move(provider), scheduler::GetSingleThreadTaskRunnerForTesting());
 
     provider_ = base::MakeRefCounted<WebGPUSwapBufferProviderForTests>(
-        &provider_alive_, &client_, device_.Get(), dawn_control_client_, kUsage,
-        kInternalUsage, kFormat, PredefinedColorSpace::kSRGB,
+        &provider_alive_, client_.Get(), device_.Get(), dawn_control_client_,
+        kUsage, kInternalUsage, kFormat, PredefinedColorSpace::kSRGB,
         gfx::HDRMetadata(), kTopLeft_GrSurfaceOrigin);
   }
 
@@ -264,7 +274,7 @@ class WebGPUSwapBufferProviderTest : public testing::Test {
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
   raw_ptr<MockWebGPUInterface> webgpu_;
   raw_ptr<gpu::TestSharedImageInterface> sii_;
-  FakeProviderClient client_;
+  Persistent<FakeProviderClient> client_;
   scoped_refptr<WebGPUSwapBufferProviderForTests> provider_;
   bool provider_alive_ = true;
 };

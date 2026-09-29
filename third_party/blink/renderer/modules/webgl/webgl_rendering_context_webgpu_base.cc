@@ -3987,6 +3987,7 @@ void WebGLRenderingContextWebGPUBase::Trace(Visitor* visitor) const {
 
   WebGLContextObjectSupport::Trace(visitor);
   CanvasRenderingContext::Trace(visitor);
+  WebGPUSwapBufferProvider::Client::Trace(visitor);
 }
 
 void WebGLRenderingContextWebGPUBase::OnDebugMessage(GLenum source,

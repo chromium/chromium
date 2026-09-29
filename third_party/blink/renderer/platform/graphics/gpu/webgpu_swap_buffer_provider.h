@@ -20,6 +20,8 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_types_3d.h"
 #include "third_party/blink/renderer/platform/graphics/predefined_color_space.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_video_frame_pool.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -36,7 +38,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
     : public cc::TextureLayerClient,
       public RefCounted<WebGPUSwapBufferProvider> {
  public:
-  class Client {
+  class Client : public GarbageCollectedMixin {
    public:
     // Called to make the WebGPU/Dawn stop accessing the texture prior to its
     // transfer to the compositor/video frame
@@ -164,7 +166,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   void ReleaseWGPUTextureAccessIfNeeded();
 
   scoped_refptr<DawnControlClientHolder> dawn_control_client_;
-  raw_ptr<Client> client_;
+  WeakPersistent<Client> client_;
   wgpu::Device device_;
   scoped_refptr<cc::TextureLayer> layer_;
   bool neutered_ = false;

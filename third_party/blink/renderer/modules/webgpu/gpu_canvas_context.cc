@@ -97,6 +97,7 @@ void GPUCanvasContext::Trace(Visitor* visitor) const {
   visitor->Trace(swap_texture_);
   ScriptWrappable::Trace(visitor);
   CanvasRenderingContext::Trace(visitor);
+  WebGPUSwapBufferProvider::Client::Trace(visitor);
 }
 
 // CanvasRenderingContext implementation
