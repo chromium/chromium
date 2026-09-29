@@ -2145,7 +2145,7 @@ TEST_P(VisualRectMappingTest, ElementCanvasTransformVisualRectMapping) {
   SetBodyInnerHTML(R"HTML(
     <style>body { margin: 0; }</style>
     <canvas content=drawable id="canvas" style="width: 200px; height: 200px">
-      <div id="target" style="width: 100px; height: 100px"></div>
+      <div id="target" drawable style="width: 100px; height: 100px"></div>
     </canvas>
   )HTML");
 

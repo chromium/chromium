@@ -413,7 +413,7 @@ TEST_F(StyleAdjusterTest, AdjustForCanvasDrawableDescendant) {
       <div id="b" drawable style="background: blue;">
         <div id="ba" drawable></div>
       </div>
-      <span id="immediate_span">immediate</span>
+      <span id="immediate_span" drawable>immediate</span>
     </canvas>
   )HTML");
   UpdateAllLifecyclePhasesForTest();

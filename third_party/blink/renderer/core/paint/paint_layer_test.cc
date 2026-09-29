@@ -2635,7 +2635,7 @@ TEST_P(PaintLayerTest, PaintLayerCanvasTransformUpdated) {
 
   SetBodyInnerHTML(R"HTML(
     <canvas id='canvas' width='200' height='200' content=drawable>
-      <div id='target' style='width: 100px; height: 100px;'></div>
+      <div id='target' drawable style='width: 100px; height: 100px;'></div>
     </canvas>
   )HTML");
 

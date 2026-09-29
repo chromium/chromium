@@ -2468,7 +2468,7 @@ TEST_P(PaintLayerScrollableAreaTest,
   ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
   SetBodyInnerHTML(R"HTML(
     <canvas id="canvas" style="width: 200px; height: 200px" content=drawable>
-      <div id="scroller" style="width: 100px; height: 100px; overflow: scroll">
+      <div id="scroller" drawable style="width: 100px; height: 100px; overflow: scroll">
         <div style="width: 200px; height: 200px; background: white"></div>
       </div>
     </canvas>

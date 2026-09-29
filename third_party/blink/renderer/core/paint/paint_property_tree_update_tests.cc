@@ -2396,7 +2396,7 @@ TEST_P(PaintPropertyTreeUpdateTest, CanvasSubtreePseudoElementFilter) {
       }
     </style>
     <canvas id="canvas" content=drawable>
-      <div id="target"></div>
+      <div id="target" drawable></div>
     </canvas>
   )HTML");
 
@@ -2447,7 +2447,7 @@ TEST_P(PaintPropertyTreeUpdateTest, CanvasSubtreeScrollbarInIframe) {
       }
     </style>
     <canvas id="canvas" content=drawable></canvas>
-    <iframe id="iframe"></iframe>
+    <iframe id="iframe" drawable></iframe>
   )HTML");
   SetChildFrameHTML(R"HTML(
     <style>

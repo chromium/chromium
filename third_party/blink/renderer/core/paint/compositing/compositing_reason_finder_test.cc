@@ -705,7 +705,7 @@ TEST_P(CompositingReasonFinderTest, CanvasChild) {
   GetDocument().GetSettings()->SetScriptEnabled(true);
   SetBodyInnerHTML(R"HTML(
     <canvas id=canvas content=drawable>
-      <div id=child style="width: 10px; height: 10px;">
+      <div id=child drawable style="width: 10px; height: 10px;">
        <div id=grandchild style="width: 10px; height: 10px;"
        </div>
       </div>
@@ -770,7 +770,7 @@ TEST_P(CompositingReasonFinderTest, CanvasChildSlotted) {
           <slot name="slot1"></slot>
         </canvas>
       </template>
-      <div id=slotted slot="slot1">
+      <div id=slotted drawable slot="slot1">
         <p id=slotchild>Hello</p>
       </div>
     </div>
