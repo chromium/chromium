@@ -430,13 +430,11 @@ bool OpusAudioDecoder::DecodeBuffer(const scoped_refptr<DecoderBuffer>& input) {
       kSampleFormatF32, channel_layout_, channels_, sample_rate_,
       kMaxOpusOutputPacketSizeSamples, pool_);
 
-  float* float_output_buffer =
-      reinterpret_cast<float*>(output_buffer->channel_data()[0].get());
-
   auto input_span = base::span(*input);
   const int frames_decoded = opus_multistream_decode_float(
       opus_decoder_.get(), input_span.data(), input_span.size(),
-      float_output_buffer, output_buffer->frame_count(), 0);
+      output_buffer->interleaved_data_cast<float>().data(),
+      output_buffer->frame_count(), 0);
 
   if (frames_decoded < 0) {
     DLOG(ERROR) << "opus_multistream_decode failed for"
