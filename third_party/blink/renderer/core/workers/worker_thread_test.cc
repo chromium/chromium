@@ -623,6 +623,7 @@ TEST_F(WorkerThreadTest, MAYBE_NestedPauseFreezeNoInterrupts) {
 
   ExpectReportingCalls();
   Start();
+  reporting_proxy_->WaitUntilDidEvaluateTopLevelScript();
 
   base::WaitableEvent child_waitable;
   PostCrossThreadTask(

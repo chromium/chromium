@@ -12,13 +12,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/loader/javascript_framework_detection.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
-#include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/event_target_names.h"
 #include "third_party/blink/renderer/core/execution_context/security_context_init.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
-#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/worker_devtools_params.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
@@ -108,7 +106,15 @@ class FakeWorkerGlobalScope : public WorkerGlobalScope {
       const FetchClientSettingsObjectSnapshot& outside_settings_object,
       WorkerResourceTimingNotifier& outside_resource_timing_notifier,
       const v8_inspector::V8StackTraceId& stack_id) override {
-    NOTREACHED();
+    DCHECK(!IsContextPaused());
+    mojom::blink::RequestContextType context_type =
+        mojom::blink::RequestContextType::WORKER;
+    network::mojom::RequestDestination destination =
+        network::mojom::RequestDestination::kWorker;
+    FetchClassicScript(script_url, std::move(worker_main_script_load_params),
+                       outside_settings_object,
+                       outside_resource_timing_notifier, context_type,
+                       destination, stack_id);
   }
   void FetchAndRunModuleScript(
       const KURL& module_url_record,
@@ -120,7 +126,6 @@ class FakeWorkerGlobalScope : public WorkerGlobalScope {
       network::mojom::CredentialsMode) override {
     NOTREACHED();
   }
-  bool IsOffMainThreadScriptFetchDisabled() override { return true; }
 
   void ExceptionThrown(ErrorEvent*) override {}
 
@@ -137,6 +142,13 @@ class FakeWorkerGlobalScope : public WorkerGlobalScope {
  private:
   SharedWorkerToken token_;
 };
+
+// Run a worker top-level script (`source`) on initialized `worker_thread`.
+void RunWorkerToplevelScriptForTesting(
+    WorkerThread& worker_thread,
+    const SecurityOrigin* security_origin,
+    const String& source,
+    const KURL& script_url = KURL("http://fake.url/"));
 
 class WorkerThreadForTest : public WorkerThread {
  public:
@@ -159,8 +171,8 @@ class WorkerThreadForTest : public WorkerThread {
                                                                script_url),
           WorkerBackingThreadStartupData::CreateDefault(),
           std::make_unique<WorkerDevToolsParams>());
-    EvaluateClassicScript(script_url, source, nullptr /* cached_meta_data */,
-                          v8_inspector::V8StackTraceId());
+    RunWorkerToplevelScriptForTesting(*this, security_origin, source,
+                                      script_url);
   }
 
  protected:
