@@ -5,6 +5,7 @@
 #include "cc/layers/solid_color_scrollbar_layer.h"
 
 #include <memory>
+#include <utility>
 
 #include "cc/layers/layer_impl.h"
 #include "cc/layers/solid_color_scrollbar_layer_impl.h"
@@ -12,6 +13,24 @@
 #include "cc/trees/layer_tree_settings.h"
 
 namespace cc {
+
+namespace {
+
+int ThumbThickness(const Scrollbar& scrollbar) {
+  gfx::Rect thumb_rect = scrollbar.ThumbRect();
+  return scrollbar.Orientation() == ScrollbarOrientation::kHorizontal
+             ? thumb_rect.height()
+             : thumb_rect.width();
+}
+
+int TrackStart(const Scrollbar& scrollbar) {
+  gfx::Rect track_rect = scrollbar.TrackRect();
+  return scrollbar.Orientation() == ScrollbarOrientation::kHorizontal
+             ? track_rect.x()
+             : track_rect.y();
+}
+
+}  // namespace
 
 std::unique_ptr<LayerImpl> SolidColorScrollbarLayer::CreateLayerImpl(
     LayerTreeImpl* tree_impl) const {
@@ -24,16 +43,11 @@ scoped_refptr<SolidColorScrollbarLayer> SolidColorScrollbarLayer::CreateOrReuse(
     scoped_refptr<Scrollbar> scrollbar,
     SolidColorScrollbarLayer* existing_layer) {
   DCHECK(scrollbar->IsOverlay());
-  bool is_horizontal =
-      scrollbar->Orientation() == ScrollbarOrientation::kHorizontal;
-  gfx::Rect thumb_rect = scrollbar->ThumbRect();
-  int thumb_thickness =
-      is_horizontal ? thumb_rect.height() : thumb_rect.width();
-  gfx::Rect track_rect = scrollbar->TrackRect();
-  int track_start = is_horizontal ? track_rect.x() : track_rect.y();
+  int thumb_thickness = ThumbThickness(*scrollbar);
+  int track_start = TrackStart(*scrollbar);
 
-  scoped_refptr<SolidColorScrollbarLayer> result;
   if (existing_layer &&
+      existing_layer->scrollbar_.Read(*existing_layer)->IsSame(*scrollbar) &&
       // We don't support change of these fields in a layer.
       existing_layer->thumb_thickness() == thumb_thickness &&
       existing_layer->track_start() == track_start) {
@@ -41,35 +55,31 @@ scoped_refptr<SolidColorScrollbarLayer> SolidColorScrollbarLayer::CreateOrReuse(
     DCHECK_EQ(scrollbar->Orientation(), existing_layer->orientation());
     DCHECK_EQ(scrollbar->IsLeftSideVerticalScrollbar(),
               existing_layer->is_left_side_vertical_scrollbar());
-    result = existing_layer;
-  } else {
-    result = Create(scrollbar->Orientation(), thumb_thickness, track_start,
-                    scrollbar->IsLeftSideVerticalScrollbar());
+    existing_layer->SetColor(scrollbar->ThumbColor());
+    return existing_layer;
   }
-  result->SetColor(scrollbar->ThumbColor());
-  return result;
+
+  return Create(std::move(scrollbar));
 }
 
 scoped_refptr<SolidColorScrollbarLayer> SolidColorScrollbarLayer::Create(
-    ScrollbarOrientation orientation,
-    int thumb_thickness,
-    int track_start,
-    bool is_left_side_vertical_scrollbar) {
+    scoped_refptr<Scrollbar> scrollbar) {
   return base::WrapRefCounted(
-      new SolidColorScrollbarLayer(orientation, thumb_thickness, track_start,
-                                   is_left_side_vertical_scrollbar));
+      new SolidColorScrollbarLayer(std::move(scrollbar)));
 }
 
 SolidColorScrollbarLayer::SolidColorScrollbarLayer(
-    ScrollbarOrientation orientation,
-    int thumb_thickness,
-    int track_start,
-    bool is_left_side_vertical_scrollbar)
-    : ScrollbarLayerBase(orientation, is_left_side_vertical_scrollbar),
-      thumb_thickness_(thumb_thickness),
-      track_start_(track_start),
+    scoped_refptr<Scrollbar> scrollbar)
+    : ScrollbarLayerBase(scrollbar->Orientation(),
+                         scrollbar->IsLeftSideVerticalScrollbar()),
+      scrollbar_(std::move(scrollbar)),
+      thumb_thickness_(ThumbThickness(*scrollbar_.Read(*this))),
+      track_start_(TrackStart(*scrollbar_.Read(*this))),
       color_(SkColors::kTransparent) {
+  DCHECK(scrollbar_.Read(*this)->IsOverlay());
+  DCHECK(scrollbar_.Read(*this)->IsSolidColor());
   Layer::SetOpacity(0.f);
+  SetColor(scrollbar_.Read(*this)->ThumbColor());
 }
 
 SolidColorScrollbarLayer::~SolidColorScrollbarLayer() = default;

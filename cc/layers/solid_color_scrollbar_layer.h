@@ -21,14 +21,11 @@ class CC_EXPORT SolidColorScrollbarLayer : public ScrollbarLayerBase {
       LayerTreeImpl* tree_impl) const override;
 
   static scoped_refptr<SolidColorScrollbarLayer> CreateOrReuse(
-      scoped_refptr<Scrollbar>,
+      scoped_refptr<Scrollbar> scrollbar,
       SolidColorScrollbarLayer* existing_layer);
 
   static scoped_refptr<SolidColorScrollbarLayer> Create(
-      ScrollbarOrientation orientation,
-      int thumb_thickness,
-      int track_start,
-      bool is_left_side_vertical_scrollbar);
+      scoped_refptr<Scrollbar> scrollbar);
 
   SolidColorScrollbarLayer(const SolidColorScrollbarLayer&) = delete;
   SolidColorScrollbarLayer& operator=(const SolidColorScrollbarLayer&) = delete;
@@ -53,12 +50,10 @@ class CC_EXPORT SolidColorScrollbarLayer : public ScrollbarLayerBase {
                              CommitState& commit_state) override;
 
  private:
-  SolidColorScrollbarLayer(ScrollbarOrientation orientation,
-                           int thumb_thickness,
-                           int track_start,
-                           bool is_left_side_vertical_scrollbar);
+  explicit SolidColorScrollbarLayer(scoped_refptr<Scrollbar> scrollbar);
   ~SolidColorScrollbarLayer() override;
 
+  ProtectedSequenceForbidden<scoped_refptr<Scrollbar>> scrollbar_;
   int thumb_thickness_;
   int track_start_;
   ProtectedSequenceReadable<SkColor4f> color_;

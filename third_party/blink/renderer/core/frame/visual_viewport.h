@@ -335,10 +335,12 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   void EnqueueScrollEvent();
   void EnqueueResizeEvent();
 
+  class ScrollbarDelegate;
+
   EScrollbarWidth CSSScrollbarWidth() const;
   int ScrollbarThickness() const;
   void UpdateScrollbarLayer(ScrollbarOrientation);
-  void UpdateScrollbarColor(cc::SolidColorScrollbarLayer&);
+  SkColor4f ScrollbarThumbColor() const;
 
   void NotifyRootFrameViewport() const;
 
@@ -368,6 +370,8 @@ class CORE_EXPORT VisualViewport : public GarbageCollected<VisualViewport>,
   scoped_refptr<cc::Layer> scroll_layer_;
   scoped_refptr<cc::SolidColorScrollbarLayer> scrollbar_layer_horizontal_;
   scoped_refptr<cc::SolidColorScrollbarLayer> scrollbar_layer_vertical_;
+  scoped_refptr<ScrollbarDelegate> scrollbar_delegate_horizontal_;
+  scoped_refptr<ScrollbarDelegate> scrollbar_delegate_vertical_;
 
   TraceablePropertyTreeStateOrAlias parent_property_tree_state_{
       TraceablePropertyTreeStateOrAlias::kUninitialized};

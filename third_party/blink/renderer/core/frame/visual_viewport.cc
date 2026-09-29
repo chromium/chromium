@@ -78,6 +78,7 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/theme/web_theme_engine_helper.h"
+#include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
@@ -95,6 +96,129 @@ OverscrollType ComputeOverscrollType() {
 }
 
 }  // anonymous namespace
+
+// Adapter implementing `cc::Scrollbar` for `VisualViewport`'s compositor
+// scrollbar layers (`cc::SolidColorScrollbarLayer`). Unlike regular
+// `ScrollableArea`s, which create `blink::Scrollbar` instances and wrap them in
+// `blink::ScrollbarLayerDelegate`, `VisualViewport` manages its solid-color
+// overlay scrollbar layers directly.
+//
+// `cc::SolidColorScrollbarLayer` only reads `Orientation()`,
+// `IsLeftSideVerticalScrollbar()`, `IsSolidColor()`, `IsOverlay()`,
+// `ThumbRect()` (for thumb thickness), `TrackRect()` (for track start),
+// `ThumbColor()`, and `IsSame()`; the actual thumb length and position are
+// computed on the compositor thread by `cc::SolidColorScrollbarLayerImpl` and
+// no main-thread painting or resource upload occurs. Therefore, the
+// implementation of most `cc::Scrollbar` methods below does not matter.
+class VisualViewport::ScrollbarDelegate : public cc::Scrollbar {
+ public:
+  ScrollbarDelegate(VisualViewport& visual_viewport,
+                    ScrollbarOrientation orientation)
+      : visual_viewport_(&visual_viewport), orientation_(orientation) {}
+
+  void SetThumbNeedsRepaint() { thumb_needs_repaint_ = true; }
+
+  // cc::Scrollbar implementation:
+  bool IsSame(const cc::Scrollbar& other) const override {
+    return this == &other;
+  }
+  cc::ScrollbarOrientation Orientation() const override {
+    return orientation_ == kHorizontalScrollbar
+               ? cc::ScrollbarOrientation::kHorizontal
+               : cc::ScrollbarOrientation::kVertical;
+  }
+  bool IsLeftSideVerticalScrollbar() const override { return false; }
+  bool IsSolidColor() const override { return true; }
+  bool IsOverlay() const override { return true; }
+  bool IsRunningWebTest() const override {
+    return WebTestSupport::IsRunningWebTest();
+  }
+  bool IsFluentOverlayScrollbarMinimalMode() const override { return false; }
+  bool HasThumb() const override { return true; }
+  bool SupportsDragSnapBack() const override { return false; }
+  bool JumpOnTrackClick() const override { return false; }
+  bool IsOpaque() const override { return false; }
+  int MinimumThumbLength() const override { return 0; }
+
+  gfx::Rect ThumbRect() const override {
+    if (!visual_viewport_ || !visual_viewport_->IsActiveViewport()) {
+      return gfx::Rect();
+    }
+    // `cc::SolidColorScrollbarLayer` only uses `ThumbRect()` to extract
+    // `thumb_thickness` (height for horizontal, width for vertical). The thumb
+    // origin and length along the track are computed on the compositor thread
+    // by `cc::SolidColorScrollbarLayerImpl`, so those values do not matter.
+    int thumb_thickness =
+        ScrollbarThemeOverlayMobile::GetInstance().ThumbThickness(
+            visual_viewport_->ScaleFromDIP(),
+            visual_viewport_->CSSScrollbarWidth());
+    return gfx::Rect(0, 0, thumb_thickness, thumb_thickness);
+  }
+
+  gfx::Rect TrackRect() const override {
+    if (!visual_viewport_ || !visual_viewport_->IsActiveViewport()) {
+      return gfx::Rect();
+    }
+    // `cc::SolidColorScrollbarLayer` only uses `TrackRect()` to extract
+    // `track_start` (`x()` for horizontal, `y()` for vertical), which equals
+    // the scrollbar margin. The track size is computed from the layer bounds on
+    // the compositor thread, so the width and height here do not matter.
+    int margin = ScrollbarThemeOverlayMobile::GetInstance().ScrollbarMargin(
+        visual_viewport_->ScaleFromDIP(),
+        visual_viewport_->CSSScrollbarWidth());
+    return gfx::Rect(margin, margin, 0, 0);
+  }
+
+  gfx::Rect BackButtonRect() const override { return gfx::Rect(); }
+  gfx::Rect ForwardButtonRect() const override { return gfx::Rect(); }
+  float Opacity() const override { return 1.f; }
+  bool HasTickmarks() const override { return false; }
+
+  bool ThumbNeedsRepaint() const override { return thumb_needs_repaint_; }
+  void ClearThumbNeedsRepaint() override { thumb_needs_repaint_ = false; }
+  bool TrackAndButtonsNeedRepaint() const override { return false; }
+
+  void PaintThumb(cc::PaintCanvas& canvas, const gfx::Rect& rect) override {
+    NOTREACHED();
+  }
+  void PaintTrackAndButtons(cc::PaintCanvas& canvas,
+                            const gfx::Rect& rect) override {
+    NOTREACHED();
+  }
+
+  SkColor4f ThumbColor() const override {
+    if (!visual_viewport_ || !visual_viewport_->IsActiveViewport()) {
+      return SkColors::kTransparent;
+    }
+    return visual_viewport_->ScrollbarThumbColor();
+  }
+
+  bool NeedsUpdateDisplay() const override { return false; }
+  void ClearNeedsUpdateDisplay() override {}
+  bool UsesNinePatchThumbResource() const override { return false; }
+  gfx::Size NinePatchThumbCanvasSize() const override { return gfx::Size(); }
+  gfx::Rect NinePatchThumbAperture() const override { return gfx::Rect(); }
+  bool UsesSolidColorThumb() const override { return false; }
+  gfx::Insets SolidColorThumbInsets() const override { return gfx::Insets(); }
+  bool UsesNinePatchTrackAndButtonsResource() const override { return false; }
+  gfx::Size NinePatchTrackAndButtonsCanvasSize(float scale) const override {
+    return gfx::Size();
+  }
+  gfx::Rect NinePatchTrackAndButtonsAperture(float scale) const override {
+    return gfx::Rect();
+  }
+  gfx::Rect ShrinkMainThreadedMinimalModeThumbRect(
+      gfx::Rect& rect) const override {
+    return rect;
+  }
+
+ private:
+  ~ScrollbarDelegate() override = default;
+
+  WeakPersistent<VisualViewport> visual_viewport_;
+  ScrollbarOrientation orientation_;
+  bool thumb_needs_repaint_ = true;
+};
 
 VisualViewport::VisualViewport(Page& owner)
     : ScrollableArea(owner.GetAgentGroupScheduler().CompositorTaskRunner()),
@@ -668,6 +792,8 @@ void VisualViewport::InitializeScrollbars() {
 
   scrollbar_layer_horizontal_ = nullptr;
   scrollbar_layer_vertical_ = nullptr;
+  scrollbar_delegate_horizontal_ = nullptr;
+  scrollbar_delegate_vertical_ = nullptr;
   if (VisualViewportSuppliesScrollbars() &&
       !GetPage().GetSettings().GetHideScrollbars()) {
     UpdateScrollbarLayer(kHorizontalScrollbar);
@@ -720,31 +846,25 @@ void VisualViewport::UpdateScrollbarLayer(ScrollbarOrientation orientation) {
   bool is_horizontal = orientation == kHorizontalScrollbar;
   scoped_refptr<cc::SolidColorScrollbarLayer>& scrollbar_layer =
       is_horizontal ? scrollbar_layer_horizontal_ : scrollbar_layer_vertical_;
-  if (!scrollbar_layer) {
-    auto& theme = ScrollbarThemeOverlayMobile::GetInstance();
-    float scale = ScaleFromDIP();
-    int thumb_thickness = theme.ThumbThickness(scale, CSSScrollbarWidth());
-    int scrollbar_margin = theme.ScrollbarMargin(scale, CSSScrollbarWidth());
-    cc::ScrollbarOrientation cc_orientation =
-        orientation == kHorizontalScrollbar
-            ? cc::ScrollbarOrientation::kHorizontal
-            : cc::ScrollbarOrientation::kVertical;
-    scrollbar_layer = cc::SolidColorScrollbarLayer::Create(
-        cc_orientation, thumb_thickness, scrollbar_margin,
-        /*is_left_side_vertical_scrollbar*/ false);
-    scrollbar_layer->SetElementId(GetScrollbarElementId(orientation));
-    scrollbar_layer->SetScrollElementId(scroll_layer_->element_id());
-    scrollbar_layer->SetIsDrawable(true);
+  scoped_refptr<ScrollbarDelegate>& scrollbar_delegate =
+      is_horizontal ? scrollbar_delegate_horizontal_
+                    : scrollbar_delegate_vertical_;
+  if (!scrollbar_delegate) {
+    scrollbar_delegate =
+        base::MakeRefCounted<ScrollbarDelegate>(*this, orientation);
   }
+  scrollbar_delegate->SetThumbNeedsRepaint();
+  scrollbar_layer = cc::SolidColorScrollbarLayer::CreateOrReuse(
+      scrollbar_delegate, scrollbar_layer.get());
+  scrollbar_layer->SetElementId(GetScrollbarElementId(orientation));
+  scrollbar_layer->SetScrollElementId(scroll_layer_->element_id());
+  scrollbar_layer->SetIsDrawable(true);
 
   scrollbar_layer->SetBounds(
-      orientation == kHorizontalScrollbar
-          ? gfx::Size(size_.width() - ScrollbarThickness(),
-                      ScrollbarThickness())
-          : gfx::Size(ScrollbarThickness(),
-                      size_.height() - ScrollbarThickness()));
-
-  UpdateScrollbarColor(*scrollbar_layer);
+      is_horizontal ? gfx::Size(size_.width() - ScrollbarThickness(),
+                                ScrollbarThickness())
+                    : gfx::Size(ScrollbarThickness(),
+                                size_.height() - ScrollbarThickness()));
 }
 
 bool VisualViewport::VisualViewportSuppliesScrollbars() const {
@@ -1206,6 +1326,8 @@ void VisualViewport::DisposeImpl() {
   scroll_layer_.reset();
   scrollbar_layer_horizontal_.reset();
   scrollbar_layer_vertical_.reset();
+  scrollbar_delegate_horizontal_.reset();
+  scrollbar_delegate_vertical_.reset();
   device_emulation_transform_node_ = nullptr;
   overscroll_elasticity_transform_node_ = nullptr;
   page_scale_node_ = nullptr;
@@ -1256,27 +1378,28 @@ void VisualViewport::UsedColorSchemeChanged() {
   DCHECK(IsActiveViewport());
   // The scrollbar overlay color theme depends on the used color scheme.
   RecalculateOverlayScrollbarColorScheme();
+  ScrollbarColorChanged();
 }
 
 void VisualViewport::ScrollbarColorChanged() {
   DCHECK(IsActiveViewport());
   if (scrollbar_layer_horizontal_) {
     DCHECK(scrollbar_layer_vertical_);
-    UpdateScrollbarColor(*scrollbar_layer_horizontal_);
-    UpdateScrollbarColor(*scrollbar_layer_vertical_);
+    UpdateScrollbarLayer(kHorizontalScrollbar);
+    UpdateScrollbarLayer(kVerticalScrollbar);
   }
 }
 
-void VisualViewport::UpdateScrollbarColor(cc::SolidColorScrollbarLayer& layer) {
+SkColor4f VisualViewport::ScrollbarThumbColor() const {
   const auto* color_provider = GetPage().GetColorProviderForPainting(
-      UsedColorSchemeScrollbars(), GetPage().GetSettings().GetInForcedColors());
+      GetOverlayScrollbarColorScheme(),
+      GetPage().GetSettings().GetInForcedColors());
   WebThemeEngine::ExtraParams params =
       WebThemeEngine::ScrollbarThumbExtraParams();
   Color default_color = Color::FromSkColor4f(
       WebThemeEngineHelper::GetNativeThemeEngine()->GetScrollbarThumbColor(
           WebThemeEngine::kStateNormal, &params, color_provider));
-  layer.SetColor(
-      CSSScrollbarThumbColor().value_or(default_color).toSkColor4f());
+  return CSSScrollbarThumbColor().value_or(default_color).toSkColor4f();
 }
 
 }  // namespace blink
