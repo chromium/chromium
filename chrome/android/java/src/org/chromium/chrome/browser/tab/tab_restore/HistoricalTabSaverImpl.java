@@ -13,6 +13,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -30,7 +31,8 @@ import java.util.function.Supplier;
 @NullMarked
 @JNINamespace("historical_tab_saver")
 public class HistoricalTabSaverImpl implements HistoricalTabSaver {
-    private final List<Supplier<TabModel>> mSecondaryTabModelSuppliers = new ArrayList<>();
+    private final List<Supplier<@Nullable TabModel>> mSecondaryTabModelSuppliers =
+            new ArrayList<>();
     private final TabModel mTabModel;
 
     // These values are persisted to logs. Entries should not be renumbered and numeric values
@@ -64,12 +66,12 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
     }
 
     @Override
-    public void addSecondaryTabModelSupplier(Supplier<TabModel> tabModelSupplier) {
+    public void addSecondaryTabModelSupplier(Supplier<@Nullable TabModel> tabModelSupplier) {
         mSecondaryTabModelSuppliers.add(tabModelSupplier);
     }
 
     @Override
-    public void removeSecondaryTabModelSupplier(Supplier<TabModel> tabModelSupplier) {
+    public void removeSecondaryTabModelSupplier(Supplier<@Nullable TabModel> tabModelSupplier) {
         mSecondaryTabModelSuppliers.remove(tabModelSupplier);
     }
 
@@ -227,7 +229,7 @@ public class HistoricalTabSaverImpl implements HistoricalTabSaver {
     }
 
     private boolean tabIdExistsInSecondaryModel(int tabId) {
-        for (Supplier<TabModel> tabModelSupplier : mSecondaryTabModelSuppliers) {
+        for (Supplier<@Nullable TabModel> tabModelSupplier : mSecondaryTabModelSuppliers) {
             var tabModel = tabModelSupplier.get();
             if (tabModel != null && tabModel.getTabById(tabId) != null) {
                 return true;

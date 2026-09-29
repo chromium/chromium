@@ -300,7 +300,7 @@ public class LocaleManagerDelegate {
      *
      * @see LocaleManager#setSnackbarManager
      */
-    public void setSnackbarManager(SnackbarManager manager) {
+    public void setSnackbarManager(@Nullable SnackbarManager manager) {
         mSnackbarManager = new WeakReference<SnackbarManager>(manager);
         if (mIsSnackbarQueuedForDeviceSearchEngineType != SearchEngineType.SEARCH_ENGINE_UNKNOWN) {
             showSnackbarForDeviceSearchEngineUpdate();

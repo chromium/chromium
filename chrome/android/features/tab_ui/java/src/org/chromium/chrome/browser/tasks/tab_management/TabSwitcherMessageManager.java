@@ -173,7 +173,7 @@ public class TabSwitcherMessageManager {
     private final MonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
     private final Supplier<PaneManager> mPaneManagerSupplier;
     private final Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
-    private final Supplier<LayoutStateProvider> mLayoutStateProviderSupplier;
+    private final Supplier<@Nullable LayoutStateProvider> mLayoutStateProviderSupplier;
 
     private @Nullable Profile mProfile;
     private @Nullable PriceWelcomeMessageController mPriceWelcomeMessageController;
@@ -217,7 +217,7 @@ public class TabSwitcherMessageManager {
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             Supplier<PaneManager> paneManagerSupplier,
             Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
-            Supplier<LayoutStateProvider> layoutStateProviderSupplier) {
+            Supplier<@Nullable LayoutStateProvider> layoutStateProviderSupplier) {
         mActivity = activity;
         mLifecycleDispatcher = lifecycleDispatcher;
         mCurrentTabModelSupplier = currentTabModelSupplier;

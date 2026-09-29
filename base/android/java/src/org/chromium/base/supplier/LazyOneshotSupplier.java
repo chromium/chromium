@@ -56,7 +56,7 @@ public interface LazyOneshotSupplier<T extends @Nullable Object> {
      * Allows callers to inline a lambda to satisfy the implementation of this object. The supplier
      * must be able to run and complete synchronously at any point.
      */
-    static <T> LazyOneshotSupplier<T> fromSupplier(Supplier<T> supplier) {
+    static <T extends @Nullable Object> LazyOneshotSupplier<T> fromSupplier(Supplier<T> supplier) {
         return new LazyOneshotSupplierImpl<>() {
             @Override
             public void doSet() {

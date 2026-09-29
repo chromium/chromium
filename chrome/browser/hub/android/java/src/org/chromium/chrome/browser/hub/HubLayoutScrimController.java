@@ -26,7 +26,7 @@ public class HubLayoutScrimController implements ScrimController {
     private static final int SCRIM_FADE_DURATION_MS = 350;
 
     private final ScrimManager mScrimManager;
-    private final Supplier<View> mAnchorViewSupplier;
+    private final Supplier<@Nullable View> mAnchorViewSupplier;
     private final NonNullObservableSupplier<Boolean> mIsIncognitoSupplier;
     private final Callback<Boolean> mOnIncognitoChange = this::onIncognitoChange;
 
@@ -40,7 +40,7 @@ public class HubLayoutScrimController implements ScrimController {
      */
     public HubLayoutScrimController(
             ScrimManager scrimManager,
-            Supplier<View> anchorViewSupplier,
+            Supplier<@Nullable View> anchorViewSupplier,
             NonNullObservableSupplier<Boolean> isIncognitoSupplier) {
         mScrimManager = scrimManager;
         mAnchorViewSupplier = anchorViewSupplier;

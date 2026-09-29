@@ -122,7 +122,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     public LayoutManagerChromeTablet(
             LayoutManagerHost host,
             ViewGroup contentContainer,
-            Supplier<TabSwitcher> tabSwitcherSupplier,
+            Supplier<@Nullable TabSwitcher> tabSwitcherSupplier,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             BrowserControlsStateProvider browserControlsStateProvider,
             MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,

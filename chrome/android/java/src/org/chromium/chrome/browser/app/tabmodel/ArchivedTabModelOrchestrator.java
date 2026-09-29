@@ -793,13 +793,15 @@ public class ArchivedTabModelOrchestrator extends TabModelOrchestrator {
         }
     }
 
-    public void initializeHistoricalTabModelObserver(Supplier<TabModel> regularTabModelSupplier) {
+    public void initializeHistoricalTabModelObserver(
+            Supplier<@Nullable TabModel> regularTabModelSupplier) {
         if (mHistoricalTabModelObserver != null) {
             mHistoricalTabModelObserver.addSecondaryTabModelSupplier(regularTabModelSupplier);
         }
     }
 
-    public void removeHistoricalTabModelObserver(Supplier<TabModel> regularTabModelSupplier) {
+    public void removeHistoricalTabModelObserver(
+            Supplier<@Nullable TabModel> regularTabModelSupplier) {
         if (mHistoricalTabModelObserver != null) {
             mHistoricalTabModelObserver.removeSecondaryTabModelSupplier(regularTabModelSupplier);
         }

@@ -160,7 +160,7 @@ public class MemoryPressureListener {
      * Used by applications to simulate a memory pressure signal. By throwing certain intent
      * actions.
      */
-    public static boolean handleDebugIntent(Activity activity, String action) {
+    public static boolean handleDebugIntent(Activity activity, @Nullable String action) {
         ThreadUtils.assertOnUiThread();
         if (ACTION_LOW_MEMORY.equals(action)) {
             simulateLowMemoryPressureSignal(activity);

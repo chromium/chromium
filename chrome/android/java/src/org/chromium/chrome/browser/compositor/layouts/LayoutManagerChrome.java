@@ -81,7 +81,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
     private @Nullable TabContentManager mTabContentManager;
 
     // Lazy Tab Switcher Init
-    private final Supplier<TabSwitcher> mTabSwitcherSupplier;
+    private final Supplier<@Nullable TabSwitcher> mTabSwitcherSupplier;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
 
     private final HubLayoutDependencyHolder mHubLayoutDependencyHolder;
@@ -109,7 +109,7 @@ public class LayoutManagerChrome extends LayoutManagerImpl implements Accessibil
     public LayoutManagerChrome(
             LayoutManagerHost host,
             ViewGroup contentContainer,
-            Supplier<TabSwitcher> tabSwitcherSupplier,
+            Supplier<@Nullable TabSwitcher> tabSwitcherSupplier,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<ToolbarThemeColorProvider> toolbarThemeColorProvider,

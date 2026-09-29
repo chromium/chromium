@@ -198,7 +198,7 @@ public class VerticalTabListCoordinator {
     private final @Nullable UndoBarThrottle mUndoBarThrottle;
     private final @Nullable TabUnderlineManager mTabUnderlineManager;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
-    private final Supplier<TabContentManager> mTabContentManagerSupplier;
+    private final Supplier<@Nullable TabContentManager> mTabContentManagerSupplier;
     private final List<VerticalTabListItemTouchHelperCallback> mTouchHelperCallbacks =
             new ArrayList<>();
     private @Nullable TabStripContextMenuCoordinator mTabStripContextMenuCoordinator;
@@ -328,7 +328,7 @@ public class VerticalTabListCoordinator {
             @Nullable BooleanSupplier canActivateTabLayoutToggleMenuSupplier,
             @Nullable ViewStub tabHoverCardViewStub,
             @Nullable ViewStub tabGroupHoverCardViewStub,
-            Supplier<TabContentManager> tabContentManagerSupplier,
+            Supplier<@Nullable TabContentManager> tabContentManagerSupplier,
             @Nullable UndoBarThrottle undoBarThrottle,
             BrowserControlsStateProvider browserControlsStateProvider,
             BackPressManager backPressManager) {
@@ -422,15 +422,13 @@ public class VerticalTabListCoordinator {
                 new ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 
-        @SuppressWarnings("NullAway")
-        Supplier<@Nullable TabContentManager> nullableSupplier = tabContentManagerSupplier;
         mTabHoverController =
                 new VerticalTabHoverController(
                         mContainerView,
                         tabHoverCardViewStub,
                         tabGroupHoverCardViewStub,
                         tabModelSelector,
-                        nullableSupplier,
+                        tabContentManagerSupplier,
                         this::isAnyContextMenuShowing);
 
         VerticalTabListRecyclerView recyclerView = mContainerView.getRecyclerView();

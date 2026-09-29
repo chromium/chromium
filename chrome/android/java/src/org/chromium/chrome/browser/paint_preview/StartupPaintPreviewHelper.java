@@ -48,7 +48,7 @@ public class StartupPaintPreviewHelper implements Destroyable {
     private final long mActivityCreationTime;
 
     private final BrowserControlsManager mBrowserControlsManager;
-    private final Supplier<LoadProgressCoordinator> mProgressBarCoordinatorSupplier;
+    private final Supplier<@Nullable LoadProgressCoordinator> mProgressBarCoordinatorSupplier;
     private final ObserverList<PaintPreviewMetricsObserver> mMetricsObservers =
             new ObserverList<>();
     private final TabModelSelector mTabModelSelector;
@@ -72,7 +72,7 @@ public class StartupPaintPreviewHelper implements Destroyable {
             long activityCreationTime,
             BrowserControlsManager browserControlsManager,
             TabModelSelector tabModelSelector,
-            Supplier<LoadProgressCoordinator> progressBarCoordinatorSupplier) {
+            Supplier<@Nullable LoadProgressCoordinator> progressBarCoordinatorSupplier) {
         mActivityCreationTime = activityCreationTime;
         mBrowserControlsManager = browserControlsManager;
         mProgressBarCoordinatorSupplier = progressBarCoordinatorSupplier;

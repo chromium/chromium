@@ -127,7 +127,7 @@ public class ArchivedTabsMessageService
     private final Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
     private final NullableObservableSupplier<TabModel> mCurrentTabModelSupplier;
     private final NonNullObservableSupplier<Integer> mTabCountSupplier;
-    private final Supplier<LayoutStateProvider> mLayoutStateProviderSupplier;
+    private final Supplier<@Nullable LayoutStateProvider> mLayoutStateProviderSupplier;
     private final LayoutStateObserver mLayoutStateObserver =
             new LayoutStateObserver() {
                 @Override
@@ -165,7 +165,7 @@ public class ArchivedTabsMessageService
             Supplier<PaneManager> paneManagerSupplier,
             Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
             NullableObservableSupplier<TabModel> currentTabModelSupplier,
-            Supplier<LayoutStateProvider> layoutStateProviderSupplier) {
+            Supplier<@Nullable LayoutStateProvider> layoutStateProviderSupplier) {
         super(
                 MessageType.ARCHIVED_TABS_MESSAGE,
                 UiType.ARCHIVED_TABS_MESSAGE,

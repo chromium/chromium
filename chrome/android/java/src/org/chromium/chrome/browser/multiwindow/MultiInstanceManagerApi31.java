@@ -129,7 +129,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
                 }
             };
 
-    private final Supplier<DesktopWindowStateManager> mDesktopWindowStateManagerSupplier;
+    private final Supplier<@Nullable DesktopWindowStateManager> mDesktopWindowStateManagerSupplier;
     private final MultiInstanceStateObserver mOnMultiInstanceStateChanged;
 
     private boolean mIsCreationLimitMessageEnqueued;
@@ -141,7 +141,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             MenuOrKeyboardActionController menuOrKeyboardActionController,
-            Supplier<DesktopWindowStateManager> desktopWindowStateManagerSupplier) {
+            Supplier<@Nullable DesktopWindowStateManager> desktopWindowStateManagerSupplier) {
         super(
                 activity,
                 tabModelOrchestratorSupplier,

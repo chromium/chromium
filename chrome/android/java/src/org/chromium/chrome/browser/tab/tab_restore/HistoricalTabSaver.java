@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab.tab_restore;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
@@ -21,13 +22,13 @@ public interface HistoricalTabSaver {
      * Adds a secondary {@link TabModel} supplier to check if a deleted tab should be added to
      * recent tabs.
      */
-    void addSecondaryTabModelSupplier(Supplier<TabModel> tabModelSupplier);
+    void addSecondaryTabModelSupplier(Supplier<@Nullable TabModel> tabModelSupplier);
 
     /**
      * Removes a secondary {@link TabModel} supplier to check if a deleted tab should be added to
      * recent tabs.
      */
-    void removeSecondaryTabModelSupplier(Supplier<TabModel> tabModelSupplier);
+    void removeSecondaryTabModelSupplier(Supplier<@Nullable TabModel> tabModelSupplier);
 
     /**
      * Creates a Tab entry in TabRestoreService.

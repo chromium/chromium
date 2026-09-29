@@ -503,7 +503,7 @@ public class MultiWindowUtils implements ActivityStateListener {
      * @param startActivityOptions The {@link Bundle} that will be used to start the activity.
      */
     public static void relaunchChromeTabbedActivity2(
-            Context context, int windowId, Bundle startActivityOptions) {
+            Context context, int windowId, @Nullable Bundle startActivityOptions) {
         Intent intent =
                 createNewWindowIntent(
                         context,

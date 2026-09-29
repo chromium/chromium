@@ -70,10 +70,10 @@ public class HubProvider {
             BackPressManager backPressManager,
             MenuOrKeyboardActionController menuOrKeyboardActionController,
             Supplier<SnackbarManager> snackbarManagerSupplier,
-            Supplier<BottomSheetController> bottomSheetControllerSupplier,
+            Supplier<@Nullable BottomSheetController> bottomSheetControllerSupplier,
             @Nullable BottomBarHostManager bottomBarHostManager,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
-            Supplier<MenuButtonCoordinator> menuButtonCoordinatorSupplier,
+            Supplier<@Nullable MenuButtonCoordinator> menuButtonCoordinatorSupplier,
             MonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier,
             SearchActivityClient searchActivityClient,
             NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
@@ -87,7 +87,9 @@ public class HubProvider {
                             assert tabModelSelectorSupplier.get() != null;
                             NullableObservableSupplier<Tab> tabSupplier =
                                     tabModelSelectorSupplier.get().getCurrentTabSupplier();
-                            assert menuButtonCoordinatorSupplier.get() != null;
+                            MenuButtonCoordinator menuButtonCoordinator =
+                                    menuButtonCoordinatorSupplier.get();
+                            assert menuButtonCoordinator != null;
 
                             SnackbarManager snackbarManager = snackbarManagerSupplier.get();
                             assert snackbarManager != null;
@@ -104,7 +106,7 @@ public class HubProvider {
                                     bottomSheetController,
                                     bottomBarHostManager,
                                     tabSupplier,
-                                    menuButtonCoordinatorSupplier.get(),
+                                    menuButtonCoordinator,
                                     mHubShowPaneHelper,
                                     edgeToEdgeSupplier,
                                     searchActivityClient,

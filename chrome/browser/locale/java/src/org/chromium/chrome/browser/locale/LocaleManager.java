@@ -91,9 +91,10 @@ public class LocaleManager implements DefaultSearchEngineDialogHelper.Delegate {
 
     /**
      * Sets the {@link SnackbarManager} used by this instance.
+     *
      * @param manager SnackbarManager instance.
      */
-    public void setSnackbarManager(SnackbarManager manager) {
+    public void setSnackbarManager(@Nullable SnackbarManager manager) {
         mDelegate.setSnackbarManager(manager);
     }
 

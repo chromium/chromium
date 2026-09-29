@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 
@@ -31,7 +32,7 @@ public class ChromeTabbedActivity2 extends ChromeTabbedActivity {
 
     @Override
     protected @LaunchIntentDispatcher.Action int maybeDispatchLaunchIntent(
-            Intent intent, Bundle savedInstanceState) {
+            Intent intent, @Nullable Bundle savedInstanceState) {
         if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             // ChromeTabbedActivity2 can be launched in multi-instance configuration if a CTA2-task
             // survives Chrome upgrade and gets to the foreground to have the activity re-created.

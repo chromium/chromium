@@ -15,6 +15,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -40,10 +41,10 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
     public static final String SUPPORTED_PROFILE_TYPE = "supported_profile_type";
 
     /** A {@link Supplier<Bundle>} for the saved instance state supplier. */
-    private final Supplier<Bundle> mSavedInstanceStateSupplier;
+    private final Supplier<@Nullable Bundle> mSavedInstanceStateSupplier;
 
     /** A {@link Supplier<PersistableBundle>} for the persistent state supplier. */
-    private final Supplier<PersistableBundle> mPersistentStateSupplier;
+    private final Supplier<@Nullable PersistableBundle> mPersistentStateSupplier;
 
     /** A supplier of {@link TabModelSelector} instance. */
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
@@ -117,8 +118,9 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
      * @param persistentStateSupplier A {@link Supplier<PersistableBundle>} instance to pass in the
      *     PersistableBundle that was persisted during onSaveInstanceState that allows to look for
      *     signals on whether to block the draw or not.
-     * @param tabModelSelectorSupplier A {@link MonotonicObservableSupplier <TabModelSelector>} that allows to
-     *     listen for onTabStateInitialized signals which is used a fallback to unblock draw.
+     * @param tabModelSelectorSupplier A {@link MonotonicObservableSupplier<TabModelSelector>} that
+     *     allows to listen for onTabStateInitialized signals which is used a fallback to unblock
+     *     draw.
      * @param intentSupplier The {@link Supplier<Intent>} which is passed when Chrome was launched
      *     through Intent.
      * @param shouldIgnoreIntentSupplier A {@link Supplier<Boolean>} to indicate whether we need to
@@ -129,8 +131,8 @@ public class IncognitoRestoreAppLaunchDrawBlocker {
      * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting.
      */
     IncognitoRestoreAppLaunchDrawBlocker(
-            Supplier<Bundle> savedInstanceStateSupplier,
-            Supplier<PersistableBundle> persistentStateSupplier,
+            Supplier<@Nullable Bundle> savedInstanceStateSupplier,
+            Supplier<@Nullable PersistableBundle> persistentStateSupplier,
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             Supplier<Intent> intentSupplier,
             Supplier<Boolean> shouldIgnoreIntentSupplier,

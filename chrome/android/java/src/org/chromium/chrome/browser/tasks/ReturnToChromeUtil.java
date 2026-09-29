@@ -124,8 +124,8 @@ public final class ReturnToChromeUtil {
     /** Returns whether should show a NTP as the home surface at startup. */
     public static boolean shouldShowNtpAsHomeSurfaceAtStartup(
             Intent intent,
-            Bundle bundle,
-            PersistableBundle persistableBundle,
+            @Nullable Bundle bundle,
+            @Nullable PersistableBundle persistableBundle,
             ChromeInactivityTracker inactivityTracker) {
         // If the device is android desktop, don't show a NTP homepage.
         if (DeviceInfo.isDesktop()) {
@@ -147,7 +147,7 @@ public final class ReturnToChromeUtil {
     }
 
     /** Returns whether a recreate was happened. */
-    private static boolean isFromRecreate(Bundle bundle) {
+    private static boolean isFromRecreate(@Nullable Bundle bundle) {
         if (bundle == null) return false;
 
         return bundle.getBoolean(ChromeActivity.IS_FROM_RECREATING, false);

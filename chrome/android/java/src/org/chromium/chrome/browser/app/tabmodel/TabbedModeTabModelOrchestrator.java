@@ -86,7 +86,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
     private @MonotonicNonNull OneshotSupplier<ProfileProvider> mProfileProviderSupplier;
     private @MonotonicNonNull RecordingTabCreatorManager mRecordingTabCreatorManager;
 
-    private @Nullable Supplier<TabModel> mArchivedHistoricalObserverSupplier;
+    private @Nullable Supplier<@Nullable TabModel> mArchivedHistoricalObserverSupplier;
     private @Nullable Destroyable mDeclutterLease;
     private @Nullable TabContentManager mTabContentManager;
     private @Nullable CallbackController mCallbackController = new CallbackController();

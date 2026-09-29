@@ -53,7 +53,8 @@ public class HistoryItemBuilder implements Destroyable {
     private final AppMenuItemTheme mAppMenuItemTheme;
     private final TabModelSelector mTabModelSelector;
     private final Supplier<FaviconHelper> mFaviconHelperSupplier;
-    private final Supplier<RecentlyClosedEntriesManager> mRecentlyClosedEntriesManagerSupplier;
+    private final Supplier<@Nullable RecentlyClosedEntriesManager>
+            mRecentlyClosedEntriesManagerSupplier;
     private final boolean mIsMenuIconAtStart;
     private final boolean mShouldShowIconBeforeItem;
     private final RoundedIconGenerator mRoundedIconGenerator;
@@ -79,7 +80,7 @@ public class HistoryItemBuilder implements Destroyable {
             AppMenuItemTheme appMenuItemTheme,
             TabModelSelector tabModelSelector,
             Supplier<FaviconHelper> faviconHelperSupplier,
-            Supplier<RecentlyClosedEntriesManager> recentlyClosedEntriesManagerSupplier,
+            Supplier<@Nullable RecentlyClosedEntriesManager> recentlyClosedEntriesManagerSupplier,
             boolean isMenuIconAtStart,
             boolean shouldShowIconBeforeItem,
             RoundedIconGenerator roundedIconGenerator,

@@ -679,7 +679,10 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
      */
     // TODO(crbug.com/40691614): Clean up the launches from SearchActivity/Chrome.
     public @Nullable Tab launchUrlFromExternalApp(
-            LoadUrlParams loadUrlParams, String appId, boolean forceNewTab, Intent intent) {
+            LoadUrlParams loadUrlParams,
+            @Nullable String appId,
+            boolean forceNewTab,
+            Intent intent) {
         if (mTabModel == null) return null;
         assert !mIncognito || isIncognitoForced();
 

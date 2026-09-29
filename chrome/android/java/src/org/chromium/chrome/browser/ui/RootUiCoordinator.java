@@ -433,7 +433,7 @@ public class RootUiCoordinator
     protected final @ActivityType int mActivityType;
     protected final Supplier<Boolean> mIsInOverviewModeSupplier;
     private final AppMenuDelegate mAppMenuDelegate;
-    protected final Supplier<TabContentManager> mTabContentManagerSupplier;
+    protected final Supplier<@Nullable TabContentManager> mTabContentManagerSupplier;
     private final IntentRequestTracker mIntentRequestTracker;
     private final boolean mInitializeUiWithIncognitoColors;
     protected final SettableMonotonicObservableSupplier<EphemeralTabCoordinator>
@@ -563,7 +563,7 @@ public class RootUiCoordinator
             MonotonicObservableSupplier<TabCreatorManager> tabCreatorManagerSupplier,
             FullscreenManager fullscreenManager,
             MonotonicObservableSupplier<CompositorViewHolder> compositorViewHolderSupplier,
-            Supplier<TabContentManager> tabContentManagerSupplier,
+            Supplier<@Nullable TabContentManager> tabContentManagerSupplier,
             MonotonicObservableSupplier<SnackbarManager> snackbarManagerSupplier,
             SettableMonotonicObservableSupplier<EdgeToEdgeController> edgeToEdgeControllerSupplier,
             TopInsetProvider topInsetProvider,
@@ -2266,7 +2266,7 @@ public class RootUiCoordinator
                             mMultiWindowModeStateDispatcher,
                             assertNonNull(getBottomSheetController()),
                             getDataSharingTabManager(),
-                            mTabContentManagerSupplier.get(),
+                            assertNonNull(mTabContentManagerSupplier.get()),
                             mTabCreatorManagerSupplier.asNonNull().get(),
                             getMerchantTrustSignalsCoordinatorSupplier(),
                             omniboxActionDelegate,

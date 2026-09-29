@@ -135,7 +135,7 @@ public class TabSwitcherPaneFactory {
             LazyOneshotSupplier<HubManager> hubManagerSupplier,
             @Nullable ArchivedTabsAutoDeletePromoManager archivedTabsAutoDeletePromoManager,
             Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
-            Supplier<LayoutStateProvider> layoutStateProviderSupplier,
+            Supplier<@Nullable LayoutStateProvider> layoutStateProviderSupplier,
             NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
             @Nullable MultiInstanceManager multiInstanceManager,
             @Nullable DragAndDropDelegate dragDropDelegate,

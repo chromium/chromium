@@ -79,7 +79,7 @@ public class TabSwitcherPaneCoordinatorFactory {
     private final UndoBarThrottle mUndoBarThrottle;
     private final Supplier<PaneManager> mPaneManagerSupplier;
     private final Supplier<TabGroupUiActionHandler> mTabGroupUiActionHandlerSupplier;
-    private final Supplier<LayoutStateProvider> mLayoutStateProviderSupplier;
+    private final Supplier<@Nullable LayoutStateProvider> mLayoutStateProviderSupplier;
     private @Nullable TabSwitcherMessageManager mMessageManager;
     private final @Nullable TabSwitcherDragHandler mTabSwitcherDragHandler;
 
@@ -133,7 +133,7 @@ public class TabSwitcherPaneCoordinatorFactory {
             UndoBarThrottle undoBarThrottle,
             Supplier<PaneManager> paneManagerSupplier,
             Supplier<TabGroupUiActionHandler> tabGroupUiActionHandlerSupplier,
-            Supplier<LayoutStateProvider> layoutStateProviderSupplier,
+            Supplier<@Nullable LayoutStateProvider> layoutStateProviderSupplier,
             @Nullable TabSwitcherDragHandler tabSwitcherDragHandler) {
         mActivity = activity;
         mLifecycleDispatcher = lifecycleDispatcher;

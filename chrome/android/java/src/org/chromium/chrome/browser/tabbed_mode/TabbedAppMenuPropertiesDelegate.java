@@ -147,8 +147,9 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     private @Nullable FaviconHelper mFaviconHelper;
     private final FaviconHelper.DefaultFaviconHelper mDefaultFaviconHelper;
     private final RoundedIconGenerator mRoundedIconGenerator;
-    private final Supplier<RecentlyClosedEntriesManager> mRecentlyClosedEntriesManagerSupplier;
-    private final Supplier<SideUiStateProvider> mSideUiStateProviderSupplier;
+    private final Supplier<@Nullable RecentlyClosedEntriesManager>
+            mRecentlyClosedEntriesManagerSupplier;
+    private final Supplier<@Nullable SideUiStateProvider> mSideUiStateProviderSupplier;
 
     public TabbedAppMenuPropertiesDelegate(
             Context context,
@@ -167,8 +168,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             PageZoomManager pageZoomManager,
             OneshotSupplier<HubManager> hubManagerSupplier,
             @Nullable OpenInAppMenuItemProvider openInAppMenuItemProvider,
-            Supplier<RecentlyClosedEntriesManager> recentlyClosedEntriesManagerSupplier,
-            Supplier<SideUiStateProvider> sideUiStateProviderSupplier,
+            Supplier<@Nullable RecentlyClosedEntriesManager> recentlyClosedEntriesManagerSupplier,
+            Supplier<@Nullable SideUiStateProvider> sideUiStateProviderSupplier,
             NonNullObservableSupplier<Boolean> xrSpaceModeObservableSupplier,
             BooleanSupplier canActivateTabLayoutToggleMenu) {
         super(

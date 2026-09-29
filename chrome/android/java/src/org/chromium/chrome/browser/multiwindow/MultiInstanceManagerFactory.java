@@ -8,6 +8,7 @@ import android.app.Activity;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabmodel.TabModelOrchestrator;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
@@ -43,7 +44,7 @@ public class MultiInstanceManagerFactory extends MultiInstanceOrchestratorFactor
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             MonotonicObservableSupplier<ModalDialogManager> modalDialogManagerSupplier,
             MenuOrKeyboardActionController menuOrKeyboardActionController,
-            Supplier<DesktopWindowStateManager> desktopWindowStateManagerSupplier) {
+            Supplier<@Nullable DesktopWindowStateManager> desktopWindowStateManagerSupplier) {
         if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             return new MultiInstanceManagerApi31(
                     activity,

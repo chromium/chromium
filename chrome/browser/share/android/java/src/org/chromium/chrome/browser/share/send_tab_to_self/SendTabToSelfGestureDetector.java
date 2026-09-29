@@ -41,8 +41,8 @@ public class SendTabToSelfGestureDetector implements SensorEventListener {
 
     private final SensorManager mSensorManager;
     private final @Nullable Sensor mAccelerometer;
-    private final Supplier<Tab> mTabSupplier;
-    private final Supplier<Profile> mProfileSupplier;
+    private final Supplier<@Nullable Tab> mTabSupplier;
+    private final Supplier<@Nullable Profile> mProfileSupplier;
     // Threshold for considering an acceleration event as a "tap" (in m/s^2).
     // Dynamically configured based on the gesture sensitivity level.
     private final float mAccelerationThreshold;
@@ -51,7 +51,9 @@ public class SendTabToSelfGestureDetector implements SensorEventListener {
     private boolean mListening;
 
     public SendTabToSelfGestureDetector(
-            Context context, Supplier<Tab> tabSupplier, Supplier<Profile> profileSupplier) {
+            Context context,
+            Supplier<@Nullable Tab> tabSupplier,
+            Supplier<@Nullable Profile> profileSupplier) {
         mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         mAccelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION);
         mTabSupplier = tabSupplier;

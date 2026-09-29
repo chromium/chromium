@@ -10,6 +10,7 @@ import android.os.PersistableBundle;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -19,8 +20,8 @@ import java.util.function.Supplier;
 /** A factory class to create {@link IncognitoRestoreAppLaunchDrawBlocker}. */
 @NullMarked
 public class IncognitoRestoreAppLaunchDrawBlockerFactory {
-    private final Supplier<Bundle> mSavedInstanceStateSupplier;
-    private final Supplier<PersistableBundle> mPersistentStateSupplier;
+    private final Supplier<@Nullable Bundle> mSavedInstanceStateSupplier;
+    private final Supplier<@Nullable PersistableBundle> mPersistentStateSupplier;
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private final CipherFactory mCipherFactory;
 
@@ -31,13 +32,14 @@ public class IncognitoRestoreAppLaunchDrawBlockerFactory {
      * @param persistentStateSupplier A {@link Supplier<PersistableBundle>} instance to pass in the
      *     PersistableBundle that was persisted during onSaveInstanceState that allows to look for
      *     signals on whether to block the draw or not.
-     * @param tabModelSelectorSupplier A {@link MonotonicObservableSupplier <TabModelSelector>} that allows to
-     *     listen for onTabStateInitialized signals which is used a fallback to unblock draw.
+     * @param tabModelSelectorSupplier A {@link MonotonicObservableSupplier<TabModelSelector>} that
+     *     allows to listen for onTabStateInitialized signals which is used a fallback to unblock
+     *     draw.
      * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting.
      */
     public IncognitoRestoreAppLaunchDrawBlockerFactory(
-            Supplier<Bundle> savedInstanceStateSupplier,
-            Supplier<PersistableBundle> persistentStateSupplier,
+            Supplier<@Nullable Bundle> savedInstanceStateSupplier,
+            Supplier<@Nullable PersistableBundle> persistentStateSupplier,
             MonotonicObservableSupplier<TabModelSelector> tabModelSelectorSupplier,
             CipherFactory cipherFactory) {
         mSavedInstanceStateSupplier = savedInstanceStateSupplier;

@@ -65,7 +65,7 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
     public LayoutManagerChromePhone(
             LayoutManagerHost host,
             ViewGroup contentContainer,
-            Supplier<TabSwitcher> tabSwitcherSupplier,
+            Supplier<@Nullable TabSwitcher> tabSwitcherSupplier,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
             MonotonicObservableSupplier<TabContentManager> tabContentManagerSupplier,
             Supplier<ToolbarThemeColorProvider> toolbarThemeColorProvider,
