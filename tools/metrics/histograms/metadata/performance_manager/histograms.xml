@@ -136,7 +136,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.Discarding.DecisionResult{Trigger}"
-    enum="CanDiscardResult" expires_after="2027-01-21">
+    enum="CanDiscardResult" expires_after="2027-03-28">
   <owner>aattar@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -158,7 +158,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.Discarding.HadFormInteraction"
-    enum="Boolean" expires_after="2027-01-21">
+    enum="Boolean" expires_after="2027-03-28">
   <owner>aattar@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -169,7 +169,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.Discarding.HadUserEdits" enum="Boolean"
-    expires_after="2027-01-21">
+    expires_after="2027-03-28">
   <owner>aattar@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -180,7 +180,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.Discarding.ProtectionReason"
-    enum="CannotDiscardReason" expires_after="2027-01-21">
+    enum="CannotDiscardReason" expires_after="2027-03-28">
   <owner>aattar@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
@@ -192,7 +192,7 @@ each histogram.
 </histogram>
 
 <histogram name="PerformanceManager.Discarding.TimeHiddenAtDecision" units="ms"
-    expires_after="2027-01-21">
+    expires_after="2027-03-28">
   <owner>aattar@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>

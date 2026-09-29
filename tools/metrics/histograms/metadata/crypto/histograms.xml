@@ -235,7 +235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crypto.TPMOperation.Win.LoadTBSLibrary.Result" enum="Hresult"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>jdoerrie@chromium.org</owner>
   <owner>src/crypto/OWNERS</owner>
   <summary>

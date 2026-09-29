@@ -1522,7 +1522,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.ChildProcessBinding.SetPriorityLatency"
-    units="microseconds" expires_after="2027-01-24">
+    units="microseconds" expires_after="2027-03-28">
   <owner>kawasin@google.com</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -1872,7 +1872,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DefaultBrowserPromo.EntryPoint.{Source}"
-    enum="AndroidDefaultBrowserPromoOutcomeType" expires_after="2027-01-26">
+    enum="AndroidDefaultBrowserPromoOutcomeType" expires_after="2027-03-28">
   <owner>eleanorlee@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -1965,7 +1965,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.DesktopWindowHeuristicResult4"
-    enum="DesktopWindowHeuristicResult" expires_after="2027-01-24">
+    enum="DesktopWindowHeuristicResult" expires_after="2027-03-28">
   <owner>aishwaryarj@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -2554,7 +2554,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Handoff.Enabled.{UpdateType}" enum="Boolean"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>zheliooo@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -3268,7 +3268,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MaybeCopyContentAreaAsBitmap.Time" units="ms"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>chikamune@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <owner>clank-app-team@google.com</owner>
@@ -3556,7 +3556,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MultiInstance.NumInstances.DesktopWindow"
-    units="instances" expires_after="2027-01-24">
+    units="instances" expires_after="2027-03-28">
   <owner>aishwaryarj@google.com</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-large-form-factors@google.com</owner>
@@ -3627,7 +3627,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.MultiInstance.WindowManager.DesktopWindowModeState"
-    enum="DesktopWindowModeState" expires_after="2027-01-24">
+    enum="DesktopWindowModeState" expires_after="2027-03-28">
   <owner>aishwaryarj@google.com</owner>
   <owner>wenyufu@chromium.org</owner>
   <owner>clank-large-form-factors@google.com</owner>
@@ -5159,7 +5159,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Pdf.DocumentLoad" enum="Boolean"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -5216,7 +5216,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Pdf.DownloadUrlDecoded" enum="Boolean"
-    expires_after="2026-12-01">
+    expires_after="2027-03-28">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -5227,7 +5227,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Pdf.DownloadUrlEncoded" enum="Boolean"
-    expires_after="2026-12-01">
+    expires_after="2027-03-28">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -5237,7 +5237,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Pdf.FindInPageCounts" units="count"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -5281,7 +5281,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Pdf.SelectionMenuItem"
-    enum="AndroidPdfSelectionMenuItem" expires_after="2027-01-10">
+    enum="AndroidPdfSelectionMenuItem" expires_after="2027-03-28">
   <owner>rathomas@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -5291,7 +5291,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Pdf.ToolbarAction" enum="AndroidPdfToolbarAction"
-    expires_after="2027-01-10">
+    expires_after="2027-03-28">
   <owner>rathomas@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -5302,7 +5302,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Pdf.UriIsNull" enum="Boolean"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>shuyng@google.com</owner>
   <owner>clank-large-form-factors@google.com</owner>
   <summary>
@@ -5422,7 +5422,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.RequestDesktopSite.Changed" enum="SiteLayout"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>shuyng@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -5433,7 +5433,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.RequestDesktopSite.DomainSettingChanged"
-    enum="Boolean" expires_after="2027-01-24">
+    enum="Boolean" expires_after="2027-03-28">
   <owner>shuyng@google.com</owner>
   <owner>twellington@chromium.org</owner>
   <summary>
@@ -10010,7 +10010,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ChromiumAndroidLinker.RelroSharingStatus2"
-    enum="RelroSharingStatus" expires_after="2027-01-17">
+    enum="RelroSharingStatus" expires_after="2027-03-28">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>

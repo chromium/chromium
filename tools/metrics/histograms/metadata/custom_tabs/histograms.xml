@@ -73,7 +73,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.AdaptiveToolbarButton.ChosenRanking" units="rank"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>jinsukkiim@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -160,7 +160,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.AuthView.UrlParams" units="bit field"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>sinansahin@google.com</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>

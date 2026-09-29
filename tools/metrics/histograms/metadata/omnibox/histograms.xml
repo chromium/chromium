@@ -933,7 +933,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 
 <histogram
     name="Omnibox.AimEntrypoint.Shown.ByPageContext.{OmniboxPageContext}{AimEntrypointParty}"
-    enum="Boolean" expires_after="2027-01-24">
+    enum="Boolean" expires_after="2027-03-28">
   <owner>khalidpeer@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
@@ -1616,7 +1616,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.DocumentSuggest.HttpResponseCode"
-    enum="HttpResponseCode" expires_after="2027-01-24">
+    enum="HttpResponseCode" expires_after="2027-03-28">
   <owner>manukh@chromium.org</owner>
   <owner>jdonnelly@chromium.org</owner>
   <summary>
@@ -2429,7 +2429,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.IsPasteAndGo" enum="Boolean"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>jdonnelly@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -2655,7 +2655,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.LocationIconView.Update.Time" units="microseconds"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>gjc@google.com</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -3658,7 +3658,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
-<histogram name="Omnibox.Paste" units="count" expires_after="2027-01-24">
+<histogram name="Omnibox.Paste" units="count" expires_after="2027-03-28">
   <owner>jdonnelly@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -5575,7 +5575,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.Views.RevertAll.Time" units="microseconds"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>gjc@google.com</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -5587,7 +5587,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.Views.SetTextAndSelectedRange.IdempotentCall"
-    enum="Boolean" expires_after="2027-01-24">
+    enum="Boolean" expires_after="2027-03-28">
   <owner>gjc@google.com</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -5600,7 +5600,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.Views.SetTextAndSelectedRange.Time"
-    units="microseconds" expires_after="2027-01-24">
+    units="microseconds" expires_after="2027-03-28">
   <owner>gjc@google.com</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -6270,7 +6270,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="VoiceSearch.Action" enum="VoiceSearchAction"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>wenhuc@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -6286,7 +6286,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="VoiceSearch.Action.{OmniboxPageContext}"
-    enum="VoiceSearchAction" expires_after="2027-01-24">
+    enum="VoiceSearchAction" expires_after="2027-03-28">
   <owner>wenhuc@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -6302,7 +6302,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="VoiceSearch.Errors" enum="VoiceSearchError"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>wenhuc@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -6317,7 +6317,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="VoiceSearch.Errors.{OmniboxPageContext}"
-    enum="VoiceSearchError" expires_after="2027-01-24">
+    enum="VoiceSearchError" expires_after="2027-03-28">
   <owner>wenhuc@google.com</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>

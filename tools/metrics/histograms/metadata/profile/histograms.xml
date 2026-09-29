@@ -146,7 +146,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Profile.BrowserActive.PerProfile" enum="Profile"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>msarda@chromium.org</owner>
   <owner>tangltom@chromium.org</owner>
   <summary>
@@ -870,7 +870,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.FirstProfileTime.FirstWebContentsNonEmptyPaint"
-    units="ms" expires_after="2027-01-24">
+    units="ms" expires_after="2027-03-28">
   <owner>dgn@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>
@@ -919,7 +919,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProfilePicker.FirstRun.FinishReason"
-    enum="FirstRunFinishReason" expires_after="2027-01-24">
+    enum="FirstRunFinishReason" expires_after="2027-03-28">
   <owner>dgn@chromium.org</owner>
   <owner>for-you-fre@google.com</owner>
   <summary>

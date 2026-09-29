@@ -1139,7 +1139,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Webapp.Install.DisplayMode2" enum="WebAppDisplayMode"
-    expires_after="2027-01-03">
+    expires_after="2027-03-28">
   <owner>peter@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <summary>
@@ -2068,7 +2068,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebApp.Migration.ApplyResult"
-    enum="WebAppApplyManifestMigrationResult" expires_after="2027-01-27">
+    enum="WebAppApplyManifestMigrationResult" expires_after="2027-03-28">
   <owner>dibyapal@chromium.org</owner>
   <owner>pwa-team@google.com</owner>
   <summary>

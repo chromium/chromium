@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="CBOR.Read.Duration" units="microseconds"
-    expires_after="2026-12-15">
+    expires_after="2027-03-28">
   <owner>zgroza@chromium.org</owner>
   <owner>src/components/cbor/OWNERS</owner>
   <summary>
@@ -41,7 +41,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CBOR.Read.Result" enum="CBORDecoderError"
-    expires_after="2026-12-15">
+    expires_after="2027-03-28">
   <owner>zgroza@chromium.org</owner>
   <owner>src/components/cbor/OWNERS</owner>
   <summary>
@@ -55,7 +55,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CBOR.Read.Size" units="bytes" expires_after="2026-12-15">
+<histogram name="CBOR.Read.Size" units="bytes" expires_after="2027-03-28">
   <owner>zgroza@chromium.org</owner>
   <owner>src/components/cbor/OWNERS</owner>
   <summary>
@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CBOR.Write.Duration" units="microseconds"
-    expires_after="2026-12-15">
+    expires_after="2027-03-28">
   <owner>zgroza@chromium.org</owner>
   <owner>src/components/cbor/OWNERS</owner>
   <summary>
@@ -82,7 +82,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="CBOR.Write.Size" units="bytes" expires_after="2026-12-15">
+<histogram name="CBOR.Write.Size" units="bytes" expires_after="2027-03-28">
   <owner>zgroza@chromium.org</owner>
   <owner>src/components/cbor/OWNERS</owner>
   <summary>
@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CBOR.Write.Success" enum="BooleanSuccess"
-    expires_after="2026-12-15">
+    expires_after="2027-03-28">
   <owner>zgroza@chromium.org</owner>
   <owner>src/components/cbor/OWNERS</owner>
   <summary>

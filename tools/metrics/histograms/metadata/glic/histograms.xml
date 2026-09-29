@@ -294,7 +294,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Actor.ManagedUserActuationEnabled" enum="BooleanEnabled"
-    expires_after="2026-12-31">
+    expires_after="2027-03-28">
   <owner>rosiey@google.com</owner>
   <owner>sauski@google.com</owner>
   <summary>
@@ -444,7 +444,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Api.StatusCounts.Inactive" enum="GlicHostApiRequestType"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>carlosk@chromium.org</owner>
   <owner>harringtond@chromium.org</owner>
   <owner>birnie@google.com</owner>
@@ -1727,7 +1727,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Instance.TimeSinceLastActive{Range}" units="ms"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -1743,7 +1743,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Instance.TimeSinceLastInstanceActiveOnOpen" units="ms"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
@@ -1876,7 +1876,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Instance.ZoomChangeCount" units="count"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>cuianthony@chromium.org</owner>
   <owner>glic-dev@google.com</owner>
   <summary>
@@ -3011,7 +3011,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.Selection.SiteExceptionsCount" units="exceptions"
-    expires_after="2026-12-31">
+    expires_after="2027-03-28">
   <owner>wusirui@google.com</owner>
   <owner>naai-xfn@google.com</owner>
   <summary>
@@ -3684,7 +3684,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.YoutubeSummarizeVideoZSS.Events"
-    enum="GlicYoutubeSummarizeVideoZSSResult" expires_after="2027-01-24">
+    enum="GlicYoutubeSummarizeVideoZSSResult" expires_after="2027-03-28">
   <owner>basiaz@google.com</owner>
   <owner>birnie@google.com</owner>
   <summary>
@@ -3696,7 +3696,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Glic.ZoomAction" enum="GlicZoomAction"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>cuianthony@chromium.org</owner>
   <owner>glic-dev@google.com</owner>
   <summary>

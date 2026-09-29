@@ -2298,7 +2298,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentExtraction.AnnotatedPageContent.NodeCount"
-    units="nodes" expires_after="2027-01-24">
+    units="nodes" expires_after="2027-03-28">
   <owner>linnan@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -2311,7 +2311,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentExtraction.AnnotatedPageContent.ProtoSize"
-    units="KB" expires_after="2027-01-24">
+    units="KB" expires_after="2027-03-28">
   <owner>linnan@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -2324,7 +2324,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentExtraction.AnnotatedPageContent.WordCount"
-    units="words" expires_after="2027-01-24">
+    units="words" expires_after="2027-03-28">
   <owner>linnan@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -2539,7 +2539,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentExtraction.PageSettledMonitor.ShouldWaitForPdfLoadAtPdfLoadCompletion"
-    enum="Boolean" expires_after="2027-01-24">
+    enum="Boolean" expires_after="2027-03-28">
   <owner>linnan@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>
@@ -2583,7 +2583,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="OptimizationGuide.PageContentExtraction.TriggerSource"
     enum="OptimizationGuidePageContentExtractionTriggerSource"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>alexmt@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>

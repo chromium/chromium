@@ -635,7 +635,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.BackgroundRefresh.Timeout.ActiveProviderCount"
-    units="count" expires_after="2027-01-24">
+    units="count" expires_after="2027-03-28">
   <owner>fedegermi@google.com</owner>
   <owner>marq@chromium.org</owner>
   <summary>
@@ -1297,7 +1297,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.CredentialExtension.SyncedStore" enum="Boolean"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>rgod@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <owner>bling-transactions-eng@google.com</owner>
@@ -1778,7 +1778,7 @@ chromium-metrics-reviews@google.com.
 <!-- TODO(crbug.com/401551080) Mark this "expires-never" after validating it works as intended. -->
 
 <histogram name="IOS.DefaultStatusAPI.IsDefaultBrowser" enum="Boolean"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>gujen@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <owner>rkgibson@google.com</owner>
@@ -2940,7 +2940,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Gemini.Floaty.HiddenFromSource"
-    enum="IOSGeminiFloatyUpdateSource" expires_after="2027-01-25">
+    enum="IOSGeminiFloatyUpdateSource" expires_after="2027-03-28">
   <owner>joemerramos@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>
@@ -2949,7 +2949,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Gemini.Floaty.ShownFromSource"
-    enum="IOSGeminiFloatyUpdateSource" expires_after="2027-01-25">
+    enum="IOSGeminiFloatyUpdateSource" expires_after="2027-03-28">
   <owner>joemerramos@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>
@@ -2958,7 +2958,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Gemini.Floaty.TimeMinimized" units="ms"
-    expires_after="2027-01-25">
+    expires_after="2027-03-28">
   <owner>joemerramos@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>
@@ -2967,7 +2967,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Gemini.Floaty.ViewStateTransition"
-    enum="IOSGeminiViewStateTransition" expires_after="2027-01-25">
+    enum="IOSGeminiViewStateTransition" expires_after="2027-03-28">
   <owner>joemerramos@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>
@@ -3040,7 +3040,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="IOS.Gemini.ImageRemix.ContextMenuEntryPoint.AspectRatio.Tapped"
-    enum="IOSGeminiAspectRatioBucket" expires_after="2027-01-16">
+    enum="IOSGeminiAspectRatioBucket" expires_after="2027-03-28">
   <owner>joepeplowski@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>
@@ -3215,7 +3215,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Gemini.Prompt.ImagesAttached.Count" units="count"
-    expires_after="2027-01-22">
+    expires_after="2027-03-28">
   <owner>joepeplowski@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>
@@ -3235,7 +3235,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Gemini.Prompt.LongPressImage.Included" enum="Boolean"
-    expires_after="2027-01-22">
+    expires_after="2027-03-28">
   <owner>joepeplowski@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>
@@ -5031,7 +5031,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Notification.Dismissed" enum="NotificationType"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>scottyoder@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
@@ -5041,7 +5041,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Notification.Interaction" enum="NotificationType"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>scottyoder@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
@@ -5051,7 +5051,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Notification.Received" enum="NotificationType"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>thegreenfrog@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
@@ -5061,7 +5061,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Notifications.OptInPrompt.Action"
-    enum="IOSNotificationsOptInActionOnPrompt" expires_after="2027-01-24">
+    enum="IOSNotificationsOptInActionOnPrompt" expires_after="2027-03-28">
   <owner>hiramahmood@google.com</owner>
   <owner>scottyoder@google.com</owner>
   <summary>Logs a user's action on the Notifications Opt-In Prompt.</summary>
@@ -5313,7 +5313,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Omnibox.Copy" enum="IOSOmniboxCopyType"
-    expires_after="2027-01-22">
+    expires_after="2027-03-28">
   <owner>christianxu@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Records copy event in the omnibox with the type of copy.</summary>
@@ -5341,7 +5341,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Omnibox.SteadyStatePositionAtStartup"
-    enum="OmniboxPositionType" expires_after="2027-01-22">
+    enum="OmniboxPositionType" expires_after="2027-03-28">
   <owner>christianxu@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -5350,7 +5350,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Omnibox.SteadyStatePositionAtStartup.Selected"
-    enum="OmniboxPositionType" expires_after="2027-01-22">
+    enum="OmniboxPositionType" expires_after="2027-03-28">
   <owner>christianxu@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>
@@ -5657,7 +5657,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PageActionMenu.FeatureRowShown"
-    enum="IOSPageActionMenuFeatureType" expires_after="2027-01-24">
+    enum="IOSPageActionMenuFeatureType" expires_after="2027-03-28">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>
@@ -5666,7 +5666,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PageActionMenu.FeatureRowUsed"
-    enum="IOSPageActionMenuFeatureType" expires_after="2027-01-24">
+    enum="IOSPageActionMenuFeatureType" expires_after="2027-03-28">
   <owner>kanouche@google.com</owner>
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>
@@ -6845,7 +6845,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SadTab.FileIsPDF" enum="Boolean"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>gambard@chromium.org</owner>
   <owner>bling-fundamentals@google.com</owner>
   <summary>
@@ -7672,7 +7672,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="IOS.Settings.DefaultBrowserSettingsPassivePromo"
     enum="IOSDefaultBrowserSettingsPassivePromoAction"
-    expires_after="2027-01-03">
+    expires_after="2027-03-28">
   <owner>cheickcisse@google.com</owner>
   <owner>bling-mony-pod@google.com</owner>
   <summary>

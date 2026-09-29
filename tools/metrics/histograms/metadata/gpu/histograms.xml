@@ -103,7 +103,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="ConfigureDisplays.External.Modeset.AttemptSucceeded"
-    enum="BooleanSuccess" expires_after="2027-01-21">
+    enum="BooleanSuccess" expires_after="2027-03-28">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
@@ -116,7 +116,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.External.Modeset.FinalStatus"
-    enum="BooleanSuccess" expires_after="2027-01-21">
+    enum="BooleanSuccess" expires_after="2027-03-28">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
@@ -142,7 +142,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.Internal.Modeset.FinalStatus"
-    enum="BooleanSuccess" expires_after="2027-01-21">
+    enum="BooleanSuccess" expires_after="2027-03-28">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
@@ -154,7 +154,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.Modeset.FinalTaskStatus"
-    enum="ConfigureDisplaysTaskStatus" expires_after="2027-01-21">
+    enum="ConfigureDisplaysTaskStatus" expires_after="2027-03-28">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
@@ -170,7 +170,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.Modeset.MstExternalDisplaysCount"
-    units="count" expires_after="2027-01-21">
+    units="count" expires_after="2027-03-28">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
@@ -181,7 +181,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.Modeset.MstExternalDisplaysPercentage"
-    units="%" expires_after="2027-01-21">
+    units="%" expires_after="2027-03-28">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
@@ -217,7 +217,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.Modeset.TotalExternalDisplaysCount"
-    units="count" expires_after="2027-01-21">
+    units="count" expires_after="2027-03-28">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
@@ -228,7 +228,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.{Connection}.Modeset.Success.RefreshRate"
-    units="Hz" expires_after="2027-01-21">
+    units="Hz" expires_after="2027-03-28">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>
@@ -242,7 +242,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ConfigureDisplays.{Connection}.Modeset.{Report}.Resolution"
-    enum="DisplayResolution" expires_after="2027-01-21">
+    enum="DisplayResolution" expires_after="2027-03-28">
   <owner>gildekel@chromium.org</owner>
   <owner>chromeos-gfx-display@chromium.org</owner>
   <summary>{Connection} {Report}</summary>
@@ -338,7 +338,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="GPU.ANGLE.D3D11FeatureLevel" enum="D3DFeatureLevel"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>geofflang@google.com</owner>
   <owner>angle-team@google.com</owner>
   <summary>
@@ -2608,7 +2608,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Viz.ExternalBeginFrameSource.Interval" units="ms"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>lizeb@chromium.org</owner>
   <owner>chromeos-gfx@chromium.org</owner>
   <summary>

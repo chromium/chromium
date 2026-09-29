@@ -112,7 +112,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="OSCrypt.AsyncInitialization.Time" units="ms"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>wfh@chromium.org</owner>
   <owner>nparker@chromium.org</owner>
   <summary>

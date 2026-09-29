@@ -158,7 +158,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.DiscountBubble.SourceTypeOnShow"
-    enum="DiscountType" expires_after="2027-01-26">
+    enum="DiscountType" expires_after="2027-03-28">
   <owner>ihsuanchen@google.com</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -178,7 +178,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.DiscountsBubble.SourceTypeOnCopy"
-    enum="DiscountType" expires_after="2027-01-26">
+    enum="DiscountType" expires_after="2027-03-28">
   <owner>ihsuanchen@google.com</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -189,7 +189,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.Discounts.DiscountsBubble.TypeOnCopy"
-    enum="DiscountClusterType" expires_after="2027-01-26">
+    enum="DiscountClusterType" expires_after="2027-03-28">
   <owner>meiliang@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -714,7 +714,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceTracking.PriceInsightsSidePanel.{Action}"
-    enum="PriceInsightsPriceBucket" expires_after="2027-01-25">
+    enum="PriceInsightsPriceBucket" expires_after="2027-03-28">
   <owner>yuezhanggg@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <summary>
@@ -729,7 +729,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceTracking.PriceTrackedProductCount"
-    units="subscriptions" expires_after="2027-01-24">
+    units="subscriptions" expires_after="2027-03-28">
   <owner>ayman@chromium.org</owner>
   <owner>mdjones@chromium.org</owner>
   <owner>chrome-shopping@google.org</owner>

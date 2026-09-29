@@ -3395,7 +3395,7 @@ recorded in the same way, even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.LineFocusSessionLength" units="ms"
-    expires_after="2026-12-01">
+    expires_after="2027-03-28">
   <owner>kristislee@google.com</owner>
   <owner>komo-eng@google.com</owner>
   <summary>
@@ -3406,7 +3406,7 @@ recorded in the same way, even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.LineFocusSession{Type}Distance"
-    units="pixels" expires_after="2026-12-01">
+    units="pixels" expires_after="2027-03-28">
   <owner>kristislee@google.com</owner>
   <owner>komo-eng@google.com</owner>
   <summary>
@@ -3420,7 +3420,7 @@ recorded in the same way, even if they fit the naming pattern. -->
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.LineFocusSession{Type}Lines"
-    units="lines" expires_after="2026-12-01">
+    units="lines" expires_after="2027-03-28">
   <owner>kristislee@google.com</owner>
   <owner>komo-eng@google.com</owner>
   <summary>

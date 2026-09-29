@@ -834,7 +834,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SBClientPhishing.ImageEmbeddingList.Version" units="YYMMDDRR"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

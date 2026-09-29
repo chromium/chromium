@@ -620,7 +620,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="DevTools.VisualLogging.ProcessingTime" units="ms"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>danilsomsikov@google.com</owner>
   <owner>hablich@google.com</owner>
   <summary>

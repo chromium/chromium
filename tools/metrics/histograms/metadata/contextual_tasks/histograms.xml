@@ -140,7 +140,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualTasks.Context.DurationSinceLastActive"
-    units="seconds" expires_after="2027-01-24">
+    units="seconds" expires_after="2027-03-28">
   <owner>sophiechang@chromium.org</owner>
   <owner>abhayprakash@google.com</owner>
   <summary>
@@ -677,7 +677,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ContextualTasks.WebUI.OAuthError"
-    units="GoogleServiceAuthError" expires_after="2027-01-24">
+    units="GoogleServiceAuthError" expires_after="2027-03-28">
   <owner>mercerd@chromium.org</owner>
   <owner>chrome-contextual-tasks-eng@google.com</owner>
   <summary>

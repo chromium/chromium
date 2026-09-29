@@ -70,7 +70,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.DeletedUserProfiles" units="profiles"
-    expires_after="2027-01-24">
+    expires_after="2027-03-28">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -179,7 +179,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.FreeDiskSpaceDuringLoginTotalFreedInMb" units="MiB"
-    expires_after="2027-01-03">
+    expires_after="2027-03-28">
   <owner>vsavu@google.com</owner>
   <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
@@ -250,7 +250,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.LoginDiskCleanupProgress"
-    enum="CryptohomeLoginDiskCleanupProgress" expires_after="2027-01-03">
+    enum="CryptohomeLoginDiskCleanupProgress" expires_after="2027-03-28">
   <owner>vsavu@google.com</owner>
   <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
@@ -276,7 +276,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.LoginDiskCleanupTotalTime" units="ms"
-    expires_after="2027-01-03">
+    expires_after="2027-03-28">
   <owner>vsavu@google.com</owner>
   <owner>chromeos-disk-cleanup@google.com</owner>
   <summary>
