@@ -851,7 +851,6 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceFlexibleFsBrowserTest,
 
   chromeos::FakePowerManagerClient::Get()->SendSuspendImminent(
       power_manager::SuspendImminent::IDLE);
-  base::RunLoop().RunUntilIdle();
 
   // Holding space model gets cleared on suspend.
   EXPECT_TRUE(holding_space_model->items().empty());
