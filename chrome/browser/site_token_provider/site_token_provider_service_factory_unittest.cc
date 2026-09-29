@@ -7,7 +7,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_service.h"
 #include "components/site_token_provider/features.h"
+#include "components/site_token_provider/site_token_provider_prefs.h"
 #include "components/site_token_provider/site_token_provider_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -49,6 +52,19 @@ TEST_F(SiteTokenProviderServiceFactoryTest, ServiceInstantiation) {
   SiteTokenProviderService* service =
       SiteTokenProviderServiceFactory::GetForProfile(profile.get());
   EXPECT_THAT(service, NotNull());
+}
+
+TEST_F(SiteTokenProviderServiceFactoryTest, RegisterProfilePrefs) {
+  TestingProfile::Builder builder;
+  std::unique_ptr<TestingProfile> profile = builder.Build();
+
+  PrefService* prefs = profile->GetPrefs();
+  const PrefService::Preference* pref =
+      prefs->FindPreference(prefs::kSiteTokenProviderPref);
+  ASSERT_NE(pref, nullptr);
+  EXPECT_FALSE(prefs->GetBoolean(prefs::kSiteTokenProviderPref));
+  EXPECT_EQ(pref->registration_flags(),
+            user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
 }
 
 TEST_F(SiteTokenProviderServiceFactoryTest, ServiceNotCreatedForOffTheRecord) {

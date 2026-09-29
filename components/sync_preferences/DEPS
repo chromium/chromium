@@ -37,6 +37,7 @@ specific_include_rules = {
     "+components/saved_tab_groups/public",
     "+components/search_engines",
     "+components/sharing_message",
+    "+components/site_token_provider",
     "+components/subscription_eligibility",
     "+components/translate",
     "+components/variations",

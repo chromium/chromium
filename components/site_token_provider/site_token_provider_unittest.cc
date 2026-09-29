@@ -15,9 +15,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_store.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/site_token_provider/features.h"
 #include "components/site_token_provider/proto/site_token_data.pb.h"
+#include "components/site_token_provider/site_token_provider_prefs.h"
 #include "components/site_token_provider/site_token_provider_service.h"
 #include "services/network/public/cpp/data_element.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -280,6 +283,19 @@ TEST(SiteTokenProviderDomainTest, ParseAllowlistedDomains) {
   EXPECT_TRUE(domains.contains("example.com"));
   EXPECT_TRUE(domains.contains("example2.com"));
   EXPECT_TRUE(domains.contains("sub.example3.com"));
+}
+
+TEST(SiteTokenProviderPrefsTest, RegisterProfilePrefs) {
+  auto registry = base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
+  site_token_provider::prefs::RegisterProfilePrefs(registry.get());
+
+  const base::Value* default_value = nullptr;
+  ASSERT_TRUE(registry->defaults()->GetValue(prefs::kSiteTokenProviderPref,
+                                             &default_value));
+  EXPECT_EQ(*default_value, base::Value(false));
+
+  EXPECT_EQ(registry->GetRegistrationFlags(prefs::kSiteTokenProviderPref),
+            user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
 }
 
 }  // namespace

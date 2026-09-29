@@ -1,6 +1,7 @@
 include_rules = [
   "+components/endpoint_fetcher",
   "+components/keyed_service/core",
+  "+components/pref_registry",
   "+components/signin/public/base",
   "+components/signin/public/identity_manager",
   "+mojo/public/cpp/bindings",
@@ -12,6 +13,7 @@ include_rules = [
 
 specific_include_rules = {
   ".*unittest\\.cc": [
+    "+components/prefs",
     "+services/network/test",
   ],
 }

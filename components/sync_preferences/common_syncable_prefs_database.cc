@@ -27,6 +27,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/saved_tab_groups/public/pref_names.h"
 #include "components/sharing_message/pref_names.h"
+#include "components/site_token_provider/site_token_provider_prefs.h"
 #include "components/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/features.h"
@@ -176,6 +177,7 @@ enum {
   kSubscriptionEligibilitySubscriptionBenefits = 126,
   kCustomLinksInitializedMobile = 127,
   kCustomLinksListMobile = 128,
+  kSiteTokenProviderPref = 129,
   // New entries should be added above this line.
   kSubscriptionEligibilityAiSubscriptionTier =
       100338,  // (different ID as it's a move from //chrome)
@@ -583,6 +585,11 @@ constexpr auto kCommonSyncablePrefsAllowlist =
          {syncable_prefs_ids::kAutofillAtMemoryShortcut, syncer::PREFERENCES,
           PrefSensitivity::kNone, MergeBehavior::kNone,
           WriteBehavior::kWriteToBoth}},
+        {site_token_provider::prefs::kSiteTokenProviderPref,
+         {syncable_prefs_ids::kSiteTokenProviderPref,
+          syncer::PRIORITY_PREFERENCES,
+          PrefSensitivity::kExemptFromUserControlWhileSignedIn,
+          MergeBehavior::kNone, WriteBehavior::kWriteToBoth}},
     });
 
 }  // namespace
