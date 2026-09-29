@@ -51,6 +51,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.language.settings.SelectLanguageFragment;
+import org.chromium.components.browser_ui.settings.SearchUtils;
 import org.chromium.components.browser_ui.settings.SearchViewProvider;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.ui.base.TestActivity;
@@ -750,6 +751,122 @@ public class MultiColumnTitleUpdaterTest {
         assertEquals(View.VISIBLE, titleView.getVisibility());
         assertEquals(View.VISIBLE, searchButton.getVisibility());
         assertFalse(updater.isSearchOpen());
+    }
+
+    /** Regression test for the close button being laid out off screen. crbug.com/565418037 */
+    @Test
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    public void testSearchViewProvider_closeButtonFitsInTitleContainer() {
+        mMultiColumnSettings
+                .getChildFragmentManager()
+                .beginTransaction()
+                .replace(R.id.preferences_detail, new TestSearchViewProviderFragment())
+                .commitNow();
+
+        List<MultiColumnSettings.Title> titles = new ArrayList<>();
+        titles.add(
+                new MultiColumnSettings.Title("uuid1", createTitleSupplier("All Sites"), 0, null));
+        mMultiColumnSettings.setFakeTitles(titles);
+
+        // Mirror settings_preference_detail_pane.xml.
+        HorizontalScrollView titleScrollView = new HorizontalScrollView(mActivity);
+        titleScrollView.setFillViewport(true);
+        titleScrollView.addView(mContainer);
+
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater(/* shownInTab= */ true);
+        updater.onTitleUpdated();
+
+        ChromeImageButton searchButton = (ChromeImageButton) mContainer.getChildAt(1);
+        SearchView searchView = (SearchView) mContainer.getChildAt(2);
+        searchButton.performClick();
+        searchView.setQuery("g", false);
+
+        int widthPx = 1000;
+        titleScrollView.measure(
+                View.MeasureSpec.makeMeasureSpec(widthPx, View.MeasureSpec.EXACTLY),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        titleScrollView.layout(0, 0, widthPx, titleScrollView.getMeasuredHeight());
+
+        // The search view fills the title container, and the close button fits within it.
+        assertEquals(widthPx, searchView.getWidth());
+        View closeButton = searchView.findViewById(R.id.search_close_btn);
+        assertEquals(View.VISIBLE, closeButton.getVisibility());
+        int closeButtonRightPx = closeButton.getRight();
+        for (View v = (View) closeButton.getParent(); v != searchView; v = (View) v.getParent()) {
+            closeButtonRightPx += v.getLeft();
+        }
+        assertTrue(closeButtonRightPx <= widthPx);
+    }
+
+    /** A {@link SearchViewProvider} that initializes its search view with {@link SearchUtils}. */
+    public static class TestSearchUtilsProviderFragment extends Fragment
+            implements SearchViewProvider {
+        private SearchViewProvider.@Nullable Observer mObserver;
+
+        @Override
+        public View onCreateView(
+                LayoutInflater inflater,
+                @Nullable ViewGroup container,
+                @Nullable Bundle savedInstanceState) {
+            return new View(inflater.getContext());
+        }
+
+        @Override
+        public void setSearchViewObserver(SearchViewProvider.Observer observer) {
+            mObserver = observer;
+        }
+
+        @Override
+        public void initSearchView(SearchView searchView) {
+            SearchUtils.initializeSearchView(
+                    searchView,
+                    /* initialQuery= */ null,
+                    /* activity= */ null,
+                    mObserver,
+                    query -> {});
+        }
+    }
+
+    /** Regression test for the close button not closing search. crbug.com/565418037 */
+    @Test
+    @EnableFeatures({ChromeFeatureList.SETTINGS_IN_TAB})
+    public void testSearchViewProvider_closeButtonClearsThenClosesSearch() {
+        mMultiColumnSettings
+                .getChildFragmentManager()
+                .beginTransaction()
+                .replace(R.id.preferences_detail, new TestSearchUtilsProviderFragment())
+                .commitNow();
+
+        List<MultiColumnSettings.Title> titles = new ArrayList<>();
+        titles.add(
+                new MultiColumnSettings.Title("uuid1", createTitleSupplier("All Sites"), 0, null));
+        mMultiColumnSettings.setFakeTitles(titles);
+
+        MultiColumnTitleUpdater updater = createMultiColumnTitleUpdater(/* shownInTab= */ true);
+        updater.onTitleUpdated();
+
+        View titleView = mContainer.getChildAt(0);
+        ChromeImageButton searchButton = (ChromeImageButton) mContainer.getChildAt(1);
+        SearchView searchView = (SearchView) mContainer.getChildAt(2);
+        View closeButton = searchView.findViewById(R.id.search_close_btn);
+
+        // The close button is shown as soon as search opens.
+        searchButton.performClick();
+        assertTrue(updater.isSearchOpen());
+        assertEquals(View.VISIBLE, closeButton.getVisibility());
+
+        // With a query, the close button clears it and search stays open.
+        searchView.setQuery("g", false);
+        closeButton.performClick();
+        assertEquals("", searchView.getQuery().toString());
+        assertEquals(View.VISIBLE, closeButton.getVisibility());
+        assertTrue(updater.isSearchOpen());
+
+        // With an empty query, the close button closes search and restores the title.
+        closeButton.performClick();
+        assertFalse(updater.isSearchOpen());
+        assertEquals(View.VISIBLE, titleView.getVisibility());
+        assertEquals(View.VISIBLE, searchButton.getVisibility());
     }
 
     @Test

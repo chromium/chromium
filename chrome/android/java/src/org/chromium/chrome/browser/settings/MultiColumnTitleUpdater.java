@@ -490,7 +490,10 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
                 var searchViewParams = new LinearLayout.LayoutParams(0, WRAP_CONTENT, 1f);
                 searchViewParams.gravity = Gravity.CENTER_VERTICAL;
                 searchView.setLayoutParams(searchViewParams);
-                searchView.setMaxWidth(Integer.MAX_VALUE);
+                // Do not set a max width. The HorizontalScrollView measures its content with an
+                // unbounded width, so the SearchView would grow to its max width and push the
+                // close button off screen. Its fillViewport attribute stretches the SearchView to
+                // the pane width instead.
                 searchView.setVisibility(View.GONE);
                 if (TextUtils.isEmpty(searchView.getQueryHint())) {
                     searchView.setQueryHint(mContext.getString(R.string.search));

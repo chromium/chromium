@@ -37,7 +37,9 @@ public class SearchUtils {
 
     /**
      * Initializes an Android default search view by setting listeners and default states of the
-     * search icon, box and close icon.
+     * search icon, box and close icon. Unlike a search view in a menu item, the close button keeps
+     * its default behavior: it stays visible, clears the query, or closes the search if the query
+     * is empty.
      *
      * @param searchView The view that handles the search query.
      * @param initialQuery The query that the search field should be opened with.
@@ -93,6 +95,13 @@ public class SearchUtils {
         searchView.setFocusable(false);
         searchView.setImeOptions(EditorInfo.IME_FLAG_NO_FULLSCREEN);
 
+        // A search view in a toolbar menu item is closed with the toolbar's up button, so its close
+        // button only clears the query and is hidden while the query is empty. A standalone search
+        // view (e.g. in the SettingsInTab detail pane title) may have no other way to close it, so
+        // it keeps the default SearchView behavior: the close button stays visible, clears the
+        // query, or closes the search if the query is empty.
+        boolean isClearButton = searchItem != null;
+
         // Restore the search view if a query was recovered.
         if (initialQuery != null) {
             if (searchItem != null) {
@@ -100,39 +109,45 @@ public class SearchUtils {
             }
             searchView.setIconified(false);
             searchView.setQuery(initialQuery, false);
-            updateActionBarButtons(searchView, initialQuery, activity);
+            updateActionBarButtons(searchView, initialQuery, activity, isClearButton);
         }
 
         // Clicking the menu item hides the clear button and triggers search for an empty query.
         if (searchItem != null) {
             searchItem.setOnMenuItemClickListener(
                     (MenuItem m) -> {
-                        updateActionBarButtons(searchView, "", activity);
+                        updateActionBarButtons(searchView, "", activity, isClearButton);
                         changeListener.onQueryTextChange("");
                         return false; // Continue with the default action.
                     });
         }
 
-        // Make the close button a clear button.
-        findSearchClearButton(searchView)
-                .setOnClickListener(
-                        (View v) -> {
-                            searchView.setQuery("", false);
-                            updateActionBarButtons(searchView, "", activity);
-                            changeListener.onQueryTextChange("");
-                        });
+        if (isClearButton) {
+            // Make the close button a clear button.
+            findSearchClearButton(searchView)
+                    .setOnClickListener(
+                            (View v) -> {
+                                searchView.setQuery("", false);
+                                updateActionBarButtons(searchView, "", activity, isClearButton);
+                                changeListener.onQueryTextChange("");
+                            });
 
-        // Ensure the clear button doesn't reappear with layout changes (e.g. keyboard visibility).
-        findSearchClearButton(searchView)
-                .addOnLayoutChangeListener(
-                        (view, i, i1, i2, i3, i4, i5, i6, i7) ->
-                                updateActionBarButtons(
-                                        searchView, searchView.getQuery().toString(), activity));
+            // Ensure the clear button doesn't reappear with layout changes (e.g. keyboard
+            // visibility).
+            findSearchClearButton(searchView)
+                    .addOnLayoutChangeListener(
+                            (view, i, i1, i2, i3, i4, i5, i6, i7) ->
+                                    updateActionBarButtons(
+                                            searchView,
+                                            searchView.getQuery().toString(),
+                                            activity,
+                                            isClearButton));
+        }
 
         // Ensure that a changed search view triggers the search - independent from used code path.
         searchView.setOnSearchClickListener(
                 view -> {
-                    updateActionBarButtons(searchView, "", activity);
+                    updateActionBarButtons(searchView, "", activity, isClearButton);
                     changeListener.onQueryTextChange("");
                     if (searchViewObserver != null) {
                         searchViewObserver.onUpdated(true);
@@ -154,7 +169,7 @@ public class SearchUtils {
 
                     @Override
                     public boolean onQueryTextChange(String query) {
-                        updateActionBarButtons(searchView, query, activity);
+                        updateActionBarButtons(searchView, query, activity, isClearButton);
                         changeListener.onQueryTextChange(query);
                         return true; // Consume event.
                     }
@@ -191,13 +206,18 @@ public class SearchUtils {
         searchView.setQuery(null, false);
         searchView.setIconified(true);
         searchItem.collapseActionView();
-        updateActionBarButtons(searchView, null, activity);
+        updateActionBarButtons(searchView, null, activity, /* isClearButton= */ true);
     }
 
     private static void updateActionBarButtons(
-            SearchView searchView, @Nullable String query, @Nullable Activity activity) {
-        ImageView clearButton = findSearchClearButton(searchView);
-        clearButton.setVisibility(query == null || query.equals("") ? View.GONE : View.VISIBLE);
+            SearchView searchView,
+            @Nullable String query,
+            @Nullable Activity activity,
+            boolean isClearButton) {
+        if (isClearButton) {
+            ImageView clearButton = findSearchClearButton(searchView);
+            clearButton.setVisibility(query == null || query.equals("") ? View.GONE : View.VISIBLE);
+        }
         int otherButtonsVisibility = query != null ? View.GONE : View.VISIBLE;
         if (activity != null) {
             SettingsUtils.setOverflowMenuVisibility(activity, otherButtonsVisibility);
