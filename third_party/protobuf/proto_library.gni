@@ -477,7 +477,21 @@ template("proto_library") {
 
     # The deps may have steps that have to run before running protoc.
     if (defined(invoker.proto_deps)) {
-      public_deps += invoker.proto_deps
+      # TODO(crbug.com/563098656): Remove this filter once Perfetto's
+      # ipc:source_set maps its :cpp deps to :source_set. Currently
+      # ipc:source_set has public_deps on common:cpp and config:cpp (C++ compile
+      # targets), which unnecessarily blocks ipc protoc code generation on C++
+      # compilation. Its .proto input configs are already propagated via deps.
+      public_deps += filter_exclude(
+              invoker.proto_deps,
+              [
+                ":source_set",
+                "//third_party/perfetto/protos/perfetto/ipc:source_set",
+              ])
+      if (get_label_info(":$target_name", "dir") !=
+          "//third_party/perfetto/protos/perfetto/ipc") {
+        public_deps += filter_include(invoker.proto_deps, [ ":source_set" ])
+      }
     }
     if (defined(invoker.deps)) {
       # This is to propagate input deps for imported proto to ancestor targets.
@@ -485,8 +499,11 @@ template("proto_library") {
         _dep = get_label_info(_dep, "label_no_toolchain")
 
         # TODO(agrieve): Update perfetto to follow naming scheme.
-        if (filter_exclude([ _dep ], [ "//third_party/perfetto/*" ]) == []) {
-          # Protozero does not follow the naming scheme.
+        if (filter_exclude([ _dep ],
+                           [ "//third_party/perfetto/*source_set" ]) == []) {
+          # Perfetto's *source_set targets are pure input groups and do not have
+          # a corresponding _gen target. Other Perfetto proto targets (:cpp,
+          # :ipc, :zero, :lite) invoke proto_library() and do have _gen targets.
           public_deps += [
             "${_dep}_input_group",
             _dep,
