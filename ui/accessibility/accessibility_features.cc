@@ -446,6 +446,11 @@ bool IsReadAnythingDistillerRefactorEnabled() {
       ::features::kReadAnythingDistillerRefactor);
 }
 
+BASE_FEATURE(kImmersiveReadAnythingPrint, base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsImmersiveReadAnythingPrintEnabled() {
+  return base::FeatureList::IsEnabled(::features::kImmersiveReadAnythingPrint);
+}
+
 // This feature is only used in tests and must not be enabled by default.
 BASE_FEATURE(kScreenAITestMode, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsScreenAITestModeEnabled() {

@@ -356,6 +356,11 @@ AX_BASE_EXPORT bool IsReadAnythingDistillationQualityEvaluationEnabled();
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kReadAnythingDistillerRefactor);
 AX_BASE_EXPORT bool IsReadAnythingDistillerRefactorEnabled();
 
+// Enables printing the distilled content from immersive Reading Mode. Immersive
+// Reading Mode itself has launched and is not gated by a feature flag.
+AX_BASE_EXPORT BASE_DECLARE_FEATURE(kImmersiveReadAnythingPrint);
+AX_BASE_EXPORT bool IsImmersiveReadAnythingPrintEnabled();
+
 // ScreenAI library's Main Content Extraction service is enabled.
 AX_BASE_EXPORT bool IsScreenAIMainContentExtractionEnabled();
 

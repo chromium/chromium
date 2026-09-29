@@ -14155,6 +14155,14 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfNoTargetDeviceQrCode)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
+    {"immersive-read-anything-print",
+     flag_descriptions::kImmersiveReadAnythingPrintName,
+     flag_descriptions::kImmersiveReadAnythingPrintDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kImmersiveReadAnythingPrint)},
+#endif
+
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

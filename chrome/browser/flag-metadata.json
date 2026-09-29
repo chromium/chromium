@@ -6253,6 +6253,11 @@
     "expiry_milestone": 159
   },
   {
+    "name": "immersive-read-anything-print",
+    "owners": [ "eitang@chromium.org", "komo-eng@google.com", "//ui/accessibility/OWNERS" ],
+    "expiry_milestone": 180
+  },
+  {
    "name": "import-export-flags",
    "owners": [ "ananyaseelam@google.com", "kiehl@google.com", "//ui/webui/PLATFORM_OWNERS" ],
    "expiry_milestone": 160
