@@ -24,6 +24,11 @@ if (enable_me2me_host) {
     outputs = [ "$root_build_dir/remoting/shared_lib.py" ]
   }
 
+  copy("remoting_me2me_host_copy_desktop_session") {
+    sources = [ "desktop_session.py" ]
+    outputs = [ "$root_build_dir/remoting/desktop-session" ]
+  }
+
   copy("remoting_me2me_host_copy_pipewire_templates") {
     sources = [
       "pipewire-media-session.conf.template",
@@ -79,6 +84,7 @@ if (enable_me2me_host) {
   group("remoting_dev_me2me_host") {
     deps = [
       ":remote_session_info",
+      ":remoting_me2me_host_copy_desktop_session",
       ":remoting_me2me_host_copy_host_wrapper",
       ":remoting_me2me_host_copy_libremoting_core",
       ":remoting_me2me_host_copy_pipewire_templates",

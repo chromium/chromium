@@ -40,31 +40,66 @@ int MockIsRemoteError(const char* session) {
   return -ENOENT;
 }
 
+int MockGetServiceCrd(const char* session, char** service) {
+  *service = strdup("chrome-remote-desktop");
+  return 0;
+}
+
+int MockGetServiceOther(const char* session, char** service) {
+  *service = strdup("gdm-password");
+  return 0;
+}
+
+int MockGetServiceNullSuccess(const char* session, char** service) {
+  *service = nullptr;
+  return 0;
+}
+
+int MockGetServiceFailure(const char* session, char** service) {
+  *service = nullptr;
+  return -ENODATA;
+}
+
 }  // namespace
 
 TEST(SystemdUtilsTest, RemoteSession) {
-  EXPECT_TRUE(IsRunningInHeadlessSystemdSession(&MockGetSessionSuccess,
-                                                &MockIsRemoteTrue));
+  EXPECT_TRUE(IsRunningInHeadlessSystemdSession(
+      &MockGetSessionSuccess, &MockIsRemoteTrue, &MockGetServiceOther));
 }
 
 TEST(SystemdUtilsTest, LocalSession) {
-  EXPECT_FALSE(IsRunningInHeadlessSystemdSession(&MockGetSessionSuccess,
-                                                 &MockIsRemoteFalse));
+  EXPECT_FALSE(IsRunningInHeadlessSystemdSession(
+      &MockGetSessionSuccess, &MockIsRemoteFalse, &MockGetServiceOther));
+}
+
+TEST(SystemdUtilsTest, CrdPamServiceSession) {
+  EXPECT_TRUE(IsRunningInHeadlessSystemdSession(
+      &MockGetSessionSuccess, &MockIsRemoteFalse, &MockGetServiceCrd));
 }
 
 TEST(SystemdUtilsTest, GetSessionFails) {
-  EXPECT_FALSE(IsRunningInHeadlessSystemdSession(&MockGetSessionFailure,
-                                                 &MockIsRemoteTrue));
+  EXPECT_FALSE(IsRunningInHeadlessSystemdSession(
+      &MockGetSessionFailure, &MockIsRemoteTrue, &MockGetServiceCrd));
 }
 
 TEST(SystemdUtilsTest, GetSessionReturnsNull) {
-  EXPECT_FALSE(IsRunningInHeadlessSystemdSession(&MockGetSessionNullSuccess,
-                                                 &MockIsRemoteTrue));
+  EXPECT_FALSE(IsRunningInHeadlessSystemdSession(
+      &MockGetSessionNullSuccess, &MockIsRemoteTrue, &MockGetServiceCrd));
 }
 
 TEST(SystemdUtilsTest, IsRemoteFails) {
-  EXPECT_FALSE(IsRunningInHeadlessSystemdSession(&MockGetSessionSuccess,
-                                                 &MockIsRemoteError));
+  EXPECT_FALSE(IsRunningInHeadlessSystemdSession(
+      &MockGetSessionSuccess, &MockIsRemoteError, &MockGetServiceCrd));
+}
+
+TEST(SystemdUtilsTest, GetServiceFails) {
+  EXPECT_FALSE(IsRunningInHeadlessSystemdSession(
+      &MockGetSessionSuccess, &MockIsRemoteFalse, &MockGetServiceFailure));
+}
+
+TEST(SystemdUtilsTest, GetServiceReturnsNull) {
+  EXPECT_FALSE(IsRunningInHeadlessSystemdSession(
+      &MockGetSessionSuccess, &MockIsRemoteFalse, &MockGetServiceNullSuccess));
 }
 
 }  // namespace remoting

@@ -62,6 +62,8 @@ install:
 
 	install "$(SRC_DIR)/remoting/host/linux/linux_me2me_host.py" \
 	  "$(INSTALL_DIR)/chrome-remote-desktop"
+	install "$(SRC_DIR)/remoting/host/linux/desktop_session.py" \
+	  "$(INSTALL_DIR)/desktop-session"
 	install -m 0644 \
 	  "$(SRC_DIR)/remoting/host/linux/shared_lib.py" \
 	  "$(INSTALL_DIR)/shared_lib.py"
@@ -172,6 +174,9 @@ endif
 	install -m 0644 \
 	  "$(SRC_DIR)/remoting/host/installer/linux/chrome-remote-desktop@.service" \
 	  "$(SYSTEMD_UNIT_DIR)/chrome-remote-desktop@.service"
+	install -m 0644 \
+	  "$(SRC_DIR)/remoting/host/installer/linux/chrome-remote-desktop-x11-session@.service" \
+	  "$(SYSTEMD_UNIT_DIR)/chrome-remote-desktop-x11-session@.service"
 
 	install "$(BUILD_DIR)/remoting/installer/cron/chrome-remote-desktop" \
 	  "$(CRON_DIR)/chrome-remote-desktop"

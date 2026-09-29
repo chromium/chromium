@@ -78,9 +78,12 @@ if (enable_me2me_host && target_cpu == "x64" && !is_component_build) {
 
       # Files to be packaged into the deb.
       "//remoting/host/installer/linux/Xsession",
+      "//remoting/host/installer/linux/chrome-remote-desktop-x11-session@.service",
+      "//remoting/host/installer/linux/chrome-remote-desktop@.service",
       "//remoting/host/installer/linux/is-remoting-session",
       "//remoting/host/installer/linux/setup-session-environment",
       "//remoting/host/linux/configure_url_forwarder.py",
+      "//remoting/host/linux/desktop_session.py",
       "//remoting/host/linux/linux_me2me_host.py",
       "//remoting/host/linux/pipewire.conf.template",
       "//remoting/host/linux/pipewire-media-session.conf.template",
@@ -123,8 +126,6 @@ if (enable_me2me_host && target_cpu == "x64" && !is_component_build) {
       "-b",
       build_timestamp,
     ]
-    inputs +=
-        [ "//remoting/host/installer/linux/chrome-remote-desktop@.service" ]
 
     deps = [
       ":credits",

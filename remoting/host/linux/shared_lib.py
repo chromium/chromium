@@ -199,7 +199,7 @@ HOST_OFFLINE_REASON_SESSION_RETRIES_EXCEEDED = "SESSION_RETRIES_EXCEEDED"
 
 # This is the exit code used to signal to wrapper that it should restart instead
 # of exiting. It must be kept in sync with RestartForceExitStatus in
-# chrome-remote-desktop@.service.
+# chrome-remote-desktop@.service and chrome-remote-desktop-x11-session@.service.
 RELAUNCH_EXIT_CODE = 41
 
 # Globals needed by the atexit cleanup() handler.

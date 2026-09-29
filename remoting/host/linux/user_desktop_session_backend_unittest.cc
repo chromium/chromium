@@ -95,7 +95,7 @@ TEST_F(UserDesktopSessionBackendTest,
       CreateSession("normal_active", "user", "wayland", "active",
                     "gdm-password", /*is_remote=*/false),
       CreateSession("crd_session", "user", "wayland", "online",
-                    "chrome-remote-desktop-session", /*is_remote=*/false),
+                    "chrome-remote-desktop", /*is_remote=*/false),
       CreateSession("normal_online", "user", "wayland", "online",
                     "gdm-password", /*is_remote=*/false),
   };

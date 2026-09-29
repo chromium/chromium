@@ -60,8 +60,7 @@ class LoginSessionManager {
     // Whether the session is remote.
     bool is_remote;
 
-    // The PAM service name of the session (e.g.
-    // "chrome-remote-desktop-session").
+    // The PAM service name of the session (e.g. "chrome-remote-desktop").
     std::string service;
 
     // The session state (e.g. "active", "online", "closing").

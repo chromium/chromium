@@ -7,9 +7,13 @@
 set -e
 
 if [ "$1" = "remove" ]; then
-  # Stop the service when the package is being removed.
-  echo "Stopping Chrome Remote Desktop service..."
-  systemctl stop 'chrome-remote-desktop@*'
+  # Stop the services when the package is being removed. Debhelper doesn't
+  # manage templated services, so they need to be stopped here. The
+  # non-templated chrome-remote-desktop.service is stopped by the snippet that
+  # dh_installsystemd appends below.
+  echo "Stopping Chrome Remote Desktop services..."
+  systemctl stop 'chrome-remote-desktop@*' \
+    'chrome-remote-desktop-x11-session@*'
 fi
 
 #DEBHELPER#

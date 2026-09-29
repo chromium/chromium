@@ -51,15 +51,15 @@ UserDesktopSessionBackend::SelectBestGraphicalSession(
     }
 
     // Priority ranking:
-    // 1. service == "chrome-remote-desktop-session": dedicated CRD user
-    //    session.
+    // 1. service == "chrome-remote-desktop": dedicated CRD user session (see
+    //    chrome-remote-desktop-x11-session@.service).
     // 2. is_remote == true: prefer remote/headless sessions over local console
     //    sessions to avoid displaying remote user activity on a physical
     //    monitor and ensure compatibility with curtain mode.
     // 3. state == "active": prefer active (foreground) sessions over online
     //    (background) sessions.
     std::tuple<int, bool, bool> priority = {
-        session.service == "chrome-remote-desktop-session" ? 1 : 0,
+        session.service == "chrome-remote-desktop" ? 1 : 0,
         session.is_remote,
         session.state == "active",
     };
