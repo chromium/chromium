@@ -237,7 +237,9 @@ class MEDIA_EXPORT ChannelLayoutConfig {
 
   template <ChannelLayout layout>
   static constexpr ChannelLayoutConfig FromLayout() {
-    if constexpr (layout == CHANNEL_LAYOUT_MONO) {
+    if constexpr (layout == CHANNEL_LAYOUT_NONE) {
+      return ChannelLayoutConfig();
+    } else if constexpr (layout == CHANNEL_LAYOUT_MONO) {
       return Mono();
     } else if constexpr (layout == CHANNEL_LAYOUT_STEREO) {
       return Stereo();
