@@ -249,8 +249,8 @@ void SearchEnginePreconnector::PreconnectDSE(bool is_startup) {
   }
 
   GURL preconnect_url = GetDefaultSearchEngineOriginURL();
-  if (preconnect_url.GetScheme() != url::kHttpScheme &&
-      preconnect_url.GetScheme() != url::kHttpsScheme) {
+  if (!preconnect_url.SchemeIs(url::kHttpScheme) &&
+      !preconnect_url.SchemeIs(url::kHttpsScheme)) {
     return;
   }
 
