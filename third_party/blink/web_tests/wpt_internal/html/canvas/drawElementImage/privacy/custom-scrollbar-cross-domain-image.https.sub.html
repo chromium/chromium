@@ -12,6 +12,7 @@
   const imageUrl = 'https://{{hosts[alt][]}}:{{ports[https][0]}}/images/red.png';
 
   const iframe = document.createElement('iframe');
+  iframe.setAttribute('drawable', '');
   iframe.style.cssText = 'width: 150px; height: 150px; border: none;';
   const iframeLoaded = new Promise(resolve => { iframe.onload = resolve; });
   iframe.srcdoc = `
