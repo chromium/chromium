@@ -242,7 +242,7 @@ ChromeRenderFrameObserver::ChromeRenderFrameObserver(
       (base::FeatureList::IsEnabled(
            features::kInitialWebUIWithoutTranslateForNtp) &&
        base::CommandLine::ForCurrentProcess()->HasSwitch(
-           switches::kInstantProcess));
+           switches::kNtpProcess));
 
   if (!skip_translate) {
     translate_agent_ = new translate::TranslateAgent(

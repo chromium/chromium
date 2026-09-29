@@ -3102,6 +3102,10 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
             blink::switches::kDisableReduceAcceptLanguage);
       }
 
+      if (process->GetUserData(search::kIsNTPProcessKey)) {
+        command_line->AppendSwitch(switches::kNtpProcess);
+      }
+
 #if !BUILDFLAG(IS_ANDROID)
       InstantService* instant_service =
           InstantServiceFactory::GetForProfile(profile);

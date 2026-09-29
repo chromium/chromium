@@ -545,6 +545,9 @@ inline constexpr char kNoStartupWindow[] = "no-startup-window";
 // Overrides the default URL for the Notebook Home WebUI.
 inline constexpr char kNotebookHomeURL[] = "notebook-home-url";
 
+// Marks a renderer as a New Tab Page process.
+inline constexpr char kNtpProcess[] = "ntp-process";
+
 // Calculate the hash of an MHTML file as it is being saved.
 // The browser process will write the serialized MHTML contents to a file and
 // calculate its hash as it is streamed back from the renderer via a Mojo data
