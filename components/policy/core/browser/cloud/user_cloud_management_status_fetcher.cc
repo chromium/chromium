@@ -4,102 +4,113 @@
 
 #include "components/policy/core/browser/cloud/user_cloud_management_status_fetcher.h"
 
-#include <memory>
-#include <optional>
-#include <string>
 #include <utility>
 
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/logging.h"
-#include "base/memory/ptr_util.h"
-#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
-#include "components/policy/core/common/cloud/device_management_service.h"
+#include "base/values.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/cloud/dmserver_job_configurations.h"
 #include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_logger.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/core/common/policy_proto_decoders.h"
+#include "components/policy/core/common/policy_types.h"
+#include "components/policy/policy_constants.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
-#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "google_apis/gaia/gaia_constants.h"
-#include "google_apis/gaia/google_service_auth_error.h"
+#include "google_apis/gaia/core_account_id.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace policy {
 
 namespace {
 
-UserInterceptionPolicies GetUserInterceptionPoliciesFromProto(
-    const enterprise_management::SigninExperiencePolicies& policies_proto) {
-  UserInterceptionPolicies policies;
-  if (policies_proto.has_sync_disabled()) {
-    policies.sync_disabled = policies_proto.sync_disabled();
+const base::Value* GetMandatoryPolicyValue(const PolicyMap& policy_map,
+                                           const char* policy_name,
+                                           base::Value::Type value_type) {
+  const PolicyMap::Entry* entry = policy_map.Get(policy_name);
+  if (!entry || entry->level != POLICY_LEVEL_MANDATORY) {
+    return nullptr;
   }
-  std::optional<int> profile_separation_settings;
-  if (policies_proto.has_profile_separation_settings()) {
-    profile_separation_settings =
-        static_cast<int>(policies_proto.profile_separation_settings());
-  }
-  std::optional<int> profile_separation_data_migration_settings;
-  if (policies_proto.has_profile_separation_data_migration_settings()) {
-    profile_separation_data_migration_settings = static_cast<int>(
-        policies_proto.profile_separation_data_migration_settings());
-  }
-  std::optional<std::string> managed_accounts_signin_restrictions;
-  if (policies_proto.has_managed_accounts_signin_restrictions()) {
-    managed_accounts_signin_restrictions =
-        policies_proto.managed_accounts_signin_restrictions();
+  return entry->value(value_type);
+}
+
+std::optional<ProfileSeparationPolicies> ExtractProfileSeparationPolicies(
+    const enterprise_management::PolicyFetchResponse& policy_fetch_response) {
+  if ((policy_fetch_response.has_error_code() &&
+       policy_fetch_response.error_code() != net::HTTP_OK) ||
+      !policy_fetch_response.error_message().empty()) {
+    LOG_POLICY(WARNING, POLICY_FETCHING)
+        << "UserManagementStatusAndPolicies policy_fetch_response contained "
+        << "error code: " << policy_fetch_response.error_code()
+        << ", message: " << policy_fetch_response.error_message();
+    return std::nullopt;
   }
 
-  policies.profile_separation_policies = ProfileSeparationPolicies(
+  enterprise_management::PolicyData policy_data;
+  if (!policy_data.ParseFromString(policy_fetch_response.policy_data()) ||
+      !policy_data.has_policy_value()) {
+    LOG_POLICY(WARNING, POLICY_FETCHING)
+        << "Failed to parse PolicyData or missing policy_value in "
+        << "UserManagementStatusAndPolicies.";
+    return std::nullopt;
+  }
+
+  // TODO(crbug.com/543381833): Use PolicyValidator to validate this policy.
+  enterprise_management::CloudPolicySettings cloud_policy_settings;
+  if (!cloud_policy_settings.ParseFromString(policy_data.policy_value())) {
+    LOG_POLICY(WARNING, POLICY_FETCHING)
+        << "Failed to parse CloudPolicySettings from PolicyData.";
+    return std::nullopt;
+  }
+
+  PolicyMap policy_map;
+  DecodeProtoFields(cloud_policy_settings, /*external_data_manager=*/nullptr,
+                    POLICY_SOURCE_CLOUD, POLICY_SCOPE_USER, &policy_map,
+                    PolicyPerProfileFilter::kAny);
+
+  std::optional<int> profile_separation_settings;
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
+  if (const base::Value* v =
+          GetMandatoryPolicyValue(policy_map, key::kProfileSeparationSettings,
+                                  base::Value::Type::INTEGER)) {
+    profile_separation_settings = v->GetInt();
+  }
+#endif
+
+  std::optional<int> profile_separation_data_migration_settings;
+#if !BUILDFLAG(IS_CHROMEOS)
+  if (const base::Value* v = GetMandatoryPolicyValue(
+          policy_map, key::kProfileSeparationDataMigrationSettings,
+          base::Value::Type::INTEGER)) {
+    profile_separation_data_migration_settings = v->GetInt();
+  }
+#endif
+
+  std::optional<std::string> managed_accounts_signin_restrictions;
+#if !BUILDFLAG(IS_IOS)
+  if (const base::Value* v = GetMandatoryPolicyValue(
+          policy_map, key::kManagedAccountsSigninRestriction,
+          base::Value::Type::STRING)) {
+    managed_accounts_signin_restrictions = v->GetString();
+  }
+#endif
+
+  return ProfileSeparationPolicies(
       profile_separation_settings, profile_separation_data_migration_settings,
       std::move(managed_accounts_signin_restrictions));
-
-  if (policies_proto.has_browser_theme_color()) {
-    policies.browser_theme_color = policies_proto.browser_theme_color();
-  }
-  if (policies_proto.has_enterprise_logo_url()) {
-    policies.enterprise_logo_url = policies_proto.enterprise_logo_url();
-  }
-  if (policies_proto.has_enterprise_custom_label()) {
-    policies.enterprise_custom_label =
-        policies_proto.enterprise_custom_label();
-  }
-  return policies;
 }
 
 }  // namespace
-
-UserManagementStatus::UserManagementStatus() = default;
-UserManagementStatus::~UserManagementStatus() = default;
-UserManagementStatus::UserManagementStatus(const UserManagementStatus&) =
-    default;
-UserManagementStatus& UserManagementStatus::operator=(
-    const UserManagementStatus&) = default;
-UserManagementStatus::UserManagementStatus(UserManagementStatus&&) = default;
-UserManagementStatus& UserManagementStatus::operator=(
-    UserManagementStatus&&) = default;
-
-UserInterceptionPolicies::UserInterceptionPolicies() = default;
-UserInterceptionPolicies::UserInterceptionPolicies(
-    ProfileSeparationPolicies profile_separation_policies)
-    : profile_separation_policies(std::move(profile_separation_policies)) {}
-UserInterceptionPolicies::~UserInterceptionPolicies() = default;
-UserInterceptionPolicies::UserInterceptionPolicies(
-    const UserInterceptionPolicies&) = default;
-UserInterceptionPolicies& UserInterceptionPolicies::operator=(
-    const UserInterceptionPolicies&) = default;
-UserInterceptionPolicies::UserInterceptionPolicies(
-    UserInterceptionPolicies&&) = default;
-UserInterceptionPolicies& UserInterceptionPolicies::operator=(
-    UserInterceptionPolicies&&) = default;
 
 // static
 void UserCloudManagementStatusFetcher::FetchStatusAndPolicies(
@@ -120,13 +131,13 @@ void UserCloudManagementStatusFetcher::FetchStatusAndPolicies(
       [](std::unique_ptr<UserCloudManagementStatusFetcher> fetcher,
          FetchStatusAndPoliciesCallback callback,
          std::optional<UserManagementStatus> status,
-         std::optional<UserInterceptionPolicies> interception_policies) {
+         std::optional<ProfileSeparationPolicies> profile_separation_policies) {
         std::move(callback).Run(std::move(status),
-                                std::move(interception_policies));
+                                std::move(profile_separation_policies));
       },
       std::move(fetcher), std::move(callback));
-  raw_fetcher->Start(
-      identity_manager, account_id, std::move(on_status_received));
+  raw_fetcher->Start(identity_manager, account_id,
+                     std::move(on_status_received));
 }
 
 UserCloudManagementStatusFetcher::UserCloudManagementStatusFetcher(
@@ -146,10 +157,10 @@ UserCloudManagementStatusFetcher::~UserCloudManagementStatusFetcher() = default;
 void UserCloudManagementStatusFetcher::Start(
     signin::IdentityManager* identity_manager,
     const CoreAccountId& account_id,
-    InternalFetchCallback callback) {
+    FetchStatusAndPoliciesCallback callback) {
   callback_ = std::move(callback);
 
-  // Set 10.0s timeout timer.
+  // Start the fetch timeout timer.
   timeout_timer_.Start(
       FROM_HERE, features::kMigrateSecureConnectApiToDmServerFetchTimeout.Get(),
       base::BindOnce(&UserCloudManagementStatusFetcher::OnTimeout,
@@ -176,20 +187,19 @@ void UserCloudManagementStatusFetcher::OnAccessTokenFetchComplete(
     return;
   }
 
-  SendDeviceManagementRequest(access_token_info.token);
+  SendDeviceManagementRequest(std::move(access_token_info.token));
 }
 
 void UserCloudManagementStatusFetcher::SendDeviceManagementRequest(
-    const std::string& access_token) {
+    std::string access_token) {
   DMServerJobConfiguration::CreateParams params =
       DMServerJobConfiguration::CreateParams::WithoutClient(
           DeviceManagementService::JobConfiguration::
               TYPE_USER_MANAGEMENT_STATUS_AND_POLICIES,
           &service_.get(), /*client_id=*/"", url_loader_factory_);
-  params.oauth_token = access_token;
-  params.callback =
-      base::BindOnce(&UserCloudManagementStatusFetcher::OnJobDone,
-                     weak_factory_.GetWeakPtr());
+  params.oauth_token = std::move(access_token);
+  params.callback = base::BindOnce(&UserCloudManagementStatusFetcher::OnJobDone,
+                                   weak_factory_.GetWeakPtr());
 
   auto config = std::make_unique<DMServerJobConfiguration>(std::move(params));
 
@@ -221,13 +231,13 @@ void UserCloudManagementStatusFetcher::OnJobDone(DMServerJobResult result) {
   status.is_chrome_profile_management_enabled =
       status_response.is_chrome_profile_management_enabled();
 
-  std::optional<UserInterceptionPolicies> interception_policies;
-  if (status_response.has_signin_experience_policies()) {
-    interception_policies = GetUserInterceptionPoliciesFromProto(
-        status_response.signin_experience_policies());
+  std::optional<ProfileSeparationPolicies> profile_separation_policies;
+  if (status_response.has_policy_fetch_response()) {
+    profile_separation_policies = ExtractProfileSeparationPolicies(
+        status_response.policy_fetch_response());
   }
 
-  Finish(status, std::move(interception_policies));
+  Finish(status, std::move(profile_separation_policies));
 }
 
 void UserCloudManagementStatusFetcher::OnTimeout() {
@@ -239,14 +249,14 @@ void UserCloudManagementStatusFetcher::OnTimeout() {
 
 void UserCloudManagementStatusFetcher::Finish(
     std::optional<UserManagementStatus> status,
-    std::optional<UserInterceptionPolicies> interception_policies) {
+    std::optional<ProfileSeparationPolicies> profile_separation_policies) {
   timeout_timer_.Stop();
   token_fetcher_.reset();
   fetch_job_.reset();
 
   if (callback_) {
     std::move(callback_).Run(std::move(status),
-                             std::move(interception_policies));
+                             std::move(profile_separation_policies));
   }
 }
 

@@ -39,7 +39,6 @@ class IdentityManager;
 namespace policy {
 class UserCloudSigninRestrictionPolicyFetcher;
 struct UserManagementStatus;
-struct UserInterceptionPolicies;
 }  // namespace policy
 
 // Service responsible to show enterprise management disclaimers at startup on
@@ -126,6 +125,7 @@ class ProfileManagementDisclaimerService
     CoreAccountId account_id;
     bool profile_creation_required_by_policy = false;
     bool cancelable = true;
+    bool is_fetching_management_status = false;
 
     // The access point always has a value if the account_id is set.
     std::optional<signin_metrics::AccessPoint> access_point;
@@ -135,6 +135,8 @@ class ProfileManagementDisclaimerService
     // profile that was chosen, it may be null if the user denied management.
     // The second parameter is whether management is required by policy.
     base::OnceCallbackList<void(Profile*, bool)> callbacks;
+
+    base::WeakPtrFactory<ResetableState> weak_ptr_factory{this};
   };
 
   signin::IdentityManager* GetIdentityManager();
@@ -188,19 +190,21 @@ class ProfileManagementDisclaimerService
                              bool is_from_cached_registration_result,
                              bool is_managed_account);
 
-  // Called when the profile separation policies are fetched (or extracted from
-  // DM Server status/interception policies).
+  // Called when the profile separation policies are fetched.
   void OnProfileSeparationPoliciesFetched(
       policy::ProfileSeparationPolicies profile_separation_policies);
 
-  // Called when the user cloud management status and interception policies
-  // are fetched from the Device Management server. `account_id` is bound into
-  // the callback to guarantee concurrency safety and avoid cross-account races
-  // if the active sign-in account changes while the network fetch is in flight.
+  // Called when the user cloud management status and profile separation
+  // policies are fetched from the Device Management server. `state_weak_ptr`
+  // and `account_id` are bound into the callback to guarantee concurrency
+  // safety and avoid stale callbacks if `Reset()` or an account switch occurs
+  // while the network fetch is in flight.
   void OnManagementStatusFetched(
+      base::WeakPtr<ResetableState> state_weak_ptr,
       const CoreAccountId& account_id,
       std::optional<policy::UserManagementStatus> status,
-      std::optional<policy::UserInterceptionPolicies> interception_policies);
+      std::optional<policy::ProfileSeparationPolicies>
+          profile_separation_policies);
 
   // Opens the device signals disclaimer dialog if the following conditions
   // apply for the current profile:

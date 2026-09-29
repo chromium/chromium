@@ -5322,7 +5322,7 @@ message DeviceManagementRequest {
       generate_chrome_profile_challenge_request = 44;
 
   // Request to check whether a user account is managed and optionally fetch
-  // sign-in interception policies.
+  // user cloud policies.
   // HTTP query parameter 'request': 'user_management_status_and_policies'
   optional UserManagementStatusAndPoliciesRequest
       user_management_status_and_policies_request = 45;
@@ -5507,61 +5507,11 @@ message DeviceManagementResponse {
 }
 
 // Request from device to server to check if a user is managed and retrieve
-// sign-in experience policies.
+// user cloud policies.
 message UserManagementStatusAndPoliciesRequest {
-  // Whether to fetch sign-in experience policies for the user. Policies are
+  // Whether to fetch user cloud policies for the user. Policies are
   // fetched only if the user is managed and has management enabled.
   optional bool should_fetch_policies = 1;
-}
-
-// Enterprise policies needed to customize the sign-in experience (such as
-// profile separation and branding).
-message SigninExperiencePolicies {
-  // Enums are explicitly defined here matching the policy integer enum values
-  // because generated policy protos (from policy definitions templates) are
-  // created at build time and do not export standalone proto enum types.
-  //
-  // NOTE: If new enum values are added to policy_templates.json / policy YAMLs
-  // for ProfileSeparationSettings or ProfileSeparationDataMigrationSettings,
-  // ensure these enums are updated accordingly.
-
-  // Values match the proto enum values of the `ProfileSeparationSettings`
-  // policy.
-  enum ProfileSeparationSettings {
-    SUGGESTED = 0;
-    ENFORCED = 1;
-    DISABLED = 2;
-  }
-
-  // Values match the proto enum values of the
-  // `ProfileSeparationDataMigrationSettings` policy.
-  enum ProfileSeparationDataMigrationSettings {
-    USER_OPT_IN = 1;
-    USER_OPT_OUT = 2;
-    ALWAYS_SEPARATE = 3;
-  }
-
-  // Value for the `SyncDisabled` policy.
-  optional bool sync_disabled = 1;
-
-  // Value for the `ProfileSeparationSettings` policy.
-  optional ProfileSeparationSettings profile_separation_settings = 2;
-
-  // Value for the `ProfileSeparationDataMigrationSettings` policy.
-  optional ProfileSeparationDataMigrationSettings
-      profile_separation_data_migration_settings = 3;
-
-  // Value for the `BrowserThemeColor` policy.
-  optional string browser_theme_color = 4;
-
-  // Value for the `EnterpriseLogoUrl` policy.
-  optional string enterprise_logo_url = 5;
-
-  // Value for the `EnterpriseCustomLabel` policy.
-  optional string enterprise_custom_label = 6;
-
-  // Value for the `ManagedAccountsSigninRestriction` policy.
-  optional string managed_accounts_signin_restrictions = 7;
 }
 
 // Response from server to device for check user management status and policies
@@ -5573,9 +5523,11 @@ message UserManagementStatusAndPoliciesResponse {
   // Whether Chrome management is enabled for this user.
   optional bool is_chrome_profile_management_enabled = 2;
 
-  // Sign-in experience policies for the user, populated when
+  // Policy fetch response containing the user's Chrome policies
+  // (`PolicyFetchResponse` -> serialized `PolicyData` -> serialized
+  // `ChromeSettingsProto` / `CloudPolicySettings`), populated when
   // `should_fetch_policies` is true and management is enabled.
-  optional SigninExperiencePolicies signin_experience_policies = 3;
+  optional PolicyFetchResponse policy_fetch_response = 3;
 }
 
 // Device State Information stored in the server is retrieval at

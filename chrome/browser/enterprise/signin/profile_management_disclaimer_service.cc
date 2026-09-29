@@ -161,8 +161,7 @@ void ProfileManagementDisclaimerService::MaybeResetAcceptManagementDisclaimer(
   }
 }
 
-ProfileManagementDisclaimerService::ResetableState::ResetableState() =
-    default;
+ProfileManagementDisclaimerService::ResetableState::ResetableState() = default;
 
 ProfileManagementDisclaimerService::ResetableState::~ResetableState() {
   callbacks.Notify(profile_to_continue_in.get(),
@@ -244,8 +243,9 @@ void ProfileManagementDisclaimerService::
   }
   state_->access_point = access_point;
 
-  // Wait for the current disclaimer to be closed.
-  if (state_->profile_creation_controller) {
+  // Wait for the current disclaimer or in-flight status fetch to complete.
+  if (state_->profile_creation_controller ||
+      state_->is_fetching_management_status) {
     return;
   }
 
@@ -301,24 +301,37 @@ void ProfileManagementDisclaimerService::
 
   CHECK(!state_->profile_creation_controller);
 
+  // If the account cannot try to register for policies because of delays
+  // between failures, we can reset the state and wait for another attempt.
+  if (!CanTryPolicyRegistration(
+          signin_prefs_.GetPolicyDisclaimerLastRegistrationFailureTime(
+              info.GetGaiaId()))) {
+    OnRegisteredForPolicy(account_id,
+                          /*is_from_cached_registration_result=*/true,
+                          /*is_managed_account=*/false);
+    return;
+  }
+
   if (base::FeatureList::IsEnabled(
           policy::features::kMigrateSecureConnectApiToDmServer)) {
+    state_->is_fetching_management_status = true;
     if (profile_separation_policies_for_testing_.has_value() ||
         user_choice_for_testing_.has_value() || auto_accept_management_) {
+      if (!auto_accept_management_) {
+        CHECK_IS_TEST();
+      }
       policy::UserManagementStatus status;
       status.is_account_managed = true;
       status.is_chrome_profile_management_enabled = true;
-      policy::UserInterceptionPolicies interception_policies;
-      interception_policies.profile_separation_policies =
-          profile_separation_policies_for_testing_.value_or(
-              policy::ProfileSeparationPolicies());
 
       base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
           FROM_HERE,
           base::BindOnce(
               &ProfileManagementDisclaimerService::OnManagementStatusFetched,
-              weak_ptr_factory_.GetWeakPtr(), account_id, status,
-              interception_policies));
+              weak_ptr_factory_.GetWeakPtr(),
+              state_->weak_ptr_factory.GetWeakPtr(), account_id, status,
+              profile_separation_policies_for_testing_.value_or(
+                  policy::ProfileSeparationPolicies())));
       return;
     }
     policy::UserCloudManagementStatusFetcher::FetchStatusAndPolicies(
@@ -329,18 +342,8 @@ void ProfileManagementDisclaimerService::
         GetIdentityManager(), account_id, /*should_fetch_policies=*/true,
         base::BindOnce(
             &ProfileManagementDisclaimerService::OnManagementStatusFetched,
-            weak_ptr_factory_.GetWeakPtr(), account_id));
-    return;
-  }
-
-  // If the account cannot try to register for policies because of delays
-  // between failures, we can reset the state and wait for another attempt.
-  if (!CanTryPolicyRegistration(
-          signin_prefs_.GetPolicyDisclaimerLastRegistrationFailureTime(
-              info.GetGaiaId()))) {
-    OnRegisteredForPolicy(account_id,
-                          /*is_from_cached_registration_result=*/true,
-                          /*is_managed_account=*/false);
+            weak_ptr_factory_.GetWeakPtr(),
+            state_->weak_ptr_factory.GetWeakPtr(), account_id));
     return;
   }
 
@@ -367,8 +370,7 @@ void ProfileManagementDisclaimerService::
 
   policy_fetch_tracker_by_account_id_[account_id]->RegisterForPolicy(
       base::BindOnce(&ProfileManagementDisclaimerService::OnRegisteredForPolicy,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     account_id,
+                     weak_ptr_factory_.GetWeakPtr(), account_id,
                      /*is_from_cached_registration_result=*/false),
       !IsSigninRegistration(*state_->access_point));
 }
@@ -559,16 +561,19 @@ bool ProfileManagementDisclaimerService::MaybeAutoAcceptManagement() {
 }
 
 void ProfileManagementDisclaimerService::OnManagementStatusFetched(
+    base::WeakPtr<ResetableState> state_weak_ptr,
     const CoreAccountId& account_id,
     std::optional<policy::UserManagementStatus> status,
-    std::optional<policy::UserInterceptionPolicies> interception_policies) {
-  // Ensure the fetched management status corresponds to the account currently
-  // being evaluated. This protects against cross-account race conditions where
-  // an account switch or signout occurred while the asynchronous network fetch
-  // was in flight.
-  if (!state_ || state_->account_id != account_id) {
+    std::optional<policy::ProfileSeparationPolicies>
+        profile_separation_policies) {
+  // Ensure the fetched management status corresponds to the active state and
+  // account currently being evaluated. This protects against stale callbacks if
+  // `Reset()`, an account switch, or signout occurred while the asynchronous
+  // network fetch was in flight.
+  if (!state_weak_ptr || !state_ || state_->account_id != account_id) {
     return;
   }
+  state_->is_fetching_management_status = false;
 
   const bool is_managed_account =
       status.has_value() && status->CanBeSubjectedToEnterprisePolicies();
@@ -589,10 +594,8 @@ void ProfileManagementDisclaimerService::OnManagementStatusFetched(
     return;
   }
 
-  OnProfileSeparationPoliciesFetched(
-      interception_policies.has_value()
-          ? std::move(interception_policies->profile_separation_policies)
-          : policy::ProfileSeparationPolicies());
+  OnProfileSeparationPoliciesFetched(profile_separation_policies.value_or(
+      policy::ProfileSeparationPolicies()));
 }
 
 void ProfileManagementDisclaimerService::OnRegisteredForPolicy(

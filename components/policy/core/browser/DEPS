@@ -9,6 +9,8 @@ include_rules = [
   "+components/url_matcher",
   "+components/version_info",
   "+extensions/buildflags",
+  "+net/base",
+  "+net/http",
   "+printing/buildflags",
   "+services/network/public/mojom/url_response_head.mojom.h",
   "+services/network/test",
