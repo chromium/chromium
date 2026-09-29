@@ -421,16 +421,19 @@ class FuseboxViewBinder {
         ColorStateList iconBackgroundTint =
                 OmniboxResourceProvider.getFuseboxPopupIconBackgroundTintList(
                         buttonView.getContext(), brandedColorScheme, isBottomSheet);
-        themeButton(buttonView, textAppearance, subtextAppearance, iconTint, iconBackgroundTint);
-
         @Px
         int iconSize =
                 OmniboxResourceProvider.getFuseboxPopupIconSize(
                         buttonView.getContext(), isBottomSheet);
+        themeButton(
+                buttonView,
+                textAppearance,
+                subtextAppearance,
+                iconTint,
+                iconBackgroundTint,
+                iconSize);
 
         holder.mHasColor = data.hasColor;
-        updateIconSize(holder.mActionIcon, iconSize);
-        updateIconSize(holder.mActionEndIcon, iconSize);
 
         if (data.customIcon != null) {
             var drawable = new BitmapDrawable(res, data.customIcon);
@@ -524,7 +527,8 @@ class FuseboxViewBinder {
             @StyleRes int textAppearance,
             @StyleRes int subtextAppearance,
             ColorStateList iconTint,
-            @Nullable ColorStateList iconBackgroundTint) {
+            @Nullable ColorStateList iconBackgroundTint,
+            @Px int iconSize) {
         FuseboxItemViewHolder holder = getViewHolder(buttonView);
         TextView textView = holder.mActionText;
         TextView subtextView = holder.mActionSubtext;
@@ -543,6 +547,9 @@ class FuseboxViewBinder {
         if (endImageView != null) {
             endImageView.setImageTintList(iconTint);
         }
+
+        updateIconSize(imageView, iconSize);
+        updateIconSize(endImageView, iconSize);
 
         // The icon background is only present for horizontal attachments, so null-checking is
         // necessary.
@@ -641,19 +648,33 @@ class FuseboxViewBinder {
         int textAppearance = mResourceProvider.getPopupButtonTextRes();
         @StyleRes int smallTextAppearance = mResourceProvider.getPopupHeaderVisibilityTextRes();
 
+        @Px int iconSize = mResourceProvider.getFuseboxPopupIconSize(isBottomSheet);
         themeButton(
                 popup.mMoreOptionsButton,
                 textAppearance,
                 smallTextAppearance,
                 iconTint,
-                iconBackgroundTint);
+                iconBackgroundTint,
+                iconSize);
 
         for (View button : popup.mAttachmentButtons) {
-            themeButton(button, textAppearance, smallTextAppearance, iconTint, iconBackgroundTint);
+            themeButton(
+                    button,
+                    textAppearance,
+                    smallTextAppearance,
+                    iconTint,
+                    iconBackgroundTint,
+                    iconSize);
         }
 
         for (View button : popup.mDynamicThemedButtons) {
-            themeButton(button, textAppearance, smallTextAppearance, iconTint, iconBackgroundTint);
+            themeButton(
+                    button,
+                    textAppearance,
+                    smallTextAppearance,
+                    iconTint,
+                    iconBackgroundTint,
+                    iconSize);
         }
 
         for (TextView header : popup.mHeaders) {

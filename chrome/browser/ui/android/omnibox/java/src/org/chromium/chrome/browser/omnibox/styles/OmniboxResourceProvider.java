@@ -688,6 +688,17 @@ public class OmniboxResourceProvider implements ComponentCallbacks2 {
     }
 
     /**
+     * Resolves the icon dimension for Fusebox popup items (24dp for bottom sheet, 20dp for plus
+     * menu).
+     *
+     * @param isBottomSheet Whether the popup is presented as a bottom sheet.
+     * @return Icon size in pixels.
+     */
+    public @Px int getFuseboxPopupIconSize(boolean isBottomSheet) {
+        return getFuseboxPopupIconSize(mContext, isBottomSheet);
+    }
+
+    /**
      * Get primary icon background tint list.
      *
      * @see #getPrimaryIconBackgroundTintList(Context, ...)

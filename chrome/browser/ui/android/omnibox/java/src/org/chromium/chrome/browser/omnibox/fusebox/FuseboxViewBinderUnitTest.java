@@ -1093,6 +1093,11 @@ public class FuseboxViewBinderUnitTest {
         assertEquals(expectedSize, layoutParams.width);
         assertEquals(expectedSize, layoutParams.height);
 
+        ImageView fileIcon = mPopup.mFileButton.findViewById(R.id.start_icon);
+        ViewGroup.LayoutParams fileLayoutParams = fileIcon.getLayoutParams();
+        assertEquals(expectedSize, fileLayoutParams.width);
+        assertEquals(expectedSize, fileLayoutParams.height);
+
         addModelButton();
         ImageView dynamicIcon = getDynamicButton(0).findViewById(R.id.start_icon);
         ViewGroup.LayoutParams dynamicLayoutParams = dynamicIcon.getLayoutParams();
@@ -1113,6 +1118,11 @@ public class FuseboxViewBinderUnitTest {
         ViewGroup.LayoutParams layoutParams = tabIcon.getLayoutParams();
         assertEquals(expectedBottomSheetIconSize, layoutParams.width);
         assertEquals(expectedBottomSheetIconSize, layoutParams.height);
+
+        ImageView fileIcon = viewHolder.popup.mFileButton.findViewById(R.id.start_icon);
+        ViewGroup.LayoutParams fileLayoutParams = fileIcon.getLayoutParams();
+        assertEquals(expectedBottomSheetIconSize, fileLayoutParams.width);
+        assertEquals(expectedBottomSheetIconSize, fileLayoutParams.height);
 
         addModelButton(model, viewHolder);
         ImageView dynamicIcon = getDynamicButton(viewHolder.popup, 0).findViewById(R.id.start_icon);
