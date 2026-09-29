@@ -747,6 +747,21 @@ void RootCompositorFrameSinkImpl::UpdateFrameIntervalDeciderSettings() {
     continuous_range_settings.max_interval = max_vsync_interval_.value();
     continuous_range_settings.default_interval = base::TimeDelta();
     settings.interval_settings = continuous_range_settings;
+#if BUILDFLAG(IS_ANDROID)
+  } else if (!exact_supported_refresh_rates_.empty() &&
+             base::FeatureList::IsEnabled(
+                 features::kAndroidFrameIntervalContinuousRange)) {
+    // Bound matched frame intervals by the display's max supported refresh
+    // rate. The max interval is unbounded so that content slower than the
+    // display's supported rates is still voted as-is, leaving it to
+    // SurfaceFlinger to pick a compatible display mode.
+    FrameIntervalMatcher::ContinuousRangeSettings continuous_range_settings;
+    continuous_range_settings.min_interval =
+        exact_supported_refresh_rates_.begin()->first;
+    continuous_range_settings.max_interval = base::TimeDelta::Max();
+    continuous_range_settings.default_interval = base::TimeDelta();
+    settings.interval_settings = continuous_range_settings;
+#endif
   } else {
     settings.interval_settings = {};
   }

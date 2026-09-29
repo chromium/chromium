@@ -312,6 +312,67 @@ TEST(FrameIntervalMatchersTest, OnlyVideoContinuousRange) {
   }
 }
 
+// Android configuration: bounded only by the display's max refresh rate.
+TEST(FrameIntervalMatchersTest, OnlyVideoContinuousRangeUnboundedMax) {
+  constexpr base::TimeDelta kMinInterval = base::Microseconds(8333);  // 120Hz.
+  Settings settings;
+  settings.interval_settings =
+      BuildContinuousRangeSettings(kMinInterval, base::TimeDelta::Max());
+  OnlyVideoMatcher matcher;
+
+  auto match = [&](base::TimeDelta content_interval) {
+    Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/1u);
+    FrameIntervalInputs& frame_interval_inputs =
+        inputs.inputs_map[FrameSinkId(0, 1)];
+    frame_interval_inputs.content_interval_info.push_back(
+        {ContentFrameIntervalType::kVideo, content_interval});
+    frame_interval_inputs.has_only_content_frame_interval_updates = true;
+    return matcher.Match(inputs);
+  };
+
+  // Content slower than the display max passes through unchanged, including
+  // very slow content, since the max interval is unbounded.
+  ExpectResult(match(base::Hertz(30)), base::Hertz(30),
+               ResultIntervalType::kExact);
+  ExpectResult(match(base::Hertz(60)), base::Hertz(60),
+               ResultIntervalType::kExact);
+  ExpectResult(match(base::Seconds(1)), base::Seconds(1),
+               ResultIntervalType::kExact);
+
+  // Content far faster than the display max (e.g. ~8849Hz) picks a cadence
+  // just above the range minimum: ceil(8333 / 113) = 74, 74 * 113 = 8362us.
+  ExpectResult(match(base::Microseconds(113)), base::Microseconds(8362),
+               ResultIntervalType::kExact);
+
+  // A zero content interval uses the range minimum.
+  ExpectResult(match(base::TimeDelta()), kMinInterval,
+               ResultIntervalType::kExact);
+}
+
+TEST(FrameIntervalMatchersTest, VideoConferenceContinuousRangeUnboundedMax) {
+  constexpr base::TimeDelta kMinInterval = base::Microseconds(8333);  // 120Hz.
+  Settings settings;
+  settings.interval_settings =
+      BuildContinuousRangeSettings(kMinInterval, base::TimeDelta::Max());
+  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/3u);
+  VideoConferenceMatcher matcher;
+
+  FrameIntervalInputs& interval_inputs1 = inputs.inputs_map[FrameSinkId(0, 1)];
+  interval_inputs1.content_interval_info.push_back(
+      {ContentFrameIntervalType::kVideo, base::Hertz(30)});
+  FrameIntervalInputs& interval_inputs2 = inputs.inputs_map[FrameSinkId(0, 2)];
+  interval_inputs2.content_interval_info.push_back(
+      {ContentFrameIntervalType::kVideo, base::Hertz(1000)});
+
+  // Minimum content interval faster than the display max is clamped.
+  ExpectResult(matcher.Match(inputs), kMinInterval, ResultIntervalType::kExact);
+
+  // Otherwise the minimum content interval passes through.
+  interval_inputs2.content_interval_info[0].frame_interval = base::Hertz(24);
+  ExpectResult(matcher.Match(inputs), base::Hertz(30),
+               ResultIntervalType::kExact);
+}
+
 TEST(FrameIntervalMatchersTest, VideoConference) {
   Settings settings;
   Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/3u);
@@ -537,6 +598,39 @@ TEST(FrameIntervalMatchersTest, SlowScrollThrottleSlowSpeedThrottle) {
 
   interval_input.major_scroll_speed_in_pixels_per_second = 0.0f;
   ExpectNullResult(matcher.Match(inputs));
+}
+
+TEST(FrameIntervalMatchersTest, SlowScrollThrottleContinuousRange) {
+  Settings settings;
+  settings.interval_settings =
+      BuildContinuousRangeSettings(base::Hertz(100), base::Hertz(50));
+  Inputs inputs = BuildDefaultInputs(settings, /*num_sinks=*/1u);
+  std::vector<mojom::FrameRateVelocityPoint> velocity_points;
+  velocity_points.emplace_back(30, 0);
+  velocity_points.emplace_back(80, 125);
+  velocity_points.emplace_back(120, 300);
+  SlowScrollThrottleMatcher matcher(/*device_scale_factor=*/1.0f,
+                                    std::move(velocity_points));
+
+  FrameIntervalInputs& interval_input = inputs.inputs_map[FrameSinkId(0, 1)];
+  interval_input.content_interval_info.push_back(
+      {ContentFrameIntervalType::kCompositorScroll, base::TimeDelta()});
+  interval_input.has_only_content_frame_interval_updates = true;
+
+  // Clamped to min_interval (100Hz).
+  interval_input.major_scroll_speed_in_pixels_per_second = 400.0f;
+  ExpectResult(matcher.Match(inputs), base::Hertz(100),
+               ResultIntervalType::kAtLeast);
+
+  // Within range (80Hz).
+  interval_input.major_scroll_speed_in_pixels_per_second = 200.0f;
+  ExpectResult(matcher.Match(inputs), base::Hertz(80),
+               ResultIntervalType::kAtLeast);
+
+  // Clamped to max_interval (50Hz).
+  interval_input.major_scroll_speed_in_pixels_per_second = 10.0f;
+  ExpectResult(matcher.Match(inputs), base::Hertz(50),
+               ResultIntervalType::kAtLeast);
 }
 
 TEST(FrameIntervalMatchersTest, SlowScrollThrottleIgnoreOneOffUpdate) {
