@@ -5,8 +5,10 @@
 #include "chrome/browser/ui/webui/ash/settings/test_support/fake_os_settings_sections.h"
 
 #include <optional>
+#include <vector>
 
 #include "ash/webui/settings/public/constants/routes.mojom-shared.h"
+#include "base/containers/to_vector.h"
 #include "base/rand_util.h"
 #include "chrome/browser/ui/webui/ash/settings/constants/constants_util.h"
 #include "chrome/browser/ui/webui/ash/settings/test_support/fake_os_settings_section.h"
@@ -25,11 +27,11 @@ FakeOsSettingsSections::~FakeOsSettingsSections() = default;
 
 void FakeOsSettingsSections::FillWithFakeSettings() {
   std::vector<chromeos::settings::mojom::Subpage> shuffled_subpages =
-      AllSubpages();
+      base::ToVector(AllSubpages());
   base::RandomShuffle(shuffled_subpages.begin(), shuffled_subpages.end());
 
   std::vector<chromeos::settings::mojom::Setting> shuffled_settings =
-      AllSettings();
+      base::ToVector(AllSettings());
   base::RandomShuffle(shuffled_settings.begin(), shuffled_settings.end());
 
   auto subpage_it = shuffled_subpages.begin();

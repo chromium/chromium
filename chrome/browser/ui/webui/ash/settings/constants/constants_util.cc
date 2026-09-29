@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/webui/ash/settings/constants/constants_util.h"
 
-#include <vector>
+#include <array>
+#include <cstddef>
+#include <cstdint>
 
-#include "base/no_destructor.h"
+#include "base/containers/span.h"
 
 namespace ash::settings {
 namespace {
@@ -17,21 +19,35 @@ using ::chromeos::settings::mojom::Setting;
 using ::chromeos::settings::mojom::Subpage;
 }  // namespace mojom
 
-template <typename T>
-std::vector<T> All() {
-  int32_t min_value = static_cast<int32_t>(T::kMinValue);
-  int32_t max_value = static_cast<int32_t>(T::kMaxValue);
+template <typename T, auto Filter = [](T) { return true; }>
+consteval auto All() {
+  constexpr int32_t kMinValue = static_cast<int32_t>(T::kMinValue);
+  constexpr int32_t kMaxValue = static_cast<int32_t>(T::kMaxValue);
 
-  std::vector<T> all;
-  for (int32_t i = min_value; i <= max_value; ++i) {
+  constexpr size_t kCount = [] {
+    size_t count = 0;
+    for (int32_t i = kMinValue; i <= kMaxValue; ++i) {
+      T current = static_cast<T>(i);
+
+      // Not every value between the min and max values is valid:
+      // (1) We use a numbering scheme which purposely skips some values for the
+      //     Subpage and Setting enums.
+      // (2) Some values are deprecated and removed.
+      if (chromeos::settings::mojom::IsKnownEnumValue(current) &&
+          Filter(current)) {
+        ++count;
+      }
+    }
+    return count;
+  }();
+
+  std::array<T, kCount> all{};
+  size_t index = 0;
+  for (int32_t i = kMinValue; i <= kMaxValue; ++i) {
     T current = static_cast<T>(i);
-
-    // Not every value between the min and max values is valid:
-    // (1) We use a numbering scheme which purposely skips some values for the
-    //     Subpage and Setting enums.
-    // (2) Some values are deprecated and removed.
-    if (chromeos::settings::mojom::IsKnownEnumValue(current)) {
-      all.push_back(current);
+    if (chromeos::settings::mojom::IsKnownEnumValue(current) &&
+        Filter(current)) {
+      all[index++] = current;
     }
   }
 
@@ -40,28 +56,22 @@ std::vector<T> All() {
 
 }  // namespace
 
-const std::vector<mojom::Section>& AllSections() {
-  static const base::NoDestructor<std::vector<mojom::Section>> all_sections([] {
-    std::vector<mojom::Section> sections = All<mojom::Section>();
-    return sections;
-  }());
-
-  return *all_sections;
+base::span<const mojom::Section> AllSections() {
+  static constexpr auto kAllSections = All<mojom::Section>();
+  return kAllSections;
 }
 
-const std::vector<mojom::Subpage>& AllSubpages() {
-  static const base::NoDestructor<std::vector<mojom::Subpage>> all_subpages([] {
-    std::vector<mojom::Subpage> subpages = All<mojom::Subpage>();
-    std::erase(subpages, mojom::Subpage::kInternalStorybook);
-    return subpages;
-  }());
-  return *all_subpages;
+base::span<const mojom::Subpage> AllSubpages() {
+  static constexpr auto kAllSubpages =
+      All<mojom::Subpage, [](mojom::Subpage subpage) {
+        return subpage != mojom::Subpage::kInternalStorybook;
+      }>();
+  return kAllSubpages;
 }
 
-const std::vector<mojom::Setting>& AllSettings() {
-  static const base::NoDestructor<std::vector<mojom::Setting>> all_settings(
-      All<mojom::Setting>());
-  return *all_settings;
+base::span<const mojom::Setting> AllSettings() {
+  static constexpr auto kAllSettings = All<mojom::Setting>();
+  return kAllSettings;
 }
 
 }  // namespace ash::settings

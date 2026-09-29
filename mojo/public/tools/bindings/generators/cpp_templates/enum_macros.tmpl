@@ -37,14 +37,14 @@ enum class {{enum_name}} : int32_t {
 {{export_attribute}} std::ostream& operator<<(std::ostream& os, {{enum_name}} value);
 
 {#-   Returns true if the given enum value exists in this version of enum. #}
-inline bool IsKnownEnumValue({{enum_name}} value) {
+constexpr bool IsKnownEnumValue({{enum_name}} value) {
   return {{enum|get_name_for_kind(internal=True,
                                   flatten_nested_kind=True)}}::IsKnownValue(
       static_cast<int32_t>(value));
 }
 
 {%-   if enum.extensible and enum.default_field %}
-inline {{enum_name}} ToKnownEnumValue({{enum_name}} value) {
+constexpr {{enum_name}} ToKnownEnumValue({{enum_name}} value) {
   if (IsKnownEnumValue(value)) {
     return value;
   }
@@ -107,7 +107,7 @@ struct {{enum_name}}_Data {
  public:
   static bool constexpr kIsExtensible = {% if enum.extensible %}true{% else %}false{% endif %};
 
-  static bool IsKnownValue(int32_t value) {
+  static constexpr bool IsKnownValue(int32_t value) {
 {%- if enum.fields %}
     switch (value) {
 {%-   for enum_field in enum.fields|groupby('numeric_value') %}
