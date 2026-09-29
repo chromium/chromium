@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
-#include "base/run_loop.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
@@ -83,6 +82,5 @@ TEST_F(ChromeKeyboardWebContentsTest, SetKeyboardUrl) {
   TestDelegate delegate(chrome_keyboard_web_contents_->web_contents());
 
   chrome_keyboard_web_contents_->SetKeyboardUrl(GURL("http://bar.com"));
-  base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, delegate.opened());
 }
