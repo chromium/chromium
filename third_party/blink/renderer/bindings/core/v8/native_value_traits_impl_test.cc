@@ -587,6 +587,42 @@ TEST(NativeValueTraitsImplTest, PassAsSpanMissingOpt) {
   }
 }
 
+TEST(NativeValueTraitsImplTest, IDLOptionalObject) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope scope;
+  v8::Isolate* isolate = scope.GetIsolate();
+  {
+    NonThrowableExceptionState exception_state;
+    ScriptObject result =
+        NativeValueTraits<IDLOptional<IDLObject>>::ArgumentValue(
+            isolate, 0, v8::Undefined(isolate), exception_state);
+    EXPECT_TRUE(result.IsEmpty());
+  }
+  {
+    NonThrowableExceptionState exception_state;
+    v8::Local<v8::Object> object = v8::Object::New(isolate);
+    ScriptObject result =
+        NativeValueTraits<IDLOptional<IDLObject>>::ArgumentValue(
+            isolate, 0, object, exception_state);
+    ASSERT_FALSE(result.IsEmpty());
+    EXPECT_EQ(result.V8Object(), object);
+  }
+  {
+    DummyExceptionStateForTesting exception_state;
+    ScriptObject result =
+        NativeValueTraits<IDLOptional<IDLObject>>::ArgumentValue(
+            isolate, 0, v8::Null(isolate), exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+    EXPECT_TRUE(result.IsEmpty());
+  }
+  {
+    DummyExceptionStateForTesting exception_state;
+    NativeValueTraits<IDLOptional<IDLObject>>::ArgumentValue(
+        isolate, 0, v8::Number::New(isolate, 42), exception_state);
+    EXPECT_TRUE(exception_state.HadException());
+  }
+}
+
 TEST(NativeValueTraitsImplTest, PassAsSpanCopy) {
   test::TaskEnvironment task_environment;
   NonThrowableExceptionState exception_state;

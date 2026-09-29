@@ -200,6 +200,8 @@ class CORE_EXPORT ScriptObject final {
 
   bool IsNull() const { return object_.IsNull(); }
 
+  bool IsEmpty() const { return object_.IsEmpty(); }
+
   void Clear() { object_.Clear(); }
 
   // NOLINTNEXTLINE(google-explicit-constructor)

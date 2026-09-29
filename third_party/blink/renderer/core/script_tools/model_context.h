@@ -24,7 +24,6 @@
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/wtf/base_hash_traits.h"
-#include "v8/include/v8-primitive.h"
 
 namespace blink {
 class AbortController;
@@ -145,14 +144,15 @@ class CORE_EXPORT ModelContext : public EventTarget,
       const ModelContextGetToolOptions* options = nullptr);
   ScriptPromise<IDLNullable<IDLString>> executeTool(ScriptState* script_state,
                                                     RegisteredTool* tool) {
-    v8::Isolate* isolate = script_state->GetIsolate();
-    return executeTool(script_state, tool,
-                       ScriptValue(isolate, v8::Object::New(isolate)));
+    return executeTool(script_state, tool, ScriptObject());
   }
+  // `input_object` is empty when the argument was omitted or explicitly
+  // `undefined`, in which case we manually treat it as an empty object, by
+  // constructing a new one in its place.
   ScriptPromise<IDLNullable<IDLString>> executeTool(
       ScriptState* script_state,
       RegisteredTool* tool,
-      ScriptValue input_object,
+      ScriptObject input_object,
       const ExecuteToolOptions* options = nullptr);
   void UnregisterTool(const String& name);
 

@@ -77,19 +77,14 @@ const char kInactiveDocumentError[] = "The document is not active.";
 const char kDocumentDomainEnabledError[] =
     "document.modelContext cannot be used when document.domain is enabled.";
 
+// `input` must be a non-empty, non-null object.
 String ValidateAndStringifyValue(ScriptState* script_state,
                                  ExceptionState& exception_state,
-                                 ScriptValue input,
+                                 const ScriptObject& input,
                                  const String& value_name) {
-  if (!input.V8Value()->IsObject()) {
-    exception_state.ThrowTypeError("invalid " + value_name +
-                                   ": value is not an object");
-    return String();
-  }
-
   v8::Local<v8::String> value;
   TryRethrowScope rethrow_scope(script_state->GetIsolate(), exception_state);
-  if (!v8::JSON::Stringify(script_state->GetContext(), input.V8Value())
+  if (!v8::JSON::Stringify(script_state->GetContext(), input.V8Object())
            .ToLocal(&value)) {
     CHECK(rethrow_scope.HasCaught());
     return String();
@@ -1080,7 +1075,7 @@ void ModelContext::OnGetScriptToolsCompleted(
 ScriptPromise<IDLNullable<IDLString>> ModelContext::executeTool(
     ScriptState* script_state,
     RegisteredTool* tool,
-    ScriptValue input_object,
+    ScriptObject input_object,
     const ExecuteToolOptions* options) {
   if (!document_->IsActive()) {
     return ScriptPromise<IDLNullable<IDLString>>::RejectWithDOMException(
@@ -1123,9 +1118,16 @@ ScriptPromise<IDLNullable<IDLString>> ModelContext::executeTool(
                           "an opaque origin."));
   }
 
-  String input_arguments = ValidateAndStringifyValue(
-      script_state, PassThroughException(script_state->GetIsolate()),
-      input_object, "input object");
+  // Per Web IDL, an omitted or explicitly-undefined optional argument is
+  // "missing", which is represented by `IsEmpty()`. We treat a "missing"
+  // optional input object as the empty object.
+  v8::Isolate* isolate = script_state->GetIsolate();
+  if (input_object.IsEmpty()) {
+    input_object = ScriptObject(isolate, v8::Object::New(isolate));
+  }
+  String input_arguments =
+      ValidateAndStringifyValue(script_state, PassThroughException(isolate),
+                                input_object, "input object");
   if (!input_arguments) {
     // Exception already thrown by ValidateAndStringifyValue.
     return EmptyPromise();
