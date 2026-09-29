@@ -7,8 +7,9 @@
 #include <memory>
 #include <set>
 
+#include "base/containers/flat_set.h"
 #include "base/values.h"
-#include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_provider_mac.h"
+#include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_metadata.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/policy_error_map.h"
@@ -20,8 +21,6 @@
 namespace enterprise_auth {
 
 constexpr char kAllIdentityProviders[] = "all";
-constexpr char kMicrosoftIdentityProvider[] = "microsoft";
-constexpr char kOktaIdentityProvider[] = "okta";
 
 ExtensibleEnterpriseSSOPolicyHandler::ExtensibleEnterpriseSSOPolicyHandler(
     const policy::Schema& chrome_schema)
@@ -43,8 +42,10 @@ void ExtensibleEnterpriseSSOPolicyHandler::ApplyPolicySettings(
     return;
   }
 
-  std::set<std::string> supported_idps_set =
-      ExtensibleEnterpriseSSOProvider::GetSupportedIdentityProviders();
+  base::flat_set<std::string> supported_idps_set =
+      base::MakeFlatSet<std::string>(
+          GetSupportedIdentityProviders(), std::less<>(),
+          [](const SsoExtensionMetadata& data) { return data.idp_name; });
 
   for (const base::Value& policy_item : policy_value->GetList()) {
     const std::string* item = policy_item.GetIfString();

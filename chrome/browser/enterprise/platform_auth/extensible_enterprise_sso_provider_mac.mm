@@ -15,8 +15,10 @@
 #import "base/strings/strcat.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
+#import "base/values.h"
 #import "chrome/browser/browser_process.h"
 #import "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_entra.h"
+#import "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_metadata.h"
 #import "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_policy_handler.h"
 #import "chrome/common/pref_names.h"
 #import "components/policy/core/common/policy_logger.h"
@@ -32,11 +34,6 @@
 namespace enterprise_auth {
 
 namespace {
-
-constexpr std::array<const char*, 2> kSupportedIdps{
-    kMicrosoftIdentityProvider,
-    kOktaIdentityProvider,
-};
 
 // Empty function used to ensure SSOServiceEntraAuthControllerDelegate does not
 // get destroyed until the data is fetched.
@@ -149,22 +146,6 @@ void ExtensibleEnterpriseSSOProvider::GetData(
   }
 
   OnAuthorizationDone(std::move(callback), std::move(metrics), nullptr);
-}
-
-// static
-std::set<std::string>
-ExtensibleEnterpriseSSOProvider::GetSupportedIdentityProviders() {
-  return {kSupportedIdps.begin(), kSupportedIdps.end()};
-}
-
-// static
-base::ListValue
-ExtensibleEnterpriseSSOProvider::GetSupportedIdentityProvidersList() {
-  base::ListValue idps;
-  for (const char* idp : kSupportedIdps) {
-    idps.Append(idp);
-  }
-  return idps;
 }
 
 }  // namespace enterprise_auth

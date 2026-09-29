@@ -4,17 +4,14 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_PLATFORM_AUTH_EXTENSIBLE_ENTERPRISE_SSO_PROVIDER_MAC_H_
 #define CHROME_BROWSER_ENTERPRISE_PLATFORM_AUTH_EXTENSIBLE_ENTERPRISE_SSO_PROVIDER_MAC_H_
 
-#include <set>
+#include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "base/values.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider.h"
 #include "url/gurl.h"
 
 namespace enterprise_auth {
-
-extern const char kAllIdentityProviders[];
 
 // Class that provides authentication functionalities from Extensible Enterprise
 // SSO. This class does not support origin filtering because call to a platform
@@ -54,9 +51,6 @@ class ExtensibleEnterpriseSSOProvider : public PlatformAuthProvider {
       delete;
   ExtensibleEnterpriseSSOProvider& operator=(
       const ExtensibleEnterpriseSSOProvider&) = delete;
-
-  static std::set<std::string> GetSupportedIdentityProviders();
-  static base::ListValue GetSupportedIdentityProvidersList();
 
   // enterprise_auth::PlatformAuthProvider:
   bool SupportsOriginFiltering() override;

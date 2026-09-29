@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/values.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_provider_manager.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -21,6 +22,7 @@
 #if BUILDFLAG(IS_MAC)
 #include "base/feature_list.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_metadata.h"
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_prefs_handler.h"
 #include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_provider_mac.h"
 #include "chrome/browser/enterprise/platform_auth/platform_auth_features.h"
@@ -55,10 +57,13 @@ void PlatformAuthPolicyObserver::RegisterPrefs(
   pref_registry->RegisterIntegerPref(GetPrefName(), 0);
 #elif BUILDFLAG(IS_MAC)
   pref_registry->RegisterIntegerPref(GetPrefName(), 1);
-  pref_registry->RegisterListPref(
-      prefs::kExtensibleEnterpriseSSOEnabledIdps,
-      enterprise_auth::ExtensibleEnterpriseSSOProvider::
-          GetSupportedIdentityProvidersList());
+  base::ListValue all_idps;
+  for (const auto& metadata :
+       enterprise_auth::GetSupportedIdentityProviders()) {
+    all_idps.Append(metadata.idp_name);
+  }
+  pref_registry->RegisterListPref(prefs::kExtensibleEnterpriseSSOEnabledIdps,
+                                  std::move(all_idps));
   enterprise_auth::ExtensibleEnterpriseSSOPrefsHandler::RegisterPrefs(
       pref_registry);
 #else

@@ -77,9 +77,6 @@ class ExtensibleEnterpriseSSOPrefsHandler {
   // Must be called on the main thread.
   void UpdatePrefs();
 
-  static const CFStringRef kOktaSSOExtensionID;
-  static const CFStringRef kOktaSSOTeamID;
-
  private:
   void OnConfigRead(base::ListValue res);
 

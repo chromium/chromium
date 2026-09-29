@@ -14,8 +14,6 @@ class PolicyMap;
 namespace enterprise_auth {
 
 extern const char kAllIdentityProviders[];
-extern const char kMicrosoftIdentityProvider[];
-extern const char kOktaIdentityProvider[];
 
 // Policy handler for EnterpriseAuthenticationAppLink policy
 class ExtensibleEnterpriseSSOPolicyHandler

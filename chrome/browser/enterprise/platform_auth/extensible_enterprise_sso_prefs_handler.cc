@@ -26,6 +26,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
+#include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_metadata.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -38,6 +39,7 @@ using ScopedPropList = base::apple::ScopedCFTypeRef<CFPropertyListRef>;
 namespace {
 
 const CFStringRef kExtensibleSSOPrefName(CFSTR("com.apple.extensiblesso"));
+
 base::RepeatingCallback<std::unique_ptr<CFPreferencesObserver>()>&
 GetCfPrefsOverrideForTesting() {
   static base::NoDestructor<
@@ -51,20 +53,25 @@ base::ListValue ParseConfiguration(CFPreferencesObserver::Config config) {
     return {};
   }
 
-  // This mechanism is meant to be used only for Okta's SSO extension.
-  // If the extension and team IDs don't match return an empty result.
+  // If the extension or team IDs don't match any supported IdPs return an empty
+  // result.
   const CFStringRef extension_id =
       base::apple::CFCast<CFStringRef>(config.extension_id.get());
-  if (!extension_id ||
-      !CFEqual(extension_id,
-               ExtensibleEnterpriseSSOPrefsHandler::kOktaSSOExtensionID)) {
+  if (!extension_id) {
     return {};
   }
 
   const CFStringRef team_id =
       base::apple::CFCast<CFStringRef>(config.team_id.get());
-  if (!team_id ||
-      !CFEqual(team_id, ExtensibleEnterpriseSSOPrefsHandler::kOktaSSOTeamID)) {
+  if (!team_id) {
+    return {};
+  }
+
+  // Only Okta is supported for now since request proxying in
+  // `PlatformAuthProxyingURLLoaderFactory` only handles Okta SSO requests.
+  const SsoExtensionMetadata* metadata =
+      FindSsoExtensionMetadata(team_id, extension_id);
+  if (!metadata || metadata->idp_name != kOktaIdentityProvider) {
     return {};
   }
 
@@ -179,20 +186,6 @@ class CFPreferencesObserverImpl final : public CFPreferencesObserver {
  private:
   base::RepeatingClosure callback_;
 };
-
-// Team ID and Extension ID are fields of the MDM profile for the Apple
-// Extensible Enterprise SSO payload (com.apple.extensiblesso).
-// Team ID identifies the IdP (Okta) and the Extension ID identifies the
-// specific SSO extension app on the device.
-//
-// These constants are used to filter the system configuration: we only
-// sync hosts that are explicitly configured to use the Okta extension.
-//
-// The concrete values can be found in Okta's official documentation.
-const CFStringRef ExtensibleEnterpriseSSOPrefsHandler::kOktaSSOExtensionID(
-    CFSTR("com.okta.mobile.auth-service-extension"));
-const CFStringRef ExtensibleEnterpriseSSOPrefsHandler::kOktaSSOTeamID(
-    CFSTR("B7F62B65BN"));
 
 ExtensibleEnterpriseSSOPrefsHandler::ExtensibleEnterpriseSSOPrefsHandler(
     PrefService* local_state)

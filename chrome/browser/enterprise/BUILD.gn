@@ -218,6 +218,7 @@ source_set("enterprise") {
   if (is_mac) {
     public += [
       "platform_auth/extensible_enterprise_sso_entra.h",
+      "platform_auth/extensible_enterprise_sso_metadata.h",
       "platform_auth/extensible_enterprise_sso_policy_handler.h",
       "platform_auth/extensible_enterprise_sso_prefs_handler.h",
       "platform_auth/extensible_enterprise_sso_provider_mac.h",
@@ -666,6 +667,7 @@ source_set("impl") {
   if (is_mac) {
     sources += [
       "platform_auth/extensible_enterprise_sso_entra.mm",
+      "platform_auth/extensible_enterprise_sso_metadata.mm",
       "platform_auth/extensible_enterprise_sso_policy_handler.cc",
       "platform_auth/extensible_enterprise_sso_prefs_handler.cc",
       "platform_auth/extensible_enterprise_sso_provider_mac.mm",

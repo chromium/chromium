@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "base/strings/sys_string_conversions.h"
+#import "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_metadata.h"
 #import "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_policy_handler.h"
 #import "chrome/browser/platform_util.h"
 #import "components/policy/core/common/policy_logger.h"

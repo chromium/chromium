@@ -19,6 +19,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/current_thread.h"
 #include "base/values.h"
+#include "chrome/browser/enterprise/platform_auth/extensible_enterprise_sso_metadata.h"
 #include "chrome/browser/enterprise/platform_auth/scoped_cf_prefs_observer_override.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -92,10 +93,9 @@ class ExtensibleEnterpriseSSOPrefsHandlerTest : public testing::Test {
   }
 
   void SetHostsPropertyOverride(ScopedPropList hosts) {
-    ScopedPropList extension_id_prop = base::apple::ScopedCFTypeRef(
-        ExtensibleEnterpriseSSOPrefsHandler::kOktaSSOExtensionID);
-    ScopedPropList team_id_prop = base::apple::ScopedCFTypeRef(
-        ExtensibleEnterpriseSSOPrefsHandler::kOktaSSOTeamID);
+    ScopedPropList extension_id_prop =
+        base::apple::ScopedCFTypeRef(kOktaSsoExtensionId);
+    ScopedPropList team_id_prop = base::apple::ScopedCFTypeRef(kOktaSsoTeamId);
     SetConfigOverride(std::move(extension_id_prop), std::move(team_id_prop),
                       std::move(hosts));
   }
@@ -333,16 +333,15 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ExtensibleEnterpriseSSOPrefsHandlerConfigTest,
     testing::Values(
-        ConfigTestParams({kInvalidPropID,
-                          ExtensibleEnterpriseSSOPrefsHandler::kOktaSSOTeamID}),
-        ConfigTestParams(
-            {ExtensibleEnterpriseSSOPrefsHandler::kOktaSSOExtensionID,
-             kInvalidPropID}),
-        ConfigTestParams({nullptr,
-                          ExtensibleEnterpriseSSOPrefsHandler::kOktaSSOTeamID}),
-        ConfigTestParams(
-            {ExtensibleEnterpriseSSOPrefsHandler::kOktaSSOExtensionID,
-             nullptr}),
-        ConfigTestParams({nullptr, nullptr})));
+        ConfigTestParams({kInvalidPropID, kOktaSsoTeamId}),
+        ConfigTestParams({kOktaSsoExtensionId, kInvalidPropID}),
+        ConfigTestParams({nullptr, kOktaSsoTeamId}),
+        ConfigTestParams({kOktaSsoExtensionId, nullptr}),
+        ConfigTestParams({nullptr, nullptr}),
+        // Microsoft is a supported IdP, but host syncing is Okta-only.
+        ConfigTestParams({kMicrosoftSsoExtensionId, kMicrosoftSsoTeamId}),
+        // IDs from different IdPs must not be combined.
+        ConfigTestParams({kOktaSsoExtensionId, kMicrosoftSsoTeamId}),
+        ConfigTestParams({kMicrosoftSsoExtensionId, kOktaSsoTeamId})));
 
 }  // namespace enterprise_auth
