@@ -25,17 +25,5 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  data_deps = [ ":platform_runtime_test_lib" ]
-}
-
-if (is_mac) {
-  _target_type = "shared_library"
-} else {
-  _target_type = "loadable_module"
-}
-
-target(_target_type, "platform_runtime_test_lib") {
-  testonly = true
-  sources = [ "platform_runtime_test_lib.cc" ]
-  deps = [ "//base:compiler_specific" ]
+  data_deps = [ "//chrome/common/platform_runtime:platform_runtime_test_lib" ]
 }

@@ -24178,16 +24178,6 @@ Called by update_net_error_codes.py.-->
   <int value="16" label="I/O"/>
 </enum>
 
-<enum name="PlatformRuntimeApplyResult">
-  <summary>
-    The outcome of applying the most recently distributed Platform Runtime
-    header block to an outgoing request.
-  </summary>
-  <int value="0" label="No header block available in this process"/>
-  <int value="1" label="Not applicable: request carried none of the headers"/>
-  <int value="2" label="Applied"/>
-</enum>
-
 <enum name="PlatformRuntimeInstallationResult">
   <summary>
     The result or failure status when installing the Platform Runtime component
@@ -24228,6 +24218,17 @@ Called by update_net_error_codes.py.-->
   <int value="0" label="On startup due to being missing"/>
   <int value="1" label="On startup due to being stale"/>
   <int value="2" label="Via the background updater process"/>
+</enum>
+
+<enum name="PlatformRuntimeIntegrityResult">
+  <summary>
+    The outcome status when attempting to process request headers for integrity
+    checks.
+  </summary>
+  <int value="0" label="(Obsolete) Component unavailable"/>
+  <int value="1" label="Library unavailable"/>
+  <int value="2" label="Success"/>
+  <int value="3" label="Failure"/>
 </enum>
 
 <enum name="PlatformRuntimeProcessHeadersStatus">
