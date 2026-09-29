@@ -143,9 +143,6 @@ public class RecentTabsPageUnitTest {
         when(mRecentTabsManager.isRecentlyClosedTabsCollapsed()).thenReturn(true);
         when(mRecentTabsManager.isPromoCollapsed()).thenReturn(true);
 
-        ArgumentCaptor<RecentTabsManager.UpdatedCallback> callbackCaptor =
-                ArgumentCaptor.forClass(RecentTabsManager.UpdatedCallback.class);
-
         // Open page with deep-link fragment for session_2.
         String url = UrlConstants.RECENT_TABS_URL + "#session_2";
         RecentTabsPage page =
@@ -157,12 +154,6 @@ public class RecentTabsPageUnitTest {
                         ObservableSuppliers.alwaysZero(),
                         mEdgeToEdgeSupplier,
                         url);
-
-        verify(mRecentTabsManager).setUpdatedCallback(callbackCaptor.capture());
-        RecentTabsManager.UpdatedCallback callback = callbackCaptor.getValue();
-
-        // Trigger sync data load.
-        callback.onUpdated();
 
         // Verify that the deep-linked group (session_2) is now expanded.
         ExpandableListView listView = page.getView().findViewById(R.id.odp_listview);
@@ -186,9 +177,6 @@ public class RecentTabsPageUnitTest {
         when(mRecentTabsManager.isRecentlyClosedTabsCollapsed()).thenReturn(true);
         when(mRecentTabsManager.isPromoCollapsed()).thenReturn(true);
 
-        ArgumentCaptor<RecentTabsManager.UpdatedCallback> callbackCaptor =
-                ArgumentCaptor.forClass(RecentTabsManager.UpdatedCallback.class);
-
         // Construct page without a fragment.
         RecentTabsPage page =
                 new RecentTabsPage(
@@ -199,12 +187,6 @@ public class RecentTabsPageUnitTest {
                         ObservableSuppliers.alwaysZero(),
                         mEdgeToEdgeSupplier,
                         UrlConstants.RECENT_TABS_URL);
-
-        verify(mRecentTabsManager).setUpdatedCallback(callbackCaptor.capture());
-        RecentTabsManager.UpdatedCallback callback = callbackCaptor.getValue();
-
-        // Load sync data first.
-        callback.onUpdated();
 
         // Ensure everything is initially collapsed.
         ExpandableListView listView = page.getView().findViewById(R.id.odp_listview);
@@ -232,7 +214,8 @@ public class RecentTabsPageUnitTest {
         List<ForeignSession> sessions = new ArrayList<>();
         sessions.add(createForeignSession("session_1", "Device 1"));
         sessions.add(createForeignSession("session_2", "Device 2"));
-        when(mRecentTabsManager.getForeignSessions()).thenReturn(sessions);
+        // No sync data is available when the page is created.
+        when(mRecentTabsManager.getForeignSessions()).thenReturn(new ArrayList<>());
         when(mRecentTabsManager.getForeignSessionCollapsed(any())).thenReturn(true);
         when(mRecentTabsManager.isRecentlyClosedTabsCollapsed()).thenReturn(true);
         when(mRecentTabsManager.isPromoCollapsed()).thenReturn(true);
@@ -264,6 +247,7 @@ public class RecentTabsPageUnitTest {
         }
 
         // Trigger sync data load.
+        when(mRecentTabsManager.getForeignSessions()).thenReturn(sessions);
         callback.onUpdated();
 
         // Verify that the queued deep-link group is expanded now that data is available.
@@ -283,7 +267,8 @@ public class RecentTabsPageUnitTest {
         List<ForeignSession> sessions = new ArrayList<>();
         sessions.add(createForeignSession("session_1", "Device 1"));
         sessions.add(createForeignSession("session_2", "Device 2"));
-        when(mRecentTabsManager.getForeignSessions()).thenReturn(sessions);
+        // No sync data is available when the page is created.
+        when(mRecentTabsManager.getForeignSessions()).thenReturn(new ArrayList<>());
         when(mRecentTabsManager.getForeignSessionCollapsed(any())).thenReturn(true);
         when(mRecentTabsManager.isRecentlyClosedTabsCollapsed()).thenReturn(true);
         when(mRecentTabsManager.isPromoCollapsed()).thenReturn(true);
@@ -311,6 +296,7 @@ public class RecentTabsPageUnitTest {
         page.updateForUrl(UrlConstants.RECENT_TABS_URL);
 
         // Load sync data now.
+        when(mRecentTabsManager.getForeignSessions()).thenReturn(sessions);
         callback.onUpdated();
 
         // Verify that no groups are expanded. If the target tag wasn't cleared, session_2 would

@@ -74,7 +74,6 @@ public class RecentTabsCoordinator
         mActivity = activity;
         mRecentTabsManager = recentTabsManager;
 
-        mRecentTabsManager.setUpdatedCallback(this::onUpdated);
         LayoutInflater inflater = LayoutInflater.from(activity);
 
         ContextMenuManager contextMenuManager =
@@ -112,6 +111,9 @@ public class RecentTabsCoordinator
                                 mView.getPaddingRight(),
                                 mView.getPaddingBottom());
         mTabStripHeightSupplier.addSyncObserverAndPostIfNonNull(mTabStripHeightChangeCallback);
+        mRecentTabsManager.setUpdatedCallback(this::onUpdated);
+        // Render whatever data is already available; subsequent changes arrive via the callback.
+        onUpdated();
     }
 
     /**
