@@ -146,7 +146,7 @@ public class MediaNotificationManager {
         // to prevent the OS from archiving the old notification.
         MediaNotificationController oldController = sControllers.get(excludeId);
         if (oldController != null) {
-            oldController.demote(/* stopFgs= */ true);
+            oldController.demote();
         }
 
         int newActiveId = getFallbackPlayingControllerId(mediaTypeId, excludeId);
@@ -251,7 +251,7 @@ public class MediaNotificationManager {
                     MediaNotificationController previousController =
                             sControllers.get(previousActiveId);
                     if (previousController != null) {
-                        previousController.demote(/* stopFgs= */ true);
+                        previousController.demote();
                     }
                 }
             }
@@ -402,11 +402,6 @@ public class MediaNotificationManager {
             }
         }
         return false;
-    }
-
-    public static boolean hasPlayingController(@MediaTypeId int mediaTypeId) {
-        return getFallbackPlayingControllerId(mediaTypeId, MediaNotificationInfo.INVALID_ID)
-                != MediaNotificationInfo.INVALID_ID;
     }
 
     public static void resetForTesting() {

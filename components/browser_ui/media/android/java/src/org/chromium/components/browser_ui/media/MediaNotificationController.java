@@ -422,6 +422,9 @@ public class MediaNotificationController {
             return false;
         }
         try {
+            // Binds `service` in Android OS to `notification.getMetadata().id` and marks that
+            // notification with `FLAG_FOREGROUND_SERVICE` (ignoring `cancel(id)` until
+            // `stopForeground()` is called), without updating any controller's `mIsForeground`.
             ForegroundServiceUtils.getInstance()
                     .startForeground(
                             service,
@@ -619,21 +622,27 @@ public class MediaNotificationController {
         if (shouldBeForeground() && !mIsForeground) {
             promote(/* shouldLogNotification= */ true);
         } else {
-            // Android O+ requires startForeground() after startForegroundService() even if the
-            // media
-            // is now paused/inactive. Start FGS then immediately demote to a background
-            // notification.
+            // Android O+ requires startForeground() after startForegroundService(), even if this
+            // controller is now paused or another tab took over as the active FGS owner while the
+            // service was starting.
             updateMediaSession();
             updateNotificationBuilder();
             NotificationWrapper notification = mNotificationBuilder.buildNotificationWrapper();
             finishStartingForegroundServiceOnO(mService, notification);
 
-            boolean stopFgs = true;
-            if (MediaNotificationManager.isMultipleMediaNotificationsEnabled()) {
-                stopFgs = !MediaNotificationManager.hasPlayingController(getMediaTypeId());
-            }
-            demoteInternal(stopFgs);
+            // Detach immediately so this notification doesn't stay stuck with
+            // FLAG_FOREGROUND_SERVICE while mIsForeground is false (which would prevent
+            // clearNotification() from canceling it).
+            demoteInternal();
             updateNotification(/* shouldLogNotification= */ true);
+
+            // If there was an active controller that got detached above, we need to attach it now.
+            MediaNotificationController activeController =
+                    MediaNotificationManager.getActiveOrFallbackControllerByMediaTypeId(
+                            getMediaTypeId());
+            if (activeController != null && activeController.isForeground()) {
+                activeController.updateNotification(/* shouldLogNotification= */ false);
+            }
         }
     }
 
@@ -1340,12 +1349,10 @@ public class MediaNotificationController {
      * Internal helper to detach FGS status and update state without re-entering
      * updateNotification().
      */
-    private void demoteInternal(boolean stopFgs) {
+    private void demoteInternal() {
         if (mService == null) return;
-        if (stopFgs) {
-            ForegroundServiceUtils.getInstance()
-                    .stopForeground(mService, Service.STOP_FOREGROUND_DETACH);
-        }
+        ForegroundServiceUtils.getInstance()
+                .stopForeground(mService, Service.STOP_FOREGROUND_DETACH);
         mIsForeground = false;
     }
 
@@ -1396,19 +1403,16 @@ public class MediaNotificationController {
     }
 
     /**
-     * Demotes this controller's notification from the Foreground Service (FGS). This transitions
-     * the shared service to the background, making this notification a normal background
-     * notification that the user can swipe away.
-     *
-     * @param stopFgs If true, stops the Foreground Service FGS status entirely. If false, keeps the
-     *     service running in the background.
+     * Demotes this controller's notification from the Foreground Service (FGS). This detaches the
+     * notification from the shared foreground service, making it a normal background notification
+     * that the user can swipe away or cancel.
      */
-    public void demote(boolean stopFgs) {
+    public void demote() {
         if (!mIsForeground) return;
         mIsForeground = false;
         if (mService == null) return;
 
-        demoteInternal(stopFgs);
+        demoteInternal();
         updateNotification(/* shouldLogNotification= */ false);
     }
 
