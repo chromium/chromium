@@ -5,14 +5,17 @@
 package org.chromium.chrome.browser.settings;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -116,5 +119,40 @@ public class ChromeBaseSettingsFragmentTest {
         Context context = fragment.getContext();
         assertNotNull(context);
         assertEquals(R.style.ThemeOverlay_Chromium_Settings, context.getThemeResId());
+    }
+
+    @Test
+    public void testShownInTab_TextViewDoesNotInheritScrollbars() {
+        // PreferenceTheme must not define android:scrollbars="vertical" globally, which would cause
+        // all child views (including TextView elements for preference titles and summaries) to
+        // inherit vertical scrollbars and trigger transient scrollbar rendering during resize.
+        FragmentActivity activity = Robolectric.buildActivity(TabHostActivity.class).setup().get();
+        TestSettingsFragment fragment = new TestSettingsFragment();
+        attach(activity, fragment);
+
+        Context context = fragment.getContext();
+        assertNotNull(context);
+
+        TextView textView = new TextView(context);
+        assertFalse(
+                "TextView must not inherit vertical scrollbars from the settings theme",
+                textView.isVerticalScrollBarEnabled());
+    }
+
+    @Test
+    public void testPreferenceFragmentListStyle_EnablesVerticalScrollbars() {
+        // SettingsFragmentList (referenced via preferenceFragmentListStyle) must explicitly enable
+        // vertical scrollbars so the root RecyclerView retains intentional list scrolling.
+        FragmentActivity activity = Robolectric.buildActivity(TabHostActivity.class).setup().get();
+        TestSettingsFragment fragment = new TestSettingsFragment();
+        attach(activity, fragment);
+
+        Context context = fragment.getContext();
+        assertNotNull(context);
+
+        View listView = new View(context, null, R.attr.preferenceFragmentListStyle);
+        assertTrue(
+                "Views styled with preferenceFragmentListStyle must enable vertical scrollbars",
+                listView.isVerticalScrollBarEnabled());
     }
 }
