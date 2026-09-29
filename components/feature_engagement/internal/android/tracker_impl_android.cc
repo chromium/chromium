@@ -132,15 +132,6 @@ bool TrackerImplAndroid::HasEverTriggered(
   return tracker_->HasEverTriggered(*features_[feature], j_from_window);
 }
 
-int32_t TrackerImplAndroid::GetTriggerState(
-    JNIEnv* env,
-    const base::android::JavaRef<jstring>& jfeature) {
-  std::string feature = base::android::ConvertJavaStringToUTF8(env, jfeature);
-  DCHECK(features_.find(feature) != features_.end());
-
-  return static_cast<int>(tracker_->GetTriggerState(*features_[feature]));
-}
-
 void TrackerImplAndroid::Dismissed(
     JNIEnv* env,
     const base::android::JavaRef<jstring>& jfeature) {

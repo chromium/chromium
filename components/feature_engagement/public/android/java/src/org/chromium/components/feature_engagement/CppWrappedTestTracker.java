@@ -88,15 +88,6 @@ public class CppWrappedTestTracker implements Tracker {
         return true;
     }
 
-    @TriggerState
-    @CalledByNative
-    @Override
-    public int getTriggerState(String feature) {
-        return ourFeature(feature)
-                ? TriggerState.HAS_NOT_BEEN_DISPLAYED
-                : TriggerState.HAS_BEEN_DISPLAYED;
-    }
-
     @CalledByNative
     @Override
     public void dismissed(String feature) {

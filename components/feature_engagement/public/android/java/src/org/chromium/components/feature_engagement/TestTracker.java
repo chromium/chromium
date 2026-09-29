@@ -38,11 +38,6 @@ public class TestTracker implements Tracker {
     }
 
     @Override
-    public @TriggerState int getTriggerState(String feature) {
-        return TriggerState.NOT_READY;
-    }
-
-    @Override
     public void dismissed(String feature) {}
 
     @Override

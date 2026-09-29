@@ -88,9 +88,6 @@ class TrackerImplAndroid : public base::SupportsUserData::Data {
   virtual bool HasEverTriggered(JNIEnv* env,
                                 const base::android::JavaRef<jstring>& jfeature,
                                 const bool j_from_window);
-  virtual int32_t GetTriggerState(
-      JNIEnv* env,
-      const base::android::JavaRef<jstring>& jfeature);
   virtual void Dismissed(JNIEnv* env,
                          const base::android::JavaRef<jstring>& jfeature);
   virtual void DismissedWithSnooze(

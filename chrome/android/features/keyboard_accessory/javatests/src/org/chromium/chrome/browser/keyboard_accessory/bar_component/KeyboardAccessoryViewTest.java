@@ -109,7 +109,6 @@ import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.feature_engagement.TriggerDetails;
-import org.chromium.components.feature_engagement.TriggerState;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.ui.AsyncViewProvider;
 import org.chromium.ui.AsyncViewStub;
@@ -184,11 +183,6 @@ public class KeyboardAccessoryViewTest {
         @Override
         public boolean hasEverTriggered(String feature, boolean fromWindow) {
             return true;
-        }
-
-        @Override
-        public int getTriggerState(String feature) {
-            return TriggerState.HAS_NOT_BEEN_DISPLAYED;
         }
 
         @Override

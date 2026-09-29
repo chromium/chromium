@@ -361,52 +361,12 @@ addition you are required to inform when the feature has been dismissed:
 tracker->Dismissed(feature_engagement::kIPHGoatTeleportationFeature);
 ```
 
-#### Inspecting whether IPH has already been triggered for a feature
-
-Sometimes additional tracking is required to figure out if In-Product Help for a
-particular feature should be shown, and sometimes this is costly. If the
-In-Product Help has already been shown for that feature, it might not be
-necessary any more to do the additional tracking of state.
-
-To check if the triggering condition has already been fulfilled (i.e. can not
-currently be triggered again), you can call:
-
-```c++
-// TriggerState is { HAS_BEEN_DISPLAYED, HAS_NOT_BEEN_DISPLAYED, NOT_READY }.
-Tracker::TriggerState trigger_state =
-    GetTriggerState(feature_engagement::kIPHGoatTeleportationFeature);
-```
-
-Inspecting this state requires the Tracker to already have been initialized,
-else `NOT_READY` is always returned. See `IsInitialized()` and
-`AddOnInitializedCallback(...)` for how to ensure the call to this is delayed.
-
-##### A note about TriggerState naming
-
-The values of the `TriggerState` enum are `HAS_BEEN_DISPLAYED`, `HAS_NOT_BEEN_DISPLAYED`,
-and `NOT_READY`. However, it is possible for the IPH to have been displayed at least
-once but for the `TriggerState` result to be `HAS_NOT_BEEN_DISPLAYED`.
-
-This is because the `TriggerState` enums are named in a way that assumes that
-`event_trigger` comparators have a value of `==0` (i.e. the IPH has never been shown
-within the search window), which is true for most `FeatureConfig`s.
-
-The true interpretation of the states is as follows:
-
-*   `HAS_BEEN_DISPLAYED`: `event_trigger` condition is NOT met and in-product
-    help will not be displayed if `Tracker` is asked.
-*   `HAS_NOT_BEEN_DISPLAYED`: `event_trigger` condition is met and in-product
-    help **might** be displayed if `Tracker` is asked. Note that only the `event_trigger`
-    condition is checked; `WouldTriggerHelpUI` checks all of the relevant conditions.
-*   `NOT_READY`: `Tracker` not fully initialized yet, so it is unable to inspect
-    the state.
-
 #### Inspecting whether IPH would have been triggered for a feature
 
-Another way to check the internal state of the `Tracker` is to invoke
-`feature_engagement::Tracker::WouldTriggerHelpUI` which is basically the same as
-invoking `feature_engagement::Tracker::ShouldTriggerHelpUI`, but being allowed
-to ignore the state. It is still required to invoke
+To check the internal state of the `Tracker` without triggering the UI, you can
+invoke `feature_engagement::Tracker::WouldTriggerHelpUI` which is basically the
+same as invoking `feature_engagement::Tracker::ShouldTriggerHelpUI`, but being
+allowed to ignore the state. It is still required to invoke
 `feature_engagement::Tracker::ShouldTriggerHelpUI` if In-Product Help should be
 shown.
 

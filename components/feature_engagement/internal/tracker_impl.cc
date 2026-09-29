@@ -444,36 +444,6 @@ bool TrackerImpl::HasEverTriggered(const base::Feature& feature,
   return event_count > 0;
 }
 
-Tracker::TriggerState TrackerImpl::GetTriggerState(
-    const base::Feature& feature) const {
-  if (!IsInitialized()) {
-    DVLOG(2) << "TriggerState for " << feature.name << ": "
-             << static_cast<int>(Tracker::TriggerState::NOT_READY);
-    return Tracker::TriggerState::NOT_READY;
-  }
-
-  FeatureConfig feature_config = configuration_->GetFeatureConfig(feature);
-  std::vector<GroupConfig> group_configs;
-  for (auto group : feature_config.groups) {
-    group_configs.push_back(configuration_->GetGroupConfigByName(group));
-  }
-  auto* event_model_reader = GetEventModelReaderForFeature(feature_config);
-  ConditionValidator::Result result = condition_validator_->MeetsConditions(
-      feature, configuration_->GetFeatureConfig(feature), group_configs,
-      *event_model_reader, *availability_model_, *display_lock_controller_,
-      configuration_.get(), *time_provider_);
-
-  if (result.trigger_ok) {
-    DVLOG(2) << "TriggerState for " << feature.name << ": "
-             << static_cast<int>(Tracker::TriggerState::HAS_NOT_BEEN_DISPLAYED);
-    return Tracker::TriggerState::HAS_NOT_BEEN_DISPLAYED;
-  }
-
-  DVLOG(2) << "TriggerState for " << feature.name << ": "
-           << static_cast<int>(Tracker::TriggerState::HAS_BEEN_DISPLAYED);
-  return Tracker::TriggerState::HAS_BEEN_DISPLAYED;
-}
-
 void TrackerImpl::Dismissed(const base::Feature& feature) {
   DVLOG(2) << "Dismissing " << feature.name;
   DCHECK(!IsFeatureBlockedByTest(feature));

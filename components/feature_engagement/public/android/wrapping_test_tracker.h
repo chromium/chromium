@@ -37,7 +37,6 @@ class WrappingTestTracker : public Tracker {
   bool WouldTriggerHelpUI(const base::Feature& feature) const override;
   bool HasEverTriggered(const base::Feature& feature,
                         bool from_window) const override;
-  TriggerState GetTriggerState(const base::Feature& feature) const override;
   void Dismissed(const base::Feature& feature) override;
   void DismissedWithSnooze(const base::Feature& feature,
                            std::optional<SnoozeAction> snooze_action) override;
