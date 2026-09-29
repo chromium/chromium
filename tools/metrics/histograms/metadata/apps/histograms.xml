@@ -1904,6 +1904,15 @@ chromium-metrics-reviews@google.com.
   <token key="InstallReason" variants="InstallReason"/>
 </histogram>
 
+<histogram name="Apps.AppShim.Launched" enum="Boolean"
+    expires_after="2027-03-01">
+  <owner>mek@chromium.org</owner>
+  <owner>src/chrome/browser/web_applications/OWNERS</owner>
+  <summary>
+    Records true when an app shim child process launches on macOS.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppShim.LaunchResult.{LaunchMode}"
     enum="AppShimLaunchResult" expires_after="2027-03-01">
   <owner>mek@chromium.org</owner>
@@ -1936,6 +1945,15 @@ chromium-metrics-reviews@google.com.
     <variant name="SecCodeCopyGuestWithAttributes"/>
     <variant name="SecCodeCopySigningInformation"/>
   </token>
+</histogram>
+
+<histogram name="Apps.AppShim.WillTerminate" enum="Boolean"
+    expires_after="2027-03-01">
+  <owner>mek@chromium.org</owner>
+  <owner>src/chrome/browser/web_applications/OWNERS</owner>
+  <summary>
+    Records true when an app shim child process is about to terminate on macOS.
+  </summary>
 </histogram>
 
 <histogram name="Apps.AppShimRegistry.HmacKeyStore.LoadResult"

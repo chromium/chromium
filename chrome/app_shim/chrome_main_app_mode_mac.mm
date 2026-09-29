@@ -12,7 +12,7 @@
 #include "base/apple/bundle_locations.h"
 #include "base/apple/foundation_util.h"
 #include "base/command_line.h"
-#include "base/metrics/histogram_macros_local.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/app_shim/app_shim_main_delegate.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/mac/app_mode_common.h"
@@ -51,8 +51,7 @@ int APP_SHIM_ENTRY_POINT_NAME(const app_mode::ChromeAppModeInfo* info) {
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kProcessType, switches::kAppShim);
 
-  // Local histogram to let tests verify that histograms are emitted properly.
-  LOCAL_HISTOGRAM_BOOLEAN("AppShim.Launched", true);
+  base::UmaHistogramBoolean("Apps.AppShim.Launched", true);
 
   AppShimMainDelegate delegate(info);
   content::ContentMainParams params(&delegate);

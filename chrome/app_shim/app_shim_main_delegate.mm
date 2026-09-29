@@ -12,7 +12,6 @@
 #include "base/i18n/language_tag.h"
 #include "base/i18n/tag_converters.h"
 #include "base/logging.h"
-#include "base/metrics/histogram_macros_local.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"

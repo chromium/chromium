@@ -25,7 +25,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
-#include "base/metrics/histogram_macros_local.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -1038,8 +1038,7 @@ NSMenu* AppShimController::GetApplicationDockMenu() {
 }
 
 void AppShimController::ApplicationWillTerminate() {
-  // Local histogram to let tests verify that histograms are emitted properly.
-  LOCAL_HISTOGRAM_BOOLEAN("AppShim.WillTerminate", true);
+  base::UmaHistogramBoolean("Apps.AppShim.WillTerminate", true);
   host_->ApplicationWillTerminate();
 }
 

@@ -27,21 +27,15 @@ void FetchHistogramsFromChildProcesses() {
 
 using AppShimMetricsTest = WebAppIntegrationTest;
 
-// TODO(crbug.com/191476878): Re-enable this test once the bug is fixed.
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_Basics DISABLED_Basics
-#else
-#define MAYBE_Basics Basics
-#endif
-IN_PROC_BROWSER_TEST_F(AppShimMetricsTest, MAYBE_Basics) {
+IN_PROC_BROWSER_TEST_F(AppShimMetricsTest, Basics) {
   base::HistogramTester histogram_tester;
   helper_.InstallMenuOption(Site::kStandalone);
   helper_.CheckWindowCreated();
 
   FetchHistogramsFromChildProcesses();
-  histogram_tester.ExpectTotalCount("AppShim.Launched",
+  histogram_tester.ExpectTotalCount("Apps.AppShim.Launched",
                                     /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount("AppShim.WillTerminate",
+  histogram_tester.ExpectTotalCount("Apps.AppShim.WillTerminate",
                                     /*expected_count=*/0);
 
   helper_.QuitAppShim(Site::kStandalone);
@@ -49,9 +43,9 @@ IN_PROC_BROWSER_TEST_F(AppShimMetricsTest, MAYBE_Basics) {
 
   // After quitting we should have metrics from it.
   FetchHistogramsFromChildProcesses();
-  histogram_tester.ExpectTotalCount("AppShim.Launched",
+  histogram_tester.ExpectTotalCount("Apps.AppShim.Launched",
                                     /*expected_count=*/1);
-  histogram_tester.ExpectTotalCount("AppShim.WillTerminate",
+  histogram_tester.ExpectTotalCount("Apps.AppShim.WillTerminate",
                                     /*expected_count=*/1);
 }
 
