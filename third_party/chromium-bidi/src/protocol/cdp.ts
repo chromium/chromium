@@ -102,5 +102,5 @@ export interface EventParametersFor<
 > {
   event: EventName;
   params: ProtocolMapping.Events[EventName][0];
-  session: Protocol.Target.SessionID;
+  session?: Protocol.Target.SessionID;
 }

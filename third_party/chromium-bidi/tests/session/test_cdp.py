@@ -207,3 +207,82 @@ async def test_cdp_no_extraneous_events(
             if "id" not in event:
                 events.append(event)
             event = await asyncio.wait_for(read_JSON_message(websocket), timeout=1.0)
+
+
+@pytest.mark.asyncio
+async def test_cdp_subscribe_browser_session(websocket, context_id):
+    await subscribe(websocket, ["goog:cdp.Target.attachedToTarget"])
+
+    await send_JSON_command(
+        websocket,
+        {
+            "method": "goog:cdp.sendCommand",
+            "params": {
+                "method": "Target.attachToTarget",
+                "params": {"targetId": context_id, "flatten": True},
+            },
+        },
+    )
+
+    event_response = await wait_for_event(websocket, "goog:cdp.Target.attachedToTarget")
+    assert event_response == AnyExtending(
+        {
+            "type": "event",
+            "method": "goog:cdp.Target.attachedToTarget",
+            "params": {
+                "event": "Target.attachedToTarget",
+                "params": {
+                    "sessionId": ANY,
+                    "targetInfo": AnyExtending({"targetId": context_id}),
+                    "waitingForDebugger": False,
+                },
+                "session": ANY,
+            },
+        }
+    )
+
+
+@pytest.mark.asyncio
+async def test_cdp_subscribe_custom_session(websocket, context_id):
+    attach_result = await execute_command(
+        websocket,
+        {
+            "method": "goog:cdp.sendCommand",
+            "params": {
+                "method": "Target.attachToTarget",
+                "params": {"targetId": context_id, "flatten": True},
+            },
+        },
+    )
+    custom_session_id = attach_result["result"]["sessionId"]
+
+    await subscribe(websocket, ["goog:cdp.Runtime.executionContextCreated"])
+
+    await send_JSON_command(
+        websocket,
+        {
+            "method": "goog:cdp.sendCommand",
+            "params": {
+                "method": "Runtime.enable",
+                "params": {},
+                "session": custom_session_id,
+            },
+        },
+    )
+
+    event_response = await wait_for_event(
+        websocket, "goog:cdp.Runtime.executionContextCreated"
+    )
+    assert event_response == AnyExtending(
+        {
+            "type": "event",
+            "method": "goog:cdp.Runtime.executionContextCreated",
+            "params": {
+                "event": "Runtime.executionContextCreated",
+                "params": {
+                    "context": ANY,
+                },
+                "session": custom_session_id,
+            },
+        }
+    )
