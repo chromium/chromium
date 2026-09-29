@@ -57,34 +57,21 @@ enabled = false
 command = ["/dev/null"]
 patterns = ["null"]
 
-# The source of truth for the following formatters is depot_tools' git_cl.py
-# On Windows, depot_tools executables like gn, vpython3, and lucicfg are .bat
-# files that won't be found by jj's subprocess invocation without the .bat
-# extension. Windows --scope blocks below override commands with .bat variants.
-[fix.tools.gn-format]
-command = ["gn", "format", "--stdin"]
-patterns = [
-    "glob:'**/*.gn'",
-    "glob:'**/*.gni'",
-    "glob:'**/*.typemap'",
+# The source of truth for formatters is depot_tools' git_cl.py
+# If you update this command, you also need to update the git-cl-format
+# command for windows below.
+# LINT.IfChange(git-cl-format)
+[fix.tools.git-cl-format]
+command = [
+    "git",
+    "cl",
+    "format",
+    "--stdin-filename=$path",
+    "--mojom",
+    "--lucicfg",
+    "--python",
 ]
-
-[fix.tools.java-format]
-command = ["tools/jj/formatters/java.py", "$path"]
-line-range-arg = "--lines=$first:$last"
-patterns = ["glob:'**/*.java'"]
-
-[fix.tools.kotlin-format]
-command = ["third_party/depot_tools/ktfmt.py", "-"]
-patterns = ["glob:'**/*.kt'"]
-
-[fix.tools.rust-format]
-command = ["third_party/depot_tools/rustfmt.py", "--config-path=.rustfmt.toml"]
-patterns = ["glob:'**/*.rs'"]
-
-[fix.tools.clang-format]
-command = ["third_party/depot_tools/clang_format.py", "--assume-filename=$path"]
-line-range-arg = "--lines=$first:$last"
+# LINT.ThenChange(//tools/jj/config.toml:git-cl-format-windows)
 patterns = [
     "glob:'**/*.cc'",
     "glob:'**/*.cpp'",
@@ -94,36 +81,21 @@ patterns = [
     "glob:'**/*.proto'",
     "glob:'**/*.js'",
     "glob:'**/*.ts'",
-]
-
-[fix.tools.py-format]
-command = ["tools/jj/formatters/python.py", "$path"]
-patterns = ["glob:'**/*.py'"]
-
-[fix.tools.md-format]
-command = ["third_party/depot_tools/markdown_format.py", "--from-stdin", "--assume-filename=$path"]
-patterns = [
-    "glob:'agents/**/*.md'",
-    "glob:'.gemini/**/*.md'",
-]
-
-[fix.tools.mojom-format]
-command = ["vpython3", "mojo/public/tools/mojom/mojom_format.py"]
-patterns = [
+    "glob:'**/*.java'",
+    "glob:'**/*.kt'",
+    "glob:'**/*.rs'",
+    "glob:'**/*.py'",
+    "glob:'**/*.gn'",
+    "glob:'**/*.gni'",
+    "glob:'**/*.typemap'",
     "glob:'**/*.mojom'",
     "glob:'**/*.test-mojom'",
+    "glob:'**/*.star'",
+    "glob:'**/*.swift'",
+    "glob:'agents/**/*.md'",
+    "glob:'.gemini/**/*.md'",
+    "glob:'**/*.xml'",
 ]
-
-[fix.tools.lucicfg-format]
-command = ["lucicfg", "fmt", "-stdio", "$path"]
-patterns = ["glob:'**/*.star'"]
-
-# This formatter is only available on macos
-[[--scope]]
---when.platforms = ["macos"]
-[--scope.fix.tools.swift-format]
-command = ["third_party/depot_tools/swift_format", "format"]
-patterns = ["glob:'**/*.swift'"]
 
 [[--scope]]
 --when.platforms = ["windows"]
@@ -135,42 +107,17 @@ import os, subprocess, sys
 script = os.path.join(os.environ['JJ_WORKSPACE_ROOT'], sys.argv[1])
 sys.exit(subprocess.call([sys.executable, script, *sys.argv[2:]]))
 """]
-[--scope.fix.tools.gn-format]
-command = ["gn.bat", "format", "--stdin"]
-[--scope.fix.tools.rust-format]
+# If you update this command, you also need to update the default git-cl-format
+# command above.
+# LINT.IfChange(git-cl-format-windows)
+[--scope.fix.tools.git-cl-format]
 command = [
-  "vpython3.bat",
-  "third_party/depot_tools/rustfmt.py",
-  "--config-path=.rustfmt.toml",
+    "git.bat",
+    "cl",
+    "format",
+    "--stdin-filename=$path",
+    "--mojom",
+    "--lucicfg",
+    "--python",
 ]
-[--scope.fix.tools.java-format]
-command = [
-  "vpython3.bat",
-  "tools/jj/formatters/java.py",
-  "$path",
-]
-[--scope.fix.tools.kotlin-format]
-command = [
-  "vpython3.bat",
-  "third_party/depot_tools/ktfmt.py",
-  "-",
-]
-[--scope.fix.tools.clang-format]
-command = [
-  "vpython3.bat",
-  "third_party/depot_tools/clang_format.py",
-  "--assume-filename=$path",
-]
-[--scope.fix.tools.py-format]
-command = ["vpython3.bat", "tools/jj/formatters/python.py", "$path"]
-[--scope.fix.tools.md-format]
-command = [
-  "vpython3.bat",
-  "third_party/depot_tools/markdown_format.py",
-  "--from-stdin",
-  "--assume-filename=$path",
-]
-[--scope.fix.tools.mojom-format]
-command = ["vpython3.bat", "mojo/public/tools/mojom/mojom_format.py"]
-[--scope.fix.tools.lucicfg-format]
-command = ["lucicfg.bat", "fmt", "-stdio", "$path"]
+# LINT.ThenChange(//tools/jj/config.toml:git-cl-format)
