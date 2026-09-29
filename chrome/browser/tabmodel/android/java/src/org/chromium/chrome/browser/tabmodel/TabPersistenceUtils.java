@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tabmodel;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 
 /** Utility class for tab persistence. */
@@ -43,6 +44,20 @@ public class TabPersistenceUtils {
         if (tabState.url == null) return false;
 
         return UrlUtilities.isNtpUrl(tabState.url);
+    }
+
+    /**
+     * Returns true if an {@link DirtinessState#UNTIDY} tab should be saved early (when it is
+     * loading its initial non-empty URL and cannot go back).
+     *
+     * @param tab The tab to check.
+     * @param dirtiness The current {@link DirtinessState} of the tab.
+     */
+    public static boolean shouldSaveUntidyTab(Tab tab, @DirtinessState int dirtiness) {
+        return dirtiness == DirtinessState.UNTIDY
+                && tab.isLoading()
+                && !tab.getUrl().isEmpty()
+                && !tab.canGoBack();
     }
 
     private TabPersistenceUtils() {}

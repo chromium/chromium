@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -54,6 +55,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelType;
 import org.chromium.components.tabs.TabStripCollection;
+import org.chromium.url.GURL;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -330,6 +332,128 @@ public class ModelTrackingOrchestratorUnitTest {
 
         verify(mRegularSynchronizer).saveTab(eq(tab));
         verify(mActiveTabCache).saveActiveTab(tab);
+    }
+
+    @Test
+    public void testSaveTab_ClearsDirtinessWhenDirty() {
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ true);
+
+        mOrchestrator.onDataLoaded(mRegularData, /* incognito= */ false);
+        mOrchestrator.onRestoredForModel(/* incognito= */ false);
+
+        MockTab tab = new MockTab(1, mProfile);
+        TabStateAttributesRegistry.createAttributesForTab(
+                tab, TabStateStore.class, TabCreationState.FROZEN_FOR_LAZY_LOAD);
+        TabStateAttributes attributes =
+                TabStateAttributesRegistry.getAttributesFor(tab, TabStateStore.class);
+        assertEquals(DirtinessState.DIRTY, attributes.getDirtinessState());
+
+        mOrchestrator.saveTab(tab);
+
+        verify(mRegularSynchronizer).saveTab(eq(tab));
+        assertEquals(DirtinessState.CLEAN, attributes.getDirtinessState());
+    }
+
+    @Test
+    public void testSaveTab_ClearsDirtinessWhenUntidyAndUrlEmpty() {
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ true);
+
+        mOrchestrator.onDataLoaded(mRegularData, /* incognito= */ false);
+        mOrchestrator.onRestoredForModel(/* incognito= */ false);
+
+        MockTab tab = new MockTab(1, mProfile);
+        tab.onLoadStarted(/* toDifferentDocument= */ true);
+        TabStateAttributesRegistry.createAttributesForTab(
+                tab, TabStateStore.class, TabCreationState.LIVE_IN_FOREGROUND);
+        TabStateAttributes attributes =
+                TabStateAttributesRegistry.getAttributesFor(tab, TabStateStore.class);
+        TabStateAttributes.Observer observer = mock(TabStateAttributes.Observer.class);
+        attributes.addObserver(observer);
+        assertEquals(DirtinessState.UNTIDY, attributes.getDirtinessState());
+
+        mOrchestrator.saveTab(tab);
+
+        verify(mRegularSynchronizer).saveTab(eq(tab));
+        assertEquals(DirtinessState.CLEAN, attributes.getDirtinessState());
+
+        // Subsequent navigation to the first non-empty URL transitions CLEAN -> UNTIDY once.
+        tab.setGurlOverrideForTesting(new GURL("https://www.example.com"));
+        attributes.updateIsDirty(DirtinessState.UNTIDY);
+        verify(observer).onTabStateDirtinessChanged(tab, DirtinessState.UNTIDY);
+    }
+
+    @Test
+    public void testSaveTab_ClearsDirtinessWhenUntidyAndNotLoading() {
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ true);
+
+        mOrchestrator.onDataLoaded(mRegularData, /* incognito= */ false);
+        mOrchestrator.onRestoredForModel(/* incognito= */ false);
+
+        MockTab tab = new MockTab(1, mProfile);
+        tab.setGurlOverrideForTesting(new GURL("https://www.example.com"));
+        tab.setCanGoBack(false);
+        TabStateAttributesRegistry.createAttributesForTab(
+                tab, TabStateStore.class, TabCreationState.LIVE_IN_FOREGROUND);
+        TabStateAttributes attributes =
+                TabStateAttributesRegistry.getAttributesFor(tab, TabStateStore.class);
+        assertEquals(DirtinessState.UNTIDY, attributes.getDirtinessState());
+
+        mOrchestrator.saveTab(tab);
+
+        verify(mRegularSynchronizer).saveTab(eq(tab));
+        assertEquals(DirtinessState.CLEAN, attributes.getDirtinessState());
+    }
+
+    @Test
+    public void testSaveTab_ClearsDirtinessWhenUntidyAndCanGoBack() {
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ true);
+
+        mOrchestrator.onDataLoaded(mRegularData, /* incognito= */ false);
+        mOrchestrator.onRestoredForModel(/* incognito= */ false);
+
+        MockTab tab = new MockTab(1, mProfile);
+        tab.onLoadStarted(/* toDifferentDocument= */ true);
+        tab.setGurlOverrideForTesting(new GURL("https://www.example.com"));
+        tab.setCanGoBack(true);
+        TabStateAttributesRegistry.createAttributesForTab(
+                tab, TabStateStore.class, TabCreationState.LIVE_IN_FOREGROUND);
+        TabStateAttributes attributes =
+                TabStateAttributesRegistry.getAttributesFor(tab, TabStateStore.class);
+        assertEquals(DirtinessState.UNTIDY, attributes.getDirtinessState());
+
+        mOrchestrator.saveTab(tab);
+
+        verify(mRegularSynchronizer).saveTab(eq(tab));
+        assertEquals(DirtinessState.CLEAN, attributes.getDirtinessState());
+    }
+
+    @Test
+    public void testSaveTab_PreservesDirtinessWhenUntidyAndUrlNonEmpty() {
+        createOrchestrator(/* hasCipherFactory= */ true, /* isAuthoritative= */ true);
+
+        mOrchestrator.onDataLoaded(mRegularData, /* incognito= */ false);
+        mOrchestrator.onRestoredForModel(/* incognito= */ false);
+
+        MockTab tab = new MockTab(1, mProfile);
+        tab.onLoadStarted(/* toDifferentDocument= */ true);
+        tab.setGurlOverrideForTesting(new GURL("https://www.example.com"));
+        tab.setCanGoBack(false);
+        TabStateAttributesRegistry.createAttributesForTab(
+                tab, TabStateStore.class, TabCreationState.LIVE_IN_FOREGROUND);
+        TabStateAttributes attributes =
+                TabStateAttributesRegistry.getAttributesFor(tab, TabStateStore.class);
+        TabStateAttributes.Observer observer = mock(TabStateAttributes.Observer.class);
+        attributes.addObserver(observer);
+        assertEquals(DirtinessState.UNTIDY, attributes.getDirtinessState());
+
+        mOrchestrator.saveTab(tab);
+
+        verify(mRegularSynchronizer).saveTab(eq(tab));
+        assertEquals(DirtinessState.UNTIDY, attributes.getDirtinessState());
+
+        // TabStateAttributes naturally deduplicates further UNTIDY signals while UNTIDY.
+        attributes.updateIsDirty(DirtinessState.UNTIDY);
+        verify(observer, never()).onTabStateDirtinessChanged(tab, DirtinessState.UNTIDY);
     }
 
     @Test

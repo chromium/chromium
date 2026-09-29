@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.tabmodel.TabGroupVisualDataStore;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelType;
+import org.chromium.chrome.browser.tabmodel.TabPersistenceUtils;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.components.tabs.TabStripCollection;
 
@@ -387,7 +388,11 @@ public class ModelTrackingOrchestrator {
 
         TabStateAttributes attributes =
                 TabStateAttributesRegistry.getAttributesFor(tab, TabStateStore.class);
-        if (attributes != null) {
+        // Do not clear UNTIDY when saving an initial non-empty URL so TabStateAttributes
+        // deduplicates further UNTIDY updates during the initial load while still allowing
+        // onLoadStopped to promote UNTIDY to DIRTY.
+        if (attributes != null
+                && !TabPersistenceUtils.shouldSaveUntidyTab(tab, attributes.getDirtinessState())) {
             attributes.clearTabStateDirtiness();
         }
 

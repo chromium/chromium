@@ -8,6 +8,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -46,6 +48,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
+import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
 import org.chromium.chrome.browser.tab.TabStateAttributesRegistry;
 import org.chromium.chrome.browser.tab.TabStateStorageService;
 import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
@@ -59,7 +62,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabOrchestratorType;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
+import org.chromium.chrome.browser.tabmodel.TabPersistenceUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabPersistentStoreObserver;
+import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -364,6 +369,126 @@ public class TabStateStoreUnitTest {
         // Transition to DIRTY.
         attributes.updateIsDirty(TabStateAttributes.DirtinessState.DIRTY);
         verify(mModelTrackingOrchestrator).saveTab(tab);
+    }
+
+    @Test
+    public void testOnTabStateDirtinessChanged_UntidySavesWhenUrlNonEmptyAndCannotGoBack() {
+        mTabStateStore.onNativeLibraryReady();
+        MockTab tab = (MockTab) createMockTabWithParentCollection(1, mProfile);
+
+        TabStateAttributesRegistry.createAttributesForTab(
+                tab, TabStateStore.class, TabCreationState.FROZEN_ON_RESTORE);
+        mTabStateStore.onTabRegistered(tab);
+        clearInvocations(mModelTrackingOrchestrator);
+
+        TabStateAttributes attributes =
+                TabStateAttributesRegistry.getAttributesFor(tab, TabStateStore.class);
+
+        // 1. UNTIDY while URL is empty does not save even when loading.
+        tab.onLoadStarted(/* toDifferentDocument= */ true);
+        attributes.updateIsDirty(DirtinessState.UNTIDY);
+        verify(mModelTrackingOrchestrator, never()).saveTab(tab);
+
+        // 2. UNTIDY while loading and URL is non-empty but canGoBack() is true does not save.
+        attributes.clearTabStateDirtiness();
+        tab.setGurlOverrideForTesting(new GURL("https://www.example.com"));
+        tab.setCanGoBack(true);
+        attributes.updateIsDirty(DirtinessState.UNTIDY);
+        verify(mModelTrackingOrchestrator, never()).saveTab(tab);
+
+        // 3. UNTIDY while not loading does not save even when URL is non-empty and !canGoBack().
+        attributes.clearTabStateDirtiness();
+        tab.onLoadStopped();
+        tab.setCanGoBack(false);
+        attributes.updateIsDirty(DirtinessState.UNTIDY);
+        verify(mModelTrackingOrchestrator, never()).saveTab(tab);
+
+        // 4. UNTIDY when loading, URL is non-empty, and !canGoBack() saves.
+        attributes.clearTabStateDirtiness();
+        tab.onLoadStarted(/* toDifferentDocument= */ true);
+        attributes.updateIsDirty(DirtinessState.UNTIDY);
+        verify(mModelTrackingOrchestrator).saveTab(tab);
+        clearInvocations(mModelTrackingOrchestrator);
+
+        // 5. Transition to DIRTY still saves even when canGoBack() is true.
+        tab.setCanGoBack(true);
+        attributes.updateIsDirty(DirtinessState.DIRTY);
+        verify(mModelTrackingOrchestrator).saveTab(tab);
+    }
+
+    private void stubOrchestratorSaveTabDirtinessUpdate() {
+        doAnswer(
+                        invocation -> {
+                            Tab savedTab = invocation.getArgument(0);
+                            TabStateAttributes attrs =
+                                    TabStateAttributesRegistry.getAttributesFor(
+                                            savedTab, TabStateStore.class);
+                            if (attrs != null
+                                    && !TabPersistenceUtils.shouldSaveUntidyTab(
+                                            savedTab, attrs.getDirtinessState())) {
+                                attrs.clearTabStateDirtiness();
+                            }
+                            return null;
+                        })
+                .when(mModelTrackingOrchestrator)
+                .saveTab(any());
+    }
+
+    @Test
+    public void testOnTabRegistered_WithEmptyUrl_ClearsUntidyThenSavesFirstNonEmptyUrlOnce() {
+        mTabStateStore.onNativeLibraryReady();
+        stubOrchestratorSaveTabDirtinessUpdate();
+
+        MockTab tab = (MockTab) createMockTabWithParentCollection(1, mProfile);
+        tab.onLoadStarted(/* toDifferentDocument= */ true);
+        TabStateAttributesRegistry.createAttributesForTab(
+                tab, TabStateStore.class, TabCreationState.LIVE_IN_FOREGROUND);
+        TabStateAttributes attributes =
+                TabStateAttributesRegistry.getAttributesFor(tab, TabStateStore.class);
+
+        // Registration with empty URL saves and resets UNTIDY -> CLEAN.
+        mTabStateStore.onTabRegistered(tab);
+        verify(mModelTrackingOrchestrator).saveTab(tab);
+        Assert.assertEquals(DirtinessState.CLEAN, attributes.getDirtinessState());
+        clearInvocations(mModelTrackingOrchestrator);
+
+        // First non-empty URL navigation fires CLEAN -> UNTIDY once and preserves UNTIDY.
+        tab.setGurlOverrideForTesting(new GURL("https://www.example.com"));
+        tab.setCanGoBack(false);
+        attributes.updateIsDirty(DirtinessState.UNTIDY);
+        verify(mModelTrackingOrchestrator).saveTab(tab);
+        Assert.assertEquals(DirtinessState.UNTIDY, attributes.getDirtinessState());
+        clearInvocations(mModelTrackingOrchestrator);
+
+        // Further UNTIDY updates are deduplicated by TabStateAttributes.
+        attributes.updateIsDirty(DirtinessState.UNTIDY);
+        verify(mModelTrackingOrchestrator, never()).saveTab(tab);
+    }
+
+    @Test
+    public void
+            testOnTabRegistered_WithNonEmptyUrl_PreservesUntidyAndDeduplicatesSubsequentUntidy() {
+        mTabStateStore.onNativeLibraryReady();
+        stubOrchestratorSaveTabDirtinessUpdate();
+
+        MockTab tab = (MockTab) createMockTabWithParentCollection(1, mProfile);
+        tab.onLoadStarted(/* toDifferentDocument= */ true);
+        tab.setGurlOverrideForTesting(new GURL("https://www.example.com"));
+        tab.setCanGoBack(false);
+
+        TabStateAttributesRegistry.createAttributesForTab(
+                tab, TabStateStore.class, TabCreationState.LIVE_IN_FOREGROUND);
+        TabStateAttributes attributes =
+                TabStateAttributesRegistry.getAttributesFor(tab, TabStateStore.class);
+
+        mTabStateStore.onTabRegistered(tab);
+        verify(mModelTrackingOrchestrator).saveTab(tab);
+        Assert.assertEquals(DirtinessState.UNTIDY, attributes.getDirtinessState());
+        clearInvocations(mModelTrackingOrchestrator);
+
+        // Because saveTab preserved UNTIDY, TabStateAttributes naturally deduplicates UNTIDY.
+        attributes.updateIsDirty(DirtinessState.UNTIDY);
+        verify(mModelTrackingOrchestrator, never()).saveTab(tab);
     }
 
     @Test

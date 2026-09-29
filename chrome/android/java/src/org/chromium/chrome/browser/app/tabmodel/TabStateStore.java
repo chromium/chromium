@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabRegistrationObserver;
 import org.chromium.chrome.browser.tabmodel.TabOrchestratorType;
 import org.chromium.chrome.browser.tabmodel.TabPersistencePolicy;
+import org.chromium.chrome.browser.tabmodel.TabPersistenceUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 
@@ -560,7 +561,8 @@ public class TabStateStore implements TabPersistentStore {
     }
 
     private void onTabStateDirtinessChanged(Tab tab, @DirtinessState int dirtiness) {
-        if (dirtiness == DirtinessState.DIRTY) {
+        if (dirtiness == DirtinessState.DIRTY
+                || TabPersistenceUtils.shouldSaveUntidyTab(tab, dirtiness)) {
             saveTab(tab);
         }
     }
