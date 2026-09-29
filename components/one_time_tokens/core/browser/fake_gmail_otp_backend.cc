@@ -43,7 +43,7 @@ void FakeGmailOtpBackend::OnIncomingOneTimeTokenBackendNotification(
 void FakeGmailOtpBackend::FetchUserDataProcessingConsent(
     FetchUserDataProcessingConsentCallback callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+      FROM_HERE, base::BindOnce(std::move(callback), consent_states_));
 }
 
 bool FakeGmailOtpBackend::HasPendingRequests() const {

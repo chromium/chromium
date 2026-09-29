@@ -50,7 +50,7 @@
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/consent_auditor/fake_consent_auditor.h"
 #include "components/device_reauth/mock_device_authenticator.h"
-#include "components/one_time_tokens/core/browser/mock_one_time_token_service.h"
+#include "components/one_time_tokens/core/browser/fake_gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -463,15 +463,13 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
                        FetchUserDataProcessingConsent_Success) {
-  auto mock_otp_service = std::make_unique<
-      testing::NiceMock<one_time_tokens::MockOneTimeTokenService>>();
-  EXPECT_CALL(*mock_otp_service, FetchUserDataProcessingConsent)
-      .WillOnce(
-          RunOnceCallback<0>(one_time_tokens::UserDataProcessingConsentStates{
-              .comms_apps = one_time_tokens::ConsentState::kEnabled,
-              .google_apps = one_time_tokens::ConsentState::kEnabled,
-          }));
-  autofill_client()->set_one_time_token_service(std::move(mock_otp_service));
+  auto fake_backend = std::make_unique<one_time_tokens::FakeGmailOtpBackend>();
+  fake_backend->SetUserDataProcessingConsent(
+      one_time_tokens::UserDataProcessingConsentStates{
+          .comms_apps = one_time_tokens::ConsentState::kEnabled,
+          .google_apps = one_time_tokens::ConsentState::kEnabled,
+      });
+  autofill_client()->set_gmail_otp_backend(std::move(fake_backend));
 
   auto function = base::MakeRefCounted<
       extensions::AutofillPrivateFetchUserDataProcessingConsentFunction>();
@@ -491,15 +489,13 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
                        FetchUserDataProcessingConsent_MixedAndUnknown) {
-  auto mock_otp_service = std::make_unique<
-      testing::NiceMock<one_time_tokens::MockOneTimeTokenService>>();
-  EXPECT_CALL(*mock_otp_service, FetchUserDataProcessingConsent)
-      .WillOnce(
-          RunOnceCallback<0>(one_time_tokens::UserDataProcessingConsentStates{
-              .comms_apps = one_time_tokens::ConsentState::kDisabled,
-              .google_apps = one_time_tokens::ConsentState::kUnknown,
-          }));
-  autofill_client()->set_one_time_token_service(std::move(mock_otp_service));
+  auto fake_backend = std::make_unique<one_time_tokens::FakeGmailOtpBackend>();
+  fake_backend->SetUserDataProcessingConsent(
+      one_time_tokens::UserDataProcessingConsentStates{
+          .comms_apps = one_time_tokens::ConsentState::kDisabled,
+          .google_apps = one_time_tokens::ConsentState::kUnknown,
+      });
+  autofill_client()->set_gmail_otp_backend(std::move(fake_backend));
 
   auto function = base::MakeRefCounted<
       extensions::AutofillPrivateFetchUserDataProcessingConsentFunction>();
@@ -519,15 +515,13 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
                        FetchUserDataProcessingConsent_Undefined) {
-  auto mock_otp_service = std::make_unique<
-      testing::NiceMock<one_time_tokens::MockOneTimeTokenService>>();
-  EXPECT_CALL(*mock_otp_service, FetchUserDataProcessingConsent)
-      .WillOnce(
-          RunOnceCallback<0>(one_time_tokens::UserDataProcessingConsentStates{
-              .comms_apps = one_time_tokens::ConsentState::kUndefined,
-              .google_apps = one_time_tokens::ConsentState::kUndefined,
-          }));
-  autofill_client()->set_one_time_token_service(std::move(mock_otp_service));
+  auto fake_backend = std::make_unique<one_time_tokens::FakeGmailOtpBackend>();
+  fake_backend->SetUserDataProcessingConsent(
+      one_time_tokens::UserDataProcessingConsentStates{
+          .comms_apps = one_time_tokens::ConsentState::kUndefined,
+          .google_apps = one_time_tokens::ConsentState::kUndefined,
+      });
+  autofill_client()->set_gmail_otp_backend(std::move(fake_backend));
 
   auto function = base::MakeRefCounted<
       extensions::AutofillPrivateFetchUserDataProcessingConsentFunction>();
@@ -547,11 +541,9 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
                        FetchUserDataProcessingConsent_BackendError) {
-  auto mock_otp_service = std::make_unique<
-      testing::NiceMock<one_time_tokens::MockOneTimeTokenService>>();
-  EXPECT_CALL(*mock_otp_service, FetchUserDataProcessingConsent)
-      .WillOnce(RunOnceCallback<0>(std::nullopt));
-  autofill_client()->set_one_time_token_service(std::move(mock_otp_service));
+  auto fake_backend = std::make_unique<one_time_tokens::FakeGmailOtpBackend>();
+  fake_backend->SetUserDataProcessingConsent(std::nullopt);
+  autofill_client()->set_gmail_otp_backend(std::move(fake_backend));
 
   auto function = base::MakeRefCounted<
       extensions::AutofillPrivateFetchUserDataProcessingConsentFunction>();
@@ -567,8 +559,8 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiBrowserTest,
-                       FetchUserDataProcessingConsent_NoService) {
-  autofill_client()->set_one_time_token_service(nullptr);
+                       FetchUserDataProcessingConsent_NoBackend) {
+  autofill_client()->set_gmail_otp_backend(nullptr);
 
   auto function = base::MakeRefCounted<
       extensions::AutofillPrivateFetchUserDataProcessingConsentFunction>();

@@ -45,6 +45,11 @@ class FakeGmailOtpBackend : public GmailOtpBackend {
 
   size_t num_callbacks() const { return callbacks_.size(); }
 
+  void SetUserDataProcessingConsent(
+      std::optional<UserDataProcessingConsentStates> consent_states) {
+    consent_states_ = std::move(consent_states);
+  }
+
   const std::vector<OneTimeTokenBackendNotification>& incoming_notifications()
       const {
     return incoming_notifications_;
@@ -53,6 +58,7 @@ class FakeGmailOtpBackend : public GmailOtpBackend {
  private:
   std::vector<Callback> callbacks_;
   std::vector<OneTimeTokenBackendNotification> incoming_notifications_;
+  std::optional<UserDataProcessingConsentStates> consent_states_;
 };
 
 }  // namespace one_time_tokens

@@ -57,8 +57,6 @@ class OneTimeTokenServiceImpl : public OneTimeTokenService {
   void RequestOneTimeToken(
       base::TimeDelta timeout,
       base::OnceCallback<void(std::optional<OneTimeToken>)> callback) override;
-  void FetchUserDataProcessingConsent(
-      FetchUserDataProcessingConsentCallback callback) override;
 
  private:
   // Retrieves SMS OTPs from `sms_.backend` if any subscriber is interested.

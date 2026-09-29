@@ -27,6 +27,7 @@
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_login_context.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service.h"
+#include "chrome/browser/autofill/gmail_otp_backend_factory.h"
 #include "chrome/browser/autofill/one_time_token_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -38,6 +39,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/one_time_tokens/core/browser/fake_gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service_impl.h"
 #include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
@@ -101,10 +103,6 @@ class MockKeyedOneTimeTokenService
                one_time_tokens::OneTimeTokenService::Callback,
                base::OnceClosure),
               (override));
-  MOCK_METHOD(void,
-              FetchUserDataProcessingConsent,
-              (FetchUserDataProcessingConsentCallback),
-              (override));
 };
 
 class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
@@ -137,14 +135,10 @@ class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
     ASSERT_TRUE(embedded_https_test_server().Start());
     ASSERT_TRUE(embedded_test_server()->Start());
 
-    ON_CALL(GetMockOtpService(), FetchUserDataProcessingConsent)
-        .WillByDefault([](one_time_tokens::OneTimeTokenService::
-                              FetchUserDataProcessingConsentCallback callback) {
-          std::move(callback).Run(
-              one_time_tokens::UserDataProcessingConsentStates{
-                  .comms_apps = one_time_tokens::ConsentState::kEnabled,
-                  .google_apps = one_time_tokens::ConsentState::kEnabled});
-        });
+    GetFakeGmailOtpBackend().SetUserDataProcessingConsent(
+        one_time_tokens::UserDataProcessingConsentStates{
+            .comms_apps = one_time_tokens::ConsentState::kEnabled,
+            .google_apps = one_time_tokens::ConsentState::kEnabled});
 
     // Allow no-op calls to Subscribe for SMS from Autofill OtpManager.
     EXPECT_CALL(
@@ -179,6 +173,11 @@ class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
     autofill::OneTimeTokenServiceFactory::GetInstance()
         ->SetTestingSubclassFactoryAndUse<MockKeyedOneTimeTokenService>(
             context, base::BindOnce(&CreateMockOtpService));
+    GmailOtpBackendFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          return std::make_unique<one_time_tokens::FakeGmailOtpBackend>();
+        }));
   }
 
   // Waits for the background page analysis (AnnotatedPageContent) to be
@@ -207,6 +206,13 @@ class AttemptOtpFillingToolBrowserTest : public ActorToolsTest {
         autofill::OneTimeTokenServiceFactory::GetForProfile(GetProfile()));
     CHECK(mock_otp_service);
     return *mock_otp_service;
+  }
+
+  one_time_tokens::FakeGmailOtpBackend& GetFakeGmailOtpBackend() {
+    auto* fake_backend = static_cast<one_time_tokens::FakeGmailOtpBackend*>(
+        GmailOtpBackendFactory::GetForProfile(GetProfile()));
+    CHECK(fake_backend);
+    return *fake_backend;
   }
 
   affiliations::FakeAffiliationService* fake_affiliation_service() {
@@ -680,14 +686,10 @@ IN_PROC_BROWSER_TEST_F(AttemptOtpFillingToolBrowserTest,
   ASSERT_OK_AND_ASSIGN(DomNode otp_field,
                        GetDomNodeOnPage(*main_frame(), "#otp"));
 
-  EXPECT_CALL(GetMockOtpService(), FetchUserDataProcessingConsent)
-      .WillOnce([](one_time_tokens::OneTimeTokenService::
-                       FetchUserDataProcessingConsentCallback callback) {
-        std::move(callback).Run(
-            one_time_tokens::UserDataProcessingConsentStates{
-                .comms_apps = one_time_tokens::ConsentState::kDisabled,
-                .google_apps = one_time_tokens::ConsentState::kEnabled});
-      });
+  GetFakeGmailOtpBackend().SetUserDataProcessingConsent(
+      one_time_tokens::UserDataProcessingConsentStates{
+          .comms_apps = one_time_tokens::ConsentState::kDisabled,
+          .google_apps = one_time_tokens::ConsentState::kEnabled});
   EXPECT_CALL(GetMockOtpService(),
               Subscribe(one_time_tokens::OneTimeTokenSource::kGmail, _, _, _))
       .Times(0);

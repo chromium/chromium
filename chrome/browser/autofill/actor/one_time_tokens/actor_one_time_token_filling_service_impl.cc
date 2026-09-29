@@ -27,6 +27,7 @@
 #include "base/types/expected.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/autofill/actor/one_time_tokens/actor_one_time_token_filling_service_metrics.h"
+#include "chrome/browser/autofill/gmail_otp_backend_factory.h"
 #include "chrome/browser/autofill/one_time_token_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/chrome_security_state_util.h"
@@ -46,6 +47,7 @@
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/autofill/core/browser/integrators/one_time_tokens/otp_suggestion.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/one_time_token_log_sink.h"
 #include "components/one_time_tokens/core/browser/one_time_token_service.h"
@@ -687,14 +689,14 @@ void ActorOneTimeTokenFillingServiceImpl::OnBackendLogMessage(
 
 void ActorOneTimeTokenFillingServiceImpl::FetchUserDataProcessingConsent(
     FetchUserDataProcessingConsentCallback callback) {
-  one_time_tokens::OneTimeTokenService* service =
-      OneTimeTokenServiceFactory::GetForProfile(profile_);
-  if (!service) {
+  one_time_tokens::GmailOtpBackend* backend =
+      GmailOtpBackendFactory::GetForProfile(profile_);
+  if (!backend) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
     return;
   }
-  service->FetchUserDataProcessingConsent(std::move(callback));
+  backend->FetchUserDataProcessingConsent(std::move(callback));
 }
 
 base::WeakPtr<ActorOneTimeTokenFillingService>

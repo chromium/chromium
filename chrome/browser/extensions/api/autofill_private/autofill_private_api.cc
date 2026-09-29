@@ -69,7 +69,7 @@
 #include "components/consent_auditor/consent_auditor.h"
 #include "components/device_reauth/device_authenticator.h"
 #include "components/feature_engagement/public/feature_constants.h"
-#include "components/one_time_tokens/core/browser/one_time_token_service.h"
+#include "components/one_time_tokens/core/browser/gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_branded_strings.h"
@@ -1742,15 +1742,15 @@ AutofillPrivateFetchUserDataProcessingConsentFunction::Run() {
                             kErrorAutofillClientUnavailable})));
   }
 
-  one_time_tokens::OneTimeTokenService* otp_service =
-      client->GetOneTimeTokenService();
-  if (!otp_service) {
+  one_time_tokens::GmailOtpBackend* gmail_otp_backend =
+      client->GetGmailOtpBackend();
+  if (!gmail_otp_backend) {
     return RespondNow(
         Error(base::StrCat({"Fetch user data processing consent - ",
                             kErrorOneTimeTokenServiceUnavailable})));
   }
 
-  otp_service->FetchUserDataProcessingConsent(base::BindOnce(
+  gmail_otp_backend->FetchUserDataProcessingConsent(base::BindOnce(
       &AutofillPrivateFetchUserDataProcessingConsentFunction::OnConsentFetched,
       base::RetainedRef(this)));
   return did_respond() ? AlreadyResponded() : RespondLater();

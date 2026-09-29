@@ -6,6 +6,7 @@
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/attempt_otp_filling_tool_request.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
+#include "chrome/browser/autofill/gmail_otp_backend_factory.h"
 #include "chrome/browser/autofill/one_time_token_service_factory.h"
 #include "chrome/browser/glic/actor/new_glic_actor_functional_browsertest.h"
 #include "chrome/browser/glic/public/features.h"
@@ -19,6 +20,7 @@
 #include "components/affiliations/core/browser/fake_affiliation_service.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/one_time_tokens/core/browser/fake_gmail_otp_backend.h"
 #include "components/one_time_tokens/core/browser/mock_one_time_token_service.h"
 #include "components/one_time_tokens/core/browser/one_time_token.h"
 #include "components/one_time_tokens/core/browser/user_data_processing_consent_states.h"
@@ -282,6 +284,11 @@ class GlicActorTaskLifecycleGmailOtpEnabledBrowserTest
             context,
             base::BindOnce(&GlicActorTaskLifecycleGmailOtpEnabledBrowserTest::
                                CreateMockOtpService));
+    GmailOtpBackendFactory::GetInstance()->SetTestingFactory(
+        context, base::BindRepeating([](content::BrowserContext* context)
+                                         -> std::unique_ptr<KeyedService> {
+          return std::make_unique<one_time_tokens::FakeGmailOtpBackend>();
+        }));
   }
 
   void SetUpOnMainThread() override {
@@ -306,15 +313,10 @@ class GlicActorTaskLifecycleGmailOtpEnabledBrowserTest
     EXPECT_CALL(GetMockOtpService(), GetCachedOneTimeTokens())
         .WillRepeatedly(
             []() { return std::vector<one_time_tokens::OneTimeToken>(); });
-    EXPECT_CALL(GetMockOtpService(), FetchUserDataProcessingConsent(testing::_))
-        .WillRepeatedly(
-            [](one_time_tokens::OneTimeTokenService::
-                   FetchUserDataProcessingConsentCallback callback) {
-              std::move(callback).Run(
-                  one_time_tokens::UserDataProcessingConsentStates{
-                      .comms_apps = one_time_tokens::ConsentState::kEnabled,
-                      .google_apps = one_time_tokens::ConsentState::kEnabled});
-            });
+    GetFakeGmailOtpBackend().SetUserDataProcessingConsent(
+        one_time_tokens::UserDataProcessingConsentStates{
+            .comms_apps = one_time_tokens::ConsentState::kEnabled,
+            .google_apps = one_time_tokens::ConsentState::kEnabled});
   }
 
   affiliations::FakeAffiliationService* fake_affiliation_service() {
@@ -346,6 +348,13 @@ class GlicActorTaskLifecycleGmailOtpEnabledBrowserTest
             autofill::OneTimeTokenServiceFactory::GetForProfile(GetProfile()));
     CHECK(mock_otp_service);
     return *mock_otp_service;
+  }
+
+  one_time_tokens::FakeGmailOtpBackend& GetFakeGmailOtpBackend() {
+    auto* fake_backend = static_cast<one_time_tokens::FakeGmailOtpBackend*>(
+        GmailOtpBackendFactory::GetForProfile(GetProfile()));
+    CHECK(fake_backend);
+    return *fake_backend;
   }
 
   void SetMockOtpResponse(const std::string& otp) {

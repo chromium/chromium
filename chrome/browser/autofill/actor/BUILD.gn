@@ -63,6 +63,7 @@ source_set("unit_tests") {
     "//components/autofill/core/browser:test_support",
     "//components/autofill/core/browser/actor:test_support",
     "//components/one_time_tokens/core/browser",
+    "//components/one_time_tokens/core/browser:test_support",
     "//components/one_time_tokens/core/common:features",
     "//components/security_state/content",
     "//components/tabs:test_support",
