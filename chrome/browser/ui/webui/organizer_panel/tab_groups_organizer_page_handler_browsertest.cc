@@ -33,6 +33,7 @@
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -676,6 +677,131 @@ IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
   ASSERT_TRUE(saved_group.has_value());
   EXPECT_EQ(page.added_groups()[1]->id,
             saved_group->saved_guid().AsLowercaseString());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    TabGroupsOrganizerPageHandlerBrowserTest,
+    GetTabGroupsIncludesNonSavedTabGroupsAcrossMultipleWindows) {
+  tab_groups::TabGroupSyncService* service = sync_service();
+  ASSERT_TRUE(service);
+
+  // Group in window 1.
+  tab_groups::TabGroupId group_id1 =
+      browser()->GetTabStripModel()->AddToNewGroup({0});
+  tab_groups::TabGroupVisualData visual_data1(
+      u"Window 1 Group", tab_groups::TabGroupColorId::kGreen);
+  browser()->GetTabStripModel()->ChangeTabGroupVisuals(group_id1, visual_data1);
+  service->RemoveGroup(group_id1);
+  ASSERT_FALSE(service->GetGroup(group_id1).has_value());
+
+  // Create window 2 and add a group in window 2.
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
+  ASSERT_TRUE(browser2);
+  ASSERT_EQ(1, browser2->GetTabStripModel()->count());
+
+  tab_groups::TabGroupId group_id2 =
+      browser2->GetTabStripModel()->AddToNewGroup({0});
+  tab_groups::TabGroupVisualData visual_data2(
+      u"Window 2 Group", tab_groups::TabGroupColorId::kBlue);
+  browser2->GetTabStripModel()->ChangeTabGroupVisuals(group_id2, visual_data2);
+  service->RemoveGroup(group_id2);
+  ASSERT_FALSE(service->GetGroup(group_id2).has_value());
+
+  FakeTabGroupsOrganizerPage page;
+  mojo::Remote<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
+      handler_remote;
+  TabGroupsOrganizerPageHandler handler(
+      handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
+      browser()->GetTabStripModel()->GetActiveWebContents());
+
+  base::test::TestFuture<std::vector<organizer_panel::mojom::TabGroupPtr>>
+      future;
+  handler_remote->GetTabGroups(future.GetCallback());
+
+  const std::vector<organizer_panel::mojom::TabGroupPtr>& returned_groups =
+      future.Get();
+
+  ASSERT_EQ(2u, returned_groups.size());
+  std::vector<std::string> returned_titles = {returned_groups[0]->title,
+                                              returned_groups[1]->title};
+  EXPECT_THAT(returned_titles, testing::UnorderedElementsAre("Window 1 Group",
+                                                             "Window 2 Group"));
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
+                       NotifiesPageOnNonSavedTabGroupInAnotherWindow) {
+  tab_groups::TabGroupSyncService* service = sync_service();
+  ASSERT_TRUE(service);
+  service->SetIsInitializedForTesting(false);
+
+  FakeTabGroupsOrganizerPage page;
+  mojo::Remote<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
+      handler_remote;
+  TabGroupsOrganizerPageHandler handler(
+      handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
+      browser()->GetTabStripModel()->GetActiveWebContents());
+
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
+  ASSERT_TRUE(browser2);
+  ASSERT_EQ(1, browser2->GetTabStripModel()->count());
+
+  tab_groups::TabGroupId local_id2 =
+      browser2->GetTabStripModel()->AddToNewGroup({0});
+  page.WaitForTabGroupAdded();
+
+  ASSERT_EQ(1u, page.added_groups().size());
+  std::string unsaved_id2 = page.added_groups()[0]->id;
+  EXPECT_EQ(unsaved_id2, tab_groups::LocalTabGroupIDToString(local_id2));
+
+  tab_groups::TabGroupVisualData visual_data(
+      u"Updated Window 2 Group", tab_groups::TabGroupColorId::kOrange);
+  browser2->GetTabStripModel()->ChangeTabGroupVisuals(local_id2, visual_data);
+  page.WaitForTabGroupUpdated();
+
+  ASSERT_EQ(1u, page.updated_groups().size());
+  EXPECT_EQ(page.updated_groups()[0]->id, unsaved_id2);
+  EXPECT_EQ(page.updated_groups()[0]->title, "Updated Window 2 Group");
+  EXPECT_EQ(page.updated_groups()[0]->color,
+            tab_groups::TabGroupColorId::kOrange);
+
+  browser2->GetTabStripModel()->RemoveFromGroup({0});
+  page.WaitForTabGroupRemoved();
+
+  ASSERT_EQ(1u, page.removed_group_ids().size());
+  EXPECT_EQ(page.removed_group_ids()[0], unsaved_id2);
+}
+
+IN_PROC_BROWSER_TEST_F(TabGroupsOrganizerPageHandlerBrowserTest,
+                       OpenTabGroupFocusesNonSavedGroupInAnotherWindow) {
+  tab_groups::TabGroupSyncService* service = sync_service();
+  ASSERT_TRUE(service);
+
+  BrowserWindowInterface* browser2 = CreateBrowser(browser()->GetProfile());
+  ASSERT_TRUE(browser2);
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser2, GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+  ASSERT_EQ(2, browser2->GetTabStripModel()->count());
+
+  tab_groups::TabGroupId local_id2 =
+      browser2->GetTabStripModel()->AddToNewGroup({0});
+  service->RemoveGroup(local_id2);
+  ASSERT_FALSE(service->GetGroup(local_id2).has_value());
+
+  browser2->GetTabStripModel()->ActivateTabAt(1);
+  ASSERT_EQ(1, browser2->GetTabStripModel()->active_index());
+
+  FakeTabGroupsOrganizerPage page;
+  mojo::Remote<organizer_panel::mojom::TabGroupsOrganizerPageHandler>
+      handler_remote;
+  TabGroupsOrganizerPageHandler handler(
+      handler_remote.BindNewPipeAndPassReceiver(), page.BindAndPassRemote(),
+      browser()->GetTabStripModel()->GetActiveWebContents());
+
+  handler_remote->OpenTabGroup(tab_groups::LocalTabGroupIDToString(local_id2));
+  handler_remote.FlushForTesting();
+
+  EXPECT_EQ(0, browser2->GetTabStripModel()->active_index());
 }
 
 }  // namespace

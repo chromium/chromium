@@ -98,21 +98,24 @@ TabGroupsOrganizerPageHandler::TabGroupsOrganizerPageHandler(
     : receiver_(this, std::move(receiver)),
       page_(std::move(page)),
       web_contents_(web_contents),
+      profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       tab_group_sync_service_(
-          tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-              Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
+          tab_groups::TabGroupSyncServiceFactory::GetForProfile(profile_)) {
   if (tab_group_sync_service_) {
     tab_group_sync_service_observation_.Observe(tab_group_sync_service_);
   }
-  if (TabStripModel* tab_strip_model = GetTabStripModel()) {
-    tab_strip_model->AddObserver(this);
+  if (ProfileBrowserCollection* browser_collection =
+          ProfileBrowserCollection::GetForProfile(profile_)) {
+    browser_collection_observation_.Observe(browser_collection);
+    browser_collection->ForEach([this](BrowserWindowInterface* browser) {
+      OnBrowserCreated(browser);
+      return true;
+    });
   }
 }
 
 TabGroupsOrganizerPageHandler::~TabGroupsOrganizerPageHandler() {
-  if (TabStripModel* tab_strip_model = GetTabStripModel()) {
-    tab_strip_model->RemoveObserver(this);
-  }
+  TabStripModelObserver::StopObservingAll(this);
   if (on_menu_closed_callback_) {
     std::move(on_menu_closed_callback_).Run();
   }
@@ -134,18 +137,23 @@ void TabGroupsOrganizerPageHandler::GetTabGroups(
     }
   }
 
-  // TODO(crbug.com/565021302): Listen to other tab strips for unsaved tab
-  // groups.
-  if (TabStripModel* tab_strip_model = GetTabStripModel();
-      tab_strip_model && tab_strip_model->SupportsTabGroups()) {
-    for (const tab_groups::TabGroupId& group_id :
-         tab_strip_model->group_model()->ListTabGroups()) {
-      if (const TabGroup* tab_group = GetUnsavedTabGroup(group_id)) {
-        sortable_groups.push_back(
-            {CreateMojoTabGroup(tab_group),
-             GetLastUsedTime(tab_strip_model, tab_group)});
-      }
-    }
+  if (ProfileBrowserCollection* browser_collection =
+          ProfileBrowserCollection::GetForProfile(profile_)) {
+    browser_collection->ForEach(
+        [this, &sortable_groups](BrowserWindowInterface* browser) {
+          TabStripModel* tab_strip_model = browser->GetTabStripModel();
+          if (tab_strip_model && tab_strip_model->SupportsTabGroups()) {
+            for (const tab_groups::TabGroupId& group_id :
+                 tab_strip_model->group_model()->ListTabGroups()) {
+              if (const TabGroup* tab_group = GetUnsavedTabGroup(group_id)) {
+                sortable_groups.push_back(
+                    {CreateMojoTabGroup(tab_group),
+                     GetLastUsedTime(tab_strip_model, tab_group)});
+              }
+            }
+          }
+          return true;
+        });
   }
 
   std::ranges::sort(sortable_groups,
@@ -307,6 +315,20 @@ void TabGroupsOrganizerPageHandler::OnWillBeDestroyed() {
   tab_group_sync_service_ = nullptr;
 }
 
+void TabGroupsOrganizerPageHandler::OnBrowserCreated(
+    BrowserWindowInterface* browser) {
+  if (TabStripModel* tab_strip_model = browser->GetTabStripModel()) {
+    tab_strip_model->AddObserver(this);
+  }
+}
+
+void TabGroupsOrganizerPageHandler::OnBrowserClosed(
+    BrowserWindowInterface* browser) {
+  if (TabStripModel* tab_strip_model = browser->GetTabStripModel()) {
+    tab_strip_model->RemoveObserver(this);
+  }
+}
+
 void TabGroupsOrganizerPageHandler::OnTabGroupAdded(
     const tab_groups::TabGroupId& group_id) {
   if (const TabGroup* tab_group = GetUnsavedTabGroup(group_id)) {
@@ -347,29 +369,34 @@ int TabGroupsOrganizerPageHandler::GetAndIncrementLatestCommandId() {
   return latest_command_id_ += 1;
 }
 
-TabStripModel* TabGroupsOrganizerPageHandler::GetTabStripModel() const {
-  BrowserWindowInterface* browser =
-      webui::GetBrowserWindowInterface(web_contents_);
-  return browser ? browser->GetTabStripModel() : nullptr;
-}
-
 const TabGroup* TabGroupsOrganizerPageHandler::GetUnsavedTabGroup(
     const tab_groups::TabGroupId& group_id) const {
   if (IsGroupInSyncService(group_id)) {
     return nullptr;
   }
-  TabStripModel* tab_strip_model = GetTabStripModel();
-  if (!tab_strip_model || !tab_strip_model->SupportsTabGroups() ||
-      tab_strip_model->IsEphemeralTabGroup(group_id) ||
-      !tab_strip_model->group_model()->ContainsTabGroup(group_id)) {
+  ProfileBrowserCollection* browser_collection =
+      ProfileBrowserCollection::GetForProfile(profile_);
+  if (!browser_collection) {
     return nullptr;
   }
-  const TabGroup* tab_group =
-      tab_strip_model->group_model()->GetTabGroup(group_id);
-  if (!tab_group || tab_group->IsEmpty()) {
-    return nullptr;
-  }
-  return tab_group;
+
+  const TabGroup* result = nullptr;
+  browser_collection->ForEach(
+      [&group_id, &result](BrowserWindowInterface* browser) {
+        TabStripModel* tab_strip_model = browser->GetTabStripModel();
+        if (tab_strip_model && tab_strip_model->SupportsTabGroups() &&
+            !tab_strip_model->IsEphemeralTabGroup(group_id) &&
+            tab_strip_model->group_model()->ContainsTabGroup(group_id)) {
+          const TabGroup* tab_group =
+              tab_strip_model->group_model()->GetTabGroup(group_id);
+          if (tab_group && !tab_group->IsEmpty()) {
+            result = tab_group;
+            return false;
+          }
+        }
+        return true;
+      });
+  return result;
 }
 
 bool TabGroupsOrganizerPageHandler::IsGroupInSyncService(
