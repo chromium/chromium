@@ -28,12 +28,17 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/common/platform_runtime/platform_runtime_impl.h"
+#include "chrome/browser/global_features.h"
+#include "chrome/common/request_header_integrity/buildflags.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/update_client/crx_update_item.h"
 #include "crypto/sha2.h"
+
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY) && !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/request_header_integrity/platform_runtime_host.h"  // nogncheck
+#endif
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
@@ -429,19 +434,20 @@ void PlatformRuntimeComponentInstallerPolicy::ComponentReady(
     install_trigger_ = PlatformRuntimeInstallTrigger::kBackground;
   }
 
-  // Offload blocking path resolution and DLL loading to a background thread.
+  // Offload blocking path resolution to a background thread.
   // Note: GetInstalledDirectory() and GetLatestInstalledComponentDir() perform
   // blocking I/O which is disallowed on the UI thread.
-  base::ThreadPool::PostTask(
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(
-          [](const base::Version& version, const base::FilePath& install_dir) {
+          [](const base::Version& version,
+             const base::FilePath& install_dir) -> base::FilePath {
             base::FilePath dll_path;
 #if BUILDFLAG(IS_WIN)
             base::FilePath app_dir = installer::GetInstalledDirectory(
                 install_static::IsSystemInstall());
             if (app_dir.empty()) {
-              return;
+              return base::FilePath();
             }
             base::Version disk_version;
             base::FilePath latest_dir =
@@ -451,7 +457,7 @@ void PlatformRuntimeComponentInstallerPolicy::ComponentReady(
                         kPlatformRuntimePublicKeySHA256),
                     &disk_version);
             if (latest_dir.empty()) {
-              return;
+              return base::FilePath();
             }
             dll_path = GetBinaryPath(latest_dir);
             const base::Version& loaded_version =
@@ -460,13 +466,29 @@ void PlatformRuntimeComponentInstallerPolicy::ComponentReady(
             dll_path = GetBinaryPath(install_dir);
             const base::Version& loaded_version = version;
 #endif
+            if (!base::PathExists(dll_path)) {
+              return base::FilePath();
+            }
             VLOG(1) << "Platform Runtime component ready, version "
                     << loaded_version.GetString() << " in " << dll_path.value();
-
-            platform_runtime::PlatformRuntimeImpl::GetInstance()
-                ->UpdatePlatformRuntimeLibrary(dll_path);
+            return dll_path;
           },
-          version, install_dir));
+          version, install_dir),
+      base::BindOnce([](const base::FilePath& dll_path) {
+        if (dll_path.empty()) {
+          return;
+        }
+    // The library is executed only in a sandboxed utility process, so the
+    // browser just records where it is.
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY) && !BUILDFLAG(IS_ANDROID)
+        if (g_browser_process && g_browser_process->GetFeatures()) {
+          if (auto* host =
+                  g_browser_process->GetFeatures()->platform_runtime_host()) {
+            host->OnComponentReady(dll_path);
+          }
+        }
+#endif
+      }));
 }
 
 base::FilePath PlatformRuntimeComponentInstallerPolicy::GetRelativeInstallDir()

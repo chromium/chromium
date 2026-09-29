@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
+import("//chrome/common/request_header_integrity/buildflags.gni")
 import("//components/captive_portal/core/features.gni")
 import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/guest_view/buildflags/buildflags.gni")
@@ -357,10 +358,12 @@ source_set("renderer_updater") {
   ]
 
   deps = [
+    "//chrome/browser:global_features",
     "//chrome/browser/content_settings",
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/signin",
     "//chrome/common:constants",
+    "//chrome/common/request_header_integrity:buildflags",
     "//components/content_settings/common:mojom",
     "//components/content_settings/core/common",
     "//components/keyed_service/content",
@@ -378,6 +381,10 @@ source_set("renderer_updater") {
 
   if (enable_bound_session_credentials) {
     deps += [ "//components/unexportable_keys/mojom:mojo_service" ]
+  }
+
+  if (enable_request_header_integrity) {
+    deps += [ "//chrome/browser/request_header_integrity" ]
   }
 }
 

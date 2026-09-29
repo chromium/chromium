@@ -10,17 +10,23 @@ if (enable_request_header_integrity) {
     public = [ "chrome_companero_host.h" ]
     sources = [ "chrome_companero_host.cc" ]
 
+    if (!is_android) {
+      public += [ "platform_runtime_host.h" ]
+      sources += [ "platform_runtime_host.cc" ]
+    }
+
     public_deps = [
       "//base",
       "//chrome/common/request_header_integrity:mojom",
       "//mojo/public/cpp/bindings",
+      "//net",
     ]
 
     deps = [
       "//chrome/common/request_header_integrity",
       "//components/embedder_support:user_agent",
+      "//content/public/browser",
       "//google_apis",
-      "//net",
       "//services/network/public/mojom",
     ]
   }
@@ -30,10 +36,17 @@ if (enable_request_header_integrity) {
 
     sources = [ "chrome_companero_host_unittest.cc" ]
 
+    if (!is_android) {
+      sources += [ "platform_runtime_host_unittest.cc" ]
+    }
+
     deps = [
       ":request_header_integrity",
       "//base/test:test_support",
       "//chrome/common/request_header_integrity",
+      "//chrome/common/request_header_integrity:mojom",
+      "//mojo/public/cpp/bindings",
+      "//net",
       "//services/network/public/mojom",
       "//testing/gmock",
       "//testing/gtest",

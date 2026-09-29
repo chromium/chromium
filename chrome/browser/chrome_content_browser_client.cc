@@ -6090,7 +6090,14 @@ std::unique_ptr<blink::URLLoaderThrottle> CreateGoogleURLLoaderThrottle(
               policy::policy_prefs::kForceGoogleSafeSearch),
           profile->GetPrefs()->GetInteger(
               policy::policy_prefs::kForceYouTubeRestrict),
-          profile->GetPrefs()->GetString(prefs::kAllowedDomainsForApps));
+          profile->GetPrefs()->GetString(prefs::kAllowedDomainsForApps)
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY) && !BUILDFLAG(IS_ANDROID)
+              ,
+          // Only the copy pushed to renderers carries this; the throttle
+          // built here reads the block from its own process instead.
+          net::HttpRequestHeaders()
+#endif
+      );
   return std::make_unique<GoogleURLLoaderThrottle>(
 #if BUILDFLAG(IS_ANDROID)
       client_data_header,

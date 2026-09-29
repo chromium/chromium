@@ -24231,6 +24231,17 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Failure"/>
 </enum>
 
+<enum name="PlatformRuntimeProcessHeadersStatus">
+  <summary>
+    The outcome of one invocation of the Platform Runtime library in the utility
+    process.
+  </summary>
+  <int value="0" label="Library unavailable"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Ran but produced no output"/>
+  <int value="3" label="Failure"/>
+</enum>
+
 <enum name="PointerPrimaryButton">
   <int value="0" label="Left"/>
   <int value="1" label="Right"/>

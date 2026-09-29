@@ -282,7 +282,7 @@ void RequestHeaderIntegrityURLLoaderThrottle::UpdateCorsExemptHeaders(
 void RequestHeaderIntegrityURLLoaderThrottle::AddRequestIntegrityHeaders(
     net::HttpRequestHeaders* headers,
     ChromeCompaneroLoader& companero_loader,
-    ResourceType resource_type) {
+    std::optional<ResourceType> resource_type) {
   const std::string digest = base::Base64Encode(base::SHA1Hash(
       base::as_byte_span(base::StrCat({kIntegritySeed, google_apis::GetAPIKey(),
                                        embedder_support::GetUserAgent()}))));
@@ -298,7 +298,9 @@ void RequestHeaderIntegrityURLLoaderThrottle::AddRequestIntegrityHeaders(
   if (companero_header) {
     headers->SetHeader(companero_header->name, companero_header->value);
   }
-  RecordDynamicHeaderPresent(resource_type, companero_header.has_value());
+  if (resource_type) {
+    RecordDynamicHeaderPresent(*resource_type, companero_header.has_value());
+  }
 }
 
 // static

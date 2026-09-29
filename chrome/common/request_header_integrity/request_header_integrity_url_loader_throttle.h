@@ -5,6 +5,7 @@
 #ifndef CHROME_COMMON_REQUEST_HEADER_INTEGRITY_REQUEST_HEADER_INTEGRITY_URL_LOADER_THROTTLE_H_
 #define CHROME_COMMON_REQUEST_HEADER_INTEGRITY_REQUEST_HEADER_INTEGRITY_URL_LOADER_THROTTLE_H_
 
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -59,11 +60,13 @@ class RequestHeaderIntegrityURLLoaderThrottle
       network::mojom::NetworkContextParams* params);
 
   // Adds the integrity headers, and records whether the dynamic integrity
-  // header could be attached in the histogram for `resource_type`.
+  // header could be attached in the histogram for `resource_type`. Pass
+  // std::nullopt when the headers are not attached to an actual request, so
+  // that no histogram is recorded.
   static void AddRequestIntegrityHeaders(
       net::HttpRequestHeaders* headers,
       ChromeCompaneroLoader& companero_loader,
-      ResourceType resource_type);
+      std::optional<ResourceType> resource_type);
 
   // Called both for initial requests and upon redirects during prefetching.
   // - Adds the integrity header names to `removed_headers` in the case where

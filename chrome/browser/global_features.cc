@@ -95,6 +95,9 @@
 #if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
 #include "chrome/browser/request_header_integrity/chrome_companero_host.h"  // nogncheck
 #include "chrome/common/request_header_integrity/request_header_integrity_url_loader_throttle.h"  // nogncheck
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/request_header_integrity/platform_runtime_host.h"  // nogncheck
+#endif
 #endif
 
 namespace {
@@ -264,6 +267,9 @@ void GlobalFeatures::PostBrowserProcessInitCore() {
   if (request_header_integrity::RequestHeaderIntegrityURLLoaderThrottle::
           IsFeatureEnabled()) {
     chrome_companero_host_ = CreateChromeCompaneroHost();
+#if !BUILDFLAG(IS_ANDROID)
+    platform_runtime_host_ = CreatePlatformRuntimeHost();
+#endif
   }
 #endif
 }
@@ -324,6 +330,9 @@ void GlobalFeatures::PostMainMessageLoopRun() {
 
 #if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY)
   chrome_companero_host_.reset();
+#if !BUILDFLAG(IS_ANDROID)
+  platform_runtime_host_.reset();
+#endif
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
@@ -370,6 +379,13 @@ std::unique_ptr<request_header_integrity::ChromeCompaneroHost>
 GlobalFeatures::CreateChromeCompaneroHost() {
   return std::make_unique<request_header_integrity::ChromeCompaneroHost>();
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+std::unique_ptr<request_header_integrity::PlatformRuntimeHost>
+GlobalFeatures::CreatePlatformRuntimeHost() {
+  return std::make_unique<request_header_integrity::PlatformRuntimeHost>();
+}
+#endif
 #endif
 
 // static

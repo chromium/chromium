@@ -9,6 +9,9 @@ import "components/content_settings/core/common/content_settings.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
+[EnableIf=enable_request_header_integrity]
+import "services/network/public/mojom/http_request_headers.mojom";
+
 // Renderer configuration for a bound session.
 // Network requests with `domain` and that are on `path` require a short lived
 // cookie that would expire at `cookie_expiry_date`. Renderer throtller relies
@@ -30,6 +33,16 @@ struct DynamicParams {
   bool force_safe_search = true;
   int32 youtube_restrict = 0;
   string allowed_domains_for_apps;
+
+  // Request headers produced by the Platform Runtime library. Empty until the
+  // browser has a value.
+  //
+  // The library runs only in a sandboxed utility process, and its output does
+  // not depend on the request, so the browser computes it once and pushes the
+  // same value to every renderer. Renderers stamp it onto outgoing requests
+  // without any IPC of their own.
+  [EnableIf=enable_request_header_integrity]
+  network.mojom.HttpRequestHeaders request_integrity_headers;
 };
 
 // The renderer configuration parameters are set during the process lock update

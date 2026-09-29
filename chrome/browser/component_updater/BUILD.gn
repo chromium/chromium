@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chrome_build.gni")
+import("//chrome/common/request_header_integrity/buildflags.gni")
 import("//components/on_device_translation/buildflags/features.gni")
 import("//components/safe_browsing/buildflags.gni")
 import("//extensions/buildflags/buildflags.gni")
@@ -143,6 +144,7 @@ source_set("impl") {
   deps = [
     "//chrome/browser:browser_features",
     "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
     "//chrome/browser/accessibility",
     "//chrome/browser/actor:impl",
     "//chrome/browser/ai",
@@ -155,7 +157,7 @@ source_set("impl") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/update_client",
     "//chrome/common",
-    "//chrome/common/platform_runtime",
+    "//chrome/common/request_header_integrity:buildflags",
     "//components/certificate_transparency",
     "//components/certificate_transparency:proto_gen",
     "//components/commerce/core:commerce_heuristics_data",
@@ -306,6 +308,10 @@ source_set("impl") {
 
   if (is_chrome_for_testing) {
     deps += [ "//chrome/browser/chrome_for_testing:browser" ]
+  }
+
+  if (enable_request_header_integrity) {
+    deps += [ "//chrome/browser/request_header_integrity" ]
   }
 }
 

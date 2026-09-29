@@ -7,10 +7,12 @@
 
 #include <vector>
 
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/renderer_configuration.mojom-forward.h"
+#include "chrome/common/request_header_integrity/buildflags.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -25,6 +27,12 @@
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 class BoundSessionCookieRefreshService;
+#endif
+
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY) && !BUILDFLAG(IS_ANDROID)
+namespace net {
+class HttpRequestHeaders;
+}
 #endif
 
 class Profile;
@@ -80,6 +88,12 @@ class RendererUpdater : public KeyedService
   GetBoundSessionThrottlerParams() const;
 #endif
 
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY) && !BUILDFLAG(IS_ANDROID)
+  // Returns the browser's current Platform Runtime header block, or empty
+  // if there is none yet.
+  net::HttpRequestHeaders GetPlatformRuntimeHeaders() const;
+#endif
+
   // Create renderer configuration that changes at runtime.
   chrome::mojom::DynamicParamsPtr CreateRendererDynamicParams() const;
 
@@ -104,6 +118,13 @@ class RendererUpdater : public KeyedService
   BooleanPrefMember force_google_safesearch_;
   IntegerPrefMember force_youtube_restrict_;
   StringPrefMember allowed_domains_for_apps_;
+
+#if BUILDFLAG(ENABLE_REQUEST_HEADER_INTEGRITY) && !BUILDFLAG(IS_ANDROID)
+  // The Platform Runtime header block is global rather than per-profile, so
+  // every profile's updater subscribes to the same browser-wide host and
+  // rebroadcasts to its own renderers.
+  base::CallbackListSubscription platform_runtime_subscription_;
+#endif
 };
 
 #endif  // CHROME_BROWSER_PROFILES_RENDERER_UPDATER_H_
