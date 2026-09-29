@@ -5,6 +5,7 @@
 #include "components/remote_cocoa/app_shim/cr_application.h"
 
 #include "base/apple/call_with_eh_frame.h"
+#include "base/mac/mac_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/crash/core/common/crash_key.h"
@@ -41,6 +42,16 @@
     if (!found) {
       return NO;
     }
+  }
+
+  // Clicking the Full Screen heading in the green-button menu can crash on
+  // macOS 27.0. (https://crbug.com/565084600, FB24915584). Ignore
+  // -submenuAction: when the target does not respond.
+  if (base::mac::MacOSVersion() >= 27'00'00 &&
+      base::mac::MacOSVersion() < 27'02'00 &&
+      anAction == @selector(submenuAction:) &&
+      ![aTarget respondsToSelector:anAction]) {
+    return NO;
   }
 
   // When a Cocoa control is wired to a freed object, we get crashers
