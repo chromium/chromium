@@ -14,6 +14,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -199,8 +200,7 @@ class CC_EXPORT OwnedLayerImplList {
 };
 
 using LayerList = std::vector<scoped_refptr<Layer>>;
-// RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler stacks.
-using LayerImplList = RAW_PTR_EXCLUSION std::vector<LayerImpl*>;
+using LayerImplList = std::vector<raw_ptr<LayerImpl, DanglingUntriaged>>;
 // List of effect node IDs representing render surfaces in drawing order.
 // Storing integer IDs instead of bare pointers eliminates the need for
 // RAW_PTR_EXCLUSION and avoids UAF risks across property tree updates.
