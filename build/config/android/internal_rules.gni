@@ -2956,6 +2956,9 @@ if (enable_java_templates) {
   #    enabled depends on chromium_code and the global
   #    use_errorprone_java_compiler variable.
   #  use_turbine: If True, compile headers using turbine.py.
+  #  has_annotation_processors: Whether annotation_processor_deps is non-empty.
+  #    When False (and on a linux-x64 host), turbine.py uses the GraalVM
+  #    native-image turbine binary rather than turbine.jar.
   #  apk_name: Optional APK name. If provided, will tell compile_java.py to also
   #    generate an .apk.jar.info file under size-info/${apk_name}.apk.jar.info
   #  processor_args_javac: List of annotation processor arguments, each one
@@ -3108,16 +3111,33 @@ if (enable_java_templates) {
       }
 
       if (invoker.use_turbine) {
-        _turbine_jar_path = "//third_party/turbine/cipd/turbine.jar"
-        inputs += [ _turbine_jar_path ]
+        _has_annotation_processors =
+            defined(invoker.has_annotation_processors) &&
+            invoker.has_annotation_processors
+
+        # The GraalVM native-image turbine binary is built only for linux-x64,
+        # and does not support annotation processors.
+        _use_turbine_binary = host_os == "linux" && host_cpu == "x64" &&
+                              !_has_annotation_processors
         outputs += [ invoker.generated_jar_path ]
+        if (_use_turbine_binary) {
+          # Still requires java_paths_for_inputs for lib/ct.sym.
+          _turbine_path = "//third_party/turbine/cipd/turbine"
+          _turbine_flag = "--turbine-binary-path"
+        } else {
+          _turbine_path = "//third_party/turbine/cipd/turbine.jar"
+          _turbine_flag = "--turbine-jar-path"
+          args += [
+            "--processorpath=@FileArg($_rebased_build_config:processor_classpath)",
+            "--processors=@FileArg($_rebased_build_config:processor_classes)",
+          ]
+        }
+        inputs += [ _turbine_path ]
         args += [
-          "--turbine-jar-path",
-          rebase_path(_turbine_jar_path, root_build_dir),
+          _turbine_flag,
+          rebase_path(_turbine_path, root_build_dir),
           "--generated-jar-path",
           rebase_path(invoker.generated_jar_path, root_build_dir),
-          "--processorpath=@FileArg($_rebased_build_config:processor_classpath)",
-          "--processors=@FileArg($_rebased_build_config:processor_classes)",
 
           # Turbine needs only direct deps.
           "--classpath=@FileArg($_rebased_build_config:interface_classpath)",
@@ -4130,6 +4150,7 @@ if (enable_java_templates) {
         compile_java_helper(_header_target_name) {
           forward_variables_from(invoker, _compile_java_forward_variables)
           use_turbine = true
+          has_annotation_processors = _annotation_processor_deps != []
           output_jar_path = _header_jar_path
           generated_jar_path = _generated_jar_path
           deps = _annotation_processor_deps

@@ -24,10 +24,15 @@ def main(argv):
     parser = argparse.ArgumentParser()
     action_helpers.add_depfile_arg(parser)
     parser.add_argument('--target-name', help='Fully qualified GN target name.')
-    parser.add_argument(
+    turbine_group = parser.add_mutually_exclusive_group(required=True)
+    turbine_group.add_argument(
         '--turbine-jar-path',
-        required=True,
         help='Path to the turbine jar file.',
+    )
+    turbine_group.add_argument(
+        '--turbine-binary-path',
+        help='Path to the GraalVM native-image turbine executable. Does not '
+        'support annotation processors.',
     )
     parser.add_argument(
         '--java-srcjars',
@@ -98,11 +103,22 @@ def main(argv):
     # Turbine is run only on .java files.
     java_files = [f for f in files if f.endswith('.java')]
 
-    cmd = build_utils.JavaCmd() + [
-        '-classpath',
-        options.turbine_jar_path,
-        'com.google.turbine.main.Main',
-    ]
+    if options.turbine_binary_path:
+        if options.processors or options.processorpath:
+            parser.error(
+                '--turbine-binary-path does not support annotation processors.'
+            )
+        cmd = [
+            options.turbine_binary_path,
+            # Needed to locate lib/ct.sym for --release.
+            '-Djava.home=' + build_utils.JAVA_HOME,
+        ]
+    else:
+        cmd = build_utils.JavaCmd() + [
+            '-classpath',
+            options.turbine_jar_path,
+            'com.google.turbine.main.Main',
+        ]
     # Keep consistent with javac_args release flag in
     # //build/android/gyp/compile_java.py and
     # compileOptions in //build/android/gradle/android.jinja
