@@ -111,6 +111,10 @@ class UniversalOptOutService : public KeyedService,
   // history older than the retention window, and updates eligibility.
   void RecordLocationAndUpdateEligibility();
 
+  // Overrides `kUniversalOptOutEligibilityHistory` from the JSON file specified
+  // by `switches::kUniversalOptOutHistoryJsonPath` if present.
+  void MaybeOverrideHistoryFromCommandLine();
+
   // Records location for `current_day` in `kUniversalOptOutEligibilityHistory`.
   void RecordLocation(base::Time current_day,
                       ScopedDictPrefUpdate& history_update);

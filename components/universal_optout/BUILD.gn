@@ -17,6 +17,7 @@ static_library("universal_optout") {
   sources = [
     "prefs.cc",
     "prefs.h",
+    "switches.h",
     "universal_optout_service.cc",
     "universal_optout_service.h",
   ]

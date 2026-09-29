@@ -9,11 +9,16 @@
 #include <string>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/json/json_file_value_serializer.h"
 #include "base/json/values_util.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/prefs/pref_service.h"
@@ -23,6 +28,7 @@
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/universal_optout/features.h"
 #include "components/universal_optout/prefs.h"
+#include "components/universal_optout/switches.h"
 
 namespace universal_optout {
 
@@ -127,6 +133,8 @@ UniversalOptOutService::UniversalOptOutService(
   if (opt_out_changed_callback_) {
     OnOptOutPrefChanged();
   }
+
+  MaybeOverrideHistoryFromCommandLine();
   RecordLocationAndUpdateEligibility();
   RecordStartupMetrics();
 }
@@ -173,6 +181,59 @@ void UniversalOptOutService::RecordLocationAndUpdateEligibility() {
   RecordLocation(current_day, history_update);
   PruneExpiredHistory(current_day, history_update);
   UpdateEligibility(current_day);
+}
+
+void UniversalOptOutService::MaybeOverrideHistoryFromCommandLine() {
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  if (!command_line->HasSwitch(switches::kUniversalOptOutHistoryJsonPath)) {
+    return;
+  }
+
+  base::FilePath json_path = command_line->GetSwitchValuePath(
+      switches::kUniversalOptOutHistoryJsonPath);
+  if (json_path.empty()) {
+    return;
+  }
+
+  JSONFileValueDeserializer deserializer(json_path);
+  int error_code;
+  std::string error_message;
+  std::unique_ptr<base::Value> json_content =
+      deserializer.Deserialize(&error_code, &error_message);
+  if (!json_content || !json_content->is_dict()) {
+    LOG(ERROR)
+        << "Failed to load Universal Opt-Out eligibility history JSON from "
+        << json_path << ": " << error_message << " (" << error_code << ")";
+    return;
+  }
+
+  const base::DictValue* dict = json_content->GetDict().FindDict(
+      prefs::kUniversalOptOutEligibilityHistory);
+
+  if (!dict) {
+    LOG(ERROR) << "Failed to find " << prefs::kUniversalOptOutEligibilityHistory
+               << " in JSON from " << json_path;
+    return;
+  }
+
+  ScopedDictPrefUpdate history_update(
+      &pref_service_.get(), prefs::kUniversalOptOutEligibilityHistory);
+
+  // Override the history dict with the values from the JSON file.
+  history_update->clear();
+  for (auto [key, value] : *dict) {
+    if (!value.is_bool()) {
+      continue;
+    }
+
+    base::Time record_day;
+    if (base::Time::FromUTCString(key.c_str(), &record_day)) {
+      std::string day_key =
+          base::TimeToValue(record_day.UTCMidnight()).GetString();
+      history_update->Set(day_key, value.GetBool());
+    }
+  }
 }
 
 void UniversalOptOutService::RecordLocation(

@@ -8,8 +8,11 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
@@ -28,6 +31,7 @@
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/universal_optout/features.h"
 #include "components/universal_optout/prefs.h"
+#include "components/universal_optout/switches.h"
 #include "components/variations/service/test_variations_service.h"
 #include "components/variations/variations_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -574,6 +578,46 @@ TEST_F(UniversalOptOutServiceTest, OptOutChangedCallback) {
   pref_service_.SetBoolean(prefs::kUniversalOptOutEnabled, false);
   ASSERT_EQ(observed_values.size(), 3u);
   EXPECT_FALSE(observed_values.back());
+}
+
+TEST_F(UniversalOptOutServiceTest, OverrideHistoryFromJsonFile) {
+  EnableFeatureWithTargetLocations("us-fl");
+  SetGeoLevel1("us-ny");
+
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  base::FilePath json_path = temp_dir.GetPath().AppendASCII("history.json");
+
+  // Override history with the past 2 days of eligibility.
+  std::string json_content = R"({
+    "universal_optout.eligibility_history": {
+      "2026-08-10": true,
+      "2026-08-09": true
+    }
+  })";
+  ASSERT_TRUE(base::WriteFile(json_path, json_content));
+
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchPath(
+      switches::kUniversalOptOutHistoryJsonPath, json_path);
+
+  auto service = CreateService();
+  EXPECT_TRUE(service->IsEligible());
+
+  const base::DictValue& history =
+      pref_service_.GetDict(prefs::kUniversalOptOutEligibilityHistory);
+  base::Time today = GetCurrentDay(test_clock_.Now());
+  std::string one_day_ago_key =
+      base::TimeToValue(today - base::Days(1)).GetString();
+  std::string two_days_ago_key =
+      base::TimeToValue(today - base::Days(2)).GetString();
+  std::string today_key = base::TimeToValue(today).GetString();
+
+  EXPECT_EQ(history.size(), 3u);
+  EXPECT_EQ(history.FindBool(one_day_ago_key), true);
+  EXPECT_EQ(history.FindBool(two_days_ago_key), true);
+  // The history will continue to be recorded after the pref is overridden.
+  EXPECT_EQ(history.FindBool(today_key), false);
 }
 
 }  // namespace universal_optout
