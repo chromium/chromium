@@ -303,6 +303,7 @@ void RTCIceTransport::Trace(Visitor* visitor) const {
   visitor->Trace(peer_connection_);
   EventTarget::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
+  IceTransportProxy::Delegate::Trace(visitor);
 }
 
 void RTCIceTransport::Dispose() {
