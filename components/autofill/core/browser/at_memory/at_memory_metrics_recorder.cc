@@ -112,6 +112,11 @@ std::string_view MemoryDataTypeToCategoryString(MemoryDataType type) {
     case MemoryDataType::kKnownTravelerNumberExpirationDate:
       return "KnownTravelerNumber";
 
+    case MemoryDataType::kLoyaltyMembershipId:
+    case MemoryDataType::kLoyaltyMembershipProgram:
+    case MemoryDataType::kLoyaltyMembershipProvider:
+      return "LoyaltyCard";
+
     case MemoryDataType::kNationalIdCardName:
     case MemoryDataType::kNationalIdCardCountry:
     case MemoryDataType::kNationalIdCardNumber:

@@ -89,7 +89,10 @@ enum class MemoryDataType {
   kCreditCardSecurityCode = 74,
   kCreditCardNameOnCard = 75,
   kCreditCardNickname = 76,
-  kMaxValue = kCreditCardNickname,
+  kLoyaltyMembershipId = 77,
+  kLoyaltyMembershipProgram = 78,
+  kLoyaltyMembershipProvider = 79,
+  kMaxValue = kLoyaltyMembershipProvider,
 };
 // LINT.ThenChange(
 //     //tools/metrics/histograms/metadata/autofill/enums.xml:MemoryDataType)

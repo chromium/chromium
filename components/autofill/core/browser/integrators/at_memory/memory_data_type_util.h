@@ -43,6 +43,7 @@ enum class MemoryDataTypeCategory {
   kVehicle,
   kOrder,
   kShipment,
+  kLoyaltyCard,
 };
 
 // Returns the semantic category for a given `type`.

@@ -60,6 +60,7 @@ std::optional<AutofillSettingsPage> AutofillSettingsPageForMemoryDataType(
     // (credit cards) settings page.
     case MemoryDataTypeCategory::kCreditCard:
     case MemoryDataTypeCategory::kIban:
+    case MemoryDataTypeCategory::kLoyaltyCard:
       return AutofillSettingsPage::kCreditCards;
     case MemoryDataTypeCategory::kContactInfo:
       return AutofillSettingsPage::kAddresses;

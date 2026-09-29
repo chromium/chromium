@@ -703,6 +703,34 @@ TEST_P(AtMemoryManagerTest, OnSearchSubmitted_AutofillSource_Flight_Footer) {
                   IDS_AUTOFILL_AI_MANAGE_TRAVEL_SUGGESTION_MAIN_TEXT))))));
 }
 
+// Tests that the manage loyalty card footer is shown for autofill sourced
+// loyalty cards.
+TEST_P(AtMemoryManagerTest,
+       OnSearchSubmitted_AutofillSource_LoyaltyCard_Footer) {
+  SeeFormAndShowPopup();
+
+  std::vector<Suggestion> final_suggestions;
+  std::vector<MemorySearchResult> entries;
+  MemorySearchResult entry(MemoryDataType::kLoyaltyMembershipId, u"Label",
+                           u"Value");
+  entry.sources.emplace_back(MemoryEntrySourceType::kAutofill);
+  entries.push_back(std::move(entry));
+
+  MockQueryResultsAndExpectCallback(u"query",
+                                    MemorySearchStatus::kFinalResponseSuccess,
+                                    std::move(entries), final_suggestions);
+
+  manager().OnSearchSubmitted(u"query");
+
+  EXPECT_THAT(
+      final_suggestions,
+      ElementsAre(EqualsAtMemorySuggestion(
+          MemoryDataType::kLoyaltyMembershipId,
+          ElementsAre(EqualsSuggestion(
+              SuggestionType::kManageLoyaltyCard,
+              l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_LOYALTY_CARDS))))));
+}
+
 // Tests that Autofill-sourced data of unknown type does not display any manage
 // information footer suggestion.
 TEST_P(AtMemoryManagerTest, OnSearchSubmitted_AutofillSource_Unknown_NoFooter) {
@@ -2354,6 +2382,8 @@ TEST_P(AtMemoryManagerIconTest,
        Suggestion::Icon::kCardGenericSpark},
       {MemoryDataType::kIban, Suggestion::Icon::kCardGenericVector,
        Suggestion::Icon::kCardGenericSpark},
+      {MemoryDataType::kLoyaltyMembershipId, Suggestion::Icon::kLoyalty,
+       Suggestion::Icon::kTextSpark},
       {MemoryDataType::kOrderId, Suggestion::Icon::kOrder,
        Suggestion::Icon::kOrderSpark},
       {MemoryDataType::kShipmentTrackingNumber, Suggestion::Icon::kShipment,

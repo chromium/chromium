@@ -58,6 +58,17 @@ TEST(MemoryDataTypeUtilTest, ToMemoryDataTypeMapping) {
       ToMemoryDataType(
           personal_context::proto::MEMORY_DATA_TYPE_SHIPMENT_SHIP_DATE),
       MemoryDataType::kShipmentShippedDate);
+  EXPECT_EQ(
+      ToMemoryDataType(
+          personal_context::proto::MEMORY_DATA_TYPE_LOYALTY_MEMBERSHIP_ID),
+      MemoryDataType::kLoyaltyMembershipId);
+  EXPECT_EQ(
+      ToMemoryDataType(
+          personal_context::proto::MEMORY_DATA_TYPE_LOYALTY_MEMBERSHIP_PROGRAM),
+      MemoryDataType::kLoyaltyMembershipProgram);
+  EXPECT_EQ(ToMemoryDataType(personal_context::proto::
+                                 MEMORY_DATA_TYPE_LOYALTY_MEMBERSHIP_PROVIDER),
+            MemoryDataType::kLoyaltyMembershipProvider);
 
   // Entity types map to their primary attributes:
   EXPECT_EQ(ToMemoryDataType(personal_context::proto::MEMORY_DATA_TYPE_VEHICLE),
@@ -70,6 +81,12 @@ TEST(MemoryDataTypeUtilTest, ToMemoryDataTypeMapping) {
 TEST(MemoryDataTypeUtilTest, ToFieldType) {
   EXPECT_EQ(ToFieldType(MemoryDataType::kNameFull), NAME_FULL);
   EXPECT_EQ(ToFieldType(MemoryDataType::kIban), IBAN_VALUE);
+  EXPECT_EQ(ToFieldType(MemoryDataType::kLoyaltyMembershipId),
+            LOYALTY_MEMBERSHIP_ID);
+  EXPECT_EQ(ToFieldType(MemoryDataType::kLoyaltyMembershipProgram),
+            LOYALTY_MEMBERSHIP_PROGRAM);
+  EXPECT_EQ(ToFieldType(MemoryDataType::kLoyaltyMembershipProvider),
+            LOYALTY_MEMBERSHIP_PROVIDER);
   EXPECT_EQ(ToFieldType(MemoryDataType::kPassportNumber), std::nullopt);
 }
 
@@ -105,6 +122,7 @@ TEST(MemoryDataTypeUtilTest, ToEntityType) {
   EXPECT_EQ(ToEntityType(MemoryDataType::kNameFull), std::nullopt);
   EXPECT_EQ(ToEntityType(MemoryDataType::kCreditCardNumber), std::nullopt);
   EXPECT_EQ(ToEntityType(MemoryDataType::kIban), std::nullopt);
+  EXPECT_EQ(ToEntityType(MemoryDataType::kLoyaltyMembershipId), std::nullopt);
   EXPECT_EQ(ToEntityType(MemoryDataType::kUnknown), std::nullopt);
 }
 
@@ -167,6 +185,8 @@ TEST(MemoryDataTypeUtilTest, GetMemoryDataTypeCategory) {
             MemoryDataTypeCategory::kCreditCard);
   EXPECT_EQ(GetMemoryDataTypeCategory(MemoryDataType::kIban),
             MemoryDataTypeCategory::kIban);
+  EXPECT_EQ(GetMemoryDataTypeCategory(MemoryDataType::kLoyaltyMembershipId),
+            MemoryDataTypeCategory::kLoyaltyCard);
   EXPECT_EQ(GetMemoryDataTypeCategory(MemoryDataType::kPassportNumber),
             MemoryDataTypeCategory::kPassport);
   EXPECT_EQ(GetMemoryDataTypeCategory(MemoryDataType::kVehicleMake),
@@ -183,6 +203,8 @@ TEST(MemoryDataTypeUtilTest, ToAutofillPolicyDataCategory) {
   EXPECT_EQ(ToAutofillPolicyDataCategory(MemoryDataType::kCreditCardNumber),
             AutofillClient::AutofillPolicyDataCategory::kPayments);
   EXPECT_EQ(ToAutofillPolicyDataCategory(MemoryDataType::kIban),
+            AutofillClient::AutofillPolicyDataCategory::kPayments);
+  EXPECT_EQ(ToAutofillPolicyDataCategory(MemoryDataType::kLoyaltyMembershipId),
             AutofillClient::AutofillPolicyDataCategory::kPayments);
   EXPECT_EQ(ToAutofillPolicyDataCategory(MemoryDataType::kPassportNumber),
             AutofillClient::AutofillPolicyDataCategory::kIdentityDocs);

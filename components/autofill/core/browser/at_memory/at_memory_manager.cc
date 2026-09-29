@@ -124,6 +124,8 @@ Suggestion::AtMemoryPayload::Identifier GetPayloadIdentifier(
       return std::get<std::string>(identifier);
     case MemoryDataTypeCategory::kContactInfo:
       return std::get<std::string>(identifier);
+    case MemoryDataTypeCategory::kLoyaltyCard:
+    // TODO(crbug.com/566955519): Record usage of local loyalty cards.
     case MemoryDataTypeCategory::kUnknown:
       return std::monostate();
   }
@@ -634,6 +636,10 @@ IsAsync AtMemoryManager::FillSearchResult(
 
       case MemoryDataType::kCreditCardNickname:
       case MemoryDataType::kIbanNickname:
+      case MemoryDataType::kLoyaltyMembershipId:
+      case MemoryDataType::kLoyaltyMembershipProgram:
+      case MemoryDataType::kLoyaltyMembershipProvider:
+      // TODO(crbug.com/566955519): Record usage of local loyalty cards.
       case MemoryDataType::kUnknown: {
         return fill_now();
       }

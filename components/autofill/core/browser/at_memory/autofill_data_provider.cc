@@ -399,6 +399,8 @@ std::vector<MemorySearchResult> AutofillDataProvider::GetAutofillData(
       }
       break;
     }
+    case MemoryDataTypeCategory::kLoyaltyCard:
+    // TODO(crbug.com/565559151): Add support for loyalty cards.
     case MemoryDataTypeCategory::kUnknown:
       break;
   }
