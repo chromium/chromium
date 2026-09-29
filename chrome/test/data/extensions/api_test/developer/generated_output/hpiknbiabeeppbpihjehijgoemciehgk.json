@@ -37,7 +37,7 @@
    "mustRemainInstalled": false,
    "name": "My extension 2",
    "offlineEnabled": false,
-   "pinnedToToolbar": false,
+   "pinnedToToolbar": true,
    "runtimeErrors": [  ],
    "runtimeWarnings": [  ],
    "state": "ENABLED",

@@ -794,7 +794,7 @@ TEST_F(DeveloperPrivateApiUnitTest,
   };
   TestExtensionPrefSetting(base::BindLambdaForTesting(pinned_to_toolbar),
                            "pinnedToToolbar", id,
-                           /*expected_default_value=*/false);
+                           /*expected_default_value=*/true);
 
   TestExtensionPrefSetting(
       base::BindRepeating(
