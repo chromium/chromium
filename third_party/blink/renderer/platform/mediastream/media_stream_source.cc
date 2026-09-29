@@ -30,15 +30,32 @@
 
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 
-#include "base/synchronization/lock.h"
+#include <cstdint>
+#include <memory>
+#include <string>
+#include <utility>
+
+#include "base/functional/callback_forward.h"
+#include "base/notreached.h"
+#include "build/buildflag.h"
+#include "media/base/audio_parameters.h"
+#include "media/base/sample_format.h"
+#include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_source.h"
+#include "third_party/blink/public/platform/modules/mediastream/web_platform_media_stream_source.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
-#include "third_party/blink/renderer/platform/audio/audio_bus.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
-#include "third_party/blink/renderer/platform/mediastream/webaudio_destination_consumer.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
+#include "third_party/blink/renderer/platform/wtf/text/strcat.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/display/types/display_constants.h"
 
 namespace blink {

@@ -4,10 +4,19 @@
 
 #include "third_party/blink/renderer/platform/mediastream/transferred_media_stream_component.h"
 
-#include "base/synchronization/lock.h"
+#include <utility>
+
+#include "base/check_op.h"
+#include "base/functional/callback.h"
+#include "third_party/blink/public/platform/media/video_capture.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
-#include "third_party/blink/public/platform/web_audio_source_provider.h"
+#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_sink.h"
+#include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 

@@ -4,9 +4,16 @@
 
 #include "third_party/blink/renderer/platform/mediastream/aec_dump_agent_impl.h"
 
+#include <memory>
+#include <utility>
+
+#include "base/files/file.h"
 #include "base/memory/ptr_util.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/mojom/mediastream/aec_dump.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 
 namespace blink {

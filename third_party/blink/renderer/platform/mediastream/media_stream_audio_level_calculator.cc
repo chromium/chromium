@@ -4,12 +4,15 @@
 
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_level_calculator.h"
 
+#include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <limits>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/synchronization/lock.h"
 #include "base/types/pass_key.h"
 #include "media/base/audio_bus.h"
 

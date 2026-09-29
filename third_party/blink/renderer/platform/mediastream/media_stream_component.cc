@@ -31,6 +31,9 @@
 
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 
+#include "base/check.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
+
 namespace blink {
 
 MediaStreamComponents::MediaStreamComponents(MediaStreamComponent* audio_track,

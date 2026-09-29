@@ -5,7 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_MEDIASTREAM_MEDIA_STREAM_TYPES_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MODULES_MEDIASTREAM_MEDIA_STREAM_TYPES_H_
 
+#include <optional>
+
+#include "base/functional/callback.h"
 #include "media/capture/video_capture_types.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 

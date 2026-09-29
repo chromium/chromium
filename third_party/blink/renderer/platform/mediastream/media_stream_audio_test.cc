@@ -4,10 +4,14 @@
 
 #include <stdint.h>
 
-#include <ranges>
+#include <algorithm>
+#include <cstddef>
+#include <memory>
+#include <optional>
 
 #include "base/atomicops.h"
-#include "base/compiler_specific.h"
+#include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
@@ -16,16 +20,21 @@
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
+#include "build/buildflag.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "media/base/channel_layout.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
+#include "third_party/blink/public/platform/modules/mediastream/web_media_stream_source.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_deliverer.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component_impl.h"

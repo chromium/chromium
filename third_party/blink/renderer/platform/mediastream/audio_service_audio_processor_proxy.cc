@@ -4,12 +4,21 @@
 
 #include "third_party/blink/renderer/platform/mediastream/audio_service_audio_processor_proxy.h"
 
+#include <cstdint>
+#include <optional>
+
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/location.h"
+#include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "media/base/audio_processor_controls.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "third_party/webrtc/api/media_stream_interface.h"
 
 namespace blink {
 

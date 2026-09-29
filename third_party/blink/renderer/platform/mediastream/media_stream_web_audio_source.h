@@ -32,11 +32,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_MEDIA_STREAM_WEB_AUDIO_SOURCE_H_
 
 #include <memory>
-#include <utility>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider.h"

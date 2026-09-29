@@ -30,9 +30,13 @@
 
 #include "third_party/blink/renderer/platform/mediastream/media_stream_web_audio_source.h"
 
+#include <cstddef>
+#include <cstdint>
 #include <memory>
+#include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/platform/web_audio_source_provider.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"

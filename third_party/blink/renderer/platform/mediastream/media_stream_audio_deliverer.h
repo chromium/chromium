@@ -8,9 +8,12 @@
 #include <inttypes.h>
 
 #include <algorithm>
+#include <cstdint>
 
+#include "base/check.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"

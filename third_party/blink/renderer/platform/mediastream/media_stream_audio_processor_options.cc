@@ -4,8 +4,12 @@
 
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
 
+#include <string>
+
+#include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
+#include "build/buildflag.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/media_switches.h"
 

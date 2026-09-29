@@ -5,7 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_AEC_DUMP_AGENT_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_MEDIASTREAM_AEC_DUMP_AGENT_IMPL_H_
 
+#include <memory>
+
+#include "base/files/file.h"
 #include "base/memory/raw_ptr.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/mediastream/aec_dump.mojom-blink.h"
 #include "third_party/blink/renderer/platform/platform_export.h"

@@ -9,8 +9,6 @@
 
 #include "base/memory/singleton.h"
 #include "base/threading/thread_checker.h"
-#include "third_party/blink/public/common/mediastream/media_stream_request.h"
-#include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_api_name.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 

@@ -5,7 +5,9 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_level_calculator.h"
 
 #include <algorithm>
+#include <memory>
 
+#include "base/memory/scoped_refptr.h"
 #include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -33,9 +33,9 @@
 
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/web_common.h"
-
 #include "third_party/blink/public/platform/web_private_ptr.h"
 
 namespace blink {
