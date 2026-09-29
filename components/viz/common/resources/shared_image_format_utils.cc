@@ -51,8 +51,6 @@ SharedImageFormatUMA GetSharedImageFormatUMA(SharedImageFormat format) {
       return SharedImageFormatUMA::kR_8;
     } else if (format == SinglePlaneFormat::kRG_88) {
       return SharedImageFormatUMA::kRG_88;
-    } else if (format == SinglePlaneFormat::kLUMINANCE_F16) {
-      return SharedImageFormatUMA::kLUMINANCE_F16;
     } else if (format == SinglePlaneFormat::kRGBA_F16) {
       return SharedImageFormatUMA::kRGBA_F16;
     } else if (format == SinglePlaneFormat::kR_16) {
@@ -161,8 +159,7 @@ SkColorType ToClosestSkColorType(SharedImageFormat format) {
     return kR16_unorm_SkColorType;
   } else if (format == SinglePlaneFormat::kRG_1616) {
     return kR16G16_unorm_SkColorType;
-  } else if (format == SinglePlaneFormat::kLUMINANCE_F16 ||
-             format == SinglePlaneFormat::kR_F16) {
+  } else if (format == SinglePlaneFormat::kR_F16) {
     return kA16_float_SkColorType;
   } else if (format == SinglePlaneFormat::kRG_88) {
     return kR8G8_unorm_SkColorType;

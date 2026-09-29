@@ -64,8 +64,7 @@ VkFormat ToVkFormatSinglePlanarInternal(viz::SharedImageFormat format) {
     return VK_FORMAT_A2R10G10B10_UNORM_PACK32;
   } else if (format == viz::SinglePlaneFormat::kETC1) {
     return VK_FORMAT_ETC2_R8G8B8_UNORM_BLOCK;
-  } else if (format == viz::SinglePlaneFormat::kLUMINANCE_F16 ||
-             format == viz::SinglePlaneFormat::kR_F16) {
+  } else if (format == viz::SinglePlaneFormat::kR_F16) {
     return VK_FORMAT_R16_SFLOAT;
   }
   return VK_FORMAT_UNDEFINED;
@@ -84,8 +83,6 @@ GLenum GLDataFormat(viz::SharedImageFormat format, int plane_index) {
       return GL_RGBA;
     } else if (format == viz::SinglePlaneFormat::kBGRA_8888) {
       return GL_BGRA_EXT;
-    } else if (format == viz::SinglePlaneFormat::kLUMINANCE_F16) {
-      return GL_LUMINANCE;
     } else if (format == viz::SinglePlaneFormat::kBGR_565 ||
                format == viz::SinglePlaneFormat::kETC1 ||
                format == viz::SinglePlaneFormat::kRGBX_8888 ||
@@ -126,8 +123,7 @@ GLenum GLDataType(viz::SharedImageFormat format) {
       return GL_UNSIGNED_SHORT_4_4_4_4;
     } else if (format == viz::SinglePlaneFormat::kBGR_565) {
       return GL_UNSIGNED_SHORT_5_6_5;
-    } else if (format == viz::SinglePlaneFormat::kLUMINANCE_F16 ||
-               format == viz::SinglePlaneFormat::kR_F16 ||
+    } else if (format == viz::SinglePlaneFormat::kR_F16 ||
                format == viz::SinglePlaneFormat::kRGBA_F16) {
       return GL_HALF_FLOAT_OES;
     } else if (format == viz::SinglePlaneFormat::kR_16 ||
@@ -213,8 +209,6 @@ GLenum TextureStorageFormat(viz::SharedImageFormat format,
       return GL_R8_EXT;
     } else if (format == viz::SinglePlaneFormat::kRG_88) {
       return GL_RG8_EXT;
-    } else if (format == viz::SinglePlaneFormat::kLUMINANCE_F16) {
-      return GL_LUMINANCE16F_EXT;
     } else if (format == viz::SinglePlaneFormat::kR_F16) {
       return GL_R16F_EXT;
     } else if (format == viz::SinglePlaneFormat::kR_16) {
@@ -407,11 +401,10 @@ GLenum GLFormatCaps::GetFallbackFormatIfNotSupported(GLenum gl_format) const {
       !ext_texture_norm16_) {
     return GL_ZERO;
   }
-  // Fallback to GL_LUMINANCE16F for R16F format based on extensions and ES3
-  // support.
+  // No fallback for R16F format based on extensions and ES3 support.
   if (gl_format == GL_R16F_EXT &&
       (!is_atleast_gles3_ && !enable_texture_half_float_linear_)) {
-    return GL_LUMINANCE16F_EXT;
+    return GL_ZERO;
   }
   // No fallback for RG16F format without texture_rg extension.
   if (gl_format == GL_RG16F_EXT && !ext_texture_rg_) {
@@ -564,8 +557,7 @@ wgpu::TextureFormat ToDawnFormat(viz::SharedImageFormat format) {
     return wgpu::TextureFormat::RG8Unorm;
   } else if (format == viz::SinglePlaneFormat::kR_16) {
     return wgpu::TextureFormat::R16Unorm;
-  } else if (format == viz::SinglePlaneFormat::kLUMINANCE_F16 ||
-             format == viz::SinglePlaneFormat::kR_F16) {
+  } else if (format == viz::SinglePlaneFormat::kR_F16) {
     return wgpu::TextureFormat::R16Float;
   } else if (format == viz::SinglePlaneFormat::kRG_1616) {
     return wgpu::TextureFormat::RG16Unorm;

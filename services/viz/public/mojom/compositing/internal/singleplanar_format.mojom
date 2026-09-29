@@ -14,7 +14,6 @@ enum SingleplanarFormat {
   ETC1,
   R_8,
   RG_88,
-  LUMINANCE_F16,
   RGBA_F16,
   R_16,
   RG_1616,

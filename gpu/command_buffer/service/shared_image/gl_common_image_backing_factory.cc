@@ -39,15 +39,10 @@ std::optional<viz::SharedImageFormat> GetFallbackFormatIfNotSupported(
     // No fallback for R_16, RG_1616 format.
     return std::nullopt;
   }
-  if (plane_format == viz::SinglePlaneFormat::kR_F16) {
-    bool fallback =
-        !caps.is_atleast_gles3() && !caps.enable_texture_half_float_linear();
-    base::UmaHistogramBoolean("GPU.SharedImage.R16FToLuminanceF16Fallback",
-                              fallback);
-    if (fallback) {
-      // Fallback to LUMINANCE_F16 for R_F16 format.
-      return viz::SinglePlaneFormat::kLUMINANCE_F16;
-    }
+  if (plane_format == viz::SinglePlaneFormat::kR_F16 &&
+      !caps.is_atleast_gles3() && !caps.enable_texture_half_float_linear()) {
+    // No fallback for R_F16 format.
+    return std::nullopt;
   }
   return plane_format;
 }

@@ -34,8 +34,6 @@ const char* SinglePlaneFormatToString(SharedImageFormat format) {
     return "R_8";
   } else if (format == SinglePlaneFormat::kRG_88) {
     return "RG_88";
-  } else if (format == SinglePlaneFormat::kLUMINANCE_F16) {
-    return "LUMINANCE_F16";
   } else if (format == SinglePlaneFormat::kRGBA_F16) {
     return "RGBA_F16";
   } else if (format == SinglePlaneFormat::kR_16) {
@@ -383,7 +381,6 @@ int SharedImageFormat::BytesPerPixel() const {
     case mojom::SingleplanarFormat::RG_1616:
       return 4;
     case mojom::SingleplanarFormat::RGBA_4444:
-    case mojom::SingleplanarFormat::LUMINANCE_F16:
     case mojom::SingleplanarFormat::R_F16:
     case mojom::SingleplanarFormat::R_16:
     case mojom::SingleplanarFormat::BGR_565:
