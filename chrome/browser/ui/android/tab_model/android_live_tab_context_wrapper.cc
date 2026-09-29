@@ -17,7 +17,7 @@
 
 AndroidLiveTabContextCloseWrapper::AndroidLiveTabContextCloseWrapper(
     TabModel* tab_model,
-    std::vector<TabAndroid*> closed_tabs,
+    std::vector<raw_ptr<TabAndroid>> closed_tabs,
     base::flat_map<int, tab_groups::TabGroupId> tab_id_to_tab_group,
     base::flat_map<tab_groups::TabGroupId, tab_groups::TabGroupVisualData>
         tab_group_visual_data,
@@ -92,7 +92,7 @@ AndroidLiveTabContextCloseWrapper::GetGroupIdForSavedGroup(
 TabAndroid* AndroidLiveTabContextCloseWrapper::GetTabAt(
     int relative_index) const {
   DCHECK_LT(base::checked_cast<size_t>(relative_index), closed_tabs_.size());
-  auto* tab_android = closed_tabs_[relative_index];
+  TabAndroid* tab_android = closed_tabs_[relative_index];
   DCHECK(tab_android);
   return tab_android;
 }

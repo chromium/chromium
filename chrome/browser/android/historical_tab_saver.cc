@@ -16,6 +16,7 @@
 #include "base/android/token_android.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/memory/raw_ptr.h"
 #include "base/not_fatal_until.h"
 #include "base/uuid.h"
@@ -150,8 +151,11 @@ void CreateHistoricalGroup(
   base::flat_map<tab_groups::TabGroupId, std::optional<base::Uuid>>
       saved_tab_group_ids = {{tab_group_id, saved_tab_group_id}};
 
+  std::vector<raw_ptr<TabAndroid>> closed_tabs =
+      base::ToVector<raw_ptr<TabAndroid>>(tabs);
+
   AndroidLiveTabContextCloseWrapper context(
-      model, std::move(tabs), std::move(tab_id_to_group_id),
+      model, std::move(closed_tabs), std::move(tab_id_to_group_id),
       std::move(tab_group_visual_data), std::move(saved_tab_group_ids),
       std::move(web_contents_state));
 
@@ -216,8 +220,11 @@ void CreateHistoricalBulkClosure(
 
   // This wrapper is necessary for bulk closures that don't close all tabs via
   // the bulk tab editor.
+  std::vector<raw_ptr<TabAndroid>> closed_tabs =
+      base::ToVector<raw_ptr<TabAndroid>>(tabs);
+
   AndroidLiveTabContextCloseWrapper context(
-      model, std::move(tabs), std::move(tab_id_to_group_id),
+      model, std::move(closed_tabs), std::move(tab_id_to_group_id),
       std::move(tab_group_visual_data), std::move(saved_tab_group_ids_map),
       std::move(web_contents_state));
   service->BrowserClosing(&context);
