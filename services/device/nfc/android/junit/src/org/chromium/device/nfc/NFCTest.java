@@ -33,6 +33,7 @@ import android.nfc.NfcManager;
 import android.nfc.Tag;
 import android.nfc.TagLostException;
 import android.os.Bundle;
+import android.os.Vibrator;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -1503,6 +1504,40 @@ public class NFCTest {
         // The pending makeReadOnly failed with the correct error.
         verify(mockMakeReadOnlyCallback).call(mErrorCaptor.capture());
         assertNotNull(mErrorCaptor.getValue());
+        assertEquals(NdefErrorType.NOT_SUPPORTED, mErrorCaptor.getValue().errorType);
+    }
+
+    /**
+     * Test that discovered tags delivered by NfcAdapter's reader callback are processed on the UI
+     * thread. NfcAdapter invokes the callback on a background thread; NfcImpl state and its Mojo
+     * interfaces must only be accessed on the UI thread.
+     */
+    @Test
+    @Feature({"NFCTest"})
+    public void testOnTagDiscoveredIsProcessedOnUiThread() {
+        doReturn(mock(Vibrator.class)).when(mContext).getSystemService(Context.VIBRATOR_SERVICE);
+        TestNfcImpl nfc = new TestNfcImpl(mContext, mDelegate);
+        mDelegate.invokeCallback();
+        nfc.setClient(mNfcClient);
+        Watch_Response mockWatchCallback = mock(Watch_Response.class);
+        nfc.watch(mNextWatchId, mockWatchCallback);
+
+        ArgumentCaptor<ReaderCallback> readerCallback =
+                ArgumentCaptor.forClass(ReaderCallback.class);
+        verify(mNfcAdapter)
+                .enableReaderMode(
+                        any(Activity.class), readerCallback.capture(), anyInt(), (Bundle) isNull());
+
+        // Simulate an unsupported tag being reported by NfcAdapter.
+        NfcBlocklist.getInstance().setIsTagBlockedForTesting(true);
+        readerCallback.getValue().onTagDiscovered(mock(Tag.class));
+
+        // Processing must be posted to the UI thread rather than run inline on the calling thread.
+        verify(mNfcClient, times(0)).onError(any(NdefError.class));
+
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        verify(mNfcClient, times(1)).onError(mErrorCaptor.capture());
         assertEquals(NdefErrorType.NOT_SUPPORTED, mErrorCaptor.getValue().errorType);
     }
 

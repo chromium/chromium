@@ -434,6 +434,9 @@ public class NfcImpl implements Nfc {
      * Implementation of android.nfc.NfcAdapter.ReaderCallback. Callback is called when NFC tag is
      * discovered, Tag object is delegated to mojo service implementation method
      * NfcImpl.onTagDiscovered().
+     *
+     * <p>This is used by the background thread, we must ensure that requests are routed back to the
+     * UI thread.
      */
     private static class ReaderCallbackHandler implements ReaderCallback {
         private final NfcImpl mNfcImpl;
@@ -444,7 +447,12 @@ public class NfcImpl implements Nfc {
 
         @Override
         public void onTagDiscovered(Tag tag) {
-            mNfcImpl.onTagDiscovered(tag);
+            // Route back to UI thread.
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> {
+                        mNfcImpl.onTagDiscovered(tag);
+                    });
         }
     }
 
