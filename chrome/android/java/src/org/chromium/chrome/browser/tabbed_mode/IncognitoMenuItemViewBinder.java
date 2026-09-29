@@ -56,6 +56,7 @@ class IncognitoMenuItemViewBinder {
             // Setting |title| to non-focusable will allow TalkBack highlighting the whole view
             // of the menu item, not just title text.
             title.setFocusable(false);
+            view.setEnabled(enabled);
             view.setFocusable(enabled);
         } else if (key == AppMenuItemProperties.HIGHLIGHTED) {
             if (model.get(AppMenuItemProperties.HIGHLIGHTED)) {
