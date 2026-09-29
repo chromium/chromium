@@ -244,7 +244,6 @@ import java.util.stream.StreamSupport;
  * TouchToFillPaymentMethodMediator}
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_NEW_FOP_DISPLAY_ANDROID})
 @DisableFeatures({
     AutofillFeatures.AUTOFILL_ENABLE_SECURITY_TOUCH_EVENT_FILTERING_ANDROID,
     AutofillFeatures.AUTOFILL_ENABLE_AI_BASED_AMOUNT_EXTRACTION,

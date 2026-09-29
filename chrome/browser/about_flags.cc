@@ -12675,13 +12675,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-auto-minted-twa", flag_descriptions::kAndroidAutoMintedTWAName,
      flag_descriptions::kAndroidAutoMintedTWADescription, kOsAndroid,
      FEATURE_VALUE_TYPE(webapps::features::kAndroidAutoMintedTWA)},
-
-    {"autofill-enable-new-fop-display-android",
-     flag_descriptions::kAutofillEnableNewFopDisplayAndroidName,
-     flag_descriptions::kAutofillEnableNewFopDisplayAndroidDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableNewFopDisplayAndroid)},
 #endif
 
     {"dom-storage-sqlite", flag_descriptions::kDomStorageSqliteName,

@@ -1140,12 +1140,6 @@ inline constexpr char kAutofillEnableNewAmexNetworkArtName[] =
 inline constexpr char kAutofillEnableNewAmexNetworkArtDescription[] =
     "When enabled, updates the American Express network art in Autofill.";
 
-inline constexpr char kAutofillEnableNewFopDisplayAndroidName[] =
-    "Enable Autofill new FOP display on Android";
-inline constexpr char kAutofillEnableNewFopDisplayAndroidDescription[] =
-    "When enabled, updates payment method Autofill suggestions and settings "
-    "UI.";
-
 inline constexpr char kAutofillEnableOffersInClankKeyboardAccessoryName[] =
     "Enable Autofill offers in keyboard accessory";
 inline constexpr char

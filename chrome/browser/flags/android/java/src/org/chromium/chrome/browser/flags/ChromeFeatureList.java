@@ -381,8 +381,6 @@ public abstract class ChromeFeatureList {
             "AutofillEnableGradientGoogleLogos";
     public static final String AUTOFILL_ENABLE_NEW_CARD_BENEFITS_TOGGLE_TEXT =
             "AutofillEnableNewCardBenefitsToggleText";
-    public static final String AUTOFILL_ENABLE_NEW_FOP_DISPLAY_ANDROID =
-            "AutofillEnableNewFopDisplayAndroid";
     public static final String AUTOFILL_ENABLE_PAY_NOW_PAY_LATER_TABS =
             "AutofillEnablePayNowPayLaterTabs";
     public static final String AUTOFILL_ENABLE_SCAN_CARD_OPTION_WHEN_NO_CARDS_SAVED =
