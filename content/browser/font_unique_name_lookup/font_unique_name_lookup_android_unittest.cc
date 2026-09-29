@@ -377,6 +377,18 @@ class TestFontUniqueNameLookup : public FontUniqueNameLookup {
  public:
   using FontUniqueNameLookup::FontUniqueNameLookup;
   using FontUniqueNameLookup::ScheduleLoadOrUpdateTable;
+
+  void SetFailUpdateTable(bool fail) { fail_update_table_ = fail; }
+
+  bool UpdateTable() override {
+    if (fail_update_table_) {
+      return false;
+    }
+    return FontUniqueNameLookup::UpdateTable();
+  }
+
+ private:
+  bool fail_update_table_ = false;
 };
 
 class FontUniqueNameLookupCallbackTest : public ::testing::Test {
@@ -458,6 +470,33 @@ TEST_F(FontUniqueNameLookupCallbackTest, ConcurrentCallbackQueuing) {
         EXPECT_TRUE(mapping.IsValid());
         blink::FontTableMatcher matcher(mapping);
         EXPECT_GT(matcher.AvailableFonts(), 0u);
+        late_run_loop.Quit();
+      }));
+  late_run_loop.Run();
+}
+
+TEST_F(FontUniqueNameLookupCallbackTest, FailedTableUpdate) {
+  lookup_->SetFailUpdateTable(true);
+
+  base::RunLoop pre_queued_loop;
+  lookup_->QueueShareMemoryRegionWhenReady(
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindLambdaForTesting([&](base::ReadOnlySharedMemoryRegion region) {
+        EXPECT_FALSE(region.IsValid());
+        pre_queued_loop.Quit();
+      }));
+
+  lookup_->ScheduleLoadOrUpdateTable();
+  pre_queued_loop.Run();
+
+  EXPECT_FALSE(lookup_->IsValid());
+  EXPECT_FALSE(base::PathExists(lookup_->TableCacheFilePathForTesting()));
+
+  base::RunLoop late_run_loop;
+  lookup_->QueueShareMemoryRegionWhenReady(
+      base::SequencedTaskRunner::GetCurrentDefault(),
+      base::BindLambdaForTesting([&](base::ReadOnlySharedMemoryRegion region) {
+        EXPECT_FALSE(region.IsValid());
         late_run_loop.Quit();
       }));
   late_run_loop.Run();

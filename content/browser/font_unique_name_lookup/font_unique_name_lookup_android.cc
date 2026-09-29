@@ -142,8 +142,9 @@ FontUniqueNameLookup::FontUniqueNameLookup(
 FontUniqueNameLookup::~FontUniqueNameLookup() = default;
 
 base::ReadOnlySharedMemoryRegion FontUniqueNameLookup::DuplicateMemoryRegion() {
-  CHECK(proto_storage_.IsValid() && proto_storage_.mapping.size(),
-        base::NotFatalUntil::M159);
+  if (!proto_storage_.IsValid() || !proto_storage_.mapping.size()) {
+    return {};
+  }
   return proto_storage_.region.Duplicate();
 }
 
@@ -198,8 +199,7 @@ bool FontUniqueNameLookup::UpdateTableIfNeeded() {
     }
   }
 
-  UpdateTable();
-  return true;
+  return UpdateTable();
 }
 
 bool FontUniqueNameLookup::UpdateTable() {

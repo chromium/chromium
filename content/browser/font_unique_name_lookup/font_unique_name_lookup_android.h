@@ -46,10 +46,11 @@ class CONTENT_EXPORT FontUniqueNameLookup {
   // FontFilesCollector to enumerate font files and a BuildFingerprintProvider
   // to access the Android build fingerprint.
   FontUniqueNameLookup(const base::FilePath& cache_directory);
-  ~FontUniqueNameLookup();
+  virtual ~FontUniqueNameLookup();
 
   // Return a ReadOnlySharedMemoryRegion to access the serialized form of the
-  // current lookup table. To be used with FontTableMatcher.
+  // current lookup table, or an invalid region if the table is not valid. To
+  // be used with FontTableMatcher.
   base::ReadOnlySharedMemoryRegion DuplicateMemoryRegion();
 
   void QueueShareMemoryRegionWhenReady(
@@ -71,7 +72,7 @@ class CONTENT_EXPORT FontUniqueNameLookup {
   // updating, returns false if an error occured in acquiring memory or
   // serializing the scanned files to the shared memory region. Publicly exposed
   // for testing.
-  bool UpdateTable();
+  virtual bool UpdateTable();
   // Try to find a serialized lookup table in the directory specified at
   // construction and load it into memory. Do not use this method. Instead, call
   // GetInstance() to get an initialized instance. Publicly exposed for testing.
