@@ -4,6 +4,9 @@
 # found in the LICENSE file.
 
 import idl_schema
+import os
+import sys
+import tempfile
 import unittest
 
 from json_parse import OrderedDict
@@ -683,6 +686,56 @@ class IdlSchemaTest(unittest.TestCase):
         'Unexpected "{" after keyword "dictionary".',
         '\n'.join(err_out.DrainLog()),
       )
+    finally:
+      err_out.SetConsole(True)
+      err_out.SetCapture(False)
+
+  def testCheckSuccess(self):
+    self.assertEqual(0, idl_schema.Check(['test/idl_basics.idl']))
+
+  def testCheckFailure(self):
+    err_out = idl_schema.idl_parser.ErrOut
+    err_out.SetConsole(False)
+    err_out.SetCapture(True)
+    try:
+      with tempfile.NamedTemporaryFile('w', suffix='.idl', delete=False) as f:
+        f.write('//\nnamespace test { dictionary { DOMString s; }; };')
+        temp_name = f.name
+      try:
+        self.assertEqual(1, idl_schema.Check([temp_name]))
+        self.assertIn(
+          'Unexpected "{" after keyword "dictionary".',
+          '\n'.join(err_out.DrainLog()),
+        )
+      finally:
+        os.unlink(temp_name)
+    finally:
+      err_out.SetConsole(True)
+      err_out.SetCapture(False)
+
+  def testCheckBatched(self):
+    err_out = idl_schema.idl_parser.ErrOut
+    err_out.SetConsole(False)
+    err_out.SetCapture(True)
+    try:
+      with (
+        tempfile.NamedTemporaryFile('w', suffix='.idl', delete=False) as f1,
+        tempfile.NamedTemporaryFile('w', suffix='.idl', delete=False) as f2,
+      ):
+        f1.write('//\nnamespace test1 { dictionary { DOMString s; }; };')
+        f2.write('//\nnamespace test2 { dictionary { DOMString s; }; };')
+        name1, name2 = f1.name, f2.name
+      try:
+        self.assertEqual(
+          1, idl_schema.Check([name1, 'test/idl_basics.idl', name2])
+        )
+        log = err_out.DrainLog()
+        self.assertEqual(2, len(log))
+        self.assertIn('Unexpected "{" after keyword "dictionary".', log[0])
+        self.assertIn('Unexpected "{" after keyword "dictionary".', log[1])
+      finally:
+        os.unlink(name1)
+        os.unlink(name2)
     finally:
       err_out.SetConsole(True)
       err_out.SetCapture(False)

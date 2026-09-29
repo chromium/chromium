@@ -791,8 +791,10 @@ class IDLParsingTest(unittest.TestCase):
 
     def _RunIDLParse(self, input_api, filename):
         output_api = MockOutputApi()
-        results = input_api.RunTests(
-            [PRESUBMIT._GetIDLParseCommand(input_api, output_api, filename)])
+        results = input_api.RunTests([
+            PRESUBMIT._GetIDLParseCommand(input_api, output_api,
+                                          {filename: filename})
+        ])
         return results[0].message if results else None
 
     def testSuccess(self):
@@ -870,10 +872,17 @@ class IDLParsingTest(unittest.TestCase):
             ], 'UnicodeEncodeError'),
         ]
 
-        for (filename, contents, expected_error) in test_data:
+        file_map = {}
+        for (filename, contents, _) in test_data:
             full_path = self._WriteTempFile(filename, contents)
-            actual_error = self._RunIDLParse(input_api, full_path)
-            self.assertIn(expected_error, str(actual_error))
+            file_map[full_path] = filename
+
+        output_api = MockOutputApi()
+        results = input_api.RunTests(
+            [PRESUBMIT._GetIDLParseCommand(input_api, output_api, file_map)])
+        self.assertEqual(len(test_data), len(results))
+        for i, (_, _, expected_error) in enumerate(test_data):
+            self.assertIn(expected_error, results[i].message)
 
     def testCheckIDLParseErrors(self):
         input_api = MockInputApi()
@@ -907,6 +916,57 @@ class IDLParsingTest(unittest.TestCase):
         self.assertIn(invalid_path, results[0].message)
         self.assertIn('Unexpected "{" after keyword "dictionary".',
                       results[0].message)
+
+    def testParseOutputMultiline(self):
+        input_api = MockInputApi()
+        output_api = MockOutputApi()
+        file_map = {
+            '/abs/path/foo.idl': 'extensions/common/api/foo.idl',
+            '/abs/path/bar.idl': 'extensions/common/api/bar.idl',
+        }
+        cmd = PRESUBMIT._GetIDLParseCommand(input_api, output_api, file_map)
+        self.assertEqual(
+            'idl_schema: extensions/common/api/foo.idl, extensions/common/api/bar.idl',
+            cmd.name)
+        stderr = (
+            'idl_schema warning: global initialization\n'
+            '/abs/path/foo.idl: Syntax error on line 12\n'
+            '  unexpected token "interface"\n'
+            '/abs/path/bar.idl: Missing semicolon\n'
+            '  expected ";" before "}"\n'
+        )
+        errors = cmd.output_parser(1, '', stderr)
+        self.assertEqual(5, len(errors))
+        self.assertEqual(
+            'idl_schema (unknown file): '
+            'idl_schema warning: global initialization',
+            errors[0].message)
+        self.assertEqual(
+            'extensions/common/api/foo.idl could not be parsed: '
+            'Syntax error on line 12',
+            errors[1].message)
+        self.assertEqual(
+            'extensions/common/api/foo.idl: unexpected token "interface"',
+            errors[2].message)
+        self.assertEqual(
+            'extensions/common/api/bar.idl could not be parsed: '
+            'Missing semicolon',
+            errors[3].message)
+        self.assertEqual(
+            'extensions/common/api/bar.idl: expected ";" before "}"',
+            errors[4].message)
+
+    def testParseOutputFailureFallback(self):
+        input_api = MockInputApi()
+        output_api = MockOutputApi()
+        cmd = PRESUBMIT._GetIDLParseCommand(input_api, output_api,
+                                            {'/path/foo.idl': 'foo.idl'})
+        self.assertEqual('idl_schema: foo.idl', cmd.name)
+        errors = cmd.output_parser(2, 'diagnostic stdout', '')
+        self.assertEqual(1, len(errors))
+        self.assertIn('idl_schema failed with exit code 2', errors[0].message)
+        self.assertIn('stdout: diagnostic stdout', errors[0].message)
+
 
 
 

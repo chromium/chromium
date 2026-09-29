@@ -2938,22 +2938,54 @@ def CheckCommonCommands(input_api, output_api):
     return input_api.RunTests(commands)
 
 
-def _GetIDLParseCommand(input_api, output_api, filename, display_path=None):
-    display_path = display_path or filename
+def _GetIDLParseCommand(input_api, output_api, file_map):
+    file_list = list(file_map.keys())
     idl_schema = input_api.os_path.join(input_api.PresubmitLocalPath(),
                                         'tools', 'json_schema_compiler',
                                         'idl_schema.py')
-    cmd = [input_api.python3_executable, idl_schema, filename]
+    cmd = [input_api.python3_executable, idl_schema, '--check'] + file_list
 
     def parse_output(returncode, stdout, stderr):
-        if returncode != 0:
-            return [
-                output_api.PresubmitError('%s could not be parsed: %s' %
-                                          (display_path, stderr))
-            ]
-        return None
+        if returncode == 0:
+            return None
 
-    return input_api.Command(name='idl_schema: %s' % display_path,
+        errors = []
+        last_disp = None
+        for line in stderr.strip().splitlines():
+            line_str = line.strip()
+            if not line_str:
+                continue
+            if ': ' in line_str:
+                filepath, err = line_str.split(': ', 1)
+                base_path = filepath.split('(', 1)[0]
+                disp = file_map.get(base_path)
+                if not disp:
+                    disp = file_map.get(input_api.os_path.normpath(base_path))
+                if disp:
+                    if '(' in filepath:
+                        disp = f'{disp}({filepath.split("(", 1)[1]}'
+                    last_disp = disp
+                    errors.append(
+                        output_api.PresubmitError(
+                            f'{disp} could not be parsed: {err}'))
+                    continue
+            if last_disp:
+                errors.append(
+                    output_api.PresubmitError(f'{last_disp}: {line_str}'))
+            else:
+                errors.append(
+                    output_api.PresubmitError(
+                        f'idl_schema (unknown file): {line_str}'))
+
+        if not errors:
+            errors.append(
+                output_api.PresubmitError(
+                    f'idl_schema failed with exit code {returncode}. '
+                    f'stdout: {stdout}, stderr: {stderr}'))
+        return errors
+
+    files = ', '.join(file_map.values())
+    return input_api.Command(name=f'idl_schema: {files}',
                              cmd=cmd,
                              kwargs={},
                              output_parser=parse_output)
@@ -2973,14 +3005,15 @@ def CheckIDLParseErrors(input_api, output_api):
         path = affected_file.UnixLocalPath()
         return _MatchesFile(input_api, idl_included_patterns, path)
 
-    results = []
-    for affected_file in input_api.AffectedFiles(file_filter=FilterFile,
-                                                 include_deletes=False):
-        results.append(
-            _GetIDLParseCommand(input_api, output_api,
-                                affected_file.AbsoluteLocalPath(),
-                                affected_file.LocalPath()))
-    return input_api.RunTests(results)
+    affected_files = input_api.AffectedFiles(file_filter=FilterFile,
+                                             include_deletes=False)
+    if not affected_files:
+        return []
+
+    file_map = {f.AbsoluteLocalPath(): f.LocalPath() for f in affected_files}
+    return input_api.RunTests([
+        _GetIDLParseCommand(input_api, output_api, file_map)
+    ])
 
 
 def CheckJavaStyle(input_api, output_api):

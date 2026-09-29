@@ -610,6 +610,16 @@ class IDLSchema(object):
     return namespaces
 
 
+_default_parser = None
+
+
+def _GetParser():
+  global _default_parser
+  if _default_parser is None:
+    _default_parser = idl_parser.IDLParser()
+  return _default_parser
+
+
 def Load(filename):
   '''
   Given the filename of an IDL file, parses it and returns an equivalent
@@ -632,12 +642,44 @@ def Process(contents, filename):
     # Throws an exception describing the invalid character and its position.
     contents.encode('ascii')
 
-  parser = idl_parser.IDLParser()
+  parser = _GetParser()
+  parser.parse_errors = 0
+  parser.lex_errors = 0
   idl = parser.ParseData(contents, filename)
   if parser.parse_errors + parser.lex_errors > 0:
     sys.exit(1)
   idl_schema = IDLSchema(idl)
   return idl_schema.process()
+
+
+def Check(filenames):
+  '''
+  Validates a list of IDL files. Prints errors for any files that fail to parse
+  and returns 0 if all files parsed successfully, or 1 if any file failed.
+  '''
+  parser = _GetParser()
+  has_errors = False
+  for filename in filenames:
+    try:
+      with open(filename, 'rb') as handle:
+        contents = handle.read().decode('utf-8')
+      if not contents.isascii():
+        contents.encode('ascii')
+      parser.parse_errors = 0
+      parser.lex_errors = 0
+      idl = parser.ParseData(contents, filename)
+      if parser.parse_errors + parser.lex_errors > 0:
+        has_errors = True
+        continue
+      idl_schema = IDLSchema(idl)
+      idl_schema.process()
+    except (Exception, SystemExit) as e:
+      err_msg = (
+        f'{type(e).__name__}: {e}' if isinstance(e, Exception) else str(e)
+      )
+      sys.stderr.write(f'{filename}: {err_msg}\n')
+      has_errors = True
+  return 1 if has_errors else 0
 
 
 def Main():
@@ -646,6 +688,8 @@ def Main():
   were passed in on the command line.
   '''
   if len(sys.argv) > 1:
+    if sys.argv[1] == '--check':
+      sys.exit(Check(sys.argv[2:]))
     for filename in sys.argv[1:]:
       schema = Load(filename)
       print(json.dumps(schema, indent=2))
