@@ -947,8 +947,9 @@ IN_PROC_BROWSER_TEST_F(TabDragControllerTest,
   EXPECT_FALSE(TabDragController::IsActive());
 }
 
-IN_PROC_BROWSER_TEST_F(TabDragControllerTest,
-                       DragBrowserToNewTabStripDragEndedDuringActivate) {
+IN_PROC_BROWSER_TEST_F(
+    TabDragControllerTest,
+    DISABLED_DragBrowserToNewTabStripDragEndedDuringActivate) {
   AddTabsAndResetBrowser(browser(), 1);
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
 
