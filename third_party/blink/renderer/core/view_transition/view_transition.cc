@@ -933,6 +933,7 @@ void ViewTransition::Trace(Visitor* visitor) const {
   visitor->Trace(types_);
   visitor->Trace(blocked_on_);
   visitor->Trace(blocking_);
+  visitor->Trace(delegate_);
 
   ExecutionContextLifecycleObserver::Trace(visitor);
 }

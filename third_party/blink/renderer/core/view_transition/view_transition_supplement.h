@@ -86,7 +86,7 @@ class CORE_EXPORT ViewTransitionSupplement
   ~ViewTransitionSupplement() override;
 
   // GC functionality.
-  void Trace(Visitor* visitor) const;
+  void Trace(Visitor* visitor) const override;
 
   // ViewTransition::Delegate implementation.
   void AddPendingRequest(std::unique_ptr<ViewTransitionRequest>) override;

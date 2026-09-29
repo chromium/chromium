@@ -543,6 +543,7 @@ void ViewTransitionSupplement::Trace(Visitor* visitor) const {
   visitor->Trace(element_transitions_);
   visitor->Trace(skipped_with_pending_dom_callback_);
   visitor->Trace(captured_transitions_);
+  ViewTransition::Delegate::Trace(visitor);
 }
 
 void ViewTransitionSupplement::AddPendingRequest(

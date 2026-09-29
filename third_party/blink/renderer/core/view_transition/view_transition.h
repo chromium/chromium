@@ -57,7 +57,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
     kRejectTimeout
   };
 
-  class Delegate {
+  class Delegate : public GarbageCollectedMixin {
    public:
     virtual ~Delegate() = default;
 
@@ -460,8 +460,7 @@ class CORE_EXPORT ViewTransition : public GarbageCollected<ViewTransition>,
   Member<Element> scope_ = nullptr;
   bool has_document_scope_ = false;
 
-  const raw_ptr<Delegate, UnprotectedInRelease | DanglingUntriaged> delegate_ =
-      nullptr;
+  const Member<Delegate> delegate_ = nullptr;
 
   // Each transition is assigned a unique ID. For cross-document navigations
   // this is also the `transition_token` provided to the browser/GPU process to
