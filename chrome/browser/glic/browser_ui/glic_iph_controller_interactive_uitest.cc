@@ -41,6 +41,26 @@ DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
 
 using TestBase = test::InteractiveGlicFeaturePromoTest;
 
+// TODO(crbug.com/567225822): These tests are flaky on TSan due to a data race
+// between GlicTestEnvironment::SetupEmbeddedTestServers() modifying the
+// process-wide CommandLine on the main thread (after the browser has started)
+// and GCM reading it on the IO thread.
+#if defined(THREAD_SANITIZER)
+#define MAYBE_ShowPromoBlockedByAuthError DISABLED_ShowPromoBlockedByAuthError
+#define MAYBE_ShowPromoWithCtaEndsInGlic DISABLED_ShowPromoWithCtaEndsInGlic
+#define MAYBE_WarmsOnIphShownWhenFeatureEnabled \
+  DISABLED_WarmsOnIphShownWhenFeatureEnabled
+#define MAYBE_DoesNotWarmOnIphShownWhenFeatureDisabled \
+  DISABLED_DoesNotWarmOnIphShownWhenFeatureDisabled
+#else
+#define MAYBE_ShowPromoBlockedByAuthError ShowPromoBlockedByAuthError
+#define MAYBE_ShowPromoWithCtaEndsInGlic ShowPromoWithCtaEndsInGlic
+#define MAYBE_WarmsOnIphShownWhenFeatureEnabled \
+  WarmsOnIphShownWhenFeatureEnabled
+#define MAYBE_DoesNotWarmOnIphShownWhenFeatureDisabled \
+  DoesNotWarmOnIphShownWhenFeatureDisabled
+#endif
+
 class GlicIphControllerTestBase : public TestBase {
  public:
   const InteractiveBrowserTestApi::DeepQuery kMockFreClientNoThanksButton = {
@@ -105,7 +125,7 @@ class GlicIphControllerTestClassic : public GlicIphControllerTestBase {
 // Confirms that the promo is not shown if the user's profile has a signed-in
 // account that needs to be re-authenticated.
 IN_PROC_BROWSER_TEST_F(GlicIphControllerTestClassic,
-                       ShowPromoBlockedByAuthError) {
+                       MAYBE_ShowPromoBlockedByAuthError) {
   RunTestSequence(
       // Prepares the browser to show the IPH.
       InstrumentTab(kFirstTab), NavigateWebContents(kFirstTab, Title1()),
@@ -130,7 +150,8 @@ class GlicIphControllerTestTryIt : public GlicIphControllerTestBase {
 
 // TODO(b/503834154): Write a test for IPH promo leading into trust-first FRE
 
-IN_PROC_BROWSER_TEST_F(GlicIphControllerTestTryIt, ShowPromoWithCtaEndsInGlic) {
+IN_PROC_BROWSER_TEST_F(GlicIphControllerTestTryIt,
+                       MAYBE_ShowPromoWithCtaEndsInGlic) {
   SetFRECompletion(browser()->GetProfile(), prefs::FreStatus::kCompleted);
   RunTestSequence(WaitForGlicIph({feature_engagement::kIPHGlicTryItFeature}),
                   PressDefaultPromoButton(),
@@ -148,7 +169,7 @@ class GlicIphControllerTestPromoDisabled : public GlicIphControllerTestBase {
 };
 
 IN_PROC_BROWSER_TEST_F(GlicIphControllerTestPromoDisabled,
-                       ShowPromoWithCtaEndsInGlic) {
+                       MAYBE_ShowPromoWithCtaEndsInGlic) {
   SetFRECompletion(browser()->GetProfile(), prefs::FreStatus::kCompleted);
   RunTestSequence(WaitForGlicIph({feature_engagement::kIPHGlicTryItFeature}),
                   PressDefaultPromoButton(),
@@ -170,7 +191,7 @@ class GlicIphControllerTestMultiInstance : public GlicIphControllerTestBase {
 // TODO(b/503834154): Write a test for IPH promo leading into trust-first FRE.
 
 IN_PROC_BROWSER_TEST_F(GlicIphControllerTestMultiInstance,
-                       ShowPromoWithCtaEndsInGlic) {
+                       MAYBE_ShowPromoWithCtaEndsInGlic) {
   SetFRECompletion(browser()->GetProfile(), prefs::FreStatus::kCompleted);
   RunTestSequence(WaitForGlicIph({feature_engagement::kIPHGlicTryItFeature}),
                   PressDefaultPromoButton(),
@@ -213,7 +234,7 @@ class GlicIphControllerWarmingInteractiveUiTest
 };
 
 IN_PROC_BROWSER_TEST_F(GlicIphControllerWarmingInteractiveUiTest,
-                       WarmsOnIphShownWhenFeatureEnabled) {
+                       MAYBE_WarmsOnIphShownWhenFeatureEnabled) {
   base::HistogramTester histogram_tester;
   EXPECT_FALSE(IsWarmed());
 
@@ -264,7 +285,7 @@ class GlicIphControllerWarmingDisabledInteractiveUiTest
 };
 
 IN_PROC_BROWSER_TEST_F(GlicIphControllerWarmingDisabledInteractiveUiTest,
-                       DoesNotWarmOnIphShownWhenFeatureDisabled) {
+                       MAYBE_DoesNotWarmOnIphShownWhenFeatureDisabled) {
   base::HistogramTester histogram_tester;
   EXPECT_FALSE(IsWarmed());
 
