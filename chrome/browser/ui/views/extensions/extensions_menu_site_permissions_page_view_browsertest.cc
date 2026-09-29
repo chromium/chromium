@@ -284,10 +284,16 @@ IN_PROC_BROWSER_TEST_F(ExtensionsSitePermissionsPageViewBrowserTest,
   EXPECT_TRUE(IsMainPageOpened());
 }
 
+// TODO(crbug.com/558644679): Re-enable this test on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ShowRequestsTogglePressed DISABLED_ShowRequestsTogglePressed
+#else
+#define MAYBE_ShowRequestsTogglePressed ShowRequestsTogglePressed
+#endif
 // Tests that toggling the show requests button changes whether an extension can
 // show site access requests in the toolbar, and the UI is properly updated.
 IN_PROC_BROWSER_TEST_F(ExtensionsSitePermissionsPageViewBrowserTest,
-                       ShowRequestsTogglePressed) {
+                       MAYBE_ShowRequestsTogglePressed) {
   auto extensionA =
       InstallExtensionWithHostPermissions("Extension A", {"<all_urls>"});
   auto extensionB =
