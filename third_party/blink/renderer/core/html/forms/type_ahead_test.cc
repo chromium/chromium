@@ -8,14 +8,23 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 
 namespace blink {
 namespace {
 
-class TestTypeAheadDataSource : public TypeAheadDataSource {
+class TestTypeAheadDataSource final
+    : public GarbageCollected<TestTypeAheadDataSource>,
+      public TypeAheadDataSource {
  public:
   void set_selected_index(int index) { selected_index_ = index; }
+
+  void Trace(Visitor* visitor) const override {
+    TypeAheadDataSource::Trace(visitor);
+  }
 
   // TypeAheadDataSource overrides:
   int IndexOfSelectedOption() const override { return selected_index_; }
@@ -40,11 +49,16 @@ class TestTypeAheadDataSource : public TypeAheadDataSource {
 
 class TypeAheadTest : public ::testing::Test {
  protected:
-  TypeAheadTest() : type_ahead_(&test_source_) {}
+  TypeAheadTest()
+      : test_source_(MakeGarbageCollected<TestTypeAheadDataSource>()),
+        type_ahead_(MakeGarbageCollected<DisallowNewWrapper<TypeAhead>>(
+            test_source_.Get())) {}
+
+  TypeAhead& type_ahead() { return type_ahead_->Value(); }
 
   test::TaskEnvironment task_environment_;
-  TestTypeAheadDataSource test_source_;
-  TypeAhead type_ahead_;
+  Persistent<TestTypeAheadDataSource> test_source_;
+  Persistent<DisallowNewWrapper<TypeAhead>> type_ahead_;
 };
 
 TEST_F(TypeAheadTest, HasActiveSessionAtStart) {
@@ -53,7 +67,7 @@ TEST_F(TypeAheadTest, HasActiveSessionAtStart) {
   web_event.text[0] = ' ';
   auto& event = *KeyboardEvent::Create(web_event, nullptr);
 
-  EXPECT_FALSE(type_ahead_.HasActiveSession(event));
+  EXPECT_FALSE(type_ahead().HasActiveSession(event));
 }
 
 TEST_F(TypeAheadTest, HasActiveSessionAfterHandleEvent) {
@@ -62,12 +76,12 @@ TEST_F(TypeAheadTest, HasActiveSessionAfterHandleEvent) {
                                base::TimeTicks() + base::Milliseconds(500));
     web_event.text[0] = ' ';
     auto& event = *KeyboardEvent::Create(web_event, nullptr);
-    type_ahead_.HandleEvent(
+    type_ahead().HandleEvent(
         event, event.charCode(),
         TypeAhead::kMatchPrefix | TypeAhead::kCycleFirstChar);
 
     // A session should now be in progress.
-    EXPECT_TRUE(type_ahead_.HasActiveSession(event));
+    EXPECT_TRUE(type_ahead().HasActiveSession(event));
   }
 
   {
@@ -76,7 +90,7 @@ TEST_F(TypeAheadTest, HasActiveSessionAfterHandleEvent) {
                                base::TimeTicks() + base::Milliseconds(1500));
     web_event.text[0] = ' ';
     auto& event = *KeyboardEvent::Create(web_event, nullptr);
-    EXPECT_TRUE(type_ahead_.HasActiveSession(event));
+    EXPECT_TRUE(type_ahead().HasActiveSession(event));
   }
 
   {
@@ -85,7 +99,7 @@ TEST_F(TypeAheadTest, HasActiveSessionAfterHandleEvent) {
                                base::TimeTicks() + base::Milliseconds(1501));
     web_event.text[0] = ' ';
     auto& event = *KeyboardEvent::Create(web_event, nullptr);
-    EXPECT_FALSE(type_ahead_.HasActiveSession(event));
+    EXPECT_FALSE(type_ahead().HasActiveSession(event));
   }
 }
 
@@ -94,15 +108,16 @@ TEST_F(TypeAheadTest, HasActiveSessionAfterResetSession) {
                              base::TimeTicks() + base::Milliseconds(500));
   web_event.text[0] = ' ';
   auto& event = *KeyboardEvent::Create(web_event, nullptr);
-  type_ahead_.HandleEvent(event, event.charCode(),
-                          TypeAhead::kMatchPrefix | TypeAhead::kCycleFirstChar);
+  type_ahead().HandleEvent(
+      event, event.charCode(),
+      TypeAhead::kMatchPrefix | TypeAhead::kCycleFirstChar);
 
   // A session should now be in progress.
-  EXPECT_TRUE(type_ahead_.HasActiveSession(event));
+  EXPECT_TRUE(type_ahead().HasActiveSession(event));
 
   // But resetting it should make it go back to false.
-  type_ahead_.ResetSession();
-  EXPECT_FALSE(type_ahead_.HasActiveSession(event));
+  type_ahead().ResetSession();
+  EXPECT_FALSE(type_ahead().HasActiveSession(event));
 }
 
 }  // namespace

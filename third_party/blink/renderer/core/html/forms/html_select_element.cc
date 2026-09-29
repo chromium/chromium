@@ -1578,7 +1578,9 @@ void HTMLSelectElement::Trace(Visitor* visitor) const {
   visitor->Trace(descendant_selectedcontents_);
   visitor->Trace(select_type_);
   visitor->Trace(descendants_observer_);
+  visitor->Trace(type_ahead_);
   HTMLFormControlElementWithState::Trace(visitor);
+  TypeAheadDataSource::Trace(visitor);
 }
 
 void HTMLSelectElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {

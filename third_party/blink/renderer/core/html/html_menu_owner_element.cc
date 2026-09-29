@@ -175,7 +175,9 @@ void HTMLMenuOwnerElement::RemovedFrom(ContainerNode& insertion_point) {
 void HTMLMenuOwnerElement::Trace(Visitor* visitor) const {
   visitor->Trace(menu_mutation_observer_);
   visitor->Trace(last_mouseup_menu_item_);
+  visitor->Trace(type_ahead_);
   HTMLElement::Trace(visitor);
+  TypeAheadDataSource::Trace(visitor);
 }
 
 MenuItemList HTMLMenuOwnerElement::ItemList() const {

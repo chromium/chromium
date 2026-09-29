@@ -137,4 +137,8 @@ void TypeAhead::ResetSession() {
   buffer_.Clear();
 }
 
+void TypeAhead::Trace(Visitor* visitor) const {
+  visitor->Trace(data_source_);
+}
+
 }  // namespace blink

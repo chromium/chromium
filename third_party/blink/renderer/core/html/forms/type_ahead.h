@@ -31,6 +31,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -39,9 +41,8 @@ namespace blink {
 
 class KeyboardEvent;
 
-class CORE_EXPORT TypeAheadDataSource {
+class CORE_EXPORT TypeAheadDataSource : public GarbageCollectedMixin {
  public:
-  virtual ~TypeAheadDataSource() = default;
 
   virtual int IndexOfSelectedOption() const = 0;
   virtual int OptionCount() const = 0;
@@ -69,10 +70,10 @@ class CORE_EXPORT TypeAhead {
   int HandleEvent(const KeyboardEvent&, UChar charCode, MatchModeFlags);
   bool HasActiveSession(const KeyboardEvent&);
   void ResetSession();
+  void Trace(Visitor*) const;
 
  private:
-  raw_ptr<TypeAheadDataSource, UnprotectedInRelease | DanglingUntriaged>
-      data_source_;
+  Member<TypeAheadDataSource> data_source_;
   // platform timestamp of last keyboard event in seconds
   std::optional<base::TimeTicks> last_type_time_;
   UChar repeating_char_;

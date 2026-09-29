@@ -36,6 +36,8 @@ namespace blink {
 class DateTimeSymbolicFieldElement : public DateTimeFieldElement,
                                      public TypeAheadDataSource {
  public:
+  void Trace(Visitor*) const override;
+
   DateTimeSymbolicFieldElement(const DateTimeSymbolicFieldElement&) = delete;
   DateTimeSymbolicFieldElement& operator=(const DateTimeSymbolicFieldElement&) =
       delete;

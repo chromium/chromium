@@ -187,4 +187,10 @@ String DateTimeSymbolicFieldElement::OptionAtIndex(int index) const {
   return symbols_[index];
 }
 
+void DateTimeSymbolicFieldElement::Trace(Visitor* visitor) const {
+  visitor->Trace(type_ahead_);
+  DateTimeFieldElement::Trace(visitor);
+  TypeAheadDataSource::Trace(visitor);
+}
+
 }  // namespace blink
