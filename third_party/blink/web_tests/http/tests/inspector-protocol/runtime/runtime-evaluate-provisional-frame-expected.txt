@@ -1,0 +1,26 @@
+Tests that Runtime.evaluate on a newly attached provisional OOPiF target does not crash and is queued until the navigation commits.
+Evaluating on provisional frame before navigation commits:
+{
+    id : <number>
+    result : {
+        result : {
+            description : 1
+            type : number
+            value : 1
+        }
+    }
+    sessionId : <string>
+}
+Evaluating after navigation commits:
+{
+    id : <number>
+    result : {
+        result : {
+            description : 1
+            type : number
+            value : 1
+        }
+    }
+    sessionId : <string>
+}
+

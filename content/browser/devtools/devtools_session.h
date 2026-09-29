@@ -121,7 +121,12 @@ class DevToolsSession : public protocol::FrontendChannel,
   void AttachToAgent(blink::mojom::DevToolsAgent* agent,
                      bool force_using_io_session);
   void DispatchProtocolMessage(base::span<const uint8_t> message);
-  void SuspendSendingMessagesToAgent();
+  enum class SuspendMode {
+    kNone,
+    kAll,
+    kExecutionOnly,
+  };
+  void SuspendSendingMessagesToAgent(SuspendMode mode = SuspendMode::kAll);
   void ResumeSendingMessagesToAgent();
   void ClearPendingMessages(bool did_crash);
 
@@ -277,7 +282,7 @@ class DevToolsSession : public protocol::FrontendChannel,
   std::unique_ptr<protocol::UberDispatcher> dispatcher_{
       new protocol::UberDispatcher(this)};
 
-  bool suspended_sending_messages_to_agent_ = false;
+  SuspendMode suspend_mode_ = SuspendMode::kNone;
 
   // Messages that were sent to the agent or queued after suspending.
   std::list<PendingMessage> pending_messages_;

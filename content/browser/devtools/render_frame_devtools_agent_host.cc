@@ -242,8 +242,17 @@ RenderFrameDevToolsAgentHost::CreateForLocalRootOrEmbeddedPageNavigation(
   // that the navigation will commit to the new frame host.
   FrameTreeNode* frame_tree_node = request->frame_tree_node();
   CHECK(!FindAgentHost(frame_tree_node), base::NotFatalUntil::M159);
-  return new RenderFrameDevToolsAgentHost(frame_tree_node,
-                                          request->GetRenderFrameHost());
+  scoped_refptr<RenderFrameDevToolsAgentHost> result =
+      new RenderFrameDevToolsAgentHost(frame_tree_node,
+                                       request->GetRenderFrameHost());
+  if (!request->IsSameDocument() && !request->HasCommitted()) {
+    // This agent host is created mid-navigation (after DidStartNavigation),
+    // so we track the uncommitted request to be able to pause messages
+    // to the agent before navigation commits.
+    result->navigation_requests_.insert(request);
+    result->is_initial_provisional_navigation_ = true;
+  }
+  return result;
 }
 
 // static
@@ -401,7 +410,10 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session) {
   }
 
   if (!navigation_requests_.empty()) {
-    session->SuspendSendingMessagesToAgent();
+    session->SuspendSendingMessagesToAgent(
+        is_initial_provisional_navigation_
+            ? DevToolsSession::SuspendMode::kExecutionOnly
+            : DevToolsSession::SuspendMode::kAll);
   }
 
   session->CreateAndAddHandler<protocol::AuditsHandler>();
@@ -597,6 +609,7 @@ void RenderFrameDevToolsAgentHost::DidFinishNavigation(
     }
 
     if (navigation_requests_.empty()) {
+      is_initial_provisional_navigation_ = false;
       for (DevToolsSession* session : sessions())
         session->ResumeSendingMessagesToAgent();
     }
@@ -648,9 +661,9 @@ void RenderFrameDevToolsAgentHost::DidStartNavigation(
   if (request->IsSameDocument()) {
     return;
   }
-  if (navigation_requests_.empty()) {
-    for (DevToolsSession* session : sessions())
-      session->SuspendSendingMessagesToAgent();
+  is_initial_provisional_navigation_ = false;
+  for (DevToolsSession* session : sessions()) {
+    session->SuspendSendingMessagesToAgent(DevToolsSession::SuspendMode::kAll);
   }
   navigation_requests_.insert(request);
 }

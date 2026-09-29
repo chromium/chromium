@@ -69,7 +69,7 @@ bool ShouldSuspendDuringNavigation(crdtp::span<uint8_t> method) {
   return !ShouldSendOnIO(method);
 }
 
-// Async control commands (such as CSS.enable) are idempotant and can
+// Async control commands (such as CSS.enable) are idempotent and can
 // be safely replayed in the new RenderFrameHost. We will always forward
 // them to the new renderer on cross process navigation. Main rationale for
 // it is that the client doesn't expect such calls to fail in normal
@@ -78,7 +78,7 @@ bool ShouldSuspendDuringNavigation(crdtp::span<uint8_t> method) {
 // Ideally all non-control async commands shoulds be listed here but we
 // conservatively start with Runtime domain where the decision is more
 // clear.
-bool TerminateOnCrossProcessNavigation(crdtp::span<uint8_t> method) {
+bool MayCauseJavascriptExecution(crdtp::span<uint8_t> method) {
   static auto* kEntries = new std::vector<crdtp::span<uint8_t>>{
       crdtp::SpanFrom("Runtime.awaitPromise"),
       crdtp::SpanFrom("Runtime.callFunctionOn"),
@@ -244,11 +244,11 @@ void DevToolsSession::AttachToAgent(blink::mojom::DevToolsAgent* agent,
   // We're attaching to a new agent while suspended; therefore, messages that
   // have been sent previously either need to be terminated or re-sent once we
   // resume, as we will not get any responses from the old agent at this point.
-  if (suspended_sending_messages_to_agent_) {
+  if (suspend_mode_ != SuspendMode::kNone) {
     for (auto it = pending_messages_.begin(); it != pending_messages_.end();) {
       const PendingMessage& message = *it;
       if (waiting_for_response_.count(message.call_id) &&
-          TerminateOnCrossProcessNavigation(crdtp::SpanFrom(message.method))) {
+          MayCauseJavascriptExecution(crdtp::SpanFrom(message.method))) {
         // Send error to the client and remove the message from pending.
         SendProtocolResponse(
             message.call_id,
@@ -444,9 +444,15 @@ void DevToolsSession::FallThrough(int call_id,
 
   auto it = pending_messages_.emplace(pending_messages_.end(), call_id, method,
                                       message, std::string(fallthrough_data));
-  if (suspended_sending_messages_to_agent_ &&
-      ShouldSuspendDuringNavigation(method))
-    return;
+  if (ShouldSuspendDuringNavigation(method)) {
+    if (suspend_mode_ == SuspendMode::kAll) {
+      return;
+    }
+    if (suspend_mode_ == SuspendMode::kExecutionOnly &&
+        MayCauseJavascriptExecution(method)) {
+      return;
+    }
+  }
 
   DispatchToAgent(pending_messages_.back());
   waiting_for_response_[call_id] = it;
@@ -506,14 +512,14 @@ void DevToolsSession::DispatchToAgent(const PendingMessage& message) {
   }
 }
 
-void DevToolsSession::SuspendSendingMessagesToAgent() {
+void DevToolsSession::SuspendSendingMessagesToAgent(SuspendMode mode) {
   DCHECK(!browser_only_);
-  suspended_sending_messages_to_agent_ = true;
+  suspend_mode_ = mode;
 }
 
 void DevToolsSession::ResumeSendingMessagesToAgent() {
   DCHECK(!browser_only_);
-  suspended_sending_messages_to_agent_ = false;
+  suspend_mode_ = SuspendMode::kNone;
   for (auto it = pending_messages_.begin(); it != pending_messages_.end();
        ++it) {
     const PendingMessage& message = *it;
