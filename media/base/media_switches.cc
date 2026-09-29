@@ -605,8 +605,7 @@ BASE_FEATURE(kFeatureManagementLiveTranslateCrOS,
 
 // Controls whether FFmpegDemuxer attaches the HDR metadata carried by ITU-T
 // T.35 timed metadata tracks to the video tracks that reference them.
-BASE_FEATURE(kFFmpegDemuxerIT35MetadataTrack,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFFmpegDemuxerIT35MetadataTrack, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Forces software video encoders to be used for low resolutions.
 // Enabled-by-default, except for Android where SW encoder for H26x and AV1 are
