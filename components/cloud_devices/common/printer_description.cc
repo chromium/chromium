@@ -11,6 +11,7 @@
 #include <ostream>
 #include <string>
 #include <utility>
+#include <variant>
 
 #include "base/check.h"
 #include "base/json/json_reader.h"
@@ -22,6 +23,7 @@
 #include "build/build_config.h"
 #include "components/cloud_devices/common/cloud_device_description_consts.h"
 #include "components/cloud_devices/common/description_items_inl.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -501,13 +503,13 @@ RangeVendorCapability::RangeVendorCapability(ValueType value_type,
       max_value_(max_value),
       default_value_(default_value) {}
 
-RangeVendorCapability::RangeVendorCapability(RangeVendorCapability&& other) =
+RangeVendorCapability::RangeVendorCapability(RangeVendorCapability&&) noexcept =
     default;
 
 RangeVendorCapability::~RangeVendorCapability() = default;
 
 RangeVendorCapability& RangeVendorCapability::operator=(
-    RangeVendorCapability&& other) = default;
+    RangeVendorCapability&&) noexcept = default;
 
 bool RangeVendorCapability::IsValid() const {
   if (min_value_.empty() || max_value_.empty())
@@ -604,12 +606,12 @@ TypedValueVendorCapability::TypedValueVendorCapability(
     : value_type_(value_type), default_value_(default_value) {}
 
 TypedValueVendorCapability::TypedValueVendorCapability(
-    TypedValueVendorCapability&& other) = default;
+    TypedValueVendorCapability&&) noexcept = default;
 
 TypedValueVendorCapability::~TypedValueVendorCapability() = default;
 
 TypedValueVendorCapability& TypedValueVendorCapability::operator=(
-    TypedValueVendorCapability&& other) = default;
+    TypedValueVendorCapability&&) noexcept = default;
 
 bool TypedValueVendorCapability::IsValid() const {
   if (default_value_.empty())
@@ -651,115 +653,63 @@ void TypedValueVendorCapability::SaveTo(base::DictValue* dict) const {
     dict->Set(kDefaultValue, default_value_);
 }
 
-VendorCapability::VendorCapability() : type_(Type::NONE) {}
+VendorCapability::VendorCapability() = default;
 
 VendorCapability::VendorCapability(const std::string& id,
                                    const std::string& display_name,
                                    RangeVendorCapability range_capability)
-    : type_(Type::RANGE),
-      id_(id),
+    : id_(id),
       display_name_(display_name),
-      range_capability_(std::move(range_capability)) {}
+      capability_(std::move(range_capability)) {}
 
 VendorCapability::VendorCapability(const std::string& id,
                                    const std::string& display_name,
                                    SelectVendorCapability select_capability)
-    : type_(Type::SELECT),
-      id_(id),
+    : id_(id),
       display_name_(display_name),
-      select_capability_(std::move(select_capability)) {}
+      capability_(std::move(select_capability)) {}
 
 VendorCapability::VendorCapability(
     const std::string& id,
     const std::string& display_name,
     TypedValueVendorCapability typed_value_capability)
-    : type_(Type::TYPED_VALUE),
-      id_(id),
+    : id_(id),
       display_name_(display_name),
-      typed_value_capability_(std::move(typed_value_capability)) {}
+      capability_(std::move(typed_value_capability)) {}
 
-VendorCapability::VendorCapability(VendorCapability&& other)
-    : type_(other.type_), id_(other.id_), display_name_(other.display_name_) {
-  switch (type_) {
-    case Type::NONE:
-      // No-op;
-      break;
-    case Type::RANGE:
-      new (&range_capability_)
-          RangeVendorCapability(std::move(other.range_capability_));
-      break;
-    case Type::SELECT:
-      new (&select_capability_)
-          SelectVendorCapability(std::move(other.select_capability_));
-      break;
-    case Type::TYPED_VALUE:
-      new (&typed_value_capability_)
-          TypedValueVendorCapability(std::move(other.typed_value_capability_));
-      break;
-    default:
-      NOTREACHED();
-  }
-}
+VendorCapability::VendorCapability(VendorCapability&&) noexcept = default;
 
-VendorCapability::~VendorCapability() {
-  InternalCleanup();
-}
+VendorCapability& VendorCapability::operator=(VendorCapability&&) noexcept =
+    default;
 
-void VendorCapability::InternalCleanup() {
-  switch (type_) {
-    case Type::NONE:
-      break;
-    case Type::RANGE:
-      range_capability_.~RangeVendorCapability();
-      break;
-    case Type::SELECT:
-      select_capability_.~SelectVendorCapability();
-      break;
-    case Type::TYPED_VALUE:
-      typed_value_capability_.~TypedValueVendorCapability();
-      break;
-    default:
-      NOTREACHED();
-  }
-  type_ = Type::NONE;
-}
+VendorCapability::~VendorCapability() = default;
 
-bool VendorCapability::operator==(const VendorCapability& other) const {
-  if (type_ != other.type_ || id_ != other.id_ ||
-      display_name_ != other.display_name_) {
-    return false;
-  }
-  switch (type_) {
-    case Type::NONE:
-      return true;
-    case Type::RANGE:
-      return range_capability_ == other.range_capability_;
-    case Type::SELECT:
-      return select_capability_ == other.select_capability_;
-    case Type::TYPED_VALUE:
-      return typed_value_capability_ == other.typed_value_capability_;
-  }
-  NOTREACHED() << "Bad vendor capability type";
-}
+bool VendorCapability::operator==(const VendorCapability&) const = default;
 
 bool VendorCapability::IsValid() const {
-  if (id_.empty() || display_name_.empty())
+  if (id_.empty() || display_name_.empty()) {
     return false;
-  switch (type_) {
-    case Type::NONE:
-      return false;
-    case Type::RANGE:
-      return range_capability_.IsValid();
-    case Type::SELECT:
-      return select_capability_.IsValid();
-    case Type::TYPED_VALUE:
-      return typed_value_capability_.IsValid();
   }
-  NOTREACHED() << "Bad vendor capability type";
+  return std::visit(absl::Overload{
+                        [](const std::monostate&) { return false; },
+                        [](const RangeVendorCapability& capability) {
+                          return capability.IsValid();
+                        },
+                        [](const SelectVendorCapability& capability) {
+                          return capability.IsValid();
+                        },
+                        [](const TypedValueVendorCapability& capability) {
+                          return capability.IsValid();
+                        },
+                    },
+                    capability_);
 }
 
 bool VendorCapability::LoadFrom(const base::DictValue& dict) {
-  InternalCleanup();
+  capability_ = std::monostate();
+  id_.clear();
+  display_name_.clear();
+
   const std::string* type_str = dict.FindString(kKeyType);
   Type type;
   if (!type_str ||
@@ -768,76 +718,79 @@ bool VendorCapability::LoadFrom(const base::DictValue& dict) {
   }
 
   const std::string* id_str = dict.FindString(kKeyId);
-  if (!id_str)
+  if (!id_str) {
     return false;
+  }
 
-  id_ = *id_str;
   const std::string* display_name_str = dict.FindString(kKeyDisplayName);
-  if (!display_name_str)
+  if (!display_name_str) {
     return false;
+  }
 
-  display_name_ = *display_name_str;
   const base::DictValue* range_capability_value =
       dict.FindDict(kOptionRangeCapability);
-  if (!range_capability_value == (type == Type::RANGE))
+  if (!range_capability_value == (type == Type::RANGE)) {
     return false;
+  }
 
   const base::DictValue* select_capability_value =
       dict.FindDict(kOptionSelectCapability);
-  if (!select_capability_value == (type == Type::SELECT))
+  if (!select_capability_value == (type == Type::SELECT)) {
     return false;
+  }
 
   const base::DictValue* typed_value_capability_value =
       dict.FindDict(kOptionTypedValueCapability);
-  if (!typed_value_capability_value == (type == Type::TYPED_VALUE))
+  if (!typed_value_capability_value == (type == Type::TYPED_VALUE)) {
     return false;
+  }
 
-  type_ = type;
-  switch (type_) {
+  id_ = *id_str;
+  display_name_ = *display_name_str;
+
+  switch (type) {
     case Type::NONE:
-    default:
       NOTREACHED();
     case Type::RANGE:
-      new (&range_capability_) RangeVendorCapability();
-      return range_capability_.LoadFrom(*range_capability_value);
+      return capability_.emplace<RangeVendorCapability>().LoadFrom(
+          *range_capability_value);
     case Type::SELECT:
-      new (&select_capability_) SelectVendorCapability();
-      return select_capability_.LoadFrom(*select_capability_value);
+      return capability_.emplace<SelectVendorCapability>().LoadFrom(
+          *select_capability_value);
     case Type::TYPED_VALUE:
-      new (&typed_value_capability_) TypedValueVendorCapability();
-      return typed_value_capability_.LoadFrom(*typed_value_capability_value);
+      return capability_.emplace<TypedValueVendorCapability>().LoadFrom(
+          *typed_value_capability_value);
   }
+  NOTREACHED();
 }
 
 void VendorCapability::SaveTo(base::DictValue* dict) const {
   DCHECK(IsValid());
-  dict->Set(kKeyType, TypeToString(kVendorCapabilityTypeNames, type_));
   dict->Set(kKeyId, id_);
   dict->Set(kKeyDisplayName, display_name_);
 
-  switch (type_) {
-    case Type::NONE:
-      NOTREACHED();
-    case Type::RANGE: {
-      base::DictValue range_capability_value;
-      range_capability_.SaveTo(&range_capability_value);
-      dict->Set(kOptionRangeCapability, std::move(range_capability_value));
-      break;
-    }
-    case Type::SELECT: {
-      base::DictValue select_capability_value;
-      select_capability_.SaveTo(&select_capability_value);
-      dict->Set(kOptionSelectCapability, std::move(select_capability_value));
-      break;
-    }
-    case Type::TYPED_VALUE: {
-      base::DictValue typed_value_capability_value;
-      typed_value_capability_.SaveTo(&typed_value_capability_value);
-      dict->Set(kOptionTypedValueCapability,
-                std::move(typed_value_capability_value));
-      break;
-    }
-  }
+  std::visit(absl::Overload{
+                 [](const std::monostate&) { NOTREACHED(); },
+                 [&](const RangeVendorCapability& capability) {
+                   dict->Set(kKeyType, kTypeVendorCapabilityRange);
+                   base::DictValue value;
+                   capability.SaveTo(&value);
+                   dict->Set(kOptionRangeCapability, std::move(value));
+                 },
+                 [&](const SelectVendorCapability& capability) {
+                   dict->Set(kKeyType, kTypeVendorCapabilitySelect);
+                   base::DictValue value;
+                   capability.SaveTo(&value);
+                   dict->Set(kOptionSelectCapability, std::move(value));
+                 },
+                 [&](const TypedValueVendorCapability& capability) {
+                   dict->Set(kKeyType, kTypeVendorCapabilityTypedValue);
+                   base::DictValue value;
+                   capability.SaveTo(&value);
+                   dict->Set(kOptionTypedValueCapability, std::move(value));
+                 },
+             },
+             capability_);
 }
 
 Color::Color() : type(ColorType::AUTO_COLOR) {}

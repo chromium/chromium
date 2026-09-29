@@ -1221,6 +1221,50 @@ TEST(PrinterDescriptionTest, CddSetVendorCapability) {
             NormalizeJson(description.ToStringForTesting()));
 }
 
+TEST(PrinterDescriptionTest, VendorCapability) {
+  VendorCapability empty;
+  EXPECT_FALSE(empty.IsValid());
+  EXPECT_EQ(empty, VendorCapability());
+
+  VendorCapability cap1(
+      "id_1", "name_1",
+      RangeVendorCapability(RangeVendorCapability::ValueType::INTEGER, "1",
+                            "10"));
+  EXPECT_TRUE(cap1.IsValid());
+
+  VendorCapability cap1_same(
+      "id_1", "name_1",
+      RangeVendorCapability(RangeVendorCapability::ValueType::INTEGER, "1",
+                            "10"));
+  EXPECT_EQ(cap1, cap1_same);
+
+  VendorCapability cap_diff_id(
+      "id_2", "name_1",
+      RangeVendorCapability(RangeVendorCapability::ValueType::INTEGER, "1",
+                            "10"));
+  EXPECT_NE(cap1, cap_diff_id);
+
+  VendorCapability cap_diff_name(
+      "id_1", "name_2",
+      RangeVendorCapability(RangeVendorCapability::ValueType::INTEGER, "1",
+                            "10"));
+  EXPECT_NE(cap1, cap_diff_name);
+
+  VendorCapability cap_diff_type(
+      "id_1", "name_1",
+      TypedValueVendorCapability(TypedValueVendorCapability::ValueType::INTEGER,
+                                 "1"));
+  EXPECT_NE(cap1, cap_diff_type);
+
+  VendorCapability cap_moved(std::move(cap1));
+  EXPECT_EQ(cap_moved, cap1_same);
+
+  // Do not combine these lines: They test `operator=`.
+  VendorCapability cap_assigned;
+  cap_assigned = std::move(cap_moved);
+  EXPECT_EQ(cap_assigned, cap1_same);
+}
+
 #if BUILDFLAG(IS_CHROMEOS)
 TEST(PrinterDescriptionTest, CddGetPin) {
   {

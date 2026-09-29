@@ -90,15 +90,15 @@ SelectionCapability<Option, Traits>::SelectionCapability() {
 
 template <class Option, class Traits>
 SelectionCapability<Option, Traits>::SelectionCapability(
-    SelectionCapability&& other) = default;
+    SelectionCapability&&) noexcept = default;
 
 template <class Option, class Traits>
-SelectionCapability<Option, Traits>::~SelectionCapability() {
-}
+SelectionCapability<Option, Traits>::~SelectionCapability() = default;
 
 template <class Option, class Traits>
-SelectionCapability<Option, Traits>& SelectionCapability<Option, Traits>::
-operator=(SelectionCapability&& other) = default;
+SelectionCapability<Option, Traits>&
+SelectionCapability<Option, Traits>::operator=(SelectionCapability&&) noexcept =
+    default;
 
 template <class Option, class Traits>
 bool SelectionCapability<Option, Traits>::operator==(

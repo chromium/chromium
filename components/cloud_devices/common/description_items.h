@@ -104,14 +104,14 @@ template <class Option, class Traits>
 class SelectionCapability {
  public:
   SelectionCapability();
-  SelectionCapability(SelectionCapability&& other);
 
   SelectionCapability(const SelectionCapability&) = delete;
   SelectionCapability& operator=(const SelectionCapability&) = delete;
 
-  ~SelectionCapability();
+  SelectionCapability(SelectionCapability&&) noexcept;
+  SelectionCapability& operator=(SelectionCapability&&) noexcept;
 
-  SelectionCapability& operator=(SelectionCapability&& other);
+  ~SelectionCapability();
 
   bool operator==(const SelectionCapability& other) const;
 

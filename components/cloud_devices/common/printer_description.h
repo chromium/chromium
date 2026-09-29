@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <variant>
 #include <vector>
 
 #include "build/build_config.h"
@@ -76,14 +77,14 @@ class RangeVendorCapability {
                         const std::string& min_value,
                         const std::string& max_value,
                         const std::string& default_value);
-  RangeVendorCapability(RangeVendorCapability&& other);
 
   RangeVendorCapability(const RangeVendorCapability&) = delete;
   RangeVendorCapability& operator=(const RangeVendorCapability&) = delete;
 
-  ~RangeVendorCapability();
+  RangeVendorCapability(RangeVendorCapability&&) noexcept;
+  RangeVendorCapability& operator=(RangeVendorCapability&&) noexcept;
 
-  RangeVendorCapability& operator=(RangeVendorCapability&& other);
+  ~RangeVendorCapability();
 
   friend bool operator==(const RangeVendorCapability&,
                          const RangeVendorCapability&) = default;
@@ -126,15 +127,15 @@ class TypedValueVendorCapability {
   explicit TypedValueVendorCapability(ValueType value_type);
   TypedValueVendorCapability(ValueType value_type,
                              const std::string& default_value);
-  TypedValueVendorCapability(TypedValueVendorCapability&& other);
 
   TypedValueVendorCapability(const TypedValueVendorCapability&) = delete;
   TypedValueVendorCapability& operator=(const TypedValueVendorCapability&) =
       delete;
 
-  ~TypedValueVendorCapability();
+  TypedValueVendorCapability(TypedValueVendorCapability&&) noexcept;
+  TypedValueVendorCapability& operator=(TypedValueVendorCapability&&) noexcept;
 
-  TypedValueVendorCapability& operator=(TypedValueVendorCapability&& other);
+  ~TypedValueVendorCapability();
 
   friend bool operator==(const TypedValueVendorCapability&,
                          const TypedValueVendorCapability&) = default;
@@ -167,32 +168,30 @@ class VendorCapability {
   VendorCapability(const std::string& id,
                    const std::string& display_name,
                    TypedValueVendorCapability typed_value_capability);
-  VendorCapability(VendorCapability&& other);
 
   VendorCapability(const VendorCapability&) = delete;
   VendorCapability& operator=(const VendorCapability&) = delete;
 
+  VendorCapability(VendorCapability&&) noexcept;
+  VendorCapability& operator=(VendorCapability&&) noexcept;
+
   ~VendorCapability();
 
-  bool operator==(const VendorCapability& other) const;
+  bool operator==(const VendorCapability&) const;
 
   bool IsValid() const;
   bool LoadFrom(const base::DictValue& dict);
   void SaveTo(base::DictValue* dict) const;
 
  private:
-  void InternalCleanup();
-
-  Type type_;
   std::string id_;
   std::string display_name_;
 
-  // If the CDD is valid, exactly one of the capabilities has a value.
-  union {
-    RangeVendorCapability range_capability_;
-    SelectVendorCapability select_capability_;
-    TypedValueVendorCapability typed_value_capability_;
-  };
+  std::variant<std::monostate,
+               RangeVendorCapability,
+               SelectVendorCapability,
+               TypedValueVendorCapability>
+      capability_;
 };
 
 struct VendorItem {
