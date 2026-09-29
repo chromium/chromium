@@ -207,6 +207,25 @@ struct TopicContinuationQuery {
   string prompt;
 };
 
+// A page suggested in a TopicCollection.
+struct TopicCollectionItem {
+  // Display title of the page.
+  string title;
+  // URL of the page.
+  url.mojom.Url url;
+  // Name of the site the page belongs to, if known.
+  string? site_name;
+};
+
+// A titled group of pages related to a Topic, shown as a carousel on the topic
+// details page.
+struct TopicCollection {
+  // Display title of the collection.
+  string title;
+  // Pages in the collection, in display order.
+  array<TopicCollectionItem> items;
+};
+
 // A grouping of related browsing history shown in the Topics view.
 struct Topic {
   // Stable identifier for the Topic.
@@ -225,6 +244,8 @@ struct Topic {
   array<TopicVisit> visits;
   // Suggested follow-up searches for the Topic.
   array<TopicContinuationQuery> continuation_queries;
+  // Groups of related pages, shown on the topic details page.
+  array<TopicCollection> collections;
 };
 
 // Represents either a topic ID or a full topic URL.

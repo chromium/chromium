@@ -17,6 +17,10 @@ export function getHtml(this: TopicSummaryPanelElement) {
     @click="${this.onOpenRelatedTabsClick_}">
   Open related tabs
 </cr-button>
+${this.topic?.collections.map(collection => html`
+  <topic-collection-carousel .collection="${collection}">
+  </topic-collection-carousel>
+`)}
 <!--_html_template_end_-->`;
   // clang-format on
 }

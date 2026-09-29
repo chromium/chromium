@@ -859,11 +859,15 @@ browser::context_hub::mojom::TopicPtr ToMojoTopic(
             std::move(query.title), std::move(query.prompt)));
   }
 
+  // TODO(crbug.com/558572977): Send the topic's collections once the topic
+  // generation backend produces them.
   return browser::context_hub::mojom::Topic::New(
       /*id=*/std::move(journey.journey_id), std::move(journey.title),
       journey.creation_time, std::move(journey.emoji),
       std::move(journey.overview), std::move(journey.short_overview),
-      std::move(visits), std::move(continuation_queries));
+      std::move(visits), std::move(continuation_queries),
+      /*collections=*/
+      std::vector<browser::context_hub::mojom::TopicCollectionPtr>());
 }
 
 std::vector<browser::context_hub::mojom::TopicPtr> ToMojoTopics(

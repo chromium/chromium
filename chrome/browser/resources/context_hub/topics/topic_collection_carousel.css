@@ -1,0 +1,134 @@
+/* Copyright 2026 The Chromium Authors
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* #css_wrapper_metadata_start
+ * #type=style-lit
+ * #import=//resources/cr_elements/cr_hidden_style_lit.css.js
+ * #import=//resources/cr_elements/cr_shared_vars.css.js
+ * #scheme=relative
+ * #include=cr-hidden-style-lit
+ * #css_wrapper_metadata_end */
+
+:host {
+  --topic-carousel-gap: 8px;
+  /* Three cards fill the width, the rest scroll into view. */
+  --topic-carousel-card-width: calc((100% - 2 * var(--topic-carousel-gap)) / 3);
+  display: block;
+}
+
+#header {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+  margin-block-end: 12px;
+}
+
+#title {
+  color: var(--cr-primary-text-color);
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 28px;
+  margin: 0;
+  min-width: 0;
+  overflow-wrap: break-word;
+}
+
+#scrollButtons {
+  display: flex;
+  flex-shrink: 0;
+  gap: 4px;
+}
+
+#cards {
+  display: flex;
+  gap: var(--topic-carousel-gap);
+  list-style: none;
+  margin: 0;
+  overflow-x: auto;
+  padding: 0;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+/* min-width: 0 keeps a card to its slot. Flex items otherwise grow to fit
+ * their content, which a long title (it doesn't wrap) would widen. */
+#cards li {
+  display: flex;
+  flex: 0 0 var(--topic-carousel-card-width);
+  min-width: 0;
+  scroll-snap-align: start;
+}
+
+.card {
+  background-color: var(--cr-fallback-color-surface);
+  border: none;
+  border-radius: 16px;
+  box-sizing: border-box;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  font: inherit;
+  min-width: 0;
+  overflow: hidden;
+  padding: 0;
+  text-align: start;
+  width: 100%;
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--cr-focus-outline-color);
+  outline-offset: -2px;
+}
+
+/* Stands in for the page's image: its favicon on a tinted background. */
+.card-image {
+  align-items: center;
+  background-color: var(--cr-fallback-color-secondary-container);
+  display: flex;
+  height: 98px;
+  justify-content: center;
+  width: 100%;
+}
+
+.card-favicon {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 32px;
+  height: 32px;
+  width: 32px;
+}
+
+.card-text {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 14px 14px;
+  width: 100%;
+}
+
+.card-title,
+.card-site {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-title {
+  color: var(--cr-link-color);
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.card:hover .card-title {
+  text-decoration: underline;
+}
+
+.card-site {
+  color: var(--cr-secondary-text-color);
+  font-size: 13px;
+  line-height: 20px;
+}

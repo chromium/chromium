@@ -10,9 +10,24 @@
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {Time} from '//resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 
-import type {Topic, TopicContinuationQuery, TopicVisit} from '../context_hub.mojom-webui.js';
+import type {Topic, TopicCollection, TopicCollectionItem, TopicContinuationQuery, TopicVisit} from '../context_hub.mojom-webui.js';
 
 export type {TopicContinuationQuery, TopicVisit} from '../context_hub.mojom-webui.js';
+
+// A page in a `Collection`, as rendered on its carousel card.
+export interface CollectionItem {
+  title: string;
+  url: string;
+  // The backend's site name, or the page's domain when it didn't send one.
+  siteName: string;
+}
+
+// A titled group of pages related to a topic, shown as a carousel on the
+// topic details page.
+export interface Collection {
+  title: string;
+  items: CollectionItem[];
+}
 
 // What the topics UI renders. Adapted from the Mojo `Topic` by `toTopicItem()`,
 // which resolves the fallbacks below once so that the views don't have to.
@@ -29,6 +44,8 @@ export interface TopicItem {
   creationTime: Time;
   visits: TopicVisit[];
   continuationQueries: TopicContinuationQuery[];
+  // Only collections with a title and at least one openable page.
+  collections: Collection[];
 }
 
 export const DEFAULT_ICON = 'cr:insert-drive-file';
@@ -55,6 +72,31 @@ export function toTopicItem(topic: Topic): TopicItem {
     creationTime: topic.creationTime,
     visits: topic.visits,
     continuationQueries: topic.continuationQueries,
+    collections: toCollections(topic.collections),
+  };
+}
+
+// Keeps the collections that have a title and at least one page that can be
+// opened in a tab and has a title.
+function toCollections(collections: TopicCollection[]): Collection[] {
+  return collections.map(toCollection)
+      .filter(collection => !!collection.title && collection.items.length > 0);
+}
+
+function toCollection(collection: TopicCollection): Collection {
+  return {
+    title: collection.title.trim(),
+    items: collection.items.filter(item => isWebUrl(item.url))
+               .map(toCollectionItem)
+               .filter(item => !!item.title),
+  };
+}
+
+function toCollectionItem(item: TopicCollectionItem): CollectionItem {
+  return {
+    title: item.title.trim(),
+    url: item.url,
+    siteName: item.siteName?.trim() || getDisplayDomain(item.url),
   };
 }
 

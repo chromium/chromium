@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://context-hub/topics/topic_collection_carousel.js';
 import 'chrome://context-hub/topics/topic_details.js';
 import 'chrome://context-hub/topics/topics_view.js';
 
 import {browserProxyFactory, PageHandlerRemote} from 'chrome://context-hub/context_hub.mojom-webui.js';
-import type {Topic, TopicVisit} from 'chrome://context-hub/context_hub.mojom-webui.js';
+import type {Topic, TopicCollection, TopicVisit} from 'chrome://context-hub/context_hub.mojom-webui.js';
 import type {TopicCardElement} from 'chrome://context-hub/topics/topic_card.js';
+import type {TopicCollectionCarouselElement} from 'chrome://context-hub/topics/topic_collection_carousel.js';
 import type {TopicDetailsElement} from 'chrome://context-hub/topics/topic_details.js';
 import {getSuggestedPrompts, TOPIC_DETAILS_TABS} from 'chrome://context-hub/topics/topic_details.js';
 import type {TopicSitesDialogElement} from 'chrome://context-hub/topics/topic_sites_dialog.js';
 import {BADGE_BACKGROUND_COLORS, DEFAULT_ICON, getBackgroundColorForTopic, getBadgePath, getBadgeShapeForTopic, getDisplayDomain, getOpenableUrls, getTopicSites, MAX_TOPIC_SITES, toTopicItem} from 'chrome://context-hub/topics/topic_utils.js';
-import type {BadgeShape} from 'chrome://context-hub/topics/topic_utils.js';
+import type {BadgeShape, Collection} from 'chrome://context-hub/topics/topic_utils.js';
 import type {TopicsViewElement} from 'chrome://context-hub/topics/topics_view.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -41,6 +43,27 @@ function createTopic(overrides: Partial<Topic> = {}): Topic {
     ],
     continuationQueries: [
       {title: 'Query title', prompt: 'Query prompt'},
+    ],
+    collections: [],
+    ...overrides,
+  };
+}
+
+function createCollection(
+    overrides: Partial<TopicCollection> = {}): TopicCollection {
+  return {
+    title: 'Collection 1',
+    items: [
+      {
+        title: 'Item 1',
+        url: 'https://example.com/item-1',
+        siteName: 'Site name',
+      },
+      {
+        title: 'Item 2',
+        url: 'https://www.example.org/item-2',
+        siteName: null,
+      },
     ],
     ...overrides,
   };
@@ -135,6 +158,49 @@ suite('TopicUtils', () => {
     assertEquals(
         'news.example.com', getDisplayDomain('http://news.example.com'));
     assertEquals('', getDisplayDomain('not a url'));
+  });
+
+  test('toTopicItem maps collections, falling back to the domain', () => {
+    const item = toTopicItem(createTopic({collections: [createCollection()]}));
+    assertDeepEquals(
+        [{
+          title: 'Collection 1',
+          items: [
+            {
+              title: 'Item 1',
+              url: 'https://example.com/item-1',
+              siteName: 'Site name',
+            },
+            {
+              title: 'Item 2',
+              url: 'https://www.example.org/item-2',
+              siteName: 'example.org',
+            },
+          ],
+        }],
+        item.collections);
+  });
+
+  test('toTopicItem drops unopenable items and empty collections', () => {
+    const item = toTopicItem(createTopic({
+      collections: [
+        createCollection({
+          items: [
+            {title: 'Settings', url: 'chrome://settings', siteName: null},
+            {title: ' ', url: 'https://a.com/', siteName: null},
+            {title: 'B', url: 'https://b.com/', siteName: ' '},
+          ],
+        }),
+        createCollection({title: ' '}),
+        createCollection({
+          items: [{title: 'History', url: 'chrome://history', siteName: null}],
+        }),
+      ],
+    }));
+    assertEquals(1, item.collections.length);
+    assertDeepEquals(
+        [{title: 'B', url: 'https://b.com/', siteName: 'b.com'}],
+        item.collections[0]!.items);
   });
 
   test('getSuggestedPrompts prefers titles, drops empties and caps', () => {
@@ -436,5 +502,133 @@ suite('TopicDetails', () => {
     assertEquals(
         TOPIC_DETAILS_TABS.length,
         query('#panels')!.querySelectorAll('[role=tabpanel]').length);
+  });
+
+  test('summary panel shows a carousel per collection', async () => {
+    handler.setResultFor('getTopic', Promise.resolve({
+      topic: createTopic({
+        collections: [
+          createCollection(),
+          createCollection({title: 'Collection 2'}),
+        ],
+      }),
+    }));
+    await createDetails('?id=topic-1');
+
+    const carousels = query('topic-summary-panel')!.shadowRoot!
+                          .querySelectorAll('topic-collection-carousel');
+    assertDeepEquals(
+        ['Collection 1', 'Collection 2'],
+        Array.from(carousels).map(carousel => carousel.collection!.title));
+  });
+});
+
+suite('TopicCollectionCarousel', () => {
+  let carousel: TopicCollectionCarouselElement;
+  let openWindowProxy: TestOpenWindowProxy;
+
+  setup(() => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    openWindowProxy = new TestOpenWindowProxy();
+    OpenWindowProxyImpl.setInstance(openWindowProxy);
+  });
+
+  async function createCarousel(collection: Collection) {
+    carousel = document.createElement('topic-collection-carousel');
+    carousel.style.width = '600px';
+    carousel.collection = collection;
+    document.body.appendChild(carousel);
+    await microtasksFinished();
+  }
+
+  function createItems(count: number): Collection['items'] {
+    const items: Collection['items'] = [];
+    for (let i = 0; i < count; i++) {
+      items.push({
+        title: `Page ${i}`,
+        url: `https://site${i}.com/`,
+        siteName: `Site ${i}`,
+      });
+    }
+    return items;
+  }
+
+  function query(selector: string): HTMLElement|null {
+    return carousel.shadowRoot.querySelector<HTMLElement>(selector);
+  }
+
+  test('renders the title and a card per item', async () => {
+    await createCarousel({title: 'Collection title', items: createItems(2)});
+
+    assertEquals('Collection title', query('#title')!.textContent.trim());
+    const cards = carousel.shadowRoot.querySelectorAll('.card');
+    assertEquals(2, cards.length);
+    assertEquals(
+        'Page 1', cards[1]!.querySelector('.card-title')!.textContent.trim());
+    assertEquals(
+        'Site 1', cards[1]!.querySelector('.card-site')!.textContent.trim());
+  });
+
+  test('clicking a card opens its page', async () => {
+    await createCarousel({title: 'Collection title', items: createItems(2)});
+
+    carousel.shadowRoot.querySelectorAll<HTMLElement>('.card')[1]!.click();
+    assertEquals(
+        'https://site1.com/', await openWindowProxy.whenCalled('openUrl'));
+  });
+
+  test('three cards fit, even with a long title', async () => {
+    const items = createItems(3);
+    items[2]!.title = 'A long title '.repeat(10);
+    await createCarousel({title: 'Collection title', items});
+
+    assertTrue(query('#scrollButtons')!.hidden);
+    const cards = query('#cards')!;
+    assertTrue(cards.scrollWidth <= cards.clientWidth + 1);
+    const widths = Array.from(carousel.shadowRoot.querySelectorAll('li'))
+                       .map(li => Math.round(li.getBoundingClientRect().width));
+    assertEquals(1, new Set(widths).size);
+  });
+
+  test('shows the scroll buttons when the cards overflow', async () => {
+    await createCarousel({title: 'Collection title', items: createItems(6)});
+    assertFalse(query('#scrollButtons')!.hidden);
+  });
+
+  // Records where the cards were asked to scroll to, or by.
+  function stubScrolling(cards: HTMLElement) {
+    const calls: Array<{method: string, left: number}> = [];
+    cards.scrollTo = ((options: ScrollToOptions) => {
+      calls.push({method: 'scrollTo', left: options.left!});
+    }) as typeof cards.scrollTo;
+    cards.scrollBy = ((options: ScrollToOptions) => {
+      calls.push({method: 'scrollBy', left: options.left!});
+    }) as typeof cards.scrollBy;
+    return calls;
+  }
+
+  test('scroll buttons wrap around at either end', async () => {
+    await createCarousel({title: 'Collection title', items: createItems(6)});
+    const cards = query('#cards')!;
+    const calls = stubScrolling(cards);
+    const lastPage = cards.scrollWidth - cards.clientWidth;
+
+    // At the start, back wraps to the end and forward scrolls a page.
+    query('#back')!.click();
+    query('#forward')!.click();
+    assertDeepEquals(
+        [
+          {method: 'scrollTo', left: lastPage},
+          {method: 'scrollBy', left: cards.clientWidth},
+        ],
+        calls);
+
+    // At the end, forward wraps to the start.
+    calls.length = 0;
+    cards.scrollLeft = lastPage;
+    cards.dispatchEvent(new Event('scroll'));
+    await microtasksFinished();
+    query('#forward')!.click();
+    assertDeepEquals([{method: 'scrollTo', left: 0}], calls);
   });
 });
