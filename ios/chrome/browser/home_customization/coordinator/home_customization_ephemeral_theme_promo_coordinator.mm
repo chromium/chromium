@@ -80,7 +80,8 @@ constexpr CGFloat kMaxSheetHeightRatio = 0.75;
     id<NewTabPageCommands> ntpHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), NewTabPageCommands);
     completion = ^{
-      [ntpHandler showHomeBackgroundCustomizationPromoWithUIHandler:nil];
+      [ntpHandler showHomeBackgroundCustomizationPromoWithUIHandler:nil
+                                          shouldAlertFETOfDismissal:NO];
     };
   } else {
     id<HelpCommands> helpHandler =

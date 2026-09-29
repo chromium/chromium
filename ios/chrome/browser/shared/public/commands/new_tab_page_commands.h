@@ -39,7 +39,9 @@ typedef NS_ENUM(NSInteger, FeedLayoutUpdateType);
 
 // Shows the home background customization promo on the NTP.
 - (void)showHomeBackgroundCustomizationPromoWithUIHandler:
-    (id<PromosManagerUIHandler>)UIHandler;
+            (id<PromosManagerUIHandler>)UIHandler
+                                shouldAlertFETOfDismissal:
+                                    (BOOL)shouldAlertFETOfDismissal;
 
 @end
 

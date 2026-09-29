@@ -2180,7 +2180,8 @@ const char kContextPanelDismissedHistogram[] =
   // call the command.
   [HandlerForProtocol(self.dispatcher, NewTabPageCommands)
       showHomeBackgroundCustomizationPromoWithUIHandler:
-          _promosManagerCoordinator];
+          _promosManagerCoordinator
+                              shouldAlertFETOfDismissal:YES];
 }
 
 - (void)showDockingPromo {

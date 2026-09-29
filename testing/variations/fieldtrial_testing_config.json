@@ -12431,6 +12431,31 @@
             ]
         }
     ],
+    "NewTabPageEphemeralTheme": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "animation-colormapping": "{\"light\":{\"575B5F\":\"#575B5F\"},\"dark\":{\"575B5F\":\"#A2A9B0\"}}",
+                        "animation-promo-colormapping": "{\"light\":{\"575B5F\":\"#575B5F\",\"1B1C1D\":\"#1B1C1D\",\"F0F4F9\":\"#F0F4F9\",\"FFFFFF\":\"#FFFFFF\",\"BDC1C6\":\"#BDC1C6\",\"A8C7FA\":\"#A8C7FA\",\"D3E3FD\":\"#D3E3FD\",\"CEEAD6\":\"#CEEAD6\",\"AECBFA\":\"#AECBFA\",\"A8DAB5\":\"#A8DAB5\",\"E5EEFE\":\"#E5EEFE\",\"ECF4F9\":\"#ECF4F9\",\"kInvertedTextPrimaryColor\":\"#FFFFFF\",\"Floaty-text\":\"#000000\",\"Tab-text\":\"#000000\"},\"dark\":{\"575B5F\":\"#A2A9B0\",\"1B1C1D\":\"#FFFFFF\",\"F0F4F9\":\"#282A2C\",\"FFFFFF\":\"#131314\",\"BDC1C6\":\"#000000\",\"A8C7FA\":\"#0B57D0\",\"D3E3FD\":\"#0842A0\",\"CEEAD6\":\"#137333\",\"AECBFA\":\"#0842A0\",\"A8DAB5\":\"#137333\",\"E5EEFE\":\"#052A66\",\"ECF4F9\":\"#072A37\",\"kInvertedTextPrimaryColor\":\"#000000\",\"Floaty-text\":\"#FFFFFF\",\"Tab-text\":\"#FFFFFF\"}}",
+                        "animation-promo-url": "",
+                        "animation-url": "",
+                        "google-logo-dark-url": "",
+                        "google-logo-light-url": "",
+                        "seed-color": "#1A73E8",
+                        "version": "1"
+                    },
+                    "enable_features": [
+                        "NewTabPageEphemeralTheme"
+                    ]
+                }
+            ]
+        }
+    ],
     "NewVoiceSearchUiInNtpRealbox": [
         {
             "platforms": [
