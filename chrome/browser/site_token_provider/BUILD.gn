@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
+
 source_set("site_token_provider") {
   sources = [
     "site_token_header_client.cc",
@@ -30,6 +32,23 @@ source_set("site_token_provider") {
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//url",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  visibility = [ ":*" ]
+  sources = [
+    "fake_trusted_url_loader_header_client.cc",
+    "fake_trusted_url_loader_header_client.h",
+  ]
+  deps = [
+    "//base",
+    "//mojo/public/cpp/bindings",
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
@@ -66,4 +85,32 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//url",
   ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  visibility = [ "//chrome/test:*" ]
+  sources = [ "site_token_browsertest.cc" ]
+  deps = [
+    ":site_token_provider",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser:chrome_content_browser_client",
+    "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
+    "//chrome/test/base:chrome_test_utils",
+    "//components/site_token_provider",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+    "//url",
+  ]
+  if (enable_extensions_core) {
+    deps += [
+      "//extensions/buildflags",
+      "//extensions/common",
+    ]
+  }
 }
