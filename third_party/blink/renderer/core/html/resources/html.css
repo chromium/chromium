@@ -2631,10 +2631,6 @@ select optgroup optgroup {
   -internal-overscroll-container: auto;
 }
 
-[overscrollcontainer] > [overscrollarea] {
-  -internal-overscroll-position: auto;
-}
-
 [overscrollcontainer] > [overscrollarea]::overscroll-backdrop {
   display: none;
   position: absolute;

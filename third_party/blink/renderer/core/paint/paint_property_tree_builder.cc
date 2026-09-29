@@ -3591,7 +3591,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateContentTranslation() {
       PseudoElement* pseudo =
           overscroll_area_tracker->DOMSortedElements()[i - 1]->GetPseudoElement(
               kPseudoIdOverscrollAreaParent);
-      if (LayoutBox* layout_box = pseudo->GetLayoutBox()) {
+      if (LayoutBox* layout_box = pseudo ? pseudo->GetLayoutBox() : nullptr) {
         scroll_origin = layout_box->ScrollOrigin();
         break;
       }

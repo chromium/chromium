@@ -56,7 +56,6 @@ void ScrollTo(PaintLayerScrollableArea* scrollable_area, ScrollOffset offset) {
 }
 
 void AdjustAreaOrContentInertness(const Element& element,
-                                  bool is_overscroll_area,
                                   const ComputedStyle& parent_style,
                                   std::optional<bool>& html_inert,
                                   bool& can_escape_overscroll_inertness) {
@@ -67,7 +66,7 @@ void AdjustAreaOrContentInertness(const Element& element,
 
   auto* tracker = parent->GetOverscrollAreaTracker();
 
-  if (is_overscroll_area) {
+  if (element.IsValidOverscrollArea()) {
     // A closed overscroll area is always inert. An open overscroll area is
     // inert if another overscroll area above it in visual stacking order is
     // open.
@@ -128,32 +127,6 @@ void AdjustInvokerInertness(const Element& element,
   }
 }
 
-bool IsValidOverscrollAreaInternal(
-    Element& element,
-    EInternalOverscrollPosition overscroll_position,
-    EOverlay overlay,
-    const ComputedStyle* parent_style) {
-  if (overscroll_position != EInternalOverscrollPosition::kAuto) {
-    return false;
-  }
-  if (!parent_style || parent_style->EffectiveOverscrollContainerType() ==
-                           EOverscrollContainerType::kNone) {
-    return false;
-  }
-  Element* parent = FlatTreeTraversal::ParentElement(element);
-  if (!parent || parent->GetTreeScope() != element.GetTreeScope()) {
-    return false;
-  }
-  bool is_in_top_layer =
-      RuntimeEnabledFeatures::OverlayPropertyEnabled()
-          ? (element.IsInTopLayer() && overlay == EOverlay::kAuto)
-          : (element.IsInTopLayer() && element.IsRenderedInTopLayer());
-  if (is_in_top_layer) {
-    return false;
-  }
-  return element.GetDocument().IsOverscrollCommandTarget(element);
-}
-
 }  // namespace
 
 OverscrollAreaTracker::OverscrollAreaTracker(Element* element)
@@ -181,34 +154,55 @@ const VectorOf<Element>& OverscrollAreaTracker::DOMSortedElements() {
 }
 
 // static
-bool OverscrollAreaTracker::IsValidOverscrollArea(
-    Element& element,
-    const ComputedStyleBuilder& style_builder,
-    const ComputedStyle* parent_style) {
-  return IsValidOverscrollAreaInternal(
-      element, style_builder.InternalOverscrollPosition(),
-      style_builder.Overlay(), parent_style);
+bool OverscrollAreaTracker::ShouldBeOverscrollArea(Element& element) {
+  if (!RuntimeEnabledFeatures::OverscrollGesturesEnabled() ||
+      !element.FastHasAttribute(html_names::kOverscrollareaAttr)) {
+    return false;
+  }
+  const ComputedStyle* parent_style = element.ParentComputedStyle();
+  if (!parent_style || parent_style->EffectiveOverscrollContainerType() ==
+                           EOverscrollContainerType::kNone) {
+    return false;
+  }
+  Element* parent = FlatTreeTraversal::ParentElement(element);
+  if (!parent || parent->GetTreeScope() != element.GetTreeScope()) {
+    return false;
+  }
+  if (element.IsInTopLayer()) {
+    return false;
+  }
+  return element.GetDocument().IsOverscrollCommandTarget(element);
 }
 
 // static
-bool OverscrollAreaTracker::IsValidOverscrollArea(
-    Element& element,
-    const ComputedStyle* style,
-    const ComputedStyle* parent_style) {
-  return style && IsValidOverscrollAreaInternal(
-                      element, style->InternalOverscrollPosition(),
-                      style->Overlay(), parent_style);
+bool OverscrollAreaTracker::UpdateOverscrollArea(Element& element) {
+  Element* old_container = element.GetOverscrollContainer();
+  Element* new_container = ShouldBeOverscrollArea(element)
+                               ? FlatTreeTraversal::ParentElement(element)
+                               : nullptr;
+  if (old_container == new_container) {
+    return false;
+  }
+  if (old_container) {
+    element.DetachOverscroll();
+  }
+  if (new_container) {
+    new_container->EnsureOverscrollAreaTracker().AddOverscroll(&element);
+  }
+  // The layout object of an overscroll area is a child of the layout object of
+  // its ::-internal-overscroll-area-parent.
+  element.SetNeedsReattachLayoutTree();
+  return true;
 }
 
 // static
 void OverscrollAreaTracker::AdjustInertness(
     const Element& element,
-    bool is_overscroll_area,
     const ComputedStyle& parent_style,
     std::optional<bool>& html_inert,
     bool& can_escape_overscroll_inertness) {
-  AdjustAreaOrContentInertness(element, is_overscroll_area, parent_style,
-                               html_inert, can_escape_overscroll_inertness);
+  AdjustAreaOrContentInertness(element, parent_style, html_inert,
+                               can_escape_overscroll_inertness);
   AdjustInvokerInertness(element, parent_style, html_inert);
 }
 

@@ -1739,7 +1739,6 @@ bool CSSParserFastPaths::IsValidKeywordPropertyAndValue(
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto ||
              value_id == CSSValueID::kPush || value_id == CSSValueID::kOverlay;
     case CSSPropertyID::kInternalOverscrollContainer:
-    case CSSPropertyID::kInternalOverscrollPosition:
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kAuto;
     case CSSPropertyID::kInternalUnbounded:
       return value_id == CSSValueID::kNone || value_id == CSSValueID::kActive;
@@ -1896,7 +1895,6 @@ CSSBitset CSSParserFastPaths::handled_by_keyword_fast_paths_properties_{{
     CSSPropertyID::kInteractivity,
     CSSPropertyID::kOverscrollContainerType,
     CSSPropertyID::kInternalOverscrollContainer,
-    CSSPropertyID::kInternalOverscrollPosition,
     CSSPropertyID::kInternalUnbounded,
 }};
 

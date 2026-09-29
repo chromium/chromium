@@ -63,13 +63,10 @@ LayoutObject* LayoutTreeBuilderForElement::NextLayoutObject() const {
     return nullptr;
   }
   // Overscroll areas are the last child within their
-  // ::-internal-overscroll-area-parent. GetOverscrollContainer() caches
-  // whether `node_` is a valid overscroll area (computed in
-  // Element::RecalcOwnStyle).
-  DCHECK_EQ(!!node_->GetOverscrollContainer(),
-            OverscrollAreaTracker::IsValidOverscrollArea(
-                *node_, style_, node_->ParentComputedStyle()));
-  if (node_->GetOverscrollContainer()) {
+  // ::-internal-overscroll-area-parent.
+  DCHECK_EQ(node_->IsValidOverscrollArea(),
+            OverscrollAreaTracker::ShouldBeOverscrollArea(*node_));
+  if (node_->IsValidOverscrollArea()) {
     return nullptr;
   }
 

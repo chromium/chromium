@@ -3904,6 +3904,11 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
       SetNeedsStyleRecalc(kLocalStyleChange,
                           StyleChangeReasonForTracing::FromAttribute(name));
     }
+  } else if (RuntimeEnabledFeatures::OverscrollGesturesEnabled() &&
+             name == html_names::kOverscrollareaAttr) {
+    // See OverscrollAreaTracker::UpdateOverscrollArea().
+    SetNeedsStyleRecalc(kLocalStyleChange,
+                        StyleChangeReasonForTracing::FromAttribute(name));
   } else if (name == html_names::kDrawableAttr) {
     SetNeedsStyleRecalc(kLocalStyleChange,
                         StyleChangeReasonForTracing::FromAttribute(name));
@@ -5312,7 +5317,17 @@ void Element::RecalcStyle(const StyleRecalcChange change,
   StyleRecalcChange child_change =
       IsPseudoElement() ? change.ForPseudoElement() : change.ForChildren(*this);
   if (change.ShouldRecalcStyleFor(*this)) {
+    // The style of an overscroll area depends on its registration. This has to
+    // run before rule collection because of potentially matching
+    // pseudo-classes.
+    bool overscroll_container_changed =
+        OverscrollAreaTracker::UpdateOverscrollArea(*this);
     child_change = RecalcOwnStyle(change, local_style_recalc_context);
+    if (overscroll_container_changed) {
+      // Add or remove ::-internal-overscroll-area-parent.
+      child_change =
+          child_change.EnsureAtLeast(StyleRecalcChange::kUpdatePseudoElements);
+    }
     if (GetStyleChangeType() == kSubtreeStyleChange) {
       child_change =
           child_change.EnsureAtLeast(StyleRecalcChange::kRecalcDescendants);
@@ -5479,9 +5494,15 @@ void Element::RecalcStyle(const StyleRecalcChange change,
                         layout_sibling_recalc_context);
 
     // ::overscroll-area-parent ignores the ComputedStyle bits and checks
-    // GetOverscrollContainer().
-    UpdatePseudoElement(kPseudoIdOverscrollAreaParent, child_change,
-                        child_recalc_context);
+    // IsValidOverscrollArea().
+    bool had_overscroll_area_parent =
+        GetPseudoElement(kPseudoIdOverscrollAreaParent);
+    if (UpdatePseudoElement(kPseudoIdOverscrollAreaParent, child_change,
+                            child_recalc_context) &&
+        !had_overscroll_area_parent) {
+      // The container attaches area parents before its other children.
+      GetOverscrollContainer()->SetNeedsReattachLayoutTree();
+    }
 
     // View transitions ignore the ComputedStyle bits and check
     // ViewTransitionUtils::GetTransition(*this).
@@ -5763,34 +5784,6 @@ StyleRecalcChange Element::RecalcOwnStyle(
     // null to make sure we don't mark for re-attachment if the new style is
     // null.
     old_style = nullptr;
-  }
-
-  // If we have an overscroll container, but it's the wrong one or we shouldn't
-  // have one, remove this element from the overscroll container (which should
-  // also clear GetOverscrollContainer() on `this`).
-  bool is_valid_overscroll_area = OverscrollAreaTracker::IsValidOverscrollArea(
-      *this, new_style, parent_style);
-  Element* overscroll_container = GetOverscrollContainer();
-  if (is_valid_overscroll_area || overscroll_container) {
-    Element* parent = FlatTreeTraversal::ParentElement(*this);
-
-    if (overscroll_container && (!new_style || !is_valid_overscroll_area ||
-                                 overscroll_container != parent)) {
-      DetachOverscroll();
-      overscroll_container = nullptr;
-      // We may need to remove this element's
-      // ::-internal-overscroll-area-parent.
-      child_change =
-          child_change.EnsureAtLeast(StyleRecalcChange::kUpdatePseudoElements);
-    }
-    // If we no longer have an overscroll container, but need one, add this
-    // element to the parent overscroll container.
-    if (!overscroll_container && is_valid_overscroll_area) {
-      parent->EnsureOverscrollAreaTracker().AddOverscroll(this);
-      // We need to add a ::-internal-overscroll-area-parent for this element.
-      child_change =
-          child_change.EnsureAtLeast(StyleRecalcChange::kUpdatePseudoElements);
-    }
   }
 
   if (GetOverscrollAreaTracker() && old_style && new_style &&
@@ -11588,9 +11581,10 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
     return false;
   }
   if (pseudo_id == kPseudoIdOverscrollAreaParent) {
-    // We set or remove our overscroll container in RecalcOwnStyle. Its presence
-    // indicates if we need an overscroll area parent for this element.
-    return GetOverscrollContainer();
+    // Valid overscroll areas get an overscroll area parent, unless they are
+    // display:none.
+    return IsValidOverscrollArea() &&
+           ComputedStyle::NullifyEnsured(GetComputedStyle());
   }
   if (pseudo_id == kPseudoIdCheckMark) {
     // We want to avoid the performance cost of generating the checkmark for
@@ -11642,7 +11636,7 @@ bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
     }
     if (pseudo_id == kPseudoIdOverscrollBackdrop) {
       return RuntimeEnabledFeatures::OverscrollGesturesEnabled() &&
-             GetOverscrollContainer() != nullptr;
+             IsValidOverscrollArea();
     }
     return style->CanGeneratePseudoElement(pseudo_id);
   }
@@ -11934,6 +11928,15 @@ void Element::SetIsInTopLayer(bool in_top_layer) {
       // added between two lifecycle updates since the overlay computed value
       // would not change, but the layout object order may have.
       SetForceReattachLayoutTree();
+    }
+
+    // Top layer elements can't be overscroll areas. An element leaving the top
+    // layer isn't a valid area yet, but may become one.
+    if (RuntimeEnabledFeatures::OverscrollGesturesEnabled() &&
+        FastHasAttribute(html_names::kOverscrollareaAttr)) {
+      SetNeedsStyleRecalc(
+          kLocalStyleChange,
+          StyleChangeReasonForTracing::Create(style_change_reason::kTopLayer));
     }
 
     if (IsA<HTMLDialogElement>(*this)) {
@@ -14311,6 +14314,10 @@ Element* Element::GetOverscrollContainer() const {
     return data->GetOverscrollContainer();
   }
   return nullptr;
+}
+
+bool Element::IsValidOverscrollArea() const {
+  return GetOverscrollContainer();
 }
 
 void Element::SetOverscrollContainer(Element* element) {

@@ -4154,7 +4154,8 @@ PhysicalOffset LayoutObject::OffsetFromOverscrollContainer(
   for (wtf_size_t i = 0; i < affecting_overscroll_areas; ++i) {
     auto* area_parent =
         overscroll_areas[i]->GetPseudoElement(kPseudoIdOverscrollAreaParent);
-    if (auto* area_parent_object = area_parent->GetLayoutObject()) {
+    if (auto* area_parent_object =
+            area_parent ? area_parent->GetLayoutObject() : nullptr) {
       offset += OffsetFromScrollableContainer(area_parent_object, mode);
     }
   }

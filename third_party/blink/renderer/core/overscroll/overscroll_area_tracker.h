@@ -18,7 +18,6 @@
 namespace blink {
 
 class ComputedStyle;
-class ComputedStyleBuilder;
 class Element;
 
 // Tracks overscroll area elements associated with an overscroll container
@@ -43,15 +42,15 @@ class CORE_EXPORT OverscrollAreaTracker
 
   const VectorOf<Element>& DOMSortedElements();
 
-  static bool IsValidOverscrollArea(Element& element,
-                                    const ComputedStyleBuilder& style_builder,
-                                    const ComputedStyle* parent_style);
-  static bool IsValidOverscrollArea(Element& element,
-                                    const ComputedStyle* style,
-                                    const ComputedStyle* parent_style);
+  // Doesn't depend on the style of `element`, so it's valid before styling.
+  static bool ShouldBeOverscrollArea(Element& element);
+
+  // Registers or unregisters `element` with its parent's tracker. Called before
+  // styling `element`, since its style depends on this. Returns true if the
+  // overscroll container of `element` changed.
+  static bool UpdateOverscrollArea(Element& element);
 
   static void AdjustInertness(const Element& element,
-                              bool is_overscroll_area,
                               const ComputedStyle& parent_style,
                               std::optional<bool>& html_inert,
                               bool& can_escape_overscroll_inertness);

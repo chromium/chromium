@@ -7960,15 +7960,6 @@ const CSSValue* InternalOverscrollContainer::CSSValueFromComputedStyleInternal(
   return CSSIdentifierValue::Create(style.InternalOverscrollContainer());
 }
 
-// -internal-overscroll-position: none | auto
-const CSSValue* InternalOverscrollPosition::CSSValueFromComputedStyleInternal(
-    const ComputedStyle& style,
-    const LayoutObject*,
-    bool allow_visited_style,
-    CSSValuePhase value_phase) const {
-  return CSSIdentifierValue::Create(style.InternalOverscrollPosition());
-}
-
 // -internal-unbounded: none | active
 const CSSValue* InternalUnbounded::CSSValueFromComputedStyleInternal(
     const ComputedStyle& style,

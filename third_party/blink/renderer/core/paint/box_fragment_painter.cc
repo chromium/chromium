@@ -3061,7 +3061,7 @@ gfx::Vector2d BoxFragmentPainter::PixelSnappedOverscrollOffset() const {
     for (const Element* element : tracker->DOMSortedElements()) {
       PseudoElement* pseudo =
           element->GetPseudoElement(kPseudoIdOverscrollAreaParent);
-      if (LayoutBox* layout_box = pseudo->GetLayoutBox()) {
+      if (LayoutBox* layout_box = pseudo ? pseudo->GetLayoutBox() : nullptr) {
         offset += layout_box->GetScrollableArea()->PixelSnappedScrollOffset();
       }
     }

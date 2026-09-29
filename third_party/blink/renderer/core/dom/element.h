@@ -2190,6 +2190,8 @@ class CORE_EXPORT Element : public ContainerNode {
   OverscrollAreaTracker* GetOverscrollAreaTracker() const;
 
   Element* GetOverscrollContainer() const;
+  // Updated before styling by OverscrollAreaTracker::UpdateOverscrollArea().
+  bool IsValidOverscrollArea() const;
   void SetOverscrollContainer(Element*);
   void ClearOverscrollContainer();
   void DetachOverscroll();

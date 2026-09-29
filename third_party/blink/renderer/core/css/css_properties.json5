@@ -5097,16 +5097,6 @@
       runtime_flag: "OverscrollGestures",
     },
     {
-      name: "-internal-overscroll-position",
-      property_methods: ["CSSValueFromComputedStyleInternal"],
-      field_group: "*",
-      field_template: "keyword",
-      keywords: ["none", "auto"],
-      typedom_types: ["Keyword"],
-      default_value: "none",
-      runtime_flag: "OverscrollGestures",
-    },
-    {
       name: "-internal-unbounded",
       property_methods: ["CSSValueFromComputedStyleInternal"],
       field_group: "*",

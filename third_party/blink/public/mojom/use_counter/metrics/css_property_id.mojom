@@ -52,7 +52,6 @@ enum CSSSampleId {
     kInternalOverflowBlock = 0,
     kInternalOverflowInline = 0,
     kInternalOverscrollContainer = 0,
-    kInternalOverscrollPosition = 0,
     kInternalUnbounded = 0,
 
     // This CSSSampleId represents page load for CSS histograms. It is recorded once

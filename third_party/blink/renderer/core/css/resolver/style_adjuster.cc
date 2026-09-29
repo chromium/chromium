@@ -1167,11 +1167,9 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     // Root elements that are in the top layer should just be left alone
     // because the fullscreen.css doesn't apply any style to them.
     //
-    // Similarly, overscroll-position elements must be out of flow positioned
-    // with a box.
+    // Similarly, overscroll areas must be out of flow positioned with a box.
     if (is_in_top_layer || builder.StyleType() == kPseudoIdBackdrop ||
-        builder.InternalOverscrollPosition() ==
-            EInternalOverscrollPosition::kAuto) {
+        (element && element->IsValidOverscrollArea())) {
       if (!builder.HasOutOfFlowPosition()) {
         builder.SetPosition(EPosition::kAbsolute);
       }
@@ -1598,6 +1596,11 @@ StyleAdjuster::ElementTypeForCache StyleAdjuster::GetElementTypeCacheKey(
     return {ElementType::kIsNotElement};
   }
 
+  // Overscroll areas are forced to be out of flow positioned.
+  if (element.IsValidOverscrollArea()) {
+    return {ElementType::kIsNotElement};
+  }
+
   switch (element.GetElementType()) {
     case ElementType::kHTMLCanvasElement:
       // <canvas> has special handling for touch-action and stacking contexts
@@ -1890,11 +1893,7 @@ void StyleAdjuster::AdjustOverscrollInertness(
     return;
   }
 
-  Element& element = state.GetElement();
-  bool is_overscroll_area = OverscrollAreaTracker::IsValidOverscrollArea(
-      element, state.StyleBuilder(), state.ParentStyle());
-
-  OverscrollAreaTracker::AdjustInertness(element, is_overscroll_area,
+  OverscrollAreaTracker::AdjustInertness(state.GetElement(),
                                          *state.ParentStyle(), html_inert,
                                          can_escape_overscroll_inertness);
 }

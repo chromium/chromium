@@ -39,7 +39,6 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/overscroll/overscroll_area_tracker.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_pseudo_element_base.h"
 
@@ -647,17 +646,9 @@ bool IsLayoutObjectReparented(const LayoutObject* layout_object) {
     return true;
   }
   if (auto* element = DynamicTo<Element>(layout_object->GetNode())) {
-    // GetOverscrollContainer() caches whether `element` is a valid overscroll
-    // area (computed in Element::RecalcOwnStyle), which determines whether it
-    // is reparented into ::-internal-overscroll-area-parent. Note that
-    // IsInternalOverscrollPositionAuto() can still be true when the construct
-    // is invalid (e.g. when [overscrollcontainer] > [overscrollarea] matches in
-    // the DOM tree but flat-tree parent or tree scope checks fail).
-    DCHECK_EQ(!!element->GetOverscrollContainer(),
-              OverscrollAreaTracker::IsValidOverscrollArea(
-                  *element, element->GetComputedStyle(),
-                  element->ParentComputedStyle()));
-    return element->GetOverscrollContainer();
+    // Overscroll areas are reparented into their
+    // ::-internal-overscroll-area-parent.
+    return element->IsValidOverscrollArea();
   }
   return false;
 }

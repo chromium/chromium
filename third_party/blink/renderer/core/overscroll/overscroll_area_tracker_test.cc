@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "cc/input/scroll_snap_data.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
@@ -15,8 +16,10 @@
 #include "third_party/blink/renderer/core/dom/indexed_pseudo_element.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
+#include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
@@ -1400,6 +1403,87 @@ TEST_F(OverscrollAreaTrackerPageTest, OverscrollContainerSubtreeTracking) {
   EXPECT_FALSE(container->GetComputedStyle()->IsInOverscrollContainer());
   EXPECT_FALSE(child->GetComputedStyle()->IsInOverscrollContainer());
   EXPECT_FALSE(grandchild->GetComputedStyle()->IsInOverscrollContainer());
+}
+
+TEST_F(OverscrollAreaTrackerPageTest, DisplayNoneAreaIsRegistered) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="container" overscrollcontainer>
+      <div id="child"></div>
+      <div id="menu" overscrollarea style="display: none"></div>
+    </div>
+    <button command="toggle-overscroll" commandfor="menu"></button>
+  )HTML");
+  Element* container = GetElementById("container");
+  Element* menu = GetElementById("menu");
+  EXPECT_EQ(menu->GetOverscrollContainer(), container);
+  EXPECT_FALSE(menu->GetPseudoElement(kPseudoIdOverscrollAreaParent));
+
+  menu->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
+  UpdateAllLifecyclePhasesForTest();
+  PseudoElement* area_parent =
+      menu->GetPseudoElement(kPseudoIdOverscrollAreaParent);
+  ASSERT_TRUE(area_parent);
+  // Area parents are the first layout children of the container.
+  EXPECT_EQ(container->GetLayoutObject()->SlowFirstChild(),
+            area_parent->GetLayoutObject());
+  EXPECT_EQ(menu->GetLayoutObject()->Parent(), area_parent->GetLayoutObject());
+
+  menu->SetInlineStyleProperty(CSSPropertyID::kDisplay, "none");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(menu->GetOverscrollContainer(), container);
+  EXPECT_FALSE(menu->GetPseudoElement(kPseudoIdOverscrollAreaParent));
+}
+
+TEST_F(OverscrollAreaTrackerPageTest, AreaStyleReflectsRegistration) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="container" overscrollcontainer>
+      <div id="menu"></div>
+    </div>
+    <button command="toggle-overscroll" commandfor="menu"></button>
+  )HTML");
+  Element* container = GetElementById("container");
+  Element* menu = GetElementById("menu");
+
+  menu->SetAttributeWithoutValidation(html_names::kOverscrollareaAttr,
+                                      g_empty_atom);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(menu->GetOverscrollContainer(), container);
+  EXPECT_EQ(menu->GetComputedStyle()->GetPosition(), EPosition::kAbsolute);
+  EXPECT_TRUE(menu->GetComputedStyle()->IsInert());
+
+  menu->removeAttribute(html_names::kOverscrollareaAttr);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(menu->IsValidOverscrollArea());
+  EXPECT_EQ(menu->GetComputedStyle()->GetPosition(), EPosition::kStatic);
+  EXPECT_FALSE(menu->GetComputedStyle()->IsInert());
+}
+
+TEST_F(OverscrollAreaTrackerPageTest, AreaLeavingTopLayerIsRegistered) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="container" overscrollcontainer>
+      <div id="area" overscrollarea></div>
+    </div>
+    <button command="toggle-overscroll" commandfor="area"></button>
+  )HTML");
+  Element* container = GetElementById("container");
+  Element* area = GetElementById("area");
+  EXPECT_EQ(area->GetOverscrollContainer(), container);
+
+  // Top layer elements can't be overscroll areas.
+  LocalFrame::NotifyUserActivation(
+      GetDocument().GetFrame(), mojom::UserActivationNotificationType::kTest);
+  Fullscreen::RequestFullscreen(*area);
+  Fullscreen::DidResolveEnterFullscreenRequest(GetDocument(),
+                                               /*granted=*/true);
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_TRUE(area->IsInTopLayer());
+  EXPECT_FALSE(area->IsValidOverscrollArea());
+
+  Fullscreen::FullyExitFullscreen(GetDocument());
+  Fullscreen::DidExitFullscreen(GetDocument());
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_FALSE(area->IsInTopLayer());
+  EXPECT_EQ(area->GetOverscrollContainer(), container);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

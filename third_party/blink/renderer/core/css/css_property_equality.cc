@@ -1430,7 +1430,6 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kInternalForcedOutlineColor:
     case CSSPropertyID::kInternalForcedVisitedColor:
     case CSSPropertyID::kInternalOverscrollContainer:
-    case CSSPropertyID::kInternalOverscrollPosition:
     case CSSPropertyID::kInternalUnbounded:
     case CSSPropertyID::kInternalVisitedBackgroundColor:
     case CSSPropertyID::kInternalVisitedBorderBlockEndColor:
