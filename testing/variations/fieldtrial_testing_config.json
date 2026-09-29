@@ -8404,6 +8404,23 @@
             ]
         }
     ],
+    "FontDataManagerPrewarming": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260929",
+                    "enable_features": [
+                        "FontDataManagerPrewarming"
+                    ]
+                }
+            ]
+        }
+    ],
     "FontDataServiceChromeOS": [
         {
             "platforms": [
