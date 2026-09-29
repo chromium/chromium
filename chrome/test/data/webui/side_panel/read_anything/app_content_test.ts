@@ -914,7 +914,6 @@ suite('AppContent', () => {
 
   suite('on image toggle with readability', () => {
     setup(() => {
-      contentController.configureTrustedTypes();
       chrome.readingMode.activeDistillationMethod =
           chrome.readingMode.distillationTypeReadability;
     });
@@ -1056,7 +1055,6 @@ suite('AppContent', () => {
       const text = 'the best link ever';
       chrome.readingMode.activeDistillationMethod =
           chrome.readingMode.distillationTypeReadability;
-      contentController.configureTrustedTypes();
       readingMode.htmlContent = `<a href="${url}">${text}</a>`;
       app.updateContent();
       await microtasksFinished();

@@ -319,7 +319,6 @@ suite('ContentController', () => {
         async () => {
           chrome.readingMode.activeDistillationMethod =
               chrome.readingMode.distillationTypeReadability;
-          contentController.configureTrustedTypes();
           readingMode.htmlContent =
               'I see my present\npartner\n\nin the imperfect tense';
 
@@ -339,7 +338,6 @@ suite('ContentController', () => {
         async () => {
           chrome.readingMode.activeDistillationMethod =
               chrome.readingMode.distillationTypeReadability;
-          contentController.configureTrustedTypes();
           readingMode.htmlContent =
               '<pre>I see my present\npartner\n\nin the imperfect tense</pre>';
 
@@ -599,7 +597,6 @@ suite('ContentController', () => {
       const url = 'https://www.relsilicon.com/';
       chrome.readingMode.activeDistillationMethod =
           chrome.readingMode.distillationTypeReadability;
-      contentController.configureTrustedTypes();
       const text = 'a link';
       readingMode.htmlContent = `<a href="${url}">${text}</a>`;
 
@@ -705,7 +702,6 @@ suite('ContentController', () => {
           chrome.readingMode.activeDistillationMethod =
               chrome.readingMode.distillationTypeReadability;
           const buttonText = 'Buttons should be seen and not clicked';
-          contentController.configureTrustedTypes();
           readingMode.htmlContent = `<button>${buttonText}</button>`;
 
           const root = contentController.updateContent();
@@ -725,7 +721,6 @@ suite('ContentController', () => {
           chrome.readingMode.activeDistillationMethod =
               chrome.readingMode.distillationTypeReadability;
           const markText = 'When everything is important, nothing is';
-          contentController.configureTrustedTypes();
           readingMode.htmlContent = `<mark>${markText}</mark>`;
 
           const root = contentController.updateContent();
@@ -795,7 +790,6 @@ suite('ContentController', () => {
           chrome.readingMode.isReadabilityEnabled = true;
           chrome.readingMode.activeDistillationMethod =
               chrome.readingMode.distillationTypeReadability;
-          contentController.configureTrustedTypes();
           readingMode.htmlContent = `<a href="${url}">${text}</a>`;
           chrome.readingMode.linksEnabled = false;
 
@@ -826,7 +820,6 @@ suite('ContentController', () => {
           chrome.readingMode.isReadabilityEnabled = true;
           chrome.readingMode.activeDistillationMethod =
               chrome.readingMode.distillationTypeReadability;
-          contentController.configureTrustedTypes();
           readingMode.htmlContent = `<a href="${url}">${text}</a>`;
           chrome.readingMode.linksEnabled = true;
 
@@ -1629,5 +1622,50 @@ suite('ContentController', () => {
 
     chrome.readingMode.onRenderedTextMappingReady();
     assertTrue(triggered);
+  });
+
+  suite('updateContentForReadability', () => {
+    setup(() => {
+      chrome.readingMode.isReadabilityEnabled = true;
+      chrome.readingMode.activeDistillationMethod =
+          chrome.readingMode.distillationTypeReadability;
+      chrome.readingMode.linksEnabled = true;
+    });
+
+    test(
+        'distilled content with embedded media frame is sanitized',
+        async () => {
+          readingMode.htmlContent = '<p>Normal text</p>' +
+              '<iframe data-video="//www.youtube.com/embed/test" ' +
+              'srcdoc="<script>evil()</script>"></iframe>';
+
+          const root = contentController.updateContent() as DocumentFragment;
+          await microtasksFinished();
+
+          assertTrue(!!root);
+          assertEquals(null, root.querySelector('iframe'));
+          assertEquals(null, root.querySelector('script'));
+          assertStringContains(root.textContent || '', 'Normal text');
+        });
+
+    test('strips style, meta, and template elements', async () => {
+      readingMode.htmlContent =
+          '<style>body { display: none; }</style>' +
+          '<meta http-equiv="refresh" content="0;url=https://example.com">' +
+          '<template><p>Hidden</p></template>' +
+          '<p>Safe text <a href="javascript:void(0)">Link</a></p>';
+
+      const root = contentController.updateContent() as DocumentFragment;
+      await microtasksFinished();
+
+      assertTrue(!!root);
+      assertEquals(null, root.querySelector('style'));
+      assertEquals(null, root.querySelector('meta'));
+      assertEquals(null, root.querySelector('template'));
+      const link = root.querySelector('a');
+      assertTrue(!!link);
+      assertEquals('', link.getAttribute('href'));
+      assertStringContains(root.textContent || '', 'Safe text');
+    });
   });
 });

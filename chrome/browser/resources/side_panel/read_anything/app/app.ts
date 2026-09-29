@@ -169,9 +169,6 @@ export class AppElement extends AppElementBase implements SpeechListener,
     TextSegmenter.getInstance().updateLanguage(
         chrome.readingMode.baseLanguageForSpeech);
     this.contentState_ = this.contentController_.getState();
-    if (chrome.readingMode.isReadabilityEnabled) {
-      this.contentController_.configureTrustedTypes();
-    }
     this.isImmersiveEnabled_ = chrome.readingMode.isImmersiveEnabled;
     this.isImprovedReadAloudEnabled_ =
         chrome.readingMode.isImprovedReadAloudEnabled;
