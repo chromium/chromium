@@ -108,9 +108,6 @@ class DesktopDataControlsDialogTest : public InProcessBrowserTest,
 
  protected:
   size_t constructor_called_count_ = 0;
-  // ensure NoWebContentsModalDialogManager test's bool observer outlives its
-  // objects destruction.
-  bool test_dialog_destructor_called_unused_ = false;
 
   std::map<DesktopDataControlsDialog*, views::DialogDelegate*> delegates_;
   std::map<DesktopDataControlsDialog*, base::OnceClosure>
@@ -223,12 +220,10 @@ IN_PROC_BROWSER_TEST_F(DesktopDataControlsDialogTest,
 
 IN_PROC_BROWSER_TEST_F(DesktopDataControlsDialogTest,
                        NoWebContentsModalDialogManager) {
-  ui::test::TestWebDialogDelegate* delegate =
-      new ui::test::TestWebDialogDelegate(GURL(url::kAboutBlankURL));
-  delegate->SetDeleteOnClosedAndObserve(&test_dialog_destructor_called_unused_);
+  ui::test::TestWebDialogDelegate delegate{GURL(url::kAboutBlankURL)};
 
   auto view = std::make_unique<views::WebDialogView>(
-      browser()->GetProfile(), delegate,
+      browser()->GetProfile(), &delegate,
       std::make_unique<ChromeWebContentsHandler>());
   auto view_ptr = view.get();
   gfx::NativeView parent_view =
@@ -248,6 +243,8 @@ IN_PROC_BROWSER_TEST_F(DesktopDataControlsDialogTest,
   }
   ASSERT_TRUE(was_bypassed.IsReady());
   ASSERT_FALSE(was_bypassed.Get());
+
+  widget->CloseNow();
 }
 
 IN_PROC_BROWSER_TEST_F(DesktopDataControlsDialogTest,
