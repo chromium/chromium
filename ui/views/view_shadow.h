@@ -25,8 +25,7 @@ namespace views {
 
 // Manages the shadow for a view. This forces |view| to paint to layer if it's
 // not.
-class VIEWS_EXPORT ViewShadow : public ViewObserver,
-                                public ui::LayerOwner::Observer {
+class VIEWS_EXPORT ViewShadow : public ViewObserver {
  public:
   ViewShadow(View* view, int elevation);
 
@@ -38,9 +37,6 @@ class VIEWS_EXPORT ViewShadow : public ViewObserver,
   // Update the corner radius of the view along with the shadow.
   void SetRoundedCornerRadius(int corner_radius);
   void SetRoundedCorners(const gfx::RoundedCornersF& radii);
-
-  // ui::LayerOwner::Observer:
-  void OnLayerRecreated(ui::Layer* old_layer) override;
 
   ui::Shadow* shadow() { return shadow_.get(); }
   const ui::Shadow* shadow() const { return shadow_.get(); }
@@ -54,8 +50,6 @@ class VIEWS_EXPORT ViewShadow : public ViewObserver,
   std::unique_ptr<ui::Shadow> shadow_;
 
   base::ScopedObservation<View, ViewObserver> view_observation_{this};
-  base::ScopedObservation<ui::Shadow, ui::LayerOwner::Observer>
-      shadow_observation_{this};
 };
 
 }  // namespace views
