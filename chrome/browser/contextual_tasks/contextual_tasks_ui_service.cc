@@ -30,6 +30,9 @@
 #include "chrome/browser/contextual_tasks/contextual_search_session_finder.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_cookie_synchronizer.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_eligibility_manager.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/contextual_tasks/contextual_tasks_extension_handler.h"
+#endif
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui.h"
@@ -3832,6 +3835,15 @@ void ContextualTasksUiService::OnLensOverlayStateChanged(
   if (web_ui_interface) {
     web_ui_interface->OnLensOverlayStateChanged(is_showing, invocation_source);
   }
+
+#if !BUILDFLAG(IS_ANDROID)
+  panel_contents->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
+    if (auto* handler =
+            ContextualTasksExtensionHandler::GetForCurrentDocument(rfh)) {
+      handler->OnLensOverlayStateChanged(is_showing);
+    }
+  });
+#endif
 }
 
 void ContextualTasksUiService::AssociateWebContentsToTask(
