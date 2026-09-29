@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_chip_controller.h"
 #include "chrome/browser/ui/performance_controls/memory_saver_utils.h"
-#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
@@ -141,13 +140,8 @@ void MemorySaverChipTabHelper::ComputeChipState(
 }
 
 void MemorySaverChipTabHelper::UpdatePageActionState() {
-  tabs::TabFeatures* tab_features = tab().GetTabFeatures();
-  if (!tab_features) {
-    // Tab features may not be present at shutdown.
-    return;
-  }
   memory_saver::MemorySaverChipController* controller =
-      tab_features->memory_saver_chip_controller();
+      memory_saver::MemorySaverChipController::From(&tab());
   if (!controller) {
     return;
   }

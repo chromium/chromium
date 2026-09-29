@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/tabs/public/tab_interface.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/text/bytes_formatting.h"
 
@@ -23,11 +24,21 @@ constexpr base::TimeDelta kChipVisibleDuration = base::Seconds(12);
 
 }  // namespace
 
+DEFINE_USER_DATA(MemorySaverChipController);
+
 MemorySaverChipController::MemorySaverChipController(
+    tabs::TabInterface& tab,
     page_actions::PageActionController& page_action_controller)
-    : page_action_controller_(page_action_controller) {}
+    : page_action_controller_(page_action_controller),
+      scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {}
 
 MemorySaverChipController::~MemorySaverChipController() = default;
+
+// static
+MemorySaverChipController* MemorySaverChipController::From(
+    tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
 
 void MemorySaverChipController::ShowIcon() {
   page_action_controller_->Show(kActionShowMemorySaverChip);

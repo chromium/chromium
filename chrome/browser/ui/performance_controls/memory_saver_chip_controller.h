@@ -8,9 +8,14 @@
 #include "base/byte_size.h"
 #include "base/cancelable_callback.h"
 #include "base/memory/raw_ref.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace page_actions {
 class PageActionController;
+}
+
+namespace tabs {
+class TabInterface;
 }
 
 namespace memory_saver {
@@ -20,9 +25,14 @@ namespace memory_saver {
 // chip state) and the Page Action framework.
 class MemorySaverChipController {
  public:
-  explicit MemorySaverChipController(
+  DECLARE_USER_DATA(MemorySaverChipController);
+
+  MemorySaverChipController(
+      tabs::TabInterface& tab,
       page_actions::PageActionController& page_action_controller);
   ~MemorySaverChipController();
+
+  static MemorySaverChipController* From(tabs::TabInterface* tab);
 
   // These methods set the MemorySaver page action icon (or chip) to the
   // desired state. Note that chip state is transient.
@@ -42,6 +52,8 @@ class MemorySaverChipController {
 
   raw_ref<page_actions::PageActionController> page_action_controller_;
   base::CancelableOnceClosure chip_timer_callback_;
+  ui::ScopedUnownedUserData<MemorySaverChipController>
+      scoped_unowned_user_data_;
   base::WeakPtrFactory<MemorySaverChipController> weak_factory_{this};
 };
 

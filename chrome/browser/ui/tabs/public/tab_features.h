@@ -416,10 +416,6 @@ class TabFeatures {
     return zoom_view_controller_.get();
   }
 
-  memory_saver::MemorySaverChipController* memory_saver_chip_controller() {
-    return memory_saver_chip_controller_.get();
-  }
-
   LensOverlayController* lens_overlay_controller();
   const LensOverlayController* lens_overlay_controller() const;
 
