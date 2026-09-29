@@ -3463,6 +3463,7 @@ TEST_F(AutocompleteResultTest, Mobile_TrimOmniboxActions) {
   scoped_refptr<FakeAutocompleteProvider> provider =
       new FakeAutocompleteProvider(AutocompleteProvider::Type::kSearch);
   using OmniboxActionId::ACTION_IN_SUGGEST;
+  using OmniboxActionId::CROSS_DEVICE_TAB;
   using OmniboxActionId::PEDAL;
   using OmniboxActionId::UNKNOWN;
   const std::set<OmniboxActionId> all_actions_to_test{ACTION_IN_SUGGEST, PEDAL};
@@ -3541,6 +3542,21 @@ TEST_F(AutocompleteResultTest, Mobile_TrimOmniboxActions) {
        ,
        false,
        true},
+      {"Cross-device tab actions are preserved at any index",
+       {{CROSS_DEVICE_TAB},
+        {CROSS_DEVICE_TAB},
+        {CROSS_DEVICE_TAB},
+        {CROSS_DEVICE_TAB}},
+       // ZPS
+       {{CROSS_DEVICE_TAB},
+        {CROSS_DEVICE_TAB},
+        {CROSS_DEVICE_TAB},
+        {CROSS_DEVICE_TAB}},
+       // Typed
+       {{CROSS_DEVICE_TAB},
+        {CROSS_DEVICE_TAB},
+        {CROSS_DEVICE_TAB},
+        {CROSS_DEVICE_TAB}}},
   };
 
   // Crete matches following the `input_matches_and_actions` input.

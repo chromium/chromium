@@ -836,12 +836,15 @@ void AutocompleteResult::TrimOmniboxActions(bool is_zero_suggest) {
   //   (Android only)
   // - TAB_SWITCH actions are not considered because they're never attached.
   //   On Android, the tab switch match is attached as ACTION_IN_SUGGEST.
+  // - CROSS_DEVICE_TAB actions are permitted in all slots (they only appear on
+  //   dedicated CROSS_DEVICE_TAB matches, of which there is at most one).
   if constexpr (is_desktop) {
     return;
   }
 
   std::vector<OmniboxActionId> include_all{OmniboxActionId::ACTION_IN_SUGGEST,
-                                           OmniboxActionId::PEDAL};
+                                           OmniboxActionId::PEDAL,
+                                           OmniboxActionId::CROSS_DEVICE_TAB};
   std::vector<OmniboxActionId> include_pedals_and_others;
   std::vector<OmniboxActionId> exclude_pedals;
   if constexpr (is_android_any) {
@@ -849,6 +852,8 @@ void AutocompleteResult::TrimOmniboxActions(bool is_zero_suggest) {
     exclude_pedals.push_back(OmniboxActionId::ACTION_IN_SUGGEST);
   }
   include_pedals_and_others.push_back(OmniboxActionId::PEDAL);
+  include_pedals_and_others.push_back(OmniboxActionId::CROSS_DEVICE_TAB);
+  exclude_pedals.push_back(OmniboxActionId::CROSS_DEVICE_TAB);
 
   for (size_t index = 0u; index < matches_.size(); ++index) {
     matches_[index].FilterOmniboxActions(
