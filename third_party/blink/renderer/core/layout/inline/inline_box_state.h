@@ -294,7 +294,8 @@ class CORE_EXPORT InlineLayoutStateStack {
   void AddBoxFragmentPlaceholder(InlineBoxState*,
                                  const TextFitBlockScale& text_scale,
                                  LogicalLineItems*,
-                                 FontBaseline);
+                                 FontBaseline,
+                                 bool has_non_empty_inline_box_start);
   void AddBoxData(const ConstraintSpace&,
                   const InlineBoxState*,
                   LogicalLineItems*);

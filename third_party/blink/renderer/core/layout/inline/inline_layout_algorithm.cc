@@ -792,7 +792,8 @@ void InlineLayoutAlgorithm::PlaceOutOfFlowObjects(
   bool is_ltr = IsLtr(line_info.BaseDirection());
 
   for (LogicalLineItem& child : *line_box) {
-    has_preceding_inline_level_content |= child.HasInFlowFragment();
+    has_preceding_inline_level_content |=
+        child.HasInFlowFragment() || child.has_non_empty_inline_box_start;
 
     const LayoutObject* box = child.out_of_flow_positioned_box;
     if (!box)
@@ -835,7 +836,8 @@ void InlineLayoutAlgorithm::PlaceOutOfFlowObjects(
     for (LogicalLineItem& child : base::Reversed(*line_box)) {
       const LayoutObject* box = child.out_of_flow_positioned_box;
       if (!box) {
-        has_preceding_inline_level_content |= child.HasInFlowFragment();
+        has_preceding_inline_level_content |=
+            child.HasInFlowFragment() || child.has_non_empty_inline_box_start;
         continue;
       }
       if (has_preceding_inline_level_content &&

@@ -276,6 +276,8 @@ struct LogicalLineItem {
   // to be ignored, and just use paragraph direction (UAX#9 L1)
   bool has_only_bidi_trailing_spaces = false;
 
+  bool has_non_empty_inline_box_start = false;
+
   bool is_hidden_for_paint = false;
 
   bool has_over_annotation = false;
