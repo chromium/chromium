@@ -44,9 +44,6 @@ class BnplTosViewDesktopInteractiveUiTest : public InteractiveBrowserTest {
   InteractiveBrowserTestApi::MultiStep InvokeUiAndWaitForShow(
       BnplIssuer::IssuerId bnpl_issuer_id) {
     return Steps(
-        ObserveState(
-            views::test::kCurrentFocusedViewId,
-            BrowserView::GetBrowserViewForBrowser(browser())->GetWidget()),
         Do([this, bnpl_issuer_id]() {
           payments::BnplTosModel model;
           model.issuer = BnplIssuer(
@@ -143,16 +140,7 @@ IN_PROC_BROWSER_TEST_F(BnplTosViewDesktopInteractiveUiTest, EscKeyPress) {
   RunTestSequence(
       InvokeUiAndWaitForShow(BnplIssuer::IssuerId::kBnplAffirm),
       InAnyContext(
-// Dialogs are already in focus for Mac builds and focusing again causes a
-// button click.
-#if !BUILDFLAG(IS_MAC)
-          // Focus on an element in the dialog as the dialog's `kTopViewId`
-          // view can't be focused on with `RequestFocus()`.
-          WithView(views::DialogClientView::kOkButtonElementId,
-                   [](views::View* view) { view->RequestFocus(); }),
-          WaitForState(views::test::kCurrentFocusedViewId,
-                       views::DialogClientView::kOkButtonElementId),
-#endif
+          FocusElement(views::DialogClientView::kOkButtonElementId),
           SendAccelerator(views::DialogClientView::kTopViewId,
                           ui::Accelerator(ui::VKEY_ESCAPE, ui::MODIFIER_NONE)),
           WaitForHide(views::DialogClientView::kTopViewId)));
