@@ -350,6 +350,18 @@ TEST_F(AppMenuSearchControllerTest, StaticActionsAndTabGroups) {
   EXPECT_EQ(items[4]->GetActionItem()->GetActionId(), kActionTabGroupDelete);
 }
 
+TEST_F(AppMenuSearchControllerTest, SearchRequiresInitializedIndex) {
+  menu_root_->AddChild(actions::ActionItem::Builder()
+                           .SetActionId(kActionNewTab)
+                           .SetText(u"New Tab")
+                           .Build());
+
+  EXPECT_CHECK_DEATH(controller_->Search(u"New"));
+
+  controller_->InitializeSearchIndex();
+  EXPECT_EQ(controller_->Search(u"New"), nullptr);
+}
+
 TEST_F(AppMenuSearchControllerTest, FlattenHierarchyExtractsSynonyms) {
   std::vector<std::u16string> synonyms = {u"private", u"secret"};
   auto action_item = actions::ActionItem::Builder()

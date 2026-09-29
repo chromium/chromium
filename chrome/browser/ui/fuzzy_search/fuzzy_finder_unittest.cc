@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/test/gtest_util.h"
 #include "chrome/browser/ui/fuzzy_search/fuzzy_search_item.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -123,6 +124,21 @@ TEST_F(FuzzyFinderTest, NoMatchReturnsEmpty) {
   FuzzyFinder finder(items);
 
   EXPECT_THAT(finder.FuzzyFind(u"Settings", /*max_results=*/5), IsEmpty());
+}
+
+TEST_F(FuzzyFinderTest, HasMinQueryLength) {
+  // Empty and 1-character queries do not meet the threshold.
+  EXPECT_FALSE(FuzzyFinder::HasMinQueryLength(u""));
+  EXPECT_FALSE(FuzzyFinder::HasMinQueryLength(u"a"));
+
+  // Two or more characters meet the threshold, including interior whitespace.
+  EXPECT_TRUE(FuzzyFinder::HasMinQueryLength(u"ab"));
+  EXPECT_TRUE(FuzzyFinder::HasMinQueryLength(u"a b"));
+
+  // Untrimmed queries with leading or trailing whitespace CHECK-fail.
+  EXPECT_CHECK_DEATH(FuzzyFinder::HasMinQueryLength(u"   "));
+  EXPECT_CHECK_DEATH(FuzzyFinder::HasMinQueryLength(u" a "));
+  EXPECT_CHECK_DEATH(FuzzyFinder::HasMinQueryLength(u" ab "));
 }
 
 TEST_F(FuzzyFinderTest, QueryShorterThanTwoCharactersReturnsEmpty) {

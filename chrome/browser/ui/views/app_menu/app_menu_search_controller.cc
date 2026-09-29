@@ -11,12 +11,17 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/notimplemented.h"
+#include "base/strings/string_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/fuzzy_search/fuzzy_finder.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "ui/actions/actions.h"
 
 namespace {
+
+// Maximum number of candidates returned by fuzzy finder across all categories.
+constexpr size_t kMaxGlobalCandidates = 50;
 
 // Maps known dynamic submenus to their corresponding search category type.
 AppMenuSearchItem::Type GetSubmenuType(
@@ -89,6 +94,13 @@ std::u16string_view ExtractItemTitle(const actions::BaseAction* action,
 
 }  // namespace
 
+AppMenuSearchController::SearchResults::SearchResults() = default;
+AppMenuSearchController::SearchResults::SearchResults(SearchResults&&) =
+    default;
+AppMenuSearchController::SearchResults&
+AppMenuSearchController::SearchResults::operator=(SearchResults&&) = default;
+AppMenuSearchController::SearchResults::~SearchResults() = default;
+
 AppMenuSearchController::AppMenuSearchController(actions::ActionItem* menu_root)
     : menu_root_(menu_root) {
   CHECK(menu_root_);
@@ -109,6 +121,23 @@ void AppMenuSearchController::InitializeSearchIndex() {
   }
 
   fuzzy_finder_ = std::make_unique<FuzzyFinder>(std::move(raw_items));
+}
+
+actions::ActionItem* AppMenuSearchController::Search(
+    std::u16string_view query) {
+  CHECK(fuzzy_finder_);
+
+  const std::u16string_view trimmed_query =
+      base::TrimWhitespace(query, base::TRIM_ALL);
+  if (!FuzzyFinder::HasMinQueryLength(trimmed_query)) {
+    search_results_root_.reset();
+    return nullptr;
+  }
+
+  const std::vector<FuzzySearchResult> matches =
+      fuzzy_finder_->FuzzyFind(query, kMaxGlobalCandidates);
+
+  return BuildSearchResultsTree(ProcessSearchResults(matches));
 }
 
 void AppMenuSearchController::FlattenHierarchyRecursive(
@@ -167,4 +196,20 @@ void AppMenuSearchController::AddSearchItem(
       .SetTitle(std::u16string(title))
       .SetSecondaryText(std::u16string(secondary_text));
   search_items_.push_back(builder.Build());
+}
+
+// TODO(crbug.com/549177116): Implement this.
+AppMenuSearchController::SearchResults
+AppMenuSearchController::ProcessSearchResults(
+    const std::vector<FuzzySearchResult>& matches) const {
+  NOTIMPLEMENTED();
+  SearchResults results;
+  return results;
+}
+
+// TODO(crbug.com/549177116): Implement this.
+actions::ActionItem* AppMenuSearchController::BuildSearchResultsTree(
+    AppMenuSearchController::SearchResults results) {
+  NOTIMPLEMENTED();
+  return search_results_root_.get();
 }

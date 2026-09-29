@@ -85,11 +85,6 @@ enum class MatchStep : uint8_t {
   kSubstitution,
 };
 
-// Returns true if the query meets the standard minimum search length.
-bool HasMinQueryLength(std::u16string_view query) {
-  return query.length() >= kMinQueryLength;
-}
-
 }  // namespace
 
 FuzzyFinder::FuzzyFinder(std::vector<FuzzySearchItem*> searchable_items)
@@ -97,14 +92,19 @@ FuzzyFinder::FuzzyFinder(std::vector<FuzzySearchItem*> searchable_items)
 
 FuzzyFinder::~FuzzyFinder() = default;
 
-std::vector<FuzzySearchResult> FuzzyFinder::Find(const std::u16string& query,
+bool FuzzyFinder::HasMinQueryLength(std::u16string_view trimmed_query) {
+  CHECK(trimmed_query == base::TrimWhitespace(trimmed_query, base::TRIM_ALL));
+  return trimmed_query.length() >= kMinQueryLength;
+}
+
+std::vector<FuzzySearchResult> FuzzyFinder::Find(std::u16string_view query,
                                                  size_t max_results) {
   if (searchable_items_.empty() || max_results == 0) {
     return {};
   }
 
   // Trim leading and trailing whitespace from the query.
-  std::u16string_view trimmed_query =
+  const std::u16string_view trimmed_query =
       base::TrimWhitespace(query, base::TRIM_ALL);
 
   // Reject queries shorter than the minimum threshold to avoid broad/low-signal
@@ -138,9 +138,8 @@ std::vector<FuzzySearchResult> FuzzyFinder::Find(const std::u16string& query,
   return results;
 }
 
-std::vector<FuzzySearchResult> FuzzyFinder::FuzzyFind(
-    const std::u16string& query,
-    size_t max_results) {
+std::vector<FuzzySearchResult> FuzzyFinder::FuzzyFind(std::u16string_view query,
+                                                      size_t max_results) {
   if (searchable_items_.empty() || max_results == 0) {
     return {};
   }

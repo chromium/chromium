@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -34,6 +35,11 @@ class FuzzyFinder {
   FuzzyFinder& operator=(const FuzzyFinder&) = delete;
   ~FuzzyFinder();
 
+  // Returns true if the trimmed_query meets the minimum length threshold
+  // required for a search. trimmed_query must already have leading and trailing
+  // whitespace removed.
+  static bool HasMinQueryLength(std::u16string_view trimmed_query);
+
   // Searches searchable_items_ for items matching query via case- and
   // accent-insensitive substring matching against item titles.
   //
@@ -47,7 +53,7 @@ class FuzzyFinder {
   // - The query does not meet the minimum non-whitespace character threshold.
   // - No items match.
   // - searchable_items_ is empty or max_results is 0.
-  std::vector<FuzzySearchResult> Find(const std::u16string& query,
+  std::vector<FuzzySearchResult> Find(std::u16string_view query,
                                       size_t max_results);
 
   // Performs a fuzzy search / string approximation over `searchable_items_`
@@ -58,7 +64,7 @@ class FuzzyFinder {
   // is dropped.
   //
   // Returns up to max_results matching items ordered by descending score.
-  std::vector<FuzzySearchResult> FuzzyFind(const std::u16string& query,
+  std::vector<FuzzySearchResult> FuzzyFind(std::u16string_view query,
                                            size_t max_results);
 
  private:
