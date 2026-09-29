@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/strings/string_view_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -19,78 +20,68 @@ const crypto::aead::Algorithm kAllAlgorithms[]{
     crypto::aead::CHACHA20_POLY1305,
 };
 
-class AeadTest : public testing::TestWithParam<crypto::Aead::AeadAlgorithm> {};
+std::vector<uint8_t> FixedKeyFor(crypto::aead::Algorithm algo, uint8_t fill) {
+  return std::vector<uint8_t>(crypto::aead::KeySizeFor(algo), fill);
+}
+
+std::vector<uint8_t> FixedNonceFor(crypto::aead::Algorithm algo, uint8_t fill) {
+  return std::vector<uint8_t>(crypto::aead::NonceSizeFor(algo), fill);
+}
+
+class AeadTest : public testing::TestWithParam<crypto::aead::Algorithm> {};
 
 INSTANTIATE_TEST_SUITE_P(All, AeadTest, testing::ValuesIn(kAllAlgorithms));
 
-TEST_P(AeadTest, SealOpen) {
-  crypto::Aead::AeadAlgorithm alg = GetParam();
-  crypto::Aead aead(alg);
-  std::string key(aead.KeyLength(), 0);
-  aead.Init(&key);
-  std::string nonce(aead.NonceLength(), 0);
-  std::string plaintext("this is the plaintext");
-  std::string ad("this is the additional data");
+TEST_P(AeadTest, SealOpenString) {
+  const crypto::aead::Algorithm alg = GetParam();
+  crypto::Aead aead(alg, FixedKeyFor(alg, 0));
+  const auto nonce = FixedNonceFor(alg, 0);
+  const std::string_view plaintext = "this is the plaintext";
+  const std::string_view ad = "this is the additional data";
   std::string ciphertext;
-  EXPECT_TRUE(aead.Seal(plaintext, nonce, ad, &ciphertext));
-  EXPECT_LT(0U, ciphertext.size());
+  EXPECT_TRUE(
+      aead.Seal(plaintext, base::as_string_view(nonce), ad, &ciphertext));
+  EXPECT_GT(ciphertext.size(), plaintext.size());
 
   std::string decrypted;
-  EXPECT_TRUE(aead.Open(ciphertext, nonce, ad, &decrypted));
+  EXPECT_TRUE(
+      aead.Open(ciphertext, base::as_string_view(nonce), ad, &decrypted));
 
   EXPECT_EQ(plaintext, decrypted);
 }
 
 TEST_P(AeadTest, SealOpenSpan) {
-  crypto::Aead::AeadAlgorithm alg = GetParam();
-  crypto::Aead aead(alg);
-  std::vector<uint8_t> key(aead.KeyLength(), 0u);
-  aead.Init(key);
-  std::vector<uint8_t> nonce(aead.NonceLength(), 0u);
-  static constexpr uint8_t kPlaintext[] = "plaintext";
-  static constexpr uint8_t kAdditionalData[] = "additional data input";
-  std::vector<uint8_t> ciphertext =
-      aead.Seal(kPlaintext, nonce, kAdditionalData);
-  EXPECT_LT(sizeof(kPlaintext), ciphertext.size());
+  const crypto::aead::Algorithm alg = GetParam();
+  crypto::Aead aead(alg, FixedKeyFor(alg, 0));
+  const auto nonce = FixedNonceFor(alg, 0);
+  constexpr auto plaintext = std::to_array<uint8_t>({0x01, 0x23, 0x45, 0x67});
+  constexpr auto ad = std::to_array<uint8_t>({0x89, 0xab, 0xcd, 0xef});
+  std::vector<uint8_t> ciphertext = aead.Seal(plaintext, nonce, ad);
+  EXPECT_GT(ciphertext.size(), plaintext.size());
 
   std::optional<std::vector<uint8_t>> decrypted =
-      aead.Open(ciphertext, nonce, kAdditionalData);
+      aead.Open(ciphertext, nonce, ad);
   ASSERT_TRUE(decrypted);
-  ASSERT_EQ(decrypted->size(), sizeof(kPlaintext));
-  ASSERT_EQ(base::span(*decrypted), base::span(kPlaintext));
-
-  std::vector<uint8_t> wrong_key(aead.KeyLength(), 1u);
-  crypto::Aead aead_wrong_key(alg);
-  aead_wrong_key.Init(wrong_key);
-  decrypted = aead_wrong_key.Open(ciphertext, nonce, kAdditionalData);
-  EXPECT_FALSE(decrypted);
+  ASSERT_EQ(base::span(*decrypted), base::span(plaintext));
 }
 
 TEST_P(AeadTest, SealOpenWrongKey) {
-  crypto::Aead::AeadAlgorithm alg = GetParam();
-  crypto::Aead aead(alg);
-  std::string key(aead.KeyLength(), 0);
-  std::string wrong_key(aead.KeyLength(), 1);
-  aead.Init(&key);
-  crypto::Aead aead_wrong_key(alg);
-  aead_wrong_key.Init(&wrong_key);
+  const crypto::aead::Algorithm alg = GetParam();
+  crypto::Aead aead(alg, FixedKeyFor(alg, 0));
+  crypto::Aead aead_wrong_key(alg, FixedKeyFor(alg, 1));
 
-  std::string nonce(aead.NonceLength(), 0);
-  std::string plaintext("this is the plaintext");
-  std::string ad("this is the additional data");
-  std::string ciphertext;
-  EXPECT_TRUE(aead.Seal(plaintext, nonce, ad, &ciphertext));
-  EXPECT_LT(0U, ciphertext.size());
+  const auto nonce = FixedNonceFor(alg, 0);
+  constexpr auto plaintext = std::to_array<uint8_t>({0x01, 0x23, 0x45, 0x67});
+  constexpr auto ad = std::to_array<uint8_t>({0x89, 0xab, 0xcd, 0xef});
+  const auto ciphertext = aead.Seal(plaintext, nonce, ad);
+  EXPECT_GT(ciphertext.size(), plaintext.size());
 
-  std::string decrypted;
-  EXPECT_FALSE(aead_wrong_key.Open(ciphertext, nonce, ad, &decrypted));
-  EXPECT_EQ(0U, decrypted.size());
+  EXPECT_FALSE(aead_wrong_key.Open(ciphertext, nonce, ad));
 }
 
 TEST_P(AeadTest, SealOpenTooShortKey) {
-  crypto::Aead aead(GetParam());
   std::array<uint8_t, 1> key;
-  aead.Init(key);
+  crypto::Aead aead(GetParam(), key);
 
   std::string nonce(aead.NonceLength(), 0);
   std::string plaintext("this is the plaintext");

@@ -68,25 +68,15 @@ std::optional<std::vector<uint8_t>> Open(
 
 }  // namespace aead
 
-Aead::Aead(AeadAlgorithm algorithm) : algorithm_(algorithm) {}
-
 Aead::Aead(AeadAlgorithm algorithm, base::span<const uint8_t> key)
-    : Aead(algorithm) {
-  Init(key);
-}
-
-Aead::~Aead() = default;
-
-void Aead::Init(base::span<const uint8_t> key) {
+    : algorithm_(algorithm) {
   if (EVP_AEAD_CTX_init(ctx_.get(), AeadForAlgorithm(algorithm_), key.data(),
                         key.size(), EVP_AEAD_DEFAULT_TAG_LENGTH, nullptr)) {
     initialized_ = true;
   }
 }
 
-void Aead::Init(const std::string* key) {
-  Init(base::as_byte_span(*key));
-}
+Aead::~Aead() = default;
 
 std::vector<uint8_t> Aead::Seal(
     base::span<const uint8_t> plaintext,

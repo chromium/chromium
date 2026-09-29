@@ -76,12 +76,6 @@ class CRYPTO_EXPORT Aead {
   static constexpr auto AES_256_GCM_SIV = aead::AES_256_GCM_SIV;
   static constexpr auto CHACHA20_POLY1305 = aead::CHACHA20_POLY1305;
 
-  // If you use the one-arg form here, you must call Init() to configure a key.
-  // TODO(https://crbug.com/475891208): remove this; there are no callers (nor
-  // is there any reason) to construct an Aead instance before the key is
-  // available.
-  explicit Aead(AeadAlgorithm algorithm);
-
   // This tolerates an incorrect-length key by leaving the Aead object in an
   // uninitialized state.
   //
@@ -91,17 +85,6 @@ class CRYPTO_EXPORT Aead {
   Aead(const Aead&) = delete;
   Aead& operator=(const Aead&) = delete;
   ~Aead();
-
-  // These are only legal to call if the key was not supplied at construction
-  // time. The key is copied into the internal AEAD context, so there is no
-  // longer any need for it to outlive this object.
-  //
-  // If the key is of the wrong size for the specified algorithm, or the
-  // receiving object has not been Init()ed, then Seal() and Open() always fail.
-  //
-  // TODO(https://crbug.com/475891208): remove this.
-  void Init(base::span<const uint8_t> key);
-  void Init(const std::string* key);
 
   std::vector<uint8_t> Seal(base::span<const uint8_t> plaintext,
                             base::span<const uint8_t> nonce,
