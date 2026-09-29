@@ -8,6 +8,9 @@
 
 #include "chrome/browser/devtools/protocol/autofill_handler.h"
 #include "chrome/browser/devtools/protocol/browser_handler_android.h"
+#if BUILDFLAG(ENABLE_PRINTING)
+#include "chrome/browser/devtools/protocol/page_handler.h"
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 #include "chrome/browser/devtools/protocol/target_handler_android.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_client.h"
@@ -35,6 +38,17 @@ ChromeDevToolsSessionAndroid::ChromeDevToolsSessionAndroid(
           std::make_unique<AutofillHandler>(dispatcher(), agent_host->GetId());
     }
   }
+#if BUILDFLAG(ENABLE_PRINTING)
+  if (agent_host->GetWebContents() &&
+      agent_host->GetType() == content::DevToolsAgentHost::kTypePage) {
+    if (IsDomainAvailableToUntrustedClient<PageHandler>() ||
+        channel->GetClient()->IsTrusted()) {
+      page_handler_ = std::make_unique<PageHandler>(
+          agent_host, agent_host->GetWebContents(), dispatcher(),
+          channel->GetClient()->IsTrusted());
+    }
+  }
+#endif  // BUILDFLAG(ENABLE_PRINTING)
   if (IsDomainAvailableToUntrustedClient<BrowserHandlerAndroid>() ||
       channel->GetClient()->IsTrusted()) {
     browser_handler_ = std::make_unique<BrowserHandlerAndroid>(

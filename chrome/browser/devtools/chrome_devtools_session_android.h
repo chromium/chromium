@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "chrome/browser/devtools/chrome_devtools_session_base.h"
+#include "printing/buildflags/buildflags.h"
 
 namespace content {
 class DevToolsAgentHostClientChannel;
@@ -15,6 +16,9 @@ class DevToolsAgentHostClientChannel;
 
 class AutofillHandler;
 class BrowserHandlerAndroid;
+#if BUILDFLAG(ENABLE_PRINTING)
+class PageHandler;
+#endif  // BUILDFLAG(ENABLE_PRINTING)
 class TargetHandlerAndroid;
 
 class ChromeDevToolsSessionAndroid : public ChromeDevToolsSessionBase {
@@ -33,6 +37,9 @@ class ChromeDevToolsSessionAndroid : public ChromeDevToolsSessionBase {
  private:
   std::unique_ptr<AutofillHandler> autofill_handler_;
   std::unique_ptr<BrowserHandlerAndroid> browser_handler_;
+#if BUILDFLAG(ENABLE_PRINTING)
+  std::unique_ptr<PageHandler> page_handler_;
+#endif  // BUILDFLAG(ENABLE_PRINTING)
   std::unique_ptr<TargetHandlerAndroid> target_handler_;
 };
 

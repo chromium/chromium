@@ -288,6 +288,18 @@ static_library("devtools") {
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//ui/base",
     ]
+    if (enable_printing) {
+      sources += [
+        "protocol/page_handler.cc",
+        "protocol/page_handler.h",
+        "protocol/page_handler_android.cc",
+      ]
+      deps += [
+        "//chrome/browser/printing",
+        "//components/printing/browser/headless",
+        "//components/printing/browser/print_to_pdf",
+      ]
+    }
   } else {
     public_deps += [
       "//chrome/browser/ui:browser_tab_strip",
@@ -473,6 +485,7 @@ static_library("devtools") {
       "protocol/extensions_handler.h",
       "protocol/page_handler.cc",
       "protocol/page_handler.h",
+      "protocol/page_handler_desktop.cc",
       "protocol/pwa_handler.cc",
       "protocol/pwa_handler.h",
       "protocol/security_handler.cc",
@@ -704,6 +717,11 @@ if (enable_devtools_frontend) {
     }
 
     if (is_android) {
+      if (enable_printing) {
+        sources += [ "protocol/devtools_printtopdf_android_browsertest.cc" ]
+        deps += [ "//third_party/inspector_protocol:crdtp" ]
+      }
+
       deps += [
         "//chrome/browser/ui/android/tab_model:test_support",
         "//components/privacy_sandbox/privacy_sandbox_attestations",
