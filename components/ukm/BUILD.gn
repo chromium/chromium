@@ -174,7 +174,7 @@ source_set("unit_tests") {
     deps += [
       "//chromeos/components/kiosk:test_support",
       "//chromeos/components/mgs:test_support",
-      "//components/user_manager:test_support",
+      "//components/session_manager/test:test_support",
     ]
   }
 }

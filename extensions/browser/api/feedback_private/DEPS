@@ -8,3 +8,9 @@ include_rules = [
   "+third_party/boringssl",
   "+third_party/cros_system_api"
 ]
+
+specific_include_rules = {
+  "feedback_service_unittest\\.cc": [
+    "+components/session_manager/test/user_session_test_environment.h",
+  ],
+}

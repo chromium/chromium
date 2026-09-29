@@ -23,8 +23,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/components/kiosk/kiosk_test_utils.h"  // nogncheck
 #include "chromeos/components/mgs/managed_guest_session_test_utils.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace ukm {
@@ -430,17 +429,29 @@ TEST_F(UkmConsentStateObserverTest, VerifyConflictingProfilesRevokesConsent) {
 // Test consent state for kiosk.
 class KioskUkmConsentStateObserverTest : public UkmConsentStateObserverTest {
  public:
+  void SetUp() override {
+    UkmConsentStateObserverTest::SetUp();
+    ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
+        local_state_.registry());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
+    chromeos::SetUpFakeChromeAppKioskSession();
+  }
+
+  void TearDown() override {
+    user_session_test_environment_.reset();
+    UkmConsentStateObserverTest::TearDown();
+  }
+
   bool is_ukm_collection_enabled() const { return GetParam(); }
+
+ private:
+  TestingPrefServiceSimple local_state_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
 };
 
 TEST_P(KioskUkmConsentStateObserverTest, VerifyDefaultConsent) {
-  // Enter Kiosk session.
-  TestingPrefServiceSimple local_state;
-  user_manager::UserManager::RegisterPrefs(local_state.registry());
-  user_manager::ScopedUserManager user_manager(
-      std::make_unique<user_manager::FakeUserManager>(&local_state));
-  chromeos::SetUpFakeChromeAppKioskSession();
-
   sync_preferences::TestingPrefServiceSyncable prefs;
   RegisterUrlKeyedAnonymizedDataCollectionPref(prefs);
   TestUkmConsentStateObserver observer;

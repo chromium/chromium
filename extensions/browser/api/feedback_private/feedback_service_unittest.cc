@@ -29,9 +29,8 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "base/base64.h"
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user_manager.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "crypto/hpke.h"
 #include "crypto/keypair.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -183,7 +182,18 @@ void VerifyAttachment(std::string_view name,
 
 class FeedbackServiceTest : public ApiUnitTest {
  protected:
-  FeedbackServiceTest() {
+  FeedbackServiceTest() = default;
+  ~FeedbackServiceTest() override = default;
+
+  void SetUp() override {
+#if BUILDFLAG(IS_CHROMEOS)
+    ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
+        local_state_.registry());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+    ApiUnitTest::SetUp();
+
 #if BUILDFLAG(IS_CHROMEOS)
     test_url_loader_factory_.AddResponse(
         kVariationsFetchHpkeKey, kTestPublicKeyResponseBody, net::HTTP_OK);
@@ -191,20 +201,20 @@ class FeedbackServiceTest : public ApiUnitTest {
     test_shared_loader_factory_ =
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
             &test_url_loader_factory_);
-    CHECK(scoped_temp_dir_.CreateUniqueTempDir());
+    ASSERT_TRUE(scoped_temp_dir_.CreateUniqueTempDir());
     mock_uploader_ = std::make_unique<StrictMock<MockFeedbackUploader>>(
         /*is_off_the_record=*/false, scoped_temp_dir_.GetPath(),
         test_shared_loader_factory_);
     feedback_data_ = base::MakeRefCounted<FeedbackData>(
         mock_uploader_->AsWeakPtr(), nullptr);
-#if BUILDFLAG(IS_CHROMEOS)
-    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
-#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
-  ~FeedbackServiceTest() override = default;
+  void TearDown() override {
+    ApiUnitTest::TearDown();
+#if BUILDFLAG(IS_CHROMEOS)
+    user_session_test_environment_.reset();
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
 
   void TestSendFeedbackConcerningTabTitles(bool send_tab_titles) {
     feedback_data_->AddLog(kFakeKey, kFakeValue);
@@ -334,7 +344,9 @@ class FeedbackServiceTest : public ApiUnitTest {
   }
 
 #if BUILDFLAG(IS_CHROMEOS)
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+  TestingPrefServiceSimple local_state_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::ScopedTempDir scoped_temp_dir_;

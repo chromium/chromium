@@ -13,17 +13,22 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user_manager_impl.h"
+#include "components/session_manager/test/user_session_test_environment.h"
+#include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace user_manager {
 namespace {
+
+constexpr AccountId::Literal kDefaultAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("default_account@gmail.com",
+                                            GaiaId::Literal("fake-gaia-id"));
+
 std::optional<std::string> GetStringPrefValue(KnownUser* known_user,
                                               const AccountId& account_id,
                                               const char* pref_name) {
@@ -40,21 +45,22 @@ std::optional<std::string> GetStringPrefValue(KnownUser* known_user,
 // local_state.
 class KnownUserTest : public testing::Test {
  public:
-  KnownUserTest() {
-    UserManager::RegisterPrefs(local_state_.registry());
-    fake_user_manager_.Reset(std::make_unique<FakeUserManager>(&local_state_));
-  }
+  KnownUserTest() = default;
   ~KnownUserTest() override = default;
 
   KnownUserTest(const KnownUserTest& other) = delete;
   KnownUserTest& operator=(const KnownUserTest& other) = delete;
 
- protected:
-  const AccountId kDefaultAccountId =
-      AccountId::FromUserEmailGaiaId("default_account@gmail.com",
-                                     GaiaId("fake-gaia-id"));
-  FakeUserManager* fake_user_manager() { return fake_user_manager_.Get(); }
+  void SetUp() override {
+    ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
+        local_state_.registry());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
+  }
 
+  void TearDown() override { user_session_test_environment_.reset(); }
+
+ protected:
   PrefService* local_state() { return &local_state_; }
 
   const base::DictValue* FindPrefs(const AccountId& account_id) {
@@ -65,9 +71,9 @@ class KnownUserTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
 
-  // Owned by |scoped_user_manager_|.
   TestingPrefServiceSimple local_state_;
-  TypedScopedUserManager<FakeUserManager> fake_user_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
 };
 
 TEST_F(KnownUserTest, FindPrefsNonExisting) {
@@ -93,11 +99,11 @@ TEST_F(KnownUserTest, FindPrefsIgnoresEphemeralGaiaUsers) {
       AccountId::FromUserEmailGaiaId("account1@gmail.com", GaiaId("gaia_id_1"));
   const AccountId kAccountIdEphemeralGaia =
       AccountId::FromUserEmailGaiaId("account2@gmail.com", GaiaId("gaia_id_2"));
-  fake_user_manager()->SetEphemeralModeConfig(UserManager::EphemeralModeConfig(
+  UserManager::Get()->SetEphemeralModeConfig(UserManager::EphemeralModeConfig(
       /*included_by_default=*/false, {kAccountIdEphemeralGaia},
       /*exclude_list=*/{}));
-  fake_user_manager()->SetOwnerId(kAccountIdNonEphemeralGaia);
-  ASSERT_TRUE(fake_user_manager()->IsUserNonCryptohomeDataEphemeral(
+  UserManager::Get()->SetOwnerId(kAccountIdNonEphemeralGaia);
+  ASSERT_TRUE(UserManager::Get()->IsUserNonCryptohomeDataEphemeral(
       kAccountIdEphemeralGaia));
 
   const std::string kCustomPrefName = "custom_pref";
@@ -221,11 +227,11 @@ TEST_F(KnownUserTest, SaveKnownUserIgnoresEphemeralGaiaUsers) {
   const AccountId kAccountIdEphemeralGaia =
       AccountId::FromUserEmailGaiaId("account2@gmail.com", GaiaId("gaia_id_2"));
 
-  fake_user_manager()->SetEphemeralModeConfig(UserManager::EphemeralModeConfig(
+  UserManager::Get()->SetEphemeralModeConfig(UserManager::EphemeralModeConfig(
       /*included_by_default=*/false, {kAccountIdEphemeralGaia},
       /*exclude_list=*/{}));
-  fake_user_manager()->SetOwnerId(kAccountIdNonEphemeralGaia);
-  ASSERT_TRUE(fake_user_manager()->IsUserNonCryptohomeDataEphemeral(
+  UserManager::Get()->SetOwnerId(kAccountIdNonEphemeralGaia);
+  ASSERT_TRUE(UserManager::Get()->IsUserNonCryptohomeDataEphemeral(
       kAccountIdEphemeralGaia));
 
   known_user.SaveKnownUser(kAccountIdNonEphemeralGaia);

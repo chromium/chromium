@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/user_manager/device_ownership_waiter_impl.h"
-
 #include <memory>
 
 #include "base/test/scoped_chromeos_version_info.h"
@@ -11,8 +9,10 @@
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/test/user_session_test_environment.h"
+#include "components/user_manager/device_ownership_waiter_impl.h"
+#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,15 +24,25 @@ class DeviceOwnershipWaiterTest : public testing::Test {
 
   ~DeviceOwnershipWaiterTest() override = default;
 
-  void SetOwnerId(const AccountId& id) { fake_user_manager_->SetOwnerId(id); }
+  void SetUp() override {
+    ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
+        local_state_.registry());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
+  }
+
+  void TearDown() override { user_session_test_environment_.reset(); }
+
+  void SetOwnerId(const AccountId& id) { UserManager::Get()->SetOwnerId(id); }
 
  private:
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ash::ScopedStubInstallAttributes> stub_install_attributes_{
       std::make_unique<ash::ScopedStubInstallAttributes>(
           ash::StubInstallAttributes::CreateUnset())};
-  user_manager::TypedScopedUserManager<FakeUserManager>
-      fake_user_manager_{std::make_unique<FakeUserManager>()};
+  TestingPrefServiceSimple local_state_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
 };
 
 TEST_F(DeviceOwnershipWaiterTest, DelaysCorrectly) {
