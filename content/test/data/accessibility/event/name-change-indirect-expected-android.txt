@@ -1,6 +1,1 @@
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 === END INITIAL PAGE LOAD ===
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on class_name=android.view.View
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=SUBTREE] on [oranges] class_name=android.widget.TextView
-TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=SUBTREE] on [oranges] class_name=android.widget.TextView
-TYPE_WINDOW_CONTENT_CHANGED [contentTypes=TEXT] on [oranges] class_name=android.widget.TextView
