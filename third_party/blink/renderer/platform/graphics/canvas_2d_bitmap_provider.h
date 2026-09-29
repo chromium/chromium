@@ -68,7 +68,7 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
 
   ~Canvas2DBitmapProvider() override;
 
-  bool IsValid() const { return GetSkSurface(); }
+  bool IsValid() const { return surface_ != nullptr; }
   void SetDelegate(CanvasResourceProviderDelegate* delegate) {
     delegate_ = delegate;
   }
@@ -117,7 +117,6 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
   void ApplyAnimatedImageFrameIndexesForId(SkCanvas* canvas, uint32_t id);
 
   SkSurfaceProps GetSkSurfaceProps() const;
-  SkSurface* GetSkSurface() const;
   sk_sp<SkSurface> CreateSkSurface() const;
 
   CanvasImageProvider* GetOrCreateSWCanvasImageProvider();
@@ -129,7 +128,7 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
   gfx::ColorSpace color_space_;
   gfx::HDRMetadata hdr_metadata_;
   raw_ptr<CanvasResourceProviderDelegate> delegate_ = nullptr;
-  mutable sk_sp<SkSurface> surface_;
+  const sk_sp<SkSurface> surface_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
   const cc::PaintImage::Id snapshot_paint_image_id_;
   cc::PaintImage::ContentId snapshot_paint_image_content_id_ =

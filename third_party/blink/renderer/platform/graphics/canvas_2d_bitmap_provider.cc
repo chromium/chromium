@@ -50,6 +50,7 @@ Canvas2DBitmapProvider::Canvas2DBitmapProvider(
       color_space_(color_space),
       hdr_metadata_(hdr_metadata),
       delegate_(delegate),
+      surface_(CreateSkSurface()),
       snapshot_paint_image_id_(cc::PaintImage::GetNextId()) {
   CanvasMemoryDumpProvider::Instance()->RegisterClient(this);
 }
@@ -59,13 +60,6 @@ Canvas2DBitmapProvider::~Canvas2DBitmapProvider() {
   if (context_provider_wrapper_) {
     context_provider_wrapper_->RemoveObserver(this);
   }
-}
-
-SkSurface* Canvas2DBitmapProvider::GetSkSurface() const {
-  if (!surface_) {
-    surface_ = CreateSkSurface();
-  }
-  return surface_.get();
 }
 
 void Canvas2DBitmapProvider::OnMemoryDump(
@@ -142,7 +136,7 @@ scoped_refptr<StaticBitmapImage> Canvas2DBitmapProvider::Snapshot(
 
   cc::PaintImage paint_image;
 
-  auto sk_image = GetSkSurface()->makeImageSnapshot();
+  auto sk_image = surface_->makeImageSnapshot();
   if (sk_image) {
     auto last_snapshot_sk_image_id = snapshot_sk_image_id_;
     snapshot_sk_image_id_ = sk_image->uniqueID();
@@ -225,7 +219,7 @@ void Canvas2DBitmapProvider::ClearAtCreation() {
 void Canvas2DBitmapProvider::RasterRecord(cc::PaintRecord last_recording) {
   if (!skia_canvas_) {
     skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
-        GetSkSurface()->getCanvas(), GetOrCreateSWCanvasImageProvider());
+        surface_->getCanvas(), GetOrCreateSWCanvasImageProvider());
   }
   cc::PlaybackCallbacks::CustomDataRasterCallback custom_callback;
   if (delegate_) {
@@ -248,11 +242,10 @@ bool Canvas2DBitmapProvider::WritePixels(const SkImageInfo& orig_info,
 
   if (!skia_canvas_) {
     skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
-        GetSkSurface()->getCanvas(), GetOrCreateSWCanvasImageProvider());
+        surface_->getCanvas(), GetOrCreateSWCanvasImageProvider());
   }
 
-  return GetSkSurface()->getCanvas()->writePixels(orig_info, pixels, row_bytes,
-                                                  x, y);
+  return surface_->getCanvas()->writePixels(orig_info, pixels, row_bytes, x, y);
 }
 
 std::unique_ptr<Canvas2DBitmapProvider> Canvas2DBitmapProvider::CreateWithClear(
