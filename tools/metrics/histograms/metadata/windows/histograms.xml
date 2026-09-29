@@ -731,6 +731,39 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Windows.VmDetection.Agreement" enum="VmDetectionAgreement"
+    expires_after="2026-12-18">
+  <owner>sorin@chromium.org</owner>
+  <owner>ganesh@chromium.org</owner>
+  <summary>
+    Which of the CPUID-based and SMBIOS-based implementations detected a virtual
+    machine guest. Recorded each time browser activity is reported, at most once
+    every 5 hours. Not yet emitted (crbug.com/563548288).
+  </summary>
+</histogram>
+
+<histogram name="Windows.VmDetection.FirmwareVmVendor" enum="FirmwareVmVendor"
+    expires_after="2026-12-18">
+  <owner>sorin@chromium.org</owner>
+  <owner>ganesh@chromium.org</owner>
+  <summary>
+    The virtualization vendor identified from the SMBIOS/firmware strings.
+    Recorded each time browser activity is reported, at most once every 5 hours.
+    Not yet emitted (crbug.com/563548288).
+  </summary>
+</histogram>
+
+<histogram name="Windows.VmDetection.HypervisorType" enum="HypervisorType"
+    expires_after="2026-12-18">
+  <owner>sorin@chromium.org</owner>
+  <owner>ganesh@chromium.org</owner>
+  <summary>
+    The hypervisor identified via the CPUID hypervisor leaves. Recorded each
+    time browser activity is reported, at most once every 5 hours. Not yet
+    emitted (crbug.com/563548288).
+  </summary>
+</histogram>
+
 <histogram name="Windows.Win11HardwareRequirements2.{Type}Check"
     enum="BooleanEnabled" expires_after="2027-03-07">
   <owner>estalin@chromium.org</owner>

@@ -48,6 +48,10 @@ source_set("activity_reporter") {
     if (use_activity_reporter_internal_constants) {
       sources += [ "internal/constants.h" ]
     }
+
+    if (is_win) {
+      deps += [ ":vm_detection" ]
+    }
   } else {
     sources += [ "activity_reporter_disabled.cc" ]
   }
@@ -55,20 +59,47 @@ source_set("activity_reporter") {
   friend = [ ":unit_tests" ]
 }
 
+if (is_win) {
+  # Experimental VM-guest detection. See virtual_machine_win.h. Not gated on
+  # `report_activity`, so that its tests also run in unbranded builds.
+  source_set("vm_detection") {
+    visibility = [
+      ":activity_reporter",
+      ":unit_tests",
+    ]
+    public = [ "virtual_machine_win.h" ]
+    sources = [
+      "virtual_machine_metrics_win.cc",
+      "virtual_machine_stub_win.cc",
+    ]
+    deps = [ "//base" ]
+  }
+}
+
 source_set("unit_tests") {
   testonly = true
+  sources = []
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+
   if (report_activity) {
-    sources = [
+    sources += [
       "activity_reporter_for_testing.h",
       "activity_reporter_impl_unittest.cc",
     ]
-    deps = [
+    deps += [
       ":activity_reporter",
-      "//base/test:test_support",
       "//components/prefs:test_support",
       "//components/update_client",
       "//testing/gmock",
-      "//testing/gtest",
     ]
+  }
+
+  if (is_win) {
+    sources += [ "virtual_machine_win_unittest.cc" ]
+    deps += [ ":vm_detection" ]
   }
 }

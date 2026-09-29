@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "base/version_info/channel.h"
 #include "base/version_info/version_info.h"
+#include "build/build_config.h"
 #include "components/activity_reporter/activity_reporter.h"
 #include "components/activity_reporter/buildflags.h"
 #include "components/activity_reporter/configurator.h"
@@ -25,6 +26,10 @@
 #include "components/update_client/network.h"
 #include "components/update_client/persisted_data.h"
 #include "components/update_client/update_client.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "components/activity_reporter/virtual_machine_win.h"
+#endif
 
 namespace activity_reporter {
 
@@ -83,6 +88,11 @@ class ActivityReporterImpl : public ActivityReporter {
       return;
     }
     last_reported_ = base::Time::Now();
+#if BUILDFLAG(IS_WIN)
+    // Recorded once per Chrome active ping sent, so that the samples are
+    // weighted by active use.
+    RecordVirtualMachineHistogramsAsync();
+#endif
     update_client_->CheckForUpdate(
         std::string{kChromeActivityId},
         base::BindOnce(
