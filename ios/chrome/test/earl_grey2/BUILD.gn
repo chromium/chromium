@@ -236,10 +236,9 @@ _web_eg2tests_deps = [ "//ios/chrome/browser/web/model:eg2_tests" ]
 chrome_ios_eg2_test("ios_chrome_all_eg2tests_module") {
   xcode_test_application_name = "ios_chrome_eg2tests"
 
-  deps = _autofill_automation_eg2tests_deps + _bookmarks_eg2tests_deps +
-         _integration_eg2tests_deps + _settings_eg2tests_deps +
-         _signin_eg2tests_deps + _smoke_eg2tests_deps + _ui_eg2tests_deps +
-         _web_eg2tests_deps
+  deps = _bookmarks_eg2tests_deps + _integration_eg2tests_deps +
+         _settings_eg2tests_deps + _signin_eg2tests_deps +
+         _smoke_eg2tests_deps + _ui_eg2tests_deps + _web_eg2tests_deps
   data_deps = [ ":ios_chrome_eg2tests" ]
 }
 
