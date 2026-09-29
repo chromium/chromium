@@ -1,0 +1,24 @@
+<!--
+@BLINK-ALLOW:radioGroupIds=*
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+@MAC-ALLOW:AXLinkedUIElements
+@MAC-DENY:AXLinkedUIElements=[]
+@WIN-ALLOW:setsize*
+@WIN-ALLOW:posinset*
+@AURALINUX-ALLOW:setsize*
+@AURALINUX-ALLOW:posinset*
+-->
+<!DOCTYPE html>
+<html>
+  <body>
+    <div role="radiogroup" aria-labelledby="summary">
+      <button role="radio">Huey</button>
+      <div role="radio">Dewey</div>
+      <div aria-hidden="true">
+        <button role="radio">Louie</button>
+        <div role="radio">Steve</div>
+      </div>
+    </div>
+  </body>
+</html>

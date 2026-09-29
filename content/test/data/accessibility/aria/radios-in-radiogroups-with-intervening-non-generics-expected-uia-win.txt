@@ -1,0 +1,40 @@
+Document
+++Group Name='Summary of radios' Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++Group
+++++++Button Name='Summary of radios' ExpandCollapse.ExpandCollapseState='Expanded'
+++++++++Text Name='Summary of radios'
+++++++Group IsControlElement=false
+++++++++RadioButton Name='Huey' SelectionItem.IsSelected=false
+++++++++RadioButton Name='Dewey' SelectionItem.IsSelected=false
+++++++++RadioButton Name='Louie' SelectionItem.IsSelected=false
+++Group Name='foo radiogroup bar' Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++Group IsControlElement=false
+++++++Text Name='foo radiogroup bar'
+++++List
+++++++ListItem Name='Huey'
+++++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++++++++RadioButton Name='Huey' SelectionItem.IsSelected=false
+++++++ListItem Name='Dewey'
+++++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++++++++RadioButton Name='Dewey' SelectionItem.IsSelected=false
+++++++ListItem Name='Louie'
+++++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++++++++RadioButton Name='Louie' SelectionItem.IsSelected=false
+++Group Name='outer group' Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++Group IsControlElement=false
+++++++Text Name='outer group'
+++++List
+++++++ListItem Name='Huey'
+++++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++++++++RadioButton Name='Huey' SelectionItem.IsSelected=false
+++++++ListItem Name='Dewey%E2%97%A6 Bing%E2%97%A6 Bang'
+++++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++++++++RadioButton Name='Dewey' SelectionItem.IsSelected=false
+++++++++Group Name='inner group' Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++++++++Text Name='%E2%97%A6 '
+++++++++++RadioButton Name='Bing' SelectionItem.IsSelected=false
+++++++++++Text Name='%E2%97%A6 '
+++++++++++RadioButton Name='Bang' SelectionItem.IsSelected=false
+++++++ListItem Name='Louie'
+++++++++Text Name='%E2%80%A2 ' IsControlElement=false
+++++++++RadioButton Name='Louie' SelectionItem.IsSelected=false

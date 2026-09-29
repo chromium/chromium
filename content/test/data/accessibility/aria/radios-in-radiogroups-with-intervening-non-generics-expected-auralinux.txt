@@ -1,0 +1,40 @@
+[document web]
+++[panel] name='Summary of radios' labelled-by=[toggle button] setsize:4
+++++[panel]
+++++++[toggle button] name='Summary of radios' label-for=[panel] posinset:1 setsize:4
+++++++++[static] name='Summary of radios'
+++++++[section]
+++++++++[radio button] name='Huey' checkable checkable:true posinset:1 setsize:3
+++++++++[radio button] name='Dewey' checkable checkable:true posinset:2 setsize:3
+++++++++[radio button] name='Louie' checkable checkable:true posinset:3 setsize:3
+++[panel] name='foo radiogroup bar' labelled-by=[section] setsize:0
+++++[section] label-for=[panel]
+++++++[static] name='foo radiogroup bar'
+++++[list] setsize:3
+++++++[list item] posinset:1 setsize:3
+++++++++[static] name='%E2%80%A2 '
+++++++++[radio button] name='Huey' checkable checkable:true posinset:1 setsize:3
+++++++[list item] posinset:2 setsize:3
+++++++++[static] name='%E2%80%A2 '
+++++++++[radio button] name='Dewey' checkable checkable:true posinset:2 setsize:3
+++++++[list item] posinset:3 setsize:3
+++++++++[static] name='%E2%80%A2 '
+++++++++[radio button] name='Louie' checkable checkable:true posinset:3 setsize:3
+++[panel] name='outer group' labelled-by=[section] setsize:0
+++++[section] label-for=[panel]
+++++++[static] name='outer group'
+++++[list] setsize:3
+++++++[list item] posinset:1 setsize:3
+++++++++[static] name='%E2%80%A2 '
+++++++++[radio button] name='Huey' checkable checkable:true posinset:1 setsize:3
+++++++[list item] posinset:2 setsize:3
+++++++++[static] name='%E2%80%A2 '
+++++++++[radio button] name='Dewey' checkable checkable:true posinset:2 setsize:3
+++++++++[panel] name='inner group' setsize:2
+++++++++++[static] name='%E2%97%A6 '
+++++++++++[radio button] name='Bing' checkable checkable:true posinset:1 setsize:2
+++++++++++[static] name='%E2%97%A6 '
+++++++++++[radio button] name='Bang' checkable checkable:true posinset:2 setsize:2
+++++++[list item] posinset:3 setsize:3
+++++++++[static] name='%E2%80%A2 '
+++++++++[radio button] name='Louie' checkable checkable:true posinset:3 setsize:3

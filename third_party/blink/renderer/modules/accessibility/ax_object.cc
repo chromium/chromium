@@ -7226,6 +7226,7 @@ void AXObject::ChildrenChangedWithCleanLayout() {
                         << this;
 
   AXObjectCache().MarkAXObjectDirtyWithCleanLayout(this);
+  AXObjectCache().AriaRadioGroupChildrenChanged(this);
 }
 
 LayoutObject* AXObject::GetLayoutObject() const {

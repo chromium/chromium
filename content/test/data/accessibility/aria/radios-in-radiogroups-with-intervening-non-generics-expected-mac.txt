@@ -1,0 +1,40 @@
+AXWebArea
+++AXRadioGroup AXDescription='Summary of radios' AXTitle='Summary of radios'
+++++AXGroup
+++++++AXButton AXTitle='Summary of radios'
+++++++++AXStaticText AXValue='Summary of radios'
+++++++AXGroup
+++++++++AXRadioButton AXLinkedUIElements=[:7, :8, :9] AXTitle='Huey' AXValue=0
+++++++++AXRadioButton AXLinkedUIElements=[:7, :8, :9] AXTitle='Dewey' AXValue=0
+++++++++AXRadioButton AXLinkedUIElements=[:7, :8, :9] AXTitle='Louie' AXValue=0
+++AXRadioGroup AXDescription='foo radiogroup bar' AXTitle='foo radiogroup bar'
+++++AXGroup
+++++++AXStaticText AXValue='foo radiogroup bar'
+++++AXList AXSubrole=AXContentList
+++++++AXGroup
+++++++++AXListMarker AXValue='%E2%80%A2 '
+++++++++AXRadioButton AXLinkedUIElements=[:16, :19, :22] AXTitle='Huey' AXValue=0
+++++++AXGroup
+++++++++AXListMarker AXValue='%E2%80%A2 '
+++++++++AXRadioButton AXLinkedUIElements=[:16, :19, :22] AXTitle='Dewey' AXValue=0
+++++++AXGroup
+++++++++AXListMarker AXValue='%E2%80%A2 '
+++++++++AXRadioButton AXLinkedUIElements=[:16, :19, :22] AXTitle='Louie' AXValue=0
+++AXRadioGroup AXDescription='outer group' AXTitle='outer group'
+++++AXGroup
+++++++AXStaticText AXValue='outer group'
+++++AXList AXSubrole=AXContentList
+++++++AXGroup
+++++++++AXListMarker AXValue='%E2%80%A2 '
+++++++++AXRadioButton AXLinkedUIElements=[:29, :32, :40] AXTitle='Huey' AXValue=0
+++++++AXGroup
+++++++++AXListMarker AXValue='%E2%80%A2 '
+++++++++AXRadioButton AXLinkedUIElements=[:29, :32, :40] AXTitle='Dewey' AXValue=0
+++++++++AXRadioGroup AXDescription='inner group' AXTitle='inner group'
+++++++++++AXStaticText AXValue='%E2%97%A6 '
+++++++++++AXRadioButton AXLinkedUIElements=[:35, :37] AXTitle='Bing' AXValue=0
+++++++++++AXStaticText AXValue='%E2%97%A6 '
+++++++++++AXRadioButton AXLinkedUIElements=[:35, :37] AXTitle='Bang' AXValue=0
+++++++AXGroup
+++++++++AXListMarker AXValue='%E2%80%A2 '
+++++++++AXRadioButton AXLinkedUIElements=[:29, :32, :40] AXTitle='Louie' AXValue=0

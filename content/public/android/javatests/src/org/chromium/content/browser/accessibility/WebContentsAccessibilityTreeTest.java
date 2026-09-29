@@ -924,6 +924,18 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_radiosInRadiogroupsWithInterveningNonGenerics() {
+        performAriaTest("radios-in-radiogroups-with-intervening-non-generics.html");
+    }
+
+    @Test
+    @SmallTest
+    public void test_radioGroupCalculationWithIgnoredRadios() {
+        performAriaTest("radio-group-calculation-with-ignored-radios.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaReadonly() {
         performAriaTest("aria-readonly.html");
     }

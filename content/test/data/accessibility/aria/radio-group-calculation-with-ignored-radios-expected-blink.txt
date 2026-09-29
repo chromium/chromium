@@ -1,0 +1,12 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++radioGroup setSize=2
+++++++++radioButton name='Huey' setSize=2 posInSet=1 checkedState=false radioGroupIds=radioButton,radioButton
+++++++++++staticText name='Huey'
+++++++++++++inlineTextBox name='Huey'
+++++++++radioButton name='Dewey' setSize=2 posInSet=2 checkedState=false radioGroupIds=radioButton,radioButton
+++++++++++staticText name='Dewey'
+++++++++++++inlineTextBox name='Dewey'
+++++++++radioButton ignored invisible name='Louie' checkedState=false radioGroupIds=radioButton,radioButton
+++++++++++staticText ignored invisible

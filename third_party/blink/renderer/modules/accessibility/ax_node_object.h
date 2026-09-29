@@ -182,11 +182,18 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   // Is a redundant label of a radio button or checkbox.
   static bool IsRedundantLabel(HTMLLabelElement* label);
 
-  // Used to compute kRadioGroupIds, which is only used on Mac.
+  // Used to compute kRadioGroupIds.
   // TODO(accessibility) Consider computing on browser side and removing here.
   AXObjectVector RadioButtonsInGroup() const override;
   static HeapVector<Member<HTMLInputElement>> FindAllRadioButtonsWithSameName(
       HTMLInputElement* radio_button);
+
+  // Find nearest radiogroup parent of role=radio.
+  static AXObject* NearestAriaRadioGroupAncestor(const AXObject* radio);
+  // Collects all role=radio descendants of `radiogroup`, without descending
+  // into nested radiogroups.
+  static HeapVector<Member<AXObject>> CollectAriaRadioButtonsInGroup(
+      AXObject* radiogroup);
 
   ax::mojom::blink::WritingDirection GetTextDirection() const final;
   ax::mojom::blink::TextPosition GetTextPosition() const final;
@@ -458,6 +465,9 @@ class MODULES_EXPORT AXNodeObject : public AXObject {
   friend class AXObject;  // For GetNode().
   friend class AXObjectCacheImpl;
   FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, RadioButtonsInGroupInTableRows);
+  FRIEND_TEST_ALL_PREFIXES(AccessibilityTest,
+                           AriaRadioButtonsInGroupNotCrossingNestedRadiogroups);
+  FRIEND_TEST_ALL_PREFIXES(AccessibilityTest, AriaRadioGroupCacheClearedOnThaw);
 };
 
 template <>

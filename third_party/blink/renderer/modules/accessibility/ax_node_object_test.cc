@@ -958,6 +958,38 @@ TEST_F(AccessibilityTest, RadioButtonsInGroupInTableRows) {
   EXPECT_EQ(6u, radio_group_ids.size());
 }
 
+// ARIA (role=radio/radiogroup) radio buttons need not be direct siblings of
+// one another: RadioButtonsInGroup() walks up to the nearest enclosing
+// radiogroup ancestor, then collects role=radio descendants without crossing
+// into a nested radiogroup's own boundary.
+TEST_F(AccessibilityTest, AriaRadioButtonsInGroupNotCrossingNestedRadiogroups) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="outer" role="radiogroup">
+        <div role="radio" id="r1"></div>
+        <div id="wrapper">
+          <div role="radio" id="r2"></div>
+        </div>
+        <div role="radiogroup" id="inner">
+          <div role="radio" id="r3"></div>
+        </div>
+      </div>
+  )HTML");
+
+  const AXObject* r1 = GetAXObjectByElementId("r1");
+  ASSERT_NE(nullptr, r1);
+  ASSERT_EQ(ax::mojom::Role::kRadioButton, r1->RoleValue());
+  ScopedFreezeAXCache freeze(GetAXObjectCache());
+  AXObject::AXObjectVector outer_group =
+      To<AXNodeObject>(r1)->RadioButtonsInGroup();
+  EXPECT_EQ(2u, outer_group.size());
+
+  const AXObject* r3 = GetAXObjectByElementId("r3");
+  ASSERT_NE(nullptr, r3);
+  AXObject::AXObjectVector inner_group =
+      To<AXNodeObject>(r3)->RadioButtonsInGroup();
+  EXPECT_EQ(1u, inner_group.size());
+}
+
 // Regression test for crbug.com/501371770. Verifies that an aria-owned element
 // is not pruned via RemoveSubtree while its own AddChildren() is in progress.
 // The exact crash requires a deeply nested cascade during tree building (found

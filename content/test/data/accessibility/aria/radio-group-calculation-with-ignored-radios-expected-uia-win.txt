@@ -1,0 +1,4 @@
+Document
+++Group Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++RadioButton Name='Huey' SelectionItem.IsSelected=false
+++++RadioButton Name='Dewey' SelectionItem.IsSelected=false

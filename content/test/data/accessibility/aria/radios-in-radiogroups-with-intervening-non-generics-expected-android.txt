@@ -1,0 +1,37 @@
+android.webkit.WebView focusable focused
+++android.widget.RadioGroup role_description='radio group' container_title='Summary of radios'
+++++android.view.View
+++++++android.view.View role_description='disclosure triangle' clickable expanded focusable interesting name='Summary of radios' item_index=0 row_index=0 expanded_state=3
+++++++android.view.View
+++++++++android.widget.RadioButton checkable clickable focusable interesting name='Huey' state_description='Not checked. In group, option 1 of 3' item_index=0 row_index=0
+++++++++android.widget.RadioButton checkable clickable focusable interesting name='Dewey' state_description='Not checked. In group, option 2 of 3' item_index=1 row_index=1
+++++++++android.widget.RadioButton checkable clickable focusable interesting name='Louie' state_description='Not checked. In group, option 3 of 3' item_index=2 row_index=2
+++android.widget.RadioGroup role_description='radio group' container_title='foo radiogroup bar'
+++++android.widget.TextView interesting name='foo radiogroup bar'
+++++android.widget.ListView collection item_count=3 row_count=3 column_count=1
+++++++android.view.View collection_item item_index=0 row_index=0 row_span=1 column_span=1
+++++++++android.view.View interesting name='%E2%80%A2 '
+++++++++android.widget.RadioButton checkable clickable focusable interesting name='Huey' state_description='Not checked. In group, option 1 of 3' item_index=0 row_index=0
+++++++android.view.View collection_item item_index=1 row_index=1 row_span=1 column_span=1
+++++++++android.view.View interesting name='%E2%80%A2 '
+++++++++android.widget.RadioButton checkable clickable focusable interesting name='Dewey' state_description='Not checked. In group, option 2 of 3' item_index=1 row_index=1
+++++++android.view.View collection_item item_index=2 row_index=2 row_span=1 column_span=1
+++++++++android.view.View interesting name='%E2%80%A2 '
+++++++++android.widget.RadioButton checkable clickable focusable interesting name='Louie' state_description='Not checked. In group, option 3 of 3' item_index=2 row_index=2
+++android.widget.RadioGroup role_description='radio group' container_title='outer group'
+++++android.widget.TextView interesting name='outer group'
+++++android.widget.ListView collection item_count=3 row_count=3 column_count=1
+++++++android.view.View collection_item item_index=0 row_index=0 row_span=1 column_span=1
+++++++++android.view.View interesting name='%E2%80%A2 '
+++++++++android.widget.RadioButton checkable clickable focusable interesting name='Huey' state_description='Not checked. In group, option 1 of 3' item_index=0 row_index=0
+++++++android.view.View collection_item item_index=1 row_index=1 row_span=1 column_span=1
+++++++++android.view.View interesting name='%E2%80%A2 '
+++++++++android.widget.RadioButton checkable clickable focusable interesting name='Dewey' state_description='Not checked. In group, option 2 of 3' item_index=1 row_index=1
+++++++++android.widget.RadioGroup role_description='radio group' container_title='inner group'
+++++++++++android.widget.TextView interesting name='%E2%97%A6 '
+++++++++++android.widget.RadioButton checkable clickable focusable interesting name='Bing' state_description='Not checked. In group, option 1 of 2' item_index=0 row_index=0
+++++++++++android.widget.TextView interesting name='%E2%97%A6 '
+++++++++++android.widget.RadioButton checkable clickable focusable interesting name='Bang' state_description='Not checked. In group, option 2 of 2' item_index=1 row_index=1
+++++++android.view.View collection_item item_index=2 row_index=2 row_span=1 column_span=1
+++++++++android.view.View interesting name='%E2%80%A2 '
+++++++++android.widget.RadioButton checkable clickable focusable interesting name='Louie' state_description='Not checked. In group, option 3 of 3' item_index=2 row_index=2

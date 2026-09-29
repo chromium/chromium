@@ -1849,6 +1849,19 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-radio-in-shadow-root.html"));
 }
 
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityTreeTest,
+    AccessibilityRadiosInRadiogroupsWithInterveningNonGenerics) {
+  RunAriaTest(FILE_PATH_LITERAL(
+      "radios-in-radiogroups-with-intervening-non-generics.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityRadioGroupCalculationWithIgnoredRadios) {
+  RunAriaTest(
+      FILE_PATH_LITERAL("radio-group-calculation-with-ignored-radios.html"));
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaReadonly) {
   RunAriaTest(FILE_PATH_LITERAL("aria-readonly.html"));
 }

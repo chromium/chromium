@@ -4063,19 +4063,53 @@ AXObject::AXObjectVector AXNodeObject::RadioButtonsInGroup() const {
     return radio_buttons;
   }
 
-  // If the immediate parent is a radio group, return all its children that are
-  // radio buttons.
-  AXObject* parent = ParentObjectUnignored();
-  if (parent && parent->RoleValue() == ax::mojom::blink::Role::kRadioGroup) {
-    for (AXObject* child : parent->UnignoredChildrenSlow()) {
-      DCHECK(child);
+  // For ARIA radio buttons, find the containing radiogroup and collect all
+  // radio buttons within it, but not in nested radiogroups.
+  AXObject* radiogroup = NearestAriaRadioGroupAncestor(this);
+  if (!radiogroup) {
+    return radio_buttons;
+  }
+
+  return AXObjectCache().GetOrComputeAriaRadioButtonGroupMembers(radiogroup);
+}
+
+// static
+AXObject* AXNodeObject::NearestAriaRadioGroupAncestor(const AXObject* radio) {
+  if (!radio) {
+    return nullptr;
+  }
+  for (AXObject* ancestor = radio->ParentObjectUnignored(); ancestor;
+       ancestor = ancestor->ParentObjectUnignored()) {
+    if (ancestor->RoleValue() == ax::mojom::blink::Role::kRadioGroup) {
+      return ancestor;
+    }
+  }
+  return nullptr;
+}
+
+// static
+HeapVector<Member<AXObject>> AXNodeObject::CollectAriaRadioButtonsInGroup(
+    AXObject* radiogroup) {
+  HeapVector<Member<AXObject>> radio_buttons;
+  if (!radiogroup) {
+    return radio_buttons;
+  }
+
+  HeapDeque<Member<AXObject>> queue;
+  queue.push_back(radiogroup);
+  while (!queue.empty()) {
+    AXObject* current = queue.front();
+    queue.pop_front();
+    for (const auto& child : current->ChildrenIncludingIgnored()) {
+      CHECK(child);
       if (child->RoleValue() == ax::mojom::blink::Role::kRadioButton &&
-          child->IsIncludedInTree()) {
+          !child->IsIgnored()) {
         radio_buttons.push_back(child);
+      } else if (child->RoleValue() != ax::mojom::blink::Role::kRadioGroup) {
+        queue.push_back(child);
       }
     }
   }
-
   return radio_buttons;
 }
 

@@ -1,0 +1,60 @@
+<!--
+@BLINK-ALLOW:radioGroupIds=*
+@BLINK-ALLOW:setSize*
+@BLINK-ALLOW:posInSet*
+@MAC-ALLOW:AXLinkedUIElements
+@MAC-DENY:AXLinkedUIElements=[]
+@WIN-ALLOW:setsize*
+@WIN-ALLOW:posinset*
+@AURALINUX-ALLOW:setsize*
+@AURALINUX-ALLOW:posinset*
+-->
+<!DOCTYPE html>
+<html>
+  <body>
+    <div role="radiogroup" aria-labelledby="summary">
+      <details open>
+        <summary id="summary">Summary of radios</summary>
+        <button role="radio">Huey</button>
+        <button role="radio">Dewey</button>
+        <button role="radio">Louie</button>
+      </details>
+    </div>
+    <div role="radiogroup" aria-labelledby="role-label2">
+      <div id="role-label2">foo radiogroup bar</div>
+      <ul>
+        <li>
+          <button role="radio">Huey</button>
+        </li>
+
+        <li>
+          <button role="radio">Dewey</button>
+        </li>
+
+        <li>
+          <button role="radio">Louie</button>
+        </li>
+      </ul>
+    </div>
+    <div role="radiogroup" aria-labelledby="role-label3">
+      <div id="role-label3">outer group</div>
+      <ul>
+        <li>
+          <button role="radio">Huey</button>
+        </li>
+
+        <li>
+          <button role="radio">Dewey</button>
+          <ul role="radiogroup" aria-label="inner group">
+            <li><button role="radio">Bing</button></li>
+            <li><button role="radio">Bang</button></li>
+          </ul>
+        </li>
+
+        <li>
+          <button role="radio">Louie</button>
+        </li>
+      </ul>
+    </div>
+  </body>
+</html>

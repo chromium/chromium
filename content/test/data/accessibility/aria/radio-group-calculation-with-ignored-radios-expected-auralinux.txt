@@ -1,0 +1,4 @@
+[document web]
+++[panel] setsize:2
+++++[radio button] name='Huey' checkable checkable:true posinset:1 setsize:2
+++++[radio button] name='Dewey' checkable checkable:true posinset:2 setsize:2

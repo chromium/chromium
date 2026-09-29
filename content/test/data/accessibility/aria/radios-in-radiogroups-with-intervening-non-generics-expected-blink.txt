@@ -1,0 +1,82 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++radioGroup name='Summary of radios' setSize=4
+++++++++details
+++++++++++genericContainer ignored
+++++++++++++disclosureTriangle name='Summary of radios' setSize=4 posInSet=1
+++++++++++++++listMarker ignored
+++++++++++++++++staticText ignored
+++++++++++++++staticText name='Summary of radios'
+++++++++++++++++inlineTextBox name='Summary of radios'
+++++++++++genericContainer
+++++++++++++radioButton name='Huey' setSize=3 posInSet=1 checkedState=false radioGroupIds=radioButton,radioButton,radioButton
+++++++++++++++staticText name='Huey'
+++++++++++++++++inlineTextBox name='Huey'
+++++++++++++radioButton name='Dewey' setSize=3 posInSet=2 checkedState=false radioGroupIds=radioButton,radioButton,radioButton
+++++++++++++++staticText name='Dewey'
+++++++++++++++++inlineTextBox name='Dewey'
+++++++++++++radioButton name='Louie' setSize=3 posInSet=3 checkedState=false radioGroupIds=radioButton,radioButton,radioButton
+++++++++++++++staticText name='Louie'
+++++++++++++++++inlineTextBox name='Louie'
+++++++radioGroup name='foo radiogroup bar' setSize=0
+++++++++genericContainer
+++++++++++staticText name='foo radiogroup bar'
+++++++++++++inlineTextBox name='foo radiogroup bar'
+++++++++list setSize=3
+++++++++++listItem setSize=3 posInSet=1
+++++++++++++listMarker name='%E2%80%A2 '
+++++++++++++++staticText ignored
+++++++++++++radioButton name='Huey' setSize=3 posInSet=1 checkedState=false radioGroupIds=radioButton,radioButton,radioButton
+++++++++++++++staticText name='Huey'
+++++++++++++++++inlineTextBox name='Huey'
+++++++++++listItem setSize=3 posInSet=2
+++++++++++++listMarker name='%E2%80%A2 '
+++++++++++++++staticText ignored
+++++++++++++radioButton name='Dewey' setSize=3 posInSet=2 checkedState=false radioGroupIds=radioButton,radioButton,radioButton
+++++++++++++++staticText name='Dewey'
+++++++++++++++++inlineTextBox name='Dewey'
+++++++++++listItem setSize=3 posInSet=3
+++++++++++++listMarker name='%E2%80%A2 '
+++++++++++++++staticText ignored
+++++++++++++radioButton name='Louie' setSize=3 posInSet=3 checkedState=false radioGroupIds=radioButton,radioButton,radioButton
+++++++++++++++staticText name='Louie'
+++++++++++++++++inlineTextBox name='Louie'
+++++++radioGroup name='outer group' setSize=0
+++++++++genericContainer
+++++++++++staticText name='outer group'
+++++++++++++inlineTextBox name='outer group'
+++++++++list setSize=3
+++++++++++listItem setSize=3 posInSet=1
+++++++++++++listMarker name='%E2%80%A2 '
+++++++++++++++staticText ignored
+++++++++++++radioButton name='Huey' setSize=3 posInSet=1 checkedState=false radioGroupIds=radioButton,radioButton,radioButton
+++++++++++++++staticText name='Huey'
+++++++++++++++++inlineTextBox name='Huey'
+++++++++++listItem setSize=3 posInSet=2
+++++++++++++listMarker name='%E2%80%A2 '
+++++++++++++++staticText ignored
+++++++++++++radioButton name='Dewey' setSize=3 posInSet=2 checkedState=false radioGroupIds=radioButton,radioButton,radioButton
+++++++++++++++staticText name='Dewey'
+++++++++++++++++inlineTextBox name='Dewey'
+++++++++++++radioGroup name='inner group' setSize=2
+++++++++++++++none ignored
+++++++++++++++++none ignored
+++++++++++++++++++staticText name='%E2%97%A6 '
+++++++++++++++++++++inlineTextBox name='%E2%97%A6 '
+++++++++++++++++radioButton name='Bing' setSize=2 posInSet=1 checkedState=false radioGroupIds=radioButton,radioButton
+++++++++++++++++++staticText name='Bing'
+++++++++++++++++++++inlineTextBox name='Bing'
+++++++++++++++none ignored
+++++++++++++++++none ignored
+++++++++++++++++++staticText name='%E2%97%A6 '
+++++++++++++++++++++inlineTextBox name='%E2%97%A6 '
+++++++++++++++++radioButton name='Bang' setSize=2 posInSet=2 checkedState=false radioGroupIds=radioButton,radioButton
+++++++++++++++++++staticText name='Bang'
+++++++++++++++++++++inlineTextBox name='Bang'
+++++++++++listItem setSize=3 posInSet=3
+++++++++++++listMarker name='%E2%80%A2 '
+++++++++++++++staticText ignored
+++++++++++++radioButton name='Louie' setSize=3 posInSet=3 checkedState=false radioGroupIds=radioButton,radioButton,radioButton
+++++++++++++++staticText name='Louie'
+++++++++++++++++inlineTextBox name='Louie'

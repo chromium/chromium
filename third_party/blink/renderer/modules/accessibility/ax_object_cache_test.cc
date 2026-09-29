@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 
 #include <algorithm>
+#include <optional>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -28,6 +29,7 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_test_utils.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
+#include "third_party/blink/renderer/modules/accessibility/ax_node_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_relation_cache.h"
@@ -1572,6 +1574,199 @@ TEST_F(AccessibilityTest, ZoomCausesLocationChangesWithoutTreeUpdates) {
 
   // After taking location changes, pending location changes are cleared.
   EXPECT_FALSE(cache.HasPendingLocationChanges());
+}
+
+// AXObjectCacheImpl's ARIA role=radio/radiogroup group membership cache is
+// only populated while the tree is serialized, and is cleared in Thaw().
+// When the list of radios is later updated, the cache should be cleared and
+// then recalculated.
+TEST_F(AccessibilityTest, AriaRadioGroupCacheClearedOnThaw) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="group" role="radiogroup">
+        <div role="radio" id="r1"></div>
+        <div role="radio" id="r2"></div>
+      </div>
+  )HTML");
+
+  AXObjectCacheImpl& cache = GetAXObjectCache();
+  AXObject* r1 = GetAXObjectByElementId("r1");
+  ASSERT_NE(nullptr, r1);
+  ASSERT_EQ(ax::mojom::Role::kRadioButton, r1->RoleValue());
+  {
+    ScopedFreezeAXCache freeze(cache);
+    EXPECT_EQ(2u, To<AXNodeObject>(r1)->RadioButtonsInGroup().size());
+  }
+
+  Element* group = GetElementById("group");
+  ASSERT_NE(nullptr, group);
+  Element* r3 = GetDocument().CreateRawElement(html_names::kDivTag);
+  r3->setAttribute(html_names::kRoleAttr, AtomicString("radio"));
+  r3->setAttribute(html_names::kIdAttr, AtomicString("r3"));
+  group->AppendChild(r3);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  r1 = GetAXObjectByElementId("r1");
+  ASSERT_NE(nullptr, r1);
+  {
+    ScopedFreezeAXCache freeze(cache);
+    EXPECT_EQ(3u, To<AXNodeObject>(r1)->RadioButtonsInGroup().size());
+  }
+}
+
+// Commits and serializes all pending updates. Returns the number of
+// radioGroupIds serialized for `radio_id`, or nullopt if that object was not
+// part of the serialized updates. If `serialize_root` is true, the root is
+// queued for serialization, which guarantees a serializer exists afterwards so
+// that later calls only serialize objects that were marked dirty.
+static std::optional<size_t> SerializeAndGetRadioGroupSize(
+    AXObjectCacheImpl& cache,
+    Document& document,
+    AXID radio_id,
+    bool serialize_root = false) {
+  cache.CommitAXUpdates(document, /*force=*/true);
+  if (serialize_root) {
+    cache.AddDirtyObjectToSerializationQueue(cache.Root());
+  }
+  std::vector<ui::AXTreeUpdate> updates;
+  if (cache.HasObjectsPendingSerialization()) {
+    std::vector<ui::AXEvent> events;
+    bool had_end_of_test_event = false;
+    bool had_load_complete_messages = false;
+    ScopedFreezeAXCache freeze(cache);
+    cache.GetUpdatesAndEventsForSerialization(
+        updates, events, had_end_of_test_event, had_load_complete_messages);
+  }
+  cache.ClearObjectsPendingSerializationForTesting();
+  cache.ResetLifecycleForTesting();
+
+  std::optional<size_t> radio_group_size;
+  for (const ui::AXTreeUpdate& update : updates) {
+    for (const ui::AXNodeData& node : update.nodes) {
+      if (node.id == radio_id) {
+        radio_group_size = node.GetIntListAttribute(
+                                   ax::mojom::IntListAttribute::kRadioGroupIds)
+                               .size();
+      }
+    }
+  }
+  return radio_group_size;
+}
+
+// When an ARIA radiogroup's membership changes, every radio in the group must
+// be re-serialized, since each one's radioGroupIds lists all of its peers.
+// Each test below serializes a baseline, changes the membership without
+// touching r1, and checks that r1 is re-serialized with its new group size.
+// The baseline result is not checked, since r1 may already have been
+// serialized before the test gets a chance to.
+TEST_F(AccessibilityTest, AriaRadioPeersSerializedOnInsertion) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="group" role="radiogroup">
+        <div role="radio" id="r1"></div>
+        <div role="radio" id="r2"></div>
+      </div>
+  )HTML");
+  AXObjectCacheImpl& cache = GetAXObjectCache();
+  cache.SetAXMode(ui::kAXModeComplete);
+  AXID r1_id = GetAXObjectByElementId("r1")->AXObjectID();
+  SerializeAndGetRadioGroupSize(cache, GetDocument(), r1_id,
+                                /*serialize_root=*/true);
+
+  Element* r3 = GetDocument().CreateRawElement(html_names::kDivTag);
+  r3->setAttribute(html_names::kRoleAttr, AtomicString("radio"));
+  GetElementById("group")->AppendChild(r3);
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(3u, SerializeAndGetRadioGroupSize(cache, GetDocument(), r1_id));
+}
+
+TEST_F(AccessibilityTest, AriaRadioPeersSerializedOnRemoval) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="group" role="radiogroup">
+        <div role="radio" id="r1"></div>
+        <div id="wrapper">
+          <div role="radio" id="r2"></div>
+        </div>
+        <div role="radio" id="r3"></div>
+      </div>
+  )HTML");
+  AXObjectCacheImpl& cache = GetAXObjectCache();
+  cache.SetAXMode(ui::kAXModeComplete);
+  AXID r1_id = GetAXObjectByElementId("r1")->AXObjectID();
+  SerializeAndGetRadioGroupSize(cache, GetDocument(), r1_id,
+                                /*serialize_root=*/true);
+
+  GetElementById("r3")->remove();
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(2u, SerializeAndGetRadioGroupSize(cache, GetDocument(), r1_id));
+
+  // Removing an ancestor of a radio, rather than the radio itself.
+  GetElementById("wrapper")->remove();
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(1u, SerializeAndGetRadioGroupSize(cache, GetDocument(), r1_id));
+}
+
+TEST_F(AccessibilityTest, AriaRadioPeersSerializedWhenRadioBecomesIgnored) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="group" role="radiogroup">
+        <div role="radio" id="r1"></div>
+        <div role="radio" id="r2"></div>
+      </div>
+  )HTML");
+  AXObjectCacheImpl& cache = GetAXObjectCache();
+  cache.SetAXMode(ui::kAXModeComplete);
+  AXID r1_id = GetAXObjectByElementId("r1")->AXObjectID();
+  SerializeAndGetRadioGroupSize(cache, GetDocument(), r1_id,
+                                /*serialize_root=*/true);
+
+  GetElementById("r2")->setAttribute(html_names::kAriaHiddenAttr,
+                                     AtomicString("true"));
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(1u, SerializeAndGetRadioGroupSize(cache, GetDocument(), r1_id));
+}
+
+TEST_F(AccessibilityTest, AriaRadioPeersSerializedOnAriaOwns) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="group" role="radiogroup">
+        <div role="radio" id="r1"></div>
+      </div>
+      <div role="radio" id="r2"></div>
+  )HTML");
+  AXObjectCacheImpl& cache = GetAXObjectCache();
+  cache.SetAXMode(ui::kAXModeComplete);
+  AXID r1_id = GetAXObjectByElementId("r1")->AXObjectID();
+  SerializeAndGetRadioGroupSize(cache, GetDocument(), r1_id,
+                                /*serialize_root=*/true);
+
+  GetElementById("group")->setAttribute(html_names::kAriaOwnsAttr,
+                                        AtomicString("r2"));
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(2u, SerializeAndGetRadioGroupSize(cache, GetDocument(), r1_id));
+}
+
+TEST_F(AccessibilityTest,
+       AriaRadioPeersSerializedOnNestedRadiogroupRoleChange) {
+  SetBodyInnerHTML(R"HTML(
+      <div id="outer" role="radiogroup">
+        <div role="radio" id="r1"></div>
+        <div id="wrapper">
+          <div role="radio" id="r2"></div>
+        </div>
+      </div>
+  )HTML");
+  AXObjectCacheImpl& cache = GetAXObjectCache();
+  cache.SetAXMode(ui::kAXModeComplete);
+  AXID r1_id = GetAXObjectByElementId("r1")->AXObjectID();
+  SerializeAndGetRadioGroupSize(cache, GetDocument(), r1_id,
+                                /*serialize_root=*/true);
+
+  // r2 moves into its own nested group, leaving r1 alone in the outer group.
+  GetElementById("wrapper")->setAttribute(html_names::kRoleAttr,
+                                          AtomicString("radiogroup"));
+  GetDocument().View()->UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(1u, SerializeAndGetRadioGroupSize(cache, GetDocument(), r1_id));
 }
 
 }  // namespace blink

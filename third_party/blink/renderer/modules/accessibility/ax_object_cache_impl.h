@@ -200,6 +200,7 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
       ax_tree_source_->Thaw();
       ClearCachedNodesOnLine();
       radio_group_name_to_node_ids_.clear();
+      aria_radio_group_members_.clear();
     }
   }
   bool IsFrozen() const override { return frozen_count_; }
@@ -825,9 +826,18 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // information is used.
   void ComputeNodesOnLine(const LayoutObject* layout_object);
 
-  // Returns the radio button group members for the given radio button.
+  // Returns the radio button group members for the given HTML radio button.
   HeapVector<Member<AXObject>> GetRadioButtonGroupMembers(
       HTMLInputElement* radio_button);
+
+  // Returns the list of radios contained within `radiogroup`.
+  HeapVector<Member<AXObject>> GetOrComputeAriaRadioButtonGroupMembers(
+      AXObject* radiogroup);
+
+  // Called when the children of `obj` changed. If `obj` is within an ARIA
+  // radiogroup, records the radiogroup so that all of its radios are marked
+  // dirty (their radioGroupIds may have changed) before the tree is finalized.
+  void AriaRadioGroupChildrenChanged(AXObject* obj);
 
   bool HasCachedDataForNodesOnLine() const {
     return !processed_blocks_.empty();
@@ -1350,6 +1360,20 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
 
   HeapHashMap<String, HeapVector<Member<RadioButtonGroup>>>
       radio_group_name_to_node_ids_;
+
+  // Cache of ARIA role=radio to role=radiogroup membership, keyed by the
+  // radiogroup AXObject's own AXID. Populated during serialization and
+  // cleared in every Thaw().
+  HashMap<AXID, Vector<AXID>> aria_radio_group_members_;
+
+  // ARIA radiogroups whose membership may have changed since the last
+  // serialization. Populated by AriaRadioGroupChildrenChanged() and processed
+  // by MarkAriaRadioGroupMembersDirty() before the tree is finalized.
+  HashSet<AXID> aria_radiogroups_with_changed_membership_;
+
+  // Marks all radios in each radiogroup in
+  // `aria_radiogroups_with_changed_membership_` dirty, then clears it.
+  void MarkAriaRadioGroupMembersDirty();
 
   // The set of node IDs whose bounds has changed since the last time
   // SerializeLocationChanges was called.
