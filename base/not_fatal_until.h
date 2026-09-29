@@ -11,8 +11,10 @@ namespace base {
 // M here refers to milestones, see chrome/VERSION's MAJOR field that updates
 // when chromium branches.
 //
-// To clean up old entries remove the already-fatal argument from CHECKs as well
-// as from this list. This generates better-optimized CHECKs in official builds.
+// To clean up old entries, run `base/tools/clean-up-not-fatal-until.py -m <M>`
+// to remove the already-fatal argument from CHECKs as well as from this list.
+// This generates better-optimized CHECKs in official builds.
+// See binary size cost: https://bit.ly/not-fatal-until-perf
 enum class NotFatalUntil {
   NoSpecifiedMilestoneInternal = -1,
   M136 = 136,
