@@ -1472,6 +1472,11 @@ const base::FeatureParam<std::string> kIndigoComponentAttribute{
 BASE_FEATURE(kInitialWebUIWithoutSpellCheckForNtp,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the initial WebUI skips language detection initialization on
+// startup for NTP.
+BASE_FEATURE(kInitialWebUIWithoutTranslateForNtp,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSystemNotifications, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When kNoReferrers is enabled, most HTTP requests will provide empty

@@ -234,10 +234,15 @@ ChromeRenderFrameObserver::ChromeRenderFrameObserver(
   SetClientSidePhishingDetection();
 #endif
 
-  bool skip_translate = base::FeatureList::IsEnabled(features::kInitialWebUI) &&
-                        features::kInitialWebUIWithoutTranslate.Get() &&
-                        base::CommandLine::ForCurrentProcess()->HasSwitch(
-                            switches::kTopChromeWebUI);
+  bool skip_translate =
+      (base::FeatureList::IsEnabled(features::kInitialWebUI) &&
+       features::kInitialWebUIWithoutTranslate.Get() &&
+       base::CommandLine::ForCurrentProcess()->HasSwitch(
+           switches::kTopChromeWebUI)) ||
+      (base::FeatureList::IsEnabled(
+           features::kInitialWebUIWithoutTranslateForNtp) &&
+       base::CommandLine::ForCurrentProcess()->HasSwitch(
+           switches::kInstantProcess));
 
   if (!skip_translate) {
     translate_agent_ = new translate::TranslateAgent(
