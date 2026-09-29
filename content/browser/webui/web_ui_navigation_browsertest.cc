@@ -91,7 +91,7 @@ class WebUINavigationBrowserTest : public ContentBrowserTest {
   // if somehow non-WebUI scheme gets granted WebUI bindings. See also
   // WebFrameInChromeSchemeIsAllowed, which tests the more typical case of a
   // WebUI scheme embedding a web iframe.
-  void TestWebFrameInProcessWithWebUIBindings(BindingsPolicySet bindings) {
+  void TestWebFrameInProcessWithWebUIBindings() {
     FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                               ->GetPrimaryFrameTree()
                               .root();
@@ -108,7 +108,7 @@ class WebUINavigationBrowserTest : public ContentBrowserTest {
     // bindings, the web content is correctly isolated regardless of the scheme
     // of the parent document.
     ChildProcessSecurityPolicyImpl::GetInstance()->GrantWebUIBindings(
-        root->current_frame_host()->GetProcess()->GetDeprecatedID(), bindings);
+        root->current_frame_host()->GetProcess()->GetDeprecatedID());
     EXPECT_TRUE(ChildProcessSecurityPolicyImpl::GetInstance()->HasWebUIBindings(
         root->current_frame_host()->GetProcess()->GetDeprecatedID()));
     {
@@ -1032,23 +1032,11 @@ IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest, WebUIMainFrameToWebAllowed) {
 }
 
 #if !BUILDFLAG(IS_ANDROID)
-// The following tests rely on full site isolation behavior, which is not
+// The following test relies on full site isolation behavior, which is not
 // present on Android.
 IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
                        WebFrameInWebUIProcessAllowed) {
-  TestWebFrameInProcessWithWebUIBindings(
-      BindingsPolicySet({BindingsPolicyValue::kWebUi}));
-}
-
-IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
-                       WebFrameInMojoWebUIProcessAllowed) {
-  TestWebFrameInProcessWithWebUIBindings(
-      BindingsPolicySet({BindingsPolicyValue::kMojoWebUi}));
-}
-
-IN_PROC_BROWSER_TEST_F(WebUINavigationBrowserTest,
-                       WebFrameInHybridWebUIProcessAllowed) {
-  TestWebFrameInProcessWithWebUIBindings(kWebUIBindingsPolicySet);
+  TestWebFrameInProcessWithWebUIBindings();
 }
 #endif
 

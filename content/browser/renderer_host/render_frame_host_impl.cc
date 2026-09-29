@@ -8238,7 +8238,7 @@ void RenderFrameHostImpl::AllowBindings(BindingsPolicySet bindings) {
                "render_frame_host", this, "bindings_flags",
                bindings.ToEnumBitmask());
 
-  BindingsPolicySet webui_bindings =
+  const BindingsPolicySet webui_bindings =
       Intersection(bindings, kWebUIBindingsPolicySet);
 
   // Ensure callers that specify non-zero WebUI bindings are doing so on a
@@ -8291,8 +8291,10 @@ void RenderFrameHostImpl::AllowBindings(BindingsPolicySet bindings) {
   }
 
   if (!webui_bindings.empty()) {
+    // ChildProcessSecurityPolicy does not track individual types of bindings,
+    // just whether any WebUI bindings have been granted.
     ChildProcessSecurityPolicyImpl::GetInstance()->GrantWebUIBindings(
-        GetProcess()->GetDeprecatedID(), webui_bindings);
+        GetProcess()->GetDeprecatedID());
   }
 
   enabled_bindings_.PutAll(bindings);

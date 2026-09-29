@@ -32,7 +32,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/security_principal.h"
 #include "content/public/browser/site_isolation_policy.h"
-#include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
@@ -1199,124 +1198,43 @@ TEST_P(ChildProcessSecurityPolicyTest, CanServiceWebUIBindings) {
   const GURL url(GetWebUIURL("thumb/http://www.google.com/"));
   const GURL other_url(GetWebUIURL("not-thumb/"));
   const url::Origin origin = url::Origin::Create(url);
-  {
-    p->AddForTesting(kRendererProcess, browser_context());
-    LockProcessIfNeeded(kRendererProcess, browser_context(), url);
 
-    EXPECT_FALSE(p->HasWebUIBindings(kRendererID));
+  p->AddForTesting(kRendererProcess, browser_context());
+  LockProcessIfNeeded(kRendererProcess, browser_context(), url);
 
-    EXPECT_FALSE(p->CanRequestURL(kRendererID, url));
-    EXPECT_FALSE(p->CanCommitURL(kRendererID, url));
-    EXPECT_TRUE(p->CanRedirectToURL(url));
+  EXPECT_FALSE(p->HasWebUIBindings(kRendererID));
 
-    EXPECT_FALSE(p->CanRequestURL(kRendererID, other_url));
-    EXPECT_FALSE(p->CanCommitURL(kRendererID, other_url));
-    EXPECT_TRUE(p->CanRedirectToURL(other_url));
+  EXPECT_FALSE(p->CanRequestURL(kRendererID, url));
+  EXPECT_FALSE(p->CanCommitURL(kRendererID, url));
+  EXPECT_TRUE(p->CanRedirectToURL(url));
 
-    p->GrantWebUIBindings(kRendererID,
-                          BindingsPolicySet({BindingsPolicyValue::kWebUi}));
+  EXPECT_FALSE(p->CanRequestURL(kRendererID, other_url));
+  EXPECT_FALSE(p->CanCommitURL(kRendererID, other_url));
+  EXPECT_TRUE(p->CanRedirectToURL(other_url));
 
-    EXPECT_TRUE(p->HasWebUIBindings(kRendererID));
+  p->GrantWebUIBindings(kRendererID);
 
-    EXPECT_FALSE(p->CanRequestURL(kRendererID, url));
-    EXPECT_FALSE(p->CanCommitURL(kRendererID, url));
-    EXPECT_TRUE(p->CanRedirectToURL(url));
+  EXPECT_TRUE(p->HasWebUIBindings(kRendererID));
 
-    EXPECT_FALSE(p->CanRequestURL(kRendererID, other_url));
-    EXPECT_FALSE(p->CanCommitURL(kRendererID, other_url));
-    EXPECT_TRUE(p->CanRedirectToURL(other_url));
+  EXPECT_FALSE(p->CanRequestURL(kRendererID, url));
+  EXPECT_FALSE(p->CanCommitURL(kRendererID, url));
+  EXPECT_TRUE(p->CanRedirectToURL(url));
 
-    p->GrantCommitOrigin(kRendererID, origin);
+  EXPECT_FALSE(p->CanRequestURL(kRendererID, other_url));
+  EXPECT_FALSE(p->CanCommitURL(kRendererID, other_url));
+  EXPECT_TRUE(p->CanRedirectToURL(other_url));
 
-    EXPECT_TRUE(p->CanRequestURL(kRendererID, url));
-    EXPECT_TRUE(p->CanCommitURL(kRendererID, url));
-    EXPECT_TRUE(p->CanRedirectToURL(url));
+  p->GrantCommitOrigin(kRendererID, origin);
 
-    EXPECT_FALSE(p->CanRequestURL(kRendererID, other_url));
-    EXPECT_FALSE(p->CanCommitURL(kRendererID, other_url));
-    EXPECT_TRUE(p->CanRedirectToURL(other_url));
+  EXPECT_TRUE(p->CanRequestURL(kRendererID, url));
+  EXPECT_TRUE(p->CanCommitURL(kRendererID, url));
+  EXPECT_TRUE(p->CanRedirectToURL(url));
 
-    p->Remove(kRendererProcess);
-  }
+  EXPECT_FALSE(p->CanRequestURL(kRendererID, other_url));
+  EXPECT_FALSE(p->CanCommitURL(kRendererID, other_url));
+  EXPECT_TRUE(p->CanRedirectToURL(other_url));
 
-  {
-    p->AddForTesting(kRendererProcess, browser_context());
-    LockProcessIfNeeded(kRendererProcess, browser_context(), url);
-
-    EXPECT_FALSE(p->HasWebUIBindings(kRendererID));
-
-    EXPECT_FALSE(p->CanRequestURL(kRendererID, url));
-    EXPECT_FALSE(p->CanCommitURL(kRendererID, url));
-    EXPECT_TRUE(p->CanRedirectToURL(url));
-
-    EXPECT_FALSE(p->CanRequestURL(kRendererID, other_url));
-    EXPECT_FALSE(p->CanCommitURL(kRendererID, other_url));
-    EXPECT_TRUE(p->CanRedirectToURL(other_url));
-
-    p->GrantWebUIBindings(kRendererID,
-                          BindingsPolicySet({BindingsPolicyValue::kMojoWebUi}));
-
-    EXPECT_TRUE(p->HasWebUIBindings(kRendererID));
-
-    EXPECT_FALSE(p->CanRequestURL(kRendererID, url));
-    EXPECT_FALSE(p->CanCommitURL(kRendererID, url));
-    EXPECT_TRUE(p->CanRedirectToURL(url));
-
-    EXPECT_FALSE(p->CanRequestURL(kRendererID, other_url));
-    EXPECT_FALSE(p->CanCommitURL(kRendererID, other_url));
-    EXPECT_TRUE(p->CanRedirectToURL(other_url));
-
-    p->GrantCommitOrigin(kRendererID, origin);
-
-    EXPECT_TRUE(p->CanRequestURL(kRendererID, url));
-    EXPECT_TRUE(p->CanCommitURL(kRendererID, url));
-    EXPECT_TRUE(p->CanRedirectToURL(url));
-
-    EXPECT_FALSE(p->CanRequestURL(kRendererID, other_url));
-    EXPECT_FALSE(p->CanCommitURL(kRendererID, other_url));
-    EXPECT_TRUE(p->CanRedirectToURL(other_url));
-
-    p->Remove(kRendererProcess);
-  }
-
-  {
-    p->AddForTesting(kRendererProcess, browser_context());
-    LockProcessIfNeeded(kRendererProcess, browser_context(), url);
-
-    EXPECT_FALSE(p->HasWebUIBindings(kRendererID));
-
-    EXPECT_FALSE(p->CanRequestURL(kRendererID, url));
-    EXPECT_FALSE(p->CanCommitURL(kRendererID, url));
-    EXPECT_TRUE(p->CanRedirectToURL(url));
-
-    EXPECT_FALSE(p->CanRequestURL(kRendererID, other_url));
-    EXPECT_FALSE(p->CanCommitURL(kRendererID, other_url));
-    EXPECT_TRUE(p->CanRedirectToURL(other_url));
-
-    p->GrantWebUIBindings(kRendererID, kWebUIBindingsPolicySet);
-
-    EXPECT_TRUE(p->HasWebUIBindings(kRendererID));
-
-    EXPECT_FALSE(p->CanRequestURL(kRendererID, url));
-    EXPECT_FALSE(p->CanCommitURL(kRendererID, url));
-    EXPECT_TRUE(p->CanRedirectToURL(url));
-
-    EXPECT_FALSE(p->CanRequestURL(kRendererID, other_url));
-    EXPECT_FALSE(p->CanCommitURL(kRendererID, other_url));
-    EXPECT_TRUE(p->CanRedirectToURL(other_url));
-
-    p->GrantCommitOrigin(kRendererID, origin);
-
-    EXPECT_TRUE(p->CanRequestURL(kRendererID, url));
-    EXPECT_TRUE(p->CanCommitURL(kRendererID, url));
-    EXPECT_TRUE(p->CanRedirectToURL(url));
-
-    EXPECT_FALSE(p->CanRequestURL(kRendererID, other_url));
-    EXPECT_FALSE(p->CanCommitURL(kRendererID, other_url));
-    EXPECT_TRUE(p->CanRedirectToURL(other_url));
-
-    p->Remove(kRendererProcess);
-  }
+  p->Remove(kRendererProcess);
 }
 
 TEST_P(ChildProcessSecurityPolicyTest, RemoveRace) {
@@ -1330,7 +1248,7 @@ TEST_P(ChildProcessSecurityPolicyTest, RemoveRace) {
 
   p->GrantCommitURL(kRendererID, url);
   p->GrantReadFile(kRendererProcess, file);
-  p->GrantWebUIBindings(kRendererID, kWebUIBindingsPolicySet);
+  p->GrantWebUIBindings(kRendererID);
 
   EXPECT_TRUE(p->CanRequestURL(kRendererID, url));
   EXPECT_TRUE(p->CanRedirectToURL(url));

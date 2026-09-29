@@ -40,7 +40,6 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_exposed_isolation_level.h"
 #include "content/public/browser/web_ui_controller.h"
-#include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_features.h"
@@ -1343,8 +1342,7 @@ TEST_F(SiteInstanceTest, IsSuitableForUrlInfo) {
 
   // Simulate granting WebUI bindings for the process.
   ChildProcessSecurityPolicyImpl::GetInstance()->GrantWebUIBindings(
-      webui_host->GetDeprecatedID(),
-      BindingsPolicySet({BindingsPolicyValue::kWebUi}));
+      webui_host->GetDeprecatedID());
 
   EXPECT_TRUE(webui_instance->HasProcess());
   EXPECT_TRUE(webui_instance->IsSuitableForUrlInfo(

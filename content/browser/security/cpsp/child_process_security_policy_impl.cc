@@ -51,7 +51,6 @@
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/bindings_policy.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
@@ -608,7 +607,8 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
       absl::flat_hash_map<BrowsingInstanceId, OriginAgentClusterIsolationState>;
 
   explicit ProcessState(BrowserContext* browser_context)
-      : can_send_midi_(false),
+      : has_web_ui_bindings_(false),
+        can_send_midi_(false),
         can_send_midi_sysex_(false),
         browser_context_(browser_context) {
     if (!base::FeatureList::IsEnabled(blink::features::kBlockMidiByDefault)) {
@@ -791,9 +791,7 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
   }
 #endif
 
-  void GrantBindings(BindingsPolicySet bindings) {
-    enabled_bindings_.PutAll(bindings);
-  }
+  void grant_web_ui_bindings() { has_web_ui_bindings_ = true; }
 
   void GrantOriginCheckExemptionForWebView(const url::Origin& origin) {
     // This should only be allowed for opaque origins with LoadDataWithBaseURL
@@ -985,9 +983,7 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
     browsing_instance_default_isolation_states_.erase(id);
   }
 
-  bool has_web_ui_bindings() const {
-    return enabled_bindings_.HasAny(kWebUIBindingsPolicySet);
-  }
+  bool has_web_ui_bindings() const { return has_web_ui_bindings_; }
 
   bool CanSendMidi() const {
     if (base::FeatureList::IsEnabled(blink::features::kBlockMidiByDefault)) {
@@ -1094,7 +1090,7 @@ class ChildProcessSecurityPolicyImpl::ProcessState {
   // allow_universal_access_from_file_urls.
   OriginSet webview_origin_exemption_set_;
 
-  BindingsPolicySet enabled_bindings_;
+  bool has_web_ui_bindings_;
 
   bool can_send_midi_;
 
@@ -1771,19 +1767,13 @@ void ChildProcessSecurityPolicyImpl::GrantRequestScheme(
   }
 }
 
-void ChildProcessSecurityPolicyImpl::GrantWebUIBindings(
-    int child_id,
-    BindingsPolicySet bindings) {
-  // Only WebUI bindings should come through here.
-  CHECK(bindings.HasAny(kWebUIBindingsPolicySet));
-  CHECK(Difference(bindings, kWebUIBindingsPolicySet).empty());
-
+void ChildProcessSecurityPolicyImpl::GrantWebUIBindings(int child_id) {
   base::AutoLock lock(lock_);
 
   // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   if (auto* state = process_states_.GetProcessStateForMutation(
           ChildProcessId::FromUnsafeValue(child_id))) {
-    state->GrantBindings(bindings);
+    state->grant_web_ui_bindings();
   }
 }
 

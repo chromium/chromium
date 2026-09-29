@@ -28,7 +28,6 @@
 #include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/child_process_security_policy.h"
-#include "content/public/common/bindings_policy.h"
 #include "content/public/common/child_process_id.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -556,8 +555,10 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   void RevokeAllPermissionsForFile(ChildProcessId child_id,
                                    const base::FilePath& file);
 
-  // Grant the child process the ability to use Web UI Bindings.
-  void GrantWebUIBindings(int child_id, BindingsPolicySet bindings);
+  // Grant the child process the ability to use WebUI Bindings. Individual types
+  // of WebUI bindings are not tracked at this level. Callers are responsible
+  // for ensuring the child process is locked to a WebUI-permitted site.
+  void GrantWebUIBindings(int child_id);
 
   // Some APIs for Android WebView and <webview> tags allow bypassing some
   // security checks, such as which URLs are allowed to commit. This method
