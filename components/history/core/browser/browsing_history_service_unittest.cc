@@ -1219,6 +1219,23 @@ TEST_F(BrowsingHistoryServiceTest, ShouldQueryActorVisitsOnly) {
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
+TEST_F(BrowsingHistoryServiceTest, QueryDurationHistogram) {
+  base::HistogramTester histogram_tester;
+
+  AddHistory({{kUrl1, 1, kLocal}, {kUrl2, 2, kLocal}, {kUrl3, 3, kLocal}});
+
+  histogram_tester.ExpectTotalCount("History.BrowsingHistory.QueryDuration", 0);
+
+  // Initial query with max_count = 2 to leave remaining entries for
+  // continuation.
+  QueryHistory(2);
+  histogram_tester.ExpectTotalCount("History.BrowsingHistory.QueryDuration", 1);
+
+  // Continuation query to fetch the remaining history entry.
+  ContinueQuery();
+  histogram_tester.ExpectTotalCount("History.BrowsingHistory.QueryDuration", 2);
+}
+
 }  // namespace
 
 }  // namespace history

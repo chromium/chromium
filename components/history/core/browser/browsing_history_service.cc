@@ -90,6 +90,7 @@ struct BrowsingHistoryService::QueryHistoryState
 
   std::u16string search_text;
   QueryOptions original_options;
+  base::TimeTicks query_start_time;
 
   QuerySourceStatus local_status = UNINITIALIZED;
   // Should always be sorted in reverse chronological order.
@@ -245,6 +246,8 @@ void BrowsingHistoryService::QueryHistory(const std::u16string& search_text,
 
 void BrowsingHistoryService::QueryHistoryInternal(
     scoped_refptr<QueryHistoryState> state) {
+  state->query_start_time = base::TimeTicks::Now();
+
   // Anything in-flight is invalid.
   query_task_tracker_.TryCancelAll();
   web_history_request_.reset();
@@ -880,6 +883,11 @@ void BrowsingHistoryService::ReturnResultsToDriver(
                            (!CanRetry(state->remote_status) ||
                             state->original_options.app_id != kNoAppIdFilter);
   info.sync_timed_out = state->remote_status == TIMED_OUT;
+  if (!state->query_start_time.is_null()) {
+    base::UmaHistogramTimes("History.BrowsingHistory.QueryDuration",
+                            base::TimeTicks::Now() - state->query_start_time);
+    state->query_start_time = base::TimeTicks();
+  }
   base::OnceClosure continuation =
       base::BindOnce(&BrowsingHistoryService::QueryHistoryInternal,
                      weak_factory_.GetWeakPtr(), std::move(state));
