@@ -52,19 +52,6 @@ public class SendTabToSelfMetricsRecorder {
         SendTabToSelfMetricsRecorderJni.get().recordNotificationStatus(status);
     }
 
-    public static void recordScrollPositionGenerationOutcome(
-            @ScrollPositionGenerationOutcome int outcome) {
-        SendTabToSelfMetricsRecorderJni.get().recordScrollPositionGenerationOutcome(outcome);
-    }
-
-    public static void recordScrollPositionGenerationTime(long durationMs) {
-        SendTabToSelfMetricsRecorderJni.get().recordScrollPositionGenerationTime(durationMs);
-    }
-
-    public static void recordScrollPositionSelectorLength(int length) {
-        SendTabToSelfMetricsRecorderJni.get().recordScrollPositionSelectorLength(length);
-    }
-
     public static void recordEntryPointInvoked(@ShareEntryPoint int entryPoint) {
         SendTabToSelfMetricsRecorderJni.get().recordEntryPointInvoked(entryPoint);
     }
@@ -79,15 +66,6 @@ public class SendTabToSelfMetricsRecorder {
                 boolean hasScrollPosition);
 
         void recordHasScrollPositionOnOpened(boolean hasScrollPosition);
-
-        void recordScrollPositionGenerationOutcome(
-                @JniType("send_tab_to_self::ScrollPositionGenerationOutcome")
-                        @ScrollPositionGenerationOutcome
-                        int outcome);
-
-        void recordScrollPositionGenerationTime(long durationMs);
-
-        void recordScrollPositionSelectorLength(int length);
 
         void recordEntryPointInvoked(
                 @JniType("send_tab_to_self::ShareEntryPoint") @ShareEntryPoint int entryPoint);
