@@ -74,6 +74,8 @@ export class MemoryBanksElement extends CrLitElement {
       availableCollections_: {type: Array, state: true},
       availableTags_: {type: Array, state: true},
       filteredEntries_: {type: Array, state: true},
+      viewMode_: {type: String, state: true},
+      currentPage_: {type: Number, state: true},
       geminiResponse_: {type: String, state: true},
       isAskingGemini_: {type: Boolean, state: true},
       showGeminiPanel_: {type: Boolean, state: true},
@@ -96,6 +98,9 @@ export class MemoryBanksElement extends CrLitElement {
   protected accessor availableCollections_: string[] = [];
   protected accessor availableTags_: string[] = [];
   protected accessor filteredEntries_: MemoryBankEntry[] = [];
+  protected accessor viewMode_: 'card'|'table' = 'table';
+  protected accessor currentPage_: number = 0;
+  protected pageSize_: number = 7;
   protected accessor geminiResponse_: string = '';
   protected accessor isAskingGemini_: boolean = false;
   protected accessor showGeminiPanel_: boolean = false;
@@ -141,6 +146,11 @@ export class MemoryBanksElement extends CrLitElement {
       if (nextSelectedIds.size !== this.selectedIds.size) {
         this.selectedIds = nextSelectedIds;
       }
+      // The filtered set can shrink out from under the table, e.g. when the
+      // last entry on the final page is deleted.
+      const lastPage = Math.max(
+          0, Math.ceil(this.filteredEntries_.length / this.pageSize_) - 1);
+      this.currentPage_ = Math.min(this.currentPage_, lastPage);
     }
   }
 
@@ -242,6 +252,7 @@ export class MemoryBanksElement extends CrLitElement {
     const checkbox = e.currentTarget as HTMLElement & {checked: boolean};
     checkbox.checked = true;
     this.selectedCollections_ = new Set();
+    this.currentPage_ = 0;
   }
 
   protected onCollectionCheckboxChange_(e: Event) {
@@ -254,6 +265,7 @@ export class MemoryBanksElement extends CrLitElement {
       updated.delete(collection);
     }
     this.selectedCollections_ = updated;
+    this.currentPage_ = 0;
   }
 
   protected getSelectedTagCount_(): number {
@@ -276,6 +288,7 @@ export class MemoryBanksElement extends CrLitElement {
     const checkbox = e.currentTarget as HTMLElement & {checked: boolean};
     checkbox.checked = true;
     this.selectedTags_ = new Set();
+    this.currentPage_ = 0;
   }
 
   protected onTagCheckboxChange_(e: Event) {
@@ -288,6 +301,7 @@ export class MemoryBanksElement extends CrLitElement {
       updated.delete(tag);
     }
     this.selectedTags_ = updated;
+    this.currentPage_ = 0;
   }
 
   protected onFilterDropdownKeydown_(e: KeyboardEvent) {
@@ -296,6 +310,68 @@ export class MemoryBanksElement extends CrLitElement {
       e.stopPropagation();
       this.activeFilterMenu_ = null;
     }
+  }
+
+  protected onViewModeChange_(mode: 'card'|'table') {
+    this.viewMode_ = mode;
+  }
+
+  protected onTableViewClick_() {
+    this.onViewModeChange_('table');
+  }
+
+  protected onCardViewClick_() {
+    this.onViewModeChange_('card');
+  }
+
+  protected getPaginatedEntries_(): MemoryBankEntry[] {
+    const start = this.currentPage_ * this.pageSize_;
+    return this.filteredEntries_.slice(start, start + this.pageSize_);
+  }
+
+  protected getPaginationInfo_(): string {
+    const total = this.filteredEntries_.length;
+    if (total === 0) {
+      return 'Showing 0 of 0 saved items';
+    }
+    const pageCount = this.getPaginatedEntries_().length;
+    const start = this.currentPage_ * this.pageSize_;
+    return `Showing ${start + 1}–${start + pageCount} of ${total} saved items`;
+  }
+
+  protected isLastPage_(): boolean {
+    return (this.currentPage_ + 1) * this.pageSize_ >=
+        this.filteredEntries_.length;
+  }
+
+  protected onPreviousPageClick_() {
+    if (this.currentPage_ > 0) {
+      this.currentPage_--;
+    }
+  }
+
+  protected onNextPageClick_() {
+    if (!this.isLastPage_()) {
+      this.currentPage_++;
+    }
+  }
+
+  protected formatDisplayUrl_(url: string): string {
+    try {
+      const parsed = new URL(url);
+      const domainAndPath = parsed.host + parsed.pathname + parsed.search;
+      return domainAndPath.replace(/\/$/, '');
+    } catch {
+      return url.replace(/^https?:\/\//, '').replace(/\/$/, '');
+    }
+  }
+
+  protected formatDate_(mojoTime: {internalValue: bigint}): string {
+    return this.convertMojoTimeToDate(mojoTime).toLocaleDateString(undefined, {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    });
   }
 
   private onDocumentPointerDown_ = (e: PointerEvent) => {
@@ -310,11 +386,15 @@ export class MemoryBanksElement extends CrLitElement {
     }
   };
 
-  protected onMoreActionsClick_(entry: MemoryBankEntry, e: MouseEvent) {
+  protected onMoreActionsClick_(e: MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    this.activeMenuEntry_ = entry;
     const target = e.currentTarget as HTMLElement;
+    const index = Number(target.dataset['index']);
+    const entryIndex = this.viewMode_ === 'table' ?
+        this.currentPage_ * this.pageSize_ + index :
+        index;
+    this.activeMenuEntry_ = this.filteredEntries_[entryIndex] ?? null;
     this.$.actionMenu.showAt(target);
   }
 
@@ -435,6 +515,7 @@ export class MemoryBanksElement extends CrLitElement {
   protected onSearchChanged_(e: CustomEvent<string>) {
     this.searchQuery = e.detail;
     this.selectedIds = new Set();
+    this.currentPage_ = 0;
     this.updateSuggestions_(this.searchQuery);
   }
 
@@ -501,6 +582,7 @@ export class MemoryBanksElement extends CrLitElement {
     this.searchQuery = newQuery;
     this.searchField_?.setValue(newQuery, /*noEvent=*/ true);
     this.selectedIds = new Set();
+    this.currentPage_ = 0;
   }
 
   protected async onCopyClick_() {

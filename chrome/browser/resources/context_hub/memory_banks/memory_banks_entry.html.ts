@@ -10,7 +10,8 @@ import type {MemoryBankEntry} from '../context_hub.mojom-webui.js';
 
 import type {MemoryBanksElement} from './memory_banks.js';
 
-export function getHtml(this: MemoryBanksElement, entry: MemoryBankEntry) {
+export function getHtml(
+    this: MemoryBanksElement, entry: MemoryBankEntry, index: number) {
   return html`
     <a class="card ${this.isSelected(entry.id) ? 'selected' : ''}"
         href="${entry.url}" target="_blank">
@@ -35,34 +36,35 @@ export function getHtml(this: MemoryBanksElement, entry: MemoryBankEntry) {
         <div class="footer-main">
           <div class="favicon"
               style="background-image: ${
-                  getFaviconForPageURL(entry.url, true)}">
+      getFaviconForPageURL(entry.url, true)}">
           </div>
           <div class="meta-text">
             <span class="card-title" title="${entry.tabTitle}">${
-        entry.tabTitle}</span>
+      entry.tabTitle}</span>
             <span class="card-date">
               ${
-        this.convertMojoTimeToDate(entry.timestamp)
-            .toLocaleDateString(undefined, {
-              month: 'short',
-              day: 'numeric',
-              year: 'numeric',
-            })}
+      this.convertMojoTimeToDate(entry.timestamp)
+          .toLocaleDateString(undefined, {
+            month: 'short',
+            day: 'numeric',
+            year: 'numeric',
+          })}
             </span>
           </div>
         </div>
         ${
-        entry.tags && entry.tags.length > 0 ? html`
+      entry.tags && entry.tags.length > 0 ? html`
           <div class="card-tags">
             ${entry.tags.slice(0, 4).map(tag => html`
               <span class="tag-pill" title="${tag}">${tag}</span>
             `)}
           </div>
         ` :
-                                              ''}
+                                            ''}
         <cr-icon-button class="card-more-btn" iron-icon="cr:more-vert"
             title="More actions"
-            @click="${(e: MouseEvent) => this.onMoreActionsClick_(entry, e)}">
+            data-index="${index}"
+            @click="${this.onMoreActionsClick_}">
         </cr-icon-button>
       </div>
     </a>

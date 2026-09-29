@@ -35,6 +35,20 @@ div.innerHTML = getTrustedHTML`
             6.5 5 8 5.67 8 6.5 7.33 8 6.5 8z">
         </path>
       </g>
+      <!-- Source: Material Symbols table_rows / view_list -->
+      <g id="table-view" viewBox="0 -960 960 960">
+        <path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80
+            H120Z">
+        </path>
+      </g>
+      <!-- Source: Material Symbols grid_view -->
+      <g id="grid-view" viewBox="0 -960 960 960">
+        <path d="M120-520v-320h320v320H120Zm0 400v-320h320v320H120Zm400-400v-320
+            h320v320H520Zm0 400v-320h320v320H520ZM200-600h160v-160H200v160Zm400
+            0h160v-160H600v160Zm-400 400h160v-160H200v160Zm400 0h160v-160H600
+            v160Z">
+        </path>
+      </g>
     </defs>
   </svg>
 </cr-iconset>`;
