@@ -242,6 +242,9 @@ public class ActorNotificationFactoryTest {
         assertTrue(
                 "Notification should have auto-cancel enabled",
                 (notification.flags & Notification.FLAG_AUTO_CANCEL) != 0);
+        assertFalse(
+                "Live notification should be allowed to alert",
+                (notification.flags & Notification.FLAG_ONLY_ALERT_ONCE) != 0);
 
         assertSmallIcon(notification);
         assertAction(notification);
@@ -259,6 +262,9 @@ public class ActorNotificationFactoryTest {
         assertFalse(
                 "Non-live completed notification should not be ongoing",
                 (nonLiveNotification.flags & Notification.FLAG_ONGOING_EVENT) != 0);
+        assertTrue(
+                "Non-live completed notification should only alert once",
+                (nonLiveNotification.flags & Notification.FLAG_ONLY_ALERT_ONCE) != 0);
         assertFalse(
                 "Non-live completed notification should not request promoted ongoing",
                 nonLiveNotification.extras.getBoolean(

@@ -275,21 +275,26 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
             }
         } else {
             // No active tasks. Update the foreground service with the latest notification
-            // (e.g. Success/Failed status) before we wait to stop it.
-            if (mPinnedNotificationId != INVALID_NOTIFICATION_ID) {
+            // (e.g. Success/Failed status), or transfer the pin to the next task awaiting
+            // demotion, before we wait to stop it.
+            int notificationIdToPin = mPinnedNotificationId;
+            Set<Integer> pendingDemotionIds = mNotificationService.getPendingDemotionTaskIds();
+            if (!pendingDemotionIds.isEmpty()
+                    && !pendingDemotionIds.contains(notificationIdToPin)) {
+                notificationIdToPin = pendingDemotionIds.iterator().next();
+            }
+            if (notificationIdToPin != INVALID_NOTIFICATION_ID) {
                 Notification notification =
                         mNotificationService.getCachedNotification(
-                                mPinnedNotificationId,
-                                isActivityVisibleForTask(mPinnedNotificationId),
-                                isWarningMode(mPinnedNotificationId));
+                                notificationIdToPin,
+                                isActivityVisibleForTask(notificationIdToPin),
+                                isWarningMode(notificationIdToPin));
                 if (notification != null) {
-                    startOrUpdateForegroundService(mPinnedNotificationId, notification);
+                    startOrUpdateForegroundService(notificationIdToPin, notification);
                 }
             }
 
-            if (!mStopServiceDelayed
-                    || (mNotificationService != null
-                            && mNotificationService.hasPendingDemotions())) {
+            if (!mStopServiceDelayed || mNotificationService.hasPendingDemotions()) {
                 postMaybeStopServiceRunnable();
             }
         }
@@ -318,6 +323,8 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         boolean killOldNotification =
                 mPinnedNotificationId != INVALID_NOTIFICATION_ID
                         && mPinnedNotificationId != notificationId;
+        int unpinnedNotificationId =
+                killOldNotification ? mPinnedNotificationId : INVALID_NOTIFICATION_ID;
 
         getServiceController()
                 .startOrUpdateForegroundService(
@@ -326,24 +333,34 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
         mStartForegroundCalled = true;
         mPinnedNotificationId = notificationId;
         mPinnedNotification = notification;
+
+        if (unpinnedNotificationId != INVALID_NOTIFICATION_ID && mNotificationService != null) {
+            // The old notification was removed along with the foreground state. It can no longer
+            // be live, so it is demoted now rather than when its demotion timer expires.
+            mNotificationService.demoteNow(unpinnedNotificationId);
+        }
     }
 
+    /**
+     * Stops and unbinds the service, removing the pinned notification so that it does not retain
+     * foreground service flags, and reposting it as a regular notification.
+     */
     @VisibleForTesting
     void stopAndUnbindService() {
-        stopAndUnbindService(ServiceCompat.STOP_FOREGROUND_DETACH);
-    }
-
-    @VisibleForTesting
-    void stopAndUnbindService(int flags) {
         if (!mIsServiceBound) return;
         mIsServiceBound = false;
 
-        getServiceController().stopActorForegroundService(flags);
+        int pinnedNotificationId = mPinnedNotificationId;
+        getServiceController().stopActorForegroundService(ServiceCompat.STOP_FOREGROUND_REMOVE);
         getServiceController().unbindService();
 
         mStartForegroundCalled = false;
         mPinnedNotificationId = INVALID_NOTIFICATION_ID;
         mPinnedNotification = null;
+
+        if (pinnedNotificationId != INVALID_NOTIFICATION_ID && mNotificationService != null) {
+            mNotificationService.repostNotification(pinnedNotificationId);
+        }
 
         if (mStopCallbackForTesting != null) {
             mStopCallbackForTesting.run();
@@ -364,32 +381,22 @@ public class ActorForegroundServiceManager implements ActorKeyedService.Observer
             mPinnedNotificationId = INVALID_NOTIFICATION_ID;
             mPinnedNotification = null;
         }
-        maybeStopServiceNow(
-                wasPinned
-                        ? ServiceCompat.STOP_FOREGROUND_REMOVE
-                        : ServiceCompat.STOP_FOREGROUND_DETACH);
+        maybeStopServiceNow();
     }
 
     /**
      * Stops and unbinds the foreground service if all tasks are finished and no demotions are
-     * pending.
+     * pending, removing the pinned notification and reposting it as a regular notification.
+     * Otherwise, updates the pinned notification to the next task that still needs the service.
      */
     public void maybeStopServiceNow() {
-        maybeStopServiceNow(ServiceCompat.STOP_FOREGROUND_DETACH);
-    }
-
-    /**
-     * Stops and unbinds the foreground service with the specified flags if all tasks are finished
-     * and no demotions are pending.
-     *
-     * @param flags ServiceCompat flags for stopping the foreground service.
-     */
-    public void maybeStopServiceNow(int flags) {
         if (mActiveTaskIds.isEmpty()
                 && (mNotificationService == null || !mNotificationService.hasPendingDemotions())) {
             mHandler.removeCallbacks(mMaybeStopServiceRunnable);
-            stopAndUnbindService(flags);
+            stopAndUnbindService();
+            return;
         }
+        processTaskUpdateQueue();
     }
 
     private ActorForegroundServiceController getServiceController() {

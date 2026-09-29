@@ -14,6 +14,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -45,6 +46,7 @@ import org.chromium.components.browser_ui.notifications.MockNotificationManagerP
 import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Unit tests for {@link ActorNotificationService}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -1021,8 +1023,7 @@ public class ActorNotificationServiceTest {
                 taskId, ActorTaskState.FINISHED, /* isSilent= */ false, /* isWarning= */ false);
         assertEquals(1, mMockNotificationManager.getMutationCountAndDecrement());
 
-        java.util.concurrent.atomic.AtomicBoolean notifiedDuringMaybeStop =
-                new java.util.concurrent.atomic.AtomicBoolean(false);
+        AtomicBoolean notifiedDuringMaybeStop = new AtomicBoolean(false);
         doAnswer(
                         invocation -> {
                             // At the moment maybeStopServiceNow is called, nonLiveWrapper
@@ -1055,6 +1056,34 @@ public class ActorNotificationServiceTest {
         assertNotNull(demoted);
         assertFalse(
                 "After demotion, notification should not request promoted ongoing",
+                demoted.extras.getBoolean(ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
+    }
+
+    @Test
+    public void testDemoteNow_DoesNotCallMaybeStopServiceNow() {
+        int taskId = 1;
+        when(mTask.getId()).thenReturn(taskId);
+        when(mTask.getTitle()).thenReturn("Test Task");
+        when(mTask.getState()).thenReturn(ActorTaskState.FINISHED);
+        when(mKeyedService.getTask(taskId)).thenReturn(mTask);
+
+        ActorForegroundServiceManager fgsManager = mock(ActorForegroundServiceManager.class);
+        ActorForegroundServiceManager.setInstanceForTesting(fgsManager);
+
+        mNotificationService.updateNotificationForTask(
+                taskId, ActorTaskState.FINISHED, /* isSilent= */ false, /* isWarning= */ false);
+        assertTrue(mNotificationService.hasPendingDemotionForTesting(taskId));
+
+        mNotificationService.demoteNow(taskId);
+
+        assertFalse(mNotificationService.hasPendingDemotionForTesting(taskId));
+        verify(fgsManager, never()).maybeStopServiceNow();
+        Notification demoted =
+                mNotificationService.getCachedNotification(
+                        taskId, /* isSilent= */ false, /* isWarning= */ false);
+        assertNotNull(demoted);
+        assertFalse(
+                "After demoteNow, notification should not request promoted ongoing",
                 demoted.extras.getBoolean(ActorNotificationFactory.EXTRA_REQUEST_PROMOTED_ONGOING));
     }
 
