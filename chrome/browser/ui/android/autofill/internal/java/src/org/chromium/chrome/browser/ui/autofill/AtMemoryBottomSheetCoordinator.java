@@ -23,10 +23,6 @@ public class AtMemoryBottomSheetCoordinator {
     private final AtMemoryBottomSheetMediator mMediator;
     private final BottomSheetController mBottomSheetController;
 
-    public static final int ITEM_TYPE_SUGGESTION = 1;
-    public static final int ITEM_TYPE_SEARCH_TILE = 2;
-    public static final int ITEM_TYPE_ILLUSTRATION_CARD = 3;
-
     private final BottomSheetObserver mBottomSheetObserver =
             new BottomSheetObserver() {
                 @Override
