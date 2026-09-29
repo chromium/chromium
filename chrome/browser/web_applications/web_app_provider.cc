@@ -81,7 +81,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/web_applications/ash/migrations/adobe_express_oem_to_default_migration.h"
 #include "chrome/browser/web_applications/isolated_web_apps/policy/isolated_web_app_cache_manager.h"
 #include "chrome/browser/web_applications/web_app_run_on_os_login_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
@@ -508,14 +507,6 @@ void WebAppProvider::OnSyncBridgeReady(
                          AsWeakPtr()));
       return;
   }
-
-    // Perform database migrations once the sync bridge is ready, but before
-    // starting the rest of the subsystems and notifying that the registry is
-    // ready.
-#if BUILDFLAG(IS_CHROMEOS)
-  web_app::migrations::MigrateAdobeExpressFromOemInstallToDefault(
-      sync_bridge_.get());
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   base::ConcurrentClosures concurrent;
 
