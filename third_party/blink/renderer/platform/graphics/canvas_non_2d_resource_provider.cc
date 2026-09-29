@@ -577,7 +577,7 @@ bool CanvasNon2DResourceProvider::ShouldReplaceTargetBuffer(
 scoped_refptr<gpu::ClientSharedImage>
 CanvasNon2DResourceProvider::BeginExternalOverwrite(
     gpu::SyncToken& internal_access_sync_token) {
-  DCHECK(!is_software_);
+  CHECK(!is_software_);
 
   if (IsGpuContextLost()) {
     return nullptr;
