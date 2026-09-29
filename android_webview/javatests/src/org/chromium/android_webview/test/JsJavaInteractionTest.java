@@ -2153,6 +2153,51 @@ public class JsJavaInteractionTest extends AwParameterizedTest {
                 mListener.hasNoMoreOnPostMessage());
     }
 
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "JsJavaInteraction"})
+    public void testNavigationDoesNotClearNewPageListeners() throws Throwable {
+        addWebMessageListenerOnUiThread(mAwContents, JS_OBJECT_NAME, new String[] {"*"}, mListener);
+
+        loadUrlFromPath(POST_MESSAGE_SIMPLE_HTML);
+        // Consume Page 1's postMessage so the queue is empty
+        TestWebMessageListener.Data initialData = mListener.waitForOnPostMessage();
+        Assert.assertEquals("Hello", initialData.getAsString());
+
+        String html =
+                "<html><head><title>Initial</title></head><body>"
+                        + "<script>"
+                        + "  "
+                        + JS_OBJECT_NAME
+                        + ".onmessage = function(e) {"
+                        + "    document.title = e.data;"
+                        + "  };"
+                        + "  "
+                        + JS_OBJECT_NAME
+                        + ".postMessage('READY');"
+                        + "</script>"
+                        + "</body></html>";
+        mActivityTestRule.loadDataWithBaseUrlSync(
+                mAwContents,
+                mContentsClient.getOnPageFinishedHelper(),
+                html,
+                "text/html",
+                false,
+                "https://stress-test.example.com",
+                null);
+
+        TestWebMessageListener.Data data = mListener.waitForOnPostMessage();
+        Assert.assertEquals("READY", data.getAsString());
+
+        final OnReceivedTitleHelper onReceivedTitleHelper =
+                mContentsClient.getOnReceivedTitleHelper();
+        final int titleCallCount = onReceivedTitleHelper.getCallCount();
+        data.mReplyProxy.postMessage(new MessagePayload("REPLY_OK"));
+
+        onReceivedTitleHelper.waitForCallback(titleCallCount);
+        Assert.assertEquals("REPLY_OK", onReceivedTitleHelper.getTitle());
+    }
+
     private boolean isJsObjectInjectedWhenLoadingUrl(
             final String baseUrl, final String jsObjectName) throws Throwable {
         mActivityTestRule.loadDataWithBaseUrlSync(
