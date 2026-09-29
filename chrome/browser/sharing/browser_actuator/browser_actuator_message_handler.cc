@@ -44,12 +44,19 @@ void BrowserActuatorMessageHandler::OnMessage(
             browser_actuator::BrowserActuatorServiceFactory::GetForProfile(
                 profile_);
         if (service && service->IsInitialized()) {
-          browser_actuator::TransportSession* session =
-              service->GetOrCreateSession(session_id);
           // TODO(crbug.com/538161953): Handle invalid/empty session_id or null
           // profile (e.g. via UMA metrics).
-          if (session) {
+          if (service->GetOrCreateSession(session_id)) {
             for (const auto& typed_payload : bundled_message.typed_payloads()) {
+              // Re-resolve the session on every iteration: a previous payload
+              // (e.g. a CloseSession control command) may have synchronously
+              // destroyed it, so a pointer cached across iterations could
+              // dangle.
+              browser_actuator::TransportSession* session =
+                  service->GetSession(session_id);
+              if (!session) {
+                break;
+              }
               std::optional<browser_actuator::PayloadType> payload_type =
                   browser_actuator::FromDownstreamProtoPayloadType(
                       typed_payload.payload_type());
