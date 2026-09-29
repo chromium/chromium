@@ -648,6 +648,31 @@ struct UpdateBnplPaymentInstrumentRequestDetails {
       UpdateBnplPaymentInstrumentType::kUnknown;
 };
 
+// Information required to make an UpdateCard request.
+struct UpdateCardRequestDetails {
+  UpdateCardRequestDetails();
+  UpdateCardRequestDetails(const UpdateCardRequestDetails& other);
+  UpdateCardRequestDetails& operator=(const UpdateCardRequestDetails& other);
+  UpdateCardRequestDetails(UpdateCardRequestDetails&&);
+  UpdateCardRequestDetails& operator=(UpdateCardRequestDetails&&);
+  ~UpdateCardRequestDetails();
+
+  // The Chrome locale.
+  std::string app_locale;
+  // The billing customer number for the account this request is sent to.
+  int64_t billing_customer_number = 0;
+  // The platform identifier for the instrument being updated.
+  int64_t instrument_id = 0;
+  // The cardholder name provided by the user to update.
+  std::u16string cardholder_name;
+  // The CVC entered by the user to verify and update the card.
+  std::u16string cvc;
+  // An opaque token returned by the preflight request chaining this update.
+  std::string context_token;
+  // Client encoded risk data.
+  std::string risk_data;
+};
+
 // Information required to make a GetWalletReminderNotice request.
 struct GetWalletReminderNoticeRequestDetails {
   GetWalletReminderNoticeRequestDetails();

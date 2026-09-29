@@ -339,6 +339,17 @@ UpdateBnplPaymentInstrumentRequestDetails::operator=(
 UpdateBnplPaymentInstrumentRequestDetails::
     ~UpdateBnplPaymentInstrumentRequestDetails() = default;
 
+UpdateCardRequestDetails::UpdateCardRequestDetails() = default;
+UpdateCardRequestDetails::UpdateCardRequestDetails(
+    const UpdateCardRequestDetails&) = default;
+UpdateCardRequestDetails& UpdateCardRequestDetails::operator=(
+    const UpdateCardRequestDetails& other) = default;
+UpdateCardRequestDetails::UpdateCardRequestDetails(UpdateCardRequestDetails&&) =
+    default;
+UpdateCardRequestDetails& UpdateCardRequestDetails::operator=(
+    UpdateCardRequestDetails&&) = default;
+UpdateCardRequestDetails::~UpdateCardRequestDetails() = default;
+
 GetWalletReminderNoticeRequestDetails::GetWalletReminderNoticeRequestDetails() =
     default;
 GetWalletReminderNoticeRequestDetails::GetWalletReminderNoticeRequestDetails(

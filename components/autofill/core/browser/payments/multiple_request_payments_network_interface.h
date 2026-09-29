@@ -83,6 +83,13 @@ class MultipleRequestPaymentsNetworkInterface
       const GetDetailsForUpdateCardRequestDetails& request_details,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               const std::string&)> callback);
+
+  // Sends a request to update card details (such as cardholder name)
+  // accompanied by CVC.
+  virtual RequestId UpdateCard(
+      const UpdateCardRequestDetails& request_details,
+      base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult)>
+          callback);
 };
 
 }  // namespace autofill::payments

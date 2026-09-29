@@ -473,5 +473,58 @@ TEST_F(MultipleRequestGetDetailsForUpdateCardTest,
   EXPECT_EQ(PaymentsRpcResult::kTryAgainFailure, result_);
 }
 
+class MultipleRequestUpdateCardTest
+    : public MultipleRequestPaymentsNetworkInterfaceTest {
+ public:
+  MultipleRequestUpdateCardTest() = default;
+  ~MultipleRequestUpdateCardTest() override = default;
+
+ protected:
+  void SendUpdateCardRequest() {
+    UpdateCardRequestDetails request_details;
+    request_details.app_locale = "en-US";
+    request_details.billing_customer_number = 111222333444L;
+    request_details.instrument_id = 123456789L;
+    request_details.cardholder_name = u"John Doe";
+    request_details.cvc = u"123";
+    request_details.context_token = "some_context_token";
+    request_details.risk_data = "some_risk_data";
+
+    id_ = payments_network_interface_->UpdateCard(
+        request_details,
+        base::BindOnce(&MultipleRequestUpdateCardTest::OnDidUpdateCard,
+                       GetWeakPtr()));
+  }
+
+  PaymentsRpcResult result_ = PaymentsRpcResult::kNone;
+
+ private:
+  base::WeakPtr<MultipleRequestUpdateCardTest> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+  void OnDidUpdateCard(PaymentsRpcResult result) { result_ = result; }
+
+  base::WeakPtrFactory<MultipleRequestUpdateCardTest> weak_ptr_factory_{this};
+};
+
+TEST_F(MultipleRequestUpdateCardTest, UpdateCard_Success) {
+  SendUpdateCardRequest();
+  IssueOAuthToken();
+  ReturnResponse(net::HTTP_OK, "{\"card_info\":{}}");
+
+  EXPECT_EQ(PaymentsRpcResult::kSuccess, result_);
+}
+
+TEST_F(MultipleRequestUpdateCardTest, UpdateCard_Failure) {
+  SendUpdateCardRequest();
+  IssueOAuthToken();
+  ReturnResponse(
+      net::HTTP_OK,
+      "{\"error\":{\"user_error_message\":\"Failed to update card\"}}");
+
+  EXPECT_EQ(PaymentsRpcResult::kPermanentFailure, result_);
+}
+
 }  // namespace
 }  // namespace autofill::payments
