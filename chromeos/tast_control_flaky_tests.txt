@@ -41,3 +41,6 @@ tast.camera.CCAUISmoke.fake_vcd
 
 # b/561313615
 tast.vm.AudioResumeAfterCrasRestarted.virtio_cras_snd@brya
+
+# b/567359111
+tast.ui.ChromeCrashReporterMetrics.success_crashpad@trogdor
