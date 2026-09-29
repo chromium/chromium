@@ -6990,16 +6990,9 @@ test("unit_tests") {
   }
 
   if (safe_browsing_mode > 0) {
-    sources += [
-      "../common/safe_browsing/binary_feature_extractor_unittest.cc",
-      "../common/safe_browsing/download_type_util_unittest.cc",
-    ]
-
     deps += [
       "../common/safe_browsing:archive_analyzer_results",
-      "../common/safe_browsing:mock_binary_feature_extractor",
-      "//chrome/common/safe_browsing:binary_feature_extractor",
-      "//chrome/common/safe_browsing:download_type_util",
+      "//chrome/common/safe_browsing:unit_tests",
       "//components/file_access:test_support",
       "//components/safe_browsing/content/browser:client_side_detection_service",
       "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
@@ -7017,16 +7010,8 @@ test("unit_tests") {
   }
 
   if (safe_browsing_mode == 1) {
-    # TODO(sgurun): enable tests for safe_browsing==2.
-    sources += [
-      "../common/safe_browsing/ipc_protobuf_message_test_messages.h",
-      "../common/safe_browsing/ipc_protobuf_message_unittest.cc",
-    ]
     if (is_mac) {
       sources += [
-        "../common/safe_browsing/binary_feature_extractor_mac_unittest.cc",
-        "../common/safe_browsing/disk_image_type_sniffer_mac_unittest.cc",
-        "../common/safe_browsing/mach_o_image_reader_mac_unittest.cc",
         "../utility/safe_browsing/mac/dmg_analyzer_unittest.cc",
         "../utility/safe_browsing/mac/dmg_test_utils.cc",
         "../utility/safe_browsing/mac/dmg_test_utils.h",
@@ -7035,15 +7020,9 @@ test("unit_tests") {
         "../utility/safe_browsing/mac/udif_unittest.cc",
       ]
     }
-    if (is_win) {
-      sources +=
-          [ "../common/safe_browsing/binary_feature_extractor_win_unittest.cc" ]
-    }
     deps += [
-      ":test_proto",
       "//chrome/services/file_util/public/cpp:unit_tests",
       "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
-      "//ipc:protobuf_support",
     ]
   }
 
@@ -7958,10 +7937,6 @@ if (!is_android) {
     # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
     # enable the diagnostic by removing this line.
     configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-  }
-
-  proto_library("test_proto") {
-    sources = [ "../common/safe_browsing/ipc_protobuf_message_test.proto" ]
   }
 
   if (is_chromeos) {

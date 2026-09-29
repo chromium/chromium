@@ -4,6 +4,7 @@
 
 import("//chrome/common/features.gni")
 import("//components/safe_browsing/buildflags.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 assert(!is_fuchsia, "Fuchsia shouldn't use anything in //chrome")
 
@@ -140,5 +141,61 @@ source_set("safe_browsing") {
       "//ipc",
       "//third_party/zlib/google:zip",
     ]
+  }
+}
+
+if (safe_browsing_mode != 0) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "binary_feature_extractor_unittest.cc",
+      "download_type_util_unittest.cc",
+    ]
+    deps = [
+      ":binary_feature_extractor",
+      ":download_type_util",
+      ":mock_binary_feature_extractor",
+      "//base/test:test_support",
+      "//components/safe_browsing/core/common:features",
+      "//testing/gtest",
+    ]
+
+    if (safe_browsing_mode == 1) {
+      # TODO(sgurun): enable tests for safe_browsing==2.
+      sources += [
+        "ipc_protobuf_message_test_messages.h",
+        "ipc_protobuf_message_unittest.cc",
+      ]
+      deps += [
+        ":safe_browsing",
+        ":test_proto",
+        "//ipc:protobuf_support",
+      ]
+
+      if (is_mac) {
+        sources += [
+          "binary_feature_extractor_mac_unittest.cc",
+          "disk_image_type_sniffer_mac_unittest.cc",
+          "mach_o_image_reader_mac_unittest.cc",
+        ]
+        deps += [
+          ":disk_image_type_sniffer_mac",
+          "//chrome/common:constants",
+          "//content/test:test_support",
+        ]
+      }
+
+      if (is_win) {
+        sources += [ "binary_feature_extractor_win_unittest.cc" ]
+        deps += [ "//chrome/common:constants" ]
+      }
+    }
+  }
+}
+
+if (safe_browsing_mode == 1) {
+  proto_library("test_proto") {
+    testonly = true
+    sources = [ "ipc_protobuf_message_test.proto" ]
   }
 }
