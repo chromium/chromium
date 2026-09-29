@@ -14,10 +14,6 @@ namespace updater {
 // This is fine for the purposes of the mini_installer, but you have
 // been warned!
 
-// Formats a sequence of |bytes| as hex.  The |str| buffer must have room for
-// at least 2*|size| + 1.
-bool HexEncode(const void* bytes, size_t size, wchar_t* str, size_t str_size);
-
 // Counts the number of characters in the string up to a maximum of
 // alloc_size.  The highest return value from this function can therefore be
 // alloc_size - 1 since |alloc_size| includes the \0 terminator.
@@ -35,18 +31,6 @@ bool SafeStrCopy(wchar_t* dest, size_t dest_size, const wchar_t* src);
 // is copied over to string dest.  If the return value is false, the |dest|
 // string should be the same as it was before.
 bool SafeStrCat(wchar_t* dest, size_t dest_size, const wchar_t* src);
-
-// Function to check if a string (specified by str) starts with another string
-// (specified by start_str). The comparison is string insensitive.
-bool StrStartsWith(const wchar_t* str, const wchar_t* start_str);
-
-// Takes the path to file and returns a pointer to the basename component.
-// Example input -> output:
-//     c:\full\path\to\file.ext -> file.ext
-//     file.ext -> file.ext
-// Note: |size| is the number of characters in |path| not including the string
-// terminator.
-const wchar_t* GetNameFromPathExt(const wchar_t* path, size_t size);
 
 // A string class that manages a fixed size buffer on the stack.
 // The methods in the class are based on the above string methods and the

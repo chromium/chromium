@@ -498,6 +498,12 @@ bool StoreRunTimeEnrollmentToken(const std::string& enrollment_token);
 // Get the command line of a process, given the process id.
 HResultOr<std::wstring> GetCommandLineForPid(DWORD process_id);
 
+// Splits `command_line` into arguments using `::CommandLineToArgvW`. Returns
+// `std::nullopt` on failure. Note that if `command_line` is empty,
+// `::CommandLineToArgvW` returns the path of the current executable.
+std::optional<std::vector<std::wstring>> CommandLineToArgv(
+    const std::wstring& command_line);
+
 // Logs the COM client PID when called from a COM server.
 void LogComCaller(base::cstring_view caller_func);
 

@@ -116,6 +116,11 @@ INSTANTIATE_TEST_SUITE_P(
     AppCommandFormatComponentsInvalidPathsTest,
     ::testing::ValuesIn(std::vector<
                         AppCommandFormatComponentsInvalidPathsTestCase>{
+        // An empty command format is invalid. `::CommandLineToArgvW` would
+        // otherwise return the path of the current executable.
+        {UpdaterScope::kUser, L""},
+        {UpdaterScope::kSystem, L""},
+
         // Relative paths are invalid.
         {UpdaterScope::kUser, L"process.exe"},
 

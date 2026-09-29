@@ -18,6 +18,7 @@
 #include <string>
 #include <vector>
 
+#include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -66,7 +67,9 @@
 
 namespace updater::test {
 
+using ::testing::ElementsAre;
 using ::testing::EndsWith;
+using ::testing::Optional;
 
 namespace {
 
@@ -712,6 +715,23 @@ TEST(WinUtil, GetCommandLineForPid) {
       GetCommandLineForPid(::GetCurrentProcessId());
   ASSERT_TRUE(cmd_line_for_pid.has_value());
   EXPECT_STREQ(cmd_line_for_pid->c_str(), ::GetCommandLine());
+}
+
+TEST(WinUtil, CommandLineToArgv) {
+  EXPECT_THAT(CommandLineToArgv(L"prog.exe"),
+              Optional(ElementsAre(L"prog.exe")));
+  EXPECT_THAT(
+      CommandLineToArgv(L"\"C:\\Program Files\\prog.exe\" a \"b c\" \"\""),
+      Optional(ElementsAre(L"C:\\Program Files\\prog.exe", L"a", L"b c", L"")));
+
+  // An empty command line returns the path of the current executable.
+  const std::optional<std::vector<std::wstring>> args = CommandLineToArgv(L"");
+  ASSERT_TRUE(args);
+  ASSERT_EQ(args->size(), 1u);
+  base::FilePath exe;
+  ASSERT_TRUE(base::PathService::Get(base::FILE_EXE, &exe));
+  EXPECT_TRUE(
+      base::FilePath::CompareEqualIgnoreCase(args->front(), exe.value()));
 }
 
 TEST(WinUtil, AddCurrentUserAllowedAce) {

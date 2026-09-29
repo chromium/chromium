@@ -253,20 +253,6 @@ std::optional<int> DaynumFromDWORD(DWORD value) {
              : std::nullopt;
 }
 
-std::optional<std::vector<std::wstring>> CommandLineToArgv(
-    const std::wstring& command_line) {
-  int num_args = 0;
-  base::win::ScopedLocalAllocTyped<wchar_t*> argv(
-      ::CommandLineToArgvW(command_line.c_str(), &num_args));
-  if (!argv || num_args < 1) {
-    LOG(ERROR) << __func__ << "!argv || num_args < 1: " << num_args;
-    return std::nullopt;
-  }
-  // SAFETY: `num_args` describes the valid portion of `argv`.
-  return UNSAFE_BUFFERS(
-      std::vector<std::wstring>(argv.get(), argv.get() + num_args));
-}
-
 [[nodiscard]] bool IsServicePresentNonAdmin(const std::wstring& service_name) {
   ScopedScHandle scm(
       ::OpenSCManager(nullptr, nullptr, SC_MANAGER_CONNECT | GENERIC_READ));
@@ -314,6 +300,20 @@ std::wstring SanitizeAppId(const std::wstring& app_id) {
 }
 
 }  // namespace
+
+std::optional<std::vector<std::wstring>> CommandLineToArgv(
+    const std::wstring& command_line) {
+  int num_args = 0;
+  base::win::ScopedLocalAllocTyped<wchar_t*> argv(
+      ::CommandLineToArgvW(command_line.c_str(), &num_args));
+  if (!argv || num_args < 1) {
+    LOG(ERROR) << __func__ << ": !argv || num_args < 1: " << num_args;
+    return std::nullopt;
+  }
+  // SAFETY: `num_args` describes the valid portion of `argv`.
+  return UNSAFE_BUFFERS(
+      std::vector<std::wstring>(argv.get(), argv.get() + num_args));
+}
 
 NamedObjectAttributes::NamedObjectAttributes(const std::wstring& name,
                                              const std::wstring& sddl)
@@ -1605,19 +1605,20 @@ HResultOr<std::wstring> GetCommandLineForPid(DWORD process_id) {
                                               sizeof(info), nullptr))) {
     return base::unexpected(E_FAIL);
   }
-  BYTE* peb = reinterpret_cast<BYTE*>(info.PebBaseAddress);
+  const uintptr_t peb = reinterpret_cast<uintptr_t>(info.PebBaseAddress);
   if (!peb) {
     return base::unexpected(E_FAIL);
   }
   SIZE_T bytes_read = 0;
   DWORD_PTR dw = 0;
 
-  // Get the address of the process parameters.
-  // SAFETY: the `ProcessParameters` offset into the PEB is always valid.
+  // Get the address of the process parameters. `peb` is an address in the
+  // remote process, so it is never dereferenced locally; it is only passed to
+  // `::ReadProcessMemory`.
   if (!::ReadProcessMemory(
           process_handle.get(),
-          UNSAFE_BUFFERS(peb + offsetof(PEB, ProcessParameters)), &dw,
-          sizeof(dw), &bytes_read)) {
+          reinterpret_cast<LPCVOID>(peb + offsetof(PEB, ProcessParameters)),
+          &dw, sizeof(dw), &bytes_read)) {
     return base::unexpected(HRESULTFromLastError());
   }
 

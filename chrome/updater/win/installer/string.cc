@@ -7,54 +7,10 @@
 #include <windows.h>
 
 #include <stddef.h>
-#include <stdint.h>
-
-#include <algorithm>
-#include <string>
 
 #include "base/compiler_specific.h"
-#include "base/containers/span.h"
-#include "base/strings/string_number_conversions.h"
-
-namespace {
-
-// Returns true if the given two ASCII characters are same (ignoring case).
-bool EqualASCIICharI(wchar_t a, wchar_t b) {
-  if (a >= L'A' && a <= L'Z') {
-    a += (L'a' - L'A');
-  }
-  if (b >= L'A' && b <= L'Z') {
-    b += (L'a' - L'A');
-  }
-  return (a == b);
-}
-
-}  // namespace
 
 namespace updater {
-
-// Formats a sequence of |bytes| as hex.  The |str| buffer must have room for
-// at least 2*|size| + 1.
-bool HexEncode(const void* bytes, size_t size, wchar_t* str, size_t str_size) {
-  if (str_size <= (size * 2)) {
-    return false;
-  }
-
-  // SAFETY: The caller guarantees `bytes` points to at least `size` bytes.
-  // TODO(crbug.com/40284755): Change this helper to take a
-  // `base::span<const uint8_t>` and migrate callers so this `UNSAFE_BUFFERS`
-  // construction can be removed.
-  // We need to pass the data to `base::HexEncode()`, which now takes a span.
-  // Since we only have a raw pointer + explicit length here, we must construct
-  // a view from them; this is safe because `bytes_ptr` is treated as a byte
-  // pointer and we only read up to `size` bytes.
-  const uint8_t* const bytes_ptr = reinterpret_cast<const uint8_t*>(bytes);
-  const auto bytes_span = UNSAFE_BUFFERS(base::span(bytes_ptr, size));
-  const std::string hex = base::HexEncode(bytes_span);
-  std::ranges::copy(hex, str);
-  UNSAFE_TODO(str[size * 2]) = L'\0';
-  return true;
-}
 
 size_t SafeStrLen(const wchar_t* str, size_t alloc_size) {
   if (!str || !alloc_size) {
@@ -103,37 +59,6 @@ bool SafeStrCat(wchar_t* dest, size_t dest_size, const wchar_t* src) {
   // terminated.
   size_t str_len = SafeStrLen(dest, dest_size);
   return SafeStrCopy(UNSAFE_TODO(dest + str_len), dest_size - str_len, src);
-}
-
-bool StrStartsWith(const wchar_t* str, const wchar_t* start_str) {
-  if (str == nullptr || start_str == nullptr) {
-    return false;
-  }
-
-  for (int i = 0; UNSAFE_TODO(start_str[i]) != L'\0'; ++i) {
-    if (!EqualASCIICharI(UNSAFE_TODO(str[i]), UNSAFE_TODO(start_str[i]))) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-const wchar_t* GetNameFromPathExt(const wchar_t* path, size_t size) {
-  if (!size) {
-    return path;
-  }
-
-  const wchar_t* current = &UNSAFE_TODO(path[size - 1]);
-  while (current != path && L'\\' != *current) {
-    UNSAFE_TODO(--current);
-  }
-
-  // If no path separator found, just return |path|.
-  // Otherwise, return a pointer right after the separator.
-  return ((current == path) && (L'\\' != *current))
-             ? current
-             : (UNSAFE_TODO(current + 1));
 }
 
 }  // namespace updater

@@ -33,6 +33,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
@@ -242,7 +243,12 @@ BOOL CALLBACK OnResourceFound(HMODULE module,
     return FALSE;
   }
 
-  if (!StrStartsWith(name, kUpdaterArchivePrefix)) {
+  // `name` may be an integer resource ID rather than a string pointer (this
+  // also covers nullptr), so it must be checked before being treated as a
+  // string.
+  if (IS_INTRESOURCE(name) ||
+      !base::StartsWith(name, kUpdaterArchivePrefix,
+                        base::CompareCase::INSENSITIVE_ASCII)) {
     return FALSE;
   }
 

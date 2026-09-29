@@ -6,10 +6,10 @@
 
 #include <windows.h>
 
-#include <shellapi.h>
 #include <stddef.h>
 
 #include <functional>
+#include <iterator>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -25,7 +25,6 @@
 #include "base/functional/function_ref.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
@@ -39,7 +38,6 @@
 #include "base/task/thread_pool.h"
 #include "base/version.h"
 #include "base/win/registry.h"
-#include "base/win/scoped_localalloc.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/event_history.h"
 #include "chrome/updater/updater_branding.h"
@@ -408,21 +406,21 @@ HRESULT AppCommandRunner::GetAppCommandFormatComponents(
     std::vector<std::wstring>& parameters) {
   VLOG(2) << __func__ << ": " << scope << ": " << command_format;
 
-  int num_args = 0;
-  base::win::ScopedLocalAllocTyped<wchar_t*> argv(
-      ::CommandLineToArgvW(command_format.c_str(), &num_args));
-  if (!argv || num_args < 1) {
-    LOG(ERROR) << __func__ << "!argv || num_args < 1: " << num_args;
+  // `::CommandLineToArgvW` returns the path of the current executable for an
+  // empty command line, so an empty command format must be rejected here.
+  if (command_format.empty()) {
+    VLOG(1) << __func__ << ": empty command format";
     return E_INVALIDARG;
   }
 
-  // SAFETY: the unsafe buffer is present due to the ::CommandLineToArgvW call.
-  // When constructing the span, `num_args` is validated and checked as a valid
-  // size_t value.
-  UNSAFE_BUFFERS(const base::span<wchar_t*> safe_args{
-      argv.get(), base::checked_cast<size_t>(num_args)});
+  std::optional<std::vector<std::wstring>> args =
+      CommandLineToArgv(command_format);
+  if (!args) {
+    VLOG(1) << __func__ << ": failed to split: " << command_format;
+    return E_INVALIDARG;
+  }
 
-  const base::FilePath exe(safe_args[0]);
+  const base::FilePath exe(args->front());
   if (!IsSecureAppCommandExePath(scope, exe)) {
     LOG(WARNING) << __func__
                  << ": !IsSecureAppCommandExePath(scope, exe): " << exe;
@@ -430,10 +428,7 @@ HRESULT AppCommandRunner::GetAppCommandFormatComponents(
   }
 
   executable = exe;
-  parameters.clear();
-  for (size_t i = 1; i < safe_args.size(); ++i) {
-    parameters.push_back(safe_args[i]);
-  }
+  parameters.assign(std::next(args->begin()), args->end());
 
   return S_OK;
 }
