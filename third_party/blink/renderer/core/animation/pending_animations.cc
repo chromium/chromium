@@ -40,6 +40,13 @@
 
 namespace blink {
 
+PendingAnimations::PendingAnimations(Document& document)
+    : timer_(document.GetTaskRunner(TaskType::kInternalDefault),
+             this,
+             &PendingAnimations::TimerFired),
+      compositor_group_(1),
+      inside_timer_fired_(false) {}
+
 void PendingAnimations::Add(Animation* animation) {
   DCHECK(animation);
   DCHECK_EQ(pending_.Find(animation), kNotFound);

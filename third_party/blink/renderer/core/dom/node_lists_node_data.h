@@ -154,7 +154,7 @@ class NodeListsNodeData final : public GarbageCollected<NodeListsNodeData>,
   void AdoptTreeScope() { InvalidateCaches(); }
 
   void AdoptDocument(Document& old_document, Document& new_document) {
-    DCHECK_NE(old_document, new_document);
+    DCHECK_NE(&old_document, &new_document);
 
     NodeListAtomicNameCacheMap::const_iterator atomic_name_cache_end =
         atomic_name_caches_.end();

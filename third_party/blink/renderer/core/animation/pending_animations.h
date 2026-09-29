@@ -34,7 +34,6 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/timer.h"
@@ -42,6 +41,7 @@
 
 namespace blink {
 
+class Document;
 class PaintArtifactCompositor;
 
 // Handles starting animations when they could potentially require
@@ -66,12 +66,7 @@ class CORE_EXPORT PendingAnimations final
   // Compositor group reserved for animations which already have a start time.
   static const int kCompositorGroupHasStartTime = 1;
 
-  explicit PendingAnimations(Document& document)
-      : timer_(document.GetTaskRunner(TaskType::kInternalDefault),
-               this,
-               &PendingAnimations::TimerFired),
-        compositor_group_(1),
-        inside_timer_fired_(false) {}
+  explicit PendingAnimations(Document& document);
 
   void Add(Animation*);
 

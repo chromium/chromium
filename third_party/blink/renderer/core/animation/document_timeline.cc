@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
 #include "third_party/blink/renderer/core/animation/animation_effect.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -132,6 +133,15 @@ void DocumentTimeline::ScheduleNextService() {
   } else {
     timing_->WakeAfter(base::Seconds(next_effect_delay - kMinimumDelay));
   }
+}
+
+DocumentTimeline::DocumentTimelineTiming::DocumentTimelineTiming(
+    DocumentTimeline* timeline)
+    : timeline_(timeline),
+      timer_(timeline->GetDocument()->GetTaskRunner(TaskType::kInternalDefault),
+             this,
+             &DocumentTimelineTiming::TimerFired) {
+  DCHECK(timeline_);
 }
 
 void DocumentTimeline::DocumentTimelineTiming::WakeAfter(

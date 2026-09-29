@@ -26,15 +26,17 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_COLLECTION_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/live_node_list_base.h"
 #include "third_party/blink/renderer/core/html/collection_items_cache.h"
 #include "third_party/blink/renderer/core/html/collection_type.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
+
+class Document;
 
 // A simple iterator based on an index number in an HTMLCollection.
 // This doesn't work if the HTMLCollection is updated during iteration.
@@ -191,13 +193,7 @@ class CORE_EXPORT HTMLCollection : public ScriptWrappable,
   virtual void UpdateIdNameCache() const;
   bool HasValidIdNameCache() const { return named_item_cache_; }
 
-  void SetNamedItemCache(NamedItemCache* cache) const {
-    DCHECK(!named_item_cache_);
-    // Do not repeat registration for the same invalidation type.
-    if (InvalidationType() != kInvalidateOnIdNameAttrChange)
-      GetDocument().RegisterNodeListWithIdNameCache(this);
-    named_item_cache_ = cache;
-  }
+  void SetNamedItemCache(NamedItemCache* cache) const;
 
   NamedItemCache& GetNamedItemCache() const {
     DCHECK(named_item_cache_);
@@ -206,8 +202,9 @@ class CORE_EXPORT HTMLCollection : public ScriptWrappable,
 
  private:
   void InvalidateIdNameCacheMaps(Document* old_document = nullptr) const {
-    if (!HasValidIdNameCache())
+    if (!HasValidIdNameCache()) {
       return;
+    }
 
     // Make sure we decrement the NodeListWithIdNameCache count from
     // the old document instead of the new one in the case the collection
@@ -218,12 +215,7 @@ class CORE_EXPORT HTMLCollection : public ScriptWrappable,
     named_item_cache_.Clear();
   }
 
-  void UnregisterIdNameCacheFromDocument(Document& document) const {
-    DCHECK(HasValidIdNameCache());
-    // Do not repeat unregistration for the same invalidation type.
-    if (InvalidationType() != kInvalidateOnIdNameAttrChange)
-      document.UnregisterNodeListWithIdNameCache(this);
-  }
+  void UnregisterIdNameCacheFromDocument(Document& document) const;
 
   const unsigned overrides_item_after_ : 1;
   const unsigned should_only_include_direct_children_ : 1;
@@ -242,11 +234,12 @@ DISABLE_CFI_PERF
 inline void HTMLCollection::InvalidateCacheForAttribute(
     const QualifiedName* attr_name) const {
   if (!attr_name ||
-      ShouldInvalidateTypeOnAttributeChange(InvalidationType(), *attr_name))
+      ShouldInvalidateTypeOnAttributeChange(InvalidationType(), *attr_name)) {
     InvalidateCache();
-  else if (*attr_name == html_names::kIdAttr ||
-           *attr_name == html_names::kNameAttr)
+  } else if (*attr_name == html_names::kIdAttr ||
+             *attr_name == html_names::kNameAttr) {
     InvalidateIdNameCacheMaps();
+  }
 }
 
 }  // namespace blink

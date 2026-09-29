@@ -36,7 +36,6 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/animation/animation_timeline.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/platform/timer.h"
 
 namespace blink {
@@ -124,14 +123,7 @@ class CORE_EXPORT DocumentTimeline : public AnimationTimeline {
 
   class DocumentTimelineTiming final : public PlatformTiming {
    public:
-    explicit DocumentTimelineTiming(DocumentTimeline* timeline)
-        : timeline_(timeline),
-          timer_(timeline->GetDocument()->GetTaskRunner(
-                     TaskType::kInternalDefault),
-                 this,
-                 &DocumentTimelineTiming::TimerFired) {
-      DCHECK(timeline_);
-    }
+    explicit DocumentTimelineTiming(DocumentTimeline* timeline);
 
     void WakeAfter(base::TimeDelta duration) override;
 
