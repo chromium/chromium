@@ -33,7 +33,7 @@
 /cardboard-java/src
 /cast_core/prebuilts
 /cast_web_runtime
-/checkstyle/**/*.jar
+/checkstyle/cipd
 /chromeos_login_manager
 /chromeos_text_input
 /cld_2/src
