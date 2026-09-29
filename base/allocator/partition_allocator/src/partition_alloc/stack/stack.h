@@ -27,14 +27,14 @@ class NoDestructor;
 
 // Returns the current stack pointer.
 // TODO(bikineev,1202644): Remove this once base/stack_util.h lands.
-PA_NOINLINE PA_COMPONENT_EXPORT(PARTITION_ALLOC) uintptr_t* GetStackPointer();
+PA_NOINLINE PA_COMPONENT_EXPORT(PARTITION_ALLOC) uintptr_t GetStackPointer();
 // Returns the top of the stack using system API.
-PA_COMPONENT_EXPORT(PARTITION_ALLOC) void* GetStackTop();
+PA_COMPONENT_EXPORT(PARTITION_ALLOC) uintptr_t GetStackTop();
 
 // Interface for stack visitation.
 class StackVisitor {
  public:
-  virtual void VisitStack(uintptr_t* stack_ptr, uintptr_t* stack_top) = 0;
+  virtual void VisitStack(uintptr_t stack_ptr, uintptr_t stack_top) = 0;
 };
 
 // Abstraction over the stack. Supports handling of:
@@ -44,17 +44,17 @@ class StackVisitor {
 class PA_COMPONENT_EXPORT(PARTITION_ALLOC) Stack final {
  public:
   // Sets start of the stack.
-  explicit Stack(void* stack_top);
+  explicit Stack(uintptr_t stack_top);
 
   // Word-aligned iteration of the stack. Flushes callee saved registers and
   // passes the range of the stack on to |visitor|.
   void IteratePointers(StackVisitor* visitor) const;
 
   // Returns the top of the stack.
-  void* stack_top() const { return stack_top_; }
+  uintptr_t stack_top() const { return stack_top_; }
 
  private:
-  void* stack_top_;
+  uintptr_t stack_top_;
 };
 
 // A class to keep stack top pointers through thread creation/destruction.
@@ -68,9 +68,9 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) StackTopRegistry {
   // `NotifyThreadCreated()` this succeeds when an entry already exists.
   // See `MessagePumpAndroid::MaybeUpdatePseudoStackTop()` in
   // base/message_loop/message_pump_android.cc.
-  void OverwriteCurrentThreadStackTop(void* stack_top);
+  void OverwriteCurrentThreadStackTop(uintptr_t stack_top);
 
-  void* GetCurrentThreadStackTop() const;
+  uintptr_t GetCurrentThreadStackTop() const;
 
  private:
   // std::unordered_map is not available inside PartitionAlloc, because
@@ -82,11 +82,11 @@ class PA_COMPONENT_EXPORT(PARTITION_ALLOC) StackTopRegistry {
   // PartitionAlloc with InternalAllocator.
   using StackTops = base::flat_map<
       base::PlatformThreadId,
-      void*,
+      uintptr_t,
       std::less<>,
-      std::vector<std::pair<base::PlatformThreadId, void*>,
+      std::vector<std::pair<base::PlatformThreadId, uintptr_t>,
                   internal::InternalAllocator<
-                      std::pair<base::PlatformThreadId, void*>>>>;
+                      std::pair<base::PlatformThreadId, uintptr_t>>>>;
 
   friend class base::NoDestructor<StackTopRegistry>;
 

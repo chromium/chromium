@@ -43,9 +43,9 @@ class StackScanner final : public StackVisitor {
     container_->value = std::make_unique<int>();
   }
 
-  void VisitStack(uintptr_t* stack_ptr, uintptr_t* stack_top) final {
-    for (; stack_ptr != stack_top; ++stack_ptr) {
-      if (*stack_ptr == reinterpret_cast<uintptr_t>(container_->value.get())) {
+  void VisitStack(uintptr_t stack_ptr, uintptr_t stack_top) final {
+    for (; stack_ptr < stack_top; stack_ptr += sizeof(stack_ptr)) {
+      if (*reinterpret_cast<void**>(stack_ptr) == container_->value.get()) {
         found_ = true;
       }
     }
@@ -336,7 +336,7 @@ TEST_F(PartitionAllocStackTest, IteratePointersFindsCalleeSavedRegisters) {
     (PA_BUILDFLAG(PA_ARCH_CPU_X86) || PA_BUILDFLAG(PA_ARCH_CPU_X86_64))
 class CheckStackAlignmentVisitor final : public StackVisitor {
  public:
-  void VisitStack(uintptr_t*, uintptr_t*) final {
+  void VisitStack(uintptr_t, uintptr_t) final {
     // Check that the stack doesn't get misaligned by asm trampolines.
     float f[4] = {0.};
     [[maybe_unused]] volatile auto xmm = ::_mm_load_ps(f);

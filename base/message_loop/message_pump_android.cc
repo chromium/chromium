@@ -652,14 +652,13 @@ void MessagePumpAndroid::MaybeUpdatePseudoStackTop() {
     return;
   }
 #if PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
-  void* stack_pointer = partition_alloc::internal::GetStackPointer();
-  uintptr_t stack_address = reinterpret_cast<uintptr_t>(stack_pointer);
+  uintptr_t stack_address = partition_alloc::internal::GetStackPointer();
   if (stack_address <= pseudo_stack_top_) {
     return;
   }
   pseudo_stack_top_ = stack_address;
   partition_alloc::internal::StackTopRegistry::Get()
-      .OverwriteCurrentThreadStackTop(stack_pointer);
+      .OverwriteCurrentThreadStackTop(stack_address);
 #endif  // PA_BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
