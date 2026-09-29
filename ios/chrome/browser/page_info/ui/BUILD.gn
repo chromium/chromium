@@ -9,6 +9,8 @@ source_set("ui") {
     "page_info_about_this_site_info.mm",
     "page_info_history_consumer.h",
     "page_info_history_mutator.h",
+    "page_info_navigation_item_title_view.h",
+    "page_info_navigation_item_title_view.mm",
     "page_info_presentation_commands.h",
     "page_info_security_view_controller.h",
     "page_info_security_view_controller.mm",

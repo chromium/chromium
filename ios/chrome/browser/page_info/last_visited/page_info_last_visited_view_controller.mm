@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/history/ui_bundled/history_ui_constants.h"
 #import "ios/chrome/browser/page_info/constants/page_info_constants.h"
 #import "ios/chrome/browser/page_info/last_visited/page_info_last_visited_view_controller_delegate.h"
+#import "ios/chrome/browser/page_info/ui/page_info_navigation_item_title_view.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
@@ -74,7 +75,8 @@ enum ItemType : NSInteger {
   self.navigationItem.largeTitleDisplayMode =
       UINavigationItemLargeTitleDisplayModeNever;
   self.title = l10n_util::GetNSString(IDS_PAGE_INFO_HISTORY);
-  self.navigationItem.prompt = _hostName;
+  self.navigationItem.titleView =
+      CreatePageInfoNavigationItemTitleView(self.title, _hostName);
 
   // Adds the "Done" button and hooks it up to `dismissLastVisited`.
   UIBarButtonItem* dismissButton = [[UIBarButtonItem alloc]
@@ -84,27 +86,6 @@ enum ItemType : NSInteger {
   dismissButton.accessibilityIdentifier =
       kPageInfoViewNavigationDoneButtonAccessibilityIdentifier;
   self.navigationItem.rightBarButtonItem = dismissButton;
-}
-
-// The title view needs to be set manually so it's possible to force focus
-// VoiceOver on it.
-- (void)setTitle:(NSString*)title {
-  if (!title) {
-    self.navigationItem.titleView = nil;
-    return;
-  }
-  UILabel* titleLabel = [[UILabel alloc] init];
-  titleLabel.adjustsFontForContentSizeCategory = YES;
-  titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
-  titleLabel.text = title;
-  titleLabel.textAlignment = NSTextAlignmentLeft;
-  titleLabel.adjustsFontSizeToFitWidth = YES;
-  titleLabel.minimumScaleFactor = 0.1;
-  self.navigationItem.titleView = titleLabel;
-
-  // Force VoiceOver to focus the heading of the view.
-  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
-                                  self.navigationItem.titleView);
 }
 
 #pragma mark - UITableViewDelegate

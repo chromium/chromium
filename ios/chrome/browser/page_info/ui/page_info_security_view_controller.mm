@@ -9,6 +9,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/page_info/constants/page_info_constants.h"
+#import "ios/chrome/browser/page_info/ui/page_info_navigation_item_title_view.h"
 #import "ios/chrome/browser/page_info/ui/page_info_presentation_commands.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/commands/page_info_commands.h"
@@ -59,7 +60,8 @@ enum ItemIdentifier {
   self.title = l10n_util::GetNSString(IDS_IOS_PAGE_INFO_SECURITY);
   self.navigationItem.largeTitleDisplayMode =
       UINavigationItemLargeTitleDisplayModeNever;
-  self.navigationItem.prompt = _pageInfoSecurityDescription.siteURL;
+  self.navigationItem.titleView = CreatePageInfoNavigationItemTitleView(
+      self.title, _pageInfoSecurityDescription.siteURL);
   self.tableView.accessibilityIdentifier =
       kPageInfoSecurityViewAccessibilityIdentifier;
   self.navigationController.navigationBar.accessibilityIdentifier =

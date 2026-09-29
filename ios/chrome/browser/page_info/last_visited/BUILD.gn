@@ -14,6 +14,7 @@ source_set("last_visited") {
     "//ios/chrome/browser/history/ui_bundled:constants",
     "//ios/chrome/browser/history/ui_bundled:ui",
     "//ios/chrome/browser/page_info/features",
+    "//ios/chrome/browser/page_info/ui",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/common/ui/colors",
     "//ui/base",

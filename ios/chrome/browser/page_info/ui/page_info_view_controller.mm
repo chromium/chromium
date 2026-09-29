@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/page_info/features/features.h"
 #import "ios/chrome/browser/page_info/ui/page_info_about_this_site_info.h"
 #import "ios/chrome/browser/page_info/ui/page_info_history_mutator.h"
+#import "ios/chrome/browser/page_info/ui/page_info_navigation_item_title_view.h"
 #import "ios/chrome/browser/permissions/ui_bundled/permission_info.h"
 #import "ios/chrome/browser/permissions/ui_bundled/permissions_constants.h"
 #import "ios/chrome/browser/permissions/ui_bundled/permissions_delegate.h"
@@ -62,9 +63,6 @@ typedef NS_ENUM(NSInteger, ItemIdentifier) {
   ItemIdentifierLastVisited,
 };
 
-// The minimum scale factor of the title label showing the URL.
-const float kTitleLabelMinimumScaleFactor = 0.7f;
-
 // The maximum number of lines we should show for a page's description in the
 // AboutThisSite section.
 const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
@@ -107,7 +105,8 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
   self.title = l10n_util::GetNSString(IDS_IOS_PAGE_INFO_SITE_INFORMATION);
   self.navigationItem.largeTitleDisplayMode =
       UINavigationItemLargeTitleDisplayModeNever;
-  self.navigationItem.prompt = self.pageInfoSecurityDescription.siteURL;
+  self.navigationItem.titleView = CreatePageInfoNavigationItemTitleView(
+      self.title, self.pageInfoSecurityDescription.siteURL);
 
   self.tableView.accessibilityIdentifier = kPageInfoViewAccessibilityIdentifier;
   self.navigationController.navigationBar.accessibilityIdentifier =
@@ -137,6 +136,8 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
   if (self.pageInfoSecurityDescription.isPageLoading) {
     _pageInfoSecurityDescription =
         [self.pageInfoPresentationHandler updatedSiteSecurityDescription];
+    self.navigationItem.titleView = CreatePageInfoNavigationItemTitleView(
+        self.title, self.pageInfoSecurityDescription.siteURL);
   }
 
   [self loadModel];
@@ -483,17 +484,6 @@ const NSInteger kAboutThisSiteDetailTextNumberOfLines = 2;
       }
               range:NSMakeRange(0, descriptionAttributedString.length)];
   return descriptionAttributedString;
-}
-
-// Returns an UILabel for the navigationItem titleView for `siteURL`.
-- (UILabel*)titleViewLabelForURL:(NSString*)siteURL {
-  UILabel* labelURL = [[UILabel alloc] init];
-  labelURL.lineBreakMode = NSLineBreakByTruncatingHead;
-  labelURL.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  labelURL.text = siteURL;
-  labelURL.adjustsFontSizeToFitWidth = YES;
-  labelURL.minimumScaleFactor = kTitleLabelMinimumScaleFactor;
-  return labelURL;
 }
 
 // Updates `snapshot` to reflect the changes to AboutThisSite info.

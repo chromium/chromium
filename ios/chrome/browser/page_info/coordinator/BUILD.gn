@@ -73,16 +73,25 @@ source_set("coordinator") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "page_info_permissions_mediator_unittest.mm" ]
+  sources = [
+    "page_info_permissions_mediator_unittest.mm",
+    "page_info_site_security_mediator_unittest.mm",
+  ]
   deps = [
     ":coordinator",
     "//base/test:test_support",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/page_info/ui",
     "//ios/chrome/browser/permissions/ui_bundled",
     "//ios/chrome/browser/permissions/ui_bundled:permission_info",
     "//ios/chrome/test:test_support",
+    "//ios/web/public/navigation",
     "//ios/web/public/permissions",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base",
+    "//url",
   ]
 }
