@@ -1055,6 +1055,49 @@ TEST_F(RenderWidgetHostViewChildFrameTest,
   connector->SetRootRenderWidgetHostView(nullptr);
 }
 
+TEST_F(RenderWidgetHostViewChildFrameTest, MouseWheelPhaseHandling) {
+  ASSERT_NE(view_->GetMouseWheelPhaseHandler(), nullptr);
+  EXPECT_FALSE(view_->GetMouseWheelPhaseHandler()->HasPendingWheelEndEvent());
+
+  // First wheel tick without phase (such as from a Linux platform event).
+  blink::WebMouseWheelEvent event1 =
+      blink::SyntheticWebMouseWheelEventBuilder::Build(
+          0, 0, 0, -10.f, 0, ui::ScrollGranularity::kScrollByPixel);
+  event1.phase = blink::WebMouseWheelEvent::kPhaseNone;
+  event1.momentum_phase = blink::WebMouseWheelEvent::kPhaseNone;
+
+  view_->ProcessMouseWheelEvent(event1, ui::LatencyInfo());
+  EXPECT_TRUE(view_->GetMouseWheelPhaseHandler()->HasPendingWheelEndEvent());
+
+  // Second wheel tick in multi-tick sequence continues the active scroll.
+  blink::WebMouseWheelEvent event2 = event1;
+  view_->ProcessMouseWheelEvent(event2, ui::LatencyInfo());
+  EXPECT_TRUE(view_->GetMouseWheelPhaseHandler()->HasPendingWheelEndEvent());
+
+  // GestureEventAck for GestureScrollUpdate updates the first scroll update
+  // state.
+  blink::WebGestureEvent scroll_update =
+      blink::SyntheticWebGestureEventBuilder::BuildScrollUpdate(
+          0.f, -10.f, 0, blink::WebGestureDevice::kTouchpad);
+  view_->GestureEventAck(
+      scroll_update, blink::mojom::InputEventResultSource::kCompositorThread,
+      blink::mojom::InputEventResultState::kConsumed);
+  EXPECT_EQ(FirstScrollUpdateAckState::kConsumed,
+            view_->GetMouseWheelPhaseHandler()
+                ->first_scroll_update_ack_state_for_testing());
+
+  // Dispatch the pending wheel end event to finish the sequence.
+  view_->GetMouseWheelPhaseHandler()->DispatchPendingWheelEndEvent();
+  EXPECT_FALSE(view_->GetMouseWheelPhaseHandler()->HasPendingWheelEndEvent());
+
+  // Pre-phased events (e.g. from macOS or trackpads) should pass through
+  // without activating the synthetic phase timer.
+  blink::WebMouseWheelEvent phased_event = event1;
+  phased_event.phase = blink::WebMouseWheelEvent::kPhaseBegan;
+  view_->ProcessMouseWheelEvent(phased_event, ui::LatencyInfo());
+  EXPECT_FALSE(view_->GetMouseWheelPhaseHandler()->HasPendingWheelEndEvent());
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(RenderWidgetHostViewChildFrameTest, ReportScrollJankStats) {
   auto root_view =

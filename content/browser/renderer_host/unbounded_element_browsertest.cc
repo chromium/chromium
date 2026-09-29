@@ -1350,6 +1350,84 @@ IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
   EXPECT_TRUE(EvalJs(iframe, "window.__clicked").ExtractBool());
 }
 
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_SubframeScrollableUnboundedElement \
+  DISABLED_SubframeScrollableUnboundedElement
+#else
+#define MAYBE_SubframeScrollableUnboundedElement \
+  SubframeScrollableUnboundedElement
+#endif
+IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest,
+                       MAYBE_SubframeScrollableUnboundedElement) {
+  if (!GetParam()) {
+    // Same-origin subframes share the root view and compositor. Scrolling over
+    // parent-level occluders is a compositor scroll hit-testing limitation
+    // tracked separately (see go/same-origin-iframe-unbounded);
+    // RenderWidgetHostViewChildFrame is only exercised in OOPIF mode.
+    GTEST_SKIP();
+  }
+
+  GURL url(embedded_test_server()->GetURL(
+      "a.com", GetParam() ? "/unbounded_subframe.html"
+                          : "/unbounded_subframe.html?same_origin"));
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  RenderFrameHost* iframe = ChildFrameAt(primary_main_frame_host(), 0);
+  ASSERT_TRUE(iframe);
+  EXPECT_TRUE(WaitForLoadStop(web_contents()));
+  WaitForHitTestData(iframe);
+
+  std::string script = R"(
+    document.body.innerHTML = `
+      <div id="scroller" style="width:150px; height:100px; position:absolute;
+           top:120px; left:120px; overflow-y:scroll;" unbounded>
+        <div style="height:600px;">Scroller content</div>
+      </div>
+    `;
+    document.getElementById('scroller').showUnboundedElement();
+  )";
+  EXPECT_TRUE(ExecJs(iframe, script));
+
+  UnboundedSurfaceWindow* window = GetActiveWindow();
+  ASSERT_TRUE(window);
+  MainThreadFrameObserver frame_observer(iframe->GetRenderWidgetHost());
+  frame_observer.Wait();
+
+  blink::WebMouseWheelEvent event(blink::WebInputEvent::Type::kMouseWheel,
+                                  blink::WebInputEvent::kNoModifiers,
+                                  base::TimeTicks::Now());
+  event.button = blink::WebMouseEvent::Button::kNoButton;
+  gfx::Rect popup_bounds = window->GetBounds();
+  const int kMouseOffsetX = 25;
+  const int kMouseOffsetY = 25;
+  event.SetPositionInWidget(kMouseOffsetX, kMouseOffsetY);
+  event.SetPositionInScreen(popup_bounds.x() + kMouseOffsetX,
+                            popup_bounds.y() + kMouseOffsetY);
+  event.delta_y = -50.0f;
+  event.wheel_ticks_y = -1.0f;
+
+  window->RouteMouseWheelEvent(event);
+  RunUntilInputProcessed(iframe->GetRenderWidgetHost());
+
+  double initial_scroll = 0.0;
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    initial_scroll =
+        EvalJs(iframe, "document.getElementById('scroller').scrollTop")
+            .ExtractDouble();
+    return initial_scroll > 0.0;
+  }));
+
+  // Route a second wheel tick to verify multi-tick wheel scrolling.
+  event.SetTimeStamp(base::TimeTicks::Now());
+  window->RouteMouseWheelEvent(event);
+  RunUntilInputProcessed(iframe->GetRenderWidgetHost());
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return EvalJs(iframe, "document.getElementById('scroller').scrollTop")
+               .ExtractDouble() > initial_scroll;
+  }));
+}
+
 IN_PROC_BROWSER_TEST_P(UnboundedElementBrowserTest, DynamicBoundsSync) {
   GURL url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url));

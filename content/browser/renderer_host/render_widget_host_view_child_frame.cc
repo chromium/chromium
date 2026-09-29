@@ -72,7 +72,8 @@ RenderWidgetHostViewChildFrame::RenderWidgetHostViewChildFrame(
     const display::ScreenInfos& parent_screen_infos)
     : RenderWidgetHostViewBase(widget_host),
       frame_sink_id_(widget_host->GetFrameSinkId()),
-      frame_connector_(nullptr) {
+      frame_connector_(nullptr),
+      mouse_wheel_phase_handler_(this) {
   // TODO(enne): this appears to have a null current() in some tests.
   screen_infos_ = parent_screen_infos;
 
@@ -791,6 +792,8 @@ void RenderWidgetHostViewChildFrame::GestureEventAck(
   TRACE_EVENT1("input", "RenderWidgetHostViewChildFrame::GestureEventAck",
                "type", blink::WebInputEvent::GetName(event.GetType()));
 
+  mouse_wheel_phase_handler_.GestureEventAck(event, ack_result);
+
 #if !BUILDFLAG(IS_ANDROID)
   HandleSwipeToMoveCursorGestureAck(event);
 #endif
@@ -879,6 +882,11 @@ gfx::Rect RenderWidgetHostViewChildFrame::GetBoundsInScreenWithoutTransform() {
 void RenderWidgetHostViewChildFrame::DidStopFlinging() {
   if (selection_controller_client_)
     selection_controller_client_->DidStopFlinging();
+}
+
+MouseWheelPhaseHandler*
+RenderWidgetHostViewChildFrame::GetMouseWheelPhaseHandler() {
+  return &mouse_wheel_phase_handler_;
 }
 
 blink::mojom::PointerLockResult RenderWidgetHostViewChildFrame::LockPointer(
