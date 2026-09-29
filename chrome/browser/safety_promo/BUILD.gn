@@ -32,6 +32,7 @@ android_library("java") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable/safety_promo_carousel_illustration_bg.xml",
     "java/res/drawable/safety_promo_enhanced_safe_browsing_carousel_illustration.xml",
     "java/res/drawable/safety_promo_enhanced_safe_browsing_illustration.xml",
     "java/res/drawable/safety_promo_history_quick_delete_carousel_illustration.xml",

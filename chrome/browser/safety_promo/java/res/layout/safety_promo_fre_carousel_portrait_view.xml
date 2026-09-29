@@ -57,6 +57,9 @@ found in the LICENSE file.
           android:id="@+id/safety_promo_carousel_recycler_view"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
+          android:layout_marginHorizontal="@dimen/fre_spacing"
+          android:background="@drawable/safety_promo_carousel_illustration_bg"
+          android:clipToOutline="true"
           android:orientation="horizontal"
           android:scrollbars="none" />
 

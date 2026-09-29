@@ -11,5 +11,4 @@ found in the LICENSE file.
     android:layout_height="wrap_content"
     android:adjustViewBounds="true"
     android:scaleType="fitCenter"
-    android:paddingHorizontal="@dimen/fre_spacing"
     android:importantForAccessibility="no" />
