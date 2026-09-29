@@ -2338,6 +2338,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   // for a navigation of the primary main frame.
   // |is_request_for_navigation| is whether the request is for a navigation.
   // |first_auth_attempt| is needed by AwHttpAuthHandler constructor.
+  // |do_not_prompt_for_login| is true if the request must not show login UI
+  // (see network::ResourceRequest::do_not_prompt_for_login). This is only the
+  // case for proxy auth challenges. The embedder must not show login UI for
+  // such requests, but may still provide credentials from sources that don't
+  // involve UI (e.g. extensions or enterprise policy). Otherwise it should
+  // return nullptr or run |auth_required_callback| with std::nullopt.
   // |guest_page_holder| is set if the auth is occurring in the context of
   // a guest view.
   // |auth_required_callback| is used to transfer auth credentials to
@@ -2378,6 +2384,7 @@ class CONTENT_EXPORT ContentBrowserClient {
       const GURL& url,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       bool first_auth_attempt,
+      bool do_not_prompt_for_login,
       GuestPageHolder* guest_page_holder,
       LoginDelegate::LoginAuthRequiredCallback auth_required_callback);
 

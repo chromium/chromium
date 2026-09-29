@@ -414,6 +414,10 @@ struct URLRequest {
 
   // True if login prompts for this request should be suppressed. Cached
   // credentials or default credentials may still be used for authentication.
+  // Server auth challenges are cancelled in the network service. Proxy auth
+  // challenges are forwarded to the URLLoaderNetworkServiceObserver, flagged
+  // with `do_not_prompt_for_login`, so that non-UI credential sources (e.g.
+  // extensions) can answer them.
   bool do_not_prompt_for_login;
 
   // True if |frame_id| is the outermost main frame of a page.

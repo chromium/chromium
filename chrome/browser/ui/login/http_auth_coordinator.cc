@@ -41,15 +41,20 @@ HttpAuthCoordinator::CreateLoginDelegate(
     bool is_request_for_navigation,
     const GURL& url,
     scoped_refptr<net::HttpResponseHeaders> response_headers,
+    bool do_not_prompt_for_login,
     content::GuestPageHolder* guest,
     content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
   auto flow_owned = std::make_unique<Flow>(
       this, web_contents, auth_info, request_id,
       is_request_for_primary_main_frame_navigation, is_request_for_navigation,
-      url, response_headers, std::move(auth_required_callback));
+      url, response_headers, do_not_prompt_for_login,
+      std::move(auth_required_callback));
   Flow* flow = flow_owned.get();
   flows_[flow] = std::move(flow_owned);
 
+  // The enterprise proxy error service and extensions don't show login UI, so
+  // they may also answer requests with `do_not_prompt_for_login`. ShowDialog()
+  // never shows UI for such requests.
   if (flow->ForwardToEnterpriseProxy(browser_context)) {
     return std::make_unique<LoginDelegateWrapper>(flow);
   }
@@ -90,6 +95,7 @@ HttpAuthCoordinator::Flow::Flow(
     bool is_request_for_navigation,
     const GURL& url,
     scoped_refptr<net::HttpResponseHeaders> response_headers,
+    bool do_not_prompt_for_login,
     content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback)
     : coordinator_(coordinator),
       auth_info_(auth_info),
@@ -99,6 +105,7 @@ HttpAuthCoordinator::Flow::Flow(
       is_request_for_navigation_(is_request_for_navigation),
       url_(url),
       response_headers_(response_headers),
+      do_not_prompt_for_login_(do_not_prompt_for_login),
       callback_(std::move(auth_required_callback)) {
   if (web_contents) {
     web_contents_ = web_contents->GetWeakPtr();
@@ -194,6 +201,14 @@ void HttpAuthCoordinator::Flow::ShowDialog() {
   // If we're being asked to show a dialog, then the callback must still be
   // valid.
   CHECK(callback_);
+
+  // Requests that must not prompt for login never show a dialog, nor create a
+  // LoginTabHelper (which would prompt once the navigation commits). Only
+  // non-UI sources may provide credentials for them, and none did.
+  if (do_not_prompt_for_login_) {
+    std::move(callback_).Run(std::nullopt);
+    return;
+  }
 
   // If the WebContents is no longer valid, then we cannot show a dialog.
   if (!web_contents_) {

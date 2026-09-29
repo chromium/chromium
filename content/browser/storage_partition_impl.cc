@@ -131,6 +131,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "net/base/auth.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/cookies/cookie_setting_override.h"
@@ -493,6 +494,7 @@ class LoginHandlerDelegate {
       const GURL& url,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
       bool first_auth_attempt,
+      bool do_not_prompt_for_login,
       FrameTreeNodeId frame_tree_node_id)
       : auth_challenge_responder_(std::move(auth_challenge_responder)),
         auth_info_(auth_info),
@@ -504,6 +506,7 @@ class LoginHandlerDelegate {
         url_(url),
         response_headers_(std::move(response_headers)),
         first_auth_attempt_(first_auth_attempt),
+        do_not_prompt_for_login_(do_not_prompt_for_login),
         web_contents_(web_contents ? web_contents->GetWeakPtr() : nullptr),
         browser_context_(browser_context->GetWeakPtr()),
         frame_tree_node_id_(frame_tree_node_id) {
@@ -559,7 +562,7 @@ class LoginHandlerDelegate {
         auth_info_, web_contents_.get(), browser_context_.get(), request_id_,
         is_request_for_primary_main_frame_navigation_,
         is_request_for_navigation_, url_, response_headers_,
-        first_auth_attempt_, guest,
+        first_auth_attempt_, do_not_prompt_for_login_, guest,
         base::BindOnce(&LoginHandlerDelegate::OnAuthCredentials,
                        weak_factory_.GetWeakPtr()));
     creating_login_delegate_ = false;
@@ -589,6 +592,7 @@ class LoginHandlerDelegate {
   GURL url_;
   const scoped_refptr<net::HttpResponseHeaders> response_headers_;
   bool first_auth_attempt_;
+  const bool do_not_prompt_for_login_;
   base::WeakPtr<WebContents> web_contents_;
   base::WeakPtr<BrowserContext> browser_context_;
   std::unique_ptr<LoginDelegate> login_delegate_;
@@ -2038,10 +2042,15 @@ void StoragePartitionImpl::OnAuthRequired(
     int32_t request_id,
     const GURL& url,
     bool first_auth_attempt,
+    bool do_not_prompt_for_login,
     const net::AuthChallengeInfo& auth_info,
     const scoped_refptr<net::HttpResponseHeaders>& head_headers,
     mojo::PendingRemote<network::mojom::AuthChallengeResponder>
         auth_challenge_responder) {
+  // The network service only forwards proxy challenges for requests that must
+  // not prompt for login.
+  DCHECK(!do_not_prompt_for_login || auth_info.is_proxy);
+
   URLLoaderNetworkContext context =
       url_loader_network_observers_.current_context();
   URLLoaderNetworkContext original_context = context;
@@ -2103,8 +2112,12 @@ void StoragePartitionImpl::OnAuthRequired(
 
   // If the request is for a prerendering page, prerendering should be cancelled
   // because the embedder may show UI for auth requests, and it's unsuitable for
-  // a hidden page.
-  if (CancelIfPrerendering(context.navigation_or_document(),
+  // a hidden page. Requests that must not prompt for login never show UI (only
+  // non-UI credential sources may answer them), so they don't cancel
+  // prerendering. Their challenges used to be cancelled in the network service
+  // without reaching here.
+  if (!do_not_prompt_for_login &&
+      CancelIfPrerendering(context.navigation_or_document(),
                            PrerenderFinalStatus::kLoginAuthRequested)) {
     return;
   }
@@ -2209,7 +2222,8 @@ void StoragePartitionImpl::OnAuthRequired(
       std::move(auth_challenge_responder), current_web_contents,
       browser_context_, auth_info, *is_primary_main_frame_navigation,
       *is_navigation_request, process_id, request_id, url, head_headers,
-      first_auth_attempt, frame_tree_node_id);  // deletes self
+      first_auth_attempt, do_not_prompt_for_login,
+      frame_tree_node_id);  // deletes self
 }
 
 void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(

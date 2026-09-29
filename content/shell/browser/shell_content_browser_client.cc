@@ -690,8 +690,14 @@ std::unique_ptr<LoginDelegate> ShellContentBrowserClient::CreateLoginDelegate(
     const GURL& url,
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     bool first_auth_attempt,
+    bool do_not_prompt_for_login,
     GuestPageHolder* guest,
     LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
+  // `login_request_callback_` stands in for a login dialog, which must not be
+  // shown for requests that must not prompt for login.
+  if (do_not_prompt_for_login) {
+    return nullptr;
+  }
   if (!login_request_callback_.is_null()) {
     std::move(login_request_callback_)
         .Run(is_request_for_primary_main_frame_navigation,

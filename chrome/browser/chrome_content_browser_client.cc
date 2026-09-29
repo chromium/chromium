@@ -7356,6 +7356,7 @@ ChromeContentBrowserClient::CreateLoginDelegate(
     const GURL& url,
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     bool first_auth_attempt,
+    bool do_not_prompt_for_login,
     content::GuestPageHolder* guest,
     content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -7366,7 +7367,9 @@ ChromeContentBrowserClient::CreateLoginDelegate(
   // nullptr instead of LoginDelegate to fail authentication. (See b/260522530).
   if (auth_info.scheme ==
       net::HttpAuth::SchemeToString(net::HttpAuth::AUTH_SCHEME_NEGOTIATE)) {
-    ash::KerberosInBrowserDialog::Show();
+    if (!do_not_prompt_for_login) {
+      ash::KerberosInBrowserDialog::Show();
+    }
     return nullptr;
   }
 
@@ -7380,7 +7383,7 @@ ChromeContentBrowserClient::CreateLoginDelegate(
         std::move(auth_required_callback));
   }
 
-  if (ash::HttpAuthDialog::IsEnabled()) {
+  if (!do_not_prompt_for_login && ash::HttpAuthDialog::IsEnabled()) {
     return ash::HttpAuthDialog::Create(auth_info, web_contents, url,
                                        std::move(auth_required_callback));
   }
@@ -7392,7 +7395,8 @@ ChromeContentBrowserClient::CreateLoginDelegate(
   return http_auth_coordinator_->CreateLoginDelegate(
       web_contents, browser_context, auth_info, request_id,
       is_request_for_primary_main_frame_navigation, is_request_for_navigation,
-      url, response_headers, guest, std::move(auth_required_callback));
+      url, response_headers, do_not_prompt_for_login, guest,
+      std::move(auth_required_callback));
 }
 
 bool ChromeContentBrowserClient::HandleExternalProtocol(

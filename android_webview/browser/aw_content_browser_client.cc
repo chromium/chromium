@@ -1003,8 +1003,14 @@ AwContentBrowserClient::CreateLoginDelegate(
     const GURL& url,
     scoped_refptr<net::HttpResponseHeaders> response_headers,
     bool first_auth_attempt,
+    bool do_not_prompt_for_login,
     content::GuestPageHolder* guest,
     content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback) {
+  // AwHttpAuthHandler asks the app for credentials, which WebView has never
+  // done for requests that must not prompt for login. Keep cancelling them.
+  if (do_not_prompt_for_login) {
+    return nullptr;
+  }
   return std::make_unique<AwHttpAuthHandler>(auth_info, web_contents,
                                              first_auth_attempt,
                                              std::move(auth_required_callback));

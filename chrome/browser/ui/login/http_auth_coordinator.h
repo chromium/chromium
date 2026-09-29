@@ -35,8 +35,9 @@ class WebContents;
 // The control flow is the following:
 //   (1) Extensions are given the opportunity to automatically fill in or
 //       cancel http auth. If this happens, skip the remaining steps.
-//   (2) If the network request is from a context that has no UI, then a dialog
-//       cannot be shown. Cancel http auth.
+//   (2) If the network request is from a context that has no UI, or if it must
+//       not prompt for login (`do_not_prompt_for_login`), then a dialog cannot
+//       be shown. Cancel http auth.
 //   (3a) If the network request is for a subframe, show the dialog.
 //   (3b) If the network request is for the main frame, immediately cancel http
 //        auth. Cancel the navigation and replace with a blank html page. Then
@@ -58,7 +59,9 @@ class HttpAuthCoordinator {
   HttpAuthCoordinator();
   virtual ~HttpAuthCoordinator();
 
-  // Creates an instance of Flow.
+  // Creates an instance of Flow. If `do_not_prompt_for_login` is true, only
+  // non-UI sources (extensions, the enterprise proxy error service) may provide
+  // credentials; no dialog is shown.
   std::unique_ptr<content::LoginDelegate> CreateLoginDelegate(
       content::WebContents* web_contents,
       content::BrowserContext* browser_context,
@@ -68,6 +71,7 @@ class HttpAuthCoordinator {
       bool is_request_for_navigation,
       const GURL& url,
       scoped_refptr<net::HttpResponseHeaders> response_headers,
+      bool do_not_prompt_for_login,
       content::GuestPageHolder* guest,
       content::LoginDelegate::LoginAuthRequiredCallback auth_required_callback);
 
@@ -96,6 +100,7 @@ class HttpAuthCoordinator {
          bool is_request_for_navigation,
          const GURL& url,
          scoped_refptr<net::HttpResponseHeaders> response_headers,
+         bool do_not_prompt_for_login,
          content::LoginDelegate::LoginAuthRequiredCallback
              auth_required_callback);
     ~Flow();
@@ -145,6 +150,7 @@ class HttpAuthCoordinator {
     const bool is_request_for_navigation_;
     const GURL url_;
     const scoped_refptr<net::HttpResponseHeaders> response_headers_;
+    const bool do_not_prompt_for_login_;
 
     // Set to true if the extension cancels the request.
     bool did_cancel_from_extension_ = false;

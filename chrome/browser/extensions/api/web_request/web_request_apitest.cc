@@ -129,9 +129,11 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/features.h"
 #include "net/base/filename_util.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/network_isolation_key.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/log/net_log_source.h"
 #include "net/socket/udp_server_socket.h"
@@ -139,6 +141,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "net/test/embedded_test_server/register_basic_auth_handler.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -150,7 +153,9 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/cpp/url_loader_factory_builder.h"
+#include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
@@ -175,6 +180,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/login/login_handler.h"                 // nogncheck
+#include "chrome/browser/ui/login/login_tab_helper.h"              // nogncheck
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"  // nogncheck
 #include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -8567,6 +8573,170 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerAuthTest,
 
   EXPECT_EQ("Auth success",
             EvalJs(GetActiveWebContents(), "document.body.textContent"));
+}
+
+// Tests proxy auth for service worker navigation preload requests. Navigation
+// preload requests suppress login prompts (`do_not_prompt_for_login`). Before
+// b/457210267 was fixed, the network service cancelled their proxy auth
+// challenges before extensions could answer them, and the 407 response reached
+// the page.
+class ProxyAuthWithServiceWorkerPreloadTest : public ExtensionApiTest {
+ public:
+  ProxyAuthWithServiceWorkerPreloadTest() = default;
+  ~ProxyAuthWithServiceWorkerPreloadTest() override = default;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ExtensionApiTest::SetUpCommandLine(command_line);
+
+    // HTTPS server to be tunnelled to via a proxy server requiring basic auth.
+    // CERT_TEST_NAMES has a valid certificate for "a.test".
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_.InitializeAndListen());
+
+    // `embedded_test_server()` acts as an HTTP proxy that requires basic auth.
+    // It returns 407s if the Proxy-Authorization header is missing, and it
+    // tunnels CONNECT requests for "a.test" and `https_server_`'s port to
+    // `https_server_`.
+    net::test_server::RegisterProxyBasicAuthHandler(*embedded_test_server(),
+                                                    "user", "pass");
+    embedded_test_server()->EnableConnectProxy(
+        {net::HostPortPair::FromURL(https_server_.GetURL("a.test", "/"))});
+    ASSERT_TRUE(InitializeEmbeddedTestServer());
+    command_line->AppendSwitchASCII(
+        ::switches::kProxyServer,
+        embedded_test_server()->host_port_pair().ToString());
+  }
+
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+    https_server_.StartAcceptingConnections();
+    EmbeddedTestServerAcceptConnections();
+  }
+
+ protected:
+  // Loads an extension that answers auth challenges for "a.test" with the
+  // proxy credentials, and reports each challenge with a
+  // "proxy-auth:<isProxy>:<url>" message. If `decline_preload` is true, the
+  // extension doesn't provide credentials for navigation preload requests.
+  void LoadProxyAuthExtension(bool decline_preload) {
+    static constexpr char kManifest[] =
+        R"({
+             "name": "Proxy auth provider",
+             "version": "0.1",
+             "manifest_version": 3,
+             "permissions": ["webRequest", "webRequestAuthProvider"],
+             "host_permissions": ["https://a.test/*"],
+             "background": {"service_worker": "background.js"}
+           })";
+    static constexpr char kBackgroundJs[] =
+        R"(chrome.webRequest.onAuthRequired.addListener(
+               (details, callback) => {
+                 chrome.test.sendMessage(
+                     `proxy-auth:${details.isProxy}:${details.url}`);
+                 const isPreload =
+                     details.url.includes('service-worker-navigation-preload');
+                 if (declinePreload && isPreload) {
+                   callback({});
+                   return;
+                 }
+                 callback({authCredentials: {username: 'user',
+                                             password: 'pass'}});
+               },
+               {urls: ['https://a.test/*']},
+               ['asyncBlocking']);
+           chrome.test.sendMessage('ready');)";
+
+    test_extension_dir_.WriteManifest(kManifest);
+    test_extension_dir_.WriteFile(
+        FILE_PATH_LITERAL("background.js"),
+        base::StrCat({"const declinePreload = ",
+                      base::ToString(decline_preload), ";\n", kBackgroundJs}));
+
+    ExtensionTestMessageListener ready_listener("ready");
+    ASSERT_TRUE(LoadExtension(test_extension_dir_.UnpackedPath()));
+    ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+  }
+
+  // Registers a service worker that enables navigation preload and responds to
+  // navigations with the preload response. Then clears the proxy auth cache
+  // and closes all connections, so that the next request through the proxy
+  // gets a new proxy auth challenge.
+  void RegisterNavigationPreloadServiceWorker() {
+    content::WebContents* web_contents = GetActiveWebContents();
+    ASSERT_TRUE(NavigateToURL(
+        web_contents,
+        https_server_.GetURL("a.test",
+                             "/service_worker/create_service_worker.html")));
+    ASSERT_EQ("DONE", EvalJs(web_contents,
+                             "register('navigation_preload_worker.js', '/');"));
+
+    network::mojom::NetworkContext* network_context =
+        profile()->GetDefaultStoragePartition()->GetNetworkContext();
+    base::RunLoop clear_run_loop;
+    network_context->ClearHttpAuthCache(base::Time(), base::Time::Max(),
+                                        /*filter=*/nullptr,
+                                        clear_run_loop.QuitClosure());
+    clear_run_loop.Run();
+    base::RunLoop close_run_loop;
+    network_context->CloseAllConnections(close_run_loop.QuitClosure());
+    close_run_loop.Run();
+  }
+
+  // Returns a URL in the scope of the service worker. The navigation preload
+  // response echoes the Service-Worker-Navigation-Preload request header.
+  GURL GetPreloadUrl() const {
+    return https_server_.GetURL(
+        "a.test", "/echoheader?service-worker-navigation-preload");
+  }
+
+ private:
+  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  TestExtensionDir test_extension_dir_;
+};
+
+// Tests that an extension can answer the proxy auth challenge of a service
+// worker navigation preload request. Regression test for b/457210267.
+IN_PROC_BROWSER_TEST_F(ProxyAuthWithServiceWorkerPreloadTest,
+                       PreloadProxyAuthChallengeReachesExtension) {
+  ASSERT_NO_FATAL_FAILURE(LoadProxyAuthExtension(/*decline_preload=*/false));
+  ASSERT_NO_FATAL_FAILURE(RegisterNavigationPreloadServiceWorker());
+
+  const GURL url = GetPreloadUrl();
+  ExtensionTestMessageListener preload_auth_listener("proxy-auth:true:" +
+                                                     url.spec());
+  content::WebContents* web_contents = GetActiveWebContents();
+  EXPECT_TRUE(NavigateToURL(web_contents, url));
+  EXPECT_EQ("true", EvalJs(web_contents, "document.body.textContent"));
+  EXPECT_TRUE(preload_auth_listener.WaitUntilSatisfied());
+}
+
+// Tests that no login prompt is shown when nothing answers the proxy auth
+// challenge of a service worker navigation preload request. Regression test
+// for b/457210267.
+IN_PROC_BROWSER_TEST_F(
+    ProxyAuthWithServiceWorkerPreloadTest,
+    PreloadProxyAuthChallengeWithoutCredentialsShowsNoPrompt) {
+  ASSERT_NO_FATAL_FAILURE(LoadProxyAuthExtension(/*decline_preload=*/true));
+  ASSERT_NO_FATAL_FAILURE(RegisterNavigationPreloadServiceWorker());
+
+  const GURL url = GetPreloadUrl();
+  ExtensionTestMessageListener preload_auth_listener("proxy-auth:true:" +
+                                                     url.spec());
+  content::WebContents* web_contents = GetActiveWebContents();
+  content::NavigateToURLBlockUntilNavigationsComplete(web_contents, url, 1);
+  EXPECT_TRUE(preload_auth_listener.WaitUntilSatisfied());
+
+  EXPECT_THAT(LoginHandler::GetAllLoginHandlersForTest(), testing::IsEmpty());
+  // A LoginTabHelper would show a login prompt once the navigation commits.
+  EXPECT_EQ(LoginTabHelper::FromWebContents(web_contents), nullptr);
+
+  // The navigation commits the proxy's 407 response.
+  content::NavigationEntry* entry =
+      web_contents->GetController().GetLastCommittedEntry();
+  ASSERT_TRUE(entry);
+  EXPECT_EQ(net::HTTP_PROXY_AUTHENTICATION_REQUIRED,
+            entry->GetHttpStatusCode());
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

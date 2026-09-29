@@ -146,11 +146,17 @@ interface URLLoaderNetworkServiceObserver {
   // The is not needed for frame based requests because they have their own
   // URLLoaderFactory and a unique URLLoaderNetworkServiceObserver for each
   // frame.
+  //
+  // |do_not_prompt_for_login| is true if the request must not show login UI
+  // (see URLRequest.do_not_prompt_for_login). Only proxy challenges are
+  // forwarded for such requests. The receiver may still provide credentials
+  // from non-UI sources.
   OnAuthRequired(
       mojo_base.mojom.UnguessableToken? window_id,
       int32 request_id,
       url.mojom.Url url,
       bool first_auth_attempt,
+      bool do_not_prompt_for_login,
       AuthChallengeInfo auth_info,
       HttpResponseHeaders? head_headers,
       pending_remote<AuthChallengeResponder> auth_challenge_responder);
