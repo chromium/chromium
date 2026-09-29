@@ -35,6 +35,7 @@
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "components/variations/variations_client.h"
+#include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -2509,6 +2510,10 @@ TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestSuccess) {
       "Lens.Composebox.ContextUpload.SuccessResponseTime", 1);
   histogram_tester.ExpectTotalCount(
       "Lens.Composebox.ContextUpload.FailureResponseTime", 0);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.FileUpload.HttpStatus",
+                                      200, 1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.FileUpload.NetError",
+                                      net::OK, 1);
 }
 
 TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestFailure) {
@@ -2536,6 +2541,81 @@ TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestFailure) {
       "Lens.Composebox.ContextUpload.SuccessResponseTime", 0);
   histogram_tester.ExpectTotalCount(
       "Lens.Composebox.ContextUpload.FailureResponseTime", 1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.FileUpload.HttpStatus",
+                                      500, 1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.FileUpload.NetError",
+                                      net::OK, 1);
+}
+
+TEST_F(ComposeboxQueryControllerTest, UploadPdfFileRequestFailure_NetError) {
+  base::HistogramTester histogram_tester;
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Ensure that the upload request fails with a network error and no HTTP
+  // status.
+  controller().set_next_file_upload_request_should_return_error(true);
+  controller().set_fake_server_response_http_status_code(-1);
+  controller().set_fake_server_response_net_error_code(
+      net::ERR_INTERNET_DISCONNECTED);
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf,
+                    ContextUploadStatus::kUploadFailed,
+                    ContextUploadErrorType::kServerError);
+
+  histogram_tester.ExpectTotalCount(
+      "Lens.Composebox.ContextUpload.SuccessResponseTime", 0);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Composebox.ContextUpload.FailureResponseTime", 1);
+  // Pure network errors without HTTP response headers should not record
+  // HttpStatus.
+  histogram_tester.ExpectTotalCount("ContextualTasks.FileUpload.HttpStatus", 0);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.FileUpload.NetError",
+                                      std::abs(net::ERR_INTERNET_DISCONNECTED),
+                                      1);
+}
+
+TEST_F(ComposeboxQueryControllerTest,
+       UploadPdfFileRequestFailure_HttpErrorAndNetError) {
+  base::HistogramTester histogram_tester;
+  // Act: Start the session.
+  controller().InitializeIfNeeded();
+
+  // Ensure that the upload request returns HTTP 502 with a net error.
+  controller().set_next_file_upload_request_should_return_error(true);
+  controller().set_fake_server_response_http_status_code(502);
+  controller().set_fake_server_response_net_error_code(net::ERR_FAILED);
+
+  // Act: Start the file upload flow.
+  const base::UnguessableToken file_token = base::UnguessableToken::Create();
+  StartPdfFileUploadFlow(file_token,
+                         /*file_data=*/std::vector<uint8_t>());
+
+  // Assert: Validate cluster info request and state changes.
+  WaitForClusterInfo();
+
+  // Assert: Validate file upload request and status changes.
+  WaitForFileUpload(file_token, lens::MimeType::kPdf,
+                    ContextUploadStatus::kUploadFailed,
+                    ContextUploadErrorType::kServerError);
+
+  histogram_tester.ExpectTotalCount(
+      "Lens.Composebox.ContextUpload.SuccessResponseTime", 0);
+  histogram_tester.ExpectTotalCount(
+      "Lens.Composebox.ContextUpload.FailureResponseTime", 1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.FileUpload.HttpStatus",
+                                      502, 1);
+  histogram_tester.ExpectUniqueSample("ContextualTasks.FileUpload.NetError",
+                                      std::abs(net::ERR_FAILED), 1);
 }
 
 TEST_F(ComposeboxQueryControllerTest,

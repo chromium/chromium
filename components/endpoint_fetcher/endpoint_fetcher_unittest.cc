@@ -169,7 +169,9 @@ TEST_F(EndpointFetcherTest, FetchResponse) {
               Run(Pointee(AllOf(
                   Field(&EndpointResponse::response, kExpectedResponse),
                   Field(&EndpointResponse::http_status_code, net::HTTP_OK),
-                  Field(&EndpointResponse::error_type, std::nullopt)))))
+                  Field(&EndpointResponse::error_type, std::nullopt),
+                  Field(&EndpointResponse::net_error_code,
+                        std::optional<int>(net::OK))))))
       .WillOnce([&run_loop](std::unique_ptr<EndpointResponse> ignored) {
         run_loop.Quit();
       });
@@ -185,10 +187,12 @@ TEST_F(EndpointFetcherTest, FetchEndpointResponseError) {
   base::RunLoop run_loop;
   EXPECT_CALL(
       endpoint_fetcher_callback(),
-      Run(Pointee(AllOf(
-          Field(&EndpointResponse::response, kExpectedResponseError),
-          Field(&EndpointResponse::http_status_code, -1),
-          Field(&EndpointResponse::error_type, FetchErrorType::kNetError)))))
+      Run(Pointee(
+          AllOf(Field(&EndpointResponse::response, kExpectedResponseError),
+                Field(&EndpointResponse::http_status_code, -1),
+                Field(&EndpointResponse::error_type, FetchErrorType::kNetError),
+                Field(&EndpointResponse::net_error_code,
+                      std::optional<int>(net::ERR_FAILED))))))
       .WillOnce([&run_loop](std::unique_ptr<EndpointResponse> ignored) {
         run_loop.Quit();
       });
@@ -206,7 +210,9 @@ TEST_F(EndpointFetcherTest, FetchRedirectionResponse) {
               Run(Pointee(AllOf(
                   Field(&EndpointResponse::response, kExpectedResponse),
                   Field(&EndpointResponse::http_status_code, net::HTTP_FOUND),
-                  Field(&EndpointResponse::error_type, std::nullopt)))))
+                  Field(&EndpointResponse::error_type, std::nullopt),
+                  Field(&EndpointResponse::net_error_code,
+                        std::optional<int>(net::OK))))))
       .WillOnce([&run_loop](std::unique_ptr<EndpointResponse> ignored) {
         run_loop.Quit();
       });
@@ -224,7 +230,9 @@ TEST_F(EndpointFetcherTest, FetchOAuthError) {
       Run(Pointee(AllOf(
           Field(&EndpointResponse::response, kExpectedAuthError),
           Field(&EndpointResponse::http_status_code, -1),
-          Field(&EndpointResponse::error_type, FetchErrorType::kAuthError)))))
+          Field(&EndpointResponse::error_type, FetchErrorType::kAuthError),
+          // No network request was made, so there is no net error code.
+          Field(&EndpointResponse::net_error_code, std::nullopt)))))
       .WillOnce([&run_loop](std::unique_ptr<EndpointResponse> ignored) {
         run_loop.Quit();
       });
@@ -241,7 +249,9 @@ TEST_F(EndpointFetcherTest, FetchOAuthNoPrimaryAccount) {
       Run(Pointee(AllOf(
           Field(&EndpointResponse::response, kExpectedPrimaryAccountError),
           Field(&EndpointResponse::http_status_code, -1),
-          Field(&EndpointResponse::error_type, FetchErrorType::kAuthError)))))
+          Field(&EndpointResponse::error_type, FetchErrorType::kAuthError),
+          // No network request was made, so there is no net error code.
+          Field(&EndpointResponse::net_error_code, std::nullopt)))))
       .WillOnce([&run_loop](std::unique_ptr<EndpointResponse> ignored) {
         run_loop.Quit();
       });

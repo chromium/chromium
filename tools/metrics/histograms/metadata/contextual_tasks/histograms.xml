@@ -318,6 +318,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ContextualTasks.FileUpload.HttpStatus" enum="HttpResponseCode"
+    expires_after="2027-03-07">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when an HTTP response is received for a contextual file upload
+    request. Records the HTTP status code of the response.
+  </summary>
+</histogram>
+
+<histogram name="ContextualTasks.FileUpload.NetError" enum="NetErrorCodes"
+    expires_after="2027-03-07">
+  <owner>hujasonx@google.com</owner>
+  <owner>chrome-contextual-tasks-eng@google.com</owner>
+  <summary>
+    Recorded when a contextual file upload request completes at the network
+    layer (either successfully or with an error). Records the network error
+    code. Not recorded if the upload failed before a network request was made,
+    e.g. due to an authentication failure.
+  </summary>
+</histogram>
+
 <histogram
     name="ContextualTasks.HistoryNavigation.UserAction.NavigatedInFullTab"
     enum="Boolean" expires_after="2026-12-22">

@@ -81,6 +81,11 @@ struct EndpointResponse {
   int http_status_code{-1};
   std::optional<FetchErrorType> error_type;
   scoped_refptr<net::HttpResponseHeaders> headers;
+  // The net error code of the completed network request, or std::nullopt if no
+  // network request was made (e.g. the fetch failed authentication first).
+  // Note net::OK is 0, so a completed request that succeeded holds a value of
+  // 0 rather than std::nullopt.
+  std::optional<int> net_error_code;
 };
 
 using EndpointFetcherCallback =

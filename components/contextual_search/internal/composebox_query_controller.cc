@@ -2724,6 +2724,15 @@ void ComposeboxQueryController::HandleUploadResponse(
   upload_request->response_code = response->http_status_code;
   upload_request->endpoint_fetcher_.reset();
 
+  if (response->http_status_code > 0) {
+    base::UmaHistogramSparse("ContextualTasks.FileUpload.HttpStatus",
+                             response->http_status_code);
+  }
+  if (response->net_error_code.has_value()) {
+    base::UmaHistogramSparse("ContextualTasks.FileUpload.NetError",
+                             std::abs(response->net_error_code.value()));
+  }
+
   base::TimeDelta elapsed =
       upload_request->response_time - upload_request->start_time;
   if (response->http_status_code == google_apis::ApiErrorCode::HTTP_SUCCESS) {

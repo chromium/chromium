@@ -299,6 +299,7 @@ void EndpointFetcher::OnResponseFetched(
         response_info->headers->raw_headers());
   }
   int net_error_code = simple_url_loader_->NetError();
+  response->net_error_code = net_error_code;
   // The EndpointFetcher and its members will be destroyed after
   // any of the below callbacks. Do not access The EndpointFetcher
   // or its members after the callbacks.

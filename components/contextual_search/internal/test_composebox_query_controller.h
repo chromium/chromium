@@ -111,6 +111,14 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
     disable_file_upload_response_ = disable;
   }
 
+  void set_fake_server_response_net_error_code(int net_error_code) {
+    fake_server_response_net_error_code_ = net_error_code;
+  }
+
+  void set_fake_server_response_http_status_code(int http_status_code) {
+    fake_server_response_http_status_code_ = http_status_code;
+  }
+
   void set_enable_cluster_info_ttl(bool enable_cluster_info_ttl) {
     enable_cluster_info_ttl_ = enable_cluster_info_ttl;
   }
@@ -247,6 +255,12 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
 
   // If true, file upload requests will not respond.
   bool disable_file_upload_response_ = false;
+
+  // The net error code to return in fake responses.
+  int fake_server_response_net_error_code_ = 0;
+
+  // The HTTP status code to return in fake responses, if explicitly set.
+  std::optional<int> fake_server_response_http_status_code_;
 
   // If true, the cluster info will expire when the TTL expires as normal.
   // Set to false by default to prevent flakiness in tests that expect the
