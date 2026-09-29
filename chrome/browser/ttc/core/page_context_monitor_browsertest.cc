@@ -210,8 +210,8 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest, GetPageContext) {
             "Non empty simple page");
 }
 
-// Fetching the page context must not include the content of a cross-site
-// iframe.
+// Fetching the page context must include the content of a cross-site iframe,
+// as iframes are processed on the server side.
 IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
                        GetPageContextCrossSiteIframe) {
   ASSERT_TRUE(content::NavigateToURL(
@@ -242,23 +242,19 @@ IN_PROC_BROWSER_TEST_F(PageContextMonitorBrowserTest,
   EXPECT_EQ(page_content.main_frame_data().title(), "iframe test");
   ASSERT_TRUE(page_content.has_root_node());
 
-  // The iframe must be present but redacted, with none of its content.
+  // The iframe must be present and unredacted on the client, with its content.
   const optimization_guide::proto::ContentNode* iframe =
       FindIframeNode(page_content.root_node());
   ASSERT_TRUE(iframe);
   const optimization_guide::proto::IframeData& iframe_data =
       iframe->content_attributes().iframe_data();
-  EXPECT_FALSE(iframe_data.has_frame_data());
-  ASSERT_TRUE(iframe_data.has_redacted_frame_metadata());
-  EXPECT_EQ(iframe_data.redacted_frame_metadata().reason(),
-            optimization_guide::proto::IframeData_RedactedFrameMetadata::
-                REASON_CROSS_SITE);
-  EXPECT_EQ(iframe->children_nodes_size(), 0);
+  EXPECT_TRUE(iframe_data.has_frame_data());
+  EXPECT_FALSE(iframe_data.has_redacted_frame_metadata());
+  EXPECT_GT(iframe->children_nodes_size(), 0);
 
-  // The subframe's text must not appear anywhere in the content.
+  // The subframe's text must appear in the content.
   EXPECT_THAT(CollectText(page_content.root_node()),
-              testing::Not(testing::Contains(
-                  testing::HasSubstr("Non empty simple page"))));
+              testing::Contains(testing::HasSubstr("Non empty simple page")));
 }
 
 }  // namespace

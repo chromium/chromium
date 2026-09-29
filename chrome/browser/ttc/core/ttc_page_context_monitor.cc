@@ -52,7 +52,6 @@ void TtcPageContextMonitor::StartNewFetch(FetchCompleteCallback callback) {
   options.annotated_page_content_options =
       optimization_guide::DefaultAIPageContentOptions(
           /*on_critical_path=*/true);
-  options.annotated_page_content_options->include_same_site_only = true;
   options.annotated_page_content_options->max_meta_elements = 32;
 
   fetcher_->FetchStart(
