@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/survey_config.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/scoped_browser_locale.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -120,7 +121,8 @@ IN_PROC_BROWSER_TEST_F(ChromeSigninClientHatsSurveyBrowserTest,
 
   // Expect the HaTS service to launch the first run sign-in survey.
   std::map<std::string, std::string> expected_string_psd = {
-      {"Channel", "unknown"},
+      {"Channel",
+       std::string(version_info::GetChannelString(chrome::GetChannel()))},
       {"Chrome Version", version_info::GetVersion().GetString()},
       {"Number of Chrome Profiles", "1"},
       {"Number of Google Accounts", "1"},

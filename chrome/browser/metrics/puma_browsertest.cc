@@ -7,6 +7,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/branding_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/testing/metrics_consent_override.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -226,9 +228,13 @@ IN_PROC_BROWSER_TEST_F(PumaBrowserTest, VerifyRcCoarseSystemProfile) {
   EXPECT_EQ(rc_profile.profile_country_id(),
             country_codes::CountryId("BE").Serialize());
 
-  // Verify channel. In a test environment, the channel is UNKNOWN.
+  // Verify channel.
   EXPECT_EQ(rc_profile.channel(),
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_WIN)
+            ::private_metrics::RcCoarseSystemProfile::CHANNEL_STABLE);
+#else
             ::private_metrics::RcCoarseSystemProfile::CHANNEL_UNKNOWN);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_WIN)
 }
 // LINT.ThenChange(/ios/chrome/browser/metrics/model/puma_egtest.mm:VerifyRcCoarseSystemProfile)
 

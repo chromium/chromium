@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/mock_hats_service.h"
 #include "chrome/browser/ui/hats/survey_config.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -95,7 +96,8 @@ IN_PROC_BROWSER_TEST_F(SigninHatsUtilBrowserTest, LaunchHatsSurveyForProfile) {
   MakeAccountAvailable();
 
   const std::map<std::string, std::string> survey_data = {
-      {"Channel", "unknown"},
+      {"Channel",
+       std::string(version_info::GetChannelString(chrome::GetChannel()))},
       {"Chrome Version", version_info::GetVersion().GetString()},
       {"Number of Chrome Profiles", "1"},
       {"Number of Google Accounts", "1"},
@@ -113,7 +115,8 @@ IN_PROC_BROWSER_TEST_F(SigninHatsUtilBrowserTest, LaunchHatsSurveyForProfile) {
 IN_PROC_BROWSER_TEST_F(SigninHatsUtilBrowserTest,
                        LaunchHatsSurveyForProfileNoAccount) {
   const std::map<std::string, std::string> survey_data = {
-      {"Channel", "unknown"},
+      {"Channel",
+       std::string(version_info::GetChannelString(chrome::GetChannel()))},
       {"Chrome Version", version_info::GetVersion().GetString()},
       {"Number of Chrome Profiles", "1"},
       {"Number of Google Accounts", "0"},
@@ -232,7 +235,8 @@ class SigninHatsUtilPromoBubbleDismissedBrowserTest
 IN_PROC_BROWSER_TEST_P(SigninHatsUtilPromoBubbleDismissedBrowserTest,
                        LaunchHatsSurveyForProfile) {
   const std::map<std::string, std::string> survey_data = {
-      {"Channel", "unknown"},
+      {"Channel",
+       std::string(version_info::GetChannelString(chrome::GetChannel()))},
       {"Chrome Version", version_info::GetVersion().GetString()},
       {"Number of Chrome Profiles", "1"},
       {"Number of Google Accounts", "0"},
