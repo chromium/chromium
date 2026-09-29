@@ -63,6 +63,7 @@
 #include "chrome/browser/storage_access_api/storage_access_api_service_factory.h"
 #include "chrome/browser/storage_access_api/storage_access_api_service_impl.h"
 #include "chrome/browser/storage_access_api/storage_access_api_tab_helper.h"
+#include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/sync_tab_context/tab_context_decryption_token_tab_helper.h"
@@ -422,6 +423,12 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
       GetUserDataFactory()
           .CreateInstance<chrome_browser_net::NetErrorTabHelper>(*tab, *tab,
                                                                  web_contents);
+
+  if (!profile->IsOffTheRecord()) {
+    supervised_user_navigation_observer_ =
+        GetUserDataFactory().CreateInstance<SupervisedUserNavigationObserver>(
+            *tab, *tab, web_contents);
+  }
 }
 
 TabFeatures::~TabFeatures() = default;

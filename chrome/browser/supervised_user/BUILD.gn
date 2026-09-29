@@ -33,7 +33,9 @@ source_set("supervised_user") {
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/browser:device_parental_controls",
     "//components/supervised_user/core/common",
+    "//components/tabs:public",
     "//content/public/browser",
+    "//ui/base/unowned_user_data",
     "//url",
   ]
 
@@ -45,7 +47,6 @@ source_set("supervised_user") {
     ]
     public_deps += [
       "//components/security_interstitials/content:security_interstitial_page",
-      "//components/tabs:public",
     ]
   }
 
@@ -771,6 +772,7 @@ if (is_android) {
         "//components/safe_search_api:test_support",
         "//components/supervised_user/core/browser:test_support",
         "//components/supervised_user/core/browser/android",
+        "//components/tabs:public",
         "//components/url_matcher",
         "//content/test:test_support",
         "//net:test_support",

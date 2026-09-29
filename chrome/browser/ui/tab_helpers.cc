@@ -57,7 +57,6 @@
 #include "chrome/browser/ssl/chrome_security_blocking_page_factory.h"
 #include "chrome/browser/ssl/https_only_mode_tab_helper.h"
 #include "chrome/browser/subresource_filter/chrome_content_subresource_filter_web_contents_helper_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -493,17 +492,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
         prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
             profile));
   }
-#if BUILDFLAG(IS_CHROMEOS)
-  // Do not create for Incognito and Isolated  mode.
-  if (!profile->IsPrimaryOTRProfileWithRegularParent()) {
-    SupervisedUserNavigationObserver::CreateForWebContents(web_contents);
-  }
-#else
-  // Do not create for OTR.
-  if (!profile->IsOffTheRecord()) {
-    SupervisedUserNavigationObserver::CreateForWebContents(web_contents);
-  }
-#endif
   TrustedVaultEncryptionKeysTabHelper::CreateForWebContents(web_contents);
   ukm::InitializeSourceUrlRecorderForWebContents(web_contents);
   vr::VrTabHelper::CreateForWebContents(web_contents);

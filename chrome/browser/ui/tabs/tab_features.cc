@@ -67,6 +67,7 @@
 #include "chrome/browser/storage_access_api/storage_access_api_service_factory.h"
 #include "chrome/browser/storage_access_api/storage_access_api_service_impl.h"
 #include "chrome/browser/storage_access_api/storage_access_api_tab_helper.h"
+#include "chrome/browser/supervised_user/supervised_user_navigation_observer.h"
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -983,6 +984,22 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       GetUserDataFactory()
           .CreateInstance<chrome_browser_net::NetErrorTabHelper>(
               tab, tab, tab.GetContents());
+
+#if BUILDFLAG(IS_CHROMEOS)
+  // Do not create for Incognito and Isolated mode.
+  if (!profile->IsPrimaryOTRProfileWithRegularParent()) {
+    supervised_user_navigation_observer_ =
+        GetUserDataFactory().CreateInstance<SupervisedUserNavigationObserver>(
+            tab, tab, tab.GetContents());
+  }
+#else
+  // Do not create for OTR.
+  if (!profile->IsOffTheRecord()) {
+    supervised_user_navigation_observer_ =
+        GetUserDataFactory().CreateInstance<SupervisedUserNavigationObserver>(
+            tab, tab, tab.GetContents());
+  }
+#endif
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1359,6 +1376,13 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
       GetUserDataFactory()
           .CreateInstance<chrome_browser_net::NetErrorTabHelper>(*tab, *tab,
                                                                  new_contents);
+
+  if (supervised_user_navigation_observer_) {
+    supervised_user_navigation_observer_.reset();
+    supervised_user_navigation_observer_ =
+        GetUserDataFactory().CreateInstance<SupervisedUserNavigationObserver>(
+            *tab, *tab, new_contents);
+  }
 }
 
 customize_chrome::SidePanelController*

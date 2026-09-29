@@ -23,7 +23,7 @@
 #include "components/supervised_user/core/common/supervised_users.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace supervised_user {
 class SupervisedUserService;
@@ -37,21 +37,32 @@ class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 using OnInterstitialResultCallback = base::RepeatingCallback<
     void(supervised_user::InterstitialResultCallbackActions, bool, bool)>;
 
 class SupervisedUserNavigationObserver
-    : public content::WebContentsUserData<SupervisedUserNavigationObserver>,
-      public content::WebContentsObserver,
+    : public content::WebContentsObserver,
       public supervised_user::SupervisedUserUrlFilteringService::Observer,
       public supervised_user::mojom::SupervisedUserCommands {
  public:
+  DECLARE_USER_DATA(SupervisedUserNavigationObserver);
+
+  SupervisedUserNavigationObserver(tabs::TabInterface& tab,
+                                   content::WebContents* web_contents);
+
   SupervisedUserNavigationObserver(const SupervisedUserNavigationObserver&) =
       delete;
   SupervisedUserNavigationObserver& operator=(
       const SupervisedUserNavigationObserver&) = delete;
 
   ~SupervisedUserNavigationObserver() override;
+
+  // Returns the SupervisedUserNavigationObserver for the given tab.
+  static SupervisedUserNavigationObserver* From(tabs::TabInterface* tab);
 
   const std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>&
   blocked_navigations() const {
@@ -101,10 +112,6 @@ class SupervisedUserNavigationObserver
   }
 
  private:
-  friend class content::WebContentsUserData<SupervisedUserNavigationObserver>;
-
-  explicit SupervisedUserNavigationObserver(content::WebContents* web_contents);
-
   void OnRequestBlockedInternal(
       supervised_user::WebFilteringResult filtering_result,
       int64_t navigation_id,
@@ -186,10 +193,11 @@ class SupervisedUserNavigationObserver
   PrefChangeRegistrar pref_change_registrar_;
 #endif  // BUILDFLAG(IS_ANDROID)
 
+  ui::ScopedUnownedUserData<SupervisedUserNavigationObserver>
+      scoped_unowned_user_data_;
+
   base::WeakPtrFactory<SupervisedUserNavigationObserver> weak_ptr_factory_{
       this};
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_NAVIGATION_OBSERVER_H_

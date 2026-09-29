@@ -123,8 +123,10 @@ bool TabContentsSyncedTabDelegate::ProfileHasChildAccount() const {
 
 const std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>*
 TabContentsSyncedTabDelegate::GetBlockedNavigations() const {
+  tabs::TabInterface* const tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents_);
   SupervisedUserNavigationObserver* navigation_observer =
-      SupervisedUserNavigationObserver::FromWebContents(web_contents_);
+      tab ? SupervisedUserNavigationObserver::From(tab) : nullptr;
 #if BUILDFLAG(IS_ANDROID)
   // TabHelpers::AttachTabHelpers() will not be called for a placeholder tab's
   // WebContents that is temporarily created from a serialized state in

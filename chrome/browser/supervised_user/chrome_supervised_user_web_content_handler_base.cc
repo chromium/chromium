@@ -10,6 +10,7 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/supervised_user/core/common/features.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
@@ -106,8 +107,8 @@ bool ChromeSupervisedUserWebContentHandlerBase::
 }
 
 void ChromeSupervisedUserWebContentHandlerBase::OnInterstitialDone() {
-  auto* navigation_observer =
-      SupervisedUserNavigationObserver::FromWebContents(web_contents_);
+  auto* navigation_observer = SupervisedUserNavigationObserver::From(
+      tabs::TabInterface::GetFromContents(web_contents_));
   // After this, the WebContents may be destroyed. Make sure we don't try to use
   // it again. `OnInterstitialDone` will destruct the web content handler,
   // and consequently the web_contents_ pointer.

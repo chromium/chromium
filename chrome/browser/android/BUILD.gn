@@ -147,6 +147,7 @@ source_set("tabs_impl") {
     "//chrome/browser/search_engines",
     "//chrome/browser/site_protection",
     "//chrome/browser/storage_access_api",
+    "//chrome/browser/supervised_user",
     "//chrome/browser/sync",
     "//chrome/browser/sync_tab_context",
     "//chrome/browser/tab_contents",

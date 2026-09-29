@@ -89,6 +89,7 @@ class SharedHighlightingPromo;
 class SidePanelRegistry;
 class SoundContentSettingObserver;
 class StorageAccessAPITabHelper;
+class SupervisedUserNavigationObserver;
 class TabCaptureContentsBorderHelper;
 class TabContextDecryptionTokenTabHelper;
 class TabResourceUsageTabHelper;
@@ -935,6 +936,9 @@ class TabFeatures {
   std::unique_ptr<SearchEngineTabHelper> search_engine_tab_helper_;
 
   std::unique_ptr<chrome_browser_net::NetErrorTabHelper> net_error_tab_helper_;
+
+  std::unique_ptr<SupervisedUserNavigationObserver>
+      supervised_user_navigation_observer_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};

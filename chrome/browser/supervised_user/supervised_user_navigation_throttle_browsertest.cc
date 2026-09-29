@@ -226,7 +226,8 @@ class SupervisedUserNavigationThrottleTestBase
   }
 
   SupervisedUserNavigationObserver* supervised_user_navigation_observer() {
-    return SupervisedUserNavigationObserver::FromWebContents(web_contents());
+    return SupervisedUserNavigationObserver::From(
+        browser()->GetTabStripModel()->GetActiveTab());
   }
 
  private:

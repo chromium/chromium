@@ -32,6 +32,7 @@
 #include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/test_support/features.h"
+#include "components/tabs/public/tab_interface.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -216,8 +217,8 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserNavigationObserverAndroidBrowserTest,
 IN_PROC_BROWSER_TEST_P(SupervisedUserNavigationObserverAndroidBrowserTest,
                        ReloadSearchResultAfterSearchContentFilterIsEnabled) {
   // Verify that the observer is attached.
-  ASSERT_NE(nullptr,
-            SupervisedUserNavigationObserver::FromWebContents(web_contents()));
+  ASSERT_NE(nullptr, SupervisedUserNavigationObserver::From(
+                         tabs::TabInterface::GetFromContents(web_contents())));
 
   GURL url = embedded_test_server()->GetURL("google.com", "/search?q=cat");
   EXPECT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -277,8 +278,8 @@ IN_PROC_BROWSER_TEST_P(
     SupervisedUserNavigationObserverNoApprovalsInterstitialAndroidBrowserTest,
     ShowInterstitialPage) {
   // Verify that the observer is attached.
-  ASSERT_NE(nullptr,
-            SupervisedUserNavigationObserver::FromWebContents(web_contents()));
+  ASSERT_NE(nullptr, SupervisedUserNavigationObserver::From(
+                         tabs::TabInterface::GetFromContents(web_contents())));
   GURL url = embedded_test_server()->GetURL("/supervised_user/simple.html");
 
   // In this test, all classifications are restricted after enabling the
@@ -307,8 +308,8 @@ IN_PROC_BROWSER_TEST_P(
     SupervisedUserNavigationObserverNoApprovalsInterstitialAndroidBrowserTest,
     GoToHelpCenterPage) {
   // Verify that the observer is attached.
-  ASSERT_NE(nullptr,
-            SupervisedUserNavigationObserver::FromWebContents(web_contents()));
+  ASSERT_NE(nullptr, SupervisedUserNavigationObserver::From(
+                         tabs::TabInterface::GetFromContents(web_contents())));
 
   // In this test, all classifications are restricted after enabling the
   // browser content filter.
@@ -361,7 +362,8 @@ IN_PROC_BROWSER_TEST_P(
     SupervisedUserNavigationObserverNoApprovalsInterstitialAndroidBrowserTest,
     GoBack) {
   // Verify that the observer is attached.
-  ASSERT_NE(SupervisedUserNavigationObserver::FromWebContents(web_contents()),
+  ASSERT_NE(SupervisedUserNavigationObserver::From(
+                tabs::TabInterface::GetFromContents(web_contents())),
             nullptr);
 
   GURL allowed_url =

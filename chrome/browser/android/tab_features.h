@@ -140,6 +140,7 @@ class SearchEngineTabHelper;
 class SecurityStateEventObserver;
 class SoundContentSettingObserver;
 class StorageAccessAPITabHelper;
+class SupervisedUserNavigationObserver;
 class TabContextDecryptionTokenTabHelper;
 
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
@@ -279,6 +280,8 @@ class TabFeatures {
   std::unique_ptr<FileSystemAccessTabHelper> file_system_access_tab_helper_;
   std::unique_ptr<SearchEngineTabHelper> search_engine_tab_helper_;
   std::unique_ptr<chrome_browser_net::NetErrorTabHelper> net_error_tab_helper_;
+  std::unique_ptr<SupervisedUserNavigationObserver>
+      supervised_user_navigation_observer_;
 
   // Holds the WebUI embedding context subscription.
   base::CallbackListSubscription tab_subscription_;
