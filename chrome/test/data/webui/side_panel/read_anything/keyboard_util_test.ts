@@ -109,6 +109,8 @@ suite('Keyboard utils', () => {
         new KeyboardEvent('keydown', {key: 'l', altKey: true})));
     assertTrue(isLineFocusShortcut(
         new KeyboardEvent('keydown', {key: 'L', altKey: true})));
+    assertTrue(isLineFocusShortcut(
+        new KeyboardEvent('keydown', {code: 'KeyL', altKey: true})));
 
     // Without Alt should fail
     assertFalse(isLineFocusShortcut(new KeyboardEvent('keydown', {key: 'l'})));
