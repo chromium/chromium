@@ -6467,8 +6467,9 @@
     },
     {
       // https://crbug.com/41492459
+      // ChromeStatus: https://chromestatus.com/feature/6294595288825856
       name: "TextOverflowString",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "TextScaleMetaTag",
