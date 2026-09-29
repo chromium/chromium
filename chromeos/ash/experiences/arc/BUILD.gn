@@ -549,6 +549,7 @@ source_set("unit_tests") {
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/ui/frame",
     "//components/account_id",
+    "//components/account_id:test_support",
     "//components/exo",
     "//components/exo:test_support",
     "//components/keyed_service/content",

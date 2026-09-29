@@ -11,6 +11,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_helper.h"
 #include "base/base_switches.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
@@ -28,11 +29,10 @@
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_platform_support.h"
 #include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/test_helper.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -44,6 +44,13 @@
 
 namespace arc {
 namespace {
+
+constexpr AccountId::Literal kRegularAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("user1@test.com",
+                                            GaiaId::Literal("1234567890-1"));
+constexpr AccountId::Literal kChildAccountId =
+    AccountId::Literal::FromUserEmailGaiaId("user5@test.com",
+                                            GaiaId::Literal("1234567890-5"));
 
 // If an instance is created, based on the value passed to the constructor,
 // EnableARC feature is enabled/disabled in the scope.
@@ -69,18 +76,15 @@ class ScopedArcFeature {
 
 class ArcUtilTest : public ash::AshTestBase {
  public:
-  ArcUtilTest() {
-    ash::ConciergeClient::InitializeFake();
-    ash::UpstartClient::InitializeFake();
-  }
+  ArcUtilTest() = default;
   ArcUtilTest(const ArcUtilTest&) = delete;
   ArcUtilTest& operator=(const ArcUtilTest&) = delete;
-  ~ArcUtilTest() override {
-    ash::UpstartClient::Shutdown();
-    ash::ConciergeClient::Shutdown();
-  }
+  ~ArcUtilTest() override = default;
 
   void SetUp() override {
+    ash::ConciergeClient::InitializeFake();
+    ash::UpstartClient::InitializeFake();
+    set_start_session(false);
     fake_arc_platform_support_ = std::make_unique<FakeArcPlatformSupport>();
     ash::AshTestBase::SetUp();
     prefs::RegisterProfilePrefs(profile_prefs_.registry());
@@ -89,6 +93,8 @@ class ArcUtilTest : public ash::AshTestBase {
   void TearDown() override {
     ash::AshTestBase::TearDown();
     fake_arc_platform_support_.reset();
+    ash::UpstartClient::Shutdown();
+    ash::ConciergeClient::Shutdown();
   }
 
  protected:
@@ -114,6 +120,10 @@ class ArcUtilTest : public ash::AshTestBase {
   }
 
   PrefService* profile_prefs() { return &profile_prefs_; }
+
+  ash::test::UserSessionTestEnvironment& user_session_test_environment() {
+    return ash_test_helper()->user_session_test_environment();
+  }
 
   std::unique_ptr<FakeArcPlatformSupport> fake_arc_platform_support_;
   base::test::ScopedCommandLine scoped_command_line_;
@@ -316,37 +326,44 @@ TEST_F(ArcUtilTest, IsArcOptInVerificationDisabled) {
 }
 
 TEST_F(ArcUtilTest, IsArcAllowedForUser) {
-  TestingPrefServiceSimple local_state;
   ash::ScopedStubInstallAttributes install_attributes(
       ash::StubInstallAttributes::CreateCloudManaged("test-domain",
                                                      "FAKE_DEVICE_ID"));
-  user_manager::UserManagerImpl::RegisterPrefs(local_state.registry());
-  user_manager::TypedScopedUserManager fake_user_manager(
-      std::make_unique<user_manager::FakeUserManager>(&local_state));
 
-  EXPECT_TRUE(IsArcAllowedForUser(fake_user_manager->AddGaiaUser(
-      AccountId::FromUserEmailGaiaId("user1@test.com", GaiaId("1234567890-1")),
-      user_manager::UserType::kRegular)));
-  EXPECT_FALSE(IsArcAllowedForUser(fake_user_manager->AddGuestUser()));
-  EXPECT_TRUE(IsArcAllowedForUser(
-      fake_user_manager->AddPublicAccountUser(AccountId::FromUserEmailGaiaId(
-          "user3@test.com", GaiaId("1234567890-3")))));
-  EXPECT_FALSE(IsArcAllowedForUser(
-      user_manager::TestHelper(fake_user_manager.Get())
-          .AddKioskChromeAppUser("user4@kiosk-apps.device-local.localhost")));
-  EXPECT_TRUE(IsArcAllowedForUser(fake_user_manager->AddGaiaUser(
-      AccountId::FromUserEmailGaiaId("user5@test.com", GaiaId("1234567890-5")),
-      user_manager::UserType::kChild)));
+  const user_manager::User* regular_user =
+      user_session_test_environment().AddRegularUser(kRegularAccountId);
+  ASSERT_TRUE(regular_user);
+  EXPECT_TRUE(IsArcAllowedForUser(regular_user));
+
+  const user_manager::User* guest_user =
+      user_session_test_environment().AddGuestUser();
+  ASSERT_TRUE(guest_user);
+  EXPECT_FALSE(IsArcAllowedForUser(guest_user));
+
+  const user_manager::User* public_account_user =
+      user_session_test_environment().AddPublicAccountUser(
+          "user3@public-accounts.device-local.localhost");
+  ASSERT_TRUE(public_account_user);
+  EXPECT_TRUE(IsArcAllowedForUser(public_account_user));
+
+  const user_manager::User* kiosk_user =
+      user_session_test_environment().AddKioskChromeAppUser(
+          "user4@kiosk-apps.device-local.localhost");
+  ASSERT_TRUE(kiosk_user);
+  EXPECT_FALSE(IsArcAllowedForUser(kiosk_user));
+
+  const user_manager::User* child_user =
+      user_session_test_environment().AddChildUser(kChildAccountId);
+  ASSERT_TRUE(child_user);
+  EXPECT_TRUE(IsArcAllowedForUser(child_user));
 
   // Set up public account user.
-  const AccountId account_id =
-      AccountId::FromUserEmailGaiaId("test@test.com", GaiaId("9876543210"));
-  fake_user_manager->AddPublicAccountUser(account_id);
-  fake_user_manager->UserLoggedIn(
-      account_id, user_manager::TestHelper::GetFakeUsernameHash(account_id));
-  const user_manager::User* ephemeral_user = fake_user_manager->GetActiveUser();
+  const user_manager::User* ephemeral_user =
+      user_session_test_environment().AddPublicAccountUser(
+          "test@public-accounts.device-local.localhost");
   ASSERT_TRUE(ephemeral_user);
-  ASSERT_TRUE(fake_user_manager->IsUserCryptohomeDataEphemeral(
+  user_session_test_environment().LogIn(ephemeral_user->GetAccountId());
+  ASSERT_TRUE(user_manager::UserManager::Get()->IsUserCryptohomeDataEphemeral(
       ephemeral_user->GetAccountId()));
 
   EXPECT_TRUE(IsArcAllowedForUser(ephemeral_user));

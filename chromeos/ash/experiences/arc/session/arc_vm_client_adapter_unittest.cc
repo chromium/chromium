@@ -56,8 +56,8 @@
 #include "chromeos/ash/experiences/arc/test/connection_holder_util.h"
 #include "chromeos/ash/experiences/arc/test/fake_app_host.h"
 #include "chromeos/ash/experiences/arc/test/fake_app_instance.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/prefs/testing_pref_service.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -352,6 +352,10 @@ class ArcVmClientAdapterTest : public testing::Test,
   }
 
   void SetUp() override {
+    ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
+        local_state_.registry());
+    user_session_test_environment_ =
+        std::make_unique<ash::test::UserSessionTestEnvironment>(&local_state_);
     run_loop_ = std::make_unique<base::RunLoop>();
     adapter_ = CreateArcVmClientAdapterForTesting(base::BindRepeating(
         &ArcVmClientAdapterTest::RewriteStatus, base::Unretained(this)));
@@ -388,19 +392,17 @@ class ArcVmClientAdapterTest : public testing::Test,
     adapter_->SetDemoModeDelegate(&demo_mode_delegate_);
     app_host_ = std::make_unique<FakeAppHost>(arc_bridge_service()->app());
     app_instance_ = std::make_unique<FakeAppInstance>(app_host_.get());
-
-    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
-    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(fake_user_manager));
   }
 
   void TearDown() override {
-    scoped_user_manager_.reset();
+    app_instance_.reset();
+    app_host_.reset();
     ash::PatchPanelClient::Shutdown();
     ash::SessionManagerClient::Shutdown();
     adapter_->RemoveObserver(this);
     adapter_.reset();
     run_loop_.reset();
+    user_session_test_environment_.reset();
   }
 
   // ArcClientAdapter::Observer:
@@ -636,11 +638,14 @@ class ArcVmClientAdapterTest : public testing::Test,
     status->set_system_image_ext_format_for_testing(system_image_ext_format_);
   }
 
+  content::BrowserTaskEnvironment browser_task_environment_;
+  TestingPrefServiceSimple local_state_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<ArcClientAdapter> adapter_;
   std::optional<bool> is_system_shutdown_;
 
-  content::BrowserTaskEnvironment browser_task_environment_;
   base::ScopedTempDir dir_;
   ArcServiceManager arc_service_manager_;
 
@@ -655,7 +660,6 @@ class ArcVmClientAdapterTest : public testing::Test,
   std::unique_ptr<FakeAppHost> app_host_;
   std::unique_ptr<FakeAppInstance> app_instance_;
   std::unique_ptr<TestDebugDaemonClient> test_debug_daemon_client_;
-  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
 };
 
 // Tests that SetUserInfo() doesn't crash.

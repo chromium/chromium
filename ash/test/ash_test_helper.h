@@ -17,6 +17,7 @@
 #include "ash/session/test_pref_service_provider.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell_delegate.h"
+#include "base/check_deref.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_command_line.h"
@@ -211,6 +212,10 @@ class AshTestHelper : public aura::test::AuraTestHelper {
 
   FakeDlcserviceClient* dlc_service_client() {
     return dlc_service_client_.get();
+  }
+
+  ash::test::UserSessionTestEnvironment& user_session_test_environment() {
+    return CHECK_DEREF(user_session_test_environment_.get());
   }
 
   template <typename T>

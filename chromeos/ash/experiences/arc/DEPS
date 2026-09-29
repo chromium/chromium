@@ -27,6 +27,9 @@ specific_include_rules = {
   ],
   ".*_unittest.cc": [
     "+ash/test/ash_test_base.h",
+    "+ash/test/ash_test_helper.h",
+    "+components/account_id",
+    "+components/session_manager/test",
     "+components/user_manager",
     "+components/user_prefs/test/test_browser_context_with_prefs.h",
     "+content/public/test/browser_task_environment.h",
