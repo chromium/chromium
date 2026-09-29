@@ -291,7 +291,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
       const PhysicalFragmentList& fragments,
       const PhysicalSize& size);
 
-  // Get the padding box rectangle (same as "client rect").
+  // Get the padding box rectangle.
   PhysicalRect PhysicalPaddingBoxRect() const {
     NOT_DESTROYED();
     return PhysicalContractedBoxRect(kContractToPaddingEdge, StyleRef(),

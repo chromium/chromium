@@ -2531,10 +2531,34 @@ int Element::clientTop() {
   return ClientTopNoLayout();
 }
 
+// static
+PhysicalRect Element::PhysicalClientRect(const LayoutBox& box) {
+  PhysicalRect rect = box.PhysicalPaddingBoxRect();
+  if (!box.IsTextField() ||
+      !RuntimeEnabledFeatures::InputClientRectWithoutInlinePaddingEnabled()) {
+    return rect;
+  }
+  // Text fields clip their text at the content box in the inline axis.
+  // TODO(crbug.com/501216032): Derive this from the overflow clip rect once
+  // overflow-clip-margin applies to scroll containers, so that the client rect
+  // follows it.
+  // Spec: https://drafts.csswg.org/css-overflow-3/#overflow-clip-margin
+  // Resolution: https://github.com/w3c/csswg-drafts/issues/13502
+  const PhysicalRect content_rect = box.PhysicalContentBoxRect();
+  if (box.IsHorizontalWritingMode()) {
+    rect.offset.left = content_rect.offset.left;
+    rect.size.width = content_rect.size.width;
+  } else {
+    rect.offset.top = content_rect.offset.top;
+    rect.size.height = content_rect.size.height;
+  }
+  return rect;
+}
+
 int Element::ClientLeftNoLayout() const {
   if (const auto* layout_object = GetLayoutBox()) {
     return AdjustForAbsoluteZoom::AdjustLayoutUnit(
-               layout_object->PhysicalPaddingBoxRect().offset.left,
+               PhysicalClientRect(*layout_object).offset.left,
                layout_object->StyleRef())
         .Round();
   }
@@ -2544,7 +2568,7 @@ int Element::ClientLeftNoLayout() const {
 int Element::ClientTopNoLayout() const {
   if (const auto* layout_object = GetLayoutBox()) {
     return AdjustForAbsoluteZoom::AdjustLayoutUnit(
-               layout_object->PhysicalPaddingBoxRect().offset.top,
+               PhysicalClientRect(*layout_object).offset.top,
                layout_object->StyleRef())
         .Round();
   }
@@ -2655,7 +2679,7 @@ int Element::clientWidth() {
     // using, just use the border-box size.
     return AdjustForAbsoluteZoom::AdjustLayoutUnit(
                box->IsTable() ? box->StitchedSize().width
-                              : box->PhysicalPaddingBoxRect().Width(),
+                              : PhysicalClientRect(*box).Width(),
                box->StyleRef())
         .Round();
   }
@@ -2699,7 +2723,7 @@ int Element::clientHeight() {
     // using, just use the border-box size.
     return AdjustForAbsoluteZoom::AdjustLayoutUnit(
                box->IsTable() ? box->StitchedSize().height
-                              : box->PhysicalPaddingBoxRect().Height(),
+                              : PhysicalClientRect(*box).Height(),
                box->StyleRef())
         .Round();
   }

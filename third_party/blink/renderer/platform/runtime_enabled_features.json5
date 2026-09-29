@@ -3763,6 +3763,13 @@
       status: "experimental",
     },
     {
+      // Text fields leave the inline padding out of their client rect and
+      // scroll size, matching where they clip their text. Kill switch.
+      // https://github.com/w3c/csswg-drafts/issues/13502
+      name: "InputClientRectWithoutInlinePadding",
+      status: "stable",
+    },
+    {
       // Prevents running DefaultEventHandler on disabled input elements.
       // Enabled in M153, safe to remove in M155.
       // https://issues.chromium.org/issues/533188858

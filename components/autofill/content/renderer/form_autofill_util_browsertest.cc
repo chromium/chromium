@@ -1521,7 +1521,7 @@ TEST_F(FormAutofillUtilsTest, IsWebElementVisibleTest) {
         <div style="display: none;">     <input type="text" data-invisible></div>
         <div style="visibility: hidden;"><input type="text" data-invisible></div>
 
-        <input type="text" data-visible   style="width: 15px; height: 15px;">
+        <input type="text" data-visible   style="width: 20px; height: 15px;">
         <input type="text" data-invisible style="width: 15px; height:  5px;">
         <input type="text" data-invisible style="width:  5px; height: 15px;">
         <input type="text" data-invisible style="width:  5px; height:  5px;">

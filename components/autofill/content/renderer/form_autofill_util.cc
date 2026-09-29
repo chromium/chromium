@@ -1554,7 +1554,8 @@ bool IsAdIframe(const WebElement& element) {
 //
 // Note that WebElement::BoundsInWidget(), WebElement::GetClientSize(),
 // and WebElement::GetScrollSize() include the padding but do not include the
-// border and margin. BoundsInWidget() additionally scales the
+// border and margin. For text fields, GetClientSize() and GetScrollSize()
+// also leave out the inline padding. BoundsInWidget() additionally scales the
 // dimensions according to the zoom factor.
 //
 // It seems that invisible fields on websites typically have dimensions between

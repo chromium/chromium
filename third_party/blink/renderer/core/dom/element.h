@@ -2242,6 +2242,10 @@ class CORE_EXPORT Element : public ContainerNode {
 
   bool IsViewportScrollElement();
 
+  // Returns the rect reported by clientLeft/Top/Width/Height: the padding
+  // box, but text fields use the content box in the inline axis.
+  static PhysicalRect PhysicalClientRect(const LayoutBox&);
+
   void AddPropertyToPresentationAttributeStyle(HeapVector<CSSPropertyValue, 8>&,
                                                CSSPropertyID,
                                                CSSValueID identifier);
