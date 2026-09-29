@@ -3,20 +3,12 @@
 // found in the LICENSE file.
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_persister.h"
 
-#include <sstream>
-
 #include "base/functional/concurrent_closures.h"
-#include "base/logging.h"
-#include "base/path_service.h"
-#include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "base/threading/sequence_bound.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_profile.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

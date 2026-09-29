@@ -4,20 +4,10 @@
 
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_persister.h"
 
-#include <sstream>
-
 #include "base/files/file_util.h"
-#include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/bind_post_task.h"
-#include "base/task/thread_pool.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/common/chrome_paths.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 
 namespace safe_browsing {
 
@@ -85,15 +75,6 @@ ExtensionTelemetryPersister::ExtensionTelemetryPersister(
 
 void ExtensionTelemetryPersister::PersisterInit() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/40225665): Remove old directory clean up code after
-  // launch.
-  base::FilePath old_dir;
-  if (base::PathService::Get(chrome::DIR_USER_DATA, &old_dir)) {
-    old_dir = old_dir.AppendASCII("CRXTelemetry");
-    if (base::DirectoryExists(old_dir)) {
-      base::DeletePathRecursively(old_dir);
-    }
-  }
   write_index_ = kInitialWriteIndex;
   read_index_ = kInitialReadIndex;
   dir_path_ = dir_path_.AppendASCII("CRXTelemetry");
