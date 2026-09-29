@@ -229,7 +229,6 @@ BASE_DECLARE_FEATURE(kInAppWindowManagerDeprecation);
 BASE_DECLARE_FEATURE(kIncognitoAsWindowFullScreen);
 BASE_DECLARE_FEATURE(kIncognitoModeForcedAndroid);
 BASE_DECLARE_FEATURE(kIncognitoScreenshot);
-BASE_DECLARE_FEATURE(kIncognitoThemeOverlayTesting);
 BASE_DECLARE_FEATURE(kInlinePdfV2);
 BASE_DECLARE_FEATURE(kInlinePdfV2Download);
 BASE_DECLARE_FEATURE(kInlinePdfV2Incognito);

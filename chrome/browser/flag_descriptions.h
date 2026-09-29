@@ -3079,11 +3079,6 @@ inline constexpr char kIncognitoScreenshotDescription[] =
     "Enables Incognito screenshots on Android. It will also make Incognito "
     "thumbnails visible.";
 
-inline constexpr char kIncognitoThemeOverlayTestingName[] =
-    "Incognito theme overlay for testing";
-inline constexpr char kIncognitoThemeOverlayTestingDescription[] =
-    "Enables incognito theme overlay for testing on the current window.";
-
 inline constexpr char kInfoBarInlineLinksName[] = "InfoBar inline links";
 inline constexpr char kInfoBarInlineLinksDescription[] =
     "Enables inline links in InfoBars when supported.";

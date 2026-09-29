@@ -640,7 +640,6 @@ public abstract class ChromeFeatureList {
     public static final String INCOGNITO_AS_WINDOW_FULL_SCREEN = "IncognitoAsWindowFullScreen";
     public static final String INCOGNITO_MODE_FORCED_ANDROID = "IncognitoModeForcedAndroid";
     public static final String INCOGNITO_SCREENSHOT = "IncognitoScreenshot";
-    public static final String INCOGNITO_THEME_OVERLAY_TESTING = "IncognitoThemeOverlayTesting";
     public static final String INLINE_PDF_V2 = "InlinePdfV2";
     public static final String INLINE_PDF_V2_DOWNLOAD = "InlinePdfV2Download";
     public static final String INLINE_PDF_V2_INCOGNITO = "InlinePdfV2Incognito";
@@ -1285,8 +1284,6 @@ public abstract class ChromeFeatureList {
                     HOME_BUTTON_REMOVAL,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sIncognitoThemeOverlayTesting =
-            newCachedFlag(INCOGNITO_THEME_OVERLAY_TESTING, false);
     public static final CachedFlag sKeyboardEscBackNavigation =
             newCachedFlag(KEYBOARD_ESC_BACK_NAVIGATION, true);
     public static final CachedFlag sLaunchCauseScreenOffFix =
@@ -1652,7 +1649,6 @@ public abstract class ChromeFeatureList {
                     sGridTabSwitcherSurfaceColorUpdate,
                     sHistoryPaneAndroid,
                     sHomeButtonRemoval,
-                    sIncognitoThemeOverlayTesting,
                     sKeyboardEscBackNavigation,
                     sLaunchCauseScreenOffFix,
                     sLensBypassCompressionForC2pa,

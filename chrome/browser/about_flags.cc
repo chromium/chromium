@@ -12054,13 +12054,6 @@ const FeatureEntry kFeatureEntries[] = {
      kOsDesktop | kOsAndroid,
      FEATURE_VALUE_TYPE(history::kBrowsingHistorySimilarVisitsGrouping)},
 
-#if BUILDFLAG(IS_ANDROID)
-    {"incognito-theme-overlay-testing",
-     flag_descriptions::kIncognitoThemeOverlayTestingName,
-     flag_descriptions::kIncognitoThemeOverlayTestingDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kIncognitoThemeOverlayTesting)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
     {"mobile-promo-on-desktop-force-promo-type",
      flag_descriptions::kMobilePromoOnDesktopForcePromoTypeName,
      flag_descriptions::kMobilePromoOnDesktopForcePromoTypeDescription, kOsAll,
