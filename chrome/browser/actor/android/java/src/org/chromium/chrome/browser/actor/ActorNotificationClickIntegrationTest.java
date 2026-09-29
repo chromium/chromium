@@ -24,6 +24,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -34,6 +35,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.components.browser_ui.notifications.BaseNotificationManagerProxyFactory;
@@ -78,6 +80,7 @@ public class ActorNotificationClickIntegrationTest {
         intent.putExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, true);
         intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, taskId);
         intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, state);
+        IntentUtils.addTrustedIntentExtras(intent);
 
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher("Actor.Notification.ClickTaskState", state);
@@ -98,6 +101,7 @@ public class ActorNotificationClickIntegrationTest {
         Intent intent = new Intent(mContext, ChromeTabbedActivity.class);
         intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, taskId);
         intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, state);
+        IntentUtils.addTrustedIntentExtras(intent);
 
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher("Actor.Notification.ClickTaskState", state);
@@ -117,6 +121,7 @@ public class ActorNotificationClickIntegrationTest {
         ActorTask task = mock(ActorTask.class);
         when(task.getId()).thenReturn(taskId);
         when(task.getState()).thenReturn(state);
+        when(task.getTargetTabId()).thenReturn(Tab.INVALID_TAB_ID);
 
         ActorForegroundServiceController controller = mock(ActorForegroundServiceController.class);
         ActorForegroundServiceController.setInstanceForTesting(controller);
@@ -126,6 +131,7 @@ public class ActorNotificationClickIntegrationTest {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, taskId);
         intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, state);
+        IntentUtils.addTrustedIntentExtras(intent);
         when(controller.createTrustedBringTabToFrontIntent(task)).thenReturn(intent);
 
         // Verify that building a notification for this task produces a PendingIntent.
@@ -151,6 +157,7 @@ public class ActorNotificationClickIntegrationTest {
         ActorTask liveTask = mock(ActorTask.class);
         when(mActorKeyedService.getTask(taskId)).thenReturn(liveTask);
         when(liveTask.getState()).thenReturn(liveState);
+        when(liveTask.getTargetTabId()).thenReturn(Tab.INVALID_TAB_ID);
 
         // The intent contains an older state, but the live state should be logged.
         Intent intent = new Intent(mContext, ChromeTabbedActivity.class);
@@ -158,6 +165,7 @@ public class ActorNotificationClickIntegrationTest {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, taskId);
         intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, intentState);
+        IntentUtils.addTrustedIntentExtras(intent);
 
         var watcher =
                 HistogramWatcher.newSingleRecordWatcher(
@@ -186,6 +194,7 @@ public class ActorNotificationClickIntegrationTest {
         intent.putExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, true);
         intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, taskId);
         intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, state);
+        IntentUtils.addTrustedIntentExtras(intent);
 
         mActivityTestRule.startMainActivityFromIntent(intent, null);
 
@@ -210,11 +219,39 @@ public class ActorNotificationClickIntegrationTest {
         intent.putExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, true);
         intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, taskId);
         intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, state);
+        IntentUtils.addTrustedIntentExtras(intent);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getActivity().onNewIntent(intent));
 
         CriteriaHelper.pollUiThread(() -> notificationManager.getNotifications().isEmpty());
+    }
+
+    @Test
+    @MediumTest
+    public void testNotificationClick_UntrustedIntent_DoesNotDismissNotification()
+            throws Exception {
+        int taskId = 108;
+        int state = ActorTaskState.FINISHED;
+
+        MockNotificationManagerProxy notificationManager = new MockNotificationManagerProxy();
+        BaseNotificationManagerProxyFactory.setInstanceForTesting(notificationManager);
+        notificationManager.notify(taskId, new Notification());
+        assertEquals(1, notificationManager.getNotifications().size());
+
+        Intent intent = new Intent(mContext, ChromeTabbedActivity.class);
+        intent.setAction(Intent.ACTION_VIEW);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.putExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, true);
+        intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, taskId);
+        intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, state);
+
+        mActivityTestRule.startMainActivityFromIntent(intent, null);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getActivity().onNewIntent(intent));
+
+        assertEquals(1, notificationManager.getNotifications().size());
     }
 
     @Test
@@ -234,6 +271,7 @@ public class ActorNotificationClickIntegrationTest {
         intent.putExtra(ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, true);
         intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_ID, taskId);
         intent.putExtra(NotificationConstants.EXTRA_ACTOR_TASK_STATE, state);
+        IntentUtils.addTrustedIntentExtras(intent);
 
         mActivityTestRule.startMainActivityFromIntent(intent, null);
 

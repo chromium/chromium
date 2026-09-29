@@ -1897,7 +1897,7 @@ public class IntentHandler {
      * @return Whether the intent originated from an Actor notification.
      */
     public static boolean isActorNotificationIntent(@Nullable Intent intent) {
-        if (intent == null) return false;
+        if (!wasIntentSenderChrome(intent)) return false;
         return IntentUtils.safeGetBooleanExtra(
                         intent, ActorNotificationFactory.EXTRA_SHOW_ACTOR_CONTROL, false)
                 || IntentUtils.safeGetIntExtra(
