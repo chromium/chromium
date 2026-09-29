@@ -157,7 +157,6 @@ double AudioInputStreamFuchsia::GetVolume() {
 }
 
 bool AudioInputStreamFuchsia::SetAutomaticGainControl(bool enabled) {
-  NOTIMPLEMENTED();
   return false;
 }
 
