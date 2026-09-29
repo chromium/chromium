@@ -30,9 +30,10 @@ namespace base::i18n_internal {
 // i.e. the subtags that come before extensions have already been consumed.
 // It checks that the first subtag is a singleton (a subtag of length 1) and
 // then consumes all the subtags after that until it reaches a subtag that is
-// not a extension subtag (see the function `IsExtensionSubtag` for more info).
-// It does that repeatedly as there can be multiple extensions in a BCP47 tag.
-// There are also two cases where the parsing would fail (std::nullopt is
+// not a extension subtag (see the function
+// `Bcp47SubtagParser::IsSubtagType(SubtagType::kExtensionSubtag)` for more
+// info). It does that repeatedly as there can be multiple extensions in a BCP47
+// tag. There are also two cases where the parsing would fail (std::nullopt is
 // returned):
 // - Repeated singleton: there are more than one extension with the same
 // singleton, this is not allowed by the BCP47 standard.
@@ -57,9 +58,10 @@ ParseBcp47Extensions(SubtagsReader& subtags) {
 
 // Assumes that the first subtag is the "x" singleton subtag. It parses all the
 // following subtags by checking whether they are valid private-use subtags (see
-// the `IsPrivateUseSubtag` function for more details). If the "x" singleton is
-// not followed by any valid subtag, parsing fails (std::nullopt is returned) as
-// this is not allowed by the BCP47 standard.
+// the `Bcp47SubtagParser::IsSubtagType(SubtagType::kPrivateUseSubtag)` function
+// for more details). If the "x" singleton is not followed by any valid subtag,
+// parsing fails (std::nullopt is returned) as this is not allowed by the BCP47
+// standard.
 constexpr std::vector<std::string_view> ParseBcp47PrivateUse(
     SubtagsReader& subtags) {
   if (subtags.Read(SubtagType::kPrivateUseSingleton).empty()) {
@@ -71,17 +73,22 @@ constexpr std::vector<std::string_view> ParseBcp47PrivateUse(
 
 // The parsed BCP47 tag. It is a view on the actual input string.
 struct ParsedBcp47Tag {
-  // See the comments in `IsLanguageSubtag`.
+  // See the comments in
+  // `Bcp47SubtagParser::IsSubtagType(SubtagType::kLanguage)`.
   std::string_view language;
-  // See the comments in `IsScriptSubtag`.
+  // See the comments in `Bcp47SubtagParser::IsSubtagType(SubtagType::kScript)`.
   std::string_view script;
-  // See the comments in `IsRegionSubtag`.
+  // See the comments in `Bcp47SubtagParser::IsSubtagType(SubtagType::kRegion)`.
   std::string_view region;
-  // See the comments in `IsVariantSubtag`.
+  // See the comments in
+  // `Bcp47SubtagParser::IsSubtagType(SubtagType::kVariant)`.
   std::vector<std::string_view> variants;
-  // See the comments in `IsExtensionSingleton` and `IsExtensionSubtag`.
+  // See the comments in
+  // `Bcp47SubtagParser::IsSubtagType(SubtagType::kExtensionSingleton)` and
+  // `Bcp47SubtagParser::IsSubtagType(SubtagType::kExtensionSubtag)`.
   base::flat_map<char, std::vector<std::string_view>> extensions;
-  // See the comments in `IsPrivateUseSubtag`.
+  // See the comments in
+  // `Bcp47SubtagParser::IsSubtagType(SubtagType::kPrivateUseSubtag)`.
   std::vector<std::string_view> private_use;
 };
 
@@ -143,7 +150,7 @@ constexpr std::optional<ParsedBcp47Tag> ParseBcp47Tag(
   if (tag.empty()) {
     return std::nullopt;
   }
-  return ParseBcp47Tag(SubtagsReader(tag));
+  return ParseBcp47Tag(SubtagsReader::Create(tag));
 }
 
 // Reconstructs the BCP47 tag's individual subtags and hyphen separators from

@@ -441,8 +441,12 @@ TEST(Bcp47ExtensionTest, ExtensionFromString) {
   // Invalid: doesn't start with singleton-.
   EXPECT_FALSE(Extension::FromString("-a-myext").has_value());
 
+  // Valid: 2-char subtags are allowed (RFC 5646 Section 2.2.6).
+  ASSERT_OK_AND_ASSIGN(Extension two_char_ext, Extension::FromString("a-at"));
+  EXPECT_EQ(two_char_ext.SubtagsString(), "at");
+
   // Invalid: invalid subtag (too short).
-  EXPECT_FALSE(Extension::FromString("a-at").has_value());
+  EXPECT_FALSE(Extension::FromString("a-b").has_value());
   // Invalid: invalid subtag (too long).
   EXPECT_FALSE(Extension::FromString("a-toolongsubtag").has_value());
 }
@@ -470,8 +474,12 @@ TEST(Bcp47ExtensionTest, ExtensionMutation) {
   EXPECT_TRUE(ext.AddSubtag("sub1"));
   EXPECT_EQ(ext.SubtagsString(), "aaa-abc-bbb-sub1-sub2");
 
+  // 2-char subtags are valid.
+  EXPECT_TRUE(ext.AddSubtag("at"));
+  EXPECT_EQ(ext.SubtagsString(), "aaa-abc-at-bbb-sub1-sub2");
+
   // Invalid.
-  EXPECT_FALSE(ext.AddSubtag("at"));
+  EXPECT_FALSE(ext.AddSubtag("a"));
   EXPECT_FALSE(ext.AddSubtag("toolongsubtag"));
 }
 

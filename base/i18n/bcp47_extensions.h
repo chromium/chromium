@@ -55,8 +55,8 @@ class COMPONENT_EXPORT(LANGUAGE_TAG) Extension {
   std::string SubtagsString() const;
 
   // Adds a subtag to the extension.
-  // Subtags must be lower case ASCII alphanumeric and have length between 3
-  // and 8.
+  // Subtags must be ASCII alphanumeric and have length between 2 and 8. They
+  // are stored lower case.
   bool AddSubtag(std::string_view subtag);
 
  private:

@@ -94,7 +94,8 @@ std::vector<std::string_view> LanguageTag::GetExtensionSubtagsInternal(
                             : i18n_internal::SubtagType::kExtensionSingleton;
 
   std::string_view singleton;
-  i18n_internal::SubtagsReader reader(tag_string());
+  auto reader = i18n_internal::SubtagsReaderUnsafe::Create(
+      base::PassKey<LanguageTag>(), tag_string());
   while (
       !(singleton = reader.Seek(singleton_type).Read(singleton_type)).empty()) {
     if (ToLowerASCII(singleton.front()) == normalized_key) {

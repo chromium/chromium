@@ -147,7 +147,9 @@ Extension::Extension(Extension&&) = default;
 Extension& Extension::operator=(Extension&&) = default;
 
 bool Extension::AddSubtag(std::string_view subtag) {
-  if (!VerifyTypeOrAttributeSubtags({subtag})) {
+  // RFC 5646 Section 2.2.6:
+  //  extension     = singleton 1*("-" (2*8alphanum))
+  if (subtag.size() < 2 || subtag.size() > 8 || !IsAllAlphaNumeric(subtag)) {
     return false;
   }
   subtags_.insert(CanonicalizeTypeOrAttributeSubtags({subtag}));

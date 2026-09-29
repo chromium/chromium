@@ -18,6 +18,7 @@
 #include "base/i18n/internal/bcp47_parser.h"
 #include "base/i18n/internal/bcp47_subtags_reader.h"
 #include "base/i18n/internal/immutable_string.h"
+#include "base/types/pass_key.h"
 
 namespace base {
 class Value;
@@ -98,8 +99,9 @@ class COMPONENT_EXPORT(LANGUAGE_TAG) LanguageTag {
   // Notice that this does not necessarily represent the language itself as some
   // of them need their region, script and variant to be properly represented.
   constexpr std::string_view language_subtag() const LIFETIME_BOUND {
-    return i18n_internal::SubtagsReader(tag_string())
-        .Read(i18n_internal::SubtagType::kLanguage);
+    return i18n_internal::SubtagsReaderUnsafe::Create(
+               base::PassKey<LanguageTag>(), tag_string())
+        .Peek(i18n_internal::SubtagType::kLanguage);
   }
   // Creates a new `LanguageTag` containing only the language subtag.
   LanguageTag WithLanguageSubtagOnly() const;
@@ -111,9 +113,10 @@ class COMPONENT_EXPORT(LANGUAGE_TAG) LanguageTag {
   // - "sr-Latn" -> "Latn"
   // - "zh-Hans" -> "Hans"
   constexpr std::string_view script_subtag() const LIFETIME_BOUND {
-    return i18n_internal::SubtagsReader(tag_string())
+    return i18n_internal::SubtagsReaderUnsafe::Create(
+               base::PassKey<LanguageTag>(), tag_string())
         .Seek(i18n_internal::SubtagType::kScript)
-        .Read(i18n_internal::SubtagType::kScript);
+        .Peek(i18n_internal::SubtagType::kScript);
   }
   // Returns the region subtag in the language tag if present.
   // Examples:
@@ -122,9 +125,10 @@ class COMPONENT_EXPORT(LANGUAGE_TAG) LanguageTag {
   // - "en" -> ""
   // - "sr-Latn" -> ""
   constexpr std::string_view region_subtag() const LIFETIME_BOUND {
-    return i18n_internal::SubtagsReader(tag_string())
+    return i18n_internal::SubtagsReaderUnsafe::Create(
+               base::PassKey<LanguageTag>(), tag_string())
         .Seek(i18n_internal::SubtagType::kRegion)
-        .Read(i18n_internal::SubtagType::kRegion);
+        .Peek(i18n_internal::SubtagType::kRegion);
   }
 
   // Returns the variant subtags in the language tag if present.
@@ -134,7 +138,8 @@ class COMPONENT_EXPORT(LANGUAGE_TAG) LanguageTag {
   // - "sl-IT-rozaj-biske" -> ["biske", "rozaj"]
   constexpr std::vector<std::string_view> variant_subtags() const
       LIFETIME_BOUND {
-    return i18n_internal::SubtagsReader(tag_string())
+    return i18n_internal::SubtagsReaderUnsafe::Create(
+               base::PassKey<LanguageTag>(), tag_string())
         .Seek(i18n_internal::SubtagType::kVariant)
         .ReadSubtags(i18n_internal::SubtagType::kVariant);
   }
