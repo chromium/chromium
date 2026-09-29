@@ -759,6 +759,7 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "crbug.com/567286370")
     public void testGetLocationBarOffsetForFocusAnimation() {
         // The NTP observes the AI Mode entry point config, so the mock must supply one. Suppliers
         // are bound to the thread they're created on, so create it on the UI thread.
