@@ -30,7 +30,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
-import org.chromium.base.CallbackUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.DeviceInfo;
@@ -236,8 +235,6 @@ import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarBehavior;
-import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
-import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarPrefs;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.chrome.browser.ui.RootUiCoordinator;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
@@ -1920,94 +1917,14 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
     @VisibleForTesting
     boolean maybeShowGlicPromo() {
-        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-                || CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_STARTUP_PROMOS)) {
-            return false;
-        }
-
-        Profile profile = mProfileSupplier.get();
-        if (profile == null
-                || mActivity == null
-                || mActivity.isFinishing()
-                || mActivity.isDestroyed()) {
-            return false;
-        }
-
-        boolean hasEvaluatedGlicPromo =
-                ChromeSharedPreferences.getInstance()
-                        .contains(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED);
-
-        if (!GlicEnabling.isEnabledByFlags() && hasEvaluatedGlicPromo) {
-            ChromeSharedPreferences.getInstance()
-                    .removeKey(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED);
-            return false;
-        }
-
-        if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.GLIC, "adaptive-toolbar-auto-pin", true)) {
-            return false;
-        }
-
-        // When the Android Bottom Bar is enabled the promo is not required as the button is
-        // available by default.
-        boolean glicEnabled = GlicEnabling.isEnabledForProfile(profile);
-        boolean bottomBarEnabled = BottomBarConfigUtils.isBottomBarEnabled(mActivity);
-        if (!glicEnabled || bottomBarEnabled) {
-            return false;
-        }
-
-        if (hasEvaluatedGlicPromo) {
-            return false;
-        }
-        boolean isGlicPinned =
-                AdaptiveToolbarPrefs.getCustomizationSetting() == AdaptiveToolbarButtonVariant.GLIC;
-        boolean isToolbarPinned =
-                AdaptiveToolbarPrefs.getCustomizationSetting() != AdaptiveToolbarButtonVariant.AUTO;
-        // We use wouldTriggerHelpUi and notifyEvent manually instead of shouldTriggerHelpUi
-        // to avoid locking the IPH session and blocking other IPHs from showing.
-        Tracker tracker = TrackerFactory.getTrackerForProfile(profile);
-        boolean shouldPinGlic =
-                tracker.wouldTriggerHelpUi(
-                        FeatureConstants.ADAPTIVE_BUTTON_PIN_GLIC_TOOLBAR_BUTTON_FEATURE);
-        tracker.notifyEvent(EventConstants.ADAPTIVE_TOOLBAR_GLIC_IPH_TRIGGER);
-
-        // Auto-enable the Glic button and bypass the promo if:
-        // 1. Glic is already pinned to the toolbar.
-        // 2. The feature engagement tracker recommends pinning Glic AND the user has not
-        //    manually customized the toolbar with a different button (to avoid overriding
-        //    the user's explicit preference).
-        if (isGlicPinned || (shouldPinGlic && !isToolbarPinned)) {
-            enableGlicButton();
-            return false;
-        }
-
-        if (!ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                ChromeFeatureList.GLIC, "glic-bottom-sheet-promo", true)) {
-            return false;
-        }
-
-        showGlicPromo();
-        return true;
-    }
-
-    private void showGlicPromo() {
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED, false);
-
-        Runnable onAccepted = this::enableGlicButton;
-        Runnable onDismissed = CallbackUtils.emptyRunnable();
-
         var bottomSheetController = getBottomSheetController();
-        assert bottomSheetController != null;
+        if (bottomSheetController == null) {
+            return false;
+        }
         mGlicPromoCoordinator =
-                new GlicPromoCoordinator(mActivity, bottomSheetController, onAccepted, onDismissed);
-        mGlicPromoCoordinator.showBottomSheet();
-    }
-
-    private void enableGlicButton() {
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.GLIC_PROMO_ACCEPTED, true);
-        AdaptiveToolbarPrefs.saveToolbarButtonManualOverride(AdaptiveToolbarButtonVariant.GLIC);
+                GlicPromoCoordinator.maybeShowPromo(
+                        mActivity, mProfileSupplier.get(), bottomSheetController);
+        return mGlicPromoCoordinator != null;
     }
 
     private void updateTopControlsHeight() {
