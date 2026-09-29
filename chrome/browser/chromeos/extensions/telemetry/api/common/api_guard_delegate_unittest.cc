@@ -26,7 +26,6 @@
 #include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/ash/browser_delegate/browser_controller_impl.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/hardware_info_delegate.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -41,8 +40,7 @@
 #include "chromeos/ash/services/cros_healthd/public/cpp/fake_cros_healthd.h"
 #include "components/account_id/account_id.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
@@ -196,7 +194,7 @@ class ApiGuardDelegateTest
   void SetUserAsOwner() {
     // Make sure the current user is affiliated.
     const AccountId account_id = AccountId::FromUserEmail(kUserEmail);
-    user_manager()->SetOwnerId(account_id);
+    user_manager::UserManager::Get()->SetOwnerId(account_id);
   }
 
   void SetDeviceManufacturer(const std::string& manufacturer) {
@@ -258,7 +256,7 @@ class ApiGuardDelegateTest
 TEST_P(ApiGuardDelegateTest, CurrentUserNotOwner) {
   // Make sure the current user is not the device owner.
   const AccountId regular_user = AccountId::FromUserEmail("regular@gmail.com");
-  user_manager()->SetOwnerId(regular_user);
+  user_manager::UserManager::Get()->SetOwnerId(regular_user);
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
   base::test::TestFuture<std::optional<std::string>> future;
@@ -381,7 +379,7 @@ class ApiGuardDelegateAffiliatedUserTest : public ApiGuardDelegateTest {
  protected:
   void LogIn(std::string_view email, const GaiaId& gaia_id) override {
     BrowserWithTestWindowTest::LogIn(email, gaia_id);
-    user_manager()->SetUserPolicyStatus(
+    user_manager::UserManager::Get()->SetUserPolicyStatus(
         AccountId::FromUserEmailGaiaId(email, gaia_id),
         /*is_managed=*/true,
         /*is_affiliated=*/true);
@@ -661,9 +659,9 @@ TEST_P(ApiGuardDelegateTest, OwnerCheckUsesCallingProfile) {
   const AccountId second_user =
       AccountId::FromUserEmailGaiaId(kSecondUserEmail, kSecondUserGaiaId);
   LogIn(kSecondUserEmail, kSecondUserGaiaId);
-  user_manager()->SetOwnerId(second_user);
-  user_manager()->SwitchActiveUser(second_user);
-  ASSERT_TRUE(user_manager()->IsCurrentUserOwner());
+  user_manager::UserManager::Get()->SetOwnerId(second_user);
+  user_manager::UserManager::Get()->SwitchActiveUser(second_user);
+  ASSERT_TRUE(user_manager::UserManager::Get()->IsCurrentUserOwner());
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
   base::test::TestFuture<std::optional<std::string>> future;
@@ -692,11 +690,11 @@ TEST_P(ApiGuardDelegateTest, AffiliationCheckUsesCallingProfile) {
   const AccountId second_user =
       AccountId::FromUserEmailGaiaId(kSecondUserEmail, kSecondUserGaiaId);
   LogIn(kSecondUserEmail, kSecondUserGaiaId);
-  user_manager()->SetOwnerId(second_user);
-  user_manager()->SetUserPolicyStatus(second_user,
-                                      /*is_managed=*/true,
-                                      /*is_affiliated=*/true);
-  user_manager()->SwitchActiveUser(second_user);
+  user_manager::UserManager::Get()->SetOwnerId(second_user);
+  user_manager::UserManager::Get()->SetUserPolicyStatus(second_user,
+                                                        /*is_managed=*/true,
+                                                        /*is_affiliated=*/true);
+  user_manager::UserManager::Get()->SwitchActiveUser(second_user);
 
   auto api_guard_delegate = ApiGuardDelegate::Factory::Create();
   base::test::TestFuture<std::optional<std::string>> future;
