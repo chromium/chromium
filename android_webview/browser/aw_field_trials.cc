@@ -62,6 +62,11 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       ::features::kBlockCrossPartitionBlobUrlFetching);
 
+  // DISABLED_INCOMPATIBLE: The LanguageDetector API depends on Chrome's
+  // Optimization Guide to deliver and manage the language detection model,
+  // which is not available in WebView.
+  aw_feature_overrides.DisableFeature(blink::features::kLanguageDetectionAPI);
+
   // DISABLED_TEMPORARY: crbug.com/445202443. There are some test cases
   // need to be fixed before enabling this feature flag for android.
   aw_feature_overrides.DisableFeature(

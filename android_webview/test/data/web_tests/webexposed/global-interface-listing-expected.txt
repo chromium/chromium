@@ -5812,16 +5812,6 @@ interface KeyframeEffect : AnimationEffect
     setter iterationComposite
     setter pseudoElement
     setter target
-interface LanguageDetector
-    static method availability
-    static method create
-    attribute @@toStringTag
-    getter expectedInputLanguages
-    getter inputQuota
-    method constructor
-    method destroy
-    method detect
-    method measureInputUsage
 interface LargestContentfulPaint : PerformanceEntry
     attribute @@toStringTag
     getter element
