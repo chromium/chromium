@@ -21,7 +21,8 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './page_action_icon.css.js';
 import {getHtml} from './page_action_icon.html.js';
-import {getClickSourceType, HelpBubbleAnchorMixin, playIconAnimation, setHasHelpBubble} from './toolbar_button.js';
+import {ToolbarActionMixin} from './toolbar_action_mixin.js';
+import {getClickSourceType, playIconAnimation} from './toolbar_button.js';
 import type {ToolbarChipButtonElement} from './toolbar_chip_button.js';
 
 export interface PageActionIconElement {
@@ -30,7 +31,29 @@ export interface PageActionIconElement {
   };
 }
 
-const PageActionIconElementBase = HelpBubbleAnchorMixin(CrLitElement);
+const initialState: PageActionState = {
+  pageActionId: PageActionId.kActionAiMode,
+  accessibleName: '',
+  tooltipText: '',
+  icon: {handleId: 0n},
+  text: '',
+  shouldShowChip: false,
+  shouldAnimateChipIn: false,
+  shouldAnimateChipOut: false,
+  backgroundColorOverride: null,
+  identifier: {
+    nativeIdentifier: '',
+    secondaryIdentifier: '',
+  },
+  isActive: false,
+  tabSwitchToken: 0,
+  animationStyle: PageActionAnimationStyle.kStandard,
+  trailingIcon: null,
+  showTrailingIcon: false,
+};
+
+const PageActionIconElementBase =
+    ToolbarActionMixin(CrLitElement, initialState);
 
 export class PageActionIconElement extends PageActionIconElementBase {
   static get is() {
@@ -47,8 +70,6 @@ export class PageActionIconElement extends PageActionIconElementBase {
 
   static override get properties() {
     return {
-      state: {type: Object},
-
       // Draw a focus ring as if focused (e.g., the AI mode chip when the user
       // tabs through the Omnibox suggestions, keeping real focus in the text
       // field).
@@ -56,7 +77,6 @@ export class PageActionIconElement extends PageActionIconElementBase {
 
       // Some additional style attributes for the chip element.
       chipStyleOverride_: {type: String, state: true},
-      isHighlighted: {type: Boolean},
 
       glowUpEnabled: {type: Boolean},
 
@@ -64,29 +84,11 @@ export class PageActionIconElement extends PageActionIconElementBase {
     };
   }
 
-  accessor state: PageActionState = {
-    pageActionId: PageActionId.kActionAiMode,
-    accessibleName: '',
-    tooltipText: '',
-    icon: {handleId: 0n},
-    text: '',
-    shouldShowChip: false,
-    shouldAnimateChipIn: false,
-    shouldAnimateChipOut: false,
-    backgroundColorOverride: null,
-    identifier: {
-      nativeIdentifier: '',
-      secondaryIdentifier: '',
-    },
-    isActive: false,
-    tabSwitchToken: 0,
-    animationStyle: PageActionAnimationStyle.kStandard,
-    trailingIcon: null,
-    showTrailingIcon: false,
-  };
+  override getElementId(state: PageActionState): string|undefined {
+    return state.identifier?.nativeIdentifier || undefined;
+  }
 
   accessor forceFocusRing: boolean = false;
-  protected accessor isHighlighted: boolean = false;
 
   protected accessor chipStyleOverride_: string|null = null;
 
@@ -98,7 +100,6 @@ export class PageActionIconElement extends PageActionIconElementBase {
   private animatedIconColor_: string = '';
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
   private wasShowingChip_: boolean = false;
-  private registerHelpBubbleController_: AbortController|null = null;
   // Tracks the active 'endEvent' handler for the SVG animation to allow
   // cleanup.
   private animationEndHandler_: (() => void)|null = null;
@@ -112,15 +113,12 @@ export class PageActionIconElement extends PageActionIconElementBase {
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    if (this.registerHelpBubbleController_) {
-      this.registerHelpBubbleController_.abort();
-      this.registerHelpBubbleController_ = null;
-    }
     // Clean up animation event listeners on disconnect to prevent memory leaks
     // when dynamic page action icons are detached from the DOM.
     this.cleanupAnimationListener_();
     this.activeIconAnimation_ = 'none';
   }
+
   override willUpdate(changedProperties: PropertyValues<this>): void {
     super.willUpdate(changedProperties);
 
@@ -243,21 +241,6 @@ export class PageActionIconElement extends PageActionIconElementBase {
           ensureTransitionEndEvent(button);
         }
       }
-
-      const oldId = oldState?.identifier?.nativeIdentifier;
-      const newId = this.state.identifier?.nativeIdentifier;
-      if (oldId !== newId) {
-        if (this.registerHelpBubbleController_) {
-          this.registerHelpBubbleController_.abort();
-          this.registerHelpBubbleController_ = null;
-        }
-        if (oldId) {
-          this.unregisterHelpBubble(oldId);
-        }
-        if (newId) {
-          this.registerHelpBubble_(newId);
-        }
-      }
     }
   }
 
@@ -355,40 +338,6 @@ export class PageActionIconElement extends PageActionIconElementBase {
     // Prevent us from taking focus, since that may cause the omnibox popup
     // to close, and disable the AIM button in turn.
     e.preventDefault();
-  }
-
-  // TODO(crbug.com/489109708): Deduplicate help bubble tracking logic across
-  // toolbar elements.
-  private async registerHelpBubble_(newId: string) {
-    this.registerHelpBubbleController_ = new AbortController();
-    const signal = this.registerHelpBubbleController_.signal;
-
-    const animations = this.getAnimations().filter(anim => {
-      const timing = anim.effect?.getTiming();
-      // Ignore infinite animations (e.g. pulsing for IPH).
-      return timing?.iterations !== Infinity && timing?.duration !== Infinity;
-    });
-
-    // Wait for any animations to complete, so button is in final location.
-    if (animations.length > 0) {
-      try {
-        await Promise.all(animations.map(a => a.finished));
-      } catch (e) {
-        // Ignore animation cancellation.
-      }
-    }
-
-    if (!signal.aborted) {
-      this.registerHelpBubble(newId, this.$.button, {
-        secondaryId: this.state.identifier?.secondaryIdentifier || undefined,
-        onHighlightChanged: (highlighted: boolean) => {
-          this.isHighlighted = highlighted;
-        },
-        onHelpBubbleShown: () => setHasHelpBubble(this, true),
-        onHelpBubbleHidden: () => setHasHelpBubble(this, false),
-      });
-      this.registerHelpBubbleController_ = null;
-    }
   }
 
   protected getTooltip_(): string {

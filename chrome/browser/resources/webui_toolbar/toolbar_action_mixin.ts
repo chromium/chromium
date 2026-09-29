@@ -136,7 +136,12 @@ export const ToolbarActionMixin =
             return;
           }
 
-          this.registerHelpBubble(newId, this, {
+          // Anchor help bubbles to the inner toolbar-chip-button if present, or
+          // this element otherwise.
+          const anchor = this.shadowRoot?.querySelector(
+                             'toolbar-chip-button') as HTMLElement ??
+              this;
+          this.registerHelpBubble(newId, anchor, {
             secondaryId: this.getSecondaryElementId(),
             onHighlightChanged: (highlighted: boolean) => {
               if (this.trackedHighlighted && !highlighted) {
@@ -155,8 +160,10 @@ export const ToolbarActionMixin =
         // configured with delegatesFocus, which Lit doesn't do by default for
         // wrapper elements.
         override focus() {
-          const button = this.shadowRoot?.querySelector(
-                             'cr-icon-button, cr-button') as HTMLElement;
+          const button =
+              this.shadowRoot?.querySelector(
+                  'toolbar-chip-button, cr-icon-button, cr-button') as
+              HTMLElement;
           if (button) {
             button.focus();
           }

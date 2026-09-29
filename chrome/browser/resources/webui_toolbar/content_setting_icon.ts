@@ -16,7 +16,7 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './content_setting_icon.css.js';
 import {getHtml} from './content_setting_icon.html.js';
-import {HelpBubbleAnchorMixin, setHasHelpBubble} from './toolbar_button.js';
+import {ToolbarActionMixin} from './toolbar_action_mixin.js';
 import type {ToolbarChipButtonElement} from './toolbar_chip_button.js';
 
 // Duration (in ms) for the fade/slide animation of the chip label, matching
@@ -48,7 +48,21 @@ export interface ContentSettingIconElement {
   };
 }
 
-const ContentSettingIconElementBase = HelpBubbleAnchorMixin(CrLitElement);
+const initialState: ContentSettingImageState = {
+  type: ContentSettingImageType.kCookies,
+  isBlocked: false,
+  tooltip: '',
+  accessibilityString: '',
+  shouldRunAnimation: false,
+  explanatoryString: '',
+  identifier: {
+    nativeIdentifier: '',
+    secondaryIdentifier: '',
+  },
+};
+
+const ContentSettingIconElementBase =
+    ToolbarActionMixin(CrLitElement, initialState);
 
 export class ContentSettingIconElement extends ContentSettingIconElementBase {
   static get is() {
@@ -65,8 +79,6 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
 
   static override get properties() {
     return {
-      state: {type: Object},
-      trackedHighlighted: {type: Boolean},
       shouldShowLabel_: {
         type: Boolean,
         reflect: true,
@@ -78,21 +90,6 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
     };
   }
 
-  accessor state: ContentSettingImageState = {
-    type: ContentSettingImageType.kCookies,
-    isBlocked: false,
-    tooltip: '',
-    accessibilityString: '',
-    shouldRunAnimation: false,
-    explanatoryString: '',
-    identifier: {
-      nativeIdentifier: '',
-      secondaryIdentifier: '',
-    },
-  };
-
-  accessor trackedHighlighted: boolean = false;
-
   protected accessor shouldShowLabel_: boolean = false;
 
   // Used to instantly neutralize CSS transitions when snapping the chip to its
@@ -101,7 +98,6 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
   protected accessor suppressTransitions_: boolean = false;
 
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
-  private registerHelpBubbleController_: AbortController|null = null;
   private collapseTimerId_: number|null = null;
 
   override disconnectedCallback() {
@@ -109,10 +105,10 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
     this.clearCollapseTimer_();
     this.shouldShowLabel_ = false;
     this.suppressTransitions_ = false;
-    if (this.registerHelpBubbleController_) {
-      this.registerHelpBubbleController_.abort();
-      this.registerHelpBubbleController_ = null;
-    }
+  }
+
+  override getElementId(state: ContentSettingImageState): string|undefined {
+    return state.identifier?.nativeIdentifier || undefined;
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -125,31 +121,6 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
     if (changedProperties.has('trackedHighlighted')) {
       this.handleBubbleVisibilityChanged_(
           changedProperties.get('trackedHighlighted'));
-    }
-  }
-
-  override updated(changedProperties: PropertyValues<this>) {
-    super.updated(changedProperties);
-
-    if (changedProperties.has('state')) {
-      const oldState = changedProperties.get('state');
-      const oldId = oldState?.identifier?.nativeIdentifier;
-      const newId = this.state.identifier?.nativeIdentifier;
-
-      // Only change registration when we see a new ID (like the initial state
-      // message), not on ordinary state messages.
-      if (oldId !== newId) {
-        if (this.registerHelpBubbleController_) {
-          this.registerHelpBubbleController_.abort();
-          this.registerHelpBubbleController_ = null;
-        }
-        if (oldId) {
-          this.unregisterHelpBubble(oldId);
-        }
-        if (newId) {
-          this.registerHelpBubble_(newId);
-        }
-      }
     }
   }
 
@@ -208,40 +179,6 @@ export class ContentSettingIconElement extends ContentSettingIconElementBase {
       if (this.shouldShowLabel_) {
         this.startCollapseTimer_(COLLAPSE_HOLD_DURATION_MS);
       }
-    }
-  }
-
-  // TODO(crbug.com/489109708): Deduplicate help bubble tracking logic across
-  // toolbar elements.
-  private async registerHelpBubble_(newId: string) {
-    this.registerHelpBubbleController_ = new AbortController();
-    const signal = this.registerHelpBubbleController_.signal;
-
-    const animations = this.getAnimations().filter(anim => {
-      const timing = anim.effect?.getTiming();
-      // Ignore infinite animations (e.g. pulsing for IPH).
-      return timing?.iterations !== Infinity && timing?.duration !== Infinity;
-    });
-
-    // Wait for any animations to complete, so button is in final location.
-    if (animations.length > 0) {
-      try {
-        await Promise.all(animations.map(a => a.finished));
-      } catch (e) {
-        // Ignore animation cancellation.
-      }
-    }
-
-    if (!signal.aborted) {
-      this.registerHelpBubble(newId, this.$.chip, {
-        secondaryId: this.state.identifier?.secondaryIdentifier || undefined,
-        onHighlightChanged: (highlighted: boolean) => {
-          this.trackedHighlighted = highlighted;
-        },
-        onHelpBubbleShown: () => setHasHelpBubble(this, true),
-        onHelpBubbleHidden: () => setHasHelpBubble(this, false),
-      });
-      this.registerHelpBubbleController_ = null;
     }
   }
 
