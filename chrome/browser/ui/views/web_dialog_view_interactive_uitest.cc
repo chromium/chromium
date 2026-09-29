@@ -7,7 +7,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
-#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
@@ -84,38 +83,33 @@ class WebDialogBrowserTest : public InProcessBrowserTest {
 
   // content::BrowserTestBase:
   void SetUpOnMainThread() override;
+  void TearDownOnMainThread() override;
 
  protected:
   void SimulateEscapeKey();
 
   bool was_view_deleted() const { return !view_tracker_.view(); }
+  views::WebDialogView* view() {
+    return static_cast<views::WebDialogView*>(view_tracker_.view());
+  }
 
-  raw_ptr<views::WebDialogView, DanglingUntriaged> view_ = nullptr;
-  bool web_dialog_delegate_destroyed_ = false;
-  raw_ptr<ui::test::TestWebDialogDelegate, DanglingUntriaged> delegate_ =
-      nullptr;
+  ui::test::TestWebDialogDelegate delegate_{
+      GURL(chrome::kChromeUIChromeURLsURL)};
 
  private:
   views::ViewTracker view_tracker_;
 };
 
 void WebDialogBrowserTest::SetUpOnMainThread() {
-  ui::test::TestWebDialogDelegate* delegate =
-      new ui::test::TestWebDialogDelegate(GURL(chrome::kChromeUIChromeURLsURL));
-  delegate->set_size(kInitialWidth, kInitialHeight);
-  delegate->SetDeleteOnClosedAndObserve(&web_dialog_delegate_destroyed_);
-
-  // Store the delegate so that we can update ShouldCloseDialogOnEscape().
-  delegate_ = delegate;
+  delegate_.set_size(kInitialWidth, kInitialHeight);
 
   auto view = std::make_unique<views::WebDialogView>(
-      browser()->GetProfile(), delegate,
+      browser()->GetProfile(), &delegate_,
       std::make_unique<ChromeWebContentsHandler>());
   view->SetOwnedByWidget(views::WidgetDelegate::OwnedByWidgetPassKey());
   gfx::NativeView parent_view =
       browser()->GetTabStripModel()->GetActiveWebContents()->GetNativeView();
-  view_ = view.get();
-  view_tracker_.SetView(view_);
+  view_tracker_.SetView(view.get());
 
   auto* widget =
       views::Widget::CreateWindowWithParent(std::move(view), parent_view);
@@ -123,12 +117,20 @@ void WebDialogBrowserTest::SetUpOnMainThread() {
   ASSERT_TRUE(base::test::RunUntil([&]() { return widget->IsVisible(); }));
 }
 
+void WebDialogBrowserTest::TearDownOnMainThread() {
+  // Some tests close the Widget themselves; for those that don't, close it
+  // here so the Widget doesn't outlive its delegate.
+  if (view() && view()->GetWidget()) {
+    view()->GetWidget()->CloseNow();
+  }
+}
+
 void WebDialogBrowserTest::SimulateEscapeKey() {
   ui::KeyEvent escape_event(ui::EventType::kKeyPressed, ui::VKEY_ESCAPE,
                             ui::EF_NONE);
-  if (view_->GetFocusManager()->OnKeyEvent(escape_event)) {
+  if (view()->GetFocusManager()->OnKeyEvent(escape_event)) {
     ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
-        view_->GetWidget()->GetNativeWindow(), ui::VKEY_ESCAPE, false, false,
+        view()->GetWidget()->GetNativeWindow(), ui::VKEY_ESCAPE, false, false,
         false, false));
   }
 }
@@ -150,7 +152,7 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_SizeWindow) {
   bool centered_in_window = false;
 #endif
 
-  gfx::Rect set_bounds = view_->GetWidget()->GetClientAreaBoundsInScreen();
+  gfx::Rect set_bounds = view()->GetWidget()->GetClientAreaBoundsInScreen();
   gfx::Rect actual_bounds, rwhv_bounds;
 
   // Bigger than the default in both dimensions.
@@ -168,18 +170,18 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_SizeWindow) {
   };
 
   // WebDialogView ignores the WebContents* |source| argument to
-  // SetContentsBounds. We could pass view_->web_contents(), but it's not
+  // SetContentsBounds. We could pass view()->web_contents(), but it's not
   // relevant for the test.
   {
-    WidgetResizeWaiter waiter(view_->GetWidget());
-    view_->SetContentsBounds(nullptr, set_bounds);
+    WidgetResizeWaiter waiter(view()->GetWidget());
+    view()->SetContentsBounds(nullptr, set_bounds);
     waiter.Wait();
   }
-  actual_bounds = view_->GetWidget()->GetClientAreaBoundsInScreen();
+  actual_bounds = view()->GetWidget()->GetClientAreaBoundsInScreen();
   check_bounds(set_bounds, actual_bounds);
 
   rwhv_bounds =
-      view_->web_contents()->GetRenderWidgetHostView()->GetViewBounds();
+      view()->web_contents()->GetRenderWidgetHostView()->GetViewBounds();
   EXPECT_LT(0, rwhv_bounds.width());
   EXPECT_LT(0, rwhv_bounds.height());
   EXPECT_GE(set_bounds.width(), rwhv_bounds.width());
@@ -190,39 +192,39 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_SizeWindow) {
   set_bounds.set_height(250);
 
   {
-    WidgetResizeWaiter waiter(view_->GetWidget());
-    view_->SetContentsBounds(nullptr, set_bounds);
+    WidgetResizeWaiter waiter(view()->GetWidget());
+    view()->SetContentsBounds(nullptr, set_bounds);
     waiter.Wait();
   }
 
-  actual_bounds = view_->GetWidget()->GetClientAreaBoundsInScreen();
+  actual_bounds = view()->GetWidget()->GetClientAreaBoundsInScreen();
   check_bounds(set_bounds, actual_bounds);
 
   rwhv_bounds =
-      view_->web_contents()->GetRenderWidgetHostView()->GetViewBounds();
+      view()->web_contents()->GetRenderWidgetHostView()->GetViewBounds();
   EXPECT_LT(0, rwhv_bounds.width());
   EXPECT_LT(0, rwhv_bounds.height());
   EXPECT_GE(set_bounds.width(), rwhv_bounds.width());
   EXPECT_GE(set_bounds.height(), rwhv_bounds.height());
 
   // Get very small.
-  const gfx::Size min_size = view_->GetWidget()->GetMinimumSize();
+  const gfx::Size min_size = view()->GetWidget()->GetMinimumSize();
   EXPECT_LT(0, min_size.width());
   EXPECT_LT(0, min_size.height());
 
   set_bounds.set_size(min_size);
 
   {
-    WidgetResizeWaiter waiter(view_->GetWidget());
-    view_->SetContentsBounds(nullptr, set_bounds);
+    WidgetResizeWaiter waiter(view()->GetWidget());
+    view()->SetContentsBounds(nullptr, set_bounds);
     waiter.Wait();
   }
 
-  actual_bounds = view_->GetWidget()->GetClientAreaBoundsInScreen();
+  actual_bounds = view()->GetWidget()->GetClientAreaBoundsInScreen();
   check_bounds(set_bounds, actual_bounds);
 
   rwhv_bounds =
-      view_->web_contents()->GetRenderWidgetHostView()->GetViewBounds();
+      view()->web_contents()->GetRenderWidgetHostView()->GetViewBounds();
   EXPECT_LT(0, rwhv_bounds.width());
   EXPECT_LT(0, rwhv_bounds.height());
   EXPECT_GE(set_bounds.width(), rwhv_bounds.width());
@@ -233,12 +235,12 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_SizeWindow) {
   set_bounds.set_height(250);
 
   {
-    WidgetResizeWaiter waiter(view_->GetWidget());
-    view_->SetContentsBounds(nullptr, set_bounds);
+    WidgetResizeWaiter waiter(view()->GetWidget());
+    view()->SetContentsBounds(nullptr, set_bounds);
     waiter.Wait();
   }
 
-  actual_bounds = view_->GetWidget()->GetClientAreaBoundsInScreen();
+  actual_bounds = view()->GetWidget()->GetClientAreaBoundsInScreen();
   check_bounds(set_bounds, actual_bounds);
 
   // Now verify that attempts to re-size to 0x0 enforces the minimum size.
@@ -246,17 +248,17 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_SizeWindow) {
   set_bounds.set_height(0);
 
   {
-    WidgetResizeWaiter waiter(view_->GetWidget());
-    view_->SetContentsBounds(nullptr, set_bounds);
+    WidgetResizeWaiter waiter(view()->GetWidget());
+    view()->SetContentsBounds(nullptr, set_bounds);
     waiter.Wait();
   }
 
-  actual_bounds = view_->GetWidget()->GetClientAreaBoundsInScreen();
+  actual_bounds = view()->GetWidget()->GetClientAreaBoundsInScreen();
   EXPECT_EQ(min_size, actual_bounds.size());
 
   // And that the render view is also non-zero.
   rwhv_bounds =
-      view_->web_contents()->GetRenderWidgetHostView()->GetViewBounds();
+      view()->web_contents()->GetRenderWidgetHostView()->GetViewBounds();
   EXPECT_LT(0, rwhv_bounds.width());
   EXPECT_LT(0, rwhv_bounds.height());
 
@@ -264,9 +266,7 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_SizeWindow) {
   // have run (or the dialog has none and gets fast-closed via
   // RenderViewHostImpl::ClosePageIgnoringUnloadEvents which is the case here).
   // Close via WebContents for more authentic coverage (vs Widget::CloseNow()).
-  EXPECT_FALSE(web_dialog_delegate_destroyed_);
-  view_->web_contents()->Close();
-  EXPECT_TRUE(web_dialog_delegate_destroyed_);
+  view()->web_contents()->Close();
 
   // The close of the actual widget should happen asynchronously.
   EXPECT_FALSE(was_view_deleted());
@@ -285,14 +285,12 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, CloseParentWindow) {
   // TestWebDialogDelegate defaults to window-modal, so closing the browser
   // Window (as opposed to closing merely the tab) should close the dialog.
   EXPECT_EQ(ui::mojom::ModalType::kWindow,
-            view_->GetWidget()->widget_delegate()->GetModalType());
+            view()->GetWidget()->widget_delegate()->GetModalType());
 
   // Close the parent window. Tear down may happen asynchronously.
-  EXPECT_FALSE(web_dialog_delegate_destroyed_);
   EXPECT_FALSE(was_view_deleted());
   browser()->GetWindow()->Close();
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(web_dialog_delegate_destroyed_);
   EXPECT_TRUE(was_view_deleted());
 }
 
@@ -305,10 +303,9 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, CloseDialogOnEscapeEnabled) {
 
   // If ShouldCloseDialogOnEscape() is true, pressing Escape should close the
   // dialog.
-  delegate_->SetCloseOnEscape(true);
+  delegate_.SetCloseOnEscape(true);
   SimulateEscapeKey();
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(web_dialog_delegate_destroyed_);
   EXPECT_TRUE(was_view_deleted());
 }
 
@@ -320,10 +317,9 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, CloseDialogOnEscapeDisabled) {
       ui_test_utils::BROWSER_TEST_NO_WAIT);
 
   // If ShouldCloseDialogOnEscape() is false, pressing Escape does nothing.
-  delegate_->SetCloseOnEscape(false);
+  delegate_.SetCloseOnEscape(false);
   SimulateEscapeKey();
   base::RunLoop().RunUntilIdle();
-  EXPECT_FALSE(web_dialog_delegate_destroyed_);
   EXPECT_FALSE(was_view_deleted());
 }
 
@@ -333,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, CloseDialogOnEscapeDisabled) {
 // This is the regression test for crbug.com/523277481.
 IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest,
                        UnhandledEnterRespectsButtonFocus) {
-  views::FocusManager* focus_manager = view_->GetFocusManager();
+  views::FocusManager* focus_manager = view()->GetFocusManager();
   ASSERT_TRUE(focus_manager);
 
   ui::TestAcceleratorTarget target;
@@ -349,19 +345,19 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest,
 
   // When WebDialogView is focused, an unhandled Enter event fires the
   // accelerator.
-  focus_manager->SetFocusedView(view_);
-  EXPECT_EQ(view_, focus_manager->GetFocusedView());
-  view_->HandleKeyboardEvent(view_->web_contents(), event);
+  focus_manager->SetFocusedView(view());
+  EXPECT_EQ(view(), focus_manager->GetFocusedView());
+  view()->HandleKeyboardEvent(view()->web_contents(), event);
   EXPECT_EQ(1, target.accelerator_count());
 
   // After switching focus to a default button, an unhandled Enter event does
   // not fire the accelerator.
-  auto* button = view_->AddChildView(std::make_unique<views::LabelButton>(
+  auto* button = view()->AddChildView(std::make_unique<views::LabelButton>(
       views::Button::PressedCallback(), u"Confirm"));
   button->SetIsDefault(true);
   focus_manager->SetFocusedView(button);
   EXPECT_EQ(button, focus_manager->GetFocusedView());
-  view_->HandleKeyboardEvent(view_->web_contents(), event);
+  view()->HandleKeyboardEvent(view()->web_contents(), event);
   EXPECT_EQ(1, target.accelerator_count());
 }
 
@@ -373,5 +369,5 @@ IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest,
 #define MAYBE_TextInputViaKeyEvent TextInputViaKeyEvent
 #endif
 IN_PROC_BROWSER_TEST_F(WebDialogBrowserTest, MAYBE_TextInputViaKeyEvent) {
-  TestTextInputViaKeyEvent(view_->web_contents());
+  TestTextInputViaKeyEvent(view()->web_contents());
 }
