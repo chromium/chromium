@@ -33,10 +33,12 @@ class MockOutputApi(object):
     return self.PresubmitResult(message, 'Warning')
 
 class MockFile(object):
-  def __init__(self, local_path, new_contents, changed_lines=None):
+  def __init__(self, local_path, new_contents, changed_lines=None,
+               old_contents=None):
     self._local_path = local_path
     self._new_contents = new_contents
     self._changed_lines = changed_lines or []
+    self._old_contents = old_contents or []
 
   def LocalPath(self):
     return self._local_path
@@ -46,6 +48,9 @@ class MockFile(object):
 
   def ChangedContents(self):
     return self._changed_lines
+
+  def OldContents(self):
+    return self._old_contents
 
 class FeatureEngagementConstantsPresubmitTest(unittest.TestCase):
   FEATURE_CONSTANTS_PATH = (
@@ -418,6 +423,210 @@ class FeatureEngagementConstantsPresubmitTest(unittest.TestCase):
     self.assertEqual(1, len(results))
     self.assertEqual('Error', results[0].type)
     self.assertIn('if and only if window is 0', results[0].message)
+
+  def testNewFlagsHaveMetrics_AllFilesPresent(self):
+    input_api = MockInputApi()
+    input_api.files = [
+        MockFile(
+            'components/feature_engagement/public/feature_constants.h',
+            [],
+            [(10, 'FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHGoatTeleportationFeature);')],
+        ),
+        MockFile(
+            'components/feature_engagement/public/feature_constants.cc',
+            [],
+            [(10, 'BASE_FEATURE(kIPHGoatTeleportationFeature, "IPH_GoatTeleportation", '
+                  'base::FEATURE_ENABLED_BY_DEFAULT);')],
+        ),
+        MockFile(
+            'components/feature_engagement/public/feature_list.h',
+            [],
+            [(10, 'DEFINE_VARIATION_PARAM(kIPHGoatTeleportationFeature, '
+                  '"IPH_GoatTeleportation");'),
+             (15, 'VARIATION_ENTRY(kIPHGoatTeleportationFeature)')],
+        ),
+        MockFile(
+            'components/feature_engagement/public/feature_list.cc',
+            [],
+            [(10, '    &kIPHGoatTeleportationFeature,')],
+        ),
+        MockFile('tools/metrics/actions/actions.xml', []),
+        MockFile('tools/metrics/histograms/metadata/feature_engagement/histograms.xml', []),
+    ]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    errors = [r for r in results if r.type == 'Error']
+    self.assertEqual(0, len(errors))
+
+  def testNewFlagsHaveMetrics_MissingActionsXml(self):
+    input_api = MockInputApi()
+    input_api.files = [
+        MockFile(
+            'components/feature_engagement/public/feature_constants.h',
+            [],
+            [(10, 'FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHGoatTeleportationFeature);')],
+        ),
+        MockFile('tools/metrics/histograms/metadata/feature_engagement/histograms.xml', []),
+    ]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    errors = [r for r in results if r.type == 'Error']
+    self.assertEqual(1, len(errors))
+    self.assertIn('kIPHGoatTeleportationFeature', errors[0].message)
+    self.assertIn('tools/metrics/actions/actions.xml', errors[0].message)
+    self.assertNotIn('histograms.xml', errors[0].message.split('missing from this change:\n')[1].split('\n\n')[0])
+    self.assertIn('README.md#required-code-changes', errors[0].message)
+    self.assertIn('generate_iph_entry.py', errors[0].message)
+
+  def testNewFlagsHaveMetrics_MissingHistogramsXml(self):
+    input_api = MockInputApi()
+    input_api.files = [
+        MockFile(
+            'components/feature_engagement/public/feature_constants.cc',
+            [],
+            [(10, 'BASE_FEATURE(kIPHGoatTeleportationFeature, "IPH_GoatTeleportation", '
+                  'base::FEATURE_ENABLED_BY_DEFAULT);')],
+        ),
+        MockFile('tools/metrics/actions/actions.xml', []),
+    ]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    errors = [r for r in results if r.type == 'Error']
+    self.assertEqual(1, len(errors))
+    self.assertIn('kIPHGoatTeleportationFeature', errors[0].message)
+    self.assertIn('tools/metrics/histograms/metadata/feature_engagement/histograms.xml', errors[0].message)
+    self.assertNotIn('actions.xml', errors[0].message.split('missing from this change:\n')[1].split('\n\n')[0])
+    self.assertIn('README.md#required-code-changes', errors[0].message)
+    self.assertIn('generate_iph_entry.py', errors[0].message)
+
+  def testNewFlagsHaveMetrics_MissingBothXmlFiles(self):
+    input_api = MockInputApi()
+    input_api.files = [
+        MockFile(
+            'components/feature_engagement/public/feature_list.h',
+            [],
+            [(10, 'DEFINE_VARIATION_PARAM(kIPHGoatTeleportationFeature, "IPH_GoatTeleportation");')],
+        ),
+        MockFile(
+            'components/feature_engagement/public/feature_list.cc',
+            [],
+            [(10, '    &kIPHGoatTeleportationFeature,')],
+        ),
+    ]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    errors = [r for r in results if r.type == 'Error']
+    self.assertEqual(1, len(errors))
+    self.assertIn('kIPHGoatTeleportationFeature', errors[0].message)
+    self.assertIn('tools/metrics/actions/actions.xml', errors[0].message)
+    self.assertIn('tools/metrics/histograms/metadata/feature_engagement/histograms.xml', errors[0].message)
+    self.assertIn('README.md#required-code-changes', errors[0].message)
+    self.assertIn('generate_iph_entry.py', errors[0].message)
+
+  def testNewFlagsHaveMetrics_NoFlagAdded(self):
+    input_api = MockInputApi()
+    input_api.files = [
+        MockFile(
+            'components/feature_engagement/public/feature_list.h',
+            [],
+            [(10, '// Just a comment modification'),
+             (11, '/* Another comment */')],
+        ),
+    ]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    errors = [r for r in results if r.type == 'Error']
+    self.assertEqual(0, len(errors))
+
+  def testNewFlagsHaveMetrics_FeatureConfigurationsCcOnly(self):
+    input_api = MockInputApi()
+    input_api.files = [
+        MockFile(
+            'components/feature_engagement/public/feature_configurations.cc',
+            [],
+            [(10, 'if (kIPHGoatTeleportationFeature.name == feature->name) {'),
+             (11, '  return config;'),
+             (12, '}')],
+        ),
+    ]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    errors = [r for r in results if r.type == 'Error']
+    self.assertEqual(0, len(errors))
+
+  def testNewFlagsHaveMetrics_MultiLineFeatureDeclaration(self):
+    input_api = MockInputApi()
+    input_api.files = [
+        MockFile(
+            'components/feature_engagement/public/feature_constants.h',
+            [],
+            [(10, 'FEATURE_CONSTANTS_DECLARE_FEATURE('),
+             (11, '    kIPHGoatTeleportationFeature);')],
+        ),
+    ]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    errors = [r for r in results if r.type == 'Error']
+    self.assertEqual(1, len(errors))
+    self.assertIn('kIPHGoatTeleportationFeature', errors[0].message)
+    self.assertIn('tools/metrics/actions/actions.xml', errors[0].message)
+    self.assertIn('tools/metrics/histograms/metadata/feature_engagement/histograms.xml', errors[0].message)
+
+  def testNewFlagsHaveMetrics_ExistingFlagReorderedOrMoved(self):
+    input_api = MockInputApi()
+    input_api.files = [
+        MockFile(
+            'components/feature_engagement/public/feature_constants.h',
+            new_contents=[
+                'FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHExistingFeature);',
+            ],
+            changed_lines=[
+                (20, 'FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHExistingFeature);'),
+            ],
+            old_contents=[
+                '// Some comment',
+                'FEATURE_CONSTANTS_DECLARE_FEATURE(kIPHExistingFeature);',
+            ],
+        ),
+        MockFile(
+            'components/feature_engagement/public/feature_constants.cc',
+            new_contents=[
+                'BASE_FEATURE(kIPHExistingFeature, "IPH_Existing", '
+                'base::FEATURE_ENABLED_BY_DEFAULT);',
+            ],
+            changed_lines=[
+                (25, 'BASE_FEATURE(kIPHExistingFeature, "IPH_Existing", '
+                     'base::FEATURE_ENABLED_BY_DEFAULT);'),
+            ],
+            old_contents=[
+                'BASE_FEATURE(kIPHExistingFeature, "IPH_Existing", '
+                'base::FEATURE_ENABLED_BY_DEFAULT);',
+            ],
+        ),
+        MockFile(
+            'components/feature_engagement/public/feature_list.h',
+            new_contents=[
+                'DEFINE_VARIATION_PARAM(kIPHExistingFeature, "IPH_Existing");',
+                'VARIATION_ENTRY(kIPHExistingFeature)',
+            ],
+            changed_lines=[
+                (30, 'DEFINE_VARIATION_PARAM(kIPHExistingFeature, "IPH_Existing");'),
+                (35, 'VARIATION_ENTRY(kIPHExistingFeature)'),
+            ],
+            old_contents=[
+                'DEFINE_VARIATION_PARAM(kIPHExistingFeature, "IPH_Existing");',
+                'VARIATION_ENTRY(kIPHExistingFeature)',
+            ],
+        ),
+        MockFile(
+            'components/feature_engagement/public/feature_list.cc',
+            new_contents=[
+                '    &kIPHExistingFeature,',
+            ],
+            changed_lines=[
+                (40, '    &kIPHExistingFeature,'),
+            ],
+            old_contents=[
+                '    &kIPHExistingFeature,',
+            ],
+        ),
+    ]
+    results = PRESUBMIT.CheckChangeOnUpload(input_api, MockOutputApi())
+    errors = [r for r in results if r.type == 'Error']
+    self.assertEqual(0, len(errors))
 
 if __name__ == '__main__':
   unittest.main()

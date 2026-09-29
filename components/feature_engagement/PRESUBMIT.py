@@ -22,6 +22,7 @@ def _CommonChecks(input_api, output_api):
   results.extend(_CheckNoRedundantNamespaceQualifier(input_api, output_api))
   results.extend(_CheckAlwaysTrueInUsedOrTrigger(input_api, output_api))
   results.extend(_CheckEventConfigComparatorAndWindow(input_api, output_api))
+  results.extend(_CheckNewFlagsHaveMetrics(input_api, output_api))
   return results
 
 def _CheckFeatureListSorting(input_api, output_api):
@@ -324,3 +325,79 @@ def _CheckEventConfigComparatorAndWindow(input_api, output_api):
           results.append(output_api.PresubmitError(message))
 
   return results
+
+
+def _CheckNewFlagsHaveMetrics(input_api, output_api):
+  """Checks that adding new feature flags also updates actions.xml and histograms.xml."""
+  FEATURE_CONSTANTS_H_PATH = (
+      'components/feature_engagement/public/feature_constants.h')
+  FEATURE_CONSTANTS_CC_PATH = (
+      'components/feature_engagement/public/feature_constants.cc')
+  FEATURE_LIST_H_PATH = 'components/feature_engagement/public/feature_list.h'
+  FEATURE_LIST_CC_PATH = 'components/feature_engagement/public/feature_list.cc'
+  ACTIONS_XML_PATH = 'tools/metrics/actions/actions.xml'
+  HISTOGRAMS_XML_PATH = (
+      'tools/metrics/histograms/metadata/feature_engagement/histograms.xml')
+
+  flag_patterns = {
+      FEATURE_CONSTANTS_H_PATH: input_api.re.compile(
+          r'\b(?:FEATURE_CONSTANTS_DECLARE_FEATURE|BASE_DECLARE_FEATURE)\s*\(\s*(k\w+)'
+      ),
+      FEATURE_CONSTANTS_CC_PATH: input_api.re.compile(
+          r'\bBASE_FEATURE\s*\(\s*(k\w+)'
+      ),
+      FEATURE_LIST_H_PATH: input_api.re.compile(
+          r'\b(?:DEFINE_VARIATION_PARAM|VARIATION_ENTRY)\s*\(\s*(k\w+)'
+      ),
+      FEATURE_LIST_CC_PATH: input_api.re.compile(
+          r'&\s*(k\w+)'
+      ),
+  }
+
+  added_flags = set()
+  for f in input_api.AffectedFiles():
+    local_path = f.LocalPath()
+    pattern = flag_patterns.get(local_path)
+    if not pattern:
+      continue
+
+    old_contents_text = '\n'.join(f.OldContents())
+    for _, stmt in _IterChangedStatements(input_api, f):
+      for match in pattern.finditer(stmt):
+        flag_name = match.group(1)
+        if flag_name == 'kIPHDummyFeature':
+          continue
+        # Skip if the flag already existed anywhere in the file before this CL.
+        if input_api.re.search(
+            r'\b' + input_api.re.escape(flag_name) + r'\b', old_contents_text):
+          continue
+        added_flags.add(flag_name)
+
+  if not added_flags:
+    return []
+
+  affected_paths = {f.LocalPath() for f in input_api.AffectedFiles()}
+  missing_files = []
+  if ACTIONS_XML_PATH not in affected_paths:
+    missing_files.append(ACTIONS_XML_PATH)
+  if HISTOGRAMS_XML_PATH not in affected_paths:
+    missing_files.append(HISTOGRAMS_XML_PATH)
+
+  if not missing_files:
+    return []
+
+  flag_list_str = ', '.join(sorted(added_flags))
+  missing_files_str = '\n  - '.join(missing_files)
+  message = (
+      f'It looks like you are adding one or more new feature flags '
+      f'({flag_list_str}), but the following required metric files are missing '
+      f'from this change:\n'
+      f'  - {missing_files_str}\n\n'
+      f'Whenever a new Feature Engagement (IPH) flag is added, you must also '
+      f'update the corresponding entries in actions.xml and histograms.xml.\n\n'
+      f'For details on the required code and UMA changes, see:\n'
+      f'https://chromium.googlesource.com/chromium/src/+/main/components/feature_engagement/README.md#required-code-changes\n\n'
+      f'Tip: You can use the helper script `python3 tools/feature_engagement/generate_iph_entry.py` '
+      f'to generate all required boilerplate code, entries, and UMA configurations automatically.'
+  )
+  return [output_api.PresubmitError(message)]
