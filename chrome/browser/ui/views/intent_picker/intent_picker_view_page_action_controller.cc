@@ -16,9 +16,22 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 
+DEFINE_USER_DATA(IntentPickerViewPageActionController);
+
 IntentPickerViewPageActionController::IntentPickerViewPageActionController(
     tabs::TabInterface& tab_interface)
-    : tab_interface_(tab_interface) {}
+    : tab_interface_(tab_interface),
+      scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
+}
+
+IntentPickerViewPageActionController::~IntentPickerViewPageActionController() =
+    default;
+
+// static
+IntentPickerViewPageActionController*
+IntentPickerViewPageActionController::From(tabs::TabInterface* tab) {
+  return tab ? Get(tab->GetUnownedUserDataHost()) : nullptr;
+}
 
 void IntentPickerViewPageActionController::UpdatePageActionVisibility(
     bool should_show_icon,

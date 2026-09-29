@@ -333,7 +333,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
 
   if (page_action_controller_->ActionExists(kActionShowIntentPicker)) {
     intent_picker_view_page_action_controller_ =
-        std::make_unique<IntentPickerViewPageActionController>(tab);
+        GetUserDataFactory()
+            .CreateInstance<IntentPickerViewPageActionController>(tab, tab);
   }
 
   if (page_action_controller_->ActionExists(kActionShowFileSystemAccess)) {

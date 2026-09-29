@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "components/tabs/public/tab_interface.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace ui {
 class ImageModel;
@@ -25,13 +26,16 @@ class IntentPickerViewPageActionController {
   explicit IntentPickerViewPageActionController(
       tabs::TabInterface& tab_interface);
 
-  ~IntentPickerViewPageActionController() = default;
+  ~IntentPickerViewPageActionController();
 
   // Disallow copies
   IntentPickerViewPageActionController(
       const IntentPickerViewPageActionController&) = delete;
   IntentPickerViewPageActionController& operator=(
       const IntentPickerViewPageActionController&) = delete;
+
+  DECLARE_USER_DATA(IntentPickerViewPageActionController);
+  static IntentPickerViewPageActionController* From(tabs::TabInterface* tab);
 
   // Updates the visibility of the Intent Picker icon and suggestion chip.
   // If should_show_icon is true, the icon and chip are shown.
@@ -44,6 +48,8 @@ class IntentPickerViewPageActionController {
   // Hides the Intent Picker page action icon and closes any associated bubble.
   void HideIcon();
   const raw_ref<tabs::TabInterface> tab_interface_;
+  ui::ScopedUnownedUserData<IntentPickerViewPageActionController>
+      scoped_unowned_user_data_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_INTENT_PICKER_INTENT_PICKER_VIEW_PAGE_ACTION_CONTROLLER_H_

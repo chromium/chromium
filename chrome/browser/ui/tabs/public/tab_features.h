@@ -396,11 +396,6 @@ class TabFeatures {
     return js_optimizations_page_action_controller_.get();
   }
 
-  IntentPickerViewPageActionController*
-  intent_picker_view_page_action_controller() {
-    return intent_picker_view_page_action_controller_.get();
-  }
-
   FileSystemAccessPageActionController*
   file_system_access_page_action_controller() {
     return file_system_access_page_action_controller_.get();

@@ -10,6 +10,7 @@ source_set("intent_picker_page_action") {
   public_deps = [
     "//base",
     "//chrome/browser/ui/tabs:tabs_public",
+    "//ui/base/unowned_user_data",
   ]
 
   deps = [

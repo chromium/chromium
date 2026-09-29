@@ -594,11 +594,9 @@ void IntentPickerTabHelper::OnWebAppInstallManagerDestroyed() {
 
 void IntentPickerTabHelper::UpdatePageAction(tabs::TabInterface* tab_interface,
                                              bool show_icon) {
-  if (auto* const tab_features = tab_interface->GetTabFeatures()) {
-    if (auto* controller =
-            tab_features->intent_picker_view_page_action_controller()) {
-      controller->UpdatePageActionVisibility(show_icon, app_icon(),
-                                             ShouldShowExpandedChip());
-    }
+  if (auto* controller =
+          IntentPickerViewPageActionController::From(tab_interface)) {
+    controller->UpdatePageActionVisibility(show_icon, app_icon(),
+                                           ShouldShowExpandedChip());
   }
 }
