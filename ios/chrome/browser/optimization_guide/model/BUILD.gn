@@ -66,6 +66,7 @@ source_set("model") {
     "//ios/web",
     "//ios/web/public",
     "//ios/web/public:web_state_observer",
+    "//services/network/public/cpp",
   ]
 
   if (build_with_model_execution) {

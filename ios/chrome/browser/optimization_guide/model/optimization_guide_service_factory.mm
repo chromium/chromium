@@ -70,8 +70,11 @@ std::unique_ptr<KeyedService> BuildOptimizationGuideService(
       BrowserListFactory::GetForProfile(profile),
       GetApplicationContext()->GetSharedURLLoaderFactory(),
       IdentityManagerFactory::GetForProfile(profile), std::move(delegate),
-      base::BindRepeating(&ProfileIOS::GetNetworkContext,
-                          base::Unretained(profile)));
+      base::BindRepeating(
+          [](base::WeakPtr<ProfileIOS> profile) {
+            return profile ? profile->GetNetworkContext() : nullptr;
+          },
+          profile->AsWeakPtr()));
 
   service->DoFinalInit(
       BackgroundDownloadServiceFactory::GetForProfile(profile));
