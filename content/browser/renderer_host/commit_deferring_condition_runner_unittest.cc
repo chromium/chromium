@@ -4,6 +4,7 @@
 
 #include "content/browser/renderer_host/commit_deferring_condition_runner.h"
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/commit_deferring_condition.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_renderer_host.h"
@@ -31,6 +32,9 @@ class CommitDeferringConditionRunnerTest
 
   CommitDeferringConditionRunner* runner() { return runner_.get(); }
 
+ protected:
+  std::unique_ptr<CommitDeferringConditionRunner> runner_;
+
  private:
   // CommitDeferringConditionRunner::Delegate:
   void OnCommitDeferringConditionChecksComplete(
@@ -43,7 +47,6 @@ class CommitDeferringConditionRunnerTest
     was_delegate_notified_ = true;
   }
 
-  std::unique_ptr<CommitDeferringConditionRunner> runner_;
   bool was_delegate_notified_ = false;
 };
 
@@ -221,6 +224,76 @@ TEST_F(CommitDeferringConditionRunnerTest, MultipleConditionsWithCancelled) {
   EXPECT_TRUE(condition2.WasInvoked());
   EXPECT_FALSE(condition3.WasInvoked());
   EXPECT_FALSE(is_deferring());
+}
+
+class SynchronousResumeCondition : public CommitDeferringCondition {
+ public:
+  explicit SynchronousResumeCondition(NavigationHandle& handle,
+                                      bool* was_invoked_ptr)
+      : CommitDeferringCondition(handle), was_invoked_ptr_(was_invoked_ptr) {}
+  Result WillCommitNavigation(base::OnceClosure resume_closure) override {
+    *was_invoked_ptr_ = true;
+    std::move(resume_closure).Run();
+    return Result::kDefer;
+  }
+  const char* TraceEventName() const override {
+    return "SynchronousResumeCondition";
+  }
+
+ private:
+  raw_ptr<bool> was_invoked_ptr_;
+};
+
+// Test that if a condition calls the resume closure synchronously, the runner
+// correctly handles it and proceeds to the next condition or notified the
+// delegate.
+// Regression test for https://crbug.com/502293787.
+TEST_F(CommitDeferringConditionRunnerTest, BasicSyncResume) {
+  MockNavigationHandle handle;
+  bool was_invoked = false;
+  auto condition =
+      std::make_unique<SynchronousResumeCondition>(handle, &was_invoked);
+  runner()->AddConditionForTesting(std::move(condition));
+
+  MockHandleConditionWrapper condition2(
+      CommitDeferringCondition::Result::kProceed);
+  runner()->AddConditionForTesting(condition2.PassToDelegate());
+
+  runner()->ProcessChecks();
+  EXPECT_TRUE(was_delegate_notified());
+  EXPECT_TRUE(was_invoked);
+  EXPECT_FALSE(is_deferring());
+}
+
+class DeletingCondition : public CommitDeferringCondition {
+ public:
+  DeletingCondition(NavigationHandle& handle,
+                    base::OnceClosure delete_runner_callback)
+      : CommitDeferringCondition(handle),
+        delete_runner_callback_(std::move(delete_runner_callback)) {}
+  Result WillCommitNavigation(base::OnceClosure resume_closure) override {
+    std::move(delete_runner_callback_).Run();
+    return Result::kCancelled;
+  }
+  const char* TraceEventName() const override { return "DeletingCondition"; }
+
+ private:
+  base::OnceClosure delete_runner_callback_;
+};
+
+// Test that if a condition deletes the runner during WillCommitNavigation, the
+// runner handles it safely.
+TEST_F(CommitDeferringConditionRunnerTest, DeleteRunnerDuringCall) {
+  MockNavigationHandle handle;
+  auto condition = std::make_unique<DeletingCondition>(
+      handle, base::BindOnce(
+                  [](std::unique_ptr<CommitDeferringConditionRunner>* runner) {
+                    runner->reset();
+                  },
+                  &runner_));
+  runner()->AddConditionForTesting(std::move(condition));
+  runner()->ProcessChecks();
+  EXPECT_EQ(runner(), nullptr);
 }
 
 }  // namespace content
