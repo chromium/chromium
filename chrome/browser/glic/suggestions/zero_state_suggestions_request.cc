@@ -20,7 +20,6 @@
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/web_contents.h"
 
@@ -174,18 +173,13 @@ void ZeroStateSuggestionsRequest::OnAllPageContextExtracted(
   //
   // This account check is done before the kZeroStateSuggestionsUsePrivateAi is
   // read, so that the experiment flag is only read for affected users.
-  bool account_can_use_private_ai = true;
-  if (base::FeatureList::IsEnabled(
-          switches::kGlicEligibilitySeparateAccountCapability)) {
-    CoreAccountInfo primary_account =
-        identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-    AccountInfo extended_info =
-        identity_manager_->FindExtendedAccountInfoByAccountId(
-            primary_account.account_id);
-    account_can_use_private_ai =
-        GlicEnabling::CanUseAdultFeatures(
-            extended_info.GetAccountCapabilities());
-  }
+  CoreAccountInfo primary_account =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  AccountInfo extended_info =
+      identity_manager_->FindExtendedAccountInfoByAccountId(
+          primary_account.account_id);
+  const bool account_can_use_private_ai =
+      GlicEnabling::CanUseAdultFeatures(extended_info.GetAccountCapabilities());
 
   optimization_guide::ModelExecutionServiceType service_type =
       account_can_use_private_ai &&

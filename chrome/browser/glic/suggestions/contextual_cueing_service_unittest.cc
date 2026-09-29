@@ -17,17 +17,14 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/optimization_guide/core/model_execution/remote_model_execution_common.h"
 #include "components/optimization_guide/core/optimization_guide_permissions_util.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -443,7 +440,7 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
     service_ = std::make_unique<ContextualCueingService>(
         /*page_content_extraction_service=*/nullptr,
         mock_optimization_guide_keyed_service_, loading_predictor_.get(),
-        IdentityManagerFactory::GetForProfile(&profile_), pref_service_.get(),
+        identity_manager(), pref_service_.get(),
         /*template_url_service=*/nullptr);
   }
 
@@ -492,7 +489,9 @@ class ContextualCueingServiceTestZeroStateSuggestions : public testing::Test {
 
   content::WebContents* web_contents() { return web_contents_.get(); }
 
-  Profile* profile() { return &profile_; }
+  signin::IdentityManager* identity_manager() {
+    return identity_test_env_.identity_manager();
+  }
 
   PrefService* pref_service() { return pref_service_.get(); }
 
@@ -538,10 +537,7 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
 TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
        UsesDefaultAiWhenFeatureEnabledButAccountLacksCapability) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {switches::kGlicEligibilitySeparateAccountCapability,
-       kZeroStateSuggestionsUsePrivateAi},
-      {});
+  feature_list.InitAndEnableFeature(kZeroStateSuggestionsUsePrivateAi);
   SetAccountCapability(/*can_use_model_execution=*/false);
   SetGlicTabContextEnabled(true);
   InitializeContextualCueingService();
@@ -614,7 +610,7 @@ TEST_F(ContextualCueingServiceTestZeroStateSuggestions,
   auto local_service = std::make_unique<ContextualCueingService>(
       /*page_content_extraction_service=*/nullptr,
       /*optimization_guide_keyed_service=*/nullptr, loading_predictor(),
-      IdentityManagerFactory::GetForProfile(profile()), pref_service(),
+      identity_manager(), pref_service(),
       /*template_url_service=*/nullptr);
 
   // Verify PrepareToFetch does not crash.
