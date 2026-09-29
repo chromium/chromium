@@ -107,6 +107,23 @@ gpu::SharedImageInterface* GetSharedImageInterface() {
   return context_provider->SharedImageInterface();
 }
 
+bool IsSupportedFormat(viz::SharedImageFormat format) {
+  if (format == viz::SinglePlaneFormat::kRGBA_8888 ||
+      format == viz::SinglePlaneFormat::kBGRA_8888 ||
+      format == viz::SinglePlaneFormat::kRGBX_8888 ||
+      format == viz::SinglePlaneFormat::kBGRX_8888 ||
+      format == viz::SinglePlaneFormat::kRGBA_1010102 ||
+      format == viz::SinglePlaneFormat::kBGRA_1010102 ||
+      format == viz::SinglePlaneFormat::kBGR_565 ||
+      format == viz::SinglePlaneFormat::kRGBA_F16 ||
+      format == viz::MultiPlaneFormat::kNV12 ||
+      format == viz::MultiPlaneFormat::kYV12 ||
+      format == viz::MultiPlaneFormat::kP010) {
+    return true;
+  }
+  return false;
+}
+
 perfetto::NamedTrack GetTrack(const void* buffer_id) {
   return perfetto::NamedTrack(kBufferInUse,
                               reinterpret_cast<uintptr_t>(buffer_id));
@@ -601,6 +618,10 @@ std::unique_ptr<Buffer> Buffer::CreateBufferFromGMBHandle(
     bool use_zero_copy,
     bool is_overlay_candidate,
     bool y_invert) {
+  if (!IsSupportedFormat(format)) {
+    DLOG(ERROR) << "Format " << format.ToString() << " is not supported.";
+    return nullptr;
+  }
   // If format is true multiplanar format, we prefer external sampler on
   // ChromeOS.
   if (format.is_multi_plane()) {
@@ -620,6 +641,10 @@ std::unique_ptr<Buffer> Buffer::CreateBuffer(
     gpu::SurfaceHandle surface_handle,
     base::WaitableEvent* shutdown_event,
     bool is_overlay_candidate) {
+  if (!IsSupportedFormat(format)) {
+    DLOG(ERROR) << "Format " << format.ToString() << " is not supported.";
+    return nullptr;
+  }
   // If format is true multiplanar format, we prefer external sampler on
   // ChromeOS.
   if (format.is_multi_plane()) {
