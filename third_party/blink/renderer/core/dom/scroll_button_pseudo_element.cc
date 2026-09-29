@@ -29,8 +29,12 @@
 namespace blink {
 
 PseudoId ScrollButtonPseudoElement::PseudoIdFromScrollButtonArgument(
-    const AtomicString& argument,
+    const AtomicString& raw_argument,
     const ComputedStyle& originating_element_style) {
+  // The selector parser keeps the argument as written (e.g. "UP"), but the
+  // direction keywords are ASCII case-insensitive.
+  const AtomicString argument = raw_argument.ToAsciiLower();
+
   DEFINE_STATIC_LOCAL(AtomicString, wildcard, ("*"));
   DEFINE_STATIC_LOCAL(AtomicString, block_start, ("block-start"));
   DEFINE_STATIC_LOCAL(AtomicString, inline_start, ("inline-start"));

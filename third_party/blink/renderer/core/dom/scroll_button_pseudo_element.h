@@ -14,7 +14,7 @@ class ScrollButtonPseudoElement : public PseudoElement,
                                   public PostLayoutSnapshotClient {
  public:
   static PseudoId PseudoIdFromScrollButtonArgument(
-      const AtomicString& argument,
+      const AtomicString& raw_argument,
       const ComputedStyle& originating_element_style);
 
   ScrollButtonPseudoElement(Element* originating_element, PseudoId pseudo_id);
