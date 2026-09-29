@@ -1288,8 +1288,6 @@ HRESULT MediaFoundationRenderer::UpdateVideoStream(const gfx::Size rect_size) {
     return S_OK;
   }
 
-  current_video_rect_size_ = rect_size;
-
   ComPtr<IMFMediaEngineEx> mf_media_engine_ex;
   RETURN_IF_FAILED(mf_media_engine_.As(&mf_media_engine_ex));
 
@@ -1303,6 +1301,10 @@ HRESULT MediaFoundationRenderer::UpdateVideoStream(const gfx::Size rect_size) {
   // rect set in SetWindowPos.
   RETURN_IF_FAILED(mf_media_engine_ex->UpdateVideoStream(
       /*pSrc=*/nullptr, &dest_rect, /*pBorderClr=*/nullptr));
+
+  // Cache only if size is applied. A failed update should not make a later
+  // request for the same size report success without updating Media Engine.
+  current_video_rect_size_ = rect_size;
 
   // Set the start time for the rendered video frame detection.
   RestartRenderedVideoFrameDetectionTimerInNotReported();
