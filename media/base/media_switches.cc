@@ -369,6 +369,12 @@ BASE_FEATURE(kAudioFocusDuckFlash,
 #endif
 );
 
+// Immediately pauses AudioRendererMixer's underlying output sink when all
+// inputs are removed on explicit player pauses instead of waiting for the
+// 10-second mixer pause delay.
+BASE_FEATURE(kAudioRendererMixerImmediatePause,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Allows the AutoPictureInPictureTabHelper to automatically enter
 // picture-in-picture when a webpage is occluded by another window.
 BASE_FEATURE(kAutoPictureInPictureOnWindowOccluded,

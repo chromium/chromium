@@ -7,11 +7,13 @@
 #include <cmath>
 
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
+#include "media/base/media_switches.h"
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer_input.h"
 
 namespace blink {
@@ -34,6 +36,9 @@ AudioRendererMixer::AudioRendererMixer(
   // playbacks after some time elapses.
   RenderCallback* callback = this;
   audio_sink_->Initialize(output_params, callback);
+  // TODO(crbug.com/565882940): Consider dropping auto-start. When no input
+  // ever calls Play() (e.g. media that is loaded but not playing), the output
+  // stream pumps silence until the delayed pause kicks in.
   audio_sink_->Start();
 }
 
@@ -81,7 +86,8 @@ void AudioRendererMixer::AddMixerInput(
 
 void AudioRendererMixer::RemoveMixerInput(
     const media::AudioParameters& input_params,
-    media::AudioConverter::InputCallback* input) {
+    media::AudioConverter::InputCallback* input,
+    media::AudioRendererSink::PauseReason pause_reason) {
   base::AutoLock auto_lock(lock_);
 
   int input_sample_rate = input_params.sample_rate();
@@ -96,6 +102,16 @@ void AudioRendererMixer::RemoveMixerInput(
       aggregate_converter_.RemoveInput(converter->second.get());
       converters_.erase(converter);
     }
+  }
+
+  if (pause_reason == media::AudioRendererSink::PauseReason::kPlaybackPaused &&
+      aggregate_converter_.empty() && playing_ &&
+      base::FeatureList::IsEnabled(media::kAudioRendererMixerImmediatePause)) {
+    // On explicit playback pauses (`kPlaybackPaused`), immediately pause the
+    // underlying output sink once all active mixer inputs have been removed so
+    // the OS audio stream does not remain active pumping silence.
+    audio_sink_->Pause(media::AudioRendererSink::PauseReason::kPlaybackPaused);
+    playing_ = false;
   }
 }
 

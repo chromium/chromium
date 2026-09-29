@@ -13,10 +13,12 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_latency.h"
 #include "media/base/fake_audio_render_callback.h"
+#include "media/base/media_switches.h"
 #include "media/base/mock_audio_renderer_sink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -100,6 +102,7 @@ class AudioRendererMixerInputTest : public testing::Test,
     auto sink = base::MakeRefCounted<media::MockAudioRendererSink>(
         std::string(device_id), status);
     EXPECT_CALL(*sink, Stop());
+    last_created_sink_ = sink;
     return sink;
   }
 
@@ -126,6 +129,7 @@ class AudioRendererMixerInputTest : public testing::Test,
   media::AudioParameters audio_parameters_;
   std::array<std::unique_ptr<AudioRendererMixer>, 2> mixers_;
   scoped_refptr<AudioRendererMixerInput> mixer_input_;
+  scoped_refptr<media::MockAudioRendererSink> last_created_sink_;
   std::unique_ptr<media::FakeAudioRenderCallback> fake_callback_;
   std::unique_ptr<media::AudioBus> audio_bus_;
 };
@@ -483,6 +487,52 @@ TEST_F(AudioRendererMixerInputTest, SwitchOutputDeviceEmptyDeviceId) {
   testing::Mock::VerifyAndClear(this);
 
   mixer_input_->Stop();
+}
+
+// Test that Pause(kPlaybackPaused) immediately pauses the underlying sink when
+// the input is playing, whereas Pause(kWaitingForData) retains mixer playback.
+TEST_F(AudioRendererMixerInputTest, PauseImmediateAndDelayed) {
+  base::test::ScopedFeatureList feature_list(
+      media::kAudioRendererMixerImmediatePause);
+
+  // gMock requires expectations to be set before a mock is passed to an API,
+  // so set them before Start() hands the sink to the mixer.
+  ASSERT_TRUE(last_created_sink_);
+  int pause_count = 0;
+  int play_count = 0;
+  EXPECT_CALL(*last_created_sink_,
+              Pause(media::AudioRendererSink::PauseReason::kPlaybackPaused))
+      .WillRepeatedly([&pause_count]() { ++pause_count; });
+  EXPECT_CALL(*last_created_sink_, Play()).WillRepeatedly([&play_count]() {
+    ++play_count;
+  });
+
+  mixer_input_->Initialize(audio_parameters_, fake_callback_.get());
+  mixer_input_->Start();
+
+  // Calling Pause() after Start() but before Play() (as in
+  // MaybeStartRealSink()) is a no-op; the auto-started mixer keeps running
+  // until its delayed pause kicks in.
+  mixer_input_->Pause(media::AudioRendererSink::PauseReason::kPlaybackPaused);
+  EXPECT_EQ(0, pause_count);
+
+  // The mixer is still playing, so adding the input does not call Play().
+  mixer_input_->Play();
+  EXPECT_EQ(0, play_count);
+
+  // Pause(kWaitingForData) should remove the input without immediately pausing
+  // the underlying sink.
+  mixer_input_->Pause(media::AudioRendererSink::PauseReason::kWaitingForData);
+  EXPECT_EQ(0, pause_count);
+
+  // Playing again and calling Pause(kPlaybackPaused) should immediately pause
+  // the underlying sink.
+  mixer_input_->Play();
+  mixer_input_->Pause(media::AudioRendererSink::PauseReason::kPlaybackPaused);
+  EXPECT_EQ(1, pause_count);
+
+  mixer_input_->Stop();
+  EXPECT_EQ(1, pause_count);
 }
 
 }  // namespace blink

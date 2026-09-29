@@ -17,11 +17,13 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
 #include "media/base/fake_audio_render_callback.h"
+#include "media/base/media_switches.h"
 #include "media/base/mock_audio_renderer_sink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -77,10 +79,14 @@ class AudioRendererMixerTest
 
     sink_ = base::MakeRefCounted<media::MockAudioRendererSink>();
     EXPECT_CALL(*sink_.get(), Start());
-    EXPECT_CALL(*sink_.get(), Stop());
 
     mixer_ = std::make_unique<AudioRendererMixer>(output_parameters_, sink_);
     mixer_callback_ = sink_->callback();
+
+    // gMock requires expectations to be set before the mock is called. Verify
+    // and clear expectations from mixer construction so each test starts with
+    // a clean `sink_`. Stop() is expected in TearDown().
+    testing::Mock::VerifyAndClearExpectations(sink_.get());
 
     audio_bus_ = media::AudioBus::Create(output_parameters_);
     expected_audio_bus_ = media::AudioBus::Create(output_parameters_);
@@ -96,6 +102,13 @@ class AudioRendererMixerTest
 
   AudioRendererMixerTest(const AudioRendererMixerTest&) = delete;
   AudioRendererMixerTest& operator=(const AudioRendererMixerTest&) = delete;
+
+  void TearDown() override {
+    // Verify and clear expectations left by the test before expecting Stop(),
+    // which `mixer_` calls on the sink when destroyed after TearDown().
+    testing::Mock::VerifyAndClearExpectations(sink_.get());
+    EXPECT_CALL(*sink_.get(), Stop());
+  }
 
   AudioRendererMixer* GetMixer(const LocalFrameToken&,
                                const FrameToken&,
@@ -417,7 +430,7 @@ class AudioRendererMixerTest
  protected:
   virtual ~AudioRendererMixerTest() = default;
 
-  base::test::TaskEnvironment task_env_;
+  base::test::SingleThreadTaskEnvironment task_env_;
   scoped_refptr<media::MockAudioRendererSink> sink_;
   std::unique_ptr<AudioRendererMixer> mixer_;
   raw_ptr<media::AudioRendererSink::RenderCallback> mixer_callback_;
@@ -556,7 +569,8 @@ TEST_P(AudioRendererMixerBehavioralTest, OnRenderErrorPausedInput) {
 }
 
 // Ensure the physical stream is paused after a certain amount of time with no
-// inputs playing.  The test will hang if the behavior is incorrect.
+// inputs playing when paused with delay. The test will hang if the behavior is
+// incorrect.
 TEST_P(AudioRendererMixerBehavioralTest, MixerPausesStream) {
   const base::TimeDelta kPauseTime = base::Milliseconds(500);
   // This value can't be too low or valgrind, tsan will timeout on the bots.
@@ -568,8 +582,7 @@ TEST_P(AudioRendererMixerBehavioralTest, MixerPausesStream) {
       base::WaitableEvent::InitialState::NOT_SIGNALED);
   EXPECT_CALL(*sink_.get(),
               Pause(media::AudioRendererSink::PauseReason::kPlaybackPaused))
-      .Times(2)
-      .WillRepeatedly(SignalEvent(&pause_event));
+      .WillOnce(SignalEvent(&pause_event));
   InitializeInputs(1);
 
   // Ensure never playing the input results in a sink pause.
@@ -581,16 +594,24 @@ TEST_P(AudioRendererMixerBehavioralTest, MixerPausesStream) {
     base::PlatformThread::Sleep(kSleepTime);
     ASSERT_TRUE(base::TimeTicks::Now() - start_time < kTestTimeout);
   }
+  testing::Mock::VerifyAndClearExpectations(sink_.get());
   pause_event.Reset();
 
   // Playing the input for the first time should cause a sink play.
   mixer_inputs_[0]->Start();
   EXPECT_CALL(*sink_.get(), Play());
+  EXPECT_CALL(*sink_.get(),
+              Pause(media::AudioRendererSink::PauseReason::kPlaybackPaused))
+      .WillOnce(SignalEvent(&pause_event));
   mixer_inputs_[0]->Play();
-  mixer_inputs_[0]->Pause(
-      media::AudioRendererSink::PauseReason::kPlaybackPaused);
 
-  // Ensure once the input is paused the sink eventually pauses.
+  // Pause(kWaitingForData) should retain the pause delay before pausing the
+  // sink.
+  mixer_inputs_[0]->Pause(
+      media::AudioRendererSink::PauseReason::kWaitingForData);
+  EXPECT_FALSE(pause_event.IsSignaled());
+
+  // Ensure once the input is paused with delay the sink eventually pauses.
   start_time = base::TimeTicks::Now();
   while (!pause_event.IsSignaled()) {
     mixer_callback_->Render(base::TimeDelta(), base::TimeTicks::Now(), {},
@@ -599,6 +620,99 @@ TEST_P(AudioRendererMixerBehavioralTest, MixerPausesStream) {
     ASSERT_TRUE(base::TimeTicks::Now() - start_time < kTestTimeout);
   }
 
+  mixer_inputs_[0]->Stop();
+}
+
+// Verify that an explicit Pause(kPlaybackPaused) immediately pauses the sink
+// with 0ms delay.
+TEST_P(AudioRendererMixerBehavioralTest,
+       MixerPausesStreamImmediatelyOnExplicitPause) {
+  base::test::ScopedFeatureList feature_list(
+      media::kAudioRendererMixerImmediatePause);
+  InitializeInputs(1);
+
+  mixer_inputs_[0]->Start();
+  mixer_inputs_[0]->Play();
+
+  // Explicit Pause(kPlaybackPaused) should pause the sink synchronously
+  // without waiting for Render() callbacks or pause_delay_.
+  EXPECT_CALL(*sink_.get(),
+              Pause(media::AudioRendererSink::PauseReason::kPlaybackPaused));
+  mixer_inputs_[0]->Pause(
+      media::AudioRendererSink::PauseReason::kPlaybackPaused);
+  testing::Mock::VerifyAndClearExpectations(sink_.get());
+
+  // Resuming playback should call Play() on the sink.
+  EXPECT_CALL(*sink_.get(), Play());
+  mixer_inputs_[0]->Play();
+  mixer_callback_->Render(base::TimeDelta(), base::TimeTicks::Now(), {},
+                          audio_bus_.get());
+  testing::Mock::VerifyAndClearExpectations(sink_.get());
+
+  // Stopping the last playing input should also pause the sink immediately.
+  EXPECT_CALL(*sink_.get(),
+              Pause(media::AudioRendererSink::PauseReason::kPlaybackPaused));
+  mixer_inputs_[0]->Stop();
+  testing::Mock::VerifyAndClearExpectations(sink_.get());
+}
+
+// Verify that when multiple inputs share a mixer, an explicit
+// Pause(kPlaybackPaused) on one input does not pause the underlying sink while
+// another input is still playing, and only pauses the sink once the last active
+// input pauses.
+TEST_P(AudioRendererMixerBehavioralTest,
+       MixerDoesNotPauseStreamWhenOtherInputStillPlaying) {
+  base::test::ScopedFeatureList feature_list(
+      media::kAudioRendererMixerImmediatePause);
+  InitializeInputs(2);
+
+  mixer_inputs_[0]->Start();
+  mixer_inputs_[1]->Start();
+  mixer_inputs_[0]->Play();
+  mixer_inputs_[1]->Play();
+
+  int pause_count = 0;
+  EXPECT_CALL(*sink_.get(),
+              Pause(media::AudioRendererSink::PauseReason::kPlaybackPaused))
+      .WillRepeatedly([&pause_count]() { ++pause_count; });
+
+  // Pausing the first input must not pause the shared sink while the second
+  // input is still active (`!aggregate_converter_.empty()`).
+  mixer_inputs_[0]->Pause(
+      media::AudioRendererSink::PauseReason::kPlaybackPaused);
+  EXPECT_EQ(0, pause_count);
+
+  // Verify the second input continues rendering non-zero audio uninterrupted.
+  FillAudioData(0.0f);
+  EXPECT_EQ(audio_bus_->frames(),
+            mixer_callback_->Render(base::TimeDelta(), base::TimeTicks::Now(),
+                                    {}, audio_bus_.get()));
+
+  // Pausing the remaining active input should immediately pause the sink.
+  mixer_inputs_[1]->Pause(
+      media::AudioRendererSink::PauseReason::kPlaybackPaused);
+  EXPECT_EQ(1, pause_count);
+
+  mixer_inputs_[0]->Stop();
+  mixer_inputs_[1]->Stop();
+}
+
+// Verify that disabling kAudioRendererMixerImmediatePause falls back to the
+// delayed pause behavior on explicit pauses.
+TEST_P(AudioRendererMixerBehavioralTest, ImmediatePauseFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(media::kAudioRendererMixerImmediatePause);
+
+  InitializeInputs(1);
+  EXPECT_CALL(*sink_.get(), Pause(testing::_)).Times(0);
+
+  mixer_inputs_[0]->Start();
+  mixer_inputs_[0]->Play();
+
+  // With the feature disabled, explicit Pause(kPlaybackPaused) should not
+  // immediately pause.
+  mixer_inputs_[0]->Pause(
+      media::AudioRendererSink::PauseReason::kPlaybackPaused);
   mixer_inputs_[0]->Stop();
 }
 

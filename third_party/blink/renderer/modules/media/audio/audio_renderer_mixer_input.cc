@@ -132,12 +132,12 @@ void AudioRendererMixerInput::Play() {
   playing_ = true;
 }
 
-void AudioRendererMixerInput::Pause(PauseReason /*reason*/) {
+void AudioRendererMixerInput::Pause(PauseReason reason) {
   if (!playing_ || !mixer_) {
     return;
   }
 
-  mixer_->RemoveMixerInput(params_, this);
+  mixer_->RemoveMixerInput(params_, this, reason);
   playing_ = false;
 }
 

@@ -887,6 +887,15 @@
     "expiry_milestone": 200
   },
   {
+    "name": "audio-renderer-mixer-immediate-pause",
+    "owners": [
+      "philyan@chromium.org",
+      "tguilbert@chromium.org",
+      "media-dev@chromium.org"
+    ],
+    "expiry_milestone": 175
+  },
+  {
     "name": "auto-framing-override",
     "owners": [ "kamesan@chromium.org", "chromeos-camera-eng@google.com" ],
     "expiry_milestone": 116

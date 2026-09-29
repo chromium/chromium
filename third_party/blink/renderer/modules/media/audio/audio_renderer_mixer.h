@@ -41,7 +41,8 @@ class BLINK_MODULES_EXPORT AudioRendererMixer
   void AddMixerInput(const media::AudioParameters& input_params,
                      media::AudioConverter::InputCallback* input);
   void RemoveMixerInput(const media::AudioParameters& input_params,
-                        media::AudioConverter::InputCallback* input);
+                        media::AudioConverter::InputCallback* input,
+                        media::AudioRendererSink::PauseReason pause_reason);
 
   // Since errors may occur even when no inputs are playing, an error callback
   // must be registered separately from adding a mixer input.

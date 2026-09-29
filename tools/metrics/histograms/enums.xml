@@ -13552,6 +13552,7 @@ from previous Chrome versions.
   <int value="-418041538" label="HelpAppHomePageAppArticles:disabled"/>
   <int value="-417633330" label="MessagesForAndroidInfrastructure:enabled"/>
   <int value="-416660617" label="EnforceTLS13Downgrade:disabled"/>
+  <int value="-416246546" label="AudioRendererMixerImmediatePause:disabled"/>
   <int value="-415762341" label="ElementCapture:disabled"/>
   <int value="-415186532" label="AndroidSiteSettingsUIRefresh:enabled"/>
   <int value="-414900505" label="ScrollCapture:enabled"/>
@@ -18741,6 +18742,7 @@ from previous Chrome versions.
   <int value="1186484930"
       label="AutofillEnableLogFormEventsToAllParsedFormTypes:disabled"/>
   <int value="1186830151" label="EnableFullscreenToAnyScreenAndroid:enabled"/>
+  <int value="1187038472" label="AudioRendererMixerImmediatePause:enabled"/>
   <int value="1187103825" label="OmniboxSuggestionsWrapAround:enabled"/>
   <int value="1187692916" label="TheoraVideoCodec:enabled"/>
   <int value="1187868655" label="FloatingWorkspaceV2:disabled"/>
