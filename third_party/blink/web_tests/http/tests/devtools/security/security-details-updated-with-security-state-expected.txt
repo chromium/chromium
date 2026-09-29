@@ -251,6 +251,11 @@ Open full certificate details
             </TR>
         </TABLE>
     </DIV>
+    <DIV class=origin-view-section origin-view-notes >
+        <DIV >
+The security details above are from the first inspected response.
+        </DIV>
+    </DIV>
 </DIV>
 Origin view (https://ecdhe.foo.test) -----------
 <DIV jslog=Pane; context: security.origin-view class=widget vbox security-origin-view slot=main >
@@ -404,6 +409,11 @@ Open full certificate details
             </TR>
         </TABLE>
     </DIV>
+    <DIV class=origin-view-section origin-view-notes >
+        <DIV >
+The security details above are from the first inspected response.
+        </DIV>
+    </DIV>
 </DIV>
 Origin view (https://tls13.foo.test) -----------
 <DIV jslog=Pane; context: security.origin-view class=widget vbox security-origin-view slot=main >
@@ -556,6 +566,11 @@ Open full certificate details
                 </TD>
             </TR>
         </TABLE>
+    </DIV>
+    <DIV class=origin-view-section origin-view-notes >
+        <DIV >
+The security details above are from the first inspected response.
+        </DIV>
     </DIV>
 </DIV>
 Origin view (https://ech.foo.test) -------------
@@ -717,6 +732,11 @@ Open full certificate details
                 </TD>
             </TR>
         </TABLE>
+    </DIV>
+    <DIV class=origin-view-section origin-view-notes >
+        <DIV >
+The security details above are from the first inspected response.
+        </DIV>
     </DIV>
 </DIV>
 
