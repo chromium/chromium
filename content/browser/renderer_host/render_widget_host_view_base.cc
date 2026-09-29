@@ -847,10 +847,8 @@ void RenderWidgetHostViewBase::DestroyOrDefer() {
     return;
   }
   destroy_pending_ = true;
-  if (is_frame_sink_id_owner_ && host() && host()->delegate() &&
-      host()->delegate()->GetInputEventRouter()) {
-    host()->delegate()->GetInputEventRouter()->RemoveFrameSinkIdOwner(
-        GetFrameSinkId());
+  if (is_frame_sink_id_owner_ && host() && host()->GetInputEventRouter()) {
+    host()->GetInputEventRouter()->RemoveFrameSinkIdOwner(GetFrameSinkId());
   }
   if (IsPointerLocked()) {
     UnlockPointer();
@@ -1162,14 +1160,13 @@ void RenderWidgetHostViewBase::UpdateFrameSinkIdRegistration() {
     return;
   }
   // If Destroy() has been called before we get here, host_ may be null.
-  if (!host() || !host()->delegate() ||
-      !host()->delegate()->GetInputEventRouter()) {
+  if (!host() || !host()->GetInputEventRouter()) {
     return;
   }
 
   // Let the page-level input event router know about our frame sink ID
   // for surface-based hit testing.
-  auto* router = host()->delegate()->GetInputEventRouter();
+  auto* router = host()->GetInputEventRouter();
   if (is_frame_sink_id_owner_) {
     if (!router->IsViewInMap(this)) {
       router->AddFrameSinkIdOwner(GetFrameSinkId(), this);
