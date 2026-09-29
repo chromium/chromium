@@ -312,8 +312,7 @@ TEST_F(OmniboxEverywhereHandlerTest, CreateAutocompleteMatchWithKeyword) {
   bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
 
   auto mojom_match = handler_->CreateAutocompleteMatch(
-      match, 0, bookmark_model, omnibox::GroupConfigMap(),
-      template_url_service());
+      match, bookmark_model, omnibox::GroupConfigMap(), template_url_service());
 
   ASSERT_TRUE(mojom_match.has_value());
   ASSERT_TRUE(mojom_match.value()->keyword_model);

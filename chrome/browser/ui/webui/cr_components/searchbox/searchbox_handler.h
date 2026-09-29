@@ -361,10 +361,17 @@ class SearchboxHandler : public searchbox::mojom::PageHandler,
       searchbox::mojom::AutocompleteMatch* mojom_match) const;
   std::optional<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatch(
       const AutocompleteMatch& match,
-      size_t line,
       bookmarks::BookmarkModel* bookmark_model,
       const omnibox::GroupConfigMap& suggestion_groups_map,
       const TemplateURLService* turl_service) const;
+  // Populates the screen reader labels of `mojom_match`, which was created
+  // from the match at `line` in `result`. Uses the same logic as the omnibox
+  // edit model so all omnibox UIs announce the same text.
+  void PopulateAccessibilityLabels(
+      const AutocompleteResult& result,
+      size_t line,
+      const TemplateURLService* turl_service,
+      searchbox::mojom::AutocompleteMatch* mojom_match) const;
   virtual WindowOpenDisposition ComputeWindowOpenDisposition(
       uint8_t mouse_button,
       bool alt_key,

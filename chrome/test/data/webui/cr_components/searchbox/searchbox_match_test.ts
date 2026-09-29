@@ -358,7 +358,7 @@ suite('CrComponentsRealboxMatchTest', () => {
       actionIndex: 0,
     };
     await microtasksFinished();
-    assertEquals('Search Google, Google', matchEl.ariaLabel);
+    assertEquals('Search Google', matchEl.ariaLabel);
 
     // 2. Keyword Mode chip selection
     matchEl.selection = {
@@ -394,7 +394,7 @@ suite('CrComponentsRealboxMatchTest', () => {
       actionIndex: 0,
     };
     await microtasksFinished();
-    assertEquals('Search Google, Google', matchEl.ariaLabel);
+    assertEquals('Search Google', matchEl.ariaLabel);
   });
 
   test('VirtualFocusAnnouncesOnSelectionChange', async () => {

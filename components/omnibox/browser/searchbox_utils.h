@@ -198,6 +198,38 @@ WindowOpenDisposition ComputeOpenDispositionFromModifiersAndLogToUma(
 // Returns the correct VectorIcon for a given TemplateURL (Keyword provider).
 const gfx::VectorIcon& GetKeywordVectorIcon(const TemplateURL& turl);
 
+// Returns the screen reader label for `selection` within `result`. This is an
+// extended version of AutocompleteMatchType::ToAccessibilityLabel() which also
+// narrates any focused secondary button and the controls available on the
+// match. Shared by the omnibox edit model and the WebUI searchbox handler so
+// that all omnibox UIs announce the same text.
+//   - `header_text` is the suggestion group header text for the match.
+//   - `match_text` is the text narrated for the match, i.e. the text shown in
+//     the input when the match is selected (typically `fill_into_edit`).
+//   - `include_positional_info` controls whether "n of m" is appended. It is
+//     always omitted when a button is focused.
+// `selection.line` must not be kNoMatch.
+std::u16string GetAccessibilityLabelForSelection(
+    const AutocompleteResult& result,
+    const OmniboxPopupSelection& selection,
+    const std::u16string& header_text,
+    const std::u16string& match_text,
+    bool include_positional_info,
+    const TemplateURLService* template_url_service,
+    int* label_prefix_length = nullptr);
+
+// The IPH message that sometimes appears at the bottom of the omnibox is
+// informational only and cannot be selected/focused. Its a11y label therefore
+// has to be read at the end of the preceding suggestion. Returns the label for
+// the IPH row if `selection` is right before the IPH row. Otherwise, returns
+// an empty string. `selection.line` must not be kNoMatch.
+std::u16string GetAccessibilityLabelForFollowingIphSuggestion(
+    const AutocompleteInput& input,
+    const AutocompleteResult& result,
+    const OmniboxPopupSelection& selection,
+    TemplateURLService* template_url_service,
+    bool aim_button_visible);
+
 }  // namespace searchbox
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_SEARCHBOX_UTILS_H_

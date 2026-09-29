@@ -2199,166 +2199,17 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
     const std::u16string& match_text,
     bool include_positional_info,
     int* label_prefix_length) {
-  size_t line = popup_selection_.line;
-  DCHECK_NE(line, OmniboxPopupSelection::kNoMatch)
+  DCHECK_NE(popup_selection_.line, OmniboxPopupSelection::kNoMatch)
       << "GetPopupAccessibilityLabelForCurrentSelection should never be called "
          "if the current selection is kNoMatch.";
 
-  const AutocompleteMatch& match =
-      autocomplete_controller()->result().match_at(line);
-
-  if (match.type == omnibox::AutocompleteMatchType::kHistoryEmbeddingsAnswer) {
-    // This match type is a special case that puts its primary meaningful
-    // content (the answer) into the `description` and repurposes other fields.
-    // So using `fill_into_edit` or `inline_autocompletion` or even just match
-    // `contents` doesn't make sense in this case. Instead, we provide the
-    // screen reader with the header ("Summary") and then the answer in
-    // `description`, and finally the URL details in `contents` (includes date).
-    return omnibox::AutocompleteMatchToAccessibilityLabel(
-        match,
-        autocomplete_controller()->GetSuggestionGroupHeaderText(
-            match.suggestion_group_id),
-        base::StrCat({
-            match.history_embeddings_answer_header_text,
-            match.description,
-            match.contents,
-        }),
-        line, autocomplete_controller()->result().size(), u"",
-        label_prefix_length);
-  }
-
-  int additional_message_id = 0;
-  std::u16string additional_message;
-  // This switch statement should be updated when new selection types are added.
-  static_assert(static_cast<int>(OmniboxPopupSelection::LineState::kMaxValue) ==
-                8);
-  switch (popup_selection_.state) {
-    case OmniboxPopupSelection::LineState::kNormal: {
-      int available_actions_count = 0;
-      if (line + 1 < autocomplete_controller()->result().size() &&
-          autocomplete_controller()->result().match_at(line + 1).IsToolbelt()) {
-        additional_message_id = IDS_ACC_OMNIBOX_TOOLBELT_NEXT_SUFFIX;
-      }
-      if (OmniboxPopupSelection(line,
-                                OmniboxPopupSelection::LineState::kKeywordMode)
-              .IsControlPresentOnMatch(autocomplete_controller()->result())) {
-        additional_message_id = IDS_ACC_KEYWORD_SUFFIX;
-        available_actions_count++;
-      }
-      if (OmniboxPopupSelection(
-              line, OmniboxPopupSelection::LineState::kFocusedButtonAction)
-              .IsControlPresentOnMatch(autocomplete_controller()->result())) {
-        additional_message =
-            match.GetActionAt(0u)->GetLabelStrings().accessibility_suffix;
-        available_actions_count++;
-      }
-      if (OmniboxPopupSelection(
-              line, OmniboxPopupSelection::LineState::kFocusedButtonThumbsUp)
-              .IsControlPresentOnMatch(autocomplete_controller()->result())) {
-        // No need to set `additional_message_id`. Thumbs up and thumbs down
-        // button are always present together; `additional_message_id` is set to
-        // `IDS_ACC_MULTIPLE_ACTIONS_SUFFIX` further down.
-        available_actions_count++;
-      }
-      if (OmniboxPopupSelection(
-              line, OmniboxPopupSelection::LineState::kFocusedButtonThumbsDown)
-              .IsControlPresentOnMatch(autocomplete_controller()->result())) {
-        // No need to set `additional_message_id`. Thumbs up and thumbs down
-        // button are always present together; `additional_message_id` is set to
-        // `IDS_ACC_MULTIPLE_ACTIONS_SUFFIX` further down.
-        available_actions_count++;
-      }
-      if (OmniboxPopupSelection(
-              line,
-              OmniboxPopupSelection::LineState::kFocusedButtonRemoveSuggestion)
-              .IsControlPresentOnMatch(autocomplete_controller()->result())) {
-        additional_message_id = IDS_ACC_REMOVE_SUGGESTION_SUFFIX;
-        available_actions_count++;
-      }
-      if (available_actions_count > 1) {
-        additional_message_id = IDS_ACC_MULTIPLE_ACTIONS_SUFFIX;
-      }
-
-      break;
-    }
-    case OmniboxPopupSelection::LineState::kKeywordMode: {
-      CHECK(!match.associated_keyword.empty());
-      const TemplateURL* turl = AutocompleteMatch::GetTemplateURLWithKeyword(
-          controller_->client()->GetTemplateURLService(),
-          match.associated_keyword, "");
-      std::u16string replacement_string =
-          turl ? turl->short_name() : match.contents;
-      bool ask_keyword = turl && turl->is_ask_type();
-      // For featured search engines, we also want to add the shortcut name.
-      if (AutocompleteMatch::IsFeaturedSearchType(match.type)) {
-        int message_id = ask_keyword ? IDS_ACC_ASK_KEYWORD_MODE_WITH_SHORTCUT
-                                     : IDS_ACC_KEYWORD_MODE_WITH_SHORTCUT;
-        return l10n_util::GetStringFUTF16(message_id, match.keyword,
-                                          replacement_string);
-      }
-      int message_id =
-          ask_keyword ? IDS_ACC_ASK_KEYWORD_MODE : IDS_ACC_KEYWORD_MODE;
-      return l10n_util::GetStringFUTF16(message_id, replacement_string);
-    }
-    case OmniboxPopupSelection::LineState::kFocusedButtonAction: {
-      // When pedal button is focused, the autocomplete suggestion isn't
-      // read because it's not relevant to the button's action.
-      // When dealing with toolbelt actions, we need to ensure that the proper
-      // action a11y label is announced based on the action index.
-      DCHECK(match.GetActionAt(popup_selection_.action_index));
-      return match.GetActionAt(popup_selection_.action_index)
-          ->GetLabelStrings()
-          .accessibility_hint;
-    }
-    case OmniboxPopupSelection::LineState::kFocusedButtonThumbsUp:
-      additional_message_id = IDS_ACC_THUMBS_UP_SUGGESTION_FOCUSED_PREFIX;
-      break;
-    case OmniboxPopupSelection::LineState::kFocusedButtonThumbsDown:
-      additional_message_id = IDS_ACC_THUMBS_DOWN_SUGGESTION_FOCUSED_PREFIX;
-      break;
-    case OmniboxPopupSelection::LineState::kFocusedButtonRemoveSuggestion:
-      additional_message_id = match.IsIphSuggestion()
-                                  ? IDS_ACC_DISMISS_CHROME_TIP_FOCUSED_PREFIX
-                                  : IDS_ACC_REMOVE_SUGGESTION_FOCUSED_PREFIX;
-      break;
-    case OmniboxPopupSelection::LineState::kFocusedIphLink:
-      return base::StrCat(
-          {match_text, u" ",
-           omnibox::AutocompleteMatchToAccessibilityLabel(
-               match,
-               autocomplete_controller()->GetSuggestionGroupHeaderText(
-                   match.suggestion_group_id),
-               match.iph_link_text, line, 0,
-               l10n_util::GetStringUTF16(IDS_ACC_OMNIBOX_IPH_LINK_SELECTED),
-               label_prefix_length)});
-    case OmniboxPopupSelection::LineState::kCtrlEnter:
-    default:
-      break;
-  }
-  if (additional_message_id != 0 && additional_message.empty()) {
-    additional_message = l10n_util::GetStringUTF16(additional_message_id);
-  }
-
-  if (popup_selection_.IsButtonFocused()) {
-    include_positional_info = false;
-  }
-
-  size_t total_matches =
-      include_positional_info ? autocomplete_controller()->result().size() : 0;
-
-  // For informational matches, the relevant text is in contents.
-  std::u16string announcement_text =
-      match.type == omnibox::AutocompleteMatchType::kNullResultMessage
-          ? match.contents
-          : match_text;
-  // If there's a button focused, we don't want the "n of m" message announced.
-  std::u16string label = omnibox::AutocompleteMatchToAccessibilityLabel(
-      match,
+  const AutocompleteResult& result = autocomplete_controller()->result();
+  return searchbox::GetAccessibilityLabelForSelection(
+      result, popup_selection_,
       autocomplete_controller()->GetSuggestionGroupHeaderText(
-          match.suggestion_group_id),
-      announcement_text, line, total_matches, additional_message,
-      label_prefix_length);
-  return label;
+          result.match_at(popup_selection_.line).suggestion_group_id),
+      match_text, include_positional_info,
+      controller_->client()->GetTemplateURLService(), label_prefix_length);
 }
 
 std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForAimButton() {
@@ -2375,36 +2226,10 @@ OmniboxEditModel::MaybeGetPopupAccessibilityLabelForIPHSuggestion() {
          "called "
          "if the current selection is kNoMatch.";
 
-  std::u16string label = u"";
-  size_t next_line = popup_selection_.line + 1;
-  if (next_line < autocomplete_controller()->result().size()) {
-    const AutocompleteMatch& next_match =
-        autocomplete_controller()->result().match_at(next_line);
-    // Only append lookahead suffixes for non-interactive (no link) IPH tips.
-    // Interactive IPH suggestions (disclaimers/promos with links) are focusable
-    // and will be read directly when they receive selection focus.
-    if (next_match.IsIphSuggestion() && next_match.iph_link_url.is_empty()) {
-      label =
-          l10n_util::GetStringFUTF16(IDS_ACC_CHROME_TIP, next_match.contents);
-
-      // Iff the next selection (the next time the user presses tab) is the
-      // remove suggestion button for the IPH row, also append its a11y label.
-      auto next_selection = popup_selection_.GetNextSelection(
-          autocomplete_controller()->input(),
-          autocomplete_controller()->result(),
-          controller_->client()->GetTemplateURLService(),
-          view_->AimButtonVisible(), OmniboxPopupSelection::Direction::kForward,
-          OmniboxPopupSelection::Step::kStateOrLine);
-      if (next_selection.line == next_line &&
-          next_selection.state == OmniboxPopupSelection::LineState::
-                                      kFocusedButtonRemoveSuggestion) {
-        label = l10n_util::GetStringFUTF16(IDS_ACC_DISMISS_CHROME_TIP_SUFFIX,
-                                           label);
-      }
-    }
-  }
-
-  return label;
+  return searchbox::GetAccessibilityLabelForFollowingIphSuggestion(
+      autocomplete_controller()->input(), autocomplete_controller()->result(),
+      popup_selection_, controller_->client()->GetTemplateURLService(),
+      view_->AimButtonVisible());
 }
 
 void OmniboxEditModel::UpdatePopupSelectionOnResultChanged() {
