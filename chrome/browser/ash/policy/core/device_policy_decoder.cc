@@ -1664,15 +1664,21 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     }
   }
 
-  if (policy.has_metrics_enabled()) {
-    const em::MetricsEnabledProto& container(policy.metrics_enabled());
-    if (container.has_metrics_enabled()) {
-      policies->Set(key::kDeviceMetricsReportingEnabled, POLICY_LEVEL_MANDATORY,
-                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
-                    base::Value(container.metrics_enabled()), nullptr);
-    }
+  if (policy.has_metrics_enabled() &&
+      policy.metrics_enabled().has_metrics_enabled()) {
+    policies->Set(key::kDeviceMetricsReportingEnabled, POLICY_LEVEL_MANDATORY,
+                  POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                  base::Value(policy.metrics_enabled().metrics_enabled()),
+                  nullptr);
+  } else {
+    // If the policy is missing, default to reporting enabled on
+    // enterprise-enrolled devices, matching DecodeGenericPolicies() in
+    // chrome/browser/ash/settings/device_settings_provider.cc (see
+    // crbug.com/41156165).
+    policies->Set(key::kDeviceMetricsReportingEnabled, POLICY_LEVEL_MANDATORY,
+                  POLICY_SCOPE_MACHINE, POLICY_SOURCE_ENTERPRISE_DEFAULT,
+                  base::Value(true), nullptr);
   }
-
 
   if (policy.has_device_login_screen_geolocation_access_level() &&
       policy.device_login_screen_geolocation_access_level()
