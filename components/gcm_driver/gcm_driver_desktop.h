@@ -18,7 +18,6 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/tuple.h"
-#include "components/gcm_driver/crypto/gcm_decryption_result.h"
 #include "components/gcm_driver/gcm_client.h"
 #include "components/gcm_driver/gcm_connection_observer.h"
 #include "components/gcm_driver/gcm_driver.h"
@@ -37,6 +36,10 @@ class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
 }
 
+namespace fcm {
+enum class FcmDecryptionResult;
+}  // namespace fcm
+
 namespace os_crypt_async {
 class Encryptor;
 class OSCryptAsync;
@@ -47,7 +50,6 @@ namespace gcm {
 class GCMAccountMapper;
 class GCMAppHandler;
 class GCMClientFactory;
-enum class GCMDecryptionResult;
 class GCMDelayedTaskController;
 
 // GCMDriver implementation for desktop and Chrome OS, using GCMClient.
@@ -112,7 +114,7 @@ class GCMDriverDesktop : public GCMDriver,
                 const std::string& receiver_id,
                 const OutgoingMessage& message) override;
   void RecordDecryptionFailure(const std::string& app_id,
-                               GCMDecryptionResult result) override;
+                               fcm::FcmDecryptionResult result) override;
 
   // InstanceIDHandler implementation:
   void GetToken(const std::string& app_id,

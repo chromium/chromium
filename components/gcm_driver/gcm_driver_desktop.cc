@@ -20,6 +20,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
+#include "components/fcm/crypto/fcm_decryption_result.h"
 #include "components/fcm/engine/system_encryptor.h"
 #include "components/gcm_driver/gcm_account_mapper.h"
 #include "components/gcm_driver/gcm_app_handler.h"
@@ -122,7 +123,7 @@ class GCMDriverDesktop::IOWorker : public GCMClient::Delegate {
                    const std::string& scope);
 
   void RecordDecryptionFailure(const std::string& app_id,
-                               GCMDecryptionResult result);
+                               fcm::FcmDecryptionResult result);
 
   // For testing purpose. Can be called from UI thread. Use with care.
   GCMClient* gcm_client_for_testing() const { return gcm_client_.get(); }
@@ -512,7 +513,7 @@ void GCMDriverDesktop::IOWorker::RemoveHeartbeatInterval(
 
 void GCMDriverDesktop::IOWorker::RecordDecryptionFailure(
     const std::string& app_id,
-    GCMDecryptionResult result) {
+    fcm::FcmDecryptionResult result) {
   DCHECK(io_thread_->RunsTasksInCurrentSequence());
   gcm_client_->RecordDecryptionFailure(app_id, result);
 }
@@ -747,8 +748,9 @@ void GCMDriverDesktop::DoSend(const std::string& app_id,
                                 receiver_id, message));
 }
 
-void GCMDriverDesktop::RecordDecryptionFailure(const std::string& app_id,
-                                               GCMDecryptionResult result) {
+void GCMDriverDesktop::RecordDecryptionFailure(
+    const std::string& app_id,
+    fcm::FcmDecryptionResult result) {
   DCHECK(ui_thread_->RunsTasksInCurrentSequence());
   io_thread_->PostTask(
       FROM_HERE,

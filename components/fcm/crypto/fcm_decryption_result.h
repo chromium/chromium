@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_GCM_DRIVER_CRYPTO_GCM_DECRYPTION_RESULT_H_
-#define COMPONENTS_GCM_DRIVER_CRYPTO_GCM_DECRYPTION_RESULT_H_
+#ifndef COMPONENTS_FCM_CRYPTO_FCM_DECRYPTION_RESULT_H_
+#define COMPONENTS_FCM_CRYPTO_FCM_DECRYPTION_RESULT_H_
 
 #include <string>
 
-namespace gcm {
+namespace fcm {
 
 // Result of decrypting an incoming message. The values of these reasons must
 // not be changed as they are being recorded using UMA. When adding a value,
 // please update GCMDecryptionResult in //tools/metrics/histograms/enums.xml.
-enum class GCMDecryptionResult {
+enum class FcmDecryptionResult {
   // The message had not been encrypted by the sender.
   UNENCRYPTED = 0,
 
@@ -62,10 +62,10 @@ enum class GCMDecryptionResult {
   ENUM_SIZE = INVALID_BINARY_HEADER_PUBLIC_KEY_FORMAT + 1
 };
 
-// Converts the GCMDecryptionResult value to a string that can be used to
+// Converts the FcmDecryptionResult value to a string that can be used to
 // explain the issue on chrome://gcm-internals/.
-std::string ToGCMDecryptionResultDetailsString(GCMDecryptionResult result);
+std::string ToFcmDecryptionResultDetailsString(FcmDecryptionResult result);
 
-}  // namespace gcm
+}  // namespace fcm
 
-#endif  // COMPONENTS_GCM_DRIVER_CRYPTO_GCM_DECRYPTION_RESULT_H_
+#endif  // COMPONENTS_FCM_CRYPTO_FCM_DECRYPTION_RESULT_H_

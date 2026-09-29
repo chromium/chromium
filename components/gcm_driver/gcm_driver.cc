@@ -18,7 +18,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
-#include "components/gcm_driver/crypto/gcm_decryption_result.h"
+#include "components/fcm/crypto/fcm_decryption_result.h"
 #include "components/gcm_driver/crypto/gcm_encryption_result.h"
 #include "components/gcm_driver/features.h"
 #include "components/gcm_driver/gcm_app_handler.h"
@@ -300,15 +300,15 @@ void GCMDriver::DispatchMessage(const std::string& app_id,
 }
 
 void GCMDriver::DispatchMessageInternal(const std::string& app_id,
-                                        GCMDecryptionResult result,
+                                        fcm::FcmDecryptionResult result,
                                         IncomingMessage message) {
   UMA_HISTOGRAM_ENUMERATION("GCM.Crypto.DecryptMessageResult", result,
-                            GCMDecryptionResult::ENUM_SIZE);
+                            fcm::FcmDecryptionResult::ENUM_SIZE);
 
   switch (result) {
-    case GCMDecryptionResult::UNENCRYPTED:
-    case GCMDecryptionResult::DECRYPTED_DRAFT_03:
-    case GCMDecryptionResult::DECRYPTED_DRAFT_08: {
+    case fcm::FcmDecryptionResult::UNENCRYPTED:
+    case fcm::FcmDecryptionResult::DECRYPTED_DRAFT_03:
+    case fcm::FcmDecryptionResult::DECRYPTED_DRAFT_08: {
       GCMAppHandler* handler = GetAppHandler(app_id);
 
       if (handler) {
@@ -324,25 +324,25 @@ void GCMDriver::DispatchMessageInternal(const std::string& app_id,
       // chrome://gcm-internals and send a delivery receipt.
       return;
     }
-    case GCMDecryptionResult::INVALID_ENCRYPTION_HEADER:
-    case GCMDecryptionResult::INVALID_CRYPTO_KEY_HEADER:
-    case GCMDecryptionResult::NO_KEYS:
-    case GCMDecryptionResult::INVALID_SHARED_SECRET:
-    case GCMDecryptionResult::INVALID_PAYLOAD:
-    case GCMDecryptionResult::INVALID_BINARY_HEADER_PAYLOAD_LENGTH:
-    case GCMDecryptionResult::INVALID_BINARY_HEADER_RECORD_SIZE:
-    case GCMDecryptionResult::INVALID_BINARY_HEADER_PUBLIC_KEY_LENGTH:
-    case GCMDecryptionResult::INVALID_BINARY_HEADER_PUBLIC_KEY_FORMAT: {
+    case fcm::FcmDecryptionResult::INVALID_ENCRYPTION_HEADER:
+    case fcm::FcmDecryptionResult::INVALID_CRYPTO_KEY_HEADER:
+    case fcm::FcmDecryptionResult::NO_KEYS:
+    case fcm::FcmDecryptionResult::INVALID_SHARED_SECRET:
+    case fcm::FcmDecryptionResult::INVALID_PAYLOAD:
+    case fcm::FcmDecryptionResult::INVALID_BINARY_HEADER_PAYLOAD_LENGTH:
+    case fcm::FcmDecryptionResult::INVALID_BINARY_HEADER_RECORD_SIZE:
+    case fcm::FcmDecryptionResult::INVALID_BINARY_HEADER_PUBLIC_KEY_LENGTH:
+    case fcm::FcmDecryptionResult::INVALID_BINARY_HEADER_PUBLIC_KEY_FORMAT: {
       RecordDecryptionFailure(app_id, result);
       GCMAppHandler* handler = GetAppHandler(app_id);
       if (handler) {
         handler->OnMessageDecryptionFailed(
             app_id, message.message_id,
-            ToGCMDecryptionResultDetailsString(result));
+            fcm::ToFcmDecryptionResultDetailsString(result));
       }
       return;
     }
-    case GCMDecryptionResult::ENUM_SIZE:
+    case fcm::FcmDecryptionResult::ENUM_SIZE:
       break;  // deliberate fall-through
   }
 
@@ -418,10 +418,10 @@ void GCMDriver::DecryptMessage(const std::string& app_id,
 }
 
 void GCMDriver::OnMessageDecrypted(DecryptMessageCallback callback,
-                                   GCMDecryptionResult result,
+                                   fcm::FcmDecryptionResult result,
                                    IncomingMessage message) {
   UMA_HISTOGRAM_ENUMERATION("GCM.Crypto.DecryptMessageResult", result,
-                            GCMDecryptionResult::ENUM_SIZE);
+                            fcm::FcmDecryptionResult::ENUM_SIZE);
   std::move(callback).Run(result, std::move(message.raw_data));
 }
 

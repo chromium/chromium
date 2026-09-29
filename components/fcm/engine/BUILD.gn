@@ -6,13 +6,33 @@ assert(!is_android)
 
 static_library("engine") {
   sources = [
+    "fcm_stats_recorder_impl.cc",
+    "fcm_stats_recorder_impl.h",
     "system_encryptor.cc",
     "system_encryptor.h",
   ]
 
   deps = [
     "//base",
+    "//components/fcm",
+    "//components/fcm/crypto",
     "//components/os_crypt/async/common",
     "//google_apis/gcm",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "fcm_stats_recorder_impl_unittest.cc" ]
+
+  deps = [
+    ":engine",
+    "//base",
+    "//base/test:test_support",
+    "//components/fcm",
+    "//components/fcm/crypto",
+    "//google_apis/gcm",
+    "//testing/gmock",
+    "//testing/gtest",
   ]
 }

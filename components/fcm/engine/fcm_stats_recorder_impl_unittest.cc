@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/gcm_driver/gcm_stats_recorder_impl.h"
+#include "components/fcm/engine/fcm_stats_recorder_impl.h"
 
 #include <stdint.h>
 
 #include <string>
 
 #include "base/containers/circular_deque.h"
-#include "components/gcm_driver/crypto/gcm_decryption_result.h"
-#include "components/gcm_driver/crypto/gcm_encryption_provider.h"
+#include "components/fcm/crypto/fcm_decryption_result.h"
 #include "google_apis/gcm/engine/mcs_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace gcm {
+namespace fcm {
 
 namespace {
 
@@ -33,14 +32,14 @@ static const int kByteSize = 99;
 static const int kTTL = 7;
 static const int kRetries = 3;
 static const int64_t kDelay = 15000;
-static const ConnectionFactory::ConnectionResetReason kReason =
-    ConnectionFactory::NETWORK_CHANGE;
+static const gcm::ConnectionFactory::ConnectionResetReason kReason =
+    gcm::ConnectionFactory::NETWORK_CHANGE;
 static const int kNetworkError = 1;
 
-static const RegistrationRequest::Status kRegistrationStatus =
-    RegistrationRequest::SUCCESS;
-static const UnregistrationRequest::Status kUnregistrationStatus =
-    UnregistrationRequest::SUCCESS;
+static const gcm::RegistrationRequest::Status kRegistrationStatus =
+    gcm::RegistrationRequest::SUCCESS;
+static const gcm::UnregistrationRequest::Status kUnregistrationStatus =
+    gcm::UnregistrationRequest::SUCCESS;
 
 static const char kCheckinInitiatedEvent[] = "Checkin initiated";
 static const char kCheckinInitiatedDetails[] = "Android Id: 4";
@@ -96,16 +95,17 @@ static const char kNotifySendStatusDetails[] = "Msg size: 99 bytes, TTL: 7";
 static const char kIncomingSendErrorEvent[] = "Received 'send error' msg";
 static const char kIncomingSendErrorDetails[] = "";
 
-static const GCMDecryptionResult kDecryptionResultFailure =
-    GCMDecryptionResult::INVALID_PAYLOAD;
+static const FcmDecryptionResult kDecryptionResultFailure =
+    FcmDecryptionResult::INVALID_PAYLOAD;
 
 }  // namespace
 
-class GCMStatsRecorderImplTest : public testing::Test {
+class FcmStatsRecorderImplTest : public testing::Test {
  public:
-  GCMStatsRecorderImplTest();
-  ~GCMStatsRecorderImplTest() override;
-  void SetUp() override;
+  FcmStatsRecorderImplTest() {
+    source_ = "s1,s2";
+    recorder_.set_is_recording(true);
+  }
 
   void VerifyRecordedCheckinCount(int expected_count) {
     EXPECT_EQ(expected_count,
@@ -142,156 +142,121 @@ class GCMStatsRecorderImplTest : public testing::Test {
   }
 
   void VerifyCheckinInitiated(const std::string& remark) {
-    VerifyCheckin(recorder_.checkin_activities(),
-                  kCheckinInitiatedEvent,
-                  kCheckinInitiatedDetails,
-                  remark);
+    VerifyCheckin(recorder_.checkin_activities(), kCheckinInitiatedEvent,
+                  kCheckinInitiatedDetails, remark);
   }
 
   void VerifyCheckinDelayedDueToBackoff(const std::string& remark) {
     VerifyCheckin(recorder_.checkin_activities(),
                   kCheckinDelayedDueToBackoffEvent,
-                  kCheckinDelayedDueToBackoffDetails,
-                  remark);
+                  kCheckinDelayedDueToBackoffDetails, remark);
   }
 
   void VerifyCheckinSuccess(const std::string& remark) {
-    VerifyCheckin(recorder_.checkin_activities(),
-                  kCheckinSuccessEvent,
-                  kCheckinSuccessDetails,
-                  remark);
+    VerifyCheckin(recorder_.checkin_activities(), kCheckinSuccessEvent,
+                  kCheckinSuccessDetails, remark);
   }
 
   void VerifyCheckinFailure(const std::string& remark) {
-    VerifyCheckin(recorder_.checkin_activities(),
-                  kCheckinFailureEvent,
-                  kCheckinFailureDetails,
-                  remark);
+    VerifyCheckin(recorder_.checkin_activities(), kCheckinFailureEvent,
+                  kCheckinFailureDetails, remark);
   }
 
   void VerifyConnectionInitiated(const std::string& remark) {
     VerifyConnection(recorder_.connection_activities(),
-                     kConnectionInitiatedEvent,
-                     kConnectionInitiatedDetails,
+                     kConnectionInitiatedEvent, kConnectionInitiatedDetails,
                      remark);
   }
 
   void VerifyConnectionDelayedDueToBackoff(const std::string& remark) {
     VerifyConnection(recorder_.connection_activities(),
                      kConnectionDelayedDueToBackoffEvent,
-                     kConnectionDelayedDueToBackoffDetails,
-                     remark);
+                     kConnectionDelayedDueToBackoffDetails, remark);
   }
 
   void VerifyConnectionSuccess(const std::string& remark) {
-    VerifyConnection(recorder_.connection_activities(),
-                     kConnectionSuccessEvent,
-                     kConnectionSuccessDetails,
-                     remark);
+    VerifyConnection(recorder_.connection_activities(), kConnectionSuccessEvent,
+                     kConnectionSuccessDetails, remark);
   }
 
   void VerifyConnectionFailure(const std::string& remark) {
-    VerifyConnection(recorder_.connection_activities(),
-                     kConnectionFailureEvent,
-                     kConnectionFailureDetails,
-                     remark);
+    VerifyConnection(recorder_.connection_activities(), kConnectionFailureEvent,
+                     kConnectionFailureDetails, remark);
   }
 
   void VerifyConnectionResetSignaled(const std::string& remark) {
     VerifyConnection(recorder_.connection_activities(),
                      kConnectionResetSignaledEvent,
-                     kConnectionResetSignaledDetails,
-                     remark);
+                     kConnectionResetSignaledDetails, remark);
   }
 
   void VerifyRegistrationSent(const std::string& remark) {
-    VerifyRegistration(recorder_.registration_activities(),
-                       kSenderIds,
-                       kRegistrationSentEvent,
-                       kRegistrationSentDetails,
+    VerifyRegistration(recorder_.registration_activities(), kSenderIds,
+                       kRegistrationSentEvent, kRegistrationSentDetails,
                        remark);
   }
 
   void VerifyRegistrationResponse(const std::string& remark) {
-    VerifyRegistration(recorder_.registration_activities(),
-                       kSenderIds,
-                       kRegistrationResponseEvent,
-                       kRegistrationResponseDetails,
+    VerifyRegistration(recorder_.registration_activities(), kSenderIds,
+                       kRegistrationResponseEvent, kRegistrationResponseDetails,
                        remark);
   }
 
   void VerifyRegistrationRetryRequested(const std::string& remark) {
-    VerifyRegistration(recorder_.registration_activities(),
-                       kSenderIds,
+    VerifyRegistration(recorder_.registration_activities(), kSenderIds,
                        kRegistrationRetryDelayedEvent,
-                       kRegistrationRetryDelayedDetails,
-                       remark);
+                       kRegistrationRetryDelayedDetails, remark);
   }
 
   void VerifyUnregistrationSent(const std::string& remark) {
-    VerifyRegistration(recorder_.registration_activities(),
-                       kSenderIds,
-                       kUnregistrationSentEvent,
-                       kUnregistrationSentDetails,
+    VerifyRegistration(recorder_.registration_activities(), kSenderIds,
+                       kUnregistrationSentEvent, kUnregistrationSentDetails,
                        remark);
   }
 
   void VerifyUnregistrationResponse(const std::string& remark) {
-    VerifyRegistration(recorder_.registration_activities(),
-                       kSenderIds,
+    VerifyRegistration(recorder_.registration_activities(), kSenderIds,
                        kUnregistrationResponseEvent,
-                       kUnregistrationResponseDetails,
-                       remark);
+                       kUnregistrationResponseDetails, remark);
   }
 
   void VerifyUnregistrationRetryDelayed(const std::string& remark) {
-    VerifyRegistration(recorder_.registration_activities(),
-                       kSenderIds,
+    VerifyRegistration(recorder_.registration_activities(), kSenderIds,
                        kUnregistrationRetryDelayedEvent,
-                       kUnregistrationRetryDelayedDetails,
-                       remark);
+                       kUnregistrationRetryDelayedDetails, remark);
   }
 
   void VerifyDataMessageReceived(const std::string& remark) {
-    VerifyReceivingData(recorder_.receiving_activities(),
-                        kDataReceivedEvent,
-                        kDataReceivedDetails,
-                        remark);
+    VerifyReceivingData(recorder_.receiving_activities(), kDataReceivedEvent,
+                        kDataReceivedDetails, remark);
   }
 
   void VerifyDataDeletedMessage(const std::string& remark) {
     VerifyReceivingData(recorder_.receiving_activities(),
-                        kDataDeletedMessageEvent,
-                        kDataDeletedMessageDetails,
+                        kDataDeletedMessageEvent, kDataDeletedMessageDetails,
                         remark);
   }
 
   void VerifyDataSentToWire(const std::string& remark) {
-    VerifySendingData(recorder_.sending_activities(),
-                      kDataSentToWireEvent,
-                      kSentToWireDetails,
-                      remark);
+    VerifySendingData(recorder_.sending_activities(), kDataSentToWireEvent,
+                      kSentToWireDetails, remark);
   }
 
   void VerifyNotifySendStatus(const std::string& remark) {
-    VerifySendingData(recorder_.sending_activities(),
-                      kNotifySendStatusEvent,
-                      kNotifySendStatusDetails,
-                      remark);
+    VerifySendingData(recorder_.sending_activities(), kNotifySendStatusEvent,
+                      kNotifySendStatusDetails, remark);
   }
 
   void VerifyIncomingSendError(const std::string& remark) {
-    VerifySendingData(recorder_.sending_activities(),
-                      kIncomingSendErrorEvent,
-                      kIncomingSendErrorDetails,
-                      remark);
+    VerifySendingData(recorder_.sending_activities(), kIncomingSendErrorEvent,
+                      kIncomingSendErrorDetails, remark);
   }
 
   void VerifyRecordedDecryptionFailure(const std::string& remark) {
     const auto& queue = recorder_.decryption_failure_activities();
 
     EXPECT_EQ(kAppId, queue.front().app_id) << remark;
-    EXPECT_EQ(ToGCMDecryptionResultDetailsString(kDecryptionResultFailure),
+    EXPECT_EQ(ToFcmDecryptionResultDetailsString(kDecryptionResultFailure),
               queue.front().details)
         << remark;
   }
@@ -348,20 +313,10 @@ class GCMStatsRecorderImplTest : public testing::Test {
   }
 
   std::string source_;
-  GCMStatsRecorderImpl recorder_;
+  FcmStatsRecorderImpl recorder_;
 };
 
-GCMStatsRecorderImplTest::GCMStatsRecorderImplTest(){
-}
-
-GCMStatsRecorderImplTest::~GCMStatsRecorderImplTest() = default;
-
-void GCMStatsRecorderImplTest::SetUp(){
-  source_ = "s1,s2";
-  recorder_.set_is_recording(true);
-}
-
-TEST_F(GCMStatsRecorderImplTest, StartStopRecordingTest) {
+TEST_F(FcmStatsRecorderImplTest, StartStopRecordingTest) {
   EXPECT_TRUE(recorder_.is_recording());
   recorder_.RecordDataSentToWire(kAppId, kReceiverId, kMessageId, kQueuedSec);
   VerifyRecordedSendingCount(1);
@@ -387,19 +342,18 @@ TEST_F(GCMStatsRecorderImplTest, StartStopRecordingTest) {
   VerifyAllActivityQueueEmpty("no registration");
 
   recorder_.RecordRegistrationSent(kAppId, kSenderIds);
-  recorder_.RecordRegistrationResponse(kAppId, source_,
-                                       kRegistrationStatus);
+  recorder_.RecordRegistrationResponse(kAppId, source_, kRegistrationStatus);
   recorder_.RecordRegistrationRetryDelayed(kAppId, source_, kDelay, kRetries);
   recorder_.RecordUnregistrationSent(kAppId, source_);
-  recorder_.RecordUnregistrationResponse(
-      kAppId, source_, kUnregistrationStatus);
+  recorder_.RecordUnregistrationResponse(kAppId, source_,
+                                         kUnregistrationStatus);
   recorder_.RecordUnregistrationRetryDelayed(kAppId, source_, kDelay, kRetries);
   VerifyAllActivityQueueEmpty("no unregistration");
 
   recorder_.RecordDataMessageReceived(kAppId, kFrom, kByteSize,
-                                      GCMStatsRecorder::DATA_MESSAGE);
+                                      gcm::GCMStatsRecorder::DATA_MESSAGE);
   recorder_.RecordDataMessageReceived(kAppId, kFrom, kByteSize,
-                                      GCMStatsRecorder::DELETED_MESSAGES);
+                                      gcm::GCMStatsRecorder::DELETED_MESSAGES);
   VerifyAllActivityQueueEmpty("no receiving");
 
   recorder_.RecordDataSentToWire(kAppId, kReceiverId, kMessageId, kQueuedSec);
@@ -410,7 +364,7 @@ TEST_F(GCMStatsRecorderImplTest, StartStopRecordingTest) {
   VerifyAllActivityQueueEmpty("no sending");
 }
 
-TEST_F(GCMStatsRecorderImplTest, ClearLogTest) {
+TEST_F(FcmStatsRecorderImplTest, ClearLogTest) {
   recorder_.RecordDataSentToWire(kAppId, kReceiverId, kMessageId, kQueuedSec);
   VerifyRecordedSendingCount(1);
   VerifyDataSentToWire("1st call");
@@ -424,7 +378,7 @@ TEST_F(GCMStatsRecorderImplTest, ClearLogTest) {
   VerifyRecordedSendingCount(0);
 }
 
-TEST_F(GCMStatsRecorderImplTest, CheckinTest) {
+TEST_F(FcmStatsRecorderImplTest, CheckinTest) {
   recorder_.RecordCheckinInitiated(kAndroidId);
   VerifyRecordedCheckinCount(1);
   VerifyCheckinInitiated("1st call");
@@ -442,7 +396,7 @@ TEST_F(GCMStatsRecorderImplTest, CheckinTest) {
   VerifyCheckinFailure("4th call");
 }
 
-TEST_F(GCMStatsRecorderImplTest, ConnectionTest) {
+TEST_F(FcmStatsRecorderImplTest, ConnectionTest) {
   recorder_.RecordConnectionInitiated(kHost);
   VerifyRecordedConnectionCount(1);
   VerifyConnectionInitiated("1st call");
@@ -464,13 +418,12 @@ TEST_F(GCMStatsRecorderImplTest, ConnectionTest) {
   VerifyConnectionResetSignaled("5th call");
 }
 
-TEST_F(GCMStatsRecorderImplTest, RegistrationTest) {
+TEST_F(FcmStatsRecorderImplTest, RegistrationTest) {
   recorder_.RecordRegistrationSent(kAppId, kSenderIds);
   VerifyRecordedRegistrationCount(1);
   VerifyRegistrationSent("1st call");
 
-  recorder_.RecordRegistrationResponse(kAppId, source_,
-                                       kRegistrationStatus);
+  recorder_.RecordRegistrationResponse(kAppId, source_, kRegistrationStatus);
   VerifyRecordedRegistrationCount(2);
   VerifyRegistrationResponse("2nd call");
 
@@ -482,8 +435,8 @@ TEST_F(GCMStatsRecorderImplTest, RegistrationTest) {
   VerifyRecordedRegistrationCount(4);
   VerifyUnregistrationSent("4th call");
 
-  recorder_.RecordUnregistrationResponse(
-      kAppId, source_, kUnregistrationStatus);
+  recorder_.RecordUnregistrationResponse(kAppId, source_,
+                                         kUnregistrationStatus);
   VerifyRecordedRegistrationCount(5);
   VerifyUnregistrationResponse("5th call");
 
@@ -492,21 +445,21 @@ TEST_F(GCMStatsRecorderImplTest, RegistrationTest) {
   VerifyUnregistrationRetryDelayed("6th call");
 }
 
-TEST_F(GCMStatsRecorderImplTest, RecordReceivingTest) {
+TEST_F(FcmStatsRecorderImplTest, RecordReceivingTest) {
   recorder_.RecordConnectionInitiated(std::string());
   recorder_.RecordConnectionSuccess();
   recorder_.RecordDataMessageReceived(kAppId, kFrom, kByteSize,
-                                      GCMStatsRecorder::DATA_MESSAGE);
+                                      gcm::GCMStatsRecorder::DATA_MESSAGE);
   VerifyRecordedReceivingCount(1);
   VerifyDataMessageReceived("1st call");
 
   recorder_.RecordDataMessageReceived(kAppId, kFrom, kByteSize,
-                                      GCMStatsRecorder::DELETED_MESSAGES);
+                                      gcm::GCMStatsRecorder::DELETED_MESSAGES);
   VerifyRecordedReceivingCount(2);
   VerifyDataDeletedMessage("2nd call");
 }
 
-TEST_F(GCMStatsRecorderImplTest, RecordSendingTest) {
+TEST_F(FcmStatsRecorderImplTest, RecordSendingTest) {
   recorder_.RecordDataSentToWire(kAppId, kReceiverId, kMessageId, kQueuedSec);
   VerifyRecordedSendingCount(1);
   VerifyDataSentToWire("1st call");
@@ -525,11 +478,11 @@ TEST_F(GCMStatsRecorderImplTest, RecordSendingTest) {
   VerifyDataSentToWire("4th call");
 }
 
-TEST_F(GCMStatsRecorderImplTest, RecordDecryptionFailureTest) {
+TEST_F(FcmStatsRecorderImplTest, RecordDecryptionFailureTest) {
   recorder_.RecordDecryptionFailure(kAppId, kDecryptionResultFailure);
   VerifyRecordedDecryptionFailureCount(1);
 
   VerifyRecordedDecryptionFailure("1st call");
 }
 
-}  // namespace gcm
+}  // namespace fcm

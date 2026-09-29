@@ -11,7 +11,7 @@
 #include "base/containers/span.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/string_view_util.h"
-#include "components/gcm_driver/crypto/gcm_decryption_result.h"
+#include "components/fcm/crypto/fcm_decryption_result.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gcm {
@@ -85,7 +85,7 @@ TEST(MessagePayloadParserTest, MinimumMessageSize) {
       base::as_string_view(kValidMessage).substr(0u, kValidMessage.size() / 2));
   EXPECT_FALSE(parser.IsValid());
   EXPECT_EQ(parser.GetFailureReason(),
-            GCMDecryptionResult::INVALID_BINARY_HEADER_PAYLOAD_LENGTH);
+            fcm::FcmDecryptionResult::INVALID_BINARY_HEADER_PAYLOAD_LENGTH);
 }
 
 TEST(MessagePayloadParserTest, MinimumRecordSize) {
@@ -99,7 +99,7 @@ TEST(MessagePayloadParserTest, MinimumRecordSize) {
   MessagePayloadParser parser(message);
   EXPECT_FALSE(parser.IsValid());
   EXPECT_EQ(parser.GetFailureReason(),
-            GCMDecryptionResult::INVALID_BINARY_HEADER_RECORD_SIZE);
+            fcm::FcmDecryptionResult::INVALID_BINARY_HEADER_RECORD_SIZE);
 }
 
 TEST(MessagePayloadParserTest, InvalidPublicKeyLength) {
@@ -113,7 +113,7 @@ TEST(MessagePayloadParserTest, InvalidPublicKeyLength) {
   MessagePayloadParser parser(message);
   EXPECT_FALSE(parser.IsValid());
   EXPECT_EQ(parser.GetFailureReason(),
-            GCMDecryptionResult::INVALID_BINARY_HEADER_PUBLIC_KEY_LENGTH);
+            fcm::FcmDecryptionResult::INVALID_BINARY_HEADER_PUBLIC_KEY_LENGTH);
 }
 
 TEST(MessagePayloadParserTest, InvalidPublicKeyFormat) {
@@ -125,7 +125,7 @@ TEST(MessagePayloadParserTest, InvalidPublicKeyFormat) {
   MessagePayloadParser parser(message);
   EXPECT_FALSE(parser.IsValid());
   EXPECT_EQ(parser.GetFailureReason(),
-            GCMDecryptionResult::INVALID_BINARY_HEADER_PUBLIC_KEY_FORMAT);
+            fcm::FcmDecryptionResult::INVALID_BINARY_HEADER_PUBLIC_KEY_FORMAT);
 }
 
 }  // namespace

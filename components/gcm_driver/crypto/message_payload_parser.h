@@ -12,9 +12,11 @@
 
 #include "base/check.h"
 
-namespace gcm {
+namespace fcm {
+enum class FcmDecryptionResult;
+}  // namespace fcm
 
-enum class GCMDecryptionResult;
+namespace gcm {
 
 // Parses and validates the binary message payload included in messages that
 // are encrypted per draft-ietf-webpush-encryption-08:
@@ -48,7 +50,7 @@ class MessagePayloadParser {
 
   // Returns the failure reason when the given payload could not be parsed. Must
   // only be called when IsValid() returns false.
-  GCMDecryptionResult GetFailureReason() const {
+  fcm::FcmDecryptionResult GetFailureReason() const {
     DCHECK(failure_reason_.has_value());
     return failure_reason_.value();
   }
@@ -85,7 +87,7 @@ class MessagePayloadParser {
 
  private:
   bool is_valid_ = false;
-  std::optional<GCMDecryptionResult> failure_reason_;
+  std::optional<fcm::FcmDecryptionResult> failure_reason_;
 
   std::string salt_;
   uint32_t record_size_ = 0;

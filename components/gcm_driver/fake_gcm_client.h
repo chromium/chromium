@@ -11,9 +11,13 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "components/fcm/engine/fcm_stats_recorder_impl.h"
 #include "components/gcm_driver/gcm_client.h"
-#include "components/gcm_driver/gcm_stats_recorder_impl.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+
+namespace fcm {
+enum class FcmDecryptionResult;
+}  // namespace fcm
 
 namespace base {
 class SequencedTaskRunner;
@@ -70,7 +74,7 @@ class FakeGCMClient : public GCMClient {
             const std::string& receiver_id,
             const OutgoingMessage& message) override;
   void RecordDecryptionFailure(const std::string& app_id,
-                               GCMDecryptionResult result) override;
+                               fcm::FcmDecryptionResult result) override;
   void SetRecording(bool recording) override;
   void ClearActivityLogs() override;
   GCMStatistics GetStatistics() const override;
@@ -129,7 +133,7 @@ class FakeGCMClient : public GCMClient {
   scoped_refptr<base::SequencedTaskRunner> ui_thread_;
   scoped_refptr<base::SequencedTaskRunner> io_thread_;
   std::map<std::string, std::pair<std::string, std::string>> instance_id_data_;
-  GCMStatsRecorderImpl recorder_;
+  fcm::FcmStatsRecorderImpl recorder_;
   base::WeakPtrFactory<FakeGCMClient> weak_ptr_factory_{this};
 };
 

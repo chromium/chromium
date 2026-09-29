@@ -2,21 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/gcm_driver/gcm_stats_recorder_impl.h"
+#include "components/fcm/engine/fcm_stats_recorder_impl.h"
 
+#include <inttypes.h>
 
 #include "base/containers/circular_deque.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "components/gcm_driver/crypto/gcm_decryption_result.h"
-#include "components/gcm_driver/crypto/gcm_encryption_provider.h"
+#include "components/fcm/crypto/fcm_decryption_result.h"
 #include "google_apis/gcm/engine/mcs_client.h"
 #include "google_apis/gcm/engine/registration_request.h"
 
-namespace gcm {
+namespace fcm {
 
 const uint32_t MAX_LOGGED_ACTIVITY_COUNT = 100;
 
@@ -25,7 +26,7 @@ namespace {
 // Insert an item to the front of deque while maintaining the size of the deque.
 // Overflow item is discarded.
 //
-// DANGER: the returned pointer will not be valind if the queue is modified.
+// DANGER: the returned pointer will not be valid if the queue is modified.
 template <typename T>
 T* InsertCircularBuffer(base::circular_deque<T>* q, const T& item) {
   DCHECK(q);
@@ -163,16 +164,16 @@ std::string GetUnregistrationStatusString(
 
 }  // namespace
 
-GCMStatsRecorderImpl::GCMStatsRecorderImpl()
+FcmStatsRecorderImpl::FcmStatsRecorderImpl()
     : is_recording_(false), delegate_(nullptr) {}
 
-GCMStatsRecorderImpl::~GCMStatsRecorderImpl() = default;
+FcmStatsRecorderImpl::~FcmStatsRecorderImpl() = default;
 
-void GCMStatsRecorderImpl::SetDelegate(Delegate* delegate) {
+void FcmStatsRecorderImpl::SetDelegate(Delegate* delegate) {
   delegate_ = delegate;
 }
 
-void GCMStatsRecorderImpl::Clear() {
+void FcmStatsRecorderImpl::Clear() {
   checkin_activities_.clear();
   connection_activities_.clear();
   registration_activities_.clear();
@@ -181,128 +182,134 @@ void GCMStatsRecorderImpl::Clear() {
   decryption_failure_activities_.clear();
 }
 
-void GCMStatsRecorderImpl::NotifyActivityRecorded() {
-  if (delegate_)
+void FcmStatsRecorderImpl::NotifyActivityRecorded() {
+  if (delegate_) {
     delegate_->OnActivityRecorded();
+  }
 }
 
-void GCMStatsRecorderImpl::RecordDecryptionFailure(const std::string& app_id,
-                                                   GCMDecryptionResult result) {
-  DCHECK_NE(result, GCMDecryptionResult::UNENCRYPTED);
-  DCHECK_NE(result, GCMDecryptionResult::DECRYPTED_DRAFT_03);
-  DCHECK_NE(result, GCMDecryptionResult::DECRYPTED_DRAFT_08);
-  if (!is_recording_)
+void FcmStatsRecorderImpl::RecordDecryptionFailure(const std::string& app_id,
+                                                   FcmDecryptionResult result) {
+  DCHECK_NE(result, FcmDecryptionResult::UNENCRYPTED);
+  DCHECK_NE(result, FcmDecryptionResult::DECRYPTED_DRAFT_03);
+  DCHECK_NE(result, FcmDecryptionResult::DECRYPTED_DRAFT_08);
+  if (!is_recording_) {
     return;
+  }
 
   DecryptionFailureActivity data;
-  DecryptionFailureActivity* inserted_data = InsertCircularBuffer(
-      &decryption_failure_activities_, data);
+  DecryptionFailureActivity* inserted_data =
+      InsertCircularBuffer(&decryption_failure_activities_, data);
   inserted_data->app_id = app_id;
-  inserted_data->details = ToGCMDecryptionResultDetailsString(result);
+  inserted_data->details = ToFcmDecryptionResultDetailsString(result);
 
   NotifyActivityRecorded();
 }
 
-void GCMStatsRecorderImpl::RecordCheckin(
-    const std::string& event,
-    const std::string& details) {
+void FcmStatsRecorderImpl::RecordCheckin(const std::string& event,
+                                         const std::string& details) {
   CheckinActivity data;
-  CheckinActivity* inserted_data = InsertCircularBuffer(
-      &checkin_activities_, data);
+  CheckinActivity* inserted_data =
+      InsertCircularBuffer(&checkin_activities_, data);
   inserted_data->event = event;
   inserted_data->details = details;
   NotifyActivityRecorded();
 }
 
-void GCMStatsRecorderImpl::RecordCheckinInitiated(uint64_t android_id) {
-  if (!is_recording_)
+void FcmStatsRecorderImpl::RecordCheckinInitiated(uint64_t android_id) {
+  if (!is_recording_) {
     return;
+  }
   RecordCheckin("Checkin initiated",
                 base::StringPrintf("Android Id: %" PRIu64, android_id));
 }
 
-void GCMStatsRecorderImpl::RecordCheckinDelayedDueToBackoff(
+void FcmStatsRecorderImpl::RecordCheckinDelayedDueToBackoff(
     int64_t delay_msec) {
-  if (!is_recording_)
+  if (!is_recording_) {
     return;
+  }
   RecordCheckin("Checkin backoff",
-                base::StringPrintf("Delayed for %" PRId64 " msec",
-                                   delay_msec));
+                base::StringPrintf("Delayed for %" PRId64 " msec", delay_msec));
 }
 
-void GCMStatsRecorderImpl::RecordCheckinSuccess() {
-  if (!is_recording_)
+void FcmStatsRecorderImpl::RecordCheckinSuccess() {
+  if (!is_recording_) {
     return;
+  }
   RecordCheckin("Checkin succeeded", std::string());
 }
 
-void GCMStatsRecorderImpl::RecordCheckinFailure(const std::string& status,
+void FcmStatsRecorderImpl::RecordCheckinFailure(const std::string& status,
                                                 bool will_retry) {
-  if (!is_recording_)
+  if (!is_recording_) {
     return;
-  RecordCheckin("Checkin failed", base::StringPrintf(
-      "%s.%s",
-      status.c_str(),
-      will_retry ? " Will retry." : "Will not retry."));
+  }
+  RecordCheckin(
+      "Checkin failed",
+      base::StringPrintf("%s.%s", status.c_str(),
+                         will_retry ? " Will retry." : "Will not retry."));
 }
 
-void GCMStatsRecorderImpl::RecordConnection(
-    const std::string& event,
-    const std::string& details) {
+void FcmStatsRecorderImpl::RecordConnection(const std::string& event,
+                                            const std::string& details) {
   ConnectionActivity data;
-  ConnectionActivity* inserted_data = InsertCircularBuffer(
-      &connection_activities_, data);
+  ConnectionActivity* inserted_data =
+      InsertCircularBuffer(&connection_activities_, data);
   inserted_data->event = event;
   inserted_data->details = details;
   NotifyActivityRecorded();
 }
 
-void GCMStatsRecorderImpl::RecordConnectionInitiated(const std::string& host) {
-  if (!is_recording_)
+void FcmStatsRecorderImpl::RecordConnectionInitiated(const std::string& host) {
+  if (!is_recording_) {
     return;
+  }
 
   RecordConnection("Connection initiated", host);
 }
 
-void GCMStatsRecorderImpl::RecordConnectionDelayedDueToBackoff(
+void FcmStatsRecorderImpl::RecordConnectionDelayedDueToBackoff(
     int64_t delay_msec) {
-  if (!is_recording_)
+  if (!is_recording_) {
     return;
+  }
 
-  RecordConnection("Connection backoff",
-                   base::StringPrintf("Delayed for %" PRId64 " msec",
-                                      delay_msec));
+  RecordConnection(
+      "Connection backoff",
+      base::StringPrintf("Delayed for %" PRId64 " msec", delay_msec));
 }
 
-void GCMStatsRecorderImpl::RecordConnectionSuccess() {
-  if (!is_recording_)
+void FcmStatsRecorderImpl::RecordConnectionSuccess() {
+  if (!is_recording_) {
     return;
+  }
   RecordConnection("Connection succeeded", std::string());
 }
 
-void GCMStatsRecorderImpl::RecordConnectionFailure(int network_error) {
-  if (!is_recording_)
+void FcmStatsRecorderImpl::RecordConnectionFailure(int network_error) {
+  if (!is_recording_) {
     return;
+  }
   RecordConnection("Connection failed",
                    base::StringPrintf("With network error %d", network_error));
 }
 
-void GCMStatsRecorderImpl::RecordConnectionResetSignaled(
-      ConnectionFactory::ConnectionResetReason reason) {
-  if (!is_recording_)
+void FcmStatsRecorderImpl::RecordConnectionResetSignaled(
+    gcm::ConnectionFactory::ConnectionResetReason reason) {
+  if (!is_recording_) {
     return;
-  RecordConnection("Connection reset",
-                   GetConnectionResetReasonString(reason));
+  }
+  RecordConnection("Connection reset", GetConnectionResetReasonString(reason));
 }
 
-void GCMStatsRecorderImpl::RecordRegistration(
-    const std::string& app_id,
-    const std::string& source,
-    const std::string& event,
-    const std::string& details) {
+void FcmStatsRecorderImpl::RecordRegistration(const std::string& app_id,
+                                              const std::string& source,
+                                              const std::string& event,
+                                              const std::string& details) {
   RegistrationActivity data;
-  RegistrationActivity* inserted_data = InsertCircularBuffer(
-      &registration_activities_, data);
+  RegistrationActivity* inserted_data =
+      InsertCircularBuffer(&registration_activities_, data);
   inserted_data->app_id = app_id;
   inserted_data->source = source;
   inserted_data->event = event;
@@ -310,88 +317,84 @@ void GCMStatsRecorderImpl::RecordRegistration(
   NotifyActivityRecorded();
 }
 
-void GCMStatsRecorderImpl::RecordRegistrationSent(
+void FcmStatsRecorderImpl::RecordRegistrationSent(
     const std::string& app_id,
     const std::string& sender_ids) {
   UMA_HISTOGRAM_COUNTS_1M("GCM.RegistrationRequest", 1);
-  if (!is_recording_)
+  if (!is_recording_) {
     return;
-  RecordRegistration(app_id, sender_ids,
-                     "Registration request sent", std::string());
+  }
+  RecordRegistration(app_id, sender_ids, "Registration request sent",
+                     std::string());
 }
 
-void GCMStatsRecorderImpl::RecordRegistrationResponse(
+void FcmStatsRecorderImpl::RecordRegistrationResponse(
     const std::string& app_id,
     const std::string& source,
-    RegistrationRequest::Status status) {
-  if (!is_recording_)
+    gcm::RegistrationRequest::Status status) {
+  if (!is_recording_) {
     return;
-  RecordRegistration(app_id, source,
-                     "Registration response received",
+  }
+  RecordRegistration(app_id, source, "Registration response received",
                      GetRegistrationStatusString(status));
 }
 
-void GCMStatsRecorderImpl::RecordRegistrationRetryDelayed(
+void FcmStatsRecorderImpl::RecordRegistrationRetryDelayed(
     const std::string& app_id,
     const std::string& source,
     int64_t delay_msec,
     int retries_left) {
-  if (!is_recording_)
+  if (!is_recording_) {
     return;
+  }
   RecordRegistration(
-      app_id,
-      source,
-      "Registration retry delayed",
+      app_id, source, "Registration retry delayed",
       base::StringPrintf("Delayed for %" PRId64 " msec, retries left: %d",
-                         delay_msec,
-                         retries_left));
+                         delay_msec, retries_left));
 }
 
-void GCMStatsRecorderImpl::RecordUnregistrationSent(const std::string& app_id,
+void FcmStatsRecorderImpl::RecordUnregistrationSent(const std::string& app_id,
                                                     const std::string& source) {
-  if (!is_recording_)
+  if (!is_recording_) {
     return;
+  }
   RecordRegistration(app_id, source, "Unregistration request sent",
                      std::string());
 }
 
-void GCMStatsRecorderImpl::RecordUnregistrationResponse(
+void FcmStatsRecorderImpl::RecordUnregistrationResponse(
     const std::string& app_id,
     const std::string& source,
-    UnregistrationRequest::Status status) {
-  if (!is_recording_)
+    gcm::UnregistrationRequest::Status status) {
+  if (!is_recording_) {
     return;
-  RecordRegistration(app_id,
-                     source,
-                     "Unregistration response received",
+  }
+  RecordRegistration(app_id, source, "Unregistration response received",
                      GetUnregistrationStatusString(status));
 }
 
-void GCMStatsRecorderImpl::RecordUnregistrationRetryDelayed(
+void FcmStatsRecorderImpl::RecordUnregistrationRetryDelayed(
     const std::string& app_id,
     const std::string& source,
     int64_t delay_msec,
     int retries_left) {
-  if (!is_recording_)
+  if (!is_recording_) {
     return;
+  }
   RecordRegistration(
-      app_id,
-      source,
-      "Unregistration retry delayed",
+      app_id, source, "Unregistration retry delayed",
       base::StringPrintf("Delayed for %" PRId64 " msec, retries left: %d",
-                         delay_msec,
-                         retries_left));
+                         delay_msec, retries_left));
 }
 
-void GCMStatsRecorderImpl::RecordReceiving(
-    const std::string& app_id,
-    const std::string& from,
-    int message_byte_size,
-    const std::string& event,
-    const std::string& details) {
+void FcmStatsRecorderImpl::RecordReceiving(const std::string& app_id,
+                                           const std::string& from,
+                                           int message_byte_size,
+                                           const std::string& event,
+                                           const std::string& details) {
   ReceivingActivity data;
-  ReceivingActivity* inserted_data = InsertCircularBuffer(
-      &receiving_activities_, data);
+  ReceivingActivity* inserted_data =
+      InsertCircularBuffer(&receiving_activities_, data);
   inserted_data->app_id = app_id;
   inserted_data->from = from;
   inserted_data->message_byte_size = message_byte_size;
@@ -400,62 +403,58 @@ void GCMStatsRecorderImpl::RecordReceiving(
   NotifyActivityRecorded();
 }
 
-void GCMStatsRecorderImpl::RecordDataMessageReceived(
+void FcmStatsRecorderImpl::RecordDataMessageReceived(
     const std::string& app_id,
     const std::string& from,
     int message_byte_size,
     ReceivedMessageType message_type) {
-  if (!is_recording_)
+  if (!is_recording_) {
     return;
+  }
 
   switch (message_type) {
-    case GCMStatsRecorderImpl::DATA_MESSAGE:
+    case FcmStatsRecorderImpl::DATA_MESSAGE:
       RecordReceiving(app_id, from, message_byte_size, "Data msg received",
                       std::string());
       break;
-    case GCMStatsRecorderImpl::DELETED_MESSAGES:
+    case FcmStatsRecorderImpl::DELETED_MESSAGES:
       RecordReceiving(app_id, from, message_byte_size, "Data msg received",
                       "Message has been deleted on server");
       break;
   }
 }
 
-void GCMStatsRecorderImpl::CollectActivities(
+void FcmStatsRecorderImpl::CollectActivities(
     RecordedActivities* recorded_activities) const {
   recorded_activities->checkin_activities.insert(
       recorded_activities->checkin_activities.begin(),
-      checkin_activities_.begin(),
-      checkin_activities_.end());
+      checkin_activities_.begin(), checkin_activities_.end());
   recorded_activities->connection_activities.insert(
       recorded_activities->connection_activities.begin(),
-      connection_activities_.begin(),
-      connection_activities_.end());
+      connection_activities_.begin(), connection_activities_.end());
   recorded_activities->registration_activities.insert(
       recorded_activities->registration_activities.begin(),
-      registration_activities_.begin(),
-      registration_activities_.end());
+      registration_activities_.begin(), registration_activities_.end());
   recorded_activities->receiving_activities.insert(
       recorded_activities->receiving_activities.begin(),
-      receiving_activities_.begin(),
-      receiving_activities_.end());
+      receiving_activities_.begin(), receiving_activities_.end());
   recorded_activities->sending_activities.insert(
       recorded_activities->sending_activities.begin(),
-      sending_activities_.begin(),
-      sending_activities_.end());
+      sending_activities_.begin(), sending_activities_.end());
   recorded_activities->decryption_failure_activities.insert(
       recorded_activities->decryption_failure_activities.begin(),
       decryption_failure_activities_.begin(),
       decryption_failure_activities_.end());
 }
 
-void GCMStatsRecorderImpl::RecordSending(const std::string& app_id,
+void FcmStatsRecorderImpl::RecordSending(const std::string& app_id,
                                          const std::string& receiver_id,
                                          const std::string& message_id,
                                          const std::string& event,
                                          const std::string& details) {
   SendingActivity data;
-  SendingActivity* inserted_data = InsertCircularBuffer(
-      &sending_activities_, data);
+  SendingActivity* inserted_data =
+      InsertCircularBuffer(&sending_activities_, data);
   inserted_data->app_id = app_id;
   inserted_data->receiver_id = receiver_id;
   inserted_data->message_id = message_id;
@@ -464,26 +463,27 @@ void GCMStatsRecorderImpl::RecordSending(const std::string& app_id,
   NotifyActivityRecorded();
 }
 
-void GCMStatsRecorderImpl::RecordDataSentToWire(
-    const std::string& app_id,
-    const std::string& receiver_id,
-    const std::string& message_id,
-    int queued) {
-  if (!is_recording_)
+void FcmStatsRecorderImpl::RecordDataSentToWire(const std::string& app_id,
+                                                const std::string& receiver_id,
+                                                const std::string& message_id,
+                                                int queued) {
+  if (!is_recording_) {
     return;
+  }
   RecordSending(app_id, receiver_id, message_id, "Data msg sent to wire",
                 base::StringPrintf("Msg queued for %d seconds", queued));
 }
 
-void GCMStatsRecorderImpl::RecordNotifySendStatus(
+void FcmStatsRecorderImpl::RecordNotifySendStatus(
     const std::string& app_id,
     const std::string& receiver_id,
     const std::string& message_id,
     gcm::MCSClient::MessageSendStatus status,
     size_t byte_size,
     int ttl) {
-  if (!is_recording_)
+  if (!is_recording_) {
     return;
+  }
   RecordSending(
       app_id, receiver_id, message_id,
       base::StringPrintf("SEND status: %s",
@@ -491,14 +491,15 @@ void GCMStatsRecorderImpl::RecordNotifySendStatus(
       base::StringPrintf("Msg size: %zu bytes, TTL: %d", byte_size, ttl));
 }
 
-void GCMStatsRecorderImpl::RecordIncomingSendError(
+void FcmStatsRecorderImpl::RecordIncomingSendError(
     const std::string& app_id,
     const std::string& receiver_id,
     const std::string& message_id) {
-  if (!is_recording_)
+  if (!is_recording_) {
     return;
+  }
   RecordSending(app_id, receiver_id, message_id, "Received 'send error' msg",
                 std::string());
 }
 
-}  // namespace gcm
+}  // namespace fcm

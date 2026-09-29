@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_GCM_DRIVER_GCM_STATS_RECORDER_IMPL_H_
-#define COMPONENTS_GCM_DRIVER_GCM_STATS_RECORDER_IMPL_H_
+#ifndef COMPONENTS_FCM_ENGINE_FCM_STATS_RECORDER_IMPL_H_
+#define COMPONENTS_FCM_ENGINE_FCM_STATS_RECORDER_IMPL_H_
 
 #include <stdint.h>
 
@@ -12,30 +12,30 @@
 #include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
-#include "components/gcm_driver/gcm_activity.h"
+#include "components/fcm/fcm_activity.h"
 #include "google_apis/gcm/engine/connection_factory.h"
 #include "google_apis/gcm/engine/mcs_client.h"
 #include "google_apis/gcm/engine/registration_request.h"
 #include "google_apis/gcm/engine/unregistration_request.h"
 #include "google_apis/gcm/monitoring/gcm_stats_recorder.h"
 
-namespace gcm {
+namespace fcm {
 
-enum class GCMDecryptionResult;
+enum class FcmDecryptionResult;
 
 // Records GCM internal stats and activities for debugging purpose. Recording
 // can be turned on/off by calling set_is_recording(...) function. It is turned
 // off by default.
 // This class is not thread safe. It is meant to be owned by a gcm client
 // instance.
-class GCMStatsRecorderImpl : public GCMStatsRecorder {
+class FcmStatsRecorderImpl : public gcm::GCMStatsRecorder {
  public:
-  GCMStatsRecorderImpl();
+  FcmStatsRecorderImpl();
 
-  GCMStatsRecorderImpl(const GCMStatsRecorderImpl&) = delete;
-  GCMStatsRecorderImpl& operator=(const GCMStatsRecorderImpl&) = delete;
+  FcmStatsRecorderImpl(const FcmStatsRecorderImpl&) = delete;
+  FcmStatsRecorderImpl& operator=(const FcmStatsRecorderImpl&) = delete;
 
-  ~GCMStatsRecorderImpl() override;
+  ~FcmStatsRecorderImpl() override;
 
   // Set a delegate to receive callback from the recorder.
   void SetDelegate(Delegate* delegate);
@@ -45,7 +45,7 @@ class GCMStatsRecorderImpl : public GCMStatsRecorder {
 
   // Records a message decryption failure caused by |result| for |app_id|.
   void RecordDecryptionFailure(const std::string& app_id,
-                               GCMDecryptionResult result);
+                               FcmDecryptionResult result);
 
   // GCMStatsRecorder implementation:
   void RecordCheckinInitiated(uint64_t android_id) override;
@@ -58,12 +58,13 @@ class GCMStatsRecorderImpl : public GCMStatsRecorder {
   void RecordConnectionSuccess() override;
   void RecordConnectionFailure(int network_error) override;
   void RecordConnectionResetSignaled(
-      ConnectionFactory::ConnectionResetReason reason) override;
+      gcm::ConnectionFactory::ConnectionResetReason reason) override;
   void RecordRegistrationSent(const std::string& app_id,
                               const std::string& source) override;
-  void RecordRegistrationResponse(const std::string& app_id,
-                                  const std::string& source,
-                                  RegistrationRequest::Status status) override;
+  void RecordRegistrationResponse(
+      const std::string& app_id,
+      const std::string& source,
+      gcm::RegistrationRequest::Status status) override;
   void RecordRegistrationRetryDelayed(const std::string& app_id,
                                       const std::string& source,
                                       int64_t delay_msec,
@@ -73,7 +74,7 @@ class GCMStatsRecorderImpl : public GCMStatsRecorder {
   void RecordUnregistrationResponse(
       const std::string& app_id,
       const std::string& source,
-      UnregistrationRequest::Status status) override;
+      gcm::UnregistrationRequest::Status status) override;
   void RecordUnregistrationRetryDelayed(const std::string& app_id,
                                         const std::string& source,
                                         int64_t delay_msec,
@@ -89,7 +90,7 @@ class GCMStatsRecorderImpl : public GCMStatsRecorder {
   void RecordNotifySendStatus(const std::string& app_id,
                               const std::string& receiver_id,
                               const std::string& message_id,
-                              MCSClient::MessageSendStatus status,
+                              gcm::MCSClient::MessageSendStatus status,
                               size_t byte_size,
                               int ttl) override;
   void RecordIncomingSendError(const std::string& app_id,
@@ -129,11 +130,9 @@ class GCMStatsRecorderImpl : public GCMStatsRecorder {
   // recorded.
   void NotifyActivityRecorded();
 
-  void RecordCheckin(const std::string& event,
-                     const std::string& details);
+  void RecordCheckin(const std::string& event, const std::string& details);
 
-  void RecordConnection(const std::string& event,
-                        const std::string& details);
+  void RecordConnection(const std::string& event, const std::string& details);
 
   void RecordRegistration(const std::string& app_id,
                           const std::string& source,
@@ -164,6 +163,6 @@ class GCMStatsRecorderImpl : public GCMStatsRecorder {
       decryption_failure_activities_;
 };
 
-}  // namespace gcm
+}  // namespace fcm
 
-#endif  // COMPONENTS_GCM_DRIVER_GCM_STATS_RECORDER_IMPL_H_
+#endif  // COMPONENTS_FCM_ENGINE_FCM_STATS_RECORDER_IMPL_H_

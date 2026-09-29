@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "components/gcm_driver/crypto/gcm_decryption_result.h"
+#include "components/fcm/crypto/fcm_decryption_result.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace gcm {
@@ -59,10 +59,10 @@ TEST_F(GCMStatsRecorderAndroidTest, RecordsAndCallsDelegate) {
   EXPECT_EQ(5u, activity_recorded_calls());
 
   recorder.RecordDecryptionFailure(kTestAppId,
-                                   GCMDecryptionResult::INVALID_PAYLOAD);
+                                   fcm::FcmDecryptionResult::INVALID_PAYLOAD);
   EXPECT_EQ(6u, activity_recorded_calls());
 
-  RecordedActivities activities;
+  fcm::RecordedActivities activities;
   recorder.CollectActivities(&activities);
 
   EXPECT_EQ(4u, activities.registration_activities.size());
@@ -77,7 +77,7 @@ TEST_F(GCMStatsRecorderAndroidTest, RecordsAndCallsDelegate) {
 
   recorder.Clear();
 
-  RecordedActivities empty_activities;
+  fcm::RecordedActivities empty_activities;
   recorder.CollectActivities(&empty_activities);
 
   EXPECT_EQ(0u, empty_activities.registration_activities.size());
@@ -93,7 +93,7 @@ TEST_F(GCMStatsRecorderAndroidTest, NullDelegate) {
 
   recorder.RecordRegistrationSent(kTestAppId);
 
-  RecordedActivities activities;
+  fcm::RecordedActivities activities;
   recorder.CollectActivities(&activities);
 
   EXPECT_EQ(1u, activities.registration_activities.size());
@@ -105,7 +105,7 @@ TEST_F(GCMStatsRecorderAndroidTest, NotRecording) {
 
   recorder.RecordRegistrationSent(kTestAppId);
 
-  RecordedActivities activities;
+  fcm::RecordedActivities activities;
   recorder.CollectActivities(&activities);
 
   EXPECT_EQ(0u, activities.registration_activities.size());

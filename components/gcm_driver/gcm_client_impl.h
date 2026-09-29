@@ -21,8 +21,8 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/fcm/engine/fcm_stats_recorder_impl.h"
 #include "components/gcm_driver/gcm_client.h"
-#include "components/gcm_driver/gcm_stats_recorder_impl.h"
 #include "google_apis/gcm/base/mcs_message.h"
 #include "google_apis/gcm/engine/gcm_store.h"
 #include "google_apis/gcm/engine/gservices_settings.h"
@@ -140,7 +140,7 @@ class GCMClientImpl
             const std::string& receiver_id,
             const OutgoingMessage& message) override;
   void RecordDecryptionFailure(const std::string& app_id,
-                               GCMDecryptionResult result) override;
+                               fcm::FcmDecryptionResult result) override;
   void SetRecording(bool recording) override;
   void ClearActivityLogs() override;
   GCMStatistics GetStatistics() const override;
@@ -338,7 +338,7 @@ class GCMClientImpl
   std::unique_ptr<GCMInternalsBuilder> internals_builder_;
 
   // Recorder that logs GCM activities.
-  GCMStatsRecorderImpl recorder_;
+  fcm::FcmStatsRecorderImpl recorder_;
 
   // State of the GCM Client Implementation.
   State state_;

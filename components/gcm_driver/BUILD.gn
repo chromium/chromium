@@ -14,8 +14,6 @@ static_library("gcm_driver") {
   sources = [
     "features.cc",
     "features.h",
-    "gcm_activity.cc",
-    "gcm_activity.h",
     "gcm_app_handler.cc",
     "gcm_app_handler.h",
     "gcm_backoff_policy.cc",
@@ -42,6 +40,8 @@ static_library("gcm_driver") {
 
   public_deps = [
     "//base",
+    "//components/fcm",
+    "//components/fcm/crypto",
     "//components/gcm_driver/common",
     "//components/gcm_driver/crypto",
     "//components/gcm_driver/instance_id",
@@ -98,8 +98,6 @@ static_library("gcm_driver") {
       "gcm_desktop_utils.h",
       "gcm_driver_desktop.cc",
       "gcm_driver_desktop.h",
-      "gcm_stats_recorder_impl.cc",
-      "gcm_stats_recorder_impl.h",
     ]
     deps += [
       "//components/crx_file",
@@ -125,7 +123,10 @@ static_library("test_support") {
     "fake_gcm_profile_service.h",
   ]
 
-  public_deps = [ ":gcm_driver" ]
+  public_deps = [
+    ":gcm_driver",
+    "//components/fcm/crypto",
+  ]
   deps = [
     "//base",
     "//components/gcm_driver/instance_id:test_support",
@@ -156,7 +157,10 @@ static_library("test_support") {
       "fake_gcm_client_factory.cc",
       "fake_gcm_client_factory.h",
     ]
-    deps += [ "//google_apis/gcm:test_support" ]
+    deps += [
+      "//components/fcm/engine",
+      "//google_apis/gcm:test_support",
+    ]
   }
 }
 
@@ -171,6 +175,8 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/fcm",
+    "//components/fcm/crypto",
     "//components/gcm_driver/crypto",
     "//components/os_crypt/browser:test_support",
     "//components/prefs:test_support",
@@ -194,10 +200,10 @@ source_set("unit_tests") {
       "gcm_client_impl_unittest.cc",
       "gcm_driver_desktop_unittest.cc",
       "gcm_driver_unittest.cc",
-      "gcm_stats_recorder_impl_unittest.cc",
     ]
 
     deps += [
+      "//components/fcm/engine",
       "//components/signin/public/identity_manager:test_support",
       "//google_apis",
     ]

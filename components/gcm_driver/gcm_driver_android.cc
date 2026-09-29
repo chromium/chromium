@@ -15,6 +15,7 @@
 #include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "components/fcm/crypto/fcm_decryption_result.h"
 #include "third_party/jni_zero/default_conversions.h"
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "components/gcm_driver/android/jni_headers/GCMDriver_jni.h"
@@ -250,8 +251,9 @@ void GCMDriverAndroid::SendImpl(const std::string& app_id,
   NOTIMPLEMENTED();
 }
 
-void GCMDriverAndroid::RecordDecryptionFailure(const std::string& app_id,
-                                               GCMDecryptionResult result) {
+void GCMDriverAndroid::RecordDecryptionFailure(
+    const std::string& app_id,
+    fcm::FcmDecryptionResult result) {
   recorder_.RecordDecryptionFailure(app_id, result);
 }
 

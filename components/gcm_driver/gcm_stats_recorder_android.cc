@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/gcm_driver/gcm_stats_recorder_android.h"
+
 #include <stddef.h>
 
-#include "components/gcm_driver/crypto/gcm_decryption_result.h"
-#include "components/gcm_driver/gcm_stats_recorder_android.h"
+#include "components/fcm/crypto/fcm_decryption_result.h"
 
 namespace gcm {
 
@@ -30,7 +31,7 @@ void GCMStatsRecorderAndroid::Clear() {
 }
 
 void GCMStatsRecorderAndroid::CollectActivities(
-    RecordedActivities* recorded_activities) const {
+    fcm::RecordedActivities* recorded_activities) const {
   DCHECK(recorded_activities);
 
   recorded_activities->registration_activities.insert(
@@ -88,7 +89,7 @@ void GCMStatsRecorderAndroid::RecordUnregistrationResponse(
 void GCMStatsRecorderAndroid::RecordRegistration(const std::string& app_id,
                                                  const std::string& event,
                                                  const std::string& details) {
-  RegistrationActivity activity;
+  fcm::RegistrationActivity activity;
   activity.app_id = app_id;
   activity.event = event;
   activity.details = details;
@@ -110,7 +111,7 @@ void GCMStatsRecorderAndroid::RecordDataMessageReceived(
   if (!is_recording_)
     return;
 
-  ReceivingActivity activity;
+  fcm::ReceivingActivity activity;
   activity.app_id = app_id;
   activity.from = from;
   activity.message_byte_size = message_byte_size;
@@ -126,16 +127,16 @@ void GCMStatsRecorderAndroid::RecordDataMessageReceived(
 
 void GCMStatsRecorderAndroid::RecordDecryptionFailure(
     const std::string& app_id,
-    GCMDecryptionResult result) {
-  DCHECK_NE(result, GCMDecryptionResult::UNENCRYPTED);
-  DCHECK_NE(result, GCMDecryptionResult::DECRYPTED_DRAFT_03);
-  DCHECK_NE(result, GCMDecryptionResult::DECRYPTED_DRAFT_08);
+    fcm::FcmDecryptionResult result) {
+  DCHECK_NE(result, fcm::FcmDecryptionResult::UNENCRYPTED);
+  DCHECK_NE(result, fcm::FcmDecryptionResult::DECRYPTED_DRAFT_03);
+  DCHECK_NE(result, fcm::FcmDecryptionResult::DECRYPTED_DRAFT_08);
   if (!is_recording_)
     return;
 
-  DecryptionFailureActivity activity;
+  fcm::DecryptionFailureActivity activity;
   activity.app_id = app_id;
-  activity.details = ToGCMDecryptionResultDetailsString(result);
+  activity.details = fcm::ToFcmDecryptionResultDetailsString(result);
 
   decryption_failure_activities_.push_front(activity);
   if (decryption_failure_activities_.size() > MAX_LOGGED_ACTIVITY_COUNT)

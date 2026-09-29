@@ -4,6 +4,8 @@
 
 static_library("fcm") {
   sources = [
+    "fcm_activity.cc",
+    "fcm_activity.h",
     "fcm_app_handler.h",
     "fcm_driver.cc",
     "fcm_driver.h",
@@ -22,6 +24,7 @@ static_library("fcm") {
   ]
 
   deps = [
+    "//components/fcm/crypto",
     "//google_apis/gcm",
   ]
 
@@ -31,8 +34,6 @@ static_library("fcm") {
       "fcm_driver_android.h",
     ]
     deps += [ "android:jni_headers" ]
-  } else {
-    deps += [ "//components/fcm/engine" ]
   }
 }
 
@@ -44,11 +45,14 @@ source_set("unit_tests") {
     ":fcm",
     "//base",
     "//base/test:test_support",
+    "//google_apis/gcm",
     "//testing/gmock",
     "//testing/gtest",
   ]
 
   if (is_android) {
     sources += [ "fcm_driver_android_unittest.cc" ]
+  } else {
+    deps += [ "//components/fcm/engine:unit_tests" ]
   }
 }

@@ -13,8 +13,8 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "components/fcm/fcm_activity.h"
 #include "components/gcm_driver/common/gcm_message.h"
-#include "components/gcm_driver/gcm_activity.h"
 #include "components/gcm_driver/registration_info.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -25,6 +25,10 @@ class FilePath;
 class RetainingOneShotTimer;
 class SequencedTaskRunner;
 }  // namespace base
+
+namespace fcm {
+enum class FcmDecryptionResult;
+}  // namespace fcm
 
 namespace net {
 class IPEndPoint;
@@ -39,7 +43,6 @@ namespace gcm {
 
 struct AccountMapping;
 class Encryptor;
-enum class GCMDecryptionResult;
 
 // Interface that encapsulates the network communications with the Google Cloud
 // Messaging server. This interface is not supposed to be thread-safe.
@@ -139,7 +142,7 @@ class GCMClient {
     int send_queue_size;
     int resend_queue_size;
 
-    RecordedActivities recorded_activities;
+    fcm::RecordedActivities recorded_activities;
   };
 
   // Information about account.
@@ -303,7 +306,7 @@ class GCMClient {
 
   // Records a decryption failure due to |result| for the |app_id|.
   virtual void RecordDecryptionFailure(const std::string& app_id,
-                                       GCMDecryptionResult result) = 0;
+                                       fcm::FcmDecryptionResult result) = 0;
 
   // Enables or disables internal activity recording.
   virtual void SetRecording(bool recording) = 0;

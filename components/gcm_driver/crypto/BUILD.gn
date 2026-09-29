@@ -8,8 +8,6 @@ static_library("crypto") {
   sources = [
     "encryption_header_parsers.cc",
     "encryption_header_parsers.h",
-    "gcm_decryption_result.cc",
-    "gcm_decryption_result.h",
     "gcm_encryption_provider.cc",
     "gcm_encryption_provider.h",
     "gcm_encryption_result.h",
@@ -27,6 +25,7 @@ static_library("crypto") {
 
   deps = [
     "//base",
+    "//components/fcm/crypto",
     "//components/gcm_driver/common",
     "//components/gcm_driver/crypto/proto",
     "//components/leveldb_proto",
@@ -68,6 +67,7 @@ source_set("unit_tests") {
     ":crypto",
     "//base",
     "//base/test:test_support",
+    "//components/fcm/crypto",
     "//components/gcm_driver/common",
     "//components/gcm_driver/crypto/proto",
     "//components/leveldb_proto",

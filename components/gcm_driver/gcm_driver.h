@@ -26,11 +26,14 @@ class FilePath;
 class SequencedTaskRunner;
 }  // namespace base
 
+namespace fcm {
+enum class FcmDecryptionResult;
+}  // namespace fcm
+
 namespace gcm {
 
 class GCMAppHandler;
 class GCMConnectionObserver;
-enum class GCMDecryptionResult;
 enum class GCMEncryptionResult;
 struct AccountMapping;
 
@@ -101,7 +104,8 @@ class GCMDriver {
   using EncryptMessageCallback =
       base::OnceCallback<void(GCMEncryptionResult result, std::string message)>;
   using DecryptMessageCallback =
-      base::OnceCallback<void(GCMDecryptionResult result, std::string message)>;
+      base::OnceCallback<void(fcm::FcmDecryptionResult result,
+                              std::string message)>;
 
   using GetGCMStatisticsCallback =
       base::OnceCallback<void(const GCMClient::GCMStatistics& stats)>;
@@ -318,7 +322,7 @@ class GCMDriver {
 
   // Platform-specific implementation of recording message decryption failures.
   virtual void RecordDecryptionFailure(const std::string& app_id,
-                                       GCMDecryptionResult result) = 0;
+                                       fcm::FcmDecryptionResult result) = 0;
 
   static void LogDeliveredToAppHandler(const std::string& app_id,
                                        bool has_app_handler);
@@ -382,7 +386,7 @@ class GCMDriver {
   // if |result| indicates that it is safe to do so, or will report a decryption
   // failure for the |app_id| otherwise.
   void DispatchMessageInternal(const std::string& app_id,
-                               GCMDecryptionResult result,
+                               fcm::FcmDecryptionResult result,
                                IncomingMessage message);
 
   // Buffers an unhandled message when no app handler is registered for
@@ -403,7 +407,7 @@ class GCMDriver {
                           std::string message);
 
   void OnMessageDecrypted(DecryptMessageCallback callback,
-                          GCMDecryptionResult result,
+                          fcm::FcmDecryptionResult result,
                           IncomingMessage message);
 
   // Callback map (from app_id to callback) for Register.

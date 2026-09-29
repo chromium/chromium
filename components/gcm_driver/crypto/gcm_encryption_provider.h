@@ -21,9 +21,12 @@ class FilePath;
 class SequencedTaskRunner;
 }  // namespace base
 
+namespace fcm {
+enum class FcmDecryptionResult;
+}  // namespace fcm
+
 namespace gcm {
 
-enum class GCMDecryptionResult;
 enum class GCMEncryptionResult;
 class GCMKeyStore;
 struct IncomingMessage;
@@ -40,7 +43,7 @@ class GCMEncryptionProvider {
   // by the |result|. The |message| contains the dispatchable message in success
   // cases, or will be initialized to an empty, default state for failure.
   using DecryptMessageCallback =
-      base::OnceCallback<void(GCMDecryptionResult result,
+      base::OnceCallback<void(fcm::FcmDecryptionResult result,
                               IncomingMessage message)>;
 
   // Callback to be invoked when a message may have been encrypted, as indicated

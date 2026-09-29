@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_GCM_DRIVER_GCM_ACTIVITY_H_
-#define COMPONENTS_GCM_DRIVER_GCM_ACTIVITY_H_
+#ifndef COMPONENTS_FCM_FCM_ACTIVITY_H_
+#define COMPONENTS_FCM_FCM_ACTIVITY_H_
 
 #include <string>
 #include <vector>
 
 #include "base/time/time.h"
 
-namespace gcm {
+namespace fcm {
 
 // Contains data that are common to all activity kinds below.
 struct Activity {
@@ -85,6 +85,6 @@ struct RecordedActivities {
   std::vector<DecryptionFailureActivity> decryption_failure_activities;
 };
 
-}  // namespace gcm
+}  // namespace fcm
 
-#endif  // COMPONENTS_GCM_DRIVER_GCM_ACTIVITY_H_
+#endif  // COMPONENTS_FCM_FCM_ACTIVITY_H_

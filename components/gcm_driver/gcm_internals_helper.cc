@@ -14,7 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
-#include "components/gcm_driver/gcm_activity.h"
+#include "components/fcm/fcm_activity.h"
 #include "components/gcm_driver/gcm_internals_constants.h"
 #include "components/gcm_driver/gcm_profile_service.h"
 
@@ -23,9 +23,9 @@ namespace gcm_driver {
 namespace {
 
 base::ListValue CheckinInfoToList(
-    const std::vector<gcm::CheckinActivity>& checkins) {
+    const std::vector<fcm::CheckinActivity>& checkins) {
   base::ListValue checkin_info;
-  for (const gcm::CheckinActivity& checkin : checkins) {
+  for (const fcm::CheckinActivity& checkin : checkins) {
     base::ListValue row;
     row.Append(checkin.time.InMillisecondsFSinceUnixEpoch());
     row.Append(checkin.event);
@@ -36,9 +36,9 @@ base::ListValue CheckinInfoToList(
 }
 
 base::ListValue ConnectionInfoToList(
-    const std::vector<gcm::ConnectionActivity>& connections) {
+    const std::vector<fcm::ConnectionActivity>& connections) {
   base::ListValue connection_info;
-  for (const gcm::ConnectionActivity& connection : connections) {
+  for (const fcm::ConnectionActivity& connection : connections) {
     base::ListValue row;
     row.Append(connection.time.InMillisecondsFSinceUnixEpoch());
     row.Append(connection.event);
@@ -49,9 +49,9 @@ base::ListValue ConnectionInfoToList(
 }
 
 base::ListValue RegistrationInfoToList(
-    const std::vector<gcm::RegistrationActivity>& registrations) {
+    const std::vector<fcm::RegistrationActivity>& registrations) {
   base::ListValue registration_info;
-  for (const gcm::RegistrationActivity& registration : registrations) {
+  for (const fcm::RegistrationActivity& registration : registrations) {
     base::ListValue row;
     row.Append(registration.time.InMillisecondsFSinceUnixEpoch());
     row.Append(registration.app_id);
@@ -64,9 +64,9 @@ base::ListValue RegistrationInfoToList(
 }
 
 base::ListValue ReceivingInfoToList(
-    const std::vector<gcm::ReceivingActivity>& receives) {
+    const std::vector<fcm::ReceivingActivity>& receives) {
   base::ListValue receive_info;
-  for (const gcm::ReceivingActivity& receive : receives) {
+  for (const fcm::ReceivingActivity& receive : receives) {
     base::ListValue row;
     row.Append(receive.time.InMillisecondsFSinceUnixEpoch());
     row.Append(receive.app_id);
@@ -80,9 +80,9 @@ base::ListValue ReceivingInfoToList(
 }
 
 base::ListValue SendingInfoToList(
-    const std::vector<gcm::SendingActivity>& sends) {
+    const std::vector<fcm::SendingActivity>& sends) {
   base::ListValue send_info;
-  for (const gcm::SendingActivity& send : sends) {
+  for (const fcm::SendingActivity& send : sends) {
     base::ListValue row;
     row.Append(send.time.InMillisecondsFSinceUnixEpoch());
     row.Append(send.app_id);
@@ -96,9 +96,9 @@ base::ListValue SendingInfoToList(
 }
 
 base::ListValue DecryptionFailureInfoToList(
-    const std::vector<gcm::DecryptionFailureActivity>& failures) {
+    const std::vector<fcm::DecryptionFailureActivity>& failures) {
   base::ListValue failure_info;
-  for (const gcm::DecryptionFailureActivity& failure : failures) {
+  for (const fcm::DecryptionFailureActivity& failure : failures) {
     base::ListValue row;
     row.Append(failure.time.InMillisecondsFSinceUnixEpoch());
     row.Append(failure.app_id);

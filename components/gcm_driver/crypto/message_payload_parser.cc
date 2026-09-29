@@ -11,7 +11,7 @@
 #include "base/containers/span_reader.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/string_view_util.h"
-#include "components/gcm_driver/crypto/gcm_decryption_result.h"
+#include "components/fcm/crypto/fcm_decryption_result.h"
 
 namespace gcm {
 
@@ -36,7 +36,8 @@ constexpr size_t kMinimumMessageSize =
 MessagePayloadParser::MessagePayloadParser(std::string_view message_view) {
   auto message = base::as_byte_span(message_view);
   if (message.size() < kMinimumMessageSize) {
-    failure_reason_ = GCMDecryptionResult::INVALID_BINARY_HEADER_PAYLOAD_LENGTH;
+    failure_reason_ =
+        fcm::FcmDecryptionResult::INVALID_BINARY_HEADER_PAYLOAD_LENGTH;
     return;
   }
 
@@ -48,7 +49,8 @@ MessagePayloadParser::MessagePayloadParser(std::string_view message_view) {
   record_size_ = *reader.ReadU32BigEndian();
 
   if (record_size_ < kMinimumRecordSize) {
-    failure_reason_ = GCMDecryptionResult::INVALID_BINARY_HEADER_RECORD_SIZE;
+    failure_reason_ =
+        fcm::FcmDecryptionResult::INVALID_BINARY_HEADER_RECORD_SIZE;
     return;
   }
 
@@ -56,14 +58,14 @@ MessagePayloadParser::MessagePayloadParser(std::string_view message_view) {
 
   if (public_key_length != kUncompressedPointSize) {
     failure_reason_ =
-        GCMDecryptionResult::INVALID_BINARY_HEADER_PUBLIC_KEY_LENGTH;
+        fcm::FcmDecryptionResult::INVALID_BINARY_HEADER_PUBLIC_KEY_LENGTH;
     return;
   }
 
   auto public_key = *reader.Read<kUncompressedPointSize>();
   if (public_key[0] != 0x04) {
     failure_reason_ =
-        GCMDecryptionResult::INVALID_BINARY_HEADER_PUBLIC_KEY_FORMAT;
+        fcm::FcmDecryptionResult::INVALID_BINARY_HEADER_PUBLIC_KEY_FORMAT;
     return;
   }
   public_key_ = std::string(base::as_string_view(public_key));

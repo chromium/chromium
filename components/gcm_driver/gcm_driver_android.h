@@ -96,7 +96,7 @@ class GCMDriverAndroid : public GCMDriver,
                 const std::string& receiver_id,
                 const OutgoingMessage& message) override;
   void RecordDecryptionFailure(const std::string& app_id,
-                               GCMDecryptionResult result) override;
+                               fcm::FcmDecryptionResult result) override;
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;

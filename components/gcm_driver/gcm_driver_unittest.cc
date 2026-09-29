@@ -18,7 +18,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread.h"
-#include "components/gcm_driver/crypto/gcm_decryption_result.h"
+#include "components/fcm/crypto/fcm_decryption_result.h"
 #include "components/gcm_driver/crypto/gcm_encryption_provider.h"
 #include "components/gcm_driver/crypto/gcm_encryption_result.h"
 #include "components/gcm_driver/fake_gcm_app_handler.h"
@@ -89,7 +89,7 @@ class GCMDriverBaseTest : public testing::Test {
   network::TestURLLoaderFactory& loader() { return test_url_loader_factory_; }
   GCMEncryptionResult encryption_result() { return encryption_result_; }
   const std::string& encrypted_message() { return encrypted_message_; }
-  GCMDecryptionResult decryption_result() { return decryption_result_; }
+  fcm::FcmDecryptionResult decryption_result() { return decryption_result_; }
   const std::string& decrypted_message() { return decrypted_message_; }
 
   void PumpIOLoop();
@@ -112,7 +112,8 @@ class GCMDriverBaseTest : public testing::Test {
 
   void GetEncryptionInfoCompleted(std::string p256dh, std::string auth_secret);
   void EncryptMessageCompleted(GCMEncryptionResult result, std::string message);
-  void DecryptMessageCompleted(GCMDecryptionResult result, std::string message);
+  void DecryptMessageCompleted(fcm::FcmDecryptionResult result,
+                               std::string message);
   void UnregisterCompleted(GCMClient::Result result);
 
  protected:
@@ -137,7 +138,8 @@ class GCMDriverBaseTest : public testing::Test {
   GCMEncryptionResult encryption_result_ =
       GCMEncryptionResult::ENCRYPTION_FAILED;
   std::string encrypted_message_;
-  GCMDecryptionResult decryption_result_ = GCMDecryptionResult::UNENCRYPTED;
+  fcm::FcmDecryptionResult decryption_result_ =
+      fcm::FcmDecryptionResult::UNENCRYPTED;
   std::string decrypted_message_;
 };
 
@@ -258,7 +260,7 @@ void GCMDriverBaseTest::EncryptMessageCompleted(GCMEncryptionResult result,
     std::move(async_operation_completed_callback_).Run();
 }
 
-void GCMDriverBaseTest::DecryptMessageCompleted(GCMDecryptionResult result,
+void GCMDriverBaseTest::DecryptMessageCompleted(fcm::FcmDecryptionResult result,
                                                 std::string message) {
   decryption_result_ = result;
   decrypted_message_ = std::move(message);
@@ -280,7 +282,7 @@ TEST_F(GCMDriverBaseTest, EncryptionDecryptionRoundTrip) {
       DecryptMessage(kTestAppID1, /* authorized_entity= */ "",
                      encrypted_message(), GCMDriverBaseTest::WAIT));
 
-  EXPECT_EQ(GCMDecryptionResult::DECRYPTED_DRAFT_08, decryption_result());
+  EXPECT_EQ(fcm::FcmDecryptionResult::DECRYPTED_DRAFT_08, decryption_result());
   EXPECT_EQ(message, decrypted_message());
 }
 
