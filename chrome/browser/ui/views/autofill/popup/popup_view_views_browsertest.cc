@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
+#include "components/autofill/core/browser/suggestions/one_time_passwords/otp_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/tabbed_pane_enums.h"
@@ -641,6 +642,14 @@ IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
        std::move(remove_suggestion), std::move(manage_suggestion)});
   PrepareSelectedCell(CellIndex{3, CellType::kContent});
   ShowAndVerifyUi(/*popup_has_parent=*/true);
+}
+
+IN_PROC_BROWSER_TEST_P(PopupViewViewsBrowsertest,
+                       InvokeUi_GmailOneTimePassword) {
+  PrepareSuggestions(
+      BuildOtpSuggestions({"1234"}, SuggestionType::kGmailOneTimePasswordEntry,
+                          "elisa.becket@gmail.com"));
+  ShowAndVerifyUi();
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

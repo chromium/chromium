@@ -212,6 +212,9 @@ void FormatLabel(views::Label& label,
     case FillingProduct::kIdentityCredential:
       label.SetMaximumWidthSingleLine(max_width);
       break;
+    case FillingProduct::kOneTimePassword:
+      label.SetMaximumWidthSingleLine(kAutofillPopupUsernameMaxWidth);
+      break;
     case FillingProduct::kCreditCard:
       if (text.should_truncate.value()) {
         label.SetMaximumWidthSingleLine(max_width);
@@ -224,7 +227,6 @@ void FormatLabel(views::Label& label,
     case FillingProduct::kPassword:
     case FillingProduct::kDataList:
     case FillingProduct::kNone:
-    case FillingProduct::kOneTimePassword:
       break;
   }
 }
@@ -369,11 +371,16 @@ std::unique_ptr<PopupRowContentView> CreateFooterPopupRowContentView(
   view->SetMinimumCrossAxisSize(
       views::MenuConfig::instance().touchable_menu_height);
 
+  const views::style::TextStyle main_text_style =
+      suggestion.type == SuggestionType::kOpenGmailForOtps
+          ? kMainTextStyle
+          : kMainTextStyleLight;
   std::unique_ptr<views::Label> main_text_label = CreateMainTextLabel(
-      suggestion, /*show_new_badge=*/std::nullopt, kMainTextStyleLight);
+      suggestion, /*show_new_badge=*/std::nullopt, main_text_style);
   // TODO(crbug.com/345709988): Move this to CreateMainTextLabel. See
   // https://crrev.com/c/5605735/comment/970405c2_cbb55e85
-  if (suggestion.IsSelectable()) {
+  if (suggestion.IsSelectable() &&
+      suggestion.type != SuggestionType::kOpenGmailForOtps) {
     main_text_label->SetEnabledColor(ui::kColorLabelForegroundSecondary);
   }
   main_text_label->SetEnabled(!suggestion.is_loading);
