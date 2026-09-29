@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_alert_dialog_overlay.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_confirm_dialog_overlay.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_prompt_dialog_overlay.h"
+#import "ios/chrome/browser/overlays/model/public/web_content_area/spinning_overlay_request_config.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group_range.h"
@@ -46,6 +47,7 @@ const char kBreadcrumbOverlayActivated[] = "#activated";
 const char kBreadcrumbOverlayHttpAuth[] = "#http-auth";
 const char kBreadcrumbOverlayAlert[] = "#alert";
 const char kBreadcrumbOverlayAppLaunch[] = "#app-launch";
+const char kBreadcrumbOverlayLoading[] = "#loading";
 const char kBreadcrumbOverlayJsAlert[] = "#js-alert";
 const char kBreadcrumbOverlayJsConfirm[] = "#js-confirm";
 const char kBreadcrumbOverlayJsPrompt[] = "#js-prompt";
@@ -193,6 +195,8 @@ void BreadcrumbManagerBrowserAgent::WillShowOverlay(OverlayPresenter* presenter,
     event.push_back(kBreadcrumbOverlayJsPrompt);
   } else if (request->GetConfig<alert_overlays::AlertRequest>()) {
     event.push_back(kBreadcrumbOverlayAlert);
+  } else if (request->GetConfig<SpinningOverlayRequestConfig>()) {
+    event.push_back(kBreadcrumbOverlayLoading);
   } else {
     NOTREACHED();  // Missing breadcrumbs for the dialog.
   }
