@@ -263,6 +263,13 @@ BASE_DECLARE_FEATURE(kUseLoadingStateToDetectBackgroundTitleOrFaviconUpdate);
 
 BASE_DECLARE_FEATURE(kGlicActuationPriorityVoter);
 
+// When enabled, casts a kUserBlocking vote for every frame of a page that an
+// embedder is withholding from view until it is ready to be shown (see
+// PageLiveStateDecorator::MarkWithheldFromView). Fixes a deadlock where such a
+// page is deprioritized for being hidden, so it loads slowly, so it is never
+// shown (crbug.com/549552319).
+BASE_DECLARE_FEATURE(kPMWithheldFromViewVoter);
+
 // When enabled, ignores kMediaQueryChange favicon updates (e.g.
 // prefers-color-scheme toggles) when determining whether a background tab
 // updated its favicon.

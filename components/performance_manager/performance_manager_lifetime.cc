@@ -22,6 +22,7 @@
 #include "components/performance_manager/execution_context_priority/glic_actuation_priority_voter.h"
 #include "components/performance_manager/execution_context_priority/inherit_client_priority_voter.h"
 #include "components/performance_manager/execution_context_priority/loading_page_voter.h"
+#include "components/performance_manager/execution_context_priority/withheld_from_view_voter.h"
 #include "components/performance_manager/graph/frame_node_impl_describer.h"
 #include "components/performance_manager/graph/page_node_impl_describer.h"
 #include "components/performance_manager/graph/process_node_impl_describer.h"
@@ -84,6 +85,16 @@ void AddVoters(GraphImpl* graph, PrefService* pref_service) {
       priority_voting_system
           ->AddPriorityVoter<execution_context_priority::FrameVisibilityVoter>(
               policy_settings.ignore_main_frame_visibility);
+
+      // Casts a USER_BLOCKING vote for every frame of a page that an embedder
+      // is withholding from view until it is ready. Gated on the same settings
+      // as FrameVisibilityVoter: an embedder that opted out of
+      // visibility-driven priority has also opted out of this.
+      if (base::FeatureList::IsEnabled(features::kPMWithheldFromViewVoter)) {
+        priority_voting_system->AddPriorityVoter<
+            execution_context_priority::WithheldFromViewVoter>(
+            policy_settings.ignore_main_frame_visibility);
+      }
     }
 
     // Casts a USER_BLOCKING vote when a frame is audible.

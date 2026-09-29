@@ -70,6 +70,7 @@ source_set("side_panel") {
     "//chrome/common",
     "//chrome/common/read_anything:mojo_bindings",
     "//components/omnibox/browser",
+    "//components/performance_manager",
     "//components/prefs",
     "//components/search_engines",
     "//content/public/browser",

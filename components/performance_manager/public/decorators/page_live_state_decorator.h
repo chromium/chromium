@@ -6,6 +6,7 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_DECORATORS_PAGE_LIVE_STATE_DECORATOR_H_
 
 #include <iosfwd>
+#include <memory>
 
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -114,6 +115,50 @@ class PageLiveStateDecorator
       content::WebContents* contents,
       bool is_glic_pinned_to_visible_instance);
 
+  // A token expressing that an embedder is deliberately keeping a page out of
+  // view until it is ready to be shown, while a user waits for it (e.g. an
+  // extension action popup, or a side panel whose WebUI has been requested but
+  // has not signalled readiness yet).
+  //
+  // While a token exists for a page, all of its frames are prioritized as if
+  // they were visible. This has to be expressed explicitly because a withheld
+  // `WebContents` reports its visibility as `HIDDEN`, so Performance Manager
+  // cannot otherwise tell a page that a user is waiting to see from an
+  // ordinary background page.
+  //
+  // These objects shouldn't be created directly, they should be acquired by
+  // calling MarkWithheldFromView().
+  class ScopedWithheldFromView {
+   public:
+    ScopedWithheldFromView(const ScopedWithheldFromView&) = delete;
+    ScopedWithheldFromView& operator=(const ScopedWithheldFromView&) = delete;
+    virtual ~ScopedWithheldFromView() = default;
+
+   protected:
+    ScopedWithheldFromView() = default;
+  };
+
+  // Records that the embedder is withholding `contents` from view, for the
+  // lifetime of the returned token. This does not hide anything: the caller
+  // is already keeping the page out of view, and is informing Performance
+  // Manager so that the page is not deprioritized for being hidden.
+  //
+  // Destroy the token as soon as the surface is shown, or as soon as the
+  // embedder stops waiting to show it (e.g. the load was abandoned, or the
+  // content was cached for later). Holding one indefinitely defeats background
+  // prioritization for as long as it lives.
+  //
+  // Never returns null. `contents` must be registered with Performance
+  // Manager, except in tests, where the token is inert. The token also becomes
+  // inert if the PageNode goes away first, which is expected for a UI object
+  // torn down after its WebContents.
+  //
+  // At most one token may exist for a page at a time, since a page is
+  // withheld by the single UI surface waiting to show it. Overlapping tokens
+  // CHECK.
+  static std::unique_ptr<ScopedWithheldFromView> MarkWithheldFromView(
+      content::WebContents* contents);
+
   // Convenience functions to look up the given properties from the
   // PageLiveStateDecorator::Data for the given `contents`.
   static bool IsConnectedToUSBDevice(content::WebContents* contents);
@@ -133,6 +178,7 @@ class PageLiveStateDecorator
   static GlicActuationState GetGlicActuationState(
       content::WebContents* contents);
   static bool IsGlicPinnedToVisibleInstance(content::WebContents* contents);
+  static bool IsWithheldFromView(content::WebContents* contents);
   static bool UpdatedTitleOrFaviconInBackground(content::WebContents* contents);
 
  private:
@@ -185,6 +231,7 @@ class PageLiveStateDecorator::Data {
   virtual bool IsDevToolsOpen() const = 0;
   virtual GlicActuationState GetGlicActuationState() const = 0;
   virtual bool IsGlicPinnedToVisibleInstance() const = 0;
+  virtual bool IsWithheldFromView() const = 0;
   virtual bool UpdatedTitleOrFaviconInBackground() const = 0;
 
   static const Data* FromPageNode(const PageNode* page_node);
@@ -206,6 +253,10 @@ class PageLiveStateDecorator::Data {
   virtual void SetIsDevToolsOpenForTesting(bool value) = 0;
   virtual void SetGlicActuationStateForTesting(GlicActuationState value) = 0;
   virtual void SetIsGlicPinnedToVisibleInstanceForTesting(bool value) = 0;
+  // Returns a token equivalent to the one handed out by MarkWithheldFromView(),
+  // for tests that operate on a PageNode without a WebContents.
+  virtual std::unique_ptr<ScopedWithheldFromView>
+  MarkWithheldFromViewForTesting() = 0;
   virtual void SetUpdatedTitleOrFaviconInBackgroundForTesting(bool value) = 0;
 
  protected:
@@ -240,6 +291,7 @@ class PageLiveStateObserver : public base::CheckedObserver {
                                            GlicActuationState previous_state) {}
   virtual void OnIsGlicPinnedToVisibleInstanceChanged(
       const PageNode* page_node) {}
+  virtual void OnIsWithheldFromViewChanged(const PageNode* page_node) {}
   virtual void OnUpdatedTitleOrFaviconInBackgroundChanged(
       const PageNode* page_node) {}
 };

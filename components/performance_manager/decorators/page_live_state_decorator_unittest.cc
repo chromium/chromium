@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/test/gtest_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -61,6 +62,7 @@ class TestPageLiveStateObserver : public PageLiveStateObserver {
     kOnIsActiveTabChanged,
     kOnIsPinnedTabChanged,
     kOnIsDevToolsOpenChanged,
+    kOnIsWithheldFromViewChanged,
     kOnUpdatedTitleOrFaviconInBackgroundChanged,
   };
 
@@ -121,6 +123,10 @@ class TestPageLiveStateObserver : public PageLiveStateObserver {
     latest_function_called_ = ObserverFunction::kOnIsDevToolsOpenChanged;
     page_node_passed_ = page_node;
   }
+  void OnIsWithheldFromViewChanged(const PageNode* page_node) override {
+    latest_function_called_ = ObserverFunction::kOnIsWithheldFromViewChanged;
+    page_node_passed_ = page_node;
+  }
   void OnUpdatedTitleOrFaviconInBackgroundChanged(
       const PageNode* page_node) override {
     latest_function_called_ =
@@ -133,6 +139,13 @@ class TestPageLiveStateObserver : public PageLiveStateObserver {
   }
 
   const PageNode* page_node_passed() const { return page_node_passed_; }
+
+  // Clears the recorded call so that a subsequent absence of notifications can
+  // be asserted.
+  void Reset() {
+    latest_function_called_ = ObserverFunction::kNone;
+    page_node_passed_ = nullptr;
+  }
 
  private:
   ObserverFunction latest_function_called_ = ObserverFunction::kNone;
@@ -189,6 +202,11 @@ class PageLiveStateDecoratorTest : public PerformanceManagerTestHarness {
     ASSERT_TRUE(observer_);
     EXPECT_EQ(expected_call, observer_->latest_function_called());
     EXPECT_EQ(page_node.get(), observer_->page_node_passed());
+  }
+
+  void ResetObserverExpectation() {
+    ASSERT_TRUE(observer_);
+    observer_->Reset();
   }
 
   void DeleteObservedWebContents() {
@@ -426,6 +444,72 @@ TEST_F(PageLiveStateDecoratorTest, OnIsDevToolsOpenChanged) {
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+TEST_F(PageLiveStateDecoratorTest, WithheldFromView) {
+  EXPECT_FALSE(PageLiveStateDecorator::IsWithheldFromView(web_contents()));
+  testing::TestPageNodeProperty(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsWithheldFromView, false);
+
+  {
+    auto token = PageLiveStateDecorator::MarkWithheldFromView(web_contents());
+    EXPECT_TRUE(PageLiveStateDecorator::IsWithheldFromView(web_contents()));
+    testing::TestPageNodeProperty(
+        web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+        &PageLiveStateDecorator::Data::IsWithheldFromView, true);
+    VerifyObserverExpectation(TestPageLiveStateObserver::ObserverFunction::
+                                  kOnIsWithheldFromViewChanged);
+    ResetObserverExpectation();
+  }
+
+  EXPECT_FALSE(PageLiveStateDecorator::IsWithheldFromView(web_contents()));
+  testing::TestPageNodeProperty(
+      web_contents(), &PageLiveStateDecorator::Data::GetOrCreateForPageNode,
+      &PageLiveStateDecorator::Data::IsWithheldFromView, false);
+  VerifyObserverExpectation(TestPageLiveStateObserver::ObserverFunction::
+                                kOnIsWithheldFromViewChanged);
+}
+
+// A page is withheld by the single UI surface waiting to show it, so a second
+// overlapping token means two surfaces believe they own the same page.
+TEST_F(PageLiveStateDecoratorTest, OverlappingWithheldFromViewTokensCheck) {
+  auto token = PageLiveStateDecorator::MarkWithheldFromView(web_contents());
+  EXPECT_CHECK_DEATH(
+      { PageLiveStateDecorator::MarkWithheldFromView(web_contents()); });
+}
+
+// The token is independent of page visibility: a visible page can be withheld
+// from view, and becoming visible does not release the token.
+TEST_F(PageLiveStateDecoratorTest, WithheldFromViewIgnoresVisibility) {
+  base::WeakPtr<PageNode> node =
+      PerformanceManager::GetPrimaryPageNodeForWebContents(web_contents());
+  ASSERT_TRUE(node);
+  auto* node_impl = PageNodeImpl::FromNode(node.get());
+
+  node_impl->SetIsVisible(true);
+  auto token = PageLiveStateDecorator::MarkWithheldFromView(web_contents());
+  EXPECT_TRUE(PageLiveStateDecorator::IsWithheldFromView(web_contents()));
+
+  node_impl->SetIsVisible(false);
+  EXPECT_TRUE(PageLiveStateDecorator::IsWithheldFromView(web_contents()));
+
+  node_impl->SetIsVisible(true);
+  EXPECT_TRUE(PageLiveStateDecorator::IsWithheldFromView(web_contents()));
+
+  token.reset();
+  EXPECT_FALSE(PageLiveStateDecorator::IsWithheldFromView(web_contents()));
+}
+
+// A token that outlives the page it was taken on must be inert.
+TEST_F(PageLiveStateDecoratorTest, WithheldFromViewTokenOutlivingPageIsInert) {
+  auto token = PageLiveStateDecorator::MarkWithheldFromView(web_contents());
+  ASSERT_TRUE(PageLiveStateDecorator::IsWithheldFromView(web_contents()));
+
+  DeleteObservedWebContents();
+
+  // Must not crash.
+  token.reset();
+}
 
 TEST_F(PageLiveStateDecoratorTest, OnUpdatedTitleOrFaviconInBackgroundChanged) {
   EXPECT_FALSE(PageLiveStateDecorator::UpdatedTitleOrFaviconInBackground(

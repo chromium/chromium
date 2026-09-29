@@ -37,6 +37,15 @@ SidePanelWebUIView::SidePanelWebUIView(SidePanelEntryScope& scope,
   const bool is_ready_to_show = contents_wrapper->is_ready_to_show();
   SidePanelUtil::GetSidePanelContentProxy(this)->SetAvailable(is_ready_to_show);
   SetVisible(is_ready_to_show);
+  if (!is_ready_to_show) {
+    // Until the entry reports availability from ShowUI(), it is not added to
+    // the side panel, so its WebContents is never shown and PerformanceManager
+    // would deprioritize the very load being waited on. See
+    // crbug.com/549552319.
+    withheld_from_view_ =
+        performance_manager::PageLiveStateDecorator::MarkWithheldFromView(
+            contents_wrapper->web_contents());
+  }
   SetID(kSidePanelWebViewId);
   contents_wrapper->SetHost(weak_factory_.GetWeakPtr());
   SetWebContents(contents_wrapper->web_contents());
@@ -91,6 +100,7 @@ void SidePanelWebUIView::ViewHierarchyChanged(
 void SidePanelWebUIView::ShowUI() {
   SetVisible(true);
   SidePanelUtil::GetSidePanelContentProxy(this)->SetAvailable(true);
+  withheld_from_view_.reset();
   if (on_show_cb_) {
     on_show_cb_.Run();
   }

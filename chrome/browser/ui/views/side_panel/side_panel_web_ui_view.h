@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/webui/top_chrome/webui_contents_wrapper.h"
+#include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "ui/views/controls/webview/webview.h"
@@ -59,6 +60,11 @@ class SidePanelWebUIView : public views::WebView,
  private:
   base::RepeatingClosure on_show_cb_;
   base::RepeatingClosure close_cb_;
+
+  // Boosts the page's priority while its WebUI loads before being shown.
+  std::unique_ptr<
+      performance_manager::PageLiveStateDecorator::ScopedWithheldFromView>
+      withheld_from_view_;
   std::unique_ptr<views::MenuRunner> context_menu_runner_;
   std::unique_ptr<ui::MenuModel> context_menu_model_;
   // A handler to handle unhandled keyboard messages coming back from the

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/extensions/extension_view_views.h"
 #include "chrome/browser/ui/views/extensions/security_dialog_tracker.h"
+#include "components/performance_manager/public/decorators/page_live_state_decorator.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
@@ -140,6 +141,11 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
 
   // The contained host for the view.
   std::unique_ptr<extensions::ExtensionViewHost> host_;
+
+  // Boosts the page's priority while it loads before the popup is shown.
+  std::unique_ptr<
+      performance_manager::PageLiveStateDecorator::ScopedWithheldFromView>
+      withheld_from_view_;
 
   raw_ptr<ExtensionViewViews> extension_view_;
 

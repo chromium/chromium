@@ -277,6 +277,17 @@ ExtensionPopup::ExtensionPopup(
   // the correct value while calculating max bounds.
   set_adjust_if_offscreen(views::PlatformStyle::kAdjustBubbleIfOffscreen);
 
+  // The popup is not shown until the page finishes its first load (see the
+  // has_loaded_once() branch below), so a user is waiting on a load that
+  // PerformanceManager would otherwise treat as a background load. Taken
+  // before the view is initialized, since that can start the renderer
+  // synchronously. See crbug.com/549552319.
+  if (!host_->has_loaded_once()) {
+    withheld_from_view_ =
+        performance_manager::PageLiveStateDecorator::MarkWithheldFromView(
+            host_->host_contents());
+  }
+
   extension_view_ = AddChildView(std::make_unique<ExtensionViewViews>(
       browser_->GetProfile(), host_.get()));
   extension_view_->SetContainer(this);
@@ -317,11 +328,13 @@ void ExtensionPopup::ShowBubble() {
   // the security dialogs from spoofing.
   if (extensions::SecurityDialogTracker::GetInstance()
           ->BrowserHasVisibleSecurityDialogs(browser_, GetWidget())) {
+    withheld_from_view_.reset();
     CloseDeferredIfNecessary();
     return;
   }
 
   GetWidget()->Show();
+  withheld_from_view_.reset();
 
   // Focus on the host contents when the bubble is first shown.
   host_->host_contents()->Focus();
