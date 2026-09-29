@@ -793,6 +793,13 @@ IN_PROC_BROWSER_TEST_F(
   handler_->GetOrCreateInputStateModelForTesting()->SetLensCrop(
       "data:image/png;base64,test_crop");
 
+  EXPECT_CALL(mock_overlay, ClearRegionSelection()).Times(0);
+  EXPECT_CALL(
+      *mock_lens_controller_,
+      CloseLensAsync(
+          lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted))
+      .Times(1);
+
   base::RunLoop run_loop;
   EXPECT_CALL(mock_page_, PostSearchMessage(_))
       .WillRepeatedly([&](mojo_base::ProtoWrapper wrapper) {
@@ -1014,6 +1021,12 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksExtensionHandlerBrowserTest,
     OnWebviewMessage_OnSubmitQueryRequest_WithoutRegion_ReturnsEmptyResponse) {
+  EXPECT_CALL(
+      *mock_lens_controller_,
+      CloseLensAsync(
+          lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted))
+      .Times(1);
+
   base::RunLoop run_loop;
   EXPECT_CALL(mock_page_, PostSearchMessage(_))
       .WillOnce([&](mojo_base::ProtoWrapper wrapper) {

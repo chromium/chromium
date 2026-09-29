@@ -18,9 +18,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/lens/lens_search_controller.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/contextual_tasks/public/features.h"
+#include "components/lens/lens_overlay_dismissal_source.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/file_select_listener.h"
@@ -243,13 +246,39 @@ void ContextualTasksWebView::DidRedirectNavigation(
 
 void ContextualTasksWebView::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument()) {
+  if (!navigation_handle->IsInPrimaryMainFrame()) {
     return;
   }
 
-  if (!navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
+  if (!navigation_handle->IsSameDocument() &&
+      (!navigation_handle->HasCommitted() ||
+       navigation_handle->IsErrorPage())) {
     SetGhostLoaderVisible(false);
+  }
+
+  if (!navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
+    return;
+  }
+
+  if (browser_window_ && browser_window_->GetProfile()) {
+    if (auto* ui_service =
+            ContextualTasksUiServiceFactory::GetForBrowserContext(
+                browser_window_->GetProfile())) {
+      const GURL& previous_url =
+          navigation_handle->GetPreviousPrimaryMainFrameURL();
+      const bool was_on_srp = ui_service->IsSearchResultsUrl(previous_url) &&
+                              !ui_service->IsAiUrl(previous_url);
+      if (was_on_srp && ui_service->IsAiUrl(navigation_handle->GetURL())) {
+        if (auto* tab = browser_window_->GetActiveTabInterface()) {
+          if (auto* controller = LensSearchController::From(tab)) {
+            // TODO(crbug.com/566315172): Update to a dedicated dismissal source
+            // for SRP to AIM transitions.
+            controller->CloseLensAsync(lens::LensOverlayDismissalSource::
+                                           kContextualTasksQuerySubmitted);
+          }
+        }
+      }
+    }
   }
 }
 
