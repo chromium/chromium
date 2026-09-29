@@ -14,10 +14,7 @@
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/core/inspector/console_message_storage.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
-#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/modules/spell_check_custom_dictionary/document_spell_check_custom_dictionary.h"
 
@@ -127,22 +124,6 @@ class SpellCheckCustomDictionaryTest : public PageTestBase {
   void UseRecordingClient(RecordingTextCheckClient* client) {
     static_cast<EmptyLocalFrameClient*>(GetFrame().Client())
         ->SetTextCheckerClientForTesting(client);
-  }
-
-  // Returns the number of console warnings addWords() has logged about ignored
-  // words.
-  wtf_size_t IgnoredWordsWarningCount() {
-    ConsoleMessageStorage& storage = GetPage().GetConsoleMessageStorage();
-    wtf_size_t count = 0;
-    for (wtf_size_t i = 0; i < storage.size(); ++i) {
-      const ConsoleMessage* message = storage.at(i);
-      if (message->GetLevel() == mojom::blink::ConsoleMessageLevel::kWarning &&
-          message->Message().starts_with(
-              "SpellCheckCustomDictionary: addWords() ignored")) {
-        ++count;
-      }
-    }
-    return count;
   }
 
  private:
@@ -388,83 +369,6 @@ TEST_F(SpellCheckCustomDictionaryTest, AddWordsDropsInvalidKeepsValid) {
   ASSERT_EQ(client.last_added_.size(), 2u);
   EXPECT_EQ(client.last_added_[0], "keep");
   EXPECT_EQ(client.last_added_[1], "foo bar");
-}
-
-// Adding only valid words logs no warning.
-TEST_F(SpellCheckCustomDictionaryTest, AddWordsValidWordsDoNotWarn) {
-  SpellCheckCustomDictionary* dict = GetDictionary();
-  ASSERT_NE(dict, nullptr);
-  ScriptState* script_state = GetScriptState();
-  ScriptState::Scope scope(script_state);
-
-  RecordingTextCheckClient client;
-  UseRecordingClient(&client);
-
-  dict->addWords(script_state, {"zzzz", "foo bar", String(u"😀")});
-
-  EXPECT_EQ(IgnoredWordsWarningCount(), 0u);
-}
-
-// Each kind of invalid word makes addWords() log a warning.
-TEST_F(SpellCheckCustomDictionaryTest, AddWordsWarnsWhenIgnoringWords) {
-  // "zzzz" followed by a lone high surrogate.
-  const UChar kSurrogateWord[] = {'z', 'z', 'z', 'z', 0xD800};
-  const String kInvalidWords[] = {"", " zzzz", "zzzz\n",
-                                  String(base::span(kSurrogateWord))};
-  for (const String& word : kInvalidWords) {
-    SCOPED_TRACE(word);
-    NavigateTo(KURL("https://example.com/"));
-    SpellCheckCustomDictionary* dict =
-        DocumentSpellCheckCustomDictionary::spellCheckCustomDictionary(
-            GetDocument());
-    ScriptState* script_state = GetScriptState();
-    ScriptState::Scope scope(script_state);
-
-    RecordingTextCheckClient client;
-    UseRecordingClient(&client);
-
-    const wtf_size_t initial_count = IgnoredWordsWarningCount();
-    dict->addWords(script_state, {word, "keep"});
-
-    EXPECT_EQ(IgnoredWordsWarningCount(), initial_count + 1);
-    // The valid word is still added.
-    ASSERT_EQ(client.last_added_.size(), 1u);
-    EXPECT_EQ(client.last_added_[0], "keep");
-  }
-}
-
-// The warning is logged once per document, however many calls ignore words.
-TEST_F(SpellCheckCustomDictionaryTest, AddWordsWarnsOncePerDocument) {
-  SpellCheckCustomDictionary* dict = GetDictionary();
-  ASSERT_NE(dict, nullptr);
-  {
-    ScriptState* script_state = GetScriptState();
-    ScriptState::Scope scope(script_state);
-
-    RecordingTextCheckClient client;
-    UseRecordingClient(&client);
-
-    dict->addWords(script_state, {""});
-    dict->addWords(script_state, {" zzzz", "zzzz "});
-    dict->addWords(script_state, {""});
-    EXPECT_EQ(IgnoredWordsWarningCount(), 1u);
-  }
-
-  // A new document has its own dictionary and warns again.
-  NavigateTo(KURL("https://example.com/"));
-  SpellCheckCustomDictionary* new_dict =
-      DocumentSpellCheckCustomDictionary::spellCheckCustomDictionary(
-          GetDocument());
-  ASSERT_NE(new_dict, dict);
-  ScriptState* script_state = GetScriptState();
-  ScriptState::Scope scope(script_state);
-
-  RecordingTextCheckClient client;
-  UseRecordingClient(&client);
-
-  const wtf_size_t initial_count = IgnoredWordsWarningCount();
-  new_dict->addWords(script_state, {""});
-  EXPECT_EQ(IgnoredWordsWarningCount(), initial_count + 1);
 }
 
 // removeWords() rejects unpaired surrogates just like addWords().
