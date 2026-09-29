@@ -1065,9 +1065,15 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTest,
       WaitForComposeboxFilesCount(kSidePanelId, 0));
 }
 
-// TODO(crbug.com/524797987): Re-enable this test.
+// This tests the following CUJ:
+//  (1) User opens the Contextual Tasks side panel.
+//  (2) User clicks the add context entrypoint in the composebox.
+//  (3) User selects "Upload image" and picks an image file.
+//  (4) The image chip appears in the composebox carousel.
+//  (5) User clicks the remove button on the image chip.
+//  (6) The image chip is removed and no attachments remain.
 IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTest,
-                       DISABLED_AddAndRemoveImageChipFromComposebox) {
+                       AddAndRemoveImageChipFromComposebox) {
   base::FilePath test_data_dir;
   base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
   base::FilePath file_path = test_data_dir.AppendASCII("handbag.png");
@@ -1089,19 +1095,25 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksInteractiveUiTest,
                                       "cr-composebox-file-thumbnail",
                                       "#removeImgButton"};
 
-  RunTestSequence(InstrumentTab(kPrimaryTab, 0),
-                  SelectTab(kTabStripElementId, 0),
-                  OpenContextualTasksInSidePanel(kSidePanelId),
+  RunTestSequence(
+      InstrumentTab(kPrimaryTab, 0), SelectTab(kTabStripElementId, 0),
+      OpenContextualTasksInSidePanel(kSidePanelId),
+      // Wait for the thread webview to load before attaching an image. During
+      // zero-state initialization, ContextualTasksAppElement (app.ts) calls
+      // forceComposeboxFocus(), which clears manually added attachments,
+      // before loading the thread URL. An image attached before then would be
+      // silently removed.
+      InstrumentInnerWebContents(kInnerWebContentsId, kSidePanelId, 0),
 
-                  ForceClickAddContextEntrypoint(kSidePanelId),
-                  ForceClickMenuButton(kSidePanelId, "imageUpload"),
+      ForceClickAddContextEntrypoint(kSidePanelId),
+      ForceClickMenuButton(kSidePanelId, "imageUpload"),
 
-                  WaitForElementVisible(kSidePanelId, kImgChip),
-                  WaitForComposeboxFilesCount(kSidePanelId, 1),
+      WaitForElementVisible(kSidePanelId, kImgChip),
+      WaitForComposeboxFilesCount(kSidePanelId, 1),
 
-                  ClickButton(kSidePanelId, kRemoveImgButton),
-                  WaitForElementDoesNotExist(kSidePanelId, kImgChip),
-                  WaitForComposeboxFilesCount(kSidePanelId, 0));
+      ClickButton(kSidePanelId, kRemoveImgButton),
+      WaitForElementDoesNotExist(kSidePanelId, kImgChip),
+      WaitForComposeboxFilesCount(kSidePanelId, 0));
 }
 
 // TODO(crbug.com/524797987, crbug.com/529701663): Re-enable this test.
