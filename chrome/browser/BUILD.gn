@@ -444,6 +444,7 @@ source_set("net_benchmarking") {
   deps = [
     "//base",
     "//chrome/common:mojo_bindings",
+    "//content/public/common",
     "//mojo/public/cpp/bindings",
   ]
 }

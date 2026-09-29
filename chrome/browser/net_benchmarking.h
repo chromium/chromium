@@ -7,20 +7,21 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/net_benchmarking.mojom.h"
+#include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 namespace predictors {
 class LoadingPredictor;
-}
+}  // namespace predictors
 
 // This class handles Chrome-specific benchmarking IPC messages for the renderer
 // process.
-// All methods of this class should be called on the IO thread unless the
+// All methods of this class should be called on the UI thread unless the
 // contrary is explicitly specified.
 class NetBenchmarking : public chrome::mojom::NetBenchmarking {
  public:
   NetBenchmarking(base::WeakPtr<predictors::LoadingPredictor> loading_predictor,
-                  int render_process_id);
+                  content::ChildProcessId render_process_id);
 
   NetBenchmarking(const NetBenchmarking&) = delete;
   NetBenchmarking& operator=(const NetBenchmarking&) = delete;
@@ -31,23 +32,22 @@ class NetBenchmarking : public chrome::mojom::NetBenchmarking {
   // Callers should prefer this over using the constructor directly.
   static void Create(
       base::WeakPtr<predictors::LoadingPredictor> loading_predictor,
-      int render_process_id,
+      content::ChildProcessId render_process_id,
       mojo::PendingReceiver<chrome::mojom::NetBenchmarking> receiver);
 
   // This method is thread-safe.
   static bool CheckBenchmarkingEnabled();
 
  private:
-  // chrome:mojom:NetBenchmarking.
+  // chrome::mojom::NetBenchmarking:
   void CloseCurrentConnections(
       CloseCurrentConnectionsCallback callback) override;
   void ClearCache(ClearCacheCallback callback) override;
   void ClearHostResolverCache(ClearHostResolverCacheCallback callback) override;
   void ClearPredictorCache(ClearPredictorCacheCallback callback) override;
 
-  // These weak pointers should be dereferenced only on the UI thread.
   base::WeakPtr<predictors::LoadingPredictor> loading_predictor_;
-  const int render_process_id_;
+  const content::ChildProcessId render_process_id_;
 };
 
 #endif  // CHROME_BROWSER_NET_BENCHMARKING_H_

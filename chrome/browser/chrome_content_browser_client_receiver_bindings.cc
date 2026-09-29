@@ -241,7 +241,7 @@ void ChromeContentBrowserClient::ExposeInterfacesToRenderer(
         base::BindRepeating(
             &NetBenchmarking::Create,
             loading_predictor ? loading_predictor->GetWeakPtr() : nullptr,
-            render_process_host->GetDeprecatedID()),
+            render_process_host->GetID()),
         ui_task_runner);
   }
 

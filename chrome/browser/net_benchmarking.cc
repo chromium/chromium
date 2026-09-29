@@ -7,9 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
 #include "base/command_line.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/time/time.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/common/chrome_switches.h"
@@ -25,11 +24,13 @@ using content::BrowserThread;
 
 namespace {
 
-network::mojom::NetworkContext* GetNetworkContext(int render_process_id) {
+network::mojom::NetworkContext* GetNetworkContext(
+    content::ChildProcessId render_process_id) {
   content::RenderProcessHost* render_process_host =
       content::RenderProcessHost::FromID(render_process_id);
-  if (!render_process_host)
+  if (!render_process_host) {
     return nullptr;
+  }
   return render_process_host->GetStoragePartition()->GetNetworkContext();
 }
 
@@ -37,8 +38,8 @@ network::mojom::NetworkContext* GetNetworkContext(int render_process_id) {
 
 NetBenchmarking::NetBenchmarking(
     base::WeakPtr<predictors::LoadingPredictor> loading_predictor,
-    int render_process_id)
-    : loading_predictor_(loading_predictor),
+    content::ChildProcessId render_process_id)
+    : loading_predictor_(std::move(loading_predictor)),
       render_process_id_(render_process_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 }
@@ -50,7 +51,7 @@ NetBenchmarking::~NetBenchmarking() {
 // static
 void NetBenchmarking::Create(
     base::WeakPtr<predictors::LoadingPredictor> loading_predictor,
-    int render_process_id,
+    content::ChildProcessId render_process_id,
     mojo::PendingReceiver<chrome::mojom::NetBenchmarking> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   mojo::MakeSelfOwnedReceiver(
@@ -93,7 +94,8 @@ void NetBenchmarking::CloseCurrentConnections(
 void NetBenchmarking::ClearPredictorCache(
     ClearPredictorCacheCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (loading_predictor_)
+  if (loading_predictor_) {
     loading_predictor_->resource_prefetch_predictor()->DeleteAllUrls();
+  }
   std::move(callback).Run();
 }
