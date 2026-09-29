@@ -756,7 +756,7 @@ bool IsAIMEligibilityRefreshNTPModulesEnabled() {
   return base::FeatureList::IsEnabled(kAIMEligibilityRefreshNTPModules);
 }
 
-BASE_FEATURE(kIOSWebContextMenuNewTitle, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kIOSWebContextMenuNewTitle, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsIOSWebContextMenuNewTitleEnabled() {
   return base::FeatureList::IsEnabled(kIOSWebContextMenuNewTitle);
