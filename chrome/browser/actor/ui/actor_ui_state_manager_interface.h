@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_ACTOR_UI_ACTOR_UI_STATE_MANAGER_INTERFACE_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/actor/actor_navigation_throttle.h"
 #include "chrome/browser/actor/ui/ui_event.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/buildflags.h"
@@ -34,6 +36,9 @@ class ActorUiStateManagerInterface {
   // a complete UI environment. Delaying until the first task ensures the UI
   // environment is fully set up.
   virtual void LazyInitTabTracker() = 0;
+
+  virtual base::WeakPtr<ActorNavigationThrottle::Delegate>
+  GetNavigationDelegate() = 0;
 #endif
 
 };

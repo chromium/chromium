@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_ACTOR_UI_ACTOR_UI_TAB_CONTROLLER_H_
 #define CHROME_BROWSER_ACTOR_UI_ACTOR_UI_TAB_CONTROLLER_H_
 
+#include <memory>
+#include <vector>
+
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ref.h"
 #include "base/timer/timer.h"
@@ -12,6 +15,11 @@
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "url/gurl.h"
+
+namespace views {
+class Widget;
+}  // namespace views
 
 namespace actor {
 class ActorKeyedService;
@@ -25,6 +33,8 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   ~ActorUiTabController() override;
   DECLARE_USER_DATA(ActorUiTabController);
 
+  static ActorUiTabController* From(tabs::TabInterface* tab);
+
   // ActorUiTabControllerInterface:
   void OnUiTabStateChange(const UiTabState& ui_tab_state,
                           UiResultCallback callback) override;
@@ -34,6 +44,14 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   UiTabState GetCurrentUiTabState() const override;
 
 #if !BUILDFLAG(IS_ANDROID)
+  bool MaybeDeferNavigation(const GURL& url,
+                            base::OnceCallback<void(bool)> callback);
+
+  // Closes this tab's navigation confirmation dialog, if one is showing.
+  void CancelNavigationConfirmation();
+
+  views::Widget* GetActiveNavigationConfirmDialogWidgetForTesting() const;
+
   void OnWebContentsAttached() override;
   void OnViewBoundsChanged() override;
   void OnOverlayHoverStatusChanged(bool is_hovering) override;
@@ -118,6 +136,7 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   ActorOverlayStateChangeCallback on_actor_overlay_state_changed_callback_;
   ActorOverlayBackgroundChangeCallback
       actor_overlay_background_changed_callback_;
+  base::WeakPtr<views::Widget> active_navigation_confirm_widget_;
 #endif
 
   // The Actor Keyed Service for the associated profile.

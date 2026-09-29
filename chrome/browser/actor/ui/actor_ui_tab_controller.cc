@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/ui/actor_border_view_controller.h"
+#include "chrome/browser/actor/ui/actor_task_unload_handler.h"
 #include "chrome/browser/actor/ui/actor_ui_metrics.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/actor/ui/actor_ui_window_controller.h"
@@ -21,8 +22,11 @@
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
+#include "components/constrained_window/constrained_window_views.h"
 #include "components/tabs/public/tab_interface.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/views/bubble/bubble_dialog_model_host.h"
+#include "ui/views/widget/widget.h"
 
 DEFINE_USER_DATA(actor::ui::ActorUiTabController);
 
@@ -35,6 +39,14 @@ void LogAndIgnoreCallbackError(const std::string_view source_name,
     LOG(DFATAL) << "Unexpected error in callback from " << source_name;
     RecordTabControllerError(ActorUiTabControllerError::kCallbackError);
   }
+}
+
+// static
+ActorUiTabController* ActorUiTabController::From(tabs::TabInterface* tab) {
+  if (!tab) {
+    return nullptr;
+  }
+  return Get(tab->GetUnownedUserDataHost());
 }
 
 ActorUiTabController::ActorUiTabController(
@@ -324,5 +336,47 @@ ActorUiTabController::GetWeakPtr() {
 UiTabState ActorUiTabController::GetCurrentUiTabState() const {
   return current_ui_tab_state_;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+bool ActorUiTabController::MaybeDeferNavigation(
+    const GURL& url,
+    base::OnceCallback<void(bool)> callback) {
+  content::WebContents* contents = tab_->GetContents();
+  if (!ActorTaskTabCloseConfirmDialog::ShouldShow(contents)) {
+    return false;
+  }
+
+  // A newer navigation supersedes the pending one. This frees the tab-modal
+  // slot for the dialog created below.
+  CancelNavigationConfirmation();
+
+  // The task is left running here. If the user accepts, the throttle stops it
+  // with `kUserNavigatedAway`.
+  std::unique_ptr<views::BubbleDialogModelHost> delegate =
+      ActorTaskTabCloseConfirmDialog::CreateDelegate(contents,
+                                                     std::move(callback));
+  if (!delegate) {
+    return false;
+  }
+  active_navigation_confirm_widget_ =
+      constrained_window::ShowWebModalDialogViews(delegate.release(), contents)
+          ->GetWeakPtr();
+  return true;
+}
+
+void ActorUiTabController::CancelNavigationConfirmation() {
+  // Closing synchronously releases the old dialog's tab-modal slot and rejects
+  // its navigation if that navigation's throttle still exists; the navigation
+  // may already have been superseded.
+  if (active_navigation_confirm_widget_) {
+    active_navigation_confirm_widget_->CloseNow();
+  }
+}
+
+views::Widget*
+ActorUiTabController::GetActiveNavigationConfirmDialogWidgetForTesting() const {
+  return active_navigation_confirm_widget_.get();
+}
+#endif
 
 }  // namespace actor::ui

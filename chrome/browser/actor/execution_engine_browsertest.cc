@@ -29,6 +29,7 @@
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
 #include "chrome/browser/actor/tools/tool_callbacks.h"
 #include "chrome/browser/actor/tools/wait_tool.h"
+#include "chrome/browser/actor/ui/actor_task_unload_handler.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/download/download_test_file_activity_observer.h"
@@ -958,6 +959,23 @@ class ExecutionEngineSkipBeforeUnloadBrowserTest
     }
   }
 
+  void SetUpOnMainThread() override {
+    ExecutionEngineBrowserTest::SetUpOnMainThread();
+    // This test navigates via the Omnibox transition to exercise beforeunload
+    // handling. The leave site confirmation would intercept that navigation
+    // first, so it is suppressed here. This is process global state, so the
+    // previous value is restored at teardown.
+    previous_suppress_confirm_dialog_ =
+        ActorTaskTabCloseConfirmDialog::ShouldSuppressForTesting();
+    ActorTaskTabCloseConfirmDialog::SetSuppressForTesting(true);
+  }
+
+  void TearDownOnMainThread() override {
+    ActorTaskTabCloseConfirmDialog::SetSuppressForTesting(
+        previous_suppress_confirm_dialog_);
+    ExecutionEngineBrowserTest::TearDownOnMainThread();
+  }
+
   bool IsActorActive() const { return std::get<0>(GetParam()); }
   bool IsSkipFeatureEnabled() const { return std::get<1>(GetParam()); }
 
@@ -980,6 +998,7 @@ class ExecutionEngineSkipBeforeUnloadBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  bool previous_suppress_confirm_dialog_ = false;
 };
 
 // This test is to ensure that the beforeunload dialog is skipped when the

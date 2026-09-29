@@ -48,6 +48,10 @@
 #include "url/origin.h"
 #include "url/url_util.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/actor/ui/actor_task_unload_handler.h"
+#endif
+
 namespace actor {
 
 namespace {
@@ -907,8 +911,32 @@ class ExecutionEngineOriginGatingUserPromptingBrowserTest
         /*disabled_features=*/{features::kGlicWarming});
   }
 
+  void SetUpOnMainThread() override {
+    ExecutionEngineOriginGatingBrowserTest::SetUpOnMainThread();
+#if !BUILDFLAG(IS_ANDROID)
+    // These tests navigate via browser initiated navigations while an Actor
+    // task is active as test scaffolding to verify origin gating prompts.
+    // Suppress the leave site dialog so that test scaffolding navigations are
+    // not intercepted, and restore previous state at teardown.
+    previous_suppress_confirm_dialog_ =
+        ActorTaskTabCloseConfirmDialog::ShouldSuppressForTesting();
+    ActorTaskTabCloseConfirmDialog::SetSuppressForTesting(true);
+#endif
+  }
+
+  void TearDownOnMainThread() override {
+#if !BUILDFLAG(IS_ANDROID)
+    ActorTaskTabCloseConfirmDialog::SetSuppressForTesting(
+        previous_suppress_confirm_dialog_);
+#endif
+    ExecutionEngineOriginGatingBrowserTest::TearDownOnMainThread();
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+#if !BUILDFLAG(IS_ANDROID)
+  bool previous_suppress_confirm_dialog_ = false;
+#endif
 };
 
 // When kGlicPromptUserForNavigationToNewOrigins is enabled, we should not

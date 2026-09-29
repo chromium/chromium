@@ -61,6 +61,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/actor/ui/actor_task_unload_handler.h"
+#endif
+
 using content::BrowserThread;
 using ::testing::_;
 
@@ -1181,6 +1185,31 @@ class HistoryTaskTagBrowserTest : public HistoryBrowserTest {
   actor::ActorKeyedService* actor_service() {
     return actor::ActorKeyedService::Get(profile());
   }
+
+  void SetUpOnMainThread() override {
+    HistoryBrowserTest::SetUpOnMainThread();
+#if !BUILDFLAG(IS_ANDROID)
+    // These tests navigate via browser initiated navigations while an Actor
+    // task is active to verify history tagging. Suppress the leave site dialog
+    // so the test scaffolding is not intercepted, and restore at teardown.
+    previous_suppress_confirm_dialog_ =
+        actor::ActorTaskTabCloseConfirmDialog::ShouldSuppressForTesting();
+    actor::ActorTaskTabCloseConfirmDialog::SetSuppressForTesting(true);
+#endif
+  }
+
+  void TearDownOnMainThread() override {
+#if !BUILDFLAG(IS_ANDROID)
+    actor::ActorTaskTabCloseConfirmDialog::SetSuppressForTesting(
+        previous_suppress_confirm_dialog_);
+#endif
+    HistoryBrowserTest::TearDownOnMainThread();
+  }
+
+ private:
+#if !BUILDFLAG(IS_ANDROID)
+  bool previous_suppress_confirm_dialog_ = false;
+#endif
 };
 
 // Test that history entry is correctly tagged when actor is active.

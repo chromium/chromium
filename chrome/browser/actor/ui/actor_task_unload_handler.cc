@@ -10,6 +10,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_tab_close_skip_beforeunload_user_data.h"
+#include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -300,6 +301,15 @@ bool ActorTaskUnloadHandler::ShowCustomConfirmation(
       },
       weak_factory_.GetWeakPtr(), contents ? contents->GetWeakPtr() : nullptr,
       std::move(on_closed));
+  // Closing the tab supersedes a pending navigation confirmation on it. Close
+  // that dialog first so it rejects its navigation and frees the tab-modal slot
+  // that the close confirmation below needs.
+  if (contents) {
+    if (auto* tab_controller = ui::ActorUiTabController::From(
+            tabs::TabInterface::MaybeGetFromContents(contents))) {
+      tab_controller->CancelNavigationConfirmation();
+    }
+  }
   owned_widget_ = ActorTaskTabCloseConfirmDialog::ShowModalIfActuating(
       contents, std::move(stop_and_create_tag_callback));
   if (owned_widget_) {

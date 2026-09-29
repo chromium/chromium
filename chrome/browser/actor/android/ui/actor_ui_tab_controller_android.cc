@@ -93,6 +93,7 @@ void ActorUiTabControllerAndroid::SetActorTaskResume() {
 }
 
 bool ActorUiTabControllerAndroid::MaybeDeferNavigation(
+    tabs::TabInterface* tab,
     const GURL& url,
     NavigationConfirmedCallback callback) {
   DCHECK(tab_->GetContents());

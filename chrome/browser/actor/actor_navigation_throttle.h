@@ -19,6 +19,10 @@ namespace content {
 class NavigationThrottleRegistry;
 }
 
+namespace tabs {
+class TabInterface;
+}
+
 class Profile;
 
 namespace actor {
@@ -46,7 +50,8 @@ class ActorNavigationThrottle : public content::NavigationThrottle {
     // actor control to show a confirmation UI. If `MaybeDeferNavigation`
     // returns `true` then the navigation to url will be deferred until
     // `callback` is invoked.
-    virtual bool MaybeDeferNavigation(const GURL& url,
+    virtual bool MaybeDeferNavigation(tabs::TabInterface* tab,
+                                      const GURL& url,
                                       NavigationConfirmedCallback callback) = 0;
   };
 

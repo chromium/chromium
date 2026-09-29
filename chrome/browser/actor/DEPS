@@ -69,14 +69,18 @@ specific_include_rules = {
   'actor_commit_deferring_condition_unittest\\.cc': [
     "+chrome/browser/actor/ui/test_support/mock_event_dispatcher.h",
   ],
-  'execution_engine_(unit|browser)test\\.cc': [
+  'execution_engine_.*(unit|browser)test\\.cc': [
     "+chrome/browser/actor/ui/event_dispatcher.h",
+    # Required to opt out of the leave site confirmation dialog.
+    "+chrome/browser/actor/ui/actor_task_unload_handler.h",
   ],
   'page_stability_browsertest\\.cc': [
     "+chrome/browser/actor/ui/event_dispatcher.h",
   ],
   'tools_test_util\\.cc': [
     "+chrome/browser/actor/ui/event_dispatcher.h",
+    # Required to opt out of the leave site confirmation dialog.
+    "+chrome/browser/actor/ui/actor_task_unload_handler.h",
   ],
   'attempt_otp_filling_.*': [
     "+components/one_time_tokens/core/browser",

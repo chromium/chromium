@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/tools/tool_delegate.h"
 #include "chrome/test/base/platform_browser_test.h"
@@ -222,6 +223,9 @@ class ActorToolsTest : public PlatformBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_for_init_;
   base::ScopedTempDir temp_dir_;
+#if !BUILDFLAG(IS_ANDROID)
+  bool previous_suppress_confirm_dialog_ = false;
+#endif
 };
 
 gfx::RectF GetBoundingClientRect(content::RenderFrameHost& rfh,

@@ -8,6 +8,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_timeouts.h"
+#include "build/build_config.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_tab_data.h"
@@ -32,6 +33,10 @@
 #include "net/dns/mock_host_resolver.h"
 #include "ui/display/display_switches.h"
 #include "ui/gfx/geometry/rect_f.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/actor/ui/actor_task_unload_handler.h"
+#endif
 
 namespace actor {
 
@@ -214,6 +219,17 @@ void ActorToolsTest::SetUpOnMainThread() {
   embedded_https_test_server().ServeFilesFromSourceDirectory(
       "components/test/data");
 
+#if !BUILDFLAG(IS_ANDROID)
+  // These tests drive browser initiated navigations as scaffolding, which the
+  // leave site confirmation would treat as the user navigating away. Note this
+  // switch also suppresses the shared tab close dialog, so a suppressed fixture
+  // provides no coverage of either confirmation flow; tests that need a dialog
+  // must opt back in explicitly.
+  previous_suppress_confirm_dialog_ =
+      ActorTaskTabCloseConfirmDialog::ShouldSuppressForTesting();
+  ActorTaskTabCloseConfirmDialog::SetSuppressForTesting(true);
+#endif
+
   task_id_ =
       ActorKeyedService::Get(GetProfile())
           ->CreateTask(TestTaskSourceInfo(), NoEnterprisePolicyChecker());
@@ -245,6 +261,11 @@ void ActorToolsTest::SetUpCommandLine(base::CommandLine* command_line) {
 }
 
 void ActorToolsTest::TearDownOnMainThread() {
+#if !BUILDFLAG(IS_ANDROID)
+  ActorTaskTabCloseConfirmDialog::SetSuppressForTesting(
+      previous_suppress_confirm_dialog_);
+#endif
+
   // The ActorTask owned ExecutionEngine has a pointer to the profile, which
   // must be released before the browser is torn down to avoid a dangling
   // pointer.

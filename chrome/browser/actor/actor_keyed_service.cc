@@ -541,6 +541,8 @@ TaskId ActorKeyedService::CreateTaskImpl(
 
 #if !BUILDFLAG(IS_ANDROID)
   ui_state_manager->LazyInitTabTracker();
+  active_tasks_[task_id]->SetNavigationDelegate(
+      ui_state_manager->GetNavigationDelegate());
 #endif
 
   NotifyTaskStateChanged(*active_tasks_[task_id]);

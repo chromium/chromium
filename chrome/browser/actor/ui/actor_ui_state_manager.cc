@@ -510,7 +510,24 @@ void ActorUiStateManager::LazyInitTabTracker() {
         actor_service_.get());
   }
 }
+
+base::WeakPtr<ActorNavigationThrottle::Delegate>
+ActorUiStateManager::GetNavigationDelegate() {
+  return weak_factory_.GetWeakPtr();
+}
 #endif
+
+bool ActorUiStateManager::MaybeDeferNavigation(
+    tabs::TabInterface* tab,
+    const GURL& url,
+    NavigationConfirmedCallback callback) {
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* tab_controller = ActorUiTabController::From(tab)) {
+    return tab_controller->MaybeDeferNavigation(url, std::move(callback));
+  }
+#endif
+  return false;
+}
 
 void ActorUiStateManager::SetTabPendingActuation(tabs::TabHandle tab_handle) {
   tabs::TabInterface* tab = tab_handle.Get();

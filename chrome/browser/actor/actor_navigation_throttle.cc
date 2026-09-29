@@ -239,13 +239,49 @@ ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
                                        ::ui::PAGE_TRANSITION_AUTO_BOOKMARK) ||
         (transition & ::ui::PAGE_TRANSITION_HOME_PAGE);
 
+#if !BUILDFLAG(IS_ANDROID)
+    // TODO(crbug.com/559772874): Enable on Android.
+    // Exclude session history navigations. A back/forward navigation replays
+    // the core transition of the entry it restores, so returning to a page the
+    // user originally typed arrives here as PAGE_TRANSITION_TYPED with the
+    // FORWARD_BACK qualifier. Without this exclusion both the Actor's own
+    // history tool (which calls GoBack() and GoForward()) and the user's
+    // Back/Forward buttons would be confirmed.
+    if (transition & ::ui::PAGE_TRANSITION_FORWARD_BACK) {
+      is_user_ui_navigation = false;
+    }
+#endif
+
     if (!is_user_ui_navigation) {
       return content::NavigationThrottle::PROCEED;
     }
 
+#if !BUILDFLAG(IS_ANDROID)
+    if (!base::FeatureList::IsEnabled(features::kGlicConfirmTabClose)) {
+      return content::NavigationThrottle::PROCEED;
+    }
+
+    // TODO(crbug.com/559772874): Enable on Android.
+    // Typing in the omnibox starts a speculative prerender that carries the
+    // same transition as the navigation the user may eventually commit.
+    // Deferring it would prompt for typing alone, and letting it load is
+    // worse: prerender activation does not run NavigationThrottles, so the
+    // committed navigation would not be confirmed. Cancelling the prerender
+    // keeps the confirmation on the real navigation.
+    if (navigation_handle()->IsInPrerenderedMainFrame()) {
+      journal.Log(navigation_url, task_id_, "NavThrottle",
+                  JournalDetailsBuilder()
+                      .Add("navigate", "Cancel user UI prerender")
+                      .Build());
+      return content::NavigationThrottle::CANCEL_AND_IGNORE;
+    }
+#endif
+
     if (task->navigation_delegate()) {
+      auto* tab = tabs::TabInterface::MaybeGetFromContents(
+          navigation_handle()->GetWebContents());
       if (task->navigation_delegate()->MaybeDeferNavigation(
-              navigation_url,
+              tab, navigation_url,
               base::BindOnce(
                   &ActorNavigationThrottle::OnUserLeaveDialogDecision,
                   weak_factory_.GetWeakPtr()))) {

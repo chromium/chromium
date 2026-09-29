@@ -42,7 +42,8 @@ class ActorUiTabControllerAndroid : public ActorUiTabControllerInterface,
   UiTabState GetCurrentUiTabState() const override;
 
   // ActorNavigationThrottle::Delegate:
-  bool MaybeDeferNavigation(const GURL& url,
+  bool MaybeDeferNavigation(tabs::TabInterface* tab,
+                            const GURL& url,
                             NavigationConfirmedCallback callback) override;
 
  private:
