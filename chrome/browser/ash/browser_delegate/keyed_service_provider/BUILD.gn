@@ -13,6 +13,7 @@ group("keyed_service_provider") {
     ":history_service_provider_impl",
     ":identity_manager_provider_impl",
     ":media_device_salt_service_provider_impl",
+    ":password_reuse_manager_provider_impl",
     ":supervised_user_service_provider_impl",
     ":sync_service_provider_impl",
     ":template_url_service_provider_impl",
@@ -165,6 +166,25 @@ source_set("media_device_salt_service_provider_impl") {
     "//chrome/browser/media/webrtc",
     "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/media_device_salt:media_device_salt_service_provider",
+    "//components/account_id",
+    "//content/public/browser",
+  ]
+
+  visibility = [ ":keyed_service_provider" ]
+}
+
+source_set("password_reuse_manager_provider_impl") {
+  sources = [
+    "password_reuse_manager_provider_impl.cc",
+    "password_reuse_manager_provider_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/password_manager/factories",
+    "//chrome/browser/profiles",
+    "//chromeos/ash/components/browser_context_helper",
+    "//chromeos/ash/components/password_manager:password_reuse_manager_provider",
     "//components/account_id",
     "//content/public/browser",
   ]
