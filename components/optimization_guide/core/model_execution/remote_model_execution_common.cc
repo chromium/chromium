@@ -601,6 +601,9 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
             "choose whether to interact with the feature when presented."
           chrome_policy {}
         })");
+    case ModelBasedCapabilityKey::kQuickAnswers:
+      // TODO(crbug.com/564999158): Add network traffic annotation.
+      return MISSING_TRAFFIC_ANNOTATION;
   }
 }
 
@@ -636,6 +639,7 @@ bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kReadAloudGenerateText:
     case ModelBasedCapabilityKey::kSmartSelectionSuggestions:
     case ModelBasedCapabilityKey::kTtc:
+    case ModelBasedCapabilityKey::kQuickAnswers:
       return true;
     case ModelBasedCapabilityKey::kFormsClassifications:
       return !base::FeatureList::IsEnabled(

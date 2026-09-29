@@ -35,6 +35,7 @@ import "components/optimization_guide/proto/features/password_change_submission.
 import "components/optimization_guide/proto/features/product_specifications.proto";
 import "components/optimization_guide/proto/features/prompt_api.proto";
 import "components/optimization_guide/proto/features/proofreader_api.proto";
+import "components/optimization_guide/proto/features/quick_answers.proto";
 import "components/optimization_guide/proto/features/read_aloud_generate_text.proto";
 import "components/optimization_guide/proto/features/read_aloud_synthesize.proto";
 import "components/optimization_guide/proto/features/scam_detection.proto";
@@ -150,6 +151,8 @@ message LogAiDataRequest {
     ContextHubLoggingData context_hub = 47;
 
     SmartSelectionSuggestionsLoggingData smart_selection_suggestions = 48;
+
+    QuickAnswersLoggingData quick_answers = 49;
 
     DefaultLoggingData default = 1000;
   }

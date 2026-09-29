@@ -66,6 +66,8 @@ enum class ModelBasedCapabilityKey {
   kSmartSelectionSuggestions = proto::ModelExecutionFeature::
       MODEL_EXECUTION_FEATURE_SMART_SELECTION_SUGGESTIONS,
   kTtc = proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TTC,
+  kQuickAnswers =
+      proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_QUICK_ANSWERS,
 };
 
 inline std::ostream& operator<<(std::ostream& out,
@@ -125,6 +127,8 @@ inline std::ostream& operator<<(std::ostream& out,
       return out << "SmartSelectionSuggestions";
     case ModelBasedCapabilityKey::kTtc:
       return out << "Ttc";
+    case ModelBasedCapabilityKey::kQuickAnswers:
+      return out << "QuickAnswers";
   }
   return out;
 }
@@ -248,6 +252,9 @@ inline proto::ModelExecutionFeature ToModelExecutionFeatureProto(
           MODEL_EXECUTION_FEATURE_SMART_SELECTION_SUGGESTIONS;
     case ModelBasedCapabilityKey::kTtc:
       return proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TTC;
+    case ModelBasedCapabilityKey::kQuickAnswers:
+      return proto::ModelExecutionFeature::
+          MODEL_EXECUTION_FEATURE_QUICK_ANSWERS;
   }
 }
 

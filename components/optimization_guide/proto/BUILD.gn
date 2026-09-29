@@ -55,6 +55,7 @@ fuzzable_proto_library("optimization_guide_proto") {
     "features/product_specifications.proto",
     "features/prompt_api.proto",
     "features/proofreader_api.proto",
+    "features/quick_answers.proto",
     "features/read_aloud_generate_text.proto",
     "features/read_aloud_synthesize.proto",
     "features/scam_detection.proto",

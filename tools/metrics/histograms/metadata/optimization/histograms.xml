@@ -123,6 +123,7 @@ chromium-metrics-reviews@google.com.
   <variant name="PermissionsAi" summary="Permissions AI"/>
   <variant name="PromptApi" summary="Prompt API"/>
   <variant name="ProofreaderApi" summary="Proofreader API"/>
+  <variant name="QuickAnswers" summary="Quick Answers"/>
   <variant name="ReadAloudGenerateText" summary="Read Aloud Generate Text"/>
   <variant name="ReadAloudSynthesize" summary="Read Aloud Synthesize"/>
   <variant name="ScamDetection" summary="Scam Detection"/>

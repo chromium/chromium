@@ -111,6 +111,7 @@ size_t GetMaxParallelFeatureExecutions(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kReadAloudGenerateText:
     case ModelBasedCapabilityKey::kSmartSelectionSuggestions:
     case ModelBasedCapabilityKey::kTtc:
+    case ModelBasedCapabilityKey::kQuickAnswers:
       return 1;
     case ModelBasedCapabilityKey::kReadAloudSynthesize:
       // Since ReadAloud prefetches speech synthesis chunks concurrently for
