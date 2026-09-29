@@ -127,13 +127,24 @@ substantial deficiencies.
 
 ### Are message pipes expensive?
 
-No. As an implementation detail, creating a message pipe is essentially
-generating two random numbers and stuffing them into a hash table, along with a
-few tiny heap allocations.
+While raw message pipes are lightweight, in C++ each bound `mojo::Remote` or
+`mojo::Receiver` endpoint costs **~6 KB of heap memory** (~12 KB per pair)
+across internal routing and dispatch machinery.
 
-### So really, can I create like, thousands of them?
+**Best practices:**
 
-Yes! Nobody will mind. Create millions if you like. (OK but maybe don't.)
+* **Same process?** Avoid using Mojo for communication that is always within the
+  same process. Prefer standard C++ constructs like direct method calls,
+  callbacks (`base::OnceCallback` / `base::RepeatingCallback`), or
+  `base::ObserverList`.
+* **Avoid creating thousands of endpoints:** Creating thousands of independent
+  `Remote`/`Receiver` pairs causes measurable heap bloat and memory
+  fragmentation (e.g. 10,000 pairs consume ~120 MB of heap memory purely in
+  bindings machinery).
+* **Model interfaces around semantic capabilities:** Interfaces should still be
+  structured cleanly to reflect logical boundaries and security domains. Do not
+  try to artificially consolidate multiple distinct concepts into a single
+  interface by multiplexing with custom IDs or type enums.
 
 ### What are the performance characteristics of Mojo?
 
