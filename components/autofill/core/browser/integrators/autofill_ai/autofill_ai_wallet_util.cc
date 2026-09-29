@@ -159,8 +159,7 @@ std::string GetWalletManagementURL(const EntityInstance& entity) {
   NOTREACHED();
 }
 
-bool IsValidWalletManagementUrl(std::string_view url_string) {
-  GURL url(url_string);
+bool IsValidWalletManagementUrl(const GURL& url) {
   return url.SchemeIs(url::kHttpsScheme) &&
          google_util::IsGoogleDomainUrl(
              url, google_util::ALLOW_SUBDOMAIN,

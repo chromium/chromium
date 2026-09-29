@@ -344,7 +344,9 @@ bool EntityTable::AddWalletMetadata(
       SQL_FROM_HERE, *db(), s, wallet_metadata::kTableName,
       {wallet_metadata::kEntityGuid, wallet_metadata::kManagementUrl});
   s.BindString(0, *guid);
-  s.BindString(1, payload.management_url);
+  // Note that this will store an empty URL and create a non-fatal dump
+  // if the payload is corrupted for some reason.
+  s.BindString(1, payload.management_url.spec());
   return s.Run();
 }
 
@@ -585,11 +587,10 @@ EntityTable::LoadWalletMetadata() const {
 
   while (s.Step()) {
     EntityInstance::EntityId entity_guid(s.ColumnString(0));
-    std::string management_url = s.ColumnString(1);
     wallet_metadata_records.emplace(
         std::move(entity_guid),
-        EntityInstance::WalletRecordTypePayload{.management_url =
-                                                    std::move(management_url)});
+        EntityInstance::WalletRecordTypePayload{
+            .management_url = GURL(s.ColumnStringView(1))});
   }
   if (!s.Succeeded()) {
     return {};
@@ -809,8 +810,8 @@ std::optional<EntityInstance> EntityTable::ValidateInstance(
         return EntityInstance::LocalRecordTypePayload{};
       case EntityInstance::RecordType::kServerWallet:
         return std::move(wallet_payload)
-            .value_or(
-                EntityInstance::WalletRecordTypePayload{.management_url = ""});
+            .value_or(EntityInstance::WalletRecordTypePayload{.management_url =
+                                                                  GURL()});
       case EntityInstance::RecordType::kPersonalContext:
         // pContext entities are not stored in `EntityTable`.
         NOTREACHED();

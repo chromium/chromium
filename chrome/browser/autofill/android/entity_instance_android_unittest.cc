@@ -167,7 +167,7 @@ TEST_F(EntityInstanceAndroidTest, DoubleConversion) {
   EntityInstance passport = test::GetPassportEntityInstance(
       {.record_type = EntityInstance::WalletRecordTypePayload{
            .management_url =
-               "https://wallet.google.com/synthetic_pass?id=fake123"}});
+               GURL("https://wallet.google.com/synthetic_pass?id=fake123")}});
   EntityInstanceAndroid entity_instance_android(
       passport, /*is_enabled=*/true, /*is_eligible_for_wallet_storage=*/true,
       /*requires_reauth_to_see=*/true);
@@ -202,9 +202,10 @@ TEST_F(EntityInstanceAndroidTest,
 
   EXPECT_EQ(entity_instance.record_type(),
             EntityInstance::RecordType::kServerWallet);
-  EXPECT_EQ(entity_instance.record_type_data(),
-            EntityInstance::RecordTypeData(
-                EntityInstance::WalletRecordTypePayload{.management_url = ""}));
+  EXPECT_EQ(
+      entity_instance.record_type_data(),
+      EntityInstance::RecordTypeData(
+          EntityInstance::WalletRecordTypePayload{.management_url = GURL()}));
 }
 
 // Test that the Wallet record type payload is added when converting an
@@ -214,7 +215,7 @@ TEST_F(EntityInstanceAndroidTest,
   EntityInstance existing_entity = test::GetPassportEntityInstance(
       {.record_type = EntityInstance::WalletRecordTypePayload{
            .management_url =
-               "https://wallet.google.com/synthetic_pass?id=fake123"}});
+               GURL("https://wallet.google.com/synthetic_pass?id=fake123")}});
 
   EntityInstance entity_without_payload = test::GetPassportEntityInstance();
   EntityInstanceAndroid entity_instance_android(

@@ -167,13 +167,12 @@ TEST_F(AutofillEntityInstanceTest, CopyWithNewRecordTypeSetsWalletPayload) {
       std::get_if<EntityInstance::WalletRecordTypePayload>(
           &converted_wallet_entity.record_type_data());
   ASSERT_NE(converted_payload, nullptr);
-  EXPECT_EQ(converted_payload->management_url, "");
+  EXPECT_EQ(converted_payload->management_url, GURL());
 }
 
 TEST_F(AutofillEntityInstanceTest,
        CopyWithNewRecordTypeSameTypeCopiesThePayload) {
-  constexpr char kWalletUrl[] =
-      "https://wallet.google.com/synthetic_pass?id=fake123";
+  const GURL kWalletUrl("https://wallet.google.com/synthetic_pass?id=fake123");
   EntityInstance wallet_entity = test::GetPassportEntityInstance(
       {.record_type = EntityInstance::WalletRecordTypePayload{.management_url =
                                                                   kWalletUrl}});

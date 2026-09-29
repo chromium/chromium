@@ -486,7 +486,7 @@ EntityInstance GetEntityInstance(std::vector<AttributeInstance> attributes,
                 return EntityInstance::LocalRecordTypePayload{};
               case EntityInstance::RecordType::kServerWallet:
                 return EntityInstance::WalletRecordTypePayload{.management_url =
-                                                                   ""};
+                                                                   GURL()};
               case EntityInstance::RecordType::kPersonalContext:
                 return EntityInstance::PersonalContextRecordTypePayload{
                     .sources = {}};

@@ -343,7 +343,8 @@ class IsValidWalletManagementUrlTest
 
 TEST_P(IsValidWalletManagementUrlTest, Validation) {
   const IsValidWalletManagementUrlTestCase& test_case = GetParam();
-  EXPECT_EQ(IsValidWalletManagementUrl(test_case.url), test_case.is_valid);
+  EXPECT_EQ(IsValidWalletManagementUrl(GURL(test_case.url)),
+            test_case.is_valid);
 }
 
 INSTANTIATE_TEST_SUITE_P(

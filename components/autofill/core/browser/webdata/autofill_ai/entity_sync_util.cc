@@ -807,7 +807,7 @@ std::optional<EntityInstance> CreateEntityInstanceFromSpecifics(
         /*use_date=*/{},
         // TODO(crbug.com/560061580): Add logic to import the management URL
         // from the synced specifics.
-        EntityInstance::WalletRecordTypePayload{.management_url = ""},
+        EntityInstance::WalletRecordTypePayload{.management_url = GURL()},
         EntityInstance::AreAttributesReadOnly(!specifics.is_editable()),
         std::move(frecency_overwrite));
   };

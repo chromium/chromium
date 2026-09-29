@@ -319,7 +319,7 @@ std::optional<EntityInstance> MakeEntity(const base::DictValue& dict) {
       case EntityInstance::RecordType::kServerWallet: {
         const std::string* management_url = dict.FindString(kKeyManagementUrl);
         return EntityInstance::WalletRecordTypePayload{
-            .management_url = management_url ? *management_url : ""};
+            .management_url = management_url ? GURL(*management_url) : GURL()};
       }
       case EntityInstance::RecordType::kPersonalContext:
         return EntityInstance::PersonalContextRecordTypePayload{

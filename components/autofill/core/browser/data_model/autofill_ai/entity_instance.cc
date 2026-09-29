@@ -509,7 +509,7 @@ std::ostream& operator<<(std::ostream& os, const EntityInstance& e) {
             }
           },
           [&os](const EntityInstance::WalletRecordTypePayload& p) {
-            if (!p.management_url.empty()) {
+            if (!p.management_url.is_empty()) {
               os << "- management url: \"" << p.management_url << '"'
                  << std::endl;
             }
@@ -789,7 +789,7 @@ EntityInstance EntityInstance::CopyWithNewRecordType(
       // the management URL is empty because it needs to be provisioned
       // by the Google Wallet servers.
       new_entity.record_type_data_ =
-          WalletRecordTypePayload{.management_url = ""};
+          WalletRecordTypePayload{.management_url = GURL()};
       break;
     case RecordType::kPersonalContext:
       // TODO(crbug.com/542083924): Converting to a pContext entity is currently

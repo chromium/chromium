@@ -237,7 +237,7 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
                     // exist on Google Wallet servers yet. Their management URL
                     // is empty until the pass is created by the Wallet service.
                     EntityInstance::WalletRecordTypePayload{.management_url =
-                                                                ""})
+                                                                GURL()})
               : EntityInstance::RecordTypeData(
                     EntityInstance::LocalRecordTypePayload{});
       EntityInstance entity = EntityInstance(

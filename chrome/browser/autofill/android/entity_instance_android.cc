@@ -152,7 +152,8 @@ EntityInstance EntityInstanceAndroid::ToEntityInstance(
       case EntityInstance::RecordType::kServerWallet:
         // If there was no existing entity, the newly created entity cannot yet
         // have a management URL, which is provided by the Wallet server.
-        return EntityInstance::WalletRecordTypePayload{.management_url = ""};
+        return EntityInstance::WalletRecordTypePayload{.management_url =
+                                                           GURL()};
       case EntityInstance::RecordType::kPersonalContext:
         // pContext entities cannot be created from settings.
         NOTREACHED();

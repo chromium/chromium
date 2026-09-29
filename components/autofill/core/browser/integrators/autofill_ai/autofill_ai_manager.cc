@@ -151,7 +151,7 @@ EntityInstance GetMergedEntity(
                 &saved_entity.record_type_data());
         return EntityInstance::WalletRecordTypePayload{
             .management_url =
-                saved_payload ? saved_payload->management_url : ""};
+                saved_payload ? saved_payload->management_url : GURL()};
       }
       case EntityInstance::RecordType::kPersonalContext:
         // pContext entities are read-only.

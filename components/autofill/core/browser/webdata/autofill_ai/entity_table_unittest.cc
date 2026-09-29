@@ -169,7 +169,8 @@ TEST_F(EntityTableTest, DeleteEntityInstancesByRecordType) {
       .guid = "00000000-0000-4000-8000-123000000000",
       .record_type =
           EntityInstance::WalletRecordTypePayload{
-              .management_url = "https://wallet.google.com/wallet/passes/123"},
+              .management_url =
+                  GURL("https://wallet.google.com/wallet/passes/123")},
   });
   EntityInstance local_vr = GetVehicleEntityInstance({
       .guid = "00000000-0000-4000-8000-456000000000",
@@ -531,7 +532,8 @@ TEST_F(EntityTableTest, WalletMetadataWriteReadUpdateAndRemove) {
       .guid = "00000000-0000-4000-8000-123000000000",
       .record_type =
           EntityInstance::WalletRecordTypePayload{
-              .management_url = "https://wallet.google.com/wallet/passes/123"},
+              .management_url =
+                  GURL("https://wallet.google.com/wallet/passes/123")},
   });
   ASSERT_TRUE(table().AddOrUpdateEntityInstance(wallet_vr));
   EXPECT_THAT(table().GetEntityInstances(), ElementsAre(wallet_vr));
@@ -541,7 +543,8 @@ TEST_F(EntityTableTest, WalletMetadataWriteReadUpdateAndRemove) {
       .guid = "00000000-0000-4000-8000-123000000000",
       .record_type =
           EntityInstance::WalletRecordTypePayload{
-              .management_url = "https://wallet.google.com/wallet/passes/456"},
+              .management_url =
+                  GURL("https://wallet.google.com/wallet/passes/456")},
   });
   ASSERT_TRUE(table().AddOrUpdateEntityInstance(updated_wallet_vr));
   EXPECT_THAT(table().GetEntityInstances(), ElementsAre(updated_wallet_vr));
@@ -568,7 +571,8 @@ TEST_F(EntityTableTest, WalletMetadataReadTimeFallbackWhenRowMissing) {
       .guid = "00000000-0000-4000-8000-123000000000",
       .record_type =
           EntityInstance::WalletRecordTypePayload{
-              .management_url = "https://wallet.google.com/wallet/passes/123"},
+              .management_url =
+                  GURL("https://wallet.google.com/wallet/passes/123")},
   });
   ASSERT_TRUE(table().AddOrUpdateEntityInstance(wallet_vr));
 
@@ -580,7 +584,7 @@ TEST_F(EntityTableTest, WalletMetadataReadTimeFallbackWhenRowMissing) {
   EntityInstance expected_fallback_vr = GetVehicleEntityInstance({
       .guid = "00000000-0000-4000-8000-123000000000",
       .record_type =
-          EntityInstance::WalletRecordTypePayload{.management_url = ""},
+          EntityInstance::WalletRecordTypePayload{.management_url = GURL()},
   });
   EXPECT_THAT(table().GetEntityInstances(), ElementsAre(expected_fallback_vr));
 }

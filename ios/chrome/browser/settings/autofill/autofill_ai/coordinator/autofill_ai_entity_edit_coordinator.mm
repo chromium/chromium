@@ -52,7 +52,7 @@ autofill::EntityInstance GetEmptyEntityInstanceForType(
         // Empty entities that are created in the settings cannot yet have a
         // management_url, which is later provided by the Wallet server.
         return autofill::EntityInstance::WalletRecordTypePayload{
-            .management_url = ""};
+            .management_url = GURL()};
       case autofill::EntityInstance::RecordType::kPersonalContext:
         // pContext entities cannot be created from settings.
         NOTREACHED();
