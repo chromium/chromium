@@ -2129,7 +2129,7 @@
     {
       // crbug.com/468928416, crbug.com/498974811
       name: "CSSTextDecorationInset",
-      status: "experimental",
+      status: "stable",
     },
     {
       // https://issues.chromium.org/40675832: CSS `text-decoration-skip-ink: all` value
