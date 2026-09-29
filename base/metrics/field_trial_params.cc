@@ -19,6 +19,7 @@
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/metrics/runtime_field_trial_overrides.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -175,6 +176,22 @@ bool GetFieldTrialParamsByFeature(const Feature& feature,
                                   FieldTrialParams* params) {
   if (!FeatureList::IsEnabled(feature)) {
     return false;
+  }
+
+  if (feature.IsRuntimeMutable()) {
+    auto* feature_list = FeatureList::GetInstance();
+    if (feature_list) {
+      auto override_info =
+          feature_list->GetAssociatedRuntimeFieldTrialOverrideInfoByFeatureName(
+              feature.name);
+      if (override_info.has_value() && override_info.value()) {
+        if (override_info.value()->params.empty()) {
+          return false;
+        }
+        *params = override_info.value()->params;
+        return true;
+      }
+    }
   }
 
   FieldTrial* trial = FeatureList::GetFieldTrial(feature);

@@ -1577,7 +1577,7 @@ TEST_F(FeatureListTest,
   // By default, it should be enabled (default state).
   EXPECT_TRUE(FeatureList::IsEnabled(kRuntimeMutableFeature));
 
-  // Now update the state to disabled (the only supported scenario for V0)
+  // Now update the state to disabled.
   override_info = std::make_unique<base::RuntimeFieldTrialInfo>(
       "TrialA", "GroupA", base::FieldTrialParams(), nullptr);
   auto update =
@@ -1615,7 +1615,7 @@ TEST_F(FeatureListTest,
   // state!
   EXPECT_FALSE(FeatureList::IsEnabled(kRuntimeMutableFeature));
 
-  // Attempting to re-enable it should have no effect.
+  // Updating the state to re-enable should succeed.
   reenable_override_info = std::make_unique<base::RuntimeFieldTrialInfo>(
       "TrialB", "GroupB", base::FieldTrialParams(), nullptr);
   auto reenable_update =
@@ -1623,18 +1623,26 @@ TEST_F(FeatureListTest,
           variations::VariationsService::CreatePassKeyForTesting(),
           reenable_override_info.get(), kRuntimeMutableFeature.name,
           FeatureList::OVERRIDE_ENABLE_FEATURE);
-  EXPECT_FALSE(reenable_update.has_value());
+  ASSERT_TRUE(reenable_update.has_value());
+  reenable_update->RunPreMutationCallback();
+  reenable_update->UpdateState();
+  reenable_update->RunPostMutationCallback();
 
-  // The initial enabling of runtime mutability is logged as a success.
+  // Both override disabling and re-enabling should be logged as successes.
   histogram_tester.ExpectBucketCount(kRuntimeMutabilityResult,
-                                     RuntimeMutabilityResult::kSuccess, 1);
+                                     RuntimeMutabilityResult::kSuccess, 2);
 
-  EXPECT_EQ(1, pre_callback_calls);  // Callbacks should not be invoked.
-  EXPECT_EQ(1, post_callback_calls);
-  EXPECT_FALSE(FeatureList::IsEnabled(kRuntimeMutableFeature));
+  EXPECT_EQ(2, pre_callback_calls);
+  EXPECT_EQ(2, post_callback_calls);
+  EXPECT_TRUE(FeatureList::IsEnabled(kRuntimeMutableFeature));
 
-  // The update attempting to enable the feature is logged as a failure, because
-  // enabling features is not supported in V0.
+  // Attempting to update with OVERRIDE_USE_DEFAULT is not supported.
+  auto default_update =
+      FeatureList::GetInstance()->PrepareRuntimeMutableFeatureStateUpdate(
+          variations::VariationsService::CreatePassKeyForTesting(),
+          reenable_override_info.get(), kRuntimeMutableFeature.name,
+          FeatureList::OVERRIDE_USE_DEFAULT);
+  EXPECT_FALSE(default_update.has_value());
   histogram_tester.ExpectBucketCount(
       kRuntimeMutabilityResult,
       RuntimeMutabilityResult::kFailure_StateNotSupported, 1);
@@ -1738,6 +1746,7 @@ TEST_F(FeatureListTest, RuntimeMutability_FeatureParamBypassCache) {
   // the FeatureList singleton is torn down, preventing DanglingPtr crash in
   // unittests.
   std::unique_ptr<base::RuntimeFieldTrialInfo> override_info;
+  std::unique_ptr<base::RuntimeFieldTrialInfo> reenable_override_info;
   test::ScopedFeatureList scoped_feature_list;
   int callback_calls = 0;
   RuntimeMutabilityCallbackData callback_data;
@@ -1801,9 +1810,32 @@ TEST_F(FeatureListTest, RuntimeMutability_FeatureParamBypassCache) {
   EXPECT_EQ(12345, kRuntimeMutableFeatureParam.Get());
   EXPECT_EQ(TestEnum::kFirst, kRuntimeMutableFeatureEnumParam.Get());
 
+  // Re-enable the feature with new runtime param values and verify both int and
+  // enum FeatureParam::Get() reflect the runtime override params.
+  reenable_override_info = std::make_unique<base::RuntimeFieldTrialInfo>(
+      kTrialName, "ReenabledGroup",
+      FieldTrialParams{
+          {kRuntimeMutableFeatureParam.name, "54321"},
+          {kRuntimeMutableFeatureEnumParam.name, "second"},
+      },
+      nullptr);
+  auto reenable_update =
+      base::FeatureList::GetInstance()->PrepareRuntimeMutableFeatureStateUpdate(
+          variations::VariationsService::CreatePassKeyForTesting(),
+          reenable_override_info.get(), kRuntimeMutableFeature.name,
+          FeatureList::OVERRIDE_ENABLE_FEATURE);
+  ASSERT_TRUE(reenable_update.has_value());
+  reenable_update->RunPreMutationCallback();
+  reenable_update->UpdateState();
+  reenable_update->RunPostMutationCallback();
+
+  EXPECT_TRUE(FeatureList::IsEnabled(kRuntimeMutableFeature));
+  EXPECT_EQ(54321, kRuntimeMutableFeatureParam.Get());
+  EXPECT_EQ(TestEnum::kSecond, kRuntimeMutableFeatureEnumParam.Get());
+
   // The runtime mutability interactions should be logged.
   histogram_tester.ExpectUniqueSample(kRuntimeMutabilityResult,
-                                      RuntimeMutabilityResult::kSuccess, 1);
+                                      RuntimeMutabilityResult::kSuccess, 2);
   histogram_tester.ExpectTotalCount(kRuntimeMutabilityErrorFeatureName, 0);
 }
 

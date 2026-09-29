@@ -36,6 +36,21 @@ BASE_RUNTIME_MUTABLE_FEATURE(kTestRuntimeMutableFeature1,
 BASE_RUNTIME_MUTABLE_FEATURE(kTestRuntimeMutableFeature2,
                              FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE_PARAM(std::string,
+                   kTestRuntimeMutableFeature1Param,
+                   &kTestRuntimeMutableFeature1,
+                   "default_val");
+
+enum class TestEnum { kFirst, kSecond };
+constexpr FeatureParam<TestEnum>::Option kTestEnumOptions[] = {
+    {TestEnum::kFirst, "first"},
+    {TestEnum::kSecond, "second"}};
+BASE_FEATURE_ENUM_PARAM(TestEnum,
+                        kTestRuntimeMutableFeature1EnumParam,
+                        &kTestRuntimeMutableFeature1,
+                        TestEnum::kFirst,
+                        &kTestEnumOptions);
+
 BASE_FEATURE_PARAM(bool,
                    kTestFeatureParam1,
                    &kTestFeature1,
@@ -828,10 +843,55 @@ TEST_F(ScopedFeatureListTest, MutateRuntimeMutableFeature) {
   }
 
   ASSERT_TRUE(FeatureList::IsEnabled(kTestRuntimeMutableFeature1));
+  EXPECT_EQ("default_val", kTestRuntimeMutableFeature1Param.Get());
+  EXPECT_EQ(TestEnum::kFirst, kTestRuntimeMutableFeature1EnumParam.Get());
 
   scoped_feature_list.MutateRuntimeMutableFeature(kTestRuntimeMutableFeature1,
                                                   /*enabled=*/false);
   EXPECT_FALSE(FeatureList::IsEnabled(kTestRuntimeMutableFeature1));
+  EXPECT_EQ("default_val", kTestRuntimeMutableFeature1Param.Get());
+  EXPECT_EQ(TestEnum::kFirst, kTestRuntimeMutableFeature1EnumParam.Get());
+
+  scoped_feature_list.MutateRuntimeMutableFeature(
+      kTestRuntimeMutableFeature1,
+      /*enabled=*/true,
+      {{kTestRuntimeMutableFeature1Param.name, "mutated"},
+       {kTestRuntimeMutableFeature1EnumParam.name, "second"}});
+  EXPECT_TRUE(FeatureList::IsEnabled(kTestRuntimeMutableFeature1));
+  EXPECT_EQ("mutated", kTestRuntimeMutableFeature1Param.Get());
+  EXPECT_EQ(TestEnum::kSecond, kTestRuntimeMutableFeature1EnumParam.Get());
+
+  scoped_feature_list.MutateRuntimeMutableFeature(kTestRuntimeMutableFeature1,
+                                                  /*enabled=*/true);
+  EXPECT_TRUE(FeatureList::IsEnabled(kTestRuntimeMutableFeature1));
+  EXPECT_EQ("default_val", kTestRuntimeMutableFeature1Param.Get());
+  EXPECT_EQ(TestEnum::kFirst, kTestRuntimeMutableFeature1EnumParam.Get());
+}
+
+TEST_F(ScopedFeatureListTest, MutateRuntimeMutableFeaturesWithParameters) {
+  ScopedFeatureList scoped_feature_list;
+  {
+    auto feature_list = std::make_unique<FeatureList>();
+    feature_list->EnableRuntimeMutability(
+        kTestRuntimeMutableFeature1,
+        FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+    feature_list->EnableRuntimeMutability(
+        kTestRuntimeMutableFeature2,
+        FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+    scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  }
+
+  scoped_feature_list.MutateRuntimeMutableFeaturesWithParameters(
+      /*features_to_enable=*/{{kTestRuntimeMutableFeature1,
+                               {{kTestRuntimeMutableFeature1Param.name,
+                                 "batch_val"},
+                                {kTestRuntimeMutableFeature1EnumParam.name,
+                                 "second"}}}},
+      /*features_to_disable=*/{kTestRuntimeMutableFeature2});
+  EXPECT_TRUE(FeatureList::IsEnabled(kTestRuntimeMutableFeature1));
+  EXPECT_EQ("batch_val", kTestRuntimeMutableFeature1Param.Get());
+  EXPECT_EQ(TestEnum::kSecond, kTestRuntimeMutableFeature1EnumParam.Get());
+  EXPECT_FALSE(FeatureList::IsEnabled(kTestRuntimeMutableFeature2));
 }
 
 TEST_F(ScopedFeatureListTest, MutateRuntimeMutableFeatureWithoutMutability) {
@@ -860,21 +920,6 @@ TEST_F(ScopedFeatureListTest, MutateRuntimeMutableFeatureOverriddenOnCmdLine) {
   // mutation would silently have no effect.
   EXPECT_CHECK_DEATH(scoped_feature_list.MutateRuntimeMutableFeature(
       kTestRuntimeMutableFeature1, /*enabled=*/false));
-}
-
-TEST_F(ScopedFeatureListTest, MutateRuntimeMutableFeatureEnableUnsupported) {
-  ScopedFeatureList scoped_feature_list;
-  {
-    auto feature_list = std::make_unique<FeatureList>();
-    feature_list->EnableRuntimeMutability(
-        kTestRuntimeMutableFeature1,
-        FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
-    scoped_feature_list.InitWithFeatureList(std::move(feature_list));
-  }
-
-  // Runtime mutability only supports disabling features for now.
-  EXPECT_CHECK_DEATH(scoped_feature_list.MutateRuntimeMutableFeature(
-      kTestRuntimeMutableFeature1, /*enabled=*/true));
 }
 
 TEST_F(ScopedFeatureListTest, MutateRuntimeMutableFeatureListedTwice) {

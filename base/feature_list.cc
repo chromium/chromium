@@ -628,11 +628,9 @@ FeatureList::PrepareRuntimeMutableFeatureStateUpdateImpl(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(override_info);
 
-  // For V0 of runtime mutability, we only support disabling of features. This
-  // means we don't need to consider feature params (which are only supported
-  // for enabled features).
-  // TODO: http://crbug.com/536852160 - Remove to support enablement.
-  if (override_state != OVERRIDE_DISABLE_FEATURE) {
+  // Runtime overrides must explicitly enable or disable the feature; reverting
+  // to `OVERRIDE_USE_DEFAULT` is not supported.
+  if (override_state == OVERRIDE_USE_DEFAULT) {
     LogRuntimeMutabilityResult(
         feature_name,
         internal::RuntimeMutabilityResult::kFailure_StateNotSupported);

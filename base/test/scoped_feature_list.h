@@ -210,22 +210,23 @@ class ScopedFeatureList final {
   //    as the global instance (in tests, typically by building a FeatureList
   //    manually and passing it to `InitWithFeatureList()`);
   //  - the feature's state is pinned by a command-line override, which takes
-  //    precedence over runtime mutations;
-  //  - the requested state is not supported yet (only disabling features is
-  //    supported at the moment, so `features_to_enable` must be empty).
+  //    precedence over runtime mutations.
   //
   // Note: unlike production, this does not simulate the corresponding
   // `base::RuntimeFieldTrialOverrides` update; only the feature state (and its
-  // associated runtime trial name) is mutated.
-  //
-  // TODO(crbug.com/536851701): Support specifying field trial params for the
-  // features being mutated, once runtime mutability supports params.
+  // associated runtime trial name and params) is mutated.
   void MutateRuntimeMutableFeatures(
       const std::vector<FeatureRef>& features_to_enable,
       const std::vector<FeatureRef>& features_to_disable);
+  void MutateRuntimeMutableFeaturesWithParameters(
+      const std::vector<FeatureRefAndParams>& features_to_enable,
+      const std::vector<FeatureRef>& features_to_disable);
 
   // Convenience wrapper around the above for mutating a single feature.
-  void MutateRuntimeMutableFeature(const Feature& feature, bool enabled);
+  // `params` may only be non-empty when `enabled` is true.
+  void MutateRuntimeMutableFeature(const Feature& feature,
+                                   bool enabled,
+                                   const FieldTrialParams& params = {});
 
  private:
   using PassKey = base::PassKey<ScopedFeatureList>;

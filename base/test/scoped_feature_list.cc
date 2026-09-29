@@ -487,6 +487,18 @@ void ScopedFeatureList::InitWithFeatureStates(
 void ScopedFeatureList::MutateRuntimeMutableFeatures(
     const std::vector<FeatureRef>& features_to_enable,
     const std::vector<FeatureRef>& features_to_disable) {
+  std::vector<FeatureRefAndParams> features_to_enable_with_params;
+  features_to_enable_with_params.reserve(features_to_enable.size());
+  for (const FeatureRef& feature : features_to_enable) {
+    features_to_enable_with_params.emplace_back(*feature, FieldTrialParams());
+  }
+  MutateRuntimeMutableFeaturesWithParameters(features_to_enable_with_params,
+                                             features_to_disable);
+}
+
+void ScopedFeatureList::MutateRuntimeMutableFeaturesWithParameters(
+    const std::vector<FeatureRefAndParams>& features_to_enable,
+    const std::vector<FeatureRef>& features_to_disable) {
   CHECK(init_called_);
   FeatureList* feature_list = FeatureList::GetInstance();
   CHECK(feature_list) << "A FeatureList must be registered before mutating "
@@ -505,53 +517,50 @@ void ScopedFeatureList::MutateRuntimeMutableFeatures(
   // FeatureList decline the mutation is a test setup error, so it is diagnosed
   // here rather than being silently skipped (as it would be in production).
   flat_set<FeatureRef> seen_features;
-  auto prepare_updates = [&](const std::vector<FeatureRef>& features,
-                             bool enable) {
-    for (const FeatureRef& feature : features) {
-      CHECK(seen_features.insert(feature).second)
-          << feature->name
-          << " is specified more than once in the same runtime mutation. A "
-             "feature cannot be in both the enable and disable lists, nor "
-             "listed twice in the same list.";
-      CHECK(feature->IsRuntimeMutable())
-          << feature->name
-          << " is not declared as a runtime-mutable feature. Use "
-             "BASE_RUNTIME_MUTABLE_FEATURE() to declare it as one.";
-      CHECK(
-          feature_list->HasRuntimeMutabilityEnabledByFeatureName(feature->name))
-          << feature->name
-          << " must be declared with BASE_RUNTIME_MUTABLE_FEATURE and "
-             "registered via EnableRuntimeMutability() before simulating a "
-             "mid-session mutation.";
-      CHECK(!feature_list->IsFeatureOverriddenFromCommandLine(feature->name))
-          << feature->name
-          << " is overridden from the command line, which takes precedence "
-             "over runtime mutations. Remove the override (e.g. the enclosing "
-             "ScopedFeatureList::InitWithFeatures() call) to mutate the "
-             "feature at runtime.";
-      // TODO(crbug.com/536851701): Remove this check once runtime mutability
-      // supports enabling features.
-      CHECK(!enable) << "Runtime mutability does not support enabling features "
-                        "yet, so "
-                     << feature->name << " cannot be enabled at runtime.";
+  auto prepare_update = [&](const Feature& feature, bool enable,
+                            const FieldTrialParams& params) {
+    CHECK(seen_features.insert(feature).second)
+        << feature.name
+        << " is specified more than once in the same runtime mutation. A "
+           "feature cannot be in both the enable and disable lists, nor "
+           "listed twice in the same list.";
+    CHECK(feature.IsRuntimeMutable())
+        << feature.name
+        << " is not declared as a runtime-mutable feature. Use "
+           "BASE_RUNTIME_MUTABLE_FEATURE to declare it as one.";
+    CHECK(feature_list->HasRuntimeMutabilityEnabledByFeatureName(feature.name))
+        << feature.name
+        << " must be declared with BASE_RUNTIME_MUTABLE_FEATURE and "
+           "registered via EnableRuntimeMutability() before simulating a "
+           "mid-session mutation.";
+    CHECK(!feature_list->IsFeatureOverriddenFromCommandLine(feature.name))
+        << feature.name
+        << " is overridden from the command line, which takes precedence "
+           "over runtime mutations. Remove the override (e.g. the enclosing "
+           "ScopedFeatureList::InitWithFeatures() call) to mutate the "
+           "feature at runtime.";
 
-      auto override_info = std::make_unique<RuntimeFieldTrialInfo>(
-          RuntimeMutationTrialName(*feature), RuntimeMutationGroupName(enable),
-          base::FieldTrialParams(), nullptr);
+    auto override_info = std::make_unique<RuntimeFieldTrialInfo>(
+        RuntimeMutationTrialName(feature), RuntimeMutationGroupName(enable),
+        params, nullptr);
 
-      std::optional<FeatureList::RuntimeMutableFeatureUpdate> update =
-          feature_list->PrepareRuntimeMutableFeatureStateUpdate(
-              PassKey(), override_info.get(), feature->name,
-              enable ? FeatureList::OVERRIDE_ENABLE_FEATURE
-                     : FeatureList::OVERRIDE_DISABLE_FEATURE);
-      CHECK(update.has_value())
-          << "Failed to prepare a runtime mutation for " << feature->name;
-      updates.push_back(std::move(update).value());
-      runtime_field_trial_info_cache_.push_back(std::move(override_info));
-    }
+    std::optional<FeatureList::RuntimeMutableFeatureUpdate> update =
+        feature_list->PrepareRuntimeMutableFeatureStateUpdate(
+            PassKey(), override_info.get(), feature.name,
+            enable ? FeatureList::OVERRIDE_ENABLE_FEATURE
+                   : FeatureList::OVERRIDE_DISABLE_FEATURE);
+    CHECK(update.has_value())
+        << "Failed to prepare a runtime mutation for " << feature.name;
+    updates.push_back(std::move(update).value());
+    runtime_field_trial_info_cache_.push_back(std::move(override_info));
   };
-  prepare_updates(features_to_enable, /*enable=*/true);
-  prepare_updates(features_to_disable, /*enable=*/false);
+  for (const FeatureRefAndParams& feature_and_params : features_to_enable) {
+    prepare_update(*feature_and_params.feature, /*enable=*/true,
+                   feature_and_params.params);
+  }
+  for (const FeatureRef& feature : features_to_disable) {
+    prepare_update(*feature, /*enable=*/false, FieldTrialParams());
+  }
 
   if (updates.empty()) {
     return;
@@ -576,12 +585,16 @@ void ScopedFeatureList::MutateRuntimeMutableFeatures(
   }
 }
 
-void ScopedFeatureList::MutateRuntimeMutableFeature(const Feature& feature,
-                                                    bool enabled) {
+void ScopedFeatureList::MutateRuntimeMutableFeature(
+    const Feature& feature,
+    bool enabled,
+    const FieldTrialParams& params) {
   if (enabled) {
-    MutateRuntimeMutableFeatures({feature}, {});
+    MutateRuntimeMutableFeaturesWithParameters({{feature, params}}, {});
   } else {
-    MutateRuntimeMutableFeatures({}, {feature});
+    CHECK(params.empty())
+        << "Field trial params can only be specified when enabling a feature.";
+    MutateRuntimeMutableFeaturesWithParameters({}, {feature});
   }
 }
 

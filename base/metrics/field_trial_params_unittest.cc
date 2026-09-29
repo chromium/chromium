@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/functional/callback.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/test/gtest_util.h"
@@ -558,4 +559,83 @@ TEST_F(FieldTrialParamsTest, FeatureParamEnumClass) {
   EXPECT_EQ(UI::THREE_D, f.Get());  // not registered
 }
 
+namespace {
+BASE_RUNTIME_MUTABLE_FEATURE(kTestFeatureRuntime,
+                             base::FEATURE_DISABLED_BY_DEFAULT);
+}
+
+TEST_F(FieldTrialParamsTest,
+       GetFieldTrialParamsByFeature_RuntimeMutableOverrides) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  {
+    auto feature_list = std::make_unique<base::FeatureList>();
+    feature_list->EnableRuntimeMutability(
+        kTestFeatureRuntime,
+        base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+    scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  }
+
+  FieldTrialParams params = {{"x", "1"}, {"y", "2"}};
+  scoped_feature_list.MutateRuntimeMutableFeature(kTestFeatureRuntime,
+                                                  /*enabled=*/true, params);
+
+  FieldTrialParams actual_params;
+  EXPECT_TRUE(
+      GetFieldTrialParamsByFeature(kTestFeatureRuntime, &actual_params));
+  EXPECT_EQ(params, actual_params);
+}
+
+TEST_F(FieldTrialParamsTest,
+       GetFieldTrialParamsByFeature_RuntimeMutableOverrideWithEmptyParams) {
+  const std::string kTrialName =
+      "GetFieldTrialParamsByFeature_RuntimeMutableOverrideWithEmptyParams";
+
+  // Associate non-empty params with the startup FieldTrial to verify that an
+  // active runtime override with empty params returns false without falling
+  // back to the overridden startup trial's params.
+  ASSERT_TRUE(AssociateFieldTrialParams(kTrialName, "A", {{"x", "startup"}}));
+  scoped_refptr<base::FieldTrial> trial =
+      base::FieldTrialList::CreateFieldTrial(kTrialName, "A");
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  {
+    auto feature_list = std::make_unique<base::FeatureList>();
+    feature_list->EnableRuntimeMutability(
+        kTestFeatureRuntime,
+        base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+    feature_list->RegisterFieldTrialOverride(
+        kTestFeatureRuntime.name, base::FeatureList::OVERRIDE_ENABLE_FEATURE,
+        trial.get());
+    scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  }
+
+  scoped_feature_list.MutateRuntimeMutableFeature(
+      kTestFeatureRuntime, /*enabled=*/true, /*params=*/{});
+
+  FieldTrialParams actual_params = {{"sentinel", "untouched"}};
+  EXPECT_FALSE(
+      GetFieldTrialParamsByFeature(kTestFeatureRuntime, &actual_params));
+  EXPECT_EQ(FieldTrialParams({{"sentinel", "untouched"}}), actual_params);
+  EXPECT_EQ("", GetFieldTrialParamValueByFeature(kTestFeatureRuntime, "x"));
+}
+
+TEST_F(FieldTrialParamsTest,
+       GetFieldTrialParamValueByFeature_RuntimeMutableOverrides) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  {
+    auto feature_list = std::make_unique<base::FeatureList>();
+    feature_list->EnableRuntimeMutability(
+        kTestFeatureRuntime,
+        base::FeatureList::OnRuntimeMutableFeatureStateChangedCallback());
+    scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+  }
+
+  FieldTrialParams params = {{"x", "1"}, {"y", "2"}};
+  scoped_feature_list.MutateRuntimeMutableFeature(kTestFeatureRuntime,
+                                                  /*enabled=*/true, params);
+
+  EXPECT_EQ("1", GetFieldTrialParamValueByFeature(kTestFeatureRuntime, "x"));
+  EXPECT_EQ("2", GetFieldTrialParamValueByFeature(kTestFeatureRuntime, "y"));
+  EXPECT_EQ("", GetFieldTrialParamValueByFeature(kTestFeatureRuntime, "z"));
+}
 }  // namespace base
