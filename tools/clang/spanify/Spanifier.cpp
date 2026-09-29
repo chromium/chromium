@@ -501,6 +501,10 @@ std::string NodeKey(const T* node,
 std::string GetRHS(const MatchFinder::MatchResult& result);
 std::string GetLHS(const MatchFinder::MatchResult& result);
 
+bool IsRewrittenToStringView(const clang::DeclaratorDecl* array_decl,
+                             clang::QualType element_type,
+                             const clang::ASTContext& ast_context);
+
 // Emit a generic instruction to the output stream. This removes duplicates.
 void Emit(const std::string& line) {
   static std::set<std::string> emitted;
@@ -2268,13 +2272,26 @@ void RewriteUnaryOperation(const MatchFinder::MatchResult& result) {
 // Tests are in: tests/chrome/array-tests-original.cc
 void RewriteArraySizeof(const MatchFinder::MatchResult& result) {
   clang::SourceManager& source_manager = *result.SourceManager;
+  const clang::ASTContext& ast_context = *result.Context;
 
   const auto* sizeof_expr =
       result.Nodes.getNodeAs<clang::UnaryExprOrTypeTraitExpr>("sizeof_expr");
 
-  const std::string& array_decl_as_string =
-      result.Nodes.getNodeAs<clang::DeclaratorDecl>("rhs_begin")
-          ->getNameAsString();
+  const auto* array_decl =
+      result.Nodes.getNodeAs<clang::DeclaratorDecl>("rhs_begin");
+
+  // `sizeof` of a `std::string_view` gives the size of the view, not of the
+  // buffer. Exclude the rewrite so `sizeof` keeps measuring the buffer.
+  if (const clang::ArrayType* array_type =
+          ast_context.getAsArrayType(array_decl->getType())) {
+    if (IsRewrittenToStringView(array_decl, array_type->getElementType(),
+                                ast_context)) {
+      EmitExclusion(GetRHS(result));
+      return;
+    }
+  }
+
+  const std::string& array_decl_as_string = array_decl->getNameAsString();
 
   // sizeof_expr matches with "sizeof(c_array)" in case of
   // `sizeof(c_array)`, and "sizeof " in case of `sizeof c_array`. In the
@@ -2700,6 +2717,18 @@ bool IsConstexpr(const clang::DeclaratorDecl* decl) {
   return false;
 }
 
+// Returns true if `array_decl` is rewritten into a `std::string_view` instead
+// of a `std::array`. Shared with `RewriteArraySizeof()` so both agree.
+bool IsRewrittenToStringView(const clang::DeclaratorDecl* array_decl,
+                             clang::QualType element_type,
+                             const clang::ASTContext& ast_context) {
+  if (!clang::dyn_cast_or_null<clang::StringLiteral>(GetInitExpr(array_decl))) {
+    return false;
+  }
+  // Only const arrays will be rewritten to `std::string_view`.
+  return element_type.isConstant(ast_context) || IsConstexpr(array_decl);
+}
+
 bool IsInlineVarDecl(const clang::DeclaratorDecl* decl) {
   if (const auto* var_decl = clang::dyn_cast_or_null<clang::VarDecl>(decl)) {
     return var_decl->isInlineSpecified();
@@ -2873,8 +2902,8 @@ std::string getNodeFromArrayDecl(const clang::TypeLoc* type_loc,
   std::string additional_replacement;
   if (init_string_literal) {
     assert(original_element_type->isAnyCharacterType());
-    if (original_element_type.isConstant(ast_context) ||
-        IsConstexpr(array_decl)) {
+    if (IsRewrittenToStringView(array_decl, original_element_type,
+                                ast_context)) {
       replacement_text = llvm::formatv(
           "{0} {1}", GetStringViewType(new_element_type, ast_context),
           array_variable_as_string);
