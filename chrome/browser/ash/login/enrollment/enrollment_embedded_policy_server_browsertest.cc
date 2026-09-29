@@ -1422,7 +1422,6 @@ IN_PROC_BROWSER_TEST_F(
   ScopedDeviceSettings settings;
 
   SetupAutoLaunchApp(settings.owner_settings_service());
-  enrollment_screen()->OnConfirmationClosed();
   enrollment_ui_.LeaveSuccessScreen();
 
   // Wait for app to be launched.

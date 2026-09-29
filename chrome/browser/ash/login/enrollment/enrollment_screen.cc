@@ -569,6 +569,10 @@ bool EnrollmentScreen::HandleAccelerator(LoginAcceleratorAction action) {
 }
 
 void EnrollmentScreen::OnCancel() {
+  if (is_hidden()) {
+    return;
+  }
+
   if (enrollment_succeeded_) {
     // Cancellation is the same to confirmation after the successful enrollment.
     OnConfirmationClosed();
@@ -607,6 +611,10 @@ void EnrollmentScreen::OnCancel() {
 }
 
 void EnrollmentScreen::OnConfirmationClosed() {
+  if (is_hidden()) {
+    return;
+  }
+
   StartupUtils::MarkEulaAccepted(local_state_.get());
 
   // TODO(crbug.com/40805389): Logging as "WARNING" to make sure it's preserved
