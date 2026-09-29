@@ -159,6 +159,7 @@ void WebGPUTest::Initialize(const Options& options) {
       });
   webgpu()->FlushCommands();
   while (!done) {
+    base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
     RunPendingTasks();
   }
 }
@@ -207,11 +208,10 @@ void WebGPUTest::WaitForCompletion(wgpu::Device device) {
 
 void WebGPUTest::WaitForFutureCompletion(wgpu::Device device,
                                          wgpu::FutureWaitInfo wait_info) {
-  // Perform a busy loop acting as an event loop checking for the Future to be
-  // completed.
   while (!wait_info.completed) {
     instance_.WaitAny(1, &wait_info, 0);
     webgpu()->FlushCommands();
+    base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
     RunPendingTasks();
   }
 }
