@@ -32,15 +32,16 @@ StyleScopeFrame& StyleScopeFrame::GetParentFrameOrThis(
 }
 
 bool StyleScopeFrame::HasSeenImplicitScope(const StyleScope& style_scope) {
-  if (!seen_implicit_scopes_) {
-    seen_implicit_scopes_ = CalculateSeenImplicitScopes();
-  }
-  return seen_implicit_scopes_->Contains(&style_scope);
+  return EnsureSeenImplicitScopes().Contains(&style_scope);
 }
 
-StyleScopeFrame::ScopeSet* StyleScopeFrame::CalculateSeenImplicitScopes() {
-  bool owns_set;
-  ScopeSet* scopes;
+StyleScopeFrame::ScopeSet& StyleScopeFrame::EnsureSeenImplicitScopes() {
+  if (seen_implicit_scopes_) {
+    return *seen_implicit_scopes_;
+  }
+
+  bool owns_set = false;
+  ScopeSet* scopes = nullptr;
 
   auto add_triggered_scopes = [&owns_set, &scopes](Element& element) {
     if (const StyleScopeData* style_scope_data = element.GetStyleScopeData()) {
@@ -63,7 +64,7 @@ StyleScopeFrame::ScopeSet* StyleScopeFrame::CalculateSeenImplicitScopes() {
   if (parent_frame) {
     // We've seen all scopes that the parent has seen ...
     owns_set = false;
-    scopes = parent_frame->CalculateSeenImplicitScopes();
+    scopes = &parent_frame->EnsureSeenImplicitScopes();
     // ... plus any new scopes seen on this element.
     add_triggered_scopes(element_);
   } else {
@@ -78,7 +79,8 @@ StyleScopeFrame::ScopeSet* StyleScopeFrame::CalculateSeenImplicitScopes() {
     }
   }
 
-  return scopes;
+  seen_implicit_scopes_ = scopes;
+  return *seen_implicit_scopes_;
 }
 
 }  // namespace blink

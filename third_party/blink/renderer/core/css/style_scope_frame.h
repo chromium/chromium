@@ -109,7 +109,7 @@ class CORE_EXPORT StyleScopeFrame {
 
   using ScopeSet = GCedHeapHashSet<Member<const StyleScope>>;
 
-  ScopeSet* CalculateSeenImplicitScopes();
+  ScopeSet& EnsureSeenImplicitScopes();
 
   Element& element_;
   StyleScopeFrame* parent_ = nullptr;
