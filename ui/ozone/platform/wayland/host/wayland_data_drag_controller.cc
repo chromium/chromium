@@ -153,12 +153,10 @@ WaylandDataDragController::~WaylandDataDragController() {
 bool WaylandDataDragController::StartSession(const OSExchangeData& data,
                                              int operations,
                                              DragEventSource source) {
-  // TODO(crbug.com/340398746): Should be DCHECK'ed instead, though due to buggy
-  // compositors, eg: KWin 6, which do not send data_source.dnd_finish|cancelled
-  // in some cases, it was temporarily turned into this conditional avoid
-  // browser crashes. Revert once it stabilizes at compositors side.
-  if (state_ != State::kIdle) {
-    Reset();
+  if (IsDragInProgress()) {
+    LOG(WARNING) << "Cannot start a new drag session while an active drag "
+                    "is in progress.";
+    return false;
   }
 
   auto* origin_window = source == DragEventSource::kTouch
