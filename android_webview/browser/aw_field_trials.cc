@@ -67,10 +67,6 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   aw_feature_overrides.DisableFeature(
       blink::features::kAboutBlankPageRespectsDarkModeOnUserAction);
 
-  // DISABLED_TEMPORARY: crbug.com/444669046. Remove this once WebView
-  // experiment has concluded.
-  aw_feature_overrides.DisableFeature(
-      input::features::kUpdateScrollPredictorInputMapping);
 
   // DISABLED_TEMPORARY: crbug.com/444669046. Disable
   // ScrollPredictorEnhancements refined prediction on WebView by default so it

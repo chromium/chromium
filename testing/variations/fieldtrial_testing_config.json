@@ -18783,32 +18783,6 @@
             ]
         }
     ],
-    "UpdateScrollPredictorInputMapping": [
-        {
-            "platforms": [
-                "android_webview"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithDispatch_WebView_20260818",
-                    "enable_features": [
-                        "UpdateScrollPredictorInputMapping",
-                        "WaitForLateScrollEvents"
-                    ]
-                },
-                {
-                    "name": "Enabled_WebView_20260818",
-                    "params": {
-                        "mode": "UseScrollPredictorForEmptyQueue"
-                    },
-                    "enable_features": [
-                        "UpdateScrollPredictorInputMapping",
-                        "WaitForLateScrollEvents"
-                    ]
-                }
-            ]
-        }
-    ],
     "UploadReportOnProfileOpenStudy": [
         {
             "platforms": [
