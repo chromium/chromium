@@ -18,10 +18,10 @@ class AutofillDialogController {
 
   // Shows the dialog. The negative button is not displayed when an empty
   // negative button text is passed.
-  virtual void Show(const std::u16string& title,
-                    const std::u16string& description,
-                    const std::u16string& positive_button_text,
-                    const std::u16string& negative_button_text,
+  virtual void Show(std::u16string title,
+                    std::u16string description,
+                    std::u16string positive_button_text,
+                    std::u16string negative_button_text,
                     base::OnceClosure on_positive_button_clicked_callback) = 0;
 
   virtual void ShowLoadingDialog(const std::u16string& title,

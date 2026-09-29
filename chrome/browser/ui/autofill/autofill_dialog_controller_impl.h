@@ -29,10 +29,10 @@ class AutofillDialogControllerImpl : public AutofillDialogController {
       delete;
 
   // AutofillDialogController:
-  void Show(const std::u16string& title,
-            const std::u16string& description,
-            const std::u16string& positive_button_text,
-            const std::u16string& negative_button_text,
+  void Show(std::u16string title,
+            std::u16string description,
+            std::u16string positive_button_text,
+            std::u16string negative_button_text,
             base::OnceClosure on_positive_button_clicked_callback) override;
   void ShowLoadingDialog(const std::u16string& title,
                          base::TimeDelta min_time) override;

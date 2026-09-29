@@ -17,10 +17,10 @@ class MockAutofillDialogController : public AutofillDialogController {
 
   MOCK_METHOD(void,
               Show,
-              (const std::u16string&,
-               const std::u16string&,
-               const std::u16string&,
-               const std::u16string&,
+              (std::u16string,
+               std::u16string,
+               std::u16string,
+               std::u16string,
                base::OnceClosure),
               (override));
   MOCK_METHOD(void,
