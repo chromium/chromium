@@ -19,6 +19,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -215,7 +216,7 @@ class FileSystemAccessFileWriterImplTestBase : public testing::Test {
     }
   }
 
-  FileSystemAccessStatus WriteStreamSync(
+  blink::mojom::FileSystemAccessErrorPtr WriteStreamSync(
       uint64_t position,
       mojo::ScopedDataPipeConsumerHandle data_pipe,
       uint64_t* bytes_written_out) {
@@ -224,7 +225,7 @@ class FileSystemAccessFileWriterImplTestBase : public testing::Test {
     handle_->Write(position, std::move(data_pipe), future.GetCallback());
     blink::mojom::FileSystemAccessErrorPtr result;
     std::tie(result, *bytes_written_out) = future.Take();
-    return result->status;
+    return result;
   }
 
   FileSystemAccessStatus TruncateSync(uint64_t length) {
@@ -245,9 +246,10 @@ class FileSystemAccessFileWriterImplTestBase : public testing::Test {
     return future.Get()->status;
   }
 
-  FileSystemAccessStatus WriteSync(uint64_t position,
-                                   const std::string& contents,
-                                   uint64_t* bytes_written_out) {
+  blink::mojom::FileSystemAccessErrorPtr WriteSync(
+      uint64_t position,
+      const std::string& contents,
+      uint64_t* bytes_written_out) {
     return WriteStreamSync(position, CreateStream(contents), bytes_written_out);
   }
 
@@ -436,7 +438,7 @@ class FileSystemAccessFileWriterImplTest
 
 TEST_F(FileSystemAccessFileWriterImplTest, WriteValidEmptyString) {
   uint64_t bytes_written;
-  FileSystemAccessStatus result = WriteSync(0, "", &bytes_written);
+  FileSystemAccessStatus result = WriteSync(0, "", &bytes_written)->status;
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
   EXPECT_EQ(bytes_written, 0u);
 
@@ -450,7 +452,8 @@ TEST_F(FileSystemAccessFileWriterImplTest, WriteValidEmptyString) {
 TEST_F(FileSystemAccessFileWriterImplTest, WriteValidNonEmpty) {
   std::string test_data("abcdefghijklmnopqrstuvwxyz");
   uint64_t bytes_written;
-  FileSystemAccessStatus result = WriteSync(0, test_data, &bytes_written);
+  FileSystemAccessStatus result =
+      WriteSync(0, test_data, &bytes_written)->status;
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
   EXPECT_EQ(bytes_written, test_data.size());
 
@@ -465,11 +468,11 @@ TEST_F(FileSystemAccessFileWriterImplTest, WriteWithOffsetInFile) {
   uint64_t bytes_written;
   FileSystemAccessStatus result;
 
-  result = WriteSync(0, "1234567890", &bytes_written);
+  result = WriteSync(0, "1234567890", &bytes_written)->status;
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
   EXPECT_EQ(bytes_written, 10u);
 
-  result = WriteSync(4, "abc", &bytes_written);
+  result = WriteSync(4, "abc", &bytes_written)->status;
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
   EXPECT_EQ(bytes_written, 3u);
 
@@ -482,7 +485,7 @@ TEST_F(FileSystemAccessFileWriterImplTest, WriteWithOffsetInFile) {
 
 TEST_F(FileSystemAccessFileWriterImplTest, WriteWithOffsetPastFile) {
   uint64_t bytes_written;
-  FileSystemAccessStatus result = WriteSync(4, "abc", &bytes_written);
+  FileSystemAccessStatus result = WriteSync(4, "abc", &bytes_written)->status;
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
   EXPECT_EQ(bytes_written, 3u);
 
@@ -498,7 +501,7 @@ TEST_F(FileSystemAccessFileWriterImplTest, TruncateShrink) {
   uint64_t bytes_written;
   FileSystemAccessStatus result;
 
-  result = WriteSync(0, "1234567890", &bytes_written);
+  result = WriteSync(0, "1234567890", &bytes_written)->status;
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
   EXPECT_EQ(bytes_written, 10u);
 
@@ -515,7 +518,7 @@ TEST_F(FileSystemAccessFileWriterImplTest, TruncateGrow) {
   uint64_t bytes_written;
   FileSystemAccessStatus result;
 
-  result = WriteSync(0, "abc", &bytes_written);
+  result = WriteSync(0, "abc", &bytes_written)->status;
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
   EXPECT_EQ(bytes_written, 3u);
 
@@ -530,7 +533,7 @@ TEST_F(FileSystemAccessFileWriterImplTest, TruncateGrow) {
 
 TEST_F(FileSystemAccessFileWriterImplTest, WriterDestroyedAfterClose) {
   uint64_t bytes_written;
-  FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written);
+  FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written)->status;
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
   EXPECT_EQ(bytes_written, 3u);
 
@@ -544,7 +547,7 @@ TEST_F(FileSystemAccessFileWriterImplTest, WriterDestroyedAfterClose) {
 
 TEST_F(FileSystemAccessFileWriterImplTest, WriterDestroyedAfterAbort) {
   uint64_t bytes_written;
-  FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written);
+  FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written)->status;
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
   EXPECT_EQ(bytes_written, 3u);
 
@@ -571,7 +574,8 @@ class FileSystemAccessSandboxedFileWriterImplTest
 TEST_F(FileSystemAccessSandboxedFileWriterImplTest, SkipQuarantine) {
   std::string test_data("abcdefghijklmnopqrstuvwxyz");
   uint64_t bytes_written;
-  FileSystemAccessStatus result = WriteSync(0, test_data, &bytes_written);
+  FileSystemAccessStatus result =
+      WriteSync(0, test_data, &bytes_written)->status;
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
   EXPECT_EQ(bytes_written, test_data.size());
 
@@ -584,28 +588,55 @@ TEST_F(FileSystemAccessSandboxedFileWriterImplTest, SkipQuarantine) {
 }
 
 TEST_F(FileSystemAccessSandboxedFileWriterImplTest, QuotaError) {
+  ASSERT_EQ(base::File::FILE_OK,
+            storage::AsyncFileTestHelper::CreateFileWithData(
+                file_system_context_.get(), test_file_url_, "original"));
   ASSERT_TRUE(quota_manager_);
   quota_manager_->SetQuota(kTestStorageKey, /*quota=*/1);
 
   uint64_t bytes_written;
-  FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written);
-  LOG(ERROR) << "after WriteSync";
-  // TODO(crbug.com/40266589): Refactor WriteSync to return a
-  // base::expected<uint64_t, FileSystemAccessErrorPtr>. For now, it seems safe
-  // to assume that this file error is a quota error.
-  EXPECT_EQ(result, FileSystemAccessStatus::kFileError);
+  auto result = WriteSync(0, "abc", &bytes_written);
+  ASSERT_EQ(result->status, FileSystemAccessStatus::kFileError);
+  EXPECT_EQ(result->file_error, base::File::FILE_ERROR_NO_SPACE);
   EXPECT_EQ(bytes_written, 0u);
-
-  // In practice, the renderer should disconnect the mojo pipe to the writer on
-  // receiving the quota error from the write call above. For the purpose of
-  // this test, we'll confirm that the above write never made it to the swap
-  // file, then abort.
   EXPECT_EQ("", ReadFile(test_swap_url_));
 
-  result = CloseSync();
-  EXPECT_EQ(result, FileSystemAccessStatus::kOk);
-  EXPECT_EQ("", ReadFile(test_file_url_));
-  EXPECT_TRUE(handle_.WasInvalidated());
+  // The renderer disconnects the writer on a write error. Closing instead
+  // would commit the swap file, overwriting the original file's contents.
+  remote_.reset();
+  ASSERT_TRUE(base::test::RunUntil([&] { return handle_.WasInvalidated(); }));
+
+  EXPECT_EQ("original", ReadFile(test_file_url_));
+  EXPECT_FALSE(storage::AsyncFileTestHelper::FileExists(
+      file_system_context_.get(), test_swap_url_,
+      storage::AsyncFileTestHelper::kDontCheckSize));
+}
+
+TEST_F(FileSystemAccessSandboxedFileWriterImplTest,
+       QuotaErrorAfterPartialWrite) {
+  ASSERT_EQ(base::File::FILE_OK,
+            storage::AsyncFileTestHelper::CreateFileWithData(
+                file_system_context_.get(), test_file_url_, "original"));
+
+  // Include the existing files' usage so that exactly two bytes remain.
+  base::test::TestFuture<blink::mojom::QuotaStatusCode, int64_t, int64_t>
+      quota_future;
+  quota_manager_->GetUsageAndQuota(kTestStorageKey, quota_future.GetCallback());
+  ASSERT_EQ(quota_future.Get<0>(), blink::mojom::QuotaStatusCode::kOk);
+  quota_manager_->SetQuota(kTestStorageKey, quota_future.Get<1>() + 2);
+
+  uint64_t bytes_written;
+  auto result = WriteSync(0, "abc", &bytes_written);
+  ASSERT_EQ(result->status, FileSystemAccessStatus::kFileError);
+  EXPECT_EQ(result->file_error, base::File::FILE_ERROR_NO_SPACE);
+  EXPECT_EQ(bytes_written, 2u);
+  EXPECT_EQ("ab", ReadFile(test_swap_url_));
+  EXPECT_EQ("original", ReadFile(test_file_url_));
+
+  remote_.reset();
+  ASSERT_TRUE(base::test::RunUntil([&] { return handle_.WasInvalidated(); }));
+
+  EXPECT_EQ("original", ReadFile(test_file_url_));
   EXPECT_FALSE(storage::AsyncFileTestHelper::FileExists(
       file_system_context_.get(), test_swap_url_,
       storage::AsyncFileTestHelper::kDontCheckSize));
@@ -637,7 +668,7 @@ class FileSystemAccessFileWriterAfterWriteChecksTest
 
 TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest, Allow) {
   uint64_t bytes_written;
-  FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written);
+  FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written)->status;
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
   EXPECT_EQ(bytes_written, 3u);
 
@@ -678,7 +709,7 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest, Allow) {
 
 TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest, Block) {
   uint64_t bytes_written;
-  FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written);
+  FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written)->status;
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
   EXPECT_EQ(bytes_written, 3u);
 
@@ -700,7 +731,7 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest, Block) {
 TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest,
        HandleCloseDuringCheckOK) {
   uint64_t bytes_written;
-  FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written);
+  FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written)->status;
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
   EXPECT_EQ(bytes_written, 3u);
 
@@ -742,7 +773,7 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest,
 TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest,
        HandleCloseDuringCheckNotOK) {
   uint64_t bytes_written;
-  FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written);
+  FileSystemAccessStatus result = WriteSync(0, "abc", &bytes_written)->status;
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
   EXPECT_EQ(bytes_written, 3u);
 
@@ -805,7 +836,7 @@ TEST_F(FileSystemAccessFileWriterAfterWriteChecksTest,
   ASSERT_TRUE(handle_);
 
   uint64_t bytes_written;
-  FileSystemAccessStatus result = WriteSync(0, "foo", &bytes_written);
+  FileSystemAccessStatus result = WriteSync(0, "foo", &bytes_written)->status;
   EXPECT_EQ(result, FileSystemAccessStatus::kOk);
   EXPECT_EQ(bytes_written, 3u);
 
@@ -1000,7 +1031,7 @@ TEST_P(FileSystemAccessFileWriterImplPermissionTest,
 
   uint64_t bytes_written;
   std::string test_data("foo");
-  EXPECT_EQ(WriteStreamSync(0, CreateStream(test_data), &bytes_written),
+  EXPECT_EQ(WriteStreamSync(0, CreateStream(test_data), &bytes_written)->status,
             FileSystemAccessStatus::kOk);
   EXPECT_EQ(bytes_written, test_data.size());
 }
