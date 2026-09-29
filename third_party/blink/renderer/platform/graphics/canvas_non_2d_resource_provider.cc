@@ -664,6 +664,7 @@ CanvasNon2DResourceProvider::DoExternalOverdrawAndSnapshot(
 }
 
 void CanvasNon2DResourceProvider::EnsureResourceReadyForDraw() {
+  CHECK(!is_software_);
   DCHECK(resource_);
 
   // Since the resource will be updated, the cached snapshot is no longer valid.
@@ -672,10 +673,8 @@ void CanvasNon2DResourceProvider::EnsureResourceReadyForDraw() {
   // for these writes.
   cached_snapshot_.reset();
 
-  // Determine if a new resource is needed for accelerated resources. Note that
-  // for unaccelerated resources, writes to the SharedImage are deferred to
-  // ProduceCanvasResource.
-  if (!is_software_ && ShouldReplaceTargetBuffer(cached_content_id_)) {
+  // Determine if a new resource is needed.
+  if (ShouldReplaceTargetBuffer(cached_content_id_)) {
     cached_content_id_ = PaintImage::kInvalidContentId;
     DCHECK(!current_resource_has_write_access_)
         << "Write access must be released before sharing the resource";
