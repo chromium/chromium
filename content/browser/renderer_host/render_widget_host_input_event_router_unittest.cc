@@ -429,6 +429,9 @@ class RenderWidgetHostInputEventRouterTest : public testing::Test {
   input::RenderWidgetHostViewInput* wheel_target() {
     return rwhier()->wheel_target_;
   }
+  input::RenderWidgetHostViewInput* last_fling_start_target() {
+    return rwhier()->last_fling_start_target_;
+  }
 
   void TestSendNewGestureWhileBubbling(
       TestRenderWidgetHostViewChildFrame* bubbling_origin,
@@ -1859,6 +1862,82 @@ TEST_F(RenderWidgetHostInputEventRouterTest,
   rwhier()->ProcessAckedTouchEvent(
       input::TouchEventWithLatencyInfo(touch_start_event),
       blink::mojom::InputEventResultState::kConsumed, view_root_.get());
+}
+
+// Verifies that when a view receives a GestureFlingStart and is subsequently
+// destroyed, a subsequent GestureFlingCancel does not crash on a dangling
+// ScopedInputDispatchPin.
+TEST_F(RenderWidgetHostInputEventRouterTest, FlingCancelAfterTargetDestroyed) {
+  ChildViewState child = MakeChildView(view_root_.get());
+  view_root_->SetHittestResult(child.view.get(), false);
+
+  blink::WebTouchEvent touch_event(
+      blink::WebInputEvent::Type::kTouchStart,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests());
+  touch_event.touches_length = 1;
+  touch_event.touches[0].state = blink::WebTouchPoint::State::kStatePressed;
+  touch_event.unique_touch_event_id = 1;
+
+  rwhier()->RouteTouchEvent(view_root_.get(), &touch_event, ui::LatencyInfo());
+  EXPECT_EQ(child.view.get(), touch_target());
+
+  blink::WebGestureEvent tap_down(
+      blink::WebInputEvent::Type::kGestureTapDown,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests(),
+      blink::WebGestureDevice::kTouchscreen);
+  tap_down.unique_touch_event_id = 1;
+  rwhier()->RouteGestureEvent(view_root_.get(), &tap_down, ui::LatencyInfo());
+  EXPECT_EQ(child.view.get(), touchscreen_gesture_target());
+
+  blink::WebGestureEvent fling_start(
+      blink::WebInputEvent::Type::kGestureFlingStart,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests(),
+      blink::WebGestureDevice::kTouchscreen);
+  fling_start.unique_touch_event_id = 1;
+
+  rwhier()->RouteGestureEvent(view_root_.get(), &fling_start,
+                              ui::LatencyInfo());
+  EXPECT_EQ(child.view.get(), last_fling_start_target());
+
+  // When the child view is destroyed with an unacked touch event in the queue,
+  // UpdateQueueAfterTargetDestroyed() synchronously calls
+  // root_view->ProcessAckedTouchEvent(), which can synthesize and route a
+  // GestureFlingCancel. Verify that |last_fling_start_target_| has already been
+  // cleared before that synchronous callback runs.
+  bool ack_callback_ran = false;
+  child.view->Reset();
+  view_root_->set_on_process_acked_touch_event_callback(
+      base::BindLambdaForTesting([&]() {
+        ack_callback_ran = true;
+        EXPECT_EQ(nullptr, last_fling_start_target());
+        blink::WebGestureEvent sync_fling_cancel(
+            blink::WebInputEvent::Type::kGestureFlingCancel,
+            blink::WebInputEvent::kNoModifiers,
+            blink::WebInputEvent::GetStaticTimeStampForTests(),
+            blink::WebGestureDevice::kTouchscreen);
+        rwhier()->RouteGestureEvent(view_root_.get(), &sync_fling_cancel,
+                                    ui::LatencyInfo());
+      }));
+
+  // Destroy the child view.
+  rwhier()->OnRenderWidgetHostViewInputDestroyed(child.view.get());
+  EXPECT_TRUE(ack_callback_ran);
+  EXPECT_EQ(nullptr, last_fling_start_target());
+  EXPECT_EQ(blink::WebInputEvent::Type::kUndefined,
+            child.view->last_gesture_seen());
+
+  // Route a subsequent GestureFlingCancel; this must not crash or pin a
+  // dangling pointer.
+  blink::WebGestureEvent fling_cancel(
+      blink::WebInputEvent::Type::kGestureFlingCancel,
+      blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::GetStaticTimeStampForTests(),
+      blink::WebGestureDevice::kTouchscreen);
+  rwhier()->RouteGestureEvent(view_root_.get(), &fling_cancel,
+                              ui::LatencyInfo());
 }
 
 #if defined(USE_AURA)
