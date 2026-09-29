@@ -79,10 +79,13 @@ void WebIntTest::SetUp() {
   web_state_ = web::WebState::Create(web_state_create_params);
 
   // Resize the webview so that pages can be properly rendered.
-  web_state()->GetView().frame = GetAnyKeyWindow().bounds;
+  web_state_->GetView().frame = GetAnyKeyWindow().bounds;
 
-  web_state()->SetDelegate(&web_state_delegate_);
-  web_state()->SetKeepRenderProcessAlive(true);
+  web_state_->SetDelegate(&web_state_delegate_);
+  web_state_->SetKeepRenderProcessAlive(true);
+
+  // Observe WebState and fail the test if the render process crashes.
+  StartObservingWebStateForRenderProcessGone(web_state_.get());
 }
 
 void WebIntTest::TearDown() {

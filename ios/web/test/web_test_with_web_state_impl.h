@@ -41,8 +41,10 @@ class WebTestWithWebStateImpl : public WebTest {
   // Creates a WebStateImpl with the given parameters.
   template <typename... Args>
   std::unique_ptr<WebStateImpl> CreateWebStateImpl(Args&&... args) {
-    return std::make_unique<WebStateImpl>(
+    auto web_state = std::make_unique<WebStateImpl>(
         base::PassKey<WebTestWithWebStateImpl>{}, std::forward<Args>(args)...);
+    StartObservingWebStateForRenderProcessGone(web_state.get());
+    return web_state;
   }
 };
 

@@ -17,6 +17,7 @@ namespace web {
 class BrowserState;
 class JavaScriptFeature;
 class WebClient;
+class WebState;
 class WebTestRenderProcessCrashObserver;
 
 // A test fixture for web tests that need a minimum environment set up that
@@ -51,11 +52,14 @@ class WebTest : public PlatformTest {
   // Returns the BrowserState that is used for testing.
   BrowserState* GetBrowserState();
 
-  // If called with `true`, prevents the test fixture from automatically failing
-  // when a render process crashes during the test.  This is useful for tests
-  // that intentionally crash the render process.  By default, the WebTest
-  // fixture will fail if a render process crashes.
-  void SetIgnoreRenderProcessCrashesDuringTesting(bool allow);
+  // Starts observing `web_state` and fail the test if it is the render process
+  // is killed. The observation is automatically unregistered when the WebState
+  // is destroyed.
+  void StartObservingWebStateForRenderProcessGone(WebState* web_state);
+
+  // Cancels all observations of WebState registered with a previous call to
+  // StartObservingWebStateForRenderProcessGone(...). Generally unnecessary.
+  void StopObservingWebStatesForRenderProcessGone();
 
  private:
   // The WebClient used in tests.

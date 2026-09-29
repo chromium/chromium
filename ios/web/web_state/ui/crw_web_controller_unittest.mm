@@ -2247,7 +2247,7 @@ class CRWWebControllerWebProcessTest : public WebTestWithWebController {
     [web_controller() injectWebViewContentView:webViewContentView];
 
     // This test intentionally crashes the render process.
-    SetIgnoreRenderProcessCrashesDuringTesting(true);
+    StopObservingWebStatesForRenderProcessGone();
   }
   WKWebView* web_view_;
 };

@@ -6,21 +6,35 @@
 
 #import "base/check.h"
 #import "base/memory/ptr_util.h"
+#import "base/scoped_multi_source_observation.h"
 #import "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/js_test_util.h"
-#import "ios/web/web_state/deprecated/global_web_state_observer.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_observer.h"
 
 namespace web {
 
-class WebTestRenderProcessCrashObserver : public GlobalWebStateObserver {
+class WebTestRenderProcessCrashObserver : public WebStateObserver {
  public:
   WebTestRenderProcessCrashObserver() = default;
   ~WebTestRenderProcessCrashObserver() override = default;
 
+  void Observe(WebState* web_state) {
+    web_state_observations_.AddObservation(web_state);
+  }
+
+  void WebStateDestroyed(WebState* web_state) override {
+    web_state_observations_.RemoveObservation(web_state);
+  }
+
   void RenderProcessGone(WebState* web_state) override {
     FAIL() << "Renderer process died unexpectedly during the test";
   }
+
+ private:
+  base::ScopedMultiSourceObservation<WebState, WebStateObserver>
+      web_state_observations_{this};
 };
 
 WebTest::WebTest(WebTaskEnvironment::MainThreadType main_thread_type)
@@ -28,9 +42,7 @@ WebTest::WebTest(WebTaskEnvironment::MainThreadType main_thread_type)
 
 WebTest::WebTest(std::unique_ptr<web::WebClient> web_client,
                  WebTaskEnvironment::MainThreadType main_thread_type)
-    : web_client_(std::move(web_client)),
-      task_environment_(main_thread_type),
-      crash_observer_(std::make_unique<WebTestRenderProcessCrashObserver>()) {}
+    : web_client_(std::move(web_client)), task_environment_(main_thread_type) {}
 
 WebTest::~WebTest() {}
 
@@ -60,12 +72,15 @@ BrowserState* WebTest::GetBrowserState() {
   return browser_state_.get();
 }
 
-void WebTest::SetIgnoreRenderProcessCrashesDuringTesting(bool allow) {
-  if (allow) {
-    crash_observer_ = nullptr;
-  } else {
+void WebTest::StartObservingWebStateForRenderProcessGone(WebState* web_state) {
+  if (!crash_observer_) {
     crash_observer_ = std::make_unique<WebTestRenderProcessCrashObserver>();
   }
+  crash_observer_->Observe(web_state);
+}
+
+void WebTest::StopObservingWebStatesForRenderProcessGone() {
+  crash_observer_.reset();
 }
 
 }  // namespace web

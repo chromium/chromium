@@ -252,7 +252,7 @@ TEST_F(WebStateImplTest, ObserverTest) {
             actual_favicon_url.icon_sizes[0].height());
 
   // Test that RenderProcessGone() is called.
-  SetIgnoreRenderProcessCrashesDuringTesting(true);
+  StopObservingWebStatesForRenderProcessGone();
   ASSERT_FALSE(observer->render_process_gone_info());
   web_state->OnRenderProcessGone();
   ASSERT_TRUE(observer->render_process_gone_info());

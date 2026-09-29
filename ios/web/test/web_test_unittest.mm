@@ -39,10 +39,10 @@ TEST_F(WebTestFixtureTest, FailsOnRenderCrash) {
                        "Renderer process died unexpectedly");
 }
 
-// Tests that `SetIgnoreRenderProcessCrashesDuringTesting()` properly ignores
+// Tests that `StopObservingWebStatesForRenderProcessGone()` properly ignores
 // intentional render process crashes.
 TEST_F(WebTestFixtureTest, SucceedsOnRenderCrash) {
-  SetIgnoreRenderProcessCrashesDuringTesting(true);
+  StopObservingWebStatesForRenderProcessGone();
   web::SimulateWKWebViewCrash(web_view_);
 }
 

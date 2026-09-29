@@ -45,8 +45,10 @@ void WebTestWithWebState::SetUp() {
 
   // Force generation of child views; necessary for some tests.
   web_state_->GetView();
+  web_state_->SetKeepRenderProcessAlive(true);
 
-  web_state()->SetKeepRenderProcessAlive(true);
+  // Observe WebState and fail the test if the render process crashes.
+  StartObservingWebStateForRenderProcessGone(web_state_.get());
 }
 
 void WebTestWithWebState::TearDown() {
