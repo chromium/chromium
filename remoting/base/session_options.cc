@@ -4,11 +4,13 @@
 
 #include "remoting/base/session_options.h"
 
+#include <optional>
+#include <ostream>
+#include <string>
 #include <string_view>
 
-#include "base/containers/flat_map.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -52,36 +54,29 @@ void PrintOptional(std::ostream& os, const std::optional<T>& opt) {
   }
 }
 
-using BoolFieldMap =
-    base::flat_map<std::string_view, std::optional<bool> SessionOptions::*>;
-using IntFieldMap =
-    base::flat_map<std::string_view, std::optional<int> SessionOptions::*>;
-
-const BoolFieldMap& GetBoolFieldsMap() {
-  static const base::NoDestructor<BoolFieldMap> kMap({
-      {kSessionOptionDetectUpdatedRegion,
-       &SessionOptions::detect_updated_region},
-      {kSessionOptionCaptureVideoOnDedicatedThread,
-       &SessionOptions::capture_video_on_dedicated_thread},
+static constexpr auto kBoolFieldsMap =
+    base::MakeFixedFlatMap<std::string_view,
+                           std::optional<bool> SessionOptions::*>({
+        {kSessionOptionDetectUpdatedRegion,
+         &SessionOptions::detect_updated_region},
+        {kSessionOptionCaptureVideoOnDedicatedThread,
+         &SessionOptions::capture_video_on_dedicated_thread},
 #if BUILDFLAG(IS_MAC)
-      {kSessionOptionEnableSckCapturer, &SessionOptions::enable_sck_capturer},
+        {kSessionOptionEnableSckCapturer, &SessionOptions::enable_sck_capturer},
 #endif  // BUILDFLAG(IS_MAC)
 #if BUILDFLAG(IS_WIN)
-      {kSessionOptionAllowDxgiCapturer, &SessionOptions::allow_dxgi_capturer},
+        {kSessionOptionAllowDxgiCapturer, &SessionOptions::allow_dxgi_capturer},
 #endif  // BUILDFLAG(IS_WIN)
-      {kSessionOptionDisableUdp, &SessionOptions::disable_udp},
-      {kSessionOptionAv1ActiveMap, &SessionOptions::av1_active_map},
-  });
-  return *kMap;
-}
+        {kSessionOptionDisableUdp, &SessionOptions::disable_udp},
+        {kSessionOptionAv1ActiveMap, &SessionOptions::av1_active_map},
+    });
 
-const IntFieldMap& GetIntFieldsMap() {
-  static const base::NoDestructor<IntFieldMap> kMap({
-      {kSessionOptionVp9EncoderSpeed, &SessionOptions::vp9_encoder_speed},
-      {kSessionOptionAv1EncoderSpeed, &SessionOptions::av1_encoder_speed},
-  });
-  return *kMap;
-}
+static constexpr auto kIntFieldsMap =
+    base::MakeFixedFlatMap<std::string_view,
+                           std::optional<int> SessionOptions::*>({
+        {kSessionOptionVp9EncoderSpeed, &SessionOptions::vp9_encoder_speed},
+        {kSessionOptionAv1EncoderSpeed, &SessionOptions::av1_encoder_speed},
+    });
 
 }  // namespace
 
@@ -97,9 +92,6 @@ SessionOptions& SessionOptions::operator=(SessionOptions&& other) = default;
 bool SessionOptions::operator==(const SessionOptions& other) const = default;
 
 SessionOptions SessionOptions::Parse(const base::DictValue& dict) {
-  const auto& bool_fields = GetBoolFieldsMap();
-  const auto& int_fields = GetIntFieldsMap();
-
   SessionOptions options;
   for (auto [key, value] : dict) {
     if (!value.is_string()) {
@@ -108,8 +100,8 @@ SessionOptions SessionOptions::Parse(const base::DictValue& dict) {
     }
     const std::string& string_val = value.GetString();
 
-    auto bool_it = bool_fields.find(key);
-    if (bool_it != bool_fields.end()) {
+    auto bool_it = kBoolFieldsMap.find(key);
+    if (bool_it != kBoolFieldsMap.end()) {
       std::optional<bool> bool_val = ParseBool(string_val);
       if (!bool_val.has_value()) {
         continue;
@@ -118,8 +110,8 @@ SessionOptions SessionOptions::Parse(const base::DictValue& dict) {
       continue;
     }
 
-    auto int_it = int_fields.find(key);
-    if (int_it != int_fields.end()) {
+    auto int_it = kIntFieldsMap.find(key);
+    if (int_it != kIntFieldsMap.end()) {
       std::optional<int> int_val = ParseInt(string_val);
       if (!int_val.has_value()) {
         continue;
@@ -137,7 +129,7 @@ std::ostream& operator<<(std::ostream& os,
                          const SessionOptions& session_options) {
   os << "{ ";
   bool first = true;
-  for (const auto& [key, field_ptr] : GetBoolFieldsMap()) {
+  for (const auto& [key, field_ptr] : kBoolFieldsMap) {
     if (!first) {
       os << ", ";
     }
@@ -145,7 +137,7 @@ std::ostream& operator<<(std::ostream& os,
     os << key << ": ";
     PrintOptional(os, session_options.*field_ptr);
   }
-  for (const auto& [key, field_ptr] : GetIntFieldsMap()) {
+  for (const auto& [key, field_ptr] : kIntFieldsMap) {
     if (!first) {
       os << ", ";
     }
