@@ -140,6 +140,11 @@ def RunTestsForProject(spanify_dir, scripts_dir, src_dir, project):
                 src_dir, 'third_party/googletest/src/googlemock/include'
             )
         ),
+        # Relative on purpose, resolved against `test_dir`, so headers in
+        # relative_include/ get relative paths, as in standalone 2P builds.
+        # Needed by angle/relative-include to reproduce the bug.
+        # Keep last so it cannot shadow the paths above.
+        'relative_include',
     ]
 
     # Set up the test environment.
