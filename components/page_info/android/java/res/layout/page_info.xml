@@ -54,12 +54,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="3"
                     android:ellipsize="end"
-                    app:verticalInset="@dimen/page_info_suspicious_site_button_vertical_inset"
-                    android:paddingStart="@dimen/page_info_suspicious_site_button_padding_horizontal"
-                    android:paddingEnd="@dimen/page_info_suspicious_site_button_padding_horizontal"
-                    android:paddingTop="@dimen/page_info_suspicious_site_button_padding_vertical"
-                    android:paddingBottom="@dimen/page_info_suspicious_site_button_padding_vertical"
-                    style="@style/FilledButton"/>
+                    style="@style/PageInfoSuspiciousSitePrimaryButton"/>
 
                 <org.chromium.ui.widget.ButtonCompat
                     android:id="@+id/page_info_mark_as_safe_button"
@@ -68,12 +63,7 @@
                     android:layout_height="wrap_content"
                     android:maxLines="3"
                     android:ellipsize="end"
-                    app:verticalInset="@dimen/page_info_suspicious_site_button_vertical_inset"
-                    android:paddingStart="@dimen/page_info_suspicious_site_button_padding_horizontal"
-                    android:paddingEnd="@dimen/page_info_suspicious_site_button_padding_horizontal"
-                    android:paddingTop="@dimen/page_info_suspicious_site_button_padding_vertical"
-                    android:paddingBottom="@dimen/page_info_suspicious_site_button_padding_vertical"
-                    style="@style/FilledTonalButton"/>
+                    style="@style/PageInfoSuspiciousSiteSecondaryButton"/>
             </org.chromium.components.browser_ui.widget.DualControlLayout>
         </LinearLayout>
         <org.chromium.components.page_info.PageInfoRowView

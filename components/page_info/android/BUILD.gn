@@ -47,8 +47,10 @@ android_resources("java_resources") {
     "java/res/layout/page_info_row.xml",
     "java/res/layout/page_info_summary.xml",
     "java/res/layout/page_info_title.xml",
+    "java/res/values-sw600dp/styles.xml",
     "java/res/values/dimens.xml",
     "java/res/values/ids.xml",
+    "java/res/values/styles.xml",
     "java/res/xml/page_info_cookie_preference.xml",
   ]
   deps = [

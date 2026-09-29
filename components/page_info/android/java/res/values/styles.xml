@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources>
+    <style name="PageInfoSuspiciousSitePrimaryButton"
+        parent="@style/FilledButton">
+        <item name="android:paddingStart">
+            @dimen/page_info_suspicious_site_button_padding_horizontal
+        </item>
+        <item name="android:paddingEnd">
+            @dimen/page_info_suspicious_site_button_padding_horizontal
+        </item>
+        <item name="android:paddingTop">
+            @dimen/page_info_suspicious_site_button_padding_vertical
+        </item>
+        <item name="android:paddingBottom">
+            @dimen/page_info_suspicious_site_button_padding_vertical
+        </item>
+        <item name="verticalInset">
+            @dimen/page_info_suspicious_site_button_vertical_inset
+        </item>
+    </style>
+
+    <style name="PageInfoSuspiciousSiteSecondaryButton"
+        parent="@style/FilledTonalButton">
+        <item name="android:paddingStart">
+            @dimen/page_info_suspicious_site_button_padding_horizontal
+        </item>
+        <item name="android:paddingEnd">
+            @dimen/page_info_suspicious_site_button_padding_horizontal
+        </item>
+        <item name="android:paddingTop">
+            @dimen/page_info_suspicious_site_button_padding_vertical
+        </item>
+        <item name="android:paddingBottom">
+            @dimen/page_info_suspicious_site_button_padding_vertical
+        </item>
+        <item name="verticalInset">
+            @dimen/page_info_suspicious_site_button_vertical_inset
+        </item>
+    </style>
+</resources>

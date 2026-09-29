@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<resources>
+    <!-- Mirrors the Suspicious Site dialog's button bar on large form factors
+         (SafeBrowsingSuspiciousSiteDialogBridge#buildStandardDialogModel),
+         where PRIMARY_FILLED_NEGATIVE_OUTLINE resolves via
+         ThemeOverlay.BrowserUI.ModalDialog.FilledPrimaryButton
+         (components/browser_ui/modaldialog/android/java/res/values/styles.xml)
+         to @style/FilledButton and @style/TextButton — despite "OUTLINE" in the
+         constant name. Padding and insets are left to the stock styles. -->
+    <style name="PageInfoSuspiciousSitePrimaryButton"
+        parent="@style/FilledButton" />
+
+    <style name="PageInfoSuspiciousSiteSecondaryButton"
+        parent="@style/TextButton" />
+</resources>
