@@ -109,20 +109,23 @@ TEST(DOMArrayBufferTest, TransferAfterJSTransferCopiesContents) {
 
   auto* buffer_a = DOMArrayBuffer::Create(4, 4);
   static_cast<uint32_t*>(buffer_a->Data())[0] = 0x11111111u;
+  void* original_data = buffer_a->Data();
 
   v8::Local<v8::ArrayBuffer> wrapper_a =
       ToV8Traits<DOMArrayBuffer>::ToV8(script_state, buffer_a)
           .As<v8::ArrayBuffer>();
-  ASSERT_EQ(buffer_a->Data(), wrapper_a->Data());
+  ASSERT_EQ(original_data, wrapper_a->Data());
 
-  // Calling JS ArrayBuffer.prototype.transfer() detaches `wrapper_a` and
-  // returns a new JS ArrayBuffer over the same BackingStore, while `buffer_a`
-  // on the native side still holds a reference to that BackingStore.
+  // Calling JS ArrayBuffer.prototype.transfer() detaches `wrapper_a` (and
+  // `buffer_a` via OnArrayBufferDetached) and returns a new JS ArrayBuffer over
+  // the same BackingStore.
   v8::Local<v8::Value> transferred_val;
   ASSERT_TRUE(CallTransfer(script_state, wrapper_a).ToLocal(&transferred_val));
   ASSERT_TRUE(wrapper_a->WasDetached());
+  EXPECT_TRUE(buffer_a->IsDetached());
+  EXPECT_EQ(nullptr, buffer_a->Data());
   v8::Local<v8::ArrayBuffer> wrapper_b = transferred_val.As<v8::ArrayBuffer>();
-  ASSERT_EQ(buffer_a->Data(), wrapper_b->Data());
+  ASSERT_EQ(original_data, wrapper_b->Data());
 
   // Materialize a new DOMArrayBuffer for `wrapper_b` and transfer it.
   DOMArrayBuffer* buffer_b = NativeValueTraits<DOMArrayBuffer>::NativeValue(
@@ -139,17 +142,13 @@ TEST(DOMArrayBufferTest, TransferAfterJSTransferCopiesContents) {
   EXPECT_EQ(nullptr, buffer_b->Data());
   EXPECT_EQ(0u, buffer_b->ByteLength());
 
-  // Because `buffer_a` still held a reference to the original BackingStore,
-  // TransferOrCopy() must have copied the contents into a fresh BackingStore.
   EXPECT_TRUE(dst.IsValid());
-  // Note the below generally does not have to hold true if we change the
-  // implementation to also detach `buffer_a` when the wrapper is detached.
-  EXPECT_NE(buffer_a->Data(), dst.Data());
+  EXPECT_EQ(original_data, dst.Data());
   EXPECT_EQ(0x11111111u, static_cast<const uint32_t*>(dst.Data())[0]);
 }
 
 TEST(DOMArrayBufferTest,
-     TransferAfterJSTransferWithIsolatedWorldWrapperDoesNotAlias) {
+     TransferAfterJSTransferWithIsolatedWorldWrapperDetachesAll) {
   test::TaskEnvironment task_environment;
   V8TestingScope v8_scope;
   v8::Isolate* isolate = v8_scope.GetIsolate();
@@ -177,11 +176,16 @@ TEST(DOMArrayBufferTest,
   ASSERT_EQ(original_data, isolated_wrapper->Data());
 
   // Step 1: JS ArrayBuffer.prototype.transfer() in the main world detaches
-  // `main_wrapper`, leaving `isolated_wrapper` attached to `original_data`.
+  // `main_wrapper`, `buffer_a`, and `isolated_wrapper`.
   v8::Local<v8::Value> transferred_val;
   ASSERT_TRUE(CallTransfer(main_state, main_wrapper).ToLocal(&transferred_val));
   ASSERT_TRUE(main_wrapper->WasDetached());
-  ASSERT_FALSE(isolated_wrapper->WasDetached());
+  EXPECT_TRUE(isolated_wrapper->WasDetached());
+  EXPECT_NE(original_data, isolated_wrapper->Data());
+  EXPECT_EQ(main_wrapper->Data(), isolated_wrapper->Data());
+  EXPECT_EQ(0u, isolated_wrapper->ByteLength());
+  EXPECT_TRUE(buffer_a->IsDetached());
+  EXPECT_EQ(nullptr, buffer_a->Data());
   v8::Local<v8::ArrayBuffer> transferred_wrapper =
       transferred_val.As<v8::ArrayBuffer>();
   ASSERT_EQ(original_data, transferred_wrapper->Data());
@@ -199,19 +203,41 @@ TEST(DOMArrayBufferTest,
   EXPECT_TRUE(buffer_b->IsDetached());
   EXPECT_TRUE(transferred_wrapper->WasDetached());
 
-  // Step 3: Verify `dst` does not alias `isolated_wrapper`'s memory.
   ASSERT_TRUE(dst.IsValid());
-  EXPECT_NE(dst.Data(), isolated_wrapper->Data());
+  EXPECT_EQ(original_data, dst.Data());
   EXPECT_EQ(0x11111111u, static_cast<const uint32_t*>(dst.Data())[0]);
+}
 
-  // Writes to `dst` (e.g. on a worker thread) must not be visible in the
-  // isolated world wrapper, and vice versa.
-  static_cast<uint32_t*>(dst.Data())[0] = 0xDEADBEEFu;
-  EXPECT_EQ(0x11111111u,
-            static_cast<const uint32_t*>(isolated_wrapper->Data())[0]);
+TEST(DOMArrayBufferTest, WrapInIsolatedWorldAfterMainWorldWrapperDetached) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope v8_scope;
+  ScriptState* main_state = v8_scope.GetScriptState();
+  ScriptState* isolated_state = IsolatedWorldScriptState(v8_scope, 1);
+  ASSERT_TRUE(isolated_state);
 
-  static_cast<uint32_t*>(isolated_wrapper->Data())[0] = 0xCAFEBABEu;
-  EXPECT_EQ(0xDEADBEEFu, static_cast<const uint32_t*>(dst.Data())[0]);
+  auto* buffer = DOMArrayBuffer::Create(16, 1);
+
+  v8::Local<v8::ArrayBuffer> main_wrapper =
+      ToV8Traits<DOMArrayBuffer>::ToV8(main_state, buffer)
+          .As<v8::ArrayBuffer>();
+  ASSERT_FALSE(main_wrapper->WasDetached());
+
+  v8::Local<v8::Value> result;
+  ASSERT_TRUE(CallTransfer(main_state, main_wrapper).ToLocal(&result));
+  ASSERT_TRUE(main_wrapper->WasDetached());
+  EXPECT_TRUE(buffer->IsDetached());
+
+  // Wrapping in another world after the existing wrapper was detached must
+  // produce a wrapper that is also detached.
+  v8::Local<v8::ArrayBuffer> isolated_wrapper;
+  {
+    v8::Context::Scope isolated_scope(isolated_state->GetContext());
+    isolated_wrapper = ToV8Traits<DOMArrayBuffer>::ToV8(isolated_state, buffer)
+                           .As<v8::ArrayBuffer>();
+  }
+  EXPECT_TRUE(isolated_wrapper->WasDetached());
+  EXPECT_EQ(0u, isolated_wrapper->ByteLength());
+  EXPECT_TRUE(buffer->IsDetached());
 }
 
 }  // namespace blink

@@ -7,6 +7,7 @@
 
 #include <algorithm>
 
+#include "base/check_is_test.h"
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "partition_alloc/oom.h"
@@ -43,6 +44,12 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
     CHECK(contents.IsValid());
     contents.ByteSpan().copy_from(source);
     return Create(std::move(contents));
+  }
+  static DOMArrayBuffer* CreateDetached() {
+    DOMArrayBuffer* result =
+        MakeGarbageCollected<DOMArrayBuffer>(ArrayBufferContents());
+    result->is_detached_ = true;
+    return result;
   }
 
   static DOMArrayBuffer* Create(scoped_refptr<SharedBuffer>);
@@ -91,7 +98,18 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
 
   void Trace(Visitor*) const override;
 
-  bool IsDetached() const override;
+  static void SetArrayBufferDetachCallback(v8::Isolate* isolate);
+
+  bool IsDetached() const { return is_detached_; }
+
+  // Blink-side code generally does not need to detach array buffers, so this
+  // method is just for tests. In production, a common way to detach a buffer
+  // is via performing its transfer.
+  void DetachForTesting() {
+    CHECK_IS_TEST();
+    contents_.Reset();
+    is_detached_ = true;
+  }
 
   v8::Local<v8::Object> AssociateWithWrapper(
       v8::Isolate* isolate,
@@ -106,6 +124,9 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
   v8::Maybe<bool> TransferDetachable(v8::Isolate*,
                                      v8::Local<v8::Value> detach_key,
                                      ArrayBufferContents& result);
+  bool DetachWrappers(v8::Isolate* isolate, v8::Local<v8::Value> detach_key);
+  static void OnArrayBufferDetached(v8::Isolate* isolate,
+                                    v8::Local<v8::ArrayBuffer> buffer);
 
   // Detach key can be any ECMAScript value (i.e. v8::Value), however, we don't
   // want to use a v8::Context-sensitive detach key like v8::Object. So, we
@@ -113,6 +134,9 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
   // we can write `array_buffer->SetDetachKey(isolate, "my key")`.
   TraceWrapperV8Reference<v8::String> detach_key_;
 
+  // TODO(caseq): see if we can get rid of it in favor of checking
+  // contents_.IsValid().
+  bool is_detached_ = false;
   bool has_non_main_world_wrappers_ = false;
 };
 

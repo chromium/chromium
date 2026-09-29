@@ -337,11 +337,11 @@ V8ImageDataPixelFormat ImageData::pixelFormat() const {
 bool ImageData::IsBufferBaseDetached() const {
   switch (data_->GetContentType()) {
     case V8ImageDataArray::ContentType::kFloat32Array:
-      return data_->GetAsFloat32Array()->BufferBase()->IsDetached();
+      return data_->GetAsFloat32Array()->IsDetached();
     case V8ImageDataArray::ContentType::kFloat16Array:
-      return data_->GetAsFloat16Array()->BufferBase()->IsDetached();
+      return data_->GetAsFloat16Array()->IsDetached();
     case V8ImageDataArray::ContentType::kUint8ClampedArray:
-      return data_->GetAsUint8ClampedArray()->BufferBase()->IsDetached();
+      return data_->GetAsUint8ClampedArray()->IsDetached();
   }
 
   NOTREACHED();

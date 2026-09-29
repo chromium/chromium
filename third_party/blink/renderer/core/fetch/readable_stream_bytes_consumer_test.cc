@@ -263,7 +263,7 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseReadDetachedDuringRead) {
   checkpoint.Call(4);
   EXPECT_EQ(Result::kOk, consumer->BeginRead(buffer));
   EXPECT_THAT(buffer, ElementsAre(0x43, 0x44, 0x45, 0x46));
-  chunk->DetachForTesting();
+  chunk->buffer()->DetachForTesting();
   EXPECT_EQ(Result::kError, consumer->EndRead(4));
   EXPECT_EQ(PublicState::kErrored, consumer->GetPublicState());
 }
@@ -309,7 +309,7 @@ TEST(ReadableStreamBytesConsumerTest, TwoPhaseReadDetachedBetweenReads) {
   EXPECT_EQ(Result::kOk, consumer->BeginRead(buffer));
   EXPECT_THAT(buffer, ElementsAre(0x43, 0x44, 0x45, 0x46));
   EXPECT_EQ(Result::kOk, consumer->EndRead(1));
-  chunk->DetachForTesting();
+  chunk->buffer()->DetachForTesting();
   EXPECT_EQ(Result::kError, consumer->BeginRead(buffer));
   EXPECT_EQ(PublicState::kErrored, consumer->GetPublicState());
 }

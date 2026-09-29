@@ -38,12 +38,6 @@ class CORE_EXPORT DOMArrayBufferBase : public ScriptWrappable {
     return contents_.ByteSpanMaybeShared();
   }
 
-  // TODO(331348222): It doesn't make sense to detach DomSharedArrayBuffers,
-  // remove that possibility.
-  virtual bool IsDetached() const { return is_detached_; }
-
-  void Detach() { is_detached_ = true; }
-
   bool IsShared() const { return contents_.IsShared(); }
 
   bool IsResizableByUserJavaScript() const {
@@ -58,7 +52,6 @@ class CORE_EXPORT DOMArrayBufferBase : public ScriptWrappable {
       : contents_(std::move(contents)) {}
 
   ArrayBufferContents contents_;
-  bool is_detached_ = false;
 };
 
 }  // namespace blink

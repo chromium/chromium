@@ -18,16 +18,11 @@ using AllowSharedBufferSource =
 inline base::span<uint8_t> AsByteSpan(
     const AllowSharedBufferSource& buffer_union) {
   switch (buffer_union.GetContentType()) {
-    case AllowSharedBufferSource::ContentType::kArrayBufferAllowShared: {
-      auto* buffer = buffer_union.GetAsArrayBufferAllowShared();
-      return (buffer && !buffer->IsDetached()) ? buffer->ByteSpanMaybeShared()
-                                               : base::span<uint8_t>();
-    }
-    case AllowSharedBufferSource::ContentType::kArrayBufferViewAllowShared: {
-      auto* buffer = buffer_union.GetAsArrayBufferViewAllowShared().Get();
-      return (buffer && !buffer->IsDetached()) ? buffer->ByteSpanMaybeShared()
-                                               : base::span<uint8_t>();
-    }
+    case AllowSharedBufferSource::ContentType::kArrayBufferAllowShared:
+      return buffer_union.GetAsArrayBufferAllowShared()->ByteSpanMaybeShared();
+    case AllowSharedBufferSource::ContentType::kArrayBufferViewAllowShared:
+      return buffer_union.GetAsArrayBufferViewAllowShared()
+          ->ByteSpanMaybeShared();
   }
 }
 

@@ -24,22 +24,11 @@ using AllowSharedBufferSource =
 template <typename T>
 base::span<T> AsSpan(const AllowSharedBufferSource* buffer_union) {
   switch (buffer_union->GetContentType()) {
-    case AllowSharedBufferSource::ContentType::kArrayBufferAllowShared: {
-      auto* buffer = buffer_union->GetAsArrayBufferAllowShared();
-      return (buffer && !buffer->IsDetached())
-                 ? UNSAFE_TODO(base::span<T>(
-                       reinterpret_cast<T*>(buffer->DataMaybeShared()),
-                       buffer->ByteLength()))
-                 : base::span<T>();
-    }
-    case AllowSharedBufferSource::ContentType::kArrayBufferViewAllowShared: {
-      auto* buffer = buffer_union->GetAsArrayBufferViewAllowShared().Get();
-      return (buffer && !buffer->IsDetached())
-                 ? UNSAFE_TODO(base::span<T>(
-                       reinterpret_cast<T*>(buffer->BaseAddressMaybeShared()),
-                       buffer->byteLength()))
-                 : base::span<T>();
-    }
+    case AllowSharedBufferSource::ContentType::kArrayBufferAllowShared:
+      return buffer_union->GetAsArrayBufferAllowShared()->ByteSpanMaybeShared();
+    case AllowSharedBufferSource::ContentType::kArrayBufferViewAllowShared:
+      return buffer_union->GetAsArrayBufferViewAllowShared()
+          ->ByteSpanMaybeShared();
   }
 }
 

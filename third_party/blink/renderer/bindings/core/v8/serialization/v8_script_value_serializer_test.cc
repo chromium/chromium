@@ -848,7 +848,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripDetachedImageData) {
       ASSERT_NO_EXCEPTION);
   SkPixmap pm = image_data->GetSkPixmap();
   pm.writable_addr32(0, 0)[0] = 200u;
-  image_data->data()->GetAsUint8ClampedArray()->BufferBase()->Detach();
+  image_data->data()->GetAsUint8ClampedArray()->buffer()->DetachForTesting();
 
   v8::Local<v8::Value> wrapper =
       ToV8Traits<ImageData>::ToV8(scope.GetScriptState(), image_data);

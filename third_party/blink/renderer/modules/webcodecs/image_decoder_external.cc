@@ -223,18 +223,13 @@ ImageDecoderExternal::ImageDecoderExternal(ScriptState* script_state,
   base::span<const uint8_t> array_span;
   switch (init->data()->GetContentType()) {
     case V8ImageBufferSource::ContentType::kArrayBufferAllowShared:
-      if (auto* buffer = init->data()->GetAsArrayBufferAllowShared()) {
-        if (!buffer->IsDetached()) {
-          array_span = buffer->ByteSpanMaybeShared();
-        }
-      }
+      array_span =
+          init->data()->GetAsArrayBufferAllowShared()->ByteSpanMaybeShared();
       break;
     case V8ImageBufferSource::ContentType::kArrayBufferViewAllowShared:
-      if (auto* view = init->data()->GetAsArrayBufferViewAllowShared().Get()) {
-        if (!view->IsDetached()) {
-          array_span = view->ByteSpanMaybeShared();
-        }
-      }
+      array_span = init->data()
+                       ->GetAsArrayBufferViewAllowShared()
+                       ->ByteSpanMaybeShared();
       break;
     case V8ImageBufferSource::ContentType::kReadableStream:
       NOTREACHED();

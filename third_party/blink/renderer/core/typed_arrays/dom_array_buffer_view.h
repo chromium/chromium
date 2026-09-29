@@ -129,9 +129,7 @@ class CORE_EXPORT DOMArrayBufferView : public ScriptWrappable {
     ScriptWrappable::Trace(visitor);
   }
 
-  void DetachForTesting() { dom_array_buffer_->Detach(); }
-
-  bool IsDetached() const { return dom_array_buffer_->IsDetached(); }
+  bool IsDetached() const { return !IsShared() && buffer()->IsDetached(); }
 
  protected:
   DOMArrayBufferView(DOMArrayBufferBase* dom_array_buffer, size_t byte_offset)

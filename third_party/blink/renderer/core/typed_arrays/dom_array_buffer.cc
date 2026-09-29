@@ -146,6 +146,67 @@ bool DOMArrayBuffer::ShareNonSharedForInternalUse(ArrayBufferContents& result) {
   return true;
 }
 
+// static
+void DOMArrayBuffer::SetArrayBufferDetachCallback(v8::Isolate* isolate) {
+  isolate->SetArrayBufferDetachCallback(&DOMArrayBuffer::OnArrayBufferDetached);
+}
+
+// static
+void DOMArrayBuffer::OnArrayBufferDetached(v8::Isolate* isolate,
+                                           v8::Local<v8::ArrayBuffer> buffer) {
+  auto* array_buffer = ToScriptWrappable<DOMArrayBuffer>(isolate, buffer);
+  CHECK(array_buffer);  // We should only be called for AB wrapping something.
+  if (array_buffer->is_detached_) {
+    return;
+  }
+  array_buffer->contents_.Reset();
+  array_buffer->is_detached_ = true;
+
+  if (array_buffer->has_non_main_world_wrappers()) {
+    CHECK(array_buffer->DetachWrappers(isolate,
+                                       array_buffer->detach_key_.Get(isolate)));
+  }
+}
+
+bool DOMArrayBuffer::DetachWrappers(v8::Isolate* isolate,
+                                    v8::Local<v8::Value> detach_key) {
+  v8::HandleScope handle_scope(isolate);
+  bool first = true;
+  bool failed = false;
+  ForArrayBuffersInAllWorlds(
+      isolate, this,
+      [&first, &failed, &detach_key](v8::Local<v8::ArrayBuffer> buffer_handle) {
+        if (buffer_handle->WasDetached()) {
+          return;
+        }
+        // Loop to detach all buffer handles. This may throw an exception
+        // if the |detach_key| is incorrect. It should either fail for all
+        // handles or succeed for all handles. It should never be the case that
+        // the handles have different detach keys. CHECK to catch when this
+        // invariant is broken.
+        if (!failed) {
+          bool detach_result = false;
+          // Note that this will cause DetachWrappers() re-entry for just one
+          // level of recursion if this is called via TransferDetachable().
+          // We consider this to be acceptable and probably not worth working
+          // around with a dedicated flag.
+          // TODO(caseq): removing is_detached_ flag and using
+          // contents_.IsValid() instead is going to take care of that as
+          // OnArrayBufferDetached() will assume a detached buffer when called
+          // from within TransferDetachable().
+          if (!buffer_handle->Detach(detach_key).To(&detach_result)) {
+            CHECK(first);
+            failed = true;
+          } else {
+            // On success, Detach must always return true.
+            DCHECK(detach_result);
+          }
+          first = false;
+        }
+      });
+  return !failed;
+}
+
 v8::Maybe<bool> DOMArrayBuffer::TransferDetachable(
     v8::Isolate* isolate,
     v8::Local<v8::Value> detach_key,
@@ -157,51 +218,29 @@ v8::Maybe<bool> DOMArrayBuffer::TransferDetachable(
     return v8::Just(false);
   }
 
-  v8::HandleScope handle_scope(isolate);
-  v8::LocalVector<v8::ArrayBuffer> buffer_handles(isolate);
+  ArrayBufferContents contents(std::move(contents_));
 
-  // First detach all the JS wrappers, so we (likely) would be retaining the
-  // only reference to the backing store. ArrayBufferContents needs to know
-  // that to avoid an unnecessary copy.
-  bool first = true;
-  bool failed = false;
-  ForArrayBuffersInAllWorlds(
-      isolate, this,
-      [&first, &failed, &detach_key](v8::Local<v8::ArrayBuffer> buffer_handle) {
-        // Loop to detach all buffer handles. This may throw an exception
-        // if the |detach_key| is incorrect. It should either fail for all
-        // handles or succeed for all handles. It should never be the case that
-        // the handles have different detach keys. CHECK to catch when this
-        // invariant is broken.
-        if (!failed) {
-          bool detach_result = false;
-          if (!buffer_handle->Detach(detach_key).To(&detach_result)) {
-            CHECK(first);
-            failed = true;
-          } else {
-            // On success, Detach must always return true.
-            DCHECK(detach_result);
-          }
-          first = false;
-        }
-      });
-
-  if (failed) {
+  // First detach all the JS wrappers, so the contents above would be likely
+  // retaining the only reference to the backing store. ArrayBufferContents
+  // needs to know that to avoid an unnecessary copy.
+  if (!DetachWrappers(isolate, detach_key)) {
+    contents_ = std::move(contents);
     // Propagate an exception to the caller.
     return v8::Nothing<bool>();
   }
 
-  if (!Content()->IsValid()) {
+  if (!contents.IsValid()) {
     // We transfer an empty ArrayBuffer, we can just allocate an empty content.
     result = ArrayBufferContents(
         0, 1, ArrayBufferContents::kNotShared,
         ArrayBufferContents::kDontInitialize,
         ArrayBufferContents::AllocationFailureBehavior::kCrash);
   } else {
-    Content()->TransferOrCopy(result);
+    contents.TransferOrCopy(result);
   }
 
-  Detach();
+  CHECK(!contents_.IsValid());
+  is_detached_ = true;
   return v8::Just(true);
 }
 
@@ -296,48 +335,15 @@ v8::Local<v8::Value> DOMArrayBuffer::Wrap(ScriptState* script_state) {
                                          std::move(backing_store))
                   : v8::ArrayBuffer::New(script_state->GetIsolate(), 0);
 
-    if (!detach_key_.IsEmpty()) {
+    if (is_detached_) {
+      wrapper->Detach(v8::Local<v8::Value>()).Check();
+    } else if (!detach_key_.IsEmpty()) {
       wrapper->SetDetachKey(detach_key_.Get(script_state->GetIsolate()));
     }
   }
 
   return AssociateWithWrapper(script_state->GetIsolate(), wrapper_type_info,
                               wrapper);
-}
-
-bool DOMArrayBuffer::IsDetached() const {
-  if (contents_.BackingStore() == nullptr) {
-    return is_detached_;
-  }
-  if (is_detached_) {
-    return true;
-  }
-
-  v8::Isolate* isolate = v8::Isolate::GetCurrent();
-  v8::HandleScope handle_scope(isolate);
-
-  // There may be several v8::ArrayBuffers corresponding to the DOMArrayBuffer,
-  // but at most one of them may be non-detached.
-  int nondetached_count = 0;
-  int detached_count = 0;
-
-  ForArrayBuffersInAllWorlds(isolate, this,
-                             [&detached_count, &nondetached_count](
-                                 v8::Local<v8::ArrayBuffer> buffer_handle) {
-                               if (buffer_handle->WasDetached()) {
-                                 ++detached_count;
-                               } else {
-                                 ++nondetached_count;
-                               }
-                             });
-
-  // This CHECK fires even though it should not. TODO(330759272): Investigate
-  // under which conditions we end up with multiple non-detached JSABs for the
-  // same DOMAB and potentially restore this check.
-
-  // CHECK_LE(nondetached_count, 1);
-
-  return nondetached_count == 0 && detached_count > 0;
 }
 
 v8::Local<v8::Object> DOMArrayBuffer::AssociateWithWrapper(
