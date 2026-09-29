@@ -163,7 +163,7 @@ class UsbDeviceHandleImpl : public UsbDeviceHandle {
   ClaimedInterfaceMap claimed_interfaces_;
 
   // This set holds weak pointers to pending transfers.
-  std::set<Transfer*> transfers_;
+  std::set<raw_ptr<Transfer>> transfers_;
 
   // A map from endpoints to EndpointMapValue
   typedef std::map<int, EndpointMapValue> EndpointMap;

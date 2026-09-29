@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
@@ -103,7 +104,7 @@ class UsbServiceImpl final : public UsbService {
   // Tracks libusb_devices that might be removed while they are being
   // enumerated. This is a weak pointer to a libusb_device object owned by a
   // UsbDeviceImpl.
-  std::set<libusb_device*> devices_being_enumerated_;
+  std::set<raw_ptr<libusb_device>> devices_being_enumerated_;
 
   // This WeakPtr is used to safely post hotplug events back to the thread this
   // object lives on.
