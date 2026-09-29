@@ -415,42 +415,30 @@ std::optional<std::string> HttpNoVarySearchData::SerializeToString() const {
   std::vector<structured_headers::DictionaryMember> members;
 
   if (!vary_on_key_order_) {
-    members.emplace_back(keys::kKeyOrder,
-                         structured_headers::ParameterizedMember(
-                             structured_headers::Item(true), {}));
+    members.emplace_back(keys::kKeyOrder, structured_headers::Item(true));
   }
 
   if (vary_by_default_) {
     if (!affected_params_.empty()) {
       std::vector<structured_headers::ParameterizedItem> param_items;
       for (const auto& param : affected_params_) {
-        param_items.push_back(structured_headers::ParameterizedItem(
-            structured_headers::Item(
-                structured_headers::Item::string,
-                base::EscapeQueryParamValue(param, /*use_plus=*/true)),
-            {}));
+        param_items.emplace_back(structured_headers::Item(
+            structured_headers::Item::string,
+            base::EscapeQueryParamValue(param, /*use_plus=*/true)));
       }
-      members.emplace_back(
-          keys::kParams,
-          structured_headers::ParameterizedMember(std::move(param_items), {}));
+      members.emplace_back(keys::kParams, std::move(param_items));
     }
   } else {
-    members.emplace_back(keys::kParams,
-                         structured_headers::ParameterizedMember(
-                             structured_headers::Item(true), {}));
+    members.emplace_back(keys::kParams, structured_headers::Item(true));
 
     if (!affected_params_.empty()) {
       std::vector<structured_headers::ParameterizedItem> except_items;
       for (const auto& param : affected_params_) {
-        except_items.push_back(structured_headers::ParameterizedItem(
-            structured_headers::Item(
-                structured_headers::Item::string,
-                base::EscapeQueryParamValue(param, /*use_plus=*/true)),
-            {}));
+        except_items.emplace_back(structured_headers::Item(
+            structured_headers::Item::string,
+            base::EscapeQueryParamValue(param, /*use_plus=*/true)));
       }
-      members.emplace_back(
-          keys::kExcept,
-          structured_headers::ParameterizedMember(std::move(except_items), {}));
+      members.emplace_back(keys::kExcept, std::move(except_items));
     }
   }
 
