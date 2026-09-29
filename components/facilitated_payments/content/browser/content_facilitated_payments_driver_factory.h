@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
+#include "build/build_config.h"
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -62,6 +63,7 @@ class ContentFacilitatedPaymentsDriverFactory
   FRIEND_TEST_ALL_PREFIXES(
       ContentFacilitatedPaymentsDriverFactoryTest,
       IsEligibleForQrCodeDetection_NoOptimizationGuideDecider_ReturnsFalse);
+#if BUILDFLAG(IS_ANDROID)
   FRIEND_TEST_ALL_PREFIXES(
       ContentFacilitatedPaymentsDriverFactoryTest,
       OnTextCopiedToClipboard_ErrorDocument_DoesNotTriggerPixDetection_PixFlowExitedReasonLogged);
@@ -77,16 +79,20 @@ class ContentFacilitatedPaymentsDriverFactory
   FRIEND_TEST_ALL_PREFIXES(
       ContentFacilitatedPaymentsDriverFactoryTest,
       OnTextCopiedToClipboard_PixCodeInIFrame_FlagEnabled_PixFlowExitedReasonNotLogged);
+#endif  // BUILDFLAG(IS_ANDROID)
   // content::WebContentsObserver:
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
+#if BUILDFLAG(IS_ANDROID)
+  // The Pix and payment link flows are only available on Android.
   void RenderFrameHostStateChanged(
       content::RenderFrameHost* render_frame_host,
       content::RenderFrameHost::LifecycleState old_state,
       content::RenderFrameHost::LifecycleState new_state) override;
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
   void OnTextCopiedToClipboard(content::RenderFrameHost* render_frame_host,
                                const std::u16string& copied_text) override;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Returns whether the `FacilitatedPaymentsAgent` should run QR code
   // heuristics on `url`. Detection requires both the feature flag and a

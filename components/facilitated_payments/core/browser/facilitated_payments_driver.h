@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "build/build_config.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
@@ -41,6 +42,9 @@ class FacilitatedPaymentsDriver {
       delete;
   virtual ~FacilitatedPaymentsDriver();
 
+#if BUILDFLAG(IS_ANDROID)
+  // The Pix and payment link flows are only available on Android.
+
   // Informs `PixManager` that a navigation related event has
   // taken place. The navigation could be to the currently displayed page, or
   // away from the currently displayed page. It is invoked only for the primary
@@ -68,6 +72,7 @@ class FacilitatedPaymentsDriver {
   virtual void SetPixManagerForTesting(std::unique_ptr<PixManager> pix_manager);
   virtual void SetPaymentLinkManagerForTesting(
       std::unique_ptr<PaymentLinkManager> payment_link_manager);
+#endif  // BUILDFLAG(IS_ANDROID)
 
  protected:
   // Returns true if the current page context is secure for payments.
@@ -76,8 +81,10 @@ class FacilitatedPaymentsDriver {
  private:
   const raw_ref<FacilitatedPaymentsClient> facilitated_payments_client_;
   FacilitatedPaymentsApiClientCreator api_client_creator_;
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<PixManager> pix_manager_;
   std::unique_ptr<PaymentLinkManager> payment_link_manager_;
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace payments::facilitated

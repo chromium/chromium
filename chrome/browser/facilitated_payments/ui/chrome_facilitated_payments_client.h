@@ -9,19 +9,22 @@
 #include <string>
 #include <string_view>
 
-#include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
-#include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
-#include "components/facilitated_payments/android/device_delegate_android.h"
+#include "build/build_config.h"
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
-#include "components/facilitated_payments/core/browser/payment_link_manager.h"
-#include "components/facilitated_payments/core/browser/pix_account_linking_manager.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "content/public/browser/web_contents_user_data.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
+#include "components/facilitated_payments/android/device_delegate_android.h"
+#include "components/facilitated_payments/core/browser/payment_link_manager.h"
+#include "components/facilitated_payments/core/browser/pix_account_linking_manager.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace url {
 class Origin;
@@ -70,8 +73,10 @@ class ChromeFacilitatedPaymentsClient
   GetFacilitatedPaymentsDriverForFrame(
       content::RenderFrameHost* render_frame_host);
 
+#if BUILDFLAG(IS_ANDROID)
   virtual void SetFacilitatedPaymentsControllerForTesting(
       std::unique_ptr<FacilitatedPaymentsController> controller);
+#endif  // BUILDFLAG(IS_ANDROID)
 
  private:
   friend class content::WebContentsUserData<ChromeFacilitatedPaymentsClient>;
@@ -92,6 +97,8 @@ class ChromeFacilitatedPaymentsClient
       final;
   payments::facilitated::DeviceDelegate* GetDeviceDelegate() final;
   bool IsWebContentsVisibleOrOccluded() final;
+  strike_database::StrikeDatabase* GetStrikeDatabase() final;
+#if BUILDFLAG(IS_ANDROID)
   void ShowPixPaymentPrompt(
       base::span<const autofill::BankAccount> bank_account_suggestions,
       base::OnceCallback<void(int64_t)> on_payment_account_selected) final;
@@ -107,7 +114,6 @@ class ChromeFacilitatedPaymentsClient
   void SetUiEventListener(
       base::RepeatingCallback<void(payments::facilitated::UiEvent)>
           ui_event_listener) final;
-  strike_database::StrikeDatabase* GetStrikeDatabase() final;
   void InitPixAccountLinkingFlow(
       const url::Origin& pix_payment_page_origin) final;
   void ShowPixAccountLinkingPrompt(
@@ -123,6 +129,7 @@ class ChromeFacilitatedPaymentsClient
   void ShowAccountLinkingFailureNotification(
       payments::facilitated::FacilitatedPaymentsType fop_type) final;
   bool HasScreenlockOrBiometricSetup() final;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Register any allowlists with the OptimizationGuide framework, so that
   // individual features can later request to check whether the current main
@@ -135,8 +142,12 @@ class ChromeFacilitatedPaymentsClient
   std::unique_ptr<payments::facilitated::FacilitatedPaymentsNetworkInterface>
       facilitated_payments_network_interface_;
 
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<FacilitatedPaymentsController>
       facilitated_payments_controller_;
+
+  payments::facilitated::DeviceDelegateAndroid device_delegate_;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // The optimization guide decider to help determine whether the current main
   // frame URL is eligible for facilitated payments.
@@ -144,8 +155,6 @@ class ChromeFacilitatedPaymentsClient
       optimization_guide_decider_ = nullptr;
 
   base::RepeatingCallback<bool(content::WebContents*)> is_cct_callback_;
-
-  payments::facilitated::DeviceDelegateAndroid device_delegate_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

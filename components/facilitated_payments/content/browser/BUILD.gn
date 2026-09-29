@@ -28,6 +28,10 @@ static_library("browser") {
     "//components/security_state/content",
     "//components/security_state/core",
   ]
+
+  if (!is_android) {
+    sources += [ "facilitated_payments_api_client_factory_desktop.cc" ]
+  }
 }
 
 source_set("unit_tests") {

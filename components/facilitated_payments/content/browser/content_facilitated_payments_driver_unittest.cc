@@ -8,13 +8,12 @@
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 #include "components/facilitated_payments/content/browser/facilitated_payments_api_client_factory.h"
 #include "components/facilitated_payments/content/browser/security_checker.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_client.h"
-#include "components/facilitated_payments/core/browser/payment_link_manager.h"
-#include "components/facilitated_payments/core/browser/pix_manager.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/facilitated_payments/core/mojom/facilitated_payments_agent.mojom.h"
 #include "components/optimization_guide/core/hints/test_optimization_guide_decider.h"
@@ -24,11 +23,13 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "components/facilitated_payments/core/browser/payment_link_manager.h"
+#include "components/facilitated_payments/core/browser/pix_manager.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace payments::facilitated {
 namespace {
-
-constexpr char16_t kFakePixCode[] =
-    u"00020126370014br.gov.bcb.pix2515www.example.com6304EA3F";
 
 class MockContentFacilitatedPaymentsDriverFactory
     : public ContentFacilitatedPaymentsDriverFactory {
@@ -52,6 +53,10 @@ class MockFacilitatedPaymentsAgent : public mojom::FacilitatedPaymentsAgent {
 
   MOCK_METHOD(void, SetQrCodeDetectionEnabled, (bool), (override));
 };
+
+#if BUILDFLAG(IS_ANDROID)
+constexpr char16_t kFakePixCode[] =
+    u"00020126370014br.gov.bcb.pix2515www.example.com6304EA3F";
 
 class MockPixManager : public PixManager {
  public:
@@ -92,6 +97,7 @@ class MockPaymentLinkManager : public PaymentLinkManager {
               (const GURL&, const GURL&, ukm::SourceId),
               (override));
 };
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class MockSecurityChecker : public SecurityChecker {
  public:
@@ -124,6 +130,7 @@ class ContentFacilitatedPaymentsDriverTest
         web_contents(), client_.get());
     driver_ = std::make_unique<ContentFacilitatedPaymentsDriver>(
         client_.get(), render_frame_host, std::move(sc), factory_.get());
+#if BUILDFLAG(IS_ANDROID)
     std::unique_ptr<MockPaymentLinkManager> em =
         std::make_unique<testing::NiceMock<MockPaymentLinkManager>>(
             client_.get(),
@@ -141,16 +148,21 @@ class ContentFacilitatedPaymentsDriverTest
             decider_.get());
     pix_manager_ = pm.get();
     driver_->SetPixManagerForTesting(std::move(pm));
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   void TearDown() override {
     SetContents(nullptr);
-    decider_.reset();
-    driver_.reset();
-    factory_.reset();
     security_checker_ = nullptr;
+#if BUILDFLAG(IS_ANDROID)
     payment_link_manager_ = nullptr;
     pix_manager_ = nullptr;
+#endif  // BUILDFLAG(IS_ANDROID)
+    // The driver owns the managers, which hold references to `decider_`, so it
+    // must be destroyed before `decider_`.
+    driver_.reset();
+    factory_.reset();
+    decider_.reset();
     content::RenderViewHostTestHarness::TearDown();
   }
 
@@ -159,11 +171,15 @@ class ContentFacilitatedPaymentsDriverTest
   std::unique_ptr<FacilitatedPaymentsClient> client_;
   std::unique_ptr<MockContentFacilitatedPaymentsDriverFactory> factory_;
   std::unique_ptr<ContentFacilitatedPaymentsDriver> driver_;
+#if BUILDFLAG(IS_ANDROID)
   raw_ptr<MockPaymentLinkManager> payment_link_manager_;
   raw_ptr<MockPixManager> pix_manager_;
+#endif  // BUILDFLAG(IS_ANDROID)
   raw_ptr<MockSecurityChecker> security_checker_;
 };
 
+// Payment link and Pix flows are only supported on Android.
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(ContentFacilitatedPaymentsDriverTest, PaymentLinkPushPaymentTriggered) {
   const GURL kFakePaymentLinkUrl("https://www.example.com/pay");
 
@@ -227,6 +243,7 @@ TEST_F(ContentFacilitatedPaymentsDriverTest,
       url::Origin::Create(GURL("http://example.com")), kFakePixCode,
       ukm::kInvalidSourceId, /*is_same_origin=*/false);
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Test that reporting heuristic score forwards to the factory.
 TEST_F(ContentFacilitatedPaymentsDriverTest,

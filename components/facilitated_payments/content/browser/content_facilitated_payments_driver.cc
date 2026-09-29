@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "build/build_config.h"
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 #include "components/facilitated_payments/content/browser/facilitated_payments_api_client_factory.h"
 #include "components/facilitated_payments/content/browser/security_checker.h"
@@ -30,6 +31,7 @@ ContentFacilitatedPaymentsDriver::ContentFacilitatedPaymentsDriver(
 
 ContentFacilitatedPaymentsDriver::~ContentFacilitatedPaymentsDriver() = default;
 
+#if BUILDFLAG(IS_ANDROID)
 // TODO(crbug.com/40280186): Add test for this method once FPManager refactoring
 // is done.
 void ContentFacilitatedPaymentsDriver::HandlePaymentLink(const GURL& url) {
@@ -49,11 +51,14 @@ void ContentFacilitatedPaymentsDriver::HandlePaymentLink(const GURL& url) {
       /*ukm_source_id=*/render_frame_host->GetPageUkmSourceId());
 }
 
-bool ContentFacilitatedPaymentsDriver::IsSecureForPaymentHandling() const {
-  content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromID(render_frame_host_id_);
-  return security_checker_->IsSecureForPaymentLinkHandling(*render_frame_host);
+void ContentFacilitatedPaymentsDriver::SetPaymentLinkHandlerReceiver(
+    mojo::PendingReceiver<mojom::PaymentLinkHandler> pending_receiver) {
+  if (receiver_.is_bound()) {
+    receiver_.reset();
+  }
+  receiver_.Bind(std::move(pending_receiver));
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void ContentFacilitatedPaymentsDriver::ReportHeuristicScore(
     double heuristic_score) {
@@ -64,14 +69,6 @@ void ContentFacilitatedPaymentsDriver::ReportHeuristicScore(
       factory_->OnHeuristicScoreReported(render_frame_host, heuristic_score);
     }
   }
-}
-
-void ContentFacilitatedPaymentsDriver::SetPaymentLinkHandlerReceiver(
-    mojo::PendingReceiver<mojom::PaymentLinkHandler> pending_receiver) {
-  if (receiver_.is_bound()) {
-    receiver_.reset();
-  }
-  receiver_.Bind(std::move(pending_receiver));
 }
 
 void ContentFacilitatedPaymentsDriver::SetFacilitatedPaymentsDriverReceiver(
@@ -101,6 +98,12 @@ void ContentFacilitatedPaymentsDriver::SetFacilitatedPaymentsAgentForTesting(
 void ContentFacilitatedPaymentsDriver::SetFactoryForTesting(
     ContentFacilitatedPaymentsDriverFactory* factory) {
   factory_ = factory;
+}
+
+bool ContentFacilitatedPaymentsDriver::IsSecureForPaymentHandling() const {
+  content::RenderFrameHost* render_frame_host =
+      content::RenderFrameHost::FromID(render_frame_host_id_);
+  return security_checker_->IsSecureForPaymentLinkHandling(*render_frame_host);
 }
 
 }  // namespace payments::facilitated

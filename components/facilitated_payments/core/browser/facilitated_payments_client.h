@@ -12,14 +12,18 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/autofill/core/browser/payments/risk_data_loader.h"
 #include "components/facilitated_payments/core/browser/account_linking_params.h"
 #include "components/facilitated_payments/core/browser/device_delegate.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
-#include "components/facilitated_payments/core/browser/payment_link_manager.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/signin/public/identity_manager/account_info.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/facilitated_payments/core/browser/payment_link_manager.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace url {
 class Origin;
@@ -91,6 +95,14 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   // because it's outside the screen bounds.
   virtual bool IsWebContentsVisibleOrOccluded() = 0;
 
+  // Gets the StrikeDatabase associated with the client. Note: Nullptr may be
+  // returned so check before use.
+  virtual strike_database::StrikeDatabase* GetStrikeDatabase() = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+  // The payment prompts and the Pix account linking flow are only available on
+  // Android.
+
   // Shows the user's Pix accounts from their Google Wallet, and prompts to pay.
   // `bank_account_suggestions` is the list of Pix accounts to be shown to the
   // user for payment. `on_payment_account_selected` is the callback called with
@@ -123,10 +135,6 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
   // Enables features to pass a callback to listen to UI events.
   virtual void SetUiEventListener(
       base::RepeatingCallback<void(UiEvent)> ui_event_listener) = 0;
-
-  // Gets the StrikeDatabase associated with the client. Note: Nullptr may be
-  // returned so check before use.
-  virtual strike_database::StrikeDatabase* GetStrikeDatabase() = 0;
 
   virtual void InitPixAccountLinkingFlow(
       const url::Origin& pix_payment_page_origin) = 0;
@@ -162,6 +170,7 @@ class FacilitatedPaymentsClient : public autofill::RiskDataLoader {
 
  protected:
   std::unique_ptr<PixAccountLinkingManager> pix_account_linking_manager_;
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace payments::facilitated

@@ -8,12 +8,10 @@
 #include <string>
 #include <string_view>
 
-#include "base/android/device_info.h"
 #include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
+#include "build/build_config.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
-#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
-#include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/strike_database/strike_database_factory.h"
@@ -22,13 +20,9 @@
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
-#include "components/device_reauth/device_authenticator.h"
-#include "components/facilitated_payments/android/device_delegate_android.h"
 #include "components/facilitated_payments/content/browser/facilitated_payments_api_client_factory.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/browser/network_api/facilitated_payments_network_interface.h"
-#include "components/facilitated_payments/core/browser/payment_link_manager.h"
-#include "components/facilitated_payments/core/browser/pix_account_linking_manager.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 #include "components/optimization_guide/core/hints/optimization_guide_decider.h"
@@ -38,6 +32,16 @@
 #include "content/public/browser/web_contents.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
+#include "chrome/browser/facilitated_payments/ui/android/facilitated_payments_controller.h"
+#include "components/device_reauth/device_authenticator.h"
+#include "components/facilitated_payments/android/device_delegate_android.h"
+#include "components/facilitated_payments/core/browser/payment_link_manager.h"
+#include "components/facilitated_payments/core/browser/pix_account_linking_manager.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 ChromeFacilitatedPaymentsClient::ChromeFacilitatedPaymentsClient(
     content::WebContents* web_contents,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
@@ -46,28 +50,40 @@ ChromeFacilitatedPaymentsClient::ChromeFacilitatedPaymentsClient(
           *web_contents),
       driver_factory_(web_contents,
                       /* client= */ this),
+#if BUILDFLAG(IS_ANDROID)
       facilitated_payments_controller_(
           std::make_unique<FacilitatedPaymentsController>(web_contents)),
+      device_delegate_(web_contents),
+#endif  // BUILDFLAG(IS_ANDROID)
       optimization_guide_decider_(optimization_guide_decider),
-      is_cct_callback_(std::move(is_cct_callback)),
-      device_delegate_(web_contents) {
+      is_cct_callback_(std::move(is_cct_callback)) {
+#if BUILDFLAG(IS_ANDROID)
   pix_account_linking_manager_ =
       std::make_unique<payments::facilitated::PixAccountLinkingManager>(
           this, payments::facilitated::GetFacilitatedPaymentsApiClientCreator(
                     web_contents->GetWeakPtr()));
+#endif  // BUILDFLAG(IS_ANDROID)
   RegisterAllowlists();
 }
 
 ChromeFacilitatedPaymentsClient::~ChromeFacilitatedPaymentsClient() {
+#if BUILDFLAG(IS_ANDROID)
   if (pix_account_linking_manager_) {
     pix_account_linking_manager_->DismissPrompt();
   }
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeFacilitatedPaymentsClient::LoadRiskData(
     base::OnceCallback<void(const std::string&)> on_risk_data_loaded_callback) {
   autofill::risk_util::LoadRiskData(/*obfuscated_gaia_id=*/0, &GetWebContents(),
                                     std::move(on_risk_data_loaded_callback));
+}
+
+payments::facilitated::ContentFacilitatedPaymentsDriver*
+ChromeFacilitatedPaymentsClient::GetFacilitatedPaymentsDriverForFrame(
+    content::RenderFrameHost* render_frame_host) {
+  return &driver_factory_.GetOrCreateForFrame(render_frame_host);
 }
 
 const url::Origin& ChromeFacilitatedPaymentsClient::GetLastCommittedOrigin()
@@ -116,11 +132,19 @@ ChromeFacilitatedPaymentsClient::GetCoreAccountInfo() {
 }
 
 bool ChromeFacilitatedPaymentsClient::IsInLandscapeMode() {
+#if BUILDFLAG(IS_ANDROID)
   return facilitated_payments_controller_->IsInLandscapeMode();
+#else
+  return false;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 bool ChromeFacilitatedPaymentsClient::IsFoldable() {
+#if BUILDFLAG(IS_ANDROID)
   return base::android::device_info::is_foldable();
+#else
+  return false;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 bool ChromeFacilitatedPaymentsClient::IsInChromeCustomTabMode() {
@@ -134,13 +158,31 @@ ChromeFacilitatedPaymentsClient::GetOptimizationGuideDecider() {
 
 payments::facilitated::DeviceDelegate*
 ChromeFacilitatedPaymentsClient::GetDeviceDelegate() {
+#if BUILDFLAG(IS_ANDROID)
   return &device_delegate_;
+#else
+  // Only the Android payment flows use the device delegate.
+  return nullptr;
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 bool ChromeFacilitatedPaymentsClient::IsWebContentsVisibleOrOccluded() {
   return GetWebContents().GetVisibility() != content::Visibility::HIDDEN;
 }
 
+strike_database::StrikeDatabase*
+ChromeFacilitatedPaymentsClient::GetStrikeDatabase() {
+  content::BrowserContext* context = GetWebContents().GetBrowserContext();
+
+  Profile* profile = Profile::FromBrowserContext(context);
+  if (!profile) {
+    return nullptr;
+  }
+
+  return StrikeDatabaseFactory::GetForProfile(profile);
+}
+
+#if BUILDFLAG(IS_ANDROID)
 void ChromeFacilitatedPaymentsClient::ShowPixPaymentPrompt(
     base::span<const autofill::BankAccount> bank_account_suggestions,
     base::OnceCallback<void(int64_t)> on_payment_account_selected) {
@@ -178,24 +220,6 @@ void ChromeFacilitatedPaymentsClient::SetUiEventListener(
         ui_event_listener) {
   facilitated_payments_controller_->SetUiEventListener(
       std::move(ui_event_listener));
-}
-
-payments::facilitated::ContentFacilitatedPaymentsDriver*
-ChromeFacilitatedPaymentsClient::GetFacilitatedPaymentsDriverForFrame(
-    content::RenderFrameHost* render_frame_host) {
-  return &driver_factory_.GetOrCreateForFrame(render_frame_host);
-}
-
-strike_database::StrikeDatabase*
-ChromeFacilitatedPaymentsClient::GetStrikeDatabase() {
-  content::BrowserContext* context = GetWebContents().GetBrowserContext();
-
-  Profile* profile = Profile::FromBrowserContext(context);
-  if (!profile) {
-    return nullptr;
-  }
-
-  return StrikeDatabaseFactory::GetForProfile(profile);
 }
 
 void ChromeFacilitatedPaymentsClient::InitPixAccountLinkingFlow(
@@ -246,8 +270,24 @@ bool ChromeFacilitatedPaymentsClient::HasScreenlockOrBiometricSetup() {
   return authenticator->CanAuthenticateWithBiometricOrScreenLock();
 }
 
+void ChromeFacilitatedPaymentsClient::
+    SetFacilitatedPaymentsControllerForTesting(
+        std::unique_ptr<FacilitatedPaymentsController> mock_controller) {
+  facilitated_payments_controller_ = std::move(mock_controller);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 void ChromeFacilitatedPaymentsClient::RegisterAllowlists() {
   if (optimization_guide_decider_) {
+    if (base::FeatureList::IsEnabled(
+            payments::facilitated::kEnableDesktopQrCodeDetection)) {
+      optimization_guide_decider_->RegisterOptimizationTypes(
+          {optimization_guide::proto::
+               PAYMENT_QR_CODE_MERCHANT_URL_REGEX_ALLOWLIST});
+    }
+#if BUILDFLAG(IS_ANDROID)
+    // These allowlists are only used by the Android-only Pix and payment link
+    // flows.
     if (base::FeatureList::IsEnabled(payments::facilitated::kEwalletPayments)) {
       optimization_guide_decider_->RegisterOptimizationTypes(
           {optimization_guide::proto::EWALLET_MERCHANT_ALLOWLIST});
@@ -257,23 +297,12 @@ void ChromeFacilitatedPaymentsClient::RegisterAllowlists() {
       optimization_guide_decider_->RegisterOptimizationTypes(
           {optimization_guide::proto::PIX_PSP_ALLOWLIST});
     }
-    if (base::FeatureList::IsEnabled(
-            payments::facilitated::kEnableDesktopQrCodeDetection)) {
-      optimization_guide_decider_->RegisterOptimizationTypes(
-          {optimization_guide::proto::
-               PAYMENT_QR_CODE_MERCHANT_URL_REGEX_ALLOWLIST});
-    }
     optimization_guide_decider_->RegisterOptimizationTypes(
         {optimization_guide::proto::A2A_MERCHANT_ALLOWLIST});
     optimization_guide_decider_->RegisterOptimizationTypes(
         {optimization_guide::proto::PIX_MERCHANT_ORIGINS_ALLOWLIST});
+#endif  // BUILDFLAG(IS_ANDROID)
   }
-}
-
-void ChromeFacilitatedPaymentsClient::
-    SetFacilitatedPaymentsControllerForTesting(
-        std::unique_ptr<FacilitatedPaymentsController> mock_controller) {
-  facilitated_payments_controller_ = std::move(mock_controller);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeFacilitatedPaymentsClient);

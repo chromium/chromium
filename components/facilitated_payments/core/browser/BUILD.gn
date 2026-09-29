@@ -7,8 +7,6 @@ static_library("browser") {
     "account_linking_params.h",
     "account_linking_result.h",
     "device_delegate.h",
-    "ewallet_account_linking_manager.cc",
-    "ewallet_account_linking_manager.h",
     "facilitated_payments_api_client.h",
     "facilitated_payments_app_info_list.h",
     "facilitated_payments_client.cc",
@@ -17,8 +15,6 @@ static_library("browser") {
     "facilitated_payments_driver.h",
     "model/secure_payload.cc",
     "model/secure_payload.h",
-    "native_account_linking_handler.cc",
-    "native_account_linking_handler.h",
     "network_api/facilitated_payments_initiate_payment_request.cc",
     "network_api/facilitated_payments_initiate_payment_request.h",
     "network_api/facilitated_payments_initiate_payment_request_details.cc",
@@ -31,19 +27,29 @@ static_library("browser") {
     "network_api/get_details_for_ewallet_account_linking_request.h",
     "network_api/get_details_for_pix_account_linking_request.cc",
     "network_api/get_details_for_pix_account_linking_request.h",
-    "payment_link_manager.cc",
-    "payment_link_manager.h",
-    "pix_account_linking_manager.cc",
-    "pix_account_linking_manager.h",
-    "pix_manager.cc",
-    "pix_manager.h",
-    "pix_manager_test_api.h",
     "strike_databases/ewallet_account_linking_strike_database.cc",
     "strike_databases/ewallet_account_linking_strike_database.h",
     "strike_databases/payment_link_suggestion_strike_database.h",
     "strike_databases/pix_account_linking_strike_database.cc",
     "strike_databases/pix_account_linking_strike_database.h",
   ]
+
+  # The payment flows below are only launched on Android.
+  if (is_android) {
+    sources += [
+      "ewallet_account_linking_manager.cc",
+      "ewallet_account_linking_manager.h",
+      "native_account_linking_handler.cc",
+      "native_account_linking_handler.h",
+      "payment_link_manager.cc",
+      "payment_link_manager.h",
+      "pix_account_linking_manager.cc",
+      "pix_account_linking_manager.h",
+      "pix_manager.cc",
+      "pix_manager.h",
+      "pix_manager_test_api.h",
+    ]
+  }
 
   public_deps = [
     "//base",
@@ -63,44 +69,47 @@ static_library("browser") {
   deps = [ "//components/facilitated_payments/core/validation:pix_validator_rs_ffi_glue" ]
 }
 
-source_set("unit_tests") {
-  testonly = true
-  sources = [
-    "ewallet_account_linking_manager_unittest.cc",
-    "facilitated_payments_driver_unittest.cc",
-    "native_account_linking_handler_unittest.cc",
-    "network_api/facilitated_payments_initiate_payment_request_details_unittest.cc",
-    "network_api/facilitated_payments_initiate_payment_request_unittest.cc",
-    "network_api/facilitated_payments_network_interface_unittest.cc",
-    "network_api/get_details_for_ewallet_account_linking_request_unittest.cc",
-    "network_api/get_details_for_pix_account_linking_request_unittest.cc",
-    "payment_link_manager_unittest.cc",
-    "pix_account_linking_manager_unittest.cc",
-    "pix_manager_unittest.cc",
-    "strike_databases/ewallet_account_linking_strike_database_unittest.cc",
-  ]
+# These tests cover Android-only payment flows and prefs, and are only run in
+# the Android `components_unittests`.
+if (is_android) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [
+      "ewallet_account_linking_manager_unittest.cc",
+      "facilitated_payments_driver_unittest.cc",
+      "native_account_linking_handler_unittest.cc",
+      "network_api/facilitated_payments_initiate_payment_request_details_unittest.cc",
+      "network_api/facilitated_payments_initiate_payment_request_unittest.cc",
+      "network_api/facilitated_payments_network_interface_unittest.cc",
+      "network_api/get_details_for_ewallet_account_linking_request_unittest.cc",
+      "network_api/get_details_for_pix_account_linking_request_unittest.cc",
+      "payment_link_manager_unittest.cc",
+      "pix_account_linking_manager_unittest.cc",
+      "pix_manager_unittest.cc",
+      "strike_databases/ewallet_account_linking_strike_database_unittest.cc",
+    ]
 
-  deps = [
-    ":browser",
-    ":test_support",
-    "//components/autofill/core/browser:test_support",
-    "//components/autofill/core/common",
-    "//components/facilitated_payments/core/utils",
-    "//components/optimization_guide/core",
-    "//components/optimization_guide/core:test_support",
-    "//components/signin/public/identity_manager",
-    "//components/signin/public/identity_manager:test_support",
-    "//components/sync:test_support",
-    "//components/ukm:test_support",
-    "//content/test:test_support",
-    "//testing/gtest",
-  ]
+    deps = [
+      ":browser",
+      ":test_support",
+      "//components/autofill/core/browser:test_support",
+      "//components/autofill/core/common",
+      "//components/facilitated_payments/core/utils",
+      "//components/optimization_guide/core",
+      "//components/optimization_guide/core:test_support",
+      "//components/signin/public/identity_manager",
+      "//components/signin/public/identity_manager:test_support",
+      "//components/sync:test_support",
+      "//components/ukm:test_support",
+      "//content/test:test_support",
+      "//testing/gtest",
+    ]
+  }
 }
 
 static_library("test_support") {
   testonly = true
   sources = [
-    "ewallet_account_linking_manager_test_api.h",
     "mock_device_delegate.cc",
     "mock_device_delegate.h",
     "mock_facilitated_payments_api_client.cc",
@@ -111,9 +120,15 @@ static_library("test_support") {
     "mock_facilitated_payments_client.h",
     "network_api/mock_facilitated_payments_network_interface.cc",
     "network_api/mock_facilitated_payments_network_interface.h",
-    "payment_link_manager_test_api.h",
-    "pix_account_linking_manager_test_api.h",
   ]
+
+  if (is_android) {
+    sources += [
+      "ewallet_account_linking_manager_test_api.h",
+      "payment_link_manager_test_api.h",
+      "pix_account_linking_manager_test_api.h",
+    ]
+  }
 
   deps = [
     ":browser",

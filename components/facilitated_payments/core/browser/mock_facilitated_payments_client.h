@@ -11,13 +11,17 @@
 
 #include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/data_model/payments/bank_account.h"
 #include "components/autofill/core/browser/data_model/payments/ewallet.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_app_info_list.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
-#include "components/facilitated_payments/core/browser/payment_link_manager.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "testing/gmock/include/gmock/gmock.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/facilitated_payments/core/browser/payment_link_manager.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace autofill {
 class PaymentsDataManager;
@@ -57,12 +61,18 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               (override));
   MOCK_METHOD(bool, IsInLandscapeMode, (), (override));
   MOCK_METHOD(bool, IsFoldable, (), (override));
+  MOCK_METHOD(bool, IsInChromeCustomTabMode, (), (override));
   MOCK_METHOD(optimization_guide::OptimizationGuideDecider*,
               GetOptimizationGuideDecider,
               (),
               (override));
   MOCK_METHOD(DeviceDelegate*, GetDeviceDelegate, (), (override));
   MOCK_METHOD(bool, IsWebContentsVisibleOrOccluded, (), (override));
+  MOCK_METHOD(strike_database::StrikeDatabase*,
+              GetStrikeDatabase,
+              (),
+              (override));
+#if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD(void,
               ShowPixPaymentPrompt,
               (base::span<const autofill::BankAccount> pix_account_suggestions,
@@ -81,10 +91,6 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               SetUiEventListener,
               (base::RepeatingCallback<void(payments::facilitated::UiEvent)>
                    ui_event_listener),
-              (override));
-  MOCK_METHOD(strike_database::StrikeDatabase*,
-              GetStrikeDatabase,
-              (),
               (override));
   MOCK_METHOD(void,
               InitPixAccountLinkingFlow,
@@ -109,7 +115,7 @@ class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
               (FacilitatedPaymentsType),
               (override));
   MOCK_METHOD(bool, HasScreenlockOrBiometricSetup, (), (override));
-  MOCK_METHOD(bool, IsInChromeCustomTabMode, (), (override));
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace payments::facilitated

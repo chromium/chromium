@@ -4,8 +4,6 @@
 
 static_library("facilitated_payments") {
   sources = [
-    "payment_link_handler_binder.cc",
-    "payment_link_handler_binder.h",
     "ui/chrome_facilitated_payments_client.cc",
     "ui/chrome_facilitated_payments_client.h",
   ]
@@ -15,7 +13,6 @@ static_library("facilitated_payments") {
   deps = [
     "//chrome/browser/autofill",
     "//chrome/browser/device_reauth",
-    "//chrome/browser/facilitated_payments/ui/android",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/signin",
@@ -23,25 +20,42 @@ static_library("facilitated_payments") {
     "//chrome/browser/ui/autofill",
     "//components/autofill/core/browser",
     "//components/device_reauth",
-    "//components/facilitated_payments/android",
     "//components/facilitated_payments/content/browser",
     "//components/facilitated_payments/core/browser",
     "//components/facilitated_payments/core/utils",
   ]
+
+  # The payment UI, payment link handling, and platform API client are
+  # Android-only. Desktop only runs payment QR code detection, which needs
+  # none of them.
+  if (is_android) {
+    sources += [
+      "payment_link_handler_binder.cc",
+      "payment_link_handler_binder.h",
+    ]
+    deps += [
+      "//chrome/browser/facilitated_payments/ui/android",
+      "//components/facilitated_payments/android",
+    ]
+  }
 }
 
-source_set("unit_tests") {
-  testonly = true
+# The client tests exercise the Android payment UI controller, which is not
+# built on Desktop.
+if (is_android) {
+  source_set("unit_tests") {
+    testonly = true
 
-  sources = [ "ui/chrome_facilitated_payments_client_unittest.cc" ]
+    sources = [ "ui/chrome_facilitated_payments_client_unittest.cc" ]
 
-  deps = [
-    ":facilitated_payments",
-    "//base",
-    "//chrome/test:test_support",
-    "//chrome/test/base:chrome_render_view_host_test_harness",
-    "//components/facilitated_payments/core/browser",
-    "//components/facilitated_payments/core/features",
-    "//components/optimization_guide/core:test_support",
-  ]
+    deps = [
+      ":facilitated_payments",
+      "//base",
+      "//chrome/test:test_support",
+      "//chrome/test/base:chrome_render_view_host_test_harness",
+      "//components/facilitated_payments/core/browser",
+      "//components/facilitated_payments/core/features",
+      "//components/optimization_guide/core:test_support",
+    ]
+  }
 }

@@ -25,6 +25,7 @@
 #include "chrome/browser/content_settings/mixed_content_settings_tab_helper.h"
 #include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/enterprise/connectors/referrer_cache_utils.h"
+#include "chrome/browser/facilitated_payments/ui/chrome_facilitated_payments_client.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
@@ -85,6 +86,7 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/enterprise/buildflags/buildflags.h"
+#include "components/facilitated_payments/core/features/features.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/javascript_dialogs/tab_modal_dialog_manager.h"
 #include "components/metrics/content/metrics_services_web_contents_observer.h"
@@ -566,6 +568,20 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
 
   TabDialogs::CreateForWebContents(web_contents);
   web_modal::WebContentsModalDialogManager::CreateForWebContents(web_contents);
+
+  // On Desktop the client only runs payment QR code detection (no payment UI),
+  // so it is created behind its own flag. Preconditions are checked before the
+  // flag to avoid activating the experiment for ineligible tabs.
+  if (enable_browser_autofill) {
+    auto* optimization_guide_decider =
+        OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
+    if (optimization_guide_decider &&
+        base::FeatureList::IsEnabled(
+            payments::facilitated::kEnableDesktopQrCodeDetection)) {
+      ChromeFacilitatedPaymentsClient::CreateForWebContents(
+          web_contents, optimization_guide_decider);
+    }
+  }
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_WEBUI_NTP)

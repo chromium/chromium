@@ -9,16 +9,21 @@
 #include <utility>
 
 #include "base/check_deref.h"
+#include "build/build_config.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
+
+#if BUILDFLAG(IS_ANDROID)
 #include "base/strings/string_view_rust.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/payment_link_manager.h"
 #include "components/facilitated_payments/core/browser/pix_manager.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/facilitated_payments/core/validation/pix_validator_cxx.rs.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace payments::facilitated {
 
+#if BUILDFLAG(IS_ANDROID)
 namespace {
 
 // Translates the raw validation result, returning `std::nullopt` for
@@ -49,6 +54,7 @@ std::optional<PixCodeRustValidationResult> TranslateRustPixQrCodeResult(
 }
 
 }  // namespace
+#endif  // BUILDFLAG(IS_ANDROID)
 
 FacilitatedPaymentsDriver::FacilitatedPaymentsDriver(
     FacilitatedPaymentsClient* client,
@@ -58,6 +64,7 @@ FacilitatedPaymentsDriver::FacilitatedPaymentsDriver(
 
 FacilitatedPaymentsDriver::~FacilitatedPaymentsDriver() = default;
 
+#if BUILDFLAG(IS_ANDROID)
 void FacilitatedPaymentsDriver::DidNavigateToOrAwayFromPage() const {
   if (pix_manager_) {
     pix_manager_->Reset();
@@ -135,5 +142,6 @@ void FacilitatedPaymentsDriver::SetPaymentLinkManagerForTesting(
     std::unique_ptr<PaymentLinkManager> payment_link_manager) {
   payment_link_manager_ = std::move(payment_link_manager);
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace payments::facilitated

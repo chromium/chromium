@@ -5,24 +5,30 @@
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver_factory.h"
 
 #include "base/test/gmock_callback_support.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/facilitated_payments/content/browser/security_checker.h"
+#include "build/build_config.h"
 #include "components/facilitated_payments/core/browser/mock_facilitated_payments_client.h"
 #include "components/facilitated_payments/core/features/features.h"
 #include "components/facilitated_payments/core/metrics/facilitated_payments_metrics.h"
 #include "components/optimization_guide/core/hints/mock_optimization_guide_decider.h"
 #include "components/optimization_guide/core/hints/test_optimization_guide_decider.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
-#include "net/base/net_errors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/test/metrics/histogram_tester.h"
+#include "components/facilitated_payments/content/browser/security_checker.h"
+#include "content/public/test/navigation_simulator.h"
+#include "net/base/net_errors.h"
+#endif  // BUILDFLAG(IS_ANDROID)
+
 namespace payments::facilitated {
 
+// Pix copy detection is only supported on Android.
+#if BUILDFLAG(IS_ANDROID)
 class MockContentFacilitatedPaymentsDriver
     : public ContentFacilitatedPaymentsDriver {
  public:
@@ -44,6 +50,7 @@ class MockContentFacilitatedPaymentsDriver
                bool is_same_origin),
               (override));
 };
+#endif  // BUILDFLAG(IS_ANDROID)
 
 class ContentFacilitatedPaymentsDriverFactoryTest
     : public content::RenderViewHostTestHarness {
@@ -77,6 +84,7 @@ class ContentFacilitatedPaymentsDriverFactoryTest
   std::unique_ptr<ContentFacilitatedPaymentsDriverFactory> factory_;
 };
 
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(
     ContentFacilitatedPaymentsDriverFactoryTest,
     OnTextCopiedToClipboard_PixCodeInIFrame_FlagEnabled_PixFlowExitedReasonNotLogged) {
@@ -190,6 +198,7 @@ TEST_F(
       /*sample=*/PixFlowExitedReason::kFrameIsErrorDocument,
       /*expected_bucket_count=*/1);
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Test that QR code detection is eligible when the merchant is on the
 // allowlist and the feature is enabled.

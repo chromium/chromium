@@ -11,28 +11,28 @@
 
 namespace payments::facilitated {
 
-#if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kDisableFacilitatedPaymentsMerchantAllowlist);
-#endif  // BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kEnableDesktopQrCodeDetection);
-#if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kEnableEwalletNewAccountLinking);
 BASE_DECLARE_FEATURE(kEnableIframeForPix);
+#if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kEnablePixAccountLinking);
+#endif  // BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kEnablePixAccountLinkingNative);
-extern const base::FeatureParam<std::string>
-    kPixAccountLinkingNativePromptVariant;
 extern const base::FeatureParam<int>
     kPixAccountLinkingNativeTriggerDelaySeconds;
-extern const base::FeatureParam<std::string> kVideoUrlOnPrompt;
-BASE_DECLARE_FEATURE(kEnablePixInCct);
-#endif  // BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kEnablePixPaymentsInLandscapeMode);
 #if BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kEnableStaticQrCodeForPix);
-BASE_DECLARE_FEATURE(kEwalletPayments);
-BASE_DECLARE_FEATURE(kFacilitatedPaymentsEnableA2APayment);
+extern const base::FeatureParam<std::string>
+    kPixAccountLinkingNativePromptVariant;
+extern const base::FeatureParam<std::string> kVideoUrlOnPrompt;
 #endif  // BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kEnablePixInCct);
+BASE_DECLARE_FEATURE(kEnablePixPaymentsInLandscapeMode);
+BASE_DECLARE_FEATURE(kEnableStaticQrCodeForPix);
+#if BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kEwalletPayments);
+#endif  // BUILDFLAG(IS_ANDROID)
+BASE_DECLARE_FEATURE(kFacilitatedPaymentsEnableA2APayment);
 
 }  // namespace payments::facilitated
 
