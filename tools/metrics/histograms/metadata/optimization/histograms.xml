@@ -127,6 +127,8 @@ chromium-metrics-reviews@google.com.
   <variant name="ReadAloudSynthesize" summary="Read Aloud Synthesize"/>
   <variant name="ScamDetection" summary="Scam Detection"/>
   <variant name="Skills" summary="Skills"/>
+  <variant name="SmartSelectionSuggestions"
+      summary="Smart Selection Suggestions"/>
   <variant name="SpeechRecognitionSmallExpertModel"
       summary="Speech Recognition Small Expert Model (TinyGemma)"/>
   <variant name="Summarize" summary="Summarize"/>

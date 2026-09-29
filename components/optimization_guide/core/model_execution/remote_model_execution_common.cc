@@ -568,6 +568,9 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
             }
           }
         })");
+    case ModelBasedCapabilityKey::kSmartSelectionSuggestions:
+      // TODO(crbug.com/561489586): Add network traffic annotation.
+      return MISSING_TRAFFIC_ANNOTATION;
     case ModelBasedCapabilityKey::kTtc:
       return net::DefineNetworkTrafficAnnotation("ttc_model_execution", R"(
         semantics {
@@ -631,6 +634,7 @@ bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kContextHub:
     case ModelBasedCapabilityKey::kReadAloudSynthesize:
     case ModelBasedCapabilityKey::kReadAloudGenerateText:
+    case ModelBasedCapabilityKey::kSmartSelectionSuggestions:
     case ModelBasedCapabilityKey::kTtc:
       return true;
     case ModelBasedCapabilityKey::kFormsClassifications:

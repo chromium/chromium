@@ -109,6 +109,7 @@ size_t GetMaxParallelFeatureExecutions(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kContextualCueing:
     case ModelBasedCapabilityKey::kCardRecommendations:
     case ModelBasedCapabilityKey::kReadAloudGenerateText:
+    case ModelBasedCapabilityKey::kSmartSelectionSuggestions:
     case ModelBasedCapabilityKey::kTtc:
       return 1;
     case ModelBasedCapabilityKey::kReadAloudSynthesize:
