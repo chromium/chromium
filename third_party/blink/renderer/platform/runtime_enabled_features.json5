@@ -5450,6 +5450,12 @@
       status: "stable",
     },
     {
+      // Places ruby annotations clear of the base's underline or overline.
+      // https://drafts.csswg.org/css-ruby-1/#ruby-text-decoration
+      name: "RubyTextDecorationSpacing",
+      status: "test",
+    },
+    {
       // Runs a microtask checkpoint before prepare script in
       // XML Parser. This was added in M148 and can be removed
       // after M150.

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Ruby Test: an underline on a ruby base displaces its under annotation</title>
+<link rel="author" title="ChangSeok Oh" href="mailto:changseok@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-ruby-1/#ruby-text-decoration">
+<meta name="assert" content="An underline on a ruby base is positioned between the base level and the annotation on the under side, so the annotation is displaced relative to an otherwise identical undecorated ruby. The underline is transparent, so any rendering difference is the annotation having moved.">
+<script src="../../resources/ahem.js"></script>
+<style>
+.box { font: 40px/3 Ahem; }
+ruby { ruby-position: under; }
+rt { font: 20px/1 Ahem; }
+.decorated {
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 20px;
+  text-underline-position: under;
+  text-underline-offset: 0px;
+}
+</style>
+<div class="box"><ruby><span class="decorated">AA</span><rt>BBBB</rt></ruby></div>

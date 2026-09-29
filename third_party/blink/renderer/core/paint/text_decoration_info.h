@@ -59,6 +59,11 @@ struct TextDecorationFragmentContext {
 CORE_EXPORT TextDecorationFragmentContext
 ComputeTextDecorationFragmentContext(const InlineCursor& cursor);
 
+CORE_EXPORT std::optional<gfx::RectF> ComputeUnderOverDecorationBounds(
+    const ComputedStyle& style,
+    const UsedFont& font,
+    LayoutUnit inline_size);
+
 // Holds the resolved metrics and styling for a single AppliedTextDecoration.
 // This immutable structure decouples index-specific properties from the overall
 // TextDecorationInfo context.

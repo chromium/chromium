@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Ruby Test: text decorations on a ruby base displace its annotations</title>
+<link rel="author" title="ChangSeok Oh" href="mailto:changseok@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-ruby-1/#ruby-text-decoration">
+<meta name="assert" content="An underline and an overline of a ruby base are positioned between the base level and the annotations on their respective sides, so both annotations are displaced relative to an otherwise identical undecorated ruby. The decorations are transparent, so any rendering difference is the annotations having moved.">
+<script src="../../resources/ahem.js"></script>
+<style>
+.box { font: 40px/4 Ahem; }
+rt { font: 20px/1 Ahem; }
+.under-line {
+  text-decoration-line: underline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 20px;
+  text-underline-position: under;
+  text-underline-offset: 0px;
+}
+.over-line {
+  text-decoration-line: overline;
+  text-decoration-color: transparent;
+  text-decoration-thickness: 20px;
+}
+</style>
+<div class="box"><span class="under-line"><ruby class="over-line"><ruby style="ruby-position:under">AA<rt>BBBB</rt></ruby><rt>CCCC</rt></ruby></span></div>
