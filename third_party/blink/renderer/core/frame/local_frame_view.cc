@@ -224,13 +224,19 @@ namespace {
 std::optional<cc::PaintRecord> GetCanvasSnapshot(DOMNodeId id) {
   if (auto* nested_canvas =
           DynamicTo<HTMLCanvasElement>(DOMNodeIds::NodeForId(id))) {
-    if (!nested_canvas->OriginClean() || !nested_canvas->GetLayoutObject()) {
+    if (!nested_canvas->OriginClean()) {
+      return cc::PaintRecord();
+    }
+    LayoutReplaced* nested_layout_obj =
+        To<LayoutReplaced>(nested_canvas->GetLayoutObject());
+    if (!nested_layout_obj) {
       return cc::PaintRecord();
     }
     if (scoped_refptr<StaticBitmapImage> snapshot =
             nested_canvas->Snapshot(kFrontBuffer)) {
       PaintRecordBuilder builder;
-      gfx::RectF dest_rect(gfx::SizeF(nested_canvas->Size()));
+      gfx::RectF dest_rect(
+          gfx::SizeF(nested_layout_obj->PhysicalContentBoxRect().size));
       gfx::RectF src_rect(gfx::SizeF(nested_canvas->Size()));
       {
         DrawingRecorder recorder(
