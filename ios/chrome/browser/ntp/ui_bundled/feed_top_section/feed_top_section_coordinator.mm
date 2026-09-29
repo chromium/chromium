@@ -50,6 +50,7 @@ using base::UmaHistogramEnumeration;
 using base::UserMetricsAction;
 
 @interface FeedTopSectionCoordinator () <
+    FeedTopSectionMediatorDelegate,
     NotificationsOptInAlertCoordinatorDelegate,
     SigninPromoViewMediatorDelegate>
 
@@ -138,6 +139,7 @@ using base::UserMetricsAction;
                                       TemplateURLPrepopulateData::google.id;
   self.feedTopSectionMediator.isDefaultSearchEngine = isDefaultSearchEngine;
   self.feedTopSectionMediator.presenter = self;
+  self.feedTopSectionMediator.delegate = self;
   self.feedTopSectionMediator.NTPDelegate = self.NTPDelegate;
   self.feedTopSectionViewController.delegate = self.feedTopSectionMediator;
   self.feedTopSectionViewController.feedTopSectionMutator =
@@ -148,6 +150,7 @@ using base::UserMetricsAction;
 
 - (void)stop {
   _viewController = nil;
+  self.feedTopSectionMediator.delegate = nil;
   [self.feedTopSectionMediator shutdown];
   [self.signinPromoMediator disconnect];
   self.signinPromoMediator.consumer = nil;
@@ -157,6 +160,17 @@ using base::UserMetricsAction;
 }
 
 #pragma mark - Public
+
+- (BOOL)feedTopSectionVisible {
+  return self.feedTopSectionMediator.feedTopSectionVisible;
+}
+
+#pragma mark - FeedTopSectionMediatorDelegate
+
+- (void)feedTopSectionMediator:(FeedTopSectionMediator*)mediator
+           didUpdateVisibility:(BOOL)visible {
+  [self.NTPDelegate feedTopSectionDidUpdateVisibility:visible];
+}
 
 - (void)signinPromoHasChangedVisibility:(BOOL)visible {
   if (!self.isSignInPromoEnabled ||

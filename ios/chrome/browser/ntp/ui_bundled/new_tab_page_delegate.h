@@ -28,6 +28,9 @@
 // Called when the feed top section is manually dismissed.
 - (void)handleFeedTopSectionClosed;
 
+// Called when the feed top section promo visibility changes.
+- (void)feedTopSectionDidUpdateVisibility:(BOOL)visible;
+
 // Returns whether sign-in is enabled for the user.
 - (BOOL)isSignInAllowed;
 

@@ -969,6 +969,8 @@ using ntp_tiles::AimButtonRefactorArm;
       self.contentSuggestionsCoordinator.viewController;
   NTPViewController.NTPShortcutsHandler = self;
   NTPViewController.feedVisible = [self isFeedVisible];
+  NTPViewController.feedTopSectionVisible =
+      self.feedTopSectionCoordinator.feedTopSectionVisible;
   NTPViewController.feedTopSectionViewController =
       self.feedTopSectionCoordinator.viewController;
   NTPViewController.feedWrapperViewController = self.feedWrapperViewController;
@@ -986,6 +988,8 @@ using ntp_tiles::AimButtonRefactorArm;
     self.NTPRedesignViewController.NTPContentDelegate = self;
     self.NTPRedesignViewController.headerCommandsHandler = self;
     self.NTPRedesignViewController.feedViewController = self.feedViewController;
+    self.NTPRedesignViewController.feedTopSectionVisible =
+        self.feedTopSectionCoordinator.feedTopSectionVisible;
     self.NTPRedesignViewController.feedTopSectionViewController =
         self.feedTopSectionCoordinator.viewController;
     self.NTPRedesignViewController.magicStackViewController =
@@ -1562,6 +1566,14 @@ using ntp_tiles::AimButtonRefactorArm;
   }
 }
 
+- (void)feedTopSectionDidUpdateVisibility:(BOOL)visible {
+  if (IsNTPRedesignEnabled()) {
+    self.NTPRedesignViewController.feedTopSectionVisible = visible;
+  } else {
+    self.NTPViewController.feedTopSectionVisible = visible;
+  }
+}
+
 - (BOOL)isSignInAllowed {
   return self.authService->SigninEnabled();
 }
@@ -1937,6 +1949,8 @@ using ntp_tiles::AimButtonRefactorArm;
       self.feedHeaderViewController = nil;
     }
     self.NTPRedesignViewController.feedViewController = self.feedViewController;
+    self.NTPRedesignViewController.feedTopSectionVisible =
+        self.feedTopSectionCoordinator.feedTopSectionVisible;
     self.NTPRedesignViewController.feedTopSectionViewController =
         self.feedTopSectionCoordinator.viewController;
     [self updateFeedLayout];

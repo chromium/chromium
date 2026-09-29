@@ -73,6 +73,7 @@ constexpr CGFloat kSigninPromoVisibilityThresholdFraction = 1.0 / 3.0;
 
   BOOL _isBottomOmnibox;
   UIViewController* _feedTopSectionViewController;
+  BOOL _feedTopSectionVisible;
   UIView* _feedTopSectionContainerView;
   NSArray<NSLayoutConstraint*>* _feedTopSectionConstraints;
   BOOL _isSigninPromoVisible;
@@ -118,6 +119,7 @@ constexpr CGFloat kSigninPromoVisibilityThresholdFraction = 1.0 / 3.0;
 }
 
 - (void)handleFeedTopSectionClosed {
+  _feedTopSectionVisible = NO;
   _feedTopSectionViewController.view.hidden = YES;
   _feedTopSectionContainerView.hidden = YES;
   __weak __typeof(self) weakSelf = self;
@@ -134,7 +136,7 @@ constexpr CGFloat kSigninPromoVisibilityThresholdFraction = 1.0 / 3.0;
 }
 
 - (void)updateFeedSigninPromoVisibility {
-  if (!_feedTopSectionViewController ||
+  if (!_feedTopSectionVisible || !_feedTopSectionViewController ||
       _feedTopSectionViewController.view.hidden ||
       !_feedTopSectionContainerView || _feedTopSectionContainerView.hidden ||
       !self.view.window) {
@@ -410,7 +412,7 @@ constexpr CGFloat kSigninPromoVisibilityThresholdFraction = 1.0 / 3.0;
 }
 
 - (BOOL)hasFeedTopSection {
-  return _feedTopSectionViewController &&
+  return _feedTopSectionVisible && _feedTopSectionViewController &&
          !_feedTopSectionViewController.view.hidden;
 }
 
@@ -816,6 +818,20 @@ constexpr CGFloat kSigninPromoVisibilityThresholdFraction = 1.0 / 3.0;
       [self embedFeedTopSectionViewController];
     }
     [self updateHeaderContainerHierarchy];
+  }
+}
+
+- (BOOL)feedTopSectionVisible {
+  return _feedTopSectionVisible;
+}
+
+- (void)setFeedTopSectionVisible:(BOOL)feedTopSectionVisible {
+  if (_feedTopSectionVisible == feedTopSectionVisible) {
+    return;
+  }
+  _feedTopSectionVisible = feedTopSectionVisible;
+  if (self.isViewLoaded) {
+    [self updateFeedLayout];
   }
 }
 

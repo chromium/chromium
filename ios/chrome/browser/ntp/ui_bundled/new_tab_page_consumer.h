@@ -20,6 +20,9 @@
 // Whether the Magic Stack module is visible on the NTP.
 @property(nonatomic, assign) BOOL magicStackVisible;
 
+// Whether the Feed Top Section (promos) is visible on the NTP.
+@property(nonatomic, assign) BOOL feedTopSectionVisible;
+
 // Collection of trait-specific override values for customizing NTP appearance
 @property(nonatomic, readonly) id<UITraitOverrides> traitOverrides;
 

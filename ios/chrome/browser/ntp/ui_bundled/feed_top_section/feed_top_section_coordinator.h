@@ -18,6 +18,9 @@
 
 @property(nonatomic, readonly, strong) UIViewController* viewController;
 
+// Whether the feed top section has content to show and is visible.
+@property(nonatomic, readonly, assign) BOOL feedTopSectionVisible;
+
 // Delegate for NTP related actions.
 @property(nonatomic, weak) id<NewTabPageDelegate> NTPDelegate;
 

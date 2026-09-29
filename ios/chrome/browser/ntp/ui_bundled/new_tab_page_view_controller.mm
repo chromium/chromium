@@ -204,11 +204,19 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   UIImage* _aimIcon;
   // Tracks whether the NTP was scrolled to the top before a size transition.
   BOOL _scrolledToTop;
+  // Constraints for the feed top section promo.
+  NSArray<NSLayoutConstraint*>* _feedTopSectionConstraints;
+  // Constraint connecting the top of the collection view to the view above it.
+  NSLayoutConstraint* _collectionViewTopConstraint;
+  // The height of the feed top section before it was closed/removed.
+  CGFloat _lastClosedPromoHeight;
 }
 
 // Properties synthesized from NewTabPageScrollConsumer.
 @synthesize mostVisitedVisible = _mostVisitedVisible;
 @synthesize magicStackVisible = _magicStackVisible;
+@synthesize feedTopSectionVisible = _feedTopSectionVisible;
+@synthesize feedTopSectionViewController = _feedTopSectionViewController;
 
 - (instancetype)init {
   self = [super initWithNibName:nil bundle:nil];
@@ -524,8 +532,9 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
                                      kContentSuggestionsReset];
   }
 
-  // Adds the feed top section to the view hierarchy if it exists.
-  if (self.feedTopSectionViewController) {
+  // Adds the feed top section to the view hierarchy if it exists and is
+  // visible.
+  if (self.feedTopSectionVisible && self.feedTopSectionViewController) {
     [self addObjectAboveFeed:self.feedTopSectionViewController];
   }
 
@@ -633,6 +642,10 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
     [self removeObjectFromViewHierarchy:obj];
   }
   [self.objectsAboveFeed removeAllObjects];
+  [NSLayoutConstraint deactivateConstraints:_feedTopSectionConstraints];
+  _feedTopSectionConstraints = nil;
+  _collectionViewTopConstraint.active = NO;
+  _collectionViewTopConstraint = nil;
 }
 
 - (void)resetStateUponReload {
@@ -728,8 +741,18 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
 - (void)updateScrollPositionForFeedTopSectionClosed {
   if (self.isFakeboxPinned) {
-    [self setContentOffset:[self scrollPosition] + [self feedTopSectionHeight]];
+    // Use the stored height or view's frame height directly since
+    // `feedTopSectionVisible` may already have been updated to NO when the
+    // promo was closed.
+    CGFloat promoHeight =
+        _lastClosedPromoHeight > 0
+            ? _lastClosedPromoHeight
+            : (self.feedTopSectionViewController
+                   ? self.feedTopSectionViewController.view.frame.size.height
+                   : 0);
+    [self setContentOffset:[self scrollPosition] + promoHeight];
   }
+  _lastClosedPromoHeight = 0;
 }
 
 - (void)feedLayoutDidEndUpdatesWithType:(FeedLayoutUpdateType)type {
@@ -758,6 +781,10 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   self.feedHeaderViewController = nil;
   self.feedWrapperViewController = nil;
   self.mutator = nil;
+  [NSLayoutConstraint deactivateConstraints:_feedTopSectionConstraints];
+  _feedTopSectionConstraints = nil;
+  _collectionViewTopConstraint.active = NO;
+  _collectionViewTopConstraint = nil;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
@@ -893,6 +920,40 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   _feedBottomInset = feedBottomInset;
   if (self.feedVisible) {
     [self updateFeedInsetsForMinimumHeight];
+  }
+}
+
+- (UIViewController*)feedTopSectionViewController {
+  return _feedTopSectionViewController;
+}
+
+- (void)setFeedTopSectionViewController:
+    (UIViewController*)feedTopSectionViewController {
+  if (_feedTopSectionViewController == feedTopSectionViewController) {
+    return;
+  }
+  if (self.viewLoaded && _feedTopSectionViewController &&
+      [self.objectsAboveFeed containsObject:_feedTopSectionViewController]) {
+    [self removeObjectFromViewHierarchy:_feedTopSectionViewController];
+    [self.objectsAboveFeed removeObject:_feedTopSectionViewController];
+    [NSLayoutConstraint deactivateConstraints:_feedTopSectionConstraints];
+    _feedTopSectionConstraints = nil;
+  }
+  _feedTopSectionViewController = feedTopSectionViewController;
+  if (self.viewLoaded) {
+    [self updateFeedTopSectionHierarchy];
+    [self updateNTPLayout];
+  }
+}
+
+- (void)setFeedTopSectionVisible:(BOOL)feedTopSectionVisible {
+  if (_feedTopSectionVisible == feedTopSectionVisible) {
+    return;
+  }
+  _feedTopSectionVisible = feedTopSectionVisible;
+  if (self.viewLoaded) {
+    [self updateFeedTopSectionHierarchy];
+    [self updateNTPLayout];
   }
 }
 
@@ -1554,7 +1615,8 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 // Checks whether the feed top section is visible and updates the
 // `NTPContentDelegate`.
 - (void)updateFeedSigninPromoIsVisible {
-  if (!self.feedTopSectionViewController) {
+  if (!self.feedTopSectionViewController || !self.feedTopSectionVisible) {
+    [self.NTPContentDelegate signinPromoHasChangedVisibility:NO];
     return;
   }
 
@@ -1633,6 +1695,58 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   [NSLayoutConstraint deactivateConstraints:collectionWidthConstraints];
 }
 
+// Updates the feed top section hierarchy and constraints based on visibility.
+- (void)updateFeedTopSectionHierarchy {
+  if (!self.viewLoaded || !self.feedWrapperViewController) {
+    return;
+  }
+
+  if (self.feedTopSectionVisible && self.feedTopSectionViewController) {
+    if (![self.objectsAboveFeed
+            containsObject:self.feedTopSectionViewController]) {
+      [self addObjectAboveFeed:self.feedTopSectionViewController];
+    }
+    if (!_feedTopSectionConstraints.count && self.feedHeaderViewController) {
+      _feedTopSectionConstraints = @[
+        [self.feedTopSectionViewController.view.centerXAnchor
+            constraintEqualToAnchor:self.collectionView.centerXAnchor],
+        [self.feedTopSectionViewController.view.widthAnchor
+            constraintEqualToAnchor:self.moduleLayoutGuide.widthAnchor],
+        [self.feedTopSectionViewController.view.topAnchor
+            constraintEqualToAnchor:self.feedHeaderViewController.view
+                                        .bottomAnchor],
+      ];
+      [NSLayoutConstraint activateConstraints:_feedTopSectionConstraints];
+    }
+  } else {
+    if (self.feedTopSectionViewController &&
+        [self.objectsAboveFeed
+            containsObject:self.feedTopSectionViewController]) {
+      _lastClosedPromoHeight =
+          self.feedTopSectionViewController.view.frame.size.height;
+    }
+    [NSLayoutConstraint deactivateConstraints:_feedTopSectionConstraints];
+    _feedTopSectionConstraints = nil;
+    if (self.feedTopSectionViewController &&
+        [self.objectsAboveFeed
+            containsObject:self.feedTopSectionViewController]) {
+      [self removeObjectFromViewHierarchy:self.feedTopSectionViewController];
+      [self.objectsAboveFeed removeObject:self.feedTopSectionViewController];
+    }
+  }
+
+  _collectionViewTopConstraint.active = NO;
+  UIView* lastView =
+      [self viewForAboveFeedObject:[self.objectsAboveFeed lastObject]];
+  if (lastView) {
+    _collectionViewTopConstraint = [self.collectionView.topAnchor
+        constraintEqualToAnchor:lastView.bottomAnchor];
+    _collectionViewTopConstraint.active = YES;
+  }
+
+  [self updateAccessibilityElementsForSwitchControl];
+}
+
 // Applies constraints to the NTP collection view, along with the constraints
 // for the content suggestions within it.
 - (void)applyCollectionViewConstraints {
@@ -1640,6 +1754,10 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   contentSuggestionsView.translatesAutoresizingMaskIntoConstraints = NO;
   self.magicStackCollectionView.view.translatesAutoresizingMaskIntoConstraints =
       NO;
+
+  [NSLayoutConstraint deactivateConstraints:_feedTopSectionConstraints];
+  _feedTopSectionConstraints = nil;
+  _collectionViewTopConstraint.active = NO;
 
   if (self.feedHeaderViewController) {
     [self cleanUpCollectionViewConstraints];
@@ -1653,8 +1771,8 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
       [self.collectionView.centerXAnchor
           constraintEqualToAnchor:self.moduleLayoutGuide.centerXAnchor],
     ]];
-    if (self.feedTopSectionViewController) {
-      [NSLayoutConstraint activateConstraints:@[
+    if (self.feedTopSectionVisible && self.feedTopSectionViewController) {
+      _feedTopSectionConstraints = @[
         [self.feedTopSectionViewController.view.centerXAnchor
             constraintEqualToAnchor:self.collectionView.centerXAnchor],
         [self.feedTopSectionViewController.view.widthAnchor
@@ -1662,18 +1780,17 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
         [self.feedTopSectionViewController.view.topAnchor
             constraintEqualToAnchor:self.feedHeaderViewController.view
                                         .bottomAnchor],
-        [self.collectionView.topAnchor
-            constraintEqualToAnchor:self.feedTopSectionViewController.view
-                                        .bottomAnchor],
-      ]];
+      ];
+      [NSLayoutConstraint activateConstraints:_feedTopSectionConstraints];
     }
   }
   UIView* lastView =
       [self viewForAboveFeedObject:[self.objectsAboveFeed lastObject]];
-  [NSLayoutConstraint activateConstraints:@[
-    [self.collectionView.topAnchor
-        constraintEqualToAnchor:lastView.bottomAnchor],
-  ]];
+  if (lastView) {
+    _collectionViewTopConstraint = [self.collectionView.topAnchor
+        constraintEqualToAnchor:lastView.bottomAnchor];
+    _collectionViewTopConstraint.active = YES;
+  }
 
   if (_feedContainer) {
     [NSLayoutConstraint activateConstraints:@[
@@ -1998,6 +2115,9 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 
 // Height of the feed top section, returns 0 if not visible.
 - (CGFloat)feedTopSectionHeight {
+  if (!self.feedTopSectionVisible) {
+    return 0;
+  }
   return self.feedTopSectionViewController
              ? self.feedTopSectionViewController.view.frame.size.height
              : 0;

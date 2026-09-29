@@ -131,6 +131,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   NewTabPageBottomSheetViewController* _bottomSheetViewController;
   UIViewController* _feedViewController;
   UIViewController* _feedTopSectionViewController;
+  BOOL _feedTopSectionVisible;
   NSArray<NSLayoutConstraint*>* _logoConstraints;
   SearchEngineLogoState _logoState;
 
@@ -503,6 +504,7 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   _bottomSheetViewController.feedViewController = _feedViewController;
   _bottomSheetViewController.feedTopSectionViewController =
       _feedTopSectionViewController;
+  _bottomSheetViewController.feedTopSectionVisible = _feedTopSectionVisible;
   [self addChildViewController:_bottomSheetViewController];
   [self.view addSubview:_bottomSheetViewController.view];
   [_bottomSheetViewController didMoveToParentViewController:self];
@@ -1003,7 +1005,22 @@ constexpr CGFloat kPadFormSheetMinHeight = 300.0;
   }
 }
 
+- (BOOL)feedTopSectionVisible {
+  return _feedTopSectionVisible;
+}
+
+- (void)setFeedTopSectionVisible:(BOOL)feedTopSectionVisible {
+  if (_feedTopSectionVisible == feedTopSectionVisible) {
+    return;
+  }
+  _feedTopSectionVisible = feedTopSectionVisible;
+  if (_bottomSheetViewController) {
+    _bottomSheetViewController.feedTopSectionVisible = feedTopSectionVisible;
+  }
+}
+
 - (void)handleFeedTopSectionClosed {
+  _feedTopSectionVisible = NO;
   [_bottomSheetViewController handleFeedTopSectionClosed];
 }
 

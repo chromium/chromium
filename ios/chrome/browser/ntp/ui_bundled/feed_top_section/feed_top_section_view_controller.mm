@@ -95,6 +95,9 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
 - (void)viewDidLoad {
   [super viewDidLoad];
   self.view.translatesAutoresizingMaskIntoConstraints = NO;
+  BOOL hasPromo = self.promoViewContainer != nil;
+  self.view.hidden = !hasPromo;
+  self.contentStack.hidden = !hasPromo;
   [self.view addSubview:self.contentStack];
 }
 

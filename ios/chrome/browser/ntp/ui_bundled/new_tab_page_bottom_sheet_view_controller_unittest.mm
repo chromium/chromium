@@ -638,6 +638,7 @@ TEST_F(NewTabPageBottomSheetViewControllerTest,
   promo_vc.view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 390, 120)];
   [promo_vc.view.heightAnchor constraintEqualToConstant:120.0].active = YES;
   view_controller_.feedTopSectionViewController = promo_vc;
+  view_controller_.feedTopSectionVisible = YES;
 
   UIViewController* feed_vc = [[UIViewController alloc] init];
   UIScrollView* scroll_view =
@@ -667,6 +668,47 @@ TEST_F(NewTabPageBottomSheetViewControllerTest,
   EXPECT_FLOAT_EQ(expected_header_height, scroll_view.contentInset.top);
 }
 
+// Tests that feed insets do not include promo height when feedTopSectionVisible
+// is NO even if feedTopSectionViewController is set.
+TEST_F(NewTabPageBottomSheetViewControllerTest,
+       TestFeedInsetsWithFeedTopSectionNotVisible) {
+  UIViewController* promo_vc = [[UIViewController alloc] init];
+  promo_vc.view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 390, 120)];
+  [promo_vc.view.heightAnchor constraintEqualToConstant:120.0].active = YES;
+  view_controller_.feedTopSectionViewController = promo_vc;
+  view_controller_.feedTopSectionVisible = NO;
+
+  UIViewController* feed_vc = [[UIViewController alloc] init];
+  UIScrollView* scroll_view =
+      [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, 390, 800)];
+  [feed_vc.view addSubview:scroll_view];
+  view_controller_.feedViewController = feed_vc;
+
+  [view_controller_ loadViewIfNeeded];
+  [view_controller_.view layoutIfNeeded];
+
+  EXPECT_FLOAT_EQ(0.0, [view_controller_ feedTopSectionHeight]);
+  CGFloat expected_header_height = [view_controller_ headerHeight];
+  EXPECT_FLOAT_EQ(expected_header_height, scroll_view.contentInset.top);
+
+  // Dynamically setting feedTopSectionVisible to YES updates layout and insets.
+  view_controller_.feedTopSectionVisible = YES;
+  [view_controller_.view layoutIfNeeded];
+  CGFloat promo_height = [view_controller_ feedTopSectionHeight];
+  EXPECT_GT(promo_height, 0.0);
+  constexpr CGFloat kExpectedPromoSpacing = 16.0;
+  CGFloat expected_top_inset =
+      expected_header_height + promo_height + kExpectedPromoSpacing;
+  EXPECT_FLOAT_EQ(expected_top_inset, scroll_view.contentInset.top);
+
+  // Dynamically setting feedTopSectionVisible back to NO removes promo from
+  // insets.
+  view_controller_.feedTopSectionVisible = NO;
+  [view_controller_.view layoutIfNeeded];
+  EXPECT_FLOAT_EQ(0.0, [view_controller_ feedTopSectionHeight]);
+  EXPECT_FLOAT_EQ(expected_header_height, scroll_view.contentInset.top);
+}
+
 // Tests that handleFeedTopSectionClosed animates hidden and preserves child VC
 // hierarchy.
 TEST_F(NewTabPageBottomSheetViewControllerTest,
@@ -675,6 +717,7 @@ TEST_F(NewTabPageBottomSheetViewControllerTest,
   promo_vc.view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 390, 100)];
   [promo_vc.view.heightAnchor constraintEqualToConstant:100.0].active = YES;
   view_controller_.feedTopSectionViewController = promo_vc;
+  view_controller_.feedTopSectionVisible = YES;
 
   UIViewController* feed_vc = [[UIViewController alloc] init];
   UIScrollView* scroll_view =
@@ -686,10 +729,12 @@ TEST_F(NewTabPageBottomSheetViewControllerTest,
   [view_controller_.view layoutIfNeeded];
 
   EXPECT_FALSE(promo_vc.view.hidden);
+  EXPECT_TRUE(view_controller_.feedTopSectionVisible);
 
   [view_controller_ handleFeedTopSectionClosed];
 
   EXPECT_TRUE(promo_vc.view.hidden);
+  EXPECT_FALSE(view_controller_.feedTopSectionVisible);
   // Child VC lifecycle must remain intact (not detached by dismiss animation).
   EXPECT_EQ(promo_vc.parentViewController, feed_vc);
 }
@@ -701,6 +746,7 @@ TEST_F(NewTabPageBottomSheetViewControllerTest,
   promo_vc.view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 390, 100)];
   [promo_vc.view.heightAnchor constraintEqualToConstant:100.0].active = YES;
   view_controller_.feedTopSectionViewController = promo_vc;
+  view_controller_.feedTopSectionVisible = YES;
 
   UIViewController* feed_vc = [[UIViewController alloc] init];
   UIScrollView* scroll_view =

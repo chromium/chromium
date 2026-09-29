@@ -36,11 +36,28 @@ enum class ContentNotificationPromoProvisionalEntrypoint {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/content/enums.xml)
 
+@class FeedTopSectionMediator;
+
+// Delegate for mediator events.
+@protocol FeedTopSectionMediatorDelegate <NSObject>
+
+// Called when the feed top section visibility changes.
+- (void)feedTopSectionMediator:(FeedTopSectionMediator*)mediator
+           didUpdateVisibility:(BOOL)visible;
+
+@end
+
 // Mediator for the NTP Feed top section, handling the interactions.
 @interface FeedTopSectionMediator
     : NSObject <FeedTopSectionMutator,
                 FeedTopSectionViewControllerDelegate,
                 SigninPromoViewConsumer>
+
+// Delegate for mediator events.
+@property(nonatomic, weak) id<FeedTopSectionMediatorDelegate> delegate;
+
+// Whether the feed top section has content to show and is visible.
+@property(nonatomic, readonly, assign) BOOL feedTopSectionVisible;
 
 - (instancetype)initWithConsumer:(id<FeedTopSectionConsumer>)consumer
                        identityManager:(signin::IdentityManager*)identityManager

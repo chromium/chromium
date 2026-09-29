@@ -71,6 +71,9 @@ typedef NS_ENUM(NSInteger, FeedLayoutUpdateType);
 // header and the feed collection).
 @property(nonatomic, weak) UIViewController* feedTopSectionViewController;
 
+// Whether the feed top section has content to show and is visible.
+@property(nonatomic, assign) BOOL feedTopSectionVisible;
+
 // In-product help handle for displaying IPH bubbles relating to the NTP.
 @property(nonatomic, weak) id<HelpCommands> helpHandler;
 

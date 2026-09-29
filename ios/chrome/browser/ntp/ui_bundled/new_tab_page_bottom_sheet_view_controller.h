@@ -65,6 +65,9 @@ enum class BottomSheetSnappingState {
 // The feed top section view controller containing promos (e.g. Sign-in promo).
 @property(nonatomic, strong) UIViewController* feedTopSectionViewController;
 
+// Indicates whether the feed top section promo is visible.
+@property(nonatomic, assign) BOOL feedTopSectionVisible;
+
 // The magic stack view controller.
 @property(nonatomic, strong)
     MagicStackCollectionViewController* magicStackViewController;
