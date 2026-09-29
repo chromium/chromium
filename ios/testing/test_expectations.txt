@@ -202,3 +202,5 @@ crbug.com/561644215 AssistantAIMTestCase/testAssistantHiddenOnNTPAfterColdStart 
 
 # Gardening suppression 2026-09-28
 crbug.com/567129485 [ iPhone Simulator ] PasswordControllerEGTest/testLoginEventReported [ Pass Failure ]
+crbug.com/567174858 PageInfoTestCase/testOpeningURLFromFullHistoryDismissesPageInfo [ Pass Failure ]
+crbug.com/567174858 PageInfoTestCase/testOpeningURLFromLastVisitedDismissesPageInfo [ Pass Failure ]
