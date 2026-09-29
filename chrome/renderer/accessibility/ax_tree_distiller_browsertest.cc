@@ -4,8 +4,10 @@
 
 #include "chrome/renderer/accessibility/ax_tree_distiller.h"
 
+#include <array>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -88,7 +90,8 @@ class AXTreeDistillerTestBase : public ChromeRenderViewTest {
 struct TestCase {
   const char* test_name;
   const char* html;
-  std::vector<std::string> expected_node_contents;
+  // Unused trailing entries are empty.
+  std::array<std::string_view, 4> expected_node_contents;
 };
 
 class AXTreeDistillerTest : public AXTreeDistillerTestBase,
@@ -262,7 +265,13 @@ const TestCase kDistillWebPageTestCases[] = {
 
 TEST_P(AXTreeDistillerTest, DistillsWebPage) {
   TestCase param = GetParam();
-  DistillPage(param.html, param.expected_node_contents);
+  std::vector<std::string> expected_node_contents;
+  for (std::string_view content : param.expected_node_contents) {
+    if (!content.empty()) {
+      expected_node_contents.emplace_back(content);
+    }
+  }
+  DistillPage(param.html, expected_node_contents);
 }
 
 INSTANTIATE_TEST_SUITE_P(/* prefix */,

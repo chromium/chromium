@@ -443,10 +443,11 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
                                   std::vector<std::u16string> texts) {
     EXPECT_EQ(segments.size(), node_ids.size());
     EXPECT_EQ(segments.size(), texts.size());
-    for (int i = 0; i < segments.size(); i++) {
+    for (size_t i = 0; i < segments.size(); i++) {
       EXPECT_EQ(segments.at(i).id, node_ids.at(i));
       EXPECT_EQ(segments.at(i).text_start, 0);
-      EXPECT_EQ(segments.at(i).text_end, texts.at(i).length());
+      EXPECT_EQ(static_cast<size_t>(segments.at(i).text_end),
+                texts.at(i).length());
     }
   }
 
@@ -454,7 +455,7 @@ class ReadAnythingAppControllerTest : public ChromeRenderViewTest {
       std::vector<ReadAloudTextSegment> expected_segments) {
     std::vector<ReadAloudTextSegment> segments = GetCurrentTextSegments();
     EXPECT_EQ(segments.size(), expected_segments.size());
-    for (int i = 0; i < segments.size(); i++) {
+    for (size_t i = 0; i < segments.size(); i++) {
       EXPECT_EQ(segments.at(i).id, expected_segments.at(i).id);
       EXPECT_EQ(segments.at(i).text_start, expected_segments.at(i).text_start);
       EXPECT_EQ(segments.at(i).text_end, expected_segments.at(i).text_end);

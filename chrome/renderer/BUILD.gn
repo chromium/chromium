@@ -434,3 +434,138 @@ static_library("renderer") {
     ]
   }
 }
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "accessibility/ax_tree_distiller_browsertest.cc",
+      "accessibility/read_anything/read_anything_app_controller_browsertest.cc",
+      "accessibility/read_anything/read_anything_distiller_factory_browsertest.cc",
+      "accessibility/read_anything/read_anything_readability_distiller_browsertest.cc",
+      "accessibility/read_anything/read_anything_screen2x_distiller_browsertest.cc",
+      "accessibility/read_anything/read_anything_test_utils.cc",
+      "accessibility/read_anything/read_anything_test_utils.h",
+      "autofill/autofill_renderer_browsertest.cc",
+      "autofill/fake_mojo_password_manager_driver.cc",
+      "autofill/fake_mojo_password_manager_driver.h",
+      "autofill/fake_password_generation_driver.cc",
+      "autofill/fake_password_generation_driver.h",
+      "autofill/page_passwords_analyser_browsertest.cc",
+      "autofill/password_autofill_agent_browsertest.cc",
+      "autofill/password_generation_agent_browsertest.cc",
+      "autofill/password_generation_test_utils.cc",
+      "autofill/password_generation_test_utils.h",
+      "chrome_content_settings_agent_delegate_browsertest.cc",
+      "chrome_render_frame_observer_browsertest.cc",
+      "commerce/commerce_web_extractor_browsertest.cc",
+      "indigo/indigo_agent_browsertest.cc",
+      "translate/translate_agent_browsertest.cc",
+      "translate/translate_script_browsertest.cc",
+    ]
+    deps = [
+      ":renderer",
+      "//base/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//chrome/test/base:chrome_render_view_test",
+      "//components/autofill/content/renderer",
+      "//components/autofill/content/renderer:test_support",
+      "//components/commerce/content/renderer",
+      "//components/no_state_prefetch/renderer",
+      "//components/optimization_guide/content/renderer",
+      "//components/safe_browsing/core/common/phishing_classifier",
+      "//components/safe_browsing/core/common/proto:client_model_proto",
+      "//components/translate/content/renderer",
+      "//content/test:test_support",
+      "//gin",
+      "//services/strings",
+      "//testing/gtest",
+    ]
+
+    if (safe_browsing_mode == 1) {
+      sources += [ "safe_browsing/threat_dom_details_browsertest.cc" ]
+      deps += [
+        "//components/safe_browsing/content/common:interfaces",
+        "//components/safe_browsing/content/renderer",
+      ]
+
+      if (!is_mac) {
+        sources += [
+          # single-process mode hangs on Mac sometimes because of multiple UI
+          # message loops. See 306348
+          "safe_browsing/content_phishing_classifier_delegate_browsertest.cc",
+          "safe_browsing/phishing_classifier_browsertest.cc",
+          "safe_browsing/phishing_dom_utils_browsertest.cc",
+        ]
+        deps += [
+          "//chrome/test/base:chrome_unit_test_suite",
+          "//components/safe_browsing/content/renderer/phishing_classifier",
+          "//components/safe_browsing/core/common/fbs:client_model",
+        ]
+      }
+    }
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "accessibility/read_anything/read_anything_test_utils.cc",
+    "accessibility/read_anything/read_anything_test_utils.h",
+    "chrome_content_renderer_client_unittest.cc",
+    "chrome_render_frame_observer_unittest.cc",
+    "instant_restricted_id_cache_unittest.cc",
+    "media/flash_embed_rewrite_unittest.cc",
+    "net/net_error_helper_core_unittest.cc",
+    "tab_context_decryption_token_extension_unittest.cc",
+    "v8_unwinder_unittest.cc",
+  ]
+  deps = [
+    ":renderer",
+    "//base:base_stack_sampling_profiler_test_util",
+    "//base/test:test_support",
+    "//chrome/test:test_support",
+    "//chrome/test/base:chrome_render_view_test",
+    "//components/sync_tab_context:constants",
+    "//gin",
+    "//gin:gin_test",
+    "//testing/gtest",
+  ]
+
+  if (enable_bound_session_credentials) {
+    sources += [
+      "bound_session_credentials/bound_session_request_throttled_handler_renderer_impl_unittest.cc",
+      "bound_session_credentials/bound_session_request_throttled_in_renderer_manager_unittest.cc",
+    ]
+  }
+
+  if (!is_android) {
+    sources += [
+      "accessibility/phrase_segmentation/dependency_parser_model_unittest.cc",
+      "accessibility/phrase_segmentation/dependency_tree_unittest.cc",
+      "accessibility/phrase_segmentation/phrase_segmenter_unittest.cc",
+      "accessibility/phrase_segmentation/token_boundaries_unittest.cc",
+      "accessibility/phrase_segmentation/tokenized_sentence_unittest.cc",
+      "accessibility/phrase_segmentation/tokenizer_unittest.cc",
+      "accessibility/read_anything/read_aloud_app_model_unittest.cc",
+      "accessibility/read_anything/read_aloud_traversal_utils_unittest.cc",
+      "accessibility/read_anything/read_anything_app_controller_unittest.cc",
+      "accessibility/read_anything/read_anything_app_model_unittest.cc",
+      "accessibility/read_anything/read_anything_node_utils_unittest.cc",
+      "media/webrtc_logging_agent_impl_unittest.cc",
+      "searchbox/searchbox_unittest.cc",
+    ]
+    deps += [
+      "//services/strings",
+      "//third_party/fuzztest",
+    ]
+  }
+
+  if (is_chromeos) {
+    sources += [
+      "ash_merge_session_loader_throttle_unittest.cc",
+      "chromeos_delayed_callback_group_unittest.cc",
+    ]
+  }
+}
