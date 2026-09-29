@@ -258,7 +258,6 @@ void Connection::RemoveTransaction(int64_t id) {
     return;
   }
 
-  base::TimeTicks start = base::TimeTicks::Now();
   bool can_go_inactive = true;
 
   // If this client is still blocking other clients, leave the keep-actives
@@ -269,15 +268,6 @@ void Connection::RemoveTransaction(int64_t id) {
       can_go_inactive = false;
       break;
     }
-  }
-  base::TimeDelta duration = base::TimeTicks::Now() - start;
-  if (duration > base::Milliseconds(2)) {
-    base::UmaHistogramTimes("IndexedDB.RemoveTransactionLongTimes", duration);
-    base::UmaHistogramCounts100000(
-        "IndexedDB.RemoveTransactionRequestQueueSize",
-        bucket_context_->lock_manager().RequestsWaitingForMetrics());
-    base::UmaHistogramCounts100000(
-        "IndexedDB.RemoveTransactionConnectionTxnCount", transactions_.size());
   }
 
   // Safe to make this client inactive.
