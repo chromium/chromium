@@ -70,7 +70,7 @@ enum class ResourceType : uint8_t;
 class CORE_EXPORT InspectorPageAgent final
     : public InspectorBaseAgent<protocol::Page::Metainfo> {
  public:
-  class Client {
+  class Client : public GarbageCollectedMixin {
    public:
     virtual ~Client() = default;
     virtual void PageLayoutInvalidated(bool resized) {}
@@ -327,7 +327,7 @@ class CORE_EXPORT InspectorPageAgent final
   HeapHashMap<WeakMember<LocalFrame>, Vector<IsolatedWorldRequest>>
       pending_isolated_worlds_;
   HashMap<String, AdTracker::AdScriptAncestry> frame_ad_script_ancestry_;
-  raw_ptr<Client, UnprotectedInRelease | DanglingUntriaged> client_;
+  Member<Client> client_;
   Member<InspectorResourceContentLoader> inspector_resource_content_loader_;
   int resource_content_loader_client_id_;
   InspectorAgentState::Boolean suppress_file_chooser_;

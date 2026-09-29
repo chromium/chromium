@@ -1976,6 +1976,7 @@ void InspectorPageAgent::Trace(Visitor* visitor) const {
   visitor->Trace(pending_isolated_worlds_);
   visitor->Trace(inspector_resource_content_loader_);
   visitor->Trace(injected_script_manager_);
+  visitor->Trace(client_);
   InspectorBaseAgent::Trace(visitor);
 }
 
