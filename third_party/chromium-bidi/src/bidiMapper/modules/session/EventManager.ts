@@ -38,13 +38,22 @@ import {
   unrollEvents,
 } from './SubscriptionManager.js';
 
+type LazyEvent<T = ChromiumBidi.Event> =
+  Promise<Result<T>> | (() => Promise<Result<T>>);
+
+/**
+ * Wraps an event (or a lazy event factory) with a unique monotonic `id` and
+ * its associated `contextId`. Used to buffer events, deduplicate buffered
+ * events across `goog:channel` subscriptions via `#lastMessageSent`, and
+ * defer/memoize lazy event evaluation until the event is actually sent.
+ */
 class EventWrapper {
   readonly #idWrapper = new IdWrapper();
   readonly #contextId: BrowsingContext.BrowsingContext | null;
-  readonly #event: Promise<Result<ChromiumBidi.Event>>;
+  #event: LazyEvent;
 
   constructor(
-    event: Promise<Result<ChromiumBidi.Event>>,
+    event: LazyEvent,
     contextId: BrowsingContext.BrowsingContext | null,
   ) {
     this.#event = event;
@@ -60,6 +69,10 @@ class EventWrapper {
   }
 
   get event(): Promise<Result<ChromiumBidi.Event>> {
+    if (typeof this.#event === 'function') {
+      // Evaluate lazy events only when sent, and cache the promise for other channels.
+      this.#event = this.#event();
+    }
     return this.#event;
   }
 }
@@ -179,10 +192,12 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
   }
 
   registerPromiseEvent(
-    event: Promise<Result<ChromiumBidi.Event>>,
+    event: LazyEvent,
     contextId: BrowsingContext.BrowsingContext,
     eventName: ChromiumBidi.EventNames,
   ): void {
+    // Wrap the event with a unique id and contextId for buffering, deduplication,
+    // and lazy evaluation (if `event` is a factory function).
     const eventWrapper = new EventWrapper(event, contextId);
     const sortedGoogChannels =
       this.#subscriptionManager.getGoogChannelsSubscribedToEvent(
@@ -193,7 +208,10 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     // Send events to channels in the subscription priority.
     for (const googChannel of sortedGoogChannels) {
       this.emit(EventManagerEvents.Event, {
-        message: OutgoingMessage.createFromPromise(event, googChannel),
+        message: OutgoingMessage.createFromPromise(
+          eventWrapper.event,
+          googChannel,
+        ),
         event: eventName,
       });
       this.#markEventSent(eventWrapper, googChannel, eventName);
@@ -201,7 +219,7 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
   }
 
   registerGlobalPromiseEvent(
-    event: Promise<Result<ChromiumBidi.Event>>,
+    event: LazyEvent,
     eventName: ChromiumBidi.EventNames,
   ): void {
     const eventWrapper = new EventWrapper(event, null);
@@ -213,7 +231,10 @@ export class EventManager extends EventEmitter<EventManagerEventsMap> {
     // Send events to goog:channels in the subscription priority.
     for (const googChannel of sortedGoogChannels) {
       this.emit(EventManagerEvents.Event, {
-        message: OutgoingMessage.createFromPromise(event, googChannel),
+        message: OutgoingMessage.createFromPromise(
+          eventWrapper.event,
+          googChannel,
+        ),
         event: eventName,
       });
       this.#markEventSent(eventWrapper, googChannel, eventName);

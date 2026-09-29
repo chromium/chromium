@@ -272,6 +272,7 @@ ts_library("unit_tests") {
     "bidiMapper/modules/network/NetworkUtils.test.ts",
     "bidiMapper/modules/script/PreloadScriptStorage.test.ts",
     "bidiMapper/modules/script/SharedId.test.ts",
+    "bidiMapper/modules/session/EventManager.test.ts",
     "bidiMapper/modules/session/SubscriptionManager.test.ts",
     "bidiMapper/modules/session/events.test.ts",
     "bidiMapper/modules/storage/StorageProcessor.test.ts",

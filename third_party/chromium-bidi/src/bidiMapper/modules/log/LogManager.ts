@@ -165,35 +165,41 @@ export class LogManager {
         return;
       }
 
-      const argsPromise: Promise<Script.RemoteValue[]> = Promise.all(
-        params.args.map((arg) => this.#heuristicSerializeArg(arg, realm)),
-      );
+      let argsPromise: Promise<Script.RemoteValue[]> | undefined;
+      // Avoid CDP serialization roundtrips unless a log subscription emits the event.
+      const getArgsPromise = () => {
+        argsPromise ??= Promise.all(
+          params.args.map((arg) => this.#heuristicSerializeArg(arg, realm)),
+        );
+        return argsPromise;
+      };
 
       for (const browsingContext of realm.associatedBrowsingContexts) {
         this.#eventManager.registerPromiseEvent(
-          argsPromise.then(
-            (args) => ({
-              kind: 'success',
-              value: {
-                type: 'event',
-                method: ChromiumBidi.Log.EventNames.LogEntryAdded,
-                params: {
-                  level: getLogLevel(params.type),
-                  source: realm.source,
-                  text: getRemoteValuesText(args, true),
-                  timestamp: Math.round(params.timestamp),
-                  stackTrace: getBidiStackTrace(params.stackTrace),
-                  type: 'console',
-                  method: getLogMethod(params.type),
-                  args,
+          () =>
+            getArgsPromise().then(
+              (args) => ({
+                kind: 'success',
+                value: {
+                  type: 'event',
+                  method: ChromiumBidi.Log.EventNames.LogEntryAdded,
+                  params: {
+                    level: getLogLevel(params.type),
+                    source: realm.source,
+                    text: getRemoteValuesText(args, true),
+                    timestamp: Math.round(params.timestamp),
+                    stackTrace: getBidiStackTrace(params.stackTrace),
+                    type: 'console',
+                    method: getLogMethod(params.type),
+                    args,
+                  },
                 },
-              },
-            }),
-            (error) => ({
-              kind: 'error',
-              error,
-            }),
-          ),
+              }),
+              (error) => ({
+                kind: 'error',
+                error,
+              }),
+            ),
           browsingContext.id,
           ChromiumBidi.Log.EventNames.LogEntryAdded,
         );
