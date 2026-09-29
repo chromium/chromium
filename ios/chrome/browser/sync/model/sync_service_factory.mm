@@ -213,6 +213,9 @@ std::unique_ptr<syncer::SyncClient> BuildSyncClient(ProfileIOS* profile) {
 std::unique_ptr<KeyedService> BuildSyncService(ProfileIOS* profile) {
   CHECK(profile);
   CHECK(!profile->IsOffTheRecord());
+  if (!syncer::IsSyncAllowedByFlag()) {
+    return nullptr;
+  }
 
   // Always create the GCMProfileService instance such that we can listen to
   // the profile notifications and purge the GCM store when the profile is
@@ -296,10 +299,6 @@ SyncServiceFactory* SyncServiceFactory::GetInstance() {
 
 // static
 syncer::SyncService* SyncServiceFactory::GetForProfile(ProfileIOS* profile) {
-  if (!syncer::IsSyncAllowedByFlag()) {
-    return nullptr;
-  }
-
   return GetInstance()->GetServiceForProfileAs<syncer::SyncService>(
       profile, /*create*/ true);
 }
@@ -307,10 +306,6 @@ syncer::SyncService* SyncServiceFactory::GetForProfile(ProfileIOS* profile) {
 // static
 syncer::SyncService* SyncServiceFactory::GetForProfileIfExists(
     ProfileIOS* profile) {
-  if (!syncer::IsSyncAllowedByFlag()) {
-    return nullptr;
-  }
-
   return GetInstance()->GetServiceForProfileAs<syncer::SyncService>(
       profile, /*create*/ false);
 }
@@ -319,10 +314,6 @@ syncer::SyncService* SyncServiceFactory::GetForProfileIfExists(
 syncer::SyncServiceImpl*
 SyncServiceFactory::GetForProfileAsSyncServiceImplForTesting(
     ProfileIOS* profile) {
-  if (!syncer::IsSyncAllowedByFlag()) {
-    return nullptr;
-  }
-
   return GetInstance()->GetServiceForProfileAs<syncer::SyncServiceImpl>(
       profile, /*create*/ true);
 }
