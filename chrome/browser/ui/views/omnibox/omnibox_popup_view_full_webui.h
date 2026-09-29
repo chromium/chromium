@@ -10,7 +10,12 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_webui.h"
+#include "content/public/browser/web_contents_observer.h"
 #include "ui/gfx/range/range.h"
+
+namespace content {
+class NavigationHandle;
+}
 
 class LocationBar;
 class OmniboxController;
@@ -18,7 +23,8 @@ class OmniboxView;
 class OmniboxPopupPresenterDelegate;
 class OmniboxPopupHandler;
 
-class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI {
+class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI,
+                                  public content::WebContentsObserver {
  public:
   OmniboxPopupViewFullWebUI(
       OmniboxView* omnibox_view,
@@ -58,6 +64,10 @@ class OmniboxPopupViewFullWebUI : public OmniboxPopupViewWebUI {
   bool IsPopupHandlerReady() const override;
   bool IsReverting() const override;
   void SetIsReverting(bool reverting) override;
+
+  // content::WebContentsObserver:
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override;
 
   // True if this has focus, reckoned by OnFocus/OnBlur. This may be slightly
   // out-of-sync with the model's when doing auto-focus, since the timings of
