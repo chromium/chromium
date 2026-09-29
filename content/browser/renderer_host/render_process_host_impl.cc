@@ -1778,8 +1778,8 @@ RenderProcessHostImpl::RenderProcessHostImpl(
   // TODO(crbug.com/379869738): Remove GetUnsafeValue.
   gpu_client_ = std::make_unique<viz::GpuClient>(
       std::make_unique<BrowserGpuClientDelegate>(), id.GetUnsafeValue(),
-      tracing_id,
-      /*enable_extra_handles_validation=*/false, GetUIThreadTaskRunner({}));
+      tracing_id, viz::mojom::GpuClientType::kRenderer,
+      GetUIThreadTaskRunner({}));
 }
 
 // static
@@ -2580,9 +2580,8 @@ void RenderProcessHostImpl::CreateOOPVideoDecoder(
       if (!oop_video_decoder_gpu_client_) {
         mojo::PendingReceiver<viz::mojom::Gpu> gpu_receiver =
             gpu_remote.InitWithNewPipeAndPassReceiver();
-        oop_video_decoder_gpu_client_ =
-            content::CreateGpuClient(std::move(gpu_receiver),
-                                     /*enable_extra_handles_validation=*/true);
+        oop_video_decoder_gpu_client_ = content::CreateGpuClient(
+            std::move(gpu_receiver), viz::mojom::GpuClientType::kOOPVD);
       } else {
         oop_video_decoder_gpu_client_->Add(
             gpu_remote.InitWithNewPipeAndPassReceiver());

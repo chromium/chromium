@@ -31,7 +31,7 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::Gpu {
   GpuClient(std::unique_ptr<GpuClientDelegate> delegate,
             int client_id,
             uint64_t client_tracing_id,
-            bool enable_extra_handles_validation,
+            mojom::GpuClientType client_type,
             scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
   GpuClient(const GpuClient&) = delete;
@@ -111,7 +111,7 @@ class VIZ_HOST_EXPORT GpuClient : public mojom::Gpu {
   std::unique_ptr<GpuClientDelegate> delegate_;
   const int client_id_;
   const uint64_t client_tracing_id_;
-  const bool enable_extra_handles_validation_;
+  const mojom::GpuClientType client_type_;
 
   mojo::ReceiverSet<mojom::Gpu> gpu_receivers_;
   // Whether a channel request that intends to set `channel_handle_` is

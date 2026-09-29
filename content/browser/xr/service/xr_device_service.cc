@@ -25,8 +25,8 @@ class XRDeviceServiceHostImpl : public device::mojom::XRDeviceServiceHost {
   // BindGpu is called from the XR process to establish a connection to the GPU
   // process.
   void BindGpu(::mojo::PendingReceiver<::viz::mojom::Gpu> receiver) override {
-    gpu_client_ = content::CreateGpuClient(
-        std::move(receiver), /*enable_extra_handles_validation=*/false);
+    gpu_client_ = content::CreateGpuClient(std::move(receiver),
+                                           viz::mojom::GpuClientType::kXR);
   }
 
  private:

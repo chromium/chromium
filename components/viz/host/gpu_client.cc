@@ -21,14 +21,15 @@ namespace viz {
 GpuClient::GpuClient(std::unique_ptr<GpuClientDelegate> delegate,
                      int client_id,
                      uint64_t client_tracing_id,
-                     bool enable_extra_handles_validation,
+                     mojom::GpuClientType client_type,
                      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : delegate_(std::move(delegate)),
       client_id_(client_id),
       client_tracing_id_(client_tracing_id),
-      enable_extra_handles_validation_(enable_extra_handles_validation),
+      client_type_(client_type),
       task_runner_(std::move(task_runner)) {
   DCHECK(delegate_);
+  CHECK_NE(client_type, mojom::GpuClientType::kBrowser);
   gpu_receivers_.set_disconnect_handler(
       base::BindRepeating(&GpuClient::OnError, base::Unretained(this),
                           ErrorReason::kConnectionLost));
@@ -102,8 +103,7 @@ void GpuClient::EstablishGpuChannelInternal(
     mojo::ScopedMessagePipeHandle client_handle,
     base::TimeTicks start_time) {
   gpu_host->EstablishGpuChannel(
-      client_id_, client_tracing_id_, /*is_gpu_host=*/false,
-      enable_extra_handles_validation_, /*sync=*/false,
+      client_id_, client_tracing_id_, client_type_, /*sync=*/false,
       std::move(service_handle),
       base::BindOnce(&GpuClient::OnEstablishGpuChannel,
                      weak_factory_.GetWeakPtr(), reason, start_time,

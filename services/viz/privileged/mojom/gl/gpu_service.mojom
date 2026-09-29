@@ -62,6 +62,15 @@ enum MemoryInvalidAccessType {
   kMemberDereferenceAfterFree,
 };
 
+enum GpuClientType {
+    kBrowser,
+    kRenderer,
+    kOOPVD,
+    kVideoCapture,
+    kXR,
+    kCastMirroring
+};
+
 interface GpuService {
   // Tells the GPU service to connect `channel_handle` for communication with a
   // client. The GPU service responds with `success` to indicate whether the
@@ -73,8 +82,7 @@ interface GpuService {
   EstablishGpuChannel(
       int32 client_id,
       uint64 client_tracing_id,
-      bool is_gpu_host,
-      bool enable_extra_handles_validation,
+      GpuClientType client_type,
       handle<message_pipe> channel_handle)  => (
           bool success,
           gpu.mojom.GpuInfo gpu_info,

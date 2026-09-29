@@ -171,12 +171,10 @@ void BrowserGpuChannelHostFactory::EstablishRequest::Establish(bool sync) {
     return;
   }
 
-  bool is_gpu_host = true;
-
   mojo::MessagePipe pipe;
   host->gpu_host()->EstablishGpuChannel(
-      gpu_client_id_, gpu_client_tracing_id_, is_gpu_host,
-      /*enable_extra_handles_validation=*/false, sync, std::move(pipe.handle1),
+      gpu_client_id_, gpu_client_tracing_id_,
+      viz::mojom::GpuClientType::kBrowser, sync, std::move(pipe.handle1),
       base::BindOnce(
           &BrowserGpuChannelHostFactory::EstablishRequest::OnEstablished, this,
           std::move(pipe.handle0)));

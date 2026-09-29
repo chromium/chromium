@@ -915,8 +915,7 @@ bool GpuServiceImpl::IsExiting() const {
 void GpuServiceImpl::EstablishGpuChannel(
     int32_t client_id,
     uint64_t client_tracing_id,
-    bool is_gpu_host,
-    bool enable_extra_handles_validation,
+    mojom::GpuClientType client_type,
     mojo::ScopedMessagePipeHandle channel_handle,
     EstablishGpuChannelCallback callback) {
   if (io_runner_->BelongsToCurrentThread()) {
@@ -938,16 +937,16 @@ void GpuServiceImpl::EstablishGpuChannel(
     main_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&GpuServiceImpl::EstablishGpuChannel, weak_ptr_,
-                       client_id, client_tracing_id, is_gpu_host,
-                       enable_extra_handles_validation,
+                       client_id, client_tracing_id, client_type,
                        std::move(channel_handle), std::move(wrap_callback)));
     return;
   }
 
   auto channel_token = base::UnguessableToken::Create();
   gpu::GpuChannel* gpu_channel = gpu_channel_manager_->EstablishChannel(
-      channel_token, client_id, client_tracing_id, is_gpu_host,
-      enable_extra_handles_validation, gpu_extra_info_, gpu_info_,
+      channel_token, client_id, client_tracing_id,
+      client_type == mojom::GpuClientType::kBrowser,
+      client_type == mojom::GpuClientType::kOOPVD, gpu_extra_info_, gpu_info_,
       gpu_feature_info_);
 
   if (!gpu_channel) {

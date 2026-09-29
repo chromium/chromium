@@ -35,7 +35,7 @@ void UtilityProcessHost::BindHostReceiver(
     // TODO(crbug.com/328099369) Remove once all clients get this directly.
     if (auto gpu_receiver = receiver.As<viz::mojom::Gpu>()) {
       gpu_client_ = content::CreateGpuClient(
-          std::move(gpu_receiver), /*enable_extra_handles_validation=*/false);
+          std::move(gpu_receiver), viz::mojom::GpuClientType::kVideoCapture);
       return;
     }
   }

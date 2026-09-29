@@ -190,8 +190,7 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost,
   // browser GPU info data might not be initialized as well.
   void EstablishGpuChannel(int client_id,
                            uint64_t client_tracing_id,
-                           bool is_gpu_host,
-                           bool enable_extra_handles_validation,
+                           mojom::GpuClientType client_type,
                            bool sync,
                            mojo::ScopedMessagePipeHandle handle,
                            EstablishChannelCallback callback);
