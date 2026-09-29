@@ -21,11 +21,13 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_path_override.h"
+#include "base/test/with_feature_override.h"
 #include "chrome/browser/web_applications/os_integration/mac/apps_folder_support.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_auto_login_util.h"
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
 #include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #import "chrome/common/mac/app_mode_common.h"
@@ -954,17 +956,29 @@ TEST_F(WebAppShortcutCreatorTest, UpdateIcon) {
   EXPECT_EQ(product_logo_16.Height(), image.size.height);
 }
 
-TEST_F(WebAppShortcutCreatorTest, RevealAppShimInFinder) {
+class WebAppShortcutCreatorRevealInFinderTest
+    : public base::test::WithFeatureOverride,
+      public WebAppShortcutCreatorTest {
+ public:
+  WebAppShortcutCreatorRevealInFinderTest()
+      : base::test::WithFeatureOverride(features::kWebAppInstallDialog) {}
+};
+
+TEST_P(WebAppShortcutCreatorRevealInFinderTest, RevealAppShimInFinder) {
   WebAppShortcutCreatorMock shortcut_creator(app_data_dir_, info_.get());
 
   EXPECT_CALL(shortcut_creator, RevealAppShimInFinder(_)).Times(0);
   EXPECT_TRUE(shortcut_creator.CreateShortcuts(SHORTCUT_CREATION_AUTOMATED,
                                                ShortcutLocations()));
 
-  EXPECT_CALL(shortcut_creator, RevealAppShimInFinder(_));
+  EXPECT_CALL(shortcut_creator, RevealAppShimInFinder(_))
+      .Times(IsParamFeatureEnabled() ? 0 : 1);
   EXPECT_TRUE(shortcut_creator.CreateShortcuts(SHORTCUT_CREATION_BY_USER,
                                                ShortcutLocations()));
 }
+
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    WebAppShortcutCreatorRevealInFinderTest);
 
 TEST_F(WebAppShortcutCreatorTest, SortAppBundles) {
   base::FilePath app_dir("/home/apps");

@@ -13831,24 +13831,6 @@
             ]
         }
     ],
-    "PWAInstallDialogRefresh": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebAppInstallDialog"
-                    ]
-                }
-            ]
-        }
-    ],
     "PageActionAnchoredMessageEasyDismiss": [
         {
             "platforms": [
