@@ -92,8 +92,15 @@ class ElementTrackerViewsMinimizeRestoreUiTest : public InteractiveBrowserTest,
       widget_observation_{this};
 };
 
+// TODO(crbug.com/567239399): Flaky on Windows; times out waiting for the
+// minimized/restored events.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_TestAssumptions DISABLED_TestAssumptions
+#else
+#define MAYBE_TestAssumptions TestAssumptions
+#endif
 IN_PROC_BROWSER_TEST_F(ElementTrackerViewsMinimizeRestoreUiTest,
-                       TestAssumptions) {
+                       MAYBE_TestAssumptions) {
   // Note: on Windows, visibility does not change on minimization.
 #if !BUILDFLAG(IS_WIN)
   bool shown = false;
