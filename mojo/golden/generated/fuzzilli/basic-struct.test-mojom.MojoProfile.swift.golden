@@ -157,8 +157,8 @@ extension ObjectGroup {
 /// Arrays
 ///
 extension ILType {
-    fileprivate static let jsInt64ElementArray: ILType =
-        .createJsArrayType(ofElementType: .jsInt64Element)
+    fileprivate static let jsInt64MojoArray: ILType =
+        .createJsArrayType(ofElementType: .bigint)
 }
 
 /// As Fuzzilli runs, the OperationMutator and VariadicInputReducer will modify
@@ -172,17 +172,14 @@ extension ILType {
 /// to prevent the CodeGenerator from being scheduled first when there are
 /// no visible variables, as `findOrGenerateType` causes a crash if there
 /// are no visibile variables.
-private let MojoInt64ArrayGenerator = CodeGenerator(
-    "MojoInt64ArrayGenerator",
+private let MojoInt64MojoArrayGenerator = CodeGenerator(
+    "MojoInt64MojoArrayGenerator",
     inputs: .one,
-    produces: [.jsInt64ElementArray]
+    produces: [.jsInt64MojoArray]
 ) { b, _ in
     let elem = b.findOrGenerateType(.bigint)
     var elements: [Variable] = [elem]
-    b.createArray(
-        with: elements,
-        elementGroupName:
-            ILType.jsInt64Element.group)
+    b.createArray(with: elements)
 }
 
 ///
@@ -197,8 +194,8 @@ extension OptionsBag {
     fileprivate static let goldenSimpleUnion = OptionsBag(
         name: "golden.SimpleUnion",
         properties: [
-            "arr": .jsInt64ElementArray,
-            "val": .integer,
+            "arr": .jsInt64MojoArray,
+            "val": .jsInt16,
             "flag": .boolean,
         ],
         selectionMode: .exactlyOne,
@@ -309,7 +306,7 @@ let mojoPrimaryProfile = Profile(
     additionalCodeGenerators: [
         (MojoMethodCallGenerator, 10000),
         (MojoPropertyRetrievalGenerator, 10000),
-        (MojoInt64ArrayGenerator, 1),
+        (MojoInt64MojoArrayGenerator, 1),
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,

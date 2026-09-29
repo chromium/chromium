@@ -2,8 +2,8 @@ extension ILType {
 {%- for m in maps %}
     fileprivate static let {{m|format_il_type}}: ILType =
         .createJsMapType(
-            ofKeyType: .{{m.key_kind|format_il_type(primitive_with_suffix=True)}},
-            ofValueType: .{{m.value_kind|format_il_type(primitive_with_suffix=True)}}
+            ofKeyType: .{{m.key_kind|format_il_type}},
+            ofValueType: .{{m.value_kind|format_il_type}}
         )
 {%- endfor %}
 }
@@ -28,8 +28,8 @@ private let Mojo{{m|format_unique_name}}Generator = CodeGenerator(
     inputs: .one,
     produces: [.{{m|format_il_type}}]
 ) { b, _ in
-    let key = b.findOrGenerateType(.{{m.key_kind|format_il_type(primitive_with_suffix=True)}})
-    let val = b.findOrGenerateType(.{{m.value_kind|format_il_type(primitive_with_suffix=True)}})
+    let key = b.findOrGenerateType(.{{m.key_kind|format_il_type}})
+    let val = b.findOrGenerateType(.{{m.value_kind|format_il_type}})
     var keys: [Variable] = [key]
     var values: [Variable] = [val]
 {%- if m.value_kind.is_nullable %}
@@ -46,12 +46,6 @@ private let Mojo{{m|format_unique_name}}Generator = CodeGenerator(
        }
     }
 {%- endif %}
-    b.createMap(
-        withKeys: keys,
-        withValues: values,
-        keyGroupName:
-            ILType.{{m.key_kind|format_il_type(primitive_with_suffix=True)}}.group,
-        valueGroupName:
-            ILType.{{m.value_kind|format_il_type(primitive_with_suffix=True)}}.group)
+    b.createMap(withKeys: keys, withValues: values)
 }
 {%- endfor %}

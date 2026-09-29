@@ -68,22 +68,22 @@ extension ObjectGroup {
                 .either(.jsGoldenSimpleStruct, .undefined),
             ] => .undefined,
             "getArrayValue": [
-                .plain(.jsFloatElementArray),
-                .plain(.integer),
+                .plain(.jsFloatMojoArray),
+                .plain(.jsInt32),
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetArrayValue_ResponseParams),
             "getMapValue": [
-                .plain(.jsStringElement_Uint64ElementMap),
+                .plain(.jsString_Uint64MojoMap),
                 .plain(.string),
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetMapValue_ResponseParams),
             "sendObserver": [
                 .either(.jsGoldenObserverRemote, .undefined),
             ] => .undefined,
             "syncGetArrayValue": [
-                .plain(.jsFloatElementArray),
-                .plain(.integer),
+                .plain(.jsFloatMojoArray),
+                .plain(.jsInt32),
             ] => .jsGoldenPrimary_SyncGetArrayValue_ResponseParams,
             "syncGetMapValue": [
-                .plain(.jsStringElement_Uint64ElementMap),
+                .plain(.jsString_Uint64MojoMap),
                 .plain(.string),
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_SyncGetMapValue_ResponseParams),
         ]
@@ -137,7 +137,7 @@ extension ObjectGroup {
                 .plain(
                     .function(
                         [
-                            .plain(.integer),
+                            .plain(.jsInt32),
                             .either(.boolean, .undefined),
                         ] => .undefined))
             ] => .integer,
@@ -268,8 +268,8 @@ extension ObjectGroup {
 /// Arrays
 ///
 extension ILType {
-    fileprivate static let jsFloatElementArray: ILType =
-        .createJsArrayType(ofElementType: .jsFloatElement)
+    fileprivate static let jsFloatMojoArray: ILType =
+        .createJsArrayType(ofElementType: .float)
 }
 
 /// As Fuzzilli runs, the OperationMutator and VariadicInputReducer will modify
@@ -283,10 +283,10 @@ extension ILType {
 /// to prevent the CodeGenerator from being scheduled first when there are
 /// no visible variables, as `findOrGenerateType` causes a crash if there
 /// are no visibile variables.
-private let MojoFloatArrayGenerator = CodeGenerator(
-    "MojoFloatArrayGenerator",
+private let MojoFloatMojoArrayGenerator = CodeGenerator(
+    "MojoFloatMojoArrayGenerator",
     inputs: .one,
-    produces: [.jsFloatElementArray]
+    produces: [.jsFloatMojoArray]
 ) { b, _ in
     let elem = b.findOrGenerateType(.float)
     var elements: [Variable] = [elem]
@@ -302,20 +302,17 @@ private let MojoFloatArrayGenerator = CodeGenerator(
            elements.append(b.randomVariable(forUseAs: .float))
        }
     }
-    b.createArray(
-        with: elements,
-        elementGroupName:
-            ILType.jsFloatElement.group)
+    b.createArray(with: elements)
 }
 
 ///
 /// Maps
 ///
 extension ILType {
-    fileprivate static let jsStringElement_Uint64ElementMap: ILType =
+    fileprivate static let jsString_Uint64MojoMap: ILType =
         .createJsMapType(
-            ofKeyType: .jsStringElement,
-            ofValueType: .jsUint64Element
+            ofKeyType: .string,
+            ofValueType: .bigint
         )
 }
 
@@ -330,13 +327,13 @@ extension ILType {
 /// to prevent the CodeGenerator from being scheduled first when there are
 /// no visible variables, as `findOrGenerateType` causes a crash if there
 /// are no visibile variables.
-private let MojoString_Uint64MapGenerator = CodeGenerator(
-    "MojoString_Uint64MapGenerator",
+private let MojoString_Uint64MojoMapGenerator = CodeGenerator(
+    "MojoString_Uint64MojoMapGenerator",
     inputs: .one,
-    produces: [.jsStringElement_Uint64ElementMap]
+    produces: [.jsString_Uint64MojoMap]
 ) { b, _ in
-    let key = b.findOrGenerateType(.jsStringElement)
-    let val = b.findOrGenerateType(.jsUint64Element)
+    let key = b.findOrGenerateType(.string)
+    let val = b.findOrGenerateType(.bigint)
     var keys: [Variable] = [key]
     var values: [Variable] = [val]
 
@@ -351,13 +348,7 @@ private let MojoString_Uint64MapGenerator = CodeGenerator(
            values.append(b.randomVariable(forUseAs: .bigint))
        }
     }
-    b.createMap(
-        withKeys: keys,
-        withValues: values,
-        keyGroupName:
-            ILType.jsStringElement.group,
-        valueGroupName:
-            ILType.jsUint64Element.group)
+    b.createMap(withKeys: keys, withValues: values)
 }
 
 ///
@@ -496,8 +487,8 @@ let mojoPrimaryProfile = Profile(
         (MojoMethodCallGenerator, 10000),
         (MojoPropertyRetrievalGenerator, 10000),
         (MojoGoldenObserverRouterListenerGenerator, 5000),
-        (MojoFloatArrayGenerator, 1),
-        (MojoString_Uint64MapGenerator, 1),
+        (MojoFloatMojoArrayGenerator, 1),
+        (MojoString_Uint64MojoMapGenerator, 1),
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,

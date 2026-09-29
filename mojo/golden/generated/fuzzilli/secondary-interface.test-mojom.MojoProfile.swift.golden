@@ -112,7 +112,7 @@ extension ObjectGroup {
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_SendObserver_ResponseParams),
             "sendDelegateTwo": [
                 .plain(.jsGoldenDelegateTwoPendingReceiver),
-                .plain(.integer),
+                .plain(.jsInt32),
             ] => .undefined,
             "getDelegateOne": [
             ] => .jsPromise(resolvingTo: .jsGoldenPrimary_GetDelegateOne_ResponseParams),
@@ -150,7 +150,7 @@ extension ObjectGroup {
         properties: ["$": .jsGoldenDelegateOneRemoteWrapper],
         methods: [
             "method": [
-                .plain(.integer),
+                .plain(.jsInt32),
             ] => .undefined,
         ]
     )
@@ -229,7 +229,7 @@ extension ObjectGroup {
                 .plain(
                     .function(
                         [
-                            .either(.integer, .undefined),
+                            .either(.jsInt32, .undefined),
                             .plain(.jsGoldenDelegateOneRemote),
                         ] => .undefined))
             ] => .integer,

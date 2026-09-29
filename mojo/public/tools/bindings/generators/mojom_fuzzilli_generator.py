@@ -10,18 +10,17 @@ from mojom.generate.template_expander import UseJinja
 from generators.mojom_js_generator import JavaScriptStylizer
 
 GENERATOR_PREFIX = "fuzzilli"
-# Map primitive predicates to (fuzzilli type representation, element type
-# prefix). The element type prefix refers to the name of the `ILType.object`
-# definition representing the primitive.
+# Map primitive predicates to (fuzzilli type representation, type name). Type
+# name refers to the name used for arrays and maps (e.g. jsInt64MojoArray).
 PRIMITIVES_MAPPING = {
   mojom.BOOL: ("boolean", "Bool"),
-  mojom.INT8: ("integer", "Int8"),
-  mojom.INT16: ("integer", "Int16"),
-  mojom.INT32: ("integer", "Int32"),
+  mojom.INT8: ("jsInt8", "Int8"),
+  mojom.INT16: ("jsInt16", "Int16"),
+  mojom.INT32: ("jsInt32", "Int32"),
   mojom.INT64: ("bigint", "Int64"),
-  mojom.UINT8: ("integer", "Uint8"),
-  mojom.UINT16: ("integer", "Uint16"),
-  mojom.UINT32: ("integer", "Uint32"),
+  mojom.UINT8: ("jsUint8", "Uint8"),
+  mojom.UINT16: ("jsUint16", "Uint16"),
+  mojom.UINT32: ("jsUint32", "Uint32"),
   # TODO(crbug.com/553587894): Determine a way to support uint64, as
   # `ILType.bigint` is currently internally represented as an int64.
   mojom.UINT64: ("bigint", "Uint64"),
@@ -29,13 +28,13 @@ PRIMITIVES_MAPPING = {
   mojom.DOUBLE: ("float", "Float"),  # no dedicated `.double` type
   mojom.STRING: ("string", "String"),
   mojom.NULLABLE_BOOL: ("boolean", "Bool"),
-  mojom.NULLABLE_INT8: ("integer", "Int8"),
-  mojom.NULLABLE_INT16: ("integer", "Int16"),
-  mojom.NULLABLE_INT32: ("integer", "Int32"),
+  mojom.NULLABLE_INT8: ("jsInt8", "Int8"),
+  mojom.NULLABLE_INT16: ("jsInt16", "Int16"),
+  mojom.NULLABLE_INT32: ("jsInt32", "Int32"),
   mojom.NULLABLE_INT64: ("bigint", "Int64"),
-  mojom.NULLABLE_UINT8: ("integer", "Uint8"),
-  mojom.NULLABLE_UINT16: ("integer", "Uint16"),
-  mojom.NULLABLE_UINT32: ("integer", "Uint32"),
+  mojom.NULLABLE_UINT8: ("jsUint8", "Uint8"),
+  mojom.NULLABLE_UINT16: ("jsUint16", "Uint16"),
+  mojom.NULLABLE_UINT32: ("jsUint32", "Uint32"),
   mojom.NULLABLE_UINT64: ("bigint", "Uint64"),
   mojom.NULLABLE_FLOAT: ("float", "Float"),
   mojom.NULLABLE_DOUBLE: ("float", "Float"),
@@ -246,14 +245,9 @@ class Generator(generator.Generator):
 
   # Formats a unique type identifier string across namespaces for a Mojom type
   # by combining the CamelCase namespace prefix with the type's local name.
-  # The `primitive_with_suffix` argument determines whether the name returned
-  # for primitives represents the primitive itself or a proxy `IL.object`
-  # type. These proxy types are identified by their `Element` suffix.
-  def _FormatUniqueName(self, kind, primitive_with_suffix=False):
+  def _FormatUniqueName(self, kind):
     if kind in PRIMITIVES_MAPPING:
-      il_type, element_prefix = PRIMITIVES_MAPPING[kind]
-      if primitive_with_suffix:
-        return f"{element_prefix}Element"
+      _, element_prefix = PRIMITIVES_MAPPING[kind]
       return element_prefix
 
     if kind in HANDLES_MAPPING:
@@ -271,14 +265,16 @@ class Generator(generator.Generator):
     if mojom.IsArrayKind(kind):
       # Despite the lack of a prefix, the element's unique name ensures that
       # the name of the array is unique within each profile. If two modules
-      # have the same array (e.g., `FooArray`), the name's will not collide
-      # as the `ILType` definitions are `fileprivate`.
-      return f"{self._FormatUniqueName(kind.kind)}Array"
+      # have the same array (e.g., `FooMojoArray`), the name's will not collide
+      # as the `ILType` definitions are `fileprivate`. The "Mojo" suffix ensures
+      # that the types do not collide with Fuzzilli internal types
+      # (e.g. jsUint8Array)
+      return f"{self._FormatUniqueName(kind.kind)}MojoArray"
 
     if mojom.IsMapKind(kind):
       return (
         f"{self._FormatUniqueName(kind.key_kind)}_"
-        f"{self._FormatUniqueName(kind.value_kind)}Map"
+        f"{self._FormatUniqueName(kind.value_kind)}MojoMap"
       )
 
     if self._IsAnyPendingRemoteKind(kind) or self._IsAnyPendingReceiverKind(
@@ -300,14 +296,9 @@ class Generator(generator.Generator):
 
   # Maps a Mojom kind to its corresponding Fuzzilli Intermediate Language (IL)
   # type name representation (e.g., "boolean", "jsFooStruct").
-  # The `primitive_with_suffix` argument determines whether the name returned
-  # for primitives represents the primitive itself or a proxy `IL.object`
-  # type. These proxy types are identified by their `Element` suffix.
-  def _ILTypeName(self, kind, primitive_with_suffix=False):
+  def _ILTypeName(self, kind):
     if kind in PRIMITIVES_MAPPING:
-      il_type, element_prefix = PRIMITIVES_MAPPING[kind]
-      if primitive_with_suffix:
-        return f"js{element_prefix}Element"
+      il_type, _ = PRIMITIVES_MAPPING[kind]
       return il_type
 
     if (
@@ -319,17 +310,12 @@ class Generator(generator.Generator):
       return f"js{self._FormatUniqueName(kind)}"
 
     if mojom.IsArrayKind(kind):
-      return (
-        f"js{self._FormatUniqueName(kind.kind, primitive_with_suffix=True)}"
-        "Array"
-      )
+      return f"js{self._FormatUniqueName(kind.kind)}MojoArray"
 
     if mojom.IsMapKind(kind):
       return (
-        "js"
-        f"{self._FormatUniqueName(kind.key_kind, primitive_with_suffix=True)}_"
-        f"{self._FormatUniqueName(kind.value_kind, primitive_with_suffix=True)}"
-        "Map"
+        f"js{self._FormatUniqueName(kind.key_kind)}_"
+        f"{self._FormatUniqueName(kind.value_kind)}MojoMap"
       )
 
     if mojom.IsInterfaceKind(kind):
