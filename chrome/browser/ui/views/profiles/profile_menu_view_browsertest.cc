@@ -44,10 +44,10 @@
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/account_preview_data_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/mock_signin_ui_delegate.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_promo_util.h"
-#include "chrome/browser/signin/signin_ui_delegate.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/sync/account_bookmark_sync_service_factory.h"
@@ -170,6 +170,7 @@
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 namespace {
+using signin_ui_util::MockSigninUiDelegate;
 using testing::_;
 using testing::Eq;
 using testing::Pair;
@@ -177,46 +178,6 @@ using ::testing::StrictMock;
 using testing::UnorderedElementsAre;
 
 constexpr char kTestEmail[] = "foo@example.com";
-
-class MockSigninUiDelegate : public signin_ui_util::SigninUiDelegate {
- public:
-  MOCK_METHOD(void,
-              ShowSigninUI,
-              (Profile*,
-               bool,
-               signin_metrics::AccessPoint,
-               signin_metrics::PromoAction,
-               const std::string&),
-              (override));
-  MOCK_METHOD(void,
-              ShowReauthUI,
-              (Profile*,
-               const std::string&,
-               bool,
-               signin_metrics::AccessPoint,
-               signin_metrics::PromoAction),
-              (override));
-  MOCK_METHOD(void,
-              ShowTurnSyncOnUI,
-              (Profile*,
-               signin_metrics::AccessPoint,
-               signin_metrics::PromoAction,
-               const CoreAccountId&,
-               TurnSyncOnHelper::SigninAbortedMode,
-               bool,
-               bool),
-              (override));
-  MOCK_METHOD(void,
-              ShowHistorySyncOptinUI,
-              (Profile*, const CoreAccountId&, signin_metrics::AccessPoint),
-              (override));
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  MOCK_METHOD(void,
-              ShowCrossDeviceSigninQrBubble,
-              (BrowserWindowInterface*, GURL, base::OnceClosure),
-              (override));
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
-};
 
 Profile* CreateAdditionalProfile() {
   ProfileManager* profile_manager = g_browser_process->profile_manager();

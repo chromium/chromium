@@ -41,7 +41,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/signin/signin_ui_delegate.h"
+#include "chrome/browser/signin/mock_signin_ui_delegate.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -84,6 +84,7 @@ namespace indigo {
 namespace {
 
 using ::optimization_guide::OptimizationGuideDecision;
+using signin_ui_util::MockSigninUiDelegate;
 using ::testing::_;
 
 class FakeGlicSidePanelCoordinator : public glic::GlicSidePanelCoordinator {
@@ -164,32 +165,6 @@ class FakeDocumentMetadata : public blink::mojom::DocumentMetadata {
   std::vector<std::string> last_blocked_keywords_;
   base::OnceClosure quit_closure_;
 };
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-class MockSigninUiDelegate : public signin_ui_util::SigninUiDelegate {
- public:
-  MOCK_METHOD(void,
-              ShowSigninUI,
-              (Profile*,
-               bool,
-               signin_metrics::AccessPoint,
-               signin_metrics::PromoAction,
-               const std::string&),
-              (override));
-  MOCK_METHOD(void,
-              ShowReauthUI,
-              (Profile*,
-               const std::string&,
-               bool,
-               signin_metrics::AccessPoint,
-               signin_metrics::PromoAction),
-              (override));
-  MOCK_METHOD(void,
-              ShowCrossDeviceSigninQrBubble,
-              (BrowserWindowInterface*, GURL, base::OnceClosure),
-              (override));
-};
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 #if BUILDFLAG(IS_CHROMEOS)
 constexpr bool kSignOutSupportedOnPlatform = false;

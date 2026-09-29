@@ -343,6 +343,7 @@ if (toolkit_views) {
       "//chrome/browser/profiles/keep_alive",
       "//chrome/browser/signin",
       "//chrome/browser/signin:identity_test_support",
+      "//chrome/browser/signin:test_support",
       "//chrome/browser/subscription_eligibility",
       "//chrome/browser/sync:factories",
       "//chrome/browser/themes",

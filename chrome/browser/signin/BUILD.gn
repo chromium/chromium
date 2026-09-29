@@ -500,14 +500,21 @@ if (!is_android) {
 
 source_set("test_support") {
   testonly = true
-  public = [ "chrome_signin_client_test_util.h" ]
-  sources = [ "chrome_signin_client_test_util.cc" ]
+  public = [
+    "chrome_signin_client_test_util.h",
+    "mock_signin_ui_delegate.h",
+  ]
+  sources = [
+    "chrome_signin_client_test_util.cc",
+    "mock_signin_ui_delegate.cc",
+  ]
   public_deps = [
+    ":signin",
     "//base",
     "//services/network:test_support",
+    "//testing/gmock",
   ]
   deps = [
-    ":signin",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/content",
     "//components/keyed_service/core",

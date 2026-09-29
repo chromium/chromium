@@ -90,6 +90,7 @@ source_set("unit_tests") {
   deps = [
     ":skills",
     "//chrome/browser/optimization_guide:test_support",
+    "//chrome/browser/signin:test_support",
     "//chrome/browser/skills",
     "//chrome/browser/skills:public",
     "//chrome/browser/ui/browser_window/test:test_support",

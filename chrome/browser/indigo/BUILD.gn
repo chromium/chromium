@@ -166,6 +166,7 @@ source_set("unit_tests") {
     "//chrome/browser/glic/test_support",
     "//chrome/browser/indigo/onboarding",
     "//chrome/browser/optimization_guide:test_support",
+    "//chrome/browser/signin:test_support",
     "//chrome/browser/skills",
     "//chrome/browser/ui/side_panel:test_support",
     "//chrome/browser/ui/views/page_action:test_support",

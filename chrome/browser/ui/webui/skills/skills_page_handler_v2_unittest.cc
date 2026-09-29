@@ -14,7 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
-#include "chrome/browser/signin/signin_ui_delegate.h"
+#include "chrome/browser/signin/mock_signin_ui_delegate.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
@@ -40,6 +40,7 @@
 namespace skills {
 namespace {
 
+using signin_ui_util::MockSigninUiDelegate;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
@@ -76,32 +77,6 @@ class MockSkillsDialogDelegate : public SkillsDialogDelegate {
               (),
               (override));
 };
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-class MockSigninUiDelegate : public signin_ui_util::SigninUiDelegate {
- public:
-  MOCK_METHOD(void,
-              ShowSigninUI,
-              (Profile*,
-               bool,
-               signin_metrics::AccessPoint,
-               signin_metrics::PromoAction,
-               const std::string&),
-              (override));
-  MOCK_METHOD(void,
-              ShowReauthUI,
-              (Profile*,
-               const std::string&,
-               bool,
-               signin_metrics::AccessPoint,
-               signin_metrics::PromoAction),
-              (override));
-  MOCK_METHOD(void,
-              ShowCrossDeviceSigninQrBubble,
-              (BrowserWindowInterface*, GURL, base::OnceClosure),
-              (override));
-};
-#endif
 
 class MockSkillsUiTabController : public SkillsUiTabControllerInterface {
  public:
