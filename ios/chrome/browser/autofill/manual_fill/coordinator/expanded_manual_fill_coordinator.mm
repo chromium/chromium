@@ -185,6 +185,11 @@ using manual_fill::ManualFillDataType;
 
 // Stops and deletes all active child coordinators.
 - (void)stopChildCoordinators {
+  // Explicitly stop and nil out _manualFillPasswordCoordinator so it is cleaned
+  // up even if passwordsFetched has not completed yet.
+  [_manualFillPasswordCoordinator stop];
+  _manualFillPasswordCoordinator = nil;
+
   for (ChromeCoordinator* coordinator in self.childCoordinators) {
     [coordinator stop];
   }

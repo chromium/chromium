@@ -910,6 +910,14 @@ void UndoInSessionSuppressedEntity(
 // Called when the user has taken action to dismiss a popover.
 - (void)expandedManualFillCoordinatorDidDismissPopover:
     (ExpandedManualFillCoordinator*)coordinator {
+  // If a new coordinator has already been started before the previous popover
+  // finished its dismissal animation, only stop and remove the dismissed
+  // coordinator rather than resetting the newly started one.
+  if (self.childCoordinators.lastObject != coordinator) {
+    [coordinator stop];
+    [self.childCoordinators removeObject:coordinator];
+    return;
+  }
   [self reset];
 }
 
