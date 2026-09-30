@@ -149,6 +149,7 @@ def setup_test_environment(args, chrome_version, chrome_options_list=None,
         tuple: A tuple containing the WebDriver, the tunnel process, and the
                actual chrome version used.
     """
+    common.verify_sender_connectivity(args)
     if chrome_options_list is None:
         chrome_options_list = CHROME_OPTIONS
 

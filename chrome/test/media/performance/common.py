@@ -10,6 +10,7 @@ import logging
 import multiprocessing
 import os
 import shutil
+import socket
 import subprocess
 import sys
 import tempfile
@@ -143,6 +144,61 @@ SENDER_TERMINATE_DRIVER_CMD = {
 WIN_REMOTE_TMP_DIR = 'C:/cft_temp'
 WIN_SYSTEM32_TAR = 'C:/Windows/System32/tar.exe'
 
+# --- Remote sender connectivity ---
+LOCAL_SENDERS = ('localhost', '127.0.0.1', None)
+SSH_PORT = 22
+# BatchMode makes ssh fail instead of hanging on a password/passphrase prompt,
+# and ConnectTimeout bounds how long ssh waits for an unreachable host.
+SSH_BASE_OPTS = [
+    '-o', 'StrictHostKeyChecking=no',
+    '-o', 'BatchMode=yes',
+    '-o', 'ConnectTimeout=10',
+]
+# ssh exits with 255 when it fails to connect or authenticate. Any other code
+# is the exit status of the remote command.
+SSH_CONNECT_ERROR = 255
+PREFLIGHT_TCP_TIMEOUT_SECS = 5
+PREFLIGHT_MAX_ATTEMPTS = 3
+PREFLIGHT_RETRY_DELAY_SECS = 5
+INFRA_FAILURE_NOTE = 'This is an infra failure, not a test failure.'
+
+# Maps (host, username) -> None on success, or the RemoteDeviceError that
+# made the connectivity check fail. Keeps the check to once per process.
+_sender_preflight_results = {}
+
+
+class RemoteDeviceError(RuntimeError):
+    """The remote sender DUT is unusable.
+
+    This is an infra failure, not a test failure.
+    """
+
+    def __init__(self, message, reason=None):
+        super().__init__(message)
+        # Short cause (e.g. "[Errno 113] No route to host") for retry logs.
+        self.reason = reason or message
+
+
+class SenderNotFoundError(RemoteDeviceError):
+    """The sender hostname does not resolve in DNS.
+
+    This is an infra failure, not a test failure.
+    """
+
+
+class SenderUnreachableError(RemoteDeviceError):
+    """The sender cannot be reached over the network on the SSH port.
+
+    This is an infra failure, not a test failure.
+    """
+
+
+class SenderSshError(RemoteDeviceError):
+    """The SSH port is reachable, but running a command over SSH fails.
+
+    This is an infra failure, not a test failure.
+    """
+
 
 class StartProcess(AbstractContextManager):
     """Starts a multiprocessing.Process."""
@@ -177,7 +233,7 @@ def send_ssh_command(hostname, username, command, blocking=False):
     Returns:
         subprocess.CompletedProcess or subprocess.Popen: The process object.
     """
-    if hostname in ['localhost', '127.0.0.1', None]:
+    if hostname in LOCAL_SENDERS:
         logging.debug('Executing local command: %s', command)
         if blocking:
             return subprocess.run(command,
@@ -196,7 +252,7 @@ def send_ssh_command(hostname, username, command, blocking=False):
     key_path = os.path.expanduser('~/.ssh/id_ed25519')
     ssh_command = [
         'ssh',
-        '-o', 'StrictHostKeyChecking=no',
+        *SSH_BASE_OPTS,
         '-i', key_path,
         f'{username}@{hostname}',
         command
@@ -209,6 +265,9 @@ def send_ssh_command(hostname, username, command, blocking=False):
                                  text=True,
                                  timeout=120,
                                  check=False)
+        if process.returncode == SSH_CONNECT_ERROR:
+            logging.error('SSH to %s failed (rc=%d): %s', hostname,
+                          process.returncode, (process.stderr or '').strip())
     else:
         process = subprocess.Popen(  # pylint: disable=consider-using-with
             ssh_command,
@@ -220,18 +279,153 @@ def send_ssh_command(hostname, username, command, blocking=False):
     return process
 
 
+def _check_sender_dns(host):
+    """Resolves `host` and returns its first IP address as a string."""
+    try:
+        addrinfo = socket.getaddrinfo(host, SSH_PORT)
+    except socket.gaierror as e:
+        reason = f'DNS lookup failed: {e}'
+        raise SenderNotFoundError(
+            f"Sender '{host}' does not resolve ({reason}). Check the "
+            f"--sender hostname and the lab DHCP/DNS entry. "
+            f"{INFRA_FAILURE_NOTE}", reason) from e
+    # Each entry is (family, type, proto, canonname, sockaddr); sockaddr[0]
+    # is the IP address for both IPv4 and IPv6.
+    return addrinfo[0][4][0]
+
+
+def _check_sender_tcp(host, ip):
+    """Opens and immediately closes a TCP connection to host:22."""
+    try:
+        conn = socket.create_connection((host, SSH_PORT),
+                                        timeout=PREFLIGHT_TCP_TIMEOUT_SECS)
+    except OSError as e:
+        # socket.timeout has no errno/strerror, so fall back to str(e).
+        if e.errno is not None:
+            reason = f'[Errno {e.errno}] {e.strerror or e}'
+        else:
+            reason = str(e) or type(e).__name__
+        raise SenderUnreachableError(
+            f"Sender '{host}' ({ip}) is not reachable on port {SSH_PORT}: "
+            f"{reason}. Likely causes: device powered off/asleep/rebooting, "
+            "network link or DHCP lease lost, or sshd not running. "
+            f"{INFRA_FAILURE_NOTE}", reason) from e
+    conn.close()
+
+
+def _check_sender_ssh(host, username):
+    """Runs a trivial command over SSH and verifies its output."""
+    # `echo ok` behaves the same in cmd, PowerShell, and POSIX shells.
+    try:
+        result = send_ssh_command(host, username, 'echo ok', blocking=True)
+    except subprocess.TimeoutExpired as e:
+        reason = f"ssh timed out after {e.timeout}s running 'echo ok'"
+        raise SenderSshError(
+            f"SSH to {username}@{host} failed: {reason}. "
+            f"{INFRA_FAILURE_NOTE}", reason) from e
+
+    stdout = (result.stdout or '').strip()
+    if result.returncode != 0 or stdout != 'ok':
+        stderr = (result.stderr or '').strip() or '<empty>'
+        reason = f'rc={result.returncode}, stdout={stdout!r}: {stderr}'
+        raise SenderSshError(
+            f"SSH to {username}@{host} failed (rc={result.returncode}, "
+            f"stdout={stdout!r}). Check the SSH key, authorized_keys, and "
+            f"host key on the sender. {INFRA_FAILURE_NOTE}\n"
+            f"ssh stderr:\n{stderr}", reason)
+
+
+def _record_sender_failure(args, error):
+    """Caches `error` so later callers see the sender as unreachable."""
+    if args.sender not in LOCAL_SENDERS:
+        _sender_preflight_results[(args.sender, args.username)] = error
+
+
+def _sender_check_failed(args):
+    """Returns True if the cached connectivity state for the sender is bad."""
+    return _sender_preflight_results.get(
+        (args.sender, args.username)) is not None
+
+
+def _raise_if_ssh_failed(args, result, action):
+    """Raises SenderUnreachableError if `result` is an ssh connect failure."""
+    if result.returncode != SSH_CONNECT_ERROR:
+        return
+    stderr = (result.stderr or '').strip() or '<empty>'
+    error = SenderUnreachableError(
+        f"Lost SSH connection to sender '{args.sender}' while {action} "
+        f"(rc={result.returncode}): {stderr}. {INFRA_FAILURE_NOTE}", stderr)
+    _record_sender_failure(args, error)
+    raise error
+
+
+def verify_sender_connectivity(args):
+    """Fails fast if the remote sender is missing or unreachable.
+
+    Checks, in order, that `args.sender` resolves in DNS, accepts TCP
+    connections on port 22, and can run a trivial command over SSH. The
+    sequence is retried so that a briefly rebooting DUT does not fail the run.
+    The outcome is cached per (host, username) for the life of the process.
+
+    Args:
+        args: Parsed arguments with `sender` and `username` attributes.
+
+    Raises:
+        SenderNotFoundError: The hostname does not resolve.
+        SenderUnreachableError: TCP port 22 cannot be reached.
+        SenderSshError: SSH connects but the test command fails.
+    """
+    host = args.sender
+    username = args.username
+    if host in LOCAL_SENDERS:
+        return
+
+    key = (host, username)
+    if key in _sender_preflight_results:
+        cached_error = _sender_preflight_results[key]
+        if cached_error is not None:
+            raise cached_error
+        return
+
+    last_error = None
+    for attempt in range(1, PREFLIGHT_MAX_ATTEMPTS + 1):
+        try:
+            ip = _check_sender_dns(host)
+            _check_sender_tcp(host, ip)
+            _check_sender_ssh(host, username)
+        except RemoteDeviceError as e:
+            last_error = e
+            logging.warning('Sender check attempt %d/%d failed for %s: %s',
+                            attempt, PREFLIGHT_MAX_ATTEMPTS, host, e.reason)
+            if attempt < PREFLIGHT_MAX_ATTEMPTS:
+                time.sleep(PREFLIGHT_RETRY_DELAY_SECS)
+            continue
+
+        logging.info('Sender %s (%s) reachable over SSH.', host, ip)
+        _sender_preflight_results[key] = None
+        return
+
+    _sender_preflight_results[key] = last_error
+    raise last_error
+
+
 def terminate_old_chromedriver(args):
     """Tries to terminate any existing chromedriver processes."""
+    verify_sender_connectivity(args)
     logging.info("Attempting to terminate old chromedriver processes...")
-    send_ssh_command(args.sender, args.username,
-                     SENDER_TERMINATE_DRIVER_CMD[args.sender_os],
-                     blocking=True)
+    result = send_ssh_command(args.sender, args.username,
+                              SENDER_TERMINATE_DRIVER_CMD[args.sender_os],
+                              blocking=True)
+    _raise_if_ssh_failed(args, result, 'terminating chromedriver')
 
     for _ in range(15):
         result = send_ssh_command(args.sender,
                                   args.username,
                                   SENDER_CHROMEDRIVER_CHECK_CMD[args.sender_os],
                                   blocking=True)
+        # grep/pgrep exit 1 when nothing matches, which is the expected
+        # result here. Only 255 means ssh itself failed.
+        _raise_if_ssh_failed(args, result, 'checking for chromedriver')
         if not result.stdout.strip():
             logging.info("Old chromedriver processes confirmed gone.")
             return
@@ -240,9 +434,39 @@ def terminate_old_chromedriver(args):
     raise RuntimeError("Chromedriver processes lingered after kill attempts.")
 
 
+def _raise_if_remote_info_missing(args, info, arch_probes, version_probes):
+    """Raises RemoteDeviceError if arch or os_version could not be detected.
+
+    Args:
+        args: Parsed arguments with `sender` and `sender_os`.
+        info: The dict built by get_remote_info.
+        arch_probes: List of (command, CompletedProcess) used to detect arch.
+        version_probes: List of (command, CompletedProcess) used to detect the
+            OS version.
+    """
+    missing = []
+    details = []
+    for field, probes in (('arch', arch_probes),
+                          ('os_version', version_probes)):
+        if info[field]:
+            continue
+        missing.append(field)
+        for command, result in probes:
+            details.append(
+                f'  {field} probe {command!r}: rc={result.returncode}, '
+                f'stdout={result.stdout!r}, stderr={result.stderr!r}')
+    if not missing:
+        return
+    raise RemoteDeviceError(
+        f"Could not detect {' and '.join(missing)} of sender "
+        f"'{args.sender}' (sender_os={args.sender_os}). {INFRA_FAILURE_NOTE}\n"
+        + '\n'.join(details))
+
+
 def get_remote_info(args):
     """Detects info (arch, OS version) of the machine."""
-    if args.sender in ['localhost', '127.0.0.1', None]:
+    verify_sender_connectivity(args)
+    if args.sender in LOCAL_SENDERS:
         import platform
         arch = platform.machine()
         info = {
@@ -252,27 +476,36 @@ def get_remote_info(args):
         return info
 
     info = {'arch': None, 'os_version': None}
+    # (command, result) pairs, kept so failures can report the raw output.
+    arch_probes = []
+    version_probes = []
     if args.sender_os == 'mac':
         # Use absolute paths on Mac to avoid PATH issues in non-interactive SSH.
+        arch_cmd = '/usr/bin/uname -m'
         arch_result = send_ssh_command(args.sender,
                                        args.username,
-                                       '/usr/bin/uname -m',
+                                       arch_cmd,
                                        blocking=True)
+        arch_probes.append((arch_cmd, arch_result))
         arch = arch_result.stdout.strip()
         info['arch'] = 'x64' if arch == 'x86_64' else arch
 
+        version_cmd = '/usr/bin/sw_vers -productVersion'
         version_result = send_ssh_command(args.sender,
                                           args.username,
-                                          '/usr/bin/sw_vers -productVersion',
+                                          version_cmd,
                                           blocking=True)
+        version_probes.append((version_cmd, version_result))
         info['os_version'] = version_result.stdout.strip()
 
     elif args.sender_os == 'cros':
         # Standard uname for architecture.
+        arch_cmd = '/usr/bin/uname -m'
         arch_result = send_ssh_command(args.sender,
                                        args.username,
-                                       '/usr/bin/uname -m',
+                                       arch_cmd,
                                        blocking=True)
+        arch_probes.append((arch_cmd, arch_result))
         arch = arch_result.stdout.strip()
         info['arch'] = 'x64' if arch == 'x86_64' else arch
         info['os_version'] = 'cros'
@@ -287,6 +520,7 @@ def get_remote_info(args):
                                        args.username,
                                        arch_cmd,
                                        blocking=True)
+        arch_probes.append((arch_cmd, arch_result))
         # Architecture codes: 0 = x86, 9 = x64, 12 = ARM64
         arch_code = arch_result.stdout.strip()
         if arch_code == '9':
@@ -306,31 +540,46 @@ def get_remote_info(args):
                                            args.username,
                                            arch_cmd_fallback,
                                            blocking=True)
+            arch_probes.append((arch_cmd_fallback, arch_result))
             arch = arch_result.stdout.strip()
-            info['arch'] = 'x64' if arch in ['AMD64', 'ARM64'] else 'x86'
+            # Unknown or empty values must stay None rather than guess x86.
+            info['arch'] = {
+                'AMD64': 'x64',
+                'ARM64': 'x64',
+                'x86': 'x86'
+            }.get(arch)
 
-        version_result = send_ssh_command(
-            args.sender,
-            args.username,
-            'powershell -Command '
-            '"[System.Environment]::OSVersion.Version.ToString()"',
-            blocking=True)
+        version_cmd = ('powershell -Command '
+                       '"[System.Environment]::OSVersion.Version.ToString()"')
+        version_result = send_ssh_command(args.sender,
+                                          args.username,
+                                          version_cmd,
+                                          blocking=True)
+        version_probes.append((version_cmd, version_result))
         info['os_version'] = version_result.stdout.strip()
 
     elif args.sender_os == 'linux':
+        arch_cmd = 'uname -m'
         arch_result = send_ssh_command(args.sender,
                                        args.username,
-                                       'uname -m',
+                                       arch_cmd,
                                        blocking=True)
+        arch_probes.append((arch_cmd, arch_result))
         arch = arch_result.stdout.strip()
         info['arch'] = 'x64' if arch == 'x86_64' else arch
 
+        version_cmd = 'uname -r'
         version_result = send_ssh_command(args.sender,
                                           args.username,
-                                          'uname -r',
+                                          version_cmd,
                                           blocking=True)
+        version_probes.append((version_cmd, version_result))
         info['os_version'] = version_result.stdout.strip()
 
+    # Unknown sender_os values run no probes; install_and_setup_chrome reports
+    # those as NotImplementedError.
+    if arch_probes:
+        _raise_if_remote_info_missing(args, info, arch_probes, version_probes)
     return info
 
 
@@ -368,6 +617,7 @@ def install_and_setup_chrome(args, chrome_version):
     Downloads and sets up a specific version of Chrome for Testing and its
     matching chromedriver.
     """
+    verify_sender_connectivity(args)
     info = get_remote_info(args)
     arch = info['arch']
     os_version = info['os_version']
@@ -402,7 +652,7 @@ def install_and_setup_chrome(args, chrome_version):
 
     # --- Download and Unzip ---
     logging.info("Downloading Chrome and Chromedriver.")
-    if args.sender in ['localhost', '127.0.0.1', None]:
+    if args.sender in LOCAL_SENDERS:
         # Handle local installation on the NUC.
         tmp_dir = '/tmp'
         chrome_zip = chrome_url.split('/')[-1]
@@ -735,10 +985,11 @@ def wait_for_chromedriver(args, chrome_version=None, codec_name=None):
 
 def start_ssh_tunnel(args):
     """Starts the SSH tunnel process."""
-    if args.sender in ['localhost', '127.0.0.1', None]:
+    if args.sender in LOCAL_SENDERS:
         logging.info("Local sender detected. Skipping SSH tunnel.")
         return None
 
+    verify_sender_connectivity(args)
     # pylint: disable=consider-using-with
     host_tunnel_cmd = [
         'ssh',
@@ -816,6 +1067,10 @@ def teardown_test_environment(driver, tunnel_proc, args):
             except Exception:
                 pass
 
+    if _sender_check_failed(args):
+        logging.warning('Skipping remote cleanup: sender unreachable.')
+        return
+
     cleanup_command = {
         'mac': (
             "rm -f /tmp/*.zip"
@@ -833,13 +1088,27 @@ def teardown_test_environment(driver, tunnel_proc, args):
         ),
     }
 
-    send_ssh_command(args.sender, args.username,
-                     cleanup_command[args.sender_os])
-    logging.info("Cleaned up tmp files on remote machine.")
+    # Cleanup runs in `finally` blocks, so it must never raise over the
+    # original exception.
+    try:
+        result = send_ssh_command(args.sender, args.username,
+                                  cleanup_command[args.sender_os],
+                                  blocking=True)
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        logging.warning('Failed to clean up tmp files on remote machine: %s',
+                        e)
+        return
+    if result.returncode == 0:
+        logging.info("Cleaned up tmp files on remote machine.")
+    else:
+        logging.warning(
+            'Failed to clean up tmp files on remote machine (rc=%d): %s',
+            result.returncode, (result.stderr or '').strip())
 
 
 def setup_cros_environment(args, chrome_version, chrome_options_list):
     """Sets up ChromeOS environment using Crossbench."""
+    verify_sender_connectivity(args)
     logging.info("Setting up ChromeOS environment using Crossbench.")
 
     # 1. Dynamically mock missing optional dependencies and their submodules.
@@ -1131,12 +1400,16 @@ def cleanup_binaries(args, chrome_version=None):
 
     logging.info("Cleaning up Chrome/Chromedriver directories...")
 
+    if _sender_check_failed(args):
+        logging.warning('Skipping remote cleanup: sender unreachable.')
+        return
+
     try:
         terminate_old_chromedriver(args)
     except Exception as e:
         logging.warning("Error terminating processes in cleanup: %s", e)
 
-    if args.sender in ['localhost', '127.0.0.1', None]:
+    if args.sender in LOCAL_SENDERS:
         # Local cleanup
         tmp_dir = tempfile.gettempdir()
         for pattern in ['chrome*', 'chromedriver*']:
@@ -1152,6 +1425,11 @@ def cleanup_binaries(args, chrome_version=None):
         logging.info("Cleaned up local Chrome/Chromedriver directories.")
         return
 
+    # terminate_old_chromedriver may have just found the sender unreachable.
+    if _sender_check_failed(args):
+        logging.warning('Skipping remote cleanup: sender unreachable.')
+        return
+
     cleanup_command = {
         'mac': "rm -rf /tmp/chrome* /tmp/chromedriver*",
         'linux': "rm -rf /tmp/chrome* /tmp/chromedriver*",
@@ -1164,10 +1442,22 @@ def cleanup_binaries(args, chrome_version=None):
         ),
     }
 
-    send_ssh_command(args.sender, args.username,
-                     cleanup_command[args.sender_os],
-                     blocking=True)
-    logging.info("Cleaned up remote Chrome/Chromedriver directories.")
+    # Cleanup runs in `finally` blocks, so it must never raise over the
+    # original exception.
+    try:
+        result = send_ssh_command(args.sender, args.username,
+                                  cleanup_command[args.sender_os],
+                                  blocking=True)
+    except Exception as e:  # pylint: disable=broad-exception-caught
+        logging.warning(
+            'Failed to clean up remote Chrome/Chromedriver directories: %s', e)
+        return
+    if result.returncode == 0:
+        logging.info("Cleaned up remote Chrome/Chromedriver directories.")
+    else:
+        logging.warning(
+            'Failed to clean up remote Chrome/Chromedriver directories '
+            '(rc=%d): %s', result.returncode, (result.stderr or '').strip())
 
 
 def start_glances_monitoring(args, csv_remote_path):
@@ -1218,14 +1508,14 @@ def stop_glances_monitoring(
 
         # 2. SCP the power log file back
         remote_log = "/tmp/cros_power.txt"
-        if args.sender in ['localhost', '127.0.0.1', None]:
+        if args.sender in LOCAL_SENDERS:
             if os.path.exists(remote_log):
                 shutil.copy(remote_log, csv_local_path)
         else:
             key_path = os.path.expanduser('~/.ssh/id_ed25519')
             subprocess.run([
                 'scp', '-i', key_path,
-                '-o', 'StrictHostKeyChecking=no',
+                *SSH_BASE_OPTS,
                 f'{args.username}@{args.sender}:{remote_log}',
                 csv_local_path
             ], check=False, timeout=30)
@@ -1257,14 +1547,14 @@ def stop_glances_monitoring(
     send_ssh_command(args.sender, args.username, kill_cmd, blocking=True)
 
     # 2. SCP the CSV file back to the host
-    if args.sender in ['localhost', '127.0.0.1', None]:
+    if args.sender in LOCAL_SENDERS:
         if os.path.exists(csv_remote_path):
             shutil.copy(csv_remote_path, csv_local_path)
     else:
         key_path = os.path.expanduser('~/.ssh/id_ed25519')
         subprocess.run([
             'scp', '-i', key_path,
-            '-o', 'StrictHostKeyChecking=no',
+            *SSH_BASE_OPTS,
             f'{args.username}@{args.sender}:{csv_remote_path}',
             csv_local_path
         ], check=False, timeout=30)
