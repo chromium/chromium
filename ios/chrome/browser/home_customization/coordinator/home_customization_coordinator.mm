@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_coordinator.h"
 
 #import "base/feature_list.h"
-#import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
@@ -626,22 +625,6 @@ CGFloat const kSheetCornerRadius = 30;
         URLLoadingBrowserAgent:URLLoadingBrowserAgent
         sharedURLLoaderFactory:sharedURLLoaderFactory
                   offTheRecord:offTheRecord];
-    if ([key hasSuffix:[NSString
-                           stringWithFormat:@"_%ld",
-                                            HomeCustomizationBackgroundStyle::
-                                                kEphemeral]]) {
-      const base::DictValue& themeData =
-          profile->GetPrefs()->GetDict(prefs::kIosNtpEphemeralThemeData);
-      const std::string* lightPath =
-          themeData.FindString(kEphemeralThemeGoogleLogoLightPathKey);
-      const std::string* darkPath =
-          themeData.FindString(kEphemeralThemeGoogleLogoDarkPathKey);
-      if (lightPath && darkPath) {
-        [searchEngineLogoMediator
-            setOverrideLogoPath:base::SysUTF8ToNSString(*lightPath)
-                   darkLogoPath:base::SysUTF8ToNSString(*darkPath)];
-      }
-    }
     _activeSearchEngineLogoMediator[key] = searchEngineLogoMediator;
   }
 

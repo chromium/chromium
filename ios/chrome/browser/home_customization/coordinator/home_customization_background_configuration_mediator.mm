@@ -275,7 +275,8 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
   BOOL isCustomColor = !selectedColorID && colorTheme && colorTheme->color();
   BOOL isDefaultBackground =
       !selectedColorID &&
-      !_backgroundCustomizationService->GetCurrentCustomBackground();
+      !_backgroundCustomizationService->GetCurrentCustomBackground() &&
+      !_backgroundCustomizationService->IsCurrentEphemeralTheme();
 
   // The hue slider displays either the custom color or the default red, since
   // hue = 0% represents red on the color wheel.

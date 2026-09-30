@@ -811,6 +811,12 @@ TEST_F(HomeCustomizationBackgroundConfigurationMediatorTest,
   EXPECT_NSEQ(ephemeral_id, consumer_.selectedBackgroundId);
   EXPECT_EQ(initial_recent_count,
             CustomizationService()->GetRecentlyUsedBackgrounds().size());
+
+  // Verify that no color option (including default) is selected in the color
+  // palette when the ephemeral theme is active.
+  [mediator_ loadColorBackgroundConfigurations];
+  EXPECT_EQ(nil, consumer_.selectedBackgroundId);
+
   [mediator_ disconnect];
 }
 

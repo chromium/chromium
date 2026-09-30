@@ -205,6 +205,7 @@ CGRect UpdateDesiredFrame(CGRect desired_frame,
       [[filePath lastPathComponent] stringByDeletingPathExtension];
   config.bundle =
       [NSBundle bundleWithPath:[filePath stringByDeletingLastPathComponent]];
+  config.shouldLoop = YES;
   _animatedBackground = ios::provider::GenerateLottieAnimation(config);
   if (!_animatedBackground) {
     return;
@@ -212,7 +213,7 @@ CGRect UpdateDesiredFrame(CGRect desired_frame,
   [self updateAnimationColors];
   UIView* animationView = _animatedBackground.animationView;
   animationView.translatesAutoresizingMaskIntoConstraints = NO;
-  animationView.contentMode = UIViewContentModeScaleAspectFill;
+  animationView.contentMode = UIViewContentModeScaleAspectFit;
   [self addSubview:animationView];
   AddSameConstraints(animationView, self);
   [_animatedBackground play];

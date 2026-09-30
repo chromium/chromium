@@ -21,8 +21,6 @@
 #import "base/strings/string_util.h"
 #import "base/task/thread_pool.h"
 #import "components/feature_engagement/public/feature_constants.h"
-#import "components/image_fetcher/core/image_data_fetcher.h"
-#import "components/image_fetcher/core/request_metadata.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
@@ -304,7 +302,6 @@ HomeBackgroundCustomizationService::~HomeBackgroundCustomizationService() {}
 void HomeBackgroundCustomizationService::Shutdown() {
   weak_ptr_factory_.InvalidateWeakPtrs();
   ephemeral_promo_url_loader_.reset();
-  ephemeral_theme_image_fetcher_.reset();
   promos_manager_ = nullptr;
   // It's safe to call `reset()` unconditionally.
   theme_syncable_service_.reset();
@@ -963,11 +960,9 @@ void HomeBackgroundCustomizationService::CleanupEphemeralThemeData() {
     }
   }
 
-  static constexpr std::array<std::string_view, 4> kFilePathKeys = {
+  static constexpr std::array<std::string_view, 2> kFilePathKeys = {
       kEphemeralThemeAnimationPathKey,
       kEphemeralThemeAnimationPromoPathKey,
-      kEphemeralThemeGoogleLogoLightPathKey,
-      kEphemeralThemeGoogleLogoDarkPathKey,
   };
   const base::DictValue& ephemeral_theme_data =
       pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData);
@@ -1015,20 +1010,10 @@ void HomeBackgroundCustomizationService::MaybeFetchEphemeralThemeData() {
 
   std::vector<EphemeralThemeAsset> assets = {
       {GURL(kNewTabPageEphemeralThemeAnimationUrlParam.Get()),
-       kEphemeralThemeAnimationFileName, kEphemeralThemeAnimationPathKey,
-       /*is_image=*/false},
+       kEphemeralThemeAnimationFileName, kEphemeralThemeAnimationPathKey},
       {GURL(kNewTabPageEphemeralThemeAnimationPromoUrlParam.Get()),
        kEphemeralThemePromoAnimationFileName,
-       kEphemeralThemeAnimationPromoPathKey,
-       /*is_image=*/false},
-      {GURL(kNewTabPageEphemeralThemeGoogleLogoLightUrlParam.Get()),
-       kEphemeralThemeGoogleLogoLightFileName,
-       kEphemeralThemeGoogleLogoLightPathKey,
-       /*is_image=*/true},
-      {GURL(kNewTabPageEphemeralThemeGoogleLogoDarkUrlParam.Get()),
-       kEphemeralThemeGoogleLogoDarkFileName,
-       kEphemeralThemeGoogleLogoDarkPathKey,
-       /*is_image=*/true},
+       kEphemeralThemeAnimationPromoPathKey},
   };
 
   // Validate all required asset URLs upfront before starting the sequential
@@ -1086,24 +1071,6 @@ void HomeBackgroundCustomizationService::FetchNextEphemeralThemeAsset(
       &HomeBackgroundCustomizationService::OnEphemeralThemeAssetDownloaded,
       weak_ptr_factory_.GetWeakPtr(), std::move(pending_assets),
       std::move(theme_dict));
-
-  if (current_asset.is_image) {
-    if (!ephemeral_theme_image_fetcher_) {
-      ephemeral_theme_image_fetcher_ =
-          std::make_unique<image_fetcher::ImageDataFetcher>(
-              url_loader_factory_);
-      ephemeral_theme_image_fetcher_->SetImageDownloadLimit(
-          network::SimpleURLLoader::kMaxBoundedStringDownloadSize);
-    }
-    ephemeral_theme_image_fetcher_->FetchImageData(
-        current_asset.url,
-        base::BindOnce([](const std::string& image_data,
-                          const image_fetcher::RequestMetadata&) {
-          return image_data;
-        }).Then(std::move(download_callback)),
-        kEphemeralPromoTrafficAnnotation);
-    return;
-  }
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = current_asset.url;

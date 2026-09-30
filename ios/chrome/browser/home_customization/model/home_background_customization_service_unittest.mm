@@ -1397,10 +1397,10 @@ TEST_F(HomeBackgroundCustomizationServiceTest, SetAndPersistEphemeralTheme) {
 }
 
 // Test that when both ephemeral theme features are enabled, the service
-// sequentially downloads the main animation JSON, the promo animation JSON,
-// the light Google logo image, and the dark Google logo image, writes all four
-// to disk, saves their file paths and parsed color mapping dictionaries in
-// `kIosNtpEphemeralThemeData`, and registers the promo for single display.
+// sequentially downloads the main animation JSON and the promo animation JSON,
+// writes both to disk, saves their file paths and parsed color mapping
+// dictionaries in `kIosNtpEphemeralThemeData`, and registers the promo for
+// single display.
 TEST_F(HomeBackgroundCustomizationServiceTest,
        FetchesAndSavesEphemeralThemeDataSequentiallyAndRegistersPromo) {
   base::ScopedTempDir temp_dir;
@@ -1414,17 +1414,11 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
       "https://www.gstatic.com/promo_animation.json";
   static constexpr char kPromoColorMappingJson[] =
       R"({"light":{"**.Background.Fill 1.Color":"#1A73E8"}})";
-  static constexpr char kGoogleLogoLightUrl[] =
-      "https://www.gstatic.com/logo_light.png";
-  static constexpr char kGoogleLogoDarkUrl[] =
-      "https://www.gstatic.com/logo_dark.png";
   static constexpr char kSeedColor[] = "#1A73E8";
   static constexpr char kAnimationLottieJsonBody[] =
       R"({"v":"5.7.4","name":"theme","layers":[]})";
   static constexpr char kPromoLottieJsonBody[] =
       R"({"v":"5.7.4","name":"promo","layers":[]})";
-  static constexpr char kGoogleLogoLightImageData[] = "fake_light_logo_png";
-  static constexpr char kGoogleLogoDarkImageData[] = "fake_dark_logo_png";
 
   feature_list_.InitWithFeaturesAndParameters(
       {{kNewTabPageEphemeralTheme,
@@ -1432,8 +1426,6 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
          {"animation-colormapping", kAnimationColorMappingJson},
          {"animation-promo-url", kPromoUrl},
          {"animation-promo-colormapping", kPromoColorMappingJson},
-         {"google-logo-light-url", kGoogleLogoLightUrl},
-         {"google-logo-dark-url", kGoogleLogoDarkUrl},
          {"seed-color", kSeedColor},
          {"version", "1"}}},
        {feature_engagement::kIPHiOSPromoEphemeralThemeFeature, {}}},
@@ -1452,8 +1444,6 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
   // Step 1: Only the first download (`animation-url`) should be pending.
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kAnimationUrl));
   EXPECT_FALSE(test_url_loader_factory_.IsPending(kPromoUrl));
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(kGoogleLogoLightUrl));
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(kGoogleLogoDarkUrl));
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       kAnimationUrl, kAnimationLottieJsonBody);
@@ -1462,25 +1452,8 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
   // Step 2: After the first file is written to disk, the second download
   // (`animation-promo-url`) is started.
   EXPECT_TRUE(test_url_loader_factory_.IsPending(kPromoUrl));
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(kGoogleLogoLightUrl));
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(kGoogleLogoDarkUrl));
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       kPromoUrl, kPromoLottieJsonBody);
-  test_url_loader_factory_.WaitForRequest(GURL(kGoogleLogoLightUrl));
-
-  // Step 3: After the second JSON is written to disk, the light Google logo
-  // image download (`google-logo-light-url`) is started via ImageDataFetcher.
-  EXPECT_TRUE(test_url_loader_factory_.IsPending(kGoogleLogoLightUrl));
-  EXPECT_FALSE(test_url_loader_factory_.IsPending(kGoogleLogoDarkUrl));
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      kGoogleLogoLightUrl, kGoogleLogoLightImageData);
-  test_url_loader_factory_.WaitForRequest(GURL(kGoogleLogoDarkUrl));
-
-  // Step 4: After the light logo image is written to disk, the dark Google logo
-  // image download (`google-logo-dark-url`) is started via ImageDataFetcher.
-  EXPECT_TRUE(test_url_loader_factory_.IsPending(kGoogleLogoDarkUrl));
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      kGoogleLogoDarkUrl, kGoogleLogoDarkImageData);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return !pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData).empty();
   }));
@@ -1504,26 +1477,6 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
   ASSERT_TRUE(
       base::ReadFileToString(expected_promo_file, &saved_promo_contents));
   EXPECT_EQ(kPromoLottieJsonBody, saved_promo_contents);
-
-  base::FilePath expected_light_logo_file =
-      temp_dir.GetPath()
-          .AppendASCII(kEphemeralThemeDirectoryName)
-          .AppendASCII(kEphemeralThemeGoogleLogoLightFileName);
-  EXPECT_TRUE(base::PathExists(expected_light_logo_file));
-  std::string saved_light_logo_contents;
-  ASSERT_TRUE(base::ReadFileToString(expected_light_logo_file,
-                                     &saved_light_logo_contents));
-  EXPECT_EQ(kGoogleLogoLightImageData, saved_light_logo_contents);
-
-  base::FilePath expected_dark_logo_file =
-      temp_dir.GetPath()
-          .AppendASCII(kEphemeralThemeDirectoryName)
-          .AppendASCII(kEphemeralThemeGoogleLogoDarkFileName);
-  EXPECT_TRUE(base::PathExists(expected_dark_logo_file));
-  std::string saved_dark_logo_contents;
-  ASSERT_TRUE(base::ReadFileToString(expected_dark_logo_file,
-                                     &saved_dark_logo_contents));
-  EXPECT_EQ(kGoogleLogoDarkImageData, saved_dark_logo_contents);
 
   const base::DictValue& saved_theme_data =
       pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData);
@@ -1560,16 +1513,6 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
   ASSERT_TRUE(promo_color_val);
   EXPECT_EQ("#1A73E8", *promo_color_val);
 
-  const std::string* saved_logo_light_path =
-      saved_theme_data.FindString(kEphemeralThemeGoogleLogoLightPathKey);
-  ASSERT_TRUE(saved_logo_light_path);
-  EXPECT_EQ(expected_light_logo_file.value(), *saved_logo_light_path);
-
-  const std::string* saved_logo_dark_path =
-      saved_theme_data.FindString(kEphemeralThemeGoogleLogoDarkPathKey);
-  ASSERT_TRUE(saved_logo_dark_path);
-  EXPECT_EQ(expected_dark_logo_file.value(), *saved_logo_dark_path);
-
   const std::string* saved_seed_color =
       saved_theme_data.FindString(kEphemeralThemeSeedColorKey);
   ASSERT_TRUE(saved_seed_color);
@@ -1587,9 +1530,9 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
             saved_background_style.value());
 }
 
-// Test that the service skips re-downloading the animation JSONs and Google
-// logo images when all four paths are already cached in prefs and the version
-// parameter is not greater than the cached version.
+// Test that the service skips re-downloading the animation JSONs when both
+// paths are already cached in prefs and the version parameter is not greater
+// than the cached version.
 TEST_F(HomeBackgroundCustomizationServiceTest,
        SkipsDownloadWhenEphemeralThemeDataAlreadyCached) {
   base::ScopedTempDir temp_dir;
@@ -1599,17 +1542,11 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
       "https://www.gstatic.com/theme_animation.json";
   static constexpr char kPromoUrl[] =
       "https://www.gstatic.com/promo_animation.json";
-  static constexpr char kGoogleLogoLightUrl[] =
-      "https://www.gstatic.com/logo_light.png";
-  static constexpr char kGoogleLogoDarkUrl[] =
-      "https://www.gstatic.com/logo_dark.png";
 
   feature_list_.InitWithFeaturesAndParameters(
       {{kNewTabPageEphemeralTheme,
         {{"animation-url", kAnimationUrl},
          {"animation-promo-url", kPromoUrl},
-         {"google-logo-light-url", kGoogleLogoLightUrl},
-         {"google-logo-dark-url", kGoogleLogoDarkUrl},
          {"version", "1"}}},
        {feature_engagement::kIPHiOSPromoEphemeralThemeFeature, {}}},
       {});
@@ -1619,10 +1556,6 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
                   "/tmp/ephemeral_animation.json");
   cached_dict.Set(kEphemeralThemeAnimationPromoPathKey,
                   "/tmp/ephemeral_promo.json");
-  cached_dict.Set(kEphemeralThemeGoogleLogoLightPathKey,
-                  "/tmp/ephemeral_google_logo_light.png");
-  cached_dict.Set(kEphemeralThemeGoogleLogoDarkPathKey,
-                  "/tmp/ephemeral_google_logo_dark.png");
   cached_dict.Set(kEphemeralThemeVersionKey, 1);
   pref_service_->SetDict(prefs::kIosNtpEphemeralThemeData,
                          std::move(cached_dict));
@@ -1651,18 +1584,12 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
       "https://www.gstatic.com/theme_animation_v2.json";
   static constexpr char kPromoUrl[] =
       "https://www.gstatic.com/promo_animation_v2.json";
-  static constexpr char kGoogleLogoLightUrl[] =
-      "https://www.gstatic.com/logo_light_v2.png";
-  static constexpr char kGoogleLogoDarkUrl[] =
-      "https://www.gstatic.com/logo_dark_v2.png";
   static constexpr char kSeedColor[] = "#EA4335";
 
   feature_list_.InitWithFeaturesAndParameters(
       {{kNewTabPageEphemeralTheme,
         {{"animation-url", kAnimationUrl},
          {"animation-promo-url", kPromoUrl},
-         {"google-logo-light-url", kGoogleLogoLightUrl},
-         {"google-logo-dark-url", kGoogleLogoDarkUrl},
          {"seed-color", kSeedColor},
          {"version", "2"}}},
        {feature_engagement::kIPHiOSPromoEphemeralThemeFeature, {}}},
@@ -1673,10 +1600,6 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
                   "/tmp/old_ephemeral_animation.json");
   cached_dict.Set(kEphemeralThemeAnimationPromoPathKey,
                   "/tmp/old_ephemeral_promo.json");
-  cached_dict.Set(kEphemeralThemeGoogleLogoLightPathKey,
-                  "/tmp/old_logo_light.png");
-  cached_dict.Set(kEphemeralThemeGoogleLogoDarkPathKey,
-                  "/tmp/old_logo_dark.png");
   cached_dict.Set(kEphemeralThemeSeedColorKey, "#1A73E8");
   cached_dict.Set(kEphemeralThemeVersionKey, 1);
   pref_service_->SetDict(prefs::kIosNtpEphemeralThemeData,
@@ -1699,14 +1622,6 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
   test_url_loader_factory_.WaitForRequest(GURL(kPromoUrl));
   test_url_loader_factory_.SimulateResponseForPendingRequest(
       kPromoUrl, R"({"v":"5.7.4","name":"promo_v2","layers":[]})");
-
-  test_url_loader_factory_.WaitForRequest(GURL(kGoogleLogoLightUrl));
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      kGoogleLogoLightUrl, "new_light_logo_png");
-
-  test_url_loader_factory_.WaitForRequest(GURL(kGoogleLogoDarkUrl));
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      kGoogleLogoDarkUrl, "new_dark_logo_png");
 
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData)
@@ -1744,7 +1659,7 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
 
 // Test that when the ephemeral theme feature is disabled and the current
 // background is `kEphemeral` with a saved background style of `kDefault`, the
-// service restores the default background, deletes the 4 asset files, and
+// service restores the default background, deletes the 2 asset files, and
 // clears `kIosNtpEphemeralThemeData`.
 TEST_F(HomeBackgroundCustomizationServiceTest,
        CleansUpEphemeralThemeAndRestoresDefaultBackgroundWhenFeatureDisabled) {
@@ -1753,12 +1668,8 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
 
   base::FilePath animation_file = temp_dir.GetPath().AppendASCII("anim.json");
   base::FilePath promo_file = temp_dir.GetPath().AppendASCII("promo.json");
-  base::FilePath light_logo_file = temp_dir.GetPath().AppendASCII("light.png");
-  base::FilePath dark_logo_file = temp_dir.GetPath().AppendASCII("dark.png");
   ASSERT_TRUE(base::WriteFile(animation_file, "{}"));
   ASSERT_TRUE(base::WriteFile(promo_file, "{}"));
-  ASSERT_TRUE(base::WriteFile(light_logo_file, "png"));
-  ASSERT_TRUE(base::WriteFile(dark_logo_file, "png"));
 
   pref_service_->SetList(prefs::kIosRecentlyUsedBackgrounds, {});
   {
@@ -1780,10 +1691,6 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
     base::DictValue theme_dict;
     theme_dict.Set(kEphemeralThemeAnimationPathKey, animation_file.value());
     theme_dict.Set(kEphemeralThemeAnimationPromoPathKey, promo_file.value());
-    theme_dict.Set(kEphemeralThemeGoogleLogoLightPathKey,
-                   light_logo_file.value());
-    theme_dict.Set(kEphemeralThemeGoogleLogoDarkPathKey,
-                   dark_logo_file.value());
     theme_dict.Set(
         kPreEphemeralThemeBackgroundStyleKey,
         static_cast<int>(HomeCustomizationBackgroundStyle::kDefault));
@@ -1807,13 +1714,11 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
   EXPECT_TRUE(pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData).empty());
   EXPECT_FALSE(base::PathExists(animation_file));
   EXPECT_FALSE(base::PathExists(promo_file));
-  EXPECT_FALSE(base::PathExists(light_logo_file));
-  EXPECT_FALSE(base::PathExists(dark_logo_file));
 }
 
 // Test that when the ephemeral theme feature is disabled and the current
 // background is `kEphemeral` with a non-default saved background style, the
-// service restores the most recently used user background, deletes the 4 asset
+// service restores the most recently used user background, deletes the 2 asset
 // files, and clears `kIosNtpEphemeralThemeData`.
 TEST_F(
     HomeBackgroundCustomizationServiceTest,
@@ -1823,12 +1728,8 @@ TEST_F(
 
   base::FilePath animation_file = temp_dir.GetPath().AppendASCII("anim.json");
   base::FilePath promo_file = temp_dir.GetPath().AppendASCII("promo.json");
-  base::FilePath light_logo_file = temp_dir.GetPath().AppendASCII("light.png");
-  base::FilePath dark_logo_file = temp_dir.GetPath().AppendASCII("dark.png");
   ASSERT_TRUE(base::WriteFile(animation_file, "{}"));
   ASSERT_TRUE(base::WriteFile(promo_file, "{}"));
-  ASSERT_TRUE(base::WriteFile(light_logo_file, "png"));
-  ASSERT_TRUE(base::WriteFile(dark_logo_file, "png"));
 
   sync_pb::UserColorTheme color_theme = GenerateUserColorTheme(0xff0000);
   pref_service_->SetList(prefs::kIosRecentlyUsedBackgrounds, {});
@@ -1840,10 +1741,6 @@ TEST_F(
     base::DictValue theme_dict;
     theme_dict.Set(kEphemeralThemeAnimationPathKey, animation_file.value());
     theme_dict.Set(kEphemeralThemeAnimationPromoPathKey, promo_file.value());
-    theme_dict.Set(kEphemeralThemeGoogleLogoLightPathKey,
-                   light_logo_file.value());
-    theme_dict.Set(kEphemeralThemeGoogleLogoDarkPathKey,
-                   dark_logo_file.value());
     theme_dict.Set(
         kPreEphemeralThemeBackgroundStyleKey,
         static_cast<int>(HomeCustomizationBackgroundStyle::kDefault));
@@ -1882,13 +1779,11 @@ TEST_F(
   EXPECT_TRUE(pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData).empty());
   EXPECT_FALSE(base::PathExists(animation_file));
   EXPECT_FALSE(base::PathExists(promo_file));
-  EXPECT_FALSE(base::PathExists(light_logo_file));
-  EXPECT_FALSE(base::PathExists(dark_logo_file));
 }
 
 // Test that when the ephemeral theme feature is disabled and the current
 // background is not `kEphemeral`, the service keeps the current background,
-// deletes the 4 asset files, and clears `kIosNtpEphemeralThemeData`.
+// deletes the 2 asset files, and clears `kIosNtpEphemeralThemeData`.
 TEST_F(HomeBackgroundCustomizationServiceTest,
        CleansUpEphemeralThemeFilesWhenNotEphemeralAndFeatureDisabled) {
   base::ScopedTempDir temp_dir;
@@ -1896,12 +1791,8 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
 
   base::FilePath animation_file = temp_dir.GetPath().AppendASCII("anim.json");
   base::FilePath promo_file = temp_dir.GetPath().AppendASCII("promo.json");
-  base::FilePath light_logo_file = temp_dir.GetPath().AppendASCII("light.png");
-  base::FilePath dark_logo_file = temp_dir.GetPath().AppendASCII("dark.png");
   ASSERT_TRUE(base::WriteFile(animation_file, "{}"));
   ASSERT_TRUE(base::WriteFile(promo_file, "{}"));
-  ASSERT_TRUE(base::WriteFile(light_logo_file, "png"));
-  ASSERT_TRUE(base::WriteFile(dark_logo_file, "png"));
 
   sync_pb::UserColorTheme color_theme = GenerateUserColorTheme(0x00ff00);
   pref_service_->SetList(prefs::kIosRecentlyUsedBackgrounds, {});
@@ -1917,10 +1808,6 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
     base::DictValue theme_dict;
     theme_dict.Set(kEphemeralThemeAnimationPathKey, animation_file.value());
     theme_dict.Set(kEphemeralThemeAnimationPromoPathKey, promo_file.value());
-    theme_dict.Set(kEphemeralThemeGoogleLogoLightPathKey,
-                   light_logo_file.value());
-    theme_dict.Set(kEphemeralThemeGoogleLogoDarkPathKey,
-                   dark_logo_file.value());
     theme_dict.Set(kPreEphemeralThemeBackgroundStyleKey,
                    static_cast<int>(HomeCustomizationBackgroundStyle::kColor));
     pref_service_->SetDict(prefs::kIosNtpEphemeralThemeData,
@@ -1939,6 +1826,4 @@ TEST_F(HomeBackgroundCustomizationServiceTest,
   EXPECT_TRUE(pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData).empty());
   EXPECT_FALSE(base::PathExists(animation_file));
   EXPECT_FALSE(base::PathExists(promo_file));
-  EXPECT_FALSE(base::PathExists(light_logo_file));
-  EXPECT_FALSE(base::PathExists(dark_logo_file));
 }
