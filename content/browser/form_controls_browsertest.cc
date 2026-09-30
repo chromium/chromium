@@ -51,6 +51,13 @@ class FormControlsBrowserTest : public ContentBrowserTest {
     // enough to need separate expected images. Force using ganesh until either
     // all Android bots are running graphite or these tests support skia gold.
     feature_list_.InitAndDisableFeature(features::kSkiaGraphite);
+#elif BUILDFLAG(IS_WIN)
+    // On Windows, the baseline images were generated with Skia Graphite enabled
+    // via fieldtrial_testing_config.json. Explicitly enable Graphite so tests
+    // also match the baselines in branded builds, where
+    // fieldtrial_testing_config is disabled.
+    feature_list_.InitWithFeatures(
+        {features::kSkiaGraphite, features::kSkiaGraphiteWinIntel}, {});
 #endif
   }
 
