@@ -5,8 +5,11 @@
 #import "ios/chrome/browser/cobrowse/coordinator/assistant_aim_mediator.h"
 
 #import "base/functional/callback_helpers.h"
+#import "base/location.h"
 #import "base/memory/raw_ptr.h"
+#import "base/run_loop.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "components/contextual_tasks/public/features.h"
@@ -51,6 +54,8 @@
 #import "ios/web/public/web_state_delegate_bridge.h"
 #import "ios/web/public/web_state_observer_bridge.h"
 #import "net/base/apple/url_conversions.h"
+#import "net/base/mock_network_change_notifier.h"
+#import "net/base/network_change_notifier.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/lens_server_proto/aim_communication.pb.h"
@@ -62,6 +67,15 @@
 @interface AssistantAIMMediator (Testing)
 - (void)didGetSelectedThreadURL:(GURL)url;
 @end
+
+namespace {
+
+// The default AIM zero-state URL, as loaded in light mode.
+constexpr char kAimZeroStateURL[] =
+    "https://www.google.com/"
+    "search?udm=50&sourceid=chrome-mobile&gsas=4&csuir=1&cs=0";
+
+}  // namespace
 
 class AssistantAIMMediatorTest : public PlatformTest {
  protected:
@@ -132,8 +146,24 @@ class AssistantAIMMediatorTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
+  // Simulates a network change and waits until it has been delivered to the
+  // mediator. `NetworkChangeNotifier` notifies each observer by posting a task
+  // to the sequence the observer was added on (the main thread here). All those
+  // tasks are posted synchronously by `NotifyObserversOfNetworkChangeForTests`,
+  // so a task posted to the same sequence afterwards only runs once the
+  // mediator has been notified.
+  void NotifyNetworkChangeAndWait(
+      net::NetworkChangeNotifier::ConnectionType type) {
+    net::NetworkChangeNotifier::NotifyObserversOfNetworkChangeForTests(type);
+    base::RunLoop run_loop;
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
   web::WebTaskEnvironment task_environment_{
       web::WebTaskEnvironment::TimeSource::MOCK_TIME};
+  net::test::ScopedMockNetworkChangeNotifier scoped_network_change_notifier_;
   web::ScopedTestingWebClient web_client_;
   base::test::ScopedFeatureList scoped_feature_list_;
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
@@ -689,8 +719,7 @@ TEST_F(AssistantAIMMediatorTest,
           fake_web_state_->GetNavigationManager());
   ASSERT_TRUE(navigation_manager->LoadURLWithParamsWasCalled());
   EXPECT_EQ(navigation_manager->GetLastLoadURLWithParams()->url,
-            GURL("https://www.google.com/"
-                 "search?udm=50&sourceid=chrome-mobile&gsas=4&csuir=1&cs=0"));
+            GURL(kAimZeroStateURL));
 }
 
 // Tests that didTapStartNewThread loads the zero-state URL, sets a personalized
@@ -726,8 +755,7 @@ TEST_F(AssistantAIMMediatorTest,
           fake_web_state_->GetNavigationManager());
   ASSERT_TRUE(navigation_manager->LoadURLWithParamsWasCalled());
   EXPECT_EQ(navigation_manager->GetLastLoadURLWithParams()->url,
-            GURL("https://www.google.com/"
-                 "search?udm=50&sourceid=chrome-mobile&gsas=4&csuir=1&cs=0"));
+            GURL(kAimZeroStateURL));
 }
 
 // Tests that loadedURL returns the URL of the current WebState, and returns
@@ -823,4 +851,101 @@ TEST_F(AssistantAIMMediatorTest, DidGetSelectedThreadURLDoesNotAnimateDetent) {
                  "search?q=history_query&udm=50&sourceid=chrome-mobile&gsas=4&"
                  "csuir=1&cs=0"));
   [mock_container_handler_ verify];
+}
+
+// Tests that the AIM URL is reloaded when the network reconnects after a page
+// load failure.
+TEST_F(AssistantAIMMediatorTest, ReloadsOnReconnectAfterPageLoadFailure) {
+  // Replace the navigation manager to clear the initial load triggered during
+  // `SetUp()`.
+  fake_web_state_->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  fake_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::FAILURE);
+
+  // Simulate the error-page placeholder navigation starting with an error; this
+  // must not clear the failed state.
+  web::FakeNavigationContext error_context;
+  error_context.SetIsSameDocument(false);
+  error_context.SetError([NSError
+      errorWithDomain:NSURLErrorDomain
+                 code:NSURLErrorNotConnectedToInternet
+             userInfo:nil]);
+  fake_web_state_->OnNavigationStarted(&error_context);
+
+  NotifyNetworkChangeAndWait(net::NetworkChangeNotifier::CONNECTION_WIFI);
+
+  web::FakeNavigationManager* navigation_manager =
+      static_cast<web::FakeNavigationManager*>(
+          fake_web_state_->GetNavigationManager());
+  ASSERT_TRUE(navigation_manager->LoadURLWithParamsWasCalled());
+  EXPECT_EQ(navigation_manager->GetLastLoadURLWithParams()->url,
+            GURL(kAimZeroStateURL));
+
+  // A subsequent reconnection must not trigger another reload.
+  fake_web_state_->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  NotifyNetworkChangeAndWait(net::NetworkChangeNotifier::CONNECTION_WIFI);
+
+  navigation_manager = static_cast<web::FakeNavigationManager*>(
+      fake_web_state_->GetNavigationManager());
+  EXPECT_FALSE(navigation_manager->LoadURLWithParamsWasCalled());
+}
+
+// Tests that the AIM URL is not reloaded when the network changes to
+// `CONNECTION_NONE` after a page load failure.
+TEST_F(AssistantAIMMediatorTest,
+       DoesNotReloadWhenDisconnectedAfterPageLoadFailure) {
+  // Replace the navigation manager to clear the initial load triggered during
+  // `SetUp()`.
+  fake_web_state_->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  fake_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::FAILURE);
+
+  NotifyNetworkChangeAndWait(net::NetworkChangeNotifier::CONNECTION_NONE);
+
+  web::FakeNavigationManager* navigation_manager =
+      static_cast<web::FakeNavigationManager*>(
+          fake_web_state_->GetNavigationManager());
+  EXPECT_FALSE(navigation_manager->LoadURLWithParamsWasCalled());
+}
+
+// Tests that when the AIM page loads successfully while online, a subsequent
+// network disconnection and reconnection does not reload the page.
+TEST_F(AssistantAIMMediatorTest, DoesNotReloadOnReconnectAfterPageLoadSuccess) {
+  // Replace the navigation manager to clear the initial load triggered during
+  // `SetUp()`.
+  fake_web_state_->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  fake_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+
+  NotifyNetworkChangeAndWait(net::NetworkChangeNotifier::CONNECTION_NONE);
+
+  NotifyNetworkChangeAndWait(net::NetworkChangeNotifier::CONNECTION_WIFI);
+
+  web::FakeNavigationManager* navigation_manager =
+      static_cast<web::FakeNavigationManager*>(
+          fake_web_state_->GetNavigationManager());
+  EXPECT_FALSE(navigation_manager->LoadURLWithParamsWasCalled());
+}
+
+// Tests that the AIM URL is not reloaded on network reconnect if a new
+// non-error navigation has already started after a page load failure.
+TEST_F(AssistantAIMMediatorTest,
+       DoesNotReloadOnReconnectAfterNewNavigationStarts) {
+  // Replace the navigation manager to clear the initial load triggered during
+  // `SetUp()`.
+  fake_web_state_->SetNavigationManager(
+      std::make_unique<web::FakeNavigationManager>());
+  fake_web_state_->OnPageLoaded(web::PageLoadCompletionStatus::FAILURE);
+
+  web::FakeNavigationContext context;
+  context.SetIsSameDocument(false);
+  fake_web_state_->OnNavigationStarted(&context);
+
+  NotifyNetworkChangeAndWait(net::NetworkChangeNotifier::CONNECTION_WIFI);
+
+  web::FakeNavigationManager* navigation_manager =
+      static_cast<web::FakeNavigationManager*>(
+          fake_web_state_->GetNavigationManager());
+  EXPECT_FALSE(navigation_manager->LoadURLWithParamsWasCalled());
 }
