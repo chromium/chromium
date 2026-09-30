@@ -42,8 +42,6 @@
 #import "ios/web/public/web_state_delegate.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/test/web_test_with_web_state_impl.h"
-#import "ios/web/web_state/deprecated/global_web_state_event_tracker.h"
-#import "ios/web/web_state/deprecated/global_web_state_observer.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/web_state_policy_decider_test_util.h"
 #import "net/http/http_response_headers.h"
@@ -65,51 +63,6 @@ using testing::Return;
 
 namespace web {
 namespace {
-
-// Test observer to check that the GlobalWebStateObserver methods are called as
-// expected.
-class TestGlobalWebStateObserver : public GlobalWebStateObserver {
- public:
-  TestGlobalWebStateObserver()
-      : GlobalWebStateObserver(),
-        did_start_loading_called_(false),
-        did_stop_loading_called_(false),
-        did_start_navigation_called_(false),
-        web_state_destroyed_called_(false) {}
-
-  // Methods returning true if the corresponding GlobalWebStateObserver method
-  // has been called.
-  bool did_start_loading_called() const { return did_start_loading_called_; }
-  bool did_stop_loading_called() const { return did_stop_loading_called_; }
-  bool did_start_navigation_called() const {
-    return did_start_navigation_called_;
-  }
-  bool web_state_destroyed_called() const {
-    return web_state_destroyed_called_;
-  }
-
- private:
-  // GlobalWebStateObserver implementation:
-  void WebStateDidStartLoading(WebState* web_state) override {
-    did_start_loading_called_ = true;
-  }
-  void WebStateDidStopLoading(WebState* web_state) override {
-    did_stop_loading_called_ = true;
-  }
-  void WebStateDidStartNavigation(
-      WebState* web_state,
-      NavigationContext* navigation_context) override {
-    did_start_navigation_called_ = true;
-  }
-  void WebStateDestroyed(WebState* web_state) override {
-    web_state_destroyed_called_ = true;
-  }
-
-  bool did_start_loading_called_;
-  bool did_stop_loading_called_;
-  bool did_start_navigation_called_;
-  bool web_state_destroyed_called_;
-};
 
 // Test decider to check that the WebStatePolicyDecider methods are called as
 // expected.
@@ -473,41 +426,6 @@ TEST_F(WebStateImplTest, DelegateTest) {
 
     delegate.ClearLastProxyAuthenticationRequest();
   }
-}
-
-// Verifies that GlobalWebStateObservers are called when expected.
-TEST_F(WebStateImplTest, GlobalObserverTest) {
-  // Create a WebState as a unique pointer to allow destruction.
-  std::unique_ptr<WebStateImpl> web_state =
-      CreateWebStateImpl(WebState::CreateParams(GetBrowserState()));
-
-  std::unique_ptr<TestGlobalWebStateObserver> observer =
-      std::make_unique<TestGlobalWebStateObserver>();
-
-  // Test that DidStartNavigation() is called.
-  EXPECT_FALSE(observer->did_start_navigation_called());
-  std::unique_ptr<NavigationContextImpl> context =
-      NavigationContextImpl::CreateNavigationContext(
-          web_state.get(), GURL(), /*has_user_gesture=*/true,
-          ui::PageTransition::PAGE_TRANSITION_AUTO_BOOKMARK,
-          /*is_renderer_initiated=*/true);
-  web_state->OnNavigationStarted(context.get());
-  EXPECT_TRUE(observer->did_start_navigation_called());
-
-  // Test that WebStateDidStartLoading() is called.
-  EXPECT_FALSE(observer->did_start_loading_called());
-  web_state->SetIsLoading(true);
-  EXPECT_TRUE(observer->did_start_loading_called());
-
-  // Test that WebStateDidStopLoading() is called.
-  EXPECT_FALSE(observer->did_stop_loading_called());
-  web_state->SetIsLoading(false);
-  EXPECT_TRUE(observer->did_stop_loading_called());
-
-  // Test that WebStateDestroyed() is called.
-  EXPECT_FALSE(observer->web_state_destroyed_called());
-  web_state.reset();
-  EXPECT_TRUE(observer->web_state_destroyed_called());
 }
 
 // A Google Mock matcher which matches WebStatePolicyDecider::RequestInfo.

@@ -422,10 +422,6 @@ class WebStateImpl final : public WebState {
   // safe operation (if this marker is not present, the cast is invalid).
   void AddWebStateImplMarker();
 
-  // Send global creation event. Needs to be the last method called in
-  // the constructor.
-  void SendGlobalCreationEvent();
-
   // WebState is sequence-affine.
   SEQUENCE_CHECKER(sequence_checker_);
 

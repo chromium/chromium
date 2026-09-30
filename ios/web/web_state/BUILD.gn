@@ -55,12 +55,6 @@ source_set("web_state") {
     "web_state_observer_bridge.mm",
     "web_state_policy_decider.mm",
     "web_state_policy_decider_bridge.mm",
-
-    # TODO(crbug.com/41353925): delete those files when no longer needed.
-    "deprecated/global_web_state_event_tracker.h",
-    "deprecated/global_web_state_event_tracker.mm",
-    "deprecated/global_web_state_observer.h",
-    "deprecated/global_web_state_observer.mm",
   ]
 
   frameworks = [ "QuartzCore.framework" ]

@@ -22,7 +22,6 @@
 #import "ios/web/public/session/proto/metadata.pb.h"
 #import "ios/web/public/session/proto/storage.pb.h"
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
-#import "ios/web/web_state/deprecated/global_web_state_event_tracker.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/web_state_impl_realized_web_state.h"
 #import "ios/web/web_state/web_state_impl_serialized_data.h"
@@ -91,8 +90,6 @@ WebStateImpl::WebStateImpl(PassKey, const CreateParams& params) {
                                               WebStateID::NewUnique());
   pimpl_->Init(params.browser_state, last_active_time,
                params.created_with_opener);
-
-  SendGlobalCreationEvent();
 }
 
 WebStateImpl::WebStateImpl(PassKey,
@@ -106,8 +103,6 @@ WebStateImpl::WebStateImpl(PassKey,
   saved_ = std::make_unique<SerializedData>(
       this, browser_state, unique_identifier, std::move(metadata),
       std::move(storage_loader), std::move(session_fetcher));
-
-  SendGlobalCreationEvent();
 }
 
 WebStateImpl::WebStateImpl(PassKey, CloneFrom, const RealizedWebState& pimpl) {
@@ -131,8 +126,6 @@ WebStateImpl::WebStateImpl(PassKey, CloneFrom, const RealizedWebState& pimpl) {
                         pimpl.GetTitle(), pimpl.GetVisibleURL(),
                         pimpl.GetFaviconStatus(), std::move(storage),
                         std::move(session_fetcher));
-
-  SendGlobalCreationEvent();
 }
 
 WebStateImpl::WebStateImpl(TestKey,
@@ -1092,14 +1085,6 @@ void WebStateImpl::AddWebStateImplMarker() {
   // can safely be performed even before the end of the constructor.
   SetUserData(kWebStateIsWebStateImpl,
               std::make_unique<base::SupportsUserData::Data>());
-}
-
-void WebStateImpl::SendGlobalCreationEvent() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(saved_ || pimpl_);
-
-  // Send creation event.
-  GlobalWebStateEventTracker::GetInstance()->OnWebStateCreated(this);
 }
 
 }  // namespace web
