@@ -22,6 +22,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarConstants;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -38,6 +39,7 @@ import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.settings.CustomDividerFragment;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
+import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.prefs.PrefChangeRegistrar;
 import org.chromium.components.prefs.PrefChangeRegistrar.PrefObserver;
 
@@ -105,6 +107,9 @@ public class AppearanceSettingsFragment extends ChromeBaseSettingsFragment
         updateBookmarkBarPref();
         updateUiThemePref();
         updateTabPositionPref();
+
+        TrackerFactory.getTrackerForProfile(getProfile())
+                .notifyEvent(EventConstants.SETTINGS_APPEARANCE_OPENED);
     }
 
     @Override

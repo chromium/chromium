@@ -686,6 +686,9 @@
       <message name="IDS_BOOKMARKS_BAR_EMPTY_MESSAGE" desc="Message shown in a popup menu when a bookmarks bar folder is opened and contains no bookmarks.">
         This folder is empty
       </message>
+      <message name="IDS_BOOKMARK_BAR_IPH_MESSAGE" desc="IPH text bubble encouraging users to turn on the bookmark bar in settings.">
+        You can turn on the bookmark bar in Settings > Appearance
+      </message>
       <!-- USB -->
       <message name="IDS_CONNECTED_TO_USB_DEVICE_NOTIFICATION_TITLE" desc="Text to be shown as a notification when a website is connected to a USB device.">
         Connected to a USB device
