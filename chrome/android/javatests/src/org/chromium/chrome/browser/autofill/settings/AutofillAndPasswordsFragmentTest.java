@@ -36,6 +36,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
@@ -219,6 +220,7 @@ public class AutofillAndPasswordsFragmentTest {
         signInPromoDeclined(false);
 
         mSettingsTestRule.startSettingsActivity(createFragmentArgs());
+        disableItemAnimation();
 
         onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_promo_title))
@@ -257,6 +259,7 @@ public class AutofillAndPasswordsFragmentTest {
         signInPromoDeclined(false);
 
         mSettingsTestRule.startSettingsActivity(createFragmentArgs());
+        disableItemAnimation();
 
         onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_promo_title))
@@ -278,6 +281,7 @@ public class AutofillAndPasswordsFragmentTest {
         signInPromoDeclined(false);
 
         mSettingsTestRule.startSettingsActivity(createFragmentArgs());
+        disableItemAnimation();
 
         onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_promo_dismiss_button)).perform(click());
@@ -304,6 +308,7 @@ public class AutofillAndPasswordsFragmentTest {
         signInPromoDeclined(false);
 
         mSettingsTestRule.startSettingsActivity(createFragmentArgs());
+        disableItemAnimation();
 
         onView(withId(R.id.signin_promo_view_container)).check(matches(isDisplayed()));
         onView(withId(R.id.signin_promo_primary_button)).perform(click());
@@ -749,5 +754,17 @@ public class AutofillAndPasswordsFragmentTest {
         onView(withText(titleRes)).perform(scrollTo(), click());
 
         verify(mSettingsNavigation).startSettings(any(), eq(expectedFragment), any(), eq(true));
+    }
+
+    /** Disable animation to reduce flakiness. */
+    private void disableItemAnimation() {
+        AutofillAndPasswordsFragment fragment = mSettingsTestRule.getFragment();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    RecyclerView listView = fragment.getListView();
+                    if (listView != null) {
+                        listView.setItemAnimator(null);
+                    }
+                });
     }
 }
