@@ -70,7 +70,9 @@ public final class CronetStatsLog {
      * long time_to_send_first_byte_millis, long time_to_establish_dns_micros, long
      * time_to_establish_ssl_micros, long time_to_connect_micros, long
      * time_to_send_first_byte_micros, long time_to_receive_header_last_byte_micros, int is_proxied,
-     * int can_use_adaptive_network_selection);<br>
+     * int can_use_adaptive_network_selection, long request_body_size_kb, long
+     * response_body_size_kb, long upload_throughput_bytes_per_sec, long
+     * download_throughput_bytes_per_sec, int is_cached);<br>
      */
     public static final int CRONET_TRAFFIC_REPORTED = 704;
 
@@ -424,6 +426,11 @@ public final class CronetStatsLog {
             CRONET_TRAFFIC_REPORTED__CAN_USE_ADAPTIVE_NETWORK_SELECTION__OPTIONAL_BOOLEAN_TRUE = 1;
     public static final int
             CRONET_TRAFFIC_REPORTED__CAN_USE_ADAPTIVE_NETWORK_SELECTION__OPTIONAL_BOOLEAN_FALSE = 2;
+
+    // Values for CronetTrafficReported.is_cached
+    public static final int CRONET_TRAFFIC_REPORTED__IS_CACHED__IS_CACHED_UNKNOWN = 0;
+    public static final int CRONET_TRAFFIC_REPORTED__IS_CACHED__IS_CACHED_NOT_CACHED = 1;
+    public static final int CRONET_TRAFFIC_REPORTED__IS_CACHED__IS_CACHED_CACHE_HIT = 2;
 
     // Values for CronetEngineBuilderInitialized.author
     public static final int CRONET_ENGINE_BUILDER_INITIALIZED__AUTHOR__AUTHOR_UNSPECIFIED = 0;
@@ -785,7 +792,12 @@ public final class CronetStatsLog {
             long arg36,
             long arg37,
             int arg38,
-            int arg39) {
+            int arg39,
+            long arg40,
+            long arg41,
+            long arg42,
+            long arg43,
+            int arg44) {
         final StatsEvent.Builder builder = StatsEvent.newBuilder();
         builder.setAtomId(code);
         builder.writeLong(arg1);
@@ -830,6 +842,11 @@ public final class CronetStatsLog {
         builder.writeLong(arg37);
         builder.writeInt(arg38);
         builder.writeInt(arg39);
+        builder.writeLong(arg40);
+        builder.writeLong(arg41);
+        builder.writeLong(arg42);
+        builder.writeLong(arg43);
+        builder.writeInt(arg44);
 
         builder.usePooledBuffer();
         StatsLog.write(builder.build());

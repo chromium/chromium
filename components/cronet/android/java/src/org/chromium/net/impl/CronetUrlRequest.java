@@ -1014,53 +1014,36 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
         final Map<String, List<String>> responseHeaders;
         final String negotiatedProtocol;
         final int httpStatusCode;
-        final boolean wasCached;
+        final CronetTrafficInfo.CacheState cacheState;
         final Boolean isProxied = mResponseInfo != null ? mResponseInfo.isProxied() : null;
         if (mResponseInfo != null) {
             responseHeaders = mResponseInfo.getAllHeaders();
             negotiatedProtocol = mResponseInfo.getNegotiatedProtocol();
             httpStatusCode = mResponseInfo.getHttpStatusCode();
-            wasCached = mResponseInfo.wasCached();
+            cacheState =
+                    mResponseInfo.wasCached()
+                            ? CronetTrafficInfo.CacheState.CACHE_HIT
+                            : CronetTrafficInfo.CacheState.NOT_CACHED;
         } else {
             responseHeaders = Collections.emptyMap();
             negotiatedProtocol = "";
             httpStatusCode = 0;
-            wasCached = false;
+            cacheState = CronetTrafficInfo.CacheState.UNSPECIFIED;
         }
 
         // TODO(stefanoduo): A better approach might be keeping track of the total length of an
         // upload and use that value as the request body size instead.
         final long requestTotalSizeInBytes = mMetrics.getSentByteCount();
-        final long requestHeaderSizeInBytes;
-        final long requestBodySizeInBytes;
-        // Cached responses might still need to be revalidated over the network before being served
-        // (from UrlResponseInfo#wasCached documentation).
-        if (wasCached && requestTotalSizeInBytes == 0) {
-            // Served from cache without the need to revalidate.
-            requestHeaderSizeInBytes = 0;
-            requestBodySizeInBytes = 0;
-        } else {
-            // Served from cache with the need to revalidate or served from the network directly.
-            requestHeaderSizeInBytes =
-                    CronetRequestCommon.estimateHeadersSizeInBytes(mRequestHeaders);
-            requestBodySizeInBytes = max(0, requestTotalSizeInBytes - requestHeaderSizeInBytes);
-        }
+        final long requestHeaderSizeInBytes =
+                CronetRequestCommon.estimateHeadersSizeInBytes(mRequestHeaders);
+        final long requestBodySizeInBytes =
+                max(0, requestTotalSizeInBytes - requestHeaderSizeInBytes);
 
         final long responseTotalSizeInBytes = mMetrics.getReceivedByteCount();
-        final long responseBodySizeInBytes;
-        final long responseHeaderSizeInBytes;
-        // Cached responses might still need to be revalidated over the network before being served
-        // (from UrlResponseInfo#wasCached documentation).
-        if (wasCached && responseTotalSizeInBytes == 0) {
-            // Served from cache without the need to revalidate.
-            responseBodySizeInBytes = 0;
-            responseHeaderSizeInBytes = 0;
-        } else {
-            // Served from cache with the need to revalidate or served from the network directly.
-            responseHeaderSizeInBytes =
-                    CronetRequestCommon.estimateHeadersSizeInBytes(responseHeaders);
-            responseBodySizeInBytes = max(0, responseTotalSizeInBytes - responseHeaderSizeInBytes);
-        }
+        final long responseHeaderSizeInBytes =
+                CronetRequestCommon.estimateHeadersSizeInBytes(responseHeaders);
+        final long responseBodySizeInBytes =
+                max(0, responseTotalSizeInBytes - responseHeaderSizeInBytes);
 
         final Duration totalLatency;
         if (mMetrics.getRequestStart() != null && mMetrics.getRequestEnd() != null) {
@@ -1128,7 +1111,8 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                 mMetrics.getTimeToReceiveHeaderLastByteMicroseconds(),
                 isProxied,
                 // go/cronet-cans currently only supports bidirectional streams.
-                /* isAdaptiveNetworkStream= */ false);
+                /* isAdaptiveNetworkStream= */ false,
+                cacheState);
     }
 
     // Maybe report metrics. This method should only be called on Callback's executor thread and

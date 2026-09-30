@@ -63,6 +63,7 @@ public final class CronetLoggerImplTest {
         when(mTrafficInfo.getFailureReason())
                 .thenReturn(CronetTrafficInfo.RequestFailureReason.UNKNOWN);
         when(mTrafficInfo.getCronetSource()).thenReturn(CronetSource.CRONET_SOURCE_UNSPECIFIED);
+        when(mTrafficInfo.getCacheState()).thenReturn(CronetTrafficInfo.CacheState.UNSPECIFIED);
     }
 
     @Test

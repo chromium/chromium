@@ -302,7 +302,24 @@ public class CronetLoggerImpl extends CronetLogger {
                     trafficInfo.getTimeToSendFirstByteMicros(),
                     trafficInfo.getTimeToReceiveHeaderLastByteMicros(),
                     OptionalBoolean.fromBoolean(trafficInfo.isProxied()).getValue(),
-                    OptionalBoolean.fromBoolean(trafficInfo.isAdaptiveNetworkStream()).getValue());
+                    OptionalBoolean.fromBoolean(trafficInfo.isAdaptiveNetworkStream()).getValue(),
+                    /* request_body_size_kb= */ -1,
+                    /* response_body_size_kb= */ -1,
+                    /* upload_throughput_bytes_per_sec= */ -1,
+                    /* download_throughput_bytes_per_sec= */ -1,
+                    convertToProtoCacheState(trafficInfo.getCacheState()));
+        }
+    }
+
+    private static int convertToProtoCacheState(CronetTrafficInfo.CacheState cacheState) {
+        switch (cacheState) {
+            case NOT_CACHED:
+                return CronetStatsLog.CRONET_TRAFFIC_REPORTED__IS_CACHED__IS_CACHED_NOT_CACHED;
+            case CACHE_HIT:
+                return CronetStatsLog.CRONET_TRAFFIC_REPORTED__IS_CACHED__IS_CACHED_CACHE_HIT;
+            case UNSPECIFIED:
+            default:
+                return CronetStatsLog.CRONET_TRAFFIC_REPORTED__IS_CACHED__IS_CACHED_UNKNOWN;
         }
     }
 

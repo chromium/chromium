@@ -317,6 +317,12 @@ public abstract class CronetLogger {
             OTHER,
         }
 
+        public static enum CacheState {
+            UNSPECIFIED,
+            NOT_CACHED,
+            CACHE_HIT,
+        }
+
         private final long mRequestHeaderSizeInBytes;
         private final long mRequestBodySizeInBytes;
         private final long mResponseHeaderSizeInBytes;
@@ -347,6 +353,7 @@ public abstract class CronetLogger {
         private final long mTimeToReceiveHeaderLastByteMicros;
         private final Boolean mIsProxied;
         private final boolean mIsAdaptiveNetworkStream;
+        private final CacheState mCacheState;
 
         public CronetTrafficInfo(
                 long requestHeaderSizeInBytes,
@@ -378,7 +385,8 @@ public abstract class CronetLogger {
                 long timeToSendFirstByteMicros,
                 long timeToReceiveHeaderLastByteMicros,
                 Boolean isProxied,
-                boolean isAdaptiveNetworkStream) {
+                boolean isAdaptiveNetworkStream,
+                CacheState cacheState) {
             mRequestHeaderSizeInBytes = requestHeaderSizeInBytes;
             mRequestBodySizeInBytes = requestBodySizeInBytes;
             mResponseHeaderSizeInBytes = responseHeaderSizeInBytes;
@@ -409,6 +417,7 @@ public abstract class CronetLogger {
             mTimeToReceiveHeaderLastByteMicros = timeToReceiveHeaderLastByteMicros;
             mIsProxied = isProxied;
             mIsAdaptiveNetworkStream = isAdaptiveNetworkStream;
+            mCacheState = cacheState;
         }
 
         /**
@@ -544,6 +553,10 @@ public abstract class CronetLogger {
 
         public boolean isAdaptiveNetworkStream() {
             return mIsAdaptiveNetworkStream;
+        }
+
+        public CacheState getCacheState() {
+            return mCacheState;
         }
     }
 

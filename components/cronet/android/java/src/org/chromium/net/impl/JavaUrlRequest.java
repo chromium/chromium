@@ -958,46 +958,36 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
             final Map<String, List<String>> responseHeaders;
             final String negotiatedProtocol;
             final int httpStatusCode;
-            final boolean wasCached;
+            final CronetTrafficInfo.CacheState cacheState;
             if (mUrlResponseInfo != null) {
                 responseHeaders = mUrlResponseInfo.getAllHeaders();
                 negotiatedProtocol = mUrlResponseInfo.getNegotiatedProtocol();
                 httpStatusCode = mUrlResponseInfo.getHttpStatusCode();
-                wasCached = mUrlResponseInfo.wasCached();
+                cacheState =
+                        mUrlResponseInfo.wasCached()
+                                ? CronetTrafficInfo.CacheState.CACHE_HIT
+                                : CronetTrafficInfo.CacheState.NOT_CACHED;
             } else {
                 responseHeaders = Collections.emptyMap();
                 negotiatedProtocol = "";
                 httpStatusCode = 0;
-                wasCached = false;
+                cacheState = CronetTrafficInfo.CacheState.UNSPECIFIED;
             }
 
-            final long requestHeaderSizeInBytes;
-            final long requestBodySizeInBytes;
-            if (wasCached) {
-                requestHeaderSizeInBytes = 0;
-                requestBodySizeInBytes = 0;
-            } else {
-                requestHeaderSizeInBytes = estimateHeadersSizeInBytes(mRequestHeaders);
-                // TODO(stefanoduo): Add logic to keep track of request body size.
-                requestBodySizeInBytes = -1;
-            }
+            final long requestHeaderSizeInBytes = estimateHeadersSizeInBytes(mRequestHeaders);
+            // TODO(stefanoduo): Add logic to keep track of request body size.
+            final long requestBodySizeInBytes = -1;
 
+            final long responseHeaderSizeInBytes = estimateHeadersSizeInBytesList(responseHeaders);
             final long responseBodySizeInBytes;
-            final long responseHeaderSizeInBytes;
-            if (wasCached) {
-                responseHeaderSizeInBytes = 0;
-                responseBodySizeInBytes = 0;
+            // Content-Length is not mandatory, if missing report a non-valid response body size
+            // for the time being.
+            if (responseHeaders.containsKey("Content-Length")) {
+                responseBodySizeInBytes =
+                        parseContentLengthString(responseHeaders.get("Content-Length").get(0));
             } else {
-                responseHeaderSizeInBytes = estimateHeadersSizeInBytesList(responseHeaders);
-                // Content-Length is not mandatory, if missing report a non-valid response body size
-                // for the time being.
-                if (responseHeaders.containsKey("Content-Length")) {
-                    responseBodySizeInBytes =
-                            parseContentLengthString(responseHeaders.get("Content-Length").get(0));
-                } else {
-                    // TODO(stefanoduo): Add logic to keep track of response body size.
-                    responseBodySizeInBytes = -1;
-                }
+                // TODO(stefanoduo): Add logic to keep track of response body size.
+                responseBodySizeInBytes = -1;
             }
 
             final Duration totalLatency = Duration.ofSeconds(0);
@@ -1052,7 +1042,8 @@ final class JavaUrlRequest extends ExperimentalUrlRequest {
                     /* timeToSendFirstByteMicros= */ -1,
                     /* timeToReceiveHeaderLastByteMicros= */ -1,
                     /* isProxied= */ null,
-                    /* isAdaptiveNetworkStream= */ false);
+                    /* isAdaptiveNetworkStream= */ false,
+                    cacheState);
         }
 
         // Maybe report metrics. This method should only be called on Callback's executor thread and

@@ -485,6 +485,7 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.getReadCount()).isGreaterThan(0);
         assertThat(trafficInfo.getOnUploadReadCount()).isEqualTo(0);
         assertThat(trafficInfo.getIsBidiStream()).isFalse();
+        assertThat(trafficInfo.getCacheState()).isEqualTo(CronetTrafficInfo.CacheState.NOT_CACHED);
         assertThat(trafficInfo.getTimeToEstablishDNSMicros()).isGreaterThan(-1);
         assertThat(trafficInfo.getTimeToEstablishSSLMicros()).isGreaterThan(0);
         assertThat(trafficInfo.getTimeToConnectMicros()).isGreaterThan(0);
@@ -493,6 +494,51 @@ public final class CronetLoggerTest {
 
         assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
         assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(1);
+    }
+
+    @Test
+    @SmallTest
+    public void testCachedRequestNative() throws Exception {
+        final String url = mNativeTestServer.getFileURL("/cacheable.txt");
+        mTestRule
+                .getTestFramework()
+                .applyEngineBuilderPatch(
+                        (builder) ->
+                                builder.enableHttpCache(
+                                        CronetEngine.Builder.HTTP_CACHE_IN_MEMORY, 100 * 1024));
+        CronetEngine engine = mTestRule.getTestFramework().startEngine();
+
+        TestUrlRequestCallback callback1 = new TestUrlRequestCallback();
+        engine.newUrlRequestBuilder(url, callback1, callback1.getExecutor()).build().start();
+        callback1.blockForDone();
+        assertThat(callback1.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback1.getResponseInfoWithChecks().wasCached()).isFalse();
+        mTestLogger.waitForLogCronetTrafficInfo();
+
+        final CronetTrafficInfo trafficInfo1 = mTestLogger.getLastCronetTrafficInfo();
+        assertThat(trafficInfo1.getResponseHeaderSizeInBytes()).isGreaterThan(0);
+        assertThat(trafficInfo1.getResponseBodySizeInBytes()).isGreaterThan(0);
+        assertThat(trafficInfo1.getResponseStatusCode()).isEqualTo(200);
+        assertThat(trafficInfo1.getTerminalState())
+                .isEqualTo(CronetTrafficInfo.RequestTerminalState.SUCCEEDED);
+        assertThat(trafficInfo1.getCacheState()).isEqualTo(CronetTrafficInfo.CacheState.NOT_CACHED);
+
+        TestUrlRequestCallback callback2 = new TestUrlRequestCallback();
+        engine.newUrlRequestBuilder(url, callback2, callback2.getExecutor()).build().start();
+        callback2.blockForDone();
+        assertThat(callback2.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
+        assertThat(callback2.getResponseInfoWithChecks().wasCached()).isTrue();
+        mTestLogger.waitForLogCronetTrafficInfo();
+
+        final CronetTrafficInfo trafficInfo2 = mTestLogger.getLastCronetTrafficInfo();
+        assertThat(trafficInfo2.getResponseHeaderSizeInBytes()).isGreaterThan(0);
+        assertThat(trafficInfo2.getResponseStatusCode()).isEqualTo(200);
+        assertThat(trafficInfo2.getTerminalState())
+                .isEqualTo(CronetTrafficInfo.RequestTerminalState.SUCCEEDED);
+        assertThat(trafficInfo2.getCacheState()).isEqualTo(CronetTrafficInfo.CacheState.CACHE_HIT);
+
+        assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
+        assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(2);
     }
 
     @Test
@@ -529,6 +575,7 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.getReadCount()).isEqualTo(0);
         assertThat(trafficInfo.getOnUploadReadCount()).isEqualTo(0);
         assertThat(trafficInfo.getIsBidiStream()).isFalse();
+        assertThat(trafficInfo.getCacheState()).isEqualTo(CronetTrafficInfo.CacheState.UNSPECIFIED);
         assertThat(trafficInfo.getFinalUserCallbackThrew()).isFalse();
 
         assertThat(trafficInfo.getConnectionCloseSource()).isEqualTo(ConnectionCloseSource.UNKNOWN);
@@ -628,6 +675,7 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.getReadCount()).isEqualTo(0);
         assertThat(trafficInfo.getOnUploadReadCount()).isEqualTo(0);
         assertThat(trafficInfo.getIsBidiStream()).isFalse();
+        assertThat(trafficInfo.getCacheState()).isEqualTo(CronetTrafficInfo.CacheState.UNSPECIFIED);
         assertThat(trafficInfo.getFinalUserCallbackThrew()).isFalse();
         assertThat(trafficInfo.getConnectionCloseSource()).isEqualTo(ConnectionCloseSource.UNKNOWN);
         assertThat(trafficInfo.getNetworkInternalErrorCode()).isEqualTo(0);
@@ -663,6 +711,8 @@ public final class CronetLoggerTest {
 
         mTestLogger.waitForLogCronetTrafficInfo();
         assertThat(mTestLogger.getLastCronetTrafficInfo().getOnUploadReadCount()).isGreaterThan(0);
+        assertThat(mTestLogger.getLastCronetTrafficInfo().getCacheState())
+                .isEqualTo(CronetTrafficInfo.CacheState.NOT_CACHED);
     }
 
     @Test
@@ -709,6 +759,8 @@ public final class CronetLoggerTest {
             assertThat(trafficInfo.getReadCount()).isGreaterThan(0);
             assertThat(trafficInfo.getOnUploadReadCount()).isGreaterThan(0);
             assertThat(trafficInfo.getIsBidiStream()).isTrue();
+            assertThat(trafficInfo.getCacheState())
+                    .isEqualTo(CronetTrafficInfo.CacheState.NOT_CACHED);
             assertThat(trafficInfo.getFinalUserCallbackThrew()).isFalse();
             assertThat(trafficInfo.getConnectionCloseSource())
                     .isEqualTo(ConnectionCloseSource.UNKNOWN);
