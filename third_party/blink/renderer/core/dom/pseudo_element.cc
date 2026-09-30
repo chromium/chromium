@@ -224,6 +224,11 @@ const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
                           (AtomicString("::scroll-marker-group")));
       return scroll_marker_group;
     }
+    case kPseudoIdScrollButton: {
+      DEFINE_STATIC_LOCAL(QualifiedName, scroll_button,
+                          (AtomicString("::scroll-button")));
+      return scroll_button;
+    }
     case kPseudoIdScrollButtonBlockStart: {
       DEFINE_STATIC_LOCAL(QualifiedName, scroll_button_block_start,
                           (AtomicString("::scroll-button(block-start)")));
@@ -326,6 +331,11 @@ AtomicString PseudoElement::PseudoElementNameForEvents(Element* element) {
 
 PseudoId PseudoElement::GetPseudoIdForStyling() const {
   return ResolvePseudoIdAlias(pseudo_id_);
+}
+
+std::pair<PseudoId, AtomicString>
+PseudoElement::GetSelectorPseudoIdAndArgument() const {
+  return {GetPseudoIdForStyling(), GetPseudoArgument()};
 }
 
 bool PseudoElement::IsWebExposed(PseudoId pseudo_id, const Node* parent) {

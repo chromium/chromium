@@ -65,7 +65,7 @@ Focusable* Focusable::CreateFromElement(Element& element,
   // Track the pseudo-element through its CSSPseudoElement if possible (the
   // same cached one that `Event.pseudoTarget` exposes for focus events on it).
   // `CSSPseudoElement::From()` returns nullptr for pseudo-elements that the
-  // CSSPseudoElement interface does not support (e.g. `::scroll-button()` or
+  // CSSPseudoElement interface does not support (e.g.
   // `::column::scroll-marker`), which are tracked directly instead.
   if (pseudo_element) {
     if (CSSPseudoElement* css_pseudo_element =

@@ -11221,7 +11221,7 @@ PseudoElement* Element::GetPseudoElement(
 
 CSSPseudoElement* Element::pseudo(const AtomicString& type) {
   auto [pseudo_id, pseudo_argument] =
-      CSSPseudoElement::ConvertTypeToSupportedPseudoId(type);
+      CSSPseudoElement::ConvertTypeToSupportedPseudoId(type, this);
   return EnsureCSSPseudoElement(pseudo_id, pseudo_argument);
 }
 

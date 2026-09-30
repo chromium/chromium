@@ -139,29 +139,26 @@ promise_test(async (t) => {
     scroller.scrollTop = 0;
   });
 
-  // ::scroll-button() is not supported by the CSSPseudoElement interface.
-  assert_equals(scroller.pseudo("::scroll-button(block-end)"), null);
+  const button = scroller.pseudo("::scroll-button(block-end)");
+  assert_true(button instanceof CSSPseudoElement, "precondition");
 
   // Clicking the scroll button focuses it.
   const buttonStyle = getComputedStyle(scroller, "::scroll-button(block-end)");
   await clickScrollButton();
   assert_equals(buttonStyle.backgroundColor, FOCUSED_COLOR, "clicked scroll button is focused");
 
-  // Just like Event.pseudoTarget, only the originating element is exposed.
   const focusable = document.activeFocusable;
-  assert_focusable(focusable, { target: scroller });
+  assert_focusable(focusable, { target: scroller, pseudoElement: button });
   assert_equals(document.activeElement, scroller);
 
-  // focus() still restores focus to the scroll button itself.
+  // focus() restores focus to the scroll button.
   item1.pseudo("::scroll-marker").focus();
   assert_not_equals(buttonStyle.backgroundColor, FOCUSED_COLOR, "scroll button is blurred");
   focusable.focus();
   assert_equals(buttonStyle.backgroundColor, FOCUSED_COLOR, "scroll button is refocused");
-  assert_focusable(document.activeFocusable, { target: scroller });
-}, "activeFocusable with a pseudo-element that CSSPseudoElement does not support");
+  assert_focusable(document.activeFocusable, { target: scroller, pseudoElement: button });
+}, "activeFocusable with ::scroll-button()");
 
-// TODO(crbug.com/565786176): This fails until the CSSPseudoElement interface
-// supports ::scroll-button(), which Focusable needs to find a re-created one.
 promise_test(async (t) => {
   const scroller = document.getElementById("scroller");
   t.add_cleanup(() => {

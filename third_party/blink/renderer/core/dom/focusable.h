@@ -72,7 +72,8 @@ class CORE_EXPORT Focusable final : public ScriptWrappable {
   // The focusable item, i.e. what `focus()` focuses, which `target` and
   // `pseudoElement` are derived from. Exactly one of these is set:
   // - `element_`, for elements, and for pseudo-elements that the
-  //   CSSPseudoElement interface doesn't support (e.g. `::scroll-button()`).
+  //   CSSPseudoElement interface doesn't support (e.g.
+  //   `::column::scroll-marker`).
   //   Just like `Event.pseudoTarget`, such a pseudo-element is only exposed
   //   through its ultimate originating element as `target`.
   // - `pseudo_element_`, for pseudo-elements that the CSSPseudoElement

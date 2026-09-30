@@ -16,10 +16,15 @@ class ScrollButtonPseudoElement : public PseudoElement,
   static PseudoId PseudoIdFromScrollButtonArgument(
       const AtomicString& raw_argument,
       const ComputedStyle& originating_element_style);
+  // Returns the logical direction (e.g. "block-start") of the scroll button
+  // with `pseudo_id`, which is how ::scroll-button() refers to it.
+  static AtomicString ScrollButtonArgumentFromPseudoId(PseudoId pseudo_id);
 
   ScrollButtonPseudoElement(Element* originating_element, PseudoId pseudo_id);
 
   bool IsScrollButtonPseudoElement() const final { return true; }
+  std::pair<PseudoId, AtomicString> GetSelectorPseudoIdAndArgument()
+      const override;
 
   int DefaultTabIndex() const override { return 0; }
   void DefaultEventHandler(Event&) override;

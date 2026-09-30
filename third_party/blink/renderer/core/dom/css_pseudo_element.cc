@@ -9,15 +9,19 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_csspseudoelement_document_element_text.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_csspseudoelement_element.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
+#include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_selector_parser.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/geometry_utils.h"
+#include "third_party/blink/renderer/core/dom/scroll_button_pseudo_element.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/geometry/dom_point.h"
 #include "third_party/blink/renderer/core/geometry/dom_quad.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -31,6 +35,8 @@ bool CSSPseudoElement::IsSupportedTypeForCSSPseudoElement(PseudoId pseudo_id) {
       return true;
     case kPseudoIdBackdrop:
       return RuntimeEnabledFeatures::CSSPseudoElementBackdropEnabled();
+    case kPseudoIdScrollButton:
+      return RuntimeEnabledFeatures::CSSPseudoElementScrollButtonEnabled();
     case kPseudoIdViewTransition:
     case kPseudoIdViewTransitionGroup:
     case kPseudoIdViewTransitionImagePair:
@@ -43,6 +49,40 @@ bool CSSPseudoElement::IsSupportedTypeForCSSPseudoElement(PseudoId pseudo_id) {
 }
 
 namespace {
+
+// All scroll buttons have kPseudoIdScrollButton, so the argument is what
+// identifies a scroll button. Returns it as a logical direction, so that each
+// scroll button has a single CSSPseudoElement (e.g. `up` is `block-start` in
+// horizontal-tb), or null for `*`.
+AtomicString ResolveScrollButtonArgument(Element& originating_element,
+                                         const AtomicString& argument) {
+  if (!RuntimeEnabledFeatures::CSSPseudoElementScrollButtonEnabled()) {
+    return g_null_atom;
+  }
+  const CSSValueID direction = CssValueKeywordID(argument);
+  switch (direction) {
+    case CSSValueID::kBlockStart:
+    case CSSValueID::kInlineStart:
+    case CSSValueID::kInlineEnd:
+    case CSSValueID::kBlockEnd:
+      return GetCSSValueNameAs<AtomicString>(direction);
+    case CSSValueID::kUp:
+    case CSSValueID::kRight:
+    case CSSValueID::kDown:
+    case CSSValueID::kLeft:
+      break;
+    default:
+      return g_null_atom;
+  }
+  // Physical directions map to logical ones based on the writing mode.
+  originating_element.GetDocument().UpdateStyleAndLayoutTreeForElement(
+      &originating_element, DocumentUpdateReason::kJavaScript);
+  const ComputedStyle* style = originating_element.EnsureComputedStyle();
+  return ScrollButtonPseudoElement::ScrollButtonArgumentFromPseudoId(
+      ScrollButtonPseudoElement::PseudoIdFromScrollButtonArgument(
+          GetCSSValueNameAs<AtomicString>(direction),
+          style ? *style : ComputedStyle::GetInitialStyleSingleton()));
+}
 
 PseudoId GetViewTransitionPseudoParentId(PseudoId pseudo_id) {
   switch (pseudo_id) {
@@ -95,7 +135,8 @@ String CSSPseudoElement::type() const {
 }
 
 std::pair<PseudoId, AtomicString>
-CSSPseudoElement::ConvertTypeToSupportedPseudoId(const AtomicString& type) {
+CSSPseudoElement::ConvertTypeToSupportedPseudoId(const AtomicString& type,
+                                                 Element* originating_element) {
   HeapVector<CSSSelector> arena;
   CSSParserTokenStream stream(type);
   base::span<CSSSelector> vector = CSSSelectorParser::ParseSelector(
@@ -118,6 +159,15 @@ CSSPseudoElement::ConvertTypeToSupportedPseudoId(const AtomicString& type) {
       return {kPseudoIdInvalid, g_null_atom};
     }
     argument = selector.IdentList()[0];
+  } else if (pseudo_id == kPseudoIdScrollButton) {
+    // Only elements have scroll buttons.
+    if (originating_element) {
+      argument = ResolveScrollButtonArgument(*originating_element,
+                                             selector.Argument());
+    }
+    if (argument.IsNull()) {
+      return {kPseudoIdInvalid, g_null_atom};
+    }
   } else {
     argument = selector.Argument();
   }
@@ -139,12 +189,14 @@ CSSPseudoElement* CSSPseudoElement::From(PseudoElement* pseudo_element) {
   Vector<std::pair<PseudoId, AtomicString>> chain;
   for (auto* p = pseudo_element; p;
        p = DynamicTo<PseudoElement>(p->parentElement())) {
-    if (!p->isConnected() ||
-        !IsSupportedTypeForCSSPseudoElement(p->GetPseudoId())) {
+    auto [id, argument] = p->GetSelectorPseudoIdAndArgument();
+    if (!p->isConnected() || !IsSupportedTypeForCSSPseudoElement(id)) {
       return nullptr;
     }
-    chain.emplace_back(p->GetPseudoId(),
-                       keep_argument ? p->GetPseudoArgument() : g_null_atom);
+    if (!keep_argument && IsTransitionPseudoElement(id)) {
+      argument = g_null_atom;
+    }
+    chain.emplace_back(id, argument);
   }
   // Start from the outermost pseudo on the originating element.
   const auto& [outer_id, outer_argument] = chain.back();
@@ -202,7 +254,8 @@ CSSPseudoElement* CSSPseudoElement::pseudo(
 }
 
 CSSPseudoElement* CSSPseudoElement::pseudo(const AtomicString& type) {
-  auto [pseudo_id, pseudo_argument] = ConvertTypeToSupportedPseudoId(type);
+  auto [pseudo_id, pseudo_argument] =
+      ConvertTypeToSupportedPseudoId(type, /*originating_element=*/nullptr);
   return pseudo(pseudo_id, pseudo_argument);
 }
 
@@ -276,7 +329,10 @@ PseudoElement* GetPseudoElementForCSSPseudoElement(
     current_owner = next_pseudo;
   }
 
-  return current_owner->GetPseudoElement(pseudo_id, pseudo_argument);
+  // GetStyledPseudoElement() resolves the pseudo-element that a selector refers
+  // to, e.g. the scroll button for ::scroll-button(block-start).
+  return DynamicTo<PseudoElement>(
+      current_owner->GetStyledPseudoElement(pseudo_id, pseudo_argument));
 }
 
 }  // namespace

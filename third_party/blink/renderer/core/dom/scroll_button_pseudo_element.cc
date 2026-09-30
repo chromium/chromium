@@ -10,6 +10,7 @@
 #include "cc/input/scroll_snap_data.h"
 #include "cc/input/snap_selection_strategy.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
@@ -81,6 +82,29 @@ PseudoId ScrollButtonPseudoElement::PseudoIdFromScrollButtonArgument(
   }
   CHECK(mapping.BlockEnd());
   return kPseudoIdScrollButtonBlockEnd;
+}
+
+// static
+AtomicString ScrollButtonPseudoElement::ScrollButtonArgumentFromPseudoId(
+    PseudoId pseudo_id) {
+  switch (pseudo_id) {
+    case kPseudoIdScrollButtonBlockStart:
+      return GetCSSValueNameAs<AtomicString>(CSSValueID::kBlockStart);
+    case kPseudoIdScrollButtonInlineStart:
+      return GetCSSValueNameAs<AtomicString>(CSSValueID::kInlineStart);
+    case kPseudoIdScrollButtonInlineEnd:
+      return GetCSSValueNameAs<AtomicString>(CSSValueID::kInlineEnd);
+    case kPseudoIdScrollButtonBlockEnd:
+      return GetCSSValueNameAs<AtomicString>(CSSValueID::kBlockEnd);
+    default:
+      NOTREACHED();
+  }
+}
+
+std::pair<PseudoId, AtomicString>
+ScrollButtonPseudoElement::GetSelectorPseudoIdAndArgument() const {
+  return {kPseudoIdScrollButton,
+          ScrollButtonArgumentFromPseudoId(GetPseudoId())};
 }
 
 namespace {
