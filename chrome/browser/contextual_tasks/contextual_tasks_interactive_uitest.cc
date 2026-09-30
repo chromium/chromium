@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
@@ -20,6 +21,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/run_until.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
@@ -72,6 +74,7 @@
 #include "components/contextual_search/contextual_search_types.h"
 #include "components/contextual_search/mock_contextual_search_session_handle.h"
 #include "components/contextual_search/pref_names.h"
+#include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/host_override.h"
@@ -3362,6 +3365,151 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksCopyUrlTest, FocusAndBlur) {
                               /*fail_if_not_instrumented=*/false));
 }
 
+// Enables the ephemeral branded toolbar entry point, which surfaces the
+// ephemeral Contextual Tasks toolbar button after the side panel is closed on a
+// tab associated with a task.
+class ContextualTasksEphemeralToolbarInteractiveUiTest
+    : public ContextualTasksInteractiveUiTest {
+ public:
+  void SetUpFeatureList() override {
+    std::vector<base::test::FeatureRefAndParams> enabled =
+        GetDefaultEnabledFeatures();
+    // The ephemeral button only shows when it matches the side panel dock.
+    // Enable the right-hand variant so the test does not depend on the
+    // default side panel alignment.
+    enabled.push_back(
+        {kContextualTasksEphemeralBrandedEntryPoint,
+         {{"ContextualTasksEntryPoint", "toolbar-ephemeral-branded"},
+          {"enable-right-hand-contextual-tasks-ephemeral-button", "true"}}});
+    enabled.push_back({kContextualTasksForceEntryPointEligibility, {}});
+    feature_list_.InitWithFeaturesAndParameters(enabled,
+                                                GetDefaultDisabledFeatures());
+  }
+
+  std::optional<base::Uuid> GetTaskIdForActiveTab() {
+    content::WebContents* const web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    std::optional<ContextualTask> task =
+        CHECK_DEREF(ContextualTasksServiceFactory::GetForProfile(
+                        browser()->GetProfile()))
+            .GetContextualTaskForTab(
+                sessions::SessionTabHelper::IdForTab(web_contents));
+    if (!task.has_value()) {
+      return std::nullopt;
+    }
+    return task->GetTaskId();
+  }
+
+  content::WebContents* GetActiveSidePanelWebContents() {
+    return ContextualTasksPanelController::From(browser())
+        ->GetActiveWebContents();
+  }
+};
+
+// This tests the following CUJ:
+//  (1) User navigates to a webpage and starts a Lens region search from the
+//      Chrome app menu.
+//  (2) Contextual Tasks side panel opens with an active task for the tab.
+//  (3) User clicks the close button in the Contextual Tasks side panel
+//      toolbar.
+//  (4) Side panel closes and the ephemeral Contextual Tasks button appears in
+//      the browser toolbar.
+//  (5) User clicks the ephemeral toolbar button.
+//  (6) Contextual Tasks side panel reopens and restores the same task and
+//      side panel contents.
+//  (7) Ephemeral toolbar button hides while the side panel is open.
+IN_PROC_BROWSER_TEST_P(ContextualTasksEphemeralToolbarInteractiveUiTest,
+                       EphemeralToolbarButtonReopen) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kReopenedSidePanelId);
+
+  const DeepQuery kCloseButton = {"contextual-tasks-app", "#toolbar",
+                                  "#closeButton"};
+
+  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto off_center_point = base::BindLambdaForTesting([browser_view]() {
+    gfx::Point off_center =
+        browser_view->GetContentsView()->GetBoundsInScreen().CenterPoint();
+    off_center.Offset(100, 100);
+    return off_center;
+  });
+
+  std::optional<base::Uuid> task_id_before_close;
+  base::WeakPtr<content::WebContents> side_panel_contents_before_close;
+
+  RunTestSequence(
+      // (1) Navigate to a page and start a Lens region search.
+      OpenLensOverlayWithRegionSearch(kPrimaryTab, kOverlayId,
+                                      std::move(off_center_point)),
+
+      // (2) The Contextual Tasks side panel opens with an active task.
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "EphemeralReopenSidePanelContents",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kSidePanelId, "EphemeralReopenSidePanelContents"),
+      WaitForElementVisible(kSidePanelId, kCloseButton),
+      EnsureNotPresent(kContextualTasksEphemeralToolbarButtonElementId),
+      Do([&]() {
+        task_id_before_close = GetTaskIdForActiveTab();
+        content::WebContents* const contents = GetActiveSidePanelWebContents();
+        if (contents) {
+          side_panel_contents_before_close = contents->GetWeakPtr();
+        }
+      }),
+      Check([&]() { return task_id_before_close.has_value(); },
+            "Active tab is associated with a task before closing"),
+      Check([&]() { return !!side_panel_contents_before_close; },
+            "Side panel WebContents exist before closing"),
+
+      // (3) Close the side panel via the toolbar close button. The clicked
+      // WebUI hides in response, so do not wait for a JS round trip.
+      ClickElement(kSidePanelId, kCloseButton, ExecuteJsMode::kFireAndForget),
+
+      // (4) The side panel closes and the ephemeral button appears.
+      WaitForHide(kContextualTasksSidePanelWebViewElementId),
+      UninstrumentWebContents(kSidePanelId,
+                              /*fail_if_not_instrumented=*/false),
+      WaitForShow(kContextualTasksEphemeralToolbarButtonElementId),
+      Check([&]() { return GetTaskIdForActiveTab() == task_id_before_close; },
+            "Active tab stays associated with the task after closing"),
+
+      // (5) Click the ephemeral toolbar button.
+      PressButton(kContextualTasksEphemeralToolbarButtonElementId),
+
+      // (6) The side panel reopens and restores the same task and contents.
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      Check(
+          [&]() {
+            return ContextualTasksPanelController::From(browser())
+                ->IsPanelOpenForContextualTask();
+          },
+          "Side panel is open for the contextual task"),
+      Check([&]() { return GetTaskIdForActiveTab() == task_id_before_close; },
+            "Reopened side panel restores the same task"),
+      Check(
+          [&]() {
+            return side_panel_contents_before_close &&
+                   side_panel_contents_before_close.get() ==
+                       GetActiveSidePanelWebContents();
+          },
+          "Reopened side panel restores the same WebContents"),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "EphemeralReopenedSidePanelContents",
+                       [](ContextualTasksWebView* web_view) -> views::View* {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kReopenedSidePanelId,
+                              "EphemeralReopenedSidePanelContents"),
+      WaitForElementVisible(kReopenedSidePanelId, kCloseButton),
+
+      // (7) The ephemeral button hides while the side panel is open.
+      WaitForHide(kContextualTasksEphemeralToolbarButtonElementId));
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     ContextualTasksCopyUrlTest,
@@ -3580,6 +3728,13 @@ IN_PROC_BROWSER_TEST_P(ContextualTasksExtensionLensButtonInteractiveUiTest,
 
 INSTANTIATE_TEST_SUITE_P(All,
                          ContextualTasksExtensionLensButtonInteractiveUiTest,
+                         testing::Values(UserVariation::kSignedIn,
+                                         UserVariation::kSignedOut,
+                                         UserVariation::kIncognito),
+                         &UserVariationToString);
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ContextualTasksEphemeralToolbarInteractiveUiTest,
                          testing::Values(UserVariation::kSignedIn,
                                          UserVariation::kSignedOut,
                                          UserVariation::kIncognito),
