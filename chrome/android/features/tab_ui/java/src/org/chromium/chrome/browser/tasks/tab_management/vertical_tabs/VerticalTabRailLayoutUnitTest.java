@@ -631,6 +631,19 @@ public class VerticalTabRailLayoutUnitTest {
                         .getDimensionPixelSize(R.dimen.vertical_tabs_footer_button_height_tablet),
                 tabletLayout.getIncognitoChipSizePxForTesting());
 
+        ImageView tabletCollapseButton = tabletLayout.findViewById(R.id.collapse_button);
+        ImageView tabletSearchButton = tabletLayout.findViewById(R.id.tab_search_button);
+        assertEquals(
+                R.drawable.vertical_tabs_menu_collapse_24dp,
+                shadowOf(tabletCollapseButton.getDrawable()).getCreatedFromResId());
+        assertEquals(
+                R.drawable.ic_manage_search_24dp,
+                shadowOf(tabletSearchButton.getDrawable()).getCreatedFromResId());
+        tabletLayout.setCollapseState(RailCollapseState.COLLAPSED);
+        assertEquals(
+                R.drawable.vertical_tabs_menu_expand_24dp,
+                shadowOf(tabletCollapseButton.getDrawable()).getCreatedFromResId());
+
         DeviceInfo.setIsDesktopForTesting(true);
         VerticalTabRailLayout desktopLayout =
                 (VerticalTabRailLayout)
@@ -651,6 +664,18 @@ public class VerticalTabRailLayoutUnitTest {
                         .getResources()
                         .getDimensionPixelSize(R.dimen.vertical_tabs_footer_button_height),
                 desktopLayout.getIncognitoChipSizePxForTesting());
+        ImageView desktopCollapseButton = desktopLayout.findViewById(R.id.collapse_button);
+        ImageView desktopSearchButton = desktopLayout.findViewById(R.id.tab_search_button);
+        assertEquals(
+                R.drawable.vertical_tabs_menu_collapse,
+                shadowOf(desktopCollapseButton.getDrawable()).getCreatedFromResId());
+        assertEquals(
+                R.drawable.ic_manage_search_20dp,
+                shadowOf(desktopSearchButton.getDrawable()).getCreatedFromResId());
+        desktopLayout.setCollapseState(RailCollapseState.COLLAPSED);
+        assertEquals(
+                R.drawable.vertical_tabs_menu_expand,
+                shadowOf(desktopCollapseButton.getDrawable()).getCreatedFromResId());
     }
 
     @Test

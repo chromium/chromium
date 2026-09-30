@@ -380,7 +380,7 @@ public class VerticalTabRailLayout extends ConstraintLayout {
                                 ? R.drawable.vertical_tabs_menu_collapse
                                 : R.drawable.vertical_tabs_menu_expand));
         mSearchButton.setImageResource(
-                isTablet ? R.drawable.ic_manage_search_24dp : R.drawable.ic_manage_search_16dp);
+                isTablet ? R.drawable.ic_manage_search_24dp : R.drawable.ic_manage_search_20dp);
         int resId =
                 isManuallyExpanded
                         ? R.string.accessibility_collapse_vertical_tabs
