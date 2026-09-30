@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -47,8 +48,11 @@ void GatherInlineContainerFragmentsFromItems(
 
     // We only care about inlines which have generated a box fragment.
     const PhysicalBoxFragment* box = item->BoxFragment();
-    if (!box)
+    if (!box ||
+        (box->IsOpaque() &&
+         RuntimeEnabledFeatures::InlineContainingBlockSkipOpaqueEnabled())) {
       continue;
+    }
 
     // See if we need the containing block information for this inline.
     const LayoutObject* key = box->GetLayoutObject();
