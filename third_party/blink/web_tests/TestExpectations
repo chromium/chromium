@@ -2346,8 +2346,10 @@ crbug.com/450876665 external/wpt/html/semantics/embedded-content/media-elements/
 
 # Various flaky timeouts on the debug builder. Note that some timeouts actually
 # surface as failures because `webdriver.error.TimeoutException` is thrown.
-crbug.com/452662753 crbug.com/505597865 [ Debug ] external/wpt/webdriver/tests/bidi/network/set_extra_headers/headers_name_standard_tentative.py [ Failure Pass ]
 crbug.com/452662753 [ Debug ] external/wpt/webdriver/tests/classic/find_elements_from_element/user_prompts.py [ Failure Pass ]
+
+crbug.com/553259600 [ Debug ] external/wpt/webdriver/tests/bidi/network/set_extra_headers/headers_name_standard_tentative.py [ Failure Pass ]
+crbug.com/553259600 [ Linux Release ] external/wpt/webdriver/tests/bidi/network/set_extra_headers/headers_name_standard_tentative.py [ Failure Pass ]
 
 # Unstable context IDs dumped in output
 crbug.com/454945074 external/wpt/webdriver/tests/classic/execute_async_script/node.py [ Failure ]
@@ -8809,7 +8811,6 @@ crbug.com/40318224 http/tests/perf/large-inlined-script.html [ Timeout ]
 
 # Gardener 2026-04-23
 crbug.com/504695891 [ Mac15 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Failure Pass ]
-crbug.com/452662753 [ Linux Release ] external/wpt/webdriver/tests/bidi/network/set_extra_headers/headers_name_standard_tentative.py [ Failure Pass ]
 
 
 # Gardener 2026-05-04
