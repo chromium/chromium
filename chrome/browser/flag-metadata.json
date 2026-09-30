@@ -469,6 +469,11 @@
     "expiry_milestone": 170
   },
   {
+    "name": "android-new-tab-button-tabstrip-webui",
+    "owners": [ "acondor@chromium.org", "clank-performance-team@google.com" ],
+    "expiry_milestone": 170
+  },
+  {
     "name": "android-open-incognito-as-window",
     "owners": [ "shuyng@google.com", "clank-large-form-factors@google.com" ],
     "expiry_milestone": 170

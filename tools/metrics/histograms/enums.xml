@@ -8918,6 +8918,7 @@ from previous Chrome versions.
   <int value="-1830472348" label="CryptAuthV2DeviceSync:enabled"/>
   <int value="-1830199297" label="force-empty-corb-allowlist"/>
   <int value="-1829053093" label="PrivateStateTokens:enabled"/>
+  <int value="-1828466588" label="AndroidNewTabButtonTabstripWebUI:enabled"/>
   <int value="-1827753249" label="ExtensionManifestV2Disabled:enabled"/>
   <int value="-1827599944" label="QueryTilesLocalOrdering:enabled"/>
   <int value="-1827136280" label="AndroidComposeplate:disabled"/>
@@ -11019,6 +11020,7 @@ from previous Chrome versions.
   <int value="-1190174011" label="enable-hdr"/>
   <int value="-1190171773" label="NtpHistoryClustersModuleTextOnly:enabled"/>
   <int value="-1189429241" label="AndroidBottomBar:disabled"/>
+  <int value="-1188631364" label="AndroidNewTabButtonTabstripWebUI:disabled"/>
   <int value="-1188087884" label="OpenDownloadInPreferredApp:enabled"/>
   <int value="-1188066168" label="Mahi:disabled"/>
   <int value="-1188052495" label="MediaAppImageMantisExpandBackground:enabled"/>
