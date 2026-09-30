@@ -59,3 +59,24 @@ proto_library("proto_attestation_reference_value_proto") {
   proto_in_dir = "chromium"
   cc_generator_options = "lite"
 }
+
+config("oak_session_tls_config") {
+  include_dirs = [ "src" ]
+}
+
+source_set("oak_session_tls") {
+  sources = [
+    "src/oak_session/tls/oak_session_tls.cc",
+    "src/oak_session/tls/oak_session_tls.h",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_configs = [ ":oak_session_tls_config" ]
+
+  deps = [
+    "//third_party/abseil-cpp:absl",
+    "//third_party/boringssl",
+  ]
+}
