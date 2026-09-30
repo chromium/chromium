@@ -1468,3 +1468,54 @@ TEST_F(ComposeboxInputStateManagerTest, TestDriveDisallowedWhenRestricted) {
   EXPECT_FALSE(
       state.allowedAttachments.contains(ComposeboxAttachmentOption::kDrive));
 }
+
+// Tests that `canAttachActiveTabWithAttachedWebStateIDs:` correctly determines
+// eligibility based on extractability and whether the tab is already attached.
+TEST_F(ComposeboxInputStateManagerTest,
+       TestCanAttachActiveTabWithAttachedWebStateIDs) {
+  // 1. When WebStateList is empty / no active web state.
+  EXPECT_FALSE([manager_ canAttachActiveTabWithAttachedWebStateIDs:{}]);
+
+  // 2. Ineligible web state: NTP.
+  auto ntp_web_state = std::make_unique<web::FakeWebState>();
+  ntp_web_state->SetVisibleURL(GURL("chrome://newtab/"));
+  web_state_list_.InsertWebState(
+      std::move(ntp_web_state),
+      WebStateList::InsertionParams::AtIndex(0).Activate());
+  EXPECT_FALSE([manager_ canAttachActiveTabWithAttachedWebStateIDs:{}]);
+
+  // 3. Eligible web state: HTTP/HTTPS URL with HTML mime type.
+  auto eligible_web_state = std::make_unique<web::FakeWebState>();
+  eligible_web_state->SetVisibleURL(GURL("https://example.com/"));
+  eligible_web_state->SetContentsMimeType("text/html");
+  web::WebStateID eligible_id = eligible_web_state->GetUniqueIdentifier();
+  web_state_list_.InsertWebState(
+      std::move(eligible_web_state),
+      WebStateList::InsertionParams::AtIndex(1).Activate());
+  EXPECT_TRUE([manager_ canAttachActiveTabWithAttachedWebStateIDs:{}]);
+
+  // 4. Ineligible web state: AIM URL.
+  auto aim_web_state = std::make_unique<web::FakeWebState>();
+  aim_web_state->SetVisibleURL(
+      GURL("https://www.google.com/search?udm=50&q=test"));
+  aim_web_state->SetContentsMimeType("text/html");
+  web_state_list_.InsertWebState(
+      std::move(aim_web_state),
+      WebStateList::InsertionParams::AtIndex(2).Activate());
+  EXPECT_FALSE([manager_ canAttachActiveTabWithAttachedWebStateIDs:{}]);
+
+  // 5. Ineligible web state: AIM zero state URL.
+  auto aim_zero_state_web_state = std::make_unique<web::FakeWebState>();
+  aim_zero_state_web_state->SetVisibleURL(
+      GURL("https://www.google.com/search?udm=50"));
+  aim_zero_state_web_state->SetContentsMimeType("text/html");
+  web_state_list_.InsertWebState(
+      std::move(aim_zero_state_web_state),
+      WebStateList::InsertionParams::AtIndex(3).Activate());
+  EXPECT_FALSE([manager_ canAttachActiveTabWithAttachedWebStateIDs:{}]);
+
+  // 6. Tab already attached.
+  web_state_list_.ActivateWebStateAt(1);
+  EXPECT_FALSE(
+      [manager_ canAttachActiveTabWithAttachedWebStateIDs:{eligible_id}]);
+}

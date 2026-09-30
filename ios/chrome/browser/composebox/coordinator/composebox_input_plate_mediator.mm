@@ -1057,12 +1057,8 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   [self requestUIRefresh];
 
   if (_omniboxFocused && _entrypoint == ComposeboxEntrypoint::kCobrowse) {
-    [self attachCurrentTabContentWithAutoAdded:YES];
+    [self updateAutoAttachedCurrentTabIfNeeded];
   }
-}
-
-- (void)attachCurrentTabContent {
-  [self attachCurrentTabContentWithAutoAdded:NO];
 }
 
 - (void)recordPlusMenuOpenedWithVisibleInternalButtons:
@@ -1350,32 +1346,26 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   [self commitUIUpdates];
 }
 
-// Attaches the active WebState's tab content to the input plate. When
-// `autoAdded` is YES, any existing auto-attached tab is removed first so that
-// only the latest active tab is tracked dynamically.
-- (void)attachCurrentTabContentWithAutoAdded:(BOOL)autoAdded {
+// Attaches the active WebState's tab content to the input plate upon explicit
+// user request (e.g., from the plus menu).
+- (void)attachCurrentTabContent {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (![_stateManager canAddMoreAttachments]) {
-    [self.delegate showAttachmentLimitError];
+  if (![self canAttachActiveTab]) {
+    [self.delegate showSnackbarForItemUploadDidFail];
     return;
   }
+
   web::WebState* webState =
       _webStateList ? _webStateList->GetActiveWebState() : nullptr;
   if (!webState) {
     return;
   }
 
-  if (autoAdded) {
-    if (_removedWebStateIDs.contains(webState->GetUniqueIdentifier())) {
-      return;
-    }
-    // Only the currently active tab should be automatically tracked. Remove
-    // any previously auto-attached item so that active tab navigations cleanly
-    // replace the dynamic slot without polluting the input plate with stale
-    // tabs or erasing user-attached tabs.
-    [self removeAutoAddedItems];
-  } else {
-    _removedWebStateIDs.erase(webState->GetUniqueIdentifier());
+  _removedWebStateIDs.erase(webState->GetUniqueIdentifier());
+
+  if (![_stateManager canAddMoreAttachments]) {
+    [self.delegate showAttachmentLimitError];
+    return;
   }
 
   [self.metricsRecorder
@@ -1388,7 +1378,47 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
                         cachedWebStateIDs:{}
                      fromExternalWebState:nullptr
                                    source:ComposeboxInputItemSource::kCurrentTab
-                                autoAdded:autoAdded];
+                                autoAdded:NO];
+}
+
+// Synchronizes the automatically attached active tab in Co-browse mode.
+- (void)updateAutoAttachedCurrentTab {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  // Only the currently active tab should be automatically tracked. Remove
+  // any previously auto-attached item so that active tab navigations cleanly
+  // replace the dynamic slot without polluting the input plate with stale
+  // tabs or erasing user-attached tabs.
+  [self removeAutoAddedItems];
+
+  if (![self canAttachActiveTab]) {
+    return;
+  }
+
+  web::WebState* webState =
+      _webStateList ? _webStateList->GetActiveWebState() : nullptr;
+  if (!webState) {
+    return;
+  }
+
+  if (_removedWebStateIDs.contains(webState->GetUniqueIdentifier())) {
+    return;
+  }
+
+  if (![_stateManager canAddMoreAttachments]) {
+    return;
+  }
+
+  [self.metricsRecorder
+      recordAttachmentButtonUsed:FuseboxAttachmentButtonType::kCurrentTab];
+
+  std::set<web::WebStateID> webStateIDs =
+      [self attachedWebStateIDsInCurrentContext];
+  webStateIDs.insert(webState->GetUniqueIdentifier());
+  [self attachSelectedTabsWithWebStateIDs:webStateIDs
+                        cachedWebStateIDs:{}
+                     fromExternalWebState:nullptr
+                                   source:ComposeboxInputItemSource::kCurrentTab
+                                autoAdded:YES];
 }
 
 // Removes all automatically added tab items and cleans up their tracking from
@@ -1413,7 +1443,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
     [self removeAutoAddedItems];
     return;
   }
-  [self attachCurrentTabContentWithAutoAdded:YES];
+  [self updateAutoAttachedCurrentTab];
 }
 
 // Stops observing the active WebState and resets the observer bridge.
@@ -2245,7 +2275,6 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
 }
 
 - (void)handleFailedAttachment:(base::UnguessableToken)identifier {
-  [self.delegate showSnackbarForItemUploadDidFail];
   _latestTabSelectionMapping.erase(identifier);
   ComposeboxInputItem* item = [_items itemForIdentifier:identifier];
   // `item` can be nil if the user deleted the shared tab or closed the sheet
@@ -2254,6 +2283,12 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
   // dereferencing `item.identifier` (a C++ reference) when logging or removing.
   if (!item) {
     return;
+  }
+  // Do not show an error snackbar for automatically attached tabs that fail
+  // context extraction in the background, to avoid interrupting the user
+  // without explicit user intent.
+  if (!item.isAutoAdded) {
+    [self.delegate showSnackbarForItemUploadDidFail];
   }
   [self.debugLogger
       logEvent:[ComposeboxDebuggerEvent

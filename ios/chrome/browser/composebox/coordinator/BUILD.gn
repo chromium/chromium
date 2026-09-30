@@ -210,6 +210,7 @@ group("intelligence_deps") {
   public_deps = [
     "//ios/chrome/browser/intelligence/persist_tab_context/model",
     "//ios/chrome/browser/intelligence/proto_wrappers",
+    "//ios/chrome/browser/intelligence/proto_wrappers:utils",
   ]
 }
 
@@ -294,6 +295,7 @@ source_set("input_state_manager") {
     "composebox_input_state_manager.mm",
   ]
   deps = [
+    ":intelligence_deps",
     "//base",
     "//components/contextual_search:prefs",
     "//components/contextual_search:public",

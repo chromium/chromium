@@ -87,6 +87,26 @@
                                                          source;
 - (BOOL)isWebStateIDRemoved:(web::WebStateID)webStateID;
 - (void)removeDeselectedIDs:(std::set<web::WebStateID>)deselectedIDs;
+- (void)updateAutoAttachedCurrentTab;
+- (void)handleFailedAttachment:(base::UnguessableToken)identifier;
+@end
+
+// Mock delegate for the mediator.
+@interface TestComposeboxInputPlateMediatorDelegate
+    : NSObject <ComposeboxInputPlateMediatorDelegate>
+@property(nonatomic, assign) BOOL showedSnackbarForItemUploadDidFail;
+@end
+
+@implementation TestComposeboxInputPlateMediatorDelegate
+- (void)reloadAutocompleteSuggestionsRestarting:(BOOL)restart {
+}
+- (void)refineWithText:(NSString*)text {
+}
+- (void)showAttachmentLimitError {
+}
+- (void)showSnackbarForItemUploadDidFail {
+  _showedSnackbarForItemUploadDidFail = YES;
+}
 @end
 
 // Mock consumer for the mediator.
@@ -1446,6 +1466,121 @@ TEST_F(ComposeboxInputPlateMediatorTest,
       std::move(second_web_state),
       WebStateList::InsertionParams::AtIndex(1).Activate());
 
+  EXPECT_EQ(consumer.items.count, 0U);
+}
+
+// Tests that auto-adding a tab ignores ineligible web states (e.g., NTP) and
+// removes any previously auto-added items.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       AutoAddedTabIgnoredOnIneligibleWebState) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  ComposeboxInputPlateMediator* mediator = [[ComposeboxInputPlateMediator alloc]
+      initWithContextualSearchSession:nullptr
+                         webStateList:web_state_list_.get()
+                        faviconLoader:nullptr
+               persistTabContextAgent:nullptr
+                          isIncognito:NO
+                           modeHolder:[[ComposeboxModeHolder alloc] init]
+                   templateURLService:template_url_service()
+                aimEligibilityService:aim_eligibility_service_.get()
+                          prefService:&pref_service_
+                              profile:profile_.get()
+                 cobrowseBrowserAgent:nil
+            browserCoordinatorHandler:nil
+                         sceneHandler:nil
+                           entrypoint:ComposeboxEntrypoint::kCobrowse];
+
+  TestComposeboxInputPlateConsumer* consumer =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  web::WebState* active_web_state = web_state_list_->GetActiveWebState();
+  ASSERT_TRUE(active_web_state);
+
+  // Create an auto-added item for the initial active tab.
+  [mediator createInputItemForWebState:active_web_state
+                                source:ComposeboxInputItemSource::kTabPicker];
+  ASSERT_EQ(consumer.items.count, 1U);
+  ComposeboxInputItem* item = consumer.items.firstObject;
+  ASSERT_TRUE(item != nil);
+  item.isAutoAdded = YES;
+
+  // Change active tab's URL to NTP (an ineligible web state).
+  web::FakeWebState* fake_web_state =
+      static_cast<web::FakeWebState*>(active_web_state);
+  fake_web_state->SetVisibleURL(GURL("chrome://newtab/"));
+
+  // Attempt to auto-attach the current tab content on NTP.
+  [mediator updateAutoAttachedCurrentTab];
+
+  // The previously auto-added item should be removed, and no new item added.
+  EXPECT_EQ(consumer.items.count, 0U);
+}
+
+// Tests that failed attachments do not trigger the error snackbar for
+// auto-added items, but do trigger it for manual user attachments.
+TEST_F(ComposeboxInputPlateMediatorTest,
+       AutoAddedFailedAttachmentDoesNotShowSnackbar) {
+  SetAIMEligible(true);
+  SetDSEGoogle(true);
+  ComposeboxInputPlateMediator* mediator = [[ComposeboxInputPlateMediator alloc]
+      initWithContextualSearchSession:nullptr
+                         webStateList:web_state_list_.get()
+                        faviconLoader:nullptr
+               persistTabContextAgent:nullptr
+                          isIncognito:NO
+                           modeHolder:[[ComposeboxModeHolder alloc] init]
+                   templateURLService:template_url_service()
+                aimEligibilityService:aim_eligibility_service_.get()
+                          prefService:&pref_service_
+                              profile:profile_.get()
+                 cobrowseBrowserAgent:nil
+            browserCoordinatorHandler:nil
+                         sceneHandler:nil
+                           entrypoint:ComposeboxEntrypoint::kCobrowse];
+
+  TestComposeboxInputPlateConsumer* consumer =
+      [[TestComposeboxInputPlateConsumer alloc] init];
+  mediator.consumer = consumer;
+
+  TestComposeboxInputPlateMediatorDelegate* delegate =
+      [[TestComposeboxInputPlateMediatorDelegate alloc] init];
+  mediator.delegate = delegate;
+
+  base::ScopedClosureRunner disconnect_runner(base::BindOnce(^{
+    [mediator disconnect];
+  }));
+
+  web::WebState* active_web_state = web_state_list_->GetActiveWebState();
+  ASSERT_TRUE(active_web_state);
+
+  // 1. Auto-added item failure: should NOT trigger the snackbar.
+  base::UnguessableToken auto_item_id = [mediator
+      createInputItemForWebState:active_web_state
+                          source:ComposeboxInputItemSource::kTabPicker];
+  ComposeboxInputItem* auto_item = consumer.items.firstObject;
+  ASSERT_TRUE(auto_item != nil);
+  auto_item.isAutoAdded = YES;
+
+  [mediator handleFailedAttachment:auto_item_id];
+  EXPECT_FALSE(delegate.showedSnackbarForItemUploadDidFail);
+  EXPECT_EQ(consumer.items.count, 0U);
+
+  // 2. User-attached item failure: SHOULD trigger the snackbar.
+  base::UnguessableToken user_item_id = [mediator
+      createInputItemForWebState:active_web_state
+                          source:ComposeboxInputItemSource::kTabPicker];
+  ComposeboxInputItem* user_item = consumer.items.firstObject;
+  ASSERT_TRUE(user_item != nil);
+  user_item.isAutoAdded = NO;
+
+  [mediator handleFailedAttachment:user_item_id];
+  EXPECT_TRUE(delegate.showedSnackbarForItemUploadDidFail);
   EXPECT_EQ(consumer.items.count, 0U);
 }
 
