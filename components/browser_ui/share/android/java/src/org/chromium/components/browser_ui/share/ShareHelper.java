@@ -378,7 +378,8 @@ public class ShareHelper {
                 Intent.FLAG_ACTIVITY_NEW_DOCUMENT
                         | Intent.FLAG_ACTIVITY_FORWARD_RESULT
                         | Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP
-                        | Intent.FLAG_ACTIVITY_NEW_TASK);
+                        | Intent.FLAG_ACTIVITY_NEW_TASK
+                        | Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
         intent.putExtra(ShareParams.EXTRA_SHARE_ORIGIN, params.getOrigin());
         intent.putExtra(
                 EXTRA_TASK_ID, assumeNonNull(params.getWindow().getActivity().get()).getTaskId());
@@ -405,7 +406,6 @@ public class ShareHelper {
         Uri offlineUri = params.getOfflineUri();
         if (offlineUri != null) {
             intent.putExtra(Intent.EXTRA_SUBJECT, params.getTitle());
-            intent.addFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             intent.putExtra(Intent.EXTRA_STREAM, offlineUri);
             intent.addCategory(Intent.CATEGORY_DEFAULT);

@@ -8,7 +8,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
-
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
@@ -204,6 +203,11 @@ public class ShareHelperUnitTest {
                 "Text URL not set correctly.",
                 JUnitTestGURLs.EXAMPLE_URL.getSpec(),
                 nextIntent.getStringExtra(Intent.EXTRA_TEXT));
+        assertEquals(
+                "Intent should include FLAG_ACTIVITY_NEW_DOCUMENT | FLAG_ACTIVITY_MULTIPLE_TASK.",
+                Intent.FLAG_ACTIVITY_NEW_DOCUMENT | Intent.FLAG_ACTIVITY_MULTIPLE_TASK,
+                nextIntent.getFlags()
+                        & (Intent.FLAG_ACTIVITY_NEW_DOCUMENT | Intent.FLAG_ACTIVITY_MULTIPLE_TASK));
 
         assertLastComponentNameRecorded(null);
     }
