@@ -440,13 +440,6 @@ OffscreenCanvasRenderingContext2D::GetOrCreatePaintCanvas() {
   return GetPaintCanvas();
 }
 
-void OffscreenCanvasRenderingContext2D::RecordingCleared() {
-  BaseRenderingContext2D::RecordingCleared();
-  if (shared_image_provider_) {
-    shared_image_provider_->RecordingCleared();
-  }
-}
-
 void OffscreenCanvasRenderingContext2D::WillDraw(
     const gfx::Rect& dirty_rect,
     CanvasPerformanceMonitor::DrawType draw_type) {

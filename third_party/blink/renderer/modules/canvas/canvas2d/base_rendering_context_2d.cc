@@ -785,6 +785,9 @@ void BaseRenderingContext2D::InitializeForRecording(
 
 void BaseRenderingContext2D::RecordingCleared() {
   clear_frame_ = true;
+  if (shared_image_provider_) {
+    shared_image_provider_->RecordingCleared();
+  }
 }
 
 void BaseRenderingContext2D::Reset() {

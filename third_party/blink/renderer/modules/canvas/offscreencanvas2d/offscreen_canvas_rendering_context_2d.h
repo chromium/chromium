@@ -98,7 +98,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   Color GetCurrentColor() const final;
 
   MemoryManagedPaintCanvas* GetOrCreatePaintCanvas() final;
-  void RecordingCleared() override;
 
   void WillDraw(const gfx::Rect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) final;

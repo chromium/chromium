@@ -162,7 +162,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void SetOriginTainted() final;
   void DisableAcceleration() override;
   bool ShouldDisableAccelerationBecauseOfReadback() const override;
-  void RecordingCleared() override;
 
   // CanvasHibernationHandler::Delegate implementation
   Canvas2DResourceProvider* GetSharedImageProvider() const override;
