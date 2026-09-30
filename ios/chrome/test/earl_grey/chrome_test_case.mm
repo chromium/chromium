@@ -497,7 +497,12 @@ void ResetAuthentication() {
       [ChromeEarlGrey setSimulatedDuoHingeStatus:UIHingeStatusClosed];
     }
     [ChromeEarlGrey setSimulatedDuoOrientation:UIDeviceOrientationPortrait];
-  } else {
+  } else if ([ChromeEarlGrey interfaceOrientation] !=
+             UIInterfaceOrientationPortrait) {
+    // Only rotate if needed. On a physical device with the orientation lock on,
+    // an XCUITest rotation releases the lock, and the OS then re-applies the
+    // physical orientation (e.g. a device resting in landscape), undoing the
+    // rotation and failing EarlGrey's orientation check.
     [EarlGrey rotateInterfaceToOrientation:UIInterfaceOrientationPortrait
                                      error:nil];
   }
