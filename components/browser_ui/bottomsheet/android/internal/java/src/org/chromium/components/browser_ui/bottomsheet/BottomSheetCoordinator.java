@@ -348,9 +348,11 @@ class BottomSheetCoordinator
                             mMediator.notifyContainerSizeChanged(mContainerWidth, mContainerHeight);
                         }
 
-                        updateContentContainerHeight();
+                        updateSheetVerticalLayout();
 
-                        @Px int viewportBottomInset = getViewportBottomInset();
+                        @Px
+                        int viewportBottomInset =
+                                getViewportBottomInset(getEdgeToEdgeBottomInset());
                         if (previousHeight != mContainerHeight
                                 || mPreviousViewportBottomInset != viewportBottomInset) {
                             // If we are in the middle of a touch event stream (i.e. scrolling while
@@ -415,10 +417,11 @@ class BottomSheetCoordinator
     }
 
     private void onInsetChanged() {
-        updateContentContainerHeight();
+        updateSheetVerticalLayout();
     }
 
     private @Px int getEdgeToEdgeBottomInset() {
+        assert mEdgeToEdgeBottomInsetSupplier.get() != null;
         if (mBottomMargin != 0) return 0;
         @Px
         int bottomInset =
@@ -427,9 +430,8 @@ class BottomSheetCoordinator
         return Math.max(0, bottomInset - keyboardInset);
     }
 
-    private int getViewportBottomInset() {
-        assert mEdgeToEdgeBottomInsetSupplier.get() != null;
-        @Px int viewportBottomInset = getEdgeToEdgeBottomInset();
+    private @Px int getViewportBottomInset(@Px int e2eBottomInset) {
+        @Px int viewportBottomInset = e2eBottomInset;
 
         if (isSheetOpen()) {
             int visibleViewport = mVisibleViewportRect.height();
@@ -704,64 +706,60 @@ class BottomSheetCoordinator
      */
     void setSheetOffsetFromBottom(
             float offset, @StateChangeReason int reason, boolean reportOpenClosed) {
+        float previousOffsetPx = mCurrentOffsetPx;
+        float previousTranslationY = mMediator.getSheetTranslationY();
+        int previousContainerHeight = mMediator.getContainerHeight();
         mCurrentOffsetPx = offset;
 
-        assert mEdgeToEdgeBottomInsetSupplier.get() != null;
-        int bottomInset = getEdgeToEdgeBottomInset();
-        @SheetState int targetState = getTargetSheetState();
+        updateSheetVerticalLayout();
+
         boolean isSheetOpen = isSheetOpen();
-
-        // The browser controls offset is added here so that the sheet's toolbar behaves like the
-        // browser controls do.
-        float translationY =
-                (mContainerHeight - mCurrentOffsetPx)
-                        + getOffsetFromBrowserControls()
-                        - (targetState == SheetState.HIDDEN ? 0 : bottomInset);
-
-        // Ensure we don't over translate the bottom container.
-        translationY = Math.max(0, translationY);
-
-        updateViewport();
-        boolean translationChanged =
-                !MathUtils.areFloatsEqual(translationY, mMediator.getSheetTranslationY());
-        boolean heightNeedsUpdate = false;
-        if (isFullHeightResizeContent()) {
-            @Px int newHeight = getResizingContentContainerHeight();
-            if (mMediator.getContainerHeight() != newHeight) {
-                heightNeedsUpdate = true;
-            }
+        if (isSheetOpen
+                && !hasVerticalOffsetOrLayoutChanged(
+                        previousOffsetPx, previousTranslationY, previousContainerHeight)) {
+            return;
         }
 
-        if (isSheetOpen && !translationChanged && !heightNeedsUpdate) return;
-
-        mMediator.setSheetTranslationY(translationY);
-
-        updateContentContainerHeight();
-
         if (reportOpenClosed) {
-            // Do open/close computation based on the minimum allowed state by the sheet's content.
-            // Note that when transitioning from hidden to peek, even dismissable sheets may want
-            // to have a peek state.
-            @SheetState int minSwipableState = getMinSwipableSheetState();
-            if (isPeekStateEnabled() && (!isSheetOpen || targetState == SheetState.PEEK)) {
-                minSwipableState = SheetState.PEEK;
-            }
-
-            float minScrollableHeight = getSheetHeightForState(minSwipableState);
-            boolean isAtMinHeight =
-                    MathUtils.areFloatsEqual(getCurrentOffsetPx(), minScrollableHeight);
-            boolean heightLessThanPeek = getCurrentOffsetPx() < minScrollableHeight;
-
-            if (isSheetOpen && (heightLessThanPeek || isAtMinHeight)) {
-                onSheetClosed(reason);
-            } else if (!isSheetOpen
-                    && targetState != SheetState.HIDDEN
-                    && getCurrentOffsetPx() > minScrollableHeight) {
-                onSheetOpened(reason);
-            }
+            updateSheetOpenClosedState(isSheetOpen, reason);
         }
 
         sendOffsetChangeEvents();
+    }
+
+    private boolean hasVerticalOffsetOrLayoutChanged(
+            float previousOffsetPx, float previousTranslationY, int previousContainerHeight) {
+        boolean offsetChanged = !MathUtils.areFloatsEqual(previousOffsetPx, mCurrentOffsetPx);
+        boolean translationChanged =
+                !MathUtils.areFloatsEqual(previousTranslationY, mMediator.getSheetTranslationY());
+        boolean heightChanged = previousContainerHeight != mMediator.getContainerHeight();
+        return offsetChanged || translationChanged || heightChanged;
+    }
+
+    private void updateSheetOpenClosedState(boolean isSheetOpen, @StateChangeReason int reason) {
+        @SheetState int targetState = getTargetSheetState();
+        @SheetState int minOpenableState = getMinOpenableState(isSheetOpen, targetState);
+        float minScrollableHeight = getSheetHeightForState(minOpenableState);
+        boolean isAtMinHeight = MathUtils.areFloatsEqual(getCurrentOffsetPx(), minScrollableHeight);
+        boolean heightLessThanPeek = getCurrentOffsetPx() < minScrollableHeight;
+
+        if (isSheetOpen && (heightLessThanPeek || isAtMinHeight)) {
+            onSheetClosed(reason);
+        } else if (!isSheetOpen
+                && targetState != SheetState.HIDDEN
+                && getCurrentOffsetPx() > minScrollableHeight) {
+            onSheetOpened(reason);
+        }
+    }
+
+    private @SheetState int getMinOpenableState(boolean isSheetOpen, @SheetState int targetState) {
+        // Do open/close computation based on the minimum allowed state by the sheet's content.
+        // Note that when transitioning from hidden to peek, even dismissable sheets may want to
+        // have a peek state.
+        if (isPeekStateEnabled() && (!isSheetOpen || targetState == SheetState.PEEK)) {
+            return SheetState.PEEK;
+        }
+        return getMinSwipableSheetState();
     }
 
     @Override
@@ -808,14 +806,6 @@ class BottomSheetCoordinator
         return content != null
                 && isHalfStateEnabled()
                 && content.getFullHeightRatio() == HeightMode.RESIZE_CONTENT;
-    }
-
-    private @Px int getResizingContentContainerHeight() {
-        return mMediator.calculateContentContainerHeight(
-                getSheetHeightForState(SheetState.HALF),
-                getSheetHeightForState(SheetState.FULL),
-                mCurrentOffsetPx,
-                mVisibleViewportRect);
     }
 
     /** Returns the resolved PEEK height in pixels for the current content. */
@@ -1104,7 +1094,7 @@ class BottomSheetCoordinator
 
         if (state == SheetState.HALF || state == SheetState.FULL) {
             if (isLargeFormFactorUiEnabled() || isFullHeightResizeContent()) {
-                updateContentContainerHeight();
+                updateSheetVerticalLayout();
             }
         }
 
@@ -1371,7 +1361,7 @@ class BottomSheetCoordinator
 
         boolean showHandlebar = content != null && content.showHandlebar();
         mMediator.setHandlebarVisible(showHandlebar);
-        updateContentContainerHeight();
+        updateSheetVerticalLayout();
         sizeAndPositionSheetInParent();
         updateBackgroundColor();
         updateSheetLayoutMode(mode);
@@ -1390,96 +1380,74 @@ class BottomSheetCoordinator
         return SheetState.FULL;
     }
 
-    private void updateContentContainerHeight() {
-        updateViewport();
-
-        int topMargin = getHandlebarHeight();
-        mMediator.setContentTopMargin(topMargin);
+    private void updateSheetVerticalLayout() {
+        assert mWindow != null;
+        @Px int e2eBottomInset = getEdgeToEdgeBottomInset();
+        updateViewport(e2eBottomInset);
 
         boolean isLargeFormFactorUiEnabled = isLargeFormFactorUiEnabled();
-        if (isFullHeightResizeContent()) {
-            mMediator.setContainerHeight(getResizingContentContainerHeight());
-            mMediator.setContentBottomPadding(0);
-        } else {
-            int targetHeight;
-            if (isLargeFormFactorUiEnabled) {
-                if (isFullHeightWrapContent()) {
-                    targetHeight = ViewGroup.LayoutParams.WRAP_CONTENT;
-                } else {
-                    targetHeight =
-                            (int) getSheetHeightForState(getTargetOrCurrentState()) - topMargin;
-                }
-            } else {
-                targetHeight = ViewGroup.LayoutParams.MATCH_PARENT;
-            }
-            mMediator.setContainerHeight(targetHeight);
+        boolean isFullHeightResizeContent = isFullHeightResizeContent();
 
-            @Px int viewportBottomInset = isLargeFormFactorUiEnabled ? 0 : getViewportBottomInset();
-            mMediator.setContentBottomPadding(viewportBottomInset);
-        }
-
-        int targetBgHeight =
-                isLargeFormFactorUiEnabled
-                        ? (int) getSheetHeightForState(SheetState.FULL)
-                        : ViewGroup.LayoutParams.MATCH_PARENT;
-        mMediator.setBackgroundHeight(targetBgHeight);
-
-        updateCurtainHeight();
-
-        if (isLargeFormFactorUiEnabled) {
-            applyLargeFormFactorBackgroundBounds();
-        } else {
-            mMediator.setVisibleBackgroundHeight(0);
-        }
+        mMediator.updateVerticalLayout(
+                mContainerHeight,
+                mCurrentOffsetPx,
+                getOffsetFromBrowserControls(),
+                e2eBottomInset,
+                getViewportBottomInset(e2eBottomInset),
+                mVisibleViewportRect,
+                mWindow.getDecorView().getHeight(),
+                getHandlebarHeight(),
+                isLargeFormFactorUiEnabled,
+                isFullHeightResizeContent,
+                getHalfHeightForVerticalLayoutPx(isFullHeightResizeContent),
+                getFullHeightForVerticalLayoutPx(
+                        isLargeFormFactorUiEnabled, isFullHeightResizeContent),
+                getTargetOrCurrentStateHeightPx(isLargeFormFactorUiEnabled));
     }
 
-    /**
-     * Shrinks the background and shadow to match the visible height of the sheet on LFF (desktop
-     * currently).
-     *
-     * <p>When a user drags the sheet downward, the internal view doesn't actually resize; it just
-     * gets pushed off-screen. This method visually trims the background to ensure the bottom
-     * rounded corners and drop shadows stay perfectly aligned with the bottom of the window instead
-     * of disappearing below it.
-     */
-    private void applyLargeFormFactorBackgroundBounds() {
-        // The true visual height of the sheet's cosmetic wrapper.
-        int visibleHeight = (int) Math.max(0, mCurrentOffsetPx);
-        if (visibleHeight == 0) {
-            return;
-        }
-
-        // Ensure we don't accidentally ask for a bounds size larger than the actual layout limits.
-        int targetFullHeight = (int) getSheetHeightForState(SheetState.FULL);
-        if (targetFullHeight > 0) {
-            visibleHeight = Math.min(visibleHeight, targetFullHeight);
-        }
-
-        mMediator.setVisibleBackgroundHeight(visibleHeight);
+    private float getHalfHeightForVerticalLayoutPx(boolean isFullHeightResizeContent) {
+        return isFullHeightResizeContent ? getSheetHeightForState(SheetState.HALF) : 0f;
     }
 
-    private void updateViewport() {
+    private float getFullHeightForVerticalLayoutPx(
+            boolean isLargeFormFactorUiEnabled, boolean isFullHeightResizeContent) {
+        if (!isLargeFormFactorUiEnabled && !isFullHeightResizeContent) return 0f;
+        return getSheetHeightForState(SheetState.FULL);
+    }
+
+    private @Px int getTargetOrCurrentStateHeightPx(boolean isLargeFormFactorUiEnabled) {
+        if (!isLargeFormFactorUiEnabled || isFullHeightWrapContent()) return 0;
+        return (int) getSheetHeightForState(getTargetOrCurrentState());
+    }
+
+    private void updateViewport(@Px int e2eBottomInset) {
         assert mWindow != null;
 
         View decorView = mWindow.getDecorView();
-        @Px int decorWidth = decorView.getWidth();
-        @Px int decorHeight = decorView.getHeight();
-
         WindowInsetsCompat insets = mInsetObserver.getLastRawWindowInsets();
         if (insets == null) {
-            mWindow.getDecorView().getWindowVisibleDisplayFrame(mVisibleViewportRect);
-            mVisibleViewportRect.bottom =
-                    Math.min(
-                            mVisibleViewportRect.bottom,
-                            decorView.getBottom() - getEdgeToEdgeBottomInset());
-            mVisibleViewportRect.bottom = Math.max(mVisibleViewportRect.bottom, 0);
+            updateViewportFromDisplayFrame(decorView, e2eBottomInset);
             return;
         }
 
+        updateViewportFromWindowInsets(decorView, insets, e2eBottomInset);
+    }
+
+    private void updateViewportFromDisplayFrame(View decorView, @Px int e2eBottomInset) {
+        decorView.getWindowVisibleDisplayFrame(mVisibleViewportRect);
+        mVisibleViewportRect.bottom =
+                Math.min(mVisibleViewportRect.bottom, decorView.getBottom() - e2eBottomInset);
+        mVisibleViewportRect.bottom = Math.max(mVisibleViewportRect.bottom, 0);
+    }
+
+    private void updateViewportFromWindowInsets(
+            View decorView, WindowInsetsCompat insets, @Px int e2eBottomInset) {
+        @Px int decorWidth = decorView.getWidth();
+        @Px int decorHeight = decorView.getHeight();
         Insets combinedInsets =
                 insets.getInsets(
                         WindowInsetsCompat.Type.ime() | WindowInsetsCompat.Type.systemBars());
-        @Px int bottomInset = Math.max(combinedInsets.bottom, getEdgeToEdgeBottomInset());
+        @Px int bottomInset = Math.max(combinedInsets.bottom, e2eBottomInset);
         bottomInset = Math.min(bottomInset, decorHeight);
 
         mVisibleViewportRect.set(
@@ -1487,12 +1455,6 @@ class BottomSheetCoordinator
                 combinedInsets.top,
                 decorWidth - combinedInsets.right,
                 decorHeight - bottomInset);
-    }
-
-    private void updateCurtainHeight() {
-        assert mWindow != null;
-        @Px int maxWindowHeight = mWindow.getDecorView().getHeight();
-        mMediator.setKeyboardCurtainHeight(maxWindowHeight);
     }
 
     /** Called when the sheet content layout changed. */

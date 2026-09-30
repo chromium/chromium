@@ -2396,4 +2396,63 @@ public class BottomSheetCoordinatorUnitTest {
                 mBottomSheet.getCurrentOffsetPx(),
                 MathUtils.EPSILON);
     }
+
+    @Test
+    public void testSetSheetOffsetFromBottom_EdgeToEdgeBottomInset_NotifiesFullHeightFraction() {
+        BottomSheetCoordinator.setSmallScreenForTesting(false);
+        mBottomSheet.setEdgeToEdgeBottomInsetSupplierForTesting(() -> 24);
+
+        when(mSheetContent.getFullHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
+        when(mSheetContent.getHalfHeightRatio()).thenReturn(0.5f);
+        when(mSheetContent.getPeekHeight()).thenReturn(HeightMode.DISABLED);
+        when(mSheetContent.getContentView()).thenReturn(new View(mActivity));
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
+
+        mBottomSheet.showContent(mSheetContent);
+        mBottomSheet.setSheetState(SheetState.HALF, false);
+        mBottomSheet.addObserver(mBottomSheetObserver);
+
+        // At offset = containerHeight - e2eBottomInset (200 - 24 = 176), translationY hits 0f.
+        mBottomSheet.setSheetOffsetFromBottom(176f, StateChangeReason.SWIPE);
+        assertEquals(0f, mBottomSheet.getView().getTranslationY(), 0.0f);
+        verify(mBottomSheetObserver).onSheetOffsetChanged(176f / 200f, 176f);
+
+        // Moving from 176f to full height (200f) keeps translationY clamped at 0f, but must still
+        // dispatch onSheetOffsetChanged(1.0f, 200f). Repeating the identical 200f offset while
+        // already open at 200f must be a no-op and not dispatch a second notification.
+        mBottomSheet.setSheetOffsetFromBottom(200f, StateChangeReason.SWIPE);
+        mBottomSheet.setSheetOffsetFromBottom(200f, StateChangeReason.SWIPE);
+        assertEquals(0f, mBottomSheet.getView().getTranslationY(), 0.0f);
+        verify(mBottomSheetObserver).onSheetOffsetChanged(1.0f, 200f);
+    }
+
+    @Test
+    public void testOnInsetChanged_UpdatesTranslationYForKeyboardAndEdgeToEdgeInset() {
+        BottomSheetCoordinator.setSmallScreenForTesting(false);
+        mBottomSheet.setEdgeToEdgeBottomInsetSupplierForTesting(() -> 24);
+
+        when(mSheetContent.getFullHeightRatio()).thenReturn((float) HeightMode.DEFAULT);
+        when(mSheetContent.getHalfHeightRatio()).thenReturn(0.5f);
+        when(mSheetContent.getPeekHeight()).thenReturn(HeightMode.DISABLED);
+        when(mSheetContent.getContentView()).thenReturn(new View(mActivity));
+        setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
+
+        mBottomSheet.showContent(mSheetContent);
+        mBottomSheet.setSheetState(SheetState.HALF, false);
+
+        // At HALF (100px) with e2eBottomInset = 24px and keyboardInset = 0px:
+        // translationY = (200 - 100) - 24 = 76f.
+        assertEquals(76f, mBottomSheet.getView().getTranslationY(), 0.0f);
+
+        verify(mInsetObserver)
+                .addWindowInsetsAnimationListener(mInsetsAnimationListenerCaptor.capture());
+        InsetObserver.WindowInsetsAnimationListener listener =
+                mInsetsAnimationListenerCaptor.getValue();
+
+        // When keyboard inset increases to 24px, getEdgeToEdgeBottomInset() drops to 0px, so
+        // onInsetChanged() must update translationY to 100f.
+        mKeyboardInsetSupplier.set(24);
+        listener.onStart(null, null);
+        assertEquals(100f, mBottomSheet.getView().getTranslationY(), 0.0f);
+    }
 }
