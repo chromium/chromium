@@ -17,21 +17,23 @@ class Window;
 }
 
 namespace views {
+class MenuItemView;
 class View;
-}
+}  // namespace views
 
 namespace ash {
 
 class WindowPreviewView;
 
 // A bubble dialog view that displays a mirror preview of an aura::Window
-// anchored to a shelf item or menu item.
+// anchored to a shelf tooltip or menu item.
 class ASH_EXPORT ShelfWindowPreviewBubble : public ShelfBubble,
                                             public aura::WindowObserver {
   METADATA_HEADER(ShelfWindowPreviewBubble, ShelfBubble)
 
  public:
-  ShelfWindowPreviewBubble(views::View* anchor, aura::Window* window);
+  ShelfWindowPreviewBubble(views::MenuItemView* anchor, aura::Window* window);
+  ShelfWindowPreviewBubble(ShelfBubble* anchor, aura::Window* window);
 
   ShelfWindowPreviewBubble(const ShelfWindowPreviewBubble&) = delete;
   ShelfWindowPreviewBubble& operator=(const ShelfWindowPreviewBubble&) = delete;
@@ -47,7 +49,7 @@ class ASH_EXPORT ShelfWindowPreviewBubble : public ShelfBubble,
 
   // Updates the anchor view and mirrored window in place without recreating
   // the bubble widget.
-  void UpdateAnchorAndWindow(views::View* anchor, aura::Window* window);
+  void UpdateAnchorAndWindow(views::MenuItemView* anchor, aura::Window* window);
 
   // Fades out the preview bubble's widget and closes it when the animation
   // finishes.
@@ -56,6 +58,10 @@ class ASH_EXPORT ShelfWindowPreviewBubble : public ShelfBubble,
   aura::Window* window() const { return window_; }
 
  private:
+  ShelfWindowPreviewBubble(views::View* anchor,
+                           aura::Window* window,
+                           views::BubbleBorder::Arrow arrow);
+
   void CreatePreviewView();
   void RemovePreviewView();
 

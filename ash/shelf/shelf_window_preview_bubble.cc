@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/shelf/shelf.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ash/wm/window_preview_view.h"
 #include "base/i18n/rtl.h"
@@ -23,6 +24,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/widget/widget.h"
@@ -37,7 +39,7 @@ namespace {
 // menu, placing the preview bubble horizontally beside the menu toward the
 // center of the display (`LEFT_CENTER` when the menu is on the left half of
 // the screen, or `RIGHT_CENTER` when on the right half).
-views::BubbleBorder::Arrow GetArrowForAnchor(views::View* anchor) {
+views::BubbleBorder::Arrow GetArrowForAnchor(views::MenuItemView* anchor) {
   CHECK(anchor);
   const gfx::Rect anchor_bounds = anchor->GetBoundsInScreen();
   const display::Display display =
@@ -51,6 +53,17 @@ views::BubbleBorder::Arrow GetArrowForAnchor(views::View* anchor) {
     arrow = views::BubbleBorder::horizontal_mirror(arrow);
   }
   return arrow;
+}
+
+// Returns the bubble arrow position for a preview bubble anchored to the shelf
+// tooltip, placing the preview bubble above the tooltip for a horizontal shelf
+// and below the tooltip for a vertical shelf.
+views::BubbleBorder::Arrow GetArrowForShelf(ShelfBubble* anchor) {
+  CHECK(anchor);
+  return Shelf::ForWindow(anchor->GetWidget()->GetNativeWindow())
+                 ->IsHorizontalAlignment()
+             ? views::BubbleBorder::BOTTOM_CENTER
+             : views::BubbleBorder::TOP_CENTER;
 }
 
 // Calculates the preferred size for the preview bubble of |window| based on its
@@ -97,12 +110,22 @@ constexpr base::TimeDelta kAnimationDuration = base::Milliseconds(150);
 
 }  // namespace
 
-ShelfWindowPreviewBubble::ShelfWindowPreviewBubble(views::View* anchor,
+ShelfWindowPreviewBubble::ShelfWindowPreviewBubble(views::MenuItemView* anchor,
                                                    aura::Window* window)
+    : ShelfWindowPreviewBubble(anchor, window, GetArrowForAnchor(anchor)) {}
+
+ShelfWindowPreviewBubble::ShelfWindowPreviewBubble(ShelfBubble* anchor,
+                                                   aura::Window* window)
+    : ShelfWindowPreviewBubble(anchor, window, GetArrowForShelf(anchor)) {}
+
+ShelfWindowPreviewBubble::ShelfWindowPreviewBubble(
+    views::View* anchor,
+    aura::Window* window,
+    views::BubbleBorder::Arrow arrow)
     : ShelfBubble(anchor,
                   ShelfAlignment::kBottom,
                   /*for_tooltip=*/false,
-                  GetArrowForAnchor(anchor)),
+                  arrow),
       window_(window) {
   CHECK(anchor);
   CHECK(window_);
@@ -174,8 +197,9 @@ void ShelfWindowPreviewBubble::OnWindowDestroying(aura::Window* window) {
   }
 }
 
-void ShelfWindowPreviewBubble::UpdateAnchorAndWindow(views::View* anchor,
-                                                     aura::Window* window) {
+void ShelfWindowPreviewBubble::UpdateAnchorAndWindow(
+    views::MenuItemView* anchor,
+    aura::Window* window) {
   CHECK(anchor);
   CHECK(window);
 

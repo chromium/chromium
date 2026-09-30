@@ -9,6 +9,10 @@
 
 #include "ash/ash_export.h"
 
+namespace aura {
+class Window;
+}
+
 namespace gfx {
 class Point;
 }
@@ -36,6 +40,13 @@ class ASH_EXPORT ShelfTooltipDelegate {
   // the coordinates of the `delegate_view`.
   virtual bool ShouldHideTooltip(const gfx::Point& cursor_point,
                                  views::View* delegate_view) const = 0;
+
+  // Returns the single open window that corresponds to the shelf item
+  // represented by `view`. Returns nullptr if `view` is not a shelf item view,
+  // or if there is no window or if there are multiple windows (in which case
+  // previews are shown via the shelf application menu on hover instead).
+  virtual aura::Window* GetSingleOpenWindowForShelfView(
+      const views::View* view) = 0;
 
   // Returns the title of |view|.
   virtual std::u16string GetTitleForView(const views::View* view) const = 0;

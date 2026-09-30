@@ -4,14 +4,17 @@
 
 #include "ash/shelf/shelf_tooltip_manager.h"
 
+#include <optional>
 #include <string>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/shelf/desk_button_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_tooltip_bubble.h"
 #include "ash/shelf/shelf_tooltip_delegate.h"
 #include "ash/shelf/shelf_widget.h"
+#include "ash/shelf/shelf_window_preview_bubble.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk_button/desk_button_container.h"
 #include "base/functional/bind.h"
@@ -56,6 +59,18 @@ ShelfTooltipManager::~ShelfTooltipManager() {
 void ShelfTooltipManager::Close(bool animate) {
   // Cancel any timer set to show a tooltip after a delay.
   timer_.Stop();
+
+  // Close the preview bubble first since it is anchored to the tooltip bubble.
+  if (preview_bubble_) {
+    ShelfWindowPreviewBubble* preview_bubble = preview_bubble_;
+    preview_bubble_ = nullptr;
+    if (animate) {
+      preview_bubble->FadeOutAndClose();
+    } else {
+      preview_bubble->GetWidget()->CloseNow();
+    }
+  }
+
   if (!bubble_)
     return;
   if (!animate) {
@@ -81,10 +96,11 @@ void ShelfTooltipManager::ShowTooltip(views::View* view) {
   }
 
   // Hide the old bubble immediately, skipping the typical closing animation.
-  Close(false /*animate*/);
+  Close(/*animate=*/false);
 
-  if (!ShouldShowTooltipForView(view))
+  if (!ShouldShowTooltipForView(view)) {
     return;
+  }
 
   const ShelfAlignment alignment = shelf_->alignment();
 
@@ -105,9 +121,32 @@ void ShelfTooltipManager::ShowTooltip(views::View* view) {
   ::wm::SetWindowVisibilityAnimationType(
       window, ::wm::WINDOW_VISIBILITY_ANIMATION_TYPE_VERTICAL);
   ::wm::SetWindowVisibilityAnimationTransition(window, ::wm::ANIMATE_HIDE);
+
   // Do not trigger a highlight when hovering over shelf items.
   bubble_->set_highlight_button_when_shown(false);
   bubble_->GetWidget()->Show();
+
+  if (features::IsWindowPreviewOnShelfEnabled()) {
+    if (aura::Window* open_window =
+            shelf_tooltip_delegate_->GetSingleOpenWindowForShelfView(view)) {
+      ShowPreviewBubble(open_window);
+    }
+  }
+}
+
+void ShelfTooltipManager::ShowPreviewBubble(aura::Window* window) {
+  CHECK(window);
+  CHECK(bubble_);
+
+  // Anchor the preview bubble to the tooltip bubble so it appears above it.
+  preview_bubble_ = new ShelfWindowPreviewBubble(bubble_, window);
+  preview_bubble_->RegisterWindowClosingCallback(
+      base::BindOnce(&ShelfTooltipManager::OnPreviewBubbleClosing,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void ShelfTooltipManager::OnPreviewBubbleClosing() {
+  preview_bubble_ = nullptr;
 }
 
 void ShelfTooltipManager::ShowTooltipWithDelay(views::View* view) {
@@ -184,7 +223,7 @@ void ShelfTooltipManager::OnKeyEvent(ui::KeyEvent* event) {
 }
 
 void ShelfTooltipManager::OnShelfShuttingDown() {
-  bubble_ = nullptr;
+  Close(/*animate=*/false);
 }
 
 void ShelfTooltipManager::OnShelfVisibilityStateChanged(

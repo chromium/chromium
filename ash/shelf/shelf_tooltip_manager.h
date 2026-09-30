@@ -12,6 +12,10 @@
 #include "base/timer/timer.h"
 #include "ui/events/event_handler.h"
 
+namespace aura {
+class Window;
+}
+
 namespace ui {
 class LocatedEvent;
 }
@@ -24,6 +28,7 @@ namespace ash {
 class ShelfBubble;
 class Shelf;
 class ShelfTooltipDelegate;
+class ShelfWindowPreviewBubble;
 
 // ShelfTooltipManager manages the tooltip bubble that appears for shelf items.
 class ASH_EXPORT ShelfTooltipManager : public ui::EventHandler,
@@ -59,6 +64,8 @@ class ASH_EXPORT ShelfTooltipManager : public ui::EventHandler,
     shelf_tooltip_delegate_ = shelf_tooltip_delegate;
   }
 
+  ShelfWindowPreviewBubble* preview_bubble() { return preview_bubble_.get(); }
+
  protected:
   // ui::EventHandler overrides:
   void OnMouseEvent(ui::MouseEvent* event) override;
@@ -81,10 +88,20 @@ class ASH_EXPORT ShelfTooltipManager : public ui::EventHandler,
   // A helper function to close the tooltip on mouse and touch press events.
   void ProcessPressedEvent(const ui::LocatedEvent& event);
 
+  // Shows the mirror preview bubble above the tooltip bubble.
+  void ShowPreviewBubble(aura::Window* window);
+
+  void OnPreviewBubbleClosing();
+
   int timer_delay_;
   base::OneShotTimer timer_;
   raw_ptr<Shelf> shelf_ = nullptr;
+  // TODO(oshima): Migrate to CLIENT_OWNS_WIDGET and own the widget via
+  // std::unique_ptr<views::Widget>.
   raw_ptr<ShelfBubble> bubble_ = nullptr;
+  // TODO(oshima): Migrate to CLIENT_OWNS_WIDGET and own the widget via
+  // std::unique_ptr<views::Widget>.
+  raw_ptr<ShelfWindowPreviewBubble> preview_bubble_ = nullptr;
 
   raw_ptr<ShelfTooltipDelegate> shelf_tooltip_delegate_ = nullptr;
 

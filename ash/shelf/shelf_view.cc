@@ -504,6 +504,27 @@ bool ShelfView::ShouldHideTooltip(const gfx::Point& cursor_location,
   return !LocationInsideVisibleShelfItemBounds(cursor_location);
 }
 
+aura::Window* ShelfView::GetSingleOpenWindowForShelfView(
+    const views::View* view) {
+  const ShelfItem* item = ShelfItemForView(view);
+  if (!item) {
+    return nullptr;
+  }
+
+  ShelfItemDelegate* delegate = model_->GetShelfItemDelegate(item->id);
+  if (!delegate) {
+    return nullptr;
+  }
+
+  ShelfItemDelegate::AppMenuItems menu_items = delegate->GetAppMenuItems(
+      ui::EF_NONE, base::BindRepeating(&ShouldIncludeMenuItem));
+  if (menu_items.size() != 1) {
+    return nullptr;
+  }
+
+  return delegate->GetAppMenuItemWindow(menu_items[0].command_id);
+}
+
 std::u16string ShelfView::GetTitleForView(const views::View* view) const {
   if (view->parent() == this)
     return GetTitleForChildView(view);

@@ -1144,6 +1144,11 @@ bool ScrollableShelfView::ShouldHideTooltip(const gfx::Point& cursor_location,
   return shelf_view_->ShouldHideTooltip(location_in_shelf_view, delegate_view);
 }
 
+aura::Window* ScrollableShelfView::GetSingleOpenWindowForShelfView(
+    const views::View* view) {
+  return shelf_view_->GetSingleOpenWindowForShelfView(view);
+}
+
 std::u16string ScrollableShelfView::GetTitleForView(
     const views::View* view) const {
   if (!view || !view->parent())
