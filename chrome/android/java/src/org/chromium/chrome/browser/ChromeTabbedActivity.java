@@ -119,7 +119,6 @@ import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
-import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromePhone;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromeTablet;
@@ -5848,12 +5847,6 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 TraceEvent.scoped("ChromeTabbedActivity.performOnConfigurationChanged")) {
             super.performOnConfigurationChanged(newConfig);
         }
-    }
-
-    @Override
-    public void onSceneChange(Layout layout) {
-        super.onSceneChange(layout);
-        if (!layout.shouldDisplayContentOverlay()) mTabModelSelector.onTabsViewShown();
     }
 
     /** Writes the tab state to disk. */

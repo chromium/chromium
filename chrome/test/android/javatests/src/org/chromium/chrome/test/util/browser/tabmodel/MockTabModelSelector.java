@@ -81,7 +81,6 @@ public class MockTabModelSelector extends TabModelSelectorBase {
     public void initializeTabModels(
             TabModelInternal normalModel, IncognitoTabModelInternal incognitoModel) {
         destroy();
-        resetTabModelListForTesting();
         initialize(normalModel, incognitoModel);
     }
 

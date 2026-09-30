@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreator.NeedsTabModel;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.url.GURL;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -111,7 +110,6 @@ public class ArchivedTabCreator implements TabCreator, NeedsTabModel {
             boolean shouldPin,
             WebContents webContents,
             @TabLaunchType int type,
-            GURL url,
             int index,
             CompletableFuture<Boolean> addTabToModel) {
         assert false : "Not reached.";

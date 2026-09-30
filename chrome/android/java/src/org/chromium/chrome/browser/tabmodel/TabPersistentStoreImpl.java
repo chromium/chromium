@@ -1612,8 +1612,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
             mLoadInProgress = false;
 
             // If tabs are done being merged into this instance, save the tab metadata file for this
-            // TabPersistentStore and delete the metadata file for the other instance, then notify
-            // observers.
+            // TabPersistentStore and delete the metadata file for the other instance.
             if (mPersistencePolicy.isMergeInProgress()) {
                 // This eventually calls saveTabModelSelectorMetadata() which must
                 // be called from the UI thread. #mergeState() starts an async task
@@ -1622,7 +1621,6 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
                 for (String mergedFileName : new HashSet<>(mMergedFileNames)) {
                     deleteFileAsync(mergedFileName);
                 }
-                for (TabPersistentStoreObserver observer : mObservers) observer.onStateMerged();
             }
 
             recordLegacyTabCountMetrics();

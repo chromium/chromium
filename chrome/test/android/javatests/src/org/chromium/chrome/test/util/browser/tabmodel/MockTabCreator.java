@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.url.GURL;
 
 import java.util.concurrent.CompletableFuture;
 
@@ -99,7 +98,6 @@ public class MockTabCreator implements TabCreator {
             boolean shouldPin,
             WebContents webContents,
             @TabLaunchType int type,
-            GURL url,
             int index,
             CompletableFuture<Boolean> addTabToModel) {
         return null;

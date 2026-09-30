@@ -46,9 +46,6 @@ public interface TabPersistentStore extends TabStateAttributes.StoreKey {
         /** To be called when the TabStates have all been loaded. */
         default void onStateLoaded() {}
 
-        /** To be called when the TabState from another instance has been merged. */
-        default void onStateMerged() {}
-
         /**
          * To be called when the active tab has been loaded.
          *

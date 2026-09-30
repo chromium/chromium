@@ -8,8 +8,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.build.annotations.EnsuresNonNull;
-import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -26,12 +24,10 @@ import java.util.function.Supplier;
 
 /** {@link TabModelSelector} for archived tabs. Must be instantiated and used on the UI thread. */
 @NullMarked
-public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implements TabModelDelegate {
+public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase {
     private final Profile mProfile;
     private final NextTabPolicySupplier mNextTabPolicySupplier;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
-
-    private TabContentManager mTabContentManager;
 
     /**
      * Builds a {@link ArchivedTabModelSelectorImpl} instance.
@@ -67,11 +63,8 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
      *
      * @param tabContentProvider A {@link TabContentManager} instance.
      */
-    @Initializer
     @Override
     public void onNativeLibraryReady(TabContentManager tabContentProvider) {
-        assert mTabContentManager == null : "onNativeLibraryReady called twice!";
-
         TabCreator tabCreator = getTabCreatorManager().getTabCreator(false);
         TabModelOrderController orderController = new TabModelOrderControllerImpl(this);
         TabRemover tabRemover = new PassthroughTabRemover(() -> getModel(/* incognito= */ false));
@@ -100,16 +93,12 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
 
         IncognitoTabModelInternal incognitoModel = TabModelFactory.createEmptyIncognitoTabModel();
 
-        onNativeLibraryReadyInternal(tabContentProvider, normalModel, incognitoModel);
+        onNativeLibraryReadyInternal(normalModel, incognitoModel);
     }
 
-    @EnsuresNonNull("mTabContentManager")
     @VisibleForTesting
     void onNativeLibraryReadyInternal(
-            TabContentManager tabContentProvider,
-            TabModelInternal normalModel,
-            IncognitoTabModelInternal incognitoModel) {
-        mTabContentManager = tabContentProvider;
+            TabModelInternal normalModel, IncognitoTabModelInternal incognitoModel) {
         initialize(normalModel, incognitoModel);
 
         new TabModelSelectorTabObserver(this) {
@@ -132,17 +121,6 @@ public class ArchivedTabModelSelectorImpl extends TabModelSelectorBase implement
     @Override
     public void openMostRecentlyClosedEntry(TabModel tabModel) {
         assert false : "Not reached.";
-    }
-
-    /**
-     * Exposed to allow tests to initialize the selector with different tab models.
-     *
-     * @param normalModel The normal tab model.
-     * @param incognitoModel The incognito tab model.
-     */
-    public void initializeForTesting(
-            TabModelInternal normalModel, IncognitoTabModelInternal incognitoModel) {
-        initialize(normalModel, incognitoModel);
     }
 
     @Override

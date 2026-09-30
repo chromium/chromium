@@ -326,7 +326,6 @@ public abstract class TabModelJniBridge implements TabModelInternal {
                         shouldPin,
                         webContents,
                         type,
-                        webContents.getVisibleUrl(),
                         index,
                         /* addTabToModel= */ CompletableFuture.completedFuture(true));
     }

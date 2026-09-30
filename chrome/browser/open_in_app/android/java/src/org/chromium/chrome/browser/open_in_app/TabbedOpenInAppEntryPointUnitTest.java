@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -174,7 +173,7 @@ public class TabbedOpenInAppEntryPointUnitTest {
         ShadowLooper.idleMainLooper();
         ArgumentCaptor<TabClosureParams> closureParamsCaptor =
                 ArgumentCaptor.forClass(TabClosureParams.class);
-        verify(mTabModelSelector).tryCloseTab(closureParamsCaptor.capture(), eq(false));
+        verify(mTabModelSelector).tryCloseTab(closureParamsCaptor.capture());
         assertEquals(TabClosingSource.OPEN_IN_APP, closureParamsCaptor.getValue().tabClosingSource);
 
         when(mOmniboxChipManager.isChipPlaced()).thenReturn(true);
@@ -233,14 +232,14 @@ public class TabbedOpenInAppEntryPointUnitTest {
                         eq(mIntent), eq(123L), eq(mContext), confirmationCaptor.capture());
 
         // Tab should not be closed yet.
-        verify(mTabModelSelector, never()).tryCloseTab(any(), anyBoolean());
+        verify(mTabModelSelector, never()).tryCloseTab(any());
 
         // Simulate user confirmation in the dialog.
         confirmationCaptor.getValue().run();
         ShadowLooper.idleMainLooper();
         ArgumentCaptor<TabClosureParams> closureParamsCaptor =
                 ArgumentCaptor.forClass(TabClosureParams.class);
-        verify(mTabModelSelector).tryCloseTab(closureParamsCaptor.capture(), eq(false));
+        verify(mTabModelSelector).tryCloseTab(closureParamsCaptor.capture());
         assertEquals(TabClosingSource.OPEN_IN_APP, closureParamsCaptor.getValue().tabClosingSource);
     }
 

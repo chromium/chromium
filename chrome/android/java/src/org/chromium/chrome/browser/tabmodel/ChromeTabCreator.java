@@ -411,6 +411,7 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
                 // created beforehand. The creation of a spare tab is a costly operation that should
                 // not be performed without testing. Spare tab is only used for navigations in the
                 // foreground and for high-end devices.
+                // TODO(crbug.com/517544602): Fix mismatched TraceEvent.end -> TraceEvent.begin.
                 TraceEvent.end("ChromeTabCreator.loadUrlWithSpareTab");
 
                 tab =
@@ -478,7 +479,6 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
             boolean shouldPin,
             WebContents webContents,
             @TabLaunchType int type,
-            GURL url,
             int suggestedPosition,
             CompletableFuture<Boolean> futureAddTabToModel) {
         if (mTabModel == null || mOrderController == null) return null;

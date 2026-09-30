@@ -290,40 +290,6 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
     }
 
     @Test
-    public void testRemoveObserver() {
-        TabModelSelectorTabRegistrationObserver.Observer observer =
-                mock(TabModelSelectorTabRegistrationObserver.Observer.class);
-        mTabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(observer);
-
-        Tab normalTab1 = MockTab.createAndInitialize(1, mProfile);
-        mTabModelSelector
-                .getModel(false)
-                .addTab(
-                        normalTab1,
-                        0,
-                        TabLaunchType.FROM_LINK,
-                        TabCreationState.LIVE_IN_FOREGROUND);
-        verify(observer).onTabRegistered(normalTab1);
-
-        mTabRegistrationObserver.removeObserver(observer);
-
-        Tab normalTab2 = MockTab.createAndInitialize(2, mProfile);
-        mTabModelSelector
-                .getModel(false)
-                .addTab(
-                        normalTab2,
-                        0,
-                        TabLaunchType.FROM_LINK,
-                        TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModelSelector
-                .getModel(false)
-                .getTabRemover()
-                .removeTab(normalTab1, /* allowDialog= */ false);
-
-        verifyNoMoreInteractions(observer);
-    }
-
-    @Test
     public void testDestroy() {
         TabModelSelectorTabRegistrationObserver.Observer observer =
                 mock(TabModelSelectorTabRegistrationObserver.Observer.class);

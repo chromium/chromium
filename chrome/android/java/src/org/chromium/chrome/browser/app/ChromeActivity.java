@@ -116,9 +116,7 @@ import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarUtils;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.CompositorViewHolderSupplier;
-import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
-import org.chromium.chrome.browser.compositor.layouts.SceneChangeObserver;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManagerHandler;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteUtils;
@@ -307,7 +305,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         implements TabCreatorManager,
                 PolicyChangeListener,
                 SnackbarManageable,
-                SceneChangeObserver,
                 StatusBarColorController.StatusBarColorProvider,
                 AppMenuDelegate,
                 AppMenuBlocker,
@@ -2013,9 +2010,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
         CompositorViewHolder compositorViewHolder = mCompositorViewHolderSupplier.get();
         if (compositorViewHolder != null) {
-            if (compositorViewHolder.getLayoutManager() != null) {
-                compositorViewHolder.getLayoutManager().removeSceneChangeObserver(this);
-            }
             compositorViewHolder.shutDown();
         }
         CompositorViewHolderSupplier.destroy(mCompositorViewHolderSupplier);
@@ -2690,7 +2684,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         LayoutManagerAppUtils.attach(windowAndroid, layoutManager);
         mLayoutManagerSupplier.set(layoutManager);
 
-        layoutManager.addSceneChangeObserver(this);
         CompositorViewHolder compositorViewHolder =
                 assumeNonNull(mCompositorViewHolderSupplier.get());
         compositorViewHolder.setLayoutManager(layoutManager);
@@ -3454,9 +3447,6 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
 
     @Override
     public void terminateIncognitoSession() {}
-
-    @Override
-    public void onSceneChange(Layout layout) {}
 
     @Override
     public void onAttachFragment(Fragment fragment) {

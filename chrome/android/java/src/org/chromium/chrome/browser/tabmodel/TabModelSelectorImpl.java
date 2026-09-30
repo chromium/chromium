@@ -51,7 +51,7 @@ import java.util.function.Supplier;
  * methods to the active model that it contains.
  */
 @NullMarked
-public class TabModelSelectorImpl extends TabModelSelectorBase implements TabModelDelegate {
+public class TabModelSelectorImpl extends TabModelSelectorBase {
     public static final int CUSTOM_TABS_SELECTOR_INDEX = -1;
 
     // Type of the Activity for this tab model. Used by sync to determine how to handle restore
@@ -281,8 +281,9 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                     @Override
                     public void onCloseContents(Tab tab) {
                         tryCloseTab(
-                                TabClosureParams.closeTab(tab).allowUndo(false).build(),
-                                /* allowDialog= */ false);
+                                TabClosureParams.closeTab(tab)
+                                        .allowUndo(/* allowUndo= */ false)
+                                        .build());
                     }
                 };
     }
@@ -387,16 +388,6 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
                 .moveTabGroupToWindowByIdChecked(
                         destWindowId, tabGroupMetadata, newIndex, /* bringToFront= */ false);
         return true;
-    }
-
-    /**
-     * Commits all pending tab closures for all {@link TabModel}s in this {@link TabModelSelector}.
-     */
-    @Override
-    public void commitAllTabClosures() {
-        for (int i = 0; i < getModels().size(); i++) {
-            getModels().get(i).commitAllTabClosures();
-        }
     }
 
     @Override

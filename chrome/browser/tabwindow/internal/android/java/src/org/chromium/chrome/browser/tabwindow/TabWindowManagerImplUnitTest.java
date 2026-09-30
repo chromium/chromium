@@ -1013,7 +1013,7 @@ public class TabWindowManagerImplUnitTest {
                         "Tabs.TabStateCleanupAbortedByArchive", false);
         doReturn(tab1).when(mArchivedTabModelSelector).getTabById(tab1.getId());
         selector0.tryCloseTab(
-                TabClosureParams.closeTab(tab1).allowUndo(false).build(), /* allowDialog= */ false);
+                TabClosureParams.closeTab(tab1).allowUndo(/* allowUndo= */ false).build());
         assertFalse(mSubject.canTabStateBeDeleted(tab1.getId()));
         histogramWatcher.assertExpected();
 
@@ -1078,7 +1078,7 @@ public class TabWindowManagerImplUnitTest {
                         "Tabs.TabThumbnailCleanupAbortedByArchive", false);
         doReturn(tab1).when(mArchivedTabModelSelector).getTabById(tab1.getId());
         selector0.tryCloseTab(
-                TabClosureParams.closeTab(tab1).allowUndo(false).build(), /* allowDialog= */ false);
+                TabClosureParams.closeTab(tab1).allowUndo(/* allowUndo= */ false).build());
         assertFalse(mSubject.canTabThumbnailBeDeleted(tab1.getId()));
         histogramWatcher.assertExpected();
 

@@ -1023,8 +1023,9 @@ public class TabsTest {
                     // Prior to fixing crbug.com/40067160 this would assert as the tab could not be
                     // found in any model as it was in the undoable tab closure state.
                     selector.tryCloseTab(
-                            TabClosureParams.closeTab(tab).allowUndo(false).build(),
-                            /* allowDialog= */ false);
+                            TabClosureParams.closeTab(tab)
+                                    .allowUndo(/* allowUndo= */ false)
+                                    .build());
                     assertTrue(tab.isClosing());
                     assertTrue(tab.isDestroyed());
                 });

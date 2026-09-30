@@ -39,7 +39,6 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabCreatorManager;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
@@ -55,7 +54,6 @@ public class ArchivedTabModelSelectorImplTest {
     private static final @ActivityType int NO_RESTORE_TYPE = ActivityType.CUSTOM_TAB;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private TabContentManager mMockTabContentManager;
     @Mock private TabDelegateFactory mTabDelegateFactory;
     @Mock private NextTabPolicySupplier mNextTabPolicySupplier;
 
@@ -94,8 +92,7 @@ public class ArchivedTabModelSelectorImplTest {
                 new PassthroughTabRemover(() -> mTabModelSelector.getModel(true));
         MockTabModel incognitoTabModel = new MockTabModel(mIncognitoProfile, null);
         incognitoTabModel.setTabRemoverForTesting(incognitoTabRemover);
-        mTabModelSelector.onNativeLibraryReadyInternal(
-                mMockTabContentManager, regularTabModel, incognitoTabModel);
+        mTabModelSelector.onNativeLibraryReadyInternal(regularTabModel, incognitoTabModel);
 
         assertEquals(
                 mTabModelSelector.getModel(/* incognito= */ false),

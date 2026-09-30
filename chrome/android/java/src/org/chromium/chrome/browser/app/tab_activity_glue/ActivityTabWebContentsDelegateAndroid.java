@@ -311,12 +311,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         final CompletableFuture<Boolean> addTabToModel = new CompletableFuture<>();
         final Tab tab =
                 tabCreator.createTabWithWebContents(
-                        mTab,
-                        /* shouldPin= */ false,
-                        webContents,
-                        tabLaunchType,
-                        targetUrl,
-                        addTabToModel);
+                        mTab, /* shouldPin= */ false, webContents, tabLaunchType, addTabToModel);
         if (tab == null) return false;
 
         if (disposition == WindowOpenDisposition.NEW_POPUP) {

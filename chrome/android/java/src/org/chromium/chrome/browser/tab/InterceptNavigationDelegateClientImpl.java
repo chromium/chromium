@@ -139,8 +139,7 @@ public class InterceptNavigationDelegateClientImpl implements InterceptNavigatio
                         .tryCloseTab(
                                 TabClosureParams.closeTab(mTab)
                                         .allowUndo(/* allowUndo= */ false)
-                                        .build(),
-                                /* allowDialog= */ false);
+                                        .build());
             }
         }
     }

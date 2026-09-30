@@ -148,9 +148,6 @@ public abstract class TabModelSelectorBase
     public void onNativeLibraryReady(TabContentManager tabContentProvider) {}
 
     @Override
-    public void onTabsViewShown() {}
-
-    @Override
     public void selectModel(boolean incognito) {
         if (mTabModelInternals.isEmpty()) {
             mStartIncognito = incognito;
@@ -273,12 +270,12 @@ public abstract class TabModelSelectorBase
     }
 
     @Override
-    public boolean tryCloseTab(TabClosureParams tabClosureParams, boolean allowDialog) {
+    public void tryCloseTab(TabClosureParams tabClosureParams) {
         if (tabClosureParams.tabs == null
                 || tabClosureParams.tabs.size() != 1
                 || tabClosureParams.tabCloseType != TabCloseType.SINGLE) {
             assert false : "Invalid tab closure params received for tryCloseTab.";
-            return false;
+            return;
         }
         Tab tab = tabClosureParams.tabs.get(0);
         boolean isClosing = tab.isClosing() && !tab.isDestroyed();
@@ -290,11 +287,11 @@ public abstract class TabModelSelectorBase
                 TabList comprehensiveModel = model.getComprehensiveModel();
                 if (comprehensiveModel.indexOf(tab) > TabList.INVALID_TAB_INDEX) {
                     model.commitTabClosure(tab.getId());
-                    return true;
+                    return;
                 }
             } else if (model.indexOf(tab) > TabList.INVALID_TAB_INDEX) {
-                model.getTabRemover().closeTabs(tabClosureParams, allowDialog);
-                return true;
+                model.getTabRemover().closeTabs(tabClosureParams, /* allowDialog= */ false);
+                return;
             }
         }
 
@@ -302,13 +299,13 @@ public abstract class TabModelSelectorBase
         // the case for navigations progressing while the tab is being moved between web clients.
         if (tab.isDetachedFromActivity()) {
             tab.setDidCloseWhileDetached();
-            return true;
+            return;
         }
 
         if (getModels().isEmpty()) {
             // Tab may be destroyed here via Tab#destroy(). It is skipped for now
             // to examine its potential side effect on crbug.com/325558929.
-            return true;
+            return;
         } else {
             assert false
                     : "Tried to close a tab that is not in any model!"
@@ -320,7 +317,6 @@ public abstract class TabModelSelectorBase
                             + tab.isDestroyed()
                             + " Is detached "
                             + tab.isDetachedFromActivity();
-            return false;
         }
     }
 
@@ -496,10 +492,5 @@ public abstract class TabModelSelectorBase
         for (TabModelInternal tabModel : mTabModelInternals) {
             tabModel.removeObserver(observer);
         }
-    }
-
-    @Override
-    public void resetTabModelListForTesting() {
-        mTabModelInternals.clear();
     }
 }

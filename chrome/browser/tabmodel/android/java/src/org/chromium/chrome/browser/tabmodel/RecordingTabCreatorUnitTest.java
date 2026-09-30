@@ -149,17 +149,23 @@ public class RecordingTabCreatorUnitTest {
 
     @Test
     public void testCreateTabWithWebContents() {
+        when(mWebContents.getVisibleUrl()).thenReturn(mGurl);
+
         mRecordingTabCreator.createTabWithWebContents(
-                mTab, true, mWebContents, TabLaunchType.FROM_LINK, mGurl, 5, mAddTabToModel);
+                mTab,
+                /* shouldPin= */ true,
+                mWebContents,
+                TabLaunchType.FROM_LINK,
+                /* index= */ 5,
+                mAddTabToModel);
 
         verify(mDelegate)
                 .createTabWithWebContents(
                         mTab,
-                        true,
+                        /* shouldPin= */ true,
                         mWebContents,
                         TabLaunchType.FROM_LINK,
-                        mGurl,
-                        5,
+                        /* index= */ 5,
                         mAddTabToModel);
 
         assertEquals(1, mRecordingTabCreator.getTabCount());

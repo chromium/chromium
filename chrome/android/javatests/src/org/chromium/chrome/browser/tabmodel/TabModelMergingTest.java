@@ -450,7 +450,7 @@ public class TabModelMergingTest {
         // tab metadata file for ChromeTabbedActivity gets deleted before attempting to merge
         // on cold start.
         mergeTabsAndAssert(mActivity2, mMergeIntoActivity2ExpectedTabs);
-        mockObserver.stateMergedCallback.waitForCallback(0, 1);
+        mockObserver.stateLoadedCallback.waitForCallback(0, 1);
 
         // Create an intent to launch a new ChromeTabbedActivity.
         Intent intent = createChromeTabbedActivityIntent(mActivity2);
