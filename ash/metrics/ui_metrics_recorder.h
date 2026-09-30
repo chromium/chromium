@@ -14,7 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "cc/metrics/custom_metrics_recorder.h"
-#include "cc/metrics/event_latency_tracker.h"
+#include "cc/metrics/latency_data.h"
 
 namespace ash {
 
@@ -61,9 +61,8 @@ class ASH_EXPORT UiMetricsRecorder : public cc::CustomMetricRecorder {
   void OnPostLoginAnimationFinish();
 
   // cc::CustomMetricRecorder:
-  void ReportEventLatency(
-      const viz::BeginFrameArgs& args,
-      std::vector<cc::EventLatencyTracker::LatencyData> latencies) override;
+  void ReportEventLatency(const viz::BeginFrameArgs& args,
+                          std::vector<cc::LatencyData> latencies) override;
 
   // Expose the fixed table of event latency histogram names for testing.
   static base::span<const std::string_view>

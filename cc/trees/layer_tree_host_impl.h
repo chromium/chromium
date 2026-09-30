@@ -38,7 +38,6 @@
 #include "cc/input/scrollbar_animation_controller.h"
 #include "cc/layers/layer_collections.h"
 #include "cc/metrics/average_lag_tracking_manager.h"
-#include "cc/metrics/event_latency_tracker.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/events_metrics_manager.h"
 #include "cc/metrics/frame_sequence_metrics.h"

@@ -8,7 +8,11 @@
 #include <vector>
 
 #include "cc/cc_export.h"
-#include "cc/metrics/event_latency_tracker.h"
+#include "cc/metrics/latency_data.h"
+
+namespace viz {
+struct BeginFrameArgs;
+}
 
 namespace cc {
 
@@ -18,9 +22,8 @@ class CC_EXPORT CustomMetricRecorder {
   static CustomMetricRecorder* Get();
 
   // Invoked to report event latencies.
-  virtual void ReportEventLatency(
-      const viz::BeginFrameArgs& args,
-      std::vector<EventLatencyTracker::LatencyData> latencies) = 0;
+  virtual void ReportEventLatency(const viz::BeginFrameArgs& args,
+                                  std::vector<LatencyData> latencies) = 0;
 
  protected:
   CustomMetricRecorder();

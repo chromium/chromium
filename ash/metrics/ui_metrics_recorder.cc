@@ -207,7 +207,7 @@ void UiMetricsRecorder::OnPostLoginAnimationFinish() {
 
 void UiMetricsRecorder::ReportEventLatency(
     const viz::BeginFrameArgs& args,
-    std::vector<cc::EventLatencyTracker::LatencyData> latencies) {
+    std::vector<cc::LatencyData> latencies) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   constexpr base::TimeDelta kMaxLatency = base::Seconds(5);

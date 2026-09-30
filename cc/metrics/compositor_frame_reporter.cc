@@ -35,10 +35,10 @@
 #include "cc/base/rolling_time_delta_history.h"
 #include "cc/metrics/custom_metrics_recorder.h"
 #include "cc/metrics/event_latency_tracing_recorder.h"
-#include "cc/metrics/event_latency_tracker.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/metrics/frame_sequence_tracker.h"
 #include "cc/metrics/frame_sequence_tracker_collection.h"
+#include "cc/metrics/latency_data.h"
 #include "cc/metrics/submit_info.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_frame_reporter.pbzero.h"
@@ -1484,7 +1484,7 @@ void CompositorFrameReporter::ReportEventLatencyMetrics() const {
   DCHECK_EQ(StageType::kTotalLatency, total_latency_stage.stage_type);
   DCHECK(dropped_non_damaging_events_metrics_);
 
-  std::vector<EventLatencyTracker::LatencyData> latencies;
+  std::vector<LatencyData> latencies;
 
   for (const auto& event_metrics : events_metrics_) {
     DCHECK(event_metrics);
@@ -1596,7 +1596,7 @@ void CompositorFrameReporter::ReportEventLatencyMetrics() const {
     }
 
     if (report_event_latency_to_custom_recorder_) {
-      EventLatencyTracker::LatencyData& latency_data =
+      LatencyData& latency_data =
           latencies.emplace_back(event_metrics->type(), total_latency);
 
       if (scroll_metrics)
