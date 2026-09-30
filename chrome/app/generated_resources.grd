@@ -1528,6 +1528,9 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_APP_MENU_INCOGNITO" desc="Label for the Incognito block button in the main App Menu">
           Incognito
         </message>
+        <message name="IDS_APP_MENU_BLOCK_TOOLTIP" desc="Tooltip for an App Menu button that includes its label and keyboard shortcut.">
+          <ph name="TOOLTIP_TEXT">$1<ex>New tab</ex></ph> (<ph name="KEYBOARD_SHORTCUT">$2<ex>Ctrl+T</ex></ph>)
+        </message>
         <message name="IDS_PROFILE_ROW_VERIFY_MESSAGE" desc="A label to indicate that the profile needs credential verification (reauthentication). This is a shorter version of 'Verify it's you' that is used in other places.">
           Verify
         </message>

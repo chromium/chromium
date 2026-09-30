@@ -1053,6 +1053,7 @@ void BrowserActions::InitializeChromeMenuActions() {
           .SetProperty(actions::kShortTitleTextKey,
                        new std::u16string(
                            l10n_util::GetStringUTF16(IDS_APP_MENU_INCOGNITO)))
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_NEW_INCOGNITO_WINDOW))
           .Build());
 
   root_action_item_->AddChild(
@@ -1072,6 +1073,7 @@ void BrowserActions::InitializeChromeMenuActions() {
               : vector_icons::kBusinessChromeRefreshOldIcon)
           .SetEnabled(
               enterprise_isolated_mode::IsolatedModeReplacesIncognito(profile))
+          .SetAccelerator(GetAcceleratorForCommandId(IDC_NEW_INCOGNITO_WINDOW))
           .Build());
 
   root_action_item_->AddChild(
@@ -1236,6 +1238,8 @@ void BrowserActions::InitializeChromeMenuActions() {
               l10n_util::GetStringUTF16(IDS_NEW_TAB)))
           .SetTooltipText(BrowserActions::GetCleanTitleAndTooltipText(
               l10n_util::GetStringUTF16(IDS_NEW_TAB)))
+          .SetAccelerator(
+              ui::Accelerator(GetAcceleratorForCommandId(IDC_NEW_TAB)))
           .SetImage(ui::ImageModel::FromVectorIcon(
               features::IsRoundedIconsEnabled()
                   ? vector_icons::kAddWeight500CustomIcon
