@@ -19,7 +19,6 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
@@ -43,7 +42,6 @@
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
-#include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -225,17 +223,6 @@ bool IsInputTypeAllowed(const omnibox::SearchboxConfig& config,
 }  // namespace
 
 // static
-const net::BackoffEntry::Policy AimEligibilityService::kBackoffPolicy = {
-    0,               // Num errors to ignore.
-    1000,            // Initial delay in ms (1 second).
-    2.0,             // Multiply factor.
-    0.2,             // Jitter (fuzzing percentage).
-    60 * 60 * 1000,  // Maximum delay in ms (1 hour).
-    -1,              // Threshold to discard backoff history.
-    false,           // Always use initial delay.
-};
-
-// static
 bool AimEligibilityService::GenericKillSwitchFeatureCheck(
     const AimEligibilityService* aim_eligibility_service,
     const base::Feature& feature) {
@@ -335,8 +322,7 @@ AimEligibilityService::AimEligibilityService(
       template_url_service_(template_url_service),
       url_loader_factory_(url_loader_factory),
       identity_manager_(identity_manager),
-      configuration_(std::move(configuration)),
-      backoff_entry_(&kBackoffPolicy) {
+      configuration_(std::move(configuration)) {
   if (!base::FeatureList::IsEnabled(omnibox::kAimEnabled)) {
     return;
   }
@@ -384,11 +370,7 @@ AimEligibilityService::AimEligibilityService(
     net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
   } else if (startup_request_enabled) {
     startup_request_sent_ = true;
-    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&AimEligibilityService::ScheduleServerEligibilityRequest,
-                       weak_factory_.GetWeakPtr(), RequestSource::kStartup,
-                       locale));
+    ScheduleServerEligibilityRequest(RequestSource::kStartup, locale);
   }
 
   if (identity_manager_) {
@@ -1101,7 +1083,6 @@ GURL AimEligibilityService::GetRequestUrl(
 void AimEligibilityService::ScheduleServerEligibilityRequest(
     RequestSource request_source,
     const std::string& locale) {
-  retry_timer_.Stop();
   bool is_debounced = false;
   if (base::FeatureList::IsEnabled(omnibox::kAimEligibilityServiceDebounce)) {
     if (request_debounce_timer_.IsRunning()) {
@@ -1311,19 +1292,17 @@ void AimEligibilityService::OnServerEligibilityResponse(
                             : EligibilityRequestStatus::kSuccess;
 
   int num_retries = active_loader_->GetNumRetries();
-  int net_error = active_loader_->NetError();
   active_loader_.reset();
 
-  ProcessServerEligibilityResponse(
-      request_source, response_account, response_code, net_error,
-      request_status, num_retries, auth_method, std::move(response_string));
+  ProcessServerEligibilityResponse(request_source, response_account,
+                                   response_code, request_status, num_retries,
+                                   auth_method, std::move(response_string));
 }
 
 void AimEligibilityService::ProcessServerEligibilityResponse(
     RequestSource request_source,
     GaiaId response_account,
     int response_code,
-    int net_error,
     EligibilityRequestStatus request_status,
     int num_retries,
     AuthenticationMethod auth_method,
@@ -1333,35 +1312,13 @@ void AimEligibilityService::ProcessServerEligibilityResponse(
   const bool custom_retry_policy_enabled = base::FeatureList::IsEnabled(
       omnibox::kAimServerEligibilityCustomRetryPolicyEnabled);
 
-  const bool is_success =
-      (response_code == net::HTTP_OK && response_string.has_value());
-  backoff_entry_.InformOfRequest(is_success);
-
-  if (!is_success) {
+  if (response_code != 200 || !response_string) {
     LogEligibilityRequestStatus(EligibilityRequestStatus::kErrorResponse,
                                 request_source);
     if (custom_retry_policy_enabled) {
       base::UmaHistogramExactLinear(
           kEligibilityRequestRetriesFailedHistogramName, num_retries,
           kMaxRetries + 1);
-    }
-
-    // Schedule retry if transient error.
-    bool is_transient_failure =
-        (net_error != net::OK && net_error != net::ERR_ABORTED) ||
-        (response_code >= net::HTTP_INTERNAL_SERVER_ERROR &&
-         response_code < net::HTTP_STATUS_CODE_MAX) ||
-        response_code == net::HTTP_TOO_MANY_REQUESTS;
-    if (is_transient_failure) {
-      base::TimeDelta delay = backoff_entry_.GetTimeUntilRelease();
-      VLOG(1) << "AimEligibilityService: request failed (net_error="
-              << net_error << ", response_code=" << response_code
-              << "). Retrying in " << delay.InSecondsF() << " seconds.";
-      retry_timer_.Start(
-          FROM_HERE, delay,
-          base::BindOnce(
-              &AimEligibilityService::ScheduleServerEligibilityRequest,
-              weak_factory_.GetWeakPtr(), request_source, GetLocale()));
     }
     return;
   }

@@ -26,7 +26,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/google_service_auth_error.h"
-#include "net/base/backoff_entry.h"
 #include "net/base/network_change_notifier.h"
 #include "third_party/omnibox_proto/aim_eligibility_client_request.pb.h"
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
@@ -470,7 +469,6 @@ class AimEligibilityService
       RequestSource request_source,
       GaiaId pending_request_account,
       int response_code,
-      int net_error,
       EligibilityRequestStatus request_status,
       int num_retries,
       AuthenticationMethod auth_method,
@@ -570,15 +568,6 @@ class AimEligibilityService
 
   // A configuration for the service.
   const Configuration configuration_;
-
-  // Backoff entry to manage retries for transient failures.
-  net::BackoffEntry backoff_entry_;
-
-  // Timer for retrying failed requests.
-  base::OneShotTimer retry_timer_;
-
-  // Static backoff policy.
-  static const net::BackoffEntry::Policy kBackoffPolicy;
 
   // For binding the `OnServerEligibilityResponse()` callback.
   base::WeakPtrFactory<AimEligibilityService> weak_factory_{this};

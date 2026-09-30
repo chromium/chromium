@@ -25,7 +25,6 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/scoped_variations_ids_provider.h"
-#include "net/base/net_errors.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -1023,67 +1022,4 @@ TEST_F(AimEligibilityServiceTest, FetchEligibilityWithLocaleChange) {
       true, 1);
   histogram_tester.ExpectUniqueSample(
       "Omnibox.AimEligibility.EligibilityResponse.is_eligible", true, 1);
-}
-
-TEST_F(AimEligibilityServiceTest, StartupRequestTransientFailureRetries) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {omnibox::kAimEnabled, omnibox::kAimServerRequestOnStartupEnabled},
-      {omnibox::kAimStartupRequestDelayedUntilNetworkAvailableEnabled,
-       omnibox::kAimEligibilityServiceDebounce});
-
-  // Re-create service with features enabled to trigger startup request.
-  test_url_loader_factory_.pending_requests()->clear();
-  CreateService();
-
-  // Verify initial request is pending.
-  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
-
-  // Simulate network failure.
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      test_url_loader_factory_.GetPendingRequest(0)->request.url,
-      network::URLLoaderCompletionStatus(net::ERR_CONNECTION_REFUSED),
-      network::mojom::URLResponseHead::New(), "");
-
-  // Retry should be scheduled. Timer is running.
-  ASSERT_EQ(test_url_loader_factory_.NumPending(), 0);
-
-  // Initial delay is 1s, with 20% jitter it is 800ms - 1200ms.
-  // Fast forward by 1200ms.
-  task_environment_.FastForwardBy(base::Milliseconds(1200));
-
-  // Verify retry request is pending.
-  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
-
-  // Simulate second failure.
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      test_url_loader_factory_.GetPendingRequest(0)->request.url,
-      network::URLLoaderCompletionStatus(net::ERR_CONNECTION_REFUSED),
-      network::mojom::URLResponseHead::New(), "");
-
-  // Second retry should be scheduled with 2s delay (1600ms - 2400ms jitter).
-  ASSERT_EQ(test_url_loader_factory_.NumPending(), 0);
-
-  // Fast forward by 1200ms (should NOT trigger retry yet).
-  task_environment_.FastForwardBy(base::Milliseconds(1200));
-  ASSERT_EQ(test_url_loader_factory_.NumPending(), 0);
-
-  // Fast forward by another 1200ms (total 2400ms, should trigger retry).
-  task_environment_.FastForwardBy(base::Milliseconds(1200));
-  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
-
-  // Simulate success.
-  omnibox::AimEligibilityResponse response;
-  response.set_is_eligible(true);
-  std::string response_string;
-  response.SerializeToString(&response_string);
-
-  test_url_loader_factory_.SimulateResponseForPendingRequest(
-      test_url_loader_factory_.GetPendingRequest(0)->request.url.spec(),
-      response_string, net::HTTP_OK);
-
-  // Verify no more retries are pending.
-  ASSERT_EQ(test_url_loader_factory_.NumPending(), 0);
-  task_environment_.FastForwardBy(base::Seconds(10));
-  ASSERT_EQ(test_url_loader_factory_.NumPending(), 0);
 }
