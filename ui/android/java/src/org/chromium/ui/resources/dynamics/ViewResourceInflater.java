@@ -41,6 +41,8 @@ import org.chromium.build.annotations.RequiresNonNull;
  */
 @NullMarked
 public class ViewResourceInflater {
+    /** The invalid ID. */
+    private static final int INVALID_ID = -1;
 
     /** The id of the XML Layout that describes the View. */
     private int mLayoutId;
@@ -75,9 +77,6 @@ public class ViewResourceInflater {
     /** The ViewInflaterOnDrawListener used to track changes in the View when attached. */
     private @Nullable ViewInflaterOnDrawListener mOnDrawListener;
 
-    /** The invalid ID. */
-    private static final int INVALID_ID = -1;
-
     /**
      * @param layoutId The XML Layout that declares the View.
      * @param viewId The id of the root View of the Layout.
@@ -104,7 +103,9 @@ public class ViewResourceInflater {
         if (mView != null) return;
 
         // Inflate the View without attaching to hierarchy (attachToRoot param is false).
-        mView = LayoutInflater.from(mContext).inflate(mLayoutId, mContainer, false);
+        mView =
+                LayoutInflater.from(mContext)
+                        .inflate(mLayoutId, mContainer, /* attachToRoot= */ false);
 
         // Make sure the View we just inflated is the right one.
         assert mView.getId() == mViewId;
@@ -120,7 +121,7 @@ public class ViewResourceInflater {
 
     /** Invalidate the inflated View, causing a snapshot of the View to be captured. */
     public void invalidate() {
-        invalidate(false);
+        invalidate(/* didViewSizeChange= */ false);
     }
 
     /**
@@ -362,7 +363,7 @@ public class ViewResourceInflater {
     private void invalidateResource() {
         if (mIsInvalidated && mView != null && mResourceAdapter != null) {
             mIsInvalidated = false;
-            mResourceAdapter.invalidate(null);
+            mResourceAdapter.invalidate(/* dirtyRect= */ null);
         }
     }
 

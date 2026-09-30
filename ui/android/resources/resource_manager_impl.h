@@ -7,8 +7,6 @@
 
 #include <array>
 #include <memory>
-#include <unordered_map>
-#include <unordered_set>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
@@ -18,8 +16,9 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/android/resources/resource_manager.h"
 #include "ui/android/ui_android_export.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_ui_types.h"
+
+class SkBitmap;
 
 namespace cc {
 class UIResourceManager;
@@ -63,7 +62,7 @@ class UI_ANDROID_EXPORT ResourceManagerImpl
   void OnResourceReady(JNIEnv* env,
                        int32_t res_type,
                        int32_t res_id,
-                       const base::android::JavaRef<jobject>& bitmap,
+                       SkBitmap bitmap,
                        int32_t width,
                        int32_t height,
                        int64_t native_resource);
@@ -91,11 +90,11 @@ class UI_ANDROID_EXPORT ResourceManagerImpl
   // from the cache.
   void RemoveUnusedTints();
 
-  using ResourceMap = std::unordered_map<int, std::unique_ptr<Resource>>;
+  using ResourceMap = absl::flat_hash_map<int, std::unique_ptr<Resource>>;
   using TintedResourceMap =
-      std::unordered_map<SkColor, std::unique_ptr<ResourceMap>>;
+      absl::flat_hash_map<SkColor, std::unique_ptr<ResourceMap>>;
 
-  raw_ptr<cc::UIResourceManager> ui_resource_manager_;
+  raw_ptr<cc::UIResourceManager> ui_resource_manager_ = nullptr;
   std::array<ResourceMap, ANDROID_RESOURCE_TYPE_COUNT> resources_;
   TintedResourceMap tinted_resources_;
 

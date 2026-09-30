@@ -68,13 +68,11 @@ public class AsyncPreloadResourceLoader extends ResourceLoader {
         AsyncLoadTask task = mOutstandingLoads.get(resId);
 
         if (task != null) {
-            if (!task.cancel(false)) {
+            if (!task.cancel(/* mayInterruptIfRunning= */ false)) {
                 try {
                     registerResource(task.get(), resId);
-                } catch (InterruptedException e) {
-                    notifyLoadFinished(resId, null);
-                } catch (ExecutionException e) {
-                    notifyLoadFinished(resId, null);
+                } catch (InterruptedException | ExecutionException e) {
+                    notifyLoadFinished(resId, /* resource= */ null);
                 }
                 return;
             }
@@ -96,11 +94,8 @@ public class AsyncPreloadResourceLoader extends ResourceLoader {
     }
 
     private @Nullable Resource createResource(int resId) {
-        try {
-            TraceEvent.begin("AsyncPreloadResourceLoader.createResource");
+        try (TraceEvent te = TraceEvent.scoped("AsyncPreloadResourceLoader.createResource")) {
             return mCreator.create(resId);
-        } finally {
-            TraceEvent.end("AsyncPreloadResourceLoader.createResource");
         }
     }
 

@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ANDROID_COMPOSITOR_RESOURCES_TOOLBAR_RESOURCE_H_
 
 #include "ui/android/resources/resource.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace android {
 

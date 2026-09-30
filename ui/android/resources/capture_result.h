@@ -7,7 +7,6 @@
 
 #include <jni.h>
 
-#include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_hardware_buffer_handle.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback_forward.h"
@@ -31,10 +30,10 @@ class UI_ANDROID_EXPORT CaptureResult {
   STACK_ALLOCATED();
 
  public:
-  explicit CaptureResult(const jni_zero::JavaRef<jobject>& obj);
+  explicit CaptureResult(const base::android::JavaRef<jobject>& obj);
   CaptureResult(CaptureResult&& other) = delete;
   CaptureResult(const CaptureResult&) = delete;
-  CaptureResult operator=(const CaptureResult&) = delete;
+  CaptureResult& operator=(const CaptureResult&) = delete;
   ~CaptureResult();
 
   // Returns whether there is a non-null result.
@@ -55,8 +54,9 @@ class UI_ANDROID_EXPORT CaptureResult {
 namespace jni_zero {
 
 template <>
-inline ui::CaptureResult FromJniType(JNIEnv* env,
-                                     const jni_zero::JavaRef<jobject>& obj) {
+inline ui::CaptureResult FromJniType(
+    JNIEnv* env,
+    const base::android::JavaRef<jobject>& obj) {
   return ui::CaptureResult(obj);
 }
 

@@ -20,9 +20,8 @@
 namespace ui {
 
 using base::android::ScopedHardwareBufferHandle;
-using base::android::ScopedJavaGlobalRef;
 
-CaptureResult::CaptureResult(const jni_zero::JavaRef<jobject>& obj)
+CaptureResult::CaptureResult(const base::android::JavaRef<jobject>& obj)
     : java_capture_result_(obj) {}
 
 CaptureResult::~CaptureResult() = default;
@@ -32,10 +31,8 @@ CaptureResult::operator bool() const {
 }
 
 SkBitmap CaptureResult::GetBitmap() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  gfx::JavaBitmap j_bitmap(
-      Java_CaptureResult_getBitmap(env, java_capture_result_));
-  return gfx::CreateSkBitmapFromJavaBitmap(j_bitmap);
+  return Java_CaptureResult_getBitmap(base::android::AttachCurrentThread(),
+                                      java_capture_result_);
 }
 
 ScopedHardwareBufferHandle CaptureResult::GetHardwareBuffer() const {

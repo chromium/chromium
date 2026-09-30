@@ -9,10 +9,12 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
 import android.util.SparseArray;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -103,23 +105,22 @@ public class ResourceManager implements ResourceLoaderCallback {
      * @param syncIds Resource ids which will be loaded synchronously.
      * @param asyncIds Resource ids which will be loaded asynchronously.
      */
-    public void preloadResources(int type, int[] syncIds, int[] asyncIds) {
+    public void preloadResources(int type, int @Nullable [] syncIds, int @Nullable [] asyncIds) {
         ResourceLoader loader = mResourceLoaders.get(type);
         assumeNonNull(loader);
         if (asyncIds != null) {
-            for (Integer resId : asyncIds) {
+            for (int resId : asyncIds) {
                 loader.preloadResource(resId);
             }
         }
 
         if (syncIds != null) {
-            for (Integer resId : syncIds) {
+            for (int resId : syncIds) {
                 loader.loadResource(resId);
             }
         }
     }
 
-    @SuppressWarnings("cast")
     @Override
     public void onResourceLoaded(
             @AndroidResourceType int resType, int resId, @Nullable Resource resource) {
@@ -134,14 +135,15 @@ public class ResourceManager implements ResourceLoaderCallback {
 
         if (mNativeResourceManagerPtr == 0) return;
 
+        Rect bitmapSize = resource.getBitmapSize();
         ResourceManagerJni.get()
                 .onResourceReady(
                         mNativeResourceManagerPtr,
                         resType,
                         resId,
                         bitmap,
-                        resource.getBitmapSize().width(),
-                        resource.getBitmapSize().height(),
+                        bitmapSize.width(),
+                        bitmapSize.height(),
                         resource.createNativeResource());
     }
 
@@ -201,7 +203,7 @@ public class ResourceManager implements ResourceLoaderCallback {
                 long nativeResourceManagerImpl,
                 int resType,
                 int resId,
-                Bitmap bitmap,
+                @JniType("SkBitmap") Bitmap bitmap,
                 int width,
                 int height,
                 long nativeResource);

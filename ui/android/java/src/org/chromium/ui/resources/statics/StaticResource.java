@@ -39,11 +39,6 @@ public class StaticResource implements Resource {
     }
 
     @Override
-    public @Nullable NinePatchData getNinePatchData() {
-        return mNinePatchData;
-    }
-
-    @Override
     public Bitmap getBitmap() {
         assert mBitmap != null : "StaticResource#getBitmap can only be called once per lifecycle";
         Bitmap bitmap = mBitmap;

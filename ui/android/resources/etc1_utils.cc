@@ -4,10 +4,25 @@
 
 #include "ui/android/resources/etc1_utils.h"
 
+#include <algorithm>
+#include <array>
+#include <bit>
+#include <cmath>
+#include <cstdint>
+#include <optional>
+#include <utility>
+
+#include "base/bits.h"
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
+#include "base/containers/span_reader.h"
+#include "base/containers/span_writer.h"
 #include "base/files/file.h"
 #include "base/memory/aligned_memory.h"
 #include "base/numerics/byte_conversions.h"
+#include "base/numerics/safe_conversions.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/android_opengl/etc1/etc1.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -27,25 +42,31 @@ namespace ui {
 
 namespace {
 
-const uint32_t kCompressedKey = 0xABABABAB;
-const uint32_t kCurrentExtraVersion = 1;
+constexpr uint32_t kCompressedKey = 0xABABABAB;
+constexpr uint32_t kCurrentExtraVersion = 1;
+
+// On-disk header layout:
+//   [0..4)   kCompressedKey (uint32_t, big-endian)
+//   [4..8)   content width  (uint32_t, big-endian)
+//   [8..12)  content height (uint32_t, big-endian)
+//   [12..28) ETC1 PKM header (ETC_PKM_HEADER_SIZE == 16 bytes)
+constexpr size_t kHeaderSize = 3 * sizeof(uint32_t) + ETC_PKM_HEADER_SIZE;
+static_assert(kHeaderSize == 28);
+
+// On-disk trailer layout (kCurrentExtraVersion == 1):
+//   [0..4)   extra_data_version (uint32_t, big-endian)
+//   [4..8)   1.f / scale        (float, big-endian)
+constexpr size_t kTrailerSize = sizeof(uint32_t) + sizeof(float);
+static_assert(kTrailerSize == 8);
 
 unsigned int NextPowerOfTwo(int a) {
-  DCHECK(a >= 0);
-  auto x = static_cast<unsigned int>(a);
-  --x;
-  x |= x >> 1u;
-  x |= x >> 2u;
-  x |= x >> 4u;
-  x |= x >> 8u;
-  x |= x >> 16u;
-  return x + 1;
+  CHECK_GE(a, 0);
+  return a == 0 ? 0u : std::bit_ceil(static_cast<uint32_t>(a));
 }
 
 unsigned int RoundUpMod4(int a) {
-  DCHECK(a >= 0);
-  auto x = static_cast<unsigned int>(a);
-  return (x + 3u) & ~3u;
+  CHECK_GE(a, 0);
+  return base::bits::AlignUp(static_cast<uint32_t>(a), 4u);
 }
 
 // TODO(khushalsagar): This is a hack to ensure correct byte size computation
@@ -56,40 +77,14 @@ size_t ETC1RowBytes(int width) {
   return width / 2;
 }
 
-bool WriteBigEndianU32ToFile(base::File* file,
-                             base::StrictNumeric<uint32_t> v) {
-  return file->WriteAtCurrentPos(base::U32ToBigEndian(v)) == sizeof(v);
-}
-
-bool WriteBigEndianFloatToFile(base::File* file, float v) {
-  return file->WriteAtCurrentPos(base::FloatToBigEndian(v)) == sizeof(v);
-}
-
-bool ReadBigEndianU32FromFile(base::File* file, uint32_t* out) {
-  std::array<uint8_t, sizeof(*out)> buffer;
-  if (file->ReadAtCurrentPos(buffer).value_or(0u) != buffer.size()) {
-    return false;
-  }
-  *out = base::U32FromBigEndian(buffer);
-  return true;
-}
-bool ReadBigEndianFloatFromFile(base::File* file, float* out) {
-  std::array<uint8_t, sizeof(*out)> buffer;
-  if (file->ReadAtCurrentPos(buffer).value_or(0u) != buffer.size()) {
-    return false;
-  }
-  *out = base::FloatFromBigEndian(buffer);
-  return true;
-}
-
 gfx::Size GetETCEncodedSize(const gfx::Size& bitmap_size, bool supports_npot) {
-  DCHECK(bitmap_size.width() >= 0);
-  DCHECK(bitmap_size.height() >= 0);
+  CHECK_GE(bitmap_size.width(), 0);
+  CHECK_GE(bitmap_size.height(), 0);
   DCHECK(!bitmap_size.IsEmpty());
 
   if (!supports_npot) {
-    return gfx::Size(NextPowerOfTwo(bitmap_size.width()),
-                     NextPowerOfTwo(bitmap_size.height()));
+    return gfx::Size(NextPowerOfTwo(RoundUpMod4(bitmap_size.width())),
+                     NextPowerOfTwo(RoundUpMod4(bitmap_size.height())));
   } else {
     return gfx::Size(RoundUpMod4(bitmap_size.width()),
                      RoundUpMod4(bitmap_size.height()));
@@ -101,6 +96,7 @@ gfx::Size GetETCEncodedSize(const gfx::Size& bitmap_size, bool supports_npot) {
 // of `T`.
 template <typename T>
 rust::Slice<T> CastToAlignedSlice(void* data, size_t bytes) {
+  CHECK(data);
   CHECK(base::IsAligned(data, alignof(T)));
   return {reinterpret_cast<T*>(data), bytes / sizeof(T)};
 }
@@ -109,9 +105,12 @@ rust::Slice<T> CastToAlignedSlice(void* data, size_t bytes) {
 }  // namespace
 
 // static
-sk_sp<SkPixelRef> Etc1::CompressBitmap(SkBitmap raw_data,
-                                                     bool supports_etc_npot) {
-  if (raw_data.empty()) {
+sk_sp<SkPixelRef> Etc1::CompressBitmap(const SkBitmap& raw_data,
+                                       bool supports_etc_npot) {
+  if (raw_data.empty() || !raw_data.getPixels() ||
+      raw_data.bytesPerPixel() != sizeof(uint32_t) ||
+      (raw_data.rowBytes() % sizeof(uint32_t)) != 0 ||
+      !base::IsAligned(raw_data.getPixels(), alignof(uint32_t))) {
     return nullptr;
   }
 
@@ -119,14 +118,19 @@ sk_sp<SkPixelRef> Etc1::CompressBitmap(SkBitmap raw_data,
   const gfx::Size encoded_size =
       GetETCEncodedSize(raw_data_size, supports_etc_npot);
   constexpr size_t kPixelSize = 4;  // For kARGB_8888_Config.
-  size_t stride = kPixelSize * raw_data_size.width();
+  const size_t stride = raw_data.rowBytes();
 
   size_t encoded_bytes =
       etc1_get_encoded_data_size(encoded_size.width(), encoded_size.height());
   SkImageInfo info =
       SkImageInfo::Make(encoded_size.width(), encoded_size.height(),
                         kUnknown_SkColorType, kUnpremul_SkAlphaType);
-  sk_sp<SkData> etc1_pixel_data(SkData::MakeUninitialized(encoded_bytes));
+  const gfx::Size block_aligned_size(RoundUpMod4(raw_data_size.width()),
+                                     RoundUpMod4(raw_data_size.height()));
+  sk_sp<SkData> etc1_pixel_data =
+      encoded_size == block_aligned_size
+          ? SkData::MakeUninitialized(encoded_bytes)
+          : SkData::MakeZeroInitialized(encoded_bytes);
   sk_sp<SkPixelRef> etc1_pixel_ref(SkMallocPixelRef::MakeWithData(
       info, ETC1RowBytes(encoded_size.width()), std::move(etc1_pixel_data)));
 
@@ -142,6 +146,7 @@ sk_sp<SkPixelRef> Etc1::CompressBitmap(SkBitmap raw_data,
                   raw_data.width(), raw_data.height(),
                   raw_data.rowBytesAsPixels(),
                   encoded_size.width() / kBlockSize);
+    etc1_pixel_ref->setImmutable();
     return etc1_pixel_ref;
   }
 #endif
@@ -160,36 +165,32 @@ sk_sp<SkPixelRef> Etc1::CompressBitmap(SkBitmap raw_data,
 
 bool Etc1::WriteToFile(base::File* file,
                        const gfx::Size& content_size,
-                       const float scale,
-                       sk_sp<SkPixelRef> compressed_data) {
+                       float scale,
+                       const sk_sp<SkPixelRef>& compressed_data) {
+  CHECK(file);
+  CHECK(compressed_data);
   if (!file->IsValid()) {
     return false;
   }
 
-  if (!WriteBigEndianU32ToFile(file, kCompressedKey)) {
-    return false;
-  }
-
-  if (!WriteBigEndianU32ToFile(
-          file, base::checked_cast<uint32_t>(content_size.width()))) {
-    return false;
-  }
-
-  if (!WriteBigEndianU32ToFile(
-          file, base::checked_cast<uint32_t>(content_size.height()))) {
-    return false;
-  }
-
-  // Write ETC1 header.
   CHECK_GE(compressed_data->width(), 0);
   CHECK_GE(compressed_data->height(), 0);
   unsigned width = static_cast<unsigned>(compressed_data->width());
   unsigned height = static_cast<unsigned>(compressed_data->height());
 
-  uint8_t etc1_buffer[ETC_PKM_HEADER_SIZE];
-  etc1_pkm_format_header(etc1_buffer, width, height);
-
-  if (file->WriteAtCurrentPos(etc1_buffer) != ETC_PKM_HEADER_SIZE) {
+  // Pack the 28-byte header (key, width, height, and 16-byte PKM header) into a
+  // single write syscall.
+  std::array<uint8_t, kHeaderSize> header;
+  base::SpanWriter<uint8_t> header_writer(header);
+  header_writer.WriteU32BigEndian(kCompressedKey);
+  header_writer.WriteU32BigEndian(
+      base::checked_cast<uint32_t>(content_size.width()));
+  header_writer.WriteU32BigEndian(
+      base::checked_cast<uint32_t>(content_size.height()));
+  etc1_pkm_format_header(header_writer.Skip<ETC_PKM_HEADER_SIZE>()->data(),
+                         width, height);
+  DCHECK_EQ(header_writer.remaining(), 0u);
+  if (file->WriteAtCurrentPos(header) != header.size()) {
     return false;
   }
 
@@ -201,11 +202,14 @@ bool Etc1::WriteToFile(base::File* file,
     return false;
   }
 
-  if (!WriteBigEndianU32ToFile(file, kCurrentExtraVersion)) {
-    return false;
-  }
-
-  if (!WriteBigEndianFloatToFile(file, 1.f / scale)) {
+  // Pack the 8-byte trailer (version and inverted scale) into a single write
+  // syscall.
+  std::array<uint8_t, kTrailerSize> trailer;
+  base::SpanWriter<uint8_t> trailer_writer(trailer);
+  trailer_writer.WriteU32BigEndian(kCurrentExtraVersion);
+  trailer_writer.Write(base::FloatToBigEndian(1.f / scale));
+  DCHECK_EQ(trailer_writer.remaining(), 0u);
+  if (file->WriteAtCurrentPos(trailer) != trailer.size()) {
     return false;
   }
 
@@ -213,61 +217,49 @@ bool Etc1::WriteToFile(base::File* file,
 }
 
 bool Etc1::ReadFromFile(base::File* file,
-                  gfx::Size* out_content_size,
-                  float* out_scale,
-                  sk_sp<SkPixelRef>* out_pixels) {
+                        gfx::Size* out_content_size,
+                        float* out_scale,
+                        sk_sp<SkPixelRef>* out_pixels) {
+  CHECK(file);
   if (!file->IsValid()) {
     return false;
   }
 
+  std::array<uint8_t, kHeaderSize> header;
+  if (file->ReadAtCurrentPos(header) != header.size()) {
+    return false;
+  }
+
+  base::SpanReader<const uint8_t> header_reader(header);
   uint32_t key = 0;
-  if (!ReadBigEndianU32FromFile(file, &key)) {
+  uint32_t raw_content_width = 0;
+  uint32_t raw_content_height = 0;
+  if (!header_reader.ReadU32BigEndian(key) || key != kCompressedKey ||
+      !header_reader.ReadU32BigEndian(raw_content_width) ||
+      raw_content_width == 0u ||
+      !base::IsValueInRangeForNumericType<int>(raw_content_width) ||
+      !header_reader.ReadU32BigEndian(raw_content_height) ||
+      raw_content_height == 0u ||
+      !base::IsValueInRangeForNumericType<int>(raw_content_height)) {
     return false;
   }
 
-  if (key != kCompressedKey) {
-    return false;
-  }
-
-  int content_width;
-  {
-    uint32_t val = 0;
-    if (!ReadBigEndianU32FromFile(file, &val) || val == 0u ||
-        !base::IsValueInRangeForNumericType<int>(val)) {
-      return false;
-    }
-    content_width = base::checked_cast<int>(val);
-  }
-
-  int content_height;
-  {
-    uint32_t val = 0;
-    if (!ReadBigEndianU32FromFile(file, &val) || val == 0u ||
-        !base::IsValueInRangeForNumericType<int>(val)) {
-      return false;
-    }
-    content_height = base::checked_cast<int>(val);
-  }
-
+  const int content_width = base::checked_cast<int>(raw_content_width);
+  const int content_height = base::checked_cast<int>(raw_content_height);
   out_content_size->SetSize(content_width, content_height);
 
   // Read ETC1 header.
-  uint8_t etc1_buffer[ETC_PKM_HEADER_SIZE];
-  if (file->ReadAtCurrentPos(etc1_buffer) != ETC_PKM_HEADER_SIZE) {
+  base::span<const uint8_t, ETC_PKM_HEADER_SIZE> etc1_buffer =
+      *header_reader.Read<ETC_PKM_HEADER_SIZE>();
+  if (!etc1_pkm_is_valid(etc1_buffer.data())) {
     return false;
   }
 
-  if (!etc1_pkm_is_valid(etc1_buffer)) {
-    return false;
-  }
-
-  int raw_width = etc1_pkm_get_width(etc1_buffer);
-  if (raw_width <= 0) {
-    return false;
-  }
-
-  int raw_height = etc1_pkm_get_height(etc1_buffer);
-  if (raw_height <= 0) {
+  const int raw_width = etc1_pkm_get_width(etc1_buffer.data());
+  const int raw_height = etc1_pkm_get_height(etc1_buffer.data());
+  if (raw_width <= 0 || raw_height <= 0 || (raw_width % 4) != 0 ||
+      (raw_height % 4) != 0 || content_width > raw_width ||
+      content_height > raw_height) {
     return false;
   }
 
@@ -279,21 +271,22 @@ bool Etc1::ReadFromFile(base::File* file,
     return false;
   }
   gfx::Size display_size = screen->GetPrimaryDisplay().GetSizeInPixel();
-  int max_dimension = std::max(display_size.width(), display_size.height());
+  const int max_dimension =
+      std::max(display_size.width(), display_size.height());
+  const size_t max_etc1_dimension = NextPowerOfTwo(max_dimension);
 
   if (content_width > max_dimension || content_height > max_dimension ||
-      static_cast<size_t>(raw_width) > NextPowerOfTwo(max_dimension) ||
-      static_cast<size_t>(raw_height) > NextPowerOfTwo(max_dimension)) {
+      static_cast<size_t>(raw_width) > max_etc1_dimension ||
+      static_cast<size_t>(raw_height) > max_etc1_dimension) {
     return false;
   }
 
-  int data_size = etc1_get_encoded_data_size(raw_width, raw_height);
+  const int data_size = etc1_get_encoded_data_size(raw_width, raw_height);
   sk_sp<SkData> etc1_pixel_data(SkData::MakeUninitialized(data_size));
 
   std::optional<size_t> pixel_bytes_read =
       file->ReadAtCurrentPos(skia::as_writable_byte_span(*etc1_pixel_data));
-
-  if (pixel_bytes_read != data_size) {
+  if (pixel_bytes_read != static_cast<size_t>(data_size)) {
     return false;
   }
 
@@ -302,23 +295,34 @@ bool Etc1::ReadFromFile(base::File* file,
 
   *out_pixels = SkMallocPixelRef::MakeWithData(info, ETC1RowBytes(raw_width),
                                                std::move(etc1_pixel_data));
+  (*out_pixels)->setImmutable();
 
+  std::array<uint8_t, kTrailerSize> trailer;
+  std::optional<size_t> trailer_bytes_read = file->ReadAtCurrentPos(trailer);
+  if (!trailer_bytes_read || *trailer_bytes_read < 4u) {
+    return false;
+  }
+  base::SpanReader<const uint8_t> trailer_reader(
+      base::span(trailer).first(*trailer_bytes_read));
   uint32_t extra_data_version = 0;
-  if (!ReadBigEndianU32FromFile(file, &extra_data_version)) {
+  if (!trailer_reader.ReadU32BigEndian(extra_data_version)) {
     return false;
   }
 
   *out_scale = 1.f;
   if (extra_data_version == 1u) {
-    if (!ReadBigEndianFloatFromFile(file, out_scale)) {
+    auto scale_bytes = trailer_reader.Read<4>();
+    if (!scale_bytes) {
       return false;
     }
-
-    if (*out_scale == 0.f) {
+    *out_scale = base::FloatFromBigEndian(*scale_bytes);
+    if (!std::isfinite(*out_scale) || *out_scale <= 0.f) {
       return false;
     }
-
     *out_scale = 1.f / *out_scale;
+    if (!std::isfinite(*out_scale)) {
+      return false;
+    }
   }
 
   return true;

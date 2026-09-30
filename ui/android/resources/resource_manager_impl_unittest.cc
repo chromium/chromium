@@ -20,7 +20,6 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "ui/android/resources/system_ui_resource_type.h"
 #include "ui/android/window_android.h"
-#include "ui/gfx/android/java_bitmap.h"
 
 using ::testing::_;
 using ::testing::AtLeast;
@@ -53,8 +52,7 @@ class TestResourceManagerImpl : public ResourceManagerImpl {
     canvas.drawColor(SK_ColorWHITE);
     small_bitmap.setImmutable();
 
-    OnResourceReady(nullptr, res_type, res_id,
-                    gfx::ConvertToJavaBitmap(small_bitmap), 1, 1,
+    OnResourceReady(nullptr, res_type, res_id, std::move(small_bitmap), 1, 1,
                     reinterpret_cast<intptr_t>(new Resource()));
   }
 

@@ -83,7 +83,7 @@ class UI_ANDROID_EXPORT ResourceManager {
   virtual base::WeakPtr<ResourceManager> GetWeakPtr() = 0;
 
  protected:
-  virtual ~ResourceManager() {}
+  virtual ~ResourceManager() = default;
 };
 
 }  // namespace ui

@@ -25,22 +25,15 @@ public class SystemResourceLoader extends AsyncPreloadResourceLoader {
 
     /**
      * Creates an instance of a {@link SystemResourceLoader}.
+     *
      * @param resourceType The resource type this loader is responsible for loading.
-     * @param callback     The {@link ResourceLoaderCallback} to notify when a {@link Resource} is
-     *                     done loading.
-     * @param minScreenSideLengthPx    The length (in pixels) of the smallest side of the screen.
+     * @param callback The {@link ResourceLoaderCallback} to notify when a {@link Resource} is done
+     *     loading.
+     * @param minScreenSideLengthPx The length (in pixels) of the smallest side of the screen.
      */
     public SystemResourceLoader(
             int resourceType, ResourceLoaderCallback callback, final int minScreenSideLengthPx) {
-        super(
-                resourceType,
-                callback,
-                new ResourceCreator() {
-                    @Override
-                    public @Nullable Resource create(int resId) {
-                        return createResource(minScreenSideLengthPx, resId);
-                    }
-                });
+        super(resourceType, callback, resId -> createResource(minScreenSideLengthPx, resId));
     }
 
     private static @Nullable Resource createResource(int minScreenSideLengthPx, int resId) {

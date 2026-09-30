@@ -5,16 +5,18 @@
 #ifndef UI_ANDROID_RESOURCES_RESOURCE_H_
 #define UI_ANDROID_RESOURCES_RESOURCE_H_
 
+#include <cstdint>
+#include <memory>
+
 #include "cc/resources/scoped_ui_resource.h"
-#include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/android/ui_android_export.h"
-#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace ui {
 
 class UI_ANDROID_EXPORT Resource {
  public:
-  enum class Type { BITMAP, NINE_PATCH_BITMAP, TOOLBAR };
+  enum class Type : uint8_t { BITMAP, NINE_PATCH_BITMAP, TOOLBAR };
 
   Resource();
   virtual ~Resource();
@@ -31,14 +33,14 @@ class UI_ANDROID_EXPORT Resource {
   Type type() const { return type_; }
 
  protected:
-  Resource(Type type);
+  explicit Resource(Type type);
 
  private:
-  const Type type_;
+  std::unique_ptr<cc::ScopedUIResource> ui_resource_;
 
   // Size of the bitmap in physical pixels.
   gfx::Size size_;
-  std::unique_ptr<cc::ScopedUIResource> ui_resource_;
+  const Type type_;
 };
 
 }  // namespace ui

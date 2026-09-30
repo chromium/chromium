@@ -9,10 +9,7 @@
 #include "ui/android/ui_android_export.h"
 #include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/point_f.h"
-
-namespace cc {
-class NinePatchLayer;
-}
+#include "ui/gfx/geometry/rect.h"
 
 namespace ui {
 
@@ -32,12 +29,6 @@ class UI_ANDROID_EXPORT NinePatchResource final : public Resource {
   // Returns the position where the resource should be drawn to account for
   // margins, given the |content_position| in the parent's coordinate space.
   gfx::PointF DrawPosition(const gfx::Point& content_position) const;
-
-  // Updates draw properties on |layer| used to draw this resource. The
-  // |content_location| is the rect of the content to be fit inside the resource
-  // in the parent's coordinate space.
-  void UpdateNinePatchLayer(cc::NinePatchLayer* layer,
-                            const gfx::Rect& content_location) const;
 
   gfx::Rect Border(const gfx::Size& bounds) const;
   gfx::Rect Border(const gfx::Size& bounds, const gfx::InsetsF& scale) const;

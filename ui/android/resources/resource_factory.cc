@@ -8,8 +8,6 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/android/ui_android_jni_headers/ResourceFactory_jni.h"
 
-using jni_zero::JavaRef;
-
 namespace ui {
 
 static int64_t JNI_ResourceFactory_CreateBitmapResource(JNIEnv* env) {

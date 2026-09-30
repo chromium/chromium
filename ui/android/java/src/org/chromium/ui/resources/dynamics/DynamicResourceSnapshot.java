@@ -8,9 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.Rect;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.resources.Resource;
-import org.chromium.ui.resources.statics.NinePatchData;
 
 /** The current state of a dynamic resource. */
 @NullMarked
@@ -33,11 +31,6 @@ public class DynamicResourceSnapshot implements Resource {
     @Override
     public Rect getBitmapSize() {
         return mBitmapSize;
-    }
-
-    @Override
-    public @Nullable NinePatchData getNinePatchData() {
-        return null;
     }
 
     @Override

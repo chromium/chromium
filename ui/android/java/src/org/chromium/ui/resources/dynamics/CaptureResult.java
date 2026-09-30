@@ -40,6 +40,11 @@ public class CaptureResult {
         int HARDWARE_BUFFER = 1;
     }
 
+    private final @Destination int mDestination;
+    private final @Nullable Bitmap mBitmap;
+    private final @Nullable HardwareBuffer mHardwareBuffer;
+    private final @Nullable Runnable mReleaseCallback;
+
     /**
      * Constructs a {@link CaptureResult} with a {@link Bitmap}.
      *
@@ -74,7 +79,7 @@ public class CaptureResult {
      * @return The captured {@link Bitmap}, or {@code null} if not applicable.
      */
     @CalledByNative
-    public Bitmap getBitmap() {
+    public @JniType("SkBitmap") Bitmap getBitmap() {
         assert mDestination == Destination.BITMAP;
         return assertNonNull(mBitmap);
     }
@@ -103,9 +108,4 @@ public class CaptureResult {
         assert mDestination == Destination.HARDWARE_BUFFER;
         return assertNonNull(mReleaseCallback);
     }
-
-    private final @Destination int mDestination;
-    private final @Nullable Bitmap mBitmap;
-    private final @Nullable HardwareBuffer mHardwareBuffer;
-    private final @Nullable Runnable mReleaseCallback;
 }
