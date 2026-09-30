@@ -29,6 +29,7 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/values.h"
 #include "chrome/browser/affiliations/affiliation_service_factory.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
@@ -622,6 +623,7 @@ class PasswordsPrivateDelegateImplMockTaskEnvironmentTest
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateDelegateImplMockTaskEnvironmentTest,
                        AuthenticationTimeMetric) {
+  base::ScopedMockElapsedTimersForTest mock_elapsed_timers;
   content::WebContents* web_contents_ptr =
       browser()->GetTabStripModel()->GetActiveWebContents();
   auto delegate = CreateDelegate();
@@ -643,7 +645,8 @@ IN_PROC_BROWSER_TEST_F(PasswordsPrivateDelegateImplMockTaskEnvironmentTest,
   delegate->RequestCredentialsDetails({0}, callback.Get(), web_contents_ptr);
 
   histogram_tester().ExpectUniqueTimeSample(
-      "PasswordManager.Settings.AuthenticationTime2", base::Seconds(0), 1);
+      "PasswordManager.Settings.AuthenticationTime2",
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordsPrivateDelegateImplMockTaskEnvironmentTest,
