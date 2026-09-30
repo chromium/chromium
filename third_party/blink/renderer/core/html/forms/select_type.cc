@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_mutation_observer_init.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer.h"
 #include "third_party/blink/renderer/core/dom/mutation_record.h"
@@ -297,6 +298,7 @@ class MenuListSelectType final : public SelectType {
   void HidePopup(SelectPopupHideBehavior) override;
   void PopupDidHide() override;
   bool PopupIsVisible() const override;
+  bool NativePopupIsVisible() const override;
   PopupMenu* PopupForTesting() const override;
   AXObject* PopupRootAXObject() const override;
   void ShowPicker() override;
@@ -883,9 +885,25 @@ bool MenuListSelectType::PopupIsVisible() const {
     return popover_open || native_popup_is_visible_;
 }
 
+bool MenuListSelectType::NativePopupIsVisible() const {
+  return native_popup_is_visible_;
+}
+
 void MenuListSelectType::SetNativePopupIsVisible(bool popup_is_visible) {
   native_popup_is_visible_ = popup_is_visible;
   select_->PseudoStateChanged(CSSSelector::kPseudoOpen);
+  if (!popup_is_visible) {
+    // While the native popup was showing, hover updates were not applied to
+    // the select (see HTMLSelectElement::SetHovered), so its hover state may
+    // be stale now. Re-sync it with the document's hover chain.
+    Element* hover_element = select_->GetDocument().HoverElement();
+    bool select_in_hover_chain =
+        hover_element &&
+        FlatTreeTraversal::IsInclusiveDescendantOf(*hover_element, *select_);
+    if (select_->IsHovered() && !select_in_hover_chain) {
+      select_->SetHovered(false);
+    }
+  }
   if (auto* layout_object = select_->GetLayoutObject()) {
     // Invalidate paint to ensure that the focus ring is updated.
     layout_object->SetShouldDoFullPaintInvalidation();
@@ -2157,6 +2175,10 @@ void SelectType::PopupDidHide() {
 }
 
 bool SelectType::PopupIsVisible() const {
+  return false;
+}
+
+bool SelectType::NativePopupIsVisible() const {
   return false;
 }
 

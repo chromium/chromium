@@ -404,6 +404,36 @@ TEST_F(HTMLSelectElementTest, PopupIsVisible) {
   EXPECT_FALSE(select->PopupIsVisible());
 }
 
+// crbug.com/40774159: while the native popup is showing, hover updates on
+// the owner document must not clear the select's :hover state. Otherwise the
+// hover style flickers depending on whether the mouse re-enters the popup
+// window or the owner window.
+TEST_F(HTMLSelectElementTest, KeepsHoverWhileNativePopupIsVisible) {
+  SetHtmlInnerHTML("<select><option>o1</option></select>");
+  auto* select = To<HTMLSelectElement>(GetDocument().body()->firstChild());
+  ASSERT_NE(select, nullptr);
+
+  // Simulate the mouse hovering the select.
+  GetDocument().UpdateHoverActiveState(/*is_active=*/false,
+                                       /*update_active_chain=*/true, select);
+  EXPECT_TRUE(select->IsHovered());
+
+  select->ShowPopup();
+  ASSERT_TRUE(select->PopupIsVisible());
+
+  // The mouse moves off the select (over the owner window next to the popup).
+  GetDocument().UpdateHoverActiveState(/*is_active=*/false,
+                                       /*update_active_chain=*/true,
+                                       GetDocument().body());
+  EXPECT_TRUE(select->IsHovered());
+
+  // Once the popup hides, the hover state re-syncs with the document's hover
+  // chain, which no longer contains the select.
+  select->PopupDidHide();
+  EXPECT_FALSE(select->PopupIsVisible());
+  EXPECT_FALSE(select->IsHovered());
+}
+
 TEST_F(HTMLSelectElementTest, FirstSelectableOption) {
   {
     SetHtmlInnerHTML("<select></select>");
