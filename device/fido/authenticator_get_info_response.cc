@@ -130,7 +130,7 @@ std::vector<uint8_t> AuthenticatorGetInfoResponse::EncodeToCBOR(
       cbor::Value::MapValue entry;
       entry.emplace("type", "public-key");
       entry.emplace("alg", algorithm);
-      algorithms_cbor.emplace_back(cbor::Value(entry));
+      algorithms_cbor.emplace_back(std::move(entry));
     }
     device_info_map.emplace(0x0a, std::move(algorithms_cbor));
   }

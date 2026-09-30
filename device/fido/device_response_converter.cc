@@ -949,7 +949,7 @@ static std::optional<cbor::Value> FixInvalidUTF8Value(
         new_array.emplace_back(std::move(*maybe_fixed));
       }
 
-      return cbor::Value(new_array);
+      return cbor::Value(std::move(new_array));
     }
 
     case cbor::Value::Type::MAP: {
@@ -984,7 +984,7 @@ static std::optional<cbor::Value> FixInvalidUTF8Value(
         new_map.emplace(it.first.Clone(), std::move(*maybe_fixed));
       }
 
-      return cbor::Value(new_map);
+      return cbor::Value(std::move(new_map));
     }
   }
 }

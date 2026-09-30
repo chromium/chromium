@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <ostream>
+#include <utility>
 
 #include "base/containers/map_util.h"
 #include "base/containers/span.h"
@@ -14,8 +15,8 @@
 #include "components/cbor/reader.h"
 #include "components/cbor/writer.h"
 #include "crypto/aead.h"
-#include "crypto/random.h"
 #include "crypto/hash.h"
+#include "crypto/random.h"
 #include "device/fido/pin.h"
 
 namespace device {
@@ -252,7 +253,7 @@ cbor::Value LargeBlobData::AsCBOR() const {
   map.emplace(static_cast<int>(LargeBlobDataKeys::kCiphertext), ciphertext_);
   map.emplace(static_cast<int>(LargeBlobDataKeys::kNonce), nonce_);
   map.emplace(static_cast<int>(LargeBlobDataKeys::kOrigSize), orig_size_);
-  return cbor::Value(map);
+  return cbor::Value(std::move(map));
 }
 
 LargeBlobArrayReader::LargeBlobArrayReader() = default;
