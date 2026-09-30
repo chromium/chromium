@@ -3003,7 +3003,13 @@ bool IsAXCustomActionNamesForTestingProjectionEnabled() {
   NSMutableArray* actions = [NSMutableArray array];
 
   // VoiceOver expects the "press" action to be first.
-  if (_owner->HasDefaultAction()) {
+  // Don't advertise AXPress for ax::mojom::DefaultActionVerb::kClickAncestor.
+  // ax::mojom::DefaultActionVerb::kClickAncestor is used when an element with a
+  // click listener is present in its ancestry chain, so the node itself isn't
+  // clickable.
+  if (_owner->HasDefaultAction() &&
+      _owner->GetData().GetDefaultActionVerb() !=
+          ax::mojom::DefaultActionVerb::kClickAncestor) {
     [actions insertObject:NSAccessibilityPressAction atIndex:0];
   }
 

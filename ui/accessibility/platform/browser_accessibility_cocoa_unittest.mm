@@ -280,6 +280,40 @@ TEST_P(BrowserAccessibilityCocoaTest, AXPressAdvertisementMatchesExecution) {
   EXPECT_TRUE([cocoa_node_3 accessibilityPerformPress]);
 }
 
+// A node whose default action only comes from a clickable ancestor must not
+// advertise AXPress, otherwise VoiceOver announces it as "clickable".
+TEST_P(BrowserAccessibilityCocoaTest, ClickAncestorDoesNotAdvertisePress) {
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kGenericContainer;
+  root_data.SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClick);
+  root_data.child_ids = {2};
+
+  AXNodeData child_data;
+  child_data.id = 2;
+  child_data.role = ax::mojom::Role::kTab;
+  child_data.SetDefaultActionVerb(ax::mojom::DefaultActionVerb::kClickAncestor);
+
+  AXTreeUpdate update;
+  update.root_id = root_data.id;
+  update.nodes = {root_data, child_data};
+
+  TestAXNodeIdDelegate node_id_delegate;
+  auto manager = std::make_unique<MockBrowserAccessibilityManagerMac>(
+      update, node_id_delegate, nullptr);
+  BrowserAccessibilityCocoa* cocoa_root =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          manager->GetFromID(root_data.id)->GetNativeViewAccessible().Get());
+  BrowserAccessibilityCocoa* cocoa_child =
+      base::apple::ObjCCastStrict<BrowserAccessibilityCocoa>(
+          manager->GetFromID(child_data.id)->GetNativeViewAccessible().Get());
+
+  EXPECT_TRUE([[cocoa_root internalAccessibilityActionNames]
+      containsObject:NSAccessibilityPressAction]);
+  EXPECT_FALSE([[cocoa_child internalAccessibilityActionNames]
+      containsObject:NSAccessibilityPressAction]);
+}
+
 TEST_P(BrowserAccessibilityCocoaTest, ViewsShowMenuUsesSerializedCapabilities) {
   AXNodeData root;
   root.id = 1;
