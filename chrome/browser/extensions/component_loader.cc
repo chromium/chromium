@@ -105,6 +105,7 @@ namespace {
 
 #if BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)
 BASE_FEATURE(kHangoutsExtensionV3, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kRemoveHangoutsExtension, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)
 
 bool g_enable_background_extensions_during_testing = false;
@@ -512,6 +513,9 @@ std::vector<ExtensionId> ComponentLoader::GetRegisteredComponentExtensionsIds()
 
 #if BUILDFLAG(ENABLE_HANGOUT_SERVICES_EXTENSION)
 void ComponentLoader::AddHangoutServicesExtension() {
+  if (base::FeatureList::IsEnabled(kRemoveHangoutsExtension)) {
+    return;
+  }
   // Finch controlled migration to a v3 Manifest - see crbug.com/326877912.
   if (base::FeatureList::IsEnabled(kHangoutsExtensionV3)) {
     Add(IDR_HANGOUT_SERVICES_MANIFEST_V3,
