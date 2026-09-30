@@ -4,6 +4,8 @@
 
 #include "base/memory_coordinator/memory_limit.h"
 
+#include <ostream>
+
 #include "base/byte_size.h"
 
 namespace base {
@@ -12,6 +14,10 @@ ByteSize MemoryLimit::Scale(ByteSize baseline) const {
   // Use int64_t here in order to get saturating behaviour if we get too big.
   const int64_t tmp = static_cast<int64_t>(baseline.InBytes());
   return ByteSize(static_cast<uint64_t>(Scale(tmp)));
+}
+
+void PrintTo(const MemoryLimit& memory_limit, std::ostream* os) {
+  *os << memory_limit.percent() << "%";
 }
 
 }  // namespace base

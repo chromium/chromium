@@ -71,6 +71,10 @@ TEST(MemoryLimitTest, ScaleByteSize) {
   EXPECT_EQ(limit_50.Scale(KiB(100)), KiB(50));
 }
 
+TEST(MemoryLimitTest, PrintTo) {
+  EXPECT_EQ(testing::PrintToString(MemoryLimit::FromPercent(50)), "50%");
+}
+
 #if defined(GTEST_HAS_DEATH_TEST)
 TEST(MemoryLimitTest, NegativePercentDeathTest) {
   EXPECT_CHECK_DEATH({ MemoryLimit::FromPercent(-1); });

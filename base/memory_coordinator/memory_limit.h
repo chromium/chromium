@@ -5,6 +5,7 @@
 #ifndef BASE_MEMORY_COORDINATOR_MEMORY_LIMIT_H_
 #define BASE_MEMORY_COORDINATOR_MEMORY_LIMIT_H_
 
+#include <iosfwd>
 #include <type_traits>
 
 #include "base/base_export.h"
@@ -81,6 +82,9 @@ class BASE_EXPORT MemoryLimit {
 
   int percent_ = kDefaultPercent;
 };
+
+// Pretty-printer for gtest.
+BASE_EXPORT void PrintTo(const MemoryLimit& memory_limit, std::ostream* os);
 
 }  // namespace base
 
