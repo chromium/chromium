@@ -80,6 +80,19 @@ bool ProcessingInstruction::IsXSL() const {
   return is_xsl_;
 }
 
+void ProcessingInstruction::DisallowXSL() {
+  if (!is_xsl_) {
+    return;
+  }
+  DocumentXSLT::ProcessingInstructionRemovedFromDocument(GetDocument(), this);
+  is_xsl_ = false;
+  if (sheet_) {
+    ClearSheet();
+  }
+  ClearResource();
+  loading_ = false;
+}
+
 EventListener* ProcessingInstruction::EventListenerForXSLT() {
   if (!listener_for_xslt_) {
     return nullptr;

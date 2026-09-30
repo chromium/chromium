@@ -249,4 +249,40 @@ TEST(XMLDocumentParserTest, ChunkedParsingWithPauseRust) {
   EXPECT_TRUE(parser->WellFormed());
 }
 
+TEST(XMLDocumentParserTest, RustParserInstantiation) {
+  test::TaskEnvironment task_environment;
+  ScopedNullExecutionContext execution_context;
+  execution_context.GetExecutionContext().SetUpSecurityContextForTesting();
+
+  {
+    auto& doc =
+        *Document::CreateForTest(execution_context.GetExecutionContext());
+    ScopedXMLRustForNonXsltForTest rust_non_xslt(false);
+    ScopedXMLParsingRustForTest rust_all(false);
+    DocumentParser* parser = doc.CreateParser();
+    EXPECT_FALSE(doc.UsingRustXmlParserForTesting());
+    EXPECT_TRUE(parser);
+  }
+
+  {
+    auto& doc =
+        *Document::CreateForTest(execution_context.GetExecutionContext());
+    ScopedXMLRustForNonXsltForTest rust_non_xslt(false);
+    ScopedXMLParsingRustForTest rust_all(true);
+    DocumentParser* parser = doc.CreateParser();
+    EXPECT_TRUE(doc.UsingRustXmlParserForTesting());
+    EXPECT_TRUE(parser);
+  }
+
+  {
+    auto& doc =
+        *Document::CreateForTest(execution_context.GetExecutionContext());
+    ScopedXMLRustForNonXsltForTest rust_non_xslt(true);
+    ScopedXMLParsingRustForTest rust_all(false);
+    DocumentParser* parser = doc.CreateParser();
+    EXPECT_TRUE(doc.UsingRustXmlParserForTesting());
+    EXPECT_TRUE(parser);
+  }
+}
+
 }  // namespace blink

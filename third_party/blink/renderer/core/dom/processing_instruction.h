@@ -51,6 +51,7 @@ class CORE_EXPORT ProcessingInstruction final : public CharacterData,
 
   bool IsCSS() const { return is_css_; }
   bool IsXSL() const;
+  void DisallowXSL();
   void UpdateStylesheetIfNeeded();
 
   void DidChangeData();

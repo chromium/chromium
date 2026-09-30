@@ -3702,30 +3702,25 @@ DocumentParser* Document::CreateParser() {
         *html_document, parser_sync_policy_, registry, sanitizer_.Get());
   }
 
-  data_->using_rust_xml_parser_ = false;
+  data_->xml_parser_start_time_ = base::TimeTicks::Now();
 
-  // Use the Rust XML parser for situations non-XSLT situations: XMLHttpRequest,
+  // Use the Rust XML parser when XMLParsingRust is enabled, or when
+  // XMLRustForNonXslt is enabled for non-XSLT situations: XMLHttpRequest,
   // JS DOMParser API, where no dom_window_ is available, or for SVG images.
-  if (!GetFrame() || IsSVGDocument()) {
-    // Measure this for now only in non-frame = non-XSLT situations, so that
-    // when we compare the UMA metrics of Rust vs. non-Rust for
-    // XMLRustForNonXsltEnabled(), we're looking at roughly the same type and
-    // length of documents on average.
-    data_->xml_parser_start_time_ = base::TimeTicks::Now();
+  data_->using_rust_xml_parser_ =
+      RuntimeEnabledFeatures::XMLParsingRustEnabled() ||
+      (RuntimeEnabledFeatures::XMLRustForNonXsltEnabled() &&
+       (!GetFrame() || IsSVGDocument()));
 
-    if (RuntimeEnabledFeatures::XMLRustForNonXsltEnabled()) {
-      data_->using_rust_xml_parser_ = true;
-      return MakeGarbageCollected<XMLDocumentParserRs>(*this, View());
-    }
-  }
-
-  // FIXME: this should probably pass the frame instead
-  if (RuntimeEnabledFeatures::XMLParsingRustEnabled()) {
-    data_->using_rust_xml_parser_ = true;
+  if (data_->using_rust_xml_parser_) {
     return MakeGarbageCollected<XMLDocumentParserRs>(*this, View());
-  } else {
-    return MakeGarbageCollected<XMLDocumentParser>(*this, View());
   }
+
+  return MakeGarbageCollected<XMLDocumentParser>(*this, View());
+}
+
+bool Document::UsingRustXmlParserForTesting() const {
+  return data_->using_rust_xml_parser_;
 }
 
 bool Document::IsFrameSet() const {

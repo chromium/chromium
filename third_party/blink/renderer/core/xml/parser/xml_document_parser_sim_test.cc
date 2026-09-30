@@ -3,13 +3,17 @@
 // found in the LICENSE file.
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/origin_trials/origin_trial_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
+#include "third_party/blink/renderer/core/dom/transform_source.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -230,6 +234,156 @@ TEST_F(XMLDocumentParserSimTest, LoadCompletionDuringInlineScriptBadMarkup) {
 
   // The malformed document must still reach completion.
   EXPECT_TRUE(GetDocument().LoadEventFinished());
+}
+
+TEST_F(XMLDocumentParserSimTest, RustParserDisabled) {
+  ScopedXMLRustForNonXsltForTest rust_non_xslt(false);
+  ScopedXMLParsingRustForTest rust_all(false);
+
+  SimRequest main_resource("https://example.com/test.xhtml",
+                           "application/xhtml+xml");
+  LoadURL("https://example.com/test.xhtml");
+  main_resource.Write(
+      "<html xmlns=\"http://www.w3.org/1999/xhtml\"><body>Hello</body></html>");
+  main_resource.Finish();
+
+  EXPECT_FALSE(GetDocument().UsingRustXmlParserForTesting());
+  ASSERT_TRUE(GetDocument().documentElement());
+  EXPECT_EQ(GetDocument().documentElement()->tagName(), "html");
+}
+
+TEST_F(XMLDocumentParserSimTest, RustParserNormalXml) {
+  ScopedXMLRustForNonXsltForTest rust_non_xslt(false);
+  ScopedXMLParsingRustForTest rust_all(true);
+
+  SimRequest main_resource("https://example.com/test.xhtml",
+                           "application/xhtml+xml");
+  LoadURL("https://example.com/test.xhtml");
+  main_resource.Write(
+      "<html xmlns=\"http://www.w3.org/1999/xhtml\"><body>Hello</body></html>");
+  main_resource.Finish();
+
+  EXPECT_TRUE(GetDocument().UsingRustXmlParserForTesting());
+  EXPECT_FALSE(GetDocument().GetTransformSource());
+  ASSERT_TRUE(GetDocument().documentElement());
+  EXPECT_EQ(GetDocument().documentElement()->tagName(), "html");
+}
+
+TEST_F(XMLDocumentParserSimTest, RustParserXsltOriginTrialAllowed) {
+  ScopedXMLRustForNonXsltForTest rust_non_xslt(false);
+  ScopedXMLParsingRustForTest rust_all(true);
+  ScopedXSLTForTest disable_xslt(false);
+
+  SimRequest main_resource("https://example.com/test.xml", "application/xml");
+  SimSubresourceRequest sheet_resource("https://example.com/sheet.xsl",
+                                       "text/xsl");
+  LoadURL("https://example.com/test.xml");
+  GetDocument().GetExecutionContext()->GetOriginTrialContext()->AddFeature(
+      mojom::blink::OriginTrialFeature::kXSLT);
+  main_resource.Write(
+      "<?xml version=\"1.0\"?>\n"
+      "<?xml-stylesheet type=\"text/xsl\" href=\"sheet.xsl\"?>\n"
+      "<root><item>Hello</item></root>");
+  main_resource.Finish();
+
+  EXPECT_TRUE(GetDocument().UsingRustXmlParserForTesting());
+  EXPECT_TRUE(GetDocument().GetTransformSource());
+  EXPECT_FALSE(GetDocument().documentElement());
+
+  sheet_resource.Complete(
+      "<xsl:stylesheet version=\"1.0\" "
+      "xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">"
+      "<xsl:template match=\"/\">"
+      "<html><body><h1>Transformed</h1></body></html>"
+      "</xsl:template>"
+      "</xsl:stylesheet>");
+  test::RunPendingTasks();
+
+  Document* transformed_doc = MainFrame().GetFrame()->GetDocument();
+  ASSERT_TRUE(transformed_doc);
+  ASSERT_TRUE(transformed_doc->documentElement());
+  EXPECT_EQ(transformed_doc->documentElement()->tagName(), "HTML");
+}
+
+TEST_F(XMLDocumentParserSimTest, RustParserXsltOriginTrialDisallowed) {
+  ScopedXMLRustForNonXsltForTest rust_non_xslt(false);
+  ScopedXMLParsingRustForTest rust_all(true);
+  ScopedXSLTForTest disable_xslt(false);
+
+  SimRequest main_resource("https://example.com/test.xhtml",
+                           "application/xhtml+xml");
+  LoadURL("https://example.com/test.xhtml");
+  main_resource.Write(
+      "<?xml version=\"1.0\"?>\n"
+      "<?xml-stylesheet type=\"text/xsl\" href=\"sheet.xsl\"?>\n"
+      "<html xmlns=\"http://www.w3.org/1999/xhtml\"><body>Hello</body></html>");
+  main_resource.Finish();
+
+  EXPECT_TRUE(GetDocument().UsingRustXmlParserForTesting());
+  EXPECT_FALSE(GetDocument().GetTransformSource());
+  ASSERT_TRUE(GetDocument().documentElement());
+  EXPECT_EQ(GetDocument().documentElement()->tagName(), "html");
+  EXPECT_EQ(GetDocument().body()->textContent(), "Hello");
+}
+
+TEST_F(XMLDocumentParserSimTest, RustParserXsltCapAlertAllowed) {
+  ScopedXMLRustForNonXsltForTest rust_non_xslt(false);
+  ScopedXMLParsingRustForTest rust_all(true);
+  ScopedXSLTForTest disable_xslt(false);
+  ScopedEnableXSLTForCAPAlertsForTest enable_cap(true);
+
+  SimRequest main_resource("https://example.com/test.xml", "application/xml");
+  SimSubresourceRequest sheet_resource("https://example.com/sheet.xsl",
+                                       "text/xsl");
+  LoadURL("https://example.com/test.xml");
+  main_resource.Write(
+      "<?xml version=\"1.0\"?>\n"
+      "<?xml-stylesheet type=\"text/xsl\" href=\"sheet.xsl\"?>\n"
+      "<alert xmlns=\"urn:oasis:names:tc:emergency:cap:1.2\">\n"
+      "  <info>Emergency</info>\n"
+      "</alert>");
+  main_resource.Finish();
+
+  EXPECT_TRUE(GetDocument().UsingRustXmlParserForTesting());
+  EXPECT_TRUE(GetDocument().IsCAPAlert());
+  EXPECT_TRUE(GetDocument().GetTransformSource());
+  EXPECT_FALSE(GetDocument().documentElement());
+
+  sheet_resource.Complete(
+      "<xsl:stylesheet version=\"1.0\" "
+      "xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">"
+      "<xsl:template match=\"/\">"
+      "<html><body><h1>CAP Transformed</h1></body></html>"
+      "</xsl:template>"
+      "</xsl:stylesheet>");
+  test::RunPendingTasks();
+
+  Document* transformed_doc = MainFrame().GetFrame()->GetDocument();
+  ASSERT_TRUE(transformed_doc);
+  ASSERT_TRUE(transformed_doc->documentElement());
+  EXPECT_EQ(transformed_doc->documentElement()->tagName(), "HTML");
+}
+
+TEST_F(XMLDocumentParserSimTest, RustParserXsltCapAlertDisabled) {
+  ScopedXMLRustForNonXsltForTest rust_non_xslt(false);
+  ScopedXMLParsingRustForTest rust_all(true);
+  ScopedXSLTForTest disable_xslt(false);
+  ScopedEnableXSLTForCAPAlertsForTest disable_cap(false);
+
+  SimRequest main_resource("https://example.com/test.xml", "application/xml");
+  LoadURL("https://example.com/test.xml");
+  main_resource.Write(
+      "<?xml version=\"1.0\"?>\n"
+      "<?xml-stylesheet type=\"text/xsl\" href=\"sheet.xsl\"?>\n"
+      "<alert xmlns=\"urn:oasis:names:tc:emergency:cap:1.2\">\n"
+      "  <info>Emergency</info>\n"
+      "</alert>");
+  main_resource.Finish();
+
+  EXPECT_TRUE(GetDocument().UsingRustXmlParserForTesting());
+  EXPECT_TRUE(GetDocument().IsCAPAlert());
+  EXPECT_FALSE(GetDocument().GetTransformSource());
+  EXPECT_TRUE(GetDocument().IsViewSource());
 }
 
 }  // namespace
