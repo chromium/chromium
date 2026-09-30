@@ -4822,7 +4822,6 @@
           "${ISOLATED_OUTDIR}",
           "--xctest"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -4874,7 +4873,6 @@
           "${ISOLATED_OUTDIR}",
           "--xctest"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
@@ -4926,7 +4924,6 @@
           "${ISOLATED_OUTDIR}",
           "--xctest"
         ],
-        "experiment_percentage": 100,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },

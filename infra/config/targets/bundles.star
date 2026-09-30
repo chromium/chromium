@@ -1524,11 +1524,6 @@ targets.bundle(
     targets = [
         "rlz_unittests",
     ],
-    per_test_modifications = {
-        "rlz_unittests": targets.mixin(
-            experiment_percentage = 100,
-        ),
-    },
 )
 
 targets.bundle(
@@ -5347,9 +5342,6 @@ targets.bundle(
             swarming = targets.swarming(
                 shards = 3,
             ),
-        ),
-        "rlz_unittests": targets.mixin(
-            experiment_percentage = 100,
         ),
     },
 )

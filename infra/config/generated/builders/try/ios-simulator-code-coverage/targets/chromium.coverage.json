@@ -7293,7 +7293,6 @@
           "27a266a",
           "--xctest"
         ],
-        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7347,7 +7346,6 @@
           "27a266a",
           "--xctest"
         ],
-        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -7401,7 +7399,6 @@
           "27a266a",
           "--xctest"
         ],
-        "experiment_percentage": 100,
         "isolate_profile_data": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
