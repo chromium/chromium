@@ -447,7 +447,7 @@ TEST_F(ChromotingHostTest, IncomingSessionAccepted) {
                            &rejection_reason, &rejection_location);
   EXPECT_EQ(response, protocol::SessionManager::ACCEPT);
   EXPECT_TRUE(rejection_reason.empty());
-  EXPECT_EQ(rejection_location.program_counter(), nullptr);
+  EXPECT_EQ(rejection_location.program_counter(), 0u);
 
   EXPECT_CALL(*session, Close(_, _, _))
       .WillOnce(InvokeWithoutArgs(
@@ -485,7 +485,7 @@ TEST_F(ChromotingHostTest, SessionAcceptedWhenSecondarySessionManagerExists) {
                            &rejection_reason, &rejection_location);
   EXPECT_EQ(response, protocol::SessionManager::ACCEPT);
   EXPECT_TRUE(rejection_reason.empty());
-  EXPECT_EQ(rejection_location.program_counter(), nullptr);
+  EXPECT_EQ(rejection_location.program_counter(), 0u);
 
   EXPECT_CALL(*session, Close(_, _, _))
       .WillOnce(InvokeWithoutArgs(
@@ -518,7 +518,7 @@ TEST_F(ChromotingHostTest, LoginBackOffTriggersIfClientsDoNotAuthenticate) {
                              &rejection_location);
     EXPECT_EQ(response, protocol::SessionManager::ACCEPT);
     EXPECT_TRUE(rejection_reason.empty());
-    EXPECT_EQ(rejection_location.program_counter(), nullptr);
+    EXPECT_EQ(rejection_location.program_counter(), 0u);
     // Begin authentication; this will increase the backoff count, and since
     // OnSessionAuthenticated is never called, the host should only allow
     // kNumFailuresIgnored + 1 connections before beginning the backoff.
@@ -531,7 +531,7 @@ TEST_F(ChromotingHostTest, LoginBackOffTriggersIfClientsDoNotAuthenticate) {
                            &rejection_reason, &rejection_location);
   EXPECT_EQ(response, protocol::SessionManager::OVERLOAD);
   EXPECT_FALSE(rejection_reason.empty());
-  EXPECT_NE(rejection_location.program_counter(), nullptr);
+  EXPECT_NE(rejection_location.program_counter(), 0u);
   EXPECT_EQ(host_->client_sessions_for_tests().size(), kNumFailuresIgnored + 1);
 
   // Shut down host while objects owned by this test are still in scope.
@@ -563,7 +563,7 @@ TEST_F(ChromotingHostTest, LoginBackOffResetsIfClientsAuthenticate) {
                              &rejection_location);
     EXPECT_EQ(response, protocol::SessionManager::ACCEPT);
     EXPECT_TRUE(rejection_reason.empty());
-    EXPECT_EQ(rejection_location.program_counter(), nullptr);
+    EXPECT_EQ(rejection_location.program_counter(), 0u);
     // Begin authentication; this will increase the backoff count
     host_->OnSessionAuthenticating(
         host_->client_sessions_for_tests().begin()->second.get());
@@ -591,7 +591,7 @@ TEST_F(ChromotingHostTest, LoginBackOffResetsIfClientsAuthenticate) {
                            &rejection_location);
   EXPECT_EQ(response, protocol::SessionManager::ACCEPT);
   EXPECT_TRUE(rejection_reason.empty());
-  EXPECT_EQ(rejection_location.program_counter(), nullptr);
+  EXPECT_EQ(rejection_location.program_counter(), 0u);
 
   // Shut down host while objects owned by this test are still in scope.
   ShutdownHost();

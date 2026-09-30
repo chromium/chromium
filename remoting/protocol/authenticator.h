@@ -132,7 +132,7 @@ class Authenticator {
     // Returns whether the RejectionDetails is null, i.e. there is no location
     // info and no rejection message.
     inline bool is_null() const {
-      return location.program_counter() == nullptr && message.empty();
+      return location.program_counter() == 0 && message.empty();
     }
 
     // A free-form human-readable string that describes the reason for the

@@ -61,13 +61,13 @@ Location::Location(const Location& other) = default;
 Location::Location(Location&& other) noexcept = default;
 Location& Location::operator=(const Location& other) = default;
 
-Location::Location(const char* file_name, const void* program_counter)
+Location::Location(const char* file_name, uintptr_t program_counter)
     : file_name_(file_name), program_counter_(program_counter) {}
 
 Location::Location(const char* function_name,
                    const char* file_name,
                    int line_number,
-                   const void* program_counter)
+                   uintptr_t program_counter)
     : function_name_(function_name),
       file_name_(file_name),
       line_number_(line_number),
@@ -83,7 +83,7 @@ std::string Location::ToString() const {
     return std::string(function_name_) + "@" + file_name_ + ":" +
            NumberToString(line_number_);
   }
-  return StringPrintf("pc:%p", program_counter_.get());
+  return StringPrintf("pc:%" PRIxPTR, program_counter_);
 }
 
 void Location::WriteIntoTrace(perfetto::TracedValue context) const {
@@ -107,14 +107,14 @@ NOINLINE Location Location::Current(const char* function_name,
                                     const char* file_name,
                                     int line_number) {
   return Location(function_name, UNSAFE_TODO(file_name + kStrippedPrefixLength),
-                  line_number, RETURN_ADDRESS());
+                  line_number, reinterpret_cast<uintptr_t>(RETURN_ADDRESS()));
 }
 
 // static
 NOINLINE Location Location::CurrentWithoutFunctionName(const char* file_name,
                                                        int line_number) {
   return Location(nullptr, UNSAFE_TODO(file_name + kStrippedPrefixLength),
-                  line_number, RETURN_ADDRESS());
+                  line_number, reinterpret_cast<uintptr_t>(RETURN_ADDRESS()));
 }
 
 //------------------------------------------------------------------------------

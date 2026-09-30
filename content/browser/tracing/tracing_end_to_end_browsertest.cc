@@ -255,7 +255,8 @@ IN_PROC_BROWSER_TEST_F(TracingEndToEndBrowserTest, TaskExecutionEvent) {
     base::PendingTask task;
     task.task = base::DoNothing();
     task.posted_from = base::Location::CreateForTesting(
-        "my_func", "my_file", 0, /*program_counter=*/&task);
+        "my_func", "my_file", 0,
+        /*program_counter=*/reinterpret_cast<uintptr_t>(&task));
     // TaskAnnotator::RunTask is responsible for emitting the task execution
     // event.
     task_annotator.RunTask("RunTaskForTesting", task);

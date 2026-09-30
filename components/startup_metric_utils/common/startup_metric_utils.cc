@@ -128,8 +128,8 @@ void CommonStartupMetricRecorder::AddStartupEventsForTelemetry() {
 }
 
 #if DCHECK_IS_ON()
-base::flat_set<const void*>& CommonStartupMetricRecorder::GetSessionLog() {
-  static base::NoDestructor<base::flat_set<const void*>> session_log;
+base::flat_set<uintptr_t>& CommonStartupMetricRecorder::GetSessionLog() {
+  static base::NoDestructor<base::flat_set<uintptr_t>> session_log;
   return *session_log;
 }
 #endif  // DCHECK_IS_ON()

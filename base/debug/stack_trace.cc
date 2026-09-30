@@ -288,6 +288,15 @@ StackTrace::StackTrace(span<const void* const> trace)
   }
 }
 
+StackTrace::StackTrace(span<const uintptr_t> trace)
+    : count_(std::min(trace.size(), std::size(trace_))) {
+  if (count_) {
+    std::ranges::transform(
+        trace.first(count_), trace_.begin(),
+        [](uintptr_t addr) { return reinterpret_cast<const void*>(addr); });
+  }
+}
+
 // static
 bool StackTrace::WillSymbolizeToStreamForTesting() {
 #if BUILDFLAG(HAS_SYMBOLS) == 0

@@ -97,6 +97,11 @@ class BASE_EXPORT StackTrace {
   // be used.
   explicit StackTrace(span<const void* const> trace);
 
+  // Creates a stacktrace from an existing array of instruction pointers (such
+  // as returned by TaskTrace). Only the first `kMaxTraces` of the span will
+  // be used.
+  explicit StackTrace(span<const uintptr_t> trace);
+
 #if BUILDFLAG(IS_WIN)
   // Creates a stacktrace for an exception.
   // Note: this function will throw an import not found (StackWalk64) exception

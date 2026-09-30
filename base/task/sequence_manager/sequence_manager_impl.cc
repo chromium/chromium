@@ -122,13 +122,12 @@ void ReclaimMemoryFromQueue(internal::TaskQueueImpl* queue, LazyNow* lazy_now) {
 // and moving backwards in memory. Returns a pointer to the first digit of the
 // result. Does *not* NUL-terminate the number.
 #if !BUILDFLAG(IS_ANDROID)
-char* PrependHexAddress(char* output, const void* address) {
-  uintptr_t value = reinterpret_cast<uintptr_t>(address);
+char* PrependHexAddress(char* output, uintptr_t address) {
   static const std::string_view kHexChars = "0123456789ABCDEF";
   do {
-    *UNSAFE_TODO(output--) = kHexChars[value % 16];
-    value /= 16;
-  } while (value);
+    *UNSAFE_TODO(output--) = kHexChars[address % 16];
+    address /= 16;
+  } while (address);
   *UNSAFE_TODO(output--) = 'x';
   *output = '0';
   return output;

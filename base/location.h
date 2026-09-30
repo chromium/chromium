@@ -5,11 +5,13 @@
 #ifndef BASE_LOCATION_H_
 #define BASE_LOCATION_H_
 
+#include <stdint.h>
+
 #include <compare>
 #include <string>
 
 #include "base/base_export.h"
-#include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr.h"  // TODO(thestig): Remove.
 #include "base/trace_event/base_tracing_forward.h"
 #include "build/build_config.h"
 
@@ -27,7 +29,7 @@ class BASE_EXPORT Location {
   static Location CreateForTesting(const char* function_name,
                                    const char* file_name,
                                    int line_number,
-                                   const void* program_counter) {
+                                   uintptr_t program_counter) {
     return Location(function_name, file_name, line_number, program_counter);
   }
 
@@ -72,7 +74,7 @@ class BASE_EXPORT Location {
   // The address of the code generating this Location object. Should always be
   // valid except for default initialized Location objects, which will be
   // nullptr.
-  const void* program_counter() const { return program_counter_; }
+  uintptr_t program_counter() const { return program_counter_; }
 
   // Converts to the most user-readable form possible. If function and filename
   // are not available, this will return "pc:<hex address>".
@@ -93,7 +95,7 @@ class BASE_EXPORT Location {
   // Only initializes the file name and program counter, the source information
   // will be null for the strings, and -1 for the line number.
   // TODO(http://crbug.com/760702) remove file name from this constructor.
-  Location(const char* file_name, const void* program_counter);
+  Location(const char* file_name, uintptr_t program_counter);
 
   // Constructor should be called with a long-lived char*, such as __FILE__.
   // It assumes the provided value will persist as a global constant, and it
@@ -101,15 +103,12 @@ class BASE_EXPORT Location {
   Location(const char* function_name,
            const char* file_name,
            int line_number,
-           const void* program_counter);
+           uintptr_t program_counter);
 
   const char* function_name_ = nullptr;
   const char* file_name_ = nullptr;
   int line_number_ = -1;
-
-  // `program_counter_` uses UnprotectedInRelease for performance reasons
-  // (based on analysis of sampling profiler data and tab_search:top100:2020).
-  raw_ptr<const void, UnprotectedInRelease> program_counter_ = nullptr;
+  uintptr_t program_counter_ = 0;
 };
 
 BASE_EXPORT const void* GetProgramCounter();

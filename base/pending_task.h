@@ -5,6 +5,8 @@
 #ifndef BASE_PENDING_TASK_H_
 #define BASE_PENDING_TASK_H_
 
+#include <stdint.h>
+
 #include <array>
 
 #include "base/base_export.h"
@@ -66,7 +68,7 @@ struct BASE_EXPORT TaskMetadata {
 
   // Chain of symbols of the parent tasks which led to this one being posted.
   static constexpr size_t kTaskBacktraceLength = 4;
-  std::array<const void*, kTaskBacktraceLength> task_backtrace = {};
+  std::array<uintptr_t, kTaskBacktraceLength> task_backtrace = {};
 
   // The context of the IPC message that was being handled when this task was
   // posted. This is a hash of the IPC message name that is set within the scope

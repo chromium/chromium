@@ -169,7 +169,7 @@ void TaskAnnotator::WillQueueTask(perfetto::StaticString trace_event_name,
             pending_task->task_backtrace.begin() + 1);
   pending_task->task_backtrace_overflow =
       parent_task->task_backtrace_overflow ||
-      parent_task->task_backtrace.back() != nullptr;
+      parent_task->task_backtrace.back();
 }
 
 void TaskAnnotator::RunTaskImpl(PendingTask& pending_task) {
@@ -183,7 +183,7 @@ void TaskAnnotator::RunTaskImpl(PendingTask& pending_task) {
   // optimizer in an optimized build. Look at a memory dump of the stack.
   static constexpr int kStackTaskTraceSnapshotSize =
       PendingTask::kTaskBacktraceLength + 4;
-  std::array<const void*, kStackTaskTraceSnapshotSize> task_backtrace;
+  std::array<uintptr_t, kStackTaskTraceSnapshotSize> task_backtrace;
 
   // Store a marker to locate |task_backtrace| content easily on a memory
   // dump. The layout is as follows:
@@ -197,13 +197,12 @@ void TaskAnnotator::RunTaskImpl(PendingTask& pending_task) {
   //   0x c001 c0de d0 17 d00d
   //      o dude,i did it biig
   //   0x 0 d00d 1 d1d 17 8119
-  task_backtrace.front() = reinterpret_cast<void*>(0xc001c0ded017d00d);
-  task_backtrace.back() = reinterpret_cast<void*>(0x0d00d1d1d178119);
+  task_backtrace.front() = static_cast<uintptr_t>(0xc001c0ded017d00d);
+  task_backtrace.back() = static_cast<uintptr_t>(0x0d00d1d1d178119);
 
   task_backtrace[1] = pending_task.posted_from.program_counter();
   std::ranges::copy(pending_task.task_backtrace, task_backtrace.begin() + 2);
-  task_backtrace[kStackTaskTraceSnapshotSize - 2] =
-      reinterpret_cast<void*>(pending_task.ipc_hash);
+  task_backtrace[kStackTaskTraceSnapshotSize - 2] = pending_task.ipc_hash;
   debug::Alias(&task_backtrace);
 
   // Record the task time in convenient units. This can be compared to times
@@ -234,8 +233,8 @@ void TaskAnnotator::RunTaskImpl(PendingTask& pending_task) {
   // sample on this thread later in the event of a crash. Alias once again after
   // these writes to make sure the compiler doesn't optimize them out (unused
   // writes to a local variable).
-  task_backtrace.front() = nullptr;
-  task_backtrace.back() = nullptr;
+  task_backtrace.front() = 0;
+  task_backtrace.back() = 0;
   debug::Alias(&task_backtrace);
 }
 

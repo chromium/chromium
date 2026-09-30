@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_STARTUP_METRIC_UTILS_COMMON_STARTUP_METRIC_UTILS_H_
 #define COMPONENTS_STARTUP_METRIC_UTILS_COMMON_STARTUP_METRIC_UTILS_H_
 
+#include <stdint.h>
+
 #include <string_view>
 
 #include "base/component_export.h"
@@ -80,7 +82,7 @@ class COMPONENT_EXPORT(STARTUP_METRIC_UTILS) CommonStartupMetricRecorder final {
   void ResetSessionForTesting();
 
 #if DCHECK_IS_ON()
-  base::flat_set<const void*>& GetSessionLog();
+  base::flat_set<uintptr_t>& GetSessionLog();
 #endif  // DCHECK_IS_ON()
 
   // DCHECKs that this is the first time |method_id| is passed to this assertion

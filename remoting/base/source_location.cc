@@ -42,7 +42,7 @@ SourceLocation::SourceLocation(const base::Location& location) {
     DCHECK(function_name_);
     DCHECK(file_name_);
     DCHECK_GT(line_number_, -1);
-  } else if (location.program_counter() != nullptr) {
+  } else if (location.program_counter()) {
     // We don't log a warning if the location is uninitialized.
     LOG(WARNING) << "Location " << location.ToString()
                  << " does not have source info.";
