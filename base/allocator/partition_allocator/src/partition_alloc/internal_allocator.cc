@@ -21,12 +21,12 @@ PartitionRoot& InternalAllocatorRoot() {
 
 // static
 void* InternalPartitionAllocated::operator new(size_t count) {
-  return InternalAllocatorRoot().Alloc<AllocFlags::kNoHooks>(count);
+  return InternalAllocatorRoot().Alloc<kInternalAllocFlags>(count);
 }
 // static
 void* InternalPartitionAllocated::operator new(size_t count,
                                                std::align_val_t alignment) {
-  return InternalAllocatorRoot().AlignedAlloc<AllocFlags::kNoHooks>(
+  return InternalAllocatorRoot().AlignedAlloc<kInternalAllocFlags>(
       static_cast<size_t>(alignment), count);
 }
 // static

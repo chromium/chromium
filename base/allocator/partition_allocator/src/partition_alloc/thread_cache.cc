@@ -624,7 +624,8 @@ void ThreadCache::Delete(void* thread_caches_ptr) {
 
 // static
 void* ThreadCache::operator new(size_t count) {
-  return internal::InternalAllocatorRoot().Alloc<AllocFlags::kNoHooks>(count);
+  return internal::InternalAllocatorRoot().Alloc<internal::kInternalAllocFlags>(
+      count);
 }
 // static
 void ThreadCache::operator delete(void* ptr) {
