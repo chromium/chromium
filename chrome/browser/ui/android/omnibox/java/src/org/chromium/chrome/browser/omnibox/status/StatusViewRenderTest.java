@@ -29,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.params.ParameterAnnotations;
@@ -37,6 +38,7 @@ import org.chromium.base.test.params.ParameterProvider;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
@@ -101,6 +103,7 @@ public class StatusViewRenderTest {
     @BeforeClass
     public static void setupSuite() {
         sActivity = sActivityTestRule.launchActivity(null);
+        ResettersForTesting.register(() -> sActivity = null);
     }
 
     @Before
@@ -127,6 +130,7 @@ public class StatusViewRenderTest {
                                     .inflate(R.layout.location_status, view, true)
                                     .findViewById(R.id.location_bar_status);
                     mStatusView.setCompositeTouchDelegate(new CompositeTouchDelegate(view));
+                    mStatusView.setIconAnimationDurationForTesting(0);
                     mLocationBarModel =
                             new LocationBarModel(
                                     mStatusView.getContext(),
@@ -159,6 +163,11 @@ public class StatusViewRenderTest {
         runOnUiThreadBlocking(() -> mLocationBarModel.destroy());
     }
 
+    private void renderStatusView(String id) throws IOException {
+        CriteriaHelper.pollUiThread(() -> !mStatusView.isStatusIconAnimating());
+        mRenderTestRule.render(mStatusView, id);
+    }
+
     @Test
     @MediumTest
     @Feature({"RenderTest"})
@@ -171,7 +180,7 @@ public class StatusViewRenderTest {
                             StatusProperties.STATUS_ICON_RESOURCE,
                             new StatusIconResource(R.drawable.ic_search_24dp, 0));
                 });
-        mRenderTestRule.render(mStatusView, "status_view_incognito_with_icon");
+        renderStatusView("status_view_incognito_with_icon");
     }
 
     @Test
@@ -184,7 +193,7 @@ public class StatusViewRenderTest {
                     mStatusView.setIncognitoBadgeVisibility(true);
                     mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, null);
                 });
-        mRenderTestRule.render(mStatusView, "status_view_incognito_no_icon");
+        renderStatusView("status_view_incognito_no_icon");
     }
 
     @Test
@@ -201,7 +210,7 @@ public class StatusViewRenderTest {
                             StatusProperties.STATUS_ICON_RESOURCE,
                             new StatusIconResource(R.drawable.ic_search_24dp, 0));
                 });
-        mRenderTestRule.render(mStatusView, "status_view_with_icon");
+        renderStatusView("status_view_with_icon");
     }
 
     public static class GeolocationContentSettingsParams implements ParameterProvider {
@@ -244,7 +253,7 @@ public class StatusViewRenderTest {
                             R.string.accessibility_menu_info);
                     mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
                 });
-        mRenderTestRule.render(mStatusView, "status_view_with_location_permission_icon");
+        renderStatusView("status_view_with_location_permission_icon");
     }
 
     @Test
@@ -268,6 +277,6 @@ public class StatusViewRenderTest {
                             R.string.accessibility_menu_info);
                     mStatusModel.set(StatusProperties.STATUS_ICON_RESOURCE, statusIcon);
                 });
-        mRenderTestRule.render(mStatusView, "status_view_with_store_icon");
+        renderStatusView("status_view_with_store_icon");
     }
 }
