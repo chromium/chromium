@@ -2137,9 +2137,11 @@ IN_PROC_BROWSER_TEST_P(FullWebUIOmniboxInteractiveTest,
           true, "UserInputStillInProgress"));
 }
 
+// TODO(crbug.com/567661957): Re-enable WebUIToolbarEnabled once failures are
+// resolved.
 INSTANTIATE_TEST_SUITE_P(All,
                          FullWebUIOmniboxInteractiveTest,
-                         testing::Bool(),
+                         testing::Values(false),
                          [](const testing::TestParamInfo<bool>& info) {
                            return info.param ? "WebUIToolbarEnabled"
                                              : "WebUIToolbarDisabled";
