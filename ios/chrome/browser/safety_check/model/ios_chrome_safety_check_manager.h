@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SAFETY_CHECK_MODEL_IOS_CHROME_SAFETY_CHECK_MANAGER_H_
 #define IOS_CHROME_BROWSER_SAFETY_CHECK_MODEL_IOS_CHROME_SAFETY_CHECK_MANAGER_H_
 
+#import "base/callback_list.h"
 #import "base/memory/scoped_refptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/observer_list.h"
@@ -385,6 +386,9 @@ class IOSChromeSafetyCheckManager
   // Validates IOSChromeSafetyCheckManager::Observer events are evaluated on the
   // same sequence that IOSChromeSafetyCheckManager was created on.
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Subscription for pings with OmahaService.
+  base::CallbackListSubscription omaha_ping_subscription_;
 
   // Ensures IOSChromePasswordCheckManager::Observer events are posted on the
   // same sequence that IOSChromeSafetyCheckManager was created on.

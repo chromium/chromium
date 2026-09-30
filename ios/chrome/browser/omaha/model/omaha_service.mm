@@ -110,21 +110,23 @@ bool OmahaService::HasStarted() const {
   return started_ && !backend_.is_null();
 }
 
-void OmahaService::CheckNow(OneOffCallback callback) {
+base::CallbackListSubscription OmahaService::CheckNow(OneOffCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!HasStarted()) {
     // If the backend has not been initialized, or the service not started,
     // pretend the server has responded that the application is up to date.
+    auto subscription = one_off_callback_list_.Add(std::move(callback));
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(callback),
+        base::BindOnce(&OmahaService::NotifyCallback,
+                       weak_ptr_factory_.GetWeakPtr(),
                        UpgradeRecommendedDetails{.is_up_to_date = true}));
-    return;
+    return subscription;
   }
 
-  DCHECK(!one_off_callback_);
-  one_off_callback_ = std::move(callback);
+  auto subscription = one_off_callback_list_.Add(std::move(callback));
   backend_.AsyncCall(&OmahaBackend::CheckNow);
+  return subscription;
 }
 
 void OmahaService::GetDebugInformation(
@@ -143,13 +145,23 @@ void OmahaService::GetDebugInformation(
 
 void OmahaService::OnPingReceived(const UpgradeRecommendedDetails& details) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(HasStarted());
+
   [[NSUserDefaults standardUserDefaults] setBool:details.is_up_to_date
                                           forKey:kIOSChromeUpToDateKey];
 
+  NotifyCallback(details);
+}
+
+// This is split from OnPingReceived(...) to avoid updating the value of
+// kIOSChromeUpToDateKey when handling fake replies to CheckNow(...) when
+// the service is disabled.
+void OmahaService::NotifyCallback(const UpgradeRecommendedDetails& details) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If there is a one-off callback, then it has the priority over the
   // scheduled ping.
-  if (one_off_callback_) {
-    std::move(one_off_callback_).Run(details);
+  if (!one_off_callback_list_.empty()) {
+    one_off_callback_list_.Notify(details);
     return;
   }
 

@@ -7,6 +7,7 @@
 
 #include <Foundation/Foundation.h>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/i18n/language_tag.h"
 #include "base/memory/scoped_refptr.h"
@@ -64,7 +65,7 @@ class OmahaService {
 
   // Request an immediate check with the Omaha server. The callback will
   // be called with the result of the ping.
-  void CheckNow(OneOffCallback callback);
+  base::CallbackListSubscription CheckNow(OneOffCallback callback);
 
   // Returns debug information about the Omaha service.
   void GetDebugInformation(base::OnceCallback<void(base::DictValue)> callback);
@@ -72,6 +73,9 @@ class OmahaService {
  private:
   // Called from the callback passed to OmahaBackend::Start().
   void OnPingReceived(const UpgradeRecommendedDetails& details);
+
+  // Forward `details` to the callbacks.
+  void NotifyCallback(const UpgradeRecommendedDetails& details);
 
   // OmahaService is sequence-bound.
   SEQUENCE_CHECKER(sequence_checker_);
@@ -83,7 +87,7 @@ class OmahaService {
   UpgradeRecommendedCallback upgrade_recommended_callback_;
 
   // The saved OneOffCallback passed to CheckNow().
-  OneOffCallback one_off_callback_;
+  base::OnceCallbackList<OneOffCallback::RunType> one_off_callback_list_;
 
   // Whether the service has been started.
   bool started_ = false;

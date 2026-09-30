@@ -554,9 +554,10 @@ void IOSChromeSafetyCheckManager::StartOmahaCheckInternal() {
     case version_info::Channel::BETA:
     case version_info::Channel::DEV:
     case version_info::Channel::CANARY: {
-      GetApplicationContext()->GetOmahaService().CheckNow(
-          base::BindOnce(&IOSChromeSafetyCheckManager::HandleOmahaResponse,
-                         weak_ptr_factory_.GetWeakPtr()));
+      omaha_ping_subscription_ =
+          GetApplicationContext()->GetOmahaService().CheckNow(
+              base::BindOnce(&IOSChromeSafetyCheckManager::HandleOmahaResponse,
+                             weak_ptr_factory_.GetWeakPtr()));
       break;
     }
     default:
@@ -611,6 +612,7 @@ void IOSChromeSafetyCheckManager::HandleOmahaResponse(
 void IOSChromeSafetyCheckManager::HandleOmahaError() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  omaha_ping_subscription_ = {};
   if (update_chrome_check_state_ == UpdateChromeSafetyCheckState::kRunning) {
     SetUpdateChromeCheckState(UpdateChromeSafetyCheckState::kOmahaError);
   }
