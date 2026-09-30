@@ -40,6 +40,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
+import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -67,6 +68,8 @@ public class BottomSheetListViewBaseUnitTest {
     private static class TestBottomSheetListView extends BottomSheetListViewBase {
         private @Px int mDesiredHeight = 300;
         private @Px int mMaxHeight = 600;
+        private @Px int mSideMarginPx;
+        private boolean mUseSuperHeightCalculation;
 
         int mLastContainerWidth;
         int mLastContainerHeight;
@@ -87,6 +90,14 @@ public class BottomSheetListViewBaseUnitTest {
             mMaxHeight = maxHeight;
         }
 
+        void setSideMarginPxForTesting(@Px int sideMarginPx) {
+            mSideMarginPx = sideMarginPx;
+        }
+
+        void setUseSuperHeightCalculationForTesting(boolean useSuper) {
+            mUseSuperHeightCalculation = useSuper;
+        }
+
         @Override
         protected View getHandlebar() {
             return getContentView();
@@ -104,11 +115,17 @@ public class BottomSheetListViewBaseUnitTest {
 
         @Override
         public @Px int getDesiredSheetHeightPx() {
+            if (mUseSuperHeightCalculation) {
+                return super.getDesiredSheetHeightPx();
+            }
             return mDesiredHeight;
         }
 
         @Override
         public @Px int getMaximumSheetHeightPx() {
+            if (mUseSuperHeightCalculation) {
+                return super.getMaximumSheetHeightPx();
+            }
             return mMaxHeight;
         }
 
@@ -119,7 +136,7 @@ public class BottomSheetListViewBaseUnitTest {
 
         @Override
         protected @Px int getSideMarginPx() {
-            return 0;
+            return mSideMarginPx;
         }
 
         @Override
@@ -1359,5 +1376,401 @@ public class BottomSheetListViewBaseUnitTest {
         assertNull("Skipped item should remain undecorated", view0.getBackground());
         assertNull("Skipped item should remain undecorated", view1.getBackground());
         assertNull("Skipped item should remain undecorated", view2.getBackground());
+    }
+
+    /** A content view that remembers the width it was last measured with. */
+    private static class WidthRecordingView extends View {
+        private int mLastWidthMeasureSpec;
+
+        WidthRecordingView(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+            mLastWidthMeasureSpec = widthMeasureSpec;
+            setMeasuredDimension(View.MeasureSpec.getSize(widthMeasureSpec), 100);
+        }
+
+        @Px
+        int getLastMeasuredWidthPx() {
+            return View.MeasureSpec.getSize(mLastWidthMeasureSpec);
+        }
+    }
+
+    /** An item list that remembers the width it was last measured with. */
+    private static class WidthRecordingRecyclerView extends RecyclerView {
+        private int mLastWidthMeasureSpec;
+        private int mMeasureCount;
+
+        WidthRecordingRecyclerView(Context context) {
+            super(context);
+        }
+
+        @Override
+        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+            mLastWidthMeasureSpec = widthMeasureSpec;
+            mMeasureCount++;
+            int desiredWidth = Math.max(0, View.MeasureSpec.getSize(widthMeasureSpec) / 2);
+            setMeasuredDimension(View.resolveSize(desiredWidth, widthMeasureSpec), 100);
+        }
+
+        int getMeasureCount() {
+            return mMeasureCount;
+        }
+
+        @Px
+        int getLastWidthMeasureSpecSizePx() {
+            return View.MeasureSpec.getSize(mLastWidthMeasureSpec);
+        }
+    }
+
+    /** Sets up a sheet whose content view and item list both record their measured width. */
+    private TestBottomSheetListView setUpWidthRecordingSheet(
+            WidthRecordingView contentView,
+            WidthRecordingRecyclerView itemList,
+            @Px int sideMarginPx) {
+        TestBottomSheetListView listView =
+                new TestBottomSheetListView(mMockBottomSheetController, contentView);
+        listView.setSideMarginPxForTesting(sideMarginPx);
+        listView.setSheetItemListView(itemList);
+        return listView;
+    }
+
+    // Verifies that the content view spans the whole sheet while the item list is measured inside
+    // the sheet's side margins.
+    @Test
+    public void testRemeasure_insetsItemListBySideMargins() {
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        WidthRecordingView contentView = new WidthRecordingView(activity);
+        WidthRecordingRecyclerView itemList = new WidthRecordingRecyclerView(activity);
+        @Px int sideMarginPx = 48;
+        TestBottomSheetListView listView =
+                setUpWidthRecordingSheet(contentView, itemList, sideMarginPx);
+
+        @Px int sheetWidthPx = 1200;
+        when(mMockBottomSheetController.getMaxSheetWidth()).thenReturn(sheetWidthPx);
+
+        listView.remeasure();
+
+        assertEquals(sheetWidthPx, contentView.getLastMeasuredWidthPx());
+        assertEquals(sheetWidthPx - 2 * sideMarginPx, itemList.getLastWidthMeasureSpecSizePx());
+    }
+
+    // Verifies that the window width is used while the sheet has not been created yet and
+    // therefore reports no width of its own.
+    @Test
+    public void testRemeasure_beforeSheetIsCreated_fallsBackToWindowWidth() {
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        WidthRecordingView contentView = new WidthRecordingView(activity);
+        WidthRecordingRecyclerView itemList = new WidthRecordingRecyclerView(activity);
+        @Px int sideMarginPx = 48;
+        TestBottomSheetListView listView =
+                setUpWidthRecordingSheet(contentView, itemList, sideMarginPx);
+
+        when(mMockBottomSheetController.getMaxSheetWidth()).thenReturn(0);
+        @Px int windowWidthPx = activity.getResources().getDisplayMetrics().widthPixels;
+
+        listView.remeasure();
+
+        assertEquals(windowWidthPx, contentView.getLastMeasuredWidthPx());
+        assertEquals(windowWidthPx - 2 * sideMarginPx, itemList.getLastWidthMeasureSpecSizePx());
+    }
+
+    // Verifies that a sheet which is narrower than the window is measured at its own width. On wide
+    // windows the sheet is capped to a fixed width and centred, so the window width would be far
+    // too generous.
+    @Test
+    @Config(qualifiers = "w1280dp-h800dp")
+    public void testRemeasure_wideWindow_usesSheetWidthRatherThanWindowWidth() {
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        WidthRecordingView contentView = new WidthRecordingView(activity);
+        WidthRecordingRecyclerView itemList = new WidthRecordingRecyclerView(activity);
+        @Px int sideMarginPx = 48;
+        TestBottomSheetListView listView =
+                setUpWidthRecordingSheet(contentView, itemList, sideMarginPx);
+
+        @Px int windowWidthPx = activity.getResources().getDisplayMetrics().widthPixels;
+        @Px int sheetWidthPx = windowWidthPx / 2;
+        assertTrue(sheetWidthPx < windowWidthPx);
+        when(mMockBottomSheetController.getMaxSheetWidth()).thenReturn(sheetWidthPx);
+
+        listView.remeasure();
+
+        assertEquals(sheetWidthPx, contentView.getLastMeasuredWidthPx());
+        assertEquals(sheetWidthPx - 2 * sideMarginPx, itemList.getLastWidthMeasureSpecSizePx());
+    }
+
+    // Verifies that margins wider than the sheet itself leave the item list at zero width instead
+    // of a negative one.
+    @Test
+    public void testRemeasure_sideMarginsWiderThanSheet_clampsItemListWidthToZero() {
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        WidthRecordingView contentView = new WidthRecordingView(activity);
+        WidthRecordingRecyclerView itemList = new WidthRecordingRecyclerView(activity);
+        @Px int sheetWidthPx = 100;
+        TestBottomSheetListView listView =
+                setUpWidthRecordingSheet(contentView, itemList, /* sideMarginPx= */ 200);
+
+        when(mMockBottomSheetController.getMaxSheetWidth()).thenReturn(sheetWidthPx);
+
+        listView.remeasure();
+
+        assertEquals(sheetWidthPx, contentView.getLastMeasuredWidthPx());
+        assertEquals(0, itemList.getLastWidthMeasureSpecSizePx());
+    }
+
+    // Verifies that when setVisible(true) runs remeasure() before this content is the sheet's
+    // current content, and getMaxSheetWidth() then changes once requestShowContent() makes it
+    // current (e.g. from 0 to 480px for the first sheet in an activity, or from 600dp to 480dp on
+    // desktop once the large-form-factor width applies), querying getFullHeightRatio() /
+    // getHalfHeightRatio() detects the width change and re-measures both the content view and item
+    // list at the final sheet width.
+    @Test
+    @Config(qualifiers = "w1920dp-h1080dp")
+    public void testHeightRatios_RemeasuresWhenMaxSheetWidthChangesDuringShow() {
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        WidthRecordingView contentView = new WidthRecordingView(activity);
+        WidthRecordingRecyclerView itemList = new WidthRecordingRecyclerView(activity);
+        itemList.setAdapter(
+                new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                    @Override
+                    public RecyclerView.ViewHolder onCreateViewHolder(
+                            ViewGroup parent, int viewType) {
+                        return new RecyclerView.ViewHolder(new View(activity)) {};
+                    }
+
+                    @Override
+                    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {}
+
+                    @Override
+                    public int getItemCount() {
+                        return 1;
+                    }
+                });
+        @Px int sideMarginPx = 16;
+        TestBottomSheetListView listView =
+                setUpWidthRecordingSheet(contentView, itemList, sideMarginPx);
+        listView.setUseSuperHeightCalculationForTesting(true);
+
+        when(mMockBottomSheetController.getMaxSheetHeight()).thenReturn(1000);
+        when(mMockBottomSheetController.getContainerHeight()).thenReturn(1080);
+
+        // 1. Pre-show inside setVisible(true) before requestShowContent(): this content is not yet
+        // the sheet's current content, so the width reported now is not the final one. This models
+        // the first sheet shown in an activity, where the sheet does not exist yet,
+        // getMaxSheetWidth() returns 0 and remeasure() falls back to the window width (1920px).
+        when(mMockBottomSheetController.getMaxSheetWidth()).thenReturn(0);
+        @Px int windowWidthPx = activity.getResources().getDisplayMetrics().widthPixels;
+        assertEquals(1920, windowWidthPx);
+
+        when(mMockBottomSheetController.requestShowContent(listView, true))
+                .thenAnswer(
+                        invocation -> {
+                            assertEquals(1, itemList.getMeasureCount());
+                            assertEquals(windowWidthPx, contentView.getLastMeasuredWidthPx());
+                            assertEquals(
+                                    windowWidthPx - 2 * sideMarginPx,
+                                    itemList.getLastWidthMeasureSpecSizePx());
+
+                            // 2. Inside requestShowContent() -> showContent(listView): listView
+                            // is now the sheet's current content, so getMaxSheetWidth() reports
+                            // the final width (480px on a desktop large form factor).
+                            @Px int desktopSheetWidthPx = 480;
+                            when(mMockBottomSheetController.getMaxSheetWidth())
+                                    .thenReturn(desktopSheetWidthPx);
+
+                            // BottomSheet queries getFullHeightRatio() and getHalfHeightRatio().
+                            float fullRatio = listView.getFullHeightRatio();
+                            float halfRatio = listView.getHalfHeightRatio();
+                            assertEquals(100f / 1000f, fullRatio, 0.001f);
+                            assertEquals(100f / 1000f, halfRatio, 0.001f);
+
+                            // Simulate repeated animation frames querying height ratios.
+                            listView.getFullHeightRatio();
+                            listView.getHalfHeightRatio();
+                            listView.getFullHeightRatio();
+                            listView.getHalfHeightRatio();
+
+                            // Remeasure should occur exactly once for the sheet width change,
+                            // rather than on every frame because the RecyclerView measures
+                            // narrower than the inset sheet width.
+                            assertEquals(2, itemList.getMeasureCount());
+                            assertTrue(
+                                    itemList.getMeasuredWidth()
+                                            < itemList.getLastWidthMeasureSpecSizePx());
+
+                            assertEquals(desktopSheetWidthPx, contentView.getLastMeasuredWidthPx());
+                            assertEquals(
+                                    desktopSheetWidthPx - 2 * sideMarginPx,
+                                    itemList.getLastWidthMeasureSpecSizePx());
+                            return true;
+                        });
+
+        assertEquals(0, itemList.getMeasureCount());
+        assertTrue(listView.setVisible(true));
+    }
+
+    // Verifies that invalidating the measurement cache (e.g. on adapter change) causes
+    // needsRemeasure() to trigger a remeasure on the next ratio query.
+    @Test
+    public void testHeightRatios_invalidateMeasurementCache_triggersRemeasureOnNextQuery() {
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        WidthRecordingView contentView = new WidthRecordingView(activity);
+        WidthRecordingRecyclerView itemList = new WidthRecordingRecyclerView(activity);
+        RecyclerView.Adapter<RecyclerView.ViewHolder> adapter =
+                new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                    @Override
+                    public RecyclerView.ViewHolder onCreateViewHolder(
+                            ViewGroup parent, int viewType) {
+                        return new RecyclerView.ViewHolder(new View(activity)) {};
+                    }
+
+                    @Override
+                    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {}
+
+                    @Override
+                    public int getItemCount() {
+                        return 1;
+                    }
+                };
+        itemList.setAdapter(adapter);
+        @Px int sideMarginPx = 16;
+        TestBottomSheetListView listView =
+                setUpWidthRecordingSheet(contentView, itemList, sideMarginPx);
+        listView.setUseSuperHeightCalculationForTesting(true);
+
+        when(mMockBottomSheetController.getMaxSheetHeight()).thenReturn(1000);
+        when(mMockBottomSheetController.getMaxSheetWidth()).thenReturn(600);
+
+        // First ratio query triggers initial remeasure.
+        assertEquals(0, itemList.getMeasureCount());
+        float fullRatio = listView.getFullHeightRatio();
+        assertEquals(100f / 1000f, fullRatio, 0.001f);
+        assertEquals(1, itemList.getMeasureCount());
+
+        // Subsequent query without cache invalidation should not remeasure.
+        listView.getFullHeightRatio();
+        listView.getHalfHeightRatio();
+        assertEquals(1, itemList.getMeasureCount());
+
+        // Invalidate the cache (as happens on adapter change or container resize).
+        listView.invalidateMeasurementCache();
+
+        // The next ratio query should detect that remeasure is needed and remeasure the views.
+        fullRatio = listView.getFullHeightRatio();
+        assertEquals(100f / 1000f, fullRatio, 0.001f);
+        assertEquals(2, itemList.getMeasureCount());
+
+        // Subsequent query should once again use the cached measurement.
+        listView.getFullHeightRatio();
+        listView.getHalfHeightRatio();
+        assertEquals(2, itemList.getMeasureCount());
+
+        // Setting a new adapter also invalidates the cache and triggers remeasure on next query.
+        RecyclerView.Adapter<RecyclerView.ViewHolder> newAdapter =
+                new RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+                    @Override
+                    public RecyclerView.ViewHolder onCreateViewHolder(
+                            ViewGroup parent, int viewType) {
+                        return new RecyclerView.ViewHolder(new View(activity)) {};
+                    }
+
+                    @Override
+                    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {}
+
+                    @Override
+                    public int getItemCount() {
+                        return 2;
+                    }
+                };
+        listView.setSheetItemListAdapter(newAdapter);
+        fullRatio = listView.getFullHeightRatio();
+        assertEquals(100f / 1000f, fullRatio, 0.001f);
+        assertEquals(3, itemList.getMeasureCount());
+    }
+
+    @Test
+    public void testHeightRatios_withEmptyAdapter_doesNotThrowAssertionAndReturnsNonListHeight() {
+        Activity activity = Robolectric.setupActivity(Activity.class);
+        View contentView = createMeasurableContentView(activity);
+        RealMeasuringBottomSheetListView listView =
+                new RealMeasuringBottomSheetListView(mMockBottomSheetController, contentView);
+
+        final int handlebarHeight = 23;
+        final int handlebarTopMargin = 3;
+        final int handlebarBottomMargin = 5;
+        final int headerHeight = 41;
+        final int headerTopMargin = 2;
+        final int headerBottomMargin = 11;
+        listView.setHandlebarForTesting(
+                createMeasurableChildView(
+                        activity, handlebarHeight, handlebarTopMargin, handlebarBottomMargin));
+        listView.setHeaderViewForTesting(
+                createMeasurableChildView(
+                        activity, headerHeight, headerTopMargin, headerBottomMargin));
+
+        RecyclerView recyclerView =
+                new RecyclerView(activity) {
+                    private @Nullable Adapter mAdapter;
+
+                    @Override
+                    public void setAdapter(@Nullable Adapter adapter) {
+                        mAdapter = adapter;
+                    }
+
+                    @Override
+                    public @Nullable Adapter getAdapter() {
+                        return mAdapter;
+                    }
+
+                    @Override
+                    public int getChildCount() {
+                        return 0;
+                    }
+
+                    @Override
+                    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+                        // An empty list view measures to 0 height.
+                        setMeasuredDimension(View.MeasureSpec.getSize(widthMeasureSpec), 0);
+                    }
+                };
+        RecyclerView.Adapter adapter = createSheetAdapter(Collections.emptyList());
+        listView.setSheetItemListView(recyclerView);
+        listView.setSheetItemListAdapter(adapter);
+
+        final int containerHeight = 1000;
+        final int maxSheetHeight = 1000;
+        when(mMockBottomSheetController.getMaxSheetHeight()).thenReturn(maxSheetHeight);
+        when(mMockBottomSheetController.getContainerHeight()).thenReturn(containerHeight);
+
+        // When the adapter has 0 items, getSheetItemListHeightWithMarginsPx returns 0 instead of
+        // throwing an AssertionError due to mSheetItemListView measuring to 0 height.
+        // The computed sheet height reflects only the non-list elements (handlebar + header) rather
+        // than falling back to full available height.
+        final int expectedNonListHeight =
+                (handlebarTopMargin + handlebarHeight + handlebarBottomMargin)
+                        + (headerTopMargin + headerHeight + headerBottomMargin);
+        float expectedRatio = (float) expectedNonListHeight / maxSheetHeight;
+
+        float halfRatio = listView.getHalfHeightRatio();
+        float fullRatio = listView.getFullHeightRatio();
+
+        assertEquals(
+                "Half height ratio should reflect only the non-list elements",
+                expectedRatio,
+                halfRatio,
+                0.001f);
+        assertEquals(
+                "Full height ratio should reflect only the non-list elements",
+                expectedRatio,
+                fullRatio,
+                0.001f);
+        assertTrue(
+                "Height ratio should reflect non-list elements instead of full available height",
+                halfRatio < 1.0f);
+        assertTrue(
+                "Height ratio should reflect non-list elements instead of full available height",
+                fullRatio < 1.0f);
     }
 }

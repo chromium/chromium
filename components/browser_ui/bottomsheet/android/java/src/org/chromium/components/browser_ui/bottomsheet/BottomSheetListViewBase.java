@@ -218,6 +218,11 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
 
     private @Px int mCachedDesiredSheetHeightPx = INVALID_PX_DIMENSION;
     private @Px int mCachedMaximumSheetHeightPx = INVALID_PX_DIMENSION;
+    // Tracks the sheet width used during the last remeasure. We compare against this rather than
+    // the measured width of mContentView or mSheetItemListView because child views (such as
+    // RecyclerView) resolve MeasureSpec.AT_MOST to their content width and can measure narrower
+    // than the full available sheet width.
+    private @Px int mLastRemeasureSheetWidthPx = INVALID_PX_DIMENSION;
     private @Nullable Adapter mCurrentAdapter;
 
     private final AdapterDataObserver mAdapterDataObserver =
@@ -341,6 +346,35 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
     protected void invalidateMeasurementCache() {
         mCachedDesiredSheetHeightPx = INVALID_PX_DIMENSION;
         mCachedMaximumSheetHeightPx = INVALID_PX_DIMENSION;
+        // Invalidate the sheet width tracker so subsequent ratio queries will remeasure the views.
+        mLastRemeasureSheetWidthPx = INVALID_PX_DIMENSION;
+    }
+
+    /**
+     * Returns whether the content view and list view need to be remeasured.
+     *
+     * <p>Remeasuring is required when views have not yet been measured, or when the sheet width has
+     * changed since the last measurement. The sheet width depends on the sheet's current content
+     * (e.g. the large-form-factor width only applies once this content is showing), so the width
+     * used by the remeasure() in setVisible() is often not the final one. The width is compared
+     * against {@link #mLastRemeasureSheetWidthPx} rather than the views' measured widths because
+     * the {@link RecyclerView} is measured with {@code MeasureSpec.AT_MOST} and can resolve to a
+     * narrower width than the sheet when its content is smaller.
+     */
+    private boolean needsRemeasure() {
+        return !hasValidMeasurements() || mLastRemeasureSheetWidthPx != getSheetWidthPx();
+    }
+
+    /**
+     * Returns whether the content view and the item list hold usable measurements. An empty list
+     * measures to 0 height but adds nothing to the sheet height, so it counts as valid.
+     */
+    private boolean hasValidMeasurements() {
+        if (mContentView.getMeasuredHeight() <= 0 || mSheetItemListView == null) return false;
+        RecyclerView.Adapter<?> adapter = mSheetItemListView.getAdapter();
+        return adapter == null
+                || adapter.getItemCount() == 0
+                || mSheetItemListView.getMeasuredHeight() > 0;
     }
 
     /**
@@ -358,8 +392,7 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
                 && mCachedMaximumSheetHeightPx != INVALID_PX_DIMENSION) {
             return mCachedMaximumSheetHeightPx;
         }
-        if (mContentView.getMeasuredHeight() <= 0
-                || assumeNonNull(mSheetItemListView).getMeasuredHeight() <= 0) {
+        if (needsRemeasure()) {
             if (!remeasure()) {
                 return getAvailableSheetHeight();
             }
@@ -392,8 +425,7 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
                 && mCachedDesiredSheetHeightPx != INVALID_PX_DIMENSION) {
             return mCachedDesiredSheetHeightPx;
         }
-        if (mContentView.getMeasuredHeight() <= 0
-                || assumeNonNull(mSheetItemListView).getMeasuredHeight() <= 0) {
+        if (needsRemeasure()) {
             if (!remeasure()) {
                 return getAvailableSheetHeight();
             }
@@ -416,8 +448,14 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
     }
 
     private @Px int getSheetItemListHeightWithMarginsPx(boolean showOnlyInitialItems) {
-        assert assumeNonNull(mSheetItemListView).getMeasuredHeight() > 0
-                : "Sheet item list hasn't been measured.";
+        // When the adapter is empty or null, the list items contribute 0 to the sheet height.
+        // In that case, mSheetItemListView measures to 0 height, so we return early before
+        // checking the measured height assertion.
+        RecyclerView.Adapter<?> adapter = assumeNonNull(mSheetItemListView).getAdapter();
+        if (adapter == null || adapter.getItemCount() == 0) {
+            return 0;
+        }
+        assert mSheetItemListView.getMeasuredHeight() > 0 : "Sheet item list hasn't been measured.";
         @Px int totalHeight = 0;
         int visibleItems = 0;
         for (int posInSheet = 0; posInSheet < mSheetItemListView.getChildCount(); posInSheet++) {
@@ -473,16 +511,22 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
 
     /** Measures the content of the bottom sheet. Returns whether dimensions are valid. */
     protected boolean remeasure() {
+        // The content view fills the sheet edge to edge, while the item list sits inside it with a
+        // side margin on each end. Measuring each view at the width it is laid out at keeps the
+        // measured heights of wrapping content in sync with what is drawn.
+        @Px int sheetWidthPx = getSheetWidthPx();
         mContentView.measure(
-                View.MeasureSpec.makeMeasureSpec(getInsetDisplayWidthPx(), MeasureSpec.AT_MOST),
+                View.MeasureSpec.makeMeasureSpec(sheetWidthPx, MeasureSpec.AT_MOST),
                 MeasureSpec.UNSPECIFIED);
-        assumeNonNull(mSheetItemListView)
-                .measure(
-                        View.MeasureSpec.makeMeasureSpec(
-                                getInsetDisplayWidthPx(), MeasureSpec.AT_MOST),
-                        MeasureSpec.UNSPECIFIED);
-        return mContentView.getMeasuredHeight() > 0
-                && assumeNonNull(mSheetItemListView).getMeasuredHeight() > 0;
+        if (mSheetItemListView != null) {
+            mSheetItemListView.measure(
+                    View.MeasureSpec.makeMeasureSpec(
+                            getInsetSheetWidthPx(sheetWidthPx), MeasureSpec.AT_MOST),
+                    MeasureSpec.UNSPECIFIED);
+        }
+        boolean valid = hasValidMeasurements();
+        mLastRemeasureSheetWidthPx = valid ? sheetWidthPx : INVALID_PX_DIMENSION;
+        return valid;
     }
 
     protected void removeObserver(BottomSheetObserver observer) {
@@ -519,13 +563,30 @@ public abstract class BottomSheetListViewBase implements BottomSheetContent {
                 == Math.min(getMaximumSheetHeightPx(), getAvailableSheetHeight());
     }
 
-    private @Px int getInsetDisplayWidthPx() {
-        if (mBottomSheetController.isLargeFormFactorUiEnabled(this)) {
-            int maxSheetWidth = mBottomSheetController.getMaxSheetWidth();
-            if (maxSheetWidth > 0) return maxSheetWidth;
+    /**
+     * Returns the width of the bottom sheet itself. The sheet is not always as wide as the window:
+     * it is capped to a fixed width on large windows and centred in the container. Before the sheet
+     * is created the controller reports no width, so the window width is used instead.
+     *
+     * @return the sheet width in pixels.
+     */
+    private @Px int getSheetWidthPx() {
+        @Px int maxSheetWidth = mBottomSheetController.getMaxSheetWidth();
+        if (maxSheetWidth > 0) {
+            return maxSheetWidth;
         }
-        return mContentView.getContext().getResources().getDisplayMetrics().widthPixels
-                - 2 * getSideMarginPx();
+        return mContentView.getContext().getResources().getDisplayMetrics().widthPixels;
+    }
+
+    /**
+     * Returns the width available to the sheet's item list, which is inset from the edges of the
+     * sheet by a side margin on each end.
+     *
+     * @param sheetWidthPx The width of the sheet itself.
+     * @return the inset width in pixels, never negative.
+     */
+    private @Px int getInsetSheetWidthPx(@Px int sheetWidthPx) {
+        return Math.max(0, sheetWidthPx - 2 * getSideMarginPx());
     }
 
     private boolean isListedItem(View childInSheetView) {
