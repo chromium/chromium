@@ -62,8 +62,8 @@ NSString* const kFailedToStartCaptureError = @"Failed to start audio capture";
   [self.consumer setSessionState:_currentState];
 
   __weak TTCMediator* weakSelf = self;
-  [_audioEngine requestMicrophonePermissionWithCompletion:^(BOOL granted) {
-    [weakSelf didRequestMicrophonePermissionWithGranted:granted];
+  [_audioEngine startCaptureWithCompletion:^(BOOL success, NSError* error) {
+    [weakSelf didStartCaptureWithSuccess:success error:error];
   }];
 }
 
@@ -139,27 +139,6 @@ NSString* const kFailedToStartCaptureError = @"Failed to start audio capture";
 
 #pragma mark - Private
 
-// Handles the result of the microphone permission request. If granted, begins
-// audio capture; otherwise transitions the session to error state.
-- (void)didRequestMicrophonePermissionWithGranted:(BOOL)granted {
-  // Discard callback if the session was stopped or disconnected while prompt
-  // was visible.
-  if (_currentState != TTCSessionState::kConnecting) {
-    return;
-  }
-
-  if (!granted) {
-    _currentState = TTCSessionState::kError;
-    [self.consumer setSessionState:_currentState];
-    [self.consumer didEncounterError:kMicrophonePermissionDeniedError];
-    return;
-  }
-
-  __weak TTCMediator* weakSelf = self;
-  [_audioEngine startCaptureWithCompletion:^(BOOL success, NSError* error) {
-    [weakSelf didStartCaptureWithSuccess:success error:error];
-  }];
-}
 
 // Handles the result of starting audio capture. If successful, transitions
 // the session to listening state; otherwise transitions to error state.

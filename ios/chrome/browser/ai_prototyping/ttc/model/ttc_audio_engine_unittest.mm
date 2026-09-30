@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_engine.h"
 
+#import <AVFAudio/AVFAudio.h>
+
 #import <algorithm>
 
 #import "base/apple/foundation_util.h"
@@ -18,12 +20,12 @@
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+#import "third_party/ocmock/OCMock/OCMock.h"
+#import "third_party/ocmock/gtest_support.h"
 
 // Expose TTCAudioRecorderDelegate, TTCAudioPlayerDelegate, and testing helpers.
 @interface TTCAudioEngine (Testing) <TTCAudioRecorderDelegate,
                                      TTCAudioPlayerDelegate>
-- (instancetype)initWithRecorder:(TTCAudioRecorder*)recorder
-                          player:(TTCAudioPlayer*)player;
 - (void)setIsCapturingForTesting:(BOOL)isCapturing;
 - (void)setIsAudioEngineRunningForTesting:(BOOL)isRunning;
 @end
@@ -78,7 +80,23 @@ namespace {
 
 class TTCAudioEngineTest : public PlatformTest {
  protected:
+  void TearDown() override {
+    if (mock_audio_app_) {
+      [mock_audio_app_ stopMocking];
+      mock_audio_app_ = nil;
+    }
+    PlatformTest::TearDown();
+  }
+
+  void SetUpMockAudioApp(AVAudioApplicationRecordPermission permission) {
+    mock_audio_app_ = OCMClassMock([AVAudioApplication class]);
+    OCMStub(ClassMethod([mock_audio_app_ sharedInstance]))
+        .andReturn(mock_audio_app_);
+    OCMStub([mock_audio_app_ recordPermission]).andReturn(permission);
+  }
+
   web::WebTaskEnvironment task_environment_;
+  id mock_audio_app_ = nil;
 };
 
 // Tests that TTCAudioEngine initializes with expected default properties.
@@ -102,7 +120,7 @@ TEST_F(TTCAudioEngineTest, TestAudioEngineStopCycles) {
 
   for (int i = 0; i < 5; ++i) {
     [engine stopCapture];
-    [engine stopPlaybackImmediately];
+    [engine clearPlaybackQueue];
   }
   [engine disconnect];
 
@@ -124,7 +142,8 @@ TEST_F(TTCAudioEngineTest, TestAudioEngineDisconnect) {
 // it to its own delegate.
 TEST_F(TTCAudioEngineTest, TestAudioEngineDelegatesEnergy) {
   TTCAudioRecorder* recorder = [[TTCAudioRecorder alloc] init];
-  TTCAudioEngine* engine = [[TTCAudioEngine alloc] initWithRecorder:recorder];
+  TTCAudioEngine* engine = [[TTCAudioEngine alloc] initWithRecorder:recorder
+                                                             player:nil];
   ASSERT_TRUE(engine != nil);
 
   FakeTTCAudioControllerDelegate* delegate =
@@ -142,6 +161,8 @@ TEST_F(TTCAudioEngineTest, TestAudioEngineDelegatesEnergy) {
 // Tests that invoking stopCapture while audio session configuration is
 // in flight cleanly cancels the startup sequence.
 TEST_F(TTCAudioEngineTest, TestAudioEngineStopWhileStartingCancelsRecording) {
+  SetUpMockAudioApp(AVAudioApplicationRecordPermissionGranted);
+
   TTCAudioEngine* engine = [[TTCAudioEngine alloc] init];
   ASSERT_TRUE(engine != nil);
 
@@ -156,7 +177,103 @@ TEST_F(TTCAudioEngineTest, TestAudioEngineStopWhileStartingCancelsRecording) {
 
   auto [success, error] = future.Get();
   EXPECT_FALSE(success);
-  EXPECT_TRUE(error != nil);
+  ASSERT_TRUE(error != nil);
+  EXPECT_NSEQ(error.domain, kTTCAudioEngineErrorDomain);
+  EXPECT_EQ(error.code,
+            static_cast<NSInteger>(TTCAudioEngineErrorCode::kStartupCancelled));
+  EXPECT_FALSE(engine.isCapturing);
+}
+
+// Tests that startCaptureWithCompletion fails with permission denied when
+// microphone permission is not granted.
+TEST_F(TTCAudioEngineTest, TestAudioEngineStartCapturePermissionDenied) {
+  SetUpMockAudioApp(AVAudioApplicationRecordPermissionDenied);
+
+  TTCAudioEngine* engine = [[TTCAudioEngine alloc] init];
+  ASSERT_TRUE(engine != nil);
+
+  base::test::TestFuture<BOOL, NSError*> future;
+  auto* future_ptr = &future;
+  [engine startCaptureWithCompletion:^(BOOL success, NSError* error) {
+    future_ptr->SetValue(success, error);
+  }];
+
+  auto [success, error] = future.Get();
+  EXPECT_FALSE(success);
+  ASSERT_TRUE(error != nil);
+  EXPECT_NSEQ(error.domain, kTTCAudioEngineErrorDomain);
+  EXPECT_EQ(error.code,
+            static_cast<NSInteger>(TTCAudioEngineErrorCode::kPermissionDenied));
+  EXPECT_FALSE(engine.isCapturing);
+}
+
+// Tests that startCaptureWithCompletion requests permission when undetermined
+// and cancels when permission is denied by the user.
+TEST_F(TTCAudioEngineTest,
+       TestAudioEngineStartCapturePermissionRequestedAndDenied) {
+  SetUpMockAudioApp(AVAudioApplicationRecordPermissionUndetermined);
+  OCMStub(ClassMethod([mock_audio_app_
+              requestRecordPermissionWithCompletionHandler:[OCMArg any]]))
+      .andDo(^(NSInvocation* invocation) {
+        void (^handler)(BOOL);
+        [invocation getArgument:&handler atIndex:2];
+        handler(NO);
+      });
+
+  TTCAudioEngine* engine = [[TTCAudioEngine alloc] init];
+  ASSERT_TRUE(engine != nil);
+
+  base::test::TestFuture<BOOL, NSError*> future;
+  auto* future_ptr = &future;
+  [engine startCaptureWithCompletion:^(BOOL success, NSError* error) {
+    future_ptr->SetValue(success, error);
+  }];
+
+  auto [success, error] = future.Get();
+  EXPECT_FALSE(success);
+  ASSERT_TRUE(error != nil);
+  EXPECT_NSEQ(error.domain, kTTCAudioEngineErrorDomain);
+  EXPECT_EQ(error.code,
+            static_cast<NSInteger>(TTCAudioEngineErrorCode::kPermissionDenied));
+  EXPECT_FALSE(engine.isCapturing);
+}
+
+// Tests that invoking stopCapture while permission request is in flight cleanly
+// cancels the startup sequence.
+TEST_F(TTCAudioEngineTest,
+       TestAudioEngineStopWhileRequestingPermissionCancelsRecording) {
+  SetUpMockAudioApp(AVAudioApplicationRecordPermissionUndetermined);
+  __block void (^savedHandler)(BOOL) = nil;
+  OCMStub(ClassMethod([mock_audio_app_
+              requestRecordPermissionWithCompletionHandler:[OCMArg any]]))
+      .andDo(^(NSInvocation* invocation) {
+        void (^handler)(BOOL);
+        [invocation getArgument:&handler atIndex:2];
+        savedHandler = [handler copy];
+      });
+
+  TTCAudioEngine* engine = [[TTCAudioEngine alloc] init];
+  ASSERT_TRUE(engine != nil);
+
+  base::test::TestFuture<BOOL, NSError*> future;
+  auto* future_ptr = &future;
+  [engine startCaptureWithCompletion:^(BOOL success, NSError* error) {
+    future_ptr->SetValue(success, error);
+  }];
+
+  // Stop capture while permission request is pending.
+  [engine stopCapture];
+
+  // Now invoke the permission handler.
+  ASSERT_TRUE(savedHandler != nil);
+  savedHandler(YES);
+
+  auto [success, error] = future.Get();
+  EXPECT_FALSE(success);
+  ASSERT_TRUE(error != nil);
+  EXPECT_NSEQ(error.domain, kTTCAudioEngineErrorDomain);
+  EXPECT_EQ(error.code,
+            static_cast<NSInteger>(TTCAudioEngineErrorCode::kStartupCancelled));
   EXPECT_FALSE(engine.isCapturing);
 }
 
@@ -297,7 +414,7 @@ TEST_F(TTCAudioEngineTest, TestAudioEngineLoopbackRoutingEnabled) {
   EXPECT_TRUE(player.isPlaying);
   EXPECT_TRUE(engine.isPlaying);
 
-  [engine stopPlaybackImmediately];
+  [engine clearPlaybackQueue];
   EXPECT_FALSE(player.isPlaying);
   EXPECT_FALSE(engine.isPlaying);
   [engine disconnect];
@@ -344,7 +461,7 @@ TEST_F(TTCAudioEngineTest,
   EXPECT_TRUE(player.isPlaying);
   EXPECT_TRUE(engine.isPlaying);
 
-  [engine stopPlaybackImmediately];
+  [engine clearPlaybackQueue];
   [engine disconnect];
 }
 

@@ -63,6 +63,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/web/public/test",
     "//testing/gtest",
+    "//third_party/ocmock",
   ]
   frameworks = [
     "AVFAudio.framework",

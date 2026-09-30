@@ -23,6 +23,9 @@
 #import "ios/web/public/thread/web_task_traits.h"
 #import "ios/web/public/thread/web_thread.h"
 
+// Domain for errors originated by TTCAudioEngine.
+NSString* const kTTCAudioEngineErrorDomain = @"org.chromium.ttc.audio";
+
 namespace {
 
 // Test audio tone generation constants.
@@ -33,13 +36,6 @@ constexpr double kTestToneSampleRate = 24000.0;
 constexpr size_t kTestToneChunkSampleCount = 480;
 constexpr size_t kTestToneTotalChunks = 50;
 constexpr double kTestToneAmplitude = 8000.0;
-
-// Domain for errors originated by TTCAudioEngine.
-NSString* const kTTCAudioEngineErrorDomain = @"org.chromium.ttc.audio";
-
-// Error codes for TTCAudioEngine.
-constexpr NSInteger kErrorCodeInputNodeUnavailable = -1;
-constexpr NSInteger kErrorCodeStartupCancelled = -2;
 
 // Configures the AVAudioSession for simultaneous recording and playback,
 // defaulting to speaker and enabling Bluetooth routes. Must run off the UI
@@ -110,6 +106,7 @@ NSError* ConfigureAudioSessionHardware() {
 }
 
 @synthesize delegate = _delegate;
+@synthesize loopbackEnabled = _loopbackEnabled;
 
 - (BOOL)isCapturing {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
@@ -121,7 +118,7 @@ NSError* ConfigureAudioSessionHardware() {
   return _player.isPlaying;
 }
 
-- (BOOL)loopbackEnabled {
+- (BOOL)isLoopbackEnabled {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
   return _loopbackEnabled;
 }
@@ -136,9 +133,9 @@ NSError* ConfigureAudioSessionHardware() {
   self = [super init];
   if (self) {
     _audioEngine = [[AVAudioEngine alloc] init];
-    _recorder = recorder;
+    _recorder = recorder ?: [[TTCAudioRecorder alloc] init];
     _recorder.delegate = self;
-    _player = player;
+    _player = player ?: [[TTCAudioPlayer alloc] init];
     _player.delegate = self;
     [_player attachToAudioEngine:_audioEngine error:nil];
     _isCapturing = NO;
@@ -149,13 +146,8 @@ NSError* ConfigureAudioSessionHardware() {
   return self;
 }
 
-- (instancetype)initWithRecorder:(TTCAudioRecorder*)recorder {
-  return [self initWithRecorder:recorder player:[[TTCAudioPlayer alloc] init]];
-}
-
 - (instancetype)init {
-  return [self initWithRecorder:[[TTCAudioRecorder alloc] init]
-                         player:[[TTCAudioPlayer alloc] init]];
+  return [self initWithRecorder:nil player:nil];
 }
 
 - (void)dealloc {
@@ -164,6 +156,76 @@ NSError* ConfigureAudioSessionHardware() {
 
 #pragma mark - Public
 
+- (void)startCaptureWithCompletion:(void (^)(BOOL success,
+                                             NSError* error))completion {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (_isCapturing) {
+    if (completion) {
+      completion(YES, nil);
+    }
+    return;
+  }
+
+  if (_isStarting) {
+    if (completion) {
+      NSError* inFlightError = [NSError
+          errorWithDomain:kTTCAudioEngineErrorDomain
+                     code:static_cast<NSInteger>(
+                              TTCAudioEngineErrorCode::kStartupCancelled)
+                 userInfo:@{
+                   NSLocalizedDescriptionKey :
+                       @"Audio capture startup is already in flight."
+                 }];
+      completion(NO, inFlightError);
+    }
+    return;
+  }
+
+  _isStarting = YES;
+
+  __weak TTCAudioEngine* weakSelf = self;
+  [self requestMicrophonePermissionWithCompletion:^(BOOL granted) {
+    [weakSelf didRequestPermissionWithGranted:granted completion:completion];
+  }];
+}
+
+- (void)didRequestPermissionWithGranted:(BOOL)granted
+                             completion:(void (^)(BOOL success,
+                                                  NSError* error))completion {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  if (!_isStarting) {
+    if (completion) {
+      NSError* cancelError = [NSError
+          errorWithDomain:kTTCAudioEngineErrorDomain
+                     code:static_cast<NSInteger>(
+                              TTCAudioEngineErrorCode::kStartupCancelled)
+                 userInfo:@{
+                   NSLocalizedDescriptionKey :
+                       @"Audio capture startup was cancelled."
+                 }];
+      completion(NO, cancelError);
+    }
+    return;
+  }
+
+  if (!granted) {
+    _isStarting = NO;
+    if (completion) {
+      NSError* permError = [NSError
+          errorWithDomain:kTTCAudioEngineErrorDomain
+                     code:static_cast<NSInteger>(
+                              TTCAudioEngineErrorCode::kPermissionDenied)
+                 userInfo:@{
+                   NSLocalizedDescriptionKey : @"Microphone permission denied"
+                 }];
+      completion(NO, permError);
+    }
+    return;
+  }
+
+  [self proceedWithStartCaptureWithCompletion:completion];
+}
+
 - (void)requestMicrophonePermissionWithCompletion:
     (void (^)(BOOL granted))completion {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
@@ -171,6 +233,12 @@ NSError* ConfigureAudioSessionHardware() {
   if (app.recordPermission == AVAudioApplicationRecordPermissionGranted) {
     if (completion) {
       completion(YES);
+    }
+    return;
+  }
+  if (app.recordPermission == AVAudioApplicationRecordPermissionDenied) {
+    if (completion) {
+      completion(NO);
     }
     return;
   }
@@ -186,32 +254,9 @@ NSError* ConfigureAudioSessionHardware() {
       }];
 }
 
-- (void)startCaptureWithCompletion:(void (^)(BOOL success,
-                                             NSError* error))completion {
+- (void)proceedWithStartCaptureWithCompletion:
+    (void (^)(BOOL success, NSError* error))completion {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  if (_isCapturing) {
-    if (completion) {
-      completion(YES, nil);
-    }
-    return;
-  }
-
-  if (_isStarting) {
-    if (completion) {
-      NSError* inFlightError =
-          [NSError errorWithDomain:kTTCAudioEngineErrorDomain
-                              code:kErrorCodeStartupCancelled
-                          userInfo:@{
-                            NSLocalizedDescriptionKey :
-                                @"Audio capture startup is already in flight."
-                          }];
-      completion(NO, inFlightError);
-    }
-    return;
-  }
-
-  _isStarting = YES;
-
   // Cache previous category on the UI thread before hopping to ThreadPool.
   if (!_previousCategory) {
     _previousCategory = [AVAudioSession sharedInstance].category;
@@ -495,13 +540,14 @@ NSError* ConfigureAudioSessionHardware() {
   if (!_isStarting) {
     [self restoreAudioSessionCategory];
     if (completion) {
-      NSError* cancelledError =
-          [NSError errorWithDomain:kTTCAudioEngineErrorDomain
-                              code:kErrorCodeStartupCancelled
-                          userInfo:@{
-                            NSLocalizedDescriptionKey :
-                                @"Audio capture startup was cancelled."
-                          }];
+      NSError* cancelledError = [NSError
+          errorWithDomain:kTTCAudioEngineErrorDomain
+                     code:static_cast<NSInteger>(
+                              TTCAudioEngineErrorCode::kStartupCancelled)
+                 userInfo:@{
+                   NSLocalizedDescriptionKey :
+                       @"Audio capture startup was cancelled."
+                 }];
       completion(NO, cancelledError);
     }
     return;
@@ -567,24 +613,28 @@ NSError* ConfigureAudioSessionHardware() {
     inputNode = _audioEngine.inputNode;
   } @catch (NSException* exception) {
     if (error) {
-      *error = [NSError errorWithDomain:kTTCAudioEngineErrorDomain
-                                   code:kErrorCodeInputNodeUnavailable
-                               userInfo:@{
-                                 NSLocalizedDescriptionKey : exception.reason
-                                     ?: @"Audio input node is unavailable."
-                               }];
+      *error = [NSError
+          errorWithDomain:kTTCAudioEngineErrorDomain
+                     code:static_cast<NSInteger>(
+                              TTCAudioEngineErrorCode::kInputNodeUnavailable)
+                 userInfo:@{
+                   NSLocalizedDescriptionKey : exception.reason
+                       ?: @"Audio input node is unavailable."
+                 }];
     }
     return NO;
   }
 
   if (!inputNode) {
     if (error) {
-      *error = [NSError errorWithDomain:kTTCAudioEngineErrorDomain
-                                   code:kErrorCodeInputNodeUnavailable
-                               userInfo:@{
-                                 NSLocalizedDescriptionKey :
-                                     @"Audio input node is unavailable."
-                               }];
+      *error = [NSError
+          errorWithDomain:kTTCAudioEngineErrorDomain
+                     code:static_cast<NSInteger>(
+                              TTCAudioEngineErrorCode::kInputNodeUnavailable)
+                 userInfo:@{
+                   NSLocalizedDescriptionKey :
+                       @"Audio input node is unavailable."
+                 }];
     }
     return NO;
   }

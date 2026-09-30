@@ -66,10 +66,6 @@ TEST_F(TTCMediatorTest, TestStartSessionSuccessUpdatesState) {
   mediator_.consumer = mock_consumer_;
 
   OCMStub([mock_audio_engine_
-      requestMicrophonePermissionWithCompletion:([OCMArg
-                                                    invokeBlockWithArgs:@YES,
-                                                                        nil])]);
-  OCMStub([mock_audio_engine_
       startCaptureWithCompletion:([OCMArg invokeBlockWithArgs:@YES,
                                                               [NSNull null],
                                                               nil])]);
@@ -87,10 +83,15 @@ TEST_F(TTCMediatorTest, TestStartSessionSuccessUpdatesState) {
 TEST_F(TTCMediatorTest, TestStartSessionPermissionDenied) {
   mediator_.consumer = mock_consumer_;
 
+  NSError* permError = [NSError
+      errorWithDomain:@"org.chromium.ttc.audio"
+                 code:-3
+             userInfo:@{
+               NSLocalizedDescriptionKey : @"Microphone permission denied"
+             }];
   OCMStub([mock_audio_engine_
-      requestMicrophonePermissionWithCompletion:([OCMArg
-                                                    invokeBlockWithArgs:@NO,
-                                                                        nil])]);
+      startCaptureWithCompletion:([OCMArg invokeBlockWithArgs:@NO, permError,
+                                                              nil])]);
 
   OCMExpect([mock_consumer_ setSessionState:TTCSessionState::kConnecting]);
   OCMExpect([mock_consumer_ setSessionState:TTCSessionState::kError]);
@@ -111,10 +112,6 @@ TEST_F(TTCMediatorTest, TestStartSessionRecordingFails) {
                  code:-1
              userInfo:@{NSLocalizedDescriptionKey : @"Hardware init failure"}];
 
-  OCMStub([mock_audio_engine_
-      requestMicrophonePermissionWithCompletion:([OCMArg
-                                                    invokeBlockWithArgs:@YES,
-                                                                        nil])]);
   OCMStub([mock_audio_engine_
       startCaptureWithCompletion:([OCMArg
                                      invokeBlockWithArgs:@NO, error, nil])]);
@@ -214,10 +211,6 @@ TEST_F(TTCMediatorTest, TestAudioEngineDelegateUpdatesEnergy) {
   mediator_.consumer = mock_consumer_;
 
   OCMStub([mock_audio_engine_
-      requestMicrophonePermissionWithCompletion:([OCMArg
-                                                    invokeBlockWithArgs:@YES,
-                                                                        nil])]);
-  OCMStub([mock_audio_engine_
       startCaptureWithCompletion:([OCMArg invokeBlockWithArgs:@YES,
                                                               [NSNull null],
                                                               nil])]);
@@ -247,24 +240,23 @@ TEST_F(TTCMediatorTest, TestAudioEngineDelegateIgnoresEnergyWhenIdle) {
 TEST_F(TTCMediatorTest, TestStopSessionWhileConnectingDiscardsCallbacks) {
   mediator_.consumer = mock_consumer_;
 
-  __block void (^captured_permission_block)(BOOL) = nil;
+  __block void (^captured_start_block)(BOOL, NSError*) = nil;
   OCMStub([mock_audio_engine_
-      requestMicrophonePermissionWithCompletion:[OCMArg checkWithBlock:^BOOL(
-                                                            id block) {
-        captured_permission_block = [block copy];
+      startCaptureWithCompletion:[OCMArg checkWithBlock:^BOOL(id block) {
+        captured_start_block = [block copy];
         return YES;
       }]]);
 
   [mediator_ startSession];
 
-  // Stop session before permission resolves.
+  // Stop session before capture resolves.
   [mediator_ stopSession];
 
-  // Verify that subsequent permission grant does not transition to kListening.
+  // Verify that subsequent completion does not transition to kListening.
   [[mock_consumer_ reject] setSessionState:TTCSessionState::kListening];
 
-  if (captured_permission_block) {
-    captured_permission_block(YES);
+  if (captured_start_block) {
+    captured_start_block(YES, nil);
   }
 
   EXPECT_OCMOCK_VERIFY(mock_consumer_);
