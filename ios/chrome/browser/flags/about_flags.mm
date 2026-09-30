@@ -2845,6 +2845,10 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
              kSegmentationPlatformEphemeralCardRanker,
          kEphemeralCardRankerCardOverrideOptions,
          "SegmentationPlatformEphemeralCardRanker")},
+    {"context-menu-preview-downsample-image",
+     flag_descriptions::kContextMenuPreviewDownsampleImageName,
+     flag_descriptions::kContextMenuPreviewDownsampleImageDescription,
+     flags_ui::kOsIos, FEATURE_VALUE_TYPE(kContextMenuPreviewDownsampleImage)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

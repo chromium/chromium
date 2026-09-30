@@ -510,6 +510,12 @@ inline constexpr char kContextManagementInComposeboxDescription[] =
     "When Enabled, it ensures that removed tab context are removed from AIM "
     "even when submitted.";
 
+inline constexpr char kContextMenuPreviewDownsampleImageName[] =
+    "Context Menu Preview Downsample Image";
+inline constexpr char kContextMenuPreviewDownsampleImageDescription[] =
+    "When enabled, downsamples images in the context menu preview to reduce "
+    "memory usage.";
+
 inline constexpr char kContextualTasksName[] = "Enables the contextual tasks";
 inline constexpr char kContextualTasksDescription[] =
     "Enables the contextual tasks infrastructure";
