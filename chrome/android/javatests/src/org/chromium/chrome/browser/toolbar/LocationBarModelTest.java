@@ -41,6 +41,8 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.dom_distiller.DomDistillerTabUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.LayoutTestUtils;
+import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
@@ -91,21 +93,21 @@ public class LocationBarModelTest {
     public void tearDown() {
         if (mToolbarObserver != null || mLocationBarObserver != null) {
             ThreadUtils.runOnUiThreadBlocking(
-                    () -> {
-                        LocationBarModel model =
-                                mActivityTestRule
-                                        .getActivity()
-                                        .getToolbarManager()
-                                        .getLocationBarModelForTesting();
-                        if (mToolbarObserver != null) {
-                            model.removeToolbarDataProviderObserver(mToolbarObserver);
-                            mToolbarObserver = null;
-                        }
-                        if (mLocationBarObserver != null) {
-                            model.removeObserver(mLocationBarObserver);
-                            mLocationBarObserver = null;
-                        }
-                    });
+                () -> {
+                    LocationBarModel model =
+                            mActivityTestRule
+                                    .getActivity()
+                                    .getToolbarManager()
+                                    .getLocationBarModelForTesting();
+                    if (mToolbarObserver != null) {
+                        model.removeToolbarDataProviderObserver(mToolbarObserver);
+                        mToolbarObserver = null;
+                    }
+                    if (mLocationBarObserver != null) {
+                        model.removeObserver(mLocationBarObserver);
+                        mLocationBarObserver = null;
+                    }
+                });
         }
     }
 
@@ -131,6 +133,13 @@ public class LocationBarModelTest {
                 "LocationBarModel is still trying to show a tab.",
                 Tab.INVALID_TAB_ID,
                 getCurrentTabId(mActivityTestRule.getActivity()));
+
+        // Restore a tab and return to the BROWSING layout so subsequent batched tests do not race
+        // with an in-flight transition to the HUB layout on tablets.
+        ChromeTabUtils.newTabFromMenu(
+                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        LayoutTestUtils.startShowingAndWaitForLayout(
+                mActivityTestRule.getActivity().getLayoutManager(), LayoutType.BROWSING, false);
     }
 
     @Test
