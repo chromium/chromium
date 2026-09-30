@@ -14,7 +14,6 @@ import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoor
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_COLLECTIONS;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator.BottomSheetType.THEME_TIP;
-import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.CHROME_COLOR;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.IMAGE_FROM_DISK;
 import static org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType.THEME_COLLECTION;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.APP_LAUNCH_SEARCH_ENGINE_HAD_LOGO;
@@ -499,12 +498,6 @@ public class NtpCustomizationUtils {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         return prefsManager.readInt(
                 ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_TYPE, NtpBackgroundType.DEFAULT);
-    }
-
-    /** Removes the NTP's background image type from the SharedPreference. */
-    public static void removeNtpBackgroundTypeFromSharedPreference() {
-        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_TYPE);
     }
 
     /**
@@ -1151,19 +1144,32 @@ public class NtpCustomizationUtils {
         return prefsManager.readLong(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP, 0);
     }
 
-    /** Removes the NTP's background color key and primary color key from the SharedPreference. */
-    static void resetCustomizedColors() {
+    /**
+     * Deletes all the NTP background image files, including the legacy background image file, the
+     * daily refresh background image file and all the files in the upload image and theme
+     * collection image directories.
+     */
+    static void deleteAllNtpBackgroundImageFiles() {
+        deleteBackgroundImageFile(createBackgroundImageFile());
+        deleteBackgroundImageFile(createDailyRefreshBackgroundImageFile());
+        deleteThemeImageFileDir(NTP_UPLOAD_IMAGES_DIR);
+        deleteThemeImageFileDir(NTP_THEME_COLLECTION_IMAGES_DIR);
+    }
+
+    /**
+     * Removes all the NTP background related keys from the SharedPreference regardless of the
+     * background type, including the background type, colors, image file path, image info and daily
+     * refresh data. This doesn't delete any image file.
+     */
+    static void removeAllNtpBackgroundDataFromSharedPreference() {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.removeKey(NTP_CUSTOMIZATION_BACKGROUND_TYPE);
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR);
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR_DARK);
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID);
         prefsManager.removeKey(
                 ChromePreferenceKeys.NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED);
-    }
-
-    /** Removes the NTP's background image related keys from the SharedPreference */
-    static void resetCustomizedImage(boolean deleteImageFile) {
-        SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
+        prefsManager.removeKey(NTP_CUSTOMIZATION_BACKGROUND_IMAGE_FILE_PATH);
         prefsManager.removeKey(NTP_CUSTOMIZATION_PRIMARY_COLOR);
         prefsManager.removeKey(NTP_CUSTOMIZATION_PRIMARY_COLOR_DARK);
         prefsManager.removeKey(NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH);
@@ -1174,16 +1180,13 @@ public class NtpCustomizationUtils {
         prefsManager.removeKey(NTP_BACKGROUND_IMAGE_PORTRAIT_INFO_FOR_DAILY_REFRESH);
         prefsManager.removeKey(NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO);
         prefsManager.removeKey(NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO_FOR_DAILY_REFRESH);
-        if (deleteImageFile) {
-            deleteBackgroundImageFile(createBackgroundImageFile());
-            deleteBackgroundImageFile(createDailyRefreshBackgroundImageFile());
-            deleteThemeImageFileDir(NTP_UPLOAD_IMAGES_DIR);
-            deleteThemeImageFileDir(NTP_THEME_COLLECTION_IMAGES_DIR);
-        }
     }
 
-    /** Removes all NTP custom background related data. */
-    public static void resetNtpCustomBackgroundData() {
+    /**
+     * Removes all NTP custom background related data when the NTP background customization is
+     * disabled by policy.
+     */
+    public static void resetNtpCustomBackgroundDataForPolicy() {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         if (!prefsManager.contains(NTP_CUSTOMIZATION_BACKGROUND_TYPE)) {
             // If the no data has been cached or has been cleaned up before, exits here.
@@ -1191,11 +1194,9 @@ public class NtpCustomizationUtils {
         }
 
         @NtpBackgroundType int type = prefsManager.readInt(NTP_CUSTOMIZATION_BACKGROUND_TYPE);
-        removeNtpBackgroundTypeFromSharedPreference();
-        switch (type) {
-            case CHROME_COLOR -> resetCustomizedColors();
-            case IMAGE_FROM_DISK, THEME_COLLECTION ->
-                    resetCustomizedImage(/* deleteImageFile= */ true);
+        removeAllNtpBackgroundDataFromSharedPreference();
+        if (type == IMAGE_FROM_DISK || type == THEME_COLLECTION) {
+            deleteAllNtpBackgroundImageFiles();
         }
     }
 

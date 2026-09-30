@@ -486,7 +486,7 @@ public class NtpCustomizationUtilsUnitTest {
         assertEquals(
                 color, NtpCustomizationUtils.getBackgroundColorFromSharedPreference(defaultColor));
 
-        NtpCustomizationUtils.resetCustomizedColors();
+        NtpCustomizationUtils.removeAllNtpBackgroundDataFromSharedPreference();
         assertFalse(prefsManager.contains(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR));
     }
 
@@ -527,13 +527,25 @@ public class NtpCustomizationUtilsUnitTest {
     }
 
     @Test
-    public void testResetCustomizedImage() {
+    public void testRemoveAllNtpBackgroundDataAndDeleteImageFiles() {
         SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
 
         // Setup data.
+        sharedPreferencesManager.writeInt(NTP_CUSTOMIZATION_BACKGROUND_TYPE, COLOR_FROM_HEX);
+        sharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR, Color.RED);
+        sharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR_DARK, Color.BLACK);
+        sharedPreferencesManager.writeInt(ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID, 1);
+        sharedPreferencesManager.writeBoolean(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED, true);
         sharedPreferencesManager.writeInt(NTP_CUSTOMIZATION_PRIMARY_COLOR, Color.RED);
         sharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR_DARK, Color.GREEN);
+        sharedPreferencesManager.writeInt(
                 NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH, Color.BLUE);
+        sharedPreferencesManager.writeString(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_FILE_PATH, "file_path");
         sharedPreferencesManager.writeString(NTP_CUSTOMIZATION_BACKGROUND_INFO, "background_info");
         sharedPreferencesManager.writeString(
                 NTP_CUSTOMIZATION_BACKGROUND_INFO_FOR_DAILY_REFRESH, "daily_refresh_info");
@@ -543,6 +555,8 @@ public class NtpCustomizationUtilsUnitTest {
                 NTP_BACKGROUND_IMAGE_PORTRAIT_INFO_FOR_DAILY_REFRESH, "daily_refresh_portrait");
         sharedPreferencesManager.writeString(
                 NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO_FOR_DAILY_REFRESH, "daily_refresh_landscape");
+        sharedPreferencesManager.writeLong(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP, 100L);
 
         // Create background image files.
         Bitmap bitmap = Bitmap.createBitmap(10, 10, Bitmap.Config.ARGB_8888);
@@ -562,22 +576,40 @@ public class NtpCustomizationUtilsUnitTest {
         assertTrue(themeCollectionImageFile.exists());
 
         // Call reset.
-        NtpCustomizationUtils.resetCustomizedImage(/* deleteImageFile= */ true);
+        NtpCustomizationUtils.removeAllNtpBackgroundDataFromSharedPreference();
+        NtpCustomizationUtils.deleteAllNtpBackgroundImageFiles();
         RobolectricUtil.runAllBackgroundAndUi();
 
         // Verify all keys are removed.
+        assertFalse(sharedPreferencesManager.contains(NTP_CUSTOMIZATION_BACKGROUND_TYPE));
         assertFalse(
                 sharedPreferencesManager.contains(
                         ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR));
         assertFalse(
                 sharedPreferencesManager.contains(
-                        NTP_CUSTOMIZATION_BACKGROUND_INFO_FOR_DAILY_REFRESH));
+                        ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR_DARK));
+        assertFalse(
+                sharedPreferencesManager.contains(
+                        ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID));
+        assertFalse(
+                sharedPreferencesManager.contains(
+                        ChromePreferenceKeys.NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED));
         assertFalse(
                 sharedPreferencesManager.contains(
                         ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR));
         assertFalse(
                 sharedPreferencesManager.contains(
+                        ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR_DARK));
+        assertFalse(
+                sharedPreferencesManager.contains(
                         NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH));
+        assertFalse(
+                sharedPreferencesManager.contains(
+                        ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_FILE_PATH));
+        assertFalse(sharedPreferencesManager.contains(NTP_CUSTOMIZATION_BACKGROUND_INFO));
+        assertFalse(
+                sharedPreferencesManager.contains(
+                        NTP_CUSTOMIZATION_BACKGROUND_INFO_FOR_DAILY_REFRESH));
         assertFalse(
                 sharedPreferencesManager.contains(
                         ChromePreferenceKeys.NTP_BACKGROUND_IMAGE_PORTRAIT_INFO));
@@ -588,6 +620,9 @@ public class NtpCustomizationUtilsUnitTest {
         assertFalse(
                 sharedPreferencesManager.contains(
                         NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO_FOR_DAILY_REFRESH));
+        assertFalse(
+                sharedPreferencesManager.contains(
+                        ChromePreferenceKeys.NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP));
 
         assertFalse(imageFile.exists());
         assertFalse(dailyRefreshImageFile.exists());
@@ -602,10 +637,35 @@ public class NtpCustomizationUtilsUnitTest {
         SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
         sharedPreferencesManager.writeInt(NTP_CUSTOMIZATION_BACKGROUND_TYPE, IMAGE_FROM_DISK);
 
-        NtpCustomizationUtils.resetNtpCustomBackgroundData();
+        NtpCustomizationUtils.resetNtpCustomBackgroundDataForPolicy();
         RobolectricUtil.runAllBackgroundAndUi();
 
         assertFalse(sharedPreferencesManager.contains(NTP_CUSTOMIZATION_BACKGROUND_TYPE));
+    }
+
+    @Test
+    public void testResetNtpCustomBackgroundData_colorFromHex() {
+        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
+        sharedPreferencesManager.writeInt(NTP_CUSTOMIZATION_BACKGROUND_TYPE, COLOR_FROM_HEX);
+        sharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR, Color.RED);
+        sharedPreferencesManager.writeInt(NTP_CUSTOMIZATION_PRIMARY_COLOR, Color.BLUE);
+        sharedPreferencesManager.writeInt(
+                ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR_DARK, Color.GREEN);
+        NtpCustomizationUtils.setBackgroundImageFilePathToSharedPreference("/path/to/image");
+
+        NtpCustomizationUtils.resetNtpCustomBackgroundDataForPolicy();
+        RobolectricUtil.runAllBackgroundAndUi();
+
+        assertFalse(sharedPreferencesManager.contains(NTP_CUSTOMIZATION_BACKGROUND_TYPE));
+        assertFalse(
+                sharedPreferencesManager.contains(
+                        ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR));
+        assertFalse(sharedPreferencesManager.contains(NTP_CUSTOMIZATION_PRIMARY_COLOR));
+        assertFalse(
+                sharedPreferencesManager.contains(
+                        ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR_DARK));
+        assertNull(NtpCustomizationUtils.getBackgroundImageFilePathFromSharedPreference());
     }
 
     @Test
