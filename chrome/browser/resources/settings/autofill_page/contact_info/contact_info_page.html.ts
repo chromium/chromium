@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsContactInfoPageElement} from './contact_info_page.js';
+
+export function getHtml(this: SettingsContactInfoPageElement) {
+  return html`<!--_html_template_start_-->
   <settings-subpage page-title="$i18n{contactInfoTitle}"
       learn-more-url="$i18n{addressesAndPaymentMethodsLearnMoreURL}"
       class="multi-card">
@@ -53,7 +63,8 @@
       <div class="cr-row continuation">
         <h2 class="flex">$i18n{addresses}</h2>
         <cr-button id="addAddress" class="header-aligned-button"
-            @click="${this.onAddAddressClick_}" aria-label="$i18n{addAddressTitle}"
+            @click="${this.onAddAddressClick_}"
+            aria-label="$i18n{addAddressTitle}"
             ?disabled="${!this.profileEnabledSyntheticPref_?.value}">
           $i18n{add}
         </cr-button>
@@ -182,3 +193,5 @@
       </cr-action-menu>
     </div>
   </settings-subpage>
+<!--_html_template_end_-->`;
+}

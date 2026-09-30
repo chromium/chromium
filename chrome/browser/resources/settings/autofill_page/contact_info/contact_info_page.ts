@@ -886,8 +886,6 @@ export class SettingsContactInfoPageElement extends
   }
 }
 
-export type ContactInfoPageElement = SettingsContactInfoPageElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-contact-info-page': SettingsContactInfoPageElement;

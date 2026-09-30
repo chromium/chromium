@@ -413,8 +413,6 @@ export class SettingsAddressEditDialogElement extends
   }
 }
 
-export type AddressEditDialogElement = SettingsAddressEditDialogElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-address-edit-dialog': SettingsAddressEditDialogElement;

@@ -43,9 +43,6 @@ export class SettingsGmailOtpDisclaimerDialogElement extends CrLitElement {
   }
 }
 
-export type GmailOtpDisclaimerDialogElement =
-    SettingsGmailOtpDisclaimerDialogElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-gmail-otp-disclaimer-dialog':

@@ -136,9 +136,6 @@ export class SettingsAddressRemoveConfirmationDialogElement extends
   }
 }
 
-export type AddressRemoveConfirmationDialogElement =
-    SettingsAddressRemoveConfirmationDialogElement;
-
 declare global {
   interface HTMLElementTagNameMap {
     'settings-address-remove-confirmation-dialog':

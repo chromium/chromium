@@ -1,3 +1,13 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+
+import type {SettingsGmailOtpDisclaimerDialogElement} from './gmail_otp_disclaimer_dialog.js';
+
+export function getHtml(this: SettingsGmailOtpDisclaimerDialogElement) {
+  return html`<!--_html_template_start_-->
 <cr-dialog id="dialog" show-on-attach close-text="$i18n{close}">
   <div slot="title">$i18n{gmailOtpRequiredTitle}</div>
   <div slot="body">
@@ -13,3 +23,5 @@
     </cr-button>
   </div>
 </cr-dialog>
+<!--_html_template_end_-->`;
+}
