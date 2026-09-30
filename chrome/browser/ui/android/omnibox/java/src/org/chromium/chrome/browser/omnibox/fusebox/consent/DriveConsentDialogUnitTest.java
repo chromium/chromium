@@ -36,7 +36,6 @@ import org.chromium.ui.widget.LoadingView;
 
 /** Unit tests for {@link DriveConsentDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DriveConsentDialogUnitTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -45,9 +44,10 @@ public class DriveConsentDialogUnitTest {
     @Mock private Callback<Boolean> mOnConsentComplete;
     @Mock private Callback<Boolean> mShowConsentComplete;
     @Mock private Profile mProfile;
-    @Mock private LoadingView mSpinner;
+    @Mock private LoadingView.Observer mSpinnerObserver;
 
     private Activity mActivity;
+    private LoadingView mSpinner;
     private DriveConsentDialog mDialog;
     private WindowAndroid mWindowAndroid;
     private PropertyModel mModalDialogModel;
@@ -55,6 +55,9 @@ public class DriveConsentDialogUnitTest {
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mSpinner = new LoadingView(mActivity);
+        mSpinner.showLoadingUi();
+        mSpinner.addObserver(mSpinnerObserver);
         mModalDialogModel = new PropertyModel(ModalDialogProperties.ALL_KEYS);
         mDialog = new DriveConsentDialog(mActivity, mModalDialogManager, mOnConsentComplete);
         mDialog.setModalDialogModelForTesting(mModalDialogModel);
@@ -118,7 +121,7 @@ public class DriveConsentDialogUnitTest {
 
         mDialog.onPageFirstPaint();
 
-        verify(mSpinner).hideLoadingUi();
+        verify(mSpinnerObserver).onHideLoadingUiComplete();
     }
 
     @Test
@@ -131,6 +134,6 @@ public class DriveConsentDialogUnitTest {
         verify(mOnConsentComplete).onResult(false);
         verify(mModalDialogManager)
                 .dismissDialog(mModalDialogModel, DialogDismissalCause.ACTION_ON_CONTENT);
-        verify(mSpinner).destroy();
+        assertTrue(mSpinner.isObserverListEmpty());
     }
 }
