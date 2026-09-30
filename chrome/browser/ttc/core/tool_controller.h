@@ -59,6 +59,8 @@ class ToolController {
                  ToolResponseCallback callback);
   void OpenKnownPage(const base::DictValue& arguments,
                      ToolResponseCallback callback);
+  void FindAndHighlight(const base::DictValue& arguments,
+                        ToolResponseCallback callback);
 
   // Runs the tool request returned by `create_action` against the session's
   // active tab, replying to `callback` with the result. Replies with an error

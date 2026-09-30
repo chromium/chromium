@@ -23,6 +23,7 @@
 #include "chrome/common/actor/action_result.h"
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/open_known_page_tool_request.h"
@@ -92,6 +93,10 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
   }
   if (tool_request.name == "open_known_page") {
     OpenKnownPage(tool_request.arguments, std::move(callback));
+    return;
+  }
+  if (tool_request.name == "find_and_highlight") {
+    FindAndHighlight(tool_request.arguments, std::move(callback));
     return;
   }
 #endif
@@ -231,6 +236,26 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   open_known_page.behavior = ToolDefinition::Behavior::kBlocking;
   open_known_page.verbalization = ToolDefinition::Verbalization::kSilentAction;
   tools.push_back(std::move(open_known_page));
+
+  ToolDefinition find_and_highlight;
+  find_and_highlight.name = "find_and_highlight";
+  find_and_highlight.description =
+      "Highlight and scroll to specific text on the page.";
+  find_and_highlight.parameters_json_schema =
+      base::DictValue()
+          .Set("type", "object")
+          .Set("properties",
+               base::DictValue().Set(
+                   "query", base::DictValue()
+                                .Set("type", "string")
+                                .Set("description",
+                                     "A short phrase copied exactly as it "
+                                     "appears in the page content.")))
+          .Set("required", base::ListValue().Append("query"));
+  find_and_highlight.behavior = ToolDefinition::Behavior::kBlocking;
+  find_and_highlight.verbalization =
+      ToolDefinition::Verbalization::kSilentAction;
+  tools.push_back(std::move(find_and_highlight));
 #endif
 
   return tools;
@@ -355,34 +380,6 @@ void ToolController::ReloadPage(ToolResponseCallback callback) {
       std::move(callback));
 }
 
-void ToolController::PerformActionOnActiveTab(
-    base::FunctionRef<std::unique_ptr<actor::ToolRequest>(tabs::TabHandle)>
-        create_action,
-    ToolResponseCallback callback) {
-  // TODO(b/561651267): Get BrowserWindowInterface* from SessionControllerImpl
-  // (or a class that manages the active window for the session).
-  BrowserWindowInterface* browser = nullptr;
-  if (auto* collection =
-          ProfileBrowserCollection::GetForProfile(GetProfile())) {
-    browser = collection->GetLastActiveBrowser();
-  }
-  if (!browser) {
-    std::move(callback).Run(
-        ToolResponse::Error(actor::mojom::ActionResultCode::kWindowWentAway,
-                            "No active browser window"));
-    return;
-  }
-
-  tabs::TabInterface* active_tab = browser->GetTabStripModel()->GetActiveTab();
-  if (!active_tab) {
-    std::move(callback).Run(ToolResponse::Error(
-        actor::mojom::ActionResultCode::kTabWentAway, "No active tab"));
-    return;
-  }
-
-  PerformAction(create_action(active_tab->GetHandle()), std::move(callback));
-}
-
 void ToolController::SwitchTab(const base::DictValue& arguments,
                                ToolResponseCallback callback) {
   const std::string* query = arguments.FindString("query");
@@ -409,6 +406,53 @@ void ToolController::OpenKnownPage(const base::DictValue& arguments,
 
   PerformAction(std::make_unique<actor::OpenKnownPageToolRequest>(*query),
                 std::move(callback));
+}
+
+void ToolController::FindAndHighlight(const base::DictValue& arguments,
+                                      ToolResponseCallback callback) {
+  const std::string* query = arguments.FindString("query");
+  if (!query) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing query argument"));
+    return;
+  }
+
+  PerformActionOnActiveTab(
+      [&query](
+          tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::FindAndHighlightToolRequest>(tab_handle,
+                                                                    *query);
+      },
+      std::move(callback));
+}
+
+void ToolController::PerformActionOnActiveTab(
+    base::FunctionRef<std::unique_ptr<actor::ToolRequest>(tabs::TabHandle)>
+        create_action,
+    ToolResponseCallback callback) {
+  // TODO(b/561651267): Get BrowserWindowInterface* from SessionControllerImpl
+  // (or a class that manages the active window for the session).
+  BrowserWindowInterface* browser = nullptr;
+  if (auto* collection =
+          ProfileBrowserCollection::GetForProfile(GetProfile())) {
+    browser = collection->GetLastActiveBrowser();
+  }
+  if (!browser) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kWindowWentAway,
+                            "No active browser window"));
+    return;
+  }
+
+  tabs::TabInterface* active_tab = browser->GetTabStripModel()->GetActiveTab();
+  if (!active_tab) {
+    std::move(callback).Run(ToolResponse::Error(
+        actor::mojom::ActionResultCode::kTabWentAway, "No active tab"));
+    return;
+  }
+
+  PerformAction(create_action(active_tab->GetHandle()), std::move(callback));
 }
 
 void ToolController::PerformAction(std::unique_ptr<actor::ToolRequest> action,

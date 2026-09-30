@@ -14,6 +14,7 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_task_metadata.h"
 #include "chrome/browser/actor/enterprise_policy_checker.h"
+#include "chrome/browser/actor/tab_annotation_manager.h"
 #include "chrome/browser/actor/tab_observation_strategy.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager.h"
@@ -54,6 +55,14 @@
 namespace ttc {
 
 namespace {
+
+// Asserts that `response` is an error and expects its code to be
+// `expected_code`. Must be used in a void-returning function.
+#define EXPECT_TOOL_ERROR(response, expected_code)       \
+  do {                                                   \
+    ASSERT_FALSE((response).Ok());                       \
+    EXPECT_EQ((response).error().code, (expected_code)); \
+  } while (0)
 
 class ToolControllerBrowserTest : public TtcCoreBrowserTestBase {
  public:
@@ -151,9 +160,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, PerformSearchMissingQuery) {
                                       future.GetCallback());
 
   ToolResponse response = future.Take();
-  ASSERT_FALSE(response.Ok());
-  EXPECT_EQ(response.error().code,
-            actor::mojom::ActionResultCode::kArgumentsInvalid);
+  EXPECT_TOOL_ERROR(response,
+                    actor::mojom::ActionResultCode::kArgumentsInvalid);
 }
 
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, CloseCurrentTab) {
@@ -270,9 +278,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GoBackWithoutHistory) {
                                       future.GetCallback());
 
   ToolResponse response = future.Take();
-  ASSERT_FALSE(response.Ok());
-  EXPECT_EQ(response.error().code,
-            actor::mojom::ActionResultCode::kHistoryNoBackEntries);
+  EXPECT_TOOL_ERROR(response,
+                    actor::mojom::ActionResultCode::kHistoryNoBackEntries);
 }
 
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, ReloadPage) {
@@ -347,9 +354,8 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SwitchTabInvalidArguments) {
                                       future.GetCallback());
 
   ToolResponse response = future.Take();
-  ASSERT_FALSE(response.Ok());
-  EXPECT_EQ(response.error().code,
-            actor::mojom::ActionResultCode::kArgumentsInvalid);
+  EXPECT_TOOL_ERROR(response,
+                    actor::mojom::ActionResultCode::kArgumentsInvalid);
 }
 
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, OpenKnownPage) {
@@ -400,9 +406,78 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
                                       future.GetCallback());
 
   ToolResponse response = future.Take();
-  ASSERT_FALSE(response.Ok());
-  EXPECT_EQ(response.error().code,
-            actor::mojom::ActionResultCode::kArgumentsInvalid);
+  EXPECT_TOOL_ERROR(response,
+                    actor::mojom::ActionResultCode::kArgumentsInvalid);
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, FindAndHighlight) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  // title1.html's body is "This page has no title."
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL("example.com", "/title1.html")));
+
+  base::test::TestFuture<ToolResponse> future;
+
+  ToolRequest tool_request;
+  tool_request.name = "find_and_highlight";
+  tool_request.arguments.Set("query", "no title");
+
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  EXPECT_TRUE(future.Take().Ok());
+
+  auto* annotation_manager =
+      actor::TabAnnotationManager::FromWebContents(web_contents());
+  ASSERT_TRUE(annotation_manager);
+  EXPECT_TRUE(annotation_manager->HasActiveHighlight());
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
+                       FindAndHighlightTextNotFound) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL("example.com", "/title1.html")));
+
+  base::test::TestFuture<ToolResponse> future;
+
+  ToolRequest tool_request;
+  tool_request.name = "find_and_highlight";
+  tool_request.arguments.Set("query", "nonexistent text");
+
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  EXPECT_TOOL_ERROR(
+      response, actor::mojom::ActionResultCode::kFindAndHighlightTextNotFound);
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
+                       FindAndHighlightMissingQuery) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  base::test::TestFuture<ToolResponse> future;
+
+  ToolRequest tool_request;
+  tool_request.name = "find_and_highlight";
+
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  EXPECT_TOOL_ERROR(response,
+                    actor::mojom::ActionResultCode::kArgumentsInvalid);
 }
 
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, UnsupportedTool) {
@@ -419,9 +494,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, UnsupportedTool) {
                                       future.GetCallback());
 
   ToolResponse response = future.Take();
-  ASSERT_FALSE(response.Ok());
-  EXPECT_EQ(response.error().code,
-            actor::mojom::ActionResultCode::kToolUnknown);
+  EXPECT_TOOL_ERROR(response, actor::mojom::ActionResultCode::kToolUnknown);
   ASSERT_TRUE(response.error().message.has_value());
   EXPECT_EQ(*response.error().message, "Unsupported tool");
 }
@@ -432,7 +505,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   ASSERT_TRUE(session_controller);
 
   std::vector<ToolDefinition> tools = session_controller->GetToolDefinitions();
-  ASSERT_EQ(tools.size(), 8u);
+  ASSERT_EQ(tools.size(), 9u);
 
   const ToolDefinition& open_url = tools[0];
   EXPECT_EQ(open_url.name, "open_url");
@@ -557,6 +630,30 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
     ASSERT_TRUE(tool_required);
     EXPECT_EQ(*tool_required, base::ListValue().Append("query"));
   }
+
+  const ToolDefinition& find_and_highlight = tools[8];
+  EXPECT_EQ(find_and_highlight.name, "find_and_highlight");
+  EXPECT_FALSE(find_and_highlight.description.empty());
+  EXPECT_EQ(find_and_highlight.behavior, ToolDefinition::Behavior::kBlocking);
+  EXPECT_EQ(find_and_highlight.verbalization,
+            ToolDefinition::Verbalization::kSilentAction);
+
+  const base::DictValue& highlight_schema =
+      find_and_highlight.parameters_json_schema;
+  const std::string* highlight_schema_type =
+      highlight_schema.FindString("type");
+  ASSERT_TRUE(highlight_schema_type);
+  EXPECT_EQ(*highlight_schema_type, "object");
+
+  const std::string* highlight_query_type =
+      highlight_schema.FindStringByDottedPath("properties.query.type");
+  ASSERT_TRUE(highlight_query_type);
+  EXPECT_EQ(*highlight_query_type, "string");
+
+  const base::ListValue* highlight_required =
+      highlight_schema.FindList("required");
+  ASSERT_TRUE(highlight_required);
+  EXPECT_EQ(*highlight_required, base::ListValue().Append("query"));
 }
 
 class ToolControllerActorDisabledBrowserTest
