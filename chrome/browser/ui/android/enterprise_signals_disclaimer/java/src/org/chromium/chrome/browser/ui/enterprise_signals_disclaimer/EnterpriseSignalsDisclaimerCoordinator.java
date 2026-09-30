@@ -28,20 +28,20 @@ import java.lang.annotation.Target;
  * acting on the user's decision is the responsibility of the embedder.
  */
 @NullMarked
-class EnterpriseSignalsDisclaimerCoordinator implements View.OnAttachStateChangeListener {
+public class EnterpriseSignalsDisclaimerCoordinator implements View.OnAttachStateChangeListener {
     /** How the embedder is going to present the disclaimer. Affects the rendered layout. */
     @IntDef({PresentationMode.MODAL_DIALOG, PresentationMode.BOTTOM_SHEET})
     @Target(ElementType.TYPE_USE)
     @Retention(RetentionPolicy.SOURCE)
-    @interface PresentationMode {
+    public @interface PresentationMode {
         int MODAL_DIALOG = 0;
         int BOTTOM_SHEET = 1;
     }
 
     /** Delegate for the enterprise signals disclaimer. */
-    interface Delegate extends EnterpriseSignalsDisclaimerMediator.Delegate {
+    public interface Delegate extends EnterpriseSignalsDisclaimerMediator.Delegate {
         /** Called the first time the disclaimer view is attached to a window. */
-        void onShown();
+        default void onShown() {}
     }
 
     private final EnterpriseSignalsDisclaimerMediator mMediator;
@@ -61,7 +61,7 @@ class EnterpriseSignalsDisclaimerCoordinator implements View.OnAttachStateChange
      * @param presentationMode How the embedder is going to present the disclaimer.
      * @param delegate The {@link Delegate} for embedder interactions.
      */
-    EnterpriseSignalsDisclaimerCoordinator(
+    public EnterpriseSignalsDisclaimerCoordinator(
             Context context,
             IdentityManager identityManager,
             CoreAccountInfo account,
@@ -83,7 +83,7 @@ class EnterpriseSignalsDisclaimerCoordinator implements View.OnAttachStateChange
     }
 
     /** Returns the root view of the disclaimer, to be hosted by the embedder. */
-    View getView() {
+    public View getView() {
         return mView;
     }
 
@@ -93,7 +93,7 @@ class EnterpriseSignalsDisclaimerCoordinator implements View.OnAttachStateChange
     }
 
     /** Destroys the coordinator, cleaning up resources. Does not affect the hosting UI. */
-    void destroy() {
+    public void destroy() {
         if (mIsDestroyed) {
             return;
         }

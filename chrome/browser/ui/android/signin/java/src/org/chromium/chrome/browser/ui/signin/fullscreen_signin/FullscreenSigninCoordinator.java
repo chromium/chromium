@@ -20,6 +20,8 @@ import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.signin.services.BadgeConfig;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.ui.signin.ConfirmManagedSyncDataDialogCoordinator;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.PrimaryAccountChangeEvent;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
@@ -118,6 +120,15 @@ public class FullscreenSigninCoordinator implements IdentityManager.Observer {
         default boolean canUsePreferredAccount() {
             return false;
         }
+
+        /**
+         * Called to display the management notice for {@code account}, when {@code
+         * ChromeFeatureList.ANDROID_NEW_MANAGEMENT_NOTICE} is enabled. The host is responsible for
+         * dismissing the notice and must report the user's decision via {@code listener}.
+         */
+        default void displayManagementNotice(
+                CoreAccountInfo account,
+                ConfirmManagedSyncDataDialogCoordinator.Listener listener) {}
     }
 
     private final FullscreenSigninMediator mMediator;

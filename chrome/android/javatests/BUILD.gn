@@ -1402,6 +1402,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.signin") {
   deps = [
     ":chrome_test_java_helper",
     "//chrome/browser/prefs/android:java",
+    "//chrome/browser/ui/android/enterprise_signals_disclaimer:java_resources",
   ]
 }
 

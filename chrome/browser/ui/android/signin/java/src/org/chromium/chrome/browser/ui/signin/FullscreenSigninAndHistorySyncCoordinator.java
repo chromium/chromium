@@ -332,6 +332,9 @@ public final class FullscreenSigninAndHistorySyncCoordinator extends SigninAndHi
         return true;
     }
 
+    // TODO(b/553341908): Implement FullscreenSigninCoordinator.Delegate#displayManagementNotice to
+    // show the enterprise signals disclaimer.
+
     @Override
     public OneshotSupplier<Boolean> getPolicyLoadListener() {
         return mDelegate.getPolicyLoadListener();

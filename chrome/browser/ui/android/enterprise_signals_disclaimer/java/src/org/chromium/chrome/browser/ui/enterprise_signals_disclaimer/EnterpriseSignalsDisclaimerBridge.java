@@ -14,7 +14,7 @@ import java.util.List;
 
 /** Native bridge for Enterprise Signals Disclaimer. */
 @NullMarked
-class EnterpriseSignalsDisclaimerBridge {
+public class EnterpriseSignalsDisclaimerBridge {
     private EnterpriseSignalsDisclaimerBridge() {}
 
     public static boolean hasAccountAcknowledgedSignalsDisclaimer(GaiaId gaiaId) {
@@ -31,7 +31,7 @@ class EnterpriseSignalsDisclaimerBridge {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         boolean hasAccountAcknowledgedSignalsDisclaimer(@JniType("GaiaId") GaiaId gaiaId);
 
         void setAccountAcknowledgedSignalsDisclaimer(@JniType("GaiaId") GaiaId gaiaId);

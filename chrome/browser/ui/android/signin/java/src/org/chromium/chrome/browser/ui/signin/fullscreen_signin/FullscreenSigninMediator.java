@@ -691,15 +691,26 @@ public class FullscreenSigninMediator
             signOutThenSignInWithSelectedAccount(
                     mSelectedAccount, accessPoint, signinTimestampsLogger, signInCallback);
         } else {
-            FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
-                    mSelectedAccount,
-                    assertNonNull(mSigninManager),
-                    signinTimestampsLogger,
-                    accessPoint,
-                    signInCallback,
-                    mContext,
-                    mModalDialogManager);
+            checkAccountManagementAndSignIn(
+                    mSelectedAccount, accessPoint, signinTimestampsLogger, signInCallback);
         }
+    }
+
+    /** Performs sign-in after confirming account management with the user, if necessary. */
+    private void checkAccountManagementAndSignIn(
+            CoreAccountInfo account,
+            @SigninAccessPoint int accessPoint,
+            SigninFlowTimestampsLogger signinTimestampsLogger,
+            SignInCallback signInCallback) {
+        FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
+                account,
+                assertNonNull(mSigninManager),
+                signinTimestampsLogger,
+                accessPoint,
+                signInCallback,
+                mContext,
+                mModalDialogManager,
+                mDelegate);
     }
 
     /**
@@ -751,18 +762,15 @@ public class FullscreenSigninMediator
             CoreAccountInfo selectedAccount,
             @SigninAccessPoint int accessPoint,
             SigninFlowTimestampsLogger signinTimestampsLogger,
-            @Nullable SignInCallback signInCallback) {
+            SignInCallback signInCallback) {
         Runnable signOutCallback =
                 () -> {
                     if (mDestroyed) return;
-                    FreManagementNoticeDialogHelper.checkAccountManagementAndSignIn(
+                    checkAccountManagementAndSignIn(
                             selectedAccount,
-                            assertNonNull(mSigninManager),
-                            signinTimestampsLogger,
                             accessPoint,
-                            signInCallback,
-                            mContext,
-                            mModalDialogManager);
+                            signinTimestampsLogger,
+                            signInCallback);
                 };
         assumeNonNull(mSigninManager).signOut(SignoutReason.ABORT_SIGNIN, signOutCallback);
     }

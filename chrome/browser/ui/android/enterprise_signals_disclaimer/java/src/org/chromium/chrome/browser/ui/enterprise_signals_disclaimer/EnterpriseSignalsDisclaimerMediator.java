@@ -32,7 +32,7 @@ class EnterpriseSignalsDisclaimerMediator implements ProfileDataCache.Observer {
     static final String LEARN_MORE_LINK = "https://support.google.com/chrome/a/answer/16191236";
 
     /** Delegate for the enterprise signals disclaimer mediator. */
-    interface Delegate {
+    public interface Delegate {
         /**
          * Opens the info page for the given URL in CTT.
          *
