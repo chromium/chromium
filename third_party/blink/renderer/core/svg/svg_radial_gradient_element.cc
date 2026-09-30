@@ -129,6 +129,7 @@ RadialGradientAttributes SVGRadialGradientElement::CollectGradientAttributes()
 
   VisitedSet visited;
   const SVGGradientElement* current = this;
+  bool is_in_canvas_subtree = IsInCanvasSubtree();
 
   RadialGradientAttributes attributes;
   while (true) {
@@ -137,9 +138,13 @@ RadialGradientAttributes SVGRadialGradientElement::CollectGradientAttributes()
     visited.insert(current);
 
     current = current->ReferencedElement();
-    // Ignore the referenced gradient element if it is not attached.
-    if (!current || !current->GetLayoutObject())
+    // Ignore the referenced gradient element if it is not attached or if we
+    // are following a reference chain that started inside the canvas subtree
+    // and an element outside the subtree is found.
+    if (!current || !current->GetLayoutObject() ||
+        (is_in_canvas_subtree && !current->IsInCanvasSubtree())) {
       break;
+    }
     // Cycle detection.
     if (visited.Contains(current))
       break;
