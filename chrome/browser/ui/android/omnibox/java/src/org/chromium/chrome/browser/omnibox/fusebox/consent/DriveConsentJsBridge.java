@@ -24,14 +24,6 @@ class DriveConsentJsBridge {
     /** Interface for receiving events dispatched from the ConsentKit web page. */
     interface Delegate {
         /**
-         * Called when the ConsentKit page finishes its initialization handshake.
-         *
-         * @param callbackId The identifier passed by the page to be returned via {@code
-         *     window.ckUiCallback(callbackId)}.
-         */
-        void onWhenAttached(int callbackId);
-
-        /**
          * Called when the ConsentKit page finishes its consent flow.
          *
          * @param resultJson The JSON payload containing the flow result, or null if the page closed
@@ -51,17 +43,11 @@ class DriveConsentJsBridge {
         mDelegateRef = new WeakReference<>(delegate);
     }
 
-    /** Called by the ConsentKit page when it attaches to the native container. */
+    /** Declares to ConsentKit that Chrome cannot complete the whenAttached callback handshake. */
     @JavascriptInterface
     @UsedByReflection("ConsentKit WebView JS bridge (window.ckUi)")
-    public void whenAttached(int callbackId) {
-        ThreadUtils.postOnUiThread(
-                () -> {
-                    Delegate delegate = mDelegateRef.get();
-                    if (delegate != null) {
-                        delegate.onWhenAttached(callbackId);
-                    }
-                });
+    public boolean isWhenAttachedSupported() {
+        return false;
     }
 
     /** No-op since {@link #closeWithResult} supplies the complete flow result. */

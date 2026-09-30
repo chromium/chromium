@@ -95,14 +95,6 @@ class DriveConsentKitClient extends WebContentsObserver implements DriveConsentJ
     }
 
     @Override
-    public void onWhenAttached(int callbackId) {
-        // Intentionally unanswered: replying requires window.ckUiCallback(), and Chrome cannot
-        // evaluate JavaScript on non-WebUI origins.
-        // TODO: Switch to the CkChromeIdWebView user agent once ConsentKit ships its Chrome adapter
-        // (cl/987461829), which stops the page from calling whenAttached().
-    }
-
-    @Override
     public void onCloseWithResult(@Nullable String resultJson) {
         if (mDestroyed || mCompleted) return;
         if (TextUtils.isEmpty(resultJson)) {
