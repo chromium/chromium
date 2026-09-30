@@ -162,9 +162,9 @@ PageInfoMainView::PageInfoMainView(
       views::BoxLayout::Orientation::kVertical,
       gfx::Insets::TLBR(0, 0, hover_list_spacing, 0)));
 
-  AddChildView(CreateBubbleHeaderView())
-      ->SetProperty(views::kMarginsKey,
-                    gfx::Insets::TLBR(0, 0, hover_list_spacing, 0));
+  header_view_ = AddChildView(CreateBubbleHeaderView());
+  header_view_->SetProperty(views::kMarginsKey,
+                            gfx::Insets::TLBR(0, 0, hover_list_spacing, 0));
 
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_VR)
   page_feature_info_view_ = AddChildView(std::make_unique<views::View>());
@@ -662,24 +662,23 @@ void PageInfoMainView::OnMerchantTrustDataFetched(
 
 gfx::Size PageInfoMainView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
-  if (site_settings_view_ == nullptr && permissions_view_ == nullptr &&
-      security_container_view_ == nullptr) {
+  if (children().empty()) {
     return views::View::CalculatePreferredSize(available_size);
   }
 
   int width = 0;
-  if (site_settings_view_) {
-    width = std::max(width, site_settings_view_->GetPreferredSize().width());
+  if (available_size.width().is_bounded()) {
+    width = available_size.width().value();
+  } else {
+    // Exclude `header_view_` because it contains the site URL/origin, which
+    // can be very long and should not expand the bubble's width.
+    for (views::View* child : children()) {
+      if (child != header_view_ && child->GetVisible()) {
+        width = std::max(width, child->GetPreferredSize({}).width());
+      }
+    }
   }
 
-  if (permissions_view_) {
-    width = std::max(width, permissions_view_->GetPreferredSize().width());
-  }
-
-  if (security_container_view_) {
-    width =
-        std::max(width, security_container_view_->GetPreferredSize().width());
-  }
   return gfx::Size(width,
                    GetLayoutManager()->GetPreferredHeightForWidth(this, width));
 }

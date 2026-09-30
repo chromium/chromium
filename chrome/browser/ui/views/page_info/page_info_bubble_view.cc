@@ -303,7 +303,6 @@ void PageInfoBubbleView::OpenPermissionPage(ContentSettingsType type) {
   AnnouncePageOpened(PageInfoUI::PermissionTypeToUIString(type));
 }
 
-
 void PageInfoBubbleView::OpenCookiesPage() {
   presenter_->OnCookiesPageOpened();
   std::unique_ptr<views::View> cookies_page_view =
@@ -366,9 +365,12 @@ gfx::Size PageInfoBubbleView::CalculatePreferredSize(
   }
 
   int width = PageInfoViewFactory::kMinBubbleWidth;
-  if (page_container_) {
-    width = std::max(width, page_container_->GetPreferredSize().width());
-    width = std::min(width, PageInfoViewFactory::kMaxBubbleWidth);
+  if (available_size.width().is_bounded()) {
+    width = available_size.width().value();
+  } else {
+    width = std::clamp(page_container_->GetPreferredSize().width(),
+                       PageInfoViewFactory::kMinBubbleWidth,
+                       PageInfoViewFactory::kMaxBubbleWidth);
   }
   return gfx::Size(width,
                    GetLayoutManager()->GetPreferredHeightForWidth(this, width));

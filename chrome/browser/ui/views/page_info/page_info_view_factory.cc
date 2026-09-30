@@ -64,9 +64,14 @@ class PageInfoSubpageView : public views::View {
 
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override {
-    // Only the with of |content_| is taken into account, because the header
+    // Only the width of |content_| is taken into account, because the header
     // view contains site origin in the subtitle which can be very long.
-    const int width = content_->GetPreferredSize(available_size).width();
+    int width = 0;
+    if (available_size.width().is_bounded()) {
+      width = available_size.width().value();
+    } else if (content_) {
+      width = content_->GetPreferredSize({}).width();
+    }
     return gfx::Size(
         width, GetLayoutManager()->GetPreferredHeightForWidth(this, width));
   }

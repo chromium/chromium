@@ -86,6 +86,7 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/scoped_views_test_helper.h"
+#include "ui/views/test/test_views.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 #include "chrome/browser/plugins/chrome_plugin_service_filter.h"
@@ -118,13 +119,14 @@ class PageInfoBubbleViewTestApi {
       delete;
 
   void CreateView(base::RepeatingClosure open_extensions_menu_callback =
-                      base::RepeatingClosure()) {
+                      base::RepeatingClosure(),
+                  const GURL& url = GURL(kUrl)) {
     if (bubble_delegate_) {
       bubble_delegate_->GetWidget()->CloseNow();
     }
 
     PageInfoBubbleSpecification::Builder builder(views::BubbleAnchor(), parent_,
-                                                 web_contents_, GURL(kUrl));
+                                                 web_contents_, url);
     builder.AddPageInfoClosingCallback(
         base::BindOnce(&PageInfoBubbleViewTestApi::OnPageInfoBubbleClosed,
                        base::Unretained(this), run_loop_.QuitClosure()));
@@ -346,6 +348,10 @@ class PageInfoBubbleViewTestApi {
         static_cast<ChosenObjectView*>(parent->children()[object_view_index]);
     views::View* row_view = object_view->children()[0];
     return row_view->children();
+  }
+
+  views::BubbleDialogDelegateView* bubble_delegate() {
+    return bubble_delegate_;
   }
 
   void WaitForBubbleClose() { run_loop_.Run(); }
@@ -1423,4 +1429,176 @@ TEST_F(PageInfoBubbleViewTest, SeeExtensionsButtonClick) {
       base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON);
   button->OnMousePressed(click_event);
   button->OnMouseReleased(click_event);
+}
+
+// Regression test for crbug.com/393077432. The main view's height calculation
+// must respect the width constraint rather than its unconstrained content
+// width, ensuring the bubble dialog's height matches its content without
+// trailing blank space.
+TEST_F(PageInfoBubbleViewTest, BubbleHeightMatchesContentHeightForLongUrl) {
+  const GURL long_url(
+      "https://www.example-long-domain-name-that-wraps-lines-in-page-info-"
+      "dialog.com/store/products/item?param=12345");
+  api_->CreateView(base::RepeatingClosure(), long_url);
+
+  views::View* main_view = api_->current_view();
+  ASSERT_NE(nullptr, main_view);
+
+  PageInfoUI::IdentityInfo identity;
+  identity.identity_status = PageInfo::SITE_IDENTITY_STATUS_CERT;
+  identity.connection_status = PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED;
+  static_cast<PageInfoMainView*>(main_view)->SetIdentityInfo(identity);
+
+  // Unconstrained width should exclude the header view (and be less than
+  // kMinBubbleWidth).
+  const int min_width = PageInfoViewFactory::kMinBubbleWidth;
+  EXPECT_LT(main_view->GetPreferredSize({}).width(), min_width);
+
+  // Main view calculated height for min bubble width matches its layout
+  // manager.
+  EXPECT_EQ(main_view->GetHeightForWidth(min_width),
+            main_view->GetLayoutManager()->GetPreferredHeightForWidth(
+                main_view, min_width));
+
+  // Bubble width is clamped to kMinBubbleWidth,
+  // and bubble height matches content height (no extra blank vertical space).
+  const gfx::Size bubble_size = api_->bubble_delegate()->GetPreferredSize({});
+  EXPECT_EQ(bubble_size.width(), min_width);
+  EXPECT_EQ(bubble_size.height(),
+            main_view->GetLayoutManager()->GetPreferredHeightForWidth(
+                main_view, bubble_size.width()));
+}
+
+TEST_F(PageInfoBubbleViewTest, DynamicSizingSupportsWideContent) {
+  const GURL url("https://example.com");
+  api_->CreateView(base::RepeatingClosure(), url);
+
+  views::View* main_view = api_->current_view();
+  ASSERT_NE(nullptr, main_view);
+
+  PageInfoUI::IdentityInfo identity;
+  identity.identity_status = PageInfo::SITE_IDENTITY_STATUS_CERT;
+  identity.connection_status = PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED;
+  static_cast<PageInfoMainView*>(main_view)->SetIdentityInfo(identity);
+
+  // Bubble width defaults to kMinBubbleWidth (320px).
+  EXPECT_EQ(PageInfoViewFactory::kMinBubbleWidth,
+            api_->bubble_delegate()->GetPreferredSize({}).width());
+
+  // Add a wide child view (450px) to simulate wider content.
+  constexpr int kWideChildWidth = 450;
+  main_view->AddChildView(
+      std::make_unique<views::StaticSizedView>(gfx::Size(kWideChildWidth, 30)));
+
+  // Dialog preferred width should dynamically expand to accommodate wide
+  // content.
+  const gfx::Size bubble_size = api_->bubble_delegate()->GetPreferredSize({});
+  EXPECT_EQ(kWideChildWidth, bubble_size.width());
+
+  // And the calculated height should match the layout's preferred height at
+  // this width.
+  const int content_height =
+      main_view->GetLayoutManager()->GetPreferredHeightForWidth(
+          main_view, kWideChildWidth);
+  EXPECT_EQ(bubble_size.height(), content_height);
+}
+
+TEST_F(PageInfoBubbleViewTest, BubbleWidthClampedToMaxBubbleWidth) {
+  const GURL url("https://example.com");
+  api_->CreateView(base::RepeatingClosure(), url);
+
+  views::View* main_view = api_->current_view();
+  ASSERT_NE(nullptr, main_view);
+
+  // Add an extraordinarily wide child view (1200px) exceeding kMaxBubbleWidth
+  // (1000px).
+  constexpr int kExtraWideChildWidth = 1200;
+  main_view->AddChildView(std::make_unique<views::StaticSizedView>(
+      gfx::Size(kExtraWideChildWidth, 30)));
+
+  // Dialog preferred width should be clamped to kMaxBubbleWidth (1000px).
+  const gfx::Size bubble_size = api_->bubble_delegate()->GetPreferredSize({});
+  EXPECT_EQ(PageInfoViewFactory::kMaxBubbleWidth, bubble_size.width());
+
+  // Layout height should be computed at kMaxBubbleWidth.
+  const int content_height =
+      main_view->GetLayoutManager()->GetPreferredHeightForWidth(
+          main_view, PageInfoViewFactory::kMaxBubbleWidth);
+  EXPECT_EQ(bubble_size.height(), content_height);
+}
+
+TEST_F(PageInfoBubbleViewTest, SubpageHeightMatchesContentForLongUrl) {
+  const GURL long_url(
+      "https://www.example-store-reviews-long-domain-name.com/store/products/"
+      "item?param=12345");
+  api_->CreateView(base::RepeatingClosure(), long_url);
+
+  // Open the security subpage.
+  api_->navigation_handler()->OpenSecurityPage();
+
+  views::View* subpage_view = api_->current_view();
+  ASSERT_NE(nullptr, subpage_view);
+
+  const gfx::Size bubble_size = api_->bubble_delegate()->GetPreferredSize({});
+  const int expected_height =
+      subpage_view->GetLayoutManager()->GetPreferredHeightForWidth(
+          subpage_view, bubble_size.width());
+
+  EXPECT_EQ(bubble_size.height(), expected_height);
+}
+
+TEST_F(PageInfoBubbleViewTest,
+       MainViewPreferredWidthIgnoresHeaderAndHiddenViews) {
+  const GURL long_url(
+      "https://"
+      "www.example-very-long-domain-name-exceeding-any-reasonable-width.com/"
+      "path/to/resource?param=12345678901234567890");
+  api_->CreateView(base::RepeatingClosure(), long_url);
+
+  views::View* main_view = api_->current_view();
+  ASSERT_NE(nullptr, main_view);
+
+  PageInfoUI::IdentityInfo identity;
+  identity.identity_status = PageInfo::SITE_IDENTITY_STATUS_CERT;
+  identity.connection_status = PageInfo::SITE_CONNECTION_STATUS_ENCRYPTED;
+  static_cast<PageInfoMainView*>(main_view)->SetIdentityInfo(identity);
+
+  // Natural content width must only reflect visible non-header children (<
+  // 320px).
+  const int natural_width = main_view->GetPreferredSize({}).width();
+  EXPECT_LT(natural_width, PageInfoViewFactory::kMinBubbleWidth);
+
+  // Adding a wide child view (600px) that is hidden should NOT expand natural
+  // width.
+  auto* hidden_view = main_view->AddChildView(
+      std::make_unique<views::StaticSizedView>(gfx::Size(600, 30)));
+  hidden_view->SetVisible(false);
+  EXPECT_EQ(natural_width, main_view->GetPreferredSize({}).width());
+
+  // Making it visible should expand natural width.
+  hidden_view->SetVisible(true);
+  EXPECT_EQ(600, main_view->GetPreferredSize({}).width());
+}
+
+TEST_F(PageInfoBubbleViewTest, DialogResizesWhenNavigatingToSubpageAndBack) {
+  api_->CreateView();
+
+  const gfx::Size main_page_size =
+      api_->bubble_delegate()->GetPreferredSize({});
+
+  // Navigate to security subpage.
+  api_->navigation_handler()->OpenSecurityPage();
+  const gfx::Size security_page_size =
+      api_->bubble_delegate()->GetPreferredSize({});
+
+  // Both should respect kMinBubbleWidth.
+  EXPECT_GE(main_page_size.width(), PageInfoViewFactory::kMinBubbleWidth);
+  EXPECT_GE(security_page_size.width(), PageInfoViewFactory::kMinBubbleWidth);
+  // Different pages have different content heights.
+  EXPECT_NE(main_page_size.height(), security_page_size.height());
+
+  // Navigate back to main page.
+  api_->navigation_handler()->OpenMainPage(base::DoNothing());
+  const gfx::Size restored_size = api_->bubble_delegate()->GetPreferredSize({});
+  EXPECT_EQ(main_page_size, restored_size);
 }
