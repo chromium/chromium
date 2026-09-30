@@ -337,8 +337,10 @@ std::unique_ptr<views::View> CreateLegalMessageView(
     const std::u16string& user_email,
     const ui::ImageModel& user_avatar,
     base::RepeatingCallback<void(const GURL&)> callback) {
-  auto result =
-      CreateLegalMessageView(legal_message_lines, std::move(callback));
+  auto result = CreateLegalMessageView(
+      legal_message_lines, /*text_style=*/std::nullopt,
+      /*text_color_id=*/std::nullopt, /*link_text_style=*/std::nullopt,
+      std::move(callback));
   if (user_email.empty() || user_avatar.IsEmpty()) {
     return result;
   }

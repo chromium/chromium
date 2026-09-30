@@ -259,6 +259,7 @@ AutofillAiImportDataBubbleView::GetWalletableEntitySubtitle() const {
       views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
           &AutofillAiImportDataController::OnGoToWalletLinkClicked,
           controller_));
+  go_to_wallet.text_style = views::style::STYLE_LINK_4;
 
   return views::Builder<views::StyledLabel>()
       .SetText(std::move(formatted_text))
@@ -273,7 +274,8 @@ AutofillAiImportDataBubbleView::GetWalletableEntitySubtitle() const {
 std::unique_ptr<views::View>
 AutofillAiImportDataBubbleView::GetWalletableEntityDisclosure() {
   std::unique_ptr<views::View> legal_message_view = CreateLegalMessageView(
-      controller_->GetLegalMessageLines(),
+      controller_->GetLegalMessageLines(), views::style::STYLE_BODY_4,
+      ui::kColorSysOnSurfaceSubtle, views::style::STYLE_LINK_4,
       base::BindRepeating(
           &AutofillAiImportDataController::OnLegalMessageLinkClicked,
           controller_));

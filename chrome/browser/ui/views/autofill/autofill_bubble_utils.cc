@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/autofill/autofill_bubble_utils.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -14,6 +15,7 @@
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"
@@ -49,6 +51,9 @@ std::unique_ptr<views::ImageButton> CreateEditButton(
 
 std::unique_ptr<views::View> CreateLegalMessageView(
     const LegalMessageLines& legal_message_lines,
+    std::optional<int> text_style,
+    std::optional<ui::ColorId> text_color_id,
+    std::optional<int> link_text_style,
     base::RepeatingCallback<void(const GURL&)> callback) {
   auto result = views::Builder<views::BoxLayoutView>()
                     .SetOrientation(views::BoxLayout::Orientation::kVertical)
@@ -60,12 +65,17 @@ std::unique_ptr<views::View> CreateLegalMessageView(
     auto label = views::Builder<views::StyledLabel>()
                      .SetText(line.text())
                      .SetTextContext(CONTEXT_DIALOG_BODY_TEXT_SMALL)
-                     .SetDefaultTextStyle(views::style::STYLE_SECONDARY)
+                     .SetDefaultTextStyle(
+                         text_style.value_or(views::style::STYLE_SECONDARY))
+                     .SetDefaultEnabledColorId(text_color_id)
                      .Build();
     for (const LegalMessageLine::Link& link : line.links()) {
-      label->AddStyleRange(link.range,
-                           views::StyledLabel::RangeStyleInfo::CreateForLink(
-                               base::BindRepeating(callback, link.url)));
+      views::StyledLabel::RangeStyleInfo link_style =
+          views::StyledLabel::RangeStyleInfo::CreateForLink(
+              base::BindRepeating(callback, link.url));
+      link_style.text_style =
+          link_text_style.value_or(views::style::STYLE_LINK);
+      label->AddStyleRange(link.range, link_style);
     }
     result->AddChildView(std::move(label));
   }
