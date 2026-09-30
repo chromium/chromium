@@ -64,10 +64,12 @@ const expectedInheritedProperties = {
   'word-spacing': '2px',
   'color': 'rgb(255, 0, 0)',
 };
-for (const [property, value] of Object.entries(expectedInheritedProperties)) {
-  parent.style[property] = value;
-  parentInPicker.style[property] = value;
-}
+test(() => {
+  for (const [property, value] of Object.entries(expectedInheritedProperties)) {
+    parent.style[property] = value;
+    parentInPicker.style[property] = value;
+  }
+}, 'Setup');
 
 function testProperties(style, expectedProperties) {
   const parentStyle = getComputedStyle(parent);

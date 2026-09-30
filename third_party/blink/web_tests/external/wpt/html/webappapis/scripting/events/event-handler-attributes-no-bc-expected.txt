@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] template contents
+  assert_equals: expected (object) null but got (function) function "() => ran = true"
+[FAIL] new Document()
+  assert_equals: expected (object) null but got (function) function "() => ran = true"
+[FAIL] DOMParser()
+  assert_equals: expected (object) null but got (function) function "() => ran = true"
+Harness: the test ran to completion.
+

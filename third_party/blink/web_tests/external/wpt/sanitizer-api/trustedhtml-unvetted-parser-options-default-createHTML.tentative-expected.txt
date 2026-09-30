@@ -1,0 +1,80 @@
+This is a testharness.js-based test.
+Found 38 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Element.setHTMLUnsafe: string with a sanitizer config throws without calling createHTML
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] Element.setHTMLUnsafe: TrustedHTML with a sanitizer config throws
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] Element.setHTMLUnsafe: string with a sanitizer config without effect throws without calling createHTML
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] Element.setHTMLUnsafe: TrustedHTML with a sanitizer config without effect throws
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] Element.setHTMLUnsafe: string with a Sanitizer throws without calling createHTML
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] Element.setHTMLUnsafe: TrustedHTML with a Sanitizer throws
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] Element.setHTMLUnsafe: string with the "default" sanitizer preset throws without calling createHTML
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] Element.setHTMLUnsafe: TrustedHTML with the "default" sanitizer preset throws
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] Element.setHTMLUnsafe: string with a sanitizer config and runScripts false throws without calling createHTML
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] Element.setHTMLUnsafe: TrustedHTML with a sanitizer config and runScripts false throws
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] Element.setHTMLUnsafe: string with runScripts true throws without calling createHTML
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] Element.setHTMLUnsafe: TrustedHTML with runScripts true throws
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] Element.setHTMLUnsafe: string with runScripts true and an empty sanitizer config throws without calling createHTML
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] Element.setHTMLUnsafe: TrustedHTML with runScripts true and an empty sanitizer config throws
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] ShadowRoot.setHTMLUnsafe: string with a sanitizer config throws without calling createHTML
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] ShadowRoot.setHTMLUnsafe: TrustedHTML with a sanitizer config throws
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] ShadowRoot.setHTMLUnsafe: string with a sanitizer config without effect throws without calling createHTML
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] ShadowRoot.setHTMLUnsafe: TrustedHTML with a sanitizer config without effect throws
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] ShadowRoot.setHTMLUnsafe: string with a Sanitizer throws without calling createHTML
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] ShadowRoot.setHTMLUnsafe: TrustedHTML with a Sanitizer throws
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] ShadowRoot.setHTMLUnsafe: string with the "default" sanitizer preset throws without calling createHTML
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] ShadowRoot.setHTMLUnsafe: TrustedHTML with the "default" sanitizer preset throws
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] ShadowRoot.setHTMLUnsafe: string with a sanitizer config and runScripts false throws without calling createHTML
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] ShadowRoot.setHTMLUnsafe: TrustedHTML with a sanitizer config and runScripts false throws
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] ShadowRoot.setHTMLUnsafe: string with runScripts true throws without calling createHTML
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] ShadowRoot.setHTMLUnsafe: TrustedHTML with runScripts true throws
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] ShadowRoot.setHTMLUnsafe: string with runScripts true and an empty sanitizer config throws without calling createHTML
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] ShadowRoot.setHTMLUnsafe: TrustedHTML with runScripts true and an empty sanitizer config throws
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] Document.parseHTMLUnsafe: string with a sanitizer config throws without calling createHTML
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] Document.parseHTMLUnsafe: TrustedHTML with a sanitizer config throws
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] Document.parseHTMLUnsafe: string with a sanitizer config without effect throws without calling createHTML
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] Document.parseHTMLUnsafe: TrustedHTML with a sanitizer config without effect throws
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] Document.parseHTMLUnsafe: string with a Sanitizer throws without calling createHTML
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] Document.parseHTMLUnsafe: TrustedHTML with a Sanitizer throws
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] Document.parseHTMLUnsafe: string with the "default" sanitizer preset throws without calling createHTML
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] Document.parseHTMLUnsafe: TrustedHTML with the "default" sanitizer preset throws
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] Document.parseHTMLUnsafe: string with a sanitizer config and runScripts false throws without calling createHTML
+  assert_equals: a single violation reported expected 1 but got 0
+[FAIL] Document.parseHTMLUnsafe: TrustedHTML with a sanitizer config and runScripts false throws
+  assert_equals: a single violation reported expected 1 but got 0
+Harness: the test ran to completion.
+

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<title>event handlers and no browsing context</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<body>
+<script>
+function run_checks(element) {
+  assert_equals(element.onclick, null);
+  let ran = false;
+  // attribute change steps
+  element.setAttribute('onclick', 'ran = true;');
+  assert_equals(element.onclick, null);
+  element.dispatchEvent(new Event('click'));
+  assert_false(ran);
+  // IDL attribute setter
+  element.onclick = () => ran = true;
+  assert_equals(element.onclick, null);
+  element.dispatchEvent(new Event('click'));
+  assert_false(ran);
+}
+
+test(() => {
+  const template = document.createElement('template');
+  template.innerHTML = '<div onclick="assert_unreached();"></div>';
+  run_checks(template.content.firstChild);
+}, 'template contents');
+
+test(() => {
+  const doc = new Document();
+  doc.appendChild(doc.createElementNS('http://www.w3.org/1999/xhtml', 'html'));
+  doc.documentElement.innerHTML = '<div onclick="assert_unreached();"></div>';
+  run_checks(doc.documentElement.firstChild);
+}, 'new Document()');
+
+test(() => {
+  const p = new DOMParser();
+  const doc = p.parseFromString('<!doctype html><div onclick="assert_unreached();"></div>', 'text/html');
+  run_checks(doc.body.firstChild);
+}, 'DOMParser()');
+</script>
