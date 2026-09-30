@@ -2620,8 +2620,14 @@ TEST_F(RenderViewContextMenuMenuSimplificationTest,
   // Verify that the partial translate item is present.
   EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE));
 
-  // Verify that it is present exactly once.
+  // Verify that it is present exactly once and uses the V2 partial translate
+  // string ("Translate selection").
   EXPECT_EQ(1, CountOccurrences(*menu, IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE));
+  std::optional<size_t> index = menu->menu_model().GetIndexOfCommandId(
+      IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE);
+  ASSERT_TRUE(index.has_value());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PARTIAL_TRANSLATE_V2),
+            menu->menu_model().GetLabelAt(index.value()));
 }
 
 TEST_F(RenderViewContextMenuMenuSimplificationTest,
@@ -2640,8 +2646,14 @@ TEST_F(RenderViewContextMenuMenuSimplificationTest,
   // Verify that the partial translate item is present.
   EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE));
 
-  // Verify that it is present exactly once.
+  // Verify that it is present exactly once and uses the V2 partial translate
+  // string ("Translate selection").
   EXPECT_EQ(1, CountOccurrences(*menu, IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE));
+  std::optional<size_t> index = menu->menu_model().GetIndexOfCommandId(
+      IDC_CONTENT_CONTEXT_PARTIAL_TRANSLATE);
+  ASSERT_TRUE(index.has_value());
+  EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CONTENT_CONTEXT_PARTIAL_TRANSLATE_V2),
+            menu->menu_model().GetLabelAt(index.value()));
 }
 
 using send_tab_to_self::EntryPointDisplayReason;
