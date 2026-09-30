@@ -124,7 +124,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ReceiverSetState {
   }
 
   ReceiverId current_receiver() const {
-    DCHECK(current_context_);
+    DCHECK(current_receiver_);
     return current_receiver_;
   }
 
