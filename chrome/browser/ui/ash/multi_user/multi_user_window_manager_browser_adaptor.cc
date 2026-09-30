@@ -130,7 +130,7 @@ void MultiUserWindowManagerBrowserAdaptor::OnBrowserCreated(
 
   // A unit test (e.g. CrashRestoreComplexTest.RestoreSessionForThreeUsers) can
   // come here with no valid window.
-  if (!browser->GetWindow() || !browser->GetNativeWindow()) {
+  if (!browser->GetNativeWindow()) {
     return;
   }
   multi_user_window_manager_->SetWindowOwner(browser->GetNativeWindow(),

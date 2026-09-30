@@ -100,8 +100,8 @@ class BrowserDelegate {
   // Can also be nullptr while the browser is initialized/shutdown.
   virtual content::WebContents* GetInspectedWebContents() const = 0;
 
-  // Returns the window. Can be nullptr, e.g. when the browser is being
-  // closed.
+  // Returns the window. Never nullptr.
+  // TODO(crbug.com/41444285): Change to return a reference.
   virtual ui::BaseWindow* GetWindow() const = 0;
 
   // Returns the native window. Can be nullptr, e.g. when the browser is being

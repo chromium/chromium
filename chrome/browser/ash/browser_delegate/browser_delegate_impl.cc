@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/browser_delegate/browser_delegate_impl.h"
 
 #include "ash/wm/window_pin_util.h"
+#include "base/check.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -141,7 +142,9 @@ content::WebContents* BrowserDelegateImpl::GetInspectedWebContents() const {
 }
 
 ui::BaseWindow* BrowserDelegateImpl::GetWindow() const {
-  return browser_->GetWindow();
+  ui::BaseWindow* window = browser_->GetWindow();
+  CHECK(window);
+  return window;
 }
 
 aura::Window* BrowserDelegateImpl::GetNativeWindow() const {

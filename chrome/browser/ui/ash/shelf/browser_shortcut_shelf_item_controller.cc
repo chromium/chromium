@@ -372,10 +372,8 @@ void BrowserShortcutShelfItemController::ExecuteCommand(bool from_context_menu,
   DCHECK(!from_context_menu);
 
   // Check that the index is valid and the browser has not been closed.
-  // It's unclear why, but the browser's window may be null: crbug.com/41444285
   if (command_id < static_cast<int64_t>(app_menu_items_.size()) &&
-      app_menu_items_[command_id].first &&
-      app_menu_items_[command_id].first->GetWindow()) {
+      app_menu_items_[command_id].first) {
     ash::BrowserDelegate* browser = app_menu_items_[command_id].first;
     const std::optional<size_t> tab_index = app_menu_items_[command_id].second;
     if (event_flags & (ui::EF_SHIFT_DOWN | ui::EF_MIDDLE_MOUSE_BUTTON)) {

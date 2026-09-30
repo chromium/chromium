@@ -335,7 +335,7 @@ bool TabScrubber::FinishScrub(bool activate) {
   const int stops_scrubbing = scrubbing_;
   activate_timer_.Stop();
 
-  if (browser_ && browser_->GetWindow()) {
+  if (browser_) {
     GetWidget(browser_)->ReleaseCapture();
 
     if (activate && highlighted_tab_ != -1) {
