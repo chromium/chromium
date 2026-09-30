@@ -14,6 +14,7 @@
 #include "base/containers/flat_map.h"
 #include "base/mac/scoped_ionotificationportref.h"
 #include "base/mac/scoped_ioobject.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/xbox_controller_mac.h"
@@ -75,7 +76,7 @@ class XboxDataFetcher : public GamepadDataFetcher,
   void XboxControllerError(XboxControllerMac* controller) override;
 
   // The set of connected controllers.
-  std::set<XboxControllerMac*> controllers_;
+  std::set<raw_ptr<XboxControllerMac>> controllers_;
 
   // The set of enumerated controllers that received an exclusive access error
   // on opening the device, keyed by registry entry ID. The data fetcher is

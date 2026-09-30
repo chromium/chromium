@@ -20,6 +20,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "device/gamepad/gamepad_id_list.h"
@@ -64,7 +65,7 @@ GamepadSource XboxDataFetcher::source() {
 void XboxDataFetcher::GetGamepadData(bool devices_changed_hint) {
   // This just loops through all the connected pads and "pings" them to indicate
   // that they're still active.
-  for (auto* controller : controllers_) {
+  for (XboxControllerMac* controller : controllers_) {
     GetPadState(controller->location_id());
   }
 }
@@ -298,10 +299,10 @@ void XboxDataFetcher::UnregisterFromNotifications() {
 }
 
 XboxControllerMac* XboxDataFetcher::ControllerForLocation(UInt32 location_id) {
-  for (std::set<XboxControllerMac*>::iterator i = controllers_.begin();
-       i != controllers_.end(); ++i) {
-    if ((*i)->location_id() == location_id)
-      return *i;
+  for (XboxControllerMac* controller : controllers_) {
+    if (controller->location_id() == location_id) {
+      return controller;
+    }
   }
   return NULL;
 }
@@ -361,14 +362,7 @@ void XboxDataFetcher::RemoveController(XboxControllerMac* controller) {
 }
 
 void XboxDataFetcher::RemoveControllerByLocationID(uint32_t location_id) {
-  XboxControllerMac* controller = NULL;
-  for (std::set<XboxControllerMac*>::iterator i = controllers_.begin();
-       i != controllers_.end(); ++i) {
-    if ((*i)->location_id() == location_id) {
-      controller = *i;
-      break;
-    }
-  }
+  XboxControllerMac* controller = ControllerForLocation(location_id);
   if (controller)
     RemoveController(controller);
 }
