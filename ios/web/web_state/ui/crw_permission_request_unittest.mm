@@ -30,10 +30,12 @@ class CRWPermissionRequestTest : public web::WebTestWithWebState {
   }
 
   CRWPermissionRequest* CreateRequest(
+      id<CRWPermissionPresenter> presenter,
       void (^decision_handler)(WKPermissionDecision)) {
     return [[CRWPermissionRequest alloc]
-        initWithDecisionHandler:decision_handler
-                   onTaskRunner:base::SequencedTaskRunner::GetCurrentDefault()];
+        initWithPresenter:presenter
+          decisionHandler:decision_handler
+             onTaskRunner:base::SequencedTaskRunner::GetCurrentDefault()];
   }
 
   web::FakeWebStateDelegate delegate_;
@@ -45,7 +47,7 @@ TEST_F(CRWPermissionRequestTest, DenyOnDeallocWithoutDecision) {
   base::RepeatingClosure quit_closure = run_loop.QuitClosure();
   __block WKPermissionDecision decision = WKPermissionDecisionDeny;
   @autoreleasepool {
-    CreateRequest(^(WKPermissionDecision wk_decision) {
+    CreateRequest(/*presenter=*/nil, ^(WKPermissionDecision wk_decision) {
       decision = wk_decision;
       quit_closure.Run();
     });
@@ -60,14 +62,13 @@ TEST_F(CRWPermissionRequestTest, MediaCaptureDenyWhenWebStateMissing) {
   base::RunLoop run_loop;
   base::RepeatingClosure quit_closure = run_loop.QuitClosure();
   __block WKPermissionDecision decision = WKPermissionDecisionDeny;
+  FakeCRWPermissionPresenter* presenter =
+      [[FakeCRWPermissionPresenter alloc] init];
   CRWPermissionRequest* request =
-      CreateRequest(^(WKPermissionDecision wk_decision) {
+      CreateRequest(presenter, ^(WKPermissionDecision wk_decision) {
         decision = wk_decision;
         quit_closure.Run();
       });
-  FakeCRWPermissionPresenter* presenter =
-      [[FakeCRWPermissionPresenter alloc] init];
-  request.presenter = presenter;
   [request displayPromptForMediaCaptureType:WKMediaCaptureTypeCamera
                                      origin:GURL(kTestOrigin)];
   run_loop.Run();
@@ -83,7 +84,7 @@ TEST_F(CRWPermissionRequestTest, MediaCaptureSingleDecisionInvoked) {
   __block WKPermissionDecision decision = WKPermissionDecisionDeny;
   @autoreleasepool {
     CRWPermissionRequest* request =
-        CreateRequest(^(WKPermissionDecision wk_decision) {
+        CreateRequest(/*presenter=*/nil, ^(WKPermissionDecision wk_decision) {
           ++call_count;
           decision = wk_decision;
           quit_closure.Run();
@@ -106,18 +107,17 @@ TEST_F(CRWPermissionRequestTest,
   base::RepeatingClosure quit_closure = run_loop.QuitClosure();
   __block WKPermissionDecision decision = WKPermissionDecisionDeny;
 
+  FakeCRWPermissionPresenter* presenter =
+      [[FakeCRWPermissionPresenter alloc] init];
+  presenter.presentingWebState = static_cast<web::WebStateImpl*>(web_state());
+
   CRWPermissionRequest* request =
-      CreateRequest(^(WKPermissionDecision wk_decision) {
+      CreateRequest(presenter, ^(WKPermissionDecision wk_decision) {
         decision = wk_decision;
         quit_closure.Run();
       });
 
   delegate_.SetPermissionDecision(web::PermissionDecisionGrant);
-
-  FakeCRWPermissionPresenter* presenter =
-      [[FakeCRWPermissionPresenter alloc] init];
-  presenter.presentingWebState = static_cast<web::WebStateImpl*>(web_state());
-  request.presenter = presenter;
 
   [request displayPromptForMediaCaptureType:WKMediaCaptureTypeCamera
                                      origin:GURL(kTestOrigin)];

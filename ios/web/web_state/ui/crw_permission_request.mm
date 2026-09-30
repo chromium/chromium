@@ -30,6 +30,8 @@ NSArray<NSNumber*>* GetPermissionsFromWKMediaCaptureType(
 }  // namespace
 
 @implementation CRWPermissionRequest {
+  // The object that initiates the presentation of the permission prompt.
+  __weak id<CRWPermissionPresenter> _presenter;
   // Task runner the decision handler should run on.
   scoped_refptr<base::SequencedTaskRunner> _taskRunner;
   // Handler of user's permission decision.
@@ -38,12 +40,13 @@ NSArray<NSNumber*>* GetPermissionsFromWKMediaCaptureType(
   BOOL _decisionHandlerInvoked;
 }
 
-- (instancetype)initWithDecisionHandler:
-                    (void (^)(WKPermissionDecision decision))decisionHandler
-                           onTaskRunner:
-                               (const scoped_refptr<base::SequencedTaskRunner>&)
-                                   taskRunner {
+- (instancetype)
+    initWithPresenter:(id<CRWPermissionPresenter>)presenter
+      decisionHandler:(void (^)(WKPermissionDecision decision))decisionHandler
+         onTaskRunner:
+             (const scoped_refptr<base::SequencedTaskRunner>&)taskRunner {
   if ((self = [super init])) {
+    _presenter = presenter;
     _taskRunner = taskRunner;
     _decisionHandler = decisionHandler;
     _decisionHandlerInvoked = NO;

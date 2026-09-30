@@ -122,10 +122,10 @@ void RecordHistogramForPermissionRequestForWKMediaCaptureType(
                                (void (^)(WKPermissionDecision decision))
                                    decisionHandler {
   RecordHistogramForPermissionRequestForWKMediaCaptureType(type);
-  CRWPermissionRequest* request = [[CRWPermissionRequest alloc]
-      initWithDecisionHandler:decisionHandler
-                 onTaskRunner:self.mainTaskRunner];
-  request.presenter = self;
+  CRWPermissionRequest* request =
+      [[CRWPermissionRequest alloc] initWithPresenter:self
+                                      decisionHandler:decisionHandler
+                                         onTaskRunner:self.mainTaskRunner];
   GURL securityOrigin = web::GURLOriginWithWKSecurityOrigin(origin);
   if (web::GetWebClient()->EnableFullscreenAPI()) {
     if (@available(iOS 16, *)) {

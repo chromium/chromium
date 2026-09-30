@@ -30,16 +30,15 @@ class WebStateImpl;
 // prompt on the main thread, handles user response, and deals with edge cases.
 @interface CRWPermissionRequest : NSObject
 
-// The object that initiates the presentation of the permission prompt.
-@property(nonatomic, weak) id<CRWPermissionPresenter> presenter;
-
 // Initializes the request with `decisionHandler` to be executed on `taskRunner`
 // once a decision is made.
-- (instancetype)initWithDecisionHandler:
-                    (void (^)(WKPermissionDecision decision))decisionHandler
-                           onTaskRunner:
-                               (const scoped_refptr<base::SequencedTaskRunner>&)
-                                   taskRunner;
+- (instancetype)
+    initWithPresenter:(id<CRWPermissionPresenter>)presenter
+      decisionHandler:(void (^)(WKPermissionDecision decision))decisionHandler
+         onTaskRunner:
+             (const scoped_refptr<base::SequencedTaskRunner>&)taskRunner
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
 
 // Displays a prompt to users and asks capture permission for `mediaCaptureType`
 // coming from a page with the given `origin`.
