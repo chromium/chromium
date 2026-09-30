@@ -1268,6 +1268,7 @@ source_set("core") {
     "//ui/message_center",
     "//ui/webui",
     "//ui/webui:buildflags",
+    "//ui/webui/resources/cr_components/color_change_listener:mojom",
     "//ui/webui/tracked_element",
   ]
 
@@ -1391,10 +1392,7 @@ source_set("core") {
   }
 
   if (!is_android || is_desktop_android) {
-    deps += [
-      "//chrome/browser/ui/webui/discards",
-      "//ui/webui/resources/cr_components/color_change_listener:mojom",
-    ]
+    deps += [ "//chrome/browser/ui/webui/discards" ]
   }
 
   if (enable_dice_support) {

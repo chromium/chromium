@@ -55,6 +55,7 @@ source_set("management") {
     deps += [
       "//chrome/browser/apps/app_service",
       "//chrome/browser/device_api",
+      "//chrome/browser/ui/webui:theme_source",
       "//chrome/browser/web_applications",
     ]
   }
@@ -93,10 +94,7 @@ source_set("management") {
     ]
   }
   if (enable_extensions_core) {
-    deps += [
-      "//chrome/browser/extensions",
-      "//chrome/browser/ui/webui:theme_source",
-    ]
+    deps += [ "//chrome/browser/extensions" ]
   }
 }
 

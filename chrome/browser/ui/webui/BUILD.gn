@@ -411,55 +411,52 @@ source_set("current_channel_logo") {
   ]
 }
 
-if (!is_android || enable_extensions_core || enable_webui_history) {
-  source_set("theme_source") {
-    sources = [ "theme_source.cc" ]
-    public = [ "theme_source.h" ]
-    public_deps = [
-      "//base",
-      "//content/public/browser",
-    ]
-    deps = [
-      ":current_channel_logo",
-      "//chrome/app/theme:theme_resources",
-      "//chrome/browser:resources_util",
-      "//chrome/browser/profiles:profile",
+source_set("theme_source") {
+  sources = [ "theme_source.cc" ]
+  public = [ "theme_source.h" ]
+  public_deps = [
+    "//base",
+    "//content/public/browser",
+  ]
+  deps = [
+    ":current_channel_logo",
+    "//chrome/app/theme:theme_resources",
+    "//chrome/browser:resources_util",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui/color:color_headers",
+    "//chrome/browser/ui/color:mixers",
+    "//chrome/common",
+    "//chrome/common:channel_info",
+    "//components/version_info",
+    "//net",
+    "//services/network/public/mojom",
+    "//ui/base",
+    "//ui/color",
+    "//ui/gfx",
+    "//url",
+  ]
+
+  # //chrome/browser/themes and the ntp_resource_cache are desktop-only; their
+  # headers are only used under #if !BUILDFLAG(IS_ANDROID) in theme_source.cc.
+  if (!is_android) {
+    deps += [
       "//chrome/browser/themes",
-      "//chrome/browser/ui/color:color_headers",
-      "//chrome/browser/ui/color:mixers",
-      "//chrome/common",
-      "//chrome/common:channel_info",
-      "//components/version_info",
-      "//net",
-      "//services/network/public/mojom",
-      "//ui/base",
-      "//ui/color",
-      "//ui/gfx",
-      "//url",
+      "//chrome/browser/ui/webui/ntp:ntp_resource_cache",
     ]
-
-    # //chrome/browser/themes and the ntp_resource_cache are desktop-only; their
-    # headers are only used under #if !BUILDFLAG(IS_ANDROID) in theme_source.cc.
-    if (!is_android) {
-      deps += [
-        "//chrome/browser/themes",
-        "//chrome/browser/ui/webui/ntp:ntp_resource_cache",
-      ]
-    }
-
-    if (is_chromeos) {
-      deps += [
-        "//ui/chromeos/styles:cros_styles_resources",
-        "//ui/chromeos/styles:cros_tokens_color_mappings",
-      ]
-    }
-
-    # ThemeSource uses InstantService::ShouldServiceRequest() and InstantService
-    # (//chrome/browser/search) constructs ThemeSource — a genuine
-    # bidirectional pair. //chrome/browser/search owns the real dep edge and the
-    # corresponding allow_circular_includes_from, since search transitively
-    # reaches theme_source via the NTP targets.
   }
+
+  if (is_chromeos) {
+    deps += [
+      "//ui/chromeos/styles:cros_styles_resources",
+      "//ui/chromeos/styles:cros_tokens_color_mappings",
+    ]
+  }
+
+  # ThemeSource uses InstantService::ShouldServiceRequest() and InstantService
+  # (//chrome/browser/search) constructs ThemeSource — a genuine
+  # bidirectional pair. //chrome/browser/search owns the real dep edge and the
+  # corresponding allow_circular_includes_from, since search transitively
+  # reaches theme_source via the NTP targets.
 }
 
 if (!is_android) {

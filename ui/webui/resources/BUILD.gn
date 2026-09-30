@@ -54,7 +54,6 @@ generate_grd("build_grd") {
   if ((!is_android && !is_ios) || is_desktop_android) {
     public_deps += [
       "cr_components/app_management:build_grdp",
-      "cr_components/color_change_listener:build_grdp",
       "cr_components/cr_lottie:build_grdp",
       "cr_components/cr_shortcut_input:build_grdp",
       "cr_components/customize_color_scheme_mode:build_grdp",
@@ -75,7 +74,6 @@ generate_grd("build_grd") {
       "$root_gen_dir/third_party/d3/d3_resources.grdp",
       "$root_gen_dir/third_party/lottie/resources.grdp",
       "$root_gen_dir/third_party/polymer/v3_0/polymer_3_0_resources.grdp",
-      "$root_gen_dir/ui/webui/resources/cr_components/color_change_listener/resources.grdp",
       "$root_gen_dir/ui/webui/resources/cr_components/page_image_service/resources.grdp",
       "$target_gen_dir/cr_components/app_management/resources.grdp",
       "$target_gen_dir/cr_components/cr_lottie/resources.grdp",
@@ -93,6 +91,8 @@ generate_grd("build_grd") {
   }
 
   if (!is_ios) {
+    public_deps += [ "cr_components/color_change_listener:build_grdp" ]
+
     # TODO(crbug.com/527601593): Revert by moving these components back into the
     # main desktop block at L53 if we disable composebox on Android phones.
     public_deps += [
@@ -103,6 +103,7 @@ generate_grd("build_grd") {
       "cr_components/searchbox/icons:build_grdp",
     ]
     grdp_files += [
+      "$root_gen_dir/ui/webui/resources/cr_components/color_change_listener/resources.grdp",
       "$target_gen_dir/cr_components/composebox/resources.grdp",
       "$target_gen_dir/cr_components/help_bubble/resources.grdp",
       "$target_gen_dir/cr_components/localized_link/resources.grdp",

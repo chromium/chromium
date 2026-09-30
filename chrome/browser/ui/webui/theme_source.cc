@@ -21,9 +21,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resources_util.h"
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/themes/theme_properties.h"
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/themes/theme_properties.h"       // nogncheck
+#include "chrome/browser/themes/theme_service.h"          // nogncheck
+#include "chrome/browser/themes/theme_service_factory.h"  // nogncheck
 #endif
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/color/chrome_color_provider_utils.h"
@@ -58,14 +58,14 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/search/instant_service.h"
-#include "chrome/browser/themes/theme_service.h"
-#include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/themes/theme_service.h"          // nogncheck
+#include "chrome/browser/themes/theme_service_factory.h"  // nogncheck
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache_factory.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/themes/browser_theme_pack.h"
+#include "chrome/browser/themes/browser_theme_pack.h"  // nogncheck
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 #if BUILDFLAG(IS_CHROMEOS)
