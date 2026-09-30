@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.download.DownloadUtils;
 import org.chromium.chrome.browser.download.home.DownloadManagerCoordinator;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfigHelper;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.native_page.BasicNativePage;
@@ -123,11 +122,6 @@ public class DownloadPage extends BasicNativePage implements DownloadManagerCoor
     }
 
     private void initializeBackPressHandler(BackPressManager backPressManager) {
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES)) {
-            return;
-        }
-
         // Helper function to get an active handler.
         Supplier<@Nullable BackPressHandler> getActiveHandler =
                 () -> {

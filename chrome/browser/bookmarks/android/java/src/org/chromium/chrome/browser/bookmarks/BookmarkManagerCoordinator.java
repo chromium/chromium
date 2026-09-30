@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkListEntry.ViewType;
 import org.chromium.chrome.browser.bookmarks.BookmarkUiPrefs.BookmarkRowDisplayPref;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -405,12 +404,7 @@ public class BookmarkManagerCoordinator
             RecordUserAction.record("MobileBookmarkManagerPageOpen");
         }
 
-        if (ChromeFeatureList.isEnabled(
-                ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES)) {
-            mBackPressManager = backPressManager;
-        } else {
-            mBackPressManager = null;
-        }
+        mBackPressManager = backPressManager;
 
         mComponentCallbacks =
                 new ComponentCallbacks() {
@@ -522,8 +516,7 @@ public class BookmarkManagerCoordinator
     @Override
     public boolean invokeBackActionOnEscape() {
         // Back action should NOT be invoked on escape for tablets.
-        return !ChromeFeatureList.isEnabled(
-                ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES);
+        return false;
     }
 
     @Override

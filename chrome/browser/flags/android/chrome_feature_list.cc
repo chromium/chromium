@@ -409,7 +409,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kEnableAndroidSidePanelLogs,
     &kEnableAndroidSidePanelManualResizing,
     &kEnableBrowserWindowInterfaceForCustomTabActivity,
-    &kEnableEscapeHandlingForSecondaryActivities,
     &kEnableSwipeToSwitchPane,
     &kEnableToolbarPositioningInResizeMode,
     &kEnableXAxisActivityTransition,
@@ -844,7 +843,6 @@ BASE_FEATURE(kEnableAndroidSidePanelDevFeature, base::FEATURE_DISABLED_BY_DEFAUL
 BASE_FEATURE(kEnableAndroidSidePanelLogs, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableAndroidSidePanelManualResizing, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableBrowserWindowInterfaceForCustomTabActivity, base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kEnableEscapeHandlingForSecondaryActivities, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableSwipeToSwitchPane, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableToolbarPositioningInResizeMode, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kEnableXAxisActivityTransition, base::FEATURE_DISABLED_BY_DEFAULT);

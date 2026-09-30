@@ -28,15 +28,11 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures(ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES)
 public class BackPressHelperTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -66,15 +62,6 @@ public class BackPressHelperTest {
         when(mMockKeyEvent.isMetaPressed()).thenReturn(false);
 
         mOnKeyDownHandler = BackPressHelper.create(mLifecycleOwner, mDispatcher, mMockHandler);
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES)
-    public void onKeyDown_whenFeatureDisabled_returnsFalse() {
-        boolean result = mOnKeyDownHandler.onKeyDown(KeyEvent.KEYCODE_ESCAPE, mMockKeyEvent);
-        assertFalse(result);
-        verify(mMockHandler, never()).invokeBackActionOnEscape();
-        verify(mMockHandler, never()).handleEscPress();
     }
 
     @Test

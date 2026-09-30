@@ -582,8 +582,6 @@ public abstract class ChromeFeatureList {
             "EnableDownloadSaveAsContextMenu";
     public static final String ENABLE_DOWNLOAD_SAVE_AS_SYSTEM_FILE_DIALOG =
             "EnableDownloadSaveAsSystemFileDialog";
-    public static final String ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES =
-            "EnableEscapeHandlingForSecondaryActivities";
     public static final String ENABLE_EXCLUSIVE_ACCESS_MANAGER = "EnableExclusiveAccessManager";
     public static final String ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID =
             "EnableFullscreenToAnyScreenAndroid";

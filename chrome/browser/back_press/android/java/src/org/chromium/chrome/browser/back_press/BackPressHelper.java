@@ -11,13 +11,12 @@ import androidx.activity.OnBackPressedDispatcher;
 import androidx.lifecycle.LifecycleOwner;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 
 /**
- * Helper class for back press event handling via {@link OnBackPressedDisptacher}. This is a
- * recommended way over {@link Activity#onBackPressed}. Refer to the Android developer's guide
- * {@link https://developer.android.com/guide/navigation/navigation-custom-back}.
+ * Helper class for back press event handling via {@link OnBackPressedDispatcher}. This is a
+ * recommended way over {@link Activity#onBackPressed}. Refer to the Android developer's guide at
+ * https://developer.android.com/guide/navigation/navigation-custom-back.
  */
 @NullMarked
 public final class BackPressHelper {
@@ -53,9 +52,6 @@ public final class BackPressHelper {
          *       instead call the handler's {@link BackPressHandler#handleEscPress()} method to
          *       allow for custom, non-back-like behavior.
          * </ol>
-         *
-         * This entire functionality is gated by the {@code
-         * ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES} feature flag.
          *
          * @param keyCode The key code from the {@code onKeyDown} event.
          * @param event The full {@link KeyEvent}, used to check for modifier keys (e.g., Ctrl, Alt)
@@ -111,11 +107,6 @@ public final class BackPressHelper {
         dispatcher.addCallback(lifecycleOwner, callback);
 
         return (keyCode, event) -> {
-            if (!ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES)) {
-                return false;
-            }
-
             boolean isEscapeAndOnlyEscape =
                     keyCode == KeyEvent.KEYCODE_ESCAPE
                             && event.getRepeatCount() == 0

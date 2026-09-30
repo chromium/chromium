@@ -66,7 +66,6 @@ import java.util.concurrent.TimeoutException;
     ChromeFeatureList.SETTINGS_IN_TAB, // crbug.com/521895796
     ChromeFeatureList.SETTINGS_IN_TAB_DESKTOP // crbug.com/556881398
 })
-@EnableFeatures({ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES})
 public class SettingsActivityUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 

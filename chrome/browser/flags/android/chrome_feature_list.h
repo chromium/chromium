@@ -206,7 +206,6 @@ BASE_DECLARE_FEATURE(kEnableAndroidSidePanelDevFeature);
 BASE_DECLARE_FEATURE(kEnableAndroidSidePanelLogs);
 BASE_DECLARE_FEATURE(kEnableAndroidSidePanelManualResizing);
 BASE_DECLARE_FEATURE(kEnableBrowserWindowInterfaceForCustomTabActivity);
-BASE_DECLARE_FEATURE(kEnableEscapeHandlingForSecondaryActivities);
 BASE_DECLARE_FEATURE(kEnableSwipeToSwitchPane);
 BASE_DECLARE_FEATURE(kEnableToolbarPositioningInResizeMode);
 BASE_DECLARE_FEATURE(kEnableXAxisActivityTransition);

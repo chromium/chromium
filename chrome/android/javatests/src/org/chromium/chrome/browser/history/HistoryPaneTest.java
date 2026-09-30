@@ -43,10 +43,7 @@ import org.chromium.url.GURL;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(Batch.PER_CLASS)
-@EnableFeatures({
-    ChromeFeatureList.HISTORY_PANE_ANDROID,
-    ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES
-})
+@EnableFeatures(ChromeFeatureList.HISTORY_PANE_ANDROID)
 @DisableFeatures(ChromeFeatureList.ANDROID_HISTORY_CLUSTERING)
 // @DisableIf.Device(DeviceFormFactor.DESKTOP)
 public class HistoryPaneTest {

@@ -33,8 +33,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerFactory;
@@ -53,8 +51,6 @@ import java.util.function.Function;
  * and {@link NativePageFactory}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-// Needed for {@link BasicNativePage.setBackPressHandler()}. See {@link SettingsActivityUnitTest}.
-@EnableFeatures(ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES)
 public class SettingsPageUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

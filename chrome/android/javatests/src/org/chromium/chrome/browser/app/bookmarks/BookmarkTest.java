@@ -714,7 +714,6 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES)
     @Restriction({DeviceFormFactor.PHONE})
     public void testSearchBookmarks_pressEscape() throws Exception {
         BookmarkId folder = addFolder(TEST_FOLDER_TITLE);
@@ -763,7 +762,6 @@ public class BookmarkTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES)
     @Restriction({DeviceFormFactor.ONLY_TABLET})
     public void testTabletSearch_EscapeKeyClearsSearch() throws Exception {
         // Setup: Add a bookmark so the folder isn't empty.

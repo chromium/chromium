@@ -67,7 +67,6 @@ import java.util.function.Supplier;
 @DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_HISTORY_LAYOUT)
 @EnableFeatures({
     ChromeFeatureList.HISTORY_PANE_ANDROID,
-    ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES,
     ChromeFeatureList.ANDROID_HISTORY_CLUSTERING
 })
 public class HistoryPaneUnitTest {

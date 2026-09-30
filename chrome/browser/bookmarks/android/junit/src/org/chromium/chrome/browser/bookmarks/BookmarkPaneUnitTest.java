@@ -67,7 +67,6 @@ import java.util.function.DoubleConsumer;
 @RunWith(ParameterizedRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.BOOKMARK_PANE_ANDROID)
 @DisableFeatures({
-    ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES,
     ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_LAYOUT,
     ChromeFeatureList.ANDROID_DESKTOP_BOOKMARK_DIALOG
 })

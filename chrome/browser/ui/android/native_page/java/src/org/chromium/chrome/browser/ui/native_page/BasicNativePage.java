@@ -14,7 +14,6 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandlerRegistry;
@@ -171,10 +170,6 @@ public abstract class BasicNativePage implements NativePage, OnAttachStateChange
      */
     protected void setBackPressHandler(
             BackPressHandler handler, BackPressHandlerRegistry registry) {
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.ENABLE_ESCAPE_HANDLING_FOR_SECONDARY_ACTIVITIES)) {
-            return;
-        }
         assert mView != null : "setBackPressHandler must be called after initWithView()";
         mBackPressHandler = handler;
         mRegistry = registry;

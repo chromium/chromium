@@ -6187,11 +6187,6 @@ inline constexpr char kEnableCommandLineOnNonRootedName[] =
 inline constexpr char kEnableCommandLineOnNoRootedDescription[] =
     "Enable reading command line file on non-rooted devices (DANGEROUS).";
 
-inline constexpr char kEnableEscapeHandlingForSecondaryActivitiesName[] =
-    "Enable escape handling for secondary activities and native pages.";
-inline constexpr char kEnableEscapeHandlingForSecondaryActivitiesDescription[] =
-    "Enables handling escape events on secondary activities and native pages.";
-
 inline constexpr char kEnableSwipeToSwitchPaneName[] =
     "Enable Swipe To Switch Pane";
 inline constexpr char kEnableSwipeToSwitchPaneDescription[] =
