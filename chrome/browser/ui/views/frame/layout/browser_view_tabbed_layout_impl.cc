@@ -1242,8 +1242,12 @@ BrowserViewTabbedLayoutImpl::CalculateProposedLayout(
   // Update the multi-contents view about if we will be animating content
   // bounds. This is to make optimizations during animations e.g. avoid
   // repositioning status bubble.
+  const bool is_origin_changing =
+      (side_panel_is_animating && !views().side_panel->IsRightAligned()) ||
+      (vertical_tab_strip_animation.current_motion && !base::i18n::IsRTL());
   views().multi_contents_view->SetIsAnimatingContent(
-      side_panel_is_animating || vertical_tab_strip_animation.current_motion);
+      side_panel_is_animating || vertical_tab_strip_animation.current_motion,
+      is_origin_changing);
 
   // Lay out contents container. The contents container contains the multi-
   // contents view when multi-contents are enabled. The checks here are to
