@@ -15,8 +15,10 @@
 #include <vector>
 
 #include "base/functional/function_ref.h"
+#include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "base/win/windows_version.h"
@@ -25,6 +27,10 @@
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/ax_system_caret_win.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_event_dispatcher.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/test/desktop_window_tree_host_win_test_api.h"
 #include "ui/views/test/widget_test.h"
@@ -76,6 +82,46 @@ TEST_F(DesktopWindowTreeHostWinTest, RedundantSetCapture) {
 
   handler->ReleaseCapture();
   EXPECT_FALSE(handler->HasCapture());
+}
+
+// Verifies that the latched mouse_pressed_handler_ is cleared when the move
+// loop ends, even though the loop swallows the WM_LBUTTONUP that would
+// normally clear it.
+TEST_F(DesktopWindowTreeHostWinTest, RunMoveLoopClearsMousePressedHandler) {
+  Widget widget;
+  Widget::InitParams params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_WINDOW);
+  params.bounds = gfx::Rect(100, 100, 200, 200);
+  widget.Init(std::move(params));
+  widget.Show();
+
+  aura::Window* window = widget.GetNativeWindow();
+  aura::WindowEventDispatcher* dispatcher = window->GetHost()->dispatcher();
+
+  ui::test::EventGenerator generator(window->GetRootWindow());
+  generator.MoveMouseTo(window->GetBoundsInScreen().CenterPoint());
+  generator.PressLeftButton();
+  ASSERT_TRUE(dispatcher->mouse_pressed_handler());
+
+  // No matching release: that is what the move loop does to the WM_LBUTTONUP.
+  // Without real mouse input the loop can exit before pumping this task, so
+  // bind weakly -- it may run after `widget` is gone.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindLambdaForTesting([weak_widget = widget.GetWeakPtr()]() {
+        if (weak_widget) {
+          weak_widget->EndMoveLoop();
+        }
+      }));
+  widget.RunMoveLoop(gfx::Vector2d(), Widget::MoveLoopSource::kMouse,
+                     Widget::MoveLoopEscapeBehavior::kDontHide);
+
+  // Without this the expectation below would also pass if the loop had
+  // destroyed the host, taking the latch with it.
+  ASSERT_TRUE(widget.GetNativeWindow());
+  ASSERT_EQ(dispatcher, widget.GetNativeWindow()->GetHost()->dispatcher());
+
+  EXPECT_FALSE(dispatcher->mouse_pressed_handler());
 }
 
 TEST_F(DesktopWindowTreeHostWinTest, SetAllowScreenshots) {

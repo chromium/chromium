@@ -656,9 +656,22 @@ Widget::MoveLoopResult DesktopWindowTreeHostWin::RunMoveLoop(
     Widget::MoveLoopEscapeBehavior escape_behavior) {
   const bool hide_on_escape =
       escape_behavior == Widget::MoveLoopEscapeBehavior::kHide;
-  return message_handler_->RunMoveLoop(drag_offset, hide_on_escape)
-             ? Widget::MoveLoopResult::kSuccessful
-             : Widget::MoveLoopResult::kCanceled;
+
+  // The move loop can destroy `this` before it returns (e.g. reverting a tab
+  // drag closes the window from inside the loop).
+  auto weak_this = GetWeakPtr();
+  const bool moved = message_handler_->RunMoveLoop(drag_offset, hide_on_escape);
+
+  // The loop swallows the WM_LBUTTONUP that ends the drag, so Aura never
+  // dispatches the matching release and mouse_pressed_handler_ stays latched
+  // onto the dragged window, starving its descendants of mouse events. If the
+  // host died with the loop, the latch died with it.
+  if (weak_this && dispatcher()) {
+    dispatcher()->OnHostLostMouseGrab();
+  }
+
+  return moved ? Widget::MoveLoopResult::kSuccessful
+               : Widget::MoveLoopResult::kCanceled;
 }
 
 void DesktopWindowTreeHostWin::EndMoveLoop() {
