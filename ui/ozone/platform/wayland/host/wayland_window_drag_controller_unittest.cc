@@ -1964,7 +1964,20 @@ TEST_P(WaylandWindowDragControllerTest, TabletPenDragDropWhileProximityOut) {
   EXPECT_EQ(State::kAttached, drag_controller_state());
 
   // 4. While dragging, lift the pen (proximity-out).
+  WaylandTestBase::SyncDisplay();
   event_source->OnTabletToolProximityOut({}, time);
+
+  // Synthesized DnD motion events while in kAttached state must still carry
+  // the tablet button state and be dispatched as kMouseDragged.
+  EXPECT_CALL(delegate_, DispatchEvent(_)).WillOnce([&](Event* event) {
+    ASSERT_TRUE(event->IsMouseEvent());
+    EXPECT_EQ(EventType::kMouseDragged, event->type());
+    EXPECT_TRUE(event->flags() & EF_LEFT_MOUSE_BUTTON);
+    EXPECT_EQ(State::kAttached, drag_controller_state());
+  });
+  SendDndMotionForWindowDrag({20, 20});
+  Mock::VerifyAndClearExpectations(&delegate_);
+  EXPECT_CALL(delegate_, DispatchEvent(_)).Times(::testing::AnyNumber());
 
   // 5. Drag the tab and end the drag cleanly while still in proximity-out.
   auto* move_loop_handler = GetWmMoveLoopHandler(*window_);

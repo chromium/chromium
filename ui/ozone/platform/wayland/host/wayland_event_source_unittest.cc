@@ -563,6 +563,21 @@ TEST_P(WaylandEventSourceTest, PointerMotionDoesNotInheritTabletToolButtons) {
   event_source->OnPointerMotionEvent(
       gfx::PointF(30, 30), base::TimeTicks::Now(),
       wl::EventDispatchPolicy::kImmediate, /*is_synthesized=*/false);
+  ::testing::Mock::VerifyAndClearExpectations(&delegate);
+
+  // Synthesized pointer motion events (such as those generated from
+  // wl_data_device.motion during a DnD session) must include
+  // `tablet_tool_buttons_` so they are dispatched as kMouseDragged.
+  EXPECT_CALL(delegate, DispatchEvent(::testing::_)).WillOnce([](Event* event) {
+    ASSERT_TRUE(event->IsMouseEvent());
+    auto* mouse_event = event->AsMouseEvent();
+    EXPECT_EQ(mouse_event->type(), EventType::kMouseDragged);
+    EXPECT_TRUE(mouse_event->flags() & EF_LEFT_MOUSE_BUTTON);
+    EXPECT_TRUE(mouse_event->flags() & EF_IS_SYNTHESIZED);
+  });
+  event_source->OnPointerMotionEvent(
+      gfx::PointF(40, 40), base::TimeTicks::Now(),
+      wl::EventDispatchPolicy::kImmediate, /*is_synthesized=*/true);
 }
 
 // Check that if an event dispatched by ReleasePressedPointerButtons causes the
