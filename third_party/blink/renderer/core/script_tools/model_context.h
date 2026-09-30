@@ -205,8 +205,6 @@ class CORE_EXPORT ModelContext : public EventTarget,
   class ToolFunctionFinishedCallback;
   class ToolUnregisterAbortAlgorithm;
 
-  bool IsModelContextAllowed() const;
-
   bool ExecuteV8Tool(V8ToolExecuteCallback* tool_function,
                      base::UnguessableToken invocation_id,
                      const String& name,
