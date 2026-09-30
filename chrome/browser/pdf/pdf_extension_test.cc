@@ -1575,9 +1575,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithArrowLeftRight) {
   EXPECT_EQ(kScrollIncrement, GetViewportScrollPositionX(extension_host));
 }
 
-// TODO(crbug.com/565684021): re-enable this test on reland of the reverted CL
-IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest,
-                       DISABLED_WithArrowLeftRightScrollToPage) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithArrowLeftRightScrollToPage) {
   content::RenderFrameHost* extension_host = LoadPdfGetExtensionHost(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   ASSERT_TRUE(extension_host);

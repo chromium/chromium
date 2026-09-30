@@ -46,6 +46,7 @@ class PdfStreamDelegate {
     bool allow_javascript = false;
     bool use_skia = false;
     bool allow_xfa_forms = false;
+    bool is_print_preview = false;
     std::string coep_header;
   };
 

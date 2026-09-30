@@ -4,7 +4,17 @@
 
 /* #css_wrapper_metadata_start
  * #type=style-lit
+ * #import=./scrollbar.css.js
+ * #include=scrollbar
  * #css_wrapper_metadata_end */
+
+
+/* <viewer-thumbnail-bar> must have a limited height, since the viewport of the
+ * internal #thumbnails div is used to determine which thumbnails to load. */
+:host {
+  display: block;
+  height: 100%;
+}
 
 :host(:focus) {
   outline: none;
