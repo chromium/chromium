@@ -13,7 +13,9 @@
       }
 
       :host-context([settings-refresh-2026]) {
+        --settings-menu-label-fade-collapse-time: 50ms;
         --settings-menu-width: 250px;
+        --settings-menu-width-collapse-time: 100ms;
       }
 
       :host-context([settings-refresh-2026]) cr-toolbar::part(search-field) {
@@ -25,6 +27,14 @@
         color: var(--color-toolbar-search-field-text-color);
         font-weight: 400;
         line-height: 167%;
+      }
+
+      :host-context([settings-refresh-2026]) #left settings-menu {
+        transition: width var(--settings-menu-width-collapse-time) ease;
+      }
+
+      :host-context([settings-refresh-2026]) #left[collapsed] settings-menu {
+        transition-delay: var(--settings-menu-label-fade-collapse-time);
       }
 
       cr-toolbar {

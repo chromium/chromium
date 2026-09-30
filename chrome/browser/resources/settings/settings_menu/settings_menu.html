@@ -78,8 +78,17 @@
         pointer-events: none;
       }
 
-      :host-context([settings-refresh-2026]):host([collapsed])  .menu-label {
-       display: none;
+      :host-context([settings-refresh-2026]) .menu-label {
+        opacity: 1;
+        transition: opacity var(--settings-menu-label-fade-collapse-time) ease
+            var(--settings-menu-width-collapse-time);
+        white-space: nowrap;
+        will-change: opacity;
+      }
+
+      :host-context([settings-refresh-2026]):host([collapsed]) .menu-label {
+        transition-delay: 0ms;
+        opacity: 0;
       }
     </style>
     <div role="navigation">
