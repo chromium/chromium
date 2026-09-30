@@ -2996,6 +2996,45 @@ TEST_F(ContextualTasksUiServiceTest,
   contextual_tasks::SetForcedEmbeddedPageHostOverride(std::nullopt);
 }
 
+TEST_F(ContextualTasksUiServiceTest,
+       AddRequiredSidePanelUrlChanges_ForceCountryCodeUS) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {contextual_tasks::kContextualTasksForceCountryCodeUS,
+       contextual_tasks::kContextualTasksSidePanelRearchitecture},
+      {});
+
+  auto web_contents = content::WebContentsTester::CreateTestWebContents(
+      profile_.get(), content::SiteInstance::Create(profile_.get()));
+
+  GURL url("https://www.google.com/search?q=test");
+  service_for_nav_->SetIsWebContentsInSidePanelForTesting(true);
+  EXPECT_TRUE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(url, /*is_renderer_initiated=*/false),
+      web_contents.get(), /*is_from_embedded_page=*/false,
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true,
+      /*is_mobile_ua=*/false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+
+  GURL new_url = ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
+      url, web_contents.get());
+
+  std::string hl_val;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(new_url, "hl", &hl_val));
+  EXPECT_EQ("US", hl_val);
+
+  std::string gl_val;
+  EXPECT_TRUE(net::GetValueForKeyInQuery(new_url, "gl", &gl_val));
+  EXPECT_EQ("us", gl_val);
+
+  EXPECT_FALSE(service_for_nav_->HandleNavigation(
+      CreateOpenUrlParams(new_url, /*is_renderer_initiated=*/false),
+      web_contents.get(), /*is_from_embedded_page=*/false,
+      /*from_can_create_window=*/false, /*is_same_site_or_from_ui=*/true,
+      /*is_mobile_ua=*/false, std::nullopt, std::nullopt,
+      blink::mojom::WindowFeatures()));
+}
+
 TEST_F(ContextualTasksUiServiceTest, IsWebContentsInSidePanel) {
   auto web_contents = content::WebContentsTester::CreateTestWebContents(
       profile_.get(), content::SiteInstance::Create(profile_.get()));

@@ -269,7 +269,9 @@ bool ShouldResetZeroStateForOmniboxAction(
 #endif
 
 void LoadUrlInSidePanel(content::WebContents* web_contents, const GURL& url) {
-  web_contents->GetController().LoadURL(url, content::Referrer(),
+  GURL new_url = ContextualTasksUiService::AddRequiredSidePanelUrlChanges(
+      url, web_contents);
+  web_contents->GetController().LoadURL(new_url, content::Referrer(),
                                         ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
                                         std::string());
 }
@@ -3523,9 +3525,7 @@ void ContextualTasksUiService::StartTaskUiInSidePanelImpl(
   if (ContextualTasksUIInterface* web_ui_interface =
           GetWebUiInterface(panel_contents)) {
     if (IsContextualTasksSidePanelRearchitectureEnabled()) {
-      panel_contents->GetController().LoadURL(url, content::Referrer(),
-                                              ui::PAGE_TRANSITION_AUTO_TOPLEVEL,
-                                              std::string());
+      LoadUrlInSidePanel(panel_contents, url);
     } else {
       content::OpenURLParams url_params =
           content::OpenURLParams::CreateBrowserInitiated(
