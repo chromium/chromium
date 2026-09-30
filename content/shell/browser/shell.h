@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/session_storage_namespace_handle.h"
@@ -81,7 +82,7 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
   static Shell* FromWebContents(WebContents* web_contents);
 
   // Returns the currently open windows.
-  static std::vector<Shell*>& windows() { return windows_; }
+  static std::vector<raw_ptr<Shell>>& windows() { return windows_; }
 
   // Stores the supplied |quit_closure|, to be run when the last Shell instance
   // is destroyed.
@@ -257,7 +258,7 @@ class Shell : public WebContentsDelegate, public WebContentsObserver {
 
   // A container of all the open windows. We use a vector so we can keep track
   // of ordering.
-  static std::vector<Shell*> windows_;
+  static std::vector<raw_ptr<Shell>> windows_;
 
   static base::OnceCallback<void(Shell*)> shell_created_callback_;
 };

@@ -21,6 +21,7 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -848,7 +849,7 @@ void WebTestControlHost::InitiateCaptureDump(
   renderer_dump_result_ = std::move(renderer_dump_result);
 
   if (capture_navigation_history) {
-    for (auto* window : Shell::windows()) {
+    for (Shell* window : Shell::windows()) {
       WebContents* web_contents = window->web_contents();
       // Only dump the main test window, and windows that it opened. This avoids
       // devtools windows specifically.
@@ -1603,7 +1604,6 @@ void WebTestControlHost::GetWritableDirectory(
   std::move(reply).Run(writable_directory_for_tests_.GetPath());
 }
 
-
 void WebTestControlHost::SetFilePathForMockFileDialog(
     const base::FilePath& path) {
   fake_file_dialog_factory_.emplace(std::vector<base::FilePath>{path});
@@ -1955,7 +1955,7 @@ void WebTestControlHost::PrepareRendererForNextWebTest() {
           /*context=*/"", "disabled"));
 
   // Flush all the back/forward cache to avoid side effects in the next test.
-  for (auto* shell : Shell::windows()) {
+  for (Shell* shell : Shell::windows()) {
     shell->web_contents()->GetController().GetBackForwardCache().Flush();
   }
 
@@ -2078,10 +2078,11 @@ void WebTestControlHost::OnLeakDetectionDone(
 
 void WebTestControlHost::CloseTestOpenedWindows() {
   DevToolsAgentHost::DetachAllClients();
-  std::vector<Shell*> open_windows(Shell::windows());
-  for (auto* shell : open_windows) {
-    if (shell != main_window_)
+  std::vector<Shell*> open_windows(std::from_range, Shell::windows());
+  for (Shell* shell : open_windows) {
+    if (shell != main_window_) {
       shell->Close();
+    }
   }
   secondary_window_ = nullptr;
   base::RunLoop().RunUntilIdle();

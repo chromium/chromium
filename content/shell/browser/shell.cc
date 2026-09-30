@@ -15,6 +15,7 @@
 #include "base/compiler_specific.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -70,7 +71,7 @@ constexpr int kDefaultTestWindowHeightDip = 600;
 ShellPlatformDelegate* g_platform;
 }  // namespace
 
-std::vector<Shell*> Shell::windows_;
+std::vector<raw_ptr<Shell>> Shell::windows_;
 base::OnceCallback<void(Shell*)> Shell::shell_created_callback_;
 
 Shell::Shell(std::unique_ptr<WebContents> web_contents,
