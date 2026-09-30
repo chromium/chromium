@@ -15,7 +15,6 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.graphics.Canvas;
 import android.graphics.Rect;
-import android.os.Build.VERSION_CODES;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -149,6 +148,7 @@ public class AppMenuTest {
                         });
         ThreadUtils.runOnUiThreadBlocking(this::setUpTestOnUiThread);
         mLifecycleDispatcher.observerRegisteredCallbackHelper.waitForCallback(0);
+        CriteriaHelper.pollUiThread(() -> sActivity.findViewById(R.id.top_button).isLaidOut());
     }
 
     @After
@@ -235,10 +235,6 @@ public class AppMenuTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/517914573")
-    @DisableIf.Build(
-            sdk_is_greater_than = VERSION_CODES.VANILLA_ICE_CREAM,
-            message = "crbug.com/435724248")
     public void testShowAppMenu_AnchorTop() throws TimeoutException {
         AppMenuCoordinatorImpl.setHasPermanentMenuKeyForTesting(false);
         showMenuAndAssert(mAppMenuHandler);
@@ -247,14 +243,20 @@ public class AppMenuTest {
         Rect viewRect = getViewLocationRect(topAnchor);
         Rect popupRect = getPopupLocationRect();
 
-        // Check that top right corner of app menu aligns with the top right corner of the anchor.
+        // Check that top right corner of app menu aligns with the top right corner of the anchor,
+        // accounting for R.dimen.menu_negative_software_vertical_offset on sw600dp devices.
+        int negativeSoftwareVerticalOffset =
+                sActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.menu_negative_software_vertical_offset);
+        int expectedMinTop = viewRect.top - negativeSoftwareVerticalOffset;
         int alignmentSlop = viewRect.bottom - viewRect.top;
         Assert.assertEquals(
                 "Popup should overlap top anchor. Anchor rect: "
                         + viewRect
                         + ", popup rect: "
                         + popupRect,
-                viewRect.top,
+                expectedMinTop,
                 popupRect.top,
                 alignmentSlop);
         Assert.assertTrue(
@@ -262,7 +264,7 @@ public class AppMenuTest {
                         + viewRect
                         + ", popup rect: "
                         + popupRect,
-                viewRect.top <= popupRect.top);
+                expectedMinTop <= popupRect.top);
         Assert.assertEquals(
                 "Popup should be aligned with right of anchor. Anchor rect: "
                         + viewRect
@@ -1414,6 +1416,8 @@ public class AppMenuTest {
 
     private Rect getPopupLocationRect() {
         View contentView = mAppMenuHandler.getAppMenu().getPopup().getContentView();
+        CriteriaHelper.pollUiThread(
+                () -> contentView.getWidth() > 0 && contentView.getHeight() > 0);
 
         Rect popupRect = new Rect();
         int[] popupLocation = new int[2];
