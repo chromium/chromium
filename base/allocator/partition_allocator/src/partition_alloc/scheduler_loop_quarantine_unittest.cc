@@ -249,10 +249,8 @@ TYPED_TEST(SchedulerLoopQuarantineTest, ScopedOptOut) {
 // Test if partition 0 is Invalid that the exclusion still works
 // on the other partitions.
 TEST(SchedulerLoopQuarantineTest, ExclusionWithInvalidFirstPartition) {
-  if (kNumPartitions < 2) {
-    GTEST_SKIP() << "Test requires kNumPartitions >= 2";
-  }
-#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+#if PA_BUILDFLAG(USE_ALLOCATOR_SHIM) && PA_BUILDFLAG(ENABLE_AUTO_PARTITIONING)
+  static_assert(kNumPartitions >= 2);
   auto* root1 = allocator_shim::internal::PartitionAllocMalloc::Allocator(1);
   if (!root1) {
     GTEST_SKIP() << "Partition 1 is not initialized";
@@ -286,7 +284,11 @@ TEST(SchedulerLoopQuarantineTest, ExclusionWithInvalidFirstPartition) {
     }
   });
   worker.join();
-#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM)
+#else
+  GTEST_SKIP()
+      << "Test requires USE_ALLOCATOR_SHIM and ENABLE_AUTO_PARTITIONING";
+#endif  // PA_BUILDFLAG(USE_ALLOCATOR_SHIM) &&
+        // PA_BUILDFLAG(ENABLE_AUTO_PARTITIONING)
 }
 
 TYPED_TEST(ThreadBoundSchedulerLoopQuarantineTest,

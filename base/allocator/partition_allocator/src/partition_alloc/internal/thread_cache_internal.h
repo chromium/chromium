@@ -49,7 +49,11 @@ namespace internal {
 
 extern PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionTlsKey g_thread_cache_key;
 
+#if PA_BUILDFLAG(ENABLE_AUTO_PARTITIONING)
 constexpr inline size_t kMaxThreadCacheIndex = 4;
+#else
+constexpr inline size_t kMaxThreadCacheIndex = 1;
+#endif
 constexpr inline size_t kDefaultRootThreadCacheIndex = 0;
 
 #if PA_CONFIG(THREAD_CACHE_FAST_TLS)

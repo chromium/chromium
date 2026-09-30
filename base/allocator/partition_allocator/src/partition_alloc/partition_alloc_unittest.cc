@@ -7073,6 +7073,7 @@ TEST_P(PartitionAllocTest, SwitchBucketDistributionAfterAlloc) {
   root->Free(ptr);
 }
 
+#if PA_BUILDFLAG(ENABLE_AUTO_PARTITIONING)
 TEST_P(PartitionAllocTest, MultipleThreadCachePerThread) {
   // Use thread cache indices which are not used by default partitions.
   constexpr size_t index1 = kNumPartitions;
@@ -7103,6 +7104,7 @@ TEST_P(PartitionAllocTest, MultipleThreadCachePerThread) {
                                     bucket_index, pos2));
   EXPECT_EQ(pos2, 0u);
 }
+#endif  // PA_BUILDFLAG(ENABLE_AUTO_PARTITIONING)
 
 // Documentation tests demonstrating the behavior of `IsExtentOutOfBounds()`.
 // This test passes if it doesn't crash.
