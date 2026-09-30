@@ -8,11 +8,12 @@
 
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
-#import "components/origin_gating/core/origin_gating_checker.h"
 #import "components/origin_gating/core/origin_gating_configuration.h"
 #import "components/origin_gating/core/origin_gating_registration.h"
 #import "components/origin_gating/core/origin_gating_service.h"
+#import "components/origin_gating/core/types.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
+#import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -25,44 +26,6 @@ namespace {
 
 inline constexpr ActorTaskId kTestTaskId = ActorTaskId(42);
 
-// Fake delegate that returns a fixed decision for testing.
-class TestOriginGatingCheckerDelegate
-    : public origin_gating::OriginGatingChecker::Delegate {
- public:
-  explicit TestOriginGatingCheckerDelegate(bool is_allowed)
-      : is_allowed_(is_allowed) {}
-
-  void DoesOriginRequireUserConfirmation(
-      origin_gating::GatingDecisionContext* context,
-      const origin_gating::GateableEvent& event,
-      DoesOriginRequireUserConfirmationCallback callback) const override {
-    std::move(callback).Run(false);
-  }
-
-  void EvaluateEnterprisePolicy(
-      const GURL& destination,
-      EvaluateEnterprisePolicyCallback callback) const override {
-    std::move(callback).Run({.decision = origin_gating::Decision::kNoDecision});
-  }
-
-  void OnNoVerdict(
-      origin_gating::GatingDecisionContext* context,
-      const origin_gating::GateableEvent& event,
-      bool requires_user_confirmation,
-      base::OnceCallback<void(NoVerdictResult)> callback) override {
-    std::move(callback).Run({.is_allowed = is_allowed_,
-                             .did_prompt_user = false,
-                             .bypass_cache = true});
-  }
-
-  base::WeakPtr<TestOriginGatingCheckerDelegate> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
- private:
-  const bool is_allowed_;
-  base::WeakPtrFactory<TestOriginGatingCheckerDelegate> weak_ptr_factory_{this};
-};
 }  // namespace
 
 class ActorWebStatePolicyDeciderTest : public PlatformTest {
@@ -78,7 +41,7 @@ class ActorWebStatePolicyDeciderTest : public PlatformTest {
   }
 
   std::unique_ptr<origin_gating::OriginGatingRegistration>
-  CreateCheckerRegistration(TestOriginGatingCheckerDelegate& delegate) {
+  CreateCheckerRegistration(FakeOriginGatingCheckerDelegate& delegate) {
     return gating_service_->CreateAndRegisterChecker(
         delegate.GetWeakPtr(),
         origin_gating::OriginGatingConfiguration(
@@ -108,7 +71,7 @@ class ActorWebStatePolicyDeciderTest : public PlatformTest {
 // Test that a permissible navigation request is allowed and do not stop the
 // task.
 TEST_F(ActorWebStatePolicyDeciderTest, AllowsPermissibleNavigation) {
-  TestOriginGatingCheckerDelegate delegate(/*is_allowed=*/true);
+  FakeOriginGatingCheckerDelegate delegate(/*is_allowed=*/true);
   std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
       CreateCheckerRegistration(delegate);
 
@@ -132,7 +95,7 @@ TEST_F(ActorWebStatePolicyDeciderTest, AllowsPermissibleNavigation) {
 // Test that blocked navigations are cancelled and invoke StopTask with
 // kBrowserFailure.
 TEST_F(ActorWebStatePolicyDeciderTest, CancelsBlockedNavigationAndReportsCode) {
-  TestOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
+  FakeOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
   std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
       CreateCheckerRegistration(delegate);
 
@@ -160,7 +123,7 @@ TEST_F(ActorWebStatePolicyDeciderTest, AllowsNavigationWhenFeatureDisabled) {
   scoped_feature_list_.Reset();
 
   // Even if the delegate would block, disabling the feature bypasses the check.
-  TestOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
+  FakeOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
   std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
       CreateCheckerRegistration(delegate);
 
@@ -204,7 +167,7 @@ TEST_F(ActorWebStatePolicyDeciderTest, CancelsNavigationWhenCheckerIsNull) {
 
 // Test that subframe navigations are allowed without gating.
 TEST_F(ActorWebStatePolicyDeciderTest, AllowsSubframeNavigation) {
-  TestOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
+  FakeOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
   std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
       CreateCheckerRegistration(delegate);
 
@@ -228,7 +191,7 @@ TEST_F(ActorWebStatePolicyDeciderTest, AllowsSubframeNavigation) {
 
 // Test that invalid URLs are rejected.
 TEST_F(ActorWebStatePolicyDeciderTest, CancelsInvalidUrl) {
-  TestOriginGatingCheckerDelegate delegate(/*is_allowed=*/true);
+  FakeOriginGatingCheckerDelegate delegate(/*is_allowed=*/true);
   std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
       CreateCheckerRegistration(delegate);
 
@@ -252,7 +215,7 @@ TEST_F(ActorWebStatePolicyDeciderTest, CancelsInvalidUrl) {
 // Test that initial explicit AUTO_TOPLEVEL navigations bypass origin gating
 // even if the destination origin would otherwise be blocked.
 TEST_F(ActorWebStatePolicyDeciderTest, AllowsExplicitAutoToplevelNavigation) {
-  TestOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
+  FakeOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
   std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
       CreateCheckerRegistration(delegate);
 
@@ -280,7 +243,7 @@ TEST_F(ActorWebStatePolicyDeciderTest, AllowsExplicitAutoToplevelNavigation) {
 // gated.
 TEST_F(ActorWebStatePolicyDeciderTest,
        CancelsRedirectedAutoToplevelNavigation) {
-  TestOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
+  FakeOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
   std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
       CreateCheckerRegistration(delegate);
 

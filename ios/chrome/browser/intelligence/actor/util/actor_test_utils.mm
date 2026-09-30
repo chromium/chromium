@@ -4,9 +4,47 @@
 
 #import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
 
+#import <utility>
+
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
+#import "components/origin_gating/core/types.h"
+#import "url/gurl.h"
 
 namespace actor {
+
+FakeOriginGatingCheckerDelegate::FakeOriginGatingCheckerDelegate(
+    bool is_allowed)
+    : is_allowed_(is_allowed) {}
+
+FakeOriginGatingCheckerDelegate::~FakeOriginGatingCheckerDelegate() = default;
+
+void FakeOriginGatingCheckerDelegate::DoesOriginRequireUserConfirmation(
+    origin_gating::GatingDecisionContext* context,
+    const origin_gating::GateableEvent& event,
+    DoesOriginRequireUserConfirmationCallback callback) const {
+  std::move(callback).Run(false);
+}
+
+void FakeOriginGatingCheckerDelegate::EvaluateEnterprisePolicy(
+    const GURL& destination,
+    EvaluateEnterprisePolicyCallback callback) const {
+  std::move(callback).Run({.decision = origin_gating::Decision::kNoDecision});
+}
+
+void FakeOriginGatingCheckerDelegate::OnNoVerdict(
+    origin_gating::GatingDecisionContext* context,
+    const origin_gating::GateableEvent& event,
+    bool requires_user_confirmation,
+    base::OnceCallback<void(NoVerdictResult)> callback) {
+  std::move(callback).Run({.is_allowed = is_allowed_,
+                           .did_prompt_user = false,
+                           .bypass_cache = true});
+}
+
+base::WeakPtr<FakeOriginGatingCheckerDelegate>
+FakeOriginGatingCheckerDelegate::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
 
 std::unique_ptr<ActorToolRequest> MakeSuccessfulActorToolRequest(
     web::WebStateID identifier) {

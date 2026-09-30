@@ -10,13 +10,13 @@
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
-#import "components/origin_gating/core/origin_gating_checker.h"
 #import "components/origin_gating/core/origin_gating_configuration.h"
 #import "components/origin_gating/core/origin_gating_registration.h"
 #import "components/origin_gating/core/origin_gating_service.h"
 #import "components/origin_gating/core/types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
+#import "ios/chrome/browser/intelligence/actor/util/actor_test_utils.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/origin_gating/model/origin_gating_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -49,44 +49,6 @@ class TestUrlLoadingObserver : public UrlLoadingObserver {
   GURL last_url_;
   ui::PageTransition last_transition_type_ = ui::PAGE_TRANSITION_FIRST;
   base::WeakPtr<web::WebState> last_web_state_;
-};
-
-class TestOriginGatingCheckerDelegate
-    : public origin_gating::OriginGatingChecker::Delegate {
- public:
-  explicit TestOriginGatingCheckerDelegate(bool is_allowed)
-      : is_allowed_(is_allowed) {}
-
-  void DoesOriginRequireUserConfirmation(
-      origin_gating::GatingDecisionContext* context,
-      const origin_gating::GateableEvent& event,
-      DoesOriginRequireUserConfirmationCallback callback) const override {
-    std::move(callback).Run(false);
-  }
-
-  void EvaluateEnterprisePolicy(
-      const GURL& destination,
-      EvaluateEnterprisePolicyCallback callback) const override {
-    std::move(callback).Run({.decision = origin_gating::Decision::kNoDecision});
-  }
-
-  void OnNoVerdict(
-      origin_gating::GatingDecisionContext* context,
-      const origin_gating::GateableEvent& event,
-      bool requires_user_confirmation,
-      base::OnceCallback<void(NoVerdictResult)> callback) override {
-    std::move(callback).Run({.is_allowed = is_allowed_,
-                             .did_prompt_user = false,
-                             .bypass_cache = true});
-  }
-
-  base::WeakPtr<TestOriginGatingCheckerDelegate> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
- private:
-  bool is_allowed_ = true;
-  base::WeakPtrFactory<TestOriginGatingCheckerDelegate> weak_ptr_factory_{this};
 };
 
 }  // namespace
@@ -123,7 +85,7 @@ class NavigateToolTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<TestBrowser> browser_;
   TestUrlLoadingObserver url_loading_observer_;
-  TestOriginGatingCheckerDelegate default_gating_delegate_{/*is_allowed=*/true};
+  FakeOriginGatingCheckerDelegate default_gating_delegate_{/*is_allowed=*/true};
   std::unique_ptr<origin_gating::OriginGatingRegistration>
       default_gating_registration_;
 
@@ -388,7 +350,7 @@ TEST_F(NavigateToolTest, Execute_OriginGatingBlocksNavigation) {
       WebStateList::InsertionParams::AtIndex(0).Activate());
 
   // Delegate configured to block.
-  TestOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
+  FakeOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
   std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
       origin_gating::OriginGatingServiceFactory::GetForProfile(profile_.get())
           ->CreateAndRegisterChecker(delegate.GetWeakPtr(),
@@ -428,7 +390,7 @@ TEST_F(NavigateToolTest, Execute_OriginGatingAllowsNavigation) {
       WebStateList::InsertionParams::AtIndex(0).Activate());
 
   // Delegate configured to allow.
-  TestOriginGatingCheckerDelegate delegate(/*is_allowed=*/true);
+  FakeOriginGatingCheckerDelegate delegate(/*is_allowed=*/true);
   std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
       origin_gating::OriginGatingServiceFactory::GetForProfile(profile_.get())
           ->CreateAndRegisterChecker(delegate.GetWeakPtr(),
@@ -467,7 +429,7 @@ TEST_F(NavigateToolTest, Execute_OriginGatingFeatureDisabled_BypassesCheck) {
       WebStateList::InsertionParams::AtIndex(0).Activate());
 
   // Delegate configured to block, but the feature flag is OFF.
-  TestOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
+  FakeOriginGatingCheckerDelegate delegate(/*is_allowed=*/false);
   std::unique_ptr<origin_gating::OriginGatingRegistration> registration =
       origin_gating::OriginGatingServiceFactory::GetForProfile(profile_.get())
           ->CreateAndRegisterChecker(delegate.GetWeakPtr(),
