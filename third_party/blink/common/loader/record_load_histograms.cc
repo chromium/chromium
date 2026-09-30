@@ -31,6 +31,11 @@ void RecordLoadHistograms(const url::Origin& origin,
     }
   } else {
     base::UmaHistogramSparse("Net.ErrorCodesForSubresources3", -net_error);
+    if (GURL::SchemeIsCryptographic(origin.scheme()) &&
+        origin.host() == "www.google.com") {
+      base::UmaHistogramSparse("Net.ErrorCodesForHTTPSGoogleSubresources",
+                               -net_error);
+    }
   }
 
   // TODO(crbug.com/1384451): This is a temporary metric for monitoring the

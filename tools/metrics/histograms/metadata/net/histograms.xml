@@ -3432,6 +3432,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.ErrorCodesForHTTPSGoogleSubresources" enum="NetErrorCodes"
+    expires_after="never">
+<!-- expires-never: Core network stack health metric -->
+
+  <owner>nidhijaju@chromium.org</owner>
+  <owner>chrome-network-stack@google.com</owner>
+  <summary>
+    Positive net error codes that subresource requests to https://www.google.com
+    end with, including net::OK and net::ERR_ABORTED.
+  </summary>
+</histogram>
+
 <histogram name="Net.ErrorCodesForIsolatedAppScheme" enum="NetErrorCodes"
     expires_after="2027-03-14">
   <owner>giovax@chromium.org</owner>
