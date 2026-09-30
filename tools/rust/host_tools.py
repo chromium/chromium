@@ -8,17 +8,25 @@ must run on the same minimum supported host.  On Linux, they link against the
 Debian sysroot, not against the glibc of the build machine.  Tools that link
 the LLVM libraries from `RUST_HOST_LLVM_INSTALL_DIR` must also be built with
 the same compiler and against the same sysroot as these libraries.
+
+The tools are built with the `cargo` and `rustc` that `build_rust.py` built
+(see `RunHostCargo`).  Note that this is different from
+`//tools/crates/run_cargo.py`, which uses the Rust toolchain of a Chromium
+checkout, and which doesn't work on the toolchain bots.
 """
 
+import collections
 import functools
 import os
 import sys
 
 from build_rust import (
+    CARGO_HOME_DIR,
     GetMacSdkPath,
     RUST_HOST_LLVM_INSTALL_DIR,
     RustTargetTriple,
 )
+from update_rust import RUST_TOOLCHAIN_OUT_DIR
 
 # Get variables and helpers from Clang update script
 sys.path.append(
@@ -27,7 +35,12 @@ sys.path.append(
     )
 )
 
-from build import DownloadDebianSysroot
+from build import DownloadDebianSysroot, RunCommand
+
+EXE = '.exe' if sys.platform == 'win32' else ''
+
+CARGO_BIN = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'bin', f'cargo{EXE}')
+RUSTC_BIN = os.path.join(RUST_TOOLCHAIN_OUT_DIR, 'bin', f'rustc{EXE}')
 
 
 @functools.cache
@@ -109,3 +122,56 @@ def GetHostLinkerRustFlags():
     return [f'-Clinker={GetHostLinker()}'] + [
         f'-Clink-arg={arg}' for arg in GetHostLinkArgs()
     ]
+
+
+def GetHostCargoEnv(cargo_home=CARGO_HOME_DIR):
+    """Returns the environment for `RunHostCargo`.
+
+    The result is a `collections.defaultdict(str)`, so callers can extend it
+    before passing it to `RunHostCargo` - e.g. `env['CFLAGS'] += ' -Ifoo'`.
+    Flags in `CFLAGS`, `CXXFLAGS`, `LDFLAGS`, and `RUSTFLAGS` are separated by
+    spaces, and are added to the values from the caller's environment.
+    """
+    env = collections.defaultdict(str, os.environ)
+    # Cargo normally stores files in $HOME. Override this.
+    env['CARGO_HOME'] = cargo_home
+
+    # Use a rustc we deterministically provide, not a system one.
+    env['RUSTC'] = RUSTC_BIN
+
+    # Use the clang compiler from the rustc build.
+    cc, cxx, ar = GetHostCcTools()
+    env['CC'] = cc
+    env['CXX'] = cxx
+    env['AR'] = ar
+    env['LD'] = GetHostLinker()
+
+    env['CFLAGS'] += ' ' + ' '.join(GetHostCFlags())
+    env['CXXFLAGS'] += ' ' + ' '.join(GetHostCFlags())
+    env['LDFLAGS'] += ' ' + ' '.join(GetHostLinkArgs())
+    env['RUSTFLAGS'] += ' ' + ' '.join(GetHostLinkerRustFlags())
+    return env
+
+
+def RunHostCargo(cargo_args, env):
+    """Runs the `cargo` that `build_rust.py` built, with `cargo_args`.
+
+    `env` is the complete environment for `cargo`.  Usually it is the
+    result of `GetHostCargoEnv`, with more settings from the caller.
+
+    On Windows, `setenv=True` gives `cargo` and everything that it runs (e.g.
+    the `cc` crate and `lld-link`) the hermetic MSVC environment (e.g.
+    `INCLUDE` and `LIB`).
+
+    This will `fail_hard` and not return if `cargo` reports problems.
+    """
+    for tool in [CARGO_BIN, RUSTC_BIN]:
+        if not os.path.exists(tool):
+            print(
+                f'Missing {tool}. This script expects to be run after '
+                f'build_rust.py is run as the build_rust.py script builds '
+                f'cargo and rustc that are needed here.'
+            )
+            sys.exit(1)
+
+    RunCommand([CARGO_BIN] + cargo_args, setenv=True, env=env)
