@@ -233,6 +233,11 @@ public class SplitCompatApplication extends Application {
             // created and is needed only by processes that use the ApplicationStatus api (which
             // for Chrome is just the browser process).
             ApplicationStatus.initialize(this);
+            // Feature list initialization depends on locale, so do this before the feature list
+            // initialization in performBrowserProcessPreloading().
+            if (AppLocaleUtils.shouldUseSystemManagedLocale()) {
+                AppLocaleUtils.maybeMigrateOverrideLanguage();
+            }
             performBrowserProcessPreloading(context);
         }
 
@@ -260,10 +265,6 @@ public class SplitCompatApplication extends Application {
             // Disable MemoryPressureMonitor polling when Chrome goes to the background.
             ApplicationStatus.registerApplicationStateListener(
                     SplitCompatApplication::updateMemoryPressurePolling);
-
-            if (AppLocaleUtils.shouldUseSystemManagedLocale()) {
-                AppLocaleUtils.maybeMigrateOverrideLanguage();
-            }
         }
 
         // Write installed modules to crash keys.
