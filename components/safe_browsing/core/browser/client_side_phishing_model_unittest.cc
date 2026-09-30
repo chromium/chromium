@@ -21,6 +21,7 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/strings/string_view_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -225,8 +226,7 @@ void GetFlatBufferStringFromMappedMemory(
   ASSERT_TRUE(region.IsValid());
   base::ReadOnlySharedMemoryMapping mapping = region.Map();
   ASSERT_TRUE(mapping.IsValid());
-  *output = std::string(reinterpret_cast<const char*>(mapping.memory()),
-                        mapping.size());
+  *output = std::string(base::as_string_view(base::span(mapping)));
 }
 
 }  // namespace

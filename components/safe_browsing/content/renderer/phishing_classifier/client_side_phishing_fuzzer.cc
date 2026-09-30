@@ -7,6 +7,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/client_side_phishing_fuzzer.pb.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/client_side_phishing_fuzzer_fuzzable.pb.h"
@@ -41,7 +42,8 @@ DEFINE_PROTO_FUZZER(const fuzzable::safe_browsing::ClientSidePhishingFuzzerCase&
     return;
 
   const safe_browsing::flat::ClientSideModel* model =
-      safe_browsing::flat::GetClientSideModel(mapped_region.mapping.memory());
+      safe_browsing::flat::GetClientSideModel(
+          base::span(mapped_region.mapping).data());
 
   if (!model) {
     return;

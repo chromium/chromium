@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -401,7 +402,7 @@ void ClientSidePhishingModel::OnModelAndVisualTfLiteFileLoaded(
             model_str);
 
         const flat::ClientSideModel* flatbuffer_model =
-            flat::GetClientSideModel(mapped_region_.mapping.memory());
+            flat::GetClientSideModel(base::span(mapped_region_.mapping).data());
 
         if (!VerifyCSDFlatBufferIndicesAndFields(flatbuffer_model)) {
           VLOG(0) << "Failed to verify CSD Flatbuffer indices and fields";

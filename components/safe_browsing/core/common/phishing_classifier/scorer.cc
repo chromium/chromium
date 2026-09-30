@@ -11,6 +11,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -428,13 +429,13 @@ std::unique_ptr<Scorer> Scorer::Create(base::ReadOnlySharedMemoryRegion region,
     return nullptr;
   }
 
-  flatbuffers::Verifier verifier(
-      reinterpret_cast<const uint8_t*>(mapping.memory()), mapping.size());
+  const auto model_bytes = base::span(mapping);
+  flatbuffers::Verifier verifier(model_bytes.data(), model_bytes.size());
   if (!flat::VerifyClientSideModelBuffer(verifier)) {
     RecordScorerCreationStatus(SCORER_FAIL_FLATBUFFER_FAILED_VERIFY);
     return nullptr;
   }
-  scorer->flatbuffer_model_ = flat::GetClientSideModel(mapping.memory());
+  scorer->flatbuffer_model_ = flat::GetClientSideModel(model_bytes.data());
   if (!scorer->flatbuffer_model_ ||
       !scorer->flatbuffer_model_->tflite_metadata()) {
     RecordScorerCreationStatus(SCORER_FAIL_MODEL_MISSING_FIELDS);
