@@ -8,43 +8,46 @@
 #include <list>
 #include <memory>
 
+#include "base/memory/raw_ref.h"
 #include "ui/events/event.h"
-#include "ui/views/event_monitor.h"
+#include "ui/events/event_handler.h"
 
 namespace views {
 class WebView;
 }  // namespace views
 
-class BrowserWindowInterface;
+class WebUIToolbarControlDelegate;
 
-// Records recent mouse presses in screen coordinates.
-// Must be recreated when the browser window enters or
-// leaves fullscreen.
-class WebUIToolbarPressMonitor : public ui::EventObserver {
+//  The approach used by RoundedOmniboxResultsFrame on Mac to forward mouse
+//  events received by the popup to the underlying windows ultimately ends up
+//  with the event received at Views level at NativeViewHost, which doesn't know
+//  what to do with them. This is set up as a fallback handler to receive these,
+//  and forward them on further till the WebView. It also reconstructs
+//  double- (and triple-) clicks, since they might get broken by the coordinate
+//  change of the popup showing.
+class WebUIToolbarEventForwarder : public ui::EventHandler {
  public:
-  explicit WebUIToolbarPressMonitor(BrowserWindowInterface* bwi,
-                                    views::WebView& web_view);
-  ~WebUIToolbarPressMonitor() override;
+  WebUIToolbarEventForwarder(WebUIToolbarControlDelegate& control_delegate,
+                             views::WebView& web_view);
+  ~WebUIToolbarEventForwarder() override;
 
-  // ui::EventObserver:
-  void OnEvent(const ui::Event& event) override;
+  void OnMouseEvent(ui::MouseEvent* event) override;
 
-  // Returns the most recent recorded mouse press that's not `to_disregard`.
-  // May be nullptr if nothing relevant is recorded.
-  ui::MouseEvent* LastAdjustedDisregarding(const ui::Event& to_disregard);
-
-  void ClearLastAdjusted() { adjusted_events_.clear(); }
-
-  static std::unique_ptr<ui::MouseEvent> CloneMouseEvent(
-      const ui::MouseEvent* mouse_event);
+  void AddedToWidget();
+  void RemovedFromWidget();
 
  private:
-  std::unique_ptr<views::EventMonitor> monitor_;
+  class PressMonitor;
 
-  // Recent mouse presses we got, with locations adjusted to screen coordinates.
-  // This has more than one since if we're using an application monitor due to
-  // fullscreen, we will have duplicates of things seen by the forwarder.
-  std::list<std::unique_ptr<ui::MouseEvent>> adjusted_events_;
+  bool HaveOpenOmniboxPopup();
+  ui::MouseEvent* OverallLastAdjusted(const ui::MouseEvent& to_disregard);
+
+  const raw_ref<WebUIToolbarControlDelegate> control_delegate_;
+  const raw_ref<views::WebView> web_view_;
+  std::unique_ptr<PressMonitor> monitor_;
+
+  // Last mouse press we got, with location adjusted to screen coordinates.
+  std::unique_ptr<ui::MouseEvent> last_adjusted_event_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_TOOLBAR_WEB_VIEW_UTIL_MAC_H_
