@@ -175,6 +175,24 @@ void RegisterInfoBars() {
     browser_infobar_manager->Register(std::move(spec));
   }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  if (IsInfoBarMigrated(
+          InfoBarDelegate::INCOGNITO_CONNECTABILITY_INFOBAR_DELEGATE)) {
+    auto spec =
+        InfoBarSpec::Builder(
+            InfoBarDelegate::INCOGNITO_CONNECTABILITY_INFOBAR_DELEGATE)
+            // The prompt text and the decision callback come in per show
+            // via InfoBarShowParams.
+            .AddOkButton(l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW),
+                         base::DoNothing())
+            .AddCancelButton(l10n_util::GetStringUTF16(IDS_PERMISSION_DENY),
+                             base::DoNothing())
+            .SetScope(InfoBarScope::kTab)
+            .Build();
+    browser_infobar_manager->Register(std::move(spec));
+  }
+#endif
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (infobars::IsInfoBarMigrated(
           infobars::InfoBarDelegate::PIN_INFOBAR_DELEGATE)) {

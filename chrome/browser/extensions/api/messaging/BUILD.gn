@@ -90,6 +90,7 @@ source_set("messaging") {
     "//components/policy/core/browser",
     "//components/prefs",
     "//components/strings:components_strings",
+    "//components/tabs:public",
     "//url",
   ]
 
@@ -223,8 +224,10 @@ if (!is_android) {
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",
       "//chrome/browser/ui:browser_window_header",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/startup",
       "//chrome/test:test_support",
+      "//components/infobars/content",
       "//extensions:test_support",
       "//extensions/browser",
       "//extensions/common",

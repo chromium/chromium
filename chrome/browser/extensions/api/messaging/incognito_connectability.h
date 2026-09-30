@@ -88,8 +88,17 @@ class IncognitoConnectability : public BrowserContextKeyedAPI {
 
     // The infobar being shown in a given tab. The
     // infobars::ContentInfoBarManager maintains ownership of this object. This
-    // struct must always be destroyed before the infobar it tracks.
-    raw_ptr<infobars::InfoBar> infobar;
+    // struct must always be destroyed before the infobar it tracks. Null if no
+    // infobar is on screen.
+    raw_ptr<infobars::InfoBar> infobar = nullptr;
+    // Whether this tab has an unanswered prompt. Can be true while `infobar`
+    // is null, e.g. when the infobar could not be shown and the unanswered
+    // result is delivered asynchronously.
+    bool prompt_pending = false;
+    // Whether `infobar` was created by infobars::BrowserInfoBarManager rather
+    // than IncognitoConnectabilityInfoBarDelegate. Their delegates are
+    // unrelated types and are taken down differently.
+    bool is_migrated = false;
     // Connectability queries outstanding on this infobar.
     std::vector<base::OnceCallback<void(bool)>> callbacks;
   };

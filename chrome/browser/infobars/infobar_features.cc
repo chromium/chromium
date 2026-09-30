@@ -57,6 +57,11 @@ BASE_FEATURE_PARAM(bool,
                    false);
 
 BASE_FEATURE_PARAM(bool,
+                   kMigratedIncognitoConnectability,
+                   &kCentralizedInfoBarFramework,
+                   false);
+
+BASE_FEATURE_PARAM(bool,
                    kMigratedInstallerDownloader,
                    &kCentralizedInfoBarFramework,
                    false);
@@ -151,6 +156,8 @@ const base::FeatureParam<bool>* GetInfoBarMigrationParam(
       return &kMigratedDevToolsSharedProcess;
     case InfoBarDelegate::GOOGLE_API_KEYS_INFOBAR_DELEGATE:
       return &kMigratedGoogleApiKeys;
+    case InfoBarDelegate::INCOGNITO_CONNECTABILITY_INFOBAR_DELEGATE:
+      return &kMigratedIncognitoConnectability;
     case InfoBarDelegate::INSTALLER_DOWNLOADER_INFOBAR_DELEGATE:
       return &kMigratedInstallerDownloader;
     case InfoBarDelegate::KEYSTONE_PROMOTION_INFOBAR_DELEGATE_MAC:
