@@ -1741,6 +1741,12 @@ inline constexpr char kSearchEngineChoiceScreenSnackbarName[] =
 inline constexpr char kSearchEngineChoiceScreenSnackbarDescription[] =
     "Enables a snackbar after the search engine choice screen.";
 
+inline constexpr char kSegmentationPlatformEphemeralCardRankerName[] =
+    "Segmentation platform ephemeral card ranker";
+inline constexpr char kSegmentationPlatformEphemeralCardRankerDescription[] =
+    "Enables the Ephemeral Card ranker for the segmentation platform service "
+    "to rank Magic Stack ephemeral modules on iOS.";
+
 inline constexpr char kSendTabToSelfEnhancedHandoffName[] =
     "Send Tab To Self enhanced handoff";
 inline constexpr char kSendTabToSelfEnhancedHandoffDescription[] =

@@ -72,6 +72,7 @@
 #import "components/safe_browsing/ios/browser/web_ui/features.h"
 #import "components/search/ntp_features.h"
 #import "components/search_engines/search_engines_switches.h"
+#import "components/segmentation_platform/embedder/home_modules/constants.h"
 #import "components/segmentation_platform/public/features.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/shared_highlighting/core/common/shared_highlighting_features.h"
@@ -1307,6 +1308,49 @@ const FeatureEntry::FeatureParam kMagicStackTipsV2IosActionableParams[] = {
 const FeatureEntry::FeatureVariation kMagicStackTipsV2IosVariations[] = {
     {"(Non-Actionable)", kMagicStackTipsV2IosNonActionableParams, nullptr},
     {"(Actionable)", kMagicStackTipsV2IosActionableParams, nullptr},
+};
+
+const FeatureEntry::FeatureParam kLensSearchTipShowArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
+     segmentation_platform::kLensEphemeralModuleSearchVariation},
+};
+const FeatureEntry::FeatureParam kLensShopTipShowArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
+     segmentation_platform::kLensEphemeralModuleShopVariation},
+};
+const FeatureEntry::FeatureParam kLensTranslateTipShowArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
+     segmentation_platform::kLensEphemeralModuleTranslateVariation},
+};
+const FeatureEntry::FeatureParam kAddressBarPositionTipShowArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
+     segmentation_platform::kAddressBarPositionEphemeralModule},
+};
+const FeatureEntry::FeatureParam kSavePasswordsTipShowArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
+     segmentation_platform::kSavePasswordsEphemeralModule},
+};
+const FeatureEntry::FeatureParam kAutofillPasswordsTipShowArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
+     segmentation_platform::kAutofillPasswordsEphemeralModule},
+};
+const FeatureEntry::FeatureParam kEnhancedSafeBrowsingTipShowArm[] = {
+    {segmentation_platform::features::kEphemeralCardRankerForceShowCardParam,
+     segmentation_platform::kEnhancedSafeBrowsingEphemeralModule},
+};
+
+const FeatureEntry::FeatureVariation kEphemeralCardRankerCardOverrideOptions[] =
+    {
+        {"- Force Show Lens Search Tip", kLensSearchTipShowArm, nullptr},
+        {"- Force Show Lens Shop Tip", kLensShopTipShowArm, nullptr},
+        {"- Force Show Lens Translate Tip", kLensTranslateTipShowArm, nullptr},
+        {"- Force Show Address Bar Position Tip", kAddressBarPositionTipShowArm,
+         nullptr},
+        {"- Force Show Save Passwords Tip", kSavePasswordsTipShowArm, nullptr},
+        {"- Force Show Autofill Passwords Tip", kAutofillPasswordsTipShowArm,
+         nullptr},
+        {"- Force Show Enhanced Safe Browsing Tip",
+         kEnhancedSafeBrowsingTipShowArm, nullptr},
 };
 
 // To add a new entry, add to the end of kFeatureEntries. There are four
@@ -2787,6 +2831,15 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
          segmentation_platform::features::kMagicStackTipsV2Ios,
          kMagicStackTipsV2IosVariations,
          "MagicStackTipsV2Ios")},
+    {"enable-segmentation-platform-ephemeral_card_ranker",
+     flag_descriptions::kSegmentationPlatformEphemeralCardRankerName,
+     flag_descriptions::kSegmentationPlatformEphemeralCardRankerDescription,
+     flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         segmentation_platform::features::
+             kSegmentationPlatformEphemeralCardRanker,
+         kEphemeralCardRankerCardOverrideOptions,
+         "SegmentationPlatformEphemeralCardRanker")},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

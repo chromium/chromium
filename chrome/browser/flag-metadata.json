@@ -4440,8 +4440,8 @@
   },
   {
     "name": "enable-segmentation-platform-ephemeral_card_ranker",
-    "owners": ["ritikagup@google.com",  "hanxi@chromium.org", "ssid@chromium.org","xinyiji@chromium.org","clank-start@chromium.org" ],
-    "expiry_milestone": 160
+    "owners": ["ritikagup@google.com",  "hanxi@chromium.org", "ssid@chromium.org","xinyiji@chromium.org","clank-start@chromium.org","erahmaoui@google.com", "bling-flags@google.com" ],
+    "expiry_milestone": 170
   },
   {
     "name": "enable-set-shape",
