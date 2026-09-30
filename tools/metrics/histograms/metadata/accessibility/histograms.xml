@@ -2601,6 +2601,24 @@ recorded in the same way, even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.PdfHeuristics.{Role}Repetition"
+    enum="PdfAccessibilityHeaderFooterRepetition" expires_after="2027-08-01">
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records whether the text of a heuristically detected {Role} in an untagged,
+    multi-page PDF matches no other {Role} in the PDF (Unique), exactly matches
+    another (Repeating), or matches another only after digits are normalized,
+    e.g. page numbers (Incremental). Recorded once per detected {Role} when the
+    final page of the PDF is added to the accessibility tree.
+  </summary>
+  <token key="Role">
+    <variant name="Footer" summary="footer"/>
+    <variant name="Header" summary="header"/>
+  </token>
+</histogram>
+
 <histogram name="Accessibility.PdfOcr.CrosSelectToSpeak.PagesOcred"
     units="count" expires_after="2027-06-01">
   <owner>kyungjunlee@google.com</owner>

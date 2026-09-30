@@ -23929,6 +23929,16 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Not rejected or not shown"/>
 </enum>
 
+<!-- LINT.IfChange(PdfAccessibilityHeaderFooterRepetition) -->
+
+<enum name="PdfAccessibilityHeaderFooterRepetition">
+  <int value="0" label="Unique"/>
+  <int value="1" label="Repeating"/>
+  <int value="2" label="Incremental"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/pdf/renderer/pdf_accessibility_tree.h:HeaderFooterRepetition) -->
+
 <!-- LINT.IfChange(PdfAccessibilityHeadingClassifier) -->
 
 <enum name="PdfAccessibilityHeadingClassifier">

@@ -6,9 +6,11 @@
 
 #include <algorithm>
 #include <iterator>
+#include <map>
 #include <optional>
 #include <ranges>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -22,6 +24,8 @@
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversion_utils.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "components/pdf/renderer/pdf_accessibility_tree_builder.h"
@@ -35,6 +39,8 @@
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
+#include "third_party/icu/source/common/unicode/uchar.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_mode.h"
@@ -203,6 +209,110 @@ std::unique_ptr<ui::AXNodeData> CreateBannerNode(ui::AXNodeID id,
   CHECK(root_node->child_ids.empty());
   root_node->child_ids.push_back(banner_node->id);
   return banner_node;
+}
+
+// Replaces each contiguous run of Unicode digits in `text` with '#' (e.g.
+// "Page 12 of 30" -> "Page # of #").
+std::u16string NormalizeDigits(std::u16string_view text) {
+  std::u16string result;
+  result.reserve(text.size());
+  bool prev_was_digit = false;
+  for (size_t i = 0; i < text.size(); ++i) {
+    base_icu::UChar32 code_point;
+    if (!base::ReadUnicodeCharacter(text, &i, &code_point)) {
+      continue;
+    }
+    if (u_isdigit(code_point)) {
+      if (!prev_was_digit) {
+        result.push_back(u'#');
+        prev_was_digit = true;
+      }
+    } else {
+      base::WriteUnicodeCharacter(code_point, &result);
+      prev_was_digit = false;
+    }
+  }
+  return result;
+}
+
+// Returns the whitespace-collapsed text of each page's direct children that
+// have `role` and non-empty text, in page order.
+std::vector<std::u16string> GetPageChildTextsWithRole(const ui::AXNode& root,
+                                                      ax::mojom::Role role) {
+  std::vector<std::u16string> texts;
+  for (const ui::AXNode* page : root.children()) {
+    if (page->GetRole() != ax::mojom::Role::kRegion) {
+      continue;
+    }
+    for (const ui::AXNode* node : page->children()) {
+      if (node->GetRole() != role) {
+        continue;
+      }
+      std::u16string text =
+          base::CollapseWhitespace(node->GetTextContentUTF16(),
+                                   /*trim_sequences_with_line_breaks=*/false);
+      if (!text.empty()) {
+        texts.push_back(std::move(text));
+      }
+    }
+  }
+  return texts;
+}
+
+// Returns whether another text matches a text exactly (kRepeating), only after
+// digits are normalized (kIncremental), or not at all (kUnique), given the
+// number of occurrences of the text and of its digit-normalized form.
+HeaderFooterRepetition GetRepetition(int exact_count, int normalized_count) {
+  if (exact_count > 1) {
+    return HeaderFooterRepetition::kRepeating;
+  }
+  if (normalized_count > 1) {
+    return HeaderFooterRepetition::kIncremental;
+  }
+  return HeaderFooterRepetition::kUnique;
+}
+
+// Records to `histogram_name` how each of `texts` repeats within `texts`.
+void RecordRepetition(std::string_view histogram_name,
+                      const std::vector<std::u16string>& texts) {
+  // std::map references stay valid across insertions, so each text can keep a
+  // pointer to its final counts.
+  std::map<std::u16string, int> exact_counts;
+  std::map<std::u16string, int> normalized_counts;
+  std::vector<const int*> exact_count_ptrs;
+  std::vector<const int*> normalized_count_ptrs;
+  exact_count_ptrs.reserve(texts.size());
+  normalized_count_ptrs.reserve(texts.size());
+  for (const std::u16string& text : texts) {
+    int& exact_count = exact_counts[text];
+    int& normalized_count = normalized_counts[NormalizeDigits(text)];
+    ++exact_count;
+    ++normalized_count;
+    exact_count_ptrs.push_back(&exact_count);
+    normalized_count_ptrs.push_back(&normalized_count);
+  }
+
+  for (size_t i = 0; i < texts.size(); ++i) {
+    base::UmaHistogramEnumeration(
+        histogram_name,
+        GetRepetition(*exact_count_ptrs[i], *normalized_count_ptrs[i]));
+  }
+}
+
+// Records how the text of each heuristically detected header and footer
+// repeats across the pages of the PDF.
+void RecordHeaderFooterRepetitionMetrics(const ui::AXNode* root) {
+  if (!root) {
+    return;
+  }
+
+  CHECK(features::IsPdfAccessibilityHeuristicEnhancementsEnabled());
+  RecordRepetition(
+      "Accessibility.PdfHeuristics.HeaderRepetition",
+      GetPageChildTextsWithRole(*root, ax::mojom::Role::kSectionHeader));
+  RecordRepetition(
+      "Accessibility.PdfHeuristics.FooterRepetition",
+      GetPageChildTextsWithRole(*root, ax::mojom::Role::kSectionFooter));
 }
 
 }  // namespace
@@ -510,6 +620,11 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
   }
 
   UnserializeNodes();
+
+  if (features::IsPdfAccessibilityHeuristicEnhancementsEnabled() &&
+      !is_tagged_ && page_count_ > 1 && page_index == page_count_ - 1) {
+    RecordHeaderFooterRepetitionMetrics(tree_.root());
+  }
 }
 
 void PdfAccessibilityTree::SetFinalStatusMessage() {

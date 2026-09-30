@@ -4162,6 +4162,142 @@ TEST_F(PdfAccessibilityTreeTest,
   EXPECT_EQ(ax::mojom::Role::kParagraph, footnote_block->GetRole());
 }
 
+class PdfAccessibilityTreeHeaderFooterRepetitionTest
+    : public PdfAccessibilityTreeTest {
+ protected:
+  // Creates the tree for an untagged PDF with `page_count` pages.
+  void CreateTree(uint32_t page_count) {
+    page_count_ = page_count;
+    page_info_.bounds = gfx::Rect(0, 0, 800, 1000);
+    CreatePdfAccessibilityTree();
+    pdf_accessibility_tree_->SetAccessibilityDocInfo(
+        CreateAccessibilityDocInfo());
+    pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
+  }
+
+  // Adds a page with small `header` and `footer` text in the page margins.
+  void AddPage(uint32_t page_index,
+               const std::string& header,
+               const std::string& footer) {
+    CustomCharData char_data =
+        MakeCharVector({header, kLongBodyText, "body2", "body3", footer});
+    const std::vector<float> font_sizes = {8.0f, 10.0f, 10.0f, 10.0f, 8.0f};
+    const std::vector<gfx::RectF> bounds = {
+        gfx::RectF(50.0f, 20.0f, 100.0f, 12.0f),
+        gfx::RectF(50.0f, 200.0f, 200.0f, 15.0f),
+        gfx::RectF(50.0f, 220.0f, 200.0f, 15.0f),
+        gfx::RectF(50.0f, 240.0f, 200.0f, 15.0f),
+        gfx::RectF(50.0f, 960.0f, 100.0f, 12.0f),
+    };
+    std::vector<chrome_pdf::AccessibilityTextRunInfo> runs;
+    for (size_t i = 0; i < font_sizes.size(); ++i) {
+      chrome_pdf::AccessibilityTextRunInfo run = kFirstTextRun;
+      run.style = CreateNormalStyle();
+      run.style.font_size = font_sizes[i];
+      run.bounds = bounds[i];
+      run.len = char_data.char_counts[i];
+      runs.push_back(run);
+    }
+    page_info_.page_index = page_index;
+    page_info_.text_run_count = runs.size();
+    page_info_.char_count = char_data.chars.size();
+    pdf_accessibility_tree_->SetAccessibilityPageInfo(
+        page_info_, runs, char_data.chars, page_objects_);
+    WaitForThreadTasks();
+    WaitForThreadDelayedTasks();
+  }
+};
+
+TEST_F(PdfAccessibilityTreeHeaderFooterRepetitionTest, RecordsPerRole) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  base::HistogramTester histogram_tester;
+  CreateTree(/*page_count=*/3u);
+  AddPage(0u, "Running Title", "Page 1 of 3");
+  AddPage(1u, "Running Title", "Page 2 of 3");
+  // No samples should be emitted until the final page arrives.
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.PdfHeuristics.HeaderRepetition", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.PdfHeuristics.FooterRepetition", 0);
+
+  AddPage(2u, "Appendix", "Page 3 of 3");
+
+  // Headers: "Running Title" repeats exactly; "Appendix" is unique.
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.PdfHeuristics.HeaderRepetition", 3);
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.PdfHeuristics.HeaderRepetition",
+      HeaderFooterRepetition::kRepeating, 2);
+  histogram_tester.ExpectBucketCount(
+      "Accessibility.PdfHeuristics.HeaderRepetition",
+      HeaderFooterRepetition::kUnique, 1);
+
+  // Footers: page numbers differ only in digits.
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.FooterRepetition",
+      HeaderFooterRepetition::kIncremental, 3);
+}
+
+TEST_F(PdfAccessibilityTreeHeaderFooterRepetitionTest,
+       NotRecordedForSinglePagePdf) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  base::HistogramTester histogram_tester;
+  CreateTree(/*page_count=*/1u);
+  AddPage(0u, "Running Title", "Page 1 of 1");
+
+  // A header and footer are detected, but there is no other page to compare.
+  const ui::AXNode* pdf_root = pdf_accessibility_tree_->GetRoot();
+  ASSERT_GT(pdf_root->GetChildCount(), 1u);
+  const ui::AXNode* page = pdf_root->GetChildAtIndex(1u);
+  ASSERT_NE(nullptr, page);
+  ASSERT_GE(page->GetChildCount(), 2u);
+  EXPECT_EQ(ax::mojom::Role::kSectionHeader,
+            page->GetChildAtIndex(0u)->GetRole());
+  EXPECT_EQ(ax::mojom::Role::kSectionFooter,
+            page->GetChildAtIndex(page->GetChildCount() - 1)->GetRole());
+
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.PdfHeuristics.HeaderRepetition", 0);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.PdfHeuristics.FooterRepetition", 0);
+}
+
+TEST_F(PdfAccessibilityTreeHeaderFooterRepetitionTest,
+       NormalizesDigitsAndWhitespace) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {::features::kPdfAccessibilityHeuristicEnhancements},
+      {chrome_pdf::features::kPdfTags});
+
+  base::HistogramTester histogram_tester;
+  CreateTree(/*page_count=*/3u);
+  // Headers have static digits and varying internal whitespace, while footers
+  // cross a multi-digit boundary and include fullwidth Unicode digits ("１１").
+  AddPage(0u, "Copyright 2026", "Page 9");
+  AddPage(1u, "Copyright  2026", "Page 10");
+  AddPage(2u, "Copyright 2026", "Page \xEF\xBC\x91\xEF\xBC\x91");
+
+  // Exact matches after whitespace collapsing take precedence over digit
+  // normalization.
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.HeaderRepetition",
+      HeaderFooterRepetition::kRepeating, 3);
+
+  // Single-digit, multi-digit, and non-ASCII Unicode digits all normalize to
+  // "Page #".
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.PdfHeuristics.FooterRepetition",
+      HeaderFooterRepetition::kIncremental, 3);
+}
+
 class PdfAccessibilityTreeStructuredModeTest
     : public PdfAccessibilityTreeTest,
       public testing::WithParamInterface<bool> {
