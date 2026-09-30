@@ -14,8 +14,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.view.ContextThemeWrapper;
 import android.view.View;
 
 import org.junit.Before;
@@ -48,23 +50,22 @@ import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassificati
 /** Unit tests for {@link LocationBarCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.TOOLBAR_PHONE_ANIMATION_REFACTOR)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class LocationBarCoordinatorUnitTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private UrlBarCoordinator mUrlCoordinator;
     @Mock private FuseboxCoordinator mFuseboxCoordinator;
-    @Mock private View mUrlBar;
-    @Mock private LocationBarLayout mLocationBarLayout;
     @Mock private LocationBarEmbedder mLocationBarEmbedder;
-    @Mock private View mPlusButton;
     @Mock private LocationBarDataProvider mLocationBarDataProvider;
     @Mock private OptionalButtonCoordinator mOptionalButtonCoordinator;
     @Mock private LocationBarMediator mLocationBarMediator;
     @Mock private NewTabPageDelegate mNewTabPageDelegate;
-    @Mock private LocationBarPhone mLocationBarPhone;
-    @Mock private View mOptionalButtonView;
+
+    private Context mContext;
+    private View mUrlBar;
+    private LocationBarLayout mLocationBarLayout;
+    private LocationBarPhone mLocationBarPhone;
 
     // LocationBarCoordinator takes a lot of dependencies and a very busy constructor.
     // This allows us to set up tests to verify logic we need to protect without overwhelming test
@@ -77,6 +78,12 @@ public class LocationBarCoordinatorUnitTest {
 
     @Before
     public void setUp() {
+        mContext =
+                new ContextThemeWrapper(
+                        RuntimeEnvironment.getApplication(), R.style.Theme_BrowserUI_DayNight);
+        mUrlBar = new View(mContext);
+        mLocationBarLayout = new LocationBarLayout(mContext, null);
+
         mCoordinator.setUrlCoordinatorForTesting(mUrlCoordinator);
         mCoordinator.setFuseboxCoordinatorForTesting(mFuseboxCoordinator);
         mCoordinator.setUrlBarForTesting(mUrlBar);
@@ -92,12 +99,6 @@ public class LocationBarCoordinatorUnitTest {
         lenient()
                 .when(mLocationBarDataProvider.getNewTabPageDelegate())
                 .thenReturn(mNewTabPageDelegate);
-        lenient()
-                .when(mLocationBarLayout.findViewById(R.id.fusebox_plus_button))
-                .thenReturn(mPlusButton);
-        lenient()
-                .when(mLocationBarLayout.getContext())
-                .thenReturn(RuntimeEnvironment.getApplication());
         lenient()
                 .when(mFuseboxCoordinator.getFuseboxLayoutModeSupplier())
                 .thenReturn(mFuseboxLayoutModeSupplier);
@@ -245,9 +246,8 @@ public class LocationBarCoordinatorUnitTest {
      * is phone-only, and returns button data eligible to be shown.
      */
     private ButtonData setUpPhoneLayoutWithOptionalButton() {
+        mLocationBarPhone = new LocationBarPhone(mContext, null);
         mCoordinator.setLocationBarLayoutForTesting(mLocationBarPhone);
-        when(mLocationBarPhone.getContext()).thenReturn(RuntimeEnvironment.getApplication());
-        when(mLocationBarPhone.findViewById(R.id.optional_button)).thenReturn(mOptionalButtonView);
         return new ButtonDataImpl(
                 /* canShow= */ true,
                 /* isEnabled= */ true,
