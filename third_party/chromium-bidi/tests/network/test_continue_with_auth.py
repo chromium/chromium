@@ -368,7 +368,11 @@ async def test_continue_with_auth_remove_intercept_inflight_request(
 ):
     await subscribe(
         websocket,
-        ["network.beforeRequestSent", "network.responseCompleted"],
+        [
+            "network.beforeRequestSent",
+            "network.authRequired",
+            "network.responseCompleted",
+        ],
         [context_id],
     )
 
@@ -450,6 +454,26 @@ async def test_continue_with_auth_remove_intercept_inflight_request(
         }
     )
 
+    # Wait for the request to be actually blocked in the `authRequired` phase.
+    # Otherwise, the intercept can be removed before `Fetch.authRequired`
+    # arrives, making the test flaky.
+    event_response = await wait_for_event(websocket, "network.authRequired")
+    assert event_response == AnyExtending(
+        {
+            "method": "network.authRequired",
+            "params": {
+                "context": context_id,
+                "intercepts": [intercept_id],
+                "isBlocked": True,
+                "request": {
+                    "url": url_auth_required,
+                },
+            },
+            "type": "event",
+        }
+    )
+    network_id = event_response["params"]["request"]["request"]
+
     result = await execute_command(
         websocket,
         {
@@ -460,6 +484,19 @@ async def test_continue_with_auth_remove_intercept_inflight_request(
         },
     )
     assert result == {}
+
+    # Removing the intercept does not unblock the in-flight request, so it has
+    # to be continued explicitly.
+    await execute_command(
+        websocket,
+        {
+            "method": "network.continueWithAuth",
+            "params": {
+                "request": network_id,
+                "action": "cancel",
+            },
+        },
+    )
 
     event_response = await wait_for_event(websocket, "network.responseCompleted")
     assert event_response == {
