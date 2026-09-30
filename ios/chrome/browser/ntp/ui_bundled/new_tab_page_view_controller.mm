@@ -202,6 +202,8 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   NSString* _aimTitle;
   // The icon for the AI Mode button.
   UIImage* _aimIcon;
+  // Tracks whether the NTP was scrolled to the top before a size transition.
+  BOOL _scrolledToTop;
 }
 
 // Properties synthesized from NewTabPageScrollConsumer.
@@ -223,6 +225,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
     _inhibitScrollPositionUpdates = NO;
     _shiftTileStartTime = -1;
     _appearing = YES;
+    _scrolledToTop = YES;
   }
   return self;
 }
@@ -404,13 +407,24 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
            (id<UIViewControllerTransitionCoordinator>)coordinator {
   [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
 
+  BOOL wasScrolledToTop = [self wasScrolledToTopBeforeTransition];
+  CGFloat previousYOffset = [self scrollPosition];
+  CGFloat previousHeightAboveFeed = [self heightAboveFeed];
+
   __weak __typeof(self) weakSelf = self;
 
   void (^transitionBlock)(id<UIViewControllerTransitionCoordinatorContext>) =
       ^(id<UIViewControllerTransitionCoordinatorContext> context) {
-        [weakSelf updateLayoutForSize:size
-                      previousYOffset:[self scrollPosition]
-              previousHeightAboveFeed:[self heightAboveFeed]];
+        NewTabPageViewController* strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+        [strongSelf updateLayoutForSize:size
+                        previousYOffset:previousYOffset
+                previousHeightAboveFeed:previousHeightAboveFeed];
+        if (wasScrolledToTop) {
+          [strongSelf setContentOffsetToTop];
+        }
       };
 
   void (^completionBlock)(id<UIViewControllerTransitionCoordinatorContext>) =
@@ -418,8 +432,13 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
         [weakSelf completeLayoutSizeUpdate];
       };
 
-  [coordinator animateAlongsideTransition:transitionBlock
-                               completion:completionBlock];
+  if (coordinator) {
+    [coordinator animateAlongsideTransition:transitionBlock
+                                 completion:completionBlock];
+  } else {
+    transitionBlock(nil);
+    completionBlock(nil);
+  }
 
   if ([self isOrientationLandscapeForSize:size]) {
     [self.mutator notifyNtpDisplayedInLandscape];
@@ -636,6 +655,7 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   if (self.omniboxFocused) {
     return;
   }
+  _scrolledToTop = YES;
   [self setContentOffset:-[self heightAboveFeed]];
   // TODO(crbug.com/40252945): Constraint updating should not be necessary since
   // scrollViewDidScroll: calls this if needed.
@@ -1816,7 +1836,9 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
   CGFloat scrollPositionToSave = [self scrollPosition];
   scrollPositionToSave -= self.collectionShiftingOffset;
   self.mutator.scrollPositionToSave = scrollPositionToSave;
-  [self.mutator setIsScrolledToTop:[self isNTPScrolledToTop]];
+  BOOL isScrolledToTop = [self isNTPScrolledToTop];
+  _scrolledToTop = isScrolledToTop;
+  [self.mutator setIsScrolledToTop:isScrolledToTop];
 }
 
 // Updates the feed container's height constraint and z-position.
@@ -1913,6 +1935,16 @@ const CGFloat kBackgroundImageAnimationDuration = 0.2;
 }
 
 #pragma mark - Helpers
+
+// Returns YES if the NTP was scrolled to the top before a size transition.
+- (BOOL)wasScrolledToTopBeforeTransition {
+  if (_scrolledToTop) {
+    return YES;
+  }
+  CGFloat currentInsetTop = self.collectionView.contentInset.top;
+  return (currentInsetTop > 0 &&
+          self.collectionView.contentOffset.y <= -currentInsetTop + 1.0);
+}
 
 // Bottom spacing below the Quick Actions module, depending on whether Most
 // Visited is visible.
