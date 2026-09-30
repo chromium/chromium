@@ -142,6 +142,7 @@ struct InternalsDataPayload {
   bool experimental_triggering_enabled;
   InternalsDebugInfo debug_info;
   TieredRolloutInfo tiered_rollout_info;
+  bool hotkey_global_scope_migrated_v2;
 };
 
 struct InternalsDebugInfo {
@@ -289,6 +290,9 @@ interface InternalsPageHandler {
 
   // Revokes Actuation consent.
   RevokeActuationConsent();
+
+  // Sets whether the hotkey global scope migration V2 preference is set.
+  SetHotkeyGlobalScopeMigratedV2(bool migrated);
 };
 
 // Factory for InternalsPageHandler used in chrome://glic/internals.

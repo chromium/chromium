@@ -550,6 +550,12 @@ void GlicInternalsPageHandler::GetInternalsDataPayload(
   payload->experimental_triggering_enabled =
       base::FeatureList::IsEnabled(features::kGlicExperimentalTriggering);
 
+  if (g_browser_process->local_state()) {
+    payload->hotkey_global_scope_migrated_v2 =
+        g_browser_process->local_state()->GetBoolean(
+            prefs::kGlicHotkeyGlobalScopeMigratedV2);
+  }
+
   payload->config = std::move(config);
 
   mojom::InternalsDebugInfoPtr debug_info = mojom::InternalsDebugInfo::New();
@@ -987,12 +993,29 @@ void GlicInternalsPageHandler::RevokeExperimentalTriggeringConsent() {
 void GlicInternalsPageHandler::RevokeGlicConsent() {
   if (auto* service = GetGlicService()) {
     service->enabling().SetCompletedFre(glic::prefs::FreStatus::kNotStarted);
+    if (PrefService* local_state = g_browser_process->local_state()) {
+      local_state->ClearPref(prefs::kGlicLauncherEnabled);
+      local_state->ClearPref(prefs::kGlicLauncherHotkey);
+      local_state->ClearPref(prefs::kGlicHotkeyGlobalScopeEnabled);
+      local_state->ClearPref(prefs::kGlicHotkeyGlobalScopeMigratedV2);
+    }
   }
 }
 
 void GlicInternalsPageHandler::RevokeActuationConsent() {
   if (auto* service = GetGlicService()) {
     service->enabling().SetUserEnabledActuationOnWeb(false);
+  }
+}
+
+void GlicInternalsPageHandler::SetHotkeyGlobalScopeMigratedV2(bool migrated) {
+  if (PrefService* local_state = g_browser_process->local_state()) {
+    if (migrated) {
+      local_state->SetBoolean(prefs::kGlicHotkeyGlobalScopeMigratedV2, true);
+    } else {
+      local_state->ClearPref(prefs::kGlicHotkeyGlobalScopeMigratedV2);
+      local_state->ClearPref(prefs::kGlicHotkeyGlobalScopeEnabled);
+    }
   }
 }
 

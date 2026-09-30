@@ -251,6 +251,17 @@ td.property-name {
   padding: 8px;
 }
 
+.consents-container {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+}
+
+.consents-container cr-checkbox {
+  --cr-checkbox-label-padding-start: 8px;
+}
+
 cr-button {
   width: fit-content;
 }

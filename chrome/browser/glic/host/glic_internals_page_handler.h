@@ -58,6 +58,7 @@ class GlicInternalsPageHandler : public glic::mojom::InternalsPageHandler {
   void RevokeGlicConsent() override;
 
   void RevokeActuationConsent() override;
+  void SetHotkeyGlobalScopeMigratedV2(bool migrated) override;
 
  private:
   void OnInvokeSuccess(TriggerInvokeFromInternalsActionCallback callback,

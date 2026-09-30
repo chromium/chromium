@@ -6,6 +6,7 @@ import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import '//resources/cr_elements/cr_tabs/cr_tabs.js';
 
+import type {CrCheckboxElement} from '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
@@ -196,6 +197,16 @@ export class GlicInternalsAppElement extends CrLitElement {
       this.browserProxy_.handler.revokeExperimentalTriggeringConsent();
       this.fetchInternalsData_();
     }
+  }
+
+  protected onHotkeyGlobalScopeMigratedChange_(
+      e: CustomEvent<{value: boolean}>) {
+    const checked = (e.target as CrCheckboxElement).checked;
+    if (this.data_) {
+      this.data_.hotkeyGlobalScopeMigratedV2 = checked;
+    }
+    this.browserProxy_.handler.setHotkeyGlobalScopeMigratedV2(checked);
+    this.fetchInternalsData_();
   }
 
   protected onAutopushInputChange(e: Event) {

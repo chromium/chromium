@@ -588,19 +588,24 @@ export function getHtml(this: GlicInternalsAppElement) {
             ${this.invokeLogs_.map(
               log => html`<pre style="margin: 0;">${log}</pre>`)}
           </div>
-          ${this.data_?.experimentalTriggeringEnabled ? html`
-            <h3>Consents</h3>
-            <div style="display: flex; gap: 16px; align-items: center; flex-wrap: wrap;">
-              <cr-checkbox ?checked="${this.data_?.enablement?.freIsConsented}"
-                           ?disabled="${!this.data_?.enablement?.freIsConsented}"
-                           @change="${this.onGlicConsentChange_}">
-                Glic Consent
-              </cr-checkbox>
-              <cr-checkbox ?checked="${this.data_?.enablement?.actuationIsConsented}"
-                           ?disabled="${!this.data_?.enablement?.actuationIsConsented}"
-                           @change="${this.onActuationConsentChange_}">
-                Actuation Consent
-              </cr-checkbox>
+          <h3>Consents</h3>
+          <div class="consents-container">
+            <cr-checkbox ?checked="${!!this.data_?.enablement?.freIsConsented}"
+                         ?disabled="${!this.data_?.enablement?.freIsConsented}"
+                         @change="${this.onGlicConsentChange_}">
+              Glic Consent
+            </cr-checkbox>
+            <cr-checkbox ?checked="${!!this.data_?.enablement?.actuationIsConsented}"
+                         ?disabled="${!this.data_?.enablement?.actuationIsConsented}"
+                         @change="${this.onActuationConsentChange_}">
+              Actuation Consent
+            </cr-checkbox>
+            <cr-checkbox id="hotkeyGlobalScopeMigratedCheckbox"
+                         ?checked="${!!this.data_?.hotkeyGlobalScopeMigratedV2}"
+                         @change="${this.onHotkeyGlobalScopeMigratedChange_}">
+              Hotkey Global Scope Migrated V2
+            </cr-checkbox>
+            ${this.data_?.experimentalTriggeringEnabled ? html`
               <cr-checkbox ?checked="${this.isExperimentalOptInConsentMet_()}"
                            ?disabled="${!this.isExperimentalOptInConsentMet_()}"
                            @change="${this.onExperimentalConsentChange_}">
@@ -609,8 +614,8 @@ export function getHtml(this: GlicInternalsAppElement) {
               <cr-button ?disabled="${this.isAllConsentMet_()}" @click="${this.onExperimentalOptInClick_}">
                 Show Experimental Opt-In
               </cr-button>
-            </div>
-          ` : html``}
+            ` : html``}
+          </div>
         </div>
         <h2>Guest URL Presets</h2>
         ${this.data_?.config ? html`

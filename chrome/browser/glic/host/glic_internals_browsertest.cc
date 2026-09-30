@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/glic_internals_ui.h"
 #include "chrome/browser/glic/host/glic_ui.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
+#include "components/prefs/pref_change_registrar.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/test/browser_test.h"
@@ -208,6 +213,112 @@ IN_PROC_BROWSER_TEST_F(
   )js";
 
   EXPECT_EQ("ok", content::EvalJs(contents, kCheckDropdowns));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicInternalsBrowserTest,
+                       HotkeyGlobalScopeMigratedCheckboxTogglesLocalPref) {
+  content::WebContents* contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  ASSERT_TRUE(contents);
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(
+      contents, GURL("chrome://glic/internals")));
+  ASSERT_TRUE(contents->GetWebUI());
+
+  EXPECT_EQ(true, content::EvalJs(contents, kWaitForInternalsLoaded));
+
+  PrefService* local_state = g_browser_process->local_state();
+  ASSERT_TRUE(local_state);
+
+  // Set initial state to false.
+  local_state->SetBoolean(prefs::kGlicHotkeyGlobalScopeMigratedV2, false);
+
+  constexpr char kSwitchToDebugControlsAndVerifyInitial[] = R"js(
+    (async () => {
+      const app = document.querySelector('glic-internals-app');
+      if (!app) {
+        return 'app-missing';
+      }
+
+      // Switch to Debug Controls tab and wait for rendering.
+      app.selectedTabIndex_ = 1;
+      for (let i = 0; i < 50; ++i) {
+        await app.updateComplete;
+        if (app.shadowRoot.querySelector('#hotkeyGlobalScopeMigratedCheckbox')) {
+          break;
+        }
+        await new Promise(resolve => setTimeout(resolve, 50));
+      }
+
+      const checkbox =
+          app.shadowRoot.querySelector('#hotkeyGlobalScopeMigratedCheckbox');
+      if (!checkbox) {
+        return 'missing-checkbox';
+      }
+
+      if (checkbox.checked !== false) {
+        return `expected-unchecked-initially-got-${checkbox.checked}`;
+      }
+
+      return 'ok';
+    })()
+  )js";
+
+  EXPECT_EQ("ok",
+            content::EvalJs(contents, kSwitchToDebugControlsAndVerifyInitial));
+
+  // Toggle checkbox on.
+  {
+    base::RunLoop run_loop;
+    PrefChangeRegistrar pref_registrar;
+    pref_registrar.Init(local_state);
+    pref_registrar.Add(prefs::kGlicHotkeyGlobalScopeMigratedV2,
+                       run_loop.QuitClosure());
+
+    constexpr char kClickCheckbox[] = R"js(
+      (() => {
+        const app = document.querySelector('glic-internals-app');
+        const checkbox =
+            app.shadowRoot.querySelector('#hotkeyGlobalScopeMigratedCheckbox');
+        if (!checkbox) {
+          return 'missing-checkbox';
+        }
+        checkbox.click();
+        return 'ok';
+      })()
+    )js";
+
+    EXPECT_EQ("ok", content::EvalJs(contents, kClickCheckbox));
+    run_loop.Run();
+    EXPECT_TRUE(
+        local_state->GetBoolean(prefs::kGlicHotkeyGlobalScopeMigratedV2));
+  }
+
+  // Toggle checkbox off.
+  {
+    base::RunLoop run_loop;
+    PrefChangeRegistrar pref_registrar;
+    pref_registrar.Init(local_state);
+    pref_registrar.Add(prefs::kGlicHotkeyGlobalScopeMigratedV2,
+                       run_loop.QuitClosure());
+
+    constexpr char kClickCheckbox[] = R"js(
+      (() => {
+        const app = document.querySelector('glic-internals-app');
+        const checkbox =
+            app.shadowRoot.querySelector('#hotkeyGlobalScopeMigratedCheckbox');
+        if (!checkbox) {
+          return 'missing-checkbox';
+        }
+        checkbox.click();
+        return 'ok';
+      })()
+    )js";
+
+    EXPECT_EQ("ok", content::EvalJs(contents, kClickCheckbox));
+    run_loop.Run();
+    EXPECT_FALSE(
+        local_state->GetBoolean(prefs::kGlicHotkeyGlobalScopeMigratedV2));
+  }
 }
 
 }  // namespace glic
