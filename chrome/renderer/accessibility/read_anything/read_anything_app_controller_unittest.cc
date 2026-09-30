@@ -1960,7 +1960,7 @@ TEST_F(ReadAnythingAppControllerTest, ShouldBold_PDFFontWeight) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kPdfAccessibilityHeuristicEnhancements);
-  model().set_is_pdf(true);
+  model().SetIsPdf(true);
 
   ui::AXNodeData semibold_node;
   semibold_node.id = 3;
@@ -1990,7 +1990,7 @@ TEST_F(ReadAnythingAppControllerTest, IsOverline) {
 TEST_F(ReadAnythingAppControllerTest, IsSuperscriptAndIsSubscript_Pdf) {
   base::test::ScopedFeatureList feature_list(
       features::kPdfAccessibilityHeuristicEnhancements);
-  model().set_is_pdf(true);
+  model().SetIsPdf(true);
 
   ui::AXNodeData sup_node;
   sup_node.id = 2;
@@ -2019,7 +2019,7 @@ TEST_F(ReadAnythingAppControllerTest, IsSuperscriptAndIsSubscript_Pdf) {
 TEST_F(ReadAnythingAppControllerTest, IsSuperscriptAndIsSubscript_NotPdf) {
   base::test::ScopedFeatureList feature_list(
       features::kPdfAccessibilityHeuristicEnhancements);
-  model().set_is_pdf(false);
+  model().SetIsPdf(false);
 
   ui::AXNodeData sup_node;
   sup_node.id = 2;
@@ -2041,7 +2041,7 @@ TEST_F(ReadAnythingAppControllerTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kPdfAccessibilityHeuristicEnhancements);
-  model().set_is_pdf(true);
+  model().SetIsPdf(true);
 
   ui::AXNodeData sup_node;
   sup_node.id = 2;
@@ -2307,6 +2307,32 @@ TEST_F(ReadAnythingAppControllerTest, OnActiveAXTreeIDChanged) {
   controller().OnActiveAXTreeIDChanged(tree_ids[2], ukm::kInvalidSourceId,
                                        false);
   Mock::VerifyAndClearExpectations(distiller_);
+}
+
+TEST_F(ReadAnythingAppControllerTest, OnActiveAXTreeIDChanged_Pdf) {
+  ui::AXTreeID pdf_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeID web_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+
+  // Changing to a PDF tree updates IsPdf() to true and distillation method to
+  // Screen2x.
+  controller().OnActiveAXTreeIDChanged(pdf_tree_id, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+  EXPECT_TRUE(controller().IsPdf());
+  EXPECT_TRUE(model().IsPdf());
+  EXPECT_EQ(ReadAnythingAppModel::DistillationMethod::kScreen2x,
+            model().next_distillation_method());
+
+  // Changing to a non-PDF tree updates IsPdf() to false.
+  controller().OnActiveAXTreeIDChanged(web_tree_id, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/false);
+  EXPECT_FALSE(controller().IsPdf());
+  EXPECT_FALSE(model().IsPdf());
+
+  // Changing back to the PDF tree restores IsPdf() to true.
+  controller().OnActiveAXTreeIDChanged(pdf_tree_id, ukm::kInvalidSourceId,
+                                       /*is_pdf=*/true);
+  EXPECT_TRUE(controller().IsPdf());
+  EXPECT_TRUE(model().IsPdf());
 }
 
 TEST_F(ReadAnythingAppControllerTest, IsGoogleDocs) {
@@ -6337,7 +6363,7 @@ TEST_F(ReadAnythingAppControllerTest,
 TEST_F(ReadAnythingAppControllerTest, LogPageDuration_PdfInSidePanel) {
   base::HistogramTester histograms;
 
-  model().set_is_pdf(true);
+  model().SetIsPdf(true);
   model().set_active_presentation_state(
       read_anything::mojom::ReadAnythingPresentationState::kInSidePanel);
   model().set_page_start_time(base::TimeTicks::Now() - base::Seconds(15));
@@ -6353,7 +6379,7 @@ TEST_F(ReadAnythingAppControllerTest, LogPageDuration_PdfInSidePanel) {
 TEST_F(ReadAnythingAppControllerTest, LogPageDuration_WebPageInFullPage) {
   base::HistogramTester histograms;
 
-  model().set_is_pdf(false);
+  model().SetIsPdf(false);
   model().set_active_presentation_state(
       read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay);
   model().set_page_start_time(base::TimeTicks::Now() - base::Seconds(30));

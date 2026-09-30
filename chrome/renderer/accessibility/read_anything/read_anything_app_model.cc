@@ -105,7 +105,7 @@ void ReadAnythingAppModel::InsertIdIfNotIgnored(
     return;
   }
 
-  if (!a11y::IsIgnored(ax_node, is_pdf_)) {
+  if (!a11y::IsIgnored(ax_node, IsPdf())) {
     non_ignored_ids.insert(id);
   }
 }
@@ -389,7 +389,7 @@ bool ReadAnythingAppModel::IsNodeLikelyKeyPoints(ui::AXNode* node) const {
         node->GetRole() == ax::mojom::Role::kHeading) {
       return false;
     }
-    std::u16string node_text16 = a11y::GetTextContent(node, is_pdf_, IsDocs());
+    std::u16string node_text16 = a11y::GetTextContent(node, IsPdf(), IsDocs());
     std::string node_text = base::ToLowerASCII(base::UTF16ToUTF8(node_text16));
 
     static constexpr re2::LazyRE2 key_points_re = {kKeyPointsRegex};
@@ -580,6 +580,31 @@ void ReadAnythingAppModel::UpdateDistillationForDocsIfNeeded() {
   }
 }
 
+bool ReadAnythingAppModel::IsPdf() const {
+  if (tree_infos_.contains(active_tree_id_)) {
+    return tree_infos_.at(active_tree_id_)->is_pdf;
+  }
+
+  auto it = pending_is_pdf_.find(active_tree_id_);
+  if (it != pending_is_pdf_.end()) {
+    return it->second;
+  }
+
+  return false;
+}
+
+void ReadAnythingAppModel::SetIsPdf(bool is_pdf) {
+  if (active_tree_id_ == ui::AXTreeIDUnknown()) {
+    return;
+  }
+
+  if (tree_infos_.contains(active_tree_id_)) {
+    tree_infos_.at(active_tree_id_)->is_pdf = is_pdf;
+  } else {
+    pending_is_pdf_[active_tree_id_] = is_pdf;
+  }
+}
+
 bool ReadAnythingAppModel::IsDocs() const {
   // Sometimes during an initial page load, this may be called before the
   // tree has been initialized. If this happens, IsDocs should return false
@@ -745,9 +770,13 @@ void ReadAnythingAppModel::EnsureAXTreeExists(const ui::AXTreeID& tree_id) {
   for (auto& observer : observers_) {
     observer.OnTreeAdded(new_tree.get());
   }
-  tree_infos_.emplace(
-      tree_id, std::make_unique<AXTreeInfo>(
-                   std::make_unique<ui::AXTreeManager>(std::move(new_tree))));
+  auto tree_info = std::make_unique<AXTreeInfo>(
+      std::make_unique<ui::AXTreeManager>(std::move(new_tree)));
+  if (pending_is_pdf_.contains(tree_id)) {
+    tree_info->is_pdf = pending_is_pdf_[tree_id];
+    pending_is_pdf_.erase(tree_id);
+  }
+  tree_infos_.emplace(tree_id, std::move(tree_info));
   // If we previously received UKM source info for this tree_id, set the
   // UKM source now that the tree information has been added to tree_infos_.
   if (tree_id == active_tree_id_ && pending_ukm_sources_.count(tree_id) > 0) {
@@ -772,11 +801,7 @@ void ReadAnythingAppModel::UpdateActiveTreeIfNeeded(
   // in case there has been a delay in receiving valid accessibility tree
   // updates.
   if (root_tree_id_ == tree_id) {
-    // For PDFs, the active tree should remain the child tree containing the PDF
-    // content, rather than falling back to the root PDF viewer frame tree.
-    if (!is_pdf_) {
-      SetRootTreeId(root_tree_id_);
-    }
+    SetRootTreeId(root_tree_id_);
   } else if (active_tree_id_ != ui::AXTreeIDUnknown() &&
              active_tree_id_ != tree_id &&
              child_tree_ids_.find(tree_id) != child_tree_ids_.end()) {
@@ -843,6 +868,8 @@ void ReadAnythingAppModel::QueueAccessibilityUpdates(
 }
 
 void ReadAnythingAppModel::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
+  pending_is_pdf_.erase(tree_id);
+
   // `OnAXTreeDestroyed()` is called whenever the `AXActionHandler` in the
   // browser learns that an `AXTree` was destroyed. This could be from any tab,
   // not just the active one; therefore many `tree_id`s will not be found in
@@ -1245,7 +1272,7 @@ void ReadAnythingAppModel::ProcessGeneratedEvents(
         // displaying). To avoid distilling and causing RM to flicker, only
         // distill if the size of the updated tree is larger than before (to
         // capture the complete PDF load mentioned earlier).
-        if (is_pdf_ && tree_id == active_tree_id_ &&
+        if (IsPdf() && tree_id == active_tree_id_ &&
             prev_tree_size < tree_size) {
           requires_distillation_ = true;
           reset_distillation_delay_timer_ = true;
@@ -2026,13 +2053,13 @@ void ReadAnythingAppModel::FlattenAXTree(ui::AXSerializableTree* tree) {
       // Only process nodes that actually contribute readable
       // text. This helper (from read_anything_node_utils.cc) filters out
       // decorative/empty tags that shouldn't be part of the text alignment.
-      if (!a11y::IsTextForReadAnything(node, is_pdf_, IsDocs())) {
+      if (!a11y::IsTextForReadAnything(node, IsPdf(), IsDocs())) {
         continue;
       }
 
       // Use a11y::GetTextContent to get the node's normalized text. Add this
       // text to the global string and record the node's position.
-      std::u16string node_text = a11y::GetTextContent(node, is_pdf_, IsDocs());
+      std::u16string node_text = a11y::GetTextContent(node, IsPdf(), IsDocs());
       if (!node_text.empty()) {
         flattened_ax_tree_nodes_.push_back(
             {node->id(), node_text, global_ax_tree_text_.length()});

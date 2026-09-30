@@ -275,6 +275,82 @@ TEST_F(ReadAnythingAppModelTest, SetTreeInfoUrlInformation_IsNotDocs) {
   EXPECT_FALSE(model().IsDocs());
 }
 
+TEST_F(ReadAnythingAppModelTest, SetIsPdf_IsTrackedPerTree) {
+  ui::AXTreeID pdf_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeID web_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+
+  model().SetActiveTreeId(pdf_tree_id);
+  model().SetIsPdf(true);
+  EXPECT_TRUE(model().IsPdf());
+
+  // A tree that was never marked as a PDF must not inherit the state.
+  model().SetActiveTreeId(web_tree_id);
+  EXPECT_FALSE(model().IsPdf());
+
+  model().SetActiveTreeId(pdf_tree_id);
+  EXPECT_TRUE(model().IsPdf());
+}
+
+TEST_F(ReadAnythingAppModelTest, SetIsPdf_PreservesStateAcrossPendingUpdates) {
+  ui::AXTreeID pdf_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeID web_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+
+  // Initialize both trees in the model.
+  ui::AXTreeUpdate pdf_init;
+  test::SetUpdateTreeID(&pdf_init, pdf_tree_id);
+  pdf_init.root_id = 1;
+  pdf_init.nodes = {test::TextNode(1)};
+  ApplyAccessibilityUpdates(pdf_tree_id, {std::move(pdf_init)});
+
+  ui::AXTreeUpdate web_init;
+  test::SetUpdateTreeID(&web_init, web_tree_id);
+  web_init.root_id = 1;
+  web_init.nodes = {test::TextNode(1)};
+  ApplyAccessibilityUpdates(web_tree_id, {std::move(web_init)});
+
+  // Set active tree to PDF tree and mark it as a PDF.
+  model().SetActiveTreeId(pdf_tree_id);
+  model().SetIsPdf(true);
+  EXPECT_TRUE(model().IsPdf());
+
+  // Switch to web tree and ensure it is not a PDF.
+  model().SetActiveTreeId(web_tree_id);
+  model().SetIsPdf(false);
+  EXPECT_FALSE(model().IsPdf());
+
+  // Queue updates on the PDF tree while the web tree is active.
+  ui::AXTreeUpdate pdf_update;
+  test::SetUpdateTreeID(&pdf_update, pdf_tree_id);
+  ui::AXNodeData banner_node;
+  banner_node.id = 2;
+  banner_node.role = ax::mojom::Role::kBanner;
+  ui::AXNodeData static_text_node = test::TextNode(
+      /* id= */ 3, l10n_util::GetStringUTF16(IDS_PDF_OCR_RESULT_BEGIN));
+  banner_node.child_ids = {static_text_node.id};
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.child_ids = {banner_node.id};
+  pdf_update.root_id = 1;
+  pdf_update.nodes = {std::move(root), std::move(banner_node),
+                      std::move(static_text_node)};
+  QueueAccessibilityUpdates(pdf_tree_id, {std::move(pdf_update)});
+
+  // Switch back to the PDF tree; verify it retained its PDF status and
+  // unserialize pending updates.
+  model().SetActiveTreeId(pdf_tree_id);
+  EXPECT_TRUE(model().IsPdf());
+  model().UnserializePendingUpdates(pdf_tree_id);
+
+  // The OCR banner node and child text node should be ignored because the tree
+  // is a PDF.
+  EXPECT_TRUE(GetNotIgnoredIds({{2, 3}}).empty());
+
+  // Switch back to web tree; verify web tree still is not a PDF.
+  model().SetActiveTreeId(web_tree_id);
+  EXPECT_FALSE(model().IsPdf());
+}
+
 TEST_F(ReadAnythingAppModelTest,
        SetTreeInfoUrlInformation_FirstTreeIsNotReload) {
   ui::AXTreeUpdate update;
@@ -390,7 +466,7 @@ TEST_F(ReadAnythingAppModelTest, InsertIdIfNotIgnored_TextFieldsNotIgnored) {
 
 TEST_F(ReadAnythingAppModelTest,
        InsertIdIfNotIgnored_InaccessiblePDFPageNodes) {
-  model().set_is_pdf(true);
+  model().SetIsPdf(true);
 
   // PDF OCR output contains kBanner and kContentInfo (each with a static text
   // node child) to mark page start/end.
@@ -1234,7 +1310,7 @@ TEST_F(ReadAnythingAppModelTest,
 }
 
 TEST_F(ReadAnythingAppModelTest, PdfEvents_DontSetRequiresDistillation) {
-  model().set_is_pdf(true);
+  model().SetIsPdf(true);
 
   ui::AXTreeUpdate initial_update;
   test::SetUpdateTreeID(&initial_update, tree_id_);
@@ -1259,7 +1335,7 @@ TEST_F(ReadAnythingAppModelTest, PdfEvents_DontSetRequiresDistillation) {
 
 TEST_F(ReadAnythingAppModelTest,
        PdfEvents_InactiveTree_DoesNotSetRequiresDistillation) {
-  model().set_is_pdf(true);
+  model().SetIsPdf(true);
 
   // Set the active tree ID to be tree_id_ (which is default active tree in
   // SetUp). Now, create an inactive tree.
@@ -3325,7 +3401,7 @@ TEST_F(
 }
 
 TEST_F(ReadAnythingAppModelScreen2xTest, PdfEvents_SetRequiresDistillation) {
-  model().set_is_pdf(true);
+  model().SetIsPdf(true);
 
   ui::AXTreeUpdate initial_update;
   test::SetUpdateTreeID(&initial_update, tree_id_);

@@ -131,10 +131,8 @@ class ReadAnythingAppModel {
     // Cached original page metrics for this tree.
     mutable std::optional<OriginalPageMetrics> original_page_metrics;
 
-    // TODO(41496290): Include any information that is associated with a
-    // particular AXTree, namely is_pdf. Right now, this is set every time the
-    // active ax tree id changes; instead, it should be set once when a new tree
-    // is added.
+    // Whether this tree is a PDF accessibility tree.
+    bool is_pdf = false;
   };
 
   // Stores the necessary information to determine if one link is different
@@ -713,8 +711,8 @@ class ReadAnythingAppModel {
   void SetDefaultDistillationMethod();
 
   // PDF handling.
-  bool is_pdf() const { return is_pdf_; }
-  void set_is_pdf(bool is_pdf) { is_pdf_ = is_pdf; }
+  bool IsPdf() const;
+  void SetIsPdf(bool is_pdf);
 
   void AddObserver(ModelObserver* observer);
   void RemoveObserver(ModelObserver* observer);
@@ -722,11 +720,10 @@ class ReadAnythingAppModel {
   // TODO: crbug.com/416483312 - Longer term, reading mode should support
   // distilling from multiple trees, if they have important content.
   // Currently, reading mode only distills from a child tree if the root tree
-  // has no distillable content or if the page is a PDF.
+  // has no distillable content.
 
   // Signal if reading mode should allow use of child trees for the active tree
-  // if the web content's root AXTree has no distillable content or if the page
-  // is a PDF.
+  // if the web content's root AXTree has no distillable content.
   void AllowChildTreeForActiveTree(bool use_child_tree);
 
   bool SelectionNodesContainedInDistilledContent() const;
@@ -972,9 +969,7 @@ class ReadAnythingAppModel {
   // State.
   std::map<ui::AXTreeID, std::unique_ptr<AXTreeInfo>> tree_infos_;
 
-  // The AXTreeID of the currently active web contents. For PDFs, this will
-  // always be the AXTreeID of the main web contents (not the PDF iframe or its
-  // child).
+  // The AXTreeID of the currently active tree.
   ui::AXTreeID active_tree_id_ = ui::AXTreeIDUnknown();
 
   // The AXTreeID of the root tree of the web contents. This will be the same
@@ -985,19 +980,6 @@ class ReadAnythingAppModel {
   // For determining whether the latest tree is a reload or new page.
   std::string previous_tree_url_;
   base::OnceCallback<void()> set_url_information_callback_;
-
-  // PDFs are handled differently than regular webpages. That is because they
-  // are stored in a different web contents and the actual PDF text is inside an
-  // iframe. In order to get tree information from the PDF web contents, we need
-  // to enable accessibility on it first. Then, we will get tree updates from
-  // the iframe to send to the distiller.
-  // This is the flow:
-  //    main web contents -> pdf web contents -> iframe
-  // In accessibility terms:
-  //    AXTree -(via child tree)-> AXTree -(via child tree)-> AXTree
-  // The last AXTree is the one we want to send to the distiller since it
-  // contains the PDF text.
-  bool is_pdf_ = false;
 
   // Distillation is slow and happens out-of-process when Screen2x is running.
   // This boolean marks when distillation is in progress to avoid sending
@@ -1173,6 +1155,7 @@ class ReadAnythingAppModel {
       SidePanelDistillationMode::kMainContent;
 
   std::map<ui::AXTreeID, ukm::SourceId> pending_ukm_sources_;
+  std::map<ui::AXTreeID, bool> pending_is_pdf_;
 
   // Possible child tree ids that could be used to distill content if the
   // root tree has no distillable content. This will only be used if

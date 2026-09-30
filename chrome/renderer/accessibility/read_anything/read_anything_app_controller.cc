@@ -560,7 +560,7 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
 
   model_.SetRootTreeId(tree_id);
   model_.SetUkmSourceIdForTree(tree_id, ukm_source_id);
-  model_.set_is_pdf(is_pdf);
+  model_.SetIsPdf(is_pdf);
   // Reset the PDF draw timer (even if RM is hidden). The debouncer will check
   // the state of RM at that point again and only act if it's still relevant.
   if (is_pdf) {
@@ -586,9 +586,9 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
   // starts with the flag-determined distillation method before potentially
   // falling back to Screen2x if needed. If the new page is a PDF, the
   // distillation method is set to Screen2x directly.
-  // We also update |current_content_distillation_method| since showLoading will
+  // Also update `current_content_distillation_method` since showLoading will
   // clear the previous active distillation in case there's any.
-  auto initial_method = GetInitialDistillationMethod(is_pdf);
+  auto initial_method = GetInitialDistillationMethod();
   model_.set_next_distillation_method(initial_method);
   model_.set_current_content_distillation_method(initial_method);
 
@@ -628,17 +628,17 @@ void ReadAnythingAppController::PrepareForNewContentDistillation() {
 }
 
 ReadAnythingAppModel::DistillationMethod
-ReadAnythingAppController::GetInitialDistillationMethod(bool is_pdf) const {
+ReadAnythingAppController::GetInitialDistillationMethod() const {
   if (forced_distillation_method_for_testing_) {
     return *forced_distillation_method_for_testing_;
   }
 
-  // If |is_pdf| = true, or if phrase highlighting is enabled, or if the current
-  // page is a Google Doc, override IsReadAnythingWithReadabilityEnabled flag
-  // and return kScreen2x.
+  // If the current page is a PDF or a Google Doc, or if phrase highlighting is
+  // enabled, override IsReadAnythingWithReadabilityEnabled flag and return
+  // kScreen2x.
   // TODO: crbug.com/444029483- Update the phrase highlighting implementation
   // so that it works with Readability.
-  return is_pdf || IsGoogleDocs() ||
+  return IsPdf() || IsGoogleDocs() ||
                  !features::IsReadAnythingWithReadabilityEnabled() ||
                  features::IsReadAnythingReadAloudPhraseHighlightingEnabled()
              ? ReadAnythingAppModel::DistillationMethod::kScreen2x
@@ -949,13 +949,11 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     distillations_completed_++;
   }
 
-  // If there's no distillable content on the active tree or if the page is a
-  // PDF, allow child tree content to be distilled. This is needed to distill
-  // content on pages with a single root node containing an iframe that
-  // contains a tree with all the page's content, as well as for PDFs where
-  // the content is also in a child tree.
-  model_.AllowChildTreeForActiveTree(model_.content_node_ids().empty() ||
-                                     model_.is_pdf());
+  // If there's no distillable content on the active tree, allow child tree
+  // content to be distilled. This is needed to distill content on pages with a
+  // single root node containing an iframe that contains a tree with all the
+  // page's content.
+  model_.AllowChildTreeForActiveTree(model_.content_node_ids().empty());
 
   // Draw the selection in the side panel (if one exists in the main panel).
   if (!PostProcessSelection()) {
@@ -991,7 +989,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
                                kDistillationEmpty);
       DrawEmptyState();
     }
-  } else if (!model_.is_pdf() || !pdf_draw_debouncer_->IsRunning()) {
+  } else if (!IsPdf() || !pdf_draw_debouncer_->IsRunning()) {
     SetDistillationState(read_anything::mojom::ReadAnythingDistillationState::
                              kDistillationWithContent);
   }
@@ -1783,7 +1781,7 @@ std::string ReadAnythingAppController::GetHtmlTag(
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
   DCHECK(ax_node);
 
-  return a11y::GetHtmlTag(ax_node, model_.is_pdf(), model_.IsDocs());
+  return a11y::GetHtmlTag(ax_node, IsPdf(), model_.IsDocs());
 }
 
 std::string ReadAnythingAppController::GetLanguage(
@@ -1804,7 +1802,7 @@ std::u16string ReadAnythingAppController::GetTextContent(
     return std::u16string();
   }
 
-  return a11y::GetTextContent(ax_node, model_.is_pdf(), IsGoogleDocs());
+  return a11y::GetTextContent(ax_node, IsPdf(), IsGoogleDocs());
 }
 
 std::u16string ReadAnythingAppController::GetPrefixText(
@@ -1815,7 +1813,7 @@ std::u16string ReadAnythingAppController::GetPrefixText(
     return std::u16string();
   }
 
-  return a11y::GetPrefixText(ax_node, model_.is_pdf(), IsGoogleDocs());
+  return a11y::GetPrefixText(ax_node, IsPdf(), IsGoogleDocs());
 }
 
 std::string ReadAnythingAppController::GetTextDirection(
@@ -1988,8 +1986,7 @@ bool ReadAnythingAppController::ShouldBold(ui::AXNodeID ax_node_id) const {
     return true;
   }
 
-  if (!features::IsPdfAccessibilityHeuristicEnhancementsEnabled() ||
-      !model_.is_pdf()) {
+  if (!features::IsPdfAccessibilityHeuristicEnhancementsEnabled() || !IsPdf()) {
     return false;
   }
 
@@ -2013,8 +2010,7 @@ bool ReadAnythingAppController::IsOverline(ui::AXNodeID ax_node_id) const {
 bool ReadAnythingAppController::IsSuperscript(ui::AXNodeID ax_node_id) const {
   // Outside of PDFs, superscripts already come with a <sup> html tag, so
   // wrapping the text node again would nest the markup.
-  if (!model_.is_pdf() ||
-      !features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+  if (!IsPdf() || !features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
     return false;
   }
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
@@ -2028,8 +2024,7 @@ bool ReadAnythingAppController::IsSuperscript(ui::AXNodeID ax_node_id) const {
 bool ReadAnythingAppController::IsSubscript(ui::AXNodeID ax_node_id) const {
   // Outside of PDFs, subscripts already come with a <sub> html tag, so
   // wrapping the text node again would nest the markup.
-  if (!model_.is_pdf() ||
-      !features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
+  if (!IsPdf() || !features::IsPdfAccessibilityHeuristicEnhancementsEnabled()) {
     return false;
   }
   ui::AXNode* ax_node = model_.GetAXNode(ax_node_id);
@@ -2087,7 +2082,7 @@ bool ReadAnythingAppController::IsGoogleDocs() const {
 }
 
 bool ReadAnythingAppController::IsPdf() const {
-  return model_.is_pdf();
+  return model_.IsPdf();
 }
 
 std::vector<std::string> ReadAnythingAppController::GetSupportedFonts() {
@@ -2537,7 +2532,7 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
   // page_handler_->OnSelectionChange to be incorrectly triggered, resulting
   // in a failing DCHECK. Therefore, return early if this happens. This check
   // does not apply to pdfs.
-  if (!model_.is_pdf() && (!focus_node->IsText() || !anchor_node->IsText())) {
+  if (!IsPdf() && (!focus_node->IsText() || !anchor_node->IsText())) {
     return;
   }
 
@@ -2559,7 +2554,7 @@ void ReadAnythingAppController::OnSelectionChange(ui::AXNodeID anchor_node_id,
 
 void ReadAnythingAppController::OnCollapseSelection() {
   model_.increment_selections_from_reading_mode();
-  if (model_.is_pdf()) {
+  if (IsPdf()) {
     // CollapseSelection does nothing in pdfs, so just set an empty selection
     // instead.
     page_handler_->OnSelectionChange(
@@ -2587,13 +2582,13 @@ bool ReadAnythingAppController::IsSpeechTreeInitialized() {
 
 std::u16string ReadAnythingAppController::GetCurrentTextContent() {
   return read_aloud_model_
-      .GetCurrentText(model_.is_pdf(), model_.IsDocs(),
+      .GetCurrentText(IsPdf(), model_.IsDocs(),
                       model_.GetCurrentlyVisibleNodes())
       .text;
 }
 
 void ReadAnythingAppController::PreprocessTextForSpeech() {
-  read_aloud_model_.PreprocessTextForSpeech(model_.is_pdf(), model_.IsDocs(),
+  read_aloud_model_.PreprocessTextForSpeech(IsPdf(), model_.IsDocs(),
                                             model_.GetCurrentlyVisibleNodes());
 }
 
@@ -2802,7 +2797,7 @@ v8::Local<v8::Value> ReadAnythingAppController::GetCurrentTextSegments() {
 
   std::vector<ReadAloudTextSegment> nodes =
       read_aloud_model_.GetCurrentTextSegments(
-          model_.is_pdf(), model_.IsDocs(), model_.GetCurrentlyVisibleNodes());
+          IsPdf(), model_.IsDocs(), model_.GetCurrentlyVisibleNodes());
 
   v8::Local<v8::Array> highlight_array = v8::Array::New(isolate, nodes.size());
   for (int i = 0; i < (int)nodes.size(); i++) {
@@ -2925,7 +2920,7 @@ void ReadAnythingAppController::LogPageDuration() {
   base::TimeDelta duration =
       base::TimeTicks::Now() - model_.page_start_time().value();
   model_.set_page_start_time(std::nullopt);
-  std::string page_type = model_.is_pdf() ? "Pdf" : "WebPage";
+  std::string page_type = IsPdf() ? "Pdf" : "WebPage";
   std::string view_mode =
       (model_.active_presentation_state() ==
        read_anything::mojom::ReadAnythingPresentationState::kInImmersiveOverlay)
