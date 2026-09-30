@@ -276,6 +276,8 @@ class MODULES_EXPORT BaseRenderingContext2D
     return color_params_.GetAlphaType() == kOpaque_SkAlphaType;
   }
   bool IsPaintable() const override;
+  scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
+      SourceDrawingBuffer source_buffer) override;
   void DisableAccelerationForCanvas2D() final { DisableAcceleration(); }
   void PageVisibilityChanged() override {}
   void Reset() override;

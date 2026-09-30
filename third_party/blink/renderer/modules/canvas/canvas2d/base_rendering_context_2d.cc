@@ -180,6 +180,19 @@ bool BaseRenderingContext2D::IsPaintable() const {
   return HasResourceProvider();
 }
 
+scoped_refptr<StaticBitmapImage>
+BaseRenderingContext2D::PaintRenderingResultsToSnapshot(
+    SourceDrawingBuffer source_buffer) {
+  if (!IsResourceProviderValid()) {
+    return nullptr;
+  }
+  FlushCanvas(FlushReason::kOther);
+  if (shared_image_provider_) {
+    return shared_image_provider_->Snapshot();
+  }
+  return bitmap_provider_->Snapshot();
+}
+
 const MemoryManagedPaintCanvas* BaseRenderingContext2D::GetPaintCanvas() const {
   if (isContextLost() || !IsPaintable()) [[unlikely]] {
     return nullptr;

@@ -406,19 +406,6 @@ scoped_refptr<StaticBitmapImage> OffscreenCanvasRenderingContext2D::GetImage() {
   return bitmap_provider_->Snapshot();
 }
 
-scoped_refptr<StaticBitmapImage>
-OffscreenCanvasRenderingContext2D::PaintRenderingResultsToSnapshot(
-    SourceDrawingBuffer source_buffer) {
-  if (!IsResourceProviderValid()) {
-    return nullptr;
-  }
-  FlushCanvas(FlushReason::kOther);
-  if (shared_image_provider_) {
-    return shared_image_provider_->Snapshot();
-  }
-  return bitmap_provider_->Snapshot();
-}
-
 V8RenderingContext* OffscreenCanvasRenderingContext2D::AsV8RenderingContext() {
   return nullptr;
 }

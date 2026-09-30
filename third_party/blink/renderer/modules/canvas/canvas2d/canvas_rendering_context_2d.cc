@@ -762,19 +762,6 @@ CanvasRenderingContext2D::PaintRenderingResultsToResource(
   return si_provider->ProduceCanvasResource();
 }
 
-scoped_refptr<StaticBitmapImage>
-CanvasRenderingContext2D::PaintRenderingResultsToSnapshot(
-    SourceDrawingBuffer source_buffer) {
-  if (!IsResourceProviderValid()) {
-    return nullptr;
-  }
-  FlushCanvas(FlushReason::kOther);
-  if (shared_image_provider_) {
-    return shared_image_provider_->Snapshot();
-  }
-  return bitmap_provider_->Snapshot();
-}
-
 const std::optional<cc::PaintRecord>&
 CanvasRenderingContext2D::GetLastRecording() {
   return last_recording_;
