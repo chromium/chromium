@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/android/device_info.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/search/search.h"
@@ -241,6 +242,47 @@ TEST_F(NewTabPageUrlHandlerTest,
   // Act and assert.
   EXPECT_TRUE(HandleAndroidNativePageURL(&url, profile()));
   EXPECT_EQ(chrome::kChromeUINativeNewTabURL, url.spec());
+}
+
+TEST_F(NewTabPageUrlHandlerTest, HistoryURLRedirection_FeatureEnabled_Desktop) {
+  base::android::device_info::set_is_desktop_for_testing(true);
+  base::ScopedClosureRunner reset_desktop(base::BindOnce(
+      &base::android::device_info::reset_is_desktop_for_testing));
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      chrome::android::kAndroidDesktopWebUiHistory);
+
+  GURL url("chrome-native://history");
+  EXPECT_TRUE(HandleAndroidNativePageURL(&url, profile()));
+  EXPECT_EQ("chrome://history/", url.spec());
+}
+
+TEST_F(NewTabPageUrlHandlerTest,
+       HistoryURLRedirection_FeatureEnabled_NonDesktop) {
+  base::android::device_info::set_is_desktop_for_testing(false);
+  base::ScopedClosureRunner reset_desktop(base::BindOnce(
+      &base::android::device_info::reset_is_desktop_for_testing));
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      chrome::android::kAndroidDesktopWebUiHistory);
+
+  GURL url("chrome-native://history");
+  EXPECT_FALSE(HandleAndroidNativePageURL(&url, profile()));
+  EXPECT_EQ("chrome-native://history/", url.spec());
+}
+
+TEST_F(NewTabPageUrlHandlerTest,
+       HistoryURLRedirection_FeatureDisabled_Desktop) {
+  base::android::device_info::set_is_desktop_for_testing(true);
+  base::ScopedClosureRunner reset_desktop(base::BindOnce(
+      &base::android::device_info::reset_is_desktop_for_testing));
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      chrome::android::kAndroidDesktopWebUiHistory);
+
+  GURL url("chrome-native://history");
+  EXPECT_FALSE(HandleAndroidNativePageURL(&url, profile()));
+  EXPECT_EQ("chrome-native://history/", url.spec());
 }
 
 }  // namespace chrome::android

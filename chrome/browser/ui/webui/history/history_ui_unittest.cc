@@ -7,8 +7,14 @@
 #include <memory>
 #include <vector>
 
+#include "base/functional/callback_helpers.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/history/browsing_history_handler.h"
 #include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/common/url_constants.h"
@@ -43,6 +49,9 @@ class HistoryUITest : public testing::Test {
   }
 
   void TearDown() override {
+#if BUILDFLAG(IS_ANDROID)
+    base::android::device_info::reset_is_desktop_for_testing();
+#endif  // BUILDFLAG(IS_ANDROID)
     web_ui_.set_web_contents(nullptr);
     web_contents_.reset();
   }
@@ -137,6 +146,36 @@ TEST_F(HistoryUITest, OpenClearBrowsingDataWithNullNativeWindowDoesNotCrash) {
   history_ui->GetBrowsingHistoryHandlerForTesting()
       ->OpenClearBrowsingDataDialog();
 }
-#endif
+
+TEST_F(HistoryUITest, WebUIConfigEnabledOnlyWhenFeatureEnabled) {
+  HistoryUIConfig config;
+  {
+    base::android::device_info::set_is_desktop_for_testing(false);
+    base::ScopedClosureRunner reset_desktop(base::BindOnce(
+        &base::android::device_info::reset_is_desktop_for_testing));
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(
+        chrome::android::kAndroidDesktopWebUiHistory);
+    EXPECT_FALSE(config.IsWebUIEnabled(profile()));
+
+    base::android::device_info::set_is_desktop_for_testing(true);
+    EXPECT_TRUE(config.IsWebUIEnabled(profile()));
+  }
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndDisableFeature(
+        chrome::android::kAndroidDesktopWebUiHistory);
+    base::android::device_info::set_is_desktop_for_testing(true);
+    base::ScopedClosureRunner reset_desktop(base::BindOnce(
+        &base::android::device_info::reset_is_desktop_for_testing));
+    EXPECT_FALSE(config.IsWebUIEnabled(profile()));
+  }
+}
+#else
+TEST_F(HistoryUITest, WebUIConfigEnabledByDefaultOnDesktop) {
+  HistoryUIConfig config;
+  EXPECT_TRUE(config.IsWebUIEnabled(profile()));
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace

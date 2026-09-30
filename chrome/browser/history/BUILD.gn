@@ -111,6 +111,16 @@ if (is_android) {
   import("//chrome/browser/buildflags.gni")
   import("//third_party/jni_zero/jni_zero.gni")
 
+  android_library("features_java") {
+    sources =
+        [ "java/src/org/chromium/chrome/browser/history/HistoryFeatures.java" ]
+
+    deps = [
+      "//base:base_java",
+      "//chrome/browser/flags:java",
+    ]
+  }
+
   android_library("java") {
     srcjar_deps = [ ":jni_headers" ]
     sources = [
@@ -125,6 +135,7 @@ if (is_android) {
     deps = [
       ":java_resources",
       "//base:base_java",
+      "//chrome/browser/flags:java",
       "//chrome/browser/tab:java",
       "//components/browser_ui/bottomsheet/android:java",
       "//content/public/android:content_java",

@@ -12,6 +12,7 @@ import androidx.annotation.IntDef;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.history.HistoryFeatures;
 import org.chromium.chrome.browser.settings.SettingsInTab;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -87,7 +88,7 @@ public interface NativePage {
     /**
      * @param defaultColor Default color if not customized.
      * @return The toolbar (or browser controls) color used in the compositor scene layer.
-     * @see {@link Toolbar#getToolbarSceneLayerBackground()}
+     * @see Toolbar#getToolbarSceneLayerBackground()
      */
     default @ColorInt int getToolbarSceneLayerBackground(@ColorInt int defaultColor) {
         return defaultColor;
@@ -296,6 +297,9 @@ public interface NativePage {
         } else if (UrlConstants.DOWNLOADS_HOST.equals(host)) {
             return NativePageType.DOWNLOADS;
         } else if (UrlConstants.HISTORY_HOST.equals(host)) {
+            if (HistoryFeatures.isAndroidDesktopWebUiHistoryEnabled()) {
+                return NativePageType.NONE;
+            }
             return NativePageType.HISTORY;
         } else if (UrlConstants.RECENT_TABS_HOST.equals(host) && !isIncognito) {
             return NativePageType.RECENT_TABS;

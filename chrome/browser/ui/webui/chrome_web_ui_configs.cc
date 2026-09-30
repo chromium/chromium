@@ -69,6 +69,10 @@
 #include "printing/buildflags/buildflags.h"
 #include "ui/webui/buildflags.h"
 
+#if BUILDFLAG(ENABLE_WEBUI_HISTORY)
+#include "chrome/browser/ui/webui/history/history_ui.h"
+#endif  // BUILDFLAG(ENABLE_WEBUI_HISTORY)
+
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
@@ -102,7 +106,6 @@
 #include "chrome/browser/ui/webui/downloads/downloads_ui.h"
 #include "chrome/browser/ui/webui/drive_picker_host/drive_picker_host_ui.h"
 #include "chrome/browser/ui/webui/feedback/feedback_ui.h"
-#include "chrome/browser/ui/webui/history/history_ui.h"
 #include "chrome/browser/ui/webui/infobar_internals/infobar_internals_ui.h"
 #include "chrome/browser/ui/webui/inspect/inspect_ui.h"
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
@@ -338,6 +341,10 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<CertificateViewerUIConfig>());
 #endif
 
+#if BUILDFLAG(ENABLE_WEBUI_HISTORY)
+  map.AddWebUIConfig(std::make_unique<HistoryUIConfig>());
+#endif  // BUILDFLAG(ENABLE_WEBUI_HISTORY)
+
 #if BUILDFLAG(IS_ANDROID)
   map.AddWebUIConfig(
       std::make_unique<chrome_finds_internals::ChromeFindsInternalsUIConfig>());
@@ -367,7 +374,6 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<DownloadsUIConfig>());
   map.AddWebUIConfig(std::make_unique<DrivePickerHostUIConfig>());
   map.AddWebUIConfig(std::make_unique<FeedbackUIConfig>());
-  map.AddWebUIConfig(std::make_unique<HistoryUIConfig>());
   map.AddWebUIConfig(std::make_unique<HistorySidePanelUIConfig>());
   map.AddWebUIConfig(std::make_unique<HistoryClustersSidePanelUIConfig>());
   map.AddWebUIConfig(std::make_unique<InfobarInternalsUIConfig>());

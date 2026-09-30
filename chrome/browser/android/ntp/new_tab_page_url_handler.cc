@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/android/device_info.h"
 #include "base/command_line.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
@@ -63,6 +64,21 @@ bool HandleAndroidNativePageURL(GURL* url,
       return true;
     }
   }
+
+  // LINT.IfChange(AndroidDesktopWebUiHistory)
+  if (base::android::device_info::is_desktop() &&
+      base::FeatureList::IsEnabled(
+          chrome::android::kAndroidDesktopWebUiHistory)) {
+    if (url->SchemeIs(chrome::kChromeNativeScheme) &&
+        url->GetHost() == kChromeUIHistoryHost) {
+      GURL::Replacements replacements;
+      replacements.SetSchemeStr(content::kChromeUIScheme);
+      *url = url->ReplaceComponents(replacements);
+      return true;
+    }
+  }
+  // LINT.ThenChange(//chrome/browser/history/java/src/org/chromium/chrome/browser/history/HistoryFeatures.java:AndroidDesktopWebUiHistory,
+  // //chrome/browser/ui/webui/history/history_ui.cc:AndroidDesktopWebUiHistory)
 
   if (url->SchemeIs(chrome::kChromeNativeScheme) &&
       url->GetHost() == kChromeUIBookmarksHost) {

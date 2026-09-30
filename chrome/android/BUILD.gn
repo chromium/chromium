@@ -450,6 +450,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/fullscreen/android:java",
       "//chrome/browser/gesturenav/android:java",
       "//chrome/browser/gsa:java",
+      "//chrome/browser/history:features_java",
       "//chrome/browser/history:java",
       "//chrome/browser/history_clusters:java",
       "//chrome/browser/hub:factory_java",

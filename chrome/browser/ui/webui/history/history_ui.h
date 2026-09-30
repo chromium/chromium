@@ -57,6 +57,9 @@ class HistoryUIConfig : public content::WebUIConfig {
   std::unique_ptr<content::WebUIController> CreateWebUIController(
       content::WebUI* web_ui,
       const GURL& url) override;
+#if BUILDFLAG(IS_ANDROID)
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 class HistoryUI

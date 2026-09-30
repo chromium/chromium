@@ -92,6 +92,7 @@ source_set("history") {
   if (is_android) {
     sources += [ "history_ui_platform_handlers_android.cc" ]
     deps += [
+      "//chrome/browser/flags:flags_android",
       "//chrome/browser/settings:jni_headers",
       "//ui/android",
     ]

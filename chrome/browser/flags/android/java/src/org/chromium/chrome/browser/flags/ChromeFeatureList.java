@@ -278,6 +278,7 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_DESKTOP_BOOKMARK_LAYOUT = "AndroidDesktopBookmarkLayout";
     public static final String ANDROID_DESKTOP_BOOKMARK_POPUP = "AndroidDesktopBookmarkPopup";
     public static final String ANDROID_DESKTOP_HISTORY_LAYOUT = "AndroidDesktopHistoryLayout";
+    public static final String ANDROID_DESKTOP_WEB_UI_HISTORY = "AndroidDesktopWebUiHistory";
     public static final String ANDROID_DEVICE_SIGNALS_DISCLAIMER = "AndroidDeviceSignalsDisclaimer";
     public static final String ANDROID_ELEGANT_TEXT_HEIGHT = "AndroidElegantTextHeight";
     public static final String ANDROID_FIRST_RUN_LAUNCH_BOUNDS = "AndroidFirstRunLaunchBounds";
@@ -981,6 +982,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_BOTTOM_BAR, false, /* defaultValueInTests= */ true);
     public static final CachedFlag sAndroidBottomBarAim =
             newCachedFlag(ANDROID_BOTTOM_BAR_AIM, false);
+    public static final CachedFlag sAndroidDesktopWebUiHistory =
+            newCachedFlag(ANDROID_DESKTOP_WEB_UI_HISTORY, /* defaultValue= */ false);
     public static final CachedFlag sAndroidElegantTextHeight =
             newCachedFlag(ANDROID_ELEGANT_TEXT_HEIGHT, true);
     public static final CachedFlag sAndroidKeyboardShortcutOpenFile =
@@ -1535,6 +1538,7 @@ public abstract class ChromeFeatureList {
                     sAndroidAutoProjected,
                     sAndroidBottomBar,
                     sAndroidBottomBarAim,
+                    sAndroidDesktopWebUiHistory,
                     sAndroidElegantTextHeight,
                     sAndroidKeyboardShortcutOpenFile,
                     sAndroidOpenIncognitoAsWindow,

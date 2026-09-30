@@ -8,15 +8,18 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.history.HistoryFeatures;
 import org.chromium.chrome.browser.ui.native_page.NativePage.NativePageType;
 import org.chromium.components.extensions.ExtensionsBuildflags;
 import org.chromium.url.GURL;
@@ -71,6 +74,11 @@ public class NativePageTest {
 
     public static boolean isValidInIncognito(UrlCombo urlCombo) {
         return urlCombo.expectedType != NativePageType.RECENT_TABS;
+    }
+
+    @After
+    public void tearDown() {
+        DeviceInfo.resetIsDesktopForTesting();
     }
 
     /** Ensures that NativePage.isNativePageUrl() returns true for native page URLs. */
@@ -237,5 +245,56 @@ public class NativePageTest {
         Assert.assertFalse(
                 "isNativePageUrl should be false on desktop",
                 NativePage.isNativePageUrl(url, false, false));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_WEB_UI_HISTORY)
+    public void testNativePageType_History_DesktopWebUiEnabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        Assert.assertTrue(HistoryFeatures.isAndroidDesktopWebUiHistoryEnabled());
+        GURL url = new GURL("chrome://history/");
+        Assert.assertEquals(
+                "History page should be WebUI on desktop when feature is enabled",
+                NativePageType.NONE,
+                NativePage.nativePageType(
+                        url,
+                        /* candidatePage= */ null,
+                        /* isIncognito= */ false,
+                        /* preferReuse= */ false,
+                        /* hasPdfDownload= */ false));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ANDROID_DESKTOP_WEB_UI_HISTORY)
+    public void testNativePageType_History_DesktopWebUiDisabled_NonDesktop() {
+        DeviceInfo.setIsDesktopForTesting(false);
+        Assert.assertFalse(HistoryFeatures.isAndroidDesktopWebUiHistoryEnabled());
+        GURL url = new GURL("chrome://history/");
+        Assert.assertEquals(
+                "History page should be native on non-desktop even when feature is enabled",
+                NativePageType.HISTORY,
+                NativePage.nativePageType(
+                        url,
+                        /* candidatePage= */ null,
+                        /* isIncognito= */ false,
+                        /* preferReuse= */ false,
+                        /* hasPdfDownload= */ false));
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.ANDROID_DESKTOP_WEB_UI_HISTORY)
+    public void testNativePageType_History_DesktopWebUiDisabled_FeatureDisabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        Assert.assertFalse(HistoryFeatures.isAndroidDesktopWebUiHistoryEnabled());
+        GURL url = new GURL("chrome://history/");
+        Assert.assertEquals(
+                "History page should be native when feature is disabled",
+                NativePageType.HISTORY,
+                NativePage.nativePageType(
+                        url,
+                        /* candidatePage= */ null,
+                        /* isIncognito= */ false,
+                        /* preferReuse= */ false,
+                        /* hasPdfDownload= */ false));
     }
 }
