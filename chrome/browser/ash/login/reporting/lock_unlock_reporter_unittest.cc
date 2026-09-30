@@ -6,30 +6,29 @@
 
 #include <string_view>
 
+#include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/simple_test_clock.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper_testing.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/lock_unlock_event.pb.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
 #include "chromeos/ash/components/login/session/session_termination_manager.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/reporting/client/mock_report_queue.h"
-#include "components/session_manager/core/fake_session_manager_delegate.h"
 #include "components/session_manager/core/session_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
-#include "components/user_manager/user_names.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -44,6 +43,9 @@ namespace ash {
 namespace reporting {
 
 constexpr char kFakeEmail[] = "user@managed.com";
+constexpr AccountId::Literal kAccountId =
+    AccountId::Literal::FromUserEmailGaiaId(kFakeEmail,
+                                            GaiaId::Literal("1234567890"));
 
 struct LockUnlockReporterTestCase {
   session_manager::UnlockType unlock_type;
@@ -64,47 +66,35 @@ class LockUnlockTestHelper {
     chromeos::PowerManagerClient::InitializeFake();
     SessionManagerClient::InitializeFake();
 
-    TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
+    auto* browser_process = TestingBrowserProcess::GetGlobal();
+    browser_process->SetSharedURLLoaderFactory(
         test_url_loader_factory_.GetSafeWeakWrapper());
 
-    fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        browser_process->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            browser_process));
     user_session_manager_ = std::make_unique<ash::UserSessionManager>(
-        TestingBrowserProcess::GetGlobal()->local_state(),
-        TestingBrowserProcess::GetGlobal()
-            ->GetFeatures()
-            ->application_locale_storage(),
-        TestingBrowserProcess::GetGlobal()->shared_url_loader_factory(),
-        TestingBrowserProcess::GetGlobal()
-            ->platform_part()
-            ->browser_policy_connector_ash(),
-        TestingBrowserProcess::GetGlobal()
-            ->platform_part()
-            ->component_manager_ash());
+        browser_process->local_state(),
+        browser_process->GetFeatures()->application_locale_storage(),
+        browser_process->shared_url_loader_factory(),
+        browser_process->platform_part()->browser_policy_connector_ash(),
+        browser_process->platform_part()->component_manager_ash());
   }
 
   void Shutdown() {
     user_session_manager_->Shutdown();
     user_session_manager_.reset();
-    fake_user_manager_.Reset();
+    user_session_test_environment_.reset();
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(nullptr);
     SessionManagerClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
   }
 
-  session_manager::SessionManager* session_manager() {
-    return &session_manager_;
-  }
-
-  std::unique_ptr<TestingProfile> CreateRegularUserProfile() {
-    AccountId account_id = AccountId::FromUserEmail(kFakeEmail);
-    auto* const user = fake_user_manager_->AddUser(account_id);
-    TestingProfile::Builder profile_builder;
-    profile_builder.SetProfileName(user->GetAccountId().GetUserEmail());
-    auto profile = profile_builder.Build();
-    ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                            profile.get());
-    fake_user_manager_->LoginUser(user->GetAccountId(), true);
-    return profile;
+  void LogIn(const AccountId& account_id) {
+    CHECK(user_session_test_environment_->AddRegularUser(account_id));
+    user_session_test_environment_->LogIn(account_id);
   }
 
   std::unique_ptr<::reporting::UserEventReporterHelperTesting>
@@ -151,15 +141,13 @@ class LockUnlockTestHelper {
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
   ScopedStubInstallAttributes scoped_stub_install_attributes_;
 
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
   std::unique_ptr<ash::UserSessionManager> user_session_manager_;
   content::BrowserTaskEnvironment task_environment_;
 
   LockUnlockRecord record_;
   int report_count_ = 0;
-  session_manager::SessionManager session_manager_{
-      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
 };
 
 class LockUnlockReporterTest
@@ -185,11 +173,10 @@ TEST_F(LockUnlockReporterTest, ReportUnaffiliatedUserId) {
   auto reporter = LockUnlockReporter::CreateForTest(std::move(reporter_helper),
                                                     &managed_session_service);
 
-  auto profile = test_helper_.CreateRegularUserProfile();
-  auto* const user = ProfileHelper::Get()->GetUserByProfile(profile.get());
-  managed_session_service.OnUserProfileLoaded(user->GetAccountId());
+  test_helper_.LogIn(kAccountId);
+  managed_session_service.OnUserProfileLoaded(kAccountId);
 
-  test_helper_.session_manager()->SetSessionState(
+  session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOCKED);
   managed_session_service.OnSessionStateChanged();
 
@@ -212,11 +199,10 @@ TEST_F(LockUnlockReporterTest, ReportLockPolicyEnabled) {
   auto reporter = LockUnlockReporter::CreateForTest(std::move(reporter_helper),
                                                     &managed_session_service);
 
-  auto profile = test_helper_.CreateRegularUserProfile();
-  auto* const user = ProfileHelper::Get()->GetUserByProfile(profile.get());
-  managed_session_service.OnUserProfileLoaded(user->GetAccountId());
+  test_helper_.LogIn(kAccountId);
+  managed_session_service.OnUserProfileLoaded(kAccountId);
 
-  test_helper_.session_manager()->SetSessionState(
+  session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOCKED);
   managed_session_service.OnSessionStateChanged();
 
@@ -239,11 +225,10 @@ TEST_F(LockUnlockReporterTest, ReportLockPolicyDisabled) {
   auto reporter = LockUnlockReporter::CreateForTest(std::move(reporter_helper),
                                                     &managed_session_service);
 
-  auto profile = test_helper_.CreateRegularUserProfile();
-  auto* const user = ProfileHelper::Get()->GetUserByProfile(profile.get());
-  managed_session_service.OnUserProfileLoaded(user->GetAccountId());
+  test_helper_.LogIn(kAccountId);
+  managed_session_service.OnUserProfileLoaded(kAccountId);
 
-  test_helper_.session_manager()->SetSessionState(
+  session_manager::SessionManager::Get()->SetSessionState(
       session_manager::SessionState::LOCKED);
   managed_session_service.OnSessionStateChanged();
 
@@ -260,9 +245,8 @@ TEST_P(LockUnlockReporterTest, ReportUnlockPolicyDisabled) {
   auto reporter = LockUnlockReporter::CreateForTest(std::move(reporter_helper),
                                                     &managed_session_service);
 
-  auto profile = test_helper_.CreateRegularUserProfile();
-  auto* const user = ProfileHelper::Get()->GetUserByProfile(profile.get());
-  managed_session_service.OnUserProfileLoaded(user->GetAccountId());
+  test_helper_.LogIn(kAccountId);
+  managed_session_service.OnUserProfileLoaded(kAccountId);
 
   managed_session_service.OnUnlockScreenAttempt(test_case.success,
                                                 test_case.unlock_type);
@@ -280,9 +264,8 @@ TEST_P(LockUnlockReporterTest, ReportUnlockPolicyEnabled) {
   auto reporter = LockUnlockReporter::CreateForTest(std::move(reporter_helper),
                                                     &managed_session_service);
 
-  auto profile = test_helper_.CreateRegularUserProfile();
-  auto* const user = ProfileHelper::Get()->GetUserByProfile(profile.get());
-  managed_session_service.OnUserProfileLoaded(user->GetAccountId());
+  test_helper_.LogIn(kAccountId);
+  managed_session_service.OnUserProfileLoaded(kAccountId);
 
   managed_session_service.OnUnlockScreenAttempt(test_case.success,
                                                 test_case.unlock_type);

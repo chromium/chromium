@@ -122,6 +122,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/ash/login/test:test_support",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/policy/core",
     "//chrome/browser/ash/policy/reporting:test_support",
@@ -132,11 +133,13 @@ source_set("unit_tests") {
     "//chromeos/ash/components/login/session",
     "//chromeos/ash/components/policy/device_local_account",
     "//chromeos/dbus/power",
+    "//components/account_id:test_support",
     "//components/policy/core/common",
     "//components/reporting/client:test_support",
     "//components/session_manager/core",
-    "//components/session_manager/core:test_support",
+    "//components/session_manager/test:test_support",
     "//components/user_manager",
     "//content/test:test_support",
+    "//google_apis",
   ]
 }
