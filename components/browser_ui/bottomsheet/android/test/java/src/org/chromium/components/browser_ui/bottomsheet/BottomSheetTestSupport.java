@@ -32,7 +32,7 @@ public class BottomSheetTestSupport {
      * @param isSmallScreen Whether the screen should be considered small for testing.
      */
     public static void setSmallScreen(boolean isSmallScreen) {
-        BottomSheet.setSmallScreenForTesting(isSmallScreen);
+        BottomSheetCoordinator.setSmallScreenForTesting(isSmallScreen);
     }
 
     /**
@@ -64,7 +64,7 @@ public class BottomSheetTestSupport {
     }
 
     /**
-     * See {@link BottomSheet#setSheetOffsetFromBottom(float, int)}.
+     * See {@link BottomSheetCoordinator#setSheetOffsetFromBottom(float, int)}.
      *
      * @param offset The offset from the bottom in pixels.
      * @param reason The reason the sheet offset is being set.
@@ -77,12 +77,12 @@ public class BottomSheetTestSupport {
         getBottomSheet().setBottomMargin(offset);
     }
 
-    /** See {@link BottomSheet#getMaxOffsetPx()}. */
+    /** See {@link BottomSheetCoordinator#getMaxOffsetPx()}. */
     public float getMaxOffsetPx() {
         return getBottomSheet().getMaxOffsetPx();
     }
 
-    /** See {@link BottomSheet#getCurrentOffsetPx()}. */
+    /** See {@link BottomSheetCoordinator#getCurrentOffsetPx()}. */
     public float getCurrentOffsetPx() {
         return getBottomSheet().getCurrentOffsetPx();
     }
@@ -91,24 +91,24 @@ public class BottomSheetTestSupport {
         return getBottomSheet().getOffsetFromBrowserControls();
     }
 
-    /** See {@link BottomSheet#getFullRatio()}. */
+    /** See {@link BottomSheetCoordinator#getFullRatio()}. */
     public float getFullRatio() {
         return getBottomSheet().getFullRatio();
     }
 
-    /** See {@link BottomSheet#getHiddenRatio()}. */
+    /** See {@link BottomSheetCoordinator#getHiddenRatio()}. */
     public float getHiddenRatio() {
         return getBottomSheet().getHiddenRatio();
     }
 
-    /** See {@link BottomSheet#getOpeningState()}. */
+    /** See {@link BottomSheetCoordinator#getOpeningState()}. */
     @SheetState
     public int getOpeningState() {
         return getBottomSheet().getOpeningState();
     }
 
     /**
-     * See {@link BottomSheet#showContent(BottomSheetContent)}.
+     * See {@link BottomSheetCoordinator#showContent(BottomSheetContent)}.
      *
      * @param content The content to show in the bottom sheet.
      */
@@ -117,7 +117,7 @@ public class BottomSheetTestSupport {
     }
 
     /**
-     * See {@link BottomSheet#shouldGestureMoveSheet()}.
+     * See {@link BottomSheetCoordinator#shouldGestureMoveSheet()}.
      *
      * @param initialEvent The initial motion event of the gesture.
      * @param currentEvent The current motion event of the gesture.
@@ -166,7 +166,7 @@ public class BottomSheetTestSupport {
     }
 
     /** Returns the bottom sheet coordinator. */
-    private BottomSheet getBottomSheet() {
+    private BottomSheetCoordinator getBottomSheet() {
         return mController.getBottomSheetForTesting();
     }
 

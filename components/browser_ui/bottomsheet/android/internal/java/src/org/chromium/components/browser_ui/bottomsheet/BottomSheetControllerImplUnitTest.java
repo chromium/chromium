@@ -79,7 +79,7 @@ public class BottomSheetControllerImplUnitTest {
     private @Mock ViewGroup mRoot;
     private @Mock DesktopWindowStateManager mDesktopWindowStateManager;
     private @Mock AppHeaderState mAppHeaderState;
-    private @Mock BottomSheet mBottomSheet;
+    private @Mock BottomSheetCoordinator mBottomSheet;
     private @Mock BottomSheetView mBottomSheetView;
     private @Mock BottomSheetContent mSheetContent;
     private @Mock InsetObserver mInsetObserver;
@@ -121,7 +121,7 @@ public class BottomSheetControllerImplUnitTest {
         mController.onAppHeaderStateChanged(mAppHeaderState);
 
         // Simulate sheet initialization, this should kick off
-        // BottomSheet#onAppHeaderHeightChange().
+        // BottomSheetCoordinator#onAppHeaderHeightChange().
         mController.runSheetInitializerForTesting();
         verify(mBottomSheet)
                 .init(

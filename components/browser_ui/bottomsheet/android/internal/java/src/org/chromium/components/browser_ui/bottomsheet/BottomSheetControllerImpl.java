@@ -42,10 +42,10 @@ import java.util.PriorityQueue;
 import java.util.function.Supplier;
 
 /**
- * This class is responsible for managing the content shown by the {@link BottomSheet}. Features
- * wishing to show content in the {@link BottomSheet} UI must implement {@link BottomSheetContent}
- * and call {@link #requestShowContent(BottomSheetContent, boolean)} which will return true if the
- * content was actually shown (see full doc on method).
+ * This class is responsible for managing the content shown by the {@link BottomSheetCoordinator}.
+ * Features wishing to show content in the {@link BottomSheetCoordinator} UI must implement {@link
+ * BottomSheetContent} and call {@link #requestShowContent(BottomSheetContent, boolean)} which will
+ * return true if the content was actually shown (see full doc on method).
  */
 @NullMarked
 class BottomSheetControllerImpl implements ManagedBottomSheetController {
@@ -92,10 +92,10 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     private final Callback<Boolean> mContentBackPressStateChangedObserver =
             contentWillHandleBackPress -> updateBackPressStateChangedSupplier();
 
-    /** A handle to the {@link BottomSheet} that this class controls. */
-    private @MonotonicNonNull BottomSheet mBottomSheet;
+    /** A handle to the {@link BottomSheetCoordinator} that this class controls. */
+    private @MonotonicNonNull BottomSheetCoordinator mBottomSheet;
 
-    private @Nullable BottomSheet mBottomSheetForTesting;
+    private @Nullable BottomSheetCoordinator mBottomSheetForTesting;
 
     /**
      * The container that the sheet exists in. This is one layer inside of the root coordinator view
@@ -103,7 +103,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
      */
     private @MonotonicNonNull ViewGroup mBottomSheetContainer;
 
-    /** A queue for content that is waiting to be shown in the {@link BottomSheet}. */
+    /** A queue for content that is waiting to be shown in the {@link BottomSheetCoordinator}. */
     private @MonotonicNonNull PriorityQueue<BottomSheetContent> mContentQueue;
 
     /** Whether the controller is already processing a hide request for the tab. */
@@ -562,16 +562,16 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         assumeNonNull(mBottomSheet).setSheetState(state, animate);
     }
 
-    void setBottomSheetForTesting(BottomSheet bottomSheet) {
+    void setBottomSheetForTesting(BottomSheetCoordinator bottomSheet) {
         mBottomSheetForTesting = bottomSheet;
     }
 
-    BottomSheet getBottomSheetForTesting() {
+    BottomSheetCoordinator getBottomSheetForTesting() {
         return assumeNonNull(mBottomSheet);
     }
 
     BottomSheet getBottomSheetViewForTesting() {
-        return getBottomSheetForTesting();
+        return (BottomSheet) assumeNonNull(mBottomSheet);
     }
 
     ViewGroup getBottomSheetContainerForTesting() {

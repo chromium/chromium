@@ -66,7 +66,7 @@ import java.util.function.Supplier;
  * for simplicity. This means that the bottom of the screen is 0 on the Y axis.
  */
 @NullMarked
-class BottomSheet
+class BottomSheetCoordinator
         implements BottomSheetSwipeDetector.SwipeableBottomSheet, View.OnLayoutChangeListener {
     private static final String TAG = "BottomSheet";
 
@@ -192,7 +192,7 @@ class BottomSheet
      *
      * @param view The inflated {@link BottomSheetView}.
      */
-    BottomSheet(BottomSheetView view) {
+    BottomSheetCoordinator(BottomSheetView view) {
         mView = view;
         Context context = mView.getContext();
         Resources res = mView.getResources();
@@ -239,7 +239,7 @@ class BottomSheet
         sExceptionReporter = reporter;
     }
 
-    /** Called when the activity containing the {@link BottomSheet} is destroyed. */
+    /** Called when the activity containing the {@link BottomSheetCoordinator} is destroyed. */
     void destroy() {
         mIsDestroyed = true;
         mMediator.destroy();
@@ -1699,3 +1699,9 @@ class BottomSheet
         return mMediator.getStateBeforeKeyboardShownForTesting();
     }
 }
+
+    class BottomSheet extends BottomSheetCoordinator {
+        BottomSheet(BottomSheetView view) {
+            super(view);
+        }
+    }
