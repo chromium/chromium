@@ -191,12 +191,6 @@ bool Canvas2DBitmapProvider::WritePixels(const SkImageInfo& orig_info,
                                          int x,
                                          int y) {
   TRACE_EVENT0("blink", "Canvas2DBitmapProvider::WritePixels");
-
-  if (!skia_canvas_) {
-    skia_canvas_ = std::make_unique<cc::SkiaPaintCanvas>(
-        surface_->getCanvas(), GetOrCreateSWCanvasImageProvider());
-  }
-
   return surface_->getCanvas()->writePixels(orig_info, pixels, row_bytes, x, y);
 }
 
