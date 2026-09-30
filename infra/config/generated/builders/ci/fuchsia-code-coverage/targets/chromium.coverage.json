@@ -152,6 +152,7 @@
       {
         "args": [
           "--git-revision=${got_revision}",
+          "--bypass-skia-gold-functionality",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
           "--device-spec=x64-emu-large"
         ],
@@ -1147,6 +1148,7 @@
           "--enable-features=TreesInViz",
           "--test-launcher-filter-file=../../testing/buildbot/filters/trees_in_viz.blink_platform_unittests.filter",
           "--git-revision=${got_revision}",
+          "--bypass-skia-gold-functionality",
           "--code-coverage-dir=${ISOLATED_OUTDIR}",
           "--device-spec=x64-emu-large"
         ],

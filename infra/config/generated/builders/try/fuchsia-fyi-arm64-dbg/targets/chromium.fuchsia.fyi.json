@@ -182,6 +182,7 @@
       {
         "args": [
           "--git-revision=${got_revision}",
+          "--bypass-skia-gold-functionality",
           "--orchestrate"
         ],
         "merge": {

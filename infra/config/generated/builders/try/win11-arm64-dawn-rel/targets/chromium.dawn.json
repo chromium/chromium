@@ -46,6 +46,7 @@
         "args": [
           "--use-gpu-in-tests",
           "--git-revision=${got_revision}",
+          "--bypass-skia-gold-functionality",
           "--test-launcher-filter-file=../../testing/buildbot/filters/win.qualcomm.snapdragon_x_elite.gl_unittests.filter"
         ],
         "merge": {

@@ -850,6 +850,7 @@
   'skia_gold_test': {
     'args': [
       '--git-revision=${got_revision}',
+      '--bypass-skia-gold-functionality',
     ],
     'precommit_args': [
       '--gerrit-issue=${patch_issue}',
