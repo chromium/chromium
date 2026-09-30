@@ -2455,14 +2455,14 @@ fyi_mac_builder(
             "release_builder",
             "remoteexec",
             "mac",
-            "x64",
+            "arm64",
             "minimal_symbols",
         ],
     ),
     targets = targets.bundle(
         targets = ["trees_in_viz_disabled_tests"],
         mixins = [
-            "mac_15_x64",
+            "mac_26_arm64",
         ],
         per_test_modifications = {
             "blink_web_tests": targets.mixin(
@@ -2488,8 +2488,8 @@ fyi_mac_builder(
     ),
     builderless = True,
     cores = None,
-    # TODO(crbug.com/543006750): Revert to MAC_DEFAULT after arm migration.
-    os = os.MAC_15,
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
     console_view_entry = [
         consoles.console_view_entry(
             category = "treesinviz",
