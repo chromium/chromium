@@ -37,15 +37,15 @@ class CC_BASE_EXPORT ListContainerHelper final {
   // This class points to a certain position inside memory of
   // CharAllocator. It is a base class for ListContainer iterators.
   struct CC_BASE_EXPORT PositionInCharAllocator {
+    static constexpr size_t kInvalidOffset = static_cast<size_t>(-1);
+
     // `ptr_to_container` is not a raw_ptr<...> for performance reasons (based
     // on analysis of sampling profiler data and tab_search:top100:2020).
+    // https://crbug.com/549161451
     RAW_PTR_EXCLUSION CharAllocator* ptr_to_container = nullptr;
 
     size_t vector_index = 0;
-
-    // `item_iterator` is not a raw_ptr<...> for performance reasons (based on
-    // analysis of sampling profiler data and tab_search:top100:2020).
-    RAW_PTR_EXCLUSION char* item_iterator = nullptr;
+    size_t item_offset = kInvalidOffset;
 
     PositionInCharAllocator() = default;
 
@@ -54,10 +54,12 @@ class CC_BASE_EXPORT ListContainerHelper final {
 
     PositionInCharAllocator(CharAllocator* container,
                             size_t vector_ind,
-                            char* item_iter);
+                            size_t item_offset);
 
     bool operator==(const PositionInCharAllocator& other) const;
     bool operator!=(const PositionInCharAllocator& other) const;
+
+    char* item() const;
 
     PositionInCharAllocator Increment();
     PositionInCharAllocator ReverseIncrement();
@@ -73,7 +75,7 @@ class CC_BASE_EXPORT ListContainerHelper final {
 
     Iterator(CharAllocator* container,
              size_t vector_ind,
-             char* item_iter,
+             size_t item_offset,
              size_t index);
     ~Iterator();
 
@@ -98,7 +100,7 @@ class CC_BASE_EXPORT ListContainerHelper final {
 
     ConstIterator(CharAllocator* container,
                   size_t vector_ind,
-                  char* item_iter,
+                  size_t item_offset,
                   size_t index);
     ConstIterator(const Iterator& other);  // NOLINT
     ~ConstIterator();
@@ -121,7 +123,7 @@ class CC_BASE_EXPORT ListContainerHelper final {
 
     ReverseIterator(CharAllocator* container,
                     size_t vector_ind,
-                    char* item_iter,
+                    size_t item_offset,
                     size_t index);
     ~ReverseIterator();
 
@@ -143,7 +145,7 @@ class CC_BASE_EXPORT ListContainerHelper final {
 
     ConstReverseIterator(CharAllocator* container,
                          size_t vector_ind,
-                         char* item_iter,
+                         size_t item_offset,
                          size_t index);
     ConstReverseIterator(const ReverseIterator& other);  // NOLINT
     ~ConstReverseIterator();

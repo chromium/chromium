@@ -5,6 +5,7 @@
 #include "cc/base/list_container.h"
 
 #include <stddef.h>
+#include <stdint.h>
 
 #include <algorithm>
 #include <array>
@@ -25,7 +26,7 @@ class DerivedElement {
   bool bool_values[1];
   char char_values[1];
   int int_values[1];
-  long long_values[1];
+  int64_t long_values[1];
 };
 
 class DerivedElement1 : public DerivedElement {
@@ -33,7 +34,7 @@ class DerivedElement1 : public DerivedElement {
   bool bool_values1[1];
   char char_values1[1];
   int int_values1[1];
-  long long_values1[1];
+  int64_t long_values1[1];
 };
 
 class DerivedElement2 : public DerivedElement {
@@ -41,7 +42,7 @@ class DerivedElement2 : public DerivedElement {
   bool bool_values2[2];
   char char_values2[2];
   int int_values2[2];
-  long long_values2[2];
+  int64_t long_values2[2];
 };
 
 class DerivedElement3 : public DerivedElement {
@@ -49,7 +50,7 @@ class DerivedElement3 : public DerivedElement {
   bool bool_values3[3];
   char char_values3[3];
   int int_values3[3];
-  long long_values3[3];
+  int64_t long_values3[3];
 };
 
 const size_t kLargestDerivedElementSize = sizeof(DerivedElement3);
@@ -1336,6 +1337,131 @@ TEST(ListContainerTest, GetCapacityInBytes) {
                             max_waste_factor * kLargestDerivedElementSize);
     list.RemoveLast();
   }
+}
+
+// Regression test for https://crbug.com/549161451.
+// Verifies that using offsets instead of raw pointers within CharAllocator
+// and PositionInCharAllocator correctly maintains element integrity and
+// iterator functionality across multiple buffer allocations, reallocations,
+// insertions, replacements, and deletions.
+TEST(ListContainerTest, RefactorInternalAllocatorPointersRegression) {
+  const size_t kInitialReserve = 2;
+  const size_t kElementCount = 50;
+  ListContainer<NonDerivedElement> list(
+      alignof(NonDerivedElement), sizeof(NonDerivedElement), kInitialReserve);
+
+  for (size_t i = 0; i < kElementCount; ++i) {
+    NonDerivedElement* elem = list.AllocateAndConstruct<NonDerivedElement>();
+    elem->int_values[0] = static_cast<int>(i);
+  }
+  EXPECT_EQ(kElementCount, list.size());
+
+  // Test forward iteration and operator-> / operator*.
+  {
+    int expected = 0;
+    for (auto it = list.begin(); it != list.end(); ++it, ++expected) {
+      EXPECT_EQ(expected, it->int_values[0]);
+      EXPECT_EQ(expected, (*it)->int_values[0]);
+    }
+    EXPECT_EQ(static_cast<int>(kElementCount), expected);
+  }
+
+  // Test const forward iteration.
+  {
+    const auto& const_list = list;
+    int expected = 0;
+    for (auto it = const_list.cbegin(); it != const_list.cend();
+         ++it, ++expected) {
+      EXPECT_EQ(expected, it->int_values[0]);
+      EXPECT_EQ(expected, (*it)->int_values[0]);
+    }
+    EXPECT_EQ(static_cast<int>(kElementCount), expected);
+  }
+
+  // Test reverse iteration.
+  {
+    int expected = static_cast<int>(kElementCount) - 1;
+    for (auto it = list.rbegin(); it != list.rend(); ++it, --expected) {
+      EXPECT_EQ(expected, it->int_values[0]);
+      EXPECT_EQ(expected, (*it)->int_values[0]);
+    }
+    EXPECT_EQ(-1, expected);
+  }
+
+  // Test const reverse iteration.
+  {
+    const auto& const_list = list;
+    int expected = static_cast<int>(kElementCount) - 1;
+    for (auto it = const_list.crbegin(); it != const_list.crend();
+         ++it, --expected) {
+      EXPECT_EQ(expected, it->int_values[0]);
+      EXPECT_EQ(expected, (*it)->int_values[0]);
+    }
+    EXPECT_EQ(-1, expected);
+  }
+
+  // Test ElementAt, front, and back.
+  for (size_t i = 0; i < kElementCount; ++i) {
+    EXPECT_EQ(static_cast<int>(i), list.ElementAt(i)->int_values[0]);
+  }
+  EXPECT_EQ(0, list.front()->int_values[0]);
+  EXPECT_EQ(static_cast<int>(kElementCount) - 1, list.back()->int_values[0]);
+
+  // Test ReplaceExistingElement.
+  auto replace_it = list.begin();
+  NonDerivedElement* replaced =
+      list.ReplaceExistingElement<NonDerivedElement>(replace_it);
+  replaced->int_values[0] = 777;
+  EXPECT_EQ(777, list.front()->int_values[0]);
+  EXPECT_EQ(777, (*list.begin())->int_values[0]);
+  list.front()->int_values[0] = 0;  // Restore
+
+  // Test InsertBeforeAndInvalidateAllPointers across allocation boundaries.
+  // Insert an element before index 10.
+  auto insert_it = list.begin();
+  for (size_t i = 0; i < 10; ++i) {
+    ++insert_it;
+  }
+  auto inserted_it =
+      list.InsertBeforeAndInvalidateAllPointers<NonDerivedElement>(insert_it,
+                                                                   1);
+  (*inserted_it)->int_values[0] = 999;
+  EXPECT_EQ(kElementCount + 1, list.size());
+  EXPECT_EQ(999, list.ElementAt(10)->int_values[0]);
+  EXPECT_EQ(10, list.ElementAt(11)->int_values[0]);
+
+  // Test EraseAndInvalidateAllPointers.
+  // Erase the inserted element.
+  auto erase_it = list.begin();
+  for (size_t i = 0; i < 10; ++i) {
+    ++erase_it;
+  }
+  auto next_it = list.EraseAndInvalidateAllPointers(erase_it);
+  EXPECT_EQ(kElementCount, list.size());
+  EXPECT_EQ(10, (*next_it)->int_values[0]);
+  EXPECT_EQ(10, list.ElementAt(10)->int_values[0]);
+
+  // Erase from front and back.
+  list.EraseAndInvalidateAllPointers(list.begin());
+  EXPECT_EQ(kElementCount - 1, list.size());
+  EXPECT_EQ(1, list.front()->int_values[0]);
+
+  list.RemoveLast();
+  EXPECT_EQ(kElementCount - 2, list.size());
+  EXPECT_EQ(static_cast<int>(kElementCount) - 2, list.back()->int_values[0]);
+
+  // Empty the list via RemoveLast and verify insertion still works.
+  while (!list.empty()) {
+    list.RemoveLast();
+  }
+  EXPECT_EQ(0u, list.size());
+  EXPECT_TRUE(list.empty());
+
+  NonDerivedElement* new_elem = list.AllocateAndConstruct<NonDerivedElement>();
+  new_elem->int_values[0] = 42;
+  EXPECT_EQ(1u, list.size());
+  EXPECT_EQ(42, list.front()->int_values[0]);
+  EXPECT_EQ(42, list.back()->int_values[0]);
 }
 
 }  // namespace

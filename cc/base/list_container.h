@@ -126,7 +126,7 @@ class ListContainer {
   template <typename DerivedElementType>
   DerivedElementType* ReplaceExistingElement(Iterator at) {
     at->~BaseElementType();
-    return new (at.item_iterator) DerivedElementType();
+    return new (at.item()) DerivedElementType();
   }
 
   // Insert |count| new elements of |DerivedElementType| before |at|. This will
@@ -143,9 +143,9 @@ class ListContainer {
     Iterator result = at;
     for (size_t i = 0; i < count; ++i) {
       if (source) {
-        new (at.item_iterator) DerivedElementType(source.value());
+        new (at.item()) DerivedElementType(source.value());
       } else {
-        new (at.item_iterator) DerivedElementType();
+        new (at.item()) DerivedElementType();
       }
       ++at;
     }
@@ -197,17 +197,17 @@ class ListContainer {
 
     Iterator(ListContainerHelper::CharAllocator* container,
              size_t vector_ind,
-             char* item_iter,
+             size_t item_offset,
              size_t index)
         : ListContainerHelper::Iterator(container,
                                         vector_ind,
-                                        item_iter,
+                                        item_offset,
                                         index) {}
     BaseElementType* operator->() const {
-      return reinterpret_cast<BaseElementType*>(item_iterator);
+      return reinterpret_cast<BaseElementType*>(item());
     }
     BaseElementType* operator*() const {
-      return reinterpret_cast<BaseElementType*>(item_iterator);
+      return reinterpret_cast<BaseElementType*>(item());
     }
     Iterator operator++(int unused_post_increment) {
       Iterator tmp = *this;
@@ -244,19 +244,19 @@ class ListContainer {
 
     ConstIterator(ListContainerHelper::CharAllocator* container,
                   size_t vector_ind,
-                  char* item_iter,
+                  size_t item_offset,
                   size_t index)
         : ListContainerHelper::ConstIterator(container,
                                              vector_ind,
-                                             item_iter,
+                                             item_offset,
                                              index) {}
     ConstIterator(const Iterator& other)  // NOLINT
         : ListContainerHelper::ConstIterator(other) {}
     const BaseElementType* operator->() const {
-      return reinterpret_cast<const BaseElementType*>(item_iterator);
+      return reinterpret_cast<const BaseElementType*>(item());
     }
     const BaseElementType* operator*() const {
-      return reinterpret_cast<const BaseElementType*>(item_iterator);
+      return reinterpret_cast<const BaseElementType*>(item());
     }
     ConstIterator operator++(int unused_post_increment) {
       ConstIterator tmp = *this;
@@ -294,17 +294,17 @@ class ListContainer {
 
     ReverseIterator(ListContainerHelper::CharAllocator* container,
                     size_t vector_ind,
-                    char* item_iter,
+                    size_t item_offset,
                     size_t index)
         : ListContainerHelper::ReverseIterator(container,
                                                vector_ind,
-                                               item_iter,
+                                               item_offset,
                                                index) {}
     BaseElementType* operator->() const {
-      return reinterpret_cast<BaseElementType*>(item_iterator);
+      return reinterpret_cast<BaseElementType*>(item());
     }
     BaseElementType* operator*() const {
-      return reinterpret_cast<BaseElementType*>(item_iterator);
+      return reinterpret_cast<BaseElementType*>(item());
     }
     ReverseIterator operator++(int unused_post_increment) {
       ReverseIterator tmp = *this;
@@ -340,19 +340,19 @@ class ListContainer {
 
     ConstReverseIterator(ListContainerHelper::CharAllocator* container,
                          size_t vector_ind,
-                         char* item_iter,
+                         size_t item_offset,
                          size_t index)
         : ListContainerHelper::ConstReverseIterator(container,
                                                     vector_ind,
-                                                    item_iter,
+                                                    item_offset,
                                                     index) {}
     ConstReverseIterator(const ReverseIterator& other)  // NOLINT
         : ListContainerHelper::ConstReverseIterator(other) {}
     const BaseElementType* operator->() const {
-      return reinterpret_cast<const BaseElementType*>(item_iterator);
+      return reinterpret_cast<const BaseElementType*>(item());
     }
     const BaseElementType* operator*() const {
-      return reinterpret_cast<const BaseElementType*>(item_iterator);
+      return reinterpret_cast<const BaseElementType*>(item());
     }
     ConstReverseIterator operator++(int unused_post_increment) {
       ConstReverseIterator tmp = *this;

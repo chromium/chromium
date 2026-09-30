@@ -53,12 +53,13 @@ class ListContainerHelper::CharAllocator {
     // elements' memory locations.
     size_t step;
 
-    void Erase(char* position) {
+    void Erase(size_t position_offset) {
       // Confident that destructor is called by caller of this function. Since
       // CharAllocator does not handle construction after
       // allocation, it doesn't handle desctrution before deallocation.
-      DCHECK_LE(position, LastElement());
-      DCHECK_GE(position, Begin());
+      DCHECK_LE(position_offset, LastElementOffset());
+      DCHECK_EQ(position_offset % step, 0u);
+      char* position = ElementAtOffset(position_offset);
       char* start = UNSAFE_TODO(position + step);
       std::copy(start, End(), position);
 
@@ -67,9 +68,9 @@ class ListContainerHelper::CharAllocator {
       --capacity;
     }
 
-    void InsertBefore(size_t alignment, char** position, size_t count) {
-      UNSAFE_TODO(DCHECK_LE(*position, LastElement() + step));
-      DCHECK_GE(*position, Begin());
+    void InsertBefore(size_t alignment, size_t position_offset, size_t count) {
+      DCHECK_LE(position_offset, size * step);
+      DCHECK_EQ(position_offset % step, 0u);
 
       // Adjust the size and capacity
       size_t old_size = size;
@@ -79,8 +80,6 @@ class ListContainerHelper::CharAllocator {
       // Allocate the new data and update the iterator's pointer.
       std::unique_ptr<char[], base::AlignedFreeDeleter> new_data(
           static_cast<char*>(base::AlignedAlloc(size * step, alignment)));
-      size_t position_offset = *position - Begin();
-      *position = UNSAFE_TODO(new_data.get() + position_offset);
 
       // Copy the data before the inserted segment
       UNSAFE_TODO(memcpy(new_data.get(), data.get(), position_offset));
@@ -92,7 +91,7 @@ class ListContainerHelper::CharAllocator {
     }
 
     bool IsEmpty() const { return !size; }
-    bool IsFull() { return capacity == size; }
+    bool IsFull() const { return capacity == size; }
     size_t NumElementsAvailable() const { return capacity - size; }
 
     void* AddElement() {
@@ -108,11 +107,20 @@ class ListContainerHelper::CharAllocator {
 
     char* Begin() const { return data.get(); }
     char* End() const { return UNSAFE_TODO(data.get() + size * step); }
-    char* LastElement() const {
-      return UNSAFE_TODO(data.get() + (size - 1) * step);
+    char* LastElement() const { return ElementAtOffset(LastElementOffset()); }
+    size_t LastElementOffset() const {
+      DCHECK_GT(size, 0u);
+      return (size - 1) * step;
     }
     char* ElementAt(size_t index) const {
-      return UNSAFE_TODO(data.get() + index * step);
+      return ElementAtOffset(ElementOffset(index));
+    }
+    size_t ElementOffset(size_t index) const { return index * step; }
+    char* ElementAtOffset(size_t offset) const {
+      DCHECK_LT(offset, capacity * step);
+      // SAFETY: `offset` is within the allocated buffer of `capacity * step`
+      // bytes, as verified by the DCHECK_LT above.
+      return UNSAFE_BUFFERS(data.get() + offset);
     }
   };
 
@@ -121,14 +129,12 @@ class ListContainerHelper::CharAllocator {
       : alignment_(std::max(sizeof(void*), alignment)),
         element_size_(element_size),
         size_(0),
-        last_list_index_(0),
-        last_list_(nullptr) {
+        last_list_index_(0) {
     // If this fails, then alignment of elements after the first could be wrong,
     // and we need to pad sizes to fix that.
     DCHECK_EQ(element_size % alignment, 0u);
     AllocateNewList(element_count > 0 ? element_count
                                       : kDefaultNumElementTypesToReserve);
-    last_list_ = &storage_[last_list_index_];
   }
 
   CharAllocator(const CharAllocator&) = delete;
@@ -136,19 +142,21 @@ class ListContainerHelper::CharAllocator {
 
   CharAllocator& operator=(const CharAllocator&) = delete;
 
+  InnerList& last_list() { return storage_[last_list_index_]; }
+  const InnerList& last_list() const { return storage_[last_list_index_]; }
+
   void* Allocate() {
-    if (last_list_->IsFull()) {
+    if (last_list().IsFull()) {
       // Only allocate a new list if there isn't a spare one still there from
       // previous usage.
       if (last_list_index_ + 1 >= storage_.size())
-        AllocateNewList(last_list_->capacity * 2);
+        AllocateNewList(last_list().capacity * 2);
 
       ++last_list_index_;
-      last_list_ = &storage_[last_list_index_];
     }
 
     ++size_;
-    return last_list_->AddElement();
+    return last_list().AddElement();
   }
 
   size_t alignment() const { return alignment_; }
@@ -169,17 +177,15 @@ class ListContainerHelper::CharAllocator {
     DCHECK(!storage_.empty());
     storage_.erase(storage_.begin() + 1, storage_.end());
     last_list_index_ = 0;
-    last_list_ = &storage_[0];
-    last_list_->size = 0;
+    last_list().size = 0;
     size_ = 0;
   }
 
   void RemoveLast() {
     DCHECK(!IsEmpty());
-    last_list_->RemoveLast();
-    if (last_list_->IsEmpty() && last_list_index_ > 0) {
+    last_list().RemoveLast();
+    if (last_list().IsEmpty() && last_list_index_ > 0) {
       --last_list_index_;
-      last_list_ = &storage_[last_list_index_];
 
       // If there are now two empty inner lists, free one of them.
       if (last_list_index_ + 2 < storage_.size())
@@ -193,11 +199,12 @@ class ListContainerHelper::CharAllocator {
 
     // Update |position| to point to the element after the erased element.
     InnerList& list = storage_[position->vector_index];
-    char* item_iterator = position->item_iterator;
-    if (item_iterator == list.LastElement())
+    size_t item_offset = position->item_offset;
+    if (item_offset == list.LastElementOffset()) {
       position->Increment();
+    }
 
-    list.Erase(item_iterator);
+    list.Erase(item_offset);
     // TODO(weiliangc): Free the InnerList if it is empty.
     --size_;
   }
@@ -208,17 +215,18 @@ class ListContainerHelper::CharAllocator {
 
     // If |position| is End(), then append |count| elements at the end. This
     // will happen to not invalidate any iterators or memory.
-    if (!position->item_iterator) {
+    if (position->item_offset == PositionInCharAllocator::kInvalidOffset) {
       // Set |position| to be the first inserted element.
       Allocate();
       position->vector_index = storage_.size() - 1;
-      position->item_iterator = storage_[position->vector_index].LastElement();
+      position->item_offset =
+          storage_[position->vector_index].LastElementOffset();
       // Allocate the rest.
       for (size_t i = 1; i < count; ++i)
         Allocate();
     } else {
       storage_[position->vector_index].InsertBefore(
-          alignment_, &position->item_iterator, count);
+          alignment_, position->item_offset, count);
       size_ += count;
     }
   }
@@ -249,7 +257,7 @@ class ListContainerHelper::CharAllocator {
   }
 
   size_t NumAvailableElementsInLastList() const {
-    return last_list_->NumElementsAvailable();
+    return last_list().NumElementsAvailable();
   }
 
  private:
@@ -266,13 +274,8 @@ class ListContainerHelper::CharAllocator {
 
   // The index of the last list to have had elements added to it, or the only
   // list if the container has not had elements added since being cleared.
+  // https://crbug.com/549161451
   size_t last_list_index_;
-
-  // This is equivalent to |storage_[last_list_index_]|.
-  //
-  // `last_list_` is not a raw_ptr<...> for performance reasons (based on
-  // analysis of sampling profiler data and tab_search:top100:2020).
-  RAW_PTR_EXCLUSION InnerList* last_list_;
 };
 
 // PositionInCharAllocator
@@ -287,16 +290,15 @@ ListContainerHelper::PositionInCharAllocator::operator=(
 ListContainerHelper::PositionInCharAllocator::PositionInCharAllocator(
     ListContainerHelper::CharAllocator* container,
     size_t vector_ind,
-    char* item_iter)
+    size_t item_offset)
     : ptr_to_container(container),
       vector_index(vector_ind),
-      item_iterator(item_iter) {}
+      item_offset(item_offset) {}
 
 bool ListContainerHelper::PositionInCharAllocator::operator==(
     const ListContainerHelper::PositionInCharAllocator& other) const {
   DCHECK_EQ(ptr_to_container, other.ptr_to_container);
-  return vector_index == other.vector_index &&
-         item_iterator == other.item_iterator;
+  return vector_index == other.vector_index && item_offset == other.item_offset;
 }
 
 bool ListContainerHelper::PositionInCharAllocator::operator!=(
@@ -304,10 +306,19 @@ bool ListContainerHelper::PositionInCharAllocator::operator!=(
   return !(*this == other);
 }
 
+char* ListContainerHelper::PositionInCharAllocator::item() const {
+  if (item_offset == kInvalidOffset || !ptr_to_container ||
+      vector_index >= ptr_to_container->list_count()) {
+    return nullptr;
+  }
+  return ptr_to_container->InnerListById(vector_index)
+      .ElementAtOffset(item_offset);
+}
+
 ListContainerHelper::PositionInCharAllocator
 ListContainerHelper::PositionInCharAllocator::Increment() {
   const auto& list = ptr_to_container->InnerListById(vector_index);
-  if (item_iterator == list.LastElement()) {
+  if (item_offset == list.LastElementOffset()) {
     ++vector_index;
     while (vector_index < ptr_to_container->list_count()) {
       if (ptr_to_container->InnerListById(vector_index).size != 0)
@@ -315,11 +326,11 @@ ListContainerHelper::PositionInCharAllocator::Increment() {
       ++vector_index;
     }
     if (vector_index < ptr_to_container->list_count())
-      item_iterator = ptr_to_container->InnerListById(vector_index).Begin();
+      item_offset = 0;
     else
-      item_iterator = nullptr;
+      item_offset = kInvalidOffset;
   } else {
-    UNSAFE_TODO(item_iterator += list.step);
+    item_offset += list.step;
   }
   return *this;
 }
@@ -327,7 +338,7 @@ ListContainerHelper::PositionInCharAllocator::Increment() {
 ListContainerHelper::PositionInCharAllocator
 ListContainerHelper::PositionInCharAllocator::ReverseIncrement() {
   const auto& list = ptr_to_container->InnerListById(vector_index);
-  if (item_iterator == list.Begin()) {
+  if (item_offset == 0) {
     --vector_index;
     // Since |vector_index| is unsigned, we compare < list_count() instead of
     // comparing >= 0, as the variable will wrap around when it goes out of
@@ -338,13 +349,13 @@ ListContainerHelper::PositionInCharAllocator::ReverseIncrement() {
       --vector_index;
     }
     if (vector_index < ptr_to_container->list_count()) {
-      item_iterator =
-          ptr_to_container->InnerListById(vector_index).LastElement();
+      item_offset =
+          ptr_to_container->InnerListById(vector_index).LastElementOffset();
     } else {
-      item_iterator = nullptr;
+      item_offset = kInvalidOffset;
     }
   } else {
-    UNSAFE_TODO(item_iterator -= list.step);
+    item_offset -= list.step;
   }
   return *this;
 }
@@ -381,12 +392,12 @@ ListContainerHelper::ConstReverseIterator ListContainerHelper::crbegin() const {
 
   size_t id = data_->LastInnerListId();
   return ConstReverseIterator(data_.get(), id,
-                              data_->InnerListById(id).LastElement(), 0);
+                              data_->InnerListById(id).LastElementOffset(), 0);
 }
 
 ListContainerHelper::ConstReverseIterator ListContainerHelper::crend() const {
-  return ConstReverseIterator(data_.get(), static_cast<size_t>(-1), nullptr,
-                              size());
+  return ConstReverseIterator(data_.get(), static_cast<size_t>(-1),
+                              PositionInCharAllocator::kInvalidOffset, size());
 }
 
 ListContainerHelper::ReverseIterator ListContainerHelper::rbegin() {
@@ -395,11 +406,12 @@ ListContainerHelper::ReverseIterator ListContainerHelper::rbegin() {
 
   size_t id = data_->LastInnerListId();
   return ReverseIterator(data_.get(), id,
-                         data_->InnerListById(id).LastElement(), 0);
+                         data_->InnerListById(id).LastElementOffset(), 0);
 }
 
 ListContainerHelper::ReverseIterator ListContainerHelper::rend() {
-  return ReverseIterator(data_.get(), static_cast<size_t>(-1), nullptr, size());
+  return ReverseIterator(data_.get(), static_cast<size_t>(-1),
+                         PositionInCharAllocator::kInvalidOffset, size());
 }
 
 ListContainerHelper::ConstIterator ListContainerHelper::cbegin() const {
@@ -407,15 +419,18 @@ ListContainerHelper::ConstIterator ListContainerHelper::cbegin() const {
     return cend();
 
   size_t id = data_->FirstInnerListId();
-  return ConstIterator(data_.get(), id, data_->InnerListById(id).Begin(), 0);
+  return ConstIterator(data_.get(), id, 0, 0);
 }
 
 ListContainerHelper::ConstIterator ListContainerHelper::cend() const {
-  if (data_->IsEmpty())
-    return ConstIterator(data_.get(), 0, nullptr, size());
+  if (data_->IsEmpty()) {
+    return ConstIterator(data_.get(), 0,
+                         PositionInCharAllocator::kInvalidOffset, size());
+  }
 
   size_t id = data_->list_count();
-  return ConstIterator(data_.get(), id, nullptr, size());
+  return ConstIterator(data_.get(), id, PositionInCharAllocator::kInvalidOffset,
+                       size());
 }
 
 ListContainerHelper::Iterator ListContainerHelper::begin() {
@@ -423,15 +438,18 @@ ListContainerHelper::Iterator ListContainerHelper::begin() {
     return end();
 
   size_t id = data_->FirstInnerListId();
-  return Iterator(data_.get(), id, data_->InnerListById(id).Begin(), 0);
+  return Iterator(data_.get(), id, 0, 0);
 }
 
 ListContainerHelper::Iterator ListContainerHelper::end() {
-  if (data_->IsEmpty())
-    return Iterator(data_.get(), 0, nullptr, size());
+  if (data_->IsEmpty()) {
+    return Iterator(data_.get(), 0, PositionInCharAllocator::kInvalidOffset,
+                    size());
+  }
 
   size_t id = data_->list_count();
-  return Iterator(data_.get(), id, nullptr, size());
+  return Iterator(data_.get(), id, PositionInCharAllocator::kInvalidOffset,
+                  size());
 }
 
 ListContainerHelper::ConstIterator ListContainerHelper::IteratorAt(
@@ -446,7 +464,7 @@ ListContainerHelper::ConstIterator ListContainerHelper::IteratorAt(
     index -= current_size;
   }
   return ConstIterator(data_.get(), list_index,
-                       data_->InnerListById(list_index).ElementAt(index),
+                       data_->InnerListById(list_index).ElementOffset(index),
                        original_index);
 }
 
@@ -461,7 +479,7 @@ ListContainerHelper::Iterator ListContainerHelper::IteratorAt(size_t index) {
     index -= current_size;
   }
   return Iterator(data_.get(), list_index,
-                  data_->InnerListById(list_index).ElementAt(index),
+                  data_->InnerListById(list_index).ElementOffset(index),
                   original_index);
 }
 
@@ -501,9 +519,9 @@ size_t ListContainerHelper::AvailableSizeWithoutAnotherAllocationForTesting()
 /////////////////////////////////////////////////
 ListContainerHelper::Iterator::Iterator(CharAllocator* container,
                                         size_t vector_ind,
-                                        char* item_iter,
+                                        size_t item_offset,
                                         size_t index)
-    : PositionInCharAllocator(container, vector_ind, item_iter),
+    : PositionInCharAllocator(container, vector_ind, item_offset),
       index_(index) {}
 
 ListContainerHelper::Iterator::~Iterator() = default;
@@ -530,9 +548,9 @@ ListContainerHelper::ConstIterator::ConstIterator(
 
 ListContainerHelper::ConstIterator::ConstIterator(CharAllocator* container,
                                                   size_t vector_ind,
-                                                  char* item_iter,
+                                                  size_t item_offset,
                                                   size_t index)
-    : PositionInCharAllocator(container, vector_ind, item_iter),
+    : PositionInCharAllocator(container, vector_ind, item_offset),
       index_(index) {}
 
 ListContainerHelper::ConstIterator::~ConstIterator() = default;
@@ -545,9 +563,9 @@ size_t ListContainerHelper::ConstIterator::index() const {
 /////////////////////////////////////////////////
 ListContainerHelper::ReverseIterator::ReverseIterator(CharAllocator* container,
                                                       size_t vector_ind,
-                                                      char* item_iter,
+                                                      size_t item_offset,
                                                       size_t index)
-    : PositionInCharAllocator(container, vector_ind, item_iter),
+    : PositionInCharAllocator(container, vector_ind, item_offset),
       index_(index) {}
 
 ListContainerHelper::ReverseIterator::~ReverseIterator() = default;
@@ -565,9 +583,9 @@ ListContainerHelper::ConstReverseIterator::ConstReverseIterator(
 ListContainerHelper::ConstReverseIterator::ConstReverseIterator(
     CharAllocator* container,
     size_t vector_ind,
-    char* item_iter,
+    size_t item_offset,
     size_t index)
-    : PositionInCharAllocator(container, vector_ind, item_iter),
+    : PositionInCharAllocator(container, vector_ind, item_offset),
       index_(index) {}
 
 ListContainerHelper::ConstReverseIterator::~ConstReverseIterator() = default;
