@@ -214,24 +214,19 @@ export class NetworkProcessor {
       params.contexts,
     );
 
-    // Change all targets
-    if (contexts.size === 0) {
-      this.#networkStorage.defaultCacheBehavior = params.cacheBehavior;
+    this.#networkStorage.setCacheBehavior(params.cacheBehavior, contexts);
 
-      await Promise.all(
-        this.#browsingContextStorage.getAllContexts().map((context) => {
-          return context.cdpTarget.toggleSetCacheDisabled();
-        }),
-      );
-
-      return {};
-    }
-
-    const cacheDisabled = params.cacheBehavior === 'bypass';
+    const affectedContexts =
+      contexts.size === 0
+        ? this.#browsingContextStorage.getAllContexts()
+        : [...contexts.values()].flatMap((context) => [
+            context,
+            ...context.allChildren,
+          ]);
 
     await Promise.all(
-      [...contexts.values()].map((context) => {
-        return context.cdpTarget.toggleSetCacheDisabled(cacheDisabled);
+      affectedContexts.map((context) => {
+        return context.cdpTarget.toggleSetCacheDisabled();
       }),
     );
 

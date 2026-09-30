@@ -20,6 +20,7 @@ import socket
 import ssl
 import time
 import uuid
+from collections.abc import Callable
 from contextlib import closing
 from datetime import datetime, timezone
 from pathlib import Path
@@ -64,7 +65,7 @@ class LocalHttpServer:
     __protocol: Literal["http", "https"]
 
     __start_time: datetime
-    _dynamic_responses: dict[str, Any]
+    __dynamic_responses: dict[str, Any]
     hang_forever_stop_flag: Event
     _server_thread: Thread | None
 
@@ -73,7 +74,7 @@ class LocalHttpServer:
         Clears dynamically added responses. Static routes defined at startup remain.
         This differs from pytest-httpserver's clear which removes all expectations.
         """
-        self._dynamic_responses.clear()
+        self.__dynamic_responses.clear()
 
     def is_running(self) -> bool:
         """Checks if the server thread is alive and the server is responsive."""
@@ -119,7 +120,7 @@ class LocalHttpServer:
             ssl_context = (str(cert_file), str(key_file))
 
         self.__start_time = datetime.now(timezone.utc)
-        self._dynamic_responses = {}
+        self.__dynamic_responses = {}
         self.hang_forever_stop_flag = Event()
         self._server_thread = None
 
@@ -147,10 +148,17 @@ class LocalHttpServer:
 
         @self.__app.route(f"{self.__path_200}/<string:response_id>")
         def route_200_dynamic(response_id: str):
-            data = self._dynamic_responses.get(response_id)
+            data = self.__dynamic_responses.get(response_id)
             if data:
+                raw_content = data["content"]
+                content = (
+                    raw_content() if callable(raw_content) else raw_content
+                )
+                if data["content_type"] == "text/html":
+                    # Wrap in basic HTML structure if serving HTML.
+                    content = self.__html_doc(content)
                 return FlaskResponse(
-                    data["content"],
+                    content,
                     mimetype=data["content_type"],
                     headers=data["headers"],
                 )
@@ -343,13 +351,14 @@ class LocalHttpServer:
 
     def url_200(
         self,
-        content: str | None = None,
+        content: str | Callable[[], str] | None = None,
         content_type: str = "text/html",
         headers: dict[str, str] | None = None,
     ) -> str:
         """
         Returns a URL that serves a 200 response.
-        If 'content' is provided, a unique URL is generated for that specific content.
+        If 'content' is provided (as a string or a callable returning a string
+        on each request), a unique URL is generated for that specific content.
         Otherwise, returns the URL for the default 200 page.
         """
         if headers is None:
@@ -358,13 +367,8 @@ class LocalHttpServer:
         if content is not None:
             response_id = str(uuid.uuid4())
 
-            final_content = content
-            if content_type == "text/html":
-                # Wrap in basic HTML structure if serving HTML, as per original logic
-                final_content = self.__html_doc(content)
-
-            self._dynamic_responses[response_id] = {
-                "content": final_content,
+            self.__dynamic_responses[response_id] = {
+                "content": content,
                 "content_type": content_type,
                 # User-provided headers
                 "headers": headers,

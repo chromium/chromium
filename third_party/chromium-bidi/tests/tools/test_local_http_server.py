@@ -76,6 +76,17 @@ async def test_local_server_custom_content(websocket, context_id, local_server_h
 
 
 @pytest.mark.asyncio
+async def test_local_server_callable_content(
+    websocket, context_id, local_server_http
+):
+    responses = ["first", "second"]
+    responses_iter = iter(responses)
+    url = local_server_http.url_200(content=lambda: next(responses_iter))
+    assert await get_content(websocket, context_id, url) == responses[0]
+    assert await get_content(websocket, context_id, url) == responses[1]
+
+
+@pytest.mark.asyncio
 async def test_local_server_redirect(websocket, context_id, local_server_http):
     assert (
         await get_content(

@@ -430,10 +430,9 @@ export class CdpTarget {
     }
   }
 
-  async toggleSetCacheDisabled(disable?: boolean): Promise<void> {
-    const defaultCacheDisabled =
-      this.#networkStorage.defaultCacheBehavior === 'bypass';
-    const cacheDisabled = disable ?? defaultCacheDisabled;
+  async toggleSetCacheDisabled(): Promise<void> {
+    const cacheDisabled =
+      this.#networkStorage.getCacheBehavior(this.topLevelId) === 'bypass';
 
     if (this.#cacheDisableState === cacheDisabled) {
       return;

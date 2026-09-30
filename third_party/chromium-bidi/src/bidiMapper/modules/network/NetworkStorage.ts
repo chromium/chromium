@@ -29,6 +29,7 @@ import type {LoggerFn} from '../../../utils/log.js';
 import {uuidv4} from '../../../utils/uuid.js';
 import type {CdpClient} from '../../BidiMapper.js';
 import type {CdpTarget} from '../cdp/CdpTarget.js';
+import type {BrowsingContextImpl} from '../context/BrowsingContextImpl.js';
 import type {BrowsingContextStorage} from '../context/BrowsingContextStorage.js';
 import type {EventManager} from '../session/EventManager.js';
 
@@ -64,8 +65,14 @@ export class NetworkStorage {
   /** A map from intercept ID to track active network intercepts. */
   readonly #intercepts = new Map<Network.Intercept, NetworkInterception>();
 
+  // TODO: Move to ContextConfigStorage after
+  // https://github.com/w3c/webdriver-bidi/issues/1170 is addressed.
   #defaultCacheBehavior: Network.SetCacheBehaviorParameters['cacheBehavior'] =
     'default';
+  readonly #contextCacheBehavior = new Map<
+    BrowsingContext.BrowsingContext,
+    Network.SetCacheBehaviorParameters['cacheBehavior']
+  >();
 
   constructor(
     eventManager: EventManager,
@@ -514,16 +521,6 @@ export class NetworkStorage {
     );
   }
 
-  set defaultCacheBehavior(
-    behavior: Network.SetCacheBehaviorParameters['cacheBehavior'],
-  ) {
-    this.#defaultCacheBehavior = behavior;
-  }
-
-  get defaultCacheBehavior(): Network.SetCacheBehaviorParameters['cacheBehavior'] {
-    return this.#defaultCacheBehavior;
-  }
-
   addDataCollector(params: Network.AddDataCollectorParameters): string {
     return this.#collectorsStorage.addDataCollector(params);
   }
@@ -555,5 +552,28 @@ export class NetworkStorage {
     );
     // `disposeRequest` disposes request only if no other collectors for it are left.
     this.disposeRequest(params.request);
+  }
+
+  setCacheBehavior(
+    behavior: Network.SetCacheBehaviorParameters['cacheBehavior'],
+    contexts: Set<BrowsingContextImpl>,
+  ): void {
+    if (contexts.size === 0) {
+      this.#defaultCacheBehavior = behavior;
+      this.#contextCacheBehavior.clear();
+      return;
+    }
+
+    for (const context of contexts.values()) {
+      this.#contextCacheBehavior.set(context.id, behavior);
+    }
+  }
+
+  getCacheBehavior(
+    topLevelId: BrowsingContext.BrowsingContext,
+  ): Network.SetCacheBehaviorParameters['cacheBehavior'] {
+    return (
+      this.#contextCacheBehavior.get(topLevelId) ?? this.#defaultCacheBehavior
+    );
   }
 }
