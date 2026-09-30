@@ -270,12 +270,8 @@ void PersistableLog::Append(base::DictValue object) {
                        std::move(object)));
     return;
   }
-  log_.push_front(object.Clone());
-  if (base::saturated_cast<int>(log_.size()) > max_log_entries_in_memory_) {
-    log_.resize(max_log_entries_in_memory_);
-  }
-  current_log_for_disk_.Append(std::move(object));
   if (mode_ == PersistableLogMode::kPersistToDisk) {
+    current_log_for_disk_.Append(object.Clone());
     log_write_timer_.Reset();
     // Technically we can log frequently for a while and never write to disk, as
     // the timer won't trigger. To mitigate, flush if we reach 2x the max log
@@ -285,6 +281,10 @@ void PersistableLog::Append(base::DictValue object) {
         g_max_log_file_size_bytes) {
       MaybeWriteCurrentLog();
     }
+  }
+  log_.push_front(std::move(object));
+  if (base::saturated_cast<int>(log_.size()) > max_log_entries_in_memory_) {
+    log_.resize(max_log_entries_in_memory_);
   }
 }
 

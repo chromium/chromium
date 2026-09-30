@@ -78,6 +78,28 @@ TEST_F(WebAppLoggingTest, InMemoryModeDeletesLog) {
   ASSERT_FALSE(base::PathExists(log_path().DirName()));
 }
 
+TEST_F(WebAppLoggingTest, InMemoryModeCapsLogEntries) {
+  auto log = PersistableLog::CreateForTesting(
+      log_path(), PersistableLogMode::kInMemory, 3,
+      base::MakeRefCounted<FileUtilsWrapper>(), log_writing_task_runner(),
+      log_deletion_task_runner(), &clock_);
+  RunLoggingTasks();
+
+  log->AppendValue(base::Value("entry1"));
+  log->AppendValue(base::Value("entry2"));
+  log->AppendValue(base::Value("entry3"));
+  log->AppendValue(base::Value("entry4"));
+  EXPECT_EQ(log->GetEntries().size(), 3u);
+  EXPECT_EQ(*log->GetEntries()[0].FindString("value"), "entry4");
+  EXPECT_EQ(*log->GetEntries()[1].FindString("value"), "entry3");
+  EXPECT_EQ(*log->GetEntries()[2].FindString("value"), "entry2");
+
+  // On destruction, no file should be written in kInMemory mode.
+  log.reset();
+  RunLoggingTasks();
+  EXPECT_FALSE(base::PathExists(log_path()));
+}
+
 TEST_F(WebAppLoggingTest, LogIsWrittenToDisk) {
   auto log = PersistableLog::CreateForTesting(
       log_path(), PersistableLogMode::kPersistToDisk, 10,
