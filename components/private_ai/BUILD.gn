@@ -11,6 +11,7 @@ proto_library("proto") {
   sources = [
     "proto/google_rpc_code.proto",
     "proto/private_ai.proto",
+    "proto/private_tls_service.proto",
   ]
 
   deps = [ "//components/optimization_guide/proto:optimization_guide_proto" ]
@@ -21,6 +22,7 @@ proto_extras("proto_extras") {
   sources = [
     "proto/google_rpc_code.proto",
     "proto/private_ai.proto",
+    "proto/private_tls_service.proto",
   ]
 
   deps = [ ":proto" ]
