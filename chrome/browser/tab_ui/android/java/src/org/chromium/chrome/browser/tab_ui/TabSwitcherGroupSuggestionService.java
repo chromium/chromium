@@ -210,7 +210,7 @@ public class TabSwitcherGroupSuggestionService {
                 }
 
                 @Override
-                public void didCreateNewGroup(Tab destinationTab) {
+                public void didCreateNewGroup(Token tabGroupId) {
                     clearSuggestions();
                 }
 

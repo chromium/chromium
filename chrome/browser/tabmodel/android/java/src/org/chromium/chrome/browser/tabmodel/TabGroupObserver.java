@@ -107,9 +107,9 @@ public interface TabGroupObserver {
      * This method is called after a new tab group is created, either through drag and drop, the tab
      * selection editor, or by longpressing a link on a tab and using the context menu.
      *
-     * @param destinationTab The destination tab of the group after merge.
+     * @param tabGroupId The tab group ID of the newly created group.
      */
-    default void didCreateNewGroup(Tab destinationTab) {}
+    default void didCreateNewGroup(Token tabGroupId) {}
 
     /**
      * This method is called after a new title is set on a tab group.

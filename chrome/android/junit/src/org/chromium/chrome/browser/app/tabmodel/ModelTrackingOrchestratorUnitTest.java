@@ -467,10 +467,7 @@ public class ModelTrackingOrchestratorUnitTest {
         TabGroupObserver observer = mTabGroupObserverCaptor.getValue();
 
         Token groupId = Token.createRandom();
-        MockTab tab = new MockTab(1, mProfile);
-        tab.setTabGroupId(groupId);
-
-        observer.didCreateNewGroup(tab);
+        observer.didCreateNewGroup(groupId);
 
         observer.didChangeTabGroupColor(groupId, 0);
 
@@ -488,10 +485,7 @@ public class ModelTrackingOrchestratorUnitTest {
         TabGroupObserver observer = mTabGroupObserverCaptor.getValue();
 
         Token groupId = Token.createRandom();
-        MockTab tab = new MockTab(1, mProfile);
-        tab.setTabGroupId(groupId);
-
-        observer.didCreateNewGroup(tab);
+        observer.didCreateNewGroup(groupId);
 
         observer.didChangeTabGroupCollapsed(groupId, true, false);
         observer.didChangeTabGroupTitle(groupId, "New Title");
@@ -511,10 +505,7 @@ public class ModelTrackingOrchestratorUnitTest {
         TabGroupObserver observer = mTabGroupObserverCaptor.getValue();
 
         Token groupId = Token.createRandom();
-        MockTab tab = new MockTab(1, mProfile);
-        tab.setTabGroupId(groupId);
-
-        observer.didCreateNewGroup(tab);
+        observer.didCreateNewGroup(groupId);
 
         observer.didRemoveTabGroup(groupId, DidRemoveTabGroupReason.CLOSE);
 

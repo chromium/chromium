@@ -175,38 +175,10 @@ public class ModelTrackingOrchestrator {
     private final Callback<@Nullable Tab> mIncognitoActiveTabObserver =
             this::onIncognitoActiveTabChange;
 
-    private final TabGroupObserver mVisualDataUpdateObserver =
-            new TabGroupObserver() {
-                @Override
-                public void didCreateNewGroup(Tab destinationTab) {
-                    Token groupId = destinationTab.getTabGroupId();
-                    assert groupId != null;
-                    mGroupIncognitoStatus.put(groupId, destinationTab.isOffTheRecord());
-                }
-
-                @Override
-                public void didRemoveTabGroup(
-                        Token oldTabGroupId, @DidRemoveTabGroupReason int removalReason) {
-                    mGroupIncognitoStatus.remove(oldTabGroupId);
-                }
-
-                @Override
-                public void didChangeTabGroupCollapsed(
-                        Token tabGroupId, boolean isCollapsed, boolean animate) {
-                    saveTabGroupPayload(tabGroupId);
-                }
-
-                @Override
-                public void didChangeTabGroupColor(
-                        Token tabGroupId, @TabGroupColorId int newColor) {
-                    saveTabGroupPayload(tabGroupId);
-                }
-
-                @Override
-                public void didChangeTabGroupTitle(Token tabGroupId, @Nullable String newTitle) {
-                    saveTabGroupPayload(tabGroupId);
-                }
-            };
+    private final TabGroupObserver mRegularVisualDataUpdateObserver =
+            createVisualDataUpdateObserver(/* incognito= */ false);
+    private final TabGroupObserver mIncognitoVisualDataUpdateObserver =
+            createVisualDataUpdateObserver(/* incognito= */ true);
 
     private @Nullable StorageCollectionSynchronizer mIncognitoSynchronizer;
     private @Nullable StorageCollectionSynchronizer mRegularSynchronizer;
@@ -372,7 +344,10 @@ public class ModelTrackingOrchestrator {
         for (boolean incognito : new boolean[] {false, true}) {
             TabModel tabModel = getTabModel(incognito);
             if (tabModel != null) {
-                tabModel.removeTabGroupObserver(mVisualDataUpdateObserver);
+                tabModel.removeTabGroupObserver(
+                        incognito
+                                ? mIncognitoVisualDataUpdateObserver
+                                : mRegularVisualDataUpdateObserver);
             }
         }
 
@@ -564,7 +539,39 @@ public class ModelTrackingOrchestrator {
             mGroupIncognitoStatus.put(groupId, incognito);
         }
 
-        tabModel.addTabGroupObserver(mVisualDataUpdateObserver);
+        tabModel.addTabGroupObserver(
+                incognito ? mIncognitoVisualDataUpdateObserver : mRegularVisualDataUpdateObserver);
+    }
+
+    private TabGroupObserver createVisualDataUpdateObserver(boolean incognito) {
+        return new TabGroupObserver() {
+            @Override
+            public void didCreateNewGroup(Token tabGroupId) {
+                mGroupIncognitoStatus.put(tabGroupId, incognito);
+            }
+
+            @Override
+            public void didRemoveTabGroup(
+                    Token oldTabGroupId, @DidRemoveTabGroupReason int removalReason) {
+                mGroupIncognitoStatus.remove(oldTabGroupId);
+            }
+
+            @Override
+            public void didChangeTabGroupCollapsed(
+                    Token tabGroupId, boolean isCollapsed, boolean animate) {
+                saveTabGroupPayload(tabGroupId);
+            }
+
+            @Override
+            public void didChangeTabGroupColor(Token tabGroupId, @TabGroupColorId int newColor) {
+                saveTabGroupPayload(tabGroupId);
+            }
+
+            @Override
+            public void didChangeTabGroupTitle(Token tabGroupId, @Nullable String newTitle) {
+                saveTabGroupPayload(tabGroupId);
+            }
+        };
     }
 
     private void clearUnusedNodesForModel(TabModel model) {

@@ -290,11 +290,10 @@ public final class TabGroupSyncLocalObserver {
             }
 
             @Override
-            public void didCreateNewGroup(Tab destinationTab) {
+            public void didCreateNewGroup(Token tabGroupId) {
                 if (!mIsObserving) return;
                 LogUtils.log(TAG, "didCreateNewGroup");
-                LocalTabGroupId localTabGroupId =
-                        assertNonNull(TabGroupSyncUtils.getLocalTabGroupId(destinationTab));
+                LocalTabGroupId localTabGroupId = new LocalTabGroupId(tabGroupId);
                 if (groupExistsInSync(localTabGroupId)) return;
 
                 mRemoteTabGroupMutationHelper.createRemoteTabGroup(localTabGroupId);

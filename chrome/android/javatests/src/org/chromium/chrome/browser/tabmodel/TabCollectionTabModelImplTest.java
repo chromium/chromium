@@ -1074,8 +1074,8 @@ public class TabCollectionTabModelImplTest {
                     }
 
                     @Override
-                    public void didCreateNewGroup(Tab destinationTab) {
-                        assertEquals(tab0, destinationTab);
+                    public void didCreateNewGroup(Token tabGroupId) {
+                        assertEquals(tab0.getTabGroupId(), tabGroupId);
                         didCreateNewGroupHelper.notifyCalled();
                     }
                 };
@@ -2501,8 +2501,8 @@ public class TabCollectionTabModelImplTest {
                     TabGroupObserver observer =
                             new TabGroupObserver() {
                                 @Override
-                                public void didCreateNewGroup(Tab destinationTab) {
-                                    assertEquals(tab0, destinationTab);
+                                public void didCreateNewGroup(Token tabGroupId) {
+                                    assertEquals(tab0.getTabGroupId(), tabGroupId);
                                     didCreateNewGroupHelper.notifyCalled();
                                 }
                             };

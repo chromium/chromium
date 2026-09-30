@@ -302,7 +302,7 @@ public class StripLayoutHelper
                 }
 
                 @Override
-                public void didCreateNewGroup(Tab destinationTab) {
+                public void didCreateNewGroup(Token tabGroupId) {
                     rebuildStripViews();
                 }
 
@@ -5149,7 +5149,7 @@ public class StripLayoutHelper
 
     /**
      * Distinct from {@link #getSelectedTabId}, since this doesn't find the ID for the tab selected
-     * in the {@link TabModel), but rather the ID of the {@link StripLayoutTab} that is currently
+     * in the {@link TabModel}, but rather the ID of the {@link StripLayoutTab} that is currently
      * locally marked as selected (through {@link StripLayoutTab#getIsSelected()}).
      *
      * @return the ID of the {@link StripLayoutTab} for which {@link StripLayoutTab#getIsSelected}
