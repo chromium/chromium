@@ -213,7 +213,7 @@ class PrintContentAnalysisUtilsTest
     SetDMTokenForTesting(policy::DMToken::CreateEmptyToken());
     enterprise_connectors::PagePrintRequestHandler::ResetFactoryForTesting();
 #if BUILDFLAG(IS_LINUX)
-    dbus_thread_linux::ShutdownOnDBusThreadAndBlock();
+    dbus_thread_linux::Shutdown();
 #endif
     PrintPreviewTest::TearDown();
     profile_manager_.DeleteAllTestingProfiles();

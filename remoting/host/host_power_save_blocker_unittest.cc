@@ -47,7 +47,7 @@ void HostPowerSaveBlockerTest::TearDown() {
   blocker_.reset();
   task_environment_.RunUntilIdle();
 #if BUILDFLAG(IS_LINUX)
-  dbus_thread_linux::ShutdownOnDBusThreadAndBlock();
+  dbus_thread_linux::Shutdown();
 #endif  // BUILDFLAG(IS_LINUX)
 }
 

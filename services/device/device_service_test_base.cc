@@ -84,7 +84,7 @@ void DeviceServiceTestBase::SetUp() {
 void DeviceServiceTestBase::TearDown() {
 #if BUILDFLAG(IS_LINUX)
   task_environment_.RunUntilIdle();
-  dbus_thread_linux::ShutdownOnDBusThreadAndBlock();
+  dbus_thread_linux::Shutdown();
 #endif  // BUILDFLAG(IS_LINUX)
 }
 

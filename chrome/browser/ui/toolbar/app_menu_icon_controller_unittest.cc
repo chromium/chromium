@@ -147,7 +147,7 @@ class AppMenuIconControllerTest : public ::testing::TestWithParam<int> {
   void TearDown() override {
     ResetProfile();
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
-    dbus_thread_linux::ShutdownOnDBusThreadAndBlock();
+    dbus_thread_linux::Shutdown();
 #endif
   }
 
@@ -374,7 +374,7 @@ TEST_P(AppMenuIconControllerTest,
     }
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
-    dbus_thread_linux::ShutdownOnDBusThreadAndBlock();
+    dbus_thread_linux::Shutdown();
 #endif
 
     ResetProfile();
@@ -450,7 +450,7 @@ TEST_P(AppMenuIconControllerTest,
     }
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
-    dbus_thread_linux::ShutdownOnDBusThreadAndBlock();
+    dbus_thread_linux::Shutdown();
 #endif
 
     ResetProfile();

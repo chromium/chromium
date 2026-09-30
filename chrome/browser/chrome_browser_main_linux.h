@@ -36,6 +36,9 @@ class ChromeBrowserMainPartsLinux : public ChromeBrowserMainPartsPosix {
   ~ChromeBrowserMainPartsLinux() override;
 
   // ChromeBrowserMainPartsPosix overrides.
+#if !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_DBUS)
+  void PreCreateMainMessageLoop() override;
+#endif
   void PostCreateMainMessageLoop() override;
 #if BUILDFLAG(IS_LINUX)
   void PostMainMessageLoopRun() override;

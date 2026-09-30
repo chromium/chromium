@@ -222,6 +222,11 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
     //   // Do something.
     //
     std::string address;
+
+    // Called on the origin thread when the connection to the bus is lost. The
+    // process cannot meaningfully use this Bus afterwards, so the callback is
+    // expected to shut down; when it is null, losing the connection is fatal.
+    base::OnceClosure disconnected_callback;
   };
 
   // Creates a Bus object. The actual connection will be established when
@@ -715,6 +720,9 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   void OnDispatchStatusChanged(DBusConnection* connection,
                                DBusDispatchStatus status);
 
+  // Called when the connection to the bus is lost.
+  void OnConnectionDisconnected();
+
   // Called when a service owner change occurs.
   void OnServiceOwnerChanged(DBusMessage* message);
 
@@ -802,6 +810,7 @@ class CHROME_DBUS_EXPORT Bus : public base::RefCountedThreadSafe<Bus> {
   int num_pending_timeouts_;
 
   std::string address_;
+  base::OnceClosure on_disconnected_;
 };
 
 }  // namespace dbus

@@ -12,10 +12,12 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/lifetime/application_lifetime_desktop.h"
 #include "chrome/common/chrome_features.h"
 #include "components/password_manager/core/browser/password_manager_switches.h"
 #include "content/public/browser/browser_thread.h"
@@ -51,6 +53,20 @@ ChromeBrowserMainPartsLinux::ChromeBrowserMainPartsLinux(
     : ChromeBrowserMainPartsPosix(is_integration_test, startup_data) {}
 
 ChromeBrowserMainPartsLinux::~ChromeBrowserMainPartsLinux() = default;
+
+#if !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_DBUS)
+void ChromeBrowserMainPartsLinux::PreCreateMainMessageLoop() {
+  // Before content creates the PowerMonitor, which takes the system bus. Not
+  // torn down at browser shutdown; see PostDestroyThreads(). A lost bus (the
+  // session ending, or dbus restarted underneath us) ends the session the way
+  // a lost display server connection does in ChromeBrowserMainExtraPartsOzone.
+  dbus_thread_linux::Initialize(base::BindRepeating([] {
+    chrome::SessionEnding();
+    LOG(FATAL) << "Browser failed to shutdown.";
+  }));
+  ChromeBrowserMainPartsPosix::PreCreateMainMessageLoop();
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS) && BUILDFLAG(USE_DBUS)
 
 void ChromeBrowserMainPartsLinux::PostCreateMainMessageLoop() {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -116,6 +132,11 @@ void ChromeBrowserMainPartsLinux::PostDestroyThreads() {
   session_end_listener_.reset();
 #endif
   bluez::BluezDBusManager::Shutdown();
+  // TODO(shelley.vohr): Call dbus_thread_linux::Shutdown() here. It cannot run
+  // yet because the in-process device service (battery, wifi, wake lock) is
+  // destroyed after this last BrowserMainParts hook and still dereferences
+  // bus-owned dbus::ObjectProxy objects, so the buses are released at process
+  // exit instead.
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   ChromeBrowserMainPartsPosix::PostDestroyThreads();

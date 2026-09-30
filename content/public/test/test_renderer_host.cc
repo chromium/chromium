@@ -276,7 +276,7 @@ void RenderViewHostTestHarness::TearDown() {
   base::RunLoop().RunUntilIdle();
 
 #if BUILDFLAG(IS_LINUX) && BUILDFLAG(USE_DBUS)
-  dbus_thread_linux::ShutdownOnDBusThreadAndBlock();
+  dbus_thread_linux::Shutdown();
 #endif
 
 #if BUILDFLAG(IS_WIN)

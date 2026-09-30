@@ -277,6 +277,33 @@ TEST(BusTest, ShutdownAndBlockWithDBusThread) {
   dbus_thread.Stop();
 }
 
+TEST(BusTest, DisconnectedCallback) {
+  base::test::SingleThreadTaskEnvironment task_environment;
+  base::Thread::Options thread_options;
+  thread_options.message_pump_type = base::MessagePumpType::IO;
+  base::Thread dbus_thread("D-Bus thread");
+  dbus_thread.StartWithOptions(std::move(thread_options));
+
+  base::RunLoop run_loop;
+  Bus::Options options;
+  options.dbus_task_runner = dbus_thread.task_runner();
+  options.disconnected_callback = run_loop.QuitClosure();
+  scoped_refptr<Bus> bus = new Bus(std::move(options));
+
+  bus->GetDBusTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](Bus* bus) {
+                       ASSERT_TRUE(bus->Connect());
+                       ASSERT_TRUE(bus->SetUpAsyncOperations());
+                       bus->ClosePrivateConnection();
+                     },
+                     base::Unretained(bus.get())));
+  run_loop.Run();
+
+  bus->ShutdownOnDBusThreadAndBlock();
+  dbus_thread.Stop();
+}
+
 TEST(BusTest, DoubleAddAndRemoveMatch) {
   scoped_refptr<Bus> bus = new Bus(Bus::Options());
   dbus::Error error;

@@ -177,7 +177,8 @@ Bus::Bus(Options options)
       shutdown_completed_(false),
       num_pending_watches_(0),
       num_pending_timeouts_(0),
-      address_(options.address) {
+      address_(options.address),
+      on_disconnected_(std::move(options.disconnected_callback)) {
   // This is safe to call multiple times.
   dbus_threads_init_default();
   // The origin message loop is unnecessary if the client uses synchronous
@@ -1151,6 +1152,14 @@ void Bus::OnDispatchStatusChanged(DBusConnection* connection,
       FROM_HERE, base::BindOnce(&Bus::ProcessAllIncomingDataIfAny, this));
 }
 
+void Bus::OnConnectionDisconnected() {
+  AssertOnDBusThread();
+  if (!on_disconnected_) {
+    LOG(FATAL) << "D-Bus connection was disconnected. Aborting.";
+  }
+  GetOriginTaskRunner()->PostTask(FROM_HERE, std::move(on_disconnected_));
+}
+
 void Bus::OnServiceOwnerChanged(DBusMessage* message) {
   DCHECK(message);
   AssertOnDBusThread();
@@ -1238,11 +1247,9 @@ DBusHandlerResult Bus::OnConnectionDisconnectedFilter(
     DBusConnection* connection,
     DBusMessage* message,
     void* data) {
-  if (dbus_message_is_signal(message,
-                             DBUS_INTERFACE_LOCAL,
+  if (dbus_message_is_signal(message, DBUS_INTERFACE_LOCAL,
                              kDisconnectedSignal)) {
-    // Abort when the connection is lost.
-    LOG(FATAL) << "D-Bus connection was disconnected. Aborting.";
+    static_cast<Bus*>(data)->OnConnectionDisconnected();
   }
   return DBUS_HANDLER_RESULT_NOT_YET_HANDLED;
 }

@@ -6,81 +6,112 @@
 
 #include <utility>
 
-#include "base/no_destructor.h"
-#include "base/synchronization/lock.h"
-#include "base/task/lazy_thread_pool_task_runner.h"
+#include "base/check.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
+#include "base/logging.h"
+#include "base/memory/weak_ptr.h"
+#include "base/message_loop/message_pump_type.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/thread.h"
 #include "dbus/bus.h"
 
 namespace dbus_thread_linux {
 
 namespace {
 
-// Returns a global singleton reference to a session bus.
-scoped_refptr<dbus::Bus>& GetSharedSessionBusRefPtrInstance() {
-  // Store the bus in a lazy static variable instead of a global to avoid a
-  // static initializer.
-  static base::NoDestructor<scoped_refptr<dbus::Bus>> bus;
-  return *bus;
-}
+// Owns the D-Bus thread and both shared buses. The thread needs an I/O pump
+// (dbus::Bus watches its socket with base::FileDescriptorWatcher) and is never
+// a ThreadPool runner, so a bus can never hold a freed per-test runner.
+class DBusThreadLinux {
+ public:
+  DBusThreadLinux() : thread_("D-Bus thread") {
+    CHECK(thread_.StartWithOptions(
+        base::Thread::Options(base::MessagePumpType::IO, 0)));
+    session_bus_ = CreateBus(dbus::Bus::SESSION);
+    system_bus_ = CreateBus(dbus::Bus::SYSTEM);
+  }
 
-// Returns a global singleton reference to a system bus.
-scoped_refptr<dbus::Bus>& GetSharedSystemBusRefPtrInstance() {
-  // Store the bus in a lazy static variable instead of a global to avoid a
-  // static initializer.
-  static base::NoDestructor<scoped_refptr<dbus::Bus>> bus;
-  return *bus;
-}
+  DBusThreadLinux(const DBusThreadLinux&) = delete;
+  DBusThreadLinux& operator=(const DBusThreadLinux&) = delete;
 
-// Use TaskPriority::USER_BLOCKING, because there is a client
-// (NotificationPlatformBridgeLinuxImpl) which needs to run user-blocking tasks
-// on this thread. Use SingleThreadTaskRunnerThreadMode::SHARED, because DBus
-// does not require an exclusive use of the thread, only the existence of a
-// single thread for all tasks.
-base::LazyThreadPoolSingleThreadTaskRunner g_dbus_thread_task_runner =
-    LAZY_THREAD_POOL_SINGLE_THREAD_TASK_RUNNER_INITIALIZER(
-        base::TaskTraits(base::MayBlock(), base::TaskPriority::USER_BLOCKING),
-        base::SingleThreadTaskRunnerThreadMode::SHARED);
+  ~DBusThreadLinux() {
+    CHECK(!session_bus_ && !system_bus_) << "ShutdownBuses() must run first";
+  }
 
-scoped_refptr<dbus::Bus> CreateSharedBus(dbus::Bus::BusType bus_type) {
-  dbus::Bus::Options options;
-  options.bus_type = bus_type;
-  options.connection_type = dbus::Bus::PRIVATE;
-  options.dbus_task_runner = g_dbus_thread_task_runner.Get();
-  return base::MakeRefCounted<dbus::Bus>(std::move(options));
+  void set_disconnected_callback(base::RepeatingClosure callback) {
+    disconnected_callback_ = std::move(callback);
+  }
+
+  scoped_refptr<dbus::Bus> session_bus() { return session_bus_; }
+  scoped_refptr<dbus::Bus> system_bus() { return system_bus_; }
+
+  // Blocks; must run on the buses' origin thread.
+  void ShutdownBuses() {
+    session_bus_->ShutdownOnDBusThreadAndBlock();
+    session_bus_ = nullptr;
+    system_bus_->ShutdownOnDBusThreadAndBlock();
+    system_bus_ = nullptr;
+  }
+
+ private:
+  scoped_refptr<dbus::Bus> CreateBus(dbus::Bus::BusType bus_type) {
+    dbus::Bus::Options options;
+    options.bus_type = bus_type;
+    options.connection_type = dbus::Bus::PRIVATE;
+    options.dbus_task_runner = thread_.task_runner();
+    // The bus posts this to the origin thread, where Shutdown() may already
+    // have deleted `this`.
+    options.disconnected_callback = base::BindOnce(
+        &DBusThreadLinux::OnDisconnected, weak_factory_.GetWeakPtr());
+    return base::MakeRefCounted<dbus::Bus>(std::move(options));
+  }
+
+  void OnDisconnected() {
+    if (!disconnected_callback_) {
+      LOG(FATAL) << "D-Bus connection was disconnected. Aborting.";
+    }
+    disconnected_callback_.Run();
+  }
+
+  base::Thread thread_;
+  scoped_refptr<dbus::Bus> session_bus_;
+  scoped_refptr<dbus::Bus> system_bus_;
+  base::RepeatingClosure disconnected_callback_;
+  base::WeakPtrFactory<DBusThreadLinux> weak_factory_{this};
+};
+
+// Only touched on the thread that called Initialize().
+DBusThreadLinux* g_instance = nullptr;
+
+DBusThreadLinux* Instance() {
+  if (!g_instance) {
+    g_instance = new DBusThreadLinux();
+  }
+  return g_instance;
 }
 
 }  // namespace
 
+void Initialize(base::RepeatingClosure disconnected_callback) {
+  Instance()->set_disconnected_callback(std::move(disconnected_callback));
+}
+
 scoped_refptr<dbus::Bus> GetSharedSessionBus() {
-  static base::Lock lock;
-  base::AutoLock guard(lock);
-  auto& session_bus = GetSharedSessionBusRefPtrInstance();
-  if (!session_bus) {
-    session_bus = CreateSharedBus(dbus::Bus::SESSION);
-  }
-  return session_bus;
+  return Instance()->session_bus();
 }
 
 scoped_refptr<dbus::Bus> GetSharedSystemBus() {
-  static base::Lock lock;
-  base::AutoLock guard(lock);
-  auto& system_bus = GetSharedSystemBusRefPtrInstance();
-  if (!system_bus) {
-    system_bus = CreateSharedBus(dbus::Bus::SYSTEM);
-  }
-  return system_bus;
+  return Instance()->system_bus();
 }
 
-void ShutdownOnDBusThreadAndBlock() {
-  if (auto& session_bus = GetSharedSessionBusRefPtrInstance()) {
-    session_bus->ShutdownOnDBusThreadAndBlock();
-    session_bus = nullptr;
+void Shutdown() {
+  if (!g_instance) {
+    return;
   }
-  if (auto& system_bus = GetSharedSystemBusRefPtrInstance()) {
-    system_bus->ShutdownOnDBusThreadAndBlock();
-    system_bus = nullptr;
-  }
+  g_instance->ShutdownBuses();
+  delete g_instance;
+  g_instance = nullptr;
 }
 
 }  // namespace dbus_thread_linux

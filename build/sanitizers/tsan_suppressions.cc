@@ -21,6 +21,7 @@ char kTSanDefaultSuppressions[] =
     // Since we don't instrument them, we cannot reason about the
     // synchronization in them.
     "race:libdbus*.so\n"
+    "deadlock:libdbus*.so\n"
     "race:libdconfsettings*.so\n"
     "race:libflashplayer.so\n"
     "race:libgio*.so\n"
