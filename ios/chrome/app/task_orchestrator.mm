@@ -44,6 +44,8 @@
 
 namespace {
 struct SceneInfo {
+  // The UIKit scene associated with this info.
+  __weak UIScene* scene;
   // Current stage of a scene.
   TaskExecutionStage current_stage;
   // Whether a profile or account switch is currently in progress for this
@@ -72,10 +74,10 @@ std::string GetSceneIdentifier(UIScene* scene) {
   return base::SysNSStringToUTF8(scene.session.persistentIdentifier);
 }
 
-// Returns the active `SceneState` for `task.scene`.
-SceneState* GetSceneStateForTask(TaskRequest* task) {
+// Returns the active `SceneState` for `scene`.
+SceneState* GetSceneStateForScene(UIScene* scene) {
   SceneDelegate* scene_delegate =
-      base::apple::ObjCCast<SceneDelegate>(task.scene.delegate);
+      base::apple::ObjCCast<SceneDelegate>(scene.delegate);
   return scene_delegate.sceneState;
 }
 
@@ -112,7 +114,10 @@ SceneState* GetSceneStateForTask(TaskRequest* task) {
   CHECK(!sceneKey.empty());
 
   SceneInfo& sceneInfo = _tasksPerScene[sceneKey];
+  sceneInfo.scene = task.scene;
   sceneInfo.AddTask(task);
+  SceneState* sceneState = GetSceneStateForScene(task.scene);
+  sceneState.hasPendingIntent = YES;
   [self executeTasksForScene:sceneKey];
 }
 
@@ -123,8 +128,11 @@ SceneState* GetSceneStateForTask(TaskRequest* task) {
     return;
   }
 
-  TaskExecutionStage previousStage = _tasksPerScene[sceneKey].current_stage;
-  _tasksPerScene[sceneKey].current_stage = stage;
+  SceneInfo& sceneInfo = _tasksPerScene[sceneKey];
+  sceneInfo.scene = sceneState.scene;
+  sceneState.hasPendingIntent = (sceneInfo.pending_tasks.count > 0);
+  TaskExecutionStage previousStage = sceneInfo.current_stage;
+  sceneInfo.current_stage = stage;
   if (previousStage < stage) {
     [self executeTasksForScene:sceneKey];
   }
@@ -209,6 +217,8 @@ SceneState* GetSceneStateForTask(TaskRequest* task) {
   if (!hasPendingGaiaTask) {
     sceneInfo.switched_gaia_id = nil;
   }
+  SceneState* sceneState = GetSceneStateForScene(sceneInfo.scene);
+  sceneState.hasPendingIntent = sceneInfo.pending_tasks.count > 0;
 }
 
 // Initiates a profile or account switch via `ChangeProfileCommands` if a
@@ -228,7 +238,7 @@ SceneState* GetSceneStateForTask(TaskRequest* task) {
     return NO;
   }
 
-  SceneState* sceneState = GetSceneStateForTask(gaiaTask);
+  SceneState* sceneState = GetSceneStateForScene(gaiaTask.scene);
   ProfileIOS* profile = sceneState.profileState.profile;
   if (!sceneState || !profile ||
       sceneState.profileState.appState.initStage < AppInitStage::kFinal) {

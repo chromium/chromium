@@ -82,6 +82,9 @@ SceneState* CreateFakeSceneState(NSString* persistent_identifier) {
   OCMStub([fake_scene session]).andReturn(fake_scene_session);
   SceneState* scene_state = [[SceneState alloc] init];
   scene_state.scene = fake_scene;
+  id mock_scene_delegate = OCMClassMock([SceneDelegate class]);
+  OCMStub([mock_scene_delegate sceneState]).andReturn(scene_state);
+  OCMStub([fake_scene delegate]).andReturn(mock_scene_delegate);
   return scene_state;
 }
 }  // namespace
@@ -113,23 +116,31 @@ class TaskOrchestratorTest : public PlatformTest {
 TEST_F(TaskOrchestratorTest, TestAddTaskRequestExecuteImmediately) {
   NSString* scene_id = @"scene1";
   SceneState* scene_state = CreateFakeSceneState(scene_id);
+  EXPECT_FALSE(scene_state.hasPendingIntent);
   __block BOOL taskWasExecuted = NO;
+  __block BOOL hasPendingIntentDuringExecution = NO;
 
-  TaskRequest* task = [TaskRequest taskForTestingWithScene:scene_state.scene
-                                              executeBlock:^{
-                                                taskWasExecuted = YES;
-                                              }];
+  TaskRequest* task =
+      [TaskRequest taskForTestingWithScene:scene_state.scene
+                              executeBlock:^{
+                                taskWasExecuted = YES;
+                                hasPendingIntentDuringExecution =
+                                    scene_state.hasPendingIntent;
+                              }];
   task.minimumStage = TaskExecutionStage::TaskExecutionStageNone;
 
   [orchestrator_ addTaskRequest:task];
 
   EXPECT_TRUE(taskWasExecuted);
+  EXPECT_TRUE(hasPendingIntentDuringExecution);
+  EXPECT_FALSE(scene_state.hasPendingIntent);
 }
 
 // Tests that a task is queued if the stage is not met, and executed when it is.
 TEST_F(TaskOrchestratorTest, TestAddTaskRequestQueueAndExecuteLater) {
   NSString* scene_id = @"scene1";
   SceneState* scene_state = CreateFakeSceneState(scene_id);
+  EXPECT_FALSE(scene_state.hasPendingIntent);
   __block BOOL taskWasExecuted = NO;
 
   TaskRequest* task = [TaskRequest taskForTestingWithScene:scene_state.scene
@@ -139,17 +150,20 @@ TEST_F(TaskOrchestratorTest, TestAddTaskRequestQueueAndExecuteLater) {
   task.minimumStage = TaskExecutionStage::TaskExecutionUIReady;
 
   [orchestrator_ addTaskRequest:task];
+  EXPECT_TRUE(scene_state.hasPendingIntent);
 
   // Make sure that block is not run.
   [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionProfileLoaded
                       forScene:scene_state];
   EXPECT_FALSE(taskWasExecuted);
+  EXPECT_TRUE(scene_state.hasPendingIntent);
 
   // Update executionBlock to check that it's correctly called when updating to
   // the correct stage.
   [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
                       forScene:scene_state];
   EXPECT_TRUE(taskWasExecuted);
+  EXPECT_FALSE(scene_state.hasPendingIntent);
 }
 
 // Tests that tasks for different scenes are handled independently.
@@ -174,17 +188,22 @@ TEST_F(TaskOrchestratorTest, TestMultipleScenes) {
 
   [orchestrator_ addTaskRequest:task1];
   [orchestrator_ addTaskRequest:task2];
+  EXPECT_TRUE(scene_state1.hasPendingIntent);
+  EXPECT_TRUE(scene_state2.hasPendingIntent);
 
   // Check that only task1 is executed.
   [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
                       forScene:scene_state1];
   EXPECT_TRUE(task1WasExecuted);
+  EXPECT_FALSE(scene_state1.hasPendingIntent);
   EXPECT_FALSE(task2WasExecuted);
+  EXPECT_TRUE(scene_state2.hasPendingIntent);
 
   // Check that only task2 is executed.
   [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
                       forScene:scene_state2];
   EXPECT_TRUE(task2WasExecuted);
+  EXPECT_FALSE(scene_state2.hasPendingIntent);
 }
 
 // Tests that multiple tasks for the same scene with different stages are
@@ -209,17 +228,20 @@ TEST_F(TaskOrchestratorTest, TestMultipleStagesSameScene) {
 
   [orchestrator_ addTaskRequest:task1];
   [orchestrator_ addTaskRequest:task2];
+  EXPECT_TRUE(scene_state.hasPendingIntent);
 
   // Transition to ProfileLoaded. Check that only task1 is executed.
   [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionProfileLoaded
                       forScene:scene_state];
   EXPECT_TRUE(task1WasExecuted);
   EXPECT_FALSE(task2WasExecuted);
+  EXPECT_TRUE(scene_state.hasPendingIntent);
 
   // Transition to UIReady. Check that task2 is executed.
   [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
                       forScene:scene_state];
   EXPECT_TRUE(task2WasExecuted);
+  EXPECT_FALSE(scene_state.hasPendingIntent);
 }
 
 // Tests that a task is dropped if there is already a pending task for the same
@@ -248,6 +270,7 @@ TEST_F(TaskOrchestratorTest, TestDropTaskRequestWithDifferentGaiaID) {
 
   [orchestrator_ addTaskRequest:task1];
   [orchestrator_ addTaskRequest:task2];
+  EXPECT_TRUE(scene_state.hasPendingIntent);
 
   [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
                       forScene:scene_state];
@@ -255,6 +278,7 @@ TEST_F(TaskOrchestratorTest, TestDropTaskRequestWithDifferentGaiaID) {
   // task1 should be executed, task2 should be dropped.
   EXPECT_TRUE(task1WasExecuted);
   EXPECT_FALSE(task2WasExecuted);
+  EXPECT_FALSE(scene_state.hasPendingIntent);
 
   // Make sure histogram is correctly updated.
   histogram_tester_.ExpectBucketCount(
@@ -290,6 +314,7 @@ TEST_F(TaskOrchestratorTest, TestNotDropTaskRequestWithSameGaiaID) {
 
   [orchestrator_ addTaskRequest:task1];
   [orchestrator_ addTaskRequest:task2];
+  EXPECT_TRUE(scene_state.hasPendingIntent);
 
   [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
                       forScene:scene_state];
@@ -297,6 +322,7 @@ TEST_F(TaskOrchestratorTest, TestNotDropTaskRequestWithSameGaiaID) {
   // Both tasks should be executed.
   EXPECT_TRUE(task1WasExecuted);
   EXPECT_TRUE(task2WasExecuted);
+  EXPECT_FALSE(scene_state.hasPendingIntent);
 
   // Make sure histogram is correctly updated.
   histogram_tester_.ExpectUniqueSample(
@@ -371,9 +397,6 @@ TEST_F(TaskOrchestratorTest,
 
   SceneState* scene_state = CreateFakeSceneState(@"scene_switch");
   scene_state.profileState = profile_state;
-  id mock_scene_delegate = OCMClassMock([SceneDelegate class]);
-  OCMStub([mock_scene_delegate sceneState]).andReturn(scene_state);
-  OCMStub([scene_state.scene delegate]).andReturn(mock_scene_delegate);
 
   id mock_browser_provider = OCMProtocolMock(@protocol(BrowserProvider));
   TestBrowser browser(profile, scene_state);
@@ -396,6 +419,7 @@ TEST_F(TaskOrchestratorTest,
   task.gaiaID = identity.gaiaId.ToNSString();
 
   [orchestrator_ addTaskRequest:task];
+  EXPECT_TRUE(scene_state.hasPendingIntent);
   EXPECT_FALSE(change_profile_handler.changeProfileCalled);
   EXPECT_FALSE(task_was_executed);
 
@@ -407,16 +431,19 @@ TEST_F(TaskOrchestratorTest,
   EXPECT_EQ(ChangeProfileReason::kSwitchAccountsFromWidget,
             change_profile_handler.reason);
   EXPECT_FALSE(task_was_executed);
+  EXPECT_TRUE(scene_state.hasPendingIntent);
 
   // Even if TaskExecutionUIReady is reached while the switch continuation is
   // still in progress, the task must not execute until the continuation runs.
   [orchestrator_ updateToStage:TaskExecutionStage::TaskExecutionUIReady
                       forScene:scene_state];
   EXPECT_FALSE(task_was_executed);
+  EXPECT_TRUE(scene_state.hasPendingIntent);
 
   // Running the ChangeProfileContinuation completes the switch and executes the
   // ready task.
   ASSERT_TRUE([change_profile_handler hasContinuation]);
   [change_profile_handler runContinuationForSceneState:scene_state];
   EXPECT_TRUE(base::test::RunUntil([&]() { return task_was_executed; }));
+  EXPECT_FALSE(scene_state.hasPendingIntent);
 }
