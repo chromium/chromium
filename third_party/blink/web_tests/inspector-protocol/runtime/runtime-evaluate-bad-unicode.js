@@ -2,21 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TestRunner} from 'test_runner';
-
-import * as UIModule from 'devtools/ui/legacy/legacy.js';
-import * as SDK from 'devtools/core/sdk/sdk.js';
-
-(async function() {
-  TestRunner.addResult(`Tests TestRunner.RuntimeAgent.evaluate can handle invalid Unicode code points and non-characters.\n`);
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
+  const {dp} = await testRunner.startBlank(
+      `Tests TestRunner.RuntimeAgent.evaluate can handle invalid Unicode code points and non-characters.`);
+  await dp.Runtime.enable();
 
   async function test(expression) {
-    const executionContext = UIModule.Context.Context.instance().flavor(SDK.RuntimeModel.ExecutionContext);
-    const compileResult = await executionContext.runtimeModel.compileScript(expression, '', true, executionContext.id);
-    const runResult = await executionContext.runtimeModel.runScript(compileResult.scriptId, executionContext.id);
-    TestRunner.addResult(`"${expression}" -> ${runResult.object.value}`);
+    const {result: {scriptId}} = await dp.Runtime.compileScript(
+        {expression, sourceURL: '', persistScript: true});
+    const {result: {result}} = await dp.Runtime.runScript({scriptId});
+    testRunner.log(`"${expression}" -> ${result.value}`);
   }
 
+  // clang-format off
   // Invalid code points, i.e. code points that are not Unicode scalar
   // values. https://unicode.org/glossary/#unicode_scalar_value
   {
@@ -141,6 +139,7 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
     // sequence for that codepoint, that is 0xef 0xbf 0xbf.
     await test("String.fromCodePoint(0xFFFF)");
   }
+  // clang-format on
 
-  TestRunner.completeTest();
-})();
+  testRunner.completeTest();
+});

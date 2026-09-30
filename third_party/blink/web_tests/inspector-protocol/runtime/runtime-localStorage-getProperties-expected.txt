@@ -1,0 +1,13 @@
+Tests RemoteObject.getProperties on localStorage object. 66215
+{
+    configurable : true
+    enumerable : true
+    isOwn : true
+    name : testProperty
+    value : {
+        type : string
+        value : testPropertyValue
+    }
+    writable : true
+}
+

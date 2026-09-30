@@ -1,5 +1,4 @@
 Tests TestRunner.RuntimeAgent.evaluate can handle invalid Unicode code points and non-characters.
-
 "'í €' === '\uD800'" -> true
 "'í €'.codePointAt(0).toString(16)" -> d800
 "'í¯¿' === '\uDBFF'" -> true

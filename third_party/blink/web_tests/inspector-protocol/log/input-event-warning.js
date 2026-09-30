@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {TestRunner} from 'test_runner';
+(async function(/** @type {import('test_runner').TestRunner} */ testRunner) {
+  const {session, dp} = await testRunner.startBlank(
+      `Tests that console warnings are issued for a blocked event listener and that there is no crash when an offending listener is removed by the handler.`);
 
-import * as SDK from 'devtools/core/sdk/sdk.js';
-
-(async function() {
-  TestRunner.addResult(
-      `Tests that console warnings are issued for a blocked event listener and that there is no crash when an offending listener is removed by the handler.\n`);
-  await TestRunner.evaluateInPagePromise(`
+  await session.evaluate(`
       function eventListenerSuicidal(event)
       {
           event.target.removeEventListener("wheel", eventListenerSuicidal);
@@ -66,25 +63,19 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
       }
   `);
 
-  const consoleModel = SDK.TargetManager.TargetManager.instance().primaryPageTarget().model(SDK.ConsoleModel.ConsoleModel);
-  consoleModel.addEventListener(
-      SDK.ConsoleModel.Events.MessageAdded, TestRunner.safeWrap(onConsoleMessage));
-  step1();
+  await dp.Log.enable();
+  dp.Log.onEntryAdded(event => {
+    testRunner.log(event.params.entry.text.replace(/ \d+ ms/, ' <number> ms'));
+  });
 
-  function step1() {
-    TestRunner.mainTarget.logAgent().invoke_startViolationsReport({config: [{name: 'blockedEvent', threshold: 30000}]});
-    TestRunner.evaluateInPage('dispatchEvents()', step2);
-  }
+  await dp.Log.startViolationsReport(
+      {config: [{name: 'blockedEvent', threshold: 30000}]});
+  await session.evaluate('dispatchEvents()');
 
-  function step2() {
-    TestRunner.mainTarget.logAgent().invoke_startViolationsReport({config: [{name: 'blockedEvent', threshold: 0.001}]});
-    TestRunner.addResult('There should be no warnings above this line');
-    TestRunner.evaluateInPage('dispatchEvents()', () => TestRunner.completeTest());
-  }
+  await dp.Log.startViolationsReport(
+      {config: [{name: 'blockedEvent', threshold: 0.001}]});
+  testRunner.log('There should be no warnings above this line');
+  await session.evaluate('dispatchEvents()');
 
-  function onConsoleMessage(event) {
-    var message = event.data;
-    var text = message.messageText;
-    TestRunner.addResult(text.replace(/ \d+ ms/, ' <number> ms'));
-  }
-})();
+  testRunner.completeTest();
+});
