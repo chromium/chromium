@@ -3449,7 +3449,7 @@ deps = {
     'packages': [
       {
         'package': 'chromeos_internal/apps/media_app/app',
-        'version': 'iiHZAbbFd4afTLTt4CF0-zR2Gej3-2TyUxsrAFGqcUAC',
+        'version': 'm1X6DY0BY1MPKJRRQwmpgzlQy9C2zdsIcsroMlrhzvEC',
       },
     ],
     'condition': 'checkout_chromeos and checkout_src_internal',
