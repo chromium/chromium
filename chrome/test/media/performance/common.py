@@ -1,7 +1,6 @@
 # Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """A common module for media performance tests."""
 
 import glob
@@ -47,8 +46,7 @@ SERVER_PORT = int(os.environ.get('SERVER_PORT', '8000'))
 
 RECORDINGS_DIR = os.path.join(os.environ.get('ISOLATED_OUTDIR', '/tmp'),
                               'recordings')
-TRACES_DIR = os.path.join(os.environ.get('ISOLATED_OUTDIR', '/tmp'),
-                          'traces')
+TRACES_DIR = os.path.join(os.environ.get('ISOLATED_OUTDIR', '/tmp'), 'traces')
 LOCAL_HOST_IP = '127.0.0.1'
 REMOTE_URL = f'http://{LOCAL_HOST_IP}:{CHROMEDRIVER_PORT}'
 
@@ -58,88 +56,55 @@ REMOTE_URL = f'http://{LOCAL_HOST_IP}:{CHROMEDRIVER_PORT}'
 FAIL_CODE = -128
 
 METRICS = [
-    'smoothness',
-    'freezing',
-    'dropped_frame_count',
-    'total_frame_count',
+    'smoothness', 'freezing', 'dropped_frame_count', 'total_frame_count',
     'dropped_frame_percentage'
 ]
 
 # Framerate is now legacy data, but until our results are standardized we'll
 # maintain the data in case it's necessary to pass later.
-VIDEOS = [
-    {
-        'name': '1080p30fpsAV1_foodmarket_sync.mp4',
-        'fps': 30
-    },
-    {
-        'name': '1080p30fpsH264_foodmarket_yt_sync.mp4',
-        'fps': 30
-    },
-    {
-        'name': '1080p60fpsHEVC_boat_yt_sync.mp4',
-        'fps': 60
-    },
-    {
-        'name': '1080p60fpsVP9_boat_yt_sync.webm',
-        'fps': 60
-    }
-]
-
+VIDEOS = [{
+    'name': '1080p30fpsAV1_foodmarket_sync.mp4',
+    'fps': 30
+}, {
+    'name': '1080p30fpsH264_foodmarket_yt_sync.mp4',
+    'fps': 30
+}, {
+    'name': '1080p60fpsHEVC_boat_yt_sync.mp4',
+    'fps': 60
+}, {
+    'name': '1080p60fpsVP9_boat_yt_sync.webm',
+    'fps': 60
+}]
 
 SENDER_CHROMEDRIVER_CHECK_CMD = {
-    'mac': (
-        'ps aux | grep chromedriver | grep -v grep'
-    ),
-    'win': (
-        'powershell -Command "Get-Process -Name chromedriver -ErrorAction '
-        'SilentlyContinue"'
-    ),
-    'linux': (
-        'pgrep chromedriver'
-    ),
-    'cros': (
-        'pgrep chromedriver'
-    ),
+    'mac': ('ps aux | grep chromedriver | grep -v grep'),
+    'win': ('powershell -Command "Get-Process -Name chromedriver -ErrorAction '
+            'SilentlyContinue"'),
+    'linux': ('pgrep chromedriver'),
+    'cros': ('pgrep chromedriver'),
 }
 
 SENDER_STATUS_CMD = {
-    'mac': (
-        'curl -s -o /dev/null -w "%{http_code}" '
-        f'http://{LOCAL_HOST_IP}:{CHROMEDRIVER_PORT}/status'
-    ),
-    'win': (
-        f'curl.exe -s -o NUL -w "%{{http_code}}" '
-        f'http://{LOCAL_HOST_IP}:{CHROMEDRIVER_PORT}/status'
-    ),
-    'linux': (
-        'curl -s -o /dev/null -w "%{http_code}" '
-        f'http://{LOCAL_HOST_IP}:{CHROMEDRIVER_PORT}/status'
-    ),
-    'cros': (
-        'curl -s -o /dev/null -w "%{http_code}" '
-        f'http://{LOCAL_HOST_IP}:{CHROMEDRIVER_PORT}/status'
-    ),
+    'mac': ('curl -s -o /dev/null -w "%{http_code}" '
+            f'http://{LOCAL_HOST_IP}:{CHROMEDRIVER_PORT}/status'),
+    'win': (f'curl.exe -s -o NUL -w "%{{http_code}}" '
+            f'http://{LOCAL_HOST_IP}:{CHROMEDRIVER_PORT}/status'),
+    'linux': ('curl -s -o /dev/null -w "%{http_code}" '
+              f'http://{LOCAL_HOST_IP}:{CHROMEDRIVER_PORT}/status'),
+    'cros': ('curl -s -o /dev/null -w "%{http_code}" '
+             f'http://{LOCAL_HOST_IP}:{CHROMEDRIVER_PORT}/status'),
 }
 
 SENDER_TERMINATE_DRIVER_CMD = {
-    'mac': (
-        'killall chromedriver 2>/dev/null || true; '
-        'killall "Google Chrome for Testing" 2>/dev/null || true'
-    ),
-    'win': (
-        'powershell -Command "Stop-Process -Name chromedriver,chrome -Force '
-        '-ErrorAction SilentlyContinue; '
-        'taskkill /F /IM chromedriver.exe /IM chrome.exe /T; exit 0"'
-    ),
-    'linux': (
-        'pkill -f chromedriver || true; pkill -f chrome || true'
-    ),
-    'cros': (
-        'pkill -f chromedriver || true; pkill -f chrome || true'
-    ),
+    'mac': ('killall chromedriver 2>/dev/null || true; '
+            'killall "Google Chrome for Testing" 2>/dev/null || true'),
+    'win':
+    ('powershell -Command "Stop-Process -Name chromedriver,chrome -Force '
+     '-ErrorAction SilentlyContinue; '
+     'taskkill /F /IM chromedriver.exe /IM chrome.exe /T; exit 0"'),
+    'linux': ('pkill -f chromedriver || true; pkill -f chrome || true'),
+    'cros': ('pkill -f chromedriver || true; pkill -f chrome || true'),
 }
-
 
 WIN_REMOTE_TMP_DIR = 'C:/cft_temp'
 WIN_SYSTEM32_TAR = 'C:/Windows/System32/tar.exe'
@@ -150,9 +115,12 @@ SSH_PORT = 22
 # BatchMode makes ssh fail instead of hanging on a password/passphrase prompt,
 # and ConnectTimeout bounds how long ssh waits for an unreachable host.
 SSH_BASE_OPTS = [
-    '-o', 'StrictHostKeyChecking=no',
-    '-o', 'BatchMode=yes',
-    '-o', 'ConnectTimeout=10',
+    '-o',
+    'StrictHostKeyChecking=no',
+    '-o',
+    'BatchMode=yes',
+    '-o',
+    'ConnectTimeout=10',
 ]
 # ssh exits with 255 when it fails to connect or authenticate. Any other code
 # is the exit status of the remote command.
@@ -237,24 +205,21 @@ def send_ssh_command(hostname, username, command, blocking=False):
         logging.debug('Executing local command: %s', command)
         if blocking:
             return subprocess.run(command,
-                                    shell=True,
-                                    capture_output=True,
-                                    text=True,
-                                    timeout=120,
-                                    check=False)
+                                  shell=True,
+                                  capture_output=True,
+                                  text=True,
+                                  timeout=120,
+                                  check=False)
         return subprocess.Popen(command,
-                                 shell=True,
-                                 stdin=subprocess.PIPE,
-                                 stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE,
-                                 text=True)
+                                shell=True,
+                                stdin=subprocess.PIPE,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE,
+                                text=True)
 
     key_path = os.path.expanduser('~/.ssh/id_ed25519')
     ssh_command = [
-        'ssh',
-        *SSH_BASE_OPTS,
-        '-i', key_path,
-        f'{username}@{hostname}',
+        'ssh', *SSH_BASE_OPTS, '-i', key_path, f'{username}@{hostname}',
         command
     ]
     logging.debug('Executing SSH command: %s', ' '.join(ssh_command))
@@ -413,16 +378,18 @@ def terminate_old_chromedriver(args):
     """Tries to terminate any existing chromedriver processes."""
     verify_sender_connectivity(args)
     logging.info("Attempting to terminate old chromedriver processes...")
-    result = send_ssh_command(args.sender, args.username,
+    result = send_ssh_command(args.sender,
+                              args.username,
                               SENDER_TERMINATE_DRIVER_CMD[args.sender_os],
                               blocking=True)
     _raise_if_ssh_failed(args, result, 'terminating chromedriver')
 
     for _ in range(15):
-        result = send_ssh_command(args.sender,
-                                  args.username,
-                                  SENDER_CHROMEDRIVER_CHECK_CMD[args.sender_os],
-                                  blocking=True)
+        result = send_ssh_command(
+            args.sender,
+            args.username,
+            SENDER_CHROMEDRIVER_CHECK_CMD[args.sender_os],
+            blocking=True)
         # grep/pgrep exit 1 when nothing matches, which is the expected
         # result here. Only 255 means ssh itself failed.
         _raise_if_ssh_failed(args, result, 'checking for chromedriver')
@@ -446,8 +413,8 @@ def _raise_if_remote_info_missing(args, info, arch_probes, version_probes):
     """
     missing = []
     details = []
-    for field, probes in (('arch', arch_probes),
-                          ('os_version', version_probes)):
+    for field, probes in (('arch', arch_probes), ('os_version',
+                                                  version_probes)):
         if info[field]:
             continue
         missing.append(field)
@@ -512,10 +479,8 @@ def get_remote_info(args):
 
     elif args.sender_os == 'win':
         # Get architecture using CIM to avoid shell-specific environment issues.
-        arch_cmd = (
-            'powershell -Command '
-            '"(Get-CimInstance Win32_Processor).Architecture"'
-        )
+        arch_cmd = ('powershell -Command '
+                    '"(Get-CimInstance Win32_Processor).Architecture"')
         arch_result = send_ssh_command(args.sender,
                                        args.username,
                                        arch_cmd,
@@ -534,8 +499,7 @@ def get_remote_info(args):
             arch_cmd_fallback = (
                 'powershell -Command "if ($env:PROCESSOR_ARCHITEW6432) '
                 '{ $env:PROCESSOR_ARCHITEW6432 } else '
-                '{ $env:PROCESSOR_ARCHITECTURE }"'
-            )
+                '{ $env:PROCESSOR_ARCHITECTURE }"')
             arch_result = send_ssh_command(args.sender,
                                            args.username,
                                            arch_cmd_fallback,
@@ -663,32 +627,35 @@ def install_and_setup_chrome(args, chrome_version):
         remote_app_path = (f"{tmp_dir}/{chrome_dir}/"
                            "Google Chrome for Testing.app")
         if sys.platform == 'linux':
-             remote_app_path = f"{tmp_dir}/{chrome_dir}/chrome"
+            remote_app_path = f"{tmp_dir}/{chrome_dir}/chrome"
 
         remote_chromedriver_path = f"{tmp_dir}/{driver_dir}/chromedriver"
 
         if (os.path.exists(remote_app_path)
                 and os.path.exists(remote_chromedriver_path)):
-             logging.info(
-                 "Chrome and Chromedriver already installed locally. "
-                 "Skipping download/extract.")
+            logging.info("Chrome and Chromedriver already installed locally. "
+                         "Skipping download/extract.")
         else:
-             subprocess.run(
-                 f"curl -L {chrome_url} -o {tmp_dir}/{chrome_zip} && "
-                 f"curl -L {driver_url} -o {tmp_dir}/{driver_zip} && "
-                 f"unzip -o {tmp_dir}/{chrome_zip} -d {tmp_dir} && "
-                 f"unzip -o {tmp_dir}/{driver_zip} -d {tmp_dir}",
-                 shell=True, check=True, timeout=120)
+            subprocess.run(
+                f"curl -L {chrome_url} -o {tmp_dir}/{chrome_zip} && "
+                f"curl -L {driver_url} -o {tmp_dir}/{driver_zip} && "
+                f"unzip -o {tmp_dir}/{chrome_zip} -d {tmp_dir} && "
+                f"unzip -o {tmp_dir}/{driver_zip} -d {tmp_dir}",
+                shell=True,
+                check=True,
+                timeout=120)
 
         subprocess.run(f'chmod +x {remote_chromedriver_path}',
-                       shell=True, check=True)
+                       shell=True,
+                       check=True)
         # Start chromedriver locally.
         subprocess.Popen(
             f'nohup {remote_chromedriver_path} --port={CHROMEDRIVER_PORT} '
             '--disable-ipv6 --allowed-origins=\"*\" --allowed-ips= '
             '--verbose --log-path=/tmp/chromedriver_verbose.log '
             '--enable-chrome-logs '
-            f'> /tmp/chromedriver_console.log 2>&1 &', shell=True)
+            f'> /tmp/chromedriver_console.log 2>&1 &',
+            shell=True)
 
         logging.info("Finished local chromedriver setup.")
         return remote_app_path, chrome_version_actual
@@ -699,26 +666,26 @@ def install_and_setup_chrome(args, chrome_version):
         driver_zip = driver_url.split('/')[-1]
         chrome_dir = chrome_zip.replace('.zip', '')
         driver_dir = driver_zip.replace('.zip', '')
-        remote_app_path = (
-            f"{remote_tmp_dir}/{chrome_dir}/Google "
-            "Chrome for Testing.app")
+        remote_app_path = (f"{remote_tmp_dir}/{chrome_dir}/Google "
+                           "Chrome for Testing.app")
         remote_chromedriver_path = (
             f"{remote_tmp_dir}/{driver_dir}/chromedriver")
 
-        check_installed_cmd = (
-            f"[ -d '{remote_app_path}' ] && "
-            f"[ -f '{remote_chromedriver_path}' ] && "
-            "echo 'EXISTS' || echo 'MISSING'"
-        )
-        check_result = send_ssh_command(
-            args.sender, args.username, check_installed_cmd, blocking=True)
+        check_installed_cmd = (f"[ -d '{remote_app_path}' ] && "
+                               f"[ -f '{remote_chromedriver_path}' ] && "
+                               "echo 'EXISTS' || echo 'MISSING'")
+        check_result = send_ssh_command(args.sender,
+                                        args.username,
+                                        check_installed_cmd,
+                                        blocking=True)
         if check_result.stdout.strip() == 'EXISTS':
             logging.info(
                 "Chrome and Chromedriver already installed on remote Mac. "
                 "Skipping download/extract.")
         else:
             send_ssh_command(
-                args.sender, args.username,
+                args.sender,
+                args.username,
                 (f"curl -L {chrome_url} -o {remote_tmp_dir}/{chrome_zip} && "
                  f"curl -L {driver_url} -o {remote_tmp_dir}/{driver_zip} && "
                  f"unzip -o {remote_tmp_dir}/{chrome_zip} "
@@ -727,13 +694,14 @@ def install_and_setup_chrome(args, chrome_version):
                  f"-d {remote_tmp_dir}"),
                 blocking=True)
 
-            send_ssh_command(
-                args.sender, args.username,
-                (f"xattr -cr {remote_tmp_dir}/{chrome_dir} && "
-                 f"xattr -cr {remote_tmp_dir}/{driver_dir}"),
-                blocking=True)
+            send_ssh_command(args.sender,
+                             args.username,
+                             (f"xattr -cr {remote_tmp_dir}/{chrome_dir} && "
+                              f"xattr -cr {remote_tmp_dir}/{driver_dir}"),
+                             blocking=True)
 
-        send_ssh_command(args.sender, args.username,
+        send_ssh_command(args.sender,
+                         args.username,
                          f'chmod +x {remote_chromedriver_path}',
                          blocking=True)
         send_ssh_command(
@@ -753,20 +721,21 @@ def install_and_setup_chrome(args, chrome_version):
         remote_app_path = f"{remote_tmp_dir}/{chrome_dir}/chrome"
         remote_chromedriver_path = f"{remote_tmp_dir}/{driver_dir}/chromedriver"
 
-        check_installed_cmd = (
-            f"[ -f '{remote_app_path}' ] && "
-            f"[ -f '{remote_chromedriver_path}' ] && "
-            "echo 'EXISTS' || echo 'MISSING'"
-        )
-        check_result = send_ssh_command(
-            args.sender, args.username, check_installed_cmd, blocking=True)
+        check_installed_cmd = (f"[ -f '{remote_app_path}' ] && "
+                               f"[ -f '{remote_chromedriver_path}' ] && "
+                               "echo 'EXISTS' || echo 'MISSING'")
+        check_result = send_ssh_command(args.sender,
+                                        args.username,
+                                        check_installed_cmd,
+                                        blocking=True)
         if check_result.stdout.strip() == 'EXISTS':
             logging.info(
                 "Chrome and Chromedriver already installed on remote Linux. "
                 "Skipping download/extract.")
         else:
             send_ssh_command(
-                args.sender, args.username,
+                args.sender,
+                args.username,
                 (f"curl -L {chrome_url} -o {remote_tmp_dir}/{chrome_zip} && "
                  f"curl -L {driver_url} -o {remote_tmp_dir}/{driver_zip} && "
                  f"unzip -o {remote_tmp_dir}/{chrome_zip} "
@@ -775,7 +744,8 @@ def install_and_setup_chrome(args, chrome_version):
                  f"-d {remote_tmp_dir}"),
                 blocking=True)
 
-        send_ssh_command(args.sender, args.username,
+        send_ssh_command(args.sender,
+                         args.username,
                          f'chmod +x {remote_chromedriver_path}',
                          blocking=True)
         send_ssh_command(
@@ -795,17 +765,18 @@ def install_and_setup_chrome(args, chrome_version):
         remote_app_path = f"{remote_tmp_dir}/{chrome_dir}/chrome"
 
         check_installed_cmd = (
-            f"[ -f '{remote_app_path}' ] && echo 'EXISTS' || echo 'MISSING'"
-        )
-        check_result = send_ssh_command(
-            args.sender, args.username, check_installed_cmd, blocking=True)
+            f"[ -f '{remote_app_path}' ] && echo 'EXISTS' || echo 'MISSING'")
+        check_result = send_ssh_command(args.sender,
+                                        args.username,
+                                        check_installed_cmd,
+                                        blocking=True)
         if check_result.stdout.strip() == 'EXISTS':
-            logging.info(
-                "Chrome already installed on ChromeOS. "
-                "Skipping download/extract.")
+            logging.info("Chrome already installed on ChromeOS. "
+                         "Skipping download/extract.")
         else:
             send_ssh_command(
-                args.sender, args.username,
+                args.sender,
+                args.username,
                 (f"curl -L {chrome_url} -o {remote_tmp_dir}/{chrome_zip} && "
                  f"curl -L {driver_url} -o {remote_tmp_dir}/{driver_zip} && "
                  f"unzip -o {remote_tmp_dir}/{chrome_zip} "
@@ -833,16 +804,16 @@ def install_and_setup_chrome(args, chrome_version):
         driver_dir = driver_zip_name.replace('.zip', '')
         remote_app_path = f'{remote_tmp_dir}/{chrome_dir}/chrome.exe'
         remote_chromedriver_path = (
-            f'{remote_tmp_dir}/{driver_dir}/chromedriver.exe'
-        )
+            f'{remote_tmp_dir}/{driver_dir}/chromedriver.exe')
 
         check_installed_cmd = (
             f"powershell -Command \"if ((Test-Path '{remote_app_path}') -and "
             f"(Test-Path '{remote_chromedriver_path}')) "
-            f"{{ Write-Output 'EXISTS' }} else {{ Write-Output 'MISSING' }}\""
-        )
-        check_result = send_ssh_command(
-            args.sender, args.username, check_installed_cmd, blocking=True)
+            f"{{ Write-Output 'EXISTS' }} else {{ Write-Output 'MISSING' }}\"")
+        check_result = send_ssh_command(args.sender,
+                                        args.username,
+                                        check_installed_cmd,
+                                        blocking=True)
         if check_result.stdout.strip() == 'EXISTS':
             logging.info(
                 "Chrome and Chromedriver already installed on Windows. "
@@ -869,9 +840,10 @@ def install_and_setup_chrome(args, chrome_version):
                 f"Expand-Archive -Path '{chrome_zip_path}' "
                 f"-DestinationPath '{remote_tmp_dir}' -Force; "
                 f"Expand-Archive -Path '{driver_zip_path}' "
-                f"-DestinationPath '{remote_tmp_dir}' -Force }}\""
-            )
-            result = send_ssh_command(args.sender, args.username, setup_cmd,
+                f"-DestinationPath '{remote_tmp_dir}' -Force }}\"")
+            result = send_ssh_command(args.sender,
+                                      args.username,
+                                      setup_cmd,
                                       blocking=True)
             if result.returncode != 0:
                 raise RuntimeError(f"Failed to setup Chrome/Chromedriver on "
@@ -889,30 +861,30 @@ def install_and_setup_chrome(args, chrome_version):
             'chromedriver_verbose.log" '
             '--enable-chrome-logs > '
             f'"{remote_tmp_dir}/{driver_dir}/chromedriver_console.log" '
-            '2>&1\n'
-        )
+            '2>&1\n')
 
         batch_script_path = f'{remote_tmp_dir}/start_chromedriver.bat'
-        send_ssh_command(
-            args.sender, args.username,
-            (f"powershell -Command \"'{batch_script_content}' | "
-             f"Out-File -FilePath '{batch_script_path}' "
-             '-Encoding ascii"'),
-            blocking=True)
+        send_ssh_command(args.sender,
+                         args.username,
+                         (f"powershell -Command \"'{batch_script_content}' | "
+                          f"Out-File -FilePath '{batch_script_path}' "
+                          '-Encoding ascii"'),
+                         blocking=True)
 
         # Schedule and run task (wrapped in PowerShell to handle bash shells)
-        send_ssh_command(args.sender, args.username,
-                         'powershell -Command '
+        send_ssh_command(args.sender,
+                         args.username, 'powershell -Command '
                          '"schtasks /delete /tn StartChromeDriverTask /f"',
                          blocking=True)
         send_ssh_command(
-            args.sender, args.username,
+            args.sender,
+            args.username,
             (f'powershell -Command '
-              '"schtasks /create /tn StartChromeDriverTask /tr '
+             '"schtasks /create /tn StartChromeDriverTask /tr '
              f'\'{batch_script_path}\' /sc ONCE /st 23:59 /IT /f"'),
             blocking=True)
-        send_ssh_command(args.sender, args.username,
-                         'powershell -Command '
+        send_ssh_command(args.sender,
+                         args.username, 'powershell -Command '
                          '"schtasks /run /tn StartChromeDriverTask"',
                          blocking=True)
     else:
@@ -934,14 +906,10 @@ def dump_remote_logs(args, chrome_version=None, codec_name=None):
     logging.error("Dumping remote console logs:")
 
     if args.sender_os == 'win':
-        log_path = (
-            f"{WIN_REMOTE_TMP_DIR}/chromedriver-win*/"
-            "chromedriver_console*.log"
-        )
-        log_cmd = (
-            'powershell -Command "Get-Content -Path '
-            f'{log_path} -ErrorAction SilentlyContinue"'
-        )
+        log_path = (f"{WIN_REMOTE_TMP_DIR}/chromedriver-win*/"
+                    "chromedriver_console*.log")
+        log_cmd = ('powershell -Command "Get-Content -Path '
+                   f'{log_path} -ErrorAction SilentlyContinue"')
     else:
         tmp_dir = '/usr/local/tmp' if args.sender_os == 'cros' else '/tmp'
         log_cmd = f'cat {tmp_dir}/chromedriver_console*.log 2>/dev/null || true'
@@ -968,20 +936,22 @@ def wait_for_chromedriver(args, chrome_version=None, codec_name=None):
             if result.returncode == 0 and stdout == '200':
                 logging.info("Chromedriver is ready.")
                 return
-            logging.warning("Attempt %d failed. Chromedriver not ready. "
-                            "Return code: %d, stdout: '%s', stderr: '%s'",
-                            i + 1, result.returncode, stdout,
-                            result.stderr.strip())
+            logging.warning(
+                "Attempt %d failed. Chromedriver not ready. "
+                "Return code: %d, stdout: '%s', stderr: '%s'", i + 1,
+                result.returncode, stdout, result.stderr.strip())
         except subprocess.TimeoutExpired:
             logging.warning("Status check timed out. Retrying...")
         except Exception as e:  # pylint: disable=broad-exception-caught
-            logging.warning("A script-level error occurred: %s. Retrying...", e)
+            logging.warning("A script-level error occurred: %s. Retrying...",
+                            e)
         time.sleep(2)
 
     # If we reached here, Chromedriver failed to start. Try to dump logs.
     logging.error("Chromedriver failed to start.")
     dump_remote_logs(args, chrome_version, codec_name)
     raise RuntimeError("Chromedriver still not ready after multiple attempts.")
+
 
 def start_ssh_tunnel(args):
     """Starts the SSH tunnel process."""
@@ -997,11 +967,16 @@ def start_ssh_tunnel(args):
         '~/.ssh/id_ed25519',
         # Optimization for tunnel throughput. Disable compression as video
         # data is already compressed.
-        '-o', 'Compression=no',
-        '-o', 'ServerAliveInterval=10',
-        '-o', 'ServerAliveCountMax=10',
-        '-o', 'TCPKeepAlive=yes',
-        '-o', 'ExitOnForwardFailure=yes',
+        '-o',
+        'Compression=no',
+        '-o',
+        'ServerAliveInterval=10',
+        '-o',
+        'ServerAliveCountMax=10',
+        '-o',
+        'TCPKeepAlive=yes',
+        '-o',
+        'ExitOnForwardFailure=yes',
         '-L',
         f'{CHROMEDRIVER_PORT}:{LOCAL_HOST_IP}:{CHROMEDRIVER_PORT}',
         '-R',
@@ -1012,6 +987,7 @@ def start_ssh_tunnel(args):
     tunnel_proc = subprocess.Popen(host_tunnel_cmd)
     logging.info("Started tunnel.")
     return tunnel_proc
+
 
 def teardown_recording_process(rec_proc):
     """
@@ -1035,6 +1011,7 @@ def teardown_recording_process(rec_proc):
             rec_proc.wait()
             raise RuntimeError("Recording process timed out and was "
                                "forcefully terminated.") from e
+
 
 def teardown_test_environment(driver, tunnel_proc, args):
     """
@@ -1072,26 +1049,19 @@ def teardown_test_environment(driver, tunnel_proc, args):
         return
 
     cleanup_command = {
-        'mac': (
-            "rm -f /tmp/*.zip"
-        ),
-        'win': (
-            'powershell -Command "Remove-Item -Path '
-            f'{WIN_REMOTE_TMP_DIR}/*.zip '
-            '-Force -ErrorAction SilentlyContinue"'
-        ),
-        'linux': (
-            "rm -f /tmp/*.zip"
-        ),
-        'cros': (
-            "rm -f /usr/local/tmp/*.zip"
-        ),
+        'mac': ("rm -f /tmp/*.zip"),
+        'win': ('powershell -Command "Remove-Item -Path '
+                f'{WIN_REMOTE_TMP_DIR}/*.zip '
+                '-Force -ErrorAction SilentlyContinue"'),
+        'linux': ("rm -f /tmp/*.zip"),
+        'cros': ("rm -f /usr/local/tmp/*.zip"),
     }
 
     # Cleanup runs in `finally` blocks, so it must never raise over the
     # original exception.
     try:
-        result = send_ssh_command(args.sender, args.username,
+        result = send_ssh_command(args.sender,
+                                  args.username,
                                   cleanup_command[args.sender_os],
                                   blocking=True)
     except Exception as e:  # pylint: disable=broad-exception-caught
@@ -1117,32 +1087,37 @@ def setup_cros_environment(args, chrome_version, chrome_options_list):
     import importlib.util
 
     class MockFinder(importlib.abc.MetaPathFinder):
+
         def __init__(self, mocked_packages):
             self.mocked_packages = mocked_packages
+
         def find_spec(self, fullname, path, target=None):
             if any(fullname == pkg or fullname.startswith(pkg + '.')
                    for pkg in self.mocked_packages):
                 return importlib.util.spec_from_loader(fullname, self)
             return None
+
         def create_module(self, spec):
             mock = MagicMock()
             # Ensure the mock is treated as a package for submodule imports.
             mock.__path__ = []
             return mock
+
         def exec_module(self, module):
             pass
 
     # Install the finder to handle imports automatically.
-    sys.meta_path.insert(0, MockFinder([
-        "google.cloud", "psutil", "xlsxwriter", "hjson",
-        "mobly", "snippet_uiautomator"
-    ]))
+    sys.meta_path.insert(
+        0,
+        MockFinder([
+            "google.cloud", "psutil", "xlsxwriter", "hjson", "mobly",
+            "snippet_uiautomator"
+        ]))
 
     try:
         import google.protobuf.runtime_version
         google.protobuf.runtime_version.ValidateProtobufRuntimeVersion = (
-            lambda *args, **kwargs: None
-        )
+            lambda *args, **kwargs: None)
     except (ImportError, AttributeError):
         pass
 
@@ -1155,12 +1130,11 @@ def setup_cros_environment(args, chrome_version, chrome_options_list):
     from crossbench.browsers.viewport import Viewport
 
     # 2. Initialize Platform and purge zombies.
-    cb_platform = ChromeOsSshPlatform(
-        host_platform,
-        host=args.sender,
-        port=0,
-        ssh_port=22,
-        ssh_user=args.username)
+    cb_platform = ChromeOsSshPlatform(host_platform,
+                                      host=args.sender,
+                                      port=0,
+                                      ssh_port=22,
+                                      ssh_user=args.username)
 
     # Enable detailed logging for Crossbench to debug autologin issues.
     logging.getLogger('crossbench').setLevel(logging.DEBUG)
@@ -1228,22 +1202,20 @@ def setup_cros_environment(args, chrome_version, chrome_options_list):
     chrome_os_flags.append(('--log-file', '/tmp/chrome_debug.log'))
 
     # Use Viewport.MAXIMIZED for standard ChromeOS window management.
-    settings = Settings(
-        flags=chrome_os_flags,
-        platform=cb_platform,
-        driver_path=remote_driver_path,
-        viewport=Viewport.MAXIMIZED)
+    settings = Settings(flags=chrome_os_flags,
+                        platform=cb_platform,
+                        driver_path=remote_driver_path,
+                        viewport=Viewport.MAXIMIZED)
 
     # We must explicitly provide the binary path on ChromeOS.
-    browser = ChromeWebDriverChromeOsSsh(
-        label="cros_perf_test",
-        path="/opt/google/chrome/chrome",
-        settings=settings)
+    browser = ChromeWebDriverChromeOsSsh(label="cros_perf_test",
+                                         path="/opt/google/chrome/chrome",
+                                         settings=settings)
 
     # Crossbench filters out geometry flags by default for ChromeOS in
     # '_filter_flags_for_run'. We override this behavior to ensure our flags
     # reach the launch script (autologin.py).
-    browser.UNSUPPORTED_FLAGS += ("--user-data-dir",)
+    browser.UNSUPPORTED_FLAGS += ("--user-data-dir", )
 
     def _safe_setup_window():
         for _ in range(20):
@@ -1277,14 +1249,12 @@ def setup_cros_environment(args, chrome_version, chrome_options_list):
             cb_platform.ports.stop_reverse_forward(SERVER_PORT)
         except Exception:
             pass
-        cb_platform.ports.reverse_forward(
-            SERVER_PORT, SERVER_PORT)
+        cb_platform.ports.reverse_forward(SERVER_PORT, SERVER_PORT)
         logging.info("Final ChromeOS flags: %s", chrome_os_flags)
         try:
             browser.start(mock_session)
         except Exception as e:
-            logging.error(
-                "Browser failed to start.")
+            logging.error("Browser failed to start.")
             raise e
 
     # ACCESSING PRIVATE DRIVER: Crossbench does not expose the Selenium driver
@@ -1299,8 +1269,7 @@ def setup_cros_environment(args, chrome_version, chrome_options_list):
     return driver, cb_platform, actual_version
 
 
-def calculate_psnr_ssim(video_file: str,
-                        recorded_path: str,
+def calculate_psnr_ssim(video_file: str, recorded_path: str,
                         original_path: str):
     """Calculates PSNR and SSIM via FFmpeg and records them."""
     import re
@@ -1316,22 +1285,19 @@ def calculate_psnr_ssim(video_file: str,
     # - '[rec][orig]psnr': Calculate PSNR on the scaled videos.
     # - '-f null -': Force null output (don't save a file, just output stats).
     psnr_cmd = [
-        'ffmpeg', '-i', recorded_path, '-i', original_path,
-        '-lavfi', '[0:v][1:v]scale2ref[rec][orig];[rec][orig]psnr',
-        '-f', 'null', '-'
+        'ffmpeg', '-i', recorded_path, '-i', original_path, '-lavfi',
+        '[0:v][1:v]scale2ref[rec][orig];[rec][orig]psnr', '-f', 'null', '-'
     ]
     try:
         psnr_result = subprocess.run(psnr_cmd,
                                      capture_output=True,
                                      text=True,
                                      timeout=120)
-        psnr_match = re.search(r'average:(\d+\.\d+|inf)',
-                               psnr_result.stderr)
+        psnr_match = re.search(r'average:(\d+\.\d+|inf)', psnr_result.stderr)
         if psnr_match:
             val = psnr_match.group(1)
             psnr_val = 100.0 if val == 'inf' else float(val)
-            measures.average(video_file, 'video_perf',
-                                    'psnr').record(psnr_val)
+            measures.average(video_file, 'video_perf', 'psnr').record(psnr_val)
             logging.info("PSNR: %s", val)
         else:
             logging.warning(
@@ -1343,9 +1309,8 @@ def calculate_psnr_ssim(video_file: str,
     # SSIM command. Arguments are identical to PSNR above, but calculates
     # Structural Similarity (SSIM) instead.
     ssim_cmd = [
-        'ffmpeg', '-i', recorded_path, '-i', original_path,
-        '-lavfi', '[0:v][1:v]scale2ref[rec][orig];[rec][orig]ssim',
-        '-f', 'null', '-'
+        'ffmpeg', '-i', recorded_path, '-i', original_path, '-lavfi',
+        '[0:v][1:v]scale2ref[rec][orig];[rec][orig]ssim', '-f', 'null', '-'
     ]
     try:
         ssim_result = subprocess.run(ssim_cmd,
@@ -1355,8 +1320,7 @@ def calculate_psnr_ssim(video_file: str,
         ssim_match = re.search(r'All:(\d+\.\d+)', ssim_result.stderr)
         if ssim_match:
             ssim_val = float(ssim_match.group(1))
-            measures.average(video_file, 'video_perf',
-                                    'ssim').record(ssim_val)
+            measures.average(video_file, 'video_perf', 'ssim').record(ssim_val)
             logging.info("SSIM: %f", ssim_val)
         else:
             logging.warning(
@@ -1383,11 +1347,10 @@ def finalize_results(chrome_version=None):
     # If running in a LUCI environment, try to upload immediately.
     client = result_sink.TryInitClient()
     if client:
-        logging.info("LUCI ResultSink detected. Uploading extended properties.")
+        logging.info(
+            "LUCI ResultSink detected. Uploading extended properties.")
         try:
-            records = {
-                measures.TEST_SCRIPT_METRICS_KEY: measures.to_dict()
-            }
+            records = {measures.TEST_SCRIPT_METRICS_KEY: measures.to_dict()}
             client.UpdateInvocationExtendedProperties(records)
             logging.info("Metrics uploaded successfully.")
         except Exception as e:
@@ -1431,21 +1394,23 @@ def cleanup_binaries(args, chrome_version=None):
         return
 
     cleanup_command = {
-        'mac': "rm -rf /tmp/chrome* /tmp/chromedriver*",
-        'linux': "rm -rf /tmp/chrome* /tmp/chromedriver*",
-        'cros': "rm -rf /usr/local/tmp/chrome* /usr/local/tmp/chromedriver*",
-        'win': (
-            'powershell -Command "Remove-Item -Path '
-            f'{WIN_REMOTE_TMP_DIR}/chrome*,'
-            f'{WIN_REMOTE_TMP_DIR}/chromedriver* '
-            '-Recurse -Force -ErrorAction SilentlyContinue"'
-        ),
+        'mac':
+        "rm -rf /tmp/chrome* /tmp/chromedriver*",
+        'linux':
+        "rm -rf /tmp/chrome* /tmp/chromedriver*",
+        'cros':
+        "rm -rf /usr/local/tmp/chrome* /usr/local/tmp/chromedriver*",
+        'win': ('powershell -Command "Remove-Item -Path '
+                f'{WIN_REMOTE_TMP_DIR}/chrome*,'
+                f'{WIN_REMOTE_TMP_DIR}/chromedriver* '
+                '-Recurse -Force -ErrorAction SilentlyContinue"'),
     }
 
     # Cleanup runs in `finally` blocks, so it must never raise over the
     # original exception.
     try:
-        result = send_ssh_command(args.sender, args.username,
+        result = send_ssh_command(args.sender,
+                                  args.username,
                                   cleanup_command[args.sender_os],
                                   blocking=True)
     except Exception as e:  # pylint: disable=broad-exception-caught
@@ -1473,37 +1438,36 @@ def start_glances_monitoring(args, csv_remote_path):
             "elif [ -f /sys/class/power_supply/sbat0/power_now ]; then "
             "cat /sys/class/power_supply/sbat0/power_now; "
             "else echo 0; fi >> /tmp/cros_power.txt; "
-            "sleep 1; done'"
-        )
+            "sleep 1; done'")
         logging.info("Starting ChromeOS power monitoring in background...")
-        return send_ssh_command(
-            args.sender, args.username, cros_cmd, blocking=False)
+        return send_ssh_command(args.sender,
+                                args.username,
+                                cros_cmd,
+                                blocking=False)
 
     # Linux, macOS, Windows: run glances
     python_cmd = 'python' if args.sender_os == 'win' else 'python3'
-    glances_cmd = (
-        f"{python_cmd} -m glances -t 1 --export csv "
-        f"--export-csv-file {csv_remote_path} --quiet"
-    )
+    glances_cmd = (f"{python_cmd} -m glances -t 1 --export csv "
+                   f"--export-csv-file {csv_remote_path} --quiet")
     logging.info("Starting Glances monitoring on sender...")
-    return send_ssh_command(
-        args.sender, args.username, glances_cmd, blocking=False)
+    return send_ssh_command(args.sender,
+                            args.username,
+                            glances_cmd,
+                            blocking=False)
 
 
-def stop_glances_monitoring(
-    args, glances_proc, csv_remote_path, csv_local_path):
+def stop_glances_monitoring(args, glances_proc, csv_remote_path,
+                            csv_local_path):
     """Stops the monitoring process, pulls the output file, and cleans up."""
     import shutil
     logging.info("Stopping Glances/Power monitoring...")
 
     if args.sender_os == 'cros':
         # 1. Kill the ChromeOS background loop using the saved PID
-        kill_cmd = (
-            "if [ -f /tmp/cros_power.pid ]; then "
-            "kill -9 $(cat /tmp/cros_power.pid) 2>/dev/null || true; "
-            "rm -f /tmp/cros_power.pid; "
-            "fi"
-        )
+        kill_cmd = ("if [ -f /tmp/cros_power.pid ]; then "
+                    "kill -9 $(cat /tmp/cros_power.pid) 2>/dev/null || true; "
+                    "rm -f /tmp/cros_power.pid; "
+                    "fi")
         send_ssh_command(args.sender, args.username, kill_cmd, blocking=True)
 
         # 2. SCP the power log file back
@@ -1514,16 +1478,18 @@ def stop_glances_monitoring(
         else:
             key_path = os.path.expanduser('~/.ssh/id_ed25519')
             subprocess.run([
-                'scp', '-i', key_path,
-                *SSH_BASE_OPTS,
-                f'{args.username}@{args.sender}:{remote_log}',
-                csv_local_path
-            ], check=False, timeout=30)
+                'scp', '-i', key_path, *SSH_BASE_OPTS,
+                f'{args.username}@{args.sender}:{remote_log}', csv_local_path
+            ],
+                           check=False,
+                           timeout=30)
 
         # 3. Clean up remote file
         cleanup_cmd = f"rm -f {remote_log}"
-        send_ssh_command(
-            args.sender, args.username, cleanup_cmd, blocking=True)
+        send_ssh_command(args.sender,
+                         args.username,
+                         cleanup_cmd,
+                         blocking=True)
         return
 
     # Non-ChromeOS (Glances):
@@ -1537,11 +1503,9 @@ def stop_glances_monitoring(
 
     # Also send a kill command over SSH just in case
     if args.sender_os == 'win':
-        kill_cmd = (
-            'powershell -Command "Get-WmiObject Win32_Process | '
-            'Where-Object { $_.CommandLine -like \'*glances*\' } | '
-            'ForEach-Object { Stop-Process $_.ProcessId -Force }"'
-        )
+        kill_cmd = ('powershell -Command "Get-WmiObject Win32_Process | '
+                    'Where-Object { $_.CommandLine -like \'*glances*\' } | '
+                    'ForEach-Object { Stop-Process $_.ProcessId -Force }"')
     else:
         kill_cmd = "pkill -f glances"
     send_ssh_command(args.sender, args.username, kill_cmd, blocking=True)
@@ -1553,11 +1517,11 @@ def stop_glances_monitoring(
     else:
         key_path = os.path.expanduser('~/.ssh/id_ed25519')
         subprocess.run([
-            'scp', '-i', key_path,
-            *SSH_BASE_OPTS,
-            f'{args.username}@{args.sender}:{csv_remote_path}',
-            csv_local_path
-        ], check=False, timeout=30)
+            'scp', '-i', key_path, *SSH_BASE_OPTS,
+            f'{args.username}@{args.sender}:{csv_remote_path}', csv_local_path
+        ],
+                       check=False,
+                       timeout=30)
 
     # 3. Clean up remote file
     cleanup_cmd = f"rm -f {csv_remote_path}"
@@ -1600,9 +1564,8 @@ def parse_glances_csv_and_record(video_file, csv_local_path, sender_os):
                 else:
                     avg_power = avg_raw
 
-                measures.average(
-                    video_file, 'video_perf',
-                    'power_consumption_watts').record(avg_power)
+                measures.average(video_file, 'video_perf',
+                                 'power_consumption_watts').record(avg_power)
                 logging.info("ChromeOS Average Power Draw: %.2f W", avg_power)
             return
 
@@ -1611,6 +1574,7 @@ def parse_glances_csv_and_record(video_file, csv_local_path, sender_os):
         power_draws = []
 
         import re
+
         def parse_float(val):
             """Parses a float value from a string, ignoring formatting."""
             if not val:
@@ -1633,17 +1597,15 @@ def parse_glances_csv_and_record(video_file, csv_local_path, sender_os):
 
         if cpu_usages:
             avg_cpu = sum(cpu_usages) / len(cpu_usages)
-            measures.average(
-                video_file, 'video_perf', 'cpu_utilization').record(avg_cpu)
+            measures.average(video_file, 'video_perf',
+                             'cpu_utilization').record(avg_cpu)
             logging.info("Average CPU utilization: %.2f%%", avg_cpu)
 
         if power_draws:
             avg_power = sum(power_draws) / len(power_draws)
-            measures.average(
-                video_file, 'video_perf',
-                'power_consumption_watts').record(avg_power)
+            measures.average(video_file, 'video_perf',
+                             'power_consumption_watts').record(avg_power)
             logging.info("Average Power Draw: %.2f W", avg_power)
 
     except Exception as e:
         logging.error("Failed to parse monitoring log: %s", e)
-

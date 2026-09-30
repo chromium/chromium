@@ -177,7 +177,8 @@ class VerifySenderConnectivityTest(CommonTestCase):
         self.assertIn('Welcome!', str(ctx.exception))
 
     def test_ssh_timeout_raises_ssh_error(self):
-        self.run.side_effect = subprocess.TimeoutExpired(cmd='ssh', timeout=120)
+        self.run.side_effect = subprocess.TimeoutExpired(cmd='ssh',
+                                                         timeout=120)
         with self.assertLogs(level='WARNING'):
             with self.assertRaises(common.SenderSshError) as ctx:
                 common.verify_sender_connectivity(_make_args())
@@ -347,8 +348,8 @@ class GetRemoteInfoTest(CommonTestCase):
     def test_win_fallback_maps_known_values(self):
         self.ssh.responses[_WIN_CIM_CMD] = _done(stdout='')
         self.ssh.responses[_WIN_VER_CMD] = _done(stdout='10.0\n')
-        for raw, expected in (('AMD64', 'x64'), ('ARM64', 'x64'),
-                              ('x86', 'x86')):
+        for raw, expected in (('AMD64', 'x64'), ('ARM64', 'x64'), ('x86',
+                                                                   'x86')):
             with self.subTest(raw=raw):
                 self.ssh.responses[_WIN_ENV_CMD] = _done(stdout=f'{raw}\r\n')
                 info = common.get_remote_info(
@@ -414,8 +415,8 @@ class SetupEntryPointsTest(CommonTestCase):
         with mock.patch('common.download_cft_urls') as download:
             with self.assertLogs(level='WARNING'):
                 with self.assertRaises(common.SenderUnreachableError):
-                    common.setup_cros_environment(
-                        _make_args(sender_os='cros'), None, [])
+                    common.setup_cros_environment(_make_args(sender_os='cros'),
+                                                  None, [])
             download.assert_not_called()
         self.run.assert_not_called()
 
@@ -441,10 +442,9 @@ class CleanupTest(CommonTestCase):
         with self.assertLogs(level='INFO') as logs:
             common.cleanup_binaries(_make_args())
         self.run.assert_not_called()
-        self.assertIn(_SKIP_LOG,
-                      logs.output)
-        self.assertFalse(
-            any('Cleaned up remote' in l for l in logs.output), logs.output)
+        self.assertIn(_SKIP_LOG, logs.output)
+        self.assertFalse(any('Cleaned up remote' in l for l in logs.output),
+                         logs.output)
         self.assertFalse(any('confirmed gone' in l for l in logs.output))
 
     def test_cleanup_binaries_skips_when_terminate_finds_255(self):
@@ -452,9 +452,9 @@ class CleanupTest(CommonTestCase):
         self.ssh.responses[check_cmd] = _done(255, stderr=_NO_ROUTE)
         with self.assertLogs(level='INFO') as logs:
             common.cleanup_binaries(_make_args())
-        self.assertFalse(self.ssh.ran('rm -rf /tmp/chrome* /tmp/chromedriver*'))
-        self.assertIn(_SKIP_LOG,
-                      logs.output)
+        self.assertFalse(
+            self.ssh.ran('rm -rf /tmp/chrome* /tmp/chromedriver*'))
+        self.assertIn(_SKIP_LOG, logs.output)
 
     def test_cleanup_binaries_warns_on_nonzero_rc(self):
         self.ssh.responses['rm -rf /tmp/chrome* /tmp/chromedriver*'] = _done(
@@ -463,8 +463,10 @@ class CleanupTest(CommonTestCase):
             common.cleanup_binaries(_make_args())
         self.assertFalse(any('Cleaned up remote' in l for l in logs.output))
         self.assertTrue(
-            any(l.startswith('WARNING') and 'rc=1' in l and
-                'permission denied' in l for l in logs.output), logs.output)
+            any(
+                l.startswith('WARNING') and 'rc=1' in l
+                and 'permission denied' in l
+                for l in logs.output), logs.output)
 
     def test_cleanup_binaries_logs_success_on_rc_0(self):
         with self.assertLogs(level='INFO') as logs:
@@ -475,7 +477,8 @@ class CleanupTest(CommonTestCase):
 
     def test_cleanup_binaries_never_raises(self):
         common.verify_sender_connectivity(_make_args())
-        self.run.side_effect = subprocess.TimeoutExpired(cmd='ssh', timeout=120)
+        self.run.side_effect = subprocess.TimeoutExpired(cmd='ssh',
+                                                         timeout=120)
         with self.assertLogs(level='WARNING'):
             common.cleanup_binaries(_make_args())
 
@@ -484,19 +487,19 @@ class CleanupTest(CommonTestCase):
         with self.assertLogs(level='WARNING') as logs:
             common.teardown_test_environment(None, None, _make_args())
         self.run.assert_not_called()
-        self.assertIn(_SKIP_LOG,
-                      logs.output)
+        self.assertIn(_SKIP_LOG, logs.output)
 
     def test_teardown_warns_on_nonzero_rc(self):
         self.ssh.responses['rm -f /tmp/*.zip'] = _done(255, stderr=_NO_ROUTE)
         with self.assertLogs(level='INFO') as logs:
             common.teardown_test_environment(None, None, _make_args())
-        self.assertFalse(
-            any('Cleaned up tmp files' in l for l in logs.output), logs.output)
+        self.assertFalse(any('Cleaned up tmp files' in l for l in logs.output),
+                         logs.output)
         self.assertTrue(any('rc=255' in l for l in logs.output))
 
     def test_teardown_never_raises(self):
-        self.run.side_effect = subprocess.TimeoutExpired(cmd='ssh', timeout=120)
+        self.run.side_effect = subprocess.TimeoutExpired(cmd='ssh',
+                                                         timeout=120)
         with self.assertLogs(level='WARNING'):
             common.teardown_test_environment(None, None, _make_args())
 

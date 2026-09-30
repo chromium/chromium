@@ -2,7 +2,6 @@
 # Copyright 2026 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Performance test suite for media remoting on a laptop device.
 
 This script uses Selenium and Chromedriver to automate performance tests for
@@ -76,6 +75,7 @@ COMPONENTS = [
 monitors = None
 version = None
 
+
 def fuchsia_infra_is_available():
     global monitors, version
     try:
@@ -99,15 +99,16 @@ def fuchsia_infra_is_available():
             import monitors
             import version
             return True
-    except Exception as e: # pylint: disable=broad-exception-caught
+    except Exception as e:  # pylint: disable=broad-exception-caught
         logging.warning("Result reporting infra not available: %s", e)
         return False
+
 
 # Surgically resolve the common.py name collision to allow result reporting.
 FUCHSIA_INFRA_AVAILABLE = fuchsia_infra_is_available()
 
-def _wait_js_condition(driver: webdriver, element,
-                       condition: str) -> bool:
+
+def _wait_js_condition(driver: webdriver, element, condition: str) -> bool:
     """Waits a condition on the element once a second for at most 30 seconds,
        returns True if the condition met."""
     start = time.time()
@@ -117,6 +118,7 @@ def _wait_js_condition(driver: webdriver, element,
             return False
         time.sleep(1)
     return True
+
 
 def connect_to_remote_driver(chrome_options, binary_location):
     """Attempts to connect to the remote chromedriver via the tunnel."""
@@ -128,16 +130,15 @@ def connect_to_remote_driver(chrome_options, binary_location):
 
     for _ in range(20):
         try:
-            driver = webdriver.Remote(
-                command_executor=common.REMOTE_URL,
-                options=chrome_options
-            )
+            driver = webdriver.Remote(command_executor=common.REMOTE_URL,
+                                      options=chrome_options)
             logging.info("Successfully connected!")
             return driver
-        except Exception as e: #pylint: disable=broad-exception-caught
+        except Exception as e:  #pylint: disable=broad-exception-caught
             logging.info("Tunnel not yet up. Sleeping ... Error: %s", e)
             time.sleep(2)
     raise RuntimeError("Could not connect to the remote chromedriver.")
+
 
 def setup_test_environment(args, chrome_version):
     """
@@ -162,24 +163,22 @@ def setup_test_environment(args, chrome_version):
         # Split long path for 80 char limit compliance.
         binary_path = (f'{remote_app_path}/Contents/MacOS/'
                        'Google Chrome for Testing')
-        logging.info(
-            "Mac OS detected. Setting binary_location to: %s",
-            binary_path)
+        logging.info("Mac OS detected. Setting binary_location to: %s",
+                     binary_path)
     elif args.sender_os == 'win':
-        logging.info(
-            "Windows OS detected. Setting binary_location to: %s",
-            remote_app_path)
+        logging.info("Windows OS detected. Setting binary_location to: %s",
+                     remote_app_path)
         binary_path = remote_app_path
     elif args.sender_os == 'linux':
-        logging.info(
-            "Linux OS detected. Setting binary_location to: %s",
-            remote_app_path)
+        logging.info("Linux OS detected. Setting binary_location to: %s",
+                     remote_app_path)
         binary_path = remote_app_path
 
     chrome_options.binary_location = binary_path
     driver = connect_to_remote_driver(chrome_options, binary_path)
 
     return driver, tunnel_proc, actual_version
+
 
 def install_chrome_on_android(version):
     """
@@ -193,8 +192,7 @@ def install_chrome_on_android(version):
                      'third_party', 'gsutil', 'gsutil'),
         os.path.join(os.path.dirname(__file__), '..', '..', '..', '..',
                      'third_party', 'catapult', 'third_party', 'gsutil',
-                     'gsutil'),
-        'gsutil'
+                     'gsutil'), 'gsutil'
     ]
 
     gsutil_path = 'gsutil'
@@ -210,39 +208,50 @@ def install_chrome_on_android(version):
             local_path = f"/tmp/{comp}"
             logging.info("Downloading %s using %s...", comp, gsutil_path)
             subprocess.run([gsutil_path, "cp", remote_path, local_path],
-                           check=True, timeout=120)
+                           check=True,
+                           timeout=120)
             local_apks.append(local_path)
 
         # Install components sequentially (Library first).
         for apk in reversed(local_apks):
             logging.info("Installing %s to device...", os.path.basename(apk))
             subprocess.run([ADB_PATH, "install", "-r", "-d", apk],
-                           check=True, timeout=120)
+                           check=True,
+                           timeout=120)
 
         # Official Developer Bypass Sequence.
         logging.info("Applying official Chrome Android bypass sequence...")
-        subprocess.run([ADB_PATH, 'shell', 'pm', 'clear', 'com.android.chrome'],
-                       check=False, timeout=10)
-        subprocess.run([ADB_PATH, 'shell', 'am', 'set-debug-app',
-                       '--persistent', 'com.android.chrome'], check=False,
+        subprocess.run(
+            [ADB_PATH, 'shell', 'pm', 'clear', 'com.android.chrome'],
+            check=False,
+            timeout=10)
+        subprocess.run([
+            ADB_PATH, 'shell', 'am', 'set-debug-app', '--persistent',
+            'com.android.chrome'
+        ],
+                       check=False,
                        timeout=10)
         flags = " ".join([
-            "chrome",
-            "--disable-fre",
-            "--no-default-browser-check",
-            "--no-first-run",
-            "--autoplay-policy=no-user-gesture-required"
+            "chrome", "--disable-fre", "--no-default-browser-check",
+            "--no-first-run", "--autoplay-policy=no-user-gesture-required"
         ])
-        subprocess.run([ADB_PATH, 'shell',
-                       f'echo "{flags}" > /data/local/tmp/chrome-command-line'],
-                       check=False, timeout=5)
+        subprocess.run([
+            ADB_PATH, 'shell',
+            f'echo "{flags}" > /data/local/tmp/chrome-command-line'
+        ],
+                       check=False,
+                       timeout=5)
 
         logging.info("Successfully updated Android Chrome to %s.", version)
     except Exception as e:
-        logging.error("Failed to update Android Chrome: %s. "
-                      "Proceeding with on-board version.", e)
+        logging.error(
+            "Failed to update Android Chrome: %s. "
+            "Proceeding with on-board version.", e)
 
-def run_performance_test(video_file: str, driver: webdriver, args,
+
+def run_performance_test(video_file: str,
+                         driver: webdriver,
+                         args,
                          is_first_run=False):
     """
     Runs a single remoting performance test.
@@ -308,39 +317,45 @@ def run_performance_test(video_file: str, driver: webdriver, args,
         logging.info("Started camera recording.")
 
         logging.info("Starting Sender Trace...")
-        driver.execute_cdp_cmd('Tracing.start', {
-            'categories': 'cast,media,webrtc,gpu,blink',
-            'transferMode': 'ReturnAsStream'
-        })
+        driver.execute_cdp_cmd(
+            'Tracing.start', {
+                'categories': 'cast,media,webrtc,gpu,blink',
+                'transferMode': 'ReturnAsStream'
+            })
 
         if args.receiver_type == 'android':
             # Re-establish the USB data bridge immediately before use.
-            subprocess.run([ADB_PATH, 'reverse',
-                            f'tcp:{SERVER_PORT}',
-                            f'tcp:{SERVER_PORT}'],
-                           check=False, timeout=10)
+            subprocess.run([
+                ADB_PATH, 'reverse', f'tcp:{SERVER_PORT}', f'tcp:{SERVER_PORT}'
+            ],
+                           check=False,
+                           timeout=10)
 
             check_tunnels = subprocess.run([ADB_PATH, 'reverse', '--list'],
-                                           capture_output=True, text=True,
+                                           capture_output=True,
+                                           text=True,
                                            check=False)
             logging.info("Active ADB Tunnels: %s", check_tunnels.stdout)
 
             # Step 1: Launch Chrome to about:blank to prepare the window.
             logging.info("Preparing browser window...")
             subprocess.run([
-                ADB_PATH, 'shell', 'am', 'start',
-                '-n',
-                'com.android.chrome/com.google.android.apps.chrome.Main',
-                '-a', 'android.intent.action.VIEW',
-                '-d', 'about:blank',
-                '--ez', 'create_new_tab', 'true',
-                '--ez', 'no-first-run', 'true'
-            ], check=False, timeout=10)
+                ADB_PATH, 'shell', 'am', 'start', '-n',
+                'com.android.chrome/com.google.android.apps.chrome.Main', '-a',
+                'android.intent.action.VIEW', '-d', 'about:blank', '--ez',
+                'create_new_tab', 'true', '--ez', 'no-first-run', 'true'
+            ],
+                           check=False,
+                           timeout=10)
 
             # Step 2: Force landscape orientation BEFORE loading the video.
             logging.info("Enforcing landscape orientation...")
-            subprocess.run([ADB_PATH, 'shell', 'settings', 'put', 'system',
-                            'user_rotation', '1'], check=False, timeout=5)
+            subprocess.run([
+                ADB_PATH, 'shell', 'settings', 'put', 'system',
+                'user_rotation', '1'
+            ],
+                           check=False,
+                           timeout=5)
 
             # Step 3: Wait for the layout to settle.
             time.sleep(1)
@@ -350,22 +365,24 @@ def run_performance_test(video_file: str, driver: webdriver, args,
                           f'remoting_video.html?file={video_file}')
             logging.info("Loading video page into landscape browser...")
             subprocess.run([
-                ADB_PATH, 'shell', 'am', 'start',
-                '-n',
-                'com.android.chrome/com.google.android.apps.chrome.Main',
-                '-a', 'android.intent.action.VIEW',
-                '-d', remote_url
-            ], check=False, timeout=10)
+                ADB_PATH, 'shell', 'am', 'start', '-n',
+                'com.android.chrome/com.google.android.apps.chrome.Main', '-a',
+                'android.intent.action.VIEW', '-d', remote_url
+            ],
+                           check=False,
+                           timeout=10)
 
             # Step 5: Dismiss any modal (if first run) and kick reload.
             if is_first_run:
-                subprocess.run([ADB_PATH, 'shell', 'input', 'keyevent',
-                               'KEYCODE_BACK'],
-                               check=False, timeout=5)
+                subprocess.run(
+                    [ADB_PATH, 'shell', 'input', 'keyevent', 'KEYCODE_BACK'],
+                    check=False,
+                    timeout=5)
 
-            subprocess.run([ADB_PATH, 'shell', 'input', 'keyevent',
-                           'KEYCODE_F5'],
-                           check=False, timeout=5)
+            subprocess.run(
+                [ADB_PATH, 'shell', 'input', 'keyevent', 'KEYCODE_F5'],
+                check=False,
+                timeout=5)
 
         # Playback duration.
         time.sleep(30)
@@ -376,8 +393,7 @@ def run_performance_test(video_file: str, driver: webdriver, args,
             stream_id = tracing_end_resp.get('stream')
             if stream_id:
                 sender_trace_path = os.path.join(
-                    common.TRACES_DIR,
-                    f"{video_file}_sender.perfetto-trace")
+                    common.TRACES_DIR, f"{video_file}_sender.perfetto-trace")
                 with open(sender_trace_path, 'w', encoding='utf-8') as f:
                     while True:
                         read_resp = driver.execute_cdp_cmd(
@@ -392,8 +408,10 @@ def run_performance_test(video_file: str, driver: webdriver, args,
         # Stop casting/playback.
         if args.receiver_type == 'android':
             logging.info("Stopping playback on device...")
-            subprocess.run([ADB_PATH, 'shell', 'am', 'force-stop',
-                            'com.android.chrome'], check=False, timeout=5)
+            subprocess.run(
+                [ADB_PATH, 'shell', 'am', 'force-stop', 'com.android.chrome'],
+                check=False,
+                timeout=5)
         else:
             try:
                 driver.execute_cdp_cmd("Cast.stopCasting",
@@ -412,14 +430,13 @@ def run_performance_test(video_file: str, driver: webdriver, args,
 
     def record(key: str) -> None:
         if FUCHSIA_INFRA_AVAILABLE:
-            monitors.average(video_file, 'playback', key).record(
-                results.get(key, common.FAIL_CODE))
+            monitors.average(video_file, 'playback',
+                             key).record(results.get(key, common.FAIL_CODE))
 
     for metric in common.METRICS:
         record(metric)
 
-    common.calculate_psnr_ssim(video_file,
-                               camera_params.video_file,
+    common.calculate_psnr_ssim(video_file, camera_params.video_file,
                                original_video)
 
     # Explicitly log the results to the console.
@@ -431,6 +448,7 @@ def run_performance_test(video_file: str, driver: webdriver, args,
 
     return None
 
+
 def main():
     """
     Runs the performance testing suite for all videos.
@@ -438,19 +456,21 @@ def main():
     logging.getLogger().setLevel(logging.INFO)
 
     parser = argparse.ArgumentParser(
-        description="Performance test for media remoted to a device.",
-    )
+        description="Performance test for media remoted to a device.", )
     parser.add_argument('--username', help='Sender device username.')
-    parser.add_argument('--sender', default='localhost',
+    parser.add_argument('--sender',
+                        default='localhost',
                         help='Sender device IP (default: localhost for NUC).')
-    parser.add_argument('--receiver',
-                        help='Receiver device sink name.')
+    parser.add_argument('--receiver', help='Receiver device sink name.')
     parser.add_argument('--receiver-type',
                         choices=['android', RECEIVER_TYPE_FUCHSIA],
-                        default='android', help='Type of receiver device.')
-    parser.add_argument('--chrome-version', default=None,
+                        default='android',
+                        help='Type of receiver device.')
+    parser.add_argument('--chrome-version',
+                        default=None,
                         help='Chrome version to use.')
-    parser.add_argument('--sender-os', default='linux',
+    parser.add_argument('--sender-os',
+                        default='linux',
                         help='OS of the sender device.')
     args, _ = parser.parse_known_args()
     cv = args.chrome_version
@@ -482,42 +502,54 @@ def main():
 
             # Ensure the device is awake and bright for the camera.
             logging.info("Waking up device and setting max brightness...")
-            subprocess.run([ADB_PATH, 'shell', 'input', 'keyevent',
-                           'KEYCODE_WAKEUP'],
-                           check=False, timeout=5)
+            subprocess.run(
+                [ADB_PATH, 'shell', 'input', 'keyevent', 'KEYCODE_WAKEUP'],
+                check=False,
+                timeout=5)
             subprocess.run([ADB_PATH, 'shell', 'wm', 'dismiss-keyguard'],
-                           check=False, timeout=5)
+                           check=False,
+                           timeout=5)
 
             # Set brightness to max (255)
-            subprocess.run([ADB_PATH, 'shell', 'settings', 'put', 'system',
-                            'screen_brightness', '255'],
-                           check=False, timeout=5)
+            subprocess.run([
+                ADB_PATH, 'shell', 'settings', 'put', 'system',
+                'screen_brightness', '255'
+            ],
+                           check=False,
+                           timeout=5)
 
             # Pre-grant notifications to avoid system modals.
-            subprocess.run([ADB_PATH, 'shell', 'pm', 'grant',
-                            'com.android.chrome',
-                            'android.permission.POST_NOTIFICATIONS'],
-                           check=False, timeout=5)
+            subprocess.run([
+                ADB_PATH, 'shell', 'pm', 'grant', 'com.android.chrome',
+                'android.permission.POST_NOTIFICATIONS'
+            ],
+                           check=False,
+                           timeout=5)
 
             # Pre-clear any old traces on the device.
-            subprocess.run([ADB_PATH, 'shell', 'rm', '-f',
-                            '/data/local/tmp/*.perfetto-trace'],
-                           check=False, timeout=5)
+            subprocess.run([
+                ADB_PATH, 'shell', 'rm', '-f',
+                '/data/local/tmp/*.perfetto-trace'
+            ],
+                           check=False,
+                           timeout=5)
 
             subprocess.run([ADB_PATH, 'connect', RECEIVER_IP],
                            check=False,
                            timeout=15)
 
             # Bridge the web server to the USB device.
-            subprocess.run([ADB_PATH, 'reverse',
-                            f'tcp:{SERVER_PORT}',
-                            f'tcp:{SERVER_PORT}'],
-                           check=False, timeout=10)
+            subprocess.run([
+                ADB_PATH, 'reverse', f'tcp:{SERVER_PORT}', f'tcp:{SERVER_PORT}'
+            ],
+                           check=False,
+                           timeout=10)
             logging.info("USB data bridge established on port %d.",
                          SERVER_PORT)
         except Exception as e:
-            logging.error("Failed to setup ADB receiver: %s. "
-                          "Receiver traces will not be collected.", e)
+            logging.error(
+                "Failed to setup ADB receiver: %s. "
+                "Receiver traces will not be collected.", e)
 
     driver = None
     tunnel_proc = None
@@ -535,11 +567,12 @@ def main():
             rec_proc = None
             try:
                 # pass is_first_run for the first video to trigger UI cleanup.
-                rec_proc = run_performance_test(video['name'], driver, args,
+                rec_proc = run_performance_test(video['name'],
+                                                driver,
+                                                args,
                                                 is_first_run=(i == 0))
-            except Exception: # pylint: disable=broad-exception-caught
-                logging.exception("Error during video %s test",
-                                  video['name'])
+            except Exception:  # pylint: disable=broad-exception-caught
+                logging.exception("Error during video %s test", video['name'])
                 common.dump_remote_logs(args, actual_version)
                 raise
             finally:
@@ -554,6 +587,7 @@ def main():
         common.finalize_results(actual_version)
         common.teardown_test_environment(driver, tunnel_proc, args)
         common.cleanup_binaries(args, actual_version)
+
 
 if __name__ == '__main__':
     with common.StartProcess(common.server.start, [SERVER_PORT], True):
