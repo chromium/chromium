@@ -15,6 +15,7 @@
 #include "chrome/browser/context_hub/memory_bank/database_memory_bank.h"
 #include "chrome/browser/context_hub/memory_bank/in_memory_memory_bank.h"
 #include "chrome/browser/context_hub/memory_bank/noop_memory_bank.h"
+#include "chrome/browser/context_hub/memory_bank/tab_context_sync_memory_bank.h"
 #include "chrome/browser/context_hub/storage/context_hub_backend_impl.h"
 #include "chrome/browser/context_hub/tab_group_store/in_memory_tab_group_store.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -23,12 +24,14 @@
 #include "chrome/browser/personal_context/personal_context_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/tab_context_sync_service_factory.h"
 #include "chrome/browser/tab_group_sync/tab_group_sync_service_factory.h"
 #include "chrome/browser/ui/webui/context_hub/context_hub.mojom-features.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync_tab_context/tab_context_sync_service.h"
 #include "sql/database.h"
 
 namespace {
@@ -64,6 +67,7 @@ ContextHubServiceFactory::ContextHubServiceFactory()
   DependsOn(tab_groups::TabGroupSyncServiceFactory::GetInstance());
   DependsOn(page_content_annotations::PageContentExtractionServiceFactory::
                 GetInstance());
+  DependsOn(TabContextSyncServiceFactory::GetInstance());
 }
 
 ContextHubServiceFactory::~ContextHubServiceFactory() = default;
@@ -113,7 +117,19 @@ ContextHubServiceFactory::BuildServiceInstanceForBrowserContext(
   std::unique_ptr<context_hub::MemoryBank> memory_bank;
   if (base::FeatureList::IsEnabled(context_hub::features::kMemoryBanks)) {
     if (base::FeatureList::IsEnabled(
-            context_hub::features::kContextHubDatabaseStorage)) {
+            context_hub::features::kContextHubTabContextSyncStorage)) {
+      sync_tab_context::TabContextSyncService* tab_context_sync_service =
+          TabContextSyncServiceFactory::GetForProfile(profile);
+
+      if (tab_context_sync_service) {
+        memory_bank = std::make_unique<context_hub::TabContextSyncMemoryBank>(
+            profile->GetPrefs(), *tab_context_sync_service);
+      } else {
+        LOG(WARNING) << "TabContextSyncService missing. Falling back to NoOp.";
+        memory_bank = std::make_unique<context_hub::NoOpMemoryBank>();
+      }
+    } else if (base::FeatureList::IsEnabled(
+                   context_hub::features::kContextHubDatabaseStorage)) {
       backend = std::make_unique<context_hub::ContextHubBackendImpl>(db_path);
       memory_bank = std::make_unique<context_hub::DatabaseMemoryBank>(*backend);
     } else {

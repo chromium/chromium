@@ -20,9 +20,8 @@ source_set("prefs") {
   ]
 
   public_deps = [
-    ":features",
     "//base",
-    "//components/pref_registry",
+    "//components/prefs",
   ]
 }
 
@@ -55,9 +54,13 @@ source_set("context_hub") {
     "//components/keyed_service/core",
     "//components/optimization_guide/core",
     "//components/page_content_annotations/content",
+    "//components/page_content_annotations/content:page_embeddings",
+    "//components/page_content_annotations/core",
+    "//components/passage_embeddings/core",
     "//components/personal_context/core",
     "//components/personal_context/proto:personal_context_proto",
     "//components/signin/public/identity_manager",
+    "//components/sync_tab_context",
     "//components/tab_groups",
   ]
 
@@ -71,6 +74,7 @@ source_set("context_hub") {
   deps = [
     "//chrome/browser/contextual_tasks",
     "//chrome/browser/signin",
+    "//chrome/browser/sync",
     "//chrome/browser/tab_group_sync",
     "//chrome/browser/tab_group_sync:factories",
     "//chrome/browser/tab_list",
@@ -97,23 +101,32 @@ source_set("unit_tests") {
     "//chrome/browser/contextual_tasks",
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/page_content_annotations",
+    "//chrome/browser/sync",
     "//chrome/browser/tab_list",
+    "//chrome/browser/tab_list:test_support",
+    "//chrome/browser/ui/browser_window/test:test_support",
     "//chrome/browser/ui/webui/context_hub:mojo_bindings_shared",
     "//chrome/test:test_support",
     "//chrome/test/base:chrome_render_view_host_test_harness",
     "//components/optimization_guide/core:test_support",
     "//components/page_content_annotations/content",
     "//components/page_content_annotations/content:test_support",
+    "//components/passage_embeddings/core",
     "//components/personal_context/core:test_support",
     "//components/saved_tab_groups/test_support",
     "//components/signin/public/identity_manager:test_support",
+    "//components/sync_tab_context",
     "//components/tabs:test_support",
     "//content/test:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//ui/base/unowned_user_data",
   ]
 
   if (!is_android) {
-    deps += [ "//chrome/browser/ui/tabs:tab_strip_model_observer" ]
+    deps += [
+      "//chrome/browser/ui:browser_manager_service",
+      "//chrome/browser/ui/tabs:tab_strip_model_observer",
+    ]
   }
 }

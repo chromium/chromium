@@ -54,6 +54,7 @@ struct TabStripSelectionChange;
 #endif
 
 namespace content {
+class Page;
 class WebContents;
 }  // namespace content
 
@@ -69,6 +70,7 @@ struct OptimizationGuideModelExecutionResult;
 
 namespace page_content_annotations {
 class PageContentExtractionService;
+struct ExtractedPageContentResult;
 }  // namespace page_content_annotations
 
 namespace personal_context {
@@ -251,7 +253,9 @@ class ContextHubService : public KeyedService,
 
   // Memory bank wrappers that forward operations to the underlying storage
   // backend.
-  // Saves an entry in the memory bank.
+  // Saves an entry in the memory bank. If TabContextSync is enabled and the
+  // entry is a tab, page content (APC) is extracted and saved instead of the
+  // provided selected_text.
   void SaveMemoryBankEntry(MemoryBankEntry entry,
                            MemoryBank::OperationCompleteCallback callback);
   // Updates an entry in the memory bank with new tags, note, and collection.
@@ -344,6 +348,21 @@ class ContextHubService : public KeyedService,
   // GUIDs.
   std::vector<base::Uuid> AddTabGroupsToSyncService(
       base::span<const TabGroupEntry> entries);
+
+  // Searches open browser tabs for a WebContents matching `url`.
+  // Note: Looking up a WebContents solely by URL is brittle and not
+  // production-safe since there could be multiple open tabs sharing the same
+  // URL or tabs that have navigated away.
+  content::WebContents* FindWebContentsForUrl(const GURL& url) const;
+
+  // Handles the async response when APC is extracted for SaveMemoryBankEntry.
+  void OnPageContentExtractedForSaveMemoryBankEntry(
+      MemoryBankEntry entry,
+      base::WeakPtr<content::WebContents> web_contents,
+      base::WeakPtr<content::Page> page,
+      MemoryBank::OperationCompleteCallback callback,
+      std::optional<page_content_annotations::ExtractedPageContentResult>
+          result);
 
   // Callback invoked when all tab groups are fetched from the store to confirm
   // them into TabGroupSyncService.
@@ -441,8 +460,7 @@ class ContextHubService : public KeyedService,
       personal_context_service_;
   const raw_ref<optimization_guide::RemoteModelExecutor>
       optimization_guide_remote_model_executor_;
-  const raw_ref<tab_groups::TabGroupSyncService>
-      tab_group_sync_service_;
+  const raw_ref<tab_groups::TabGroupSyncService> tab_group_sync_service_;
   const raw_ref<page_content_annotations::PageContentExtractionService>
       page_content_extraction_service_;
 

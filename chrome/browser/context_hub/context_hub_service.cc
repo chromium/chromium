@@ -34,14 +34,19 @@
 #include "chrome/browser/context_hub/tab_group_store/tab_group_store.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_tab_visit_tracker.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/tab_list/tab_list_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/profile_browser_collection.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/context_hub.pb.h"
+#include "components/page_content_annotations/content/embeddings_candidate_generator.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
+#include "components/passage_embeddings/core/passage_embeddings_features.h"
 #include "components/personal_context/core/personal_context_service.h"
 #include "components/personal_context/proto/features/auto_todos.pb.h"
 #include "components/personal_context/proto/features/smart_search.pb.h"
@@ -60,7 +65,6 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/tab_list/tab_removed_reason.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 
@@ -999,7 +1003,111 @@ bool ContextHubService::SavePendingMemoryBankEntry(
 void ContextHubService::SaveMemoryBankEntry(
     MemoryBankEntry entry,
     MemoryBank::OperationCompleteCallback callback) {
+  if (base::FeatureList::IsEnabled(
+          context_hub::features::kContextHubTabContextSyncStorage) &&
+      entry.type == MemoryBankType::kTab) {
+    content::WebContents* web_contents = FindWebContentsForUrl(entry.url);
+    if (web_contents) {
+      content::Page& primary_page = web_contents->GetPrimaryPage();
+      base::WeakPtr<content::Page> page_weak_ptr = primary_page.GetWeakPtr();
+      base::WeakPtr<content::WebContents> web_contents_weak_ptr =
+          web_contents->GetWeakPtr();
+
+      page_content_extraction_service_
+          ->GetExtractedPageContentAndEligibilityForPageAsync(
+              primary_page,
+              base::BindOnce(&ContextHubService::
+                                 OnPageContentExtractedForSaveMemoryBankEntry,
+                             weak_factory_.GetWeakPtr(), std::move(entry),
+                             std::move(web_contents_weak_ptr),
+                             std::move(page_weak_ptr), std::move(callback)),
+              /*trigger_if_not_cached=*/true);
+      return;
+    }
+
+    // If no matching WebContents was found, ignore the caller's text and
+    // save with empty/null payload.
+    entry.selected_text = std::nullopt;
+  }
+
   memory_bank_->SaveMemoryBankEntry(std::move(entry), std::move(callback));
+}
+
+void ContextHubService::OnPageContentExtractedForSaveMemoryBankEntry(
+    MemoryBankEntry entry,
+    base::WeakPtr<content::WebContents> web_contents,
+    base::WeakPtr<content::Page> page,
+    MemoryBank::OperationCompleteCallback callback,
+    std::optional<page_content_annotations::ExtractedPageContentResult>
+        result) {
+  if (web_contents && page && page->IsPrimary() &&
+      web_contents->GetLastCommittedURL() == entry.url && result &&
+      result->page_content) {
+    std::vector<
+        std::pair<std::string, page_content_annotations::EmbeddingPassageType>>
+        candidates = page_content_annotations::GenerateEmbeddingsCandidates(
+            result->page_content, passage_embeddings::kMaxPassagesPerPage.Get(),
+            base::UTF16ToUTF8(web_contents->GetTitle()),
+            web_contents->GetLastCommittedURL().spec());
+    if (!candidates.empty()) {
+      std::vector<std::string> candidate_texts;
+      candidate_texts.reserve(candidates.size());
+      for (const auto& candidate : candidates) {
+        candidate_texts.push_back(candidate.first);
+      }
+      entry.selected_text = base::JoinString(candidate_texts, "\n");
+    } else {
+      entry.selected_text = std::nullopt;
+    }
+  } else {
+    entry.selected_text = std::nullopt;
+  }
+
+  memory_bank_->SaveMemoryBankEntry(std::move(entry), std::move(callback));
+}
+
+content::WebContents* ContextHubService::FindWebContentsForUrl(
+    const GURL& url) const {
+  // Note: Looking up a WebContents solely by URL is brittle and not
+  // production-safe since there could be multiple open tabs sharing the same
+  // URL or tabs that have navigated away.
+  ProfileBrowserCollection* collection =
+      ProfileBrowserCollection::GetForProfile(&profile_.get());
+  if (!collection) {
+    return nullptr;
+  }
+
+  // Check the active tab in the last active browser window first.
+  if (BrowserWindowInterface* last_active_browser =
+          collection->GetLastActiveBrowser()) {
+    if (TabListInterface* tab_list =
+            TabListInterface::From(last_active_browser)) {
+      if (tabs::TabInterface* active_tab = tab_list->GetActiveTab()) {
+        if (content::WebContents* contents = active_tab->GetContents()) {
+          if (contents->GetLastCommittedURL() == url) {
+            return contents;
+          }
+        }
+      }
+    }
+  }
+
+  // Fall back to scanning all tabs across all browser windows for this profile.
+  content::WebContents* matching_contents = nullptr;
+  collection->ForEach([&](BrowserWindowInterface* browser) {
+    if (TabListInterface* tab_list = TabListInterface::From(browser)) {
+      for (tabs::TabInterface* tab : tab_list->GetAllTabs()) {
+        if (tab && tab->GetContents() &&
+            tab->GetContents()->GetLastCommittedURL() == url) {
+          matching_contents = tab->GetContents();
+          return false;  // Stop iterating.
+        }
+      }
+    }
+    return true;
+  });
+
+  return matching_contents;
 }
 
 void ContextHubService::UpdateMemoryBankEntryAnnotations(
@@ -1092,14 +1200,12 @@ std::vector<base::Uuid> ContextHubService::AddTabGroupsToSyncService(
 void ContextHubService::OnAllTabGroupsFetchedForConfirmation(
     ConfirmAllTabGroupsCallback callback,
     std::vector<TabGroupEntry> groups) {
-  std::vector<base::Uuid> added_group_guids =
-      AddTabGroupsToSyncService(groups);
-  DeleteAllTabGroups(base::BindOnce(
-      std::move(callback), true, std::move(added_group_guids)));
+  std::vector<base::Uuid> added_group_guids = AddTabGroupsToSyncService(groups);
+  DeleteAllTabGroups(
+      base::BindOnce(std::move(callback), true, std::move(added_group_guids)));
 }
 
-std::vector<TabGroupEntry>
-ContextHubService::GetConfirmedTabGroups() const {
+std::vector<TabGroupEntry> ContextHubService::GetConfirmedTabGroups() const {
   std::vector<tab_groups::SavedTabGroup> groups =
       tab_group_sync_service_->GetAllGroups();
   // Filter out closed or remotely synced tab groups that do not have active
@@ -1113,8 +1219,8 @@ ContextHubService::GetConfirmedTabGroups() const {
   return FromSavedTabGroups(groups);
 }
 
-std::optional<TabGroupEntry>
-ContextHubService::GetConfirmedTabGroup(const base::Uuid& group_guid) const {
+std::optional<TabGroupEntry> ContextHubService::GetConfirmedTabGroup(
+    const base::Uuid& group_guid) const {
   std::optional<tab_groups::SavedTabGroup> group =
       tab_group_sync_service_->GetGroup(group_guid);
   if (!group.has_value()) {
