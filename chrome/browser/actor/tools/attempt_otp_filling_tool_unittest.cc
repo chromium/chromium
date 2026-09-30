@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
@@ -28,6 +29,7 @@
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/actor/core/actor_switches.h"
 #include "components/actor/core/aggregated_journal.h"
 #include "components/actor/core/shared_types.h"
 #include "components/actor/core/task_id.h"
@@ -613,6 +615,39 @@ TEST_F(AttemptOtpFillingToolTest, Invoke_HappyPath) {
       static_cast<int64_t>(AttemptOtpFillingToolRequest::OtpType::kEmail));
 }
 
+// `Invoke()` bypasses all checks and dialogs when
+// `kAttemptOtpFillingToolMockValueSkipsChecks` is set, directly filling the
+// mock value.
+TEST_F(AttemptOtpFillingToolTest,
+       Invoke_MockOtpValueSkipsChecksSwitch_BypassesChecksAndFillsDirectly) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kAttemptOtpFillingToolMockValueSkipsChecks, "123456");
+
+  // ConsumeLoginContext should be called to clean up any active login tracking,
+  // while RetrieveOtp and confirmation dialog are bypassed.
+  EXPECT_CALL(delegate().mock_otp_service(), ConsumeLoginContext).Times(1);
+  EXPECT_CALL(delegate().mock_otp_service(), RetrieveOtp).Times(0);
+  EXPECT_CALL(delegate(), RequestToShowGmailOtpConfirmationDialog).Times(0);
+
+  EXPECT_CALL(delegate().mock_otp_service(), FillOtp(_, _, "123456", _))
+      .WillOnce(RunOnceCallback<3>(true));
+
+  PageTarget target(gfx::Point(10, 10));
+  AttemptOtpFillingTool tool =
+      CreateTool({target}, /*for_signin=*/true,
+                 AttemptOtpFillingToolRequest::OtpType::kEmail);
+  SetupSuccessfulTimeOfUseValidation(tool, target);
+
+  TestFuture<ActionResultPtr> future;
+  tool.Invoke(future.GetCallback());
+
+  EXPECT_EQ(kOk, future.Take()->code);
+  histogram_tester_.ExpectBucketCount(
+      kAttemptOtpFillingToolHistogram,
+      AttemptOtpFillingToolEvent::kFillingOtpSuccess, 1);
+}
+
 // `Invoke()` fails with `kOtpFillFailure` when the result of
 // filling the OTP is false.
 TEST_F(AttemptOtpFillingToolTest, Invoke_ErrorFilling) {
@@ -861,6 +896,28 @@ TEST_F(AttemptOtpFillingToolTest, Validate_ConsentFetchReturnsNullopt) {
       AttemptOtpFillingToolEvent::
           kUnableToRetrieveGmailAndGoogleSmartFeaturesConsent,
       1);
+}
+
+// `Validate()` bypasses consent retrieval and opt-in dialog when
+// `kAttemptOtpFillingToolMockValueSkipsChecks` is set.
+TEST_F(AttemptOtpFillingToolTest,
+       Validate_MockOtpValueSkipsChecksSwitch_BypassesConsentAndOptIn) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      switches::kAttemptOtpFillingToolMockValueSkipsChecks, "123456");
+
+  // Consent fetching and opt-in dialog should never be called.
+  EXPECT_CALL(delegate().mock_otp_service(), FetchUserDataProcessingConsent)
+      .Times(0);
+  EXPECT_CALL(delegate(), RequestToShowGmailOtpOptInDialog).Times(0);
+
+  AttemptOtpFillingTool tool = CreateTool({PageTarget(gfx::Point(10, 10))});
+  SetAutofillGmailOtpFillingEnabled(prefs(), false);
+
+  TestFuture<ActionResultPtr> future;
+  tool.Validate(future.GetCallback());
+
+  EXPECT_EQ(kOk, future.Take()->code);
 }
 
 TEST_F(AttemptOtpFillingToolTest, TimeOfUseValidation_FormNotFound) {

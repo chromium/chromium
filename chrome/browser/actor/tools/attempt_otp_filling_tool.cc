@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -30,6 +31,7 @@
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor_webui.mojom.h"
+#include "components/actor/core/actor_switches.h"
 #include "components/actor/core/journal_details_builder.h"
 #include "components/actor/core/shared_types.h"
 #include "components/autofill/content/browser/renderer_forms_from_browser_form.h"
@@ -45,6 +47,11 @@ namespace actor {
 namespace {
 
 constexpr base::TimeDelta kGmailOtpOptInCoolOffPeriod = base::Days(90);
+
+std::string GetMockOtpValue() {
+  return base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+      switches::kAttemptOtpFillingToolMockValueSkipsChecks);
+}
 
 const char* PredictedOtpTypeToString(AttemptOtpFillingToolRequest::OtpType type) {
   switch (type) {
@@ -147,6 +154,15 @@ AttemptOtpFillingTool::~AttemptOtpFillingTool() = default;
 void AttemptOtpFillingTool::Validate(ToolCallback callback) {
   RecordAttemptOtpFillingEvent(
       AttemptOtpFillingToolEvent::kStartFillingAttempt);
+
+  if (!GetMockOtpValue().empty()) {
+    LogJournalEvent("AttemptOtpFillingTool::Validate",
+                    JournalDetailsBuilder()
+                        .Add("status", "Using mock OTP, skipping validation")
+                        .Build());
+    std::move(callback).Run(MakeOkResult());
+    return;
+  }
 
   PrefService* prefs = tool_delegate().GetProfile().GetPrefs();
   bool gmail_otp_filling_enabled =
@@ -400,6 +416,22 @@ void AttemptOtpFillingTool::Invoke(ToolCallback callback) {
                        "Target frame containing OTP fields not found.")));
     return;
   }
+
+  std::string mock_otp = GetMockOtpValue();
+  if (!mock_otp.empty()) {
+    tool_delegate().GetActorOneTimeTokenFillingService().ConsumeLoginContext();
+    LogJournalEvent(
+        "AttemptOtpFillingTool::Invoke",
+        JournalDetailsBuilder()
+            .Add("status", "Using mock OTP")
+            .Build());
+    tool_delegate().GetActorOneTimeTokenFillingService().FillOtp(
+        GetTargetTab(), trigger_field_ids_, std::move(mock_otp),
+        base::BindOnce(&AttemptOtpFillingTool::OnOtpFilled,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+    return;
+  }
+
   std::optional<url::Origin> context_origin =
       tool_delegate()
           .GetActorOneTimeTokenFillingService()

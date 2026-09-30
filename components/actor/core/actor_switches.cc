@@ -17,6 +17,15 @@ const char kDisableActorSafetyChecks[] = "disable-actor-safety-checks";
 const char kAttemptFormFillingToolSkipsUI[] =
     "attempt-form-filling-tool-skips-ui";
 
+// Supplies a mock OTP value for the `AttemptOtpFillingTool` and bypasses
+// Google Account consent fetching, opt-in dialogs, and user confirmation
+// dialogs, filling the mock value directly into the OTP field. This is only
+// intended for testing.
+// Takes precedence over one_time_tokens::switches::kMockOtpValue in
+// AttemptOtpFillingTool if both are set.
+const char kAttemptOtpFillingToolMockValueSkipsChecks[] =
+    "attempt-otp-filling-tool-mock-value-skips-checks";
+
 // Forces logging of the actor aggregated journal events in VLOG(1). Useful on
 // Android as VLOGs are removed on official builds.
 const char kEnableActorJournalVLog[] = "enable-actor-journal-vlog";

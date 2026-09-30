@@ -9,6 +9,7 @@ namespace actor::switches {
 
 extern const char kDisableActorSafetyChecks[];
 extern const char kAttemptFormFillingToolSkipsUI[];
+extern const char kAttemptOtpFillingToolMockValueSkipsChecks[];
 extern const char kEnableActorJournalVLog[];
 extern const char kActorTracePath[];
 extern const char kActorSensitiveSites[];
