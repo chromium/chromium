@@ -7,8 +7,8 @@ interface ElementImage {
   // The default size of the element in canvas grid coordinates. If the width
   // and height parameters to drawElementImage() are omitted, these are the
   // values that will be used.
-  readonly attribute double width;
-  readonly attribute double height;
+  [GetterCallWith=ScriptState] readonly attribute double width;
+  [GetterCallWith=ScriptState] readonly attribute double height;
 
   void close();
 };

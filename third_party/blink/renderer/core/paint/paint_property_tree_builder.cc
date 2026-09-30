@@ -2064,7 +2064,6 @@ static void PopulateCanvasChildPaintState(HTMLCanvasElement* canvas,
   const LayoutReplaced* replaced = To<LayoutReplaced>(canvas->GetLayoutBox());
   const ComputedStyle& style = replaced->StyleRef();
 
-  paint_state.canvas_size = canvas->Size();
   paint_state.canvas_content_size =
       gfx::SizeF(replaced->ReplacedContentRect().size);
   paint_state.canvas_device_pixel_content_box =

@@ -29,7 +29,6 @@ struct PLATFORM_EXPORT CanvasChildPaintState {
   gfx::Vector2dF reference_box_offset;  // Physical pixels
 
   // Canvas state.
-  gfx::Size canvas_size;                      // Canvas grid
   gfx::SizeF canvas_content_size;             // Physical pixels
   gfx::Size canvas_device_pixel_content_box;  // Snapped physical pixels
   DOMNodeId canvas_node_id = kInvalidDOMNodeId;
