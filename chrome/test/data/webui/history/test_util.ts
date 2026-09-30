@@ -201,7 +201,6 @@ export function createWindow(tabUrls: string[]): ForeignSessionWindow {
       remoteIconUrlForUma: '',
       sessionId: 456,
       timestamp: 0,
-      timestampDisplayStr: '',
       title: tabUrl,
       url: tabUrl,
       windowId: 0,

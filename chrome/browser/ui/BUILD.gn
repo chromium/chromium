@@ -2506,7 +2506,6 @@ static_library("ui") {
       "//chrome/browser/ui/webui/side_panel/bookmarks:impl",
       "//chrome/browser/ui/webui/side_panel/comments:impl",
       "//chrome/browser/ui/webui/side_panel/reading_list:impl",
-      "//chrome/browser/ui/webui/side_panel/tabs_from_other_devices:impl",
       "//chrome/browser/ui/webui/signin:login_ui_service_impl",
       "//chrome/browser/ui/webui/signin:signin_impl",
       "//chrome/browser/ui/webui/top_chrome",
@@ -2580,7 +2579,6 @@ static_library("ui") {
       "//chrome/browser/ui/webui/side_panel/history_clusters",
       "//chrome/browser/ui/webui/side_panel/read_anything",
       "//chrome/browser/ui/webui/side_panel/reading_list",
-      "//chrome/browser/ui/webui/side_panel/tabs_from_other_devices",
       "//chrome/browser/ui/webui/util",
       "//chrome/browser/ui/webui/webnn_internals",
     ]

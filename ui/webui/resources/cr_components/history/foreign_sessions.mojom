@@ -12,7 +12,6 @@ struct ForeignSessionTab {
   string remote_icon_url_for_uma;
   int32 session_id;
   double timestamp;
-  string timestamp_display_str;
   string title;
   url.mojom.Url url;
   int32 window_id;
@@ -58,9 +57,6 @@ interface ForeignSessionPageHandler {
 
   // Sets the collapsed state of a foreign session.
   SetForeignSessionCollapsed(string session_tag, bool collapsed);
-
-  // Notifies the browser that the page is ready to be shown.
-  ShowUi();
 };
 
 // WebUI-side handler for requests from browser.

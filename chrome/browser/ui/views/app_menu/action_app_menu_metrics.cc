@@ -446,7 +446,6 @@ void ActionAppMenuMetrics::LogMenuActionWithId(actions::ActionId action_id) {
     case kActionSharingHubScreenshot:
     case kActionShowManagementPage:
     case kActionShowSyncPassphraseDialog:
-    case kActionSidePanelShowTabsFromOtherDevices:
     case kActionTabSearch:
     case kActionTakeScreenshot:
     case kActionToggleVerticalTabs:

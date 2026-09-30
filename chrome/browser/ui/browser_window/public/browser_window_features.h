@@ -109,7 +109,6 @@ class SendTabToSelfIphController;
 class TabMenuModelDelegate;
 class TabStripModel;
 class TabStripServiceFeature;
-class TabsFromOtherDevicesSidePanelCoordinator;
 class ToastService;
 class TranslateBubbleController;
 class UIControllerFactory;
@@ -455,8 +454,6 @@ class BrowserWindowFeatures {
   // Controller for managing TabStrip UI decoupled TabStrip platform.
   std::unique_ptr<tabs_api::TabStripUIControllerImpl> tab_strip_ui_controller_;
 
-  std::unique_ptr<TabsFromOtherDevicesSidePanelCoordinator>
-      tabs_from_other_devices_side_panel_coordinator_;
   std::unique_ptr<ToastService> toast_service_;
   std::unique_ptr<TranslateBubbleController> translate_bubble_controller_;
   std::unique_ptr<ttc::EntrypointController> ttc_entrypoint_controller_;

@@ -68,7 +68,6 @@ WebUIAllUrlsBrowserTest::WebUIAllUrlsBrowserTest() {
   enable_feature(ash::features::kShimlessRMAOsUpdate);
 #endif
 
-  enable_feature(features::kTabsFromOtherDevicesSidePanel);
   enable_feature(contextual_cueing::kContextualCueingV2);
 
 #if !BUILDFLAG(IS_ANDROID)

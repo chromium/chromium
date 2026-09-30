@@ -152,7 +152,6 @@
 #include "chrome/browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/reading_list/reading_list_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_coordinator.h"
 #include "chrome/browser/ui/views/tabs/groups/recent_activity_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
@@ -567,13 +566,6 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
           std::make_unique<tabs_api::TabStripUIControllerInjectorImpl>(
               browser, tab_strip_model_),
           browser->GetUnownedUserDataHost());
-
-  if (TabsFromOtherDevicesSidePanelCoordinator::IsSupported(profile)) {
-    tabs_from_other_devices_side_panel_coordinator_ =
-        GetUserDataFactory()
-            .CreateInstance<TabsFromOtherDevicesSidePanelCoordinator>(
-                *browser, browser, profile);
-  }
 
   translate_bubble_controller_ =
       GetUserDataFactory().CreateInstance<TranslateBubbleController>(

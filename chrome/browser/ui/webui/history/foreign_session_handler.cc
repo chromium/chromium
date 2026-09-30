@@ -25,13 +25,8 @@
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
-#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/session_sync_service_factory.h"
-#include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_metrics.h"
 #include "chrome/browser/ui/webui/ntp/new_tab_ui.h"
-#include "chrome/browser/ui/webui/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_ui.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
@@ -39,8 +34,6 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/sessions/core/session_id.h"
 #include "components/strings/grit/components_strings.h"
-#include "components/sync_device_info/device_info_sync_service.h"
-#include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_sessions/session_sync_service.h"
 #include "components/sync_sessions/synced_session.h"
 #include "content/public/browser/navigation_entry.h"
@@ -92,8 +85,6 @@ history::mojom::ForeignSessionTabPtr SessionTabToMojom(
   tab_mojom->remote_icon_url_for_uma = current_navigation.favicon_url().spec();
   tab_mojom->timestamp =
       tab.timestamp.ToDeltaSinceWindowsEpoch().InMicrosecondsF();
-  tab_mojom->timestamp_display_str = base::UTF16ToUTF8(
-      ForeignSessionHandler::FormatSessionTime(tab.timestamp));
   tab_mojom->session_id = tab.tab_id.id();
 
   // Set the "direction" attribute of the title so that in RTL locales, a LTR
@@ -148,21 +139,14 @@ history::mojom::ForeignSessionWindowPtr SessionWindowToMojom(
   return window_mojom;
 }
 
-std::string GetDeviceNameSuffixFromSyncUserAgent(
-    const std::string& user_agent) {
-  if (user_agent.find("channel(canary)") != std::string::npos) {
-    return " (Canary)";
-  }
-  if (user_agent.find("channel(dev)") != std::string::npos) {
-    return " (Dev)";
-  }
-  if (user_agent.find("channel(beta)") != std::string::npos) {
-    return " (Beta)";
-  }
-  if (user_agent.find("-devel") != std::string::npos) {
-    return " (developer build)";
-  }
-  return "";
+// Returns a string used to show the user when a session was last modified.
+std::u16string FormatSessionTime(const base::Time& time) {
+  // Return a time like "1 hour ago", "2 days ago", etc.
+  base::Time now = base::Time::Now();
+  // TimeFormat does not support negative TimeDelta values, so then we use 0.
+  return ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_ELAPSED,
+                                ui::TimeFormat::LENGTH_SHORT,
+                                now < time ? base::TimeDelta() : now - time);
 }
 
 }  // namespace
@@ -174,13 +158,11 @@ ForeignSessionHandler::ForeignSessionHandler(
     Profile* profile,
     content::WebContents* web_contents,
     RestoreForeignSessionTabCallback restore_tab_callback,
-    RestoreForeignSessionWindowsCallback restore_windows_callback,
-    TabsFromOtherDevicesSidePanelUI* side_panel_ui)
+    RestoreForeignSessionWindowsCallback restore_windows_callback)
     : profile_(profile),
       web_contents_(web_contents),
       page_(std::move(pending_page)),
       receiver_(this, std::move(pending_page_handler)),
-      side_panel_ui_(side_panel_ui),
       restore_tab_callback_(std::move(restore_tab_callback)),
       restore_windows_callback_(std::move(restore_windows_callback)) {
   CHECK(restore_tab_callback_);
@@ -223,10 +205,6 @@ void ForeignSessionHandler::GetForeignSessions(
 
 void ForeignSessionHandler::OpenForeignSessionAllTabs(
     const std::string& session_tag) {
-  // This is not used by the side panel. If it becomes used in the future, the
-  // metrics should be updated to cover this case.
-  CHECK(!side_panel_ui_);
-
   sync_sessions::OpenTabsUIDelegate* open_tabs =
       GetOpenTabsUIDelegate(profile_);
   if (!open_tabs) {
@@ -275,53 +253,7 @@ void ForeignSessionHandler::OpenForeignSessionTab(
       modifiers->middle_button, modifiers->alt_key, modifiers->ctrl_key,
       modifiers->meta_key, modifiers->shift_key);
 
-  if (side_panel_ui_ && disposition == WindowOpenDisposition::CURRENT_TAB) {
-    // In the side panel, never replace the current tab but open a new tab
-    // instead.
-    disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
-  }
-
-  if (side_panel_ui_ && side_panel_ui_->metrics_recorder()) {
-    size_t device_index = 0;
-    size_t tab_recency_index = 0;
-    std::vector<raw_ptr<const sync_sessions::SyncedSession, VectorExperimental>>
-        sessions;
-    if (open_tabs->GetAllForeignSessions(&sessions)) {
-      auto it = std::ranges::find(sessions, session_tag,
-                                  &sync_sessions::SyncedSession::GetSessionTag);
-      // Note: In practice, the session should always be found, since
-      // GetForeignTab() returned non-null above.
-      if (it != sessions.end()) {
-        device_index = std::distance(sessions.begin(), it);
-
-        // Count the "recency index" of the tab, i.e. how many tabs have a
-        // timestamp after this one (and thus will show up before this one in
-        // the side panel).
-        for (const auto& window_pair : (*it)->windows) {
-          for (const auto& session_tab :
-               window_pair.second->wrapped_window.tabs) {
-            if (session_tab->timestamp > tab->timestamp) {
-              ++tab_recency_index;
-            }
-          }
-        }
-      }
-    }
-
-    side_panel_ui_->metrics_recorder()->RecordTabOpened(device_index,
-                                                        tab_recency_index);
-  }
-
-  // If this is in the side panel, `web_contents_` refers to the content of the
-  // side panel, *not* the main tab where the foreign tab should be restored.
-  content::WebContents* web_contents =
-      side_panel_ui_ ? side_panel_ui_->browser_window_interface()
-                           ->GetTabStripModel()
-                           ->GetActiveWebContents()
-                     : web_contents_.get();
-  restore_tab_callback_.Run(web_contents, *tab, disposition);
-  // Note: As a consequence of running the callback, `this` may have been
-  // destroyed!
+  restore_tab_callback_.Run(web_contents_, *tab, disposition);
 }
 
 void ForeignSessionHandler::DeleteForeignSession(
@@ -347,31 +279,10 @@ void ForeignSessionHandler::SetForeignSessionCollapsed(
   }
 }
 
-void ForeignSessionHandler::ShowUi() {
-  if (side_panel_ui_) {
-    base::WeakPtr<TopChromeWebUIController::Embedder> embedder =
-        side_panel_ui_->embedder();
-    if (embedder) {
-      embedder->ShowUI();
-    }
-  }
-}
-
 void ForeignSessionHandler::OnForeignSessionUpdated() {
   if (page_) {
     page_->OnForeignSessionsChanged(GetForeignSessionsInternal());
   }
-}
-
-// static
-std::u16string ForeignSessionHandler::FormatSessionTime(
-    const base::Time& time) {
-  // Return a time like "1 hour ago", "2 days ago", etc.
-  base::Time now = base::Time::Now();
-  // TimeFormat does not support negative TimeDelta values, so then we use 0.
-  return ui::TimeFormat::Simple(ui::TimeFormat::FORMAT_ELAPSED,
-                                ui::TimeFormat::LENGTH_SHORT,
-                                now < time ? base::TimeDelta() : now - time);
 }
 
 std::vector<history::mojom::ForeignSessionPtr>
@@ -392,23 +303,6 @@ ForeignSessionHandler::GetForeignSessionsInternal() {
     base::DictValue collapsed_sessions = current_collapsed_sessions.Clone();
     current_collapsed_sessions.clear();
 
-    std::map<std::string, int> name_counts;
-    const syncer::DeviceInfoTracker* device_info_tracker = nullptr;
-    if (side_panel_ui_) {
-      syncer::DeviceInfoSyncService* device_info_sync_service =
-          DeviceInfoSyncServiceFactory::GetForProfile(profile_);
-      if (device_info_sync_service) {
-        device_info_tracker = device_info_sync_service->GetDeviceInfoTracker();
-      }
-
-      for (const sync_sessions::SyncedSession* session : sessions) {
-        ++name_counts[session->GetSessionName()];
-      }
-    }
-
-    size_t total_tab_count = 0;
-    size_t active_device_tab_count = 0;
-
     // Note: we don't own the SyncedSessions themselves.
     for (size_t i = 0; i < sessions.size() && i < kMaxSessionsToShow; ++i) {
       const sync_sessions::SyncedSession* session = sessions[i];
@@ -416,15 +310,6 @@ ForeignSessionHandler::GetForeignSessionsInternal() {
       auto session_mojom = history::mojom::ForeignSession::New();
       session_mojom->tag = session_tag;
       session_mojom->name = session->GetSessionName();
-      if (side_panel_ui_ && name_counts[session_mojom->name] > 1 &&
-          device_info_tracker) {
-        const syncer::DeviceInfo* device_info =
-            device_info_tracker->GetDeviceInfo(session_tag);
-        if (device_info) {
-          session_mojom->name += GetDeviceNameSuffixFromSyncUserAgent(
-              device_info->sync_user_agent());
-        }
-      }
       session_mojom->modified_time =
           base::UTF16ToUTF8(FormatSessionTime(session->GetModifiedTime()));
       session_mojom->timestamp =
@@ -438,8 +323,6 @@ ForeignSessionHandler::GetForeignSessionsInternal() {
 
       std::vector<history::mojom::ForeignSessionWindowPtr> windows;
 
-      size_t session_tab_count = 0;
-
       // Order tabs by visual order within window.
       for (const auto& window_pair : session->windows) {
         history::mojom::ForeignSessionWindowPtr window_mojom =
@@ -447,23 +330,10 @@ ForeignSessionHandler::GetForeignSessionsInternal() {
         if (window_mojom) {
           windows.push_back(std::move(window_mojom));
         }
-
-        session_tab_count += window_pair.second->wrapped_window.tabs.size();
       }
-
-      if (i == 0) {
-        active_device_tab_count = session_tab_count;
-      }
-      total_tab_count += session_tab_count;
 
       session_mojom->windows = std::move(windows);
       session_list.push_back(std::move(session_mojom));
-    }
-
-    if (side_panel_ui_ && side_panel_ui_->metrics_recorder() &&
-        !side_panel_ui_->metrics_recorder()->HasRecordedTabCount()) {
-      side_panel_ui_->metrics_recorder()->RecordTabCountOnOpen(
-          session_list.size(), total_tab_count, active_device_tab_count);
     }
   }
   return session_list;

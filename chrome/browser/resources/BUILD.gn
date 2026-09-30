@@ -96,7 +96,6 @@ group("resources") {
       "side_panel/history_clusters:resources",
       "side_panel/read_anything:resources",
       "side_panel/reading_list:resources",
-      "side_panel/tabs_from_other_devices:resources",
       "signin:resources",
       "support_tool:resources",
       "tab_group_home:resources",
@@ -237,7 +236,6 @@ if (enable_webui_generate_code_cache) {
       "side_panel/customize_chrome:code_cache_resources",
       "side_panel/reading_list:code_cache_resources",
       "side_panel/shared:code_cache_resources",
-      "side_panel/tabs_from_other_devices:code_cache_resources",
       "webui_toolbar:code_cache_resources",
     ]
   }

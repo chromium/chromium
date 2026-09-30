@@ -25,7 +25,6 @@
 #include "chrome/browser/ui/lens/lens_side_panel_untrusted_ui.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/side_panel/history/history_side_panel_coordinator.h"
-#include "chrome/browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_coordinator.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast.mojom.h"
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_ui.h"
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals.mojom.h"
@@ -86,7 +85,6 @@
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_untrusted_ui.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list.mojom.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
-#include "chrome/browser/ui/webui/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_ui.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search.mojom.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/browser/ui/webui/user_education_internals/user_education_internals_ui.h"
@@ -252,16 +250,8 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
     RegisterWebUIControllerInterfaceBinder<history::mojom::PageHandler,
                                            HistoryUI>(map);
   }
-  if (TabsFromOtherDevicesSidePanelCoordinator::IsSupported(
-          Profile::FromBrowserContext(
-              render_frame_host->GetBrowserContext()))) {
-    RegisterWebUIControllerInterfaceBinder<
-        history::mojom::ForeignSessionPageHandlerFactory, HistoryUI,
-        TabsFromOtherDevicesSidePanelUI>(map);
-  } else {
-    RegisterWebUIControllerInterfaceBinder<
-        history::mojom::ForeignSessionPageHandlerFactory, HistoryUI>(map);
-  }
+  RegisterWebUIControllerInterfaceBinder<
+      history::mojom::ForeignSessionPageHandlerFactory, HistoryUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       infobar_internals::mojom::PageHandlerFactory, InfoBarInternalsUI>(map);

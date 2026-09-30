@@ -2775,7 +2775,6 @@ if (!is_android) {
       "../browser/ui/views/side_panel/history_clusters/history_clusters_side_panel_coordinator_browsertest.cc",
       "../browser/ui/views/side_panel/side_panel_coordinator_browsertest.cc",
       "../browser/ui/views/side_panel/side_panel_web_ui_view_browsertest.cc",
-      "../browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_browsertest.cc",
       "../browser/ui/views/storage/storage_pressure_bubble_view_browsertest.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_browsertest.cc",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_menu_browsertest.cc",
@@ -5907,7 +5906,6 @@ test("unit_tests") {
       "../browser/ui/views/autofill/update_address_profile_view_unittest.cc",
       "../browser/ui/views/context_hub/save_to_memory_bank_bubble_view_unittest.cc",
       "../browser/ui/views/infobars/infobar_view_unittest.cc",
-      "../browser/ui/views/side_panel/tabs_from_other_devices/tabs_from_other_devices_side_panel_metrics_unittest.cc",
     ]
 
     deps += [

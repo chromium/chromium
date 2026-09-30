@@ -17,7 +17,6 @@ export class FakeForeignSessionPageHandler extends TestBrowserProxy implements
       'openForeignSessionTab',
       'deleteForeignSession',
       'setForeignSessionCollapsed',
-      'showUi',
     ]);
   }
 
@@ -45,9 +44,5 @@ export class FakeForeignSessionPageHandler extends TestBrowserProxy implements
 
   setForeignSessionCollapsed(sessionTag: string, collapsed: boolean) {
     this.methodCalled('setForeignSessionCollapsed', sessionTag, collapsed);
-  }
-
-  showUi() {
-    this.methodCalled('showUi');
   }
 }

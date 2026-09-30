@@ -2723,7 +2723,7 @@ TEST_F(ActionAppMenuTest, SavedTabGroupsAndSidePanelMetrics) {
   menu.CloseMenu();
 }
 
-TEST_F(ActionAppMenuTest, TabsFromOtherDevicesAndSendTabToSelfMetrics) {
+TEST_F(ActionAppMenuTest, SendTabToSelfMetrics) {
   base::HistogramTester histogram_tester;
 
   ActionAppMenuManager menu_manager(&mock_window_interface_);
@@ -2734,17 +2734,6 @@ TEST_F(ActionAppMenuTest, TabsFromOtherDevicesAndSendTabToSelfMetrics) {
   histogram_tester.ExpectTotalCount(
       "Sharing.SendTabToSelf.TargetDeviceCount.ShareMenu", 0);
   menu_manager.OnMenuClosed();
-
-  // Logging kActionSidePanelShowTabsFromOtherDevices should record
-  // WrenchMenu.TimeToAction without hitting NOTREACHED().
-  ActionAppMenuMetrics metrics;
-  metrics.OnMenuOpened();
-  auto tabs_from_other_devices =
-      actions::ActionItem::Builder()
-          .SetActionId(kActionSidePanelShowTabsFromOtherDevices)
-          .Build();
-  metrics.LogMenuAction(tabs_from_other_devices.get());
-  histogram_tester.ExpectTotalCount("WrenchMenu.TimeToAction", 1);
 }
 
 }  // namespace

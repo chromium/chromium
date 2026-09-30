@@ -21,7 +21,6 @@ export interface ForeignSessionTab {
   remoteIconUrlForUma: string;
   sessionId: number;
   timestamp: number;
-  timestampDisplayStr: string;
   title: string;
   url: string;
   windowId: number;

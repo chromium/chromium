@@ -1079,6 +1079,8 @@ constexpr char kNtpMicrosoftAuthLastDismissedTime[] =
     "NewTabPage.MicrosoftAuthentication.LastDimissedTime";
 constexpr char kNtpTabGroupsLastDismissedTime[] =
     "NewTabPage.TabGroups.LastDimissedTime";
+constexpr char kTabsFromOtherDevicesAutoPinnedMigration[] =
+    "toolbar.tabs_from_other_devices_auto_pinned_migration";
 #endif  // !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS)
 // Deprecated on non-ChromePS platforms on 09/2026. Still used on ChromeOS.
@@ -1513,6 +1515,8 @@ void RegisterProfilePrefsForMigration(
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterTimePref(kNtpMicrosoftAuthLastDismissedTime, base::Time());
   registry->RegisterTimePref(kNtpTabGroupsLastDismissedTime, base::Time());
+  registry->RegisterBooleanPref(kTabsFromOtherDevicesAutoPinnedMigration,
+                                false);
 #endif  // !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS)
   // Deprecated 09/2026.
@@ -2899,6 +2903,7 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 #if !BUILDFLAG(IS_ANDROID)
   profile_prefs->ClearPref(kNtpMicrosoftAuthLastDismissedTime);
   profile_prefs->ClearPref(kNtpTabGroupsLastDismissedTime);
+  profile_prefs->ClearPref(kTabsFromOtherDevicesAutoPinnedMigration);
 #endif  // !BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS)
   // Added 09/2026.

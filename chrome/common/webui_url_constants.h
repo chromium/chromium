@@ -429,10 +429,6 @@ inline constexpr char kChromeUISearchSettingsPath[] = "/search";
 inline constexpr char kChromeUITabSearchHost[] = "tab-search.top-chrome";
 inline constexpr char kChromeUITabSearchURL[] =
     "chrome://tab-search.top-chrome/";
-inline constexpr char kChromeUITabsFromOtherDevicesSidePanelHost[] =
-    "tabs-from-other-devices.top-chrome";
-inline constexpr char kChromeUITabsFromOtherDevicesSidePanelURL[] =
-    "chrome://tabs-from-other-devices.top-chrome/";
 inline constexpr char kChromeUIUntrustedReadAnythingSidePanelHost[] =
     "read-anything-side-panel.top-chrome";
 inline constexpr char kChromeUIUntrustedReadAnythingSidePanelURL[] =

@@ -171,7 +171,6 @@ base::span<const std::string_view> GetChromeUrlsForTest() {
       "chrome://system",
       "chrome://tab-search.top-chrome",
       "chrome://tab-strip-internals",
-      "chrome://tabs-from-other-devices.top-chrome",
       "chrome://terms",
       "chrome://traces",
       "chrome://traces-internals",

@@ -187,7 +187,6 @@ base::span<const base::cstring_view> ChromeURLHosts() {
       kChromeUISyncInternalsHost,
 #if !BUILDFLAG(IS_ANDROID)
       kChromeUITabSearchHost,
-      kChromeUITabsFromOtherDevicesSidePanelHost,
       kChromeUITermsHost,
 #endif
       kChromeUITranslateInternalsHost,

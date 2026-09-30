@@ -49,7 +49,6 @@ class AndroidForeignSessionHandler
   void DeleteForeignSession(const std::string& session_tag) override {}
   void SetForeignSessionCollapsed(const std::string& session_tag,
                                   bool collapsed) override {}
-  void ShowUi() override {}
 
  private:
   // Retained to prevent premature client-side disconnect callbacks.
