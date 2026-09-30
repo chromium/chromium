@@ -42,6 +42,7 @@
 #import "ios/chrome/browser/shared/public/commands/contextual_sheet_commands.h"
 #import "ios/chrome/browser/shared/public/commands/enterprise_commands.h"
 #import "ios/chrome/browser/shared/public/commands/file_upload_panel_commands.h"
+#import "ios/chrome/browser/shared/public/commands/form_input_accessory_commands.h"
 #import "ios/chrome/browser/shared/public/commands/fullscreen_commands.h"
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
@@ -206,6 +207,9 @@
             : nil;
     autofillTabHelper->SetCommandHandlers(
         static_cast<id<SnackbarCommands>>(_commandDispatcher), atMemoryHandler);
+    id<FormInputAccessoryCommands> formInputAccessoryHandler =
+        HandlerForProtocol(_commandDispatcher, FormInputAccessoryCommands);
+    autofillTabHelper->SetFormInputAccessoryHandler(formInputAccessoryHandler);
   }
 
   ReaderModeTabHelper* readerModeTabHelper =
@@ -377,6 +381,7 @@
     autofillTabHelper->SetBaseViewController(nil);
     autofillTabHelper->SetAutofillHandler(nil);
     autofillTabHelper->SetCommandHandlers(nil, nil);
+    autofillTabHelper->SetFormInputAccessoryHandler(nil);
   }
 
   ReaderModeTabHelper* readerModeTabHelper =

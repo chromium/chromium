@@ -57,6 +57,7 @@
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/form_input_accessory_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/chrome/browser/webdata_services/model/web_data_service_factory.h"
@@ -859,6 +860,31 @@ TEST_F(ChromeAutofillClientIOSTest, GetAiPageContent_Actionable) {
             optimization_guide::proto::CONTENT_ATTRIBUTE_FORM_CONTROL);
   EXPECT_EQ(input_node.content_attributes().form_control_data().field_name(),
             "username");
+}
+
+// Test that `HideSuggestions` with `kAcceptSuggestion` calls
+// `resetAutofillSuggestionsLoadingStates` on the FormInputAccessoryCommands
+// handler.
+TEST_F(ChromeAutofillClientIOSTest,
+       HideSuggestions_ResetsLoadingStatesOnAccept) {
+  id mock_form_input_accessory_handler =
+      OCMStrictProtocolMock(@protocol(FormInputAccessoryCommands));
+  client().set_form_input_accessory_commands_handler(
+      mock_form_input_accessory_handler);
+
+  OCMExpect([mock_form_input_accessory_handler
+      resetAutofillSuggestionsLoadingStates]);
+
+  client().HideSuggestions(SuggestionHidingReason::kAcceptSuggestion,
+                           std::nullopt);
+
+  EXPECT_OCMOCK_VERIFY(mock_form_input_accessory_handler);
+
+  // For other reasons, it should not be called.
+  OCMReject([mock_form_input_accessory_handler
+      resetAutofillSuggestionsLoadingStates]);
+  client().HideSuggestions(SuggestionHidingReason::kUserAborted, std::nullopt);
+  EXPECT_OCMOCK_VERIFY(mock_form_input_accessory_handler);
 }
 
 }  // namespace autofill

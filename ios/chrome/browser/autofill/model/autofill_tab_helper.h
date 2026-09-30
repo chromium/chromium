@@ -16,6 +16,7 @@
 @class AutofillAgentDelegate;
 @protocol AutofillCommands;
 @protocol AtMemoryCommands;
+@protocol FormInputAccessoryCommands;
 @protocol FormSuggestionProvider;
 @protocol SnackbarCommands;
 @class UIViewController;
@@ -43,6 +44,10 @@ class AutofillTabHelper : public web::WebStateObserver,
   // commands and `at_memory_handler` handles AtMemory commands.
   void SetCommandHandlers(id<SnackbarCommands> snackbar_handler,
                           id<AtMemoryCommands> at_memory_handler);
+
+  // Sets the handler for form input accessory commands.
+  void SetFormInputAccessoryHandler(
+      id<FormInputAccessoryCommands> form_input_accessory_handler);
 
   // Returns an object that can provide Autofill suggestions.
   id<FormSuggestionProvider> GetSuggestionProvider();

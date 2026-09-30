@@ -41,6 +41,7 @@
 
 @protocol AtMemoryCommands;
 @protocol AutofillCommands;
+@protocol FormInputAccessoryCommands;
 @class UIViewController;
 
 namespace affiliations {
@@ -108,6 +109,15 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
     at_memory_handler_ = at_memory_handler;
   }
   id<AtMemoryCommands> at_memory_handler() const { return at_memory_handler_; }
+
+  void set_form_input_accessory_commands_handler(
+      id<FormInputAccessoryCommands> form_input_accessory_commands_handler) {
+    form_input_accessory_commands_handler_ =
+        form_input_accessory_commands_handler;
+  }
+  id<FormInputAccessoryCommands> form_input_accessory_commands_handler() const {
+    return form_input_accessory_commands_handler_;
+  }
 
   // AutofillClient:
   base::WeakPtr<AutofillClient> GetWeakPtr() override;
@@ -292,6 +302,8 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   __weak id<AutofillCommands> commands_handler_;
 
   __weak id<AtMemoryCommands> at_memory_handler_;
+
+  __weak id<FormInputAccessoryCommands> form_input_accessory_commands_handler_;
 
   // Holds a weak reference to the delegate driving the active suggestions
   // popup.

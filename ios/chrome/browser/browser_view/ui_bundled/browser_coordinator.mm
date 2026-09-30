@@ -1810,10 +1810,6 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
       dismissVirtualCardEnrollmentBottomSheet];
 }
 
-- (void)resetAutofillSuggestionsLoadingStates {
-  [self.formInputAccessoryCoordinator resetLoadingStates];
-}
-
 - (void)showOmniboxPositionChoice {
   if (!_omniboxPositionChoiceCoordinator) {
     _omniboxPositionChoiceCoordinator =

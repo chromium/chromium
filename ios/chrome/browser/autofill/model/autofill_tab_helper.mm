@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/autofill_commands.h"
+#import "ios/chrome/browser/shared/public/commands/form_input_accessory_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 
 AutofillTabHelper::~AutofillTabHelper() = default;
@@ -38,6 +39,12 @@ void AutofillTabHelper::SetCommandHandlers(
   at_memory_handler_ = at_memory_handler;
   autofill_client_->set_at_memory_handler(at_memory_handler);
   UpdateAutofillAgentDelegate();
+}
+
+void AutofillTabHelper::SetFormInputAccessoryHandler(
+    id<FormInputAccessoryCommands> form_input_accessory_handler) {
+  autofill_client_->set_form_input_accessory_commands_handler(
+      form_input_accessory_handler);
 }
 
 void AutofillTabHelper::UpdateAutofillAgentDelegate() {

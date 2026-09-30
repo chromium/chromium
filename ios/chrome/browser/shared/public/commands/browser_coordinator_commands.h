@@ -126,9 +126,6 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // Deprecated: use AutofillCommands instead.
 - (void)legacyDismissVirtualCardEnrollmentBottomSheet;
 
-// Command to reset the autofill suggestions loading states.
-- (void)resetAutofillSuggestionsLoadingStates;
-
 // Shows the omnibox position choice screen.
 - (void)showOmniboxPositionChoice;
 

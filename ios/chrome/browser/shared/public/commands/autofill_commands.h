@@ -73,10 +73,6 @@ class WebState;
 // it's shown.
 - (void)dismissEditAddressBottomSheet;
 
-// Command to reset the autofill suggestions loading states.
-// Deprecated: use BrowserCoordinatorCommands instead.
-- (void)legacyResetAutofillSuggestionsLoadingStates;
-
 // Commands to manage the Autofill error dialog.
 - (void)showAutofillErrorDialog:
     (autofill::AutofillErrorDialogContext)errorContext;
