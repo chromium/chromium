@@ -607,6 +607,10 @@ ci.builder(
     # So they need longer timeouts
     contact_team_email = "clank-engprod@google.com",
     execution_timeout = 4 * time.hour,
+    experiments = {
+        "luci.buildbucket.run_in_turboci": 100,
+        "luci.buildbucket.run_in_turboci.grpc_client": 100,
+    },
 )
 
 # TODO(crbug.com/40216047): Move to non-FYI once the tester works fine.
