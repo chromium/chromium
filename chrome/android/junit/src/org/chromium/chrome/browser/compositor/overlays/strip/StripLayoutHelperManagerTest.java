@@ -35,7 +35,6 @@ import android.view.View;
 import android.view.ViewStub;
 
 import androidx.annotation.ColorInt;
-import androidx.core.content.ContextCompat;
 
 import org.junit.After;
 import org.junit.Before;
@@ -61,7 +60,6 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
@@ -361,7 +359,6 @@ public class StripLayoutHelperManagerTest {
                 /* isNightMode= */ false, /* isIncognito= */ true);
     }
 
-    // Test case when ANDROID_SURFACE_COLOR_UPDATE disabled.
     private void doTestBackgroundColorOnActivityFocusChange(
             boolean isNightMode, boolean isIncognito) {
         var appHeaderState = Mockito.mock(AppHeaderState.class);
@@ -414,59 +411,6 @@ public class StripLayoutHelperManagerTest {
         assertEquals(
                 "Strip background color is incorrect.",
                 unfocusedLightThemeColor,
-                mStripLayoutHelperManager.getBackgroundColor());
-    }
-
-    @Test
-    @Features.EnableFeatures(ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE)
-    @Config(sdk = 30)
-    public void testGetBackgroundColor_SurfaceColorUpdate() {
-        doTestGetBackgroundColorSurfaceColorUpdate();
-    }
-
-    // Regression test the color roles are 1-to-1 in day / night mode.
-    @Test
-    @Features.EnableFeatures(ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE)
-    @Config(qualifiers = "night", sdk = 30)
-    public void testGetBackgroundColor_SurfaceColorUpdate_Dark() {
-        doTestGetBackgroundColorSurfaceColorUpdate();
-    }
-
-    public void doTestGetBackgroundColorSurfaceColorUpdate() {
-        // Default state
-        assertEquals(
-                "Initial strip background color is incorrect.",
-                SemanticColorUtils.getColorSurfaceContainerHighest(mActivity),
-                mStripLayoutHelperManager.getBackgroundColor());
-
-        // Incognito
-        mStripLayoutHelperManager.setIsIncognitoForTesting(true);
-        assertEquals(
-                "Incognito strip background color is incorrect.",
-                ContextCompat.getColor(mActivity, R.color.tab_strip_tablet_bg_incognito),
-                mStripLayoutHelperManager.getBackgroundColor());
-
-        // Unfocused DW state
-        mStripLayoutHelperManager.setIsIncognitoForTesting(false);
-        var appHeaderState = Mockito.mock(AppHeaderState.class);
-        doReturn(true).when(appHeaderState).isInDesktopWindow();
-        when(mDesktopWindowStateManager.getAppHeaderState()).thenReturn(appHeaderState);
-        mStripLayoutHelperManager.onTopResumedActivityChanged(false);
-        assertEquals(
-                "Unfocused strip background color is incorrect.",
-                TabUiThemeUtil.getTabStripBackgroundColor(
-                        mActivity,
-                        /* isIn
-                        cognito= */ false,
-                        /* isInDesktopWindow= */ true,
-                        /* isActivityFocused= */ false),
-                mStripLayoutHelperManager.getBackgroundColor());
-
-        // Unfocused incognito
-        mStripLayoutHelperManager.setIsIncognitoForTesting(true);
-        assertEquals(
-                "Unfocused strip background color is incorrect.",
-                ContextCompat.getColor(mActivity, R.color.tab_strip_tablet_bg_unfocused_incognito),
                 mStripLayoutHelperManager.getBackgroundColor());
     }
 

@@ -67,7 +67,6 @@ import java.util.concurrent.TimeoutException;
 /** Tests for search in the tab switcher. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-// TODO(crbug.com/419289558): Re-enable color surface feature flags.
 @DisableFeatures({ChromeFeatureList.ANDROID_THEME_MODULE})
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherSearchTest {

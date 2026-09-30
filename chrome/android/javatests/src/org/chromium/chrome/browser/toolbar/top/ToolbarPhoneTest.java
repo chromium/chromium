@@ -394,9 +394,6 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({
-        ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
-    })
     @DisableIf.Build(
             sdk_equals = Build.VERSION_CODES.UPSIDE_DOWN_CAKE,
             message = "crbug.com/351025374")
@@ -710,10 +707,7 @@ public class ToolbarPhoneTest {
     @Test
     @MediumTest
     @DisableIf.Build(sdk_equals = VERSION_CODES.TIRAMISU, message = "crbug.com/339034032")
-    @DisableFeatures({
-        ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
-        ChromeFeatureList.ANDROID_BOTTOM_BAR
-    })
+    @DisableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR})
     public void testToolbarBackgroundChangedWhenSearchEngineHasNoLogo() {
         when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
 

@@ -306,7 +306,6 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_SETUP_LIST = "AndroidSetupList";
     public static final String ANDROID_SET_GOOGLE_ACCOUNT_IN_HELP = "AndroidSetGoogleAccountInHelp";
     public static final String ANDROID_STARTUP_IMPROVEMENTS = "AndroidStartupImprovements";
-    public static final String ANDROID_SURFACE_COLOR_UPDATE = "AndroidSurfaceColorUpdate";
     public static final String ANDROID_TABSTRIP_STARTUP_CAPTURE_BUG_FIX =
             "AndroidTabstripStartupCaptureBugFix";
     public static final String ANDROID_TAB_DECLUTTER_ARCHIVE_ON_DESKTOP =
@@ -630,8 +629,6 @@ public abstract class ChromeFeatureList {
     public static final String GLIC_VOICE = "GlicVoice";
     public static final String GMSCORE_BIND_SERVICE_OPTIMIZATION = "GmsCoreBindServiceOptimization";
     public static final String GMS_CORE_ULP = "GmsCoreUlp";
-    public static final String GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE =
-            "GridTabSwitcherSurfaceColorUpdate";
     public static final String GROUP_SUGGESTION_SERVICE = "GroupSuggestionService";
     public static final String HASH_PREFIX_REAL_TIME_LOOKUPS =
             "SafeBrowsingHashPrefixRealTimeLookups";
@@ -1001,11 +998,6 @@ public abstract class ChromeFeatureList {
                     ANDROID_STARTUP_IMPROVEMENTS,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sAndroidSurfaceColorUpdate =
-            newCachedFlag(
-                    ANDROID_SURFACE_COLOR_UPDATE,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ false);
     public static final CachedFlag sAndroidTabDeclutterDedupeTabIdsKillSwitch =
             newCachedFlag(ANDROID_TAB_DECLUTTER_DEDUPE_TAB_IDS_KILL_SWITCH, true);
     public static final CachedFlag sAndroidTabSkipSaveTabsKillswitch =
@@ -1266,11 +1258,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(GLIC_BACKGROUND_ACTUATION_TAB_GROUP_SYNC, /* defaultValue= */ false);
     public static final CachedFlag sGlicBackgroundTriggering =
             newCachedFlag(GLIC_BACKGROUND_TRIGGERING, false);
-    public static final CachedFlag sGridTabSwitcherSurfaceColorUpdate =
-            newCachedFlag(
-                    GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ false);
     public static final CachedFlag sHistoryPaneAndroid =
             newCachedFlag(
                     HISTORY_PANE_ANDROID,
@@ -1530,7 +1517,6 @@ public abstract class ChromeFeatureList {
                     sAndroidProgressBarVisualUpdate,
                     sAndroidSetupList,
                     sAndroidStartupImprovements,
-                    sAndroidSurfaceColorUpdate,
                     sAndroidTabDeclutterDedupeTabIdsKillSwitch,
                     sAndroidTabSkipSaveTabsKillswitch,
                     sAndroidTabUiRefactor,
@@ -1633,7 +1619,6 @@ public abstract class ChromeFeatureList {
                     sGlicBackgroundActuation,
                     sGlicBackgroundActuationTabGroupSync,
                     sGlicBackgroundTriggering,
-                    sGridTabSwitcherSurfaceColorUpdate,
                     sHistoryPaneAndroid,
                     sHomeButtonRemoval,
                     sKeyboardEscBackNavigation,
@@ -2275,10 +2260,6 @@ public abstract class ChromeFeatureList {
                             "set_default_to_false_on_homepage_on_desktop",
                             true);
 
-    public static final BooleanCachedFeatureParam sTabGroupListContainment =
-            newBooleanCachedFeatureParam(
-                    GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE, "tab_group_list_containment", true);
-
     public static final BooleanCachedFeatureParam sMaliciousApkDownloadCheckTelemetryOnly =
             newBooleanCachedFeatureParam(MALICIOUS_APK_DOWNLOAD_CHECK, "telemetry_only", false);
     public static final BooleanCachedFeatureParam sMostVisitedTilesReselectLaxSchemeHost =
@@ -2481,7 +2462,6 @@ public abstract class ChromeFeatureList {
                     sSearchinCctApplyReferrerId,
                     sShouldConsiderLanguageInOverviewReadability,
                     sStartSurfaceReturnTimeTabletSecs,
-                    sTabGroupListContainment,
                     sTabStorageSqlitePrototypePhase,
                     sTabWindowManagerReportIndicesMismatchTimeDiffThresholdMs,
                     sTouchToSearchCalloutIph,

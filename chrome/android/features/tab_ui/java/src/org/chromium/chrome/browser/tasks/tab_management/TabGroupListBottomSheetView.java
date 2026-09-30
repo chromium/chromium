@@ -25,7 +25,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetRecyclerScrollListener;
@@ -202,10 +201,7 @@ public class TabGroupListBottomSheetView implements BottomSheetContent {
 
             Resources resources = mRecyclerView.getContext().getResources();
             int rowHeight =
-                    resources.getDimensionPixelSize(
-                            ChromeFeatureList.sTabGroupListContainment.getValue()
-                                    ? R.dimen.tab_group_row_height_containment
-                                    : R.dimen.tab_group_row_height);
+                    resources.getDimensionPixelSize(R.dimen.tab_group_row_height_containment);
             ViewGroup.MarginLayoutParams recyclerLp =
                     (ViewGroup.MarginLayoutParams) mRecyclerView.getLayoutParams();
             int recyclerMargins =
