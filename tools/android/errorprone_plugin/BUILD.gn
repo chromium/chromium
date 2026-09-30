@@ -15,6 +15,7 @@ java_binary("errorprone_plugin") {
     "src/org/chromium/tools/errorprone/plugin/AndroidNullableCheck.java",
     "src/org/chromium/tools/errorprone/plugin/CallbackBindCheck.java",
     "src/org/chromium/tools/errorprone/plugin/ChromeNullAwayLibraryModel.java",
+    "src/org/chromium/tools/errorprone/plugin/ChromiumDoNotMockChecker.java",
     "src/org/chromium/tools/errorprone/plugin/NoAndroidAsyncTaskCheck.java",
     "src/org/chromium/tools/errorprone/plugin/NoAndroidLog.java",
     "src/org/chromium/tools/errorprone/plugin/NoClippedSuperscript.java",

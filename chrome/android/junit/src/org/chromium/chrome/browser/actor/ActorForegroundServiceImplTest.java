@@ -240,6 +240,7 @@ public class ActorForegroundServiceImplTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.GLIC_BACKGROUND_TRIGGERING)
+    @SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
     public void testOnStartCommand_ActivityVisible_ReusesNtpTab() {
         IntentUtils.setForceIsTrustedIntentForTesting(true);
         when(mMockController.isTabbedActivityVisible()).thenReturn(true);

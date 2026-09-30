@@ -48,6 +48,7 @@ import java.util.Map;
 /** Unit tests for {@link WebContentHairlineCoordinatorImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.SIDE_PANEL_TOP_HAIRLINE_REFACTOR_ANDROID)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class WebContentHairlineCoordinatorImplTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
