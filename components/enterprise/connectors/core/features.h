@@ -41,6 +41,12 @@ BASE_DECLARE_FEATURE(kDlpScanPastedImages);
 // Controls enabling bulk data entry support in Glic actuation logic.
 BASE_DECLARE_FEATURE(kGlicBulkDataEntrySupport);
 
+#if BUILDFLAG(IS_ANDROID)
+// Controls whether files attached to web pages (file picker, drag-and-drop)
+// are scanned by enterprise content analysis on Clank.
+BASE_DECLARE_FEATURE(kEnableFileAttachedEnterpriseScanOnClank);
+#endif
+
 // Controls whether cancellation of uploads is enabled for content analysis.
 BASE_DECLARE_FEATURE(kEnableCancelUploadOnContentAnalysis);
 
