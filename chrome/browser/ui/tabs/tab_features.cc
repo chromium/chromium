@@ -86,6 +86,7 @@
 #include "chrome/browser/ui/autofill/payments/wallet_reminder_notice_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/wallet_reminder_notice_page_action_controller.h"
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
+#include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
@@ -408,6 +409,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
                 tab, tab, *profile, *page_action_controller_);
   }
 
+  BookmarkTabHelper::CreateForWebContents(tab.GetContents());
   if (tab.GetBrowserWindowInterface()->GetType() ==
           BrowserWindowInterface::TYPE_NORMAL &&
       page_action_controller_->ActionExists(kActionBookmarkThisTab)) {
@@ -1102,6 +1104,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
           tab->GetBrowserWindowInterface()->GetProfile())) {
     web_app::WebAppTabHelper::Create(tab, new_contents);
   }
+
+  BookmarkTabHelper::CreateForWebContents(new_contents);
 
   focus_tab_after_navigation_helper_ =
       std::make_unique<FocusTabAfterNavigationHelper>(new_contents);

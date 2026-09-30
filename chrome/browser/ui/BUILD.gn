@@ -1439,7 +1439,6 @@ source_set("tab_helpers_impl") {
     ]
   } else {
     deps += [
-      "//chrome/browser/ui/bookmarks",
       "//chrome/browser/ui/passwords",
       "//chrome/browser/ui/read_anything",
       "//components/image_fetcher/core",
