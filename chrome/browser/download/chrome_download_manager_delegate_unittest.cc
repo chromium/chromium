@@ -97,7 +97,6 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/device_info.h"
 #include "chrome/browser/download/download_prompt_status.h"
-#include "components/enterprise/connectors/core/features.h"
 #endif
 
 using download::DownloadItem;
@@ -2476,11 +2475,6 @@ TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
 
 TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
        CheckSavePackageAllowed_MalwareTagExempted) {
-#if BUILDFLAG(IS_ANDROID)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      enterprise_connectors::kEnableDownloadEnterpriseScanOnClank);
-#endif
   std::unique_ptr<download::MockDownloadItem> download_item =
       CreateActiveDownloadItem(0);
   EXPECT_CALL(*download_item, IsSavePackageDownload())
@@ -2520,11 +2514,6 @@ TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
 
 TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
        CheckSavePackageAllowed_TriggersScanAndSafeVerdict) {
-#if BUILDFLAG(IS_ANDROID)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      enterprise_connectors::kEnableDownloadEnterpriseScanOnClank);
-#endif
   std::unique_ptr<download::MockDownloadItem> download_item =
       CreateActiveDownloadItem(0);
   EXPECT_CALL(*download_item, IsSavePackageDownload())
@@ -2594,11 +2583,6 @@ TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
 
 TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
        CheckSavePackageScanningDone_BlockedVerdict) {
-#if BUILDFLAG(IS_ANDROID)
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      enterprise_connectors::kEnableDownloadEnterpriseScanOnClank);
-#endif
   std::unique_ptr<download::MockDownloadItem> download_item =
       CreateActiveDownloadItem(0);
   EXPECT_CALL(*download_item, IsSavePackageDownload())

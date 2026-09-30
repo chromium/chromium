@@ -93,9 +93,6 @@ void MaybeReportDangerousDownloadWarning(download::DownloadItem* download) {
 void ReportDangerousDownloadWarningBypassed(
     download::DownloadItem* download,
     download::DownloadDangerType original_danger_type) {
-  if (!IsDeepScanningEnabled()) {
-    return;
-  }
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(download);
 
@@ -142,10 +139,6 @@ void ReportDangerousDownloadWarningBypassed(
 }
 
 void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
-  if (!IsDeepScanningEnabled()) {
-    return;
-  }
-
   content::BrowserContext* browser_context =
       content::DownloadItemUtils::GetBrowserContext(download);
   Profile* profile = Profile::FromBrowserContext(browser_context);

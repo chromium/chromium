@@ -64,7 +64,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/managed_ui.h"
 #include "components/enterprise/browser/reporting/common_pref_names.h"
-#include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/net/core/features.h"
 #include "components/enterprise/net/core/prefs.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -547,11 +546,6 @@ JNI_ManagedBrowserUtils_IsOnFileDownloadedEnterpriseConnectorEnabled(
     JNIEnv* env,
     Profile* profile) {
   DCHECK(profile);
-
-  if (!base::FeatureList::IsEnabled(
-          enterprise_connectors::kEnableDownloadEnterpriseScanOnClank)) {
-    return false;
-  }
 
   auto* service =
       enterprise_connectors::ConnectorsServiceFactory::GetForBrowserContext(

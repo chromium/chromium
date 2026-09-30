@@ -135,10 +135,6 @@
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "components/enterprise/connectors/core/features.h"
-#endif
-
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
@@ -473,8 +469,6 @@ class DownloadProtectionServiceTestBase
         safe_browsing::kEnhancedFieldsForSecOps};
 #if BUILDFLAG(IS_ANDROID)
     enabled_features.push_back(kMaliciousApkDownloadCheck);
-    enabled_features.push_back(
-        enterprise_connectors::kEnableDownloadEnterpriseScanOnClank);
 #endif
     EnableFeatures(enabled_features);
   }
@@ -5865,97 +5859,6 @@ TEST_F(EnterpriseDownloadScanOnClankTest,
   run_loop.Run();
 
   EXPECT_TRUE(test_upload_service->was_called());
-}
-
-TEST_F(EnterpriseDownloadScanOnClankTest,
-       SkipsUploadWhenEnterpriseScanDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      enterprise_connectors::kEnableDownloadEnterpriseScanOnClank);
-
-  std::string file_contents = "Normal file contents";
-  base::FilePath file_path;
-  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &file_path));
-  file_path = temp_dir_.GetPath().AppendASCII("foo.apk");
-
-  // Create the file.
-  base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
-
-  NiceMockDownloadItem item;
-  PrepareBasicDownloadItemWithFullPaths(
-      &item, {"http://www.evil.com/foo.apk"},                     // url_chain
-      "http://www.google.com/",                                   // referrer
-      file_path,                                                  // tmp_path
-      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("foo.apk")));  // final_path
-  content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
-
-  EXPECT_CALL(*sb_service_->mock_database_manager(),
-              MatchDownloadAllowlistUrl(_, _))
-      .WillRepeatedly(
-          [](const GURL& url, base::OnceCallback<void(bool)> callback) {
-            std::move(callback).Run(false);
-          });
-  EXPECT_CALL(*binary_feature_extractor_.get(), CheckSignature(file_path, _));
-  EXPECT_CALL(*binary_feature_extractor_.get(),
-              ExtractImageFeatures(
-                  file_path, BinaryFeatureExtractor::kDefaultOptions, _, _));
-
-  enterprise_connectors::test::SetAnalysisConnector(
-      profile()->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED, R"(
-                         {
-                           "service_provider": "google",
-                           "enable": [
-                             {"url_list": ["*"], "tags": ["malware"]}
-                           ],
-                           "block_until_verdict": 1
-                         })");
-
-  TestBinaryUploadService* test_upload_service =
-      static_cast<TestBinaryUploadService*>(
-          CloudBinaryUploadServiceFactory::GetForProfile(profile()));
-
-  RunLoop run_loop;
-  download_service_->MaybeCheckClientDownload(
-      &item,
-      base::BindRepeating(&DownloadProtectionServiceTest::CheckDoneCallback,
-                          base::Unretained(this), run_loop.QuitClosure()));
-  run_loop.Run();
-
-  EXPECT_FALSE(test_upload_service->was_called());
-}
-
-TEST_F(EnterpriseDownloadScanOnClankTest,
-       DoesNotReportEnterpriseEventWhenEnterpriseScanDisabled) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      enterprise_connectors::kEnableDownloadEnterpriseScanOnClank);
-
-  NiceMockDownloadItem item;
-  std::string file_contents = "Normal file contents";
-  base::FilePath file_path;
-  EXPECT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &file_path));
-  file_path = temp_dir_.GetPath().AppendASCII("foo.apk");
-
-  // Create the file.
-  base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  file.WriteAtCurrentPos(base::as_byte_span(file_contents));
-
-  PrepareBasicDownloadItemWithFullPaths(
-      &item, {"http://www.evil.com/foo.apk"},                     // url_chain
-      "http://www.google.com/",                                   // referrer
-      file_path,                                                  // tmp_path
-      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("foo.apk")));  // final_path
-
-  ON_CALL(item, GetDangerType())
-      .WillByDefault(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT));
-  ON_CALL(item, IsDangerous()).WillByDefault(Return(true));
-
-  enterprise_connectors::test::EventReportValidator validator(client_.get());
-  validator.ExpectNoReport();
-
-  download_service_->MaybeSendDangerousDownloadOpenedReport(
-      &item, /*show_download_in_folder=*/false);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

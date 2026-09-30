@@ -514,9 +514,6 @@ void DownloadProtectionService::ReportSensitiveFileBypassEnterpriseEvent(
     const google::protobuf::RepeatedPtrField<ReferrerChainEntry>&
         referrer_chain,
     const google::protobuf::RepeatedPtrField<std::string>& frame_urls) {
-  if (!IsDeepScanningEnabled()) {
-    return;
-  }
   auto* reporting_event_router =
       enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
           profile);
@@ -544,9 +541,6 @@ void DownloadProtectionService::ReportDangerousDownloadOpenedEnterpriseEvent(
     const google::protobuf::RepeatedPtrField<ReferrerChainEntry>&
         referrer_chain,
     const google::protobuf::RepeatedPtrField<std::string>& frame_urls) {
-  if (!IsDeepScanningEnabled()) {
-    return;
-  }
   enterprise_connectors::ReportingEventRouter* reporting_event_router =
       enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
           profile);
@@ -568,9 +562,6 @@ void DownloadProtectionService::ReportDangerousDownloadOpenedEnterpriseEvent(
     const google::protobuf::RepeatedPtrField<ReferrerChainEntry>&
         referrer_chain,
     const google::protobuf::RepeatedPtrField<std::string>& frame_urls) {
-  if (!IsDeepScanningEnabled()) {
-    return;
-  }
   enterprise_connectors::ReportingEventRouter* reporting_event_router =
       enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
           profile);

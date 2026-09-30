@@ -310,9 +310,6 @@ void CheckClientDownloadRequest::UploadBinary(
     DownloadCheckResult result,
     DownloadCheckResultReason reason,
     enterprise_connectors::AnalysisSettings settings) {
-  if (!IsDeepScanningEnabled()) {
-    return;
-  }
   auto metadata = std::make_unique<DownloadItemMetadata>(item_);
   metadata->SetCallback(callback_);
   auto weak_metadata = metadata->GetWeakPtr();
