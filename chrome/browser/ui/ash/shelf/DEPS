@@ -91,6 +91,8 @@ specific_include_rules = {
     "+chrome/browser/consent_auditor/consent_auditor_factory.h",
   ],
   "chrome_shelf_controller_browsertest\\.cc": [
+    "+chrome/browser/ash/login/test/device_state_mixin.h",
+    "+chrome/browser/ash/login/test/login_manager_mixin.h",
     "+chrome/browser/ui/browser_init_state.h",
   ],
   "chrome_shelf_controller_unittest\\.cc": [

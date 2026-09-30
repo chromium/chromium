@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <array>
 #include <memory>
 #include <string>
 #include <utility>
@@ -15,6 +16,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
+#include "ash/multi_user/multi_user_window_manager.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/ash_view_ids.h"
@@ -26,6 +28,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_app_button.h"
+#include "ash/shelf/shelf_application_menu_model.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shelf/shelf_menu_model_adapter.h"
 #include "ash/shelf/shelf_view.h"
@@ -37,6 +40,7 @@
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
@@ -64,6 +68,9 @@
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/ash/login/test/device_state_mixin.h"
+#include "chrome/browser/ash/login/test/login_manager_mixin.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -71,6 +78,7 @@
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/extensions/menu_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/ash/shelf/app_service/app_service_app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/browser_shortcut_shelf_item_controller.h"
@@ -80,6 +88,7 @@
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_init_state.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
@@ -117,10 +126,14 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/file_manager/app_id.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "components/account_id/account_id.h"
+#include "components/account_id/account_id_literal.h"
 #include "components/app_constants/constants.h"
 #include "components/crx_file/id_util.h"
 #include "components/prefs/pref_service.h"
@@ -128,8 +141,15 @@
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/instance_update.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/signin/public/identity_manager/account_managed_status_finder.h"
+#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_manager_pref_names.h"
 #include "components/webapps/browser/test/service_worker_registration_waiter.h"
 #include "components/webapps/common/web_app_id.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -144,6 +164,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
@@ -3144,3 +3165,760 @@ IN_PROC_BROWSER_TEST_F(FilesSystemWebAppPinnedTest, EnterpriseMigration) {
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PerDeskShelfAppBrowserTest, ::testing::Bool());
+
+namespace {
+
+constexpr char kGmailUrl[] = "https://mail.google.com/mail/u";
+constexpr char kGmailLaunchURL[] = "https://mail.google.com/mail/ca";
+constexpr char kCrxAppPrefix[] = "_crx_";
+
+void CheckAppMenu(ChromeShelfController* controller,
+                  const ash::ShelfItem& item,
+                  base::span<const std::u16string> expected_item_titles) {
+  auto items = controller->GetAppMenuItemsForTesting(item);
+  ASSERT_EQ(expected_item_titles.size(), items.size());
+  for (size_t i = 0; i < expected_item_titles.size(); i++) {
+    EXPECT_EQ(expected_item_titles[i], items[i].title);
+  }
+}
+
+void NavigateAndSetTitle(BrowserWindowInterface* browser,
+                         const GURL& url,
+                         const std::u16string& title) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser, url));
+  content::NavigationEntry* entry = browser->GetTabStripModel()
+                                        ->GetActiveWebContents()
+                                        ->GetController()
+                                        .GetLastCommittedEntry();
+  ASSERT_TRUE(entry);
+  entry->SetTitle(title);
+}
+
+class V1App {
+ public:
+  V1App(Profile* profile, const std::string& app_name, const std::string& url) {
+    BrowserWindowCreateParams params = BrowserWindowCreateParams::CreateForApp(
+        std::string(kCrxAppPrefix) + app_name, /*trusted_source=*/true,
+        gfx::Rect(), profile, /*user_gesture=*/true);
+    BrowserWindowInterface* browser = CreateBrowserWindow(std::move(params));
+    browser_ = browser->GetWeakPtr();
+    chrome::AddTabAt(browser, GURL(url), 0, /*foreground=*/true);
+    browser->GetWindow()->Show();
+  }
+  V1App(const V1App&) = delete;
+  V1App& operator=(const V1App&) = delete;
+  ~V1App() {
+    if (browser_) {
+      ui_test_utils::BrowserDestroyedObserver observer(browser_.get());
+      browser_->GetWindow()->Close();
+      observer.Wait();
+    }
+  }
+
+  BrowserWindowInterface* browser() { return browser_.get(); }
+
+ private:
+  base::WeakPtr<BrowserWindowInterface> browser_;
+};
+
+}  // namespace
+
+// Check that browsers get reflected correctly in the shelf menu.
+IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTestNoDefaultBrowser,
+                       BrowserMenuGeneration) {
+  EXPECT_EQ(0U, GlobalBrowserCollection::GetInstance()->GetSize());
+  BrowserWindowInterface* browser1 = CreateBrowserWindow(
+      BrowserWindowCreateParams(profile(), /*from_user_gesture=*/true));
+  chrome::NewTab(browser1, NewTabTypes::kNoUserAction);
+
+  // Check that the browser list is empty at this time.
+  ash::ShelfItem item_browser;
+  item_browser.type = ash::TYPE_BROWSER_SHORTCUT;
+  item_browser.id = ash::ShelfID(app_constants::kChromeAppId);
+  CheckAppMenu(controller_, item_browser, {});
+
+  // Now make the created browser visible by showing its browser window.
+  browser1->GetWindow()->Show();
+  std::u16string title1 = u"Test1";
+  NavigateAndSetTitle(browser1, GURL("http://test1"), title1);
+  std::array one_menu_item = {title1};
+
+  CheckAppMenu(controller_, item_browser, one_menu_item);
+
+  // Create one more browser/window and check that one more was added.
+  BrowserWindowInterface* browser2 = CreateBrowser(profile());
+  std::u16string title2 = u"Test2";
+  NavigateAndSetTitle(browser2, GURL("http://test2"), title2);
+
+  // Check that the list contains now two entries - make furthermore sure that
+  // the active item is the first entry.
+  std::array two_menu_items = {title1, title2};
+  CheckAppMenu(controller_, item_browser, two_menu_items);
+
+  // Each menu item maps to the window of its browser.
+  ash::ShelfItemDelegate* item_delegate =
+      shelf_model()->GetShelfItemDelegate(item_browser.id);
+  ASSERT_TRUE(item_delegate);
+  EXPECT_EQ(browser1->GetWindow()->GetNativeWindow(),
+            item_delegate->GetAppMenuItemWindow(0));
+  EXPECT_EQ(browser2->GetWindow()->GetNativeWindow(),
+            item_delegate->GetAppMenuItemWindow(1));
+  EXPECT_EQ(nullptr, item_delegate->GetAppMenuItemWindow(2));
+
+  // With shift, the menu lists tabs. Only active tabs map to the window of
+  // their browser.
+  chrome::NewTab(browser1, NewTabTypes::kNoUserAction);
+  ASSERT_EQ(3U, item_delegate
+                    ->GetAppMenuItems(ui::EF_SHIFT_DOWN, base::NullCallback())
+                    .size());
+  EXPECT_EQ(nullptr, item_delegate->GetAppMenuItemWindow(0));
+  EXPECT_EQ(browser1->GetWindow()->GetNativeWindow(),
+            item_delegate->GetAppMenuItemWindow(1));
+  EXPECT_EQ(browser2->GetWindow()->GetNativeWindow(),
+            item_delegate->GetAppMenuItemWindow(2));
+
+  CloseBrowserSynchronously(browser2);
+  CloseBrowserSynchronously(browser1);
+}
+
+// Check that V1 apps are correctly reflected in the shelf menu using the
+// refocus logic.
+IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, V1AppMenuGeneration) {
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://mail.google.com/mail/?usp=installed_webapp"));
+  webapps::AppId gmail_app_id =
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+  ASSERT_EQ(ash::kGmailAppId, gmail_app_id);
+
+  const ash::ShelfID gmail_id(ash::kGmailAppId);
+  PinAppWithIDToShelf(ash::kGmailAppId);
+  SetRefocusURL(gmail_id, GURL(kGmailUrl));
+
+  ash::ShelfItem item_browser;
+  item_browser.type = ash::TYPE_BROWSER_SHORTCUT;
+  item_browser.id = ash::ShelfID(app_constants::kChromeAppId);
+
+  ash::ShelfItem item_gmail;
+  item_gmail.type = ash::TYPE_PINNED_APP;
+  item_gmail.id = gmail_id;
+  CheckAppMenu(controller_, item_gmail, {});
+
+  // Set the gmail URL to the active tab.
+  std::u16string title1 = u"Test1";
+  NavigateAndSetTitle(browser(), GURL(kGmailUrl), title1);
+
+  std::array one_menu_item = {title1};
+  CheckAppMenu(controller_, item_gmail, one_menu_item);
+
+  // Create one non-gmail tab.
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  std::u16string title2 = u"Test2";
+  NavigateAndSetTitle(browser(), GURL("https://bla"), title2);
+
+  // and another one with another gmail instance.
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  std::u16string title3 = u"Test3";
+  NavigateAndSetTitle(browser(), GURL(kGmailUrl), title3);
+  std::array two_menu_items = {title1, title3};
+  CheckAppMenu(controller_, item_gmail, two_menu_items);
+
+  // Even though the item is in the V1 app list, it should also be in the
+  // browser list.
+  std::array browser_menu_item = {title3};
+  CheckAppMenu(controller_, item_browser, browser_menu_item);
+
+  // Test that closing of (all) the item(s) does work (and all menus get
+  // updated properly).
+  controller_->Close(item_gmail.id);
+
+  CheckAppMenu(controller_, item_gmail, {});
+  std::array browser_menu_item2 = {title2};
+  CheckAppMenu(controller_, item_browser, browser_menu_item2);
+}
+
+// Checks that the generated menu list properly activates items.
+IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, V1AppMenuExecution) {
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://mail.google.com/mail/?usp=installed_webapp"));
+  webapps::AppId gmail_app_id =
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+  ASSERT_EQ(ash::kGmailAppId, gmail_app_id);
+
+  const ash::ShelfID gmail_id(ash::kGmailAppId);
+  PinAppWithIDToShelf(ash::kGmailAppId);
+  SetRefocusURL(gmail_id, GURL(kGmailUrl));
+
+  std::u16string title1 = u"Test1";
+  NavigateAndSetTitle(browser(), GURL(kGmailUrl), title1);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  std::u16string title2 = u"Test2";
+  NavigateAndSetTitle(browser(), GURL(kGmailUrl), title2);
+
+  ash::ShelfItem item_gmail;
+  item_gmail.type = ash::TYPE_PINNED_APP;
+  item_gmail.id = gmail_id;
+  std::array two_menu_items = {title1, title2};
+  CheckAppMenu(controller_, item_gmail, two_menu_items);
+  ash::ShelfItemDelegate* item_delegate =
+      shelf_model()->GetShelfItemDelegate(gmail_id);
+  ASSERT_TRUE(item_delegate);
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+
+  // Execute the second item in the menu, after the title,
+  // this shouldn't do anything since that item is already the active tab.
+  {
+    ash::ShelfApplicationMenuModel menu(
+        std::u16string(), controller_->GetAppMenuItemsForTesting(item_gmail),
+        item_delegate);
+    menu.ActivatedAt(2);
+  }
+  EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
+
+  // Execute the first item in the menu, after the title,
+  // this should activate the other tab.
+  {
+    ash::ShelfApplicationMenuModel menu(
+        std::u16string(), controller_->GetAppMenuItemsForTesting(item_gmail),
+        item_delegate);
+    menu.ActivatedAt(1);
+  }
+  EXPECT_EQ(0, browser()->tab_strip_model()->active_index());
+}
+
+// Checks that the generated menu list properly deletes items.
+IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, V1AppMenuDeletionExecution) {
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://mail.google.com/mail/?usp=installed_webapp"));
+  webapps::AppId gmail_app_id =
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+  ASSERT_EQ(ash::kGmailAppId, gmail_app_id);
+
+  const ash::ShelfID gmail_id(ash::kGmailAppId);
+  PinAppWithIDToShelf(ash::kGmailAppId);
+  SetRefocusURL(gmail_id, GURL(kGmailUrl));
+
+  std::u16string title1 = u"Test1";
+  NavigateAndSetTitle(browser(), GURL(kGmailUrl), title1);
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  std::u16string title2 = u"Test2";
+  NavigateAndSetTitle(browser(), GURL(kGmailUrl), title2);
+
+  ash::ShelfItem item_gmail;
+  item_gmail.type = ash::TYPE_PINNED_APP;
+  item_gmail.id = gmail_id;
+  std::array two_menu_items = {title1, title2};
+  CheckAppMenu(controller_, item_gmail, two_menu_items);
+
+  ash::ShelfItemDelegate* item_delegate =
+      shelf_model()->GetShelfItemDelegate(gmail_id);
+  ASSERT_TRUE(item_delegate);
+  int tabs = browser()->tab_strip_model()->count();
+  // Activate the proper tab through the menu item.
+  {
+    auto items = controller_->GetAppMenuItemsForTesting(item_gmail);
+    item_delegate->ExecuteCommand(false, 1, ui::EF_NONE,
+                                  display::kInvalidDisplayId);
+    EXPECT_EQ(tabs, browser()->tab_strip_model()->count());
+  }
+
+  // Delete one tab through the menu item.
+  {
+    auto items = controller_->GetAppMenuItemsForTesting(item_gmail);
+    item_delegate->ExecuteCommand(false, 1, ui::EF_SHIFT_DOWN,
+                                  display::kInvalidDisplayId);
+    EXPECT_EQ(--tabs, browser()->tab_strip_model()->count());
+  }
+}
+
+// Checks that only the app menu item for the active tab maps to the window of
+// the browser hosting the tab, and that a tab destroyed while the menu is open
+// maps to no window.
+IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, V1AppMenuItemWindow) {
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://mail.google.com/mail/?usp=installed_webapp"));
+  webapps::AppId gmail_app_id =
+      web_app::test::InstallWebApp(profile(), std::move(web_app_info));
+  ASSERT_EQ(ash::kGmailAppId, gmail_app_id);
+
+  // Add Gmail to the shelf and add two items.
+  const ash::ShelfID gmail_id(ash::kGmailAppId);
+  PinAppWithIDToShelf(ash::kGmailAppId);
+  SetRefocusURL(gmail_id, GURL(kGmailUrl));
+  NavigateAndSetTitle(browser(), GURL(kGmailUrl), u"Test1");
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  NavigateAndSetTitle(browser(), GURL(kGmailUrl), u"Test2");
+
+  ash::ShelfItem item_gmail;
+  item_gmail.type = ash::TYPE_PINNED_APP;
+  item_gmail.id = gmail_id;
+  ASSERT_EQ(2U, controller_->GetAppMenuItemsForTesting(item_gmail).size());
+
+  ash::ShelfItemDelegate* item_delegate =
+      shelf_model()->GetShelfItemDelegate(gmail_id);
+  ASSERT_TRUE(item_delegate);
+  aura::Window* browser_window = browser()->GetWindow()->GetNativeWindow();
+  ASSERT_TRUE(browser_window);
+  EXPECT_EQ(nullptr, item_delegate->GetAppMenuItemWindow(0));
+  EXPECT_EQ(browser_window, item_delegate->GetAppMenuItemWindow(1));
+  EXPECT_EQ(nullptr, item_delegate->GetAppMenuItemWindow(-1));
+  EXPECT_EQ(nullptr, item_delegate->GetAppMenuItemWindow(2));
+
+  // Destroy the second tab while the menu is still open. The first tab becomes
+  // active.
+  browser()->tab_strip_model()->DetachAndDeleteWebContentsAt(1);
+  EXPECT_EQ(browser_window, item_delegate->GetAppMenuItemWindow(0));
+  EXPECT_EQ(nullptr, item_delegate->GetAppMenuItemWindow(1));
+}
+
+IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, PRE_PersistShelfItemPositions) {
+  auto info1 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/app1"));
+  webapps::AppId app1_id =
+      web_app::test::InstallWebApp(profile(), std::move(info1));
+  auto info2 = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/app2"));
+  webapps::AppId app2_id =
+      web_app::test::InstallWebApp(profile(), std::move(info2));
+
+  PinAppWithIDToShelf(app1_id);
+  PinAppWithIDToShelf(app2_id);
+
+  int browser_index =
+      shelf_model()->ItemIndexByID(ash::ShelfID(app_constants::kChromeAppId));
+  int app1_index = shelf_model()->ItemIndexByID(ash::ShelfID(app1_id));
+  int app2_index = shelf_model()->ItemIndexByID(ash::ShelfID(app2_id));
+  ASSERT_GE(browser_index, 0);
+  ASSERT_GE(app1_index, 0);
+  ASSERT_GE(app2_index, 0);
+  EXPECT_LT(browser_index, app1_index);
+  EXPECT_LT(app1_index, app2_index);
+
+  // Move browser shortcut item after app2.
+  shelf_model()->Move(browser_index, app2_index);
+  EXPECT_LT(shelf_model()->ItemIndexByID(ash::ShelfID(app1_id)),
+            shelf_model()->ItemIndexByID(ash::ShelfID(app2_id)));
+  EXPECT_LT(
+      shelf_model()->ItemIndexByID(ash::ShelfID(app2_id)),
+      shelf_model()->ItemIndexByID(ash::ShelfID(app_constants::kChromeAppId)));
+}
+
+IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, PersistShelfItemPositions) {
+  webapps::AppId app1_id =
+      web_app::GenerateAppId(std::nullopt, GURL("https://example.com/app1"));
+  webapps::AppId app2_id =
+      web_app::GenerateAppId(std::nullopt, GURL("https://example.com/app2"));
+
+  EXPECT_TRUE(controller_->IsAppPinned(app1_id));
+  EXPECT_TRUE(controller_->IsAppPinned(app2_id));
+
+  int app1_index = shelf_model()->ItemIndexByID(ash::ShelfID(app1_id));
+  int app2_index = shelf_model()->ItemIndexByID(ash::ShelfID(app2_id));
+  int browser_index =
+      shelf_model()->ItemIndexByID(ash::ShelfID(app_constants::kChromeAppId));
+  EXPECT_LT(app1_index, app2_index);
+  EXPECT_LT(app2_index, browser_index);
+}
+
+IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, PRE_PersistPinned) {
+  auto info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/app1"));
+  webapps::AppId app_id =
+      web_app::test::InstallWebApp(profile(), std::move(info));
+  PinAppWithIDToShelf(app_id);
+  EXPECT_TRUE(controller_->IsAppPinned(app_id));
+}
+
+IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, PersistPinned) {
+  webapps::AppId app_id =
+      web_app::GenerateAppId(std::nullopt, GURL("https://example.com/app1"));
+  EXPECT_TRUE(controller_->IsAppPinned(app_id));
+
+  const ash::ShelfID shelf_id(app_id);
+  const ash::ShelfItem* item = controller_->GetItem(shelf_id);
+  ASSERT_TRUE(item);
+  EXPECT_EQ(ash::TYPE_PINNED_APP, item->type);
+
+  SetRefocusURL(shelf_id, GURL("https://example.com/app1"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("https://example.com/app1")));
+
+  controller_->UnpinAppWithID(app_id);
+  EXPECT_FALSE(controller_->IsAppPinned(app_id));
+  // Because the app URL is open in browser(), the item remains as TYPE_APP.
+  item = controller_->GetItem(shelf_id);
+  ASSERT_TRUE(item);
+  EXPECT_EQ(ash::TYPE_APP, item->type);
+
+  chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
+  browser()->tab_strip_model()->CloseWebContentsAt(0, 0);
+  EXPECT_FALSE(controller_->GetItem(shelf_id));
+}
+
+// Verifies that ShelfID property is updated for browsers that are present when
+// V1 app state is updated.
+IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, ExistingBrowserWindowShelfIDSet) {
+  auto info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://example.com/app1"));
+  webapps::AppId app_id =
+      web_app::test::InstallWebApp(profile(), std::move(info));
+  ASSERT_FALSE(controller_->IsAppPinned(app_id));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("https://example.com/app1")));
+
+  PinAppWithIDToShelf(app_id);
+  SetRefocusURL(ash::ShelfID(app_id), GURL("https://example.com/app1"));
+  controller_->UpdateV1AppState(app_id);
+
+  EXPECT_TRUE(controller_->GetItem(ash::ShelfID(app_id)));
+  EXPECT_EQ(ash::ShelfID(app_id),
+            ash::ShelfID::Deserialize(
+                browser()->GetWindow()->GetNativeWindow()->GetProperty(
+                    ash::kShelfIDKey)));
+}
+
+class ShelfMultiProfileBrowserTest : public MixinBasedInProcessBrowserTest {
+ public:
+  static constexpr inline auto kPrimaryAccountId =
+      AccountId::Literal::FromUserEmailGaiaId("user0@example.com",
+                                              GaiaId::Literal("fakegaia0"));
+  static constexpr inline auto kSecondaryAccountId =
+      AccountId::Literal::FromUserEmailGaiaId("user1@example.com",
+                                              GaiaId::Literal("fakegaia1"));
+
+  ShelfMultiProfileBrowserTest() { set_exit_when_last_browser_closes(false); }
+  ShelfMultiProfileBrowserTest(const ShelfMultiProfileBrowserTest&) = delete;
+  ShelfMultiProfileBrowserTest& operator=(const ShelfMultiProfileBrowserTest&) =
+      delete;
+  ~ShelfMultiProfileBrowserTest() override = default;
+
+  void SetUp() override {
+    signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(
+        "example.com");
+    MixinBasedInProcessBrowserTest::SetUp();
+  }
+
+  void TearDown() override {
+    MixinBasedInProcessBrowserTest::TearDown();
+    signin::AccountManagedStatusFinder::SetNonEnterpriseDomainForTesting(
+        nullptr);
+  }
+
+  void SetUpOnMainThread() override {
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+    LogIn(kPrimaryAccountId);
+    profile0_ = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            kPrimaryAccountId));
+    ASSERT_TRUE(profile0_);
+
+    LogIn(kSecondaryAccountId);
+    profile1_ = Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+            kSecondaryAccountId));
+    ASSERT_TRUE(profile1_);
+
+    ash::Shell::Get()->multi_user_window_manager()->SetAnimationSpeedForTest(
+        ash::MultiUserWindowManager::ANIMATION_SPEED_DISABLED);
+
+    SwitchActiveUser(kPrimaryAccountId);
+    controller_ = ChromeShelfController::instance();
+    ASSERT_TRUE(controller_);
+  }
+
+  void TearDownOnMainThread() override {
+    profile0_ = nullptr;
+    profile1_ = nullptr;
+    controller_ = nullptr;
+    MixinBasedInProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  void LogIn(const AccountId& account_id) {
+    if (auto* primary_session =
+            session_manager::SessionManager::Get()->GetPrimarySession()) {
+      user_manager::User* primary_user =
+          user_manager::UserManager::Get()->FindUserAndModify(
+              primary_session->account_id());
+      primary_user->GetProfilePrefs()->SetBoolean(
+          user_manager::prefs::kMultiProfileNeverShowIntro, true);
+      SessionControllerClientImpl::Get()->ShowMultiProfileLogin();
+    }
+    login_manager_mixin_.LoginWithDefaultContext(
+        ash::LoginManagerMixin::TestUserInfo(account_id));
+  }
+
+  void SwitchActiveUser(const AccountId& account_id) {
+    SessionControllerClientImpl::Get()->SwitchActiveUser(account_id);
+    ASSERT_EQ(session_manager::SessionManager::Get()
+                  ->GetActiveSession()
+                  ->account_id(),
+              account_id);
+  }
+
+  Profile* profile0() { return profile0_; }
+  Profile* profile1() { return profile1_; }
+  AccountId account_id0() const { return kPrimaryAccountId; }
+  AccountId account_id1() const { return kSecondaryAccountId; }
+  ash::ShelfModel* shelf_model() { return controller_->shelf_model(); }
+
+  std::vector<std::string> GetAppsShownInShelf() {
+    std::vector<std::string> app_ids;
+    for (const auto& item : shelf_model()->items()) {
+      app_ids.push_back(item.id.app_id);
+    }
+    return app_ids;
+  }
+
+  BrowserWindowInterface* CreateBrowserAndTabWithProfile(
+      Profile* profile,
+      const std::string& title,
+      const std::string& url) {
+    BrowserWindowInterface* browser = CreateBrowserWindow(
+        BrowserWindowCreateParams(profile, /*from_user_gesture=*/false));
+    chrome::AddTabAt(browser, GURL(url), 0, /*foreground=*/true);
+    browser->GetWindow()->Show();
+    NavigateAndSetTitle(browser, GURL(url), base::ASCIIToUTF16(title));
+    return browser;
+  }
+
+  std::unique_ptr<V1App> CreateRunningV1App(Profile* profile,
+                                            const std::string& app_name,
+                                            const std::string& url) {
+    return std::make_unique<V1App>(profile, app_name, url);
+  }
+
+ protected:
+  raw_ptr<ChromeShelfController> controller_ = nullptr;
+  raw_ptr<Profile> profile0_ = nullptr;
+  raw_ptr<Profile> profile1_ = nullptr;
+
+  ash::DeviceStateMixin device_state_{
+      &mixin_host_,
+      ash::DeviceStateMixin::State::OOBE_COMPLETED_PERMANENTLY_UNOWNED};
+  ash::LoginManagerMixin login_manager_mixin_{
+      &mixin_host_,
+      {ash::LoginManagerMixin::TestUserInfo(kPrimaryAccountId),
+       ash::LoginManagerMixin::TestUserInfo(kSecondaryAccountId)}};
+};
+
+IN_PROC_BROWSER_TEST_F(ShelfMultiProfileBrowserTest, V1AppUpdateOnUserSwitch) {
+  const int initial_count = shelf_model()->item_count();
+  {
+    std::unique_ptr<V1App> v1_app =
+        CreateRunningV1App(profile0(), extension_misc::kGmailAppId, kGmailUrl);
+    EXPECT_EQ(initial_count + 1, shelf_model()->item_count());
+
+    SwitchActiveUser(account_id1());
+    EXPECT_EQ(initial_count, shelf_model()->item_count());
+
+    SwitchActiveUser(account_id0());
+    EXPECT_EQ(initial_count + 1, shelf_model()->item_count());
+  }
+  EXPECT_EQ(initial_count, shelf_model()->item_count());
+}
+
+IN_PROC_BROWSER_TEST_F(ShelfMultiProfileBrowserTest,
+                       V1AppUpdateOnUserSwitchEdgecases) {
+  const int initial_count = shelf_model()->item_count();
+
+  // First test: Create an app for user1 when a different user is active.
+  std::unique_ptr<V1App> v1_app =
+      CreateRunningV1App(profile1(), extension_misc::kGmailAppId, kGmailUrl);
+  EXPECT_EQ(initial_count, shelf_model()->item_count());
+
+  // Switching to user1 should show it.
+  SwitchActiveUser(account_id1());
+  EXPECT_EQ(initial_count + 1, shelf_model()->item_count());
+
+  // Second test: Remove the app when user1 is not active.
+  SwitchActiveUser(account_id0());
+  EXPECT_EQ(initial_count, shelf_model()->item_count());
+  v1_app.reset();
+  EXPECT_EQ(initial_count, shelf_model()->item_count());
+  SwitchActiveUser(account_id1());
+  EXPECT_EQ(initial_count, shelf_model()->item_count());
+  SwitchActiveUser(account_id0());
+  EXPECT_EQ(initial_count, shelf_model()->item_count());
+}
+
+IN_PROC_BROWSER_TEST_F(ShelfMultiProfileBrowserTest, V1CloseOnVisitingDesktop) {
+  const int initial_count = shelf_model()->item_count();
+
+  std::unique_ptr<V1App> v1_app = CreateRunningV1App(
+      profile0(), extension_misc::kGmailAppId, kGmailLaunchURL);
+  EXPECT_EQ(initial_count + 1, shelf_model()->item_count());
+  SwitchActiveUser(account_id1());
+  EXPECT_EQ(initial_count, shelf_model()->item_count());
+  v1_app.reset();
+  SwitchActiveUser(account_id0());
+
+  EXPECT_EQ(initial_count, shelf_model()->item_count());
+  v1_app = CreateRunningV1App(profile0(), extension_misc::kGmailAppId,
+                              kGmailLaunchURL);
+  EXPECT_EQ(initial_count + 1, shelf_model()->item_count());
+  v1_app.reset();
+  SwitchActiveUser(account_id1());
+  EXPECT_EQ(initial_count, shelf_model()->item_count());
+}
+
+IN_PROC_BROWSER_TEST_F(ShelfMultiProfileBrowserTest,
+                       V1AppUpdateOnUserSwitchEdgecases2) {
+  const int initial_count = shelf_model()->item_count();
+
+  // First test: Create an app for user0 when a different user is active.
+  SwitchActiveUser(account_id1());
+  std::unique_ptr<V1App> v1_app =
+      CreateRunningV1App(profile0(), extension_misc::kGmailAppId, kGmailUrl);
+  EXPECT_EQ(initial_count, shelf_model()->item_count());
+  // Switching to user0 should show it.
+  SwitchActiveUser(account_id0());
+  EXPECT_EQ(initial_count + 1, shelf_model()->item_count());
+
+  // Second test: Remove the app when user0 is not active.
+  SwitchActiveUser(account_id1());
+  EXPECT_EQ(initial_count, shelf_model()->item_count());
+  v1_app.reset();
+  EXPECT_EQ(initial_count, shelf_model()->item_count());
+  SwitchActiveUser(account_id0());
+  EXPECT_EQ(initial_count, shelf_model()->item_count());
+  SwitchActiveUser(account_id1());
+  EXPECT_EQ(initial_count, shelf_model()->item_count());
+}
+
+IN_PROC_BROWSER_TEST_F(ShelfMultiProfileBrowserTest,
+                       TestShelfActivationPullsBackWindow) {
+  ash::MultiUserWindowManager* window_manager =
+      ash::Shell::Get()->multi_user_window_manager();
+
+  SwitchActiveUser(account_id0());
+  BrowserWindowInterface* browser = CreateBrowser(profile0());
+  ui::BaseWindow* browser_window = browser->GetWindow();
+  aura::Window* window = browser_window->GetNativeWindow();
+
+  // Check that an activation of the window on its owner's desktop does not
+  // change the visibility to another user.
+  controller_->ActivateWindowOrMinimizeIfActive(browser_window, false);
+  EXPECT_TRUE(window_manager->IsWindowOnDesktopOfUser(window, account_id0()));
+
+  // Transfer the window to another user's desktop and check that activating it
+  // does pull it back to that user.
+  window_manager->ShowWindowForUser(window, account_id1());
+  EXPECT_FALSE(window_manager->IsWindowOnDesktopOfUser(window, account_id0()));
+  SwitchActiveUser(account_id0());
+  controller_->ActivateWindowOrMinimizeIfActive(browser_window, false);
+  EXPECT_TRUE(window_manager->IsWindowOnDesktopOfUser(window, account_id0()));
+
+  CloseBrowserSynchronously(browser);
+}
+
+IN_PROC_BROWSER_TEST_F(ShelfMultiProfileBrowserTest,
+                       WebAppNotShownIfNotInstalledAfterUserSwitch) {
+  SwitchActiveUser(account_id0());
+  constexpr char kWebAppUrl[] = "https://webappone.com/";
+  constexpr char kWebAppName[] = "WebApp1";
+
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL(kWebAppUrl));
+  webapps::AppId installed_app_id =
+      web_app::test::InstallWebApp(profile0(), std::move(web_app_info));
+  PinAppWithIDToShelf(installed_app_id);
+
+  BrowserWindowInterface* profile1_browser =
+      CreateBrowserAndTabWithProfile(profile1(), kWebAppName, kWebAppUrl);
+  EXPECT_EQ(
+      std::vector<std::string>({app_constants::kChromeAppId, installed_app_id}),
+      GetAppsShownInShelf());
+
+  SwitchActiveUser(account_id1());
+  EXPECT_EQ(std::vector<std::string>({app_constants::kChromeAppId}),
+            GetAppsShownInShelf());
+
+  CloseBrowserSynchronously(profile1_browser);
+}
+
+// Check the multi-profile case where only user-related browsers should show up.
+IN_PROC_BROWSER_TEST_F(ShelfMultiProfileBrowserTest,
+                       BrowserMenuGenerationTwoUsers) {
+  ash::ShelfItem item_browser;
+  item_browser.type = ash::TYPE_BROWSER_SHORTCUT;
+  item_browser.id = ash::ShelfID(app_constants::kChromeAppId);
+
+  // Check that the menu is empty before the browser window is shown.
+  BrowserWindowInterface* browser0 = CreateBrowserWindow(
+      BrowserWindowCreateParams(profile0(), /*from_user_gesture=*/true));
+  chrome::NewTab(browser0, NewTabTypes::kNoUserAction);
+  CheckAppMenu(controller_, item_browser, {});
+
+  // Show the created |browser0| by showing its window.
+  browser0->GetWindow()->Show();
+  std::u16string title = u"Test";
+  NavigateAndSetTitle(browser0, GURL("http://test"), title);
+  std::array one_menu_item = {title};
+  CheckAppMenu(controller_, item_browser, one_menu_item);
+
+  // Create a browser for another user and check that it is not included in the
+  // active user's running browser list.
+  BrowserWindowInterface* browser1 =
+      CreateBrowserAndTabWithProfile(profile1(), "user1", "http://test1");
+  CheckAppMenu(controller_, item_browser, one_menu_item);
+
+  // Switch to the other user and make sure that only that user's browser window
+  // gets shown.
+  SwitchActiveUser(account_id1());
+  std::array<std::u16string, 1> one_menu_item1 = {u"user1"};
+  CheckAppMenu(controller_, item_browser, one_menu_item1);
+
+  // Transferred browsers of other users should not show up in the list.
+  ash::Shell::Get()->multi_user_window_manager()->ShowWindowForUser(
+      browser0->GetWindow()->GetNativeWindow(), account_id1());
+  CheckAppMenu(controller_, item_browser, one_menu_item1);
+
+  CloseBrowserSynchronously(browser1);
+  CloseBrowserSynchronously(browser0);
+}
+
+// Check the multi-profile case where only user-related apps should show up.
+IN_PROC_BROWSER_TEST_F(ShelfMultiProfileBrowserTest,
+                       V1AppMenuGenerationTwoUsers) {
+  BrowserWindowInterface* browser0 = CreateBrowser(profile0());
+
+  auto web_app_info = web_app::WebAppInstallInfo::CreateWithStartUrlForTesting(
+      GURL("https://mail.google.com/mail/?usp=installed_webapp"));
+  webapps::AppId gmail_app_id =
+      web_app::test::InstallWebApp(profile0(), std::move(web_app_info));
+  ASSERT_EQ(ash::kGmailAppId, gmail_app_id);
+  const ash::ShelfID gmail_id(ash::kGmailAppId);
+  PinAppWithIDToShelf(ash::kGmailAppId);
+  SetRefocusURL(gmail_id, GURL(kGmailUrl));
+
+  ash::ShelfItem item_browser;
+  item_browser.type = ash::TYPE_BROWSER_SHORTCUT;
+  item_browser.id = ash::ShelfID(app_constants::kChromeAppId);
+
+  ash::ShelfItem item_gmail;
+  item_gmail.type = ash::TYPE_PINNED_APP;
+  item_gmail.id = gmail_id;
+  CheckAppMenu(controller_, item_gmail, {});
+
+  // Set the gmail URL to a tab in user0's browser.
+  std::u16string title1 = u"Test1";
+  NavigateAndSetTitle(browser0, GURL(kGmailUrl), title1);
+
+  std::array one_menu_item = {title1};
+  CheckAppMenu(controller_, item_gmail, one_menu_item);
+
+  SwitchActiveUser(account_id1());
+
+  // No item should have content for user1.
+  CheckAppMenu(controller_, item_browser, {});
+  CheckAppMenu(controller_, item_gmail, {});
+
+  // Transfer the browser of the first user - it should still not show up.
+  ash::Shell::Get()->multi_user_window_manager()->ShowWindowForUser(
+      browser0->GetWindow()->GetNativeWindow(), account_id1());
+
+  CheckAppMenu(controller_, item_browser, {});
+  CheckAppMenu(controller_, item_gmail, {});
+
+  CloseBrowserSynchronously(browser0);
+}
