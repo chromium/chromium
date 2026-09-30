@@ -374,6 +374,20 @@ enum ItemType {
       [UISwipeActionsConfiguration configurationWithActions:@[ deleteAction ]];
 }
 
+- (void)tableView:(UITableView*)tableView
+    willBeginEditingRowAtIndexPath:(NSIndexPath*)indexPath {
+  // Do not call super. `UITableViewController` invokes `setEditing:YES` by
+  // default when a single row swipe begins, which would erroneously put the
+  // toolbar and search bar into multi-select edit mode.
+}
+
+- (void)tableView:(UITableView*)tableView
+    didEndEditingRowAtIndexPath:(NSIndexPath*)indexPath {
+  // Do not call super. `UITableViewController` invokes `setEditing:NO` by
+  // default when a single row swipe ends, which triggers `beginUpdates` /
+  // `endUpdates` mid-reload when `reloadData` resets an active swipe action.
+}
+
 #pragma mark - UISearchControllerDelegate
 
 - (void)willPresentSearchController:(UISearchController*)searchController {
@@ -404,9 +418,11 @@ enum ItemType {
 
 #pragma mark - Private
 
-// Updates edit mode, navigation bar search controller visibility, and toolbar
-// buttons when the visible site exceptions change, then reloads the table view.
+// Reloads the table view, then updates edit mode, navigation bar search
+// controller visibility, and toolbar buttons when the visible site exceptions
+// change.
 - (void)reloadSitesAndUpdateEditState {
+  [self reloadData];
   if (self.isViewLoaded) {
     if (![self editButtonEnabled] && self.tableView.editing) {
       [self setEditing:NO animated:YES];
@@ -414,7 +430,6 @@ enum ItemType {
     [self updateNavigationBar];
     [self updateUIForEditState];
   }
-  [self reloadData];
 }
 
 // Shows the search bar in the navigation item only when site exceptions exist.

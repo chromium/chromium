@@ -224,18 +224,49 @@ TEST_F(SiteSettingsCategoryDetailViewControllerTest, TestTrailingSwipeActions) {
               [NSIndexPath indexPathForRow:0 inSection:0]];
   EXPECT_EQ(nil, defaultConfig);
 
-  // Add an allowed site exception.
-  SiteSettingsSiteException* allowedSite =
-      CreateSiteException(@"https://allowed.com", @"allowed.com");
-  [view_controller setAllowedSites:@[ allowedSite ] notAllowedSites:@[]];
+  // Add two allowed site exceptions.
+  SiteSettingsSiteException* allowedSite1 =
+      CreateSiteException(@"https://allowed1.com", @"allowed1.com");
+  SiteSettingsSiteException* allowedSite2 =
+      CreateSiteException(@"https://allowed2.com", @"allowed2.com");
+  [view_controller setAllowedSites:@[ allowedSite1, allowedSite2 ]
+                   notAllowedSites:@[]];
 
   // The Allowed section is at section index 1.
-  UISwipeActionsConfiguration* allowedConfig =
-      [view_controller.tableView.delegate tableView:view_controller.tableView
-          trailingSwipeActionsConfigurationForRowAtIndexPath:
-              [NSIndexPath indexPathForRow:0 inSection:1]];
+  NSIndexPath* firstAllowedIndexPath = [NSIndexPath indexPathForRow:0
+                                                          inSection:1];
+  UISwipeActionsConfiguration* allowedConfig = [view_controller.tableView
+                                                    .delegate
+                                               tableView:view_controller
+                                                             .tableView
+      trailingSwipeActionsConfigurationForRowAtIndexPath:firstAllowedIndexPath];
   ASSERT_NE(nil, allowedConfig);
-  EXPECT_EQ(1u, allowedConfig.actions.count);
+  ASSERT_EQ(1u, allowedConfig.actions.count);
+
+  // Single-row swipe editing should not put the view controller into
+  // multi-select editing mode.
+  [view_controller.tableView.delegate tableView:view_controller.tableView
+                 willBeginEditingRowAtIndexPath:firstAllowedIndexPath];
+  EXPECT_FALSE(view_controller.editing);
+
+  // Executing the delete contextual action should invoke the mutator and reload
+  // cleanly without batch update inconsistencies.
+  OCMStub([mutator_ deleteSettingForSite:allowedSite1])
+      .andDo(^(NSInvocation* invocation) {
+        [view_controller setAllowedSites:@[ allowedSite2 ] notAllowedSites:@[]];
+      });
+  UIContextualAction* deleteAction = allowedConfig.actions.firstObject;
+  __block BOOL completionCalled = NO;
+  deleteAction.handler(deleteAction, view_controller.tableView,
+                       ^(BOOL actionPerformed) {
+                         completionCalled = actionPerformed;
+                       });
+  EXPECT_TRUE(completionCalled);
+  EXPECT_EQ(1, NumberOfItemsInSection(1));
+
+  [view_controller.tableView.delegate tableView:view_controller.tableView
+                    didEndEditingRowAtIndexPath:firstAllowedIndexPath];
+  EXPECT_FALSE(view_controller.editing);
 }
 
 // Tests that site exception rows configure a popup menu accessory button that
