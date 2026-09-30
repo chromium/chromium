@@ -39,6 +39,7 @@
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #import "components/segmentation_platform/public/constants.h"
+#import "components/segmentation_platform/public/features.h"
 #import "components/segmentation_platform/public/segmentation_platform_service.h"
 #import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/pref_names.h"
@@ -84,6 +85,7 @@
 #import "ios/chrome/browser/content_suggestions/tips/coordinator/tips_magic_stack_mediator_delegate.h"
 #import "ios/chrome/browser/content_suggestions/tips/ui/tips_module_config.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/level_up/model/level_up_service.h"
@@ -161,21 +163,25 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   PrefChangeRegistrar _prefChangeRegistrar;
   // Bridge to listen to Pref changes.
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
+  raw_ptr<HomeBackgroundCustomizationService> _backgroundCustomizationService;
 }
 
 - (instancetype)
-    initWithSegmentationService:
-        (segmentation_platform::SegmentationPlatformService*)segmentationService
-                shoppingService:(commerce::ShoppingService*)shoppingService
-                    authService:(AuthenticationService*)authenticationService
-                    prefService:(PrefService*)prefService
-                     localState:(PrefService*)localState
-                moduleMediators:(NSArray*)moduleMediators
-                    tipsManager:(TipsManagerIOS*)tipsManager
-             templateURLService:(TemplateURLService*)templateURLService
-          appStoreBundleService:(AppStoreBundleService*)appStoreBundleService
-                  bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-                 levelUpService:(LevelUpService*)levelUpService {
+       initWithSegmentationService:
+           (segmentation_platform::SegmentationPlatformService*)
+               segmentationService
+                   shoppingService:(commerce::ShoppingService*)shoppingService
+                       authService:(AuthenticationService*)authenticationService
+                       prefService:(PrefService*)prefService
+                        localState:(PrefService*)localState
+                   moduleMediators:(NSArray*)moduleMediators
+                       tipsManager:(TipsManagerIOS*)tipsManager
+                templateURLService:(TemplateURLService*)templateURLService
+             appStoreBundleService:(AppStoreBundleService*)appStoreBundleService
+                     bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
+                    levelUpService:(LevelUpService*)levelUpService
+    backgroundCustomizationService:
+        (HomeBackgroundCustomizationService*)backgroundCustomizationService {
   self = [super init];
   if (self) {
     _segmentationService = segmentationService;
@@ -189,6 +195,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
     _bookmarkModel = bookmarkModel;
     _tipsManager = tipsManager;
     _levelUpService = levelUpService;
+    _backgroundCustomizationService = backgroundCustomizationService;
 
     for (id mediator in moduleMediators) {
       if ([mediator isKindOfClass:[MostVisitedTilesMediator class]]) {
@@ -260,6 +267,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
   _appBundlePromoMediator = nil;
   _prefChangeRegistrar.Reset();
   _prefObserverBridge.reset();
+  _backgroundCustomizationService = nullptr;
 }
 
 #pragma mark - Public
@@ -566,7 +574,8 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                ->GetString(send_tab_to_self::prefs::
                                kIOSSendTabToSelfLastReceivedTabURLPref)
                .empty()));
-
+  bool magicStackV2Enabled = base::FeatureList::IsEnabled(
+      segmentation_platform::features::kMagicStackTipsV2Ios);
   if (_tipsManager) {
     // Profile signals
     inputContext->metadata_args.emplace(
@@ -655,6 +664,28 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         segmentation_platform::kIsDefaultBrowserChromeIos,
         segmentation_platform::processing::ProcessedValue::FromFloat(
             IsChromeLikelyDefaultBrowser()));
+
+    if (magicStackV2Enabled) {
+      inputContext->metadata_args.emplace(
+          segmentation_platform::kNTPBackgroundNotSelectedRecently,
+          segmentation_platform::processing::ProcessedValue::FromFloat(
+              !_tipsManager->WasSignalFiredWithin(
+                  segmentation_platform::tips_manager::signals::
+                      kNTPBackgroundSelected,
+                  base::Days(90))));
+    }
+  }
+
+  if (magicStackV2Enabled && _backgroundCustomizationService) {
+    const bool has_no_ntp_background =
+        !_backgroundCustomizationService->GetCurrentCustomBackground()
+             .has_value() &&
+        !_backgroundCustomizationService->GetCurrentColorTheme().has_value();
+
+    inputContext->metadata_args.emplace(
+        segmentation_platform::kLacksNTPBackground,
+        segmentation_platform::processing::ProcessedValue::FromFloat(
+            has_no_ntp_background));
   }
 
   __weak MagicStackRankingModel* weakSelf = self;

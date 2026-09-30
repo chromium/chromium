@@ -101,6 +101,7 @@
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/level_up/model/level_up_service_factory.h"
@@ -458,7 +459,7 @@ using segmentation_platform::TipIdentifier;
 
     _appBundlePromoMediator = [[AppBundlePromoMediator alloc]
         initWithAppStoreBundleService:AppStoreBundleServiceFactory::
-                                          GetForProfile(self.profile)
+                                          GetForProfile(profile)
                    profilePrefService:prefs];
     _appBundlePromoMediator.presentationAudience = self;
     [moduleMediators addObject:_appBundlePromoMediator];
@@ -490,30 +491,32 @@ using segmentation_platform::TipIdentifier;
               identityManager:identityManager
                    sceneState:self.browser->GetSceneState()
         isDefaultSearchEngine:isDefaultSearchEngine
-         priceTrackingEnabled:IsPriceTrackingEnabled(self.profile)];
+         priceTrackingEnabled:IsPriceTrackingEnabled(profile)];
     _setUpListMediator.commandHandler = self;
     _setUpListMediator.delegate = self.delegate;
     self.contentSuggestionsMediator.setUpListMediator = _setUpListMediator;
     [moduleMediators addObject:_setUpListMediator];
   }
   _magicStackRankingModel = [[MagicStackRankingModel alloc]
-      initWithSegmentationService:_segmentationService
-                  shoppingService:commerce::ShoppingServiceFactory::
-                                      GetForProfile(profile)
-                      authService:self.authService
-                      prefService:prefs
-                       localState:GetApplicationContext()->GetLocalState()
-                  moduleMediators:moduleMediators
-                      tipsManager:TipsManagerIOSFactory::GetForProfile(
-                                      self.profile)
-               templateURLService:ios::TemplateURLServiceFactory::GetForProfile(
-                                      self.profile)
-            appStoreBundleService:AppStoreBundleServiceFactory::GetForProfile(
-                                      self.profile)
-                    bookmarkModel:ios::BookmarkModelFactory::GetForProfile(
-                                      self.profile)
-                   levelUpService:LevelUpServiceFactory::GetForProfile(
-                                      self.profile)];
+         initWithSegmentationService:_segmentationService
+                     shoppingService:commerce::ShoppingServiceFactory::
+                                         GetForProfile(profile)
+                         authService:self.authService
+                         prefService:prefs
+                          localState:GetApplicationContext()->GetLocalState()
+                     moduleMediators:moduleMediators
+                         tipsManager:TipsManagerIOSFactory::GetForProfile(
+                                         profile)
+                  templateURLService:ios::TemplateURLServiceFactory::
+                                         GetForProfile(profile)
+               appStoreBundleService:AppStoreBundleServiceFactory::
+                                         GetForProfile(profile)
+                       bookmarkModel:ios::BookmarkModelFactory::GetForProfile(
+                                         profile)
+                      levelUpService:LevelUpServiceFactory::GetForProfile(
+                                         profile)
+      backgroundCustomizationService:HomeBackgroundCustomizationServiceFactory::
+                                         GetForProfile(profile)];
   self.contentSuggestionsMediator.magicStackRankingModel =
       _magicStackRankingModel;
   _magicStackRankingModel.delegate = self.contentSuggestionsMediator;

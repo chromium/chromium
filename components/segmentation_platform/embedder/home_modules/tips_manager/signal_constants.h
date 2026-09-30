@@ -48,6 +48,9 @@ inline constexpr char kUsedGoogleTranslation[] = "UsedGoogleTranslation";
 // User has used Password Autofill.
 inline constexpr char kUsedPasswordAutofill[] = "UsedPasswordAutofill";
 
+// User has selected a NTP background.
+inline constexpr char kNTPBackgroundSelected[] = "NTPBackgroundSelected";
+
 // LINT.ThenChange(//components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h:signal_registrations)
 
 // LINT.IfChange(signal_registrations)
@@ -61,6 +64,7 @@ inline constexpr auto kProfileSignalNames =
         signals::kSavedPasswords,
         signals::kUsedGoogleTranslation,
         signals::kUsedPasswordAutofill,
+        signals::kNTPBackgroundSelected,
     });
 
 // Tips signals related to the device or application itself. These

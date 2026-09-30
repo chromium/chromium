@@ -42,6 +42,9 @@ inline constexpr char kIsDefaultBrowserChromeIos[] =
     "is_default_browser_chrome_ios";
 inline constexpr char kNumPriceDropsInShoppingList[] =
     "num_price_drops_in_shopping_list";
+inline constexpr char kLacksNTPBackground[] = "lacks_ntp_background";
+inline constexpr char kNTPBackgroundNotSelectedRecently[] =
+    "ntp_background_not_selected_recently";
 
 // Input Context keys for emphemeral android modules.
 const char kIsUserSignedIn[] = "is_user_signed_in";
