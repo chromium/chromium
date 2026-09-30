@@ -25,6 +25,52 @@ using base::android::JavaRef;
 
 namespace content {
 
+namespace {
+
+// Flattens the response headers of `navigation_handle` into a map. Headers
+// that appear multiple times are combined into a single comma separated
+// value. Returns an empty map if the response headers haven't been received
+// yet.
+//
+// Note: `Set-Cookie` headers are handled directly by the network service and
+// are not present in NavigationHandle's response headers, so we do not need to
+// worry about comma-separating multiple cookie headers.
+base::flat_map<std::string, std::string> GetResponseHeadersMap(
+    NavigationHandle* navigation_handle) {
+  base::flat_map<std::string, std::string> response_headers;
+  const net::HttpResponseHeaders* headers =
+      navigation_handle->GetResponseHeaders();
+  if (!headers) {
+    return response_headers;
+  }
+
+  size_t headers_iterator = 0;
+  std::string header_name, header_value;
+  while (headers->EnumerateHeaderLines(&headers_iterator, &header_name,
+                                       &header_value)) {
+    auto it = response_headers.find(header_name);
+    if (it == response_headers.end()) {
+      response_headers[header_name] = header_value;
+    } else if (!header_value.empty()) {
+      if (!it->second.empty()) {
+        it->second += ", ";
+      }
+      it->second += header_value;
+    }
+  }
+  return response_headers;
+}
+
+// Returns the HTTP status code of the response of `navigation_handle`, or 0 if
+// the response headers haven't been received yet.
+int GetResponseCode(NavigationHandle* navigation_handle) {
+  const net::HttpResponseHeaders* headers =
+      navigation_handle->GetResponseHeaders();
+  return headers ? headers->response_code() : 0;
+}
+
+}  // namespace
+
 NavigationHandleProxy::NavigationHandleProxy(
     NavigationHandle* cpp_navigation_handle)
     : cpp_navigation_handle_(cpp_navigation_handle) {
@@ -76,12 +122,12 @@ void NavigationHandleProxy::DidStart() {
 void NavigationHandleProxy::DidRedirect() {
   JNIEnv* env = AttachCurrentThread();
   Java_NavigationHandle_didRedirect(
-      env, java_navigation_handle_,
-      url::GURLAndroid::FromNativeGURL(env, cpp_navigation_handle_->GetURL()),
+      env, java_navigation_handle_, cpp_navigation_handle_->GetURL(),
       cpp_navigation_handle_->IsExternalProtocol(),
-      url::GURLAndroid::FromNativeGURL(
-          env, cpp_navigation_handle_->GetReferrer().url),
-      static_cast<jint>(cpp_navigation_handle_->GetReferrer().policy));
+      cpp_navigation_handle_->GetReferrer().url,
+      static_cast<jint>(cpp_navigation_handle_->GetReferrer().policy),
+      GetResponseHeadersMap(cpp_navigation_handle_),
+      GetResponseCode(cpp_navigation_handle_));
 }
 
 void NavigationHandleProxy::DidFinish() {
@@ -114,24 +160,6 @@ void NavigationHandleProxy::DidFinish() {
                             ? cpp_navigation_handle_->IsSameOrigin()
                             : false;
 
-  base::flat_map<std::string, std::string> response_headers;
-  if (cpp_navigation_handle_->GetResponseHeaders()) {
-    size_t headers_iterator = 0;
-    std::string header_name, header_value;
-    while (cpp_navigation_handle_->GetResponseHeaders()->EnumerateHeaderLines(
-        &headers_iterator, &header_name, &header_value)) {
-      auto it = response_headers.find(header_name);
-      if (it == response_headers.end()) {
-        response_headers[header_name] = header_value;
-      } else if (!header_value.empty()) {
-        if (!it->second.empty()) {
-          it->second += ", ";
-        }
-        it->second += header_value;
-      }
-    }
-  }
-
   Java_NavigationHandle_didFinish(
       env, java_navigation_handle_, gurl, cpp_navigation_handle_->IsErrorPage(),
       cpp_navigation_handle_->HasCommitted(),
@@ -140,13 +168,11 @@ void NavigationHandleProxy::DidFinish() {
       cpp_navigation_handle_->GetPageTransition(),
       cpp_navigation_handle_->GetNetErrorCode(),
       net::ErrorToString(cpp_navigation_handle_->GetNetErrorCode()),
-      cpp_navigation_handle_->GetResponseHeaders()
-          ? cpp_navigation_handle_->GetResponseHeaders()->response_code()
-          : 0,
+      GetResponseCode(cpp_navigation_handle_),
       cpp_navigation_handle_->IsExternalProtocol(),
       cpp_navigation_handle_->IsPdf(), GetMimeType(),
       cpp_navigation_handle_->GetWebContents()->GetPrimaryPage().GetJavaPage(),
-      is_same_origin, response_headers,
+      is_same_origin, GetResponseHeadersMap(cpp_navigation_handle_),
       cpp_navigation_handle_->GetIgnoredDuplicateNavigationCount());
 }
 

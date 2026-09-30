@@ -15,11 +15,14 @@ import org.chromium.build.annotations.Nullable;
 import java.lang.reflect.InvocationHandler;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /** AwNavigationListener subclass used for testing. */
 public class TestAwNavigationListener implements AwNavigationListener {
     private final List<AwNavigation> mStartedNavigations = new ArrayList<AwNavigation>();
     private final List<AwNavigation> mRedirectedNavigations = new ArrayList<AwNavigation>();
+    private final List<Map<String, String>> mRedirectResponseHeaders = new ArrayList<>();
+    private final List<Integer> mRedirectStatusCodes = new ArrayList<>();
     private final List<AwNavigation> mCompletedNavigations = new ArrayList<AwNavigation>();
     private final List<AwNavigation> mVisibleNavigations = new ArrayList<AwNavigation>();
     private final List<AwPage> mDeletedPages = new ArrayList<AwPage>();
@@ -47,6 +50,22 @@ public class TestAwNavigationListener implements AwNavigationListener {
             return null;
         }
         return mRedirectedNavigations.get(mRedirectedNavigations.size() - 1);
+    }
+
+    /** The response headers passed to the last onNavigationRedirected callback. */
+    @Nullable Map<String, String> getLastRedirectResponseHeaders() {
+        if (mRedirectResponseHeaders.isEmpty()) {
+            return null;
+        }
+        return mRedirectResponseHeaders.get(mRedirectResponseHeaders.size() - 1);
+    }
+
+    /** The status code passed to the last onNavigationRedirected callback. */
+    @Nullable Integer getLastRedirectStatusCode() {
+        if (mRedirectStatusCodes.isEmpty()) {
+            return null;
+        }
+        return mRedirectStatusCodes.get(mRedirectStatusCodes.size() - 1);
     }
 
     @Nullable AwNavigation getLastCompletedNavigation() {
@@ -114,11 +133,17 @@ public class TestAwNavigationListener implements AwNavigationListener {
     }
 
     @Override
-    public void onNavigationRedirected(AwNavigation navigation) {
+    public void onNavigationRedirected(
+            AwNavigation navigation, Map<String, String> responseHeaders, int statusCode) {
         Assert.assertTrue(
                 "onNavigationRedirected should only be called for a started navigation",
                 mStartedNavigations.contains(navigation));
         mRedirectedNavigations.add(navigation);
+        mRedirectResponseHeaders.add(responseHeaders);
+        mRedirectStatusCodes.add(statusCode);
+        Assert.assertNull(
+                "The navigation should only expose the headers of its final response",
+                navigation.getResponseHeaders());
     }
 
     @Override

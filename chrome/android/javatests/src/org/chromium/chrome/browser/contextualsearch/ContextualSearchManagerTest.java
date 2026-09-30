@@ -368,7 +368,9 @@ public class ContextualSearchManagerTest extends ContextualSearchInstrumentation
                                     redirectUrl,
                                     true,
                                     /* referrerUrl= */ GURL.emptyGURL(),
-                                    /* referrerPolicy= */ ReferrerPolicy.DEFAULT);
+                                    /* referrerPolicy= */ ReferrerPolicy.DEFAULT,
+                                    /* redirectResponseHeaders= */ new HashMap<>(),
+                                    /* redirectHttpStatusCode= */ 0);
                             mPanel.getOverlayPanelContent()
                                     .getInterceptNavigationDelegateForTesting()
                                     .shouldIgnoreNavigation(

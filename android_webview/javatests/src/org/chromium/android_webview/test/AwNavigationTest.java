@@ -28,6 +28,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.net.test.util.TestWebServer;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -113,6 +114,44 @@ public class AwNavigationTest extends AwParameterizedTest {
         Map<String, String> responseHeaders = navigation.getResponseHeaders();
         Assert.assertNotNull(responseHeaders);
         Assert.assertEquals("Value1, Value2", responseHeaders.get("Custom-Header"));
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testNavigationResponseHeadersOnRedirect() throws Throwable {
+        String destinationUrl =
+                mWebServer.setResponse(
+                        "/destination.html", "<html><body>Hello</body></html>", null);
+        List<Pair<String, String>> redirectHeaders =
+                new ArrayList<>(List.of(new Pair<>("Custom-Header", "RedirectValue")));
+        String redirectUrl =
+                mWebServer.setRedirect("/redirect.html", destinationUrl, redirectHeaders);
+
+        mActivityTestRule.loadUrlSync(
+                mTestContainerView.getAwContents(),
+                mContentsClient.getOnPageFinishedHelper(),
+                redirectUrl);
+
+        // The headers and status code of the redirect response are given to the
+        // onNavigationRedirected callback.
+        Map<String, String> redirectResponseHeaders =
+                mNavigationListener.getLastRedirectResponseHeaders();
+        Assert.assertNotNull(redirectResponseHeaders);
+        Assert.assertEquals("RedirectValue", redirectResponseHeaders.get("Custom-Header"));
+        Assert.assertEquals(destinationUrl, redirectResponseHeaders.get("Location"));
+        Assert.assertEquals(Integer.valueOf(302), mNavigationListener.getLastRedirectStatusCode());
+
+        // The navigation itself only holds the headers and status code of the final response, even
+        // though it's the same navigation object that was redirected.
+        AwNavigation navigation = mNavigationListener.getLastCompletedNavigation();
+        Assert.assertNotNull(navigation);
+        Assert.assertSame(navigation, mNavigationListener.getLastRedirectedNavigation());
+        Assert.assertEquals(destinationUrl, navigation.getUrl());
+        Map<String, String> responseHeaders = navigation.getResponseHeaders();
+        Assert.assertNotNull(responseHeaders);
+        Assert.assertFalse(responseHeaders.containsKey("Custom-Header"));
+        Assert.assertEquals(200, navigation.getStatusCode());
     }
 
     @Test

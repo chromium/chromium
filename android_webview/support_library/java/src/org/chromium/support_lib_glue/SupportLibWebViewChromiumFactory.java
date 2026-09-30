@@ -397,6 +397,8 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         ApiCall.CREATE_SHARED_ARRAY_BUFFER,
         ApiCall.WEB_MESSAGE_PAYLOAD_GET_AS_SHARED_ARRAY_BUFFER,
         ApiCall.CREATE_WEB_SURFACE,
+        ApiCall.REDIRECT_PARAMETERS_GET_RESPONSE_HEADERS,
+        ApiCall.REDIRECT_PARAMETERS_GET_STATUS_CODE,
         // Add new constants above. The final constant should have a trailing comma for cleaner
         // diffs.
         ApiCall.COUNT, // Added to suppress WrongConstant in #recordApiCall
@@ -616,8 +618,10 @@ public class SupportLibWebViewChromiumFactory implements WebViewProviderFactoryB
         int CREATE_SHARED_ARRAY_BUFFER = 209;
         int WEB_MESSAGE_PAYLOAD_GET_AS_SHARED_ARRAY_BUFFER = 210;
         int CREATE_WEB_SURFACE = 211;
+        int REDIRECT_PARAMETERS_GET_RESPONSE_HEADERS = 212;
+        int REDIRECT_PARAMETERS_GET_STATUS_CODE = 213;
         // Remember to update AndroidXWebkitApiCall in enums.xml when adding new values here
-        int COUNT = 212;
+        int COUNT = 214;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:AndroidXWebkitApiCall)

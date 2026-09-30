@@ -964,6 +964,8 @@ chromium-metrics-reviews@google.com.
   <int value="209" label="WebViewCompat.createSharedArrayBuffer"/>
   <int value="210" label="WebMessagePayload.getAsSharedArrayBuffer"/>
   <int value="211" label="WebViewProviderFactory.createWebSurface"/>
+  <int value="212" label="NavigationRedirectParameters.getResponseHeaders"/>
+  <int value="213" label="NavigationRedirectParameters.getStatusCode"/>
 <!-- LINT.ThenChange(/android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromiumFactory.java:ApiCall) -->
 
 </enum>

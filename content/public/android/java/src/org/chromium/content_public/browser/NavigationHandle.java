@@ -71,6 +71,8 @@ public class NavigationHandle {
     private @Nullable Page mCommittedPage;
     private boolean mIsSameOrigin;
     private @Nullable Map<String, String> mResponseHeaders;
+    private @Nullable Map<String, String> mRedirectResponseHeaders;
+    private int mRedirectHttpStatusCode;
     private int mIgnoredDuplicateNavigationCount;
 
     private long mNavigationStartMs;
@@ -207,16 +209,26 @@ public class NavigationHandle {
      * The navigation received a redirect. Called once per redirect.
      *
      * @param url The new URL.
+     * @param redirectResponseHeaders The headers of the response that caused this redirect.
+     * @param redirectHttpStatusCode The HTTP status code of the response that caused this redirect.
      */
     @CalledByNative
     @VisibleForTesting
     public void didRedirect(
-            GURL url, boolean isExternalProtocol, GURL referrerUrl, int referrerPolicy) {
+            @JniType("GURL") GURL url,
+            boolean isExternalProtocol,
+            @JniType("GURL") GURL referrerUrl,
+            int referrerPolicy,
+            @JniType("base::flat_map<std::string, std::string>")
+                    Map<String, String> redirectResponseHeaders,
+            int redirectHttpStatusCode) {
         mUrl = url;
         mIsRedirect = true;
         mIsExternalProtocol = isExternalProtocol;
         mReferrerUrl = referrerUrl;
         mReferrerPolicy = referrerPolicy;
+        mRedirectResponseHeaders = redirectResponseHeaders;
+        mRedirectHttpStatusCode = redirectHttpStatusCode;
 
         takeNavigationStateSnapshot();
     }
@@ -370,10 +382,38 @@ public class NavigationHandle {
     }
 
     /**
+     * The headers of the response the navigation committed, available once the navigation has
+     * finished. The headers of intermediate redirect responses are not included, those are provided
+     * by {@link #getRedirectResponseHeaders()}.
+     *
      * @return The response headers.
      */
     public @Nullable Map<String, String> getResponseHeaders() {
         return mResponseHeaders;
+    }
+
+    /**
+     * The headers of the response that caused the most recent redirect, or null if the navigation
+     * hasn't been redirected. This is intended to be called from within {@link
+     * WebContentsObserver#didRedirectNavigation}, since a subsequent redirect will replace the
+     * value.
+     *
+     * @return The headers of the redirect response.
+     */
+    public @Nullable Map<String, String> getRedirectResponseHeaders() {
+        return mRedirectResponseHeaders;
+    }
+
+    /**
+     * The HTTP status code of the response that caused the most recent redirect, or 0 if the
+     * navigation hasn't been redirected. This is intended to be called from within {@link
+     * WebContentsObserver#didRedirectNavigation}, since a subsequent redirect will replace the
+     * value.
+     *
+     * @return The status code of the redirect response.
+     */
+    public int redirectHttpStatusCode() {
+        return mRedirectHttpStatusCode;
     }
 
     /**

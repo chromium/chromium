@@ -16,6 +16,10 @@ public interface WebViewNavigationListenerBoundaryInterface
 
     void onNavigationRedirected(/* WebViewNavigation */ InvocationHandler navigation);
 
+    default void onNavigationRedirected(
+            /* WebViewNavigation */ InvocationHandler navigation,
+            /* NavigationRedirectParameters */ InvocationHandler redirectParameters) {}
+
     void onNavigationCompleted(/* WebViewNavigation */ InvocationHandler navigation);
 
     default void onNavigationVisible(/* WebViewNavigation */ InvocationHandler navigation) {}

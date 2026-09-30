@@ -11,6 +11,7 @@ android_library("support_lib_glue_java") {
     "java/src/org/chromium/support_lib_glue/SupportLibHttpCache.java",
     "java/src/org/chromium/support_lib_glue/SupportLibJsReplyProxyAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibNavigationParametersAdapter.java",
+    "java/src/org/chromium/support_lib_glue/SupportLibNavigationRedirectParametersAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibOriginMatchedHeader.java",
     "java/src/org/chromium/support_lib_glue/SupportLibProfile.java",
     "java/src/org/chromium/support_lib_glue/SupportLibProfileStore.java",

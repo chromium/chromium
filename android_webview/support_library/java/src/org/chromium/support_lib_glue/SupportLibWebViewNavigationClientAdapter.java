@@ -14,6 +14,7 @@ import org.chromium.support_lib_boundary.util.Features;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
+import java.util.Map;
 
 /**
  * Support library glue navigation client callback adapter.
@@ -52,11 +53,14 @@ class SupportLibWebViewNavigationClientAdapter implements AwNavigationListener {
     }
 
     @Override
-    public void onNavigationRedirected(AwNavigation navigation) {
+    public void onNavigationRedirected(
+            AwNavigation navigation, Map<String, String> responseHeaders, int statusCode) {
         if (!BoundaryInterfaceReflectionUtil.containsFeature(
                 mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE)) {
             return;
         }
+        // The redirect response headers and status code are not exposed here, as this navigation
+        // client is set to be deprecated in favour of {@link #AwNavigationListener}.
         mClientImpl.onNavigationRedirected(
                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
                         new SupportLibWebViewNavigationAdapter(navigation)));

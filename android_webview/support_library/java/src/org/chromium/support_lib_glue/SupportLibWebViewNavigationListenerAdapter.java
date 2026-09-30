@@ -14,6 +14,7 @@ import org.chromium.support_lib_boundary.util.Features;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Proxy;
+import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 
@@ -69,7 +70,20 @@ class SupportLibWebViewNavigationListenerAdapter implements AwNavigationListener
     }
 
     @Override
-    public void onNavigationRedirected(AwNavigation navigation) {
+    public void onNavigationRedirected(
+            AwNavigation navigation, Map<String, String> responseHeaders, int statusCode) {
+        if (BoundaryInterfaceReflectionUtil.containsFeature(
+                mSupportedFeatures, Features.NAVIGATION_GET_RESPONSE_HEADERS)) {
+            mExecutor.execute(
+                    () ->
+                            mImpl.onNavigationRedirected(
+                                    BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                            new SupportLibWebViewNavigationAdapter(navigation)),
+                                    BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
+                                            new SupportLibNavigationRedirectParametersAdapter(
+                                                    responseHeaders, statusCode))));
+            return;
+        }
         if (!BoundaryInterfaceReflectionUtil.containsFeature(
                 mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_LISTENER_V1)) {
             return;

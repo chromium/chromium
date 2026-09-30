@@ -4,9 +4,10 @@
 
 package org.chromium.android_webview;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import androidx.annotation.AnyThread;
 import androidx.annotation.UiThread;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
@@ -22,6 +23,7 @@ import org.chromium.content_public.browser.PageState;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.function.Supplier;
 
@@ -123,8 +125,13 @@ public class AwNavigationClient implements Page.PageDeletionListener {
     public void onNavigationRedirected(NavigationHandle navigation) {
         ThreadUtils.assertOnUiThread();
         AwNavigation awNavigation = getOrUpdateAwNavigationFor(navigation);
+        // The headers are guaranteed to be set, as NavigationHandle#didRedirect is called before
+        // observers are notified of the redirect.
+        Map<String, String> responseHeaders =
+                assumeNonNull(navigation.getRedirectResponseHeaders());
+        int statusCode = navigation.redirectHttpStatusCode();
         for (AwNavigationListener listener : mNavigationListeners) {
-            listener.onNavigationRedirected(awNavigation);
+            listener.onNavigationRedirected(awNavigation, responseHeaders, statusCode);
         }
     }
 
