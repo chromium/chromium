@@ -23,6 +23,7 @@ source_set("browser_tests") {
 
   sources = [
     "bluetooth_internals/bluetooth_internals_browsertest.cc",
+    "browser_actuator_internals/browser_actuator_internals_browsertest.cc",
     "chrome_urls/chrome_urls_browsertest.cc",
     "commerce_internals/commerce_internals_browsertest.cc",
     "contextual_tasks/contextual_tasks_browsertest.cc",
@@ -40,15 +41,18 @@ source_set("browser_tests") {
     "//chrome/browser:chrome_content_browser_client",
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/bookmarks",
+    "//chrome/browser/browser_actuator/internals",
     "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/tabs/tab_group_home:constants",
     "//chrome/test:test_support",
     "//chrome/test/base:test_switches",
     "//chrome/test/base:web_ui_mocha_browser_test",
+    "//components/browser_actuator/public",
     "//components/commerce/core:commerce_constants",
     "//components/contextual_tasks/public",
     "//components/metrics_services_manager",
     "//components/notebooks/public",
+    "//components/prefs",
     "//components/ukm",
     "//components/ukm:ukm_test_helper",
     "//components/webui/chrome_urls/",
@@ -637,6 +641,7 @@ generate_grd("build_grd") {
     ":build_mocha_grdp",
     ":build_ts",
     "bluetooth_internals:build_grdp",
+    "browser_actuator_internals:build_grdp",
     "chrome_urls:build_grdp",
     "commerce_internals:build_grdp",
     "contextual_tasks:build_grdp",
@@ -651,6 +656,7 @@ generate_grd("build_grd") {
 
   grdp_files = [
     "$target_gen_dir/bluetooth_internals/resources.grdp",
+    "$target_gen_dir/browser_actuator_internals/resources.grdp",
     "$target_gen_dir/chai_resources.grdp",
     "$target_gen_dir/chrome_urls/resources.grdp",
     "$target_gen_dir/commerce_internals/resources.grdp",
