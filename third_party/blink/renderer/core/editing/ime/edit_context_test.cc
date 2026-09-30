@@ -7,8 +7,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_edit_context_init.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -253,6 +257,74 @@ TEST_F(EditContextTest, DeleteSurroundingTextInCodePointsEdgeCases) {
             String::FromUtf8("a\xE0\xB8\x81\xE0\xB9\x89"));
   EXPECT_EQ(edit_context->selectionStart(), 1u);
   EXPECT_EQ(edit_context->selectionEnd(), 1u);
+}
+
+TEST_F(EditContextTest, InRangeUpdatesDoNotRecordUseCounters) {
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ScriptState::Scope script_scope(script_state);
+  auto* edit_context = CreateEditContext(script_state, "abcdef", 2);
+  DummyExceptionStateForTesting exception_state;
+
+  edit_context->updateSelection(1, 3, exception_state);
+  HeapVector<Member<DOMRect>> character_bounds = {DOMRect::Create()};
+  edit_context->updateCharacterBounds(5, character_bounds);
+  edit_context->updateText(0, 4, "xyz", exception_state);
+
+  EXPECT_FALSE(exception_state.HadException());
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kEditContextUpdateTextRangeExceedsTextRange));
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kEditContextUpdateSelectionRangeExceedsTextRange));
+  EXPECT_FALSE(GetDocument().IsUseCounted(
+      WebFeature::kEditContextUpdateCharacterBoundsExceedsTextRange));
+}
+
+TEST_F(EditContextTest, OutOfRangeUpdatesRecordUseCounters) {
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ScriptState::Scope script_scope(script_state);
+  auto* edit_context = CreateEditContext(script_state, "abcdef", 2);
+  DummyExceptionStateForTesting exception_state;
+
+  // "abcdef" has length 6, so an end offset of 10 is out of range.
+  edit_context->updateSelection(1, 10, exception_state);
+
+  EXPECT_FALSE(exception_state.HadException());
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kEditContextUpdateSelectionRangeExceedsTextRange));
+  // Selection offsets should be clamped to the text length.
+  EXPECT_EQ(edit_context->selectionStart(), 1u);
+  EXPECT_EQ(edit_context->selectionEnd(), 6u);
+
+  HeapVector<Member<DOMRect>> character_bounds = {DOMRect::Create()};
+  edit_context->updateCharacterBounds(6, character_bounds);
+
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kEditContextUpdateCharacterBoundsExceedsTextRange));
+
+  edit_context->updateText(0, 10, "xyz", exception_state);
+
+  EXPECT_FALSE(exception_state.HadException());
+  EXPECT_TRUE(GetDocument().IsUseCounted(
+      WebFeature::kEditContextUpdateTextRangeExceedsTextRange));
+  EXPECT_EQ(edit_context->text(), "xyz");
+}
+
+TEST_F(EditContextTest, UpdateTextClampsOutOfRangeBounds) {
+  ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+  ScriptState::Scope script_scope(script_state);
+  auto* edit_context = CreateEditContext(script_state, "abcdef", 6);
+  DummyExceptionStateForTesting exception_state;
+
+  // Both offsets are past the end of the text, so they should be clamped to
+  // offset 6 and the update should become an insertion at the end.
+  edit_context->updateText(8, 10, "xyz", exception_state);
+
+  EXPECT_FALSE(exception_state.HadException());
+  EXPECT_EQ(edit_context->text(), "abcdefxyz");
+  // Selection adjustment must use the clamped range and move the caret past
+  // the inserted text.
+  EXPECT_EQ(edit_context->selectionStart(), 9u);
+  EXPECT_EQ(edit_context->selectionEnd(), 9u);
 }
 
 }  // namespace blink

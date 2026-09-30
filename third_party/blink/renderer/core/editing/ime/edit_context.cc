@@ -224,6 +224,12 @@ void EditContext::updateSelection(uint32_t start,
 
   uint32_t bound_start = std::min(start, text_.length());
   uint32_t bound_end = std::min(end, text_.length());
+  if (bound_start != start || bound_end != end) {
+    UseCounter::Count(
+        GetExecutionContext(),
+        WebFeature::kEditContextUpdateSelectionRangeExceedsTextRange);
+  }
+
   if (has_composition_ &&
       (bound_start != selection_start_ || bound_end != selection_end_)) {
     UseCounter::Count(
@@ -260,6 +266,13 @@ void EditContext::updateCharacterBounds(
   TRACE_EVENT1("ime", "EditContext::updateCharacterBounds", "range_start, size",
                std::to_string(range_start) + ", " +
                    std::to_string(character_bounds.size()));
+
+  if (range_start > text_.length() ||
+      character_bounds.size() > text_.length() - range_start) {
+    UseCounter::Count(
+        GetExecutionContext(),
+        WebFeature::kEditContextUpdateCharacterBoundsExceedsTextRange);
+  }
 
   character_bounds_.clear();
   std::ranges::for_each(character_bounds, [this](const auto& bounds) {
@@ -303,6 +316,10 @@ void EditContext::updateText(uint32_t start,
                new_text);
   if (start > end) {
     std::swap(start, end);
+  }
+  if (end > text_.length()) {
+    UseCounter::Count(GetExecutionContext(),
+                      WebFeature::kEditContextUpdateTextRangeExceedsTextRange);
   }
   end = std::min(end, text_.length());
   start = std::min(start, end);

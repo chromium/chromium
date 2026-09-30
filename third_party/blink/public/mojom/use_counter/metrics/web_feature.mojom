@@ -5343,6 +5343,9 @@ enum WebFeature {
   kCSSValuePositionVisibilityAnchorVisible = 6026,
   kCSSValuePositionVisibilityAnchorsVisible = 6027,
   kCSSValuePositionVisibilityAnchorValid = 6028,
+  kEditContextUpdateTextRangeExceedsTextRange = 6029,
+  kEditContextUpdateSelectionRangeExceedsTextRange = 6030,
+  kEditContextUpdateCharacterBoundsExceedsTextRange = 6031,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

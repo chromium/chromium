@@ -6806,6 +6806,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="6026" label="CSSValuePositionVisibilityAnchorVisible"/>
   <int value="6027" label="CSSValuePositionVisibilityAnchorsVisible"/>
   <int value="6028" label="CSSValuePositionVisibilityAnchorValid"/>
+  <int value="6029" label="EditContextUpdateTextRangeExceedsTextRange"/>
+  <int value="6030" label="EditContextUpdateSelectionRangeExceedsTextRange"/>
+  <int value="6031" label="EditContextUpdateCharacterBoundsExceedsTextRange"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
