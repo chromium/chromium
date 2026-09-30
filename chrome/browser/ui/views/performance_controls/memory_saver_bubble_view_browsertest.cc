@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_resource_view.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -79,6 +80,8 @@ class MemorySaverBubbleViewTest
     AddNewTab(kMemorySavings, ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
 
     SetMemorySaverModeEnabled(true);
+
+    WaitForInitialWebUIToolbar(browser());
   }
   void TearDownOnMainThread() override {
     unconditionally_discard_pages_.reset();
@@ -112,12 +115,15 @@ class MemorySaverBubbleViewTest
                                                       discard_reason);
   }
 
-  void DiscardTab(int tab_index) {
+  void DiscardTab(int tab_index, BrowserWindowInterface* b = nullptr) {
+    if (!b) {
+      b = browser();
+    }
     base::ByteSize savings = kMemorySavings;
     mojom::LifecycleUnitDiscardReason reason =
         ::mojom::LifecycleUnitDiscardReason::PROACTIVE;
     content::WebContents* const old_contents =
-        browser()->GetTabStripModel()->GetWebContentsAt(tab_index);
+        b->GetTabStripModel()->GetWebContentsAt(tab_index);
     if (auto* old_usage =
             performance_manager::user_tuning::UserPerformanceTuningManager::
                 PreDiscardResourceUsage::FromWebContents(old_contents)) {
@@ -125,10 +131,12 @@ class MemorySaverBubbleViewTest
       reason = old_usage->discard_reason();
     }
 
-    TryDiscardTabAt(tab_index);
+    auto* manager = performance_manager::user_tuning::
+        UserPerformanceTuningManager::GetInstance();
+    manager->DiscardPageForTesting(old_contents);
 
     content::WebContents* const new_contents =
-        browser()->GetTabStripModel()->GetWebContentsAt(tab_index);
+        b->GetTabStripModel()->GetWebContentsAt(tab_index);
     if (auto* new_usage =
             performance_manager::user_tuning::UserPerformanceTuningManager::
                 PreDiscardResourceUsage::FromWebContents(new_contents)) {
@@ -138,7 +146,7 @@ class MemorySaverBubbleViewTest
           PreDiscardResourceUsage::CreateForWebContents(new_contents, savings,
                                                         reason);
     }
-    if (browser()->GetTabStripModel()->active_index() == tab_index) {
+    if (b->GetTabStripModel()->active_index() == tab_index) {
       new_contents->GetController().Reload(content::ReloadType::NORMAL,
                                            /*check_for_repost=*/true);
       content::WaitForLoadStop(new_contents);
@@ -183,7 +191,13 @@ class MemorySaverBubbleViewTest
     if (!b) {
       b = browser();
     }
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return page_actions::PageActionTestAccessor(b, kActionShowMemorySaverChip)
+          .GetVisible();
+    }));
     page_actions::PageActionTestAccessor(b, kActionShowMemorySaverChip).Click();
+    ASSERT_TRUE(
+        base::test::RunUntil([&]() { return GetBubbleView(b) != nullptr; }));
   }
 
   base::HistogramTester histogram_tester_;
@@ -246,19 +260,11 @@ IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
 IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
                        ShowDialogWithoutExcludeSiteButtonInGuestMode) {
   BrowserWindowInterface* guest_browser = CreateGuestBrowser();
+  WaitForInitialWebUIToolbar(guest_browser);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(guest_browser,
                                            GetURL("foo.com", "/title1.html")));
 
-  content::WebContents* const contents =
-      guest_browser->GetTabStripModel()->GetActiveWebContents();
-  performance_manager::user_tuning::UserPerformanceTuningManager::
-      PreDiscardResourceUsage::CreateForWebContents(
-          contents, kMemorySavings,
-          ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
-
-  auto* manager = performance_manager::user_tuning::
-      UserPerformanceTuningManager::GetInstance();
-  manager->DiscardPageForTesting(contents);
+  DiscardTab(0, guest_browser);
 
   ClickPageActionChip(guest_browser);
 
@@ -267,25 +273,20 @@ IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
   views::Button* const cancel_button = GetMatchingView<views::Button>(
       MemorySaverBubbleView::kMemorySaverDialogCancelButton, guest_browser);
   EXPECT_EQ(cancel_button, nullptr);
+  views::Widget* widget = GetBubbleView(guest_browser)->GetWidget();
+  EXPECT_EQ(widget->widget_delegate()->AsBubbleDialogDelegate()->GetSubtitle(),
+            std::u16string());
 }
 #endif
 
 IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewTest,
                        ShowDialogWithoutExcludeSiteButtonInIncognitoMode) {
   BrowserWindowInterface* incognito_browser = CreateIncognitoBrowser();
+  WaitForInitialWebUIToolbar(incognito_browser);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(incognito_browser,
                                            GetURL("foo.com", "/title1.html")));
 
-  content::WebContents* const contents =
-      incognito_browser->GetTabStripModel()->GetActiveWebContents();
-  performance_manager::user_tuning::UserPerformanceTuningManager::
-      PreDiscardResourceUsage::CreateForWebContents(
-          contents, kMemorySavings,
-          ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
-
-  auto* manager = performance_manager::user_tuning::
-      UserPerformanceTuningManager::GetInstance();
-  manager->DiscardPageForTesting(contents);
+  DiscardTab(0, incognito_browser);
 
   ClickPageActionChip(incognito_browser);
 
@@ -320,19 +321,11 @@ IN_PROC_BROWSER_TEST_F(MemorySaverBubbleViewIsolatedTest,
   BrowserWindowInterface* isolated_browser = CreateIncognitoBrowser();
   EXPECT_TRUE(
       isolated_browser->GetProfile()->IsEnterpriseIsolatedModeProfile());
+  WaitForInitialWebUIToolbar(isolated_browser);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(isolated_browser,
                                            GetURL("foo.com", "/title1.html")));
 
-  content::WebContents* const contents =
-      isolated_browser->GetTabStripModel()->GetActiveWebContents();
-  performance_manager::user_tuning::UserPerformanceTuningManager::
-      PreDiscardResourceUsage::CreateForWebContents(
-          contents, kMemorySavings,
-          ::mojom::LifecycleUnitDiscardReason::PROACTIVE);
-
-  auto* manager = performance_manager::user_tuning::
-      UserPerformanceTuningManager::GetInstance();
-  manager->DiscardPageForTesting(contents);
+  DiscardTab(0, isolated_browser);
 
   ClickPageActionChip(isolated_browser);
 
