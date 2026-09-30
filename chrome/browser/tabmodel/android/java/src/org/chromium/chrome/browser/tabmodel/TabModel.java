@@ -462,8 +462,22 @@ public interface TabModel extends TabList {
      *
      * @param id The id of the tab whose related tabs are being moved.
      * @param newIndex The new index in TabModel that these tabs are being moved to.
+     * @deprecated Use {@link #moveGroupToIndex(Token, int)} instead.
      */
+    // TODO(crbug.com/517544602): Migrate all callers to moveGroupToIndex and remove. When moving
+    // a tab group, this method internally resolves the group ID and routes to moveGroupToIndex;
+    // callers should invoke moveGroupToIndex directly.
+    @Deprecated
     void moveRelatedTabs(@TabId int id, int newIndex);
+
+    /**
+     * Moves the tab group with {@code tabGroupId} to the position with {@code newIndex} in
+     * TabModel.
+     *
+     * @param tabGroupId The {@link Token} ID of the tab group being moved.
+     * @param newIndex The new index in TabModel that the group is being moved to.
+     */
+    void moveGroupToIndex(Token tabGroupId, int newIndex);
 
     /**
      * This method checks if an impending group merge action will result in a new group creation.
@@ -486,8 +500,7 @@ public interface TabModel extends TabList {
      * would be locked down using a mechanism like {@code friend class} or some sort of access
      * token. However, for now this disclaimer will suffice.
      *
-     * @param tabs The list of tabs to make a tab group from. The first tab in the list will be the
-     *     root tab. An empty list will no-op.
+     * @param tabs The list of tabs to make a tab group from. An empty list will no-op.
      * @param tabGroupId An externally minted tab group id token.
      */
     void createTabGroupForTabGroupSync(List<Tab> tabs, Token tabGroupId);

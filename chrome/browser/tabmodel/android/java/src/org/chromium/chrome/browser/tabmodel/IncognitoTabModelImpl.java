@@ -590,6 +590,11 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
+    public void moveGroupToIndex(Token tabGroupId, int newIndex) {
+        mDelegateModel.moveGroupToIndex(tabGroupId, newIndex);
+    }
+
+    @Override
     public boolean willMergingCreateNewGroup(List<Tab> tabsToMerge) {
         return mDelegateModel.willMergingCreateNewGroup(tabsToMerge);
     }

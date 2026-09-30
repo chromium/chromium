@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
@@ -31,7 +32,6 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 
 import java.util.Arrays;
@@ -327,9 +327,7 @@ public class GroupReorderStrategyTest extends ReorderStrategyTestBase {
 
     @SuppressWarnings("DirectInvocationOnMock")
     private void verifySuccessfulDrag(int expectedIndex, float expectedOffset) {
-        @TabId
-        int lastShownTabId = mModel.getGroupLastShownTabId(mInteractingGroupTitle.getTabGroupId());
-        verify(mModel).moveRelatedTabs(lastShownTabId, expectedIndex);
+        verify(mModel).moveGroupToIndex(mInteractingGroupTitle.getTabGroupId(), expectedIndex);
         verify(mAnimationHost).startAnimations(anyList(), isNull());
 
         for (StripLayoutView view : mDraggedGroup) {
@@ -339,9 +337,8 @@ public class GroupReorderStrategyTest extends ReorderStrategyTestBase {
 
     @SuppressWarnings("DirectInvocationOnMock")
     private void verifyFailedDrag(float expectedOffset) {
-        @TabId
-        int lastShownTabId = mModel.getGroupLastShownTabId(mInteractingGroupTitle.getTabGroupId());
-        verify(mModel, never()).moveRelatedTabs(eq(lastShownTabId), anyInt());
+        verify(mModel, never())
+                .moveGroupToIndex(eq(mInteractingGroupTitle.getTabGroupId()), anyInt());
         verify(mAnimationHost, never()).startAnimations(anyList(), isNull());
 
         for (StripLayoutView view : mDraggedGroup) {
@@ -351,9 +348,7 @@ public class GroupReorderStrategyTest extends ReorderStrategyTestBase {
 
     @SuppressWarnings("DirectInvocationOnMock")
     private void verifySuccessfulRestore(int initialIndex) {
-        @TabId
-        int lastShownTabId = mModel.getGroupLastShownTabId(mInteractingGroupTitle.getTabGroupId());
-        verify(mModel).moveRelatedTabs(lastShownTabId, initialIndex);
+        verify(mModel).moveGroupToIndex(mInteractingGroupTitle.getTabGroupId(), initialIndex);
     }
 
     // ============================================================================================
@@ -362,7 +357,7 @@ public class GroupReorderStrategyTest extends ReorderStrategyTestBase {
 
     /**
      * Updates {@code mStripTabs} and the {@code idealX} for the dragged {@link StripLayoutView}s in
-     * response to a {@link TabModel#moveRelatedTabs}. This "fakes" a tab strip rebuild.
+     * response to a {@link TabModel#moveGroupToIndex}. This "fakes" a tab strip rebuild.
      */
     private void mockRebuildForViews(StripLayoutView[] draggedGroup, float deltaFromNewPosition) {
         doAnswer(
@@ -370,12 +365,13 @@ public class GroupReorderStrategyTest extends ReorderStrategyTestBase {
                             for (StripLayoutView view : draggedGroup) {
                                 view.setIdealX(view.getIdealX() + deltaFromNewPosition);
                             }
-                            int id = invocation.getArgument(0);
+                            Token tabGroupId = invocation.getArgument(0);
+                            int id = mModel.getTabsInGroup(tabGroupId).get(0).getId();
                             int index = Math.min(mStripTabs.length - 1, invocation.getArgument(1));
                             mStripTabs[index] = StripLayoutUtils.findTabById(mStripTabs, id);
                             return null;
                         })
                 .when(mModel)
-                .moveRelatedTabs(anyInt(), anyInt());
+                .moveGroupToIndex(any(), anyInt());
     }
 }

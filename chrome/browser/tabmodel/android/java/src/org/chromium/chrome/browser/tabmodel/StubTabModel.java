@@ -108,6 +108,11 @@ public class StubTabModel extends EmptyTabModel {
     }
 
     @Override
+    public void moveGroupToIndex(Token tabGroupId, int newIndex) {
+        throw error();
+    }
+
+    @Override
     public void createSingleTabGroup(Tab tab) {
         throw error();
     }

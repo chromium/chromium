@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -572,7 +573,10 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
             verify(mModel)
                     .moveTab(eq(((StripLayoutTab) viewToMove).getTabId()), eq(expectedModelIndex));
         } else if (viewToMove instanceof StripLayoutGroupTitle) {
-            verify(mModel).moveRelatedTabs(anyInt(), eq(expectedModelIndex));
+            verify(mModel)
+                    .moveGroupToIndex(
+                            eq(((StripLayoutGroupTitle) viewToMove).getTabGroupId()),
+                            eq(expectedModelIndex));
         }
     }
 
@@ -603,25 +607,26 @@ public class MultiTabReorderStrategyTest extends ReorderStrategyTestBase {
                                 for (StripLayoutTab tab : mSelectedTabs) {
                                     tab.setIdealX(tab.getIdealX() + deltaX);
                                 }
-                                int id = invocation.getArgument(0);
+                                Token tabGroupId = invocation.getArgument(0);
+                                int id = mModel.getTabsInGroup(tabGroupId).get(0).getId();
                                 int index =
                                         Math.min(mStripTabs.length - 1, invocation.getArgument(1));
                                 mStripTabs[index] = StripLayoutUtils.findTabById(mStripTabs, id);
                                 return null;
                             })
                     .when(mModel)
-                    .moveRelatedTabs(anyInt(), anyInt());
+                    .moveGroupToIndex(any(), anyInt());
         }
     }
 
     // Verification Helpers
     private void verifyBlockMovedPastGroup() {
-        verify(mModel, times(1)).moveRelatedTabs(anyInt(), anyInt());
+        verify(mModel, times(1)).moveGroupToIndex(any(), anyInt());
     }
 
     @SuppressWarnings("DirectInvocationOnMock")
     private void verifyFailedDrag(float expectedOffset) {
-        verify(mModel, never()).moveRelatedTabs(anyInt(), anyInt());
+        verify(mModel, never()).moveGroupToIndex(any(), anyInt());
         verify(mModel.getTabUngrouper(), times(1))
                 .ungroupTabs(anyList(), anyBoolean(), anyBoolean(), any());
 

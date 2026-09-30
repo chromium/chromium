@@ -660,8 +660,7 @@ public class MultiTabReorderStrategy extends ReorderStrategyBase {
     private void moveAdjacentGroupPastBlock(
             StripLayoutGroupTitle adjGroupTitle, boolean isAdjPinned, boolean towardEnd) {
         int destinationIndex = getDestinationIndex(towardEnd, isAdjPinned);
-        Tab firstTabInAdjGroup = mModel.getTabsInGroup(adjGroupTitle.getTabGroupId()).get(0);
-        mModel.moveRelatedTabs(firstTabInAdjGroup.getId(), destinationIndex);
+        mModel.moveGroupToIndex(adjGroupTitle.getTabGroupId(), destinationIndex);
     }
 
     /**

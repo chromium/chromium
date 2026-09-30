@@ -937,47 +937,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    protected void moveGroupToIndex(Token tabGroupId, int newIndex) {
-        assertOnUiThread();
-        if (mNativeTabCollectionTabModelImplPtr == 0) return;
-
-        List<Tab> tabs = getTabsInGroup(tabGroupId);
-        if (tabs.isEmpty()) return;
-
-        Tab firstTab = tabs.get(0);
-        int oldIndex = indexOf(firstTab);
-
-        ObserverList.RewindableIterator<TabGroupObserver> groupObservers =
-                mTabGroupObservers.rewindableIterator();
-        while (groupObservers.hasNext()) {
-            groupObservers.next().willMoveTabGroup(tabGroupId);
-        }
-
-        int finalIndex =
-                TabCollectionTabModelImplJni.get()
-                        .moveTabGroupTo(mNativeTabCollectionTabModelImplPtr, tabGroupId, newIndex);
-
-        if (finalIndex == oldIndex) return;
-
-        invalidateCache();
-
-        ObserverList.RewindableIterator<TabModelObserver> modelObservers =
-                mTabModelObservers.rewindableIterator();
-        for (int i = 0; i < tabs.size(); i++) {
-            Tab tab = tabs.get(i);
-            modelObservers.rewind();
-            while (modelObservers.hasNext()) {
-                modelObservers.next().didMoveTab(tab, finalIndex + i, oldIndex + i);
-            }
-        }
-
-        groupObservers.rewind();
-        while (groupObservers.hasNext()) {
-            groupObservers.next().didMoveTabGroup(tabGroupId, oldIndex, finalIndex);
-        }
-    }
-
-    @Override
     protected List<Tab> getAllTabs() {
         assertOnUiThread();
         if (mTabsList == null) {
@@ -1312,6 +1271,50 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         assertOnUiThread();
         try (ScopedStorageBatch ignored = mBatchFactory.get()) {
             moveRelatedTabsInternal(id, newIndex);
+        }
+    }
+
+    @Override
+    public void moveGroupToIndex(Token tabGroupId, int newIndex) {
+        assertOnUiThread();
+        if (mNativeTabCollectionTabModelImplPtr == 0) return;
+
+        List<Tab> tabs = getTabsInGroup(tabGroupId);
+        if (tabs.isEmpty()) return;
+
+        try (ScopedStorageBatch ignored = mBatchFactory.get()) {
+            Tab firstTab = tabs.get(0);
+            int oldIndex = indexOf(firstTab);
+
+            ObserverList.RewindableIterator<TabGroupObserver> groupObservers =
+                    mTabGroupObservers.rewindableIterator();
+            while (groupObservers.hasNext()) {
+                groupObservers.next().willMoveTabGroup(tabGroupId);
+            }
+
+            int finalIndex =
+                    TabCollectionTabModelImplJni.get()
+                            .moveTabGroupTo(
+                                    mNativeTabCollectionTabModelImplPtr, tabGroupId, newIndex);
+
+            if (finalIndex == oldIndex) return;
+
+            invalidateCache();
+
+            ObserverList.RewindableIterator<TabModelObserver> modelObservers =
+                    mTabModelObservers.rewindableIterator();
+            for (int i = 0; i < tabs.size(); i++) {
+                Tab tab = tabs.get(i);
+                modelObservers.rewind();
+                while (modelObservers.hasNext()) {
+                    modelObservers.next().didMoveTab(tab, finalIndex + i, oldIndex + i);
+                }
+            }
+
+            groupObservers.rewind();
+            while (groupObservers.hasNext()) {
+                groupObservers.next().didMoveTabGroup(tabGroupId, oldIndex, finalIndex);
+            }
         }
     }
 

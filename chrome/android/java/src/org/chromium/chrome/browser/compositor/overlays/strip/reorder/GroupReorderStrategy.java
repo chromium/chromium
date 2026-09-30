@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.StripUpdateDelegate;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.ui.base.LocalizationUtils;
@@ -177,8 +176,7 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
         ArrayList<Animator> animationList = new ArrayList<>();
         if (isDragCancelled) {
             Token interactingTabGroupId = assumeNonNull(mInteractingGroupTitle).getTabGroupId();
-            @TabId int tabId = mModel.getGroupLastShownTabId(interactingTabGroupId);
-            mModel.moveRelatedTabs(tabId, mOriginIndex);
+            mModel.moveGroupToIndex(interactingTabGroupId, mOriginIndex);
         }
         Runnable onAnimationEnd =
                 () -> {
@@ -334,8 +332,7 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
             // Case B: Attempt to drab past ungrouped tab.
             if (Math.abs(offset) <= getTabSwapThreshold(/* isPinned= */ false)) return false;
 
-            @TabId int tabId = mModel.getGroupLastShownTabId(interactingTabGroupId);
-            mModel.moveRelatedTabs(tabId, adjTabIndex);
+            mModel.moveGroupToIndex(interactingTabGroupId, adjTabIndex);
             animateViewSliding(adjStripTab);
         }
 
@@ -360,8 +357,7 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
         int indexTowardStart = TabGroupUtils.getFirstTabModelIndexForList(mModel, adjTabs);
         int indexTowardEnd = TabGroupUtils.getLastTabModelIndexForList(mModel, adjTabs);
         int destIndex = towardEnd ? indexTowardEnd : indexTowardStart;
-        @TabId int tabId = mModel.getGroupLastShownTabId(interactingTabGroupId);
-        mModel.moveRelatedTabs(tabId, destIndex);
+        mModel.moveGroupToIndex(interactingTabGroupId, destIndex);
 
         // Animate the displaced views sliding to their new positions.
         List<Animator> animators = new ArrayList<>();
