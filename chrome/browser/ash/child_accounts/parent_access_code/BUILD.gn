@@ -25,6 +25,7 @@ static_library("parent_access_code") {
     "//ash/public/cpp",
     "//chrome/common:constants",
     "//components/prefs",
+    "//components/session_manager/core",
     "//components/user_manager",
   ]
 }

@@ -17,6 +17,8 @@
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
@@ -70,8 +72,11 @@ bool ParentAccessService::IsApprovalRequired(SupervisedAction action) {
   switch (action) {
     case SupervisedAction::kUpdateClock:
     case SupervisedAction::kUpdateTimezone:
-      if (user_manager::UserManager::Get()->IsUserLoggedIn()) {
-        return user_manager::UserManager::Get()->GetActiveUser()->IsChild();
+      if (const auto* active_session =
+              session_manager::SessionManager::Get()->GetActiveSession()) {
+        return CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+                               active_session->account_id()))
+            .IsChild();
       }
       return IsDeviceOwnedByChild();
     case SupervisedAction::kAddUser:

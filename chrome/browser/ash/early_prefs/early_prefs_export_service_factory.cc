@@ -5,6 +5,8 @@
 #include "chrome/browser/ash/early_prefs/early_prefs_export_service_factory.h"
 
 #include "ash/constants/ash_paths.h"
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/feature_list.h"
 #include "base/path_service.h"
@@ -14,6 +16,9 @@
 #include "chromeos/ash/components/osauth/public/auth_parts.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
 
@@ -38,13 +43,16 @@ EarlyPrefsExportServiceFactory::BuildServiceInstanceForBrowserContext(
   auto* profile = Profile::FromBrowserContext(context);
 
   PrefService* user_prefs = profile->GetPrefs();
-  auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
-  CHECK(primary_user);
+  const auto& primary_user =
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(
+          CHECK_DEREF(
+              session_manager::SessionManager::Get()->GetPrimarySession())
+              .account_id()));
   base::FilePath early_prefs_dir;
   bool success =
       base::PathService::Get(ash::DIR_HOMEDIR_MOUNT, &early_prefs_dir);
   CHECK(success);
-  early_prefs_dir = early_prefs_dir.Append(primary_user->username_hash());
+  early_prefs_dir = early_prefs_dir.Append(primary_user.username_hash());
 
   std::unique_ptr<KeyedService> service =
       std::make_unique<EarlyPrefsExportService>(early_prefs_dir, user_prefs);
