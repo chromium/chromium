@@ -1486,6 +1486,7 @@ policies:
   1485: ShowInputOptionsInShelfEnabled
   1486: AdminInstalledChromeAppsForceAllowed
   1487: DeviceMaxUserProfiles
+  1488: AutoLaunchAndroidApps
 
 atomic_groups:
   1: Homepage
