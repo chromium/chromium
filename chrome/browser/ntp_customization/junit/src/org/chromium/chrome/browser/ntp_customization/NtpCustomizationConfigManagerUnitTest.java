@@ -1178,25 +1178,6 @@ public class NtpCustomizationConfigManagerUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
-    public void testClearSyncedNtpBackgroundData() {
-        NtpCustomizationConfigManager manager = createConfigManagerWithListener();
-        CustomBackgroundInfo info = createTestCustomBackgroundInfo();
-        NtpBackgroundDataThemeCollection themeCollectionData = createTestThemeCollectionData(info);
-
-        manager.onSyncedThemeCollectionImageChanged(mContext, themeCollectionData);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        // Clear synced background data before NTP foregrounds.
-        manager.clearSyncedNtpBackgroundData(mContext);
-        verify(mNtpBackgroundDataManager).maybeCleanUpUnusedSyncedImageData(themeCollectionData);
-        verify(mNtpThemeStateProvider, never()).notifyApplyThemeChanges();
-        manager.maybeApplyBackgroundUpdateFromDeviceSync(mContext);
-
-        verify(mNtpThemeStateProvider, never()).notifyApplyThemeChanges();
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_THEME_SYNC)
     public void testOnSyncedThemeCollectionImageChanged_replacesOldPendingSync_cleansUpOldImage() {
         NtpCustomizationConfigManager manager = createConfigManagerWithListener();
         CustomBackgroundInfo info1 = createTestCustomBackgroundInfo();
