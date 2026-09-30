@@ -24,6 +24,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.UnownedUserDataHost;
@@ -43,7 +44,6 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import java.lang.ref.WeakReference;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ContextualTasksBridgeUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -52,10 +52,10 @@ public class ContextualTasksBridgeUnitTest {
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private ContextualTasksBridge.Natives mMockJni;
     @Mock private HelpAndFeedbackLauncher mMockHelpAndFeedbackLauncher;
-    @Mock private Activity mMockActivity;
     @Mock private WebContents mWebContents;
     @Mock private FeedbackPolicyManager mFeedbackPolicyManager;
 
+    private Activity mActivity;
     private ContextualTasksBridge mBridge;
     private final UnownedUserDataHost mUserDataHost = new UnownedUserDataHost();
 
@@ -65,11 +65,12 @@ public class ContextualTasksBridgeUnitTest {
 
     @Before
     public void setUp() {
+        mActivity = Robolectric.buildActivity(Activity.class).get();
         ContextualTasksBridgeJni.setInstanceForTesting(mMockJni);
         when(mMockJni.init(any(), eq(TEST_NATIVE_BROWSER_WINDOW_INTERFACE_PTR), eq(mProfile)))
                 .thenReturn(TEST_NATIVE_BRIDGE_PTR);
         when(mWindowAndroid.getUnownedUserDataHost()).thenReturn(mUserDataHost);
-        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mMockActivity));
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
 
         mBridge = new ContextualTasksBridge(mProfile, mWindowAndroid);
         mBridge.onAddedToTask(
@@ -114,7 +115,7 @@ public class ContextualTasksBridgeUnitTest {
         mBridge.openFeedbackUi(TEST_URL);
 
         verify(mMockHelpAndFeedbackLauncher)
-                .showFeedback(eq(mMockActivity), eq(TEST_URL), eq("cobrowse"));
+                .showFeedback(eq(mActivity), eq(TEST_URL), eq("cobrowse"));
     }
 
     @Test

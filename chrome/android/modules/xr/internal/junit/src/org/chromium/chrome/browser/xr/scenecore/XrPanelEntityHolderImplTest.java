@@ -23,8 +23,6 @@ import androidx.xr.scenecore.PanelEntity;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -34,23 +32,21 @@ import org.chromium.ui.xr.scenecore.XrVector3;
 
 /** Tests for {@link XrPanelEntityHolderImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class XrPanelEntityHolderImplTest {
     private static final float DELTA = 0.01f;
-
-    @Mock private View mView;
 
     private Session mSession;
     private XrPanelEntityHolderImpl mHolder;
     private ComponentActivity mActivity;
+    private View mView;
     private PanelEntity mPanelEntity;
 
     @Before
     public void setUp() {
         XrModuleProviderImpl.initialize();
-        MockitoAnnotations.openMocks(this);
 
         mActivity = Robolectric.buildActivity(ComponentActivity.class).create().start().get();
+        mView = new View(mActivity);
 
         SessionCreateResult result = Session.create(mActivity);
         assertTrue(result instanceof SessionCreateSuccess);

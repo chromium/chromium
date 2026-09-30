@@ -17,6 +17,7 @@ import static org.chromium.chrome.browser.hub.HubPaneHostProperties.SLIDE_ANIMAT
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.SNACKBAR_CONTAINER_CALLBACK;
 
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -36,7 +38,6 @@ import org.chromium.ui.modelutil.PropertyObservable;
 
 /** Tests for {@link HubPaneHostMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class HubPaneHostMediatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -44,9 +45,11 @@ public class HubPaneHostMediatorUnitTest {
 
     private @Mock Pane mPane;
     private @Mock Pane mIncognitoPane;
-    private @Mock ViewGroup mRootView;
-    private @Mock ViewGroup mSnackbarContainer;
     private @Mock HubColorMixer mColorMixer;
+
+    private final ViewGroup mRootView = new FrameLayout(ContextUtils.getApplicationContext());
+    private final ViewGroup mSnackbarContainer =
+            new FrameLayout(ContextUtils.getApplicationContext());
 
     private final SettableMonotonicObservableSupplier<Pane> mPaneSupplier =
             ObservableSuppliers.createMonotonic();

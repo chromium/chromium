@@ -22,6 +22,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -45,7 +46,6 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link RequestDesktopUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class RequestDesktopUtilsUnitTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -56,11 +56,11 @@ public class RequestDesktopUtilsUnitTest {
 
     @Mock private WebsitePreferenceBridge.Natives mWebsitePreferenceBridgeJniMock;
     @Mock private MessageDispatcher mMessageDispatcher;
-    @Mock private Activity mActivity;
     @Mock private Profile mProfile;
     @Mock private Tracker mTracker;
     @Mock private UserPrefs.Natives mUserPrefsJni;
 
+    private Activity mActivity;
     private SharedPreferencesManager mSharedPreferencesManager;
     private Resources mResources;
 
@@ -73,7 +73,7 @@ public class RequestDesktopUtilsUnitTest {
         TrackerFactory.setTrackerForTests(mTracker);
 
         mResources = ApplicationProvider.getApplicationContext().getResources();
-        when(mActivity.getResources()).thenReturn(mResources);
+        mActivity = Robolectric.buildActivity(Activity.class).get();
     }
 
     @Test

@@ -21,11 +21,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for the {@link TabViewManager} class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabViewManagerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private TabImpl mTab;
@@ -33,11 +33,13 @@ public class TabViewManagerUnitTest {
     @Mock private TabViewProvider mTabViewProvider0;
     @Mock private TabViewProvider mTabViewProvider1;
     @Mock private TabViewProvider mTabViewProvider2;
-    @Mock private View mTabView0;
+
+    private final View mTabView0 = new View(ContextUtils.getApplicationContext());
+    private final View mTabView1 = new View(ContextUtils.getApplicationContext());
+    private final View mTabView2 = new View(ContextUtils.getApplicationContext());
+
     private static final int VIEW_BACKGROUND0 = Color.WHITE;
-    @Mock private View mTabView1;
     private static final int VIEW_BACKGROUND1 = Color.BLACK;
-    @Mock private View mTabView2;
     private static final int VIEW_BACKGROUND2 = Color.RED;
 
     private TabViewManagerImpl mTabViewManager;

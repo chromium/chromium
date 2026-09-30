@@ -21,6 +21,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -44,7 +45,6 @@ import org.chromium.ui.test.util.MockitoHelper;
 /** Unit test for {@link MismatchNotificationChecker} */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class MismatchNotificationCheckerUnitTest {
     private static final int INIT_SHOW_COUNT = 2;
     private static final int INIT_USER_ACT_COUNT = 1;
@@ -152,7 +152,7 @@ public class MismatchNotificationCheckerUnitTest {
 
             mChecker =
                     new MismatchNotificationChecker(
-                            mock(Activity.class),
+                            Robolectric.buildActivity(Activity.class).get(),
                             mock(WindowAndroid.class),
                             mock(ActivityResultTracker.class),
                             mock(DeviceLockActivityLauncher.class),

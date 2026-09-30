@@ -18,7 +18,6 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 
 import androidx.annotation.NonNull;
 
@@ -41,6 +40,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.bookmarks.R;
 import org.chromium.chrome.browser.bookmarks.bar.BookmarkBarVisibilityProvider.BookmarkBarVisibilityObserver;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
@@ -62,7 +62,6 @@ import java.util.Set;
 /** Unit tests for {@link BookmarkBarVisibilityProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BookmarkBarVisibilityProviderTest {
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -71,8 +70,6 @@ public class BookmarkBarVisibilityProviderTest {
     public OverrideContextWrapperTestRule mOverrideContextRule =
             new OverrideContextWrapperTestRule();
 
-    @Mock private Activity mActivity;
-    @Mock private Resources mResources;
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private Configuration mConfig;
     @Mock private PrefChangeRegistrar.Natives mPrefChangeRegistrarJni;
@@ -81,6 +78,9 @@ public class BookmarkBarVisibilityProviderTest {
     @Mock private UserPrefs.Natives mUserPrefsJni;
     @Mock private BookmarkBarVisibilityObserver mObserver;
 
+    private Activity mActivity;
+    private int mItemMinWidth;
+    private int mItemMaxWidth;
     private final Set<ConfigurationChangedObserver> mConfigChangeObserverCache = new HashSet<>();
     private final SettableMonotonicObservableSupplier<Profile> mProfileSupplier =
             ObservableSuppliers.createMonotonic();
@@ -90,14 +90,17 @@ public class BookmarkBarVisibilityProviderTest {
 
     @Before
     public void setUp() {
+        mActivity = Robolectric.buildActivity(Activity.class).get();
+        mItemMinWidth =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.bookmark_bar_item_min_width);
+        mItemMaxWidth =
+                mActivity.getResources().getDimensionPixelSize(R.dimen.bookmark_bar_item_max_width);
         mProfileSupplier.set(mProfile);
         mOverrideContextRule.setIsDesktop(true);
 
         // Set up mocks.
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
-        when(mActivity.getResources()).thenReturn(mResources);
-        when(mResources.getDimensionPixelSize(anyInt())).thenReturn(12);
 
         // Set up natives.
         PrefChangeRegistrarJni.setInstanceForTesting(mPrefChangeRegistrarJni);
@@ -196,14 +199,14 @@ public class BookmarkBarVisibilityProviderTest {
         BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(false);
         mConfigChangeObserverCache.stream().forEach(obs -> obs.onConfigurationChanged(mConfig));
         verify(mObserver, times(1)).onVisibilityChanged(false);
-        verify(mObserver, times(1)).onItemWidthConstraintsChanged(12, 12);
+        verify(mObserver, times(1)).onItemWidthConstraintsChanged(mItemMinWidth, mItemMaxWidth);
         clearInvocations(mObserver);
 
         // Case: Configuration changed to allow feature.
         BookmarkBarUtils.setActivityStateBookmarkBarCompatibleForTesting(true);
         mConfigChangeObserverCache.stream().forEach(obs -> obs.onConfigurationChanged(mConfig));
         verify(mObserver, times(1)).onVisibilityChanged(true);
-        verify(mObserver, times(1)).onItemWidthConstraintsChanged(12, 12);
+        verify(mObserver, times(1)).onItemWidthConstraintsChanged(mItemMinWidth, mItemMaxWidth);
 
         // Clean up.
         provider.destroy();
@@ -396,7 +399,7 @@ public class BookmarkBarVisibilityProviderTest {
         mConfigChangeObserverCache.stream().forEach(obs -> obs.onConfigurationChanged(mConfig));
         verify(mObserver, times(1))
                 .onVisibilityChanged_TriState(BookmarkBarVisibilityState.ALWAYS_HIDE);
-        verify(mObserver, times(1)).onItemWidthConstraintsChanged(12, 12);
+        verify(mObserver, times(1)).onItemWidthConstraintsChanged(mItemMinWidth, mItemMaxWidth);
         clearInvocations(mObserver);
 
         // Case: Configuration changed to allow feature.
@@ -404,7 +407,7 @@ public class BookmarkBarVisibilityProviderTest {
         mConfigChangeObserverCache.stream().forEach(obs -> obs.onConfigurationChanged(mConfig));
         verify(mObserver, times(1))
                 .onVisibilityChanged_TriState(BookmarkBarVisibilityState.ALWAYS_SHOW);
-        verify(mObserver, times(1)).onItemWidthConstraintsChanged(12, 12);
+        verify(mObserver, times(1)).onItemWidthConstraintsChanged(mItemMinWidth, mItemMaxWidth);
 
         // Clean up.
         provider.destroy();

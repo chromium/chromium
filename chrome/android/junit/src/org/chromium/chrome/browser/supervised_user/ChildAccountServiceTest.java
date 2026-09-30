@@ -8,7 +8,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -24,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -38,7 +38,6 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link ChildAccountService}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ChildAccountServiceTest {
     private static final long FAKE_NATIVE_CALLBACK = 1000L;
 
@@ -71,7 +70,7 @@ public class ChildAccountServiceTest {
 
     @Test
     public void testReauthenticateChildAccountWhenReauthenticationSucceeded() {
-        final Activity activity = mock(Activity.class);
+        final Activity activity = Robolectric.buildActivity(Activity.class).get();
         when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
         doAnswer(
                         invocation -> {
@@ -92,7 +91,7 @@ public class ChildAccountServiceTest {
 
     @Test
     public void testReauthenticateChildAccountWhenReauthenticationFailed() {
-        final Activity activity = mock(Activity.class);
+        final Activity activity = Robolectric.buildActivity(Activity.class).get();
         when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
         doAnswer(
                         invocation -> {

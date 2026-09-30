@@ -28,6 +28,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.shadows.ShadowNotification;
 
@@ -47,7 +48,6 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapper;
 /** Unit tests for {@link ActorNotificationFactory}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.ACTOR_LIVE_NOTIFICATION)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ActorNotificationFactoryTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -55,13 +55,14 @@ public class ActorNotificationFactoryTest {
     @Mock private Profile mProfile;
     @Mock private ProfileResolver.Natives mProfileResolverNatives;
     @Mock private ActorForegroundServiceController mServiceController;
-    @Mock private Activity mActivity;
 
+    private Activity mActivity;
     private Context mContext;
     private static final String TASK_TITLE = "Test Task";
 
     @Before
     public void setUp() {
+        mActivity = Robolectric.buildActivity(Activity.class).get();
         mContext = RuntimeEnvironment.application;
         ProfileResolverJni.setInstanceForTesting(mProfileResolverNatives);
         ActorForegroundServiceController.setInstanceForTesting(mServiceController);

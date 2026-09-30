@@ -35,15 +35,14 @@ import java.util.List;
 
 /** Tests for {@link XrMovableComponentImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class XrMovableComponentImplTest {
 
     @Mock private OnMoveListener mListener;
-    @Mock private View mView;
 
     private Session mSession;
     private XrMovableComponentImpl<PanelEntity> mMovableComponent;
     private ComponentActivity mActivity;
+    private View mView;
     private PanelEntity mEntity;
 
     @Before
@@ -51,6 +50,7 @@ public class XrMovableComponentImplTest {
         MockitoAnnotations.openMocks(this);
 
         mActivity = Robolectric.buildActivity(ComponentActivity.class).create().start().get();
+        mView = new View(mActivity);
 
         SessionCreateResult result = Session.create(mActivity);
         assertTrue(result instanceof SessionCreateSuccess);

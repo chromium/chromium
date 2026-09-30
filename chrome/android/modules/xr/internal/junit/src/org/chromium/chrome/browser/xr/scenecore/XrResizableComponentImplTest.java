@@ -36,16 +36,15 @@ import java.util.List;
 
 /** Tests for {@link XrResizableComponentImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class XrResizableComponentImplTest {
     private static final float DELTA = 0.01f;
 
-    @Mock private View mView;
     @Mock private OnResizeListener mListener;
 
     private Session mSession;
     private XrResizableComponentImpl<PanelEntity> mResizableComponent;
     private ComponentActivity mActivity;
+    private View mView;
     private PanelEntity mEntity;
 
     @Before
@@ -54,6 +53,7 @@ public class XrResizableComponentImplTest {
         MockitoAnnotations.openMocks(this);
 
         mActivity = Robolectric.buildActivity(ComponentActivity.class).create().start().get();
+        mView = new View(mActivity);
 
         SessionCreateResult result = Session.create(mActivity);
         assertTrue(result instanceof SessionCreateSuccess);

@@ -4,13 +4,11 @@
 
 package org.chromium.chrome.browser.survey;
 
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.ui.hats.TestSurveyUtils.setTestSurveyConfigForTrigger;
 
 import android.app.Activity;
-import android.content.res.Resources;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -18,9 +16,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -40,7 +38,6 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 /** Unit tests for {@link ChromeSurveyController} and {@link SurveyThrottler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.EnableFeatures(ChromeFeatureList.CHROME_SURVEY_NEXT_ANDROID)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ChromeSurveyControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -48,14 +45,15 @@ public class ChromeSurveyControllerTest {
     @Mock PrefService mPrefServiceMock;
     @Mock TabModelSelector mSelector;
     @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    @Mock Activity mActivity;
     @Mock Profile mProfile;
     @Mock MessageDispatcher mMessageDispatcher;
+
+    private Activity mActivity;
 
     @Before
     public void before() {
         ChromeSurveyController.setEnableForTesting();
-        doReturn(Mockito.mock(Resources.class)).when(mActivity).getResources();
+        mActivity = Robolectric.buildActivity(Activity.class).get();
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefServiceMock);

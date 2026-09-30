@@ -38,6 +38,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NonNullObservableSupplier;
@@ -71,7 +72,6 @@ import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link HubManagerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class HubManagerImplUnitTest {
     private static final int TAB_ID = 8;
 
@@ -80,10 +80,8 @@ public class HubManagerImplUnitTest {
     @Mock private BackPressManager mBackPressManager;
     @Mock private Tab mTab;
     @Mock private Pane mTabSwitcherPane;
-    @Mock private ViewGroup mTabSwitcherPaneView;
     @Mock private MenuOrKeyboardActionHandler mTabSwitcherMenuOrKeyboardActionHandler;
     @Mock private Pane mIncognitoTabSwitcherPane;
-    @Mock private ViewGroup mIncognitoTabSwitcherPaneView;
     @Mock private MenuOrKeyboardActionHandler mIncognitoTabSwitcherMenuOrKeyboardActionHandler;
     @Mock private HubLayoutController mHubLayoutController;
     @Mock private MenuOrKeyboardActionController mMenuOrKeyboardActionController;
@@ -99,6 +97,11 @@ public class HubManagerImplUnitTest {
     @Mock private BottomSheetController mBottomSheetController;
 
     @Captor private ArgumentCaptor<NonNullObservableSupplier<Integer>> mMarginSupplierCaptor;
+
+    private final ViewGroup mTabSwitcherPaneView =
+            new FrameLayout(ContextUtils.getApplicationContext());
+    private final ViewGroup mIncognitoTabSwitcherPaneView =
+            new FrameLayout(ContextUtils.getApplicationContext());
 
     private final MonotonicObservableSupplier<Integer> mPreviousLayoutTypeSupplier =
             ObservableSuppliers.alwaysNull();

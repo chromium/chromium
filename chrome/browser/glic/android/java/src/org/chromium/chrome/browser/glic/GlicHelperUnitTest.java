@@ -13,7 +13,6 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 
 import android.Manifest;
 import android.app.Activity;
@@ -31,6 +30,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -52,7 +52,6 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link GlicHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class GlicHelperUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -66,6 +65,16 @@ public class GlicHelperUnitTest {
     @Mock private WindowAndroid mWindowAndroidMock;
 
     private UserActionTester mUserActionTester;
+
+    /** Activity that implements {@link SnackbarManageable}. */
+    private static class SnackbarManageableActivity extends Activity implements SnackbarManageable {
+        private SnackbarManager mSnackbarManager;
+
+        @Override
+        public SnackbarManager getSnackbarManager() {
+            return mSnackbarManager;
+        }
+    }
 
     @Before
     public void setUp() {
@@ -233,7 +242,7 @@ public class GlicHelperUnitTest {
     @Test
     public void testShowMicDisabledSnackbar_NonSnackbarManageableActivity() {
         when(mWindowAndroidMock.hasPermission(Manifest.permission.RECORD_AUDIO)).thenReturn(false);
-        Activity nonManageableActivity = mock(Activity.class);
+        Activity nonManageableActivity = Robolectric.buildActivity(Activity.class).get();
         when(mWindowAndroidMock.getActivity())
                 .thenReturn(new WeakReference<>(nonManageableActivity));
 
@@ -245,10 +254,9 @@ public class GlicHelperUnitTest {
     @Test
     public void testShowMicDisabledSnackbar_NullSnackbarManager() {
         when(mWindowAndroidMock.hasPermission(Manifest.permission.RECORD_AUDIO)).thenReturn(false);
-        Activity activity =
-                mock(Activity.class, withSettings().extraInterfaces(SnackbarManageable.class));
+        SnackbarManageableActivity activity =
+                Robolectric.buildActivity(SnackbarManageableActivity.class).get();
         when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
-        when(((SnackbarManageable) activity).getSnackbarManager()).thenReturn(null);
 
         GlicHelper.showMicDisabledSnackbar(mWindowAndroidMock);
 
@@ -258,15 +266,14 @@ public class GlicHelperUnitTest {
     @Test
     public void testShowMicDisabledSnackbar_Success() {
         // Arrange.
-        Activity activity =
-                mock(Activity.class, withSettings().extraInterfaces(SnackbarManageable.class));
+        SnackbarManageableActivity activity =
+                Robolectric.buildActivity(SnackbarManageableActivity.class).get();
+        activity.mSnackbarManager = mSnackbarManagerMock;
         when(mWindowAndroidMock.hasPermission(Manifest.permission.RECORD_AUDIO)).thenReturn(false);
         when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(activity));
-        when(((SnackbarManageable) activity).getSnackbarManager()).thenReturn(mSnackbarManagerMock);
 
-        when(activity.getString(R.string.glic_mic_disabled_snackbar))
-                .thenReturn("Enable mic to use voice");
-        when(activity.getString(R.string.settings)).thenReturn("Settings");
+        String expectedText = activity.getString(R.string.glic_mic_disabled_snackbar);
+        String expectedActionText = activity.getString(R.string.settings);
         ContextUtils.initApplicationContextForTests(mContextMock);
         when(mContextMock.getPackageName()).thenReturn("org.chromium.chrome");
 
@@ -278,8 +285,8 @@ public class GlicHelperUnitTest {
         verify(mSnackbarManagerMock).showSnackbar(captor.capture());
         Snackbar snackbar = captor.getValue();
         assertEquals(Snackbar.UMA_GLIC_MIC_DISABLED, snackbar.getIdentifierForTesting());
-        assertEquals("Enable mic to use voice", snackbar.getTextForTesting());
-        assertEquals("Settings", snackbar.getActionText());
+        assertEquals(expectedText, snackbar.getTextForTesting());
+        assertEquals(expectedActionText, snackbar.getActionText());
 
         // Act: Trigger "Settings".
         SnackbarController controller = snackbar.getController();
