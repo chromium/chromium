@@ -5,6 +5,7 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
+  resources_package = "org.chromium.chrome.browser.omaha"
   sources = [
     "java/src/org/chromium/chrome/browser/omaha/ExponentialBackoffScheduler.java",
     "java/src/org/chromium/chrome/browser/omaha/MarketURLGetter.java",
@@ -24,6 +25,8 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/omaha/VersionNumberGetter.java",
     "java/src/org/chromium/chrome/browser/omaha/XMLParser.java",
     "java/src/org/chromium/chrome/browser/omaha/inline/InAppUpdatePolicy.java",
+    "java/src/org/chromium/chrome/browser/omaha/inline/InAppUpdateSnackbarController.java",
+    "java/src/org/chromium/chrome/browser/omaha/inline/InAppUpdateSnackbarEvent.java",
     "java/src/org/chromium/chrome/browser/omaha/metrics/TrackingProvider.java",
     "java/src/org/chromium/chrome/browser/omaha/metrics/UpdateSuccessMetrics.java",
   ]
@@ -36,6 +39,8 @@ android_library("java") {
     "//base/version_info/android:version_constants_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/uid/android:java",
     "//components/background_task_scheduler:background_task_scheduler_task_ids_java",
     "//components/background_task_scheduler:factory_java",

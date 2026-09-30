@@ -563,6 +563,8 @@ chromium-metrics-reviews@google.com.
   <int value="96" label="UMA_GLIC_MIC_DISABLED"/>
   <int value="97" label="UMA_AUTOFILL_AI_SUPPRESSION_UNDO"/>
   <int value="98" label="UMA_ACTOR_EXTERNAL_TRIGGER"/>
+  <int value="99" label="UMA_IN_APP_UPDATE_DISCOVERY"/>
+  <int value="100" label="UMA_IN_APP_UPDATE_RESTART"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/messages/android/java/src/org/chromium/chrome/browser/ui/messages/snackbar/Snackbar.java:SnackbarIdentifier) -->

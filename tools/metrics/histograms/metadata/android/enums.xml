@@ -1435,6 +1435,17 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/hub/internal/android/java/src/org/chromium/chrome/browser/hub/HubToolbarMediator.java:HubSearchEntrypoint) -->
 
+<!-- LINT.IfChange(InAppUpdateSnackbarEvent) -->
+
+<enum name="InAppUpdateSnackbarEvent">
+  <int value="0" label="Impression"/>
+  <int value="1" label="Action Tapped"/>
+  <int value="2" label="Dismissed No Action"/>
+  <int value="3" label="Dismissed By Lifecycle"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/omaha/android/java/src/org/chromium/chrome/browser/omaha/inline/InAppUpdateSnackbarEvent.java:InAppUpdateSnackbarEvent) -->
+
 <enum name="IncognitoReauthPromoActionType">
   <int value="0" label="Promo accepted"/>
   <int value="1" label="No thanks"/>

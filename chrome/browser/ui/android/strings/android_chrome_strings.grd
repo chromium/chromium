@@ -4221,6 +4221,19 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
       <message name="IDS_MENU_UPDATE_UNSUPPORTED_SUMMARY_DEFAULT" desc="Summary string for update menu item explaining that the Android version on the device is unsupported. [CHAR_LIMIT=30]">
         Android version is unsupported
       </message>
+      <!-- In-app update flow snackbars -->
+      <message name="IDS_IN_APP_UPDATE_DISCOVERY_TITLE" desc="Snackbar text informing the user that an update is available.">
+        A new version of Chrome is available
+      </message>
+      <message name="IDS_IN_APP_UPDATE_DISCOVERY_ACTION" desc="Action button text on snackbar to start updating. [CHAR_LIMIT=15]">
+        Update
+      </message>
+      <message name="IDS_IN_APP_UPDATE_RESTART_TITLE" desc="Snackbar text informing the user that an update has been downloaded and is ready to install.">
+        An update has been downloaded
+      </message>
+      <message name="IDS_IN_APP_UPDATE_RESTART_ACTION" desc="Action button text on snackbar to restart Chrome and apply the update. [CHAR_LIMIT=15]">
+        Restart
+      </message>
       <message name="IDS_MENU_NEW_WINDOW" desc="Menu item for opening a new window. [CHAR_LIMIT=27]">
         New window
       </message>

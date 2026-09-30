@@ -2629,6 +2629,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.InAppUpdate.DiscoverySnackbar.Event"
+    enum="InAppUpdateSnackbarEvent" expires_after="2027-03-10">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records impressions and interactions with the in-app update Discovery
+    Snackbar in Chrome for Android, tracking whether the snackbar was shown,
+    tapped by the user to start a flexible download, dismissed without action,
+    or dismissed by lifecycle interruption. Note: Impression is recorded when
+    the snackbar is enqueued with SnackbarManager.
+  </summary>
+</histogram>
+
+<histogram name="Android.InAppUpdate.RestartSnackbar.Event"
+    enum="InAppUpdateSnackbarEvent" expires_after="2027-03-10">
+  <owner>vakh@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records impressions and interactions with the in-app update Restart Snackbar
+    in Chrome for Android, tracking whether the snackbar was shown after a
+    background update finished downloading, tapped by the user to restart
+    Chrome, dismissed without action, or dismissed by lifecycle interruption.
+    Note: Impression is recorded when the snackbar is enqueued with
+    SnackbarManager.
+  </summary>
+</histogram>
+
 <histogram name="Android.IncognitoNotification.FileNotDeleted" enum="Boolean"
     expires_after="2027-03-07">
   <owner>arabm@google.com</owner>

@@ -1077,6 +1077,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/omaha/StringSanitizerTest.java",
       "src/org/chromium/chrome/browser/omaha/VersionNumberTest.java",
       "src/org/chromium/chrome/browser/omaha/inline/InAppUpdatePolicyTest.java",
+      "src/org/chromium/chrome/browser/omaha/inline/InAppUpdateSnackbarControllerTest.java",
       "src/org/chromium/chrome/browser/omaha/metrics/UpdateSuccessMetricsTest.java",
     ]
 
