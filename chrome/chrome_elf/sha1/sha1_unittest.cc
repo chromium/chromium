@@ -2,16 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-//------------------------------------------------------------------------------
-// * This code is taken from base/sha1, with small changes.
-//------------------------------------------------------------------------------
-
 #include "chrome/chrome_elf/sha1/sha1.h"
 
 #include <stddef.h>
 
 #include <string>
 
+#include "base/containers/span.h"
+#include "base/hash/sha1.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -48,6 +46,18 @@ TEST(SHA1Test, Test3) {
                                0x27, 0x31, 0x65, 0x34, 0x01, 0x6f};
 
   EXPECT_EQ(elf_sha1::SHA1HashString(input), expected);
+}
+
+// Verify that the implementation matches //base across input lengths,
+// especially around the 55/56-byte padding threshold (where the 8-byte bit
+// length spills into an extra block) and the 64-byte block boundary.
+TEST(SHA1Test, MatchesBaseAcrossLengths) {
+  std::string input;
+  for (size_t i = 0; i <= 256; ++i) {
+    EXPECT_EQ(elf_sha1::SHA1HashString(input),
+              base::SHA1Hash(base::as_byte_span(input)));
+    input.push_back(static_cast<char>(i));
+  }
 }
 
 }  // namespace

@@ -2,10 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-//------------------------------------------------------------------------------
-// * This code is taken from base/sha1, with small changes.
-//------------------------------------------------------------------------------
-
 #ifndef CHROME_CHROME_ELF_SHA1_SHA1_H_
 #define CHROME_CHROME_ELF_SHA1_SHA1_H_
 
