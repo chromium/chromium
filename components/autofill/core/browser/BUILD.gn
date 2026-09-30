@@ -2495,7 +2495,7 @@ source_set("unit_tests") {
   }
 
   if (!is_fuchsia) {
-    deps += [ "//components/autofill/core/browser/at_memory/policy:unit_tests" ]
+    deps += [ "//components/autofill/core/browser/policy:unit_tests" ]
   }
 
   if (is_win || is_mac || is_linux || is_chromeos || is_android) {
