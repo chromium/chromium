@@ -17,6 +17,7 @@
 #include "base/strings/pattern.h"
 #include "base/task/task_traits.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/trace_config.h"
 #include "base/values.h"
@@ -32,7 +33,10 @@
 #include "content/public/test/test_content_browser_client.h"
 #include "content/shell/browser/shell.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_config.h"
 #include "services/tracing/public/cpp/tracing_features.h"
+#include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
+#include "third_party/perfetto/protos/perfetto/trace/trace.pbzero.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
@@ -48,6 +52,36 @@
 using base::trace_event::TraceConfig;
 
 namespace content {
+
+namespace {
+
+// A legacy JSON trace decodes to no packets, so a non-zero count means the
+// trace is a protobuf.
+size_t CountTracePackets(const std::string& serialized_trace) {
+  perfetto::protos::pbzero::Trace::Decoder trace(serialized_trace);
+  size_t packets = 0;
+  for (auto it = trace.packet(); !!it; ++it) {
+    ++packets;
+  }
+  return packets;
+}
+
+// The default config, asking for the protobuf trace instead of JSON.
+perfetto::TraceConfig ProtobufTraceConfig() {
+  return tracing::GetDefaultPerfettoConfig(TraceConfig(),
+                                           /*privacy_filtering_enabled=*/false,
+                                           /*convert_to_legacy_json=*/false);
+}
+
+// Stops tracing and waits for the session to finish, discarding the trace.
+void StopTracingAndWait() {
+  base::test::TestFuture<std::unique_ptr<std::string>> trace;
+  ASSERT_TRUE(TracingController::GetInstance()->StopTracing(
+      TracingControllerImpl::CreateCallbackEndpoint(trace.GetCallback())));
+  ASSERT_TRUE(trace.Wait());
+}
+
+}  // namespace
 
 class TracingControllerTestEndpoint
     : public TracingController::TraceDataEndpoint {
@@ -316,6 +350,18 @@ class TracingControllerTest : public ContentBrowserTest {
   DISABLED_EnableAndStopTracingWithEmptyFile
 #define MAYBE_DoubleStopTracing DISABLED_DoubleStopTracing
 #define MAYBE_ProcessesPresentInTrace DISABLED_ProcessesPresentInTrace
+#define MAYBE_EnableAndStopTracingWithProtobufOutput \
+  DISABLED_EnableAndStopTracingWithProtobufOutput
+#define MAYBE_ProtobufOutputToFileIsNotTranslated \
+  DISABLED_ProtobufOutputToFileIsNotTranslated
+#define MAYBE_StartTracingWithAddedDataSource \
+  DISABLED_StartTracingWithAddedDataSource
+#define MAYBE_StartTracingWithMixedOutputFormatsFails \
+  DISABLED_StartTracingWithMixedOutputFormatsFails
+#define MAYBE_StartTracingWithPerfettoConfigFailsWhileTracing \
+  DISABLED_StartTracingWithPerfettoConfigFailsWhileTracing
+#define MAYBE_StopTracingWithAgentLabelFailsForProtobuf \
+  DISABLED_StopTracingWithAgentLabelFailsForProtobuf
 #else
 #define MAYBE_EnableAndStopTracing EnableAndStopTracing
 #define MAYBE_EnableAndStopTracingWithFilePath EnableAndStopTracingWithFilePath
@@ -325,6 +371,17 @@ class TracingControllerTest : public ContentBrowserTest {
   EnableAndStopTracingWithEmptyFile
 #define MAYBE_DoubleStopTracing DoubleStopTracing
 #define MAYBE_ProcessesPresentInTrace ProcessesPresentInTrace
+#define MAYBE_EnableAndStopTracingWithProtobufOutput \
+  EnableAndStopTracingWithProtobufOutput
+#define MAYBE_ProtobufOutputToFileIsNotTranslated \
+  ProtobufOutputToFileIsNotTranslated
+#define MAYBE_StartTracingWithAddedDataSource StartTracingWithAddedDataSource
+#define MAYBE_StartTracingWithMixedOutputFormatsFails \
+  StartTracingWithMixedOutputFormatsFails
+#define MAYBE_StartTracingWithPerfettoConfigFailsWhileTracing \
+  StartTracingWithPerfettoConfigFailsWhileTracing
+#define MAYBE_StopTracingWithAgentLabelFailsForProtobuf \
+  StopTracingWithAgentLabelFailsForProtobuf
 #endif
 
 IN_PROC_BROWSER_TEST_F(TracingControllerTest, GetCategories) {
@@ -428,6 +485,142 @@ IN_PROC_BROWSER_TEST_F(TracingControllerTest, MAYBE_ProcessesPresentInTrace) {
   TestStartAndStopTracingString();
   EXPECT_TRUE(last_data().find("CrBrowserMain") != std::string::npos);
   EXPECT_TRUE(last_data().find("CrRendererMain") != std::string::npos);
+}
+
+// A config that does not set convert_to_legacy_json yields a protobuf trace.
+IN_PROC_BROWSER_TEST_F(TracingControllerTest,
+                       MAYBE_EnableAndStopTracingWithProtobufOutput) {
+  Navigate(shell());
+
+  TracingControllerImpl* controller = TracingControllerImpl::GetInstance();
+
+  base::test::TestFuture<void> started;
+  ASSERT_TRUE(controller->StartTracingWithPerfettoConfig(
+      ProtobufTraceConfig(), started.GetCallback()));
+  ASSERT_TRUE(started.Wait());
+
+  base::test::TestFuture<std::unique_ptr<std::string>> trace;
+  ASSERT_TRUE(controller->StopTracing(
+      TracingController::CreateStringEndpoint(trace.GetCallback())));
+  std::unique_ptr<std::string> contents = trace.Take();
+
+  ASSERT_FALSE(contents->empty());
+  // A legacy JSON trace starts with '{'; a protobuf trace does not.
+  EXPECT_NE('{', (*contents)[0]);
+  EXPECT_GT(CountTracePackets(*contents), 0u);
+}
+
+// A protobuf trace must reach disk byte for byte; Windows text mode would
+// expand its '\n' bytes and it would no longer decode.
+IN_PROC_BROWSER_TEST_F(TracingControllerTest,
+                       MAYBE_ProtobufOutputToFileIsNotTranslated) {
+  Navigate(shell());
+
+  base::FilePath file_path;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::CreateTemporaryFile(&file_path));
+  }
+
+  TracingControllerImpl* controller = TracingControllerImpl::GetInstance();
+
+  base::test::TestFuture<void> started;
+  ASSERT_TRUE(controller->StartTracingWithPerfettoConfig(
+      ProtobufTraceConfig(), started.GetCallback()));
+  ASSERT_TRUE(started.Wait());
+
+  base::test::TestFuture<void> written;
+  ASSERT_TRUE(controller->StopTracing(TracingController::CreateFileEndpoint(
+      file_path, written.GetCallback(), base::TaskPriority::USER_BLOCKING)));
+  ASSERT_TRUE(written.Wait());
+
+  std::string trace;
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::ReadFileToString(file_path, &trace));
+  }
+
+  ASSERT_FALSE(trace.empty());
+  EXPECT_NE('{', trace[0]);
+  EXPECT_GT(CountTracePackets(trace), 0u);
+}
+
+// A caller may add data sources GetDefaultPerfettoConfig() does not produce.
+IN_PROC_BROWSER_TEST_F(TracingControllerTest,
+                       MAYBE_StartTracingWithAddedDataSource) {
+  Navigate(shell());
+
+  perfetto::TraceConfig config = ProtobufTraceConfig();
+  ASSERT_FALSE(config.data_sources().empty());
+  config.add_data_sources()->mutable_config()->set_name(
+      "org.chromium.tracing_controller_browsertest");
+
+  TracingControllerImpl* controller = TracingControllerImpl::GetInstance();
+
+  base::test::TestFuture<void> started;
+  ASSERT_TRUE(controller->StartTracingWithPerfettoConfig(
+      config, started.GetCallback()));
+  ASSERT_TRUE(started.Wait());
+
+  StopTracingAndWait();
+}
+
+// convert_to_legacy_json applies to the whole session, so a config whose data
+// sources disagree is rejected.
+IN_PROC_BROWSER_TEST_F(TracingControllerTest,
+                       MAYBE_StartTracingWithMixedOutputFormatsFails) {
+  Navigate(shell());
+
+  TracingControllerImpl* controller = TracingControllerImpl::GetInstance();
+
+  perfetto::TraceConfig config = ProtobufTraceConfig();
+  ASSERT_GT(config.data_sources().size(), 1u);
+  (*config.mutable_data_sources())[0]
+      .mutable_config()
+      ->mutable_chrome_config()
+      ->set_convert_to_legacy_json(true);
+
+  EXPECT_FALSE(controller->StartTracingWithPerfettoConfig(
+      config, TracingController::StartTracingDoneCallback()));
+  EXPECT_FALSE(controller->IsTracing());
+}
+
+// The config belongs to the session and cannot be swapped while tracing.
+IN_PROC_BROWSER_TEST_F(TracingControllerTest,
+                       MAYBE_StartTracingWithPerfettoConfigFailsWhileTracing) {
+  Navigate(shell());
+
+  TracingControllerImpl* controller = TracingControllerImpl::GetInstance();
+
+  base::test::TestFuture<void> started;
+  ASSERT_TRUE(controller->StartTracing(TraceConfig(), started.GetCallback()));
+  ASSERT_TRUE(started.Wait());
+
+  EXPECT_FALSE(controller->StartTracingWithPerfettoConfig(
+      ProtobufTraceConfig(), TracingController::StartTracingDoneCallback()));
+
+  StopTracingAndWait();
+}
+
+// An agent label filters the converted JSON, so it needs a JSON trace.
+IN_PROC_BROWSER_TEST_F(TracingControllerTest,
+                       MAYBE_StopTracingWithAgentLabelFailsForProtobuf) {
+  Navigate(shell());
+
+  TracingControllerImpl* controller = TracingControllerImpl::GetInstance();
+
+  base::test::TestFuture<void> started;
+  ASSERT_TRUE(controller->StartTracingWithPerfettoConfig(
+      ProtobufTraceConfig(), started.GetCallback()));
+  ASSERT_TRUE(started.Wait());
+
+  base::test::TestFuture<std::unique_ptr<std::string>> rejected;
+  EXPECT_FALSE(controller->StopTracing(
+      TracingController::CreateStringEndpoint(rejected.GetCallback()),
+      "traceEvents"));
+
+  StopTracingAndWait();
+  EXPECT_FALSE(rejected.IsReady());
 }
 
 }  // namespace content

@@ -57,6 +57,8 @@ class StringTraceDataEndpoint : public TracingController::TraceDataEndpoint {
   std::ostringstream trace_;
 };
 
+// The file is opened in binary mode: the trace may be gzip data or a protobuf,
+// which Windows text mode would corrupt by translating '\n' to '\r\n'.
 class FileTraceDataEndpoint : public TracingController::TraceDataEndpoint {
  public:
   explicit FileTraceDataEndpoint(const base::FilePath& trace_file_path,
@@ -108,13 +110,13 @@ class FileTraceDataEndpoint : public TracingController::TraceDataEndpoint {
       // it's still owned by base::File. So we have to close it first and then
       // reopen as FILE*.
       temp_file.Close();
-      file_.reset(base::OpenFile(pending_file_path_, "w"));
+      file_.reset(base::OpenFile(pending_file_path_, "wb"));
     } else {
       LOG(WARNING) << "Unable to use temporary file " << pending_file_path_
                    << ": "
                    << base::File::ErrorToString(temp_file.error_details());
       pending_file_path_.clear();
-      file_.reset(base::OpenFile(file_path_, "w"));
+      file_.reset(base::OpenFile(file_path_, "wb"));
       LOG_IF(ERROR, file_ == nullptr)
           << "Failed to open " << file_path_.value();
     }
