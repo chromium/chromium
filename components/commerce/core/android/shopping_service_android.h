@@ -91,8 +91,7 @@ class ShoppingServiceAndroid : public base::SupportsUserData::Data,
                              int32_t j_management_type,
                              const std::string& j_id);
 
-  void GetAllPriceTrackedBookmarks(JNIEnv* env,
-                                   const JavaRef<jobject>& j_callback);
+  void GetAllPriceTrackedBookmarks(const JavaRef<jobject>& j_callback);
 
   bool IsShoppingListEligible();
 
@@ -105,24 +104,20 @@ class ShoppingServiceAndroid : public base::SupportsUserData::Data,
   ScopedJavaGlobalRef<jobject> java_ref() { return java_ref_; }
 
  private:
-  void HandleProductInfoCallback(JNIEnv* env,
-                                 const ScopedJavaGlobalRef<jobject>& callback,
+  void HandleProductInfoCallback(const ScopedJavaGlobalRef<jobject>& callback,
                                  const GURL& url,
                                  const std::optional<const ProductInfo>& info);
 
-  void HandleMerchantInfoCallback(JNIEnv* env,
-                                  const ScopedJavaGlobalRef<jobject>& callback,
+  void HandleMerchantInfoCallback(const ScopedJavaGlobalRef<jobject>& callback,
                                   const GURL& url,
                                   std::optional<MerchantInfo> info);
 
   void HandlePriceInsightsInfoCallback(
-      JNIEnv* env,
       const ScopedJavaGlobalRef<jobject>& callback,
       const GURL& url,
       const std::optional<PriceInsightsInfo>& info);
 
-  void HandleDiscountInfoCallback(JNIEnv* env,
-                                  const ScopedJavaGlobalRef<jobject>& callback,
+  void HandleDiscountInfoCallback(const ScopedJavaGlobalRef<jobject>& callback,
                                   const GURL& url,
                                   const std::vector<DiscountInfo> info);
 

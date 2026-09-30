@@ -104,7 +104,7 @@ void ShoppingServiceAndroid::GetProductInfoForUrl(
 
   shopping_service_->GetProductInfoForUrl(
       url, base::BindOnce(&ShoppingServiceAndroid::HandleProductInfoCallback,
-                          weak_ptr_factory_.GetWeakPtr(), env,
+                          weak_ptr_factory_.GetWeakPtr(),
                           ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
@@ -137,10 +137,10 @@ ShoppingServiceAndroid::GetAvailableProductInfoForUrl(
 }
 
 void ShoppingServiceAndroid::HandleProductInfoCallback(
-    JNIEnv* env,
     const ScopedJavaGlobalRef<jobject>& callback,
     const GURL& url,
     const std::optional<const ProductInfo>& info) {
+  JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> info_java_object(nullptr);
   if (info.has_value()) {
     info_java_object = Java_ShoppingService_createProductInfo(
@@ -170,15 +170,15 @@ void ShoppingServiceAndroid::GetMerchantInfoForUrl(
 
   shopping_service_->GetMerchantInfoForUrl(
       url, base::BindOnce(&ShoppingServiceAndroid::HandleMerchantInfoCallback,
-                          weak_ptr_factory_.GetWeakPtr(), env,
+                          weak_ptr_factory_.GetWeakPtr(),
                           ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
 void ShoppingServiceAndroid::HandleMerchantInfoCallback(
-    JNIEnv* env,
     const ScopedJavaGlobalRef<jobject>& callback,
     const GURL& url,
     std::optional<MerchantInfo> info) {
+  JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> info_java_object(nullptr);
   if (info.has_value()) {
     info_java_object = Java_ShoppingService_createMerchantInfo(
@@ -204,15 +204,15 @@ void ShoppingServiceAndroid::GetPriceInsightsInfoForUrl(
   shopping_service_->GetPriceInsightsInfoForUrl(
       url,
       base::BindOnce(&ShoppingServiceAndroid::HandlePriceInsightsInfoCallback,
-                     weak_ptr_factory_.GetWeakPtr(), env,
+                     weak_ptr_factory_.GetWeakPtr(),
                      ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
 void ShoppingServiceAndroid::HandlePriceInsightsInfoCallback(
-    JNIEnv* env,
     const ScopedJavaGlobalRef<jobject>& callback,
     const GURL& url,
     const std::optional<PriceInsightsInfo>& info) {
+  JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> info_java_object(nullptr);
   if (info.has_value()) {
     ScopedJavaLocalRef<jobject> j_price_points = nullptr;
@@ -253,15 +253,15 @@ void ShoppingServiceAndroid::GetDiscountInfoForUrl(
 
   shopping_service_->GetDiscountInfoForUrl(
       {url}, base::BindOnce(&ShoppingServiceAndroid::HandleDiscountInfoCallback,
-                            weak_ptr_factory_.GetWeakPtr(), env,
+                            weak_ptr_factory_.GetWeakPtr(),
                             ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
 void ShoppingServiceAndroid::HandleDiscountInfoCallback(
-    JNIEnv* env,
     const ScopedJavaGlobalRef<jobject>& callback,
     const GURL& url,
     const std::vector<DiscountInfo> info) {
+  JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobjectArray> discount_info_array_obj =
       ConvertToJavaDiscountInfos(env, info);
   Java_ShoppingService_runDiscountInfoCallback(
@@ -279,7 +279,7 @@ void ShoppingServiceAndroid::GetAvailableDiscountInfoForUrl(
 
   shopping_service_->GetAvailableDiscountInfoForUrl(
       {url}, base::BindOnce(&ShoppingServiceAndroid::HandleDiscountInfoCallback,
-                            weak_ptr_factory_.GetWeakPtr(), env,
+                            weak_ptr_factory_.GetWeakPtr(),
                             ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
@@ -376,11 +376,11 @@ bool ShoppingServiceAndroid::IsSubscribedFromCache(int32_t j_type,
 }
 
 void ShoppingServiceAndroid::GetAllPriceTrackedBookmarks(
-    JNIEnv* env,
     const JavaRef<jobject>& j_callback) {
   shopping_service_->GetAllPriceTrackedBookmarks(base::BindOnce(
-      [](JNIEnv* env, const ScopedJavaGlobalRef<jobject>& callback,
+      [](const ScopedJavaGlobalRef<jobject>& callback,
          std::vector<const bookmarks::BookmarkNode*> tracked_items) {
+        JNIEnv* env = base::android::AttachCurrentThread();
         std::vector<int64_t> ids;
         for (const bookmarks::BookmarkNode* bookmark : tracked_items) {
           ids.push_back(bookmark->id());
@@ -388,7 +388,7 @@ void ShoppingServiceAndroid::GetAllPriceTrackedBookmarks(
         Java_ShoppingService_runGetAllPriceTrackedBookmarksCallback(
             env, callback, base::android::ToJavaLongArray(env, ids));
       },
-      env, ScopedJavaGlobalRef<jobject>(j_callback)));
+      ScopedJavaGlobalRef<jobject>(j_callback)));
 }
 
 void ShoppingServiceAndroid::OnSubscribe(const CommerceSubscription& sub,
