@@ -419,7 +419,6 @@ mojom("mojom_platform") {
   # Chromium without blink doesn't use and must not depend on //media
   if (use_blink) {
     public_deps += [
-      "//media/capture/mojom:video_capture",
       "//media/capture/mojom:video_capture_types",
       "//media/mojo/mojom",
       "//media/mojo/mojom:media_types",
