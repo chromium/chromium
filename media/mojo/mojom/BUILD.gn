@@ -87,7 +87,6 @@ mojom("mojom") {
     ":media_log",
     ":media_types",
     ":speech_recognition",
-    ":video_encode",
     ":web_speech_recognition",
     "//gpu/ipc/common:interfaces",
     "//mojo/public/mojom/base",

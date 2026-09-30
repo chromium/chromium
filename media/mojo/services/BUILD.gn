@@ -88,6 +88,7 @@ component("services") {
     "//media/gpu/ipc/common",
     "//media/mojo:buildflags",
     "//media/mojo/mojom",
+    "//media/mojo/mojom:video_encode",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/system",
     "//services/service_manager/public/cpp",
@@ -384,7 +385,10 @@ mojolpm_fuzzer_test("mojo_video_encode_accelerator_service_mojolpm_fuzzer") {
 
   seed_corpus_sources = [ "mojo_video_encode_accelerator_service_mojolpm_fuzzer_seed_corpus/simple.textproto" ]
 
-  proto_deps = [ "//media/mojo/mojom:mojom_mojolpm" ]
+  proto_deps = [
+    "//media/mojo/mojom:mojom_mojolpm",
+    "//media/mojo/mojom:video_encode_mojolpm",
+  ]
 
   deps = [
     ":services",
@@ -395,6 +399,8 @@ mojolpm_fuzzer_test("mojo_video_encode_accelerator_service_mojolpm_fuzzer") {
     "//media:test_support",
     "//media/mojo/mojom",
     "//media/mojo/mojom:mojom_mojolpm",
+    "//media/mojo/mojom:video_encode",
+    "//media/mojo/mojom:video_encode_mojolpm",
     "//mojo/public/cpp/bindings",
     "//mojo/public/cpp/test_support:test_utils",
     "//testing/gtest",
