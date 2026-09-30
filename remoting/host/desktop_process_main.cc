@@ -10,6 +10,8 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
@@ -32,6 +34,7 @@
 #if BUILDFLAG(IS_LINUX) && defined(REMOTING_USE_X11)
 #include <gtk/gtk.h>
 
+#include "remoting/host/linux/thread_bound_x11_event_source.h"
 #include "ui/gfx/x/xlib_support.h"
 #endif
 
@@ -44,7 +47,6 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "base/functional/bind.h"
 #include "remoting/host/win/session_interaction_strategy.h"
 #else
 #include "remoting/host/create_desktop_interaction_strategy_factory.h"
@@ -96,12 +98,26 @@ int DesktopProcessMain() {
   // Launch the input thread.
   scoped_refptr<AutoThreadTaskRunner> input_task_runner =
       AutoThread::CreateWithType("Input thread", ui_task_runner,
+#if BUILDFLAG(IS_LINUX) && defined(REMOTING_USE_X11)
+                                 // X11EventSource requires a UI message pump.
+                                 base::MessagePumpType::UI);
+#else
                                  base::MessagePumpType::IO);
+#endif
 
   // Launch the I/O thread.
   scoped_refptr<AutoThreadTaskRunner> io_task_runner =
       AutoThread::CreateWithType("I/O thread", ui_task_runner,
                                  base::MessagePumpType::IO);
+
+#if BUILDFLAG(IS_LINUX) && defined(REMOTING_USE_X11)
+  // Create an X11EventSource on the main and input threads, so X events on
+  // their x11::Connection instances are dispatched.
+  ThreadBoundX11EventSource::CreateForCurrentThread();
+  input_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ThreadBoundX11EventSource::CreateForCurrentThread));
+#endif
 
 #if BUILDFLAG(IS_POSIX)
   // Allow the main thread (which is not an I/O thread) to use

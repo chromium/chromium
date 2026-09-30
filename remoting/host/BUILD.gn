@@ -1329,7 +1329,7 @@ if (enable_me2me_host) {
       defines += [ "REMOTING_USE_X11" ]
       deps += [
         "//remoting/host/linux:platform_impls",
-        "//ui/events/platform/x11",
+        "//remoting/host/linux:x11",
       ]
       if (is_linux) {
         deps += [ "//ui/gtk:gtk_config" ]

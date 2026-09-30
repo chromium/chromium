@@ -417,6 +417,8 @@ source_set("x11_display_utils") {
 if (remoting_use_x11) {
   source_set("x11") {
     sources = [
+      "thread_bound_x11_event_source.cc",
+      "thread_bound_x11_event_source.h",
       "unicode_to_keysym.cc",
       "unicode_to_keysym.h",
       "x11_character_injector.cc",
@@ -434,6 +436,7 @@ if (remoting_use_x11) {
       "//remoting/base",
       "//remoting/base:logging",
       "//third_party/webrtc_overrides:webrtc_component",
+      "//ui/events/platform/x11",
     ]
   }
 }

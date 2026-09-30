@@ -166,8 +166,7 @@
 
 #include "remoting/host/linux/gnome_remote_desktop_session.h"
 #include "remoting/host/linux/portal_remote_desktop_session.h"
-#include "ui/events/platform/x11/x11_event_source.h"
-#include "ui/gfx/x/connection.h"
+#include "remoting/host/linux/thread_bound_x11_event_source.h"
 #include "ui/gfx/x/xlib_support.h"
 #endif  // defined(REMOTING_USE_X11)
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -1302,13 +1301,6 @@ void HostProcess::ShutdownOnUiThread() {
   // See crbug.com/161373 and crbug.com/104544.
   PulseAudioCapturer::InitializePipeReader(nullptr);
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(REMOTING_USE_X11)
-  context_->input_task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce([]() { delete ui::X11EventSource::GetInstance(); }));
-#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
-        // defined(REMOTING_USE_X11)
 }
 
 void HostProcess::OnHostNotFound() {
@@ -2496,16 +2488,17 @@ int HostProcessMain(bool multi_process) {
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier(
       net::NetworkChangeNotifier::CreateIfNeeded());
 
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(REMOTING_USE_X11)
-  // Create an X11EventSource on all UI threads, so the global X11 connection
-  // (x11::Connection::Get()) can dispatch X events.
-  auto event_source =
-      std::make_unique<ui::X11EventSource>(x11::Connection::Get());
-  context->input_task_runner()->PostTask(
-      FROM_HERE,
-      base::BindOnce([]() { new ui::X11EventSource(x11::Connection::Get()); }));
-#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
-        // defined(REMOTING_USE_X11)
+#if BUILDFLAG(IS_LINUX) && defined(REMOTING_USE_X11)
+  // Create an X11EventSource on all UI threads, so X events on their
+  // x11::Connection instances are dispatched. For the multi-process host, X11
+  // is only used by the desktop process.
+  if (!multi_process) {
+    ThreadBoundX11EventSource::CreateForCurrentThread();
+    context->input_task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ThreadBoundX11EventSource::CreateForCurrentThread));
+  }
+#endif  // BUILDFLAG(IS_LINUX) && defined(REMOTING_USE_X11)
 
   // Create & start the HostProcess using these threads.
   // TODO(wez): The HostProcess holds a reference to itself until Shutdown().

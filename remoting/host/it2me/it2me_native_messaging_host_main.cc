@@ -33,8 +33,9 @@
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #if defined(REMOTING_USE_X11)
 #include <gtk/gtk.h>
+
 #include "base/linux_util.h"
-#include "ui/events/platform/x11/x11_event_source.h"
+#include "remoting/host/linux/thread_bound_x11_event_source.h"
 #include "ui/gfx/x/xlib_support.h"
 #endif  // defined(REMOTING_USE_X11)
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) &&
@@ -263,15 +264,12 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
                                           context->management_service());
 
 #if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(REMOTING_USE_X11)
-  scoped_refptr<AutoThreadTaskRunner> input_task_runner;
-  // Create an X11EventSource on all UI threads, so the global X11 connection
-  // (x11::Connection::Get()) can dispatch X events.
-  auto event_source =
-      std::make_unique<ui::X11EventSource>(x11::Connection::Get());
-  input_task_runner = context->input_task_runner();
-  input_task_runner->PostTask(FROM_HERE, base::BindOnce([]() {
-                                new ui::X11EventSource(x11::Connection::Get());
-                              }));
+  // Create an X11EventSource on all UI threads, so X events on their
+  // x11::Connection instances are dispatched.
+  ThreadBoundX11EventSource::CreateForCurrentThread();
+  context->input_task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ThreadBoundX11EventSource::CreateForCurrentThread));
 #endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
         // defined(REMOTING_USE_X11)
 
@@ -285,13 +283,6 @@ int It2MeNativeMessagingHostMain(int argc, char** argv) {
 
   // Run the loop until channel is alive.
   run_loop.Run();
-
-#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(REMOTING_USE_X11)
-  input_task_runner->PostTask(FROM_HERE, base::BindOnce([]() {
-                                delete ui::X11EventSource::GetInstance();
-                              }));
-#endif  // (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
-        // defined(REMOTING_USE_X11)
 
   // Block until tasks blocking shutdown have completed their execution.
   base::ThreadPoolInstance::Get()->Shutdown();

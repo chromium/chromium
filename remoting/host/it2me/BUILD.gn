@@ -196,7 +196,7 @@ if (!is_chromeos && enable_remoting_host) {
       defines = [ "REMOTING_USE_X11" ]
       deps += [
         "//build/config/linux/gtk",
-        "//ui/events/platform/x11",
+        "//remoting/host/linux:x11",
         "//ui/gtk:gtk_config",
       ]
     }
