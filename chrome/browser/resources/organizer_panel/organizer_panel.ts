@@ -9,6 +9,8 @@ export type {SearchApiProxy} from '/tab_group_shared/search_api_proxy.js';
 export {SearchApiProxyImpl} from '/tab_group_shared/search_api_proxy.js';
 export {TabGroupDotElement, TabGroupDotSize} from '/tab_group_shared/tab_group_dot.js';
 export {OrganizerPanelAppElement} from './app.js';
+export {CrossDeviceTabsDelegate} from './delegates/cross_device_tabs_delegate.js';
+export type {CrossDeviceTab} from './delegates/cross_device_tabs_delegate.js';
 export {isActive, isSplitTab, OpenTabsDelegate, OpenTabsItemType} from './delegates/open_tabs_delegate.js';
 export type {OpenTabsItem} from './delegates/open_tabs_delegate.js';
 export {RecentTabsDelegate} from './delegates/recent_tabs_delegate.js';

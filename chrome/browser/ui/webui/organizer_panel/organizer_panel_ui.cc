@@ -8,6 +8,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/tabs/organizer/organizer_panel_utils.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
 #include "chrome/browser/ui/webui/organizer_panel/organizer_panel_page_handler.h"
@@ -58,12 +59,15 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
       {"tabCount", IDS_TAB_SEARCH_TAB_COUNT},
       {"tabGroupMoreOptions", IDS_TAB_GROUP_MORE_OPTIONS},
       {"tabGroups", IDS_ORGANIZER_PANEL_TAB_GROUPS},
+      {"tabsOnOtherDevices", IDS_ORGANIZER_PANEL_CROSS_DEVICE_TABS},
       {"title", IDS_ORGANIZER_PANEL},
   };
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean(
       "cjkWordBoundaryEnabled",
       base::FeatureList::IsEnabled(tabs::kTabSearchCjkWordBoundary));
+  source->AddBoolean("crossDeviceTabsEnabled",
+                     organizer_panel::IsOrganizerPanelCrossDeviceTabsEnabled());
 
   ui::Accelerator accelerator(ui::VKEY_A,
                               ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR);

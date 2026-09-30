@@ -40,6 +40,11 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelTest, List) {
   RunTest("organizer_panel/organizer_list_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(OrganizerPanelTest, CrossDeviceTabsDelegate) {
+  set_test_loader_host(chrome::kChromeUIOrganizerPanelHost);
+  RunTest("organizer_panel/cross_device_tabs_delegate_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(OrganizerPanelTest, OpenTabsDelegate) {
   set_test_loader_host(chrome::kChromeUIOrganizerPanelHost);
   RunTest("organizer_panel/open_tabs_delegate_test.js", "mocha.run()");

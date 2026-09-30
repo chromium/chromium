@@ -12,6 +12,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
+import {CrossDeviceTabsDelegate} from './delegates/cross_device_tabs_delegate.js';
 import {OpenTabsDelegate} from './delegates/open_tabs_delegate.js';
 import {RecentTabsDelegate} from './delegates/recent_tabs_delegate.js';
 import {TabGroupsDelegate} from './delegates/tab_groups_delegate.js';
@@ -49,11 +50,20 @@ export class OrganizerPanelAppElement extends CrLitElement {
   protected accessor shortcut_: string = loadTimeData.getString('shortcutText');
   protected accessor searchQuery_: string = '';
   protected accessor sectionDelegates_:
-      Array<OrganizerListSectionDelegate<unknown>> = [
-        new OpenTabsDelegate(),
-        new RecentTabsDelegate(),
-        new TabGroupsDelegate(),
-      ];
+      Array<OrganizerListSectionDelegate<unknown>> =
+          this.getSectionDelegates_();
+
+  private getSectionDelegates_(): Array<OrganizerListSectionDelegate<unknown>> {
+    const delegates: Array<OrganizerListSectionDelegate<unknown>> = [
+      new OpenTabsDelegate(),
+      new RecentTabsDelegate(),
+      new TabGroupsDelegate(),
+    ];
+    if (loadTimeData.getBoolean('crossDeviceTabsEnabled')) {
+      delegates.push(new CrossDeviceTabsDelegate());
+    }
+    return delegates;
+  }
 
 
   protected onSearchChanged_(e: CustomEvent<string>) {

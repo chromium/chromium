@@ -23,6 +23,7 @@ suite('OrganizerPanelAppTest', () => {
       cjkWordBoundaryEnabled: false,
       clearSearch: 'Clear search',
       closeTab: 'Close tab',
+      crossDeviceTabsEnabled: false,
       noResults: 'No results',
       openTabs: 'Open Tabs',
       recentlyClosed: 'Recently Closed',
@@ -70,6 +71,21 @@ suite('OrganizerPanelAppTest', () => {
 
   test('renders organizer list with expected sections', () => {
     assertEquals(3, app.$.list.sectionDelegates.length);
+  });
+
+  test('renders cross-device tabs section when flag is enabled', async () => {
+    loadTimeData.overrideValues({
+      tabsOnOtherDevices: 'Tabs on other devices',
+      crossDeviceTabsEnabled: true,
+    });
+    const testApp = document.createElement('organizer-panel-app');
+    document.body.appendChild(testApp);
+    await microtasksFinished();
+
+    assertEquals(4, testApp.$.list.sectionDelegates.length);
+    assertEquals(
+        'Tabs on other devices',
+        testApp.$.list.sectionDelegates[3]!.getHeader());
   });
 
   test('updates list searchQuery when search field changes', async () => {

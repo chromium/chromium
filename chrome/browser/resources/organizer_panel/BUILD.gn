@@ -19,6 +19,7 @@ build_webui("build") {
   ts_files = [
     "app.html.ts",
     "app.ts",
+    "delegates/cross_device_tabs_delegate.ts",
     "delegates/open_tabs_delegate.ts",
     "delegates/recent_tabs_delegate.ts",
     "delegates/tab_delegate_utils.ts",

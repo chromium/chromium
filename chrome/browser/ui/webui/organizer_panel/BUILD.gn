@@ -49,6 +49,7 @@ source_set("organizer_panel") {
     "//chrome/browser/ui/tabs/organizer",
     "//chrome/browser/ui/tabs/saved_tab_groups",
     "//chrome/browser/ui/views/bookmarks/saved_tab_groups",
+    "//chrome/browser/ui/views/tabs/organizer",
     "//chrome/browser/ui/webui:favicon_source",
     "//chrome/browser/ui/webui:theme_source",
     "//chrome/browser/ui/webui:webui_util",
