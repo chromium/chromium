@@ -78,6 +78,7 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         /* bitmap= */ null,
                         Color.BLUE,
                         /* fileIdHash= */ null);
+        // Same image, but the attribution was localized by the device that selected it.
         CustomBackgroundInfo info4 =
                 new CustomBackgroundInfo(
                         GURL.emptyGURL(),
@@ -89,6 +90,21 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                 new NtpBackgroundDataThemeCollection(
                         PlatformType.ANDROID,
                         info4,
+                        /* backgroundImageInfo= */ null,
+                        /* bitmap= */ null,
+                        Color.RED,
+                        /* fileIdHash= */ null);
+
+        CustomBackgroundInfo infoOtherCollection =
+                new CustomBackgroundInfo(
+                        GURL.emptyGURL(),
+                        TEST_COLLECTION_ID + "_other",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false);
+        NtpBackgroundDataThemeCollection dataOtherCollection =
+                new NtpBackgroundDataThemeCollection(
+                        PlatformType.ANDROID,
+                        infoOtherCollection,
                         /* backgroundImageInfo= */ null,
                         /* bitmap= */ null,
                         Color.RED,
@@ -116,10 +132,14 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
         assertEquals(data1, data2);
         assertEquals(data1, data3);
         assertEquals(data1, dataNullColor);
-        assertNotEquals(data1, data4);
         assertEquals(data1.hashCode(), data2.hashCode());
         assertEquals(data1.hashCode(), data3.hashCode());
         assertEquals(data1.hashCode(), dataNullColor.hashCode());
+        assertNotEquals(data1, dataOtherCollection);
+
+        // The attribution is localized per device and is not part of the theme identity.
+        assertEquals(data1, data4);
+        assertEquals(data1.hashCode(), data4.hashCode());
 
         // The device the image came from is not part of the theme identity.
         assertEquals(data1, dataFromDesktop);
@@ -128,9 +148,10 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
 
         // hasSameThemeAndColor() additionally requires primaryColor to match.
         assertTrue(data1.hasSameThemeAndColor(data2));
+        assertTrue(data1.hasSameThemeAndColor(data4));
         assertFalse(data1.hasSameThemeAndColor(data3));
         assertFalse(data1.hasSameThemeAndColor(dataNullColor));
-        assertFalse(data1.hasSameThemeAndColor(data4));
+        assertFalse(data1.hasSameThemeAndColor(dataOtherCollection));
 
         // isBitmapSaved should not affect equality.
         data1.setIsBitmapSaved(/* isBitmapSaved= */ true);
@@ -389,6 +410,10 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ false,
                         TEST_ATTRIBUTION);
+        // The backdrop server localizes the attribution to the UI language of the device that
+        // requested it, so the same image reaches this device with a different attribution, or
+        // with none at all, depending on where it was selected. Those still describe one and the
+        // same image.
         CustomBackgroundInfo infoNullAttribution =
                 new CustomBackgroundInfo(
                         JUnitTestGURLs.URL_1,
@@ -403,10 +428,38 @@ public class NtpBackgroundDataThemeCollectionUnitTest {
                         /* isUploadedImage= */ false,
                         /* isDailyRefreshEnabled= */ false,
                         "Different Attribution");
+        CustomBackgroundInfo infoDifferentUrl =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_2,
+                        TEST_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false,
+                        TEST_ATTRIBUTION);
+        CustomBackgroundInfo infoDifferentCollectionId =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_1,
+                        TEST_COLLECTION_ID + "_other",
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ false,
+                        TEST_ATTRIBUTION);
+        CustomBackgroundInfo infoDailyRefreshEnabled =
+                new CustomBackgroundInfo(
+                        JUnitTestGURLs.URL_1,
+                        TEST_COLLECTION_ID,
+                        /* isUploadedImage= */ false,
+                        /* isDailyRefreshEnabled= */ true,
+                        TEST_ATTRIBUTION);
 
         assertEquals(info1, info2);
         assertEquals(info1.hashCode(), info2.hashCode());
-        assertNotEquals(info1, infoNullAttribution);
-        assertNotEquals(info1, infoDifferentAttribution);
+
+        assertEquals(info1, infoNullAttribution);
+        assertEquals(info1.hashCode(), infoNullAttribution.hashCode());
+        assertEquals(info1, infoDifferentAttribution);
+        assertEquals(info1.hashCode(), infoDifferentAttribution.hashCode());
+
+        assertNotEquals(info1, infoDifferentUrl);
+        assertNotEquals(info1, infoDifferentCollectionId);
+        assertNotEquals(info1, infoDailyRefreshEnabled);
     }
 }

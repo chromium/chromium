@@ -18,6 +18,16 @@ public class CustomBackgroundInfo {
     public final String collectionId;
     public final boolean isUploadedImage;
     public final boolean isDailyRefreshEnabled;
+
+    /**
+     * The human readable attribution of the background image.
+     *
+     * <p>This is a display string that the backdrop server localizes to the UI language of the
+     * device that requested it, so two devices running in different languages describe the same
+     * image differently, and sync hands the string over verbatim. It is therefore deliberately not
+     * part of {@link #equals}: comparing it would make the very same image look like two different
+     * ones and duplicate it in the theme history.
+     */
     public final @Nullable String attribution;
 
     /**
@@ -88,21 +98,23 @@ public class CustomBackgroundInfo {
                 attributions != null ? String.join(", ", attributions) : null);
     }
 
+    /**
+     * Compares the fields that identify the image itself. The attribution is deliberately left out,
+     * see {@link #attribution}.
+     */
     @Override
     public boolean equals(@Nullable Object obj) {
         if (obj instanceof CustomBackgroundInfo other) {
             return Objects.equals(backgroundUrl, other.backgroundUrl)
                     && Objects.equals(collectionId, other.collectionId)
                     && isUploadedImage == other.isUploadedImage
-                    && isDailyRefreshEnabled == other.isDailyRefreshEnabled
-                    && Objects.equals(attribution, other.attribution);
+                    && isDailyRefreshEnabled == other.isDailyRefreshEnabled;
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                backgroundUrl, collectionId, isUploadedImage, isDailyRefreshEnabled, attribution);
+        return Objects.hash(backgroundUrl, collectionId, isUploadedImage, isDailyRefreshEnabled);
     }
 }

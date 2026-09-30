@@ -112,8 +112,9 @@ public class NtpBackgroundDataBase {
      * checks whether the primary color matches. Callers that decide whether to re-apply a theme or
      * recreate the activity should use this method so that color-only updates are applied.
      *
-     * <p>Neither method compares the platform type: it records where an entry came from, not what
-     * the theme looks like.
+     * <p>Neither method compares the platform type (where an entry came from) or, for theme
+     * collections, the attribution string (display-only text that can differ in language and format
+     * for the same image).
      */
     public boolean hasSameThemeAndColor(@Nullable Object obj) {
         return equals(obj);
