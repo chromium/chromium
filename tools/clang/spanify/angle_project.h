@@ -83,13 +83,16 @@ class AngleProject : public Project {
     // A file is off limits when it is not hand-maintained ANGLE C++: either a
     // code generator owns it (/shaders/gen/, context_private_call.inl.h) or it
     // is a flex/bison grammar rather than a translation unit (.l, .y). The
+    // span implementation (span.h) is the rewrite target itself, and
+    // anglebase/ is ported from Chromium //base and tracks upstream. The
     // remaining cases -- autogen paths, code outside the submodule, and
     // third-party libraries vendored inside it -- are shared by all four 2P
     // projects.
     auto is_excluded = [](llvm::StringRef f) -> bool {
       return f.contains("/shaders/gen/") ||
              f.contains("context_private_call.inl.h") || f.ends_with(".l") ||
-             f.ends_with(".y") ||
+             f.ends_with(".y") || f.ends_with("/src/common/span.h") ||
+             f.contains("/src/common/base/anglebase/") ||
              IsExcludedFromSubmodule(f, "third_party/angle/",
                                      "tools/clang/spanify/tests/angle/");
     };

@@ -91,9 +91,11 @@ class PartitionAllocProject : public Project {
 
     // Running in-place inside Chromium: absolute path contains
     // "base/allocator/partition_allocator". We only want to spanify
-    // PartitionAlloc sources, excluding third_party (e.g. googletest).
+    // PartitionAlloc sources, excluding third_party (e.g. googletest) and the
+    // container/span implementation, which is the rewrite target itself.
     llvm::StringRef file(filename);
     return file.contains("third_party/") ||
+           file.contains("partition_alloc_base/containers/") ||
            (!file.contains("base/allocator/partition_allocator/") &&
             !file.contains("partition_alloc/"));
   }
