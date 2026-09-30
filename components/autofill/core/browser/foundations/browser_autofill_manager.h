@@ -638,11 +638,6 @@ class BrowserAutofillManager : public AutofillManager {
   // each field and record into FieldInfo UKM event.
   void ProcessFieldLogEventsInForm(const FormStructure& form_structure);
 
-  // Log the number of log events of all types which have been recorded until
-  // the FieldInfo metric is recorded into UKM at form submission or form
-  // destruction time (whatever comes first).
-  void LogEventCountsUMAMetric(const FormStructure& form_structure);
-
   // Handles the credit card specific logic after `form` is filled, including
   // logging the fill operation and recording card usage.
   void LogAndRecordCreditCardFill(
