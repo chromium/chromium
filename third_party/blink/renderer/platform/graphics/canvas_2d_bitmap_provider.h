@@ -82,11 +82,6 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
                    int x,
                    int y);
 
-  viz::SharedImageFormat GetSharedImageFormat() const { return format_; }
-  const gfx::ColorSpace& GetColorSpace() const { return color_space_; }
-  const gfx::HDRMetadata& GetHdrMetadata() const { return hdr_metadata_; }
-  SkAlphaType GetAlphaType() const { return alpha_type_; }
-  gfx::Size Size() const { return size_; }
   base::ByteSize EstimatedSizeInBytes() const {
     return base::ByteSize(format_.EstimatedSizeInBytes(size_));
   }
@@ -95,7 +90,6 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
   Canvas2DBitmapProvider(sk_sp<SkSurface> surface,
                          gfx::Size size,
                          viz::SharedImageFormat format,
-                         SkAlphaType alpha_type,
                          const gfx::ColorSpace& color_space,
                          const gfx::HDRMetadata& hdr_metadata,
                          CanvasResourceProviderDelegate* delegate);
@@ -114,7 +108,6 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
   std::unique_ptr<CanvasImageProvider> canvas_image_provider_;
   gfx::Size size_;
   viz::SharedImageFormat format_;
-  SkAlphaType alpha_type_;
   gfx::ColorSpace color_space_;
   gfx::HDRMetadata hdr_metadata_;
   raw_ptr<CanvasResourceProviderDelegate> delegate_ = nullptr;

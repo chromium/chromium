@@ -40,13 +40,11 @@ Canvas2DBitmapProvider::Canvas2DBitmapProvider(
     sk_sp<SkSurface> surface,
     gfx::Size size,
     viz::SharedImageFormat format,
-    SkAlphaType alpha_type,
     const gfx::ColorSpace& color_space,
     const gfx::HDRMetadata& hdr_metadata,
     CanvasResourceProviderDelegate* delegate)
     : size_(size),
       format_(format),
-      alpha_type_(alpha_type),
       color_space_(color_space),
       hdr_metadata_(hdr_metadata),
       delegate_(delegate),
@@ -100,7 +98,7 @@ Canvas2DBitmapProvider::GetOrCreateSWCanvasImageProvider() {
   }
 
   cc::ImageDecodeCache* cache_f16 = nullptr;
-  if (GetSharedImageFormat() == viz::SinglePlaneFormat::kRGBA_F16) {
+  if (format_ == viz::SinglePlaneFormat::kRGBA_F16) {
     cache_f16 = &Image::SharedCCDecodeCache(kRGBA_F16_SkColorType);
   }
 
@@ -114,7 +112,7 @@ Canvas2DBitmapProvider::GetOrCreateSWCanvasImageProvider() {
     }
   }
   canvas_image_provider_ = std::make_unique<CanvasImageProvider>(
-      cache_rgba8, cache_f16, GetColorSpace(), GetSharedImageFormat(),
+      cache_rgba8, cache_f16, color_space_, format_,
       cc::PlaybackImageProvider::RasterMode::kSoftware,
       context_provider_wrapper_);
 
@@ -144,7 +142,7 @@ scoped_refptr<StaticBitmapImage> Canvas2DBitmapProvider::Snapshot(
         PaintImageBuilder::WithDefault()
             .set_id(snapshot_paint_image_id_)
             .set_image(std::move(sk_image), snapshot_paint_image_content_id_)
-            .set_hdr_metadata(GetHdrMetadata())
+            .set_hdr_metadata(hdr_metadata_)
             .TakePaintImage();
   }
 
@@ -215,8 +213,7 @@ std::unique_ptr<Canvas2DBitmapProvider> Canvas2DBitmapProvider::CreateWithClear(
       alpha_type == kOpaque_SkAlphaType ? SkColors::kBlack
                                         : SkColors::kTransparent);
   return base::WrapUnique<Canvas2DBitmapProvider>(new Canvas2DBitmapProvider(
-      std::move(surface), size, format, alpha_type, color_space, hdr_metadata,
-      delegate));
+      std::move(surface), size, format, color_space, hdr_metadata, delegate));
 }
 
 std::unique_ptr<Canvas2DBitmapProvider>

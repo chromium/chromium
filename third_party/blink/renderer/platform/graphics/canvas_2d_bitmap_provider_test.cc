@@ -19,12 +19,11 @@ namespace {
 
 constexpr int kMaxTextureSize = 1024;
 
-template <typename T>
-SkImageInfo GetSkImageInfo(T* provider) {
+SkImageInfo GetSkImageInfo(const StaticBitmapImage* snapshot) {
   return SkImageInfo::Make(
-      provider->Size().width(), provider->Size().height(),
-      viz::ToClosestSkColorType(provider->GetSharedImageFormat()),
-      provider->GetAlphaType(), provider->GetColorSpace().ToSkColorSpace());
+      snapshot->GetSize().width(), snapshot->GetSize().height(),
+      viz::ToClosestSkColorType(snapshot->GetSharedImageFormat()),
+      snapshot->GetAlphaType(), snapshot->GetColorSpace().ToSkColorSpace());
 }
 
 class Canvas2DBitmapProviderTest : public testing::Test {
@@ -44,8 +43,10 @@ TEST_F(Canvas2DBitmapProviderTest, Create) {
   auto provider = Canvas2DBitmapProvider::CreateForTesting(kSize, color_params);
 
   ASSERT_TRUE(provider);
-  EXPECT_EQ(provider->Size(), kSize);
-  EXPECT_TRUE(GetSkImageInfo(provider.get()) == kInfo);
+  scoped_refptr<StaticBitmapImage> snapshot = provider->Snapshot();
+  ASSERT_TRUE(snapshot);
+  EXPECT_EQ(snapshot->GetSize(), kSize);
+  EXPECT_TRUE(GetSkImageInfo(snapshot.get()) == kInfo);
 }
 
 TEST_F(Canvas2DBitmapProviderTest, HdrMetadata) {
