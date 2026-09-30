@@ -622,6 +622,48 @@ TEST_F(MenuItemViewLayoutTest, TitleItemWithBorder) {
             title_without_border->GetContentStart());
 }
 
+// Tests that background padding is added to the item's height, and that the
+// content keeps its place in the row, which starts below the top padding.
+TEST_F(MenuItemViewLayoutTest, BackgroundPaddingSurroundsRow) {
+  MenuItemView* item = root_menu()->AppendSubMenu(2, u"Submenu");
+  item->AppendMenuItem(3, u"Submenu Item");
+  MenuItemView* padded_item = root_menu()->AppendSubMenu(4, u"Submenu");
+  padded_item->AppendMenuItem(5, u"Submenu Item");
+  MenuItemView::MenuItemBackground background(ui::kColorMenuBackground,
+                                              /*corner_radius=*/0);
+  background.top_padding = 6;
+  background.bottom_padding = 4;
+  padded_item->SetMenuItemBackground(background);
+
+  PerformLayout();
+
+  EXPECT_EQ(item->height() + 10, padded_item->height());
+  ImageView* arrow = TestMenuItemView::submenu_arrow_image_view(item);
+  ImageView* padded_arrow =
+      TestMenuItemView::submenu_arrow_image_view(padded_item);
+  ASSERT_TRUE(arrow);
+  ASSERT_TRUE(padded_arrow);
+  EXPECT_EQ(arrow->y() + 6, padded_arrow->y());
+}
+
+// Tests that a container item lays out its child in the row, inside the
+// background's padding.
+TEST_F(MenuItemViewLayoutTest, ContainerLayoutRespectsBackgroundPadding) {
+  test_item()->set_vertical_margin(0);
+  View* child_view = test_item()->AddChildView(std::make_unique<View>());
+  child_view->SetPreferredSize(gfx::Size(200, 50));
+  MenuItemView::MenuItemBackground background(ui::kColorMenuBackground,
+                                              /*corner_radius=*/0);
+  background.top_padding = 6;
+  background.bottom_padding = 4;
+  test_item()->SetMenuItemBackground(background);
+
+  PerformLayout();
+
+  EXPECT_EQ(gfx::Insets::TLBR(6, 0, 4, 0),
+            test_item()->GetLocalBounds().InsetsFrom(child_view->bounds()));
+}
+
 class MenuItemViewPaintUnitTest : public ViewsTestBase {
  public:
   MenuItemViewPaintUnitTest() = default;
@@ -823,6 +865,45 @@ TEST_F(MenuItemViewPaintUnitTest, DontSchedulePaintFromOnPaint) {
   gfx::Canvas canvas(submenu_item->size(), 1.f, false /* opaque */);
   submenu_item->OnPaint(&canvas);
   EXPECT_FALSE(ViewTestApi(submenu_arrow_image_view).needs_paint());
+}
+
+// Tests that the selection highlight doesn't cover the background's padding,
+// and is clipped to the background's rounded corner next to the padding.
+TEST_F(MenuItemViewPaintUnitTest, HighlightSkipsBackgroundPadding) {
+  constexpr int kPadding = 6;
+  MenuItemView* item = menu_item_view()->AppendMenuItem(1);
+  MenuItemView::MenuItemBackground background(
+      ui::kColorMenuBackground, /*top_radius=*/12, /*bottom_radius=*/0,
+      /*horizontal_margin=*/0);
+  background.top_padding = kPadding;
+  item->SetMenuItemBackground(background);
+  item->SetSelectedColorId(ui::kColorMenuItemBackgroundSelected);
+
+  menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
+                           MenuAnchorPosition::kTopLeft,
+                           ui::mojom::MenuSourceType::kKeyboard);
+
+  auto paint = [item](bool selected) {
+    item->SetSelected(selected);
+    gfx::Canvas canvas(item->size(), 1.f, /*is_opaque=*/false);
+    item->OnPaint(&canvas);
+    return canvas.GetBitmap();
+  };
+  const SkBitmap unselected = paint(false);
+  const SkBitmap selected = paint(true);
+  auto is_highlighted = [&](int x, int y) {
+    return unselected.getColor(x, y) != selected.getColor(x, y);
+  };
+
+  // The padding isn't highlighted, but the row below it is.
+  const int center_x = item->width() / 2;
+  EXPECT_FALSE(is_highlighted(center_x, kPadding / 2));
+  EXPECT_TRUE(is_highlighted(center_x, (kPadding + item->height()) / 2));
+
+  // At the top of the row, the highlight follows the background's curve: the
+  // corner pixel is outside the curve, and a pixel just inside is highlighted.
+  EXPECT_FALSE(is_highlighted(0, kPadding));
+  EXPECT_TRUE(is_highlighted(2, kPadding));
 }
 
 TEST_F(MenuItemViewPaintUnitTest, SelectionIconColors) {

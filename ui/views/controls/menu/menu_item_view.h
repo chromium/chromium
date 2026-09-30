@@ -141,6 +141,11 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
     int top_radius = 0;
     int bottom_radius = 0;
     std::optional<int> horizontal_margin = std::nullopt;
+    // Extra padding above and below the item's row, filled with the background
+    // color. The row keeps its height, and the selection highlight covers
+    // only the row.
+    int top_padding = 0;
+    int bottom_padding = 0;
   };
 
   // Constructor for use with the top level menu item. This menu is never
@@ -193,6 +198,7 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   void SetMenuItemBackground(
       std::optional<MenuItemBackground> menu_item_background) {
     menu_item_background_ = menu_item_background;
+    invalidate_dimensions();
   }
 
   void SetContainerStyle(ui::ColorId background_color_id,
@@ -671,6 +677,11 @@ class VIEWS_EXPORT MenuItemView : public View, public LayoutDelegate {
   // Returns the corresponding margin from the `MenuConfig` if
   // `vertical_margin_` is not set.
   int GetVerticalMargin() const;
+
+  // Returns the top and bottom padding of `menu_item_background_`, or empty
+  // insets if there is no background. The item's row is its bounds minus
+  // this padding.
+  gfx::Insets GetBackgroundPadding() const;
 
   ViewAccessibility* GetSubmenuViewAccessibility();
   ViewAccessibility* GetScrollViewContainerViewAccessibility();
