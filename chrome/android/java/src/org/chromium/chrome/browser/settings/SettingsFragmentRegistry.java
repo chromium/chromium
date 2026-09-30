@@ -13,12 +13,14 @@ import androidx.fragment.app.Fragment;
 
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
 import org.chromium.chrome.browser.about_settings.LegalInformationSettings;
 import org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment;
 import org.chromium.chrome.browser.appearance.settings.BookmarkBarSettingsFragment;
+import org.chromium.chrome.browser.appearance.settings.TabPositionSettingsFragment;
 import org.chromium.chrome.browser.autofill.settings.AndroidPaymentAppsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment.AutofillSettingsReferrer;
@@ -77,6 +79,7 @@ import org.chromium.chrome.browser.toolbar.adaptive.settings.AdaptiveToolbarSett
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.tracing.settings.TracingCategoriesSettings;
 import org.chromium.chrome.browser.tracing.settings.TracingSettings;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.browser_ui.accessibility.AccessibilitySettings;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.ChosenObjectSettings;
@@ -314,6 +317,14 @@ public class SettingsFragmentRegistry {
         registerMapping("/bookmarkBar", BookmarkBarSettingsFragment.class);
         registerMapping("/theme", ThemeSettingsFragment.class);
         registerMapping("/toolbar", AdaptiveToolbarSettingsFragment.class);
+        // The page only exists on devices eligible for vertical tabs, and asserts as much. A URL
+        // can still be typed or replayed from history elsewhere, so send it back to Appearance.
+        registerMapping("/tabPosition", TabPositionSettingsFragment.class)
+                .availableWhen(
+                        profile ->
+                                VerticalTabUtils.isVerticalTabsEligible(
+                                        ContextUtils.getApplicationContext()))
+                .fallback("/appearance");
 
         // Accessibility
         registerMapping("/accessibility", AccessibilitySettings.class);

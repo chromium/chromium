@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.about_settings.AboutChromeSettings;
 import org.chromium.chrome.browser.about_settings.LegalInformationSettings;
 import org.chromium.chrome.browser.appearance.settings.AppearanceSettingsFragment;
 import org.chromium.chrome.browser.appearance.settings.BookmarkBarSettingsFragment;
+import org.chromium.chrome.browser.appearance.settings.TabPositionSettingsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment;
 import org.chromium.chrome.browser.autofill.settings.AutofillAndPasswordsFragment.AutofillSettingsReferrer;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFragment;
@@ -57,6 +58,7 @@ import org.chromium.chrome.browser.sync.settings.PersonalizeGoogleServicesSettin
 import org.chromium.chrome.browser.tracing.settings.DeveloperSettings;
 import org.chromium.chrome.browser.tracing.settings.TracingCategoriesSettings;
 import org.chromium.chrome.browser.tracing.settings.TracingSettings;
+import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.components.browser_ui.site_settings.AllSiteSettings;
 import org.chromium.components.browser_ui.site_settings.ChosenObjectSettings;
 import org.chromium.components.browser_ui.site_settings.GroupedWebsitesSettings;
@@ -837,6 +839,28 @@ public class SettingsFragmentRegistryTest {
         IdentityManager identityManager = mock(IdentityManager.class);
         when(identityManager.hasPrimaryAccount()).thenReturn(signedIn);
         IdentityServicesProvider.setIdentityManagerForTesting(identityManager);
+    }
+
+    @Test
+    public void testResolveShowsTabPositionWhenVerticalTabsEligible() {
+        VerticalTabUtils.setIsVerticalTabsEligibleForTesting(true);
+
+        SettingsFragmentRegistry.Resolution resolution = resolve("chrome://settings/tabPosition");
+        assertNull(resolution.redirectUrl);
+        assertEquals(TabPositionSettingsFragment.class, resolution.fragmentClass);
+        assertEquals(
+                "chrome://settings/tabPosition",
+                SettingsFragmentRegistry.createUrlForFragment(
+                        TabPositionSettingsFragment.class, null));
+    }
+
+    @Test
+    public void testResolveRedirectsTabPositionWhenVerticalTabsIneligible() {
+        // The page asserts that the device is eligible for vertical tabs, so it must not be built
+        // for a URL typed or replayed from history on a device that is not.
+        VerticalTabUtils.setIsVerticalTabsEligibleForTesting(false);
+
+        assertRedirects("chrome://settings/tabPosition", "chrome://settings/appearance");
     }
 
     /** Resolves a URL for the cases that do not depend on browser state. */
