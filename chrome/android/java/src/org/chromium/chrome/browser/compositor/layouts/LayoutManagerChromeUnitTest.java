@@ -254,6 +254,26 @@ public class LayoutManagerChromeUnitTest {
         Assert.assertFalse(
                 observer.willAddedTabBeSelected(
                         TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND, /* incognito= */ false));
+        Assert.assertFalse(
+                observer.willAddedTabBeSelected(
+                        TabLaunchType.FROM_REPARENTING_BACKGROUND, /* incognito= */ false));
+        Assert.assertFalse(
+                observer.willAddedTabBeSelected(
+                        TabLaunchType.FROM_RESTORE, /* incognito= */ false));
+        Assert.assertFalse(
+                observer.willAddedTabBeSelected(TabLaunchType.FROM_RESTORE, /* incognito= */ true));
+        Assert.assertFalse(
+                observer.willAddedTabBeSelected(
+                        TabLaunchType.FROM_RESTORE_TABS_UI, /* incognito= */ false));
+        Assert.assertTrue(
+                observer.willAddedTabBeSelected(
+                        TabLaunchType.FROM_RESTORE_TABS_UI, /* incognito= */ true));
+        Assert.assertFalse(
+                observer.willAddedTabBeSelected(
+                        TabLaunchType.FROM_BROWSER_ACTIONS, /* incognito= */ false));
+        Assert.assertTrue(
+                observer.willAddedTabBeSelected(
+                        TabLaunchType.FROM_BROWSER_ACTIONS, /* incognito= */ true));
     }
 
     @Test

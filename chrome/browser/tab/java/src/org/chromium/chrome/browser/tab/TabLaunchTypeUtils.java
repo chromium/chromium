@@ -126,4 +126,43 @@ public final class TabLaunchTypeUtils {
             default -> false;
         };
     }
+
+    /**
+     * Returns true if a newly added tab will be selected as the active tab by the layout manager.
+     *
+     * @param type The launch type of the added tab.
+     * @param isTabIncognito Whether the added tab is incognito.
+     * @param isIncognitoSelected Whether the incognito tab model is currently selected.
+     * @return True if the added tab will be selected.
+     */
+    public static boolean willAddedTabBeSelected(
+            @TabLaunchType int type, boolean isTabIncognito, boolean isIncognitoSelected) {
+        assertValidLaunchType(type);
+        if (type == TabLaunchType.FROM_RESTORE) return false;
+        boolean isBackgroundLaunch = isBackgroundLaunch(type) || isRestoreLaunch(type);
+        return !isBackgroundLaunch || (!isIncognitoSelected && isTabIncognito);
+    }
+
+    /**
+     * Returns true if the layout manager should skip the tab-creating animation for a tab launched
+     * with the given type.
+     *
+     * @param type The launch type to inspect.
+     * @return True if the tab-creating animation should be skipped.
+     */
+    public static boolean shouldSkipTabCreatingAnimation(@TabLaunchType int type) {
+        assertValidLaunchType(type);
+        return switch (type) {
+            case TabLaunchType.FROM_RESTORE,
+                    TabLaunchType.FROM_REPARENTING,
+                    TabLaunchType.FROM_REPARENTING_BACKGROUND,
+                    TabLaunchType.FROM_EXTERNAL_APP,
+                    TabLaunchType.FROM_LAUNCHER_SHORTCUT,
+                    TabLaunchType.FROM_STARTUP,
+                    TabLaunchType.FROM_APP_WIDGET,
+                    TabLaunchType.FROM_SYNC_BACKGROUND ->
+                    true;
+            default -> false;
+        };
+    }
 }

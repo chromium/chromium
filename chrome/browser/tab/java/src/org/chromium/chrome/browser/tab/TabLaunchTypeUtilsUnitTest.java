@@ -57,6 +57,17 @@ public class TabLaunchTypeUtilsUnitTest {
     private static final Set<Integer> REPARENTING_TYPES =
             Set.of(TabLaunchType.FROM_REPARENTING, TabLaunchType.FROM_REPARENTING_BACKGROUND);
 
+    private static final Set<Integer> SKIP_TAB_CREATING_ANIMATION_TYPES =
+            Set.of(
+                    TabLaunchType.FROM_RESTORE,
+                    TabLaunchType.FROM_REPARENTING,
+                    TabLaunchType.FROM_REPARENTING_BACKGROUND,
+                    TabLaunchType.FROM_EXTERNAL_APP,
+                    TabLaunchType.FROM_LAUNCHER_SHORTCUT,
+                    TabLaunchType.FROM_STARTUP,
+                    TabLaunchType.FROM_APP_WIDGET,
+                    TabLaunchType.FROM_SYNC_BACKGROUND);
+
     @Test
     public void testEnumSizeConstant() {
         assertEquals("TabLaunchType.SIZE is expected to be 37", 37, TabLaunchType.SIZE);
@@ -85,6 +96,32 @@ public class TabLaunchTypeUtilsUnitTest {
                     "isReparentingLaunch mismatch for type " + type,
                     REPARENTING_TYPES.contains(type),
                     TabLaunchTypeUtils.isReparentingLaunch(type));
+            boolean expectedBgOrRestore =
+                    BACKGROUND_TYPES.contains(type) || RESTORE_TYPES.contains(type);
+            assertEquals(
+                    "willAddedTabBeSelected(false, false) mismatch for type " + type,
+                    type != TabLaunchType.FROM_RESTORE && !expectedBgOrRestore,
+                    TabLaunchTypeUtils.willAddedTabBeSelected(
+                            type, /* isTabIncognito= */ false, /* isIncognitoSelected= */ false));
+            assertEquals(
+                    "willAddedTabBeSelected(false, true) mismatch for type " + type,
+                    type != TabLaunchType.FROM_RESTORE && !expectedBgOrRestore,
+                    TabLaunchTypeUtils.willAddedTabBeSelected(
+                            type, /* isTabIncognito= */ false, /* isIncognitoSelected= */ true));
+            assertEquals(
+                    "willAddedTabBeSelected(true, false) mismatch for type " + type,
+                    type != TabLaunchType.FROM_RESTORE,
+                    TabLaunchTypeUtils.willAddedTabBeSelected(
+                            type, /* isTabIncognito= */ true, /* isIncognitoSelected= */ false));
+            assertEquals(
+                    "willAddedTabBeSelected(true, true) mismatch for type " + type,
+                    type != TabLaunchType.FROM_RESTORE && !expectedBgOrRestore,
+                    TabLaunchTypeUtils.willAddedTabBeSelected(
+                            type, /* isTabIncognito= */ true, /* isIncognitoSelected= */ true));
+            assertEquals(
+                    "shouldSkipTabCreatingAnimation mismatch for type " + type,
+                    SKIP_TAB_CREATING_ANIMATION_TYPES.contains(type),
+                    TabLaunchTypeUtils.shouldSkipTabCreatingAnimation(type));
         }
     }
 
@@ -113,6 +150,14 @@ public class TabLaunchTypeUtilsUnitTest {
                     "isReparentingLaunch should assert for invalid type " + type,
                     AssertionError.class,
                     () -> TabLaunchTypeUtils.isReparentingLaunch(type));
+            assertThrows(
+                    "willAddedTabBeSelected should assert for invalid type " + type,
+                    AssertionError.class,
+                    () -> TabLaunchTypeUtils.willAddedTabBeSelected(type, false, false));
+            assertThrows(
+                    "shouldSkipTabCreatingAnimation should assert for invalid type " + type,
+                    AssertionError.class,
+                    () -> TabLaunchTypeUtils.shouldSkipTabCreatingAnimation(type));
         }
     }
 }

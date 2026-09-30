@@ -60,6 +60,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabLaunchTypeUtils;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
@@ -216,14 +217,7 @@ public class LayoutManagerImpl
         @Override
         public void willAddTab(Tab tab, @TabLaunchType int type) {
             // Open the new tab
-            if (type == TabLaunchType.FROM_RESTORE
-                    || type == TabLaunchType.FROM_REPARENTING
-                    || type == TabLaunchType.FROM_REPARENTING_BACKGROUND
-                    || type == TabLaunchType.FROM_EXTERNAL_APP
-                    || type == TabLaunchType.FROM_LAUNCHER_SHORTCUT
-                    || type == TabLaunchType.FROM_STARTUP
-                    || type == TabLaunchType.FROM_APP_WIDGET
-                    || type == TabLaunchType.FROM_SYNC_BACKGROUND) {
+            if (TabLaunchTypeUtils.shouldSkipTabCreatingAnimation(type)) {
                 return;
             }
 
@@ -297,27 +291,8 @@ public class LayoutManagerImpl
         }
 
         boolean willAddedTabBeSelected(@TabLaunchType int launchType, boolean incognito) {
-            boolean isBackgroundLaunch;
-            switch (launchType) {
-                case TabLaunchType.FROM_LONGPRESS_BACKGROUND:
-                case TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP:
-                case TabLaunchType.FROM_RECENT_TABS:
-                case TabLaunchType.FROM_RESTORE_TABS_UI:
-                case TabLaunchType.FROM_SYNC_BACKGROUND:
-                case TabLaunchType.FROM_BROWSER_ACTIONS:
-                case TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP:
-                case TabLaunchType.FROM_TAB_LIST_INTERFACE_BACKGROUND:
-                case TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND:
-                case TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND:
-                case TabLaunchType.FROM_OMNIBOX_BACKGROUND:
-                    isBackgroundLaunch = true;
-                    break;
-                default:
-                    isBackgroundLaunch = false;
-            }
-
-            return !isBackgroundLaunch
-                    || (!getTabModelSelector().isIncognitoSelected() && incognito);
+            return TabLaunchTypeUtils.willAddedTabBeSelected(
+                    launchType, incognito, getTabModelSelector().isIncognitoSelected());
         }
     }
 
