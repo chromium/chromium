@@ -29,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -65,7 +66,6 @@ import java.util.Map;
 
 /** Unit tests for {@link LocationBarNavigator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class LocationBarNavigatorUnitTest {
     private static final String TEST_URL = JUnitTestGURLs.EXAMPLE_URL.getSpec();
 
@@ -75,7 +75,6 @@ public class LocationBarNavigatorUnitTest {
     @Mock private LocationBarDataProvider mLocationBarDataProvider;
     @Mock private Tab mTab;
     @Mock private WebContents mWebContents;
-    @Mock private Activity mActivity;
     @Mock private Profile mProfile;
     @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private TabModelSelector mTabModelSelector;
@@ -99,6 +98,7 @@ public class LocationBarNavigatorUnitTest {
             new OneshotSupplierImpl<>();
     private final SettableMonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier =
             ObservableSuppliers.createMonotonic();
+    private final Activity mActivity = Robolectric.buildActivity(Activity.class).setup().get();
     private LocationBarNavigator mNavigator;
 
     @Before
