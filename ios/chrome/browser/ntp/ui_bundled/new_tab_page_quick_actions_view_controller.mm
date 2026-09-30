@@ -30,29 +30,6 @@ constexpr CGFloat kQuickActionsHeightUICleanup = 50.0;
 // quick actions row when there are three (3) buttons in the row.
 constexpr CGFloat kLeadingActionWidthFactor = 0.36;
 
-// The horizontal inset margin for the button stack view in a regular x regular
-// size class.
-constexpr CGFloat kHorizontalInsetRegularXRegular = 36.0;
-
-// Returns the leading margin for the button stack based on the window's size
-// class.
-CGFloat HorizontalInsetForQuickActions(
-    id<UITraitEnvironment> trait_environment) {
-  if (!IsNewTabPageUICleanupEnabled()) {
-    return 0.0;
-  }
-
-  AimButtonRefactorArm arm = ntp_tiles::GetAimButtonRefactorArm();
-  if (arm == AimButtonRefactorArm::kAttachImageQuickAction ||
-      arm == ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction) {
-    return 0.0;
-  }
-
-  return IsRegularXRegularSizeClass(trait_environment)
-             ? kHorizontalInsetRegularXRegular
-             : 0.0;
-}
-
 }  // namespace
 
 @implementation NewTabPageQuickActionsViewController {
@@ -67,10 +44,6 @@ CGFloat HorizontalInsetForQuickActions(
 
   // Constraint for the width of the AI Mode button in Split Toolbar mode.
   NSLayoutConstraint* _aimButtonSplitToolbarWidthConstraint;
-
-  // Constraints for the leading and trailing edges of the `_buttonStackView`.
-  NSLayoutConstraint* _stackViewLeadingConstraint;
-  NSLayoutConstraint* _stackViewTrailingConstraint;
 
   // The custom title for the AIM button.
   NSString* _aimTitle;
@@ -204,30 +177,16 @@ CGFloat HorizontalInsetForQuickActions(
                    forControlEvents:UIControlEventTouchUpInside];
 
   [self.view addSubview:_buttonStackView];
-
-  CGFloat inset = HorizontalInsetForQuickActions(self);
-
-  _stackViewLeadingConstraint = [_buttonStackView.leadingAnchor
-      constraintEqualToAnchor:self.view.leadingAnchor
-                     constant:inset];
-  _stackViewTrailingConstraint = [_buttonStackView.trailingAnchor
-      constraintEqualToAnchor:self.view.trailingAnchor
-                     constant:-inset];
+  AddSameConstraints(_buttonStackView, self.view);
 
   [NSLayoutConstraint activateConstraints:@[
-    [_buttonStackView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
-    [_buttonStackView.bottomAnchor
-        constraintEqualToAnchor:self.view.bottomAnchor],
     [_buttonStackView.heightAnchor
         constraintEqualToConstant:IsNewTabPageUICleanupEnabled()
                                       ? kQuickActionsHeightUICleanup
                                       : kQuickActionsHeight],
-    _stackViewLeadingConstraint,
-    _stackViewTrailingConstraint,
   ]];
 
-  if (IsNewTabPageUICleanupEnabled() ||
-      arm == AimButtonRefactorArm::kImageGenerationQuickAction ||
+  if (arm == AimButtonRefactorArm::kImageGenerationQuickAction ||
       arm == AimButtonRefactorArm::kAttachImageQuickAction) {
     [self registerForTraitChanges:@[
       UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class
@@ -250,21 +209,9 @@ CGFloat HorizontalInsetForQuickActions(
 // Updates the horizontal constraints for the button stack view based on the
 // layout environment.
 - (void)updateButtonStackConstraints {
-  if (IsNewTabPageUICleanupEnabled()) {
-    if (!_stackViewLeadingConstraint && !_stackViewTrailingConstraint) {
-      return;
-    }
-
-    CGFloat inset = HorizontalInsetForQuickActions(self);
-    _stackViewLeadingConstraint.constant = inset;
-    _stackViewTrailingConstraint.constant = -inset;
-  }
-
   AimButtonRefactorArm arm = ntp_tiles::GetAimButtonRefactorArm();
-  if (arm != AimButtonRefactorArm::kImageGenerationQuickAction &&
-      arm != AimButtonRefactorArm::kAttachImageQuickAction) {
-    return;
-  }
+  CHECK(arm == AimButtonRefactorArm::kImageGenerationQuickAction ||
+        arm == AimButtonRefactorArm::kAttachImageQuickAction);
 
   if (!IsSplitToolbarMode(self)) {
     _aimButtonSplitToolbarWidthConstraint.active = NO;
