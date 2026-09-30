@@ -78,4 +78,17 @@ const ScriptMessageListValue& ScriptMessageValue::GetList() const {
   return std::get<ScriptMessageListValue>(data_);
 }
 
+std::unique_ptr<base::Value> ScriptMessageValue::ConvertToValue() const {
+  switch (type()) {
+    case base::Value::Type::NONE:
+      return std::make_unique<base::Value>(base::Value());
+    case base::Value::Type::DICT:
+      return ValueResultFromWKResult(GetDict().data());
+    case base::Value::Type::LIST:
+      return ValueResultFromWKResult(GetList().data());
+    default:
+      return std::make_unique<base::Value>(GetValue().Clone());
+  }
+}
+
 }  // namespace web

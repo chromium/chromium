@@ -9,8 +9,8 @@ source_set("fuzzer_support") {
   sources = [
     "fuzzer_env_with_java_script_feature.h",
     "fuzzer_env_with_java_script_feature.mm",
-    "fuzzer_util.cc",
     "fuzzer_util.h",
+    "fuzzer_util.mm",
   ]
   deps = [
     ":js_message_proto",

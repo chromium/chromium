@@ -79,6 +79,11 @@ class ScriptMessageListValue {
   // end.
   iterator end();
 
+  // Return the underlying `data_` property.
+  // TODO(crbug.com/514993435): Remove once all JavaScriptFeature callsites
+  // migrate to using JavaScriptMessage.
+  const NSArray* data() const { return data_; }
+
  private:
   NSArray* data_;
 };

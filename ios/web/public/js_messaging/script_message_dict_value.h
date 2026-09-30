@@ -37,6 +37,11 @@ class ScriptMessageDictValue {
   // Returns true if `key` is an entry in this dictionary.
   bool contains(std::string_view key) const;
 
+  // Return the underlying `data_` property.
+  // TODO(crbug.com/514993435): Remove once all JavaScriptFeature callsites
+  // migrate to using JavaScriptMessage.
+  const NSDictionary* data() const { return data_; }
+
   // Finds the entry corresponding to `key` in this dictionary. Returns
   // `std::nullopt` if there is no such entry.
   std::optional<ScriptMessageValue> Find(std::string_view key);

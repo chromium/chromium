@@ -52,6 +52,11 @@ class ScriptMessageValue {
   const ScriptMessageDictValue& GetDict() const;
   const ScriptMessageListValue& GetList() const;
 
+  // Copies all data stored in this object into a base::Value object.
+  // TODO(crbug.com/514993435): This is a temporary function. It will be removed
+  // once all JavaScriptFeature callsites use ScriptMessageValue.
+  std::unique_ptr<base::Value> ConvertToValue() const;
+
  private:
   // The object ScriptMessageValue encapsulates.
   std::variant<std::monostate,

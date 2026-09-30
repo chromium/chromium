@@ -8,7 +8,9 @@
 #include <memory>
 #include <optional>
 
+#include "base/check.h"
 #include "base/values.h"
+#include "ios/web/public/js_messaging/script_message_value.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -17,6 +19,14 @@ namespace web {
 // Represents a script message sent from JavaScript.
 class ScriptMessage {
  public:
+  explicit ScriptMessage(ScriptMessageValue body,
+                         bool is_user_interacting,
+                         bool is_main_frame,
+                         std::optional<GURL> request_url,
+                         url::Origin security_origin);
+
+  // Deprecated, prefer using the constructor accepting
+  // a ScriptMessageValue.
   explicit ScriptMessage(std::unique_ptr<base::Value> legacy_body,
                          bool is_user_interacting,
                          bool is_main_frame,
@@ -37,6 +47,11 @@ class ScriptMessage {
   // Returns the message body.
   base::Value* legacy_body() const { return legacy_body_.get(); }
 
+  const ScriptMessageValue& body() const {
+    CHECK(body_.has_value());
+    return *body_;
+  }
+
   // Whether or not the user was interacting with the page when this message
   // was sent.
   bool is_user_interacting() const { return is_user_interacting_; }
@@ -54,6 +69,9 @@ class ScriptMessage {
 
  private:
   std::unique_ptr<base::Value> legacy_body_;
+  // TODO(crbug.com/514993435): Unwrap `body` from optional once `legacy_body_`
+  // is no longer in use.
+  std::optional<ScriptMessageValue> body_;
   bool is_user_interacting_;
   bool is_main_frame_;
   std::optional<GURL> request_url_;
