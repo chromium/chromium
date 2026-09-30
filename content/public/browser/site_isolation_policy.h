@@ -50,7 +50,11 @@ class CONTENT_EXPORT SiteIsolationPolicy {
   // isolation uses origins instead of scheme and eTLD+1.
   static bool IsStrictOriginIsolationEnabled();
 
-  // Returns true if error page isolation is enabled.
+  // Returns true if error page isolation is enabled for main frames (if
+  // `in_main_frame` is true) or subframes (otherwise). Subframe error page
+  // isolation is disabled whenever partial site isolation is disabled (e.g.,
+  // on low-memory Android devices), unless it has been explicitly enabled from
+  // the command line.
   static bool IsErrorPageIsolationEnabled(bool in_main_frame);
 
   // Returns true if isolated origins may be added at runtime in response

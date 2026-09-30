@@ -199,6 +199,21 @@ bool SiteIsolationPolicy::IsStrictOriginIsolationEnabled() {
 
 // static
 bool SiteIsolationPolicy::IsErrorPageIsolationEnabled(bool in_main_frame) {
+  // Isolating subframe error pages requires out-of-process iframes, so treat it
+  // like other partial site isolation modes and turn it off when those are
+  // disabled, e.g. on Android when the device is below a memory threshold. If
+  // the user has explicitly enabled subframe error page isolation from the
+  // command line or chrome://flags, honor this regardless of these checks.
+  // Note that main frame error page isolation does not require out-of-process
+  // iframes and isn't affected by these checks.
+  if (!in_main_frame &&
+      IsSiteIsolationDisabled(SiteIsolationMode::kPartialSiteIsolation) &&
+      !base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
+          features::kIsolateSubframeErrorPages.name,
+          base::FeatureList::OVERRIDE_ENABLE_FEATURE)) {
+    return false;
+  }
+
   return GetContentClient()->browser()->ShouldIsolateErrorPage(in_main_frame);
 }
 
