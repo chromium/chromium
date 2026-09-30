@@ -326,8 +326,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   LinkedHashSet<String> font_lru_list_;
 
   std::unique_ptr<CanvasHibernationHandler> hibernation_handler_;
-  std::unique_ptr<Canvas2DResourceProvider> shared_image_provider_;
-  std::unique_ptr<Canvas2DBitmapProvider> bitmap_provider_;
 
   // `did_fail_to_create_resource_provider_` prevents repeated attempts in
   // allocating resources after the first attempt failed.

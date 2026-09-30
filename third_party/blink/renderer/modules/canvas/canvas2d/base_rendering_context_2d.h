@@ -112,6 +112,8 @@ class MODULES_EXPORT BaseRenderingContext2D
   BaseRenderingContext2D(const BaseRenderingContext2D&) = delete;
   BaseRenderingContext2D& operator=(const BaseRenderingContext2D&) = delete;
 
+  ~BaseRenderingContext2D() override;
+
   void ResetInternal() override;
 
   CanvasRenderingContext2DSettings* getContextAttributes() const;
@@ -283,10 +285,7 @@ class MODULES_EXPORT BaseRenderingContext2D
   unsigned try_restore_context_attempt_count_ = 0;
 
  protected:
-  std::optional<cc::PaintRecord> FlushCanvasInternal(
-      Canvas2DResourceProvider* shared_image_provider,
-      Canvas2DBitmapProvider* bitmap_provider,
-      FlushReason reason);
+  std::optional<cc::PaintRecord> FlushCanvasInternal(FlushReason reason);
 
   void FlushIfRecordingLimitExceeded();
 
@@ -338,6 +337,8 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   bool context_restorable_{true};
   Canvas2DColorParams color_params_;
+  std::unique_ptr<Canvas2DResourceProvider> shared_image_provider_;
+  std::unique_ptr<Canvas2DBitmapProvider> bitmap_provider_;
 
  private:
   void UpdateRecordingLimits(bool is_graphite);

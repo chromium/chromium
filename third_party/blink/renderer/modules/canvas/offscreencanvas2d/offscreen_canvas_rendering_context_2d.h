@@ -151,9 +151,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   bool InitializeResourceProvider() override;
   bool IsResourceProviderValid() const;
   void ResetResourceProvider();
-
-  std::unique_ptr<Canvas2DResourceProvider> shared_image_provider_;
-  std::unique_ptr<Canvas2DBitmapProvider> bitmap_provider_;
 };
 
 }  // namespace blink

@@ -159,6 +159,8 @@ BaseRenderingContext2D::BaseRenderingContext2D(
   UpdateRecordingLimits(/*is_graphite=*/false);
 }
 
+BaseRenderingContext2D::~BaseRenderingContext2D() = default;
+
 const MemoryManagedPaintRecorder* BaseRenderingContext2D::Recorder() const {
   return recorder_.get();
 }
@@ -782,8 +784,6 @@ void BaseRenderingContext2D::Reset() {
 }
 
 std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
-    Canvas2DResourceProvider* shared_image_provider,
-    Canvas2DBitmapProvider* bitmap_provider,
     FlushReason reason) {
   MemoryManagedPaintRecorder* recorder = Recorder();
   if (!recorder || !recorder->HasReleasableDrawOps()) {
@@ -793,17 +793,17 @@ std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
   cc::PaintRecord recording = recorder->ReleaseMainRecording();
   DidFlushRecording(recording, clear_frame_, reason);
   clear_frame_ = false;
-  if (shared_image_provider) {
-    ScopedRasterTimer timer(shared_image_provider->IsAccelerated()
-                                ? shared_image_provider->RasterInterface()
+  if (shared_image_provider_) {
+    ScopedRasterTimer timer(shared_image_provider_->IsAccelerated()
+                                ? shared_image_provider_->RasterInterface()
                                 : nullptr,
-                            *shared_image_provider);
-    shared_image_provider->RasterRecord(recording);
-    shared_image_provider->ReleaseImageProviderImages();
-  } else if (bitmap_provider) {
-    ScopedRasterTimer timer(nullptr, *bitmap_provider);
-    bitmap_provider->RasterRecord(recording);
-    bitmap_provider->ReleaseImageProviderImages();
+                            *shared_image_provider_);
+    shared_image_provider_->RasterRecord(recording);
+    shared_image_provider_->ReleaseImageProviderImages();
+  } else if (bitmap_provider_) {
+    ScopedRasterTimer timer(nullptr, *bitmap_provider_);
+    bitmap_provider_->RasterRecord(recording);
+    bitmap_provider_->ReleaseImageProviderImages();
   }
   if (Host()) {
     Host()->DidFlush();
