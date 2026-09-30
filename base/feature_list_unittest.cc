@@ -1892,7 +1892,7 @@ TEST_F(FeatureListTest, RuntimeMutability_GetRuntimeMutableFeatureState) {
   it = states2.find(kRuntimeMutableFeature.name);
   ASSERT_NE(it, states2.end());
   EXPECT_EQ(FeatureList::OVERRIDE_DISABLE_FEATURE, it->second.override_state);
-  EXPECT_EQ("TrialA", it->second.override_info->trial_name);
+  EXPECT_EQ("TrialA", it->second.override_info->trial_name());
 }
 
 TEST_F(FeatureListTest, RuntimeMutability_GetOverrideStateWithoutActivation) {

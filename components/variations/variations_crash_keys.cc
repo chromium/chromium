@@ -264,17 +264,17 @@ void VariationsCrashKeys::OnRuntimeFieldTrialOverride(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   uint32_t overridden_trial_name_hash =
-      override_info.overridden_trial == nullptr
+      override_info.overridden_trial() == nullptr
           ? 0
-          : HashName(override_info.overridden_trial->trial_name());
+          : HashName(override_info.overridden_trial()->trial_name());
   uint32_t previous_override_trial_name_hash =
       previous_override_trial_name.empty()
           ? 0
           : HashName(previous_override_trial_name);
 
   runtime_field_trial_overrides_string_ += base::StringPrintf(
-      "%x-%x-%x-%x,", HashName(override_info.trial_name),
-      HashName(override_info.group_name), overridden_trial_name_hash,
+      "%x-%x-%x-%x,", HashName(override_info.trial_name()),
+      HashName(override_info.group_name()), overridden_trial_name_hash,
       previous_override_trial_name_hash);
 
   ++num_total_runtime_field_trial_overrides_;

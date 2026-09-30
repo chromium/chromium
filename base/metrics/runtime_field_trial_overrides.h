@@ -28,25 +28,36 @@ class VariationsService;
 namespace base {
 
 // Information about a FieldTrial runtime override.
-struct BASE_EXPORT RuntimeFieldTrialInfo {
-  // The trial name of the override.
-  std::string trial_name;
-  // The group name of the override.
-  std::string group_name;
-  // Field trial parameters associated with this override.
-  base::FieldTrialParams params;
-  // The FieldTrial that is being overridden. This may be null if no
-  // specific trial is being overridden (e.g. a killswitch for an
-  // ENABLED_BY_DEFAULT feature). Weak pointer (owned by the FieldTrialList
-  // singleton).
-  raw_ptr<const FieldTrial> overridden_trial;
-
+class BASE_EXPORT RuntimeFieldTrialInfo {
+ public:
   RuntimeFieldTrialInfo(std::string trial_name,
                         std::string group_name,
                         base::FieldTrialParams params,
                         const FieldTrial* overridden_trial);
-
+  RuntimeFieldTrialInfo(const RuntimeFieldTrialInfo&) = delete;
+  RuntimeFieldTrialInfo& operator=(const RuntimeFieldTrialInfo&) = delete;
   ~RuntimeFieldTrialInfo();
+
+  const std::string& trial_name() const { return trial_name_; }
+  const std::string& group_name() const { return group_name_; }
+  const base::FieldTrialParams& params() const { return params_; }
+  const FieldTrial* overridden_trial() const { return overridden_trial_; }
+
+ private:
+  // The trial name of the override.
+  std::string trial_name_;
+
+  // The group name of the override.
+  std::string group_name_;
+
+  // Field trial parameters associated with this override.
+  base::FieldTrialParams params_;
+
+  // The FieldTrial that is being overridden. This may be null if no
+  // specific trial is being overridden (e.g. a killswitch for an
+  // ENABLED_BY_DEFAULT feature). Weak pointer (owned by the FieldTrialList
+  // singleton).
+  raw_ptr<const FieldTrial> overridden_trial_;
 };
 
 // Manages (applying and retrieving) runtime FieldTrial overrides for features

@@ -45,9 +45,9 @@ class RuntimeFieldTrialOverridesTest : public ::testing::Test {
     void OnRuntimeFieldTrialOverride(
         const RuntimeFieldTrialInfo& override_info,
         std::string_view previous_override_trial_name) override {
-      last_trial_name = override_info.trial_name;
-      last_group_name = override_info.group_name;
-      last_overridden_trial = override_info.overridden_trial;
+      last_trial_name = override_info.trial_name();
+      last_group_name = override_info.group_name();
+      last_overridden_trial = override_info.overridden_trial();
       last_previous_override_trial_name =
           std::string(previous_override_trial_name);
       call_count++;
@@ -77,9 +77,9 @@ TEST_F(RuntimeFieldTrialOverridesTest, ApplyAndGetOverrides) {
 
   auto* override_info = FindOverride(overrides->GetRuntimeOverrides(), "Trial");
   ASSERT_TRUE(override_info != nullptr);
-  EXPECT_EQ(override_info->trial_name, "Trial");
-  EXPECT_EQ(override_info->group_name, "Group");
-  EXPECT_EQ(override_info->overridden_trial, nullptr);
+  EXPECT_EQ(override_info->trial_name(), "Trial");
+  EXPECT_EQ(override_info->group_name(), "Group");
+  EXPECT_EQ(override_info->overridden_trial(), nullptr);
 }
 
 TEST_F(RuntimeFieldTrialOverridesTest, ApplyWithPreviousOverride) {
@@ -96,9 +96,9 @@ TEST_F(RuntimeFieldTrialOverridesTest, ApplyWithPreviousOverride) {
   auto* override_info =
       FindOverride(overrides->GetRuntimeOverrides(), "Killswitch50Pct");
   ASSERT_TRUE(override_info != nullptr);
-  EXPECT_EQ(override_info->trial_name, "Killswitch50Pct");
-  EXPECT_EQ(override_info->group_name, "Disabled50");
-  EXPECT_EQ(override_info->overridden_trial, trial);
+  EXPECT_EQ(override_info->trial_name(), "Killswitch50Pct");
+  EXPECT_EQ(override_info->group_name(), "Disabled50");
+  EXPECT_EQ(override_info->overridden_trial(), trial);
 
   EXPECT_TRUE(overrides->ApplyRuntimeOverride(
       pass_key,
@@ -114,9 +114,9 @@ TEST_F(RuntimeFieldTrialOverridesTest, ApplyWithPreviousOverride) {
   override_info =
       FindOverride(overrides->GetRuntimeOverrides(), "Killswitch100Pct");
   ASSERT_TRUE(override_info != nullptr);
-  EXPECT_EQ(override_info->trial_name, "Killswitch100Pct");
-  EXPECT_EQ(override_info->group_name, "Disabled100");
-  EXPECT_EQ(override_info->overridden_trial, trial);
+  EXPECT_EQ(override_info->trial_name(), "Killswitch100Pct");
+  EXPECT_EQ(override_info->group_name(), "Disabled100");
+  EXPECT_EQ(override_info->overridden_trial(), trial);
 }
 
 TEST_F(RuntimeFieldTrialOverridesTest,
@@ -141,9 +141,9 @@ TEST_F(RuntimeFieldTrialOverridesTest,
   auto* override_info =
       FindOverride(overrides->GetRuntimeOverrides(), "Killswitch");
   ASSERT_TRUE(override_info != nullptr);
-  EXPECT_EQ(override_info->trial_name, "Killswitch");
-  EXPECT_EQ(override_info->group_name, "Disabled100Pct");
-  EXPECT_EQ(override_info->overridden_trial, nullptr);
+  EXPECT_EQ(override_info->trial_name(), "Killswitch");
+  EXPECT_EQ(override_info->group_name(), "Disabled100Pct");
+  EXPECT_EQ(override_info->overridden_trial(), nullptr);
   EXPECT_EQ(overrides->GetRuntimeOverrides().size(), 1);
 }
 
@@ -231,9 +231,9 @@ TEST_F(RuntimeFieldTrialOverridesTest,
   auto* override_info =
       FindOverride(overrides->GetRuntimeOverrides(), "Killswitch1");
   ASSERT_TRUE(override_info != nullptr);
-  EXPECT_EQ(override_info->trial_name, "Killswitch1");
-  EXPECT_EQ(override_info->group_name, "Disabled1");
-  EXPECT_EQ(override_info->overridden_trial, trial1);
+  EXPECT_EQ(override_info->trial_name(), "Killswitch1");
+  EXPECT_EQ(override_info->group_name(), "Disabled1");
+  EXPECT_EQ(override_info->overridden_trial(), trial1);
 
   EXPECT_FALSE(FindOverride(overrides->GetRuntimeOverrides(), "Killswitch2") !=
                nullptr);
@@ -272,9 +272,9 @@ TEST_F(RuntimeFieldTrialOverridesTest, ApplyFailsWhenTrialNameAlreadyExists) {
   auto* override_info =
       FindOverride(overrides->GetRuntimeOverrides(), "Killswitch");
   ASSERT_TRUE(override_info != nullptr);
-  EXPECT_EQ(override_info->trial_name, "Killswitch");
-  EXPECT_EQ(override_info->group_name, "Disabled1");
-  EXPECT_EQ(override_info->overridden_trial, trial1);
+  EXPECT_EQ(override_info->trial_name(), "Killswitch");
+  EXPECT_EQ(override_info->group_name(), "Disabled1");
+  EXPECT_EQ(override_info->overridden_trial(), trial1);
 
   EXPECT_EQ(observer.call_count, 1);
 
@@ -300,9 +300,9 @@ TEST_F(RuntimeFieldTrialOverridesTest, GetRuntimeOverride) {
   // It should now return the override info.
   auto* override_info = overrides->GetRuntimeOverride("Trial");
   ASSERT_TRUE(override_info != nullptr);
-  EXPECT_EQ(override_info->trial_name, "Trial");
-  EXPECT_EQ(override_info->group_name, "Group");
-  EXPECT_EQ(override_info->overridden_trial, trial);
+  EXPECT_EQ(override_info->trial_name(), "Trial");
+  EXPECT_EQ(override_info->group_name(), "Group");
+  EXPECT_EQ(override_info->overridden_trial(), trial);
 
   // Looking up a different trial name should still return std::nullopt.
   EXPECT_FALSE(overrides->GetRuntimeOverride("OtherTrial") != nullptr);

@@ -1540,7 +1540,7 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_PolicyRestriction) {
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "MyStudy");
     ASSERT_TRUE(override);
-    EXPECT_EQ(override->group_name, "Group1");
+    EXPECT_EQ(override->group_name(), "Group1");
   }
 }
 
@@ -1645,8 +1645,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_StrictKillswitch) {
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "MyStudy3");
     ASSERT_TRUE(override);
-    EXPECT_EQ(override->group_name, "Group1");
-    EXPECT_FALSE(override->overridden_trial);
+    EXPECT_EQ(override->group_name(), "Group1");
+    EXPECT_FALSE(override->overridden_trial());
   }
 
   {
@@ -1663,10 +1663,10 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_StrictKillswitch) {
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "MyStudy4");
     ASSERT_TRUE(override);
-    EXPECT_EQ(override->group_name, "Group1");
+    EXPECT_EQ(override->group_name(), "Group1");
     // This is not overriding any specific trial since the feature was simply
     // ENABLED_BY_DEFAULT and not controlled by any field trial.
-    EXPECT_FALSE(override->overridden_trial);
+    EXPECT_FALSE(override->overridden_trial());
   }
 }
 
@@ -1720,8 +1720,8 @@ TEST_F(VariationsServiceTest,
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "NoOpStudy");
     ASSERT_TRUE(override_info);
-    EXPECT_EQ(override_info->group_name, "NewDefault");
-    EXPECT_EQ(override_info->overridden_trial, trial);
+    EXPECT_EQ(override_info->group_name(), "NewDefault");
+    EXPECT_EQ(override_info->overridden_trial(), trial);
   }
 
   {
@@ -1740,8 +1740,8 @@ TEST_F(VariationsServiceTest,
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "NoOpStudy");
     ASSERT_TRUE(override_info);
-    EXPECT_EQ(override_info->group_name, "NewDefault");
-    EXPECT_EQ(override_info->overridden_trial, trial);
+    EXPECT_EQ(override_info->group_name(), "NewDefault");
+    EXPECT_EQ(override_info->overridden_trial(), trial);
   }
 
   {
@@ -1759,8 +1759,8 @@ TEST_F(VariationsServiceTest,
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "NoOpStudy");
     ASSERT_TRUE(override_info);
-    EXPECT_EQ(override_info->group_name, "EvenNewerDefault");
-    EXPECT_EQ(override_info->overridden_trial, trial);
+    EXPECT_EQ(override_info->group_name(), "EvenNewerDefault");
+    EXPECT_EQ(override_info->overridden_trial(), trial);
   }
 }
 
@@ -1798,8 +1798,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_NoOpOverride) {
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "NoOpStudy");
     ASSERT_TRUE(override_info);
-    EXPECT_EQ(override_info->group_name, "Default");
-    EXPECT_FALSE(override_info->overridden_trial);
+    EXPECT_EQ(override_info->group_name(), "Default");
+    EXPECT_FALSE(override_info->overridden_trial());
   }
 
   {
@@ -1818,8 +1818,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_NoOpOverride) {
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "NoOpStudy");
     ASSERT_TRUE(override_info);
-    EXPECT_EQ(override_info->group_name, "Default");
-    EXPECT_FALSE(override_info->overridden_trial);
+    EXPECT_EQ(override_info->group_name(), "Default");
+    EXPECT_FALSE(override_info->overridden_trial());
   }
 
   {
@@ -1837,8 +1837,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_NoOpOverride) {
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "NoOpStudy");
     ASSERT_TRUE(override_info);
-    EXPECT_EQ(override_info->group_name, "NewDefault");
-    EXPECT_FALSE(override_info->overridden_trial);
+    EXPECT_EQ(override_info->group_name(), "NewDefault");
+    EXPECT_FALSE(override_info->overridden_trial());
   }
 }
 
@@ -1972,8 +1972,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_AlreadyApplied) {
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "Killswitch");
     ASSERT_TRUE(override);
-    EXPECT_EQ(override->group_name, "Disabled100");
-    EXPECT_EQ(override->overridden_trial, trial);
+    EXPECT_EQ(override->group_name(), "Disabled100");
+    EXPECT_EQ(override->overridden_trial(), trial);
   }
 
   {
@@ -1992,8 +1992,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_AlreadyApplied) {
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "Killswitch");
     ASSERT_TRUE(override);
-    EXPECT_EQ(override->group_name, "Disabled100");
-    EXPECT_EQ(override->overridden_trial, trial);
+    EXPECT_EQ(override->group_name(), "Disabled100");
+    EXPECT_EQ(override->overridden_trial(), trial);
   }
 
   {
@@ -2013,8 +2013,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_AlreadyApplied) {
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "Killswitch");
     ASSERT_TRUE(override);
-    EXPECT_EQ(override->group_name, "Disabled50");
-    EXPECT_EQ(override->overridden_trial, trial);
+    EXPECT_EQ(override->group_name(), "Disabled50");
+    EXPECT_EQ(override->overridden_trial(), trial);
   }
 }
 
@@ -2316,8 +2316,8 @@ TEST_F(VariationsServiceTest,
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "KillswitchA");
     ASSERT_TRUE(override);
-    EXPECT_EQ(override->group_name, "Disabled");
-    EXPECT_EQ(override->overridden_trial, trial1);
+    EXPECT_EQ(override->group_name(), "Disabled");
+    EXPECT_EQ(override->overridden_trial(), trial1);
   }
 
   {
@@ -2353,8 +2353,8 @@ TEST_F(VariationsServiceTest,
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "KillswitchB");
     ASSERT_TRUE(override);
-    EXPECT_EQ(override->group_name, "Disabled");
-    EXPECT_EQ(override->overridden_trial, trial2);
+    EXPECT_EQ(override->group_name(), "Disabled");
+    EXPECT_EQ(override->overridden_trial(), trial2);
   }
 
   {
@@ -2446,8 +2446,8 @@ TEST_F(VariationsServiceTest,
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "KillswitchA");
     ASSERT_TRUE(override);
-    EXPECT_EQ(override->group_name, "Disabled");
-    EXPECT_EQ(override->overridden_trial, trial);
+    EXPECT_EQ(override->group_name(), "Disabled");
+    EXPECT_EQ(override->overridden_trial(), trial);
   }
 
   {
@@ -2537,8 +2537,8 @@ TEST_F(VariationsServiceTest,
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "KillswitchAAndB");
     ASSERT_TRUE(override);
-    EXPECT_EQ(override->group_name, "Disabled");
-    EXPECT_EQ(override->overridden_trial, trial);
+    EXPECT_EQ(override->group_name(), "Disabled");
+    EXPECT_EQ(override->overridden_trial(), trial);
   }
 
   {
@@ -2562,8 +2562,8 @@ TEST_F(VariationsServiceTest,
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "KillswitchAAndB");
     ASSERT_TRUE(override);
-    EXPECT_EQ(override->group_name, "Disabled");
-    EXPECT_EQ(override->overridden_trial, trial);
+    EXPECT_EQ(override->group_name(), "Disabled");
+    EXPECT_EQ(override->overridden_trial(), trial);
   }
 }
 
@@ -2611,8 +2611,8 @@ TEST_F(VariationsServiceTest,
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "KillswitchA");
     ASSERT_TRUE(override_info);
-    EXPECT_EQ(override_info->group_name, "Disabled");
-    EXPECT_EQ(override_info->overridden_trial, trial);
+    EXPECT_EQ(override_info->group_name(), "Disabled");
+    EXPECT_EQ(override_info->overridden_trial(), trial);
   }
 }
 
@@ -2665,8 +2665,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_FeaturesWithNoTrials) {
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "KillswitchAAndB");
     ASSERT_TRUE(override);
-    EXPECT_EQ(override->group_name, "Disabled50");
-    EXPECT_EQ(override->overridden_trial, nullptr);
+    EXPECT_EQ(override->group_name(), "Disabled50");
+    EXPECT_EQ(override->overridden_trial(), nullptr);
   }
 
   {
@@ -2696,8 +2696,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_FeaturesWithNoTrials) {
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "KillswitchAAndB");
     ASSERT_TRUE(override);
-    EXPECT_EQ(override->group_name, "Disabled50");
-    EXPECT_EQ(override->overridden_trial, nullptr);
+    EXPECT_EQ(override->group_name(), "Disabled50");
+    EXPECT_EQ(override->overridden_trial(), nullptr);
   }
 
   {
@@ -2725,8 +2725,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_FeaturesWithNoTrials) {
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "KillswitchAAndB");
     ASSERT_TRUE(override);
-    EXPECT_EQ(override->group_name, "Disabled50");
-    EXPECT_EQ(override->overridden_trial, nullptr);
+    EXPECT_EQ(override->group_name(), "Disabled50");
+    EXPECT_EQ(override->overridden_trial(), nullptr);
   }
 
   {
@@ -2747,8 +2747,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_FeaturesWithNoTrials) {
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "KillswitchAAndB");
     ASSERT_TRUE(override);
-    EXPECT_EQ(override->group_name, "Disabled100");
-    EXPECT_EQ(override->overridden_trial, nullptr);
+    EXPECT_EQ(override->group_name(), "Disabled100");
+    EXPECT_EQ(override->overridden_trial(), nullptr);
   }
 }
 
@@ -2824,8 +2824,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_TrialNameCollision) {
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "Trial1");
     ASSERT_TRUE(override);
-    EXPECT_EQ(override->group_name, "Group3");
-    EXPECT_EQ(override->overridden_trial, trial1);
+    EXPECT_EQ(override->group_name(), "Group3");
+    EXPECT_EQ(override->overridden_trial(), trial1);
   }
 
   {
@@ -2848,8 +2848,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_TrialNameCollision) {
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "Killswitch");
     ASSERT_TRUE(override);
-    EXPECT_EQ(override->group_name, "Disabled50");
-    EXPECT_EQ(override->overridden_trial, trial1);
+    EXPECT_EQ(override->group_name(), "Disabled50");
+    EXPECT_EQ(override->overridden_trial(), trial1);
   }
 
   {
@@ -2870,8 +2870,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_TrialNameCollision) {
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "Killswitch");
     ASSERT_TRUE(override);
-    EXPECT_EQ(override->group_name, "Disabled50");
-    EXPECT_EQ(override->overridden_trial, trial1);
+    EXPECT_EQ(override->group_name(), "Disabled50");
+    EXPECT_EQ(override->overridden_trial(), trial1);
   }
 
   {
@@ -2892,8 +2892,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_TrialNameCollision) {
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "Killswitch");
     ASSERT_TRUE(override);
-    EXPECT_EQ(override->group_name, "Disabled100");
-    EXPECT_EQ(override->overridden_trial, trial1);
+    EXPECT_EQ(override->group_name(), "Disabled100");
+    EXPECT_EQ(override->overridden_trial(), trial1);
   }
 
   {
@@ -2917,8 +2917,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_TrialNameCollision) {
         base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
             "Trial1");
     ASSERT_TRUE(override);
-    EXPECT_EQ(override->group_name, "Disabled");
-    EXPECT_EQ(override->overridden_trial, trial1);
+    EXPECT_EQ(override->group_name(), "Disabled");
+    EXPECT_EQ(override->overridden_trial(), trial1);
   }
 }
 
@@ -2960,7 +2960,7 @@ TEST_F(VariationsServiceTest,
     void OnRuntimeFieldTrialOverride(
         const base::RuntimeFieldTrialInfo& override_info,
         std::string_view previous_override_trial_name) override {
-      applied_order.push_back(override_info.trial_name);
+      applied_order.push_back(override_info.trial_name());
     }
     std::vector<std::string> applied_order;
   };
@@ -2996,8 +2996,8 @@ TEST_F(VariationsServiceTest,
       base::RuntimeFieldTrialOverrides::GetInstance()->GetRuntimeOverride(
           kRuntimeMonitoringStudyName);
   ASSERT_TRUE(rollout_override);
-  EXPECT_EQ(rollout_override->group_name, "GroupRollout");
-  EXPECT_EQ(rollout_override->overridden_trial, nullptr);
+  EXPECT_EQ(rollout_override->group_name(), "GroupRollout");
+  EXPECT_EQ(rollout_override->overridden_trial(), nullptr);
 
   base::RuntimeFieldTrialOverrides::GetInstance()->RemoveObserver(&observer);
 }
@@ -3042,7 +3042,7 @@ TEST_F(VariationsServiceTest,
       CHECK(override_info_opt.value())
           << "Observers must not be notified before the runtime override for "
           << kTestRuntimeFeatureA.name << " has been applied.";
-      associated_trial_name = override_info_opt.value()->trial_name;
+      associated_trial_name = override_info_opt.value()->trial_name();
     }
 
     bool notified = false;
@@ -3361,8 +3361,8 @@ TEST_F(VariationsServiceTest, ApplyRuntimeMutableChanges_RotateUmaLogFails) {
 // emitted to Variations.ApplyRuntimeMutableChanges.ValidationFailedStudyName.
 //
 // This test simulates a corrupted mutation by injecting a post-mutation
-// callback that actively subverts the freshly-created RuntimeFieldTrialInfo
-// struct's group_name. VariationsService iterates over the live overrides
+// callback that actively subverts the freshly-created RuntimeFieldTrialInfo's
+// group_name. VariationsService iterates over the live overrides
 // during its final validation pass, detects the mismatch between the expected
 // "Group1" and the corrupted group name, and logs the telemetry failure.
 TEST_F(VariationsServiceTest,
@@ -3395,7 +3395,7 @@ TEST_F(VariationsServiceTest,
                 << "Post-mutation callbacks must not run before the runtime "
                    "override for "
                 << feature.get().name << " has been applied.";
-            const_cast<std::string&>(override_info.value()->group_name) =
+            const_cast<std::string&>(override_info.value()->group_name()) =
                 "CorruptedGroup";
           }));
   scoped_feature_list.InitWithFeatureList(std::move(feature_list));

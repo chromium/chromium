@@ -45,7 +45,7 @@ class FieldTrialList;
 class PersistentMemoryAllocator;
 class FeatureVisitor;
 
-struct RuntimeFieldTrialInfo;
+class RuntimeFieldTrialInfo;
 
 namespace internal {
 struct RuntimeMutableFeatureState;

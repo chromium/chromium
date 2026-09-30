@@ -322,7 +322,7 @@ bool RuntimeMutableExperimentAlreadyApplied(
   return
       // Check if the override has been applied.
       (runtime_override_info &&
-       runtime_override_info->group_name == experiment.name()) ||
+       runtime_override_info->group_name() == experiment.name()) ||
       // It's possible it wasn't applied as a runtime override but simply as
       // a regular FieldTrial at startup.
       (existing_trial &&
@@ -1028,7 +1028,7 @@ void VariationsService::SimulateAndApplyRuntimeMutableChanges(
       // inconsistency rather than a seed-triggered validation failure.
       CHECK(override_info.has_value());
       if (!override_info.value() ||
-          override_info.value()->trial_name != changes.study_name) {
+          override_info.value()->trial_name() != changes.study_name) {
         validation_failed = true;
         break;
       }
@@ -1037,9 +1037,9 @@ void VariationsService::SimulateAndApplyRuntimeMutableChanges(
       auto* runtime_override_info =
           runtime_field_trial_overrides->GetRuntimeOverride(changes.study_name);
       if (!runtime_override_info ||
-          runtime_override_info->trial_name != changes.study_name ||
-          runtime_override_info->group_name != changes.group_name ||
-          runtime_override_info->overridden_trial.get() !=
+          runtime_override_info->trial_name() != changes.study_name ||
+          runtime_override_info->group_name() != changes.group_name ||
+          runtime_override_info->overridden_trial() !=
               changes.trial_to_override) {
         validation_failed = true;
       }
@@ -1525,8 +1525,8 @@ VariationsService::PrepareRuntimeMutableChanges(
       // This should never happen.
       return base::unexpected(kControllingTrialNotFound);
     }
-    trial_to_override = runtime_override_info->overridden_trial.get();
-    previous_override_to_replace = runtime_override_info->trial_name;
+    trial_to_override = runtime_override_info->overridden_trial();
+    previous_override_to_replace = runtime_override_info->trial_name();
     CHECK_EQ(previous_override_to_replace, controlling_trial_name);
   } else if (!controlling_trial_name.empty()) {
     trial_to_override = base::FieldTrialList::Find(controlling_trial_name);

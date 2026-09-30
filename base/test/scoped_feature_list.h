@@ -20,7 +20,7 @@
 #include "base/types/pass_key.h"
 
 namespace base {
-struct RuntimeFieldTrialInfo;
+class RuntimeFieldTrialInfo;
 }  // namespace base
 
 namespace base::test {

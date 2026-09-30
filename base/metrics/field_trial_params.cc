@@ -185,10 +185,10 @@ bool GetFieldTrialParamsByFeature(const Feature& feature,
           feature_list->GetAssociatedRuntimeFieldTrialOverrideInfoByFeatureName(
               feature.name);
       if (override_info.has_value() && override_info.value()) {
-        if (override_info.value()->params.empty()) {
+        if (override_info.value()->params().empty()) {
           return false;
         }
-        *params = override_info.value()->params;
+        *params = override_info.value()->params();
         return true;
       }
     }

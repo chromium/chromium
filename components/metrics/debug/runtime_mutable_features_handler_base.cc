@@ -58,10 +58,10 @@ void RuntimeMutableFeaturesHandlerBase::HandleFetchRuntimeMutableFeatures(
     bool runtime_override = false;
     if (feature_state.override_info) {
       // The feature is being controlled by a runtime-mutable field trial.
-      CHECK(!feature_state.override_info->trial_name.empty());
-      CHECK(!feature_state.override_info->group_name.empty());
-      trial_name = feature_state.override_info->trial_name;
-      group_name = feature_state.override_info->group_name;
+      CHECK(!feature_state.override_info->trial_name().empty());
+      CHECK(!feature_state.override_info->group_name().empty());
+      trial_name = feature_state.override_info->trial_name();
+      group_name = feature_state.override_info->group_name();
       runtime_override = true;
     } else {
       // The feature is not being controlled by a runtime-mutable field trial.
