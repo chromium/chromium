@@ -20,10 +20,13 @@ class TabGroupStyle {
   static int GetChipCornerRadius(
       TabStripOrientation orientation = TabStripOrientation::kHorizontal);
   static int GetEmptyChipSize();
+  static int GetFocusedChipHeight();
   static gfx::Point GetTitleChipOffset(
-      std::optional<int> text_height = std::nullopt);
+      std::optional<int> chip_height = std::nullopt);
   static gfx::Insets GetInsetsForHeaderChip(
       TabStripOrientation orientation = TabStripOrientation::kHorizontal);
+  static gfx::Insets GetInsetsForFocusedHeaderChip();
+  static gfx::Insets GetInsetsForFocusedUnfocusChip();
   // Returns the horizontal padding between adjacent tab group headers when
   // collapsed.
   static int GetPaddingBetweenCollapsedHeaders();

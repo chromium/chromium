@@ -16,10 +16,15 @@ namespace {
 
 constexpr int kHeaderChipVerticalInset = 2;
 constexpr int kEmptyChipSize = 20;
+constexpr int kFocusedChipHeight = 28;
 constexpr int kCornerRadius = 6;
 constexpr int kVerticalCornerRadius = 8;
 constexpr int kVerticalHeaderChipHorizontalInset = 8;
 constexpr int kTabGroupOverlapAdjustment = 2;
+constexpr gfx::Insets kFocusedHeaderChipInsets =
+    gfx::Insets::TLBR(6, 12, 6, 10);
+constexpr gfx::Insets kFocusedUnfocusChipInsets =
+    gfx::Insets::TLBR(2, 10, 2, 10);
 
 }  // namespace
 
@@ -41,9 +46,15 @@ int TabGroupStyle::GetEmptyChipSize() {
 }
 
 // static
-gfx::Point TabGroupStyle::GetTitleChipOffset(std::optional<int> text_height) {
+int TabGroupStyle::GetFocusedChipHeight() {
+  return kFocusedChipHeight;
+}
+
+// static
+gfx::Point TabGroupStyle::GetTitleChipOffset(std::optional<int> chip_height) {
   const int total_space =
-      GetLayoutConstant(LayoutConstant::kTabStripHeight) - GetEmptyChipSize() -
+      GetLayoutConstant(LayoutConstant::kTabStripHeight) -
+      chip_height.value_or(GetEmptyChipSize()) -
       GetLayoutConstant(LayoutConstant::kTabstripToolbarOverlap);
   return gfx::Point(GetLeadingGroupHeaderPadding(), total_space / 2);
 }
@@ -54,6 +65,16 @@ gfx::Insets TabGroupStyle::GetInsetsForHeaderChip(
   return orientation == TabStripOrientation::kHorizontal
              ? gfx::Insets::VH(kHeaderChipVerticalInset, kCornerRadius)
              : gfx::Insets::VH(0, kVerticalHeaderChipHorizontalInset);
+}
+
+// static
+gfx::Insets TabGroupStyle::GetInsetsForFocusedHeaderChip() {
+  return kFocusedHeaderChipInsets;
+}
+
+// static
+gfx::Insets TabGroupStyle::GetInsetsForFocusedUnfocusChip() {
+  return kFocusedUnfocusChipInsets;
 }
 
 // static

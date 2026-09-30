@@ -464,6 +464,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Bookmarks bar context menu ('Unfocus group')"/>
   <int value="12" label="App menu ('Unfocus group')"/>
   <int value="13" label="Organizer panel context menu ('Unfocus group')"/>
+  <int value="14" label="Tab group header unfocus button"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/tab_enums.h:TabGroupFocusExitReason) -->

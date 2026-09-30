@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_group_view_layout.h"
 
 #include <algorithm>
+
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/views/tabs/common/split_tab_view.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/ui/views/tabs/common/tab_group_header_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_line_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_style.h"
+#include "chrome/browser/ui/views/tabs/common/tab_group_unfocus_button.h"
 #include "chrome/browser/ui/views/tabs/common/tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_collection_controller.h"
 #include "chrome/browser/ui/views/tabs/common/tab_strip_layout_utils.h"
@@ -28,6 +30,7 @@ constexpr int kGroupLineWidth = 2;
 constexpr int kGroupLineCollapsedLeadingPadding = 6;
 constexpr int kGroupHeaderHeight = 26;
 constexpr int kGroupHeaderVerticalMargin = 4;
+constexpr int kFocusedHeadersGap = 2;
 }  // namespace
 
 TabGroupViewLayout::TabGroupViewLayout(TabStripOrientation orientation)
@@ -80,6 +83,26 @@ views::ProposedLayout TabGroupViewLayout::CalculateVerticalLayout(
     group_line_bounds.set_y(height);
     header_bounds.set_x(
         GetLayoutConstant(LayoutConstant::kVerticalTabStripHorizontalPadding));
+  }
+
+  if (tab_group_view->unfocus_header_) {
+    if (tab_group_view->IsGroupFocused()) {
+      gfx::Rect unfocus_bounds;
+      unfocus_bounds.set_x(header_bounds.x());
+      unfocus_bounds.set_y(height);
+      unfocus_bounds.set_height(kGroupHeaderHeight);
+      if (size_bounds.width().is_bounded()) {
+        unfocus_bounds.set_width(size_bounds.width().value() -
+                                 unfocus_bounds.x());
+      }
+      layouts.child_layouts.emplace_back(tab_group_view->unfocus_header_.get(),
+                                         true, unfocus_bounds);
+      height += unfocus_bounds.height() + kFocusedHeadersGap;
+      width = std::max(width, unfocus_bounds.width());
+    } else {
+      layouts.child_layouts.emplace_back(tab_group_view->unfocus_header_.get(),
+                                         false, gfx::Rect());
+    }
   }
 
   header_bounds.set_y(height);
@@ -195,15 +218,36 @@ views::ProposedLayout TabGroupViewLayout::CalculateHorizontalLayout(
   // Place the group header.
   int header_width = 0;
   if (tab_group_view->group_header_) {
-    const int header_height = TabGroupStyle::GetEmptyChipSize();
-    const int header_y = TabGroupStyle::GetTitleChipOffset().y();
-    header_width = tab_group_view->group_header_
-                       ->GetPreferredSize(views::SizeBounds({}, header_height))
-                       .width();
-    gfx::Rect header_bounds(0, header_y, header_width, header_height);
+    const bool is_focused = tab_group_view->IsGroupFocused();
+    const int header_height = is_focused ? TabGroupStyle::GetFocusedChipHeight()
+                                         : TabGroupStyle::GetEmptyChipSize();
+    const int header_y = TabGroupStyle::GetTitleChipOffset(header_height).y();
+    int x_offset = 0;
+    if (tab_group_view->unfocus_header_) {
+      if (is_focused) {
+        const int unfocus_width =
+            tab_group_view->unfocus_header_
+                ->GetPreferredSize(views::SizeBounds({}, header_height))
+                .width();
+        gfx::Rect unfocus_bounds(0, header_y, unfocus_width, header_height);
+        layouts.child_layouts.emplace_back(
+            tab_group_view->unfocus_header_.get(), true, unfocus_bounds);
+        x_offset = unfocus_width + kFocusedHeadersGap;
+      } else {
+        layouts.child_layouts.emplace_back(
+            tab_group_view->unfocus_header_.get(), false, gfx::Rect());
+      }
+    }
+    const int main_header_width =
+        tab_group_view->group_header_
+            ->GetPreferredSize(views::SizeBounds({}, header_height))
+            .width();
+    gfx::Rect header_bounds(x_offset, header_y, main_header_width,
+                            header_height);
     layouts.child_layouts.emplace_back(
         tab_group_view->group_header_.get(),
         tab_group_view->group_header_->GetVisible(), header_bounds);
+    header_width = x_offset + main_header_width;
   }
 
   TabStripCollectionLayoutInfo collection = CollectVisibleChildLayoutInfo(
@@ -287,6 +331,11 @@ int TabGroupViewLayout::CalculateHorizontalCrossoverWidth(
   if (has_header) {
     crossover_width +=
         tab_group_view->group_header_->GetPreferredSize().width();
+    if (tab_group_view->IsGroupFocused() && tab_group_view->unfocus_header_) {
+      crossover_width +=
+          tab_group_view->unfocus_header_->GetPreferredSize().width() +
+          kFocusedHeadersGap;
+    }
   }
   if (!tab_group_view->IsCollapsed()) {
     for (const auto* child :
@@ -326,6 +375,10 @@ gfx::Size TabGroupViewLayout::CalculateHorizontalMinimumSize(
                           tab_group_view->group_header_->GetVisible();
   if (has_header) {
     min_width += tab_group_view->group_header_->GetPreferredSize().width();
+    if (tab_group_view->IsGroupFocused() && tab_group_view->unfocus_header_) {
+      min_width += tab_group_view->unfocus_header_->GetPreferredSize().width() +
+                   kFocusedHeadersGap;
+    }
   }
   if (!tab_group_view->IsCollapsed()) {
     for (const auto* child :

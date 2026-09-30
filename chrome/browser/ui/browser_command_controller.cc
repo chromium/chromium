@@ -2796,14 +2796,12 @@ void BrowserCommandController::UpdateCommandsForTabGroupFocusChanged() {
   }
 
   if (base::FeatureList::IsEnabled(features::kTabGroupsFocusing)) {
-    const bool is_focused =
-        browser_->tab_strip_model()->GetFocusedGroup().has_value();
     if (auto* const action = FindAction(kActionUnfocusTabGroup, browser_)) {
-      action->SetVisible(is_focused);
+      action->SetVisible(false);
     }
     if (auto* const action =
             FindAction(kActionToggleCollapseVertical, browser_)) {
-      action->SetVisible(!is_focused);
+      action->SetVisible(true);
     }
   }
 }
