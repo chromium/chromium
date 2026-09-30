@@ -951,7 +951,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="MerchantTrust.BottomSheet.OpenSource"
-    enum="MerchantTrustBottomSheetOpenedSource" expires_after="2026-04-25">
+    enum="MerchantTrustBottomSheetOpenedSource" expires_after="2027-09-30">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
   <summary>
@@ -959,6 +959,9 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
     sheet is opened. Implemented for Android.
 
     Warning: this histogram was expired from 2023-04-25 to 2024-09-18; data may
+    be missing.
+
+    Warning: this histogram was expired from 2026-04-25 to 2026-09-30; data may
     be missing.
   </summary>
 </histogram>
