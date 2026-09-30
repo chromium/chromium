@@ -33,7 +33,10 @@ source_set("features") {
     "//net",
   ]
 
-  visibility = [ "//components/browser_actuator/*" ]
+  visibility = [
+    "//chrome/browser/sharing/browser_actuator:*",
+    "//components/browser_actuator/*",
+  ]
 }
 
 source_set("session_stream_recorder") {
