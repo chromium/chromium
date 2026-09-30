@@ -622,7 +622,7 @@ declare_args() {
 # lose us coverage of that particular span in that exact moment. This is
 # not a big deal, and is probably preferable to sticking
 # `base::unchecked` on all those spans (shutting them out entirely).
-use_checked_span = !(is_asan || is_ubsan || is_tsan) && use_partition_alloc &&
+use_checked_span = !(is_asan || is_ubsan || is_tsan || is_msan) && use_partition_alloc &&
                    has_64_bit_pointers
 
 # Enables additional features, e.g. slack space zapping.
