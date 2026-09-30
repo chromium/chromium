@@ -9,7 +9,6 @@
 
 #include "base/functional/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/with_feature_override.h"
 #include "build/build_config.h"
 #include "chrome/test/payments/payment_app_install_util.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
@@ -109,28 +108,14 @@ struct ResponseEntry {
 // Tests requests from `PaymentManifestDownloader` are checked against the
 // initiator frame's connection allowlist.
 //
-// Note: `PaymentManifestDownloader` has two url loader factories:
-// - The url loader factory associated with the initiator frame. It has the
-// frame's network restriction id and checks the request url. It is used for the
-// initial HEAD request when downloading a payment method manifest if the
-// `PaymentRequestUseRendererUrlLoader` feature is enabled.
-// - The url loader factory for the browser process. It does not have the
-// frame's network restriction id. The connection allowlist check is done inside
-// the `PaymentManifestDownloader`, before it reaches the url loader factory. It
-// is used for:
-//   1. Initial HEAD request if the `PaymentRequestUseRendererUrlLoader` feature
-//      is disabled.
-//   2. Following redirects for the initial payment method manifest request.
-//   3. The subsequent GET request to download the actual payment method
-//   manifest content after the Link header has been resolved.
-//   4. Downloading web app manifests.
+// Note: `PaymentManifestDownloader` uses the url loader factory for the browser
+// process, which does not have the frame's network restriction id. The
+// connection allowlist check is done inside `PaymentManifestDownloader` before
+// the request reaches the url loader factory.
 class PaymentRequestConnectionAllowlistBrowserTest
-    : public base::test::WithFeatureOverride,
-      public PaymentRequestPlatformBrowserTestBase {
+    : public PaymentRequestPlatformBrowserTestBase {
  protected:
-  PaymentRequestConnectionAllowlistBrowserTest()
-      : base::test::WithFeatureOverride(
-            features::kPaymentRequestUseRendererUrlLoader) {
+  PaymentRequestConnectionAllowlistBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {network::features::kConnectionAllowlists,
@@ -189,7 +174,7 @@ class PaymentRequestConnectionAllowlistBrowserTest
 
 // Test that cross-origin payment manifest download from "b.com" is allowed when
 // Connection-Allowlist is set to (response-origin "*://b.com:*/*").
-IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
+IN_PROC_BROWSER_TEST_F(PaymentRequestConnectionAllowlistBrowserTest,
                        HeadRequestAllowed) {
   RegisterResponse("/payment_request_connection_allowlist_cross_origin.html",
                    ResponseEntry(kDefaultPaymentPageContent,
@@ -218,7 +203,7 @@ IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
 
 // Test that cross-origin payment manifest download from "b.com" is blocked when
 // Connection-Allowlist is set to (response-origin).
-IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
+IN_PROC_BROWSER_TEST_F(PaymentRequestConnectionAllowlistBrowserTest,
                        HeadRequestBlocked) {
   RegisterResponse(
       "/payment_request_connection_allowlist_same_origin.html",
@@ -245,28 +230,18 @@ IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
       console_observer.GetMessageAt(0u),
       AllOf(HasSubstr("Unable to download payment manifest"),
             HasSubstr("ERR_NETWORK_ACCESS_REVOKED"), HasSubstr("(-33)")));
-  if (IsParamFeatureEnabled()) {
-    // When feature `PaymentRequestUseRendererUrlLoader` is enabled, the request
-    // went through the url loader factory associated with the initiator render
-    // frame host. The connection allowlist check by the url loader factory
-    // blocks the request and fails it with the net error code.
-    monitor.WaitForUrls({payment_url});
-    EXPECT_EQ(monitor.WaitForRequestCompletion(payment_url).error_code,
-              net::ERR_NETWORK_ACCESS_REVOKED);
-  } else {
-    // Otherwise, the request would have gone through the url loader factory
-    // for the browser process. That url loader factory does not have access to
-    // the connection allowlist. The connection allowlist check is done in
-    // `PaymentManifestDownloader`. It blocks the request before it reaches the
-    // url loader factory.
-    EXPECT_FALSE(monitor.GetRequestInfo(payment_url).has_value());
-  }
+  // The request would have gone through the url loader factory for the browser
+  // process. That url loader factory does not have access to the connection
+  // allowlist. The connection allowlist check is done in
+  // `PaymentManifestDownloader`. It blocks the request before it reaches the
+  // url loader factory.
+  EXPECT_FALSE(monitor.GetRequestInfo(payment_url).has_value());
 }
 
 // Test that payment manifest download from "a.com", which is redirected to
 // "sub.a.com" is allowed when Connection-Allowlist is set to (response-origin
 // "*://sub.a.com:*/*") and `redirects=allow`.
-IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
+IN_PROC_BROWSER_TEST_F(PaymentRequestConnectionAllowlistBrowserTest,
                        HeadRequestRedirectAllowed) {
   GURL target_url = https_server()->GetURL("sub.a.com", "/nickpay.test/pay");
   GURL redirect_url =
@@ -305,7 +280,7 @@ IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
 // Test that payment manifest download from "a.com", which is redirected to
 // "sub.a.com" is blocked when Connection-Allowlist is set to (response-origin
 // "*://sub.a.com:*/*") and `redirects=block`.
-IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
+IN_PROC_BROWSER_TEST_F(PaymentRequestConnectionAllowlistBrowserTest,
                        HeadRequestRedirectBlocked) {
   GURL target_url = https_server()->GetURL("sub.a.com", "/nickpay.test/pay");
   GURL redirect_url =
@@ -342,25 +317,18 @@ IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
                     HasSubstr("ERR_UNSAFE_REDIRECT"), HasSubstr("(-311)")));
   monitor.WaitForUrls({redirect_url});
 
-  // When feature `PaymentRequestUseRendererUrlLoader` is enabled, the initial
-  // HEAD request went through the url loader factory associated with the
-  // initiator render frame host, which has the network restrictions ID. The
-  // network service connection allowlist check blocks the redirect and fails
-  // the request with `net::ERR_UNSAFE_REDIRECT`.
-  // Otherwise, the url loader factory for browser process is used, and the
-  // redirect is blocked by the connection allowlist check in
-  // `PaymentManifestDownloader`. The request is cancelled, which destroys the
-  // loader. Then the loader cancels the request and results in
-  // `net::ERR_ABORTED`.
-  EXPECT_EQ(
-      monitor.WaitForRequestCompletion(redirect_url).error_code,
-      IsParamFeatureEnabled() ? net::ERR_UNSAFE_REDIRECT : net::ERR_ABORTED);
+  // The url loader factory for browser process is used, and the redirect is
+  // blocked by the connection allowlist check in `PaymentManifestDownloader`.
+  // The request is cancelled, which destroys the loader. Then the loader
+  // cancels the request and results in `net::ERR_ABORTED`.
+  EXPECT_EQ(monitor.WaitForRequestCompletion(redirect_url).error_code,
+            net::ERR_ABORTED);
 }
 
 // Test that payment method manifest download is allowed when both the initial
 // HEAD request and subsequent GET requests are allowed by the connection
 // allowlist.
-IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
+IN_PROC_BROWSER_TEST_F(PaymentRequestConnectionAllowlistBrowserTest,
                        PaymentMethodManifestAllowed) {
   RegisterResponse(
       "/payment_request_connection_allowlist_manifest_allowed.html",
@@ -425,7 +393,7 @@ IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
 // Test that payment method manifest download is blocked when the subsequent
 // GET request is not allowed by the connection allowlist. Only the initial HEAD
 // request is allowed.
-IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
+IN_PROC_BROWSER_TEST_F(PaymentRequestConnectionAllowlistBrowserTest,
                        PaymentMethodManifestBlocked) {
   RegisterResponse(
       "/payment_request_connection_allowlist_manifest_blocked.html",
@@ -479,7 +447,7 @@ IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
 
 // Test that web app manifest download is allowed when both the payment method
 // manifest and web app manifest are allowed by the connection allowlist.
-IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
+IN_PROC_BROWSER_TEST_F(PaymentRequestConnectionAllowlistBrowserTest,
                        WebAppManifestAllowed) {
   RegisterResponse(
       "/payment_request_connection_allowlist_webapp_allowed.html",
@@ -535,7 +503,7 @@ IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
 
 // Test that web app manifest download is blocked when its URL is not allowed by
 // the connection allowlist. Only the payment method manifest is allowed.
-IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
+IN_PROC_BROWSER_TEST_F(PaymentRequestConnectionAllowlistBrowserTest,
                        WebAppManifestBlocked) {
   RegisterResponse(
       "/payment_request_connection_allowlist_webapp_blocked.html",
@@ -602,7 +570,7 @@ IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
 
 // Test that payment icon download is allowed when the URL is allowed by the
 // connection allowlist.
-IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
+IN_PROC_BROWSER_TEST_F(PaymentRequestConnectionAllowlistBrowserTest,
                        PaymentIconAllowed) {
   RegisterResponse(
       "/payment_request_connection_allowlist_icon_allowed.html",
@@ -670,7 +638,7 @@ IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
 
 // Test that payment icon download is blocked when the URL is not allowed by the
 // connection allowlist.
-IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
+IN_PROC_BROWSER_TEST_F(PaymentRequestConnectionAllowlistBrowserTest,
                        PaymentIconBlocked) {
   RegisterResponse(
       "/payment_request_connection_allowlist_icon_blocked.html",
@@ -738,7 +706,7 @@ IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
 
 // Test that Payment Request API PaymentRequestEvent.openWindow() is allowed
 // when the URL is allowed by the connection allowlist.
-IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
+IN_PROC_BROWSER_TEST_F(PaymentRequestConnectionAllowlistBrowserTest,
                        OpenWindowAllowed) {
   RegisterResponse("/", ResponseEntry("", {}, net::HTTP_OK));
 
@@ -794,7 +762,7 @@ IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
 
 // Test that Payment Request API PaymentRequestEvent.openWindow() is blocked
 // when the URL is not allowed by the connection allowlist.
-IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
+IN_PROC_BROWSER_TEST_F(PaymentRequestConnectionAllowlistBrowserTest,
                        OpenWindowBlocked) {
   RegisterResponse("/", ResponseEntry("", {}, net::HTTP_OK));
 
@@ -850,7 +818,7 @@ IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
 // Test that service worker's connection allowlist's redirect directive has no
 // effect on Payment Request API PaymentRequestEvent: openWindow() when there is
 // a redirect.
-IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
+IN_PROC_BROWSER_TEST_F(PaymentRequestConnectionAllowlistBrowserTest,
                        NoEffectOnOpenWindowRedirect) {
   RegisterResponse("/", ResponseEntry("", {}, net::HTTP_OK));
 
@@ -917,7 +885,7 @@ IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
   EXPECT_TRUE(monitor.GetRequestInfo(redirect_url).has_value());
 }
 
-IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
+IN_PROC_BROWSER_TEST_F(PaymentRequestConnectionAllowlistBrowserTest,
                        PaymentHandlerServiceWorkerRegistrationAllowed) {
   RegisterResponse(
       "/payment_request.html",
@@ -948,7 +916,7 @@ IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
             net::OK);
 }
 
-IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
+IN_PROC_BROWSER_TEST_F(PaymentRequestConnectionAllowlistBrowserTest,
                        PaymentHandlerServiceWorkerRegistrationBlocked) {
   RegisterResponse("/payment_request.html",
                    ResponseEntry{"<html><body>Hello</body></html>",
@@ -978,7 +946,7 @@ IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
             net::ERR_NETWORK_ACCESS_REVOKED);
 }
 
-IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
+IN_PROC_BROWSER_TEST_F(PaymentRequestConnectionAllowlistBrowserTest,
                        PaymentHandlerServiceWorkerRegistrationAllowedInIframe) {
   RegisterResponse(
       "/payment_request.html",
@@ -1022,7 +990,7 @@ IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
             net::OK);
 }
 
-IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
+IN_PROC_BROWSER_TEST_F(PaymentRequestConnectionAllowlistBrowserTest,
                        PaymentHandlerServiceWorkerRegistrationBlockedInIframe) {
   RegisterResponse(
       "/payment_request.html",
@@ -1064,9 +1032,6 @@ IN_PROC_BROWSER_TEST_P(PaymentRequestConnectionAllowlistBrowserTest,
   EXPECT_EQ(monitor.WaitForRequestCompletion(service_worker_url).error_code,
             net::ERR_NETWORK_ACCESS_REVOKED);
 }
-
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    PaymentRequestConnectionAllowlistBrowserTest);
 
 }  // namespace
 }  // namespace payments

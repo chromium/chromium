@@ -71,14 +71,11 @@ class PaymentManifestDownloaderTestBase
         const_csp_checker_(std::make_unique<ConstCSPChecker>(/*allow=*/true)) {}
 
   void InitDownloader() {
-    mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_rfh;
-    test_factory_.Clone(url_loader_factory_rfh.BindNewPipeAndPassReceiver());
     auto logger = std::make_unique<TestErrorLogger>();
     test_error_logger_ = logger.get();
     downloader_ = std::make_unique<PaymentManifestDownloader>(
         std::move(logger), const_csp_checker_->GetWeakPtr(),
-        shared_url_loader_factory_, std::move(url_loader_factory_rfh),
-        main_rfh()->GetWeakDocumentPtr());
+        shared_url_loader_factory_, main_rfh()->GetWeakDocumentPtr());
   }
 
   const std::vector<std::string>& logged_errors() const {
@@ -912,16 +909,9 @@ TEST_F(PaymentManifestDownloaderCSPTest, WebAppManifestCSPDenied) {
 
 class PaymentManifestDownloaderLnaTest
     : public PaymentManifestDownloaderTestBase {
- protected:
-  PaymentManifestDownloaderLnaTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {features::kPaymentRequestEnforceLNAWithClientSecurityState},
-        /*disabled_features=*/{features::kPaymentRequestUseRendererUrlLoader});
-  }
-
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kPaymentRequestEnforceLNAWithClientSecurityState};
 };
 
 TEST_F(PaymentManifestDownloaderLnaTest,
@@ -953,24 +943,6 @@ TEST_F(PaymentManifestDownloaderLnaTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kPaymentRequestEnforceLNAWithClientSecurityState);
-
-  InitDownloader();
-  downloader_->DownloadPaymentMethodManifest(
-      url::Origin::Create(GURL("https://example.test")), test_url_,
-      base::BindOnce(&PaymentManifestDownloaderLnaTest::OnManifestDownload,
-                     base::Unretained(this)));
-
-  ASSERT_EQ(test_factory_.NumPending(), 1);
-  const network::ResourceRequest& request =
-      test_factory_.GetPendingRequest(0)->request;
-  EXPECT_FALSE(request.trusted_params.has_value());
-}
-
-TEST_F(PaymentManifestDownloaderLnaTest,
-       TrustedParamsNotSetWhenUsingRendererUrlLoader) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kPaymentRequestUseRendererUrlLoader);
 
   InitDownloader();
   downloader_->DownloadPaymentMethodManifest(

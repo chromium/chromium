@@ -102,13 +102,10 @@ class InstallablePaymentAppCrawlerTest
     static_cast<content::TestBrowserContext*>(browser_context())
         ->SetPermissionControllerDelegate(std::move(mock_permission_manager));
 
-    mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_rfh;
-    test_factory_.Clone(url_loader_factory_rfh.BindNewPipeAndPassReceiver());
-
     downloader_ = std::make_unique<PaymentManifestDownloader>(
         std::make_unique<DeveloperConsoleLogger>(web_contents()),
         const_csp_checker_->GetWeakPtr(), shared_url_loader_factory_,
-        std::move(url_loader_factory_rfh), main_rfh()->GetWeakDocumentPtr());
+        main_rfh()->GetWeakDocumentPtr());
 
     parser_ = std::make_unique<PaymentManifestParser>(
         std::make_unique<DeveloperConsoleLogger>(web_contents()));

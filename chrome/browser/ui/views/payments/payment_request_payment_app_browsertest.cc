@@ -135,15 +135,12 @@ class PaymentRequestPaymentAppTest : public PaymentRequestBrowserTestBase {
     content::WebContents* web_contents =
         content::WebContents::FromRenderFrameHost(frame);
     CHECK(web_contents);
-    mojo::Remote<network::mojom::URLLoaderFactory> renderer_url_loader_factory;
-    frame->CreateNetworkServiceDefaultFactory(
-        renderer_url_loader_factory.BindNewPipeAndPassReceiver());
     auto downloader = std::make_unique<TestDownloader>(
         GetCSPCheckerForTests(),
         web_contents->GetBrowserContext()
             ->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess(),
-        std::move(renderer_url_loader_factory), frame->GetWeakDocumentPtr());
+        frame->GetWeakDocumentPtr());
     downloader->AddTestServerURL("https://alicepay.test/",
                                  GetPaymentAppURL(PaymentApp::kAlicePay));
     downloader->AddTestServerURL("https://bobpay.test/",

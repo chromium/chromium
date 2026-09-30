@@ -149,14 +149,10 @@ class ServiceWorkerPaymentAppFinderBrowserTest : public InProcessBrowserTest {
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     content::BrowserContext* context = web_contents->GetBrowserContext();
-    mojo::Remote<network::mojom::URLLoaderFactory> renderer_url_loader_factory;
-    web_contents->GetPrimaryMainFrame()->CreateNetworkServiceDefaultFactory(
-        renderer_url_loader_factory.BindNewPipeAndPassReceiver());
     auto downloader = std::make_unique<TestDownloader>(
         GetCSPChecker(),
         context->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess(),
-        std::move(renderer_url_loader_factory),
         web_contents->GetPrimaryMainFrame()->GetWeakDocumentPtr());
     downloader->AddTestServerURL("https://alicepay.test/",
                                  alicepay_.GetURL("alicepay.test", "/"));

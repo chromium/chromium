@@ -62,8 +62,7 @@ public class PaymentManifestDownloader {
      *
      * @param webContents The web contents to use as the context for the downloads. If this goes
      *     away, pending downloads are cancelled.
-     * @param renderFrameHost The render frame host is used to get the url loader factory for
-     *     downloading the manifest.
+     * @param renderFrameHost The initiator render frame host.
      * @param cspChecker The Content-Security-Policy (CSP) checker.
      */
     public void initialize(

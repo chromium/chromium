@@ -72,10 +72,6 @@ BASE_FEATURE(kSecurePaymentConfirmationStoreCredentialsInOS,
 #endif
 );
 
-
-BASE_FEATURE(kPaymentRequestUseRendererUrlLoader,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPaymentRequestRejectTooSmallWindows,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -61,17 +61,12 @@ class ManifestVerifierBrowserTest : public InProcessBrowserTest {
 
     const_csp_checker_ = std::make_unique<ConstCSPChecker>(/*allow=*/true);
 
-    mojo::Remote<network::mojom::URLLoaderFactory> renderer_url_loader_factory;
-    web_contents->GetPrimaryMainFrame()->CreateNetworkServiceDefaultFactory(
-        renderer_url_loader_factory.BindNewPipeAndPassReceiver());
-
     test_downloader_ = std::make_unique<TestDownloader>(
         const_csp_checker_->GetWeakPtr(),
         browser()
             ->GetProfile()
             ->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess(),
-        std::move(renderer_url_loader_factory),
         web_contents->GetPrimaryMainFrame()->GetWeakDocumentPtr());
     test_downloader_->AddTestServerURL("https://", https_server_->GetURL("/"));
   }

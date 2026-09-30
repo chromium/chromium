@@ -1285,10 +1285,6 @@ public final class ProductionSupportedFlagList {
                 "No-op experiment to verify WebView uses low entropy source provided by the"
                         + " nonembedded WebView services work."),
         Flag.baseFeature(
-                PaymentFeatureList.PAYMENT_REQUEST_USE_RENDERER_URL_LOADER,
-                "When enabled, the PaymentRequest will use the URL loader from the renderer instead"
-                        + " of the browser process."),
-        Flag.baseFeature(
                 ContentFeatures.PREVIEW_HANDWRITING_GESTURE,
                 "When enabled, it allows users to see a preview of their handwriting gestures"),
         Flag.baseFeature(

@@ -117,15 +117,11 @@ void PaymentRequestPlatformBrowserTestBase::
   content::BrowserContext* context =
       GetActiveWebContents()->GetBrowserContext();
 
-  std::unique_ptr<TestDownloader> downloader;
-  mojo::Remote<network::mojom::URLLoaderFactory> renderer_url_loader_factory;
-  frame->CreateNetworkServiceDefaultFactory(
-      renderer_url_loader_factory.BindNewPipeAndPassReceiver());
-  downloader = std::make_unique<TestDownloader>(
+  std::unique_ptr<TestDownloader> downloader = std::make_unique<TestDownloader>(
       GetCSPCheckerForTests(),
       context->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
-      std::move(renderer_url_loader_factory), frame->GetWeakDocumentPtr());
+      frame->GetWeakDocumentPtr());
 
   for (const auto& method : payment_methods) {
     downloader->AddTestServerURL("https://" + method.first + "/",

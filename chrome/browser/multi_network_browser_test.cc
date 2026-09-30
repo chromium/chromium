@@ -1184,19 +1184,16 @@ IN_PROC_BROWSER_TEST_F(MultiNetworkBrowserTest,
       pay_method_url.spec());
 
   // PaymentRequest.canMakePayment() triggers manifest downloads using
-  // CreateNetworkServiceDefaultFactory on RenderFrameHost.
+  // StoragePartition::GetURLLoaderFactoryForBrowserProcess().
   EXPECT_TRUE(content::EvalJs(web_contents.get(), script).is_ok());
 
   VerifyFactoryCounts(
       test_client, network,
-      // 1 navigation factory for /title1.html, and 2 document subresource
-      // factories (1 for the initial empty document created during WebContents
-      // initialization, and 1 for /title1.html). Chrome's
-      // PaymentManifestDownloader does not reuse the existing URLLoaderFactory
-      // for subresources created during navigation commit. Instead, it uses a
-      // dedicated URLLoaderFactory for each payment manifest download (created
-      // via RenderFrameHost::CreateNetworkServiceDefaultFactory, which
-      // correctly propagates the target_network because it calls
-      // WillCreateURLLoaderFactory and passes that RenderFrameHost).
-      {.navigation = 1, .document_subresource = 3});
+      // 1 navigation factory for /title1.html, and 2 document
+      // subresource factories (1 for the initial empty document
+      // created during WebContents initialization, and 1 for
+      // /title1.html). Chrome's PaymentManifestDownloader uses
+      // StoragePartition::GetURLLoaderFactoryForBrowserProcess(),
+      // which does not call WillCreateURLLoaderFactory.
+      {.navigation = 1, .document_subresource = 2});
 }

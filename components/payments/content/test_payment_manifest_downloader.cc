@@ -18,12 +18,10 @@ namespace payments {
 TestDownloader::TestDownloader(
     base::WeakPtr<CSPChecker> csp_checker,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_rfh,
     content::WeakDocumentPtr initiator_document)
     : PaymentManifestDownloader(std::make_unique<ErrorLogger>(),
                                 csp_checker,
                                 url_loader_factory,
-                                std::move(url_loader_factory_rfh),
                                 std::move(initiator_document)) {}
 
 TestDownloader::~TestDownloader() = default;
@@ -62,13 +60,11 @@ void TestDownloader::InitiateDownload(
     bool did_follow_redirect,
     Download::Type download_type,
     int allowed_number_of_redirects,
-    bool use_url_loader_factory_rfh,
     PaymentManifestDownloadCallback callback) {
   PaymentManifestDownloader::InitiateDownload(
       request_initiator, FindTestServerURL(url),
       FindTestServerURL(url_before_redirects), did_follow_redirect,
-      download_type, allowed_number_of_redirects, use_url_loader_factory_rfh,
-      std::move(callback));
+      download_type, allowed_number_of_redirects, std::move(callback));
 }
 
 }  // namespace payments
