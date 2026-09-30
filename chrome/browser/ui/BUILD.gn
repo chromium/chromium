@@ -1453,14 +1453,6 @@ source_set("tab_helpers_impl") {
     deps += [ "//chrome/browser/ui/search" ]
   }
 
-  if (is_chromeos) {
-    deps += [
-      "//chrome/browser/ash/growth",
-      "//chrome/browser/chromeos/policy/dlp",
-      "//chrome/browser/ui/ash/google_one",
-    ]
-  }
-
   if (enable_captive_portal_detection) {
     deps += [
       "//chrome/browser/captive_portal",

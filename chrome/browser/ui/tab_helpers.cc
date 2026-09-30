@@ -156,10 +156,6 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
-#endif
-
 #if BUILDFLAG(ENABLE_CAPTIVE_PORTAL_DETECTION)
 #include "chrome/browser/captive_portal/captive_portal_service_factory.h"
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
@@ -526,10 +522,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
   if (enable_browser_autofill && !profile->IsOffTheRecord()) {
     ChromeComposeClient::CreateForWebContents(web_contents);
   }
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS)
-  policy::DlpContentTabHelper::MaybeCreateForWebContents(web_contents);
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
