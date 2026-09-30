@@ -48,57 +48,6 @@ namespace {
 
 const char kErrorSiteHistogramPrefix[] = "Sync.DataTypeErrorSite.";
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-// LINT.IfChange(SyncMetadataConsistency)
-enum class SyncMetadataConsistency {
-  // Stored metadata is consistent with the activation request.
-  kMetadataConsistent = 0,
-
-  // The following cases will result in metadata being cleared.
-  kCacheGuidMismatch = 1,
-  kDataTypeIdMismatch = 2,
-
-  // The following cases won't result in metadata being cleared.
-  kEmptyPersistedAuthenticatedGaiaId = 3,
-  kAuthenticatedGaiaIdMismatch = 4,
-
-  kMaxValue = kAuthenticatedGaiaIdMismatch,
-};
-// LINT.ThenChange(/tools/metrics/histograms/metadata/sync/enums.xml:SyncMetadataConsistency)
-
-SyncMetadataConsistency GetSyncMetadataConsistency(
-    const sync_pb::DataTypeState& data_type_state,
-    const DataTypeActivationRequest& activation_request,
-    DataType type) {
-  // Check for a mismatch between the cache guid or the data type id stored
-  // in `data_type_state` and the one received from sync. A mismatch indicates
-  // that the stored metadata are invalid (e.g. has been manipulated) and
-  // don't belong to the current syncing client.
-  if (data_type_state.cache_guid() != activation_request.cache_guid) {
-    return SyncMetadataConsistency::kCacheGuidMismatch;
-  }
-
-  if (data_type_state.progress_marker().data_type_id() !=
-      GetSpecificsFieldNumberFromDataType(type)) {
-    return SyncMetadataConsistency::kDataTypeIdMismatch;
-  }
-
-  // Check for a mismatch in authenticated account id. The id can change after
-  // restart (and this does not mean the account has changed, this is checked
-  // above by cache_guid mismatch).
-  if (data_type_state.authenticated_obfuscated_gaia_id().empty()) {
-    return SyncMetadataConsistency::kEmptyPersistedAuthenticatedGaiaId;
-  }
-
-  if (data_type_state.authenticated_obfuscated_gaia_id() !=
-      activation_request.authenticated_gaia_id.ToString()) {
-    return SyncMetadataConsistency::kAuthenticatedGaiaIdMismatch;
-  }
-
-  return SyncMetadataConsistency::kMetadataConsistent;
-}
-
 size_t CountDuplicateClientTags(const EntityMetadataMap& metadata_map) {
   absl::flat_hash_set<std::string> client_tag_hashes;
   for (const auto& [storage_key, metadata] : metadata_map) {
@@ -318,6 +267,9 @@ void ClientTagBasedDataTypeProcessor::ConnectIfReady() {
 
   CHECK_EQ(activation_response->data_type_state.cache_guid(),
            activation_request_.cache_guid);
+  CHECK_EQ(
+      activation_response->data_type_state.authenticated_obfuscated_gaia_id(),
+      activation_request_.authenticated_gaia_id.ToString());
 
   activation_response->type_processor =
       std::make_unique<DataTypeProcessorProxy>(
@@ -1537,39 +1489,23 @@ void ClientTagBasedDataTypeProcessor::
     return;
   }
 
-  const SyncMetadataConsistency sync_metadata_consistency =
-      GetSyncMetadataConsistency(entity_tracker_->data_type_state(),
-                                 activation_request_, type_);
+  const sync_pb::DataTypeState& data_type_state =
+      entity_tracker_->data_type_state();
 
-  // TODO(crbug.com/40897441): remove once the account mismatch case is
-  // resolved.
-  const std::string_view type_suffix = DataTypeToHistogramSuffix(type_);
-  base::UmaHistogramEnumeration(
-      base::StrCat({"Sync.DataTypeMetadataConsistency.", type_suffix}),
-      sync_metadata_consistency);
-
-  switch (sync_metadata_consistency) {
-    case SyncMetadataConsistency::kMetadataConsistent:
-      break;
-    case SyncMetadataConsistency::kEmptyPersistedAuthenticatedGaiaId:
-    case SyncMetadataConsistency::kAuthenticatedGaiaIdMismatch: {
-      // Fix the field in place.
-      // TODO(crbug.com/40897441): This doesn't fit the method name. It's also
-      // not clear if this codepath is even required.
-      sync_pb::DataTypeState update_data_type_state =
-          entity_tracker_->data_type_state();
-      update_data_type_state.set_authenticated_obfuscated_gaia_id(
-          activation_request_.authenticated_gaia_id.ToString());
-      entity_tracker_->set_data_type_state(update_data_type_state);
-      break;
-    }
-    // Deeper issues where we need to restart sync for this type.
-    case SyncMetadataConsistency::kCacheGuidMismatch:
-    case SyncMetadataConsistency::kDataTypeIdMismatch:
-      ClearAllTrackedMetadataAndResetState();
-      // Not having `entity_tracker_` results in doing the initial sync again.
-      CHECK(!entity_tracker_);
-      break;
+  // Check for a mismatch between the cache guid, authenticated gaia id, or the
+  // data type id stored in `data_type_state` and the one received from sync. A
+  // mismatch indicates that the stored metadata are invalid (e.g. has been
+  // manipulated) and don't belong to the current syncing client. Note that for
+  // local sync, both `authenticated_obfuscated_gaia_id()` and
+  // `activation_request_.authenticated_gaia_id` are expected to be empty.
+  if (data_type_state.cache_guid() != activation_request_.cache_guid ||
+      data_type_state.authenticated_obfuscated_gaia_id() !=
+          activation_request_.authenticated_gaia_id.ToString() ||
+      data_type_state.progress_marker().data_type_id() !=
+          GetSpecificsFieldNumberFromDataType(type_)) {
+    ClearAllTrackedMetadataAndResetState();
+    // Not having `entity_tracker_` results in doing the initial sync again.
+    CHECK(!entity_tracker_);
   }
 }
 
