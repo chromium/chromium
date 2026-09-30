@@ -554,17 +554,6 @@ OutOfFlowLayoutPart::OutOfFlowLayoutPart(BoxFragmentBuilder* container_builder)
       should_add_outer_fragmentainer_children_(
           !RuntimeEnabledFeatures::FragmentedOofInCbEnabled() &&
           InvolvedInBlockFragmentation(container_builder_)) {
-  // If there are no OOFs inside, we can return early, except if this is the
-  // root. There may be top-layer nodes still to be added. Additionally, for
-  // pagination, we might not have hauled any OOFs inside the fragmentainers
-  // yet. See HandleFragmentation().
-  if (!container_builder_.HasOutOfFlowPositionedCandidates() &&
-      !container_builder_.HasOutOfFlowFragmentainerDescendants() &&
-      !container_builder_.HasMulticolsWithPendingOOFs() &&
-      !container_builder_.IsRoot()) {
-    return;
-  }
-
   const BlockNode& node = Node();
   const ConstraintSpace& space = GetConstraintSpace();
   const WritingDirectionMode writing_direction = space.GetWritingDirection();

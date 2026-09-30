@@ -42,6 +42,20 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   STACK_ALLOCATED();
 
  public:
+  static void Run(BoxFragmentBuilder* builder) {
+    // If there are no OOFs inside, we can skip OOF layout, except if this is
+    // the root. There may be top-layer nodes still to be added. Additionally,
+    // for pagination, we might not have hauled any OOFs inside the
+    // fragmentainers yet. See HandleFragmentation().
+    if (!builder->HasOutOfFlowPositionedCandidates() &&
+        !builder->HasOutOfFlowFragmentainerDescendants() &&
+        !builder->HasMulticolsWithPendingOOFs() && !builder->IsRoot()) {
+      return;
+    }
+
+    OutOfFlowLayoutPart(builder).Run();
+  }
+
   explicit OutOfFlowLayoutPart(BoxFragmentBuilder* container_builder);
   void Run();
 
