@@ -1518,7 +1518,7 @@ TEST_F(EnclaveManagerTest, RenewPINAddsCohortDetails) {
     wrapped_pin_cbor.erase(wrapped_pin_cbor.find(cbor::Value(7)));
     std::vector<uint8_t> encrypted_pin = EnclaveManager::EncryptWrappedPIN(
         security_domain_secret,
-        *cbor::Writer::Write(cbor::Value(wrapped_pin_cbor)));
+        *cbor::Writer::Write(cbor::Value(std::move(wrapped_pin_cbor))));
     wrapped_pin_proto->set_wrapped_pin(
         std::string(base::as_string_view(encrypted_pin)));
     security_domain_service_->SetPinMemberWrappedPin(

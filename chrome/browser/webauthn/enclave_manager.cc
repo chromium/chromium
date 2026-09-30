@@ -656,7 +656,7 @@ cbor::Value BuildPINAndSecurityDomainSecretWrappingEnclaveRequest(
   request.emplace(enclave::kRecoveryKeyStoreCertXml, ToVector(cert_xml));
   request.emplace(enclave::kRecoveryKeyStoreSigXml, ToVector(sig_xml));
   request.emplace(enclave::kRequestWrappedSecretKey, wrapped_secret);
-  return cbor::Value(request);
+  return cbor::Value(std::move(request));
 }
 
 // Build an enclave request to renew a PIN.
