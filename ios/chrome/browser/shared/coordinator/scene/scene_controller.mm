@@ -2963,38 +2963,50 @@ UrlLoadParams UpdateParamsForDinoGame(UrlLoadParams params) {
 #pragma mark - Handling of Destroying the Incognito Profile
 
 - (void)willDestroyIncognitoProfile {
+  if (!_browserLifecycleManager) {
+    // Nothing to do if the UI has not yet been created.
+    return;
+  }
+
+  Browser* incognitoBrowser =
+      _browserLifecycleManager.incognitoInterface.browser;
+
   // Clear the Incognito Browser and notify the TabGrid that its otrBrowser
   // will be destroyed.
   self.mainCoordinator.incognitoBrowser = nil;
 
   if (breadcrumbs::IsEnabled(GetApplicationContext()->GetLocalState())) {
-    BreadcrumbManagerBrowserAgent::FromBrowser(self.incognitoInterface.browser)
+    BreadcrumbManagerBrowserAgent::FromBrowser(incognitoBrowser)
         ->SetLoggingEnabled(false);
   }
 
-  _incognitoWebStateObserver.reset();
-  [self.browserLifecycleManager willDestroyIncognitoProfile];
+  _incognitoWebStateObserver->Reset();
+  [_browserLifecycleManager willDestroyIncognitoProfile];
 }
 
 - (void)incognitoProfileCreated {
-  [self.browserLifecycleManager incognitoProfileCreated];
+  if (!_browserLifecycleManager) {
+    // Nothing to do if the UI has not yet been created.
+    return;
+  }
+
+  [_browserLifecycleManager incognitoProfileCreated];
+
+  Browser* incognitoBrowser =
+      _browserLifecycleManager.incognitoInterface.browser;
+  _incognitoWebStateObserver->Observe(incognitoBrowser->GetWebStateList());
 
   // There should be a new URL loading browser agent for the incognito browser,
   // so set the scene URL loading service on it.
-  UrlLoadingBrowserAgent::FromBrowser(self.incognitoInterface.browser)
+  UrlLoadingBrowserAgent::FromBrowser(incognitoBrowser)
       ->SetSceneService(_sceneURLLoadingService.get());
-  _incognitoWebStateObserver = std::make_unique<
-      base::ScopedObservation<WebStateList, WebStateListObserverBridge>>(
-      _webStateListForwardingObserver.get());
-  _incognitoWebStateObserver->Observe(
-      self.incognitoInterface.browser->GetWebStateList());
   if (self.currentInterface.incognito) {
     [self activateBVCAndMakeCurrentBVCPrimary];
   }
 
   // Always set the new otr Browser for the tablet or grid switcher.
   // Notify the TabGrid with the new Incognito Browser.
-  self.mainCoordinator.incognitoBrowser = self.incognitoInterface.browser;
+  self.mainCoordinator.incognitoBrowser = incognitoBrowser;
 }
 
 #pragma mark - iPad Popover Appearance Propagation
