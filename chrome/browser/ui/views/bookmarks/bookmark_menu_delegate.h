@@ -73,15 +73,6 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
   // - a folder for mobile nodes, if any
   void BuildFullMenu(views::MenuItemView* parent);
 
-  // Makes the menu for `folder` the active menu. `start_index` is the index of
-  // the first child of `folder` to show in the menu.
-  void SetActiveMenu(const BookmarkParentFolder& folder, size_t start_index);
-
-  // Updates the start index of the given `folder` and updates its menu
-  // accordingly.
-  void SetMenuStartIndex(const BookmarkParentFolder& folder,
-                         size_t start_index);
-
   // Returns the id given to the next menu.
   int next_menu_id() const { return next_menu_id_; }
 
@@ -91,9 +82,6 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
             ->GetBookmarkMergedSurfaceService());
   }
   const BookmarkMergedSurfaceService* GetBookmarkMergedSurfaceService() const;
-
-  // Returns the menu.
-  views::MenuItemView* menu() { return menu_; }
 
   // Returns the context menu, or NULL if the context menu isn't showing.
   views::MenuItemView* context_menu() {
@@ -239,29 +227,9 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
   virtual std::vector<raw_ref<views::MenuItemView>>
   GetAndUpdateStaleMenuArtifacts();
 
- private:
-  friend class BookmarkMenuDelegateTest;
-
   using MenuIDToNodeMap = std::map<int, BookmarkFolderOrURL>;
   using NodeToMenuMap =
       std::map<BookmarkFolderOrURL, raw_ptr<views::MenuItemView>>;
-
-  // Creates a menu. This uses BuildMenu() to recursively populate the menu.
-  views::MenuItemView* CreateMenu(const BookmarkParentFolder& parent,
-                                  size_t start_child_index);
-
-  // Returns true if `folder` has child nodes.
-  bool ShouldBuildPermanentNode(const BookmarkParentFolder& folder) const;
-
-  // Builds menus for the 'other' and 'mobile' nodes if they're not empty,
-  // adding them to `parent_menu_item_`.
-  void BuildMenusForPermanentNodes();
-
-  // Builds a submenu item for the provided bookmark folder, adding it to
-  // `parent_menu`.
-  void BuildMenuForFolder(const BookmarkParentFolder& folder,
-                          const ui::ImageModel& icon,
-                          views::MenuItemView* parent_menu);
 
   // Creates an entry in menu for each child node of `folder` starting at
   // `start_child_index`.
@@ -291,6 +259,30 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
   void AddBookmarkNode(const bookmarks::BookmarkNode* node,
                        views::MenuItemView* new_parent_menu,
                        size_t new_index);
+
+  // Accessors for state subclasses need. The maps are returned by const
+  // reference so that mutation keeps going through `AddMenuToMaps()`.
+  views::MenuDelegate* real_delegate() { return real_delegate_; }
+  const MenuIDToNodeMap& menu_id_to_node_map() const {
+    return menu_id_to_node_map_;
+  }
+  const NodeToMenuMap& node_to_menu_map() const { return node_to_menu_map_; }
+
+ private:
+  friend class BookmarkMenuDelegateTest;
+
+  // Returns true if `folder` has child nodes.
+  bool ShouldBuildPermanentNode(const BookmarkParentFolder& folder) const;
+
+  // Builds menus for the 'other' and 'mobile' nodes if they're not empty,
+  // adding them to `parent_menu_item_`.
+  void BuildMenusForPermanentNodes();
+
+  // Builds a submenu item for the provided bookmark folder, adding it to
+  // `parent_menu`.
+  void BuildMenuForFolder(const BookmarkParentFolder& folder,
+                          const ui::ImageModel& icon,
+                          views::MenuItemView* parent_menu);
 
   // Adds or removes the bookmarks title + separator as necessary.
   // Returns the updated menu if there were changes; otherwise, returns null.
@@ -350,9 +342,6 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
   // Maps from menu id to BookmarkNode.
   MenuIDToNodeMap menu_id_to_node_map_;
 
-  // Current menu.
-  raw_ptr<views::MenuItemView> menu_;
-
   // If non-NULL this is the |parent| passed to BuildFullMenu and is NOT owned
   // by us.
   raw_ptr<views::MenuItemView> parent_menu_item_;
@@ -368,10 +357,6 @@ class BookmarkMenuDelegate : public BookmarkMergedSurfaceServiceObserver,
 
   // Maps from node to menu.
   NodeToMenuMap node_to_menu_map_;
-
-  // For root menu items created by `CreateMenu`, stores the `start_child_idx`
-  // used when building the menu.
-  std::map<BookmarkParentFolder, size_t> node_start_child_idx_map_;
 
   // Nodes whose submenus have been built (i.e. `BuildMenu` was called on them).
   std::set<BookmarkParentFolder> built_nodes_;

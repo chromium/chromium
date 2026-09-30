@@ -17,8 +17,8 @@
 #include "ui/views/controls/menu/menu_delegate.h"
 
 class BookmarkBarView;
+class BookmarkBarMenuDelegate;
 class BookmarkMenuControllerObserver;
-class BookmarkMenuDelegate;
 class BrowserWindowInterface;
 
 namespace ui {
@@ -139,7 +139,7 @@ class BookmarkMenuController : public BookmarkMergedSurfaceServiceObserver,
 
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
-  std::unique_ptr<BookmarkMenuDelegate> menu_delegate_;
+  std::unique_ptr<BookmarkBarMenuDelegate> menu_delegate_;
 
   // The folder we're showing the contents of.
   const BookmarkParentFolder folder_;

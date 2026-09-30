@@ -15,6 +15,7 @@ source_set("bookmarks") {
   public = [
     "bookmark_account_storage_move_dialog.h",
     "bookmark_account_storage_move_dialog_delegate.h",
+    "bookmark_bar_menu_delegate.h",
     "bookmark_bar_view.h",
     "bookmark_bubble_view.h",
     "bookmark_button.h",
@@ -66,6 +67,7 @@ source_set("impl") {
   sources = [
     "bookmark_account_storage_move_dialog.cc",
     "bookmark_account_storage_move_dialog_delegate.cc",
+    "bookmark_bar_menu_delegate.cc",
     "bookmark_bar_view.cc",
     "bookmark_bubble_view.cc",
     "bookmark_button.cc",

@@ -10,9 +10,9 @@
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service.h"
 #include "chrome/browser/bookmarks/bookmark_merged_surface_service_observer.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_bar_menu_delegate.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_menu_controller_observer.h"
-#include "chrome/browser/ui/views/bookmarks/bookmark_menu_delegate.h"
 #include "content/public/browser/page_navigator.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -32,7 +32,7 @@ BookmarkMenuController::BookmarkMenuController(
     const BookmarkParentFolder& folder,
     size_t start_child_index,
     bool for_drop)
-    : menu_delegate_(std::make_unique<BookmarkMenuDelegate>(
+    : menu_delegate_(std::make_unique<BookmarkBarMenuDelegate>(
           browser,
           parent,
           this,

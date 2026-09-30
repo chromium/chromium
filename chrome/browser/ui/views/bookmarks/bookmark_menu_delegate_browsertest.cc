@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_bar_menu_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -91,66 +93,86 @@ class BookmarkMenuDelegateTest : public InProcessBrowserTest {
   void TearDownOnMainThread() override {
     DestroyDelegate();
 
-    root_menu_.reset();
-    bookmark_menu_delegate_.reset();
-
     InProcessBrowserTest::TearDownOnMainThread();
   }
 
  protected:
+  // Returns the delegate under test. Exactly one of the two delegates is alive
+  // at a time; which one depends on whether the test used NewDelegate() or one
+  // of the NewAndBuildFullMenu*() helpers.
+  BookmarkMenuDelegate* active_delegate() const {
+    CHECK(app_menu_delegate_ || bookmark_menu_delegate_)
+        << "Call NewDelegate() or NewAndBuildFullMenu*() first.";
+    if (app_menu_delegate_) {
+      return app_menu_delegate_.get();
+    }
+    return bookmark_menu_delegate_.get();
+  }
+
   bool ShouldCloseOnRemove(const bookmarks::BookmarkNode* node) const {
-    return bookmark_menu_delegate_->ShouldCloseOnRemove(
+    return active_delegate()->ShouldCloseOnRemove(
         BookmarkMenuDelegate::BookmarkFolderOrURL(node));
   }
 
-  // Destroys the delegate. Do this rather than directly deleting
-  // |bookmark_menu_delegate_| as otherwise the menu is leaked.
+  // Destroys the active delegate. Do this rather than directly deleting the
+  // delegate as otherwise the bookmark bar menu is leaked.
   void DestroyDelegate() {
-    if (!bookmark_menu_delegate_.get()) {
-      return;
+    if (bookmark_menu_delegate_) {
+      views::MenuItemView* menu = bookmark_menu_delegate_->menu();
+      bookmark_menu_delegate_.reset();
+      // Since we never show the menu we need to pass the MenuItemView to
+      // MenuRunner so that the MenuItemView is destroyed.
+      if (menu) {
+        views::MenuRunner menu_runner(base::WrapUnique(menu), 0);
+      }
     }
-
-    views::MenuItemView* menu = bookmark_menu_delegate_->menu();
-    bookmark_menu_delegate_.reset();
-    // Since we never show the menu we need to pass the MenuItemView to
-    // MenuRunner so that the MenuItemView is destroyed.
-    if (menu) {
-      views::MenuRunner menu_runner(base::WrapUnique(menu), 0);
-    }
+    // The app menu delegate holds raw_ptrs into `root_menu_`, so it has to be
+    // destroyed before the menu it points into.
+    app_menu_delegate_.reset();
+    root_menu_.reset();
   }
 
   void NewDelegate() {
     DestroyDelegate();
 
-    bookmark_menu_delegate_ = std::make_unique<BookmarkMenuDelegate>(
+    bookmark_menu_delegate_ = std::make_unique<BookmarkBarMenuDelegate>(
         browser(), nullptr, &test_delegate_, BookmarkLaunchLocation::kNone);
   }
 
+  // Builds the app-menu style menu. This path embeds the bookmarks into a
+  // caller-owned parent menu, which is what AppMenu does, so it uses
+  // BookmarkMenuDelegate directly rather than the bookmark bar subclass.
   void NewAndBuildFullMenu() {
+    DestroyDelegate();
+
     root_menu_ = std::make_unique<views::MenuItemView>();
     // Add a placeholder here because in practice the full menu is never
     // empty.
     root_menu_->AppendTitle(std::u16string());
     root_menu_->CreateSubmenu();
-    NewDelegate();
-    bookmark_menu_delegate_->BuildFullMenu(root_menu_.get());
+    app_menu_delegate_ = std::make_unique<BookmarkMenuDelegate>(
+        browser(), nullptr, &test_delegate_, BookmarkLaunchLocation::kNone);
+    app_menu_delegate_->BuildFullMenu(root_menu_.get());
   }
 
   void NewAndBuildFullMenuWithBookmarksTitle() {
     // Remove the managed bookmarks node.
     browser()->GetProfile()->GetPrefs()->SetList(
         bookmarks::prefs::kManagedBookmarks, base::ListValue());
+    DestroyDelegate();
+
     root_menu_ = std::make_unique<views::MenuItemView>();
     root_menu_->CreateSubmenu();
     // Add a placeholder to ensure the bookmarks title is added.
     root_menu_->AppendTitle(std::u16string());
-    NewDelegate();
-    bookmark_menu_delegate_->BuildFullMenu(root_menu_.get());
+    app_menu_delegate_ = std::make_unique<BookmarkMenuDelegate>(
+        browser(), nullptr, &test_delegate_, BookmarkLaunchLocation::kNone);
+    app_menu_delegate_->BuildFullMenu(root_menu_.get());
   }
 
   std::variant<const BookmarkNode*, BookmarkParentFolder> GetNodeForMenuItem(
       views::MenuItemView* menu) {
-    const auto& node_map = bookmark_menu_delegate_->menu_id_to_node_map_;
+    const auto& node_map = active_delegate()->menu_id_to_node_map_;
     auto iter = node_map.find(menu->GetCommand());
     if (iter == node_map.end()) {
       return nullptr;
@@ -164,7 +186,7 @@ class BookmarkMenuDelegateTest : public InProcessBrowserTest {
     return iter->second.GetIfBookmarkURL();
   }
 
-  int next_menu_id() { return bookmark_menu_delegate_->next_menu_id_; }
+  int next_menu_id() { return active_delegate()->next_menu_id_; }
 
   // Forces all the menus to load by way of invoking WillShowMenu() on all menu
   // items of tyep SUBMENU.
@@ -173,7 +195,7 @@ class BookmarkMenuDelegateTest : public InProcessBrowserTest {
 
     for (views::MenuItemView* item : menu->GetSubmenu()->GetMenuItems()) {
       if (item->GetType() == views::MenuItemView::Type::kSubMenu) {
-        bookmark_menu_delegate_->WillShowMenu(item);
+        active_delegate()->WillShowMenu(item);
         LoadAllMenus(item);
       }
     }
@@ -193,13 +215,18 @@ class BookmarkMenuDelegateTest : public InProcessBrowserTest {
         ->managed_node();
   }
 
-  // Returns the menu being used for the test.
+  // Returns the menu being used for the test. This is the root menu owned by
+  // the fixture for the app menu path, and the bookmark bar delegate's own root
+  // menu otherwise.
   views::MenuItemView* menu() {
-    return root_menu_.get() ? root_menu_.get()
-                            : bookmark_menu_delegate_->menu();
+    if (root_menu_) {
+      return root_menu_.get();
+    }
+    return bookmark_menu_delegate_ ? bookmark_menu_delegate_->menu() : nullptr;
   }
 
-  std::unique_ptr<BookmarkMenuDelegate> bookmark_menu_delegate_;
+  std::unique_ptr<BookmarkBarMenuDelegate> bookmark_menu_delegate_;
+  std::unique_ptr<BookmarkMenuDelegate> app_menu_delegate_;
 
   std::unique_ptr<views::MenuItemView> root_menu_;
 
@@ -282,7 +309,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, VerifyLazyLoad) {
   EXPECT_EQ(0u, f1_item->GetSubmenu()->GetMenuItems().size());
   // Will show triggers a load.
   int next_id_before_load = next_menu_id();
-  bookmark_menu_delegate_->WillShowMenu(f1_item);
+  active_delegate()->WillShowMenu(f1_item);
   // f1 should have loaded its children.
   EXPECT_EQ(next_id_before_load + 2 * AppMenuModel::kNumUnboundedMenuTypes,
             next_menu_id());
@@ -300,10 +327,10 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, VerifyLazyLoad) {
   EXPECT_EQ(0u, f11_item->GetSubmenu()->GetMenuItems().size());
 
   next_id_before_load = next_menu_id();
-  bookmark_menu_delegate_->WillShowMenu(f11_item);
+  active_delegate()->WillShowMenu(f11_item);
   // Invoke WillShowMenu() twice to make sure the second call doesn't cause
   // problems.
-  bookmark_menu_delegate_->WillShowMenu(f11_item);
+  active_delegate()->WillShowMenu(f11_item);
   // F11 should have loaded its single child (f11a).
   EXPECT_EQ(next_id_before_load + AppMenuModel::kNumUnboundedMenuTypes,
             next_menu_id());
@@ -327,9 +354,9 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, RemoveBookmarks) {
       {
           f1->children()[1].get(),
       };
-  bookmark_menu_delegate_->WillRemoveBookmarks(nodes_to_remove);
+  active_delegate()->WillRemoveBookmarks(nodes_to_remove);
   nodes_to_remove.clear();
-  bookmark_menu_delegate_->DidRemoveBookmarks();
+  active_delegate()->DidRemoveBookmarks();
 }
 
 // Verifies ShouldCloseOnRemove() for account bookmark bar, bookmark bar
@@ -429,13 +456,13 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest,
   for (const BookmarkNode* node : bookmark_bar_has_children) {
     nodes_to_remove.push_back(node);
   }
-  bookmark_menu_delegate_->WillRemoveBookmarks(nodes_to_remove);
+  active_delegate()->WillRemoveBookmarks(nodes_to_remove);
   nodes_to_remove.clear();
   while (bookmark_bar_has_children.size()) {
     model()->Remove(bookmark_bar_has_children[0],
                     bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
   }
-  bookmark_menu_delegate_->DidRemoveBookmarks();
+  active_delegate()->DidRemoveBookmarks();
 
   // The placeholder, "other" and mobile bookmark folders, and their separator
   // remain.
@@ -464,13 +491,13 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest,
   for (const BookmarkNode* node : other_folder_children) {
     nodes_to_remove.push_back(node);
   }
-  bookmark_menu_delegate_->WillRemoveBookmarks(nodes_to_remove);
+  active_delegate()->WillRemoveBookmarks(nodes_to_remove);
   nodes_to_remove.clear();
   while (other_folder_children.size()) {
     model()->Remove(other_folder_children[0],
                     bookmarks::metrics::BookmarkEditSource::kOther, FROM_HERE);
   }
-  bookmark_menu_delegate_->DidRemoveBookmarks();
+  active_delegate()->DidRemoveBookmarks();
 
   EXPECT_EQ(1u, other_node_menu->GetSubmenu()->children().size());
 }
@@ -492,17 +519,17 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DragAndDropAfterNode) {
                                    gfx::PointF(menu_loc),
                                    ui::DragDropTypes::DRAG_COPY);
   auto* f1a_item = root_item->GetSubmenu()->GetMenuItemAt(0);
-  EXPECT_TRUE(bookmark_menu_delegate_->CanDrop(f1a_item, drop_data));
+  EXPECT_TRUE(active_delegate()->CanDrop(f1a_item, drop_data));
   EXPECT_EQ(f1->children().size(), 2u);
 
   views::MenuDelegate::DropPosition drop_position =
       views::MenuDelegate::DropPosition::kAfter;
-  EXPECT_EQ(bookmark_menu_delegate_->GetDropOperation(f1a_item, target_event,
-                                                      &drop_position),
+  EXPECT_EQ(active_delegate()->GetDropOperation(f1a_item, target_event,
+                                                &drop_position),
             ui::mojom::DragOperation::kCopy);
 
-  auto drop_cb = bookmark_menu_delegate_->GetDropCallback(
-      f1a_item, drop_position, target_event);
+  auto drop_cb =
+      active_delegate()->GetDropCallback(f1a_item, drop_position, target_event);
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
   std::move(drop_cb).Run(target_event, output_drag_op,
                          /*drag_image_layer_owner=*/nullptr);
@@ -531,17 +558,17 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DragAndDropOnNode) {
                                    ui::DragDropTypes::DRAG_COPY);
   auto* f11_item = root_item->GetSubmenu()->GetMenuItemAt(1);
   const BookmarkNode* f11_node = f1->children()[1].get();
-  EXPECT_TRUE(bookmark_menu_delegate_->CanDrop(f11_item, drop_data));
+  EXPECT_TRUE(active_delegate()->CanDrop(f11_item, drop_data));
   EXPECT_EQ(f11_node->children().size(), 1u);
 
   views::MenuDelegate::DropPosition drop_position =
       views::MenuDelegate::DropPosition::kOn;
-  EXPECT_EQ(bookmark_menu_delegate_->GetDropOperation(f11_item, target_event,
-                                                      &drop_position),
+  EXPECT_EQ(active_delegate()->GetDropOperation(f11_item, target_event,
+                                                &drop_position),
             ui::mojom::DragOperation::kCopy);
 
-  auto drop_cb = bookmark_menu_delegate_->GetDropCallback(
-      f11_item, drop_position, target_event);
+  auto drop_cb =
+      active_delegate()->GetDropCallback(f11_item, drop_position, target_event);
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
   std::move(drop_cb).Run(target_event, output_drag_op,
                          /*drag_image_layer_owner=*/nullptr);
@@ -569,17 +596,17 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DragAndDropBeforeNode) {
                                    gfx::PointF(menu_loc),
                                    ui::DragDropTypes::DRAG_COPY);
   auto* f11_item = root_item->GetSubmenu()->GetMenuItemAt(1);
-  EXPECT_TRUE(bookmark_menu_delegate_->CanDrop(f11_item, drop_data));
+  EXPECT_TRUE(active_delegate()->CanDrop(f11_item, drop_data));
   EXPECT_EQ(f1->children().size(), 2u);
 
   views::MenuDelegate::DropPosition drop_position =
       views::MenuDelegate::DropPosition::kBefore;
-  EXPECT_EQ(bookmark_menu_delegate_->GetDropOperation(f11_item, target_event,
-                                                      &drop_position),
+  EXPECT_EQ(active_delegate()->GetDropOperation(f11_item, target_event,
+                                                &drop_position),
             ui::mojom::DragOperation::kCopy);
 
-  auto drop_cb = bookmark_menu_delegate_->GetDropCallback(
-      f11_item, drop_position, target_event);
+  auto drop_cb =
+      active_delegate()->GetDropCallback(f11_item, drop_position, target_event);
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
   std::move(drop_cb).Run(target_event, output_drag_op,
                          /*drag_image_layer_owner=*/nullptr);
@@ -607,10 +634,10 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DropCallbackModelChanged) {
                                    gfx::PointF(menu_loc),
                                    ui::DragDropTypes::DRAG_COPY);
   auto* f1_item = root_item->GetSubmenu()->GetMenuItemAt(1);
-  EXPECT_TRUE(bookmark_menu_delegate_->CanDrop(f1_item, drop_data));
+  EXPECT_TRUE(active_delegate()->CanDrop(f1_item, drop_data));
   EXPECT_EQ(f1->children().size(), 2u);
 
-  auto drop_cb = bookmark_menu_delegate_->GetDropCallback(
+  auto drop_cb = active_delegate()->GetDropCallback(
       f1_item, views::MenuDelegate::DropPosition::kAfter, target_event);
   model()->AddURL(model()->bookmark_bar_node(), 2, u"z1",
                   GURL(std::string(kBasePath) + "z1"));
@@ -637,12 +664,12 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DragAndDropInvalid) {
   auto* managed_folder_menu = root_item->GetSubmenu()->GetMenuItemAt(2);
   ASSERT_EQ(managed_folder_menu->title(), managed_node()->GetTitle());
   // Calling `CanDrop()` is required as it sets `drop_data_`.
-  ASSERT_TRUE(bookmark_menu_delegate_->CanDrop(managed_folder_menu, drop_data));
+  ASSERT_TRUE(active_delegate()->CanDrop(managed_folder_menu, drop_data));
 
   views::MenuDelegate::DropPosition drop_position =
       views::MenuDelegate::DropPosition::kBefore;
-  EXPECT_EQ(bookmark_menu_delegate_->GetDropOperation(
-                managed_folder_menu, target_event, &drop_position),
+  EXPECT_EQ(active_delegate()->GetDropOperation(managed_folder_menu,
+                                                target_event, &drop_position),
             ui::mojom::DragOperation::kNone);
 
   // Drop before mobile node.
@@ -656,20 +683,20 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DragAndDropInvalid) {
   auto* mobile_folder_menu =
       root_item->GetSubmenu()->GetMenuItemAt(mobile_folder_menu_index);
   ASSERT_EQ(mobile_folder_menu->title(), model()->mobile_node()->GetTitle());
-  ASSERT_TRUE(bookmark_menu_delegate_->CanDrop(mobile_folder_menu, drop_data));
+  ASSERT_TRUE(active_delegate()->CanDrop(mobile_folder_menu, drop_data));
 
   drop_position = views::MenuDelegate::DropPosition::kBefore;
-  EXPECT_EQ(bookmark_menu_delegate_->GetDropOperation(
-                mobile_folder_menu, target_event, &drop_position),
+  EXPECT_EQ(active_delegate()->GetDropOperation(mobile_folder_menu,
+                                                target_event, &drop_position),
             ui::mojom::DragOperation::kNone);
 
   // Drop after mobile node.
 
-  ASSERT_TRUE(bookmark_menu_delegate_->CanDrop(mobile_folder_menu, drop_data));
+  ASSERT_TRUE(active_delegate()->CanDrop(mobile_folder_menu, drop_data));
 
   drop_position = views::MenuDelegate::DropPosition::kAfter;
-  EXPECT_EQ(bookmark_menu_delegate_->GetDropOperation(
-                mobile_folder_menu, target_event, &drop_position),
+  EXPECT_EQ(active_delegate()->GetDropOperation(mobile_folder_menu,
+                                                target_event, &drop_position),
             ui::mojom::DragOperation::kNone);
 
   // Drop after other node.
@@ -677,11 +704,11 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DragAndDropInvalid) {
   auto* other_folder_menu =
       root_item->GetSubmenu()->GetMenuItemAt(mobile_folder_menu_index - 1);
   ASSERT_EQ(other_folder_menu->title(), model()->other_node()->GetTitle());
-  ASSERT_TRUE(bookmark_menu_delegate_->CanDrop(other_folder_menu, drop_data));
+  ASSERT_TRUE(active_delegate()->CanDrop(other_folder_menu, drop_data));
 
   drop_position = views::MenuDelegate::DropPosition::kAfter;
-  EXPECT_EQ(bookmark_menu_delegate_->GetDropOperation(
-                other_folder_menu, target_event, &drop_position),
+  EXPECT_EQ(active_delegate()->GetDropOperation(other_folder_menu, target_event,
+                                                &drop_position),
             ui::mojom::DragOperation::kNone);
 
   // Drop on url.
@@ -690,11 +717,11 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DragAndDropInvalid) {
   ASSERT_EQ(
       url_item->title(),
       bookmark_service()->GetNodeAtIndex(bookmark_bar_folder, 0)->GetTitle());
-  ASSERT_TRUE(bookmark_menu_delegate_->CanDrop(url_item, drop_data));
+  ASSERT_TRUE(active_delegate()->CanDrop(url_item, drop_data));
 
   drop_position = views::MenuDelegate::DropPosition::kOn;
-  EXPECT_EQ(bookmark_menu_delegate_->GetDropOperation(url_item, target_event,
-                                                      &drop_position),
+  EXPECT_EQ(active_delegate()->GetDropOperation(url_item, target_event,
+                                                &drop_position),
             ui::mojom::DragOperation::kNone);
 }
 
@@ -711,7 +738,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DragAndDropAfterManagedNode) {
   ui::DropTargetEvent target_event(drop_data, gfx::PointF(), gfx::PointF(),
                                    ui::DragDropTypes::DRAG_LINK);
   // Calling `CanDrop()` is required as it sets `drop_data_`.
-  ASSERT_TRUE(bookmark_menu_delegate_->CanDrop(managed_folder_menu, drop_data));
+  ASSERT_TRUE(active_delegate()->CanDrop(managed_folder_menu, drop_data));
   BookmarkParentFolder bookmark_bar_folder(
       BookmarkParentFolder::BookmarkBarFolder());
   size_t bookmark_bar_nodes_size =
@@ -721,11 +748,11 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DragAndDropAfterManagedNode) {
   // Drop after managed node.
   views::MenuDelegate::DropPosition drop_position =
       views::MenuDelegate::DropPosition::kAfter;
-  EXPECT_EQ(bookmark_menu_delegate_->GetDropOperation(
-                managed_folder_menu, target_event, &drop_position),
+  EXPECT_EQ(active_delegate()->GetDropOperation(managed_folder_menu,
+                                                target_event, &drop_position),
             ui::mojom::DragOperation::kLink);
 
-  auto drop_cb = bookmark_menu_delegate_->GetDropCallback(
+  auto drop_cb = active_delegate()->GetDropCallback(
       managed_folder_menu, drop_position, target_event);
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
   std::move(drop_cb).Run(target_event, output_drag_op,
@@ -763,16 +790,16 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest, DragAndDropBeforeOtherNode) {
   ui::DropTargetEvent target_event(drop_data, gfx::PointF(), gfx::PointF(),
                                    ui::DragDropTypes::DRAG_LINK);
   // Calling `CanDrop()` is required as it sets `drop_data_`.
-  ASSERT_TRUE(bookmark_menu_delegate_->CanDrop(other_folder_menu, drop_data));
+  ASSERT_TRUE(active_delegate()->CanDrop(other_folder_menu, drop_data));
 
   // Drop before other node.
   views::MenuDelegate::DropPosition drop_position =
       views::MenuDelegate::DropPosition::kBefore;
-  EXPECT_EQ(bookmark_menu_delegate_->GetDropOperation(
-                other_folder_menu, target_event, &drop_position),
+  EXPECT_EQ(active_delegate()->GetDropOperation(other_folder_menu, target_event,
+                                                &drop_position),
             ui::mojom::DragOperation::kLink);
 
-  auto drop_cb = bookmark_menu_delegate_->GetDropCallback(
+  auto drop_cb = active_delegate()->GetDropCallback(
       other_folder_menu, drop_position, target_event);
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
   std::move(drop_cb).Run(target_event, output_drag_op,
@@ -824,8 +851,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest,
   EXPECT_TRUE(f2_item->GetSubmenu()->GetMenuItems().empty());
 
   // Load the two menus. The move should now be reflected.
-  bookmark_menu_delegate_->WillShowMenu(f1_item);
-  bookmark_menu_delegate_->WillShowMenu(f2_item);
+  active_delegate()->WillShowMenu(f1_item);
+  active_delegate()->WillShowMenu(f2_item);
   EXPECT_EQ(1u, f1_item->GetSubmenu()->GetMenuItems().size());
   EXPECT_EQ(1u, f2_item->GetSubmenu()->GetMenuItems().size());
 
@@ -921,7 +948,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest,
   views::MenuItemView* root_item = menu();
   views::MenuItemView* other_node_menu =
       root_item->GetSubmenu()->GetMenuItemAt(7);
-  bookmark_menu_delegate_->WillShowMenu(other_node_menu);
+  active_delegate()->WillShowMenu(other_node_menu);
 
   EXPECT_EQ(other_node_menu->GetSubmenu()->GetMenuItems().size(), 4u);
   EXPECT_EQ(other_node_menu->GetSubmenu()->children().size(), 5u);
