@@ -31,7 +31,6 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/sync/base/time.h"
 #include "net/base/network_change_notifier.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace web_app {
 

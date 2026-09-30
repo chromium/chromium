@@ -1896,14 +1896,6 @@ BASE_FEATURE(kWebAppMigratePreinstalledChat, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kWebAppInstallDialog, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kWebAppInstallDialogWinPin, base::FEATURE_DISABLED_BY_DEFAULT);
-
-// When this feature is enabled, the web app sync code will process the
-// `migrated_from_manifest_id` field in its sync data to possibly treat new
-// applications that come in via sync as being the result of a migration.
-// Unless `blink::features::kWebAppMigrationApi` is enabled on some other
-// synced profile, no such data should exist in sync.
-BASE_FEATURE(kWebAppHandleAppMigrationViaSync,
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kWebAppUpgradeToDatabaseVersion6,

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/web_applications/commands/set_user_display_mode_command.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
@@ -18,7 +17,6 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace web_app {
 
