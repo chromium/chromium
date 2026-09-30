@@ -41,10 +41,10 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class BottomSheetMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private BottomSheetObserver mObserver;
-    @Mock private BottomSheetContent mContent;
-    @Mock private View mContentView;
-    @Mock private View mToolbarView;
+    private @Mock BottomSheetObserver mObserver;
+    private @Mock BottomSheetContent mContent;
+    private @Mock View mContentView;
+    private @Mock View mToolbarView;
 
     private PropertyModel mModel;
     private BottomSheetMediator mMediator;

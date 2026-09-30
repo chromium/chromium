@@ -37,10 +37,10 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 public class BottomSheetViewBinderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private BottomSheetView mView;
-    @Mock private TouchHandler mTouchHandler;
-    @Mock private OnClickListener mClickListener;
-    @Mock private Runnable mCallback;
+    private @Mock BottomSheetView mView;
+    private @Mock TouchHandler mTouchHandler;
+    private @Mock OnClickListener mClickListener;
+    private @Mock Runnable mCallback;
     private PropertyModel mModel;
 
     @Before

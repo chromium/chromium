@@ -68,25 +68,26 @@ public class BottomSheetControllerImplUnitTest {
     private static final int APP_HEADER_HEIGHT = 42;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private ScrimManager mScrimManager;
-    @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
-    @Mock private ViewGroup mRoot;
-    @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
-    @Mock private AppHeaderState mAppHeaderState;
-    @Mock private BottomSheet mBottomSheet;
-    @Mock private BottomSheetView mBottomSheetView;
-    @Mock private BottomSheetContent mSheetContent;
-    @Mock private InsetObserver mInsetObserver;
-    @Captor ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
-    @Captor ArgumentCaptor<PropertyModel> mScrimPropertyModelCaptor;
-
-    private BottomSheetControllerImpl mController;
     private final OneshotSupplierImpl<ScrimManager> mScrimManagerSupplier =
             new OneshotSupplierImpl<>();
-    private Window mWindow;
     private final OneshotSupplierImpl<ViewGroup> mRootSupplier = new OneshotSupplierImpl<>();
     private final SettableMonotonicObservableSupplier<Integer> mEdgeToEdgeBottomInsetSupplier =
             ObservableSuppliers.createMonotonic();
+
+    private @Mock ScrimManager mScrimManager;
+    private @Mock KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
+    private @Mock ViewGroup mRoot;
+    private @Mock DesktopWindowStateManager mDesktopWindowStateManager;
+    private @Mock AppHeaderState mAppHeaderState;
+    private @Mock BottomSheet mBottomSheet;
+    private @Mock BottomSheetView mBottomSheetView;
+    private @Mock BottomSheetContent mSheetContent;
+    private @Mock InsetObserver mInsetObserver;
+    private @Captor ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
+    private @Captor ArgumentCaptor<PropertyModel> mScrimPropertyModelCaptor;
+
+    private BottomSheetControllerImpl mController;
+    private Window mWindow;
 
     @Before
     public void setUp() {

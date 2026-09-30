@@ -84,17 +84,16 @@ public class BottomSheetUnitTest {
     private static final int SHEET_PEEK_HEIGHT = 60;
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private View mSheetBackground;
-    @Mock private ShadowLayerView mShadowLayerView;
-    @Mock private BottomSheetContent mSheetContent;
-    @Mock private TouchRestrictingFrameLayout mToolbarHolder;
-    @Mock private InsetObserver mInsetObserver;
-    @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
-    @Mock private BottomSheetObserver mBottomSheetObserver;
-    @Mock private Callback<Throwable> mExceptionReporter;
+    private @Mock View mSheetBackground;
+    private @Mock ShadowLayerView mShadowLayerView;
+    private @Mock BottomSheetContent mSheetContent;
+    private @Mock TouchRestrictingFrameLayout mToolbarHolder;
+    private @Mock InsetObserver mInsetObserver;
+    private @Mock KeyboardVisibilityDelegate mKeyboardDelegate;
+    private @Mock BottomSheetObserver mBottomSheetObserver;
+    private @Mock Callback<Throwable> mExceptionReporter;
 
-    @Captor
-    private ArgumentCaptor<InsetObserver.WindowInsetsAnimationListener>
+    private @Captor ArgumentCaptor<InsetObserver.WindowInsetsAnimationListener>
             mInsetsAnimationListenerCaptor;
 
     private SettableNonNullObservableSupplier<Integer> mKeyboardInsetSupplier;
