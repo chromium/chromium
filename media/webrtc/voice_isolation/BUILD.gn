@@ -72,6 +72,7 @@ if (chrome_wide_echo_cancellation_supported) {
     testonly = true
     sources = [ "voice_isolation_wav_tool.cc" ]
     deps = [
+      "//base",
       "//components/optimization_guide/core/inference:op_resolver",
       "//media/webrtc",
     ]

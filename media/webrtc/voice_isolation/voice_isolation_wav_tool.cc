@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -29,6 +30,8 @@
 #include "third_party/tflite/src/tensorflow/lite/model_builder.h"
 
 int main(int argc, char** argv) {
+  // Needed by singletons and histograms, e.g. the ThreadPool startup metrics.
+  base::AtExitManager at_exit_manager;
   base::CommandLine::Init(argc, argv);
   logging::LoggingSettings settings;
   settings.logging_dest = logging::LOG_TO_STDERR;
