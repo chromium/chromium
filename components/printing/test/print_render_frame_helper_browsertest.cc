@@ -13,6 +13,7 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -36,14 +37,26 @@
 #include "printing/print_job_constants.h"
 #include "printing/printing_utils.h"
 #include "printing/units.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/css/page_orientation.h"
+#include "third_party/blink/public/common/css/page_size_type.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/public/mojom/input/focus_type.mojom-shared.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_local_frame.h"
+#include "third_party/blink/public/web/web_node.h"
+#include "third_party/blink/public/web/web_plugin.h"
+#include "third_party/blink/public/web/web_plugin_params.h"
+#include "third_party/blink/public/web/web_print_page_description.h"
+#include "third_party/blink/public/web/web_print_params.h"
 #include "third_party/blink/public/web/web_range.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size_f.h"
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #include "components/printing/browser/print_manager_utils.h"
@@ -498,6 +511,67 @@ class TestPrintManagerHost
   bool print_dialog_user_response_ = true;
   int accessibility_tree_set_count_ = 0;
   mojo::AssociatedReceiver<mojom::PrintManagerHost> receiver_{this};
+};
+
+class FakeWebPlugin : public blink::WebPlugin {
+ public:
+  FakeWebPlugin() = default;
+  FakeWebPlugin(const FakeWebPlugin&) = delete;
+  FakeWebPlugin& operator=(const FakeWebPlugin&) = delete;
+
+  // blink::WebPlugin:
+  bool Initialize(blink::WebPluginContainer* container) override {
+    container_ = container;
+    return true;
+  }
+  void Destroy() override {
+    container_ = nullptr;
+    delete this;
+  }
+  blink::WebPluginContainer* Container() const override { return container_; }
+  bool SupportsKeyboardFocus() const override { return true; }
+  void UpdateAllLifecyclePhases(blink::DocumentUpdateReason) override {}
+  void Paint(cc::PaintCanvas*, const gfx::Rect&) override {}
+  void UpdateGeometry(const gfx::Rect& window_rect,
+                      const gfx::Rect& clip_rect,
+                      const gfx::Rect& unobscured_rect,
+                      bool is_visible) override {}
+  void UpdateFocus(bool focused, blink::mojom::FocusType) override {}
+  void UpdateVisibility(bool) override {}
+  blink::WebInputEventResult HandleInputEvent(
+      const blink::WebCoalescedInputEvent&,
+      ui::Cursor*) override {
+    return blink::WebInputEventResult::kNotHandled;
+  }
+  void DidReceiveResponse(const blink::WebURLResponse&) override {}
+  void DidReceiveData(base::span<const char> data) override {}
+  void DidFinishLoading() override {}
+  void DidFailLoading(const blink::WebURLError&) override {}
+  bool SupportsPaginatedPrint() override { return true; }
+  MOCK_METHOD(int, PrintBegin, (const blink::WebPrintParams&), (override));
+
+ private:
+  ~FakeWebPlugin() override = default;
+
+  raw_ptr<blink::WebPluginContainer> container_ = nullptr;
+};
+
+class PdfTestContentRendererClient : public PrintTestContentRendererClient {
+ public:
+  PdfTestContentRendererClient()
+      : PrintTestContentRendererClient(/*generate_tagged_pdfs=*/false) {}
+  ~PdfTestContentRendererClient() override = default;
+
+  // content::ContentRendererClient:
+  bool OverrideCreatePlugin(content::RenderFrame* render_frame,
+                            const blink::WebPluginParams& params,
+                            blink::WebPlugin** plugin) override {
+    if (params.mime_type == "application/pdf") {
+      *plugin = new FakeWebPlugin();
+      return true;
+    }
+    return false;
+  }
 };
 
 }  // namespace
@@ -1810,6 +1884,79 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, PrintWithIframe) {
 }
 
 #endif  // MOCK_PRINTER_SUPPORTS_PAGE_IMAGES
+
+// RenderViewTest-based tests crash on Android
+// http://crbug.com/187500
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_PrintRenderFrameHelperPdfTest \
+  DISABLED_PrintRenderFrameHelperPdfTest
+#else
+#define MAYBE_PrintRenderFrameHelperPdfTest PrintRenderFrameHelperPdfTest
+#endif  // BUILDFLAG(IS_ANDROID)
+
+class MAYBE_PrintRenderFrameHelperPdfTest
+    : public PrintRenderFrameHelperTestBase {
+ public:
+  MAYBE_PrintRenderFrameHelperPdfTest() = default;
+  MAYBE_PrintRenderFrameHelperPdfTest(
+      const MAYBE_PrintRenderFrameHelperPdfTest&) = delete;
+  MAYBE_PrintRenderFrameHelperPdfTest& operator=(
+      const MAYBE_PrintRenderFrameHelperPdfTest&) = delete;
+  ~MAYBE_PrintRenderFrameHelperPdfTest() override = default;
+
+ protected:
+  // content::RenderViewTest:
+  content::ContentRendererClient* CreateContentRendererClient() override {
+    return new PdfTestContentRendererClient();
+  }
+};
+
+TEST_F(MAYBE_PrintRenderFrameHelperPdfTest, PrintPdfParams) {
+  LoadHTML(R"HTML(
+    <embed id="plugin" type="application/pdf">
+    <script>
+      document.getElementById('plugin').focus();
+    </script>
+  )HTML");
+
+  auto* plugin = static_cast<FakeWebPlugin*>(
+      GetMainFrame()->GetPluginToPrint(blink::WebNode()));
+  ASSERT_TRUE(plugin);
+  EXPECT_CALL(*plugin, PrintBegin)
+      .Times(2)
+      .WillRepeatedly([](const blink::WebPrintParams& params) {
+        EXPECT_EQ(gfx::RectF(24, 24, 768, 1008),
+                  params.printable_area_in_css_pixels);
+        EXPECT_EQ(gfx::SizeF(816, 1056), params.default_page_description.size);
+        EXPECT_FLOAT_EQ(48.0f, params.default_page_description.margin_top);
+        EXPECT_FLOAT_EQ(48.0f, params.default_page_description.margin_right);
+        EXPECT_FLOAT_EQ(48.0f, params.default_page_description.margin_bottom);
+        EXPECT_FLOAT_EQ(48.0f, params.default_page_description.margin_left);
+        EXPECT_EQ(blink::PageOrientation::kUpright,
+                  params.default_page_description.orientation);
+        EXPECT_EQ(blink::PageSizeType::kAuto,
+                  params.default_page_description.page_size_type);
+#if BUILDFLAG(IS_APPLE)
+        EXPECT_EQ(kDefaultPdfDpi, params.printer_dpi);
+#else
+        EXPECT_EQ(kPointsPerInch, params.printer_dpi);
+#endif
+        EXPECT_FLOAT_EQ(1.0f, params.scale_factor);
+        EXPECT_FALSE(params.ignore_css_margins);
+        EXPECT_FALSE(params.ignore_page_size);
+        EXPECT_FALSE(params.rasterize_pdf);
+        EXPECT_EQ(mojom::PrintScalingOption::kSourceSize,
+                  params.print_scaling_option);
+        EXPECT_TRUE(params.use_paginated_layout);
+        EXPECT_FALSE(params.printing_internal_headers_and_footers);
+        EXPECT_EQ(1u, params.pages_per_sheet);
+        return 1;
+      });
+
+  print_manager()->SetExpectedPagesCount(1);
+  OnPrintPages();
+  VerifyPagesPrinted(true);
+}
 
 // These print preview tests do not work on Chrome OS yet.
 #if !BUILDFLAG(IS_CHROMEOS)
