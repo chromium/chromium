@@ -61,6 +61,9 @@ class DeviceAuthorizationKeysFetcher {
       signin::IdentityManager* identity_manager,
       FetchKeysCallback callback);
 
+  // Cancels the in-flight request, if any. Its callback will not be run.
+  void Cancel();
+
  private:
   void OnFetchCompleted(
       FetchKeysCallback callback,

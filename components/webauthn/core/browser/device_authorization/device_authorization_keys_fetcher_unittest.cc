@@ -309,5 +309,35 @@ TEST_F(DeviceAuthorizationKeysFetcherTest,
       DeviceAuthorizationFetchResultForUMA::kKeysFetched, 1);
 }
 
+// Tests that `Cancel()` drops the in-flight request without running its
+// callback, and that a new request can be started afterwards.
+TEST_F(DeviceAuthorizationKeysFetcherTest, CancelDropsInFlightRequest) {
+  sync_pb::GetDeviceAuthorizationKeyRequest request;
+  base::test::TestFuture<
+      base::expected<sync_pb::GetDeviceAuthorizationKeyResponse, Error>>
+      cancelled_future;
+  fetcher_.FetchDeviceAuthorizationKeys(
+      request, shared_url_loader_factory_,
+      identity_test_environment_.identity_manager(),
+      cancelled_future.GetCallback());
+  // `NumPending()` spins the run loop, which delivers the access token.
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+
+  fetcher_.Cancel();
+
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  EXPECT_FALSE(cancelled_future.IsReady());
+
+  sync_pb::GetDeviceAuthorizationKeyResponse response_proto;
+  response_proto.mutable_device_authorization_keys()->add_keys()->set_version(
+      1);
+  base::expected<sync_pb::GetDeviceAuthorizationKeyResponse, Error> result =
+      FetchDeviceAuthorizationKeys(request, net::HTTP_OK,
+                                   response_proto.SerializeAsString());
+  ASSERT_TRUE(result.has_value());
+  EXPECT_TRUE(result->has_device_authorization_keys());
+  EXPECT_FALSE(cancelled_future.IsReady());
+}
+
 }  // namespace
 }  // namespace webauthn

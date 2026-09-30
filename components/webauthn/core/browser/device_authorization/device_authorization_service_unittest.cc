@@ -4,12 +4,17 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
+#include "build/build_config.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/version_info/channel.h"
 #include "components/webauthn/core/browser/device_authorization/device_authorization_client.h"
@@ -31,6 +36,9 @@ using ::base::test::TestFuture;
 using ::testing::SizeIs;
 
 constexpr char kTestEmail[] = "test@example.com";
+#if !BUILDFLAG(IS_CHROMEOS)
+constexpr char kOtherEmail[] = "other@example.com";
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 constexpr char kKeyBytes[] = "fake_device_auth_key";
 constexpr int32_t kKeyProtoVersion = 1;
 constexpr char kFakeWebFallbackUrl[] = "https://example.com/reauth";
@@ -111,6 +119,7 @@ class DeviceAuthorizationServiceImplTest : public testing::Test {
                 &test_url_loader_factory_)) {}
 
   void SetUp() override {
+    identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
     auto client = std::make_unique<TestDeviceAuthorizationClient>();
     client_ = client.get();
     service_ = std::make_unique<DeviceAuthorizationServiceImpl>(
@@ -119,15 +128,20 @@ class DeviceAuthorizationServiceImplTest : public testing::Test {
   }
 
   void TearDown() override {
+    if (service_) {
+      DestroyService();
+    }
+  }
+
+  void DestroyService() {
     client_ = nullptr;
     service_->Shutdown();
     service_.reset();
   }
 
-  GaiaId SignInPrimaryAccount() {
+  GaiaId SignInPrimaryAccount(std::string_view email = kTestEmail) {
     identity_test_env_.MakePrimaryAccountAvailable(
-        kTestEmail, signin::ConsentLevel::kSignin);
-    identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
+        email, signin::ConsentLevel::kSignin);
     return identity_test_env_.identity_manager()
         ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
         .gaia;
@@ -138,6 +152,12 @@ class DeviceAuthorizationServiceImplTest : public testing::Test {
       net::HttpStatusCode status = net::HTTP_OK) {
     test_url_loader_factory_.AddResponse(kDeviceAuthorizationKeyEndpointUrl,
                                          response.SerializeAsString(), status);
+  }
+
+  bool HasCachedKeys(const GaiaId& gaia_id) {
+    TestFuture<std::optional<CachedDeviceAuthorizationKeys>> future;
+    client_->GetCachedKeys(gaia_id, future.GetCallback());
+    return future.Get().has_value();
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -427,11 +447,121 @@ TEST_F(DeviceAuthorizationServiceImplTest,
   service_->GetOrFetchKeys(future.GetCallback());
   EXPECT_FALSE(future.IsReady());
 
-  client_ = nullptr;
-  service_->Shutdown();
+  DestroyService();
   ASSERT_TRUE(future.IsReady());
   const DeviceAuthFetchResult& result = future.Get();
   EXPECT_EQ(result.status(), DeviceAuthFetchResult::Status::kError);
 }
+
+// The primary account cannot be changed or cleared on ChromeOS.
+#if !BUILDFLAG(IS_CHROMEOS)
+
+// Test that changing the primary account while a fetch is in flight fails the
+// pending request, cancels the network request and stores nothing.
+TEST_F(DeviceAuthorizationServiceImplTest,
+       TestPrimaryAccountChangeCancelsPendingFetch) {
+  const GaiaId gaia_id = SignInPrimaryAccount();
+  TestFuture<DeviceAuthFetchResult> future;
+  service_->GetOrFetchKeys(future.GetCallback());
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return test_url_loader_factory_.pending_requests()->size() == 1;
+  }));
+
+  const GaiaId other_gaia_id = SignInPrimaryAccount(kOtherEmail);
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get().status(), DeviceAuthFetchResult::Status::kError);
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  EXPECT_FALSE(HasCachedKeys(gaia_id));
+  EXPECT_FALSE(HasCachedKeys(other_gaia_id));
+}
+
+// Test that a fetch for the new primary account succeeds after a fetch for the
+// previous one was cancelled.
+TEST_F(DeviceAuthorizationServiceImplTest,
+       TestFetchForNewPrimaryAccountAfterAccountChange) {
+  const GaiaId gaia_id = SignInPrimaryAccount();
+  TestFuture<DeviceAuthFetchResult> future;
+  service_->GetOrFetchKeys(future.GetCallback());
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return test_url_loader_factory_.pending_requests()->size() == 1;
+  }));
+
+  const GaiaId other_gaia_id = SignInPrimaryAccount(kOtherEmail);
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get().status(), DeviceAuthFetchResult::Status::kError);
+
+  SetResponseForEndpoint(CreateSuccessResponse());
+  TestFuture<DeviceAuthFetchResult> other_future;
+  service_->GetOrFetchKeys(other_future.GetCallback());
+
+  EXPECT_EQ(other_future.Get().status(),
+            DeviceAuthFetchResult::Status::kSuccess);
+  EXPECT_FALSE(HasCachedKeys(gaia_id));
+  EXPECT_TRUE(HasCachedKeys(other_gaia_id));
+}
+
+// Test that signing out while a fetch is in flight fails the pending request.
+TEST_F(DeviceAuthorizationServiceImplTest, TestSignOutCancelsPendingFetch) {
+  const GaiaId gaia_id = SignInPrimaryAccount();
+  TestFuture<DeviceAuthFetchResult> future;
+  service_->GetOrFetchKeys(future.GetCallback());
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return test_url_loader_factory_.pending_requests()->size() == 1;
+  }));
+
+  identity_test_env_.ClearPrimaryAccount();
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get().status(), DeviceAuthFetchResult::Status::kError);
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  EXPECT_FALSE(HasCachedKeys(gaia_id));
+}
+
+// Test that changing the primary account while an access token is being
+// fetched for the previous one does not send a request with either account's
+// token.
+TEST_F(DeviceAuthorizationServiceImplTest,
+       TestPrimaryAccountChangeCancelsPendingAccessTokenRequest) {
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
+  const GaiaId gaia_id = SignInPrimaryAccount();
+  SetResponseForEndpoint(CreateSuccessResponse());
+  TestFuture<DeviceAuthFetchResult> future;
+  service_->GetOrFetchKeys(future.GetCallback());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return identity_test_env_.IsAccessTokenRequestPending(); }));
+
+  const GaiaId other_gaia_id = SignInPrimaryAccount(kOtherEmail);
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get().status(), DeviceAuthFetchResult::Status::kError);
+  EXPECT_FALSE(identity_test_env_.IsAccessTokenRequestPending());
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  EXPECT_EQ(test_url_loader_factory_.total_requests(), 0u);
+  EXPECT_FALSE(HasCachedKeys(gaia_id));
+  EXPECT_FALSE(HasCachedKeys(other_gaia_id));
+}
+
+// Test that signing out while an access token is being fetched fails the
+// pending request. On sign-out, the access token request fails before the
+// service is notified of the primary account change.
+TEST_F(DeviceAuthorizationServiceImplTest,
+       TestSignOutWhileAccessTokenPendingFailsFetch) {
+  identity_test_env_.SetAutomaticIssueOfAccessTokens(false);
+  const GaiaId gaia_id = SignInPrimaryAccount();
+  TestFuture<DeviceAuthFetchResult> future;
+  service_->GetOrFetchKeys(future.GetCallback());
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return identity_test_env_.IsAccessTokenRequestPending(); }));
+
+  identity_test_env_.ClearPrimaryAccount();
+
+  ASSERT_TRUE(future.IsReady());
+  EXPECT_EQ(future.Get().status(), DeviceAuthFetchResult::Status::kError);
+  EXPECT_EQ(test_url_loader_factory_.total_requests(), 0u);
+  EXPECT_FALSE(HasCachedKeys(gaia_id));
+}
+
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace webauthn

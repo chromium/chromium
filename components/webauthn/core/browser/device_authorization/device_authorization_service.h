@@ -14,6 +14,10 @@ namespace webauthn {
 
 // Handles device authorization keys operations including fetching from the
 // server, storing on device, and dispatching logic to platform embedders.
+//
+// Requests are made for the primary account at the time of the call. If the
+// primary account changes before a request completes, its callback is run with
+// an error.
 class DeviceAuthorizationService : public KeyedService {
  public:
   ~DeviceAuthorizationService() override = default;

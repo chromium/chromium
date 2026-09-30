@@ -104,6 +104,10 @@ void DeviceAuthorizationKeysFetcher::FetchDeviceAuthorizationKeys(
                      base::Unretained(this), std::move(callback)));
 }
 
+void DeviceAuthorizationKeysFetcher::Cancel() {
+  endpoint_fetcher_.reset();
+}
+
 void DeviceAuthorizationKeysFetcher::OnFetchCompleted(
     FetchKeysCallback callback,
     std::unique_ptr<endpoint_fetcher::EndpointResponse> response) {

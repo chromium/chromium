@@ -10,12 +10,13 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
 #include "base/version_info/channel.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/webauthn/core/browser/device_authorization/device_authorization_client.h"
 #include "components/webauthn/core/browser/device_authorization/device_authorization_keys_fetcher.h"
 #include "components/webauthn/core/browser/device_authorization/device_authorization_service.h"
@@ -24,10 +25,6 @@
 namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
-
-namespace signin {
-class IdentityManager;
-}  // namespace signin
 
 namespace sync_pb {
 class GetDeviceAuthorizationKeyRequest;
@@ -38,7 +35,9 @@ namespace webauthn {
 // Coordinates the process of retrieving the device authorization keys,
 // including communication with the server, validation of the retrieved keys
 // and delegating platform-specific logic to DeviceAuthorizationClient.
-class DeviceAuthorizationServiceImpl : public DeviceAuthorizationService {
+class DeviceAuthorizationServiceImpl
+    : public DeviceAuthorizationService,
+      public signin::IdentityManager::Observer {
  public:
   DeviceAuthorizationServiceImpl(
       signin::IdentityManager* identity_manager,
@@ -58,6 +57,12 @@ class DeviceAuthorizationServiceImpl : public DeviceAuthorizationService {
   void GetOrFetchKeys(FetchDeviceAuthKeysCallback callback) override;
   void FetchKeysWithReAuthToken(std::string reauth_proof_token,
                                 FetchDeviceAuthKeysCallback callback) override;
+
+  // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
  private:
   void FetchKeysImpl(std::optional<std::string> reauth_proof_token,
@@ -80,13 +85,13 @@ class DeviceAuthorizationServiceImpl : public DeviceAuthorizationService {
                      DeviceAuthorizationKeysFetcher::Error> response);
 
   // Callback invoked when keys have been stored in the local cache.
-  void OnKeysStored(const GaiaId& gaia_id,
-                    DeviceAuthorizationKeys keys,
-                    bool success);
+  void OnKeysStored(DeviceAuthorizationKeys keys, bool success);
 
-  // Invokes all pending callbacks for `gaia_id` with `result` and clears them.
-  void NotifyPendingCallbacks(const GaiaId& gaia_id,
-                              const DeviceAuthFetchResult& result);
+  // Aborts the pending fetch, if any, and fails its callbacks.
+  void CancelPendingFetch();
+
+  // Invokes all pending callbacks with `result` and clears them.
+  void NotifyPendingCallbacks(const DeviceAuthFetchResult& result);
 
   // Used to obtain the primary account and authenticate requests.
   raw_ptr<signin::IdentityManager> identity_manager_ = nullptr;
@@ -100,11 +105,20 @@ class DeviceAuthorizationServiceImpl : public DeviceAuthorizationService {
   // Executes network requests to retrieve the keys from the server.
   std::unique_ptr<DeviceAuthorizationKeysFetcher> fetcher_;
 
-  // Pending callbacks keyed by GaiaId for coalesced requests.
-  base::flat_map<GaiaId, std::vector<FetchDeviceAuthKeysCallback>>
-      pending_callbacks_;
+  // The primary account for which a fetch is in flight, if any.
+  std::optional<GaiaId> pending_gaia_id_;
+
+  // Callbacks waiting for the fetch for `pending_gaia_id_`.
+  std::vector<FetchDeviceAuthKeysCallback> pending_callbacks_;
+
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // Only for the pending fetch. Invalidated whenever the pending fetch is
+  // cancelled or the service shuts down.
   base::WeakPtrFactory<DeviceAuthorizationServiceImpl> weak_ptr_factory_{this};
 };
 
