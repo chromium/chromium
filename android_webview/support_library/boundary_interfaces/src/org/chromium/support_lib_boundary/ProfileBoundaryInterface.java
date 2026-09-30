@@ -45,6 +45,7 @@ public interface ProfileBoundaryInterface {
             /* SpeculativeLoadingParameters */ InvocationHandler speculativeLoadingParams,
             /* PrefetchOperationCallback */ InvocationHandler callback);
 
+    @Deprecated
     void clearPrefetch(
             String url,
             Executor callbackExecutor,
