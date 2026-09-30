@@ -160,7 +160,7 @@ import java.util.Set;
 @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
 @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 public class ManageSyncSettingsTest {
-    private static final int RENDER_TEST_REVISION = 12;
+    private static final int RENDER_TEST_REVISION = 13;
 
     /** Maps selected types to their Account UI element IDs. */
     private static final Map<Integer, String> ACCOUNT_UI_DATATYPES =
@@ -222,7 +222,7 @@ public class ManageSyncSettingsTest {
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setRevision(RENDER_TEST_REVISION)
-                    .setDescription("Ligatures and contextual alternates disabled in UI text")
+                    .setDescription("Add Search AI Mode connected apps entry")
                     .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SYNC)
                     .build();
 
@@ -337,6 +337,10 @@ public class ManageSyncSettingsTest {
         Assert.assertFalse(accountAdvancedHeader.isIconSpaceReserved());
 
         scrollToAndVerifyPresence(R.string.sync_encryption);
+
+        scrollToAndVerifyPresence(R.string.account_search_ai_mode_connected_apps_title);
+        onView(withText(R.string.account_search_ai_mode_connected_apps_summary))
+                .check(matches(isDisplayed()));
 
         scrollToAndVerifyPresence(R.string.account_data_dashboard_title);
         onView(withText(R.string.account_data_dashboard_subtitle)).check(matches(isDisplayed()));
@@ -1240,13 +1244,9 @@ public class ManageSyncSettingsTest {
     @Feature({"PersonalizedGoogleServices"})
     public void testClickPersonalizeGoogleServicesNonEEA() {
         mSyncTestRule.setUpAccountAndSignInForTesting();
-        final ManageSyncSettings fragment = startManageSyncPreferences();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
-                    recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
-                });
-        // Click the Google ActivityControls pref
+        startManageSyncPreferences();
+        // Scroll to and click the Google ActivityControls pref.
+        scrollToAndVerifyPresence(R.string.sign_in_personalize_google_services_title);
         onView(withText(R.string.sign_in_personalize_google_services_title)).perform(click());
         verify(mGoogleActivityController).openWebAndAppActivitySettings(any(), any());
     }
@@ -1257,13 +1257,9 @@ public class ManageSyncSettingsTest {
     public void testClickPersonalizeGoogleServicesEEA() {
         when(mRegionalCapabilities.isInEeaCountry()).thenReturn(true);
         mSyncTestRule.setUpAccountAndSignInForTesting();
-        final ManageSyncSettings fragment = startManageSyncPreferences();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
-                    recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
-                });
-        // Click the Personalize Google services
+        startManageSyncPreferences();
+        // Scroll to and click the Personalize Google services pref.
+        scrollToAndVerifyPresence(R.string.sign_in_personalize_google_services_title_eea);
         onView(withText(R.string.sign_in_personalize_google_services_title_eea)).perform(click());
         onView(withText(R.string.personalized_google_services_summary))
                 .check(matches(isDisplayed()));
