@@ -1117,6 +1117,65 @@ IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
 }
 
 IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
+                       RejectStatelessOauthMarkers) {
+  base::test::TestFuture<bool> launch_future;
+  system_web_app_manager()->LaunchSystemWebAppAsync(
+      launch_future.GetCallback());
+  ASSERT_TRUE(launch_future.Get());
+  BrowserWindowInterface* const boca_app_browser =
+      FindBocaSystemWebAppBrowser();
+  ASSERT_THAT(boca_app_browser, NotNull());
+  ASSERT_TRUE(boca::OnTaskLockedController::From(boca_app_browser)
+                  ->is_locked_for_on_task());
+
+  const SessionID window_id = boca_app_browser->GetSessionID();
+  ASSERT_TRUE(window_id.is_valid());
+  system_web_app_manager()->SetWindowTrackerForSystemWebAppWindow(
+      window_id, /*observers=*/{});
+
+  const GURL assigned_url =
+      embedded_test_server()->GetURL(kTabUrl1Host, "/title1.html");
+  CreateBackgroundTabAndWait(window_id, assigned_url,
+                             ::boca::LockedNavigationOptions::BLOCK_NAVIGATION);
+  auto* const tab_strip_model = boca_app_browser->GetTabStripModel();
+  ASSERT_EQ(tab_strip_model->count(), 2);
+  tab_strip_model->ActivateTabAt(1);
+  WaitForUrlBlocklistUpdate();
+
+  // Ordinary cross-domain URL is blocked.
+  const GURL blocked_control_url =
+      embedded_test_server()->GetURL(kTabUrl2Host, "/title2.html");
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(boca_app_browser, blocked_control_url));
+  EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
+            assigned_url);
+
+  auto* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetInstance()->GetForBrowserContext(
+          profile());
+  ASSERT_FALSE(window_tracker->oauth_in_progress());
+
+  // Supplying completion query keys without an active OAuth flow must be
+  // blocked.
+  const GURL completion_marker_url = embedded_test_server()->GetURL(
+      kTabUrl2Host, "/title2.html?code=x&access_token=x&id_token=x");
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(boca_app_browser, completion_marker_url));
+  EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
+            assigned_url);
+  EXPECT_FALSE(window_tracker->oauth_in_progress());
+
+  // Supplying a bare client_id without required OAuth start parameters
+  // (response_type) must be blocked and must not set oauth_in_progress.
+  const GURL start_marker_url = embedded_test_server()->GetURL(
+      kTabUrl2Host, "/title2.html?client_id=not-an-oauth-flow");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(boca_app_browser, start_marker_url));
+  EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
+            assigned_url);
+  EXPECT_FALSE(window_tracker->oauth_in_progress());
+}
+
+IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,
                        AllowOauthPopups) {
   // Launch OnTask SWA.
   base::test::TestFuture<bool> launch_future;

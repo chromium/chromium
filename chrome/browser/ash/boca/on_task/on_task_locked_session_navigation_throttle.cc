@@ -55,10 +55,16 @@ bool DoAllQueryParamsExist(const std::set<std::string>& request_params,
 }
 
 // Returns whether the url is the start of an Oauth login.
+// TODO(b/541544177): Harden `login_detection_util` to offer all indicators
+// needed to reliably detect an OAuth login start.
 bool IsOauthLoginStart(const GURL& url) {
-  return url.SchemeIsHTTPOrHTTPS() &&
-         DoAllQueryParamsExist(login_detection::GetOAuthLoginStartQueryParams(),
-                               url);
+  if (!url.SchemeIsHTTPOrHTTPS()) {
+    return false;
+  }
+  std::set<std::string> params =
+      login_detection::GetOAuthLoginStartQueryParams();
+  params.insert("response_type");
+  return DoAllQueryParamsExist(params, url);
 }
 
 // Returns whether the url is the completion of an Oauth login.
@@ -335,9 +341,9 @@ OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
     return PROCEED;
   }
 
-  // Checks if the query is the end of an OAuth login. If so, then we want
-  // to let these pass.
-  if (IsOauthLoginComplete(url)) {
+  // Checks if the query is the end of an OAuth login. Only allow completion
+  // URLs to bypass restrictions when an OAuth login flow is actively tracked.
+  if (window_tracker->oauth_in_progress() && IsOauthLoginComplete(url)) {
     should_redirects_pass_ = true;
     return PROCEED;
   }
