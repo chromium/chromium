@@ -15,6 +15,12 @@ namespace actor {
 BASE_DECLARE_FEATURE(kGlicActionUseOptimizationGuide);
 BASE_DECLARE_FEATURE(kActorBypassTOUValidationForGuestView);
 
+// When disabled, a tab-backed ActorSurface uses its TabHandle value as its
+// ActorSurfaceId, and headless surfaces take ids from a separate range starting
+// at 1000000. When enabled, every surface takes the next id from one counter,
+// independent of TabHandle.
+BASE_DECLARE_FEATURE(kGenerateIndependentIdsForActorSurface);
+
 BASE_DECLARE_FEATURE(kGlicExternalProtocolActionResultCode);
 
 BASE_DECLARE_FEATURE(kGlicBlockNavigationToDangerousContentTypes);

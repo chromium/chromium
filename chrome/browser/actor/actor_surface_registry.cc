@@ -7,8 +7,10 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/actor/actor_surface_impl.h"
+#include "components/actor/core/actor_features.h"
 
 namespace actor {
 
@@ -48,7 +50,11 @@ ActorSurface* ActorSurfaceRegistry::GetOrCreateForTab(tabs::TabHandle tab) {
   if (ActorSurface* existing = GetForTab(tab)) {
     return existing;
   }
-  ActorSurfaceId id = next_surface_id_.GenerateNextId();
+  ActorSurfaceId id =
+      base::FeatureList::IsEnabled(kGenerateIndependentIdsForActorSurface)
+          ? next_surface_id_.GenerateNextId()
+          : ActorSurfaceId(tab.raw_value());
+  CHECK(!surfaces_.contains(id));
   surfaces_.emplace(id, std::make_unique<ActorSurfaceImpl>(id, tab));
   StartTrackingTab(id, tab);
   return Get(id);
@@ -63,7 +69,11 @@ ActorSurface* ActorSurfaceRegistry::CreateForHeadless(
   if (ActorSurface* existing = GetForHeadless(contents)) {
     return existing;
   }
-  ActorSurfaceId id = next_surface_id_.GenerateNextId();
+  ActorSurfaceId id =
+      base::FeatureList::IsEnabled(kGenerateIndependentIdsForActorSurface)
+          ? next_surface_id_.GenerateNextId()
+          : ActorSurfaceId(next_headless_surface_id_++);
+  CHECK(!surfaces_.contains(id));
   surfaces_.emplace(id, std::make_unique<ActorSurfaceImpl>(id, contents));
   return Get(id);
 }

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ACTOR_ACTOR_SURFACE_REGISTRY_H_
 #define CHROME_BROWSER_ACTOR_ACTOR_SURFACE_REGISTRY_H_
 
+#include <cstdint>
 #include <map>
 #include <memory>
 
@@ -82,7 +83,14 @@ class ActorSurfaceRegistry : public HeadlessWebContentsManager::Observer {
       headless_manager_observation_{this};
 
   // Generates a new ActorSurfaceId for each surface created by this registry.
+  // Used when kGenerateIndependentIdsForActorSurface is enabled.
   ActorSurfaceId::Generator next_surface_id_;
+
+  // Next id for a headless surface when kGenerateIndependentIdsForActorSurface
+  // is disabled. Starts well above any expected TabHandle value, since
+  // tab-backed surfaces then use their TabHandle value as their id.
+  static constexpr int32_t kFirstHeadlessSurfaceId = 1000000;
+  int32_t next_headless_surface_id_ = kFirstHeadlessSurfaceId;
 
   // All surfaces owned by this registry, keyed by id.
   std::map<ActorSurfaceId, std::unique_ptr<ActorSurfaceImpl>> surfaces_;
