@@ -4468,6 +4468,7 @@ static_library("ui") {
       "//chrome/browser/ui/views:tab_dialogs_impl",
       "//chrome/browser/ui/views/autofill/autofill_ai",
       "//chrome/browser/ui/views/autofill/autofill_ai:impl",
+      "//chrome/browser/ui/views/autofill/one_time_tokens",
       "//chrome/browser/ui/views/autofill/payments:manage_saved_iban_bubble_view",
       "//chrome/browser/ui/views/autofill/payments:save_iban_bubble_view",
       "//chrome/browser/ui/views/autofill/popup/email_verifier",
