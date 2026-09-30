@@ -166,10 +166,16 @@
   }
 
   _categories = @[
-    [[LevelUpCategory alloc] initWithTitle:@"Productivity"
-                                     tasks:productivityTasks],
-    [[LevelUpCategory alloc] initWithTitle:@"Safety" tasks:safetyTasks],
-    [[LevelUpCategory alloc] initWithTitle:@"Search" tasks:searchTasks]
+    [[LevelUpCategory alloc]
+        initWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_LEVEL_UP_CATEGORY_PRODUCTIVITY)
+                tasks:productivityTasks],
+    [[LevelUpCategory alloc]
+        initWithTitle:l10n_util::GetNSString(IDS_IOS_LEVEL_UP_CATEGORY_SAFETY)
+                tasks:safetyTasks],
+    [[LevelUpCategory alloc]
+        initWithTitle:l10n_util::GetNSString(IDS_IOS_LEVEL_UP_CATEGORY_SEARCH)
+                tasks:searchTasks]
   ];
 
   if ([self.consumer respondsToSelector:@selector(addCategoryCard:)]) {

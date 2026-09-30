@@ -4731,6 +4731,15 @@ To continue from your computer, switch to <ph name="OTHER_EMAIL">$2<ex>john.doe@
       <message name="IDS_IOS_LEVEL_UP_ALL_TASKS_TITLE" desc="Title for Level Up screen showing all tasks.  [iOS only]">
         All Tasks
       </message>
+      <message name="IDS_IOS_LEVEL_UP_CATEGORY_PRODUCTIVITY" desc="Category title for Level Up productivity tasks. [iOS only]">
+        Productivity
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_CATEGORY_SAFETY" desc="Category title for Level Up safety tasks. [iOS only]">
+        Safety
+      </message>
+      <message name="IDS_IOS_LEVEL_UP_CATEGORY_SEARCH" desc="Category title for Level Up search tasks. [iOS only]">
+        Search
+      </message>
       <message name="IDS_IOS_LEVEL_UP_COMPLETED_TASKS" desc="Label indicating the number of tasks completed in the Level Up list. [iOS only]">
         {count, plural,
           =1 {1 completed task}
