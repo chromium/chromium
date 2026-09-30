@@ -474,6 +474,12 @@ void PasskeyTabHelper::HandleCreateRequestedEvent(
   CHECK(request_type == PasskeyRequestParams::RequestType::kConditionalCreate ||
         request_type == PasskeyRequestParams::RequestType::kModal);
 
+  if (request_type == PasskeyRequestParams::RequestType::kConditionalCreate &&
+      web_state_->GetBrowserState()->IsOffTheRecord()) {
+    DeferToRendererForFrame(web_frame, passkey_request_id, request_type);
+    return;
+  }
+
   const url::Origin& origin = web_frame->GetSecurityOrigin();
   const std::string& rp_id = params.RpId();
   if (!OriginIsAllowedToClaimRelyingPartyId(rp_id, origin)) {
@@ -511,6 +517,9 @@ void PasskeyTabHelper::RecordPasswordLogin(std::string_view username,
 
 bool PasskeyTabHelper::HasAutomaticPasskeyUpgradeEligibility(
     const RegistrationRequestParams& params) const {
+  if (web_state_->GetBrowserState()->IsOffTheRecord()) {
+    return false;
+  }
   if (!client_->IsAutomaticPasskeyUpgradeEnabled()) {
     return false;
   }
@@ -580,11 +589,13 @@ void PasskeyTabHelper::HandleRegistration(RegistrationRequestParams params) {
   bool is_conditional =
       request_type == PasskeyRequestParams::RequestType::kConditionalCreate;
 
-  if (is_conditional &&
-      (!password_store_ || !client_->IsAutomaticPasskeyUpgradeEnabled())) {
-    // Automatic passkey upgrade is not allowed, defer to renderer.
-    DeferToRenderer(std::move(request_info), request_type);
-    return;
+  if (is_conditional) {
+    CHECK(!web_state_->GetBrowserState()->IsOffTheRecord());
+    if (!password_store_ || !client_->IsAutomaticPasskeyUpgradeEnabled()) {
+      // Automatic passkey upgrade is not allowed, defer to renderer.
+      DeferToRenderer(std::move(request_info), request_type);
+      return;
+    }
   }
 
   const std::string& passkey_request_id = params.RequestId();
@@ -1123,8 +1134,8 @@ base::WeakPtr<PasskeyTabHelper> PasskeyTabHelper::AsWeakPtr() {
 
 void PasskeyTabHelper::MaybeShowInterstitialAndRegister(
     RegistrationRequestParams params) {
-  if (params.Type() != PasskeyRequestParams::RequestType::kConditionalCreate &&
-      web_state_->GetBrowserState()->IsOffTheRecord()) {
+  if (web_state_->GetBrowserState()->IsOffTheRecord()) {
+    CHECK_EQ(params.Type(), PasskeyRequestParams::RequestType::kModal);
     LogEvent(WebAuthenticationIOSContentAreaEvent::kIncognitoInterstitialShown);
     client_->ShowInterstitial(
         base::BindOnce(&PasskeyTabHelper::OnInterstitialDecision,
@@ -1145,25 +1156,6 @@ void PasskeyTabHelper::OnInterstitialDecision(RegistrationRequestParams params,
     return;
   }
   HandleRegistration(std::move(params));
-}
-
-void PasskeyTabHelper::OnConditionalCreateInterstitialDecision(
-    const std::string& request_id,
-    bool proceed) {
-  auto it = registration_requests_.find(request_id);
-  if (it == registration_requests_.end()) {
-    return;
-  }
-  if (!proceed) {
-    web::WebFrame* web_frame = GetWebFrame(it->second.FrameId());
-    if (web_frame) {
-      RejectPasskeyRequest(web_frame, it->second.RequestId(),
-                           WebAuthnError::kNotAllowedError);
-    }
-    registration_requests_.erase(it);
-    return;
-  }
-  StartPasskeyCreation(request_id, /*did_complete_uv=*/false);
 }
 
 void PasskeyTabHelper::OnGetPasswordStoreResultsOrErrorFrom(
@@ -1199,15 +1191,7 @@ void PasskeyTabHelper::OnGetPasswordStoreResultsOrErrorFrom(
     const RegistrationRequestParams& params = it->second;
 
     if (results && CanPerformAutomaticPasskeyUpgrade(params, *results)) {
-      if (web_state_->GetBrowserState()->IsOffTheRecord()) {
-        LogEvent(
-            WebAuthenticationIOSContentAreaEvent::kIncognitoInterstitialShown);
-        client_->ShowInterstitial(base::BindOnce(
-            &PasskeyTabHelper::OnConditionalCreateInterstitialDecision,
-            weak_factory_.GetWeakPtr(), request_id));
-      } else {
-        StartPasskeyCreation(request_id, /*did_complete_uv=*/false);
-      }
+      StartPasskeyCreation(request_id, /*did_complete_uv=*/false);
     } else {
       DeferToRenderer(params.RequestInfo(), params.Type());
       registration_requests_.erase(it);
