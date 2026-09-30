@@ -76,7 +76,7 @@ export class PreloadScript {
     this.#channels =
       params.arguments?.map((a) => new ChannelProxy(a.value, logger)) ?? [];
     this.#functionDeclaration = params.functionDeclaration;
-    this.#sandbox = params.sandbox;
+    this.#sandbox = params.sandbox || undefined;
     this.#contexts = params.contexts;
     this.#userContexts = params.userContexts;
   }
@@ -94,6 +94,11 @@ export class PreloadScript {
   /** UserContexts of the preload script, if any */
   get userContexts(): Browser.UserContext[] | undefined {
     return this.#userContexts;
+  }
+
+  /** Sandbox / world name of the preload script, if any */
+  get sandbox(): string | undefined {
+    return this.#sandbox;
   }
 
   /**

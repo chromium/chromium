@@ -616,11 +616,14 @@ export class CdpTarget {
 
   /**
    * All the ProxyChannels from all the preload scripts of the given
-   * BrowsingContext.
+   * BrowsingContext and sandbox.
    */
-  getChannels(): ChannelProxy[] {
+  getChannels(sandbox?: string): ChannelProxy[] {
     return this.#preloadScriptStorage
-      .find()
+      .find({
+        targetId: this.topLevelId,
+      })
+      .filter((script) => script.sandbox === sandbox)
       .flatMap((script) => script.channels);
   }
 

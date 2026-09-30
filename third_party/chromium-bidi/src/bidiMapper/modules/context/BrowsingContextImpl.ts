@@ -701,18 +701,17 @@ export class BrowsingContextImpl {
             this.#defaultRealmDeferred = new Deferred<Realm>();
           }
           this.#defaultRealmDeferred.resolve(realm);
-
-          // Initialize ChannelProxy listeners for all the channels of all the
-          // preload scripts related to this BrowsingContext.
-          // TODO: extend for not default realms by the sandbox name.
-          void Promise.all(
-            this.#cdpTarget
-              .getChannels()
-              .map((channel) =>
-                channel.startListenerFromWindow(realm, this.#eventManager),
-              ),
-          );
         }
+
+        // Initialize ChannelProxy listeners for all the channels of all the
+        // preload scripts related to this BrowsingContext and sandbox.
+        void Promise.all(
+          this.#cdpTarget
+            .getChannels(sandbox)
+            .map((channel) =>
+              channel.startListenerFromWindow(realm, this.#eventManager),
+            ),
+        );
       },
     );
 
