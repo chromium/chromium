@@ -10,6 +10,7 @@
 import argparse
 import atexit
 import datetime
+import dbus
 import logging
 import os
 import pwd
@@ -26,6 +27,60 @@ from shared_lib import (
     exec_self_via_login_shell,
     watch_for_resolution_changes,
 )
+
+# PAM service name used by chrome-remote-desktop-x11-session@.service.
+CRD_PAM_SERVICE = "chrome-remote-desktop"
+
+# Timeout for each D-Bus call to logind, so that a hung logind can't delay
+# the exit past the unit's TimeoutStopSec, which would lose the exit code.
+LOGIND_DBUS_TIMEOUT_SECONDS = 5
+
+
+def terminate_logind_session():
+  """Terminates the logind session that this script runs in.
+
+  Processes that daemonize (e.g. XDG autostart apps) are not killed by
+  cleanup(). With the default `KillUserProcesses=no`, logind would leave them
+  running and keep the session in the "closing" state indefinitely after
+  pam_close_session(). Terminating the session makes logind stop its scope
+  unit, which kills all remaining processes. This must happen while the
+  session is still active, i.e. before this process exits.
+  """
+  try:
+    bus = dbus.SystemBus()
+    manager = dbus.Interface(
+        bus.get_object("org.freedesktop.login1", "/org/freedesktop/login1",
+                       introspect=False),
+        "org.freedesktop.login1.Manager")
+    session_path = manager.GetSessionByPID(
+        dbus.UInt32(os.getpid()), timeout=LOGIND_DBUS_TIMEOUT_SECONDS)
+    session_object = bus.get_object("org.freedesktop.login1", session_path,
+                                    introspect=False)
+    properties = session_object.GetAll(
+        "org.freedesktop.login1.Session",
+        dbus_interface=dbus.PROPERTIES_IFACE,
+        timeout=LOGIND_DBUS_TIMEOUT_SECONDS)
+    service = properties.get("Service")
+    leader = properties.get("Leader")
+    # Only terminate the session that the systemd unit created for this
+    # process. Otherwise, e.g. if the script was run manually from an SSH or
+    # desktop session, leave that session alone.
+    if service != CRD_PAM_SERVICE or leader != os.getpid():
+      logging.info(
+          "Not terminating logind session %s with PAM service %s and leader "
+          "%s", session_path, service, leader)
+      return
+
+    # Terminating the session also sends SIGTERM and SIGHUP to this process.
+    # Ignore them so that they don't interrupt the atexit handlers or change
+    # the exit code (e.g. RELAUNCH_EXIT_CODE).
+    signal.signal(signal.SIGTERM, signal.SIG_IGN)
+    signal.signal(signal.SIGHUP, signal.SIG_IGN)
+    logging.info("Terminating logind session %s", session_path)
+    dbus.Interface(session_object, "org.freedesktop.login1.Session").Terminate(
+        timeout=LOGIND_DBUS_TIMEOUT_SECONDS)
+  except dbus.exceptions.DBusException as e:
+    logging.warning("Failed to terminate logind session: %s", e)
 
 
 class SignalHandler:
@@ -96,7 +151,10 @@ def main():
     logging.warning(gdm_message)
     syslog.syslog(syslog.LOG_WARNING | syslog.LOG_DAEMON, gdm_message)
 
-  # Tears down the session processes and unsets CRD systemd env vars.
+  # atexit handlers run in reverse order, so the logind session is terminated
+  # after cleanup() has torn down the session processes and unset CRD systemd
+  # env vars.
+  atexit.register(terminate_logind_session)
   atexit.register(cleanup)
   signal_handler = SignalHandler()
   for s in [signal.SIGHUP, signal.SIGINT, signal.SIGTERM]:

@@ -33,8 +33,10 @@ PAMName=chrome-remote-desktop
 TTYPath=/dev/chrome-remote-desktop
 ExecStart=/opt/google/chrome-remote-desktop/desktop-session --type=x11 --new-session
 # Only send SIGTERM to the script, so that it can tear down the X server and
-# session in order and clean up the systemd user environment. Any remaining
-# processes are sent SIGKILL afterwards.
+# session in order and clean up the systemd user environment. Note that
+# pam_systemd moves the session processes into the logind session scope, so
+# they are not covered by KillMode. The script terminates the logind session
+# on exit to kill any remaining session processes.
 KillMode=mixed
 # In the worst case, cleanup() can take longer than the default 90 seconds to
 # terminate all session processes.
