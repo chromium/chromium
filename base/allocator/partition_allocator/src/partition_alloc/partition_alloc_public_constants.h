@@ -117,12 +117,12 @@ inline constexpr size_t kPartitionCachelineSize = 64;
 //
 // See |PartitionDirectMapMetadata| for details.
 
-constexpr size_t kGiB = 1024 * 1024 * 1024ull;
-constexpr size_t kSuperPageShift = 21;  // 2 MiB
-constexpr size_t kSuperPageSize = 1 << kSuperPageShift;
-constexpr size_t kSuperPageAlignment = kSuperPageSize;
-constexpr size_t kSuperPageOffsetMask = kSuperPageAlignment - 1;
-constexpr size_t kSuperPageBaseMask = ~kSuperPageOffsetMask;
+inline constexpr size_t kGiB = 1024 * 1024 * 1024ull;
+inline constexpr size_t kSuperPageShift = 21;  // 2 MiB
+inline constexpr size_t kSuperPageSize = 1 << kSuperPageShift;
+inline constexpr size_t kSuperPageAlignment = kSuperPageSize;
+inline constexpr size_t kSuperPageOffsetMask = kSuperPageAlignment - 1;
+inline constexpr size_t kSuperPageBaseMask = ~kSuperPageOffsetMask;
 
 // PartitionAlloc's address space is split into pools. See `glossary.md`.
 enum pool_handle : unsigned {
