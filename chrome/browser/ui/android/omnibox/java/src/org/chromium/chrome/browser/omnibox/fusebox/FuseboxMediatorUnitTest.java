@@ -58,8 +58,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
-import org.robolectric.Robolectric;
-import org.robolectric.android.controller.ActivityController;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -133,7 +131,6 @@ import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.MimeTypeUtils;
-import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -261,7 +258,6 @@ public class FuseboxMediatorUnitTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock private FuseboxViewHolder mViewHolder;
     @Mock private FuseboxPopup mPopup;
     @Mock private Profile mProfile;
     @Mock private FuseboxSessionState mSession;
@@ -294,7 +290,7 @@ public class FuseboxMediatorUnitTest {
     @Captor private ArgumentCaptor<Intent> mIntentCaptor;
     @Captor private ArgumentCaptor<WindowAndroid.IntentCallback> mIntentCallbackCaptor;
 
-    private ActivityController<TestActivity> mActivityController;
+    private FuseboxViewHolder mViewHolder;
     private Context mContext;
     private Resources mResources;
     private PropertyModel mModel;
@@ -321,12 +317,8 @@ public class FuseboxMediatorUnitTest {
     @Before
     public void setUp() {
         OmniboxFeatures.sMultiattachmentFusebox.setForTesting(/* overrideValue= */ true);
+        OmniboxFeatures.setShowBottomSheetPopupForTesting(/* value= */ false);
         mTabModelSelectorSupplier = ObservableSuppliers.createNonNull(mTabModelSelector);
-        mActivityController = Robolectric.buildActivity(TestActivity.class).setup();
-        Activity activity = mActivityController.get();
-        ConstraintLayout viewGroup = new ConstraintLayout(activity);
-        activity.setContentView(viewGroup);
-        LayoutInflater.from(activity).inflate(R.layout.fusebox_layout, viewGroup, true);
 
         ProfileResolverJni.setInstanceForTesting(mProfileResolverNatives);
         TrackerFactory.setTrackerForTests(mTracker);
@@ -336,6 +328,8 @@ public class FuseboxMediatorUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
+        ConstraintLayout viewGroup = new ConstraintLayout(mContext);
+        LayoutInflater.from(mContext).inflate(R.layout.fusebox_layout, viewGroup, true);
         mResources = mContext.getResources();
         mResourceProvider = new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
         mModel = new PropertyModel(FuseboxProperties.ALL_KEYS);
@@ -406,7 +400,6 @@ public class FuseboxMediatorUnitTest {
         if (mResourceProvider != null) {
             mResourceProvider.destroy();
         }
-        mActivityController.close();
     }
 
     private static InputStateBuilder createDefaultInputStateBuilder() {
