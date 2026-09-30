@@ -13,9 +13,6 @@ source_set("dmg_common") {
   visibility = [
     ":*",
     "//chrome/utility/safe_browsing:*",
-
-    # Unit tests directly use some of the utilities in this target.
-    "//chrome/test:unit_tests",
   ]
 
   sources = [
@@ -68,4 +65,25 @@ fuzzer_test("safe_browsing_hfs_fuzzer") {
   seed_corpus = rebase_path("//chrome/test/data/safe_browsing/dmg/data")
 
   libfuzzer_options = [ "max_len=1488576" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "dmg_analyzer_unittest.cc",
+    "dmg_test_utils.cc",
+    "dmg_test_utils.h",
+    "hfs_unittest.cc",
+    "read_stream_unittest.cc",
+    "udif_unittest.cc",
+  ]
+  deps = [
+    ":dmg_common",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/common:constants",
+    "//chrome/common/safe_browsing:archive_analyzer_results",
+    "//chrome/utility/safe_browsing",
+    "//testing/gtest",
+  ]
 }
