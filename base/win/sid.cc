@@ -16,11 +16,10 @@
 
 #include <algorithm>
 #include <iterator>
-#include <map>
 #include <utility>
 
 #include "base/check.h"
-#include "base/no_destructor.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util_win.h"
 #include "base/win/scoped_handle.h"
@@ -104,28 +103,30 @@ Sid Sid::FromKnownCapability(WellKnownCapability capability) {
 }
 
 Sid Sid::FromNamedCapability(std::wstring_view capability_name) {
-  static const base::NoDestructor<std::map<std::wstring, WellKnownCapability>>
-      known_capabilities(
-          {{L"INTERNETCLIENT", WellKnownCapability::kInternetClient},
-           {L"INTERNETCLIENTSERVER",
-            WellKnownCapability::kInternetClientServer},
-           {L"PRIVATENETWORKCLIENTSERVER",
-            WellKnownCapability::kPrivateNetworkClientServer},
-           {L"PICTURESLIBRARY", WellKnownCapability::kPicturesLibrary},
-           {L"VIDEOSLIBRARY", WellKnownCapability::kVideosLibrary},
-           {L"MUSICLIBRARY", WellKnownCapability::kMusicLibrary},
-           {L"DOCUMENTSLIBRARY", WellKnownCapability::kDocumentsLibrary},
-           {L"ENTERPRISEAUTHENTICATION",
-            WellKnownCapability::kEnterpriseAuthentication},
-           {L"SHAREDUSERCERTIFICATES",
-            WellKnownCapability::kSharedUserCertificates},
-           {L"REMOVABLESTORAGE", WellKnownCapability::kRemovableStorage},
-           {L"APPOINTMENTS", WellKnownCapability::kAppointments},
-           {L"CONTACTS", WellKnownCapability::kContacts}});
+  static constexpr auto kKnownCapabilities =
+      base::MakeFixedFlatMap<std::wstring_view, WellKnownCapability>({
+          // keep-sorted start
+          {L"APPOINTMENTS", WellKnownCapability::kAppointments},
+          {L"CONTACTS", WellKnownCapability::kContacts},
+          {L"DOCUMENTSLIBRARY", WellKnownCapability::kDocumentsLibrary},
+          {L"ENTERPRISEAUTHENTICATION",
+           WellKnownCapability::kEnterpriseAuthentication},
+          {L"INTERNETCLIENT", WellKnownCapability::kInternetClient},
+          {L"INTERNETCLIENTSERVER", WellKnownCapability::kInternetClientServer},
+          {L"MUSICLIBRARY", WellKnownCapability::kMusicLibrary},
+          {L"PICTURESLIBRARY", WellKnownCapability::kPicturesLibrary},
+          {L"PRIVATENETWORKCLIENTSERVER",
+           WellKnownCapability::kPrivateNetworkClientServer},
+          {L"REMOVABLESTORAGE", WellKnownCapability::kRemovableStorage},
+          {L"SHAREDUSERCERTIFICATES",
+           WellKnownCapability::kSharedUserCertificates},
+          {L"VIDEOSLIBRARY", WellKnownCapability::kVideosLibrary}
+          // keep-sorted end
+      });
 
   std::wstring cap_upper = base::ToUpperASCII(capability_name);
-  auto known_cap = known_capabilities->find(cap_upper);
-  if (known_cap != known_capabilities->end()) {
+  auto known_cap = kKnownCapabilities.find(cap_upper);
+  if (known_cap != kKnownCapabilities.end()) {
     return FromKnownCapability(known_cap->second);
   }
   static_assert((SHA256_DIGEST_LENGTH / sizeof(DWORD)) ==
