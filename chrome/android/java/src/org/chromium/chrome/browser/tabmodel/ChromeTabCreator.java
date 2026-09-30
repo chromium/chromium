@@ -745,64 +745,8 @@ public class ChromeTabCreator implements TabCreator, NeedsTabModel, NeedsTabMode
             @TabLaunchType int tabLaunchType,
             @Nullable Intent intent,
             @PageTransition int originalTransitionType) {
-        int transition = PageTransition.LINK;
-        switch (tabLaunchType) {
-            case TabLaunchType.FROM_OMNIBOX:
-            case TabLaunchType.FROM_OMNIBOX_BACKGROUND:
-                transition = originalTransitionType;
-                break;
-            case TabLaunchType.FROM_RESTORE:
-            case TabLaunchType.FROM_LINK:
-            case TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW:
-            case TabLaunchType.FROM_EXTERNAL_APP:
-            case TabLaunchType.FROM_BROWSER_ACTIONS:
-                // FROM_API ensures intent handling isn't used.
-                transition = PageTransition.LINK | PageTransition.FROM_API;
-                break;
-            case TabLaunchType.FROM_CHROME_UI:
-            case TabLaunchType.FROM_TAB_SWITCHER_UI:
-            case TabLaunchType.FROM_RESTORE_TABS_UI:
-            case TabLaunchType.FROM_TAB_GROUP_UI:
-            case TabLaunchType.FROM_STARTUP:
-            case TabLaunchType.FROM_SESSION_STARTUP_WITH_URLS_PREF:
-            case TabLaunchType.FROM_LAUNCHER_SHORTCUT:
-            case TabLaunchType.FROM_LAUNCH_NEW_INCOGNITO_TAB:
-            case TabLaunchType.FROM_APP_WIDGET:
-            case TabLaunchType.FROM_READING_LIST:
-            case TabLaunchType.FROM_SYNC_BACKGROUND:
-            case TabLaunchType.FROM_REPARENTING:
-            case TabLaunchType.FROM_START_SURFACE:
-                transition = PageTransition.AUTO_TOPLEVEL;
-                break;
-            case TabLaunchType.FROM_LONGPRESS_FOREGROUND:
-            case TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP:
-            case TabLaunchType.FROM_LONGPRESS_INCOGNITO:
-            case TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND:
-                transition = PageTransition.LINK;
-                break;
-            case TabLaunchType.FROM_LONGPRESS_BACKGROUND:
-            case TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP:
-            case TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP:
-            case TabLaunchType.FROM_RECENT_TABS:
-            case TabLaunchType.FROM_RECENT_TABS_FOREGROUND:
-            case TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND:
-            case TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND:
-            case TabLaunchType.FROM_REPARENTING_BACKGROUND:
-            case TabLaunchType.FROM_SPECULATIVE_BACKGROUND_CREATION:
-            case TabLaunchType.FROM_TAB_LIST_INTERFACE:
-            case TabLaunchType.FROM_TIPS_NOTIFICATIONS:
-            case TabLaunchType.FROM_TAB_LIST_INTERFACE_BACKGROUND:
-                // On low end devices tabs are backgrounded in a frozen state, so we set the
-                // transition type to RELOAD to avoid handling intents when the tab is foregrounded.
-                // (https://crbug.com/40536523)
-                transition =
-                        SysUtils.isLowEndDevice() ? PageTransition.RELOAD : PageTransition.LINK;
-                break;
-            case TabLaunchType.UNSET: // Fall through.
-            default:
-                assert false;
-                break;
-        }
+        int transition =
+                TabLaunchTypeUtils.getDefaultPageTransition(tabLaunchType, originalTransitionType);
 
         return IntentHandler.getTransitionTypeFromIntent(assumeNonNull(intent), transition);
     }
