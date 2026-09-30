@@ -633,14 +633,7 @@ if (is_win || is_mac || is_linux) {
       "//skia",
       "//ui/base/unowned_user_data",
     ]
-  }
-
-  source_set("profile_customization_bubble_sync_controller_impl") {
     sources = [ "profile_customization_bubble_sync_controller.cc" ]
-    public_deps = [
-      ":profile_customization_bubble_sync_controller",
-      "//chrome/browser:browser_public_dependencies",
-    ]
     deps = [
       ":avatar_toolbar_button",
       "//base",

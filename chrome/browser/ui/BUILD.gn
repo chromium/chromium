@@ -2115,7 +2115,6 @@ static_library("ui") {
     # TODO(crbug.com/353332589): Remove this circular dependency when the
     # following headers get componentized:
     # c/b/ui/browser.h
-    # c/b/ui/views/profiles/profile_customization_bubble_sync_controller.h
     "//chrome/browser/search_engine_choice:impl",
 
     # TODO(crbug.com/353332589): Remove this circular dependency when the
@@ -3214,7 +3213,6 @@ static_library("ui") {
       "//chrome/browser/ui/startup/default_browser_prompt:impl",
       "//chrome/browser/ui/views/profiles:badged_profile_photo",
       "//chrome/browser/ui/views/profiles:profile_customization_bubble_sync_controller",
-      "//chrome/browser/ui/views/profiles:profile_customization_bubble_sync_controller_impl",
       "//chrome/browser/ui/views/profiles:profile_management_types",
       "//chrome/browser/ui/views/profiles:profile_menu_view",
       "//chrome/browser/ui/views/profiles:profile_picker_feature_promo_controller",
@@ -3241,10 +3239,6 @@ static_library("ui") {
       "//chrome/browser/ui/views/profiles:profile_menu_view",
       "//chrome/browser/ui/startup/default_browser_prompt:impl",
       "//chrome/browser/ui/webui/signin:profile_impl",
-
-      # TODO(crbug.com/353332589):
-      # profile_customization_bubble_sync_controller.cc includes browser_view.h.
-      "//chrome/browser/ui/views/profiles:profile_customization_bubble_sync_controller_impl",
 
       # TODO(crbug.com/364667551): Remove this circular dependency when the
       # following header gets modularized:
