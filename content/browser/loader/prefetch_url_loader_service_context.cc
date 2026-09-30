@@ -71,8 +71,6 @@ PrefetchURLLoaderServiceContext::PrefetchURLLoaderServiceContext(
     : browser_context_(browser_context),
       loader_factory_receivers_(loader_factory_receivers) {
   CHECK_CURRENTLY_ON(BrowserThread::UI, base::NotFatalUntil::M160);
-  accept_langs_ =
-      GetContentClient()->browser()->GetAcceptLangs(browser_context);
 
   // Create a RendererPreferenceWatcher to observe updates in the preferences.
   GetContentClient()->browser()->RegisterRendererPreferenceWatcher(
@@ -277,6 +275,11 @@ void PrefetchURLLoaderServiceContext::CreatePrefetchLoaderAndStart(
       prefetched_signed_exchange_cache =
           current_context.prefetched_signed_exchange_cache;
 
+  if (!accept_langs_.has_value()) {
+    accept_langs_ =
+        GetContentClient()->browser()->GetAcceptLangs(browser_context_);
+  }
+
   // base::Unretained is safe here since |this| owns the loader.
   auto loader = std::make_unique<PrefetchURLLoader>(
       request_id, options, current_context.frame_tree_node_id, resource_request,
@@ -292,7 +295,7 @@ void PrefetchURLLoaderServiceContext::CreatePrefetchLoaderAndStart(
           base::Unretained(this), resource_request,
           current_context.frame_tree_node_id),
       browser_context_, std::move(prefetched_signed_exchange_cache),
-      accept_langs_,
+      *accept_langs_,
       base::BindOnce(
           &GenerateRecursivePrefetchToken,
           current_context.weak_ptr_factory.GetWeakPtr()));

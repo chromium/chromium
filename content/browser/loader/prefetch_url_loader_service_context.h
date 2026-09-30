@@ -111,7 +111,8 @@ class CONTENT_EXPORT PrefetchURLLoaderServiceContext final
 
   base::RepeatingClosure prefetch_load_callback_for_testing_;
 
-  std::string accept_langs_;
+  // Lazily initialized on first prefetch if not already set.
+  std::optional<std::string> accept_langs_;
 };
 
 }  // namespace content
