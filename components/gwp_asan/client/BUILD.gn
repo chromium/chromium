@@ -37,6 +37,7 @@ source_set("features") {
 component("client") {
   output_name = "gwp_asan_client"
   sources = [
+    "decaying_bloom_filter.h",
     "guarded_page_allocator.cc",
     "guarded_page_allocator.h",
     "gwp_asan.cc",
@@ -108,6 +109,7 @@ component("client") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "decaying_bloom_filter_unittest.cc",
     "guarded_page_allocator_unittest.cc",
     "gwp_asan_unittest.cc",
     "lightweight_detector/poison_metadata_recorder_unittest.cc",
