@@ -25,6 +25,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -47,7 +48,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SurveyClientUnitTest {
     private static final String TEST_SURVEY_TRIGGER = "test_survey_trigger";
     private static final String TEST_TRIGGER_ID = "triggerId1234";
@@ -60,14 +60,16 @@ public class SurveyClientUnitTest {
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefService mPrefServiceMock;
-    @Mock private Activity mActivity;
     @Mock private Profile mProfile;
     @Mock private PrivacyPreferencesManager mPrivacyPreferencesManager;
     @Mock private TabModelSelector mTabModelSelector;
     @Captor private ArgumentCaptor<PauseResumeWithNativeObserver> mLifecycleObserverCaptor;
 
+    private Activity mActivity;
+
     @Before
     public void setup() {
+        mActivity = Robolectric.buildActivity(Activity.class).get();
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefServiceMock);

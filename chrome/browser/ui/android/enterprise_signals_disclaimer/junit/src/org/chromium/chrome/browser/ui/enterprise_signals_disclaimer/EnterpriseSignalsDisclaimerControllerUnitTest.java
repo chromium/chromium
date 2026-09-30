@@ -32,6 +32,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.OngoingStubbing;
 import org.mockito.verification.VerificationMode;
+import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
@@ -63,25 +64,24 @@ import java.util.function.Consumer;
 /** Unit tests for {@link EnterpriseSignalsDisclaimerController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class EnterpriseSignalsDisclaimerControllerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Profile mProfile;
     @Mock private SigninManager mSigninManager;
-    @Mock private AppCompatActivity mActivity;
     @Mock private EnterpriseSignalsDisclaimerCoordinator mCoordinator;
     @Mock private CoordinatorFactory mCoordinatorFactory;
     @Mock private EnterpriseSignalsDisclaimerHost mHost;
     @Mock private HostFactory mHostFactory;
     @Mock private Callback<String> mShowInfoPageCallback;
-    @Mock private View mView;
     @Mock private ManagedBrowserUtils.Natives mManagedBrowserUtilsJniMock;
     @Mock private EnterpriseSignalsDisclaimerBridge.Natives mBridgeNativesMock;
 
     @Captor private ArgumentCaptor<Consumer<Integer>> mDismissalCallbackCaptor;
 
     private final FakeIdentityManager mIdentityManager = new FakeIdentityManager();
+    private final View mView = new View(RuntimeEnvironment.getApplication());
+    private AppCompatActivity mActivity;
 
     @Before
     public void setUp() {
@@ -89,10 +89,7 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
         EnterpriseSignalsDisclaimerBridgeJni.setInstanceForTesting(mBridgeNativesMock);
         IdentityServicesProvider.setSigninManagerForTesting(mSigninManager);
 
-        // The controller uses the activity to determine the form factor. Back it with the
-        // Robolectric resources, so that `@Config(qualifiers = ...)` is respected.
-        when(mActivity.getResources())
-                .thenReturn(RuntimeEnvironment.getApplication().getResources());
+        mActivity = Robolectric.buildActivity(AppCompatActivity.class).get();
 
         when(mSigninManager.getIdentityManager()).thenReturn(mIdentityManager);
         when(mCoordinator.getView()).thenReturn(mView);
@@ -127,7 +124,7 @@ public class EnterpriseSignalsDisclaimerControllerUnitTest {
     private EnterpriseSignalsDisclaimerCoordinator createMockCoordinator() {
         EnterpriseSignalsDisclaimerCoordinator coordinator =
                 mock(EnterpriseSignalsDisclaimerCoordinator.class);
-        when(coordinator.getView()).thenReturn(mock(View.class));
+        when(coordinator.getView()).thenReturn(new View(RuntimeEnvironment.getApplication()));
         return coordinator;
     }
 

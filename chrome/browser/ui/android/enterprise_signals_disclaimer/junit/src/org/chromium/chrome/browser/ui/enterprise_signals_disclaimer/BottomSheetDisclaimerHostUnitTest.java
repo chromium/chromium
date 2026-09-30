@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -24,51 +25,30 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.RuntimeEnvironment;
 
-import org.chromium.base.test.params.BlockJUnit4RunnerDelegate;
-import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
-import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
-import org.chromium.base.test.params.ParameterProvider;
-import org.chromium.base.test.params.ParameterSet;
-import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerHost.DismissalCause;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.IntSupplier;
 
 /** Unit tests for {@link BottomSheetDisclaimerHost}. */
-@RunWith(ParameterizedRunner.class)
-@UseRunnerDelegate(BlockJUnit4RunnerDelegate.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
+@RunWith(BaseRobolectricTestRunner.class)
 public class BottomSheetDisclaimerHostUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BottomSheetController mBottomSheetController;
-    @Mock private View mContentView;
     @Mock private IntSupplier mVerticalScrollOffsetSupplier;
     @Mock private Consumer<@DismissalCause Integer> mSheetDismissedCallback;
 
     @Captor private ArgumentCaptor<BottomSheetContent> mSheetContentCaptor;
 
+    private final View mContentView = new View(RuntimeEnvironment.getApplication());
     private BottomSheetDisclaimerHost mHost;
-
-    public static class NonUserActionReasonsParams implements ParameterProvider {
-        @Override
-        public List<ParameterSet> getParameters() {
-            return Arrays.asList(
-                    new ParameterSet().value(StateChangeReason.NONE).name("None"),
-                    new ParameterSet().value(StateChangeReason.NAVIGATION).name("Navigation"),
-                    new ParameterSet().value(StateChangeReason.COMPOSITED_UI).name("CompositedUi"),
-                    new ParameterSet().value(StateChangeReason.VR).name("Vr"),
-                    new ParameterSet().value(StateChangeReason.PROMOTE_TAB).name("PromoteTab"),
-                    new ParameterSet().value(StateChangeReason.OMNIBOX_FOCUS).name("OmniboxFocus"));
-        }
-    }
 
     @Before
     public void setUp() {
@@ -247,15 +227,32 @@ public class BottomSheetDisclaimerHostUnitTest {
     }
 
     @Test
-    @UseMethodParameter(NonUserActionReasonsParams.class)
-    public void testSheetClosed_nonUserActionReason_invokesCallbackWithDismissedWithoutUserAction(
-            @StateChangeReason int reason) {
-        showAsCurrentSheetContent();
+    public void
+            testSheetClosed_nonUserActionReason_invokesCallbackWithDismissedWithoutUserAction() {
+        int[] reasons = {
+            StateChangeReason.NONE,
+            StateChangeReason.NAVIGATION,
+            StateChangeReason.COMPOSITED_UI,
+            StateChangeReason.VR,
+            StateChangeReason.PROMOTE_TAB,
+            StateChangeReason.OMNIBOX_FOCUS
+        };
+        for (@StateChangeReason int reason : reasons) {
+            // Use a fresh host for each reason, since the dismissal callback is only run once.
+            clearInvocations(mBottomSheetController, mSheetDismissedCallback);
+            mHost =
+                    new BottomSheetDisclaimerHost(
+                            mBottomSheetController,
+                            mContentView,
+                            mVerticalScrollOffsetSupplier,
+                            mSheetDismissedCallback);
+            showAsCurrentSheetContent();
 
-        mHost.onSheetOpened(StateChangeReason.NONE);
-        mHost.onSheetClosed(reason);
+            mHost.onSheetOpened(StateChangeReason.NONE);
+            mHost.onSheetClosed(reason);
 
-        verify(mSheetDismissedCallback)
-                .accept(DismissalCause.DISMISSED_WITHOUT_EXPLICIT_USER_ACTION);
+            verify(mSheetDismissedCallback)
+                    .accept(DismissalCause.DISMISSED_WITHOUT_EXPLICIT_USER_ACTION);
+        }
     }
 }

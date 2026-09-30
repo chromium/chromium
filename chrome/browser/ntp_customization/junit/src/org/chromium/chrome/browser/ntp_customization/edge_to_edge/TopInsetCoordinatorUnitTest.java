@@ -41,6 +41,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
@@ -68,7 +69,6 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for {@link TopInsetCoordinator} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TopInsetCoordinatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -78,7 +78,6 @@ public class TopInsetCoordinatorUnitTest {
     @Mock private Tab mNonNtpTab1;
     @Mock private Tab mNonNtpTab2;
     @Mock private WindowInsetsCompat mWindowInsetsCompat;
-    @Mock private View mView;
     @Mock private NativePage mNativePage;
     @Mock private TopInsetProvider.Observer mObserver;
     @Mock private LayoutStateProvider mLayoutStateProvider;
@@ -90,6 +89,8 @@ public class TopInsetCoordinatorUnitTest {
             ObservableSuppliers.createNullable();
     private final OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
+
+    private final View mView = new View(ContextUtils.getApplicationContext());
 
     private Context mContext;
     private NtpCustomizationConfigManager mNtpCustomizationConfigManager;

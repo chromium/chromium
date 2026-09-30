@@ -7,15 +7,14 @@ package org.chromium.chrome.browser.ui.device_lock;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.DEVICE_SUPPORTS_PIN_CREATION_INTENT;
 import static org.chromium.chrome.browser.ui.device_lock.DeviceLockProperties.ON_CREATE_DEVICE_LOCK_CLICKED;
@@ -33,7 +32,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.view.View;
 
@@ -45,6 +43,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
+import org.robolectric.Robolectric;
+import org.robolectric.shadow.api.Shadow;
+import org.robolectric.shadows.ShadowContextImpl;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
@@ -62,22 +63,19 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for the {@link DeviceLockMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DeviceLockMediatorUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
-    @Mock public Activity mActivity;
     @Mock private DeviceLockCoordinator.Delegate mDelegate;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private ReauthenticatorBridge mDeviceLockAuthenticatorBridge;
     @Mock private AccountReauthenticationUtils mAccountReauthenticationUtils;
     @Mock private KeyguardManager mKeyguardManager;
-    @Mock private PackageManager mPackageManager;
-    @Mock private View mView;
 
+    private final View mView = new View(ContextUtils.getApplicationContext());
     private final CoreAccountId mAccountId = new CoreAccountId(new GaiaId("account-id"));
 
     private final Answer<Object> mSuccessfulDeviceLockCreation =
@@ -134,11 +132,14 @@ public class DeviceLockMediatorUnitTest {
                 return null;
             };
 
+    private Activity mActivity;
+
     @Before
     public void setUp() {
         when(mDelegate.getSource()).thenReturn(DeviceLockActivityLauncher.Source.AUTOFILL);
-        doReturn(mKeyguardManager).when(mActivity).getSystemService(eq(Context.KEYGUARD_SERVICE));
-        doReturn(mPackageManager).when(mActivity).getPackageManager();
+        mActivity = Robolectric.buildActivity(Activity.class).get();
+        ShadowContextImpl shadowContext = Shadow.extract(mActivity.getBaseContext());
+        shadowContext.setSystemService(Context.KEYGUARD_SERVICE, mKeyguardManager);
 
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         prefs.edit().remove(DEVICE_LOCK_PAGE_HAS_BEEN_PASSED).apply();
@@ -192,7 +193,9 @@ public class DeviceLockMediatorUnitTest {
         resolveInfo.activityInfo.applicationInfo = applicationInfo;
         resolveInfo.activityInfo.name = "ExamplePackage";
 
-        doReturn(resolveInfo).when(mPackageManager).resolveActivity(any(), anyInt());
+        shadowOf(mActivity.getPackageManager())
+                .addResolveInfoForIntent(
+                        DeviceLockUtils.createDeviceLockDirectlyIntent(), resolveInfo);
         DeviceLockMediator deviceLockMediator =
                 new DeviceLockMediator(
                         mDelegate,

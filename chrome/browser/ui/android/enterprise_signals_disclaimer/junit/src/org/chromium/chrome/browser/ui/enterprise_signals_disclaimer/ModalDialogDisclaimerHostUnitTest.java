@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.ui.enterprise_signals_disclaimer;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -26,85 +27,28 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.RuntimeEnvironment;
 
-import org.chromium.base.test.params.BlockJUnit4RunnerDelegate;
-import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
-import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
-import org.chromium.base.test.params.ParameterProvider;
-import org.chromium.base.test.params.ParameterSet;
-import org.chromium.base.test.params.ParameterizedRunner;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ui.enterprise_signals_disclaimer.EnterpriseSignalsDisclaimerHost.DismissalCause;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.function.Consumer;
 
 /** Unit tests for {@link ModalDialogDisclaimerHost}. */
-@RunWith(ParameterizedRunner.class)
-@UseRunnerDelegate(BlockJUnit4RunnerDelegate.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
+@RunWith(BaseRobolectricTestRunner.class)
 public class ModalDialogDisclaimerHostUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ModalDialogManager mModalDialogManager;
-    @Mock private View mView;
     @Mock private Consumer<@DismissalCause Integer> mDialogDismissedCallback;
     @Captor private ArgumentCaptor<PropertyModel> mDialogModelCaptor;
 
+    private final View mView = new View(RuntimeEnvironment.getApplication());
     private ModalDialogDisclaimerHost mHost;
-
-    public static class OtherDismissalCausesParams implements ParameterProvider {
-        @Override
-        public List<ParameterSet> getParameters() {
-            return Arrays.asList(
-                    new ParameterSet().value(DialogDismissalCause.UNKNOWN).name("Unknown"),
-                    new ParameterSet()
-                            .value(DialogDismissalCause.POSITIVE_BUTTON_CLICKED)
-                            .name("PositiveButtonClicked"),
-                    new ParameterSet()
-                            .value(DialogDismissalCause.NEGATIVE_BUTTON_CLICKED)
-                            .name("NegativeButtonClicked"),
-                    new ParameterSet()
-                            .value(DialogDismissalCause.ACTION_ON_CONTENT)
-                            .name("ActionOnContent"),
-                    new ParameterSet()
-                            .value(DialogDismissalCause.DISMISSED_BY_NATIVE)
-                            .name("DismissedByNative"),
-                    new ParameterSet().value(DialogDismissalCause.TAB_SWITCHED).name("TabSwitched"),
-                    new ParameterSet()
-                            .value(DialogDismissalCause.TAB_DESTROYED)
-                            .name("TabDestroyed"),
-                    new ParameterSet()
-                            .value(DialogDismissalCause.ACTIVITY_DESTROYED)
-                            .name("ActivityDestroyed"),
-                    new ParameterSet()
-                            .value(DialogDismissalCause.NOT_ATTACHED_TO_WINDOW)
-                            .name("NotAttachedToWindow"),
-                    new ParameterSet().value(DialogDismissalCause.NAVIGATE).name("Navigate"),
-                    new ParameterSet()
-                            .value(DialogDismissalCause.NAVIGATE_BACK)
-                            .name("NavigateBack"),
-                    new ParameterSet()
-                            .value(DialogDismissalCause.TOUCH_OUTSIDE)
-                            .name("TouchOutside"),
-                    new ParameterSet()
-                            .value(DialogDismissalCause.WEB_CONTENTS_DESTROYED)
-                            .name("WebContentsDestroyed"),
-                    new ParameterSet()
-                            .value(DialogDismissalCause.DIALOG_INTERACTION_DEFERRED)
-                            .name("DialogInteractionDeferred"),
-                    new ParameterSet()
-                            .value(DialogDismissalCause.ACTION_ON_DIALOG_NOT_POSSIBLE)
-                            .name("ActionOnDialogNotPossible"),
-                    new ParameterSet()
-                            .value(DialogDismissalCause.CLIENT_TIMEOUT)
-                            .name("ClientTimeout"));
-        }
-    }
 
     @Before
     public void setUp() {
@@ -223,17 +167,40 @@ public class ModalDialogDisclaimerHostUnitTest {
     }
 
     @Test
-    @UseMethodParameter(OtherDismissalCausesParams.class)
-    public void testOnDismiss_otherReason_invokesCallbackWithDismissedWithoutUserAction(
-            @DialogDismissalCause int dismissalCause) {
-        mHost.show();
-        Assert.assertTrue(mHost.isActive());
+    public void testOnDismiss_otherReason_invokesCallbackWithDismissedWithoutUserAction() {
+        int[] dismissalCauses = {
+            DialogDismissalCause.UNKNOWN,
+            DialogDismissalCause.POSITIVE_BUTTON_CLICKED,
+            DialogDismissalCause.NEGATIVE_BUTTON_CLICKED,
+            DialogDismissalCause.ACTION_ON_CONTENT,
+            DialogDismissalCause.DISMISSED_BY_NATIVE,
+            DialogDismissalCause.TAB_SWITCHED,
+            DialogDismissalCause.TAB_DESTROYED,
+            DialogDismissalCause.ACTIVITY_DESTROYED,
+            DialogDismissalCause.NOT_ATTACHED_TO_WINDOW,
+            DialogDismissalCause.NAVIGATE,
+            DialogDismissalCause.NAVIGATE_BACK,
+            DialogDismissalCause.TOUCH_OUTSIDE,
+            DialogDismissalCause.WEB_CONTENTS_DESTROYED,
+            DialogDismissalCause.DIALOG_INTERACTION_DEFERRED,
+            DialogDismissalCause.ACTION_ON_DIALOG_NOT_POSSIBLE,
+            DialogDismissalCause.CLIENT_TIMEOUT
+        };
+        for (@DialogDismissalCause int dismissalCause : dismissalCauses) {
+            // Use a fresh host for each cause, since the dismissal callback is only run once.
+            clearInvocations(mModalDialogManager, mDialogDismissedCallback);
+            mHost =
+                    new ModalDialogDisclaimerHost(
+                            mModalDialogManager, mView, mDialogDismissedCallback);
+            mHost.show();
+            Assert.assertTrue(mHost.isActive());
 
-        mHost.onDismiss(null, dismissalCause);
+            mHost.onDismiss(null, dismissalCause);
 
-        Assert.assertFalse(mHost.isActive());
-        verify(mDialogDismissedCallback)
-                .accept(DismissalCause.DISMISSED_WITHOUT_EXPLICIT_USER_ACTION);
+            Assert.assertFalse(mHost.isActive());
+            verify(mDialogDismissedCallback)
+                    .accept(DismissalCause.DISMISSED_WITHOUT_EXPLICIT_USER_ACTION);
+        }
     }
 
     @Test

@@ -15,7 +15,6 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Resources;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -26,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -63,7 +63,6 @@ import org.chromium.ui.shadows.ShadowAppCompatResources;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowAppCompatResources.class})
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class WebContentsDarkModeMessageControllerUnitTest {
     private boolean mIsFeatureEnabled;
 
@@ -74,9 +73,6 @@ public class WebContentsDarkModeMessageControllerUnitTest {
     private static final String OPT_OUT_FEATURE = FeatureConstants.AUTO_DARK_OPT_OUT_FEATURE;
     private static final String DISABLED_EVENT = EventConstants.AUTO_DARK_DISABLED_IN_APP_MENU;
     private static final String TEST_URL = "https://example.com";
-    private static final String TEST_LINK_STRING = "<link></link>";
-    private static final String TEST_OPT_OUT_TITLE = "opt_out";
-    private static final String TEST_OPT_IN_TITLE = "opt_in";
 
     private static class FakeMessageDispatcher implements MessageDispatcher {
         private PropertyModel mShownMessageModel;
@@ -135,16 +131,15 @@ public class WebContentsDarkModeMessageControllerUnitTest {
     }
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock Activity mMockActivity;
     @Mock Profile mMockProfile;
     @Mock WebContents mMockWebContents;
     @Mock SettingsNavigation mMockSettingsNavigation;
     @Mock HelpAndFeedbackLauncher mMockFeedbackLauncher;
     @Mock FeedbackPolicyManager mMockFeedbackPolicyManager;
 
-    @Mock Resources mMockResources;
     @Mock Tracker mMockTracker;
 
+    Activity mActivity;
     FakeMessageDispatcher mMessageDispatcher;
     FakeModalDialogManager mModalDialogManager;
 
@@ -165,12 +160,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
                     }
                 });
 
-        when(mMockActivity.getResources()).thenReturn(mMockResources);
-        when(mMockResources.getString(anyInt())).thenReturn(TEST_LINK_STRING);
-        when(mMockResources.getString(eq(R.string.auto_dark_message_title)))
-                .thenReturn(TEST_OPT_OUT_TITLE);
-        when(mMockResources.getString(eq(R.string.auto_dark_message_opt_in_title)))
-                .thenReturn(TEST_OPT_IN_TITLE);
+        mActivity = Robolectric.buildActivity(Activity.class).get();
 
         when(mMockTracker.shouldTriggerHelpUi(eq(USER_ED_FEATURE))).thenReturn(true);
         when(mMockTracker.shouldTriggerHelpUi(eq(USER_ED_OPT_IN_FEATURE))).thenReturn(true);
@@ -202,12 +192,12 @@ public class WebContentsDarkModeMessageControllerUnitTest {
         reset(mMockWebContents, mMockSettingsNavigation, mMockTracker);
         setOptOut(true);
         String enabledFeature = USER_ED_FEATURE;
-        String messageTitle = TEST_OPT_OUT_TITLE;
+        String messageTitle = mActivity.getString(R.string.auto_dark_message_title);
         when(mMockTracker.shouldTriggerHelpUi(eq(enabledFeature))).thenReturn(true);
 
         // Successfully send message.
         WebContentsDarkModeMessageController.attemptToSendMessage(
-                mMockActivity, mMockProfile, mMockWebContents, mMessageDispatcher);
+                mActivity, mMockProfile, mMockWebContents, mMessageDispatcher);
         verify(mMockTracker, times(1)).shouldTriggerHelpUi(enabledFeature);
         Assert.assertNotNull("Message should be non-null.", mMessageDispatcher.mShownMessageModel);
         Assert.assertEquals(
@@ -232,12 +222,12 @@ public class WebContentsDarkModeMessageControllerUnitTest {
         reset(mMockWebContents, mMockSettingsNavigation, mMockTracker);
         setOptOut(false);
         String enabledFeature = USER_ED_OPT_IN_FEATURE;
-        String messageTitle = TEST_OPT_IN_TITLE;
+        String messageTitle = mActivity.getString(R.string.auto_dark_message_opt_in_title);
         when(mMockTracker.shouldTriggerHelpUi(eq(enabledFeature))).thenReturn(true);
 
         // Successfully send message.
         WebContentsDarkModeMessageController.attemptToSendMessage(
-                mMockActivity, mMockProfile, mMockWebContents, mMessageDispatcher);
+                mActivity, mMockProfile, mMockWebContents, mMessageDispatcher);
         verify(mMockTracker, times(1)).shouldTriggerHelpUi(enabledFeature);
         Assert.assertNotNull("Message should be non-null.", mMessageDispatcher.mShownMessageModel);
         Assert.assertEquals(
@@ -282,7 +272,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
 
         // Attempt to send message and fail.
         WebContentsDarkModeMessageController.attemptToSendMessage(
-                mMockActivity, mMockProfile, mMockWebContents, mMessageDispatcher);
+                mActivity, mMockProfile, mMockWebContents, mMessageDispatcher);
         Assert.assertNull(
                 "Shown message should be null, since we don't show the message.",
                 mMessageDispatcher.mShownMessageModel);
@@ -298,7 +288,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
 
     private void verifyLaunchSettings(int numTimes) {
         verify(mMockSettingsNavigation, times(numTimes))
-                .startSettings(eq(mMockActivity), eq(ThemeSettingsFragment.class));
+                .startSettings(eq(mActivity), eq(ThemeSettingsFragment.class));
     }
 
     // Message sent tests.
@@ -370,7 +360,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
 
         // Attempt to send message and fail because feature engagement conditions not met.
         WebContentsDarkModeMessageController.attemptToShowDialog(
-                mMockActivity, mMockProfile, TEST_URL, mModalDialogManager);
+                mActivity, mMockProfile, TEST_URL, mModalDialogManager);
         verify(mMockTracker, times(1)).notifyEvent(eq(DISABLED_EVENT));
         Assert.assertNull(
                 "Shown dialog model should be null, since we should not trigger the dialog.",
@@ -381,7 +371,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
     public void testShowDialog_ShouldTrigger() {
         // Attempt to send message and succeed because feature engagement conditions met.
         WebContentsDarkModeMessageController.attemptToShowDialog(
-                mMockActivity, mMockProfile, TEST_URL, mModalDialogManager);
+                mActivity, mMockProfile, TEST_URL, mModalDialogManager);
         verify(mMockTracker, times(1)).notifyEvent(eq(DISABLED_EVENT));
         Assert.assertNotNull(
                 "Shown dialog model should be non-null, since we trigger the dialog.",
@@ -398,10 +388,10 @@ public class WebContentsDarkModeMessageControllerUnitTest {
 
         // Click on positive button.
         WebContentsDarkModeMessageController.attemptToShowDialog(
-                mMockActivity, mMockProfile, TEST_URL, mModalDialogManager);
+                mActivity, mMockProfile, TEST_URL, mModalDialogManager);
         mModalDialogManager.clickButton(ButtonType.POSITIVE);
         verify(mMockFeedbackLauncher, times(1))
-                .showFeedback(eq(mMockActivity), eq(TEST_URL), any(), anyInt(), any());
+                .showFeedback(eq(mActivity), eq(TEST_URL), any(), anyInt(), any());
 
         // Verify dismissal.
         Assert.assertNull(
@@ -420,7 +410,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
 
         // Click on positive button.
         WebContentsDarkModeMessageController.attemptToShowDialog(
-                mMockActivity, mMockProfile, TEST_URL, mModalDialogManager);
+                mActivity, mMockProfile, TEST_URL, mModalDialogManager);
         mModalDialogManager.clickButton(ButtonType.POSITIVE);
         verifyLaunchSettings(1);
 
@@ -442,7 +432,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
 
         // Click on positive button.
         WebContentsDarkModeMessageController.attemptToShowDialog(
-                mMockActivity, mMockProfile, TEST_URL, mModalDialogManager);
+                mActivity, mMockProfile, TEST_URL, mModalDialogManager);
         mModalDialogManager.clickButton(ButtonType.POSITIVE);
 
         // Should open settings, NOT feedback.
@@ -460,7 +450,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
     public void testDialogController_ClickNegativeButton() {
         // Click on negative button.
         WebContentsDarkModeMessageController.attemptToShowDialog(
-                mMockActivity, mMockProfile, TEST_URL, mModalDialogManager);
+                mActivity, mMockProfile, TEST_URL, mModalDialogManager);
         mModalDialogManager.clickButton(ButtonType.NEGATIVE);
 
         // Verify dismissal.
@@ -472,7 +462,7 @@ public class WebContentsDarkModeMessageControllerUnitTest {
 
     @Test
     public void testClickableSpan_SettingsLink() {
-        AutoDarkClickableSpan clickableSpan = new AutoDarkClickableSpan(mMockActivity);
+        AutoDarkClickableSpan clickableSpan = new AutoDarkClickableSpan(mActivity);
         clickableSpan.onClick(null);
         verifyLaunchSettings(1);
     }

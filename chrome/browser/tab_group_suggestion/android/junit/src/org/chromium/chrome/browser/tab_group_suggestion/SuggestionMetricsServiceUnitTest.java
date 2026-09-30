@@ -23,6 +23,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -40,7 +41,6 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 
 /** Unit tests for {@link SuggestionMetricsService}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SuggestionMetricsServiceUnitTest {
     private static final int WINDOW_ID = 0;
 
@@ -49,7 +49,6 @@ public class SuggestionMetricsServiceUnitTest {
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private TabModel mTabModel;
     @Mock private ActivityLifecycleDispatcher mLifecycleDispatcher;
-    @Mock private Activity mActivity;
     @Mock private Tab mTab1;
 
     @Captor private ArgumentCaptor<StartStopWithNativeObserver> mStartStopObserverCaptor;
@@ -57,10 +56,12 @@ public class SuggestionMetricsServiceUnitTest {
     private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
             ObservableSuppliers.createNullable();
     private final Token mGtsGroupId = new Token(1, 1);
+    private Activity mActivity;
     private SuggestionMetricsService mSuggestionMetricsService;
 
     @Before
     public void setUp() {
+        mActivity = Robolectric.buildActivity(Activity.class).get();
         onStateChangeForTesting(mActivity, ActivityState.CREATED);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
         when(mTabModel.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);

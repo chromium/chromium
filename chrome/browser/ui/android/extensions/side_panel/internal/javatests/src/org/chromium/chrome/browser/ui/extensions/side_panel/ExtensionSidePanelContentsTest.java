@@ -43,15 +43,14 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link ExtensionSidePanelContents}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ExtensionSidePanelContentsTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private WebContents mWebContents;
     @Mock private ThinWebView mThinWebView;
-    @Mock private View mThinWebViewUnderlyingView;
 
     private Activity mActivity;
+    private View mThinWebViewUnderlyingView;
     private IntentRequestTracker mIntentRequestTracker;
     private ActivityWindowAndroid mWindowAndroid;
 
@@ -59,6 +58,7 @@ public class ExtensionSidePanelContentsTest {
     public void setUp() {
         ExtensionSidePanelContents.setSkipViewEventSinkForTesting(true);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mThinWebViewUnderlyingView = new View(mActivity);
         mIntentRequestTracker = IntentRequestTracker.createFromActivity(mActivity);
         mWindowAndroid =
                 new ActivityWindowAndroid(

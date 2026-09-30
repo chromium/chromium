@@ -24,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -37,23 +38,23 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for the DialogControllerImpl class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DialogControllerImplUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
     @Mock private WebContents mWebContents;
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private Activity mActivity;
 
     @Mock private DialogControllerImpl.AlertDialogFactory mAlertDialogFactory;
     @Mock private AlertDialog.Builder mAlertDialog;
     @Mock private Callback<PaymentAppError> mDenyCallback;
     @Mock private Runnable mApproveCallback;
 
+    private Activity mActivity;
     private DialogControllerImpl mDialogController;
 
     @Before
     public void setUp() {
+        mActivity = Robolectric.buildActivity(Activity.class).get();
         when(mWebContents.isDestroyed()).thenReturn(false);
         when(mWebContents.getVisibility()).thenReturn(Visibility.VISIBLE);
         when(mWebContents.getTopLevelNativeWindow()).thenReturn(mWindowAndroid);

@@ -34,6 +34,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ActivityController;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -43,14 +44,14 @@ import org.chromium.ui.base.TestActivity;
 /** Unit tests for {@link HubPaneSwipeGestureHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.ENABLE_SWIPE_TO_SWITCH_PANE)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class HubPaneSwipeGestureHandlerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private HubPaneSwipeGestureHandler.SwipeGestureDelegate mDelegate;
     @Mock private ViewParent mViewParent;
     @Mock private VelocityTracker mVelocityTracker;
-    @Mock private View mAdjacentView;
+
+    private final View mAdjacentView = new View(ContextUtils.getApplicationContext());
 
     private ActivityController<TestActivity> mActivityController;
     private HubPaneSwipeGestureHandler mGestureHandler;
