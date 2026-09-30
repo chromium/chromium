@@ -10493,26 +10493,6 @@
           }
         ]
       },
-      "linux-rel-no-external-ip": {
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
       "linux-separate-renderer-fyi-rel": {
         "contact_team_email": "toyoshim@chromium.org",
         "problem_specs": [
@@ -13273,26 +13253,6 @@
       },
       "win10-enterprise-companion-tester-rel": {
         "contact_team_email": "omaha-client-dev@google.com",
-        "problem_specs": [
-          {
-            "name": "Unhealthy",
-            "period_days": 7,
-            "score": 5,
-            "thresholds": {
-              "_default": "_default"
-            }
-          },
-          {
-            "name": "Low Value",
-            "period_days": 90,
-            "score": 1,
-            "thresholds": {
-              "_default": "_default"
-            }
-          }
-        ]
-      },
-      "win10-rel-no-external-ip": {
         "problem_specs": [
           {
             "name": "Unhealthy",

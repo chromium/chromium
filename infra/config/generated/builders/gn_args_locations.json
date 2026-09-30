@@ -350,7 +350,6 @@
     "linux-headless-shell-rel": "ci/linux-headless-shell-rel/gn-args.json",
     "linux-multiscreen-fyi-rel": "ci/linux-multiscreen-fyi-rel/gn-args.json",
     "linux-perfetto-rel": "ci/linux-perfetto-rel/gn-args.json",
-    "linux-rel-no-external-ip": "ci/linux-rel-no-external-ip/gn-args.json",
     "linux-separate-renderer-fyi-rel": "ci/linux-separate-renderer-fyi-rel/gn-args.json",
     "linux-surface-embed-rel": "ci/linux-surface-embed-rel/gn-args.json",
     "linux-treesinviz-enabled-rel": "ci/linux-treesinviz-enabled-rel/gn-args.json",
@@ -372,7 +371,6 @@
     "win-treesinviz-disabled-rel": "ci/win-treesinviz-disabled-rel/gn-args.json",
     "win-upload-perfetto": "ci/win-upload-perfetto/gn-args.json",
     "win-webdriver-bidi-rel": "ci/win-webdriver-bidi-rel/gn-args.json",
-    "win10-rel-no-external-ip": "ci/win10-rel-no-external-ip/gn-args.json",
     "win10-wpt-chromium-rel": "ci/win10-wpt-chromium-rel/gn-args.json",
     "win32-arm64-rel": "ci/win32-arm64-rel/gn-args.json"
   },

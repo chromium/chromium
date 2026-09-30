@@ -48,7 +48,6 @@ ci/linux-fuzz-coverage
 ci/linux-headless-shell-rel
 ci/linux-js-code-coverage
 ci/linux-perfetto-rel
-ci/linux-rel-no-external-ip
 ci/linux-upload-perfetto
 ci/linux-v4l2-codec-rel
 ci/mac-code-coverage
@@ -63,7 +62,6 @@ ci/win-fieldtrial-rel
 ci/win-perfetto-rel
 ci/win-upload-perfetto
 ci/win10-code-coverage
-ci/win10-rel-no-external-ip
 ci/win32-arm64-rel
 codesearch/gen-android-try
 codesearch/gen-chromiumos-try
