@@ -76,6 +76,7 @@ group("perf_without_chrome") {
 
   data = [
            "//tools/perf/",
+           "//PRESUBMIT_test_mocks.py",
 
            # Field trial config
            "//tools/variations/",
