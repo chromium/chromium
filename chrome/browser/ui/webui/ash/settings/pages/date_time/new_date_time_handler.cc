@@ -7,12 +7,16 @@
 #include <vector>
 
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
+#include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/child_accounts/parent_access_code/parent_access_service.h"
 #include "chrome/browser/ash/system/timezone_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/set_time/set_time_dialog.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/date_time/mojom/date_time_handler.mojom.h"
-#include "components/user_manager/user_manager.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/user_manager/user.h"
 #include "content/public/browser/web_contents.h"
 
 namespace ash::settings {
@@ -36,7 +40,9 @@ NewDateTimeHandler::~NewDateTimeHandler() {
 }
 
 void NewDateTimeHandler::ShowParentAccessForTimezone() {
-  DCHECK(user_manager::UserManager::Get()->GetActiveUser()->IsChild());
+  const user_manager::User& user = CHECK_DEREF(
+      BrowserContextHelper::Get()->GetUserByBrowserContext(profile_));
+  CHECK(user.IsChild());
 
   if (!parent_access::ParentAccessService::IsApprovalRequired(
           SupervisedAction::kUpdateTimezone)) {
@@ -45,7 +51,7 @@ void NewDateTimeHandler::ShowParentAccessForTimezone() {
   }
 
   ParentAccessController::Get()->ShowWidget(
-      user_manager::UserManager::Get()->GetActiveUser()->GetAccountId(),
+      user.GetAccountId(),
       base::BindOnce(&NewDateTimeHandler::OnParentAccessValidation,
                      weak_ptr_factory_.GetWeakPtr()),
       SupervisedAction::kUpdateTimezone, false /* extra_dimmer */,

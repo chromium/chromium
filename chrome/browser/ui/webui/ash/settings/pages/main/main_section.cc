@@ -30,7 +30,10 @@
 #include "chrome/grit/os_settings_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -248,15 +251,17 @@ void MainSection::AddChromeOSUserStrings(
     content::WebUIDataSource* html_source) {
   const user_manager::User* user =
       BrowserContextHelper::Get()->GetUserByBrowserContext(profile());
-  const user_manager::User* primary_user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  std::string primary_user_email = primary_user->GetDisplayEmail();
+  const AccountId& primary_account_id =
+      CHECK_DEREF(session_manager::SessionManager::Get()->GetPrimarySession())
+          .account_id();
+  const user_manager::User& primary_user = CHECK_DEREF(
+      user_manager::UserManager::Get()->FindUser(primary_account_id));
+  std::string primary_user_email = primary_user.GetDisplayEmail();
 
   html_source->AddString("primaryUserEmail", primary_user_email);
 
-  html_source->AddBoolean(
-      "isSecondaryUser",
-      user && user->GetAccountId() != primary_user->GetAccountId());
+  html_source->AddBoolean("isSecondaryUser",
+                          user && user->GetAccountId() != primary_account_id);
   html_source->AddString(
       "secondaryUserBannerText",
       l10n_util::GetStringFUTF16(IDS_SETTINGS_SECONDARY_USER_BANNER,

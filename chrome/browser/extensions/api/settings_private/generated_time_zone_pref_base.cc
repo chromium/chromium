@@ -11,6 +11,9 @@
 #include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/settings_private.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
 namespace extensions {
@@ -50,7 +53,12 @@ void GeneratedTimeZonePrefBase::UpdateTimeZonePrefControlledBy(
   } else if (!profile_->IsSameOrParent(profile_util::GetPrimaryUserProfile())) {
     out_pref->controlled_by = settings_api::ControlledBy::kPrimaryUser;
     out_pref->controlled_by_name =
-        user_manager::UserManager::Get()->GetPrimaryUser()->GetDisplayEmail();
+        CHECK_DEREF(
+            user_manager::UserManager::Get()->FindUser(
+                CHECK_DEREF(
+                    session_manager::SessionManager::Get()->GetPrimarySession())
+                    .account_id()))
+            .GetDisplayEmail();
     out_pref->enforcement = settings_api::Enforcement::kEnforced;
   }
   // Time zone settings can be policy-bound (for all users), or primary-user

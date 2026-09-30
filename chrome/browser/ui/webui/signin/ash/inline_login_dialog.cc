@@ -19,7 +19,9 @@
 #include "components/account_manager_core/account_addition_options.h"
 #include "components/account_manager_core/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/session_manager/core/session.h"
 #include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -49,7 +51,13 @@ constexpr int kEduCoexistenceSigninDialogWidth = 1040;
 constexpr int kEduCoexistenceSigninDialogHeight = 680;
 
 bool IsDeviceAccountEmail(const std::string& email) {
-  auto* active_user = user_manager::UserManager::Get()->GetActiveUser();
+  const auto* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  if (!active_session) {
+    return false;
+  }
+  const auto* active_user =
+      user_manager::UserManager::Get()->FindUser(active_session->account_id());
   return active_user &&
          gaia::AreEmailsSame(active_user->GetDisplayEmail(), email);
 }
