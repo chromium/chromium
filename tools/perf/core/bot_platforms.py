@@ -244,6 +244,20 @@ class CrossbenchConfig(BenchmarkConfig):
     self.estimated_runtime: Final[int] = estimated_runtime
     self.stories: Final[tuple[str, ...]] = stories or ('default',)
 
+  @property
+  def flags(self) -> tuple[str, ...]:
+    # The repeat count is part of the crossbench flags. It is derived on
+    # access rather than baked in at construction time because the schedule
+    # csv can override self.repeat after the config was created (see
+    # _ParseScheduleConfigRow).
+    if self.repeat > 1:
+      return (*self._flags, f'--repeat={self.repeat}')
+    return self._flags
+
+  @flags.setter
+  def flags(self, flags: tuple[str, ...]) -> None:
+    self._flags = flags
+
   def _process_flags(
     self, flags: tuple[str, ...], auto_enable_field_trials: bool
   ) -> tuple[str, ...]:
@@ -253,6 +267,9 @@ class CrossbenchConfig(BenchmarkConfig):
         "--disable-field-trial-config" not in flags
       ):
         flags += ("--enable-field-trials=benchmarking",)
+    assert not any(flag.startswith('--repeat') for flag in flags), (
+      f"Use the repeat= argument instead of passing --repeat in {flags}"
+    )
     assert len(flags) == len(set(flags)), (
       f"Found duplicate arguments in {flags}"
     )
@@ -1326,7 +1343,9 @@ def ParseFlags(file_path: pathlib.Path, row, has_flags: bool) -> str | None:
 def _ParseScheduleConfigRow(
   row, name: str, factory: BenchmarkConfigFactory, is_telemetry: bool
 ) -> BenchmarkConfig:
-  repeat = int(row.get('repeat', 1))
+  # An absent or empty "repeat" column means "use the config's own default"
+  # (e.g. browser_startup.crossbench is registered with repeat=10).
+  repeat: int | None = int(row['repeat']) if row.get('repeat') else None
   kwargs = {}
   for k, v in row.items():
     if k in ('bot', 'repeat', 'shard'):
@@ -1337,10 +1356,8 @@ def _ParseScheduleConfigRow(
     return factory(name, pageset_repeat=repeat, **kwargs)
 
   config = factory(**kwargs)
-  if hasattr(config, 'repeat'):
+  if repeat is not None:
     config.repeat = repeat
-  else:
-    assert repeat == 1, f'Cannot use repeat > 1 yet on {name}'
 
   return config
 

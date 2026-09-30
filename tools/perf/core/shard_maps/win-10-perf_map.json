@@ -2,7 +2,7 @@
     "0": {
         "benchmarks": {
             "blink_perf.accessibility": {
-                "end": 10,
+                "end": 16,
                 "abridged": false
             },
             "jetstream2": {
@@ -66,14 +66,14 @@
     "1": {
         "benchmarks": {
             "blink_perf.accessibility": {
-                "begin": 10,
+                "begin": 16,
                 "abridged": false
             },
             "blink_perf.bindings": {
                 "abridged": false
             },
             "blink_perf.css": {
-                "end": 60,
+                "end": 78,
                 "abridged": false
             },
             "jetstream2": {
@@ -124,7 +124,7 @@
     "2": {
         "benchmarks": {
             "blink_perf.css": {
-                "begin": 60,
+                "begin": 78,
                 "abridged": false
             },
             "blink_perf.dom": {
@@ -137,7 +137,7 @@
                 "abridged": false
             },
             "blink_perf.layout": {
-                "end": 41,
+                "end": 48,
                 "abridged": false
             },
             "jetstream2": {
@@ -188,11 +188,11 @@
     "3": {
         "benchmarks": {
             "blink_perf.layout": {
-                "begin": 41,
+                "begin": 48,
                 "abridged": false
             },
             "blink_perf.owp_storage": {
-                "end": 4,
+                "end": 7,
                 "abridged": false
             },
             "jetstream2": {
@@ -243,7 +243,7 @@
     "4": {
         "benchmarks": {
             "blink_perf.owp_storage": {
-                "begin": 4,
+                "begin": 7,
                 "abridged": false
             },
             "blink_perf.parser": {
@@ -253,7 +253,6 @@
                 "abridged": false
             },
             "blink_perf.webaudio": {
-                "end": 12,
                 "abridged": false
             },
             "jetstream2": {
@@ -303,10 +302,6 @@
     },
     "5": {
         "benchmarks": {
-            "blink_perf.webaudio": {
-                "begin": 12,
-                "abridged": false
-            },
             "blink_perf.webcodecs": {
                 "abridged": false
             },
@@ -329,7 +324,7 @@
                 "abridged": false
             },
             "media.desktop": {
-                "end": 9,
+                "end": 10,
                 "abridged": false
             },
             "system_health.common_desktop": {
@@ -372,7 +367,8 @@
                 "crossbench_name": "browser-startup",
                 "arguments": [
                     "--enable-features=InitialWebUI:high_stream_priority/true,WebUIReloadButton:WebUIReloadButtonDeferBrowserViewShow/true/WebUIReloadButtonKeepVisibleUntilPaint/true/WebUIReloadButtonPrewarmWebUI/true,SkipIPCChannelPausingForNonGuests,WebUIInProcessResourceLoadingV2,InitialWebUISyncNavStartToCommit,InitialWebUIWithoutExtensions,WebUIBundledCodeCache,SendGPUChannelEarly",
-                    "--enable-field-trials=benchmarking"
+                    "--enable-field-trials=benchmarking",
+                    "--repeat=10"
                 ]
             }
         }
@@ -380,7 +376,7 @@
     "6": {
         "benchmarks": {
             "media.desktop": {
-                "begin": 9,
+                "begin": 10,
                 "abridged": false
             },
             "memory.desktop": {
@@ -686,18 +682,18 @@
         }
     },
     "extra_infos": {
-        "num_stories": 1200,
+        "num_stories": 1204,
         "predicted_min_shard_time": 1940.0,
         "predicted_min_shard_index": 15,
         "predicted_max_shard_time": 2205.0,
         "predicted_max_shard_index": 17,
-        "shard #0": 2004.0,
-        "shard #1": 2015.0,
-        "shard #2": 2013.0,
-        "shard #3": 2010.0,
+        "shard #0": 2001.0,
+        "shard #1": 2010.0,
+        "shard #2": 2004.0,
+        "shard #3": 1987.0,
         "shard #4": 2015.0,
-        "shard #5": 2001.0,
-        "shard #6": 2034.0,
+        "shard #5": 2002.0,
+        "shard #6": 2004.0,
         "shard #7": 2007.0,
         "shard #8": 2014.0,
         "shard #9": 2021.0,

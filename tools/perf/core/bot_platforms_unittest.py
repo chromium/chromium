@@ -43,6 +43,60 @@ class BotPlatformTest(unittest.TestCase):
       self.assertEqual(config.name, 'speedometer3.crossbench')
       self.assertEqual(config.repeat, 2)
 
+  def testLoadScheduleFileRepeat(self):
+    with tempfile.TemporaryDirectory() as tmpdir:
+      tmpdir_path = pathlib.Path(tmpdir)
+      # browser_startup.crossbench is registered with repeat=10. An empty
+      # repeat cell keeps it, an explicit value overrides it.
+      file_path = tmpdir_path / 'browser_startup.crossbench.csv'
+      file_path.write_text(
+        'bot,repeat,shard\n'
+        'test-bot-1,,1\n'
+        'test-bot-2,1,1\n'
+        'test-bot-3,3,1\n',
+        encoding='utf-8',
+      )
+
+      configs = {}
+      bot_platforms.LoadScheduleFile(file_path, configs)
+
+      self.assertEqual(configs['test-bot-1'][0].repeat, 10)
+      self.assertIn('--repeat=10', configs['test-bot-1'][0].flags)
+      self.assertEqual(configs['test-bot-2'][0].repeat, 1)
+      self.assertNotIn('--repeat=1', configs['test-bot-2'][0].flags)
+      self.assertEqual(configs['test-bot-3'][0].repeat, 3)
+      self.assertIn('--repeat=3', configs['test-bot-3'][0].flags)
+
+  def testLoadScheduleFileWithoutRepeatColumn(self):
+    with tempfile.TemporaryDirectory() as tmpdir:
+      tmpdir_path = pathlib.Path(tmpdir)
+      file_path = tmpdir_path / 'browser_startup.crossbench.csv'
+      file_path.write_text('bot,shard\ntest-bot,1\n', encoding='utf-8')
+
+      configs = {}
+      bot_platforms.LoadScheduleFile(file_path, configs)
+
+      self.assertEqual(configs['test-bot'][0].repeat, 10)
+
+  def testCrossbenchConfigRepeatFlag(self):
+    config = bot_platforms.CrossbenchConfig(
+      'test', 'test_name', flags=('--my_arg',), repeat=1
+    )
+    self.assertEqual(
+      config.flags, ('--my_arg', '--enable-field-trials=benchmarking')
+    )
+    config = bot_platforms.CrossbenchConfig(
+      'test', 'test_name', flags=('--my_arg',), repeat=10
+    )
+    self.assertEqual(
+      config.flags,
+      ('--my_arg', '--enable-field-trials=benchmarking', '--repeat=10'),
+    )
+    with self.assertRaisesRegex(AssertionError, 'repeat'):
+      bot_platforms.CrossbenchConfig(
+        'test', 'test_name', flags=('--repeat=5',), repeat=10
+      )
+
   def testLoadScheduleFileWithFlagsError(self):
     with tempfile.TemporaryDirectory() as tmpdir:
       tmpdir_path = pathlib.Path(tmpdir)

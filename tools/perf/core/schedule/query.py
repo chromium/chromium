@@ -114,7 +114,8 @@ def add_bot(
 
   new_row = {
     'bot': bot,
-    'repeat': '1',
+    # Leave repeat unset so the benchmark config's own default applies.
+    'repeat': '',
     'shard': '1',
   }
   if repeat:

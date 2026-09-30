@@ -80,12 +80,13 @@ win-10-perf,2,1
       bots.add(bot)
       repeats = row.get('repeat')
       self.assertIsNotNone(repeats, f"Missing 'repeat' column in {path}")
-      repeats = int(repeats)
-      self.assertGreater(
-        repeats,
-        0,
-        f"'repeats' value {repeats} must be positive in {path} for bot {bot}",
-      )
+      if repeats:
+        repeats = int(repeats)
+        self.assertGreater(
+          repeats,
+          0,
+          f"'repeats' value {repeats} must be positive in {path} for bot {bot}",
+        )
       shard = row.get('shard')
       self.assertIsNotNone(shard, f"Missing 'shard' column in {path}")
       shard = int(shard)
