@@ -260,7 +260,7 @@ TEST_F(IosSmartTabGroupingRequestWrapperTest,
   // Create a cached PageContext proto.
   optimization_guide::proto::PageContext context;
   context.set_title("Cached Title");
-  context.set_url("https://cached.com/");
+  context.set_url("https://example.com/");
   context.set_inner_text("Cached Data");
   std::string serialized_context;
   ASSERT_TRUE(context.SerializeToString(&serialized_context));

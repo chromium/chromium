@@ -11,6 +11,7 @@
 #import "base/files/file_util.h"
 #import "base/files/scoped_temp_dir.h"
 #import "base/functional/bind.h"
+#import "base/metrics/field_trial_params.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/bind.h"
@@ -35,10 +36,12 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/web/public/test/fakes/fake_navigation_context.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_observer.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
@@ -64,17 +67,7 @@ class PersistTabContextBrowserAgentTest
   void SetUp() override {
     PlatformTest::SetUp();
 
-    if (GetParam() == PersistTabStorageType::kSQLite) {
-      feature_list_.InitWithFeaturesAndParameters(
-          {{kPersistTabContext, {{kPersistTabContextStorageParam, "1"}}},
-           {page_content_annotations::features::kPageContentCache, {}}},
-          {});
-    } else {
-      feature_list_.InitWithFeaturesAndParameters(
-          {{kPersistTabContext, {{kPersistTabContextStorageParam, "0"}}},
-           {kCleanupPersistedTabContexts, {}}},
-          {});
-    }
+    InitFeatures(/*extract_on_page_load=*/false);
 
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
@@ -91,6 +84,46 @@ class PersistTabContextBrowserAgentTest
       ASSERT_TRUE(base::test::RunUntil(
           [&]() { return service->IsCacheInitialized(); }));
     }
+  }
+
+  // Initializes the feature list for the current storage type. When
+  // `extract_on_page_load` is true, also enables page-load extraction timing.
+  void InitFeatures(bool extract_on_page_load) {
+    base::FieldTrialParams params = {
+        {kPersistTabContextStorageParam,
+         GetParam() == PersistTabStorageType::kSQLite ? "1" : "0"},
+        {kPersistTabContextExtractionTimingParam,
+         extract_on_page_load ? "1" : "0"}};
+    base::test::FeatureRefAndParams storage_feature =
+        GetParam() == PersistTabStorageType::kSQLite
+            ? base::test::FeatureRefAndParams(
+                  page_content_annotations::features::kPageContentCache, {})
+            : base::test::FeatureRefAndParams(kCleanupPersistedTabContexts, {});
+    feature_list_.Reset();
+    feature_list_.InitWithFeaturesAndParameters(
+        {{kPersistTabContext, params}, storage_feature}, {});
+  }
+
+  // Recreates the agent with page-load extraction enabled. The extraction
+  // timing param is only read when the agent is constructed.
+  void RecreateAgentWithPageLoadExtraction() {
+    InitFeatures(/*extract_on_page_load=*/true);
+    agent_ = nullptr;
+    PersistTabContextBrowserAgent::RemoveFromBrowser(browser_.get());
+    PersistTabContextBrowserAgent::CreateForBrowser(browser_.get());
+    agent_ = PersistTabContextBrowserAgent::FromBrowser(browser_.get());
+  }
+
+  // Inserts a realized, eligible tab with `id` into the WebStateList.
+  web::FakeWebState* InsertEligibleTab(web::WebStateID id) {
+    auto tab = std::make_unique<web::FakeWebState>(id);
+    tab->SetCurrentURL(
+        GURL("http://example.com/" + base::NumberToString(id.identifier())));
+    tab->SetIsRealized(true);
+    tab->SetContentsMimeType("text/html");
+    web::FakeWebState* tab_ptr = tab.get();
+    web_state_list_->InsertWebState(std::move(tab));
+    return tab_ptr;
   }
 
   base::FilePath GetStorageDir() {
@@ -159,12 +192,21 @@ class PersistTabContextBrowserAgentTest
     return web_state;
   }
 
-  void CallOnPageContextExtracted(base::WeakPtr<web::WebState> weak_web_state,
-                                  PageContextWrapperCallbackResponse response) {
-    agent_->OnPageContextExtracted(weak_web_state, std::move(response));
+  void CallOnPageContextExtracted(
+      base::WeakPtr<web::WebState> weak_web_state,
+      PageContextWrapperCallbackResponse response,
+      std::optional<GURL> expected_url = std::nullopt) {
+    GURL url = expected_url.value_or(
+        weak_web_state ? weak_web_state->GetLastCommittedURL() : GURL());
+    agent_->OnPageContextExtracted(weak_web_state, url, std::move(response));
   }
 
   void RunCacheCleanup() { agent_->RunCacheCleanup(); }
+
+  // Returns the agent's in-flight extraction wrapper, or nil if none.
+  PageContextWrapper* GetPageContextWrapper() {
+    return agent_->page_context_wrapper_;
+  }
 
   web::WebTaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
@@ -212,6 +254,11 @@ TEST_P(PersistTabContextBrowserAgentTest, TestGetSingleContextAsync_NotFound) {
 }
 
 TEST_P(PersistTabContextBrowserAgentTest, TestGetSingleContextAsync_Found) {
+  auto tab = std::make_unique<web::FakeWebState>(test_web_state_id_);
+  tab->SetCurrentURL(GURL("http://example.com/1"));
+  tab->SetIsRealized(true);
+  web_state_list_->InsertWebState(std::move(tab));
+
   CreateDummyContextFile(test_web_state_id_);
   base::RunLoop run_loop;
   agent_->GetSingleContextAsync(
@@ -254,6 +301,13 @@ TEST_P(PersistTabContextBrowserAgentTest, TestGetMultipleContextsAsync) {
   web::WebStateID id1 = web::WebStateID::FromSerializedValue(1);
   web::WebStateID id2 = web::WebStateID::FromSerializedValue(2);
   web::WebStateID id3 = web::WebStateID::FromSerializedValue(3);
+  for (web::WebStateID id : {id1, id2, id3}) {
+    auto tab = std::make_unique<web::FakeWebState>(id);
+    tab->SetCurrentURL(
+        GURL("http://example.com/" + base::NumberToString(id.identifier())));
+    tab->SetIsRealized(true);
+    web_state_list_->InsertWebState(std::move(tab));
+  }
   CreateDummyContextFile(id1);
   CreateDummyContextFile(id3);
 
@@ -453,6 +507,329 @@ TEST_P(PersistTabContextBrowserAgentTest,
     task_environment_.FastForwardBy(base::Milliseconds(100));
     EXPECT_FALSE(base::PathExists(GetPathForWebStateIdForTest(web_state_id)));
   }
+}
+
+// Test that a committed navigation in a hidden realized tab deletes its
+// persisted context from storage.
+TEST_P(PersistTabContextBrowserAgentTest,
+       DidFinishNavigationDeletesContextForHiddenTab) {
+  web::WebStateID hidden_id = web::WebStateID::FromSerializedValue(201);
+  auto hidden_tab = std::make_unique<web::FakeWebState>(hidden_id);
+  hidden_tab->SetCurrentURL(GURL("http://example.com/201"));
+  hidden_tab->SetIsRealized(true);
+  hidden_tab->SetContentsMimeType("text/html");
+  web::FakeWebState* hidden_tab_ptr = hidden_tab.get();
+  web_state_list_->InsertWebState(
+      std::move(hidden_tab),
+      WebStateList::InsertionParams::Automatic().Activate(true));
+
+  CreateDummyContextFile(hidden_id);
+
+  // Insert and activate a second tab so the first tab is no longer active.
+  web::WebStateID active_id = web::WebStateID::FromSerializedValue(202);
+  auto active_tab = std::make_unique<web::FakeWebState>(active_id);
+  active_tab->SetCurrentURL(GURL("http://example.com/202"));
+  active_tab->SetIsRealized(true);
+  web_state_list_->InsertWebState(
+      std::move(active_tab),
+      WebStateList::InsertionParams::Automatic().Activate(true));
+
+  // Commit a navigation in the hidden tab.
+  hidden_tab_ptr->SetCurrentURL(GURL("http://victim.example/account"));
+  web::FakeNavigationContext nav_context;
+  nav_context.SetHasCommitted(true);
+  nav_context.SetIsSameDocument(false);
+  hidden_tab_ptr->OnNavigationFinished(&nav_context);
+
+  // Restore the original URL before reading to prove DidFinishNavigation
+  // deleted the stored entry rather than ValidateReadContext rejecting a URL
+  // mismatch.
+  hidden_tab_ptr->SetCurrentURL(GURL("http://example.com/201"));
+
+  base::test::TestFuture<
+      std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>>
+      future;
+  agent_->GetSingleContextAsync(base::NumberToString(hidden_id.identifier()),
+                                future.GetCallback());
+  EXPECT_FALSE(future.Get().has_value());
+}
+
+// Test that a committed navigation in one tab does not cancel an in-flight
+// extraction for another tab. The extraction wrapper is shared across all
+// observed tabs, so resetting it on navigation would drop unrelated work.
+TEST_P(PersistTabContextBrowserAgentTest,
+       NavigationInOtherTabDoesNotCancelInFlightExtraction) {
+  web::WebStateID extracting_id = web::WebStateID::FromSerializedValue(211);
+  auto extracting_tab = std::make_unique<web::FakeWebState>(extracting_id);
+  extracting_tab->SetCurrentURL(GURL("http://example.com/211"));
+  extracting_tab->SetIsRealized(true);
+  extracting_tab->SetContentsMimeType("text/html");
+  web::FakeWebState* extracting_tab_ptr = extracting_tab.get();
+  web_state_list_->InsertWebState(std::move(extracting_tab));
+
+  web::WebStateID navigating_id = web::WebStateID::FromSerializedValue(212);
+  auto navigating_tab = std::make_unique<web::FakeWebState>(navigating_id);
+  navigating_tab->SetCurrentURL(GURL("http://example.com/212"));
+  navigating_tab->SetIsRealized(true);
+  navigating_tab->SetContentsMimeType("text/html");
+  web::FakeWebState* navigating_tab_ptr = navigating_tab.get();
+  web_state_list_->InsertWebState(std::move(navigating_tab));
+
+  // Start an extraction for the first tab. Low-priority extractions post their
+  // work, so the wrapper stays in flight until the run loop spins.
+  agent_->WasHidden(extracting_tab_ptr);
+  PageContextWrapper* in_flight_wrapper = GetPageContextWrapper();
+  ASSERT_NE(nil, in_flight_wrapper);
+
+  // Commit a navigation in the other tab.
+  navigating_tab_ptr->SetCurrentURL(GURL("http://example.com/212/next"));
+  web::FakeNavigationContext nav_context;
+  nav_context.SetHasCommitted(true);
+  navigating_tab_ptr->OnNavigationFinished(&nav_context);
+
+  // The first tab's extraction must still be in flight.
+  EXPECT_EQ(in_flight_wrapper, GetPageContextWrapper());
+}
+
+// Test that a page load does not start an extraction when page-load extraction
+// timing is disabled (the default).
+TEST_P(PersistTabContextBrowserAgentTest,
+       PageLoadedDoesNotExtractWhenTimingDisabled) {
+  web::FakeWebState* tab =
+      InsertEligibleTab(web::WebStateID::FromSerializedValue(221));
+  tab->WasShown();
+
+  tab->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+
+  EXPECT_EQ(nil, GetPageContextWrapper());
+}
+
+// Test that a successful page load in the visible tab starts an extraction when
+// page-load extraction timing is enabled.
+TEST_P(PersistTabContextBrowserAgentTest,
+       PageLoadedExtractsVisibleTabWhenTimingEnabled) {
+  RecreateAgentWithPageLoadExtraction();
+  web::FakeWebState* tab =
+      InsertEligibleTab(web::WebStateID::FromSerializedValue(222));
+  tab->WasShown();
+
+  // A failed load must not trigger an extraction.
+  tab->OnPageLoaded(web::PageLoadCompletionStatus::FAILURE);
+  EXPECT_EQ(nil, GetPageContextWrapper());
+
+  tab->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  EXPECT_NE(nil, GetPageContextWrapper());
+}
+
+// Test that a page load in a background tab neither starts an extraction nor
+// cancels the in-flight extraction of a just-hidden tab, since all realized
+// tabs are observed and they share a single extraction wrapper.
+TEST_P(PersistTabContextBrowserAgentTest,
+       PageLoadedInBackgroundTabDoesNotCancelInFlightExtraction) {
+  RecreateAgentWithPageLoadExtraction();
+  web::FakeWebState* background_tab =
+      InsertEligibleTab(web::WebStateID::FromSerializedValue(223));
+
+  // A background load with no extraction in flight must not start one.
+  background_tab->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+  ASSERT_EQ(nil, GetPageContextWrapper());
+
+  // Start an extraction for a tab that was just hidden.
+  web::FakeWebState* hidden_tab =
+      InsertEligibleTab(web::WebStateID::FromSerializedValue(224));
+  hidden_tab->WasHidden();
+  PageContextWrapper* in_flight_wrapper = GetPageContextWrapper();
+  ASSERT_NE(nil, in_flight_wrapper);
+
+  background_tab->OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
+
+  EXPECT_EQ(in_flight_wrapper, GetPageContextWrapper());
+}
+
+// Test that a committed same-document navigation (e.g. SPA pushState) also
+// deletes the persisted context for that tab.
+TEST_P(PersistTabContextBrowserAgentTest,
+       DidFinishNavigationSameDocumentDeletesContext) {
+  web::WebStateID tab_id = web::WebStateID::FromSerializedValue(203);
+  auto tab = std::make_unique<web::FakeWebState>(tab_id);
+  tab->SetCurrentURL(GURL("http://example.com/203"));
+  tab->SetIsRealized(true);
+  web::FakeWebState* tab_ptr = tab.get();
+  web_state_list_->InsertWebState(std::move(tab));
+
+  CreateDummyContextFile(tab_id);
+
+  web::FakeNavigationContext nav_context;
+  nav_context.SetHasCommitted(true);
+  nav_context.SetIsSameDocument(true);
+  tab_ptr->OnNavigationFinished(&nav_context);
+
+  base::test::TestFuture<
+      std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>>
+      future;
+  agent_->GetSingleContextAsync(base::NumberToString(tab_id.identifier()),
+                                future.GetCallback());
+  EXPECT_FALSE(future.Get().has_value());
+}
+
+// Test that OnPageContextExtracted discards extracted context and deletes any
+// existing cached entry when the WebState's committed URL changed during
+// extraction.
+TEST_P(PersistTabContextBrowserAgentTest,
+       OnPageContextExtractedDiscardsContextOnURLMismatch) {
+  web::WebStateID tab_id = web::WebStateID::FromSerializedValue(204);
+  auto tab = std::make_unique<web::FakeWebState>(tab_id);
+  tab->SetCurrentURL(GURL("http://victim.example/account"));
+  tab->SetIsRealized(true);
+  web::FakeWebState* tab_ptr = tab.get();
+  web_state_list_->InsertWebState(std::move(tab));
+
+  CreateDummyContextFile(tab_id);
+
+  auto extracted_context =
+      std::make_unique<optimization_guide::proto::PageContext>();
+  extracted_context->set_url("http://attacker.example/page");
+  extracted_context->set_title("Attacker Title");
+
+  CallOnPageContextExtracted(tab_ptr->GetWeakPtr(),
+                             base::ok(std::move(extracted_context)),
+                             GURL("http://attacker.example/page"));
+
+  // Verify the newly extracted context was not written to storage even when the
+  // tab's URL matches the extracted context's URL.
+  tab_ptr->SetCurrentURL(GURL("http://attacker.example/page"));
+  base::test::TestFuture<
+      std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>>
+      extracted_future;
+  agent_->GetSingleContextAsync(base::NumberToString(tab_id.identifier()),
+                                extracted_future.GetCallback());
+  EXPECT_FALSE(extracted_future.Get().has_value());
+
+  // Verify the pre-existing cached context was also deleted from storage.
+  tab_ptr->SetCurrentURL(GURL("http://example.com/204"));
+  base::test::TestFuture<
+      std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>>
+      previous_future;
+  agent_->GetSingleContextAsync(base::NumberToString(tab_id.identifier()),
+                                previous_future.GetCallback());
+  EXPECT_FALSE(previous_future.Get().has_value());
+}
+
+// Test that GetSingleContextAsync validates the cached PageContext URL against
+// the live WebState's committed URL, returning nullopt and evicting the entry
+// on mismatch.
+TEST_P(PersistTabContextBrowserAgentTest,
+       GetSingleContextAsyncRejectsAndEvictsMismatchedURL) {
+  web::WebStateID tab_id = web::WebStateID::FromSerializedValue(205);
+  auto tab = std::make_unique<web::FakeWebState>(tab_id);
+  tab->SetCurrentURL(GURL("http://example.com/205"));
+  tab->SetIsRealized(true);
+  web::FakeWebState* tab_ptr = tab.get();
+  web_state_list_->InsertWebState(std::move(tab));
+
+  CreateDummyContextFile(tab_id);
+
+  // Update the live WebState's committed URL without firing navigation events.
+  tab_ptr->SetCurrentURL(GURL("http://victim.example/account"));
+
+  base::test::TestFuture<
+      std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>>
+      mismatch_future;
+  agent_->GetSingleContextAsync(base::NumberToString(tab_id.identifier()),
+                                mismatch_future.GetCallback());
+  EXPECT_FALSE(mismatch_future.Get().has_value());
+
+  // Restore the original URL and verify the stale entry was evicted from
+  // storage.
+  tab_ptr->SetCurrentURL(GURL("http://example.com/205"));
+  base::test::TestFuture<
+      std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>>
+      evicted_future;
+  agent_->GetSingleContextAsync(base::NumberToString(tab_id.identifier()),
+                                evicted_future.GetCallback());
+  EXPECT_FALSE(evicted_future.Get().has_value());
+}
+
+// Test that GetMultipleContextsAsync validates all fetched contexts in a batch,
+// preserving valid entries while rejecting and evicting mismatched or closed
+// tabs.
+TEST_P(PersistTabContextBrowserAgentTest,
+       GetMultipleContextsAsyncRejectsAndEvictsMismatchedURL) {
+  web::WebStateID valid_id = web::WebStateID::FromSerializedValue(206);
+  auto valid_tab = std::make_unique<web::FakeWebState>(valid_id);
+  valid_tab->SetCurrentURL(GURL("http://example.com/206"));
+  valid_tab->SetIsRealized(true);
+  web_state_list_->InsertWebState(std::move(valid_tab));
+  CreateDummyContextFile(valid_id);
+
+  web::WebStateID mismatch_id = web::WebStateID::FromSerializedValue(207);
+  auto mismatch_tab = std::make_unique<web::FakeWebState>(mismatch_id);
+  mismatch_tab->SetCurrentURL(GURL("http://example.com/207"));
+  mismatch_tab->SetIsRealized(true);
+  web::FakeWebState* mismatch_tab_ptr = mismatch_tab.get();
+  web_state_list_->InsertWebState(std::move(mismatch_tab));
+  CreateDummyContextFile(mismatch_id);
+
+  // Cached context for a closed tab not present in any WebStateList.
+  web::WebStateID orphaned_id = web::WebStateID::FromSerializedValue(208);
+  CreateDummyContextFile(orphaned_id);
+
+  // Change mismatch_tab's committed URL without firing navigation events.
+  mismatch_tab_ptr->SetCurrentURL(GURL("http://victim.example/account"));
+
+  base::test::TestFuture<PersistTabContextBrowserAgent::PageContextMap>
+      batch_future;
+  agent_->GetMultipleContextsAsync(
+      {base::NumberToString(valid_id.identifier()),
+       base::NumberToString(mismatch_id.identifier()),
+       base::NumberToString(orphaned_id.identifier())},
+      batch_future.GetCallback());
+  const PersistTabContextBrowserAgent::PageContextMap& results =
+      batch_future.Get();
+  ASSERT_TRUE(results.at("206").has_value());
+  EXPECT_EQ((*results.at("206"))->url(), "http://example.com/206");
+  EXPECT_FALSE(results.at("207").has_value());
+  EXPECT_FALSE(results.at("208").has_value());
+
+  // Restore mismatch_tab's original URL and verify its stale entry was evicted.
+  mismatch_tab_ptr->SetCurrentURL(GURL("http://example.com/207"));
+  base::test::TestFuture<
+      std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>>
+      evicted_future;
+  agent_->GetSingleContextAsync(base::NumberToString(mismatch_id.identifier()),
+                                evicted_future.GetCallback());
+  EXPECT_FALSE(evicted_future.Get().has_value());
+}
+
+// Test that read validation checks WebStates across all browsers in the
+// profile's BrowserList.
+TEST_P(PersistTabContextBrowserAgentTest,
+       GetSingleContextAsyncValidatesAcrossMultipleBrowsers) {
+  auto secondary_browser = std::make_unique<TestBrowser>(profile_.get());
+  BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_.get());
+  browser_list->AddBrowser(browser_.get());
+  browser_list->AddBrowser(secondary_browser.get());
+
+  web::WebStateID other_browser_tab_id =
+      web::WebStateID::FromSerializedValue(209);
+  auto other_tab = std::make_unique<web::FakeWebState>(other_browser_tab_id);
+  other_tab->SetCurrentURL(GURL("http://example.com/209"));
+  other_tab->SetIsRealized(true);
+  secondary_browser->GetWebStateList()->InsertWebState(std::move(other_tab));
+
+  CreateDummyContextFile(other_browser_tab_id);
+
+  base::test::TestFuture<
+      std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>>
+      future;
+  agent_->GetSingleContextAsync(
+      base::NumberToString(other_browser_tab_id.identifier()),
+      future.GetCallback());
+  ASSERT_TRUE(future.Get().has_value());
+  EXPECT_EQ((*future.Get())->url(), "http://example.com/209");
+
+  browser_list->RemoveBrowser(secondary_browser.get());
+  browser_list->RemoveBrowser(browser_.get());
 }
 
 // Verifies cleanup removes cache entries whose WebState no longer exists,

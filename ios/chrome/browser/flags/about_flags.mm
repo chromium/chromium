@@ -813,7 +813,6 @@ const FeatureEntry::FeatureVariation kBestOfAppFREVariations[] = {
      kBestOfAppFREArm4Upload, nullptr},
 };
 
-
 const FeatureEntry::FeatureParam kSingleScreenForBWGPromoConsent[] = {
     {kBWGPromoConsentParams, "1"}};
 const FeatureEntry::FeatureParam kDoubleScreenForBWGPromoConsent[] = {
