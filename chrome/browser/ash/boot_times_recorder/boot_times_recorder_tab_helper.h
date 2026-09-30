@@ -5,8 +5,10 @@
 #ifndef CHROME_BROWSER_ASH_BOOT_TIMES_RECORDER_BOOT_TIMES_RECORDER_TAB_HELPER_H_
 #define CHROME_BROWSER_ASH_BOOT_TIMES_RECORDER_BOOT_TIMES_RECORDER_TAB_HELPER_H_
 
+#include <memory>
+#include <vector>
+
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 
 namespace content {
 class RenderFrameHost;
@@ -17,13 +19,12 @@ namespace ash {
 
 // During login, notifies `BootTimesRecorder` whenever a tab starts or ends
 // loading.
-class BootTimesRecorderTabHelper
-    : public content::WebContentsObserver,
-      public content::WebContentsUserData<BootTimesRecorderTabHelper> {
+class BootTimesRecorderTabHelper : public content::WebContentsObserver {
  public:
-  // Creates BootTimesRecorderTabHelper and attaches it to the `web_contents` if
-  // login is not done yet.
-  static void MaybeCreateForWebContents(content::WebContents* web_contents);
+  // Creates BootTimesRecorderTabHelper for `web_contents` if login is not done
+  // yet.
+  static std::unique_ptr<BootTimesRecorderTabHelper> MaybeCreate(
+      content::WebContents* web_contents);
 
   BootTimesRecorderTabHelper(const BootTimesRecorderTabHelper&) = delete;
   BootTimesRecorderTabHelper& operator=(const BootTimesRecorderTabHelper&) =
@@ -40,11 +41,9 @@ class BootTimesRecorderTabHelper
       content::WebContents* inner_web_contents) override;
 
  private:
-  friend class content::WebContentsUserData<BootTimesRecorderTabHelper>;
-
   explicit BootTimesRecorderTabHelper(content::WebContents* web_contents);
 
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
+  std::vector<std::unique_ptr<BootTimesRecorderTabHelper>> inner_helpers_;
 };
 
 }  // namespace ash

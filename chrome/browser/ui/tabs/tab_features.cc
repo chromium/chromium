@@ -215,6 +215,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"  // nogncheck
+#include "chrome/browser/ash/boot_times_recorder/boot_times_recorder_tab_helper.h"
 #include "chrome/browser/ash/child_accounts/time_limits/web_time_navigation_observer.h"
 #include "chrome/browser/ash/growth/campaigns_manager_session_tab_helper.h"
 #include "chrome/browser/ash/mahi/web_contents/mahi_tab_helper.h"
@@ -793,6 +794,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   web_time_navigation_observer_ =
       ash::app_time::WebTimeNavigationObserver::MaybeCreate(tab,
                                                             tab.GetContents());
+  boot_times_recorder_tab_helper_ =
+      ash::BootTimesRecorderTabHelper::MaybeCreate(tab.GetContents());
 #endif
 
   // The controller is created for all tabs but only affects back button
@@ -1254,6 +1257,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   if (web_time_navigation_observer_) {
     web_time_navigation_observer_->OnDiscardContents(new_contents);
   }
+  boot_times_recorder_tab_helper_ =
+      ash::BootTimesRecorderTabHelper::MaybeCreate(new_contents);
 #endif
 
 #if BUILDFLAG(ENABLE_RLZ)

@@ -296,6 +296,7 @@ class CampaignsManagerSessionTabHelper;
 class GeminiAppTabHelper;
 class GoogleOneOfferIphTabHelper;
 namespace ash {
+class BootTimesRecorderTabHelper;
 class CrosIsolatedWebAppEnabler;
 }  // namespace ash
 namespace ash::app_time {
@@ -831,6 +832,8 @@ class TabFeatures {
   std::unique_ptr<mahi::MahiTabHelper> mahi_tab_helper_;
   std::unique_ptr<ash::app_time::WebTimeNavigationObserver>
       web_time_navigation_observer_;
+  std::unique_ptr<ash::BootTimesRecorderTabHelper>
+      boot_times_recorder_tab_helper_;
 #endif
 
 #if BUILDFLAG(ENABLE_RLZ)
