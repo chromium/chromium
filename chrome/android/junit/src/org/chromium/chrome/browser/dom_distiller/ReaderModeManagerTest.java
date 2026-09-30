@@ -19,8 +19,6 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.os.Looper;
 import android.util.Pair;
 
@@ -35,6 +33,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 
 import org.chromium.base.Callback;
@@ -87,7 +86,6 @@ import java.util.concurrent.TimeoutException;
 /** This class tests the behavior of the {@link ReaderModeManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures(ChromeFeatureList.GLIC)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ReaderModeManagerTest {
     private static final GURL MOCK_DISTILLER_URL = new GURL("chrome-distiller://url");
     private static final GURL MOCK_URL = JUnitTestGURLs.GOOGLE_URL_CAT;
@@ -109,8 +107,6 @@ public class ReaderModeManagerTest {
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private SnackbarManager mSnackbarManager;
     @Mock private LoadCommittedDetails mLoadCommitedDetails;
-    @Mock private Activity mActivity;
-    @Mock private Resources mResources;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
     private TabObserver mTabObserver;
@@ -168,13 +164,8 @@ public class ReaderModeManagerTest {
                         eq("chrome-distiller"), eq(MOCK_URL.getSpec()), eq("Test Title")))
                 .thenReturn(MOCK_DISTILLER_URL.getSpec());
 
-        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(mActivity));
-        when(mActivity.getResources()).thenReturn(mResources);
-        when(mActivity.getPackageName())
-                .thenReturn(ApplicationProvider.getApplicationContext().getPackageName());
-        Configuration configuration = new Configuration();
-        configuration.uiMode = Configuration.UI_MODE_NIGHT_NO;
-        when(mResources.getConfiguration()).thenReturn(configuration);
+        Activity activity = Robolectric.buildActivity(Activity.class).get();
+        when(mWindowAndroid.getActivity()).thenReturn(new WeakReference<>(activity));
 
         mManager = new ReaderModeManager(mTab, () -> mMessageDispatcher);
 

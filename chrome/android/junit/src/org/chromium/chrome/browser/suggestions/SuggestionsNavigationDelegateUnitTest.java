@@ -24,6 +24,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -44,13 +45,11 @@ import java.util.List;
 
 /** Unit tests for {@link SuggestionsNavigationDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SuggestionsNavigationDelegateUnitTest {
     private static final boolean IS_INCOGNITO_SELECTED = false;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private Activity mActivity;
     @Mock private Profile mProfile;
     @Mock private NativePageHost mHost;
     @Mock private TabModelSelector mTabModelSelector;
@@ -62,9 +61,10 @@ public class SuggestionsNavigationDelegateUnitTest {
 
     @Before
     public void setUp() {
+        Activity activity = Robolectric.buildActivity(Activity.class).get();
         mSuggestionsNavigationDelegate =
                 new SuggestionsNavigationDelegate(
-                        mActivity, mProfile, mHost, mTabModelSelector, mTab);
+                        activity, mProfile, mHost, mTabModelSelector, mTab);
 
         lenient().when(mTabModelSelector.isIncognitoSelected()).thenReturn(IS_INCOGNITO_SELECTED);
     }

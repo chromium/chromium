@@ -23,6 +23,7 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ActivityState;
@@ -38,24 +39,25 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link WindowZOrderTracker}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class WindowZOrderTrackerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private Runnable mCallback;
-    @Mock private Activity mActivity1;
-    @Mock private Activity mActivity2;
     @Mock private ActivityWindowAndroid mWindowAndroid1;
     @Mock private ActivityWindowAndroid mWindowAndroid2;
     @Mock private DisplayAndroid mDisplay1;
     @Mock private DisplayAndroid mDisplay2;
 
+    private Activity mActivity1;
+    private Activity mActivity2;
     private WindowZOrderTracker mTracker;
     private static final int DISPLAY_ID_1 = 1;
     private static final int DISPLAY_ID_2 = 2;
 
     @Before
     public void setUp() {
+        mActivity1 = Robolectric.buildActivity(Activity.class).get();
+        mActivity2 = Robolectric.buildActivity(Activity.class).get();
         mTracker = new WindowZOrderTracker(mCallback);
 
         when(mWindowAndroid1.getActivity()).thenReturn(new WeakReference<>(mActivity1));
@@ -286,7 +288,7 @@ public class WindowZOrderTrackerUnitTest {
 
     @Test
     public void testPeriodicMetrics() {
-        Activity activity3 = mock(Activity.class);
+        Activity activity3 = Robolectric.buildActivity(Activity.class).get();
         ActivityWindowAndroid window3 = mock(ActivityWindowAndroid.class);
         when(window3.getActivity()).thenReturn(new WeakReference<>(activity3));
         when(window3.getDisplay()).thenReturn(mDisplay1);

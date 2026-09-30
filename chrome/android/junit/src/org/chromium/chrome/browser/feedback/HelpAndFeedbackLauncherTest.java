@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.FeatureOverrides;
 import org.chromium.base.ServiceLoaderUtil;
@@ -29,17 +30,18 @@ import org.chromium.chrome.browser.profiles.Profile;
 
 /** Tests for {@link HelpAndFeedbackLauncher}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class HelpAndFeedbackLauncherTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private FeedbackPolicyManager mFeedbackPolicyManager;
     @Mock private HelpAndFeedbackLauncherDelegate mDelegate;
     @Mock private Profile mProfile;
-    @Mock private Activity mActivity;
+
+    private Activity mActivity;
 
     @Before
     public void setUp() {
+        mActivity = Robolectric.buildActivity(Activity.class).get();
         FeedbackPolicyManager.setInstanceForTesting(mFeedbackPolicyManager);
         ServiceLoaderUtil.setInstanceForTesting(HelpAndFeedbackLauncherDelegate.class, mDelegate);
     }

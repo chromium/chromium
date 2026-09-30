@@ -26,6 +26,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
@@ -44,12 +45,12 @@ import java.util.Map;
 
 /** Test for {@link FeedFeedbackCollector}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class FeedFeedbackCollectorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     // Enable the Features class, so we can override command line switches in the test.
-    @Mock private Activity mActivity;
     @Mock private Profile mProfile;
+
+    private Activity mActivity;
 
     // Test constants.
     private static final String CATEGORY_TAG = "category_tag";
@@ -108,6 +109,7 @@ public class FeedFeedbackCollectorTest {
     @Before
     public void setUp() {
         ThreadUtils.setUiThread(Looper.getMainLooper());
+        mActivity = Robolectric.buildActivity(Activity.class).get();
         IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
         when(IdentityServicesProvider.get().getIdentityManager(any()))
                 .thenReturn(mock(IdentityManager.class));

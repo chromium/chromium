@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CallbackHelper;
@@ -29,17 +30,16 @@ import org.chromium.chrome.browser.profiles.ProfileProvider;
 
 /** Tests for ActivityProfileProviderInitializer. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ActivityProfileProviderTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mOriginalProfile;
-    @Mock private Activity mActivity;
 
     private ActivityLifecycleDispatcherImpl mLifecycleDispatcher;
 
     @Before
     public void setUp() {
-        mLifecycleDispatcher = new ActivityLifecycleDispatcherImpl(mActivity);
+        Activity activity = Robolectric.buildActivity(Activity.class).get();
+        mLifecycleDispatcher = new ActivityLifecycleDispatcherImpl(activity);
     }
 
     @Test

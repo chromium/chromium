@@ -48,7 +48,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class RecentTabsPageUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -57,13 +56,13 @@ public class RecentTabsPageUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarios =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock private Activity mActivity;
     @Mock private RecentTabsManager mRecentTabsManager;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
 
     @Captor ArgumentCaptor<EdgeToEdgePadAdjuster> mPadAdjusterCaptor;
 
+    private Activity mActivity;
     private RecentTabsPage mRecentTabsPage;
     private final SettableMonotonicObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier =
             ObservableSuppliers.createMonotonic();

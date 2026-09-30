@@ -37,6 +37,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -89,7 +90,6 @@ import java.util.List;
 /** Unit test for {@link ShareDelegateImpl} that mocked out most native class calls. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = {BaseRobolectricTestRunner.MIN_SDK, 34})
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ShareDelegateImplUnitTest {
     @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
@@ -107,7 +107,6 @@ public class ShareDelegateImplUnitTest {
     @Mock private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private Activity mActivity;
     @Mock private LargeIconBridgeJni mLargeIconBridgeJni;
     @Mock private Tracker mTracker;
     @Mock private DataSharingTabManager mDataSharingTabManager;
@@ -118,6 +117,8 @@ public class ShareDelegateImplUnitTest {
 
     @Mock private DataProtectionBridge.Natives mDataProtectionBridgeMock;
     @Mock private DomDistillerUrlUtils.Natives mDomDistillerUrlUtilsJniMock;
+
+    private Activity mActivity;
 
     private final ArgumentCaptor<ShareParams> mShareParamsCaptor =
             ArgumentCaptor.forClass(ShareParams.class);
@@ -177,6 +178,7 @@ public class ShareDelegateImplUnitTest {
         ShareHelper.setShareWithLastUsedComponentHookForTesting(() -> mShareHelperCallCount++);
         LargeIconBridgeJni.setInstanceForTesting(mLargeIconBridgeJni);
         TrackerFactory.setTrackerForTests(mTracker);
+        mActivity = Robolectric.buildActivity(Activity.class).get();
         Mockito.doReturn(new WeakReference<>(mActivity)).when(mWindowAndroid).getActivity();
         DataProtectionBridge.setInstanceForTesting(mDataProtectionBridgeMock);
         DomDistillerUrlUtilsJni.setInstanceForTesting(mDomDistillerUrlUtilsJniMock);

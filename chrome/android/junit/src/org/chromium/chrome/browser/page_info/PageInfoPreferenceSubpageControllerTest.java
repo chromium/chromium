@@ -28,6 +28,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.site_settings.BaseSiteSettingsFragment;
@@ -37,7 +38,6 @@ import org.chromium.components.page_info.PageInfoPreferenceSubpageController;
 
 /** Tests for PageInfoPreferenceSubpageController. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PageInfoPreferenceSubpageControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -46,7 +46,8 @@ public class PageInfoPreferenceSubpageControllerTest {
     @Mock private FragmentManager mFragmentManager;
     @Mock private FragmentTransaction mFragmentTransaction;
     @Mock private BaseSiteSettingsFragment mFragment;
-    @Mock private View mView;
+
+    private final View mView = new View(ContextUtils.getApplicationContext());
 
     private static class TestPreferenceSubpageController
             extends PageInfoPreferenceSubpageController {

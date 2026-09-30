@@ -27,6 +27,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -49,7 +50,6 @@ import org.chromium.components.embedder_support.util.UrlConstants;
 
 /** Tests public methods in NativePageFactory. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NativePageFactoryTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private PdfPage mPdfPage;
@@ -57,7 +57,7 @@ public class NativePageFactoryTest {
     @Mock private Tab mTab;
     @Mock private BrowserControlsManager mBrowserControlsManager;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private Activity mActivity;
+    private Activity mActivity;
     private NativePageFactory mNativePageFactory;
     private PdfInfo mPdfInfo;
     private static final String PDF_LINK = "https://www.foo.com/testfiles/pdf/sample.pdf";
@@ -158,6 +158,7 @@ public class NativePageFactoryTest {
 
     @Before
     public void setUp() {
+        mActivity = Robolectric.buildActivity(Activity.class).get();
         mNativePageFactory =
                 new NativePageFactory(
                         null, null, null, null, null, null, null, null, null, null, null, null,

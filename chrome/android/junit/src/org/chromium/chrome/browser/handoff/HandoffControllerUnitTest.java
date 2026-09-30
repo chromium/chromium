@@ -16,13 +16,13 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import static org.chromium.chrome.browser.app.ChromeActivity.HANDOFF_SDK_VERSION;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Build;
-import android.os.Bundle;
+import android.os.Process;
 import android.os.UserManager;
 
 import org.junit.Before;
@@ -33,6 +33,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.util.ReflectionHelpers;
@@ -57,21 +58,18 @@ import java.util.Collections;
 // TODO(crbug.com/503422619): Update to 37 once its available, and remove the delegate in
 //  HandoffController.java.
 @Config(sdk = 35)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class HandoffControllerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private Activity mActivity;
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private UserManager mUserManager;
     @Mock private Tab mTab;
     @Mock private HandoffController.Delegate mDelegate;
     @Mock private ExternalIntentUrlChecker.Natives mExternalIntentUrlCheckerJni;
 
+    private Activity mActivity;
     private SettableNullableObservableSupplier<Tab> mCurrentTabSupplier;
     private ActivityTabProvider mActivityTabProvider;
     private HandoffController mController;
-    private Bundle mUserRestrictions;
     private UserActionTester mUserActionTester;
 
     @Before
@@ -82,14 +80,12 @@ public class HandoffControllerUnitTest {
 
         ExternalIntentUrlCheckerJni.setInstanceForTesting(mExternalIntentUrlCheckerJni);
 
+        mActivity = Robolectric.buildActivity(Activity.class).get();
         mCurrentTabSupplier = ObservableSuppliers.createNullable();
         when(mTabModelSelector.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
 
         mActivityTabProvider = new ActivityTabProvider();
-        mUserRestrictions = new Bundle();
 
-        when(mActivity.getSystemService(Context.USER_SERVICE)).thenReturn(mUserManager);
-        when(mUserManager.getUserRestrictions()).thenReturn(mUserRestrictions);
         when(mTabModelSelector.isIncognitoBrandedModelSelected()).thenReturn(false);
         when(mTabModelSelector.getModels()).thenReturn(Collections.emptyList());
         when(mTab.isOffTheRecord()).thenReturn(false);
@@ -113,6 +109,11 @@ public class HandoffControllerUnitTest {
                 new HandoffController(
                         mActivity, mTabModelSelector, mActivityTabProvider, mDelegate);
         ShadowLooper.idleMainLooper();
+    }
+
+    private void disallowHandoffByPolicy() {
+        shadowOf(mActivity.getSystemService(UserManager.class))
+                .setUserRestriction(Process.myUserHandle(), "disallow_handoff", true);
     }
 
     @Test
@@ -152,7 +153,7 @@ public class HandoffControllerUnitTest {
 
     @Test
     public void testUpdateHandoffState_Initialization_Policy_Disabled() {
-        mUserRestrictions.putBoolean("disallow_handoff", true);
+        disallowHandoffByPolicy();
         HistogramWatcher watcher =
                 HistogramWatcher.newBuilder()
                         .expectNoRecords("Android.Handoff.Enabled.TabSwitch")
@@ -276,7 +277,7 @@ public class HandoffControllerUnitTest {
     @Test
     public void testOnHandoffActivityDataRequested_Policy_Disabled_ReturnsNull() throws Exception {
         initializeController();
-        mUserRestrictions.putBoolean("disallow_handoff", true);
+        disallowHandoffByPolicy();
 
         var data = callOnHandoffActivityDataRequested(null);
 

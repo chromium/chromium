@@ -46,7 +46,6 @@ import org.chromium.url.GURL;
 
 /** Unit tests for {@link TabSharingToolbarMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabSharingToolbarMediatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
 
@@ -276,8 +275,7 @@ public class TabSharingToolbarMediatorTest {
         assertTrue(spans.length > 0);
 
         try {
-            View mockView = Mockito.mock(View.class);
-            spans[0].onClick(mockView);
+            spans[0].onClick(new View(mContext));
         } catch (RuntimeException e) {
             // Expected fallthrough when unmocked JNI boundary in TabImplJni is reached in
             // Robolectric.

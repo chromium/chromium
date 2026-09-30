@@ -55,7 +55,6 @@ import java.util.List;
 
 /** Unit tests for {@link RecentTabsCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class RecentTabsCoordinatorUnitTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -64,7 +63,6 @@ public class RecentTabsCoordinatorUnitTest {
     public ActivityScenarioRule<TestActivity> mActivityScenarios =
             new ActivityScenarioRule<>(TestActivity.class);
 
-    @Mock private Activity mActivity;
     @Mock private RecentTabsManager mRecentTabsManager;
     @Mock private NativePageNavigationDelegate mNavigationDelegate;
     @Mock private EdgeToEdgeController mEdgeToEdgeController;
@@ -77,6 +75,7 @@ public class RecentTabsCoordinatorUnitTest {
     private final SettableNonNullObservableSupplier<Integer> mTabStripHeightSupplier =
             ObservableSuppliers.createNonNull(0);
 
+    private Activity mActivity;
     private RecentTabsCoordinator mCoordinator;
 
     @Before

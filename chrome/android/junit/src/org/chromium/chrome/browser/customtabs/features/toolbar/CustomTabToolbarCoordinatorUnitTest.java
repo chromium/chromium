@@ -58,7 +58,6 @@ import org.chromium.url.GURL;
 /** Tests for {@link CustomTabToolbarCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({SHARE_CUSTOM_ACTIONS_IN_CCT})
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CustomTabToolbarCoordinatorUnitTest {
     private static final int SCREEN_WIDTH = 800;
     private static final int SCREEN_HEIGHT = 1600;
@@ -86,19 +85,18 @@ public class CustomTabToolbarCoordinatorUnitTest {
     @Mock private Tab mTab;
     @Mock private CustomButtonParams mCustomButtonParams;
     @Mock private PendingIntent mPendingIntent;
-    @Mock private Activity mActivity;
     @Mock private ToolbarManager mToolbarManager;
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock private CustomTabToolbarButtonsCoordinator mToolbarButtonsCoordinator;
 
     private CustomTabBrowserControlsVisibilityDelegate mVisibilityDelegate;
-    private Activity mActivityForResources;
+    private Activity mActivity;
     private CustomTabActivityTabController mTabController;
     private CustomTabToolbarCoordinator mCoordinator;
 
     @Before
     public void setup() {
-        mActivityForResources = Robolectric.setupActivity(Activity.class);
+        mActivity = Robolectric.setupActivity(Activity.class);
         mTabController = env.createTabController();
 
         BrowserStateBrowserControlsVisibilityDelegate browserControlsVisibilityDelegate =
@@ -155,8 +153,7 @@ public class CustomTabToolbarCoordinatorUnitTest {
     public void testCreateShareButtonWithCustomActions() {
         int testColor = 0x99aabbcc;
         mCoordinator.onCustomButtonClick(
-                mActivity,
-                CustomButtonParamsImpl.createShareButton(mActivityForResources, testColor));
+                mActivity, CustomButtonParamsImpl.createShareButton(mActivity, testColor));
         verify(mShareDelegate)
                 .share(any(), eq(false), eq(ShareDelegate.ShareOrigin.CUSTOM_TAB_SHARE_BUTTON));
     }

@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -35,15 +36,15 @@ import java.util.function.Supplier;
 
 /** Tests for {@link FragmentDependencyProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class FragmentDependencyProviderTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private Activity mActivity;
     @Mock private Profile mProfile;
     @Mock private ActivityResultTracker mActivityResultTracker;
     @Mock private Supplier<SettingsSearchCoordinator> mSearchCoordinatorSupplier;
     @Mock private SettingsSearchCoordinator mSearchCoordinator;
+
+    private Activity mActivity;
 
     public static class TestSearchViewProviderFragment extends Fragment
             implements SearchViewProvider {
@@ -69,6 +70,7 @@ public class FragmentDependencyProviderTest {
 
     @Before
     public void setUp() {
+        mActivity = Robolectric.buildActivity(Activity.class).get();
         when(mSearchCoordinatorSupplier.get()).thenReturn(mSearchCoordinator);
     }
 
