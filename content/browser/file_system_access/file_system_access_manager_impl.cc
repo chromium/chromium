@@ -408,7 +408,7 @@ void CreateAndTruncateFile(
 }
 
 bool IsValidTransferToken(FileSystemAccessTransferTokenImpl* token,
-                          const url::Origin& expected_origin,
+                          const blink::StorageKey& expected_storage_key,
                           HandleType expected_handle_type) {
   if (!token) {
     return false;
@@ -418,7 +418,15 @@ bool IsValidTransferToken(FileSystemAccessTransferTokenImpl* token,
     return false;
   }
 
-  if (token->origin() != expected_origin) {
+  if (token->origin() != expected_storage_key.origin()) {
+    return false;
+  }
+
+  // kFileSystemTypeTemporary is the sandboxed OPFS backend. OPFS handles are
+  // partitioned by StorageKey, so the redeeming context's StorageKey must match
+  // the token's, not just its origin.
+  if (token->url().type() == storage::kFileSystemTypeTemporary &&
+      token->url().storage_key() != expected_storage_key) {
     return false;
   }
 
@@ -1621,8 +1629,7 @@ void FileSystemAccessManagerImpl::DidResolveTransferTokenForFileHandle(
     FileSystemAccessTransferTokenImpl* resolved_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!IsValidTransferToken(resolved_token,
-                            binding_context.storage_key.origin(),
+  if (!IsValidTransferToken(resolved_token, binding_context.storage_key,
                             HandleType::kFile)) {
     // Fail silently. In practice, the FileSystemAccessManager should not
     // receive any invalid tokens. Before redeeming a token, the render process
@@ -1647,8 +1654,7 @@ void FileSystemAccessManagerImpl::DidResolveTransferTokenForDirectoryHandle(
     FileSystemAccessTransferTokenImpl* resolved_token) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!IsValidTransferToken(resolved_token,
-                            binding_context.storage_key.origin(),
+  if (!IsValidTransferToken(resolved_token, binding_context.storage_key,
                             HandleType::kDirectory)) {
     // Fail silently. See comment above in
     // DidResolveTransferTokenForFileHandle() for details.
