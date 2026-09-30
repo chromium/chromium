@@ -10,7 +10,6 @@ import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.AP
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.COLOR_STATE_LIST;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.COMPOSEPLATE_BUTTON_CLICK_LISTENER;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.INCOGNITO_CLICK_LISTENER;
-import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.IS_INCOGNITO_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.IS_VISIBLE;
 import static org.chromium.chrome.browser.composeplate.ComposeplateProperties.TEXT_STYLE_RES_ID;
 
@@ -26,10 +25,6 @@ public class ComposeplateViewBinder {
     public static void bind(PropertyModel model, ComposeplateView view, PropertyKey propertyKey) {
         if (IS_VISIBLE == propertyKey) {
             view.setVisibility(model.get(IS_VISIBLE) ? View.VISIBLE : View.GONE);
-        } else if (IS_INCOGNITO_BUTTON_VISIBLE == propertyKey) {
-            View incognitoButton = view.findViewById(R.id.incognito_button);
-            incognitoButton.setVisibility(
-                    model.get(IS_INCOGNITO_BUTTON_VISIBLE) ? View.VISIBLE : View.GONE);
         } else if (INCOGNITO_CLICK_LISTENER == propertyKey) {
             View incognitoButton = view.findViewById(R.id.incognito_button);
             incognitoButton.setOnClickListener(model.get(INCOGNITO_CLICK_LISTENER));
