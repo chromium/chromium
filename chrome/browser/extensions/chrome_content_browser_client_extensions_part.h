@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_CHROME_CONTENT_BROWSER_CLIENT_EXTENSIONS_PART_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -94,6 +95,19 @@ class ChromeContentBrowserClientExtensionsPart
                                  const GURL& first_party_url,
                                  const GURL& script_url,
                                  content::BrowserContext* context);
+
+  // Returns whether the enabled extension `extension_id` holds the
+  // clipboardWrite API permission in `context`. The permission query, the
+  // content settings proxy and the browser-side write check all ask this.
+  static bool ExtensionHasClipboardWritePermission(
+      content::BrowserContext* context,
+      const std::string& extension_id);
+
+  // Returns whether a service worker with `origin` may be given a ClipboardHost
+  // at all. Answers only whether this class of context is ever eligible, not
+  // whether an individual clipboard call is allowed.
+  static bool IsClipboardAllowedForServiceWorker(const url::Origin& origin);
+
   static bool MayDeleteServiceWorkerRegistration(
       const GURL& scope,
       content::BrowserContext* browser_context);

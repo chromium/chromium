@@ -72,6 +72,7 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/switches.h"
 #include "pdf/buildflags.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "url/origin.h"
@@ -623,6 +624,33 @@ bool ChromeContentBrowserClientExtensionsPart::AllowServiceWorker(
                                    ->enabled_extensions()
                                    .GetExtensionOrAppByURL(first_party_url);
   return ::extensions::AllowServiceWorker(scope, script_url, extension);
+}
+
+// static
+bool ChromeContentBrowserClientExtensionsPart::
+    ExtensionHasClipboardWritePermission(content::BrowserContext* context,
+                                         const std::string& extension_id) {
+  const Extension* extension =
+      ExtensionRegistry::Get(context)->enabled_extensions().GetByID(
+          extension_id);
+  return extension && extension->permissions_data()->HasAPIPermission(
+                          mojom::APIPermissionID::kClipboardWrite);
+}
+
+// static
+bool ChromeContentBrowserClientExtensionsPart::
+    IsClipboardAllowedForServiceWorker(const url::Origin& origin) {
+  // The renderer only exposes navigator.clipboard to extension service workers
+  // when this is on, so the browser has to agree or a disabled feature still
+  // hands out a ClipboardHost.
+  if (!base::FeatureList::IsEnabled(
+          blink::features::kClipboardOnExtensionServiceWorker)) {
+    return false;
+  }
+  // Only extension service workers ever get a ClipboardHost. Whether a given
+  // extension may write is decided per call, because the permission can be
+  // revoked while the worker is running.
+  return origin.scheme() == kExtensionScheme;
 }
 
 // static

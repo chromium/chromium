@@ -2633,6 +2633,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool IsClipboardPasteAllowed(
       content::RenderFrameHost* render_frame_host);
 
+  // Returns whether a service worker with `origin` may be given a
+  // ClipboardHost at all. This runs once, when the interface is bound, and
+  // answers only whether this class of context is ever eligible, not whether
+  // any individual clipboard call is allowed.
+  virtual bool IsClipboardAllowedForServiceWorker(const url::Origin& origin);
+
   // Determines if a clipboard paste containing |data| of type |data_type| is
   // allowed in this renderer frame.  Possible data types supported for paste
   // are in the ClipboardHostImpl class.  Text based formats will use the

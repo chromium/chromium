@@ -3727,12 +3727,8 @@ bool ChromeContentBrowserClient::AllowWorkerWriteToClipboard(
   if (origin.scheme() != extensions::kExtensionScheme) {
     return false;
   }
-  const extensions::Extension* extension =
-      extensions::ExtensionRegistry::Get(browser_context)
-          ->enabled_extensions()
-          .GetByID(origin.host());
-  return extension && extension->permissions_data()->HasAPIPermission(
-                          extensions::mojom::APIPermissionID::kClipboardWrite);
+  return extensions::ChromeContentBrowserClientExtensionsPart::
+      ExtensionHasClipboardWritePermission(browser_context, origin.host());
 #else
   return false;
 #endif
@@ -8127,6 +8123,16 @@ bool ChromeContentBrowserClient::IsClipboardPasteAllowed(
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
   return false;
+}
+
+bool ChromeContentBrowserClient::IsClipboardAllowedForServiceWorker(
+    const url::Origin& origin) {
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
+  return extensions::ChromeContentBrowserClientExtensionsPart::
+      IsClipboardAllowedForServiceWorker(origin);
+#else
+  return false;
+#endif
 }
 
 void ChromeContentBrowserClient::IsClipboardPasteAllowedByPolicy(

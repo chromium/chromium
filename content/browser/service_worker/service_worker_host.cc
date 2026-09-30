@@ -159,6 +159,14 @@ void ServiceWorkerHost::BindHidService(
 void ServiceWorkerHost::BindClipboardHost(
     mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver) {
   CHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!GetContentClient()->browser()->IsClipboardAllowedForServiceWorker(
+          version_->key().origin())) {
+    // The renderer only exposes navigator.clipboard to eligible workers, so a
+    // request from an ineligible one means a compromised renderer.
+    mojo::ReportBadMessage(
+        "Clipboard is not allowed for this service worker origin.");
+    return;
+  }
   clipboard_hosts_.Add(std::make_unique<ClipboardHostImpl>(*this),
                        std::move(receiver));
 }

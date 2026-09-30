@@ -1,0 +1,9 @@
+{
+  "name": "Clipboard Service Worker Test",
+  "version": "1.0",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "service_worker.js"
+  },
+  "permissions": ["clipboardRead", "clipboardWrite"]
+}

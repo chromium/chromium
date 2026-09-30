@@ -103,6 +103,8 @@ class CONTENT_EXPORT ServiceWorkerHost : public BucketContext,
   void BindUsbService(
       mojo::PendingReceiver<blink::mojom::WebUsbService> receiver);
 
+  // Refused with a bad message unless the embedder lists the worker's origin
+  // as eligible.
   void BindClipboardHost(
       mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver);
 

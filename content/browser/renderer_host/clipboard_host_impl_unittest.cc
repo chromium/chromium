@@ -43,6 +43,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "mojo/public/cpp/test_support/fake_message_dispatch_context.h"
+#include "mojo/public/cpp/test_support/test_utils.h"
 #include "skia/ext/skia_utils_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -2401,6 +2403,35 @@ TEST_F(ClipboardHostImplContextTest, ListenerGatedOnContext) {
   run_loop.Run();
 }
 
+// Records what the embedder is asked when a service worker writes.
+class ServiceWorkerWriteBrowserClient : public TestContentBrowserClient {
+ public:
+  bool AllowWorkerWriteToClipboard(const url::Origin& origin,
+                                   BrowserContext* browser_context) override {
+    origin_ = origin;
+    browser_context_ = browser_context;
+    return true;
+  }
+
+  void IsClipboardCopyAllowedByPolicy(
+      const ClipboardEndpoint& source,
+      const ui::ClipboardMetadata& metadata,
+      const ClipboardPasteData& data,
+      IsClipboardCopyAllowedCallback callback) override {
+    source_.emplace(source);
+    std::move(callback).Run(metadata.format_type, data, std::nullopt);
+  }
+
+  const url::Origin& origin() const { return origin_; }
+  BrowserContext* browser_context() const { return browser_context_; }
+  const std::optional<ClipboardEndpoint>& source() const { return source_; }
+
+ private:
+  url::Origin origin_;
+  raw_ptr<BrowserContext> browser_context_ = nullptr;
+  std::optional<ClipboardEndpoint> source_;
+};
+
 class ClipboardHostImplServiceWorkerTest : public ClipboardHostImplTest {
  protected:
   static constexpr char kScope[] = "https://example.com/";
@@ -2467,7 +2498,17 @@ TEST_F(ClipboardHostImplServiceWorkerTest, CannotWriteOrRead) {
   EXPECT_TRUE(text.empty());
 }
 
+class EligibleServiceWorkerBrowserClient : public TestContentBrowserClient {
+ public:
+  bool IsClipboardAllowedForServiceWorker(const url::Origin&) override {
+    return true;
+  }
+};
+
 TEST_F(ClipboardHostImplServiceWorkerTest, HostDiesWithWorker) {
+  EligibleServiceWorkerBrowserClient browser_client;
+  ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
+
   mojo::Remote<blink::mojom::ClipboardHost> remote;
   version().worker_host()->BindClipboardHost(
       remote.BindNewPipeAndPassReceiver());
@@ -2478,6 +2519,51 @@ TEST_F(ClipboardHostImplServiceWorkerTest, HostDiesWithWorker) {
   remote.set_disconnect_handler(disconnected.GetCallback());
   StopServiceWorker(&version());
   EXPECT_TRUE(disconnected.Wait());
+}
+
+TEST_F(ClipboardHostImplServiceWorkerTest, IneligibleWorkerIsBadMessage) {
+  mojo::FakeMessageDispatchContext fake_dispatch_context;
+  mojo::test::BadMessageObserver bad_message_observer;
+
+  mojo::Remote<blink::mojom::ClipboardHost> remote;
+  version().worker_host()->BindClipboardHost(
+      remote.BindNewPipeAndPassReceiver());
+  EXPECT_EQ("Clipboard is not allowed for this service worker origin.",
+            bad_message_observer.WaitForBadMessage());
+}
+
+TEST_F(ClipboardHostImplServiceWorkerTest, WritesAsWorkerAndCannotRead) {
+  ServiceWorkerWriteBrowserClient browser_client;
+  ScopedContentBrowserClientSetting browser_client_setting(&browser_client);
+
+  ClipboardHostImpl host(*version().worker_host());
+  mojo::Remote<blink::mojom::ClipboardHost> remote;
+  mojo::Receiver<blink::mojom::ClipboardHost> receiver(
+      &host, remote.BindNewPipeAndPassReceiver());
+
+  remote->WriteText(u"from-worker");
+  remote->CommitWrite();
+  remote.FlushForTesting();
+
+  EXPECT_EQ(url::Origin::Create(GURL(kScope)), browser_client.origin());
+  EXPECT_EQ(helper().browser_context(), browser_client.browser_context());
+  ASSERT_TRUE(browser_client.source());
+  EXPECT_TRUE(browser_client.source()->is_service_worker());
+  EXPECT_EQ(nullptr, browser_client.source()->web_contents());
+  EXPECT_EQ(helper().browser_context(),
+            browser_client.source()->browser_context());
+  ASSERT_TRUE(browser_client.source()->data_transfer_endpoint());
+  EXPECT_EQ(GURL(kScope),
+            *browser_client.source()->data_transfer_endpoint()->GetURL());
+
+  base::test::TestFuture<std::u16string> future;
+  system_clipboard()->ReadText(ui::ClipboardBuffer::kCopyPaste,
+                               /*data_dst=*/std::nullopt, future.GetCallback());
+  EXPECT_EQ(u"from-worker", future.Take());
+
+  std::u16string text = u"non-empty";
+  remote->ReadText(ui::ClipboardBuffer::kCopyPaste, &text);
+  EXPECT_TRUE(text.empty());
 }
 
 }  // namespace content

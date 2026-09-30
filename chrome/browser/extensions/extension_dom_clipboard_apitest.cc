@@ -4,6 +4,7 @@
 
 #include "base/feature_list.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/profiles/profile.h"
@@ -13,11 +14,11 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/background_script_executor.h"
-#include "extensions/browser/script_executor.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/test/test_extension_dir.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
@@ -28,6 +29,13 @@ namespace {
 
 class ClipboardApiTest : public ExtensionApiTest {
  public:
+  ClipboardApiTest() {
+    // navigator.clipboard is only exposed to extension service workers when
+    // this is on, and it is off by default until it is enabled via Finch.
+    scoped_feature_list_.InitAndEnableFeature(
+        blink::features::kClipboardOnExtensionServiceWorker);
+  }
+
   void SetUpOnMainThread() override {
     ExtensionApiTest::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -45,6 +53,8 @@ class ClipboardApiTest : public ExtensionApiTest {
       const std::string& script,
       int options = content::EXECUTE_SCRIPT_DEFAULT_OPTIONS);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -216,5 +226,56 @@ IN_PROC_BROWSER_TEST_F(ClipboardApiTest, HostedAppNoPermission) {
   EXPECT_FALSE(ExecuteCommandInIframeInSelectedTab("paste")) << message_;
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+IN_PROC_BROWSER_TEST_F(ClipboardApiTest, ServiceWorker) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  // Use a test clipboard so the write can be verified, and so the test does not
+  // depend on or disturb the machine's real clipboard.
+  content::BrowserTestClipboardScope clipboard;
+  ASSERT_TRUE(RunExtensionTest("clipboard/service_worker")) << message_;
+
+  // The write must actually reach the clipboard: a regression that turns it
+  // into a silently successful no-op would otherwise pass.
+  std::string text;
+  clipboard.GetText(&text);
+  EXPECT_EQ("Hello from Service Worker!", text);
+}
+
+IN_PROC_BROWSER_TEST_F(ClipboardApiTest, ServiceWorkerNoPermission) {
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  static constexpr char kManifest[] =
+      R"({
+         "name": "Clipboard Service Worker No Permission",
+         "manifest_version": 3,
+         "version": "1",
+         "background": {"service_worker": "background.js"},
+         "permissions": []
+       })";
+  static constexpr char kScript[] =
+      R"(
+        chrome.test.runTests([
+          async function testClipboardWriteFailsWithoutPermission() {
+            chrome.test.assertTrue(!!navigator.clipboard,
+                                   'navigator.clipboard should be defined');
+            await chrome.test.assertPromiseRejects(
+                navigator.clipboard.writeText('Should fail'),
+                /NotAllowedError/);
+            chrome.test.succeed();
+          },
+          // Reads are refused in every worker, with or without the permission,
+          // so this asserts the worker rejection rather than a permission one.
+          async function testClipboardReadFailsInWorker() {
+            await chrome.test.assertPromiseRejects(
+                navigator.clipboard.readText(),
+                /NotAllowedError.*Read not supported in Worker/);
+            chrome.test.succeed();
+          }
+        ]);
+      )";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kScript);
+  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
+}
 
 }  // namespace extensions

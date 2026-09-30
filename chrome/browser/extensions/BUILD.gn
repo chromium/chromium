@@ -1962,6 +1962,7 @@ source_set("unit_tests") {
     "api/webstore_private/webstore_private_unittest.cc",
     "bookmarks/bookmarks_helpers_unittest.cc",
     "chrome_component_extension_resource_manager_unittest.cc",
+    "chrome_content_browser_client_extensions_part_unittest.cc",
     "chrome_content_verifier_unittest.cc",
     "chrome_extension_function_details_unittest.cc",
     "chrome_extension_function_unittest.cc",

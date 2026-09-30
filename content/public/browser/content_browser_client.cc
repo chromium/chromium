@@ -1539,6 +1539,11 @@ bool ContentBrowserClient::IsClipboardPasteAllowed(
   return true;
 }
 
+bool ContentBrowserClient::IsClipboardAllowedForServiceWorker(
+    const url::Origin& origin) {
+  return false;
+}
+
 void ContentBrowserClient::IsClipboardPasteAllowedByPolicy(
     const ClipboardEndpoint& source,
     const ClipboardEndpoint& destination,

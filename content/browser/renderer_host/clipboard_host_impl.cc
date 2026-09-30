@@ -166,7 +166,14 @@ class ServiceWorkerClipboardContext : public ClipboardHostImpl::Context {
   bool CanObserveChanges() override { return false; }
   bool CanRead() override { return false; }
   bool IsPasteAllowed() override { return false; }
-  bool CanWrite() override { return false; }
+  bool CanWrite() override {
+    // Asked per call, not cached at bind time: the embedder's answer can change
+    // while the worker is still running.
+    BrowserContext* browser_context = GetBrowserContext();
+    return browser_context &&
+           GetContentClient()->browser()->AllowWorkerWriteToClipboard(
+               host_->version()->key().origin(), browser_context);
+  }
 
   BrowserContext* GetBrowserContext() override {
     return BrowserContextForWorker(*host_);
