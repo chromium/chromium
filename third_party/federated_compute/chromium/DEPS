@@ -2,6 +2,7 @@ noparent = True
 
 include_rules = [
   "+absl",
+  "+base/containers/span.h",
   "+fcp",
   "+gmock",
   "+google",

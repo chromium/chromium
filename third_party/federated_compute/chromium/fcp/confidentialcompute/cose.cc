@@ -28,6 +28,7 @@
 #include "absl/strings/str_cat.h"
 #include "absl/strings/string_view.h"
 #include "absl/time/time.h"
+#include "base/containers/span.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -107,25 +108,22 @@ std::vector<uint8_t> BuildProtectedHeader(
     const std::optional<std::string>& dst_state) {
   cbor::Value::MapValue map;
   if (algorithm) {
-    map.emplace(cbor::Value(CoseHeaderParameter::kHdrAlg),
-                cbor::Value(*algorithm));
+    map.emplace(CoseHeaderParameter::kHdrAlg, *algorithm);
   }
   if (src_state) {
-    map.emplace(cbor::Value(CoseHeaderParameter::kSrcState),
-                *src_state
-                    ? cbor::Value(**src_state, cbor::Value::Type::BYTE_STRING)
-                    : cbor::Value(cbor::Value::SimpleValue::NULL_VALUE));
+    map.emplace(CoseHeaderParameter::kSrcState,
+                *src_state ? cbor::Value(base::as_byte_span(**src_state))
+                           : cbor::Value(cbor::Value::Null()));
   }
   if (dst_state) {
-    map.emplace(cbor::Value(CoseHeaderParameter::kDstState),
-                cbor::Value(*dst_state, cbor::Value::Type::BYTE_STRING));
+    map.emplace(CoseHeaderParameter::kDstState, base::as_byte_span(*dst_state));
   }
   std::optional<std::vector<uint8_t>> encoded_protected_header =
       cbor::Writer::Write(cbor::Value(std::move(map)));
   if (!encoded_protected_header) {
     return {};
   }
-  return *encoded_protected_header;
+  return *std::move(encoded_protected_header);
 }
 
 // Builds the payload for a CWT, which is a map of CWT claims encoded as a bstr.
@@ -135,39 +133,31 @@ absl::StatusOr<std::vector<uint8_t>> BuildCwtPayload(
     const cose_internal::BaseCwt<T>& cwt) {
   cbor::Value::MapValue map;
   if (cwt.expiration_time) {
-    map.emplace(cbor::Value(CwtClaim::kExp),
-                cbor::Value(absl::ToUnixSeconds(*cwt.expiration_time)));
+    map.emplace(CwtClaim::kExp, absl::ToUnixSeconds(*cwt.expiration_time));
   }
   if (cwt.not_before) {
-    map.emplace(cbor::Value(CwtClaim::kNbf),
-                cbor::Value(absl::ToUnixSeconds(*cwt.not_before)));
+    map.emplace(CwtClaim::kNbf, absl::ToUnixSeconds(*cwt.not_before));
   }
   if (cwt.issued_at) {
-    map.emplace(cbor::Value(CwtClaim::kIat),
-                cbor::Value(absl::ToUnixSeconds(*cwt.issued_at)));
+    map.emplace(CwtClaim::kIat, absl::ToUnixSeconds(*cwt.issued_at));
   }
   if (cwt.public_key) {
     ABSL_ASSIGN_OR_RETURN(std::string encoded_public_key,
                           cwt.public_key->Encode());
-    map.emplace(
-        cbor::Value(CwtClaim::kPublicKey),
-        cbor::Value(encoded_public_key, cbor::Value::Type::BYTE_STRING));
+    map.emplace(CwtClaim::kPublicKey, base::as_byte_span(encoded_public_key));
   }
   if (!cwt.config_properties.empty()) {
-    map.emplace(
-        cbor::Value(CwtClaim::kConfigProperties),
-        cbor::Value(cwt.config_properties, cbor::Value::Type::BYTE_STRING));
+    map.emplace(CwtClaim::kConfigProperties,
+                base::as_byte_span(cwt.config_properties));
   }
   if (!cwt.logical_pipeline_name.empty()) {
-    map.emplace(cbor::Value(CwtClaim::kLogicalPipelineName),
-                cbor::Value(cwt.logical_pipeline_name));
+    map.emplace(CwtClaim::kLogicalPipelineName, cwt.logical_pipeline_name);
   }
   if (!cwt.invocation_id.empty()) {
-    map.emplace(cbor::Value(CwtClaim::kInvocationId),
-                cbor::Value(cwt.invocation_id, cbor::Value::Type::BYTE_STRING));
+    map.emplace(CwtClaim::kInvocationId, base::as_byte_span(cwt.invocation_id));
   }
   if (cwt.transform_index) {
-    map.emplace(cbor::Value(CwtClaim::kTransformIndex),
+    map.emplace(CwtClaim::kTransformIndex,
                 static_cast<int64_t>(*cwt.transform_index));
   }
   if (!cwt.dst_node_ids.empty()) {
@@ -175,22 +165,19 @@ absl::StatusOr<std::vector<uint8_t>> BuildCwtPayload(
     for (uint32_t dst_node_id : cwt.dst_node_ids) {
       dst_node_ids_array.emplace_back(static_cast<int64_t>(dst_node_id));
     }
-    map.emplace(cbor::Value(CwtClaim::kDstNodeIds),
-                std::move(dst_node_ids_array));
+    map.emplace(CwtClaim::kDstNodeIds, std::move(dst_node_ids_array));
   }
   if (!cwt.access_policy_sha256.empty()) {
-    map.emplace(
-        cbor::Value(CwtClaim::kAccessPolicySha256),
-        cbor::Value(cwt.access_policy_sha256, cbor::Value::Type::BYTE_STRING));
+    map.emplace(CwtClaim::kAccessPolicySha256,
+                base::as_byte_span(cwt.access_policy_sha256));
   }
 
   std::optional<std::vector<uint8_t>> encoded_cwt_payload =
       cbor::Writer::Write(cbor::Value(std::move(map)));
   if (!encoded_cwt_payload) {
     return absl::InternalError("failed to build cwt payload");
-    ;
   }
-  return *encoded_cwt_payload;
+  return *std::move(encoded_cwt_payload);
 }
 
 // Parses a serialized protected header from a COSE structure and sets the
@@ -379,7 +366,7 @@ std::string BuildSigStructure(
   if (sign_protected) {
     sig_structure.emplace_back(std::move(*sign_protected));
   }
-  sig_structure.emplace_back(std::string(aad), cbor::Value::Type::BYTE_STRING);
+  sig_structure.emplace_back(base::as_byte_span(aad));
   sig_structure.emplace_back(std::move(payload));
 
   std::optional<std::vector<uint8_t>> encoded_sig_structure =
@@ -450,24 +437,21 @@ std::vector<uint8_t> BuildReleaseTokenPayload(const ReleaseToken& token) {
 
   cbor::Value::MapValue unprotected_header;
   if (token.encryption_key_id) {
-    unprotected_header.emplace(
-        CoseHeaderParameter::kHdrKid,
-        cbor::Value(*token.encryption_key_id, cbor::Value::Type::BYTE_STRING));
+    unprotected_header.emplace(CoseHeaderParameter::kHdrKid,
+                               base::as_byte_span(*token.encryption_key_id));
   }
   if (token.encapped_key) {
-    unprotected_header.emplace(
-        CoseHeaderParameter::kEncapsulatedKey,
-        cbor::Value(*token.encapped_key, cbor::Value::Type::BYTE_STRING));
+    unprotected_header.emplace(CoseHeaderParameter::kEncapsulatedKey,
+                               base::as_byte_span(*token.encapped_key));
   }
   array_value.emplace_back(std::move(unprotected_header));
-  array_value.emplace_back(token.encrypted_payload,
-                           cbor::Value::Type::BYTE_STRING);
+  array_value.emplace_back(base::as_byte_span(token.encrypted_payload));
   std::optional<std::vector<uint8_t>> encoded_array =
       cbor::Writer::Write(cbor::Value(std::move(array_value)));
   if (!encoded_array) {
     return {};
   }
-  return *encoded_array;
+  return *std::move(encoded_array);
 }
 
 // Builds a Enc_structure object for a COSE_Encrypt0 structure.
@@ -477,7 +461,7 @@ std::string BuildEncStructure(std::vector<uint8_t> protected_header,
   cbor::Value::ArrayValue enc_structure;
   enc_structure.emplace_back("Encrypt0");
   enc_structure.emplace_back(std::move(protected_header));
-  enc_structure.emplace_back(aad, cbor::Value::Type::BYTE_STRING);
+  enc_structure.emplace_back(base::as_byte_span(aad));
   auto result = cbor::Writer::Write(cbor::Value(std::move(enc_structure)));
   if (!result) {
     return {};
@@ -604,33 +588,28 @@ absl::StatusOr<OkpKey> OkpKey::Decode(absl::string_view encoded) {
 absl::StatusOr<std::string> OkpKey::Encode() const {
   // Generate a map containing the parameters that are set.
   cbor::Value::MapValue map;
-  map.emplace(cbor::Value(CoseKeyParameter::kKty),
-              cbor::Value(CoseKeyType::kOkp));
+  map.emplace(CoseKeyParameter::kKty, CoseKeyType::kOkp);
   if (!key_id.empty()) {
-    map.emplace(cbor::Value(CoseKeyParameter::kKid),
-                cbor::Value(key_id, cbor::Value::Type::BYTE_STRING));
+    map.emplace(CoseKeyParameter::kKid, base::as_byte_span(key_id));
   }
   if (algorithm) {
-    map.emplace(cbor::Value(CoseKeyParameter::kAlg), cbor::Value(*algorithm));
+    map.emplace(CoseKeyParameter::kAlg, *algorithm);
   }
   if (!key_ops.empty()) {
     cbor::Value::ArrayValue array;
     for (int64_t key_op : key_ops) {
       array.emplace_back(key_op);
     }
-    map.emplace(cbor::Value(CoseKeyParameter::kKeyOps),
-                cbor::Value(std::move(array)));
+    map.emplace(CoseKeyParameter::kKeyOps, std::move(array));
   }
   if (curve) {
-    map.emplace(cbor::Value(CoseKeyParameter::kOkpCrv), cbor::Value(*curve));
+    map.emplace(CoseKeyParameter::kOkpCrv, *curve);
   }
   if (!x.empty()) {
-    map.emplace(cbor::Value(CoseKeyParameter::kOkpX),
-                cbor::Value(x, cbor::Value::Type::BYTE_STRING));
+    map.emplace(CoseKeyParameter::kOkpX, base::as_byte_span(x));
   }
   if (!d.empty()) {
-    map.emplace(cbor::Value(CoseKeyParameter::kOkpD),
-                cbor::Value(d, cbor::Value::Type::BYTE_STRING));
+    map.emplace(CoseKeyParameter::kOkpD, base::as_byte_span(d));
   }
   std::optional<std::vector<uint8_t>> encoded_key =
       cbor::Writer::Write(cbor::Value(std::move(map)));
@@ -741,8 +720,7 @@ absl::StatusOr<std::string> Ec2Key::Encode() const {
   cbor::Value::MapValue map;
   map.emplace(CoseKeyParameter::kKty, CoseKeyType::kEc2);
   if (!key_id.empty()) {
-    map.emplace(CoseKeyParameter::kKid,
-                cbor::Value(key_id, cbor::Value::Type::BYTE_STRING));
+    map.emplace(CoseKeyParameter::kKid, base::as_byte_span(key_id));
   }
   if (algorithm) {
     map.emplace(CoseKeyParameter::kAlg, *algorithm);
@@ -758,16 +736,13 @@ absl::StatusOr<std::string> Ec2Key::Encode() const {
     map.emplace(CoseKeyParameter::kEc2Crv, *curve);
   }
   if (!x.empty()) {
-    map.emplace(CoseKeyParameter::kEc2X,
-                cbor::Value(x, cbor::Value::Type::BYTE_STRING));
+    map.emplace(CoseKeyParameter::kEc2X, base::as_byte_span(x));
   }
   if (!y.empty()) {
-    map.emplace(CoseKeyParameter::kEc2Y,
-                cbor::Value(y, cbor::Value::Type::BYTE_STRING));
+    map.emplace(CoseKeyParameter::kEc2Y, base::as_byte_span(y));
   }
   if (!d.empty()) {
-    map.emplace(CoseKeyParameter::kEc2D,
-                cbor::Value(d, cbor::Value::Type::BYTE_STRING));
+    map.emplace(CoseKeyParameter::kEc2D, base::as_byte_span(d));
   }
 
   std::optional<std::vector<uint8_t>> encoded_key =
@@ -897,7 +872,7 @@ absl::StatusOr<std::string> cose_internal::BaseCwt<T>::Encode() const {
   array.emplace_back(cbor::Value::MapValue());  // unprotected header
   ABSL_ASSIGN_OR_RETURN(std::vector<uint8_t> payload, BuildCwtPayload(*this));
   array.emplace_back(std::move(payload));
-  array.emplace_back(signature, cbor::Value::Type::BYTE_STRING);
+  array.emplace_back(base::as_byte_span(signature));
   std::optional<std::vector<uint8_t>> encoded_array =
       cbor::Writer::Write(cbor::Value(std::move(array)));
   if (!encoded_array) {
@@ -1013,7 +988,7 @@ absl::StatusOr<std::string> ReleaseToken::Encode() const {
                                           /*dst_state=*/std::nullopt));
   array.emplace_back(cbor::Value::MapValue());  // unprotected header
   array.emplace_back(BuildReleaseTokenPayload(*this));
-  array.emplace_back(signature, cbor::Value::Type::BYTE_STRING);
+  array.emplace_back(base::as_byte_span(signature));
   std::optional<std::vector<uint8_t>> encoded_array =
       cbor::Writer::Write(cbor::Value(std::move(array)));
   if (!encoded_array) {
@@ -1030,22 +1005,19 @@ absl::StatusOr<std::string> SymmetricKey::Encode(
   // Note: we're not using libcppbor in Chromium anyway, so just use cbor.
 
   cbor::Value::MapValue map;
-  map.emplace(cbor::Value(CoseKeyParameter::kKty),
-              cbor::Value(CoseKeyType::kSymmetric));
+  map.emplace(CoseKeyParameter::kKty, CoseKeyType::kSymmetric);
   if (algorithm) {
-    map.emplace(cbor::Value(CoseKeyParameter::kAlg), cbor::Value(*algorithm));
+    map.emplace(CoseKeyParameter::kAlg, *algorithm);
   }
   if (!key_ops.empty()) {
     cbor::Value::ArrayValue array;
     for (int64_t key_op : key_ops) {
       array.emplace_back(key_op);
     }
-    map.emplace(cbor::Value(CoseKeyParameter::kKeyOps),
-                cbor::Value(std::move(array)));
+    map.emplace(CoseKeyParameter::kKeyOps, std::move(array));
   }
   if (!k.empty()) {
-    map.emplace(cbor::Value(CoseKeyParameter::kSymmetricK),
-                cbor::Value(k, cbor::Value::Type::BYTE_STRING));
+    map.emplace(CoseKeyParameter::kSymmetricK, base::as_byte_span(k));
   }
   std::optional<std::vector<uint8_t>> encoded_key =
       cbor::Writer::Write(cbor::Value(std::move(map)));
