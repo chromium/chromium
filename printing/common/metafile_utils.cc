@@ -623,12 +623,13 @@ SkDeserialProcs DeserializationProcs(
     TypefaceDeserializationContext* typeface_ctx,
     ImageDeserializationContext* image_ctx) {
   SkDeserialProcs procs;
-  procs.fImageDataProc = DeserializeRasterImage;
-  procs.fImageCtx = image_ctx;
   procs.fPictureProc = DeserializeOopPicture;
   procs.fPictureCtx = picture_ctx;
+  procs.fImageDataProc = DeserializeRasterImage;
+  procs.fImageCtx = image_ctx;
   procs.fTypefaceStreamProc = DeserializeOopTypeface;
   procs.fTypefaceCtx = typeface_ctx;
+  procs.fAllowSkSL = false;
   return procs;
 }
 
