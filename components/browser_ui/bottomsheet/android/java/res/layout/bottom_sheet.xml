@@ -4,7 +4,7 @@ Copyright 2018 The Chromium Authors
 Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
-<org.chromium.components.browser_ui.bottomsheet.BottomSheet
+<org.chromium.components.browser_ui.bottomsheet.BottomSheetView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/bottom_sheet"
@@ -71,4 +71,4 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_gravity="start|bottom" />
 
-</org.chromium.components.browser_ui.bottomsheet.BottomSheet>
+</org.chromium.components.browser_ui.bottomsheet.BottomSheetView>

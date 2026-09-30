@@ -147,10 +147,11 @@ public class BottomSheetUnitTest {
      */
     private BottomSheet inflateAndAttachSheet(boolean isLargeFormFactor) {
         int layoutId = isLargeFormFactor ? R.layout.bottom_sheet_desktop : R.layout.bottom_sheet;
-        BottomSheet sheet = (BottomSheet) LayoutInflater.from(mActivity).inflate(layoutId, null);
+        BottomSheetView view =
+                (BottomSheetView) LayoutInflater.from(mActivity).inflate(layoutId, null);
         mSheetContainer.removeAllViews();
-        mSheetContainer.addView(sheet);
-        return sheet;
+        mSheetContainer.addView(view);
+        return new BottomSheet(view);
     }
 
     /**
@@ -161,11 +162,12 @@ public class BottomSheetUnitTest {
      */
     private void installSharedTestViews(BottomSheet sheet) {
         sheet.setSheetContainerForTesting(mSheetContainer);
-        sheet.setToolbarHolderForTesting(mToolbarHolder);
-        sheet.setBottomSheetContentContainerForTesting(
-                sheet.findViewById(R.id.bottom_sheet_content));
-        sheet.setSheetBackgroundForTesting(mSheetBackground);
-        sheet.setShadowLayerForTesting(mShadowLayerView);
+        sheet.getView().setToolbarHolderForTesting(mToolbarHolder);
+        sheet.getView()
+                .setBottomSheetContentContainerForTesting(
+                        sheet.getView().findViewById(R.id.bottom_sheet_content));
+        sheet.getView().setSheetBackgroundForTesting(mSheetBackground);
+        sheet.getView().setShadowLayerForTesting(mShadowLayerView);
     }
 
     /**
@@ -463,7 +465,7 @@ public class BottomSheetUnitTest {
 
         mBottomSheet.getVisibleViewportRectForTesting().set(0, 0, 1080, 1920);
 
-        View contentContainer = mBottomSheet.findViewById(R.id.bottom_sheet_content);
+        View contentContainer = mBottomSheet.getView().findViewById(R.id.bottom_sheet_content);
 
         mBottomSheet.setSheetOffsetFromBottom(120.0f, BottomSheetController.StateChangeReason.NONE);
         // Container height should be clamp(120, 100, 160) = 120.
@@ -497,7 +499,7 @@ public class BottomSheetUnitTest {
 
         // Max sheet height is 200, so 0.80 * 200 = 160.
         assertEquals(160.0f, mBottomSheet.getCurrentOffsetPx(), 0.0f);
-        View contentContainer = mBottomSheet.findViewById(R.id.bottom_sheet_content);
+        View contentContainer = mBottomSheet.getView().findViewById(R.id.bottom_sheet_content);
         assertEquals(160, contentContainer.getLayoutParams().height);
     }
 
@@ -530,7 +532,7 @@ public class BottomSheetUnitTest {
 
         mBottomSheet.getVisibleViewportRectForTesting().set(0, 0, 1080, 1920);
 
-        View contentContainer = mBottomSheet.findViewById(R.id.bottom_sheet_content);
+        View contentContainer = mBottomSheet.getView().findViewById(R.id.bottom_sheet_content);
 
         mBottomSheet.setSheetOffsetFromBottom(150.0f, BottomSheetController.StateChangeReason.NONE);
         // Container height should be max(100, 150) = 150.
@@ -550,7 +552,7 @@ public class BottomSheetUnitTest {
         mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT - 1);
         mSheetContainer.layout(0, 0, SHEET_CONTAINER_WIDTH, SHEET_CONTAINER_HEIGHT);
 
-        View contentContainer = mBottomSheet.findViewById(R.id.bottom_sheet_content);
+        View contentContainer = mBottomSheet.getView().findViewById(R.id.bottom_sheet_content);
         assertEquals(24, contentContainer.getPaddingBottom());
 
         doReturn((float) HeightMode.RESIZE_CONTENT).when(mSheetContent).getFullHeightRatio();
@@ -589,7 +591,7 @@ public class BottomSheetUnitTest {
         mBottomSheet.getVisibleViewportRectForTesting().set(0, 0, 1080, 1920);
 
         mBottomSheet.setSheetOffsetFromBottom(150.0f, BottomSheetController.StateChangeReason.NONE);
-        View contentContainer = mBottomSheet.findViewById(R.id.bottom_sheet_content);
+        View contentContainer = mBottomSheet.getView().findViewById(R.id.bottom_sheet_content);
         assertEquals(150, contentContainer.getLayoutParams().height);
 
         // Hide content (which means content == null in onSheetContentChanged)
@@ -620,7 +622,7 @@ public class BottomSheetUnitTest {
 
         mBottomSheet.showContent(mSheetContent);
 
-        View curtain = mBottomSheet.findViewById(R.id.keyboard_curtain);
+        View curtain = mBottomSheet.getView().findViewById(R.id.keyboard_curtain);
         assertEquals(
                 "Keyboard curtain bg color should be the override color.",
                 ColorStateList.valueOf(overrideColor),
@@ -737,7 +739,7 @@ public class BottomSheetUnitTest {
 
         mActivity.getWindow().getDecorView().layout(0, 0, 1080, 200);
 
-        View contentContainer = mBottomSheet.findViewById(R.id.bottom_sheet_content);
+        View contentContainer = mBottomSheet.getView().findViewById(R.id.bottom_sheet_content);
 
         WindowInsetsCompat insets = mock(WindowInsetsCompat.class);
         doReturn(insets).when(mInsetObserver).getLastRawWindowInsets();
@@ -968,7 +970,7 @@ public class BottomSheetUnitTest {
         assertEquals(
                 "Accessibility pane title should be set on the bottom sheet when opened",
                 expectedOpenTitle,
-                ViewCompat.getAccessibilityPaneTitle(mBottomSheet));
+                ViewCompat.getAccessibilityPaneTitle(mBottomSheet.getView()));
 
         // Verify title when closed
         mBottomSheet.setSheetState(SheetState.HIDDEN, false);
@@ -977,7 +979,7 @@ public class BottomSheetUnitTest {
                 "Accessibility pane title should be set to closed on the bottom sheet when"
                         + " closed",
                 expectedClosedTitle,
-                ViewCompat.getAccessibilityPaneTitle(mBottomSheet));
+                ViewCompat.getAccessibilityPaneTitle(mBottomSheet.getView()));
     }
 
     @Test
@@ -1001,7 +1003,7 @@ public class BottomSheetUnitTest {
         mBottomSheet.showContent(mSheetContent);
         mBottomSheet.setSheetState(SheetState.FULL, false);
 
-        View contentContainer = mBottomSheet.findViewById(R.id.bottom_sheet_content);
+        View contentContainer = mBottomSheet.getView().findViewById(R.id.bottom_sheet_content);
         assertEquals(
                 "Child content view should be displayed inside the bottom sheet content container.",
                 contentContainer,
@@ -1012,14 +1014,14 @@ public class BottomSheetUnitTest {
                 childView.getVisibility());
         assertNull(
                 "Root BottomSheet should have null contentDescription so child text is unmasked.",
-                mBottomSheet.getContentDescription());
+                mBottomSheet.getView().getContentDescription());
         assertNull(
                 "Inner content container should have null contentDescription.",
                 contentContainer.getContentDescription());
         assertEquals(
                 "Accessibility pane title should still be set when opened.",
                 mActivity.getResources().getString(openStringId),
-                ViewCompat.getAccessibilityPaneTitle(mBottomSheet));
+                ViewCompat.getAccessibilityPaneTitle(mBottomSheet.getView()));
     }
 
     @Test
@@ -1090,12 +1092,12 @@ public class BottomSheetUnitTest {
         // Set state to HALF. Offset should be HALF height (0.5 * 200 = 100).
         mBottomSheet.setSheetState(SheetState.HALF, false);
 
-        View contentContainer = mBottomSheet.findViewById(R.id.bottom_sheet_content);
+        View contentContainer = mBottomSheet.getView().findViewById(R.id.bottom_sheet_content);
 
         // Now set offset to 200 (full height). translationY should be 0.
         mBottomSheet.setSheetOffsetFromBottom(200, StateChangeReason.NONE);
         assertEquals(200, contentContainer.getLayoutParams().height);
-        assertEquals(0f, mBottomSheet.getTranslationY(), 0.0f);
+        assertEquals(0f, mBottomSheet.getView().getTranslationY(), 0.0f);
 
         // Now set offset to 250. translationY should still be 0 (capped).
         // Height should remain clamped to FULL height (200).
@@ -1103,7 +1105,7 @@ public class BottomSheetUnitTest {
 
         // Height should remain clamped to FULL height (200).
         assertEquals(200, contentContainer.getLayoutParams().height);
-        assertEquals(0f, mBottomSheet.getTranslationY(), 0.0f);
+        assertEquals(0f, mBottomSheet.getView().getTranslationY(), 0.0f);
     }
 
     @Test
@@ -1188,7 +1190,7 @@ public class BottomSheetUnitTest {
 
         sheet.showContent(mSheetContent);
 
-        View closeButton = sheet.findViewById(R.id.bottom_sheet_close_button);
+        View closeButton = sheet.getView().findViewById(R.id.bottom_sheet_close_button);
         assertEquals(
                 "Close button should be visible for non-modal sheets on large form factors.",
                 View.VISIBLE,
@@ -1206,7 +1208,7 @@ public class BottomSheetUnitTest {
 
         sheet.showContent(mSheetContent);
 
-        View closeButton = sheet.findViewById(R.id.bottom_sheet_close_button);
+        View closeButton = sheet.getView().findViewById(R.id.bottom_sheet_close_button);
         assertEquals(
                 "Close button should be hidden for modal sheets on large form factors.",
                 View.GONE,
@@ -1224,7 +1226,7 @@ public class BottomSheetUnitTest {
         setupBottomSheetStrings(android.R.string.ok, android.R.string.ok);
 
         sheet.showContent(nonModalContent);
-        View closeButton = sheet.findViewById(R.id.bottom_sheet_close_button);
+        View closeButton = sheet.getView().findViewById(R.id.bottom_sheet_close_button);
         assertEquals(
                 "Close button should be visible for non-modal sheets on large form factors.",
                 View.VISIBLE,
@@ -1251,7 +1253,7 @@ public class BottomSheetUnitTest {
         sheet.showContent(content);
         sheet.setSheetState(SheetState.FULL, false);
 
-        View closeButton = sheet.findViewById(R.id.bottom_sheet_close_button);
+        View closeButton = sheet.getView().findViewById(R.id.bottom_sheet_close_button);
         assertEquals(
                 "Non-modal popup content must offer a close button.",
                 View.VISIBLE,
@@ -1281,7 +1283,7 @@ public class BottomSheetUnitTest {
 
         sheet.showContent(mSheetContent);
 
-        View closeButton = sheet.findViewById(R.id.bottom_sheet_close_button);
+        View closeButton = sheet.getView().findViewById(R.id.bottom_sheet_close_button);
         assertNull("Close button should never show on phones.", closeButton);
     }
 
@@ -1289,15 +1291,16 @@ public class BottomSheetUnitTest {
     public void testDesktopUi_LargeFormFactorNotSupported_FallbackToMobileRendering() {
         BottomSheet sheet = inflateAndAttachSheet(/* isLargeFormFactor= */ true);
         sheet.setSheetContainerForTesting(mSheetContainer);
-        sheet.setToolbarHolderForTesting(mToolbarHolder);
-        sheet.setBottomSheetContentContainerForTesting(
-                sheet.findViewById(R.id.bottom_sheet_content));
+        sheet.getView().setToolbarHolderForTesting(mToolbarHolder);
+        sheet.getView()
+                .setBottomSheetContentContainerForTesting(
+                        sheet.getView().findViewById(R.id.bottom_sheet_content));
 
         // Use the real views found inside bottom_sheet_desktop, rather than mocks, to verify exact
         // layout behaviors. This is why the test cannot use installSharedTestViews().
-        View sheetBackground = sheet.findViewById(R.id.background);
-        View shadowLayer = sheet.findViewById(R.id.shadow_layer);
-        View fallbackShadowLayer = sheet.findViewById(R.id.desktop_fallback_shadow);
+        View sheetBackground = sheet.getView().findViewById(R.id.background);
+        View shadowLayer = sheet.getView().findViewById(R.id.shadow_layer);
+        View fallbackShadowLayer = sheet.getView().findViewById(R.id.desktop_fallback_shadow);
 
         initSheet(sheet, /* isLargeFormFactor= */ true);
 
@@ -1319,7 +1322,7 @@ public class BottomSheetUnitTest {
         assertEquals(
                 "Close button should be hidden unconditionally during fallback.",
                 View.GONE,
-                sheet.findViewById(R.id.bottom_sheet_close_button).getVisibility());
+                sheet.getView().findViewById(R.id.bottom_sheet_close_button).getVisibility());
 
         assertFalse(
                 "Background clipToOutline should be disabled to prevent clipping the layout.",
@@ -1357,7 +1360,7 @@ public class BottomSheetUnitTest {
         assertEquals(
                 "Sheet width should match clamped desktop width.",
                 expectedDesktopWidth,
-                sheet.getLayoutParams().width);
+                sheet.getView().getLayoutParams().width);
 
         // Content B does not support large form factor -> falls back to mobile full width.
         BottomSheetContent contentFallback = mock(BottomSheetContent.class);
@@ -1376,7 +1379,7 @@ public class BottomSheetUnitTest {
         assertEquals(
                 "Sheet width should be updated on content swap.",
                 expectedFallbackWidth,
-                sheet.getLayoutParams().width);
+                sheet.getView().getLayoutParams().width);
     }
 
     @Test
@@ -1582,7 +1585,7 @@ public class BottomSheetUnitTest {
         // layout
         BottomSheet sheet = buildSheet(/* isLargeFormFactor= */ true);
 
-        ImageView handlebar = sheet.getHandlebarForTesting();
+        ImageView handlebar = sheet.getView().getHandlebarForTesting();
         assertNotNull(handlebar);
         assertTrue(
                 "Handlebar should have an OnClickListener configured on desktop",
@@ -1613,7 +1616,7 @@ public class BottomSheetUnitTest {
                 "Handlebar should have TYPE_HAND hover pointer icon configured on desktop",
                 handlebar.getPointerIcon());
         TouchRestrictingFrameLayout contentContainer =
-                sheet.findViewById(R.id.bottom_sheet_content);
+                sheet.getView().findViewById(R.id.bottom_sheet_content);
         MarginLayoutParams params = (MarginLayoutParams) contentContainer.getLayoutParams();
         assertEquals(handlebar.getMeasuredHeight(), params.topMargin);
 
@@ -1652,12 +1655,12 @@ public class BottomSheetUnitTest {
         doReturn(contentView).when(contentWithHandlebar).getContentView();
 
         sheet.showContent(contentWithHandlebar);
-        ImageView handlebar = sheet.getHandlebarForTesting();
+        ImageView handlebar = sheet.getView().getHandlebarForTesting();
         int expectedHeight = 200 + handlebar.getMeasuredHeight();
         assertEquals(
                 expectedHeight, sheet.getSheetHeightForState(SheetState.FULL), MathUtils.EPSILON);
         TouchRestrictingFrameLayout contentContainer =
-                sheet.findViewById(R.id.bottom_sheet_content);
+                sheet.getView().findViewById(R.id.bottom_sheet_content);
         MarginLayoutParams params = (MarginLayoutParams) contentContainer.getLayoutParams();
         assertEquals(handlebar.getMeasuredHeight(), params.topMargin);
     }
@@ -1673,7 +1676,7 @@ public class BottomSheetUnitTest {
         doReturn(new View(mActivity)).when(contentWithHandlebar).getContentView();
 
         sheet.showContent(contentWithHandlebar);
-        ImageView handlebar = sheet.getHandlebarForTesting();
+        ImageView handlebar = sheet.getView().getHandlebarForTesting();
         int expectedPeekHeight = 50 + handlebar.getMeasuredHeight();
         assertEquals(expectedPeekHeight, sheet.getPeekHeightPx());
     }
@@ -1719,7 +1722,7 @@ public class BottomSheetUnitTest {
         sheet.showContent(mSheetContent);
 
         // Trigger onLayout in LFF mode.
-        sheet.layout(0, 0, 1000, containerHeight);
+        sheet.getView().layout(0, 0, 1000, containerHeight);
 
         assertFalse(mSheetContainer.getClipChildren());
         assertFalse(mSheetContainer.getClipToPadding());
@@ -1733,7 +1736,7 @@ public class BottomSheetUnitTest {
         mSheetContainer.layout(0, 0, 1000, containerHeight);
         installSharedTestViews(sheet);
         TouchRestrictingFrameLayout contentContainer =
-                sheet.findViewById(R.id.bottom_sheet_content);
+                sheet.getView().findViewById(R.id.bottom_sheet_content);
         initSheet(sheet, /* isLargeFormFactor= */ true);
 
         doReturn(true).when(mSheetContent).supportsLargeFormFactor();
@@ -1775,7 +1778,7 @@ public class BottomSheetUnitTest {
         mSheetContainer.layout(0, 0, 1000, containerHeight);
         installSharedTestViews(sheet);
         TouchRestrictingFrameLayout contentContainer =
-                sheet.findViewById(R.id.bottom_sheet_content);
+                sheet.getView().findViewById(R.id.bottom_sheet_content);
         initSheet(sheet, /* isLargeFormFactor= */ false);
 
         doReturn(0.5f).when(mSheetContent).getHalfHeightRatio();
@@ -1802,8 +1805,8 @@ public class BottomSheetUnitTest {
         // This test asserts on the toolbar holder's own top margin, so it needs the real
         // inflated view rather than the shared mock. It must be installed before init().
         TouchRestrictingFrameLayout toolbarHolder =
-                sheet.findViewById(R.id.bottom_sheet_toolbar_container);
-        sheet.setToolbarHolderForTesting(toolbarHolder);
+                sheet.getView().findViewById(R.id.bottom_sheet_toolbar_container);
+        sheet.getView().setToolbarHolderForTesting(toolbarHolder);
 
         initSheet(sheet, /* isLargeFormFactor= */ false);
 
@@ -1815,7 +1818,7 @@ public class BottomSheetUnitTest {
 
         sheet.showContent(contentWithToolbarAndHandlebar);
 
-        ImageView handlebar = sheet.getHandlebarForTesting();
+        ImageView handlebar = sheet.getView().getHandlebarForTesting();
         assertEquals(View.VISIBLE, handlebar.getVisibility());
         int handlebarHeight = handlebar.getMeasuredHeight();
         assertTrue("Handlebar height should be greater than 0", handlebarHeight > 0);
@@ -1827,7 +1830,7 @@ public class BottomSheetUnitTest {
                 toolbarParams.topMargin);
 
         TouchRestrictingFrameLayout contentContainer =
-                sheet.findViewById(R.id.bottom_sheet_content);
+                sheet.getView().findViewById(R.id.bottom_sheet_content);
         MarginLayoutParams contentParams = (MarginLayoutParams) contentContainer.getLayoutParams();
         assertEquals(
                 "Content container top margin should match handlebar height",
@@ -1886,7 +1889,7 @@ public class BottomSheetUnitTest {
 
         assertFalse(
                 "Custom half ratio of 0.70f should provide sufficient clearance on 512dp"
-                    + " container.",
+                        + " container.",
                 mBottomSheet.isSmallScreen());
     }
 
@@ -1908,7 +1911,7 @@ public class BottomSheetUnitTest {
 
         assertFalse(
                 "Large custom half ratio (0.90f) must not trigger isSmallScreen on standard"
-                    + " display.",
+                        + " display.",
                 mBottomSheet.isSmallScreen());
     }
 
@@ -1958,7 +1961,7 @@ public class BottomSheetUnitTest {
         assertEquals(
                 "A non-large-form-factor sheet must stay STANDARD even if content opts in.",
                 SheetLayoutMode.STANDARD,
-                sheet.getSheetLayoutMode());
+                sheet.getView().getSheetLayoutMode());
     }
 
     @Test
@@ -1969,7 +1972,7 @@ public class BottomSheetUnitTest {
         assertEquals(
                 "Large form factor sheet with opted-in content must use DESKTOP_POPUP.",
                 SheetLayoutMode.DESKTOP_POPUP,
-                sheet.getSheetLayoutMode());
+                sheet.getView().getSheetLayoutMode());
     }
 
     @Test
@@ -1980,7 +1983,7 @@ public class BottomSheetUnitTest {
         assertEquals(
                 "Large form factor sheet with opted-out content must use DESKTOP_FALLBACK.",
                 SheetLayoutMode.DESKTOP_FALLBACK,
-                sheet.getSheetLayoutMode());
+                sheet.getView().getSheetLayoutMode());
     }
 
     @Test
@@ -2024,7 +2027,7 @@ public class BottomSheetUnitTest {
     public void testContentContainerHeight_DesktopFallback_UsesMatchParent() {
         BottomSheet sheet = buildSheetWithContainerHeight(/* isLargeFormFactor= */ true, 1000);
         TouchRestrictingFrameLayout contentContainer =
-                sheet.findViewById(R.id.bottom_sheet_content);
+                sheet.getView().findViewById(R.id.bottom_sheet_content);
         sheet.showContent(buildContent(/* supportsLargeFormFactor= */ false, 0.5f, 1.0f));
 
         sheet.setSheetState(SheetState.FULL, false);
@@ -2040,7 +2043,7 @@ public class BottomSheetUnitTest {
         BottomSheet sheet = buildSheetWithContainerHeight(/* isLargeFormFactor= */ false, 1000);
         sheet.setEdgeToEdgeBottomInsetSupplierForTesting(() -> 40);
         TouchRestrictingFrameLayout contentContainer =
-                sheet.findViewById(R.id.bottom_sheet_content);
+                sheet.getView().findViewById(R.id.bottom_sheet_content);
         sheet.showContent(buildContent(/* supportsLargeFormFactor= */ true, 0.5f, 1.0f));
 
         sheet.setSheetState(SheetState.FULL, false);
@@ -2056,7 +2059,7 @@ public class BottomSheetUnitTest {
         BottomSheet sheet = buildSheetWithContainerHeight(/* isLargeFormFactor= */ true, 1000);
         sheet.setEdgeToEdgeBottomInsetSupplierForTesting(() -> 40);
         TouchRestrictingFrameLayout contentContainer =
-                sheet.findViewById(R.id.bottom_sheet_content);
+                sheet.getView().findViewById(R.id.bottom_sheet_content);
         sheet.showContent(buildContent(/* supportsLargeFormFactor= */ true, 0.5f, 1.0f));
 
         sheet.setSheetState(SheetState.FULL, false);
@@ -2091,7 +2094,7 @@ public class BottomSheetUnitTest {
 
         // 1. Show a sheet with desktop UI enabled (DESKTOP_POPUP).
         sheet.showContent(desktopUiContent);
-        assertEquals(SheetLayoutMode.DESKTOP_POPUP, sheet.getSheetLayoutMode());
+        assertEquals(SheetLayoutMode.DESKTOP_POPUP, sheet.getView().getSheetLayoutMode());
         assertEquals(
                 "A sheet with desktop UI must add the 24dp desktop bottom margin on top of the"
                         + " caller margin.",
@@ -2101,7 +2104,7 @@ public class BottomSheetUnitTest {
         // 2. Switch on the same BottomSheet instance to a sheet without desktop UI
         // (DESKTOP_FALLBACK).
         sheet.showContent(nonDesktopUiContent);
-        assertEquals(SheetLayoutMode.DESKTOP_FALLBACK, sheet.getSheetLayoutMode());
+        assertEquals(SheetLayoutMode.DESKTOP_FALLBACK, sheet.getView().getSheetLayoutMode());
         assertEquals(
                 "Switching from a sheet with desktop UI to a sheet without desktop UI must remove"
                         + " the desktop bottom margin offset.",
@@ -2113,18 +2116,18 @@ public class BottomSheetUnitTest {
     public void testShowContent_NullOnLargeFormFactor_ResetsToStandardLayoutMode() {
         BottomSheet sheet = buildSheet(/* isLargeFormFactor= */ true);
         sheet.showContent(buildContent(/* supportsLargeFormFactor= */ true, 0.5f, 1.0f));
-        assertEquals(SheetLayoutMode.DESKTOP_POPUP, sheet.getSheetLayoutMode());
+        assertEquals(SheetLayoutMode.DESKTOP_POPUP, sheet.getView().getSheetLayoutMode());
 
         sheet.showContent(null);
 
         assertEquals(
                 "Clearing sheet content on desktop must not leave the view in DESKTOP_FALLBACK.",
                 SheetLayoutMode.STANDARD,
-                sheet.getSheetLayoutMode());
+                sheet.getView().getSheetLayoutMode());
         assertEquals(
                 "Fallback shadow must remain hidden when no content is shown.",
                 View.GONE,
-                sheet.findViewById(R.id.desktop_fallback_shadow).getVisibility());
+                sheet.getView().findViewById(R.id.desktop_fallback_shadow).getVisibility());
         assertEquals(
                 "Desktop bottom margin must be removed when content is cleared.",
                 0,
@@ -2194,7 +2197,7 @@ public class BottomSheetUnitTest {
         mBottomSheet.showContent(mSheetContent);
         mBottomSheet.setSheetState(SheetState.HALF, false);
 
-        View contentContainer = mBottomSheet.findViewById(R.id.bottom_sheet_content);
+        View contentContainer = mBottomSheet.getView().findViewById(R.id.bottom_sheet_content);
         assertFalse(mBottomSheet.isSmallScreen());
         assertEquals(0, contentContainer.getPaddingBottom());
 
@@ -2242,14 +2245,15 @@ public class BottomSheetUnitTest {
 
     @Test
     public void testPointerIcon_ShowsHandOnHandlebarInDesktopMode_ShowsArrowOnSheet() {
-        BottomSheet sheet = inflateAndAttachSheet(/* isLargeFormFactor= */ true);
-        sheet.setSheetContainerForTesting(mSheetContainer);
+        BottomSheet coordinator = inflateAndAttachSheet(/* isLargeFormFactor= */ true);
+        coordinator.setSheetContainerForTesting(mSheetContainer);
+        BottomSheetView sheet = coordinator.getView();
         TouchRestrictingFrameLayout toolbarHolder =
                 sheet.findViewById(R.id.bottom_sheet_toolbar_container);
         sheet.setToolbarHolderForTesting(toolbarHolder);
         sheet.setBottomSheetContentContainerForTesting(
                 sheet.findViewById(R.id.bottom_sheet_content));
-        initSheet(sheet, /* isLargeFormFactor= */ true);
+        initSheet(coordinator, /* isLargeFormFactor= */ true);
 
         BottomSheetContent desktopContent = mock(BottomSheetContent.class);
         when(desktopContent.supportsLargeFormFactor()).thenReturn(true);
@@ -2257,7 +2261,7 @@ public class BottomSheetUnitTest {
         when(desktopContent.getToolbarView()).thenReturn(new View(mActivity));
         when(desktopContent.getContentView()).thenReturn(new View(mActivity));
 
-        sheet.showContent(desktopContent);
+        coordinator.showContent(desktopContent);
 
         ImageView handlebar = sheet.getHandlebarForTesting();
         assertNotNull("Handlebar view should be present in large form factor mode", handlebar);
@@ -2307,7 +2311,7 @@ public class BottomSheetUnitTest {
         when(phoneStyleContent.showHandlebar()).thenReturn(true);
         when(phoneStyleContent.getToolbarView()).thenReturn(new View(mActivity));
         when(phoneStyleContent.getContentView()).thenReturn(new View(mActivity));
-        sheet.showContent(phoneStyleContent);
+        coordinator.showContent(phoneStyleContent);
         assertNull(
                 "The handlebar should drop the hand pointer for content without the desktop layout",
                 handlebar.getPointerIcon());
@@ -2324,13 +2328,15 @@ public class BottomSheetUnitTest {
         // A mouse wheel scroll arrives as a generic motion event.
         assertTrue(
                 "A mouse scroll inside the sheet should be consumed so the page behind ignores it",
-                mBottomSheet.onGenericMotionEvent(createMouseScrollEvent(100, 50)));
+                mBottomSheet.getView().dispatchGenericMotionEvent(createMouseScrollEvent(100, 50)));
         assertFalse(
                 "A mouse scroll exactly on the top edge of the sheet should pass through",
-                mBottomSheet.onGenericMotionEvent(createMouseScrollEvent(100, 0)));
+                mBottomSheet.getView().dispatchGenericMotionEvent(createMouseScrollEvent(100, 0)));
         assertFalse(
                 "A mouse scroll above the sheet should pass through",
-                mBottomSheet.onGenericMotionEvent(createMouseScrollEvent(100, -10)));
+                mBottomSheet
+                        .getView()
+                        .dispatchGenericMotionEvent(createMouseScrollEvent(100, -10)));
     }
 
     @Test

@@ -74,6 +74,7 @@ public class BottomSheetControllerImplUnitTest {
     @Mock private DesktopWindowStateManager mDesktopWindowStateManager;
     @Mock private AppHeaderState mAppHeaderState;
     @Mock private BottomSheet mBottomSheet;
+    @Mock private BottomSheetView mBottomSheetView;
     @Mock private BottomSheetContent mSheetContent;
     @Mock private InsetObserver mInsetObserver;
     @Captor ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverCaptor;
@@ -93,7 +94,8 @@ public class BottomSheetControllerImplUnitTest {
         activity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mWindow = activity.getWindow();
         when(mRoot.getContext()).thenReturn(activity);
-        when(mRoot.findViewById(R.id.bottom_sheet)).thenReturn(mBottomSheet);
+        when(mBottomSheet.getView()).thenReturn(mBottomSheetView);
+        when(mBottomSheetView.getContext()).thenReturn(activity);
         mScrimManagerSupplier.set(mScrimManager);
         mRootSupplier.set(mRoot);
         mController =
@@ -107,6 +109,7 @@ public class BottomSheetControllerImplUnitTest {
                         mDesktopWindowStateManager,
                         mInsetObserver,
                         /* enableLargeFormFactorUi= */ false);
+        mController.setBottomSheetForTesting(mBottomSheet);
     }
 
     @Test

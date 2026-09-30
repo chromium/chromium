@@ -95,6 +95,8 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     /** A handle to the {@link BottomSheet} that this class controls. */
     private @MonotonicNonNull BottomSheet mBottomSheet;
 
+    private @Nullable BottomSheet mBottomSheetForTesting;
+
     /**
      * The container that the sheet exists in. This is one layer inside of the root coordinator view
      * to support the view's shadow.
@@ -233,10 +235,15 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         }
         mBottomSheetContainer.setVisibility(View.VISIBLE);
 
-        var rootView = root.get();
-        int layoutId = isLargeFormFactor() ? R.layout.bottom_sheet_desktop : R.layout.bottom_sheet;
-        LayoutInflater.from(rootView.getContext()).inflate(layoutId, mBottomSheetContainer);
-        mBottomSheet = rootView.findViewById(R.id.bottom_sheet);
+        if (mBottomSheetForTesting != null) {
+            mBottomSheet = mBottomSheetForTesting;
+        } else {
+            var rootView = root.get();
+            int layoutId =
+                    isLargeFormFactor() ? R.layout.bottom_sheet_desktop : R.layout.bottom_sheet;
+            LayoutInflater.from(rootView.getContext()).inflate(layoutId, mBottomSheetContainer);
+            mBottomSheet = new BottomSheet(rootView.findViewById(R.id.bottom_sheet));
+        }
 
         mBottomSheet.init(
                 window,
@@ -283,6 +290,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
                             scrimProperties.set(
                                     ScrimProperties.BACKGROUND_COLOR,
                                     mBottomSheet
+                                            .getView()
                                             .getContext()
                                             .getColor(R.color.bottom_sheet_desktop_scrim));
                         }
@@ -384,7 +392,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     public PropertyModel createScrimParams() {
         return new PropertyModel.Builder(ScrimProperties.ALL_KEYS)
                 .with(ScrimProperties.AFFECTS_STATUS_BAR, true)
-                .with(ScrimProperties.ANCHOR_VIEW, mBottomSheet)
+                .with(ScrimProperties.ANCHOR_VIEW, assumeNonNull(mBottomSheet).getView())
                 .with(ScrimProperties.CLICK_DELEGATE, this::onScrimClicked)
                 .with(ScrimProperties.VISIBILITY_CALLBACK, this::onScrimVisibilityChanged)
                 .build();
@@ -554,8 +562,16 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         assumeNonNull(mBottomSheet).setSheetState(state, animate);
     }
 
-    View getBottomSheetViewForTesting() {
+    void setBottomSheetForTesting(BottomSheet bottomSheet) {
+        mBottomSheetForTesting = bottomSheet;
+    }
+
+    BottomSheet getBottomSheetForTesting() {
         return assumeNonNull(mBottomSheet);
+    }
+
+    BottomSheet getBottomSheetViewForTesting() {
+        return getBottomSheetForTesting();
     }
 
     ViewGroup getBottomSheetContainerForTesting() {

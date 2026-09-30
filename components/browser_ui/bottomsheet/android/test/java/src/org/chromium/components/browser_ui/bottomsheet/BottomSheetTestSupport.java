@@ -26,22 +26,34 @@ public class BottomSheetTestSupport {
         mController = (BottomSheetControllerImpl) controller;
     }
 
-    /** @param isSmallScreen Whether the screen should be considered small for testing. */
+    /**
+     * Sets whether the screen should be considered small for testing.
+     *
+     * @param isSmallScreen Whether the screen should be considered small for testing.
+     */
     public static void setSmallScreen(boolean isSmallScreen) {
         BottomSheet.setSmallScreenForTesting(isSmallScreen);
     }
 
-    /** @see {@link ManagedBottomSheetController#suppressSheet(int)} */
+    /**
+     * See {@link ManagedBottomSheetController#suppressSheet(int)}.
+     *
+     * @param reason The reason the bottom sheet is being suppressed.
+     */
     public int suppressSheet(@StateChangeReason int reason) {
         return mController.suppressSheet(reason);
     }
 
-    /** @see {@link ManagedBottomSheetController#unsuppressSheet(int)} */
+    /**
+     * See {@link ManagedBottomSheetController#unsuppressSheet(int)}.
+     *
+     * @param token The token used to suppress the bottom sheet.
+     */
     public void unsuppressSheet(int token) {
         mController.unsuppressSheet(token);
     }
 
-    /** @see {@link ManagedBottomSheetController#handleBackPress()} */
+    /** See {@link ManagedBottomSheetController#handleBackPress()}. */
     public boolean handleBackPress() {
         return mController.handleBackPress();
     }
@@ -51,7 +63,12 @@ public class BottomSheetTestSupport {
         if (getBottomSheet() != null) mController.endAnimationsForTesting();
     }
 
-    /** @see {@link BottomSheet#setSheetOffsetFromBottom(float, int)} */
+    /**
+     * See {@link BottomSheet#setSheetOffsetFromBottom(float, int)}.
+     *
+     * @param offset The offset from the bottom in pixels.
+     * @param reason The reason the sheet offset is being set.
+     */
     public void setSheetOffsetFromBottom(float offset, @StateChangeReason int reason) {
         getBottomSheet().setSheetOffsetFromBottom(offset, reason);
     }
@@ -60,16 +77,12 @@ public class BottomSheetTestSupport {
         getBottomSheet().setBottomMargin(offset);
     }
 
-    /**
-     * @see {@link BottomSheet#getMaxOffsetPx()}
-     */
+    /** See {@link BottomSheet#getMaxOffsetPx()}. */
     public float getMaxOffsetPx() {
         return getBottomSheet().getMaxOffsetPx();
     }
 
-    /**
-     * @see {@link BottomSheet#getCurrentOffsetPx()}
-     */
+    /** See {@link BottomSheet#getCurrentOffsetPx()}. */
     public float getCurrentOffsetPx() {
         return getBottomSheet().getCurrentOffsetPx();
     }
@@ -78,30 +91,37 @@ public class BottomSheetTestSupport {
         return getBottomSheet().getOffsetFromBrowserControls();
     }
 
-    /**
-     * @see {@link BottomSheet#getFullRatio()}
-     */
+    /** See {@link BottomSheet#getFullRatio()}. */
     public float getFullRatio() {
         return getBottomSheet().getFullRatio();
     }
 
-    /** @see {@link BottomSheet#getHiddenRatio()} */
+    /** See {@link BottomSheet#getHiddenRatio()}. */
     public float getHiddenRatio() {
         return getBottomSheet().getHiddenRatio();
     }
 
-    /** @see {@link BottomSheet#getOpeningState()} */
+    /** See {@link BottomSheet#getOpeningState()}. */
     @SheetState
     public int getOpeningState() {
         return getBottomSheet().getOpeningState();
     }
 
-    /** @see {@link BottomSheet#showContent(BottomSheetContent)}} */
+    /**
+     * See {@link BottomSheet#showContent(BottomSheetContent)}.
+     *
+     * @param content The content to show in the bottom sheet.
+     */
     public void showContent(BottomSheetContent content) {
         getBottomSheet().showContent(content);
     }
 
-    /** @see {@link BottomSheet#shouldGestureMoveSheet()} */
+    /**
+     * See {@link BottomSheet#shouldGestureMoveSheet()}.
+     *
+     * @param initialEvent The initial motion event of the gesture.
+     * @param currentEvent The current motion event of the gesture.
+     */
     public boolean shouldGestureMoveSheet(MotionEvent initialEvent, MotionEvent currentEvent) {
         return getBottomSheet().shouldGestureMoveSheet(initialEvent, currentEvent);
     }
@@ -145,9 +165,9 @@ public class BottomSheetTestSupport {
         getBottomSheet().setSheetState(SheetState.HIDDEN, false, StateChangeReason.TAP_SCRIM);
     }
 
-    /** @return The bottom sheet view. */
+    /** Returns the bottom sheet coordinator. */
     private BottomSheet getBottomSheet() {
-        return (BottomSheet) mController.getBottomSheetViewForTesting();
+        return mController.getBottomSheetForTesting();
     }
 
     /** Returns the container for the bottom sheet. */
@@ -155,9 +175,7 @@ public class BottomSheetTestSupport {
         return mController.getBottomSheetContainerForTesting();
     }
 
-    /**
-     * @return Whether has any token to suppress the bottom sheet.
-     */
+    /** Returns whether has any token to suppress the bottom sheet. */
     public boolean hasSuppressionTokens() {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> mController.hasSuppressionTokensForTesting());

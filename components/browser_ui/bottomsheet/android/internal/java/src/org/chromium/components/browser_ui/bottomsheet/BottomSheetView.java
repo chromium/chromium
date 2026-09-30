@@ -533,14 +533,6 @@ public class BottomSheetView extends FrameLayout {
         mTouchHandler = handler;
     }
 
-    /**
-     * @return Whether the UI is using large form factor configurations.
-     */
-    public boolean isLargeFormFactorUiEnabled() {
-        return mLayoutMode == SheetLayoutMode.DESKTOP_POPUP
-                || mLayoutMode == SheetLayoutMode.DESKTOP_FALLBACK;
-    }
-
     @Override
     public boolean onInterceptTouchEvent(MotionEvent e) {
         if (mTouchHandler != null) {

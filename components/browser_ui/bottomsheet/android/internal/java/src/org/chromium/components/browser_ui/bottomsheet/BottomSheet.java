@@ -12,10 +12,11 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Rect;
-import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.Window;
 
 import androidx.annotation.ColorInt;
@@ -40,6 +41,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent.HeightMode;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetView.SheetLayoutMode;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -64,7 +66,7 @@ import java.util.function.Supplier;
  * for simplicity. This means that the bottom of the screen is 0 on the Y axis.
  */
 @NullMarked
-class BottomSheet extends BottomSheetView
+class BottomSheet
         implements BottomSheetSwipeDetector.SwipeableBottomSheet, View.OnLayoutChangeListener {
     private static final String TAG = "BottomSheet";
 
@@ -76,6 +78,9 @@ class BottomSheet extends BottomSheetView
      * observers keep starting new ones.
      */
     static final int MAX_ANIMATIONS_ENDED_FOR_TESTING = 8;
+
+    /** The view representing the bottom sheet. */
+    private final BottomSheetView mView;
 
     /** A means of reporting an exception/stack without crashing. */
     private static @Nullable Callback<Throwable> sExceptionReporter;
@@ -183,15 +188,14 @@ class BottomSheet extends BottomSheetView
     }
 
     /**
-     * Constructor for inflation from XML.
+     * Constructor for the bottom sheet coordinator.
      *
-     * @param context An Android context.
-     * @param atts The XML attributes.
+     * @param view The inflated {@link BottomSheetView}.
      */
-    public BottomSheet(Context context, AttributeSet atts) {
-        super(context, atts);
-
-        Resources res = getResources();
+    BottomSheet(BottomSheetView view) {
+        mView = view;
+        Context context = mView.getContext();
+        Resources res = mView.getResources();
         mMinHalfFullDistance =
                 res.getDimensionPixelSize(R.dimen.bottom_sheet_min_full_half_distance);
         mDesktopBottomMargin =
@@ -210,15 +214,12 @@ class BottomSheet extends BottomSheetView
         mMediator = new BottomSheetMediator(mModel);
         mMediator.initSwipeDetector(context, this);
         mMediator.setIsHidingSupplier(this::isHiding);
+        PropertyModelChangeProcessor.create(mModel, mView, BottomSheetViewBinder::bind);
     }
 
-    @Override
-    protected void onFinishInflate() {
-        super.onFinishInflate();
-        // Bind only once the child views exist. super.onFinishInflate() is what assigns
-        // mCloseButton; binding any earlier makes every setter in BottomSheetView no-op against its
-        // null guard, silently dropping properties that buildModel() pre-set.
-        PropertyModelChangeProcessor.create(mModel, this, BottomSheetViewBinder::bind);
+    /** Returns the underlying {@link BottomSheetView}. */
+    BottomSheetView getView() {
+        return mView;
     }
 
     private PropertyModel buildModel() {
@@ -258,7 +259,9 @@ class BottomSheet extends BottomSheetView
         if (mSettleAnimator == animator) mSettleAnimator = null;
     }
 
-    /** @return Whether the sheet is in the process of hiding. */
+    /**
+     * @return Whether the sheet is in the process of hiding.
+     */
     boolean isHiding() {
         return mSettleAnimator != null && getTargetSheetState() == SheetState.HIDDEN;
     }
@@ -291,7 +294,7 @@ class BottomSheet extends BottomSheetView
         mWindow = window;
         mEdgeToEdgeBottomInsetSupplier = edgeToEdgeBottomInsetSupplier;
         mInsetObserver = insetObserver;
-        mSheetContainer = (ViewGroup) getParent();
+        mSheetContainer = (ViewGroup) mView.getParent();
         onAppHeaderHeightChanged(appHeaderHeight);
         setBottomMargin(bottomMargin);
 
@@ -354,7 +357,7 @@ class BottomSheet extends BottomSheetView
                             // keyboard is up) don't set the sheet state. Instead allow the gesture
                             // detector to position the sheet and make sure the keyboard hides.
                             if (mMediator.isScrolling()) {
-                                keyboardDelegate.hideKeyboard(BottomSheet.this);
+                                keyboardDelegate.hideKeyboard(mView);
                             } else {
                                 @SheetState int targetState = getTargetSheetState();
                                 if (targetState != SheetState.NONE) {
@@ -408,7 +411,7 @@ class BottomSheet extends BottomSheetView
                     setSheetState(getSheetState(), false);
                 });
 
-        mSheetContainer.removeView(this);
+        mSheetContainer.removeView(mView);
     }
 
     private void onInsetChanged() {
@@ -417,7 +420,9 @@ class BottomSheet extends BottomSheetView
 
     private @Px int getEdgeToEdgeBottomInset() {
         if (mBottomMargin != 0) return 0;
-        @Px int bottomInset = ViewUtils.dpToPx(getContext(), mEdgeToEdgeBottomInsetSupplier.get());
+        @Px
+        int bottomInset =
+                ViewUtils.dpToPx(mView.getContext(), mEdgeToEdgeBottomInsetSupplier.get());
         @Px int keyboardInset = mInsetObserver.getSupplierForKeyboardInset().get();
         return Math.max(0, bottomInset - keyboardInset);
     }
@@ -505,7 +510,7 @@ class BottomSheet extends BottomSheetView
         if (content != null && content.canDragSheet(event)) {
             return true;
         }
-        return isEventInToolbar(event);
+        return mView.isEventInToolbar(event);
     }
 
     /**
@@ -554,14 +559,14 @@ class BottomSheet extends BottomSheetView
             currentContent.getContentView().removeOnLayoutChangeListener(this);
         }
 
-        if (content != null && getParent() == null) {
-            mSheetContainer.addView(this);
+        if (content != null && mView.getParent() == null) {
+            mSheetContainer.addView(mView);
         } else if (content == null) {
             if (mSheetContainer.getParent() == null) {
                 throw new RuntimeException(
                         "Attempting to detach sheet that was not in the hierarchy!");
             }
-            mSheetContainer.removeView(this);
+            mSheetContainer.removeView(mView);
         }
 
         onSheetContentChanged(content);
@@ -681,6 +686,7 @@ class BottomSheet extends BottomSheetView
 
     /**
      * Sets the sheet's offset relative to the bottom of the screen.
+     *
      * @param offset The offset that the sheet should be.
      * @param reason The reason for the sheet offset to change to report to listeners.
      */
@@ -690,10 +696,11 @@ class BottomSheet extends BottomSheetView
 
     /**
      * Sets the sheet's offset relative to the bottom of the screen.
+     *
      * @param offset The offset that the sheet should be.
      * @param reason The reason for the sheet offset to change to report to listeners.
      * @param reportOpenClosed {@code true} to allow reporting the sheet opened or closed as a
-     *         result of this change. {@code reason} is never used when this is {@code false}.
+     *     result of this change. {@code reason} is never used when this is {@code false}.
      */
     void setSheetOffsetFromBottom(
             float offset, @StateChangeReason int reason, boolean reportOpenClosed) {
@@ -899,7 +906,9 @@ class BottomSheet extends BottomSheetView
                 : customFullRatio;
     }
 
-    /** @return The height of the container that the bottom sheet exists in. */
+    /**
+     * @return The height of the container that the bottom sheet exists in.
+     */
     public float getSheetContainerHeight() {
         return mContainerHeight;
     }
@@ -953,20 +962,23 @@ class BottomSheet extends BottomSheetView
         mMediator.notifySheetOffsetChanged(mLastOffsetRatioSent, getCurrentOffsetPx());
     }
 
-    /** @see #setSheetState(int, boolean, int) */
+    /**
+     * @see #setSheetState(int, boolean, int)
+     */
     void setSheetState(@SheetState int state, boolean animate) {
         setSheetState(state, animate, StateChangeReason.NONE);
     }
 
     /**
      * Moves the sheet to the provided state.
+     *
      * @param state The state to move the panel to. This cannot be SheetState.SCROLLING or
-     *              SheetState.NONE.
-     * @param animate If true, the sheet will animate to the provided state, otherwise it will
-     *                move there instantly.
+     *     SheetState.NONE.
+     * @param animate If true, the sheet will animate to the provided state, otherwise it will move
+     *     there instantly.
      * @param reason The reason the sheet state is changing. This can be specified to indicate to
-     *               observers that a more specific event has occurred, otherwise
-     *               STATE_CHANGE_REASON_NONE can be used.
+     *     observers that a more specific event has occurred, otherwise STATE_CHANGE_REASON_NONE can
+     *     be used.
      */
     void setSheetState(@SheetState int state, boolean animate, @StateChangeReason int reason) {
         assert state != SheetState.NONE;
@@ -986,7 +998,7 @@ class BottomSheet extends BottomSheetView
         mMediator.setTargetSheetState(state);
         if (getCurrentSheetContent() != null) {
             @StringRes int resId = getAccessibilityStringIdForState(state);
-            updateA11yPaneTitle(getResources().getString(resId));
+            updateA11yPaneTitle(mView.getResources().getString(resId));
         }
 
         @SheetState int targetState = getTargetSheetState();
@@ -1101,6 +1113,7 @@ class BottomSheet extends BottomSheetView
 
     /**
      * If the animation to settle the sheet in one of its states is running.
+     *
      * @return True if the animation is running.
      */
     private boolean isRunningSettleAnimation() {
@@ -1232,7 +1245,7 @@ class BottomSheet extends BottomSheetView
         if (content == null || !content.showHandlebar()) {
             return 0;
         }
-        return getHandlebarMeasuredHeight(getMaxSheetWidth(), getMaxSheetHeight());
+        return mView.getHandlebarMeasuredHeight(getMaxSheetWidth(), getMaxSheetHeight());
     }
 
     private float getRatioForState(int state) {
@@ -1274,9 +1287,10 @@ class BottomSheet extends BottomSheetView
 
     /**
      * Gets the target state of the sheet based on the sheet's height and velocity.
+     *
      * @param sheetHeight The current height of the sheet.
      * @param yVelocity The current Y velocity of the sheet. If this value is positive, the movement
-     *                  is from bottom to top.
+     *     is from bottom to top.
      * @return The target state of the bottom sheet.
      */
     @SheetState
@@ -1572,7 +1586,7 @@ class BottomSheet extends BottomSheetView
     @VisibleForTesting
     void updateBackgroundColor() {
         if (getCurrentSheetContent() == null) return;
-        Context context = getContext();
+        Context context = mView.getContext();
         int colorNonModal = getNonModalBottomSheetBgColor(context);
         int colorModal = getModalBottomSheetBgColor(context);
 
