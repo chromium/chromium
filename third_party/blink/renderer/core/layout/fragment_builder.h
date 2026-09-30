@@ -196,6 +196,7 @@ class CORE_EXPORT FragmentBuilder {
   bool HasItems() const { return items_builder_; }
   // The |FragmentItemsBuilder| for the inline formatting context of this box.
   FragmentItemsBuilder* ItemsBuilder() { return items_builder_; }
+  const FragmentItemsBuilder* ItemsBuilder() const { return items_builder_; }
   void SetItemsBuilder(FragmentItemsBuilder* builder) {
     items_builder_ = builder;
   }

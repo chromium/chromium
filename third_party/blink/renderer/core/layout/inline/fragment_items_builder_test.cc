@@ -60,7 +60,8 @@ TEST_F(FragmentItemsBuilderTest, MultipleLogicalLineItems) {
     // In this case, we should reuse one |LogicalLineContainer| instance.
     EXPECT_EQ(line_container1, line_container2);
 
-    const auto& items = items_builder.Items(PhysicalSize());
+    items_builder.ConvertToPhysical(PhysicalSize());
+    const auto& items = items_builder.Items();
     EXPECT_EQ(items.size(), 2u);
     EXPECT_EQ(items[0].item->LineBoxFragment(), line_fragment1);
     EXPECT_EQ(items[1].item->LineBoxFragment(), line_fragment2);
@@ -84,7 +85,8 @@ TEST_F(FragmentItemsBuilderTest, MultipleLogicalLineItems) {
 
     items_builder.AddLine(*line_fragment1, LogicalOffset());
     items_builder.AddLine(*line_fragment2, LogicalOffset());
-    const auto& items = items_builder.Items(PhysicalSize());
+    items_builder.ConvertToPhysical(PhysicalSize());
+    const auto& items = items_builder.Items();
     EXPECT_EQ(items.size(), 2u);
     EXPECT_EQ(items[0].item->LineBoxFragment(), line_fragment1);
     EXPECT_EQ(items[1].item->LineBoxFragment(), line_fragment2);
@@ -108,7 +110,8 @@ TEST_F(FragmentItemsBuilderTest, MultipleLogicalLineItems) {
     // Add lines in the reverse order.
     items_builder.AddLine(*line_fragment2, LogicalOffset());
     items_builder.AddLine(*line_fragment1, LogicalOffset());
-    const auto& items = items_builder.Items(PhysicalSize());
+    items_builder.ConvertToPhysical(PhysicalSize());
+    const auto& items = items_builder.Items();
     EXPECT_EQ(items.size(), 2u);
     EXPECT_EQ(items[0].item->LineBoxFragment(), line_fragment2);
     EXPECT_EQ(items[1].item->LineBoxFragment(), line_fragment1);
@@ -130,7 +133,8 @@ TEST_F(FragmentItemsBuilderTest, MultipleLogicalLineItems) {
 
     // Add line2, but not line1.
     items_builder.AddLine(*line_fragment2, LogicalOffset());
-    const auto& items = items_builder.Items(PhysicalSize());
+    items_builder.ConvertToPhysical(PhysicalSize());
+    const auto& items = items_builder.Items();
     EXPECT_EQ(items.size(), 1u);
     EXPECT_EQ(items[0].item->LineBoxFragment(), line_fragment2);
   }

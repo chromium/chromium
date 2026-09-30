@@ -366,12 +366,6 @@ FragmentItemsBuilder::AddPreviousItems(const PhysicalBoxFragment& container,
   return AddPreviousItemsResult();
 }
 
-const FragmentItemsBuilder::ItemWithOffsetList& FragmentItemsBuilder::Items(
-    const PhysicalSize& outer_size) {
-  ConvertToPhysical(outer_size);
-  return items_;
-}
-
 // Convert internal logical offsets to physical. Items are kept with logical
 // offset until outer box size is determined.
 void FragmentItemsBuilder::ConvertToPhysical(const PhysicalSize& outer_size) {

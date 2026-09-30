@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -15,11 +16,26 @@ namespace blink {
 
 namespace {
 
-// std::pair.first points to the start linebox fragment.
-// std::pair.second points to the end linebox fragment.
-// TODO(layout-dev): Update this to a struct for increased readability.
-using LineBoxPair =
-    std::pair<const PhysicalLineBoxFragment*, const PhysicalLineBoxFragment*>;
+struct LineBoxRange {
+  DISALLOW_NEW();
+
+ public:
+  LineBoxRange() = default;
+  LineBoxRange(const PhysicalLineBoxFragment* start,
+               const PhysicalLineBoxFragment* end)
+      : start(start), end(end) {}
+
+  void Trace(Visitor* visitor) const {
+    visitor->Trace(start);
+    visitor->Trace(end);
+  }
+
+  Member<const PhysicalLineBoxFragment> start;
+  Member<const PhysicalLineBoxFragment> end;
+};
+
+using ContainingLineBoxMap =
+    HeapHashMap<Member<const LayoutInline>, LineBoxRange>;
 
 // |fragment_converter| is the converter for the current containing block
 // fragment, and |containing_block_converter| is the converter of the
@@ -29,13 +45,13 @@ using LineBoxPair =
 template <class Items>
 void GatherInlineContainerFragmentsFromItems(
     const Items& items,
-    const PhysicalOffset& box_offset,
-    InlineContainingBlockUtils::InlineContainingBlockMap*
-        inline_containing_block_map,
-    HeapHashMap<Member<const LayoutObject>, LineBoxPair>*
-        containing_linebox_map,
+    PhysicalOffset box_offset,
+    InlineContainingBlockMap* inline_containing_block_map,
+    ContainingLineBoxMap* containing_linebox_map,
     const WritingModeConverter* fragment_converter = nullptr,
     const WritingModeConverter* containing_block_converter = nullptr) {
+  DCHECK(!fragment_converter ||
+         !RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
   DCHECK_EQ(!!fragment_converter, !!containing_block_converter);
   const PhysicalLineBoxFragment* linebox = nullptr;
   for (const auto& item : items) {
@@ -54,19 +70,22 @@ void GatherInlineContainerFragmentsFromItems(
       continue;
     }
 
+    const auto* key = DynamicTo<LayoutInline>(box->GetLayoutObject());
+    if (!key) {
+      continue;
+    }
     // See if we need the containing block information for this inline.
-    const LayoutObject* key = box->GetLayoutObject();
     auto it = inline_containing_block_map->find(key);
     if (it == inline_containing_block_map->end())
       continue;
 
-    std::optional<InlineContainingBlockUtils::InlineContainingBlockGeometry>&
-        containing_block_geometry = it->value;
-    LineBoxPair& containing_lineboxes =
-        containing_linebox_map->insert(key, LineBoxPair{nullptr, nullptr})
+    std::optional<InlineContainingBlockGeometry>& containing_block_geometry =
+        it->value;
+    LineBoxRange& containing_lineboxes =
+        containing_linebox_map->insert(key, LineBoxRange{nullptr, nullptr})
             .stored_value->value;
     DCHECK(containing_block_geometry.has_value() ||
-           !containing_lineboxes.first);
+           !containing_lineboxes.start);
 
     PhysicalRect fragment_rect = item->RectInContainerFragment();
     if (fragment_converter) {
@@ -79,15 +98,14 @@ void GatherInlineContainerFragmentsFromItems(
     }
     fragment_rect.offset += box_offset;
 
-    if (containing_lineboxes.first == linebox) {
+    if (containing_lineboxes.start == linebox) {
       // Unite the start rect with the fragment's rect.
       containing_block_geometry->start_fragment_union_rect.Unite(fragment_rect);
-    } else if (!containing_lineboxes.first) {
-      DCHECK(!containing_lineboxes.second);
+    } else if (!containing_lineboxes.start) {
+      DCHECK(!containing_lineboxes.end);
       // This is the first linebox we've encountered, initialize the containing
       // block geometry.
-      containing_lineboxes.first = linebox;
-      containing_lineboxes.second = linebox;
+      containing_lineboxes.start = containing_lineboxes.end = linebox;
 
       // An abspos is hidden in line-clamp iff its containing block is hidden.
       // For inline CBs, this means iff all of its fragments are hidden.
@@ -96,19 +114,18 @@ void GatherInlineContainerFragmentsFromItems(
       // CB's fragments.
       bool should_hide_abspos = linebox->IsHiddenForPaint();
 
-      containing_block_geometry =
-          InlineContainingBlockUtils::InlineContainingBlockGeometry{
-              fragment_rect, fragment_rect,
-              containing_block_geometry->relative_offset,
-              /*is_hidden_for_paint*/ should_hide_abspos};
+      containing_block_geometry = InlineContainingBlockGeometry{
+          fragment_rect, fragment_rect,
+          containing_block_geometry->relative_offset,
+          /*is_hidden_for_paint=*/should_hide_abspos};
     }
 
-    if (containing_lineboxes.second == linebox) {
+    if (containing_lineboxes.end == linebox) {
       // Unite the end rect with the fragment's rect.
       containing_block_geometry->end_fragment_union_rect.Unite(fragment_rect);
     } else if (!linebox->IsEmptyLineBox()) {
       // We've found a new "end" linebox,  update the containing block geometry.
-      containing_lineboxes.second = linebox;
+      containing_lineboxes.end = linebox;
       containing_block_geometry->end_fragment_union_rect = fragment_rect;
     }
   }
@@ -116,39 +133,40 @@ void GatherInlineContainerFragmentsFromItems(
 
 }  // namespace
 
-void InlineContainingBlockUtils::ComputeInlineContainerGeometry(
-    InlineContainingBlockMap* inline_containing_block_map,
-    BoxFragmentBuilder* container_builder) {
-  if (inline_containing_block_map->empty())
-    return;
-
-  DCHECK(container_builder->ItemsBuilder());
+void ComputeInlineContainerGeometry(
+    const BoxFragmentBuilder& container_builder,
+    InlineContainingBlockMap* inline_containing_block_map) {
+  DCHECK(!inline_containing_block_map->empty());
+  DCHECK(container_builder.ItemsBuilder());
 
   // This function requires that we have the final size of the fragment set
   // upon the builder.
-  DCHECK_GE(container_builder->InlineSize(), LayoutUnit());
-  DCHECK_GE(container_builder->FragmentBlockSize(), LayoutUnit());
+  DCHECK_GE(container_builder.InlineSize(), LayoutUnit());
+  DCHECK_GE(container_builder.FragmentBlockSize(), LayoutUnit());
 
-  HeapHashMap<Member<const LayoutObject>, LineBoxPair> containing_linebox_map;
+  // TODO(crbug.com/40267498): Move this into
+  // GatherInlineContainerFragmentsFromItems() when non-FragmentedOofInCb
+  // support is removed.
+  ContainingLineBoxMap containing_linebox_map;
 
   // To access the items correctly we need to convert them to the physical
   // coordinate space.
-  DCHECK_EQ(container_builder->ItemsBuilder()->GetWritingMode(),
-            container_builder->GetWritingMode());
-  DCHECK_EQ(container_builder->ItemsBuilder()->Direction(),
-            container_builder->Direction());
+  DCHECK_EQ(container_builder.ItemsBuilder()->GetWritingMode(),
+            container_builder.GetWritingMode());
+  DCHECK_EQ(container_builder.ItemsBuilder()->Direction(),
+            container_builder.Direction());
+
   GatherInlineContainerFragmentsFromItems(
-      container_builder->ItemsBuilder()->Items(ToPhysicalSize(
-          container_builder->Size(), container_builder->GetWritingMode())),
-      PhysicalOffset(), inline_containing_block_map, &containing_linebox_map);
+      container_builder.ItemsBuilder()->Items(), PhysicalOffset(),
+      inline_containing_block_map, &containing_linebox_map);
 }
 
-void InlineContainingBlockUtils::ComputeInlineContainerGeometryForFragmentainer(
+void ComputeInlineContainerGeometryForFragmentainer(
     const LayoutBox* box,
     PhysicalSize accumulated_containing_block_size,
     InlineContainingBlockMap* inline_containing_block_map) {
-  if (inline_containing_block_map->empty())
-    return;
+  DCHECK(!RuntimeEnabledFeatures::FragmentedOofInCbEnabled());
+  DCHECK(!inline_containing_block_map->empty());
 
   WritingDirectionMode writing_direction =
       box->StyleRef().GetWritingDirection();
@@ -160,7 +178,7 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometryForFragmentainer(
   // as if all fragments are stacked.
   LayoutUnit current_block_offset;
 
-  HeapHashMap<Member<const LayoutObject>, LineBoxPair> containing_linebox_map;
+  ContainingLineBoxMap containing_linebox_map;
   for (auto& physical_fragment : box->PhysicalFragments()) {
     LogicalOffset logical_offset(LayoutUnit(), current_block_offset);
     PhysicalOffset offset = containing_block_converter.ToPhysical(

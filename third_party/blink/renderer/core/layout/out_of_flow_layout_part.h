@@ -334,7 +334,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
   // relative to the fragmentation context root (not including any offset from
   // relative positioning).
   void AddInlineContainingBlockInfo(
-      const InlineContainingBlockUtils::InlineContainingBlockMap&,
+      const InlineContainingBlockMap&,
       const WritingDirectionMode container_writing_direction,
       PhysicalSize container_builder_size,
       LogicalOffset containing_block_relative_offset = LogicalOffset(),

@@ -214,8 +214,8 @@ const PhysicalBoxFragment* PhysicalBoxFragment::Create(
         scrollbar, padding, physical_size, writing_direction);
 
     if (FragmentItemsBuilder* items_builder = builder->ItemsBuilder()) {
-      calculator.AddItems(builder->GetLayoutObject(),
-                          items_builder->Items(physical_size));
+      items_builder->ConvertToPhysical(physical_size);
+      calculator.AddItems(builder->GetLayoutObject(), items_builder->Items());
     }
 
     for (auto& child : builder->children_) {

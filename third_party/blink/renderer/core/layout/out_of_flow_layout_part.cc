@@ -864,25 +864,32 @@ OutOfFlowLayoutPart::GetContainingBlockInfo(
 
 void OutOfFlowLayoutPart::ComputeInlineContainingBlocks(
     const HeapVector<LogicalOofPositionedNode>& candidates) {
-  InlineContainingBlockUtils::InlineContainingBlockMap
-      inline_container_fragments;
+  InlineContainingBlockMap inline_container_fragments;
 
   for (auto& candidate : candidates) {
     const LayoutInline* inline_container = candidate.InlineContainer();
     if (inline_container) {
-      InlineContainingBlockUtils::InlineContainingBlockGeometry
-          inline_geometry = {};
+      InlineContainingBlockGeometry inline_geometry = {};
       inline_container_fragments.insert(inline_container, inline_geometry);
     }
   }
 
-  // Fetch the inline start/end fragment geometry.
-  InlineContainingBlockUtils::ComputeInlineContainerGeometry(
-      &inline_container_fragments, &container_builder_);
+  if (inline_container_fragments.empty()) {
+    return;
+  }
+
+  DCHECK(container_builder_.ItemsBuilder());
 
   LogicalSize container_builder_size = container_builder_.Size();
   PhysicalSize container_builder_physical_size = ToPhysicalSize(
       container_builder_size, GetConstraintSpace().GetWritingMode());
+  container_builder_.ItemsBuilder()->ConvertToPhysical(
+      container_builder_physical_size);
+
+  // Fetch the inline start/end fragment geometry.
+  ComputeInlineContainerGeometry(container_builder_,
+                                 &inline_container_fragments);
+
   AddInlineContainingBlockInfo(inline_container_fragments,
                                default_containing_block_.writing_direction,
                                container_builder_physical_size);
@@ -895,7 +902,7 @@ void OutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
     DISALLOW_NEW();
 
    public:
-    InlineContainingBlockUtils::InlineContainingBlockMap map;
+    InlineContainingBlockMap map;
     // The relative offset of the inline's containing block to the
     // fragmentation context root.
     LogicalOffset relative_offset;
@@ -916,8 +923,7 @@ void OutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
       const LayoutBox* containing_block = To<LayoutBox>(
           descendant.containing_block.Fragment()->GetLayoutObject());
 
-      InlineContainingBlockUtils::InlineContainingBlockGeometry
-          inline_geometry = {};
+      InlineContainingBlockGeometry inline_geometry = {};
       inline_geometry.relative_offset =
           descendant.InlineContainerInfo().RelativeOffset();
       auto it = inline_containing_blocks.find(containing_block);
@@ -927,7 +933,7 @@ void OutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
         it->value.map.insert(inline_container, inline_geometry);
         continue;
       }
-      InlineContainingBlockUtils::InlineContainingBlockMap inline_container_map;
+      InlineContainingBlockMap inline_container_map;
       inline_container_map.insert(inline_container, inline_geometry);
       InlineContainingBlockInfo inline_info{
           std::move(inline_container_map),
@@ -947,7 +953,7 @@ void OutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
         ToPhysicalSize(size, containing_block->StyleRef().GetWritingMode());
 
     // Fetch the inline start/end fragment geometry.
-    InlineContainingBlockUtils::ComputeInlineContainerGeometryForFragmentainer(
+    ComputeInlineContainerGeometryForFragmentainer(
         containing_block, container_builder_physical_size, &inline_info.map);
 
     AddInlineContainingBlockInfo(
@@ -959,8 +965,7 @@ void OutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
 }
 
 void OutOfFlowLayoutPart::AddInlineContainingBlockInfo(
-    const InlineContainingBlockUtils::InlineContainingBlockMap&
-        inline_container_fragments,
+    const InlineContainingBlockMap& inline_container_fragments,
     const WritingDirectionMode container_writing_direction,
     PhysicalSize container_builder_size,
     LogicalOffset containing_block_relative_offset,
@@ -1007,7 +1012,7 @@ void OutOfFlowLayoutPart::AddInlineContainingBlockInfo(
     // ------->|    $ --->
     // --------+
     //
-    // Case 2b: Same direction, non-overlapping fragments.
+    // Case 2b: Different direction, non-overlapping fragments.
     //             +--------
     // --------->  ^ <-----|
     //             *--------

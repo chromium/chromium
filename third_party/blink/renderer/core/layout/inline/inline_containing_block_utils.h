@@ -16,50 +16,47 @@ namespace blink {
 
 class BoxFragmentBuilder;
 class LayoutBox;
-class LayoutObject;
+class LayoutInline;
 
-class InlineContainingBlockUtils {
-  STATIC_ONLY(InlineContainingBlockUtils);
-
- public:
-  // Inline containing block geometry is defined by two rectangles, generated
-  // by fragments of the LayoutInline.
-  struct InlineContainingBlockGeometry {
-    DISALLOW_NEW();
-    // Union of fragments generated on the first line.
-    PhysicalRect start_fragment_union_rect;
-    // Union of fragments generated on the last line.
-    PhysicalRect end_fragment_union_rect;
-    // The accumulated relative offset of the inline container to be applied to
-    // any descendants after fragmentation.
-    LogicalOffset relative_offset;
-    bool is_hidden_for_paint;
-  };
-
-  // This is only used on or by structures on the stack.
-  using InlineContainingBlockMap =
-      HeapHashMap<Member<const LayoutObject>,
-                  std::optional<InlineContainingBlockGeometry>>;
-
-  // Computes the geometry required for any inline containing blocks.
-  // |inline_containing_block_map| is a map whose keys specify which objects we
-  // need to calculate inline containing block geometry for. |container_builder|
-  // is the builder of the containing block of the inline containers.
-  static void ComputeInlineContainerGeometry(
-      InlineContainingBlockMap* inline_containing_block_map,
-      BoxFragmentBuilder* container_builder);
-
-  // Computes the geometry required for any inline containing blocks inside a
-  // fragmentation context. |box| is the containing block the inline containers
-  // are descendants of. |accumulated_containing_block_size| is the size of the
-  // containing block, including the total block size from all fragmentainers.
-  // |inline_containing_block_map| is a map whose keys specify which objects we
-  // need to calculate inline containing block geometry for.
-  static void ComputeInlineContainerGeometryForFragmentainer(
-      const LayoutBox* box,
-      PhysicalSize accumulated_containing_block_size,
-      InlineContainingBlockMap* inline_containing_block_map);
+// Inline containing block geometry is defined by two rectangles, generated
+// by fragments of the LayoutInline.
+struct InlineContainingBlockGeometry {
+  DISALLOW_NEW();
+  // Union of fragments generated on the first line.
+  PhysicalRect start_fragment_union_rect;
+  // Union of fragments generated on the last line.
+  PhysicalRect end_fragment_union_rect;
+  // The accumulated relative offset of the inline container to be applied to
+  // any descendants after fragmentation.
+  //
+  // TODO(crbug.com/40267498): Remove along with non-FragmentedOofInCb code.
+  LogicalOffset relative_offset;
+  bool is_hidden_for_paint;
 };
+
+// Containing block information for each LayoutInline that contain out-of-flow
+// positioned descendants.
+//
+// This is only used on or by structures on the stack.
+using InlineContainingBlockMap =
+    HeapHashMap<Member<const LayoutInline>,
+                std::optional<InlineContainingBlockGeometry>>;
+
+// Compute the containing block geometry for all inlines that have out-of-flow
+// positioned descendants that depend on it.
+void ComputeInlineContainerGeometry(const BoxFragmentBuilder&,
+                                    InlineContainingBlockMap*);
+
+// Computes the geometry required for any inline containing blocks inside a
+// fragmentation context. |box| is the containing block the inline containers
+// are descendants of. |accumulated_containing_block_size| is the size of the
+// containing block, including the total block size from all fragmentainers.
+// |inline_containing_block_map| is a map whose keys specify which objects we
+// need to calculate inline containing block geometry for.
+void ComputeInlineContainerGeometryForFragmentainer(
+    const LayoutBox* box,
+    PhysicalSize accumulated_containing_block_size,
+    InlineContainingBlockMap* inline_containing_block_map);
 
 }  // namespace blink
 

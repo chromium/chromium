@@ -131,12 +131,20 @@ class CORE_EXPORT FragmentItemsBuilder {
   // Moves all the |FragmentItem|s by |offset| in the block or inline direction.
   void MoveChildrenInDirection(LayoutUnit offset, bool is_block_direction);
 
-  // Converts the |FragmentItem| vector to the physical coordinate space and
-  // returns the result. This should only be used for determining the inline
-  // containing block geometry for OOF-positioned nodes.
+  // Get all items with their physical dimensions. May only be called when all
+  // items have been added and converted to physical values (see
+  // `ConvertToPhysical()`).
+  const ItemWithOffsetList& Items() const {
+    DCHECK(is_converted_to_physical_);
+    return items_;
+  }
+
+  // Convert the `FragmentItem` vector to the physical coordinate space. This is
+  // used for determining the inline containing block geometry for
+  // OOF-positioned nodes, and also for calculating scrollable overflow.
   //
   // Once this method has been called, new items cannot be added.
-  const ItemWithOffsetList& Items(const PhysicalSize& outer_size);
+  void ConvertToPhysical(const PhysicalSize& outer_size);
 
   // Build a |FragmentItems|. The builder cannot build twice because data set
   // to this builder may be cleared.
@@ -150,8 +158,6 @@ class CORE_EXPORT FragmentItemsBuilder {
   void MoveCurrentLogicalLineItemsToMap();
 
   void AddItems(base::span<LogicalLineItem> child_span);
-
-  void ConvertToPhysical(const PhysicalSize& outer_size);
 
   ItemWithOffsetList items_;
   String text_content_;
