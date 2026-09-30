@@ -112,7 +112,7 @@ public class CachedZeroSuggestionsManagerUnitTest {
     }
 
     @Test
-    public void saveToCache_DoNotCacheClipboardSuggestions() {
+    public void saveToCache_DoNotCacheClipboardAndCrossDeviceTabSuggestions() {
         var mixList =
                 Arrays.asList(
                         createSuggestionBuilder("test", 1, OmniboxSuggestionType.CLIPBOARD_IMAGE)
@@ -122,6 +122,8 @@ public class CachedZeroSuggestionsManagerUnitTest {
                         createSuggestionBuilder("test", 3, OmniboxSuggestionType.CLIPBOARD_TEXT)
                                 .build(),
                         createSuggestionBuilder("test", 4, OmniboxSuggestionType.SEARCH_HISTORY)
+                                .build(),
+                        createSuggestionBuilder("test", 5, OmniboxSuggestionType.CROSS_DEVICE_TAB)
                                 .build());
         var expectedList =
                 Arrays.asList(

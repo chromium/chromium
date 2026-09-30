@@ -222,11 +222,13 @@ public class AutocompleteResult {
         var builder = AutocompleteResultProto.newBuilder();
         builder.setGroups(mGroupsInfo);
         for (var match : mSuggestions) {
-            // Note: intentionally skip clipboard suggestions from being preserved.
+            // Note: intentionally skip clipboard and cross-device tab suggestions from being
+            // preserved.
             int type = match.getType();
             if (type == OmniboxSuggestionType.CLIPBOARD_URL
                     || type == OmniboxSuggestionType.CLIPBOARD_TEXT
-                    || type == OmniboxSuggestionType.CLIPBOARD_IMAGE) {
+                    || type == OmniboxSuggestionType.CLIPBOARD_IMAGE
+                    || type == OmniboxSuggestionType.CROSS_DEVICE_TAB) {
                 continue;
             }
 

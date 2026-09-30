@@ -333,7 +333,7 @@ void AndroidNTPZpsSection::InitFromMatches(ACMatches& matches) {
     // Hacky and delicate, but follows a pattern found in other sections of this
     // file.
     const_cast<Group::LimitAndCount&>(
-        groups_[1].group_id_limits_and_counts().at(
+        groups_[2].group_id_limits_and_counts().at(
             omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST))
         .limit = 0;
   }
@@ -350,6 +350,10 @@ AndroidNTPZpsSection::AndroidNTPZpsSection(
               Group(1,
                     {
                         {omnibox::GROUP_MOBILE_CLIPBOARD, 1},
+                    }),
+              Group(1,
+                    {
+                        {omnibox::GROUP_CROSS_DEVICE_TABS, 1},
                     }),
               Group(OmniboxFieldTrial::kOmniboxNumNtpZpsRecentSearches.Get(),
                     {
@@ -393,6 +397,10 @@ AndroidSRPZpsSection::AndroidSRPZpsSection(
                     {
                         {omnibox::GROUP_MOBILE_CLIPBOARD, 1},
                     }),
+              Group(1,
+                    {
+                        {omnibox::GROUP_CROSS_DEVICE_TABS, 1},
+                    }),
               Group(OmniboxFieldTrial::kOmniboxNumSrpZpsRelatedSearches.Get(),
                     {
                         {omnibox::GROUP_PREVIOUS_SEARCH_RELATED,
@@ -434,6 +442,10 @@ AndroidWebZpsSection::AndroidWebZpsSection(
               Group(1,
                     {
                         {omnibox::GROUP_CONTEXTUAL_SEARCH_ACTION, 1},
+                    }),
+              Group(1,
+                    {
+                        {omnibox::GROUP_CROSS_DEVICE_TABS, 1},
                     }),
               Group(OmniboxFieldTrial::kOmniboxNumWebZpsRelatedSearches.Get(),
                     {

@@ -1490,6 +1490,18 @@ TEST(AutocompleteGrouperSectionsTest, AndroidSRPZpsSection) {
         },
         {300, 298, 100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89, 88});
   }
+  {
+    SCOPED_TRACE(
+        "Given cross-device tab matches, should display at most 1 after "
+        "clipboard and above related/recent searches");
+    test({CreateMatch(103, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX),
+          CreateMatch(102, omnibox::GROUP_MOBILE_CLIPBOARD),
+          CreateMatch(101, omnibox::GROUP_CROSS_DEVICE_TABS),
+          CreateMatch(100, omnibox::GROUP_CROSS_DEVICE_TABS),
+          CreateMatch(99, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
+          CreateMatch(98, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST)},
+         {103, 102, 101, 99, 98});
+  }
 }
 
 // Tests the groups, limits, and rules for the Android Web ZPS section.
@@ -1653,6 +1665,20 @@ TEST(AutocompleteGrouperSectionsTest, AndroidWebZpsSection) {
         },
         {300, 298, 296, 295, 100, 99, 98, 97, 96, 95, 94, 93, 92, 91, 90, 89});
   }
+  {
+    SCOPED_TRACE(
+        "Given cross-device tab matches, should display at most 1 after "
+        "contextual action and above related/recent searches");
+    test({CreateMatch(105, omnibox::GROUP_MOBILE_SEARCH_READY_OMNIBOX),
+          CreateMatch(104, omnibox::GROUP_MOBILE_CLIPBOARD),
+          CreateMatch(103, omnibox::GROUP_MOBILE_MOST_VISITED),
+          CreateMatch(102, omnibox::GROUP_CONTEXTUAL_SEARCH_ACTION),
+          CreateMatch(101, omnibox::GROUP_CROSS_DEVICE_TABS),
+          CreateMatch(100, omnibox::GROUP_CROSS_DEVICE_TABS),
+          CreateMatch(99, omnibox::GROUP_VISITED_DOC_RELATED),
+          CreateMatch(98, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST)},
+         {105, 104, 103, 102, 101, 99, 98});
+  }
 }
 
 // Tests the groups, limits, and rules for the Android NTP ZPS + Inspire Me.
@@ -1779,6 +1805,17 @@ TEST(AutocompleteGrouperSectionsTest, AndroidNTPZpsSection_withInspireMe) {
         },
         // No more than MAX_PREVIOUS_SEARCH_RELATED + MAX_TRENDING_QUERIES.
         {15, 14, 13, 12, 11});
+  }
+  {
+    SCOPED_TRACE(
+        "Given cross-device tab matches, should display at most 1 above "
+        "psuggest and trends");
+    test({CreateMatch(102, omnibox::GROUP_MOBILE_CLIPBOARD),
+          CreateMatch(101, omnibox::GROUP_CROSS_DEVICE_TABS),
+          CreateMatch(100, omnibox::GROUP_CROSS_DEVICE_TABS),
+          CreateMatch(99, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
+          CreateMatch(98, omnibox::GROUP_TRENDS)},
+         {102, 101, 99, 98});
   }
 }
 

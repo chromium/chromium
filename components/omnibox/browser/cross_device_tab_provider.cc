@@ -72,9 +72,9 @@ AutocompleteMatch CreateCrossDeviceTabMatch(
     base::Time tab_last_active_time) {
   CHECK(provider);
 
-  AutocompleteMatch match(provider, omnibox::kDefaultRemoteZeroSuggestRelevance,
-                          /*deletable=*/false,
-                          omnibox::AutocompleteMatchType::kCrossDeviceTab);
+  AutocompleteMatch match(
+      provider, omnibox::kCrossDeviceTabZeroSuggestRelevance,
+      /*deletable=*/false, omnibox::AutocompleteMatchType::kCrossDeviceTab);
   match.destination_url = navigation.virtual_url();
   match.description = navigation.title();
   match.description_class = ClassifyTermMatches(
