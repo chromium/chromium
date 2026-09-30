@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_history_item.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_ui_constants.h"
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_url_utils.h"
+#import "ios/chrome/browser/net/model/network_change_observer_bridge.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -53,50 +54,12 @@
 #import "ui/base/page_transition_types.h"
 #import "url/gurl.h"
 
-// Protocol mirroring `net::NetworkChangeNotifier::NetworkChangeObserver`.
-@protocol NetworkChangeObserving <NSObject>
-
-// Called when the network changes, with the new connection `type`. See
-// `net::NetworkChangeNotifier::NetworkChangeObserver::OnNetworkChanged`.
-- (void)onNetworkChanged:(net::NetworkChangeNotifier::ConnectionType)type;
-
-@end
-
 @interface AssistantAIMMediator () <CRWWebFramesManagerObserver,
                                     CRWWebStateDelegate,
                                     CRWWebStateObserver,
                                     CRWWebStatePolicyDecider,
                                     NetworkChangeObserving>
 @end
-
-namespace {
-
-// Bridges C++ `NetworkChangeObserver` methods to Objective-C calls.
-class NetworkChangeObserverBridge
-    : public net::NetworkChangeNotifier::NetworkChangeObserver {
- public:
-  explicit NetworkChangeObserverBridge(id<NetworkChangeObserving> observer)
-      : observer_(observer) {
-    net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
-  }
-  NetworkChangeObserverBridge(const NetworkChangeObserverBridge&) = delete;
-  NetworkChangeObserverBridge& operator=(const NetworkChangeObserverBridge&) =
-      delete;
-  ~NetworkChangeObserverBridge() override {
-    net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
-  }
-
-  // net::NetworkChangeNotifier::NetworkChangeObserver:
-  void OnNetworkChanged(
-      net::NetworkChangeNotifier::ConnectionType type) override {
-    [observer_ onNetworkChanged:type];
-  }
-
- private:
-  __weak id<NetworkChangeObserving> observer_;
-};
-
-}  // namespace
 
 @implementation AssistantAIMMediator {
   std::unique_ptr<web::WebState> _webState;

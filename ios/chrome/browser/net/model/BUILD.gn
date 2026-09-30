@@ -66,6 +66,16 @@ source_set("net_types") {
   ]
 }
 
+source_set("network_change_observer_bridge") {
+  sources = [
+    "network_change_observer_bridge.h",
+    "network_change_observer_bridge.mm",
+  ]
+  public_deps = [ "//net" ]
+  deps = [ "//base" ]
+  frameworks = [ "Foundation.framework" ]
+}
+
 source_set("crurl") {
   sources = [
     "crurl.h",

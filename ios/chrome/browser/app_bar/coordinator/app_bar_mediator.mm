@@ -46,6 +46,7 @@
 #import "ios/chrome/browser/lens_overlay/model/lens_overlay_tab_helper.h"
 #import "ios/chrome/browser/lens_overlay/public/lens_overlay_availability_utils.h"
 #import "ios/chrome/browser/lens_overlay/public/lens_overlay_entrypoint.h"
+#import "ios/chrome/browser/net/model/network_change_observer_bridge.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_util.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
@@ -99,31 +100,6 @@ class AppBarMediatorPassKeyFactory {
 
 namespace {
 
-// Observes network connection changes to update Assistant button.
-class NetworkChangeObserverBridge
-    : public net::NetworkChangeNotifier::NetworkChangeObserver {
- public:
-  explicit NetworkChangeObserverBridge(void (^on_network_changed)())
-      : on_network_changed_(on_network_changed) {
-    net::NetworkChangeNotifier::AddNetworkChangeObserver(this);
-  }
-
-  ~NetworkChangeObserverBridge() override {
-    net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
-  }
-
-  // net::NetworkChangeNotifier::NetworkChangeObserver implementation:
-  void OnNetworkChanged(
-      net::NetworkChangeNotifier::ConnectionType type) override {
-    if (on_network_changed_) {
-      on_network_changed_();
-    }
-  }
-
- private:
-  __strong void (^on_network_changed_)();
-};
-
 inline LayoutStateAssistantPassKey PassKey() {
   return layout_state::AppBarMediatorPassKeyFactory::CreateKey();
 }
@@ -136,6 +112,7 @@ inline LayoutStateAssistantPassKey PassKey() {
                               IdentityManagerObserving,
                               IncognitoStateObserver,
                               LensOverlayStateNotifierObserver,
+                              NetworkChangeObserving,
                               PrefObserverDelegate,
                               SceneStateObserver,
                               SearchEngineObserving,
@@ -278,9 +255,8 @@ inline LayoutStateAssistantPassKey PassKey() {
               }));
     }
 
-    _networkChangeObserver = std::make_unique<NetworkChangeObserverBridge>(^{
-      [weakSelf updateAssistantButton];
-    });
+    _networkChangeObserver =
+        std::make_unique<NetworkChangeObserverBridge>(self);
 
     _tabGridState = tabGridState;
     [_tabGridState addObserver:self];
@@ -802,6 +778,12 @@ inline LayoutStateAssistantPassKey PassKey() {
 #pragma mark - GeminiServiceObserving
 
 - (void)geminiEligibilityDidChange {
+  [self updateAssistantButton];
+}
+
+#pragma mark - NetworkChangeObserving
+
+- (void)onNetworkChanged:(net::NetworkChangeNotifier::ConnectionType)type {
   [self updateAssistantButton];
 }
 
