@@ -15,7 +15,6 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "cc/paint/paint_record.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_union_dommatrix_undefined.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_fill_rule.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_image_smoothing_quality.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -213,60 +212,50 @@ class MODULES_EXPORT BaseRenderingContext2D
     return context_lost_mode_ != kNotLostContext;
   }
 
-  V8UnionDOMMatrixOrUndefined::Ret drawElementImage(
-      ScriptState* script_state,
-      const V8UnionElementOrElementImage* element,
-      double dx,
-      double dy,
-      const DrawElementImageOptions* options,
-      ExceptionState& exception_state);
-  V8UnionDOMMatrixOrUndefined::Ret drawElementImage(
-      ScriptState* script_state,
-      const V8UnionElementOrElementImage* element,
-      double dx,
-      double dy,
-      double dwidth,
-      double dheight,
-      const DrawElementImageOptions* options,
-      ExceptionState& exception_state);
-  V8UnionDOMMatrixOrUndefined::Ret drawElementImage(
-      ScriptState* script_state,
-      const V8UnionElementOrElementImage* element,
-      double sx,
-      double sy,
-      double swidth,
-      double sheight,
-      double dx,
-      double dy,
-      const DrawElementImageOptions* options,
-      ExceptionState& exception_state);
-  V8UnionDOMMatrixOrUndefined::Ret drawElementImage(
-      ScriptState* script_state,
-      const V8UnionElementOrElementImage* element,
-      double sx,
-      double sy,
-      double swidth,
-      double sheight,
-      double dx,
-      double dy,
-      double dwidth,
-      double dheight,
-      const DrawElementImageOptions* options,
-      ExceptionState& exception_state);
+  void drawElementImage(const V8UnionElementOrElementImage* element,
+                        double dx,
+                        double dy,
+                        const DrawElementImageOptions* options,
+                        ExceptionState& exception_state);
+  void drawElementImage(const V8UnionElementOrElementImage* element,
+                        double dx,
+                        double dy,
+                        double dwidth,
+                        double dheight,
+                        const DrawElementImageOptions* options,
+                        ExceptionState& exception_state);
+  void drawElementImage(const V8UnionElementOrElementImage* element,
+                        double sx,
+                        double sy,
+                        double swidth,
+                        double sheight,
+                        double dx,
+                        double dy,
+                        const DrawElementImageOptions* options,
+                        ExceptionState& exception_state);
+  void drawElementImage(const V8UnionElementOrElementImage* element,
+                        double sx,
+                        double sy,
+                        double swidth,
+                        double sheight,
+                        double dx,
+                        double dy,
+                        double dwidth,
+                        double dheight,
+                        const DrawElementImageOptions* options,
+                        ExceptionState& exception_state);
 
-  V8UnionDOMMatrixOrUndefined::Ret DrawElementInternal(
-      ScriptState* script_state,
-      const V8UnionElementOrElementImage* element,
-      std::optional<double> sx,
-      std::optional<double> sy,
-      std::optional<double> swidth,
-      std::optional<double> sheight,
-      double x,
-      double y,
-      std::optional<double> dwidth,
-      std::optional<double> dheight,
-      const DrawElementImageOptions* options,
-      ExceptionState& exception_state);
+  void DrawElementInternal(const V8UnionElementOrElementImage* element,
+                           std::optional<double> sx,
+                           std::optional<double> sy,
+                           std::optional<double> swidth,
+                           std::optional<double> sheight,
+                           double x,
+                           double y,
+                           std::optional<double> dwidth,
+                           std::optional<double> dheight,
+                           const DrawElementImageOptions* options,
+                           ExceptionState& exception_state);
 
   scoped_refptr<const cc::AnimatedImageFrameIndexMap>
   GetAnimatedImageFrameIndexMap(uint32_t id) const override;

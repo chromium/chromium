@@ -475,9 +475,7 @@ DOMMatrix* OffscreenCanvas::getElementTransform(
       return nullptr;
     }
     gfx::Transform transform = GetElementTransform(
-        paint_record->paint_state, Size(), draw_transform->Matrix(),
-        RuntimeEnabledFeatures::ElementCanvasTransformEnabled(
-            GetExecutionContext()));
+        paint_record->paint_state, Size(), draw_transform->Matrix());
     return MakeGarbageCollected<DOMMatrix>(transform,
                                            transform.Is2dTransform());
   }

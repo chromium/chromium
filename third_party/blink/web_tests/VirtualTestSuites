@@ -5104,27 +5104,6 @@
     "expires": "Dec 31, 2026"
   },
   {
-    "prefix": "element-canvas-transform-disabled",
-    "owners": [
-      "pdr@chromium.org",
-      "paint-dev@chromium.org"
-    ],
-    "platforms": [
-      "Linux",
-      "Mac",
-      "Win"
-    ],
-    "bases": [
-      "wpt_internal/html/canvas/drawElementImage/css-transform-on-div-disabled.html",
-      "wpt_internal/html/canvas/drawElementImage/draw-element-image-returned-matrix-disabled.html"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--disable-blink-features=ElementCanvasTransform"
-    ],
-    "expires": "Jan 1, 2027"
-  },
-  {
     "prefix": "static-routing-api-devtools-improvement",
     "platforms": [
       "Linux",

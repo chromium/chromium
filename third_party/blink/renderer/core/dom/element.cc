@@ -4569,19 +4569,8 @@ const gfx::Transform* Element::GetCanvasTransform() const {
   return nullptr;
 }
 
-bool Element::HasCanvasTransform() const {
-  return GetCanvasTransform() != nullptr;
-}
-
 const gfx::Transform* Element::GetUsedCanvasTransform() const {
-  if (IsInCanvasSubtree() &&
-      RuntimeEnabledFeatures::ElementCanvasTransformEnabled(
-          GetExecutionContext())) {
-    if (HasCanvasTransform() && CanvasForDrawing()) {
-      return GetCanvasTransform();
-    }
-  }
-  return nullptr;
+  return CanvasForDrawing() ? GetCanvasTransform() : nullptr;
 }
 
 void Element::SetCanvasTransform(const gfx::Transform& transform) {

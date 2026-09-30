@@ -2688,10 +2688,6 @@
       status: "stable",
     },
     {
-      name: "ElementCanvasTransform",
-      status: "experimental",
-    },
-    {
       public: true,
       name: "ElementCapture",
       status: {"Android": "experimental", "iOS": "", "default": "stable"},

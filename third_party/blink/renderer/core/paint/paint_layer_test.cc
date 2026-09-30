@@ -2631,7 +2631,6 @@ TEST_P(PaintLayerTest, HitTestScrollMarkerPseudoElement) {
 
 TEST_P(PaintLayerTest, PaintLayerCanvasTransformUpdated) {
   ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
-  ScopedElementCanvasTransformForTest forced_canvas_transform_feature(true);
 
   SetBodyInnerHTML(R"HTML(
     <canvas id='canvas' width='200' height='200' content=drawable>

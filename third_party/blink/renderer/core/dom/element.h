@@ -1190,7 +1190,6 @@ class CORE_EXPORT Element : public ContainerNode {
   // the 'drawable' attribute). Returns nullptr otherwise.
   HTMLCanvasElement* CanvasForDrawing() const;
 
-  bool HasCanvasTransform() const;
   // Returns the transform that should be used for mapping the border-box,
   // before CSS transforms, to the canvas coordinate space. When the element
   // has a CanvasForDrawing, this affects the geometry of the element (e.g.,

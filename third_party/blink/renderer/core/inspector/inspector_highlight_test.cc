@@ -1019,7 +1019,6 @@ TEST_F(InspectorHighlightTest, ShapeOutsideHighlightScalesAfterTranslation) {
 
 TEST_F(InspectorHighlightTest, CanvasInlineChildHighlight) {
   ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
-  ScopedElementCanvasTransformForTest forced_canvas_transform_feature(true);
 
   PageTestBase::LoadAhem(*GetDocument().GetFrame());
 

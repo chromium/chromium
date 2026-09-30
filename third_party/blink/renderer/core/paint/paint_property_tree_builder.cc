@@ -615,10 +615,6 @@ static bool NeedsElementCanvasTransform(const LayoutObject& object) {
   if (!element || !element->IsInCanvasSubtree()) {
     return false;
   }
-  if (!RuntimeEnabledFeatures::ElementCanvasTransformEnabled(
-          object.GetDocument().GetExecutionContext())) {
-    return false;
-  }
   // Note: Create a canvas transform node even if no canvas element transform
   // is set to avoid paint invalidation from adding a canvas element transform.
   return element->CanvasForDrawing();
@@ -2093,19 +2089,11 @@ static void PopulateCanvasChildState(
   gfx::RectF reference_box = layer->BackdropFilterReferenceBox();
   gfx::SizeF box_size = reference_box.size();
   gfx::Vector2dF reference_box_offset = reference_box.OffsetFromOrigin();
-  gfx::Point3F transform_origin(
-      FloatValueForLength(object.StyleRef().GetTransformOrigin().X(),
-                          reference_box.width()),
-      FloatValueForLength(object.StyleRef().GetTransformOrigin().Y(),
-                          reference_box.height()),
-      object.StyleRef().GetTransformOrigin().Z());
   state.canvas_child_state =
       MakeGarbageCollected<EffectPaintPropertyNode::CanvasChildState>();
   state.canvas_child_state->id = object.GetNode()->GetDomNodeId();
   state.canvas_child_state->paint_state.effective_zoom =
       object.StyleRef().EffectiveZoom();
-  state.canvas_child_state->paint_state.transform_origin = gfx::ScalePoint(
-      transform_origin, 1.0f / object.StyleRef().EffectiveZoom());
   state.canvas_child_state->paint_state.box_size = box_size;
   state.canvas_child_state->paint_state.reference_box_offset =
       reference_box_offset;

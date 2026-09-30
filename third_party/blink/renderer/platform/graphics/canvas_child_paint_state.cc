@@ -12,7 +12,6 @@ namespace blink {
 bool CanvasChildPaintState::operator==(
     const CanvasChildPaintState& other) const {
   return effective_zoom == other.effective_zoom &&
-         transform_origin == other.transform_origin &&
          box_size == other.box_size &&
          reference_box_offset == other.reference_box_offset &&
          canvas_content_size == other.canvas_content_size &&
@@ -28,15 +27,14 @@ bool CanvasChildPaintState::operator==(
 
 gfx::Transform GetElementTransform(const CanvasChildPaintState& paint_state,
                                    const gfx::Size& canvas_size,
-                                   const gfx::Transform& draw_transform,
-                                   bool element_canvas_transform_enabled) {
+                                   const gfx::Transform& draw_transform) {
   gfx::Vector2dF physical_to_canvas_grid =
       GetCanvasGridScaleFactor(paint_state, canvas_size);
   float physical_to_css = 1.0f / paint_state.effective_zoom;
   float canvas_grid_to_css_x = physical_to_css / physical_to_canvas_grid.x();
   float canvas_grid_to_css_y = physical_to_css / physical_to_canvas_grid.y();
 
-  // 1. Change of basis for a transform in canvas pixel grid coordinates to a
+  // Change of basis for a transform in canvas pixel grid coordinates to a
   // canvas in css coordinates. The general formula is:
   //   T_css = S_canvas_to_css * T_canvas * S_canvas_to_css^-1
   gfx::Transform css_transform;
@@ -44,21 +42,7 @@ gfx::Transform GetElementTransform(const CanvasChildPaintState& paint_state,
   css_transform.PreConcat(draw_transform);
   css_transform.Scale(1.0f / canvas_grid_to_css_x, 1.0f / canvas_grid_to_css_y);
 
-  if (element_canvas_transform_enabled) {
-    return css_transform;
-  }
-
-  // 2. Apply the transform relative to the transform origin.
-  gfx::Transform result;
-  result.Translate3d(-paint_state.transform_origin.x(),
-                     -paint_state.transform_origin.y(),
-                     -paint_state.transform_origin.z());
-  result.PreConcat(css_transform);
-  result.Translate3d(paint_state.transform_origin.x(),
-                     paint_state.transform_origin.y(),
-                     paint_state.transform_origin.z());
-
-  return result;
+  return css_transform;
 }
 
 gfx::Vector2dF GetCanvasGridScaleFactor(
