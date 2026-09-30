@@ -8,7 +8,6 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
-#include "base/feature_list.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -36,7 +35,6 @@
 #include "chrome/browser/ui/safety_hub/safety_hub_prefs.h"
 #include "chrome/browser/ui/tabs/tab_strip_prefs.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/settings_private.h"
 #include "chrome/common/pref_names.h"
 #include "components/autofill/core/common/autofill_prefs.h"
@@ -271,11 +269,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
         // BUILDFLAG(IS_CHROMEOS)
   (*s_allowlist)[payments::kCanMakePaymentEnabled] =
       settings_api::PrefType::kBoolean;
-  if (base::FeatureList::IsEnabled(
-          features::kGlicActorAutofillOneTimePassword)) {
-    (*s_allowlist)[autofill::prefs::kAutofillGmailOtpFillingEnabled] =
-        settings_api::PrefType::kBoolean;
-  }
+  (*s_allowlist)[autofill::prefs::kAutofillGmailOtpFillingEnabled] =
+      settings_api::PrefType::kBoolean;
   (*s_allowlist)[bookmarks::prefs::kShowBookmarkBar] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[bookmarks::prefs::kBookmarkBarVisibilityState] =
