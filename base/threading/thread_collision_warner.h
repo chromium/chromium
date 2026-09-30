@@ -145,14 +145,19 @@ struct BASE_EXPORT DCheckAsserter : public AsserterBase {
 
 class BASE_EXPORT ThreadCollisionWarner {
  public:
-  // The parameter asserter is there only for test purpose
-  explicit ThreadCollisionWarner(AsserterBase* asserter = new DCheckAsserter())
-      : valid_thread_id_(kInvalidThreadId), counter_(0), asserter_(asserter) {}
+  ThreadCollisionWarner()
+      : valid_thread_id_(kInvalidThreadId),
+        counter_(0),
+        asserter_(GetDefaultAsserter()) {}
+
+  static ThreadCollisionWarner CreateForTesting(AsserterBase* asserter) {
+    return ThreadCollisionWarner(asserter);
+  }
 
   ThreadCollisionWarner(const ThreadCollisionWarner&) = delete;
   ThreadCollisionWarner& operator=(const ThreadCollisionWarner&) = delete;
 
-  ~ThreadCollisionWarner() { asserter_.ClearAndDelete(); }
+  ~ThreadCollisionWarner() = default;
 
   // This class is meant to be used through the macro
   // DFAKE_SCOPED_LOCK_THREAD_LOCKED
@@ -210,6 +215,13 @@ class BASE_EXPORT ThreadCollisionWarner {
   };
 
  private:
+  static AsserterBase* GetDefaultAsserter();
+
+  // The parameter asserter is there only for test purpose, in which case
+  // ownership is not transferred.
+  explicit ThreadCollisionWarner(AsserterBase* asserter)
+      : valid_thread_id_(kInvalidThreadId), counter_(0), asserter_(asserter) {}
+
   // This method stores the current thread identifier and does a DCHECK
   // if a another thread has already done it, it is safe if same thread
   // calls this multiple time (recursion allowed).
@@ -233,7 +245,7 @@ class BASE_EXPORT ThreadCollisionWarner {
 
   // Here only for class unit tests purpose, during the test I need to not
   // DCHECK but notify the collision with something else.
-  raw_ptr<AsserterBase> asserter_;
+  const raw_ptr<AsserterBase> asserter_;
 };
 
 }  // namespace base

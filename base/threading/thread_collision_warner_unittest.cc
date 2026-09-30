@@ -4,8 +4,6 @@
 
 #include "base/threading/thread_collision_warner.h"
 
-#include <memory>
-
 #include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
@@ -17,9 +15,10 @@
 
 #if !DCHECK_IS_ON()
 
-// Would cause a memory leak otherwise.
+// Define a ThreadCollisionWarner member so NonThreadSafeQueue's member
+// initializer list compiles when DCHECK_IS_ON() is false.
 #undef DFAKE_MUTEX
-#define DFAKE_MUTEX(obj) std::unique_ptr<base::AsserterBase> obj
+#define DFAKE_MUTEX(obj) base::ThreadCollisionWarner obj
 
 // In non-DCHECK builds, we expect the AsserterBase::warn() to not happen
 // because the ThreadCollisionWarner's implementation is going to be
@@ -56,70 +55,73 @@ class AssertReporter : public base::AsserterBase {
 }  // namespace
 
 TEST(ThreadCollisionTest, BookCriticalSection) {
-  AssertReporter* local_reporter = new AssertReporter();
+  AssertReporter local_reporter;
 
-  base::ThreadCollisionWarner warner(local_reporter);
-  EXPECT_FALSE(local_reporter->fail_state());
+  base::ThreadCollisionWarner warner =
+      base::ThreadCollisionWarner::CreateForTesting(&local_reporter);
+  EXPECT_FALSE(local_reporter.fail_state());
 
   {  // Pin section.
     DFAKE_SCOPED_LOCK_THREAD_LOCKED(warner);
-    EXPECT_FALSE(local_reporter->fail_state());
+    EXPECT_FALSE(local_reporter.fail_state());
     {  // Pin section.
       DFAKE_SCOPED_LOCK_THREAD_LOCKED(warner);
-      EXPECT_FALSE(local_reporter->fail_state());
+      EXPECT_FALSE(local_reporter.fail_state());
     }
   }
 }
 
 TEST(ThreadCollisionTest, ScopedRecursiveBookCriticalSection) {
-  AssertReporter* local_reporter = new AssertReporter();
+  AssertReporter local_reporter;
 
-  base::ThreadCollisionWarner warner(local_reporter);
-  EXPECT_FALSE(local_reporter->fail_state());
+  base::ThreadCollisionWarner warner =
+      base::ThreadCollisionWarner::CreateForTesting(&local_reporter);
+  EXPECT_FALSE(local_reporter.fail_state());
 
   {  // Pin section.
     DFAKE_SCOPED_RECURSIVE_LOCK(warner);
-    EXPECT_FALSE(local_reporter->fail_state());
+    EXPECT_FALSE(local_reporter.fail_state());
     {  // Pin section again (allowed by DFAKE_SCOPED_RECURSIVE_LOCK)
       DFAKE_SCOPED_RECURSIVE_LOCK(warner);
-      EXPECT_FALSE(local_reporter->fail_state());
+      EXPECT_FALSE(local_reporter.fail_state());
     }  // Unpin section.
   }    // Unpin section.
 
   // Check that section is not pinned
   {  // Pin section.
     DFAKE_SCOPED_LOCK(warner);
-    EXPECT_FALSE(local_reporter->fail_state());
+    EXPECT_FALSE(local_reporter.fail_state());
   }  // Unpin section.
 }
 
 TEST(ThreadCollisionTest, ScopedBookCriticalSection) {
-  AssertReporter* local_reporter = new AssertReporter();
+  AssertReporter local_reporter;
 
-  base::ThreadCollisionWarner warner(local_reporter);
-  EXPECT_FALSE(local_reporter->fail_state());
+  base::ThreadCollisionWarner warner =
+      base::ThreadCollisionWarner::CreateForTesting(&local_reporter);
+  EXPECT_FALSE(local_reporter.fail_state());
 
   {  // Pin section.
     DFAKE_SCOPED_LOCK(warner);
-    EXPECT_FALSE(local_reporter->fail_state());
+    EXPECT_FALSE(local_reporter.fail_state());
   }  // Unpin section.
 
   {  // Pin section.
     DFAKE_SCOPED_LOCK(warner);
-    EXPECT_FALSE(local_reporter->fail_state());
+    EXPECT_FALSE(local_reporter.fail_state());
     {
       // Pin section again (not allowed by DFAKE_SCOPED_LOCK)
       DFAKE_SCOPED_LOCK(warner);
-      EXPECT_NDCHECK_FALSE_DCHECK_TRUE(local_reporter->fail_state());
+      EXPECT_NDCHECK_FALSE_DCHECK_TRUE(local_reporter.fail_state());
       // Reset the status of warner for further tests.
-      local_reporter->reset();
+      local_reporter.reset();
     }  // Unpin section.
   }    // Unpin section.
 
   {
     // Pin section.
     DFAKE_SCOPED_LOCK(warner);
-    EXPECT_FALSE(local_reporter->fail_state());
+    EXPECT_FALSE(local_reporter.fail_state());
   }  // Unpin section.
 }
 
@@ -127,7 +129,7 @@ TEST(ThreadCollisionTest, MTBookCriticalSectionTest) {
   class NonThreadSafeQueue {
    public:
     explicit NonThreadSafeQueue(base::AsserterBase* asserter)
-        : push_pop_(asserter) {}
+        : push_pop_(base::ThreadCollisionWarner::CreateForTesting(asserter)) {}
 
     NonThreadSafeQueue(const NonThreadSafeQueue&) = delete;
     NonThreadSafeQueue& operator=(const NonThreadSafeQueue&) = delete;
@@ -156,9 +158,9 @@ TEST(ThreadCollisionTest, MTBookCriticalSectionTest) {
     raw_ptr<NonThreadSafeQueue> queue_;
   };
 
-  AssertReporter* local_reporter = new AssertReporter();
+  AssertReporter local_reporter;
 
-  NonThreadSafeQueue queue(local_reporter);
+  NonThreadSafeQueue queue(&local_reporter);
 
   QueueUser queue_user_a(&queue);
   QueueUser queue_user_b(&queue);
@@ -172,7 +174,7 @@ TEST(ThreadCollisionTest, MTBookCriticalSectionTest) {
   thread_a.Join();
   thread_b.Join();
 
-  EXPECT_NDCHECK_FALSE_DCHECK_TRUE(local_reporter->fail_state());
+  EXPECT_NDCHECK_FALSE_DCHECK_TRUE(local_reporter.fail_state());
 }
 
 // This unittest accesses a queue in a non-thread-safe manner in an attempt to
@@ -187,7 +189,7 @@ TEST(ThreadCollisionTest, MTScopedBookCriticalSectionTest) {
   class NonThreadSafeQueue {
    public:
     explicit NonThreadSafeQueue(base::AsserterBase* asserter)
-        : push_pop_(asserter) {}
+        : push_pop_(base::ThreadCollisionWarner::CreateForTesting(asserter)) {}
 
     NonThreadSafeQueue(const NonThreadSafeQueue&) = delete;
     NonThreadSafeQueue& operator=(const NonThreadSafeQueue&) = delete;
@@ -219,9 +221,9 @@ TEST(ThreadCollisionTest, MTScopedBookCriticalSectionTest) {
     raw_ptr<NonThreadSafeQueue> queue_;
   };
 
-  AssertReporter* local_reporter = new AssertReporter();
+  AssertReporter local_reporter;
 
-  NonThreadSafeQueue queue(local_reporter);
+  NonThreadSafeQueue queue(&local_reporter);
 
   QueueUser queue_user_a(&queue);
   QueueUser queue_user_b(&queue);
@@ -235,7 +237,7 @@ TEST(ThreadCollisionTest, MTScopedBookCriticalSectionTest) {
   thread_a.Join();
   thread_b.Join();
 
-  EXPECT_NDCHECK_FALSE_DCHECK_TRUE(local_reporter->fail_state());
+  EXPECT_NDCHECK_FALSE_DCHECK_TRUE(local_reporter.fail_state());
 }
 #endif  // THREAD_SANITIZER
 
@@ -245,7 +247,7 @@ TEST(ThreadCollisionTest, MTSynchedScopedBookCriticalSectionTest) {
   class NonThreadSafeQueue {
    public:
     explicit NonThreadSafeQueue(base::AsserterBase* asserter)
-        : push_pop_(asserter) {}
+        : push_pop_(base::ThreadCollisionWarner::CreateForTesting(asserter)) {}
 
     NonThreadSafeQueue(const NonThreadSafeQueue&) = delete;
     NonThreadSafeQueue& operator=(const NonThreadSafeQueue&) = delete;
@@ -287,9 +289,9 @@ TEST(ThreadCollisionTest, MTSynchedScopedBookCriticalSectionTest) {
     raw_ptr<base::Lock> lock_;
   };
 
-  AssertReporter* local_reporter = new AssertReporter();
+  AssertReporter local_reporter;
 
-  NonThreadSafeQueue queue(local_reporter);
+  NonThreadSafeQueue queue(&local_reporter);
 
   base::Lock lock;
 
@@ -305,7 +307,7 @@ TEST(ThreadCollisionTest, MTSynchedScopedBookCriticalSectionTest) {
   thread_a.Join();
   thread_b.Join();
 
-  EXPECT_FALSE(local_reporter->fail_state());
+  EXPECT_FALSE(local_reporter.fail_state());
 }
 
 TEST(ThreadCollisionTest, MTSynchedScopedRecursiveBookCriticalSectionTest) {
@@ -314,7 +316,7 @@ TEST(ThreadCollisionTest, MTSynchedScopedRecursiveBookCriticalSectionTest) {
   class NonThreadSafeQueue {
    public:
     explicit NonThreadSafeQueue(base::AsserterBase* asserter)
-        : push_pop_(asserter) {}
+        : push_pop_(base::ThreadCollisionWarner::CreateForTesting(asserter)) {}
 
     NonThreadSafeQueue(const NonThreadSafeQueue&) = delete;
     NonThreadSafeQueue& operator=(const NonThreadSafeQueue&) = delete;
@@ -363,9 +365,9 @@ TEST(ThreadCollisionTest, MTSynchedScopedRecursiveBookCriticalSectionTest) {
     raw_ptr<base::Lock> lock_;
   };
 
-  AssertReporter* local_reporter = new AssertReporter();
+  AssertReporter local_reporter;
 
-  NonThreadSafeQueue queue(local_reporter);
+  NonThreadSafeQueue queue(&local_reporter);
 
   base::Lock lock;
 
@@ -381,5 +383,5 @@ TEST(ThreadCollisionTest, MTSynchedScopedRecursiveBookCriticalSectionTest) {
   thread_a.Join();
   thread_b.Join();
 
-  EXPECT_FALSE(local_reporter->fail_state());
+  EXPECT_FALSE(local_reporter.fail_state());
 }

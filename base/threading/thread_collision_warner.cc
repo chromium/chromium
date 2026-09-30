@@ -7,6 +7,7 @@
 #include <atomic>
 #include <ostream>
 
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/threading/platform_thread.h"
 
@@ -14,6 +15,12 @@ namespace base {
 
 void DCheckAsserter::warn() {
   NOTREACHED() << "Thread Collision";
+}
+
+// static
+AsserterBase* ThreadCollisionWarner::GetDefaultAsserter() {
+  static NoDestructor<DCheckAsserter> default_asserter;
+  return default_asserter.get();
 }
 
 void ThreadCollisionWarner::EnterSelf() {
