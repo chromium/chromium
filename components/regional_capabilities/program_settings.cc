@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/notreached.h"
 #include "components/country_codes/country_codes.h"
@@ -46,8 +47,7 @@ constexpr country_codes::CountryId kTaiyakiCountry("JP");
 
 constexpr ProgramSettings kTaiyakiSettings{
     .program = Program::kTaiyaki,
-    .associated_countries =
-        base::raw_span<const country_codes::CountryId>(&kTaiyakiCountry, 1u),
+    .associated_countries = base::span_from_ref(kTaiyakiCountry),
     .search_engine_list_type = SearchEngineListType::kShuffled,
     .selection_from_settings_counts_as_choice_screen_choice = false,
     .choice_screen_eligibility_config =
@@ -79,6 +79,15 @@ constexpr ProgramSettings kDefaultSettings{
     .choice_screen_eligibility_config = std::nullopt,
 };
 
+constexpr country_codes::CountryId kSconeCountry("GB");
+
+constexpr ProgramSettings kNoOpSconeSettings = []() {
+  ProgramSettings ret = kDefaultSettings;
+  ret.program = Program::kScone;
+  ret.associated_countries = base::span_from_ref(kSconeCountry);
+  return ret;
+}();
+
 }  // namespace
 
 int SerializeProgram(Program program) {
@@ -90,6 +99,7 @@ bool IsValidSerializedProgram(int serialized_program) {
     case Program::kDefault:
     case Program::kTaiyaki:
     case Program::kWaffle:
+    case Program::kScone:
       return true;
   }
 
@@ -124,6 +134,7 @@ bool IsClientCompatibleWithProgram(Program program) {
 #endif
       return false;
     case Program::kWaffle:
+    case Program::kScone:
     case Program::kDefault:
       return true;
   }
@@ -149,6 +160,8 @@ const ProgramSettings& GetSettingsForProgram(Program program) {
         return kWaffleWithLocationRestrictionSettings;
       }
       return kWaffleSettings;
+    case Program::kScone:
+      return kNoOpSconeSettings;
     case Program::kDefault:
       return kDefaultSettings;
   }

@@ -226,6 +226,7 @@ Program CountryIdToProgram(const CountryId& country_id) {
 #endif
 
       Program::kWaffle,
+      Program::kScone,
   };
 
   for (Program program : kCountryDerivedPrograms) {
@@ -532,6 +533,7 @@ std::optional<RegionalCapabilitiesService::ChoiceScreenDesign>
 RegionalCapabilitiesService::GetChoiceScreenDesign() {
   switch (GetActiveProgramSettings().program) {
     case Program::kDefault:
+    case Program::kScone:
       return std::nullopt;
     case Program::kTaiyaki:
 #if BUILDFLAG(IS_IOS)
@@ -711,6 +713,8 @@ RegionalCapabilitiesService::GetActiveProgramForMetrics() {
       return ActiveRegionalProgram::kTaiyaki;
     case Program::kWaffle:
       return ActiveRegionalProgram::kWaffle;
+    case Program::kScone:
+      return ActiveRegionalProgram::kScone;
   }
   NOTREACHED();
 }

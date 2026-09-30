@@ -22,6 +22,8 @@ std::string ProgramToString(Program program) {
       return "Taiyaki";
     case Program::kWaffle:
       return "Waffle";
+    case Program::kScone:
+      return "Scone";
   }
   NOTREACHED();
 }

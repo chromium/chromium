@@ -33,7 +33,8 @@ enum class ActiveRegionalProgram {
   kMixed = 2,
   kWaffle = 3,
   kTaiyaki = 4,
-  kMaxValue = kTaiyaki,
+  kScone = 5,
+  kMaxValue = kScone,
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/regional_capabilities/enums.xml:ActiveRegionalProgram)
 

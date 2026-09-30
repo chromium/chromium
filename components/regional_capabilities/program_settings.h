@@ -19,9 +19,10 @@ enum class Program : int {
   kDefault = 1,
   kTaiyaki = 2,
   kWaffle = 3,
+  kScone = 4,
 
   kMin = kDefault,
-  kMax = kWaffle,
+  kMax = kScone,
 };
 
 using ProgramSet = base::EnumSet<Program, Program::kMin, Program::kMax>;

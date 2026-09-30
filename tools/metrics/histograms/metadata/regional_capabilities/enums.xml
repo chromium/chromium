@@ -36,6 +36,7 @@ chromium-metrics-reviews@google.com.
   </int>
   <int value="3" label="Waffle"/>
   <int value="4" label="Taiyaki"/>
+  <int value="5" label="Scone"/>
 </enum>
 
 <!-- LINT.ThenChange(/components/regional_capabilities/regional_capabilities_metrics.h:ActiveRegionalProgram) -->

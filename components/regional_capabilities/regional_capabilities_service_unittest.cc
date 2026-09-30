@@ -49,6 +49,9 @@ void PrintTo(const Program& program, std::ostream* os) {
     case Program::kWaffle:
       *os << "kWaffle";
       break;
+    case Program::kScone:
+      *os << "kScone";
+      break;
   }
 }
 
@@ -399,6 +402,25 @@ INSTANTIATE_TEST_SUITE_P(
         },
 #endif  // BUILDFLAG(IS_ANDROID)
 
+        ProgramDeterminationTestParam{
+            .test_name = "gb_to_scone",
+            .client_fetched_country = CountryId("GB"),
+#if BUILDFLAG(IS_ANDROID)
+            .device_program_override = Program::kScone,
+#endif  // BUILDFLAG(IS_ANDROID)
+            .expected_program = Program::kScone,
+            .expected_is_in_choice_screen_region = false,
+            .expected_ose_list_type = SearchEngineListType::kTopN,
+            .expected_histograms =
+                {
+#if BUILDFLAG(IS_ANDROID)
+                    {"RegionalCapabilities.Debug.AndroidProgramResolution",
+                     ExpectHistogramBucket(AndroidProgramResolution::kSuccess)},
+#endif
+                    {"RegionalCapabilities.LoadedCountrySource",
+                     ExpectHistogramBucket(LoadedCountrySource::kCurrentOnly)},
+                },
+        },
         ProgramDeterminationTestParam{
             .test_name = "us_to_default",
             .client_fetched_country = CountryId("US"),
