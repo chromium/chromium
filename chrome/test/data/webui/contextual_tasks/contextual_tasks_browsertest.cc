@@ -232,8 +232,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, TabPicker) {
   RunTest("contextual_tasks/tab_picker_test.js", "mocha.run();");
 }
 
-IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, Favicons) {
-  RunTest("contextual_tasks/favicons_test.js", "mocha.run();");
+IN_PROC_BROWSER_TEST_F(ContextualTasksBrowserTest, ContextLibrary) {
+  RunTest("contextual_tasks/context_library_test.js", "mocha.run();");
 }
 #endif
 

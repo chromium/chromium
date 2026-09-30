@@ -4,9 +4,10 @@
 
 import {html} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {FaviconsAppElement} from './favicons_app.js';
+import type {ContextLibraryElement} from './context_library.js';
 
-export function getHtml(this: FaviconsAppElement) {
+export function getHtml(this: ContextLibraryElement) {
+  // Frontend context library is synonymous with favicon group.
   return html`<!--_html_template_start_-->
     <composebox-favicon-group id="faviconGroup"
         .tabs="${this.tabs}"

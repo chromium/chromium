@@ -217,8 +217,8 @@ build_webui("build") {
   ]
 
   ts_files = [
-    "favicons_app.html.ts",
-    "favicons_app.ts",
+    "context_library.html.ts",
+    "context_library.ts",
     "lens_button_app.html.ts",
     "lens_button_app.ts",
     "lens_chip_app.html.ts",
@@ -230,7 +230,7 @@ build_webui("build") {
   ]
 
   css_files = [
-    "favicons_app.css",
+    "context_library.css",
     "lens_button_app.css",
     "lens_chip_app.css",
     "tab_picker_app.css",
@@ -273,7 +273,7 @@ build_webui("build") {
   optimize = true
   optimize_webui_host = "chrome-extension://glbjnfimcajjenihimblfaponejbkoph"
   optimize_webui_in_files = [
-    "favicons_app.js",
+    "context_library.js",
     "lens_button_app.js",
   ]
 
