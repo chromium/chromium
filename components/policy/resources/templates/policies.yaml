@@ -1487,6 +1487,7 @@ policies:
   1486: AdminInstalledChromeAppsForceAllowed
   1487: DeviceMaxUserProfiles
   1488: AutoLaunchAndroidApps
+  1489: LaunchOnStartupEnabled
 
 atomic_groups:
   1: Homepage

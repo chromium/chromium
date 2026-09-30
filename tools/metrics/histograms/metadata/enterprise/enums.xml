@@ -2588,6 +2588,7 @@ chromium-metrics-reviews@google.com.
   <int value="1486" label="AdminInstalledChromeAppsForceAllowed"/>
   <int value="1487" label="DeviceMaxUserProfiles"/>
   <int value="1488" label="AutoLaunchAndroidApps"/>
+  <int value="1489" label="LaunchOnStartupEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
