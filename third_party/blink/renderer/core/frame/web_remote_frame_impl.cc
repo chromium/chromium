@@ -140,6 +140,27 @@ WebRemoteFrameImpl* WebRemoteFrameImpl::CreateMainFrame(
   return frame;
 }
 
+WebRemoteFrameImpl* WebRemoteFrameImpl::CreatePlaceholderForEmbeddedFrameTree(
+    mojom::blink::TreeScopeType scope,
+    const RemoteFrameToken& frame_token,
+    const base::UnguessableToken& devtools_frame_token,
+    HTMLFrameOwnerElement* frame_owner,
+    mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+        remote_frame_host,
+    mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver,
+    mojom::blink::FrameReplicationStatePtr replicated_state) {
+  DCHECK(frame_owner);
+  auto* frame = MakeGarbageCollected<WebRemoteFrameImpl>(scope, frame_token);
+  LocalFrame* host_frame = frame_owner->GetDocument().GetFrame();
+  frame->InitializeCoreFrame(
+      *host_frame->GetPage(), frame_owner, /*parent=*/nullptr,
+      /*previous_sibling=*/nullptr, FrameInsertType::kInsertInConstructor,
+      g_null_atom, &host_frame->window_agent_factory(), devtools_frame_token,
+      std::move(remote_frame_host), std::move(receiver));
+  frame->SetReplicatedState(std::move(replicated_state));
+  return frame;
+}
+
 WebRemoteFrameImpl::~WebRemoteFrameImpl() = default;
 
 void WebRemoteFrameImpl::Trace(Visitor* visitor) const {
@@ -256,6 +277,15 @@ void WebRemoteFrameImpl::InitializeCoreFrame(
       ancestor_widget =
           To<WebLocalFrameImpl>(parent)->LocalRoot()->FrameWidgetImpl();
     }
+  } else if (owner && owner->IsLocal()) {
+    // Never gets to this point unless |owner| is a <persistentwidget> element.
+    HTMLFrameOwnerElement* owner_element = To<HTMLFrameOwnerElement>(owner);
+    DCHECK_EQ(owner_element->OwnerType(),
+              FrameOwnerElementType::kPersistentwidget);
+    LocalFrame& local_frame =
+        owner_element->GetDocument().GetFrame()->LocalFrameRoot();
+    ancestor_widget =
+        WebLocalFrameImpl::FromFrame(local_frame)->FrameWidgetImpl();
   }
 
   SetCoreFrame(MakeGarbageCollected<RemoteFrame>(

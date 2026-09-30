@@ -42,6 +42,22 @@ class CORE_EXPORT WebRemoteFrameImpl final
       mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver,
       mojom::blink::FrameReplicationStatePtr replicated_state);
 
+  // Creates a placeholder RemoteFrame owned by `frame_owner` in the embedder's
+  // renderer process to represent an embedded MPArch FrameTree (e.g.
+  // <persistentwidget>). The returned RemoteFrame connects to the outer
+  // delegate RenderFrameProxyHost in the browser process for layout,
+  // compositing, and input routing, but is initialized with a null parent so
+  // it is not added to the embedder's blink::FrameTree (e.g. window.frames).
+  static WebRemoteFrameImpl* CreatePlaceholderForEmbeddedFrameTree(
+      mojom::blink::TreeScopeType,
+      const RemoteFrameToken& frame_token,
+      const base::UnguessableToken& devtools_frame_token,
+      HTMLFrameOwnerElement* frame_owner,
+      mojo::PendingAssociatedRemote<mojom::blink::RemoteFrameHost>
+          remote_frame_host,
+      mojo::PendingAssociatedReceiver<mojom::blink::RemoteFrame> receiver,
+      mojom::blink::FrameReplicationStatePtr replicated_state);
+
   WebRemoteFrameImpl(mojom::blink::TreeScopeType,
                      const RemoteFrameToken& frame_token);
   ~WebRemoteFrameImpl() override;

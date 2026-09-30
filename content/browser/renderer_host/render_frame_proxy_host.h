@@ -278,6 +278,12 @@ class CONTENT_EXPORT RenderFrameProxyHost
   void BindRemoteFrameInterfaces(
       mojo::PendingAssociatedRemote<blink::mojom::RemoteFrame>,
       mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrameHost>);
+  // Like BindRemoteFrameInterfaces, but resets any existing bindings first.
+  // Used by persistent widgets when re-attaching across same-origin
+  // navigations.
+  void RebindRemoteFrameInterfaces(
+      mojo::PendingAssociatedRemote<blink::mojom::RemoteFrame>,
+      mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrameHost>);
   void BindRemoteMainFrameInterfaces(
       mojo::PendingAssociatedRemote<blink::mojom::RemoteMainFrame>
           remote_main_frame,

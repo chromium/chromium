@@ -420,6 +420,31 @@ class CONTENT_EXPORT FrameTree {
       bool is_dummy_frame_for_inner_tree,
       std::unique_ptr<base::UnguessableToken> sandbox_origin_token = nullptr);
 
+  // Creates a dummy outer delegate FrameTreeNode which serves as a placeholder
+  // for an inner FrameTree (e.g., Persistent Widgets). It will never have a
+  // corresponding RenderFrameImpl in a renderer process, so remotes, receivers,
+  // names, and policies are passed as null/default values.
+  FrameTreeNode* CreateDelegateFrameTreeNode(
+      RenderFrameHostImpl* parent,
+      blink::FrameOwnerElementType owner_type);
+
+  // Connects this inner FrameTree to an outer delegate FrameTreeNode, setting
+  // up the inner/outer FrameTree mapping and initializing the
+  // RenderFrameProxyHost in the embedder's SiteInstanceGroup with the renderer
+  // RemoteFrame interfaces.
+  RenderFrameProxyHost* ConnectOuterDelegateProxy(
+      FrameTreeNode* outer_delegate_node,
+      RenderFrameHostImpl* embedder_rfh,
+      const blink::RemoteFrameToken& frame_token,
+      blink::mojom::RemoteFrameInterfacesFromRendererPtr
+          remote_frame_interfaces);
+
+  // Initializes the RenderViewHost for this inner FrameTree root and assigns
+  // its RenderWidgetHostViewChildFrame to the RenderFrameHostManager so that
+  // input and compositing are routed through the embedder frame.
+  // Returns true on success, false if InitRenderView fails.
+  bool InitRenderViewForInnerFrameTree();
+
   // Removes a frame from the frame tree. |child|, its children, and objects
   // owned by their RenderFrameHostManagers are immediately deleted. The root
   // node cannot be removed this way.

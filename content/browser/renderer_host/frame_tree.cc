@@ -39,6 +39,7 @@
 #include "content/browser/renderer_host/render_view_host_delegate.h"
 #include "content/browser/renderer_host/render_view_host_factory.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/features.h"
@@ -492,6 +493,86 @@ FrameTreeNode* FrameTree::AddFrame(
   manager_delegate_->NotifySwappedFromRenderManager(
       nullptr, added_node->current_frame_host());
   return added_node;
+}
+
+FrameTreeNode* FrameTree::CreateDelegateFrameTreeNode(
+    RenderFrameHostImpl* parent,
+    blink::FrameOwnerElementType owner_type) {
+  return AddFrame(
+      /*parent=*/parent,
+      /*process_id=*/parent->GetProcess()->GetDeprecatedID(),
+      /*new_routing_id=*/parent->GetProcess()->GetNextRoutingID(),
+      /*frame_remote=*/mojo::NullAssociatedRemote(),
+      /*browser_interface_broker_receiver=*/mojo::NullReceiver(),
+      /*policy_container_bind_params=*/nullptr,
+      /*associated_interface_provider_receiver=*/mojo::NullAssociatedReceiver(),
+      /*scope=*/blink::mojom::TreeScopeType::kDocument,
+      /*frame_name=*/"",
+      /*frame_unique_name=*/"",
+      /*is_created_by_script=*/true,
+      /*frame_token=*/blink::LocalFrameToken(),
+      /*devtools_frame_token=*/base::UnguessableToken::Create(),
+      /*document_token=*/blink::DocumentToken(),
+      /*initiator_state_token=*/blink::InitiatorStateToken(),
+      /*frame_policy=*/blink::FramePolicy(),
+      /*frame_owner_properties=*/blink::mojom::FrameOwnerProperties(),
+      /*was_discarded=*/false,
+      /*owner_type=*/owner_type,
+      /*is_dummy_frame_for_inner_tree=*/true);
+}
+
+RenderFrameProxyHost* FrameTree::ConnectOuterDelegateProxy(
+    FrameTreeNode* outer_delegate_node,
+    RenderFrameHostImpl* embedder_rfh,
+    const blink::RemoteFrameToken& frame_token,
+    blink::mojom::RemoteFrameInterfacesFromRendererPtr
+        remote_frame_interfaces) {
+  outer_delegate_node->current_frame_host()
+      ->set_inner_tree_main_frame_tree_node_id(root()->frame_tree_node_id());
+
+  FrameTreeNode* inner_root = root();
+  RenderFrameProxyHost* proxy_host =
+      inner_root->current_frame_host()
+          ->browsing_context_state()
+          ->GetRenderFrameProxyHost(embedder_rfh->GetSiteInstance()->group());
+  if (!proxy_host) {
+    proxy_host =
+        inner_root->current_frame_host()
+            ->browsing_context_state()
+            ->CreateOuterDelegateProxy(embedder_rfh->GetSiteInstance()->group(),
+                                       inner_root, frame_token);
+  }
+
+  proxy_host->BindRemoteFrameInterfaces(
+      std::move(remote_frame_interfaces->frame),
+      std::move(remote_frame_interfaces->frame_host_receiver));
+
+  inner_root->current_frame_host()->PropagateEmbeddingTokenToParentFrame();
+  proxy_host->SetRenderFrameProxyCreated(true);
+  return proxy_host;
+}
+
+bool FrameTree::InitRenderViewForInnerFrameTree() {
+  FrameTreeNode* inner_root = root();
+  RenderFrameHostManager* inner_render_manager = inner_root->render_manager();
+  RenderViewHost* rvh =
+      inner_render_manager->current_frame_host()->GetRenderViewHost();
+  if (!inner_render_manager->InitRenderView(
+          inner_render_manager->current_frame_host()
+              ->GetSiteInstance()
+              ->group(),
+          static_cast<RenderViewHostImpl*>(rvh), /*proxy=*/nullptr,
+          /*navigation_metrics_token=*/std::nullopt)) {
+    return false;
+  }
+
+  RenderWidgetHostViewBase* child_rwhv =
+      inner_render_manager->GetRenderWidgetHostView();
+  CHECK(child_rwhv);
+  CHECK(child_rwhv->IsRenderWidgetHostViewChildFrame());
+  inner_render_manager->SetRWHViewForInnerFrameTree(
+      static_cast<RenderWidgetHostViewChildFrame*>(child_rwhv));
+  return true;
 }
 
 void FrameTree::RemoveFrame(FrameTreeNode* child) {

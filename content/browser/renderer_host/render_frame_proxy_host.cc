@@ -1203,6 +1203,16 @@ void RenderFrameProxyHost::BindRemoteFrameInterfaces(
     g_observer_for_testing->OnRemoteFrameBound(this);
 }
 
+void RenderFrameProxyHost::RebindRemoteFrameInterfaces(
+    mojo::PendingAssociatedRemote<blink::mojom::RemoteFrame> remote_frame,
+    mojo::PendingAssociatedReceiver<blink::mojom::RemoteFrameHost>
+        remote_frame_host_receiver) {
+  remote_frame_.reset();
+  remote_frame_host_receiver_.reset();
+  BindRemoteFrameInterfaces(std::move(remote_frame),
+                            std::move(remote_frame_host_receiver));
+}
+
 void RenderFrameProxyHost::BindRemoteMainFrameInterfaces(
     mojo::PendingAssociatedRemote<blink::mojom::RemoteMainFrame>
         remote_main_frame,
