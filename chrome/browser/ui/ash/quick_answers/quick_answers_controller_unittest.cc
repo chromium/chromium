@@ -346,7 +346,7 @@ TEST_F(QuickAnswersControllerTest, ShouldNotCrashWhenContextMenuCloses) {
   ASSERT_TRUE(active_menu_controller->owner() != nullptr);
 
   // Simulate closing the context menu.
-  ChromeQuickAnswersTestBase::ResetMenuParent();
+  ASSERT_NO_FATAL_FAILURE(ChromeQuickAnswersTestBase::ResetMenuParent());
 
   // Simulate returning a quick answers request after the context menu closed.
   // This should *not* result in a crash.

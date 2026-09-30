@@ -11,15 +11,14 @@
 #include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/types/expected.h"
-#include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "chromeos/components/magic_boost/public/cpp/magic_boost_state.h"
 #include "chromeos/components/magic_boost/test/fake_magic_boost_state.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/test/fake_quick_answers_state.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/testing_pref_service.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
+#include "components/user_manager/user.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace quick_answers {
@@ -185,10 +184,14 @@ TEST_F(QuickAnswersStateWithMagicBoostTest, MagicBoostStateEligibilityChanged) {
 
 TEST(QuickAnswersStateTest, EnabledButKiosk) {
   TestingPrefServiceSimple local_state;
-  user_manager::UserManager::RegisterPrefs(local_state.registry());
-  user_manager::ScopedUserManager scoped_user_manager(
-      std::make_unique<user_manager::FakeUserManager>(&local_state));
-  chromeos::SetUpFakeChromeAppKioskSession();
+  ash::test::UserSessionTestEnvironment::RegisterLocalStatePrefs(
+      local_state.registry());
+  ash::test::UserSessionTestEnvironment user_session_test_environment(
+      &local_state);
+  auto* user = user_session_test_environment.AddKioskChromeAppUser(
+      "example@kiosk-apps.device-local.localhost");
+  ASSERT_TRUE(user);
+  user_session_test_environment.LogIn(user->GetAccountId());
 
   FakeQuickAnswersState quick_answers_state;
   quick_answers_state.SetApplicationLocale("en");

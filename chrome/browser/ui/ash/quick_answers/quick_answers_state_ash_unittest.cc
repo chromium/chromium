@@ -7,12 +7,12 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/ash/quick_answers/test/chrome_quick_answers_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
-#include "chromeos/components/kiosk/kiosk_test_utils.h"
 #include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/quick_answers/public/cpp/constants.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
@@ -21,8 +21,7 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 
 namespace {
@@ -92,7 +91,7 @@ class QuickAnswersStateAshTest : public ChromeQuickAnswersTestBase,
   void SetUp() override {
     ChromeQuickAnswersTestBase::SetUp();
 
-    CHECK(QuickAnswersState::Get()->prefs_initialized());
+    ASSERT_TRUE(QuickAnswersState::Get()->prefs_initialized());
 
     observer_ = std::make_unique<TestQuickAnswersStateObserver>();
   }
@@ -120,7 +119,7 @@ class QuickAnswersStateAshEnabledTest : public QuickAnswersStateAshTest {
     QuickAnswersStateAshTest::SetUpInitialPrefValues();
 
     prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersEnabled, true);
-    CHECK_EQ(
+    ASSERT_EQ(
         ConsentStatus::kUnknown,
         prefs()->GetInteger(quick_answers::prefs::kQuickAnswersConsentStatus));
   }
@@ -368,10 +367,11 @@ TEST_F(QuickAnswersStateAshEnabledTest, EnabledFromBeginning) {
 class QuickAnswersStateAshKioskTest : public QuickAnswersStateAshTest {
  public:
   user_manager::User* StartUserSession() override {
-    // TODO(crbug.com/278643115): Consider to return Session instance by
-    // chromeos::SetUpFakeKioskSession().
-    chromeos::SetUpFakeChromeAppKioskSession();
-    return user_manager::UserManager::Get()->GetActiveUser();
+    auto* user = user_session_test_environment()->AddKioskChromeAppUser(
+        "example@kiosk-apps.device-local.localhost");
+    CHECK(user);
+    user_session_test_environment()->LogIn(user->GetAccountId());
+    return user;
   }
 };
 

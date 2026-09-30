@@ -7,12 +7,12 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/ash/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/user_manager/fake_user_manager.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
 
 class QuickAnswersController;
 
@@ -63,13 +63,15 @@ class ChromeQuickAnswersTestBase : public ChromeAshTestBase {
 
   void CreateAndShowBasicMenu();
   void ResetMenuParent();
-  TestingProfile* GetProfile() { return profile_.get(); }
+  TestingProfile* GetProfile() { return profile_; }
+  ash::test::UserSessionTestEnvironment* user_session_test_environment() {
+    return user_session_test_environment_.get();
+  }
 
  private:
-  user_manager::TypedScopedUserManager<user_manager::FakeUserManager>
-      user_manager_;
-  std::unique_ptr<Profile::Delegate> profile_delegate_;
-  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
+  raw_ptr<TestingProfile> profile_ = nullptr;
 
   // Menu.
   std::unique_ptr<views::Label> menu_delegate_;
