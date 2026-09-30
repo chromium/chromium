@@ -124,7 +124,7 @@ TypedValue CreateDateTimeTypedValue(int year,
 
 class FakeMemoryDataProvider : public AutofillDataProvider {
  public:
-  FakeMemoryDataProvider() : AutofillDataProvider(nullptr, nullptr) {}
+  FakeMemoryDataProvider() : AutofillDataProvider(nullptr, nullptr, nullptr) {}
   void RetrieveAll(const std::vector<MemoryDataType>& types,
                    base::OnceCallback<void(std::vector<MemorySearchResult>)>
                        callback) override {
@@ -146,7 +146,8 @@ class FakeMemoryDataProvider : public AutofillDataProvider {
 
 class DelayedMemoryDataProvider : public AutofillDataProvider {
  public:
-  DelayedMemoryDataProvider() : AutofillDataProvider(nullptr, nullptr) {}
+  DelayedMemoryDataProvider()
+      : AutofillDataProvider(nullptr, nullptr, nullptr) {}
   void RetrieveAll(const std::vector<MemoryDataType>& types,
                    base::OnceCallback<void(std::vector<MemorySearchResult>)>
                        callback) override {
@@ -1271,7 +1272,8 @@ TEST_F(AtMemoryQueryServiceTest, Query_SetsIsObfuscated) {
 
   auto data_provider = std::make_unique<AutofillDataProvider>(
       &autofill_client().GetPersonalDataManager(),
-      autofill_client().GetEntityDataManager());
+      autofill_client().GetEntityDataManager(),
+      autofill_client().GetValuablesDataManager());
   std::unique_ptr<AtMemoryQueryService> service =
       CreateQueryService(std::move(data_provider));
 

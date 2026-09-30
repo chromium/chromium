@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/autofill/autofill_entity_data_manager_factory.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
+#include "chrome/browser/autofill/valuables_data_manager_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/personal_context/personal_context_eligibility_service_factory.h"
 #include "chrome/browser/personal_context/personal_context_service_factory.h"
@@ -43,6 +44,7 @@ AtMemoryQueryServiceFactory::AtMemoryQueryServiceFactory()
   DependsOn(autofill::AutofillLogRouterFactory::GetInstance());
   DependsOn(autofill::PersonalDataManagerFactory::GetInstance());
   DependsOn(autofill::AutofillEntityDataManagerFactory::GetInstance());
+  DependsOn(autofill::ValuablesDataManagerFactory::GetInstance());
   DependsOn(PersonalContextServiceFactory::GetInstance());
   DependsOn(PersonalContextEligibilityServiceFactory::GetInstance());
   DependsOn(subscription_eligibility::SubscriptionEligibilityServiceFactory::
@@ -61,7 +63,8 @@ AtMemoryQueryServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* profile = Profile::FromBrowserContext(context);
   auto data_provider = std::make_unique<autofill::AutofillDataProvider>(
       autofill::PersonalDataManagerFactory::GetForBrowserContext(context),
-      autofill::AutofillEntityDataManagerFactory::GetForProfile(profile));
+      autofill::AutofillEntityDataManagerFactory::GetForProfile(profile),
+      autofill::ValuablesDataManagerFactory::GetForProfile(profile));
 
   personal_context::PersonalContextService* personal_context_service =
       PersonalContextServiceFactory::GetForProfile(profile);

@@ -72,7 +72,8 @@ IOSAtMemoryQueryServiceFactory::BuildServiceInstanceFor(
   std::unique_ptr<AutofillDataProvider> data_provider =
       std::make_unique<AutofillDataProvider>(
           PersonalDataManagerFactory::GetForProfile(profile),
-          IOSAutofillEntityDataManagerFactory::GetForProfile(profile));
+          IOSAutofillEntityDataManagerFactory::GetForProfile(profile),
+          /*valuables_data_manager=*/nullptr);
 
   PersonalContextEligibilityService* personal_context_eligibility_service =
       IOSPersonalContextEligibilityServiceFactory::GetForProfile(profile);

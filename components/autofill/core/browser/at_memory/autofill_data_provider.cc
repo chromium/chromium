@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
@@ -34,6 +35,7 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/data_model/usage_history_information.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/field_filling_util.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
@@ -328,13 +330,83 @@ std::vector<MemorySearchResult> FetchAutofillAiAttributeData(
   return entries;
 }
 
+// Extracts the string value for a given `type` from `loyalty_card`.
+std::u16string GetLoyaltyCardAttributeValue(const LoyaltyCard& loyalty_card,
+                                            MemoryDataType type) {
+  if (type == MemoryDataType::kLoyaltyMembershipId) {
+    return base::UTF8ToUTF16(loyalty_card.loyalty_card_number());
+  }
+  if (type == MemoryDataType::kLoyaltyMembershipProgram) {
+    return base::UTF8ToUTF16(loyalty_card.program_name());
+  }
+  if (type == MemoryDataType::kLoyaltyMembershipProvider) {
+    return base::UTF8ToUTF16(loyalty_card.merchant_name());
+  }
+  NOTREACHED();
+}
+
+// Creates a data entry from a loyalty card for a specific `memory_data_type`.
+MemorySearchResult CreateResultFromLoyaltyCard(
+    const LoyaltyCard& loyalty_card,
+    std::u16string value,
+    MemoryDataType memory_data_type) {
+  MemorySearchResult entry(
+      memory_data_type, GetMemoryDataTypeNameForI18n(memory_data_type),
+      std::move(value),
+      CalculateRankingScore(loyalty_card.use_count(), loyalty_card.use_date()));
+  entry.identifier = *loyalty_card.id();
+  entry.is_local = true;
+
+  for (MemoryDataType other_type :
+       {MemoryDataType::kLoyaltyMembershipId,
+        MemoryDataType::kLoyaltyMembershipProgram,
+        MemoryDataType::kLoyaltyMembershipProvider}) {
+    if (other_type == memory_data_type) {
+      continue;
+    }
+    std::u16string other_value =
+        GetLoyaltyCardAttributeValue(loyalty_card, other_type);
+    if (!other_value.empty()) {
+      entry.metadata_list.emplace_back(other_type,
+                                       GetMemoryDataTypeNameForI18n(other_type),
+                                       std::move(other_value));
+    }
+  }
+  return entry;
+}
+
+// Fetches loyalty card data from `valuables_data_manager`.
+std::vector<MemorySearchResult> FetchLoyaltyCardData(
+    const ValuablesDataManager* valuables_data_manager,
+    MemoryDataType memory_data_type) {
+  if (!valuables_data_manager) {
+    return {};
+  }
+
+  std::vector<MemorySearchResult> entries;
+  entries.reserve(valuables_data_manager->GetLoyaltyCards().size());
+  for (const LoyaltyCard& loyalty_card :
+       valuables_data_manager->GetLoyaltyCards()) {
+    std::u16string value =
+        GetLoyaltyCardAttributeValue(loyalty_card, memory_data_type);
+    if (value.empty()) {
+      continue;
+    }
+    entries.push_back(CreateResultFromLoyaltyCard(
+        loyalty_card, std::move(value), memory_data_type));
+  }
+  return entries;
+}
+
 }  // namespace
 
 AutofillDataProvider::AutofillDataProvider(
     const PersonalDataManager* personal_data_manager,
-    const EntityDataManager* entity_data_manager)
+    const EntityDataManager* entity_data_manager,
+    const ValuablesDataManager* valuables_data_manager)
     : personal_data_manager_(personal_data_manager),
-      entity_data_manager_(entity_data_manager) {}
+      entity_data_manager_(entity_data_manager),
+      valuables_data_manager_(valuables_data_manager) {}
 
 AutofillDataProvider::~AutofillDataProvider() = default;
 
@@ -400,7 +472,8 @@ std::vector<MemorySearchResult> AutofillDataProvider::GetAutofillData(
       break;
     }
     case MemoryDataTypeCategory::kLoyaltyCard:
-    // TODO(crbug.com/565559151): Add support for loyalty cards.
+      entries = FetchLoyaltyCardData(valuables_data_manager_, memory_data_type);
+      break;
     case MemoryDataTypeCategory::kUnknown:
       break;
   }
