@@ -19,8 +19,10 @@ namespace audio {
 InputIPC::InputIPC(
     mojo::PendingRemote<media::mojom::AudioStreamFactory> stream_factory,
     const std::string& device_id,
-    mojo::PendingRemote<media::mojom::AudioLog> log)
+    mojo::PendingRemote<media::mojom::AudioLog> log,
+    std::optional<media::AudioProcessingSettings> processing_settings)
     : device_id_(device_id),
+      processing_settings_(std::move(processing_settings)),
       pending_stream_factory_(std::move(stream_factory)),
       log_(std::move(log)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
@@ -52,11 +54,17 @@ void InputIPC::CreateStream(media::AudioInputIPCDelegate* delegate,
   if (log_)
     log = log_.Unbind();
 
+  media::mojom::AudioProcessingConfigPtr processing_config;
+  if (processing_settings_) {
+    processing_config = media::mojom::AudioProcessingConfig::New(
+        processor_controls_.BindNewPipeAndPassReceiver(),
+        *processing_settings_);
+  }
+
   stream_factory_->CreateInputStream(
       stream_.BindNewPipeAndPassReceiver(), std::move(client), {},
       std::move(log), device_id_, params, base::UnguessableToken::Create(),
-      total_segments, automatic_gain_control,
-      /*processing_config=*/nullptr,
+      total_segments, automatic_gain_control, std::move(processing_config),
       base::BindOnce(&InputIPC::StreamCreated, weak_factory_.GetWeakPtr()));
 }
 
@@ -114,6 +122,7 @@ void InputIPC::CloseStream() {
   if (stream_client_receiver_.is_bound())
     stream_client_receiver_.reset();
   stream_.reset();
+  processor_controls_.reset();
 
   // Make sure we don't get any stale stream creation messages.
   weak_factory_.InvalidateWeakPtrs();

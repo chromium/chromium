@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/test/task_environment.h"
 #include "media/base/audio_capturer_source.h"
+#include "media/base/audio_processing.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -53,6 +54,8 @@ class TestStreamFactory : public audio::FakeStreamFactory {
       bool enable_agc,
       media::mojom::AudioProcessingConfigPtr processing_config,
       CreateInputStreamCallback created_callback) override {
+    processing_config_ = std::move(processing_config);
+
     if (should_fail_) {
       std::move(created_callback).Run(nullptr, initially_muted_, std::nullopt);
       return;
@@ -88,6 +91,7 @@ class TestStreamFactory : public audio::FakeStreamFactory {
   mojo::Receiver<media::mojom::AudioInputStream> stream_receiver_;
   bool initially_muted_ = true;
   bool should_fail_ = false;
+  media::mojom::AudioProcessingConfigPtr processing_config_;
 };
 
 class MockDelegate : public media::AudioInputIPCDelegate {
@@ -138,6 +142,35 @@ TEST_F(InputIPCTest, CreateStreamPropagates) {
   EXPECT_CALL(delegate, GotOnStreamCreated(_));
   ipc->CreateStream(&delegate, audioParameters, false, 0);
   task_environment.RunUntilIdle();
+  EXPECT_FALSE(factory_->processing_config_);
+}
+
+TEST_F(InputIPCTest, CreateStreamWithProcessingSettings_PassesConfig) {
+  factory_ = std::make_unique<StrictMock<TestStreamFactory>>();
+  media::AudioProcessingSettings settings{
+      .echo_cancellation = true,
+      .noise_suppression = true,
+      .automatic_gain_control = true,
+      .multi_channel_capture_processing = false,
+  };
+  ipc = std::make_unique<InputIPC>(factory_->MakeRemote(), kDeviceId,
+                                   mojo::NullRemote(), settings);
+
+  base::RunLoop run_loop;
+  StrictMock<MockDelegate> delegate;
+  EXPECT_CALL(delegate, GotOnStreamCreated(_)).WillOnce([&] {
+    run_loop.Quit();
+  });
+  ipc->CreateStream(&delegate, audioParameters, false, 0);
+  run_loop.Run();
+
+  ASSERT_TRUE(factory_->processing_config_);
+  EXPECT_TRUE(factory_->processing_config_->settings.echo_cancellation);
+  EXPECT_TRUE(factory_->processing_config_->settings.noise_suppression);
+  EXPECT_TRUE(factory_->processing_config_->settings.automatic_gain_control);
+  EXPECT_FALSE(
+      factory_->processing_config_->settings.multi_channel_capture_processing);
+  EXPECT_TRUE(factory_->processing_config_->controls_receiver.is_valid());
 }
 
 TEST_F(InputIPCTest, StreamCreatedAfterCloseIsIgnored) {
