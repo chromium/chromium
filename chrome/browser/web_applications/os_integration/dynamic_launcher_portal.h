@@ -63,6 +63,11 @@ class DynamicLauncherPortal {
   static void ResetAvailabilityCacheForTesting();
 
  private:
+  // Whether `bus_` is the shared session bus. This is determined at
+  // construction rather than by comparing with GetSharedSessionBus(), which
+  // would create the shared bus as a side effect when a custom bus is used.
+  // Must be declared before `bus_`.
+  const bool is_shared_bus_;
   scoped_refptr<dbus::Bus> bus_;
 };
 

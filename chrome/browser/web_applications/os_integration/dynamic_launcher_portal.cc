@@ -178,7 +178,8 @@ void OnXdgDesktopPortalResponse(scoped_refptr<dbus::Bus> bus,
 }  // namespace
 
 DynamicLauncherPortal::DynamicLauncherPortal(scoped_refptr<dbus::Bus> bus)
-    : bus_(bus ? std::move(bus) : dbus_thread_linux::GetSharedSessionBus()) {}
+    : is_shared_bus_(!bus),
+      bus_(bus ? std::move(bus) : dbus_thread_linux::GetSharedSessionBus()) {}
 
 DynamicLauncherPortal::~DynamicLauncherPortal() = default;
 
@@ -189,7 +190,7 @@ void DynamicLauncherPortal::IsAvailable(
     return;
   }
 
-  bool is_custom_bus = (bus_ != dbus_thread_linux::GetSharedSessionBus());
+  const bool is_custom_bus = !is_shared_bus_;
 
   if (!is_custom_bus) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -219,7 +220,7 @@ void DynamicLauncherPortal::PrepareInstall(
     const std::vector<uint8_t>& icon_bytes,
     const GURL& target_url,
     PrepareInstallCallback callback) {
-  if (bus_ == dbus_thread_linux::GetSharedSessionBus()) {
+  if (is_shared_bus_) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   }
 
@@ -265,7 +266,7 @@ void DynamicLauncherPortal::Install(const std::string& token,
                                     const std::string& desktop_file_id,
                                     const std::string& desktop_entry,
                                     InstallCallback callback) {
-  if (bus_ == dbus_thread_linux::GetSharedSessionBus()) {
+  if (is_shared_bus_) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   }
 
@@ -297,7 +298,7 @@ void DynamicLauncherPortal::ResetAvailabilityCacheForTesting() {
 
 void DynamicLauncherPortal::Uninstall(const std::string& desktop_file_id,
                                       UninstallCallback callback) {
-  if (bus_ == dbus_thread_linux::GetSharedSessionBus()) {
+  if (is_shared_bus_) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   }
 
