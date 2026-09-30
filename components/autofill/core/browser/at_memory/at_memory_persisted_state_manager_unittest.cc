@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/at_memory/at_memory_manager.h"
 #include "components/autofill/core/browser/at_memory/at_memory_manager_test_api.h"
+#include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h"
 #include "components/autofill/core/browser/at_memory/at_memory_search_state.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
@@ -946,6 +947,49 @@ TEST_F(AtMemoryPersistedStateManagerNavigationTest, AllStateResetOnNavigation) {
 
   // Previously filled suggestions are also cleared on navigation.
   EXPECT_TRUE(state_manager().previously_filled_suggestions().empty());
+}
+
+// Tests that `metrics_recorder` is preserved when accessing the same field,
+// can be transferred via `TakeMetricsRecorder`, and is reset when switching
+// fields or when state is cleared.
+TEST_F(AtMemoryPersistedStateManagerTest, MetricsRecorderLifecycle) {
+  auto make_recorder = [this]() {
+    return std::make_unique<AtMemoryMetricsRecorder>(
+        /*uploader_service=*/nullptr, /*ukm_recorder=*/nullptr,
+        ukm::kInvalidSourceId, GURL("https://example.com"), u"Title",
+        field_id(), FormSignature(1), FieldSignature(2));
+  };
+
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  EXPECT_EQ(state_manager().metrics_recorder(), nullptr);
+
+  auto recorder = make_recorder();
+  AtMemoryMetricsRecorder* raw_recorder = recorder.get();
+  state_manager().SetMetricsRecorder(std::move(recorder));
+  EXPECT_EQ(state_manager().metrics_recorder(), raw_recorder);
+
+  // Accessing the same field keeps `metrics_recorder`.
+  state_manager().GetStateForField(field_id(), FieldOrigin());
+  EXPECT_EQ(state_manager().metrics_recorder(), raw_recorder);
+
+  // `TakeMetricsRecorder` transfers ownership out of `state_manager()`.
+  std::unique_ptr<AtMemoryMetricsRecorder> taken =
+      state_manager().TakeMetricsRecorder();
+  EXPECT_EQ(taken.get(), raw_recorder);
+  EXPECT_EQ(state_manager().metrics_recorder(), nullptr);
+
+  // Setting a new recorder and switching to a different field resets it.
+  state_manager().SetMetricsRecorder(make_recorder());
+  ASSERT_NE(state_manager().metrics_recorder(), nullptr);
+  state_manager().GetStateForField(other_field_id(), OtherFieldOrigin());
+  EXPECT_EQ(state_manager().metrics_recorder(), nullptr);
+
+  // Setting a new recorder and accepting a suggestion resets it.
+  state_manager().SetMetricsRecorder(make_recorder());
+  ASSERT_NE(state_manager().metrics_recorder(), nullptr);
+  state_manager().OnSuggestionAccepted(
+      Suggestion(u"123 Main St", SuggestionType::kAddressEntry));
+  EXPECT_EQ(state_manager().metrics_recorder(), nullptr);
 }
 
 }  // namespace

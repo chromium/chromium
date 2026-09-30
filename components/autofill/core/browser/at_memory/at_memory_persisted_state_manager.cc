@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <iterator>
+#include <memory>
 #include <utility>
 
 #include "base/check.h"
@@ -13,6 +14,7 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
 #include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
@@ -124,10 +126,9 @@ AtMemoryPersistedStateManager::GetStateForField(
     const FieldGlobalId& field_id,
     const url::Origin& field_origin) {
   if (field_id_ != field_id) {
-    search_state_timer_.Stop();
+    ResetSearchState();
     field_id_ = field_id;
     field_origin_ = field_origin;
-    search_state_.reset();
   }
   return search_state_;
 }
@@ -203,6 +204,25 @@ void AtMemoryPersistedStateManager::OnSuggestionAccepted(
     RestartPreviouslyFilledSuggestionsTimer();
   }
   ResetSearchState();
+}
+
+void AtMemoryPersistedStateManager::SetMetricsRecorder(
+    std::unique_ptr<AtMemoryMetricsRecorder> metrics_recorder) {
+  metrics_recorder_ = std::move(metrics_recorder);
+  // With search statefulness, `AtMemoryManager` only sets a recorder while the
+  // state is anchored to the popup's field, and the recorder then shares the
+  // search state's TTL. Without it, `field_id_` is never set and the recorder
+  // is instead reset by `AtMemoryManager` when the popup is hidden.
+  // TODO(crbug.com/535486238): Replace the condition with `CHECK(field_id_)`
+  // once `kAutofillAtMemorySearchStatefulness` is fully launched.
+  if (field_id_) {
+    RestartSearchStateTimer();
+  }
+}
+
+std::unique_ptr<AtMemoryMetricsRecorder>
+AtMemoryPersistedStateManager::TakeMetricsRecorder() {
+  return std::move(metrics_recorder_);
 }
 
 bool AtMemoryPersistedStateManager::IsSearching() const {
@@ -287,6 +307,7 @@ void AtMemoryPersistedStateManager::ResetSearchState() {
   field_id_ = FieldGlobalId();
   field_origin_ = url::Origin();
   search_state_.reset();
+  metrics_recorder_.reset();
 }
 
 void AtMemoryPersistedStateManager::OnSearchStateTimerExpired() {

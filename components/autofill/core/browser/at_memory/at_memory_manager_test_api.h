@@ -18,9 +18,7 @@ class AtMemoryManagerTestApi {
       : manager_(CHECK_DEREF(manager)) {}
 
   AtMemoryMetricsRecorder* at_memory_metrics_recorder() {
-    return manager_->popup_state_
-               ? manager_->popup_state_->metrics_recorder.get()
-               : nullptr;
+    return manager_->metrics_recorder();
   }
 
   AtMemoryPersistedStateManager* state_manager() {

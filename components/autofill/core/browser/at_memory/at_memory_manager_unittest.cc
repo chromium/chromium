@@ -1599,6 +1599,12 @@ TEST_P(AtMemoryManagerTest, FillOverlappingPopups) {
 
   // 5. Hide Popup 2 (without accepting suggestions).
   manager().OnPopupHidden();
+  if (GetParam()) {
+    // When search statefulness is enabled, hiding the popup does not destroy
+    // the metrics recorder; it is destroyed when the field session ends.
+    histogram_tester.ExpectTotalCount("Autofill.AtMemory.QuerySubmitted", 0);
+    manager().GetStateForField(test::MakeFieldGlobalId(), form_origin());
+  }
 
   // Verify Popup 2 logged its displayed, query submitted, suggestion accepted:
   // - PopupDisplayed should have context menu trigger as well now.
@@ -2203,8 +2209,14 @@ TEST_P(AtMemoryManagerTest, OnPopupShown_SubPopup_DoesNotResetRecorder) {
   // "QuerySubmitted".
   histogram_tester.ExpectTotalCount("Autofill.AtMemory.QuerySubmitted", 0);
 
-  // 3. Hide popup. This should destroy the recorder and log the metric.
+  // 3. Hide popup. When search statefulness is disabled, this destroys the
+  // recorder and logs the metric. When search statefulness is enabled, the
+  // recorder persists until the state is reset.
   manager().OnPopupHidden();
+  if (GetParam()) {
+    histogram_tester.ExpectTotalCount("Autofill.AtMemory.QuerySubmitted", 0);
+    manager().GetStateForField(test::MakeFieldGlobalId(), form_origin());
+  }
   histogram_tester.ExpectUniqueSample("Autofill.AtMemory.QuerySubmitted", false,
                                       1);
 }
@@ -2956,6 +2968,86 @@ TEST_F(AtMemoryManagerTestBase,
   task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(
       manager().GetStateForField(field_id, form_origin()).filter.empty());
+}
+
+// Tests that when search statefulness is enabled, the metrics recorder persists
+// across popup hide/reopen for the same field, records background query
+// completion while the popup is closed, and logs session metrics upon fill.
+TEST_F(AtMemoryManagerTestBase,
+       SearchStatefulness_MetricsRecorderPersistsAcrossPopupHideAndReopen) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemorySearchStatefulness};
+  base::HistogramTester histogram_tester;
+
+  auto [form_id, field_id] = SeeFormAndShowPopup();
+  AtMemoryMetricsRecorder* initial_recorder =
+      test_api(manager()).at_memory_metrics_recorder();
+  ASSERT_NE(initial_recorder, nullptr);
+
+  manager().OnFilterChanged(u"john");
+
+  base::RepeatingCallback<void(MemorySearchResults)> saved_query_callback;
+  EXPECT_CALL(mock_query_service(),
+              Query(std::u16string_view(u"john"), _, _, _))
+      .WillOnce(SaveArg<3>(&saved_query_callback));
+  EXPECT_CALL(update_callback_,
+              Run(ElementsAre(Field("type", &Suggestion::type,
+                                    SuggestionType::kAtMemoryFetching)),
+                  AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl));
+
+  manager().OnSearchSubmitted(u"john");
+  ASSERT_TRUE(saved_query_callback);
+
+  // Hide the popup while the query is in flight.
+  manager().OnPopupHidden();
+
+  // The metrics recorder should still be alive and not have logged session
+  // summary metrics yet.
+  EXPECT_EQ(test_api(manager()).at_memory_metrics_recorder(), initial_recorder);
+  histogram_tester.ExpectTotalCount("Autofill.AtMemory.QuerySubmitted", 0);
+  histogram_tester.ExpectTotalCount("Autofill.AtMemory.UiSessionOutcome", 0);
+
+  // Complete the query in the background while the popup is closed.
+  MemorySearchResult entry(MemoryDataType::kNameFull, u"John Doe", u"John Doe");
+  entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
+  saved_query_callback.Run(
+      MemorySearchResults(MemorySearchStatus::kFinalResponseSuccess, {entry}));
+
+  // Query completion and latency metrics should be recorded even though the
+  // popup was closed when the response arrived.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AtMemory.QueryCompleted",
+      AtMemoryQueryCompletedStatus::kQueryReturnedData, 1);
+  histogram_tester.ExpectTotalCount("Autofill.AtMemory.Latency.Query", 1);
+
+  // Reopen the popup on the same field.
+  AtMemorySearchState restored_state =
+      manager().GetStateForField(field_id, form_origin());
+  ASSERT_FALSE(restored_state.suggestions.empty());
+  manager().OnPopupShown(autofill_manager(), form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{}, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  // The existing metrics recorder instance should be reused.
+  EXPECT_EQ(test_api(manager()).at_memory_metrics_recorder(), initial_recorder);
+  histogram_tester.ExpectTotalCount("Autofill.AtMemory.QuerySubmitted", 0);
+
+  // Accept the suggestion from the restored state.
+  manager().FillSearchResult(autofill_manager(), form_id, field_id,
+                             restored_state.suggestions.back(),
+                             /*metadata=*/std::nullopt);
+
+  EXPECT_EQ(test_api(manager()).at_memory_metrics_recorder(), nullptr);
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.QuerySubmitted", true,
+                                      1);
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionFilled",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AtMemory.UiSessionOutcome",
+      AtMemoryUiSessionOutcome::kSuggestionFilled, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(All, AtMemoryManagerTest, testing::Bool());

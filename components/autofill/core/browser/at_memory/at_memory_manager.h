@@ -271,13 +271,17 @@ class AtMemoryManager {
   // statefulness is enabled.
   const url::Origin& target_field_origin() const;
 
+  // Returns the metrics recorder of the active session, which is always owned
+  // by `state_manager_`.
+  AtMemoryMetricsRecorder* metrics_recorder() const {
+    return state_manager_.metrics_recorder();
+  }
+
   // Encapsulates state for the currently visible AtMemory popup.
   struct PopupState {
     AutofillSuggestionTriggerSource trigger_source =
         AutofillSuggestionTriggerSource::kUnspecified;
     UpdateSuggestionsCallback update_callback;
-    // TODO(crbug.com/535486238): Reconsider where metrics_recorder should live.
-    std::unique_ptr<AtMemoryMetricsRecorder> metrics_recorder;
     // Flag indicating that a search query is in progress.
     // TODO(crbug.com/535486238): Remove `is_searching` once
     // `kAutofillAtMemorySearchStatefulness` is fully launched.

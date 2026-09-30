@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AT_MEMORY_AT_MEMORY_PERSISTED_STATE_MANAGER_H_
 
 #include <cstddef>
+#include <memory>
 #include <optional>
 #include <string>
 #include <string_view>
@@ -33,12 +34,15 @@ class HistoryService;
 
 namespace autofill {
 
+class AtMemoryMetricsRecorder;
 class AutofillClient;
 
 // Manages in-memory persisted state for AtMemory autofill:
 // 1. `search_state_`: Persisted search state (filter, suggestions, search
 //    status) for the active field across popup open/close lifecycles.
-// 2. `previously_filled_suggestions_`: History of suggestions accepted by the
+// 2. `metrics_recorder_`: Metrics recorder for the active field session across
+//    popup open/close lifecycles.
+// 3. `previously_filled_suggestions_`: History of suggestions accepted by the
 //    user, rendered in empty-query suggestion popups.
 //
 // Lifecycle invariant:
@@ -89,6 +93,20 @@ class AtMemoryPersistedStateManager
   void OnFilterSubmitted(const std::u16string& filter);
   void OnSuggestionsChanged(std::vector<Suggestion> suggestions);
   void OnSuggestionAccepted(const Suggestion& suggestion);
+
+  // Transfers ownership of `metrics_recorder` to `this`. The recorder is
+  // destroyed (which emits its session metrics) whenever the search state is
+  // reset, unless ownership is taken back via `TakeMetricsRecorder()` first.
+  void SetMetricsRecorder(
+      std::unique_ptr<AtMemoryMetricsRecorder> metrics_recorder);
+  std::unique_ptr<AtMemoryMetricsRecorder> TakeMetricsRecorder();
+  AtMemoryMetricsRecorder* metrics_recorder() const {
+    return metrics_recorder_.get();
+  }
+
+  // Returns the field the persisted state is anchored to, or a null
+  // `FieldGlobalId` if there is none (e.g. after a reset).
+  const FieldGlobalId& field_id() const { return field_id_; }
 
   bool IsSearching() const;
   void StopSearching();
@@ -146,6 +164,9 @@ class AtMemoryPersistedStateManager
   // State of the search for the active field. Reset if
   // `GetStateForField` is called for another field.
   std::optional<AtMemorySearchState> search_state_;
+  // Metrics recorder for the active field session. Reset when the search state
+  // for the field is reset or when ownership is transferred on fill.
+  std::unique_ptr<AtMemoryMetricsRecorder> metrics_recorder_;
   base::OneShotTimer search_state_timer_;
 
   // Stores previously filled suggestions along with their expiration time.
