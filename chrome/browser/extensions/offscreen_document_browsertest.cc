@@ -221,7 +221,8 @@ IN_PROC_BROWSER_TEST_F(OffscreenDocumentBrowserTest, APIAccessIsLimited) {
            })";
     static constexpr char kExpectedProperties[] =
         // Enums.
-        R"(["ContextType","OnInstalledReason","OnRestartRequiredReason",)"
+        R"(["ContextType","OnInstalledReason","OnLoadedReason",)"
+        R"("OnRestartRequiredReason",)"
         R"("PlatformArch","PlatformNaclArch","PlatformOs",)"
         R"("RequestUpdateCheckStatus",)"
         // Methods and events.

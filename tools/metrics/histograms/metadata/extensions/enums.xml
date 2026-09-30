@@ -811,6 +811,7 @@ Called by update_extension_histograms.py.-->
   <int value="580" label="ENTERPRISE_WEBRTC_ON_CAPTURE_STOPPED"/>
   <int value="581" label="ENTERPRISE_WEBRTC_ON_PEER_CONNECTION_ADDED"/>
   <int value="582" label="ENTERPRISE_WEBRTC_ON_PEER_CONNECTION_REMOVED"/>
+  <int value="583" label="RUNTIME_ON_EXTENSION_LOADED"/>
 </enum>
 
 <!-- LINT.ThenChange(//extensions/browser/extension_event_histogram_value.h:HistogramValue) -->

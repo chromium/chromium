@@ -166,6 +166,29 @@ chrome.runtime.OnInstalledReason = {
 
 /**
  * @enum {string}
+ * @see https://developer.chrome.com/extensions/runtime#type-OnLoadedReason
+ */
+chrome.runtime.OnLoadedReason = {
+  INSTALL: 'install',
+  UPDATE: 'update',
+  BROWSER_UPDATE: 'browser_update',
+  ENABLE: 'enable',
+  STARTUP: 'startup',
+  RELOAD: 'reload',
+};
+
+/**
+ * Details about the extension load event.
+ * @typedef {{
+ *   reason: !chrome.runtime.OnLoadedReason,
+ *   previousVersion: (string|undefined)
+ * }}
+ * @see https://developer.chrome.com/extensions/runtime#type-ExtensionLoadDetails
+ */
+chrome.runtime.ExtensionLoadDetails;
+
+/**
+ * @enum {string}
  * @see https://developer.chrome.com/extensions/runtime#type-OnRestartRequiredReason
  */
 chrome.runtime.OnRestartRequiredReason = {
@@ -492,6 +515,14 @@ chrome.runtime.onInstalled;
  * @see https://developer.chrome.com/extensions/runtime#event-onEnabled
  */
 chrome.runtime.onEnabled;
+
+/**
+ * Fired when the extension is added to the set of active extensions (e.g. on
+ * install, update, reload, enable, or browser startup/update).
+ * @type {!ChromeEvent}
+ * @see https://developer.chrome.com/extensions/runtime#event-onExtensionLoaded
+ */
+chrome.runtime.onExtensionLoaded;
 
 /**
  * Sent to the event page just before it is unloaded. This gives the extension

@@ -123,6 +123,9 @@ class RuntimeAPI : public BrowserContextKeyedAPI,
                          const Extension* extension) override;
   void OnExtensionEnabled(content::BrowserContext* browser_context,
                           const Extension* extension) override;
+  void OnExtensionReloaded(content::BrowserContext* browser_context,
+                           const Extension* extension) override;
+
   void OnExtensionUninstalled(content::BrowserContext* browser_context,
                               const Extension* extension,
                               UninstallReason reason) override;
@@ -194,6 +197,10 @@ class RuntimeAPI : public BrowserContextKeyedAPI,
   // reason "chrome_update" upon loading each extension.
   bool dispatch_chrome_updated_event_;
 
+  // True once initial startup extension loading has completed and
+  // `ExtensionSystem::ready()` has signaled.
+  bool startup_complete_ = false;
+
   bool did_read_delayed_restart_preferences_;
   bool was_last_restart_due_to_delayed_restart_api_;
 
@@ -221,9 +228,29 @@ class RuntimeEventRouter {
                                        const base::Version& old_version,
                                        bool chrome_updated);
 
-  // Dispatches the onEnabled event to the given extension.
+  // Dispatches the `runtime.onEnabled` event to the extension with
+  // `extension_id` when it transitions from a disabled state to an enabled
+  // state.
   static void DispatchOnEnabledEvent(MayBeDangling<void> context_id,
                                      const ExtensionId& extension_id);
+
+  // Dispatches the `runtime.onExtensionLoaded` event to the extension with
+  // `extension_id` when it is added to the set of active extensions, as
+  // specified by the W3C WebExtensions proposal
+  // (https://github.com/w3c/webextensions/blob/main/proposals/runtime_on_load_on_enabled_events.md):
+  // - `reason` indicates why the extension was loaded (`kInstall`, `kUpdate`,
+  //   `kBrowserUpdate`, `kEnable`, `kStartup`, or `kReload`), following the
+  //   precedence `update > install > reload > enable > browser_update >
+  //   startup` when multiple reasons apply.
+  // - `previous_version` is included in the event details only when `reason` is
+  //   `kUpdate`.
+  //   TODO(crbug.com/550447466): Follow up on whether `previous_version` should
+  //   also be populated when `reason` is `kEnable`.
+  static void DispatchOnExtensionLoadedEvent(
+      MayBeDangling<void> context_id,
+      const ExtensionId& extension_id,
+      api::runtime::OnLoadedReason reason,
+      const std::optional<std::string>& previous_version);
 
   // Dispatches the onUpdateAvailable event to the given extension.
   static void DispatchOnUpdateAvailableEvent(content::BrowserContext* context,

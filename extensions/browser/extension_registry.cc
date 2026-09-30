@@ -94,6 +94,14 @@ void ExtensionRegistry::TriggerOnEnabled(const Extension* extension) {
   }
 }
 
+void ExtensionRegistry::TriggerOnReloaded(const Extension* extension) {
+  CHECK(extension);
+  CHECK(enabled_extensions_.Contains(extension->id()));
+  for (auto& observer : observers_) {
+    observer.OnExtensionReloaded(browser_context_, extension);
+  }
+}
+
 void ExtensionRegistry::TriggerOnWillBeInstalled(const Extension* extension,
                                                  bool is_update,
                                                  const std::string& old_name) {

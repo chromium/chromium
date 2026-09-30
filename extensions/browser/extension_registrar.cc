@@ -1338,6 +1338,7 @@ bool ExtensionRegistrar::ReplaceReloadedExtension(
   CHECK(registry_->AddEnabled(extension));
 
   ActivateExtension(extension.get(), false);
+  registry_->TriggerOnReloaded(extension.get());
 
   return true;
 }
