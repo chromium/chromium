@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -24,6 +25,9 @@
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/util/reporting_errors.h"
 #include "components/reporting/util/status.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -67,11 +71,14 @@ bool UserEventReporterHelper::ReportingEnabled(
 
 bool UserEventReporterHelper::IsKioskUser() const {
   CHECK_CURRENTLY_ON(::content::BrowserThread::UI, base::NotFatalUntil::M160);
-  auto* const primary = user_manager::UserManager::Get()->GetPrimaryUser();
-  if (!primary) {
+  const auto* const primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
+  if (!primary_session) {
     return false;
   }
-  return primary->IsKioskType();
+  const auto* const primary =
+      user_manager::UserManager::Get()->FindUser(primary_session->account_id());
+  return CHECK_DEREF(primary).IsKioskType();
 }
 
 void UserEventReporterHelper::ReportEvent(

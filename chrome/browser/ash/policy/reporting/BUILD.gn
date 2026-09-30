@@ -74,6 +74,7 @@ static_library("reporting") {
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
     "//components/reporting/util:status",
+    "//components/session_manager/core",
     "//components/user_manager",
     "//content/public/browser",
     "//extensions/common",

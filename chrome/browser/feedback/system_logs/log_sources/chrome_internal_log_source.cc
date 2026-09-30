@@ -62,8 +62,12 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/version/version_loader.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
@@ -146,15 +150,17 @@ constexpr char kCpuArch[] = "cpu_arch";
 #if BUILDFLAG(IS_CHROMEOS)
 
 std::string GetPrimaryAccountTypeString() {
-  DCHECK(user_manager::UserManager::Get());
-  const user_manager::User* primary_user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
+  const auto* primary_session =
+      session_manager::SessionManager::Get()->GetPrimarySession();
 
   // In case we're on the login screen, we won't have a logged in user.
-  if (!primary_user)
+  if (!primary_session) {
     return "none";
+  }
 
-  switch (primary_user->GetType()) {
+  const user_manager::User* primary_user =
+      user_manager::UserManager::Get()->FindUser(primary_session->account_id());
+  switch (CHECK_DEREF(primary_user).GetType()) {
     case user_manager::UserType::kRegular:
       return "regular";
     case user_manager::UserType::kGuest:
