@@ -59,31 +59,10 @@ public class DownloadCollectionBridge {
 
     private static DownloadDelegate sDownloadDelegate = new DownloadDelegate();
 
-    /**  Class representing the Uri and display name pair for downloads. */
-    protected static class DisplayNameInfo {
-        private final String mUri;
-        private final String mDisplayName;
-
-        public DisplayNameInfo(String uri, String displayName) {
-            mUri = uri;
-            mDisplayName = displayName;
-        }
-
-        @CalledByNative
-        private @JniType("std::string") String getDownloadUri() {
-            return mUri;
-        }
-
-        @CalledByNative
-        private @JniType("std::string") String getDisplayName() {
-            return mDisplayName;
-        }
-    }
-
     /**
-     * Sets the DownloadDelegate to be used for utility methods.
-     * TODO(qinmin): remove this method once we moved all the utility methods into
-     * components/.
+     * Sets the DownloadDelegate to be used for utility methods. TODO(qinmin): remove this method
+     * once we moved all the utility methods into components/.
+     *
      * @param downloadDelegate The new delegate to be used.
      */
     public static void setDownloadDelegate(DownloadDelegate downloadDelegate) {
@@ -278,27 +257,6 @@ public class DownloadCollectionBridge {
                         .getContentResolver()
                         .update(uri, updateValues, null, null)
                 == 1;
-    }
-
-    /**
-     * Gets the display names for the given download Uris.
-     *
-     * @param downloadUris array of download Uris.
-     * @return an array of download Uri and display name pair.
-     */
-    @CalledByNative
-    private static DisplayNameInfo @Nullable [] getDisplayNamesForDownloads(
-            @JniType("std::vector<std::string>") String[] downloadUris) {
-        if (downloadUris == null || downloadUris.length == 0) return null;
-        List<DisplayNameInfo> infos = new ArrayList<>();
-        for (String uriString : downloadUris) {
-            if (TextUtils.isEmpty(uriString)) continue;
-            String displayName = getDisplayName(uriString);
-            if (!TextUtils.isEmpty(displayName)) {
-                infos.add(new DisplayNameInfo(uriString, displayName));
-            }
-        }
-        return infos.toArray(new DisplayNameInfo[0]);
     }
 
     /**

@@ -42,7 +42,9 @@
 #include "url/url_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/android/android_info.h"
 #include "components/download/internal/common/android/download_collection_bridge.h"
+#include "components/download/internal/common/android/download_document_uri_bridge.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace download {
@@ -141,6 +143,25 @@ void AppendRangeHeader(net::HttpRequestHeaders* headers,
 }
 
 #if BUILDFLAG(IS_ANDROID)
+base::FilePath GetDisplayName(const base::FilePath& download_uri) {
+  if (DownloadDocumentUriBridge::IsDocumentUri(download_uri)) {
+    return DownloadDocumentUriBridge::GetDisplayName(download_uri);
+  }
+  return DownloadCollectionBridge::GetDisplayName(download_uri);
+}
+
+DisplayNames GetDisplayNamesOnBackgroundThread(
+    std::vector<base::FilePath> content_uris) {
+  auto result = std::make_unique<std::map<std::string, base::FilePath>>();
+  for (const auto& uri : content_uris) {
+    base::FilePath display_name = GetDisplayName(uri);
+    if (!display_name.empty()) {
+      result->emplace(uri.value(), std::move(display_name));
+    }
+  }
+  return result;
+}
+
 struct CreateIntermediateUriResult {
  public:
   CreateIntermediateUriResult(const base::FilePath& content_uri,
@@ -164,7 +185,7 @@ CreateIntermediateUriResult CreateIntermediateUri(
                 original_url, referrer_url, suggested_name, mime_type);
   base::FilePath file_name;
   if (!content_path.empty()) {
-    file_name = DownloadCollectionBridge::GetDisplayName(content_path);
+    file_name = GetDisplayName(content_path);
   }
   if (file_name.empty())
     file_name = suggested_name;
@@ -878,6 +899,20 @@ void DetermineSavePackagePath(const GURL& url,
     return;
   }
   std::move(callback).Run(mhtml_path, mhtml_path.BaseName());
+}
+
+void GetDisplayNamesForDownloads(std::vector<base::FilePath> content_uris,
+                                 GetDisplayNamesCallback callback) {
+  if (content_uris.empty() || base::android::android_info::sdk_int() <
+                                  base::android::android_info::SDK_VERSION_Q) {
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  GetDownloadTaskRunner()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&GetDisplayNamesOnBackgroundThread,
+                     std::move(content_uris)),
+      std::move(callback));
 }
 #endif
 

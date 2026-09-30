@@ -60,6 +60,7 @@ class MockDownloadManager : public DownloadManager {
     base::Time last_access_time;
     bool transient;
     std::vector<download::DownloadItem::ReceivedSlice> received_slices;
+    base::FilePath display_name;
 
     CreateDownloadItemAdapter(
         const std::string& guid,
@@ -88,7 +89,8 @@ class MockDownloadManager : public DownloadManager {
         base::Time last_access_time,
         bool transient,
         const std::vector<download::DownloadItem::ReceivedSlice>&
-            received_slices);
+            received_slices,
+        const base::FilePath& display_name = base::FilePath());
 
     // Required by clang compiler.
     CreateDownloadItemAdapter(const CreateDownloadItemAdapter& rhs);
@@ -129,6 +131,7 @@ class MockDownloadManager : public DownloadManager {
   MOCK_METHOD1(RemoveObserver, void(Observer* observer));
 
   // Redirects to mock method to get around gmock 10 argument limit.
+  using DownloadManager::CreateDownloadItem;
   download::DownloadItem* CreateDownloadItem(
       const std::string& guid,
       uint32_t id,
@@ -155,8 +158,8 @@ class MockDownloadManager : public DownloadManager {
       bool opened,
       base::Time last_access_time,
       bool transient,
-      const std::vector<download::DownloadItem::ReceivedSlice>& received_slices)
-      override;
+      const std::vector<download::DownloadItem::ReceivedSlice>& received_slices,
+      const base::FilePath& display_name) override;
 
   MOCK_METHOD1(MockCreateDownloadItem,
                download::DownloadItem*(CreateDownloadItemAdapter adapter));
