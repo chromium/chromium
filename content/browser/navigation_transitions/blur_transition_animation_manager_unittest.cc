@@ -444,11 +444,102 @@ TEST_F(BlurTransitionAnimationManagerTest, SafeCleanupWhenTabIsClosed) {
   EXPECT_CALL(*mock_delegate_, GetWindowAndroid())
       .WillRepeatedly(Return(nullptr));
 
-  // Stop the animation. This should work safely because the code remembers
-  // which window it was watching even if it can't find it anymore.
+  // When the view is removed from the parent window, OnDetachedFromWindow() is
+  // triggered and immediately resets the window observation.
+  EXPECT_FALSE(manager_->IsObservingWindow());
+
+  // Destroy the window now (simulating Activity/Window closure during graceful
+  // shutdown while WebContents is still alive).
+  window_wrapper_.reset();
+
+  // Stop the animation. This should work safely without crashing.
   manager_->SignalExit(TransitionExitReason::kNavigationInterrupted,
                        /*should_animate_out=*/false);
   EXPECT_FALSE(manager_->IsObservingWindow());
+}
+
+TEST_F(BlurTransitionAnimationManagerTest,
+       WindowDestroyedWhileAttachedResetsObservation) {
+  auto simulator = NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.com"), web_contents());
+  simulator->Start();
+
+  EXPECT_CALL(*mock_delegate_, ShouldShowBlurTransitionAnimation(_))
+      .WillOnce(Return(true));
+  simulator->ReadyToCommit();
+  SimulateRFHActivation(simulator.get());
+
+  window_wrapper_ = ui::WindowAndroid::CreateForTesting();
+  window_wrapper_->get()->AddChild(view_android_.get());
+  EXPECT_CALL(*mock_delegate_, GetWindowAndroid())
+      .WillRepeatedly(Return(window_wrapper_->get()));
+
+  manager_->SignalExit(TransitionExitReason::kFinished, true);
+  EXPECT_TRUE(manager_->IsObservingWindow());
+
+  // Destroy the WindowAndroid directly while the view is still attached.
+  // WindowAndroid's destructor detaches all children (calling
+  // OnDetachedFromWindow), which safely resets the window observation before
+  // WindowAndroid is freed.
+  window_wrapper_.reset();
+
+  EXPECT_FALSE(manager_->IsObservingWindow());
+}
+
+TEST_F(BlurTransitionAnimationManagerTest,
+       DetachFromWindowMidTransitionRecordsInterrupted) {
+  window_wrapper_ = ui::WindowAndroid::CreateForTesting();
+  window_wrapper_->get()->AddChild(view_android_.get());
+
+  auto simulator = NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.com"), web_contents());
+  simulator->Start();
+
+  EXPECT_CALL(*mock_delegate_, ShouldShowBlurTransitionAnimation(_))
+      .WillOnce(Return(true));
+  simulator->ReadyToCommit();
+  SimulateRFHActivation(simulator.get());
+  EXPECT_EQ(GetAnimationState(), AnimationState::kBlurShown);
+
+  // Detaching mid-transition aborts it immediately.
+  view_android_->RemoveFromParent();
+  EXPECT_EQ(GetAnimationState(), AnimationState::kNone);
+  EXPECT_TRUE(view_android_->GetLayer()->children().empty());
+
+  // A later paint must not be reported as a finished transition.
+  manager_->DidFirstVisuallyNonEmptyPaint();
+  histogram_tester_.ExpectUniqueSample(
+      "Navigation.BlurTransitionAnimation.ExitReason",
+      TransitionExitReason::kNavigationInterrupted, 1);
+}
+
+TEST_F(BlurTransitionAnimationManagerTest, ViewDestroyedBeforeManagerIsSafe) {
+  auto simulator = NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://example.com"), web_contents());
+  simulator->Start();
+
+  EXPECT_CALL(*mock_delegate_, ShouldShowBlurTransitionAnimation(_))
+      .WillOnce(Return(true));
+  simulator->ReadyToCommit();
+  SimulateRFHActivation(simulator.get());
+
+  window_wrapper_ = ui::WindowAndroid::CreateForTesting();
+  window_wrapper_->get()->AddChild(view_android_.get());
+  EXPECT_CALL(*mock_delegate_, GetWindowAndroid())
+      .WillRepeatedly(Return(window_wrapper_->get()));
+
+  manager_->SignalExit(TransitionExitReason::kFinished, true);
+  EXPECT_TRUE(manager_->IsObservingWindow());
+
+  // Mirror production teardown: WebContentsImpl destroys its view before the
+  // manager (SupportsUserData) is destroyed.
+  ON_CALL(*mock_delegate_, GetNativeView()).WillByDefault(Return(nullptr));
+  view_android_.reset();
+
+  EXPECT_FALSE(manager_->IsObservingWindow());
+  EXPECT_EQ(GetAnimationState(), AnimationState::kNone);
+  // TearDown() then destroys the manager, which must not touch the view or
+  // the window.
 }
 
 TEST_F(BlurTransitionAnimationManagerTest, StopWatchingWindowWhenTabIsHidden) {
