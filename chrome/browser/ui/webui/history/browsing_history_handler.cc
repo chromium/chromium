@@ -880,21 +880,18 @@ void BrowsingHistoryHandler::OnQueryComplete(
 
   if (base::FeatureList::IsEnabled(
           critical_actions::features::kCriticalActionHistory)) {
-    std::vector<int64_t> actor_visit_ids;
+    std::vector<int64_t> visit_ids;
     for (const auto& entry : results) {
-      if (entry.is_actor_visit) {
-        actor_visit_ids.insert(actor_visit_ids.end(),
-                               entry.all_visit_ids.begin(),
-                               entry.all_visit_ids.end());
-      }
+      visit_ids.insert(visit_ids.end(), entry.all_visit_ids.begin(),
+                       entry.all_visit_ids.end());
     }
 
-    if (!actor_visit_ids.empty()) {
+    if (!visit_ids.empty()) {
       critical_actions::CriticalActionService* critical_action_service =
           critical_actions::CriticalActionFactory::GetForProfile(profile_);
       if (critical_action_service) {
         critical_actions::CriticalActionQueryOptions options;
-        options.visit_ids = std::move(actor_visit_ids);
+        options.visit_ids = std::move(visit_ids);
         critical_action_service->GetCriticalActions(
             options,
             base::BindOnce(&BrowsingHistoryHandler::CriticalActionsFetched,
@@ -923,12 +920,11 @@ void BrowsingHistoryHandler::HandleQueryResults(
     const BrowsingHistoryService::QueryResultsInfo& query_results_info,
     std::vector<critical_actions::CriticalActionEntry> critical_actions) {
   if (query_timer_.has_value()) {
-    const bool has_actor_visits =
-        std::any_of(results.begin(), results.end(),
-                    [](const auto& entry) { return entry.is_actor_visit; });
-    if (has_actor_visits &&
+    const bool queried_critical_actions =
+        !results.empty() &&
         base::FeatureList::IsEnabled(
-            critical_actions::features::kCriticalActionHistory)) {
+            critical_actions::features::kCriticalActionHistory);
+    if (queried_critical_actions) {
       base::UmaHistogramTimes(
           "HistoryPage.QueryHistoryTotalTime.WithCriticalActions",
           query_timer_->Elapsed());
@@ -977,7 +973,7 @@ void BrowsingHistoryHandler::HandleQueryResults(
     history::mojom::HistoryEntryPtr entry_mojom =
         HistoryEntryToMojom(entry, bookmark_model, *profile_, tracker, clock_);
 
-    if (entry.is_actor_visit &&
+    if (!actions_by_visit_id.empty() &&
         base::FeatureList::IsEnabled(
             critical_actions::features::kCriticalActionHistory)) {
       for (history::VisitID visit_id : entry.all_visit_ids) {
@@ -990,8 +986,10 @@ void BrowsingHistoryHandler::HandleQueryResults(
           }
         }
       }
-      base::UmaHistogramCounts100("HistoryPage.CriticalActionsPerVisitCount",
-                                  entry_mojom->critical_actions.size());
+      if (!entry_mojom->critical_actions.empty()) {
+        base::UmaHistogramCounts100("HistoryPage.CriticalActionsPerVisitCount",
+                                    entry_mojom->critical_actions.size());
+      }
     }
 
     results_mojom.push_back(std::move(entry_mojom));
