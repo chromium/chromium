@@ -32,6 +32,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/scoped_refptr.h"

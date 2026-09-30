@@ -12,6 +12,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/location.h"
@@ -178,6 +179,16 @@ bool BaseRenderingContext2D::IsResourceProviderValid() const {
 
 bool BaseRenderingContext2D::IsPaintable() const {
   return HasResourceProvider();
+}
+
+base::ByteSize BaseRenderingContext2D::AllocatedBufferSize() const {
+  if (shared_image_provider_) {
+    return shared_image_provider_->EstimatedSizeInBytes();
+  }
+  if (bitmap_provider_) {
+    return bitmap_provider_->EstimatedSizeInBytes();
+  }
+  return base::ByteSize();
 }
 
 scoped_refptr<StaticBitmapImage>

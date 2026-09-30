@@ -120,7 +120,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   ExecutionContext* GetTopExecutionContext() const override;
 
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason) override;
-  base::ByteSize AllocatedBufferSize() const override;
 
  protected:
   OffscreenCanvas* HostAsOffscreenCanvas() const final;

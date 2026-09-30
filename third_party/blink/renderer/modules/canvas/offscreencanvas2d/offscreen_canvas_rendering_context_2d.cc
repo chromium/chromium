@@ -316,16 +316,6 @@ bool OffscreenCanvasRenderingContext2D::InitializeResourceProvider() {
   return false;
 }
 
-base::ByteSize OffscreenCanvasRenderingContext2D::AllocatedBufferSize() const {
-  if (shared_image_provider_) {
-    return shared_image_provider_->EstimatedSizeInBytes();
-  }
-  if (bitmap_provider_) {
-    return bitmap_provider_->EstimatedSizeInBytes();
-  }
-  return base::ByteSize();
-}
-
 void OffscreenCanvasRenderingContext2D::Reset() {
   ResetResourceProvider();
   ResetRecorder();

@@ -40,6 +40,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/byte_size.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
@@ -1172,11 +1173,8 @@ void CanvasRenderingContext2D::CreateProvider() {
 }
 
 base::ByteSize CanvasRenderingContext2D::AllocatedBufferSize() const {
-  if (shared_image_provider_) {
-    return shared_image_provider_->EstimatedSizeInBytes();
-  }
-  if (bitmap_provider_) {
-    return bitmap_provider_->EstimatedSizeInBytes();
+  if (HasResourceProvider()) {
+    return BaseRenderingContext2D::AllocatedBufferSize();
   }
   if (hibernation_handler_ && hibernation_handler_->IsHibernating()) {
     return base::ByteSize(hibernation_handler_->memory_size());
