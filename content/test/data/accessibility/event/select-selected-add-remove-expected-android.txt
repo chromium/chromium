@@ -1,3 +1,31 @@
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.ListView [contentTypes=SUBTREE] on class_name=android.widget.ListView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Option4] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Option4] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Option5] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 === END INITIAL PAGE LOAD ===
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.ListView [contentTypes=SUBTREE] on class_name=android.widget.ListView
 TYPE_VIEW_ACCESSIBILITY_FOCUSED class_name=android.view.View on [Option2] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.ListView [contentTypes=SUBTREE] on class_name=android.widget.ListView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Option2] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Option2] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.ListView [contentTypes=SUBTREE] on class_name=android.widget.ListView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Option3] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Option3] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.ListView [contentTypes=SUBTREE] on class_name=android.widget.ListView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Option4] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Option4] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.ListView [contentTypes=SUBTREE] on class_name=android.widget.ListView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Option5] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Option5] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Option8] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Option8] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Option8] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Option8] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.ListView [contentTypes=SUBTREE] on class_name=android.widget.ListView
 TYPE_VIEW_ACCESSIBILITY_FOCUSED class_name=android.view.View on [Option10] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.ListView [contentTypes=SUBTREE] on class_name=android.widget.ListView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Option10] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Option10] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView

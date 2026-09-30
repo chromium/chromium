@@ -1,5 +1,21 @@
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 TYPE_VIEW_TEXT_SELECTION_CHANGED class_name=android.widget.EditText [0, 0] on [expanded, 3 autocomplete options available.] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [expanded, 3 autocomplete options available.] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [expanded, 3 autocomplete options available.] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [expanded, 3 autocomplete options available.] class_name=android.widget.EditText
 TYPE_VIEW_TEXT_CHANGED class_name=android.widget.EditText [0, 0, 0] text=[] beforeText= on [expanded, 3 autocomplete options available.] class_name=android.widget.EditText
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 === END INITIAL PAGE LOAD ===
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [expanded, 3 autocomplete options available.] class_name=android.widget.EditText
 TYPE_VIEW_ACCESSIBILITY_FOCUSED class_name=android.view.View on [Orange] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.ListView [contentTypes=SUBTREE] on class_name=android.widget.ListView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Apple] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Apple] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.EditText [contentTypes=SUBTREE] on [expanded, 3 autocomplete options available.] class_name=android.widget.EditText
 TYPE_VIEW_ACCESSIBILITY_FOCUSED class_name=android.view.View on [Banana] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.ListView [contentTypes=SUBTREE] on class_name=android.widget.ListView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Orange] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on [Orange] class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
