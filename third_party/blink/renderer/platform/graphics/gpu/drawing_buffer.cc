@@ -1220,26 +1220,11 @@ std::optional<gpu::SyncToken> DrawingBuffer::CopyToPlatformSharedImage(
       [&](scoped_refptr<gpu::ClientSharedImage> src_shared_image,
           const gpu::SyncToken& produce_sync_token,
           SkAlphaType src_alpha_type) -> std::optional<gpu::SyncToken> {
-    std::unique_ptr<gpu::RasterScopedAccess> dst_access =
-        dst_shared_image->BeginRasterAccess(dst_raster_interface,
-                                            dst_sync_token,
-                                            /*readonly=*/false);
-    std::unique_ptr<gpu::RasterScopedAccess> src_access =
-        src_shared_image->BeginRasterAccess(dst_raster_interface,
-                                            produce_sync_token,
-                                            /*readonly=*/true);
-
-    const gfx::Size size = Size();
-    dst_raster_interface->CopySharedImage(src_shared_image->mailbox(),
-                                          dst_shared_image->mailbox(), 0, 0, 0,
-                                          0, size.width(), size.height());
-
-    gpu::SyncToken sync_token =
-        gpu::RasterScopedAccess::EndAccess(std::move(src_access));
-    src_shared_image->UpdateDestructionSyncToken(sync_token);
-    sync_token = gpu::RasterScopedAccess::EndAccess(std::move(dst_access));
-    dst_shared_image->UpdateDestructionSyncToken(sync_token);
-    return sync_token;
+    return dst_raster_interface
+        ->CopySharedImage(src_shared_image, produce_sync_token,
+                          dst_shared_image, dst_sync_token, gfx::Rect(Size()),
+                          gfx::Point(0, 0))
+        .dest_sync_token;
   };
 
   return CopyToPlatformInternal(dst_raster_interface,
