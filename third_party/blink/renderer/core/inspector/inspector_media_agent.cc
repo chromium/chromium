@@ -189,7 +189,7 @@ void InspectorMediaAgent::PlayerCreated(const MediaPlayer& media_player) {
                            .setPlayerId(media_player.player_id)
                            .build();
   if (media_player.dom_node_id) {
-    player_object->setDomNodeId(media_player.dom_node_id);
+    player_object->setDomNodeId(media_player.dom_node_id.value());
   }
   GetFrontend()->playerCreated(std::move(player_object));
 }

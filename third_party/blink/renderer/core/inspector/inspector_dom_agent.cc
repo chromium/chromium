@@ -33,6 +33,7 @@
 #include <memory>
 
 #include "base/notreached.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
@@ -3370,11 +3371,11 @@ class InspectableNode final
   explicit InspectableNode(Node* node) : node_id_(node->GetDomNodeId()) {}
 
   v8::Local<v8::Value> get(v8::Local<v8::Context> context) override {
-    return NodeV8Value(context, DOMNodeIds::NodeForId(node_id_));
+    return NodeV8Value(context, DOMNodeIds::NodeForId(node_id_.value()));
   }
 
  private:
-  DOMNodeId node_id_;
+  DOMNodeIdType node_id_;
 };
 
 protocol::Response InspectorDOMAgent::setInspectedNode(int node_id) {
@@ -3534,7 +3535,7 @@ protocol::Response InspectorDOMAgent::getDetachedDomNodes(
   *detached_nodes =
       std::make_unique<protocol::Array<protocol::DOM::DetachedElementInfo>>();
   v8::HandleScope handles(isolate_);
-  std::map<DOMNodeId, size_t> seen_ids;
+  std::map<DOMNodeIdType, size_t> seen_ids;
 
   for (v8::Local<v8::Value> data :
        isolate_->GetHeapProfiler()->GetDetachedJSWrapperObjects()) {
@@ -3564,7 +3565,7 @@ protocol::Response InspectorDOMAgent::getDetachedDomNodes(
     // times. We don't want to return the same tree more than once, so we record
     // the ID and skip to avoid duplicate returns. We do want to return the ID
     // of the retained object `node`.
-    blink::DOMNodeId parent_id = parent->GetDomNodeId();
+    DOMNodeIdType parent_id(parent->GetDomNodeId());
     if (seen_ids.contains(parent_id)) {
       size_t parent_index = seen_ids[parent_id];
       (**detached_nodes)[parent_index]->getRetainedNodeIds()->emplace_back(
@@ -3574,7 +3575,7 @@ protocol::Response InspectorDOMAgent::getDetachedDomNodes(
     // Remember where the top-level node resides in the detached_nodes array
     seen_ids[parent_id] = (*detached_nodes)->size();
 
-    auto children = std::make_unique<protocol::Array<blink::DOMNodeId>>();
+    auto children = std::make_unique<protocol::Array<int>>();
     children->emplace_back(node->GetDomNodeId());
     std::unique_ptr<protocol::DOM::DetachedElementInfo> value =
         protocol::DOM::DetachedElementInfo::create()

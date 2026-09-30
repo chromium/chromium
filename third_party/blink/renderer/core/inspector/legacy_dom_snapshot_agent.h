@@ -5,11 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_LEGACY_DOM_SNAPSHOT_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_LEGACY_DOM_SNAPSHOT_AGENT_H_
 
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/dom_snapshot.h"
-#include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
+#include "third_party/blink/renderer/platform/graphics/dom_node_id_traits.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -23,7 +24,7 @@ class Node;
 class PaintLayer;
 
 struct OriginUrlMap {
-  HashMap<DOMNodeId, String> map;
+  HashMap<DOMNodeIdType, String> map;
   base::WeakPtrFactory<OriginUrlMap> weak_ptr_factory{this};
 };
 

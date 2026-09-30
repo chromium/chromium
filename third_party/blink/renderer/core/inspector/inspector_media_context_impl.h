@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_MEDIA_CONTEXT_IMPL_H_
 
 #include "build/build_config.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/web/web_media_inspector.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -28,7 +29,7 @@ struct MediaPlayer final : public GarbageCollected<MediaPlayer> {
   void Trace(Visitor*) const {}
 
   WebString player_id;
-  int dom_node_id = 0;
+  DOMNodeIdType dom_node_id;
   Vector<InspectorPlayerError> errors;
   Vector<InspectorPlayerEvent> events;
   Vector<InspectorPlayerMessage> messages;

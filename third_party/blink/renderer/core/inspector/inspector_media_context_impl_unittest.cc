@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_media_context_impl.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
@@ -49,6 +50,17 @@ TEST_F(InspectorMediaContextImplTest, CanCreatePlayerAndAddEvents) {
 
   impl->NotifyPlayerEvents(id, MakeEvents(10));
   EXPECT_EQ(players->at(id)->events.size(), wtf_size_t{10});
+}
+
+TEST_F(InspectorMediaContextImplTest, SetAndClearDomNodeId) {
+  auto id = impl->CreatePlayer();
+  EXPECT_FALSE(impl->MediaPlayerFromId(id).dom_node_id);
+
+  impl->SetDomNodeIdForPlayer(id, 123);
+  EXPECT_EQ(impl->MediaPlayerFromId(id).dom_node_id, DOMNodeIdType(123));
+
+  impl->SetDomNodeIdForPlayer(id, 0);
+  EXPECT_FALSE(impl->MediaPlayerFromId(id).dom_node_id);
 }
 
 TEST_F(InspectorMediaContextImplTest, KillsPlayersInCorrectOrder) {

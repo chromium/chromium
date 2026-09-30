@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_dom_snapshot_agent.h"
 
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
@@ -213,14 +214,18 @@ InspectorDOMSnapshotAgent::~InspectorDOMSnapshotAgent() = default;
 void InspectorDOMSnapshotAgent::CharacterDataModified(
     CharacterData* character_data) {
   String origin_url = GetOriginUrl(character_data);
-  if (origin_url)
-    origin_url_map_->map.insert(character_data->GetDomNodeId(), origin_url);
+  if (origin_url) {
+    origin_url_map_->map.insert(DOMNodeIdType(character_data->GetDomNodeId()),
+                                origin_url);
+  }
 }
 
 void InspectorDOMSnapshotAgent::DidInsertDOMNode(Node* node) {
   String origin_url = GetOriginUrl(node);
-  if (origin_url)
-    origin_url_map_->map.insert(node->GetDomNodeId(), origin_url);
+  if (origin_url) {
+    origin_url_map_->map.insert(DOMNodeIdType(node->GetDomNodeId()),
+                                origin_url);
+  }
 }
 
 void InspectorDOMSnapshotAgent::EnableAndReset() {
@@ -498,7 +503,7 @@ void InspectorDOMSnapshotAgent::VisitNode(Node* node,
 
   auto* nodes = document_->getNodes();
   int index = static_cast<int>(nodes->getNodeName(nullptr)->size());
-  DOMNodeId backend_node_id = node->GetDomNodeId();
+  DOMNodeIdType backend_node_id(node->GetDomNodeId());
 
   // Create DOMNode object and add it to the result array before traversing
   // children, so that parents appear before their children in the array.
@@ -525,7 +530,7 @@ void InspectorDOMSnapshotAgent::VisitNode(Node* node,
     if (!node->parentNode()) {
       SetRare(nodes->getOriginURL(nullptr), index, std::move(origin_url));
     } else {
-      DOMNodeId parent_id = node->parentNode()->GetDomNodeId();
+      DOMNodeIdType parent_id(node->parentNode()->GetDomNodeId());
       auto it = origin_url_map_->map.find(parent_id);
       String parent_url =
           it != origin_url_map_->map.end() ? it->value : String();

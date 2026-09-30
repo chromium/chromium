@@ -35,6 +35,7 @@
 #include "build/build_config.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/picture_layer.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -504,7 +505,6 @@ InspectorOverlayAgent::InspectorOverlayAgent(
           &InspectorOverlayAgent::OnResizeTimer),
       dom_agent_(dom_agent),
       swallow_next_mouse_up_(false),
-      backend_node_id_to_inspect_(0),
       show_ad_highlights_(&agent_state_, false),
       show_debug_borders_(&agent_state_, false),
       show_fps_counter_(&agent_state_, false),
@@ -595,10 +595,9 @@ protocol::Response InspectorOverlayAgent::enable() {
   }
   enabled_ = true;
   if (backend_node_id_to_inspect_) {
-    GetFrontend()->inspectNodeRequested(
-        static_cast<int>(backend_node_id_to_inspect_));
+    GetFrontend()->inspectNodeRequested(backend_node_id_to_inspect_.value());
   }
-  backend_node_id_to_inspect_ = 0;
+  backend_node_id_to_inspect_ = DOMNodeIdType();
   SetNeedsUnbufferedInput(true);
   return protocol::Response::Success();
 }
@@ -1791,7 +1790,7 @@ void InspectorOverlayAgent::Inspect(Node* inspected_node) {
     return;
   }
 
-  DOMNodeId backend_node_id = node->GetDomNodeId();
+  DOMNodeIdType backend_node_id(node->GetDomNodeId());
   if (!enabled_) {
     backend_node_id_to_inspect_ = backend_node_id;
     return;

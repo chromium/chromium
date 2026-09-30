@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/unguessable_token.h"
+#include "third_party/blink/public/common/dom/dom_node_id.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -147,7 +148,7 @@ void MediaInspectorContextImpl::SetDomNodeIdForPlayer(
     int dom_node_id) {
   const auto& player_iter = players_.find(player_id);
   if (player_iter != players_.end()) {
-    player_iter->value->dom_node_id = dom_node_id;
+    player_iter->value->dom_node_id = DOMNodeIdType(dom_node_id);
   }
 }
 
