@@ -9,7 +9,6 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.View;
@@ -26,6 +25,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.base.WindowAndroid;
@@ -36,7 +36,6 @@ import java.lang.ref.WeakReference;
 
 /** Unit tests for {@link DeferredIMEWindowInsetApplicationCallback}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DeferredIMEWindowInsetApplicationCallbackUnitTest {
     private static final Insets STATUS_BAR_INSETS = Insets.of(0, 62, 0, 0);
     private static final Insets NAV_BAR_INSETS = Insets.of(0, 0, 0, 84);
@@ -48,17 +47,18 @@ public class DeferredIMEWindowInsetApplicationCallbackUnitTest {
     private WindowInsetsCompat.Builder mBaseWindowInsets;
     private WindowInsetsAnimationCompat mAnimation;
     private WindowInsetsAnimationCompat mAnimation2;
+    private Activity mActivity;
+    private View mView;
 
-    @Mock private Activity mActivity;
     @Mock private Runnable mUpdateRunnable;
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private View mView;
     @Mock private InsetObserver mInsetObserver;
 
     @Before
     public void setUp() {
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mView = new View(mActivity);
         WeakReference<Activity> activityRef = new WeakReference<>(mActivity);
-        lenient().when(mActivity.isFinishing()).thenReturn(false);
         lenient().when(mWindowAndroid.getActivity()).thenReturn(activityRef);
         lenient().when(mWindowAndroid.isDestroyed()).thenReturn(false);
         lenient().when(mWindowAndroid.getInsetObserver()).thenReturn(mInsetObserver);
@@ -168,7 +168,7 @@ public class DeferredIMEWindowInsetApplicationCallbackUnitTest {
 
     @Test
     public void testAttachDetach_ActivityFinishing() {
-        when(mActivity.isFinishing()).thenReturn(true);
+        mActivity.finish();
         mCallback.attach(mWindowAndroid);
         verify(mInsetObserver, never()).addWindowInsetsAnimationListener(mCallback);
         verify(mInsetObserver, never())
