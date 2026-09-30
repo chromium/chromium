@@ -122,12 +122,14 @@ std::optional<blink::ExtensionScriptStreamer> TakeScriptStreamerIfAvailable(
 
 UserScriptInjector::UserScriptInjector(const UserScript* script,
                                        UserScriptSet* script_list,
-                                       bool is_declarative)
+                                       bool is_declarative,
+                                       mojom::InjectionType script_type)
     : script_(script),
       user_script_set_(script_list),
       script_id_(script_->id()),
       host_id_(script_->host_id()),
-      is_declarative_(is_declarative) {
+      is_declarative_(is_declarative),
+      script_type_(script_type) {
   user_script_set_observation_.Observe(script_list);
 }
 
@@ -149,7 +151,7 @@ void UserScriptInjector::OnUserScriptSetDestroyed() {
 }
 
 mojom::InjectionType UserScriptInjector::script_type() const {
-  return mojom::InjectionType::kContentScript;
+  return script_type_;
 }
 
 blink::mojom::UserActivationOption UserScriptInjector::IsUserGesture() const {

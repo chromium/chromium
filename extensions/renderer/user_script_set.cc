@@ -23,6 +23,7 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extensions_client.h"
 #include "extensions/common/mojom/host_id.mojom.h"
+#include "extensions/common/mojom/injection_type.mojom-shared.h"
 #include "extensions/renderer/extension_injection_host.h"
 #include "extensions/renderer/extensions_renderer_client.h"
 #include "extensions/renderer/injection_host.h"
@@ -287,8 +288,18 @@ std::unique_ptr<ScriptInjection> UserScriptSet::GetInjectionForScript(
       (host_id_.type == mojom::HostID::HostType::kExtensions) &&
       (script->GetSource() == UserScript::Source::kDynamicContentScript ||
        script->GetSource() == UserScript::Source::kDynamicUserScript);
+  // Only scripts injected via the `RequestContentScript` action of the
+  // `chrome.declarativeContent` API are reported as `kDeclarativeScript`.
+  // Extension dynamic scripts are still reported as `kContentScript` so that
+  // they keep content script behavior (e.g. asynchronous execution at
+  // `document_end` and `document_idle`).
+  mojom::InjectionType script_type =
+      is_declarative ? mojom::InjectionType::kDeclarativeScript
+                     : mojom::InjectionType::kContentScript;
   std::unique_ptr<ScriptInjector> injector(new UserScriptInjector(
-      script, this, is_declarative || is_extension_dynamic_script));
+      script, /*user_script_set=*/this,
+      /*is_declarative=*/is_declarative || is_extension_dynamic_script,
+      script_type));
 
   if (injector->CanExecuteOnFrame(injection_host.get(), web_frame, tab_id) ==
       PermissionsData::PageAccess::kDenied) {

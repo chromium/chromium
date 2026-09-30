@@ -135,9 +135,9 @@ class ScriptInjectionTracker {
                               content::RenderFrameHost* frame,
                               const Extension& extension);
 
-  // Called before a programmatic injection that was previously deferred
-  // (because host access was withheld) is permitted to run as a result of the
-  // user granting the extension access to the page.
+  // Called before a programmatic or declarative injection that was previously
+  // deferred (because host access was withheld) is permitted to run as a result
+  // of the user granting the extension access to the page.
   static void WillExecuteCode(base::PassKey<ExtensionActionRunner> pass_key,
                               mojom::InjectionType script_type,
                               content::RenderFrameHost* frame,

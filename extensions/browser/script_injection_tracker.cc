@@ -850,9 +850,9 @@ void ScriptInjectionTracker::WillExecuteCode(
               ChromeTrackEvent::kChromeExtensionId,
               ExtensionIdForTracing(extension.id()));
 
-  // A programmatic injection that was deferred while host access was withheld
-  // is being permitted to run; this is treated like any other programmatic
-  // content script injection.
+  // A programmatic or declarative injection that was deferred while host access
+  // was withheld is being permitted to run; this is treated like any other
+  // programmatic content script injection.
   HandleProgrammaticScriptInjection(PassKey(), ScriptType::kContentScript,
                                     frame, extension);
 }

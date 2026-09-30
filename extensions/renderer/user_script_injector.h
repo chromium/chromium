@@ -32,7 +32,8 @@ class UserScriptInjector : public ScriptInjector,
  public:
   UserScriptInjector(const UserScript* user_script,
                      UserScriptSet* user_script_set,
-                     bool is_declarative);
+                     bool is_declarative,
+                     mojom::InjectionType script_type);
 
   UserScriptInjector(const UserScriptInjector&) = delete;
   UserScriptInjector& operator=(const UserScriptInjector&) = delete;
@@ -94,8 +95,20 @@ class UserScriptInjector : public ScriptInjector,
   mojom::HostID host_id_;
 
   // Indicates whether or not this script is declarative. This influences which
-  // script permissions are checked before injection.
+  // script permissions are checked before injection. This is also true for
+  // extension dynamic scripts (e.g. from `scripting.registerContentScripts()`
+  // or the `userScripts` API), which use host permissions but are still
+  // reported to the browser as `mojom::InjectionType::kContentScript` via
+  // `script_type_`.
   bool is_declarative_;
+
+  // The injection type reported to the browser, e.g. when requesting
+  // permission to inject via
+  // `extensions::mojom::LocalFrameHost::RequestScriptInjectionPermission()`.
+  // Only scripts injected via the `RequestContentScript` action of the
+  // `chrome.declarativeContent` API are reported as
+  // `mojom::InjectionType::kDeclarativeScript`.
+  const mojom::InjectionType script_type_;
 
   base::ScopedObservation<UserScriptSet, UserScriptSet::Observer>
       user_script_set_observation_{this};

@@ -10,4 +10,7 @@ enum InjectionType {
   kContentScript,
   // A script injected via, e.g. tabs.executeScript().
   kProgrammaticScript,
+  // A script injected via the `RequestContentScript` action of the
+  // `chrome.declarativeContent` API.
+  kDeclarativeScript,
 };

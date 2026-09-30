@@ -5,6 +5,8 @@
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/extensions/blocked_action_waiter.h"
+#include "chrome/browser/extensions/extension_action_runner.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -242,32 +244,25 @@ IN_PROC_BROWSER_TEST_F(RequestContentScriptAPITest,
 
 // Tests that when an extension's host permissions are withheld (e.g., site
 // access set to "On click"), triggering a declarative content rule with
-// `RequestContentScript` should not record script execution in
-// `ScriptInjectionTracker`.
+// `RequestContentScript` does not record script execution in
+// `ScriptInjectionTracker` until the user explicitly grants permission.
 //
-// The browser and renderer states should stay synchronized regarding whether
-// extension code has executed. Without proper gating, a bug causes these states
-// to desynchronize:
 // In the browser process,
 // `RequestContentScript::InstructRenderProcessToInject()` checks
-// `PermissionsData::CanAccessPage()`, which returns `true` even when host
-// permissions are withheld (`PermissionsData::PageAccess::kWithheld`). This
-// causes the browser to invoke `ScriptInjectionTracker::WillExecuteCode()`,
-// erroneously marking the renderer process as having executed the content
-// script.
-// In the renderer process,
-// `extensions::mojom::LocalFrame::ExecuteDeclarativeScript()` detects that host
-// permissions are withheld and defers injection without running any script.
+// `PermissionsData::GetPageAccess()`. When page access is
+// `PermissionsData::PageAccess::kWithheld`, the browser sends
+// `extensions::mojom::LocalFrame::ExecuteDeclarativeScript()` to the renderer
+// without calling `ScriptInjectionTracker::WillExecuteCode()`. In the renderer,
+// `ScriptInjection::TryToInject()` detects that permissions are withheld,
+// defers the injection, and requests permission from the browser via
+// `extensions::mojom::LocalFrameHost::RequestScriptInjectionPermission()`.
 //
-// As a result of this bug, the browser process considers the renderer
-// authorized to act on behalf of the extension, even though no extension code
-// ever executed in that renderer.
-//
-// Currently, this test documents the existing buggy behavior by expecting
-// `ScriptInjectionTracker::DidProcessRunContentScriptFromExtension()` to return
-// `true` so the test passes before the fix.
+// Once the user grants permission (simulated via
+// `ExtensionActionRunner::RunForTesting()`), the deferred content script
+// executes in the renderer and `ScriptInjectionTracker` records that the
+// process ran a content script from the extension.
 IN_PROC_BROWSER_TEST_F(RequestContentScriptAPITest,
-                       WithheldPermissionsPrematurelyUpdatesTracker) {
+                       WithheldPermissionsUpdateTrackerOnlyAfterGrant) {
   // Start the embedded test server to serve test pages.
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -282,23 +277,30 @@ IN_PROC_BROWSER_TEST_F(RequestContentScriptAPITest,
       .SetWithholdHostPermissions(/*withhold=*/true);
 
   // Set up a listener for script execution and navigate to a test URL on the
-  // embedded test server.
+  // embedded test server, waiting for the renderer to request permission for
+  // the deferred injection.
   content::WebContents* web_contents = GetActiveWebContents();
   ASSERT_TRUE(web_contents);
+
+  ExtensionActionRunner* action_runner =
+      ExtensionActionRunner::GetForWebContents(web_contents);
+  ASSERT_TRUE(action_runner);
 
   ExtensionTestMessageListener script_listener(kInjectionSucceeded);
   script_listener.set_extension_id(extension()->id());
 
   const GURL target_url =
       embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(NavigateToURL(web_contents, target_url));
+  {
+    BlockedActionWaiter blocked_action_waiter(action_runner);
+    ASSERT_TRUE(NavigateToURL(web_contents, target_url));
+    SCOPED_TRACE("Waiting for the deferred injection to request permission");
+    blocked_action_waiter.Wait();
+  }
 
   content::RenderProcessHost* target_process =
       web_contents->GetPrimaryMainFrame()->GetProcess();
   ASSERT_TRUE(target_process);
-
-  // Run pending tasks in renderer to allow any potential injection to complete.
-  ASSERT_TRUE(RunAllPendingInRenderer(web_contents));
 
   // Verify that the extension's page access is withheld on the target URL.
   EXPECT_EQ(PermissionsData::PageAccess::kWithheld,
@@ -309,20 +311,21 @@ IN_PROC_BROWSER_TEST_F(RequestContentScriptAPITest,
   // Verify that the content script was not executed in the renderer.
   EXPECT_FALSE(script_listener.was_satisfied());
 
-  // Verify that `ScriptInjectionTracker` records that the process ran a content
-  // script from this extension. This currently returns `true` because of the
-  // bug where `PermissionsData::CanAccessPage()` returns `true` for withheld
-  // permissions, erroneously notifying `ScriptInjectionTracker` before sending
-  // the injection message to the renderer.
-  //
-  // TODO(crbug.com/513486355): Once the bug is fixed in
-  // `RequestContentScript::InstructRenderProcessToInject()`, rename this test
-  // to `WithheldPermissionsDoNotUpdateTracker` and update this expectation to
-  // verify that `ScriptInjectionTracker` does not record execution when
-  // permissions are withheld:
-  // EXPECT_FALSE(
-  //     ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
-  //         *target_process, extension()->id()));
+  // Verify that `ScriptInjectionTracker` does not record that the process ran a
+  // content script from this extension while permissions are withheld.
+  EXPECT_FALSE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
+      *target_process, extension()->id()));
+
+  // Grant permission to run the blocked action on the active tab and verify
+  // that the deferred content script executes and updates the tracker.
+  ASSERT_TRUE(action_runner->WantsToRun(extension()));
+  action_runner->RunForTesting(extension());
+
+  {
+    SCOPED_TRACE("Waiting for content script to execute after granting access");
+    ASSERT_TRUE(script_listener.WaitUntilSatisfied());
+  }
+
   EXPECT_TRUE(ScriptInjectionTracker::DidProcessRunContentScriptFromExtension(
       *target_process, extension()->id()));
 }

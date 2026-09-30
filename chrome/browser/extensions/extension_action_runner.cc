@@ -275,6 +275,10 @@ ExtensionActionRunner::RequiresUserConsentForScriptInjection(
       return extension->permissions_data()->GetContentScriptAccess(url, tab_id,
                                                                    nullptr);
     case mojom::InjectionType::kProgrammaticScript:
+    // Declarative scripts are gated on the extension's host permissions rather
+    // than its manifest content script matches, the same as
+    // `RequestContentScript::InstructRenderProcessToInject()`.
+    case mojom::InjectionType::kDeclarativeScript:
       return extension->permissions_data()->GetPageAccess(url, tab_id, nullptr);
   }
 

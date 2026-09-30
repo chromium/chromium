@@ -585,4 +585,34 @@ TEST_F(ExtensionActionRunnerUnitTest, TestWebRequestBlocked) {
   EXPECT_FALSE(runner()->WantsToRun(extension));
 }
 
+// Tests that `ExtensionActionRunner::RequiresUserConsentForScriptInjection()`
+// gates `mojom::InjectionType::kDeclarativeScript` injections (from the
+// `RequestContentScript` action of the `chrome.declarativeContent` API) on the
+// extension's host permissions (`PermissionsData::GetPageAccess()`), the same
+// as `mojom::InjectionType::kProgrammaticScript`, rather than on its manifest
+// content script matches (`PermissionsData::GetContentScriptAccess()`).
+TEST_F(ExtensionActionRunnerUnitTest, DeclarativeScriptsUseHostPermissions) {
+  // Add an extension with withheld all hosts permissions and no manifest
+  // content scripts, then navigate to a page it has requested host permissions
+  // for.
+  const Extension* extension = AddExtension();
+  ASSERT_TRUE(extension);
+  NavigateAndCommit(GURL("https://www.google.com"));
+
+  // Content script injections are denied since the extension has no manifest
+  // content scripts matching the page.
+  EXPECT_EQ(PermissionsData::PageAccess::kDenied,
+            runner()->RequiresUserConsentForScriptInjectionForTesting(
+                extension, mojom::InjectionType::kContentScript));
+
+  // Declarative and programmatic script injections are withheld because they
+  // use the extension's withheld host permissions.
+  EXPECT_EQ(PermissionsData::PageAccess::kWithheld,
+            runner()->RequiresUserConsentForScriptInjectionForTesting(
+                extension, mojom::InjectionType::kDeclarativeScript));
+  EXPECT_EQ(PermissionsData::PageAccess::kWithheld,
+            runner()->RequiresUserConsentForScriptInjectionForTesting(
+                extension, mojom::InjectionType::kProgrammaticScript));
+}
+
 }  // namespace extensions
