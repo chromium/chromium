@@ -12,6 +12,15 @@ bool IsStylusHandwritingWinEnabled() {
   return base::FeatureList::IsEnabled(kStylusHandwritingWin);
 }
 
+BASE_FEATURE_PARAM(int,
+                   kStylusHandwritingWinSmallGestureMovementThresholdHm,
+                   &kStylusHandwritingWin,
+                   75);
+
+int StylusHandwritingWinSmallGestureMovementThresholdHm() {
+  return kStylusHandwritingWinSmallGestureMovementThresholdHm.Get();
+}
+
 BASE_FEATURE(kProximateBoundsCollection, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE_PARAM(int,

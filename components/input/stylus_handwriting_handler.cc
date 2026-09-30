@@ -14,7 +14,8 @@ StylusHandwritingHandler::StylusHandwritingHandler(InputRouterClient* client)
 
 StylusHandwritingHandler::~StylusHandwritingHandler() = default;
 
-void StylusHandwritingHandler::OnTouchEvent(const blink::WebTouchEvent&) {}
+void StylusHandwritingHandler::OnTouchEvent(const blink::WebTouchEvent&,
+                                            float) {}
 
 void StylusHandwritingHandler::ApplyTouchAction(cc::TouchAction) {}
 

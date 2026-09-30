@@ -2700,6 +2700,14 @@ bool RenderWidgetHostViewAura::ShouldInitiateStylusWriting() {
   return StylusHandwritingControllerWin::IsHandwritingAPIAvailable();
 }
 
+std::optional<gfx::Vector2dF>
+RenderWidgetHostViewAura::GetStylusHandwritingPixelsPerInch() {
+  if (!last_stylus_handwriting_properties_) {
+    return std::nullopt;
+  }
+  return last_stylus_handwriting_properties_->pixels_per_inch;
+}
+
 void RenderWidgetHostViewAura::OnStartStylusWriting() {
   StartStylusWritingImpl(
       this,

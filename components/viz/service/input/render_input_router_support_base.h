@@ -5,11 +5,14 @@
 #ifndef COMPONENTS_VIZ_SERVICE_INPUT_RENDER_INPUT_ROUTER_SUPPORT_BASE_H_
 #define COMPONENTS_VIZ_SERVICE_INPUT_RENDER_INPUT_ROUTER_SUPPORT_BASE_H_
 
+#include <optional>
+
 #include "base/observer_list.h"
 #include "components/input/render_widget_host_view_input.h"
 #include "components/viz/common/hit_test/hit_test_data_provider.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/service/viz_service_export.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace viz {
 
@@ -45,6 +48,7 @@ class VIZ_SERVICE_EXPORT RenderInputRouterSupportBase
   // StylusInterface implementation.
   bool ShouldInitiateStylusWriting() override;
   void NotifyHoverActionStylusWritable(bool stylus_writable) override;
+  std::optional<gfx::Vector2dF> GetStylusHandwritingPixelsPerInch() override;
 
   // RenderWidgetHostViewInput implementation
   base::WeakPtr<input::RenderWidgetHostViewInput> GetInputWeakPtr() override;

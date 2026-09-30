@@ -32,15 +32,19 @@ RenderInputRouterSupportBase::RenderInputRouterSupportBase(
 }
 
 bool RenderInputRouterSupportBase::ShouldInitiateStylusWriting() {
-  // Stylus input events are not going to be handled on VizCompositor thread
-  // with the current scope of InputVizard.
+  // Currently there is no Stylus Handwriting support for InputVizard.
   NOTREACHED();
 }
 
 void RenderInputRouterSupportBase::NotifyHoverActionStylusWritable(
     bool stylus_writable) {
-  // Stylus input events are not going to be handled on VizCompositor thread
-  // with the current scope of InputVizard.
+  // Currently there is no Stylus Handwriting support for InputVizard.
+  NOTREACHED();
+}
+
+std::optional<gfx::Vector2dF>
+RenderInputRouterSupportBase::GetStylusHandwritingPixelsPerInch() {
+  // Currently there is no Stylus Handwriting support for InputVizard.
   NOTREACHED();
 }
 

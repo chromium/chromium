@@ -511,6 +511,12 @@ bool RenderWidgetHostViewChildFrame::ShouldInitiateStylusWriting() {
               : RenderWidgetHostViewBase::ShouldInitiateStylusWriting();
 }
 
+std::optional<gfx::Vector2dF>
+RenderWidgetHostViewChildFrame::GetStylusHandwritingPixelsPerInch() {
+  auto* root = GetRootView();
+  return root ? root->GetStylusHandwritingPixelsPerInch() : std::nullopt;
+}
+
 void RenderWidgetHostViewChildFrame::OnStartStylusWriting() {
   auto* root = GetRootView();
   if (!root) {

@@ -17,6 +17,15 @@ BASE_DECLARE_FEATURE(kStylusHandwritingWin);
 COMPONENT_EXPORT(STYLUS_HANDWRITING_WIN)
 extern bool IsStylusHandwritingWinEnabled();
 
+// HIMETRIC unit movement threshold to start stylus handwriting for gestures
+// beneath the stylus slop threshold.
+COMPONENT_EXPORT(STYLUS_HANDWRITING_WIN)
+BASE_DECLARE_FEATURE_PARAM(
+    int,
+    kStylusHandwritingWinSmallGestureMovementThresholdHm);
+COMPONENT_EXPORT(STYLUS_HANDWRITING_WIN)
+extern int StylusHandwritingWinSmallGestureMovementThresholdHm();
+
 // Enables remote configuration of how many "proximate" character bounding boxes
 // are collected via field trials.
 // The Windows Handwriting API will collect these bounds through two TSF APIs:

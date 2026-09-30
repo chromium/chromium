@@ -12,3 +12,9 @@ include_rules = [
   "+ui/gfx",
   "+ui/latency",
 ]
+
+specific_include_rules = {
+  "stylus_handwriting_handler_win(_unittest)?\\.cc": [
+    "+components/stylus_handwriting/win/features.h",
+  ],
+}

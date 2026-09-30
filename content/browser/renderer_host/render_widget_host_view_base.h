@@ -53,6 +53,7 @@
 #include "ui/events/blink/did_overscroll_params.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/native_ui_types.h"
 #include "ui/gfx/range/range.h"
 #include "url/origin.h"
@@ -311,6 +312,7 @@ class CONTENT_EXPORT RenderWidgetHostViewBase
   bool ShouldInitiateStylusWriting() override;
   // Notify whether the hovered element action is stylus writable or not.
   void NotifyHoverActionStylusWritable(bool stylus_writable) override {}
+  std::optional<gfx::Vector2dF> GetStylusHandwritingPixelsPerInch() override;
 
   // Invalidates the `viz::SurfaceAllocationGroup` of this View. Also
   // invalidates `viz::SurfaceId` of it. This should be used when no previous

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_INPUT_INPUT_ROUTER_CLIENT_H_
 #define COMPONENTS_INPUT_INPUT_ROUTER_CLIENT_H_
 
+#include <optional>
+
 #include "cc/input/touch_action.h"
 #include "components/input/dispatch_to_renderer_callback.h"
 #include "components/input/event_with_latency_info.h"
@@ -12,6 +14,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "third_party/blink/public/mojom/input/input_handler.mojom.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace ui {
 class LatencyInfo;
@@ -25,6 +28,9 @@ class StylusInterface {
 
   virtual bool ShouldInitiateStylusWriting() = 0;
   virtual void NotifyHoverActionStylusWritable(bool stylus_writable) = 0;
+  // Returns the per-axis PPI for the current stylus handwriting input device,
+  // or nullopt when there are no cached handwriting properties.
+  virtual std::optional<gfx::Vector2dF> GetStylusHandwritingPixelsPerInch() = 0;
 };
 
 class COMPONENT_EXPORT(INPUT) InputRouterClient {
