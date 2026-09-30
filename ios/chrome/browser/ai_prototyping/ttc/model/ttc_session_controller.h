@@ -9,14 +9,25 @@
 
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_states.h"
 
+@class TTCConversation;
 @protocol TTCSessionControllerObserver;
 
 // Coordinates the lifecycle, observer notifications, and backgrounding teardown
 // for an active TalkToChrome voice session on iOS.
 @interface TTCSessionController : NSObject
 
+// Underlying conversation coordinator.
+@property(nonatomic, readonly) TTCConversation* conversation;
+
 // Current lifecycle state of this session.
 @property(nonatomic, readonly, assign) TTCSessionLifecycle lifecycle;
+
+// Designated initializer injecting a custom conversation coordinator.
+- (instancetype)initWithConversation:(TTCConversation*)conversation
+    NS_DESIGNATED_INITIALIZER;
+
+// Convenience initializer using a default `TTCConversation`.
+- (instancetype)init;
 
 #pragma mark - Session Lifecycle
 

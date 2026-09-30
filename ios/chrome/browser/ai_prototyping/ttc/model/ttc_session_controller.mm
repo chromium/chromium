@@ -6,20 +6,33 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/check.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation_delegate.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
+
+@interface TTCSessionController () <TTCConversationDelegate>
+@end
 
 @implementation TTCSessionController {
   NSHashTable<id<TTCSessionControllerObserver>>* _observers;
 }
 
-- (instancetype)init {
+- (instancetype)initWithConversation:(TTCConversation*)conversation {
+  CHECK(conversation);
   self = [super init];
   if (self) {
+    _conversation = conversation;
+    _conversation.delegate = self;
     _lifecycle = TTCSessionLifecycle::kInitializing;
     _observers = [NSHashTable weakObjectsHashTable];
     [self registerBackgroundObserver];
   }
   return self;
+}
+
+- (instancetype)init {
+  return [self initWithConversation:[[TTCConversation alloc] init]];
 }
 
 #pragma mark - Session Lifecycle
@@ -28,6 +41,7 @@
   if (_lifecycle == TTCSessionLifecycle::kFinished) {
     return;
   }
+  [_conversation start];
 }
 
 - (void)onSessionInitialized {
@@ -38,11 +52,13 @@
 }
 
 - (void)stopSession {
+  [_conversation stop];
   [self setLifecycle:TTCSessionLifecycle::kFinished];
 }
 
 - (void)disconnect {
   [self stopSession];
+  [_conversation disconnect];
   [self removeBackgroundObserver];
   [_observers removeAllObjects];
 }
@@ -60,6 +76,18 @@
       [observer sessionController:self didChangeLifecycle:_lifecycle];
     }
   }
+}
+
+#pragma mark - TTCConversationDelegate
+
+- (void)conversation:(TTCConversation*)conversation
+    didUpdateAudioEnergy:(float)energy {
+  [self userAudioLevelDidUpdate:energy];
+}
+
+- (void)conversation:(TTCConversation*)conversation
+    didEncounterError:(NSError*)error {
+  [self failWithError:error];
 }
 
 #pragma mark - Audio & Errors

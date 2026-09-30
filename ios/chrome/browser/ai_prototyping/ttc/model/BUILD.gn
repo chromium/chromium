@@ -18,6 +18,10 @@ source_set("model") {
     "ttc_audio_session_manager.h",
     "ttc_audio_session_manager.mm",
     "ttc_audio_session_manager_delegate.h",
+    "ttc_conversation.h",
+    "ttc_conversation.mm",
+    "ttc_conversation_delegate.h",
+    "ttc_conversation_state.h",
     "ttc_keyed_service.h",
     "ttc_keyed_service.mm",
     "ttc_keyed_service_factory.h",
@@ -51,6 +55,7 @@ source_set("unit_tests") {
     "ttc_audio_player_unittest.mm",
     "ttc_audio_recorder_unittest.mm",
     "ttc_audio_session_manager_unittest.mm",
+    "ttc_conversation_unittest.mm",
     "ttc_keyed_service_unittest.mm",
     "ttc_session_controller_unittest.mm",
   ]

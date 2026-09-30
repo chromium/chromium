@@ -7,10 +7,70 @@
 #import <UIKit/UIKit.h>
 
 #import "base/test/run_until.h"
-#import "base/test/task_environment.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_audio_controller.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation_delegate.h"
+#import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_conversation_state.h"
 #import "ios/chrome/browser/ai_prototyping/ttc/model/ttc_session_controller_observer.h"
+#import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
+#import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
+
+#pragma mark - Fake Audio Controller
+
+@interface FakeTTCSessionAudioController : NSObject <TTCAudioController>
+
+@property(nonatomic, weak) id<TTCAudioControllerDelegate> delegate;
+@property(nonatomic, assign, getter=isCapturing) BOOL capturing;
+@property(nonatomic, assign, getter=isPlaying) BOOL playing;
+@property(nonatomic, assign, getter=isLoopbackEnabled) BOOL loopbackEnabled;
+@property(nonatomic, assign, getter=isOutputRoutedToSpeaker)
+    BOOL outputRoutedToSpeaker;
+@property(nonatomic, assign) BOOL didStopCapture;
+@property(nonatomic, assign) BOOL didStopPlayback;
+
+@end
+
+@implementation FakeTTCSessionAudioController
+
+- (void)startCaptureWithCompletion:(void (^)(BOOL success,
+                                             NSError* error))completion {
+  self.capturing = YES;
+  if (completion) {
+    completion(YES, nil);
+  }
+}
+
+- (void)stopCapture {
+  self.capturing = NO;
+  self.didStopCapture = YES;
+}
+
+- (void)playStreamingAudioChunk:(NSData*)pcm24kData {
+  self.playing = YES;
+}
+
+- (void)clearPlaybackQueue {
+}
+
+- (void)stopPlayback {
+  self.playing = NO;
+  self.didStopPlayback = YES;
+}
+
+- (void)playTestTone {
+}
+
+- (void)stopTestTone {
+}
+
+- (void)disconnect {
+}
+
+@end
+
+#pragma mark - Fake Session Observer
 
 // Fake observer conforming to TTCSessionControllerObserver for unit testing.
 @interface FakeTTCSessionControllerObserver
@@ -49,7 +109,7 @@
 
 class TTCSessionControllerTest : public PlatformTest {
  protected:
-  base::test::TaskEnvironment task_environment_;
+  web::WebTaskEnvironment task_environment_;
 };
 
 // Tests that a controller initializes in kInitializing state.
@@ -240,4 +300,124 @@ TEST_F(TTCSessionControllerTest, TestAudioLevelDispatchedFromBackgroundThread) {
   EXPECT_FLOAT_EQ(observer.lastAudioLevel, 0.8f);
 
   [controller disconnect];
+}
+
+// Tests that TTCSessionController initializes with an injected conversation and
+// assigns itself as the delegate.
+TEST_F(TTCSessionControllerTest, TestCustomConversationInjection) {
+  FakeTTCSessionAudioController* fake_audio =
+      [[FakeTTCSessionAudioController alloc] init];
+  TTCConversation* conversation =
+      [[TTCConversation alloc] initWithAudioController:fake_audio];
+  TTCSessionController* controller =
+      [[TTCSessionController alloc] initWithConversation:conversation];
+
+  EXPECT_EQ(controller.conversation, conversation);
+  EXPECT_EQ(conversation.delegate, (id<TTCConversationDelegate>)controller);
+  [controller disconnect];
+}
+
+// Tests that startSession starts the underlying conversation and capture.
+TEST_F(TTCSessionControllerTest, TestStartSessionDrivesConversation) {
+  FakeTTCSessionAudioController* fake_audio =
+      [[FakeTTCSessionAudioController alloc] init];
+  TTCConversation* conversation =
+      [[TTCConversation alloc] initWithAudioController:fake_audio];
+  TTCSessionController* controller =
+      [[TTCSessionController alloc] initWithConversation:conversation];
+
+  EXPECT_EQ(conversation.state, TTCConversationState::kStopped);
+  [controller startSession];
+  EXPECT_EQ(conversation.state, TTCConversationState::kListening);
+  EXPECT_TRUE(fake_audio.isCapturing);
+
+  [controller disconnect];
+}
+
+// Tests that stopSession stops the underlying conversation and capture.
+TEST_F(TTCSessionControllerTest, TestStopSessionDrivesConversationStop) {
+  FakeTTCSessionAudioController* fake_audio =
+      [[FakeTTCSessionAudioController alloc] init];
+  TTCConversation* conversation =
+      [[TTCConversation alloc] initWithAudioController:fake_audio];
+  TTCSessionController* controller =
+      [[TTCSessionController alloc] initWithConversation:conversation];
+
+  [controller startSession];
+  EXPECT_EQ(conversation.state, TTCConversationState::kListening);
+
+  [controller stopSession];
+  EXPECT_EQ(conversation.state, TTCConversationState::kStopped);
+  EXPECT_TRUE(fake_audio.didStopCapture);
+  EXPECT_TRUE(fake_audio.didStopPlayback);
+
+  [controller disconnect];
+}
+
+// Tests that conversation audio energy updates are forwarded to session
+// observers.
+TEST_F(TTCSessionControllerTest, TestConversationEnergyForwardedToObserver) {
+  FakeTTCSessionAudioController* fake_audio =
+      [[FakeTTCSessionAudioController alloc] init];
+  TTCConversation* conversation =
+      [[TTCConversation alloc] initWithAudioController:fake_audio];
+  TTCSessionController* controller =
+      [[TTCSessionController alloc] initWithConversation:conversation];
+  FakeTTCSessionControllerObserver* observer =
+      [[FakeTTCSessionControllerObserver alloc] init];
+  [controller addObserver:observer];
+
+  [controller startSession];
+
+  // Conversation delegate invokes didUpdateAudioEnergy.
+  [(id<TTCConversationDelegate>)controller conversation:conversation
+                                   didUpdateAudioEnergy:0.75f];
+
+  EXPECT_EQ(observer.audioLevelUpdateCount, 1);
+  EXPECT_FLOAT_EQ(observer.lastAudioLevel, 0.75f);
+
+  [controller disconnect];
+}
+
+// Tests that conversation errors are forwarded to session observers.
+TEST_F(TTCSessionControllerTest, TestConversationErrorForwardedToObserver) {
+  FakeTTCSessionAudioController* fake_audio =
+      [[FakeTTCSessionAudioController alloc] init];
+  TTCConversation* conversation =
+      [[TTCConversation alloc] initWithAudioController:fake_audio];
+  TTCSessionController* controller =
+      [[TTCSessionController alloc] initWithConversation:conversation];
+  FakeTTCSessionControllerObserver* observer =
+      [[FakeTTCSessionControllerObserver alloc] init];
+  [controller addObserver:observer];
+
+  NSError* error = [NSError errorWithDomain:@"TestConvError"
+                                       code:-42
+                                   userInfo:nil];
+  [(id<TTCConversationDelegate>)controller conversation:conversation
+                                      didEncounterError:error];
+
+  EXPECT_EQ(observer.errorCount, 1);
+  EXPECT_NSEQ(observer.lastError, error);
+
+  [controller disconnect];
+}
+
+// Tests that TTCSessionController disconnect calls disconnect on the underlying
+// conversation.
+TEST_F(TTCSessionControllerTest, TestDisconnectCleansUpConversation) {
+  FakeTTCSessionAudioController* fake_audio =
+      [[FakeTTCSessionAudioController alloc] init];
+  TTCConversation* conversation =
+      [[TTCConversation alloc] initWithAudioController:fake_audio];
+  TTCSessionController* controller =
+      [[TTCSessionController alloc] initWithConversation:conversation];
+
+  [controller startSession];
+  EXPECT_EQ(conversation.state, TTCConversationState::kListening);
+
+  [controller disconnect];
+  EXPECT_EQ(conversation.state, TTCConversationState::kStopped);
+  EXPECT_EQ(conversation.delegate, nil);
+  EXPECT_EQ(fake_audio.delegate, nil);
 }
