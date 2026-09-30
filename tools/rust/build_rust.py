@@ -803,24 +803,14 @@ def GitApplyLLVMDependentCherryPicks():
     #         'https://github.com/rust-lang/rust.git',
     #     )
 
-    # TODO: Remove once
-    # https://github.com/rust-lang/rust/pull/163128 rolls into rust.
+    # TODO(crbug.com/567940072): Remove once
+    # https://github.com/rust-lang/rust/pull/163546 rolls into rust.
     if IsGitAncestorToHead(
-        LLVM_DIR, '4200a8e34e488aaf9c1b5b1966aa4c1bbec8b4d5'
+        LLVM_DIR, '5ffb8a46e7559a86ed9178ab92605777eed49ee1'
     ):
         GitCherryPick(
             RUST_SRC_DIR,
-            '99188ef36d20ffc724b5649895e5e4df2c794faf',
-            'https://github.com/rust-lang/rust.git',
-        )
-    # TODO: Remove once
-    # https://github.com/rust-lang/rust/pull/163113 rolls into rust.
-    if IsGitAncestorToHead(
-        LLVM_DIR, 'cf40ab1dc19aa9b42e0725fec1e5cf34f898a4d4'
-    ):
-        GitCherryPick(
-            RUST_SRC_DIR,
-            '9acb7866d472c7055eabef228ce961c821251719',
+            '937145bcebff9cafefdbad652b7463a8ed04fe1f'
             'https://github.com/rust-lang/rust.git',
         )
 
