@@ -252,10 +252,10 @@ static unsigned int HarfBuzzGetNominalGlyphs(
   CHECK(hb_font_data);
 
   auto resolve_nominal_glyphs =
-      [&](unsigned int start, const UnicodeRangeSet* range_set = nullptr)
+      [&](wtf_size_t start, const UnicodeRangeSet* range_set = nullptr)
           __attribute__((always_inline)) {
             UNSAFE_BUFFERS({
-              for (unsigned int i = start; i < count; ++i) {
+              for (wtf_size_t i = start; i < count; ++i) {
                 hb_codepoint_t u = *reinterpret_cast<const hb_codepoint_t*>(
                     reinterpret_cast<const char*>(first_unicode) +
                     i * unicode_stride);
@@ -282,7 +282,7 @@ static unsigned int HarfBuzzGetNominalGlyphs(
     return resolve_nominal_glyphs(0);
   }
 
-  unsigned int done = hb_font_get_nominal_glyphs(
+  wtf_size_t done = hb_font_get_nominal_glyphs(
       hb_font_get_parent(hb_font), count, first_unicode, unicode_stride,
       first_glyph, glyph_stride);
 
@@ -387,8 +387,8 @@ static inline bool TableHasSpace(hb_face_t* face,
                                  hb_set_t* glyphs,
                                  hb_tag_t tag,
                                  hb_codepoint_t space) {
-  unsigned count = hb_ot_layout_table_get_lookup_count(face, tag);
-  for (unsigned i = 0; i < count; i++) {
+  wtf_size_t count = hb_ot_layout_table_get_lookup_count(face, tag);
+  for (wtf_size_t i = 0; i < count; ++i) {
     hb_ot_layout_lookup_collect_glyphs(face, tag, i, glyphs, glyphs, glyphs,
                                        nullptr);
     if (hb_set_has(glyphs, space)) {
@@ -453,7 +453,7 @@ bool HarfBuzzFace::HasSpaceInLigaturesOrKerning(TypesettingFeatures features) {
               HarfBuzzFontData::SpaceGlyphInOpenTypeTables::kPresent);
 }
 
-unsigned HarfBuzzFace::UnitsPerEmFromHeadTable() {
+wtf_size_t HarfBuzzFace::UnitsPerEmFromHeadTable() {
   hb_face_t* face = hb_font_get_face(harfbuzz_font_data_->unscaled_font_.get());
   return hb_face_get_upem(face);
 }

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_face_from_typeface.h"
 
 #include "base/numerics/safe_conversions.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 #include "third_party/skia/include/core/SkStream.h"
 
 namespace {
@@ -29,14 +30,14 @@ hb::unique_ptr<hb_face_t> HbFaceFromSkTypeface(sk_sp<SkTypeface> typeface) {
     size_t tf_size = tf_stream->getLength();
     hb::unique_ptr<hb_blob_t> face_blob(hb_blob_create(
         reinterpret_cast<const char*>(tf_memory),
-        base::checked_cast<unsigned int>(tf_size), HB_MEMORY_MODE_READONLY,
+        base::checked_cast<wtf_size_t>(tf_size), HB_MEMORY_MODE_READONLY,
         tf_stream.release(), DeleteTypefaceStream));
     // hb_face_create always succeeds.
     // Use hb_face_count to retrieve the number of recognized faces in the blob.
     // hb_face_create_for_tables may still create a working hb_face.
     // See https://github.com/harfbuzz/harfbuzz/issues/248 .
-    unsigned int num_hb_faces = hb_face_count(face_blob.get());
-    if (0 < num_hb_faces && static_cast<unsigned>(ttc_index) < num_hb_faces) {
+    wtf_size_t num_hb_faces = hb_face_count(face_blob.get());
+    if (0 < num_hb_faces && static_cast<wtf_size_t>(ttc_index) < num_hb_faces) {
       return_face =
           hb::unique_ptr<hb_face_t>(hb_face_create(face_blob.get(), ttc_index));
     }

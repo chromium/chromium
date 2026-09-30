@@ -20,7 +20,8 @@ struct hb_font_t;
 
 namespace blink {
 
-const unsigned kInvalidFallbackMetricsValue = static_cast<unsigned>(-1);
+inline constexpr wtf_size_t kInvalidFallbackMetricsValue =
+    static_cast<wtf_size_t>(-1);
 
 // The HarfBuzzFontData struct carries user-pointer data (a context) for
 // |hb_font_t| callback functions/operations. It contains metrics and OpenType

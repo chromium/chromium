@@ -63,10 +63,10 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   bloberizer_ng.Blobs();
 
   // Bloberize
-  constexpr unsigned word_length = 7;
-  unsigned state = 0;
-  for (unsigned from = 0; from < string.length(); from += word_length) {
-    unsigned to = std::min(from + word_length, string.length());
+  constexpr wtf_size_t word_length = 7;
+  uint32_t state = 0;
+  for (wtf_size_t from = 0; from < string.length(); from += word_length) {
+    wtf_size_t to = std::min(from + word_length, string.length());
     bool is_rtl = state & 0x2;
     bool is_override = state & 0x4;
     ++state;

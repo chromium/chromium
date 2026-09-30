@@ -62,24 +62,24 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
   // May be called multiple times; font and direction may vary between calls.
   ShapeResult* Shape(const Font*,
                      TextDirection,
-                     unsigned start,
-                     unsigned end) const;
+                     wtf_size_t start,
+                     wtf_size_t end) const;
 
   // Shape a range that has already been pre-segmented. Start and end positions
   // must match the positions defined by the ranges and must be at valid break
   // positions.
   ShapeResult* Shape(const Font*,
                      TextDirection,
-                     unsigned start,
-                     unsigned end,
+                     wtf_size_t start,
+                     wtf_size_t end,
                      const Vector<RunSegmenter::RunSegmenterRange>&,
                      ShapeOptions = ShapeOptions()) const;
 
   // Shape a single range. Start and end positions defined by the range.
   ShapeResult* Shape(const Font*,
                      TextDirection,
-                     unsigned start,
-                     unsigned end,
+                     wtf_size_t start,
+                     wtf_size_t end,
                      const RunSegmenter::RunSegmenterRange,
                      ShapeOptions = ShapeOptions()) const;
 
@@ -89,7 +89,7 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
   ShapeResult* Shape(const Font*, TextDirection) const;
 
   const String& GetText() const { return text_; }
-  unsigned TextLength() const { return text_.length(); }
+  wtf_size_t TextLength() const { return text_.length(); }
 
   // This function is between `Shape` and `SimpleFontData::GlyphForCharacter`.
   //
@@ -100,7 +100,7 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
   // Unlike `SimpleFontData::GlyphForCharacter`, it shapes, taking locale,
   // script, and OpenType features into account.
   struct GlyphData {
-    unsigned cluster;
+    wtf_size_t cluster;
     Glyph glyph;
     gfx::PointF advance;
     gfx::PointF offset;
@@ -161,8 +161,8 @@ class PLATFORM_EXPORT HarfBuzzShaper final {
                     const BufferSlice&,
                     ShapeResult*) const;
 
-  void CheckTextLen(unsigned start, unsigned length) const;
-  void CheckTextEnd(unsigned start, unsigned end) const;
+  void CheckTextLen(wtf_size_t start, wtf_size_t length) const;
+  void CheckTextEnd(wtf_size_t start, wtf_size_t end) const;
 
   const String text_;
 };
