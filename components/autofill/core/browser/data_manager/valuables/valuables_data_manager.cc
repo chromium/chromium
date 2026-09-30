@@ -90,7 +90,9 @@ void ValuablesDataManager::RecordLoyaltyCardUsed(const ValuableId& id,
     return;
   }
   loyalty_card->RecordLoyaltyCardUsed(use_date);
-  webdata_service_->UpdateValuableMetadata(loyalty_card->metadata());
+  if (webdata_service_) {
+    webdata_service_->UpdateValuableMetadata(loyalty_card->metadata());
+  }
 }
 
 const gfx::Image* ValuablesDataManager::GetCachedValuableImageForUrl(

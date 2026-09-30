@@ -24,11 +24,14 @@
 #include "components/autofill/core/browser/at_memory/at_memory_metrics_recorder_test_api.h"
 #include "components/autofill/core/browser/at_memory/at_memory_persisted_state_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
+#include "components/autofill/core/browser/data_model/valuables/loyalty_card.h"
 #include "components/autofill/core/browser/filling/autofill_ai/autofill_ai_access_manager.h"
 #include "components/autofill/core/browser/filling/autofill_ai/field_filling_entity_util.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager_test_api.h"
@@ -47,6 +50,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/test_utils/entity_data_test_util.h"
+#include "components/autofill/core/browser/test_utils/valuables_data_test_util.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
 #include "components/autofill/core/browser/webdata/autofill_ai/entity_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service_test_helper.h"
@@ -2326,6 +2330,52 @@ TEST_P(AtMemoryManagerTest, FillNonSensitiveAutofillAi) {
           passport.guid());
   ASSERT_TRUE(updated_passport.has_value());
   EXPECT_EQ(updated_passport->use_count(), initial_use_count + 1);
+}
+
+// Tests that filling loyalty card records usage metrics and increments use
+// count.
+TEST_P(AtMemoryManagerTest, FillLoyaltyCard) {
+  base::HistogramTester histogram_tester;
+  LoyaltyCard card = test::CreateLoyaltyCard();
+  test_api(*autofill_client().GetValuablesDataManager()).AddLoyaltyCard(card);
+
+  auto [form_id, field_id] = SeeFormAndShowPopup();
+
+  std::vector<Suggestion> final_suggestions;
+  {
+    MemorySearchResult entry(MemoryDataType::kLoyaltyMembershipId,
+                             u"Loyalty Card", u"987654321987654321");
+    entry.identifier = card.id().value();
+    entry.sources = {MemoryEntrySource(MemoryEntrySourceType::kAutofill)};
+    MockQueryResultsAndExpectCallback(u"query",
+                                      MemorySearchStatus::kFinalResponseSuccess,
+                                      {entry}, final_suggestions);
+  }
+  manager().OnSearchSubmitted(u"query");
+  ASSERT_EQ(final_suggestions.size(), 1u);
+
+  EXPECT_CALL(
+      autofill_manager(),
+      FillOrPreviewField(mojom::ActionPersistence::kFill,
+                         mojom::FieldActionType::kReplaceSelectionForAtMemory,
+                         _, _, std::u16string(u"987654321987654321"),
+                         FillingProduct::kAtMemory, _));
+
+  task_environment_.FastForwardBy(base::Seconds(60));
+
+  manager().FillSearchResult(autofill_manager(), form_id, field_id,
+                             final_suggestions[0], /*metadata=*/std::nullopt);
+
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionAccepted",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample("Autofill.AtMemory.SuggestionFilled",
+                                      true, 1);
+
+  std::optional<LoyaltyCard> updated_card =
+      autofill_client().GetValuablesDataManager()->GetLoyaltyCardById(
+          card.id());
+  ASSERT_TRUE(updated_card.has_value());
+  EXPECT_EQ(updated_card->use_count(), card.use_count() + 1);
 }
 
 enum class SourceScenario { kNoSources, kAutofillOnly, kGmailOnly, kMixed };

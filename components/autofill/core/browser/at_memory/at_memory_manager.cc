@@ -33,6 +33,7 @@
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
@@ -125,7 +126,7 @@ Suggestion::AtMemoryPayload::Identifier GetPayloadIdentifier(
     case MemoryDataTypeCategory::kContactInfo:
       return std::get<std::string>(identifier);
     case MemoryDataTypeCategory::kLoyaltyCard:
-    // TODO(crbug.com/566955519): Record usage of local loyalty cards.
+      return ValuableId(std::get<std::string>(identifier));
     case MemoryDataTypeCategory::kUnknown:
       return std::monostate();
   }
@@ -542,7 +543,8 @@ IsAsync AtMemoryManager::FillSearchResult(
                        },
                        [](std::monostate) { NOTREACHED(); },
                        [](const std::string&) { NOTREACHED(); },
-                       [](const EntityInstance::EntityId&) { NOTREACHED(); }},
+                       [](const EntityInstance::EntityId&) { NOTREACHED(); },
+                       [](const ValuableId&) { NOTREACHED(); }},
                    payload.identifier);
         return IsAsync(false);
       }
@@ -634,12 +636,15 @@ IsAsync AtMemoryManager::FillSearchResult(
         return fill_now();
       }
 
-      case MemoryDataType::kCreditCardNickname:
-      case MemoryDataType::kIbanNickname:
       case MemoryDataType::kLoyaltyMembershipId:
       case MemoryDataType::kLoyaltyMembershipProgram:
-      case MemoryDataType::kLoyaltyMembershipProvider:
-      // TODO(crbug.com/566955519): Record usage of local loyalty cards.
+      case MemoryDataType::kLoyaltyMembershipProvider: {
+        RecordLoyaltyCardUse(payload.identifier);
+        return fill_now();
+      }
+
+      case MemoryDataType::kCreditCardNickname:
+      case MemoryDataType::kIbanNickname:
       case MemoryDataType::kUnknown: {
         return fill_now();
       }
@@ -693,6 +698,21 @@ void AtMemoryManager::RecordAutofillAiEntityUse(
       }
     }
   }
+}
+
+void AtMemoryManager::RecordLoyaltyCardUse(
+    const Suggestion::AtMemoryPayload::Identifier& identifier) {
+  ValuablesDataManager* vdm = client_->GetValuablesDataManager();
+  if (!vdm) {
+    return;
+  }
+
+  const ValuableId* valuable_id = std::get_if<ValuableId>(&identifier);
+  if (!valuable_id || valuable_id->value().empty()) {
+    return;
+  }
+
+  vdm->RecordLoyaltyCardUsed(*valuable_id, base::Time::Now());
 }
 
 bool AtMemoryManager::IsSearching() const {

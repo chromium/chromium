@@ -25,6 +25,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
+#include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
 #include "components/autofill/core/browser/filling/autofill_ai/autofill_ai_access_manager.h"
 #include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
@@ -113,6 +114,11 @@ class AtMemoryManager {
   // Records the use of the Autofill AI entity identified by the payload's
   // identifier.
   void RecordAutofillAiEntityUse(
+      const Suggestion::AtMemoryPayload::Identifier& identifier);
+
+  // Records the use of the loyalty card identified by the payload's
+  // identifier.
+  void RecordLoyaltyCardUse(
       const Suggestion::AtMemoryPayload::Identifier& identifier);
 
   // Returns true if a search is currently in progress.

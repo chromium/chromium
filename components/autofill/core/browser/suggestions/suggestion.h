@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/payments/bnpl_issuer.h"
 #include "components/autofill/core/browser/data_model/payments/iban.h"
+#include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/integrators/at_memory/memory_data_type.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -237,7 +238,8 @@ struct Suggestion {
                                     Iban::Guid,
                                     Iban::InstrumentId,
                                     std::string,
-                                    EntityInstance::EntityId>;
+                                    EntityInstance::EntityId,
+                                    ValuableId>;
 
     AtMemoryPayload();
     // `value` is the value to be shown in the suggestion UI and the preview.
