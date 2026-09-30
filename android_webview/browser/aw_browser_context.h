@@ -258,8 +258,12 @@ class AwBrowserContext : public content::BrowserContext,
   const std::vector<scoped_refptr<AwOriginMatchedHeader>>&
   GetOriginMatchedHeaders();
 
-  // Adds a QUIC hints for the given origins.
-  void AddQuicHints(JNIEnv* env, const std::vector<GURL>& origins);
+  // Adds QUIC hints for the given origins, wildcard suffixes, or enables QUIC
+  // by default.
+  void AddQuicHints(JNIEnv* env,
+                    const std::vector<GURL>& origins,
+                    const std::vector<std::string>& wildcard_suffixes,
+                    bool try_quic_by_default);
 
   AwHttpCacheManager* GetHttpCacheManager() {
     return http_cache_manager_.get();

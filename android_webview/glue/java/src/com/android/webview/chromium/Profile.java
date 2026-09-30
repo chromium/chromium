@@ -19,6 +19,7 @@ import org.chromium.android_webview.AwBrowserContext;
 import org.chromium.android_webview.AwBrowserContextStore;
 import org.chromium.android_webview.AwHttpCacheManager;
 import org.chromium.android_webview.AwOriginMatchedHeader;
+import org.chromium.android_webview.ParsedQuicHints;
 import org.chromium.android_webview.StartupCallSite;
 import org.chromium.android_webview.StartupController;
 import org.chromium.android_webview.common.AwFeatureMap;
@@ -529,6 +530,10 @@ public class Profile {
 
     @UiThread
     public void addQuicHints(Set<String> origins) {
+        // Parse and validate here, rather than in the queued task, so that invalid input throws
+        // IllegalArgumentException synchronously on the caller's thread. Before WebView startup,
+        // queued tasks only run once startup completes, where the caller couldn't catch it.
+        ParsedQuicHints parsedHints = ParsedQuicHints.parse(origins);
         mAwInit.getRunQueue()
                 .addTask(
                         () -> {
@@ -537,7 +542,7 @@ public class Profile {
                                             .browserContext;
 
                             if (AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_ADD_QUIC_HINTS)) {
-                                browserContext.addQuicHints(origins);
+                                browserContext.addQuicHints(parsedHints);
                             } else {
                                 Log.w(TAG, "Profile.addQuicHints has been disabled.");
                             }

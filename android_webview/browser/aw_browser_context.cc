@@ -55,6 +55,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
@@ -812,13 +813,48 @@ AwBrowserContext::GetOriginMatchedHeaders() {
   return origin_matched_headers_;
 }
 
-void AwBrowserContext::AddQuicHints(JNIEnv* env,
-                                    const std::vector<GURL>& origins) {
-  auto scheme_host_ports = base::ToVector(origins, [](const GURL& origin) {
-    return url::SchemeHostPort(origin);
-  });
-  GetDefaultStoragePartition()->GetNetworkContext()->AddQuicHints(
-      scheme_host_ports, net::NetworkAnonymizationKey());
+void AwBrowserContext::AddQuicHints(
+    JNIEnv* env,
+    const std::vector<GURL>& origins,
+    const std::vector<std::string>& wildcard_suffixes,
+    bool try_quic_by_default) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto* network_context = GetDefaultStoragePartition()->GetNetworkContext();
+
+  if (try_quic_by_default) {
+    network_context->SetTryQuicByDefault(true);
+    return;
+  }
+
+  if (!origins.empty()) {
+    auto scheme_host_ports = base::ToVector(origins, [](const GURL& origin) {
+      return url::SchemeHostPort(origin);
+    });
+    network_context->AddQuicHints(scheme_host_ports,
+                                  net::NetworkAnonymizationKey());
+  }
+
+  if (!wildcard_suffixes.empty()) {
+    std::vector<network::mojom::WildcardQuicHintPtr> hints;
+    hints.reserve(wildcard_suffixes.size());
+    for (const auto& suffix_with_port : wildcard_suffixes) {
+      auto hint = network::mojom::WildcardQuicHint::New();
+      std::string_view suffix = suffix_with_port;
+      int port = 443;
+      size_t colon = suffix.rfind(':');
+      if (colon != std::string_view::npos) {
+        int parsed_port = 0;
+        CHECK(base::StringToInt(suffix.substr(colon + 1), &parsed_port) &&
+              parsed_port > 0 && parsed_port <= 65535);
+        port = parsed_port;
+        suffix = suffix.substr(0, colon);
+      }
+      hint->host_suffix = std::string(suffix);
+      hint->port = static_cast<uint16_t>(port);
+      hints.push_back(std::move(hint));
+    }
+    network_context->AddWildcardQuicHints(std::move(hints));
+  }
 }
 
 void AwBrowserContext::SetServiceWorkerIoThreadClient(

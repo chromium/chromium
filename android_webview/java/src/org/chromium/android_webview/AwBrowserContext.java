@@ -501,19 +501,13 @@ public class AwBrowserContext implements BrowserContextHandle {
                 .isValidHttpHeaderName(headerName);
     }
 
-    public void addQuicHints(Set<String> origins) {
-        GURL[] gurls = new GURL[origins.size()];
-        int i = 0;
-        for (String origin : origins) {
-            GURL gurl = new GURL(origin);
-            if (GURL.isEmptyOrInvalid(gurl)) {
-                throw new IllegalArgumentException("Invalid origin: " + origin);
-            }
-
-            gurls[i++] = gurl;
-        }
-
-        AwBrowserContextJni.get().addQuicHints(mNativeAwBrowserContext, gurls);
+    public void addQuicHints(ParsedQuicHints parsedHints) {
+        AwBrowserContextJni.get()
+                .addQuicHints(
+                        mNativeAwBrowserContext,
+                        parsedHints.exactOrigins,
+                        parsedHints.wildcardSuffixes,
+                        parsedHints.tryQuicByDefault);
     }
 
     public void setCrossOriginIsolatedAllowList(@NonNull Set<String> originPatterns) {
@@ -591,7 +585,10 @@ public class AwBrowserContext implements BrowserContextHandle {
         boolean isValidHttpHeaderValue(@JniType("std::string") String headerValue);
 
         void addQuicHints(
-                long nativeAwBrowserContext, @JniType("std::vector<GURL>") GURL[] origins);
+                long nativeAwBrowserContext,
+                @JniType("std::vector<GURL>") GURL[] origins,
+                @JniType("std::vector<std::string>") String[] wildcardSuffixes,
+                boolean tryQuicByDefault);
 
         @JniType("std::vector<std::string>")
         List<String> setCrossOriginIsolatedAllowList(
