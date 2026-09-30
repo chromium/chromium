@@ -9,18 +9,17 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
 import android.graphics.Rect;
 import android.view.View;
+import android.widget.FrameLayout;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -35,33 +34,32 @@ import org.chromium.ui.base.WindowDelegate;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class KeyboardHideHelperUnitTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private Runnable mKeyboardHiddenCallback;
-    @Mock private View mRootView;
     @Mock private WindowDelegate mWindowDelegate;
 
-    @Spy private View mView;
-
+    private FrameLayout mRootView;
+    private View mView;
     private KeyboardHideHelper mKeyboardHideHelper;
 
     @Before
     public void setUp() {
-        mView = spy(new View(RuntimeEnvironment.application));
+        mRootView = new FrameLayout(RuntimeEnvironment.application);
+        mView = new View(RuntimeEnvironment.application);
+        mRootView.addView(mView);
         mKeyboardHideHelper = new KeyboardHideHelper(mView, mKeyboardHiddenCallback);
     }
 
     @Test
     public void testHideNotifiedOnSizeDecrease_WithoutWindowDelegate() {
-        doReturn(mRootView).when(mView).getRootView();
-        doReturn(300).when(mRootView).getHeight();
+        mRootView.layout(0, 0, 100, 300);
         mKeyboardHideHelper.monitorForKeyboardHidden();
         assertTrue(mKeyboardHideHelper.isMonitoringForLayoutChanges());
 
-        doReturn(500).when(mRootView).getHeight();
+        mRootView.layout(0, 0, 100, 500);
         mKeyboardHideHelper.onGlobalLayout();
 
         verify(mKeyboardHiddenCallback).run();
