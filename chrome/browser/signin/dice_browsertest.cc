@@ -1535,7 +1535,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithoutReplaceSyncPromosWithSignInPromos,
 
   // Signin using the Chrome Sync endpoint.
   SigninViewController::From(browser())->ShowDiceEnableSyncTab(
-      signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo,
+      signin_metrics::AccessPoint::kProfileMenuPrimaryButton,
       signin_metrics::PromoAction::PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT,
       /*email_hint=*/std::string());
 

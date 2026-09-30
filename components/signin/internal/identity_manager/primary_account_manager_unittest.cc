@@ -912,13 +912,13 @@ TEST_F(PrimaryAccountManagerTest, AccountStoragePrefFeatureDisabled) {
   manager_->SetPrimaryAccountInfo(
       account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
       signin::ConsentLevel::kSignin,
-      signin_metrics::AccessPoint::kAvatarBubbleSignIn);
+      signin_metrics::AccessPoint::kProfileMenuPrimaryButton);
   EXPECT_FALSE(prefs()->GetBoolean(
       prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
   manager_->SetPrimaryAccountInfo(
       account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
       signin::ConsentLevel::kSync,
-      signin_metrics::AccessPoint::kAvatarBubbleSignIn);
+      signin_metrics::AccessPoint::kProfileMenuPrimaryButton);
   EXPECT_FALSE(prefs()->GetBoolean(
       prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
 }
@@ -934,7 +934,7 @@ TEST_F(PrimaryAccountManagerTest, AccountStoragePrefExistingSyncUser) {
     manager_->SetPrimaryAccountInfo(
         account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
         signin::ConsentLevel::kSync,
-        signin_metrics::AccessPoint::kAvatarBubbleSignIn);
+        signin_metrics::AccessPoint::kProfileMenuPrimaryButton);
     ASSERT_FALSE(prefs()->GetBoolean(
         prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
     ShutDownManager();
@@ -977,7 +977,7 @@ TEST_F(PrimaryAccountManagerTest, AccountStoragePrefNewUser) {
   manager_->SetPrimaryAccountInfo(
       account_tracker()->GetAccountInfo(account_id).GetCoreAccountInfo(),
       signin::ConsentLevel::kSignin,
-      signin_metrics::AccessPoint::kAvatarBubbleSignIn);
+      signin_metrics::AccessPoint::kProfileMenuPrimaryButton);
   EXPECT_TRUE(prefs()->GetBoolean(
       prefs::kPrefsThemesSearchEnginesAccountStorageEnabled));
 

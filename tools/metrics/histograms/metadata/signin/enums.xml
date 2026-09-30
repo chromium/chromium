@@ -1138,7 +1138,7 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="(obsolete) Apps page link"/>
   <int value="8" label="Bookmark save bubble"/>
   <int value="9" label="Bookmark manager"/>
-  <int value="10" label="Profile menu (aka avatar bubble)"/>
+  <int value="10" label="(obsolete) Profile menu (aka avatar bubble)"/>
   <int value="11" label="Profile picker"/>
   <int value="12" label="(obsolete) Devices page"/>
   <int value="13" label="(obsolete) Cloud print"/>
@@ -1200,7 +1200,7 @@ chromium-metrics-reviews@google.com.
   <int value="63" label="(obsolete) NTP Identity Disc"/>
   <int value="64" label="OIDC auth redirect URI interception"/>
   <int value="65" label="WebAuthn modal dialog"/>
-  <int value="66" label="Profile menu (aka avatar bubble) with sync promo"/>
+  <int value="66" label="Profile menu primary button"/>
   <int value="67" label="Account menu: Switch account"/>
   <int value="68" label="Product Specifications"/>
   <int value="69" label="Account menu: Switch account failed"/>

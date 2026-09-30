@@ -272,7 +272,7 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_bubble_type = "Password Bubble"},
         PromoBubbleTestParams{
             .access_point =
-                signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo,
+                signin_metrics::AccessPoint::kProfileMenuPrimaryButton,
             .expected_bubble_type = "Other"}),
     [](const testing::TestParamInfo<PromoBubbleTestParams>& info) {
       std::string test_suffix;

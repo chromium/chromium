@@ -367,8 +367,7 @@ void EnableSyncFromMultiAccountPromo(Profile* profile,
   // Aborting the sync confirmation for a secondary account reverts the original
   // primary account as primary, and keeps the secondary account.
   bool is_sync_promo =
-      access_point ==
-          signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo ||
+      access_point == signin_metrics::AccessPoint::kProfileMenuPrimaryButton ||
       access_point == signin_metrics::AccessPoint::kSettings ||
       access_point == signin_metrics::AccessPoint::kSettingsYourSavedInfo;
   TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode =

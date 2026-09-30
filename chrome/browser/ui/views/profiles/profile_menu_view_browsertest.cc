@@ -1035,7 +1035,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewWebOnlyTest, ContinueAs) {
       signin_ui_util::SetSigninUiDelegateForTesting(&mock_signin_ui_delegate);
   base::HistogramTester histogram_tester;
   const signin_metrics::AccessPoint expected_access_point =
-      signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo;
+      signin_metrics::AccessPoint::kProfileMenuPrimaryButton;
 
   EXPECT_CALL(
       mock_signin_ui_delegate,
@@ -1188,7 +1188,7 @@ class ProfileMenuViewSigninPendingTest : public ProfileMenuViewTestBase,
         ->OnSigninButtonClicked(
             account_info(),
             ProfileMenuViewBase::ActionableItem::kSigninReauthButton,
-            signin_metrics::AccessPoint::kAvatarBubbleSignIn);
+            signin_metrics::AccessPoint::kProfileMenuPrimaryButton);
     histogram_tester_.ExpectUniqueSample(
         "Profile.Menu.ClickedActionableItem",
         ProfileMenuViewBase::ActionableItem::kSigninReauthButton,
@@ -1218,7 +1218,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSigninPendingTest, OpenReauthTab) {
                               account_info_.email, true)));
   histogram_tester_.ExpectUniqueSample(
       "Signin.SigninPending.Offered",
-      signin_metrics::AccessPoint::kAvatarBubbleSignIn, 1);
+      signin_metrics::AccessPoint::kProfileMenuPrimaryButton, 1);
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS)
@@ -2796,7 +2796,7 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuSigninAccessPointTest,
                        DefaultSigninAccessPoint) {
   base::HistogramTester histogram_tester;
   const signin_metrics::AccessPoint default_access_point =
-      signin_metrics::AccessPoint::kAvatarBubbleSignIn;
+      signin_metrics::AccessPoint::kProfileMenuPrimaryButton;
   ASSERT_NO_FATAL_FAILURE(OpenProfileMenuFromCoordinator());
   // `Signin.SignIn.Offered` should NOT be recorded if the sign-in is not
   // directly offered from the profile menu.

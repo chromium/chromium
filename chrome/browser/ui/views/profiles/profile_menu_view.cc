@@ -340,13 +340,13 @@ void ProfileMenuView::OnSyncErrorButtonClicked(
           &profile(),
           identity_manager->GetPrimaryAccountInfo(
               signin::ConsentLevel::kSignin),
-          signin_metrics::AccessPoint::kAvatarBubbleSignIn);
+          signin_metrics::AccessPoint::kProfileMenuPrimaryButton);
       break;
     }
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
       GetWidget()->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
       signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
-          &profile(), signin_metrics::AccessPoint::kAvatarBubbleSignIn);
+          &profile(), signin_metrics::AccessPoint::kProfileMenuPrimaryButton);
       break;
     case syncer::SyncService::UserActionableError::kNeedsClientUpgrade:
       chrome::OpenUpdateChromeDialog(&browser());
@@ -751,22 +751,18 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
 
   ActionableItem button_type = ActionableItem::kSigninAccountButton;
   signin_metrics::AccessPoint access_point =
-      from_avatar_promo_ ? signin::kHistoryOptinAvatarPromoAccessPoint
-                         : signin_metrics::AccessPoint::kAvatarBubbleSignIn;
+      signin_metrics::AccessPoint::kProfileMenuPrimaryButton;
   switch (signin_util::GetSignedInState(identity_manager)) {
     case signin_util::SignedInState::kSignedOut:
     case signin_util::SignedInState::kWebOnlySignedIn: {
       if (!signin::CanOfferSignInForPromos(profile())) {
         break;
       }
-      access_point =
-          signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo;
       if (from_avatar_promo_) {
         CHECK(promo_info_.type.has_value());
         CHECK_EQ(promo_info_.type.value(),
                  signin::ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo);
-        access_point = access_point =
-            signin_metrics::AccessPoint::kAvatarPillExpandPromo;
+        access_point = signin_metrics::AccessPoint::kAvatarPillExpandPromo;
       }
       signin::AccountPreviewDataService* account_preview_data_service =
           AccountPreviewDataServiceFactory::GetForProfile(&profile());
@@ -848,6 +844,9 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
         switch (promo_info_.type.value()) {
           case signin::ProfileMenuAvatarButtonPromoInfo::Type::
               kHistorySyncPromo:
+            if (from_avatar_promo_) {
+              access_point = signin::kHistoryOptinAvatarPromoAccessPoint;
+            }
             params.subtitle = l10n_util::GetStringFUTF16(
                 IDS_PROFILE_MENU_SYNC_PROMO_SYNC_HISTORY_DESCRIPTION,
                 base::UTF8ToUTF16(primary_account_info.email));

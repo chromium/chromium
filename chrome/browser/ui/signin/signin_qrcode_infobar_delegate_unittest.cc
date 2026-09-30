@@ -53,7 +53,7 @@ TEST_F(SigninQRCodeInfoBarDelegateTest, AddAndRemoveOnStateChange) {
   DiceTabHelper::FromWebContents(web_contents())
       ->InitializeSigninFlow(
           GURL("https://accounts.google.com/signin"),
-          signin_metrics::AccessPoint::kAvatarBubbleSignIn,
+          signin_metrics::AccessPoint::kProfileMenuPrimaryButton,
           signin_metrics::Reason::kSigninPrimaryAccount,
           signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO,
           GURL("https://redirect.com"),

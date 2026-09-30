@@ -504,7 +504,7 @@ bool SignInWithUI(BrowserWindowInterface* browser,
       IdentityManagerFactory::GetForProfile(browser->GetProfile()));
 
   const signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::kAvatarBubbleSignIn;
+      signin_metrics::AccessPoint::kProfileMenuPrimaryButton;
 
   switch (consent_level) {
     case signin::ConsentLevel::kSignin:

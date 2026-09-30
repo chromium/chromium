@@ -78,7 +78,6 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::kExtensionInstallBubble:
     case signin_metrics::AccessPoint::kExtensions:
     case signin_metrics::AccessPoint::kBookmarkBubble:
-    case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
     case signin_metrics::AccessPoint::kUserManager:
     case signin_metrics::AccessPoint::kFullscreenSigninPromo:
     case signin_metrics::AccessPoint::kPasswordBubble:
@@ -110,7 +109,7 @@ bool IsSupportedAccessPoint(signin_metrics::AccessPoint access_point) {
     case signin_metrics::AccessPoint::kSettingsSignoutConfirmationPrompt:
     case signin_metrics::AccessPoint::kOidcRedirectionInterception:
     case signin_metrics::AccessPoint::kWebauthnModalDialog:
-    case signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo:
+    case signin_metrics::AccessPoint::kProfileMenuPrimaryButton:
     case signin_metrics::AccessPoint::kAccountMenuSwitchAccount:
     case signin_metrics::AccessPoint::kAccountMenuSwitchAccountFailed:
     case signin_metrics::AccessPoint::kProductSpecifications:
@@ -197,7 +196,6 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kExtensionInstallBubble:
     case signin_metrics::AccessPoint::kExtensions:
     case signin_metrics::AccessPoint::kBookmarkBubble:
-    case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
     case signin_metrics::AccessPoint::kUserManager:
     case signin_metrics::AccessPoint::kFullscreenSigninPromo:
     case signin_metrics::AccessPoint::kPasswordBubble:
@@ -232,7 +230,7 @@ void RecordImpressionsTilSigninButtonsHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kSettingsSignoutConfirmationPrompt:
     case signin_metrics::AccessPoint::kOidcRedirectionInterception:
     case signin_metrics::AccessPoint::kWebauthnModalDialog:
-    case signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo:
+    case signin_metrics::AccessPoint::kProfileMenuPrimaryButton:
     case signin_metrics::AccessPoint::kAccountMenuSwitchAccount:
     case signin_metrics::AccessPoint::kAccountMenuSwitchAccountFailed:
     case signin_metrics::AccessPoint::kProductSpecifications:
@@ -320,7 +318,6 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kExtensionInstallBubble:
     case signin_metrics::AccessPoint::kExtensions:
     case signin_metrics::AccessPoint::kBookmarkBubble:
-    case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
     case signin_metrics::AccessPoint::kUserManager:
     case signin_metrics::AccessPoint::kFullscreenSigninPromo:
     case signin_metrics::AccessPoint::kPasswordBubble:
@@ -355,7 +352,7 @@ void RecordImpressionsTilXButtonHistogramForAccessPoint(
     case signin_metrics::AccessPoint::kSettingsSignoutConfirmationPrompt:
     case signin_metrics::AccessPoint::kOidcRedirectionInterception:
     case signin_metrics::AccessPoint::kWebauthnModalDialog:
-    case signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo:
+    case signin_metrics::AccessPoint::kProfileMenuPrimaryButton:
     case signin_metrics::AccessPoint::kAccountMenuSwitchAccount:
     case signin_metrics::AccessPoint::kAccountMenuSwitchAccountFailed:
     case signin_metrics::AccessPoint::kProductSpecifications:
@@ -428,7 +425,6 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::kExtensionInstallBubble:
     case signin_metrics::AccessPoint::kExtensions:
     case signin_metrics::AccessPoint::kBookmarkBubble:
-    case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
     case signin_metrics::AccessPoint::kUserManager:
     case signin_metrics::AccessPoint::kFullscreenSigninPromo:
     case signin_metrics::AccessPoint::kPasswordBubble:
@@ -463,7 +459,7 @@ const char* DisplayedCountPreferenceKey(
     case signin_metrics::AccessPoint::kSettingsSignoutConfirmationPrompt:
     case signin_metrics::AccessPoint::kOidcRedirectionInterception:
     case signin_metrics::AccessPoint::kWebauthnModalDialog:
-    case signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo:
+    case signin_metrics::AccessPoint::kProfileMenuPrimaryButton:
     case signin_metrics::AccessPoint::kAccountMenuSwitchAccount:
     case signin_metrics::AccessPoint::kAccountMenuSwitchAccountFailed:
     case signin_metrics::AccessPoint::kProductSpecifications:
@@ -535,7 +531,6 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::kExtensionInstallBubble:
     case signin_metrics::AccessPoint::kExtensions:
     case signin_metrics::AccessPoint::kBookmarkBubble:
-    case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
     case signin_metrics::AccessPoint::kUserManager:
     case signin_metrics::AccessPoint::kFullscreenSigninPromo:
     case signin_metrics::AccessPoint::kPasswordBubble:
@@ -570,7 +565,7 @@ const char* AlreadySeenSigninViewPreferenceKey(
     case signin_metrics::AccessPoint::kSettingsSignoutConfirmationPrompt:
     case signin_metrics::AccessPoint::kOidcRedirectionInterception:
     case signin_metrics::AccessPoint::kWebauthnModalDialog:
-    case signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo:
+    case signin_metrics::AccessPoint::kProfileMenuPrimaryButton:
     case signin_metrics::AccessPoint::kAccountMenuSwitchAccount:
     case signin_metrics::AccessPoint::kAccountMenuSwitchAccountFailed:
     case signin_metrics::AccessPoint::kProductSpecifications:

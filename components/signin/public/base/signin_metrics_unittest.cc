@@ -24,7 +24,6 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::kExtensions,
     AccessPoint::kBookmarkBubble,
     AccessPoint::kBookmarkManager,
-    AccessPoint::kAvatarBubbleSignIn,
     AccessPoint::kUserManager,
     AccessPoint::kFullscreenSigninPromo,
     AccessPoint::kRecentTabs,
@@ -41,7 +40,7 @@ const AccessPoint kAccessPointsThatSupportUserAction[] = {
     AccessPoint::kSetUpList,
     AccessPoint::kChromeSigninInterceptBubble,
     AccessPoint::kNotificationsOptInScreenContentToggle,
-    AccessPoint::kAvatarBubbleSignInWithSyncPromo,
+    AccessPoint::kProfileMenuPrimaryButton,
     AccessPoint::kProductSpecifications,
     AccessPoint::kAddressBubble,
     AccessPoint::kGlicLaunchButton,
@@ -67,7 +66,6 @@ const AccessPoint kAccessPointsThatSupportImpression[] = {
     AccessPoint::kExtensionInstallBubble,
     AccessPoint::kBookmarkBubble,
     AccessPoint::kBookmarkManager,
-    AccessPoint::kAvatarBubbleSignIn,
     AccessPoint::kFullscreenSigninPromo,
     AccessPoint::kRecentTabs,
     AccessPoint::kPasswordBubble,
@@ -110,8 +108,6 @@ class SigninMetricsTest : public ::testing::Test {
         return "BookmarkBubble";
       case AccessPoint::kBookmarkManager:
         return "BookmarkManager";
-      case AccessPoint::kAvatarBubbleSignIn:
-        return "AvatarBubbleSignin";
       case AccessPoint::kUserManager:
         return "UserManager";
       case AccessPoint::kFullscreenSigninPromo:
@@ -186,8 +182,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "OidcRedirectionInterception";
       case AccessPoint::kWebauthnModalDialog:
         return "WebAuthnModalDialog";
-      case AccessPoint::kAvatarBubbleSignInWithSyncPromo:
-        return "AvatarBubbleSigninWithSyncPromo";
+      case AccessPoint::kProfileMenuPrimaryButton:
+        return "ProfileMenuPrimaryButton";
       case AccessPoint::kAccountMenuSwitchAccount:
         return "AccountMenu";
       case AccessPoint::kAccountMenuSwitchAccountFailed:

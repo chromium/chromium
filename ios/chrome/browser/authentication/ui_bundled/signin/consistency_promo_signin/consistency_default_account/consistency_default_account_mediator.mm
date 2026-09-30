@@ -113,7 +113,6 @@ NSString* GetPromoLabelString(
     case signin_metrics::AccessPoint::kExtensions:
     case signin_metrics::AccessPoint::kBookmarkBubble:
     case signin_metrics::AccessPoint::kBookmarkManager:
-    case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
     case signin_metrics::AccessPoint::kUserManager:
     case signin_metrics::AccessPoint::kFullscreenSigninPromo:
     case signin_metrics::AccessPoint::kPasswordBubble:
@@ -140,7 +139,7 @@ NSString* GetPromoLabelString(
     case signin_metrics::AccessPoint::kSettingsSignoutConfirmationPrompt:
     case signin_metrics::AccessPoint::kOidcRedirectionInterception:
     case signin_metrics::AccessPoint::kWebauthnModalDialog:
-    case signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo:
+    case signin_metrics::AccessPoint::kProfileMenuPrimaryButton:
     case signin_metrics::AccessPoint::kProductSpecifications:
     case signin_metrics::AccessPoint::kAccountMenuSwitchAccount:
     case signin_metrics::AccessPoint::kAccountMenuSwitchAccountFailed:

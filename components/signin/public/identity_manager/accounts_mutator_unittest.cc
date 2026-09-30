@@ -332,13 +332,13 @@ TEST_F(AccountsMutatorTest, AddOrUpdateAccount_UpdateExistingAccount) {
   accounts_mutator()->AddOrUpdateAccount(
       kTestGaiaId, maybe_updated_email, kRefreshToken,
       /*is_under_advanced_protection=*/true,
-      signin_metrics::AccessPoint::kAvatarBubbleSignIn,
+      signin_metrics::AccessPoint::kProfileMenuPrimaryButton,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   updated_account_info =
       identity_manager()->FindExtendedAccountInfoByAccountId(account_id);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   EXPECT_EQ(updated_account_info.GetLastAuthenticationAccessPoint(),
-            signin_metrics::AccessPoint::kAvatarBubbleSignIn);
+            signin_metrics::AccessPoint::kProfileMenuPrimaryButton);
 #endif
 }
 

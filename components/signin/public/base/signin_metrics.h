@@ -183,7 +183,7 @@ enum class AccessPoint : int {
   // kAppsPageLink = 7, no longer used.
   kBookmarkBubble = 8,
   kBookmarkManager = 9,
-  kAvatarBubbleSignIn = 10,
+  // kAvatarBubbleSignIn = 10, no longer used.
   kUserManager = 11,
   // kDevicesPage = 12, no longer used.
   // kCloudPrint = 13, no longer used.
@@ -266,9 +266,9 @@ enum class AccessPoint : int {
   // reauthentication is necessary to sign in with or save a passkey from the
   // Google Password Manager.
   kWebauthnModalDialog = 65,
-  // Signin button from the profile menu that is labelled as a "Signin" button,
-  // but is followed by a Sync confirmation screen as a promo.
-  kAvatarBubbleSignInWithSyncPromo = 66,
+  // Signin, history sync promo, or reauth button from the profile menu (avatar
+  // bubble).
+  kProfileMenuPrimaryButton = 66,
   // Signin as part of switching accounts via the account menu.
   kAccountMenuSwitchAccount = 67,
   // Signin via Product Specifications.

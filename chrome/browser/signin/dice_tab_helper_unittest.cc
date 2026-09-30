@@ -436,7 +436,7 @@ TEST_F(DiceTabHelperTest, SigninPendingResolutionStarted) {
 
   base::HistogramTester h_tester;
   signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::kAvatarBubbleSignIn;
+      signin_metrics::AccessPoint::kProfileMenuPrimaryButton;
   {
     DiceTabHelper::CreateForWebContents(web_contents());
     DiceTabHelper* dice_tab_helper =

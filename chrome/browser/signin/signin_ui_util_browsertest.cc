@@ -753,11 +753,11 @@ IN_PROC_BROWSER_TEST_F(SigninUiUtilTest, ShowReauthTab) {
       mock_delegate_,
       ShowReauthUI(browser()->GetProfile(), "foo@example.com",
                    /*enable_sync=*/false,
-                   signin_metrics::AccessPoint::kAvatarBubbleSignIn,
+                   signin_metrics::AccessPoint::kProfileMenuPrimaryButton,
                    signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO));
   signin_ui_util::ShowReauthForPrimaryAccountWithAuthError(
       browser()->GetProfile(),
-      signin_metrics::AccessPoint::kAvatarBubbleSignIn);
+      signin_metrics::AccessPoint::kProfileMenuPrimaryButton);
 
   // Verify that the active tab has the correct DICE sign-in URL.
   TabStripModel* tab_strip = browser()->GetTabStripModel();
@@ -852,7 +852,7 @@ IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
 
 IN_PROC_BROWSER_TEST_P(SigninUiUtilTest_ReplaceSyncPromosWithSignInPromos,
                        EnableSyncPromoWithExistingWebOnlyAccountAvatarBubble) {
-  access_point_ = signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo;
+  access_point_ = signin_metrics::AccessPoint::kProfileMenuPrimaryButton;
 
   TestEnableSyncPromoWithExistingWebOnlyAccount();
 }

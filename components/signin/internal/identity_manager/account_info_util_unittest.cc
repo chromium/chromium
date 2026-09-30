@@ -435,7 +435,7 @@ TEST(AccountInfoUtilTest, SerializeAndDeserializeAccountInfo) {
               "https://example.com/picture_with_size.jpg")
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
           .SetLastAuthenticationAccessPoint(
-              signin_metrics::AccessPoint::kAvatarBubbleSignIn)
+              signin_metrics::AccessPoint::kProfileMenuPrimaryButton)
 #endif
           .UpdateAccountCapabilitiesWith(capabilities)
           .Build();

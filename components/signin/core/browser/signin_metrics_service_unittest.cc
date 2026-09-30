@@ -442,7 +442,7 @@ struct AccessPointParam {
 };
 
 const AccessPointParam params[] = {
-    {signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo,
+    {signin_metrics::AccessPoint::kProfileMenuPrimaryButton,
      "Signin.WebSignin.TimeToChromeSignin.ProfileMenu"},
     {signin_metrics::AccessPoint::kPasswordBubble,
      "Signin.WebSignin.TimeToChromeSignin.PasswordSigninPromo"},
@@ -503,7 +503,7 @@ TEST_F(SigninMetricsServiceTest, WebSigninToChromeSigninAfterRestart) {
   CreateSigninMetricsService();
 
   Signin(account.GetEmail(),
-         signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo);
+         signin_metrics::AccessPoint::kProfileMenuPrimaryButton);
 
   histogram_tester.ExpectTotalCount(
       "Signin.WebSignin.TimeToChromeSignin.ProfileMenu", 1);
@@ -578,7 +578,7 @@ TEST_F(SigninMetricsServiceTest, ChromeSigninSettingOnSignin) {
   CreateSigninMetricsService();
 
   signin_metrics::AccessPoint access_point =
-      signin_metrics::AccessPoint::kAvatarBubbleSignIn;
+      signin_metrics::AccessPoint::kProfileMenuPrimaryButton;
   AccountInfo account = Signin("test@gmail.com", access_point);
 
   // Default user choice is no choice.

@@ -35696,14 +35696,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Signin_Impression_FromAvatarBubbleSignin"
-    not_user_triggered="true">
-  <owner>gogerald@chromium.org</owner>
-  <description>
-    Recorded when showing sign in entry in the avatar sign in bubble.
-  </description>
-</action>
-
 <action name="Signin_Impression_FromBookmarkBubble" not_user_triggered="true">
   <owner>gogerald@chromium.org</owner>
   <description>
@@ -36162,22 +36154,6 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
-<action name="Signin_Signin_FromAvatarBubbleSignin">
-  <owner>gogerald@chromium.org</owner>
-  <description>
-    Recorded on sign in start from access point
-    signin_metrics::AccessPoint::kAvatarBubbleSignIn.
-  </description>
-</action>
-
-<action name="Signin_Signin_FromAvatarBubbleSigninWithSyncPromo">
-  <owner>droger@chromium.org</owner>
-  <description>
-    Recorded on sign in start from access point
-    signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo.
-  </description>
-</action>
-
 <action name="Signin_Signin_FromAvatarPillExpandPromo">
   <owner>rsult@google.com</owner>
   <owner>chrome-signin-desktop-team@google.com</owner>
@@ -36537,6 +36513,14 @@ should be able to be added at any place in this file.
   <description>
     Recorded on sign in start from access point
     signin_metrics::AccessPoint::kProductSpecifications.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromProfileMenuPrimaryButton">
+  <owner>droger@chromium.org</owner>
+  <description>
+    Recorded on sign in start from access point
+    signin_metrics::AccessPoint::kProfileMenuPrimaryButton.
   </description>
 </action>
 

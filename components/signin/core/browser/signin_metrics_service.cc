@@ -108,7 +108,7 @@ void MaybeRecordWebSigninToChromeSigninTimes(
     signin_metrics::AccessPoint access_point) {
   std::string_view access_point_string;
   switch (access_point) {
-    case signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo:
+    case signin_metrics::AccessPoint::kProfileMenuPrimaryButton:
       access_point_string = "ProfileMenu";
       break;
     case signin_metrics::AccessPoint::kPasswordBubble:
@@ -129,7 +129,6 @@ void MaybeRecordWebSigninToChromeSigninTimes(
     case signin_metrics::AccessPoint::kExtensionInstallBubble:
     case signin_metrics::AccessPoint::kExtensions:
     case signin_metrics::AccessPoint::kBookmarkManager:
-    case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
     case signin_metrics::AccessPoint::kUserManager:
     case signin_metrics::AccessPoint::kFullscreenSigninPromo:
     case signin_metrics::AccessPoint::kRecentTabs:

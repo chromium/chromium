@@ -211,7 +211,7 @@ void HistorySyncOptinService::OnPrimaryAccountChanged(
       error_message_id = IDS_COLLABORATION_ENTREPRISE_TABS_SYNC_DISABLED_BODY;
       break;
     // All other access points should not trigger an error.
-    case signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo:
+    case signin_metrics::AccessPoint::kProfileMenuPrimaryButton:
     case signin_metrics::AccessPoint::kPasswordBubble:
     case signin_metrics::AccessPoint::kAddressBubble:
     case signin_metrics::AccessPoint::kStartPage:
@@ -223,7 +223,6 @@ void HistorySyncOptinService::OnPrimaryAccountChanged(
     case signin_metrics::AccessPoint::kExtensions:
     case signin_metrics::AccessPoint::kBookmarkBubble:
     case signin_metrics::AccessPoint::kBookmarkManager:
-    case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
     case signin_metrics::AccessPoint::kUserManager:
     case signin_metrics::AccessPoint::kFullscreenSigninPromo:
     case signin_metrics::AccessPoint::kAutofillDropdown:

@@ -170,8 +170,7 @@ std::string HatsSurveyTriggerForAccessPoint(
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
     case signin_metrics::AccessPoint::kAddressBubble:
       return kHatsSurveyTriggerIdentityAddressBubbleSignin;
-    case signin_metrics::AccessPoint::kAvatarBubbleSignIn:
-    case signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo:
+    case signin_metrics::AccessPoint::kProfileMenuPrimaryButton:
       return kHatsSurveyTriggerIdentityProfileMenuSignin;
     case signin_metrics::AccessPoint::kForYouFre:
       return kHatsSurveyTriggerIdentityFirstRunSignin;

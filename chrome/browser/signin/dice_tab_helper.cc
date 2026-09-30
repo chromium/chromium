@@ -77,7 +77,7 @@ DiceTabHelper::GetEnableSyncCallbackForBrowser() {
 
     bool is_sync_promo =
         access_point ==
-            signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo ||
+            signin_metrics::AccessPoint::kProfileMenuPrimaryButton ||
         access_point == signin_metrics::AccessPoint::kSettings ||
         access_point == signin_metrics::AccessPoint::kSettingsYourSavedInfo;
     TurnSyncOnHelper::SigninAbortedMode abort_mode =
