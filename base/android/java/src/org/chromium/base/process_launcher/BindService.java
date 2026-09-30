@@ -17,7 +17,6 @@ import android.os.UserHandle;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.BaseFeatureList;
-import org.chromium.base.BindingRequestQueue;
 import org.chromium.base.ContextUtils;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;

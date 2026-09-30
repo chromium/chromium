@@ -27,7 +27,6 @@ import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.BaseFeatures;
-import org.chromium.base.BindingRequestQueue;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -49,7 +48,7 @@ import java.util.List;
     BaseFeatures.REBIND_SERVICE_BATCH_API
 })
 public class ScopedServiceBindingBatchImplTest {
-    private static class FakeBindingRequestQueue implements BindingRequestQueue {
+    private static class FakeBindingRequestQueue extends BindingRequestQueue {
         private final List<ServiceConnection> mRebinds = new ArrayList<>();
         private final List<ServiceConnection> mUnbinds = new ArrayList<>();
         // Ordered log of the calls made on this queue, used to assert that an urgent request is

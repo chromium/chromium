@@ -11,7 +11,6 @@ import android.os.Build;
 import androidx.annotation.RequiresApi;
 
 import org.chromium.base.BaseFeatureList;
-import org.chromium.base.BindingRequestQueue;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
@@ -25,27 +24,26 @@ import java.util.LinkedHashMap;
  */
 @RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
 @NullMarked
-class BindingRequestQueueImpl implements BindingRequestQueue {
+class BindingRequestQueue {
     private final int mBatchSize;
     // LinkedHashMap is used to preserve the order of the requests.
     private final LinkedHashMap<ServiceConnection, Context.UpdateBindingParams>
             mBindingRequestQueue;
     private long mFirstRequestTimeMillis;
 
-    private BindingRequestQueueImpl() {
+    BindingRequestQueue() {
         mBatchSize = BaseFeatureList.sRebindServiceBatchApiBatchSize.getValue();
         mBindingRequestQueue = new LinkedHashMap<>(mBatchSize);
     }
 
     private static class SingletonHelper {
-        private static final BindingRequestQueueImpl INSTANCE = new BindingRequestQueueImpl();
+        private static final BindingRequestQueue INSTANCE = new BindingRequestQueue();
     }
 
-    public static BindingRequestQueueImpl getInstance() {
+    public static BindingRequestQueue getInstance() {
         return SingletonHelper.INSTANCE;
     }
 
-    @Override
     public void rebind(ServiceConnection connection, Context.BindServiceFlags flags) {
         if (mFirstRequestTimeMillis == 0) {
             mFirstRequestTimeMillis = TimeUtils.elapsedRealtimeMillis();
@@ -64,7 +62,6 @@ class BindingRequestQueueImpl implements BindingRequestQueue {
         }
     }
 
-    @Override
     public void unbind(ServiceConnection connection) {
         if (mFirstRequestTimeMillis == 0) {
             mFirstRequestTimeMillis = TimeUtils.elapsedRealtimeMillis();
@@ -82,7 +79,6 @@ class BindingRequestQueueImpl implements BindingRequestQueue {
         }
     }
 
-    @Override
     public void flush() {
         if (mBindingRequestQueue.isEmpty()) {
             return;

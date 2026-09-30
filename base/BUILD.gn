@@ -5165,7 +5165,6 @@ if (is_android) {
     deps = [
       ":base_java",
       ":build_info_java",
-      ":flagged_apis_java",
       "//base/version_info/android:version_constants_java",
       "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
       "//third_party/android_deps:com_google_errorprone_error_prone_annotations_java",
@@ -5177,7 +5176,7 @@ if (is_android) {
     ]
     sources = [
       "android/java/src/org/chromium/base/process_launcher/BindService.java",
-      "android/java/src/org/chromium/base/process_launcher/BindingRequestQueueImpl.java",
+      "android/java/src/org/chromium/base/process_launcher/BindingRequestQueue.java",
       "android/java/src/org/chromium/base/process_launcher/ChildConnectionAllocator.java",
       "android/java/src/org/chromium/base/process_launcher/ChildProcessConnection.java",
       "android/java/src/org/chromium/base/process_launcher/ChildProcessConnectionState.java",
@@ -5978,20 +5977,14 @@ if (is_android) {
       ":promise_java",
       ":service_loader_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
-      "//third_party/androidx:androidx_core_core_java",
     ]
     sources = [
       "android/java/src/org/chromium/base/AconfigFlaggedApiDelegate.java",
-      "android/java/src/org/chromium/base/BindingRequestQueue.java",
       "android/java/src/org/chromium/base/PasswordEchoSettingDelegate.java",
       "android/java/src/org/chromium/base/SelectionActionMenuClientWrapper.java",
       "android/java/src/org/chromium/base/hid/HidDevice.java",
       "android/java/src/org/chromium/base/hid/HidDeviceListener.java",
       "android/java/src/org/chromium/base/hid/HidManager.java",
-      "android/java/src/org/chromium/base/serial/SerialManager.java",
-      "android/java/src/org/chromium/base/serial/SerialPort.java",
-      "android/java/src/org/chromium/base/serial/SerialPortListener.java",
-      "android/java/src/org/chromium/base/serial/SerialPortResponse.java",
     ]
   }
 

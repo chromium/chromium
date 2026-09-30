@@ -4,13 +4,15 @@
 
 package org.chromium.base.process_launcher;
 
+import android.os.Build;
 import android.os.Handler;
+
+import androidx.annotation.ChecksSdkIntAtLeast;
 
 import com.google.errorprone.annotations.MustBeClosed;
 
 import org.jni_zero.CalledByNative;
 
-import org.chromium.base.BindingRequestQueue;
 import org.chromium.build.annotations.Nullable;
 
 /**
@@ -66,6 +68,7 @@ public interface ScopedServiceBindingBatch extends AutoCloseable {
      *
      * <p>This must be called on the process launcher thread.
      */
+    @ChecksSdkIntAtLeast(api = Build.VERSION_CODES.CINNAMON_BUN)
     static boolean shouldBatchUpdate() {
         return ScopedServiceBindingBatchImpl.shouldBatchUpdate();
     }
