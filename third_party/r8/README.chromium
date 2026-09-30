@@ -20,6 +20,11 @@ Directory overview:
   * The copy of R8 that is used for dexing.
   * Updated manually (and infrequently) in order to avoid having to re-dex all
     library targets every day.
+* bin/custom_d8 (and d8/bin/custom_d8 once d8/ is rolled)
+  * GraalVM native-image executable (linux-x64) of CustomD8 + lib/r8.jar,
+    built by 3pp. Same command-line as "org.chromium.build.CustomD8".
+  * Uses JAVA_HOME (or -Djava.home=) to resolve --lib <jdk>.
+  * Uses Serial GC. Pass heap flags (e.g. -Xms4g -Xmn3g) for large inputs.
 * 3pp
   * Contains code for 3pp-linux-amd64-packager to package and upload new
     versions of r8.
@@ -32,6 +37,7 @@ Local Modifications:
 * Added "dump_inputs.py" and "print_version.sh" scripts.
 * Added "java/src/org/chromium/build/CustomD8.java", custom_d8.jar, and BUILD.gn.
   * Used in "build/android/gyp/dex.py" to enable desugar dependencies.
+  * Also compiled into bin/custom_d8 by 3pp.
 
 Update Instructions:
 * For the custom r8/d8 jar:
