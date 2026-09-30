@@ -480,12 +480,25 @@ public class EdgeToEdgeUtils {
         return nonMandatorySystemGestures.left > 0 || nonMandatorySystemGestures.right > 0;
     }
 
-    /** Returns whether the EdgelessTopInset feature flag is enabled. */
-    public static boolean isEdgelessTopInsetEnabled() {
+    /**
+     * Returns whether the EdgeToEdge refactor (unifying top inset consumption in {@link
+     * EdgeToEdgeController} instead of {@link TopInsetCoordinator}) is enabled. For top
+     * edge-to-edge behavior beyond the refactor, check {@link #isTopEdgeToEdgeEnabled()}.
+     */
+    public static boolean isEdgeToEdgeRefactorEnabled() {
         if (Build.VERSION.SDK_INT < VERSION_CODES.R) {
             return false;
         }
-        return ChromeFeatureList.sEdgelessTopInset.isEnabled();
+        return ChromeFeatureList.sEdgeToEdgeTopInset.isEnabled();
+    }
+
+    /**
+     * Returns whether the top edge-to-edge feature is enabled (beyond the {@link
+     * EdgeToEdgeController} refactor). Implies {@link #isEdgeToEdgeRefactorEnabled()}.
+     */
+    public static boolean isTopEdgeToEdgeEnabled() {
+        return isEdgeToEdgeRefactorEnabled()
+                && ChromeFeatureList.sEdgeToEdgeTopInsetEnableTopEdgeToEdge.getValue();
     }
 
     /**
@@ -496,8 +509,9 @@ public class EdgeToEdgeUtils {
      */
     public static boolean supportsEnableTopEdgeToEdge(@Nullable Tab tab) {
         // TODO(crbug.com/498302496): Currently top edge-to-edge is only supported on native pages.
-        // Support for web pages (e.g. viewport-fit=cover) will be added in future iterations.
-        if (!isEdgelessTopInsetEnabled() || tab == null) {
+        // Support for web pages (e.g. viewport-fit=cover) will be added in future iterations and
+        // will check isTopEdgeToEdgeEnabled().
+        if (!isEdgeToEdgeRefactorEnabled() || tab == null) {
             return false;
         }
 

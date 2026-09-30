@@ -434,14 +434,14 @@ public class EdgeToEdgeInstrumentationTest {
     }
 
     /**
-     * Verifies that when NEW_TAB_PAGE_CUSTOMIZATION_V2 and EDGELESS_TOP_INSET are enabled,
+     * Verifies that when NEW_TAB_PAGE_CUSTOMIZATION_V2 and EDGE_TO_EDGE_TOP_INSET are enabled,
      * navigating from an NTP with a customized background theme (where top edge-to-edge is active)
      * to a standard web page properly transitions isDrawingToTopEdge to false without displacing
      * browser controls.
      */
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.EDGELESS_TOP_INSET)
+    @EnableFeatures(ChromeFeatureList.EDGE_TO_EDGE_TOP_INSET)
     public void testTopEdgeToEdge_restoresAfterNtpNavigation() {
         try {
             ThreadUtils.runOnUiThreadBlocking(

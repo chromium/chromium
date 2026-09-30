@@ -205,7 +205,7 @@ public class EdgeToEdgeControllerImpl
     // TODO(crbug.com/498302496): Consolidate TopInsetProvider.Observer with
     // EdgeToEdgeSupplier.ChangeObserver once TopInsetCoordinator is fully deprecated.
     private final ObserverList<TopInsetProvider.Observer> mTopInsetObservers = new ObserverList<>();
-    private final boolean mIsEdgelessTopInsetEnabled;
+    private final boolean mIsEdgeToEdgeRefactorEnabled;
     private boolean mConsumeTopInset;
     private boolean mIsTabSwitcherShowing;
     private boolean mStatusIndicatorVisible;
@@ -315,7 +315,7 @@ public class EdgeToEdgeControllerImpl
         mInsetObserver.addInsetsConsumer(
                 mWindowInsetsConsumer, InsetConsumerSource.EDGE_TO_EDGE_CONTROLLER_IMPL);
         mIsBottomChinEnabled = isSupportedByConfiguration(mActivity, mInsetObserver);
-        mIsEdgelessTopInsetEnabled = EdgeToEdgeUtils.isEdgelessTopInsetEnabled();
+        mIsEdgeToEdgeRefactorEnabled = EdgeToEdgeUtils.isEdgeToEdgeRefactorEnabled();
 
         mEdgeToEdgeStateProvider = mEdgeToEdgeManager.getEdgeToEdgeStateProvider();
         assert mEdgeToEdgeStateProvider != null
@@ -329,7 +329,7 @@ public class EdgeToEdgeControllerImpl
         // false for now, and updated later if padding gets applied.
         mEdgeToEdgeManager.setContentFitsWindowInsets(false);
 
-        if (mIsEdgelessTopInsetEnabled) {
+        if (mIsEdgeToEdgeRefactorEnabled) {
             mHomepageStateListener =
                     new NtpCustomizationConfigManager.HomepageStateListener() {
                         @Override
@@ -424,13 +424,13 @@ public class EdgeToEdgeControllerImpl
     public boolean isDrawingToTopEdge() {
         // TODO(crbug.com/498302496): When top edge-to-edge expands to web pages, update this to
         // also check page opt-in (mIsPageOptedIntoEdgeToEdge).
-        assert !mConsumeTopInset || mIsEdgelessTopInsetEnabled
-                : "Top inset should not be consumed when edgeless top inset is disabled";
+        assert !mConsumeTopInset || mIsEdgeToEdgeRefactorEnabled
+                : "Top inset should not be consumed when edge-to-edge top inset is disabled";
         return mConsumeTopInset;
     }
 
     private boolean shouldDrawTopEdgeToEdge(@Nullable Tab tab) {
-        if (!mIsEdgelessTopInsetEnabled || mStatusIndicatorVisible) return false;
+        if (!mIsEdgeToEdgeRefactorEnabled || mStatusIndicatorVisible) return false;
         if (EdgeToEdgeUtils.supportsEnableTopEdgeToEdge(tab)) {
             return true;
         }
@@ -827,7 +827,7 @@ public class EdgeToEdgeControllerImpl
             changedWindowState = true;
         }
 
-        if (mIsEdgelessTopInsetEnabled) {
+        if (mIsEdgeToEdgeRefactorEnabled) {
             if (mCurrentTab != null || !mIsTabSwitcherShowing) {
                 mConsumeTopInset = shouldDrawTopEdgeToEdge(mCurrentTab);
             }
@@ -863,7 +863,7 @@ public class EdgeToEdgeControllerImpl
         // be consumed at the root view level and managed by top controls.
         // Consume top insets when in persistent fullscreen or for top e2e.
         boolean consumeTopInsets =
-                mIsEdgelessTopInsetEnabled
+                mIsEdgeToEdgeRefactorEnabled
                         ? ((mFullscreenManager != null
                                         && mFullscreenManager.getPersistentFullscreenMode())
                                 || isDrawingToTopEdge())

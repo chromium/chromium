@@ -12478,6 +12478,7 @@ from previous Chrome versions.
   <int value="-743590125" label="TabEngagementReportingAndroid:enabled"/>
   <int value="-743504893" label="MobilePromoOnDesktopWithQRCode:enabled"/>
   <int value="-743103250" label="enable-linkable-ephemeral-apps"/>
+  <int value="-743021832" label="EdgeToEdgeTopInset:enabled"/>
   <int value="-742730757" label="VulkanFromANGLE:disabled"/>
   <int value="-742469530" label="DriveFS:disabled"/>
   <int value="-742455458"
@@ -15029,6 +15030,7 @@ from previous Chrome versions.
   <int value="35364948" label="SafetyHubFollowup:enabled"/>
   <int value="35716183" label="MagnifierNewFocusFollowing:disabled"/>
   <int value="36110634" label="AllowScrollSettings:disabled"/>
+  <int value="36364890" label="EdgeToEdgeTopInset:disabled"/>
   <int value="36422284"
       label="AutofillSaveCardDialogUnlabeledExpirationDate:enabled"/>
   <int value="36536806"

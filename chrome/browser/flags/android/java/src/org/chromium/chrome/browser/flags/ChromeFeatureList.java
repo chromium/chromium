@@ -554,7 +554,6 @@ public abstract class ChromeFeatureList {
     public static final String DOWNLOAD_TOOLBAR_BUTTON_FOR_DESKTOP =
             "DownloadToolbarButtonForDesktop";
     public static final String DRAW_CUTOUT_EDGE_TO_EDGE = "DrawCutoutEdgeToEdge";
-    public static final String EDGELESS_TOP_INSET = "EdgelessTopInset";
     public static final String EDGE_TO_EDGE_AUTOMOTIVE = "EdgeToEdgeAutomotive";
     public static final String EDGE_TO_EDGE_BOTTOM_CHIN = "EdgeToEdgeBottomChin";
     public static final String EDGE_TO_EDGE_EVERYWHERE = "EdgeToEdgeEverywhere";
@@ -562,6 +561,7 @@ public abstract class ChromeFeatureList {
     public static final String EDGE_TO_EDGE_MONITOR_CONFIGURATIONS =
             "EdgeToEdgeMonitorConfigurations";
     public static final String EDGE_TO_EDGE_TABLET = "EdgeToEdgeTablet";
+    public static final String EDGE_TO_EDGE_TOP_INSET = "EdgeToEdgeTopInset";
     public static final String EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS =
             "EdgeToEdgeUseBackupNavbarInsets";
     public static final String EMAIL_VERIFICATION_PROTOCOL = "EmailVerificationProtocol";
@@ -1193,10 +1193,10 @@ public abstract class ChromeFeatureList {
             newCachedFlag(EDGE_TO_EDGE_MONITOR_CONFIGURATIONS, /* defaultValue= */ true);
     public static final CachedFlag sEdgeToEdgeTablet =
             newCachedFlag(EDGE_TO_EDGE_TABLET, /* defaultValue= */ true);
+    public static final CachedFlag sEdgeToEdgeTopInset =
+            newCachedFlag(EDGE_TO_EDGE_TOP_INSET, /* defaultValue= */ false);
     public static final CachedFlag sEdgeToEdgeUseBackupNavbarInsets =
             newCachedFlag(EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS, true);
-    public static final CachedFlag sEdgelessTopInset =
-            newCachedFlag(EDGELESS_TOP_INSET, /* defaultValue= */ false);
     public static final CachedFlag sEnableAndroidEnterpriseScreenshotProtection =
             newCachedFlag(
                     ENABLE_ANDROID_ENTERPRISE_SCREENSHOT_PROTECTION,
@@ -1623,8 +1623,8 @@ public abstract class ChromeFeatureList {
                     sEdgeToEdgeExtraLogs,
                     sEdgeToEdgeMonitorConfigurations,
                     sEdgeToEdgeTablet,
+                    sEdgeToEdgeTopInset,
                     sEdgeToEdgeUseBackupNavbarInsets,
-                    sEdgelessTopInset,
                     sEnableAndroidEnterpriseScreenshotProtection,
                     sEnableAndroidSidePanel,
                     sEnableAndroidSidePanelDevFeature,
@@ -2242,6 +2242,9 @@ public abstract class ChromeFeatureList {
             newStringCachedFeatureParam(
                     EDGE_TO_EDGE_EVERYWHERE, "e2e_field_trial_oem_list", "realme");
 
+    public static final BooleanCachedFeatureParam sEdgeToEdgeTopInsetEnableTopEdgeToEdge =
+            newBooleanCachedFeatureParam(EDGE_TO_EDGE_TOP_INSET, "enable_top_edge_to_edge", true);
+
     public static final StringCachedFeatureParam sEdgeToEdgeUseBackupNavbarInsetsOemList =
             newStringCachedFeatureParam(
                     EDGE_TO_EDGE_USE_BACKUP_NAVBAR_INSETS, "e2e_backup_navbar_insets_oem_list", "");
@@ -2457,6 +2460,7 @@ public abstract class ChromeFeatureList {
                     sEdgeToEdgeEverywhereOemMinVersions,
                     sEdgeToEdgeTabletInvisibleBottomChinMinWidth,
                     sEdgeToEdgeTabletMinWidthThreshold,
+                    sEdgeToEdgeTopInsetEnableTopEdgeToEdge,
                     sEdgeToEdgeUseBackupNavbarInsetsOemList,
                     sEdgeToEdgeUseBackupNavbarInsetsOemMinVersions,
                     sEdgeToEdgeUseBackupNavbarInsetsUseGestures,

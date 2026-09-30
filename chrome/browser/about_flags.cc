@@ -2705,6 +2705,16 @@ const FeatureEntry::FeatureVariation kNtpAuroraV2Variations[] = {
     {"Remove composeplate button", kNtpAuroraV2_RemoveComposeplateButton,
      nullptr}};
 
+const FeatureEntry::FeatureParam kEdgeToEdgeTopInset_RefactorOnly[] = {
+    {"enable_top_edge_to_edge", "false"}};
+const FeatureEntry::FeatureParam
+    kEdgeToEdgeTopInset_RefactorAndTopEdgeToEdge[] = {
+        {"enable_top_edge_to_edge", "true"}};
+const FeatureEntry::FeatureVariation kEdgeToEdgeTopInsetVariations[] = {
+    {"Refactor only", kEdgeToEdgeTopInset_RefactorOnly, nullptr},
+    {"Refactor and new top inset", kEdgeToEdgeTopInset_RefactorAndTopEdgeToEdge,
+     nullptr}};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -6101,9 +6111,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kHighPrioritySiteNotifications)},
 
     // Android Edge to edge
-    {"edgeless-top-inset", flag_descriptions::kEdgelessTopInsetName,
-     flag_descriptions::kEdgelessTopInsetDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kEdgelessTopInset)},
+    {"edge-to-edge-top-inset", flag_descriptions::kEdgeToEdgeTopInsetName,
+     flag_descriptions::kEdgeToEdgeTopInsetDescription, kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kEdgeToEdgeTopInset,
+                                    kEdgeToEdgeTopInsetVariations,
+                                    "EdgeToEdgeTopInset")},
 
     {"android-navigation-blur-transition-animation",
      flag_descriptions::kAndroidNavigationBlurTransitionAnimationName,

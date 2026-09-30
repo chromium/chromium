@@ -3156,9 +3156,9 @@
     "expiry_milestone": 155
   },
   {
-    "name": "edgeless-top-inset",
-    "owners": [ "dmurph@chromium.org", "pwa-team@google.com" ],
-    "expiry_milestone": 160
+    "name": "edge-to-edge-top-inset",
+    "owners": [ "dmurph@chromium.org", "aixba@chromium.org", "pwa-team@google.com" ],
+    "expiry_milestone": 170
   },
   {
     "name": "elastic-overscroll",

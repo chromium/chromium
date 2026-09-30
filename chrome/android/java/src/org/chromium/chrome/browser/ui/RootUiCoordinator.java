@@ -1436,9 +1436,9 @@ public class RootUiCoordinator
         }
 
         // TODO(crbug.com/498302496): Remove TopInsetCoordinator creation and
-        // TransitiveTopInsetProvider once sEdgelessTopInset is fully launched and
+        // TransitiveTopInsetProvider once sEdgeToEdgeTopInset is fully launched and
         // TopInsetCoordinator is deleted.
-        if (!EdgeToEdgeUtils.isEdgelessTopInsetEnabled()
+        if (!EdgeToEdgeUtils.isEdgeToEdgeRefactorEnabled()
                 && mWindowAndroid.getInsetObserver() != null
                 && NtpCustomizationUtils.supportsEnableEdgeToEdgeOnTop(mWindowAndroid, mIsTablet)) {
             // Only create TopInsetCoordinator if there's a valid TransitiveTopInsetProvider
@@ -2681,7 +2681,7 @@ public class RootUiCoordinator
             // TODO(crbug.com/498302496): Pass mEdgeToEdgeController directly to downstream
             // consumers (e.g. ToolbarManager, NewTabAnimationLayout) instead of using
             // TransitiveTopInsetProvider.
-            if (EdgeToEdgeUtils.isEdgelessTopInsetEnabled()
+            if (EdgeToEdgeUtils.isEdgeToEdgeRefactorEnabled()
                     && mTopInsetProvider
                             instanceof TransitiveTopInsetProvider transitiveTopInsetProvider) {
                 transitiveTopInsetProvider.set(mEdgeToEdgeController);
