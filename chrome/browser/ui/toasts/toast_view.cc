@@ -218,6 +218,14 @@ void ToastView::Init() {
         gfx::Insets::VH(0,
                         lp->GetDistanceMetric(
                             DISTANCE_TOAST_BUBBLE_LEADING_ICON_SIDE_MARGINS)));
+    if (image_override_.has_value() &&
+        IsCompatibleImageSize(image_override_.value())) {
+      icon_view_->SetImage(image_override_.value());
+    } else {
+      CHECK(icon_);
+      icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
+          *icon_, ui::kColorToastForeground, GetIconSize()));
+    }
   }
 
   label_ = AddChildView(
@@ -476,22 +484,6 @@ gfx::Rect ToastView::GetBubbleBounds() {
                                               ? views::BubbleBorder::kShadowBlur
                                               : (preferred_size.height() / 2));
   return gfx::Rect(x, y, width, preferred_size.height());
-}
-
-void ToastView::OnThemeChanged() {
-  BubbleDialogDelegateView::OnThemeChanged();
-  if (icon_view_) {
-    const auto* color_provider = GetColorProvider();
-    if (image_override_.has_value() &&
-        IsCompatibleImageSize(image_override_.value())) {
-      icon_view_->SetImage(image_override_.value());
-    } else {
-      CHECK(icon_);
-      icon_view_->SetImage(ui::ImageModel::FromVectorIcon(
-          *icon_, color_provider->GetColor(ui::kColorToastForeground),
-          GetIconSize()));
-    }
-  }
 }
 
 void ToastView::AnimateOut(base::OnceClosure callback,
