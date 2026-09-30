@@ -487,8 +487,7 @@ public class DragAndDropLauncherActivityTest {
                                             .getModel(false),
                                     draggedTabGroup,
                                     sourceWindowId,
-                                    draggedTabGroup.get(0).getId(),
-                                    /* isGroupShared= */ false);
+                                    draggedTabGroup.get(0).getId());
                     return DragAndDropLauncherActivity.buildTabOrGroupIntent(
                             createTabGroupDropData(
                                     tabGroupMetadata, /* allowDragToCreateNewInstance= */ true),

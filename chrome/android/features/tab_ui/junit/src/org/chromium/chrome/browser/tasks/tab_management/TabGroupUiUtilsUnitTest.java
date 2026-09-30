@@ -58,7 +58,6 @@ import org.chromium.components.tab_group_sync.TabGroupUiActionHandler;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.url.JUnitTestGURLs;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -131,23 +130,22 @@ public class TabGroupUiUtilsUnitTest {
     @Test
     public void testHasTabGroups_SingleWindow_HasGroups() {
         when(mTabModel.getTabGroupCount()).thenReturn(1);
-        assertTrue(TabGroupUtils.hasTabGroups(mTabModel));
+        assertTrue(TabGroupUtils.hasTabGroups(mTabModel, /* selectorsForAllWindows= */ null));
         assertTrue(TabGroupUtils.hasTabGroups(mTabModel, List.of(mTabModelSelector)));
     }
 
     @Test
     public void testHasTabGroups_SingleWindow_NoGroups() {
         when(mTabModel.getTabGroupCount()).thenReturn(0);
-        assertFalse(TabGroupUtils.hasTabGroups(mTabModel));
+        assertFalse(TabGroupUtils.hasTabGroups(mTabModel, /* selectorsForAllWindows= */ null));
         assertFalse(TabGroupUtils.hasTabGroups(mTabModel, List.of(mTabModelSelector)));
     }
 
     @Test
     public void testHasTabGroups_NullModel() {
-        assertFalse(TabGroupUtils.hasTabGroups(/* tabModel= */ null));
         assertFalse(
                 TabGroupUtils.hasTabGroups(
-                        /* tabModel= */ null, (Collection<TabModelSelector>) null));
+                        /* tabModel= */ null, /* selectorsForAllWindows= */ null));
     }
 
     @Test
@@ -164,7 +162,7 @@ public class TabGroupUiUtilsUnitTest {
 
         List<TabModelSelector> selectors = List.of(mTabModelSelector, otherSelector);
         assertTrue(TabGroupUtils.hasTabGroups(mTabModel, selectors));
-        assertFalse(TabGroupUtils.hasTabGroups(mTabModel, (Collection<TabModelSelector>) null));
+        assertFalse(TabGroupUtils.hasTabGroups(mTabModel, /* selectorsForAllWindows= */ null));
     }
 
     @Test

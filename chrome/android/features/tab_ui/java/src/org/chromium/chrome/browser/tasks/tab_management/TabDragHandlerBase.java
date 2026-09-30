@@ -321,17 +321,19 @@ public abstract class TabDragHandlerBase
         return builder.build();
     }
 
-    protected ChromeDropDataAndroid prepareGroupDropData(Token tabGroupId, boolean isGroupShared) {
+    /**
+     * Prepares the {@link ChromeDropDataAndroid} for dragging a tab group.
+     *
+     * @param tabGroupId The ID of the tab group being dragged.
+     * @return The {@link ChromeDropDataAndroid} describing the dragged tab group.
+     */
+    protected ChromeDropDataAndroid prepareGroupDropData(Token tabGroupId) {
         TabModel tabModel = getCurrentModel();
         List<Tab> groupedTabs = tabModel.getTabsInGroup(tabGroupId);
         int windowId = TabWindowManagerSingleton.getInstance().getIdForWindow(getActivity());
         TabGroupMetadata metadata =
                 TabGroupMetadataExtractor.extractTabGroupMetadata(
-                        tabModel,
-                        groupedTabs,
-                        windowId,
-                        getTabModelSelector().getCurrentTabId(),
-                        isGroupShared);
+                        tabModel, groupedTabs, windowId, getTabModelSelector().getCurrentTabId());
         boolean allowDragToCreateInstance =
                 shouldAllowGroupDragToCreateInstance(tabGroupId)
                         && (MultiWindowUtils.getInstanceCount(PersistedInstanceType.ACTIVE)

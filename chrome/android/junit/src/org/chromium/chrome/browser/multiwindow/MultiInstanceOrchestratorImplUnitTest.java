@@ -1582,11 +1582,7 @@ public class MultiInstanceOrchestratorImplUnitTest {
         when(mTab2.getUrl()).thenReturn(JUnitTestGURLs.EXAMPLE_URL);
         mTabGroupMetadata =
                 TabGroupMetadataExtractor.extractTabGroupMetadata(
-                        mTabModel,
-                        List.of(mTab1, mTab2),
-                        SOURCE_WINDOW_ID,
-                        PARENT_TAB_ID_1,
-                        /* isGroupShared= */ false);
+                        mTabModel, List.of(mTab1, mTab2), SOURCE_WINDOW_ID, PARENT_TAB_ID_1);
     }
 
     private void verifyNewWindowIntentForUrlLaunch(Intent intent, boolean isIncognitoWindow) {

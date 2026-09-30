@@ -3507,7 +3507,6 @@ public class VerticalTabListCoordinatorUnitTest {
                         /* tabGroupTitle= */ "Test Group",
                         /* mhtmlTabTitle= */ null,
                         /* tabGroupCollapsed= */ false,
-                        /* isGroupShared= */ false,
                         /* isIncognito= */ false);
 
         Tab mockTab = prepareMockTab(mMockTab1, 101);

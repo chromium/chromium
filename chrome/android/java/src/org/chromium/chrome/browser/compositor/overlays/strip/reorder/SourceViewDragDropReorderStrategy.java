@@ -650,7 +650,6 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
             return mTabStripDragHandler.startGroupDragAction(
                     mContainerView,
                     draggedGroupTitle.getTabGroupId(),
-                    draggedGroupTitle.isGroupShared(),
                     startPoint,
                     draggedGroupTitle.getDrawX(),
                     draggedGroupTitle.getWidth());

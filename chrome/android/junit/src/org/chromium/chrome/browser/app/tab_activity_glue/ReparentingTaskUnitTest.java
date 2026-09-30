@@ -363,7 +363,6 @@ public class ReparentingTaskUnitTest {
                 /* tabGroupTitle= */ "Group",
                 /* mhtmlTabTitle= */ null,
                 /* tabGroupCollapsed= */ false,
-                /* isGroupShared= */ false,
                 /* isIncognito= */ false);
     }
 

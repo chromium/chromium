@@ -9,27 +9,19 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/memory/raw_ptr.h"
 #include "base/uuid.h"
 #include "components/saved_tab_groups/delegate/tab_group_sync_delegate.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
-#include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/saved_tab_groups/public/types.h"
 
-using base::android::JavaRef;
-using base::android::ScopedJavaGlobalRef;
-using base::android::ScopedJavaLocalRef;
-
 namespace tab_groups {
-class TabGroupSyncService;
 
 // Android implementation of TabGroupSyncDelegate. Owns the Java object and
 // passes all the calls to it which hosts all the interaction logic.
 class TabGroupSyncDelegateAndroid : public TabGroupSyncDelegate {
  public:
   explicit TabGroupSyncDelegateAndroid(
-      TabGroupSyncService* service,
-      ScopedJavaLocalRef<jobject> j_delegate_deps);
+      base::android::ScopedJavaLocalRef<jobject> j_delegate_deps);
   ~TabGroupSyncDelegateAndroid() override;
 
   // TabGroupSyncDelegate implementation.
@@ -54,11 +46,7 @@ class TabGroupSyncDelegateAndroid : public TabGroupSyncDelegate {
  private:
   // A reference to the Java counterpart of this class. See
   // TabGroupSyncServiceDelegate.java.
-  ScopedJavaGlobalRef<jobject> java_obj_;
-
-  // Not owned. This is safe because the delegate is owned by the service which
-  // outlives the delegate.
-  raw_ptr<TabGroupSyncService> tab_group_sync_service_;
+  base::android::ScopedJavaGlobalRef<jobject> java_obj_;
 };
 
 }  // namespace tab_groups

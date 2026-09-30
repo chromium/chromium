@@ -45,12 +45,11 @@ public class TabGroupSyncDelegate implements TabWindowManager.Observer {
     private final TabWindowManager mTabWindowManager;
 
     @CalledByNative
-    static TabGroupSyncDelegate create(long nativePtr, TabGroupSyncDelegate.Deps delegateDeps) {
-        return new TabGroupSyncDelegate(nativePtr, delegateDeps);
+    static TabGroupSyncDelegate create(TabGroupSyncDelegate.Deps delegateDeps) {
+        return new TabGroupSyncDelegate(delegateDeps);
     }
 
-    private TabGroupSyncDelegate(long nativePtr, TabGroupSyncDelegate.Deps delegateDeps) {
-        assert nativePtr != 0;
+    private TabGroupSyncDelegate(TabGroupSyncDelegate.Deps delegateDeps) {
         mTabWindowManager = assertNonNull(delegateDeps.tabWindowManager);
         mTabWindowManager.addObserver(this);
     }

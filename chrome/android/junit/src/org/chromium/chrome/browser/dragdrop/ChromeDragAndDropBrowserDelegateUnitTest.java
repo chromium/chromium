@@ -379,7 +379,6 @@ public class ChromeDragAndDropBrowserDelegateUnitTest {
                 tabGroupTitle,
                 /* mhtmlTabTitle= */ null,
                 /* tabGroupCollapsed= */ false,
-                /* isGroupShared= */ false,
                 /* isIncognito= */ false);
     }
 }

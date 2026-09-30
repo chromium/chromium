@@ -22,10 +22,8 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tab_group_sync.ClosingSource;
-import org.chromium.components.tab_group_sync.EventDetails;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
-import org.chromium.components.tab_group_sync.TabGroupEvent;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.common.ContentUrlConstants;
@@ -123,58 +121,6 @@ public final class TabGroupSyncUtils {
                         savedTabGroup.localId, ClosingSource.CLEANED_UP_ON_LAST_INSTANCE_CLOSURE);
             }
         }
-    }
-
-    /** Helper method to record open close metrics. */
-    public static void recordTabGroupOpenCloseMetrics(
-            TabGroupSyncService tabGroupSyncService,
-            boolean open,
-            int source,
-            LocalTabGroupId localTabGroupId) {
-        int eventType = open ? TabGroupEvent.TAB_GROUP_OPENED : TabGroupEvent.TAB_GROUP_CLOSED;
-        EventDetails eventDetails = new EventDetails(eventType);
-        eventDetails.localGroupId = localTabGroupId;
-        if (open) {
-            eventDetails.openingSource = source;
-        } else {
-            eventDetails.closingSource = source;
-        }
-        tabGroupSyncService.recordTabGroupEvent(eventDetails);
-    }
-
-    /**
-     * Tries to get the saved group for a given tab id, returning null if anything goes wrong, such
-     * as the tab not being in a group.
-     *
-     * @param tabId The id of the tab.
-     * @param tabModel The tab model to look up the tab in.
-     * @param tabGroupSyncService The sync service to get tab group data form.
-     * @return The group data object.
-     */
-    public static @Nullable SavedTabGroup getSavedTabGroupFromTabId(
-            int tabId, TabModel tabModel, TabGroupSyncService tabGroupSyncService) {
-        @Nullable Tab tab = tabModel.getTabById(tabId);
-        if (tab == null || tab.getTabGroupId() == null) return null;
-        LocalTabGroupId localTabGroupId = new LocalTabGroupId(tab.getTabGroupId());
-        return tabGroupSyncService.getGroup(localTabGroupId);
-    }
-
-    /**
-     * Returns the last access time of a tab group which is determined by most recent access time
-     * across all of its tabs.
-     *
-     * @param tabGroupId The local tab group ID.
-     * @param tabModel The tab model.
-     * @return The last access time of the tab group.
-     */
-    public static long getTabGroupLastAccessTime(Token tabGroupId, TabModel tabModel) {
-        List<Tab> tabs = tabModel.getTabsInGroup(tabGroupId);
-        long mostRecentAccessTime = 0;
-        for (Tab tab : tabs) {
-            mostRecentAccessTime = Math.max(mostRecentAccessTime, tab.getTimestampMillis());
-        }
-
-        return mostRecentAccessTime;
     }
 
     /**

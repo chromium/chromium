@@ -503,7 +503,6 @@ public class ExternalViewDragDropReorderStrategyTest extends ReorderStrategyTest
                             /* tabGroupTitle= */ "Collaboration Group",
                             /* mhtmlTabTitle= */ null,
                             /* tabGroupCollapsed= */ false,
-                            /* isGroupShared= */ false,
                             /* isIncognito= */ false);
             dropData =
                     new ChromeTabGroupDropDataAndroid.Builder()

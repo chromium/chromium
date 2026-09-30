@@ -29,34 +29,22 @@ public class TabUiUnitTestUtils {
         doReturn(tabId).when(tab).getId();
         UserDataHost userDataHost = new UserDataHost();
         doReturn(userDataHost).when(tab).getUserDataHost();
+        doReturn(GURL.emptyGURL()).when(tab).getUrl();
         return tab;
     }
 
     /** Returns a mocked and initialized tab with an id and title. */
     public static Tab prepareTab(int id, String title) {
-        return prepareTab(id, title, id);
-    }
-
-    /** Returns a mocked and initialized tab with an id, title, and rootId. */
-    public static Tab prepareTab(int id, String title, int rootId) {
-        Tab tab = prepareTab(id, rootId);
+        Tab tab = prepareTab(id);
         doReturn(title).when(tab).getTitle();
         return tab;
     }
 
     /** Returns a mocked and initialized tab with an id, title, and url. */
     public static Tab prepareTab(int id, String title, GURL url) {
-        Tab tab = prepareTab(id);
-        doReturn(title).when(tab).getTitle();
+        Tab tab = prepareTab(id, title);
         doReturn(url).when(tab).getOriginalUrl();
         doReturn(url).when(tab).getUrl();
-        return tab;
-    }
-
-    /** Returns a mocked and initialized tab with an id and rootId. */
-    public static Tab prepareTab(int tabId, int rootId) {
-        Tab tab = prepareTab(tabId);
-        doReturn(GURL.emptyGURL()).when(tab).getUrl();
         return tab;
     }
 }

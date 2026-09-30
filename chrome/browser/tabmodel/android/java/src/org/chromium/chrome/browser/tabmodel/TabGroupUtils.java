@@ -211,31 +211,6 @@ public class TabGroupUtils {
     }
 
     /**
-     * Checks to see if a tab group is shared.
-     *
-     * @param tabModel The {@link TabModel} that owns the tabs in the tab group.
-     * @param groupId The group id representing the tab group.
-     */
-    public static boolean isTabGroupShared(TabModel tabModel, Token groupId) {
-        Profile profile = tabModel.getProfile();
-        if (profile == null
-                || profile.isOffTheRecord()
-                || !TabGroupSyncFeatures.isTabGroupSyncEnabled(profile)) {
-            return false;
-        }
-
-        TabGroupSyncService tabGroupSyncService = TabGroupSyncServiceFactory.getForProfile(profile);
-        if (tabGroupSyncService == null) return false;
-
-        LocalTabGroupId localTabGroupId = new LocalTabGroupId(groupId);
-        SavedTabGroup savedTabGroup = tabGroupSyncService.getGroup(localTabGroupId);
-        if (savedTabGroup == null) return false;
-
-        @Nullable String collaborationId = savedTabGroup.collaborationId;
-        return !TextUtils.isEmpty(collaborationId);
-    }
-
-    /**
      * Returns whether the collapsed state should be applied when a group is dropped into another
      * window. If the tab strip is hidden or no tab is selected, this skips collapsing and calls
      * {@link TabModelUtils#setIndex} to ensure a tab in the group is selected.
@@ -353,14 +328,13 @@ public class TabGroupUtils {
      * Filters the given list of tabs, returning a new list containing only the tabs that are part
      * of a tab group.
      *
-     * @param tabModel The {@link TabModel} used to find grouped tabs.
      * @param tabs The list of {@link Tab}s to filter.
      * @return A new list of {@link Tab}s that are in a tab group.
      */
-    public static List<Tab> getGroupedTabs(TabModel tabModel, List<Tab> tabs) {
+    public static List<Tab> getGroupedTabs(List<Tab> tabs) {
         List<Tab> groupedTabs = new ArrayList<>();
         for (Tab tab : tabs) {
-            if (tabModel.isTabInTabGroup(tab)) groupedTabs.add(tab);
+            if (tab.getTabGroupId() != null) groupedTabs.add(tab);
         }
         return groupedTabs;
     }
@@ -405,9 +379,5 @@ public class TabGroupUtils {
             }
         }
         return false;
-    }
-
-    public static boolean hasTabGroups(@Nullable TabModel tabModel) {
-        return hasTabGroups(tabModel, /* selectorsForAllWindows= */ null);
     }
 }

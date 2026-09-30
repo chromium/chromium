@@ -22,7 +22,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tabmodel.TabGroupUtils.areAnyTabsPartOfSharedGroup;
-import static org.chromium.chrome.browser.tabmodel.TabGroupUtils.isTabGroupShared;
 
 import android.text.TextUtils;
 
@@ -52,7 +51,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -202,28 +200,6 @@ public class TabGroupUtilsUnitTest {
     }
 
     @Test
-    public void testIsTabGroupShared_IsShared() {
-        mSavedTabGroup1.collaborationId = "collaborationId";
-        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID1);
-        when(mTabModel.getProfile()).thenReturn(mProfile);
-        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(TAB_GROUP_ID1)))
-                .thenReturn(mSavedTabGroup1);
-
-        assertTrue(isTabGroupShared(mTabModel, TAB_GROUP_ID1));
-    }
-
-    @Test
-    public void testIsTabGroupShared_IsNotShared() {
-        mSavedTabGroup1.collaborationId = null;
-        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID1);
-        when(mTabModel.getProfile()).thenReturn(mProfile);
-        when(mTabGroupSyncService.getGroup(new LocalTabGroupId(TAB_GROUP_ID1)))
-                .thenReturn(mSavedTabGroup1);
-
-        assertFalse(isTabGroupShared(mTabModel, TAB_GROUP_ID1));
-    }
-
-    @Test
     public void testRegroupTabs() {
         verifyRegroupTabs(/* shouldApplyCollapse= */ true);
     }
@@ -274,7 +250,6 @@ public class TabGroupUtilsUnitTest {
                         TAB_GROUP_TITLE,
                         /* mhtmlTabTitle= */ null,
                         /* tabGroupCollapsed= */ true,
-                        /* isGroupShared= */ false,
                         /* isIncognito= */ false);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID1);
         TabGroupUtils.regroupTabs(mTabModel, tabs, tabGroupMetadata, shouldApplyCollapse);
@@ -299,7 +274,7 @@ public class TabGroupUtilsUnitTest {
     @Test
     public void testHasTabGroups_hasGroupsInCurrentModel() {
         when(mTabModel.getTabGroupCount()).thenReturn(1);
-        assertTrue(TabGroupUtils.hasTabGroups(mTabModel));
+        assertTrue(TabGroupUtils.hasTabGroups(mTabModel, /* selectorsForAllWindows= */ null));
         assertTrue(TabGroupUtils.hasTabGroups(mTabModel, List.of(mTabModelSelector)));
     }
 
@@ -317,7 +292,7 @@ public class TabGroupUtilsUnitTest {
 
         assertTrue(
                 TabGroupUtils.hasTabGroups(mTabModel, List.of(mTabModelSelector, otherSelector)));
-        assertFalse(TabGroupUtils.hasTabGroups(mTabModel, (Collection<TabModelSelector>) null));
+        assertFalse(TabGroupUtils.hasTabGroups(mTabModel, /* selectorsForAllWindows= */ null));
     }
 
     @Test
@@ -333,7 +308,6 @@ public class TabGroupUtilsUnitTest {
                         TAB_GROUP_TITLE,
                         /* mhtmlTabTitle= */ null,
                         /* tabGroupCollapsed= */ false,
-                        /* isGroupShared= */ false,
                         /* isIncognito= */ false);
         when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID1);
         when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID1);
@@ -343,5 +317,15 @@ public class TabGroupUtilsUnitTest {
         verify(mTabModel, never()).createTabGroupForTabGroupSync(any(), any());
         verify(mTabModel).setTabGroupColor(eq(TAB_GROUP_ID1), eq(0));
         verify(mTabModel).setTabGroupTitle(eq(TAB_GROUP_ID1), eq(TAB_GROUP_TITLE));
+    }
+
+    @Test
+    public void testGetGroupedTabs() {
+        when(mTab1.getTabGroupId()).thenReturn(TAB_GROUP_ID1);
+        when(mTab2.getTabGroupId()).thenReturn(null);
+        when(mTab3.getTabGroupId()).thenReturn(TAB_GROUP_ID2);
+
+        List<Tab> groupedTabs = TabGroupUtils.getGroupedTabs(List.of(mTab1, mTab2, mTab3));
+        assertEquals(List.of(mTab1, mTab3), groupedTabs);
     }
 }

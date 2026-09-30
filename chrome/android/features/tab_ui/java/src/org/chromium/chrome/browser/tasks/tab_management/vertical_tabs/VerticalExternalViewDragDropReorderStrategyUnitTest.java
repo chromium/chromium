@@ -1348,7 +1348,15 @@ public class VerticalExternalViewDragDropReorderStrategyUnitTest {
         Tab tab = createMockTab(5, /* isPinned= */ false);
         TabGroupMetadata metadata =
                 new TabGroupMetadata(
-                        0, 0, groupId, new ArrayList<>(), 0, "Title", null, false, false, false);
+                        /* selectedTabId= */ 0,
+                        /* sourceWindowId= */ 0,
+                        groupId,
+                        new ArrayList<>(),
+                        /* tabGroupColor= */ 0,
+                        "Title",
+                        /* mhtmlTabTitle= */ null,
+                        /* tabGroupCollapsed= */ false,
+                        /* isIncognito= */ false);
 
         ChromeTabGroupDropDataAndroid dropData =
                 (ChromeTabGroupDropDataAndroid)

@@ -299,8 +299,7 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
                                 currentTabModel.getTabsInGroup(tabGroupId),
                                 TabWindowManagerSingleton.getInstance().getIdForWindow(activity),
                                 assumeNonNull(currentTabModel.getTabAt(currentTabModel.index()))
-                                        .getId(),
-                                TabShareUtils.isCollaborationIdValid(collaborationId));
+                                        .getId());
                 if (tabGroupMetadata != null) {
                     moveAndCleanupSource(
                             multiInstanceManager,
@@ -708,14 +707,12 @@ public class TabGroupContextMenuCoordinator extends TabStripReorderingHelper<Tok
 
     private @Nullable TabGroupMetadata getTabGroupMetadata(Token groupId) {
         TabModel tabModel = mTabModelSupplier.get();
-        @Nullable String collaborationId = getCollaborationIdOrNull(groupId);
         return TabGroupMetadataExtractor.extractTabGroupMetadata(
                 tabModel,
                 tabModel.getTabsInGroup(groupId),
                 TabWindowManagerSingleton.getInstance()
                         .getIdForWindow(assumeNonNull(mWindowAndroid.getActivity().get())),
-                assumeNonNull(tabModel.getTabAt(tabModel.index())).getId(),
-                TabShareUtils.isCollaborationIdValid(collaborationId));
+                assumeNonNull(tabModel.getTabAt(tabModel.index())).getId());
     }
 
     private void updateTabGroupColor() {

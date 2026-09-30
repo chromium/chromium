@@ -33,13 +33,10 @@ import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 import org.chromium.chrome.browser.tabmodel.TabCreator.NeedsTabModel;
 import org.chromium.chrome.browser.tabmodel.TabCreator.NeedsTabModelOrderController;
-import org.chromium.chrome.browser.tasks.tab_management.TabShareUtils;
-import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
@@ -377,20 +374,12 @@ public class TabModelSelectorImpl extends TabModelSelectorBase implements TabMod
         Activity currentActivity = ContextUtils.activityFromContext(currentTab.getContext());
         if (currentActivity == null) return false;
 
-        String collaborationId = null;
-        if (!isIncognito) {
-            TabGroupSyncService tabGroupSyncService =
-                    TabGroupSyncServiceFactory.getForProfile(assumeNonNull(tabModel.getProfile()));
-            collaborationId =
-                    TabShareUtils.getCollaborationIdOrNull(tabGroupId, tabGroupSyncService);
-        }
         TabGroupMetadata tabGroupMetadata =
                 TabGroupMetadataExtractor.extractTabGroupMetadata(
                         tabModel,
                         tabModel.getTabsInGroup(tabGroupId),
                         TabWindowManagerSingleton.getInstance().getIdForWindow(currentActivity),
-                        currentTab.getId(),
-                        TabShareUtils.isCollaborationIdValid(collaborationId));
+                        currentTab.getId());
         if (tabGroupMetadata == null) return false;
 
         int destWindowId = TabWindowManagerSingleton.getInstance().getIdForWindow(activity);

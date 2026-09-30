@@ -947,7 +947,6 @@ public class IntentHandlerRobolectricTest {
                         /* tabGroupTitle= */ "Title",
                         /* mhtmlTabTitle= */ null,
                         /* tabGroupCollapsed= */ false,
-                        /* isGroupShared= */ false,
                         isIncognito);
         IntentHandler.setTabGroupMetadata(intent, metadata);
         if (isTrusted) {

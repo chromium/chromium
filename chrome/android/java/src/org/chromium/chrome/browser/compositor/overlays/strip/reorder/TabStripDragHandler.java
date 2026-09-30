@@ -201,7 +201,6 @@ public class TabStripDragHandler extends TabDragHandlerBase {
      *
      * @param dragSourceView View used to create the drag shadow.
      * @param tabGroupId The dragged group's ID.
-     * @param isGroupShared Whether the dragged group is shared with other collaborators.
      * @param startPoint Position of the drag start point in view coordinates.
      * @param positionX The horizontal position of the dragged group title in view coordinates.
      * @param widthDp Width of the group title in dp.
@@ -210,7 +209,6 @@ public class TabStripDragHandler extends TabDragHandlerBase {
     public boolean startGroupDragAction(
             View dragSourceView,
             Token tabGroupId,
-            boolean isGroupShared,
             PointF startPoint,
             float positionX,
             float widthDp) {
@@ -218,7 +216,7 @@ public class TabStripDragHandler extends TabDragHandlerBase {
             return false;
         }
 
-        ChromeDropDataAndroid dropData = prepareGroupDropData(tabGroupId, isGroupShared);
+        ChromeDropDataAndroid dropData = prepareGroupDropData(tabGroupId);
 
         // Initialize drag shadow.
         initShadowView(dragSourceView);

@@ -218,7 +218,7 @@ public class TabSwitcherDragHandler extends TabDragHandlerBase {
             return false;
         }
 
-        ChromeDropDataAndroid dropData = prepareGroupDropData(tabGroupId, false);
+        ChromeDropDataAndroid dropData = prepareGroupDropData(tabGroupId);
         return startDragInternal(dropData, startPoint, dragSourceView, dragShadowView);
     }
 

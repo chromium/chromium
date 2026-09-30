@@ -368,7 +368,6 @@ public class DragAndDropLauncherActivityUnitTest {
                         tabGroupTitle,
                         /* mhtmlTabTitle= */ null,
                         /* tabGroupCollapsed= */ false,
-                        /* isGroupShared= */ false,
                         /* isIncognito= */ false);
         return tabGroupMetadata;
     }

@@ -357,7 +357,7 @@ public class TabReparentingDelegateUnitTest {
     @Test
     public void testReparentTabGroupToExistingWindow_targetActivityFinishingOrDestroyed() {
         when(mDestActivity.isActivityFinishingOrDestroyed()).thenReturn(true);
-        TabGroupMetadata tabGroupMetadata = getTestTabGroupMetadata(/* isGroupShared= */ false);
+        TabGroupMetadata tabGroupMetadata = getTestTabGroupMetadata();
 
         mDelegate.reparentTabGroupToExistingWindow(
                 mDestActivity, tabGroupMetadata, /* destTabIndex= */ 3, /* bringToFront= */ true);
@@ -369,7 +369,7 @@ public class TabReparentingDelegateUnitTest {
 
     @Test
     public void testReparentTabGroupToExistingWindow_targetActivityDestroyedDuringAsyncSave() {
-        TabGroupMetadata tabGroupMetadata = getTestTabGroupMetadata(/* isGroupShared= */ true);
+        TabGroupMetadata tabGroupMetadata = getTestTabGroupMetadata();
 
         mDelegate.reparentTabGroupToExistingWindow(
                 mDestActivity, tabGroupMetadata, /* destTabIndex= */ 3, /* bringToFront= */ true);
@@ -398,25 +398,17 @@ public class TabReparentingDelegateUnitTest {
 
     @Test
     public void testReparentTabGroupToExistingWindow() {
-        doTestReparentTabGroupToExistingWindow(
-                /* isGroupShared= */ false, /* pauseResumeTabGroupSyncService= */ true);
-    }
-
-    @Test
-    public void testReparentTabGroupToExistingWindow_sharedTabGroup() {
-        doTestReparentTabGroupToExistingWindow(
-                /* isGroupShared= */ true, /* pauseResumeTabGroupSyncService= */ true);
+        doTestReparentTabGroupToExistingWindow(/* pauseResumeTabGroupSyncService= */ true);
     }
 
     @Test
     public void testReparentTabGroupToExistingWindow_noSourceTabPersistentStore() {
-        doTestReparentTabGroupToExistingWindow(
-                /* isGroupShared= */ false, /* pauseResumeTabGroupSyncService= */ false);
+        doTestReparentTabGroupToExistingWindow(/* pauseResumeTabGroupSyncService= */ false);
     }
 
     private void doTestReparentTabGroupToNewWindow(boolean pauseResumeTabGroupSyncService) {
         // Setup.
-        TabGroupMetadata tabGroupMetadata = getTestTabGroupMetadata(/* isGroupShared= */ false);
+        TabGroupMetadata tabGroupMetadata = getTestTabGroupMetadata();
         boolean openAdjacently = true;
         if (!pauseResumeTabGroupSyncService) {
             MultiWindowUtils.setActivityByWindowIdForTesting(
@@ -489,10 +481,9 @@ public class TabReparentingDelegateUnitTest {
         }
     }
 
-    private void doTestReparentTabGroupToExistingWindow(
-            boolean isGroupShared, boolean pauseResumeTabGroupSyncService) {
+    private void doTestReparentTabGroupToExistingWindow(boolean pauseResumeTabGroupSyncService) {
         // Setup.
-        TabGroupMetadata tabGroupMetadata = getTestTabGroupMetadata(isGroupShared);
+        TabGroupMetadata tabGroupMetadata = getTestTabGroupMetadata();
         if (!pauseResumeTabGroupSyncService) {
             MultiWindowUtils.setActivityByWindowIdForTesting(
                     SOURCE_WINDOW_ID, /* activity= */ null);
@@ -543,7 +534,7 @@ public class TabReparentingDelegateUnitTest {
         }
     }
 
-    private static TabGroupMetadata getTestTabGroupMetadata(boolean isGroupShared) {
+    private static TabGroupMetadata getTestTabGroupMetadata() {
         ArrayList<Entry<Integer, String>> tabIdsToUrls =
                 new ArrayList<>(
                         List.of(
@@ -559,7 +550,6 @@ public class TabReparentingDelegateUnitTest {
                 /* tabGroupTitle= */ null,
                 /* mhtmlTabTitle= */ null,
                 /* tabGroupCollapsed= */ false,
-                isGroupShared,
                 /* isIncognito= */ false);
     }
 }

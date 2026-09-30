@@ -4,12 +4,9 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static org.chromium.build.NullUtil.assumeNonNull;
-
 import android.app.Activity;
 import android.content.Context;
 import android.os.Build;
-import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -24,21 +21,14 @@ import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesCoordinator;
 import org.chromium.chrome.browser.data_sharing.ui.shared_image_tiles.SharedImageTilesView;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
-import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager;
-import org.chromium.chrome.browser.tab_ui.ActionConfirmationManager.MaybeBlockingResult;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
-import org.chromium.chrome.browser.tabmodel.TabGroupTitleUtils;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelActionListener;
@@ -46,10 +36,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.CollaborationServiceShareOrManageEntryPoint;
-import org.chromium.components.data_sharing.GroupData;
 import org.chromium.components.data_sharing.member_role.MemberRole;
-import org.chromium.components.signin.base.AccountInfo;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.tab_group_sync.EitherId.EitherGroupId;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
@@ -186,89 +173,6 @@ public class TabUiUtils {
     }
 
     /**
-     * Leave or deletes a shared tab group, prompting to user to verify first.
-     *
-     * @param context Used to load resources.
-     * @param tabModel Used to pull dependencies from.
-     * @param actionConfirmationManager Used to show a confirmation dialog.
-     * @param modalDialogManager Used to show error dialogs.
-     * @param tabId The local id of the tab being left.
-     */
-    public static void exitSharedTabGroupWithDialog(
-            Context context,
-            TabModel tabModel,
-            ActionConfirmationManager actionConfirmationManager,
-            ModalDialogManager modalDialogManager,
-            int tabId) {
-        assert isDataSharingFunctionalityEnabled();
-        assert actionConfirmationManager != null;
-
-        Profile profile = assumeNonNull(tabModel.getProfile());
-        TabGroupSyncService tabGroupSyncService =
-                assumeNonNull(TabGroupSyncServiceFactory.getForProfile(profile));
-        IdentityManager identityManager =
-                assumeNonNull(IdentityServicesProvider.get().getIdentityManager(profile));
-        CollaborationService collaborationService =
-                CollaborationServiceFactory.getForProfile(profile);
-
-        @Nullable SavedTabGroup savedTabGroup =
-                TabGroupSyncUtils.getSavedTabGroupFromTabId(tabId, tabModel, tabGroupSyncService);
-
-        @Nullable AccountInfo account = identityManager.getPrimaryAccountInfo();
-        if (savedTabGroup == null
-                || TextUtils.isEmpty(savedTabGroup.collaborationId)
-                || account == null) {
-            showGenericErrorDialog(context, modalDialogManager);
-            return;
-        }
-
-        String collaborationId = savedTabGroup.collaborationId;
-        @Nullable GroupData shareGroup = collaborationService.getGroupData(collaborationId);
-        if (shareGroup == null) {
-            showGenericErrorDialog(context, modalDialogManager);
-            return;
-        }
-
-        @MemberRole
-        int memberRole = collaborationService.getCurrentUserRoleForGroup(collaborationId);
-        Callback<MaybeBlockingResult> onActionConfirmation =
-                (MaybeBlockingResult maybeBlockingResult) -> {
-                    if (maybeBlockingResult.result
-                            != ActionConfirmationResult.CONFIRMATION_NEGATIVE) {
-                        assert maybeBlockingResult.finishBlocking != null;
-                        exitCollaborationWithoutWarning(
-                                context,
-                                modalDialogManager,
-                                collaborationService,
-                                collaborationId,
-                                memberRole,
-                                maybeBlockingResult.finishBlocking);
-                    } else if (maybeBlockingResult.finishBlocking != null) {
-                        assert false : "Should not be reachable.";
-                        // Do the safe thing and run the runnable anyway.
-                        maybeBlockingResult.finishBlocking.run();
-                    }
-                };
-
-        // The default title is not included in the savedTabGroup data. Use the filter to get the
-        // last known title for the tab group.
-        String title = savedTabGroup.title;
-        Tab tab = tabModel.getTabById(tabId);
-        if (tab != null || TextUtils.isEmpty(title)) {
-            Token tabGroupId = tab == null ? null : tab.getTabGroupId();
-            title = TabGroupTitleUtils.getDisplayableTitle(context, tabModel, tabGroupId);
-        }
-
-        if (memberRole == MemberRole.OWNER) {
-            actionConfirmationManager.processDeleteSharedGroupAttempt(title, onActionConfirmation);
-        } else if (memberRole == MemberRole.MEMBER) {
-            actionConfirmationManager.processLeaveGroupAttempt(title, onActionConfirmation);
-        } else {
-            showGenericErrorDialog(context, modalDialogManager);
-        }
-    }
-
-    /**
      * Returns whether an IPH should be shown for Tab Group Sync for the given tab group ID.
      *
      * @param tabGroupSyncService The sync service to get tab group data form.
@@ -326,7 +230,7 @@ public class TabUiUtils {
      *
      * @param activity that contains the current tab group.
      * @param tabModel The {@link TabModel} to act on.
-     * @param dataSharingTabManager The {@link} DataSharingTabManager managing communication between
+     * @param dataSharingTabManager The {@link DataSharingTabManager} managing communication between
      *     UI and DataSharing services.
      * @param tabId The local id of the tab.
      * @param tabGroupDisplayName The display name of the current group title.

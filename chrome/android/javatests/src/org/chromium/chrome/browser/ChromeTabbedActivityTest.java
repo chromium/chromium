@@ -385,7 +385,6 @@ public class ChromeTabbedActivityTest {
                         TAB_GROUP_TITLE,
                         /* mhtmlTabTitle= */ null,
                         /* tabGroupCollapsed= */ true,
-                        /* isGroupShared= */ false,
                         /* isIncognito= */ false);
         IntentHandler.setTabGroupMetadata(intent, metadata);
         IntentUtils.setForceIsTrustedIntentForTesting(true);
@@ -1079,7 +1078,6 @@ public class ChromeTabbedActivityTest {
                 TAB_GROUP_TITLE,
                 /* mhtmlTabTitle= */ null,
                 /* tabGroupCollapsed= */ true,
-                /* isGroupShared= */ false,
                 /* isIncognito= */ false);
     }
 

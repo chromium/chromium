@@ -1424,7 +1424,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
 
     /** Ungroups any tabs in {@code tabs} which are currently in a group. */
     private void ungroupTabs(List<Tab> tabs) {
-        List<Tab> groupedTabs = TabGroupUtils.getGroupedTabs(getTabModel(), tabs);
+        List<Tab> groupedTabs = TabGroupUtils.getGroupedTabs(tabs);
         if (!groupedTabs.isEmpty()) {
             // Ungroup all tabs before performing the move operation.
             getTabModel()
