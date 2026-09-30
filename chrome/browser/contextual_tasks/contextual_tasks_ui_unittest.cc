@@ -21,6 +21,7 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_post_rearchitecture.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_page.h"
 #include "chrome/browser/contextual_tasks/mock_contextual_tasks_ui_service.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -893,14 +894,13 @@ TEST_F(ContextualTasksUiTest, AreUrlsEqual) {
 }
 
 TEST_F(ContextualTasksUiTest, GetContextualTasksLoadTimeData) {
-  // The feature is enabled by default; disable it so this test covers the
-  // platform voice search path regardless of the device's form factor.
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndDisableFeature(
-      contextual_tasks::kContextualTasksWebUiVoiceSearchDesktopAndroid);
-
   base::DictValue load_time_data =
       ContextualTasksUI::GetContextualTasksLoadTimeData(profile_);
+
+  // The in-panel WebUI voice search UI is only used on large-screen Android
+  // devices (tablet or desktop form factor); it is always false elsewhere.
+  const bool expect_webui_voice_search =
+      contextual_tasks::IsAndroidLargeFormFactor();
 
   // Only set when the in-panel WebUI voice search UI in desktop Android is
   // active. It drives audio wave simulation, since that UI cannot open its own
@@ -908,14 +908,14 @@ TEST_F(ContextualTasksUiTest, GetContextualTasksLoadTimeData) {
   std::optional<bool> android_speech_recognition =
       load_time_data.FindBool("androidSpeechRecognition");
   ASSERT_TRUE(android_speech_recognition.has_value());
-  EXPECT_FALSE(android_speech_recognition.value());
+  EXPECT_EQ(android_speech_recognition.value(), expect_webui_voice_search);
 
-  // With the feature disabled, Android delegates to the platform voice
-  // recognition activity.
+  // Android phones delegate to the platform voice recognition activity.
   std::optional<bool> is_system_voice_search_enabled =
       load_time_data.FindBool("isSystemVoiceSearchEnabled");
   ASSERT_TRUE(is_system_voice_search_enabled.has_value());
-  EXPECT_EQ(is_system_voice_search_enabled.value(), !!BUILDFLAG(IS_ANDROID));
+  EXPECT_EQ(is_system_voice_search_enabled.value(),
+            !!BUILDFLAG(IS_ANDROID) && !expect_webui_voice_search);
 }
 
 #if BUILDFLAG(IS_ANDROID)

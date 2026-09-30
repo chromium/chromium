@@ -107,6 +107,7 @@ suite('ComposeboxVoiceSearchRecognition', () => {
       voiceSearchCoherenceAnySearchboxExperimentEnabled: false,
       voiceSearchCoherenceCobrowsingComposeboxEnabled: false,
       isSystemVoiceSearchEnabled: false,
+      androidSpeechRecognition: false,
     });
 
     windowProxy.setResultMapperFor(

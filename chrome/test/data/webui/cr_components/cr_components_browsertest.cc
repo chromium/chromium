@@ -303,15 +303,9 @@ IN_PROC_BROWSER_TEST_F(CrComponentsPreloadingTest, Preloading) {
 class CrComponentsComposeboxTest : public WebUIMochaBrowserTest {
  protected:
   CrComponentsComposeboxTest() {
-    // kContextualTasksWebUiVoiceSearchDesktopAndroid is disabled so that the
-    // voice search tests exercise the default recognizer path; desktop Android
-    // bots count as a large form factor and would otherwise use the Android
-    // speech recognition path.
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{contextual_tasks::kContextualTasks},
-        /*disabled_features=*/{
-            lens::features::kLensSendRawFileMediaTypes,
-            contextual_tasks::kContextualTasksWebUiVoiceSearchDesktopAndroid});
+        /*disabled_features=*/{lens::features::kLensSendRawFileMediaTypes});
 
     set_test_loader_host(chrome::kChromeUIContextualTasksHost);
   }
