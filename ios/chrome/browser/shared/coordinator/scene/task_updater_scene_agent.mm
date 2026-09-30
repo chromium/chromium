@@ -85,6 +85,15 @@
   [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
+// Downgrades the scene from `TaskExecutionUIReady` to
+// `TaskExecutionProfileLoaded` when a sign-in flow starts so UI-ready tasks
+// are deferred until sign-in completes.
+- (void)signinDidStart:(SceneState*)sceneState {
+  if (_didUpdateToUIReady) {
+    [self resetExecutionStage];
+  }
+}
+
 - (void)signinDidEnd:(SceneState*)sceneState {
   // Handle intents after sign-in is done when the forced sign-in policy
   // is enabled.
@@ -92,6 +101,15 @@
 }
 
 #pragma mark - SceneUIBlockerStateObserver
+
+// Downgrades the scene from `TaskExecutionUIReady` to
+// `TaskExecutionProfileLoaded` when a modal overlay is presented so UI-ready
+// tasks are deferred while the scene is blocked.
+- (void)willShowModalOverlay {
+  if (_didUpdateToUIReady) {
+    [self resetExecutionStage];
+  }
+}
 
 - (void)didHideModalOverlay {
   [self maybeUpdateToUIReady];

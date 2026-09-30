@@ -290,3 +290,43 @@ TEST_F(TaskUpdaterSceneAgentTest, TestUIReadyResetToStageNone) {
   EXPECT_EQ(fake_task_orchestrator_.stage,
             TaskExecutionStage::TaskExecutionStageNone);
 }
+
+// Test that TaskExecutionProfileLoaded is sent when presentingModalOverlay
+// becomes YES after reaching TaskExecutionUIReady.
+TEST_F(TaskUpdaterSceneAgentTest, TestUIReadyResetOnModalOverlay) {
+  SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
+  scene_state_.UIEnabled = YES;
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_EQ(fake_task_orchestrator_.stage,
+            TaskExecutionStage::TaskExecutionUIReady);
+
+  scene_state_.uiBlockerState.presentingModalOverlay = YES;
+  EXPECT_EQ(fake_task_orchestrator_.stage,
+            TaskExecutionStage::TaskExecutionProfileLoaded);
+
+  scene_state_.uiBlockerState.presentingModalOverlay = NO;
+  EXPECT_EQ(fake_task_orchestrator_.stage,
+            TaskExecutionStage::TaskExecutionUIReady);
+}
+
+// Test that TaskExecutionProfileLoaded is sent when a sign-in flow starts
+// after reaching TaskExecutionUIReady, and restored when sign-in ends.
+TEST_F(TaskUpdaterSceneAgentTest, TestUIReadyResetOnSigninStart) {
+  SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
+  scene_state_.UIEnabled = YES;
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  EXPECT_EQ(fake_task_orchestrator_.stage,
+            TaskExecutionStage::TaskExecutionUIReady);
+
+  {
+    std::unique_ptr<SigninInProgress> signin_in_progress =
+        [scene_state_ createSigninInProgress];
+    EXPECT_EQ(fake_task_orchestrator_.stage,
+              TaskExecutionStage::TaskExecutionProfileLoaded);
+  }
+
+  EXPECT_EQ(fake_task_orchestrator_.stage,
+            TaskExecutionStage::TaskExecutionUIReady);
+}
