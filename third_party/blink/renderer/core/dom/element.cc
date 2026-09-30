@@ -5623,6 +5623,12 @@ const ComputedStyle* Element::PropagateInheritedProperties() {
     // so we do that.
     return nullptr;
   }
+  if (style->ColorIsDerivedFromParent()) {
+    // The color was resolved from the parent's color (e.g. color-mix() with
+    // currentColor), so it can neither be kept nor copied from the parent;
+    // it must be recomputed.
+    return nullptr;
+  }
   ComputedStyleBuilder builder(*style);
   builder.PropagateIndependentInheritedProperties(*parent_style);
   INCREMENT_STYLE_STATS_COUNTER(GetDocument().GetStyleEngine(),

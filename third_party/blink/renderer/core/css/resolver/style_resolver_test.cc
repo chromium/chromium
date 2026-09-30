@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/css/css_flip_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_image_set_value.h"
 #include "third_party/blink/renderer/core/css/css_image_value.h"
+#include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/media_feature_names.h"
@@ -45,6 +46,7 @@
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
@@ -4777,6 +4779,42 @@ TEST_F(StyleResolverTest, FindContainerForElement_SkeletonPseudo) {
             nullptr);
   EXPECT_EQ(StyleResolver::FindContainerForElement(&skeleton, named_selector),
             nullptr);
+}
+
+TEST_F(StyleResolverTest, IncrementalStyleResetsColorIsDerivedFromParent) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target"
+         style="color: color-mix(in srgb, currentColor 50%, red)"></div>
+  )HTML");
+  Element* target = GetElementById("target");
+  EXPECT_TRUE(target->GetComputedStyle()->ColorIsDerivedFromParent());
+
+  // Incremental style starts from a copy of the old style.
+  target->style()->setProperty(GetDocument().GetExecutionContext(), "color",
+                               "blue", "", ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(kInlineIndependentStyleChange, target->GetStyleChangeType());
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(target->GetComputedStyle()->ColorIsDerivedFromParent());
+}
+
+TEST_F(StyleResolverTest, PreserveParentColorSkipsFastPath) {
+  ColorSchemeHelper color_scheme_helper(GetDocument());
+  color_scheme_helper.SetInForcedColors(GetDocument(), true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #parent.on { color: rgb(200, 0, 0); }
+      #preserve { forced-color-adjust: preserve-parent-color; }
+    </style>
+    <div id="parent"><div id="preserve"></div></div>
+  )HTML");
+  auto color_of = [&](const char* id) {
+    return GetElementById(id)->GetComputedStyle()->VisitedDependentColor(
+        GetCSSPropertyColor());
+  };
+  GetElementById("parent")->classList().Add(AtomicString("on"));
+  UpdateAllLifecyclePhasesForTest();
+  // The parent's used color is forced, not its computed rgb(200, 0, 0).
+  EXPECT_EQ(color_of("parent"), color_of("preserve"));
 }
 
 }  // namespace blink

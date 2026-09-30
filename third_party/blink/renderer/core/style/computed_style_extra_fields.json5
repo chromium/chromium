@@ -185,6 +185,15 @@
       field_template: "monotonic_flag",
       default_value: "false",
     },
+    // The color was computed from the parent's color (e.g. color-mix() with
+    // currentColor), so it must be recomputed when the parent's color changes.
+    {
+      name: "ColorIsDerivedFromParent",
+      field_group: "*",
+      field_template: "primitive",
+      type_name: "bool",
+      default_value: "false",
+    },
     // These are set if we used viewport or rem units when resolving a length.
     {
       name: "ViewportUnitFlags",
