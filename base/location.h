@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/base_export.h"
-#include "base/memory/raw_ptr.h"  // TODO(thestig): Remove.
 #include "base/trace_event/base_tracing_forward.h"
 #include "build/build_config.h"
 
