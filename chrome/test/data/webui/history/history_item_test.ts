@@ -493,4 +493,43 @@ suite('<history-item> integration test', function() {
         items[0]!.shadowRoot.querySelector<HTMLElement>('#collapse');
     assertFalse(isVisible(collapse));
   });
+
+  test(
+      'non-actor visit with critical actions has expand button',
+      async function() {
+        loadTimeData.overrideValues({
+          isCriticalActionsEnabled: true,
+        });
+
+        const newResults = [...TEST_HISTORY_RESULTS];
+        newResults[0]!.isActorVisit = false;
+        newResults[0]!.criticalActions = [
+          {
+            id: 'action-456',
+            label: 'Password filled',
+            tooltip: 'Saved passwords',
+            linkoutUrl: 'chrome://password-manager',
+            actionType: CriticalActionType.kCredentialAccess,
+          },
+        ];
+        element.addNewResults(newResults, false, true);
+        await microtasksFinished();
+
+        const items = element.shadowRoot.querySelectorAll('history-item');
+        const expandBtn =
+            items[0]!.shadowRoot.querySelector<HTMLElement>('#expand-button');
+        assertTrue(isVisible(expandBtn));
+        const collapse =
+            items[0]!.shadowRoot.querySelector<HTMLElement>('#collapse');
+        assertTrue(!!collapse);
+        assertFalse(collapse.hasAttribute('opened'));
+
+        expandBtn!.click();
+        await microtasksFinished();
+        assertTrue(collapse.hasAttribute('opened'));
+
+        const actionRows =
+            items[0]!.shadowRoot.querySelectorAll('.critical-action-row');
+        assertEquals(1, actionRows.length);
+      });
 });

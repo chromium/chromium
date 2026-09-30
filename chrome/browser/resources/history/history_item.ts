@@ -270,7 +270,7 @@ export class HistoryItemElement extends HistoryItemElementBase {
   }
 
   protected isExpandable_(): boolean {
-    return this.isCriticalActionsEnabled_ && !!this.item?.isActorVisit &&
+    return this.isCriticalActionsEnabled_ &&
         (this.item?.criticalActions?.length ?? 0) > 0;
   }
 

@@ -229,6 +229,18 @@ IN_PROC_BROWSER_TEST_F(HistoryListTest,
   RunTestCase("GoToGeminiChatHiddenWhenChatLinkoutsDisabled");
 }
 
+IN_PROC_BROWSER_TEST_F(
+    HistoryListTest,
+    GoToGeminiChatShownForNonActorVisitsWithCriticalActions) {
+  RunTestCase("GoToGeminiChatShownForNonActorVisitsWithCriticalActions");
+}
+
+IN_PROC_BROWSER_TEST_F(
+    HistoryListTest,
+    ReviewGeminiActivityShownForNonActorVisitsWithCriticalActions) {
+  RunTestCase("ReviewGeminiActivityShownForNonActorVisitsWithCriticalActions");
+}
+
 class HistoryWithHistoryEmbeddingsTest : public WebUIMochaBrowserTest {
  protected:
   HistoryWithHistoryEmbeddingsTest() {

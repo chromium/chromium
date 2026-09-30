@@ -582,6 +582,51 @@ suite('HistoryListTest', function() {
     assertTrue(hr.hidden);
   });
 
+  test(
+      'ReviewGeminiActivityShownForNonActorVisitsWithCriticalActions',
+      async function() {
+        loadTimeData.overrideValues({
+          myActivityGeminiAppsUrl:
+              'https://myactivity.google.com/product/gemini',
+          isCriticalActionsEnabled: true,
+          isCriticalActionsChatLinkoutsEnabled: false,
+        });
+        const historyEntry =
+            createHistoryEntry('2025-08-26 10:00', 'http://www.google.com');
+        historyEntry.isActorVisit = false;
+        historyEntry.criticalActions = [
+          {
+            id: 'action-123',
+            label: 'Password filled',
+            tooltip: 'Saved passwords',
+            linkoutUrl: 'chrome://password-manager',
+            actionType: CriticalActionType.kCredentialAccess,
+          },
+        ];
+        await finishSetup([historyEntry]);
+
+        const item = element.shadowRoot.querySelector('history-item');
+        assertTrue(!!item);
+        item.$.menuButton.click();
+        await microtasksFinished();
+
+        element.$.sharedMenu.get();
+        const reviewButton = element.shadowRoot.querySelector<HTMLElement>(
+            '#menuReviewGeminiActivityButton');
+        assertTrue(!!reviewButton);
+        assertFalse(reviewButton.hidden);
+
+        const hr = element.shadowRoot.querySelector<HTMLElement>('.hr');
+        assertTrue(!!hr);
+        assertFalse(hr.hidden);
+
+        reviewButton.click();
+        await microtasksFinished();
+
+        const url = await testProxy.whenCalled('navigateToUrl');
+        assertEquals('https://myactivity.google.com/product/gemini', url);
+      });
+
   test('GoToGeminiChatViaMenuButton', async function() {
     loadTimeData.overrideValues({
       isCriticalActionsEnabled: true,
@@ -709,6 +754,49 @@ suite('HistoryListTest', function() {
         '#menuReviewGeminiActivityButton');
     assertTrue(!!reviewButton);
     assertFalse(reviewButton.hidden);
+  });
+
+  test('GoToGeminiChatShownForNonActorVisitsWithCriticalActions', async function() {
+    loadTimeData.overrideValues({
+      isCriticalActionsEnabled: true,
+      isCriticalActionsChatLinkoutsEnabled: true,
+    });
+    testProxy.handler.setResultFor(
+        'openCriticalActionConversation', Promise.resolve({
+          result: OpenConversationResult.kSuccess,
+        }));
+    const historyEntry =
+        createHistoryEntry('2025-08-26 10:00', 'http://www.google.com');
+    historyEntry.isActorVisit = false;
+    historyEntry.criticalActions = [
+      {
+        id: 'action-123',
+        label: 'Password filled',
+        tooltip: 'Saved passwords',
+        linkoutUrl: 'chrome://password-manager',
+        actionType: CriticalActionType.kCredentialAccess,
+      },
+    ];
+    await finishSetup([historyEntry]);
+
+    const item = element.shadowRoot.querySelector('history-item');
+    assertTrue(!!item);
+    item.$.menuButton.click();
+    await microtasksFinished();
+
+    element.$.sharedMenu.get();
+    const goToGeminiChatButton = element.shadowRoot.querySelector<HTMLElement>(
+        '#menuGoToGeminiChatButton');
+    assertTrue(!!goToGeminiChatButton);
+    assertFalse(goToGeminiChatButton.hidden);
+
+    goToGeminiChatButton.click();
+    await microtasksFinished();
+
+    const actionId =
+        await testProxy.handler.whenCalled('openCriticalActionConversation');
+    assertEquals('action-123', actionId);
+    assertFalse(element.$.errorToast.open);
   });
 
   test('DeleteDisabledWhilePending', async function() {

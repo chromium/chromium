@@ -533,7 +533,6 @@ export class HistoryListElement extends HistoryListElementBase {
 
   protected canShowGoToGeminiChat_(): boolean {
     return this.isCriticalActionsEnabled_() && this.isChatLinkoutsEnabled_() &&
-        !!this.actionMenuModel_?.item.isActorVisit &&
         (this.actionMenuModel_?.item.criticalActions?.length ?? 0) > 0;
   }
 
@@ -556,7 +555,8 @@ export class HistoryListElement extends HistoryListElementBase {
 
   protected canShowReviewGeminiActivity_(): boolean {
     return this.isCriticalActionsEnabled_() && !this.isChatLinkoutsEnabled_() &&
-        !!this.actionMenuModel_?.item.isActorVisit;
+        (!!this.actionMenuModel_?.item.isActorVisit ||
+         (this.actionMenuModel_?.item.criticalActions?.length ?? 0) > 0);
   }
 
   protected onReviewGeminiActivityClick_(e: MouseEvent) {
