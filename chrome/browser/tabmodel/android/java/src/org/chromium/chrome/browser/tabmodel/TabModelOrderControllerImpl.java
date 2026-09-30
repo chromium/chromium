@@ -33,7 +33,7 @@ class TabModelOrderControllerImpl implements TabModelOrderController {
 
     @Override
     public int determineInsertionIndex(@TabLaunchType int type, int position, Tab newTab) {
-        if (type == TabLaunchType.FROM_BROWSER_ACTIONS || type == TabLaunchType.FROM_RECENT_TABS) {
+        if (TabLaunchTypeUtils.bypassesInsertionOrderCalculation(type)) {
             return TabList.INVALID_TAB_INDEX;
         }
         if (newTab.getIsPinned() && type != TabLaunchType.FROM_RESTORE) {

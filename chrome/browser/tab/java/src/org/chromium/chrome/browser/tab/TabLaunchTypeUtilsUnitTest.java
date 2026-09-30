@@ -213,6 +213,28 @@ public class TabLaunchTypeUtilsUnitTest {
     private static final Set<Integer> PARENT_DEPENDENT_CLOSE_ON_BACK_PRESS_TYPES =
             Set.of(TabLaunchType.FROM_CHROME_UI, TabLaunchType.FROM_RESTORE);
 
+    private static final Set<Integer> BYPASSES_INSERTION_ORDER_TYPES =
+            Set.of(TabLaunchType.FROM_BROWSER_ACTIONS, TabLaunchType.FROM_RECENT_TABS);
+
+    private static final Set<Integer> EXPLICIT_USER_NTP_TYPES =
+            Set.of(
+                    TabLaunchType.FROM_CHROME_UI,
+                    TabLaunchType.FROM_TAB_GROUP_UI,
+                    TabLaunchType.FROM_TAB_SWITCHER_UI,
+                    TabLaunchType.FROM_TIPS_NOTIFICATIONS);
+
+    private static final Set<Integer> REMOTE_BACKGROUND_TYPES =
+            Set.of(
+                    TabLaunchType.FROM_SYNC_BACKGROUND,
+                    TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP);
+
+    private static final Set<Integer> NAVIGATE_BACK_FROM_TAB_LIST_EDITOR_TYPES =
+            Set.of(
+                    TabLaunchType.FROM_RESTORE,
+                    TabLaunchType.FROM_REPARENTING,
+                    TabLaunchType.FROM_REPARENTING_BACKGROUND,
+                    TabLaunchType.FROM_STARTUP);
+
     @Test
     public void testEnumSizeConstant() {
         assertEquals("TabLaunchType.SIZE is expected to be 37", 37, TabLaunchType.SIZE);
@@ -331,6 +353,22 @@ public class TabLaunchTypeUtilsUnitTest {
                             || PARENT_DEPENDENT_CLOSE_ON_BACK_PRESS_TYPES.contains(type)
                             || type == TabLaunchType.FROM_SYNC_BACKGROUND,
                     TabLaunchTypeUtils.shouldCloseTabOnBackPress(tab));
+            assertEquals(
+                    "bypassesInsertionOrderCalculation mismatch for type " + type,
+                    BYPASSES_INSERTION_ORDER_TYPES.contains(type),
+                    TabLaunchTypeUtils.bypassesInsertionOrderCalculation(type));
+            assertEquals(
+                    "isExplicitUserNtpLaunch mismatch for type " + type,
+                    EXPLICIT_USER_NTP_TYPES.contains(type),
+                    TabLaunchTypeUtils.isExplicitUserNtpLaunch(type));
+            assertEquals(
+                    "isRemoteBackgroundLaunch mismatch for type " + type,
+                    REMOTE_BACKGROUND_TYPES.contains(type),
+                    TabLaunchTypeUtils.isRemoteBackgroundLaunch(type));
+            assertEquals(
+                    "shouldNavigateBackFromTabListEditor mismatch for type " + type,
+                    NAVIGATE_BACK_FROM_TAB_LIST_EDITOR_TYPES.contains(type),
+                    TabLaunchTypeUtils.shouldNavigateBackFromTabListEditor(type));
         }
     }
 
@@ -491,6 +529,22 @@ public class TabLaunchTypeUtilsUnitTest {
                     "shouldCloseTabOnBackPress should assert for invalid type " + type,
                     AssertionError.class,
                     () -> TabLaunchTypeUtils.shouldCloseTabOnBackPress(invalidTab));
+            assertThrows(
+                    "bypassesInsertionOrderCalculation should assert for invalid type " + type,
+                    AssertionError.class,
+                    () -> TabLaunchTypeUtils.bypassesInsertionOrderCalculation(type));
+            assertThrows(
+                    "isExplicitUserNtpLaunch should assert for invalid type " + type,
+                    AssertionError.class,
+                    () -> TabLaunchTypeUtils.isExplicitUserNtpLaunch(type));
+            assertThrows(
+                    "isRemoteBackgroundLaunch should assert for invalid type " + type,
+                    AssertionError.class,
+                    () -> TabLaunchTypeUtils.isRemoteBackgroundLaunch(type));
+            assertThrows(
+                    "shouldNavigateBackFromTabListEditor should assert for invalid type " + type,
+                    AssertionError.class,
+                    () -> TabLaunchTypeUtils.shouldNavigateBackFromTabListEditor(type));
         }
     }
 }

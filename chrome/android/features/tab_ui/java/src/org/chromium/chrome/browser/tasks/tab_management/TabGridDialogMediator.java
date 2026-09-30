@@ -52,6 +52,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabLaunchTypeUtils;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
 import org.chromium.chrome.browser.tab_ui.RecyclerViewPosition;
@@ -355,8 +356,7 @@ public class TabGridDialogMediator
                         // For tab group sync or data sharing a tab can be added without needing
                         // to close the tab grid dialog. The UI updates for this event are driven
                         // from TabListMediator's implementation.
-                        if (type == TabLaunchType.FROM_SYNC_BACKGROUND
-                                || type == TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP) {
+                        if (TabLaunchTypeUtils.isRemoteBackgroundLaunch(type)) {
                             return;
                         }
                         hideDialog(false);

@@ -9,7 +9,12 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.PageTransition;
 
-/** Utility methods for querying behavioral traits and predicates of {@link TabLaunchType}. */
+/**
+ * Utility methods for querying behavioral traits and predicates of {@link TabLaunchType}.
+ *
+ * <p>TODO(crbug.com/543021442): Audit these predicates to see if any legacy caller behaviors should
+ * be consolidated or cleaned up.
+ */
 @NullMarked
 public final class TabLaunchTypeUtils {
     private TabLaunchTypeUtils() {}
@@ -389,6 +394,80 @@ public final class TabLaunchTypeUtils {
             case TabLaunchType.FROM_CHROME_UI, TabLaunchType.FROM_RESTORE -> hasParent;
             case TabLaunchType.FROM_SYNC_BACKGROUND ->
                     hasParent && ChromeFeatureList.sSendTabToSelfSwitchToParentOnBack.isEnabled();
+            default -> false;
+        };
+    }
+
+    /**
+     * Returns true if a tab launched with the given type bypasses order controller insertion index
+     * calculation and defers directly to {@code TabList.INVALID_TAB_INDEX}.
+     *
+     * @param type The launch type to inspect.
+     * @return True if insertion order calculation is bypassed.
+     */
+    public static boolean bypassesInsertionOrderCalculation(@TabLaunchType int type) {
+        assertValidLaunchType(type);
+        return switch (type) {
+            case TabLaunchType.FROM_BROWSER_ACTIONS, TabLaunchType.FROM_RECENT_TABS -> true;
+            default -> false;
+        };
+    }
+
+    /**
+     * Returns true if the launch type represents an explicit user action to open a New Tab Page.
+     *
+     * @param type The launch type to inspect.
+     * @return True if the launch type is an explicit user NTP launch.
+     */
+    public static boolean isExplicitUserNtpLaunch(@TabLaunchType int type) {
+        assertValidLaunchType(type);
+        return switch (type) {
+            case TabLaunchType.FROM_CHROME_UI,
+                    TabLaunchType.FROM_TAB_GROUP_UI,
+                    TabLaunchType.FROM_TAB_SWITCHER_UI,
+                    TabLaunchType.FROM_TIPS_NOTIFICATIONS ->
+                    true;
+            default -> false;
+        };
+    }
+
+    /**
+     * Returns true if the launch type represents a tab added remotely in the background via sync or
+     * tab group collaboration.
+     *
+     * @param type The launch type to inspect.
+     * @return True if the tab is a remote background launch.
+     */
+    public static boolean isRemoteBackgroundLaunch(@TabLaunchType int type) {
+        assertValidLaunchType(type);
+        return switch (type) {
+            case TabLaunchType.FROM_SYNC_BACKGROUND,
+                    TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP ->
+                    true;
+            default -> false;
+        };
+    }
+
+    /**
+     * Returns true if adding a tab with the given launch type should cause the TabListEditor
+     * selection UI to navigate back / close.
+     *
+     * @param type The launch type to inspect.
+     * @return True if the TabListEditor should navigate back.
+     */
+    public static boolean shouldNavigateBackFromTabListEditor(@TabLaunchType int type) {
+        assertValidLaunchType(type);
+        // When tab is added due to
+        // 1) multi-window close
+        // 2) moving between multiple windows
+        // 3) NTP at startup
+        // force hiding the selection editor.
+        return switch (type) {
+            case TabLaunchType.FROM_RESTORE,
+                    TabLaunchType.FROM_REPARENTING,
+                    TabLaunchType.FROM_REPARENTING_BACKGROUND,
+                    TabLaunchType.FROM_STARTUP ->
+                    true;
             default -> false;
         };
     }
