@@ -13,6 +13,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/optimization_guide/optimization_guide_internals_ui.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -208,6 +209,10 @@ class OptimizationGuideInternalsMqlsLogsBrowserTest
     : public OptimizationGuideInternalsBrowserTest {
  protected:
   void SetUpOnMainThread() override {
+    bool consent = false;
+    ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
+        &consent);
+
     auto* model_quality_logs_uploader_service =
         OptimizationGuideKeyedServiceFactory::GetForProfile(
             browser()->GetProfile())
@@ -229,6 +234,10 @@ class OptimizationGuideInternalsMqlsLogsBrowserTest
     *(compose_logging_data.mutable_quality()) = quality;
     *(log_entry->log_ai_data_request()->mutable_compose()) =
         compose_logging_data;
+    log_entry.reset();
+
+    ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(
+        nullptr);
 
     WebUIMochaBrowserTest::SetUpOnMainThread();
   }
