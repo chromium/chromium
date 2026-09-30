@@ -15,6 +15,7 @@ source_set("tabs_public") {
   public = [
     "tab_android.h",
     "tab_android_data_provider.h",
+    "tab_android_user_data.h",
     "tab_favicon.h",
     "tab_features.h",
   ]
@@ -106,6 +107,46 @@ source_set("media_state_observer") {
   ]
 }
 
+source_set("persisted_tab_data") {
+  sources = [
+    "persisted_tab_data/language_persisted_tab_data_android.cc",
+    "persisted_tab_data/language_persisted_tab_data_android.h",
+    "persisted_tab_data/leveldb_persisted_tab_data_storage_android.cc",
+    "persisted_tab_data/leveldb_persisted_tab_data_storage_android.h",
+    "persisted_tab_data/leveldb_persisted_tab_data_storage_android_factory.cc",
+    "persisted_tab_data/leveldb_persisted_tab_data_storage_android_factory.h",
+    "persisted_tab_data/persisted_tab_data_android.cc",
+    "persisted_tab_data/persisted_tab_data_android.h",
+    "persisted_tab_data/persisted_tab_data_config_android.cc",
+    "persisted_tab_data/persisted_tab_data_config_android.h",
+    "persisted_tab_data/persisted_tab_data_storage_android.h",
+    "persisted_tab_data/sensitivity_persisted_tab_data_android.cc",
+    "persisted_tab_data/sensitivity_persisted_tab_data_android.h",
+  ]
+  public_deps = [
+    ":tabs_public",
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/commerce/core:persisted_state_db_content_proto",
+    "//components/keyed_service/core",
+    "//components/page_content_annotations/core",
+    "//components/session_proto_db",
+    "//components/translate/core/browser",
+    "//content/public/browser",
+  ]
+  deps = [
+    ":language_data_proto",
+    ":sensitivity_data_proto",
+    "//chrome/browser/persisted_state_db",
+    "//chrome/browser/profiles",
+    "//chrome/browser/tab:jni_headers",
+    "//chrome/browser/ui/android/tab_model",
+    "//components/content_capture/browser",
+    "//components/translate/core/common",
+    "//url",
+  ]
+}
+
 source_set("tabs_impl") {
   # TODO(crbug.com/486820940): Split tab_android.cc into smaller build target
   # files.
@@ -114,6 +155,7 @@ source_set("tabs_impl") {
   deps = [
     ":media_state_observer",
     ":oom_intervention",
+    ":persisted_tab_data",
     ":policy_auditor_bridge",
     ":tabs_public",
     "//chrome/browser:chained_back_navigation_tracker",
@@ -165,6 +207,7 @@ source_set("tabs_impl") {
     # from release builds. We need it in tests.
     "//chrome/browser/ui/side_panel/internal/android:dev",
     "//components/client_hints/browser",
+    "//components/content_capture/common",
     "//components/download/content/factory",
     "//components/download/content/public",
     "//components/external_intents/android",
@@ -456,19 +499,6 @@ if (is_android) {
       "overlay_panel/overlay_panel_content.h",
       "partner_browser_customizations.cc",
       "partner_browser_customizations.h",
-      "persisted_tab_data/language_persisted_tab_data_android.cc",
-      "persisted_tab_data/language_persisted_tab_data_android.h",
-      "persisted_tab_data/leveldb_persisted_tab_data_storage_android.cc",
-      "persisted_tab_data/leveldb_persisted_tab_data_storage_android.h",
-      "persisted_tab_data/leveldb_persisted_tab_data_storage_android_factory.cc",
-      "persisted_tab_data/leveldb_persisted_tab_data_storage_android_factory.h",
-      "persisted_tab_data/persisted_tab_data_android.cc",
-      "persisted_tab_data/persisted_tab_data_android.h",
-      "persisted_tab_data/persisted_tab_data_config_android.cc",
-      "persisted_tab_data/persisted_tab_data_config_android.h",
-      "persisted_tab_data/persisted_tab_data_storage_android.h",
-      "persisted_tab_data/sensitivity_persisted_tab_data_android.cc",
-      "persisted_tab_data/sensitivity_persisted_tab_data_android.h",
       "policy/policy_auditor.cc",
       "preferences/about_settings_bridge.cc",
       "preferences/autofill/autofill_payment_methods_delegate.cc",
@@ -515,7 +545,6 @@ if (is_android) {
       "storage_restore_orchestrator_factory_android.cc",
       "storage_restore_orchestrator_factory_android.h",
       "tab_android.cc",  # TODO(crbug.com/486820940): Move to tabs_impl.
-      "tab_android_user_data.h",
       "tab_browser_controls_constraints_helper.cc",
       "tab_favicon.cc",
       "tab_group_android.cc",
@@ -566,6 +595,7 @@ if (is_android) {
     ]
 
     public_deps = [
+      ":persisted_tab_data",
       "//chrome/browser:browser_public_dependencies",
       "//chrome/browser/accessibility/accessibility_prefs",
       "//chrome/browser/android/webapk:webapk_sources",

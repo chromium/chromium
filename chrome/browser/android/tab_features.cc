@@ -11,6 +11,7 @@
 #include "chrome/browser/actor/android/ui/actor_ui_tab_controller_android.h"
 #include "chrome/browser/android/media_state_observer.h"
 #include "chrome/browser/android/oom_intervention/oom_intervention_tab_helper.h"
+#include "chrome/browser/android/persisted_tab_data/language_persisted_tab_data_android.h"
 #include "chrome/browser/android/policy/policy_auditor_bridge.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/chained_back_navigation_tracker.h"
@@ -86,6 +87,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/actor/core/actor_features.h"
 #include "components/client_hints/browser/client_hints_web_contents_observer.h"
+#include "components/content_capture/common/content_capture_features.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/download/content/factory/navigation_monitor_factory.h"
 #include "components/download/content/public/download_navigation_observer.h"
@@ -434,6 +436,37 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
   recent_tab_helper_ =
       GetUserDataFactory().CreateInstance<offline_pages::RecentTabHelper>(
           *tab, *tab, web_contents);
+
+  // Register LanguagePersistedTabDataAndroid for non-incognito Android tabs to
+  // persist language details.
+  if (!profile->IsOffTheRecord() &&
+      content_capture::features::ShouldSendMetadataForDataShare()) {
+    if (auto* tab_android = TabAndroid::FromWebContents(web_contents);
+        tab_android) {
+      LanguagePersistedTabDataAndroid::From(
+          tab_android,
+          base::BindOnce(
+              [](base::WeakPtr<content::WebContents> web_contents,
+                 PersistedTabDataAndroid* persisted_tab_data) {
+                if (!web_contents) {
+                  return;
+                }
+                ChromeTranslateClient* chrome_translate_client =
+                    ChromeTranslateClient::FromWebContents(web_contents.get());
+
+                if (!chrome_translate_client) {
+                  return;
+                }
+
+                auto* language_persisted_tab_data_android =
+                    static_cast<LanguagePersistedTabDataAndroid*>(
+                        persisted_tab_data);
+                language_persisted_tab_data_android->RegisterTranslateDriver(
+                    chrome_translate_client->translate_driver());
+              },
+              web_contents->GetWeakPtr()));
+    }
+  }
 }
 
 TabFeatures::~TabFeatures() = default;

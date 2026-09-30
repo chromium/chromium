@@ -1383,7 +1383,6 @@ source_set("tab_helpers_impl") {
     "//components/commerce/content/browser",
     "//components/commerce/core:feature_list",
     "//components/compose:buildflags",
-    "//components/content_capture/common",
     "//components/content_settings/browser",
     "//components/dom_distiller/core:dom_distiller_features",
     "//components/download/content/factory",
