@@ -1083,9 +1083,10 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
   friend class Deque;
 };
 
-// UncheckedIterator<T> is just a wrapper of a T pointer with no bounds
-// checking, and the default iterator implementation of blink::Vector.
-template <typename T>
+// UncheckedIterator<T, kCheckModifications> is just a wrapper of a T pointer
+// with no bounds checking, and the default iterator implementation of
+// blink::Vector.
+template <typename T, bool kCheckModifications>
 class GC_PLUGIN_IGNORE("crbug.com/428987863") UncheckedIterator {
  public:
   using difference_type = std::ptrdiff_t;
@@ -1097,14 +1098,11 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") UncheckedIterator {
 
   constexpr UncheckedIterator() = default;
   explicit UncheckedIterator(T* cur) : current_(cur) {}
-#if DCHECK_IS_ON() ||                                   \
-    BUILDFLAG(ENABLE_HEAP_VECTOR_MODIFICATION_CHECKS) || \
-    BUILDFLAG(ENABLE_VECTOR_MODIFICATION_CHECKS)
   UncheckedIterator(T* cur, const uint32_t* modifications_ptr)
+    requires(kCheckModifications)
       : current_(cur),
-        modifications_ptr_(modifications_ptr),
-        captured_modifications_(modifications_ptr ? *modifications_ptr : 0) {}
-#endif
+        modification_state_{modifications_ptr,
+                            modifications_ptr ? *modifications_ptr : 0} {}
   UncheckedIterator(const UncheckedIterator& other) = default;
   UncheckedIterator(UncheckedIterator&& other) = default;
   // Allow implicit conversion from a base::CheckedContiguousIterator<T>.
@@ -1197,32 +1195,36 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") UncheckedIterator {
 
  private:
   ALWAYS_INLINE void CheckModifications() const {
-#if DCHECK_IS_ON() ||                                   \
-    BUILDFLAG(ENABLE_HEAP_VECTOR_MODIFICATION_CHECKS) || \
-    BUILDFLAG(ENABLE_VECTOR_MODIFICATION_CHECKS)
-    if (modifications_ptr_) {
+    if constexpr (kCheckModifications) {
+      if (modification_state_.modifications_ptr) {
 #if DCHECK_IS_ON()
-      DCHECK_EQ(captured_modifications_, *modifications_ptr_)
-          << "Vector modified while being iterated.";
+        DCHECK_EQ(modification_state_.captured_modifications,
+                  *modification_state_.modifications_ptr)
+            << "Vector modified while being iterated.";
 #else
-      CHECK_EQ(captured_modifications_, *modifications_ptr_)
-          << "Vector modified while being iterated.";
+        CHECK_EQ(modification_state_.captured_modifications,
+                 *modification_state_.modifications_ptr)
+            << "Vector modified while being iterated.";
 #endif
+      }
     }
-#endif
   }
 
-  // Allow current_ access from UncheckedIterator<U>.
-  template <typename>
+  // Allow current_ access from UncheckedIterator<U, ...>.
+  template <typename, bool>
   friend class UncheckedIterator;
 
   T* current_ = nullptr;
-#if DCHECK_IS_ON() ||                                   \
-    BUILDFLAG(ENABLE_HEAP_VECTOR_MODIFICATION_CHECKS) || \
-    BUILDFLAG(ENABLE_VECTOR_MODIFICATION_CHECKS)
-  const uint32_t* modifications_ptr_ = nullptr;
-  uint32_t captured_modifications_ = 0;
-#endif
+  struct ModificationTrackingState {
+    const uint32_t* modifications_ptr = nullptr;
+    uint32_t captured_modifications = 0;
+  };
+  struct NoModificationTrackingState {};
+  NO_UNIQUE_ADDRESS
+  std::conditional_t<kCheckModifications,
+                     ModificationTrackingState,
+                     NoModificationTrackingState>
+      modification_state_;
 };
 
 //
@@ -1382,10 +1384,13 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   using pointer = value_type*;
   using const_pointer = const value_type*;
 
+  static constexpr bool kCheckModifications =
+      kEnableModificationChecks<Allocator>;
+
   // TODO(crbug.com/355003172): We should try using
   // base::CheckedContiguousIterator instead of UncheckedIterator.
-  using iterator = UncheckedIterator<T>;
-  using const_iterator = UncheckedIterator<const T>;
+  using iterator = UncheckedIterator<T, kCheckModifications>;
+  using const_iterator = UncheckedIterator<const T, kCheckModifications>;
   using reverse_iterator = std::reverse_iterator<iterator>;
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
@@ -1798,14 +1803,14 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
 
  private:
   iterator MakeIterator(T* ptr) {
-    if constexpr (kEnableModificationChecks<Allocator>) {
+    if constexpr (kCheckModifications) {
       return iterator(ptr, &this->modification_state_.count);
     } else {
       return iterator(ptr);
     }
   }
   const_iterator MakeConstIterator(const T* ptr) const {
-    if constexpr (kEnableModificationChecks<Allocator>) {
+    if constexpr (kCheckModifications) {
       return const_iterator(ptr, &this->modification_state_.count);
     } else {
       return const_iterator(ptr);
