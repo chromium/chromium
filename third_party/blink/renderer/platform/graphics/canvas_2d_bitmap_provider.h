@@ -16,10 +16,12 @@
 #include "cc/paint/paint_record.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_color_params.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/scoped_raster_timer.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
@@ -42,7 +44,6 @@ class ProcessMemoryDump;
 namespace blink {
 
 class CanvasImageProvider;
-class CanvasResourceProviderDelegate;
 
 // Renders canvas2D ops to a Skia RAM-backed bitmap. Mailboxing is not
 // supported : cannot be directly composited. For usage by (Offscreen)Canvas2D
@@ -110,7 +111,7 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
   viz::SharedImageFormat format_;
   gfx::ColorSpace color_space_;
   gfx::HDRMetadata hdr_metadata_;
-  raw_ptr<CanvasResourceProviderDelegate> delegate_ = nullptr;
+  WeakPersistent<CanvasResourceProviderDelegate> delegate_;
   const sk_sp<SkSurface> surface_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
   const cc::PaintImage::Id snapshot_paint_image_id_;

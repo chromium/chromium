@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/canvas_memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -103,7 +104,8 @@ enum class CanvasResourceProviderType {
 };
 #pragma GCC diagnostic pop
 
-class PLATFORM_EXPORT CanvasResourceProviderDelegate {
+class PLATFORM_EXPORT CanvasResourceProviderDelegate
+    : public GarbageCollectedMixin {
  public:
   virtual ~CanvasResourceProviderDelegate() = default;
 
@@ -370,7 +372,7 @@ class PLATFORM_EXPORT Canvas2DResourceProvider
   gfx::ColorSpace color_space_;
   gfx::HDRMetadata hdr_metadata_;
 
-  raw_ptr<CanvasResourceProviderDelegate> delegate_ = nullptr;
+  WeakPersistent<CanvasResourceProviderDelegate> delegate_ = nullptr;
   mutable sk_sp<SkSurface> surface_;
   std::unique_ptr<cc::SkiaPaintCanvas> skia_canvas_;
   const cc::PaintImage::Id snapshot_paint_image_id_;
