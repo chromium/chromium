@@ -108,7 +108,7 @@ constexpr size_t kMaxImmediateDeletedPaintCacheEffects = 10u;
   if (ids.size() <= IMMEDIATE_SIZE_CONSTANT) {                           \
     helper_->IMMEDIATE_FUNCTION(ids.size(), ids.data());                 \
   } else {                                                               \
-    size_t data_size = ids.size() * sizeof(GLuint);                      \
+    size_t data_size = ids.size() * sizeof(cc::PaintCacheId);            \
     ScopedSharedMemoryPtr dest(data_size, transfer_buffer_,              \
                                mapped_memory_.get(), helper());          \
     if (dest.valid()) {                                                  \
