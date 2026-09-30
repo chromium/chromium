@@ -65,6 +65,28 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//sql/database.cc) -->
 
+<!-- LINT.IfChange(SqlMigrationBlockResult) -->
+
+<enum name="SqlMigrationBlockResult">
+  <summary>The result of migrating a single block of SQLite pages.</summary>
+  <int value="0" label="kSuccess"/>
+  <int value="1" label="kReadError"/>
+  <int value="2" label="kWriteError"/>
+  <int value="3" label="kEncryptionError"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/sqlite_migration_vfs/sqlite_migration_metrics.h:BlockMigrationResult) -->
+
+<!-- LINT.IfChange(SqlMigrationStatus) -->
+
+<enum name="SqlMigrationStatus">
+  <summary>The lifecycle status of the SQLite database migration.</summary>
+  <int value="0" label="kStarted"/>
+  <int value="1" label="kCompleted"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/sqlite_migration_vfs/sqlite_migration_metrics.h:MigrationStatus) -->
+
 </enums>
 
 </histogram-configuration>

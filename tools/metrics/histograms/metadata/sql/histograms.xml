@@ -110,6 +110,14 @@ chromium-metrics-reviews@google.com.
   <variant name="Web" summary="Web"/>
 </variants>
 
+<!-- LINT.IfChange(SqlMigrationTarget) -->
+
+<variants name="SqlMigrationTarget">
+  <variant name="Test" summary="test databases"/>
+</variants>
+
+<!-- LINT.ThenChange(//components/sqlite_migration_vfs/sqlite_migration_metrics.h:SqlMigrationTarget) -->
+
 <histogram name="Sql.Database.DatabaseCloseTime.{DatabaseTag}"
     units="microseconds" expires_after="2027-02-07">
   <owner>jpgravel@chromium.org</owner>
@@ -282,6 +290,66 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="CheckpointType" variants="CheckpointType"/>
   <token key="DatabaseTag" variants="DatabaseTag"/>
+</histogram>
+
+<histogram name="Sql.Migration.{SqlMigrationTarget}.BlockResult"
+    enum="SqlMigrationBlockResult" expires_after="2027-09-23">
+  <owner>musalmaan@chromium.org</owner>
+  <owner>arichiv@chromium.org</owner>
+  <summary>
+    Records the outcome of migrating an individual 64-page SQLite database block
+    during online background migration for {SqlMigrationTarget}. Recorded once
+    per block migration attempt, pinpointing the error source on failure.
+  </summary>
+  <token key="SqlMigrationTarget" variants="SqlMigrationTarget"/>
+</histogram>
+
+<histogram name="Sql.Migration.{SqlMigrationTarget}.BlockTime" units="ms"
+    expires_after="2027-09-23">
+  <owner>musalmaan@chromium.org</owner>
+  <owner>arichiv@chromium.org</owner>
+  <summary>
+    Records the duration of migrating an individual 64-page block for
+    {SqlMigrationTarget} from when the block is locked until migration completes
+    or fails. Recorded once per block migration attempt.
+  </summary>
+  <token key="SqlMigrationTarget" variants="SqlMigrationTarget"/>
+</histogram>
+
+<histogram name="Sql.Migration.{SqlMigrationTarget}.Status"
+    enum="SqlMigrationStatus" expires_after="2027-09-23">
+  <owner>musalmaan@chromium.org</owner>
+  <owner>arichiv@chromium.org</owner>
+  <summary>
+    Records the lifecycle status of SQLite database migration for
+    {SqlMigrationTarget}. Recorded when the first block begins migration
+    (kStarted) and when all blocks in the initial snapshot have successfully
+    completed migration (kCompleted).
+  </summary>
+  <token key="SqlMigrationTarget" variants="SqlMigrationTarget"/>
+</histogram>
+
+<histogram name="Sql.Migration.{SqlMigrationTarget}.TotalBlocks" units="count"
+    expires_after="2027-09-23">
+  <owner>musalmaan@chromium.org</owner>
+  <owner>arichiv@chromium.org</owner>
+  <summary>
+    Records the total number of 64-page blocks intended to be migrated for
+    {SqlMigrationTarget}. Recorded once when migration begins.
+  </summary>
+  <token key="SqlMigrationTarget" variants="SqlMigrationTarget"/>
+</histogram>
+
+<histogram name="Sql.Migration.{SqlMigrationTarget}.TotalTime" units="ms"
+    expires_after="2027-09-23">
+  <owner>musalmaan@chromium.org</owner>
+  <owner>arichiv@chromium.org</owner>
+  <summary>
+    Records the total time taken to complete SQLite database migration for
+    {SqlMigrationTarget} from when the first block begins migration until all
+    blocks have successfully completed. Recorded once upon migration completion.
+  </summary>
+  <token key="SqlMigrationTarget" variants="SqlMigrationTarget"/>
 </histogram>
 
 <histogram name="Sql.Recovery.Result" enum="SqlRecoveryResult"

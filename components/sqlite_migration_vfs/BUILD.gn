@@ -1,0 +1,31 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("sqlite_migration_vfs") {
+  sources = [
+    "block_migration_tracker.cc",
+    "block_migration_tracker.h",
+    "page_migration_tracker.cc",
+    "page_migration_tracker.h",
+    "sqlite_migration_metrics.cc",
+    "sqlite_migration_metrics.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "block_migration_tracker_unittest.cc",
+    "page_migration_tracker_unittest.cc",
+  ]
+
+  deps = [
+    ":sqlite_migration_vfs",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}
