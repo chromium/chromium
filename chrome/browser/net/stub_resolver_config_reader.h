@@ -142,6 +142,14 @@ class StubResolverConfigReader {
   }
 #endif
 
+  // Informs StubResolverConfigReader that DNS has been overridden for testing
+  // (e.g. by a mock host resolver or test DNS configuration). When overridden,
+  // platform DNS will be avoided in favor of the built-in DNS client so that
+  // test rules can intercept queries.
+  static void SetDnsOverriddenForTesting(bool overridden) {
+    dns_overridden_for_testing_ = overridden;
+  }
+
   static std::vector<net::IPEndPoint> GetFallbackDohNameservers();
 
  private:
@@ -195,6 +203,9 @@ class StubResolverConfigReader {
   // Flag used for testing Zero Trust DNS scenario.
   static bool is_ztdns_enabled_for_testing_;
 #endif
+
+  // Flag used to indicate DNS is overridden in tests.
+  static bool dns_overridden_for_testing_;
 
   base::WeakPtrFactory<StubResolverConfigReader> weak_factory_{this};
 };

@@ -1314,6 +1314,7 @@ if (is_android) {
     deps = [
       ":chrome_test_path_utils",
       ":test_launcher_utils",
+      "//chrome/browser/net",
       "//chrome/browser/ui/android/tab_model",
       "//chrome/browser/ui/browser_window",
       "//components/keyed_service/content",

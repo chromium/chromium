@@ -45,6 +45,7 @@
 #include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
 #include "chrome/browser/net/chrome_network_delegate.h"
 #include "chrome/browser/net/net_error_tab_helper.h"
+#include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
@@ -604,6 +605,8 @@ void InProcessBrowserTest::TearDown() {
 #endif
   BrowserTestBase::TearDown();
 
+  StubResolverConfigReader::SetDnsOverriddenForTesting(false);
+
 #if BUILDFLAG(IS_MAC)
   fake_window_focus_.reset();
 #endif
@@ -635,6 +638,9 @@ size_t InProcessBrowserTest::GetTestPreCount() {
 void InProcessBrowserTest::CreatedBrowserMainParts(
     content::BrowserMainParts* parts) {
   BrowserTestBase::CreatedBrowserMainParts(parts);
+  if (host_resolver()) {
+    StubResolverConfigReader::SetDnsOverriddenForTesting(true);
+  }
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   static_cast<ChromeBrowserMainParts*>(parts)->AddParts(
       std::make_unique<ChromeBrowserMainExtraPartsBrowserProcessInjection>());

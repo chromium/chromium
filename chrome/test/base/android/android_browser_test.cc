@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/net/stub_resolver_config_reader.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -79,6 +80,19 @@ void AndroidBrowserTest::SetUp() {
   }
 
   BrowserTestBase::SetUp();
+}
+
+void AndroidBrowserTest::TearDown() {
+  BrowserTestBase::TearDown();
+  StubResolverConfigReader::SetDnsOverriddenForTesting(false);
+}
+
+void AndroidBrowserTest::CreatedBrowserMainParts(
+    content::BrowserMainParts* parts) {
+  BrowserTestBase::CreatedBrowserMainParts(parts);
+  if (host_resolver()) {
+    StubResolverConfigReader::SetDnsOverriddenForTesting(true);
+  }
 }
 
 void AndroidBrowserTest::SetUpDefaultCommandLine(

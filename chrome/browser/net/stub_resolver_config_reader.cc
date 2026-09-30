@@ -175,6 +175,9 @@ bool StubResolverConfigReader::is_ztdns_enabled_for_testing_ = false;
 #endif
 
 // static
+bool StubResolverConfigReader::dns_overridden_for_testing_ = false;
+
+// static
 constexpr base::TimeDelta StubResolverConfigReader::kParentalControlsCheckDelay;
 
 StubResolverConfigReader::StubResolverConfigReader(PrefService* local_state,
@@ -447,7 +450,13 @@ SecureDnsConfig StubResolverConfigReader::GetAndUpdateConfiguration(
   if (update_network_service) {
     net::InsecureDnsMode insecure_dns_mode = net::InsecureDnsMode::kDisabled;
     if (GetInsecureStubResolverEnabled()) {
+      // Platform DNS APIs query the OS resolver directly. This bypasses both
+      // test host resolver overrides and replacement `net::DnsConfig`. Fall
+      // back to the built-in DNS client whenever tests override DNS, so that
+      // tests keep resolving hosts through their own rules instead of the real
+      // OS resolver.
       if (net::features::IsDnsPlatformSupported() &&
+          !dns_overridden_for_testing_ &&
           base::FeatureList::IsEnabled(kChromeEnableDnsPlatform)) {
         insecure_dns_mode = kChromeEnableDnsPlatformNoSystem.Get()
                                 ? net::InsecureDnsMode::kEnabledPlatformNoSystem

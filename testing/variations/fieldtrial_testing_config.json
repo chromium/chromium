@@ -3784,11 +3784,10 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "cancel_previous_attempt_on_retry": "true"
+                        "no_system": "true"
                     },
                     "enable_features": [
-                        "ChromeEnableDnsPlatform",
-                        "DnsPlatformFailFastAndRetry"
+                        "ChromeEnableDnsPlatform"
                     ]
                 }
             ]

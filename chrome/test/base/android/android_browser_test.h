@@ -71,6 +71,8 @@ class AndroidBrowserTest : public content::BrowserTestBase {
 
   // content::BrowserTestBase implementation.
   void SetUp() override;
+  void TearDown() override;
+  void CreatedBrowserMainParts(content::BrowserMainParts* parts) override;
   void PreRunTestOnMainThread() override;
   void PostRunTestOnMainThread() override;
 
