@@ -234,7 +234,11 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
   static constexpr int INITIAL_BUFFER_SIZE = 15000;
 
   ULONG len = INITIAL_BUFFER_SIZE;
-  ULONG flags = 0;
+  // GetNetworkListImpl only consumes unicast addresses and adapter metadata.
+  // Skip unused address lists and DNS information to reduce query work and
+  // the buffer space required by GetAdaptersAddresses.
+  ULONG flags = GAA_FLAG_SKIP_ANYCAST | GAA_FLAG_SKIP_MULTICAST |
+                GAA_FLAG_SKIP_DNS_SERVER | GAA_FLAG_SKIP_DNS_INFO;
   // Initial buffer allocated on stack.
   char initial_buf[INITIAL_BUFFER_SIZE];
   // Dynamic buffer in case initial buffer isn't large enough.
