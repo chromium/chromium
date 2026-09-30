@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "components/content_settings/core/common/content_settings.h"
 #import "components/content_settings/core/common/content_settings_pattern.h"
 
 @class CrURL;
@@ -28,6 +29,10 @@
 
 // The content settings secondary pattern for this exception.
 @property(nonatomic, assign) ContentSettingsPattern secondaryPattern;
+
+// The content setting value for this exception (`CONTENT_SETTING_ALLOW` or
+// `CONTENT_SETTING_BLOCK`).
+@property(nonatomic, assign) ContentSetting setting;
 
 @end
 

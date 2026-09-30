@@ -10,17 +10,34 @@
 #import "components/content_settings/core/common/content_settings_types.h"
 
 // Category types supported by Site Settings.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SiteSettingsCategory)
 enum class SiteSettingsCategory {
-  kMicrophone,
-  kCamera,
-  kLocation,
+  kMicrophone = 0,
+  kCamera = 1,
+  kLocation = 2,
+  kMaxValue = kLocation,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSSiteSettingsCategory)
 
-// Converts a SiteSettingsCategory to the corresponding ContentSettingsType.
+// Actions taken on site exceptions in Site Settings.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SiteSettingsExceptionAction)
+enum class SiteSettingsExceptionAction {
+  kAllowed = 0,
+  kBlocked = 1,
+  kDeleted = 2,
+  kMaxValue = kDeleted,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSSiteSettingsExceptionAction)
+
+// Converts a `SiteSettingsCategory` to the corresponding `ContentSettingsType`.
 ContentSettingsType ContentSettingsTypeFromSiteSettingsCategory(
     SiteSettingsCategory category);
 
-// Converts a ContentSettingsType to the corresponding SiteSettingsCategory.
+// Converts a `ContentSettingsType` to the corresponding `SiteSettingsCategory`.
 SiteSettingsCategory SiteSettingsCategoryFromContentSettingsType(
     ContentSettingsType type);
 

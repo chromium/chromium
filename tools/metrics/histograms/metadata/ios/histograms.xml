@@ -7826,6 +7826,34 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.SiteSettings.CategoryOpened"
+    enum="IOSSiteSettingsCategory" expires_after="2027-03-29">
+  <owner>scottyoder@google.com</owner>
+  <owner>hiramahmood@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <summary>
+    Records which permission category (Microphone, Camera, or Location) the user
+    tapped to open from the iOS Site Settings screen.
+  </summary>
+</histogram>
+
+<histogram name="IOS.SiteSettings.ExceptionAction.{Category}"
+    enum="IOSSiteSettingsExceptionAction" expires_after="2027-03-29">
+  <owner>scottyoder@google.com</owner>
+  <owner>hiramahmood@google.com</owner>
+  <owner>bling-pandamonium@google.com</owner>
+  <summary>
+    Records actions taken by the user to manage site-specific permission
+    exceptions (changing to Allowed, changing to Not Allowed, or deleting a site
+    exception) on the iOS {Category} Site Settings detail screen.
+  </summary>
+  <token key="Category">
+    <variant name="Camera"/>
+    <variant name="Location"/>
+    <variant name="Microphone"/>
+  </token>
+</histogram>
+
 <histogram name="IOS.Snapshots.BlockedByPlaceholder" enum="Boolean"
     expires_after="2027-02-12">
   <owner>tarekmakkouk@google.com</owner>

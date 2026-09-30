@@ -1985,6 +1985,26 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h:SigninFullscreenPromoEvents) -->
 
+<!-- LINT.IfChange(IOSSiteSettingsCategory) -->
+
+<enum name="IOSSiteSettingsCategory">
+  <int value="0" label="Microphone"/>
+  <int value="1" label="Camera"/>
+  <int value="2" label="Location"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/settings/site_settings/public/site_settings_constants.h:SiteSettingsCategory) -->
+
+<!-- LINT.IfChange(IOSSiteSettingsExceptionAction) -->
+
+<enum name="IOSSiteSettingsExceptionAction">
+  <int value="0" label="Changed to Allowed"/>
+  <int value="1" label="Changed to Not Allowed"/>
+  <int value="2" label="Deleted"/>
+</enum>
+
+<!-- LINT.ThenChange(/ios/chrome/browser/settings/site_settings/public/site_settings_constants.h:SiteSettingsExceptionAction) -->
+
 <enum name="IOSSpotlightAction">
   <int value="0" label="New Tab"/>
   <int value="1" label="New Incognito Tab"/>

@@ -38,6 +38,7 @@ source_set("unit_tests") {
   sources = [
     "site_settings_category_detail_coordinator_unittest.mm",
     "site_settings_category_detail_mediator_unittest.mm",
+    "site_settings_coordinator_unittest.mm",
     "site_settings_mediator_unittest.mm",
   ]
   deps = [

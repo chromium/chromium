@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/settings/site_settings/coordinator/site_settings_coordinator.h"
 
+#import <string_view>
+
+#import "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/settings/site_settings/coordinator/site_settings_category_detail_coordinator.h"
 #import "ios/chrome/browser/settings/site_settings/coordinator/site_settings_coordinator_delegate.h"
@@ -12,6 +15,14 @@
 #import "ios/chrome/browser/settings/site_settings/ui/site_settings_category_detail_view_controller.h"
 #import "ios/chrome/browser/settings/site_settings/ui/site_settings_table_view_controller.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+
+namespace {
+
+// Histogram recorded when a permission category is opened in Site Settings.
+constexpr std::string_view kCategoryOpenedHistogram =
+    "IOS.SiteSettings.CategoryOpened";
+
+}  // namespace
 
 @interface SiteSettingsCoordinator () <
     SiteSettingsCategoryDetailViewControllerDelegate,
@@ -71,6 +82,7 @@
 - (void)siteSettingsTableViewController:
             (SiteSettingsTableViewController*)controller
                       didSelectCategory:(SiteSettingsCategory)category {
+  base::UmaHistogramEnumeration(kCategoryOpenedHistogram, category);
   [_categoryDetailCoordinator stop];
   _categoryDetailCoordinator = [[SiteSettingsCategoryDetailCoordinator alloc]
       initWithBaseNavigationController:self.baseNavigationController

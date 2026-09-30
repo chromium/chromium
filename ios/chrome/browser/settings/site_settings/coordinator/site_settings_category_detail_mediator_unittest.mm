@@ -4,12 +4,15 @@
 
 #import "ios/chrome/browser/settings/site_settings/coordinator/site_settings_category_detail_mediator.h"
 
+#import "base/test/metrics/histogram_tester.h"
+#import "components/content_settings/core/browser/content_settings_uma_util.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/content_settings/core/common/content_settings.h"
 #import "components/content_settings/core/common/content_settings_pattern.h"
 #import "components/content_settings/core/common/content_settings_types.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
+#import "ios/chrome/browser/settings/site_settings/public/site_settings_constants.h"
 #import "ios/chrome/browser/settings/site_settings/ui/site_settings_category_detail_consumer.h"
 #import "ios/chrome/browser/settings/site_settings/ui/site_settings_site_exception.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
@@ -123,8 +126,10 @@ TEST_F(SiteSettingsCategoryDetailMediatorTest, TestPartitionExceptions) {
   [mediator disconnect];
 }
 
-// Tests that mutating the default setting updates HostContentSettingsMap.
+// Tests that mutating the default setting updates HostContentSettingsMap and
+// records histograms only when the setting changes.
 TEST_F(SiteSettingsCategoryDetailMediatorTest, TestSetDefaultSetting) {
+  base::HistogramTester histogram_tester;
   SiteSettingsCategoryDetailMediator* mediator =
       [[SiteSettingsCategoryDetailMediator alloc]
           initWithHostContentSettingsMap:settings_map_.get()
@@ -137,18 +142,39 @@ TEST_F(SiteSettingsCategoryDetailMediatorTest, TestSetDefaultSetting) {
 
   EXPECT_EQ(CONTENT_SETTING_ASK, consumer.defaultSetting);
 
+  // Selecting the already-active default setting should not record histograms.
+  [mediator setDefaultSetting:CONTENT_SETTING_ASK];
+  histogram_tester.ExpectTotalCount("Permissions.SiteSettingsChanged", 0);
+  histogram_tester.ExpectTotalCount("Permissions.SiteSettingsChanged.Ask", 0);
+
+  int mic_bucket =
+      content_settings_uma_util::ContentSettingTypeToHistogramValue(
+          ContentSettingsType::MEDIASTREAM_MIC);
+
   [mediator setDefaultSetting:CONTENT_SETTING_BLOCK];
 
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             settings_map_->GetDefaultContentSetting(
                 ContentSettingsType::MEDIASTREAM_MIC, nullptr));
   EXPECT_EQ(CONTENT_SETTING_BLOCK, consumer.defaultSetting);
+  histogram_tester.ExpectUniqueSample("Permissions.SiteSettingsChanged",
+                                      mic_bucket, 1);
+  histogram_tester.ExpectUniqueSample("Permissions.SiteSettingsChanged.Block",
+                                      mic_bucket, 1);
+
+  [mediator setDefaultSetting:CONTENT_SETTING_ASK];
+  histogram_tester.ExpectBucketCount("Permissions.SiteSettingsChanged",
+                                     mic_bucket, 2);
+  histogram_tester.ExpectUniqueSample("Permissions.SiteSettingsChanged.Ask",
+                                      mic_bucket, 1);
 
   [mediator disconnect];
 }
 
-// Tests that deleting a site exception clears it from HostContentSettingsMap.
+// Tests that deleting a site exception clears it from HostContentSettingsMap
+// and records the exception action histogram.
 TEST_F(SiteSettingsCategoryDetailMediatorTest, TestDeleteSettingForSite) {
+  base::HistogramTester histogram_tester;
   GURL allowedUrl("https://allowed.com");
   settings_map_->SetContentSettingDefaultScope(
       allowedUrl, allowedUrl, ContentSettingsType::MEDIASTREAM_MIC,
@@ -171,13 +197,17 @@ TEST_F(SiteSettingsCategoryDetailMediatorTest, TestDeleteSettingForSite) {
 
   // Deleting the custom scope resets it to default, removing the exception.
   EXPECT_EQ(0u, consumer.allowedSites.count);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.SiteSettings.ExceptionAction.Microphone",
+      SiteSettingsExceptionAction::kDeleted, 1);
 
   [mediator disconnect];
 }
 
-// Tests that bulk-deleting multiple site exceptions clears all of them and
-// reloads the consumer only once.
+// Tests that bulk-deleting multiple site exceptions clears all of them, reloads
+// the consumer only once, and records the bulk delete histogram.
 TEST_F(SiteSettingsCategoryDetailMediatorTest, TestDeleteSettingsForSites) {
+  base::HistogramTester histogram_tester;
   GURL allowedUrl("https://allowed.com");
   GURL blockedUrl("https://blocked.com");
   settings_map_->SetContentSettingDefaultScope(
@@ -208,13 +238,17 @@ TEST_F(SiteSettingsCategoryDetailMediatorTest, TestDeleteSettingsForSites) {
   EXPECT_EQ(0u, consumer.allowedSites.count);
   EXPECT_EQ(0u, consumer.notAllowedSites.count);
   EXPECT_EQ(initialCallCount + 1, consumer.setAllowedSitesCallCount);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.SiteSettings.ExceptionAction.Microphone",
+      SiteSettingsExceptionAction::kDeleted, 2);
 
   [mediator disconnect];
 }
 
 // Tests that updating a site exception setting moves it between allowed and not
-// allowed lists.
+// allowed lists and records the exception action histogram.
 TEST_F(SiteSettingsCategoryDetailMediatorTest, TestSetSettingForSite) {
+  base::HistogramTester histogram_tester;
   GURL siteUrl("https://example.com");
   settings_map_->SetContentSettingDefaultScope(
       siteUrl, siteUrl, ContentSettingsType::MEDIASTREAM_MIC,
@@ -233,11 +267,19 @@ TEST_F(SiteSettingsCategoryDetailMediatorTest, TestSetSettingForSite) {
   ASSERT_EQ(1u, consumer.allowedSites.count);
   ASSERT_EQ(0u, consumer.notAllowedSites.count);
 
+  // Selecting the same setting is a no-op and should not record a metric.
+  [mediator setSetting:CONTENT_SETTING_ALLOW forSite:consumer.allowedSites[0]];
+  histogram_tester.ExpectTotalCount(
+      "IOS.SiteSettings.ExceptionAction.Microphone", 0);
+
   [mediator setSetting:CONTENT_SETTING_BLOCK forSite:consumer.allowedSites[0]];
 
   EXPECT_EQ(0u, consumer.allowedSites.count);
   ASSERT_EQ(1u, consumer.notAllowedSites.count);
   EXPECT_NSEQ(@"example.com", consumer.notAllowedSites[0].formattedTitle);
+  histogram_tester.ExpectUniqueSample(
+      "IOS.SiteSettings.ExceptionAction.Microphone",
+      SiteSettingsExceptionAction::kBlocked, 1);
 
   [mediator setSetting:CONTENT_SETTING_ALLOW
                forSite:consumer.notAllowedSites[0]];
@@ -245,6 +287,11 @@ TEST_F(SiteSettingsCategoryDetailMediatorTest, TestSetSettingForSite) {
   ASSERT_EQ(1u, consumer.allowedSites.count);
   EXPECT_EQ(0u, consumer.notAllowedSites.count);
   EXPECT_NSEQ(@"example.com", consumer.allowedSites[0].formattedTitle);
+  histogram_tester.ExpectBucketCount(
+      "IOS.SiteSettings.ExceptionAction.Microphone",
+      SiteSettingsExceptionAction::kAllowed, 1);
+  histogram_tester.ExpectTotalCount(
+      "IOS.SiteSettings.ExceptionAction.Microphone", 2);
 
   [mediator disconnect];
 }
