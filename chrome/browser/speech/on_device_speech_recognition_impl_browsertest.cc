@@ -15,6 +15,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_remover_constants.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -728,8 +729,14 @@ class OnDeviceSpeechRecognitionImplQualityBrowserTest
   }
 };
 
+// TODO(crbug.com/550698030): Flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_AvailableAndInstall DISABLED_AvailableAndInstall
+#else
+#define MAYBE_AvailableAndInstall AvailableAndInstall
+#endif
 IN_PROC_BROWSER_TEST_P(OnDeviceSpeechRecognitionImplQualityBrowserTest,
-                       AvailableAndInstall) {
+                       MAYBE_AvailableAndInstall) {
   NavigateToUrl("foo.com");
   bool gemini_enabled = GetParam();
   media::mojom::AvailabilityStatus expected_availability =
