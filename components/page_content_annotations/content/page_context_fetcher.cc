@@ -75,6 +75,7 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "components/pdf/browser/pdf_document_helper.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "pdf/mojom/pdf.mojom.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -524,23 +525,6 @@ pdf::PDFDocumentHelper* PageContextFetcher::GetPDFExtractionCandidate(
   return first_in_viewport ? first_in_viewport : first_found;
 }
 
-// TODO(b/559771589): Currently PageContextFetcher does not handle a hanging PDF
-// extraction properly. There are a few scenarios a hanging extraction could
-// take place:
-// 1. The PDF document is huge and the extraction simply takes too long.
-// 2. The IPC pipe to PDFium disconnects, e.g., PDFium engine crashes.
-// 3. If `kGlicEmbeddedPdfBytesExtraction` feature is enabled, embedded PDF can
-// also be extracted. It is possible that the embedded PDF goes away in the
-// middle of the extraction. For example, the iframe hosting the PDF navigates.
-//
-// In these cases, the callback that sets `pdf_done_` to true is never invoked.
-// The context fetch will wait indefinitely for the hanging PDF extraction.
-//
-// To address this issue:
-// 1. A timeout should be added. The context fetch should proceed with a null
-// `pdf_result` when the timeout is reached.
-// 2. One of the helper functions in mojo/public/cpp/bindings/callback_helpers.h
-// should be used to handle the IPC pipe disconnection.
 void PageContextFetcher::FetchPdfContent(const PdfOptions& options) {
   // - For a top-level document PDF, the page's MIME type is `application/pdf`.
   // - For a page that embeds a PDF, for example, through an iframe whose `src`
@@ -585,15 +569,22 @@ void PageContextFetcher::FetchPdfContent(const PdfOptions& options) {
   // See comments in `AnnotatedPageContentRequest::RequestPdfText` for more
   // information about the timing of PDF text extraction.
   if (pdf_helper && pdf_helper->IsDocumentLoadComplete()) {
+    // Will fetch PDF bytes or text. Set `pdf_done_` to false before the
+    // extraction, because the passed callback is invoked immediately if the
+    // remote PDF client is invalid.
+    pdf_done_ = false;
+
     switch (options.format()) {
       case PdfOptions::Format::kBytes: {
         pdf_helper->GetPdfBytes(
             options.size_limit(),
-            base::BindOnce(
-                &PageContextFetcher::ReceivedPdfBytes, GetWeakPtr(),
-                pdf_helper->render_frame_host().GetLastCommittedOrigin(),
-                is_top_level_pdf, options.size_limit()));
-        pdf_done_ = false;  // Will fetch PDF bytes.
+            mojo::WrapCallbackWithDropHandler(
+                base::BindOnce(
+                    &PageContextFetcher::ReceivedPdfBytes, GetWeakPtr(),
+                    pdf_helper->render_frame_host().GetLastCommittedOrigin(),
+                    is_top_level_pdf, options.size_limit()),
+                base::BindOnce(&PageContextFetcher::OnPdfPipeDisconnected,
+                               GetWeakPtr())));
         break;
       }
       case PdfOptions::Format::kText: {
@@ -606,13 +597,22 @@ void PageContextFetcher::FetchPdfContent(const PdfOptions& options) {
         // more efficient if enforced within this method, inside the PDFium.
         pdf_helper->GetPageText(
             /*page_index=*/0,
-            base::BindOnce(
-                &PageContextFetcher::ReceivedPdfText, GetWeakPtr(),
-                pdf_helper->render_frame_host().GetLastCommittedOrigin(),
-                options.size_limit()));
-        pdf_done_ = false;  // Will fetch PDF first page text.
+            mojo::WrapCallbackWithDropHandler(
+                base::BindOnce(
+                    &PageContextFetcher::ReceivedPdfText, GetWeakPtr(),
+                    pdf_helper->render_frame_host().GetLastCommittedOrigin(),
+                    options.size_limit()),
+                base::BindOnce(&PageContextFetcher::OnPdfPipeDisconnected,
+                               GetWeakPtr())));
         break;
       }
+    }
+
+    // Schedule a timeout to prevent a hanging PDF extraction from making the
+    // entire page context fetch wait for the PDF extraction result
+    // indefinitely.
+    if (!pdf_done_) {
+      SchedulePdfExtractionTimeout();
     }
   } else if (options.format() == PdfOptions::Format::kText) {
     // The PDF text extraction is requested but not executed, record failure
@@ -633,6 +633,41 @@ void PageContextFetcher::FetchPdfContent(const PdfOptions& options) {
   }
 }
 
+void PageContextFetcher::SchedulePdfExtractionTimeout() {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PageContextFetcher::AbortPdfExtraction, GetWeakPtr()),
+      kPdfExtractionTimeout.Get());
+}
+
+void PageContextFetcher::OnPdfPipeDisconnected() {
+  if (pdf_done_) {
+    // The PDF extraction might have already timed out, there is no need to post
+    // the task below.
+    return;
+  }
+
+  // Handle the abort asynchronously so that, if the WebContents is being torn
+  // down, its destruction completes before the posted task runs. The page
+  // context fetch should resolve with the error
+  // `FetchPageContextError::kWebContentsWentAway`, instead of returning a
+  // partial result.
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PageContextFetcher::AbortPdfExtraction, GetWeakPtr()));
+}
+
+void PageContextFetcher::AbortPdfExtraction() {
+  if (pdf_done_) {
+    return;
+  }
+
+  // PDF extraction is aborted. Continue extracting page context and treat PDF
+  // extraction as complete with a null result.
+  pdf_done_ = true;
+  RunCallbackIfComplete();
+}
+
 // TODO(b/562581431): This function should handle the
 // `GetPdfBytesStatus::kFailed` extraction status.
 void PageContextFetcher::ReceivedPdfBytes(
@@ -642,6 +677,11 @@ void PageContextFetcher::ReceivedPdfBytes(
     pdf::mojom::PdfListener::GetPdfBytesStatus status,
     const std::vector<uint8_t>& pdf_bytes,
     uint32_t page_count) {
+  // This function can be called after PDF extraction has reached timeout.
+  // Early return in that case.
+  if (pdf_done_) {
+    return;
+  }
   pdf_done_ = true;
 
   // The sample is recorded in milliseconds.
@@ -682,6 +722,11 @@ void PageContextFetcher::ReceivedPdfBytes(
 void PageContextFetcher::ReceivedPdfText(url::Origin pdf_origin,
                                          uint32_t text_byte_limit,
                                          const std::u16string& text) {
+  // This function can be called after PDF extraction has reached timeout.
+  // Early return in that case.
+  if (pdf_done_) {
+    return;
+  }
   pdf_done_ = true;
 
   // Note: PDF text extraction is currently restricted to top-level document
@@ -1099,21 +1144,25 @@ void PageContextFetcher::ReceivedAnnotatedPageContent(
 }
 
 void PageContextFetcher::RunCallbackIfComplete() {
-  if (!initialization_done_) {
+  // `callback_` may already be null if the fetch completed earlier.
+  if (!initialization_done_ || !callback_) {
     return;
   }
 
-  // Continue only if the primary page changed or work is complete.
-  bool work_complete = (screenshot_done_ && inner_text_done_ &&
-                        annotated_page_content_done_ && pdf_done_) ||
-                       primary_page_changed_;
-  if (!work_complete) {
+  bool web_contents_went_away =
+      !web_contents() || !web_contents()->GetPrimaryMainFrame();
+
+  bool all_tasks_complete = (screenshot_done_ && inner_text_done_ &&
+                             annotated_page_content_done_ && pdf_done_);
+  bool page_still_valid = !primary_page_changed_ && !web_contents_went_away;
+  if (!all_tasks_complete && page_still_valid) {
     return;
   }
+
   base::UmaHistogramTimes("Glic.PageContextFetcher.Total",
                           elapsed_timer_.Elapsed());
 
-  if (!web_contents() || !web_contents()->GetPrimaryMainFrame()) {
+  if (web_contents_went_away) {
     std::move(callback_).Run(base::unexpected(FetchPageContextErrorDetails{
         FetchPageContextError::kWebContentsWentAway,
         "web contents went away"}));
@@ -1301,6 +1350,12 @@ BASE_FEATURE(kGlicScreenshotSensitivePaymentRedaction,
 
 BASE_FEATURE(kGlicEmbeddedPdfBytesExtraction,
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kPageContextFetcherPdfExtraction,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+const base::FeatureParam<base::TimeDelta> kPdfExtractionTimeout{
+    &kPageContextFetcherPdfExtraction, "timeout", base::Seconds(5)};
 
 const base::FeatureParam<int> kMaxScreenshotWidthParam{
     &kGlicTabScreenshotExperiment, "max_screenshot_width", 0};

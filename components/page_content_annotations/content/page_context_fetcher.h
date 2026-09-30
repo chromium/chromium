@@ -153,6 +153,12 @@ BASE_DECLARE_FEATURE(kGlicScreenshotSensitivePaymentRedaction);
 // rendered in the Chrome PDF viewer.
 BASE_DECLARE_FEATURE(kGlicEmbeddedPdfBytesExtraction);
 
+// Controls PDF extraction parameters such as the timeout limit. It is not a
+// kill switch for the PDF extraction support.
+BASE_DECLARE_FEATURE(kPageContextFetcherPdfExtraction);
+
+extern const base::FeatureParam<base::TimeDelta> kPdfExtractionTimeout;
+
 extern const base::FeatureParam<int> kMaxScreenshotWidthParam;
 
 extern const base::FeatureParam<int> kMaxScreenshotHeightParam;
@@ -219,6 +225,7 @@ class PageContextFetcher : public content::WebContentsObserver {
   friend class PageContextFetcherPdfTest;
   friend class PageContextFetcherPdfBytesExtractionTest;
   friend class PageContextFetcherPdfTextExtractionTest;
+  friend class PageContextFetcherHangingPdfTest;
 #endif  // BUILDFLAG(ENABLE_PDF)
 
   // Redacts a screenshot by painting over sensitive regions with
@@ -235,6 +242,16 @@ class PageContextFetcher : public content::WebContentsObserver {
       content::WebContents& contents);
 
   void FetchPdfContent(const PdfOptions& options);
+
+  void SchedulePdfExtractionTimeout();
+
+  // Drop handler for the PDF extraction Mojo callback.
+  void OnPdfPipeDisconnected();
+
+  // Invoked to abort PDF extraction (e.g. on IPC pipe disconnect or timeout),
+  // completing the fetch with a null result (if not already completed).
+  void AbortPdfExtraction();
+
   void ReceivedPdfBytes(url::Origin pdf_origin,
                         bool is_top_level_pdf,
                         uint32_t pdf_size_limit,

@@ -65,6 +65,7 @@ source_set("content") {
   if (enable_pdf) {
     deps += [
       "//components/pdf/browser",
+      "//mojo/public/cpp/bindings",
       "//pdf/mojom",
     ]
   }
@@ -139,6 +140,7 @@ source_set("unit_tests") {
     "//components/page_content_annotations/core:features",
     "//components/passage_embeddings/core:passage_embeddings_types",
     "//components/passage_embeddings/core:test_support",
+    "//components/pdf/common:constants",
     "//components/ukm:test_support",
     "//content/test:test_support",
     "//pdf:buildflags",
@@ -146,6 +148,10 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
   if (enable_pdf) {
-    deps += [ "//components/pdf/browser" ]
+    deps += [
+      "//components/pdf/browser",
+      "//mojo/public/cpp/bindings",
+      "//pdf/mojom",
+    ]
   }
 }
