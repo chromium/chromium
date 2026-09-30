@@ -14,9 +14,10 @@ export function getHtml(this: SettingsAppearancePageElement) {
     <div class="settings-row first" id="themeRow"
         ?hidden="${!this.pageVisibility_.setTheme}">
       <cr-link-row id="openTheme" class="first"
-          ?hidden="${!this.pageVisibility_.setTheme}"
-          label="$i18n{themes}" sub-label="${this.themeSublabel_}"
-          @click="${this.onThemeClick_}" external></cr-link-row>
+          ?hidden="${!this.pageVisibility_.setTheme}" label="$i18n{themes}"
+          sub-label="${this.themeSublabel_}" @click="${this.onThemeClick_}"
+          external>
+      </cr-link-row>
 <if expr="not is_linux">
       ${this.themeIdPref_?.value ? html`
         <div class="separator"></div>
@@ -28,8 +29,7 @@ export function getHtml(this: SettingsAppearancePageElement) {
 </if>
 <if expr="is_linux">
       <div class="settings-row continuation"
-          ?hidden="${!this.showThemesSecondary_()}"
-          id="themesSecondaryActions">
+          ?hidden="${!this.showThemesSecondary_()}" id="themesSecondaryActions">
         <div class="separator"></div>
         ${this.showUseClassic_() ? html`
           <cr-button id="useDefault" @click="${this.onUseDefaultClick_}">
@@ -50,8 +50,7 @@ export function getHtml(this: SettingsAppearancePageElement) {
 </if>
     </div>
     <div id="toolbarRow" class="settings-row">
-      <cr-link-row id="customizeToolbar"
-          label="$i18n{customizeToolbar}"
+      <cr-link-row id="customizeToolbar" label="$i18n{customizeToolbar}"
           @click="${this.onCustomizeToolbarClick_}" external>
       </cr-link-row>
       ${this.showResetPinnedActionsButton_ ? html`
@@ -80,13 +79,13 @@ export function getHtml(this: SettingsAppearancePageElement) {
         `)}
       </select>
     </div>
-    <div class="hr" ?hidden="${!this.showHr_(
-        this.pageVisibility_.setTheme, this.pageVisibility_.homeButton)}">
+    <div class="hr"
+        ?hidden="${!this.showHr_(
+            this.pageVisibility_.setTheme, this.pageVisibility_.homeButton)}">
     </div>
     <settings-toggle-button elide-label
         ?hidden="${!this.pageVisibility_.homeButton}"
-        pref-key="browser.show_home_button"
-        label="$i18n{showHomeButton}"
+        pref-key="browser.show_home_button" label="$i18n{showHomeButton}"
         sub-label="${this.getShowHomeSubLabel_()}">
     </settings-toggle-button>
     ${this.showHomeButtonPref_?.value ? html`
@@ -94,8 +93,8 @@ export function getHtml(this: SettingsAppearancePageElement) {
           ?hidden="${!this.pageVisibility_.homeButton}">
         <settings-radio-group pref-key="homepage_is_newtabpage">
           <controlled-radio-button class="list-item" name="true"
-              pref-key="homepage_is_newtabpage"
-              label="$i18n{homePageNtp}" no-extension-indicator>
+              pref-key="homepage_is_newtabpage" label="$i18n{homePageNtp}"
+              no-extension-indicator>
           </controlled-radio-button>
           <controlled-radio-button id="custom-input" class="list-item"
               name="false" pref-key="homepage_is_newtabpage"
@@ -110,7 +109,8 @@ export function getHtml(this: SettingsAppearancePageElement) {
           ${this.homepagePref_?.extensionId ? html`
             <extension-controlled-indicator
                 extension-id="${this.homepagePref_.extensionId}"
-                ?extension-can-be-disabled="${!!this.homepagePref_?.extensionCanBeDisabled}"
+                ?extension-can-be-disabled="${
+                    !!this.homepagePref_?.extensionCanBeDisabled}"
                 extension-name="${this.homepagePref_.controlledByName}"
                 @disable-extension-click="${this.onDisableExtensionClick_}">
             </extension-controlled-indicator>
@@ -118,10 +118,10 @@ export function getHtml(this: SettingsAppearancePageElement) {
         </settings-radio-group>
       </div>
     ` : ''}
-    <div
-        class="hr"
+    <div class="hr"
         ?hidden="${!this.showHr_(
-            this.pageVisibility_.homeButton, this.pageVisibility_.bookmarksBar)}">
+            this.pageVisibility_.homeButton,
+            this.pageVisibility_.bookmarksBar)}">
     </div>
     ${!this.ntpSimplificationBookmarksBarEnabled_ ? html`
       <settings-toggle-button id="showBookmarksBar"
@@ -136,29 +136,29 @@ export function getHtml(this: SettingsAppearancePageElement) {
           $i18n{bookmarksBar}
         </div>
         <settings-dropdown-menu id="bookmarksBarVisibilityDropdown"
-            label="$i18n{bookmarksBar}"
-            pref-key="bookmark_bar.visibility_state"
+            label="$i18n{bookmarksBar}" pref-key="bookmark_bar.visibility_state"
             .menuOptions="${this.bookmarksBarOptions_}"
-            @settings-control-change="${this.onBookmarksBarVisibilitySettingsControlChange_}">
+            @settings-control-change="${
+                this.onBookmarksBarVisibilitySettingsControlChange_}">
         </settings-dropdown-menu>
       </div>
     ` : ''}
 
-    <if expr="is_macosx">
-      ${this.showGlassEffectEnabled_ ? html`
-        <div class="cr-row hr">
-          <div class="flex cr-padded-text" aria-hidden="true">
-            $i18n{glassEffect}
-          </div>
-          <settings-dropdown-menu id="glassEffect"
-              label="$i18n{glassEffect}"
-              pref-key="glass_frame.enabled"
-              .menuOptions="${this.glassEffectOptions_}"
-              @settings-control-change="${this.onGlassFrameSettingsControlChange_}">
-          </settings-dropdown-menu>
+<if expr="is_macosx">
+    ${this.showGlassEffectEnabled_ ? html`
+      <div class="cr-row hr">
+        <div class="flex cr-padded-text" aria-hidden="true">
+          $i18n{glassEffect}
         </div>
-      ` : ''}
-    </if>
+        <settings-dropdown-menu id="glassEffect" label="$i18n{glassEffect}"
+            pref-key="glass_frame.enabled"
+            .menuOptions="${this.glassEffectOptions_}"
+            @settings-control-change="${
+                this.onGlassFrameSettingsControlChange_}">
+        </settings-dropdown-menu>
+      </div>
+    ` : ''}
+</if>
 
 
     <div class="cr-row">
@@ -166,17 +166,15 @@ export function getHtml(this: SettingsAppearancePageElement) {
         $i18n{tabStripPosition}
       </div>
       <settings-dropdown-menu id="tabStripPosition"
-          label="$i18n{tabStripPosition}"
-          pref-key="vertical_tabs.enabled"
-          .menuOptions="${this.tabStripOptions_}"
-          @settings-control-change="${this.onTabStripPositionSettingsControlChange_}">
+          label="$i18n{tabStripPosition}" pref-key="vertical_tabs.enabled"
+          .menuOptions="${this.tabStripOptions_}" @settings-control-change="${
+              this.onTabStripPositionSettingsControlChange_}">
       </settings-dropdown-menu>
     </div>
     <div class="list-frame indented-toggles"
         ?hidden="${!this.verticalTabsEnabledPref_?.value}">
       ${this.showVerticalTabsExpandOnHoverSetting_() ? html`
-        <settings-toggle-button
-            id="showVerticalTabsExpandOnHover"
+        <settings-toggle-button id="showVerticalTabsExpandOnHover"
             pref-key="vertical_tabs.expand_on_hover"
             label="$i18n{showVerticalTabsExpandOnHover}">
         </settings-toggle-button>
@@ -184,9 +182,9 @@ export function getHtml(this: SettingsAppearancePageElement) {
 
       ${this.showOrganizerPanelEnabled_ ? html`
         <settings-toggle-button id="showOrganizerPanelButton"
-          pref-key="organizer_panel.pinned_to_tabstrip"
-          label="$i18n{showOrganizerPanelButton}"
-          @change="${this.onShowOrganizerPanelButtonChange_}">
+            pref-key="organizer_panel.pinned_to_tabstrip"
+            label="$i18n{showOrganizerPanelButton}"
+            @change="${this.onShowOrganizerPanelButtonChange_}">
         </settings-toggle-button>
       ` : ''}
 
@@ -222,15 +220,13 @@ export function getHtml(this: SettingsAppearancePageElement) {
     </settings-toggle-button>
 
     <settings-toggle-button class="hr" id="autoPinNewTabGroups"
-        pref-key="auto_pin_new_tab_groups"
-        label="$i18n{autoPinNewTabGroups}"
+        pref-key="auto_pin_new_tab_groups" label="$i18n{autoPinNewTabGroups}"
         ?hidden="${this.showOrganizerPanelEnabled_}">
     </settings-toggle-button>
 
     ${this.showCtrlTabMru_ ? html`
       <settings-toggle-button class="hr" id="ctrlTabMru"
-          pref-key="browser.ctrl_tab_mru"
-          label="$i18n{ctrlTabMru}">
+          pref-key="browser.ctrl_tab_mru" label="$i18n{ctrlTabMru}">
       </settings-toggle-button>
     ` : ''}
 
@@ -238,16 +234,17 @@ export function getHtml(this: SettingsAppearancePageElement) {
     <div class="list-frame indented-rows">
       ${this.configurableSidePanels_.map(item => html`
         <div class="cr-row continuation">
-          <div class="flex cr-padded-text" aria-hidden="true">${item.label}</div>
+          <div class="flex cr-padded-text"
+              aria-hidden="true">${item.label}</div>
           <settings-dropdown-menu
-              label="${this.i18n('sidePanelAlignmentA11yLabel', item.label,
+              label="${this.i18n(
+                  'sidePanelAlignmentA11yLabel', item.label,
                   '$i18n{sidePanelPosition}')}"
               .menuOptions="${this.sidePanelAlignmentOptions_}"
-              data-entry-id="${item.id}"
-              pref-key="side_panel.is_right_aligned"
-              no-set-pref
-              value="${this.getOverrideValue_(item.id)}"
-              @settings-control-change="${this.onOverrideAlignmentSettingsControlChange_}">
+              data-entry-id="${item.id}" pref-key="side_panel.is_right_aligned"
+              no-set-pref value="${this.getOverrideValue_(item.id)}"
+              @settings-control-change="${
+                  this.onOverrideAlignmentSettingsControlChange_}">
           </settings-dropdown-menu>
         </div>
       `)}
@@ -257,7 +254,8 @@ export function getHtml(this: SettingsAppearancePageElement) {
           $i18n{sidePanelAlignmentChromePanels}
         </div>
         <settings-dropdown-menu id="sidePanelPosition"
-            label="${this.i18n('sidePanelAlignmentA11yLabel',
+            label="${this.i18n(
+                'sidePanelAlignmentA11yLabel',
                 '$i18n{sidePanelAlignmentChromePanels}',
                 '$i18n{sidePanelPosition}')}"
             pref-key="side_panel.is_right_aligned"
@@ -280,13 +278,15 @@ export function getHtml(this: SettingsAppearancePageElement) {
       <div class="list-frame indented-toggles">
         <settings-toggle-button id="hoverCardImagesToggle"
             ?hidden="${!this.pageVisibility_.hoverCard}"
-            @settings-boolean-control-change="${this.onHoverCardImagesSettingsBooleanControlChange_}"
+            @settings-boolean-control-change="${
+                this.onHoverCardImagesSettingsBooleanControlChange_}"
             pref-key="browser.hovercard.image_previews_enabled"
             label="$i18n{showHoverCardImages}">
         </settings-toggle-button>
         <settings-toggle-button id="hoverCardMemoryUsageToggle" class="hr"
             ?hidden="${!this.pageVisibility_.hoverCard}"
-            @settings-boolean-control-change="${this.onHoverCardMemoryUsageSettingsBooleanControlChange_}"
+            @settings-boolean-control-change="${
+                this.onHoverCardMemoryUsageSettingsBooleanControlChange_}"
             pref-key="browser.hovercard.memory_usage_enabled"
             label="$i18n{showHoverCardMemoryUsage}">
         </settings-toggle-button>
@@ -295,11 +295,9 @@ export function getHtml(this: SettingsAppearancePageElement) {
 
 <if expr="is_linux">
     <div class="hr" ?hidden="${!this.pageVisibility_.bookmarksBar}"></div>
-    <settings-toggle-button
-        ?hidden="${!this.showCustomChromeFrame_}"
+    <settings-toggle-button ?hidden="${!this.showCustomChromeFrame_}"
         pref-key="browser.custom_chrome_frame"
-        label="$i18n{showWindowDecorations}"
-        inverted>
+        label="$i18n{showWindowDecorations}" inverted>
     </settings-toggle-button>
 </if>
     <div class="cr-row">
@@ -330,21 +328,20 @@ export function getHtml(this: SettingsAppearancePageElement) {
       </select>
     </div>
 <if expr="is_macosx">
-    <settings-toggle-button class="hr"
-        pref-key="webkit.webprefs.tabs_to_links"
+    <settings-toggle-button class="hr" pref-key="webkit.webprefs.tabs_to_links"
         label="$i18n{tabsToLinks}">
     </settings-toggle-button>
-    <settings-toggle-button class="hr"
-        pref-key="browser.confirm_to_quit"
+    <settings-toggle-button class="hr" pref-key="browser.confirm_to_quit"
         label="$i18n{warnBeforeQuitting}">
     </settings-toggle-button>
 </if>
   </div>
   <settings-toggle-button class="hr" id="splitViewDragAndDrop"
       pref-key="browser.split_view_drag_and_drop_enabled"
-      label="${this.i18n(this.splitViewHorizontalEnabled_
-               ? 'allowSplitViewDragAndDropHorizontal'
-               : 'allowSplitViewDragAndDrop')}">
+      label="${this.i18n(
+          this.splitViewHorizontalEnabled_ ?
+              'allowSplitViewDragAndDropHorizontal' :
+              'allowSplitViewDragAndDrop')}">
   </settings-toggle-button>
 </settings-section>
 ${this.showManagedThemeDialog_ ? html`
