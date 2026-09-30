@@ -350,9 +350,13 @@ void GlicHandler::OnExperimentalTriggeringPrefChanged() {
   }
 }
 
-void GlicHandler::OnWebActuationCapabilityChanged(bool can_act_on_web) {
-  FireWebUIListener("glic-web-actuation-capability-changed",
-                    base::Value(can_act_on_web));
+void GlicHandler::OnWebActuationCapabilityChanged(bool /*can_act_on_web*/) {
+  // Recompute enterprise state so a subscription lapse does not show an
+  // enterprise policy indicator.
+  FireWebUIListener(
+      "glic-web-actuation-disabled-for-enterprise-changed",
+      base::Value(GlicHandler::IsWebActuationDisabledForEnterprise(
+          Profile::FromWebUI(web_ui()))));
 }
 
 void GlicHandler::HandleGetWebActuationToggleVisibility(
@@ -436,6 +440,20 @@ bool GlicHandler::ShouldShowWebActuationToggle(Profile* profile) {
       glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
   return glic_service &&
          glic_service->enabling().ShouldShowWebActuationToggle();
+}
+
+bool GlicHandler::IsWebActuationDisabledForEnterprise(Profile* profile) {
+  if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
+    return false;
+  }
+  auto* glic_service =
+      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+  if (!glic_service || !glic_service->HasActorPolicyChecker()) {
+    return false;
+  }
+  return !glic_service->actor_policy_checker().CanActOnWeb() &&
+         glic_service->actor_policy_checker().CannotActOnWebReason() ==
+             glic::GlicActorPolicyChecker::CannotActReason::kDisabledByPolicy;
 }
 
 bool GlicHandler::ShouldShowExperimentalTriggeringToggle(Profile* profile) {

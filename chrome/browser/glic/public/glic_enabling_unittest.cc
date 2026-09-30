@@ -2243,6 +2243,88 @@ TEST_F(GlicEnablingWebActuationToggleTest,
   EXPECT_TRUE(GlicEnabling::IsEligibleForGlicTieredRollout(profile()));
 }
 
+// Tests toggle visibility when a non-default preference is stored.
+class GlicEnablingWebActuationStickyToggleTest
+    : public GlicEnablingWebActuationToggleTest {
+ public:
+  GlicEnablingWebActuationStickyToggleTest() {
+    settings_toggle_feature_list_.InitWithFeaturesAndParameters(
+        /*enabled_features=*/
+        {{features::kGlicActor,
+          {{features::kGlicActorEligibleTiers.name, "1,2"}}},
+         {features::kGlicWebActuationSettingsToggle, {}}},
+        /*disabled_features=*/{});
+  }
+
+ protected:
+  // Signs in an eligible consumer account.
+  void SignInEligibleConsumerAccount() {
+    auto* identity_test_env = identity_test_env_adaptor_->identity_test_env();
+    AccountInfo account_info = identity_test_env->MakePrimaryAccountAvailable(
+        "test@example.com", signin::ConsentLevel::kSignin);
+    AccountCapabilitiesTestMutator mutator(&account_info);
+    mutator.set_can_use_model_execution_features(true);
+    signin::UpdateAccountInfoForAccount(identity_test_env->identity_manager(),
+                                        account_info);
+  }
+
+  // Updates subscription tier and triggers policy recomputation.
+  void SetSubscriptionTier(int32_t tier) {
+    profile()->GetPrefs()->SetInteger(
+        subscription_eligibility::prefs::kAiSubscriptionTier, tier);
+  }
+
+ private:
+  base::test::ScopedFeatureList settings_toggle_feature_list_;
+};
+
+TEST_F(GlicEnablingWebActuationStickyToggleTest,
+       PrefDefault_TierEligible_Visible) {
+  SignInEligibleConsumerAccount();
+  SetSubscriptionTier(1);
+
+  auto* glic_service = GlicKeyedService::Get(profile());
+  ASSERT_TRUE(glic_service->enabling().IsUserEnabledActuationOnWebDefault());
+  EXPECT_TRUE(glic_service->enabling().ShouldShowWebActuationToggle());
+}
+
+// Subscription tier requirements apply when the preference is at default.
+TEST_F(GlicEnablingWebActuationStickyToggleTest,
+       PrefDefault_TierIneligible_Hidden) {
+  SignInEligibleConsumerAccount();
+  SetSubscriptionTier(999);
+
+  auto* glic_service = GlicKeyedService::Get(profile());
+  ASSERT_TRUE(glic_service->enabling().IsUserEnabledActuationOnWebDefault());
+  EXPECT_FALSE(glic_service->enabling().ShouldShowWebActuationToggle());
+}
+
+// The toggle remains visible when the preference is set to true.
+TEST_F(GlicEnablingWebActuationStickyToggleTest,
+       OptedIn_TierIneligible_StaysVisible) {
+  SignInEligibleConsumerAccount();
+  SetSubscriptionTier(999);
+
+  auto* glic_service = GlicKeyedService::Get(profile());
+  glic_service->enabling().SetUserEnabledActuationOnWeb(true);
+
+  ASSERT_FALSE(glic_service->enabling().IsUserEnabledActuationOnWebDefault());
+  EXPECT_TRUE(glic_service->enabling().ShouldShowWebActuationToggle());
+}
+
+// The toggle remains visible when the preference is set to false.
+TEST_F(GlicEnablingWebActuationStickyToggleTest,
+       OptedOut_TierIneligible_StaysVisible) {
+  SignInEligibleConsumerAccount();
+  SetSubscriptionTier(999);
+
+  auto* glic_service = GlicKeyedService::Get(profile());
+  glic_service->enabling().SetUserEnabledActuationOnWeb(false);
+
+  ASSERT_FALSE(glic_service->enabling().IsUserEnabledActuationOnWebDefault());
+  EXPECT_TRUE(glic_service->enabling().ShouldShowWebActuationToggle());
+}
+
 // Tests for ShouldShowExperimentalTriggeringToggle(), which gates the
 // "Gemini Spark" (experimental triggering) settings toggle shared by the
 // desktop and Android settings UIs.

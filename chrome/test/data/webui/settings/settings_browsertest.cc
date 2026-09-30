@@ -728,9 +728,7 @@ struct WebActuationTestParams {
   bool force_show_switch = false;
   // kGlicWebActuationSetting (Global Gate).
   bool setting_feature_enabled = true;
-  // kGlicWebActuationSettingsToggle.
-  // If true = tier-enforced
-  // If false = legacy prefs.
+  // Controls kGlicWebActuationSettingsToggle.
   bool toggle_feature_enabled = true;
   // kGlicActorPolicyControlExemption.
   bool policy_control_exemption = false;
@@ -740,7 +738,7 @@ struct WebActuationTestParams {
   int32_t user_tier = 100;
   // If false, blocks via kAccountCapabilityIneligible.
   bool has_account_capability = true;
-  // Used for legacy mode (when toggle_feature_enabled=false).
+  // Simulates a user who has already set the opt-in pref.
   bool consent_pref_set = false;
   // If true, simulates a device/browser managed by an admin.
   bool is_managed_browser = false;
@@ -910,12 +908,13 @@ INSTANTIATE_TEST_SUITE_P(
             .user_tier = 100,
             .expected_suite = "GlicSubpage WebActuationToggleVisible"},
 
+        // Stored preference keeps the toggle visible.
         WebActuationTestParams{
-            .test_name = "Enforced_TierDisallowed_Hidden",
+            .test_name = "Enforced_TierDisallowed_WithPref_Visible",
             .toggle_feature_enabled = true,
             .user_tier = 999,
-            .consent_pref_set = true,  // Blocked despite saved pref
-            .expected_suite = "GlicSubpage WebActuationToggleHidden"},
+            .consent_pref_set = true,
+            .expected_suite = "GlicSubpage WebActuationToggleVisible"},
 
         WebActuationTestParams{
             .test_name = "Enforced_NoTiersConfigured_Hidden",

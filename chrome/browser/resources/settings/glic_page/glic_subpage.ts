@@ -225,9 +225,10 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
         'glic-disallowed-by-admin-changed',
         this.disallowedByAdminChanged_.bind(this));
     this.addWebUiListener(
-        'glic-web-actuation-capability-changed',
-        (canActOnWeb: boolean) =>
-            this.onWebActuationCapabilityChanged_(canActOnWeb));
+        'glic-web-actuation-disabled-for-enterprise-changed',
+        (disabledForEnterprise: boolean) =>
+            this.onWebActuationDisabledForEnterpriseChanged_(
+                disabledForEnterprise));
     this.addWebUiListener(
         'glic-web-actuation-toggle-visibility-changed',
         (visible: boolean) =>
@@ -713,8 +714,9 @@ export class SettingsGlicSubpageElement extends SettingsGlicSubpageElementBase {
     return loadTimeData.getString('glicWebActuationToggleLearnMoreUrl');
   }
 
-  private onWebActuationCapabilityChanged_(canActOnWeb: boolean) {
-    this.isWebActuationDisabledForEnterprise_ = !canActOnWeb;
+  private onWebActuationDisabledForEnterpriseChanged_(
+      disabledForEnterprise: boolean) {
+    this.isWebActuationDisabledForEnterprise_ = disabledForEnterprise;
     if (this.isWebActuationDisabledForEnterprise_) {
       this.webActuationEnabledExpanded_ = false;
     }

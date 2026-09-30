@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <tuple>
+#include <utility>
 
 #include "base/test/gmock_callback_support.h"
 #include "base/test/scoped_feature_list.h"
@@ -14,7 +15,9 @@
 #include "build/buildflag.h"
 #include "chrome/browser/background/glic/glic_launcher_configuration.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/extensions/api/settings_private/prefs_util.h"
+#include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
@@ -28,6 +31,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_permissions_manager.h"
+#include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/prefs/pref_service.h"
 #include "components/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "content/public/test/browser_test.h"
@@ -466,6 +470,58 @@ IN_PROC_BROWSER_TEST_F(
       .SetExperimentalTriggeringEnabled(true);
   EXPECT_TRUE(GlicHandler::ShouldShowExperimentalTriggeringToggle(
       browser()->GetProfile()));
+}
+
+// Tests enterprise policy detection for web actuation.
+class GlicHandlerEnterpriseDisabledBrowserTest : public GlicHandlerBrowserTest {
+ public:
+  GlicHandlerEnterpriseDisabledBrowserTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicWebActuationSetting, {}},
+         {features::kGlicActor,
+          {{features::kGlicActorEligibleTiers.name, "1"}}}},
+        /*disabled_features=*/{});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Missing subscription tier must not be treated as an enterprise policy block.
+IN_PROC_BROWSER_TEST_F(GlicHandlerEnterpriseDisabledBrowserTest,
+                       IsWebActuationDisabledForEnterprise_TierIneligible) {
+  Profile* profile = browser()->GetProfile();
+  profile->GetPrefs()->SetInteger(
+      subscription_eligibility::prefs::kAiSubscriptionTier, 0);
+
+  auto* glic_service = glic::GlicKeyedService::Get(profile);
+  ASSERT_TRUE(glic_service->HasActorPolicyChecker());
+  ASSERT_FALSE(glic_service->actor_policy_checker().CanActOnWeb());
+  ASSERT_NE(glic_service->actor_policy_checker().CannotActOnWebReason(),
+            glic::GlicActorPolicyChecker::CannotActReason::kDisabledByPolicy);
+
+  EXPECT_FALSE(GlicHandler::IsWebActuationDisabledForEnterprise(profile));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicHandlerEnterpriseDisabledBrowserTest,
+                       IsWebActuationDisabledForEnterprise_DisabledByPolicy) {
+  Profile* profile = browser()->GetProfile();
+  policy::ScopedManagementServiceOverrideForTesting browser_management(
+      policy::ManagementServiceFactory::GetForProfile(profile),
+      policy::EnterpriseManagementAuthority::CLOUD_DOMAIN);
+
+  // Writing the policy pref triggers the policy checker to recompute.
+  profile->GetPrefs()->SetInteger(
+      glic::prefs::kGlicActuationOnWeb,
+      std::to_underlying(
+          glic::prefs::GlicActuationOnWebPolicyState::kDisabled));
+
+  auto* glic_service = glic::GlicKeyedService::Get(profile);
+  ASSERT_TRUE(glic_service->HasActorPolicyChecker());
+  ASSERT_EQ(glic_service->actor_policy_checker().CannotActOnWebReason(),
+            glic::GlicActorPolicyChecker::CannotActReason::kDisabledByPolicy);
+
+  EXPECT_TRUE(GlicHandler::IsWebActuationDisabledForEnterprise(profile));
 }
 
 }  // namespace settings

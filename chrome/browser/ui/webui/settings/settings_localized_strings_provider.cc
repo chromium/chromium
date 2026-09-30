@@ -23,13 +23,10 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/contextual_cueing/features.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
-#include "chrome/browser/glic/actor/glic_actor_policy_checker.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/glic_settings_util.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_utils.h"
 #include "chrome/browser/indigo/resources/grit/indigo_strings.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -857,20 +854,6 @@ void AddDownloadsStrings(content::WebUIDataSource* html_source) {
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
 
-bool IsWebActuationDisabledForEnterprise(Profile* profile) {
-  if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
-    return false;
-  }
-  auto* glic_service =
-      glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-  if (!glic_service) {
-    return false;
-  }
-  return !glic_service->actor_policy_checker().CanActOnWeb() &&
-         glic_service->actor_policy_checker().CannotActOnWebReason() ==
-             glic::GlicActorPolicyChecker::CannotActReason::kDisabledByPolicy;
-}
-
 void AddGeicStrings(content::WebUIDataSource* html_source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"geicSectionTitle", IDS_SETTINGS_GEIC_SECTION_TITLE},
@@ -1196,8 +1179,9 @@ void AddGlicStrings(content::WebUIDataSource* html_source, Profile* profile) {
       base::FeatureList::IsEnabled(features::kGlicDaisyChainNewTabs));
   html_source->AddBoolean("glicWebActuationFeatureEnabled",
                           GlicHandler::ShouldShowWebActuationToggle(profile));
-  html_source->AddBoolean("isWebActuationDisabledForEnterprise",
-                          IsWebActuationDisabledForEnterprise(profile));
+  html_source->AddBoolean(
+      "isWebActuationDisabledForEnterprise",
+      GlicHandler::IsWebActuationDisabledForEnterprise(profile));
   html_source->AddBoolean("glicActorEnabled",
                           base::FeatureList::IsEnabled(features::kGlicActor));
   html_source->AddBoolean(

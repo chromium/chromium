@@ -1154,10 +1154,12 @@ bool GlicEnabling::ShouldShowWebActuationToggle() const {
     return false;
   }
 
-  // NOTE: kGlicWebActuationSettingsToggle controls toggle visibility based
-  // solely on subscription eligibility. If this feature is disabled, the
-  // toggle remains visible only if the user has previously accepted the
-  // consent card.
+  // Keep the toggle visible once a non-default preference is stored.
+  if (!IsUserEnabledActuationOnWebDefault()) {
+    return true;
+  }
+
+  // When enabled, also show the toggle to eligible subscribers.
   if (base::FeatureList::IsEnabled(features::kGlicWebActuationSettingsToggle)) {
     // Always show the toggle for internal dogfooders, mirroring the bypass in
     // GlicActorPolicyChecker.
@@ -1174,11 +1176,6 @@ bool GlicEnabling::ShouldShowWebActuationToggle() const {
     }
     return allowed_tiers.contains(
         subscription_service->GetAiSubscriptionTier());
-  }
-  // Show the toggle if the user has explicitly modified the preference before
-  // (via accepting the consent card).
-  if (!glic_service->enabling().IsUserEnabledActuationOnWebDefault()) {
-    return true;
   }
   return false;
 }
