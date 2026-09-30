@@ -30,7 +30,6 @@ from build_rust import (
     RUST_BETA_SYSROOT_DIR,
     InstallRustBetaSysroot,
 )
-from update_rust import RUST_REVISION
 
 BUILD_RUST_PY_PATH = os.path.join(
     CHROMIUM_DIR, 'tools', 'rust', 'build_rust.py'
@@ -57,7 +56,7 @@ def main():
         RunCommand([BUILD_RUST_PY_PATH, '--sync-for-gnrt'])
 
         # Get a Rust sysroot to build gnrt with.
-        InstallRustBetaSysroot(RUST_REVISION, [RustTargetTriple()])
+        InstallRustBetaSysroot([RustTargetTriple()])
 
     # Build and run gnrt to update the stdlib GN rules.
     if args.out_dir:

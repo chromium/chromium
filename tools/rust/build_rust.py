@@ -217,18 +217,14 @@ TEST_SUITES = [
 ]
 
 
-def InstallRustBetaSysroot(rust_git_hash, target_triples):
+def InstallRustBetaSysroot(target_triples):
     if os.path.exists(RUST_BETA_SYSROOT_DIR):
         RmTree(RUST_BETA_SYSROOT_DIR)
-    InstallBetaPackage(
-        FetchBetaPackage('cargo', rust_git_hash), RUST_BETA_SYSROOT_DIR
-    )
-    InstallBetaPackage(
-        FetchBetaPackage('rustc', rust_git_hash), RUST_BETA_SYSROOT_DIR
-    )
+    InstallBetaPackage(FetchBetaPackage('cargo'), RUST_BETA_SYSROOT_DIR)
+    InstallBetaPackage(FetchBetaPackage('rustc'), RUST_BETA_SYSROOT_DIR)
     for t in target_triples:
         InstallBetaPackage(
-            FetchBetaPackage('rust-std', rust_git_hash, triple=t),
+            FetchBetaPackage('rust-std', triple=t),
             RUST_BETA_SYSROOT_DIR,
         )
 
@@ -287,7 +283,7 @@ def VerifyStage0JsonHash(stage0_json_url=None):
     sys.exit(1)
 
 
-def FetchBetaPackage(name, rust_git_hash, triple=None):
+def FetchBetaPackage(name, triple=None):
     '''Downloads the beta package specified for the compiler build
 
     If `triple` is not specified, it downloads a package for the current
@@ -298,17 +294,12 @@ def FetchBetaPackage(name, rust_git_hash, triple=None):
     triple = triple if triple else RustTargetTriple()
     filename = f'{name}-beta-{triple}'
 
-    # Pull the stage0 to find the package intended to be used to build this
-    # version of the Rust compiler.
-    STAGE0_JSON_URL = (
-        'https://chromium.googlesource.com/external/github.com/'
-        'rust-lang/rust/+/{GIT_HASH}/src/stage0?format=TEXT'
-    )
-    base64_text = FetchUrl(
-        STAGE0_JSON_URL.format(GIT_HASH=rust_git_hash)
-    ).decode("utf-8")
-    stage0 = base64.b64decode(base64_text).decode("utf-8")
-    lines = stage0.splitlines()
+    # Read the stage0 to find the package intended to be used to build this
+    # version of the Rust compiler.  Read the local file (rather than
+    # fetching it from Gitiles) to avoid a network dependency.  This is the
+    # same file that `VerifyStage0JsonHash` checks and that `x.py` uses.
+    with open(STAGE0_JSON_PATH, encoding='utf-8') as f:
+        lines = f.read().splitlines()
 
     # The stage0 file contains the path to all tarballs it uses binaries from.
     for l in lines:
@@ -1051,7 +1042,7 @@ def main():
             # the hash is valid.
             return 0
         CheckoutGitRepo('Rust', RUST_GIT_URL, checkout_revision, RUST_SRC_DIR)
-        path = FetchBetaPackage('cargo', checkout_revision)
+        path = FetchBetaPackage('cargo')
         if sys.platform == 'win32':
             cargo_bin = os.path.join(path, 'cargo', 'bin', 'cargo.exe')
         else:
@@ -1200,7 +1191,7 @@ def main():
 
         if args.gnrt_stdlib:
             print('Building gnrt...')
-            InstallRustBetaSysroot(checkout_revision, [RustTargetTriple()])
+            InstallRustBetaSysroot([RustTargetTriple()])
             print('Beta sysroot installed.')
             build_cmd = [
                 sys.executable,
