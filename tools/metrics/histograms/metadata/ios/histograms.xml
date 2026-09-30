@@ -5205,6 +5205,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="IOS.NSString.stringByReplacingCharactersInRange.NilArgument"
+    enum="Boolean" expires_after="2027-09-29">
+  <owner>olivierrobin@google.com</owner>
+  <owner>rohitrao@google.com</owner>
+  <summary>
+    Logs when the NSString Fix triggers. Used to validate if the fix is still
+    required.
+  </summary>
+</histogram>
+
 <histogram name="IOS.NTP.Click" enum="IOSHomeActionType"
     expires_after="2027-02-14">
   <owner>thegreenfrog@chromium.org</owner>
