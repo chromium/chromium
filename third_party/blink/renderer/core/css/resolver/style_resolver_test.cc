@@ -4239,13 +4239,19 @@ TEST_F(StyleResolverTestCQ, ContainerUnitContext) {
         width: 200px;
         height: 200px;
       }
+      #between {
+        width: 150px;
+        height: 150px;
+      }
       #div {
         width: 100px;
         height: 100px;
       }
     </style>
     <div id="container">
-      <div id="div"></div>
+      <div id="between">
+        <div id="div"></div>
+      </div>
     </div>
   )HTML");
 

@@ -137,7 +137,7 @@ class CORE_EXPORT StyleResolverState {
     return flags;
   }
 
-  // See StyleRecalcContext::GetAnchorEvaluator().
+  // See StyleRecalcContext::anchor_evaluator.
   AnchorEvaluator* GetAnchorEvaluator() const;
 
   void SubtractScrollbarsFromViewportUnits(const gfx::Size& scrollbars) {

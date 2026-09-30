@@ -253,13 +253,16 @@ CSSToLengthConversionData StyleResolverState::UnzoomedLengthConversionData() {
 }
 
 Element* StyleResolverState::ContainerUnitContext() const {
-  // TODO(crbug.com/396016391): Always provide a StyleRecalcContext.
+  // StyleRecalcContext caches the closest ancestor size_container candidate.
+  // If that is not available, use the closest flat tree ancestor as the start
+  // candidate to search from.
   return style_recalc_context_ ? style_recalc_context_->size_container
                                : FlatTreeTraversal::ParentElement(GetElement());
 }
 
 AnchorEvaluator* StyleResolverState::GetAnchorEvaluator() const {
-  // TODO(crbug.com/396016391): Always provide a StyleRecalcContext.
+  // We only have a non-null AnchorEvaluator when we are in an interleaved style
+  // recalc for anchor positioning.
   return style_recalc_context_ ? style_recalc_context_->anchor_evaluator
                                : nullptr;
 }
