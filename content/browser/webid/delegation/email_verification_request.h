@@ -40,11 +40,11 @@ class RenderFrameHostImpl;
 
 namespace content::webid {
 
-// For a given email address, returns the domain. Returns std::nullopt if the
-// email is not valid.
+// For a given email address, returns the domain in lowercase. Returns
+// std::nullopt if the email is not valid.
 // e.g. "test@example.com" -> "example.com"
-CONTENT_EXPORT std::optional<std::string_view> GetDomainFromEmail(
-    std::string_view email LIFETIME_BOUND);
+CONTENT_EXPORT std::optional<std::string> GetDomainFromEmail(
+    std::string_view email);
 
 // Performs the email verification process, which involves making a DNS TXT
 // record request to determine the issuer, and then fetching a token from the

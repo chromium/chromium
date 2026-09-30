@@ -61,7 +61,8 @@ std::optional<url::Origin> GetOriginFromEmail(std::string_view email) {
     return std::nullopt;
   }
   GURL url("https://" + std::string(parts->second));
-  if (!url.is_valid() || !url.has_host() || url.GetHost() != parts->second) {
+  if (!url.is_valid() || !url.has_host() ||
+      !base::EqualsCaseInsensitiveASCII(url.GetHost(), parts->second)) {
     return std::nullopt;
   }
   url::Origin origin = url::Origin::Create(url);

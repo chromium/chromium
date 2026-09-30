@@ -2078,6 +2078,10 @@ TEST(EmailVerificationRequestStaticTest, ValidEmail) {
   EXPECT_EQ(GetDomainFromEmail("test@example.com"), "example.com");
 }
 
+TEST(EmailVerificationRequestStaticTest, ValidEmailUppercaseDomain) {
+  EXPECT_EQ(GetDomainFromEmail("test@EXAMPLE.COM"), "example.com");
+}
+
 TEST(EmailVerificationRequestStaticTest, ValidEmailWithSubdomain) {
   EXPECT_EQ(GetDomainFromEmail("test@mail.example.com"), "mail.example.com");
 }

@@ -225,7 +225,7 @@ net::HttpRequestHeaders CreateMessageSignatureHeaders(
 
 }  // namespace
 
-std::optional<std::string_view> GetDomainFromEmail(std::string_view email) {
+std::optional<std::string> GetDomainFromEmail(std::string_view email) {
   auto parts = base::RSplitStringOnce(email, "@");
 
   if (!parts) {
@@ -240,11 +240,12 @@ std::optional<std::string_view> GetDomainFromEmail(std::string_view email) {
   // TODO(crbug.com/380367784): consider better ways to validate if
   // the email domain is well formed.
   GURL url(base::StrCat({"https://", parts->second}));
-  if (!url.is_valid() || !url.has_host() || url.GetHost() != parts->second) {
+  if (!url.is_valid() || !url.has_host() ||
+      !base::EqualsCaseInsensitiveASCII(url.GetHost(), parts->second)) {
     return std::nullopt;
   }
 
-  return parts->second;
+  return url.GetHost();
 }
 
 EmailVerificationRequest::EmailVerificationRequest(
@@ -311,7 +312,7 @@ void EmailVerificationRequest::CheckIfVerifiable(
   // Step 3.1: the browser extracts the domain from the email address and
   // asks the DNS server who the issuer is:
 
-  std::optional<std::string_view> domain = GetDomainFromEmail(email);
+  std::optional<std::string> domain = GetDomainFromEmail(email);
   if (!domain) {
     CompleteIsVerifiableRequest(std::move(callback), std::nullopt,
                                 EmailVerificationRequestResult::kInvalidEmail);
