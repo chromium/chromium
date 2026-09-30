@@ -294,4 +294,55 @@ public final class TabLaunchTypeUtils {
             }
         };
     }
+
+    /**
+     * Returns true if the launch type represents a tab opened in the foreground from the longpress
+     * context menu (either ungrouped or within a tab group).
+     *
+     * @param type The launch type to inspect.
+     * @return True if the tab is launched in the foreground from a longpress context menu.
+     */
+    public static boolean isLongpressForegroundLaunch(@TabLaunchType int type) {
+        assertValidLaunchType(type);
+        return switch (type) {
+            case TabLaunchType.FROM_LONGPRESS_FOREGROUND,
+                    TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP ->
+                    true;
+            default -> false;
+        };
+    }
+
+    /**
+     * Returns true if the launch type represents a tab opened in the background from the longpress
+     * context menu (either ungrouped or within a tab group).
+     *
+     * @param type The launch type to inspect.
+     * @return True if the tab is launched in the background from a longpress context menu.
+     */
+    public static boolean isLongpressBackgroundLaunch(@TabLaunchType int type) {
+        assertValidLaunchType(type);
+        return switch (type) {
+            case TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                    TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP ->
+                    true;
+            default -> false;
+        };
+    }
+
+    /**
+     * Returns true if the new tab animation layout should keep the current tab selected without
+     * switching to the newly created tab.
+     *
+     * @param type The launch type to inspect.
+     * @return True if the current tab should remain selected during animation.
+     */
+    public static boolean shouldKeepCurrentTabOnAnimation(@TabLaunchType int type) {
+        assertValidLaunchType(type);
+        return switch (type) {
+            case TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP,
+                    TabLaunchType.FROM_TIPS_NOTIFICATIONS ->
+                    true;
+            default -> false;
+        };
+    }
 }

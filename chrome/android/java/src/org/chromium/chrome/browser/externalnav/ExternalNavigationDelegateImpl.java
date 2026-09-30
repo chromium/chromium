@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.password_manager.CctPasswordSavingMetricsReco
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabLaunchTypeUtils;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -312,8 +313,7 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
 
     @Override
     public boolean wasTabLaunchedFromLinkCreatingNewForegroundTab() {
-        return mTabLaunchType == TabLaunchType.FROM_LONGPRESS_FOREGROUND
-                || mTabLaunchType == TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP;
+        return TabLaunchTypeUtils.isLongpressForegroundLaunch(mTabLaunchType);
     }
 
     @Override

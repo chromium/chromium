@@ -177,6 +177,21 @@ public class TabLaunchTypeUtilsUnitTest {
                     TabLaunchType.FROM_TIPS_NOTIFICATIONS,
                     TabLaunchType.FROM_TAB_LIST_INTERFACE_BACKGROUND);
 
+    private static final Set<Integer> LONGPRESS_FOREGROUND_TYPES =
+            Set.of(
+                    TabLaunchType.FROM_LONGPRESS_FOREGROUND,
+                    TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP);
+
+    private static final Set<Integer> LONGPRESS_BACKGROUND_TYPES =
+            Set.of(
+                    TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                    TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP);
+
+    private static final Set<Integer> KEEP_CURRENT_TAB_ON_ANIMATION_TYPES =
+            Set.of(
+                    TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP,
+                    TabLaunchType.FROM_TIPS_NOTIFICATIONS);
+
     @Test
     public void testEnumSizeConstant() {
         assertEquals("TabLaunchType.SIZE is expected to be 37", 37, TabLaunchType.SIZE);
@@ -240,6 +255,18 @@ public class TabLaunchTypeUtilsUnitTest {
                     "tabLaunchTypeToHistogramKey returned TypeUnknown for type " + type,
                     "TypeUnknown",
                     TabLaunchTypeUtils.tabLaunchTypeToHistogramKey(type));
+            assertEquals(
+                    "isLongpressForegroundLaunch mismatch for type " + type,
+                    LONGPRESS_FOREGROUND_TYPES.contains(type),
+                    TabLaunchTypeUtils.isLongpressForegroundLaunch(type));
+            assertEquals(
+                    "isLongpressBackgroundLaunch mismatch for type " + type,
+                    LONGPRESS_BACKGROUND_TYPES.contains(type),
+                    TabLaunchTypeUtils.isLongpressBackgroundLaunch(type));
+            assertEquals(
+                    "shouldKeepCurrentTabOnAnimation mismatch for type " + type,
+                    KEEP_CURRENT_TAB_ON_ANIMATION_TYPES.contains(type),
+                    TabLaunchTypeUtils.shouldKeepCurrentTabOnAnimation(type));
         }
     }
 
@@ -378,6 +405,18 @@ public class TabLaunchTypeUtilsUnitTest {
                     "getDefaultPageTransition should assert for invalid type " + type,
                     AssertionError.class,
                     () -> TabLaunchTypeUtils.getDefaultPageTransition(type, PageTransition.LINK));
+            assertThrows(
+                    "isLongpressForegroundLaunch should assert for invalid type " + type,
+                    AssertionError.class,
+                    () -> TabLaunchTypeUtils.isLongpressForegroundLaunch(type));
+            assertThrows(
+                    "isLongpressBackgroundLaunch should assert for invalid type " + type,
+                    AssertionError.class,
+                    () -> TabLaunchTypeUtils.isLongpressBackgroundLaunch(type));
+            assertThrows(
+                    "shouldKeepCurrentTabOnAnimation should assert for invalid type " + type,
+                    AssertionError.class,
+                    () -> TabLaunchTypeUtils.shouldKeepCurrentTabOnAnimation(type));
         }
     }
 }

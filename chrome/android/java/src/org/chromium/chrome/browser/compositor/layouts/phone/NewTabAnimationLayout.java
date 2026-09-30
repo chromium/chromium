@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabContextMenuData;
 import org.chromium.chrome.browser.tab.TabId;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabLaunchTypeUtils;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.OverridableTabCount;
@@ -295,8 +296,7 @@ public class NewTabAnimationLayout extends Layout {
         mTopPadding = 0;
         Tab newTab = mTabModelSelector.getModel(newIsIncognito).getTabById(id);
         if (newTab != null
-                && (newTab.getLaunchType() == TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP
-                        || newTab.getLaunchType() == TabLaunchType.FROM_TIPS_NOTIFICATIONS)) {
+                && TabLaunchTypeUtils.shouldKeepCurrentTabOnAnimation(newTab.getLaunchType())) {
             // Tab selection will no-op for Tab.INVALID_TAB_ID. This operation should not change
             // the current tab. If for some reason this is the last tab it will be automatically
             // selected.
@@ -470,9 +470,7 @@ public class NewTabAnimationLayout extends Layout {
      */
     private @RectStart int getForegroundRectStart(@Nullable Tab oldTab, Tab newTab) {
         @TabLaunchType int tabLaunchType = newTab.getLaunchType();
-        if (oldTab == null
-                || tabLaunchType == TabLaunchType.FROM_LONGPRESS_FOREGROUND
-                || tabLaunchType == TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP) {
+        if (oldTab == null || TabLaunchTypeUtils.isLongpressForegroundLaunch(tabLaunchType)) {
             return RectStart.CENTER;
         }
 
