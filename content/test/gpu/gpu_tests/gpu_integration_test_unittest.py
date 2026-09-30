@@ -24,6 +24,7 @@ from gpu_path_util import setup_tools_perf_paths
 
 # pylint: enable=unused-import,wrong-import-order
 from chrome_telemetry_build import chromium_config
+import py_utils
 from py_utils import tempfile_ext
 from telemetry.internal.browser import browser_options as bo
 from telemetry.internal.util import binary_manager
@@ -1255,6 +1256,61 @@ class IsolatedWaylandDisplaysUnittest(unittest.TestCase):
 
       mock_server.Stop.assert_called_once()
       self.assertIsNone(GpuTestClass._wayland_server)
+
+
+class RetrieveAboutGpuUnittest(unittest.TestCase):
+  def setUp(self):
+    GpuTestClass._args_changed_this_browser_start = True
+    GpuTestClass._about_gpu_content = None
+    GpuTestClass._test_that_started_browser = None
+    GpuTestClass.browser = mock.MagicMock()
+    GpuTestClass.browser.browser_type = 'release'
+    GpuTestClass.tab = mock.MagicMock()
+
+  def testRetrieveAboutGpuWaitsForDawnInfo(self):
+    expected_content = 'a' * 2000
+    GpuTestClass.tab.action_runner.EvaluateJavaScript.return_value = (
+      expected_content
+    )
+
+    GpuTestClass._RetrieveAboutGpu()
+
+    GpuTestClass.tab.Navigate.assert_called_once_with('chrome://gpu')
+    GpuTestClass.tab.action_runner.WaitForElement.assert_called_once_with(
+      selector='info-view'
+    )
+    self.assertEqual(
+      GpuTestClass.tab.action_runner.WaitForJavaScriptCondition.call_args_list,
+      [
+        mock.call(
+          'document.getElementsByTagName("info-view")[0].getSelectionText '
+          '!= undefined'
+        ),
+        mock.call(
+          'document.getElementsByTagName("info-view")[0]'
+          '.getSelectionText(true).includes("Dawn Info")',
+          timeout=15,
+        ),
+      ],
+    )
+    self.assertEqual(GpuTestClass._about_gpu_content, expected_content)
+
+  def testRetrieveAboutGpuDawnInfoTimeoutStillCapturesContent(self):
+    expected_content = 'a' * 2000
+    GpuTestClass.tab.action_runner.WaitForJavaScriptCondition.side_effect = [
+      None,
+      py_utils.TimeoutException('Timed out'),
+    ]
+    GpuTestClass.tab.action_runner.EvaluateJavaScript.return_value = (
+      expected_content
+    )
+
+    GpuTestClass._RetrieveAboutGpu()
+
+    self.assertEqual(
+      GpuTestClass.tab.action_runner.WaitForJavaScriptCondition.call_count, 2
+    )
+    self.assertEqual(GpuTestClass._about_gpu_content, expected_content)
 
 
 def _ExtractTestResults(
