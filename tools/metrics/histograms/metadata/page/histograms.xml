@@ -292,10 +292,12 @@ chromium-metrics-reviews@google.com.
 
 <variants name="IncognitoSuffix">
   <variant name=""
-      summary="the navigation opened in any profile, which includes incognito
-               or guest mode"/>
+      summary="the navigation opened in any profile, which includes
+               incognito, isolated, or guest mode"/>
   <variant name=".Incognito"
       summary="the navigation opened in an incognito mode"/>
+  <variant name=".Isolated"
+      summary="the navigation opened in an isolated mode"/>
 </variants>
 
 <variants name="InitiatorOfNavigation">
@@ -2127,8 +2129,9 @@ chromium-metrics-reviews@google.com.
     when the navigation is completed or the app is backgrounded on Android.
   </summary>
   <token key="Profile">
-    <variant name="" summary="normal and incognito modes"/>
+    <variant name="" summary="normal, incognito, and isolated modes"/>
     <variant name=".Incognito" summary="incognito mode"/>
+    <variant name=".Isolated" summary="isolated mode"/>
   </token>
 </histogram>
 
@@ -2325,8 +2328,9 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="ConnectionProtocolType" variants="ConnectionProtocolType"/>
   <token key="Profile">
-    <variant name="" summary="normal and incognito modes"/>
+    <variant name="" summary="normal, incognito, and isolated modes"/>
     <variant name=".Incognito" summary="incognito mode"/>
+    <variant name=".Isolated" summary="isolated mode"/>
   </token>
 </histogram>
 
@@ -2700,6 +2704,7 @@ chromium-metrics-reviews@google.com.
   <token key="IncognitoSuffix">
     <variant name="" summary="for any traffic"/>
     <variant name=".Incognito" summary="for incognito traffic"/>
+    <variant name=".Isolated" summary="for isolated traffic"/>
   </token>
 </histogram>
 
@@ -3142,8 +3147,9 @@ chromium-metrics-reviews@google.com.
     when the navigation is completed or the app is backgrounded on Android.
   </summary>
   <token key="Profile">
-    <variant name="" summary="normal and incognito modes"/>
+    <variant name="" summary="normal, incognito, and isolated modes"/>
     <variant name=".Incognito" summary="incognito mode"/>
+    <variant name=".Isolated" summary="isolated mode"/>
   </token>
 </histogram>
 

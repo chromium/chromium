@@ -33,6 +33,11 @@ bool AwGWSPageLoadMetricsObserver::IsIncognitoProfile() const {
   return false;
 }
 
+bool AwGWSPageLoadMetricsObserver::IsIsolatedProfile() const {
+  // Always returns false since WebView does not have Isolated mode.
+  return false;
+}
+
 bool AwGWSPageLoadMetricsObserver::IsSignedIn(
     content::BrowserContext* browser_context) const {
   AwBrowserContext* aw_browser_context =

@@ -29,6 +29,7 @@ class ChromeGWSAbandonedPageLoadMetricsObserver
   void AddSRPMetricsToUKMIfNeeded(
       ukm::builders::AbandonedSRPNavigation& ukm) override;
   bool IsIncognitoProfile() const;
+  bool IsIsolatedProfile() const;
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_CHROME_GWS_ABANDONED_PAGE_LOAD_METRICS_OBSERVER_H_

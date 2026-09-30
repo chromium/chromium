@@ -17,6 +17,7 @@ namespace internal {
 
 const char kSuffixResponseFromCache[] = ".ResponseFromCache";
 const char kIncognito[] = ".Incognito";
+const char kIsolated[] = ".Isolated";
 
 }  // namespace internal
 
@@ -29,12 +30,13 @@ ChromeGWSAbandonedPageLoadMetricsObserver::
 std::vector<std::string>
 ChromeGWSAbandonedPageLoadMetricsObserver::GetAdditionalSuffixes() const {
   std::vector<std::string> suffixes;
-  // Add the incognito suffix if the current profile is incognito mode.
   for (std::string& suffix :
        GWSAbandonedPageLoadMetricsObserver::GetAdditionalSuffixes()) {
     suffixes.push_back(suffix);
     if (IsIncognitoProfile()) {
       suffixes.push_back(suffix + internal::kIncognito);
+    } else if (IsIsolatedProfile()) {
+      suffixes.push_back(suffix + internal::kIsolated);
     }
   }
   std::vector<std::string> suffixes_from_cache;
@@ -63,6 +65,14 @@ bool ChromeGWSAbandonedPageLoadMetricsObserver::IsIncognitoProfile() const {
   if (Profile* profile = Profile::FromBrowserContext(
           GetDelegate().GetWebContents()->GetBrowserContext())) {
     return profile->IsIncognitoProfile();
+  }
+  return false;
+}
+
+bool ChromeGWSAbandonedPageLoadMetricsObserver::IsIsolatedProfile() const {
+  if (Profile* profile = Profile::FromBrowserContext(
+          GetDelegate().GetWebContents()->GetBrowserContext())) {
+    return profile->IsEnterpriseIsolatedModeProfile();
   }
   return false;
 }

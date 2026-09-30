@@ -254,6 +254,7 @@ class GWSPageLoadMetricsObserver
       content::NavigationHandle* navigation_handle) = 0;
   virtual bool IsBrowserStartupComplete() = 0;
   virtual bool IsIncognitoProfile() const = 0;
+  virtual bool IsIsolatedProfile() const = 0;
   virtual bool IsSignedIn(content::BrowserContext* browser_context) const = 0;
   virtual content::BrowserContext* GetOriginalBrowserContext() = 0;
   std::string AddHistogramSuffix(const std::string& histogram_name);

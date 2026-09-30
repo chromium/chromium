@@ -208,6 +208,7 @@ const char kHistogramGWSDeviceBoundSessionsNavigationWasDeferred[] =
 const char kHistogramGWSConnectionReuseStatus[] =
     HISTOGRAM_PREFIX "ConnectionReuseStatus";
 const char kHistogramIncognitoSuffix[] = ".Incognito";
+const char kHistogramIsolatedSuffix[] = ".Isolated";
 const char kHistogramSyntheticResponseSuffix[] = ".SyntheticResponse";
 const char kHistogramDuplicateIgnoredSuffix[] = ".IgnoredDuplicateNavigation";
 
@@ -414,7 +415,8 @@ void ReportMetricForTraverseNavigation(bool is_restore_navigation,
 
 void RecordHttpStatusCode(int http_status_code,
                           const GURL& url,
-                          bool is_incognito) {
+                          bool is_incognito,
+                          bool is_isolated) {
   std::string suffix;
   if (page_load_metrics::IsGoogleSearchPrewarmUrl(url)) {
     suffix = internal::kHistogramGWSHttpStatusCodePrewarm;
@@ -429,9 +431,14 @@ void RecordHttpStatusCode(int http_status_code,
       http_status_code);
 
   if (is_incognito) {
-    base::UmaHistogramBoolean(
+    base::UmaHistogramSparse(
         base::StrCat({internal::kHistogramGWSHttpStatusCode2, suffix,
                       internal::kHistogramIncognitoSuffix}),
+        http_status_code);
+  } else if (is_isolated) {
+    base::UmaHistogramSparse(
+        base::StrCat({internal::kHistogramGWSHttpStatusCode2, suffix,
+                      internal::kHistogramIsolatedSuffix}),
         http_status_code);
   }
 }
@@ -599,7 +606,8 @@ GWSPageLoadMetricsObserver::OnRedirect(
     content::NavigationHandle* navigation_handle) {
   if (auto* response_headers = navigation_handle->GetResponseHeaders()) {
     RecordHttpStatusCode(response_headers->response_code(),
-                         navigation_handle->GetURL(), IsIncognitoProfile());
+                         navigation_handle->GetURL(), IsIncognitoProfile(),
+                         IsIsolatedProfile());
   }
 
   return CONTINUE_OBSERVING;
@@ -617,7 +625,8 @@ GWSPageLoadMetricsObserver::OnCommit(
 
   if (auto* response_headers = navigation_handle->GetResponseHeaders()) {
     RecordHttpStatusCode(response_headers->response_code(),
-                         navigation_handle->GetURL(), IsIncognitoProfile());
+                         navigation_handle->GetURL(), IsIncognitoProfile(),
+                         IsIsolatedProfile());
   }
   if (!is_gws_url) {
     return STOP_OBSERVING;
@@ -802,6 +811,11 @@ void GWSPageLoadMetricsObserver::DidActivatePrerenderedPage(
                                         internal::kHistogramIncognitoSuffix});
     base::UmaHistogramBoolean(histogram_name,
                               navigation_handle->IsPrerenderHostReused());
+  } else if (IsIsolatedProfile()) {
+    auto histogram_name = base::StrCat({internal::kHistogramPrerenderHostReused,
+                                        internal::kHistogramIsolatedSuffix});
+    base::UmaHistogramBoolean(histogram_name,
+                              navigation_handle->IsPrerenderHostReused());
   }
 
   const auto* initiator_suffix =
@@ -833,6 +847,13 @@ void GWSPageLoadMetricsObserver::DidActivatePrerenderedPage(
     base::UmaHistogramCustomTimes(histogram_name, navigation_to_activation_time,
                                   base::Milliseconds(10), base::Minutes(10),
                                   100);
+  } else if (IsIsolatedProfile()) {
+    auto histogram_name =
+        base::StrCat({internal::kHistogramGWSPrerenderNavigationToActivation,
+                      internal::kHistogramIsolatedSuffix});
+    base::UmaHistogramCustomTimes(histogram_name, navigation_to_activation_time,
+                                  base::Milliseconds(10), base::Minutes(10),
+                                  100);
   }
 }
 
@@ -860,6 +881,11 @@ void GWSPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
       auto histogram_name =
           base::StrCat({internal::kHistogramGWSActivationToFirstContentfulPaint,
                         internal::kHistogramIncognitoSuffix});
+      PAGE_LOAD_HISTOGRAM(histogram_name, activation_to_fcp);
+    } else if (IsIsolatedProfile()) {
+      auto histogram_name =
+          base::StrCat({internal::kHistogramGWSActivationToFirstContentfulPaint,
+                        internal::kHistogramIsolatedSuffix});
       PAGE_LOAD_HISTOGRAM(histogram_name, activation_to_fcp);
     }
     return;
@@ -1079,14 +1105,16 @@ void GWSPageLoadMetricsObserver::OnCustomUserTimingMarkObserved(
         timings) {
   auto record_histogram = [this](const std::string& histogram_name,
                                  const base::TimeDelta& timing) {
-    auto histogram_with_suffix = base::StrCat(
-        {histogram_name,
-         is_prerendered_ ? internal::kHistogramPrerenderSuffix
-                         : internal::kHistogramNonPrerenderSuffix,
-         IsIncognitoProfile() ? internal::kHistogramIncognitoSuffix : "",
-         is_header_from_synthetic_response_
-             ? internal::kHistogramSyntheticResponseSuffix
-             : ""});
+    auto histogram_with_suffix =
+        base::StrCat({histogram_name,
+                      is_prerendered_ ? internal::kHistogramPrerenderSuffix
+                                      : internal::kHistogramNonPrerenderSuffix,
+                      IsIncognitoProfile() ? internal::kHistogramIncognitoSuffix
+                      : IsIsolatedProfile() ? internal::kHistogramIsolatedSuffix
+                                            : "",
+                      is_header_from_synthetic_response_
+                          ? internal::kHistogramSyntheticResponseSuffix
+                          : ""});
     PAGE_LOAD_HISTOGRAM(histogram_name, timing);
     PAGE_LOAD_HISTOGRAM(histogram_with_suffix, timing);
   };
@@ -1205,6 +1233,12 @@ void GWSPageLoadMetricsObserver::LogMetricsOnComplete(
           base::StrCat(
               {internal::kHistogramGWSActivationToLargestContentfulPaint,
                internal::kHistogramIncognitoSuffix}),
+          activation_to_lcp);
+    } else if (IsIsolatedProfile()) {
+      PAGE_LOAD_HISTOGRAM(
+          base::StrCat(
+              {internal::kHistogramGWSActivationToLargestContentfulPaint,
+               internal::kHistogramIsolatedSuffix}),
           activation_to_lcp);
     }
     return;
@@ -1600,23 +1634,31 @@ void GWSPageLoadMetricsObserver::RecordPreCommitHistograms() {
   RecordConnectionReuseHistograms();
 
   const bool is_incognito = IsIncognitoProfile();
-  auto record_boolean_with_incognito = [](const std::string& histogram_name,
-                                          bool value, bool is_incognito) {
+  const bool is_isolated = IsIsolatedProfile();
+  auto record_boolean_with_profile_suffix = [](const std::string&
+                                                   histogram_name,
+                                               bool value, bool is_incognito,
+                                               bool is_isolated) {
     base::UmaHistogramBoolean(histogram_name, value);
     if (is_incognito) {
       base::UmaHistogramBoolean(
           base::StrCat({histogram_name, internal::kHistogramIncognitoSuffix}),
           value);
+    } else if (is_isolated) {
+      base::UmaHistogramBoolean(
+          base::StrCat({histogram_name, internal::kHistogramIsolatedSuffix}),
+          value);
     }
   };
 
-  record_boolean_with_incognito(
+  record_boolean_with_profile_suffix(
       internal::kHistogramGWSAcceptCHFrameReceived,
-      navigation_handle_timing_.accept_ch_frame_received, is_incognito);
-  record_boolean_with_incognito(
+      navigation_handle_timing_.accept_ch_frame_received, is_incognito,
+      is_isolated);
+  record_boolean_with_profile_suffix(
       internal::kHistogramGWSOnConnectedCalled,
       !navigation_handle_timing_.connected_callback_delay.is_zero(),
-      is_incognito);
+      is_incognito, is_isolated);
 }
 
 void GWSPageLoadMetricsObserver::RecordConnectionReuseHistograms() {
@@ -1643,6 +1685,17 @@ void GWSPageLoadMetricsObserver::RecordConnectionReuseHistograms() {
     base::UmaHistogramEnumeration(
         base::StrCat(
             {total_histogram_name, internal::kHistogramIncognitoSuffix}),
+        *connection_reuse_status_);
+  } else if (IsIsolatedProfile()) {
+    base::UmaHistogramEnumeration(
+        base::StrCat({internal::kHistogramGWSConnectionReuseStatus,
+                      internal::kHistogramIsolatedSuffix}),
+        *connection_reuse_status_);
+
+    // Record the total histogram with protocol suffix as well.
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {total_histogram_name, internal::kHistogramIsolatedSuffix}),
         *connection_reuse_status_);
   }
 
@@ -1806,6 +1859,11 @@ void GWSPageLoadMetricsObserver::RecordSessionDetails(
   if (IsIncognitoProfile()) {
     auto histogram_name = base::StrCat({advertized_alt_svc_state_histgram_name,
                                         internal::kHistogramIncognitoSuffix});
+    base::UmaHistogramEnumeration(histogram_name,
+                                  session_details.advertised_alt_svc_state);
+  } else if (IsIsolatedProfile()) {
+    auto histogram_name = base::StrCat({advertized_alt_svc_state_histgram_name,
+                                        internal::kHistogramIsolatedSuffix});
     base::UmaHistogramEnumeration(histogram_name,
                                   session_details.advertised_alt_svc_state);
   }

@@ -45,6 +45,14 @@ bool ChromeGWSPageLoadMetricsObserver::IsIncognitoProfile() const {
   return false;
 }
 
+bool ChromeGWSPageLoadMetricsObserver::IsIsolatedProfile() const {
+  if (Profile* profile = Profile::FromBrowserContext(
+          GetDelegate().GetWebContents()->GetBrowserContext())) {
+    return profile->IsEnterpriseIsolatedModeProfile();
+  }
+  return false;
+}
+
 bool ChromeGWSPageLoadMetricsObserver::IsSignedIn(
     content::BrowserContext* browser_context) const {
   signin::IdentityManager* identity_manager =
