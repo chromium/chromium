@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/frame/navigator_ua_data.h"
 
+#include <utility>
+
 #include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -55,25 +57,25 @@ void NavigatorUAData::SetMobile(bool mobile) {
   is_mobile_ = mobile;
 }
 
-void NavigatorUAData::SetPlatform(const String& brand, const String& version) {
-  platform_ = brand;
-  platform_version_ = version;
+void NavigatorUAData::SetPlatform(String brand, String version) {
+  platform_ = std::move(brand);
+  platform_version_ = std::move(version);
 }
 
-void NavigatorUAData::SetArchitecture(const String& architecture) {
-  architecture_ = architecture;
+void NavigatorUAData::SetArchitecture(String architecture) {
+  architecture_ = std::move(architecture);
 }
 
-void NavigatorUAData::SetModel(const String& model) {
-  model_ = model;
+void NavigatorUAData::SetModel(String model) {
+  model_ = std::move(model);
 }
 
-void NavigatorUAData::SetUAFullVersion(const String& ua_full_version) {
-  ua_full_version_ = ua_full_version;
+void NavigatorUAData::SetUAFullVersion(String ua_full_version) {
+  ua_full_version_ = std::move(ua_full_version);
 }
 
-void NavigatorUAData::SetBitness(const String& bitness) {
-  bitness_ = bitness;
+void NavigatorUAData::SetBitness(String bitness) {
+  bitness_ = std::move(bitness);
 }
 
 void NavigatorUAData::SetWoW64(bool wow64) {

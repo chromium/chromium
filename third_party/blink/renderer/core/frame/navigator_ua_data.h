@@ -34,11 +34,11 @@ class CORE_EXPORT NavigatorUAData : public ScriptWrappable,
   void SetBrandVersionList(const UserAgentBrandList& brand_version_list);
   void SetFullVersionList(const UserAgentBrandList& full_version_list);
   void SetMobile(bool mobile);
-  void SetPlatform(const String& brand, const String& version);
-  void SetArchitecture(const String& architecture);
-  void SetModel(const String& model);
-  void SetUAFullVersion(const String& uaFullVersion);
-  void SetBitness(const String& bitness);
+  void SetPlatform(String brand, String version);
+  void SetArchitecture(String architecture);
+  void SetModel(String model);
+  void SetUAFullVersion(String ua_full_version);
+  void SetBitness(String bitness);
   void SetWoW64(bool wow64);
   void SetFormFactors(Vector<String> form_factors);
 
