@@ -133,7 +133,6 @@
 #include "base/android/android_info.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/android/persisted_tab_data/sensitivity_persisted_tab_data_android.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/android/tab_web_contents_delegate_android.h"
 #include "chrome/browser/banners/android/chrome_app_banner_manager_android.h"
@@ -368,29 +367,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
               base::BindRepeating(&page_content_annotations::FetchPageContext),
               base::BindRepeating(&GetPageContentAnnotationsTabId));
     }
-
-#if BUILDFLAG(IS_ANDROID)
-    // If enabled, save sensitivity data for each non-incognito android tab.
-    // TODO(crbug.com/40276584): Consider moving check conditions or the
-    // registration logic to sensitivity_persisted_tab_data_android.*
-    if (!profile->IsOffTheRecord()) {
-      if (auto* tab = TabAndroid::FromWebContents(web_contents); tab) {
-        SensitivityPersistedTabDataAndroid::From(
-            tab,
-            base::BindOnce(
-                [](page_content_annotations::PageContentAnnotationsService*
-                       page_content_annotations_service,
-                   PersistedTabDataAndroid* persisted_tab_data) {
-                  auto* sensitivity_persisted_tab_data_android =
-                      static_cast<SensitivityPersistedTabDataAndroid*>(
-                          persisted_tab_data);
-                  sensitivity_persisted_tab_data_android->RegisterPCAService(
-                      page_content_annotations_service);
-                },
-                page_content_annotations_service));
-      }
-    }
-#endif  // BUILDFLAG(IS_ANDROID)
   }
   InitializePageLoadMetricsForWebContents(web_contents);
   if (auto* pm_registry =
