@@ -783,6 +783,25 @@ class AvdProcessRawSystemImageTest(unittest.TestCase):
             ),
         )
 
+    @patch('pylib.local.emulator.ini.load')
+    def testProcessSourcePropsCommaInTagId(self, mock_ini_load):
+        mock_ini_load.return_value = {
+            'AndroidVersion.ApiLevel': '35',
+            'SystemImage.TagId': 'android-desktop,google_apis_playstore',
+            'SystemImage.Abi': 'x86_64',
+        }
+        mock_open_obj = mock_open(read_data='template')
+        with patch('builtins.open', mock_open_obj):
+            package_path = avd._ProcessSourceProps(
+                '/fake/source.properties', '1.0'
+            )
+
+        self.assertEqual(
+            'system-images;android-35;'
+            'android-desktop_google_apis_playstore;x86_64',
+            package_path,
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

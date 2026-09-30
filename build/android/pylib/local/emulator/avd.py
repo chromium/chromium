@@ -219,7 +219,8 @@ def _ProcessSourceProps(source_prop_path, image_version):
 
     # These props are mandatory to form a valid image path.
     api_level = source_props['AndroidVersion.ApiLevel']
-    tag_id = source_props['SystemImage.TagId']
+    # tag_id can have comma which is not accepted by QEMU so need to replace it
+    tag_id = '_'.join(source_props['SystemImage.TagId'].split(','))
     abi = source_props['SystemImage.Abi']
 
     # Rest props that need to be present in the package.xml.
