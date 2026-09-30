@@ -602,6 +602,8 @@ source_set("testing") {
     "testing/internals_get_all_cookies.h",
     "testing/internals_get_named_cookie.cc",
     "testing/internals_get_named_cookie.h",
+    "testing/internals_select_file_dialog.cc",
+    "testing/internals_select_file_dialog.h",
     "testing/internals_ukm_recorder.cc",
     "testing/internals_ukm_recorder.h",
     "testing/intersection_observer_test_helper.h",

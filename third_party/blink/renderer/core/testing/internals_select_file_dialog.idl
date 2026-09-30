@@ -1,0 +1,14 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[
+    ImplementedAs=InternalsSelectFileDialog
+] partial interface Internals {
+    // Configures mock file dialog results for automated testing.
+    // `paths` is a list of file paths to return when a file dialog is opened.
+    // Passing null simulates the user canceling the dialog.
+    // Passing an empty sequence is invalid and throws a TypeError.
+    [CallWith=ScriptState, RaisesException]
+    Promise<undefined> setSelectFileDialogResult(sequence<DOMString>? paths);
+};
