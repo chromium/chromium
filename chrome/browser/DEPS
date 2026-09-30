@@ -632,7 +632,6 @@ specific_include_rules = {
   ],
   r"chrome_content_browser_client\.cc" : [
     "+ash/shell.h",
-    "+ash/multi_capture/multi_capture_service.h",
     "+content/public/browser/tts_controller.h",
   ],
   "chrome_navigation_browsertest.cc" : [
