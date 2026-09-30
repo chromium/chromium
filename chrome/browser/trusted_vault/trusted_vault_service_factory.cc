@@ -21,6 +21,7 @@
 #else
 #include "base/files/file_path.h"
 #include "components/trusted_vault/standalone_trusted_vault_client.h"
+#include "components/trusted_vault/standalone_trusted_vault_frontend.h"
 #include "content/public/browser/storage_partition.h"
 #endif
 
@@ -34,63 +35,52 @@ namespace {
 constexpr char kICloudKeychainAccessGroupPrefix[] = MAC_TEAM_IDENTIFIER_STRING;
 #endif
 
-#if !BUILDFLAG(IS_ANDROID)
-std::unique_ptr<trusted_vault::TrustedVaultClient>
-CreateChromeSyncStandaloneTrustedVaultClient(Profile* profile) {
-  return std::make_unique<trusted_vault::StandaloneTrustedVaultClient>(
+#if BUILDFLAG(IS_ANDROID)
+std::unique_ptr<trusted_vault::TrustedVaultService> CreateTrustedVaultService(
+    Profile* profile) {
+  TrustedVaultClientAndroid::GetAccountInfoByGaiaIdCallback
+      account_info_callback = base::BindRepeating(
+          [](signin::IdentityManager* identity_manager,
+             const GaiaId& gaia_id) -> CoreAccountInfo {
+            return identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id)
+                .GetCoreAccountInfo();
+          },
+          IdentityManagerFactory::GetForProfile(profile));
+
+  return std::make_unique<trusted_vault::TrustedVaultService>(
+      std::make_unique<TrustedVaultClientAndroid>(
+          trusted_vault::SecurityDomainId::kChromeSync, account_info_callback),
+      std::make_unique<TrustedVaultClientAndroid>(
+          trusted_vault::SecurityDomainId::kPasskeys, account_info_callback));
+}
+#else
+std::unique_ptr<trusted_vault::TrustedVaultService> CreateTrustedVaultService(
+    Profile* profile) {
+  auto frontend =
+      base::MakeRefCounted<trusted_vault::StandaloneTrustedVaultFrontend>(
 #if BUILDFLAG(IS_MAC)
-      kICloudKeychainAccessGroupPrefix,
+          kICloudKeychainAccessGroupPrefix,
 #endif
-      trusted_vault::SecurityDomainId::kChromeSync,
-      /*base_dir=*/profile->GetPath(),
-      IdentityManagerFactory::GetForProfile(profile),
-      profile->GetDefaultStoragePartition()
-          ->GetURLLoaderFactoryForBrowserProcess());
-}
-#endif
+          /*base_dir=*/profile->GetPath(),
+          IdentityManagerFactory::GetForProfile(profile),
+          profile->GetDefaultStoragePartition()
+              ->GetURLLoaderFactoryForBrowserProcess());
 
-#if BUILDFLAG(IS_ANDROID)
-TrustedVaultClientAndroid::GetAccountInfoByGaiaIdCallback
-GetAccountInfoCallback(Profile* profile) {
-  return base::BindRepeating(
-      [](signin::IdentityManager* identity_manager,
-         const GaiaId& gaia_id) -> CoreAccountInfo {
-        return identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id)
-            .GetCoreAccountInfo();
-      },
-      IdentityManagerFactory::GetForProfile(profile));
-}
-#endif
+  auto chrome_sync_client =
+      std::make_unique<trusted_vault::StandaloneTrustedVaultClient>(
+          trusted_vault::SecurityDomainId::kChromeSync, frontend);
 
-std::unique_ptr<trusted_vault::TrustedVaultClient>
-CreateChromeSyncTrustedVaultClient(Profile* profile) {
-#if BUILDFLAG(IS_ANDROID)
-  return std::make_unique<TrustedVaultClientAndroid>(
-      trusted_vault::SecurityDomainId::kChromeSync,
-      GetAccountInfoCallback(profile));
-#else
-  return CreateChromeSyncStandaloneTrustedVaultClient(profile);
-#endif
+  return std::make_unique<trusted_vault::TrustedVaultService>(
+      std::move(chrome_sync_client),
+      /*passkeys_security_domain_client=*/nullptr);
 }
-
-std::unique_ptr<trusted_vault::TrustedVaultClient>
-CreatePasskeysTrustedVaultClient(Profile* profile) {
-#if BUILDFLAG(IS_ANDROID)
-  return std::make_unique<TrustedVaultClientAndroid>(
-      trusted_vault::SecurityDomainId::kPasskeys,
-      GetAccountInfoCallback(profile));
-#else
-  return nullptr;
 #endif
-}
 
 std::unique_ptr<KeyedService> BuildTrustedVaultService(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   CHECK(!profile->IsOffTheRecord());
-  return std::make_unique<trusted_vault::TrustedVaultService>(
-      CreateChromeSyncTrustedVaultClient(profile),
-      CreatePasskeysTrustedVaultClient(profile));
+  return CreateTrustedVaultService(profile);
 }
 
 }  // namespace

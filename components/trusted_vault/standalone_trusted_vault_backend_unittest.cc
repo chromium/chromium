@@ -520,7 +520,7 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
 
  private:
   size_t num_local_recovery_factors_ = 1;
-  scoped_refptr<StandaloneTrustedVaultBackend> backend_;
+  std::unique_ptr<StandaloneTrustedVaultBackend> backend_;
   raw_ptr<LegacyStandaloneTrustedVaultStorage> storage_ = nullptr;
   raw_ptr<LegacyStandaloneTrustedVaultStorageAdapter> adapter_ = nullptr;
   raw_ptr<LegacyFakeFileAccess> file_access_ = nullptr;

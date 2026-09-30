@@ -4,330 +4,40 @@
 
 #include "components/trusted_vault/standalone_trusted_vault_client.h"
 
-#include <optional>
 #include <utility>
 
-#include "base/functional/bind.h"
+#include "base/check.h"
 #include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
-#include "base/observer_list.h"
-#include "base/sequence_checker.h"
-#include "base/task/bind_post_task.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
-#include "components/trusted_vault/command_line_switches.h"
-#include "components/trusted_vault/legacy_standalone_trusted_vault_storage.h"
-#include "components/trusted_vault/legacy_standalone_trusted_vault_storage_adapter.h"
-#include "components/trusted_vault/proto/local_trusted_vault.pb.h"
-#include "components/trusted_vault/standalone_trusted_vault_backend.h"
-#include "components/trusted_vault/trusted_vault_access_token_fetcher_impl.h"
-#include "components/trusted_vault/trusted_vault_connection_impl.h"
+#include "components/trusted_vault/standalone_trusted_vault_frontend.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
-#include "google_apis/gaia/google_service_auth_error.h"
-#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace trusted_vault {
 
-namespace {
-
-constexpr base::TaskTraits kBackendTaskTraits = {
-    base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-    base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
-
-class IdentityManagerObserver : public signin::IdentityManager::Observer {
- public:
-  IdentityManagerObserver(
-      scoped_refptr<base::SequencedTaskRunner> backend_task_runner,
-      scoped_refptr<StandaloneTrustedVaultBackend> backend,
-      const base::RepeatingClosure& notify_keys_changed_callback,
-      signin::IdentityManager* identity_manager);
-  IdentityManagerObserver(const IdentityManagerObserver& other) = delete;
-  IdentityManagerObserver& operator=(const IdentityManagerObserver& other) =
-      delete;
-  ~IdentityManagerObserver() override;
-
-  // signin::IdentityManager::Observer implementation.
-  void OnPrimaryAccountChanged(
-      const signin::PrimaryAccountChangeEvent& event) override;
-  void OnAccountsCookieDeletedByUserAction() override;
-  void OnAccountsInCookieUpdated(
-      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
-      const GoogleServiceAuthError& error) override;
-  void OnErrorStateOfRefreshTokenUpdatedForAccount(
-      const CoreAccountInfo& account_info,
-      const GoogleServiceAuthError& error,
-      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
-      override;
-  void OnRefreshTokensLoaded() override;
-  void OnIdentityManagerShutdown(
-      signin::IdentityManager* identity_manager) override;
-
- private:
-  void UpdatePrimaryAccountIfNeeded();
-  void UpdateAccountsInCookieJarInfoIfNeeded(
-      const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info);
-  StandaloneTrustedVaultBackend::RefreshTokenErrorState
-  GetPrimaryAccountRefreshTokenErrorState() const;
-
-  const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
-  const scoped_refptr<StandaloneTrustedVaultBackend> backend_;
-  const base::RepeatingClosure notify_keys_changed_callback_;
-  const raw_ptr<signin::IdentityManager> identity_manager_;
-  base::ScopedObservation<signin::IdentityManager,
-                          signin::IdentityManager::Observer>
-      identity_manager_observation_{this};
-  CoreAccountInfo primary_account_;
-};
-
-IdentityManagerObserver::IdentityManagerObserver(
-    scoped_refptr<base::SequencedTaskRunner> backend_task_runner,
-    scoped_refptr<StandaloneTrustedVaultBackend> backend,
-    const base::RepeatingClosure& notify_keys_changed_callback,
-    signin::IdentityManager* identity_manager)
-    : backend_task_runner_(backend_task_runner),
-      backend_(backend),
-      notify_keys_changed_callback_(notify_keys_changed_callback),
-      identity_manager_(identity_manager) {
-  DCHECK(backend_task_runner_);
-  DCHECK(backend_);
-  DCHECK(identity_manager_);
-
-  identity_manager_observation_.Observe(identity_manager_);
-  UpdatePrimaryAccountIfNeeded();
-  if (identity_manager_->AreRefreshTokensLoaded()) {
-    OnRefreshTokensLoaded();
-  }
-}
-
-IdentityManagerObserver::~IdentityManagerObserver() = default;
-
-void IdentityManagerObserver::OnPrimaryAccountChanged(
-    const signin::PrimaryAccountChangeEvent& event) {
-  UpdatePrimaryAccountIfNeeded();
-}
-
-void IdentityManagerObserver::OnAccountsCookieDeletedByUserAction() {
-  // TODO(crbug.com/40156992): remove this handler once tests can mimic
-  // OnAccountInCookieUpdated() properly.
-  UpdateAccountsInCookieJarInfoIfNeeded(
-      signin::AccountsInCookieJarInfo(/*accounts_are_fresh=*/true,
-                                      /*accounts=*/{}));
-  notify_keys_changed_callback_.Run();
-}
-
-void IdentityManagerObserver::OnAccountsInCookieUpdated(
-    const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
-    const GoogleServiceAuthError& error) {
-  UpdateAccountsInCookieJarInfoIfNeeded(accounts_in_cookie_jar_info);
-  notify_keys_changed_callback_.Run();
-}
-
-void IdentityManagerObserver::OnErrorStateOfRefreshTokenUpdatedForAccount(
-    const CoreAccountInfo& account_info,
-    const GoogleServiceAuthError& error,
-    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
-  if (primary_account_.IsEmpty() ||
-      account_info.account_id != primary_account_.account_id) {
-    return;
-  }
-
-  backend_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&StandaloneTrustedVaultBackend::SetPrimaryAccount,
-                     backend_, primary_account_,
-                     GetPrimaryAccountRefreshTokenErrorState()));
-}
-
-void IdentityManagerObserver::OnRefreshTokensLoaded() {
-  if (!primary_account_.IsEmpty()) {
-    // OnErrorStateOfRefreshTokenUpdatedForAccount() can be called before
-    // refresh tokens are marked as loaded, in this case error state can not be
-    // identified reliably. To mitigate this, call it again here.
-    // It is safe to use the default value for the source of the refresh token
-    // operation
-    // (`signin_metrics::SourceForRefreshTokenOperation::kUnknown`) as it is not
-    // currently used.
-    OnErrorStateOfRefreshTokenUpdatedForAccount(
-        primary_account_,
-        identity_manager_->GetErrorStateOfRefreshTokenForAccount(
-            primary_account_.account_id),
-        signin_metrics::SourceForRefreshTokenOperation::kUnknown);
-  }
-  UpdateAccountsInCookieJarInfoIfNeeded(
-      identity_manager_->GetAccountsInCookieJar());
-}
-
-void IdentityManagerObserver::OnIdentityManagerShutdown(
-    signin::IdentityManager* identity_manager) {
-  CHECK_EQ(identity_manager, identity_manager_, base::NotFatalUntil::M142);
-  identity_manager_observation_.Reset();
-}
-
-void IdentityManagerObserver::UpdatePrimaryAccountIfNeeded() {
-  CoreAccountInfo primary_account =
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  if (primary_account == primary_account_) {
-    return;
-  }
-  primary_account_ = primary_account;
-
-  // IdentityManager returns empty CoreAccountInfo if there is no primary
-  // account.
-  std::optional<CoreAccountInfo> optional_primary_account;
-  if (!primary_account.IsEmpty()) {
-    optional_primary_account = primary_account;
-  }
-
-  backend_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&StandaloneTrustedVaultBackend::SetPrimaryAccount,
-                     backend_, optional_primary_account,
-                     GetPrimaryAccountRefreshTokenErrorState()));
-}
-
-void IdentityManagerObserver::UpdateAccountsInCookieJarInfoIfNeeded(
-    const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info) {
-  if (accounts_in_cookie_jar_info.AreAccountsFresh()) {
-    backend_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            &StandaloneTrustedVaultBackend::UpdateAccountsInCookieJarInfo,
-            backend_, accounts_in_cookie_jar_info));
-  }
-}
-
-StandaloneTrustedVaultBackend::RefreshTokenErrorState
-IdentityManagerObserver::GetPrimaryAccountRefreshTokenErrorState() const {
-  if (primary_account_.IsEmpty()) {
-    return StandaloneTrustedVaultBackend::RefreshTokenErrorState::kUnknown;
-  }
-
-  if (!identity_manager_->AreRefreshTokensLoaded()) {
-    // Error state of refresh token can't be determined correctly.
-    return StandaloneTrustedVaultBackend::RefreshTokenErrorState::kUnknown;
-  }
-
-  if (identity_manager_->HasAccountWithRefreshTokenInPersistentErrorState(
-          primary_account_.account_id)) {
-    return StandaloneTrustedVaultBackend::RefreshTokenErrorState::
-        kPersistentAuthError;
-  }
-  return StandaloneTrustedVaultBackend::RefreshTokenErrorState::
-      kNoPersistentAuthErrors;
-}
-
-// Backend delegate that dispatches delegate notifications to custom callbacks,
-// used to post notifications from the backend sequence to the UI thread.
-class BackendDelegate : public StandaloneTrustedVaultBackend::Delegate {
- public:
-  BackendDelegate(
-      SecurityDomainId security_domain,
-      const base::RepeatingClosure& notify_recoverability_degraded_cb)
-      : security_domain_(security_domain),
-        notify_recoverability_degraded_cb_(notify_recoverability_degraded_cb) {}
-
-  ~BackendDelegate() override = default;
-
-  // StandaloneTrustedVaultBackend::Delegate implementation.
-  void NotifyRecoverabilityDegradedChanged(
-      SecurityDomainId security_domain) override {
-    if (security_domain == security_domain_) {
-      notify_recoverability_degraded_cb_.Run();
-    }
-  }
-
- private:
-  const SecurityDomainId security_domain_;
-  const base::RepeatingClosure notify_recoverability_degraded_cb_;
-};
-
-}  // namespace
-
 StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
-#if BUILDFLAG(IS_MAC)
-    const std::string& icloud_keychain_access_group_prefix,
-#endif
     SecurityDomainId security_domain,
-    const base::FilePath& base_dir,
-    signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : security_domain_(security_domain),
-      backend_task_runner_(
-          base::ThreadPool::CreateSequencedTaskRunner(kBackendTaskTraits)),
-      access_token_fetcher_frontend_(identity_manager) {
-  std::unique_ptr<TrustedVaultConnection> connection;
-  GURL trusted_vault_service_gurl =
-      ExtractTrustedVaultServiceURLFromCommandLine();
-  if (trusted_vault_service_gurl.is_valid()) {
-    connection = std::make_unique<TrustedVaultConnectionImpl>(
-        trusted_vault_service_gurl, url_loader_factory->Clone(),
-        std::make_unique<TrustedVaultAccessTokenFetcherImpl>(
-            access_token_fetcher_frontend_.GetWeakPtr()));
-  }
-
-  backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
-#if BUILDFLAG(IS_MAC)
-      icloud_keychain_access_group_prefix,
-#endif
-      std::make_unique<LegacyStandaloneTrustedVaultStorageAdapter>(
-          std::make_unique<LegacyStandaloneTrustedVaultStorage>(
-              base_dir, security_domain)),
-      std::make_unique<BackendDelegate>(
-          security_domain,
-          base::BindPostTaskToCurrentDefault(
-              base::BindRepeating(&StandaloneTrustedVaultClient::
-                                      NotifyRecoverabilityDegradedChanged,
-                                  weak_ptr_factory_.GetWeakPtr()))),
-      std::move(connection));
-  backend_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&StandaloneTrustedVaultBackend::ReadDataFromDisk,
-                     backend_));
-  // Using base::Unretained() is safe here, because |identity_manager_observer_|
-  // owned by |this|.
-  identity_manager_observer_ = std::make_unique<IdentityManagerObserver>(
-      backend_task_runner_, backend_,
-      base::BindRepeating(
-          &StandaloneTrustedVaultClient::NotifyTrustedVaultKeysChanged,
-          base::Unretained(this), std::nullopt),
-      identity_manager);
+    scoped_refptr<StandaloneTrustedVaultFrontend> frontend)
+    : security_domain_(security_domain), frontend_(std::move(frontend)) {
+  CHECK(frontend_);
+  frontend_->RegisterClient(security_domain_, this);
 }
 
 StandaloneTrustedVaultClient::~StandaloneTrustedVaultClient() {
-  // |backend_| needs to be destroyed inside backend sequence, not the current
-  // one. Destroy |identity_manager_observer_| that owns pointer to |backend_|
-  // as well and release |backend_| in |backend_task_runner_|.
-  identity_manager_observer_.reset();
-  backend_task_runner_->ReleaseSoon(FROM_HERE, std::move(backend_));
+  frontend_->UnregisterClient(security_domain_, this);
 }
 
 void StandaloneTrustedVaultClient::AddObserver(Observer* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observer_list_.AddObserver(observer);
 }
 
 void StandaloneTrustedVaultClient::RemoveObserver(Observer* observer) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observer_list_.RemoveObserver(observer);
 }
 
 void StandaloneTrustedVaultClient::FetchKeys(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(const std::vector<std::vector<uint8_t>>&)> cb) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(backend_);
-  // TODO(crbug.com/40255601): consider notifying observers when FetchKeys()
-  // downloads new keys from the server.
-  backend_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&StandaloneTrustedVaultBackend::FetchKeys, backend_,
-                     account_info, security_domain_,
-                     base::BindPostTaskToCurrentDefault(std::move(cb))));
+  frontend_->FetchKeys(account_info, security_domain_, std::move(cb));
 }
 
 void StandaloneTrustedVaultClient::StoreKeys(
@@ -335,38 +45,22 @@ void StandaloneTrustedVaultClient::StoreKeys(
     const std::vector<std::vector<uint8_t>>& keys,
     int last_key_version,
     std::optional<TrustedVaultUserActionTriggerForUMA> trigger) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(backend_);
-  backend_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&StandaloneTrustedVaultBackend::StoreKeys, backend_,
-                     gaia_id, security_domain_, keys, last_key_version));
+  frontend_->StoreKeys(gaia_id, security_domain_, keys, last_key_version);
   NotifyTrustedVaultKeysChanged(trigger);
 }
 
 void StandaloneTrustedVaultClient::MarkLocalKeysAsStale(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> cb) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(backend_);
-  backend_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&StandaloneTrustedVaultBackend::MarkLocalKeysAsStale,
-                     backend_, account_info, security_domain_),
-      std::move(cb));
+  frontend_->MarkLocalKeysAsStale(account_info, security_domain_,
+                                  std::move(cb));
 }
 
 void StandaloneTrustedVaultClient::GetIsRecoverabilityDegraded(
     const CoreAccountInfo& account_info,
     base::OnceCallback<void(bool)> cb) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(backend_);
-  backend_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &StandaloneTrustedVaultBackend::GetIsRecoverabilityDegraded, backend_,
-          account_info, security_domain_,
-          base::BindPostTaskToCurrentDefault(std::move(cb))));
+  frontend_->GetIsRecoverabilityDegraded(account_info, security_domain_,
+                                         std::move(cb));
 }
 
 void StandaloneTrustedVaultClient::AddTrustedRecoveryMethod(
@@ -374,98 +68,41 @@ void StandaloneTrustedVaultClient::AddTrustedRecoveryMethod(
     const std::vector<uint8_t>& public_key,
     int method_type_hint,
     base::OnceClosure cb) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(backend_);
-  backend_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod,
-                     backend_, gaia_id, security_domain_, public_key,
-                     method_type_hint,
-                     base::BindPostTaskToCurrentDefault(std::move(cb))));
+  frontend_->AddTrustedRecoveryMethod(gaia_id, security_domain_, public_key,
+                                      method_type_hint, std::move(cb));
 }
 
 void StandaloneTrustedVaultClient::ClearLocalDataForAccount(
     const CoreAccountInfo& account_info) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(backend_);
-  backend_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&StandaloneTrustedVaultBackend::ClearLocalDataForAccount,
-                     backend_, account_info));
+  frontend_->ClearLocalDataForAccount(account_info);
 }
 
 void StandaloneTrustedVaultClient::WaitForIdleForTesting(
     base::OnceClosure cb) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(backend_);
-  backend_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&StandaloneTrustedVaultBackend::WaitForIdleForTesting,
-                     backend_,
-                     base::BindPostTaskToCurrentDefault(std::move(cb))));
-}
-
-void StandaloneTrustedVaultClient::FetchBackendPrimaryAccountForTesting(
-    base::OnceCallback<void(const std::optional<CoreAccountInfo>&)> cb) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(backend_);
-  backend_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          &StandaloneTrustedVaultBackend::GetPrimaryAccountForTesting,
-          backend_),
-      std::move(cb));
-}
-
-void StandaloneTrustedVaultClient::FetchIsDeviceRegisteredForTesting(
-    const GaiaId& gaia_id,
-    base::OnceCallback<void(bool)> callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(backend_);
-  backend_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          &StandaloneTrustedVaultBackend::IsDeviceRegisteredForTesting,
-          backend_, gaia_id, security_domain_),
-      std::move(callback));
+  frontend_->WaitForIdleForTesting(std::move(cb));
 }
 
 void StandaloneTrustedVaultClient::
     GetLastAddedRecoveryMethodPublicKeyForTesting(
         base::OnceCallback<void(const std::vector<uint8_t>&)> callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(backend_);
-  backend_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&StandaloneTrustedVaultBackend::
-                         GetLastAddedRecoveryMethodPublicKeyForTesting,
-                     backend_),
-      std::move(callback));
+  frontend_->GetLastAddedRecoveryMethodPublicKeyForTesting(std::move(callback));
 }
 
 void StandaloneTrustedVaultClient::GetLastKeyVersionForTesting(
     const GaiaId& gaia_id,
     base::OnceCallback<void(int last_key_version)> callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(backend_);
-  backend_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(
-          &StandaloneTrustedVaultBackend::GetLastKeyVersionForTesting, backend_,
-          gaia_id, security_domain_),
-      std::move(callback));
+  frontend_->GetLastKeyVersionForTesting(gaia_id, security_domain_,
+                                         std::move(callback));
 }
 
 void StandaloneTrustedVaultClient::NotifyTrustedVaultKeysChanged(
     std::optional<TrustedVaultUserActionTriggerForUMA> trigger) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (Observer& observer : observer_list_) {
     observer.OnTrustedVaultKeysChanged(trigger);
   }
 }
 
 void StandaloneTrustedVaultClient::NotifyRecoverabilityDegradedChanged() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (Observer& observer : observer_list_) {
     observer.OnTrustedVaultRecoverabilityChanged();
   }

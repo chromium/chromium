@@ -12,9 +12,10 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
-#include "base/time/time.h"
+#include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/trusted_vault/local_recovery_factor.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
@@ -24,7 +25,6 @@
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "components/trusted_vault/trusted_vault_throttling_connection.h"
 #include "google_apis/gaia/gaia_id.h"
-#include "google_apis/gaia/google_service_auth_error.h"
 
 namespace signin {
 class AccountsInCookieJarInfo;
@@ -37,8 +37,7 @@ namespace trusted_vault {
 // dedicated sequence (using thread pool). Can be constructed on any thread/
 // sequence.
 class StandaloneTrustedVaultBackend
-    : public base::RefCountedThreadSafe<StandaloneTrustedVaultBackend>,
-      public TrustedVaultDegradedRecoverabilityHandler::Observer {
+    : public TrustedVaultDegradedRecoverabilityHandler::Observer {
  public:
   using FetchKeysCallback = base::OnceCallback<void(
       const std::vector<std::vector<uint8_t>>& vault_keys)>;
@@ -97,6 +96,7 @@ class StandaloneTrustedVaultBackend
       delete;
   StandaloneTrustedVaultBackend& operator=(
       const StandaloneTrustedVaultBackend& other) = delete;
+  ~StandaloneTrustedVaultBackend() override;
 
   // TrustedVaultDegradedRecoverabilityHandler::Observer implementation.
   void OnDegradedRecoverabilityChanged(
@@ -154,9 +154,6 @@ class StandaloneTrustedVaultBackend
 
   std::optional<CoreAccountInfo> GetPrimaryAccountForTesting() const;
 
-  bool IsDeviceRegisteredForTesting(const GaiaId& gaia_id,
-                                    SecurityDomainId security_domain);
-
   std::vector<uint8_t> GetLastAddedRecoveryMethodPublicKeyForTesting() const;
   int GetLastKeyVersionForTesting(const GaiaId& gaia_id,
                                   SecurityDomainId security_domain);
@@ -166,7 +163,7 @@ class StandaloneTrustedVaultBackend
   // Runs |cb| when the backend becomes idle.
   void WaitForIdleForTesting(base::OnceClosure cb);
 
-  static scoped_refptr<StandaloneTrustedVaultBackend> CreateForTesting(
+  static std::unique_ptr<StandaloneTrustedVaultBackend> CreateForTesting(
       std::unique_ptr<StandaloneTrustedVaultStorage> storage,
       std::unique_ptr<Delegate> delegate,
       std::unique_ptr<TrustedVaultThrottlingConnection> connection,
@@ -174,8 +171,6 @@ class StandaloneTrustedVaultBackend
           local_recovery_factors_factory);
 
  private:
-  friend class base::RefCountedThreadSafe<StandaloneTrustedVaultBackend>;
-
   // Constructor which allows specifying a TrustedVaultThrottlingConnection and
   // a LocalRecoveryFactorsFactory.
   // Only used in tests.
@@ -189,8 +184,6 @@ class StandaloneTrustedVaultBackend
   static TrustedVaultDownloadKeysStatusForUMA
   GetDownloadKeysStatusForUMAFromResponse(
       TrustedVaultDownloadKeysStatus response_status);
-
-  ~StandaloneTrustedVaultBackend() override;
 
   // Attempts to register local recovery factors in case they're not yet
   // registered and currently available local data is sufficient to do it. Also

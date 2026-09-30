@@ -30,6 +30,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/trusted_vault/command_line_switches.h"
 #include "components/trusted_vault/securebox.h"
+#include "components/trusted_vault/standalone_trusted_vault_frontend.h"
 #include "components/trusted_vault/standalone_trusted_vault_server_constants.h"
 #include "components/trusted_vault/test/fake_security_domains_server.h"
 #include "components/trusted_vault/test/fake_security_domains_url_loader_factory.h"
@@ -133,14 +134,23 @@ class StandaloneTrustedVaultClientTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  std::unique_ptr<StandaloneTrustedVaultClient> CreateClient() {
-    return std::make_unique<StandaloneTrustedVaultClient>(
+  scoped_refptr<StandaloneTrustedVaultFrontend> CreateFrontend() {
+    return base::MakeRefCounted<StandaloneTrustedVaultFrontend>(
 #if BUILDFLAG(IS_MAC)
         kKeychainAccessGroupPrefix,
 #endif
-        SecurityDomainId::kChromeSync,
         /*base_dir=*/temp_dir_.GetPath(), identity_test_env_.identity_manager(),
         url_loader_factory_);
+  }
+
+  std::unique_ptr<StandaloneTrustedVaultClient> CreateClient(
+      SecurityDomainId security_domain = SecurityDomainId::kChromeSync,
+      scoped_refptr<StandaloneTrustedVaultFrontend> frontend = nullptr) {
+    if (!frontend) {
+      frontend = CreateFrontend();
+    }
+    return std::make_unique<StandaloneTrustedVaultClient>(security_domain,
+                                                          std::move(frontend));
   }
 
   CoreAccountInfo MakeAccountAvailable(const std::string& email) {
@@ -355,6 +365,60 @@ TEST_F(StandaloneTrustedVaultClientTest,
     EXPECT_EQ(GetLastKeyVersion(client_b.get(), account_info.gaia),
               kServerEpoch);
   }
+}
+
+TEST_F(StandaloneTrustedVaultClientTest,
+       ShouldShareFrontendAndRouteDomainNotifications) {
+  const std::vector<uint8_t> kSyncKey = {1, 2, 3, 4};
+  CoreAccountInfo account_info = MakeAccountAvailable(kTestEmail);
+
+  scoped_refptr<StandaloneTrustedVaultFrontend> frontend = CreateFrontend();
+  std::unique_ptr<StandaloneTrustedVaultClient> sync_client =
+      CreateClient(SecurityDomainId::kChromeSync, frontend);
+  std::unique_ptr<StandaloneTrustedVaultClient> passkeys_client =
+      CreateClient(SecurityDomainId::kPasskeys, frontend);
+  WaitForIdle(sync_client.get());
+
+  MockTrustedVaultClientObserver sync_observer;
+  MockTrustedVaultClientObserver passkeys_observer;
+  sync_client->AddObserver(&sync_observer);
+  passkeys_client->AddObserver(&passkeys_observer);
+
+  // Storing keys in kChromeSync should notify only sync_observer.
+  EXPECT_CALL(sync_observer, OnTrustedVaultKeysChanged);
+  EXPECT_CALL(passkeys_observer, OnTrustedVaultKeysChanged).Times(0);
+  StoreKeys(sync_client.get(), account_info.gaia, {kSyncKey},
+            /*last_key_version=*/1);
+  WaitForIdle(sync_client.get());
+  testing::Mock::VerifyAndClearExpectations(&sync_observer);
+  testing::Mock::VerifyAndClearExpectations(&passkeys_observer);
+
+  EXPECT_THAT(FetchKeys(sync_client.get(), account_info),
+              ElementsAre(kSyncKey));
+
+  // Recoverability degraded notifications from the backend should be routed to
+  // the respective domain client only.
+  fake_security_domains_server_->RequirePublicKeyToAvoidRecoverabilityDegraded(
+      /*public_key=*/{9, 9, 9, 9});
+  base::RunLoop recoverability_run_loop;
+  EXPECT_CALL(sync_observer, OnTrustedVaultRecoverabilityChanged)
+      .WillOnce(
+          [&recoverability_run_loop]() { recoverability_run_loop.Quit(); });
+  EXPECT_CALL(passkeys_observer, OnTrustedVaultRecoverabilityChanged).Times(0);
+  sync_client->GetIsRecoverabilityDegraded(account_info, base::DoNothing());
+  recoverability_run_loop.Run();
+  testing::Mock::VerifyAndClearExpectations(&sync_observer);
+  testing::Mock::VerifyAndClearExpectations(&passkeys_observer);
+
+  // Cookie jar changes in IdentityManager should notify all registered clients.
+  EXPECT_CALL(sync_observer, OnTrustedVaultKeysChanged);
+  EXPECT_CALL(passkeys_observer, OnTrustedVaultKeysChanged);
+  identity_test_env_.SetCookieAccounts({});
+  testing::Mock::VerifyAndClearExpectations(&sync_observer);
+  testing::Mock::VerifyAndClearExpectations(&passkeys_observer);
+
+  sync_client->RemoveObserver(&sync_observer);
+  passkeys_client->RemoveObserver(&passkeys_observer);
 }
 
 }  // namespace

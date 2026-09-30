@@ -51,6 +51,8 @@ static_library("trusted_vault") {
       "standalone_trusted_vault_backend.h",
       "standalone_trusted_vault_client.cc",
       "standalone_trusted_vault_client.h",
+      "standalone_trusted_vault_frontend.cc",
+      "standalone_trusted_vault_frontend.h",
       "standalone_trusted_vault_server_constants.cc",
       "standalone_trusted_vault_server_constants.h",
       "standalone_trusted_vault_storage.h",

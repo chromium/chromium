@@ -14,12 +14,10 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
-#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/sequence_checker.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
-#include "base/task/sequenced_task_runner.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/trusted_vault/features.h"
@@ -239,14 +237,14 @@ StandaloneTrustedVaultBackend::StandaloneTrustedVaultBackend(
 StandaloneTrustedVaultBackend::~StandaloneTrustedVaultBackend() = default;
 
 // static
-scoped_refptr<StandaloneTrustedVaultBackend>
+std::unique_ptr<StandaloneTrustedVaultBackend>
 StandaloneTrustedVaultBackend::CreateForTesting(
     std::unique_ptr<StandaloneTrustedVaultStorage> storage,
     std::unique_ptr<StandaloneTrustedVaultBackend::Delegate> delegate,
     std::unique_ptr<TrustedVaultThrottlingConnection> connection,
     std::unique_ptr<LocalRecoveryFactorsFactory>
         local_recovery_factors_factory) {
-  return base::WrapRefCounted(new StandaloneTrustedVaultBackend(
+  return base::WrapUnique(new StandaloneTrustedVaultBackend(
       std::move(storage), std::move(delegate), std::move(connection),
       std::move(local_recovery_factors_factory)));
 }
@@ -575,14 +573,6 @@ void StandaloneTrustedVaultBackend::ClearLocalDataForAccount(
 std::optional<CoreAccountInfo>
 StandaloneTrustedVaultBackend::GetPrimaryAccountForTesting() const {
   return primary_account_;
-}
-
-bool StandaloneTrustedVaultBackend::IsDeviceRegisteredForTesting(
-    const GaiaId& gaia_id,
-    SecurityDomainId security_domain) {
-  CHECK(kSupportedSecurityDomainIdValues.contains(security_domain));
-  return storage_->IsRecoveryFactorRegistered(
-      gaia_id, security_domain, LocalRecoveryFactorType::kPhysicalDevice);
 }
 
 std::vector<uint8_t>
