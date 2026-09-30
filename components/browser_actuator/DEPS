@@ -12,7 +12,7 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*_unittest\\.cc": [
+  ".*_(unittest|integration_test)\\.cc": [
     "+services/network/test",
     "+net/http",
     "+net/traffic_annotation/network_traffic_annotation_test_helper.h",

@@ -111,6 +111,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "browser_actuator_integration_test.cc",
     "browser_actuator_service_impl_unittest.cc",
     "control_transport_handler_unittest.cc",
     "session_stream_recorder_unittest.cc",
