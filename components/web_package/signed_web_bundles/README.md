@@ -1,41 +1,58 @@
-# Signed Web Bundles
+# Signed Web Bundles (`components/web_package/signed_web_bundles`)
 
-This directory contains code related to _Signed Web Bundles_. Signed Web Bundles
-are an extension of normal, unsigned Web Bundles. Signed Web Bundles are encoded
-as a [CBOR Sequence](https://www.rfc-editor.org/rfc/rfc8742.html) consisting of
-an _Integrity Block_ followed by a _Web Bundle_.
+This directory contains code related to _Signed Web Bundles_ (`.swbn`). Signed
+Web Bundles are an extension of normal, unsigned Web Bundles. Signed Web Bundles
+are encoded as a [CBOR Sequence](https://www.rfc-editor.org/rfc/rfc8742.html)
+consisting of an _Integrity Block_ followed by a _Web Bundle_.
 
 In contrast to individually signed responses and Signed Exchanges, signatures of
 Signed Web Bundles provide a guarantee that the entire Web Bundle was not
 modified, including that no responses have been added or removed.
 
-## Integrity Block
+## Companion Documentation
 
-The format of the Integrity Block is described in [this
-explainer](https://github.com/WICG/webpackage/blob/main/explainers/integrity-signature.md).
-It contains magic bytes and version, similar to unsigned Web Bundles, as well as
-a _signature stack_. The signature stack contains one or more signatures and
-their corresponding public keys.
+- **AI Agent Rules & Invariants:** [AGENTS.md](AGENTS.md)
+- **Parent Component README:** [`//components/web_package/README.md`](../README.md)
+- **Core IWA Component:**
+  [`//components/webapps/isolated_web_apps`](/components/webapps/isolated_web_apps/README.md)
 
-**Note: Support for more than one signature is not yet fully designed and
-implemented (crbug.com/1366303).**
+## Integrity Block v2 & Multi-Signature Support
 
-## Parsing
+The format of the Integrity Block is described in the
+[Integrity Signature Explainer](https://github.com/WICG/webpackage/blob/main/explainers/integrity-signature.md).
+Integrity Block v2 contains magic bytes, version `2b\0\0`, an `attributes` map
+(containing the `webBundleId`), and a _signature stack_ with one or more
+signatures and their corresponding public keys (Ed25519 and ECDSA P-256 SHA-256).
 
-Parsing Signed Web Bundles is a three step process:
+`SignedWebBundleSignatureVerifier` iterates through all recognized entries in
+the signature stack, verifies the SHA-512 payload hash and cryptographic
+signatures, and ignores unrecognized signature types
+(`SignedWebBundleSignatureInfoUnknown`) for forward compatibility.
 
-1. Parse the Integrity Block using `WebBundleParser::ParseIntegrityBlock`.
-2. Verify that the signatures match using `SignedWebBundleSignatureVerifier`.
+## Parsing & Rule of 2
+
+Parsing Signed Web Bundles is a three-step process:
+
+1. Parse the Integrity Block using `WebBundleParser::ParseIntegrityBlock`, which
+   delegates CBOR decoding to the memory-safe Rust crate in `rust/`
+   (`signed_web_bundles_rust`).
+2. Verify that the signatures and `webBundleId` attribute match using
+   `SignedWebBundleSignatureVerifier` and `IdentityValidator`.
 3. Parse the metadata using `WebBundleParser::ParseMetadata` while providing the
    length of the Integrity Block as the `offset` parameter.
 
-Due to the [rule of 2](../../../docs/security/rule-of-2.md), you may need to use
-`data_decoder::SafeWebBundleParser` instead of using `WebBundleParser` directly
-if your code runs in a non-sandboxed process.
+Per the [Rule of 2](/docs/security/rule-of-2.md), non-sandboxed browser-process
+code must use `data_decoder::SafeWebBundleParser` rather than instantiating
+`WebBundleParser` directly.
 
-## Web Bundle ID
+## Web Bundle ID (`SignedWebBundleId`)
 
-Signed Web Bundles can be identified by a Web Bundle ID (see
-`SignedWebBundleId`), which is derived from the public key of its first
-signature. More information about the Web Bundle ID can be found in [this
-explainer](https://github.com/WICG/isolated-web-apps/blob/main/Scheme.md#signed-web-bundle-ids).
+Signed Web Bundles are identified by a validated `SignedWebBundleId` (lowercase
+base32-encoded string with a 3-byte type suffix), supporting three ID types:
+
+- **Ed25519 Public Key** (`SignedWebBundleId::Type::kEd25519PublicKey`)
+- **ECDSA P-256 Public Key** (`SignedWebBundleId::Type::kEcdsaP256PublicKey`)
+- **Development Proxy Mode** (`SignedWebBundleId::Type::kProxyMode`)
+
+More information about Signed Web Bundle IDs can be found in the
+[Isolated Web Apps Scheme Explainer](https://github.com/WICG/isolated-web-apps/blob/main/Scheme.md#signed-web-bundle-ids).
