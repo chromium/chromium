@@ -68,6 +68,7 @@ OrganizerPanelUI::OrganizerPanelUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(tabs::kTabSearchCjkWordBoundary));
   source->AddBoolean("crossDeviceTabsEnabled",
                      organizer_panel::IsOrganizerPanelCrossDeviceTabsEnabled());
+  source->AddBoolean("isIncognitoMode", profile->IsIncognitoProfile());
 
   ui::Accelerator accelerator(ui::VKEY_A,
                               ui::EF_SHIFT_DOWN | ui::EF_PLATFORM_ACCELERATOR);

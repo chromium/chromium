@@ -5,7 +5,7 @@
 import 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 
 import type {OrganizerPanelAppElement} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
-import {browserProxyFactory, PageHandlerRemote, tabGroupsBrowserProxyFactory, TabGroupsOrganizerPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
+import {browserProxyFactory, PageHandlerRemote, RecentTabsDelegate, tabGroupsBrowserProxyFactory, TabGroupsOrganizerPageHandlerRemote} from 'chrome://organizer-panel.top-chrome/organizer_panel.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -24,6 +24,7 @@ suite('OrganizerPanelAppTest', () => {
       clearSearch: 'Clear search',
       closeTab: 'Close tab',
       crossDeviceTabsEnabled: false,
+      isIncognitoMode: false,
       noResults: 'No results',
       openTabs: 'Open Tabs',
       recentlyClosed: 'Recently Closed',
@@ -71,6 +72,19 @@ suite('OrganizerPanelAppTest', () => {
 
   test('renders organizer list with expected sections', () => {
     assertEquals(3, app.$.list.sectionDelegates.length);
+    assertTrue(app.$.list.sectionDelegates.some(
+        delegate => delegate instanceof RecentTabsDelegate));
+  });
+
+  test('hides recent tabs section in incognito mode', async () => {
+    loadTimeData.overrideValues({isIncognitoMode: true});
+    const incognitoApp = document.createElement('organizer-panel-app');
+    document.body.appendChild(incognitoApp);
+    await microtasksFinished();
+
+    assertEquals(2, incognitoApp.$.list.sectionDelegates.length);
+    assertTrue(incognitoApp.$.list.sectionDelegates.every(
+        delegate => !(delegate instanceof RecentTabsDelegate)));
   });
 
   test('renders cross-device tabs section when flag is enabled', async () => {

@@ -56,7 +56,9 @@ export class OrganizerPanelAppElement extends CrLitElement {
   private getSectionDelegates_(): Array<OrganizerListSectionDelegate<unknown>> {
     const delegates: Array<OrganizerListSectionDelegate<unknown>> = [
       new OpenTabsDelegate(),
-      new RecentTabsDelegate(),
+      ...(!loadTimeData.getBoolean('isIncognitoMode') ?
+              [new RecentTabsDelegate()] :
+              []),
       new TabGroupsDelegate(),
     ];
     if (loadTimeData.getBoolean('crossDeviceTabsEnabled')) {
