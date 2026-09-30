@@ -40,7 +40,7 @@ extension ObjectGroup {
         properties: ["$": .jsBlinkMojomSpeculationHostRemoteWrapper],
         methods: [
             "updateSpeculationCandidates": [
-                .plain(.jsBlinkMojomSpeculationCandidateArray),
+                .plain(.jsBlinkMojomSpeculationCandidateMojoArray),
                 .plain(.boolean),
             ] => .undefined,
             "onLCPPredicted": [
@@ -98,7 +98,7 @@ extension ILType {
         .plain(.jsBlinkMojomSpeculationEagerness),
         .either(.jsNetworkMojomNoVarySearch, .undefined),
         .plain(.jsBlinkMojomSpeculationInjectionType),
-        .plain(.jsStringArray),
+        .plain(.jsStringMojoArray),
         .plain(.boolean),
     ] => .jsBlinkMojomSpeculationCandidate)
     fileprivate static let jsBlinkMojomReferrer: ILType = .object(
@@ -136,7 +136,7 @@ extension ObjectGroup {
             "eagerness": .jsBlinkMojomSpeculationEagerness,
             "noVarySearchHint": .jsNetworkMojomNoVarySearch,
             "injectionType": .jsBlinkMojomSpeculationInjectionType,
-            "tags": .jsStringArray,
+            "tags": .jsStringMojoArray,
             "formSubmission": .boolean,
         ],
         methods: [:]
@@ -165,10 +165,10 @@ extension ObjectGroup {
 /// Arrays
 ///
 extension ILType {
-    fileprivate static let jsBlinkMojomSpeculationCandidateArray: ILType =
+    fileprivate static let jsBlinkMojomSpeculationCandidateMojoArray: ILType =
         .createJsArrayType(ofElementType: .jsBlinkMojomSpeculationCandidate)
-    fileprivate static let jsStringArray: ILType =
-        .createJsArrayType(ofElementType: .jsStringElement)
+    fileprivate static let jsStringMojoArray: ILType =
+        .createJsArrayType(ofElementType: .string)
 }
 
 /// As Fuzzilli runs, the OperationMutator and VariadicInputReducer will modify
@@ -182,29 +182,23 @@ extension ILType {
 /// to prevent the CodeGenerator from being scheduled first when there are
 /// no visible variables, as `findOrGenerateType` causes a crash if there
 /// are no visibile variables.
-private let MojoBlinkMojomSpeculationCandidateArrayGenerator = CodeGenerator(
-    "MojoBlinkMojomSpeculationCandidateArrayGenerator",
+private let MojoBlinkMojomSpeculationCandidateMojoArrayGenerator = CodeGenerator(
+    "MojoBlinkMojomSpeculationCandidateMojoArrayGenerator",
     inputs: .one,
-    produces: [.jsBlinkMojomSpeculationCandidateArray]
+    produces: [.jsBlinkMojomSpeculationCandidateMojoArray]
 ) { b, _ in
     let elem = b.findOrGenerateType(.jsBlinkMojomSpeculationCandidate)
     var elements: [Variable] = [elem]
-    b.createArray(
-        with: elements,
-        elementGroupName:
-            ObjectGroup.blinkMojomSpeculationCandidate.name)
+    b.createArray(with: elements)
 }
-private let MojoStringArrayGenerator = CodeGenerator(
-    "MojoStringArrayGenerator",
+private let MojoStringMojoArrayGenerator = CodeGenerator(
+    "MojoStringMojoArrayGenerator",
     inputs: .one,
-    produces: [.jsStringArray]
+    produces: [.jsStringMojoArray]
 ) { b, _ in
     let elem = b.findOrGenerateType(.string)
     var elements: [Variable] = [elem]
-    b.createArray(
-        with: elements,
-        elementGroupName:
-            ObjectGroup.stringElement.name)
+    b.createArray(with: elements)
 }
 
 ///
@@ -243,8 +237,8 @@ extension OptionsBag {
     fileprivate static let networkMojomSearchParamsVariance = OptionsBag(
         name: "network.mojom.SearchParamsVariance",
         properties: [
-            "noVaryParams": .jsStringArray,
-            "varyParams": .jsStringArray,
+            "noVaryParams": .jsStringMojoArray,
+            "varyParams": .jsStringMojoArray,
         ],
         selectionMode: .exactlyOne,
     )
@@ -281,7 +275,7 @@ private let MojoMethodCallGenerator = CodeGenerator("MojoMethodCallGenerator") {
     let methodName = b.type(of: obj).randomMethod()!
     let signatures = b.methodSignatures(of: methodName, on: obj)
     let signature = chooseUniform(from: signatures)
-    let arguments = b.findOrGenerateArguments(forSignature: signature)
+    let arguments = b.findOrGenerateArguments(forSignature: signature, maxNumberOfVariablesToGenerate: 1000)
     b.callMethod(methodName, on: obj, withArgs: arguments, guard: false)
 }
 
@@ -328,7 +322,7 @@ let mojoSpeculationHostProfile = Profile(
     processEnv: [
         "ASAN_OPTIONS": "detect_odr_violation=0:abort_on_error=1", "DISPLAY": ":20",
     ],
-    maxExecsBeforeRespawn: 1000,
+    maxExecsBeforeRespawn: 50,
     timeout: Timeout.interval(11000, 11000),
     codePrefix: """
         let globalRemote = null;
@@ -355,8 +349,8 @@ let mojoSpeculationHostProfile = Profile(
     additionalCodeGenerators: [
         (MojoMethodCallGenerator, 10000),
         (MojoPropertyRetrievalGenerator, 10000),
-        (MojoBlinkMojomSpeculationCandidateArrayGenerator, 1),
-        (MojoStringArrayGenerator, 1),
+        (MojoBlinkMojomSpeculationCandidateMojoArrayGenerator, 1),
+        (MojoStringMojoArrayGenerator, 1),
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,

@@ -47,7 +47,7 @@ extension ObjectGroup {
             "get": [
                 .plain(.jsBlinkMojomCredentialMediationRequirement),
                 .plain(.boolean),
-                .plain(.jsUrlMojomUrlArray),
+                .plain(.jsUrlMojomUrlMojoArray),
             ] => .jsPromise(resolvingTo: .jsBlinkMojomCredentialManager_Get_ResponseParams),
         ]
     )
@@ -150,23 +150,29 @@ extension ObjectGroup {
 /// Arrays
 ///
 extension ILType {
-    fileprivate static let jsUrlMojomUrlArray: ILType =
+    fileprivate static let jsUrlMojomUrlMojoArray: ILType =
         .createJsArrayType(ofElementType: .jsUrlMojomUrl)
 }
 
 /// As Fuzzilli runs, the OperationMutator and VariadicInputReducer will modify
 /// the `CreateArray` operation to increase or decrease the element count. This
 /// allows arrays to be arbitrarily long.
-private let MojoUrlMojomUrlArrayGenerator = CodeGenerator(
-    "MojoUrlMojomUrlArrayGenerator",
-    inputs: .required(.jsUrlMojomUrl),
-    produces: [.jsUrlMojomUrlArray]
-) { b, elem in
+///
+/// `findOrGenerateType` is preferred over specifying `inputs` because
+/// Fuzzilli only uses CodeGenerators to produce types in `inputs`, while
+/// `findOrGenerateType` uses a variety of sources (e.g. `builtins`, other
+/// method properties and methods). An input is specified (i.e. `.one`)
+/// to prevent the CodeGenerator from being scheduled first when there are
+/// no visible variables, as `findOrGenerateType` causes a crash if there
+/// are no visibile variables.
+private let MojoUrlMojomUrlMojoArrayGenerator = CodeGenerator(
+    "MojoUrlMojomUrlMojoArrayGenerator",
+    inputs: .one,
+    produces: [.jsUrlMojomUrlMojoArray]
+) { b, _ in
+    let elem = b.findOrGenerateType(.jsUrlMojomUrl)
     var elements: [Variable] = [elem]
-    b.createArray(
-        with: elements,
-        elementGroupName:
-            ObjectGroup.urlMojomUrl.name)
+    b.createArray(with: elements)
 }
 
 ///
@@ -215,7 +221,7 @@ private let MojoMethodCallGenerator = CodeGenerator("MojoMethodCallGenerator") {
     let methodName = b.type(of: obj).randomMethod()!
     let signatures = b.methodSignatures(of: methodName, on: obj)
     let signature = chooseUniform(from: signatures)
-    let arguments = b.findOrGenerateArguments(forSignature: signature)
+    let arguments = b.findOrGenerateArguments(forSignature: signature, maxNumberOfVariablesToGenerate: 1000)
     b.callMethod(methodName, on: obj, withArgs: arguments, guard: false)
 }
 
@@ -260,7 +266,7 @@ let mojoCredentialManagerProfile = Profile(
     processEnv: [
         "ASAN_OPTIONS": "detect_odr_violation=0:abort_on_error=1", "DISPLAY": ":20",
     ],
-    maxExecsBeforeRespawn: 1000,
+    maxExecsBeforeRespawn: 50,
     timeout: Timeout.interval(11000, 11000),
     codePrefix: """
         let globalRemote = null;
@@ -287,7 +293,7 @@ let mojoCredentialManagerProfile = Profile(
     additionalCodeGenerators: [
         (MojoMethodCallGenerator, 10000),
         (MojoPropertyRetrievalGenerator, 10000),
-        (MojoUrlMojomUrlArrayGenerator, 1),
+        (MojoUrlMojomUrlMojoArrayGenerator, 1),
     ] + commonMojoCodeGenerators,
     additionalProgramTemplates: WeightedList([]),
     disabledCodeGenerators: mojoDisabledGenerators,
@@ -309,6 +315,7 @@ let mojoCredentialManagerProfile = Profile(
         .jsBlinkMojomCredentialMediationRequirement,
         .jsBlinkMojomCredentialManagerError,
     ] + commonMojoEnumerations,
-    additionalOptionsBags: [] + commonMojoOptionsBags,
+    additionalOptionsBags: [
+    ] + commonMojoOptionsBags,
     optionalPostProcessor: nil
 )
