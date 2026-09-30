@@ -83,6 +83,7 @@ public class TabCollectionsTabModelObserversUnitTest {
     @Mock private TabRemover mTabRemover;
     @Mock private ScopedStorageBatch mScopedStorageBatch;
     @Mock private TabModelObserver mTabModelObserver;
+    @Mock private TabGroupObserver mTabGroupObserver;
 
     private TabCollectionTabModelImpl mTabModel;
     private List<Tab> mTabs;
@@ -245,6 +246,7 @@ public class TabCollectionsTabModelObserversUnitTest {
                         () -> mScopedStorageBatch,
                         /* supportUndo= */ true);
         mTabModel.addObserver(mTabModelObserver);
+        mTabModel.addTabGroupObserver(mTabGroupObserver);
 
         when(mTabModelDelegate.getCurrentModel()).thenReturn(mTabModel);
         when(mTabModelDelegate.getModel(anyBoolean())).thenReturn(mTabModel);
@@ -813,21 +815,26 @@ public class TabCollectionsTabModelObserversUnitTest {
         verify(mTabModelObserver).onFinishingMultipleTabClosure(eq(List.of(tab1, tab2)), eq(false));
     }
 
-    // onTabGroupCreated
+    // didCreateNewGroup
 
     @Test
     public void testOnTabGroupCreated() {
         MockTab tab1 = createMockTab(101, mProfile);
         MockTab tab2 = createMockTab(102, mProfile);
-        mTabModel.addTab(tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
-        mTabModel.addTab(tab2, 1, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab1, 0, TabLaunchType.FROM_CHROME_UI, TabCreationState.LIVE_IN_FOREGROUND);
+        mTabModel.addTab(
+                tab2,
+                /* index= */ 1,
+                TabLaunchType.FROM_CHROME_UI,
+                TabCreationState.LIVE_IN_FOREGROUND);
 
-        reset(mTabModelObserver);
+        reset(mTabGroupObserver);
         Token groupId = mTabModel.createTabGroup(List.of(tab1, tab2));
-        verify(mTabModelObserver).onTabGroupCreated(eq(groupId));
+        verify(mTabGroupObserver).didCreateNewGroup(eq(groupId));
     }
 
-    // onTabGroupRemoving
+    // willRemoveTabGroup
 
     @Test
     public void testOnTabGroupRemoving() {
@@ -840,13 +847,13 @@ public class TabCollectionsTabModelObserversUnitTest {
         tab1.setTabGroupId(groupId);
         tab2.setTabGroupId(groupId);
 
-        reset(mTabModelObserver);
+        reset(mTabGroupObserver);
         mTabModel.closeTabs(
                 TabClosureParams.closeTabs(List.of(tab1, tab2)).allowUndo(false).build());
-        verify(mTabModelObserver).onTabGroupRemoving(eq(groupId));
+        verify(mTabGroupObserver).willRemoveTabGroup(eq(groupId));
     }
 
-    // onTabGroupMoved
+    // didMoveTabGroup
 
     @Test
     public void testOnTabGroupMoved() {
@@ -861,9 +868,11 @@ public class TabCollectionsTabModelObserversUnitTest {
         tab1.setTabGroupId(groupId);
         tab2.setTabGroupId(groupId);
 
-        reset(mTabModelObserver);
+        reset(mTabGroupObserver);
         mTabModel.moveGroupToIndex(groupId, 1);
-        verify(mTabModelObserver).onTabGroupMoved(eq(groupId));
+        verify(mTabGroupObserver)
+                .didMoveTabGroup(
+                        eq(groupId), /* tabModelOldIndex= */ eq(0), /* tabModelNewIndex= */ eq(1));
     }
 
     // onTabGroupVisualsChanged
@@ -876,7 +885,7 @@ public class TabCollectionsTabModelObserversUnitTest {
                 .thenReturn("Old Title");
 
         mTabModel.setTabGroupTitle(groupId, "New Title");
-        verify(mTabModelObserver).onTabGroupVisualsChanged(eq(groupId));
+        verify(mTabGroupObserver).onTabGroupVisualsChanged(eq(groupId));
     }
 
     @Test
@@ -887,7 +896,7 @@ public class TabCollectionsTabModelObserversUnitTest {
                 .thenReturn(TabGroupColorId.GREY);
 
         mTabModel.setTabGroupColor(groupId, TabGroupColorId.BLUE);
-        verify(mTabModelObserver).onTabGroupVisualsChanged(eq(groupId));
+        verify(mTabGroupObserver).onTabGroupVisualsChanged(eq(groupId));
     }
 
     @Test
@@ -898,7 +907,7 @@ public class TabCollectionsTabModelObserversUnitTest {
                 .thenReturn(false);
 
         mTabModel.setTabGroupCollapsed(groupId, true);
-        verify(mTabModelObserver).onTabGroupVisualsChanged(eq(groupId));
+        verify(mTabGroupObserver).onTabGroupVisualsChanged(eq(groupId));
     }
 
     @Test
@@ -910,7 +919,7 @@ public class TabCollectionsTabModelObserversUnitTest {
 
         mTabModel.setTabGroupVisualData(
                 groupId, "New Title", TabGroupColorId.BLUE, /* isCollapsed= */ true);
-        verify(mTabModelObserver).onTabGroupVisualsChanged(eq(groupId));
+        verify(mTabGroupObserver).onTabGroupVisualsChanged(eq(groupId));
     }
 
     // restoreCompleted

@@ -975,10 +975,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         while (groupObservers.hasNext()) {
             groupObservers.next().didMoveTabGroup(tabGroupId, oldIndex, finalIndex);
         }
-        modelObservers.rewind();
-        while (modelObservers.hasNext()) {
-            modelObservers.next().onTabGroupMoved(tabGroupId);
-        }
     }
 
     @Override
@@ -1156,8 +1152,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 observer.didChangeTabGroupCollapsed(
                         tabGroupId, assumeNonNull(isCollapsed), animate);
             }
-        }
-        for (TabModelObserver observer : mTabModelObservers) {
             observer.onTabGroupVisualsChanged(tabGroupId);
         }
     }
@@ -2425,12 +2419,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             }
         }
 
-        if (willCreateNewGroup) {
-            for (TabModelObserver observer : mTabModelObservers) {
-                observer.onTabGroupCreated(destinationTabGroupId);
-            }
-        }
-
         if ((notify == NOTIFY_IF_NOT_NEW_GROUP && !willCreateNewGroup) || notify == NOTIFY_ALWAYS) {
             groupObservers.rewind();
             while (groupObservers.hasNext()) {
@@ -2689,9 +2677,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 for (TabGroupObserver observer : mTabGroupObservers) {
                     observer.willCloseTabGroup(tabGroupId, hiding);
                     observer.willRemoveTabGroup(tabGroupId);
-                }
-                for (TabModelObserver obs : mTabModelObservers) {
-                    obs.onTabGroupRemoving(tabGroupId);
                 }
             }
         }

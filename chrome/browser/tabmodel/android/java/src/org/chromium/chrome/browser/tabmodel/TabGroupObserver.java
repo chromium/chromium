@@ -106,6 +106,8 @@ public interface TabGroupObserver {
      * This method is called after a new tab group is created, either through drag and drop, the tab
      * selection editor, or by longpressing a link on a tab and using the context menu.
      *
+     * <p>TODO(crbug.com/517544602): Rename to onTabGroupCreated for consistency with native.
+     *
      * @param tabGroupId The tab group ID of the newly created group.
      */
     default void didCreateNewGroup(Token tabGroupId) {}
@@ -137,8 +139,18 @@ public interface TabGroupObserver {
             Token tabGroupId, boolean isCollapsed, boolean animate) {}
 
     /**
+     * This method is called after a tab group's visual data (title, color, or collapsed state) is
+     * changed.
+     *
+     * @param tabGroupId The tab group ID.
+     */
+    default void onTabGroupVisualsChanged(Token tabGroupId) {}
+
+    /**
      * Called when a tab group is about to be removed from the tab model (e.g. as a result of
      * closure, ungrouping, or merging), prior to {@link #didRemoveTabGroup}.
+     *
+     * <p>TODO(crbug.com/517544602): Rename to onTabGroupRemoving for consistency with native.
      *
      * @param tabGroupId The tab group id being removed.
      */

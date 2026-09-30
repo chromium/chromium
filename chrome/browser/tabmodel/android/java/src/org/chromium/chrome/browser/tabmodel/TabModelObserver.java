@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.tabmodel;
 
-import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
@@ -282,40 +281,6 @@ public interface TabModelObserver {
      * @param canRestore Whether the closed tabs can be restored to the TabRestoreService.
      */
     default void onFinishingMultipleTabClosure(List<Tab> tabs, boolean canRestore) {}
-
-    // Tab Group
-
-    /**
-     * Called after a tab group is created. Note that new code should prefer using {@link
-     * TabGroupObserver} for tab groups over this interface and method.
-     *
-     * @param groupId The ID of the group that was created.
-     */
-    default void onTabGroupCreated(Token groupId) {}
-
-    /**
-     * Called just before a tab group is removed. Note that new code should prefer using {@link
-     * TabGroupObserver} for tab groups over this interface and method.
-     *
-     * @param groupId The ID of the group that will be removed.
-     */
-    default void onTabGroupRemoving(Token groupId) {}
-
-    /**
-     * Called after a tab group is moved to a new position. Note that new code should prefer using
-     * {@link TabGroupObserver} for tab groups over this interface and method.
-     *
-     * @param groupId The ID of the group that was moved.
-     */
-    default void onTabGroupMoved(Token groupId) {}
-
-    /**
-     * Called after a tab group's visual data (title, color, etc.) is changed. Note that new code
-     * should prefer using {@link TabGroupObserver} for tab groups over this interface and method.
-     *
-     * @param groupId The ID of the group that was changed.
-     */
-    default void onTabGroupVisualsChanged(Token groupId) {}
 
     // Misc
 

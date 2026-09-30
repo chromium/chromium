@@ -4600,34 +4600,6 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
-    public void testOnTabGroupCreatedNotification() throws Exception {
-        Tab tab0 = getTabAt(0);
-        Tab tab1 = createTab();
-        List<Tab> tabs = List.of(tab0, tab1);
-
-        CallbackHelper onTabGroupCreated = new CallbackHelper();
-        TabModelObserver observer =
-                new TabModelObserver() {
-                    @Override
-                    public void onTabGroupCreated(Token groupId) {
-                        assertFalse(groupId.isZero());
-                        onTabGroupCreated.notifyCalled();
-                    }
-                };
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mCollectionModel.addObserver(observer);
-                    mCollectionModel.createTabGroup(tabs);
-                });
-
-        onTabGroupCreated.waitForOnly();
-
-        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
-    }
-
-    @Test
-    @MediumTest
     public void testOnTabGroupRemovingNotification() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
@@ -4635,10 +4607,10 @@ public class TabCollectionTabModelImplTest {
 
         AtomicReference<Token> createdTabGroupId = new AtomicReference<>();
         CallbackHelper onTabGroupRemoving = new CallbackHelper();
-        TabModelObserver observer =
-                new TabModelObserver() {
+        TabGroupObserver observer =
+                new TabGroupObserver() {
                     @Override
-                    public void onTabGroupRemoving(Token groupId) {
+                    public void willRemoveTabGroup(Token groupId) {
                         assertFalse(groupId.isZero());
                         assertEquals(groupId, createdTabGroupId.get());
                         onTabGroupRemoving.notifyCalled();
@@ -4647,7 +4619,7 @@ public class TabCollectionTabModelImplTest {
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mCollectionModel.addObserver(observer);
+                    mCollectionModel.addTabGroupObserver(observer);
                     createdTabGroupId.set(mCollectionModel.createTabGroup(tabs));
                     // Closing the tabs will remove the tab group.
                     mCollectionModel.closeTabs(
@@ -4656,7 +4628,7 @@ public class TabCollectionTabModelImplTest {
 
         onTabGroupRemoving.waitForOnly();
 
-        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
+        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeTabGroupObserver(observer));
     }
 
     @Test
@@ -4668,8 +4640,8 @@ public class TabCollectionTabModelImplTest {
 
         AtomicReference<Token> tabGroupId = new AtomicReference<>();
         CallbackHelper onTabGroupVisualsChanged = new CallbackHelper();
-        TabModelObserver observer =
-                new TabModelObserver() {
+        TabGroupObserver observer =
+                new TabGroupObserver() {
                     @Override
                     public void onTabGroupVisualsChanged(Token groupId) {
                         assertFalse(groupId.isZero());
@@ -4681,7 +4653,7 @@ public class TabCollectionTabModelImplTest {
         // Create a tab group, then change its title.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mCollectionModel.addObserver(observer);
+                    mCollectionModel.addTabGroupObserver(observer);
                     tabGroupId.set(mCollectionModel.createTabGroup(tabs));
                     mCollectionModel.setTabGroupTitle(tabGroupId.get(), "New Title");
                 });
@@ -4717,7 +4689,7 @@ public class TabCollectionTabModelImplTest {
         // The callback is called.
         onTabGroupVisualsChanged.waitForNext();
 
-        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeObserver(observer));
+        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.removeTabGroupObserver(observer));
     }
 
     @Test
