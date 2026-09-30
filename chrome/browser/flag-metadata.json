@@ -706,7 +706,7 @@
   {
     "name": "app-background-refresh-ios",
     "owners": [ "fedegermi@google.com", "marq@chromium.org" ],
-    "expiry_milestone": 156
+    "expiry_milestone": 172
   },
   {
     "name": "app-menu-glow-up",
