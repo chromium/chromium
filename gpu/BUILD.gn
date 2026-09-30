@@ -548,6 +548,7 @@ test("gpu_unittests") {
       "command_buffer/service/gles2_cmd_decoder_unittest_drawing.cc",
       "command_buffer/service/gles2_cmd_decoder_unittest_extensions.cc",
       "command_buffer/service/gles2_cmd_decoder_unittest_framebuffers.cc",
+      "command_buffer/service/gles2_cmd_decoder_unittest_offscreen.cc",
       "command_buffer/service/gles2_cmd_decoder_unittest_programs.cc",
       "command_buffer/service/gles2_cmd_decoder_unittest_textures.cc",
     ]

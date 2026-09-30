@@ -4915,10 +4915,15 @@ bool GLES2DecoderImpl::ResizeOffscreenFramebuffer(const gfx::Size& size) {
     return false;
   }
 
-  // Reallocate the offscreen target buffers.
+  // Reallocate the offscreen target buffers. Upload zeros rather than relying
+  // on the glClear below: on drivers with the gl_clear_broken workaround
+  // glClear is unreliable, and the workaround's draw-based clear isn't
+  // available yet because this runs from Initialize() before
+  // |clear_framebuffer_blit_| is created. AllocateStorage() marks the level as
+  // cleared, so it would never be lazily cleared later.
   DCHECK(offscreen_target_color_format_);
   if (!offscreen_target_color_texture_->AllocateStorage(
-          offscreen_size_, offscreen_target_color_format_, false)) {
+          offscreen_size_, offscreen_target_color_format_, /*zero=*/true)) {
     LOG(ERROR) << "GLES2DecoderImpl::ResizeOffscreenFramebuffer failed "
                << "to allocate storage for offscreen target color texture.";
     return false;
