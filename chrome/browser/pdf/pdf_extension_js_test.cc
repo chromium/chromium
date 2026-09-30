@@ -273,13 +273,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerThumbnailBar) {
   RunTestsInJsModule("viewer_thumbnail_bar_test.js", "test.pdf");
 }
 
-// TODO(crbug.com/565684021): Consistently fails on Windows ARM64.
-#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
-#define MAYBE_ThumbnailLazyLoading DISABLED_ThumbnailLazyLoading
-#else
-#define MAYBE_ThumbnailLazyLoading ThumbnailLazyLoading
-#endif
-IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, MAYBE_ThumbnailLazyLoading) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ThumbnailLazyLoading) {
   // This file has 538 pages so there will be many thumbnails to load
   RunTestsInJsModule("thumbnail_lazy_loading_test.js", "linearized.pdf");
 }

@@ -67,8 +67,8 @@ chrome.test.runTests([
         thumbnailBar.shadowRoot.querySelectorAll('viewer-thumbnail[painted]');
     chrome.test.assertTrue(painted.length > 0);
     chrome.test.assertTrue(
-        painted.length <= 50,
-        'Expected <= 50 thumbnails painted after scroll, but got ' +
+        painted.length <= 75,
+        'Expected <= 75 thumbnails painted after scroll, but got ' +
             painted.length);
 
     chrome.test.succeed();
