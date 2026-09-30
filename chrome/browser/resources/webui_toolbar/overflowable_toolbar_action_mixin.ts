@@ -11,8 +11,8 @@ type Constructor<T> = new (...args: any[]) => T;
 export interface OverflowableToolbarActionMixinInterface {
   /**
    * Whether the action should never be hidden due to overflow. Ignored for
-   * dividers, which are shown or hidden based on the action immediately to
-   * their left.
+   * dividers, whose visibility is determined by the container. See
+   * OverflowableToolbarActionContainer.getActions() for details.
    */
   preventOverflow: boolean;
 
@@ -76,8 +76,8 @@ export const OverflowableToolbarActionMixin =
           //
           // When `preventOverflow` goes from false to true, and the element is
           // visible, a new layout is not needed, but this requests one anyway.
-          // This currently is not a common case, so doesn't seem worth the
-          // effort of handling.
+          // Users likely don't open side panels often enough for it to be worth
+          // optimizing for this specific case.
           if (changedProperties.get('preventOverflow') !== undefined) {
             this.fire('request-layout');
           }

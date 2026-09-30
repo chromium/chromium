@@ -170,14 +170,15 @@ suite('OverflowableToolbarActionContainerMixinTest', () => {
     assertFalse(actions[2]!.classList.contains('overflow-display-none'));
     assertTrue(actions[3]!.classList.contains('overflow-display-none'));
 
-    // For the sake of completeness, check the case where only `icon1` is
-    // visible.
+    // If only `icon1` is always visible, the divider should also be visible,
+    // since there's a prevent-overflow action to its left, with no divider in
+    // between.
     icon1.preventOverflow = true;
     icon2.preventOverflow = false;
     control.setToMinWidth();
     assertFalse(actions[0]!.classList.contains('overflow-display-none'));
     assertTrue(actions[1]!.classList.contains('overflow-display-none'));
-    assertTrue(actions[2]!.classList.contains('overflow-display-none'));
+    assertFalse(actions[2]!.classList.contains('overflow-display-none'));
     assertTrue(actions[3]!.classList.contains('overflow-display-none'));
   });
 
@@ -287,6 +288,66 @@ suite('OverflowableToolbarActionContainerMixinTest', () => {
     assertFalse(actions[1]!.classList.contains('overflow-display-none'));
     assertFalse(actions[2]!.classList.contains('overflow-display-none'));
     assertFalse(actions[3]!.classList.contains('overflow-display-none'));
+  });
+
+  test('expandUpToPreferredWidth skips visible divider', () => {
+    const actions = control.getActions();
+    const icon1 = actions[0]! as DummyIconElement;
+    icon1.preventOverflow = true;
+
+    // Only allow one additional element to be shown beyond those shown at
+    // min width (`icon1` and the divider).
+    const mockHost = {
+      getAvailableWidth: () => {
+        const hiddenCount =
+            control.getActions()
+                .filter(a => a.classList.contains('overflow-display-none'))
+                .length;
+        return hiddenCount >= 1 ? 100 : -10;
+      },
+    };
+    Object.defineProperty(control, 'getRootNode', {
+      value: () => ({host: mockHost}),
+      configurable: true,
+    });
+
+    control.setToMinWidth();
+    // `icon1` and the divider after it are visible.
+    assertFalse(actions[0]!.classList.contains('overflow-display-none'));
+    assertTrue(actions[1]!.classList.contains('overflow-display-none'));
+    assertFalse(actions[2]!.classList.contains('overflow-display-none'));
+    assertTrue(actions[3]!.classList.contains('overflow-display-none'));
+
+    control.expandUpToPreferredWidth();
+    // `icon3` should be shown. The already-visible divider should be skipped,
+    // and `icon2` doesn't fit.
+    assertFalse(actions[0]!.classList.contains('overflow-display-none'));
+    assertTrue(actions[1]!.classList.contains('overflow-display-none'));
+    assertFalse(actions[2]!.classList.contains('overflow-display-none'));
+    assertFalse(actions[3]!.classList.contains('overflow-display-none'));
+  });
+
+  test('setToMinWidth only shows nearest divider', async () => {
+    const dynamicControl =
+        document.createElement(
+            'test-dynamic-overflowable-toolbar-action-container') as
+        TestDynamicOverflowableToolbarActionContainerElement;
+    document.body.appendChild(dynamicControl);
+    dynamicControl.items = ['icon1', 'divider', 'icon2', 'divider', 'icon3'];
+    await microtasksFinished();
+
+    const actions = dynamicControl.getActions();
+    assertEquals(5, actions.length);
+    (actions[0]! as DummyIconElement).preventOverflow = true;
+
+    dynamicControl.setToMinWidth();
+    // Only the first divider has a prevent-overflow action to its left without
+    // an intervening divider.
+    assertFalse(actions[0]!.classList.contains('overflow-display-none'));
+    assertFalse(actions[1]!.classList.contains('overflow-display-none'));
+    assertTrue(actions[2]!.classList.contains('overflow-display-none'));
+    assertTrue(actions[3]!.classList.contains('overflow-display-none'));
+    assertTrue(actions[4]!.classList.contains('overflow-display-none'));
   });
 
   test('controlsToAddToOverflowMenu', () => {
