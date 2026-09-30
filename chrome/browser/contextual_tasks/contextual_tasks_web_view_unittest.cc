@@ -285,8 +285,11 @@ TEST_F(ContextualTasksWebViewTest,
   web_view_->SetWebContents(web_contents.get());
   EXPECT_TRUE(web_view_->IsGhostLoaderVisible());
 
-  // DidStopLoading while waiting for URL does not prematurely dismiss loader.
+  // DidStopLoading and DidFirstVisuallyNonEmptyPaint while waiting for URL
+  // do not prematurely dismiss loader.
   web_view_->DidStopLoading();
+  EXPECT_TRUE(web_view_->IsGhostLoaderVisible());
+  web_view_->DidFirstVisuallyNonEmptyPaint();
   EXPECT_TRUE(web_view_->IsGhostLoaderVisible());
 
   // When actual navigation starts and paints, ghost loader dismisses.
@@ -296,6 +299,54 @@ TEST_F(ContextualTasksWebViewTest,
   sim->Start();
   EXPECT_TRUE(web_view_->IsGhostLoaderVisible());
 
+  web_view_->DidFirstVisuallyNonEmptyPaint();
+  EXPECT_FALSE(web_view_->IsGhostLoaderVisible());
+}
+
+TEST_F(ContextualTasksWebViewTest,
+       AboutBlankNavigationAndPaintDoNotHideGhostLoader) {
+  web_view_ = std::make_unique<ContextualTasksWebView>(browser_window_.get());
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile_, nullptr);
+  web_view_->SetWebContents(web_contents.get());
+  web_view_->SetGhostLoaderVisible(true);
+  EXPECT_TRUE(web_view_->IsGhostLoaderVisible());
+
+  // An aborted about:blank navigation should not hide the ghost loader.
+  auto aborted_blank_sim = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("about:blank"), web_contents.get());
+  aborted_blank_sim->Start();
+  aborted_blank_sim->AbortCommit();
+  EXPECT_TRUE(web_view_->IsGhostLoaderVisible());
+
+  // A committed about:blank navigation and its first paint / stop loading
+  // should not hide the ghost loader while waiting for the real search page.
+  auto committed_blank_sim =
+      content::NavigationSimulator::CreateBrowserInitiated(GURL("about:blank"),
+                                                           web_contents.get());
+  committed_blank_sim->Commit();
+  EXPECT_TRUE(web_view_->IsGhostLoaderVisible());
+
+  web_view_->DidFirstVisuallyNonEmptyPaint();
+  EXPECT_TRUE(web_view_->IsGhostLoaderVisible());
+
+  web_view_->DidStopLoading();
+  EXPECT_TRUE(web_view_->IsGhostLoaderVisible());
+
+  // Once the real search navigation commits and paints, the ghost loader hides.
+  auto search_sim = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL("https://www.google.com/search?q=test"), web_contents.get());
+  search_sim->SetKeepLoading(true);
+  search_sim->Start();
+  EXPECT_TRUE(web_view_->IsGhostLoaderVisible());
+
+  // Late paint while about:blank is still the committed URL does not hide it.
+  web_view_->DidFirstVisuallyNonEmptyPaint();
+  EXPECT_TRUE(web_view_->IsGhostLoaderVisible());
+
+  search_sim->Commit();
+  EXPECT_TRUE(web_view_->IsGhostLoaderVisible());
   web_view_->DidFirstVisuallyNonEmptyPaint();
   EXPECT_FALSE(web_view_->IsGhostLoaderVisible());
 }

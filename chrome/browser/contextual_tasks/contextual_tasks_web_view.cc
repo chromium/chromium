@@ -34,6 +34,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -42,6 +43,10 @@
 
 namespace contextual_tasks {
 
+namespace {
+constexpr SkColor kDarkModeBackgroundColor = SkColorSetRGB(16, 18, 23);
+}  // namespace
+
 ContextualTasksWebView::ContextualTasksWebView(
     BrowserWindowInterface* browser_window)
     : browser_window_(browser_window) {
@@ -49,6 +54,12 @@ ContextualTasksWebView::ContextualTasksWebView(
               kContextualTasksSidePanelWebViewElementId);
 
   if (IsContextualTasksSidePanelRearchitectureEnabled()) {
+    const bool is_dark_mode =
+        contextual_tasks::ShouldUseDarkMode(browser_window->GetProfile());
+    const SkColor background_color =
+        is_dark_mode ? kDarkModeBackgroundColor : SK_ColorWHITE;
+    SetBackground(views::CreateSolidBackground(background_color));
+
     views::BoxLayout* layout =
         SetLayoutManager(std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kVertical));
@@ -62,9 +73,8 @@ ContextualTasksWebView::ContextualTasksWebView(
     blink::web_pref::WebPreferences prefs =
         toolbar_web_view_->GetWebContents()->GetOrCreateWebPreferences();
     prefs.preferred_color_scheme =
-        contextual_tasks::ShouldUseDarkMode(browser_window->GetProfile())
-            ? blink::mojom::PreferredColorScheme::kDark
-            : blink::mojom::PreferredColorScheme::kLight;
+        is_dark_mode ? blink::mojom::PreferredColorScheme::kDark
+                     : blink::mojom::PreferredColorScheme::kLight;
     toolbar_web_view_->GetWebContents()->SetWebPreferences(prefs);
 
     toolbar_web_view_->SetPreferredSize(gfx::Size(0, 46));
@@ -75,6 +85,8 @@ ContextualTasksWebView::ContextualTasksWebView(
 
     auto content_container = std::make_unique<views::View>();
     content_container->SetLayoutManager(std::make_unique<views::FillLayout>());
+    content_container->SetBackground(
+        views::CreateSolidBackground(background_color));
 
     content_web_view_ = content_container->AddChildView(
         std::make_unique<views::WebView>(browser_window->GetProfile()));
@@ -82,6 +94,11 @@ ContextualTasksWebView::ContextualTasksWebView(
     ghost_loader_view_ = content_container->AddChildView(
         std::make_unique<ContextualTasksGhostLoaderView>(
             browser_window->GetProfile()));
+    views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
+        ghost_loader_view_->GetWebContents(), background_color);
+    ghost_loader_view_->GetWebContents()->SetPageBaseBackgroundColor(
+        background_color);
+    ghost_loader_view_->GetWebContents()->SetWebPreferences(prefs);
     ghost_loader_view_->SetVisible(false);
     webui::SetBrowserWindowInterface(ghost_loader_view_->GetWebContents(),
                                      browser_window);
@@ -129,18 +146,24 @@ void ContextualTasksWebView::SetWebContents(content::WebContents* wc) {
   content_web_view_->SetWebContents(wc);
 
   if (IsContextualTasksSidePanelRearchitectureEnabled()) {
+    ignore_next_stop_loading_for_about_blank_ = false;
     Observe(wc);
     if (wc) {
       bool should_show_ghost_loader = false;
       if (browser_window_ && browser_window_->GetProfile()) {
+        const SkColor background_color =
+            contextual_tasks::ShouldUseDarkMode(browser_window_->GetProfile())
+                ? kDarkModeBackgroundColor
+                : SK_ColorWHITE;
+        views::WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
+            wc, background_color);
+        wc->SetPageBaseBackgroundColor(background_color);
+
         auto* ui_service =
             ContextualTasksUiServiceFactory::GetForBrowserContext(
                 browser_window_->GetProfile());
         if (ui_service) {
-          auto* helper = ContextualSearchWebContentsHelper::FromWebContents(wc);
-          bool is_waiting =
-              helper && helper->task_id().has_value() &&
-              ui_service->IsTaskWaitingForUrl(helper->task_id().value());
+          bool is_waiting = IsTaskWaitingForUrl();
           bool is_loading = wc->IsLoading();
           const GURL& url = wc->GetVisibleURL();
           bool is_ai = ui_service->IsAiUrl(url);
@@ -197,8 +220,10 @@ void ContextualTasksWebView::DidStartNavigation(
 
   const GURL& url = navigation_handle->GetURL();
   if (url.is_empty() || url.IsAboutBlank()) {
+    ignore_next_stop_loading_for_about_blank_ = true;
     return;
   }
+  ignore_next_stop_loading_for_about_blank_ = false;
 
   bool is_ai_url = false;
   if (browser_window_ && browser_window_->GetProfile()) {
@@ -250,10 +275,20 @@ void ContextualTasksWebView::DidFinishNavigation(
     return;
   }
 
-  if (!navigation_handle->IsSameDocument() &&
-      (!navigation_handle->HasCommitted() ||
-       navigation_handle->IsErrorPage())) {
-    SetGhostLoaderVisible(false);
+  if (!navigation_handle->IsSameDocument()) {
+    const GURL& url = navigation_handle->GetURL();
+    if (url.is_empty() || url.IsAboutBlank()) {
+      ignore_next_stop_loading_for_about_blank_ = true;
+      return;
+    }
+
+    if (!navigation_handle->HasCommitted() ||
+        navigation_handle->IsErrorPage()) {
+      if (IsTaskWaitingForUrl()) {
+        return;
+      }
+      SetGhostLoaderVisible(false);
+    }
   }
 
   if (!navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
@@ -283,19 +318,29 @@ void ContextualTasksWebView::DidFinishNavigation(
 }
 
 void ContextualTasksWebView::DidFirstVisuallyNonEmptyPaint() {
+  if (web_contents()) {
+    const GURL& visible_url = web_contents()->GetVisibleURL();
+    const GURL& committed_url = web_contents()->GetLastCommittedURL();
+    if (visible_url.is_empty() || visible_url.IsAboutBlank() ||
+        committed_url.IsAboutBlank()) {
+      return;
+    }
+  }
   SetGhostLoaderVisible(false);
 }
 
 void ContextualTasksWebView::DidStopLoading() {
-  if (browser_window_ && browser_window_->GetProfile() && web_contents()) {
-    auto* ui_service = ContextualTasksUiServiceFactory::GetForBrowserContext(
-        browser_window_->GetProfile());
-    auto* helper =
-        ContextualSearchWebContentsHelper::FromWebContents(web_contents());
-    if (ui_service && helper && helper->task_id().has_value() &&
-        ui_service->IsTaskWaitingForUrl(helper->task_id().value())) {
-      return;
-    }
+  if (ignore_next_stop_loading_for_about_blank_) {
+    ignore_next_stop_loading_for_about_blank_ = false;
+    return;
+  }
+  if (IsTaskWaitingForUrl()) {
+    return;
+  }
+  if (web_contents() &&
+      (web_contents()->IsLoading() ||
+       web_contents()->GetLastCommittedURL().IsAboutBlank())) {
+    return;
   }
   SetGhostLoaderVisible(false);
 }
@@ -372,6 +417,18 @@ void ContextualTasksWebView::DetachWebContentsModalDialogManager(
   if (dialog_manager) {
     dialog_manager->SetDelegate(nullptr);
   }
+}
+
+bool ContextualTasksWebView::IsTaskWaitingForUrl() const {
+  if (!browser_window_ || !browser_window_->GetProfile() || !web_contents()) {
+    return false;
+  }
+  auto* ui_service = ContextualTasksUiServiceFactory::GetForBrowserContext(
+      browser_window_->GetProfile());
+  auto* helper =
+      ContextualSearchWebContentsHelper::FromWebContents(web_contents());
+  return ui_service && helper && helper->task_id().has_value() &&
+         ui_service->IsTaskWaitingForUrl(helper->task_id().value());
 }
 
 BEGIN_METADATA(ContextualTasksWebView)
