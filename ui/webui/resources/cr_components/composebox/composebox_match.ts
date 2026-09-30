@@ -119,9 +119,7 @@ export class ComposeboxMatchElement extends CrLitElement {
       event.preventDefault();
     });
 
-    this.style.setProperty(
-        '--clamp-line-num',
-        `${this.overrideClampLineNum > -1 ? this.overrideClampLineNum : 2}`);
+    this.style.setProperty('--clamp-line-num', `${this.overrideClampLineNum}`);
   }
 
   private computeSuggestStyle_(): string {
@@ -137,19 +135,12 @@ export class ComposeboxMatchElement extends CrLitElement {
     }
   }
 
-  private computeIsTwoRowSuggestion_(): boolean {
-    // Rich image suggestions have their own (grid) layout and never render a
-    // second row of text.
-    return !this.isRichImage && this.match.isTwoRowSuggestion &&
-        !!this.match.description;
-  }
-
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
     if (changedProperties.has('match') ||
         changedProperties.has('richImageSuggestionsEnabled')) {
       this.suggestStyle = this.computeSuggestStyle_();
-      this.isTwoRowSuggestion = this.computeIsTwoRowSuggestion_();
+      this.isTwoRowSuggestion = this.match.isTwoRowSuggestion;
     }
   }
 
