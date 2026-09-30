@@ -12,6 +12,7 @@
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #import "components/autofill/core/browser/network/autofill_ai/mock_wallet_pass_access_manager.h"
+#import "components/autofill/core/browser/payments/test_legal_message_line.h"
 #import "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/consent_auditor/fake_consent_auditor.h"
@@ -25,6 +26,7 @@
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_country_item.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_consumer.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_edit_item.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/utils/autofill_ai_entity_instance_builder.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/sync/model/test_sync_service_utils.h"
@@ -34,6 +36,7 @@
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
+#import "url/gurl.h"
 
 @interface FakeAutofillAIEntityEditMediatorDelegate
     : NSObject <AutofillAIEntityEditMediatorDelegate>
@@ -54,6 +57,7 @@ class AutofillAIEntityEditMediatorTest : public PlatformTest {
   AutofillAIEntityEditMediatorTest() {
     scoped_feature_list_.InitWithFeatures(
         {autofill::features::kAutofillAiWithDataSchema,
+         autofill::features::kAutofillEnableWalletDisclosureNoticePublicPass,
          wallet::features::kWalletApiPrivatePassesConsent},
         {});
 
@@ -376,4 +380,288 @@ TEST_F(AutofillAIEntityEditMediatorTest, SetsCreateModeTitle) {
   EXPECT_EQ(consumer_.mode, AutofillAIEntityEditMode::kCreate);
   EXPECT_NSEQ(consumer_.title,
               autofill::GetDialogTitleForAddEntity(instance.type().name()));
+}
+
+// Tests that a public pass eligible for a wallet disclosure notice without
+// preloaded disclosure details is presented and saved as a local entity.
+TEST_F(AutofillAIEntityEditMediatorTest,
+       PublicPass_NoPreloadedDetails_FallsBackToLocal) {
+  autofill::EntityInstance wallet_instance =
+      autofill::test::GetVehicleEntityInstance(
+          {.record_type = autofill::EntityInstance::WalletRecordTypePayload{
+               .management_url = GURL()}});
+  autofill::EntityInstance::EntityId guid = wallet_instance.guid();
+
+  EXPECT_CALL(*mock_wallet_pass_manager_,
+              ExtractPreloadedDetailsForUpsertPass(wallet_instance.type()))
+      .WillOnce(testing::Return(std::nullopt));
+
+  CreateMediator(std::move(wallet_instance), AutofillAIEntityEditMode::kCreate);
+
+  EXPECT_FALSE(consumer_.isServerWalletItem);
+  EXPECT_EQ(consumer_.legalMessages.count, 0u);
+
+  [mediator_ saveEntityInstance];
+
+  // The entity was presented as local, so no fallback alert is needed.
+  EXPECT_TRUE(consumer_.didFinishSavingCalled);
+  EXPECT_FALSE(consumer_.didFinishSavingToLocalAsFallbackCalled);
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, true, ^{
+        return entity_data_manager_->GetEntityInstance(guid).has_value();
+      }));
+
+  base::optional_ref<const autofill::EntityInstance> saved_instance =
+      entity_data_manager_->GetEntityInstance(guid);
+  EXPECT_EQ(saved_instance->record_type(),
+            autofill::EntityInstance::RecordType::kLocal);
+}
+
+// Tests that when the wallet disclosure notice feature is disabled, a public
+// pass is saved to Google Wallet without showing any legal messages and without
+// consuming the preloaded single-use disclosure details.
+TEST_F(AutofillAIEntityEditMediatorTest,
+       FeatureDisabled_PublicPass_SavesToWalletWithoutDisclosure) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      autofill::features::kAutofillEnableWalletDisclosureNoticePublicPass);
+
+  autofill::EntityInstance wallet_instance =
+      autofill::test::GetVehicleEntityInstance(
+          {.record_type = autofill::EntityInstance::WalletRecordTypePayload{
+               .management_url = GURL()}});
+  autofill::EntityInstance::EntityId guid = wallet_instance.guid();
+
+  EXPECT_CALL(*mock_wallet_pass_manager_, ExtractPreloadedDetailsForUpsertPass)
+      .Times(0);
+
+  CreateMediator(std::move(wallet_instance), AutofillAIEntityEditMode::kCreate);
+
+  // No disclosure notice is required, so no legal messages are shown and the
+  // entity is still presented and saved as a Wallet item.
+  EXPECT_EQ(consumer_.legalMessages.count, 0u);
+  EXPECT_TRUE(consumer_.isServerWalletItem);
+
+  [mediator_ saveEntityInstance];
+
+  EXPECT_TRUE(consumer_.didFinishSavingCalled);
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, true, ^{
+        return entity_data_manager_->GetEntityInstance(guid).has_value();
+      }));
+
+  base::optional_ref<const autofill::EntityInstance> saved_instance =
+      entity_data_manager_->GetEntityInstance(guid);
+  EXPECT_EQ(saved_instance->record_type(),
+            autofill::EntityInstance::RecordType::kServerWallet);
+}
+
+// Tests that when an entity is ineligible for a wallet disclosure notice, legal
+// messages are not pushed to the consumer and the preloaded single-use
+// disclosure details are not consumed.
+TEST_F(AutofillAIEntityEditMediatorTest,
+       IneligibleEntity_DoesNotConsumePreloadedDetails) {
+  // Local vehicle entities are ineligible for wallet disclosure notices.
+  autofill::EntityInstance instance =
+      autofill::test::GetVehicleEntityInstance();
+
+  EXPECT_CALL(*mock_wallet_pass_manager_, ExtractPreloadedDetailsForUpsertPass)
+      .Times(0);
+
+  CreateMediator(instance, AutofillAIEntityEditMode::kCreate);
+
+  // Legal messages should be suppressed because the entity is ineligible.
+  EXPECT_EQ(consumer_.legalMessages.count, 0u);
+
+  [mediator_ saveEntityInstance];
+
+  EXPECT_TRUE(consumer_.didFinishSavingCalled);
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, true, ^{
+        return entity_data_manager_->GetEntityInstance(instance.guid())
+            .has_value();
+      }));
+}
+
+// Tests that when an eligible user has preloaded disclosure details, legal
+// messages are pushed to the consumer and the entity is saved to Wallet.
+TEST_F(AutofillAIEntityEditMediatorTest,
+       PublicPass_WithPreloadedDetails_PushesLegalMessagesAndSaves) {
+  autofill::EntityInstance wallet_instance =
+      autofill::test::GetVehicleEntityInstance(
+          {.record_type = autofill::EntityInstance::WalletRecordTypePayload{
+               .management_url = GURL()}});
+  autofill::EntityInstance::EntityId guid = wallet_instance.guid();
+
+  autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse response;
+  response.context_token = "test_context_token";
+  response.legal_message_lines.push_back(
+      autofill::TestLegalMessageLine("Test Legal Message"));
+  response.user_eligibility =
+      autofill::WalletPassAccessManager::UserEligibility::kEligible;
+
+  EXPECT_CALL(*mock_wallet_pass_manager_,
+              ExtractPreloadedDetailsForUpsertPass(wallet_instance.type()))
+      .WillOnce(testing::Return(response));
+
+  CreateMediator(std::move(wallet_instance), AutofillAIEntityEditMode::kCreate);
+
+  // Legal messages should be pushed to the consumer.
+  EXPECT_EQ(consumer_.legalMessages.count, 1u);
+  EXPECT_TRUE(consumer_.isServerWalletItem);
+
+  [mediator_ saveEntityInstance];
+
+  EXPECT_TRUE(consumer_.didFinishSavingCalled);
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, true, ^{
+        return entity_data_manager_->GetEntityInstance(guid).has_value();
+      }));
+}
+
+// Tests that a user who is not eligible to see the Google Wallet disclosure
+// notice saves a public pass to Google Wallet without legal messages, matching
+// the desktop save prompt.
+TEST_F(AutofillAIEntityEditMediatorTest,
+       PublicPass_IneligibleUser_SavesToWalletWithoutDisclosure) {
+  autofill::EntityInstance wallet_instance =
+      autofill::test::GetVehicleEntityInstance(
+          {.record_type = autofill::EntityInstance::WalletRecordTypePayload{
+               .management_url = GURL()}});
+  autofill::EntityInstance::EntityId guid = wallet_instance.guid();
+
+  autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse response;
+  response.context_token = "test_context_token";
+  response.legal_message_lines.push_back(
+      autofill::TestLegalMessageLine("Test Legal Message"));
+  response.user_eligibility =
+      autofill::WalletPassAccessManager::UserEligibility::kIneligible;
+
+  EXPECT_CALL(*mock_wallet_pass_manager_,
+              ExtractPreloadedDetailsForUpsertPass(wallet_instance.type()))
+      .WillOnce(testing::Return(response));
+
+  CreateMediator(std::move(wallet_instance), AutofillAIEntityEditMode::kCreate);
+
+  EXPECT_EQ(consumer_.legalMessages.count, 0u);
+  EXPECT_TRUE(consumer_.isServerWalletItem);
+
+  [mediator_ saveEntityInstance];
+
+  EXPECT_TRUE(consumer_.didFinishSavingCalled);
+  EXPECT_FALSE(consumer_.didFinishSavingToLocalAsFallbackCalled);
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, true, ^{
+        return entity_data_manager_->GetEntityInstance(guid).has_value();
+      }));
+
+  base::optional_ref<const autofill::EntityInstance> saved_instance =
+      entity_data_manager_->GetEntityInstance(guid);
+  EXPECT_EQ(saved_instance->record_type(),
+            autofill::EntityInstance::RecordType::kServerWallet);
+}
+
+// Tests that an eligible user's response without legal messages cannot back
+// the disclosure notice, so the public pass falls back to local storage.
+TEST_F(AutofillAIEntityEditMediatorTest,
+       PublicPass_EligibleUserWithoutLegalMessages_FallsBackToLocal) {
+  autofill::EntityInstance wallet_instance =
+      autofill::test::GetVehicleEntityInstance(
+          {.record_type = autofill::EntityInstance::WalletRecordTypePayload{
+               .management_url = GURL()}});
+  autofill::EntityInstance::EntityId guid = wallet_instance.guid();
+
+  autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse response;
+  response.context_token = "test_context_token";
+  response.user_eligibility =
+      autofill::WalletPassAccessManager::UserEligibility::kEligible;
+
+  EXPECT_CALL(*mock_wallet_pass_manager_,
+              ExtractPreloadedDetailsForUpsertPass(wallet_instance.type()))
+      .WillOnce(testing::Return(response));
+
+  CreateMediator(std::move(wallet_instance), AutofillAIEntityEditMode::kCreate);
+
+  EXPECT_EQ(consumer_.legalMessages.count, 0u);
+  EXPECT_FALSE(consumer_.isServerWalletItem);
+
+  [mediator_ saveEntityInstance];
+
+  // The entity was presented as local, so no fallback alert is needed.
+  EXPECT_TRUE(consumer_.didFinishSavingCalled);
+  EXPECT_FALSE(consumer_.didFinishSavingToLocalAsFallbackCalled);
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, true, ^{
+        return entity_data_manager_->GetEntityInstance(guid).has_value();
+      }));
+
+  base::optional_ref<const autofill::EntityInstance> saved_instance =
+      entity_data_manager_->GetEntityInstance(guid);
+  EXPECT_EQ(saved_instance->record_type(),
+            autofill::EntityInstance::RecordType::kLocal);
+}
+
+// Tests that an eligible user's response without a context token cannot back
+// the disclosure notice, so the public pass falls back to local storage.
+TEST_F(AutofillAIEntityEditMediatorTest,
+       PublicPass_EligibleUserWithoutContextToken_FallsBackToLocal) {
+  autofill::EntityInstance wallet_instance =
+      autofill::test::GetVehicleEntityInstance(
+          {.record_type = autofill::EntityInstance::WalletRecordTypePayload{
+               .management_url = GURL()}});
+  autofill::EntityInstance::EntityId guid = wallet_instance.guid();
+
+  autofill::WalletPassAccessManager::GetDetailsForUpsertPassResponse response;
+  response.legal_message_lines.push_back(
+      autofill::TestLegalMessageLine("Test Legal Message"));
+  response.user_eligibility =
+      autofill::WalletPassAccessManager::UserEligibility::kEligible;
+
+  EXPECT_CALL(*mock_wallet_pass_manager_,
+              ExtractPreloadedDetailsForUpsertPass(wallet_instance.type()))
+      .WillOnce(testing::Return(response));
+
+  CreateMediator(std::move(wallet_instance), AutofillAIEntityEditMode::kCreate);
+
+  EXPECT_EQ(consumer_.legalMessages.count, 0u);
+  EXPECT_FALSE(consumer_.isServerWalletItem);
+
+  [mediator_ saveEntityInstance];
+
+  // The entity was presented as local, so no fallback alert is needed.
+  EXPECT_TRUE(consumer_.didFinishSavingCalled);
+  EXPECT_FALSE(consumer_.didFinishSavingToLocalAsFallbackCalled);
+
+  ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForActionTimeout, true, ^{
+        return entity_data_manager_->GetEntityInstance(guid).has_value();
+      }));
+
+  base::optional_ref<const autofill::EntityInstance> saved_instance =
+      entity_data_manager_->GetEntityInstance(guid);
+  EXPECT_EQ(saved_instance->record_type(),
+            autofill::EntityInstance::RecordType::kLocal);
+}
+
+// Tests that viewing or editing an existing public pass does not consume the
+// preloaded single-use disclosure details, which are reserved for the create
+// flow.
+TEST_F(AutofillAIEntityEditMediatorTest,
+       PublicPass_ViewAndEditMode_DoesNotConsumePreloadedDetails) {
+  autofill::EntityInstance wallet_instance =
+      autofill::test::GetVehicleEntityInstance(
+          {.record_type = autofill::EntityInstance::WalletRecordTypePayload{
+               .management_url = GURL()}});
+
+  EXPECT_CALL(*mock_wallet_pass_manager_, ExtractPreloadedDetailsForUpsertPass)
+      .Times(0);
+
+  CreateMediator(std::move(wallet_instance),
+                 AutofillAIEntityEditMode::kViewAndEdit);
 }
