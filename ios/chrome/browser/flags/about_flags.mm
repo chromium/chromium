@@ -1199,6 +1199,9 @@ const FeatureEntry::FeatureParam
          "false"},
         {contextual_cueing::
              kGeminiContextualSuggestionsCuesTitleAndUrlOnlyParam,
+         "true"},
+        {contextual_cueing::
+             kGeminiContextualSuggestionsCuesServerModelExecutionParam,
          "true"}};
 const FeatureEntry::FeatureParam
     kGeminiContextualSuggestionsCuesWithOnDeviceClassifierGPU[] = {
@@ -1210,6 +1213,9 @@ const FeatureEntry::FeatureParam
          "true"},
         {contextual_cueing::
              kGeminiContextualSuggestionsCuesTitleAndUrlOnlyParam,
+         "true"},
+        {contextual_cueing::
+             kGeminiContextualSuggestionsCuesServerModelExecutionParam,
          "true"}};
 const FeatureEntry::FeatureParam
     kGeminiContextualSuggestionsCuesWithOnDeviceClassifierApcCPU[] = {
