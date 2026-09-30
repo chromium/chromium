@@ -5218,10 +5218,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
       FILE_PATH_LITERAL("dialog-modal/examples/dialog.html"));
 }
 
-// TODO(crbug.com/545647752): disabled due to flakiness
-IN_PROC_BROWSER_TEST_P(
-    DumpAccessibilityTreeTest,
-    DISABLED_AccessibilityApgPatternThirdPartyDisclosureCard) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityApgPatternThirdPartyDisclosureCard) {
   RunApgPatternThirdPartyTest(
       FILE_PATH_LITERAL("disclosure/examples/disclosure-card.html"));
 }

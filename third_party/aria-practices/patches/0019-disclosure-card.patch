@@ -1,8 +1,12 @@
 diff --git a/third_party/aria-practices/src/content/patterns/disclosure/examples/disclosure-card.html b/third_party/aria-practices/src/content/patterns/disclosure/examples/disclosure-card.html
-index 3d409091e9f4e..16935b94e8615 100644
+index 3d409091e9f4e..4bf0af276ca19 100644
 --- a/third_party/aria-practices/src/content/patterns/disclosure/examples/disclosure-card.html
 +++ b/third_party/aria-practices/src/content/patterns/disclosure/examples/disclosure-card.html
-@@ -2,88 +2,13 @@
+@@ -1,89 +1,17 @@
+ <!DOCTYPE html>
++<!--
++@BLINK-DENY-NODE:internalRole=inlineTextBox
++-->
  <html lang="en">
    <head>
      <meta charset="utf-8">
@@ -91,7 +95,7 @@ index 3d409091e9f4e..16935b94e8615 100644
          <div id="ex1">
            <div class="disclosure-cards">
              <h3 id="conference-heading">Musical Education Conference</h3>
-@@ -358,267 +283,5 @@
+@@ -358,267 +286,5 @@
              </ol>
            </div>
          </div>

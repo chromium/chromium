@@ -1518,10 +1518,8 @@ public class WebContentsAccessibilityTreeTest {
         performApgPatternThirdPartyTest("dialog-modal/examples/dialog.html");
     }
 
-    // TODO(crbug.com/545647752): disabled due to flakiness
     @Test
     @SmallTest
-    @DisabledTest(message = "b/545647752")
     public void test_ariaApgPatternThirdPartyDisclosureCard() {
         performApgPatternThirdPartyTest("disclosure/examples/disclosure-card.html");
     }
