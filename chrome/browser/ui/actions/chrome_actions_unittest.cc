@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/actions/chrome_actions.h"
 
+#include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -32,8 +33,14 @@ TEST_F(ChromeActionsTest, InitializeActionIdStringMappingTest) {
   EXPECT_THAT(actual_action_id, testing::Optional(kActionSidePanelShowFeed));
 }
 
+TEST_F(ChromeActionsTest, UseActionsForBrowserCommandsEnabledByDefault) {
+  EXPECT_TRUE(
+      base::FeatureList::IsEnabled(features::kUseActionsForBrowserCommands));
+  EXPECT_TRUE(features::ShouldUseActionsForBrowserCommands());
+}
+
 TEST_F(ChromeActionsTest, ShouldUseActionsForBrowserCommands) {
-  // Both disabled by default.
+  // Both explicitly disabled.
   {
     base::test::ScopedFeatureList feature_list;
     feature_list.InitWithFeatures(

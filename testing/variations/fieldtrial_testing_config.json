@@ -18767,24 +18767,6 @@
             ]
         }
     ],
-    "UseActionsForBrowserCommands": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "UseActionsForBrowserCommands"
-                    ]
-                }
-            ]
-        }
-    ],
     "UseAndroidCustomFrameDeadlines": [
         {
             "platforms": [
