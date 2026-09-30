@@ -1099,22 +1099,28 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                             Profile regularProfile = profile.getOriginalProfile();
                             assert mMessageDispatcher != null;
                             boolean didShowPrompt =
-                                    RequestDesktopUtils.maybeShowDefaultEnableGlobalSettingMessage(
-                                            regularProfile, mMessageDispatcher, mActivity);
+                                    !isWebAppActivity()
+                                            && RequestDesktopUtils
+                                                    .maybeShowDefaultEnableGlobalSettingMessage(
+                                                            regularProfile,
+                                                            mMessageDispatcher,
+                                                            mActivity);
 
                             if (!didShowPrompt
                                     && mAppMenuCoordinator != null
                                     && mToolbarManager != null) {
                                 var menuButtonView = mToolbarManager.getMenuButtonView();
                                 assert menuButtonView != null;
-                                mDesktopSiteSettingsIphController =
-                                        DesktopSiteSettingsIphController.create(
-                                                mActivity,
-                                                mWindowAndroid,
-                                                mActivityTabProvider,
-                                                regularProfile,
-                                                menuButtonView,
-                                                mAppMenuCoordinator.getAppMenuHandler());
+                                if (!isWebAppActivity()) {
+                                    mDesktopSiteSettingsIphController =
+                                            DesktopSiteSettingsIphController.create(
+                                                    mActivity,
+                                                    mWindowAndroid,
+                                                    mActivityTabProvider,
+                                                    regularProfile,
+                                                    menuButtonView,
+                                                    mAppMenuCoordinator.getAppMenuHandler());
+                                }
                                 mPdfPageIphController =
                                         PdfPageIphController.create(
                                                 mActivity,
@@ -1126,6 +1132,10 @@ public class BaseCustomTabRootUiCoordinator extends RootUiCoordinator {
                                                 /* isBrowserApp= */ false);
                             }
                         }));
+    }
+
+    @Nullable DesktopSiteSettingsIphController getDesktopSiteSettingsIphControllerForTesting() {
+        return mDesktopSiteSettingsIphController;
     }
 
     @Nullable CustomTabHeightStrategy getCustomTabSizeStrategyForTesting() {
