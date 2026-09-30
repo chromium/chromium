@@ -7,22 +7,14 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.clearInvocations;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.view.View;
 import android.view.View.MeasureSpec;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
@@ -39,16 +31,26 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
  * both BaseSuggestionViewUnitTest and this file.
  */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SuggestionLayoutUnitTest {
+    private static class TestSuggestionLayout extends SuggestionLayout {
+        int mInvalidateOutlineCalls;
 
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+        TestSuggestionLayout(Context context) {
+            super(context);
+            mInvalidateOutlineCalls = 0;
+        }
+
+        @Override
+        public void invalidateOutline() {
+            mInvalidateOutlineCalls++;
+            super.invalidateOutline();
+        }
+    }
 
     private final Context mContext = ContextUtils.getApplicationContext();
     private final View mDecorationView = new View(mContext);
     private final View mContentView = new View(mContext);
-    private SuggestionLayout mLayout = new SuggestionLayout(mContext);
+    private TestSuggestionLayout mLayout = new TestSuggestionLayout(mContext);
     private OmniboxResourceProvider mResourceProvider;
 
     @Before
@@ -63,58 +65,57 @@ public class SuggestionLayoutUnitTest {
 
     @Test
     public void setRoundingEdges_redrawViewOnChange() {
-        SuggestionLayout spy = spy(mLayout);
         // This test verifies whether View properly rounds its edges and that it redraws itself when
         // the new configuration differs from the old one.
 
         // By default, no edges are rounded.
         assertFalse(
                 "Unexpected default value of the top edge rounding",
-                spy.mOutlineProvider.isTopEdgeRounded());
+                mLayout.mOutlineProvider.isTopEdgeRounded());
         assertFalse(
                 "Unexpected default value of the bottom edge rounding",
-                spy.mOutlineProvider.isBottomEdgeRounded());
+                mLayout.mOutlineProvider.isBottomEdgeRounded());
 
-        spy.setRoundingEdges(/* roundTopEdge= */ false, /* roundBottomEdge= */ false);
+        mLayout.setRoundingEdges(/* roundTopEdge= */ false, /* roundBottomEdge= */ false);
         assertFalse(
                 "Top edge rounding does not reflect the requested state: false",
-                spy.mOutlineProvider.isTopEdgeRounded());
+                mLayout.mOutlineProvider.isTopEdgeRounded());
         assertFalse(
                 "Bottom edge rounding does not reflect the requested state: false",
-                spy.mOutlineProvider.isBottomEdgeRounded());
+                mLayout.mOutlineProvider.isBottomEdgeRounded());
         // No invalidate calls, because nothing has changed.
-        verify(spy, never()).invalidateOutline();
+        assertEquals(0, mLayout.mInvalidateOutlineCalls);
 
         // Enable rounding of bottom corners only. Observe redraw.
-        spy.setRoundingEdges(/* roundTopEdge= */ false, /* roundBottomEdge= */ true);
+        mLayout.setRoundingEdges(/* roundTopEdge= */ false, /* roundBottomEdge= */ true);
         assertFalse(
                 "Top edge rounding does not reflect the requested state: false",
-                spy.mOutlineProvider.isTopEdgeRounded());
+                mLayout.mOutlineProvider.isTopEdgeRounded());
         assertTrue(
                 "Bottom edge rounding does not reflect the requested state: true",
-                spy.mOutlineProvider.isBottomEdgeRounded());
-        verify(spy).invalidateOutline();
-        clearInvocations(spy);
+                mLayout.mOutlineProvider.isBottomEdgeRounded());
+        assertEquals(1, mLayout.mInvalidateOutlineCalls);
+        mLayout.mInvalidateOutlineCalls = 0;
 
         // Apply the same configuration as previously. Observe no redraw.
-        spy.setRoundingEdges(/* roundTopEdge= */ false, /* roundBottomEdge= */ true);
+        mLayout.setRoundingEdges(/* roundTopEdge= */ false, /* roundBottomEdge= */ true);
         assertFalse(
                 "Top edge rounding does not reflect the requested state: false",
-                spy.mOutlineProvider.isTopEdgeRounded());
+                mLayout.mOutlineProvider.isTopEdgeRounded());
         assertTrue(
                 "Bottom edge rounding does not reflect the requested state: true",
-                spy.mOutlineProvider.isBottomEdgeRounded());
-        verify(spy, never()).invalidateOutline();
+                mLayout.mOutlineProvider.isBottomEdgeRounded());
+        assertEquals(0, mLayout.mInvalidateOutlineCalls);
 
         // Enable rounding of all corners. Observe redraw.
-        spy.setRoundingEdges(/* roundTopEdge= */ true, /* roundBottomEdge= */ true);
+        mLayout.setRoundingEdges(/* roundTopEdge= */ true, /* roundBottomEdge= */ true);
         assertTrue(
                 "Top edge rounding does not reflect the requested state: true",
-                spy.mOutlineProvider.isTopEdgeRounded());
+                mLayout.mOutlineProvider.isTopEdgeRounded());
         assertTrue(
                 "Bottom edge rounding does not reflect the requested state: true",
-                spy.mOutlineProvider.isBottomEdgeRounded());
-        verify(spy).invalidateOutline();
+                mLayout.mOutlineProvider.isBottomEdgeRounded());
+        assertEquals(1, mLayout.mInvalidateOutlineCalls);
     }
 
     @Test
@@ -155,7 +156,7 @@ public class SuggestionLayoutUnitTest {
     @Config(qualifiers = "sw600dp")
     public void suggestionPadding_modernUiEnabled() {
         // Re-create layout with new feature flags and overrides.
-        mLayout = new SuggestionLayout(mContext);
+        mLayout = new TestSuggestionLayout(mContext);
 
         int endSpace =
                 mContext.getResources()
