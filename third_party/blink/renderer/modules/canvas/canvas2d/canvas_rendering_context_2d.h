@@ -94,8 +94,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
     : public ScriptWrappable,
       public BaseRenderingContext2D,
       public SVGResourceClient,
-      public CanvasHibernationHandler::Delegate,
-      public FlushForImageObserver {
+      public CanvasHibernationHandler::Delegate {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -150,9 +149,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   // SVGResourceClient implementation
   void ResourceContentChanged(SVGResource*) override;
-
-  // FlushForImageObserver implementation
-  void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
 
   void UpdateFilterReferences(const FilterOperations&);
   void ClearFilterReferences();

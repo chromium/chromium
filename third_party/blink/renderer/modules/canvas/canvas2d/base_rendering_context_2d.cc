@@ -790,6 +790,16 @@ void BaseRenderingContext2D::RecordingCleared() {
   }
 }
 
+void BaseRenderingContext2D::OnFlushForImage(
+    cc::PaintImage::ContentId content_id) {
+  if (shared_image_provider_ && !shared_image_provider_->IsSoftware()) {
+    if (Recorder()->getRecordingCanvas().IsCachingImage(content_id)) {
+      FlushCanvas(FlushReason::kOther);
+    }
+    shared_image_provider_->OnFlushForImage(content_id);
+  }
+}
+
 void BaseRenderingContext2D::Reset() {
   ResetInternal();
 }

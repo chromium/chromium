@@ -545,16 +545,6 @@ std::optional<cc::PaintRecord> OffscreenCanvasRenderingContext2D::FlushCanvas(
   return FlushCanvasInternal(reason);
 }
 
-void OffscreenCanvasRenderingContext2D::OnFlushForImage(
-    cc::PaintImage::ContentId content_id) {
-  if (shared_image_provider_ && !shared_image_provider_->IsSoftware()) {
-    if (Recorder()->getRecordingCanvas().IsCachingImage(content_id)) {
-      FlushCanvas(FlushReason::kOther);
-    }
-    shared_image_provider_->OnFlushForImage(content_id);
-  }
-}
-
 bool OffscreenCanvasRenderingContext2D::IsResourceProviderValid() const {
   if (shared_image_provider_) {
     return shared_image_provider_->IsValid();

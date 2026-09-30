@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_color_params.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_deferred_paint_record.h"
+#include "third_party/blink/renderer/platform/graphics/flush_for_image_listener.h"
 #include "third_party/blink/renderer/platform/graphics/flush_reason.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
@@ -77,11 +78,15 @@ enum class PredefinedColorSpace;
 class MODULES_EXPORT BaseRenderingContext2D
     : public CanvasRenderingContext,
       public Canvas2DRecorderContext,
-      public MemoryManagedPaintRecorder::Client {
+      public MemoryManagedPaintRecorder::Client,
+      public FlushForImageObserver {
  public:
   // MemoryManagedPaintRecorder::Client implementation.
   void InitializeForRecording(cc::PaintCanvas* canvas) const override;
   void RecordingCleared() override;
+
+  // FlushForImageObserver implementation.
+  void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
 
   using Canvas2DRecorderContext::Recorder;
   const MemoryManagedPaintRecorder* Recorder() const final;

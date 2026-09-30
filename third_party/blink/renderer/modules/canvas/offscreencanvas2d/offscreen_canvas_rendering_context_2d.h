@@ -29,8 +29,7 @@ class MemoryManagedPaintCanvas;
 
 class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
     : public ScriptWrappable,
-      public BaseRenderingContext2D,
-      public FlushForImageObserver {
+      public BaseRenderingContext2D {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -101,9 +100,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
 
   void WillDraw(const gfx::Rect& dirty_rect,
                 CanvasPerformanceMonitor::DrawType) final;
-
-  // FlushForImageObserver implementation
-  void OnFlushForImage(cc::PaintImage::ContentId content_id) override;
 
   sk_sp<PaintFilter> StateGetFilter() final;
 
