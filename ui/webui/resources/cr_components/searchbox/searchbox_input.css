@@ -177,4 +177,8 @@ cr-searchbox-icon,
   text-overflow: ellipsis;
 }
 
-
+/* Kept in the accessibility tree but moved offscreen. */
+#selectionAnnouncement {
+  left: -10000px;
+  position: absolute;
+}

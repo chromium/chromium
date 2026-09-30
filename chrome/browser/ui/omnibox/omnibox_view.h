@@ -279,6 +279,11 @@ class OmniboxView {
       const AutocompleteMatch& match,
       int& suggestion_text_prefix_length);
 
+  // Returns true if the full WebUI popup is showing. It has its own input and
+  // narrates suggestion selections itself, so this view must not also narrate
+  // them; doing both makes the screen reader interrupt itself.
+  bool IsSuggestionNarrationOwnedByWebUIPopup() const;
+
   virtual OmniboxController* controller();
   virtual const OmniboxController* controller() const;
 
