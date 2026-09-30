@@ -106,6 +106,7 @@ source_set("utils") {
     "//base",
     "//ios/chrome/browser/default_browser/model:features",
     "//ios/chrome/browser/intelligence/features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/common/app_group",
     "//url",
   ]
@@ -116,6 +117,7 @@ source_set("unit_tests") {
   sources = [ "chrome_app_startup_parameters_unittest.mm" ]
   deps = [
     ":startup",
+    ":utils",
     "//base",
     "//base/test:test_support",
     "//components/password_manager/core/browser",
@@ -123,6 +125,7 @@ source_set("unit_tests") {
     "//ios/chrome/app/startup:startup_basic",
     "//ios/chrome/browser/default_browser/model:test_support",
     "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/flags:system_flags",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features",

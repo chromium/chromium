@@ -6,14 +6,17 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/command_line.h"
 #import "base/strings/stringprintf.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "ios/chrome/app/app_startup_parameters.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
+#import "ios/chrome/app/startup/app_startup_utils.h"
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/model/utils_test_support.h"
+#import "ios/chrome/browser/flags/chrome_switches.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -888,6 +891,35 @@ TEST_F(AppStartupParametersTest, GoogleOneDeepLinkDisabled) {
   EXPECT_EQ("https://one.google.com/deeplink", [params externalURL].spec());
   EXPECT_EQ("https://one.google.com/deeplink", [params completeURL].spec());
   EXPECT_EQ(NO_ACTION, [params postOpeningAction]);
+}
+
+// Tests that IsAppSwitcherAISummarizationTestingExternalURLEnabled returns
+// true only when both the feature and switch are enabled.
+TEST_F(AppStartupParametersTest,
+       AppSwitcherAISummarizationTestingExternalURLEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  // 1. Both disabled.
+  scoped_feature_list.InitWithFeatures(
+      {}, {kPageActionMenu, kAppSwitcherAISummarization});
+  EXPECT_FALSE(IsAppSwitcherAISummarizationTestingExternalURLEnabled());
+
+  // 2. Feature enabled, switch not enabled.
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {kPageActionMenu, kAppSwitcherAISummarization}, {});
+  EXPECT_FALSE(IsAppSwitcherAISummarizationTestingExternalURLEnabled());
+
+  // 3. Both feature and switch enabled.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableAppSwitcherAISummarizationTestingExternalURL);
+  EXPECT_TRUE(IsAppSwitcherAISummarizationTestingExternalURLEnabled());
+
+  // 4. Switch enabled, but feature disabled.
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures(
+      {}, {kPageActionMenu, kAppSwitcherAISummarization});
+  EXPECT_FALSE(IsAppSwitcherAISummarizationTestingExternalURLEnabled());
 }
 
 }  // namespace

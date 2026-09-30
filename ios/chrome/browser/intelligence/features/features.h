@@ -361,11 +361,6 @@ BASE_DECLARE_FEATURE(kAppSwitcherAISummarization);
 // Returns true if App Switcher AI summarization is enabled.
 bool IsAppSwitcherAISummarizationEnabled();
 
-// Returns true if App Switcher AI summarization external URL testing is
-// enabled. Requires both `kAppSwitcherAISummarization` feature and the
-// experimental test flag to be enabled.
-bool IsAppSwitcherAISummarizationTestingExternalURLEnabled();
-
 #pragma mark - Debugging Features
 
 // Holds the variations of the BWG Promo Consent flow for debugging.

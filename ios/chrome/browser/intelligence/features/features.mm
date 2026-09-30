@@ -26,7 +26,6 @@
 #import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/tabs/model/inactive_tabs/features.h"
 
 BASE_FEATURE(kEnhancedCalendar, base::FEATURE_DISABLED_BY_DEFAULT);
@@ -750,14 +749,6 @@ bool IsAppSwitcherAISummarizationEnabled() {
     return false;
   }
   return base::FeatureList::IsEnabled(kAppSwitcherAISummarization);
-}
-
-bool IsAppSwitcherAISummarizationTestingExternalURLEnabled() {
-  if (!IsAppSwitcherAISummarizationEnabled()) {
-    return false;
-  }
-  return experimental_flags::
-      IsAppSwitcherAISummarizationTestingExternalURLEnabled();
 }
 
 #pragma mark - Debugging Features

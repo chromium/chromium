@@ -20,7 +20,6 @@ source_set("features") {
     "//ios/chrome/browser/intelligence/actor/tools/utils:actor_tool_utils",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/shared/public/features:system_flags",
     "//ios/chrome/browser/tabs/model/inactive_tabs:features",
   ]
 }

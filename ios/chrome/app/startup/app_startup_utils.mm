@@ -7,6 +7,7 @@
 #import "base/apple/bundle_locations.h"
 #import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "url/gurl.h"
 
@@ -173,6 +174,14 @@ bool IsCallerAppAllowListedForApplicationMode(NSString* caller_app_id) {
     return true;
   }
   return false;
+}
+
+bool IsAppSwitcherAISummarizationTestingExternalURLEnabled() {
+  if (!IsAppSwitcherAISummarizationEnabled()) {
+    return false;
+  }
+  return experimental_flags::
+      IsAppSwitcherAISummarizationTestingExternalURLEnabled();
 }
 
 void SaveFieldTrialValuesForGroupApp() {
