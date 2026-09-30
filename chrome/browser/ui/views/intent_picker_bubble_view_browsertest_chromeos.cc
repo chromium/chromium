@@ -32,10 +32,7 @@
 #include "chrome/browser/ui/navigator/browser_navigator_params.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/intent_picker_bubble_view.h"
-#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/views/web_apps/web_app_link_capturing_test_utils.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -71,7 +68,6 @@
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/checkbox.h"
-#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/dialog_test.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -243,20 +239,16 @@ class IntentPickerBubbleViewBrowserTestChromeOSBase
     intent_helper_instance_->clear_handled_intents();
   }
 
-  views::Button* GetIntentPickerIcon() {
+  page_actions::PageActionTestAccessor GetIntentPickerIcon() {
     return page_actions::PageActionTestAccessor(browser(),
-                                                kActionShowIntentPicker)
-        .view();
+                                                kActionShowIntentPicker);
   }
 
   void ClickIconToShowBubble() {
     views::NamedWidgetShownWaiter waiter(
         views::test::AnyWidgetTestPasskey{},
         IntentPickerBubbleView::kViewClassName);
-    views::test::ButtonTestApi test_api(GetIntentPickerIcon());
-    test_api.NotifyClick(ui::MouseEvent(
-        ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
-        base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON, ui::EF_LEFT_MOUSE_BUTTON));
+    GetIntentPickerIcon().Click();
 
     waiter.WaitIfNeededAndGet();
     ASSERT_NE(intent_picker_bubble(), nullptr);
@@ -388,7 +380,6 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   GURL test_url(InScopeAppUrl());
   std::string app_name = "test_name";
   auto app_id = AddArcAppWithIntentFilter(app_name, test_url);
-  views::Button* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -417,8 +408,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
   });
 
   // Make sure that the intent picker icon is no longer visible.
-  ASSERT_TRUE(intent_picker_view);
-  EXPECT_FALSE(intent_picker_view->GetVisible());
+  EXPECT_FALSE(GetIntentPickerIcon().GetVisible());
 }
 
 // Test that intent picker bubble shows if there is only PWA as candidates.
@@ -517,14 +507,13 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
 IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
                        ReloadAfterInstall) {
   GURL test_url(InScopeAppUrl());
-  views::Button* intent_picker_view = GetIntentPickerIcon();
 
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
 
   NavigateAndWaitForIconUpdate(test_url);
-  EXPECT_FALSE(intent_picker_view->GetVisible());
+  EXPECT_FALSE(GetIntentPickerIcon().GetVisible());
 
   std::string app_name = "test_name";
   auto app_id = AddArcAppWithIntentFilter(app_name, test_url);
@@ -534,7 +523,7 @@ IN_PROC_BROWSER_TEST_F(IntentPickerBubbleViewBrowserTestChromeOS,
     chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
   });
 
-  EXPECT_TRUE(intent_picker_view->GetVisible());
+  EXPECT_TRUE(GetIntentPickerIcon().GetVisible());
 
   ClickIconToShowBubble();
   EXPECT_EQ(1U, GetItemContainerSize(intent_picker_bubble()));

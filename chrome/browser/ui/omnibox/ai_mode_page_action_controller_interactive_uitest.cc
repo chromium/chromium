@@ -20,8 +20,8 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
-#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/common/webui_url_constants.h"
@@ -347,18 +347,11 @@ IN_PROC_BROWSER_TEST_F(
   RunTestSequence(
       OpenTabWithPageUrlAndFocusOmnibox(/*is_ntp=*/true),
       CheckChipVisible(true), Do([this]() {
-        if (features::IsWebUILocationBarEnabled()) {
-          // TODO(crbug.com/545160323): Support background color test in WebUI
-          // location bar.
-          return;
-        }
-        auto* view =
-            page_actions::PageActionTestAccessor(browser(), kActionAiMode)
-                .view();
-        ASSERT_NE(view, nullptr);
-        SkColor actual_bg_color = view->GetBackgroundColorForTesting();
-        SkColor expected_bg_color =
-            view->GetColorProvider()->GetColor(ui::kColorSysStateHoverOnSubtle);
+        page_actions::PageActionTestAccessor accessor(browser(), kActionAiMode);
+        auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+        SkColor actual_bg_color = accessor.GetBackgroundColor();
+        SkColor expected_bg_color = browser_view->GetColorProvider()->GetColor(
+            ui::kColorSysStateHoverOnSubtle);
         EXPECT_EQ(actual_bg_color, expected_bg_color);
       }));
 }
@@ -369,16 +362,11 @@ IN_PROC_BROWSER_TEST_F(
   RunTestSequence(
       OpenTabWithPageUrlAndFocusOmnibox(/*is_ntp=*/true),
       CheckChipVisible(true), Do([this]() {
-        if (features::IsWebUILocationBarEnabled()) {
-          return;
-        }
-        auto* view =
-            page_actions::PageActionTestAccessor(browser(), kActionAiMode)
-                .view();
-        ASSERT_NE(view, nullptr);
-        SkColor actual_fg_color = view->GetForegroundColorForTesting();
+        page_actions::PageActionTestAccessor accessor(browser(), kActionAiMode);
+        auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+        SkColor actual_fg_color = accessor.GetForegroundColor();
         SkColor expected_fg_color =
-            view->GetColorProvider()->GetColor(ui::kColorSysOnSurface);
+            browser_view->GetColorProvider()->GetColor(ui::kColorSysOnSurface);
         EXPECT_EQ(actual_fg_color, expected_fg_color);
       }));
 }
@@ -388,16 +376,10 @@ IN_PROC_BROWSER_TEST_F(
     ShowsLeadingIconWhenNoUserInputInProgress) {
   RunTestSequence(
       OpenTabWithPageUrlAndFocusOmnibox(/*is_ntp=*/true),
-      CheckChipVisible(true),
-      Do([this]() {
-        if (features::IsWebUILocationBarEnabled()) {
-          return;
-        }
-        auto* view =
-            page_actions::PageActionTestAccessor(browser(), kActionAiMode)
-                .view();
-        ASSERT_NE(view, nullptr);
-        EXPECT_EQ(view->slide_animation_for_testing().GetCurrentValue(), 0.0);
+      CheckChipVisible(true), Do([this]() {
+        EXPECT_EQ(page_actions::PageActionTestAccessor(browser(), kActionAiMode)
+                      .GetSlideAnimationValue(),
+                  0.0);
       }));
 }
 

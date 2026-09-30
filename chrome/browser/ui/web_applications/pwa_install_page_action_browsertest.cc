@@ -49,7 +49,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
-#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_interface.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
@@ -347,18 +346,9 @@ class PwaInstallViewBrowserTest : public base::test::WithFeatureOverride,
   page_actions::PageActionTestAccessor GetPageActionAccessor() {
     return page_actions::PageActionTestAccessor(browser(), kActionInstallPwa);
   }
-  page_actions::PageActionViewInterface* GetPageActionView() {
-    return BrowserView::GetBrowserViewForBrowser(browser())
-        ->toolbar_button_provider()
-        ->GetPageActionViewInterface(kActionInstallPwa);
-  }
   void ExecuteForTesting() { web_app::ShowPwaInstallDialog(browser()); }
-  void FastForwardAnimation(IconLabelBubbleView* view) {
-    auto animation = std::make_unique<gfx::AnimationTestApi>(
-        &view->slide_animation_for_testing());
-    auto now = base::TimeTicks::Now();
-    animation->SetStartTime(now);
-    animation->Step(now + base::Minutes(1));
+  void FinishAnimation(page_actions::PageActionTestAccessor icon_accessor) {
+    icon_accessor.FinishAnimation();
     EnsureLayout();
   }
   void EnsureLayout() {
@@ -366,10 +356,7 @@ class PwaInstallViewBrowserTest : public base::test::WithFeatureOverride,
         BrowserView::GetBrowserViewForBrowser(browser()));
   }
   void VerifyLabelVisibility(bool isVisible) {
-    if (!features::IsWebUILocationBarEnabled()) {
-      auto* view = GetPageActionAccessor().view();
-      FastForwardAnimation(view);
-    }
+    FinishAnimation(GetPageActionAccessor());
     EXPECT_EQ(GetPageActionAccessor().ShouldShowSuggestionChip(), isVisible);
   }
 
@@ -525,24 +512,21 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest,
     ASSERT_TRUE(result.installable);
   }
 
-  auto* page_action_view = GetPageActionAccessor().view();
-  views::InkDropHost* const ink_drop =
-      views::InkDrop::Get(page_action_view->ink_drop_view());
 
   ASSERT_EQ(installable_web_contents, GetCurrentTab());
   EXPECT_TRUE(GetPageActionAccessor().GetVisible());
-  EXPECT_FALSE(ink_drop->GetHighlighted());
+  EXPECT_FALSE(GetPageActionAccessor().HasIconHighlight());
 
   views::Widget* pwa_install_widget =
       ClickPWAInstallIconAndWaitForBubbleShown();
   EXPECT_NE(pwa_install_widget, nullptr);
-  EXPECT_TRUE(ink_drop->GetHighlighted());
+  EXPECT_TRUE(GetPageActionAccessor().HasIconHighlight());
 
   views::test::WidgetDestroyedWaiter destroy_waiter(pwa_install_widget);
   pwa_install_widget->CloseWithReason(
       views::Widget::ClosedReason::kEscKeyPressed);
   destroy_waiter.Wait();
-  EXPECT_FALSE(ink_drop->GetHighlighted());
+  EXPECT_FALSE(GetPageActionAccessor().HasIconHighlight());
 }
 
 // Tests that the install icon updates its visibility when tab crashes.
@@ -605,10 +589,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, LabelAnimation) {
   EXPECT_FALSE(GetPageActionAccessor().GetVisible());
   ASSERT_TRUE(app_banner_manager_->WaitForInstallableCheck());
   EXPECT_TRUE(GetPageActionAccessor().GetVisible());
-  if (!features::IsWebUILocationBarEnabled()) {
-    auto* view = GetPageActionAccessor().view();
-    FastForwardAnimation(view);
-  }
+  FinishAnimation(GetPageActionAccessor());
   EXPECT_TRUE(GetPageActionAccessor().ShouldShowSuggestionChip());
 
   chrome::NewTab(browser(), NewTabTypes::kNoUserAction);
@@ -899,7 +880,7 @@ IN_PROC_BROWSER_TEST_P(PwaInstallViewBrowserTest, IconViewAccessibleName) {
 
   const std::u16string& web_app_name =
       webapps::AppBannerManager::GetInstallableWebAppName(web_contents_);
-  EXPECT_EQ(GetPageActionView()->GetAccessibleName(),
+  EXPECT_EQ(GetPageActionAccessor().GetAccessibleName(),
             l10n_util::GetStringFUTF16(IDS_OMNIBOX_PWA_INSTALL_ICON_TOOLTIP,
                                        web_app_name));
 }

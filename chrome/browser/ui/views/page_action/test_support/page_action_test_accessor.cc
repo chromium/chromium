@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 
+#include <optional>
 #include <string>
 #include <string_view>
 
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/browser/ui/views/toolbar/webui_toolbar_web_view.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/toolbar_button_utils.h"
+#include "content/public/common/color_parser.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/action_id.h"
@@ -149,32 +151,77 @@ content::WebContents* PageActionTestAccessor::GetWebContents() const {
   return webui_view->GetWebViewForTesting()->web_contents();
 }
 
-bool PageActionTestAccessor::EvaluateWebUI(
-    std::string_view element_predicate_js) const {
+std::optional<content::EvalJsResult>
+PageActionTestAccessor::EvaluateWebUIResult(
+    std::string_view element_fn_js) const {
   if (auto* tracked_el = GetTrackedElement()) {
     if (content::WebContents* contents = GetWebContents()) {
       const std::string script = base::StringPrintf(
           R"((() => {
             const manager = window._trackedElementManager;
-            if (!manager) return false;
+            if (!manager) return null;
             const tracked = manager.getElementWithId({
               nativeIdentifier: "%s",
               secondaryIdentifier: "%s"
             });
-            if (!tracked || !tracked.element) return false;
+            if (!tracked || !tracked.element) return null;
             const el = tracked.element;
             return (%s)(el);
           })())",
           tracked_el->identifier().GetName().c_str(),
           tracked_el->GetSecondaryIdentifier().c_str(),
-          std::string(element_predicate_js).c_str());
+          std::string(element_fn_js).c_str());
       content::EvalJsResult result = content::EvalJs(contents, script);
-      if (result.is_bool()) {
-        return result.ExtractBool();
+      if (result.is_ok() && !result.is_none()) {
+        return result;
       }
     }
   }
-  return false;
+  // TODO(crbug.com/526715177): Remove this fallback once support for
+  // TrackedElements in page actions is implemented.
+  content::WebContents* contents = GetWebContents();
+  if (contents) {
+    const int action_id_int = static_cast<int>(
+        webui_toolbar::ActionIdToMojomPageActionId(action_id_));
+    const std::string script = base::StringPrintf(
+        R"((() => {
+          %s
+          const el = findDeep(document.body,
+                              e => e.state?.pageActionId === %d);
+          if (!el) return null;
+          return (%s)(el);
+        })())",
+        kFindDeepJS, action_id_int, std::string(element_fn_js).c_str());
+    content::EvalJsResult result = content::EvalJs(contents, script);
+    if (result.is_ok() && !result.is_none()) {
+      return result;
+    }
+  }
+  return std::nullopt;
+}
+
+bool PageActionTestAccessor::EvaluateWebUI(
+    std::string_view element_predicate_js) const {
+  const auto result = EvaluateWebUIResult(element_predicate_js);
+  return result && result->is_bool() && result->ExtractBool();
+}
+
+std::optional<std::string> PageActionTestAccessor::EvaluateWebUIString(
+    std::string_view element_extractor_js) const {
+  const auto result = EvaluateWebUIResult(element_extractor_js);
+  if (result && result->is_string()) {
+    return result->ExtractString();
+  }
+  return std::nullopt;
+}
+
+std::optional<double> PageActionTestAccessor::EvaluateWebUIDouble(
+    std::string_view element_extractor_js) const {
+  const auto result = EvaluateWebUIResult(element_extractor_js);
+  if (result && (result->is_double() || result->is_int())) {
+    return result->ExtractDouble();
+  }
+  return std::nullopt;
 }
 
 bool PageActionTestAccessor::GetVisible() const {
@@ -326,14 +373,20 @@ bool PageActionTestAccessor::IsAnimating() const {
   }
   return EvaluateWebUI(
       R"((el) => {
-        const btn = el.shadowRoot
-            ? el.shadowRoot.querySelector('button, [role="button"]')
-            : null;
-        const anims = [
-          ...el.getAnimations(),
-          ...(btn ? btn.getAnimations() : [])
-        ];
-        return anims.some(a => a.playState === 'running');
+        const getAllAnims = (root) => {
+          const anims = [];
+          const traverse = (node) => {
+            if (!node) return;
+            if (node.shadowRoot) traverse(node.shadowRoot);
+            if (node.getAnimations) anims.push(...node.getAnimations());
+            for (const child of (node.children || [])) {
+              traverse(child);
+            }
+          };
+          traverse(root);
+          return anims;
+        };
+        return getAllAnims(el).some(a => a.playState === 'running');
       })");
 }
 
@@ -362,30 +415,15 @@ std::u16string PageActionTestAccessor::GetText() const {
   if (const auto* model = GetModel()) {
     return model->GetText();
   }
-  if (auto* tracked_el = GetTrackedElement()) {
-    if (content::WebContents* contents = GetWebContents()) {
-      const std::string script = base::StringPrintf(
-          R"((() => {
-            const manager = window._trackedElementManager;
-            if (!manager) return '';
-            const tracked = manager.getElementWithId({
-              nativeIdentifier: "%s",
-              secondaryIdentifier: "%s"
-            });
-            if (!tracked || !tracked.element) return '';
-            const el = tracked.element;
-            const textSpan = el.shadowRoot
-                ? el.shadowRoot.querySelector('#text')
-                : null;
-            return (textSpan ? (textSpan.textContent || '') : '').trim();
-          })())",
-          tracked_el->identifier().GetName().c_str(),
-          tracked_el->GetSecondaryIdentifier().c_str());
-      content::EvalJsResult result = content::EvalJs(contents, script);
-      if (result.is_string()) {
-        return base::UTF8ToUTF16(result.ExtractString());
-      }
-    }
+  const auto text = EvaluateWebUIString(
+      R"((el) => {
+        const textSpan = el.shadowRoot
+            ? el.shadowRoot.querySelector('#text')
+            : null;
+        return (textSpan ? (textSpan.textContent || '') : '').trim();
+      })");
+  if (text.has_value()) {
+    return base::UTF8ToUTF16(*text);
   }
   return std::u16string();
 }
@@ -410,6 +448,54 @@ std::u16string PageActionTestAccessor::GetAccessibleName() const {
   return std::u16string();
 }
 
+SkColor PageActionTestAccessor::GetBackgroundColor() const {
+  if (auto* pav = GetPageActionView()) {
+    return pav->GetBackgroundColorForTesting();
+  }
+  const std::optional<std::string> color_str = EvaluateWebUIString(
+      R"((el) => {
+        const chipBtn = el.shadowRoot
+            ? el.shadowRoot.querySelector('#button')
+            : null;
+        if (!chipBtn) return '';
+        const btn = chipBtn.shadowRoot
+            ? (chipBtn.shadowRoot.querySelector('#button') || chipBtn)
+            : chipBtn;
+        return window.getComputedStyle(btn).backgroundColor;
+      })");
+  if (color_str.has_value()) {
+    SkColor color;
+    if (content::ParseCssColorString(*color_str, &color)) {
+      return color;
+    }
+  }
+  return SK_ColorTRANSPARENT;
+}
+
+SkColor PageActionTestAccessor::GetForegroundColor() const {
+  if (auto* pav = GetPageActionView()) {
+    return pav->GetForegroundColorForTesting();
+  }
+  const std::optional<std::string> color_str = EvaluateWebUIString(
+      R"((el) => {
+        const chipBtn = el.shadowRoot
+            ? el.shadowRoot.querySelector('#button')
+            : null;
+        if (!chipBtn) return '';
+        const btn = chipBtn.shadowRoot
+            ? (chipBtn.shadowRoot.querySelector('#button') || chipBtn)
+            : chipBtn;
+        return window.getComputedStyle(btn).color;
+      })");
+  if (color_str.has_value()) {
+    SkColor color;
+    if (content::ParseCssColorString(*color_str, &color)) {
+      return color;
+    }
+  }
+  return SK_ColorTRANSPARENT;
+}
+
 ui::ImageModel PageActionTestAccessor::GetImage() const {
   if (auto* pav = GetPageActionView()) {
     return pav->GetImageModel(views::Button::STATE_NORMAL)
@@ -429,8 +515,19 @@ ui::TrackedElement* PageActionTestAccessor::GetElement() const {
   return GetTrackedElement();
 }
 
-page_actions::PageActionView* PageActionTestAccessor::view() const {
-  return GetPageActionView();
+void PageActionTestAccessor::RequestFocus() {
+  if (auto* pav = GetPageActionView()) {
+    pav->RequestFocus();
+    return;
+  }
+  EvaluateWebUI(
+      R"((el) => {
+        const btn = el.shadowRoot
+            ? (el.shadowRoot.querySelector('#button') || el)
+            : el;
+        btn.focus();
+        return true;
+      })");
 }
 
 std::optional<size_t> PageActionTestAccessor::GetIndex() const {
@@ -450,6 +547,41 @@ std::optional<size_t> PageActionTestAccessor::GetIndex() const {
     }
   }
   return std::nullopt;
+}
+
+double PageActionTestAccessor::GetSlideAnimationValue() const {
+  if (auto* pav = GetPageActionView()) {
+    return pav->GetSlideAnimationForTesting().GetCurrentValue();
+  }
+  const std::optional<double> progress = EvaluateWebUIDouble(
+      R"((el) => {
+        const getAllAnims = (root) => {
+          const anims = [];
+          const traverse = (node) => {
+            if (!node) return;
+            if (node.shadowRoot) traverse(node.shadowRoot);
+            if (node.getAnimations) anims.push(...node.getAnimations());
+            for (const child of (node.children || [])) {
+              traverse(child);
+            }
+          };
+          traverse(root);
+          return anims;
+        };
+        const anims = getAllAnims(el);
+        const running = anims.find(a => a.playState === 'running');
+        const isExpandedTarget = el.hasAttribute('slide-and-crossfade')
+            ? Boolean(el.state?.showTrailingIcon)
+            : Boolean(el.state?.shouldShowChip);
+        if (running) {
+          const p = running.effect?.getComputedTiming()?.progress;
+          if (p !== null && p !== undefined) {
+            return isExpandedTarget ? p : (1.0 - p);
+          }
+        }
+        return isExpandedTarget ? 1.0 : 0.0;
+      })");
+  return progress.value_or(0.0);
 }
 
 void PageActionTestAccessor::FinishAnimation() const {
@@ -518,9 +650,7 @@ void PageActionTestAccessor::Click(page_actions::PageActionTrigger trigger) {
             if (!tracked || !tracked.element) return false;
             const el = tracked.element;
             const btn = el.shadowRoot
-                ? (el.shadowRoot.querySelector(
-                       '#button, toolbar-chip-button, toolbar-button, ' +
-                       'button, [role="button"]') || el)
+                ? (el.shadowRoot.querySelector('#button') || el)
                 : el;
             const detail = %d;
             if (detail > 0) {

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -65,7 +66,6 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
 #include "chrome/browser/ui/views/infobars/infobar_view.h"
-#include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/pinned_action_test_accessor.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
@@ -140,6 +140,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/actions/action_id.h"
 #include "ui/base/hit_test.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/ozone_buildflags.h"
@@ -195,16 +196,6 @@ gfx::NativeWindow GetWindowForEventGenerator(BrowserWindowInterface* browser) {
 #endif
 }
 
-template <typename T>
-T* GetLastVisible(const std::vector<T*>& views) {
-  T* visible = nullptr;
-  for (auto* view : views) {
-    if (view->GetVisible()) {
-      visible = view;
-    }
-  }
-  return visible;
-}
 
 void LoadTestPopUpExtension(Profile* profile) {
   extensions::TestExtensionDir test_extension_dir;
@@ -310,18 +301,6 @@ class WebAppFrameToolbarBrowserTest : public web_app::WebAppBrowserTestBase {
            model->IsEnabledAt(index);
   }
 
- protected:
-  // Previously, the page action icon was added as a direct child of the
-  // toolbar. With the new page action framework, the `PageActionContainer` is
-  // added as the toolbar child. As a result, the positioning should be
-  // offsetted.
-  int GetPageActionViewOffset() {
-    return helper()
-        ->web_app_frame_toolbar()
-        ->get_right_container_for_testing()
-        ->page_action_container()
-        ->x();
-  }
 
  private:
   WebAppFrameToolbarTestHelper web_app_frame_toolbar_helper_;
@@ -377,18 +356,16 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
   EXPECT_EQ(toolbar_right_container->parent(),
             helper()->web_app_frame_toolbar());
 
-  std::vector<const views::View*> page_action_views = {};
-  for (auto action_id :
+  std::vector<page_actions::PageActionTestAccessor> page_actions;
+  for (actions::ActionId action_id :
        web_app::AppBrowserController::From(helper()->app_browser())
            ->GetTitleBarPageActions()) {
-    auto* page_action_view =
-        page_actions::PageActionTestAccessor(helper()->app_browser(), action_id)
-            .view();
-    ASSERT_NE(nullptr, page_action_view);
-    EXPECT_EQ(page_action_view->parent(),
-              toolbar_right_container->page_action_container());
-    page_action_views.push_back(page_action_view);
+    page_actions.emplace_back(helper()->app_browser(), action_id);
   }
+  auto has_visible_page_action = [&page_actions]() {
+    return std::ranges::any_of(
+        page_actions, &page_actions::PageActionTestAccessor::GetVisible);
+  };
 
   views::View* const menu_button =
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
@@ -411,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
 #endif
 
   // Initially the page action icons are not visible.
-  EXPECT_EQ(GetLastVisible(page_action_views), nullptr);
+  EXPECT_FALSE(has_visible_page_action());
   const int original_menu_button_width = menu_button->width();
   EXPECT_GT(original_menu_button_width, 0);
 
@@ -434,7 +411,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
   EXPECT_LT(window_title->width(), original_window_title_width);
 #endif
 
-  EXPECT_NE(GetLastVisible(page_action_views), nullptr);
+  EXPECT_TRUE(has_visible_page_action());
   EXPECT_EQ(menu_button->width(), original_menu_button_width);
 
   // Resize the WebAppFrameToolbarView just enough to clip out the page action
@@ -442,8 +419,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
   const int original_toolbar_width = helper()->web_app_frame_toolbar()->width();
   const int new_toolbar_width =
       toolbar_right_container->width() -
-      (GetPageActionViewOffset() +
-       GetLastVisible(page_action_views)->bounds().right());
+      toolbar_right_container->page_action_container()->bounds().right();
   const int new_frame_width = helper()->frame_view()->width() -
                               original_toolbar_width + new_toolbar_width;
 
@@ -463,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
 
   // The page action icons should be hidden while the app menu button retains
   // its full width.
-  EXPECT_EQ(GetLastVisible(page_action_views), nullptr);
+  EXPECT_FALSE(has_visible_page_action());
   EXPECT_EQ(menu_button->width(), original_menu_button_width);
 }
 

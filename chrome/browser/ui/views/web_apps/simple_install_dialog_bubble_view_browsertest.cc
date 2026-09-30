@@ -391,16 +391,11 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
   const GURL app_url =
       embedded_https_test_server().GetURL("/banners/manifest_test_page.html");
   ASSERT_TRUE(NavigateAndAwaitInstallabilityCheck(browser(), app_url));
-  ASSERT_TRUE(base::test::RunUntil([&]() {
-    return page_actions::PageActionTestAccessor(browser(), kActionInstallPwa)
-        .GetVisible();
-  }));
+  page_actions::PageActionTestAccessor icon(browser(), kActionInstallPwa);
+  ASSERT_TRUE(base::test::RunUntil([&]() { return icon.GetVisible(); }));
 
-  auto* icon =
-      page_actions::PageActionTestAccessor(browser(), kActionInstallPwa).view();
-  ASSERT_NE(icon, nullptr);
-  icon->RequestFocus();
-  EXPECT_TRUE(icon->HasFocus());
+  icon.RequestFocus();
+  EXPECT_TRUE(icon.HasFocus());
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        kInstallDialogName);
@@ -409,8 +404,8 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
   ASSERT_NE(widget, nullptr);
 
   widget->CloseWithReason(views::Widget::ClosedReason::kCancelButtonClicked);
-  ASSERT_TRUE(base::test::RunUntil([&]() { return icon->HasFocus(); }));
-  EXPECT_TRUE(icon->HasFocus());
+  ASSERT_TRUE(base::test::RunUntil([&]() { return icon.HasFocus(); }));
+  EXPECT_TRUE(icon.HasFocus());
 }
 
 class PictureInPictureSimpleInstallDialogOcclusionTest

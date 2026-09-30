@@ -18,6 +18,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/custom_tab_bar_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_test_accessor.h"
@@ -438,7 +439,9 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameViewBrowserTest, DISABLED_SaveCardIcon) {
   // TODO(crbug.com/562475756): In WebUI, the page action is rendered in the
   // WebUI DOM rather than as a views::View descendant of BrowserFrameView.
   if (!features::IsWebUILocationBarEnabled()) {
-    views::View* icon = page_action_accessor.view();
+    auto* icon = static_cast<page_actions::PageActionView*>(
+        app_browser_view_->toolbar_button_provider()
+            ->GetPageActionViewInterface(kActionShowPaymentsBubbleOrPage));
     ASSERT_TRUE(icon);
     EXPECT_TRUE(GetAppFrameView()->Contains(icon));
   }

@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_TEST_SUPPORT_PAGE_ACTION_TEST_ACCESSOR_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_TEST_SUPPORT_PAGE_ACTION_TEST_ACCESSOR_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/page_action/page_action_triggers.h"
+#include "content/public/test/browser_test_utils.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/actions/action_id.h"
 #include "ui/base/models/image_model.h"
 
@@ -71,12 +74,13 @@ class PageActionTestAccessor {
   std::u16string GetText() const;
   std::u16string GetTooltipText() const;
   std::u16string GetAccessibleName() const;
+  SkColor GetBackgroundColor() const;
+  SkColor GetForegroundColor() const;
   ui::ImageModel GetImage() const;
   ui::TrackedElement* GetElement() const;
-  // TODO(crbug.com/562493581): Migrate callers of view() to accessor methods so
-  // tests work in both Views and WebUI.
-  page_actions::PageActionView* view() const;
+  void RequestFocus();
   std::optional<size_t> GetIndex() const;
+  double GetSlideAnimationValue() const;
   void FinishAnimation() const;
   void Click(page_actions::PageActionTrigger trigger =
                  page_actions::PageActionTrigger::kMouse);
@@ -88,6 +92,12 @@ class PageActionTestAccessor {
   page_actions::PageActionView* GetPageActionView() const;
   page_actions::WebUIPageActionControl* GetWebUIPageActionControl() const;
   bool EvaluateWebUI(std::string_view element_predicate_js) const;
+  std::optional<std::string> EvaluateWebUIString(
+      std::string_view element_extractor_js) const;
+  std::optional<double> EvaluateWebUIDouble(
+      std::string_view element_extractor_js) const;
+  std::optional<content::EvalJsResult> EvaluateWebUIResult(
+      std::string_view element_fn_js) const;
   ui::TrackedElementWebUI* GetTrackedElement() const;
   views::View* GetView() const;
   content::WebContents* GetWebContents() const;

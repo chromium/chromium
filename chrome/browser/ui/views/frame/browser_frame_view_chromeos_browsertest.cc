@@ -582,8 +582,9 @@ class WebAppFrameViewChromeOSTest
     return web_app_frame_toolbar_->paint_as_active_;
   }
 
-  IconLabelBubbleView* GetPageActionView(actions::ActionId action_id) {
-    return page_actions::PageActionTestAccessor(app_browser_, action_id).view();
+  page_actions::PageActionTestAccessor GetPageActionAccessor(
+      actions::ActionId action_id) {
+    return page_actions::PageActionTestAccessor(app_browser_, action_id);
   }
 
   ContentSettingImageView* GrantGeolocationPermission() {
@@ -702,11 +703,10 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, ShowManagePasswordsIcon) {
   SetUpWebApp();
   content::WebContents* web_contents =
       app_browser_->GetTabStripModel()->GetActiveWebContents();
-  IconLabelBubbleView* manage_passwords_icon =
-      GetPageActionView(kActionShowPasswordsBubbleOrPage);
+  page_actions::PageActionTestAccessor manage_passwords_icon =
+      GetPageActionAccessor(kActionShowPasswordsBubbleOrPage);
 
-  EXPECT_TRUE(manage_passwords_icon);
-  EXPECT_FALSE(manage_passwords_icon->GetVisible());
+  EXPECT_FALSE(manage_passwords_icon.GetVisible());
 
   password_manager::StoredCredential credential;
   credential.username_value = u"test";
@@ -718,7 +718,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, ShowManagePasswordsIcon) {
       ->OnPasswordAutofilled(credentials,
                              url::Origin::Create(credentials[0].url), {});
   chrome::ManagePasswordsForPage(app_browser_);
-  EXPECT_TRUE(manage_passwords_icon->GetVisible());
+  EXPECT_TRUE(manage_passwords_icon.GetVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, ShowZoomIcon) {
@@ -727,29 +727,29 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, ShowZoomIcon) {
       app_browser_->GetTabStripModel()->GetActiveWebContents();
   zoom::ZoomController* zoom_controller =
       zoom::ZoomController::FromWebContents(web_contents);
-  IconLabelBubbleView* zoom_icon = GetPageActionView(kActionShowZoomBubble);
+  page_actions::PageActionTestAccessor zoom_icon =
+      GetPageActionAccessor(kActionShowZoomBubble);
 
   ZoomBubbleCoordinator* zoom_bubble_coordinator =
       ZoomBubbleCoordinator::From(app_browser_);
 
-  EXPECT_TRUE(zoom_icon);
-  EXPECT_FALSE(zoom_icon->GetVisible());
+  EXPECT_FALSE(zoom_icon.GetVisible());
   EXPECT_FALSE(zoom_bubble_coordinator->bubble());
 
   zoom_controller->SetZoomLevel(blink::ZoomFactorToZoomLevel(1.5));
-  EXPECT_TRUE(zoom_icon->GetVisible());
+  EXPECT_TRUE(zoom_icon.GetVisible());
   EXPECT_TRUE(zoom_bubble_coordinator->bubble());
 }
 
 IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, ShowFindIcon) {
   SetUpWebApp();
 
-  IconLabelBubbleView* find_icon = GetPageActionView(kActionFind);
-  ASSERT_TRUE(find_icon);
-  EXPECT_FALSE(find_icon->GetVisible());
+  page_actions::PageActionTestAccessor find_icon =
+      GetPageActionAccessor(kActionFind);
+  EXPECT_FALSE(find_icon.GetVisible());
 
   chrome::Find(app_browser_);
-  EXPECT_TRUE(find_icon->GetVisible());
+  EXPECT_TRUE(find_icon.GetVisible());
 }
 
 // TODO(crbug.com/420040505): Fix failures on the Linux Chromium OS ASan LSan
@@ -761,10 +761,10 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, ShowFindIcon) {
 #endif
 IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, MAYBE_ShowTranslateIcon) {
   SetUpWebApp();
-  IconLabelBubbleView* translate_icon = GetPageActionView(kActionShowTranslate);
+  page_actions::PageActionTestAccessor translate_icon =
+      GetPageActionAccessor(kActionShowTranslate);
 
-  ASSERT_TRUE(translate_icon);
-  EXPECT_FALSE(translate_icon->GetVisible());
+  EXPECT_FALSE(translate_icon.GetVisible());
 
   chrome::Find(app_browser_);
   browser_view_->ShowTranslateBubble(browser_view_->GetActiveWebContents(),
@@ -772,7 +772,7 @@ IN_PROC_BROWSER_TEST_P(WebAppFrameViewChromeOSTest, MAYBE_ShowTranslateIcon) {
                                      "en", "fr",
                                      translate::TranslateErrors::NONE, true);
 
-  EXPECT_TRUE(translate_icon->GetVisible());
+  EXPECT_TRUE(translate_icon.GetVisible());
 }
 
 // Tests that the focus toolbar command focuses the app menu button in web-app
