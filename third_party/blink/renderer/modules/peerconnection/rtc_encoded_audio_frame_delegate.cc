@@ -24,8 +24,6 @@
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_features.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_util.h"
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -33,11 +31,9 @@
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 #include "third_party/webrtc/api/units/time_delta.h"
 #include "third_party/webrtc/api/units/timestamp.h"
-#include "v8/include/v8-isolate.h"
 
 namespace blink {
 
-static constexpr char kRTCEncodedAudioFrameDetachKey[] = "RTCEncodedAudioFrame";
 static constexpr int kAcceptableCaptureTimeDeltaMs = 1;
 
 const void* const RTCEncodedAudioFramesAttachment::kAttachmentKey =
@@ -64,32 +60,10 @@ std::optional<uint32_t> RTCEncodedAudioFrameDelegate::RtpTimestamp() const {
   return std::nullopt;
 }
 
-DOMArrayBuffer* RTCEncodedAudioFrameDelegate::CreateDataBuffer(
-    v8::Isolate* isolate) const {
-  ArrayBufferContents contents;
-  {
-    base::AutoLock lock(lock_);
-    if (!webrtc_frame_) {
-      // WebRTC frame already passed, return a detached ArrayBuffer.
-      DOMArrayBuffer* buffer = DOMArrayBuffer::Create(
-          /*num_elements=*/static_cast<size_t>(0), /*element_byte_size=*/1);
-      ArrayBufferContents contents_to_drop;
-      NonThrowableExceptionState exception_state;
-      buffer->Transfer(isolate,
-                       V8AtomicString(isolate, kRTCEncodedAudioFrameDetachKey),
-                       contents_to_drop, exception_state);
-      return buffer;
-    }
-
-    auto data = webrtc_frame_->GetData();
-    contents = ArrayBufferContents(
-        data.size(), 1, ArrayBufferContents::kNotShared,
-        ArrayBufferContents::kDontInitialize,
-        ArrayBufferContents::AllocationFailureBehavior::kCrash);
-    CHECK(contents.IsValid());
-    contents.ByteSpan().copy_from(data);
-  }
-  return DOMArrayBuffer::Create(std::move(contents));
+DOMArrayBuffer* RTCEncodedAudioFrameDelegate::CreateDataBuffer() const {
+  base::AutoLock lock(lock_);
+  return webrtc_frame_ ? DOMArrayBuffer::Create(webrtc_frame_->GetData())
+                       : DOMArrayBuffer::Create(ArrayBufferContents());
 }
 
 void RTCEncodedAudioFrameDelegate::SetData(const DOMArrayBuffer* data) {

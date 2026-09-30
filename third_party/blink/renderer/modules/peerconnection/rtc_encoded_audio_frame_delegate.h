@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
-#include "v8/include/v8-isolate.h"
 
 namespace blink {
 
@@ -44,7 +43,7 @@ class RTCEncodedAudioFrameDelegate
       std::optional<uint16_t> sequence_number);
 
   std::optional<uint32_t> RtpTimestamp() const;
-  DOMArrayBuffer* CreateDataBuffer(v8::Isolate* isolate) const;
+  DOMArrayBuffer* CreateDataBuffer() const;
   void SetData(const DOMArrayBuffer* data);
 
   // This method can only be called from the main thread.

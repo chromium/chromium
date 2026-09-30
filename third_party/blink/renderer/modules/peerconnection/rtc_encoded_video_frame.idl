@@ -20,9 +20,9 @@ enum RTCEncodedVideoFrameType {
     constructor (RTCEncodedVideoFrameInit init);
     readonly attribute RTCEncodedVideoFrameType type;
     [Measure] readonly attribute unsigned long timestamp;  // RTP timestamp.
-    [CallWith=ExecutionContext] attribute ArrayBuffer data;
+    attribute ArrayBuffer data;
     [CallWith=ExecutionContext] RTCEncodedVideoFrameMetadata getMetadata();
     [RuntimeEnabled=RTCEncodedFrameSetMetadata, Measure, RaisesException, CallWith=ExecutionContext]
     void setMetadata(RTCEncodedVideoFrameMetadata metadata);
-    [CallWith=ExecutionContext] stringifier;
+    stringifier;
 };

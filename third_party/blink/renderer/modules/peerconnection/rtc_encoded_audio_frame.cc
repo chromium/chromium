@@ -211,9 +211,9 @@ uint32_t RTCEncodedAudioFrame::timestamp() const {
   return delegate_->RtpTimestamp().value_or(0);
 }
 
-DOMArrayBuffer* RTCEncodedAudioFrame::data(ExecutionContext* context) const {
+DOMArrayBuffer* RTCEncodedAudioFrame::data() const {
   if (!frame_data_) {
-    frame_data_ = delegate_->CreateDataBuffer(context->GetIsolate());
+    frame_data_ = delegate_->CreateDataBuffer();
   }
   return frame_data_.Get();
 }
@@ -287,11 +287,11 @@ void RTCEncodedAudioFrame::setMetadata(ExecutionContext* execution_context,
   }
 }
 
-void RTCEncodedAudioFrame::setData(ExecutionContext*, DOMArrayBuffer* data) {
+void RTCEncodedAudioFrame::setData(DOMArrayBuffer* data) {
   frame_data_ = data;
 }
 
-String RTCEncodedAudioFrame::toString(ExecutionContext* context) const {
+String RTCEncodedAudioFrame::toString() const {
   StringBuilder sb;
   sb.Append("RTCEncodedAudioFrame{");
   if (std::optional<uint32_t> rtp_timestamp = delegate_->RtpTimestamp()) {
@@ -300,7 +300,7 @@ String RTCEncodedAudioFrame::toString(ExecutionContext* context) const {
     sb.Append(", ");
   }
   sb.Append("size: ");
-  sb.AppendNumber(data(context) ? data(context)->ByteLength() : 0);
+  sb.AppendNumber(data()->ByteLength());
   sb.Append("}");
   return sb.ToString();
 }

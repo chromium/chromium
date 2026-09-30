@@ -68,7 +68,7 @@ class MODULES_EXPORT RTCEncodedVideoFrame final : public ScriptWrappable {
   V8RTCEncodedVideoFrameType type() const;
   // Returns the RTP Packet Timestamp for this frame.
   uint32_t timestamp() const;
-  DOMArrayBuffer* data(ExecutionContext* context) const;
+  DOMArrayBuffer* data() const;
   RTCEncodedVideoFrameMetadata* getMetadata(ExecutionContext* context) const;
   base::expected<void, String> SetMetadata(
       ExecutionContext* context,
@@ -76,8 +76,8 @@ class MODULES_EXPORT RTCEncodedVideoFrame final : public ScriptWrappable {
   void setMetadata(ExecutionContext* context,
                    RTCEncodedVideoFrameMetadata* metadata,
                    ExceptionState& exception_state);
-  void setData(ExecutionContext*, DOMArrayBuffer*);
-  String toString(ExecutionContext* context) const;
+  void setData(DOMArrayBuffer*);
+  String toString() const;
 
   base::UnguessableToken OwnerId();
   int64_t Counter();

@@ -62,15 +62,15 @@ class MODULES_EXPORT RTCEncodedAudioFrame final : public ScriptWrappable {
   // Returns the RTP Packet Timestamp for this frame.
   uint32_t timestamp() const;
   std::optional<uint16_t> sequenceNumber() const;
-  DOMArrayBuffer* data(ExecutionContext* context) const;
+  DOMArrayBuffer* data() const;
   RTCEncodedAudioFrameMetadata* getMetadata(ExecutionContext*) const;
   base::expected<void, String> SetMetadata(ExecutionContext*,
                                            const RTCEncodedAudioFrameMetadata*);
   void setMetadata(ExecutionContext*,
                    RTCEncodedAudioFrameMetadata*,
                    ExceptionState&);
-  void setData(ExecutionContext*, DOMArrayBuffer*);
-  String toString(ExecutionContext* context) const;
+  void setData(DOMArrayBuffer*);
+  String toString() const;
 
   base::UnguessableToken OwnerId();
   int64_t Counter();

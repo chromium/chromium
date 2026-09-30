@@ -26,7 +26,6 @@
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 #include "third_party/webrtc/api/units/timestamp.h"
 #include "third_party/webrtc/api/video/video_frame_metadata.h"
-#include "v8/include/v8-isolate.h"
 
 namespace blink {
 
@@ -44,7 +43,7 @@ class RTCEncodedVideoFrameDelegate
   V8RTCEncodedVideoFrameType::Enum Type() const;
   std::optional<uint32_t> RtpTimestamp() const;
   std::optional<webrtc::Timestamp> PresentationTimestamp() const;
-  DOMArrayBuffer* CreateDataBuffer(v8::Isolate* isolate) const;
+  DOMArrayBuffer* CreateDataBuffer() const;
   void SetData(const DOMArrayBuffer* data);
   std::optional<uint8_t> PayloadType() const;
   std::optional<std::string> MimeType() const;
