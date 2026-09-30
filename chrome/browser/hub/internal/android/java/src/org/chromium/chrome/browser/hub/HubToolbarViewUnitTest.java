@@ -71,7 +71,9 @@ import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.HubToolbarProperties.PaneButtonLookup;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.ui.actions.button.DelegateButtonData;
@@ -436,6 +438,9 @@ public class HubToolbarViewUnitTest {
     }
 
     @Test
+    @DisableFeatures({
+        ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
+    })
     public void testUpdateSearchBoxColorScheme() {
         forceSetColorScheme(HubColorScheme.INCOGNITO);
         assertEquals(

@@ -44,7 +44,10 @@ import org.chromium.ui.base.DeviceFormFactor;
 
 /** Public transit instrumentation/integration test of Hub. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+// TODO(crbug.com/419289558): Re-enable color surface feature
 @DisableFeatures({
+    ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
+    ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
     ChromeFeatureList.ANDROID_THEME_MODULE,
     TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS
 })

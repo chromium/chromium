@@ -50,12 +50,14 @@ import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator.LeaseReason;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.hub.PaneManager;
 import org.chromium.chrome.browser.tab.TabArchiveSettings;
@@ -390,6 +392,7 @@ public class ArchivedTabsDialogCoordinatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE)
     public void testCloseAllTabsButtonBackgroundColor() {
         mCoordinator.show(mOnTabSelectingListener);
         RobolectricUtil.runAllBackgroundAndUi();

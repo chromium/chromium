@@ -39,6 +39,8 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRule;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Features;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.actions.button.DelegateButtonData;
 import org.chromium.chrome.browser.ui.actions.button.DisplayButtonData;
 import org.chromium.chrome.browser.ui.actions.button.FullButtonData;
@@ -52,6 +54,10 @@ import java.util.Collection;
 
 /** Unit tests for Hub Action Button using Button and HubActionButtonHelper. */
 @RunWith(ParameterizedRobolectricTestRunner.class)
+@Features.DisableFeatures({
+    ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
+    ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
+})
 public class HubActionButtonViewUnitTest {
     // All the tests in this file will run twice, once for isXrDevice=true and once for
     // isXrDevice=false. Expect all the tests with the same results on XR devices too.

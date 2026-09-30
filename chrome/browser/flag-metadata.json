@@ -520,6 +520,11 @@
     "expiry_milestone": 168
   },
   {
+    "name": "android-surface-color-update",
+    "owners": [ "jtanaristy@google.com", "wenyufu@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "android-tab-declutter-archive-on-desktop",
     "owners": [ "hitarthkothari@google.com", "ckitagawa@google.com", "clank-tab-dev@google.com" ],
     "expiry_milestone": 160
@@ -6003,6 +6008,11 @@
     "name": "google-pay-via-android-intents",
     "owners": [ "xuehuichen@google.com", "chrome-payments-eng@google.com" ],
     "expiry_milestone": 157
+  },
+  {
+    "name": "grid-tab-switcher-surface-color-update",
+    "owners": [ "jtanaristy@google.org", "wenyufu@chromium.org" ],
+    "expiry_milestone": 150
   },
   {
     "name": "group-promo-prototype",

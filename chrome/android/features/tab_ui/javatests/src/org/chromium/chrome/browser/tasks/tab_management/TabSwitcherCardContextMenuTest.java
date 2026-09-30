@@ -41,7 +41,12 @@ import java.util.concurrent.ExecutionException;
 /** Tests for Tab Switcher Card context menus. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
-@DisableFeatures(ChromeFeatureList.ANDROID_THEME_MODULE)
+// TODO(crbug.com/419289558): Re-enable color surface feature flags
+@DisableFeatures({
+    ChromeFeatureList.ANDROID_SURFACE_COLOR_UPDATE,
+    ChromeFeatureList.GRID_TAB_SWITCHER_SURFACE_COLOR_UPDATE,
+    ChromeFeatureList.ANDROID_THEME_MODULE
+})
 @DisabledTest(message = "Flaky. See crbug.com/467341609")
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherCardContextMenuTest {
