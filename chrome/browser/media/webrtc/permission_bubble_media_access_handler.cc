@@ -254,7 +254,7 @@ void PermissionBubbleMediaAccessHandler::ProcessQueuedAccessRequest(
       request, MediaCaptureDevicesDispatcher::GetInstance(),
       base::BindOnce(
           &PermissionBubbleMediaAccessHandler::OnMediaStreamRequestResponse,
-          base::Unretained(this), web_contents, request_id, request));
+          weak_factory_.GetWeakPtr(), web_contents, request_id, request));
 }
 
 void PermissionBubbleMediaAccessHandler::UpdateMediaRequestState(
@@ -368,7 +368,6 @@ void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
     return;
 
   auto request_it = requests_map.find(request_id);
-  DCHECK(request_it != requests_map.end());
   if (request_it == requests_map.end())
     return;
 
@@ -535,7 +534,7 @@ void PermissionBubbleMediaAccessHandler::OnAccessRequestResponse(
         FROM_HERE,
         base::BindOnce(
             &PermissionBubbleMediaAccessHandler::ProcessQueuedAccessRequest,
-            base::Unretained(this), base::UnsafeDangling(web_contents)));
+            weak_factory_.GetWeakPtr(), base::UnsafeDangling(web_contents)));
   }
 
   if (final_result != blink::mojom::MediaStreamRequestResult::OK) {
