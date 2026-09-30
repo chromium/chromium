@@ -12,11 +12,12 @@ import 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
 import type {SecurityPageBrowserProxy} from '/shared/settings/security_page/security_page_browser_proxy.js';
 import {SecurityPageBrowserProxyImpl} from '/shared/settings/security_page/security_page_browser_proxy.js';
 import type {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 
-import {getTemplate} from './secure_dns_input.html.js';
+import {getCss} from './secure_dns_input.css.js';
+import {getHtml} from './secure_dns_input.html.js';
 
 export interface SecureDnsInputElement {
   $: {
@@ -24,53 +25,64 @@ export interface SecureDnsInputElement {
   };
 }
 
-export class SecureDnsInputElement extends PolymerElement {
+export class SecureDnsInputElement extends CrLitElement {
   static get is() {
     return 'secure-dns-input';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /*
        * The value of the input field.
        */
-      value: String,
-
-      /*
-       * Whether |errorText| should be displayed beneath the input field.
-       */
-      showError_: {type: Boolean, computed: 'isInvalid_(errorText_)'},
+      value: {type: String},
 
       /**
        * The error text to display beneath the input field when |showError_| is
        * true.
        */
-      errorText_: {type: String, value: ''},
+      errorText_: {type: String},
     };
   }
 
-  declare value: string;
-  declare private readonly showError_: string;
-  declare private errorText_: string;
+  accessor value: string = '';
+  protected accessor errorText_: string = '';
+
   private browserProxy_: SecurityPageBrowserProxy =
       SecurityPageBrowserProxyImpl.getInstance();
 
-  private onKeyPress_(e: KeyboardEvent) {
+  protected onValueChanged_(e: CustomEvent<{value: string}>) {
+    this.value = e.detail.value;
+  }
+
+  protected onKeypress_(e: KeyboardEvent) {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       this.validate();
     }
   }
 
+  protected onInputBlur_() {
+    this.validate();
+  }
+
+  protected onInputChange_() {
+    this.validate();
+  }
+
   /**
    * This function ensures that while the user is entering input, especially
    * after pressing Enter, the input is not prematurely marked as invalid.
    */
-  private onInput_() {
+  protected onInput_() {
     this.errorText_ = '';
   }
 
@@ -96,11 +108,7 @@ export class SecureDnsInputElement extends PolymerElement {
           valid ? 'secureDnsCustomConnectionError' :
                   'secureDnsCustomFormatError');
     }
-    this.dispatchEvent(new CustomEvent('value-update', {
-      bubbles: true,
-      composed: true,
-      detail: {isValid: valid, text: valueToValidate},
-    }));
+    this.fire('value-update', {isValid: valid, text: valueToValidate});
   }
 
   /**
@@ -113,7 +121,7 @@ export class SecureDnsInputElement extends PolymerElement {
   /**
    * @return whether an error is being shown.
    */
-  private isInvalid_(): boolean {
+  protected isInvalid_(): boolean {
     return this.errorText_.length > 0;
   }
 }

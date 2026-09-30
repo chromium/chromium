@@ -10,9 +10,10 @@ import type {CrLottieElement} from '//resources/cr_components/cr_lottie/cr_lotti
 import type {CrIconElement} from '//resources/cr_elements/cr_icon/cr_icon.js';
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './fingerprint_progress_arc.html.js';
+import {getCss} from './fingerprint_progress_arc.css.js';
+import {getHtml} from './fingerprint_progress_arc.html.js';
 
 /**
  * The dark-mode fingerprint icon displayed temporarily each time a user scans
@@ -111,54 +112,33 @@ export interface FingerprintProgressArcElement {
   };
 }
 
-export class FingerprintProgressArcElement extends PolymerElement {
+export class FingerprintProgressArcElement extends CrLitElement {
   static get is() {
     return 'fingerprint-progress-arc';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      /**
-       * Radius of the fingerprint progress circle being displayed.
-       */
-      circleRadius: {
-        type: Number,
-        value: DEFAULT_PROGRESS_CIRCLE_RADIUS,
-      },
-
-      /**
-       * Whether lottie animation should be autoplayed.
-       */
-      autoplay: {
-        type: Boolean,
-        value: false,
-      },
-
-      /**
-       * Scale factor based the configured radius (circleRadius) vs the default
-       * radius (DEFAULT_PROGRESS_CIRCLE_RADIUS).
-       * This will affect the size of icons and check mark.
-       */
-      scale_: {
-        type: Number,
-        value: 1.0,
-      },
-
-      /**
-       * Whether fingerprint enrollment is complete.
-       */
-      isComplete_: Boolean,
+      circleRadius: {type: Number},
+      autoplay: {type: Boolean},
+      scale_: {type: Number},
+      isComplete_: {type: Boolean},
     };
   }
 
-  declare circleRadius: number;
-  declare autoplay: boolean;
-  declare private scale_: number;
-  declare private isComplete_: boolean;
+  accessor circleRadius: number = DEFAULT_PROGRESS_CIRCLE_RADIUS;
+  accessor autoplay: boolean = false;
+  private accessor scale_: number = 1.0;
+  private accessor isComplete_: boolean = false;
+
   private isDarkModeActive_: boolean = false;
   private eventTracker_: EventTracker = new EventTracker();
 
@@ -263,8 +243,7 @@ export class FingerprintProgressArcElement extends PolymerElement {
       this.clearCanvas_();
       this.drawProgressCircle_(nextPercentToDraw);
       if (!this.progressAnimationIntervalId_) {
-        this.dispatchEvent(new CustomEvent(
-            'fingerprint-progress-arc-drawn', {bubbles: true, composed: true}));
+        this.fire('fingerprint-progress-arc-drawn');
       }
       nextPercentToDraw += step;
     };

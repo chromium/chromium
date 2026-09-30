@@ -18,7 +18,7 @@ import type {ResolverOption, SettingsToggleButtonElement} from 'chrome://setting
 import {loadTimeData, SecureDnsMode, SecureDnsUiManagementMode, SecurityPageBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertNotEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {isVisible} from 'chrome://webui-test/test_util.js';
+import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestSecurityPageBrowserProxy} from '../test_security_page_browser_proxy.js';
 
@@ -43,13 +43,13 @@ suite('SettingsSecureDnsV2Input', function() {
     });
   });
 
-  setup(function() {
+  setup(async function() {
     testBrowserProxy = new TestSecurityPageBrowserProxy();
     SecurityPageBrowserProxyImpl.setInstance(testBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('secure-dns-input');
     document.body.appendChild(testElement);
-    flush();
+    await microtasksFinished();
     assertFalse(testElement.$.input.invalid);
     assertEquals('', testElement.value);
   });
@@ -76,6 +76,7 @@ suite('SettingsSecureDnsV2Input', function() {
         validFailEntry, await testBrowserProxy.whenCalled('isValidConfig'));
     assertEquals(
         validFailEntry, await testBrowserProxy.whenCalled('probeConfig'));
+    await microtasksFinished();
     assertTrue(testElement.$.input.invalid);
     assertEquals(probeFail, testElement.$.input.firstFooter);
   });
@@ -101,11 +102,13 @@ suite('SettingsSecureDnsV2Input', function() {
     assertEquals(
         invalidEntry, await testBrowserProxy.whenCalled('isValidConfig'));
     assertEquals(0, testBrowserProxy.getCallCount('probeConfig'));
+    await microtasksFinished();
     assertTrue(testElement.$.input.invalid);
     assertEquals(invalidFormat, testElement.$.input.firstFooter);
 
     // Trigger an input event and check that the error clears.
     testElement.$.input.dispatchEvent(new CustomEvent('input'));
+    await microtasksFinished();
     assertFalse(testElement.$.input.invalid);
     assertEquals(invalidEntry, testElement.value);
   });

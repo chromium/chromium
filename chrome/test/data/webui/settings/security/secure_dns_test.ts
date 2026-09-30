@@ -11,7 +11,6 @@
 import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrCollapseElement, SecureDnsInputElement, SettingsSecureDnsElement, SettingsToggleButtonElement} from 'chrome://settings/lazy_load.js';
 import {SecureDnsResolverType} from 'chrome://settings/lazy_load.js';
 import type {ResolverOption} from 'chrome://settings/settings.js';
@@ -43,13 +42,13 @@ suite('SettingsSecureDnsInput', function() {
     });
   });
 
-  setup(function() {
+  setup(async function() {
     testBrowserProxy = new TestSecurityPageBrowserProxy();
     SecurityPageBrowserProxyImpl.setInstance(testBrowserProxy);
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     testElement = document.createElement('secure-dns-input');
     document.body.appendChild(testElement);
-    flush();
+    await microtasksFinished();
     assertFalse(testElement.$.input.invalid);
     assertEquals('', testElement.value);
   });
@@ -76,6 +75,7 @@ suite('SettingsSecureDnsInput', function() {
         validFailEntry, await testBrowserProxy.whenCalled('isValidConfig'));
     assertEquals(
         validFailEntry, await testBrowserProxy.whenCalled('probeConfig'));
+    await microtasksFinished();
     assertTrue(testElement.$.input.invalid);
     assertEquals(probeFail, testElement.$.input.firstFooter);
   });
@@ -101,11 +101,13 @@ suite('SettingsSecureDnsInput', function() {
     assertEquals(
         invalidEntry, await testBrowserProxy.whenCalled('isValidConfig'));
     assertEquals(0, testBrowserProxy.getCallCount('probeConfig'));
+    await microtasksFinished();
     assertTrue(testElement.$.input.invalid);
     assertEquals(invalidFormat, testElement.$.input.firstFooter);
 
     // Trigger an input event and check that the error clears.
     testElement.$.input.dispatchEvent(new CustomEvent('input'));
+    await microtasksFinished();
     assertFalse(testElement.$.input.invalid);
     assertEquals(invalidEntry, testElement.value);
   });
@@ -179,8 +181,7 @@ suite('SettingsSecureDns', function() {
     await testBrowserProxy.whenCalled('getSecureDnsSetting');
     await microtasksFinished();
 
-    secureDnsToggle =
-        testElement.shadowRoot!.querySelector('#secureDnsToggle')!;
+    secureDnsToggle = testElement.shadowRoot.querySelector('#secureDnsToggle')!;
     assertTrue(isVisible(secureDnsToggle));
 
     assertResolverSelectShown();
@@ -193,19 +194,19 @@ suite('SettingsSecureDns', function() {
   });
 
   function getResolverOptions(): CrCollapseElement {
-    const options = testElement.shadowRoot!.querySelector<CrCollapseElement>(
+    const options = testElement.shadowRoot.querySelector<CrCollapseElement>(
         '#resolverOptions');
     assertTrue(!!options);
     return options;
   }
 
-  test('SecureDnsOff', function() {
+  test('SecureDnsOff', async function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.OFF,
       config: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
-    flush();
+    await microtasksFinished();
     assertFalse(secureDnsToggle.hasAttribute('checked'));
     assertFalse(secureDnsToggle.$.control.disabled);
     assertFalse(getResolverOptions().opened);
@@ -217,13 +218,13 @@ suite('SettingsSecureDns', function() {
         'cr-policy-pref-indicator'));
   });
 
-  test('SecureDnsAutomatic', function() {
+  test('SecureDnsAutomatic', async function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.AUTOMATIC,
       config: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
-    flush();
+    await microtasksFinished();
     assertResolverSelectShown();
     assertEquals(defaultDescription, secureDnsToggle.subLabel);
     assertFalse(!!secureDnsToggle.shadowRoot!.querySelector(
@@ -232,13 +233,13 @@ suite('SettingsSecureDns', function() {
         SecureDnsResolverType.AUTOMATIC, testElement.$.resolverSelect.value);
   });
 
-  test('SecureDnsSecure', function() {
+  test('SecureDnsSecure', async function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.SECURE,
       config: resolverList[0]!.value,
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
-    flush();
+    await microtasksFinished();
     assertResolverSelectShown();
     assertEquals(defaultDescription, secureDnsToggle.subLabel);
     assertFalse(!!secureDnsToggle.shadowRoot!.querySelector(
@@ -246,13 +247,13 @@ suite('SettingsSecureDns', function() {
     assertEquals('0', testElement.$.resolverSelect.value);
   });
 
-  test('SecureDnsManagedEnvironment', function() {
+  test('SecureDnsManagedEnvironment', async function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.OFF,
       config: '',
       managementMode: SecureDnsUiManagementMode.DISABLED_MANAGED,
     });
-    flush();
+    await microtasksFinished();
     assertFalse(secureDnsToggle.hasAttribute('checked'));
     assertTrue(secureDnsToggle.$.control.disabled);
     assertFalse(getResolverOptions().opened);
@@ -264,13 +265,13 @@ suite('SettingsSecureDns', function() {
             .shadowRoot!.querySelector('cr-tooltip-icon')!.hidden);
   });
 
-  test('SecureDnsParentalControl', function() {
+  test('SecureDnsParentalControl', async function() {
     webUIListenerCallback('secure-dns-setting-changed', {
       mode: SecureDnsMode.OFF,
       config: '',
       managementMode: SecureDnsUiManagementMode.DISABLED_PARENTAL_CONTROLS,
     });
-    flush();
+    await microtasksFinished();
     assertFalse(secureDnsToggle.hasAttribute('checked'));
     assertTrue(secureDnsToggle.$.control.disabled);
     assertFalse(getResolverOptions().opened);
@@ -282,7 +283,7 @@ suite('SettingsSecureDns', function() {
             .shadowRoot!.querySelector('cr-tooltip-icon')!.hidden);
   });
 
-  test('SecureDnsManaged', function() {
+  test('SecureDnsManaged', async function() {
     prefsBrowserProxy.fakeApi.sendPrefChanges([{
       key: 'dns_over_https.mode',
       type: chrome.settingsPrivate.PrefType.STRING,
@@ -296,7 +297,7 @@ suite('SettingsSecureDns', function() {
       config: '',
       managementMode: SecureDnsUiManagementMode.NO_OVERRIDE,
     });
-    flush();
+    await microtasksFinished();
     assertTrue(secureDnsToggle.hasAttribute('checked'));
     assertTrue(secureDnsToggle.$.control.disabled);
     assertFalse(getResolverOptions().opened);

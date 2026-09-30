@@ -1126,7 +1126,7 @@ suite('SecurityPageV2HappinessTrackingSurveys_SecureDnsLegacy', function() {
 
     // Toggle Secure DNS.
     const toggleButton =
-        secureDnsRow.shadowRoot!.querySelector<SettingsToggleButtonElement>(
+        secureDnsRow.shadowRoot.querySelector<SettingsToggleButtonElement>(
             '#secureDnsToggle');
     assertTrue(!!toggleButton);
     toggleButton.click();
