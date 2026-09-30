@@ -1270,7 +1270,6 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
     case wgpu::FeatureName::AdapterPropertiesVk:
     case wgpu::FeatureName::AdapterPropertiesMemoryHeaps:
     case wgpu::FeatureName::ShaderModuleCompilationOptions:
-    case wgpu::FeatureName::AtomicVec2uMinMax:
       return safety_level_ == webgpu::SafetyLevel::kUnsafe ||
              safety_level_ == webgpu::SafetyLevel::kSafeExperimental;
     case wgpu::FeatureName::CoreFeaturesAndLimits:
@@ -1297,7 +1296,8 @@ bool WebGPUDecoderImpl::IsFeatureExposed(wgpu::FeatureName feature) const {
     case wgpu::FeatureName::PrimitiveIndex:
     case wgpu::FeatureName::TextureComponentSwizzle:
     case wgpu::FeatureName::SubgroupSizeControl:
-    case wgpu::FeatureName::TextureCompressionUnaligned: {
+    case wgpu::FeatureName::TextureCompressionUnaligned:
+    case wgpu::FeatureName::AtomicVec2uMinMax: {
       // Likely case when no features are blocked.
       if (runtime_unsafe_features_.empty() ||
           safety_level_ == webgpu::SafetyLevel::kUnsafe) {
