@@ -10,6 +10,7 @@
 #import "components/feature_engagement/public/tracker.h"
 #import "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
 #import "components/prefs/pref_service.h"
+#import "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
 #import "components/sync/base/features.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/discover_feed/model/discover_feed_visibility_browser_agent.h"
@@ -48,6 +49,8 @@
 #import "ios/chrome/browser/shared/public/commands/gemini_commands.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios.h"
+#import "ios/chrome/browser/tips_manager/model/tips_manager_ios_factory.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -174,6 +177,21 @@ CGFloat const kSheetCornerRadius = 30;
 }
 
 - (void)stop {
+  // Notify `TipsManagerIOS` only when a non-default background or color theme
+  // was actually selected and kept during this session (ignoring sessions where
+  // no changes were made, a preview was canceled, or the background was reset
+  // to default). Must be checked before `saveCurrentTheme` resets
+  // `themeHasChanged`.
+  if (_backgroundConfigurationMediator.themeHasChanged &&
+      (_backgroundService->GetCurrentCustomBackground() ||
+       _backgroundService->GetCurrentColorTheme())) {
+    if (TipsManagerIOS* tipsManager =
+            TipsManagerIOSFactory::GetForProfile(self.profile)) {
+      tipsManager->NotifySignal(
+          segmentation_platform::tips_manager::signals::kNTPBackgroundSelected);
+    }
+  }
+
   [_backgroundConfigurationMediator saveCurrentTheme];
 
   if (IsPageActionMenuEnabled()) {
