@@ -10,6 +10,11 @@
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "testing/gmock/include/gmock/gmock.h"
 
+namespace {
+// Default maximum number of total inputs allowed in the mock searchbox config.
+constexpr int kDefaultMaxTotalInputs = 10;
+}  // namespace
+
 MockIOSChromeAimEligibilityService::MockIOSChromeAimEligibilityService(
     PrefService& pref_service,
     TemplateURLService* template_url_service,
@@ -26,6 +31,7 @@ MockIOSChromeAimEligibilityService::MockIOSChromeAimEligibilityService(
   ON_CALL(*this, IsAimLocallyEligible).WillByDefault(testing::Return(true));
   ON_CALL(*this, IsServerEligibilityEnabled)
       .WillByDefault(testing::Return(false));
+  config().mutable_rule_set()->set_max_total_inputs(kDefaultMaxTotalInputs);
 }
 
 MockIOSChromeAimEligibilityService::~MockIOSChromeAimEligibilityService() =
