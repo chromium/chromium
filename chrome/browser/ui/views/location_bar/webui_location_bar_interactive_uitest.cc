@@ -1916,11 +1916,10 @@ IN_PROC_BROWSER_TEST_P(WebUILocationBarInteractiveUiTest, DoubleClick2) {
       WaitTillOmniboxViewSelection("test", gfx::Range(14, 18)));
 }
 
-#if BUILDFLAG(IS_MAC)
-#define MAYBE_MacDoubleClick MacDoubleClick
-#else
+// TODO(crbug.com/469743571): Flaky or failing on Mac bots because opening the
+// popup between clicks exceeds the double-click timeout (kDoubleClickTimeMs =
+// 500ms).
 #define MAYBE_MacDoubleClick DISABLED_MacDoubleClick
-#endif
 
 // Test to make sure we can turn a second-click of a two-click sequence where
 // the second click is to the popup into a double-click. This is run only on
