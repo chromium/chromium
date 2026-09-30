@@ -1860,6 +1860,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.DeviceTrust.Attestation.PolicyLevel"
+    enum="DTAttestationPolicyLevel" expires_after="2027-01-02">
+  <owner>hmare@google.com</owner>
+  <owner>cbe-device-trust-eng@google.com</owner>
+  <summary>
+    Policy levels enabled for the Device Trust connector, recorded when a
+    challenge is handed to the attestation service. The policy level determines
+    the content of the attestation service's challenge response. On desktop this
+    happens during the inline navigation handshake; on iOS, when a page calls
+    the Device Trust JS API.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.DeviceTrust.Attestation.ResponseLatency.{Variant}"
     units="ms" expires_after="2027-01-02">
   <owner>hmare@google.com</owner>
@@ -1906,18 +1919,6 @@ chromium-metrics-reviews@google.com.
     Recorded when a Device Trust handshake was completed between the browser and
     a server. This captures either the success or specific failure of the
     overall flow.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.DeviceTrust.Inline.Attestation.PolicyLevel"
-    enum="DTAttestationPolicyLevel" expires_after="2027-01-02">
-  <owner>hmare@google.com</owner>
-  <owner>cbe-device-trust-eng@google.com</owner>
-  <summary>
-    Policy levels enabled for the Device Trust connector during the DTC inline
-    flow process. The inline flow can occur during a user navigation, and the
-    policy level determines the content of the attestation services' challenge
-    response.
   </summary>
 </histogram>
 
