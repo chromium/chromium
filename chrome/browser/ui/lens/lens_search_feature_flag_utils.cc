@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/lens/lens_search_feature_flag_utils.h"
 
 #include "base/feature_list.h"
+#include "base/i18n/language_tag.h"
 #include "chrome/browser/autocomplete/aim_eligibility_service_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
@@ -17,7 +18,6 @@
 
 namespace {
 constexpr char kUnitedStatesCountryCode[] = "us";
-constexpr char kEnglishUSLocale[] = "en-US";
 
 bool IsEnUs() {
   // Safety check since this is a CP'd change.
@@ -39,7 +39,8 @@ bool IsEnUs() {
   return variations_service->GetStoredPermanentCountry() ==
              kUnitedStatesCountryCode &&
          features->application_locale_storage() &&
-         features->application_locale_storage()->Get() == kEnglishUSLocale;
+         features->application_locale_storage()->GetTag() ==
+             base::i18n::GetKnownLanguageTag("en-US");
 }
 
 }  // namespace

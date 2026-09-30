@@ -254,7 +254,7 @@ void EditorMenuView::TabSelectedAt(int index) {
 
 void EditorMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
   gfx::Rect editor_menu_bounds = GetEditorMenuBounds(
-      anchor_view_bounds, this, application_locale_storage_->Get());
+      anchor_view_bounds, this, application_locale_storage_->GetTag());
   GetWidget()->SetBounds(editor_menu_bounds);
   UpdateChipsContainer(/*editor_menu_width=*/editor_menu_bounds.width());
 }

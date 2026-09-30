@@ -88,6 +88,7 @@
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "base/check_deref.h"
+#include "base/i18n/language_tag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "components/application_locale_storage/application_locale_storage.h"
@@ -1210,7 +1211,8 @@ void FirstRunFlowController::MaybeTriggerHatsSurvey() {
   const ApplicationLocaleStorage& application_locale_storage =
       CHECK_DEREF(CHECK_DEREF(CHECK_DEREF(g_browser_process).GetFeatures())
                       .application_locale_storage());
-  if (application_locale_storage.Get() != "en-US") {
+  if (application_locale_storage.GetTag() !=
+      base::i18n::GetKnownLanguageTag("en-US")) {
     return;
   }
 #endif

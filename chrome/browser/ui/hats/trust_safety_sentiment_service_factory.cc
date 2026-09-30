@@ -5,6 +5,8 @@
 
 #include <iterator>
 
+#include "base/containers/fixed_flat_set.h"
+#include "base/i18n/language_tag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/global_features.h"
@@ -14,9 +16,6 @@
 #include "components/application_locale_storage/application_locale_storage.h"
 #include "content/public/browser/browser_context.h"
 #include "extensions/buildflags/buildflags.h"
-
-inline constexpr std::string kSurveyLocales[] = {"en", "en-AU", "en-CA",
-                                                 "en-GB", "en-US"};
 
 TrustSafetySentimentServiceFactory::TrustSafetySentimentServiceFactory()
     : ProfileKeyedServiceFactory(
@@ -62,13 +61,16 @@ TrustSafetySentimentServiceFactory::BuildServiceInstanceForBrowserContext(
     (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS))
 
   // TrustSafetySentimentSurvey is conducted only in English currently.
-  const std::string& application_locale =
-      g_browser_process->GetFeatures()->application_locale_storage()->Get();
-  CHECK(!application_locale.empty());
-  bool is_eligible_locale =
-      std::find(std::begin(kSurveyLocales), std::end(kSurveyLocales),
-                application_locale) != std::end(kSurveyLocales);
-  if (!is_eligible_locale) {
+  static constexpr auto kSurveyLocales =
+      base::MakeFixedFlatSet<base::i18n::LanguageTag>(
+          {base::i18n::GetKnownLanguageTag("en"),
+           base::i18n::GetKnownLanguageTag("en-AU"),
+           base::i18n::GetKnownLanguageTag("en-CA"),
+           base::i18n::GetKnownLanguageTag("en-GB"),
+           base::i18n::GetKnownLanguageTag("en-US")});
+  if (!kSurveyLocales.contains(g_browser_process->GetFeatures()
+                                   ->application_locale_storage()
+                                   ->GetTag())) {
     return nullptr;
   }
 

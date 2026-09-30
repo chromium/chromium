@@ -7,6 +7,9 @@
 
 #include "ui/views/view.h"
 
+namespace base::i18n {
+class LanguageTag;
+}  // namespace base::i18n
 namespace gfx {
 class Rect;
 }  // namespace gfx
@@ -83,7 +86,7 @@ inline constexpr int kBigEditorMenuMinWidthDip = 480;
 //
 gfx::Rect GetEditorMenuBounds(const gfx::Rect& anchor_view_bounds,
                               const views::View* target,
-                              const std::string& application_locale,
+                              const base::i18n::LanguageTag& application_locale,
                               const CardType card_type = CardType::kDefault);
 
 }  // namespace chromeos::editor_menu

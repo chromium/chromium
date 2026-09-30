@@ -6,19 +6,20 @@
 
 #include <string>
 
+#include "base/i18n/language_tag.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
+#include "utils.h"
 
 namespace chromeos::editor_menu {
 
 namespace {
 
-int ComputeWidthOnSide(const std::string& app_locale) {
-  if (app_locale == "ta") {
-    return kBigEditorMenuMinWidthDip;
-  }
-  return kEditorMenuMinWidthDip;
+int ComputeWidthOnSide(const base::i18n::LanguageTag& app_locale) {
+  return app_locale == base::i18n::GetKnownLanguageTag("ta")
+             ? kBigEditorMenuMinWidthDip
+             : kEditorMenuMinWidthDip;
 }
 
 std::vector<gfx::Rect> GetEditorMenuBoundsCandidates(
@@ -27,7 +28,7 @@ std::vector<gfx::Rect> GetEditorMenuBoundsCandidates(
     const gfx::Rect screen_work_area,
     const gfx::Point cursor_point,
     const CardType& card_type,
-    const std::string& application_locale) {
+    const base::i18n::LanguageTag& application_locale) {
   const int width_on_top_or_bottom = std::max(
       card_type == CardType::kMahiDefaultMenu ? kMahiMenuTopBottomMinWidthDip
                                               : kEditorMenuMinWidthDip,
@@ -208,7 +209,7 @@ gfx::Rect PickBestEditorMenuBounds(std::vector<gfx::Rect> candidates,
 
 gfx::Rect GetEditorMenuBounds(const gfx::Rect& anchor_view_bounds,
                               const views::View* target,
-                              const std::string& application_locale,
+                              const base::i18n::LanguageTag& application_locale,
                               const CardType card_type) {
   display::Screen* screen = display::Screen::Get();
   const gfx::Rect screen_work_area =

@@ -12,6 +12,7 @@
 #include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/i18n/language_tag.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -391,7 +392,7 @@ void MahiMenuView::UpdateBounds(const gfx::Rect& anchor_view_bounds) {
   // TODO(b/318733414): Move `editor_menu::GetEditorMenuBounds` to a common
   // place for use
   GetWidget()->SetBounds(editor_menu::GetEditorMenuBounds(
-      anchor_view_bounds, this, application_locale_storage_->Get(),
+      anchor_view_bounds, this, application_locale_storage_->GetTag(),
       editor_menu::CardType::kMahiDefaultMenu));
 }
 

@@ -55,6 +55,7 @@ source_set("backend_logic_impl") {
     "//url",
   ]
   deps = [
+    "//base/i18n:language_tag",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/autocomplete:aim_eligibility_service",

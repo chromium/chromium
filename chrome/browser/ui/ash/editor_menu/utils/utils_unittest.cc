@@ -4,8 +4,7 @@
 
 #include "utils.h"
 
-#include <string>
-
+#include "base/i18n/language_tag.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/application_locale_storage/application_locale_storage.h"
@@ -292,10 +291,10 @@ class GetEditorMenuBoundsTest
 TEST_P(GetEditorMenuBoundsTest, Verify) {
   test_screen_.set_cursor_screen_point(GetParam().cursor_point);
 
-  const std::string& locale = TestingBrowserProcess::GetGlobal()
-                                  ->GetFeatures()
-                                  ->application_locale_storage()
-                                  ->Get();
+  const base::i18n::LanguageTag& locale = TestingBrowserProcess::GetGlobal()
+                                              ->GetFeatures()
+                                              ->application_locale_storage()
+                                              ->GetTag();
   const gfx::Rect editor_menu_bounds =
       chromeos::editor_menu::GetEditorMenuBounds(GetParam().anchor_view_bounds,
                                                  target_.get(), locale);

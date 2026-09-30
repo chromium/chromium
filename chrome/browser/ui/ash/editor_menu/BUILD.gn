@@ -21,6 +21,7 @@ source_set("utils") {
 
   deps = [
     "//base",
+    "//base/i18n:language_tag",
     "//chromeos/ash/components/editor_menu/public/cpp",
     "//ui/aura",
     "//ui/display",
@@ -125,6 +126,7 @@ source_set("unit_tests") {
     ":utils",
     ":views",
     "//base",
+    "//base/i18n:language_tag",
     "//base/test:test_support",
     "//chrome/browser:global_features",
     "//chrome/test:test_support",

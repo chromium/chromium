@@ -1207,6 +1207,7 @@ if (enable_dice_support) {
       ":profile_picker_flow_controller",
       ":profile_picker_post_sign_in_adapter",
       "//base",
+      "//base/i18n:language_tag",
       "//chrome/app:branded_strings",
       "//chrome/app:generated_resources",
       "//chrome/browser:browser_process",

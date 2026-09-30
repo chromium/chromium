@@ -19,6 +19,7 @@ source_set("magic_boost") {
   deps = [
     ":magic_boost_constants",
     "//base",
+    "//base/i18n:language_tag",
     "//chrome/browser/ash/magic_boost",
     "//chrome/browser/resources:component_extension_resources",
     "//chrome/browser/ui/ash/editor_menu:utils",
@@ -68,6 +69,7 @@ source_set("unit_tests") {
     ":magic_boost_constants",
     ":test_support",
     "//base",
+    "//base/i18n:language_tag",
     "//chrome/browser/ash/magic_boost",
     "//chrome/browser/ash/magic_boost:test_support",
     "//chrome/browser/ui/ash/editor_menu:utils",

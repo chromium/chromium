@@ -258,7 +258,7 @@ void MagicBoostOptInCard::UpdateWidgetBounds(
     const gfx::Rect& anchor_view_bounds) {
   // TODO(b/318733414): Move `GetEditorMenuBounds` to a common place to use.
   GetWidget()->SetBounds(editor_menu::GetEditorMenuBounds(
-      anchor_view_bounds, this, application_locale_storage_->Get()));
+      anchor_view_bounds, this, application_locale_storage_->GetTag()));
 }
 
 void MagicBoostOptInCard::RequestFocus() {

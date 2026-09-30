@@ -12,6 +12,7 @@
 #include "ash/system/mahi/test/mock_mahi_media_app_events_proxy.h"
 #include "base/auto_reset.h"
 #include "base/command_line.h"
+#include "base/i18n/language_tag.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -37,11 +38,11 @@
 namespace chromeos::mahi {
 
 namespace {
-const std::string& GetApplicationLocale() {
+const base::i18n::LanguageTag& GetApplicationLocale() {
   return TestingBrowserProcess::GetGlobal()
       ->GetFeatures()
       ->application_locale_storage()
-      ->Get();
+      ->GetTag();
 }
 }  // namespace
 

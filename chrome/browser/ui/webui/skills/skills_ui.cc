@@ -68,8 +68,7 @@ bool ShouldDisableBrowseSkillsPage() {
   const ApplicationLocaleStorage& application_locale_storage =
       CHECK_DEREF(CHECK_DEREF(CHECK_DEREF(g_browser_process).GetFeatures())
                       .application_locale_storage());
-  return !base::StartsWith(application_locale_storage.Get(), "en",
-                           base::CompareCase::INSENSITIVE_ASCII);
+  return application_locale_storage.GetTag().language_subtag() == "en";
 }
 
 void AddSkillsV1Resources(content::WebUIDataSource* source, Profile* profile) {
