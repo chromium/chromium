@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "components/enterprise/watermarking/mojom/watermark.mojom.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -38,7 +39,7 @@ watermark::mojom::WatermarkBlockPtr WatermarkTextContainer::Serialize() const {
   if (!region_mapping.IsValid()) {
     return nullptr;
   }
-  stream.copyTo(region_mapping.mapping.memory());
+  stream.copyTo(base::span(region_mapping.mapping).data());
   return watermark::mojom::WatermarkBlockPtr(std::in_place,
                                              std::move(region_mapping.region),
                                              block_width_, block_height_);

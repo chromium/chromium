@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "components/enterprise/watermarking/mojom/watermark.mojom.h"
 #include "components/enterprise/watermarking/watermark.h"
@@ -47,7 +48,7 @@ watermark::mojom::WatermarkBlockPtr MakeTestWatermarkBlock(
   if (!region_mapping.IsValid()) {
     return nullptr;
   }
-  stream.copyTo(region_mapping.mapping.memory());
+  stream.copyTo(base::span(region_mapping.mapping).data());
 
   // Measure string dimensions
   SkScalar text_width = font.measureText(

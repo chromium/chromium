@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/read_only_shared_memory_region.h"
@@ -70,8 +69,7 @@ class ConnectorDataPipeGetterTest : public testing::Test {
       return base::ReadOnlySharedMemoryRegion();
     }
 
-    UNSAFE_TODO(
-        std::memcpy(region.mapping.memory(), content.data(), content.size()));
+    base::span(region.mapping).copy_from(base::as_byte_span(content));
     return std::move(region.region);
   }
 
