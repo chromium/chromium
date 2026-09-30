@@ -267,7 +267,7 @@ export class TopToolbarElement extends TopToolbarElementBase {
 
   protected onThreadHistoryClick_() {
     recordAction('ContextualTasks.WebUI.UserAction.OpenThreadHistory');
-    this.browserProxy_.handler.showThreadHistory();
+    this.toolbarBrowserProxy_.handler.showThreadHistory();
   }
 
   protected onOverflowMenuButtonClick_(e: Event) {
@@ -286,7 +286,7 @@ export class TopToolbarElement extends TopToolbarElementBase {
 
   protected onOpenInNewTabClick_() {
     recordAction('ContextualTasks.WebUI.UserAction.OpenInNewTab');
-    this.browserProxy_.handler.moveTaskUiToNewTab();
+    this.toolbarBrowserProxy_.handler.moveTaskUiToNewTab();
   }
 
   protected onReopenTabsReopenClick_() {

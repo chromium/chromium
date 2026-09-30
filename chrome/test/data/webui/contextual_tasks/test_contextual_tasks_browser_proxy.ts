@@ -24,7 +24,6 @@ class MockPage extends TestBrowserProxy implements PageInterface {
     super([
       'hideInput',
       'postAimMessage',
-      'onAiPageStatusChanged',
       'onContextUpdated',
       'onHandshakeComplete',
       'onLensOverlayStateChanged',
@@ -116,10 +115,6 @@ class MockPage extends TestBrowserProxy implements PageInterface {
 
   setInNlm(inNlm: boolean) {
     this.methodCalled('setInNlm', inNlm);
-  }
-
-  onAiPageStatusChanged(isAiPage: boolean) {
-    this.methodCalled('onAiPageStatusChanged', isAiPage);
   }
 
   onLensOverlayStateChanged(isOverlayShowing: boolean) {
@@ -226,7 +221,6 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'isEmbeddedPageErrorDocument',
       'isShownInTab',
       'isZeroState',
-      'moveTaskUiToNewTab',
       'onboardingTooltipDismissed',
       'askGTooltipDismissed',
       'onContextMenuOpened',
@@ -239,7 +233,6 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
       'reopenTabs',
       'setTaskId',
       'setThreadTitle',
-      'showThreadHistory',
       'submitQuery',
       'isSidePanelPinned',
       'notifySmartTabSharingTryItIphResult',
@@ -283,9 +276,6 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
     this.methodCalled('closeSidePanel');
   }
 
-  showThreadHistory() {
-    this.methodCalled('showThreadHistory');
-  }
 
   setIsShownInTab(isInTab: boolean) {
     this.isInTab_ = isInTab;
@@ -346,10 +336,6 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
   // eslint-disable-next-line @typescript-eslint/naming-convention
   askGTooltipDismissed() {
     this.methodCalled('askGTooltipDismissed');
-  }
-
-  moveTaskUiToNewTab() {
-    this.methodCalled('moveTaskUiToNewTab');
   }
 
   reopenTabs() {
@@ -588,6 +574,8 @@ export class TestToolbarPageHandler extends TestBrowserProxy implements
       'openMyActivityUi',
       'openOverflowMenuHelpUi',
       'openFeedbackUi',
+      'moveTaskUiToNewTab',
+      'showThreadHistory',
     ]);
   }
 
@@ -609,6 +597,14 @@ export class TestToolbarPageHandler extends TestBrowserProxy implements
 
   openFeedbackUi() {
     this.methodCalled('openFeedbackUi');
+  }
+
+  moveTaskUiToNewTab() {
+    this.methodCalled('moveTaskUiToNewTab');
+  }
+
+  showThreadHistory() {
+    this.methodCalled('showThreadHistory');
   }
 }
 

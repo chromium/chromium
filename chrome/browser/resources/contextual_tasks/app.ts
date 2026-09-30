@@ -2,25 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
 // <if expr="not is_android">
 import './banner_promo.js';
 import './info_tooltip.js';
+
 import {TooltipState} from './info_tooltip.js';
+
 import type {ContextualActionMenuElement} from '//resources/cr_components/composebox/contextual_action_menu.js';
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
+
 import type {ContextualTasksInfoTooltipElement} from './info_tooltip.js';
+
 // </if>
 
 // <if expr="not is_android or enable_webui_contextual_tasks_composebox">
 import './composebox.js';
 import './onboarding_tooltip.js';
 import '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
+
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 
 import type {ContextualTasksComposeboxElement} from './composebox.js';
 import type {ContextualTasksOnboardingTooltipElement} from './onboarding_tooltip.js';
 // </if>
-
+// clang-format on
 
 
 import '//resources/cr_elements/cr_button/cr_button.js';
@@ -28,7 +34,6 @@ import './error_dialog.js';
 import './error_page.js';
 import './ghost_loader.js';
 import './top_toolbar.js';
-import {WindowManager} from './window_manager.js';
 
 import type {ChromeEvent} from '/tools/typescript/definitions/chrome_event.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -44,12 +49,15 @@ import {getHtml} from './app.html.js';
 import type {ComposeboxPosition, InjectedInput} from './contextual_tasks.mojom-webui.js';
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
+import type {ToolbarBrowserProxy} from './contextual_tasks_toolbar_browser_proxy.js';
+import {ToolbarBrowserProxyImpl} from './contextual_tasks_toolbar_browser_proxy.js';
 import {PostMessageHandler} from './post_message_handler.js';
 import type {Rect} from './post_message_handler.js';
 import {recordAction} from './utils.js';
 import {getNonOccludedClipPath} from './utils/clip_path.js';
 import {isFullWebView} from './web_view_type.js';
 import type {LoadAbortEvent, LoadEvent, NewWindowEvent, PermissionRequestEvent, WebViewType} from './web_view_type.js';
+import {WindowManager} from './window_manager.js';
 
 
 // <if expr="is_android and not enable_webui_contextual_tasks_composebox">
@@ -297,6 +305,9 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
   protected accessor friendlyZeroStateTitleAfterName_: string =
       loadTimeData.getString('friendlyZeroStateTitleAfterName');
   private browserProxy_: BrowserProxy = BrowserProxyImpl.getInstance();
+  private toolbarBrowserProxy_: ToolbarBrowserProxy =
+      ToolbarBrowserProxyImpl.getInstance();
+  private toolbarListenerIds_: number[] = [];
 
   // <if expr="not is_android">
   private askGTooltipState_ = new TooltipState(
@@ -488,9 +499,6 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
         this.threadTitle_ = title;
         document.title = title || loadTimeData.getString('title');
       }),
-      callbackRouter.onAiPageStatusChanged.addListener(isAiPage => {
-        this.isAiPage_ = isAiPage;
-      }),
 
       callbackRouter.postAimMessage.addListener(this.postAimMessage.bind(this)),
       callbackRouter.onHandshakeComplete.addListener(
@@ -595,6 +603,13 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
       callbackRouter.showSmartTabSharingDefaultOnIph.addListener(() => {
         this.showSmartTabSharingDefaultOnIph_ = true;
       }),
+    ];
+
+    this.toolbarListenerIds_ = [
+      this.toolbarBrowserProxy_.callbackRouter.onAiPageStatusChanged
+          .addListener((isAiPage: boolean) => {
+            this.isAiPage_ = isAiPage;
+          }),
     ];
 
     // Track the tooltip visibility events fired from the composebox.
@@ -758,6 +773,10 @@ export class ContextualTasksAppElement extends ContextualTasksAppElementBase {
     super.disconnectedCallback();
     this.listenerIds_.forEach(
         id => this.browserProxy_.callbackRouter.removeListener(id));
+    this.listenerIds_ = [];
+    this.toolbarListenerIds_.forEach(
+        id => this.toolbarBrowserProxy_.callbackRouter.removeListener(id));
+    this.toolbarListenerIds_ = [];
     this.removeWebviewRequestOverrides();
     this.eventTracker_.removeAll();
   }

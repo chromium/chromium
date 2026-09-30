@@ -393,12 +393,6 @@ void ContextualTasksPageHandler::CloseSidePanel() {
   }
 }
 
-void ContextualTasksPageHandler::ShowThreadHistory() {
-  // Send a message to AIM to open the threads view.
-  lens::ClientToAimMessage message;
-  message.mutable_open_threads_view()->mutable_payload();
-  PostAimMessage(message);
-}
 
 void ContextualTasksPageHandler::IsShownInTab(IsShownInTabCallback callback) {
   std::move(callback).Run(web_ui_controller_->IsShownInTab());
@@ -423,10 +417,6 @@ void ContextualTasksPageHandler::OpenAskGHelpUi() {
   OpenUrlWithDisposition(web_ui_controller_->GetProfile(),
                          GURL(contextual_tasks::GetContextualTasksTabHelpUrl()),
                          WindowOpenDisposition::NEW_FOREGROUND_TAB, browser);
-}
-
-void ContextualTasksPageHandler::MoveTaskUiToNewTab() {
-  web_ui_controller_->MoveTaskUiToNewTab();
 }
 
 void ContextualTasksPageHandler::OnTabClickedFromSourcesMenu(int32_t tab_id,

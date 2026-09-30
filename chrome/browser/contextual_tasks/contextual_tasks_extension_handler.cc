@@ -112,6 +112,28 @@ ContextualTasksExtensionHandler::~ContextualTasksExtensionHandler() {
   }
 }
 
+// static
+ContextualTasksExtensionHandler*
+ContextualTasksExtensionHandler::FromWebContents(
+    content::WebContents* web_contents) {
+  if (!web_contents) {
+    return nullptr;
+  }
+  ContextualTasksExtensionHandler* target_handler = nullptr;
+  web_contents->ForEachRenderFrameHostWithAction(
+      [&target_handler](content::RenderFrameHost* rfh) {
+        if (auto* handler =
+                ContextualTasksExtensionHandler::GetForCurrentDocument(rfh)) {
+          if (handler->contextual_tasks_page_.is_bound()) {
+            target_handler = handler;
+            return content::RenderFrameHost::FrameIterationAction::kStop;
+          }
+        }
+        return content::RenderFrameHost::FrameIterationAction::kContinue;
+      });
+  return target_handler;
+}
+
 void ContextualTasksExtensionHandler::OnLensOverlayStateChanged(
     bool is_showing) {
   if (contextual_tasks_page_) {

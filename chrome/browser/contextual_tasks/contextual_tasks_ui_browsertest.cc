@@ -116,7 +116,6 @@ class MockContextualTasksPage : public contextual_tasks::mojom::Page {
   MOCK_METHOD(void, ExitBasicMode, (), (override));
   MOCK_METHOD(void, OnZeroStateChange, (bool is_zero_state), (override));
   MOCK_METHOD(void, SetInNlm, (bool in_nlm), (override));
-  MOCK_METHOD(void, OnAiPageStatusChanged, (bool), (override));
   MOCK_METHOD(void,
               OnWindowClosed,
               (const contextual_tasks::ContextualWindowId& window_id),

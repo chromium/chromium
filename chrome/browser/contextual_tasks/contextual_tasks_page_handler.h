@@ -73,11 +73,9 @@ class ContextualTasksPageHandler
   void IsEmbeddedPageErrorDocument(
       IsEmbeddedPageErrorDocumentCallback callback) override;
   void CloseSidePanel() override;
-  void ShowThreadHistory() override;
   void IsShownInTab(IsShownInTabCallback callback) override;
   void OpenOnboardingHelpUi() override;
   void OpenAskGHelpUi() override;
-  void MoveTaskUiToNewTab() override;
   void OnTabClickedFromSourcesMenu(int32_t tab_id, const GURL& url) override;
   void OnFileClickedFromSourcesMenu(const GURL& url) override;
   void OnImageClickedFromSourcesMenu(const GURL& url) override;

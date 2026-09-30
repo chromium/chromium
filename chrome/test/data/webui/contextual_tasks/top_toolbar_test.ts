@@ -89,7 +89,7 @@ suite('TopToolbarTest', () => {
       const historyButton = topToolbar.$.threadHistoryButton;
       assertTrue(!!historyButton);
       historyButton.click();
-      await proxy.handler.whenCalled('showThreadHistory');
+      await toolbarProxy.handler.whenCalled('showThreadHistory');
     });
 
     test('hides thread history button on SRP', async () => {
@@ -237,14 +237,14 @@ suite('TopToolbarTest', () => {
       assertTrue(!!openInNewTabButton);
       assertFalse(openInNewTabButton.disabled);
       openInNewTabButton.click();
-      await proxy.handler.whenCalled('moveTaskUiToNewTab');
+      await toolbarProxy.handler.whenCalled('moveTaskUiToNewTab');
 
       topToolbar.enableOpenInNewTabButton = false;
       await microtasksFinished();
       assertTrue(openInNewTabButton.disabled);
-      proxy.handler.reset();
+      toolbarProxy.handler.reset();
       openInNewTabButton.click();
-      assertEquals(0, proxy.handler.getCallCount('moveTaskUiToNewTab'));
+      assertEquals(0, toolbarProxy.handler.getCallCount('moveTaskUiToNewTab'));
     });
 
     test('shows 3 tab icons without number for 3 tabs', async () => {
@@ -638,7 +638,7 @@ suite('TopToolbarTest', () => {
           assertTrue(!!openInNewTabButton);
           assertFalse(openInNewTabButton.disabled);
           openInNewTabButton.click();
-          await proxy.handler.whenCalled('moveTaskUiToNewTab');
+          await toolbarProxy.handler.whenCalled('moveTaskUiToNewTab');
 
           topToolbar.enableOpenInNewTabButton = false;
           await microtasksFinished();

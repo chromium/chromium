@@ -679,18 +679,6 @@ TEST_F(ContextualTasksPageHandlerTest, CloseSidePanel) {
   page_handler_->CloseSidePanel();
 }
 
-TEST_F(ContextualTasksPageHandlerTest, ShowThreadHistory) {
-  // ShowThreadHistory sends a message to the webview.
-  EXPECT_CALL(page_, PostAimMessage(_))
-      .WillOnce([&](const std::vector<uint8_t>& message) {
-        lens::ClientToAimMessage client_message;
-        ASSERT_TRUE(
-            client_message.ParseFromArray(message.data(), message.size()));
-        EXPECT_TRUE(client_message.has_open_threads_view());
-      });
-
-  page_handler_->ShowThreadHistory();
-}
 
 #if !BUILDFLAG(IS_ANDROID)
 TEST_F(ContextualTasksPageHandlerTest, MaybeTriggerPinningPromo_PanelClosed) {
@@ -791,17 +779,6 @@ TEST_F(ContextualTasksPageHandlerTest, MaybeTriggerPinningPromo_HideMenuOnAiPage
   page_handler_->MaybeTriggerPinningPromo();
 }
 #endif
-
-TEST_F(ContextualTasksPageHandlerTest, MoveTaskUiToNewTab) {
-  base::Uuid task_id = base::Uuid::GenerateRandomV4();
-  contextual_tasks_ui_->SetTaskId(task_id);
-
-  EXPECT_CALL(*mock_contextual_tasks_ui_service_,
-              MoveTaskUiToNewTab(task_id, _, _))
-      .Times(1);
-
-  page_handler_->MoveTaskUiToNewTab();
-}
 
 TEST_F(ContextualTasksPageHandlerTest, OnTabClickedFromSourcesMenu) {
   int32_t tab_id = 123;

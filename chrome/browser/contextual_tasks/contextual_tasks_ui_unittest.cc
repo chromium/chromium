@@ -2393,6 +2393,7 @@ class MockToolbarPage : public contextual_tasks_toolbar::mojom::Page {
   void FlushForTesting() { receiver_.FlushForTesting(); }
 
   MOCK_METHOD(void, OnSidePanelPinStateChanged, (bool is_pinned), (override));
+  MOCK_METHOD(void, OnAiPageStatusChanged, (bool is_ai_page), (override));
 
  private:
   mojo::Receiver<contextual_tasks_toolbar::mojom::Page> receiver_{this};
@@ -2684,6 +2685,91 @@ TEST_F(ContextualTasksUiTest, OpenFeedbackUi_NoBrowser_SafeNoOp) {
   ASSERT_NE(base_ui, nullptr);
 
   base_ui->OpenFeedbackUi();
+}
+
+TEST_F(ContextualTasksUiTest, MoveTaskUiToNewTab_NoBrowser_SafeNoOp) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  ContextualTasksUIConfig config;
+  std::unique_ptr<content::WebUIController> controller =
+      config.CreateWebUIController(&web_ui, GURL("chrome://contextual-tasks"));
+  ASSERT_TRUE(controller);
+  auto* base_ui = static_cast<ContextualTasksUIBase*>(controller.get());
+  ASSERT_NE(base_ui, nullptr);
+
+  base_ui->MoveTaskUiToNewTab();
+}
+
+TEST_F(ContextualTasksUiTest, MoveTaskUiToNewTab_CallsUiService) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  auto contextual_tasks_ui = std::make_unique<ContextualTasksUI>(&web_ui);
+  base::Uuid task_id = base::Uuid::GenerateRandomV4();
+  contextual_tasks_ui->SetTaskId(task_id);
+
+  EXPECT_CALL(*service_for_nav_, MoveTaskUiToNewTab(task_id, _, _)).Times(1);
+
+  contextual_tasks_ui->MoveTaskUiToNewTab();
+}
+
+// MockToolbarPage and the toolbar page remote are desktop-only, so these tests
+// cannot be compiled on Android.
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(ContextualTasksUiTest, OnAiPageStatusChanged) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  auto contextual_tasks_ui = std::make_unique<ContextualTasksUI>(&web_ui);
+
+  MockToolbarPage toolbar_page;
+  mojo::PendingRemote<contextual_tasks_toolbar::mojom::Page> remote =
+      toolbar_page.BindAndGetRemote();
+
+  mojo::Remote<contextual_tasks_toolbar::mojom::PageHandler> page_handler;
+  contextual_tasks_ui->CreatePageHandler(
+      std::move(remote), page_handler.BindNewPipeAndPassReceiver());
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(toolbar_page, OnAiPageStatusChanged(true))
+      .WillOnce(testing::InvokeWithoutArgs(&run_loop, &base::RunLoop::Quit));
+  contextual_tasks_ui->SetIsAiPage(true);
+  run_loop.Run();
+}
+
+TEST_F(ContextualTasksUiTest, NotifyAiPageStatusChanged_Unbound_SafeNoOp) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  auto contextual_tasks_ui = std::make_unique<ContextualTasksUI>(&web_ui);
+  contextual_tasks_ui->NotifyAiPageStatusChanged(true);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+TEST_F(ContextualTasksUiTest, ShowThreadHistory_SafeNoOp) {
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  ContextualTasksUIConfig config;
+  std::unique_ptr<content::WebUIController> controller =
+      config.CreateWebUIController(&web_ui, GURL("chrome://contextual-tasks"));
+  ASSERT_TRUE(controller);
+  auto* base_ui = static_cast<ContextualTasksUIBase*>(controller.get());
+  ASSERT_NE(base_ui, nullptr);
+
+  base_ui->ShowThreadHistory();
+}
+
+TEST_F(ContextualTasksUiTest, ShowThreadHistory_PostRearchitecture_SafeNoOp) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kContextualTasks, kContextualTasksSidePanelRearchitecture}, {});
+  content::TestWebUI web_ui;
+  web_ui.set_web_contents(embedded_web_contents_.get());
+  ContextualTasksUIConfig config;
+  std::unique_ptr<content::WebUIController> controller =
+      config.CreateWebUIController(&web_ui, GURL("chrome://contextual-tasks"));
+  ASSERT_TRUE(controller);
+  auto* base_ui = static_cast<ContextualTasksUIBase*>(controller.get());
+  ASSERT_NE(base_ui, nullptr);
+
+  base_ui->ShowThreadHistory();
 }
 
 }  // namespace contextual_tasks

@@ -70,6 +70,11 @@ class ContextualTasksExtensionHandler
  public:
   ~ContextualTasksExtensionHandler() override;
 
+  // Returns the bound ContextualTasksExtensionHandler associated with the
+  // extension document in `web_contents`, or nullptr if not found or unbound.
+  static ContextualTasksExtensionHandler* FromWebContents(
+      content::WebContents* web_contents);
+
   void OnLensOverlayStateChanged(bool is_showing);
 
   // PermissionPromptObserver::Observer:
