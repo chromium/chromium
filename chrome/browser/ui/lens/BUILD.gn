@@ -502,7 +502,9 @@ if (!is_android) {
       "//content/test:test_support",
       "//media",
       "//testing/gtest",
+      "//third_party/blink/public/common:headers",
       "//ui/base/clipboard:clipboard_test_support",
+      "//ui/views/controls/webview",
     ]
   }
 
