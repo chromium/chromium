@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/test_standalone_window_controller.h"
 
+#include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/common/extensions/api/tabs.h"
 
 namespace extensions {
@@ -15,9 +16,18 @@ TestStandaloneWindowController::TestStandaloneWindowController(
     content::WebContents* web_contents)
     : WindowController(base_window, profile),
       session_id_(session_id),
-      web_contents_(web_contents) {}
+      web_contents_(web_contents) {
+  WindowControllerList::GetInstance()->AddExtensionWindow(this);
+}
 
-TestStandaloneWindowController::~TestStandaloneWindowController() = default;
+TestStandaloneWindowController::~TestStandaloneWindowController() {
+  WindowControllerList::GetInstance()->RemoveExtensionWindow(this);
+}
+
+void TestStandaloneWindowController::SetBrowserWindowInterfaceForLookup(
+    BrowserWindowInterface* bwi) {
+  lookup_bwi_ = bwi;
+}
 
 int TestStandaloneWindowController::GetWindowId() const {
   return session_id_.id();
@@ -30,6 +40,11 @@ std::string TestStandaloneWindowController::GetWindowTypeText() const {
 void TestStandaloneWindowController::SetFullscreenMode(
     bool is_fullscreen,
     const GURL& extension_url) const {}
+
+BrowserWindowInterface*
+TestStandaloneWindowController::GetBrowserWindowInterface() {
+  return lookup_bwi_;
+}
 
 content::WebContents* TestStandaloneWindowController::GetActiveTab() const {
   return web_contents_;

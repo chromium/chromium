@@ -31,10 +31,10 @@ namespace extensions {
 
 class Extension;
 
-// A standalone WindowController test double that does not have an associated
-// BrowserWindowInterface or Browser (both return nullptr), representing
-// standalone windows hosting a single WebContents (such as Document
-// Picture-in-Picture windows).
+// A standalone WindowController test double that defaults to having no
+// associated BrowserWindowInterface or Browser (both return nullptr unless
+// overridden for lookup tests), representing standalone windows hosting a
+// single WebContents (such as Document Picture-in-Picture windows).
 class TestStandaloneWindowController : public WindowController {
  public:
   TestStandaloneWindowController(ui::BaseWindow* base_window,
@@ -47,11 +47,15 @@ class TestStandaloneWindowController : public WindowController {
       const TestStandaloneWindowController&) = delete;
   ~TestStandaloneWindowController() override;
 
+  // Allows ExtensionTabUtil::GetTabById to resolve this window during tests.
+  void SetBrowserWindowInterfaceForLookup(BrowserWindowInterface* bwi);
+
   // WindowController:
   int GetWindowId() const override;
   std::string GetWindowTypeText() const override;
   void SetFullscreenMode(bool is_fullscreen,
                          const GURL& extension_url) const override;
+  BrowserWindowInterface* GetBrowserWindowInterface() override;
   content::WebContents* GetActiveTab() const override;
   int GetTabCount() const override;
   content::WebContents* GetWebContentsAt(int i) const override;
@@ -71,6 +75,7 @@ class TestStandaloneWindowController : public WindowController {
  private:
   const SessionID session_id_;
   raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<BrowserWindowInterface> lookup_bwi_ = nullptr;
 };
 
 }  // namespace extensions

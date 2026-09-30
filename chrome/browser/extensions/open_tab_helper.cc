@@ -214,8 +214,11 @@ base::expected<content::WebContents*, std::string> OpenTabHelper::OpenTab(
         index = split_index + 1;
       }
       if (split_contents) {
-        split_tab = tabs::TabInterface::GetFromContents(split_contents);
-        CHECK(split_tab);
+        split_tab = tabs::TabInterface::MaybeGetFromContents(split_contents);
+        if (!split_tab) {
+          return base::unexpected(
+              tabs_constants::kSplitViewCreationFailedError);
+        }
       }
     }
   }
