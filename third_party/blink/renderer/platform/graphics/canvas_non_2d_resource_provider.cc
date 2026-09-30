@@ -870,25 +870,11 @@ sk_sp<SkSurface> CanvasNon2DResourceProvider::CreateSkSurface() const {
 
   CHECK(is_software_);
 
-  if (is_software_) {
-    const auto props = GetSkSurfaceProps();
-    const auto info = SkImageInfo::Make(
-        size_.width(), size_.height(), viz::ToClosestSkColorType(format_),
-        alpha_type_, color_space_.ToSkColorSpace());
-    return SkSurfaces::Raster(info, &props);
-  }
-
-  if (IsGpuContextLost() || !resource_) {
-    return nullptr;
-  }
-
   const auto props = GetSkSurfaceProps();
-
-  // When using software raster with GPU compositing, we render into CPU memory
-  // managed internally by SkSurface and copy the rendered results to the
-  // current resource's backing SharedImage before dispatching that SharedImage
-  // to the display compositor.
-  return SkSurfaces::Raster(resource_->CreateSkImageInfo(), &props);
+  const auto info = SkImageInfo::Make(
+      size_.width(), size_.height(), viz::ToClosestSkColorType(format_),
+      alpha_type_, color_space_.ToSkColorSpace());
+  return SkSurfaces::Raster(info, &props);
 }
 
 }  // namespace blink
