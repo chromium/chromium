@@ -123,7 +123,7 @@ class ConditionalCacheCountingHelperBrowserTest : public InProcessBrowserTest {
 // Tests that ConditionalCacheCountingHelper only counts those cache entries
 // that match the condition.
 // TODO(crbug.com/40816226): The test is flaky on Win.
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_CHROMEOS) && defined(MEMORY_SANITIZER))
 #define MAYBE_Count DISABLED_Count
 #else
 #define MAYBE_Count Count
