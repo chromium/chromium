@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "content/browser/renderer_host/input/mouse_wheel_phase_handler.h"
@@ -320,6 +321,9 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
 
   // Used to identify pointing device that can fire fling events.
   base::flat_set<int> fling_capable_device_ids_;
+
+  base::WeakPtrFactory<RenderWidgetHostViewEventHandler> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace content
