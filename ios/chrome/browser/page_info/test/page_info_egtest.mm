@@ -198,12 +198,16 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
   };
   GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
              @"Permissions dialog was not shown.");
-  NSString* allowButtonText = l10n_util::GetNSString(
-      IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_GRANT);
+  id<GREYMatcher> allowButtonLabelMatcher = grey_anyOf(
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_GRANT)),
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_ALLOW_THIS_TIME)),
+      nil);
 
-  id<GREYMatcher> allowButtonMatcher = allowButtonMatcher = grey_allOf(
-      grey_ancestor(dialogMatcher), grey_accessibilityLabel(allowButtonText),
-      grey_accessibilityTrait(UIAccessibilityTraitStaticText), nil);
+  id<GREYMatcher> allowButtonMatcher =
+      grey_allOf(grey_ancestor(dialogMatcher), allowButtonLabelMatcher,
+                 grey_accessibilityTrait(UIAccessibilityTraitStaticText), nil);
 
   [[[EarlGrey selectElementWithMatcher:allowButtonMatcher]
       assertWithMatcher:grey_sufficientlyVisible()] performAction:grey_tap()];

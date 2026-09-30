@@ -171,13 +171,24 @@ void TapDoneButtonOnInfobarModal() {
       grey_ancestor(dialogMatcher), grey_accessibilityLabel(alertText), nil);
   [[EarlGrey selectElementWithMatcher:textMatcher]
       assertWithMatcher:grey_sufficientlyVisible()];
-  NSString* buttonText = l10n_util::GetNSString(
-      allow ? IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_GRANT
-            : IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_DENY);
+  id<GREYMatcher> buttonLabelMatcher =
+      allow
+          ? grey_anyOf(
+                grey_accessibilityLabel(l10n_util::GetNSString(
+                    IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_GRANT)),
+                grey_accessibilityLabel(l10n_util::GetNSString(
+                    IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_ALLOW_THIS_TIME)),
+                nil)
+          : grey_anyOf(
+                grey_accessibilityLabel(l10n_util::GetNSString(
+                    IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_DENY)),
+                grey_accessibilityLabel(l10n_util::GetNSString(
+                    IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_NEVER_ALLOW)),
+                nil);
 
-  id<GREYMatcher> buttonMatcher = grey_allOf(
-      grey_ancestor(dialogMatcher), grey_accessibilityLabel(buttonText),
-      grey_accessibilityTrait(UIAccessibilityTraitStaticText), nil);
+  id<GREYMatcher> buttonMatcher =
+      grey_allOf(grey_ancestor(dialogMatcher), buttonLabelMatcher,
+                 grey_accessibilityTrait(UIAccessibilityTraitStaticText), nil);
 
   [[[EarlGrey selectElementWithMatcher:buttonMatcher]
       assertWithMatcher:grey_sufficientlyVisible()] performAction:grey_tap()];
