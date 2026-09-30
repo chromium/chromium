@@ -7894,7 +7894,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.HistoricalApplicationExitInfo.Counts2"
-    enum="AndroidProcessExitReason" expires_after="2027-03-14">
+    enum="AndroidProcessExitReason" expires_after="2027-09-30">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -7907,7 +7907,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.HistoricalApplicationExitInfo.Counts2.BACKGROUND"
-    enum="AndroidProcessExitReason" expires_after="2026-11-11">
+    enum="AndroidProcessExitReason" expires_after="2027-09-30">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -7921,7 +7921,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.HistoricalApplicationExitInfo.Counts2.DESTROYED"
-    enum="AndroidProcessExitReason" expires_after="2026-11-11">
+    enum="AndroidProcessExitReason" expires_after="2027-09-30">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -7935,7 +7935,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.HistoricalApplicationExitInfo.Counts2.FOREGROUND"
-    enum="AndroidProcessExitReason" expires_after="2026-11-11">
+    enum="AndroidProcessExitReason" expires_after="2027-09-30">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -7948,7 +7948,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.HistoricalApplicationExitInfo.Counts2.STARTUP"
-    enum="AndroidProcessExitReason" expires_after="2027-03-14">
+    enum="AndroidProcessExitReason" expires_after="2027-09-30">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <improvement direction="LOWER_IS_BETTER"/>
@@ -7961,7 +7961,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.HistoricalApplicationExitInfo.Counts2.UNKNOWN"
-    enum="AndroidProcessExitReason" expires_after="2026-11-11">
+    enum="AndroidProcessExitReason" expires_after="2027-09-30">
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <improvement direction="LOWER_IS_BETTER"/>
