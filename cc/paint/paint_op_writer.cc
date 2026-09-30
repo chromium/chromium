@@ -290,7 +290,7 @@ void PaintOpWriter::WriteSizeAt(base::span<uint8_t> memory, size_t size) {
 }
 
 void PaintOpWriter::Write(const SkPath& path, UsePaintCache use_paint_cache) {
-  auto id = path.getGenerationID();
+  PaintCacheId id = path.getGenerationID();
   Write(id);
 
   DCHECK(use_paint_cache == UsePaintCache::kEnabled ||
