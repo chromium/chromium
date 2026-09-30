@@ -281,6 +281,13 @@ void ContextualTasksExtensionHandler::HandleOnSubmitQueryRequest() {
   }
 
   PostSearchMessage(response_message);
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (auto* controller = GetLensSearchController()) {
+    controller->CloseLensAsync(
+        lens::LensOverlayDismissalSource::kContextualTasksQuerySubmitted);
+  }
+#endif
 }
 
 std::optional<lens::AddedContext>
