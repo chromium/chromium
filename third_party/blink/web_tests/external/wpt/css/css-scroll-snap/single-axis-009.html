@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <title>Single-axis scroll containers preserve old snap targets only when snap areas remain present</title>
-<link rel="help" href="https://drafts.csswg.org/css-scroll-snap-1/">
+<link rel="help" href="https://drafts.csswg.org/css-scroll-snap-1/#scroll-snap-type">
+<link rel="help" href="https://drafts.csswg.org/css-scroll-snap-1/#snap-scope">
+<link rel="help" href="https://drafts.csswg.org/css-scroll-snap-1/#re-snap">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/web-animations/testcommon.js"></script>
@@ -60,11 +62,11 @@ promise_test(async t => {
   // 2. Shift target2 vertically from top: 200px to top: 300px
   target2.style.top = "300px";
   await waitForAnimationFrames(2);
-  assert_equals(outer.scrollTop, 300, "outer should preserve snap to target2 (old_target_ids.y) when layout shifts");
+  assert_equals(outer.scrollTop, 300, "outer should re-snap to target2 in the y axis when layout shifts");
 
   // 3. Remove target2's snap area
   target2.style.scrollSnapAlign = "none";
   await waitForAnimationFrames(2);
   assert_equals(outer.scrollTop, 0, "outer should drop target2 and snap to target1 at 0 when snap area is removed");
-}, "Single-axis scroll container preserves snapped Y target (old_target_ids.y) only when snap area remains present");
+}, "Outer scroller re-snaps to its previous y-axis snap target through a single-axis scroller only while that snap area remains");
 </script>
