@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -79,6 +80,35 @@ class WebAuthenticationProxyApiTest : public ExtensionApiTest {
       ADD_FAILURE() << "Failed to navigate to test URL";
     }
     return content::EvalJs(web_contents,
+                           "PublicKeyCredential."
+                           "isUserVerifyingPlatformAuthenticatorAvailable();")
+        .ExtractBool();
+  }
+
+  // Navigates to `test_domain_` and calls IsUVPAA from a sandboxed iframe,
+  // which has an opaque origin whose precursor is `test_domain_`.
+  bool NavigateAndCallIsUVPAAFromSandboxedIframe() {
+    auto* web_contents = GetActiveWebContents();
+    if (!NavigateToURL(web_contents,
+                       https_test_server_.GetURL(test_domain_, "/page.html"))) {
+      ADD_FAILURE() << "Failed to navigate to test URL";
+    }
+    EXPECT_TRUE(content::ExecJs(web_contents, R"(
+      new Promise(resolve => {
+        const iframe = document.createElement('iframe');
+        iframe.sandbox = 'allow-scripts';
+        iframe.srcdoc = '<!DOCTYPE html>';
+        iframe.onload = () => resolve();
+        document.body.appendChild(iframe);
+      });)"));
+    content::RenderFrameHost* iframe =
+        content::ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+    if (!iframe) {
+      ADD_FAILURE() << "Failed to create sandboxed iframe";
+      return false;
+    }
+    EXPECT_TRUE(iframe->GetLastCommittedOrigin().opaque());
+    return content::EvalJs(iframe,
                            "PublicKeyCredential."
                            "isUserVerifyingPlatformAuthenticatorAvailable();")
         .ExtractBool();
@@ -790,6 +820,53 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTestWithPolicyOverride,
 
     // If the proxy is active, the SW JS stubs IsUVPAA to return true.
     EXPECT_EQ(NavigateAndCallIsUVPAA(), test.expect_proxy_active);
+  }
+}
+
+// Opaque origins (e.g. sandboxed iframes) may call IsUVPAA. They should be
+// subject to the blocked hosts policy of their precursor origin.
+IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTestWithPolicyOverride,
+                       BlockedHostsOpaqueOrigin) {
+  SetJsTestName("policyBlockedHosts");
+
+  ExtensionTestMessageListener ready_listener("ready");
+  ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+  ASSERT_TRUE(ProxyIsActive());
+
+  {
+    ExtensionManagementPolicyUpdater pref(&policy_provider_);
+    pref.AddPolicyBlockedHost("*", "*://*.b.test");
+    pref.AddPolicyAllowedHost("*", "*://allowed.b.test");
+  }
+
+  WebAuthenticationProxyService* proxy =
+      WebAuthenticationProxyService::GetIfProxyAttached(profile());
+  ASSERT_TRUE(proxy);
+
+  // An opaque origin with no precursor does not match any blocked host.
+  EXPECT_TRUE(proxy->IsActive(url::Origin()));
+
+  constexpr struct {
+    const char* domain;
+    bool expect_proxy_active;
+  } kTestCases[] = {
+      {"a.test", true},
+      {"b.test", false},
+      {"foo.b.test", false},
+      {"allowed.b.test", true},
+  };
+  for (const auto& test : kTestCases) {
+    SetTestDomainToNavigate(test.domain);
+    const url::Origin opaque_origin =
+        url::Origin::Create(GURL(base::StrCat({"https://", test.domain})))
+            .DeriveNewOpaqueOrigin();
+    SCOPED_TRACE(testing::Message() << "domain=" << test.domain);
+    EXPECT_EQ(proxy->IsActive(opaque_origin), test.expect_proxy_active);
+
+    // If the proxy is active, the SW JS stubs IsUVPAA to return true.
+    EXPECT_EQ(NavigateAndCallIsUVPAAFromSandboxedIframe(),
+              test.expect_proxy_active);
   }
 }
 

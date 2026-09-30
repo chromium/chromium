@@ -46,7 +46,13 @@ bool ProxyMayAttachToHost(const Extension& extension,
   // hosts. We also don't block Chrome-restricted hosts in order to allow
   // authentication to the Chrome Web Store from inside a remote desktop
   // session, for example.
-  return !extension.permissions_data()->IsPolicyBlockedHost(origin.GetURL());
+  //
+  // Opaque origins (e.g. sandboxed iframes) can reach this through requests
+  // that are allowed for opaque origins, such as IsUVPAA. Check them against
+  // their precursor so that they are subject to the same policy as the host
+  // that created them.
+  return !extension.permissions_data()->IsPolicyBlockedHost(
+      origin.GetTupleOrPrecursorTupleIfOpaque().GetURL());
 }
 
 }  // namespace

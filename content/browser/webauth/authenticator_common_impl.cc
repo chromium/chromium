@@ -3542,7 +3542,6 @@ void AuthenticatorCommonImpl::EnableRequestProxyExtensionsAPISupport() {
 WebAuthenticationRequestProxy*
 AuthenticatorCommonImpl::GetWebAuthnRequestProxyIfActive(
     const url::Origin& caller_origin) {
-  DCHECK(!caller_origin.opaque());
   // The Virtual Authenticator, which can be activated via Dev Tools UI or
   // ChromeDriver, should take precedence over request proxying. Otherwise
   // attaching a remote desktop session would interfere with automated or manual
