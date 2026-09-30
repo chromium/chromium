@@ -178,6 +178,7 @@ void EncoderBase<Traits>::close(ExceptionState& exception_state) {
 
 template <typename Traits>
 ScriptPromise<IDLUndefined> EncoderBase<Traits>::flush(
+    ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ThrowIfCodecStateClosed(state_, "flush", exception_state))
@@ -189,12 +190,13 @@ ScriptPromise<IDLUndefined> EncoderBase<Traits>::flush(
   MarkCodecActive();
 
   Request* request = MakeGarbageCollected<Request>();
-  request->resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state_);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
+  request->resolver = resolver;
   request->reset_count = reset_count_;
   request->type = Request::Type::kFlush;
   EnqueueRequest(request);
-  return request->resolver->Promise();
+  return resolver->Promise();
 }
 
 template <typename Traits>

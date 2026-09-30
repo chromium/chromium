@@ -162,4 +162,37 @@ TEST_F(AudioEncoderTest, EncodeQueueSize) {
   encoder->close(es);
 }
 
+TEST_F(AudioEncoderTest, FlushPromiseCreatedInCallerContext) {
+  constexpr int kSampleRate = 48000;
+  constexpr int kChannels = 2;
+
+  // Create and configure the codec in one context.
+  V8TestingScope creator_scope;
+  auto* creator_script_state = creator_scope.GetScriptState();
+  MockFunctionScope mock_function(creator_script_state);
+  auto* init = AudioEncoderInit::Create();
+  init->setOutput(V8EncodedAudioChunkOutputCallback::Create(
+      mock_function.ExpectNoCall()->ToV8Function(creator_script_state)));
+  init->setError(V8WebCodecsErrorCallback::Create(
+      mock_function.ExpectNoCall()->ToV8Function(creator_script_state)));
+  auto* encoder = AudioEncoder::Create(creator_script_state, init,
+                                       creator_scope.GetExceptionState());
+
+  auto* config = AudioEncoderConfig::Create();
+  config->setCodec("opus");
+  config->setSampleRate(kSampleRate);
+  config->setNumberOfChannels(kChannels);
+  encoder->configure(config, creator_scope.GetExceptionState());
+  ASSERT_FALSE(creator_scope.GetExceptionState().HadException());
+
+  // Call `flush()` from a different context.
+  V8TestingScope caller_scope;
+  auto promise = encoder->flush(caller_scope.GetScriptState(),
+                                caller_scope.GetExceptionState());
+  ASSERT_FALSE(caller_scope.GetExceptionState().HadException());
+  // The promise must belong to the caller's context, not the creator's.
+  EXPECT_EQ(promise.V8Promise()->GetCreationContextChecked(),
+            caller_scope.GetContext());
+}
+
 }  // namespace blink

@@ -35,7 +35,7 @@
 
     // Enqueues a request to produce outputs for all already encoded frames.
     // Resolved after emitting outputs for all previously encoded frames.
-    [RaisesException]
+    [CallWith=ScriptState, RaisesException]
     Promise<undefined> flush();
 
     // Discard all pending work and current encoder configuration.

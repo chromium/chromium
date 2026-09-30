@@ -240,7 +240,7 @@ TEST_F(VideoEncoderTest, RejectFlushAfterClose) {
   ASSERT_FALSE(es.HadException());
   {
     // We need this to make sure that configuration has completed.
-    auto promise = encoder->flush(es);
+    auto promise = encoder->flush(script_state, es);
     ScriptPromiseTester tester(script_state, promise);
     tester.WaitUntilSettled();
     ASSERT_TRUE(tester.IsFulfilled());
@@ -250,7 +250,7 @@ TEST_F(VideoEncoderTest, RejectFlushAfterClose) {
       MakeVideoFrame(script_state, config->width(), config->height(), 1),
       MakeGarbageCollected<VideoEncoderEncodeOptions>(), es);
 
-  ScriptPromiseTester tester(script_state, encoder->flush(es));
+  ScriptPromiseTester tester(script_state, encoder->flush(script_state, es));
   ASSERT_FALSE(es.HadException());
   ASSERT_FALSE(tester.IsFulfilled());
   ASSERT_FALSE(tester.IsRejected());
@@ -261,6 +261,28 @@ TEST_F(VideoEncoderTest, RejectFlushAfterClose) {
 
   tester.WaitUntilSettled();
   ASSERT_TRUE(tester.IsRejected());
+}
+
+TEST_F(VideoEncoderTest, FlushPromiseCreatedInCallerContext) {
+  // Create and configure the codec in one context.
+  V8TestingScope creator_scope;
+  MockFunctionScope mock_function(creator_scope.GetScriptState());
+  auto* init =
+      CreateInit(creator_scope.GetScriptState(), mock_function.ExpectNoCall(),
+                 mock_function.ExpectNoCall());
+  auto* encoder = CreateEncoder(creator_scope.GetScriptState(), init,
+                                creator_scope.GetExceptionState());
+  encoder->configure(CreateConfig(), creator_scope.GetExceptionState());
+  ASSERT_FALSE(creator_scope.GetExceptionState().HadException());
+
+  // Call `flush()` from a different context.
+  V8TestingScope caller_scope;
+  auto promise = encoder->flush(caller_scope.GetScriptState(),
+                                caller_scope.GetExceptionState());
+  ASSERT_FALSE(caller_scope.GetExceptionState().HadException());
+  // The promise must belong to the caller's context, not the creator's.
+  EXPECT_EQ(promise.V8Promise()->GetCreationContextChecked(),
+            caller_scope.GetContext());
 }
 
 TEST_F(VideoEncoderTest, CodecReclamation) {
@@ -671,7 +693,7 @@ TEST_F(VideoEncoderTest, EncodePreservesVisibleRect) {
                                  kEncodeSize.height(), 1, kVisibleRect),
                   MakeGarbageCollected<VideoEncoderEncodeOptions>(), es);
 
-  ScriptPromiseTester tester(script_state, encoder->flush(es));
+  ScriptPromiseTester tester(script_state, encoder->flush(script_state, es));
   tester.WaitUntilSettled();
   EXPECT_TRUE(tester.IsFulfilled());
 }

@@ -130,7 +130,7 @@ DEFINE_TEXT_PROTO_FUZZER(
         case wc_fuzzer::VideoEncoderApiInvocation::kFlush: {
           // TODO(https://crbug.com/1119253): Fuzz whether to await resolution
           // of the flush promise.
-          video_encoder->flush(IGNORE_EXCEPTION_FOR_TESTING);
+          video_encoder->flush(script_state, IGNORE_EXCEPTION_FOR_TESTING);
           break;
         }
         case wc_fuzzer::VideoEncoderApiInvocation::kReset:
@@ -151,7 +151,7 @@ DEFINE_TEXT_PROTO_FUZZER(
     // opportunity to crash, otherwise we might quit too quickly and miss
     // something bad happening in a background thread.
     ExceptionState exception_state(nullptr);
-    auto promise = video_encoder->flush(exception_state);
+    auto promise = video_encoder->flush(script_state, exception_state);
     if (!exception_state.HadException()) {
       ScriptPromiseTester tester(script_state, promise);
       tester.WaitUntilSettled();

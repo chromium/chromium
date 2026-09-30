@@ -207,6 +207,7 @@ void DecoderTemplate<Traits>::decode(const InputType* chunk,
 
 template <typename Traits>
 ScriptPromise<IDLUndefined> DecoderTemplate<Traits>::flush(
+    ScriptState* script_state,
     ExceptionState& exception_state) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -223,7 +224,7 @@ ScriptPromise<IDLUndefined> DecoderTemplate<Traits>::flush(
   Request* request = MakeGarbageCollected<Request>();
   request->type = Request::Type::kFlush;
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state_);
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUndefined>>(script_state);
   request->resolver = resolver;
   request->reset_generation = reset_generation_;
   requests_.push_back(request);

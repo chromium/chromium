@@ -105,7 +105,7 @@ DEFINE_TEXT_PROTO_FUZZER(
         case wc_fuzzer::VideoDecoderApiInvocation::kFlush: {
           // TODO(https://crbug.com/1119253): Fuzz whether to await resolution
           // of the flush promise.
-          video_decoder->flush(IGNORE_EXCEPTION_FOR_TESTING);
+          video_decoder->flush(script_state, IGNORE_EXCEPTION_FOR_TESTING);
           break;
         }
         case wc_fuzzer::VideoDecoderApiInvocation::kReset:

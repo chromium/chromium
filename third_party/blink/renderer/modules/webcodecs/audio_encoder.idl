@@ -33,7 +33,7 @@
 
     // Enqueues a request to produce outputs for all already encoded data.
     // Resolved after emitting outputs for all previously encoded data.
-    [RaisesException]
+    [CallWith=ScriptState, RaisesException]
     Promise<undefined> flush();
 
     // Discard all pending work and current encoder configuration.

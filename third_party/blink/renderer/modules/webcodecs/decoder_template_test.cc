@@ -156,7 +156,8 @@ TYPED_TEST(DecoderTemplateTest, ResetDuringFlush) {
 
   // flush() to ensure configure completes.
   {
-    auto promise = decoder->flush(v8_scope.GetExceptionState());
+    auto promise =
+        decoder->flush(v8_scope.GetScriptState(), v8_scope.GetExceptionState());
     ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
     ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
@@ -166,7 +167,8 @@ TYPED_TEST(DecoderTemplateTest, ResetDuringFlush) {
 
   // flush() again but reset() before it gets started.
   {
-    auto promise = decoder->flush(v8_scope.GetExceptionState());
+    auto promise =
+        decoder->flush(v8_scope.GetScriptState(), v8_scope.GetExceptionState());
     ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
     decoder->reset(v8_scope.GetExceptionState());
     ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
@@ -175,6 +177,29 @@ TYPED_TEST(DecoderTemplateTest, ResetDuringFlush) {
     tester.WaitUntilSettled();
     ASSERT_TRUE(tester.IsRejected());
   }
+}
+
+TYPED_TEST(DecoderTemplateTest, FlushPromiseCreatedInCallerContext) {
+  // Create and configure the codec in one context.
+  V8TestingScope creator_scope;
+  MockFunctionScope mock_function(creator_scope.GetScriptState());
+  auto* decoder =
+      this->CreateDecoder(creator_scope.GetScriptState(),
+                          this->CreateInit(creator_scope.GetScriptState(),
+                                           mock_function.ExpectNoCall(),
+                                           mock_function.ExpectNoCall()),
+                          creator_scope.GetExceptionState());
+  decoder->configure(this->CreateConfig(), creator_scope.GetExceptionState());
+  ASSERT_FALSE(creator_scope.GetExceptionState().HadException());
+
+  // Call `flush()` from a different context.
+  V8TestingScope caller_scope;
+  auto promise = decoder->flush(caller_scope.GetScriptState(),
+                                caller_scope.GetExceptionState());
+  ASSERT_FALSE(caller_scope.GetExceptionState().HadException());
+  // The promise must belong to the caller's context, not the creator's.
+  EXPECT_EQ(promise.V8Promise()->GetCreationContextChecked(),
+            caller_scope.GetContext());
 }
 
 TYPED_TEST(DecoderTemplateTest, ResetDuringConfigureOnWorker) {
@@ -226,7 +251,8 @@ TYPED_TEST(DecoderTemplateTest, ResetDuringConfigureOnWorker) {
 
   // flush() to ensure configure completes.
   {
-    auto promise = decoder->flush(v8_scope.GetExceptionState());
+    auto promise =
+        decoder->flush(v8_scope.GetScriptState(), v8_scope.GetExceptionState());
     ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
 
     ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);

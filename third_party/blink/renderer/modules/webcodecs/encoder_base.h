@@ -64,7 +64,7 @@ class MODULES_EXPORT EncoderBase
               const EncodeOptionsType* opts,
               ExceptionState& exception_state);
 
-  ScriptPromise<IDLUndefined> flush(ExceptionState&);
+  ScriptPromise<IDLUndefined> flush(ScriptState*, ExceptionState&);
 
   void reset(ExceptionState&);
 
@@ -164,6 +164,9 @@ class MODULES_EXPORT EncoderBase
   V8CodecState state_;
 
   Member<InternalConfigType> active_config_;
+  // The `ScriptState` in which this encoder was created. Used for lifetime
+  // checks and callback invocation. Do not use it to create values returned to
+  // callers (e.g. promises), which may be in a different world or realm.
   Member<ScriptState> script_state_;
   Member<OutputCallbackType> output_callback_;
   Member<V8WebCodecsErrorCallback> error_callback_;

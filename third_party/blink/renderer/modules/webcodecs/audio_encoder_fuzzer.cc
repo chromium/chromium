@@ -235,7 +235,7 @@ DEFINE_TEXT_PROTO_FUZZER(
         case wc_fuzzer::AudioEncoderApiInvocation::kFlush: {
           // TODO(https://crbug.com/1119253): Fuzz whether to await resolution
           // of the flush promise.
-          audio_encoder->flush(IGNORE_EXCEPTION_FOR_TESTING);
+          audio_encoder->flush(script_state, IGNORE_EXCEPTION_FOR_TESTING);
           break;
         }
         case wc_fuzzer::AudioEncoderApiInvocation::kReset:
