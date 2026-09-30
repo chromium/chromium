@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/default_browser/model/features.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
+#import "url/gurl.h"
 
 namespace {
 
@@ -66,6 +67,66 @@ CallerApp CallerAppFromAppID(NSString* caller_app_id) {
 }
 
 }  // namespace
+
+MobileSessionCallerApp GetCallerApp(NSString* source_app_id,
+                                    NSString* secure_source_app_id,
+                                    const GURL& complete_url) {
+  if ([secure_source_app_id
+          isEqualToString:app_group::kOpenCommandSourceShareExtension]) {
+    return CALLER_APP_GOOGLE_CHROME_SHARE_EXTENSION;
+  }
+  if ([secure_source_app_id
+          isEqualToString:app_group::kOpenCommandSourceOpenExtension]) {
+    return CALLER_APP_GOOGLE_CHROME_OPEN_EXTENSION;
+  }
+
+  if (![source_app_id length]) {
+    if (complete_url.SchemeIsHTTPOrHTTPS()) {
+      // If Chrome is opened via the system default browser mechanism, the
+      // action should be differentiated from the case where the source is
+      // unknown.
+      return CALLER_APP_THIRD_PARTY;
+    }
+    return CALLER_APP_NOT_AVAILABLE;
+  }
+
+  if ([source_app_id
+          isEqualToString:[base::apple::FrameworkBundle() bundleIdentifier]]) {
+    return CALLER_APP_GOOGLE_CHROME;
+  }
+  if ([source_app_id isEqualToString:@"com.google.GoogleMobile"]) {
+    return CALLER_APP_GOOGLE_SEARCH;
+  }
+  if ([source_app_id isEqualToString:@"com.google.Gmail"]) {
+    return CALLER_APP_GOOGLE_GMAIL;
+  }
+  if ([source_app_id isEqualToString:@"com.google.GooglePlus"]) {
+    return CALLER_APP_GOOGLE_PLUS;
+  }
+  if ([source_app_id isEqualToString:@"com.google.Drive"]) {
+    return CALLER_APP_GOOGLE_DRIVE;
+  }
+  if ([source_app_id isEqualToString:@"com.google.b612"]) {
+    return CALLER_APP_GOOGLE_EARTH;
+  }
+  if ([source_app_id isEqualToString:@"com.google.ios.youtube"]) {
+    return CALLER_APP_GOOGLE_YOUTUBE;
+  }
+  if ([source_app_id isEqualToString:@"com.google.Maps"]) {
+    return CALLER_APP_GOOGLE_MAPS;
+  }
+  if ([source_app_id hasPrefix:@"com.google."]) {
+    return CALLER_APP_GOOGLE_OTHER;
+  }
+  if ([source_app_id isEqualToString:@"com.apple.mobilesafari"]) {
+    return CALLER_APP_APPLE_MOBILESAFARI;
+  }
+  if ([source_app_id hasPrefix:@"com.apple."]) {
+    return CALLER_APP_APPLE_OTHER;
+  }
+
+  return CALLER_APP_OTHER;
+}
 
 // LINT.IfChange(IsCallerAppFirstParty)
 bool IsCallerAppFirstParty(MobileSessionCallerApp caller_app) {

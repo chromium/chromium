@@ -132,6 +132,7 @@ source_set("tasks_handling") {
     "//ios/chrome/app/profile",
     "//ios/chrome/app/spotlight",
     "//ios/chrome/app/startup:startup_basic",
+    "//ios/chrome/app/startup:utils",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/authentication/ui_bundled/change_profile",
     "//ios/chrome/browser/credential_exchange/model:credential_import_manager_swift",

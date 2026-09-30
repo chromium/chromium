@@ -107,6 +107,7 @@ source_set("utils") {
     "//ios/chrome/browser/default_browser/model:features",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/common/app_group",
+    "//url",
   ]
 }
 

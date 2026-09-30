@@ -73,10 +73,17 @@ class TaskRequestForURLContextTest : public PlatformTest {
     PlatformTest::TearDown();
   }
 
-  UIOpenURLContext* CreateMockURLContext(NSURL* url) {
-    UIOpenURLContext* mockContext = OCMClassMock([UIOpenURLContext class]);
-    OCMStub([mockContext URL]).andReturn(url);
-    return mockContext;
+  UIOpenURLContext* CreateMockURLContext(NSURL* url,
+                                         NSString* source_application = nil) {
+    UIOpenURLContext* mock_context = OCMClassMock([UIOpenURLContext class]);
+    OCMStub([mock_context URL]).andReturn(url);
+    if (source_application) {
+      UISceneOpenURLOptions* mock_options =
+          OCMClassMock([UISceneOpenURLOptions class]);
+      OCMStub([mock_options sourceApplication]).andReturn(source_application);
+      OCMStub([mock_context options]).andReturn(mock_options);
+    }
+    return mock_context;
   }
 
   // Sets whether the app is in first run for testing metrics.
@@ -94,19 +101,38 @@ class TaskRequestForURLContextTest : public PlatformTest {
   std::unique_ptr<TestBrowser> browser_;
 };
 
-// Tests that Startup.MobileSessionStartFromApps is logged.
+// Test that Startup.MobileSessionStartFromApps is logged with the expected
+// caller app, including uppercase schemes and first-party bundle IDs.
 TEST_F(TaskRequestForURLContextTest, TestStartupMobileSessionStartFromApps) {
-  base::HistogramTester histogram_tester;
-  NSURL* url = [NSURL URLWithString:@"https://www.example.com"];
-  UIOpenURLContext* context = CreateMockURLContext(url);
+  struct TestCase {
+    NSString* url_string;
+    NSString* source_application;
+    MobileSessionCallerApp expected_caller_app;
+  } test_cases[] = {
+      {@"https://www.example.com", nil, CALLER_APP_THIRD_PARTY},
+      {@"HTTP://www.example.com", nil, CALLER_APP_THIRD_PARTY},
+      {@"HTTPS://www.example.com", nil, CALLER_APP_THIRD_PARTY},
+      {@"googlechrome://www.example.com", nil, CALLER_APP_NOT_AVAILABLE},
+      {@"https://www.example.com", @"com.google.GooglePlus",
+       CALLER_APP_GOOGLE_PLUS},
+  };
 
-  TaskRequestForURLContext* request =
-      [TaskRequestForURLContext taskRequestWithURLContext:context
-                                               sceneState:scene_state_
-                                              isColdStart:YES];
-  EXPECT_NE(request, nil);
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(base::SysNSStringToUTF8(test_case.url_string));
+    base::HistogramTester histogram_tester;
+    NSURL* url = [NSURL URLWithString:test_case.url_string];
+    UIOpenURLContext* context =
+        CreateMockURLContext(url, test_case.source_application);
 
-  histogram_tester.ExpectTotalCount("Startup.MobileSessionStartFromApps", 1);
+    TaskRequestForURLContext* request =
+        [TaskRequestForURLContext taskRequestWithURLContext:context
+                                                 sceneState:scene_state_
+                                                isColdStart:YES];
+    EXPECT_NE(request, nil);
+
+    histogram_tester.ExpectUniqueSample("Startup.MobileSessionStartFromApps",
+                                        test_case.expected_caller_app, 1);
+  }
 }
 
 // Tests that Startup.ShowDefaultPromoFromApps is logged when URL contains the

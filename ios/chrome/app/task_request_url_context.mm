@@ -6,7 +6,6 @@
 
 #import <optional>
 
-#import "base/apple/bundle_locations.h"
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
@@ -22,6 +21,7 @@
 #import "ios/chrome/app/application_delegate/url_opener_params.h"
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/app/startup/app_launch_metrics.h"
+#import "ios/chrome/app/startup/app_startup_utils.h"
 #import "ios/chrome/app/task_request_for_standard_url_context.h"
 #import "ios/chrome/app/task_request_for_widget_url_context.h"
 #import "ios/chrome/app/task_request_for_xcallback_url_context.h"
@@ -40,57 +40,10 @@
 #import "ios/chrome/common/app_group/app_group_utils.h"
 #import "ios/chrome/common/app_group/widget_constants.h"
 #import "ios/chrome/common/x_callback_url.h"
+#import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
 namespace {
-
-// Returns the MobileSessionCallerApp for the specified `source_app` and `url`.
-MobileSessionCallerApp GetCallerApp(NSString* source_app, NSURL* url) {
-  if (![source_app length]) {
-    if ([url.scheme isEqualToString:@"http"] ||
-        [url.scheme isEqualToString:@"https"]) {
-      return CALLER_APP_THIRD_PARTY;
-    }
-    return CALLER_APP_NOT_AVAILABLE;
-  }
-
-  if ([source_app
-          isEqualToString:[base::apple::FrameworkBundle() bundleIdentifier]]) {
-    return CALLER_APP_GOOGLE_CHROME;
-  }
-  if ([source_app isEqualToString:@"com.google.GoogleMobile"]) {
-    return CALLER_APP_GOOGLE_SEARCH;
-  }
-  if ([source_app isEqualToString:@"com.google.Gmail"]) {
-    return CALLER_APP_GOOGLE_GMAIL;
-  }
-  if ([source_app isEqualToString:@"com.google.Plus"]) {
-    return CALLER_APP_GOOGLE_PLUS;
-  }
-  if ([source_app isEqualToString:@"com.google.Drive"]) {
-    return CALLER_APP_GOOGLE_DRIVE;
-  }
-  if ([source_app isEqualToString:@"com.google.b612"]) {
-    return CALLER_APP_GOOGLE_EARTH;
-  }
-  if ([source_app isEqualToString:@"com.google.ios.youtube"]) {
-    return CALLER_APP_GOOGLE_YOUTUBE;
-  }
-  if ([source_app isEqualToString:@"com.google.Maps"]) {
-    return CALLER_APP_GOOGLE_MAPS;
-  }
-  if ([source_app hasPrefix:@"com.google."]) {
-    return CALLER_APP_GOOGLE_OTHER;
-  }
-  if ([source_app isEqualToString:@"com.apple.mobilesafari"]) {
-    return CALLER_APP_APPLE_MOBILESAFARI;
-  }
-  if ([source_app hasPrefix:@"com.apple."]) {
-    return CALLER_APP_APPLE_OTHER;
-  }
-
-  return CALLER_APP_OTHER;
-}
 
 // Returns the launch source for first run metrics.
 first_run::ExternalLaunch GetLaunchSource(MobileSessionCallerApp caller_app,
@@ -140,12 +93,9 @@ bool IsShowDefaultBrowserSettings(NSURL* url) {
 }
 
 // Records metrics for opening a URL context at runtime.
-void RecordRuntimeMetrics(UIOpenURLContext* url_context, bool is_first_run) {
-  NSURL* url = url_context.URL;
-  NSString* source_application = url_context.options.sourceApplication;
-
-  MobileSessionCallerApp caller_app = GetCallerApp(source_application, url);
-
+void RecordRuntimeMetrics(NSURL* url,
+                          MobileSessionCallerApp caller_app,
+                          bool is_first_run) {
   if (is_first_run) {
     base::UmaHistogramEnumeration("FirstRun.LaunchSource",
                                   GetLaunchSource(caller_app, url),
@@ -191,8 +141,9 @@ void RecordRuntimeMetrics(UIOpenURLContext* url_context, bool is_first_run) {
   if ((self = [super initWithSceneState:sceneState isColdStart:isColdStart])) {
     _URLContext = URLContext;
 
-    _callerApp =
-        GetCallerApp(_URLContext.options.sourceApplication, _URLContext.URL);
+    _callerApp = GetCallerApp(_URLContext.options.sourceApplication,
+                              /*secure_source_app_id=*/nil,
+                              net::GURLWithNSURL(_URLContext.URL));
     [self extractGaiaID];
     [self recordStartupMetrics];
   }
@@ -273,7 +224,7 @@ void RecordRuntimeMetrics(UIOpenURLContext* url_context, bool is_first_run) {
 
   const BOOL isFirstRun =
       sceneState.profileState.appState.startupInformation.isFirstRun;
-  RecordRuntimeMetrics(_URLContext, isFirstRun);
+  RecordRuntimeMetrics(_URLContext.URL, _callerApp, isFirstRun);
 
   if (!self.isColdStart) {
     NSSet* URLContextSet = [NSSet setWithObject:_URLContext];

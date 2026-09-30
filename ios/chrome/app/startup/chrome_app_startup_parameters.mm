@@ -4,7 +4,6 @@
 
 #import "ios/chrome/app/startup/chrome_app_startup_parameters.h"
 
-#import "base/apple/bundle_locations.h"
 #import "base/apple/foundation_util.h"
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
@@ -858,69 +857,9 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
   return params;
 }
 
-// LINT.IfChange
-// TODO(crbug.com/462018636): This code will be soon migrated to
-// task_request_url_context.mm, so any change should be reflected also there.
-// Contact fedegermi for additional information or support.
 - (MobileSessionCallerApp)callerApp {
-  if ([_secureSourceApp
-          isEqualToString:app_group::kOpenCommandSourceShareExtension]) {
-    return CALLER_APP_GOOGLE_CHROME_SHARE_EXTENSION;
-  }
-  if ([_secureSourceApp
-          isEqualToString:app_group::kOpenCommandSourceOpenExtension]) {
-    return CALLER_APP_GOOGLE_CHROME_OPEN_EXTENSION;
-  }
-
-  if (![_declaredSourceApp length]) {
-    if (self.completeURL.SchemeIs(url::kHttpScheme) ||
-        self.completeURL.SchemeIs(url::kHttpsScheme)) {
-      // If Chrome is opened via the system default browser mechanism, the
-      // action should be differentiated from the case where the source is
-      // unknown.
-      return CALLER_APP_THIRD_PARTY;
-    }
-    return CALLER_APP_NOT_AVAILABLE;
-  }
-
-  if ([_declaredSourceApp
-          isEqualToString:[base::apple::FrameworkBundle() bundleIdentifier]]) {
-    return CALLER_APP_GOOGLE_CHROME;
-  }
-  if ([_declaredSourceApp isEqualToString:@"com.google.GoogleMobile"]) {
-    return CALLER_APP_GOOGLE_SEARCH;
-  }
-  if ([_declaredSourceApp isEqualToString:@"com.google.Gmail"]) {
-    return CALLER_APP_GOOGLE_GMAIL;
-  }
-  if ([_declaredSourceApp isEqualToString:@"com.google.GooglePlus"]) {
-    return CALLER_APP_GOOGLE_PLUS;
-  }
-  if ([_declaredSourceApp isEqualToString:@"com.google.Drive"]) {
-    return CALLER_APP_GOOGLE_DRIVE;
-  }
-  if ([_declaredSourceApp isEqualToString:@"com.google.b612"]) {
-    return CALLER_APP_GOOGLE_EARTH;
-  }
-  if ([_declaredSourceApp isEqualToString:@"com.google.ios.youtube"]) {
-    return CALLER_APP_GOOGLE_YOUTUBE;
-  }
-  if ([_declaredSourceApp isEqualToString:@"com.google.Maps"]) {
-    return CALLER_APP_GOOGLE_MAPS;
-  }
-  if ([_declaredSourceApp hasPrefix:@"com.google."]) {
-    return CALLER_APP_GOOGLE_OTHER;
-  }
-  if ([_declaredSourceApp isEqualToString:@"com.apple.mobilesafari"]) {
-    return CALLER_APP_APPLE_MOBILESAFARI;
-  }
-  if ([_declaredSourceApp hasPrefix:@"com.apple."]) {
-    return CALLER_APP_APPLE_OTHER;
-  }
-
-  return CALLER_APP_OTHER;
+  return GetCallerApp(_declaredSourceApp, _secureSourceApp, self.completeURL);
 }
-// LINT.ThenChange(//ios/chrome/app/task_request_url_context.mm)
 
 // LINT.IfChange
 // TODO(crbug.com/462018636): This code will be soon migrated to

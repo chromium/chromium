@@ -9,6 +9,14 @@
 
 #import "ios/chrome/app/startup/app_launch_metrics.h"
 
+class GURL;
+
+// Returns the MobileSessionCallerApp for the specified `source_app_id`,
+// `secure_source_app_id`, and `complete_url`.
+MobileSessionCallerApp GetCallerApp(NSString* source_app_id,
+                                    NSString* secure_source_app_id,
+                                    const GURL& complete_url);
+
 // Checks if the caller app is a first party app.
 bool IsCallerAppFirstParty(MobileSessionCallerApp caller_app);
 
