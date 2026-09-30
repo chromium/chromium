@@ -17,7 +17,7 @@ sys.path.insert(
         os.path.join(constants.DIR_SOURCE_ROOT, 'third_party', 'logdog')
     ),
 )
-from logdog import bootstrap  # pylint: disable=import-error
+from logdog import bootstrap
 
 
 @decorators.NoRaiseException(

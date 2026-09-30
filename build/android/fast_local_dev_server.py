@@ -551,7 +551,6 @@ class TaskManager:
             task.terminate()
 
     @staticmethod
-    # pylint: disable=inconsistent-return-statements
     def _num_running_processes():
         with open('/proc/stat') as f:
             for line in f:
@@ -632,7 +631,6 @@ class Task:
             # TODO(wnwen): Use ionice to reduce resource consumption.
             self.build.add_process(self)
             # This use of preexec_fn is sufficiently simple, just one os.nice call.
-            # pylint: disable=subprocess-popen-preexec-fn
             self._proc = subprocess.Popen(
                 self.cmd,
                 stdout=subprocess.PIPE,
@@ -838,7 +836,6 @@ def _process_requests(sock: socket.socket, exit_on_idle: bool):
     tasks: Dict[Tuple[str, str], Task] = {}
     server_log(f'Server started. PID={os.getpid()}')
     _register_cleanup_signal_handlers()
-    # pylint: disable=too-many-nested-blocks
     while True:
         try:
             for data, connection in _listen_for_request_data(sock):

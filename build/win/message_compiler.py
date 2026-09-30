@@ -26,13 +26,13 @@ def main():
     input_file = None
     for i, arg in enumerate(rest):
         if arg == '-h' and len(rest) > i + 1:
-            assert header_dir == None
+            assert header_dir == None  # noqa: E711
             header_dir = rest[i + 1]
         elif arg == '-r' and len(rest) > i + 1:
-            assert resource_dir == None
+            assert resource_dir == None  # noqa: E711
             resource_dir = rest[i + 1]
         elif arg.endswith('.mc') or arg.endswith('.man'):
-            assert input_file == None
+            assert input_file == None  # noqa: E711
             input_file = arg
 
     # Copy checked-in outputs to final location.

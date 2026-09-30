@@ -111,16 +111,15 @@ class CuttlefishInstance:
 
         def _starnix_wait_until_fully_booted(device_self, *args, **kwargs):
             try:
-                # pylint: disable=protected-access
                 device_self._cache['external_storage'] = '/data/local/tmp'
                 device_self._cache['current_user'] = 0
                 device_self._cache['needs_su'] = False
-            except Exception:  # pylint: disable=broad-except
+            except Exception:
                 pass
 
             try:
                 self._orig_wait_until_fully_booted(device_self, *args, **kwargs)
-            except Exception as e:  # pylint: disable=broad-except
+            except Exception as e:
                 if 'is_sd_card_ready' in str(e):
                     logging.warning(
                         'Ignoring is_sd_card_ready timeout on Starnix '

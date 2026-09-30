@@ -4,11 +4,10 @@
 """Utility methods for Skia Gold functionality unittests."""
 
 import argparse
-import collections
 import typing
 from typing import Optional
 
-import dataclasses  # Built-in, but pylint gives an ordering false positive.
+import dataclasses
 
 
 @dataclasses.dataclass

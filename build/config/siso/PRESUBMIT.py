@@ -7,7 +7,7 @@ PRESUBMIT_VERSION = '2.0.0'
 
 def CheckSisoConfigFormat(input_api, output_api):
     """Check if build/config/siso/*.star files are formatted correctly."""
-    repo_root = input_api.change.RepositoryRoot()
+    repo_root = input_api.change.RepositoryRoot()  # noqa: F841
     log_level = 'debug' if input_api.verbose else 'warning'
     commands = []
     for f in input_api.AffectedFiles():

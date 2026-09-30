@@ -24,7 +24,7 @@ _ROOT_DIR = os.path.abspath(
 
 sys.path.insert(0, _ROOT_DIR)
 
-import gclient_utils
+import gclient_utils  # noqa: E402
 
 VersionInfo = collections.namedtuple(
     "VersionInfo", ("revision_id", "revision", "commit_position", "timestamp")
@@ -352,7 +352,7 @@ def GetJjVersion(source_dir, commit_filter, merge_base_ref):
     Raises:
       RuntimeError: If running `jj root` to determine jj workspace root fails.
     """
-    jj_root_dir = GetJjWorkspaceRoot(source_dir)
+    jj_root_dir = GetJjWorkspaceRoot(source_dir)  # noqa: F841
 
     revset = '::@'
     if merge_base_ref:

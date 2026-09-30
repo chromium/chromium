@@ -1141,7 +1141,7 @@ class _VersionCodeGroupedTest(unittest.TestCase):
         self.assertEqual(abi, 'x86_64_32')
         self.assertEqual(is_next_build, False)
 
-    def testX86_Auto_64_32Translate(self):
+    def testX86_Auto_64_32Translate(self):  # noqa: F811
         """Test for a desktop build with x86_64_32."""
         build, patch, package, abi, is_next_build = TranslateVersionCode(
             '575000068'

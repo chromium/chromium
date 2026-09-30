@@ -209,7 +209,8 @@ def GenerateTestResults(
     if current_result:
         if current_result.GetType() == base_test_result.ResultType.UNKNOWN:
             crashed = result_code == _ACTIVITY_RESULT_CANCELED and any(
-                _NATIVE_CRASH_RE.search(l) for l in result_bundle.values()
+                _NATIVE_CRASH_RE.search(l)
+                for l in result_bundle.values()  # noqa: E741
             )
             if crashed:
                 current_result.SetType(base_test_result.ResultType.CRASH)
@@ -912,7 +913,7 @@ class InstrumentationTestInstance(test_instance.TestInstance):
             self._flags.extend(args.command_line_flags)
         if args.device_flags_file:
             with open(args.device_flags_file) as device_flags_file:
-                stripped_lines = (l.strip() for l in device_flags_file)
+                stripped_lines = (l.strip() for l in device_flags_file)  # noqa: E741
                 self._flags.extend(flag for flag in stripped_lines if flag)
         if (
             args.strict_mode
@@ -1284,7 +1285,6 @@ class InstrumentationTestInstance(test_instance.TestInstance):
     def IsApkInstant(self, apk):
         return apk in self._instant_additional_apks
 
-    # pylint: disable=no-self-use
     def _InflateTests(self, tests):
         inflated_tests = []
         for clazz in tests:

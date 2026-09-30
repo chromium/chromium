@@ -10,7 +10,6 @@ import unittest
 from bundled_test_runner import _BundledTestRunner, TestCase
 
 # Test names should be self-explained, no point of adding function docstring.
-# pylint: disable=missing-function-docstring, protected-access
 
 
 class BundledTestRunnerTests(unittest.TestCase):

@@ -14,8 +14,8 @@ import time
 import unittest
 from unittest import mock
 
-import google_storage_helper as helper  # pylint: disable=import-error
-from parameterized import parameterized  # pylint: disable=import-error
+import google_storage_helper as helper
+from parameterized import parameterized
 
 LIB_PATH = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
 sys.path.append(LIB_PATH)
@@ -36,7 +36,7 @@ DEVIL_PATH = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'catapult', 'devil')
 
 if DEVIL_PATH not in sys.path:
     sys.path.append(DEVIL_PATH)
-from devil.utils import cmd_helper
+from devil.utils import cmd_helper  # noqa: E402
 
 
 class GoogleStorageHelperTest(unittest.TestCase):
@@ -70,7 +70,7 @@ class GoogleStorageHelperTest(unittest.TestCase):
         ]
     )
     def test_format_bucket_name(self, _, bucket, expected):
-        got = helper._format_bucket_name(bucket)  # pylint: disable=protected-access
+        got = helper._format_bucket_name(bucket)
         self.assertEqual(
             got,
             expected,
@@ -201,7 +201,7 @@ class GoogleStorageHelperTest(unittest.TestCase):
                 ['path_to_gsutil', '-q', 'cat', 'gs://foo/bar'],
             ),
         ]
-    )  # pylint: disable=no-self-use
+    )
     def test_read_from_link(self, _, link, expected_sequence):
         with mock.patch('platform.system', autospec=True, return_value='Linux'):
             with mock.patch.object(

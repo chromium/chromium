@@ -19,7 +19,7 @@ class BuildFileTest(unittest.TestCase):
         with tempfile.NamedTemporaryFile(mode='w') as f:
             f.write(text)
             f.flush()
-            with json_gn_editor.BuildFile(f.name, '/') as build_file:
+            with json_gn_editor.BuildFile(f.name, '/') as build_file:  # noqa: F841
                 pass
             with open(f.name, 'r') as f_after:
                 self.assertEqual(f_after.read(), text)

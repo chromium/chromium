@@ -5,8 +5,6 @@
 
 """Tests for local_device_instrumentation_test_run."""
 
-# pylint: disable=protected-access
-
 import contextlib
 import os
 import random

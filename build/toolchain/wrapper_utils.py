@@ -6,11 +6,8 @@
 
 import gzip
 import os
-import re
 import subprocess
-import shlex
 import shutil
-import sys
 import threading
 
 import whole_archive

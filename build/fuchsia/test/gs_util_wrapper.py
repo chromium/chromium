@@ -25,10 +25,8 @@ def _find_gsutil() -> Optional[str]:
     sys.path.append(os.path.join(DIR_SRC_ROOT, 'build'))
     # Do not pollute the environment, callers should not use find_depot_tools
     # directly.
-    # pylint: disable=import-error, import-outside-toplevel
     import find_depot_tools
 
-    # pylint: enable=import-error, import-outside-toplevel
     sys.path.pop()
     return os.path.join(find_depot_tools.DEPOT_TOOLS_PATH, 'gsutil.py')
 

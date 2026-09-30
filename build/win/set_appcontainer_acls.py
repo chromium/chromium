@@ -14,7 +14,7 @@ SRC_DIR = os.path.dirname(
 
 sys.path.append(os.path.join(SRC_DIR, 'testing', 'scripts'))
 
-import common
+import common  # noqa: E402
 
 
 def main():

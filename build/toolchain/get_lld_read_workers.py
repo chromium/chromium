@@ -10,7 +10,7 @@ import sys
 def main():
     try:
         cpu_count = multiprocessing.cpu_count()
-    except:
+    except:  # noqa: E722
         cpu_count = 1
 
     # We use cpu_count / 4 as a heuristic.

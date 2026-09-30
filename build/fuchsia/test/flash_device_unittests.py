@@ -16,7 +16,6 @@ _TEST_PRODUCT = 'test_product'
 _TEST_VERSION = 'test.version'
 
 
-# pylint: disable=too-many-public-methods,protected-access
 class FlashDeviceTest(unittest.TestCase):
     """Unittests for flash_device.py."""
 
@@ -221,9 +220,6 @@ class FlashDeviceTest(unittest.TestCase):
             with mock.patch.dict(os.environ, {}):
                 flash_device.main()
         self.assertEqual(self._ffx_mock.call_count, 0)
-
-
-# pylint: enable=too-many-public-methods,protected-access
 
 
 if __name__ == '__main__':

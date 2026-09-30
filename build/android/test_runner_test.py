@@ -93,7 +93,6 @@ class UploadTestScriptRecordsTest(unittest.TestCase):
 
 class TestRunnerHelperTest(unittest.TestCase):
     def testCreateStructuredTestDict(self):
-        # pylint: disable=protected-access
         t_instance_mock = mock.MagicMock()
         t_result_mock = mock.MagicMock()
         test_id = 'foo.bar.class#test1[28]'
@@ -171,7 +170,6 @@ class TestRunnerHelperTest(unittest.TestCase):
             test_runner._CreateStructuredTestDict(
                 t_instance_mock, t_result_mock
             )
-        # pylint: disable=protected-access
 
 
 if __name__ == '__main__':

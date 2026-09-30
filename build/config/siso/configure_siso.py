@@ -84,7 +84,7 @@ def main():
 
     if args.get_siso_project:
         config = ReadConfig()
-        if not SISO_PROJECT_CFG in config:
+        if SISO_PROJECT_CFG not in config:
             return 1
         print(config[SISO_PROJECT_CFG])
         return 0

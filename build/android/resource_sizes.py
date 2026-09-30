@@ -48,10 +48,10 @@ with host_paths.SysPath(host_paths.BUILD_UTIL_PATH):
     from lib.results import result_types
 
 with host_paths.SysPath(host_paths.TRACING_PATH):
-    from tracing.value import convert_chart_json  # pylint: disable=import-error
+    from tracing.value import convert_chart_json
 
 with host_paths.SysPath(_ANDROID_UTILS_PATH, 0):
-    from util import build_utils  # pylint: disable=import-error
+    from util import build_utils
 
 _BASE_CHART = {
     'format_version': '0.1',
@@ -717,7 +717,7 @@ def _ConfigOutDir(out_dir):
             # Triggers auto-detection when CWD == output directory.
             constants.CheckOutputDirectory()
             out_dir = constants.GetOutDirectory()
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             pass
     return out_dir
 
@@ -775,7 +775,7 @@ def _AnalyzeApkOrApks(report_func, apk_path):
                     inner_report_func = report_func
                     inner_dex_stats_collector = dex_stats_collector
                     if on_demand:
-                        inner_report_func = lambda *_: None
+                        inner_report_func = lambda *_: None  # noqa: E731
                         inner_dex_stats_collector = (
                             method_count.DexStatsCollector()
                         )

@@ -182,7 +182,7 @@ createType="monolithicFlat"
 # Extent description
 """
             + "\n".join(vmdk_extents)
-            + f"""
+            + """
 # The Backup GPT is appended by mapping a flat file of zeros or just let it be
 # (QEMU doesn't strictly check backup GPT unless primary is corrupted).
 """

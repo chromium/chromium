@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 """Uploads the results to the flakiness dashboard server."""
-# pylint: disable=R0201
 
 import logging
 import os
@@ -195,7 +194,7 @@ class ResultsUploader:
             results_generator.GenerateJSONOutput()
             results_generator.GenerateTimesMSFile()
             results_generator.UploadJSONFiles(json_files)
-        except Exception as e:  # pylint: disable=broad-except
+        except Exception as e:
             logging.error("Uploading results to test server failed: %s.", e)
         finally:
             shutil.rmtree(tmp_folder)

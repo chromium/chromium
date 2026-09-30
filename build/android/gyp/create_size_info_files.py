@@ -44,7 +44,7 @@ def _MergeResInfoFiles(res_info_path, info_paths):
     with action_helpers.atomic_output(res_info_path, encoding='utf-8') as dst:
         for p in info_paths:
             with open(p, encoding='utf-8') as src:
-                dst.writelines(_TransformAarPaths(l) for l in src)
+                dst.writelines(_TransformAarPaths(l) for l in src)  # noqa: E741
 
 
 def _PakInfoPathsForAssets(assets):

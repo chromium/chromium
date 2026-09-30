@@ -139,7 +139,7 @@ class WinTool(object):
         for arg in args:
             m = _LINK_EXE_OUT_ARG.match(arg)
             if m:
-                pe_name = m.group('out')
+                pe_name = m.group('out')  # noqa: F841
         link = subprocess.Popen(
             args,
             shell=sys.platform == 'win32',

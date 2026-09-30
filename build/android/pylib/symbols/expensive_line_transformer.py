@@ -143,12 +143,12 @@ class ExpensiveLineTransformer(ABC):
                         self.name,
                         timeout,
                     )
-                    for l in lines:
+                    for l in lines:  # noqa: E741
                         logging.error(l)
                     logging.error(eof_line)
                     logging.error('%s: End of timed out input.', self.name)
                     logging.error('%s: Timed out output was:', self.name)
-                    for l in out_lines:
+                    for l in out_lines:  # noqa: E741
                         logging.error(l)
                     logging.error('%s: End of timed out output.', self.name)
                     self.Close()

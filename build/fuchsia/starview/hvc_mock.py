@@ -47,7 +47,7 @@ def start_hvc_mock_responder(temp_dir):
         - stop_event: A threading.Event to signal the responder thread to terminate.
     """
     stop_event = threading.Event()
-    fds = []
+    fds = []  # noqa: F841
     qemu_args = []
 
     # Add VirtIO Serial PCI controller

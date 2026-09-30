@@ -24,7 +24,6 @@ from compatible_utils import get_host_arch
 class FfxEmulator(AbstractContextManager):
     """A helper for managing emulators."""
 
-    # pylint: disable=too-many-branches
     def __init__(self, args: argparse.Namespace) -> None:
         if args.product:
             self._product = args.product

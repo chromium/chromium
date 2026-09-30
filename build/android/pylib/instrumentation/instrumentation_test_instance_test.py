@@ -5,8 +5,6 @@
 
 """Unit tests for instrumentation_test_instance."""
 
-# pylint: disable=protected-access
-
 import collections
 import tempfile
 import unittest
@@ -14,7 +12,7 @@ import unittest
 from pylib.base import base_test_result
 from pylib.instrumentation import instrumentation_test_instance
 
-import mock  # pylint: disable=import-error
+import mock
 
 _INSTRUMENTATION_TEST_INSTANCE_PATH = (
     'pylib.instrumentation.instrumentation_test_instance.%s'

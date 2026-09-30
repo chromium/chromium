@@ -54,11 +54,10 @@ def _copy_coverage_files(test_runner: FfxTestRunner, dest: str) -> None:
     shutil.copytree(coverage_dir, dest, dirs_exist_ok=True)
 
 
-# pylint: disable=too-many-instance-attributes
 class ExecutableTestRunner(TestRunner):
     """Test runner for running standalone test executables."""
 
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(
         self,
         out_dir: str,
         test_args: List[str],

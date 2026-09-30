@@ -508,7 +508,7 @@ def _CreateKeepPredicate(
       A lambda that takes a path, and returns true if the corresponding file
       must be kept.
     """
-    predicate = lambda path: os.path.basename(path)[0] != '.'
+    predicate = lambda path: os.path.basename(path)[0] != '.'  # noqa: E731
     if resource_exclusion_regex == '':
         # Do not extract dotfiles (e.g. ".gitkeep"). aapt ignores them anyways.
         return predicate

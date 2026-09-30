@@ -469,7 +469,7 @@ def _CreateJavaLocaleListFromAssets(assets, locale_paks):
     locales = [
         os.path.basename(a)[:-4] for a in assets_paths if a in locale_paks
     ]
-    return '{%s}' % ','.join('"%s"' % l for l in sorted(locales))
+    return '{%s}' % ','.join('"%s"' % l for l in sorted(locales))  # noqa: E741
 
 
 def _AddJarMapping(jar_to_target, config):

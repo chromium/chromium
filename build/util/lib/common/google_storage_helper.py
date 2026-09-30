@@ -38,7 +38,7 @@ DEVIL_PATH = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'catapult', 'devil')
 
 if DEVIL_PATH not in sys.path:
     sys.path.append(DEVIL_PATH)
-from devil.utils import cmd_helper
+from devil.utils import cmd_helper  # noqa: E402
 
 _PUBLIC_URL = 'https://storage.googleapis.com/%s/'
 _AUTHENTICATED_URL = 'https://storage.cloud.google.com/%s/'

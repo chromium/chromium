@@ -26,7 +26,7 @@ _BUILD_ANDROID_GYP_PATH = _SRC_PATH / 'build/android/gyp'
 if str(_BUILD_ANDROID_GYP_PATH) not in sys.path:
     sys.path.append(str(_BUILD_ANDROID_GYP_PATH))
 
-from util import build_utils
+from util import build_utils  # noqa: E402
 
 # Refer to parse_tree.cc for GN AST implementation details:
 # https://gn.googlesource.com/gn/+/refs/heads/main/src/gn/parse_tree.cc
@@ -240,7 +240,7 @@ class BuildFile:
         if not name.startswith('$'):
             if not name.startswith('//') and abs_path:
                 name = self._gn_rel_path + name
-            if not ':' in name:
+            if ':' not in name:
                 name += ':' + os.path.basename(name)
             if allow_relative:
                 base_path, target_name = name.split(':')

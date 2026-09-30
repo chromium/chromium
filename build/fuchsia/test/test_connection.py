@@ -38,16 +38,15 @@ def test_device_connection(target_id: Optional[str]) -> None:
     it cannot be connected."""
     start_sec = time.time()
     while time.time() - start_sec < 1800:
-        # pylint: disable=bare-except
         # First, test_connection with ffx target echo.
         try:
             test_connection(target_id=target_id, wait_sec=600)
             return
-        except:
+        except:  # noqa: E722
             # If anything wrong, reboot the device and try again.
             try:
                 boot_device(target_id, BootMode.REGULAR, must_boot=True)
-            except:
+            except:  # noqa: E722
                 # If unfortunately, the reboot failed, it's still worth
                 # continuing the test rather than failing here.
                 pass

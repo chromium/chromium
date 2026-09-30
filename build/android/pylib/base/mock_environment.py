@@ -5,7 +5,7 @@
 
 from pylib.base import environment
 
-import mock  # pylint: disable=import-error
+import mock
 
 
 MockEnvironment = mock.MagicMock(environment.Environment)

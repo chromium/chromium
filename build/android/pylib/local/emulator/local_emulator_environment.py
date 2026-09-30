@@ -17,7 +17,6 @@ _MAX_ANDROID_EMULATORS = 16
 
 # TODO(crbug.com/40799394): After Telemetry is supported by python3 we can
 # re-add super without arguments in this script.
-# pylint: disable=super-with-arguments
 class LocalEmulatorEnvironment(local_device_environment.LocalDeviceEnvironment):
     def __init__(self, args, output_manager, error_func):
         super(LocalEmulatorEnvironment, self).__init__(

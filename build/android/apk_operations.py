@@ -4,7 +4,6 @@
 # found in the LICENSE file.
 
 # Using colorama.Fore/Back/Style members
-# pylint: disable=no-member
 
 
 import argparse
@@ -46,11 +45,11 @@ with devil_env.SysPath(
 ):
     import colorama
 
-from incremental_install import installer
-from pylib import constants
-from pylib.symbols import deobfuscator
-from pylib.utils import simpleperf
-from pylib.utils import app_bundle_utils
+from incremental_install import installer  # noqa: E402
+from pylib import constants  # noqa: E402
+from pylib.symbols import deobfuscator  # noqa: E402
+from pylib.utils import simpleperf  # noqa: E402
+from pylib.utils import app_bundle_utils  # noqa: E402
 
 with devil_env.SysPath(
     os.path.join(_DIR_SOURCE_ROOT, 'build', 'android', 'gyp')
@@ -242,7 +241,7 @@ def _ResolveActivity(
     start_idx = next(
         (
             i
-            for i, l in enumerate(lines)
+            for i, l in enumerate(lines)  # noqa: E741
             if l.startswith('Activity Resolver Table:')
         ),
         None,
@@ -253,7 +252,7 @@ def _ResolveActivity(
         raise Exception('No Activity Resolver Table in:\n' + '\n'.join(lines))
     line_count = next(
         i
-        for i, l in enumerate(lines[start_idx + 1 :])
+        for i, l in enumerate(lines[start_idx + 1 :])  # noqa: E741
         if l and not l[0].isspace()
     )
     data = '\n'.join(lines[start_idx : start_idx + 1 + line_count])
@@ -1114,7 +1113,6 @@ class _LogcatProcessor:
         return ''
 
     def _GetPriorityStyle(self, priority, dim=False):
-        # pylint:disable=no-self-use
         if dim:
             return ''
         style = colorama.Fore.BLACK
@@ -1885,7 +1883,6 @@ class _Command:
                     target_cpu = 'arm'
                 else:
                     target_cpu = '<something else>'
-                # pylint: disable=line-too-long
                 native_lib_link = 'https://chromium.googlesource.com/chromium/src/+/main/docs/android_native_libraries.md'
                 not_supported_reasons[device.serial] = (
                     f"none of the app's ABIs ({','.join(app_abis)}) match this "
@@ -3063,7 +3060,7 @@ def Run(
     constants.SetOutputDirectory(output_directory)
     devil_chromium.Initialize(output_directory=output_directory)
     parser = argparse.ArgumentParser()
-    exists_or_none = lambda p: p if p and os.path.exists(p) else None
+    exists_or_none = lambda p: p if p and os.path.exists(p) else None  # noqa: E731
 
     parser.set_defaults(
         command_line_flags_file=command_line_flags_file,
@@ -3174,7 +3171,7 @@ def RunForTestApk(
     devil_chromium.Initialize(output_directory=output_directory)
 
     parser = argparse.ArgumentParser()
-    exists_or_none = lambda p: p if p and os.path.exists(p) else None
+    exists_or_none = lambda p: p if p and os.path.exists(p) else None  # noqa: E731
 
     parser.set_defaults(
         apk_path=exists_or_none(test_apk_path),

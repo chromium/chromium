@@ -338,7 +338,7 @@ def TranslateVersionCode(version_code, is_webview=False):
                 package_name = package
                 break
     if not package_name:
-        raise Error(
+        raise ValueError(
             f'Unable to match package with package_digit={package_digit} '
             f'and is_webview={is_webview}'
         )

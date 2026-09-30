@@ -24,10 +24,10 @@ from typing import Iterator, List, Optional, Set, Tuple
 _SRC_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 sys.path.append(os.path.join(_SRC_ROOT, 'build'))
-import gn_helpers
+import gn_helpers  # noqa: E402
 
 sys.path.append(os.path.join(_SRC_ROOT, 'build', 'android', 'gyp'))
-from util import build_utils
+from util import build_utils  # noqa: E402
 
 _DEPOT_TOOLS_PATH = os.path.join(_SRC_ROOT, 'third_party', 'depot_tools')
 

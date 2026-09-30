@@ -11,7 +11,7 @@ _SRC_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..', '..')
 )
 sys.path.append(os.path.join(_SRC_PATH, 'third_party'))
-import pyyaml
+import pyyaml  # noqa: E402
 
 
 def main(argv):

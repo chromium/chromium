@@ -8,7 +8,6 @@ import doctest
 import itertools
 import os
 import plistlib
-import re
 import subprocess
 import sys
 

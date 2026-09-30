@@ -12,16 +12,12 @@ import re
 import sys
 
 # vpython-provided modules
-# pylint: disable=import-error
 from mcp.server import fastmcp
-# pylint: enable=import-error
 
-# pylint: disable=wrong-import-position
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 )
 import gn_helpers
-# pylint: enable=wrong-import-position
 
 CHROMIUM_ROOT = os.path.realpath(
     os.path.join(os.path.dirname(__file__), '..', '..')

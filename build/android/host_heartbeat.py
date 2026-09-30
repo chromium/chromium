@@ -7,7 +7,6 @@
 """Sends a heart beat pulse to the currently online Android devices.
 This heart beat lets the devices know that they are connected to a host.
 """
-# pylint: disable=W0702
 
 import sys
 import time
@@ -28,7 +27,7 @@ def main():
                 d.RunShellCommand(
                     ['touch', '/sdcard/host_heartbeat'], check_return=True
                 )
-        except:
+        except:  # noqa: E722
             # Keep the heatbeat running bypassing all errors.
             pass
         time.sleep(PULSE_PERIOD)

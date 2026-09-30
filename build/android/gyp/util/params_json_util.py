@@ -99,13 +99,13 @@ def _get_json(path):
     return config
 
 
-@functools.cache  # pylint: disable=method-cache-max-size-none
+@functools.cache
 def get_build_config(path):
     """Cached version of _get_json() for .build_config.json files."""
     return _get_json(path)
 
 
-@functools.cache  # pylint: disable=method-cache-max-size-none
+@functools.cache
 def get_params(path):
     """Returns a cached, dictionary-like object for a .params.json file."""
     # It's important to cache the ParamsJson object rather than the json dict
@@ -144,13 +144,13 @@ def _filter_deps(deps, restrict_to_resource_types=False):
         # Consider groups that set input_jars_paths() as java targets. This
         # prevents such groups from contributing to the classpath when they are
         # depended on via resource deps. Admittedly, a bit of a hack...
-        keep_func = lambda x: (
+        keep_func = lambda x: (  # noqa: E731
             x.is_resource_type()
             or (x.is_group() and not x.get('input_jars_paths'))
         )
 
     else:
-        keep_func = lambda x: not x.is_root_type()
+        keep_func = lambda x: not x.is_root_type()  # noqa: E731
 
     return [d for d in deps if keep_func(d)]
 
@@ -231,13 +231,13 @@ class DepsList(_HashableList):
     def __repr__(self):
         return ','.join(repr(x) for x in self)
 
-    @functools.cache  # pylint: disable=method-cache-max-size-none
+    @functools.cache
     def recursive(self):
         """Returns all transitive dependencies."""
         # Reverse so that deps appear with higher indices.
         return self.walk(lambda x: True)
 
-    @functools.cache  # pylint: disable=method-cache-max-size-none
+    @functools.cache
     def recursive_resource_deps(self):
         """Returns all transitive resource dependencies.
 
@@ -318,7 +318,7 @@ def _extract_native_libraries_from_runtime_deps(path):
         lines = f.read().splitlines()
     ret = [
         os.path.normpath(l.replace('lib.unstripped/', ''))
-        for l in lines
+        for l in lines  # noqa: E741
         if l.endswith('.so')
     ]
     ret.reverse()
@@ -483,7 +483,7 @@ class ParamsJson(dict):
         # restrict_to_resource_types.
         return [get_params(p) for p in self.get('deps_configs', [])]
 
-    @functools.cache  # pylint: disable=method-cache-max-size-none
+    @functools.cache
     def _cached_direct_public_deps(self):
         """Returns only the direct public dependencies."""
         deps = [get_params(p) for p in self.get('public_deps_configs', [])]
@@ -491,7 +491,7 @@ class ParamsJson(dict):
             deps, restrict_to_resource_types=self.is_resource_type()
         )
 
-    @functools.cache  # pylint: disable=method-cache-max-size-none
+    @functools.cache
     def deps(self):
         """Returns deps + resolved public_deps."""
         deps = DepsList(self._direct_deps())
@@ -504,7 +504,7 @@ class ParamsJson(dict):
         # result in a cache hit.
         return DepsList(dict.fromkeys(deps), sealed=True)
 
-    @functools.cache  # pylint: disable=method-cache-max-size-none
+    @functools.cache
     def public_deps(self):
         """Returns direct public dependencies and their transitive public_deps."""
         deps = self._cached_direct_public_deps()
@@ -514,7 +514,7 @@ class ParamsJson(dict):
         )
         return DepsList(deps, sealed=True)
 
-    @functools.cache  # pylint: disable=method-cache-max-size-none
+    @functools.cache
     def processor_deps(self):
         """Returns all transitive annotation processor dependencies."""
         deps = [get_params(p) for p in self.get('processor_configs', [])]
@@ -527,7 +527,7 @@ class ParamsJson(dict):
             return get_params(path)
         return None
 
-    @functools.cache  # pylint: disable=method-cache-max-size-none
+    @functools.cache
     def module_deps(self):
         """For a bundle, returns the ParamsJson for all module dependencies."""
         deps = sorted(

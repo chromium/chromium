@@ -31,9 +31,6 @@ def Colorize(text, style=''):
 
 
 class _ColorFormatter(logging.Formatter):
-    # pylint does not see members added dynamically in the constructor.
-    # pylint: disable=no-member
-
     def __init__(self, wrapped_formatter=None, color_warnings=False):
         """Wraps a |logging.Formatter| and adds color."""
         super().__init__()

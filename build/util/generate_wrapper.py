@@ -151,16 +151,14 @@ PY_TEMPLATE = textwrap.dedent(r"""
         if proc.poll() is not None:
           return
         # SIGBREAK is defined only for win32.
-        # pylint: disable=no-member
         if sys.platform == 'win32' and sig == signal.SIGBREAK:
           print("Received signal(%d), sending CTRL_BREAK_EVENT to process %d" % (sig, proc.pid))
           proc.send_signal(signal.CTRL_BREAK_EVENT)
         else:
           print("Forwarding signal(%d) to process %d" % (sig, proc.pid))
           proc.send_signal(sig)
-        # pylint: enable=no-member
       if sys.platform == 'win32':
-        signal.signal(signal.SIGBREAK, _sig_handler) # pylint: disable=no-member
+        signal.signal(signal.SIGBREAK, _sig_handler)
       else:
         signal.signal(signal.SIGTERM, _sig_handler)
         signal.signal(signal.SIGINT, _sig_handler)

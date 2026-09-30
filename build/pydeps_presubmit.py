@@ -31,7 +31,11 @@ class PydepsChecker:
         """Returns an iterable of paths within the .pydep, relativized to //."""
         pydeps_data = self._LoadFile(pydeps_path)
         uses_gn_paths = '--gn-paths' in pydeps_data
-        entries = (l for l in pydeps_data.splitlines() if not l.startswith('#'))
+        entries = (
+            l
+            for l in pydeps_data.splitlines()  # noqa: E741
+            if not l.startswith('#')
+        )
         if uses_gn_paths:
             # Paths look like: //foo/bar/baz
             return (e[2:] for e in entries)

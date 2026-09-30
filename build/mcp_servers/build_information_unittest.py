@@ -4,24 +4,18 @@
 # found in the LICENSE file.
 """Unittests for build_information.py."""
 
-# pylint: disable=protected-access
-
 import os
 import sys
 import unittest
 from unittest import mock
 
 # vpython-provided modules
-# pylint: disable=import-error
 from pyfakefs import fake_filesystem_unittest
-# pylint: enable=import-error
 
-# pylint: disable=wrong-import-position
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 )
 from mcp_servers import build_information
-# pylint: enable=wrong-import-position
 
 CHROMIUM_ROOT = build_information.CHROMIUM_ROOT
 

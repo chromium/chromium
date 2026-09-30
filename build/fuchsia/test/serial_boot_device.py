@@ -22,8 +22,6 @@ from typing import List
 from boot_device import BootMode
 from compatible_utils import running_unattended
 
-# pylint: disable=too-many-return-statements, too-many-branches
-
 
 def _env_ready() -> bool:
     """Checks if the required environment is ready to support the functions in
@@ -91,7 +89,6 @@ def boot_device(
                 node_id,
                 serial_num,
             )
-        # pylint: disable=subprocess-run-check
         if (
             subprocess.run(
                 [
@@ -142,7 +139,6 @@ def _serialio_send_and_wait(
         while time.time() - start_sec < 28:
             send_command = ['serialio', node_id, 'send']
             send_command.extend(command)
-            # pylint: disable=subprocess-run-check
             if subprocess.run(send_command).returncode != 0:
                 logging.error(
                     'Failed to send %s via serialio to %s', command, node_id
@@ -222,7 +218,6 @@ def _run_fastboot(args: List[str], serial_num: str) -> bool:
     try:
         # Capture output to ensure we can get '< waiting for serial-num >'
         # output.
-        # pylint: disable=subprocess-run-check
         if (
             subprocess.run(args, capture_output=True, timeout=30).returncode
             == 0
@@ -242,7 +237,6 @@ def _run_fastboot(args: List[str], serial_num: str) -> bool:
 def _shutdown_if_serial_is_unavailable(node_id: str) -> None:
     if not running_unattended():
         return
-    # pylint: disable=subprocess-run-check
     if subprocess.run(['serialio', node_id, 'poll']).returncode != 0:
         logging.warning('shutting down the docker by killing the pid 1')
         # Before killing the process itself, force shutting down the logging to

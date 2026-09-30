@@ -110,7 +110,7 @@ def GetDataDependencies(runtime_deps_path, device_data_filters=None):
 
     with open(runtime_deps_path, 'r') as runtime_deps_file:
         # .runtime_deps can contain duplicates.
-        rel_host_files = sorted({l.strip() for l in runtime_deps_file if l})
+        rel_host_files = sorted({l.strip() for l in runtime_deps_file if l})  # noqa: E741
 
     output_directory = constants.GetOutDirectory()
     abs_host_files = [

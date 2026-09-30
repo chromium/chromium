@@ -13,7 +13,7 @@ import tempfile
 import time
 from typing import Any, Dict, List, Optional, Tuple
 
-import dataclasses  # Built-in, but pylint gives an ordering false positive.
+import dataclasses
 
 from skia_gold_common import skia_gold_properties
 

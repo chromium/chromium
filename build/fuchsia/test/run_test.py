@@ -84,7 +84,6 @@ def _get_test_runner(
     return create_executable_test_runner(runner_args, test_args)
 
 
-# pylint: disable=too-many-statements,too-many-branches
 def main():
     """E2E method for installing packages and running a test."""
     # Always add time stamps to the logs.

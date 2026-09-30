@@ -1,5 +1,8 @@
 line-length = 80
 indent-width = 4
+extend-exclude = [
+    "*_pb2.py",
+]
 
 [format]
 quote-style = "preserve"

@@ -5,7 +5,6 @@
 
 # TODO(crbug.com/40799394): After Telemetry is supported by python3 we can
 # remove object inheritance from this script.
-# pylint: disable=useless-object-inheritance
 class Environment(object):
     """An environment in which tests can be run.
 

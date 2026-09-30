@@ -31,8 +31,8 @@ from pylib.utils import time_profile
 
 prev_sys_path = list(sys.path)
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), os.pardir, 'gyp'))
-import dex
-from util import build_utils
+import dex  # noqa: E402
+from util import build_utils  # noqa: E402
 
 sys.path = prev_sys_path
 

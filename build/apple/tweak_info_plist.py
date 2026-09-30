@@ -27,7 +27,6 @@ import plistlib
 import re
 import subprocess
 import sys
-import tempfile
 
 TOP = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 
@@ -170,7 +169,7 @@ def _DoSCMKeys(plist, add_keys):
 
     # See if the operation failed.
     _RemoveKeys(plist, 'SCMRevision')
-    if scm_revision != None:
+    if scm_revision != None:  # noqa: E711
         plist['SCMRevision'] = scm_revision
     elif add_keys:
         print(
@@ -455,7 +454,7 @@ def Main(argv):
     overrides = {}
     if options.version_overrides:
         for pair in options.version_overrides:
-            if not '=' in pair:
+            if '=' not in pair:
                 print(
                     'Invalid value for --version-overrides:',
                     pair,

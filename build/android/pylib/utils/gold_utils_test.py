@@ -8,8 +8,6 @@ Example usage:
   vpython3 gold_utils_test.py
 """
 
-# pylint: disable=protected-access
-
 import contextlib
 import os
 from pathlib import Path
@@ -21,13 +19,13 @@ from unittest import mock
 path_root = Path(__file__).parents[2]
 sys.path.append(str(path_root))
 
-from pylib.constants import host_paths
-from pylib.utils import gold_utils
+from pylib.constants import host_paths  # noqa: E402
+from pylib.utils import gold_utils  # noqa: E402
 
 with host_paths.SysPath(host_paths.BUILD_PATH):
     from skia_gold_common import unittest_utils
 
-from pyfakefs import fake_filesystem_unittest  # pylint: disable=import-error
+from pyfakefs import fake_filesystem_unittest  # noqa: E402
 
 createSkiaGoldArgs = unittest_utils.createSkiaGoldArgs
 

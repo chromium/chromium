@@ -244,7 +244,6 @@ class _ApkDelegate:
         self._use_existing_test_data = test_instance.use_existing_test_data
 
     def GetTestDataRoot(self, device):
-        # pylint: disable=no-self-use
         return posixpath.join(
             device.GetExternalStoragePath(), 'chromium_tests_root'
         )
@@ -271,7 +270,7 @@ class _ApkDelegate:
                 permissions=self._permissions,
             )
 
-    def ResultsDirectory(self, device):  # pylint: disable=no-self-use
+    def ResultsDirectory(self, device):
         return device.GetExternalStoragePath()
 
     def Run(self, test, device, flags=None, **kwargs):
@@ -435,8 +434,6 @@ class _ExeDelegate:
         self._coverage_lock = threading.Lock()
 
     def GetTestDataRoot(self, device):
-        # pylint: disable=no-self-use
-        # pylint: disable=unused-argument
         return posixpath.join(
             constants.TEST_EXECUTABLE_DIR, 'chromium_tests_root'
         )
@@ -451,8 +448,6 @@ class _ExeDelegate:
         )
 
     def ResultsDirectory(self, device):
-        # pylint: disable=no-self-use
-        # pylint: disable=unused-argument
         return constants.TEST_EXECUTABLE_DIR
 
     def Run(self, test, device, flags=None, **kwargs):
@@ -813,7 +808,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
                 tests = gtest_test_instance.ParseGTestListTests(raw_test_list)
                 if not tests:
                     logging.info('No tests found. Output:')
-                    for l in raw_test_list:
+                    for l in raw_test_list:  # noqa: E741
                         logging.info('  %s', l)
                 else:
                     with tempfile_ext.NamedTemporaryDirectory() as temp_dir:
@@ -1208,7 +1203,7 @@ class LocalDeviceGtestRun(local_device_test_run.LocalDeviceTestRun):
         if not self._env.skip_clear_data:
             self._delegate.Clear(device)
 
-        for l in output:
+        for l in output:  # noqa: E741
             logging.info(l)
 
         # Parse the output.

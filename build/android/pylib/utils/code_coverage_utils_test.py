@@ -7,8 +7,6 @@ Example usage:
   vpython3 code_coverage_utils_test.py
 """
 
-# pylint: disable=protected-access
-
 import os
 from pathlib import Path
 import sys
@@ -19,15 +17,15 @@ from unittest import mock
 path_root = Path(__file__).parents[2]
 sys.path.append(str(path_root))
 
-from pylib.utils import code_coverage_utils
-from py_utils import tempfile_ext
+from pylib.utils import code_coverage_utils  # noqa: E402
+from py_utils import tempfile_ext  # noqa: E402
 
 
 class MockDevicePathExists:
     def __init__(self, value):
         self._path_exists = value
 
-    def PathExists(self, directory, as_root=False, retries=0):  # pylint: disable=unused-argument
+    def PathExists(self, directory, as_root=False, retries=0):
         return self._path_exists
 
 

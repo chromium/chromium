@@ -34,7 +34,7 @@ def ExtractIdg(proj_file_name):
         lines = iter(proj_file)
         for p_line in lines:
             if "<ItemDefinitionGroup" in p_line:
-                while not "</ItemDefinitionGroup" in p_line:
+                while "</ItemDefinitionGroup" not in p_line:
                     result.append(p_line)
                     p_line = lines.next()
                 result.append(p_line)
@@ -202,7 +202,7 @@ for proj_name, proj_configs in all_projects.items():
                 # This is a large group that contains many settings. We need to
                 # replicate it, with conditions so it varies per configuration.
                 idg_lines = []
-                while not "</ItemDefinitionGroup" in line:
+                while "</ItemDefinitionGroup" not in line:
                     idg_lines.append(line)
                     line = proj_lines.next()
                 idg_lines.append(line)

@@ -5,7 +5,6 @@
 # found in the LICENSE file.
 """A metric implementation to record the raw inputs."""
 
-from google.protobuf.timestamp_pb2 import Timestamp
 from measure import Measure
 from test_script_metrics_pb2 import TestScriptMetric
 

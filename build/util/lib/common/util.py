@@ -13,6 +13,7 @@ except ImportError:
 
 import os
 import signal
+import socket
 import stat
 import subprocess
 import sys

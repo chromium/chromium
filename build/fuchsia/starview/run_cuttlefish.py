@@ -10,12 +10,9 @@ import os
 from pathlib import Path
 import re
 import shutil
-import socket
-import struct
 import subprocess
 import sys
 import tempfile
-import threading
 import time
 import zipfile
 
@@ -24,7 +21,7 @@ STARVIEW_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # Setup import path for common testing utils
 sys.path.append(os.path.abspath(os.path.join(STARVIEW_DIR, '..', 'test')))
-import common
+import common  # noqa: E402
 
 AVBTOOL = os.path.join(STARVIEW_DIR, 'avbtool.py')
 CVD_AVB_TESTKEY = os.path.join(STARVIEW_DIR, 'cvd_avb_testkey_rsa4096.pem')
@@ -42,9 +39,9 @@ if (
 
 
 sys.path.append(STARVIEW_DIR)
-import partition_creator
-import simg2img
-from hvc_mock import start_hvc_mock_responder
+import partition_creator  # noqa: E402
+import simg2img  # noqa: E402
+from hvc_mock import start_hvc_mock_responder  # noqa: E402
 
 
 IS_HEADLESS_BY_DEFAULT = not (

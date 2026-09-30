@@ -65,9 +65,9 @@ _STOP_IGNORE_EXPANSIONS_OUTSIDE_GLOBLIST_DIR = '# pop(ignore-relative)'
 def parse_filelist(filelist_name):
     try:
         with open(filelist_name) as filelist:
-            unfiltered = [l for l in filelist]
+            unfiltered = [l for l in filelist]  # noqa: E741
             header = ''.join(unfiltered[:_HEADER_HEIGHT])
-            files = sorted(l.strip() for l in unfiltered[_HEADER_HEIGHT:])
+            files = sorted(l.strip() for l in unfiltered[_HEADER_HEIGHT:])  # noqa: E741
             return (files, header)
     except Exception as e:
         print_error(
@@ -170,7 +170,7 @@ def parse_and_expand_globlist(globlist_name, glob_root):
         # ensures no unwanted duplicates. The files in |to_check| must be in the
         # globroot or a subdirectory.
         files = set()
-        to_check = set()
+        to_check = set()  # noqa: F841
         for g in globlist:
             g = g.strip()
 
@@ -236,8 +236,8 @@ def compare_lists(a, b):
     differ = difflib.Differ()
     full_diff = differ.compare(a, b)
     lines = [d for d in full_diff if not d.startswith('  ')]
-    additions = [l[2:] for l in lines if l.startswith('+ ')]
-    removals = [l[2:] for l in lines if l.startswith('- ')]
+    additions = [l[2:] for l in lines if l.startswith('+ ')]  # noqa: E741
+    removals = [l[2:] for l in lines if l.startswith('- ')]  # noqa: E741
     return (additions, removals)
 
 

@@ -124,7 +124,7 @@ def SetEnvironmentAndGetRuntimeDllDirs():
             toolchain_data = json.load(tempf)
 
         toolchain = toolchain_data['path']
-        version = toolchain_data['version']
+        version = toolchain_data['version']  # noqa: F841
         win_sdk = toolchain_data.get('win_sdk')
         wdk = toolchain_data['wdk']
         # TODO(scottmg): The order unfortunately matters in these. They should be
@@ -145,7 +145,7 @@ def SetEnvironmentAndGetRuntimeDllDirs():
         runtime_path = os.path.pathsep.join(vs_runtime_dll_dirs)
         os.environ['PATH'] = runtime_path + os.path.pathsep + os.environ['PATH']
     elif sys.platform == 'win32' and not depot_tools_win_toolchain:
-        if not 'GYP_MSVS_OVERRIDE_PATH' in os.environ:
+        if 'GYP_MSVS_OVERRIDE_PATH' not in os.environ:
             os.environ['GYP_MSVS_OVERRIDE_PATH'] = DetectVisualStudioPath()
 
         # When using an installed toolchain these files aren't needed in the output
@@ -562,7 +562,7 @@ def Update(force=False, no_download=False):
     If no_download is true then the toolchain will be configured if present but
     will not be downloaded.
     """
-    if force != False and force != '--force':
+    if force != False and force != '--force':  # noqa: E712
         print('Unknown parameter "%s"' % force, file=sys.stderr)
         return 1
     if force == '--force' or os.path.exists(json_data_file):
@@ -645,7 +645,7 @@ def SetEnvironmentAndGetSDKDir():
     SetEnvironmentAndGetRuntimeDllDirs()
 
     # If WINDOWSSDKDIR is not set, search the default SDK path and set it.
-    if not 'WINDOWSSDKDIR' in os.environ:
+    if 'WINDOWSSDKDIR' not in os.environ:
         default_sdk_path = os.path.expandvars(
             '%ProgramFiles(x86)%\\Windows Kits\\10'
         )

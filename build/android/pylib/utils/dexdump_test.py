@@ -15,9 +15,8 @@ from xml.etree import ElementTree
 
 PYLIB_PATH = os.path.join(os.path.dirname(__file__), '..')
 sys.path.append(PYLIB_PATH)
-from utils import dexdump  # pylint: disable=no-name-in-module
+from utils import dexdump  # noqa: E402
 
-# pylint: disable=protected-access
 emptyAnnotations = dexdump.Annotations(
     classAnnotations={}, methodsAnnotations={}
 )

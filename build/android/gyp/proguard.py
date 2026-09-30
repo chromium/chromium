@@ -657,7 +657,7 @@ def _CombineConfigs(
         # Ignore files that contain only comments (androidx has a lot of these).
         if all(
             l.isspace() or l.rstrip().startswith('#')
-            for l in contents.splitlines()
+            for l in contents.splitlines()  # noqa: E741
         ):
             return []
 

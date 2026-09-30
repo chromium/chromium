@@ -41,7 +41,7 @@ def FlattenList(values):
 def GeomMeanAndStdDevFromHistogram(histogram_json):
     histogram = json.loads(histogram_json)
     # Handle empty histograms gracefully.
-    if not 'buckets' in histogram:
+    if 'buckets' not in histogram:
         return 0.0, 0.0
     count = 0
     sum_of_logs = 0

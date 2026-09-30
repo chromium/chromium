@@ -18,9 +18,9 @@ import tempfile
 
 # The following non-std imports are fetched via vpython. See the list at
 # //vpython.toml
-import dateutil.parser  # pylint: disable=import-error
-import jsonlines  # pylint: disable=import-error
-import psutil  # pylint: disable=import-error
+import dateutil.parser
+import jsonlines
+import psutil
 
 CHROMIUM_SRC_PATH = os.path.abspath(
   os.path.join(os.path.dirname(__file__), '..', '..')
@@ -29,14 +29,14 @@ CHROMIUM_SRC_PATH = os.path.abspath(
 # Use the android test-runner's gtest results support library for generating
 # output json ourselves.
 sys.path.insert(0, os.path.join(CHROMIUM_SRC_PATH, 'build', 'android'))
-from pylib.base import base_test_result  # pylint: disable=import-error
-from pylib.results import json_results  # pylint: disable=import-error
+from pylib.base import base_test_result  # noqa: E402
+from pylib.results import json_results  # noqa: E402
 
 sys.path.insert(0, os.path.join(CHROMIUM_SRC_PATH, 'build', 'util'))
 # TODO(crbug.com/40259280): Re-enable the 'no-name-in-module' check.
-from lib.results import result_sink  # pylint: disable=import-error,no-name-in-module
+from lib.results import result_sink  # noqa: E402
 
-import subprocess  # pylint: disable=import-error,wrong-import-order
+import subprocess  # noqa: E402
 
 DEFAULT_CROS_CACHE = os.path.abspath(
   os.path.join(CHROMIUM_SRC_PATH, 'build', 'cros_cache')
@@ -196,13 +196,13 @@ class RemoteTest:
       )
       try:
         test_proc.wait(timeout=self._timeout)
-      except subprocess.TimeoutExpired:  # pylint: disable=no-member
+      except subprocess.TimeoutExpired:
         logging.error('Test timed out. Sending SIGTERM.')
         # SIGTERM the proc and wait 10s for it to close.
         test_proc.terminate()
         try:
           test_proc.wait(timeout=10)
-        except subprocess.TimeoutExpired:  # pylint: disable=no-member
+        except subprocess.TimeoutExpired:
           # If it hasn't closed in 10s, SIGKILL it.
           logging.error('Test did not exit in time. Sending SIGKILL.')
           test_proc.kill()
@@ -753,7 +753,7 @@ class GTestTest(RemoteTest):
       os.path.join(self._path_to_outdir, self._runtime_deps_path)
     )
     with open(abs_runtime_deps_path) as runtime_deps_file:
-      files = [l.strip() for l in runtime_deps_file if l]
+      files = [l.strip() for l in runtime_deps_file if l]  # noqa: E741
     rel_file_paths = []
     for f in files:
       rel_file_path = os.path.relpath(
@@ -814,8 +814,6 @@ def device_test(args, unknown_args):
   # so cd to src/, which should be the root of all data deps.
   os.chdir(CHROMIUM_SRC_PATH)
 
-  # TODO: Remove the above when depot_tool's pylint is updated to include the
-  # fix to https://github.com/PyCQA/pylint/issues/710.
   if args.test_type == 'tast':
     test = TastTest(args, unknown_args)
   else:
@@ -1138,7 +1136,6 @@ def main():
   )
 
   # Tast test args.
-  # pylint: disable=line-too-long
   tast_test_parser = subparsers.add_parser(
     'tast',
     help='Runs a device-side set of Tast tests. For more details, see: '

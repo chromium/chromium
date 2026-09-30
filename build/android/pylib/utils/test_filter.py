@@ -25,13 +25,13 @@ def ParseFilterFile(input_lines):
       tuple containing the lists of positive patterns and negative patterns
     """
     # Strip comments and whitespace from each line and filter non-empty lines.
-    stripped_lines = (l.split('#', 1)[0].strip() for l in input_lines)
-    filter_lines = [l for l in stripped_lines if l]
+    stripped_lines = (l.split('#', 1)[0].strip() for l in input_lines)  # noqa: E741
+    filter_lines = [l for l in stripped_lines if l]  # noqa: E741
 
     # Split the tests into positive and negative patterns (gtest treats
     # every pattern after the first '-' sign as an exclusion).
-    positive_patterns = [l for l in filter_lines if l[0] != '-']
-    negative_patterns = [l[1:] for l in filter_lines if l[0] == '-']
+    positive_patterns = [l for l in filter_lines if l[0] != '-']  # noqa: E741
+    negative_patterns = [l[1:] for l in filter_lines if l[0] == '-']  # noqa: E741
     return positive_patterns, negative_patterns
 
 

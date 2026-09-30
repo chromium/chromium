@@ -124,7 +124,7 @@ def GenerateBundleApks(
         # form of "<lang>-r<region>", so just provide the language code instead.
         locales = [
             resource_utils.ToAndroidLocaleName(l).split('-')[0]
-            for l in system_image_locales
+            for l in system_image_locales  # noqa: E741
         ]
         device_spec = _CreateDeviceSpec(
             bundle_path, minimal_sdk_version, locales

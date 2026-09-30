@@ -15,13 +15,11 @@ from component_storage import ComponentStorage
 
 # Tests should use their names to explain the meaning of the tests rather than
 # relying on the extra docstrings.
-# pylint: disable=missing-docstring
 class ComponentStorageTest(unittest.TestCase):
     @mock.patch('component_storage.run_ffx_command')
     def test_retrieve_instance_id(self, mock_ffx) -> None:
         # This is the real output of a ffx component show, use it as-is - even
         # lines are fairly long.
-        # pylint: disable=line-too-long
         mock_ffx.return_value = SimpleNamespace(
             stdout="""{
             "moniker": "core/session-manager/session:session/cast_runner",
@@ -82,7 +80,6 @@ class ComponentStorageTest(unittest.TestCase):
             }
         }"""
         )
-        # pylint: disable=protected-access
         self.assertEqual(
             ComponentStorage(
                 "fuchsia-pkg://fuchsia.com/cast_runner#meta/cast_runner.cm",

@@ -14,7 +14,7 @@ script_dir = os.path.dirname(os.path.realpath(__file__))
 src_build_dir = os.path.abspath(os.path.join(script_dir, os.pardir))
 sys.path.insert(0, src_build_dir)
 
-import vs_toolchain
+import vs_toolchain  # noqa: E402
 
 
 def _HexDigest(file_name):
@@ -89,7 +89,7 @@ def _CopyCDBToOutput(output_dir, target_arch):
     if len(version_dirs) > 0:
         version_dirs.sort(reverse=True)
         redist_dir = version_dirs[0]
-    src_crt_dir = os.path.join(redist_dir, 'ucrt', 'DLLs', src_arch)
+    src_crt_dir = os.path.join(redist_dir, 'ucrt', 'DLLs', src_arch)  # noqa: F841
     _ConditionalMkdir(dst_winext_dir)
     _ConditionalMkdir(dst_winxp_dir)
     # Note that the outputs from the "copy_cdb_to_output" target need to

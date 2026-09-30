@@ -404,7 +404,7 @@ def ExpandFileArgs(args):
 
         lookup_path = match.group(1).split(':')
         file_path, _ = get_key(lookup_path[0])
-        if not file_path in file_jsons:
+        if file_path not in file_jsons:
             with open(file_path, encoding='utf-8') as f:
                 file_jsons[file_path] = json.load(f)
 

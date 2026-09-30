@@ -121,13 +121,13 @@ class _MemoryItemList:
 
 class _TypeIdItemList(_MemoryItemList):
     def __init__(self, reader, offset, size):
-        factory = lambda x: _TypeIdItem(x.ReadUInt())
+        factory = lambda x: _TypeIdItem(x.ReadUInt())  # noqa: E731
         super().__init__(reader, offset, size, factory)
 
 
 class _ProtoIdItemList(_MemoryItemList):
     def __init__(self, reader, offset, size):
-        factory = lambda x: _ProtoIdItem(
+        factory = lambda x: _ProtoIdItem(  # noqa: E731
             x.ReadUInt(), x.ReadUInt(), x.ReadUInt()
         )
         super().__init__(reader, offset, size, factory)
@@ -135,7 +135,7 @@ class _ProtoIdItemList(_MemoryItemList):
 
 class _MethodIdItemList(_MemoryItemList):
     def __init__(self, reader, offset, size):
-        factory = lambda x: _MethodIdItem(
+        factory = lambda x: _MethodIdItem(  # noqa: E731
             x.ReadUShort(), x.ReadUShort(), x.ReadUInt()
         )
         super().__init__(reader, offset, size, factory)
@@ -158,7 +158,7 @@ class _TypeListItem(_MemoryItemList):
     def __init__(self, reader):
         offset = reader.Tell()
         size = reader.ReadUInt()
-        factory = lambda x: _TypeItem(x.ReadUShort())
+        factory = lambda x: _TypeItem(x.ReadUShort())  # noqa: E731
         # This is necessary because we need to extract the size of the type list
         # (in other cases the list size is provided in the header).
         first_item_offset = reader.Tell()

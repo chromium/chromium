@@ -105,7 +105,6 @@ class ServerStartedTest(unittest.TestCase):
             stderr=subprocess.STDOUT,
             text=True,
         )
-        # pylint: disable=unused-variable
         for attempt in range(5):
             if pollServer():
                 break

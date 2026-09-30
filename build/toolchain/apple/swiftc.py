@@ -336,7 +336,7 @@ def fix_generated_header(header_path, output_path, src_dir, gen_dir):
                         section_end = len(header_contents)
                         header_contents.append('#else\n')
                         for index in range(section_start, section_end):
-                            l = header_contents[index]
+                            l = header_contents[index]  # noqa: E741
                             if l.startswith('@import'):
                                 name = l.split()[1].split(';')[0]
                                 if name != 'ObjectiveC':

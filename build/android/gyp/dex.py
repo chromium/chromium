@@ -300,7 +300,7 @@ def _CreateServicesMap(service_jars):
                         continue
                     old_lines = ret.get(n, '').splitlines()
                     new_lines = z.read(n).decode('utf8').splitlines()
-                    old_lines.extend(l for l in new_lines if l not in old_lines)
+                    old_lines.extend(l for l in new_lines if l not in old_lines)  # noqa: E741
                     data = '\n'.join(old_lines) + '\n'
                     if n in _MERGE_SERVICE_ENTRIES or ret.get(n, data) == data:
                         ret[n] = data

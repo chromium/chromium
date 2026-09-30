@@ -39,7 +39,7 @@ def NoRaiseException(
             _exception_type = exception_type or Exception
             try:
                 return f(*args, **kwargs)
-            except _exception_type as e:  # pylint: disable=broad-except
+            except _exception_type as e:
                 logging.exception(exception_message, e)
                 return default_return_value
 

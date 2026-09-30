@@ -37,10 +37,10 @@ _SRC_ROOT = os.path.normpath(
     os.path.join(os.path.dirname(__file__), '..', '..')
 )
 sys.path.append(os.path.join(_SRC_ROOT, 'build'))
-import gn_helpers
+import gn_helpers  # noqa: E402
 
 sys.path.append(os.path.join(_SRC_ROOT, 'build', 'android'))
-from pylib import constants
+from pylib import constants  # noqa: E402
 
 _VALID_TYPES = (
     'android_apk',

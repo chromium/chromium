@@ -150,12 +150,12 @@ class Class:
 
         named_methods = [
             (method, l)
-            for method, l in self._methods
+            for method, l in self._methods  # noqa: E741
             if method.name == method_name
         ]
 
         if len(named_methods) == 1:
-            return [method for method, l in named_methods]
+            return [method for method, l in named_methods]  # noqa: E741
         if len(named_methods) == 0:
             return None
 

@@ -59,8 +59,7 @@ def add_depot_tools_to_path():
 
 DEPOT_TOOLS_PATH = add_depot_tools_to_path()
 
-# pylint: disable=W0611
-import breakpad
+import breakpad  # noqa: E402, F401
 
 
 def main():

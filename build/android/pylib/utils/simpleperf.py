@@ -94,7 +94,7 @@ def _ThreadsForProcess(device, pid):
         ps_cmd = ['ps', '-p', str(pid), '-t']
         ps_output_lines = device.RunShellCommand(ps_cmd, check_return=True)
     result = []
-    for l in ps_output_lines:
+    for l in ps_output_lines:  # noqa: E741
         fields = l.split()
         # fields[2] is tid, fields[-1] is thread name. Output may include an entry
         # for the process itself with tid=pid; omit that one.

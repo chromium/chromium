@@ -101,7 +101,7 @@ def main():
     # Exit if there's no SDK support for this platform.
     try:
         host_plat = get_host_os()
-    except:
+    except:  # noqa: E722
         logging.warning('Fuchsia SDK is not supported on this platform.')
         return 0
 

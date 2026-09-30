@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import argparse
-import logging
 import os
 import re
 import subprocess

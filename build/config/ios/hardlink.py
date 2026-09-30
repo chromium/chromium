@@ -25,7 +25,7 @@ def CreateHardlinkHelper(target, output):
     elif os.path.isfile(target):
         try:
             os.link(target, output)
-        except:
+        except:  # noqa: E722
             shutil.copy(target, output)
     else:
         os.mkdir(output)

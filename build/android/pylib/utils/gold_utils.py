@@ -18,8 +18,8 @@ import sys
 build_android_path = Path(__file__).parents[2]
 sys.path.append(str(build_android_path))
 
-from pylib.constants import host_paths
-from pylib.utils import repo_utils
+from pylib.constants import host_paths  # noqa: E402
+from pylib.utils import repo_utils  # noqa: E402
 
 with host_paths.SysPath(host_paths.BUILD_PATH):
     from skia_gold_common import skia_gold_session

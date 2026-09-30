@@ -4,9 +4,7 @@
 # found in the LICENSE file.
 
 import argparse
-import os
 import pathlib
-import sys
 
 _REPO_ROOT = pathlib.Path(__file__).resolve().parents[3]
 _ENTRIES_FILE = _REPO_ROOT / '.gclient_entries'

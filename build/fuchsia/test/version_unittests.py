@@ -14,7 +14,6 @@ import version
 
 def _test(args: List[str], f: Callable) -> None:
     with mock.patch('sys.argv', args):
-        # pylint: disable=protected-access
         version._GIT_ARGS = version._load_git_args()
         f()
 
@@ -41,7 +40,6 @@ _CI_ARGS = [
 ]
 
 
-# pylint: disable=missing-function-docstring
 class VersionTest(unittest.TestCase):
     """Tests of version.py."""
 

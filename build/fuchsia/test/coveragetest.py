@@ -10,7 +10,7 @@ import os
 import sys
 import unittest
 
-import coverage  # pylint: disable=import-error
+import coverage
 
 # The files need to have sufficient coverages.
 COVERED_FILES = [
@@ -49,10 +49,8 @@ def main():
 
     for file in COVERED_FILES + TESTED_FILES:
         print('Testing ' + file + ' ...')
-        # pylint: disable=import-outside-toplevel
         # import tests after coverage start to also cover definition lines.
         module = importlib.import_module(file.replace('.py', '_unittests'))
-        # pylint: enable=import-outside-toplevel
 
         tests = unittest.TestLoader().loadTestsFromModule(module)
         if not unittest.TextTestRunner().run(tests).wasSuccessful():

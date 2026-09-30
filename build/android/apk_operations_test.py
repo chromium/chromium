@@ -12,7 +12,6 @@ import apk_operations
 
 
 # Testing internal members of apk_operations.
-# pylint: disable=protected-access
 class LogcatProcessorTest(unittest.TestCase):
     def setUp(self):
         self.device = mock.Mock()

@@ -82,7 +82,6 @@ def setup_env(mypid: int = 0) -> int:
             ),
         )
 
-    # pylint: disable=protected-access
     run_test._get_test_runner = get_test_runner
     return run_test.main()
 

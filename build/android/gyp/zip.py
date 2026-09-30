@@ -71,7 +71,7 @@ def main(args):
                     globs = action_helpers.parse_gn_list(
                         options.input_zips_excluded_globs
                     )
-                    path_transform = lambda p: (
+                    path_transform = lambda p: (  # noqa: E731
                         None if build_utils.MatchesGlob(p, globs) else p
                     )
                 zip_helpers.merge_zips(

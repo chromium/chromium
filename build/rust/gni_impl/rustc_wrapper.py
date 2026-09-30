@@ -10,7 +10,6 @@ import pathlib
 import subprocess
 import shlex
 import os
-import pathlib
 import signal
 import sys
 import re
@@ -296,7 +295,7 @@ def HandleReturnCode(completed_process, rustc_env_and_flags=None):
         signal_code = -return_code
         try:
             signal_name = signal.Signals(signal_code).name
-        except:
+        except:  # noqa: E722
             signal_name = "<unrecognized signal>"
         print(
             f'ERROR: `{process_name}` was terminated by '
@@ -326,11 +325,11 @@ def _RecommendApplyFixesScript(tool, rustc_env_and_flags):
     rel_build_dir = os.path.relpath(os.getcwd(), source_root)
 
     print(
-        f"NOTE: To apply machine-applicable fix suggestions (if any), run:",
+        "NOTE: To apply machine-applicable fix suggestions (if any), run:",
         file=sys.stderr,
         end='',
     )
-    print(f" build/rust/apply_fixes.py", file=sys.stderr, end='')
+    print(" build/rust/apply_fixes.py", file=sys.stderr, end='')
     print(f" {rel_build_dir}", file=sys.stderr, end='')
     print(f" {os.path.basename(tool)} {rustc_env_and_flags}", file=sys.stderr)
 
@@ -382,7 +381,7 @@ def main():
     # issues on the bots.
     try:
         sources_separator = remaining_args.index("SOURCES", rustenv_separator)
-    except:
+    except:  # noqa: E722
         sources_separator = None
     rustc_args = remaining_args[:ldflags_separator]
     ldflags = remaining_args[ldflags_separator + 1 : rustenv_separator]
@@ -394,7 +393,7 @@ def main():
     rustc_args.extend(["-Clink-arg=%s" % arg for arg in ldflags])
 
     with open(args.rsp) as rspfile:
-        rsp_args = [l.rstrip() for l in rspfile.read().split(' ') if l.rstrip()]
+        rsp_args = [l.rstrip() for l in rspfile.read().split(' ') if l.rstrip()]  # noqa: E741
 
     sources_separator = rsp_args.index("SOURCES")
     sources = set(rsp_args[sources_separator + 1 :])

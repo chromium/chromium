@@ -40,7 +40,7 @@ def _maybe_cache(fn):
         # user doesn't change args.gn)
         gn_rel = str(self.gn_out.resolve()).lstrip('/')
         cache_path = pathlib.Path(
-            f'/tmp/modularize_cache', gn_rel, fn.__name__, *args
+            '/tmp/modularize_cache', gn_rel, fn.__name__, *args
         )
         cache_path.parent.mkdir(exist_ok=True, parents=True)
         if self._use_cache and cache_path.is_file():
@@ -376,7 +376,7 @@ class Compiler:
                     'Probably fine: Failed to compile %s', state.pretty_name
                 )
             else:
-                if state.root_module != None:
+                if state.root_module != None:  # noqa: E711
                     logging.warning(
                         '%s was not textual but failed to compile',
                         state.pretty_name,

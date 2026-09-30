@@ -4,10 +4,9 @@
 from __future__ import absolute_import
 import base64
 import json
-import logging
 import os
 
-import requests  # pylint: disable=import-error
+import requests
 from lib.results import result_types
 
 HTML_SUMMARY_MAX = 4096

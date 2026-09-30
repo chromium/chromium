@@ -28,7 +28,6 @@ _WRONG_SERVERS_LIST = json.dumps(
 
 
 # Tests private functions.
-# pylint: disable=protected-access
 class ServeRepoTest(unittest.TestCase):
     """Unittests for serve_repo.py."""
 

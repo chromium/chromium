@@ -19,8 +19,8 @@ import sys
 build_android_path = Path(__file__).parents[2]
 sys.path.append(str(build_android_path))
 
-from pylib import constants
-from pylib.utils import device_dependencies
+from pylib import constants  # noqa: E402
+from pylib.utils import device_dependencies  # noqa: E402
 
 
 class DevicePathForTest(unittest.TestCase):

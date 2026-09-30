@@ -10,7 +10,7 @@ import json
 import os
 import zipfile
 
-from util import build_utils  # pylint: disable=unused-import
+from util import build_utils  # noqa: F401
 import action_helpers  # build_utils adds //build to sys.path.
 import print_python_deps
 
@@ -141,7 +141,7 @@ def CallAndRecordIfStale(
         with open(record_path, 'r', encoding='utf-8') as jsonfile:
             try:
                 old_metadata = _Metadata.FromFile(jsonfile)
-            except:  # pylint: disable=bare-except
+            except:  # noqa: E722
                 pass  # Not yet using new file format.
 
     changes = Changes(old_metadata, new_metadata, force, missing_outputs)

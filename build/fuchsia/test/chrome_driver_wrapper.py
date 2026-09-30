@@ -12,12 +12,10 @@ import sys
 from contextlib import AbstractContextManager
 
 # From vpython wheel.
-# pylint: disable=import-error
 from selenium import webdriver
 from selenium.webdriver import ChromeOptions
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.common.by import By
-# pylint: enable=import-error
 
 from common import get_ffx_isolate_dir, get_free_local_port
 from isolate_daemon import IsolateDaemon

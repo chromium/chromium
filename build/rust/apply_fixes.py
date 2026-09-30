@@ -25,7 +25,7 @@ REPOSITORY_ROOT = pathlib.Path(__file__).resolve().parent.parent.parent
 sys.path.append(
     os.path.join(os.path.dirname(os.path.abspath(__file__)), 'gni_impl')
 )
-from rustc_wrapper import PrepareRustEnvForExecution, LoadRustEnvAndFlags
+from rustc_wrapper import PrepareRustEnvForExecution, LoadRustEnvAndFlags  # noqa: E402
 
 
 class Highlight:

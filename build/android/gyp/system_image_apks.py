@@ -15,7 +15,7 @@ import zipfile
 
 _DIR_SOURCE_ROOT = str(pathlib.Path(__file__).parents[2])
 sys.path.append(os.path.join(_DIR_SOURCE_ROOT, 'build', 'android', 'gyp'))
-from util import build_utils
+from util import build_utils  # noqa: E402
 
 
 def main():

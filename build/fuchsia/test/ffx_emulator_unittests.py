@@ -17,7 +17,6 @@ class FfxEmulatorTest(unittest.TestCase):
     def test_use_fixed_node_name(self) -> None:
         """FfxEmulator should use a fixed node name."""
         # Allowing the test case to access FfxEmulator._node_name directly.
-        # pylint: disable=protected-access
         self.assertEqual(
             FfxEmulator(
                 argparse.Namespace(
@@ -38,7 +37,6 @@ class FfxEmulatorTest(unittest.TestCase):
     def test_use_random_node_name(self) -> None:
         """FfxEmulator should not use a fixed node name."""
         # Allowing the test case to access FfxEmulator._node_name directly.
-        # pylint: disable=protected-access
         self.assertNotEqual(
             FfxEmulator(
                 argparse.Namespace(

@@ -22,7 +22,6 @@ import argparse
 import os
 import platform
 import plistlib
-import shutil
 import subprocess
 import sys
 
@@ -245,7 +244,7 @@ def main():
         return 0
 
     parser = argparse.ArgumentParser(description='Download hermetic Xcode.')
-    args = parser.parse_args()
+    args = parser.parse_args()  # noqa: F841
 
     if not PlatformMeetsHermeticXcodeRequirements():
         print('OS version does not support toolchain.')

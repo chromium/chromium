@@ -39,8 +39,6 @@ def boot_device(
     # This file will be replaced with serial_boot_device quite soon, later one
     # should be much more reliable comparing to ffx target list and ssh. So
     # changing the file structure is not necessary in the current situation.
-    # pylint: disable=cyclic-import, import-outside-toplevel
-    # pylint: disable=wrong-import-position
     import serial_boot_device
 
     if not serial_boot_device.boot_device(

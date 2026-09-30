@@ -10,7 +10,7 @@ and accommodating API-level-specific details, such as file paths.
 """
 
 import argparse
-import dataclasses  # pylint: disable=wrong-import-order
+import dataclasses
 import logging
 import os
 import re

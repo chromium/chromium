@@ -14,8 +14,8 @@ _SRC_ROOT = os.path.normpath(os.path.join(_HERE, '..', '..'))
 sys.path.insert(0, _HERE)
 sys.path.append(_SRC_ROOT)
 
-import PRESUBMIT
-from PRESUBMIT_test_mocks import MockFile, MockInputApi, MockOutputApi
+import PRESUBMIT  # noqa: E402
+from PRESUBMIT_test_mocks import MockFile, MockInputApi, MockOutputApi  # noqa: E402
 
 
 class AndroidPresubmitTest(unittest.TestCase):
@@ -206,12 +206,9 @@ class AndroidPresubmitTest(unittest.TestCase):
         )
         self.assertEqual([], results)
 
-    def testCommonChecksInvokesPylintAndScopedUnitTests(self):
+    def testCommonChecksInvokesScopedUnitTests(self):
         self.mock_input_api.sys = mock.MagicMock()
         self.mock_input_api.sys.platform = 'linux'
-        self.mock_input_api.canned_checks.GetPylint = mock.MagicMock(
-            return_value=['pylint_check']
-        )
         self.mock_input_api.canned_checks.GetUnitTests = mock.MagicMock(
             return_value=['unit_test_check']
         )
@@ -223,13 +220,10 @@ class AndroidPresubmitTest(unittest.TestCase):
             self.mock_input_api, self.mock_output_api, is_upload=True
         )
         self.assertEqual(
-            2, self.mock_input_api.canned_checks.GetPylint.call_count
-        )
-        self.assertEqual(
             1, self.mock_input_api.canned_checks.GetUnitTests.call_count
         )
         self.mock_input_api.RunTests.assert_called_once_with(
-            ['pylint_check', 'pylint_check', 'unit_test_check']
+            ['unit_test_check']
         )
         self.assertEqual(['passed'], results)
 

@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# pylint: disable=W0702
 
 import os
 import signal
@@ -54,7 +53,7 @@ class Xvfb:
         if self._pid:
             try:
                 os.kill(self._pid, signal.SIGKILL)
-            except:
+            except:  # noqa: E722
                 pass
             del os.environ['DISPLAY']
             self._pid = 0

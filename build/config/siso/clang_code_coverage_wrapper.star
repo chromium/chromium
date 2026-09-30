@@ -216,10 +216,10 @@ _COVERAGE_EXCLUSION_LIST_MAP = {
         # These files caused a static initializer to be generated, which
         # shouldn't.
         # TODO(crbug.com/41474559): Remove when the bug is fixed.
-        "../../chrome/browser/media/router/providers/cast/cast_internal_message_util.cc",  #pylint: disable=line-too-long
-        "../../components/media_router/common/providers/cast/channel/cast_channel_enum.cc",  #pylint: disable=line-too-long
-        "../../components/media_router/common/providers/cast/channel/cast_message_util.cc",  #pylint: disable=line-too-long
-        "../../components/media_router/common/providers/cast/cast_media_source.cc",  #pylint: disable=line-too-long
+        "../../chrome/browser/media/router/providers/cast/cast_internal_message_util.cc",
+        "../../components/media_router/common/providers/cast/channel/cast_channel_enum.cc",
+        "../../components/media_router/common/providers/cast/channel/cast_message_util.cc",
+        "../../components/media_router/common/providers/cast/cast_media_source.cc",
         "../../ui/events/keycodes/dom/keycode_converter.cc",
     ] + _DEFAULT_COVERAGE_EXCLUSION_LIST,
     "chromeos": [

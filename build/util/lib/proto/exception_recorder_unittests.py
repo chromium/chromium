@@ -17,8 +17,8 @@ _BUILD_UTIL_PATH = os.path.abspath(
 if _BUILD_UTIL_PATH not in sys.path:
     sys.path.insert(0, _BUILD_UTIL_PATH)
 
-from lib.proto import exception_recorder
-from lib.proto.exception_occurrences_pb2 import ExceptionOccurrences
+from lib.proto import exception_recorder  # noqa: E402
+from lib.proto.exception_occurrences_pb2 import ExceptionOccurrences  # noqa: E402
 
 
 class MyClass:
@@ -58,7 +58,7 @@ class ExceptionRecorderTest(unittest.TestCase):
         exception_recorder.clear()
         with self.assertRaises(MyClass.MyException) as cm:
             self.myException()
-        record = exception_recorder.register(cm.exception)
+        record = exception_recorder.register(cm.exception)  # noqa: F841
         with tempfile.TemporaryDirectory() as tmpdir:
             exception_recorder.dump(tmpdir)
             file_path = os.path.join(

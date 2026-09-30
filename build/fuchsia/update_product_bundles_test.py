@@ -3,7 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import io
 import json
 import os
 import sys
@@ -142,7 +141,7 @@ class TestUpdateProductBundles(unittest.TestCase):
     def testLookupAndDownloadWithAuth(self, *_):
         try:
             common.get_host_os()
-        except:
+        except:  # noqa: E722
             # Ignore unsupported platforms. common.get_host_os used in
             # update_product_bundles.main throws an unsupported exception.
             return
@@ -173,7 +172,7 @@ class TestUpdateProductBundles(unittest.TestCase):
                         'terminal.x64',
                         '1.1.1',
                         '--base-url',
-                        f'gs://fuchsia-sdk/development/1.1.1',
+                        'gs://fuchsia-sdk/development/1.1.1',
                         '--auth',
                         auth_file,
                     ],
@@ -203,7 +202,7 @@ class TestUpdateProductBundles(unittest.TestCase):
     def testIgnoreDownloadImagesWithSameHash(self, *_):
         try:
             common.get_host_os()
-        except:
+        except:  # noqa: E722
             # Ignore unsupported platforms. common.get_host_os used in
             # update_product_bundles.main throws an unsupported exception.
             return
@@ -222,7 +221,7 @@ class TestUpdateProductBundles(unittest.TestCase):
     def testDownloadImagesWithDifferentHash(self, *_):
         try:
             common.get_host_os()
-        except:
+        except:  # noqa: E722
             # Ignore unsupported platforms. common.get_host_os used in
             # update_product_bundles.main throws an unsupported exception.
             return
@@ -271,7 +270,7 @@ class TestUpdateProductBundles(unittest.TestCase):
     def testSDKOverrideForSDKImages(self, *_):
         try:
             common.get_host_os()
-        except:
+        except:  # noqa: E722
             # Ignore unsupported platforms. common.get_host_os used in
             # update_product_bundles.main throws an unsupported exception.
             return
@@ -320,7 +319,7 @@ class TestUpdateProductBundles(unittest.TestCase):
     def testIgnoreDownloadInternalImagesWithSameHash(self, *_):
         try:
             common.get_host_os()
-        except:
+        except:  # noqa: E722
             # Ignore unsupported platforms. common.get_host_os used in
             # update_product_bundles.main throws an unsupported exception.
             return
@@ -339,7 +338,7 @@ class TestUpdateProductBundles(unittest.TestCase):
     def testDownloadInternalImagesWithDifferentHash(self, *_):
         try:
             common.get_host_os()
-        except:
+        except:  # noqa: E722
             # Ignore unsupported platforms. common.get_host_os used in
             # update_product_bundles.main throws an unsupported exception.
             return
@@ -391,7 +390,7 @@ class TestUpdateProductBundles(unittest.TestCase):
     def testIgnoreSDKOverrideForInternalImages(self, *_):
         try:
             common.get_host_os()
-        except:
+        except:  # noqa: E722
             # Ignore unsupported platforms. common.get_host_os used in
             # update_product_bundles.main throws an unsupported exception.
             return

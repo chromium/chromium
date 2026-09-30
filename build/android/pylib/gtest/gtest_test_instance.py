@@ -158,7 +158,7 @@ def ParseGTestListTests(raw_list):
                 current = test_case
         else:
             test = test.strip()
-            if test and not 'YOU HAVE' in test:
+            if test and 'YOU HAVE' not in test:
                 test_name = test.split()[0]
                 ret += [current + test_name]
     return ret
@@ -207,7 +207,7 @@ def ParseGTestOutput(output, symbolizer, device_abi):
                 )
             )
 
-    for l in output:
+    for l in output:  # noqa: E741
         matcher = _RE_TEST_STATUS.match(l)
         launcher_main_start_match = _RE_LAUNCHER_MAIN_START.match(l)
         if skipping_failure_summary:
@@ -567,7 +567,7 @@ class GtestTestInstance(test_instance.TestInstance):
             self._flags.extend(args.command_line_flags)
         if args.device_flags_file:
             with open(args.device_flags_file) as f:
-                stripped_lines = (l.strip() for l in f)
+                stripped_lines = (l.strip() for l in f)  # noqa: E741
                 self._flags.extend(flag for flag in stripped_lines if flag)
         if args.run_disabled:
             self._flags.append('--gtest_also_run_disabled_tests')
@@ -830,7 +830,7 @@ class GtestTestInstance(test_instance.TestInstance):
             with open(disabled_tests_file_path) as disabled_tests_file:
                 disabled_filter_items += [
                     '%s' % l
-                    for l in (line.strip() for line in disabled_tests_file)
+                    for l in (line.strip() for line in disabled_tests_file)  # noqa: E741
                     if l and not l.startswith('#')
                 ]
 

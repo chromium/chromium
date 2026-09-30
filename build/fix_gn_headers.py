@@ -79,7 +79,7 @@ def AddHeadersNextToCC(headers, skip_ambiguous=True):
             if skip_ambiguous:
                 continue
 
-            picked = raw_input('Pick the matches ("2,3" for multiple): ')
+            picked = input('Pick the matches ("2,3" for multiple): ')
             try:
                 matches = [matches[int(i) - 1] for i in picked.split(',')]
             except (ValueError, IndexError):
@@ -92,7 +92,7 @@ def AddHeadersNextToCC(headers, skip_ambiguous=True):
 
     for gnfile in edits:
         lines = open(gnfile).read().splitlines()
-        for l in sorted(edits[gnfile].keys(), reverse=True):
+        for l in sorted(edits[gnfile].keys(), reverse=True):  # noqa: E741
             lines.insert(l, edits[gnfile][l])
         open(gnfile, 'w').write('\n'.join(lines) + '\n')
 
@@ -120,7 +120,7 @@ def AddHeadersToSources(headers, skip_ambiguous=True):
         gnfile = os.path.join(dirname, 'BUILD.gn')
 
         lines = open(gnfile).read().splitlines()
-        matched = [i for i, l in enumerate(lines) if ' sources = [' in l]
+        matched = [i for i, l in enumerate(lines) if ' sources = [' in l]  # noqa: E741
         if skip_ambiguous and len(matched) > 1:
             print('[WARNING] Multiple sources in', gnfile)
             continue
@@ -172,7 +172,7 @@ def RemoveHeader(headers, skip_ambiguous=True):
             if skip_ambiguous:
                 continue
 
-            picked = raw_input('Pick the matches ("2,3" for multiple): ')
+            picked = input('Pick the matches ("2,3" for multiple): ')
             try:
                 matches = [matches[int(i) - 1] for i in picked.split(',')]
             except (ValueError, IndexError):
@@ -185,7 +185,7 @@ def RemoveHeader(headers, skip_ambiguous=True):
 
     for gnfile in edits:
         lines = open(gnfile).read().splitlines()
-        for l in sorted(edits[gnfile], reverse=True):
+        for l in sorted(edits[gnfile], reverse=True):  # noqa: E741
             lines.pop(l - 1)
         open(gnfile, 'w').write('\n'.join(lines) + '\n')
 

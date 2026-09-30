@@ -16,8 +16,8 @@ _BUILD_UTIL_PATH = os.path.abspath(
 if _BUILD_UTIL_PATH not in sys.path:
     sys.path.insert(0, _BUILD_UTIL_PATH)
 
-from lib.results import result_sink
-from lib.results import result_types
+from lib.results import result_sink  # noqa: E402
+from lib.results import result_types  # noqa: E402
 
 _FAKE_CONTEXT = {
     'address': 'some-ip-address',
@@ -67,7 +67,7 @@ class InitClientTest(unittest.TestCase):
 
     @mock.patch('requests.Session.close')
     def testClientAsContextManager(self, mock_close):
-        with result_sink.ResultSinkClient(_FAKE_CONTEXT) as client:
+        with result_sink.ResultSinkClient(_FAKE_CONTEXT) as client:  # noqa: F841
             mock_close.assert_not_called()
         mock_close.assert_called_once()
 

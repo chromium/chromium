@@ -3,10 +3,8 @@
 # found in the LICENSE file.
 
 import argparse
-import hashlib
 import json
 import os
-import pathlib
 import re
 import sys
 from typing import Dict, List

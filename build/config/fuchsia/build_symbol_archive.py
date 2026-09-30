@@ -56,7 +56,7 @@ def main(args):
         readelf_output = subprocess.check_output(
             ['readelf', '-S', symbol_source_path], universal_newlines=True
         )
-        if not '.symtab' in readelf_output:
+        if '.symtab' not in readelf_output:
             continue
 
         # Archive the unstripped ELF binary, placing it in a hierarchy keyed to the

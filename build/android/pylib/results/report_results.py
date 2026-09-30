@@ -83,7 +83,7 @@ def _LogToFlakinessDashboard(
 
         results_uploader.Upload(results, flakiness_server, dashboard_test_type)
 
-    except Exception:  # pylint: disable=broad-except
+    except Exception:
         logging.exception('Failure while logging to %s', flakiness_server)
 
 
@@ -113,8 +113,6 @@ def LogFull(
       flakiness_server: If provider, upload the results to flakiness dashboard
                         with this URL.
     """
-    # pylint doesn't like how colorama set up its color enums.
-    # pylint: disable=no-member
     if not results.DidRunPass() and not quiet:
         logging.critical('*' * 80)
         logging.critical('Detailed Logs')

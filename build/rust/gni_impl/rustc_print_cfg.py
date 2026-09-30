@@ -10,13 +10,10 @@ This script is typically invoked using the
 """
 
 import argparse
-import io
 import os
 import platform
-import re
 import subprocess
 import sys
-import tempfile
 
 
 def rustc_name():

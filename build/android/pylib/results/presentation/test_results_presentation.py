@@ -28,11 +28,11 @@ BASE_DIR = os.path.abspath(
 )
 
 sys.path.append(os.path.join(BASE_DIR, 'build', 'android'))
-from pylib.results.presentation import standard_gtest_merge
-from lib.common import google_storage_helper  # pylint: disable=import-error
+from pylib.results.presentation import standard_gtest_merge  # noqa: E402
+from lib.common import google_storage_helper  # noqa: E402
 
 sys.path.append(os.path.join(BASE_DIR, 'third_party'))
-import jinja2  # pylint: disable=import-error
+import jinja2  # noqa: E402
 
 JINJA_ENVIRONMENT = jinja2.Environment(
     loader=jinja2.FileSystemLoader(os.path.dirname(__file__)), autoescape=True
@@ -364,7 +364,7 @@ def results_to_html(
     )
 
     if local_output:
-        html_render = main_template.render(  #  pylint: disable=no-member
+        html_render = main_template.render(
             {
                 'tb_values': [suite_table_values, test_table_values],
                 'feedback_url': feedback_url(None),
@@ -377,7 +377,7 @@ def results_to_html(
     result_details_link = google_storage_helper.get_url_link(
         dest, '%s/html' % bucket
     )
-    html_render = main_template.render(  #  pylint: disable=no-member
+    html_render = main_template.render(
         {
             'tb_values': [suite_table_values, test_table_values],
             'feedback_url': feedback_url(result_details_link),
@@ -405,7 +405,7 @@ def result_details(
     with open(json_path) as json_file:
         json_object = json.loads(json_file.read())
 
-    if not 'per_iteration_data' in json_object:
+    if 'per_iteration_data' not in json_object:
         return 'Error: json file missing per_iteration_data.'
 
     results_dict = collections.defaultdict(list)
@@ -439,11 +439,10 @@ def upload_to_google_bucket(html, bucket, dest):
 def ui_screenshot_set(json_path):
     with open(json_path) as json_file:
         json_object = json.loads(json_file.read())
-    if not 'per_iteration_data' in json_object:
+    if 'per_iteration_data' not in json_object:
         # This will be reported as an error by result_details, no need to duplicate.
         return None
     ui_screenshots = []
-    # pylint: disable=too-many-nested-blocks
     for testsuite_run in json_object['per_iteration_data']:
         for _, test_runs in testsuite_run.items():
             for test_run in test_runs:
@@ -466,7 +465,6 @@ def ui_screenshot_set(json_path):
                             continue
                         test_screenshots = json.loads(screenshot_string)
                     ui_screenshots.extend(test_screenshots)
-    # pylint: enable=too-many-nested-blocks
 
     if ui_screenshots:
         return json.dumps(ui_screenshots)
@@ -566,8 +564,8 @@ def main():
 
     if args.build_properties:
         build_properties = json.loads(args.build_properties)
-        if (not 'buildnumber' in build_properties) or (
-            not 'buildername' in build_properties
+        if ('buildnumber' not in build_properties) or (
+            'buildername' not in build_properties
         ):
             raise parser.error('Build number/builder name not specified.')
         build_number = build_properties['buildnumber']

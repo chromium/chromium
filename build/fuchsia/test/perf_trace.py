@@ -58,7 +58,6 @@ def stop(prefix: Optional[str] = None) -> None:
     _parse_trace(prefix)
 
 
-# pylint: disable=too-many-nested-blocks
 def _parse_trace(prefix: Optional[str] = None) -> None:
     subprocess.run(
         [
@@ -71,7 +70,7 @@ def _parse_trace(prefix: Optional[str] = None) -> None:
     with open(JSON_FILE, 'r') as file:
         recorders = {}
         for event in json.load(file)['traceEvents']:
-            if not 'args' in event:
+            if 'args' not in event:
                 # Support only the events with args now.
                 continue
             cat_name = [event['cat'], event['name']]

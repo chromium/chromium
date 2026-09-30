@@ -24,8 +24,8 @@ sys.path.append(
     os.path.join(_SRC_PATH, 'third_party', 'catapult', 'common', 'py_utils')
 )
 
-from devil.utils import signal_handler
-from devil.utils import timeout_retry
+from devil.utils import signal_handler  # noqa: E402
+from devil.utils import timeout_retry  # noqa: E402
 
 OUTPUT = 'logdog'
 COORDINATOR_HOST = 'luci-logdog.appspot.com'

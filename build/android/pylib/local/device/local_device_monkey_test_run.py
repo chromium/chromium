@@ -52,9 +52,9 @@ class LocalDeviceMonkeyTestRun(local_device_test_run.LocalDeviceTestRun):
             after_pids = device.GetPids(self._test_instance.package)
 
         crashed = True
-        if not self._test_instance.package in before_pids:
+        if self._test_instance.package not in before_pids:
             logging.error('Failed to start the process.')
-        elif not self._test_instance.package in after_pids:
+        elif self._test_instance.package not in after_pids:
             logging.error(
                 'Process %s has died.', before_pids[self._test_instance.package]
             )

@@ -70,10 +70,7 @@ def ToGNString(value, pretty=False):
       GNError: |value| cannot be printed to GN.
     """
 
-    if sys.version_info.major < 3:
-        basestring_compat = basestring
-    else:
-        basestring_compat = str
+    basestring_compat = str
 
     # Emits all output tokens without intervening whitespaces.
     def GenerateTokens(v, level):
@@ -119,8 +116,8 @@ def ToGNString(value, pretty=False):
         else:  # Not supporting float: Add only when needed.
             raise GNError('Unsupported type when printing to GN.')
 
-    can_start = lambda tok: tok and tok not in ',}]='
-    can_end = lambda tok: tok and tok not in ',{[='
+    can_start = lambda tok: tok and tok not in ',}]='  # noqa: E731
+    can_end = lambda tok: tok and tok not in ',{[='  # noqa: E731
 
     # Adds whitespaces, trying to keep everything (except dicts) in 1 line.
     def PlainGlue(gen):

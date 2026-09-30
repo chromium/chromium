@@ -45,8 +45,10 @@ _TOP_SRC_DIR = os.path.join(_SCRIPT_DIR, '..')
 # Need to import android/gyp/util/resource_utils.py here.
 sys.path.insert(0, os.path.join(_SCRIPT_DIR, 'android/gyp'))
 
-from util import build_utils
-from util import resource_utils
+from util import build_utils  # noqa: E402
+from util import resource_utils  # noqa: E402
+
+xrange = range
 
 
 # This locale is the default and doesn't have translations.
@@ -219,7 +221,7 @@ def _ProcessFile(input_file, locales, check_func, fix_func):
                 with open(input_file, 'wt') as f:
                     f.write(output)
                 print('Fixed %s.' % input_file)
-            except Exception as e:  # pylint: disable=broad-except
+            except Exception as e:
                 print('Skipped %s: %s' % (input_file, e))
 
     return True
@@ -606,7 +608,6 @@ def _IsGrdAndroidOutputLine(line):
 assert _IsGrdAndroidOutputLine('  <output type="android"/>')
 
 # Many of the functions below have unused arguments due to genericity.
-# pylint: disable=unused-argument
 
 
 def _CheckGrdElementRangeAndroidOutputFilename(
@@ -954,7 +955,7 @@ def _GetAndroidGnOutputLocale(line):
 
 def _IsAndroidGnOutputLine(line):
     """Returns True iff this is an Android-specific localized .xml output."""
-    return _GetAndroidGnOutputLocale(line) != None
+    return _GetAndroidGnOutputLocale(line) != None  # noqa: E711
 
 
 def _CheckGnOutputsRangeForLocalizedStrings(gn_lines, start, end):
@@ -977,7 +978,7 @@ def _CheckGnOutputsRangeForLocalizedStrings(gn_lines, start, end):
     used to detect them quickly.
     """
     for pos in xrange(start, end):
-        if not 'values/' in gn_lines[pos]:
+        if 'values/' not in gn_lines[pos]:
             return True
     return False
 
@@ -991,7 +992,7 @@ def _CheckGnOutputsRange(gn_lines, start, end, wanted_locales):
     for pos in xrange(start, end):
         line = gn_lines[pos]
         android_locale = _GetAndroidGnOutputLocale(line)
-        assert android_locale != None
+        assert android_locale != None  # noqa: E711
         cr_locale = resource_utils.ToChromiumLocaleName(android_locale)
         if cr_locale in locales:
             errors.append(
@@ -1251,7 +1252,7 @@ def _UpdateLocalesInExpectationFile(pyl_path, wanted_locales):
     }
 
     with open(pyl_path) as f:
-        input_lines = [l.rstrip() for l in f.readlines()]
+        input_lines = [l.rstrip() for l in f.readlines()]  # noqa: E741
 
     updated_lines = _UpdateLocalesInExpectationLines(input_lines, tc_locales)
     with build_utils.AtomicOutput(pyl_path) as f:
@@ -1265,8 +1266,6 @@ def _UpdateLocalesInExpectationFile(pyl_path, wanted_locales):
 #####
 ##########################################################################
 ##########################################################################
-
-# pylint: enable=unused-argument
 
 
 def _IsAllInputFile(input_file):

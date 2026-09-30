@@ -23,7 +23,7 @@ _THIS_DIR_PATH = os.path.abspath(os.path.dirname(os.path.realpath(__file__)))
 _BUILD_PATH = os.path.join(_THIS_DIR_PATH, os.pardir)
 sys.path.insert(0, _BUILD_PATH)
 
-import mac_toolchain
+import mac_toolchain  # noqa: E402
 
 
 def _IsCorpMachine():
@@ -37,7 +37,7 @@ def _IsCorpMachine():
                 subprocess.check_output(['lsb_release', '-sc']).rstrip()
                 == b'rodete'
             )
-        except:
+        except:  # noqa: E722
             return False
     return False
 

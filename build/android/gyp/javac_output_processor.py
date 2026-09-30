@@ -41,7 +41,7 @@ def _running_locally():
     return os.path.exists('build.ninja')
 
 
-@functools.cache  # pylint: disable=method-cache-max-size-none
+@functools.cache
 def _extract_package_name(path):
     data = pathlib.Path(path).read_text('utf-8')
     if m := _PACKAGE_RE.search(data):

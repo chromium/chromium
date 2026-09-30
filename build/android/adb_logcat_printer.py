@@ -17,7 +17,6 @@ Additionally, if a <base_dir>/LOGCAT_MONITOR_PID exists, the script
 will attempt to terminate the contained PID by sending a SIGINT and
 monitoring for the deletion of the aforementioned file.
 """
-# pylint: disable=W0702
 
 import argparse
 import io
@@ -227,7 +226,7 @@ def main(argv):
         with open(os.path.join(base_dir, 'eventlog')) as f:
             output_file.write('\nLogcat Monitor Event Log\n')
             output_file.write(f.read())
-    except:
+    except:  # noqa: E722
         logger.exception('Unexpected exception')
 
     logger.info('Done.')

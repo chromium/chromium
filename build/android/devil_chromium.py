@@ -20,7 +20,7 @@ _BUILD_DIR = os.path.join(constants.DIR_SOURCE_ROOT, 'build')
 if _BUILD_DIR not in sys.path:
     sys.path.insert(1, _BUILD_DIR)
 
-import gn_helpers
+import gn_helpers  # noqa: E402
 
 _DEVIL_CONFIG = os.path.abspath(
     os.path.join(os.path.dirname(__file__), 'devil_chromium.json')

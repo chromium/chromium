@@ -24,7 +24,7 @@ _SOURCE_ROOT = os.path.abspath(
 )
 # Import jinja2 from third_party/jinja2
 sys.path.insert(1, os.path.join(_SOURCE_ROOT, 'third_party'))
-from jinja2 import Template  # pylint: disable=F0401
+from jinja2 import Template  # noqa: E402
 
 
 # A variation of these maps also exists in:
@@ -314,7 +314,7 @@ class ResourceInfoFile:
         assert not self._add_mapping_was_called
         # Allows clobbering, which is used when overriding resources.
         with open(info_file_path, encoding='utf-8') as f:
-            self._entries.update(l.rstrip().split('\t') for l in f)
+            self._entries.update(l.rstrip().split('\t') for l in f)  # noqa: E741
 
     def _ApplyRenames(self):
         applied_renames = set()
@@ -397,7 +397,7 @@ def ResolveStyleableReferences(r_txt_path):
 
     sb = []
     with open(r_txt_path, encoding='utf-8') as f:
-        for l in f:
+        for l in f:  # noqa: E741
             if l.startswith('int[] styleable'):
                 brace_start = l.index('{') + 2
                 brace_end = l.index('}') - 1
@@ -415,7 +415,7 @@ def ResolveStyleableReferences(r_txt_path):
                     except:
                         logging.warning('Failed line: %r %r', l, v)
                         raise
-                l = l[:brace_start] + ', '.join(new_values) + l[brace_end:]
+                l = l[:brace_start] + ', '.join(new_values) + l[brace_end:]  # noqa: E741
             sb.append(l)
 
     with open(r_txt_path, 'w', encoding='utf-8') as f:
@@ -887,7 +887,7 @@ def ExtractBinaryManifestValues(aapt2_path, apk_path):
         '--file',
         'AndroidManifest.xml',
     ]
-    filter_func = lambda output: build_utils.FilterLines(
+    filter_func = lambda output: build_utils.FilterLines(  # noqa: E731
         output, r'warn: unexpected chunk type'
     )
     output = build_utils.CheckOutput(cmd, stderr_filter=filter_func)

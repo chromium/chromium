@@ -11,7 +11,7 @@ from . import update_bundle_filelist
 
 
 def CheckBundleData(input_api, output_api, base, globroot='//'):
-    root = input_api.change.RepositoryRoot()
+    root = input_api.change.RepositoryRoot()  # noqa: F841
     filelist = input_api.os_path.join(
         input_api.PresubmitLocalPath(), base + '.filelist'
     )

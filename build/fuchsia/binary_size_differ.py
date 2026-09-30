@@ -168,7 +168,7 @@ def main():
         test_completed = True
         with open(args.results_path, 'wt') as results_file:
             json.dump(growth, results_file)
-    except:
+    except:  # noqa: E722
         _, value, trace = sys.exc_info()
         traceback.print_tb(trace)
         print(str(value))

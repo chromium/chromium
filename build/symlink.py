@@ -17,12 +17,12 @@ This means that if the original is deleted and replaced, the link will still
 have the old contents.
 """
 
-import errno
-import optparse
-import os
-import shutil
-import subprocess
-import sys
+import errno  # noqa: E402
+import optparse  # noqa: E402
+import os  # noqa: E402
+import shutil  # noqa: E402
+import subprocess  # noqa: E402
+import sys  # noqa: E402
 
 
 def Main(argv):

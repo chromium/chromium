@@ -21,9 +21,8 @@ _BUILD_ANDROID_GYP_ROOT = os.path.abspath(
 )
 sys.path.insert(1, _BUILD_ANDROID_GYP_ROOT)
 
-import resource_utils
+import resource_utils  # noqa: E402
 
-# pylint: disable=line-too-long
 
 _TEST_XML_INPUT_1 = '''<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
@@ -41,7 +40,6 @@ _TEST_XML_OUTPUT_2 = '''<?xml version="1.0" encoding="utf-8"?>
 </resources>
 '''
 
-# pylint: enable=line-too-long
 
 _TEST_XML_OUTPUT_EMPTY = '''<?xml version="1.0" encoding="utf-8"?>
 <resources>
@@ -305,7 +303,6 @@ class ResourceUtilsTest(unittest.TestCase):
             self._CheckTestResourceFile(test_file, _TEST_XML_OUTPUT_2)
 
     def test_RenderRJavaSource(self):
-        # pylint: disable=protected-access
         rjava_build_options = resource_utils.RJavaBuildOptions()
         result = resource_utils._RenderRJavaSource(
             'org.chromium.test',

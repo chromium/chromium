@@ -19,7 +19,7 @@ _SRC_PATH = pathlib.Path(__file__).resolve().parents[4]
 
 sys.path.append(str(_SRC_PATH / 'build/android'))
 # Import list_java_targets so that the dependency is found by print_python_deps.
-import list_java_targets  # pylint: disable=unused-import
+import list_java_targets  # noqa: E402, F401
 
 
 @dataclasses.dataclass(frozen=True)

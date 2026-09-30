@@ -16,7 +16,6 @@ import subprocess
 import sys
 import zipfile
 
-# pylint: disable=bare-except
 
 # Assuming this script is located under build/android, try to import
 # build/android/gyp/bundletool.py to get the default path to the bundletool
@@ -27,16 +26,16 @@ try:
     import bundletool
 
     _DEFAULT_BUNDLETOOL_PATH = bundletool.BUNDLETOOL_JAR_PATH
-except:
+except:  # noqa: E722
     _DEFAULT_BUNDLETOOL_PATH = None
 
 # Try to get the path of the aapt build tool from catapult/devil.
 try:
-    import devil_chromium  # pylint: disable=unused-import
+    import devil_chromium  # noqa: F401
     from devil.android.sdk import build_tools
 
     _AAPT_DEFAULT_PATH = build_tools.GetPath('aapt')
-except:
+except:  # noqa: E722
     _AAPT_DEFAULT_PATH = None
 
 
@@ -88,12 +87,8 @@ def AutoIndentStringList(lines, indentation=2):
     return result
 
 
-# pylint: disable=line-too-long
-
 # NOTE: aapt dump will quote the following characters only: \n, \ and "
 # see https://cs.android.com/search?q=f:ResourceTypes.cpp
-
-# pylint: enable=line-too-long
 
 
 def UnquoteString(s):
@@ -105,7 +100,7 @@ def UnquoteString(s):
     Returns:
       The unquoted version of the input string.
     """
-    if not '\\' in s:
+    if '\\' not in s:
         return s
 
     result = ''
@@ -348,7 +343,7 @@ def IsFilePathABundle(input_file):
         with zipfile.ZipFile(input_file) as input_zip:
             _ = input_zip.getinfo('BundleConfig.pb')
             return True
-    except:
+    except:  # noqa: E722
         return False
 
 
@@ -478,11 +473,9 @@ def IsFilePathAnApk(input_file):
         with zipfile.ZipFile(input_file) as input_zip:
             _ = input_zip.getinfo(RESOURCES_FILENAME)
             return True
-    except:
+    except:  # noqa: E722
         return False
 
-
-# pylint: disable=line-too-long
 
 # Example output from 'aapt dump resources --values' corresponding
 # to strings:
@@ -524,8 +517,6 @@ assert _RE_AAPT_STRING_RESOURCE_HEADER.match(
 
 _RE_AAPT_STRING_RESOURCE_VALUE = re.compile(r'^\s+\(string8\) "(.*)"$')
 assert _RE_AAPT_STRING_RESOURCE_VALUE.match(r'       (string8) "瀏覽首頁"')
-
-# pylint: enable=line-too-long
 
 
 def _ConvertAaptLocaleToBcp47(locale):

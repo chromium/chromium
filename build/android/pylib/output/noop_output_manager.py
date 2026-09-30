@@ -9,8 +9,6 @@ from pylib.base import output_manager
 # --local-output args are both not passed to test runner then use this
 # as the output manager impl.
 
-# pylint: disable=no-self-use
-
 
 class NoopOutputManager(output_manager.OutputManager):
     # override

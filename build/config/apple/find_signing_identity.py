@@ -4,7 +4,6 @@
 
 
 import argparse
-import os
 import subprocess
 import sys
 import re
@@ -45,7 +44,7 @@ def ListIdentities():
 
 def FindValidIdentity(pattern):
     """Find all identities matching the pattern."""
-    lines = list(l.strip() for l in ListIdentities().splitlines())
+    lines = list(l.strip() for l in ListIdentities().splitlines())  # noqa: E741
     # Look for something like
     # 1) 123ABC123ABC123ABC****** "iPhone Developer: DeveloperName (Team)"
     regex = re.compile('[0-9]+\) ([A-F0-9]+) "([^"(]*) \(([^)"]*)\)"')

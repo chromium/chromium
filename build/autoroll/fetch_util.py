@@ -15,7 +15,7 @@ import re
 _SRC_PATH = pathlib.Path(__file__).resolve().parents[2]
 
 sys.path.insert(1, str(_SRC_PATH / 'third_party/depot_tools'))
-import gclient_eval
+import gclient_eval  # noqa: E402
 
 
 _FETCH_ALL_PATH = _SRC_PATH / 'third_party/android_deps/fetch_all.py'
@@ -131,7 +131,7 @@ def fill_template(template_path, output_path, **kwargs):
   content = pathlib.Path(template_path).read_text()
   for key, value in kwargs.items():
     replace_string = '{{' + key + '}}'
-    if not replace_string in content:
+    if replace_string not in content:
       raise Exception(
         f'Replace text {replace_string} not found in {template_path}'
       )

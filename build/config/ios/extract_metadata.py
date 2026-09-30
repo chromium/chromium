@@ -8,7 +8,6 @@ import os
 import subprocess
 import sys
 import shutil
-import tempfile
 
 TARGET_CPU_MAPPING = {
     'x64': 'x86_64',

@@ -13,8 +13,8 @@ import unittest
 
 # The following non-std imports are fetched via vpython. See the list at
 # //vpython.toml
-import mock  # pylint: disable=import-error
-from parameterized import parameterized  # pylint: disable=import-error
+import mock
+from parameterized import parameterized
 
 import test_runner
 

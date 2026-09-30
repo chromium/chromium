@@ -309,7 +309,6 @@ def resolve_packages(packages: List[str], target_id: Optional[str]) -> None:
 
     # A temporary solution to avoid cycle dependency. The DIR_SRC_ROOT should be
     # moved away from common.py.
-    # pylint: disable=cyclic-import, import-outside-toplevel
     import monitors
 
     with monitors.time_consumption('pkgctl', 'gc'):
@@ -357,7 +356,6 @@ def get_ssh_address(
 
     # A temporary solution to avoid cycle dependency. The DIR_SRC_ROOT should be
     # moved away from common.py.
-    # pylint: disable=cyclic-import, import-outside-toplevel
     import monitors
 
     # The initial ffx target list command may return an empty list or without

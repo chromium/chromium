@@ -247,8 +247,8 @@ class TestRunResults:
         """Get the gtest string representation of this object."""
         with self._results_lock:
             s = []
-            plural = lambda n, s, p: '%d %s' % (n, p if n != 1 else s)
-            tests = lambda n: plural(n, 'test', 'tests')
+            plural = lambda n, s, p: '%d %s' % (n, p if n != 1 else s)  # noqa: E731
+            tests = lambda n: plural(n, 'test', 'tests')  # noqa: E731
 
             s.append('[==========] %s ran.' % (tests(len(self.GetAll()))))
             s.append('[  PASSED  ] %s.' % (tests(len(self.GetPass()))))
@@ -326,7 +326,6 @@ class TestRunResults:
             'Expected TestRunResult object: %s' % type(results)
         )
         with self._results_lock:
-            # pylint: disable=W0212
             self._results.update(results._results)
 
     def GetAll(self):

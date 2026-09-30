@@ -13,7 +13,7 @@ import sys
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 CHROMIUM_SRC_DIR = os.path.relpath(os.path.join(THIS_DIR, os.pardir, os.pardir))
 sys.path.append(THIS_DIR)
-from filter_clang_args import filter_clang_args
+from filter_clang_args import filter_clang_args  # noqa: E402
 
 RUST_TOOLCHAIN_DIR = os.path.join(
     CHROMIUM_SRC_DIR, "third_party", "rust-toolchain"

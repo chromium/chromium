@@ -17,7 +17,7 @@ import unittest
 
 build_android_path = Path(__file__).parents[2]
 sys.path.append(str(build_android_path))
-from pylib.utils import test_filter
+from pylib.utils import test_filter  # noqa: E402
 
 
 class ParseFilterFileTest(unittest.TestCase):

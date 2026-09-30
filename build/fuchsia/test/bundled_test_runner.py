@@ -42,7 +42,6 @@ class _BundledTestRunner(TestRunner):
 
     # private, use run_tests.get_test_runner function instead.
     # Keep the order of parameters consistent with ExecutableTestRunner.
-    # pylint: disable=too-many-arguments
     # TODO(crbug.com/346806329): May consider using a structure to capture the
     # arguments.
     def __init__(
@@ -138,6 +137,5 @@ def run_tests(tests: List[TestCase]) -> int:
             runner_args.test_realm,
         )
 
-    # pylint: disable=protected-access
     run_test._get_test_runner = get_test_runner
     return run_test.main()

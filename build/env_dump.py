@@ -47,7 +47,7 @@ def main():
         ]
         try:
             output = subprocess.check_output(full_cmd)
-        except Exception as e:
+        except Exception:
             sys.exit('Error running %s and dumping environment.' % envsetup_cmd)
 
         env_diff = {}

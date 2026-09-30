@@ -115,7 +115,7 @@ def _render_string_list(f, indent: int, key: str, values: list[str]):
     if len(values) == 1:
         f.write(f'[ "{values[0]}" ]\n')
     elif len(values) > 1:
-        f.write(f'[\n')
+        f.write('[\n')
         for value in values:
             f.write(f'{indent}  "{value}",\n')
         f.write(f'{indent}]\n')

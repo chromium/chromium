@@ -448,7 +448,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
                 log_lines.append(line)
                 failed_test_logs[current_test] = ''.join(log_lines)
                 if self._test_instance.quiet:
-                    for l in log_lines:
+                    for l in log_lines:  # noqa: E741
                         sys.stdout.write(l)
                 current_test = None
             elif _TEST_FINISHED_RE.match(line) and current_test:

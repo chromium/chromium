@@ -57,7 +57,7 @@ def ConvertTrieToFlatPaths(trie, prefix=None):
         if prefix:
             name = prefix + '/' + name
 
-        if len(data) != 0 and not 'results' in data:
+        if len(data) != 0 and 'results' not in data:
             result.update(ConvertTrieToFlatPaths(data, name))
         else:
             result[name] = data
@@ -67,12 +67,12 @@ def ConvertTrieToFlatPaths(trie, prefix=None):
 
 def AddPathToTrie(path, value, trie):
     """Inserts a single path and value into a directory trie structure."""
-    if not '/' in path:
+    if '/' not in path:
         trie[path] = value
         return
 
     directory, _, rest = path.partition('/')
-    if not directory in trie:
+    if directory not in trie:
         trie[directory] = {}
     AddPathToTrie(rest, value, trie[directory])
 
@@ -168,12 +168,10 @@ class JSONResultsGeneratorBase:
     TIMES_MS_FILENAME = 'times_ms.json'
     INCREMENTAL_RESULTS_FILENAME = 'incremental_results.json'
 
-    # line too long pylint: disable=line-too-long
     URL_FOR_TEST_LIST_JSON = (
         'https://%s/testfile?builder=%s&name=%s&testlistjson=1&testtype=%s&'
         'master=%s'
     )
-    # pylint: enable=line-too-long
 
     def __init__(
         self,
@@ -333,7 +331,7 @@ class JSONResultsGeneratorBase:
                     )
             else:
                 _log.error('JSON upload failed; no response returned')
-        except Exception as err:  # pylint: disable=broad-except
+        except Exception as err:
             _log.error('Upload failed: %s', err)
             return
 
@@ -431,7 +429,7 @@ class JSONResultsGeneratorBase:
 
             try:
                 results_json = json.loads(old_results)
-            except Exception:  # pylint: disable=broad-except
+            except Exception:
                 _log.debug('results.json was not valid JSON. Clobbering.')
                 # The JSON file is not valid JSON. Just clobber the results.
                 results_json = {}
@@ -584,7 +582,7 @@ class JSONResultsGeneratorBase:
         results_json[self.VERSION_KEY] = self.VERSION
 
     def _ConvertTestsToTrie(self, results):
-        if not self.TESTS in results:
+        if self.TESTS not in results:
             return
 
         test_results = results[self.TESTS]
@@ -652,7 +650,6 @@ class JSONResultsGeneratorBase:
         if is_all_no_data or (is_all_pass and max_time <= self.MIN_TIME):
             del tests[test_name]
 
-    # method could be a function pylint: disable=R0201
     def _IsResultsAllOfType(self, results, result_type):
         """Returns whether all the results are of the given type
         (e.g. all passes)."""

@@ -50,12 +50,10 @@ class DexStatsCollector:
 
     def MergeFrom(self, parent_label, other):
         """Add dex stats from another DexStatsCollector."""
-        # pylint: disable=protected-access
         for label, other_counts in other._counts_by_label.items():
             new_label = '{}-{}'.format(parent_label, label)
             self._counts_by_label[new_label] = other_counts.copy()
         self._unique_methods.update(other._unique_methods)
-        # pylint: enable=protected-access
 
     def GetUniqueMethodCount(self):
         """Returns total number of unique methods across encountered dex files."""

@@ -3,7 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# pylint: disable=protected-access
 """Unit tests for remote_output_manager.py.
 
 Example usage:
@@ -20,11 +19,11 @@ sys.path.append(str(build_android_path))
 lib_path_root = Path(__file__).parents[3] / 'lib'
 sys.path.append(str(lib_path_root))
 
-from pylib.base import output_manager
-from pylib.base import output_manager_test_case
-from pylib.output import remote_output_manager
+from pylib.base import output_manager  # noqa: E402
+from pylib.base import output_manager_test_case  # noqa: E402
+from pylib.output import remote_output_manager  # noqa: E402
 
-import mock  # pylint: disable=import-error
+import mock  # noqa: E402
 
 
 @mock.patch('lib.common.google_storage_helper')

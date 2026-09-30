@@ -19,7 +19,7 @@ class NoRaiseExceptionDecoratorTest(unittest.TestCase):
 
         try:
             raiseException()
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             self.fail(
                 'Exception was not caught by |NoRaiseException| decorator'
             )

@@ -38,10 +38,10 @@ class _TraceArguments:
     def _safeStringify(item):
         try:
             item_str = repr(item)
-        except Exception:  # pylint: disable=broad-except
+        except Exception:
             try:
                 item_str = str(item)
-            except Exception:  # pylint: disable=broad-except
+            except Exception:
                 item_str = "<ERROR>"
         return item_str
 
@@ -122,7 +122,6 @@ def _generate_trace_function(to_include, to_exclude):
             sys.settrace(None)
             return None
 
-        # pylint: disable=unused-argument
         if event not in ("call", "return"):
             return None
 

@@ -27,17 +27,17 @@ DEVIL_PATH = os.path.join(DIR_SOURCE_ROOT, 'third_party', 'catapult', 'devil')
 
 if DEVIL_PATH not in sys.path:
     sys.path.append(DEVIL_PATH)
-from devil.utils import cmd_helper
+from devil.utils import cmd_helper  # noqa: E402
 
 PYLIB_PATH = os.path.join(os.path.dirname(__file__), '..')
 sys.path.append(PYLIB_PATH)
-import constants  # pylint: disable=import-error
+import constants  # noqa: E402
 
 GYP_UTIL_PATH = os.path.join(
     os.path.dirname(__file__), '..', '..', 'gyp', 'util'
 )
 sys.path.append(GYP_UTIL_PATH)
-import build_utils  # pylint: disable=import-error
+import build_utils  # noqa: E402
 
 DEXDUMP_PATH = os.path.join(constants.ANDROID_SDK_TOOLS, 'dexdump')
 

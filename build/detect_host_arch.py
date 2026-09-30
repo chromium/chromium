@@ -7,7 +7,6 @@
 
 import platform
 import re
-import sys
 
 
 def HostArch():

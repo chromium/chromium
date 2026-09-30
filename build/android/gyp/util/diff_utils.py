@@ -31,21 +31,23 @@ def _GenerateDiffWithOnlyAdditons(expected_path, actual_data):
     # manually (ndiff expects new lines but we don't care about trailing
     # whitespace).
     with open(expected_path, encoding='utf-8') as expected:
-        expected_lines = [l for l in expected.readlines() if l.strip()]
+        expected_lines = [line for line in expected.readlines() if line.strip()]
     actual_lines = [
-        '{}\n'.format(l.rstrip()) for l in actual_data.splitlines() if l.strip()
+        '{}\n'.format(line.rstrip())
+        for line in actual_data.splitlines()
+        if line.strip()
     ]
 
     # This helps the diff to not over-anchor on comments or closing braces in
     # proguard configs.
-    def is_junk_line(l):
-        l = l.strip()
-        if l.startswith('# File:'):
+    def is_junk_line(line):
+        line = line.strip()
+        if line.startswith('# File:'):
             return False
-        return l == '' or l == '}' or l.startswith('#')
+        return line == '' or line == '}' or line.startswith('#')
 
     diff = difflib.ndiff(expected_lines, actual_lines, linejunk=is_junk_line)
-    filtered_diff = (l for l in diff if l.startswith('+'))
+    filtered_diff = (line for line in diff if line.startswith('+'))
     return ''.join(filtered_diff)
 
 
@@ -56,7 +58,7 @@ def _DiffFileContents(expected_path, actual_data):
     """Check file contents for equality and return the diff or None."""
     # Remove all trailing whitespace and add it explicitly in the end.
     with open(expected_path, encoding='utf-8') as f_expected:
-        expected_lines = [l.rstrip() for l in f_expected.readlines()]
+        expected_lines = [l.rstrip() for l in f_expected.readlines()]  # noqa: E741
     actual_lines = [
         _SkipOmitted(line).rstrip() for line in actual_data.splitlines()
     ]

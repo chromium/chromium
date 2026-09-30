@@ -194,7 +194,7 @@ def main(argv):
         logging.info('Header compilation took %ss', end)
         if options.kotlin_jar_path:
             with zipfile.ZipFile(output_jar.name, 'a') as out_zip:
-                path_transform = lambda p: p if p.endswith('.class') else None
+                path_transform = lambda p: p if p.endswith('.class') else None  # noqa: E731
                 zip_helpers.merge_zips(
                     out_zip,
                     [options.kotlin_jar_path],

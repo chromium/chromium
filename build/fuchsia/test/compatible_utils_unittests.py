@@ -15,7 +15,6 @@ import unittest.mock as mock
 import compatible_utils
 
 # Allow access to constants for testing.
-# pylint: disable=protected-access
 
 
 @unittest.skipIf(os.name == 'nt', 'Fuchsia tests not supported on Windows')

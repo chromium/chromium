@@ -136,7 +136,7 @@ class BundleDataPresubmit(unittest.TestCase):
                 f.write(_TEMP_GLOBLIST_CONTENTS)
             with open(os.path.join(temp_dir, 'untracked.txt'), 'w') as f:
                 f.write('Hello, World!')
-            path = os.path.join(temp_dir, 'untracked')
+            path = os.path.join(temp_dir, 'untracked')  # noqa: F841
             self.mock_input_api.change.RepositoryRoot = lambda: temp_dir
             self.mock_input_api.PresubmitLocalPath = lambda: temp_dir
             results = presubmit_support.CheckBundleData(

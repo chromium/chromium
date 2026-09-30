@@ -36,7 +36,7 @@ def _GetMemoryMaxInCurrentCGroup(explanation):
                             f'# cgroup memory.max exception {ex}'
                         )
                         return None
-    explanation.append(f'# cgroup memory.max not found')
+    explanation.append('# cgroup memory.max not found')
     return None
 
 
@@ -59,7 +59,7 @@ def _GetCPUCountFromCurrentCGroup(explanation):
                             f'# cgroup cpuset.cpus exception {ex}'
                         )
                         return None
-    explanation.append(f'# cgroup cpuset.cpus not found')
+    explanation.append('# cgroup cpuset.cpus not found')
     return None
 
 

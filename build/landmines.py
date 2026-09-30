@@ -33,7 +33,6 @@ import subprocess
 import time
 
 import clobber
-import landmine_utils
 
 
 def get_build_dir(src_dir):
@@ -46,7 +45,7 @@ def get_build_dir(src_dir):
     if 'CHROMIUM_OUT_DIR' in os.environ:
         output_dir = os.environ.get('CHROMIUM_OUT_DIR').strip()
         if not output_dir:
-            raise Error(
+            raise RuntimeError(
                 'CHROMIUM_OUT_DIR environment variable is set but blank!'
             )
     else:
@@ -161,7 +160,7 @@ def main():
             [sys.executable, s], stdout=subprocess.PIPE, universal_newlines=True
         )
         output, _ = proc.communicate()
-        landmines.extend([('%s\n' % l.strip()) for l in output.splitlines()])
+        landmines.extend([('%s\n' % l.strip()) for l in output.splitlines()])  # noqa: E741
     if options.landmines_path:
         landmines_path = options.landmines_path
     else:

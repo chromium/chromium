@@ -16,7 +16,6 @@ import common
 
 # Tests should use their names to explain the meaning of the tests rather than
 # relying on the extra docstrings.
-# pylint: disable=missing-function-docstring
 @unittest.skipIf(os.name == 'nt', 'Fuchsia tests not supported on Windows')
 class CommonTest(unittest.TestCase):
     """Test common.py methods."""

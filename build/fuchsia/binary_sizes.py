@@ -376,7 +376,7 @@ def GetSdkModules():
     # Leaf subdirectories containing shared object files.
     sdk_so_leaf_dirs = ['dist', 'lib']
     # Match a shared object file name.
-    sdk_so_filename_re = r'\.so(\.\d+)?$'
+    sdk_so_filename_re = r'\.so(\.\d+)?$'  # noqa: F841
 
     lib_names = set()
     for dirpath, _, file_names in os.walk(sdk_arch_dir):
@@ -626,7 +626,7 @@ def main():
         )
         sizes_histogram = CreateSizesHistogram(package_sizes)
         test_completed = True
-    except:
+    except:  # noqa: E722
         _, value, trace = sys.exc_info()
         traceback.print_tb(trace)
         print(str(value))

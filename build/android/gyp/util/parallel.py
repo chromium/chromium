@@ -78,7 +78,7 @@ class _FuncWrapper:
                 _fork_kwargs is None
             ):  # Clarifies _fork_kwargs is map for pylint.
                 _fork_kwargs = {}
-            params = _fork_params[index]  # pylint: disable=unsubscriptable-object
+            params = _fork_params[index]
             return self._func(*params, **_fork_kwargs)
         except Exception as e:
             # Only keep the exception type for builtin exception types or else risk

@@ -69,13 +69,10 @@ def _CreateMetaData(parent, name, value):
 def _ProcessManifest(path, disable_isolated_processes):
     doc, _, app_node = manifest_utils.ParseManifest(path)
 
-    # Pylint for some reason things app_node is an int.
-    # pylint: disable=no-member
     real_app_class = app_node.get(
         _AddNamespace('name'), _DEFAULT_APPLICATION_CLASS
     )
     app_node.set(_AddNamespace('name'), _INCREMENTAL_APP_NAME)
-    # pylint: enable=no-member
     _CreateMetaData(app_node, _META_DATA_APP_NAME, real_app_class)
 
     real_acf = app_node.get(_AddNamespace('appComponentFactory'))

@@ -335,7 +335,6 @@ class LocalDeviceTestRun(test_run.TestRun):
 
     def _DeterministicHash(self, test_name):
         """Return the deterministic hash for a test name, as an integer."""
-        # pylint: disable=no-self-use
         assert isinstance(test_name, str), 'Expecting a string.'
         hash_bytes = hashlib.sha256(test_name.encode('utf-8')).digest()
         # To speed thing up, only take the last 3 bytes
@@ -352,16 +351,13 @@ class LocalDeviceTestRun(test_run.TestRun):
         raise NotImplementedError
 
     def _GetUniqueTestName(self, test):
-        # pylint: disable=no-self-use
         return test
 
     def _ShouldRetry(self, test, result):
-        # pylint: disable=no-self-use,unused-argument
         return True
 
     def _ShouldRetryFullGroup(self, test_group):
         """Whether should retry the full group if the group has test failure."""
-        # pylint: disable=no-self-use,unused-argument
         return False
 
     # override
@@ -405,7 +401,6 @@ class LocalDeviceTestRun(test_run.TestRun):
 
         Return a list whose element can be a test, or a list of tests.
         """
-        # pylint: disable=no-self-use
         return tests
 
     def _RunTest(self, device, test):

@@ -319,9 +319,9 @@ def _RunLint(
 
     if creating_baseline and not warnings_as_errors:
         # Allow error code 6 when creating a baseline: ERRNO_CREATED_BASELINE
-        fail_func = lambda returncode, _: returncode not in (0, 6)
+        fail_func = lambda returncode, _: returncode not in (0, 6)  # noqa: E731
     else:
-        fail_func = lambda returncode, _: returncode != 0
+        fail_func = lambda returncode, _: returncode != 0  # noqa: E731
 
     # Lint writes an analytics.settings file here.
     env = os.environ.copy()

@@ -62,14 +62,14 @@ class AllowedHeader(Header):
 
 
 def headers(os):
-    is_linux = os == 'linux'
+    is_linux = os == 'linux'  # noqa: F841
     is_android = os == 'android'
-    is_ios = os == 'ios'
-    is_mac = os == 'mac'
-    is_apple = os == 'mac' or os == 'ios'
-    is_fuchsia = os == 'fuchsia'
+    is_ios = os == 'ios'  # noqa: F841
+    is_mac = os == 'mac'  # noqa: F841
+    is_apple = os == 'mac' or os == 'ios'  # noqa: F841
+    is_fuchsia = os == 'fuchsia'  # noqa: F841
     is_win = os == 'win'
-    is_chromeos = os == 'chromeos'
+    is_chromeos = os == 'chromeos'  # noqa: F841
 
     # Keep this list of headers alphabetically sorted, but comments should remain
     # attached to the entry under them, and blank lines should be preserved.

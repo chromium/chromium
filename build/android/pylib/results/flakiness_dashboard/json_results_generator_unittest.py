@@ -34,7 +34,6 @@ class JSONGeneratorTest(unittest.TestCase):
 
         self._orig_write_json = json_results_generator.WriteJSON
 
-        # unused arguments ... pylint: disable=W0613
         def _WriteJSONStub(json_object, file_path, callback=None):
             pass
 

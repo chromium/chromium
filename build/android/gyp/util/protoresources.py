@@ -24,7 +24,7 @@ sys.path[1:1] = [
     ),
 ]
 
-from proto import Resources_pb2
+from proto import Resources_pb2  # noqa: E402
 
 # First bytes in an .flat.arsc file.
 # uint32: Magic ("ARSC"), version (1), num_entries (1), type (0)

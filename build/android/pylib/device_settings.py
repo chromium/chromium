@@ -79,12 +79,12 @@ def SetLockScreenSettings(device):
         db = _LOCK_SCREEN_SETTINGS_PATH
         locksettings = get_lock_settings('locksettings')
         columns = ['name', 'user', 'value']
-        generate_values = lambda k, v: [k, '0', v]
+        generate_values = lambda k, v: [k, '0', v]  # noqa: E731
     elif device.FileExists(_ALTERNATE_LOCK_SCREEN_SETTINGS_PATH):
         db = _ALTERNATE_LOCK_SCREEN_SETTINGS_PATH
         locksettings = get_lock_settings('secure') + get_lock_settings('system')
         columns = ['name', 'value']
-        generate_values = lambda k, v: [k, v]
+        generate_values = lambda k, v: [k, v]  # noqa: E731
     else:
         logging.warning(
             'Unable to find database file to set lock screen settings.'

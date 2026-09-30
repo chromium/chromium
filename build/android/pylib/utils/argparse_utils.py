@@ -25,7 +25,6 @@ class CustomHelpAction(argparse.Action):
     # Derived from argparse._HelpAction from
     # https://github.com/python/cpython/blob/main/Lib/argparse.py
 
-    # pylint: disable=redefined-builtin
     # (complains about 'help' being redefined)
     def __init__(
         self,

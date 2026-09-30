@@ -12,9 +12,7 @@ import zipfile
 
 _RealZipFile = zipfile.ZipFile
 
-import dex
-
-# pylint: disable=protected-access
+import dex  # noqa: E402
 
 
 class DexTest(unittest.TestCase):

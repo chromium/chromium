@@ -318,9 +318,10 @@ def _ExpandVisitor(visitor_def, args):
     mapping = dict(
         itertools.zip_longest(visitor_def.params, args, fillvalue='')
     )
-    replace = lambda m: mapping[m.group(1)]
+    replace = lambda m: mapping[m.group(1)]  # noqa: E731
     return [
-        visitor_def.param_re.sub(replace, l) for l in visitor_def.body_lines
+        visitor_def.param_re.sub(replace, l)
+        for l in visitor_def.body_lines  # noqa: E741
     ]
 
 

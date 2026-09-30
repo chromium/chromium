@@ -12,7 +12,7 @@ from unittest import mock
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..'))
 )
-import devil_chromium  # pylint: disable=unused-import
+import devil_chromium  # noqa: F401
 from devil.android import device_utils
 from pylib.local.emulator import (
     fuchsia_cuttlefish_emulator_environment as fc_env,
@@ -132,9 +132,7 @@ class FuchsiaCuttlefishEmulatorEnvironmentTest(unittest.TestCase):
             )
             env.SetUp()
             mock_instance.Start.assert_called_once()
-            # pylint: disable=protected-access
             self.assertEqual(env._device_serials, ['127.0.0.1:6525'])
-            # pylint: enable=protected-access
 
             env.TearDown()
             mock_instance.Stop.assert_called_once()

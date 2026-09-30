@@ -4,9 +4,6 @@
 # found in the LICENSE file.
 
 import os
-import pathlib
-import shutil
-import sys
 import tempfile
 import unittest
 import zipfile

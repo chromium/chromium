@@ -5,15 +5,13 @@
 
 # TODO(jbudorick): Split these constants into coherent modules.
 
-# pylint: disable=W0212
-
 import glob
 import logging
 import os
 
 import devil.android.sdk.keyevent
 from devil.android.constants import chrome
-from devil.android.sdk import version_codes
+from devil.android.sdk import version_codes  # noqa: F401
 from devil.constants import exit_codes
 
 keyevent = devil.android.sdk.keyevent

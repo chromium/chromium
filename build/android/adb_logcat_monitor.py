@@ -129,7 +129,7 @@ def main(base_dir, adb_cmd='adb'):
             f.write(str(os.getpid()))
         while True:
             for device_id in GetAttachedDevices(adb_cmd):
-                if not device_id in devices:
+                if device_id not in devices:
                     subprocess.call([adb_cmd, '-s', device_id, 'logcat', '-c'])
                     devices[device_id] = (None, 0)
 
@@ -140,7 +140,7 @@ def main(base_dir, adb_cmd='adb'):
             time.sleep(5)
     except SigtermError:
         logging.info('Received SIGTERM, shutting down')
-    except:  # pylint: disable=bare-except
+    except:  # noqa: E722
         logging.exception('Unexpected exception in main.')
     finally:
         for process, _ in devices.values():

@@ -7,8 +7,6 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts for
 details on the presubmit API built into depot_tools.
 """
 
-import os
-
 
 def CommonChecks(input_api, output_api):
     build_fuchsia_dir = input_api.PresubmitLocalPath()

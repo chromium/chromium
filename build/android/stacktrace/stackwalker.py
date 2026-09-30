@@ -78,7 +78,7 @@ def SymbolizeMicroDump(stackwalker_binary_path, dump, symbols_path):
       Output from stackwalker tool.
     """
     with tempfile.NamedTemporaryFile() as tf:
-        for l in dump:
+        for l in dump:  # noqa: E741
             tf.write('%s\n' % l)
         cmd = [stackwalker_binary_path, tf.name, symbols_path]
         return cmd_helper.GetCmdOutput(cmd)

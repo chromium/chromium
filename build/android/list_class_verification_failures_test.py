@@ -7,13 +7,13 @@ import unittest
 
 import list_class_verification_failures as list_verification
 
-import devil_chromium  # pylint: disable=unused-import
+import devil_chromium  # noqa: F401
 from devil.android import device_errors
 from devil.android import device_utils
 from devil.android.ndk import abis
 from devil.android.sdk import version_codes
 
-import mock  # pylint: disable=import-error
+import mock
 
 
 def _CreateOdexLine(java_class_name, type_idx, verification_status):
@@ -42,11 +42,9 @@ class _DetermineDeviceToUseTest(unittest.TestCase):
         )
         result = list_verification.DetermineDeviceToUse(user_specified_devices)
         self.assertEqual(result, fake_attached_devices[0])
-        # pylint: disable=no-member
         device_utils.DeviceUtils.HealthyDevices.assert_called_with(
             device_arg=None
         )
-        # pylint: enable=no-member
 
     def testDetermineDeviceToUse_emptyListWithNoAttachedDevices(self):
         user_specified_devices = []
@@ -55,11 +53,9 @@ class _DetermineDeviceToUseTest(unittest.TestCase):
         )
         with self.assertRaises(device_errors.NoDevicesError) as _:
             list_verification.DetermineDeviceToUse(user_specified_devices)
-        # pylint: disable=no-member
         device_utils.DeviceUtils.HealthyDevices.assert_called_with(
             device_arg=None
         )
-        # pylint: enable=no-member
 
     def testDetermineDeviceToUse_oneElementListWithOneAttachedDevice(self):
         user_specified_devices = ['123']
@@ -69,11 +65,9 @@ class _DetermineDeviceToUseTest(unittest.TestCase):
         )
         result = list_verification.DetermineDeviceToUse(user_specified_devices)
         self.assertEqual(result, fake_attached_devices[0])
-        # pylint: disable=no-member
         device_utils.DeviceUtils.HealthyDevices.assert_called_with(
             device_arg=user_specified_devices
         )
-        # pylint: enable=no-member
 
 
 class _ListClassVerificationFailuresTest(unittest.TestCase):

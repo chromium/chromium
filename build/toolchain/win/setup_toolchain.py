@@ -10,7 +10,6 @@
 # win tool. The script assumes that the root build directory is the current dir
 # and the files will be written to the current directory.
 
-import errno
 import json
 import os
 import re

@@ -3,8 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# pylint: disable=protected-access
-
 
 import os
 import unittest
@@ -18,19 +16,15 @@ sys.path.append(
 from pylib.base import base_test_result
 from pylib.local.device import local_device_test_run
 
-import mock  # pylint: disable=import-error
+import mock
 
 
 class TestLocalDeviceTestRun(local_device_test_run.LocalDeviceTestRun):
-    # pylint: disable=abstract-method
-
     def __init__(self):
         super().__init__(mock.MagicMock(), mock.MagicMock())
 
 
 class TestLocalDeviceNonStringTestRun(local_device_test_run.LocalDeviceTestRun):
-    # pylint: disable=abstract-method
-
     def __init__(self):
         super().__init__(mock.MagicMock(), mock.MagicMock())
 
@@ -39,8 +33,6 @@ class TestLocalDeviceNonStringTestRun(local_device_test_run.LocalDeviceTestRun):
 
 
 class TestLocalDeviceRetryTestRun(local_device_test_run.LocalDeviceTestRun):
-    # pylint: disable=abstract-method
-
     def __init__(self, tests=None):
         mock_env = mock.MagicMock()
         mock_prop_current_try = mock.PropertyMock(

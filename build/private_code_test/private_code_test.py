@@ -79,8 +79,8 @@ def _read_private_paths(path):
     ret = [p[4:] for p in text.splitlines() if p.startswith('src/')]
     if not ret:
         sys.stderr.write(f'No src/ paths found in {path}\n')
-        sys.stderr.write(f'This test should not be run on public bots.\n')
-        sys.stderr.write(f'File contents:\n')
+        sys.stderr.write('This test should not be run on public bots.\n')
+        sys.stderr.write('File contents:\n')
         sys.stderr.write(text)
         sys.exit(1)
 

@@ -32,10 +32,3 @@ def CheckSkiaGoldCommonUnittests(input_api, output_api):
     [r'^.+_unittest\.py$'],
     env=_GetSkiaGoldEnv(input_api),
   )
-
-
-def CheckPylint(input_api, output_api):
-  """Runs pylint on all directory content and subdirectories."""
-  return input_api.canned_checks.RunPylint(
-    input_api, output_api, pylintrc='pylintrc', version='3.2'
-  )

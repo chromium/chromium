@@ -12,7 +12,7 @@ import sys
 def main():
     try:
         cpu_count = multiprocessing.cpu_count()
-    except:
+    except:  # noqa: E722
         cpu_count = 1
 
     print(cpu_count)

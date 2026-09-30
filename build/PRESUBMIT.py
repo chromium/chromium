@@ -4,7 +4,7 @@
 
 PRESUBMIT_VERSION = '2.0.0'
 
-import textwrap
+import textwrap  # noqa: E402
 
 
 def CheckNoBadDeps(input_api, output_api):
@@ -72,3 +72,8 @@ def CheckPatchFormatted(input_api, output_api):
         bypass_warnings=False,
     )
 
+
+def CheckRuff(input_api, output_api):
+    return input_api.RunTests(
+        input_api.canned_checks.GetRuff(input_api, output_api)
+    )

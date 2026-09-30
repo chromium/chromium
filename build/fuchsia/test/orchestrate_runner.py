@@ -14,7 +14,7 @@ import sys
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, SCRIPT_DIR)
 
-import common  # pylint: disable=wrong-import-position
+import common  # noqa: E402
 
 
 def support_orchestrate(test_type: str) -> bool:

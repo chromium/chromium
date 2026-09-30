@@ -11,12 +11,8 @@ details on the presubmit API built into depot_tools.
 def CommonChecks(input_api, output_api):
   results = []
   # These tests don't run on Windows and give verbose and cryptic failure
-  # messages. Linting the code on a platform where it will not run is also not
-  # valuable and gives spurious errors.
+  # messages.
   if input_api.sys.platform != 'win32':
-    results += input_api.canned_checks.RunPylint(
-      input_api, output_api, pylintrc='pylintrc', version='3.2'
-    )
     tests = input_api.canned_checks.GetUnitTestsInDirectory(
       input_api, output_api, '.', [r'^.+_test\.py$']
     )

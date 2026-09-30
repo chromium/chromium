@@ -74,7 +74,6 @@ Class descriptor  : 'La;'
         locals        :
 """
 
-# pylint: disable=line-too-long
 PROGUARD_MAPPING = """org.chromium.Original -> a:
     org.chromium.Original sDisplayAndroidManager -> e
     org.chromium.Original another() -> b
@@ -140,7 +139,6 @@ Class descriptor  : 'La;'
         locals        :
 """
 
-# pylint: disable=line-too-long
 PROGUARD_MAPPING_2 = """org.chromium.Original -> a:
     org.chromium.Original sDisplayAndroidManager -> e
     org.chromium.Original another() -> b
@@ -178,7 +176,6 @@ class GenerateProfileTests(unittest.TestCase):
         self.assertEqual(len(dex['a'].FindMethodsAtLine('a', 8, None)), 2)
         self.assertIsNone(dex['a'].FindMethodsAtLine('a', 100, None))
 
-    # pylint: disable=protected-access
     def testProcessProguardMapping(self):
         dex = cp.ProcessDex(DEX_DUMP.splitlines())
         mapping, reverse = cp.ProcessProguardMapping(

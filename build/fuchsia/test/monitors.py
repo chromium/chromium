@@ -15,7 +15,6 @@ PROTO_DIR = os.path.abspath(
 )
 if os.path.isdir(PROTO_DIR):
     sys.path.append(PROTO_DIR)
-    # pylint: disable=import-error, unused-import
     from measures import (
         average,
         clear,
@@ -30,21 +29,17 @@ else:
     class Dummy(AbstractContextManager):
         """Dummy implementation when measures components do not exist."""
 
-        # pylint: disable=no-self-use
         def record(self, *_) -> None:
             """Dummy implementation of Measure.record."""
 
-        # pylint: disable=no-self-use
         def dump(self) -> None:
             """Dummy implementation of Measure.dump."""
             # Shouldn't be called.
             assert False
 
-        # pylint: disable=no-self-use
         def __enter__(self) -> None:
             pass
 
-        # pylint: disable=no-self-use
         def __exit__(self, *_) -> bool:
             return False
 

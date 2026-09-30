@@ -12,7 +12,7 @@ CHROMIUM_SRC_DIR = os.path.realpath(os.path.join(GOLD_DIR, '..', '..'))
 
 sys.path.append(os.path.join(CHROMIUM_SRC_DIR, 'testing'))
 
-from pytype_common import pytype_runner  # pylint: disable=wrong-import-position
+from pytype_common import pytype_runner  # noqa: E402
 
 EXTRA_PATHS_COMPONENTS = [
   ('build',),

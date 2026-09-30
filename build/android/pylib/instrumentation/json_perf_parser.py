@@ -105,7 +105,7 @@ def GetAverageRunInfo(json_data, name):
                     'Entry did not contain valid value info: %s' % entry
                 )
 
-        if not val_type in entry:
+        if val_type not in entry:
             raise Exception(
                 'Entry did not contain expected value type "%s" '
                 'information: %s' % (val_type, entry)

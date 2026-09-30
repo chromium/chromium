@@ -17,9 +17,7 @@ It performs the following steps:
 
 import argparse
 import os
-import re
 import shutil
-import subprocess
 import sys
 
 import action_helpers
@@ -43,7 +41,7 @@ if os.path.exists(_PROTOBUF_DIR) and _PROTOBUF_DIR not in sys.path:
 # version of google.protobuf from vpython's site-packages. This will lead to
 # print_python_deps.py failing to declare the dependency on google.protobuf in
 # protoc_java.pydeps. This in turns leads to less hermetic builds.
-from google.protobuf import descriptor_pb2
+from google.protobuf import descriptor_pb2  # noqa: E402
 
 
 def _HasJavaPackage(proto_lines):

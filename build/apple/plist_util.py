@@ -3,14 +3,10 @@
 # found in the LICENSE file.
 
 import argparse
-import codecs
 import plistlib
 import os
 import re
-import subprocess
 import sys
-import tempfile
-import shlex
 
 # Xcode substitutes variables like ${PRODUCT_NAME} or $(PRODUCT_NAME) when
 # compiling Info.plist. It also supports supports modifiers like :identifier

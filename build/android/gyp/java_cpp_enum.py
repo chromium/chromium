@@ -13,7 +13,7 @@ import sys
 import textwrap
 import zipfile
 
-from util import build_utils  # pylint: disable=unused-import
+from util import build_utils  # noqa: F401
 from util import java_cpp_utils
 import action_helpers  # build_utils adds //build to sys.path.
 import zip_helpers

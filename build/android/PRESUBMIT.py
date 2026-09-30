@@ -141,72 +141,13 @@ def GetScopedUnitTests(input_api, build_android_dir, *, is_upload):
 
 def CommonChecks(input_api, output_api, *, is_upload):
     # These tools don't run on Windows so these tests don't work and give many
-    # verbose and cryptic failure messages. Linting the code is also skipped on
-    # Windows because it will fail due to os differences.
+    # verbose and cryptic failure messages.
     if input_api.sys.platform == 'win32':
         return []
 
     build_android_dir = input_api.PresubmitLocalPath()
 
-    def J(*dirs):
-        """Returns an absolute path under the presubmit directory."""
-        return input_api.os_path.join(build_android_dir, *dirs)
-
-    build_pys = [
-        r'gyp/.*\.py$',
-        r'.*create_unwind_table\.py',
-        r'.*create_unwind_table_tests\.py',
-    ]
     tests = []
-    # yapf likes formatting the extra_paths_list to be less readable.
-    # yapf: disable
-    tests.extend(
-      input_api.canned_checks.GetPylint(
-          input_api,
-          output_api,
-          pylintrc='pylintrc-3.2',
-          files_to_skip=[
-              r'.*_pb2\.py'
-          ] + build_pys,
-          extra_paths_list=[
-              J(),
-              J('gyp'),
-              J('buildbot'),
-              J('..'),
-              J('..', 'util'),
-              J('..', '..', 'third_party', 'catapult', 'common',
-                'py_trace_event'),
-              J('..', '..', 'third_party', 'catapult', 'common', 'py_utils'),
-              J('..', '..', 'third_party', 'catapult', 'devil'),
-              J('..', '..', 'third_party', 'catapult', 'tracing'),
-              J('..', '..', 'third_party', 'depot_tools'),
-              J('..', '..', 'third_party', 'colorama', 'src'),
-          ],
-          version='3.2'))
-    tests.extend(
-      input_api.canned_checks.GetPylint(
-          input_api,
-          output_api,
-          pylintrc='pylintrc-3.2',
-          files_to_check=build_pys,
-          files_to_skip=[
-              r'.*_pb2\.py',
-              r'.*_pb2\.py',
-              r'.*create_unwind_table\.py',
-              r'.*create_unwind_table_tests\.py',
-          ],
-          extra_paths_list=[
-              J(),
-              J('..'),
-              J('..', 'gn_ast'),
-              J('..', 'util'),
-              J('..', '..', 'google_apis'),
-              J('..', '..', 'third_party'),
-              J('gyp'),
-              J('gyp', 'util'),
-          ],
-          version='3.2'))
-    # yapf: enable
 
     pylib_test_env = dict(input_api.environ)
     pylib_test_env.update(

@@ -103,7 +103,6 @@ class LogManagerTest(unittest.TestCase):
     def test_wait_for_pattern_disabled(self) -> None:
         """Test _wait_for_pattern returns immediately if logs_dir is None."""
         log = log_manager.LogManager(None, wait_for_pattern="some pattern")
-        # pylint: disable=protected-access
         log._wait_for_pattern()
         self.assertIsNotNone(log)
 
@@ -112,7 +111,6 @@ class LogManagerTest(unittest.TestCase):
         log = log_manager.LogManager(
             'some_non_existent_dir', wait_for_pattern="some pattern"
         )
-        # pylint: disable=protected-access
         log._wait_for_pattern()
         self.assertIsNotNone(log)
 
@@ -162,7 +160,6 @@ class LogManagerTest(unittest.TestCase):
 
     def test_wait_for_pattern_success(self) -> None:
         """Test _wait_for_pattern stops immediately when pattern is found."""
-        # pylint: disable=protected-access
         tmp_dir = tempfile.mkdtemp()
         try:
             log = log_manager.LogManager(
@@ -201,7 +198,6 @@ class LogManagerTest(unittest.TestCase):
 
     def test_wait_for_pattern_split_line(self) -> None:
         """Test _wait_for_pattern reconstructs split lines successfully."""
-        # pylint: disable=protected-access
         tmp_dir = tempfile.mkdtemp()
         try:
             log = log_manager.LogManager(
@@ -242,7 +238,6 @@ class LogManagerTest(unittest.TestCase):
 
     def test_wait_for_pattern_timeout(self) -> None:
         """Test _wait_for_pattern times out if pattern is not found."""
-        # pylint: disable=protected-access
         tmp_dir = tempfile.mkdtemp()
         try:
             log = log_manager.LogManager(

@@ -120,7 +120,7 @@ def install_symbols(package_paths: Iterable[str], fuchsia_out_dir: str) -> None:
 def map_filter_file_to_package_file(filter_file: str) -> str:
     """Returns the path to |filter_file| within the test component's package."""
 
-    if not _FILTER_DIR in filter_file:
+    if _FILTER_DIR not in filter_file:
         raise ValueError(
             'CFv2 tests only support registered filter files '
             'present in the test package'

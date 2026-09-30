@@ -56,8 +56,8 @@ import tombstones
 with host_paths.SysPath(
     os.path.join(host_paths.DIR_SOURCE_ROOT, 'third_party'), 0
 ):
-    import jinja2  # pylint: disable=import-error
-    import markupsafe  # pylint: disable=import-error,unused-import
+    import jinja2
+    import markupsafe  # noqa: F401
 
 _CHROMIUM_TESTS_ROOT = 'chromium_tests_root'
 _DEVICE_TEMP_DIR_DATA_ROOT = posixpath.join(
@@ -129,9 +129,7 @@ _EXTRA_WEBVIEW_REBASELINE_MODE = (
     'org.chromium.android_webview.test.RebaselineMode'
 )
 _VALUE_WEBVIEW_REBASELINE_MODE = 'rebaseline'
-# pylint: disable=line-too-long
 # LINT.ThenChange(//android_webview/tools/system_webview_shell/layout_tests/src/org/chromium/webview_shell/test/WebViewLayoutTest.java)
-# pylint: enable=line-too-long
 
 FEATURE_ANNOTATION = 'Feature'
 RENDER_TEST_FEATURE_ANNOTATION = 'RenderTest'
@@ -399,11 +397,7 @@ class LocalDeviceInstrumentationTestRun(
                     system_app_context = system_app.ReplaceSystemApp(
                         dev, self._test_instance.replace_system_package
                     )
-                    # Pylint is not smart enough to realize that this field has
-                    # an __enter__ method, and will complain loudly.
-                    # pylint: disable=no-member
                     system_app_context.__enter__()
-                    # pylint: enable=no-member
                     self._context_managers[str(dev)].append(system_app_context)
 
                 install_steps.append(replace_package)
@@ -440,7 +434,6 @@ class LocalDeviceInstrumentationTestRun(
                 @measures.timed_func('device_setup', 'install_apk')
                 @trace_event.traced
                 def install_helper_internal(d, apk_path=None):
-                    # pylint: disable=unused-argument
                     try:
                         d.Install(
                             apk,
@@ -476,7 +469,6 @@ class LocalDeviceInstrumentationTestRun(
                 @measures.timed_func('device_setup', 'install_apex')
                 @trace_event.traced
                 def install_helper_internal(d, apk_path=None):
-                    # pylint: disable=unused-argument
                     d.InstallApex(apex)
 
                 return install_helper_internal
@@ -486,7 +478,6 @@ class LocalDeviceInstrumentationTestRun(
                 @measures.timed_func('device_setup', 'install_incremental')
                 @trace_event.traced
                 def incremental_install_helper_internal(d, apk_path=None):
-                    # pylint: disable=unused-argument
                     try:
                         installer.Install(
                             d, json_path, apk=apk, permissions=permissions
@@ -571,11 +562,7 @@ class LocalDeviceInstrumentationTestRun(
                     webview_context = webview_app.UseWebViewProvider(
                         dev, self._test_instance.use_webview_provider
                     )
-                    # Pylint is not smart enough to realize that this field has
-                    # an __enter__ method, and will complain loudly.
-                    # pylint: disable=no-member
                     webview_context.__enter__()
-                    # pylint: enable=no-member
                     self._context_managers[str(dev)].append(webview_context)
 
                 install_steps.append(use_webview_provider)
@@ -593,11 +580,7 @@ class LocalDeviceInstrumentationTestRun(
                             self._test_instance.use_voice_interaction_service,
                         )
                     )
-                    # Pylint is not smart enough to realize that this field has
-                    # an __enter__ method, and will complain loudly.
-                    # pylint: disable=no-member
                     voice_interaction_service_context.__enter__()
-                    # pylint: enable=no-member
                     self._context_managers[str(device)].append(
                         voice_interaction_service_context
                     )
@@ -950,10 +933,7 @@ class LocalDeviceInstrumentationTestRun(
             # Context manager exit handlers are applied in reverse order
             # of the enter handlers.
             for context in reversed(self._context_managers[str(dev)]):
-                # See pylint-related comment above with __enter__()
-                # pylint: disable=no-member
                 context.__exit__(*sys.exc_info())
-                # pylint: enable=no-member
 
         self._env.parallel_devices.pMap(individual_device_tear_down)
 
@@ -1184,7 +1164,6 @@ class LocalDeviceInstrumentationTestRun(
         return self._SortTests(all_tests)
 
     def _GroupTestsIntoBatchesAndOthers(self, tests):
-        # pylint: disable=no-self-use
         batched_tests = dict()
         other_tests = []
         for test in tests:
@@ -1239,7 +1218,6 @@ class LocalDeviceInstrumentationTestRun(
         return batched_tests, other_tests
 
     def _SplitBatchesAboveMaxSize(self, batched_tests):
-        # pylint: disable=no-self-use
         batched_tests_split = []
         for batch_name, tests_in_batch in batched_tests.items():
             if batch_name.startswith('UnitTests'):
@@ -1457,7 +1435,7 @@ class LocalDeviceInstrumentationTestRun(
             self._CreateFlagChangersIfNeeded(device)
             self._flag_changers[str(device)].PushFlags(add=flags_to_add)
 
-        time_ms = lambda: int(time.time() * 1e3)
+        time_ms = lambda: int(time.time() * 1e3)  # noqa: E731
         start_ms = time_ms()
 
         with ui_capture_dir:
@@ -1780,7 +1758,7 @@ class LocalDeviceInstrumentationTestRun(
             logging.error(
                 'detected failure in %s. raw output:', test_display_name
             )
-            for l in output:
+            for l in output:  # noqa: E741
                 logging.error('  %s', l)
             if not self._env.skip_clear_data:
                 if self._test_instance.package_info:
@@ -1801,7 +1779,7 @@ class LocalDeviceInstrumentationTestRun(
                     )
         else:
             logging.debug('raw output from %s:', test_display_name)
-            for l in output:
+            for l in output:  # noqa: E741
                 logging.debug('  %s', l)
 
         if self._test_instance.store_tombstones:
@@ -2241,7 +2219,7 @@ class LocalDeviceInstrumentationTestRun(
                         use_luci=use_luci,
                         optional_keys=optional_dict,
                     )
-                except Exception as e:  # pylint: disable=broad-except
+                except Exception as e:
                     _FailTestIfNecessary(results, full_test_name)
                     _AppendToLog(
                         results,
@@ -2484,7 +2462,6 @@ def _GenerateRenderTestHtml(image_name, failure_link, golden_link, diff_link):
         loader=jinja2.FileSystemLoader(_JINJA_TEMPLATE_DIR), trim_blocks=True
     )
     template = jinja2_env.get_template(_JINJA_TEMPLATE_FILENAME)
-    # pylint: disable=no-member
     return template.render(
         test_name=image_name,
         failure_link=failure_link,

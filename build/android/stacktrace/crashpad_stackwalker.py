@@ -22,9 +22,9 @@ _BUILD_ANDROID_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..')
 )
 sys.path.append(_BUILD_ANDROID_PATH)
-import devil_chromium
-from devil.android import device_utils
-from devil.utils import timeout_retry
+import devil_chromium  # noqa: E402
+from devil.android import device_utils  # noqa: E402
+from devil.utils import timeout_retry  # noqa: E402
 
 
 def _CreateSymbolsDir(build_path, dynamic_library_names):

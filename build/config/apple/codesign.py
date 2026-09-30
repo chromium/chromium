@@ -36,10 +36,7 @@ BUNDLE_ICON_PATTERNS_MAP = {
 }
 
 
-if sys.version_info.major < 3:
-    basestring_compat = basestring
-else:
-    basestring_compat = str
+basestring_compat = str
 
 
 class FileListAction(argparse.Action):
@@ -126,7 +123,7 @@ def LoadPlistFile(plist_path):
 
 def CreateSymlink(value, location):
     """Creates symlink with value at location if the target exists."""
-    target = os.path.join(os.path.dirname(location), value)
+    target = os.path.join(os.path.dirname(location), value)  # noqa: F841
     if os.path.exists(location):
         os.unlink(location)
     os.symlink(value, location)
@@ -485,7 +482,7 @@ def VerifyBundleManifest(bundle, manifest):
         lambda p: p == bundle.relative_embedded_mobileprovision,
         lambda p: IsSubPath(p, bundle.relative_signature_dir),
     ]
-    filtered = lambda path: any(map(lambda pattern: pattern(path), patterns))
+    filtered = lambda path: any(map(lambda pattern: pattern(path), patterns))  # noqa: E731
     manifest = set(path for path in manifest if not filtered(path))
 
     # Create a set of all directories in the manifest. Used to avoid doing
@@ -551,7 +548,7 @@ def VerifyBundleManifest(bundle, manifest):
         # from an incremental build after changing the target dependencies).
         for filename in filenames:
             filepath = os.path.normpath(os.path.join(reldirpath, filename))
-            if not filepath in manifest:
+            if filepath not in manifest:
                 if not bundle_icon_pattern or not bundle_icon_pattern.match(
                     filename
                 ):

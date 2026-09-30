@@ -16,7 +16,6 @@ import serial_boot_device
 from boot_device import BootMode
 
 
-# pylint: disable=too-many-public-methods, missing-function-docstring
 @mock.patch('shutil.which', return_value='/bin')
 class SerialBootDeviceTest(unittest.TestCase):
     """Unittests for serial_boot_device.py."""
