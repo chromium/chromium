@@ -9,12 +9,15 @@
 #include <utility>
 #include <vector>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/test/gtest_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_search_item.h"
+#include "chrome/grit/generated_resources.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/actions/actions.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -359,7 +362,151 @@ TEST_F(AppMenuSearchControllerTest, SearchRequiresInitializedIndex) {
   EXPECT_CHECK_DEATH(controller_->Search(u"New"));
 
   controller_->InitializeSearchIndex();
-  EXPECT_EQ(controller_->Search(u"New"), nullptr);
+  EXPECT_NE(controller_->Search(u"New"), nullptr);
+}
+
+TEST_F(AppMenuSearchControllerTest, SearchResultsCategorizationAndCapping) {
+  for (int i = 0; i < 8; ++i) {
+    menu_root_->AddChild(
+        actions::ActionItem::Builder()
+            .SetActionId(kActionNewTab)
+            .SetText(u"Action Item " + base::NumberToString16(i))
+            .Build());
+  }
+
+  auto bookmarks_menu = actions::ActionItem::Builder()
+                            .SetActionId(kActionBookmarksSubmenu)
+                            .SetText(u"Bookmarks")
+                            .Build();
+  for (int i = 0; i < 5; ++i) {
+    bookmarks_menu->AddChild(
+        actions::ActionItem::Builder()
+            .SetText(u"Bookmark Item " + base::NumberToString16(i))
+            .Build());
+  }
+  menu_root_->AddChild(std::move(bookmarks_menu));
+
+  auto recent_tabs_menu = actions::ActionItem::Builder()
+                              .SetActionId(kActionRecentTabsSubmenu)
+                              .SetText(u"History")
+                              .Build();
+  for (int i = 0; i < 4; ++i) {
+    recent_tabs_menu->AddChild(
+        actions::ActionItem::Builder()
+            .SetText(u"Recent Tab Item " + base::NumberToString16(i))
+            .Build());
+  }
+  menu_root_->AddChild(std::move(recent_tabs_menu));
+
+  controller_->InitializeSearchIndex();
+  actions::ActionItem* const results_root = controller_->Search(u"Item");
+  ASSERT_NE(results_root, nullptr);
+
+  const auto& sections = results_root->GetChildren().children();
+  ASSERT_EQ(sections.size(), 8u);
+
+  auto* bookmarks_section = sections[6]->GetActionItem();
+  EXPECT_EQ(bookmarks_section->GetChildren().children().size(), 4u);
+
+  auto* recent_tabs_section = sections[7]->GetActionItem();
+  EXPECT_EQ(recent_tabs_section->GetChildren().children().size(), 4u);
+}
+
+TEST_F(AppMenuSearchControllerTest, SearchResultsTreeCategoryHeaders) {
+  menu_root_->AddChild(actions::ActionItem::Builder()
+                           .SetActionId(kActionNewTab)
+                           .SetText(u"New Tab")
+                           .Build());
+
+  auto bookmarks_menu = actions::ActionItem::Builder()
+                            .SetActionId(kActionBookmarksSubmenu)
+                            .SetText(u"Bookmarks")
+                            .Build();
+  bookmarks_menu->AddChild(
+      actions::ActionItem::Builder().SetText(u"New Bookmark").Build());
+  menu_root_->AddChild(std::move(bookmarks_menu));
+
+  auto tab_groups_menu = actions::ActionItem::Builder()
+                             .SetActionId(kActionSavedTabGroupsSubmenu)
+                             .SetText(u"Tab Groups")
+                             .Build();
+  tab_groups_menu->AddChild(
+      actions::ActionItem::Builder().SetText(u"New Tab Group").Build());
+  menu_root_->AddChild(std::move(tab_groups_menu));
+
+  auto recent_tabs_menu = actions::ActionItem::Builder()
+                              .SetActionId(kActionRecentTabsSubmenu)
+                              .SetText(u"History")
+                              .Build();
+  recent_tabs_menu->AddChild(
+      actions::ActionItem::Builder().SetText(u"New Recent Tab").Build());
+  menu_root_->AddChild(std::move(recent_tabs_menu));
+
+  controller_->InitializeSearchIndex();
+  actions::ActionItem* const results_root = controller_->Search(u"New");
+  ASSERT_NE(results_root, nullptr);
+
+  const auto& children = results_root->GetChildren().children();
+  ASSERT_EQ(children.size(), 4u);
+
+  EXPECT_EQ(children[0]->GetActionItem()->GetText(), u"New Tab");
+
+  auto verify_section = [&](actions::ActionItem* section,
+                            int expected_header_id,
+                            const std::u16string& expected_item_text) {
+    ASSERT_NE(section, nullptr);
+    const std::u16string expected_header =
+        l10n_util::GetStringUTF16(expected_header_id);
+    EXPECT_EQ(section->GetText(), expected_header);
+    EXPECT_EQ(section->GetProperty(AppMenuActionItem::kDisplayTypeKey),
+              AppMenuActionItem::DisplayType::kSection);
+
+    const auto& section_children = section->GetChildren().children();
+    ASSERT_EQ(section_children.size(), 2u);
+    EXPECT_EQ(section_children[0]->GetActionItem()->GetText(), expected_header);
+    EXPECT_EQ(section_children[0]->GetActionItem()->GetProperty(
+                  AppMenuActionItem::kDisplayTypeKey),
+              AppMenuActionItem::DisplayType::kHeader);
+    EXPECT_EQ(section_children[1]->GetActionItem()->GetText(),
+              expected_item_text);
+  };
+
+  verify_section(children[1]->GetActionItem(),
+                 IDS_APP_MENU_SEARCH_BOOKMARKS_HEADER, u"New Bookmark");
+  verify_section(children[2]->GetActionItem(),
+                 IDS_APP_MENU_SEARCH_TAB_GROUPS_HEADER, u"New Tab Group");
+  verify_section(children[3]->GetActionItem(),
+                 IDS_APP_MENU_SEARCH_RECENT_TABS_HEADER, u"New Recent Tab");
+}
+
+TEST_F(AppMenuSearchControllerTest,
+       BuildSearchResultsTreeAttachesSecondaryText) {
+  auto bookmarks_menu = actions::ActionItem::Builder()
+                            .SetActionId(kActionBookmarksSubmenu)
+                            .SetText(u"Bookmarks")
+                            .Build();
+  bookmarks_menu->AddChild(
+      actions::ActionItem::Builder().SetText(u"Work").Build());
+  menu_root_->AddChild(std::move(bookmarks_menu));
+
+  controller_->InitializeSearchIndex();
+  actions::ActionItem* const results_root = controller_->Search(u"Work");
+  ASSERT_NE(results_root, nullptr);
+
+  bool found_secondary_text = false;
+  for (const auto& section : results_root->GetChildren().children()) {
+    for (const auto& item : section->GetChildren().children()) {
+      std::u16string* secondary_text =
+          item->GetProperty(AppMenuActionItem::kSecondaryTextKey);
+      if (secondary_text && !secondary_text->empty()) {
+        found_secondary_text = true;
+        EXPECT_EQ(*secondary_text, u"Bookmarks");
+        break;
+      }
+    }
+  }
+
+  EXPECT_TRUE(found_secondary_text);
 }
 
 TEST_F(AppMenuSearchControllerTest, FlattenHierarchyExtractsSynonyms) {

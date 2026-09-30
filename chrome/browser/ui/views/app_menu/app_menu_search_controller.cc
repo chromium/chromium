@@ -11,17 +11,24 @@
 #include <vector>
 
 #include "base/check.h"
-#include "base/notimplemented.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/fuzzy_search/fuzzy_finder.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
+#include "chrome/grit/generated_resources.h"
 #include "ui/actions/actions.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
 // Maximum number of candidates returned by fuzzy finder across all categories.
 constexpr size_t kMaxGlobalCandidates = 50;
+
+// Maximum number of search results displayed per section.
+constexpr size_t kMaxActions = 6;
+constexpr size_t kMaxBookmarks = 3;
+constexpr size_t kMaxRecentTabs = 3;
+constexpr size_t kMaxTabGroups = 3;
 
 // Maps known dynamic submenus to their corresponding search category type.
 AppMenuSearchItem::Type GetSubmenuType(
@@ -198,18 +205,113 @@ void AppMenuSearchController::AddSearchItem(
   search_items_.push_back(builder.Build());
 }
 
-// TODO(crbug.com/549177116): Implement this.
 AppMenuSearchController::SearchResults
 AppMenuSearchController::ProcessSearchResults(
     const std::vector<FuzzySearchResult>& matches) const {
-  NOTIMPLEMENTED();
   SearchResults results;
+  results.actions.reserve(kMaxActions);
+  results.bookmarks.reserve(kMaxBookmarks);
+  results.recent_tabs.reserve(kMaxRecentTabs);
+  results.tab_groups.reserve(kMaxTabGroups);
+
+  size_t remaining_capacity =
+      kMaxActions + kMaxBookmarks + kMaxRecentTabs + kMaxTabGroups;
+
+  auto try_add_item = [&remaining_capacity](
+                          std::vector<SearchResults::Item>& section,
+                          size_t max_cap,
+                          const AppMenuSearchItem* search_item) {
+    if (section.size() < max_cap) {
+      section.push_back({
+          .action_item = search_item->GetActionItem(),
+          .breadcrumb = search_item->GetSecondaryText(),
+      });
+      --remaining_capacity;
+    }
+  };
+
+  for (const auto& match : matches) {
+    // Early exit if all category sections have reached their maximum caps.
+    if (remaining_capacity <= 0) {
+      break;
+    }
+
+    auto* search_item = static_cast<AppMenuSearchItem*>(match.item.get());
+    if (!search_item || !search_item->GetActionItem()) {
+      continue;
+    }
+
+    // Partition items into their respective category sections and enforce
+    // maximum per-section result caps to keep search results concise.
+    switch (search_item->GetType()) {
+      case AppMenuSearchItem::Type::kAction:
+        try_add_item(results.actions, kMaxActions, search_item);
+        break;
+      case AppMenuSearchItem::Type::kBookmark:
+        try_add_item(results.bookmarks, kMaxBookmarks, search_item);
+        break;
+      case AppMenuSearchItem::Type::kRecentTabs:
+        try_add_item(results.recent_tabs, kMaxRecentTabs, search_item);
+        break;
+      case AppMenuSearchItem::Type::kTabGroup:
+        try_add_item(results.tab_groups, kMaxTabGroups, search_item);
+        break;
+    }
+  }
+
   return results;
 }
 
-// TODO(crbug.com/549177116): Implement this.
 actions::ActionItem* AppMenuSearchController::BuildSearchResultsTree(
-    AppMenuSearchController::SearchResults results) {
-  NOTIMPLEMENTED();
+    SearchResults results) {
+  search_results_root_ = actions::ActionItem::Builder().Build();
+
+  if (results.empty()) {
+    search_results_root_->AddChild(
+        actions::ActionItem::Builder()
+            .SetText(l10n_util::GetStringUTF16(IDS_SEARCH_NO_RESULTS))
+            .SetEnabled(false)
+            .Build());
+    return search_results_root_.get();
+  }
+
+  auto append_section = [this](std::optional<std::u16string_view> title,
+                               const std::vector<SearchResults::Item>& items) {
+    if (items.empty()) {
+      return;
+    }
+    actions::ActionItem* container = search_results_root_.get();
+    if (title.has_value()) {
+      auto section = actions::ActionItem::Builder()
+                         .SetText(std::u16string(*title))
+                         .Build();
+      section->SetProperty(AppMenuActionItem::kDisplayTypeKey,
+                           AppMenuActionItem::DisplayType::kSection);
+      section->AddChild(
+          AppMenuActionItem::CreateHeader(std::u16string(*title)));
+      container = search_results_root_->AddChild(std::move(section));
+    }
+    for (const auto& item : items) {
+      auto indirect_item =
+          std::make_unique<actions::IndirectActionItem>(item.action_item);
+      if (!item.breadcrumb.empty()) {
+        indirect_item->SetProperty(AppMenuActionItem::kSecondaryTextKey,
+                                   item.breadcrumb);
+      }
+      container->AddChild(std::move(indirect_item));
+    }
+  };
+
+  append_section(std::nullopt, results.actions);
+  append_section(
+      l10n_util::GetStringUTF16(IDS_APP_MENU_SEARCH_BOOKMARKS_HEADER),
+      results.bookmarks);
+  append_section(
+      l10n_util::GetStringUTF16(IDS_APP_MENU_SEARCH_TAB_GROUPS_HEADER),
+      results.tab_groups);
+  append_section(
+      l10n_util::GetStringUTF16(IDS_APP_MENU_SEARCH_RECENT_TABS_HEADER),
+      results.recent_tabs);
+
   return search_results_root_.get();
 }

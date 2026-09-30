@@ -1513,6 +1513,15 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_APP_MENU_SEARCH_PLACEHOLDER" desc="Placeholder text for the search bar in the app menu.">
           Search menu, or type an action
         </message>
+        <message name="IDS_APP_MENU_SEARCH_BOOKMARKS_HEADER" desc="Section header for bookmark matches in the App Menu search results.">
+          Bookmarks
+        </message>
+        <message name="IDS_APP_MENU_SEARCH_RECENT_TABS_HEADER" desc="Section header for recent tabs matches in the App Menu search results.">
+          Recent history
+        </message>
+        <message name="IDS_APP_MENU_SEARCH_TAB_GROUPS_HEADER" desc="Section header for tab group matches in the App Menu search results.">
+          Tab groups
+        </message>
         <message name="IDS_APP_MENU_TOOLS_AND_ACTIONS_HEADER" desc="Header title for the Tools and Actions section in the main App Menu">
           Tools and Actions
         </message>
