@@ -130,23 +130,31 @@ export function getOpenableUrls(topic: TopicItem): string[] {
 export const MAX_TOPIC_SITES = 10;
 
 // Returns the sites the topic details page lists for `topic`: its visits that
-// can be opened in a tab, one per URL, capped to `MAX_TOPIC_SITES`.
-// TODO(crbug.com/558572977): Return the most recent sites once visits carry
-// their visit time. Until then this keeps the order the backend sent them in.
+// can be opened in a tab, most recent first, one per URL (its latest visit),
+// capped to `MAX_TOPIC_SITES`.
 export function getTopicSites(topic: TopicItem): TopicVisit[] {
+  const visits = topic.visits.filter(visit => isWebUrl(visit.url))
+                     .sort((a, b) => compareTimes(b.visitTime, a.visitTime));
   const seenUrls = new Set<string>();
   const sites: TopicVisit[] = [];
-  for (const visit of topic.visits) {
+  for (const visit of visits) {
     if (sites.length === MAX_TOPIC_SITES) {
       break;
     }
-    if (!isWebUrl(visit.url) || seenUrls.has(visit.url)) {
+    if (seenUrls.has(visit.url)) {
       continue;
     }
     seenUrls.add(visit.url);
     sites.push(visit);
   }
   return sites;
+}
+
+function compareTimes(a: Time, b: Time): number {
+  if (a.internalValue === b.internalValue) {
+    return 0;
+  }
+  return a.internalValue < b.internalValue ? -1 : 1;
 }
 
 // Returns the host of `url` without a leading "www.", for display, or an

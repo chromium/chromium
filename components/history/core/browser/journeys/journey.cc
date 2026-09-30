@@ -10,8 +10,10 @@ namespace history::journeys {
 
 JourneyVisit::JourneyVisit() = default;
 
-JourneyVisit::JourneyVisit(GURL url, std::u16string title)
-    : url(std::move(url)), title(std::move(title)) {}
+JourneyVisit::JourneyVisit(GURL url,
+                           std::u16string title,
+                           base::Time visit_time)
+    : url(std::move(url)), title(std::move(title)), visit_time(visit_time) {}
 
 JourneyVisit::~JourneyVisit() = default;
 JourneyVisit::JourneyVisit(const JourneyVisit&) = default;

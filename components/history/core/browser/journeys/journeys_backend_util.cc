@@ -38,7 +38,7 @@ std::optional<Journey> ResolveJourneyVisits(HistoryDatabase& db,
       return std::nullopt;
     }
 
-    visits.emplace_back(url_row.url(), url_row.title());
+    visits.emplace_back(url_row.url(), url_row.title(), entry.visit_time);
   }
 
   return Journey(std::move(journey.journey_id), std::move(journey.title),

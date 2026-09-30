@@ -1585,7 +1585,7 @@ TEST_F(HistoryServiceTest, GetAllJourneys) {
       "test_journey", "Example Journey", creation_time,
       /*emoji=*/std::nullopt, /*overview=*/std::nullopt,
       /*short_overview=*/std::nullopt,
-      /*visits=*/{journeys::JourneyVisit(visited_url, page_title)});
+      /*visits=*/{journeys::JourneyVisit(visited_url, page_title, visit_time)});
   EXPECT_THAT(future.Take(), testing::ElementsAre(expected_journey));
 }
 
@@ -1641,7 +1641,8 @@ TEST_F(HistoryServiceTest, GetJourney) {
         "test_journey", "Example Journey", creation_time,
         /*emoji=*/std::nullopt, /*overview=*/std::nullopt,
         /*short_overview=*/std::nullopt,
-        /*visits=*/{journeys::JourneyVisit(visited_url, page_title)});
+        /*visits=*/
+        {journeys::JourneyVisit(visited_url, page_title, visit_time)});
     EXPECT_THAT(future.Take(), testing::Optional(expected_journey));
   }
 

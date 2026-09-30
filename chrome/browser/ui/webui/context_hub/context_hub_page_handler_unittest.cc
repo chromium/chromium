@@ -2375,7 +2375,8 @@ TEST_F(ContextHubPageHandlerTest, GetTopics_MapsResolvedJourneys) {
       "Test Topic Emoji", "Test Topic Long Description",
       "Test Topic Short Description",
       {history::journeys::JourneyVisit(GURL("https://example.com/visit"),
-                                       u"Test Visit Title")},
+                                       u"Test Visit Title",
+                                       base::Time::FromTimeT(500))},
       {history::journeys::JourneyContinuationQuery(
           "Test Continuation Query Title", "Test Continuation Query Prompt")});
 
@@ -2403,6 +2404,7 @@ TEST_F(ContextHubPageHandlerTest, GetTopics_MapsResolvedJourneys) {
   ASSERT_EQ(topics[0]->visits.size(), 1u);
   EXPECT_EQ(topics[0]->visits[0]->url, GURL("https://example.com/visit"));
   EXPECT_EQ(topics[0]->visits[0]->title, "Test Visit Title");
+  EXPECT_EQ(topics[0]->visits[0]->visit_time, base::Time::FromTimeT(500));
 
   ASSERT_EQ(topics[0]->continuation_queries.size(), 1u);
   EXPECT_EQ(topics[0]->continuation_queries[0]->title,
@@ -2432,7 +2434,8 @@ TEST_F(ContextHubPageHandlerTest, GetTopic_MapsResolvedJourney) {
       "Test Topic Emoji", "Test Topic Long Description",
       "Test Topic Short Description",
       {history::journeys::JourneyVisit(GURL("https://example.com/visit"),
-                                       u"Test Visit Title")},
+                                       u"Test Visit Title",
+                                       base::Time::FromTimeT(500))},
       {history::journeys::JourneyContinuationQuery(
           "Test Continuation Query Title", "Test Continuation Query Prompt")});
 
@@ -2459,6 +2462,7 @@ TEST_F(ContextHubPageHandlerTest, GetTopic_MapsResolvedJourney) {
   ASSERT_EQ(topic->visits.size(), 1u);
   EXPECT_EQ(topic->visits[0]->url, GURL("https://example.com/visit"));
   EXPECT_EQ(topic->visits[0]->title, "Test Visit Title");
+  EXPECT_EQ(topic->visits[0]->visit_time, base::Time::FromTimeT(500));
 
   ASSERT_EQ(topic->continuation_queries.size(), 1u);
   EXPECT_EQ(topic->continuation_queries[0]->title,

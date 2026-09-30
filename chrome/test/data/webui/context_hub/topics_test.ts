@@ -28,6 +28,10 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 // U+1F4C1 FILE FOLDER.
 const EMOJI = '\u{1F4C1}';
 
+function createVisit(url: string, title: string, time = 0): TopicVisit {
+  return {url, title, visitTime: {internalValue: BigInt(time)}};
+}
+
 function createTopic(overrides: Partial<Topic> = {}): Topic {
   return {
     id: 'topic-1',
@@ -37,9 +41,9 @@ function createTopic(overrides: Partial<Topic> = {}): Topic {
     overview: 'Long overview.',
     shortOverview: 'Short overview.',
     visits: [
-      {url: 'https://example.com/page-1', title: 'Page 1'},
-      {url: 'chrome://settings', title: 'Settings'},
-      {url: 'http://example.com/page-2', title: 'Page 2'},
+      createVisit('https://example.com/page-1', 'Page 1', 3),
+      createVisit('chrome://settings', 'Settings', 2),
+      createVisit('http://example.com/page-2', 'Page 2', 1),
     ],
     continuationQueries: [
       {title: 'Query title', prompt: 'Query prompt'},
@@ -49,8 +53,8 @@ function createTopic(overrides: Partial<Topic> = {}): Topic {
   };
 }
 
-function createCollection(
-    overrides: Partial<TopicCollection> = {}): TopicCollection {
+function createCollection(overrides: Partial<TopicCollection> = {}):
+    TopicCollection {
   return {
     title: 'Collection 1',
     items: [
@@ -122,35 +126,40 @@ suite('TopicUtils', () => {
   test('getOpenableUrls only returns web URLs', () => {
     const item = toTopicItem(createTopic({
       visits: [
-        {url: 'https://a.com/', title: ''},
-        {url: 'file:///etc/passwd', title: ''},
-        {url: 'javascript:alert(1)', title: ''},
-        {url: 'http://b.com/', title: ''},
-        {url: '', title: ''},
+        createVisit('https://a.com/', ''),
+        createVisit('file:///etc/passwd', ''),
+        createVisit('javascript:alert(1)', ''),
+        createVisit('http://b.com/', ''),
+        createVisit('', ''),
       ],
     }));
     assertDeepEquals(
         ['https://a.com/', 'http://b.com/'], getOpenableUrls(item));
   });
 
-  test('getTopicSites keeps web URLs once each, capped', () => {
+  test('getTopicSites keeps web URLs once each, most recent first', () => {
     const item = toTopicItem(createTopic({
       visits: [
-        {url: 'https://a.com/', title: 'A'},
-        {url: 'chrome://history', title: 'History'},
-        {url: 'https://a.com/', title: 'A again'},
-        {url: 'http://b.com/', title: 'B'},
+        createVisit('https://a.com/', 'A', 1),
+        createVisit('http://b.com/', 'B', 2),
+        createVisit('chrome://history', 'History', 5),
+        createVisit('https://c.com/', 'C', 3),
+        createVisit('https://a.com/', 'A again', 4),
       ],
     }));
-    assertDeepEquals(['A', 'B'], getTopicSites(item).map(site => site.title));
+    assertDeepEquals(
+        ['A again', 'C', 'B'], getTopicSites(item).map(site => site.title));
+  });
 
+  test('getTopicSites caps to the most recent sites', () => {
     const visits: TopicVisit[] = [];
     for (let i = 0; i < MAX_TOPIC_SITES + 5; i++) {
-      visits.push({url: `https://site${i}.com/`, title: `Site ${i}`});
+      visits.push(createVisit(`https://site${i}.com/`, `Site ${i}`, i));
     }
     const sites = getTopicSites(toTopicItem(createTopic({visits})));
     assertEquals(MAX_TOPIC_SITES, sites.length);
-    assertEquals('Site 0', sites[0]!.title);
+    assertEquals(`Site ${MAX_TOPIC_SITES + 4}`, sites[0]!.title);
+    assertEquals('Site 5', sites[MAX_TOPIC_SITES - 1]!.title);
   });
 
   test('getDisplayDomain drops www and handles bad URLs', () => {
@@ -396,7 +405,7 @@ suite('TopicDetails', () => {
 
   test('hides the site buttons when nothing can be opened', async () => {
     handler.setResultFor('getTopic', Promise.resolve({
-      topic: createTopic({visits: [{url: 'chrome://history', title: ''}]}),
+      topic: createTopic({visits: [createVisit('chrome://history', '')]}),
     }));
     await createDetails('?id=topic-1');
     assertTrue(queryPanel('#openRelatedTabs')!.hidden);
@@ -414,7 +423,7 @@ suite('TopicDetails', () => {
   test('sites button caps the count and the favicons', async () => {
     const visits: TopicVisit[] = [];
     for (let i = 0; i < MAX_TOPIC_SITES + 5; i++) {
-      visits.push({url: `https://site${i}.com/`, title: `Site ${i}`});
+      visits.push(createVisit(`https://site${i}.com/`, `Site ${i}`));
     }
     handler.setResultFor(
         'getTopic', Promise.resolve({topic: createTopic({visits})}));
@@ -447,7 +456,7 @@ suite('TopicDetails', () => {
   });
 
   test('sites dialog shows an untitled site by its domain once', async () => {
-    const visits = [{url: 'https://www.example.com/', title: ''}];
+    const visits = [createVisit('https://www.example.com/', '')];
     handler.setResultFor(
         'getTopic', Promise.resolve({topic: createTopic({visits})}));
     await createDetails('?id=topic-1');

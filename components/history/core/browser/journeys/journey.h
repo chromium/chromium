@@ -19,7 +19,7 @@ namespace history::journeys {
 // and title in the history database.
 struct JourneyVisit {
   JourneyVisit();
-  JourneyVisit(GURL url, std::u16string title);
+  JourneyVisit(GURL url, std::u16string title, base::Time visit_time);
   ~JourneyVisit();
   JourneyVisit(const JourneyVisit&);
   JourneyVisit& operator=(const JourneyVisit&);
@@ -33,6 +33,9 @@ struct JourneyVisit {
 
   // Resolved page title of the visit from the history database.
   std::u16string title;
+
+  // Time of the visit. It identifies the visit in the history database.
+  base::Time visit_time;
 };
 
 // Represents a fully resolved journey with URLs and titles resolved from the

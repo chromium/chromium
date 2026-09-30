@@ -849,7 +849,8 @@ browser::context_hub::mojom::TopicPtr ToMojoTopic(
   visits.reserve(journey.visits.size());
   for (history::journeys::JourneyVisit& visit : journey.visits) {
     visits.push_back(browser::context_hub::mojom::TopicVisit::New(
-        std::move(visit.url), base::UTF16ToUTF8(visit.title)));
+        std::move(visit.url), base::UTF16ToUTF8(visit.title),
+        visit.visit_time));
   }
 
   std::vector<browser::context_hub::mojom::TopicContinuationQueryPtr>

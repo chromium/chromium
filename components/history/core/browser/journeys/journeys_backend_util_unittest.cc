@@ -101,8 +101,10 @@ TEST_F(JourneysBackendUtilTest, ResolveJourneyVisits_SuccessWithMetadata) {
       "test_journey", "Example Journey", creation_time, /*emoji=*/"🔍",
       /*overview=*/"Overview text", /*short_overview=*/"Short overview",
       /*visits=*/
-      {JourneyVisit(GURL("http://www.example.com/page1"), u"Page 1"),
-       JourneyVisit(GURL("http://www.example.com/page2"), u"Page 2")},
+      {JourneyVisit(GURL("http://www.example.com/page1"), u"Page 1",
+                    visit_time_1),
+       JourneyVisit(GURL("http://www.example.com/page2"), u"Page 2",
+                    visit_time_2)},
       /*continuation_queries=*/{JourneyContinuationQuery("query", "prompt")});
   EXPECT_THAT(ResolveJourneyVisits(db_, journey), Optional(expected_journey));
 }
@@ -172,7 +174,8 @@ TEST_F(JourneysBackendUtilTest,
       /*emoji=*/std::nullopt, /*overview=*/std::nullopt,
       /*short_overview=*/std::nullopt,
       /*visits=*/
-      {JourneyVisit(GURL("http://www.example.com/dest"), u"Destination")});
+      {JourneyVisit(GURL("http://www.example.com/dest"), u"Destination",
+                    shared_visit_time)});
   EXPECT_THAT(ResolveJourneyVisits(db_, journey), Optional(expected_journey));
 }
 
@@ -260,7 +263,8 @@ TEST_F(JourneysBackendUtilTest, GetJourneyWithResolvedVisits_Found) {
       /*emoji=*/std::nullopt, /*overview=*/std::nullopt,
       /*short_overview=*/std::nullopt,
       /*visits=*/
-      {JourneyVisit(GURL("http://www.example.com/page1"), u"Page 1")});
+      {JourneyVisit(GURL("http://www.example.com/page1"), u"Page 1",
+                    visit_time)});
   EXPECT_THAT(GetJourneyWithResolvedVisits(db_, "journey_b"),
               Optional(expected_journey));
 }

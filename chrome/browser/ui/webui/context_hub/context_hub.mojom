@@ -197,6 +197,8 @@ struct TopicVisit {
   url.mojom.Url url;
   // Title of the visited page.
   string title;
+  // When the page was visited.
+  mojo_base.mojom.Time visit_time;
 };
 
 // A suggested way for the user to pick a Topic back up.
