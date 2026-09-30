@@ -287,6 +287,12 @@ class SessionServiceBase : public sessions::CommandStorageManagerDelegate,
   // Will rebuild session commands if rebuild_on_next_save_ is true.
   virtual void RebuildCommandsIfRequired() = 0;
 
+  // Returns whether closing a tab in `window_id` should mark its sessionStorage
+  // namespace for deletion. For example, tabs closing with the last browser
+  // window keep their namespaces available for session restore.
+  virtual bool ShouldDeleteSessionStorageOnTabClosing(
+      SessionID window_id) const;
+
   // Unit test accessors.
   sessions::CommandStorageManager* GetCommandStorageManagerForTest();
 

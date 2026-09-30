@@ -771,6 +771,13 @@ void SessionService::RebuildCommandsIfRequired() {
   }
 }
 
+bool SessionService::ShouldDeleteSessionStorageOnTabClosing(
+    SessionID window_id) const {
+  // If the window is closing, then the tab's sessionStorage should be kept
+  // around for session restore.
+  return !pending_window_close_ids_.contains(window_id);
+}
+
 void SessionService::OnClosingAllBrowsersChanged(bool closing) {
   if (closing) {
     LogExitEvent();

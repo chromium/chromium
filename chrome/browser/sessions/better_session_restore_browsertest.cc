@@ -451,6 +451,58 @@ IN_PROC_BROWSER_TEST_P(ContinueWhereILeftOffSessionStorageTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
+                       PRE_SessionStorageSequentiallyCloseMultipleWindows) {
+  StoreDataWithPage("session_storage.html?value=first");
+
+  BrowserWindowInterface* second_browser =
+      CreateBrowser(browser()->GetProfile());
+  StoreDataWithPage(second_browser, "session_storage.html?value=second");
+
+  ASSERT_NE(browser()
+                ->GetTabStripModel()
+                ->GetActiveWebContents()
+                ->GetController()
+                .GetDefaultSessionStorageNamespace()
+                ->id(),
+            second_browser->GetTabStripModel()
+                ->GetActiveWebContents()
+                ->GetController()
+                .GetDefaultSessionStorageNamespace()
+                ->id());
+
+  // SessionService records the first window as closed because another window
+  // remains open. Closing the last window adds its ID to
+  // `pending_window_close_ids_` before its tabs close, so `TabClosing()` leaves
+  // their sessionStorage namespaces marked as persistent for session restore.
+  CloseBrowserSynchronously(browser());
+  CloseBrowserSynchronously(second_browser);
+}
+
+IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
+                       SessionStorageSequentiallyCloseMultipleWindows) {
+  Profile* profile = browser()->GetProfile();
+  int restored_window_count = 0;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [this, profile,
+       &restored_window_count](BrowserWindowInterface* restored_browser) {
+        if (restored_browser->GetProfile() == profile &&
+            restored_browser->GetType() ==
+                BrowserWindowInterface::TYPE_NORMAL) {
+          CheckReloadedPageRestored(restored_browser);
+          const GURL& restored_url = restored_browser->GetTabStripModel()
+                                         ->GetWebContentsAt(0)
+                                         ->GetLastCommittedURL();
+          EXPECT_EQ("/session_restore/session_storage.html",
+                    restored_url.path());
+          EXPECT_EQ("value=second", restored_url.query());
+          ++restored_window_count;
+        }
+        return true;
+      });
+  EXPECT_EQ(1, restored_window_count);
+}
+
+IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
                        PRE_PRE_LocalStorageClearedOnExit) {
   StoreDataWithPage("local_storage.html");
 }
@@ -587,6 +639,21 @@ IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
   CheckReloadedPageRestored(new_browser);
   // The form data contained passwords, so it's removed completely.
   CheckFormRestored(new_browser, false, false);
+}
+
+IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
+                       PRE_SessionStorageLastWindowClose) {
+  StoreDataWithPage("session_storage.html");
+
+  // Close the last window while SessionService is still alive so TabClosing()
+  // makes the persistence decision before shutdown destroys the final namespace
+  // handle.
+  CloseBrowserSynchronously(browser());
+}
+
+IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
+                       SessionStorageLastWindowClose) {
+  CheckReloadedPageRestored();
 }
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)

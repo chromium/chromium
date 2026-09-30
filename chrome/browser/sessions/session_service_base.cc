@@ -306,13 +306,15 @@ void SessionServiceBase::TabInserted(WebContents* contents) {
 }
 
 void SessionServiceBase::TabClosing(WebContents* contents) {
-  // Allow the associated sessionStorage to get deleted; it won't be needed
-  // in the session restore.
-  content::SessionStorageNamespaceHandle* session_storage_namespace =
-      contents->GetController().GetDefaultSessionStorageNamespace();
-  session_storage_namespace->SetShouldPersist(false);
   sessions::SessionTabHelper* session_tab_helper =
       sessions::SessionTabHelper::FromWebContents(contents);
+  if (ShouldDeleteSessionStorageOnTabClosing(session_tab_helper->window_id())) {
+    content::SessionStorageNamespaceHandle* session_storage_namespace =
+        contents->GetController().GetDefaultSessionStorageNamespace();
+    // Allow the associated sessionStorage to get deleted; the tab close is
+    // being committed and it won't be needed in session restore.
+    session_storage_namespace->SetShouldPersist(false);
+  }
   TabClosed(session_tab_helper->window_id(), session_tab_helper->session_id());
 }
 
@@ -877,6 +879,11 @@ bool SessionServiceBase::ShouldTrackBrowser(
 
   return ShouldRestoreWindowOfType(
       WindowTypeForBrowserType(browser->GetType()));
+}
+
+bool SessionServiceBase::ShouldDeleteSessionStorageOnTabClosing(
+    SessionID window_id) const {
+  return true;
 }
 
 sessions::CommandStorageManager*

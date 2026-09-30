@@ -7,7 +7,9 @@ function readData() {
   return sessionStorage.getItem('key');
 }
 function writeData() {
-  sessionStorage.setItem('key', 'foo');
+  const value = new URLSearchParams(window.location.search).get('value') ||
+      'foo';
+  sessionStorage.setItem('key', value);
   return true;
 }
 </script>

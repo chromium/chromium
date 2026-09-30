@@ -232,6 +232,9 @@ class SessionService : public SessionServiceBase {
   // Will rebuild session commands if rebuild_on_next_save_ is true.
   void RebuildCommandsIfRequired() override;
 
+  bool ShouldDeleteSessionStorageOnTabClosing(
+      SessionID window_id) const override;
+
   // Invoked with true when all browsers start closing.
   void OnClosingAllBrowsersChanged(bool closing);
 
