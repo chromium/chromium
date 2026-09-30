@@ -342,7 +342,7 @@ export class CrActionMenuElement extends CrLitElement {
   }
 
   private onClick_(e: Event) {
-    if (e.target === this) {
+    if (e.composedPath()[0] === this.$.dialog) {
       this.close();
       e.stopPropagation();
     }
