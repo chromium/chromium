@@ -124,8 +124,9 @@ class WelcomeTourInteractiveUiTest
     // Ensure that the widget context for the test interaction sequence matches
     // the initial element context used to start the Welcome Tour.
     SetContextWidget(
-        views::ElementTrackerViews::GetInstance()->GetWidgetForContext(
-            ash::WelcomeTourController::Get()->GetInitialElementContext()));
+        views::ElementTrackerViews::GetInstance()
+            ->GetPrimaryWindowWidgetForContext(
+                ash::WelcomeTourController::Get()->GetInitialElementContext()));
   }
 
   // Returns whether the WelcomeTourV3 feature is enabled given test

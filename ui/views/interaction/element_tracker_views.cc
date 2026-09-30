@@ -380,12 +380,13 @@ ElementTrackerViews::GetAllMatchingViewsInAnyContext(ui::ElementIdentifier id,
   return it->second.GetAllViews(require_visible);
 }
 
-Widget* ElementTrackerViews::GetWidgetForContext(ui::ElementContext context) {
+Widget* ElementTrackerViews::GetPrimaryWindowWidgetForContext(
+    ui::ElementContext context) {
   for (auto& [id, data] : element_data_) {
     auto* const view =
         data.FindFirstViewInContext(context, /*require_visible=*/false);
     if (view) {
-      return view->GetWidget();
+      return view->GetWidget()->GetPrimaryWindowWidget();
     }
   }
   return nullptr;

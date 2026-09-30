@@ -22,10 +22,9 @@ BrowserElementsViews::~BrowserElementsViews() = default;
 
 views::Widget* BrowserElementsViews::GetPrimaryWindowWidget() {
   const auto context = GetContext();
-  return context
-             ? views::ElementTrackerViews::GetInstance()->GetWidgetForContext(
-                   context)
-             : nullptr;
+  return context ? views::ElementTrackerViews::GetInstance()
+                       ->GetPrimaryWindowWidgetForContext(context)
+                 : nullptr;
 }
 
 void BrowserElementsViews::TearDown() {

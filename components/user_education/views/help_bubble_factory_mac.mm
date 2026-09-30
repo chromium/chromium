@@ -28,8 +28,8 @@ std::unique_ptr<HelpBubble> HelpBubbleFactoryMac::CreateBubble(
     HelpBubbleParams params) {
   auto* const element_mac = element->AsA<ui::TrackedElementMac>();
   views::Widget* const widget =
-      views::ElementTrackerViews::GetInstance()->GetWidgetForContext(
-          element_mac->context());
+      views::ElementTrackerViews::GetInstance()
+          ->GetPrimaryWindowWidgetForContext(element_mac->context());
 
   // Because the exact location of the menu item cannot be determined, an arrow
   // is not shown on the bubble.
