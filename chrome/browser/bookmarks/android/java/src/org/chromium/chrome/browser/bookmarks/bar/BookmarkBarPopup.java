@@ -222,25 +222,26 @@ class BookmarkBarPopup implements FlyoutHandler<AnchoredPopupWindow> {
         RectProvider translatedRectProvider =
                 new TranslatedRectProvider(baseRectProvider, anchorView, mActivity);
 
-        mPopupWindow =
-                new AnchoredPopupWindow(
-                        mActivity,
-                        mActivity.getWindow().getDecorView(),
-                        new ColorDrawable(Color.TRANSPARENT),
-                        () -> contentView,
-                        translatedRectProvider,
-                        mBrowserControlsRectProvider);
-
-        mPopupWindow.setFocusable(true);
-        mPopupWindow.setOutsideTouchable(true);
+        AnchoredPopupWindow.Builder popupBuilder =
+                new AnchoredPopupWindow.Builder(
+                                mActivity,
+                                mActivity.getWindow().getDecorView(),
+                                new ColorDrawable(Color.TRANSPARENT),
+                                () -> contentView,
+                                translatedRectProvider)
+                        .setViewportRectProvider(mBrowserControlsRectProvider)
+                        .setFocusable(true)
+                        .setOutsideTouchable(true)
+                        .setPreferredVerticalOrientation(
+                                AnchoredPopupWindow.VerticalOrientation.BELOW)
+                        .setHorizontalOverlapAnchor(true)
+                        .setPreferredHorizontalOrientation(
+                                AnchoredPopupWindow.HorizontalOrientation.LAYOUT_DIRECTION)
+                        .setAnimateFromAnchor(true);
         if (touchInterceptor != null) {
-            mPopupWindow.setTouchInterceptor(touchInterceptor);
+            popupBuilder.setTouchInterceptor(touchInterceptor);
         }
-        mPopupWindow.setPreferredVerticalOrientation(AnchoredPopupWindow.VerticalOrientation.BELOW);
-        mPopupWindow.setHorizontalOverlapAnchor(true);
-        mPopupWindow.setPreferredHorizontalOrientation(
-                AnchoredPopupWindow.HorizontalOrientation.LAYOUT_DIRECTION);
-        mPopupWindow.setAnimateFromAnchor(true);
+        mPopupWindow = popupBuilder.build();
 
         mModelList = menuModel;
         mSizeObserver =

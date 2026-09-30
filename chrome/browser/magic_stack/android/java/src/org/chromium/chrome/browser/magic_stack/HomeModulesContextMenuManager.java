@@ -86,12 +86,13 @@ public class HomeModulesContextMenuManager {
         if (menu == null) return;
 
         mPopupWindow =
-                new AnchoredPopupWindow(
-                        view.getContext(),
-                        view,
-                        new ColorDrawable(Color.TRANSPARENT),
-                        menu.getContentView(),
-                        new RectProvider(getAnchorRectangle(view)));
+                new AnchoredPopupWindow.Builder(
+                                view.getContext(),
+                                view,
+                                new ColorDrawable(Color.TRANSPARENT),
+                                menu::getContentView,
+                                new RectProvider(getAnchorRectangle(view)))
+                        .build();
 
         showContextMenu(menu, view);
         notifyContextMenuShown(moduleProvider);

@@ -585,14 +585,34 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
     }
 
     private AnchoredPopupWindow(Builder builder) {
-        this(
-                builder.mContext,
-                builder.mRootView,
-                builder.mBackground,
-                builder.mContentViewCreator,
-                builder.mAnchorRectProvider,
-                builder.mViewportRectProvider,
-                builder.mSpecCalculator);
+        // Fill in missing theme attributes (such as R.attr.minInteractTargetSize) with adaptive
+        // density defaults in case the context theme does not define them (e.g. in WebView).
+        mContext =
+                new FillInContextThemeWrapper(
+                        builder.mContext, R.style.ThemeOverlay_UI_AdaptiveDensityDefaults);
+        mRootView = builder.mRootView.getRootView();
+        mContentViewCreator = builder.mContentViewCreator;
+        mViewportRectProvider =
+                builder.mViewportRectProvider != null
+                        ? builder.mViewportRectProvider
+                        : new RootViewRectProvider(mRootView);
+        mSpecCalculator =
+                builder.mSpecCalculator != null
+                        ? builder.mSpecCalculator
+                        : new PopupSpecCalculator();
+        mPopupWindow = UiWidgetFactory.getInstance().createPopupWindow(mContext);
+        mHandler = new Handler();
+        mRectProvider = builder.mAnchorRectProvider;
+        mPopupSpec =
+                new PopupSpec(
+                        new Rect(), new PopupPositionParams(0, 0, false, false, false, false));
+
+        mPopupWindow.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
+        mPopupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+        mPopupWindow.setBackgroundDrawable(builder.mBackground);
+
+        mPopupWindow.setTouchInterceptor(this);
+        mPopupWindow.setOnDismissListener(mDismissListener);
 
         if (builder.mOnDismissListener != null) {
             addOnDismissListener(builder.mOnDismissListener);
@@ -635,116 +655,6 @@ public class AnchoredPopupWindow implements OnTouchListener, RectProvider.Observ
             setWindowLayoutType(builder.mWindowLayoutType);
         }
         setAllowOverlapCaptionBar(builder.mAllowOverlapCaptionBar);
-    }
-
-    /**
-     * Constructs an {@link AnchoredPopupWindow} instance.
-     *
-     * @param context Context to draw resources from.
-     * @param rootView The {@link View} to use for size calculations and for display.
-     * @param background The background {@link Drawable} to use for the popup.
-     * @param contentView The content view to set on the popup. Expected to be a {@link ViewGroup}.
-     * @param anchorRectProvider The {@link RectProvider} that will provide the {@link Rect} this
-     *     popup attaches and orients to. The coordinates in the {@link Rect} are expected to be
-     *     screen coordinates.
-     * @deprecated Use the {@link Builder} to create the popup instead.
-     */
-    @Deprecated
-    public AnchoredPopupWindow(
-            Context context,
-            View rootView,
-            Drawable background,
-            View contentView,
-            RectProvider anchorRectProvider) {
-        this(context, rootView, background, () -> contentView, anchorRectProvider, null, null);
-    }
-
-    /**
-     * Constructs an {@link AnchoredPopupWindow} instance.
-     *
-     * @param context Context to draw resources from.
-     * @param rootView The {@link View} to use for size calculations and for display.
-     * @param background The background {@link Drawable} to use for the popup.
-     * @param contentViewCreator The supplier for the content view to set on the popup. The view is
-     *     expected to be a {@link ViewGroup}.
-     * @param anchorRectProvider The {@link RectProvider} that will provide the {@link Rect} this
-     *     popup attaches and orients to. The coordinates in the {@link Rect} are expected to be
-     *     screen coordinates.
-     * @param viewportRectProvider The {@link RectProvider} that provides the {@link Rect} for the
-     *     visible viewpoint. If null, the window coordinates of the root view will be used.
-     * @deprecated Use the {@link Builder} to create the popup instead.
-     */
-    @Deprecated
-    public AnchoredPopupWindow(
-            Context context,
-            View rootView,
-            @Nullable Drawable background,
-            Supplier<View> contentViewCreator,
-            RectProvider anchorRectProvider,
-            @Nullable RectProvider viewportRectProvider) {
-        this(
-                context,
-                rootView,
-                background,
-                contentViewCreator,
-                anchorRectProvider,
-                viewportRectProvider,
-                null);
-    }
-
-    /**
-     * Constructs an {@link AnchoredPopupWindow} instance.
-     *
-     * @param context Context to draw resources from.
-     * @param rootView The {@link View} to use for size calculations and for display.
-     * @param background The background {@link Drawable} to use for the popup.
-     * @param contentViewCreator The supplier for the content view to set on the popup. The view is
-     *     expected to be a {@link ViewGroup}.
-     * @param anchorRectProvider The {@link RectProvider} that will provide the {@link Rect} this
-     *     popup attaches and orients to. The coordinates in the {@link Rect} are expected to be
-     *     screen coordinates.
-     * @param viewportRectProvider The {@link RectProvider} that provides the {@link Rect} for the
-     *     visible viewpoint. If null, the window coordinates of the root view will be used.
-     * @param calculator The {@link SpecCalculator} that can customize the positioning behavior.
-     * @deprecated Use the {@link Builder} to create the popup instead.
-     */
-    @Deprecated
-    public AnchoredPopupWindow(
-            Context context,
-            View rootView,
-            @Nullable Drawable background,
-            Supplier<View> contentViewCreator,
-            RectProvider anchorRectProvider,
-            @Nullable RectProvider viewportRectProvider,
-            @Nullable SpecCalculator calculator) {
-        // Fill in missing theme attributes (such as R.attr.minInteractTargetSize) with adaptive
-        // density defaults in case the context theme does not define them (e.g. in WebView).
-        mContext =
-                new FillInContextThemeWrapper(
-                        context, R.style.ThemeOverlay_UI_AdaptiveDensityDefaults);
-        mRootView = rootView.getRootView();
-        mContentViewCreator = contentViewCreator;
-        mViewportRectProvider =
-                viewportRectProvider != null
-                        ? viewportRectProvider
-                        : new RootViewRectProvider(mRootView);
-        if (calculator == null) {
-            calculator = new PopupSpecCalculator();
-        }
-        mSpecCalculator = calculator;
-        mPopupWindow = UiWidgetFactory.getInstance().createPopupWindow(mContext);
-        mHandler = new Handler();
-        mRectProvider = anchorRectProvider;
-        mPopupSpec =
-                new PopupSpec(
-                        new Rect(), new PopupPositionParams(0, 0, false, false, false, false));
-
-        mPopupWindow.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
-        mPopupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-        mPopupWindow.setBackgroundDrawable(background);
-
-        mPopupWindow.setTouchInterceptor(this);
-        mPopupWindow.setOnDismissListener(mDismissListener);
     }
 
     /** Shows the popup. Will have no effect if the popup is already showing. */
