@@ -273,8 +273,7 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
   // BitmapGpuChannelLostObserver implementation.
   void OnGpuChannelLost() override;
 
-  bool ShouldReplaceTargetBuffer(
-      PaintImage::ContentId content_id = PaintImage::kInvalidContentId);
+  bool ShouldReplaceTargetBuffer(PaintImage::ContentId content_id);
   void FlushRecording(cc::PaintRecord last_recording);
 
   void EnsureResourceReadyForDraw();

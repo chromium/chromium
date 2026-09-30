@@ -533,6 +533,8 @@ void CanvasNon2DResourceProvider::SetAnimatedImageFrameIndexes(
 
 bool CanvasNon2DResourceProvider::ShouldReplaceTargetBuffer(
     PaintImage::ContentId content_id) {
+  CHECK(!is_software_);
+
   // If the canvas is single buffered, concurrent read/writes to the resource
   // are allowed. Note that we ignore the resource lost case as well since
   // that only indicates that we did not get a sync token for read/write
@@ -555,11 +557,7 @@ bool CanvasNon2DResourceProvider::ShouldReplaceTargetBuffer(
   // Its possible to have deferred work in skia which uses this resource. Try
   // flushing once to see if that releases the read refs. We can avoid a copy
   // by queuing this work before writing to this resource.
-  if (!is_software_) {
-    // Another context may have a read reference to this resource. Flush the
-    // deferred queue in that context so that we don't need to copy.
-    FlushForImageListener::Get()->NotifyFlushForImage(content_id);
-  }
+  FlushForImageListener::Get()->NotifyFlushForImage(content_id);
 
   return !resource_->HasOneRef();
 }
