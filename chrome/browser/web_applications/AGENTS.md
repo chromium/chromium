@@ -8,6 +8,7 @@ storage, sync, and OS integration.
 
 ## Canonical Docs
 
+- [Security Notes](SECURITY.md)
 - [Commands Architecture](commands/README.md)
 - [Lock System](locks/README.md)
 - [Jobs](jobs/README.md)

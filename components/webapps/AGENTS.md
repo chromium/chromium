@@ -16,14 +16,15 @@ and Web App Manifest processing in Chromium.
 
 ## Ecosystem Map (Directories & Spokes)
 
-- **Shared Components** (`components/webapps/`): [README](README.md)
-  Cross-platform installability, promotion, and identifiers shared by Desktop
-  and Android (delegates via `WebappsClient`). `browser/installable/` ·
-  `browser/banners/` · `browser/android/` · `common/` · `renderer/` ·
-  `isolated_web_apps/`
+- **Shared Components** (`components/webapps/`): [README](README.md) ·
+  [Security Notes](SECURITY.md) Cross-platform installability, promotion, and
+  identifiers shared by Desktop and Android (delegates via `WebappsClient`).
+  `browser/installable/` · `browser/banners/` · `browser/android/` · `common/` ·
+  `renderer/` · `isolated_web_apps/`
 - **Desktop Engine** (`chrome/browser/web_applications/`):
   [Rules](/chrome/browser/web_applications/AGENTS.md) ·
-  [README](/chrome/browser/web_applications/README.md) Per-profile
+  [README](/chrome/browser/web_applications/README.md) ·
+  [Security Notes](/chrome/browser/web_applications/SECURITY.md) Per-profile
   `WebAppProvider` engine (commands, locks, DB storage, sync, and OS
   integration).
 - **Desktop UI** (`chrome/browser/ui/web_applications/`):
