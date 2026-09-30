@@ -22,7 +22,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileLock;
-import java.nio.channels.OverlappingFileLockException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -43,7 +42,8 @@ public abstract class AwDataDirLock {
     private static @Nullable FileLock sExclusiveFileLock;
 
     @IntDef({
-        ProcessStatus.UNKNOWN,
+        ProcessStatus.PROBE_FAILURE,
+        ProcessStatus.STATUS_FAILURE,
         ProcessStatus.NONEXISTENT,
         ProcessStatus.INACCESSIBLE,
         ProcessStatus.UNINTERRUPTIBLE,
@@ -51,18 +51,20 @@ public abstract class AwDataDirLock {
         ProcessStatus.ALIVE,
     })
     private @interface ProcessStatus {
-        // We couldn't figure out the state of the process for some reason.
-        int UNKNOWN = 0;
+        // Calling Os.kill(pid, 0) failed in an unexpected way.
+        int PROBE_FAILURE = 0;
+        // Reading and parsing /proc/<pid>/stat failed.
+        int STATUS_FAILURE = 1;
         // The process doesn't appear to exist (but may just be hidden from us).
-        int NONEXISTENT = 1;
+        int NONEXISTENT = 2;
         // The process appears to exist but is inaccessible to us.
-        int INACCESSIBLE = 2;
+        int INACCESSIBLE = 3;
         // The process's main thread is in uninterruptible sleep (D state).
-        int UNINTERRUPTIBLE = 3;
+        int UNINTERRUPTIBLE = 4;
         // The process's main thread has exited (Z state).
-        int ZOMBIE = 4;
-        // The process is alive.
-        int ALIVE = 5;
+        int ZOMBIE = 5;
+        // The process is alive (any other state).
+        int ALIVE = 6;
     }
 
     public static void lock(final Context appContext) {
@@ -136,35 +138,25 @@ public abstract class AwDataDirLock {
                     // Older versions of Android incorrectly throw IOException when the flock()
                     // call fails with EAGAIN, instead of returning null. Just ignore the exception
                     // and continue as if it did return null.
-                } catch (OverlappingFileLockException e) {
+                } catch (Exception e) {
+                    // This is primarily intended to catch OverlappingFileLockException as described
+                    // below, but it seems reasonable to apply the same treatment to any exception.
+                    //
                     // The Java standard library maintains its own internal file lock table in
                     // addition to using the actual flock() system call, because it wants to have
                     // portable/consistent behavior in the case where two different threads in the
-                    // same process both try to lock the same file concurrently - whether this would
-                    // succeed or fail is OS-dependent. This is the exception thrown for that case.
+                    // same process both try to lock the same file concurrently.
                     //
-                    // In theory this can't ever happen because we only touch the lock file from
-                    // this method, which is always called on the UI thread and so can't race with
-                    // itself.
+                    // This shouldn't ever happen because this code is always called on the UI
+                    // thread, but unfortunately there is at least one library that opens our
+                    // lockfile and tries to lock it itself as part of an ill-advised workaround for
+                    // data directory locking issues, and this can race with init on another thread.
                     //
-                    // In reality, there is at least one known case of library code that opens
-                    // *our lockfile* and tries to lock it itself, to determine in advance whether
-                    // initializing WebView is going to fail due to a failure to acquire the lock!
-                    // This is ill-advised for many reasons, but the most important is that the
-                    // culprit code can run on any thread and thus can race with our locking code
-                    // if another thread in the app has concurrently triggered WebView
-                    // initialization without messing with our lockfile first. When this happens,
-                    // the culprit code that's trying to *prevent* a lock failure crash can end up
-                    // *causing* a lock failure crash that otherwise would not have happened.
-                    //
-                    // This also isn't really the app developer's fault because the known cases are
-                    // in closed-source 3P libraries. So, until we reach the last retry, we treat
-                    // this the same as a normal lock failure. If the cause really was other code
-                    // messing with our lockfile then we expect it's going to release the lock again
-                    // very quickly so that it can try to use WebView and we'll succeed next time.
-                    // On the last retry, we rethrow the exception, because we don't want to lose
-                    // the crash report data that shows us that the OverlappingFileLockException is
-                    // occuring by having it just turn into the normal lock failure exception.
+                    // Rather than just letting this crash, we treat it the same way as a normal
+                    // failure to acquire the lock - we expect the other code to release the lock
+                    // quickly, so retrying will probably resolve the situation. If we're on our
+                    // last retry, though, we rethrow the exception so that we still see the real
+                    // cause in crash data instead of just a generic failure to acquire the lock.
                     if (attempts == LOCK_RETRIES) {
                         throw e;
                     }
@@ -184,8 +176,6 @@ public abstract class AwDataDirLock {
             }
 
             // We failed to get the lock even after retrying.
-            // Many existing apps rely on this even though it's known to be unsafe.
-            // Make it fatal for apps that target P or higher
             @Nullable ProcessInfo holder = ProcessInfo.readFromFile(sLockFile);
             String error = getLockFailureReason(holder);
             if (CompatQuirks.isEnabled(CompatQuirks.Quirk.DATA_DIRECTORY_LOCK_WARN_ONLY)) {
@@ -199,10 +189,12 @@ public abstract class AwDataDirLock {
     private static class ProcessInfo {
         public final int pid;
         public final String processName;
+        public final @ProcessStatus int processStatus;
 
-        private ProcessInfo(int pid, String processName) {
+        private ProcessInfo(int pid, String processName, @ProcessStatus int processStatus) {
             this.pid = pid;
             this.processName = processName;
+            this.processStatus = processStatus;
         }
 
         @Override
@@ -211,17 +203,17 @@ public abstract class AwDataDirLock {
         }
 
         static ProcessInfo current() {
-            return new ProcessInfo(Process.myPid(), ContextUtils.getProcessName());
+            return new ProcessInfo(
+                    Process.myPid(), ContextUtils.getProcessName(), ProcessStatus.ALIVE);
         }
 
         static @Nullable ProcessInfo readFromFile(RandomAccessFile file) {
             try {
                 int pid = file.readInt();
                 String processName = file.readUTF();
-                return new ProcessInfo(pid, processName);
-            } catch (IOException e) {
-                // We'll get IOException if we failed to read the pid and process name; e.g. if the
-                // lockfile is from an old version of WebView or an IO error occurred somewhere.
+                return new ProcessInfo(pid, processName, getProcessStatus(pid));
+            } catch (Exception e) {
+                // Failed to read the debugging info.
                 return null;
             }
         }
@@ -232,49 +224,71 @@ public abstract class AwDataDirLock {
                 file.setLength(0);
                 file.writeInt(pid);
                 file.writeUTF(processName);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 // Don't crash just because something failed here, as it's only for debugging.
                 Log.w(TAG, "Failed to write info to lock file", e);
             }
         }
 
-        @ProcessStatus
-        int getProcessStatus() {
+        static String formatWithStatus(@Nullable ProcessInfo info) {
+            if (info == null) {
+                return "unknown";
+            }
+
+            return info.toString()
+                    + switch (info.processStatus) {
+                        case ProcessStatus.PROBE_FAILURE -> " probe failed!";
+                        case ProcessStatus.STATUS_FAILURE -> " status read failed!";
+                        case ProcessStatus.NONEXISTENT -> " doesn't exist!";
+                        case ProcessStatus.INACCESSIBLE -> " pid has been reused!";
+                        case ProcessStatus.UNINTERRUPTIBLE -> " is uninterruptible";
+                        case ProcessStatus.ZOMBIE -> " is a zombie";
+                        case ProcessStatus.ALIVE -> " is alive";
+                        default -> " status unknown!";
+                    };
+        }
+
+        private static @ProcessStatus int getProcessStatus(int pid) {
             try {
                 // Check the status of the pid holding the lock by sending it a null signal.
                 // This doesn't actually send a signal, just runs the kernel access checks.
                 Os.kill(pid, 0);
-
-                // No exception means the process exists and has the same uid as us, so is
-                // probably an instance of the same app. We should be able to access its
-                // status in /proc to determine a more specific state.
-                Path statPath = new File("/proc/" + pid + "/stat").toPath();
-                byte[] stat = Files.readAllBytes(statPath);
-                // Stick with bytes - there are no guarantees about string encoding here.
-                // The last ASCII ')' in stat is the end of the process name field, followed
-                // by a space and then an ASCII letter for the process status.
-                for (int i = stat.length - 1; i >= 0; i--) {
-                    if (stat[i] == (byte) ')' && i + 2 < stat.length) {
-                        return switch ((char) stat[i + 2]) {
-                            case 'D' -> ProcessStatus.UNINTERRUPTIBLE;
-                            case 'Z' -> ProcessStatus.ZOMBIE;
-                            default -> ProcessStatus.ALIVE;
-                        };
-                    }
-                }
-                return ProcessStatus.UNKNOWN;
             } catch (ErrnoException e) {
                 if (e.errno == OsConstants.ESRCH) {
                     return ProcessStatus.NONEXISTENT;
                 } else if (e.errno == OsConstants.EPERM) {
                     return ProcessStatus.INACCESSIBLE;
                 } else {
-                    return ProcessStatus.UNKNOWN;
+                    return ProcessStatus.PROBE_FAILURE;
                 }
             } catch (Exception e) {
-                // Reading /proc/pid/stat failed or something else unexpected happened.
-                return ProcessStatus.UNKNOWN;
+                return ProcessStatus.PROBE_FAILURE;
             }
+
+            // No exception means the process exists and has the same uid as us, so is
+            // probably an instance of the same app. We should be able to access its
+            // status in /proc to determine a more specific state.
+            try {
+                Path statPath = new File("/proc/" + pid + "/stat").toPath();
+                byte[] stat = Files.readAllBytes(statPath);
+                // Stick with bytes - there are no guarantees about string encoding here.
+                // The last ASCII ')' in stat is the end of the process name field, followed
+                // by a space and then an ASCII letter for the process status.
+                for (int i = stat.length - 1; i >= 0; i--) {
+                    if (stat[i] == (byte) ')') {
+                        if (i + 2 < stat.length) {
+                            return switch ((char) stat[i + 2]) {
+                                case 'D' -> ProcessStatus.UNINTERRUPTIBLE;
+                                case 'Z' -> ProcessStatus.ZOMBIE;
+                                default -> ProcessStatus.ALIVE;
+                            };
+                        }
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+            }
+            return ProcessStatus.STATUS_FAILURE;
         }
     }
 
@@ -286,21 +300,7 @@ public abstract class AwDataDirLock {
                                 + " process ");
         error.append(ProcessInfo.current().toString());
         error.append(", lock owner ");
-        if (holder != null) {
-            error.append(holder.toString());
-
-            error.append(
-                    switch (holder.getProcessStatus()) {
-                        case ProcessStatus.NONEXISTENT -> " doesn't exist!";
-                        case ProcessStatus.INACCESSIBLE -> " pid has been reused!";
-                        case ProcessStatus.UNINTERRUPTIBLE -> " is uninterruptible";
-                        case ProcessStatus.ZOMBIE -> " is a zombie";
-                        case ProcessStatus.ALIVE -> " is alive";
-                        default -> " status unknown!";
-                    });
-        } else {
-            error.append(" unknown");
-        }
+        error.append(ProcessInfo.formatWithStatus(holder));
         return error.toString();
     }
 }
