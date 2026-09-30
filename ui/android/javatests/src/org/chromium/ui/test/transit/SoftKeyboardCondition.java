@@ -63,6 +63,17 @@ public class SoftKeyboardCondition extends ConditionWithResult<Boolean> {
      * keyboard is not shown.
      */
     private void determineIfSoftKeyboardShouldShow(Context context) {
+        String defaultIme =
+                Settings.Secure.getString(
+                        context.getContentResolver(), Settings.Secure.DEFAULT_INPUT_METHOD);
+        if (defaultIme != null && defaultIme.startsWith("com.android.cts.mockime/")) {
+            // Shared lab devices may have CTS MockIme left as the default IME without an active
+            // MockImeSession, causing MockIme.onCreate() to crash and never show a soft keyboard.
+            mShouldSoftKeyboardShow = false;
+            mShouldSoftKeyboardShowReason = "default IME is CTS MockIme (" + defaultIme + ")";
+            return;
+        }
+
         if (!KeyboardUtils.isHardKeyboardConnected(context)) {
             mShouldSoftKeyboardShow = true;
             mShouldSoftKeyboardShowReason = "no hard keyboard";
