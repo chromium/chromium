@@ -262,6 +262,13 @@ class GPU_GLES2_EXPORT GraphiteSharedContext {
   const size_t max_pending_recordings_;
   size_t num_pending_recordings_ = 0;
 
+  // The number of pending commands in the graphite::Context's command buffer,
+  // as reported by the last successful insertRecording() since last submit.
+  int num_pending_commands_ = 0;
+
+  // The max of pending commands across all non-skipped submits since creation.
+  int max_pending_commands_ = 0;
+
   const base::TimeDelta max_time_between_submits_;
   base::TimeTicks last_submit_time_;
 

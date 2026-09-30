@@ -4,10 +4,15 @@
 
 #include "gpu/command_buffer/service/graphite_shared_context.h"
 
+#include <algorithm>
+#include <string_view>
+
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
+#include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -57,6 +62,24 @@ InsertRecordingStatusUma InsertRecordingStatusUma(
   }
   NOTREACHED();
 }
+
+// LINT.IfChange(PendingCommandsRange)
+std::string_view PendingCommandsRangeSuffix(int num_pending_commands) {
+  if (num_pending_commands < 1000) {
+    return "Under1K";
+  }
+  if (num_pending_commands < 10000) {
+    return "1KTo10K";
+  }
+  if (num_pending_commands < 100000) {
+    return "10KTo100K";
+  }
+  if (num_pending_commands < 500000) {
+    return "100KTo500K";
+  }
+  return "Over500K";
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/gpu/histograms.xml:PendingCommandsRange)
 
 struct FinishedContext {
   skgpu::graphite::GpuFinishedProc old_finished_proc;
@@ -392,6 +415,8 @@ bool GraphiteSharedContext::InsertRecordingImpl(
       // now.
       delegate_->MarkContextLost(error::kOutOfMemory);
     }
+  } else if (insert_status == skgpu::graphite::InsertStatus::kSuccess) {
+    num_pending_commands_ = insert_status.numPendingCommands();
   }
 
   // All other failure modes are recoverable in the sense that future recordings
@@ -408,6 +433,8 @@ void GraphiteSharedContext::submit(skgpu::graphite::SubmitInfo submit_info) {
 
 bool GraphiteSharedContext::SubmitImpl(
     const skgpu::graphite::SubmitInfo& submit_info) {
+  const int num_pending_commands = num_pending_commands_;
+  num_pending_commands_ = 0;
   num_pending_recordings_ = 0;
   last_submit_time_ = base::TimeTicks::Now();
 
@@ -419,6 +446,8 @@ bool GraphiteSharedContext::SubmitImpl(
     return true;
   }
 
+  max_pending_commands_ = std::max(max_pending_commands_, num_pending_commands);
+
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       IsThreadSafe() && base::SingleThreadTaskRunner::HasCurrentDefault()
           ? base::SingleThreadTaskRunner::GetCurrentDefault()
@@ -428,6 +457,12 @@ bool GraphiteSharedContext::SubmitImpl(
   const bool shoud_record_metric = base::ShouldRecordSubsampledMetric(0.01);
   base::TimeTicks start_time;
   if (shoud_record_metric) {
+    // Emit these before submit() so that the data is recorded even if a long
+    // submit causes the process to be killed.
+    UMA_HISTOGRAM_COUNTS_1M("GPU.Graphite.NumPendingCommands",
+                            num_pending_commands);
+    UMA_HISTOGRAM_COUNTS_1M("GPU.Graphite.MaxPendingCommands",
+                            max_pending_commands_);
     start_time = base::TimeTicks::Now();
   }
 
@@ -446,9 +481,14 @@ bool GraphiteSharedContext::SubmitImpl(
   }
 
   if (shoud_record_metric) {
+    const base::TimeDelta submit_duration = base::TimeTicks::Now() - start_time;
     UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
-        "GPU.Graphite.SubmitDurationUs", base::TimeTicks::Now() - start_time,
-        base::Microseconds(1), base::Seconds(1), 50);
+        "GPU.Graphite.SubmitDurationUs", submit_duration, base::Microseconds(1),
+        base::Seconds(1), 50);
+    base::UmaHistogramCustomMicrosecondsTimes(
+        base::StrCat({"GPU.Graphite.SubmitDurationUs.PendingCommands.",
+                      PendingCommandsRangeSuffix(num_pending_commands)}),
+        submit_duration, base::Microseconds(1), base::Seconds(1), 50);
   }
 
   return success;
