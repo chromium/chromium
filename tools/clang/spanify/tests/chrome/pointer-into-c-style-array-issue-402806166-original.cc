@@ -14,6 +14,12 @@ void UseBufferUnsafely(int* buffer) {
   buffer[UnsafeIndex()] = 13;
 }
 
+// Expected rewrite:
+// void UseTaggedBuffer(int tag, base::span<int> buffer) {
+void UseTaggedBuffer(int tag, int* buffer) {
+  buffer[UnsafeIndex()] = tag;
+}
+
 void Func() {
   // No expected rewrite: nothing unsafe happens in this scope.
   int array[10];
@@ -25,6 +31,11 @@ void Func() {
   // Expected rewrite:
   // UseBufferUnsafely(array);
   UseBufferUnsafely(&array[0]);
+
+  // Same, but after another argument: the preceding comma must survive.
+  // Expected rewrite:
+  // UseTaggedBuffer(7, array);
+  UseTaggedBuffer(7, &array[0]);
 
   // With an offset (subspan) in play, we need to also wrap the array
   // declref in a `base::span()`.

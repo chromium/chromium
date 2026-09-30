@@ -1848,14 +1848,21 @@ clang::SourceLocation EmitContainerPointerRewrites(
       FindRightBracket(result, subscript_expr);
 
   // Special case: we detected and bound a zero offset (`&buf[0]`).
-  // Rather than emit a `.subspan(...)`, we delete the subscript
-  // expression entirely.
+  // Replace all of `&buf[0]` with `buf` in one non-empty edit. apply_edits.py
+  // extends an empty deletion over a preceding `,`, so `f(x, &buf[0])` would
+  // become `f(xbuf)`.
   if (result.Nodes.getNodeAs<clang::IntegerLiteral>("zero_container_offset")) {
-    EmitReplacement(key, GetReplacementDirective(replacement_range, "",
-                                                 *result.SourceManager));
-    replacement_range = {left_bracket, right_bracket.getLocWithOffset(1)};
-    EmitReplacement(key, GetReplacementDirective(replacement_range, "",
-                                                 *result.SourceManager));
+    const clang::SourceRange container_range(container_decl_ref.getBeginLoc(),
+                                             left_bracket);
+    const std::string container_text =
+        clang::Lexer::getSourceText(
+            clang::CharSourceRange::getCharRange(container_range),
+            source_manager, lang_opts)
+            .str();
+    replacement_range.setEnd(right_bracket.getLocWithOffset(1));
+    EmitReplacement(key,
+                    GetReplacementDirective(replacement_range, container_text,
+                                            *result.SourceManager));
     return right_bracket.getLocWithOffset(1);
   }
 
@@ -2744,6 +2751,43 @@ bool IsStaticLocalOrStaticStorageClass(const clang::DeclaratorDecl* decl) {
   return false;
 }
 
+// True if `decl` shares its declaration with other declarators, e.g.
+// `int a[3], b[3];`. The array rewrite's range starts at the shared type
+// specifier, so the overlapping edits collide and the surviving one deletes
+// the other declarators. Such arrays are not rewritten.
+bool HasSiblingDeclarators(const clang::DeclaratorDecl& decl,
+                           clang::ASTContext& ast_context) {
+  // Block scope: count the declarators in the `DeclStmt`. An unnamed tag
+  // definition (`struct { int v; } buf[4];`) is not a sibling.
+  for (const auto& parent : ast_context.getParents(decl)) {
+    if (const auto* decl_stmt = parent.get<clang::DeclStmt>()) {
+      int declarators = 0;
+      for (const clang::Decl* grouped : decl_stmt->decls()) {
+        declarators += clang::isa<clang::DeclaratorDecl>(grouped) ? 1 : 0;
+      }
+      return declarators > 1;
+    }
+  }
+
+  // Fields and globals have no `DeclStmt`: siblings share the begin location.
+  const clang::DeclContext* lexical_context = decl.getLexicalDeclContext();
+  if (!lexical_context) {
+    return false;
+  }
+  for (const clang::Decl* other : lexical_context->decls()) {
+    if (other == &decl) {
+      continue;
+    }
+    const auto* other_declarator =
+        clang::dyn_cast<clang::DeclaratorDecl>(other);
+    if (other_declarator &&
+        other_declarator->getBeginLoc() == decl.getBeginLoc()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // This function handles local c-style array variables and field decls.
 // It creates a proxy_node (marked as a sink) that all other nodes are linked
 // to.
@@ -2799,6 +2843,12 @@ std::string getNodeFromArrayDecl(const clang::TypeLoc* type_loc,
   std::string key = NodeKey(array_decl, *result.SourceManager);
   EmitEdge(key, proxy_node);
   EmitSource(key);
+
+  // Rewriting one of several declarators would delete the others.
+  if (HasSiblingDeclarators(*array_decl, *result.Context)) {
+    EmitExclusion(key);
+    return key;
+  }
 
   const clang::ArrayTypeLoc& array_type_loc =
       type_loc->getUnqualifiedLoc().getAs<clang::ArrayTypeLoc>();
