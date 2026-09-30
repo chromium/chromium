@@ -1177,7 +1177,7 @@ public class BottomSheetCoordinatorUnitTest {
 
         assertEquals(
                 "Max height should be clamped to ensure a top gap for LFF.",
-                Math.max(0, shortContainerHeight - sheet.getContainerBottomMargin() - topGap),
+                Math.max(0, shortContainerHeight - topGap),
                 (int) sheet.getCurrentOffsetPx());
     }
 
@@ -1706,7 +1706,7 @@ public class BottomSheetCoordinatorUnitTest {
                 mActivity
                         .getResources()
                         .getDimensionPixelSize(R.dimen.bottom_sheet_desktop_bottom_margin);
-        int expectedMaxHeight = containerHeight - 2 * bottomMargin;
+        int expectedMaxHeight = containerHeight - bottomMargin;
         assertEquals(expectedMaxHeight, sheet.getMaxSheetHeight());
     }
 

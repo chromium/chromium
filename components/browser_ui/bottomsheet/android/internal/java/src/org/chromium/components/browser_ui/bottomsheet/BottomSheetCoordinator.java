@@ -1149,9 +1149,10 @@ class BottomSheetCoordinator
     int getMaxSheetHeight() {
         if (isLargeFormFactorUiEnabled()) {
             // Clamp the height to leave an empty gap at the top of the window equal to the
-            // desktop bottom margin (24dp).
+            // desktop bottom margin (24dp). The bottom margin is already accounted for in
+            // mSheetContainer's layout bounds (mContainerHeight).
             int topGap = mDesktopBottomMargin;
-            return Math.max(0, mContainerHeight - getContainerBottomMargin() - topGap);
+            return Math.max(0, mContainerHeight - topGap);
         }
         return mContainerHeight;
     }
