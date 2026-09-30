@@ -7005,6 +7005,21 @@
             ]
         }
     ],
+    "DomainLevelSitePermissions": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DomainLevelSitePermissions"
+                    ]
+                }
+            ]
+        }
+    ],
     "DownloadHomeIPH": [
         {
             "platforms": [

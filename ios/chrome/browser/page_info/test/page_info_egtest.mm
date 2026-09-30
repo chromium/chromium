@@ -73,6 +73,18 @@ id<GREYMatcher> MicrophonePermissionsSwitch(BOOL isOn) {
       kPageInfoMicrophoneSwitchAccessibilityIdentifier, isOn);
 }
 
+// Matcher for the camera permission dropdown button in Page Info.
+id<GREYMatcher> CameraPermissionsDropdown() {
+  return grey_accessibilityLabel(l10n_util::GetNSString(
+      IDS_IOS_AI_HUB_CAMERA_PERMISSION_DROPDOWN_ACCESSIBILITY_LABEL));
+}
+
+// Matcher for the microphone permission dropdown button in Page Info.
+id<GREYMatcher> MicrophonePermissionsDropdown() {
+  return grey_accessibilityLabel(l10n_util::GetNSString(
+      IDS_IOS_AI_HUB_MICROPHONE_PERMISSION_DROPDOWN_ACCESSIBILITY_LABEL));
+}
+
 // Matcher for the search button.
 id<GREYMatcher> SearchIconButton() {
   return grey_accessibilityID(kHistorySearchControllerSearchBarIdentifier);
@@ -198,12 +210,16 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
   };
   GREYAssert(WaitUntilConditionOrTimeout(kWaitForUIElementTimeout, condition),
              @"Permissions dialog was not shown.");
-  NSString* allowButtonText = l10n_util::GetNSString(
-      IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_GRANT);
+  id<GREYMatcher> allowButtonLabelMatcher = grey_anyOf(
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_GRANT)),
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_ALLOW_THIS_TIME)),
+      nil);
 
-  id<GREYMatcher> allowButtonMatcher = allowButtonMatcher = grey_allOf(
-      grey_ancestor(dialogMatcher), grey_accessibilityLabel(allowButtonText),
-      grey_accessibilityTrait(UIAccessibilityTraitStaticText), nil);
+  id<GREYMatcher> allowButtonMatcher =
+      grey_allOf(grey_ancestor(dialogMatcher), allowButtonLabelMatcher,
+                 grey_accessibilityTrait(UIAccessibilityTraitStaticText), nil);
 
   [[[EarlGrey selectElementWithMatcher:allowButtonMatcher]
       assertWithMatcher:grey_sufficientlyVisible()] performAction:grey_tap()];
@@ -228,6 +244,34 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
       @"Microphone state: %@ does not match expected: %@.",
       actualStatesForPermissions[@(web::PermissionMicrophone)],
       expectedStatesForPermissions[@(web::PermissionMicrophone)]);
+}
+
+// Disables `permission` in Page Info via the dropdown menu (when
+// `kDomainLevelSitePermissions` is enabled) or the toggle switch.
+- (void)disablePermission:(web::Permission)permission {
+  id<GREYMatcher> dropdownMatcher = (permission == web::PermissionCamera)
+                                        ? CameraPermissionsDropdown()
+                                        : MicrophonePermissionsDropdown();
+  NSError* error = nil;
+  [[EarlGrey selectElementWithMatcher:dropdownMatcher]
+      assertWithMatcher:grey_sufficientlyVisible()
+                  error:&error];
+  if (!error) {
+    [[EarlGrey selectElementWithMatcher:dropdownMatcher]
+        performAction:grey_tap()];
+    [[EarlGrey
+        selectElementWithMatcher:
+            chrome_test_util::ContextMenuItemWithAccessibilityLabelId(
+                IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_NEVER_ALLOW)]
+        performAction:grey_tap()];
+    return;
+  }
+
+  id<GREYMatcher> switchMatcher = (permission == web::PermissionCamera)
+                                      ? CameraPermissionsSwitch(YES)
+                                      : MicrophonePermissionsSwitch(YES);
+  [[EarlGrey selectElementWithMatcher:switchMatcher]
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
 }
 
 // Tests that rotating the device will don't dismiss the page info view.
@@ -282,14 +326,14 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGreyUI openPageInfo];
-  // Checks that no permissions are not visible.
+  // Checks that no permissions are visible.
   [[EarlGrey
-      selectElementWithMatcher:grey_anyOf(CameraPermissionsSwitch(YES),
-                                          CameraPermissionsSwitch(NO), nil)]
+      selectElementWithMatcher:
+          grey_accessibilityID(kPageInfoCameraSwitchAccessibilityIdentifier)]
       assertWithMatcher:grey_notVisible()];
-  [[EarlGrey
-      selectElementWithMatcher:grey_anyOf(MicrophonePermissionsSwitch(YES),
-                                          MicrophonePermissionsSwitch(NO), nil)]
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityID(
+                     kPageInfoMicrophoneSwitchAccessibilityIdentifier)]
       assertWithMatcher:grey_notVisible()];
 }
 
@@ -310,12 +354,11 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
     @(web::PermissionMicrophone) : @(web::PermissionStateAllowed)
   }];
   [[EarlGrey
-      selectElementWithMatcher:grey_anyOf(CameraPermissionsSwitch(YES),
-                                          CameraPermissionsSwitch(NO), nil)]
+      selectElementWithMatcher:
+          grey_accessibilityID(kPageInfoCameraSwitchAccessibilityIdentifier)]
       assertWithMatcher:grey_notVisible()];
   // Check that microphone permission item is visible, and turn it off.
-  [[EarlGrey selectElementWithMatcher:MicrophonePermissionsSwitch(YES)]
-      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
+  [self disablePermission:web::PermissionMicrophone];
   [[EarlGrey  // Dismiss view.
       selectElementWithMatcher:grey_accessibilityID(
                                    kPageInfoViewAccessibilityIdentifier)]
@@ -339,7 +382,7 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
                               "/permissions/camera_and_microphone.html")];
   [self checkAndAllowPermissionAlerts];
 
-  // Check that switchs for both permissions are visible.
+  // Check that controls for both permissions are visible.
   [ChromeEarlGreyUI openPageInfo];
   [self checkStatesForPermissions:@{
     @(web::PermissionCamera) : @(web::PermissionStateAllowed),
@@ -347,10 +390,11 @@ void AddEntryToHistoryService(GURL url, base::Time timestamp) {
   }];
   // Check that both permission item is visible, and turn off camera
   // permission.
-  [[EarlGrey selectElementWithMatcher:MicrophonePermissionsSwitch(YES)]
+  [[EarlGrey
+      selectElementWithMatcher:grey_anyOf(MicrophonePermissionsSwitch(YES),
+                                          MicrophonePermissionsDropdown(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:CameraPermissionsSwitch(YES)]
-      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
+  [self disablePermission:web::PermissionCamera];
   [[EarlGrey  // Dismiss view.
       selectElementWithMatcher:grey_accessibilityID(
                                    kPageInfoViewAccessibilityIdentifier)]
