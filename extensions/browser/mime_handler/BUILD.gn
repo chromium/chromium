@@ -10,6 +10,8 @@ source_set("mime_handler") {
   sources = [
     "generic_mime_handler_stream_delegate.cc",
     "generic_mime_handler_stream_delegate.h",
+    "mime_handler_fallback_url_loader_request_interceptor.cc",
+    "mime_handler_fallback_url_loader_request_interceptor.h",
     "mime_handler_stream_delegate.cc",
     "mime_handler_stream_delegate.h",
     "mime_handler_stream_manager.cc",
@@ -31,6 +33,7 @@ source_set("mime_handler") {
     "//components/crash/core/common:crash_key",
     "//extensions/common",
     "//extensions/common:common_constants",
+    "//services/network/public/mojom",
   ]
 }
 
@@ -93,6 +96,7 @@ source_set("unit_tests") {
     "//extensions/browser",
     "//extensions/common",
     "//mojo/public/cpp/system",
+    "//services/network:test_support",
     "//services/network/public/mojom:url_loader_base",
     "//testing/gmock",
     "//testing/gtest",

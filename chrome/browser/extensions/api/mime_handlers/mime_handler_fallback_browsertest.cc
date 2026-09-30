@@ -3,12 +3,18 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 #include <string_view>
+#include <utility>
+#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/synchronization/lock.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
@@ -21,18 +27,23 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "extensions/browser/mime_handler/mime_handler_body_cache.h"
+#include "extensions/browser/mime_handler/mime_handler_stream_manager.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/features/feature_channel.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
+#include "net/test/embedded_test_server/http_request.h"
 #include "pdf/pdf_features.h"
+#include "services/network/public/cpp/resource_request_body.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
@@ -46,6 +57,7 @@ constexpr char kFallbackPdfPath[] = "/test.pdf";
 constexpr char kEmbedHostPath[] = "/embed_host.html";
 constexpr char kIframeHostPath[] = "/iframe_host.html";
 constexpr char kTwoIframesSameUrlPath[] = "/two_iframes_same_url.html";
+constexpr char kServiceWorkerFetchHeader[] = "X-Fallback-Service-Worker";
 
 // The built-in PDF extension's top-level document URL. Tests wait for a
 // navigation to this URL to confirm that the built-in PDF viewer has
@@ -80,7 +92,26 @@ class MimeHandlerFallbackBrowserTest : public base::test::WithFeatureOverride,
         base::PathService::CheckedGet(chrome::DIR_TEST_DATA);
     embedded_test_server()->ServeFilesFromDirectory(
         chrome_test_data_dir.AppendASCII("pdf"));
+    embedded_test_server()->RegisterRequestMonitor(
+        base::BindRepeating(&MimeHandlerFallbackBrowserTest::CountPdfRequest,
+                            base::Unretained(this)));
     ASSERT_TRUE(StartEmbeddedTestServer());
+  }
+
+  // Number of times the PDF document itself was fetched over the network.
+  int pdf_request_count() {
+    base::AutoLock lock(pdf_request_count_lock_);
+    return pdf_request_count_;
+  }
+
+  std::vector<std::pair<std::string, std::string>> pdf_requests() {
+    base::AutoLock lock(pdf_request_count_lock_);
+    return pdf_requests_;
+  }
+
+  int pdf_request_count_with_worker_header() {
+    base::AutoLock lock(pdf_request_count_lock_);
+    return pdf_request_count_with_worker_header_;
   }
 
   // Loads the test 3p extension. `handler.js` either auto-aborts (when
@@ -93,6 +124,10 @@ class MimeHandlerFallbackBrowserTest : public base::test::WithFeatureOverride,
                           .AppendASCII(kFallbackSubDir));
     ASSERT_TRUE(ext);
     handler_extension_id_ = ext->id();
+  }
+
+  const std::string& handler_extension_id() const {
+    return handler_extension_id_;
   }
 
   // URL prefix (chrome-extension://<id>/) for the loaded 3p handler.
@@ -114,13 +149,34 @@ class MimeHandlerFallbackBrowserTest : public base::test::WithFeatureOverride,
   }
 
  private:
+  // Runs on the test server's IO thread.
+  void CountPdfRequest(const net::test_server::HttpRequest& request) {
+    if (request.GetURL().path() == kFallbackPdfPath) {
+      base::AutoLock lock(pdf_request_count_lock_);
+      ++pdf_request_count_;
+      pdf_requests_.emplace_back(request.method_string, request.content);
+      if (request.headers.contains(kServiceWorkerFetchHeader)) {
+        ++pdf_request_count_with_worker_header_;
+      }
+    }
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   ScopedCurrentChannel channel_{version_info::Channel::UNKNOWN};
   std::string handler_extension_id_;
+  base::Lock pdf_request_count_lock_;
+  int pdf_request_count_ GUARDED_BY(pdf_request_count_lock_) = 0;
+  std::vector<std::pair<std::string, std::string>> pdf_requests_
+      GUARDED_BY(pdf_request_count_lock_);
+  int pdf_request_count_with_worker_header_
+      GUARDED_BY(pdf_request_count_lock_) = 0;
 };
 
 // Generic MIME handler for application/pdf auto-aborts. The frame-scoped
-// re-navigation causes the built-in PDF viewer to take over the same URL.
+// re-navigation causes the built-in PDF viewer to take over the same URL,
+// and the hand-off must not fetch the document again: one request for the
+// initial load and none for the fallback. The legacy GuestView path keeps
+// no body cache, so it still re-fetches.
 IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
                        AbortAndFallbackSwapsToPdfViewerForTopLevelEmbedder) {
   ASSERT_NO_FATAL_FAILURE(LoadThirdPartyHandler());
@@ -135,6 +191,51 @@ IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
 
   EXPECT_TRUE(pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents))
       << "Generic handler aborted but built-in PDF viewer never loaded.";
+
+  constexpr int kExpectedServerRequestCountWithoutRefetch = 1;
+  // If OOPIF PDF is disabled, network request is done twice - once when the
+  // pdf file is loaded and second time when abort and fallback is triggered as
+  // there is no fallback without network request cache path.
+  EXPECT_EQ(IsParamFeatureEnabled()
+                ? kExpectedServerRequestCountWithoutRefetch
+                : kExpectedServerRequestCountWithoutRefetch + 1,
+            pdf_request_count());
+  EXPECT_EQ(pdf_url, web_contents->GetLastCommittedURL());
+}
+
+// `MimeHandlerStreamManager` calls `LoadURLWithParams()` with
+// `BYPASSING_CACHE`, so the MIME handler URL interceptor serves the cached
+// body and the fallback makes no network round trip.
+IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
+                       AbortAndFallbackBypassesServiceWorker) {
+  if (!IsParamFeatureEnabled()) {
+    GTEST_SKIP() << "Cached-body fallback routing is OOPIF-only.";
+  }
+  ASSERT_NO_FATAL_FAILURE(LoadThirdPartyHandler());
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/empty.html")));
+  ASSERT_EQ("ready", content::EvalJs(web_contents, R"(
+      navigator.serviceWorker.register('/fallback_sw.js')
+          .then(() => navigator.serviceWorker.ready)
+          .then(() => 'ready'))"));
+
+  const GURL pdf_url = embedded_test_server()->GetURL(kFallbackPdfPath);
+  auto pdf_extension_observer = MakePdfExtensionObserver();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), pdf_url));
+  pdf_extension_observer->WaitForNavigationFinished();
+  ASSERT_TRUE(pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents));
+
+  // The service worker should only contact the server one time when initial
+  // load of the pdf resource was done. When abort and fallback is called,
+  // it's not expected to have any server requests or service worker
+  // interceptions.
+  constexpr int kExpectedServerRequestCount = 1;
+  EXPECT_EQ(kExpectedServerRequestCount, pdf_request_count());
+  EXPECT_EQ(kExpectedServerRequestCount,
+            pdf_request_count_with_worker_header());
 }
 
 // Same as the top-level embedder case, but the PDF URL carries a fragment.
@@ -378,10 +479,11 @@ class MimeHandlerFallbackRedirectBrowserTest
       controllable_response2_;
 };
 
-// Verify that fallback reload redirected to a different origin does not use the
-// cached body, preventing spoofing.
+// A fallback with a cached body never reaches the network, so a redirect can
+// only occur once the cache gives up. Cap it so the refetch happens, and check
+// the redirected document commits.
 IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackRedirectBrowserTest,
-                       FallbackRedirectToDifferentOriginDoesNotUseCache) {
+                       DegradedFallbackFollowsCrossOriginRedirect) {
   if (!chrome_pdf::features::IsOopifPdfEnabled()) {
     GTEST_SKIP() << "Cached-body fallback routing is OOPIF-only.";
   }
@@ -389,6 +491,9 @@ IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackRedirectBrowserTest,
   ASSERT_NO_FATAL_FAILURE(LoadThirdPartyHandler());
   content::WebContents* const web_contents =
       browser()->GetTabStripModel()->GetActiveWebContents();
+
+  base::AutoReset<size_t> cap =
+      MimeHandlerBodyCache::SetMaxCacheBytesForTesting(1);
 
   const GURL start_url = embedded_test_server()->GetURL("a.com", "/spoof.pdf");
 
@@ -434,13 +539,95 @@ IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackRedirectBrowserTest,
   const int page_count =
       content::EvalJs(extension_host, "viewer.docLength_").ExtractInt();
 
-  // test.pdf has 1 page. accessibility/multi-page.pdf has 2 pages. Expect the
-  // browser to load the redirected PDF (multi-page, 2 pages). If spoofing
-  // occurs, the browser loads the cached PDF (test.pdf, 1 page).
+  // The page count says which document the viewer got: 1 for the pre-redirect
+  // test.pdf, 2 for the redirect target.
   EXPECT_EQ(2, page_count);
 
   // Also verify the committed URL is the redirected one.
   EXPECT_EQ(target_url, web_contents->GetLastCommittedURL());
+}
+
+// A navigation that replaces the fallback while the fallback still waits for
+// the body should load from the network. The fallback should not be pending
+// once the replacement finishes.
+IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackRedirectBrowserTest,
+                       AbortAndFallbackReplacedBeforeStartKeepsNextLoad) {
+  if (!IsParamFeatureEnabled()) {
+    GTEST_SKIP() << "Cached-body fallback routing is OOPIF-only.";
+  }
+  ASSERT_NO_FATAL_FAILURE(LoadThirdPartyHandler());
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  const GURL pdf_url = embedded_test_server()->GetURL("/spoof.pdf");
+  const content::FrameTreeNodeId embedder_ftn =
+      web_contents->GetPrimaryMainFrame()->GetFrameTreeNodeId();
+
+  web_contents->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(pdf_url));
+  net::test_server::ControllableHttpResponse* initial_response =
+      controllable_response1();
+  initial_response->WaitForRequest();
+  // The body is left unfinished, so the fallback cannot start yet.
+  initial_response->Send("HTTP/1.1 200 OK\r\n");
+  initial_response->Send("Content-Type: application/pdf\r\n");
+  initial_response->Send("\r\n");
+  initial_response->Send(pdf_data().substr(0, pdf_data().size() / 2));
+
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    auto* manager =
+        mime_handler::MimeHandlerStreamManager::FromWebContents(web_contents);
+    return manager && manager->IsPendingNativeFallback(embedder_ftn, pdf_url);
+  }));
+  ASSERT_FALSE(web_contents->GetController().GetPendingEntry());
+
+  content::TestNavigationObserver replacement_observer(pdf_url);
+  replacement_observer.WatchExistingWebContents();
+  web_contents->GetController().LoadURLWithParams(
+      content::NavigationController::LoadURLParams(pdf_url));
+  net::test_server::ControllableHttpResponse* replacement_response =
+      controllable_response2();
+  replacement_response->WaitForRequest();
+  replacement_response->Send("HTTP/1.1 200 OK\r\n");
+  replacement_response->Send("Content-Type: application/pdf\r\n");
+  replacement_response->Send("\r\n");
+  replacement_response->Send(pdf_data());
+  replacement_response->Done();
+  replacement_observer.WaitForNavigationFinished();
+  EXPECT_TRUE(replacement_observer.last_navigation_succeeded());
+
+  auto* manager =
+      mime_handler::MimeHandlerStreamManager::FromWebContents(web_contents);
+  EXPECT_FALSE(manager &&
+               manager->IsPendingNativeFallback(embedder_ftn, pdf_url));
+}
+
+// Without a replayable body cache the request really is sent again, and this
+// path never reaches the form-resubmission prompt. So the degraded fallback
+// must not repeat the POST.
+IN_PROC_BROWSER_TEST_P(MimeHandlerFallbackBrowserTest,
+                       DegradedFallbackDoesNotResubmitPost) {
+  ASSERT_NO_FATAL_FAILURE(LoadThirdPartyHandler());
+  content::WebContents* web_contents =
+      browser()->GetTabStripModel()->GetActiveWebContents();
+  // A one-byte cap makes the cache give up, so no body is kept.
+  base::AutoReset<size_t> cap =
+      MimeHandlerBodyCache::SetMaxCacheBytesForTesting(1);
+  const GURL pdf_url = embedded_test_server()->GetURL(kFallbackPdfPath);
+
+  content::NavigationController::LoadURLParams params(pdf_url);
+  params.load_type = content::NavigationController::LOAD_TYPE_HTTP_POST;
+  params.post_data = network::ResourceRequestBody::CreateFromCopyOfBytes(
+      base::as_byte_span(std::string_view("probe=1")));
+  auto pdf_extension_observer = MakePdfExtensionObserver();
+  web_contents->GetController().LoadURLWithParams(params);
+  pdf_extension_observer->WaitForNavigationFinished();
+  ASSERT_TRUE(pdf_extension_test_util::GetOnlyPdfExtensionHost(web_contents));
+
+  EXPECT_THAT(pdf_requests(),
+              testing::ElementsAre(testing::Pair("POST", "probe=1"),
+                                   testing::Pair("GET", "")));
+  EXPECT_FALSE(
+      web_contents->GetController().GetLastCommittedEntry()->GetHasPostData());
 }
 
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(MimeHandlerFallbackBrowserTest);

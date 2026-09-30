@@ -24,6 +24,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/mime_handler/mime_handler_body_cache.h"
 #include "extensions/browser/mime_handler/mime_handler_stream_delegate.h"
 #include "extensions/browser/mime_handler/stream_container.h"
 #include "extensions/browser/mime_handler/stream_info.h"
@@ -31,6 +32,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/mojom/guest_view.mojom.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
+#include "net/http/http_response_headers.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 
@@ -361,10 +363,10 @@ void MimeHandlerStreamManager::AbortAndFallbackToNativeHandler(
   // Register the fallback before the body is ready. The registration records
   // that the handler gave the document up, so a reload arriving while the body
   // is still buffering reaches the native handler instead of the handler that
-  // just rejected it. An empty body leaves that reload on its own network
+  // just rejected it. A missing body leaves that reload on its own network
   // response.
   pending_native_fallback_frames_[embedder_ftn] =
-      PendingNativeFallback{stream->original_url(), CachedFallbackBody{}};
+      PendingNativeFallback{stream->original_url(), std::nullopt};
 
   stream->GetFallbackDataPipeAsync(
       base::BindOnce(&MimeHandlerStreamManager::OnGotFallbackDataPipe,
@@ -383,14 +385,17 @@ bool MimeHandlerStreamManager::IsPendingNativeFallback(
 std::optional<MimeHandlerStreamManager::CachedFallbackBody>
 MimeHandlerStreamManager::TakeCachedFallbackBody(
     content::FrameTreeNodeId frame_tree_node_id,
+    int64_t navigation_id,
     const GURL& response_url) {
   auto it = pending_native_fallback_frames_.find(frame_tree_node_id);
   if (it == pending_native_fallback_frames_.end() ||
+      it->second.navigation_id != navigation_id ||
       !response_url.EqualsIgnoringRef(it->second.original_url) ||
-      !it->second.body.pipe.is_valid()) {
+      !it->second.response.has_value() ||
+      !it->second.response->pipe.is_valid()) {
     return std::nullopt;
   }
-  return std::move(it->second.body);
+  return std::exchange(it->second.response, std::nullopt);
 }
 
 bool MimeHandlerStreamManager::ShouldFilterResponseHeadersForHandler(
@@ -517,6 +522,20 @@ void MimeHandlerStreamManager::FrameDeleted(
 
 void MimeHandlerStreamManager::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
+  // The fallback navigation's request may start before `LoadURLWithParams()`
+  // returns, so its ID has to be recorded here.
+  auto fallback = pending_native_fallback_frames_.find(
+      navigation_handle->GetFrameTreeNodeId());
+  if (fallback != pending_native_fallback_frames_.end()) {
+    if (!fallback->second.navigation_id) {
+      fallback->second.navigation_id = navigation_handle->GetNavigationId();
+    } else if (*fallback->second.navigation_id !=
+                   navigation_handle->GetNavigationId() &&
+               !navigation_handle->IsSameDocument()) {
+      pending_native_fallback_frames_.erase(fallback);
+    }
+  }
+
   // Set the content host frame tree node ID if the navigation is for a content
   // host. This needs to occur before the network request for the content
   // navigation so that delegates that consult content-host state during
@@ -588,11 +607,16 @@ void MimeHandlerStreamManager::DidFinishNavigation(
   const content::FrameTreeNodeId frame_tree_node_id =
       navigation_handle->GetFrameTreeNodeId();
 
-  // Drop any native-fallback registration for the navigating frame. It is held
-  // until the re-navigation has committed or errored so the throttle can peek
-  // it from `WillProcessResponse`. For a canceled navigation this still fires,
-  // so the entry is never leaked.
-  pending_native_fallback_frames_.erase(frame_tree_node_id);
+  // Other navigations can finish in this frame first. These are the navigation
+  // that the fallback cancels and same-document navigations. The registration
+  // is held until the re-navigation has committed or errored so the throttle
+  // can peek it from `WillProcessResponse`. For a canceled navigation this
+  // still fires, so the entry is never leaked.
+  auto fallback = pending_native_fallback_frames_.find(frame_tree_node_id);
+  if (fallback != pending_native_fallback_frames_.end() &&
+      fallback->second.navigation_id == navigation_handle->GetNavigationId()) {
+    pending_native_fallback_frames_.erase(fallback);
+  }
 
   if (IsContentFrameNavigation(navigation_handle)) {
     --g_debug_ongoing_content_navigations;
@@ -793,7 +817,7 @@ MimeHandlerStreamManager::EraseStreamInfo(StreamInfoMap::iterator iter) {
 }
 
 void MimeHandlerStreamManager::DeleteSelfIfNoStreams() {
-  if (stream_infos_.empty()) {
+  if (stream_infos_.empty() && pending_native_fallback_frames_.empty()) {
     web_contents()->RemoveUserData(UserDataKey());
     // DO NOT add code past this point. RemoveUserData() deleted `this`.
   }
@@ -801,15 +825,15 @@ void MimeHandlerStreamManager::DeleteSelfIfNoStreams() {
 
 void MimeHandlerStreamManager::OnGotFallbackDataPipe(
     EmbedderHostInfo embedder_info,
-    base::WeakPtr<StreamContainer> stream,
+    base::WeakPtr<StreamContainer> weak_stream,
     mojo::ScopedDataPipeConsumerHandle body) {
   const content::FrameTreeNodeId embedder_ftn =
       embedder_info.frame_tree_node_id;
+  StreamContainer* stream = weak_stream.get();
   if (!stream) {
     pending_native_fallback_frames_.erase(embedder_ftn);
     return;
   }
-
   const GURL original_url = stream->original_url();
 
   // If the page moved this frame elsewhere while the body was buffering, the
@@ -823,19 +847,26 @@ void MimeHandlerStreamManager::OnGotFallbackDataPipe(
     return;
   }
 
-  // An invalid handle (no cache attached or caching was abandoned) falls
-  // through to a network refetch on reload. Capture the
-  // decoded byte count alongside the pipe so the throttle can populate
-  // `URLLoaderCompletionStatus::decoded_body_length` correctly when it
-  // replays the body (the cache stores post-decoding bytes, so the
-  // wire `Content-Length` is wrong here whenever the original was
-  // content-encoded).
-  const size_t decoded_body_size =
-      body.is_valid() ? stream->GetCachedBodySize() : 0u;
-  pending_native_fallback_frames_[embedder_ftn] = PendingNativeFallback{
-      original_url, CachedFallbackBody{std::move(body), decoded_body_size}};
+  std::optional<CachedFallbackBody> response;
+  if (body.is_valid()) {
+    response.emplace();
+    response->decoded_body_size = stream->GetCachedBodySize();
+    response->head = stream->response_head()->Clone();
+    // The fallback commits this head as a new document. The native handler
+    // should decide again whether to intercept it.
+    response->head->intercepted_by_plugin = false;
+    if (response->head->headers) {
+      response->head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+          response->head->headers->raw_headers());
+    }
+    response->pipe = std::move(body);
+  }
 
-  // Re-navigate just the embedder frame -- not the whole WebContents --
+  const bool has_cached_response = response.has_value();
+  pending_native_fallback_frames_.insert_or_assign(
+      embedder_ftn, PendingNativeFallback{original_url, std::move(response)});
+
+  // Re-navigate just the embedder frame - not the whole WebContents -
   // so iframe-hosted MIME handlers fall back without blowing away the
   // main frame. For a primary-main-frame embedder this is equivalent to
   // a main-frame reload. FTN is stable across the scoped navigation, so
@@ -845,10 +876,30 @@ void MimeHandlerStreamManager::OnGotFallbackDataPipe(
   params.transition_type = ui::PAGE_TRANSITION_CLIENT_REDIRECT;
   // The embedder is already committed on this URL. Without a reload
   // classification, re-navigating to the same URL is treated as a
-  // same-document scroll when it carries a fragment, so the response
-  // throttle never re-runs to hand the body to the native handler.
-  params.reload_type = content::ReloadType::NORMAL;
-  web_contents()->GetController().LoadURLWithParams(params);
+  // same-document scroll when it carries a fragment, so nothing re-runs to
+  // hand the document to the native handler.
+  // A hard reload skips the page's service worker. Otherwise the service
+  // worker would answer the request before the interceptor serves the cached
+  // body.
+  params.reload_type = has_cached_response
+                           ? content::ReloadType::BYPASSING_CACHE
+                           : content::ReloadType::NORMAL;
+  base::WeakPtr<content::NavigationHandle> fallback_navigation =
+      web_contents()->GetController().LoadURLWithParams(params);
+  if (!fallback_navigation) {
+    pending_native_fallback_frames_.erase(embedder_ftn);
+    return;
+  }
+  // No other navigation can start in this frame inside `LoadURLWithParams()`,
+  // so an already recorded ID belongs to the fallback navigation. The fallback
+  // navigation may wait for beforeunload before it starts, and then its ID is
+  // not recorded yet.
+  std::optional<int64_t>& navigation_id =
+      pending_native_fallback_frames_.at(embedder_ftn).navigation_id;
+  if (navigation_id) {
+    CHECK_EQ(*navigation_id, fallback_navigation->GetNavigationId());
+  }
+  navigation_id = fallback_navigation->GetNavigationId();
 }
 
 void MimeHandlerStreamManager::OnExtensionUnloaded(

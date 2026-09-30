@@ -706,6 +706,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "extensions/browser/mime_handler/mime_handler_fallback_url_loader_request_interceptor.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
@@ -6932,6 +6933,13 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
       interceptors.push_back(std::move(pdf_interceptor));
     }
   }
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS_CORE) && !BUILDFLAG(IS_ANDROID)
+  interceptors.push_back(
+      std::make_unique<extensions::mime_handler::
+                           MimeHandlerFallbackURLLoaderRequestInterceptor>(
+          frame_tree_node_id, navigation_id));
 #endif
 
   interceptors.push_back(std::make_unique<SearchPrefetchURLLoaderInterceptor>(

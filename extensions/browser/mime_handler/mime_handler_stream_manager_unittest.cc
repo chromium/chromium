@@ -11,10 +11,15 @@
 #include "base/test/gtest_util.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/navigation_controller.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/url_loader_request_interceptor.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -24,6 +29,7 @@
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/mime_handler/generic_mime_handler_stream_delegate.h"
 #include "extensions/browser/mime_handler/mime_handler_body_cache.h"
+#include "extensions/browser/mime_handler/mime_handler_fallback_url_loader_request_interceptor.h"
 #include "extensions/browser/mime_handler/mime_handler_test_helpers.h"
 #include "extensions/browser/mime_handler/mock_mime_handler_stream_delegate.h"
 #include "extensions/browser/mime_handler/stream_container.h"
@@ -32,14 +38,19 @@
 #include "extensions/browser/unloaded_extension_reason.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/data_pipe_drainer.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "services/network/test/test_url_loader_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
 namespace extensions::mime_handler {
@@ -125,6 +136,37 @@ class MimeHandlerStreamManagerTest : public content::RenderViewHostTestHarness {
     MimeHandlerStreamManager::Create(
         content::RenderViewHostTestHarness::web_contents());
     return new_host;
+  }
+
+  int64_t GetFallbackNavigationId() {
+    return content::NavigationSimulator::CreateFromPending(
+               web_contents()->GetController())
+        ->GetNavigationHandle()
+        ->GetNavigationId();
+  }
+
+  void SetUpStreamWithCachedBody(content::RenderFrameHost* embedder_host) {
+    mojo::ScopedDataPipeProducerHandle producer;
+    mojo::ScopedDataPipeConsumerHandle consumer;
+    ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(64u, producer, consumer));
+    ASSERT_EQ(MOJO_RESULT_OK, producer->WriteAllData(base::as_byte_span(
+                                  std::string("cached-body-bytes"))));
+    producer.reset();
+    scoped_refptr<MimeHandlerBodyCache> cache =
+        MimeHandlerBodyCache::Create(std::move(consumer), nullptr);
+    ASSERT_TRUE(cache);
+    ASSERT_TRUE(base::test::RunUntil([&] { return cache->is_complete(); }));
+
+    auto stream = GenerateSampleStreamContainer(1);
+    stream->SetBodyCache(std::move(cache));
+    MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+    manager->AddStreamContainer(
+        embedder_host->GetFrameTreeNodeId(), "internal_id", std::move(stream),
+        std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>(),
+        kFakeNavigationId);
+    manager->ClaimStreamInfoForTesting(embedder_host);
+    manager->GetClaimedStreamInfoForTesting(embedder_host)
+        ->SetDidExtensionFinishNavigation();
   }
 
   content::RenderFrameHost* CreateChildRenderFrameHost(
@@ -1389,13 +1431,15 @@ TEST_F(MimeHandlerStreamManagerTest,
   stream_info->SetDidExtensionFinishNavigation();
 
   manager->AbortAndFallbackToNativeHandler(embedder_host);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return web_contents()->GetController().GetPendingEntry(); }));
   ASSERT_TRUE(manager->IsPendingNativeFallback(embedder_ftn, pdf_url));
 
   // `DidFinishNavigation` on the embedder FTN clears the registration --
   // committed or errored, the re-fetch is over.
-  NiceMock<content::MockNavigationHandle> finish_handle(web_contents());
-  finish_handle.set_render_frame_host(embedder_host);
-  manager->DidFinishNavigation(&finish_handle);
+  content::NavigationSimulator::CreateFromPending(
+      web_contents()->GetController())
+      ->Commit();
   EXPECT_FALSE(manager->IsPendingNativeFallback(embedder_ftn, pdf_url));
 }
 
@@ -1403,9 +1447,9 @@ TEST_F(MimeHandlerStreamManagerTest,
        AbortAndFallbackToNativeHandler_NoBodyCache_TakeReturnsInvalid) {
   const GURL pdf_url(kOriginalUrl1);
 
-  // Without a body cache attached, the FTN registration still exists but the
-  // captured handle is invalid -- the throttle will fall through to a
-  // network refetch.
+  // Without a body cache attached the FTN registration still exists, but there
+  // is nothing to serve, so the interceptor declines and the document is
+  // fetched again.
   content::RenderFrameHost* embedder_host =
       NavigateAndCommit(main_rfh(), pdf_url);
   const content::FrameTreeNodeId embedder_ftn =
@@ -1417,9 +1461,13 @@ TEST_F(MimeHandlerStreamManagerTest,
   stream_info->SetDidExtensionFinishNavigation();
 
   manager->AbortAndFallbackToNativeHandler(embedder_host);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return web_contents()->GetController().GetPendingEntry(); }));
   ASSERT_TRUE(manager->IsPendingNativeFallback(embedder_ftn, pdf_url));
-  EXPECT_FALSE(
-      manager->TakeCachedFallbackBody(embedder_ftn, pdf_url).has_value());
+  EXPECT_FALSE(manager
+                   ->TakeCachedFallbackBody(embedder_ftn,
+                                            GetFallbackNavigationId(), pdf_url)
+                   .has_value());
 }
 
 TEST_F(MimeHandlerStreamManagerTest,
@@ -1465,15 +1513,14 @@ TEST_F(MimeHandlerStreamManagerTest,
   // The abort is observable before the body is, so a reload landing here
   // reaches the native handler with nothing yet to replay.
   EXPECT_TRUE(manager->IsPendingNativeFallback(embedder_ftn, pdf_url));
-  EXPECT_FALSE(
-      manager->TakeCachedFallbackBody(embedder_ftn, pdf_url).has_value());
 
   // The queued request is answered in the same task that completes the cache.
   producer.reset();
   ASSERT_TRUE(base::test::RunUntil([&] { return cache->is_complete(); }));
 
   std::optional<MimeHandlerStreamManager::CachedFallbackBody> taken =
-      manager->TakeCachedFallbackBody(embedder_ftn, pdf_url);
+      manager->TakeCachedFallbackBody(embedder_ftn, GetFallbackNavigationId(),
+                                      pdf_url);
   ASSERT_TRUE(taken.has_value());
   ASSERT_TRUE(taken->pipe.is_valid());
   EXPECT_EQ(std::string_view(kBody).size(), taken->decoded_body_size);
@@ -1485,8 +1532,10 @@ TEST_F(MimeHandlerStreamManagerTest,
   // The registration stays in place until
   // `DidFinishNavigation`/`FrameDeleted`, but the body is single-use.
   EXPECT_TRUE(manager->IsPendingNativeFallback(embedder_ftn, pdf_url));
-  EXPECT_FALSE(
-      manager->TakeCachedFallbackBody(embedder_ftn, pdf_url).has_value());
+  EXPECT_FALSE(manager
+                   ->TakeCachedFallbackBody(embedder_ftn,
+                                            GetFallbackNavigationId(), pdf_url)
+                   .has_value());
 }
 
 TEST_F(MimeHandlerStreamManagerTest,
@@ -1532,7 +1581,8 @@ TEST_F(MimeHandlerStreamManagerTest,
   ASSERT_TRUE(base::test::RunUntil([&] { return cache->is_complete(); }));
 
   std::optional<MimeHandlerStreamManager::CachedFallbackBody> taken =
-      manager->TakeCachedFallbackBody(embedder_ftn, pdf_url);
+      manager->TakeCachedFallbackBody(embedder_ftn, GetFallbackNavigationId(),
+                                      pdf_url);
   ASSERT_TRUE(taken.has_value());
   ASSERT_TRUE(taken->pipe.is_valid());
   EXPECT_EQ(std::string_view(kBody).size(), taken->decoded_body_size);
@@ -1544,8 +1594,10 @@ TEST_F(MimeHandlerStreamManagerTest,
   // A body consumed by the re-navigation must stay consumed. Aborting again
   // before that navigation settles must not buffer a replacement.
   manager->AbortAndFallbackToNativeHandler(embedder_host);
-  EXPECT_FALSE(
-      manager->TakeCachedFallbackBody(embedder_ftn, pdf_url).has_value());
+  EXPECT_FALSE(manager
+                   ->TakeCachedFallbackBody(embedder_ftn,
+                                            GetFallbackNavigationId(), pdf_url)
+                   .has_value());
 }
 
 // Requests queued on one body cache are answered back to back, and answering
@@ -1660,7 +1712,8 @@ TEST_F(MimeHandlerStreamManagerTest,
 
   EXPECT_FALSE(manager->IsPendingNativeFallback(embedder_ftn, pdf_url));
   EXPECT_FALSE(
-      manager->TakeCachedFallbackBody(embedder_ftn, pdf_url).has_value());
+      manager->TakeCachedFallbackBody(embedder_ftn, kFakeNavigationId, pdf_url)
+          .has_value());
   EXPECT_EQ(spoofed_url, embedder_host->GetLastCommittedURL());
   EXPECT_FALSE(web_contents()->GetController().GetPendingEntry());
 }
@@ -1714,8 +1767,15 @@ TEST_F(MimeHandlerStreamManagerTest,
   // response for a different URL (e.g. after a server redirect) is not
   // eligible.
   EXPECT_FALSE(manager->IsPendingNativeFallback(embedder_ftn, other_url));
-  EXPECT_FALSE(
-      manager->TakeCachedFallbackBody(embedder_ftn, other_url).has_value());
+  EXPECT_FALSE(manager
+                   ->TakeCachedFallbackBody(
+                       embedder_ftn, GetFallbackNavigationId(), other_url)
+                   .has_value());
+
+  EXPECT_FALSE(manager
+                   ->TakeCachedFallbackBody(
+                       embedder_ftn, GetFallbackNavigationId() + 1, pdf_url)
+                   .has_value());
 
   // A fragment-only difference is still the same resource.
   const GURL original_url_with_fragment = pdf_url.Resolve("#fragment");
@@ -1725,13 +1785,223 @@ TEST_F(MimeHandlerStreamManagerTest,
   // The cached body remains available for the matching URL.
   ASSERT_TRUE(manager->IsPendingNativeFallback(embedder_ftn, pdf_url));
   std::optional<MimeHandlerStreamManager::CachedFallbackBody> taken =
-      manager->TakeCachedFallbackBody(embedder_ftn, pdf_url);
+      manager->TakeCachedFallbackBody(embedder_ftn, GetFallbackNavigationId(),
+                                      pdf_url);
   ASSERT_TRUE(taken.has_value());
   ASSERT_TRUE(taken->pipe.is_valid());
   StringDrainerClient client;
   mojo::DataPipeDrainer drainer(&client, std::move(taken->pipe));
   ASSERT_TRUE(base::test::RunUntil([&] { return client.complete(); }));
   EXPECT_EQ(kBody, client.TakeAccumulated());
+}
+
+// The replay serves the response the first load recorded, so the head reaches
+// the client as it was kept and the completion sizes come from that head and
+// the cache rather than from this delivery.
+TEST_F(MimeHandlerStreamManagerTest,
+       MimeHandlerFallbackURLLoaderRequestInterceptor_ReplaysKeptResponse) {
+  const GURL pdf_url(kOriginalUrl1);
+
+  constexpr char kBody[] = "%PDF-cached-bytes";
+  constexpr size_t kWireSize = 6701;
+  constexpr size_t kTransferSize = 6912;
+
+  mojo::ScopedDataPipeProducerHandle producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(64u, producer, consumer));
+  ASSERT_EQ(MOJO_RESULT_OK,
+            producer->WriteAllData(base::as_byte_span(std::string(kBody))));
+  producer.reset();
+
+  auto cache = MimeHandlerBodyCache::Create(std::move(consumer), nullptr);
+  ASSERT_TRUE(cache);
+  ASSERT_TRUE(base::test::RunUntil([&] { return cache->is_complete(); }));
+
+  // Stand-in for the first load's timing, from well before this test runs.
+  const base::TimeTicks kOriginalResponseStart =
+      base::TimeTicks::Now() - base::Seconds(30);
+
+  auto transferrable_loader = blink::mojom::TransferrableURLLoader::New();
+  transferrable_loader->url = GURL(kStreamUrl1);
+  transferrable_loader->head = network::mojom::URLResponseHead::New();
+  transferrable_loader->head->mime_type = kPdfMimeType;
+  transferrable_loader->head->content_length = kWireSize;
+  transferrable_loader->head->encoded_data_length = kTransferSize;
+  transferrable_loader->head->response_start = kOriginalResponseStart;
+  transferrable_loader->head->network_accessed = true;
+  auto stream = std::make_unique<StreamContainer>(
+      /*tab_id=*/1, /*embedded=*/true, GURL(kHandlerUrl1), kExtensionId1,
+      std::move(transferrable_loader), GURL(kOriginalUrl1));
+  stream->SetBodyCache(cache);
+
+  content::RenderFrameHost* embedder_host =
+      NavigateAndCommit(main_rfh(), pdf_url);
+  const content::FrameTreeNodeId embedder_ftn =
+      embedder_host->GetFrameTreeNodeId();
+
+  MimeHandlerStreamManager* manager = mime_handler_stream_manager();
+  ASSERT_TRUE(manager);
+  manager->AddStreamContainer(
+      embedder_ftn, "internal_id", std::move(stream),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>(),
+      kFakeNavigationId);
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  extensions::StreamInfo* stream_info =
+      manager->GetClaimedStreamInfoForTesting(embedder_host);
+  ASSERT_TRUE(stream_info);
+  stream_info->SetDidExtensionFinishNavigation();
+
+  manager->AbortAndFallbackToNativeHandler(embedder_host);
+  ASSERT_TRUE(manager->IsPendingNativeFallback(embedder_ftn, pdf_url));
+
+  // Queued behind the fallback request, so it is answered only once that one
+  // has run.
+  base::test::TestFuture<mojo::ScopedDataPipeConsumerHandle> after_fallback;
+  cache->CreatePipeAsync(after_fallback.GetCallback());
+  ASSERT_TRUE(after_fallback.Wait());
+
+  network::ResourceRequest request;
+  request.url = pdf_url;
+  request.mode = network::mojom::RequestMode::kNavigate;
+
+  MimeHandlerFallbackURLLoaderRequestInterceptor interceptor(
+      embedder_ftn, GetFallbackNavigationId());
+  base::test::TestFuture<content::URLLoaderRequestInterceptor::RequestHandler>
+      handler_future;
+  interceptor.MaybeCreateLoader(request, /*browser_context=*/nullptr,
+                                handler_future.GetCallback());
+  content::URLLoaderRequestInterceptor::RequestHandler handler =
+      handler_future.Take();
+  ASSERT_FALSE(handler.is_null());
+
+  network::TestURLLoaderClient test_client;
+  mojo::PendingRemote<network::mojom::URLLoader> loader;
+  std::move(handler).Run(request, loader.InitWithNewPipeAndPassReceiver(),
+                         test_client.CreateRemote());
+  test_client.RunUntilComplete();
+
+  EXPECT_EQ(net::OK, test_client.completion_status().error_code);
+  EXPECT_EQ(std::string_view(kBody).size(),
+            test_client.completion_status().decoded_body_length.InBytes());
+  EXPECT_EQ(kWireSize,
+            test_client.completion_status().encoded_body_length.InBytes());
+  EXPECT_EQ(kTransferSize,
+            test_client.completion_status().encoded_data_length.InBytes());
+
+  ASSERT_TRUE(test_client.response_head());
+  EXPECT_EQ(kOriginalResponseStart,
+            test_client.response_head()->response_start);
+  EXPECT_TRUE(test_client.response_head()->network_accessed);
+
+  StringDrainerClient body_client;
+  mojo::DataPipeDrainer drainer(&body_client,
+                                test_client.response_body_release());
+  ASSERT_TRUE(base::test::RunUntil([&] { return body_client.complete(); }));
+  EXPECT_EQ(kBody, body_client.TakeAccumulated());
+}
+
+// A fallback navigation that did not start should not leave the registration
+// behind. Otherwise the next response in this frame would go to the native
+// handler.
+TEST_F(MimeHandlerStreamManagerTest,
+       AbortAndFallbackToNativeHandler_NavigationNotStartedDropsRegistration) {
+  const GURL pdf_url(kOriginalUrl1);
+
+  mojo::ScopedDataPipeProducerHandle producer;
+  mojo::ScopedDataPipeConsumerHandle consumer;
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(64u, producer, consumer));
+  ASSERT_EQ(MOJO_RESULT_OK, producer->WriteAllData(base::as_byte_span(
+                                std::string("cached-body-bytes"))));
+  auto cache = MimeHandlerBodyCache::Create(std::move(consumer), nullptr);
+  ASSERT_TRUE(cache);
+
+  content::RenderFrameHost* embedder_host =
+      NavigateAndCommit(main_rfh(), pdf_url);
+  const content::FrameTreeNodeId embedder_ftn =
+      embedder_host->GetFrameTreeNodeId();
+  auto stream = GenerateSampleStreamContainer(1);
+  stream->SetBodyCache(cache);
+  auto* manager = mime_handler_stream_manager();
+  manager->AddStreamContainer(
+      embedder_ftn, "internal_id", std::move(stream),
+      std::make_unique<NiceMock<MockMimeHandlerStreamDelegate>>(),
+      kFakeNavigationId);
+  manager->ClaimStreamInfoForTesting(embedder_host);
+  auto* stream_info = manager->GetClaimedStreamInfoForTesting(embedder_host);
+  ASSERT_TRUE(stream_info);
+  stream_info->SetDidExtensionFinishNavigation();
+
+  manager->AbortAndFallbackToNativeHandler(embedder_host);
+
+  // The params match the fallback navigation, so content drops the fallback
+  // navigation as a duplicate and `LoadURLWithParams()` returns null.
+  content::NavigationController::LoadURLParams params(pdf_url);
+  params.frame_tree_node_id = embedder_ftn;
+  params.transition_type = ui::PAGE_TRANSITION_CLIENT_REDIRECT;
+  params.reload_type = content::ReloadType::BYPASSING_CACHE;
+  const int64_t ongoing_navigation_id = web_contents()
+                                            ->GetController()
+                                            .LoadURLWithParams(params)
+                                            ->GetNavigationId();
+
+  producer.reset();
+  ASSERT_TRUE(base::test::RunUntil([&] { return cache->is_complete(); }));
+  ASSERT_EQ(ongoing_navigation_id, GetFallbackNavigationId());
+
+  EXPECT_FALSE(manager->IsPendingNativeFallback(embedder_ftn, pdf_url));
+}
+
+TEST_F(MimeHandlerStreamManagerTest,
+       AbortAndFallbackToNativeHandler_SameDocumentNavigationKeepsBody) {
+  const GURL pdf_url(kOriginalUrl1);
+  content::RenderFrameHost* embedder_host =
+      NavigateAndCommit(main_rfh(), pdf_url);
+  ASSERT_NO_FATAL_FAILURE(SetUpStreamWithCachedBody(embedder_host));
+  auto* manager = mime_handler_stream_manager();
+
+  manager->AbortAndFallbackToNativeHandler(embedder_host);
+  ASSERT_TRUE(base::test::RunUntil(
+      [&] { return web_contents()->GetController().GetPendingEntry(); }));
+  const int64_t fallback_navigation_id = GetFallbackNavigationId();
+
+  content::NavigationSimulator::CreateRendererInitiated(
+      pdf_url.Resolve("#page=2"), embedder_host)
+      ->CommitSameDocument();
+
+  EXPECT_TRUE(manager
+                  ->TakeCachedFallbackBody(embedder_host->GetFrameTreeNodeId(),
+                                           fallback_navigation_id, pdf_url)
+                  .has_value());
+}
+
+// The fallback navigation cancels the navigation already running in the
+// frame. Finishing the canceled navigation should not clear the registration.
+TEST_F(MimeHandlerStreamManagerTest,
+       AbortAndFallbackToNativeHandler_CanceledNavigationKeepsRegistration) {
+  const GURL pdf_url(kOriginalUrl1);
+  content::RenderFrameHost* embedder_host =
+      NavigateAndCommit(main_rfh(), pdf_url);
+  ASSERT_NO_FATAL_FAILURE(SetUpStreamWithCachedBody(embedder_host));
+  auto* manager = mime_handler_stream_manager();
+
+  auto canceled_navigation =
+      content::NavigationSimulator::CreateBrowserInitiated(GURL(kOriginalUrl2),
+                                                           web_contents());
+  canceled_navigation->Start();
+
+  manager->AbortAndFallbackToNativeHandler(embedder_host);
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    return web_contents()->GetController().GetPendingEntry()->GetURL() ==
+           pdf_url;
+  }));
+
+  const content::FrameTreeNodeId embedder_ftn =
+      embedder_host->GetFrameTreeNodeId();
+  EXPECT_TRUE(manager->IsPendingNativeFallback(embedder_ftn, pdf_url));
+  EXPECT_TRUE(manager
+                  ->TakeCachedFallbackBody(embedder_ftn,
+                                           GetFallbackNavigationId(), pdf_url)
+                  .has_value());
 }
 
 TEST_F(MimeHandlerStreamManagerTest,
@@ -1742,6 +2012,7 @@ TEST_F(MimeHandlerStreamManagerTest,
 
   EXPECT_FALSE(manager
                    ->TakeCachedFallbackBody(content::FrameTreeNodeId(),
+                                            kFakeNavigationId,
                                             GURL(kOriginalUrl1))
                    .has_value());
 }
