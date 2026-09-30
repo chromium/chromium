@@ -112,6 +112,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSelectedMetrics) {
       mojom::ActionPersistence::kFill, form().global_id(),
       form().fields().front().global_id(),
       paydm().GetCreditCardByGUID(kCardGuid), AutofillTriggerSource::kPopup,
+      /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
 
   EXPECT_THAT(
@@ -134,6 +135,7 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSelectedMetrics) {
       mojom::ActionPersistence::kFill, form().global_id(),
       form().fields().front().global_id(),
       paydm().GetCreditCardByGUID(kCardGuid), AutofillTriggerSource::kPopup,
+      /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
 
   EXPECT_THAT(
@@ -161,11 +163,12 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogFilledMetrics) {
   autofill_manager().OnAskForValuesToFillTest(
       form(), form().fields().front().global_id());
   EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
-      .WillOnce(base::test::RunOnceCallback<1>(card()));
+      .WillOnce(base::test::RunOnceCallback<2>(card()));
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form().global_id(),
       form().fields().front().global_id(),
       paydm().GetCreditCardByGUID(kCardGuid), AutofillTriggerSource::kPopup,
+      /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
 
   EXPECT_THAT(
@@ -185,11 +188,12 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogFilledMetrics) {
 
   // Fill the suggestion again.
   EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
-      .WillOnce(base::test::RunOnceCallback<1>(card()));
+      .WillOnce(base::test::RunOnceCallback<2>(card()));
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form().global_id(),
       form().fields().front().global_id(),
       paydm().GetCreditCardByGUID(kCardGuid), AutofillTriggerSource::kPopup,
+      /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
@@ -216,11 +220,12 @@ TEST_F(VirtualCardStandaloneCvcMetricsTest, LogSubmitMetrics) {
   autofill_manager().OnAskForValuesToFillTest(
       form(), form().fields().front().global_id());
   EXPECT_CALL(credit_card_access_manager(), FetchCreditCard)
-      .WillOnce(base::test::RunOnceCallback<1>(card()));
+      .WillOnce(base::test::RunOnceCallback<2>(card()));
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form().global_id(),
       form().fields().front().global_id(),
       paydm().GetCreditCardByGUID(kCardGuid), AutofillTriggerSource::kPopup,
+      /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
   SubmitForm(form());
 

@@ -125,8 +125,12 @@ class CreditCardAccessManager
 
   // `on_credit_card_fetched` is run once `card` is fetched, if fetching is
   // successful.
+  // TODO(crbug.com/561395976): always request the user confirmation using
+  // biometric authentication or a modal confirmation dialog if
+  // `require_user_confirmation` is `true`.
   virtual void FetchCreditCard(
       const CreditCard* card,
+      bool require_user_confirmation,
       OnCreditCardFetchedCallback on_credit_card_fetched);
 
   // Checks whether we should offer risk-based authentication for masked server

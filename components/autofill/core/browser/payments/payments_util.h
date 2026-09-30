@@ -61,7 +61,8 @@ void FillOrPreviewCard(mojom::ActionPersistence action_persistence,
                        BrowserAutofillManager& manager,
                        const FormGlobalId& form_id,
                        const FieldGlobalId& field_id,
-                       AutofillTriggerSource trigger_source);
+                       AutofillTriggerSource trigger_source,
+                       bool require_user_confirmation);
 
 }  // namespace payments
 }  // namespace autofill

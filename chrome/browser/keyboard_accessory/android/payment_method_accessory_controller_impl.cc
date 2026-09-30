@@ -588,8 +588,11 @@ bool PaymentMethodAccessoryControllerImpl::FetchIfCreditCardId(
     return false;
   }
 
+  // TODO(crbug.com/561395976): Propagate `require_user_confirmation` flag from
+  // Java.
   GetAutofillManager()->GetCreditCardAccessManager()->FetchCreditCard(
       UnwrapCardOrVirtualCard(*card_iter),
+      /*require_user_confirmation=*/false,
       base::BindOnce(&PaymentMethodAccessoryControllerImpl::OnCreditCardFetched,
                      weak_ptr_factory_.GetWeakPtr()));
   return true;

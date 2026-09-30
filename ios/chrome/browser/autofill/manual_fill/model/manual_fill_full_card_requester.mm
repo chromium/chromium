@@ -87,6 +87,7 @@ class CreditCard;
   BOOL isVirtualCard = (recordType == kVirtualCard);
   creditCardAccessManager->FetchCreditCard(
       (isVirtualCard ? &virtualCard : &card),
+      /*require_user_confirmation=*/false,
       base::BindOnce(
           [](__weak ManualFillFullCardRequester* weak_self,
              manual_fill::PaymentFieldType field_type, BOOL is_virtual_card,

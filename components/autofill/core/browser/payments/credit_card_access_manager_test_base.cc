@@ -379,8 +379,9 @@ void CreditCardAccessManagerTestBase::
   test_api(credit_card_access_manager())
       .set_is_user_verifiable(is_user_verifiable);
   credit_card_access_manager().FetchCreditCard(
-      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                           accessor().GetWeakPtr()));
+      card, /*require_user_confirmation=*/false,
+      base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                     accessor().GetWeakPtr()));
 
   // This checks risk-based authentication flow is successfully invoked,
   // because it is always the very first authentication flow in a VCN
@@ -537,8 +538,9 @@ void CreditCardAccessManagerTestBase::
 
 void CreditCardAccessManagerTestBase::FetchCreditCard(const CreditCard* card) {
   credit_card_access_manager().FetchCreditCard(
-      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                           accessor().GetWeakPtr()));
+      card, /*require_user_confirmation=*/false,
+      base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                     accessor().GetWeakPtr()));
 }
 
 void CreditCardAccessManagerTestBase::ExpectCardRetrievalFailure(

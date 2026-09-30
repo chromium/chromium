@@ -76,7 +76,8 @@ class ProfileTokenQualityTest : public testing::Test,
     autofill_manager().FillOrPreviewForm(
         mojom::ActionPersistence::kFill, form.global_id(),
         form.fields()[triggering_field_index].global_id(), &profile,
-        AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
+        AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
+        /*blocked_fields=*/{});
   }
 
   TestAddressDataManager& adm() { return adm_; }

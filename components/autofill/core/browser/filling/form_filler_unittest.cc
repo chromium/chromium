@@ -468,7 +468,8 @@ TEST_F(FormFillerTest, UndoSavesFormFillingDataForAutofillAi) {
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form.global_id(),
       form.fields().front().global_id(), &passport,
-      AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
+      AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
+      /*blocked_fields=*/{});
   autofill_manager().UndoAutofill(mojom::ActionPersistence::kFill,
                                   form.global_id(),
                                   form.fields().front().global_id());

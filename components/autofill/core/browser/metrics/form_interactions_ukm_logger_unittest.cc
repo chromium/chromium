@@ -1376,7 +1376,8 @@ TEST_P(LogFocusedComplexFormAtFormRemoveTest, TestEmittedUKM) {
           mojom::ActionPersistence::kFill, form.global_id(),
           first_field.global_id(),
           paydm().GetCreditCardByGUID("10000000-0000-0000-0000-000000000001"),
-          AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
+          AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
+          /*blocked_fields=*/{});
     } else {
       // Autofill should not be simulated on a field that is not autofillable.
       NOTREACHED();

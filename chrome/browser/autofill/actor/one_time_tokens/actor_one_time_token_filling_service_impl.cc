@@ -550,9 +550,12 @@ void ActorOneTimeTokenFillingServiceImpl::FillOtp(
   filling_observer_->ObserveNewFilling(filled_field_ids);
 
   // Trigger the filling operation through the Autofill manager.
+  // TODO(crbug.com/561395976): Figure out if additional authentication can be
+  // required here.
   autofill_manager.FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form_structure->global_id(),
       trigger_field_id, &otp_fill_data, AutofillTriggerSource::kGlic,
+      /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
 
   // Activate the observer and wait for completion.

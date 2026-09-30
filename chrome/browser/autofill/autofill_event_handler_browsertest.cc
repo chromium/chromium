@@ -141,6 +141,7 @@ class AutofillEventHandlerBrowserTest : public InProcessBrowserTest {
     manager->FillOrPreviewForm(mojom::ActionPersistence::kFill,
                                form.global_id(), triggered_field.global_id(),
                                &profile, AutofillTriggerSource::kPopup,
+                               /*require_user_confirmation=*/false,
                                /*blocked_fields=*/{});
   }
 
@@ -803,6 +804,7 @@ class AutofillEventMultiFrameBrowserTest : public InProcessBrowserTest {
     manager->FillOrPreviewForm(mojom::ActionPersistence::kFill,
                                form.global_id(), triggered_field.global_id(),
                                &card, AutofillTriggerSource::kPopup,
+                               /*require_user_confirmation=*/false,
                                /*blocked_fields=*/{});
   }
 

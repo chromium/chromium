@@ -76,10 +76,12 @@ MockCreditCardAccessManager::MockCreditCardAccessManager(
     BrowserAutofillManager* bam)
     : CreditCardAccessManager(bam) {
   ON_CALL(*this, FetchCreditCard)
-      .WillByDefault(
-          [this](const CreditCard* card, OnCreditCardFetchedCallback cb) {
-            CreditCardAccessManager::FetchCreditCard(card, std::move(cb));
-          });
+      .WillByDefault([this](const CreditCard* card,
+                            bool require_user_confirmation,
+                            OnCreditCardFetchedCallback cb) {
+        CreditCardAccessManager::FetchCreditCard(
+            card, require_user_confirmation, std::move(cb));
+      });
 }
 
 MockCreditCardAccessManager::~MockCreditCardAccessManager() = default;

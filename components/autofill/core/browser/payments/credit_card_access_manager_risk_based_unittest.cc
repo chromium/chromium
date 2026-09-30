@@ -532,8 +532,9 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
                        /*is_card_info_retrieval_enrolled=*/true);
 
   credit_card_access_manager().FetchCreditCard(
-      enrolled_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                                    accessor().GetWeakPtr()));
+      enrolled_card, /*require_user_confirmation=*/false,
+      base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                     accessor().GetWeakPtr()));
 
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
   // invoked.
@@ -584,8 +585,9 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
                        /*is_card_info_retrieval_enrolled=*/true);
 
   credit_card_access_manager().FetchCreditCard(
-      enrolled_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                                    accessor().GetWeakPtr()));
+      enrolled_card, /*require_user_confirmation=*/false,
+      base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                     accessor().GetWeakPtr()));
 
   // Mock that CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse
   // indicates a green path with valid card number returned.
@@ -812,8 +814,9 @@ TEST_F(CreditCardAccessManagerRiskBasedMaskedServerCardUnmaskingTest,
   const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   credit_card_access_manager().FetchCreditCard(
-      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                           accessor().GetWeakPtr()));
+      card, /*require_user_confirmation=*/false,
+      base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                     accessor().GetWeakPtr()));
 
   CreditCardRiskBasedAuthenticator::RiskBasedAuthenticationResponse response;
   response.result = CreditCardRiskBasedAuthenticator::

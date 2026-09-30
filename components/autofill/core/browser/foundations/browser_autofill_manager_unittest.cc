@@ -542,16 +542,19 @@ class MockCreditCardAccessManager : public CreditCardAccessManager {
   explicit MockCreditCardAccessManager(BrowserAutofillManager* bam)
       : CreditCardAccessManager(bam) {
     ON_CALL(*this, FetchCreditCard)
-        .WillByDefault(
-            [this](const CreditCard* card, OnCreditCardFetchedCallback cb) {
-              CreditCardAccessManager::FetchCreditCard(card, std::move(cb));
-            });
+        .WillByDefault([this](const CreditCard* card,
+                              bool require_user_confirmation,
+                              OnCreditCardFetchedCallback cb) {
+          CreditCardAccessManager::FetchCreditCard(
+              card, require_user_confirmation, std::move(cb));
+        });
   }
 
   MOCK_METHOD(void, PrepareToFetchCreditCard, (), (override));
   MOCK_METHOD(void,
               FetchCreditCard,
               (const CreditCard* card,
+               bool require_user_confirmation,
                OnCreditCardFetchedCallback on_credit_card_fetched),
               (override));
 };
@@ -1090,6 +1093,7 @@ class BrowserAutofillManagerTest
       autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill,
                                            form.global_id(), field.global_id(),
                                            profile, trigger_source,
+                                           /*require_user_confirmation=*/false,
                                            /*blocked_fields=*/{});
     } else if (const CreditCard* card =
                    personal_data().payments_data_manager().GetCreditCardByGUID(
@@ -1097,6 +1101,7 @@ class BrowserAutofillManagerTest
       autofill_manager().FillOrPreviewForm(mojom::ActionPersistence::kFill,
                                            form.global_id(), field.global_id(),
                                            card, trigger_source,
+                                           /*require_user_confirmation=*/false,
                                            /*blocked_fields=*/{});
     }
   }
@@ -1197,6 +1202,7 @@ class BrowserAutofillManagerTest
     autofill_manager().FillOrPreviewForm(
         mojom::ActionPersistence::kFill, form->global_id(),
         form->fields()[0].global_id(), &card, AutofillTriggerSource::kPopup,
+        /*require_user_confirmation=*/false,
         /*blocked_fields=*/{});
   }
 
@@ -2648,7 +2654,7 @@ TEST_F(BrowserAutofillManagerTest,
        OnCreditCardFetchedSuccessfully_LocalCreditCard) {
   const CreditCard local_card = test::GetCreditCard();
   EXPECT_CALL(cc_access_manager(), FetchCreditCard)
-      .WillOnce(base::test::RunOnceCallback<1>(local_card));
+      .WillOnce(base::test::RunOnceCallback<2>(local_card));
   EXPECT_CALL(payments_autofill_client(), OnCardDataAvailable).Times(0);
 
   FormData form = CreateTestCreditCardFormData(/*is_https=*/true,
@@ -2657,14 +2663,15 @@ TEST_F(BrowserAutofillManagerTest,
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form.global_id(),
       form.fields().front().global_id(), &local_card,
-      AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
+      AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
+      /*blocked_fields=*/{});
 }
 
 TEST_F(BrowserAutofillManagerTest,
        OnCreditCardFetchedSuccessfully_ServerCreditCard) {
   const CreditCard server_card = test::GetMaskedServerCard();
   EXPECT_CALL(cc_access_manager(), FetchCreditCard)
-      .WillOnce(base::test::RunOnceCallback<1>(server_card));
+      .WillOnce(base::test::RunOnceCallback<2>(server_card));
   EXPECT_CALL(payments_autofill_client(), OnCardDataAvailable).Times(0);
 
   FormData form = CreateTestCreditCardFormData(/*is_https=*/true,
@@ -2673,7 +2680,8 @@ TEST_F(BrowserAutofillManagerTest,
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form.global_id(),
       form.fields().front().global_id(), &server_card,
-      AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
+      AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
+      /*blocked_fields=*/{});
 }
 
 TEST_F(BrowserAutofillManagerTest,
@@ -2681,7 +2689,7 @@ TEST_F(BrowserAutofillManagerTest,
   const CreditCard filled_card = test::WithCvc(test::GetVirtualCard());
   using Options = FilledCardInformationBubbleOptions;
   EXPECT_CALL(cc_access_manager(), FetchCreditCard)
-      .WillOnce(base::test::RunOnceCallback<1>(filled_card));
+      .WillOnce(base::test::RunOnceCallback<2>(filled_card));
   EXPECT_CALL(
       payments_autofill_client(),
       OnCardDataAvailable(
@@ -2699,7 +2707,8 @@ TEST_F(BrowserAutofillManagerTest,
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form.global_id(),
       form.fields().front().global_id(), &filled_card,
-      AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
+      AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
+      /*blocked_fields=*/{});
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
@@ -2740,6 +2749,7 @@ TEST_F(BrowserAutofillManagerTest, FillOrPreviewForm_CreditCard_Bnpl) {
       mojom::ActionPersistence::kFill, form.global_id(),
       form.fields().front().global_id(), &bnpl_virtual_card,
       AutofillTriggerSource::kPopup,
+      /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
@@ -2752,7 +2762,7 @@ TEST_F(BrowserAutofillManagerTest,
       CreditCard::CardInfoRetrievalEnrollmentState::kRetrievalEnrolled);
   using Options = FilledCardInformationBubbleOptions;
   EXPECT_CALL(cc_access_manager(), FetchCreditCard)
-      .WillOnce(base::test::RunOnceCallback<1>(filled_card));
+      .WillOnce(base::test::RunOnceCallback<2>(filled_card));
   EXPECT_CALL(
       payments_autofill_client(),
       OnCardDataAvailable(
@@ -2771,6 +2781,7 @@ TEST_F(BrowserAutofillManagerTest,
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form.global_id(),
       form.fields().front().global_id(), &card, AutofillTriggerSource::kPopup,
+      /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
 }
 
@@ -2802,7 +2813,8 @@ TEST_F(BrowserAutofillManagerTest,
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form.global_id(),
       form.fields().front().global_id(), &credit_card,
-      AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
+      AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
+      /*blocked_fields=*/{});
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
@@ -7012,7 +7024,8 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest, OtpFilling) {
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form.global_id(),
       form.fields()[0].global_id(), &otp_fill_data,
-      AutofillTriggerSource::kPopup, /*blocked_fields=*/{});
+      AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
+      /*blocked_fields=*/{});
 
   // Verify that the right data is sent to the renderer.
   ASSERT_EQ(1u, filled_fields.size());
@@ -7204,7 +7217,7 @@ TEST_F(BrowserAutofillManagerTest, FillOrPreviewForm_BlockedFields) {
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form.global_id(),
       form.fields()[0].global_id(), &profile, AutofillTriggerSource::kPopup,
-      blocked_fields);
+      /*require_user_confirmation=*/false, blocked_fields);
 }
 
 // Tests that blocked_fields are preserved through the asynchronous credit
@@ -7220,8 +7233,9 @@ TEST_F(BrowserAutofillManagerTest,
   base::flat_set<FieldGlobalId> blocked_fields = {form.fields()[1].global_id()};
 
   // Mock FetchCreditCard to run the callback with the full card.
-  EXPECT_CALL(cc_access_manager(), FetchCreditCard(&card, _))
-      .WillOnce(base::test::RunOnceCallback<1>(full_card));
+  EXPECT_CALL(cc_access_manager(),
+              FetchCreditCard(&card, /*require_user_confirmation=*/true, _))
+      .WillOnce(base::test::RunOnceCallback<2>(full_card));
 
   // We expect ApplyFormAction to be called with only the non-blocked fields.
   // The second field (index 1) is blocked.
@@ -7238,7 +7252,7 @@ TEST_F(BrowserAutofillManagerTest,
   autofill_manager().FillOrPreviewForm(
       mojom::ActionPersistence::kFill, form.global_id(),
       form.fields()[0].global_id(), &card, AutofillTriggerSource::kPopup,
-      blocked_fields);
+      /*require_user_confirmation=*/true, blocked_fields);
 }
 
 class BrowserAutofillManagerSuggestionMergingTest

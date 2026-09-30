@@ -1143,8 +1143,11 @@ void AtMemoryManager::FillCreditCard(
   }
 
   // TODO(crbug.com/497795513): Consider caching fetched cards.
+  // TODO(crbug.com/561395976): Propagate the `require_user_confirmation` flag
+  // from Java.
   credit_card_access_manager->FetchCreditCard(
       credit_card,
+      /*require_user_confirmation=*/false,
       base::BindOnce(
           [](base::WeakPtr<AtMemoryManager> manager,
              base::WeakPtr<BrowserAutofillManager> bam,

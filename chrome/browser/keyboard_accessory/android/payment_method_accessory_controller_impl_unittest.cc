@@ -76,6 +76,7 @@ class TestAccessManager : public CreditCardAccessManager {
   using CreditCardAccessManager::CreditCardAccessManager;
   void FetchCreditCard(
       const CreditCard* card,
+      bool require_user_confirmation,
       OnCreditCardFetchedCallback on_credit_card_fetched) override {
     std::move(on_credit_card_fetched).Run(CHECK_DEREF(card));
   }
@@ -831,6 +832,7 @@ TEST_F(PaymentMethodAccessoryControllerTestForBnpl,
       mojom::ActionPersistence::kFill, form.global_id(),
       form.fields().front().global_id(), FillingPayload(&bnpl_card),
       AutofillTriggerSource::kKeyboardAccessoryOrBottomSheet,
+      /*require_user_confirmation=*/false,
       /*blocked_fields=*/{});
 
   std::u16string cvc = u"123";

@@ -877,13 +877,17 @@ ActorFormFillingServiceImpl::FillOrPreviewFormImpl(
                        autofill_manager.FillOrPreviewForm(
                            action_persistence, form_structure->global_id(),
                            trigger_field_id, &autofill_profile,
-                           AutofillTriggerSource::kGlic, blocked_fields);
+                           AutofillTriggerSource::kGlic,
+                           /*require_user_confirmation=*/false, blocked_fields);
                      },
                      [&](const CreditCard& credit_card) {
+                       // TODO(crbug.com/561395976): Figure out if additional
+                       // authentication can be required here.
                        autofill_manager.FillOrPreviewForm(
                            action_persistence, form_structure->global_id(),
                            trigger_field_id, &credit_card,
                            AutofillTriggerSource::kGlic,
+                           /*require_user_confirmation=*/false,
                            /*blocked_fields=*/{});
                      },
                      [&](const std::monostate&) {

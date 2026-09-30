@@ -174,8 +174,9 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
 
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().FetchCreditCard(
-      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                           accessor().GetWeakPtr()));
+      card, /*require_user_confirmation=*/false,
+      base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                     accessor().GetWeakPtr()));
 
   // The only time we should expect an error is if mandatory re-auth is
   // enabled, but the mandatory re-auth authentication was not successful.
@@ -239,8 +240,9 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
 
   credit_card_access_manager().FetchCreditCard(
-      masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                                         accessor().GetWeakPtr()));
+      masked_server_card, /*require_user_confirmation=*/false,
+      base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                     accessor().GetWeakPtr()));
 
   // This checks risk-based authentication flow is successfully invoked,
   // because it is always the very first authentication flow in a VCN
@@ -327,8 +329,9 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
 
   credit_card_access_manager().FetchCreditCard(
-      masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                                         accessor().GetWeakPtr()));
+      masked_server_card, /*require_user_confirmation=*/false,
+      base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                     accessor().GetWeakPtr()));
 
   // Ensures CreditCardRiskBasedAuthenticator::Authenticate is successfully
   // invoked.
@@ -443,8 +446,9 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
 
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().FetchCreditCard(
-      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                           accessor().GetWeakPtr()));
+      card, /*require_user_confirmation=*/false,
+      base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                     accessor().GetWeakPtr()));
 
   EXPECT_EQ(accessor().cvc(),
             MandatoryReauthResponseIsSuccess() ? kTestCvc16 : u"");
@@ -467,8 +471,9 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
 
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().FetchCreditCard(
-      card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                           accessor().GetWeakPtr()));
+      card, /*require_user_confirmation=*/false,
+      base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                     accessor().GetWeakPtr()));
 
   EXPECT_EQ(accessor().cvc(), u"");
   histogram_tester.ExpectBucketCount(
@@ -489,8 +494,9 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
   PrepareToFetchCreditCardAndWaitForCallbacks();
 
   credit_card_access_manager().FetchCreditCard(
-      masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                                         accessor().GetWeakPtr()));
+      masked_server_card, /*require_user_confirmation=*/false,
+      base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                     accessor().GetWeakPtr()));
 
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(
@@ -521,8 +527,9 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
   PrepareToFetchCreditCardAndWaitForCallbacks();
 
   credit_card_access_manager().FetchCreditCard(
-      masked_server_card, base::BindOnce(&TestAccessor::OnCreditCardFetched,
-                                         accessor().GetWeakPtr()));
+      masked_server_card, /*require_user_confirmation=*/false,
+      base::BindOnce(&TestAccessor::OnCreditCardFetched,
+                     accessor().GetWeakPtr()));
 
   SetUpDeviceAuthenticatorResponseMock();
   credit_card_access_manager().OnRiskBasedAuthenticationResponseReceived(

@@ -75,7 +75,8 @@ void FillOrPreviewCard(mojom::ActionPersistence action_persistence,
                        BrowserAutofillManager& manager,
                        const FormGlobalId& form_id,
                        const FieldGlobalId& field_id,
-                       AutofillTriggerSource trigger_source) {
+                       AutofillTriggerSource trigger_source,
+                       bool require_user_confirmation) {
   CHECK(std::holds_alternative<Suggestion::Guid>(payload));
   CHECK(action_persistence == mojom::ActionPersistence::kFill ||
         action_persistence == mojom::ActionPersistence::kPreview);
@@ -98,7 +99,7 @@ void FillOrPreviewCard(mojom::ActionPersistence action_persistence,
   }
 
   manager.FillOrPreviewForm(action_persistence, form_id, field_id, card_to_fill,
-                            trigger_source,
+                            trigger_source, require_user_confirmation,
                             /*blocked_fields=*/{});
 }
 

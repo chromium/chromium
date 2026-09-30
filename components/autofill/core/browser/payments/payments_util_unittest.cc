@@ -163,6 +163,7 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                const FieldGlobalId& trigger_field_id,
                const FillingPayload& filling_payload,
                AutofillTriggerSource trigger_source,
+               bool require_user_confirmation,
                const base::flat_set<FieldGlobalId>& blocked_fields),
               (override));
 };
@@ -209,12 +210,13 @@ TEST_F(PaymentsUtilFillOrPreviewCardTest, NormalCreditCardFill) {
       FillOrPreviewForm(mojom::ActionPersistence::kFill, form_id, field_id,
                         VariantWith<const CreditCard*>(Pointee(card_)),
                         AutofillTriggerSource::kPopup,
+                        /*require_user_confirmation=*/true,
                         base::flat_set<FieldGlobalId>()));
 
-  FillOrPreviewCard(mojom::ActionPersistence::kFill,
-                    SuggestionType::kCreditCardEntry,
-                    Suggestion::Guid(card_.guid()), autofill_manager(), form_id,
-                    field_id, AutofillTriggerSource::kPopup);
+  FillOrPreviewCard(
+      mojom::ActionPersistence::kFill, SuggestionType::kCreditCardEntry,
+      Suggestion::Guid(card_.guid()), autofill_manager(), form_id, field_id,
+      AutofillTriggerSource::kPopup, /*require_user_confirmation=*/true);
 }
 
 // Tests that previewing a regular credit card suggestion calls
@@ -227,12 +229,13 @@ TEST_F(PaymentsUtilFillOrPreviewCardTest, NormalCreditCardPreview) {
       FillOrPreviewForm(mojom::ActionPersistence::kPreview, form_id, field_id,
                         VariantWith<const CreditCard*>(Pointee(card_)),
                         AutofillTriggerSource::kPopup,
+                        /*require_user_confirmation=*/false,
                         base::flat_set<FieldGlobalId>()));
 
-  FillOrPreviewCard(mojom::ActionPersistence::kPreview,
-                    SuggestionType::kCreditCardEntry,
-                    Suggestion::Guid(card_.guid()), autofill_manager(), form_id,
-                    field_id, AutofillTriggerSource::kPopup);
+  FillOrPreviewCard(
+      mojom::ActionPersistence::kPreview, SuggestionType::kCreditCardEntry,
+      Suggestion::Guid(card_.guid()), autofill_manager(), form_id, field_id,
+      AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false);
 }
 
 // Tests that filling a virtual credit card suggestion calls
@@ -246,12 +249,13 @@ TEST_F(PaymentsUtilFillOrPreviewCardTest, VirtualCreditCardFill) {
           mojom::ActionPersistence::kFill, form_id, field_id,
           VariantWith<const CreditCard*>(Pointee(Property(
               &CreditCard::record_type, CreditCard::RecordType::kVirtualCard))),
-          AutofillTriggerSource::kPopup, base::flat_set<FieldGlobalId>()));
+          AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false,
+          base::flat_set<FieldGlobalId>()));
 
-  FillOrPreviewCard(mojom::ActionPersistence::kFill,
-                    SuggestionType::kVirtualCreditCardEntry,
-                    Suggestion::Guid(card_.guid()), autofill_manager(), form_id,
-                    field_id, AutofillTriggerSource::kPopup);
+  FillOrPreviewCard(
+      mojom::ActionPersistence::kFill, SuggestionType::kVirtualCreditCardEntry,
+      Suggestion::Guid(card_.guid()), autofill_manager(), form_id, field_id,
+      AutofillTriggerSource::kPopup, /*require_user_confirmation=*/false);
 }
 
 // Tests that previewing a virtual credit card suggestion calls
@@ -266,12 +270,14 @@ TEST_F(PaymentsUtilFillOrPreviewCardTest, VirtualCreditCardPreview) {
       FillOrPreviewForm(mojom::ActionPersistence::kPreview, form_id, field_id,
                         VariantWith<const CreditCard*>(Pointee(card_)),
                         AutofillTriggerSource::kPopup,
+                        /*require_user_confirmation=*/false,
                         base::flat_set<FieldGlobalId>()));
 
   FillOrPreviewCard(mojom::ActionPersistence::kPreview,
                     SuggestionType::kVirtualCreditCardEntry,
                     Suggestion::Guid(card_.guid()), autofill_manager(), form_id,
-                    field_id, AutofillTriggerSource::kPopup);
+                    field_id, AutofillTriggerSource::kPopup,
+                    /*require_user_confirmation=*/false);
 }
 
 }  // namespace payments

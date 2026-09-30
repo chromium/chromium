@@ -148,6 +148,7 @@ class OmniboxAutofillDelegateTest
         mojom::ActionPersistence::kFill, form.global_id(),
         form.fields()[1].global_id(), &credit_card,
         AutofillTriggerSource::kOmniboxAutofill,
+        /*require_user_confirmation=*/false,
         /*blocked_fields=*/{});
   }
 

@@ -348,7 +348,11 @@ void CreditCardAccessManager::OnDidGetUnmaskDetails(
 
 void CreditCardAccessManager::FetchCreditCard(
     const CreditCard* card,
+    bool require_user_confirmation,
     OnCreditCardFetchedCallback on_credit_card_fetched) {
+  // TODO(crbug.com/561395976): Run additional authentication if
+  // `require_user_confirmation` and no authentication is triggered for the
+  // user.
   auto* form_data_importer = autofill_client().GetFormDataImporter();
   CHECK(form_data_importer);
   form_data_importer->GetPaymentsFormDataImporter()

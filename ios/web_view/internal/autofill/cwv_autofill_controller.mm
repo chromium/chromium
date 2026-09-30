@@ -569,16 +569,17 @@ struct FocusedFieldState {
       manager.GetCreditCardAccessManager();
 
   accessManager->FetchCreditCard(
-      card.internalCard, base::BindOnce(
-                             ^(CWVFetchFullCardDetailsCompletionHandler handler,
-                               const autofill::CreditCard& fetchedCard) {
-                               CWVCreditCard* fullCard = [[CWVCreditCard alloc]
-                                   initWithCreditCard:fetchedCard];
-                               if (handler) {
-                                 handler(fullCard, /*error=*/nil);
-                               }
-                             },
-                             completionHandler));
+      card.internalCard, /*require_user_confirmation=*/false,
+      base::BindOnce(
+          ^(CWVFetchFullCardDetailsCompletionHandler handler,
+            const autofill::CreditCard& fetchedCard) {
+            CWVCreditCard* fullCard =
+                [[CWVCreditCard alloc] initWithCreditCard:fetchedCard];
+            if (handler) {
+              handler(fullCard, /*error=*/nil);
+            }
+          },
+          completionHandler));
 }
 
 - (void)focusPreviousField {

@@ -140,6 +140,7 @@ void FillCard(content::RenderFrameHost* rfh,
   manager.FillOrPreviewForm(mojom::ActionPersistence::kFill, form.global_id(),
                             triggered_field.global_id(), &card,
                             AutofillTriggerSource::kPopup,
+                            /*require_user_confirmation=*/false,
                             /*blocked_fields=*/{});
 }
 

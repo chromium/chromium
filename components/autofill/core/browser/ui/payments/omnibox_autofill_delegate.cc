@@ -579,7 +579,8 @@ void OmniboxAutofillDelegate::FillOrPreviewCard(
   payments::FillOrPreviewCard(action_persistence, suggestion.type,
                               suggestion.payload, *manager,
                               trigger_form_global_id_, trigger_field_global_id_,
-                              AutofillTriggerSource::kOmniboxAutofill);
+                              AutofillTriggerSource::kOmniboxAutofill,
+                              /*require_user_confirmation=*/false);
 }
 
 void OmniboxAutofillDelegate::Reset() {

@@ -203,6 +203,7 @@ void AutofillHandler::ContinueTrigger(
         .FillOrPreviewForm(autofill::mojom::ActionPersistence::kFill, *form_id,
                            global_field_id, &tmp_autofill_card,
                            autofill::AutofillTriggerSource::kDevtools,
+                           /*require_user_confirmation=*/false,
                            /*blocked_fields=*/{});
   }
   if (address) {
@@ -236,6 +237,7 @@ void AutofillHandler::ContinueTrigger(
         .FillOrPreviewForm(autofill::mojom::ActionPersistence::kFill, *form_id,
                            global_field_id, &tmp_autofill_profile,
                            autofill::AutofillTriggerSource::kDevtools,
+                           /*require_user_confirmation=*/false,
                            /*blocked_fields=*/{});
   }
 

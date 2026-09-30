@@ -1831,6 +1831,7 @@ void BrowserAutofillManager::FillOrPreviewForm(
     const FieldGlobalId& trigger_field_id,
     const FillingPayload& filling_payload,
     AutofillTriggerSource trigger_source,
+    bool require_user_confirmation,
     const base::flat_set<FieldGlobalId>& blocked_fields) {
   auto [form, trigger_field] =
       FindMutableFormAndField(form_id, trigger_field_id);
@@ -1853,7 +1854,8 @@ void BrowserAutofillManager::FillOrPreviewForm(
                        FillOrPreviewCreditCardForm(
                            action_persistence, CHECK_DEREF(form),
                            CHECK_DEREF(trigger_field), *credit_card,
-                           trigger_source, blocked_fields);
+                           trigger_source, require_user_confirmation,
+                           blocked_fields);
                      },
                      [&](const EntityInstance*) {
                        form_filler_->FillOrPreviewForm(
@@ -1991,6 +1993,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
     const AutofillField& trigger_field,
     const CreditCard& credit_card,
     AutofillTriggerSource trigger_source,
+    bool require_user_confirmation,
     const base::flat_set<FieldGlobalId>& blocked_fields) {
   bool require_card_fetching = [&] {
     if (action_persistence == mojom::ActionPersistence::kPreview) {
@@ -2113,7 +2116,7 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
 
   if (require_card_fetching) {
     GetCreditCardAccessManager()->FetchCreditCard(
-        &credit_card,
+        &credit_card, require_user_confirmation,
         base::BindOnce(on_fetched, weak_ptr_factory_.GetWeakPtr(),
                        fill_or_preview, form.global_id(),
                        trigger_field.global_id(), trigger_field.origin(),
@@ -2121,11 +2124,15 @@ void BrowserAutofillManager::FillOrPreviewCreditCardForm(
   } else if (fetched_independently) {
     // Cards fetched independently, such as for BNPL, have all of their data on
     // creation and do not need further fetching.
+    // TODO(crbug.com/561395976): Check if additional authentication is needed
+    // for BNPL credit cards.
     on_fetched(weak_ptr_factory_.GetWeakPtr(), fill_or_preview,
                form.global_id(), trigger_field.global_id(),
                trigger_field.origin(), trigger_source, blocked_fields,
                credit_card);
   } else {
+    // TODO(crbug.com/561395976): Trigger additional authentication for already
+    // fetched credit cards.
     fill_or_preview(*this, action_persistence, form.global_id(),
                     trigger_field.global_id(), credit_card, trigger_source,
                     blocked_fields);
