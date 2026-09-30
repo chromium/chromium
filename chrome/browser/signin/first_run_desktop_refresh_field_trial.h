@@ -20,6 +20,8 @@ namespace signin {
 // Given that these features don't apply to subsequent runs (the first run
 // experience is only triggered on the first run), it doesn't persist the trial
 // group state to local prefs.
+//
+// TODO(crbug.com/475441477): Clean up once experimentation concludes.
 void CreateFirstRunDesktopRefreshFieldTrial(
     base::FeatureList& feature_list,
     const base::FieldTrial::EntropyProvider& entropy_provider);
