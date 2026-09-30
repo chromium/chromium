@@ -1680,7 +1680,7 @@
     {
       // https://drafts.csswg.org/css-borders-4/#corner-shaping
       name: "CSSCornersShorthand",
-      status: "stable",
+      status: "experimental",
     },
     {
       // https://drafts.csswg.org/css-lists-3/#counter-reset
