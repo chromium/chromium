@@ -9,8 +9,8 @@
 import type {CrInputElement, Passkey, PasskeysBrowserProxy, SettingsPasskeysPageElement} from 'chrome://settings/lazy_load.js';
 import {PasskeysBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 class TestPasskeysBrowserProxy extends TestBrowserProxy implements
     PasskeysBrowserProxy {
@@ -145,20 +145,20 @@ suite('PasskeysEditDialog', function() {
     ];
     browserProxy.setNextPasskeys(passkeys);
     document.body.appendChild(page);
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(1, browserProxy.getCallCount('enumerate'));
 
     assertFalse(isShowingError(page));
     assertDeepEquals(getUsernamesFromList(page), [passkeys[0].userName]);
 
     clickButton(page, 'edit');
-    await flushTasks();
+    await microtasksFinished();
 
-    const dialog = page.shadowRoot!.querySelector('passkey-edit-dialog');
+    const dialog = page.shadowRoot.querySelector('passkey-edit-dialog');
     assertTrue(!!dialog);
 
     clickDialogButton(dialog, 'cancel');
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(0, browserProxy.getCallCount('edit'));
 
@@ -185,7 +185,7 @@ suite('PasskeysEditDialog', function() {
     ];
     browserProxy.setNextPasskeys(passkeys);
     document.body.appendChild(page);
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(1, browserProxy.getCallCount('enumerate'));
 
     assertFalse(isShowingError(page));
@@ -194,21 +194,21 @@ suite('PasskeysEditDialog', function() {
     clickDots(page, 0);
 
     clickButton(page, 'edit');
-    await flushTasks();
-    const dialog = page.shadowRoot!.querySelector('passkey-edit-dialog');
+    await microtasksFinished();
+    const dialog = page.shadowRoot.querySelector('passkey-edit-dialog');
     assertTrue(!!dialog);
 
-    await flushTasks();
+    await microtasksFinished();
     browserProxy.setNextPasskeys(editedPasskeys);
     setInputField(dialog, 'new-username');
-    await flushTasks();
+    await microtasksFinished();
     clickDialogButton(dialog, 'actionButton');
 
     const args = await browserProxy.whenCalled('edit');
     assertEquals(args[0], passkeys[0].credentialId);
     assertEquals(args[1], editedPasskeys[0].userName);
 
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(browserProxy.getCallCount('edit'), 1);
 
@@ -227,7 +227,7 @@ suite('PasskeysEditDialog', function() {
     ];
     browserProxy.setNextPasskeys(passkeys);
     document.body.appendChild(page);
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(
         1, browserProxy.getCallCount('enumerate'),
         'Enumerate should have been called once');
@@ -238,16 +238,16 @@ suite('PasskeysEditDialog', function() {
     clickDots(page, 0);
 
     clickButton(page, 'edit');
-    await flushTasks();
+    await microtasksFinished();
 
-    const dialog = page.shadowRoot!.querySelector('passkey-edit-dialog');
+    const dialog = page.shadowRoot.querySelector('passkey-edit-dialog');
     assertTrue(!!dialog);
 
     browserProxy.setNextPasskeys(passkeys);
     setInputField(dialog, '');
-    await flushTasks();
+    await microtasksFinished();
     clickDialogButton(dialog, 'actionButton');
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals('Enter your username', getErrorMessage(dialog));
 

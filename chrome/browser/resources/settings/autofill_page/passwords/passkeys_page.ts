@@ -12,13 +12,10 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import '../../settings_page/settings_subpage.js';
-import '../../settings_shared.css.js';
 import '../../site_favicon.js';
 import '../../simple_confirmation_dialog.js';
-import '../autofill_shared.css.js';
-import './passwords_shared.css.js';
 // <if expr="is_macosx">
 import './passkey_edit_dialog.js';
 
@@ -26,32 +23,30 @@ import './passkey_edit_dialog.js';
 import type {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {AnchorAlignment} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import type {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.js';
+import type {CrLazyRenderLitElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
-import {SettingsViewMixin} from '../../settings_page/settings_view_mixin.js';
+import {SettingsViewMixinLit} from '../../settings_page/settings_view_mixin_lit.js';
 
 // <if expr="is_macosx">
-import type {PasskeyEditDialogElement, SavedPasskeyEditedEvent} from './passkey_edit_dialog.js';
+import type {SavedPasskeyEditedEvent} from './passkey_edit_dialog.js';
 // </if>
 
 import type {Passkey, PasskeysBrowserProxy} from './passkeys_browser_proxy.js';
 import {PasskeysBrowserProxyImpl} from './passkeys_browser_proxy.js';
-import {getTemplate} from './passkeys_page.html.js';
+import {getCss} from './passkeys_page.css.js';
+import {getHtml} from './passkeys_page.html.js';
 
 export interface SettingsPasskeysPageElement {
   $: {
-    deleteErrorDialog: CrLazyRenderElement<CrDialogElement>,
+    deleteErrorDialog: CrLazyRenderLitElement<CrDialogElement>,
     menu: CrActionMenuElement,
-    // <if expr="is_macosx">
-    editPasskeyDialog: PasskeyEditDialogElement,
-    // </if>
   };
 }
 
-const SettingsPasskeysPageElementBase = SettingsViewMixin(PolymerElement);
+const SettingsPasskeysPageElementBase = SettingsViewMixinLit(CrLitElement);
 
 export class SettingsPasskeysPageElement extends
     SettingsPasskeysPageElementBase {
@@ -59,60 +54,65 @@ export class SettingsPasskeysPageElement extends
     return 'settings-passkeys-page';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
       /** Substring to filter the passkeys by. */
-      filter_: {
-        type: String,
-        value: '',
-      },
-      passkeys_: Array,
-      showDeleteConfirmationDialog_: Boolean,
-      noManagement_: Boolean,
+      filter_: {type: String},
+      passkeys_: {type: Array},
+      showDeleteConfirmationDialog_: {type: Boolean},
+      noManagement_: {type: Boolean},
 
       // <if expr="is_macosx">
-      showEditDialog_: Boolean,
-      username_: String,
-      relyingPartyId_: String,
+      showEditDialog_: {type: Boolean},
+      username_: {type: String},
+      relyingPartyId_: {type: String},
       // </if>
     };
   }
 
   // <if expr="is_macosx">
-  declare private showEditDialog_: boolean;
-  declare private username_: string;
-  declare private relyingPartyId_: string;
+  protected accessor showEditDialog_: boolean = false;
+  protected accessor username_: string = '';
+  protected accessor relyingPartyId_: string = '';
   // </if>
 
-  declare private filter_: string;
-  declare private passkeys_: Passkey[];
-  declare private showDeleteConfirmationDialog_: boolean;
+  protected accessor filter_: string = '';
+  protected accessor passkeys_: Passkey[] = [];
+  protected accessor showDeleteConfirmationDialog_: boolean = false;
   // Set if the current platform doesn't support passkey management.
   // (E.g. Windows prior to 2022H2.)
-  declare private noManagement_: boolean;
+  protected accessor noManagement_: boolean = false;
   // Contains the credentialId of the passkey that the action menu was opened
   // for.
-  private credentialIdForActionMenu_: string|null;
+  private credentialIdForActionMenu_: string|null = null;
 
   private browserProxy_: PasskeysBrowserProxy =
       PasskeysBrowserProxyImpl.getInstance();
 
-  override ready() {
-    super.ready();
+  override firstUpdated() {
     this.browserProxy_.enumerate().then(this.onEnumerateComplete_.bind(this));
+  }
+
+  protected onSearchTermChanged_(e: CustomEvent<{value: string}>) {
+    this.filter_ = e.detail.value;
   }
 
   /**
    * Used to filter the displayed passkeys when search text is entered.
    */
-  private filterFunction_(): ((passkey: Passkey) => boolean) {
-    return passkey => [passkey.relyingPartyId, passkey.userName].some(
-               str => str.toLowerCase().includes(
-                   this.filter_.trim().toLowerCase()));
+  protected getFilteredPasskeys_(): Passkey[] {
+    return this.passkeys_.filter(
+        passkey => [passkey.relyingPartyId, passkey.userName].some(
+            str =>
+                str.toLowerCase().includes(this.filter_.trim().toLowerCase())));
   }
 
   /**
@@ -130,7 +130,7 @@ export class SettingsPasskeysPageElement extends
     this.passkeys_ = passkeys;
   }
 
-  private getIconUrl_(passkey: Passkey): string {
+  protected getIconUrl_(passkey: Passkey): string {
     // `passkey.relyingPartyId` comes from the OS and hopefully can be trusted,
     // but don't let bad data form an unexpected URL. Thus drop any passkeys
     // with characters in the RP ID that are meaningful in a host per
@@ -145,10 +145,10 @@ export class SettingsPasskeysPageElement extends
   /**
    * Called when the user clicks on the three-dots icon for a passkey.
    */
-  private onDotsClick_(e: Event) {
-    this.credentialIdForActionMenu_ =
-        (e.target as HTMLElement).dataset['credentialId']!;
-    this.$.menu.showAt(e.target as HTMLElement, {
+  protected onDotsClick_(e: Event) {
+    const target = e.currentTarget as HTMLElement;
+    this.credentialIdForActionMenu_ = target.dataset['credentialId']!;
+    this.$.menu.showAt(target, {
       anchorAlignmentY: AnchorAlignment.AFTER_END,
     });
     // <if expr="is_macosx">
@@ -163,7 +163,7 @@ export class SettingsPasskeysPageElement extends
   /**
    * Called when the user clicks to delete a passkey.
    */
-  private onDeleteClick_() {
+  protected onDeleteClick_() {
     assert(this.credentialIdForActionMenu_);
     this.$.menu.close();
     this.showDeleteConfirmationDialog_ = true;
@@ -173,9 +173,9 @@ export class SettingsPasskeysPageElement extends
    * Called when a delete confirmation dialog is closed (whether successful or
    * not).
    */
-  private onConfirmDialogClose_() {
+  protected onConfirmDialogClose_() {
     const dialog =
-        this.shadowRoot!.querySelector('settings-simple-confirmation-dialog');
+        this.shadowRoot.querySelector('settings-simple-confirmation-dialog');
     assert(dialog);
     const confirmed = dialog.wasConfirmed();
     this.showDeleteConfirmationDialog_ = false;
@@ -207,26 +207,26 @@ export class SettingsPasskeysPageElement extends
   /**
    * Called when the user clicks the "ok" button on the error dialog.
    */
-  private onErrorDialogOkClick_() {
+  protected onErrorDialogOkClick_() {
     this.$.deleteErrorDialog.get().close();
   }
 
   /**
    * Returns the a11y label for the "More actions" button next to a passkey.
    */
-  private getMoreActionsLabel_(passkey: Passkey): string {
+  protected getMoreActionsLabel_(passkey: Passkey): string {
     return loadTimeData.getStringF(
         'managePasskeysMoreActionsLabel', passkey.userName,
         passkey.relyingPartyId);
   }
 
   // <if expr="is_macosx">
-  private onEditClick_() {
-    this.shadowRoot!.querySelector('cr-action-menu')!.close();
+  protected onEditClick_() {
+    this.shadowRoot.querySelector('cr-action-menu')!.close();
     this.showEditDialog_ = true;
   }
 
-  private onEditDialogClose_() {
+  protected onEditDialogClose_() {
     this.showEditDialog_ = false;
   }
 
@@ -240,7 +240,7 @@ export class SettingsPasskeysPageElement extends
   /**
    * Called when the user clicks save in the passkey edit dialog.
    */
-  private onSavedPasskeyEdited_(event: SavedPasskeyEditedEvent) {
+  protected onSavedPasskeyEdited_(event: SavedPasskeyEditedEvent) {
     assert(this.credentialIdForActionMenu_);
     this.browserProxy_.edit(this.credentialIdForActionMenu_, event.detail)
         .then(this.onEditComplete_.bind(this));
@@ -249,9 +249,11 @@ export class SettingsPasskeysPageElement extends
 
   // SettingsViewMixin implementation.
   override focusBackButton() {
-    this.shadowRoot!.querySelector('settings-subpage')!.focusBackButton();
+    this.shadowRoot.querySelector('settings-subpage')!.focusBackButton();
   }
 }
+
+export type PasskeysPageElement = SettingsPasskeysPageElement;
 
 declare global {
   interface HTMLElementTagNameMap {

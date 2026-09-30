@@ -9,20 +9,15 @@
 
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.js';
-import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '../../icons.html.js';
-import '../../settings_shared.css.js';
-import '../../settings_vars.css.js';
-import './passwords_shared.css.js';
 
 import type {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
+import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
+import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './passkey_edit_dialog.html.js';
+import {getCss} from './passkey_edit_dialog.css.js';
+import {getHtml} from './passkey_edit_dialog.html.js';
 
 export interface PasskeyEditDialogElement {
   $: {
@@ -30,7 +25,7 @@ export interface PasskeyEditDialogElement {
   };
 }
 
-const PasskeyEditDialogElementBase = I18nMixin(PolymerElement);
+const PasskeyEditDialogElementBase = I18nMixinLit(CrLitElement);
 
 export type SavedPasskeyEditedEvent = CustomEvent<string>;
 
@@ -45,41 +40,47 @@ export class PasskeyEditDialogElement extends PasskeyEditDialogElementBase {
     return 'passkey-edit-dialog';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      username: String,
-      relyingPartyId: String,
-      usernameInputErrorMessage_: String,
-      dialogFootnote_: String,
-      usernameInputInvalid_: {
-        type: Boolean,
-        computed: 'computeUsernameInputInvalid_(username)',
-      },
+      username: {type: String},
+      relyingPartyId: {type: String},
+      usernameInputErrorMessage_: {type: String},
+      dialogFootnote_: {type: String},
+      usernameInputInvalid_: {type: Boolean},
     };
   }
 
-  declare username: string;
-  declare relyingPartyId: string;
-  declare private usernameInputInvalid_: boolean;
-  declare private usernameInputErrorMessage_: string|null;
-  declare private dialogFootnote_: string|null;
+  accessor username: string = '';
+  accessor relyingPartyId: string = '';
+  protected accessor usernameInputInvalid_: boolean = false;
+  protected accessor usernameInputErrorMessage_: string = '';
+  protected accessor dialogFootnote_: string = '';
 
-  override ready() {
-    super.ready();
-    this.dialogFootnote_ =
-        this.i18n('passkeyEditDialogFootnote', this.relyingPartyId);
+  override willUpdate(changedProperties: PropertyValues<this>) {
+    super.willUpdate(changedProperties);
+    if (changedProperties.has('relyingPartyId')) {
+      this.dialogFootnote_ =
+          this.i18n('passkeyEditDialogFootnote', this.relyingPartyId);
+    }
+    if (changedProperties.has('username')) {
+      this.usernameInputInvalid_ = this.computeUsernameInputInvalid_();
+    }
   }
 
-  private onSaveButtonClick_() {
-    this.dispatchEvent(new CustomEvent('saved-passkey-edited', {
-      bubbles: true,
-      composed: true,
-      detail: this.username,
-    }));
+  protected onUsernameValueChanged_(e: CustomEvent<{value: string}>) {
+    this.username = e.detail.value;
+  }
+
+  protected onSaveButtonClick_() {
+    this.fire('saved-passkey-edited', this.username);
     this.close();
   }
 
@@ -91,7 +92,7 @@ export class PasskeyEditDialogElement extends PasskeyEditDialogElementBase {
     return false;
   }
 
-  private onCancel_() {
+  protected onCancelClick_() {
     this.$.dialog.cancel();
   }
 

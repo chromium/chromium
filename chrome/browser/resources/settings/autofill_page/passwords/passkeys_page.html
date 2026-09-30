@@ -1,34 +1,15 @@
-<style include="cr-shared-style settings-shared passwords-shared
-    autofill-shared">
-  #passkeys-list-header {
-    /* This adds enough padding so that the labels are aligned with the
-     * columns. It is necessary due to the absence of the "more actions"
-     * button in the heading.
-     */
-    padding-inline-end: calc(
-      var(--cr-icon-ripple-size) + var(--cr-icon-button-margin-start));
-  }
-
-  #iconContainer {
-    height: 24px;
-    line-height: 100%;
-    margin-inline-end: 20px;
-    padding: 4px;
-    width: 24px;
-  }
-</style>
-
 <settings-subpage page-title="$i18n{managePasskeysTitle}"
     search-label="$i18n{managePasskeysSearch}"
-    search-term="{{filter_}}">
-<template is="dom-if" if="[[noManagement_]]">
+    .searchTerm="${this.filter_}"
+    @search-term-changed="${this.onSearchTermChanged_}">
+${this.noManagement_ ? html`
   <div id="error" class="cr-row first">
     <div id="iconContainer">
       <cr-icon icon="cr:info-filled"></cr-icon>
     </div>
     <p>$i18n{managePasskeysNoSupport}</p>
   </div>
-</template>
+` : ''}
 
 <div class="cr-row first cr-secondary-text">
   $i18n{managePasskeysSubTitle}
@@ -42,67 +23,66 @@
     <div class="username-column">$i18n{editPasskeyUsernameLabel}</div>
   </div>
   <div class="cr-separators list-with-header">
-    <template is="dom-repeat" items="[[passkeys_]]"
-        filter="[[filterFunction_(filter_)]]">
+    ${this.getFilteredPasskeys_().map(item => html`
       <div class="list-item" focus-row-container>
         <div class="website-column no-min-width">
-          <site-favicon url="[[getIconUrl_(item)]]"></site-favicon>
-          <span class="text-elide elide-left">[[item.relyingPartyId]]</span>
+          <site-favicon .url="${this.getIconUrl_(item)}"></site-favicon>
+          <span class="text-elide elide-left">${item.relyingPartyId}</span>
         </div>
 
         <div id="username" class="username-column no-min-width text-elide">
-          [[item.userName]]
+          ${item.userName}
         </div>
 
-         <cr-icon-button id="moreActionsButton" class="icon-more-vert"
-            data-credential-id$="[[item.credentialId]]"
-            on-click="onDotsClick_" title="[[getMoreActionsLabel_(item)]]"
+        <cr-icon-button id="moreActionsButton" class="icon-more-vert"
+            data-credential-id="${item.credentialId}"
+            @click="${this.onDotsClick_}"
+            title="${this.getMoreActionsLabel_(item)}"
             focus-row-control focus-type="moreActionsButton"></cr-icon-button>
       </div>
-    </template>
+    `)}
   </div>
 </div>
 
 <cr-action-menu id="menu" role-description="$i18n{menu}">
   <if expr="is_macosx">
-    <button class="dropdown-item" on-click="onEditClick_" id="edit">
+    <button class="dropdown-item" @click="${this.onEditClick_}" id="edit">
       $i18n{edit}
     </button>
   </if>
-  <button class="dropdown-item" on-click="onDeleteClick_" id="delete">
+  <button class="dropdown-item" @click="${this.onDeleteClick_}" id="delete">
     $i18n{delete}
   </button>
 </cr-action-menu>
 
-<cr-lazy-render id="deleteErrorDialog">
-  <template>
-    <cr-dialog close-text="$i18n{close}">
-      <div slot="title">$i18n{managePasskeysCannotDeleteTitle}</div>
-      <div slot="body">$i18n{managePasskeysCannotDeleteBody}</div>
-      <div slot="button-container">
-        <cr-button class="action-button" on-click="onErrorDialogOkClick_">
-          $i18n{ok}
-        </cr-button>
-      </div>
-    </cr-dialog>
-  </template>
-</cr-lazy-render>
+<cr-lazy-render-lit id="deleteErrorDialog" .template="${() => html`
+  <cr-dialog close-text="$i18n{close}">
+    <div slot="title">$i18n{managePasskeysCannotDeleteTitle}</div>
+    <div slot="body">$i18n{managePasskeysCannotDeleteBody}</div>
+    <div slot="button-container">
+      <cr-button class="action-button" @click="${this.onErrorDialogOkClick_}">
+        $i18n{ok}
+      </cr-button>
+    </div>
+  </cr-dialog>
+`}">
+</cr-lazy-render-lit>
 
-<template is="dom-if" if="[[showDeleteConfirmationDialog_]]" restamp>
+${this.showDeleteConfirmationDialog_ ? html`
   <settings-simple-confirmation-dialog id="deleteConfirmDialog"
       title-text="$i18n{managePasskeysDeleteConfirmationTitle}"
       body-text="$i18n{managePasskeysDeleteConfirmationDescription}"
       confirm-text="$i18n{delete}" no-primary-button
-      on-close="onConfirmDialogClose_">
+      @close="${this.onConfirmDialogClose_}">
   </settings-simple-confirmation-dialog>
-</template>
+` : ''}
 <if expr="is_macosx">
-  <template is="dom-if" if="[[showEditDialog_]]" restamp>
-    <passkey-edit-dialog id="editPasskeyDialog" existing-entry="[[credential]]"
-        on-saved-passkey-edited="onSavedPasskeyEdited_"
-        relying-party-id="[[relyingPartyId_]]" username="[[username_]]"
-        on-close="onEditDialogClose_">
+  ${this.showEditDialog_ ? html`
+    <passkey-edit-dialog id="editPasskeyDialog"
+        @saved-passkey-edited="${this.onSavedPasskeyEdited_}"
+        .relyingPartyId="${this.relyingPartyId_}" .username="${this.username_}"
+        @close="${this.onEditDialogClose_}">
     </passkey-edit-dialog>
-  </template>
+  ` : ''}
 </if>
 </settings-subpage>

@@ -9,8 +9,8 @@
 import type {Passkey, PasskeysBrowserProxy, SettingsPasskeysPageElement, SettingsSimpleConfirmationDialogElement} from 'chrome://settings/lazy_load.js';
 import {PasskeysBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
 import {assertDeepEquals, assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 class TestPasskeysBrowserProxy extends TestBrowserProxy implements
     PasskeysBrowserProxy {
@@ -115,14 +115,14 @@ suite('PasskeysPage', function() {
   test('NoSupport', async function() {
     browserProxy.setNextPasskeys(null);
     document.body.appendChild(page);
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(browserProxy.getCallCount('enumerate'), 1);
 
     const shown = getUsernamesFromList(page);
     assertEquals(shown.length, 0, 'No passkeys shown');
 
     assertTrue(
-        page.shadowRoot!.querySelector<HTMLElement>('#error') !== null,
+        page.shadowRoot.querySelector<HTMLElement>('#error') !== null,
         'Error message shown');
   });
 
@@ -143,11 +143,11 @@ suite('PasskeysPage', function() {
     ];
     browserProxy.setNextPasskeys(passkeys);
     document.body.appendChild(page);
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(browserProxy.getCallCount('enumerate'), 1);
 
     assertTrue(
-        page.shadowRoot!.querySelector<HTMLElement>('#error') === null,
+        page.shadowRoot.querySelector<HTMLElement>('#error') === null,
         'Error message not shown');
 
     assertDeepEquals(
@@ -157,12 +157,12 @@ suite('PasskeysPage', function() {
   test('Delete', async function() {
     browserProxy.setNextPasskeys(testPasskeys);
     document.body.appendChild(page);
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(browserProxy.getCallCount('enumerate'), 1);
 
     assertDeepEquals(getUsernamesFromList(page), [testPasskeys[0].userName]);
     let confirmationDialog =
-        page.shadowRoot!.querySelector<SettingsSimpleConfirmationDialogElement>(
+        page.shadowRoot.querySelector<SettingsSimpleConfirmationDialogElement>(
             '#deleteConfirmDialog');
     assertTrue(
         confirmationDialog === null, 'Confirmation dialog should not exist');
@@ -170,13 +170,13 @@ suite('PasskeysPage', function() {
     clickDots(page, 0);
 
     clickButton(page, 'delete');
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(
         browserProxy.getCallCount('delete'), 0,
         'Delete should not have been called yet');
     confirmationDialog =
-        page.shadowRoot!.querySelector<SettingsSimpleConfirmationDialogElement>(
+        page.shadowRoot.querySelector<SettingsSimpleConfirmationDialogElement>(
             '#deleteConfirmDialog');
     assertTrue(confirmationDialog !== null, 'Cannot find confirmation dialog');
     assertTrue(
@@ -187,7 +187,7 @@ suite('PasskeysPage', function() {
     confirmationDialog.$.confirm.click();
     const deletedCredentialId = await browserProxy.whenCalled('delete');
     assertEquals(deletedCredentialId, testPasskeys[0].credentialId);
-    await flushTasks();
+    await microtasksFinished();
 
     assertDeepEquals(getUsernamesFromList(page), []);
   });
@@ -195,19 +195,19 @@ suite('PasskeysPage', function() {
   test('DeleteCancel', async function() {
     browserProxy.setNextPasskeys(testPasskeys);
     document.body.appendChild(page);
-    await flushTasks();
+    await microtasksFinished();
 
     clickDots(page, 0);
     clickButton(page, 'delete');
-    await flushTasks();
+    await microtasksFinished();
 
     const confirmationDialog =
-        page.shadowRoot!.querySelector<SettingsSimpleConfirmationDialogElement>(
+        page.shadowRoot.querySelector<SettingsSimpleConfirmationDialogElement>(
             '#deleteConfirmDialog');
     assertTrue(confirmationDialog !== null, 'Cannot find confirmation dialog');
 
     confirmationDialog.$.cancel.click();
-    await flushTasks();
+    await microtasksFinished();
 
     assertEquals(
         browserProxy.getCallCount('delete'), 0,
@@ -218,7 +218,7 @@ suite('PasskeysPage', function() {
   test('DeleteError', async function() {
     browserProxy.setNextPasskeys(testPasskeys);
     document.body.appendChild(page);
-    await flushTasks();
+    await microtasksFinished();
     assertEquals(browserProxy.getCallCount('enumerate'), 1);
 
     const lazyDialog = page.$.deleteErrorDialog;
@@ -228,10 +228,10 @@ suite('PasskeysPage', function() {
 
     clickDots(page, 0);
     clickButton(page, 'delete');
-    await flushTasks();
+    await microtasksFinished();
 
     const confirmationDialog =
-        page.shadowRoot!.querySelector<SettingsSimpleConfirmationDialogElement>(
+        page.shadowRoot.querySelector<SettingsSimpleConfirmationDialogElement>(
             '#deleteConfirmDialog');
     assertTrue(confirmationDialog !== null, 'Cannot find confirmation dialog');
 
@@ -239,7 +239,7 @@ suite('PasskeysPage', function() {
     confirmationDialog.$.confirm.click();
     const deletedCredentialId = await browserProxy.whenCalled('delete');
     assertEquals(deletedCredentialId, testPasskeys[0].credentialId);
-    await flushTasks();
+    await microtasksFinished();
 
     assertTrue(lazyDialog.get().open, 'Error dialog should be showing');
     assertDeepEquals(getUsernamesFromList(page), [testPasskeys[0].userName]);
