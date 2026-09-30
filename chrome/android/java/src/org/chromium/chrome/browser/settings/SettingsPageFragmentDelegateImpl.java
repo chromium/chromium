@@ -472,6 +472,19 @@ public class SettingsPageFragmentDelegateImpl
 
     @Override
     public void destroySettings() {
+        // TODO(crbug.com/566898692): Replace this workaround with a proper fix.
+        // When the tab is detached from the activity, e.g. by TabReparentingController before a
+        // theme change or fold/unfold recreates the activity, TabImpl freezes and destroys this
+        // page *before* the activity saves its instance state. Keep the host fragment in the
+        // FragmentManager so that its state (including the open detail page) is saved, restored
+        // and adopted by the new SettingsPage once the tab is re-attached. Snapshot the per-tab
+        // UI state now, because the objects that provide it are destroyed below.
+        boolean keepHostFragment = mSettingsHostFragment != null && mTab.isDetachedFromActivity();
+        Bundle savedStateSnapshot = new Bundle();
+        if (keepHostFragment) {
+            onSaveInstanceState(savedStateSnapshot);
+        }
+
         assert mActivity instanceof ActivityLifecycleDispatcherProvider;
         ((ActivityLifecycleDispatcherProvider) mActivity).getLifecycleDispatcher().unregister(this);
 
@@ -536,7 +549,11 @@ public class SettingsPageFragmentDelegateImpl
             // destroy the shared host fragment or clear its callbacks.
             boolean isAdoptedByNewPage =
                     isUrlNavEnabled && mTab.getNativePage() instanceof SettingsPage;
-            if (!isAdoptedByNewPage) {
+            if (keepHostFragment) {
+                mSettingsHostFragment.setSaveInstanceStateCallback(
+                        outState -> outState.putAll(savedStateSnapshot));
+                mSettingsHostFragment.setSearchOpenSupplier(null);
+            } else if (!isAdoptedByNewPage) {
                 mSettingsHostFragment.setSaveInstanceStateCallback(null);
                 mSettingsHostFragment.setSearchOpenSupplier(null);
                 if (isUrlNavEnabled) {

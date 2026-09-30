@@ -39,6 +39,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.filters.MediumTest;
+import androidx.test.runner.lifecycle.Stage;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
@@ -50,12 +51,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -298,6 +301,52 @@ public class SettingsPageTest {
 
         // 3. Verify SearchEngineSettings detail pane fragment is restored and displayed.
         onViewWaiting(withText("Microsoft Bing")).check(matches(isDisplayed()));
+    }
+
+    /**
+     * Recreates the activity the way a real theme change does. Unlike {@link
+     * ChromeTabbedActivityTestRule#recreateActivity()}, which calls {@link
+     * android.app.Activity#recreate()} directly, this goes through {@link
+     * org.chromium.chrome.browser.app.ChromeActivity#onNightModeStateChanged()}, which detaches
+     * tabs for reparenting before recreating the activity.
+     */
+    private void recreateActivityForThemeChange() {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        ChromeTabbedActivity newActivity =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        ChromeTabbedActivity.class,
+                        Stage.RESUMED,
+                        activity::onNightModeStateChanged);
+        mActivityTestRule.setActivity(newActivity);
+    }
+
+    /** Regression test for crbug.com/566898692. */
+    @Test
+    @MediumTest
+    @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    public void testThemeSwitchWithTabReparentingRestoresDetailFragment() {
+        mActivityTestRule.loadUrl("chrome-native://settings/");
+        onViewWaiting(withText(R.string.search_engine_settings)).check(matches(isDisplayed()));
+
+        // Open the SearchEngineSettings detail fragment.
+        var matcher =
+                allOf(
+                        withId(R.id.recycler_view),
+                        hasDescendant(withText(R.string.search_engine_settings)));
+        onViewWaiting(matcher)
+                .perform(scrollTo(hasDescendant(withText(R.string.search_engine_settings))));
+        onViewWaiting(withText(R.string.search_engine_settings)).perform(click());
+        onViewWaiting(withText("Microsoft Bing")).check(matches(isDisplayed()));
+
+        // Recreate the activity through the theme change path, which detaches the tab.
+        recreateActivityForThemeChange();
+
+        // Verify the header pane and the SearchEngineSettings detail fragment are restored.
+        onViewWaiting(allOf(withId(R.id.action_bar), isDisplayed())).check(matches(isDisplayed()));
+        onViewWaiting(allOf(withText(R.string.prefs_privacy_security), isDisplayed()))
+                .check(matches(isDisplayed()));
+        onViewWaiting(allOf(withText("Microsoft Bing"), isDisplayed()))
+                .check(matches(isDisplayed()));
     }
 
     /** Regression test for https://crbug.com/535695748. */
