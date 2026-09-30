@@ -18,6 +18,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/network_isolation_key.h"
+#include "net/cert/cert_status_flags.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -466,19 +467,11 @@ class PreflightController::PreflightLoader final {
 
     net::Error net_error =
         detected_error_status.has_value() ? net::ERR_FAILED : net::OK;
-    FinishHandleResponseHeader(net_error, std::move(detected_error_status),
-                               std::move(result));
-  }
-
-  void FinishHandleResponseHeader(
-      net::Error net_error,
-      std::optional<CorsErrorStatus> detected_error_status,
-      std::unique_ptr<PreflightResult> result) {
     bool has_authorization_covered_by_wildcard =
         result->HasAuthorizationCoveredByWildcard(original_request_.headers);
 
     if (!(original_request_.load_flags & net::LOAD_DISABLE_CACHE) &&
-        net_error == net::OK) {
+        net_error == net::OK && !net::IsCertStatusError(head.cert_status)) {
       if (!tainted_ || !base::FeatureList::IsEnabled(
                            features::kCorsPreflightCacheKeyTaintedOrigin)) {
         controller_->AppendToCache(*original_request_.request_initiator,
@@ -487,10 +480,8 @@ class PreflightController::PreflightLoader final {
       }
     }
 
-    CHECK(!detected_error_status.has_value() || net_error != net::OK);
-
     std::move(completion_callback_)
-        .Run(net_error, detected_error_status,
+        .Run(net_error, std::move(detected_error_status),
              has_authorization_covered_by_wildcard);
   }
 

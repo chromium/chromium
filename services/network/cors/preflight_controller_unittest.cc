@@ -8,14 +8,17 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/cert/cert_status_flags.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
@@ -972,6 +975,56 @@ TEST_F(PreflightControllerTest, CheckPreflightAccessDetectsErrorStatus) {
   ASSERT_FALSE(result0.has_value());
   EXPECT_EQ(mojom::CorsError::kPreflightInvalidStatus,
             result0.error().cors_error);
+}
+
+TEST(PreflightControllerCertErrorTest, PreflightsWithCertErrorAreNotCached) {
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+  TestURLLoaderFactory url_loader_factory;
+  PreflightController preflight_controller(/*network_service=*/nullptr);
+
+  const GURL kTargetUrl("https://example.com/allow");
+  const url::Origin kInitiatorOrigin =
+      url::Origin::Create(GURL("https://initiator.example.com/"));
+
+  ResourceRequest request;
+  request.mode = mojom::RequestMode::kCors;
+  request.credentials_mode = mojom::CredentialsMode::kOmit;
+  request.url = kTargetUrl;
+  request.request_initiator = kInitiatorOrigin;
+
+  auto head = mojom::URLResponseHead::New();
+  head->headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK\n");
+  head->headers->SetHeader(header_names::kAccessControlAllowOrigin,
+                           kInitiatorOrigin.Serialize());
+  head->headers->SetHeader(header_names::kAccessControlAllowMethods,
+                           "GET, OPTIONS");
+  head->headers->SetHeader(header_names::kAccessControlMaxAge, "1000");
+  head->cert_status = net::CERT_STATUS_AUTHORITY_INVALID;
+  url_loader_factory.AddResponse(kTargetUrl, std::move(head), "",
+                                 URLLoaderCompletionStatus(net::OK));
+
+  net::NetLogWithSource net_log = net::NetLogWithSource::Make(
+      net::NetLog::Get(), net::NetLogSourceType::URL_REQUEST);
+
+  for (size_t expected_requests = 1; expected_requests <= 2;
+       ++expected_requests) {
+    base::test::TestFuture<int, std::optional<CorsErrorStatus>, bool> future;
+    preflight_controller.PerformPreflightCheck(
+        future.GetCallback(), /*request_id=*/0, request,
+        WithTrustedHeaderClient(false), NonWildcardRequestHeadersSupport(false),
+        /*tainted=*/false, TRAFFIC_ANNOTATION_FOR_TESTS, &url_loader_factory,
+        net::IsolationInfo(),
+        /*devtools_observer=*/
+        base::WeakPtr<mojo::Remote<mojom::DevToolsObserver>>(), net_log,
+        /*acam_preflight_spec_conformant=*/true,
+        mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>());
+
+    EXPECT_EQ(net::OK, future.Get<int>());
+    EXPECT_EQ(std::nullopt, future.Get<std::optional<CorsErrorStatus>>());
+    EXPECT_EQ(expected_requests, url_loader_factory.total_requests());
+  }
 }
 
 }  // namespace
