@@ -1,6 +1,6 @@
 {
-  "version": "92.7",
-  "log_list_timestamp": "2026-09-29T14:12:18Z",
+  "version": "93.0",
+  "log_list_timestamp": "2026-09-30T13:36:09Z",
   "operators": [
     {
       "name": "Google",
@@ -1149,6 +1149,100 @@
           "state": {
             "qualified": {
               "timestamp": "2026-09-22T13:45:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2028-07-01T00:00:00Z",
+            "end_exclusive": "2029-01-01T00:00:00Z"
+          }
+        }
+      ]
+    },
+    {
+      "name": "GoDaddy",
+      "email": [
+        "ctlog@godaddy.com"
+      ],
+      "logs": [],
+      "tiled_logs": [
+        {
+          "description": "GoDaddy Aquamarine2026h2",
+          "log_id": "6jAGlJ1CunsD2FCB4yYsua5xil5vUDT3ePE4BU6CdFw=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEMTyKhqKtqQBhdnxqQIiyXSX4/Zm4ejW8LrvCxxXLJ8UrchT0A7ZeXnc8vZEVV5oeelR0wOKLtDPLDh6nshBHcw==",
+          "submission_url": "https://ct-log-api.godaddy.com/aquamarine2026h2/",
+          "monitoring_url": "https://ct-log-api.godaddy.com/aquamarine2026h2/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-09-30T13:40:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2026-07-01T00:00:00Z",
+            "end_exclusive": "2027-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "GoDaddy Aquamarine2027h1",
+          "log_id": "/cLoBbiE8/CzcwbEliJzk9OExUIiB/1Aj+4CBc6jVhY=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEDMQ0K5rmCd7krvHQytXOSmsQqRcDZRnbo6brb2ctD4QKL+XQr0CGU47OfQ2q08zRtKRiXZ6SDGKKHamcpL9t+Q==",
+          "submission_url": "https://ct-log-api.godaddy.com/aquamarine2027h1/",
+          "monitoring_url": "https://ct-log-api.godaddy.com/aquamarine2027h1/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-09-30T13:40:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2027-01-01T00:00:00Z",
+            "end_exclusive": "2027-07-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "GoDaddy Aquamarine2027h2",
+          "log_id": "8LDBho1KJqIqj/7ghUOplCvvi7u69tYBqyHdvnFJ/68=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEQ54z+CumfMd4Ts18GjnllfUZoCjFFYQUGAeQ1KkuX7eNdxNEPyjXJrMaqRr5F6lYtT6XFkAohz/fkguaIhU51w==",
+          "submission_url": "https://ct-log-api.godaddy.com/aquamarine2027h2/",
+          "monitoring_url": "https://ct-log-api.godaddy.com/aquamarine2027h2/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-09-30T13:40:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2027-07-01T00:00:00Z",
+            "end_exclusive": "2028-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "GoDaddy Aquamarine2028h1",
+          "log_id": "Nh2PNG9+2gYj4hlfNqqVGKiHKCEzvpzppruUJGPrTaY=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAELFHjZjQhWW0TDbKFi9smkN42jZIkWW94f0tCpbJkxYLqKeZGxWr9xHl/BMDvqSseBwOrkXUOnXkzenI7tJli+Q==",
+          "submission_url": "https://ct-log-api.godaddy.com/aquamarine2028h1/",
+          "monitoring_url": "https://ct-log-api.godaddy.com/aquamarine2028h1/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-09-30T13:40:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2028-01-01T00:00:00Z",
+            "end_exclusive": "2028-07-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "GoDaddy Aquamarine2028h2",
+          "log_id": "/jwyxS3R1tXbsRUdYe6iH5EhBfIZa1UNh/as89aPnFM=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEOZA5sbbVjTlj60DpI6u9AKO/79QvNB7mIq/det2cLZnhV9N4pygpZ1rArRxzn80Y4ydFh+bKOqk7gWnrYfDuqA==",
+          "submission_url": "https://ct-log-api.godaddy.com/aquamarine2028h2/",
+          "monitoring_url": "https://ct-log-api.godaddy.com/aquamarine2028h2/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2026-09-30T13:40:00Z"
             }
           },
           "temporal_interval": {
