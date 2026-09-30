@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/views/frame/app_menu_button_observer.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
 #include "ui/events/event_observer.h"
-#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/widget/widget.h"
@@ -75,11 +74,6 @@ class OmniboxPopupFullPresenter : public OmniboxPopupPresenterBase,
       bool forward_mouse_events) override;
   void SynchronizePopupBounds() override;
   void WidgetDestroyed() override;
-
-  // Transparent margin around the popup content reserved for the drop shadow:
-  // the full shadow insets when the dropdown is expanded, or the same insets
-  // with `bottom = 0` when collapsed.
-  gfx::Insets GetShadowMargin() const;
 
   OmniboxFullPopupWebUIContent* GetWebUIContent();
 
