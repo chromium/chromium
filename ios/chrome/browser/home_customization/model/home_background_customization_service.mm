@@ -17,6 +17,8 @@
 #import "base/files/file_util.h"
 #import "base/json/json_reader.h"
 #import "base/logging.h"
+#import "base/strings/string_number_conversions.h"
+#import "base/strings/string_util.h"
 #import "base/task/thread_pool.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
@@ -540,6 +542,32 @@ void HomeBackgroundCustomizationService::SetCurrentEphemeralTheme(
   ClearCurrentUserUploadedBackground();
 
   NotifyObserversOfBackgroundChange();
+}
+
+void HomeBackgroundCustomizationService::MaybeApplyEphemeralTheme() {
+  if (!IsCurrentEphemeralTheme() &&
+      (GetCurrentCustomBackground() || GetCurrentColorTheme())) {
+    return;
+  }
+
+  const base::DictValue& saved_theme_data =
+      pref_service_->GetDict(prefs::kIosNtpEphemeralThemeData);
+  const std::string* seed_hex =
+      saved_theme_data.FindString(kEphemeralThemeSeedColorKey);
+  if (!seed_hex) {
+    return;
+  }
+
+  std::string_view trimmed =
+      base::TrimString(*seed_hex, "#", base::TRIM_LEADING);
+  uint32_t rgb_value = 0;
+  if (trimmed.length() != 6 || !base::HexStringToUInt(trimmed, &rgb_value)) {
+    return;
+  }
+
+  SetCurrentEphemeralTheme(SkColorSetA(rgb_value, 0xFF),
+                           sync_pb::UserColorTheme::TONAL_SPOT);
+  StoreCurrentTheme();
 }
 
 bool HomeBackgroundCustomizationService::IsCurrentEphemeralTheme() const {

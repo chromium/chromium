@@ -255,6 +255,10 @@ class HomeBackgroundCustomizationService
       SkColor color,
       sync_pb::UserColorTheme::BrowserColorVariant color_variant);
 
+  // Applies and stores the cached ephemeral theme if no custom background or
+  // color theme is currently set (or if an ephemeral theme is already active).
+  void MaybeApplyEphemeralTheme();
+
   // Returns whether the ephemeral theme is currently active.
   bool IsCurrentEphemeralTheme() const;
 

@@ -7,7 +7,8 @@
 
 #import "ios/chrome/browser/promos_manager/coordinator/standard_promo_display_handler.h"
 
-@protocol EphemeralThemePromoCommands;
+@protocol NewTabPageCommands;
+@protocol PromosManagerUIHandler;
 
 // Handler for displaying Home Customization Ephemeral Theme Promos. This
 // handler is called by the Promos Manager when the user becomes eligible for
@@ -15,9 +16,11 @@
 @interface HomeCustomizationEphemeralThemePromoDisplayHandler
     : NSObject <StandardPromoDisplayHandler>
 
-// Initializes the handler with `ephemeralThemePromoHandler`.
-- (instancetype)initWithEphemeralThemePromoHandler:
-    (id<EphemeralThemePromoCommands>)ephemeralThemePromoHandler
+// Initializes the handler with `ntpHandler` and `promosManagerUIHandler`.
+- (instancetype)
+    initWithNewTabPageCommandsHandler:(id<NewTabPageCommands>)ntpHandler
+               promosManagerUIHandler:
+                   (id<PromosManagerUIHandler>)promosManagerUIHandler
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

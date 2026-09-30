@@ -2704,6 +2704,9 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     config.valid = true;
     config.availability = kAlwaysAvailable;
     config.session_rate = kNoRestrictions;
+    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config.blocked_by.type = BlockedBy::Type::NONE;
+    config.blocking.type = Blocking::Type::NONE;
     config.used = EventConfig("ios_background_badge_used", Comparator(EQUAL, 0),
                               kMaxStoragePeriod, kMaxStoragePeriod);
     config.trigger =
