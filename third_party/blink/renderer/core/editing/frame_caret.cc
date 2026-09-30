@@ -143,6 +143,15 @@ PositionWithAffinity FrameCaret::UpdateAppearance() {
       SetBlinkingDisabled(true);
     }
   }
+  if (RuntimeEnabledFeatures::ReadOnlyTextControlSelectionEnabled() &&
+      caret_position.AnchorNode()) {
+    if (const auto* text_control =
+            EnclosingTextControl(caret_position.GetPosition())) {
+      if (text_control->IsReadOnly()) {
+        SetBlinkingDisabled(true);
+      }
+    }
+  }
 
   // Start blinking with a black caret. Be sure not to restart if we're
   // already blinking in the right location.
@@ -314,21 +323,27 @@ bool FrameCaret::ShouldShowCaret() const {
   }
 
   Element* root = RootEditableElementOf(CaretPosition().GetPosition());
+  if (!root && RuntimeEnabledFeatures::ReadOnlyTextControlSelectionEnabled()) {
+    root = EnclosingTextControl(CaretPosition().GetPosition());
+  }
   if (root) {
-    // Caret is contained in editable content. If there is no focused element,
-    // don't show the caret.
+    // Caret is contained in editable content or a text control. If there is no
+    // focused element, don't show the caret.
     Element* focused_element = root->GetDocument().FocusedElement();
     if (!focused_element)
       return false;
   } else {
-    // Caret is not contained in editable content--see if caret browsing is
-    // enabled. If it isn't, don't show the caret.
+    // Caret is not contained in editable content or a text control--see if
+    // caret browsing is enabled. If it isn't, don't show the caret.
     if (!frame_->IsCaretBrowsingEnabled())
       return false;
   }
 
-  if (!IsEditablePosition(
-          selection_editor_->ComputeVisibleSelectionInDomTree().Start()) &&
+  const Position& start_pos =
+      selection_editor_->ComputeVisibleSelectionInDomTree().Start();
+  if (!IsEditablePosition(start_pos) &&
+      (!RuntimeEnabledFeatures::ReadOnlyTextControlSelectionEnabled() ||
+       !EnclosingTextControl(start_pos)) &&
       !frame_->IsCaretBrowsingEnabled()) {
     return false;
   }

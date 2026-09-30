@@ -359,4 +359,46 @@ TEST_F(MoveCommandsTest, CaretBrowsingOverrideDoesNotUpdateFocus) {
       "body");
 }
 
+TEST_F(MoveCommandsTest, ReadOnlyInputMoveCommands) {
+  SetBodyContent("<input id='inp' readonly value='abcd'>");
+  Element* inp = QuerySelector("#inp");
+  inp->Focus();
+  UpdateAllLifecyclePhasesForTest();
+
+  // Move right/forward in the readonly input.
+  MoveCommands::ExecuteMoveForward(*GetDocument().GetFrame(), nullptr,
+                                   EditorCommandSource::kMenuOrKeyBinding,
+                                   String());
+  MoveCommands::ExecuteMoveForward(*GetDocument().GetFrame(), nullptr,
+                                   EditorCommandSource::kMenuOrKeyBinding,
+                                   String());
+  // Move backward.
+  MoveCommands::ExecuteMoveBackward(*GetDocument().GetFrame(), nullptr,
+                                    EditorCommandSource::kMenuOrKeyBinding,
+                                    String());
+
+  const SelectionInDomTree& selection = Selection().GetSelectionInDomTree();
+  EXPECT_TRUE(selection.IsCaret());
+}
+
+TEST_F(MoveCommandsTest, ReadOnlyTextAreaMoveCommands) {
+  SetBodyContent("<textarea id='ta' readonly>line1\nline2</textarea>");
+  Element* ta = QuerySelector("#ta");
+  ta->Focus();
+  UpdateAllLifecyclePhasesForTest();
+
+  MoveCommands::ExecuteMoveForward(*GetDocument().GetFrame(), nullptr,
+                                   EditorCommandSource::kMenuOrKeyBinding,
+                                   String());
+  MoveCommands::ExecuteMoveForward(*GetDocument().GetFrame(), nullptr,
+                                   EditorCommandSource::kMenuOrKeyBinding,
+                                   String());
+  MoveCommands::ExecuteMoveBackward(*GetDocument().GetFrame(), nullptr,
+                                    EditorCommandSource::kMenuOrKeyBinding,
+                                    String());
+
+  const SelectionInDomTree& selection = Selection().GetSelectionInDomTree();
+  EXPECT_TRUE(selection.IsCaret());
+}
+
 }  // namespace blink

@@ -7,6 +7,12 @@ function test()
     document.execCommand("InsertText", false, 'Test Failed');
 }
 </script>
+<style>
+input {
+    /* Caret is always rendered on readonly inputs */
+    caret-color: transparent;
+}
+</style>
 </head>
 <body onload="test()">
 This tests that text can not be inserted into a readonly text field.

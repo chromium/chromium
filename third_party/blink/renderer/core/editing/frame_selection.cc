@@ -75,6 +75,7 @@
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
+#include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -877,6 +878,8 @@ bool FrameSelection::ShouldPaintCaret(const LayoutBlock& block) const {
   DCHECK(!result ||
          (ComputeVisibleSelectionInDomTree().IsCaret() &&
           (IsEditablePosition(ComputeVisibleSelectionInDomTree().Start()) ||
+           (RuntimeEnabledFeatures::ReadOnlyTextControlSelectionEnabled() &&
+            EnclosingTextControl(ComputeVisibleSelectionInDomTree().Start())) ||
            frame_->IsCaretBrowsingEnabled())));
   return result;
 }
@@ -889,6 +892,8 @@ bool FrameSelection::ShouldPaintCaret(
   DCHECK(!result ||
          (ComputeVisibleSelectionInDomTree().IsCaret() &&
           (IsEditablePosition(ComputeVisibleSelectionInDomTree().Start()) ||
+           (RuntimeEnabledFeatures::ReadOnlyTextControlSelectionEnabled() &&
+            EnclosingTextControl(ComputeVisibleSelectionInDomTree().Start())) ||
            frame_->IsCaretBrowsingEnabled())));
   return result;
 }

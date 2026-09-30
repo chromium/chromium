@@ -110,6 +110,66 @@ TEST_F(FrameCaretTest, ShouldBlinkCaretWhileCaretBrowsing) {
   EXPECT_TRUE(ShouldShowCaret(caret));
 }
 
+TEST_F(FrameCaretTest, ShouldShowCaretInReadOnlyInputAndTextarea) {
+  FrameCaret& caret = Selection().FrameCaretForTesting();
+  scoped_refptr<scheduler::FakeTaskRunner> task_runner =
+      base::MakeRefCounted<scheduler::FakeTaskRunner>();
+  task_runner->SetTime(0);
+  caret.RecreateCaretBlinkTimerForTesting(task_runner.get(),
+                                          task_runner->GetMockTickClock());
+  const double kInterval = 1;
+  LayoutTheme::GetTheme().SetCaretBlinkInterval(base::Seconds(kInterval));
+  GetDocument().GetPage()->GetFocusController().SetActive(true);
+  GetDocument().GetPage()->GetFocusController().SetFocused(true);
+
+  SetBodyContent(
+      "<input id='inp' readonly value='test'><textarea id='ta' "
+      "readonly>hello</textarea>");
+  Element* inp = QuerySelector("#inp");
+  Element* ta = QuerySelector("#ta");
+
+  inp->Focus();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(ShouldShowCaret(caret));
+  EXPECT_TRUE(IsVisibleIfActive(caret));
+
+  task_runner->AdvanceTimeAndRun(kInterval + 0.1);
+  EXPECT_TRUE(IsVisibleIfActive(caret))
+      << "Caret should not blink off in readonly input.";
+
+  ta->Focus();
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(ShouldShowCaret(caret));
+  EXPECT_TRUE(IsVisibleIfActive(caret));
+
+  task_runner->AdvanceTimeAndRun(kInterval + 0.1);
+  EXPECT_TRUE(IsVisibleIfActive(caret))
+      << "Caret should not blink off in readonly textarea.";
+
+  // Removing readonly should re-enable blinking.
+  inp->Focus();
+  inp->removeAttribute(html_names::kReadonlyAttr);
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsVisibleIfActive(caret));
+
+  task_runner->AdvanceTimeAndRun(kInterval + 0.1);
+  EXPECT_FALSE(IsVisibleIfActive(caret))
+      << "Caret should blink off when readonly attribute is removed.";
+
+  task_runner->AdvanceTimeAndRun(kInterval + 0.1);
+  EXPECT_TRUE(IsVisibleIfActive(caret))
+      << "Caret should blink on again when readonly attribute is removed.";
+
+  // Re-adding readonly should disable blinking again.
+  inp->setAttribute(html_names::kReadonlyAttr, AtomicString(""));
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_TRUE(IsVisibleIfActive(caret));
+
+  task_runner->AdvanceTimeAndRun(kInterval + 0.1);
+  EXPECT_TRUE(IsVisibleIfActive(caret))
+      << "Caret should not blink off when readonly is re-added.";
+}
+
 TEST_F(FrameCaretTest, CaretAnimationNone) {
   ScopedCSSCaretAnimationForTest css_caret_animation_enabled(true);
   FrameCaret& caret = Selection().FrameCaretForTesting();
