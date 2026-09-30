@@ -10,7 +10,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
@@ -20,6 +19,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import static org.chromium.ui.test.util.MockitoHelper.clearInvocations;
 
+import android.app.Activity;
 import android.content.Context;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
@@ -27,7 +27,6 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.After;
 import org.junit.Before;
@@ -38,8 +37,10 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -58,18 +59,19 @@ import org.chromium.ui.modelutil.PropertyModel;
 /** Unit tests for {@link OmniboxSuggestionsDropdown}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class OmniboxSuggestionsDropdownUnitTest {
+
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private Runnable mDropdownScrollListener;
     @Mock private Runnable mDropdownScrollToTopListener;
     @Mock private OmniboxSuggestionsDropdownAdapter mAdapter;
-    @Mock private View mView;
     @Mock private OmniboxSuggestionsDropdown.NavigationListener mNavigationListener;
 
+    private Activity mActivity;
     private Context mContext;
+    private View mView;
     private OmniboxSuggestionsDropdown mDropdown;
     private OmniboxSuggestionsDropdown.SuggestionLayoutScrollListener mListener;
     private FrameLayout.LayoutParams mLayoutParams;
@@ -78,15 +80,14 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
     @Before
     public void setUp() {
-        mContext =
-                new ContextThemeWrapper(
-                        ApplicationProvider.getApplicationContext(),
-                        R.style.Theme_BrowserUI_DayNight);
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mContext = new ContextThemeWrapper(mActivity, R.style.Theme_BrowserUI_DayNight);
+        mView = new View(mContext);
+        mView.setFocusable(true);
         mListener = spy(new OmniboxSuggestionsDropdown.SuggestionLayoutScrollListener(mContext));
         lenient().doReturn(3).when(mListener).getItemCount();
         lenient().doReturn(mView).when(mListener).findViewByPosition(anyInt());
-        lenient().doReturn(true).when(mView).isFocusable();
-        mDropdown = spy(new OmniboxSuggestionsDropdown(mContext, null, mListener));
+        mDropdown = new OmniboxSuggestionsDropdown(mContext, null, mListener);
         mDropdown.setId(R.id.omnibox_suggestions_dropdown);
         mDropdown.setAdapter(mAdapter);
 
@@ -246,20 +247,20 @@ public class OmniboxSuggestionsDropdownUnitTest {
     public void translateChildrenVertical() {
         mDropdown.translateChildrenVertical(45.6f);
         mDropdown.onChildAttachedToWindow(mView);
-        verify(mView).setTranslationY(45.6f);
+        assertEquals(45.6f, mView.getTranslationY(), MathUtils.EPSILON);
 
         mDropdown.onChildDetachedFromWindow(mView);
-        verify(mView).setTranslationY(0.0f);
+        assertEquals(0.0f, mView.getTranslationY(), MathUtils.EPSILON);
     }
 
     @Test
     public void setChildAlpha() {
         mDropdown.setChildAlpha(0.6f);
         mDropdown.onChildAttachedToWindow(mView);
-        verify(mView).setAlpha(0.6f);
+        assertEquals(0.6f, mView.getAlpha(), MathUtils.EPSILON);
 
         mDropdown.onChildDetachedFromWindow(mView);
-        verify(mView).setAlpha(1.0f);
+        assertEquals(1.0f, mView.getAlpha(), MathUtils.EPSILON);
     }
 
     @Test
@@ -286,7 +287,6 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
     @Test
     public void onKeyDown_beforeShownDoesNotHandleTabNavigation() {
-        doReturn(false).when(mDropdown).isShown();
         assertFalse(
                 mDropdown.onKeyDown(
                         KeyEvent.KEYCODE_TAB,
@@ -305,7 +305,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
 
     @Test
     public void onKeyDown_handlesTabNavigationEvents() {
-        doReturn(true).when(mDropdown).isShown();
+        mActivity.setContentView(mDropdown);
 
         // Tab should be handled the first time to put focus on the first item.
         assertTrue(
@@ -388,7 +388,7 @@ public class OmniboxSuggestionsDropdownUnitTest {
     @Test
     public void testNavigationListener_notifiedOnKeyDown() {
         mDropdown.setNavigationListener(mNavigationListener);
-        doReturn(true).when(mDropdown).isShown();
+        mActivity.setContentView(mDropdown);
 
         mDropdown.onKeyDown(
                 KeyEvent.KEYCODE_TAB,
