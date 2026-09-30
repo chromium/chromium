@@ -49,6 +49,7 @@ import org.chromium.components.user_prefs.UserPrefsJni;
 /** Unit tests for {@link BookmarkBarIphController}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Features.DisableFeatures(ChromeFeatureList.BOOKMARKS_BAR_NTP)
+@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BookmarkBarIphControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
