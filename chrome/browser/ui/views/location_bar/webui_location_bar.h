@@ -100,6 +100,7 @@ class WebUILocationBar : public LocationBar,
   std::optional<bubble_anchor_util::AnchorConfiguration> GetChipAnchor()
       override;
   ui::TrackedElement* GetAnchorOrNull() override;
+  ui::ElementContext GetElementContext() const override;
   bool in_popup_state_transition() const override;
   BrowserWindowInterface* GetBrowser() override;
   Profile* GetProfile() override;

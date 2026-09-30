@@ -19,6 +19,7 @@ class BrowserWindowInterface;
 class ChipController;
 class ContentSettingBubbleModelDelegate;
 class PermissionDashboardController;
+class WebUIPermissionDashboard;
 
 namespace bubble_anchor_util {
 struct AnchorConfiguration;
@@ -34,7 +35,6 @@ class TrackedElement;
 
 namespace contextual_tasks {
 
-class ContextualTasksPermissionDashboard;
 class ContextualTasksSidePanelCoordinator;
 
 // Custom LocationBar implementation for the contextual tasks side panel
@@ -54,10 +54,10 @@ class ContextualTasksLocationBar : public LocationBarStub,
       delete;
   ~ContextualTasksLocationBar() override;
 
-  ContextualTasksPermissionDashboard* permission_dashboard() {
+  WebUIPermissionDashboard* permission_dashboard() {
     return permission_dashboard_.get();
   }
-  const ContextualTasksPermissionDashboard* permission_dashboard() const {
+  const WebUIPermissionDashboard* permission_dashboard() const {
     return permission_dashboard_.get();
   }
 
@@ -69,6 +69,7 @@ class ContextualTasksLocationBar : public LocationBarStub,
   BrowserWindowInterface* GetBrowser() override;
   bool IsEditingOrEmpty() const override;
   ui::TrackedElement* GetAnchorOrNull() override;
+  ui::ElementContext GetElementContext() const override;
   void InvalidateLayout() override;
   bool IsDrawn() const override;
   bool IsFullscreen() const override;
@@ -105,7 +106,7 @@ class ContextualTasksLocationBar : public LocationBarStub,
   // model last passed to its `Update()`.
   WebUIContentSettingImageControl content_setting_image_control_{this};
 
-  std::unique_ptr<ContextualTasksPermissionDashboard> permission_dashboard_;
+  std::unique_ptr<WebUIPermissionDashboard> permission_dashboard_;
   std::unique_ptr<PermissionDashboardController>
       permission_dashboard_controller_;
 };

@@ -31,8 +31,13 @@
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/contextual_tasks/contextual_tasks_location_bar.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_permission_chip.h"
-#include "chrome/browser/contextual_tasks/contextual_tasks_permission_dashboard.h"
+#include "chrome/browser/ui/interaction/browser_elements.h"
+#include "chrome/browser/ui/views/permissions/chip/webui_permission_chip.h"
+#include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
+#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_test_util.h"
+#include "ui/webui/tracked_element/tracked_element_handler.h"
+#include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 #endif
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -861,6 +866,8 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
 #if !BUILDFLAG(IS_ANDROID)
 namespace {
 
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestChipElementId);
+
 class TestContextualTasksToolbarUIObserver
     : public contextual_tasks_toolbar::mojom::ContextualTasksToolbarUIObserver {
  public:
@@ -950,9 +957,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
   ASSERT_TRUE(location_bar);
   auto* dashboard = location_bar->permission_dashboard();
   ASSERT_TRUE(dashboard);
-  auto* request_chip =
-      static_cast<contextual_tasks::ContextualTasksPermissionChip*>(
-          dashboard->GetRequestChip());
+  auto* request_chip = dashboard->request_chip();
   ASSERT_TRUE(request_chip);
 
   // Mutate the dashboard and chip multiple times synchronously. All synchronous
@@ -993,6 +998,68 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
   EXPECT_EQ(observer.push_count(), 2);
   EXPECT_EQ(observer.last_state()->request_chip->message,
             u"Updated microphone message");
+}
+
+// The permission chips live in the side panel's toolbar WebUI, not in the
+// browser window's views hierarchy, so the location bar must report the
+// toolbar document's element context for chip anchors to be found.
+IN_PROC_BROWSER_TEST_F(ContextualTasksNoMockBrowserTest,
+                       LocationBarElementContextIsToolbarDocumentContext) {
+  auto* service =
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          browser()->GetProfile());
+  auto* tab = TabListInterface::From(browser())->GetActiveTab();
+  service->InitSidePanelWithGhostLoader(browser(), tab, nullptr);
+
+  auto* panel_controller =
+      contextual_tasks::ContextualTasksPanelController::From(browser());
+  ASSERT_TRUE(panel_controller);
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return panel_controller->IsPanelOpenForContextualTask(); }));
+
+  auto* coordinator =
+      contextual_tasks::ContextualTasksSidePanelCoordinator::Get(
+          browser()->GetUnownedUserDataHost());
+  ASSERT_TRUE(coordinator);
+  auto* permission_controller = coordinator->permission_controller();
+  ASSERT_TRUE(permission_controller);
+  auto* location_bar = permission_controller->GetLocationBarForTesting();
+  ASSERT_TRUE(location_bar);
+
+  content::WebContents* toolbar_contents =
+      location_bar->GetToolbarWebContents();
+  ASSERT_TRUE(toolbar_contents);
+  EXPECT_TRUE(content::WaitForLoadStop(toolbar_contents));
+
+  base::WeakPtr<ui::TrackedElementHandler> handler =
+      ui::TrackedElementHandlerDocumentSingleton::GetOrCreate(
+          toolbar_contents->GetPrimaryMainFrame());
+  ASSERT_TRUE(handler);
+
+  const ui::ElementContext context = location_bar->GetElementContext();
+  EXPECT_TRUE(context);
+  EXPECT_EQ(context, handler->context());
+  const ui::ElementContext browser_context =
+      BrowserElements::From(browser())->GetContext();
+  EXPECT_NE(context, browser_context);
+
+  // Chips wait for their anchor in the toolbar document's context, not the
+  // browser window's. A test-only element ID is used so the real toolbar
+  // WebUI can't have registered it already.
+  WebUIPermissionChip chip(location_bar, kTestChipElementId);
+  base::test::TestFuture<void> anchor_future;
+  chip.WaitForAnchor(anchor_future.GetCallback());
+  EXPECT_FALSE(anchor_future.IsReady());
+
+  ui::test::TestElement browser_context_element(kTestChipElementId,
+                                                browser_context);
+  browser_context_element.Show();
+  EXPECT_FALSE(anchor_future.IsReady());
+
+  ui::test::TestElement toolbar_element(kTestChipElementId, context);
+  toolbar_element.Show();
+  EXPECT_TRUE(anchor_future.IsReady());
+  EXPECT_EQ(chip.GetAnchor().GetIfElement(), &toolbar_element);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

@@ -6,7 +6,6 @@
 
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/views/location_bar/webui_location_bar.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_chip_view.h"
@@ -275,11 +274,15 @@ void WebUIPermissionChip::SetPressedCallback(
 }
 
 views::BubbleAnchor WebUIPermissionChip::GetAnchor() {
-  // 1. Try to anchor to the specific tracked WebUI chip element if available.
-  BrowserElements* browser_elements =
-      BrowserElements::From(location_bar_->GetBrowser());
-  if (ui::TrackedElement* element = browser_elements->GetElement(element_id_)) {
-    return views::BubbleAnchor(element);
+  // 1. Anchor to the element registered for `element_id_` in the current
+  // context. It may not be registered yet (WebUI registration is async), in
+  // which case fall back below.
+  if (ui::ElementContext context = location_bar_->GetElementContext()) {
+    if (ui::TrackedElement* element =
+            ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
+                element_id_, context)) {
+      return views::BubbleAnchor(element);
+    }
   }
 
   // 2. The WebUI element tracker registration happens asynchronously over Mojo.
@@ -301,11 +304,14 @@ views::BubbleAnchor WebUIPermissionChip::GetAnchor() {
 
 void WebUIPermissionChip::WaitForAnchor(base::OnceClosure callback) {
   CHECK(!pending_anchor_callback_);
-  BrowserElements* browser_elements =
-      BrowserElements::From(location_bar_->GetBrowser());
+  // Look for the element in the same context `GetAnchor()` uses.
+  const ui::ElementContext context = location_bar_->GetElementContext();
 
-  // 1. If the element is already tracked, run the callback immediately.
-  if (browser_elements->GetElement(element_id_)) {
+  // 1. If there is no context to look in, or the element is already tracked,
+  // run the callback immediately and let `GetAnchor()` pick the anchor.
+  if (!context ||
+      ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
+          element_id_, context)) {
     std::move(callback).Run();
     return;
   }
@@ -315,7 +321,7 @@ void WebUIPermissionChip::WaitForAnchor(base::OnceClosure callback) {
   pending_anchor_callback_ = std::move(callback);
   element_shown_subscription_ =
       ui::ElementTracker::GetElementTracker()->AddElementShownCallback(
-          element_id_, browser_elements->GetContext(),
+          element_id_, context,
           base::IgnoreArgs<ui::TrackedElement*>(base::BindRepeating(
               &WebUIPermissionChip::RunPendingAnchorCallback,
               weak_factory_.GetWeakPtr())));

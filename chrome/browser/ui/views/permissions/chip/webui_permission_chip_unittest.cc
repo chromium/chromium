@@ -222,6 +222,26 @@ TEST_F(WebUIPermissionChipTest, GetAnchorPrefersChipElementOverLocationBar) {
   EXPECT_EQ(chip.GetAnchor().GetIfElement(), &chip_element);
 }
 
+// The chip element is looked up only in the location bar's element context,
+// so a chip with the same ID in another context (e.g. another window, or a
+// different WebUI toolbar) is never used as the anchor.
+TEST_F(WebUIPermissionChipTest, GetAnchorIgnoresChipElementInOtherContext) {
+  constexpr ui::ElementContext kOtherContext =
+      ui::ElementContext::CreateFakeContextForTesting(2);
+  SetBrowser(&mock_browser_);
+  TestBrowserElements browser_elements(mock_browser_, kTestContext);
+  ui::test::TestElement location_bar_element(kLocationBarElementId,
+                                             kTestContext);
+  location_bar_element.Show();
+  ui::test::TestElement other_context_chip_element(
+      PermissionChipView::kPermissionRequestChipElementId, kOtherContext);
+  other_context_chip_element.Show();
+  WebUIPermissionChip chip(location_bar_.get(),
+                           PermissionChipView::kPermissionRequestChipElementId);
+
+  EXPECT_EQ(chip.GetAnchor().GetIfElement(), &location_bar_element);
+}
+
 TEST_F(WebUIPermissionChipTest,
        WaitForAnchorRunsImmediatelyIfElementIsTracked) {
   SetBrowser(&mock_browser_);
@@ -322,6 +342,48 @@ TEST_F(WebUIPermissionChipTest, WaitForAnchorDropsCallbackIfChipIsDestroyed) {
   chip_element.Show();
   browser_threads_.FastForwardBy(kAnchorFallbackTimeout);
   EXPECT_FALSE(future.IsReady());
+}
+
+// Like `GetAnchor()`, `WaitForAnchor()` only considers the chip element in the
+// location bar's element context.
+TEST_F(WebUIPermissionChipTest, WaitForAnchorIgnoresChipElementInOtherContext) {
+  constexpr ui::ElementContext kOtherContext =
+      ui::ElementContext::CreateFakeContextForTesting(2);
+  SetBrowser(&mock_browser_);
+  TestBrowserElements browser_elements(mock_browser_, kTestContext);
+  ui::test::TestElement other_context_chip_element(
+      PermissionChipView::kPermissionRequestChipElementId, kOtherContext);
+  other_context_chip_element.Show();
+  ui::test::TestElement chip_element(
+      PermissionChipView::kPermissionRequestChipElementId, kTestContext);
+  WebUIPermissionChip chip(location_bar_.get(),
+                           PermissionChipView::kPermissionRequestChipElementId);
+
+  base::test::TestFuture<void> future;
+  chip.WaitForAnchor(future.GetCallback());
+  // Already-shown element in another context doesn't count.
+  EXPECT_FALSE(future.IsReady());
+
+  // Nor does showing another one there.
+  ui::test::TestElement second_other_context_chip_element(
+      PermissionChipView::kPermissionRequestChipElementId, kOtherContext);
+  second_other_context_chip_element.Show();
+  EXPECT_FALSE(future.IsReady());
+
+  chip_element.Show();
+  EXPECT_TRUE(future.IsReady());
+  EXPECT_EQ(chip.GetAnchor().GetIfElement(), &chip_element);
+}
+
+// With no element context (e.g. the location bar isn't attached to a browser
+// or its WebUI isn't loaded), there is nothing to wait for.
+TEST_F(WebUIPermissionChipTest, WaitForAnchorRunsImmediatelyWithoutContext) {
+  WebUIPermissionChip chip(location_bar_.get(),
+                           PermissionChipView::kPermissionRequestChipElementId);
+
+  base::test::TestFuture<void> future;
+  chip.WaitForAnchor(future.GetCallback());
+  EXPECT_TRUE(future.IsReady());
 }
 
 TEST_F(WebUIPermissionChipTest, DashboardChipsAnchorToTheirOwnElements) {

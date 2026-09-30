@@ -14,6 +14,7 @@
 #include "components/permissions/permission_request_manager.h"
 
 class BrowserWindowInterface;
+class WebUIPermissionChip;
 
 namespace content {
 class NavigationHandle;
@@ -23,7 +24,6 @@ class WebContents;
 namespace contextual_tasks {
 
 class ContextualTasksLocationBar;
-class ContextualTasksPermissionChip;
 
 // Implements the toolbar mojom interface to control
 // the dashboard and permission chip for the contextual tasks side panel.
@@ -90,7 +90,7 @@ class ContextualTasksPermissionController
 #if !BUILDFLAG(IS_ANDROID)
   // Returns the chip `chip_identifier` refers to, or null if there is no
   // dashboard (i.e. no location bar).
-  ContextualTasksPermissionChip* GetChip(
+  WebUIPermissionChip* GetChip(
       toolbar_ui_api::mojom::LhsChipIdentifier chip_identifier);
 
   std::unique_ptr<ContextualTasksLocationBar> location_bar_;

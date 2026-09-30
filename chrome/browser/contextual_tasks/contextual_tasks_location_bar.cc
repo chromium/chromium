@@ -8,12 +8,17 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_permission_dashboard.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/browser/ui/views/permissions/chip/permission_dashboard_controller.h"
+#include "chrome/browser/ui/views/permissions/chip/webui_permission_dashboard.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/views/bubble/bubble_border.h"
+#include "ui/webui/tracked_element/tracked_element_handler.h"
+#include "ui/webui/tracked_element/tracked_element_handler_document_singleton.h"
 
 namespace contextual_tasks {
 
@@ -29,8 +34,7 @@ ContextualTasksLocationBar::ContextualTasksLocationBar(
   // Generates the default set of content setting models.
   content_setting_image_control_.Init();
 
-  permission_dashboard_ =
-      std::make_unique<ContextualTasksPermissionDashboard>(this);
+  permission_dashboard_ = std::make_unique<WebUIPermissionDashboard>(this);
   permission_dashboard_controller_ =
       std::make_unique<PermissionDashboardController>(
           /*location_bar=*/this,
@@ -43,6 +47,8 @@ ContextualTasksLocationBar::~ContextualTasksLocationBar() {
   // destroyed: `~ChipController()` hides its chips during teardown, which
   // calls `OnChanged()`.
   state_changed_callback_.Reset();
+  // Controller of dashboard then dashboard are destroyed automatically in that
+  // order.
 }
 
 ContextualTasksSidePanelCoordinator*
@@ -72,7 +78,22 @@ bool ContextualTasksLocationBar::IsEditingOrEmpty() const {
 }
 
 ui::TrackedElement* ContextualTasksLocationBar::GetAnchorOrNull() {
+  if (ui::ElementContext context = GetElementContext()) {
+    return ui::ElementTracker::GetElementTracker()->GetFirstMatchingElement(
+        kContextualTasksWebUIToolbarElementId, context);
+  }
   return nullptr;
+}
+
+ui::ElementContext ContextualTasksLocationBar::GetElementContext() const {
+  content::WebContents* webui_contents = GetToolbarWebContents();
+  if (webui_contents && webui_contents->GetPrimaryMainFrame()) {
+    if (auto handler = ui::TrackedElementHandlerDocumentSingleton::GetOrCreate(
+            webui_contents->GetPrimaryMainFrame())) {
+      return handler->context();
+    }
+  }
+  return ui::ElementContext();
 }
 
 void ContextualTasksLocationBar::InvalidateLayout() {}

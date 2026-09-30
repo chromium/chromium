@@ -408,7 +408,13 @@ WebUILocationBar::GetChipAnchor() {
 }
 
 ui::TrackedElement* WebUILocationBar::GetAnchorOrNull() {
+  // `browser_` is already dereferenced in Init, so is safe here.
   return BrowserElements::From(browser_)->GetElement(kLocationBarElementId);
+}
+
+ui::ElementContext WebUILocationBar::GetElementContext() const {
+  return browser_ ? BrowserElements::From(browser_)->GetContext()
+                  : ui::ElementContext();
 }
 
 bool WebUILocationBar::in_popup_state_transition() const {

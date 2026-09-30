@@ -20,6 +20,7 @@
 #include "components/browser_apis/ui_controllers/toolbar/toolbar_ui_api_data_model.mojom.h"
 #include "components/permissions/permission_actions_history.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/element_tracker.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -27,6 +28,8 @@ class LocationBar;
 
 class WebUIPermissionChip : public PermissionChipInterface {
  public:
+  // `element_id` identifies the tracked WebUI element the permission bubble
+  // anchors to. It must be valid.
   WebUIPermissionChip(LocationBar* location_bar,
                       ui::ElementIdentifier element_id);
   ~WebUIPermissionChip() override;

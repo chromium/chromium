@@ -19,6 +19,7 @@ source_set("location_bar") {
     "//content/public/browser",
     "//ui/base",
     "//ui/base:types",
+    "//ui/base/interaction",
     "//url",
   ]
 

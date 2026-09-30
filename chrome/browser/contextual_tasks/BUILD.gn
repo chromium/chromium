@@ -630,6 +630,7 @@ if (!is_android) {
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/hats:test_support",
+      "//chrome/browser/ui/interaction",
       "//chrome/browser/ui/lens",
       "//chrome/browser/ui/lens:test_support",
       "//chrome/browser/ui/test:dialog",
@@ -656,6 +657,8 @@ if (!is_android) {
       "//google_apis",
       "//testing/gmock",
       "//testing/gtest",
+      "//ui/base/interaction:test_support",
+      "//ui/webui/tracked_element",
     ]
 
     if (enable_dice_support) {
