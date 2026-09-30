@@ -22,13 +22,11 @@
 #import "base/time/time.h"
 #import "base/values.h"
 #import "build/branding_buildflags.h"
-#import "components/application_locale_storage/application_locale_storage.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/omaha/model/omaha_backend.h"
 #import "ios/chrome/browser/omaha/model/omaha_persistent_state.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_constants.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 #import "ios/public/provider/chrome/browser/omaha/omaha_api.h"
@@ -37,53 +35,24 @@
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "url/gurl.h"
 
-// static
-void OmahaService::Start(
-    scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
-    UpgradeRecommendedCallback upgrade_recommended_callback) {
-  GetInstance()->StartImpl(std::move(shared_url_loader_factory),
-                           std::move(upgrade_recommended_callback));
-}
+namespace {
 
-// static
-bool OmahaService::HasStarted() {
-  return GetInstance()->HasStartedImpl();
-}
-
-// static
-void OmahaService::CheckNow(OneOffCallback callback) {
-  GetInstance()->CheckNowImpl(std::move(callback));
-}
-
-// static
-void OmahaService::GetDebugInformation(
-    base::OnceCallback<void(base::DictValue)> callback) {
-  GetInstance()->GetDebugInformationImpl(std::move(callback));
-}
-
-// static
-bool OmahaService::IsEnabled() {
+// Returns whether Omaha is enabled for this build variant.
+bool IsOmahaServiceEnabled() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return !tests_hook::DisableUpdateService();
 #else
-  return true;
+  return false;
 #endif
 }
 
-// static
-OmahaService* OmahaService::GetInstance() {
-  static base::NoDestructor<OmahaService> instance;
-  return instance.get();
-}
+}  // namespace
 
-OmahaService::OmahaService()
-    : OmahaService(
-          CHECK_DEREF(GetApplicationContext()->GetLocalState()),
-          GetApplicationContext()->GetApplicationLocaleStorage()->GetTag()) {}
+OmahaService::OmahaService() {}
 
 OmahaService::OmahaService(const PrefService& local_state,
                            const base::i18n::LanguageTag& language_tag) {
-  if (OmahaService::IsEnabled()) {
+  if (IsOmahaServiceEnabled()) {
     GURL omaha_server_url = ios::provider::GetOmahaUpdateServerURL();
     if (omaha_server_url.is_valid()) {
       const base::Time app_install = base::Time::FromTimeT(
@@ -102,7 +71,7 @@ OmahaService::~OmahaService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void OmahaService::StartImpl(
+void OmahaService::Start(
     scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory,
     UpgradeRecommendedCallback upgrade_recommended_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -136,12 +105,12 @@ void OmahaService::StartImpl(
               base::BindRepeating(&OmahaPersistentState::SaveTo, defaults)));
 }
 
-bool OmahaService::HasStartedImpl() const {
+bool OmahaService::HasStarted() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return started_ && !backend_.is_null();
 }
 
-void OmahaService::CheckNowImpl(OneOffCallback callback) {
+void OmahaService::CheckNow(OneOffCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!HasStarted()) {
     // If the backend has not been initialized, or the service not started,
@@ -158,7 +127,7 @@ void OmahaService::CheckNowImpl(OneOffCallback callback) {
   backend_.AsyncCall(&OmahaBackend::CheckNow);
 }
 
-void OmahaService::GetDebugInformationImpl(
+void OmahaService::GetDebugInformation(
     base::OnceCallback<void(base::DictValue)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!HasStarted()) {

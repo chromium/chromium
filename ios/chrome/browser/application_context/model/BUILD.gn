@@ -46,6 +46,7 @@ source_set("model") {
     "//ios/chrome/browser/gcm/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/metrics/model",
+    "//ios/chrome/browser/omaha/model",
     "//ios/chrome/browser/optimization_guide/model",
     "//ios/chrome/browser/policy/model",
     "//ios/chrome/browser/prefs/model",

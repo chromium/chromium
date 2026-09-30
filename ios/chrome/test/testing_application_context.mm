@@ -20,6 +20,7 @@
 #import "components/update_client/net/network_chromium.h"
 #import "components/variations/service/variations_service.h"
 #import "ios/chrome/browser/download/model/auto_deletion/auto_deletion_service.h"
+#import "ios/chrome/browser/omaha/model/omaha_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_global_state.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/configuration_policy_handler_list_factory.h"
@@ -422,4 +423,12 @@ TestingApplicationContext::GetDeviceParentalControls() {
         std::make_unique<supervised_user::DeviceParentalControlsNoOpImpl>();
   }
   return *device_parental_controls_;
+}
+
+OmahaService& TestingApplicationContext::GetOmahaService() {
+  if (!omaha_service_) {
+    // Create a dummy OmahaService that is not enabled.
+    omaha_service_ = std::make_unique<OmahaService>();
+  }
+  return *omaha_service_;
 }

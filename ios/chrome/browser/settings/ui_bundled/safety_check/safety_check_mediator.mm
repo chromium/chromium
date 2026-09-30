@@ -1083,8 +1083,9 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 - (void)performUpdateCheck {
   __weak __typeof__(self) weakSelf = self;
 
-  if (OmahaService::HasStarted()) {
-    OmahaService::CheckNow(
+  OmahaService& omahaService = GetApplicationContext()->GetOmahaService();
+  if (omahaService.HasStarted()) {
+    omahaService.CheckNow(
         base::BindOnce(^(const UpgradeRecommendedDetails& details) {
           [weakSelf handleOmahaResponse:details];
         }));

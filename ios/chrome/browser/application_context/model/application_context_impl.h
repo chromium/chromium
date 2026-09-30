@@ -117,6 +117,7 @@ class ApplicationContextImpl : public ApplicationContext {
   supervised_user::DeviceParentalControls& GetDeviceParentalControls() override;
   optimization_guide::OptimizationGuideGlobalState*
   GetOptimizationGuideGlobalState() override;
+  OmahaService& GetOmahaService() override;
 
  private:
   // Represents the possible application states the app can be in.
@@ -215,6 +216,8 @@ class ApplicationContextImpl : public ApplicationContext {
   std::unique_ptr<base::MemoryPressureListenerRegistry>
       memory_pressure_listener_registry_;
 #endif
+
+  std::unique_ptr<OmahaService> omaha_service_;
 
   // Must be the last member variable.
   base::WeakPtrFactory<ApplicationContextImpl> weak_ptr_factory_{this};

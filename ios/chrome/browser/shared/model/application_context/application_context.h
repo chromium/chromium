@@ -89,6 +89,7 @@ class BrowserPolicyConnectorIOS;
 class DeviceIntegrityService;
 class IncognitoSessionTracker;
 class IOSChromeIOThread;
+class OmahaService;
 class PrefService;
 
 class ProfileManagerIOS;
@@ -258,6 +259,9 @@ class ApplicationContext {
   // parental controls, it will be a no-op stub.
   virtual supervised_user::DeviceParentalControls&
   GetDeviceParentalControls() = 0;
+
+  // Returns the OmahaService instance.
+  virtual OmahaService& GetOmahaService() = 0;
 
  protected:
   // Sets the global ApplicationContext instance.

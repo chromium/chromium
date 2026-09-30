@@ -8,6 +8,7 @@
 #import <vector>
 
 #import "base/base_paths.h"
+#import "base/check_deref.h"
 #import "base/check_op.h"
 #import "base/command_line.h"
 #import "base/feature_list.h"
@@ -64,6 +65,7 @@
 #import "ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/metrics/model/ios_chrome_metrics_services_manager_client.h"
+#import "ios/chrome/browser/omaha/model/omaha_service.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_global_state.h"
 #import "ios/chrome/browser/policy/model/browser_policy_connector_ios.h"
 #import "ios/chrome/browser/policy/model/configuration_policy_handler_list_factory.h"
@@ -647,6 +649,14 @@ ApplicationContextImpl::GetDeviceParentalControls() {
         std::make_unique<supervised_user::DeviceParentalControlsNoOpImpl>();
   }
   return *device_parental_controls_;
+}
+
+OmahaService& ApplicationContextImpl::GetOmahaService() {
+  if (!omaha_service_) {
+    omaha_service_ = std::make_unique<OmahaService>(
+        CHECK_DEREF(GetLocalState()), GetApplicationLocaleStorage()->GetTag());
+  }
+  return *omaha_service_;
 }
 
 optimization_guide::OptimizationGuideGlobalState*

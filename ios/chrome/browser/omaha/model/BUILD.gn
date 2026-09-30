@@ -15,11 +15,9 @@ source_set("model") {
   deps = [
     ":backend",
     "//build:branding_buildflags",
-    "//components/application_locale_storage",
     "//components/metrics:metrics_pref_names",
     "//components/prefs",
     "//ios/chrome/app:tests_hook",
-    "//ios/chrome/browser/shared/model/application_context",
     "//ios/public/provider/chrome/browser/omaha:omaha_api",
     "//ios/web/public/thread",
     "//services/network/public/cpp",

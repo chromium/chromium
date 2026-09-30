@@ -10,6 +10,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/values.h"
 #import "ios/chrome/browser/omaha/model/omaha_service.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/grit/ios_resources.h"
@@ -73,7 +74,7 @@ void OmahaDOMHandler::RegisterMessages() {
 void OmahaDOMHandler::HandleRequestDebugInformation(
     const base::ListValue& args) {
   CHECK_EQ(1u, args.size());
-  OmahaService::GetDebugInformation(
+  GetApplicationContext()->GetOmahaService().GetDebugInformation(
       base::BindOnce(&OmahaDOMHandler::OnDebugInformationAvailable,
                      weak_ptr_factory_.GetWeakPtr(), args[0].Clone()));
 }

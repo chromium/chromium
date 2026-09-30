@@ -554,7 +554,7 @@ void IOSChromeSafetyCheckManager::StartOmahaCheckInternal() {
     case version_info::Channel::BETA:
     case version_info::Channel::DEV:
     case version_info::Channel::CANARY: {
-      OmahaService::CheckNow(
+      GetApplicationContext()->GetOmahaService().CheckNow(
           base::BindOnce(&IOSChromeSafetyCheckManager::HandleOmahaResponse,
                          weak_ptr_factory_.GetWeakPtr()));
       break;

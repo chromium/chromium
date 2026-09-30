@@ -131,6 +131,7 @@ class TestingApplicationContext : public ApplicationContext {
   optimization_guide::OptimizationGuideGlobalState*
   GetOptimizationGuideGlobalState() override;
   supervised_user::DeviceParentalControls& GetDeviceParentalControls() override;
+  OmahaService& GetOmahaService() override;
 
  private:
   SEQUENCE_CHECKER(sequence_checker_);
@@ -171,6 +172,7 @@ class TestingApplicationContext : public ApplicationContext {
       device_parental_controls_;
   std::unique_ptr<ApplicationLocaleStorage> application_locale_storage_;
   std::unique_ptr<activity_reporter::ActivityReporter> activity_reporter_;
+  std::unique_ptr<OmahaService> omaha_service_;
 };
 
 #endif  // IOS_CHROME_TEST_TESTING_APPLICATION_CONTEXT_H_
