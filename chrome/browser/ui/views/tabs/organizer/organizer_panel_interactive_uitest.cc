@@ -182,13 +182,6 @@ class OrganizerPanelUiTest : public InteractiveBrowserTest {
     return steps;
   }
 
-  auto ExpandOnHover() {
-    auto steps =
-        Steps(MoveMouseTo(kTabStripRegionElementId), WaitForExpandOnHover());
-    AddDescriptionPrefix(steps, "ExpandOnHover()");
-    return steps;
-  }
-
   auto WaitForPanelOpen() {
     auto steps = Steps(
         InParallel(RunSubsequence(WaitForEvent(kBrowserViewElementId,
@@ -497,8 +490,11 @@ IN_PROC_BROWSER_TEST_F(OrganizerPanelUiTest,
                        AppearsInTabStripWhenVerticalTabsExpandOnHover) {
   RunTestSequence(
       SetVerticalTabsEnabled(true, /*expand_on_hover_enabled=*/true),
-      CollapseTabStrip(), ExpandOnHover(), OpenOrganizerPanel(),
-      ExpectPanelLocation(OrganizerPanelLocation::kVerticalTabStrip),
+      CollapseTabStrip(),
+      InParallel(RunSubsequence(OpenOrganizerPanel(),
+                                ExpectPanelLocation(
+                                    OrganizerPanelLocation::kVerticalTabStrip)),
+                 RunSubsequence(WaitForExpandOnHover())),
       CheckPanelVisuals(tabs::kVerticalTabStripDefaultUncollapsedWidth, false));
 }
 
