@@ -540,9 +540,12 @@ const SendTabToSelfEntry* SendTabToSelfBridge::SendEntry(
           guid, url, trimmed_title, shared_time, std::move(local_device_name),
           target_device_cache_guid, context, std::move(navigation_history));
 
-  // The size is recorded before potential truncation (dropping) of the context
-  // due to the per-entity size limit.
-  RecordPageContextSize(PageContextToProto(context).ByteSizeLong());
+  // The size is recorded when `context` is non-empty, before potential
+  // truncation (dropping) of the context due to the per-entity size limit.
+  if (const size_t size = PageContextToProto(context).ByteSizeLong();
+      size > 0) {
+    RecordPageContextSize(size);
+  }
 
   syncer::DeviceInfo::FormFactor sender_form_factor =
       syncer::DeviceInfo::FormFactor::kUnknown;

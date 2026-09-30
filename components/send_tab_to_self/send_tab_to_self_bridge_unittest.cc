@@ -2257,6 +2257,8 @@ TEST_F(SendTabToSelfBridgeTest,
       SendTabToSelfFormFactorCombination::kDesktopToUnknown, 1);
 }
 
+// Verifies that `Sharing.SendTabToSelf.PageContextSize2` records the serialized
+// byte size when sending an entry with a non-empty `PageContext`.
 TEST_F(SendTabToSelfBridgeTest, SendEntry_RecordsPageContextSize) {
   InitializeBridge();
 
@@ -2270,17 +2272,20 @@ TEST_F(SendTabToSelfBridgeTest, SendEntry_RecordsPageContextSize) {
                       base::DoNothing(), ShareEntryPoint::kShareSheet);
 
   histogram_tester.ExpectUniqueSample(
-      "Sharing.SendTabToSelf.PageContextSize",
+      "Sharing.SendTabToSelf.PageContextSize2",
       PageContextToProto(context).ByteSizeLong(), 1);
 }
 
+// Verifies that `Sharing.SendTabToSelf.PageContextSize2` records the
+// pre-truncation serialized size even when `PageContext` exceeds
+// `kMaxPageContextSizeBytes`.
 TEST_F(SendTabToSelfBridgeTest, SendEntry_RecordsPageContextSize_ExceedsLimit) {
   InitializeBridge();
 
   base::HistogramTester histogram_tester;
 
   PageContext context;
-  // Create a context that exceeds kMaxPageContextSizeBytes (4096 bytes).
+  // Create a context that exceeds `kMaxPageContextSizeBytes` (4096 bytes).
   constexpr size_t kLargeSize = 5000;
   static_assert(kLargeSize > kMaxPageContextSizeBytes);
   context.scroll_position.text_fragment.text_start =
@@ -2293,8 +2298,30 @@ TEST_F(SendTabToSelfBridgeTest, SendEntry_RecordsPageContextSize_ExceedsLimit) {
   size_t size = PageContextToProto(context).ByteSizeLong();
   ASSERT_GT(size, kMaxPageContextSizeBytes);
 
-  histogram_tester.ExpectUniqueSample("Sharing.SendTabToSelf.PageContextSize",
+  histogram_tester.ExpectUniqueSample("Sharing.SendTabToSelf.PageContextSize2",
                                       size, 1);
+}
+
+// Verifies that `Sharing.SendTabToSelf.PageContextSize2` is not recorded when
+// sending an entry with an empty `PageContext` (`0` serialized bytes), avoiding
+// zero-inflation in the histogram underflow bucket.
+TEST_F(SendTabToSelfBridgeTest,
+       SendEntry_DoesNotRecordPageContextSizeWhenEmpty) {
+  InitializeBridge();
+
+  base::HistogramTester histogram_tester;
+
+  // An empty `PageContext` serializes to `0` bytes and should not emit a sample
+  // to `Sharing.SendTabToSelf.PageContextSize2`.
+  const PageContext empty_context;
+  ASSERT_EQ(PageContextToProto(empty_context).ByteSizeLong(), 0u);
+
+  bridge()->SendEntry(GURL("http://www.example.com/"), "title",
+                      kLocalDeviceCacheGuid, empty_context, NavigationHistory(),
+                      base::DoNothing(), ShareEntryPoint::kShareSheet);
+
+  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.PageContextSize2",
+                                    0);
 }
 
 TEST_F(SendTabToSelfBridgeTest, SendEntryWithHistory) {

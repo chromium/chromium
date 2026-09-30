@@ -179,7 +179,7 @@ void RecordHasScrollPositionOnOpened(bool has_scroll_position) {
 }
 
 void RecordPageContextSize(size_t size) {
-  base::UmaHistogramCounts10000("Sharing.SendTabToSelf.PageContextSize", size);
+  base::UmaHistogramCounts10000("Sharing.SendTabToSelf.PageContextSize2", size);
 }
 
 void RecordScrollVolume(float volume, bool with_restoration) {
