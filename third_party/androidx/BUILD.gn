@@ -2889,7 +2889,6 @@ if (!limit_android_deps) {
       ":androidx_datastore_datastore_core_java",
       "//third_party/android_deps:com_squareup_okio_okio_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_core_java",
-      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_serialization_json_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
     ]
   }

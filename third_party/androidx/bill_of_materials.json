@@ -1615,16 +1615,6 @@
         "version": "1.7.3"
     },
     {
-        "name": "kotlinx-serialization-json",
-        "group": "org.jetbrains.kotlinx",
-        "version": "1.7.3"
-    },
-    {
-        "name": "kotlinx-serialization-json-jvm",
-        "group": "org.jetbrains.kotlinx",
-        "version": "1.7.3"
-    },
-    {
         "name": "annotations",
         "group": "org.jetbrains",
         "version": "23.0.0"
