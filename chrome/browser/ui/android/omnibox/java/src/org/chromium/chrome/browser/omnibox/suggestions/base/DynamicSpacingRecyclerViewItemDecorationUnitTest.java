@@ -8,9 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 
+import android.content.Context;
 import android.graphics.Rect;
 import android.view.View;
 
@@ -28,9 +28,11 @@ import org.mockito.quality.Strictness;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Tests for {@link DynamicSpacingRecyclerViewItemDecoration}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class DynamicSpacingRecyclerViewItemDecorationUnitTest {
     private static final int CONTAINER_SIZE = 1000;
     private static final int LEAD_IN_SPACE = 10;
@@ -40,28 +42,72 @@ public class DynamicSpacingRecyclerViewItemDecorationUnitTest {
     private static final int ITEM_LAST = 2;
     private static final int ITEM_COUNT = ITEM_LAST + 1;
 
+    private static class TestRecyclerView extends RecyclerView {
+        private final List<View> mChildren = new ArrayList<>();
+        private Adapter mTestAdapter;
+        private int mTestLayoutDirection = View.LAYOUT_DIRECTION_LTR;
+
+        TestRecyclerView(Context context) {
+            super(context);
+        }
+
+        @Override
+        public void setAdapter(Adapter adapter) {
+            mTestAdapter = adapter;
+        }
+
+        @Override
+        public Adapter getAdapter() {
+            return mTestAdapter;
+        }
+
+        @Override
+        public void addView(View child, int index) {
+            mChildren.add(index, child);
+        }
+
+        @Override
+        public int getChildAdapterPosition(View child) {
+            return mChildren.indexOf(child);
+        }
+
+        @Override
+        public void setLayoutDirection(int layoutDirection) {
+            mTestLayoutDirection = layoutDirection;
+        }
+
+        @Override
+        public int getLayoutDirection() {
+            return mTestLayoutDirection;
+        }
+    }
+
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock private RecyclerView mRecyclerView;
     @Mock private RecyclerView.Adapter mAdapter;
-    @Mock private View mFirstView;
-    @Mock private View mMiddleView;
-    @Mock private View mLastView;
+    private TestRecyclerView mRecyclerView;
+    private View mFirstView;
+    private View mMiddleView;
+    private View mLastView;
 
     private DynamicSpacingRecyclerViewItemDecoration mDecoration;
     private Rect mOffsets;
 
     @Before
     public void setUp() {
+        Context context = ContextUtils.getApplicationContext();
         mOffsets = new Rect();
+        mRecyclerView = new TestRecyclerView(context);
+        mFirstView = new View(context);
+        mMiddleView = new View(context);
+        mLastView = new View(context);
 
         lenient().doReturn(ITEM_COUNT).when(mAdapter).getItemCount();
-        lenient().doReturn(mAdapter).when(mRecyclerView).getAdapter();
-        lenient().doReturn(ITEM_FIRST).when(mRecyclerView).getChildAdapterPosition(mFirstView);
-        lenient().doReturn(ITEM_MIDDLE).when(mRecyclerView).getChildAdapterPosition(mMiddleView);
-        lenient().doReturn(ITEM_LAST).when(mRecyclerView).getChildAdapterPosition(mLastView);
-        lenient().doReturn(ContextUtils.getApplicationContext()).when(mRecyclerView).getContext();
+        mRecyclerView.setAdapter(mAdapter);
+        mRecyclerView.addView(mFirstView, ITEM_FIRST);
+        mRecyclerView.addView(mMiddleView, ITEM_MIDDLE);
+        mRecyclerView.addView(mLastView, ITEM_LAST);
     }
 
     /**
@@ -78,13 +124,13 @@ public class DynamicSpacingRecyclerViewItemDecorationUnitTest {
     // totalSpacing = 2 * expectedSpacing
     void verifyItemSpacing(int expectedSpacing) {
         // First item, RTL: lead-in space on the right.
-        doReturn(View.LAYOUT_DIRECTION_RTL).when(mRecyclerView).getLayoutDirection();
+        mRecyclerView.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         mDecoration.getItemOffsets(mOffsets, mFirstView, mRecyclerView, null);
         assertEquals(LEAD_IN_SPACE, mOffsets.right);
         assertEquals(expectedSpacing / 2, mOffsets.left);
 
         // First item, LTR: lead-in space on the left.
-        doReturn(View.LAYOUT_DIRECTION_LTR).when(mRecyclerView).getLayoutDirection();
+        mRecyclerView.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         mDecoration.getItemOffsets(mOffsets, mFirstView, mRecyclerView, null);
         assertEquals(LEAD_IN_SPACE, mOffsets.left);
         assertEquals(expectedSpacing / 2, mOffsets.right);
@@ -95,13 +141,13 @@ public class DynamicSpacingRecyclerViewItemDecorationUnitTest {
         assertEquals(expectedSpacing / 2, mOffsets.right);
 
         // Last item, RTL: lead-in space on the left.
-        doReturn(View.LAYOUT_DIRECTION_RTL).when(mRecyclerView).getLayoutDirection();
+        mRecyclerView.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         mDecoration.getItemOffsets(mOffsets, mLastView, mRecyclerView, null);
         assertEquals(expectedSpacing / 2, mOffsets.right);
         assertEquals(LEAD_IN_SPACE, mOffsets.left);
 
         // Last item, LTR: lead-in space on the right.
-        doReturn(View.LAYOUT_DIRECTION_LTR).when(mRecyclerView).getLayoutDirection();
+        mRecyclerView.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         mDecoration.getItemOffsets(mOffsets, mLastView, mRecyclerView, null);
         assertEquals(expectedSpacing / 2, mOffsets.left);
         assertEquals(LEAD_IN_SPACE, mOffsets.right);
