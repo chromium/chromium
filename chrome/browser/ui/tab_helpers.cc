@@ -173,7 +173,6 @@
 #include "chrome/browser/extensions/tab_helper.h"
 #include "extensions/browser/view_type_utils.h"
 #if !BUILDFLAG(IS_ANDROID)
-#include "chrome/browser/web_applications/policy/pre_redirection_url_observer.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
@@ -522,10 +521,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
   if (enable_browser_autofill && !profile->IsOffTheRecord()) {
     ChromeComposeClient::CreateForWebContents(web_contents);
   }
-#endif
-
-#if !BUILDFLAG(IS_ANDROID)
-  webapps::PreRedirectionURLObserver::CreateForWebContents(web_contents);
 #endif
 
   // --- Section 3: Feature tab helpers behind BUILDFLAGs ---

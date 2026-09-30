@@ -195,6 +195,7 @@
 #include "chrome/browser/ui/tabs/tab_attachment_tracker.h"
 #include "chrome/browser/v8_compile_hints/v8_compile_hints_tab_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/window_management/window_management_content_setting_observer.h"
+#include "chrome/browser/web_applications/policy/pre_redirection_url_observer.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -1016,6 +1017,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       GetUserDataFactory().CreateInstance<offline_pages::RecentTabHelper>(
           tab, tab, tab.GetContents());
 #endif
+
+  webapps::PreRedirectionURLObserver::CreateForWebContents(tab.GetContents());
 }
 
 TabUIHelper* TabFeatures::SetTabUIHelperForTesting(
@@ -1409,6 +1412,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
       GetUserDataFactory().CreateInstance<offline_pages::RecentTabHelper>(
           *tab, *tab, new_contents);
 #endif
+
+  webapps::PreRedirectionURLObserver::CreateForWebContents(new_contents);
 }
 
 customize_chrome::SidePanelController*
