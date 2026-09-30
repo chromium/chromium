@@ -2970,6 +2970,18 @@ chromium-metrics-reviews@google.com.
   <token key="HasCriticalActions" variants="HasCriticalActions"/>
 </histogram>
 
+<histogram name="HistoryPage.TimeToFirstVisibleContent" units="ms"
+    expires_after="2027-09-01">
+  <owner>wylieb@chromium.org</owner>
+  <owner>chrome-collections@google.com</owner>
+  <summary>
+    Records the time (in milliseconds) from navigation start (timeOrigin) to the
+    animation frame where the loading state is removed and browsing history
+    entries become visible in the chrome://history WebUI. Only logged when the
+    page is in the foreground (document.visibilityState === 'visible').
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

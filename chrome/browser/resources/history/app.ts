@@ -538,6 +538,13 @@ export class HistoryAppElement extends HistoryAppElementBase {
     if (document.body.classList.contains('loading')) {
       document.body.classList.remove('loading');
       this.onFirstRender_();
+      if (document.visibilityState === 'visible') {
+        requestAnimationFrame(() => {
+          BrowserProxyImpl.getInstance().recordTime(
+              'HistoryPage.TimeToFirstVisibleContent',
+              Math.round(performance.now()));
+        });
+      }
     }
   }
 

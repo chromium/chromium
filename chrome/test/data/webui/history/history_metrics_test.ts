@@ -42,6 +42,11 @@ suite('Metrics', function() {
     histogramMap = testProxy.histogramMap;
   });
 
+  teardown(() => {
+    document.body.classList.remove('loading');
+    delete (document as {visibilityState?: string}).visibilityState;
+  });
+
   /**
    * @param queryResults The query results to initialize the page with.
    * @param query The query to use in the QueryInfo.
@@ -427,5 +432,38 @@ suite('Metrics', function() {
         1, histogram[VisitContextMenuAction.REVIEW_GEMINI_ACTIVITY_CLICKED]);
     assertEquals(
         1, testProxy.actionMap['EntryMenuReviewGeminiActivity']);
+  });
+
+  test('HistoryPage.TimeToFirstVisibleContent', async () => {
+    document.body.classList.add('loading');
+    await finishSetup([]);
+
+    const [histogram, value] = await testProxy.whenCalled('recordTime');
+    assertEquals('HistoryPage.TimeToFirstVisibleContent', histogram);
+    assertTrue(value >= 0);
+    assertFalse(document.body.classList.contains('loading'));
+
+    // Subsequent queries should not record the histogram again.
+    testProxy.resetResolver('recordTime');
+    testProxy.handler.resetResolver('queryHistory');
+    testProxy.handler.setResultFor('queryHistory', Promise.resolve({
+      results: {info: createHistoryInfo('search'), value: []},
+    }));
+    app.fire('change-query', {search: 'search'});
+    await testProxy.handler.whenCalled('queryHistory');
+    await microtasksFinished();
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    assertEquals(0, testProxy.getCallCount('recordTime'));
+  });
+
+  test('HistoryPage.TimeToFirstVisibleContent_Hidden', async () => {
+    Object.defineProperty(
+        document, 'visibilityState', {value: 'hidden', configurable: true});
+    document.body.classList.add('loading');
+    await finishSetup([]);
+
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    assertEquals(0, testProxy.getCallCount('recordTime'));
+    assertFalse(document.body.classList.contains('loading'));
   });
 });

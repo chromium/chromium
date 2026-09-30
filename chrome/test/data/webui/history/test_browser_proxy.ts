@@ -31,6 +31,7 @@ export class TestHistoryBrowserProxy extends BaseTestBrowserProxy implements
       'recordHistogram',
       'recordLongTime',
       'recordSigninPendingOffered',
+      'recordTime',
       'startTurnOnSyncFlow',
     ]);
 
@@ -118,7 +119,9 @@ export class TestHistoryBrowserProxy extends BaseTestBrowserProxy implements
     this.methodCalled('recordBooleanHistogram', [histogram, value]);
   }
 
-  recordTime() {}
+  recordTime(histogram: string, value: number) {
+    this.methodCalled('recordTime', [histogram, value]);
+  }
 
   recordLongTime(histogram: string, value: number) {
     this.methodCalled('recordLongTime', histogram, value);
