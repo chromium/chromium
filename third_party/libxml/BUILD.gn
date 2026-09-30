@@ -146,7 +146,7 @@ static_library("libxml") {
     "//chromecast/internal",
     "//testing/libfuzzer/*",
     "//third_party/blink/renderer/*",
-    "//third_party/fontconfig",
+    "//third_party/fontconfig:*",
     "//third_party/libxslt",
     "//third_party/maldoca/*",
   ]

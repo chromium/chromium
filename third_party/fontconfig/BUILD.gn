@@ -88,7 +88,7 @@ if (use_bundled_fontconfig) {
     ]
   }
 
-  component("fontconfig") {
+  source_set("fontconfig_sources") {
     sources = [
       "include/fontconfig/fontconfig.h",
       "src/src/fcarch.h",
@@ -144,7 +144,6 @@ if (use_bundled_fontconfig) {
     }
 
     deps = [
-      ":fontconfig_fontations_ffi",
       "//third_party/libxml",
       "//third_party/zlib",
     ]
@@ -167,6 +166,11 @@ if (use_bundled_fontconfig) {
     if (!is_win) {
       libs = [ "uuid" ]
     }
+  }
+
+  component("fontconfig") {
+    public_deps = [ ":fontconfig_sources" ]
+    deps = [ ":fontconfig_fontations_ffi" ]
   }
 } else {
   config("fontconfig_config") {
