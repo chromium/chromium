@@ -852,7 +852,9 @@ TEST(PermissionsTest, PermissionMessages) {
   skip.insert(APIPermissionID::kIdentity);
 
   // These are private.
+#if BUILDFLAG(IS_CHROMEOS)
   skip.insert(APIPermissionID::kAccessibilityPrivate);
+#endif
   skip.insert(APIPermissionID::kAccessibilityServicePrivate);
 #if BUILDFLAG(ENABLE_PLATFORM_APPS)
   skip.insert(APIPermissionID::kArcAppsPrivate);

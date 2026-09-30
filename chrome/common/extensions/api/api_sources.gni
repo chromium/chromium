@@ -110,7 +110,6 @@ if (enable_extensions) {
 
   if (is_chromeos) {
     schema_sources_ += [
-      "accessibility_private.json",
       "accessibility_service_private.webidl",
       "certificate_provider.webidl",
       "certificate_provider_internal.webidl",

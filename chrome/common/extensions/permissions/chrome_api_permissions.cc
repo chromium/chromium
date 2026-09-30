@@ -60,8 +60,6 @@ constexpr APIPermissionInfo::InitInfo permissions_to_register[] = {
      "accessibilityFeatures.modify",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
     {APIPermissionID::kAccessibilityFeaturesRead, "accessibilityFeatures.read"},
-    {APIPermissionID::kAccessibilityPrivate, "accessibilityPrivate",
-     APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kAccessibilityServicePrivate,
      "accessibilityServicePrivate", APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kBookmark, "bookmarks"},

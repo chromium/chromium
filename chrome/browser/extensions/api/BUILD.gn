@@ -131,7 +131,6 @@ function_registration("api_registration") {
   schema_include_rules = chrome_extensions_api_schema_include_rules
 
   custom_impl_schemas = [
-    "accessibility_private",
     "accessibility_service_private",
     "action",
     "autotest_private",
@@ -170,7 +169,6 @@ function_registration("api_registration") {
   ]
 
   inputs = [
-    "//chrome/browser/accessibility/accessibility_extension_api_ash.h",
     "//chrome/browser/chromeos/extensions/accessibility_service_private/accessibility_service_private.h",
     "//chrome/browser/chromeos/extensions/echo_private/echo_private_api.h",
     "//chrome/browser/chromeos/extensions/info_private/info_private_api.h",

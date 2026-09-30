@@ -16,7 +16,7 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_helper_instance_remote_proxy.h"
-#include "chrome/common/extensions/api/accessibility_private.h"
+#include "chromeos/ash/experiences/extensions/common/api/accessibility_private.h"
 #include "services/accessibility/android/ax_tree_source_android.h"
 #include "ui/aura/client/focus_change_observer.h"
 #include "ui/aura/env.h"

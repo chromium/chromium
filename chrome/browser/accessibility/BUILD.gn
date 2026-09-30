@@ -69,7 +69,7 @@ source_set("accessibility") {
 
   if (is_chromeos) {
     public_deps += [
-      "//chrome/common/extensions/api",
+      "//chromeos/ash/experiences/extensions/common/api",
       "//content/public/browser",
       "//extensions/browser",
     ]

@@ -28,7 +28,6 @@ include_rules = [
   "+chrome/browser/ui/singleton_tabs.h",
   "+chrome/browser/ui/view_ids.h",
   "+chrome/common/chrome_paths.h",
-  "+chrome/common/extensions",
   "+chrome/test/base",
 ]
 

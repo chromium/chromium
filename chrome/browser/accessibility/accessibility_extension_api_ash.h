@@ -10,7 +10,7 @@
 
 #include <optional>
 
-#include "chrome/common/extensions/api/accessibility_private.h"
+#include "chromeos/ash/experiences/extensions/common/api/accessibility_private.h"
 #include "content/public/browser/scoped_accessibility_mode.h"
 #include "extensions/browser/extension_function.h"
 

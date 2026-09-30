@@ -16,6 +16,7 @@ function_registration("api_registration") {
   schema_include_rules = chromeos_extensions_api_schema_include_rules
 
   custom_impl_schemas = [
+    "accessibility_private",
     "file_manager_private",
     "file_manager_private_internal",
     "file_system_provider",
@@ -25,6 +26,7 @@ function_registration("api_registration") {
   ]
 
   inputs = [
+    "//chrome/browser/accessibility/accessibility_extension_api_ash.h",
     "//chrome/browser/ash/extensions/file_manager/file_manager_private_api_functions.h",
     "//chrome/browser/chromeos/extensions/file_system_provider/file_system_provider_api.h",
     "//chrome/browser/ash/extensions/input_method_api.h",
@@ -33,6 +35,7 @@ function_registration("api_registration") {
 
   deps = [
     "//base",
+    "//chrome/browser/accessibility",
     "//chrome/browser/ash/extensions",
     "//chrome/browser/ash/extensions/file_manager",
     "//chrome/browser/ash/extensions/speech",

@@ -4,10 +4,11 @@
 
 /**
  * @fileoverview Definitions for chrome.accessibilityPrivate API
- * Generated from: chrome/common/extensions/api/accessibility_private.json
+ * Generated from:
+ * chromeos/ash/experiences/extensions/common/api/accessibility_private.json
  * run `tools/json_schema_compiler/compiler.py
- * chrome/common/extensions/api/accessibility_private.json -g ts_definitions` to
- * regenerate.
+ * chromeos/ash/experiences/extensions/common/api/accessibility_private.json -g
+ * ts_definitions` to regenerate.
  */
 
 import type {ChromeEvent} from '../../../../../../tools/typescript/definitions/chrome_event.js';
