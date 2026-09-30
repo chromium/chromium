@@ -14,7 +14,8 @@ import * as SDK from 'devtools/core/sdk/sdk.js';
   await TestRunner.loadHTML(`
       <div id="inspected">Text</div>
     `);
-  await TestRunner.addStylesheetTag('http://localhost:8000/devtools/elements/styles/resources/modify-cross-domain-rule.css');
+  await TestRunner.addStylesheetTag(
+      'http://localhost:8000/devtools/resources/modify-cross-domain-rule.css');
 
   var nodeId;
   var nodeStyles;

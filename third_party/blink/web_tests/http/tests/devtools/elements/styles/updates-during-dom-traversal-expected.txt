@@ -1,4 +1,0 @@
-Tests that style updates are throttled during DOM traversal. Bug 77643.
-
-OK: updates throttled
-

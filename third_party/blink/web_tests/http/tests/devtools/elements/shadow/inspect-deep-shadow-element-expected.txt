@@ -1,7 +1,0 @@
-Tests that inspect element action works for deep shadow elements.
-
-/html/body/div/div/div//div/div/span
-document.querySelector("div#host").shadowRoot.querySelector("span#shadow")
-/html/body/div/div/span//div/div/span
-document.querySelector("span#hostOpen").shadowRoot.querySelector("span#shadow-open")
-

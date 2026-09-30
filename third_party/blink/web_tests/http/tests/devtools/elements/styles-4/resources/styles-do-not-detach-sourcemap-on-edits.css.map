@@ -1,7 +1,0 @@
-{
-"version": 3,
-"mappings": "AAAA,uBAAwB,CACpB,UAAW,CACP,MAAM,CAAE,cAAc,CACtB,KAAK,CAAE,IAAI",
-"sources": ["styles-do-not-detach-sourcemap-on-edits.scss"],
-"names": [],
-"file": "styles-do-not-detach-sourcemap-on-edits.css"
-}

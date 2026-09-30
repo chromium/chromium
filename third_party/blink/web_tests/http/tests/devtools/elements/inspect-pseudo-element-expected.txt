@@ -1,4 +1,0 @@
-Test
-
-Selected node pseudo type: before
-

@@ -1,7 +1,0 @@
-Verifies that external change of inline style element updates its title.
-
-=== initial inline style text ===
-<style id=​"inline-style">​ div { color: red } ​</style>​
-=== inline style text after change ===
-<style id=​"inline-style">​span { border: 1px solid black }​</style>​
-

@@ -1,3 +1,0 @@
-Tests that the inspected page does not crash after undoing a new rule addition. Bug 104806
-
-

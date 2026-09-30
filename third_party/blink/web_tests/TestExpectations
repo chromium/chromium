@@ -4648,9 +4648,6 @@ crbug.com/990439 http/tests/cookies/same-site/popup-cross-site-post.https.html [
 
 # These tests fail with Schemeful Same-Site due to their cross-schemeness. Skip them until there's a more permanent solution.
 
-# Sheriff failures 2017-12-04
-crbug.com/40494797 http/tests/devtools/elements/styles-4/inline-style-sourcemap.js [ Failure Pass ]
-
 # Double tap on modern media controls is a bit more complicated on Mac but
 # since we are not targeting Mac yet we can come back and fix this later.
 crbug.com/783154 [ Mac Release ] media/controls/doubletap-to-jump-backwards.html [ Crash Failure Pass Timeout ]
@@ -4808,10 +4805,6 @@ crbug.com/931533 media/video-played-collapse.html [ Failure Pass ]
 
 # Sheriff 2019-03-14
 crbug.com/806357 virtual/threaded/fast/events/pointerevents/pinch/pointerevent_touch-action-pinch_zoom_touch.html [ Crash Failure Pass Timeout ]
-
-# Sheriff 2019-03-25
-crbug.com/41448929 http/tests/devtools/elements/styles-3/styles-add-new-rule-tab.js [ Failure Pass ]
-crbug.com/41448929 http/tests/devtools/elements/styles-3/styles-add-new-rule.js [ Failure Pass Timeout ]
 
 # Tests using testRunner.useUnfortunateSynchronousResizeMode occasionally timeout,
 # but the test coverage is still good.
@@ -5174,7 +5167,6 @@ crbug.com/1208173 [ Mac ] svg/custom/svg-root-with-opacity.html [ Failure ]
 crbug.com/1208173 [ Mac ] virtual/prefer_compositing_to_lcd_text/compositing/overflow/nested-render-surfaces-with-rotation.html [ Failure ]
 
 # Sheriff 2021-05-17
-crbug.com/40767025 http/tests/devtools/elements/elements-panel-restore-selection-when-node-comes-later.js [ Failure Pass ]
 crbug.com/40761284 http/tests/devtools/layers/layers-3d-view-hit-testing.js [ Failure Pass ]
 
 # Started failing after rolling new version of check-layout-th.js
@@ -5619,9 +5611,6 @@ crbug.com/1293714 external/wpt/css/selectors/invalidation/has-complexity.html [ 
 crbug.com/393405144 [ Mac14 ] external/wpt/css/css-tables/crashtests/textarea-intrinsic-size-crash.html [ Crash Pass ]
 crbug.com/1299972 [ Linux ] screen_orientation/screenorientation-unsupported-no-crash.html [ Failure Pass Timeout ]
 
-# Disable flaky test for further investigation
-crbug.com/40778608 http/tests/devtools/elements/css-rule-hover-highlights-selectors.js [ Failure Pass ]
-
 # Sheriff 2022-03-03
 crbug.com/40217024 virtual/threaded/http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Crash Failure Pass Timeout ]
 
@@ -5759,9 +5748,6 @@ crbug.com/1316343 [ Win ] external/wpt/web-bundle/subresource-loading/reuse-web-
 crbug.com/1505807 external/wpt/web-bundle/subresource-loading/element-removal.https.tentative.html [ Pass Timeout ]
 
 # Manual test fails when run under automation due to lack of popup blocking. https://github.com/web-platform-tests/wpt/issues/3867
-
-# Temporarily disable test to merge 'reveal' button change to adorner
-crbug.com/40682649 http/tests/devtools/elements/shadow/shadow-slot-assignment.js [ Crash Failure Pass Timeout ]
 
 # Sheriff 2022-06-24
 crbug.com/40849593 [ Linux ] http/tests/devtools/network/network-initiator.js [ Failure Pass ]
@@ -6528,7 +6514,6 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/sandbox-attribute.https.html [ Failure ]
 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.any.worker.html [ Failure ]
 [ Debug Mac13 ] external/wpt/mediacapture-record/MediaRecorder-canvas-media-source.https.html [ Failure ]
-[ Debug Mac13 ] http/tests/devtools/elements/edit/undo-dom-edits.js [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Failure Skip Timeout ]
 [ Debug Mac13 ] animations/insert-composited-animation.html [ Skip Timeout ]
 [ Debug Mac13 ] storage/indexeddb/objectstore-cursor.html [ Skip Timeout ]
@@ -6567,15 +6552,12 @@ crbug.com/432218257 [ Debug Mac13 ] jquery/event.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/dark-color-scheme/fast/forms/color-scheme/media/video-playback-speed-menu.html [ Failure Skip Timeout ]
 [ Debug Mac13 ] fast/dom/shadow/selections-in-shadow.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/controls-refresh-hc/fast/forms/color-scheme/media/video-playback-speed-menu.html [ Skip Timeout ]
-# TODO(crbug.com/508429093): Uncomment after the bug gets fixed.
-# [ Debug Mac13 ] http/tests/devtools/elements/styles-4/styles-update-links-1.js [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/html/anonymous-iframe/embedding.tentative.https.window.html?10-10 [ Failure ]
 [ Debug Mac13 ] http/tests/devtools/console/console-tests.js [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/speculation-rules/prerender/response-code-successful.https.html?code=202 [ Failure ]
 [ Debug Mac13 ] virtual/threaded/animations/stability/zero-duration-large-start-delay.html [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/content-security-policy/resource-hints/prefetch-generate-directives.html [ Skip Timeout ]
 [ Debug Mac13 ] fast/forms/number/number-appearance-vertical.html [ Failure ]
-[ Debug Mac13 ] http/tests/devtools/elements/styles/updates-during-dom-traversal.js [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded-prefer-compositing/fast/scrolling/scrollable-area-frame-scrolling-no-overried-inherited-visibility-hidden.html [ Skip Timeout ]
 [ Debug Mac13 ] http/tests/devtools/indexeddb/database-refresh-view.js [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.any.sharedworker.html [ Failure ]
@@ -6590,8 +6572,6 @@ crbug.com/432218257 [ Debug Mac13 ] jquery/event.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded/printing/css2.1/page-break-after-000.html [ Skip Timeout ]
 [ Debug Mac13 ] http/tests/devtools/overrides/can-edit-iframe-html.js [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded-prefer-compositing/fast/scroll-behavior/no-erroneous-auto-scroll-pinch-zoom.html [ Skip Timeout ]
-# Will uncomment after crrev.com/c/5440693 lands
-#[ Debug Mac13 ] http/tests/devtools/elements/inspect-limited-children.js [ Skip Timeout ]
 [ Debug Mac13 ] accessibility/inline-text-word-boundary-causes-crash.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/controls-refresh-hc/fast/forms/color-scheme/time-picker/time-picker-appearance-after-closing-popup.html [ Skip Timeout ]
 [ Debug Mac13 ] http/tests/devtools/network/oopif-content.js [ Skip Timeout ]
@@ -6606,7 +6586,6 @@ crbug.com/432218257 [ Debug Mac13 ] jquery/event.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded/fast/events/pinch/pinch-zoom-pan-position-fixed.html [ Skip Timeout ]
 [ Debug Mac13 ] fullscreen/anonymous-block-merge-crash.html [ Failure ]
 [ Debug Mac13 ] virtual/threaded-prefer-compositing/fast/scroll-behavior/main-frame-scroll.html [ Skip Timeout ]
-[ Debug Mac13 ] http/tests/devtools/elements/styles-4/styles-source-lines-inline.js [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded/printing/page-count-layout-overflow.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded/fast/idleToBlob/OffscreenCanvas-convertToBlob-2d-worker.html [ Skip Timeout ]
 [ Debug Mac13 ] fast/forms/label/label-event-order.html [ Failure ]
@@ -6619,7 +6598,6 @@ crbug.com/432218257 [ Debug Mac13 ] jquery/event.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/deep-copy-config.https.html [ Skip Timeout ]
 [ Debug Mac13 ] external/wpt/css/css-text/text-transform/text-transform-capitalize-003.html [ Failure ]
 [ Debug Mac13 ] virtual/threaded-prefer-compositing/fast/scrolling/scrollbar-prevent-default.html [ Skip Timeout ]
-[ Debug Mac13 ] http/tests/devtools/elements/resolve-alien-node.js [ Skip Timeout ]
 [ Debug Mac13 ] http/tests/devtools/oopif/oopif-elements-inspect.js [ Skip Timeout ]
 
 # Sheriff 2023-05-23
@@ -7973,9 +7951,6 @@ crbug.com/904592 external/wpt/css/filter-effects/backdrop-filter-svg-blur.html [
 # Branch Gardener 2024-04-10
 crbug.com/333639341 [ Fuchsia ] fast/writing-mode/english-lr-text.html [ Failure Pass ]
 
-# Temporarily disable tests to land frontend changes
-crbug.com/325441197 http/tests/devtools/elements/elements-panel-limited-children.js [ Failure Pass ]
-
 # Gardener 2024-04-24
 crbug.com/336691003 [ Linux ] external/wpt/long-animation-frame/loaf-source-location-inline-classic-script.html [ Failure ]
 
@@ -8047,9 +8022,6 @@ crbug.com/352093460 external/wpt/webtransport/stats.https.any.serviceworker.html
 # Gardener 2024-07-19
 crbug.com/354060896 [ Release Win11-arm64 ] virtual/media-foundation-for-clear-dcomp/media/track/track-css-window-color.html [ Failure Pass Timeout ]
 crbug.com/354061998 [ Release Win11-arm64 ] http/tests/cookies/partitioned-cookies/ancestor-chain-same-site-subresource-to-cross-site.https.html [ Failure Pass Timeout ]
-
-# Disable to land crrev.com/c/5563488
-crbug.com/325441197 http/tests/devtools/elements/elements-tab-stops.js [ Failure Pass ]
 
 # Gardener 2024-07-24
 crbug.com/40186254 fast/events/touch/gesture/gesture-tap-reset-selection-range.html [ Failure Pass Timeout ]
@@ -8574,7 +8546,6 @@ crbug.com/453203283 [ Mac ] virtual/threaded/external/wpt/css/css-backgrounds/ba
 # Gardener 2025-10-17
 crbug.com/301364727 http/tests/devtools/a11y-axe-core/elements/main-tool-test.js [ Failure Pass ]
 crbug.com/301364727 http/tests/devtools/a11y-axe-core/sources/watch-expression-a11y-test.js [ Failure Pass ]
-crbug.com/301364727 http/tests/devtools/elements/styles/undo-set-selector-text.js [ Failure Pass ]
 crbug.com/301364727 http/tests/devtools/sources/debugger-ui/error-in-watch-expressions.js [ Failure Pass ]
 
 
@@ -8615,9 +8586,6 @@ crbug.com/460545299 [ Mac ] webaudio/codec-tests/webm/webm-decode.html [ Failure
 # Gardener 2025-11-25
 crbug.com/463661453 [ Mac ] virtual/threaded/wpt_internal/scheduler/integration_tests/rendering-starvation.html [ Failure Pass ]
 
-# Gardener 2025-11-27
-crbug.com/464220937 [ Mac ] http/tests/devtools/elements/inspect-pseudo-element.js [ Failure Pass ]
-
 # Gardener 2025-11-28
 crbug.com/464388023 [ Mac ] virtual/wasm-code-caching/http/tests/wasm/caching/code-cache.html [ Failure Pass ]
 crbug.com/464400408 wpt_internal/code-cache/code-cache-after-304.window.html [ Failure Pass ]
@@ -8633,14 +8601,6 @@ crbug.com/466134898 http/tests/devtools/sources/debugger-pause/debugger-eval-on-
 crbug.com/467244850 [ Linux ] external/wpt/css/css-contain/content-visibility/content-visibility-animation-with-scroll-timeline-in-auto-subtree.html [ Crash Failure Pass ]
 
 # Temporarily disable to land view-source adorner change in DevTools
-crbug.com/436798168 http/tests/devtools/elements/bidi-dom-tree.js [ Failure Pass ]
-crbug.com/436798168 http/tests/devtools/elements/copy-styles.js [ Failure Pass ]
-crbug.com/436798168 http/tests/devtools/elements/edit/delete-from-document.js [ Failure Pass ]
-crbug.com/436798168 http/tests/devtools/elements/elements-hide-html-comments.js [ Failure Pass ]
-crbug.com/436798168 http/tests/devtools/elements/elements-panel-correct-case.js [ Failure Pass ]
-crbug.com/436798168 http/tests/devtools/elements/elements-panel-structure.js [ Failure Pass ]
-crbug.com/436798168 http/tests/devtools/elements/iframe-load-event.js [ Failure Pass ]
-crbug.com/436798168 http/tests/devtools/elements/user-properties.js [ Failure Pass ]
 crbug.com/436798168 http/tests/devtools/oopif/oopif-elements-navigate-out.js [ Failure Pass ]
 crbug.com/436798168 http/tests/devtools/oopif/oopif-elements-nesting.js [ Failure Pass ]
 
@@ -8741,9 +8701,6 @@ crbug.com/489297473 [ Mac ] virtual/webnn-service-on-cpu/external/wpt/webnn/conf
 crbug.com/489297473 [ Mac ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/gemm.https.any.html?npu [ Failure Pass ]
 crbug.com/489297473 [ Mac ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gemm.https.any.html?gpu [ Failure Pass ]
 
-# Temporary to allow crrev.com/c/7575525 to land in DevTools before roll and re-enable.
-crbug.com/351662727 http/tests/devtools/elements/navigate-styles-sidebar-with-arrow-keys.js [ Failure Pass ]
-
 # Gardener 2026-03-06
 
 crbug.com/488337157 external/wpt/css/css-pseudo/input-element-pseudo-open-click.optional.html [ Pass Timeout ]
@@ -8812,11 +8769,6 @@ crbug.com/40318224 http/tests/perf/large-inlined-script.html [ Timeout ]
 # Gardener 2026-04-23
 crbug.com/504695891 [ Mac15 ] webaudio/internals/audioworkletprocessor-gc.https.html [ Failure Pass ]
 
-
-# Gardener 2026-05-04
-crbug.com/508429093 http/tests/devtools/elements/styles-4/styles-update-links-1.js [ Failure Pass ]
-crbug.com/508429093 http/tests/devtools/elements/styles-4/styles-update-links-2.js [ Failure Pass ]
-crbug.com/508429093 http/tests/devtools/elements/styles-4/styles-update-links-3.js [ Failure Pass ]
 
 # Gardener 2026-05-05
 crbug.com/509675206 [ Debug Linux ] webaudio/OfflineAudioContext/onstatechange.html [ Failure ]

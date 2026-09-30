@@ -1,4 +1,0 @@
-Tests that inspect mode works after profiling start/stop.
-
-Node selected: inspected
-
