@@ -43,6 +43,7 @@
 #import "ios/web/public/test/fakes/fake_web_state_observer_util.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
+#import "testing/platform_test.h"
 
 namespace autofill {
 
@@ -402,10 +403,13 @@ TEST_F(FormActivityTabHelperTest, FocusMainFrame) {
   EXPECT_FALSE(info->form_activity.input_missing);
 }
 
+// Tests using only fakes do not need to create a real WebState.
+using FormActivityTabHelperUnitTest = PlatformTest;
+
 // Tests that reentrant observer notifications (such as a form.removal message
 // dispatched while handling a form.activity message due to a nested run loop)
 // do not crash.
-TEST_F(FormActivityTabHelperTest, ReentrantObserverNotification) {
+TEST_F(FormActivityTabHelperUnitTest, ReentrantObserverNotification) {
   class ReentrantFormActivityObserver : public FormActivityObserver {
    public:
     explicit ReentrantFormActivityObserver(base::OnceClosure on_activity)
