@@ -108,7 +108,9 @@ class BrowserDesktopWindowTreeHostWin
                           ProfileAttributesStorage::Observer>
       profile_observation_{this};
 
-  base::win::ScopedGDIObject<HICON> icon_handle_;
+  // The badged window icon, which this window created and owns. Empty while
+  // the window shows the shared app icon, which must never be destroyed.
+  base::win::ScopedGDIObject<HICON> badged_icon_;
 
   // This will be null pre Win10.
   scoped_refptr<VirtualDesktopHelper> virtual_desktop_helper_;

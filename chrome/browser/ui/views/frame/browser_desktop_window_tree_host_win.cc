@@ -628,20 +628,22 @@ SkBitmap GetBadgedIconBitmapForProfile(Profile* profile) {
 }
 
 void BrowserDesktopWindowTreeHostWin::SetWindowIcon(bool badged) {
-  // Hold onto the previous icon so that the currently displayed
-  // icon is valid until replaced with the new icon.
-  base::win::ScopedGDIObject<HICON> previous_icon = std::move(icon_handle_);
+  // Keep the previous badged icon alive until the window has switched away
+  // from it.
+  base::win::ScopedGDIObject<HICON> previous_badged_icon =
+      std::move(badged_icon_);
+  HICON icon = nullptr;
   if (badged) {
     CHECK(browser_view_);
-    icon_handle_ = IconUtil::CreateHICONFromSkBitmap(
+    badged_icon_ = IconUtil::CreateHICONFromSkBitmap(
         GetBadgedIconBitmapForProfile(browser_view_->browser()->GetProfile()));
+    icon = badged_icon_.get();
   } else {
-    icon_handle_.reset(GetAppIcon());
+    icon = GetAppIcon();
   }
   SendMessage(GetHWND(), WM_SETICON, ICON_SMALL,
-              reinterpret_cast<LPARAM>(icon_handle_.get()));
-  SendMessage(GetHWND(), WM_SETICON, ICON_BIG,
-              reinterpret_cast<LPARAM>(icon_handle_.get()));
+              reinterpret_cast<LPARAM>(icon));
+  SendMessage(GetHWND(), WM_SETICON, ICON_BIG, reinterpret_cast<LPARAM>(icon));
 }
 
 void BrowserDesktopWindowTreeHostWin::ShowViewsSystemMenuAtDefaultLocation() {
