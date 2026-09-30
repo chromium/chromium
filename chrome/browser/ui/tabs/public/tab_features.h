@@ -186,6 +186,9 @@ class DownloadNavigationObserver;
 }  // namespace download
 
 namespace extensions {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+class AppTabHelper;
+#endif
 class ExtensionSidePanelManager;
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 class NavigationExtensionEnabler;
@@ -848,6 +851,10 @@ class TabFeatures {
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   std::unique_ptr<contextual_tasks::SearchAiModePromoTabHelper>
       search_ai_mode_promo_tab_helper_;
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  std::unique_ptr<extensions::AppTabHelper> app_tab_helper_;
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)

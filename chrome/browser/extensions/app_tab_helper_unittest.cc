@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/web_contents_tester.h"
@@ -25,24 +26,25 @@ class AppTabHelperUnitTest : public ExtensionServiceTestWithInstall {
     web_contents_ =
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
     web_contents_tester_ = content::WebContentsTester::For(web_contents_.get());
-    AppTabHelper::CreateForWebContents(web_contents_.get());
-    app_tab_helper_ = AppTabHelper::FromWebContents(web_contents_.get());
+    app_tab_helper_ =
+        std::make_unique<AppTabHelper>(tab_interface_, web_contents_.get());
   }
 
   void TearDown() override {
-    app_tab_helper_ = nullptr;
+    app_tab_helper_.reset();
     web_contents_tester_ = nullptr;
     web_contents_.reset();
     ExtensionServiceTestWithInstall::TearDown();
   }
 
-  AppTabHelper* app_tab_helper() { return app_tab_helper_; }
+  AppTabHelper* app_tab_helper() { return app_tab_helper_.get(); }
 
  private:
   std::unique_ptr<content::WebContents> web_contents_;
 
   raw_ptr<content::WebContentsTester> web_contents_tester_ = nullptr;
-  raw_ptr<AppTabHelper> app_tab_helper_ = nullptr;
+  tabs::MockTabInterface tab_interface_;
+  std::unique_ptr<AppTabHelper> app_tab_helper_;
 };
 
 TEST_F(AppTabHelperUnitTest, ClearsExtensionOnUnload) {

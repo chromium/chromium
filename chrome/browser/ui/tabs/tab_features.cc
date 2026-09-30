@@ -251,6 +251,10 @@
 #include "components/signin/public/base/signin_switches.h"
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/app_tab_helper.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/navigation_extension_enabler.h"
 #endif
@@ -890,6 +894,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   }
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  app_tab_helper_ =
+      std::make_unique<extensions::AppTabHelper>(tab, tab.GetContents());
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
   navigation_extension_enabler_ =
       std::make_unique<extensions::NavigationExtensionEnabler>(
@@ -1287,6 +1296,12 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
             .CreateInstance<contextual_tasks::SearchAiModePromoTabHelper>(
                 *tab, *tab, new_contents);
   }
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  app_tab_helper_.reset();
+  app_tab_helper_ =
+      std::make_unique<extensions::AppTabHelper>(*tab, new_contents);
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)

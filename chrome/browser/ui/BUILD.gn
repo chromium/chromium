@@ -1464,9 +1464,7 @@ source_set("tab_helpers_impl") {
     deps += [
       "//chrome/browser/extensions",
       "//chrome/browser/extensions/api/web_navigation",
-      "//chrome/browser/ui/extensions",
       "//extensions/browser",
-      "//extensions/common:extension_features",
       "//extensions/common:mojom",
     ]
     if (!is_android) {

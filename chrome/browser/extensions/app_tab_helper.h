@@ -9,27 +9,37 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/common/extension_id.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace gfx {
 class Image;
+}
+
+namespace tabs {
+class TabInterface;
 }
 
 namespace extensions {
 
 // Handles apps for the extensions system.
 class AppTabHelper : public content::WebContentsObserver,
-                     public ExtensionRegistryObserver,
-                     public content::WebContentsUserData<AppTabHelper> {
+                     public ExtensionRegistryObserver {
  public:
+  DECLARE_USER_DATA(AppTabHelper);
+
+  AppTabHelper(tabs::TabInterface& tab, content::WebContents* web_contents);
   AppTabHelper(const AppTabHelper&) = delete;
   AppTabHelper& operator=(const AppTabHelper&) = delete;
 
   ~AppTabHelper() override;
+
+  static AppTabHelper* From(tabs::TabInterface* tab);
+  static AppTabHelper* FromWebContents(content::WebContents* web_contents);
 
   // Sets the extension denoting this as an app. If `extension` is non-null this
   // tab becomes an app-tab. WebContents does not listen for unload events for
@@ -60,16 +70,9 @@ class AppTabHelper : public content::WebContentsObserver,
   SkBitmap* GetExtensionAppIcon();
 
  private:
-  friend class content::WebContentsUserData<AppTabHelper>;
-
-  explicit AppTabHelper(content::WebContents* web_contents);
-
   // content::WebContentsObserver overrides.
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void DidCloneToNewWebContents(
-      content::WebContents* old_web_contents,
-      content::WebContents* new_web_contents) override;
 
   // ExtensionRegistryObserver:
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
@@ -97,10 +100,10 @@ class AppTabHelper : public content::WebContentsObserver,
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       registry_observation_{this};
 
+  ui::ScopedUnownedUserData<AppTabHelper> scoped_unowned_user_data_;
+
   // Vend weak pointers that can be invalidated to stop in-progress loads.
   base::WeakPtrFactory<AppTabHelper> image_loader_ptr_factory_{this};
-
-  WEB_CONTENTS_USER_DATA_KEY_DECL();
 };
 
 }  // namespace extensions

@@ -161,17 +161,11 @@
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #endif
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/extensions/app_tab_helper.h"
-#include "chrome/browser/ui/extensions/extension_side_panel_utils.h"
-#include "extensions/common/extension_features.h"
-#include "extensions/common/mojom/view_type.mojom.h"
-#endif
-
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_tab_observer.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "extensions/browser/view_type_utils.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/web_applications/web_app_utils.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -544,10 +538,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
     extensions::SetViewType(web_contents,
                             extensions::mojom::ViewType::kTabContents);
   }
-#endif
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  extensions::AppTabHelper::CreateForWebContents(web_contents);
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)

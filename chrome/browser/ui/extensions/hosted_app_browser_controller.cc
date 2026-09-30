@@ -220,7 +220,9 @@ void HostedAppBrowserController::OnTabInserted(content::WebContents* contents) {
 void HostedAppBrowserController::OnTabRemoved(content::WebContents* contents) {
   AppBrowserController::OnTabRemoved(contents);
 
-  extensions::AppTabHelper::FromWebContents(contents)->SetExtensionApp(nullptr);
+  if (auto* tab_helper = extensions::AppTabHelper::FromWebContents(contents)) {
+    tab_helper->SetExtensionApp(nullptr);
+  }
 }
 
 void HostedAppBrowserController::LoadAppIcon(

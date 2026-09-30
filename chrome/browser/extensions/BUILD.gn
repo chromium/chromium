@@ -921,6 +921,7 @@ source_set("extensions") {
       "//components/translate/content/browser",
       "//content/public/browser",
       "//mojo/public/cpp/bindings",
+      "//ui/base/unowned_user_data",
     ]
     deps += [
       "//apps",
@@ -2188,6 +2189,7 @@ source_set("unit_tests") {
       "//components/password_manager/core/browser/leak_detection:test_support",
       "//components/password_manager/core/browser/sharing",
       "//components/password_manager/core/browser/sharing:test_support",
+      "//components/tabs:test_support",
       "//components/webauthn/core/browser:test_support",
       "//ui/base/clipboard:clipboard_test_support",
     ]

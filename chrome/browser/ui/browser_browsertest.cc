@@ -1301,14 +1301,13 @@ IN_PROC_BROWSER_TEST_F(BrowserTest, TabClosingWhenRemovingExtension) {
 
   std::unique_ptr<WebContents> app_contents =
       WebContents::Create(WebContents::CreateParams(browser()->GetProfile()));
-  extensions::AppTabHelper::CreateForWebContents(app_contents.get());
-  extensions::AppTabHelper* extensions_tab_helper =
-      extensions::AppTabHelper::FromWebContents(app_contents.get());
-  ASSERT_TRUE(extensions_tab_helper);
-  extensions_tab_helper->SetExtensionApp(extension_app);
-
+  WebContents* raw_app_contents = app_contents.get();
   model->AddWebContents(std::move(app_contents), 0,
                         ui::PageTransitionFromInt(0), AddTabTypes::ADD_NONE);
+  extensions::AppTabHelper* extensions_tab_helper =
+      extensions::AppTabHelper::FromWebContents(raw_app_contents);
+  ASSERT_TRUE(extensions_tab_helper);
+  extensions_tab_helper->SetExtensionApp(extension_app);
   model->SetTabPinned(0, true);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
