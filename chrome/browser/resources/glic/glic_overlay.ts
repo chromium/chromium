@@ -49,6 +49,7 @@ interface PageElementTypes {
   locationMismatchPanel: HTMLElement;
   retry: HTMLElement;
   reload: HTMLElement;
+  showError: HTMLElement;
   signInButton: HTMLElement;
   profilePickerButton: HTMLElement;
   ineligibleAccountHelpButton: HTMLElement;
@@ -196,6 +197,13 @@ export class GlicOverlayElement extends HTMLElement {
     $.reload.addEventListener('click', () => {
       this.browserProxy.handler.onRetryClicked();
     });
+
+    if (loadTimeData.getBoolean('showErrorAllowed')) {
+      $.showError.hidden = false;
+      $.showError.addEventListener('click', () => {
+        this.browserProxy.handler.onShowErrorClicked();
+      });
+    }
 
     $.signInButton.addEventListener('click', () => {
       this.browserProxy.handler.onSignInClicked();

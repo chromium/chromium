@@ -63,6 +63,10 @@ interface GlicOverlayPageHandler {
 
   // Called when the user clicks a panel close (X) button.
   OnClosePanelClicked();
+
+  // Called when the user clicks the "Show error page" button on the error
+  // panel.
+  OnShowErrorClicked();
 };
 
 // Factory to bind the page and page handler.

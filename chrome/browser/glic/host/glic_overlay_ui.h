@@ -14,6 +14,8 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
+class Profile;
+
 namespace glic {
 
 // WebUI controller for the Glic overlay surface (`chrome://glic/overlay`).
@@ -26,6 +28,8 @@ namespace glic {
 class GlicOverlayUI : public ui::MojoWebUIController,
                       public mojom::GlicOverlayPageHandlerFactory {
  public:
+  static bool IsShowErrorAllowed(Profile* profile);
+
   explicit GlicOverlayUI(content::WebUI* web_ui);
   GlicOverlayUI(const GlicOverlayUI&) = delete;
   GlicOverlayUI& operator=(const GlicOverlayUI&) = delete;

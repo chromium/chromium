@@ -8,8 +8,11 @@
 
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -18,6 +21,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/glic_resources.h"
 #include "chrome/grit/glic_resources_map.h"
+#include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -31,6 +35,21 @@
 #endif
 
 namespace glic {
+
+// static
+bool GlicOverlayUI::IsShowErrorAllowed(Profile* profile) {
+  if (!profile) {
+    return false;
+  }
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  const bool is_internal_google_account =
+      identity_manager && IsPrimaryAccountGoogleInternal(*identity_manager);
+  const bool is_glic_dev =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(::switches::kGlicDev);
+  return is_internal_google_account || is_glic_dev ||
+         profile->GetPrefs()->GetBoolean(prefs::kGlicShowErrorAllowed);
+}
 
 GlicOverlayUI::GlicOverlayUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui,
@@ -84,6 +103,7 @@ GlicOverlayUI::GlicOverlayUI(content::WebUI* web_ui)
 
   source->AddBoolean("isNoWebview", true);
   source->AddBoolean("isAndroidMobile", false);
+  source->AddBoolean("showErrorAllowed", IsShowErrorAllowed(profile));
 
   source->AddString("disabledByAdminNoticeWithLink",
                     l10n_util::GetStringFUTF16(
@@ -102,7 +122,9 @@ void GlicOverlayUI::SetPageHandler(
   // CreatePageHandler before the navigation committed, bind the pending
   // receiver now.
   page_handler_ = page_handler;
-  if (page_handler_ && pending_receiver_.is_valid()) {
+  if (!page_handler_) {
+    page_handler_receiver_.reset();
+  } else if (pending_receiver_.is_valid()) {
     page_handler_receiver_.emplace(page_handler_, std::move(pending_receiver_));
   }
 }

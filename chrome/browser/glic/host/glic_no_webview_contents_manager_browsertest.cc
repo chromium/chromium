@@ -7,13 +7,17 @@
 #include <memory>
 #include <string_view>
 
+#include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/glic_enums.h"
+#include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/guest_util.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/features.h"
@@ -45,24 +49,35 @@ GlicNoWebviewContentsManager* GetNoWebviewContentsManager(
       instance->host().contents_manager());
 }
 
+void SetDisabledByAdmin(Profile* profile, bool disabled) {
+  profile->GetPrefs()->SetInteger(
+      optimization_guide::prefs::kGeminiSettings,
+      std::to_underlying(
+          disabled
+              ? optimization_guide::prefs::GeminiSettingsPolicyState::kDisabled
+              : optimization_guide::prefs::GeminiSettingsPolicyState::
+                    kEnabled));
+}
+
 void ClickOverlayElement(content::WebContents* overlay_contents,
                          std::string_view query_selector) {
   ASSERT_TRUE(overlay_contents);
   ASSERT_TRUE(content::WaitForLoadStop(overlay_contents));
   content::ExecuteScriptAsync(overlay_contents,
                               base::StringPrintf(
-                                  R"(
-        const start = Date.now();
-        const check = () => {
-          const el = document.querySelector('%s');
-          if (el && !el.hidden) {
-            el.click();
-          } else if (Date.now() - start <= 5000) {
-            setTimeout(check, 50);
+                                  R"js(
+        (async () => {
+          const start = Date.now();
+          while (Date.now() - start <= 10000) {
+            const el = document.querySelector('%s');
+            if (el && !el.hidden && !el.closest('.panel')?.hidden) {
+              el.click();
+              return;
+            }
+            await new Promise(r => setTimeout(r, 50));
           }
-        };
-        check();
-      )",
+        })()
+      )js",
                                   std::string(query_selector).c_str()));
 }
 
@@ -468,8 +483,79 @@ IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
   ASSERT_TRUE(manager->overlay_contents());
 
   manager->SetErrorState(mojom::ErrorPanelType::kOffline);
+  ASSERT_OK(WaitForErrorPanelType(mojom::ErrorPanelType::kOffline));
+  ASSERT_TRUE(content::WaitForLoadStop(manager->overlay_contents()));
 
   ClickOverlayElement(manager->overlay_contents(), "#retry");
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
+                       ShowErrorButtonClickSwapsToGuest) {
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicShowErrorAllowed, true);
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+  ASSERT_TRUE(manager->overlay_contents());
+  ASSERT_TRUE(content::WaitForLoadStop(manager->guest_contents()));
+
+  manager->SetErrorState(mojom::ErrorPanelType::kError);
+  ASSERT_OK(WaitForErrorPanelType(mojom::ErrorPanelType::kError));
+  ASSERT_TRUE(manager->overlay_contents());
+  ASSERT_TRUE(content::WaitForLoadStop(manager->overlay_contents()));
+
+  base::test::TestFuture<content::WebContents*> web_contents_future;
+  auto subscription = manager->RegisterWebContentsChangedCallback(
+      web_contents_future.GetRepeatingCallback());
+
+  ClickOverlayElement(manager->overlay_contents(), "#showError");
+  EXPECT_EQ(web_contents_future.Take(), manager->guest_contents());
+
+  EXPECT_EQ(manager->error_type(), std::nullopt);
+  EXPECT_EQ(manager->state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingGuest);
+  EXPECT_EQ(manager->active_web_contents(), manager->guest_contents());
+  EXPECT_EQ(manager->guest_state().get(),
+            GlicNoWebviewContentsManager::GuestState::kGuestError);
+  EXPECT_TRUE(manager->ShouldReloadOnShow());
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
+                       ShowErrorDisallowedWhenDisabledByAdmin) {
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicShowErrorAllowed, true);
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+  ASSERT_TRUE(manager->overlay_contents());
+
+  SetDisabledByAdmin(GetProfile(), /*disabled=*/true);
+  ASSERT_EQ(GlicEnabling::GetProfileReadyState(GetProfile()),
+            mojom::ProfileReadyState::kDisabledByAdmin);
+  ASSERT_OK(WaitForErrorPanelType(mojom::ErrorPanelType::kDisabledByAdmin));
+
+  // Browser-side guard: OnShowErrorClicked must not dismiss non-kError panels
+  // such as kDisabledByAdmin.
+  manager->GetOverlayPageHandlerForTesting()->OnShowErrorClicked();
+  EXPECT_EQ(manager->error_type(), mojom::ErrorPanelType::kDisabledByAdmin);
+  EXPECT_EQ(manager->state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingOverlay);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
+                       ShowErrorIgnoredWhenDisallowed) {
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kGlicShowErrorAllowed, false);
+  ASSERT_OK_AND_ASSIGN(GlicInstanceImpl * instance, OpenGlicForActiveTab());
+  auto* manager = GetNoWebviewContentsManager(instance);
+  ASSERT_TRUE(manager);
+  ASSERT_TRUE(manager->overlay_contents());
+
+  manager->SetErrorState(mojom::ErrorPanelType::kError);
+  ASSERT_OK(WaitForErrorPanelType(mojom::ErrorPanelType::kError));
+
+  // Browser-side guard: OnShowErrorClicked is a no-op when disallowed.
+  manager->GetOverlayPageHandlerForTesting()->OnShowErrorClicked();
+  EXPECT_EQ(manager->error_type(), mojom::ErrorPanelType::kError);
+  EXPECT_EQ(manager->state(),
+            GlicNoWebviewContentsManager::DisplayState::kShowingOverlay);
 }
 
 IN_PROC_BROWSER_TEST_F(GlicNoWebviewOverlayBrowserTest,
@@ -507,10 +593,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(manager->overlay_contents());
 
   // Disable Glic policy while open.
-  GetProfile()->GetPrefs()->SetInteger(
-      optimization_guide::prefs::kGeminiSettings,
-      std::to_underlying(
-          optimization_guide::prefs::GeminiSettingsPolicyState::kDisabled));
+  SetDisabledByAdmin(GetProfile(), /*disabled=*/true);
   ASSERT_EQ(GlicEnabling::GetProfileReadyState(GetProfile()),
             mojom::ProfileReadyState::kDisabledByAdmin);
 
@@ -518,10 +601,7 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_OK(WaitForErrorPanelType(mojom::ErrorPanelType::kDisabledByAdmin));
 
   // Re-enable Glic policy.
-  GetProfile()->GetPrefs()->SetInteger(
-      optimization_guide::prefs::kGeminiSettings,
-      std::to_underlying(
-          optimization_guide::prefs::GeminiSettingsPolicyState::kEnabled));
+  SetDisabledByAdmin(GetProfile(), /*disabled=*/false);
   ASSERT_EQ(GlicEnabling::GetProfileReadyState(GetProfile()),
             mojom::ProfileReadyState::kReady);
 

@@ -448,6 +448,17 @@ void GlicNoWebviewContentsManager::OverlayContentsManager::
   }
 }
 
+void GlicNoWebviewContentsManager::OverlayContentsManager::
+    OnShowErrorClicked() {
+  if (error_type_ != mojom::ErrorPanelType::kError ||
+      !GlicOverlayUI::IsShowErrorAllowed(profile_) ||
+      !owner_->guest_contents() || owner_->guest_contents()->IsCrashed()) {
+    return;
+  }
+  owner_->StopGuestBootstrap();
+  owner_->ShowGuestDirectly(GuestState::kGuestError);
+}
+
 GlicNoWebviewContentsManager::GlicNoWebviewContentsManager(
     Profile* profile,
     GlicEnabling* enabling,
