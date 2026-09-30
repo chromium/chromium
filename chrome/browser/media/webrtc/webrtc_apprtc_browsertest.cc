@@ -187,9 +187,12 @@ class WebRtcApprtcBrowserTest : public WebRtcTestBase {
     if (!EvalInJavascriptFile(tab_contents, GetSourceDir().Append(
         FILE_PATH_LITERAL("chrome/test/data/webrtc/test_functions.js"))))
       return false;
-    if (!EvalInJavascriptFile(tab_contents, GetSourceDir().Append(
-        FILE_PATH_LITERAL("chrome/test/data/webrtc/video_detector.js"))))
+    if (!EvalInJavascriptFile(
+            tab_contents,
+            GetSourceDir().Append(FILE_PATH_LITERAL(
+                "chrome/test/data/webrtc/video_frame_detector.js")))) {
       return false;
+    }
 
     StartDetectingVideo(tab_contents, video_tag);
     WaitForVideoToPlay(tab_contents);
