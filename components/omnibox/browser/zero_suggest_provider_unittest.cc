@@ -3518,6 +3518,33 @@ TEST_F(ZeroSuggestProviderTest, SuggestUrlIncludesPageTitle) {
         GetProviderRequestURL(ZeroPrefixInputForSRP(/*is_prefetch=*/false));
     EXPECT_EQ(url.spec().find("pageTitle="), std::string::npos);
   }
+  // Composebox gets the param when context tab title is present and
+  // personalized URL data collection is active.
+  {
+    EXPECT_CALL(*client_, IsLensEnabled())
+        .WillRepeatedly(testing::Return(true));
+    EXPECT_CALL(*client_, IsPersonalizedUrlDataCollectionActive())
+        .WillRepeatedly(testing::Return(true));
+    AutocompleteInput input = ZeroPrefixInputForComposebox();
+    input.set_context_tab_title(u"Context Tab Title");
+    input.set_context_tab_url(GURL("https://example.com/context"));
+    GURL url = GetProviderRequestURL(input);
+    EXPECT_NE(url.spec().find("pageTitle=Context%20Tab%20Title"),
+              std::string::npos);
+  }
+  // Composebox does not get the param when personalized URL data collection is
+  // disabled (such as when custom passphrase E2EE is enabled).
+  {
+    EXPECT_CALL(*client_, IsLensEnabled())
+        .WillRepeatedly(testing::Return(true));
+    EXPECT_CALL(*client_, IsPersonalizedUrlDataCollectionActive())
+        .WillRepeatedly(testing::Return(false));
+    AutocompleteInput input = ZeroPrefixInputForComposebox();
+    input.set_context_tab_title(u"Context Tab Title");
+    input.set_context_tab_url(GURL("https://example.com/context"));
+    GURL url = GetProviderRequestURL(input);
+    EXPECT_EQ(url.spec().find("pageTitle="), std::string::npos);
+  }
 }
 
 TEST_F(ZeroSuggestProviderTest,

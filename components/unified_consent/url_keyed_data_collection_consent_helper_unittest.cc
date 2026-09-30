@@ -104,6 +104,31 @@ TEST_F(UrlKeyedDataCollectionConsentHelperTest, PersonalizedDataCollection) {
 }
 
 TEST_F(UrlKeyedDataCollectionConsentHelperTest,
+       PersonalizedDataCollection_CustomPassphrase) {
+  std::unique_ptr<UrlKeyedDataCollectionConsentHelper> helper =
+      UrlKeyedDataCollectionConsentHelper::
+          NewPersonalizedDataCollectionConsentHelper(&sync_service_);
+  helper->AddObserver(this);
+
+  sync_service_.SetMaxTransportState(
+      syncer::SyncService::TransportState::ACTIVE);
+  sync_service_.GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false,
+      /*types=*/{syncer::UserSelectableType::kHistory});
+  sync_service_.SetIsUsingExplicitPassphrase(true);
+  // Custom passphrase encryption is not supported for history data types, so
+  // DataTypeControllers stop them and they are not active in Sync.
+  sync_service_.SetFailedDataTypes({syncer::HISTORY_DELETE_DIRECTIVES});
+  sync_service_.FireStateChanged();
+
+  EXPECT_EQ(helper->GetConsentState(),
+            UrlKeyedDataCollectionConsentHelper::State::kDisabled);
+  EXPECT_FALSE(helper->IsEnabled());
+  EXPECT_TRUE(state_changed_notifications_.empty());
+  helper->RemoveObserver(this);
+}
+
+TEST_F(UrlKeyedDataCollectionConsentHelperTest,
        PersonalizedDataCollection_NullSyncService) {
     std::unique_ptr<UrlKeyedDataCollectionConsentHelper> helper =
         UrlKeyedDataCollectionConsentHelper::
