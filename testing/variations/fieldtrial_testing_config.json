@@ -20469,7 +20469,6 @@
                         "DeferSpellcheckInitialization",
                         "InitialWebUI",
                         "InitialWebUISurfaceSync",
-                        "InitialWebUISyncNavStartToCommit",
                         "InitialWebUIWithoutExtensions",
                         "LazyKeyedServiceInstantiation",
                         "PerDependencyDeadlines",
