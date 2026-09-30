@@ -16,6 +16,7 @@
 #include "base/mac/mac_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
@@ -37,14 +38,16 @@ bool IsBrowserProcess() {
 // removed soon.
 
 enum MacOcclusionForceShutoff {
-  kNoShutoff,
   kShutoffMacOS26Entirely,
   kShutoffStageManagerEntirely,
   kShutoffMacOS26StageManager,
 };
 
 BASE_FEATURE(kMacOcclusionForceShutoff, base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE_PARAM(int, kShutoffType, &kMacOcclusionForceShutoff, kNoShutoff);
+BASE_FEATURE_PARAM(int,
+                   kShutoffType,
+                   &kMacOcclusionForceShutoff,
+                   kShutoffMacOS26Entirely);
 
 bool IsEmergencyShutoffEnabled() {
   if (!base::FeatureList::IsEnabled(kMacOcclusionForceShutoff)) {
@@ -61,15 +64,14 @@ bool IsEmergencyShutoffEnabled() {
   }();
 
   switch (kShutoffType.Get()) {
-    default:
-      // Huh?
-      return false;
     case kShutoffMacOS26Entirely:
       return is_macos26;
     case kShutoffStageManagerEntirely:
       return is_stage_manager_enabled;
     case kShutoffMacOS26StageManager:
       return is_macos26 && is_stage_manager_enabled;
+    default:
+      NOTREACHED();
   }
 }
 
