@@ -1121,6 +1121,13 @@ void ContextualTasksComposeboxHandler::ClearFiles(
   pending_context_uploads_.clear();
   pending_query_request_info_.reset();
 #if !BUILDFLAG(IS_ANDROID)
+  if (visual_selection_token_.has_value()) {
+    if (auto* controller = GetLensSearchController()) {
+      if (controller->lens_overlay_controller()) {
+        controller->lens_overlay_controller()->ClearRegionSelection();
+      }
+    }
+  }
   visual_selection_token_.reset();
   visual_selection_overlay_token_.reset();
 #endif

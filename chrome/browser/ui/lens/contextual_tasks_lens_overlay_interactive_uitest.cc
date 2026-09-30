@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include "base/base64.h"
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -519,6 +520,121 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
       EnsurePresent(kOverlayId),
       ClickElement(kSidePanelWebContentsId, kPathToLensButton),
       WaitForHide(LensOverlayController::kOverlayId));
+}
+
+IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
+                       ClearComposeboxClearsOverlayRegionSelection) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSidePanelWebContentsId);
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kLensButtonExists);
+
+  const DeepQuery kPathToLensButton{"contextual-tasks-app",
+                                    "contextual-tasks-composebox",
+                                    "#composebox", "#lensIcon"};
+  const DeepQuery kPathToClearButton{
+      "contextual-tasks-app", "contextual-tasks-composebox", "#composebox",
+      "#composeboxInput", "#cancelIcon"};
+  const DeepQuery kPathToSelectionOverlay{"lens-overlay-app",
+                                          "lens-selection-overlay"};
+  constexpr char kHasPostSelection[] =
+      "el => el.shadowRoot.querySelector('#postSelectionRenderer')"
+      ".hasSelection()";
+  const GURL url = embedded_test_server()->GetURL(kDocumentWithImage);
+
+  SidePanelUI::From(browser())->DisableAnimationsForTesting();
+
+  auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  auto off_center_point = base::BindLambdaForTesting([browser_view]() {
+    gfx::Point off_center =
+        browser_view->GetContentsView()->GetBoundsInScreen().CenterPoint();
+    off_center.Offset(100, 100);
+    return off_center;
+  });
+
+  auto get_lens_controller = [this]() {
+    return LensSearchController::FromTabWebContents(
+        browser()->GetTabStripModel()->GetWebContentsAt(0));
+  };
+  auto has_region_selection = [get_lens_controller]() {
+    return get_lens_controller()
+        ->lens_overlay_controller()
+        ->HasRegionSelection();
+  };
+
+  StateChange lens_button_exists;
+  lens_button_exists.event = kLensButtonExists;
+  lens_button_exists.where = kPathToLensButton;
+  lens_button_exists.type = StateChange::Type::kExistsAndConditionTrue;
+  lens_button_exists.test_function =
+      "(el) => { const r = el.getBoundingClientRect(); return r.width > 0 && "
+      "r.height > 0; }";
+
+  RunTestSequence(
+      // 1. Open a page and show the Contextual Tasks side panel.
+      InstrumentTab(kFirstTab), NavigateWebContents(kFirstTab, url),
+      EnsurePresent(kFirstTab, DeepQuery{"body"}),
+      WaitForWebContentsPainted(kFirstTab),
+      WaitForWebContentsReady(kFirstTab, url), Do([this]() {
+        // The composebox drops attached context whose input type is not
+        // allowed by the searchbox config, so allow the Lens input types.
+        // Browser tabs are implicitly allowed when both are present.
+        omnibox::AimEligibilityResponse response;
+        auto* config = response.mutable_searchbox_config();
+        config->add_input_type_configs()->set_input_type(
+            omnibox::INPUT_TYPE_LENS_IMAGE);
+        config->add_input_type_configs()->set_input_type(
+            omnibox::INPUT_TYPE_LENS_FILE);
+        AimEligibilityServiceFactory::GetForProfile(browser()->GetProfile())
+            ->SetEligibilityResponseForDebugging(
+                base::Base64Encode(response.SerializeAsString()));
+
+        contextual_tasks::ContextualTasksPanelController::From(browser())->Show(
+            false,
+            omnibox::DESKTOP_CHROME_LENS_CONTEXTUAL_SEARCHBOX_ENTRY_POINT);
+      }),
+      WaitForShow(kContextualTasksSidePanelWebViewElementId),
+      NameViewRelative(kContextualTasksSidePanelWebViewElementId,
+                       "SidePanelContentWebViewName",
+                       [](contextual_tasks::ContextualTasksWebView* web_view) {
+                         return web_view->content_web_view();
+                       }),
+      InstrumentNonTabWebView(kSidePanelWebContentsId,
+                              "SidePanelContentWebViewName"),
+      ExecuteJsAt(kSidePanelWebContentsId, DeepQuery{"contextual-tasks-app"},
+                  "el => { "
+                  "  el.removeThreadFrameListenersForTesting(); "
+                  "  el.isLoadError_ = false; "
+                  "  el.isZeroState_ = true; "
+                  "}"),
+      WaitForWebContentsReady(kSidePanelWebContentsId),
+
+      // 2. Open the Lens overlay from the composebox Lens button and select a
+      // region.
+      WaitForStateChange(kSidePanelWebContentsId, lens_button_exists),
+      ClickElement(kSidePanelWebContentsId, kPathToLensButton),
+      SelectRegionInLensOverlay(kOverlayId, std::move(off_center_point)),
+      CheckResult(
+          [get_lens_controller]() {
+            return get_lens_controller()->invocation_source();
+          },
+          std::make_optional(
+              lens::LensOverlayInvocationSource::kContextualTasksComposebox)),
+
+      // 3. Verify the region selection is shown on the overlay.
+      InAnyContext(WaitForJsResultAt(kOverlayId, kPathToSelectionOverlay,
+                                     kHasPostSelection, true)),
+      CheckResult(has_region_selection, true),
+
+      // 4. Clear the composebox with its clear button.
+      CheckJsResultAt(kSidePanelWebContentsId, kPathToClearButton,
+                      "el => !el.disabled", true),
+      ClickElement(kSidePanelWebContentsId, kPathToClearButton),
+
+      // 5. Verify the region selection is cleared from the overlay.
+      InAnyContext(WaitForJsResultAt(kOverlayId, kPathToSelectionOverlay,
+                                     kHasPostSelection, false)),
+      CheckResult(has_region_selection, false));
 }
 
 class ContextualTasksLensOverlayEphemeralButtonInteractiveUiTest
