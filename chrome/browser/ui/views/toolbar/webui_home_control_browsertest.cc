@@ -263,14 +263,18 @@ IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, DropPlainText_FromWebPage) {
   ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
   SimulateTextDrop("hello world", DragOrigin::kWebPage);
 
+#if BUILDFLAG(IS_MAC)
+  ExpectDropIgnored();
+#else
   ExpectSearchedFor("hello world");
+#endif
 }
 
 IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, DropPlainText_FromOs) {
   ASSERT_NO_FATAL_FAILURE(SetUpHomeButtonDropTest());
   SimulateTextDrop("hello world", DragOrigin::kOs);
 
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   ExpectDropIgnored();
 #else
   ExpectSearchedFor("hello world");
@@ -282,8 +286,8 @@ IN_PROC_BROWSER_TEST_F(WebUIHomeControlBrowserTest, DropUrlText_FromWebPage) {
   const GURL url("https://www.example.test/");
 
   // Platforms that synthesize `text/uri-list` from URL-like plain text
-  // (Windows, ChromeOS, Wayland) set the home page, matching native Views.
-  // Otherwise (e.g. X11) the text is navigated to.
+  // (Windows, ChromeOS, Wayland, macOS) set the home page, matching native
+  // Views. Otherwise (e.g. X11) the text is navigated to.
   if (SimulateTextDrop(url.spec(), DragOrigin::kWebPage)) {
     ExpectHomePageSetTo(url);
   } else {

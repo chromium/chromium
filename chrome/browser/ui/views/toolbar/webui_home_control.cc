@@ -133,8 +133,18 @@ bool WebUIHomeControl::ShouldHandleDropText() {
         contents);
     return false;
   }
-#endif
   return true;
+#elif BUILDFLAG(IS_MAC)
+  // On macOS, `ui::clipboard_util::URLsAndTitlesFromPasteboard()` already
+  // synthesizes valid URLs from plain-text drags into `text/uri-list`, which
+  // is routed to `OnHomeButtonDropUrl()`. Any remaining `text/plain`-only drop
+  // is ignored regardless of its origin.
+  webui_toolbar::WebUIToolbarDragState::TakeDragOriginatedFromRenderer(
+      delegate_->GetWebContents());
+  return false;
+#else
+  return true;
+#endif
 }
 
 void WebUIHomeControl::OnIsPinnedChanged() {
