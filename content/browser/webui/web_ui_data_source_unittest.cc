@@ -486,6 +486,38 @@ TEST_F(WebUIDataSourceTest, SetCrossOriginPolicyValues) {
   EXPECT_EQ("same-origin", url_data_source->GetCrossOriginResourcePolicy());
 }
 
+TEST_F(WebUIDataSourceTest, AccessControlAllowOrigin) {
+  URLDataSource* url_data_source = source()->source();
+
+  // Default is empty.
+  EXPECT_EQ("", url_data_source->GetAccessControlAllowOriginForOrigin(
+                    "chrome-untrusted://foo"));
+
+  // Add specific origin.
+  source()->AddAccessControlAllowOrigin(
+      url::Origin::Create(GURL("chrome-untrusted://foo")));
+  EXPECT_EQ("chrome-untrusted://foo",
+            url_data_source->GetAccessControlAllowOriginForOrigin(
+                "chrome-untrusted://foo"));
+  EXPECT_EQ("", url_data_source->GetAccessControlAllowOriginForOrigin(
+                    "chrome-untrusted://bar"));
+
+  // Set allow all origins.
+  source()->SetAllowAllOrigins(true);
+  EXPECT_EQ("*", url_data_source->GetAccessControlAllowOriginForOrigin(
+                     "chrome-untrusted://foo"));
+  EXPECT_EQ("*", url_data_source->GetAccessControlAllowOriginForOrigin(
+                     "chrome-untrusted://bar"));
+
+  // Disabling allow all origins falls back to explicitly added origins.
+  source()->SetAllowAllOrigins(false);
+  EXPECT_EQ("chrome-untrusted://foo",
+            url_data_source->GetAccessControlAllowOriginForOrigin(
+                "chrome-untrusted://foo"));
+  EXPECT_EQ("", url_data_source->GetAccessControlAllowOriginForOrigin(
+                    "chrome-untrusted://bar"));
+}
+
 TEST_F(WebUIDataSourceTest, GetOrigin) {
   CreateDataSource("host");
   EXPECT_EQ(source()->GetOrigin(), url::Origin::Create(GURL("chrome://host")));

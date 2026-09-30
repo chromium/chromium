@@ -67,6 +67,8 @@ class MockWebUIDataSource : public content::WebUIDataSource {
   void OverrideCrossOriginOpenerPolicy(const std::string& value) override {}
   void OverrideCrossOriginEmbedderPolicy(const std::string& value) override {}
   void OverrideCrossOriginResourcePolicy(const std::string& value) override {}
+  void SetAllowAllOrigins(bool allow_all_origins) override {}
+  void AddAccessControlAllowOrigin(const url::Origin& origin) override {}
   void DisableTrustedTypesCSP() override {}
   void DisableDenyXFrameOptions() override {}
   void EnableReplaceI18nInJS() override {}

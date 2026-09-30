@@ -529,6 +529,17 @@ std::string ThemeSource::GetAccessControlAllowOriginForOrigin(
     return origin;
   }
 
+  // The chrome-untrusted://theme source serves theme assets to all
+  // chrome-untrusted:// pages.
+  if (serve_untrusted_) {
+    std::string untrusted_origin_prefix = content::kChromeUIUntrustedScheme;
+    untrusted_origin_prefix += "://";
+    if (base::StartsWith(origin, untrusted_origin_prefix,
+                         base::CompareCase::SENSITIVE)) {
+      return origin;
+    }
+  }
+
   return content::URLDataSource::GetAccessControlAllowOriginForOrigin(origin);
 }
 

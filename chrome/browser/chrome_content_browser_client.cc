@@ -6375,7 +6375,7 @@ void AddChromeSchemeFactoriesForWorker(
     factories->emplace(content::kChromeUIScheme,
                        content::CreateWebUIURLLoaderFactoryForWorker(
                            browser_context, content::kChromeUIScheme,
-                           std::move(allowed_webui_hosts)));
+                           std::move(allowed_webui_hosts), *request_initiator));
   }
 }
 }  // namespace
@@ -6604,6 +6604,7 @@ bool IsSystemFeatureURLDisabled(const GURL& url) {
   return false;
 }
 #endif
+}  // namespace
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 void InitializeFileURLLoaderFactoryForExtension(
@@ -6623,7 +6624,8 @@ void InitializeFileURLLoaderFactoryForExtension(
         SpecialAccessFileURLLoaderFactory::Create(render_process_id));
   }
 }
-void AddChromeSchemeFactories(
+
+void ChromeContentBrowserClient::AddChromeSchemeFactories(
     int render_process_id,
     content::RenderFrameHost* frame_host,
     content::WebContents* web_contents,
@@ -6643,7 +6645,8 @@ void AddChromeSchemeFactories(
   // Profile.
   if (instant_service && instant_service->IsInstantProcess(render_process_id)) {
     factories->emplace(chrome::kChromeSearchScheme,
-                       content::CreateWebUIURLLoaderFactory(
+                       content::CreateWebUIURLLoaderFactoryWithoutOriginLock(
+                           content::WebUIURLLoaderFactoryPasskey::GetPassKey(),
                            frame_host, chrome::kChromeSearchScheme,
                            /*allowed_hosts=*/base::flat_set<std::string>()));
   }
@@ -6681,14 +6684,14 @@ void AddChromeSchemeFactories(
     allowed_webui_hosts.emplace_back(chrome::kChromeUIAppIconHost);
   }
   if (!allowed_webui_hosts.empty()) {
-    factories->emplace(content::kChromeUIScheme,
-                       content::CreateWebUIURLLoaderFactory(
-                           frame_host, content::kChromeUIScheme,
-                           std::move(allowed_webui_hosts)));
+    factories->emplace(
+        content::kChromeUIScheme,
+        content::CreateWebUIURLLoaderFactoryWithoutOriginLock(
+            content::WebUIURLLoaderFactoryPasskey::GetPassKey(), frame_host,
+            content::kChromeUIScheme, std::move(allowed_webui_hosts)));
   }
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-}  // namespace
 
 void ChromeContentBrowserClient::
     RegisterNonNetworkSubresourceURLLoaderFactories(

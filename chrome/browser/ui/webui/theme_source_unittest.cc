@@ -160,6 +160,27 @@ TEST_F(WebUISourcesTest, ThemeAllowedOrigin) {
   EXPECT_EQ(
       theme_source()->GetAccessControlAllowOriginForOrigin("http://google.com"),
       "");
+  // Only the source serving chrome-untrusted://theme allows
+  // chrome-untrusted:// origins.
+  EXPECT_EQ(theme_source()->GetAccessControlAllowOriginForOrigin(
+                "chrome-untrusted://new-tab-page"),
+            "");
+}
+
+TEST_F(WebUISourcesTest, ThemeAllowedOriginUntrusted) {
+  ThemeSource untrusted_theme_source(profile(), /*serve_untrusted=*/true);
+  EXPECT_EQ(untrusted_theme_source.GetAccessControlAllowOriginForOrigin(
+                "chrome-untrusted://new-tab-page"),
+            "chrome-untrusted://new-tab-page");
+  EXPECT_EQ(untrusted_theme_source.GetAccessControlAllowOriginForOrigin(
+                "chrome://settings"),
+            "chrome://settings");
+  EXPECT_EQ(untrusted_theme_source.GetAccessControlAllowOriginForOrigin(
+                "chrome-extensions://some-id"),
+            "");
+  EXPECT_EQ(untrusted_theme_source.GetAccessControlAllowOriginForOrigin(
+                "http://google.com"),
+            "");
 }
 
 TEST_F(WebUISourcesTest, ThemeSourceShouldServiceRequest) {

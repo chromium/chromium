@@ -12864,7 +12864,9 @@ void RenderFrameHostImpl::CommitNavigation(
           url_loader_factory::CreatePendingRemote(
               ContentBrowserClient::URLLoaderFactoryType::kDocumentSubResource,
               url_loader_factory::TerminalParams::ForNonNetwork(
-                  CreateWebUIURLLoaderFactory(this, effective_scheme, {}),
+                  CreateWebUIURLLoaderFactory(
+                      this, effective_scheme, {},
+                      subresource_loader_factories_config.origin()),
                   GetProcess()->GetDeprecatedID()),
               url_loader_factory::ContentClientParams(
                   browser_context, this, GetProcess()->GetDeprecatedID(),

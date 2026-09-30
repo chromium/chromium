@@ -1377,8 +1377,9 @@ void DevToolsUIBindings::LoadNetworkResource(DispatchCallback callback,
           web_contents()->GetPrimaryMainFrame();
 
       mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote =
-          content::CreateWebUIURLLoaderFactory(
-              frame_host, target_tab->GetLastCommittedURL().GetScheme(),
+          content::CreateWebUIURLLoaderFactoryWithoutOriginLock(
+              content::WebUIURLLoaderFactoryPasskey::GetPassKey(), frame_host,
+              target_tab->GetLastCommittedURL().GetScheme(),
               std::move(allowed_webui_hosts));
       url_loader_factory = network::SharedURLLoaderFactory::Create(
           std::make_unique<network::WrapperPendingSharedURLLoaderFactory>(

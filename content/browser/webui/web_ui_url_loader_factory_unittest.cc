@@ -15,6 +15,7 @@
 #include "content/browser/webui/url_data_manager.h"
 #include "content/browser/webui/url_data_manager_backend.h"
 #include "content/public/browser/url_data_source.h"
+#include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/test_browser_context.h"
@@ -23,12 +24,15 @@
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
+#include "net/base/net_errors.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/origin.h"
+#include "url/url_constants.h"
 #include "url/url_util.h"
 
 namespace content {
@@ -182,8 +186,10 @@ INSTANTIATE_TEST_SUITE_P(,
 
 TEST_P(WebUIURLLoaderFactoryTest, RangeRequest) {
   mojo::Remote<network::mojom::URLLoaderFactory> loader_factory(
-      CreateWebUIURLLoaderFactory(main_rfh(), kTestWebUIScheme,
-                                  /*allowed_hosts=*/{}));
+      CreateWebUIURLLoaderFactoryWithoutOriginLock(
+          WebUIURLLoaderFactoryPasskey::GetPassKey(), main_rfh(),
+          kTestWebUIScheme,
+          /*allowed_hosts=*/{}));
 
   network::ResourceRequest request;
   request.url = GURL(base::StrCat({kTestWebUIScheme, "://", kTestWebUIHost}));
@@ -226,6 +232,142 @@ TEST_P(WebUIURLLoaderFactoryTest, RangeRequest) {
   }
 }
 
+class WebUIURLLoaderFactoryOriginLockTest : public RenderViewHostTestHarness {
+ public:
+  static constexpr char kTargetHost[] = "target";
+  static constexpr char kBody[] = "untrusted-response";
+
+  void SetUp() override {
+    RenderViewHostTestHarness::SetUp();
+    data_source_ = WebUIDataSource::CreateAndAdd(
+        browser_context(),
+        base::StrCat({kChromeUIUntrustedScheme, "://", kTargetHost, "/"}));
+    data_source_->SetRequestFilter(
+        base::BindRepeating([](const std::string& path) { return true; }),
+        base::BindRepeating([](const std::string& path,
+                               URLDataSource::GotDataCallback callback) {
+          std::move(callback).Run(
+              base::MakeRefCounted<base::RefCountedString>(std::string(kBody)));
+        }));
+  }
+
+  void TearDown() override {
+    data_source_ = nullptr;
+    RenderViewHostTestHarness::TearDown();
+  }
+
+  WebUIDataSource* data_source() { return data_source_; }
+
+  // Requests chrome-untrusted://target/ from a factory created with
+  // |request_initiator_origin_lock| and returns the completion error code.
+  // On success, also checks the response body.
+  int LoadUntrustedTargetUrl(
+      std::optional<url::Origin> request_initiator_origin_lock) {
+    mojo::Remote<network::mojom::URLLoaderFactory> loader_factory;
+    if (request_initiator_origin_lock) {
+      loader_factory.Bind(CreateWebUIURLLoaderFactory(
+          main_rfh(), kChromeUIUntrustedScheme,
+          /*allowed_hosts=*/{}, *request_initiator_origin_lock));
+    } else {
+      loader_factory.Bind(CreateWebUIURLLoaderFactoryWithoutOriginLock(
+          WebUIURLLoaderFactoryPasskey::GetPassKey(), main_rfh(),
+          kChromeUIUntrustedScheme,
+          /*allowed_hosts=*/{}));
+    }
+
+    network::ResourceRequest request;
+    request.url =
+        GURL(base::StrCat({kChromeUIUntrustedScheme,
+                           url::kStandardSchemeSeparator, kTargetHost, "/"}));
+
+    mojo::PendingRemote<network::mojom::URLLoader> loader;
+    network::TestURLLoaderClient loader_client;
+    loader_factory->CreateLoaderAndStart(
+        loader.InitWithNewPipeAndPassReceiver(), /*request_id=*/0,
+        /*options=*/0, request, loader_client.CreateRemote(),
+        net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
+    loader_client.RunUntilComplete();
+
+    const int error_code = loader_client.completion_status().error_code;
+    if (error_code == net::OK) {
+      EXPECT_TRUE(loader_client.response_body().is_valid());
+      std::string response;
+      EXPECT_TRUE(mojo::BlockingCopyToString(
+          loader_client.response_body_release(), &response));
+      EXPECT_EQ(kBody, response);
+    }
+    return error_code;
+  }
+
+ private:
+  raw_ptr<WebUIDataSource> data_source_;
+};
+
+TEST_F(WebUIURLLoaderFactoryOriginLockTest,
+       CrossOriginRequestDeniedWithoutSourceOptIn) {
+  EXPECT_EQ(net::ERR_FAILED, LoadUntrustedTargetUrl(url::Origin::Create(
+                                 GURL("chrome-untrusted://requester"))));
+}
+
+TEST_F(WebUIURLLoaderFactoryOriginLockTest,
+       CrossOriginRequestAllowedForSpecificOrigin) {
+  url::Origin allowed_initiator =
+      url::Origin::Create(GURL("chrome-untrusted://allowed"));
+  data_source()->AddAccessControlAllowOrigin(allowed_initiator);
+
+  EXPECT_EQ(net::OK, LoadUntrustedTargetUrl(allowed_initiator));
+}
+
+TEST_F(WebUIURLLoaderFactoryOriginLockTest,
+       CrossOriginRequestAllowedForWildcardOrigin) {
+  data_source()->SetAllowAllOrigins(true);
+
+  EXPECT_EQ(net::OK, LoadUntrustedTargetUrl(url::Origin::Create(
+                         GURL("chrome-untrusted://disallowed"))));
+}
+
+TEST_F(WebUIURLLoaderFactoryOriginLockTest, SameOriginRequestAllowed) {
+  EXPECT_EQ(net::OK,
+            LoadUntrustedTargetUrl(url::Origin::Create(GURL(base::StrCat(
+                {kChromeUIUntrustedScheme, url::kStandardSchemeSeparator,
+                 WebUIURLLoaderFactoryOriginLockTest::kTargetHost})))));
+}
+
+TEST_F(WebUIURLLoaderFactoryOriginLockTest,
+       OpaqueOriginWithSamePrecursorAllowed) {
+  // A sandboxed frame derived from chrome-untrusted://target has an opaque
+  // origin with a precursor tuple equal to chrome-untrusted://target. Unlike
+  // HTTP/CORS, this is intentionally treated as same-origin to preserve
+  // existing behavior; see the comment above NeedsToCheckOrigin() in
+  // web_ui_url_loader_factory.cc.
+  url::Origin sandboxed_origin =
+      url::Origin::Create(
+          GURL(base::StrCat(
+              {kChromeUIUntrustedScheme, url::kStandardSchemeSeparator,
+               WebUIURLLoaderFactoryOriginLockTest::kTargetHost})))
+          .DeriveNewOpaqueOrigin();
+  EXPECT_TRUE(sandboxed_origin.opaque());
+  EXPECT_EQ(net::OK, LoadUntrustedTargetUrl(sandboxed_origin));
+}
+
+TEST_F(WebUIURLLoaderFactoryOriginLockTest,
+       OpaqueOriginWithDifferentPrecursorDenied) {
+  // A sandboxed frame derived from chrome-untrusted://other-origin is denied
+  // when loading from chrome-untrusted://target.
+  url::Origin sandboxed_origin =
+      url::Origin::Create(GURL("chrome-untrusted://other-origin"))
+          .DeriveNewOpaqueOrigin();
+  EXPECT_TRUE(sandboxed_origin.opaque());
+  EXPECT_EQ(net::ERR_FAILED, LoadUntrustedTargetUrl(sandboxed_origin));
+}
+
+TEST_F(WebUIURLLoaderFactoryOriginLockTest,
+       NoInitiatorOriginLockAllowsAllRequests) {
+  // Factories without an origin lock (std::nullopt) are handed out
+  // for browser-internal loads (e.g. navigations, downloads).
+  EXPECT_EQ(net::OK, LoadUntrustedTargetUrl(std::nullopt));
+}
+
 class WebUIURLLoaderFactoryInvalidUrlTest
     : public RenderViewHostTestHarness,
       public testing::WithParamInterface<std::string> {
@@ -262,8 +404,10 @@ class WebUIURLLoaderFactoryInvalidUrlTest
 
 TEST_P(WebUIURLLoaderFactoryInvalidUrlTest, InvalidUrl) {
   mojo::Remote<network::mojom::URLLoaderFactory> loader_factory(
-      CreateWebUIURLLoaderFactory(main_rfh(), kNonChromeDummyScheme,
-                                  /*allowed_hosts=*/{}));
+      CreateWebUIURLLoaderFactoryWithoutOriginLock(
+          WebUIURLLoaderFactoryPasskey::GetPassKey(), main_rfh(),
+          kNonChromeDummyScheme,
+          /*allowed_hosts=*/{}));
 
   network::ResourceRequest request;
   request.url = GURL(base::StrCat({kNonChromeDummyScheme, "://", GetParam()}));
@@ -284,8 +428,10 @@ TEST_P(WebUIURLLoaderFactoryInvalidUrlTest, InvalidUrl) {
 TEST_F(WebUIURLLoaderFactoryInvalidUrlTest,
        DevToolsSchemeRejectsChromeDataSource) {
   mojo::Remote<network::mojom::URLLoaderFactory> loader_factory(
-      CreateWebUIURLLoaderFactory(main_rfh(), kChromeDevToolsScheme,
-                                  /*allowed_hosts=*/{}));
+      CreateWebUIURLLoaderFactoryWithoutOriginLock(
+          WebUIURLLoaderFactoryPasskey::GetPassKey(), main_rfh(),
+          kChromeDevToolsScheme,
+          /*allowed_hosts=*/{}));
 
   network::ResourceRequest request;
   request.url =

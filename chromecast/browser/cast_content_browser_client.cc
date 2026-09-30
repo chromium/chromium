@@ -796,8 +796,9 @@ void CastContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
 
   factories->emplace(
       kChromeResourceScheme,
-      content::CreateWebUIURLLoaderFactory(
-          frame_host, kChromeResourceScheme,
+      content::CreateWebUIURLLoaderFactoryWithoutOriginLock(
+          content::WebUIURLLoaderFactoryPasskey::GetPassKey(), frame_host,
+          kChromeResourceScheme,
           /*allowed_webui_hosts=*/base::flat_set<std::string>()));
 }
 

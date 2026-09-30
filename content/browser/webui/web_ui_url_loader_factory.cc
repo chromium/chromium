@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <ranges>
 #include <string_view>
 #include <utility>
 #include <vector>
@@ -48,6 +49,7 @@
 #include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "ui/base/template_expressions.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -118,9 +120,32 @@ void DataAvailable(
                                 std::move(url_request_elapsed_timer), bytes));
 }
 
+// This is a non-network factory, so requests made through it are not
+// subject to the standard CORS handling that the network service applies to
+// renderer-initiated requests. Instead, enforce origin isolation directly at
+// the factory level for requests originating from chrome-untrusted://
+// documents and workers, keyed off |request_initiator_origin_lock| (which the
+// browser process assigned when the factory was created) rather than any
+// renderer-provided request fields: a cross-origin request is rejected with
+// net::ERR_FAILED unless the requested data source explicitly allows the
+// initiator through its Access-Control-Allow-Origin value, regardless of
+// renderer-side request settings/modes (including no-cors).
+//
+// Opaque initiator origins (e.g. sandboxed frames) are treated as their
+// precursor origin. This differs from HTTP/CORS, where an opaque initiator is
+// always considered cross-origin. This is maintains existing WebUI
+// behavior.
+bool NeedsToCheckOrigin(
+    const std::optional<url::Origin>& request_initiator_origin_lock) {
+  return request_initiator_origin_lock.has_value() &&
+         request_initiator_origin_lock->GetTupleOrPrecursorTupleIfOpaque()
+                 .scheme() == kChromeUIUntrustedScheme;
+}
+
 void StartURLLoader(
     const network::ResourceRequest& request,
     FrameTreeNodeId frame_tree_node_id,
+    const std::optional<url::Origin>& request_initiator_origin_lock,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client_remote,
     BrowserContext* browser_context) {
   base::ElapsedTimer url_request_elapsed_timer;
@@ -143,6 +168,25 @@ void StartURLLoader(
                                               -1)) {
     webui::CallOnError(std::move(client_remote), net::ERR_INVALID_URL);
     return;
+  }
+
+  if (NeedsToCheckOrigin(request_initiator_origin_lock)) {
+    CHECK(request_initiator_origin_lock.has_value());
+    // An opaque initiator is intentionally compared using its precursor
+    // tuple, so a sandboxed frame is treated as same-origin with its
+    // precursor. See the comment above NeedsToCheckOrigin().
+    if (request_initiator_origin_lock->GetTupleOrPrecursorTupleIfOpaque() !=
+        url::SchemeHostPort(request.url)) {
+      const std::string initiator = request_initiator_origin_lock->Serialize();
+      const std::string allowed_origin =
+          source->source()->GetAccessControlAllowOriginForOrigin(initiator);
+      if (allowed_origin != "*" && allowed_origin != initiator) {
+        DVLOG(1) << "Denied cross-origin request from " << initiator << " to "
+                 << request.url;
+        webui::CallOnError(std::move(client_remote), net::ERR_FAILED);
+        return;
+      }
+    }
   }
 
   // Load everything by default, but respect the Range header if present.
@@ -225,7 +269,8 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
   static mojo::PendingRemote<network::mojom::URLLoaderFactory> CreateForFrame(
       FrameTreeNode* ftn,
       const std::string& scheme,
-      base::flat_set<std::string> allowed_hosts) {
+      base::flat_set<std::string> allowed_hosts,
+      std::optional<url::Origin> request_initiator_origin_lock) {
     mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
 
     // The WebUIURLLoaderFactory will delete itself when there are no more
@@ -234,6 +279,7 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
     base::MakeSelfDeleting<WebUIURLLoaderFactory>(
         ftn->current_frame_host()->GetBrowserContext(),
         ftn->frame_tree_node_id(), scheme, std::move(allowed_hosts),
+        std::move(request_initiator_origin_lock),
         pending_remote.InitWithNewPipeAndPassReceiver());
     return pending_remote;
   }
@@ -241,10 +287,12 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
   static mojo::PendingRemote<network::mojom::URLLoaderFactory> CreateForWorker(
       BrowserContext* browser_context,
       const std::string& scheme,
-      base::flat_set<std::string> allowed_hosts) {
+      base::flat_set<std::string> allowed_hosts,
+      const url::Origin& request_initiator_origin_lock) {
     mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
     base::MakeSelfDeleting<WebUIURLLoaderFactory>(
         browser_context, FrameTreeNodeId(), scheme, std::move(allowed_hosts),
+        request_initiator_origin_lock,
         pending_remote.InitWithNewPipeAndPassReceiver());
     return pending_remote;
   }
@@ -254,13 +302,16 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
       FrameTreeNodeId frame_tree_node_id,
       const std::string& scheme,
       base::flat_set<std::string> allowed_hosts,
+      std::optional<url::Origin> request_initiator_origin_lock,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver,
       base::SelfDeletingPassKey key)
       : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver), key),
         browser_context_(browser_context->GetWeakPtr()),
         frame_tree_node_id_(frame_tree_node_id),
         scheme_(scheme),
-        allowed_hosts_(std::move(allowed_hosts)) {}
+        allowed_hosts_(std::move(allowed_hosts)),
+        request_initiator_origin_lock_(
+            std::move(request_initiator_origin_lock)) {}
 
   WebUIURLLoaderFactory(const WebUIURLLoaderFactory&) = delete;
   WebUIURLLoaderFactory& operator=(const WebUIURLLoaderFactory&) = delete;
@@ -345,8 +396,8 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
     // from frames can happen while the RFH is changed for a cross-process
     // navigation. The URLDataSources just need the WebContents; the specific
     // frame doesn't matter.
-    StartURLLoader(request, frame_tree_node_id_, std::move(client),
-                   browser_context_.get());
+    StartURLLoader(request, frame_tree_node_id_, request_initiator_origin_lock_,
+                   std::move(client), browser_context_.get());
   }
 
   const std::string& scheme() const { return scheme_; }
@@ -355,6 +406,9 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
   const FrameTreeNodeId frame_tree_node_id_;
   const std::string scheme_;
   const base::flat_set<std::string> allowed_hosts_;  // if empty all allowed.
+  // The origin of the document or worker this factory serves, when the
+  // factory is handed out to a renderer process for subresource loading.
+  const std::optional<url::Origin> request_initiator_origin_lock_;
 };
 
 }  // namespace
@@ -362,18 +416,33 @@ class WebUIURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 CreateWebUIURLLoaderFactory(RenderFrameHost* render_frame_host,
                             const std::string& scheme,
-                            base::flat_set<std::string> allowed_hosts) {
+                            base::flat_set<std::string> allowed_hosts,
+                            const url::Origin& request_initiator_origin_lock) {
   return WebUIURLLoaderFactory::CreateForFrame(
-      FrameTreeNode::From(render_frame_host), scheme, std::move(allowed_hosts));
+      FrameTreeNode::From(render_frame_host), scheme, std::move(allowed_hosts),
+      request_initiator_origin_lock);
 }
 
 mojo::PendingRemote<network::mojom::URLLoaderFactory>
 CreateWebUIURLLoaderFactoryForWorker(
     BrowserContext* browser_context,
     const std::string& scheme,
-    base::flat_set<std::string> allowed_hosts) {
+    base::flat_set<std::string> allowed_hosts,
+    const url::Origin& request_initiator_origin_lock) {
   return WebUIURLLoaderFactory::CreateForWorker(browser_context, scheme,
-                                                std::move(allowed_hosts));
+                                                std::move(allowed_hosts),
+                                                request_initiator_origin_lock);
+}
+
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+CreateWebUIURLLoaderFactoryWithoutOriginLock(
+    WebUIURLLoaderFactoryPasskey::PassKey pass_key,
+    RenderFrameHost* render_frame_host,
+    const std::string& scheme,
+    base::flat_set<std::string> allowed_hosts) {
+  return WebUIURLLoaderFactory::CreateForFrame(
+      FrameTreeNode::From(render_frame_host), scheme, std::move(allowed_hosts),
+      std::nullopt);
 }
 
 }  // namespace content
