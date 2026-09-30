@@ -30,6 +30,11 @@ _REMOVE_UNUSED_IMPORTS_PATH = os.path.join(
     _SELF_DIR, 'remove_unused_imports.py'
 )
 _INCLUSIVE_WARNING_IDENTIFIER = 'Please use inclusive language'
+_INCLUSIVE_HEADER = (
+    '  ^^^ The above edited file(s) contain non-inclusive language '
+    '(may be pre-existing). ^^^  '
+)
+_LARGE_BATCH_THRESHOLD = 100
 
 
 class Violation(
@@ -66,10 +71,21 @@ def _checkstyle_command(style_file, java_files):
     else:
         cmd = [
             _JAVA_PATH,
-            '-cp',
-            _CHECKSTYLE_ROOT,
-            'com.puppycrawl.tools.checkstyle.Main',
+            '-Xmx512m',
         ]
+        # TieredStopAtLevel=1 restricts HotSpot to the C1 compiler, reducing JVM
+        # startup latency for typical short-lived presubmit runs. For large batch
+        # runs (>= _LARGE_BATCH_THRESHOLD files), allow C2 JIT compilation for peak
+        # throughput.
+        if len(java_files) < _LARGE_BATCH_THRESHOLD:
+            cmd.append('-XX:TieredStopAtLevel=1')
+        cmd.extend(
+            [
+                '-cp',
+                _CHECKSTYLE_ROOT,
+                'com.puppycrawl.tools.checkstyle.Main',
+            ]
+        )
     return cmd + ['-c', style_file, '-f', 'xml'] + java_files
 
 
@@ -119,7 +135,7 @@ def _parse_violations(local_path, returncode, stdout, stderr):
         results.append(
             Violation(
                 ''.join(str(filename) for filename in inclusive_files) + '\n',
-                '  ^^^ The above edited file(s) contain non-inclusive language (may be pre-existing). ^^^  ',
+                _INCLUSIVE_HEADER,
                 '',
                 inclusive_warning,
                 'warning',
