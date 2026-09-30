@@ -14,6 +14,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -255,6 +256,12 @@ class CC_EXPORT LayerTreeImpl {
     Iterator it_;
   };
   size_t num_layers() const { return layer_list_.size(); }
+  // Returns the layer at |index| in the layer list. |index| is bounds-checked
+  // against num_layers().
+  LayerImpl* LayerAtIndex(size_t index) const {
+    CHECK_LT(index, num_layers());
+    return layer_list_[index].get();
+  }
   using const_iterator = IteratorAdapter<OwnedLayerImplList::const_iterator>;
   using const_reverse_iterator =
       IteratorAdapter<OwnedLayerImplList::const_reverse_iterator>;
