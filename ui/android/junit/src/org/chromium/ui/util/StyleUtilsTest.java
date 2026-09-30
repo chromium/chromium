@@ -17,7 +17,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.ui.R;
 
 /** Tests for {@link StyleUtils} class. */
@@ -65,7 +64,6 @@ public class StyleUtilsTest {
     }
 
     @Test
-    @DisabledTest // This needs to be re-worked for Q.
     public void applyTextAppearanceToTextPaint_CustomFontSizeText() {
         TextPaint textPaint = new TextPaint();
         StyleUtils.applyTextAppearanceToTextPaint(

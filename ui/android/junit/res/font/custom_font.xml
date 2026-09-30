@@ -6,5 +6,10 @@ found in the LICENSE file.
 -->
 
 <font-family xmlns:android="http://schemas.android.com/apk/res/android">
-    <font android:fontStyle="normal" android:fontWeight="400" />
+    <!-- test_font_file.ttf is a copy of third_party/test_fonts
+         GardinerModCat.ttf. -->
+    <font
+        android:font="@font/test_font_file"
+        android:fontStyle="normal"
+        android:fontWeight="400" />
 </font-family>

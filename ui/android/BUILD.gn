@@ -789,6 +789,7 @@ android_resources("ui_junit_resources") {
   testonly = true
   sources = [
     "junit/res/font/custom_font.xml",
+    "junit/res/font/test_font_file.ttf",
     "junit/res/layout/inflated_view.xml",
     "junit/res/layout/layout_view_builder_test.xml",
     "junit/res/layout/list_menu_button_unittest.xml",
