@@ -25,8 +25,7 @@ void IpcVideoFrameCapturer::OnCreateVideoCapturerResult(
     mojom::CreateVideoCapturerResultPtr result) {
   if (capturer_control_) {
     // Perform cleanup, just as if the previous endpoint became disconnected.
-    // This replies to any pending frame requests, clears any shared-memory
-    // buffers, and resets the Mojo endpoints.
+    // This clears any shared-memory buffers and resets the Mojo endpoints.
     OnDisconnect();
   }
 
@@ -37,7 +36,7 @@ void IpcVideoFrameCapturer::OnCreateVideoCapturerResult(
       &IpcVideoFrameCapturer::OnDisconnect, base::Unretained(this)));
   if (callback_) {
     // Start() has been called.
-    capturer_control_->Start();
+    StartRemoteCapturer();
   }
 }
 
@@ -50,7 +49,7 @@ void IpcVideoFrameCapturer::Start(Callback* callback) {
   DCHECK(callback);
   callback_ = callback;
   if (capturer_control_) {
-    capturer_control_->Start();
+    StartRemoteCapturer();
   }
 }
 
@@ -69,19 +68,22 @@ bool IpcVideoFrameCapturer::SelectSource(SourceId id) {
 }
 
 void IpcVideoFrameCapturer::SetComposeEnabled(bool enabled) {
-  if (capturer_control_) {
+  compose_enabled_ = enabled;
+  if (capturer_control_ && callback_) {
     capturer_control_->SetComposeEnabled(enabled);
   }
 }
 
 void IpcVideoFrameCapturer::SetMaxFrameRate(uint32_t max_frame_rate) {
-  if (capturer_control_) {
+  max_frame_rate_ = max_frame_rate;
+  if (capturer_control_ && callback_) {
     capturer_control_->SetMaxFrameRate(max_frame_rate);
   }
 }
 
 void IpcVideoFrameCapturer::Pause(bool pause) {
-  if (capturer_control_) {
+  paused_ = pause;
+  if (capturer_control_ && callback_) {
     capturer_control_->Pause(pause);
   }
 }
@@ -153,6 +155,22 @@ void IpcVideoFrameCapturer::OnDisconnect() {
   // commands.
   capturer_control_.reset();
   event_handler_.reset();
+}
+
+void IpcVideoFrameCapturer::StartRemoteCapturer() {
+  DCHECK(capturer_control_);
+  capturer_control_->Start();
+  // The scheduler in the Desktop process only starts capturing once it gets a
+  // non-zero frame rate after Start(), so the settings must be sent after it.
+  if (compose_enabled_.has_value()) {
+    capturer_control_->SetComposeEnabled(*compose_enabled_);
+  }
+  if (max_frame_rate_.has_value()) {
+    capturer_control_->SetMaxFrameRate(*max_frame_rate_);
+  }
+  if (paused_.has_value()) {
+    capturer_control_->Pause(*paused_);
+  }
 }
 
 scoped_refptr<IpcSharedBufferCore> IpcVideoFrameCapturer::GetSharedBufferCore(

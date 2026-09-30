@@ -5,7 +5,10 @@
 #ifndef REMOTING_HOST_IPC_VIDEO_FRAME_CAPTURER_H_
 #define REMOTING_HOST_IPC_VIDEO_FRAME_CAPTURER_H_
 
+#include <cstdint>
+#include <map>
 #include <memory>
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -66,10 +69,14 @@ class IpcVideoFrameCapturer : public DesktopCapturer,
  private:
   typedef std::map<int, scoped_refptr<IpcSharedBufferCore>> SharedBuffers;
 
-  // Called when the Mojo endpoint is disconnected. Cleans up shared buffers,
-  // and sends fake responses to `callback_` where needed to keep the frame
-  // scheduler in sync.
+  // Called when the Mojo endpoint is disconnected. Cleans up shared buffers
+  // and resets the Mojo endpoints.
   void OnDisconnect();
+
+  // Sends Start() and the cached settings to the capturer in the Desktop
+  // process. Called when the capturer is started, or when new Mojo endpoints
+  // are received after Start() (e.g. the Desktop process was restarted).
+  void StartRemoteCapturer();
 
   // Returns a shared buffer from the list of known buffers.
   scoped_refptr<IpcSharedBufferCore> GetSharedBufferCore(int id);
@@ -86,6 +93,12 @@ class IpcVideoFrameCapturer : public DesktopCapturer,
   // Shared memory buffers by Id. Each buffer is owned by the corresponding
   // frame.
   SharedBuffers shared_buffers_;
+
+  // Settings to apply to each new capturer in the Desktop process, since it
+  // starts with its default state. Only set values are sent.
+  std::optional<bool> compose_enabled_;
+  std::optional<uint32_t> max_frame_rate_;
+  std::optional<bool> paused_;
 
   // Used by SelectSource() in the single-stream case. Changing the display
   // requires creating a new video-capturer in the Desktop process, and
