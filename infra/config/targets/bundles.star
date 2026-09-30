@@ -515,7 +515,7 @@ targets.bundle(
     per_test_modifications = {
         "chrome_junit_tests": targets.mixin(
             swarming = targets.swarming(
-                shards = 10,
+                shards = 4,
             ),
         ),
     },
