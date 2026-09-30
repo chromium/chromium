@@ -6324,10 +6324,10 @@ Handoff must also be enabled in the General section of Settings, and your device
         Use keyboard
       </message>
       <message name="IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_ALLOW_THIS_TIME" desc="Button text to allow access to permissions for the current visit only. [iOS only]">
-        Allow Once
+        Allow once
       </message>
       <message name="IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_ALWAYS_ALLOW" desc="Button text to always allow access to permissions for a website. [iOS only]">
-        Allow While Visiting
+        Allow while visiting the site
       </message>
       <message name="IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_DENY" desc="Button text to deny access to permissions. This should match the iOS built-in alert for permissions access.">
         Don't Allow
@@ -6336,7 +6336,7 @@ Handoff must also be enabled in the General section of Settings, and your device
         Allow
       </message>
       <message name="IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_NEVER_ALLOW" desc="Button text to never allow access to permissions for the current visit only. [iOS only]">
-        Never Allow
+        Never allow
       </message>
       <message name="IDS_IOS_PERMISSIONS_ALERT_DIALOG_MESSAGE" desc="Message shown in the alert asking users for access to permissions. This should match the iOS built-in alert for permissions access.">
         Allow "<ph name="SITE_NAME">$1<ex>permission.site</ex></ph>" to use your <ph name="PERMISSION">$2<ex>camera and microphone</ex></ph>?
@@ -6376,6 +6376,15 @@ Handoff must also be enabled in the General section of Settings, and your device
       </message>
       <message name="IDS_IOS_PERMISSIONS_MICROPHONE" desc="Usually used to show whether user has enabled a site's permission to use the device microphone.">
         Microphone
+      </message>
+      <message name="IDS_IOS_PERMISSIONS_SETTING_ALLOWED" desc="Option in a site permission dropdown indicating the site is allowed to use the permission. [iOS only]">
+        Allowed
+      </message>
+      <message name="IDS_IOS_PERMISSIONS_SETTING_ALLOWED_ONCE" desc="Option in a site permission dropdown indicating the site is allowed to use the permission for the current visit only. [iOS only]">
+        Allowed once
+      </message>
+      <message name="IDS_IOS_PERMISSIONS_SETTING_NOT_ALLOWED" desc="Option in a site permission dropdown indicating the site is not allowed to use the permission. [iOS only]">
+        Not allowed
       </message>
       <message name="IDS_IOS_PERSONALIZE_GOOGLE_SERVICES_LINKED_SERVICES_TITLE" desc="This string is found on a subpage from Chrome’s Advanced Sync settings. When the user taps it, the link takes the user to “Linked Google services” in the Google Account’s Data &amp; privacy settings. The link is on a setting that users see in Chrome’s Advanced Sync settings. This text should match the branded term “linked Google services” in Glossary Manager: https://localization.google.com/glossary/termset?gid=27517723&amp;tsid=517bace2.">
         Linked Google services

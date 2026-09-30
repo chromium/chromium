@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_view_controller.h"
 
+#import <vector>
+
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "build/branding_buildflags.h"
@@ -81,15 +83,12 @@ constexpr CGFloat kChevronPadding = 8;
 // Returns the title of the dropdown option for `setting`.
 NSString* PermissionSettingTitle(PageActionMenuPermissionSetting setting) {
   switch (setting) {
-    case PageActionMenuPermissionSetting::kAllowOnce:
-      return l10n_util::GetNSString(
-          IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_ALLOW_THIS_TIME);
     case PageActionMenuPermissionSetting::kAlwaysAllow:
-      return l10n_util::GetNSString(
-          IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_ALWAYS_ALLOW);
+      return l10n_util::GetNSString(IDS_IOS_PERMISSIONS_SETTING_ALLOWED);
+    case PageActionMenuPermissionSetting::kAllowOnce:
+      return l10n_util::GetNSString(IDS_IOS_PERMISSIONS_SETTING_ALLOWED_ONCE);
     case PageActionMenuPermissionSetting::kNeverAllow:
-      return l10n_util::GetNSString(
-          IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_NEVER_ALLOW);
+      return l10n_util::GetNSString(IDS_IOS_PERMISSIONS_SETTING_NOT_ALLOWED);
   }
 }
 
@@ -1394,19 +1393,23 @@ int PermissionDisclaimerMessageID(PageActionMenuFeatureType feature_type,
 }
 
 // Creates the menu listing the permission settings available for `featureType`,
-// with `selectedSetting` checked.
+// with `selectedSetting` checked. "Allowed once" is only offered when it is the
+// current setting.
 - (UIMenu*)permissionMenuForFeature:(PageActionMenuFeatureType)featureType
                     selectedSetting:
                         (PageActionMenuPermissionSetting)selectedSetting {
   __weak PageActionMenuViewController* weakSelf = self;
 
   NSMutableArray<UIAction*>* actions = [NSMutableArray array];
-  static constexpr PageActionMenuPermissionSetting kSettings[] = {
-      PageActionMenuPermissionSetting::kAllowOnce,
+  std::vector<PageActionMenuPermissionSetting> settings = {
       PageActionMenuPermissionSetting::kAlwaysAllow,
-      PageActionMenuPermissionSetting::kNeverAllow,
   };
-  for (PageActionMenuPermissionSetting setting : kSettings) {
+  if (selectedSetting == PageActionMenuPermissionSetting::kAllowOnce) {
+    settings.push_back(PageActionMenuPermissionSetting::kAllowOnce);
+  }
+  settings.push_back(PageActionMenuPermissionSetting::kNeverAllow);
+
+  for (PageActionMenuPermissionSetting setting : settings) {
     UIAction* action =
         [UIAction actionWithTitle:PermissionSettingTitle(setting)
                             image:nil

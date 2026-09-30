@@ -419,9 +419,19 @@ TEST_F(PageActionMenuViewControllerTest,
   UIButton* dropdownButton = dropdowns[@(PageActionMenuCameraPermission)];
   ASSERT_TRUE(dropdownButton);
 
-  NSString* initialSettingTitle = l10n_util::GetNSString(
-      IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_ALLOW_THIS_TIME);
-  EXPECT_NSEQ(dropdownButton.accessibilityValue, initialSettingTitle);
+  NSString* allowedTitle =
+      l10n_util::GetNSString(IDS_IOS_PERMISSIONS_SETTING_ALLOWED);
+  NSString* allowedOnceTitle =
+      l10n_util::GetNSString(IDS_IOS_PERMISSIONS_SETTING_ALLOWED_ONCE);
+  NSString* notAllowedTitle =
+      l10n_util::GetNSString(IDS_IOS_PERMISSIONS_SETTING_NOT_ALLOWED);
+
+  EXPECT_NSEQ(dropdownButton.accessibilityValue, allowedOnceTitle);
+  // "Allowed once" is offered, between the other options, while selected.
+  NSArray<NSString*>* expectedInitialTitles =
+      @[ allowedTitle, allowedOnceTitle, notAllowedTitle ];
+  EXPECT_NSEQ([dropdownButton.menu.children valueForKey:@"title"],
+              expectedInitialTitles);
 
   NSDictionary<NSNumber*, UILabel*>* disclaimers =
       [view_controller_ valueForKey:@"permissionDisclaimers"];
@@ -444,9 +454,12 @@ TEST_F(PageActionMenuViewControllerTest,
   id self = nil;
   OCMVerifyAll(mock_mutator_);
 
-  NSString* expectedSettingTitle = l10n_util::GetNSString(
-      IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_ALWAYS_ALLOW);
-  EXPECT_NSEQ(dropdownButton.accessibilityValue, expectedSettingTitle);
+  EXPECT_NSEQ(dropdownButton.accessibilityValue, allowedTitle);
+  // "Allowed once" is no longer offered after switching away from it.
+  NSArray<NSString*>* expectedUpdatedTitles =
+      @[ allowedTitle, notAllowedTitle ];
+  EXPECT_NSEQ([dropdownButton.menu.children valueForKey:@"title"],
+              expectedUpdatedTitles);
   EXPECT_TRUE([disclaimerLabel.text
       containsString:
           l10n_util::GetNSStringF(
@@ -484,7 +497,7 @@ TEST_F(PageActionMenuViewControllerTest, PermissionStateChangedUpdatesUI) {
       PageActionMenuPermissionSetting::kNeverAllow;
   [view_controller_ permissionStateChanged];
 
-  NSString* expectedSettingTitle = l10n_util::GetNSString(
-      IDS_IOS_PERMISSIONS_ALERT_DIALOG_BUTTON_TEXT_NEVER_ALLOW);
+  NSString* expectedSettingTitle =
+      l10n_util::GetNSString(IDS_IOS_PERMISSIONS_SETTING_NOT_ALLOWED);
   EXPECT_NSEQ(dropdownButton.accessibilityValue, expectedSettingTitle);
 }
