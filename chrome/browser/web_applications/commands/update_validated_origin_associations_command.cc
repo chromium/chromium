@@ -106,15 +106,18 @@ void UpdateValidatedOriginAssociationsCommand::StartWithLock(
     return;
   }
 
-  // If the last validation time isn't set, randomize it in the past to ensure
-  // no network fetch spikes.
+  // If the last validation time isn't set, randomize it within the past day so
+  // that the first check is spread out rather than every client fetching at
+  // once. `delta` less a full day lands in [now - 1 day, now], which the
+  // throttle below turns into a first fetch at a uniformly random point in the
+  // next 24 hours.
   if (!app->origin_association_last_validation_check_time().has_value()) {
     ScopedRegistryUpdate update = lock_->sync_bridge().BeginUpdate();
     WebApp& app_to_update = CHECK_DEREF(update->UpdateApp(app_id_));
     base::TimeDelta delta =
         base::Seconds(base::RandIntInclusive(0, base::Days(1).InSeconds()));
     app_to_update.SetOriginAssociationLastValidationCheckTime(
-        lock_->clock().Now() + delta + base::Days(1));
+        lock_->clock().Now() + delta - base::Days(1));
     CompleteAndSelfDestruct(
         CommandResult::kSuccess,
         UpdateValidatedOriginAssociationsResult::kThrottled);

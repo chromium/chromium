@@ -288,9 +288,47 @@ TEST_F(UpdateValidatedOriginAssociationsCommandTest, ThrottledWhenNoTimeValue) {
 
   const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
   EXPECT_TRUE(app->origin_association_last_validation_check_time().has_value());
-  // The time should be within the last 10 days.
-  EXPECT_GE(*app->origin_association_last_validation_check_time(),
+  // Backfill must land within the past day: in the past, so the app is not
+  // deferred beyond the throttle interval, and no further back than a day, so
+  // it is still throttled now. Both bounds matter -- asserting only one lets
+  // the sign of the offset flip without failing.
+  EXPECT_LE(*app->origin_association_last_validation_check_time(),
             clock().Now());
+  EXPECT_GE(*app->origin_association_last_validation_check_time(),
+            clock().Now() - base::Days(1));
+}
+
+// The randomized backfill exists to spread first fetches over 24 hours.
+// Whatever point in that window an app lands on, it must become eligible within
+// a day -- otherwise a revoked association stays trusted longer than the
+// throttle promises.
+TEST_F(UpdateValidatedOriginAssociationsCommandTest,
+       NotThrottledWithinADayOfBackfill) {
+  GURL start_url("https://example.com/");
+  ScopeExtensionInfo extension = ScopeExtensionInfo::CreateForScope(
+      GURL("https://example.org/scope"), /*has_origin_wildcard=*/false);
+
+  webapps::AppId app_id = InstallApp(start_url, {extension});
+
+  {
+    ScopedRegistryUpdate update = provider().sync_bridge_unsafe().BeginUpdate();
+    update->UpdateApp(app_id)->SetOriginAssociationLastValidationCheckTime(
+        std::nullopt);
+  }
+
+  // First call only backfills the timestamp.
+  base::test::TestFuture<UpdateValidatedOriginAssociationsResult> backfill;
+  provider().scheduler().UpdateValidatedOriginAssociations(
+      app_id, backfill.GetCallback());
+  ASSERT_EQ(UpdateValidatedOriginAssociationsResult::kThrottled,
+            backfill.Get());
+
+  clock().Advance(base::Days(1) + base::Seconds(1));
+
+  base::test::TestFuture<UpdateValidatedOriginAssociationsResult> future;
+  provider().scheduler().UpdateValidatedOriginAssociations(
+      app_id, future.GetCallback());
+  EXPECT_NE(UpdateValidatedOriginAssociationsResult::kThrottled, future.Get());
 }
 
 TEST_F(UpdateValidatedOriginAssociationsCommandTest, NotThrottleAfterTenDays) {
