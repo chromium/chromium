@@ -11,10 +11,10 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import android.content.Context;
 import android.view.KeyEvent;
 import android.view.View;
 
@@ -23,7 +23,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -36,25 +35,49 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
 /** Tests for {@link BaseCarouselSuggestionView}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BaseCarouselSuggestionViewUnitTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
+    private static class TestBaseCarouselSuggestionView extends BaseCarouselSuggestionView {
+        int mSuperOnKeyDownCalls;
+        int mInvalidateItemDecorationsCalls;
+
+        TestBaseCarouselSuggestionView(Context context, SimpleRecyclerViewAdapter adapter) {
+            super(context, adapter);
+        }
+
+        @Override
+        public boolean superOnKeyDown(int keyCode, KeyEvent event) {
+            mSuperOnKeyDownCalls++;
+            return super.superOnKeyDown(keyCode, event);
+        }
+
+        @Override
+        public void invalidateItemDecorations() {
+            mInvalidateItemDecorationsCalls++;
+            super.invalidateItemDecorations();
+        }
+    }
+
     @Mock private SimpleRecyclerViewAdapter mAdapter;
     @Mock private RecyclerViewSelectionController mController;
     @Mock private DynamicSpacingRecyclerViewItemDecoration mDecoration;
-    @Mock private View mChild;
+    @Mock private View.OnClickListener mOnClickListener;
 
-    @Spy
-    private BaseCarouselSuggestionView mView =
-            new BaseCarouselSuggestionView(ContextUtils.getApplicationContext(), mAdapter);
+    private View mChild;
+    private TestBaseCarouselSuggestionView mView;
 
     @Before
     public void setUp() {
+        mChild = new View(ContextUtils.getApplicationContext());
+        mChild.setOnClickListener(mOnClickListener);
+        mView =
+                new TestBaseCarouselSuggestionView(
+                        ContextUtils.getApplicationContext(), mAdapter);
         mView.setSelectionControllerForTesting(mController);
         mView.setItemDecoration(mDecoration);
-        clearInvocations(mView, mAdapter, mController, mChild);
+        clearInvocations(mAdapter, mController);
     }
 
     @Test
@@ -107,26 +130,24 @@ public class BaseCarouselSuggestionViewUnitTest {
         var event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER);
         assertFalse(event.dispatch(mView));
 
-        verify(mView).onKeyDown(event.getKeyCode(), event);
         verify(mController).getSelectedView();
-        verify(mView).superOnKeyDown(event.getKeyCode(), event);
+        assertEquals(1, mView.mSuperOnKeyDownCalls);
 
-        verifyNoMoreInteractions(mChild, mController);
+        verifyNoMoreInteractions(mOnClickListener, mController);
     }
 
     @Test
     public void onKeyDown_enterKeyAcceptsSelectedItem() {
         doReturn(mChild).when(mController).getSelectedView();
-        doReturn(true).when(mChild).performClick();
 
         var event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER);
         assertTrue(event.dispatch(mView));
 
-        verify(mView).onKeyDown(event.getKeyCode(), event);
         verify(mController).getSelectedView();
-        verify(mChild).performClick();
+        verify(mOnClickListener).onClick(mChild);
+        assertEquals(0, mView.mSuperOnKeyDownCalls);
 
-        verifyNoMoreInteractions(mChild, mController);
+        verifyNoMoreInteractions(mOnClickListener, mController);
     }
 
     @Test
@@ -134,8 +155,7 @@ public class BaseCarouselSuggestionViewUnitTest {
         var event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_T);
         assertFalse(event.dispatch(mView));
 
-        verify(mView).onKeyDown(KeyEvent.KEYCODE_T, event);
-        verify(mView).superOnKeyDown(KeyEvent.KEYCODE_T, event);
+        assertEquals(1, mView.mSuperOnKeyDownCalls);
 
         verifyNoMoreInteractions(mController);
     }
@@ -160,7 +180,7 @@ public class BaseCarouselSuggestionViewUnitTest {
         doReturn(true).when(mDecoration).notifyViewSizeChanged(anyBoolean(), anyInt(), anyInt());
         mView.onMeasure(0, 0);
         // Must be called if the decorations report changes.
-        verify(mView).invalidateItemDecorations();
+        assertEquals(1, mView.mInvalidateItemDecorationsCalls);
     }
 
     @Test
@@ -168,6 +188,6 @@ public class BaseCarouselSuggestionViewUnitTest {
         doReturn(false).when(mDecoration).notifyViewSizeChanged(anyBoolean(), anyInt(), anyInt());
         mView.onMeasure(0, 0);
         // Must be called if the decorations report changes.
-        verify(mView, never()).invalidateItemDecorations();
+        assertEquals(0, mView.mInvalidateItemDecorationsCalls);
     }
 }
