@@ -52,8 +52,6 @@ mojom("video_capture_types") {
     "//ui/gfx/geometry/mojom",
   ]
 
-  deps = [ "//media/mojo/mojom" ]
-
   export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
   export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
   export_header_blink = "third_party/blink/public/platform/web_common.h"
