@@ -9,14 +9,12 @@
 #include <optional>
 #include <string>
 #include <string_view>
-#include <variant>
 #include <vector>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
-#include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
 #include "url/gurl.h"
 
@@ -122,34 +120,23 @@ class SafetyListManager {
   // Returns true iff there's a pending parse operation in progress.
   bool IsParseInProgress() const;
 
-  // Data relevant to the "not yet parsed" state.
-  struct NotYetParsed {
-    // Fetches the underlying data and begins parsing it, if possible.
-    void MaybeStartParse(
-        base::WeakPtrFactory<SafetyListManager>& parse_weak_ptr_factory);
+  // Fetches the underlying data and begins parsing it, if possible.
+  void MaybeStartParse();
 
-    // Producer closure to read the raw JSON string when `Find()` is first
-    // called. May be null. Must not be invoked on the main thread.
-    LoadSafetyListsClosure load_safety_lists_closure;
+  // Synchronously evaluates the lookup against the current data.
+  Decision FindSync(const GURL& source, const GURL& destination) const;
 
-    // Calls to `Find` that have been deferred until parsing is complete.
-    PendingFinds pending_finds;
-  };
+  // Producer closure to read the raw JSON string when `Find()` is first called.
+  // May be null. Must not be invoked on the main thread.
+  LoadSafetyListsClosure load_safety_lists_closure_;
 
-  // Data relevant to the "parsed" state.
-  struct Parsed {
-    // Synchronously evaluates the lookup against the current data.
-    Decision Find(const GURL& source, const GURL& destination) const;
+  // Calls to `Find` that have been deferred until parsing is complete.
+  PendingFinds pending_finds_;
 
-    // Settings for allowing/blocking navigations. Must not be nullptr.
-    std::unique_ptr<content_settings::HostIndexedContentSettings>
-        navigation_settings =
-            std::make_unique<content_settings::HostIndexedContentSettings>();
-  };
-
-  // Holds either the un-parsed state, or fully parsed state.
-  std::variant<NotYetParsed, Parsed> state_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  // Settings for allowing/blocking navigations. Must not be nullptr.
+  std::unique_ptr<content_settings::HostIndexedContentSettings>
+      navigation_settings_ =
+          std::make_unique<content_settings::HostIndexedContentSettings>();
 
   // Used for `OnParsedSafetyLists` replies so in-flight parses can be
   // invalidated if a newer closure is provided before parsing finishes.

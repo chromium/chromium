@@ -9,11 +9,9 @@
 #include <string>
 #include <string_view>
 #include <utility>
-#include <variant>
 #include <vector>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
@@ -23,16 +21,13 @@
 #include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
-#include "base/thread_annotations.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/actor/core/actor_features.h"
-#include "components/content_settings/core/common/content_settings_metadata.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
-#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "url/gurl.h"
 
 namespace actor {
@@ -134,32 +129,22 @@ void SafetyListManager::Find(const GURL& source,
                              FindCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::visit(
-      absl::Overload{
-          [&](NotYetParsed& not_yet_parsed) {
-            if (not_yet_parsed.load_safety_lists_closure ||
-                IsParseInProgress()) {
-              not_yet_parsed.pending_finds.emplace_back(base::BindOnce(
-                  &SafetyListManager::Find, weak_ptr_factory_.GetWeakPtr(),
-                  source, destination, std::move(callback)));
+  if (load_safety_lists_closure_ || IsParseInProgress()) {
+    pending_finds_.emplace_back(
+        base::BindOnce(&SafetyListManager::Find, weak_ptr_factory_.GetWeakPtr(),
+                       source, destination, std::move(callback)));
 
-              not_yet_parsed.MaybeStartParse(parse_weak_ptr_factory_);
-            } else {
-              std::move(callback).Run(Decision::kNone);
-            }
-          },
-          [&](Parsed& parsed) {
-            std::move(callback).Run(parsed.Find(source, destination));
-          },
-      },
-      state_);
+    MaybeStartParse();
+  } else {
+    std::move(callback).Run(FindSync(source, destination));
+  }
 }
 
-SafetyListManager::Decision SafetyListManager::Parsed::Find(
+SafetyListManager::Decision SafetyListManager::FindSync(
     const GURL& source,
     const GURL& destination) const {
   const content_settings::RuleEntry* rule_entry =
-      navigation_settings->Find(source, destination);
+      navigation_settings_->Find(source, destination);
 
   if (!rule_entry) {
     return Decision::kNone;
@@ -260,17 +245,10 @@ void SafetyListManager::OnParsedSafetyLists(
   // operations.
   parse_weak_ptr_factory_.InvalidateWeakPtrs();
 
-  // This function is only reachable in the `NotYetParsed` state because this is
-  // called when parses complete, at most one parse is in progress at one time,
-  // every parse starts from the `NotYetParsed` state, and this is the only
-  // function that sets `state_` to the `Parsed` state. So std::get is safe
-  // here.
-
-  PendingFinds pending =
-      std::move(std::get<NotYetParsed>(state_).pending_finds);
   if (new_navigation_settings) {
-    state_ = Parsed{std::move(new_navigation_settings)};
+    navigation_settings_ = std::move(new_navigation_settings);
   }
+  PendingFinds pending = std::exchange(pending_finds_, {});
   for (base::OnceClosure& closure : pending) {
     std::move(closure).Run();
   }
@@ -284,30 +262,25 @@ void SafetyListManager::SetLoadSafetyListsClosure(
     LoadSafetyListsClosure closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(closure);
-  if (std::holds_alternative<Parsed>(state_)) {
-    state_ = NotYetParsed{std::move(closure), {}};
+  load_safety_lists_closure_ = std::move(closure);
+
+  if (pending_finds_.empty()) {
     return;
   }
-
-  NotYetParsed& not_yet_parsed = std::get<NotYetParsed>(state_);
-  not_yet_parsed.load_safety_lists_closure = std::move(closure);
-  if (!not_yet_parsed.pending_finds.empty()) {
-    not_yet_parsed.MaybeStartParse(parse_weak_ptr_factory_);
-  }
+  MaybeStartParse();
 }
 
-void SafetyListManager::NotYetParsed::MaybeStartParse(
-    base::WeakPtrFactory<SafetyListManager>& parse_weak_ptr_factory) {
-  if (!load_safety_lists_closure) {
+void SafetyListManager::MaybeStartParse() {
+  if (!load_safety_lists_closure_) {
     return;
   }
-  parse_weak_ptr_factory.InvalidateWeakPtrs();
+  parse_weak_ptr_factory_.InvalidateWeakPtrs();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&SafetyListManager::DoParseSafetyLists,
-                     std::move(load_safety_lists_closure)),
+                     std::move(load_safety_lists_closure_)),
       base::BindOnce(&SafetyListManager::OnParsedSafetyLists,
-                     parse_weak_ptr_factory.GetWeakPtr()));
+                     parse_weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SetSafetyListsForTesting(SafetyListManager* manager, std::string json) {

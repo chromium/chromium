@@ -195,7 +195,7 @@ TEST_P(SafetyListManagerTest, ParseSafetyLists_NulloptProducer) {
   manager().SetLoadSafetyListsClosure(base::BindOnce(
       []() -> std::optional<std::string> { return std::nullopt; }));
   EXPECT_EQ(Find(GURL("https://a.com"), GURL("https://b.com")),
-            Decision::kNone);
+            Decision::kAllow);
   histogram_tester.ExpectTotalCount(
       "Actor.SafetyListParseResult.NavigationAllowed", 0);
   histogram_tester.ExpectTotalCount(
@@ -292,21 +292,19 @@ TEST_P(SafetyListManagerTest,
             Decision::kNone);
   EXPECT_EQ(nullopt_producer_calls, 1);
 
-  // Transition from failed state to Parsed state.
+  // Transition from empty state to populated state.
   SetSafetyLists(R"json({
     "navigation_allowed": [{ "from": "a.com", "to": "b.com" }]
   })json");
   EXPECT_EQ(Find(GURL("https://a.com"), GURL("https://b.com")),
             Decision::kAllow);
 
-  // Transition from Parsed state to failed state via invalid JSON.
+  // Invalid JSON doesn't overwrite valid data.
   SetSafetyLists("not valid json");
   EXPECT_EQ(Find(GURL("https://a.com"), GURL("https://b.com")),
-            Decision::kNone);
-  EXPECT_EQ(Find(GURL("https://a.com"), GURL("https://b.com")),
-            Decision::kNone);
+            Decision::kAllow);
 
-  // Transition back to Parsed state with a new list.
+  // New data can overwrite old data.
   SetSafetyLists(R"json({
     "navigation_allowed": [{ "from": "c.com", "to": "d.com" }]
   })json");
