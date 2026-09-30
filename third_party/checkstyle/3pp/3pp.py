@@ -75,6 +75,7 @@ def do_install(args):
         '<suppressions><suppress checks="Foo" files="Bar"/></suppressions>\n',
         encoding='utf-8',
     )
+  
     sample_java = os.path.abspath('Sample.java')
     pathlib.Path(sample_java).write_text(
         'package foo;\nimport java.util.List;\npublic class Sample {}\n',
@@ -101,12 +102,12 @@ def do_install(args):
 
 
 def main():
+    style_xml = '//tools/android/checkstyle/chromium-style-5.0.xml'
     common.main(
         do_latest=do_latest,
         do_install=do_install,
-        runtime_deps=[
-            '//tools/android/checkstyle/chromium-style-5.0.xml',
-        ],
+        runtime_deps=[style_xml],
+        version_deps=[style_xml]
     )
 
 

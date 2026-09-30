@@ -31,8 +31,7 @@ def _find_deps():
 def compute(extra_paths=None):
     """Compute a hash of loaded Python modules and given |extra_paths|."""
     all_paths = _find_deps() + (extra_paths or [])
-    all_paths = [os.path.relpath(p, _SRC_ROOT) for p in all_paths]
-    all_paths.sort()
+    all_paths = sorted({os.path.relpath(p, _SRC_ROOT) for p in all_paths})
     md5 = hashlib.md5()
     for path in all_paths:
         md5.update((_SRC_ROOT / path).read_bytes())

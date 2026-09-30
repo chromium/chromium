@@ -283,7 +283,8 @@ def main():
     common.main(do_latest=do_latest,
                 do_install=do_install,
                 runtime_deps=[('//' + _CUSTOM_D8_SRC,
-                               _CUSTOM_D8_CHECKOUT_SUBPATH)])
+                               _CUSTOM_D8_CHECKOUT_SUBPATH)],
+                version_deps=['//' + _CUSTOM_D8_SRC])
 
 
 if __name__ == '__main__':
