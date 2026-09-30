@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-static_library("private_verification_tokens") {
+source_set("private_verification_tokens") {
   visibility = [
     ":*",
     "//chrome/browser:*",
@@ -12,6 +12,30 @@ static_library("private_verification_tokens") {
     "//chrome/browser/profiles:profiles_extra_parts_impl",
     "//chrome/test:*",
   ]
+
+  public = [
+    "private_verification_tokens_service.h",
+    "private_verification_tokens_service_factory.h",
+    "private_verification_tokens_url_loader_throttle.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//components/private_verification_tokens/common:private_verification_tokens_fetcher",
+    "//components/private_verification_tokens/common:private_verification_tokens_issuer_config",
+    "//components/private_verification_tokens/common:private_verification_tokens_store",
+    "//third_party/blink/public/common",
+    "//url",
+  ]
+
+  deps = [ ":impl" ]
+}
+
+source_set("impl") {
+  visibility = [ ":*" ]
+  public = []
 
   sources = [
     "private_verification_tokens_service.cc",
