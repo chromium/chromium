@@ -22,6 +22,7 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.BaseFeatures;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 
@@ -29,16 +30,22 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 @RunWith(BaseRobolectricTestRunner.class)
 // WindowInsets.Type.ime() and WindowInsets#getInsets(int) were added in R.
 @Config(sdk = Build.VERSION_CODES.R)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class KeyboardUtilsTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private View mRootView;
     @Mock private WindowInsets mWindowInsets;
+
+    private View mRootView;
 
     @Before
     public void setUp() {
-        when(mRootView.getRootWindowInsets()).thenReturn(mWindowInsets);
+        mRootView =
+                new View(ContextUtils.getApplicationContext()) {
+                    @Override
+                    public WindowInsets getRootWindowInsets() {
+                        return mWindowInsets;
+                    }
+                };
     }
 
     @Test

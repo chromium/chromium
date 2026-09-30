@@ -4,13 +4,19 @@
 
 package org.chromium.chrome.browser.tasks.tab_management.pinned_tabs;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
+import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Before;
@@ -21,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -28,18 +35,23 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Unit tests for {@link PinnedTabStripViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PinnedTabStripViewBinderTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private RecyclerView mRecyclerView;
     @Mock private PinnedTabStripAnimationManager mAnimationManager;
 
+    private RecyclerView mRecyclerView;
+    private LinearLayoutManager mLayoutManager;
     private PropertyModel mPropertyModel;
 
     @Before
     public void setUp() {
+        Context context = ContextUtils.getApplicationContext();
+        mLayoutManager = spy(new LinearLayoutManager(context));
+        mRecyclerView = new RecyclerView(context);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+
         mPropertyModel =
                 new PropertyModel.Builder(PinnedTabStripProperties.ALL_KEYS)
                         .with(PinnedTabStripProperties.IS_VISIBLE, false)
@@ -70,18 +82,18 @@ public class PinnedTabStripViewBinderTest {
     public void testSetScrollToPosition() {
         mPropertyModel.set(PinnedTabStripProperties.SCROLL_TO_POSITION, 5);
         verify(mAnimationManager).cancelPinnedTabBarAnimations(any());
-        verify(mRecyclerView).scrollToPosition(5);
+        verify(mLayoutManager).scrollToPosition(5);
     }
 
     @Test
     public void testSetScrollToPosition_invalidPosition() {
         mPropertyModel.set(PinnedTabStripProperties.SCROLL_TO_POSITION, -1);
-        verify(mRecyclerView, never()).smoothScrollToPosition(-1);
+        verify(mLayoutManager, never()).scrollToPosition(anyInt());
     }
 
     @Test
     public void testSetBackgroundColor() {
         mPropertyModel.set(PinnedTabStripProperties.BACKGROUND_COLOR, Color.RED);
-        verify(mRecyclerView).setBackgroundColor(Color.RED);
+        assertEquals(Color.RED, ((ColorDrawable) mRecyclerView.getBackground()).getColor());
     }
 }

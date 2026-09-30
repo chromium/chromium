@@ -83,7 +83,6 @@ import java.util.function.DoubleConsumer;
     SensitiveContentFeatures.SENSITIVE_CONTENT_WHILE_SWITCHING_TABS
 })
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class IncognitoTabSwitcherPaneUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -515,9 +514,9 @@ public class IncognitoTabSwitcherPaneUnitTest {
         } else {
             assertTrue(buttonData.canPress());
             reset(mNewTabButtonClickListener);
-            View mockView = mock(View.class);
-            buttonData.onPress(mockView);
-            verify(mNewTabButtonClickListener).onClick(mockView);
+            View view = new View(mContext);
+            buttonData.onPress(view);
+            verify(mNewTabButtonClickListener).onClick(view);
             TabSwitcherPaneCoordinator coordinator =
                     mIncognitoTabSwitcherPane.getTabSwitcherPaneCoordinator();
             if (coordinator != null) {

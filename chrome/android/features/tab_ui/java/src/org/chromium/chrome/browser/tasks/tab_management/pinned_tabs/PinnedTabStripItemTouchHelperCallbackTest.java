@@ -53,7 +53,6 @@ import java.util.function.Supplier;
         instrumentedPackages = {
             "androidx.recyclerview.widget.RecyclerView" // required to mock final
         })
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PinnedTabStripItemTouchHelperCallbackTest {
     private static final int POSITION1 = 0;
     private static final int POSITION2 = 1;
@@ -70,15 +69,15 @@ public class PinnedTabStripItemTouchHelperCallbackTest {
 
     @Mock private TabListModel mTabListModel;
     @Mock private Supplier<RecyclerView> mRecyclerViewSupplier;
-    @Mock private RecyclerView mRecyclerView;
     @Mock private OnLongPressTabItemEventListener mOnLongPressListener;
     @Mock private Canvas mCanvas;
     @Mock private TabModel mTabModel;
-    @Mock private View mItemView1;
-    @Mock private View mItemView2;
 
     private final SettableMonotonicObservableSupplier<TabModel> mTabModelSupplier =
             ObservableSuppliers.createMonotonic();
+    private RecyclerView mRecyclerView;
+    private View mItemView1;
+    private View mItemView2;
     private ViewHolder mMockViewHolder1;
     private ViewHolder mMockViewHolder2;
     private RecyclerView.ViewHolder mViewHolder;
@@ -88,6 +87,9 @@ public class PinnedTabStripItemTouchHelperCallbackTest {
     public void setUp() throws Exception {
         Context context = ApplicationProvider.getApplicationContext();
         mTabModelSupplier.set(mTabModel);
+        mRecyclerView = new RecyclerView(context);
+        mItemView1 = new View(context);
+        mItemView2 = new View(context);
 
         mViewHolder = spy(new TestViewHolder(new View(context)));
 

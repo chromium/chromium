@@ -66,7 +66,6 @@ import java.util.List;
 
 /** Unit tests for {@link PinnedTabStripMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class PinnedTabStripMediatorTest {
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -91,7 +90,6 @@ public class PinnedTabStripMediatorTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private Runnable mOnTabGroupCreation;
-    @Mock private View mMockView;
     @Mock private MultiInstanceOrchestrator mMultiInstanceOrchestrator;
     @Mock private TabActionListener mContextClickListener;
 
@@ -226,9 +224,9 @@ public class PinnedTabStripMediatorTest {
         mTabListModel.add(createTabListItem(5, false));
 
         // Simulate the layout manager returning a view for the first visible item (Tab 3).
-        when(mMockView.getBottom())
-                .thenReturn(50); // Partially obscured (less than rowCoverage: 85).
-        when(mLayoutManager.findViewByPosition(2)).thenReturn(mMockView);
+        View view = new View(mActivity);
+        view.layout(0, 0, 100, 50); // Partially obscured (less than rowCoverage: 85).
+        when(mLayoutManager.findViewByPosition(2)).thenReturn(view);
         when(mLayoutManager.findFirstVisibleItemPosition()).thenReturn(2); // Tab 3 is first visible
         when(mLayoutManager.getSpanCount()).thenReturn(2); // Two tabs per row
 

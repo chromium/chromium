@@ -72,7 +72,6 @@ import java.util.function.DoubleConsumer;
 /** Unit tests for {@link TabGroupsPane}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({ChromeFeatureList.DATA_SHARING})
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabGroupsPaneUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -224,8 +223,8 @@ public class TabGroupsPaneUnitTest {
         assertNotNull(actionButtonData);
 
         assertTrue(actionButtonData.canPress());
-        View mockView = mock(View.class);
-        actionButtonData.onPress(mockView);
+        View view = new View(ApplicationProvider.getApplicationContext());
+        actionButtonData.onPress(view);
 
         verify(mTabCreator).createNewTab(any(), anyInt(), any());
         verify(mTabModel).createSingleTabGroup(mTab);

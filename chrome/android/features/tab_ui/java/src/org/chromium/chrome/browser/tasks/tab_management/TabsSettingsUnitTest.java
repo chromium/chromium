@@ -70,7 +70,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link TabsSettings}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabsSettingsUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -341,7 +340,7 @@ public class TabsSettingsUnitTest {
         assertTrue(shareTitlesAndUrlsWithOsSwitch.isVisible());
         assertTrue(learnMoreTextMessagePreference.isVisible());
 
-        View view = Mockito.mock(View.class);
+        View view = new View(mActivity);
         tabsSettings.onLearnMoreClicked(view);
         verify(mCustomTabLauncher).openUrlInCct(eq(mActivity), eq(TabsSettings.LEARN_MORE_URL));
     }

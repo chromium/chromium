@@ -4,15 +4,13 @@
 
 package org.chromium.android_webview.robolectric;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import android.graphics.Matrix;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.View.MeasureSpec;
+import android.widget.FrameLayout;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -22,10 +20,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.mockito.stubbing.Answer;
 import org.robolectric.RuntimeEnvironment;
 
 import org.chromium.android_webview.AwDisplayModeController;
@@ -36,7 +32,6 @@ import org.chromium.blink.mojom.DisplayMode;
 
 /** JUnit tests for AwDisplayModeController. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AwDisplayModeControllerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -47,17 +42,12 @@ public class AwDisplayModeControllerTest {
     private Context mContext;
 
     @Mock private AwDisplayModeController.Delegate mDelegate;
-    @Mock private View mView;
-    @Mock private View mAnotherView;
 
-    @Mock private ViewGroup mRootView;
+    private View mView;
+    private FrameLayout mRootView;
 
-    private View.OnApplyWindowInsetsListener mListener;
-    private final int[] mLocationOnScreen = {0, 0};
     private int mViewWidth;
     private int mViewHeight;
-
-    private Matrix mGlobalTransformMatrix;
 
     private int mDisplayWidth;
     private int mDisplayHeight;
@@ -76,58 +66,19 @@ public class AwDisplayModeControllerTest {
         mViewHeight = 400;
         mDisplayWidth = 300;
         mDisplayHeight = 400;
-        mGlobalTransformMatrix = new Matrix(); // identity matrix
 
-        // Set up the view.
-        doAnswer(
-                        new Answer<Void>() {
-                            @Override
-                            public Void answer(InvocationOnMock invocation) throws Throwable {
-                                int[] loc = (int[]) invocation.getArguments()[0];
-                                loc[0] = mLocationOnScreen[0];
-                                loc[1] = mLocationOnScreen[1];
-                                return null;
-                            }
-                        })
-                .when(mView)
-                .getLocationOnScreen(any(int[].class));
-
-        when(mView.getMeasuredWidth()).thenReturn(mViewWidth);
-        when(mView.getMeasuredHeight()).thenReturn(mViewHeight);
-        doAnswer(
-                        new Answer<Void>() {
-                            @Override
-                            public Void answer(InvocationOnMock invocation) throws Throwable {
-                                Matrix matrix = (Matrix) invocation.getArguments()[0];
-                                matrix.set(mGlobalTransformMatrix);
-                                return null;
-                            }
-                        })
-                .when(mView)
-                .transformMatrixToGlobal(any(Matrix.class));
-
-        // Set up the root view.
-        doAnswer(
-                        new Answer<Void>() {
-                            @Override
-                            public Void answer(InvocationOnMock invocation) throws Throwable {
-                                int[] loc = (int[]) invocation.getArguments()[0];
-                                loc[0] = mLocationOnScreen[0];
-                                loc[1] = mLocationOnScreen[1];
-                                return null;
-                            }
-                        })
-                .when(mRootView)
-                .getLocationOnScreen(any(int[].class));
-        when(mRootView.getMeasuredWidth()).thenReturn(mViewWidth);
-        when(mRootView.getMeasuredHeight()).thenReturn(mViewHeight);
-        when(mView.getRootView()).thenReturn(mRootView);
+        // Set up the view and the root view. Neither is attached to a window, so their locations
+        // on screen are (0, 0).
+        mRootView = new FrameLayout(mContext);
+        mView = new View(mContext);
+        mRootView.addView(mView, new FrameLayout.LayoutParams(mViewWidth, mViewHeight));
+        measure(mRootView, mViewWidth, mViewHeight);
 
         // Set up the delegate.
         when(mDelegate.getDisplayWidth()).thenReturn(mDisplayWidth);
         when(mDelegate.getDisplayHeight()).thenReturn(mDisplayHeight);
 
-        mInOrder = inOrder(mDelegate, mView, mAnotherView);
+        mInOrder = inOrder(mDelegate);
 
         mController = new AwDisplayModeController(mDelegate, mView);
 
@@ -140,30 +91,29 @@ public class AwDisplayModeControllerTest {
         mInOrder.verifyNoMoreInteractions();
     }
 
+    private static void measure(View view, int width, int height) {
+        view.measure(
+                MeasureSpec.makeMeasureSpec(width, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+    }
+
     @Test
     @Feature({"AndroidWebView"})
     public void testFullscreen() {
         Assert.assertEquals(DisplayMode.FULLSCREEN, mController.getDisplayMode());
 
-        mInOrder.verify(mView).getLocationOnScreen(any(int[].class));
-        mInOrder.verify(mView).getMeasuredWidth();
-        mInOrder.verify(mView).getMeasuredHeight();
         mInOrder.verify(mDelegate).getDisplayWidth();
         mInOrder.verify(mDelegate).getDisplayHeight();
-        mInOrder.verify(mView).transformMatrixToGlobal(any(Matrix.class));
     }
 
     @Test
     @Feature({"AndroidWebView"})
     public void testNotFullscreen_NotOccupyingFullDisplay() {
         // View is not occupying the entire display, so no insets applied.
-        when(mView.getMeasuredHeight()).thenReturn(mDisplayHeight / 2);
+        measure(mView, mViewWidth, mDisplayHeight / 2);
 
         Assert.assertEquals(DisplayMode.BROWSER, mController.getDisplayMode());
 
-        mInOrder.verify(mView).getLocationOnScreen(any(int[].class));
-        mInOrder.verify(mView).getMeasuredWidth();
-        mInOrder.verify(mView).getMeasuredHeight();
         mInOrder.verify(mDelegate).getDisplayWidth();
         mInOrder.verify(mDelegate).getDisplayHeight();
     }
@@ -172,13 +122,12 @@ public class AwDisplayModeControllerTest {
     @Feature({"AndroidWebView"})
     public void testNotFullscreen_NotOccupyingFullWindow() {
         // View is not occupying the entire window, so no insets applied.
-        when(mRootView.getMeasuredHeight()).thenReturn(mViewHeight / 2);
+        measure(mRootView, mViewWidth, mViewHeight / 2);
+        // The view has fixed LayoutParams, so it keeps its size.
+        Assert.assertEquals(mViewHeight, mView.getMeasuredHeight());
 
         Assert.assertEquals(DisplayMode.BROWSER, mController.getDisplayMode());
 
-        mInOrder.verify(mView).getLocationOnScreen(any(int[].class));
-        mInOrder.verify(mView).getMeasuredWidth();
-        mInOrder.verify(mView).getMeasuredHeight();
         mInOrder.verify(mDelegate).getDisplayWidth();
         mInOrder.verify(mDelegate).getDisplayHeight();
     }
@@ -186,15 +135,11 @@ public class AwDisplayModeControllerTest {
     @Test
     @Feature({"AndroidWebView"})
     public void testNotFullscreen_ParentLayoutRotated() {
-        mGlobalTransformMatrix.postRotate(30.0f);
+        mRootView.setRotation(30.0f);
 
         Assert.assertEquals(DisplayMode.BROWSER, mController.getDisplayMode());
 
-        mInOrder.verify(mView).getLocationOnScreen(any(int[].class));
-        mInOrder.verify(mView).getMeasuredWidth();
-        mInOrder.verify(mView).getMeasuredHeight();
         mInOrder.verify(mDelegate).getDisplayWidth();
         mInOrder.verify(mDelegate).getDisplayHeight();
-        mInOrder.verify(mView).transformMatrixToGlobal(any(Matrix.class));
     }
 }

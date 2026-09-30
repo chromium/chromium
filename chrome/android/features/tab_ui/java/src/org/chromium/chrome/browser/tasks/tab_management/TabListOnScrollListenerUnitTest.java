@@ -4,77 +4,111 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
 
-import static org.chromium.ui.test.util.MockitoHelper.doCallback;
+import android.app.Activity;
+import android.content.Context;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for {@link TabListOnScrollListener}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabListOnScrollListenerUnitTest {
-    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    /** A LayoutManager with a canned vertical scroll offset. */
+    private static class TestLayoutManager extends LinearLayoutManager {
+        public int mVerticalScrollOffset;
 
-    @Mock private RecyclerView mRecyclerView;
+        TestLayoutManager(Context context) {
+            super(context);
+        }
+
+        @Override
+        public int computeVerticalScrollOffset(RecyclerView.State state) {
+            return mVerticalScrollOffset;
+        }
+    }
+
+    private RecyclerView mRecyclerView;
+    private TestLayoutManager mLayoutManager;
 
     private TabListOnScrollListener mListener;
 
     @Before
     public void setUp() {
+        Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
+        mLayoutManager = new TestLayoutManager(activity);
+        mRecyclerView = new RecyclerView(activity);
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        // Attach the RecyclerView so that posted tasks run.
+        activity.setContentView(mRecyclerView);
+        ShadowLooper.idleMainLooper();
+
         mListener = new TabListOnScrollListener();
-        doCallback(0, (Runnable r) -> r.run()).when(mRecyclerView).post(any());
+    }
+
+    /**
+     * Starts a smooth scroll to enter the settling state. It stays settling as long as the looper
+     * is not idled.
+     */
+    private void setScrollStateSettling() {
+        mRecyclerView.smoothScrollBy(0, 100);
+        assertEquals(RecyclerView.SCROLL_STATE_SETTLING, mRecyclerView.getScrollState());
+    }
+
+    private void setScrollStateIdle() {
+        mRecyclerView.stopScroll();
+        assertEquals(RecyclerView.SCROLL_STATE_IDLE, mRecyclerView.getScrollState());
     }
 
     @Test
     public void testPostUpdate() {
         assertFalse(mListener.getYOffsetNonZeroSupplier().get());
 
-        when(mRecyclerView.computeVerticalScrollOffset()).thenReturn(0);
+        mLayoutManager.mVerticalScrollOffset = 0;
         mListener.postUpdate(mRecyclerView);
+        ShadowLooper.idleMainLooper();
         assertFalse(mListener.getYOffsetNonZeroSupplier().get());
 
-        when(mRecyclerView.computeVerticalScrollOffset()).thenReturn(1);
+        mLayoutManager.mVerticalScrollOffset = 1;
         mListener.postUpdate(mRecyclerView);
+        ShadowLooper.idleMainLooper();
         assertTrue(mListener.getYOffsetNonZeroSupplier().get());
     }
 
     @Test
     public void testOnScrolled() {
-        when(mRecyclerView.computeVerticalScrollOffset()).thenReturn(1);
-        when(mRecyclerView.getScrollState()).thenReturn(RecyclerView.SCROLL_STATE_IDLE);
+        mLayoutManager.mVerticalScrollOffset = 1;
+        setScrollStateIdle();
 
         mListener.onScrolled(mRecyclerView, /* dx= */ 0, /* dy= */ 0);
         assertFalse(mListener.getYOffsetNonZeroSupplier().get());
 
-        when(mRecyclerView.getScrollState()).thenReturn(RecyclerView.SCROLL_STATE_SETTLING);
+        setScrollStateSettling();
 
         mListener.onScrolled(mRecyclerView, /* dx= */ 0, /* dy= */ 1);
         assertFalse(mListener.getYOffsetNonZeroSupplier().get());
 
-        when(mRecyclerView.computeVerticalScrollOffset()).thenReturn(0);
-        when(mRecyclerView.getScrollState()).thenReturn(RecyclerView.SCROLL_STATE_IDLE);
+        mLayoutManager.mVerticalScrollOffset = 0;
+        setScrollStateIdle();
         mListener.onScrolled(mRecyclerView, /* dx= */ 0, /* dy= */ 0);
         assertFalse(mListener.getYOffsetNonZeroSupplier().get());
 
-        when(mRecyclerView.computeVerticalScrollOffset()).thenReturn(3);
+        mLayoutManager.mVerticalScrollOffset = 3;
         mListener.onScrolled(mRecyclerView, /* dx= */ 0, /* dy= */ 2);
         assertTrue(mListener.getYOffsetNonZeroSupplier().get());
 
-        when(mRecyclerView.computeVerticalScrollOffset()).thenReturn(-1);
+        mLayoutManager.mVerticalScrollOffset = -1;
         mListener.onScrolled(mRecyclerView, /* dx= */ 0, /* dy= */ 2);
         assertFalse(mListener.getYOffsetNonZeroSupplier().get());
     }

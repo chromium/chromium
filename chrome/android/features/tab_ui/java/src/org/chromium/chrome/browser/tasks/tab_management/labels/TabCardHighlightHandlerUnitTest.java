@@ -4,23 +4,20 @@
 
 package org.chromium.chrome.browser.tasks.tab_management.labels;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
@@ -28,29 +25,27 @@ import org.chromium.chrome.browser.tasks.tab_management.TabProperties.TabCardHig
 
 /** Unit tests for {@link TabCardHighlightHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabCardHighlightHandlerUnitTest {
-    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Mock private View mCardWrapper;
-
     private Context mContext;
+    private View mCardWrapper;
     private TabCardHighlightHandler mManager;
 
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
-        when(mCardWrapper.getContext()).thenReturn(mContext);
+        mCardWrapper = new View(mContext);
         mManager = new TabCardHighlightHandler(mCardWrapper);
     }
 
     @Test
     public void testMaybeAnimateForHighlightState_Highlighted() {
+        mCardWrapper.setVisibility(View.GONE);
+
         mManager.maybeAnimateForHighlightState(
                 TabCardHighlightState.HIGHLIGHTED, /* isIncognito= */ false);
 
-        verify(mCardWrapper).setVisibility(View.VISIBLE);
-        verify(mCardWrapper).setBackground(any());
+        assertEquals(View.VISIBLE, mCardWrapper.getVisibility());
+        assertNotNull(mCardWrapper.getBackground());
     }
 
     @Test
@@ -60,25 +55,30 @@ public class TabCardHighlightHandlerUnitTest {
 
         RobolectricUtil.runAllBackgroundAndUi();
 
-        verify(mCardWrapper).setBackground(any());
+        assertNotNull(mCardWrapper.getBackground());
     }
 
     @Test
     public void testMaybeAnimateForHighlightState_NotHighlighted() {
+        mCardWrapper.setBackground(new ColorDrawable(Color.RED));
+        mCardWrapper.setAlpha(0.5f);
+
         mManager.maybeAnimateForHighlightState(
                 TabCardHighlightState.NOT_HIGHLIGHTED, /* isIncognito= */ false);
 
         RobolectricUtil.runAllBackgroundAndUi();
 
-        verify(mCardWrapper).setBackground(null);
-        verify(mCardWrapper, atLeastOnce()).setAlpha(1f);
+        assertNull(mCardWrapper.getBackground());
+        assertEquals(1f, mCardWrapper.getAlpha(), 0f);
     }
 
     @Test
     public void testClearHighlight() {
+        mCardWrapper.setBackground(new ColorDrawable(Color.RED));
+
         mManager.clearHighlight();
 
-        verify(mCardWrapper).setBackground(null);
-        verify(mCardWrapper).setVisibility(View.GONE);
+        assertNull(mCardWrapper.getBackground());
+        assertEquals(View.GONE, mCardWrapper.getVisibility());
     }
 }

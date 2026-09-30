@@ -5,14 +5,14 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.graphics.Rect;
 import android.view.View;
+import android.view.WindowManager;
+import android.widget.FrameLayout;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,19 +21,24 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Unit tests for {@link TabGridViewRectUpdater}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabGridViewRectUpdaterUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
-    @Mock private View mView;
-    @Mock private View mRootView;
     @Mock private Runnable mOnRectChanged;
 
+    private final View mView = new View(ContextUtils.getApplicationContext());
+    private final FrameLayout mRootView = new FrameLayout(ContextUtils.getApplicationContext());
+    private int mViewX;
+    private int mViewY;
+    private int mViewWidth;
+    private int mViewHeight;
     private Rect mRect;
     private TabGridViewRectUpdater mUpdater;
 
@@ -51,31 +56,48 @@ public class TabGridViewRectUpdaterUnitTest {
         mRect = new Rect();
         mUpdater = new TabGridViewRectUpdater(mView, mRect, mOnRectChanged);
 
-        // Default mock setup
-        when(mView.getWidth()).thenReturn(VIEW_WIDTH);
-        when(mView.getHeight()).thenReturn(VIEW_HEIGHT);
-        when(mView.getScaleX()).thenReturn(SCALE_X);
-        when(mView.getScaleY()).thenReturn(SCALE_Y);
-        when(mView.getRootView()).thenReturn(mRootView);
-        when(mRootView.getWidth()).thenReturn(ROOT_VIEW_WIDTH);
-        when(mRootView.getHeight()).thenReturn(ROOT_VIEW_HEIGHT);
+        mRootView.addView(mView);
+        // Attach the root view as the root of its own window so that getLocationInWindow() works.
+        Context context = ContextUtils.getApplicationContext();
+        context.getSystemService(WindowManager.class)
+                .addView(mRootView, new WindowManager.LayoutParams());
+        ShadowLooper.idleMainLooper();
+        mRootView.layout(0, 0, ROOT_VIEW_WIDTH, ROOT_VIEW_HEIGHT);
 
-        doAnswer(
-                        invocation -> {
-                            int[] coords = invocation.getArgument(0);
-                            coords[0] = INITIAL_X;
-                            coords[1] = INITIAL_Y;
-                            return null;
-                        })
-                .when(mView)
-                .getLocationInWindow(any());
+        // Scale around the top-left corner so that scaling does not change the view's location.
+        mView.setPivotX(0);
+        mView.setPivotY(0);
+        mView.setScaleX(SCALE_X);
+        mView.setScaleY(SCALE_Y);
+        mViewX = INITIAL_X;
+        mViewY = INITIAL_Y;
+        setViewSize(VIEW_WIDTH, VIEW_HEIGHT);
+    }
+
+    private void setViewSize(int width, int height) {
+        mViewWidth = width;
+        mViewHeight = height;
+        layoutView();
+    }
+
+    private void setViewLocation(int x, int y) {
+        mViewX = x;
+        mViewY = y;
+        layoutView();
+    }
+
+    /**
+     * Lays out the view manually. Tests do not idle the looper afterwards, so no layout traversal
+     * overrides these bounds.
+     */
+    private void layoutView() {
+        mView.layout(mViewX, mViewY, mViewX + mViewWidth, mViewY + mViewHeight);
     }
 
     @Test
     public void testRefreshRectBounds_firstCall() {
         mUpdater.refreshRectBounds(/* forceRefresh= */ false);
 
-        verify(mView).getLocationInWindow(any());
         assertEquals(INITIAL_X, mRect.left);
         assertEquals(INITIAL_Y, mRect.top);
         assertEquals(INITIAL_X + VIEW_WIDTH, mRect.right);
@@ -90,7 +112,6 @@ public class TabGridViewRectUpdaterUnitTest {
 
         // Second call doesn't do anything since the rect hasn't changed.
         mUpdater.refreshRectBounds(/* forceRefresh= */ false);
-        verify(mView, times(2)).getLocationInWindow(any());
         verify(mOnRectChanged, times(1)).run();
         assertEquals(INITIAL_X, mRect.left);
         assertEquals(INITIAL_Y, mRect.top);
@@ -105,15 +126,7 @@ public class TabGridViewRectUpdaterUnitTest {
 
         final int newX = 50;
         final int newY = 60;
-        doAnswer(
-                        invocation -> {
-                            int[] coords = invocation.getArgument(0);
-                            coords[0] = newX;
-                            coords[1] = newY;
-                            return null;
-                        })
-                .when(mView)
-                .getLocationInWindow(any());
+        setViewLocation(newX, newY);
 
         mUpdater.refreshRectBounds(/* forceRefresh= */ false);
         assertEquals(newX, mRect.left);
@@ -130,8 +143,8 @@ public class TabGridViewRectUpdaterUnitTest {
 
         float newScaleX = 0.5f;
         float newScaleY = 0.8f;
-        when(mView.getScaleX()).thenReturn(newScaleX);
-        when(mView.getScaleY()).thenReturn(newScaleY);
+        mView.setScaleX(newScaleX);
+        mView.setScaleY(newScaleY);
         int expectedScaledWidth = (int) (VIEW_WIDTH * newScaleX);
         int expectedScaledHeight = (int) (VIEW_HEIGHT * newScaleY);
 
@@ -150,8 +163,7 @@ public class TabGridViewRectUpdaterUnitTest {
 
         int newViewWidth = 150;
         int newViewHeight = 250;
-        when(mView.getWidth()).thenReturn(newViewWidth);
-        when(mView.getHeight()).thenReturn(newViewHeight);
+        setViewSize(newViewWidth, newViewHeight);
 
         mUpdater.refreshRectBounds(/* forceRefresh= */ false);
         assertEquals(INITIAL_X, mRect.left);
@@ -163,8 +175,8 @@ public class TabGridViewRectUpdaterUnitTest {
 
     @Test
     public void testRefreshRectBounds_zeroScale() {
-        when(mView.getScaleX()).thenReturn(0f);
-        when(mView.getScaleY()).thenReturn(0f);
+        mView.setScaleX(0f);
+        mView.setScaleY(0f);
 
         mUpdater.refreshRectBounds(/* forceRefresh= */ false);
         assertEquals(INITIAL_X, mRect.left);
@@ -177,17 +189,8 @@ public class TabGridViewRectUpdaterUnitTest {
     @Test
     public void testRefreshRectBounds_exceedsRootViewSize() {
         // Make the view itself larger than the root view.
-        when(mView.getWidth()).thenReturn(ROOT_VIEW_WIDTH + 50);
-        when(mView.getHeight()).thenReturn(ROOT_VIEW_HEIGHT + 50);
-        doAnswer(
-                        invocation -> {
-                            int[] coords = invocation.getArgument(0);
-                            coords[0] = 0;
-                            coords[1] = 0;
-                            return null;
-                        })
-                .when(mView)
-                .getLocationInWindow(any());
+        setViewSize(ROOT_VIEW_WIDTH + 50, ROOT_VIEW_HEIGHT + 50);
+        setViewLocation(0, 0);
 
         mUpdater.refreshRectBounds(/* forceRefresh= */ false);
         assertEquals(0, mRect.left);
@@ -203,8 +206,6 @@ public class TabGridViewRectUpdaterUnitTest {
         verify(mOnRectChanged, times(1)).run();
 
         mUpdater.refreshRectBounds(/* forceRefresh= */ true);
-        verify(mView, times(2)).getLocationInWindow(any());
-
         verify(mOnRectChanged, times(2)).run();
         assertEquals(INITIAL_X, mRect.left);
         assertEquals(INITIAL_Y, mRect.top);

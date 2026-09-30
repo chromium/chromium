@@ -56,10 +56,10 @@ import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Unit tests for {@link NestedLayoutDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NestedLayoutDelegateUnitTest {
     private static final Token TAB_GROUP_ID = new Token(1L, 2L);
     private static final int TAB1_ID = 11;
@@ -73,7 +73,6 @@ public class NestedLayoutDelegateUnitTest {
     @Mock private Tab mTab2;
     @Mock private Tab mTab3;
     @Mock private TabModel mTabModel;
-    @Mock private View mView;
 
     private TabListModel mModelList;
     private NestedLayoutDelegate mDelegate;
@@ -1091,19 +1090,22 @@ public class NestedLayoutDelegateUnitTest {
     @Test
     public void testPerformAccessibilityAction_ExpandCollapse() {
         PropertyModel model = addGroupHeaderToModelList(TAB1_ID);
+        View view = new View(ApplicationProvider.getApplicationContext());
+        AtomicInteger clickCount = new AtomicInteger();
+        view.setOnClickListener(v -> clickCount.incrementAndGet());
 
         assertTrue(
                 mDelegate.performAccessibilityAction(
-                        mView, AccessibilityAction.ACTION_EXPAND.getId(), /* args= */ null, model));
-        verify(mView).performClick();
+                        view, AccessibilityAction.ACTION_EXPAND.getId(), /* args= */ null, model));
+        assertEquals(1, clickCount.get());
 
         assertTrue(
                 mDelegate.performAccessibilityAction(
-                        mView,
+                        view,
                         AccessibilityAction.ACTION_COLLAPSE.getId(),
                         /* args= */ null,
                         model));
-        verify(mView, times(2)).performClick();
+        assertEquals(2, clickCount.get());
     }
 
     @Test

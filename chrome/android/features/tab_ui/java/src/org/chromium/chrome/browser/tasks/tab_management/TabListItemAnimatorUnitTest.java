@@ -6,25 +6,21 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyFloat;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.atLeastOnce;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.MESSAGE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
 import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.USE_SHRINK_CLOSE_ANIMATION;
 
-import android.content.res.Resources;
 import android.util.Pair;
 import android.view.View;
 import android.view.ViewOutlineProvider;
@@ -39,6 +35,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -53,7 +50,6 @@ import java.util.List;
 
 /** Unit tests for {@link TabListItemAnimator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabListItemAnimatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -74,15 +70,22 @@ public class TabListItemAnimatorUnitTest {
 
     private static void emptyBind(PropertyModel model, View view, PropertyKey key) {}
 
+    private static void assertAlpha(ViewHolder holder, float alpha) {
+        assertEquals(alpha, holder.itemView.getAlpha(), 0f);
+    }
+
+    private static void assertTranslation(ViewHolder holder, float x, float y) {
+        assertEquals(x, holder.itemView.getTranslationX(), 0f);
+        assertEquals(y, holder.itemView.getTranslationY(), 0f);
+    }
+
+    private static void assertScale(ViewHolder holder, float scale) {
+        assertEquals(scale, holder.itemView.getScaleX(), 0f);
+        assertEquals(scale, holder.itemView.getScaleY(), 0f);
+    }
+
     private ViewHolder buildViewHolder(@ModelType int modelType, boolean useShrinkCloseAnimation) {
-        View itemView = mock(View.class);
-        when(itemView.getAlpha()).thenReturn(1f);
-        when(itemView.getTranslationX()).thenReturn(0f);
-        when(itemView.getTranslationY()).thenReturn(0f);
-        when(itemView.getVisibility()).thenReturn(View.VISIBLE);
-        Resources resources = mock(Resources.class);
-        when(resources.getDimensionPixelSize(anyInt())).thenReturn(8);
-        when(itemView.getResources()).thenReturn(resources);
+        View itemView = new View(ContextUtils.getApplicationContext());
         var viewHolder = new ViewHolder(itemView, TabListItemAnimatorUnitTest::emptyBind);
         PropertyModel model =
                 new PropertyModel.Builder(new PropertyKey[] {CARD_TYPE, USE_SHRINK_CLOSE_ANIMATION})
@@ -102,7 +105,7 @@ public class TabListItemAnimatorUnitTest {
         var holder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ false);
 
         assertTrue(mItemAnimator.animateAdd(holder));
-        verify(holder.itemView).setAlpha(0f);
+        assertAlpha(holder, 0f);
 
         assertTrue(mItemAnimator.isRunning());
 
@@ -110,8 +113,7 @@ public class TabListItemAnimatorUnitTest {
 
         completionTrigger.onResult(holder);
 
-        // No guarantee this happens only once due to the animation loop.
-        verify(holder.itemView, atLeastOnce()).setAlpha(1f);
+        assertAlpha(holder, 1f);
         inOrder.verify(mItemAnimator).dispatchAddStarting(holder);
         inOrder.verify(mItemAnimator).dispatchAddFinished(holder);
         inOrder.verify(mItemAnimator).dispatchFinishedWhenAllAnimationsDone();
@@ -147,8 +149,7 @@ public class TabListItemAnimatorUnitTest {
         var holder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ false);
 
         assertTrue(mItemAnimator.animateChange(holder, holder, 0, 100, 50, 200));
-        verify(holder.itemView).setTranslationX(-50);
-        verify(holder.itemView).setTranslationY(-100);
+        assertTranslation(holder, -50, -100);
 
         assertTrue(mItemAnimator.isRunning());
 
@@ -156,14 +157,10 @@ public class TabListItemAnimatorUnitTest {
 
         runAnimationToCompletion();
 
-        // Cannot be accurate regarding animation interaction count.
-        verify(holder.itemView, atLeastOnce()).setTranslationX(anyFloat());
-        verify(holder.itemView, atLeastOnce()).setTranslationY(anyFloat());
         inOrder.verify(mItemAnimator).dispatchMoveStarting(holder);
         inOrder.verify(mItemAnimator).dispatchMoveFinished(holder);
         inOrder.verify(mItemAnimator).dispatchFinishedWhenAllAnimationsDone();
-        verify(holder.itemView, atLeastOnce()).setTranslationX(0f);
-        verify(holder.itemView, atLeastOnce()).setTranslationY(0f);
+        assertTranslation(holder, 0, 0);
 
         assertFalse(mItemAnimator.isRunning());
     }
@@ -175,13 +172,12 @@ public class TabListItemAnimatorUnitTest {
         float x = 40f;
         float y = 30f;
         float alpha = 0.3f;
-        when(holder.itemView.getTranslationX()).thenReturn(x);
-        when(holder.itemView.getTranslationY()).thenReturn(y);
-        when(holder.itemView.getAlpha()).thenReturn(alpha);
+        holder.itemView.setTranslationX(x);
+        holder.itemView.setTranslationY(y);
+        holder.itemView.setAlpha(alpha);
         assertTrue(mItemAnimator.animateChange(holder, null, 0, 100, 50, 200));
-        verify(holder.itemView).setTranslationX(x);
-        verify(holder.itemView).setTranslationY(y);
-        verify(holder.itemView).setAlpha(alpha);
+        assertTranslation(holder, x, y);
+        assertAlpha(holder, alpha);
 
         assertTrue(mItemAnimator.isRunning());
 
@@ -189,16 +185,12 @@ public class TabListItemAnimatorUnitTest {
 
         runAnimationToCompletion();
 
-        // Cannot be accurate regarding animation interaction count.
-        verify(holder.itemView, atLeastOnce()).setAlpha(anyFloat());
-        verify(holder.itemView, atLeastOnce()).setTranslationX(anyFloat());
-        verify(holder.itemView, atLeastOnce()).setTranslationY(anyFloat());
         inOrder.verify(mItemAnimator).dispatchChangeStarting(holder, true);
         inOrder.verify(mItemAnimator).dispatchChangeFinished(holder, true);
         inOrder.verify(mItemAnimator).dispatchFinishedWhenAllAnimationsDone();
-        verify(holder.itemView, atLeastOnce()).setAlpha(0f);
-        verify(holder.itemView, atLeastOnce()).setTranslationX(50);
-        verify(holder.itemView, atLeastOnce()).setTranslationY(100);
+        // The old view is reset once its animation ends.
+        assertAlpha(holder, 1f);
+        assertTranslation(holder, 0, 0);
 
         assertFalse(mItemAnimator.isRunning());
 
@@ -214,30 +206,20 @@ public class TabListItemAnimatorUnitTest {
         float x = 40f;
         float y = 30f;
         float alpha = 0.3f;
-        when(oldHolder.itemView.getTranslationX()).thenReturn(x);
-        when(oldHolder.itemView.getTranslationY()).thenReturn(y);
-        when(oldHolder.itemView.getAlpha()).thenReturn(alpha);
+        oldHolder.itemView.setTranslationX(x);
+        oldHolder.itemView.setTranslationY(y);
+        oldHolder.itemView.setAlpha(alpha);
 
         assertTrue(mItemAnimator.animateChange(oldHolder, newHolder, 0, 100, 50, 200));
 
-        verify(oldHolder.itemView).setTranslationX(x);
-        verify(oldHolder.itemView).setTranslationY(y);
-        verify(oldHolder.itemView).setAlpha(alpha);
-        verify(newHolder.itemView).setTranslationX(-10);
-        verify(newHolder.itemView).setTranslationY(-70);
-        verify(newHolder.itemView).setAlpha(alpha);
+        assertTranslation(oldHolder, x, y);
+        assertAlpha(oldHolder, alpha);
+        assertTranslation(newHolder, -10, -70);
+        assertAlpha(newHolder, alpha);
 
         assertTrue(mItemAnimator.isRunning());
 
         completionTrigger.onResult(Pair.create(oldHolder, newHolder));
-
-        // Cannot be accurate regarding animation interaction count.
-        verify(oldHolder.itemView, atLeastOnce()).setAlpha(anyFloat());
-        verify(oldHolder.itemView, atLeastOnce()).setTranslationX(anyFloat());
-        verify(oldHolder.itemView, atLeastOnce()).setTranslationY(anyFloat());
-        verify(newHolder.itemView, atLeastOnce()).setAlpha(anyFloat());
-        verify(newHolder.itemView, atLeastOnce()).setTranslationX(anyFloat());
-        verify(newHolder.itemView, atLeastOnce()).setTranslationY(anyFloat());
 
         // Order cannot be verified due to HashMap usage.
         verify(mItemAnimator).dispatchChangeStarting(oldHolder, true);
@@ -245,12 +227,11 @@ public class TabListItemAnimatorUnitTest {
         verify(mItemAnimator).dispatchChangeStarting(newHolder, false);
         verify(mItemAnimator).dispatchChangeFinished(newHolder, false);
 
-        verify(oldHolder.itemView, atLeastOnce()).setAlpha(0f);
-        verify(oldHolder.itemView, atLeastOnce()).setTranslationX(50);
-        verify(oldHolder.itemView, atLeastOnce()).setTranslationY(100);
-        verify(newHolder.itemView, atLeastOnce()).setAlpha(1f);
-        verify(newHolder.itemView, atLeastOnce()).setTranslationX(0);
-        verify(newHolder.itemView, atLeastOnce()).setTranslationY(0);
+        // Both views are reset once their animations end.
+        assertAlpha(oldHolder, 1f);
+        assertTranslation(oldHolder, 0, 0);
+        assertAlpha(newHolder, 1f);
+        assertTranslation(newHolder, 0, 0);
 
         verify(mItemAnimator, times(2)).dispatchFinishedWhenAllAnimationsDone();
 
@@ -288,8 +269,7 @@ public class TabListItemAnimatorUnitTest {
         var holder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ false);
 
         assertTrue(mItemAnimator.animateMove(holder, 400, 200, 50, 100));
-        verify(holder.itemView).setTranslationX(350);
-        verify(holder.itemView).setTranslationY(100);
+        assertTranslation(holder, 350, 100);
 
         assertTrue(mItemAnimator.isRunning());
 
@@ -297,14 +277,10 @@ public class TabListItemAnimatorUnitTest {
 
         completionTrigger.onResult(holder);
 
-        // Cannot be accurate regarding animation interaction count.
-        verify(holder.itemView, atLeastOnce()).setTranslationX(anyFloat());
-        verify(holder.itemView, atLeastOnce()).setTranslationY(anyFloat());
         inOrder.verify(mItemAnimator).dispatchMoveStarting(holder);
         inOrder.verify(mItemAnimator).dispatchMoveFinished(holder);
         inOrder.verify(mItemAnimator).dispatchFinishedWhenAllAnimationsDone();
-        verify(holder.itemView, atLeastOnce()).setTranslationX(0f);
-        verify(holder.itemView, atLeastOnce()).setTranslationY(0f);
+        assertTranslation(holder, 0, 0);
 
         assertFalse(mItemAnimator.isRunning());
     }
@@ -327,7 +303,7 @@ public class TabListItemAnimatorUnitTest {
     @Test
     public void animateRemove_Alpha0() {
         var holder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ false);
-        when(holder.itemView.getAlpha()).thenReturn(0f);
+        holder.itemView.setAlpha(0f);
 
         assertFalse(mItemAnimator.animateRemove(holder));
         verify(mItemAnimator).dispatchRemoveFinished(holder);
@@ -336,7 +312,7 @@ public class TabListItemAnimatorUnitTest {
     @Test
     public void animateRemove_NotVisible() {
         var holder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ false);
-        when(holder.itemView.getVisibility()).thenReturn(View.INVISIBLE);
+        holder.itemView.setVisibility(View.INVISIBLE);
 
         assertFalse(mItemAnimator.animateRemove(holder));
         verify(mItemAnimator).dispatchRemoveFinished(holder);
@@ -344,6 +320,10 @@ public class TabListItemAnimatorUnitTest {
 
     private void animateTabRemoveWithCompletionTrigger(Callback<ViewHolder> completionTrigger) {
         var holder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ true);
+        // Start from a non-default state to verify that the view is reset afterwards.
+        holder.itemView.setAlpha(0.5f);
+        holder.itemView.setScaleX(0.5f);
+        holder.itemView.setScaleY(0.5f);
 
         assertTrue(mItemAnimator.animateRemove(holder));
 
@@ -353,15 +333,12 @@ public class TabListItemAnimatorUnitTest {
 
         completionTrigger.onResult(holder);
 
-        // Cannot be accurate regarding animation.
-        verify(holder.itemView, atLeastOnce()).setScaleX(anyFloat());
-        verify(holder.itemView, atLeastOnce()).setScaleY(anyFloat());
         inOrder.verify(mItemAnimator).dispatchRemoveStarting(holder);
         inOrder.verify(mItemAnimator).dispatchRemoveFinished(holder);
         inOrder.verify(mItemAnimator).dispatchFinishedWhenAllAnimationsDone();
-        verify(holder.itemView, atLeastOnce()).setAlpha(1f);
-        verify(holder.itemView, atLeastOnce()).setScaleX(1f);
-        verify(holder.itemView, atLeastOnce()).setScaleY(1f);
+        // The view is reset once its animation ends.
+        assertAlpha(holder, 1f);
+        assertScale(holder, 1f);
 
         assertFalse(mItemAnimator.isRunning());
     }
@@ -383,7 +360,10 @@ public class TabListItemAnimatorUnitTest {
 
     private void animateNonTabRemoveWithCompletionTrigger(
             ViewHolder holder, Callback<ViewHolder> completionTrigger) {
+        // Start from a non-default alpha to verify that the view is reset afterwards.
+        holder.itemView.setAlpha(0.5f);
         assertTrue(mItemAnimator.animateRemove(holder));
+        assertAlpha(holder, 0.5f);
 
         assertTrue(mItemAnimator.isRunning());
 
@@ -391,11 +371,11 @@ public class TabListItemAnimatorUnitTest {
 
         completionTrigger.onResult(holder);
 
-        verify(holder.itemView, atLeastOnce()).setAlpha(0f);
         inOrder.verify(mItemAnimator).dispatchRemoveStarting(holder);
         inOrder.verify(mItemAnimator).dispatchRemoveFinished(holder);
         inOrder.verify(mItemAnimator).dispatchFinishedWhenAllAnimationsDone();
-        verify(holder.itemView, atLeastOnce()).setAlpha(1f);
+        // The view is reset once its animation ends.
+        assertAlpha(holder, 1f);
 
         assertFalse(mItemAnimator.isRunning());
     }
@@ -495,20 +475,20 @@ public class TabListItemAnimatorUnitTest {
                 TabListItemAnimator.DEFAULT_REMOVE_DURATION, mItemAnimator.getChangeDuration());
 
         var holder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ false);
-        when(holder.itemView.getClipToOutline()).thenReturn(true);
 
         assertTrue(mItemAnimator.animateAdd(holder));
-        verify(holder.itemView).setAlpha(0f);
-        verify(holder.itemView).setClipToOutline(true);
-        verify(holder.itemView).setOutlineProvider(any(ViewOutlineProvider.class));
+        assertAlpha(holder, 0f);
+        assertTrue(holder.itemView.getClipToOutline());
+        assertNotNull(holder.itemView.getOutlineProvider());
+        assertNotEquals(ViewOutlineProvider.BACKGROUND, holder.itemView.getOutlineProvider());
 
         assertTrue(mItemAnimator.isRunning());
 
         runAnimationToCompletion();
 
-        verify(holder.itemView, atLeastOnce()).setAlpha(1f);
-        verify(holder.itemView).setOutlineProvider(eq(ViewOutlineProvider.BACKGROUND));
-        verify(holder.itemView).setClipToOutline(false);
+        assertAlpha(holder, 1f);
+        assertEquals(ViewOutlineProvider.BACKGROUND, holder.itemView.getOutlineProvider());
+        assertFalse(holder.itemView.getClipToOutline());
         verify(mItemAnimator).dispatchAddFinished(holder);
         assertFalse(mItemAnimator.isRunning());
     }
@@ -521,19 +501,19 @@ public class TabListItemAnimatorUnitTest {
                                 mIsAnimatorRunningSupplier, /* useClipAnimations= */ true));
 
         var holder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ false);
-        when(holder.itemView.getClipToOutline()).thenReturn(true);
 
         assertTrue(mItemAnimator.animateRemove(holder));
-        verify(holder.itemView).setClipToOutline(true);
-        verify(holder.itemView).setOutlineProvider(any(ViewOutlineProvider.class));
+        assertTrue(holder.itemView.getClipToOutline());
+        assertNotNull(holder.itemView.getOutlineProvider());
+        assertNotEquals(ViewOutlineProvider.BACKGROUND, holder.itemView.getOutlineProvider());
 
         assertTrue(mItemAnimator.isRunning());
 
         runAnimationToCompletion();
 
-        verify(holder.itemView, atLeastOnce()).setAlpha(1f);
-        verify(holder.itemView).setOutlineProvider(eq(ViewOutlineProvider.BACKGROUND));
-        verify(holder.itemView).setClipToOutline(false);
+        assertAlpha(holder, 1f);
+        assertEquals(ViewOutlineProvider.BACKGROUND, holder.itemView.getOutlineProvider());
+        assertFalse(holder.itemView.getClipToOutline());
         verify(mItemAnimator).dispatchRemoveFinished(holder);
         assertFalse(mItemAnimator.isRunning());
     }
@@ -546,20 +526,20 @@ public class TabListItemAnimatorUnitTest {
                                 mIsAnimatorRunningSupplier, /* useClipAnimations= */ true));
 
         var holder = buildViewHolder(TAB, /* useShrinkCloseAnimation= */ false);
-        when(holder.itemView.getTag(R.id.tab_clip_from_top)).thenReturn(true);
-        when(holder.itemView.getClipToOutline()).thenReturn(true);
+        holder.itemView.setTag(R.id.tab_clip_from_top, true);
 
         assertTrue(mItemAnimator.animateRemove(holder));
-        verify(holder.itemView).setClipToOutline(true);
-        verify(holder.itemView).setOutlineProvider(any(ViewOutlineProvider.class));
+        assertTrue(holder.itemView.getClipToOutline());
+        assertNotNull(holder.itemView.getOutlineProvider());
+        assertNotEquals(ViewOutlineProvider.BACKGROUND, holder.itemView.getOutlineProvider());
 
         assertTrue(mItemAnimator.isRunning());
 
         runAnimationToCompletion();
 
-        verify(holder.itemView, atLeastOnce()).setAlpha(1f);
-        verify(holder.itemView).setOutlineProvider(eq(ViewOutlineProvider.BACKGROUND));
-        verify(holder.itemView).setClipToOutline(false);
+        assertAlpha(holder, 1f);
+        assertEquals(ViewOutlineProvider.BACKGROUND, holder.itemView.getOutlineProvider());
+        assertFalse(holder.itemView.getClipToOutline());
         verify(mItemAnimator).dispatchRemoveFinished(holder);
         assertFalse(mItemAnimator.isRunning());
     }

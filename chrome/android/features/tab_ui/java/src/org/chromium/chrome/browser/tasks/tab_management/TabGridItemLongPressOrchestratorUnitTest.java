@@ -15,9 +15,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
@@ -29,6 +32,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -44,11 +48,28 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link TabGridItemLongPressOrchestrator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabGridItemLongPressOrchestratorUnitTest {
     private static class MockViewHolder extends ViewHolder {
         public MockViewHolder(View itemView) {
             super(itemView);
+        }
+    }
+
+    /** An adapter with a single item (at {@code TAB_INDEX}) whose view is {@code mCardView}. */
+    private class SingleCardAdapter extends RecyclerView.Adapter<ViewHolder> {
+        private final ViewHolder mViewHolder = new MockViewHolder(mCardView);
+
+        @Override
+        public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            return mViewHolder;
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder holder, int position) {}
+
+        @Override
+        public int getItemCount() {
+            return TAB_INDEX + 1;
         }
     }
 
@@ -59,16 +80,16 @@ public class TabGridItemLongPressOrchestratorUnitTest {
     @Mock private TabListModel mModel;
     @Mock private OnLongPressTabItemEventListener mOnLongPressListener;
     @Mock private CancelLongPressTabItemEventListener mCancelListener;
-    @Mock private RecyclerView mRecyclerView;
-    @Mock private View mCardView;
     @Mock private RunnableTimer mTimer;
 
     private static final long TIMER_DURATION = ViewConfiguration.getLongPressTimeout();
     private static final int TAB_ID = 1;
     private static final int TAB_INDEX = 0;
 
+    private final RecyclerView mRecyclerView =
+            new RecyclerView(ContextUtils.getApplicationContext());
+    private final View mCardView = new View(ContextUtils.getApplicationContext());
     private final Supplier<RecyclerView> mRecyclerViewSupplier = () -> mRecyclerView;
-    private ViewHolder mViewHolder;
     private TabGridItemLongPressOrchestrator mOrchestrator;
     private PropertyModel mPropertyModel;
 
@@ -82,9 +103,12 @@ public class TabGridItemLongPressOrchestratorUnitTest {
         when(mModel.get(TAB_INDEX)).thenReturn(listItem);
         when(mModel.size()).thenReturn(1);
         when(mModel.indexFromModel(mPropertyModel)).thenReturn(TAB_INDEX);
-        when(mRecyclerView.getChildAt(TAB_INDEX)).thenReturn(mCardView);
-        mViewHolder = new MockViewHolder(mCardView);
-        when(mRecyclerView.findViewHolderForAdapterPosition(TAB_INDEX)).thenReturn(mViewHolder);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(mRecyclerView.getContext()));
+        mRecyclerView.setAdapter(new SingleCardAdapter());
+        mRecyclerView.measure(
+                MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY),
+                MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY));
+        mRecyclerView.layout(0, 0, 100, 100);
         when(mOnLongPressListener.onLongPressEvent(anyInt(), any())).thenReturn(mCancelListener);
 
         mOrchestrator =
@@ -196,7 +220,6 @@ public class TabGridItemLongPressOrchestratorUnitTest {
 
         mOrchestrator.processChildDisplacement(
                 LONG_PRESS_DP_CANCEL_THRESHOLD * LONG_PRESS_DP_CANCEL_THRESHOLD + 1.f);
-        verify(mRecyclerView).findViewHolderForAdapterPosition(TAB_INDEX);
         verify(mCancelListener).cancelLongPress();
 
         // We cancel before setting the timer and once on idle. So this should be invoked exactly
