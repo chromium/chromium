@@ -1236,7 +1236,9 @@ std::optional<gpu::SyncToken> DrawingBuffer::CopyToPlatformSharedImage(
 
     gpu::SyncToken sync_token =
         gpu::RasterScopedAccess::EndAccess(std::move(src_access));
+    src_shared_image->UpdateDestructionSyncToken(sync_token);
     sync_token = gpu::RasterScopedAccess::EndAccess(std::move(dst_access));
+    dst_shared_image->UpdateDestructionSyncToken(sync_token);
     return sync_token;
   };
 
