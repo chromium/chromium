@@ -5,6 +5,7 @@
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
 
 #include <limits>
+#include <utility>
 #include <variant>
 
 #include "base/check_is_test.h"
@@ -109,7 +110,7 @@ cbor::Value CreateSignatureStackEntryAttributes(
     attributes.emplace("kNegativeInt", std::numeric_limits<int64_t>::min());
   }
 
-  return cbor::Value(attributes);
+  return cbor::Value(std::move(attributes));
 }
 
 cbor::Value CreateSignatureStackEntry(
@@ -131,7 +132,7 @@ cbor::Value CreateSignatureStackEntry(
     entry.emplace_back("foo");
   }
 
-  return cbor::Value(entry);
+  return cbor::Value(std::move(entry));
 }
 
 cbor::Value CreateIntegrityBlock(
@@ -174,7 +175,7 @@ cbor::Value CreateIntegrityBlock(
     integrity_block.emplace_back(signature_stack);
   }
 
-  return cbor::Value(integrity_block);
+  return cbor::Value(std::move(integrity_block));
 }
 
 cbor::Value CreateIntegrityBlockForBundle(

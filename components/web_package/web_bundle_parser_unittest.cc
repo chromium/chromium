@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 #include <string_view>
+#include <utility>
 #include <variant>
 
 #include "base/compiler_specific.h"
@@ -514,7 +515,7 @@ TEST_F(WebBundleParserTest, AllKnownSectionInCritical) {
   critical_section.emplace_back("index");
   critical_section.emplace_back("critical");
   critical_section.emplace_back("responses");
-  builder.AddSection("critical", cbor::Value(critical_section));
+  builder.AddSection("critical", cbor::Value(std::move(critical_section)));
   TestDataSource data_source(builder.CreateBundle());
 
   mojom::BundleMetadataPtr metadata = ParseUnsignedBundle(&data_source).first;
@@ -528,7 +529,7 @@ TEST_F(WebBundleParserTest, UnknownSectionInCritical) {
                       "payload");
   cbor::Value::ArrayValue critical_section;
   critical_section.emplace_back("unknown_section_name");
-  builder.AddSection("critical", cbor::Value(critical_section));
+  builder.AddSection("critical", cbor::Value(std::move(critical_section)));
   TestDataSource data_source(builder.CreateBundle());
 
   ExpectFormatError(ParseUnsignedBundle(&data_source));

@@ -8,6 +8,7 @@
 
 #include <ostream>
 #include <string_view>
+#include <utility>
 
 #include "base/numerics/byte_conversions.h"
 #include "base/strings/string_view_util.h"
@@ -79,7 +80,7 @@ WebBundleBuilder::ResponseLocation WebBundleBuilder::AddResponse(
   cbor::Value::ArrayValue response_array;
   response_array.emplace_back(Encode(CreateHeaderMap(headers)));
   response_array.emplace_back(CreateByteString(payload));
-  cbor::Value response(response_array);
+  cbor::Value response(std::move(response_array));
   int64_t response_length = EncodedLength(response);
   ResponseLocation result = {current_responses_offset_, response_length};
   current_responses_offset_ += response_length;
@@ -125,10 +126,9 @@ std::vector<uint8_t> WebBundleBuilder::CreateBundle() {
     cbor::Value::ArrayValue index_value_array;
     index_value_array.emplace_back(location.offset + initial_offset);
     index_value_array.emplace_back(location.length);
-    index.insert(
-        {GetCborValueOfURL(entry.first), cbor::Value(index_value_array)});
+    index.emplace(GetCborValueOfURL(entry.first), std::move(index_value_array));
   }
-  AddSection("index", cbor::Value(index));
+  AddSection("index", cbor::Value(std::move(index)));
   AddSection("responses", cbor::Value(responses_));
   return CreateTopLevel();
 }
@@ -143,7 +143,7 @@ std::vector<uint8_t> WebBundleBuilder::CreateTopLevel() {
   // Put a dummy 8-byte bytestring.
   toplevel_array.emplace_back(cbor::Value::BinaryValue(8, 0));
 
-  std::vector<uint8_t> bundle = Encode(cbor::Value(toplevel_array));
+  std::vector<uint8_t> bundle = Encode(cbor::Value(std::move(toplevel_array)));
   // Overwrite the dummy bytestring with the actual size.
   base::span(bundle).last(8u).copy_from(base::U64ToBigEndian(bundle.size()));
   return bundle;
