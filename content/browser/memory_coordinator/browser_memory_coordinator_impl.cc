@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/memory_coordinator/browser_memory_coordinator.h"
+#include "content/browser/memory_coordinator/browser_memory_coordinator_impl.h"
 
 #include <utility>
 
@@ -17,28 +17,43 @@ namespace content {
 
 namespace {
 
-BrowserMemoryCoordinator* g_instance = nullptr;
+BrowserMemoryCoordinatorImpl* g_instance = nullptr;
 
 }  // namespace
 
 // static
 BrowserMemoryCoordinator& BrowserMemoryCoordinator::Get() {
+  return BrowserMemoryCoordinatorImpl::Get();
+}
+
+// static
+std::unique_ptr<BrowserMemoryCoordinator>
+BrowserMemoryCoordinator::CreateForTesting() {
+  return std::make_unique<BrowserMemoryCoordinatorImpl>();
+}
+
+// static
+BrowserMemoryCoordinatorImpl& BrowserMemoryCoordinatorImpl::Get() {
   CHECK(g_instance);
   return *g_instance;
 }
 
-BrowserMemoryCoordinator::BrowserMemoryCoordinator() {
+BrowserMemoryCoordinatorImpl::BrowserMemoryCoordinatorImpl() {
   CHECK(!g_instance);
   g_instance = this;
 }
 
-BrowserMemoryCoordinator::~BrowserMemoryCoordinator() {
+BrowserMemoryCoordinatorImpl::~BrowserMemoryCoordinatorImpl() {
   CHECK_EQ(g_instance, this);
   g_instance = nullptr;
 }
 
+MemoryCoordinatorPolicyManager& BrowserMemoryCoordinatorImpl::policy_manager() {
+  return policy_manager_;
+}
+
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
-void BrowserMemoryCoordinator::AddDiagnosticObserver(
+void BrowserMemoryCoordinatorImpl::AddDiagnosticObserver(
     MemoryCoordinatorPolicyManager::DiagnosticObserver* observer) {
   policy_manager_.AddDiagnosticObserver(observer);
   ++diagnostic_observer_count_;
@@ -51,7 +66,7 @@ void BrowserMemoryCoordinator::AddDiagnosticObserver(
   }
 }
 
-void BrowserMemoryCoordinator::RemoveDiagnosticObserver(
+void BrowserMemoryCoordinatorImpl::RemoveDiagnosticObserver(
     MemoryCoordinatorPolicyManager::DiagnosticObserver* observer) {
   policy_manager_.RemoveDiagnosticObserver(observer);
   CHECK_GT(diagnostic_observer_count_, 0u);
@@ -66,7 +81,7 @@ void BrowserMemoryCoordinator::RemoveDiagnosticObserver(
 }
 #endif  // BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
 
-void BrowserMemoryCoordinator::Bind(
+void BrowserMemoryCoordinatorImpl::Bind(
     ProcessType process_type,
     ChildProcessId child_process_id,
     mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost> receiver) {
@@ -78,7 +93,7 @@ void BrowserMemoryCoordinator::Bind(
 
   it->second = std::make_unique<ChildMemoryConsumerRegistryHost>(
       policy_manager_, process_type, child_process_id, std::move(receiver),
-      base::BindOnce(&BrowserMemoryCoordinator::OnHostDisconnected,
+      base::BindOnce(&BrowserMemoryCoordinatorImpl::OnHostDisconnected,
                      base::Unretained(this), child_process_id));
 
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
@@ -88,9 +103,7 @@ void BrowserMemoryCoordinator::Bind(
 #endif
 }
 
-
-
-void BrowserMemoryCoordinator::OnHostDisconnected(
+void BrowserMemoryCoordinatorImpl::OnHostDisconnected(
     ChildProcessId child_process_id) {
   size_t removed = hosts_.erase(child_process_id);
   CHECK_EQ(removed, 1u);

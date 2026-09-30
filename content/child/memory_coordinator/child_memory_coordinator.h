@@ -9,10 +9,10 @@
 #include "content/child/memory_coordinator/browser_memory_coordinator_bridge.h"
 #include "content/common/content_export.h"
 #include "content/common/memory_coordinator/memory_consumer_registry.h"
-#include "content/common/memory_coordinator/memory_coordinator_policy.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy_manager.h"
 #include "content/common/memory_coordinator/memory_pressure_listener_policy.h"
 #include "content/common/memory_coordinator/mojom/memory_coordinator.mojom-forward.h"
+#include "content/public/common/memory_coordinator/memory_coordinator_policy.h"
 
 namespace content {
 

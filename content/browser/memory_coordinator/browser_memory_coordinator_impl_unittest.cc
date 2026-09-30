@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/memory_coordinator/browser_memory_coordinator.h"
+#include "content/browser/memory_coordinator/browser_memory_coordinator_impl.h"
 
 #include <cstddef>
 #include <memory>
@@ -68,13 +68,13 @@ class MockDiagnosticObserver
 
 }  // namespace
 
-class BrowserMemoryCoordinatorTest : public Test {
+class BrowserMemoryCoordinatorImplTest : public Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  BrowserMemoryCoordinator browser_coordinator_;
+  BrowserMemoryCoordinatorImpl browser_coordinator_;
 };
 
-TEST_F(BrowserMemoryCoordinatorTest, DuplicateBind) {
+TEST_F(BrowserMemoryCoordinatorImplTest, DuplicateBind) {
   const ChildProcessId kChildId(1);
 
   mojo::test::BadMessageObserver bad_message_observer;
@@ -100,7 +100,7 @@ TEST_F(BrowserMemoryCoordinatorTest, DuplicateBind) {
 }
 
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
-TEST_F(BrowserMemoryCoordinatorTest, DiagnosticReporting) {
+TEST_F(BrowserMemoryCoordinatorImplTest, DiagnosticReporting) {
   const ChildProcessId kChildId(1);
 
   // 1. Bind a child process.

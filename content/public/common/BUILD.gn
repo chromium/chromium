@@ -209,6 +209,8 @@ source_set("common_sources") {
     "drop_data.h",
     "isolated_world_ids.h",
     "javascript_dialog_type.h",
+    "memory_coordinator/memory_coordinator_policy.h",
+    "memory_coordinator/predicate_memory_coordinator_policy.h",
     "mhtml_generation_params.cc",
     "mhtml_generation_params.h",
     "origin_util.h",

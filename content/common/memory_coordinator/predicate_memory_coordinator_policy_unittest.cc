@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/memory_coordinator/predicate_memory_coordinator_policy.h"
+#include "content/public/common/memory_coordinator/predicate_memory_coordinator_policy.h"
 
 #include <cstdint>
 #include <memory>
@@ -14,9 +14,9 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "content/common/memory_coordinator/memory_consumer_group_host.h"
-#include "content/common/memory_coordinator/memory_coordinator_policy.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy_manager.h"
 #include "content/public/common/memory_consumer_update.h"
+#include "content/public/common/memory_coordinator/memory_coordinator_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/common/memory_coordinator/predicate_memory_coordinator_policy.h"
+#include "content/public/common/memory_coordinator/predicate_memory_coordinator_policy.h"
 
 #include <string_view>
 #include <utility>
@@ -10,8 +10,8 @@
 #include "base/feature_list.h"
 #include "base/memory_coordinator/memory_coordinator_features.h"
 #include "base/memory_coordinator/memory_limit.h"
-#include "content/common/memory_coordinator/memory_coordinator_policy.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy_manager.h"
+#include "content/public/common/memory_coordinator/memory_coordinator_policy.h"
 
 namespace content {
 

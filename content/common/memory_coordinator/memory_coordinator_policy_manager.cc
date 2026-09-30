@@ -12,7 +12,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "content/common/memory_coordinator/memory_consumer_group_host.h"
-#include "content/common/memory_coordinator/memory_coordinator_policy.h"
+#include "content/public/common/memory_coordinator/memory_coordinator_policy.h"
 
 namespace content {
 

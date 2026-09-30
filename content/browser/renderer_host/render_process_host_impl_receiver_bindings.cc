@@ -19,7 +19,7 @@
 #include "content/browser/file_system/file_system_manager_impl.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/media/media_internals.h"
-#include "content/browser/memory_coordinator/browser_memory_coordinator.h"
+#include "content/browser/memory_coordinator/browser_memory_coordinator_impl.h"
 #include "content/browser/mime_registry_impl.h"
 #include "content/browser/push_messaging/push_messaging_manager.h"
 #include "content/browser/renderer_host/embedded_frame_sink_provider_impl.h"
@@ -142,8 +142,8 @@ void RenderProcessHostImpl::RegisterMojoInterfaces() {
           [](ChildProcessId rph_id,
              mojo::PendingReceiver<mojom::ChildMemoryConsumerRegistryHost>
                  receiver) {
-            BrowserMemoryCoordinator::Get().Bind(PROCESS_TYPE_RENDERER, rph_id,
-                                                 std::move(receiver));
+            BrowserMemoryCoordinatorImpl::Get().Bind(
+                PROCESS_TYPE_RENDERER, rph_id, std::move(receiver));
           },
           GetID()));
 

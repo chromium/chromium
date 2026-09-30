@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_MEMORY_COORDINATOR_BROWSER_MEMORY_COORDINATOR_H_
-#define CONTENT_BROWSER_MEMORY_COORDINATOR_BROWSER_MEMORY_COORDINATOR_H_
+#ifndef CONTENT_BROWSER_MEMORY_COORDINATOR_BROWSER_MEMORY_COORDINATOR_IMPL_H_
+#define CONTENT_BROWSER_MEMORY_COORDINATOR_BROWSER_MEMORY_COORDINATOR_IMPL_H_
 
 #include <memory>
 
@@ -11,11 +11,12 @@
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
 #include "content/common/memory_coordinator/memory_consumer_registry.h"
-#include "content/common/memory_coordinator/memory_coordinator_policy.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy_manager.h"
 #include "content/common/memory_coordinator/memory_pressure_listener_policy.h"
 #include "content/common/memory_coordinator/mojom/memory_coordinator.mojom.h"
+#include "content/public/browser/browser_memory_coordinator.h"
 #include "content/public/common/child_process_id.h"
+#include "content/public/common/memory_coordinator/memory_coordinator_policy.h"
 #include "content/public/common/process_type.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -24,25 +25,26 @@ namespace content {
 
 class ChildMemoryConsumerRegistryHost;
 
-// BrowserMemoryCoordinator is a singleton that owns the
+// BrowserMemoryCoordinatorImpl is a singleton that owns the
 // MemoryConsumerRegistry, the ChildMemoryConsumerRegistryHost
 // instances, and the MemoryCoordinatorPolicyManager.
-class CONTENT_EXPORT BrowserMemoryCoordinator {
+class CONTENT_EXPORT BrowserMemoryCoordinatorImpl
+    : public BrowserMemoryCoordinator {
  public:
-  static BrowserMemoryCoordinator& Get();
+  static BrowserMemoryCoordinatorImpl& Get();
 
-  BrowserMemoryCoordinator();
+  BrowserMemoryCoordinatorImpl();
 
-  BrowserMemoryCoordinator(const BrowserMemoryCoordinator&) = delete;
-  BrowserMemoryCoordinator& operator=(const BrowserMemoryCoordinator&) = delete;
+  BrowserMemoryCoordinatorImpl(const BrowserMemoryCoordinatorImpl&) = delete;
+  BrowserMemoryCoordinatorImpl& operator=(const BrowserMemoryCoordinatorImpl&) =
+      delete;
 
-  ~BrowserMemoryCoordinator();
+  ~BrowserMemoryCoordinatorImpl() override;
+
+  // BrowserMemoryCoordinator:
+  MemoryCoordinatorPolicyManager& policy_manager() override;
 
   MemoryConsumerRegistry& registry() { return registry_.Get(); }
-
-  MemoryCoordinatorPolicyManager& policy_manager_for_testing() {
-    return policy_manager_;
-  }
 
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
   // Adds/removes a diagnostic observer. When the first observer is added,
@@ -83,4 +85,4 @@ class CONTENT_EXPORT BrowserMemoryCoordinator {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_MEMORY_COORDINATOR_BROWSER_MEMORY_COORDINATOR_H_
+#endif  // CONTENT_BROWSER_MEMORY_COORDINATOR_BROWSER_MEMORY_COORDINATOR_IMPL_H_

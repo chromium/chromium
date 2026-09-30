@@ -5,8 +5,8 @@
 #include "content/public/test/memory_coordinator_browsertest_util.h"
 
 #include "base/hash/hash.h"
-#include "content/browser/memory_coordinator/browser_memory_coordinator.h"
 #include "content/common/memory_coordinator/memory_coordinator_policy_manager.h"
+#include "content/public/browser/browser_memory_coordinator.h"
 
 namespace content::test {
 
@@ -19,24 +19,22 @@ ScopedMemoryLimitOverride::~ScopedMemoryLimitOverride() {
 }
 
 void ScopedMemoryLimitOverride::SetLimit(base::MemoryLimit memory_limit) {
-  BrowserMemoryCoordinator::Get()
-      .policy_manager_for_testing()
-      .SetMemoryLimitOverride(consumer_id_, memory_limit);
+  BrowserMemoryCoordinator::Get().policy_manager().SetMemoryLimitOverride(
+      consumer_id_, memory_limit);
   limit_ = memory_limit;
 }
 
 void ScopedMemoryLimitOverride::ClearLimit() {
   if (limit_.has_value()) {
-    BrowserMemoryCoordinator::Get()
-        .policy_manager_for_testing()
-        .ClearMemoryLimitOverride(consumer_id_);
+    BrowserMemoryCoordinator::Get().policy_manager().ClearMemoryLimitOverride(
+        consumer_id_);
     limit_.reset();
   }
 }
 
 void ScopedMemoryLimitOverride::NotifyReleaseMemory() {
   BrowserMemoryCoordinator::Get()
-      .policy_manager_for_testing()
+      .policy_manager()
       .NotifyReleaseMemoryForTesting(consumer_id_);
 }
 

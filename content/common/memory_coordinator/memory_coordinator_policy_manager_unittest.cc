@@ -17,7 +17,7 @@
 #include "base/test/task_environment.h"
 #include "content/common/buildflags.h"
 #include "content/common/memory_coordinator/memory_consumer_group_host.h"
-#include "content/common/memory_coordinator/memory_coordinator_policy.h"
+#include "content/public/common/memory_coordinator/memory_coordinator_policy.h"
 #include "content/public/test/memory_coordinator_browsertest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_COMMON_MEMORY_COORDINATOR_PREDICATE_MEMORY_COORDINATOR_POLICY_H_
-#define CONTENT_COMMON_MEMORY_COORDINATOR_PREDICATE_MEMORY_COORDINATOR_POLICY_H_
+#ifndef CONTENT_PUBLIC_COMMON_MEMORY_COORDINATOR_PREDICATE_MEMORY_COORDINATOR_POLICY_H_
+#define CONTENT_PUBLIC_COMMON_MEMORY_COORDINATOR_PREDICATE_MEMORY_COORDINATOR_POLICY_H_
 
 #include <string_view>
 
@@ -12,7 +12,7 @@
 #include "base/memory_coordinator/memory_consumer.h"
 #include "base/memory_coordinator/traits.h"
 #include "content/common/content_export.h"
-#include "content/common/memory_coordinator/memory_coordinator_policy.h"
+#include "content/public/common/memory_coordinator/memory_coordinator_policy.h"
 
 namespace content {
 
@@ -74,4 +74,4 @@ class CONTENT_EXPORT PredicateMemoryCoordinatorPolicy
 
 }  // namespace content
 
-#endif  // CONTENT_COMMON_MEMORY_COORDINATOR_PREDICATE_MEMORY_COORDINATOR_POLICY_H_
+#endif  // CONTENT_PUBLIC_COMMON_MEMORY_COORDINATOR_PREDICATE_MEMORY_COORDINATOR_POLICY_H_

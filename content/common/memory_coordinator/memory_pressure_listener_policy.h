@@ -9,7 +9,7 @@
 
 #include "base/memory/memory_pressure_listener.h"
 #include "content/common/content_export.h"
-#include "content/common/memory_coordinator/predicate_memory_coordinator_policy.h"
+#include "content/public/common/memory_coordinator/predicate_memory_coordinator_policy.h"
 
 namespace content {
 

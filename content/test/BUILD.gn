@@ -2719,7 +2719,7 @@ test("content_unittests") {
     "../browser/media/system_media_controls/system_media_controls_notifier_unittest.cc",
     "../browser/media/webaudio/audio_context_manager_impl_unittest.cc",
     "../browser/memory/swap_metrics_driver_impl_unittest.cc",
-    "../browser/memory_coordinator/browser_memory_coordinator_unittest.cc",
+    "../browser/memory_coordinator/browser_memory_coordinator_impl_unittest.cc",
     "../browser/memory_coordinator/child_memory_consumer_registry_host_unittest.cc",
     "../browser/metrics/histogram_shared_memory_config_unittest.cc",
     "../browser/metrics/histograms_monitor_unittest.cc",
@@ -3216,7 +3216,8 @@ test("content_unittests") {
   }
 
   if (is_linux && enable_vr) {
-    sources += [ "../services/isolated_xr_device/xr_sandbox_hook_linux_unittest.cc" ]
+    sources +=
+        [ "../services/isolated_xr_device/xr_sandbox_hook_linux_unittest.cc" ]
   }
 
   if (is_android || is_linux || is_chromeos || is_mac || is_win || is_fuchsia) {

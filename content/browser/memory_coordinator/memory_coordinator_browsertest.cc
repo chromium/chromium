@@ -15,11 +15,11 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/run_until.h"
-#include "content/browser/memory_coordinator/browser_memory_coordinator.h"
-#include "content/common/memory_coordinator/memory_coordinator_policy.h"
+#include "content/browser/memory_coordinator/browser_memory_coordinator_impl.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/child_process_id.h"
+#include "content/public/common/memory_coordinator/memory_coordinator_policy.h"
 #include "content/public/common/process_type.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
@@ -128,7 +128,7 @@ class MemoryCoordinatorBrowserTest : public ContentBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(MemoryCoordinatorBrowserTest, ChildProcessRegistration) {
   MemoryCoordinatorPolicyManager& manager =
-      BrowserMemoryCoordinator::Get().policy_manager_for_testing();
+      BrowserMemoryCoordinator::Get().policy_manager();
   TestPolicy policy(manager);
   MemoryCoordinatorPolicyRegistration registration(manager, policy);
 
@@ -213,7 +213,7 @@ IN_PROC_BROWSER_TEST_F(MemoryCoordinatorBrowserTest, ChildProcessRegistration) {
 IN_PROC_BROWSER_TEST_F(MemoryCoordinatorBrowserTest,
                        ScopedMemoryLimitOverrideTest) {
   MemoryCoordinatorPolicyManager& manager =
-      BrowserMemoryCoordinator::Get().policy_manager_for_testing();
+      BrowserMemoryCoordinator::Get().policy_manager();
   TestPolicy policy(manager);
   MemoryCoordinatorPolicyRegistration registration(manager, policy);
 
@@ -271,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(MemoryCoordinatorBrowserTest,
 IN_PROC_BROWSER_TEST_F(MemoryCoordinatorBrowserTest,
                        ScopedMemoryLimitOverridePersistenceTest) {
   MemoryCoordinatorPolicyManager& manager =
-      BrowserMemoryCoordinator::Get().policy_manager_for_testing();
+      BrowserMemoryCoordinator::Get().policy_manager();
   TestPolicy policy(manager);
   MemoryCoordinatorPolicyRegistration registration(manager, policy);
 
@@ -295,7 +295,7 @@ IN_PROC_BROWSER_TEST_F(MemoryCoordinatorBrowserTest,
 IN_PROC_BROWSER_TEST_F(MemoryCoordinatorBrowserTest,
                        ScopedMemoryLimitOverrideIsolationTest) {
   MemoryCoordinatorPolicyManager& manager =
-      BrowserMemoryCoordinator::Get().policy_manager_for_testing();
+      BrowserMemoryCoordinator::Get().policy_manager();
   TestPolicy policy(manager);
   MemoryCoordinatorPolicyRegistration registration(manager, policy);
 

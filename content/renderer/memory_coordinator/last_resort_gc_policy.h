@@ -9,8 +9,8 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/timer/timer.h"
 #include "content/common/content_export.h"
-#include "content/common/memory_coordinator/memory_coordinator_policy.h"
-#include "content/common/memory_coordinator/predicate_memory_coordinator_policy.h"
+#include "content/public/common/memory_coordinator/memory_coordinator_policy.h"
+#include "content/public/common/memory_coordinator/predicate_memory_coordinator_policy.h"
 
 namespace content {
 
