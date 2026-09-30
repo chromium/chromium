@@ -30,10 +30,6 @@ struct AccountSetting {
 inline constexpr AccountSetting kWalletPrivacyContextualSurfacing{
     "WALLET_PRIVACY_CONTEXTUAL_SURFACING", base::Value::Type::BOOLEAN};
 
-inline constexpr AccountSetting kAccountSettingContext{
-    "143", base::Value::Type::BOOLEAN,
-    &features::kAccountSettingContextKillSwitch};
-
 inline constexpr AccountSetting kAccountSettingContextSearch{
     "144", base::Value::Type::BOOLEAN,
     &features::kAccountSettingContextKillSwitch};
