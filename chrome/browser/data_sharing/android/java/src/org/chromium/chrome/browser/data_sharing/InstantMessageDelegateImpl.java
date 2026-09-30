@@ -44,6 +44,7 @@ import org.chromium.components.data_sharing.DataSharingService;
 import org.chromium.components.data_sharing.GroupMember;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig;
 import org.chromium.components.data_sharing.configs.DataSharingAvatarBitmapConfig.DataSharingAvatarCallback;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
@@ -357,8 +358,7 @@ public class InstantMessageDelegateImpl implements InstantMessageDelegate {
                 UrlConstantResolverFactory.getForProfile(currentProfile);
         url = TextUtils.isEmpty(url) ? urlConstantResolver.getNtpUrl() : url;
         GURL gurl = new GURL(url);
-        if (!TabGroupSyncUtils.isSavableUrl(gurl)
-                && !TabGroupSyncUtils.isNtpOrAboutBlankUrl(gurl)) {
+        if (!TabGroupSyncUtils.isSavableUrl(gurl) && !UrlUtilities.isNtpOrAboutBlank(gurl)) {
             return;
         }
 

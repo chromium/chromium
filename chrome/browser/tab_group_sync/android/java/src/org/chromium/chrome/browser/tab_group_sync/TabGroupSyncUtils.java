@@ -6,10 +6,7 @@ package org.chromium.chrome.browser.tab_group_sync;
 
 import static org.chromium.chrome.browser.url_constants.UrlConstantResolver.getOriginalNtpGurl;
 
-import android.text.TextUtils;
 import android.util.Pair;
-
-import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -26,7 +23,6 @@ import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.content_public.browser.NavigationHandle;
-import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
 
 import java.util.Collections;
@@ -72,7 +68,7 @@ public final class TabGroupSyncUtils {
         assert url != null;
         if (isSavableUrl(url)) {
             return new Pair<>(url, title);
-        } else if (isNtpOrAboutBlankUrl(url)) {
+        } else if (UrlUtilities.isNtpOrAboutBlank(url)) {
             return new Pair<>(NTP_URL, NEW_TAB_TITLE);
         } else {
             return new Pair<>(UNSAVEABLE_URL_OVERRIDE, UNSAVEABLE_TAB_TITLE);
@@ -82,14 +78,6 @@ public final class TabGroupSyncUtils {
     /** Utility method to determine if a URL can be synced or not. */
     public static boolean isSavableUrl(GURL url) {
         return UrlUtilities.isHttpOrHttps(url);
-    }
-
-    @VisibleForTesting
-    public static boolean isNtpOrAboutBlankUrl(GURL url) {
-        String urlString = url.getValidSpecOrEmpty();
-        return UrlUtilities.isNtpUrl(url)
-                || TextUtils.equals(urlString, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL)
-                || TextUtils.equals(urlString, ContentUrlConstants.ABOUT_BLANK_URL);
     }
 
     /**

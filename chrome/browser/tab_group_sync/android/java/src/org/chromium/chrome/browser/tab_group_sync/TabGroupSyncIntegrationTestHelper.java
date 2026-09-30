@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.util.browser.sync.SyncTestUtil;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.sync.DataType;
 import org.chromium.components.sync.protocol.EntitySpecifics;
 import org.chromium.components.sync.protocol.SavedTabGroup;
@@ -335,11 +336,9 @@ public class TabGroupSyncIntegrationTestHelper {
     }
 
     private static void verifyTitleAndUrlForTab(TabInfo expectedTab, TabInfo actualTab) {
-        boolean isNtpUrl = TabGroupSyncUtils.isNtpOrAboutBlankUrl(new GURL(expectedTab.url));
+        boolean isNtpUrl = UrlUtilities.isNtpOrAboutBlank(new GURL(expectedTab.url));
         if (isNtpUrl) {
-            assertTrue(
-                    "URL is not NTP",
-                    TabGroupSyncUtils.isNtpOrAboutBlankUrl(new GURL(actualTab.url)));
+            assertTrue("URL is not NTP", UrlUtilities.isNtpOrAboutBlank(new GURL(actualTab.url)));
             assertTrue(
                     "Title is not new tab",
                     NEW_TAB_TITLE.equals(actualTab.title) || "about:blank".equals(actualTab.title));

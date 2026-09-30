@@ -15,6 +15,7 @@ import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tab_group_sync.LocalTabGroupId;
 import org.chromium.components.tab_group_sync.SavedTabGroup;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
@@ -62,8 +63,7 @@ public class RecentActivityActionHandlerImpl implements RecentActivityActionHand
     @Override
     public void reopenTab(String url) {
         GURL gurl = new GURL(url);
-        if (!TabGroupSyncUtils.isSavableUrl(gurl)
-                && !TabGroupSyncUtils.isNtpOrAboutBlankUrl(gurl)) {
+        if (!TabGroupSyncUtils.isSavableUrl(gurl) && !UrlUtilities.isNtpOrAboutBlank(gurl)) {
             return;
         }
 

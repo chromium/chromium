@@ -245,6 +245,20 @@ public class UrlUtilitiesUnitTest {
 
     @Test
     @SmallTest
+    public void testIsNtpOrAboutBlankGurl() {
+        assertTrue(UrlUtilities.isNtpOrAboutBlank(new GURL("chrome-native://newtab")));
+        assertTrue(UrlUtilities.isNtpOrAboutBlank(new GURL("chrome://newtab")));
+        assertTrue(UrlUtilities.isNtpOrAboutBlank(new GURL("about:blank")));
+        assertTrue(UrlUtilities.isNtpOrAboutBlank(new GURL("about://blank")));
+
+        assertFalse(UrlUtilities.isNtpOrAboutBlank(new GURL("http://www.example.com")));
+        assertFalse(UrlUtilities.isNtpOrAboutBlank(new GURL("chrome://history")));
+        assertFalse(UrlUtilities.isNtpOrAboutBlank(new GURL("")));
+        assertFalse(UrlUtilities.isNtpOrAboutBlank((GURL) null));
+    }
+
+    @Test
+    @SmallTest
     public void testIsChromeNativeUrl() {
         assertTrue(UrlUtilities.isChromeNativeUrl(new GURL("chrome-native://newtab")));
         assertTrue(UrlUtilities.isChromeNativeUrl(new GURL("chrome-native://bookmarks")));

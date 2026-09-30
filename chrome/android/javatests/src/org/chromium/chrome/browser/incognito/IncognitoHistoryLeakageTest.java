@@ -45,6 +45,7 @@ import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -189,17 +190,13 @@ public class IncognitoHistoryLeakageTest {
         assertEquals(mTestPage2, entry2.getOriginalUrl().getSpec());
     }
 
-    private static boolean isNtpOrAboutBlank(String url) {
-        return url.equals("chrome-native://newtab/") || url.equals("about:blank");
-    }
-
     /**
      * Returns the number of entries in the history that are not the new tab page or about:blank.
      */
     private static int getRealEntryCount(NavigationHistory history) {
         int count = 0;
         for (int i = 0; i < history.getEntryCount(); ++i) {
-            if (!isNtpOrAboutBlank(history.getEntryAtIndex(i).getOriginalUrl().getSpec())) {
+            if (!UrlUtilities.isNtpOrAboutBlank(history.getEntryAtIndex(i).getOriginalUrl())) {
                 count++;
             }
         }
@@ -213,7 +210,7 @@ public class IncognitoHistoryLeakageTest {
     private static NavigationEntry getFirstRealEntry(NavigationHistory history) {
         for (int i = 0; i < history.getEntryCount(); ++i) {
             NavigationEntry entry = history.getEntryAtIndex(i);
-            if (!isNtpOrAboutBlank(entry.getOriginalUrl().getSpec())) {
+            if (!UrlUtilities.isNtpOrAboutBlank(entry.getOriginalUrl())) {
                 return entry;
             }
         }

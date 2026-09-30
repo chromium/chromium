@@ -7,7 +7,6 @@ package org.chromium.components.favicon;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.graphics.Bitmap;
-import android.text.TextUtils;
 import android.util.LruCache;
 
 import androidx.annotation.VisibleForTesting;
@@ -21,7 +20,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.BrowserContextHandle;
-import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.NetworkTrafficAnnotationTag;
 import org.chromium.url.GURL;
 
@@ -179,7 +177,7 @@ public class LargeIconBridge {
         assert mNativeLargeIconBridge != 0;
         assert callback != null;
 
-        if ((pageUrl.isEmpty() || !pageUrl.isValid() || isNtpOrAboutBlank(pageUrl))
+        if ((pageUrl.isEmpty() || !pageUrl.isValid() || UrlUtilities.isNtpOrAboutBlank(pageUrl))
                 && isDontCacheNullFaviconsEnabled()) {
             return false;
         }
@@ -235,13 +233,6 @@ public class LargeIconBridge {
                             desiredSizePx,
                             callbackWrapper);
         }
-    }
-
-    private boolean isNtpOrAboutBlank(GURL pageUrl) {
-        String urlString = pageUrl.getValidSpecOrEmpty();
-        return UrlUtilities.isNtpUrl(pageUrl)
-                || TextUtils.equals(urlString, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL)
-                || TextUtils.equals(urlString, ContentUrlConstants.ABOUT_BLANK_URL);
     }
 
     /**
