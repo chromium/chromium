@@ -518,6 +518,60 @@ TEST_F(AudioContextTest, DisposeOrphansHandlerWhenInterrupted) {
   EXPECT_FALSE(handler->HasOneRef());
 }
 
+TEST_F(AudioContextTest, DisposeOrphansHandlerWhenRunningWithoutPulling) {
+  AudioContextOptions* options = AudioContextOptions::Create();
+  AudioContext* context = AudioContext::Create(
+      GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
+  ExpectContextBecomesRunningAsync(context);
+  ExpectContextRunning(context);
+
+  RealtimeAudioDestinationHandler* dest_handler =
+      &context->destinationNode()->GetAudioDestinationHandler();
+  FakeAudioThread audio_thread(ThreadType::kRealtimeAudioWorkletThread);
+  {
+    DelayNode* node = context->createDelay(ASSERT_NO_EXCEPTION);
+    node->connect(context->destinationNode(), 0, 0, ASSERT_NO_EXCEPTION);
+
+    // Run a render cycle so the summing junction updates its rendering state.
+    audio_thread.RunOnAudioThreadWithContext(
+        context,
+        CrossThreadBindOnce(
+            [](RealtimeAudioDestinationHandler* handler) {
+              const AudioIOPosition pos{0, 0, 0};
+              const AudioCallbackMetric metric;
+              scoped_refptr<AudioBus> bus =
+                  AudioBus::Create(2, 128, /*create_memory=*/true);
+              handler->Render(bus.get(), 128, pos, metric, base::TimeDelta(),
+                              {});
+            },
+            CrossThreadUnretained(dest_handler)));
+  }
+
+  // Stop pulling the graph while the context state remains kRunning.
+  dest_handler->StopRendering();
+  ASSERT_EQ(context->ContextState(), V8AudioContextState::Enum::kRunning);
+  ASSERT_FALSE(context->IsPullingAudioGraph());
+
+  WebHeap::CollectAllGarbageForTesting();
+
+  // Resume rendering and verify the destination renders cleanly while the
+  // graph lock is held on the main thread.
+  dest_handler->StartRendering();
+  {
+    DeferredTaskHandler::GraphAutoLocker locker(
+        context->GetDeferredTaskHandler());
+    audio_thread.RunOnAudioThread(CrossThreadBindOnce(
+        [](RealtimeAudioDestinationHandler* handler) {
+          const AudioIOPosition pos{0, 0, 0};
+          const AudioCallbackMetric metric;
+          scoped_refptr<AudioBus> bus =
+              AudioBus::Create(2, 128, /*create_memory=*/true);
+          handler->Render(bus.get(), 128, pos, metric, base::TimeDelta(), {});
+        },
+        CrossThreadUnretained(dest_handler)));
+  }
+}
+
 TEST_F(AudioContextTest, AudioContextOptions_WebAudioLatencyHint) {
   AudioContextOptions* interactive_options = AudioContextOptions::Create();
   interactive_options->setLatencyHint(
