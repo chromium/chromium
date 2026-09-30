@@ -133,6 +133,7 @@ inline LayoutStateAssistantPassKey PassKey() {
         AssistantContainerDetent::kMedium,
         AssistantContainerDetent::kLarge,
     };
+    _largestUndimmedDetent = kDefaultLargestUndimmedDetent;
   }
   return self;
 }
@@ -454,6 +455,17 @@ inline LayoutStateAssistantPassKey PassKey() {
                                     availableDetents:self.detents];
 }
 
+- (void)setLargestUndimmedDetent:
+    (AssistantContainerDetent)largestUndimmedDetent {
+  if (_largestUndimmedDetent == largestUndimmedDetent) {
+    return;
+  }
+  _largestUndimmedDetent = largestUndimmedDetent;
+  if (_heightConstraint) {
+    [self updateContainerStylingForHeight:_heightConstraint.constant];
+  }
+}
+
 - (void)setMinimizedDetentHeight:(NSInteger)minimizedDetentHeight {
   _minimizedDetentHeight = minimizedDetentHeight;
   [self updateDetentHeights];
@@ -593,9 +605,11 @@ inline LayoutStateAssistantPassKey PassKey() {
       _detentHeights[AssistantContainerDetent::kMinimized];
   CGFloat mediumHeight = _detentHeights[AssistantContainerDetent::kMedium];
   CGFloat largeHeight = _detentHeights[AssistantContainerDetent::kLarge];
+  CGFloat largestUndimmedHeight = _detentHeights[self.largestUndimmedDetent];
 
-  ContainerMorphingConstraints constraints = CalculateMorphingConstraints(
-      height, minimizedHeight, mediumHeight, largeHeight);
+  ContainerMorphingConstraints constraints =
+      CalculateMorphingConstraints(height, minimizedHeight, mediumHeight,
+                                   largeHeight, largestUndimmedHeight);
 
   if (IsChromeNextIaEnabled()) {
     BOOL isAppBarAtBottom =
@@ -623,6 +637,8 @@ inline LayoutStateAssistantPassKey PassKey() {
       updateTopCornerRadius:constraints.top_corner_radius
          bottomCornerRadius:constraints.bottom_corner_radius];
   _dimmingView.alpha = constraints.background_dimming_alpha;
+  _assistantContainerView.accessibilityViewIsModal =
+      constraints.background_dimming_alpha > 0.0;
 
   _bottomCornerRadius = constraints.bottom_corner_radius;
   _bottomMargin = constraints.bottom_margin;
@@ -821,12 +837,13 @@ inline LayoutStateAssistantPassKey PassKey() {
 
 // Handles the tap gesture on the dimming view.
 - (void)handleDimmingViewTap:(UITapGestureRecognizer*)gesture {
-  if (_activeDetent != AssistantContainerDetent::kLarge) {
+  if (!_activeDetent.has_value() ||
+      _activeDetent.value() <= self.largestUndimmedDetent) {
     return;
   }
 
   AssistantContainerDetent detent = self.detents.front();
-  if (detent == AssistantContainerDetent::kLarge) {
+  if (detent == _activeDetent.value()) {
     return;
   }
 

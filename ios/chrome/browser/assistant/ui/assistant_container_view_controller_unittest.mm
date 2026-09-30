@@ -624,4 +624,40 @@ TEST_F(AssistantContainerViewControllerTest,
   EXPECT_FALSE(view_controller_.grabberButton.hidden);
 }
 
+// Tests that largestUndimmedDetent defaults to kMedium and controls background
+// dimming and dimming view tap handling.
+TEST_F(AssistantContainerViewControllerTest,
+       LargestUndimmedDetentControlsDimmingAndTap) {
+  EXPECT_EQ(view_controller_.largestUndimmedDetent,
+            kDefaultLargestUndimmedDetent);
+
+  [view_controller_ setDetents:{AssistantContainerDetent::kMinimized,
+                                AssistantContainerDetent::kMedium,
+                                AssistantContainerDetent::kLarge}];
+
+  // At kMedium (the default largestUndimmedDetent), the dimming view should not
+  // be dimmed and tapping it should not collapse the container.
+  [view_controller_ animateToDetent:AssistantContainerDetent::kMedium
+                           duration:0.0
+                              curve:UIViewAnimationCurveEaseInOut];
+  CGFloat medium_height = view_controller_.heightConstraint.constant;
+  EXPECT_EQ(0.0, view_controller_.dimmingView.alpha);
+
+  UITapGestureRecognizer* dummy_gesture = [[UITapGestureRecognizer alloc] init];
+  [view_controller_ handleDimmingViewTap:dummy_gesture];
+  EXPECT_EQ(medium_height, view_controller_.heightConstraint.constant);
+
+  // Setting largestUndimmedDetent to kMinimized should dim kMedium and allow
+  // tapping the dimming view to collapse to kMinimized.
+  view_controller_.largestUndimmedDetent = AssistantContainerDetent::kMinimized;
+  EXPECT_NEAR(kMaxBackgroundDimmingAlpha, view_controller_.dimmingView.alpha,
+              0.001);
+
+  [view_controller_ handleDimmingViewTap:dummy_gesture];
+  [view_controller_.view layoutIfNeeded];
+  EXPECT_EQ(view_controller_.heightConstraint.constant,
+            static_cast<CGFloat>(kAssistantContainerMinimizedDetentHeight));
+  view_controller_.isAnimating = NO;
+}
+
 }  // namespace

@@ -651,6 +651,8 @@ class GeminiContainerMediatorTabHelperObserver
 - (void)setupInitialUIState {
   [self fetchZeroStateSuggestions:_startupState];
 
+  [self.containerHandler setAssistantContainerLargestUndimmedDetent:
+                             AssistantContainerDetent::kMinimized];
   [_stateManager setupInitialUIState];
 
   // In initial zero state the view shouldn't be focused for input.

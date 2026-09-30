@@ -160,6 +160,10 @@
     (std::vector<AssistantContainerDetent>)detents {
 }
 
+- (void)setAssistantContainerLargestUndimmedDetent:
+    (AssistantContainerDetent)detent {
+}
+
 - (void)animateAssistantContainerToDetent:(AssistantContainerDetent)detent {
 }
 

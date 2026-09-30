@@ -27,6 +27,11 @@ enum class AssistantContainerDetent : NSInteger;
 // The available detents for the container. Can't be empty.
 @property(nonatomic, assign) std::vector<AssistantContainerDetent> detents;
 
+// The largest detent that doesn't dim the view underneath the sheet.
+// Detents larger than this detent dim the background and prevent interaction
+// with the view underneath. Defaults to `kDefaultLargestUndimmedDetent`.
+@property(nonatomic, assign) AssistantContainerDetent largestUndimmedDetent;
+
 // The presentation context of the container.
 @property(nonatomic, assign) AssistantPresentationContext presentationContext;
 

@@ -34,6 +34,11 @@ enum class AssistantContainerDetent : NSInteger;
 - (void)setAssistantContainerDetents:
     (std::vector<AssistantContainerDetent>)detents;
 
+// Sets the largest detent that doesn't dim the view underneath the Assistant
+// Container.
+- (void)setAssistantContainerLargestUndimmedDetent:
+    (AssistantContainerDetent)detent;
+
 // Animates the container to a specific detent using default duration and curve.
 // If the detent is not found, acts as a no-op.
 - (void)animateAssistantContainerToDetent:(AssistantContainerDetent)detent;

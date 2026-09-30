@@ -16,7 +16,8 @@ TEST_F(AssistantContainerLayoutUtilsTest, CalculateConstraints_AllDetents) {
   NSInteger large = 600;
 
   // Below minimized (rubber banding constraints).
-  auto constraints = CalculateMorphingConstraints(50, minimized, medium, large);
+  auto constraints =
+      CalculateMorphingConstraints(50, minimized, medium, large, medium);
   EXPECT_EQ(100.0, constraints.actual_height);
   EXPECT_EQ(kMorphingBaseMargin, constraints.side_margin);
   EXPECT_EQ(kMorphingBaseMargin - 50.0, constraints.bottom_margin);
@@ -25,7 +26,8 @@ TEST_F(AssistantContainerLayoutUtilsTest, CalculateConstraints_AllDetents) {
   EXPECT_EQ(0.0, constraints.background_dimming_alpha);
 
   // Exactly at minimized.
-  constraints = CalculateMorphingConstraints(100, minimized, medium, large);
+  constraints =
+      CalculateMorphingConstraints(100, minimized, medium, large, medium);
   EXPECT_EQ(100.0, constraints.actual_height);
   EXPECT_EQ(kMorphingBaseMargin, constraints.side_margin);
   EXPECT_EQ(kMorphingBaseMargin, constraints.bottom_margin);
@@ -34,7 +36,8 @@ TEST_F(AssistantContainerLayoutUtilsTest, CalculateConstraints_AllDetents) {
   EXPECT_EQ(0.0, constraints.background_dimming_alpha);
 
   // Between minimized and medium at progress 0.5.
-  constraints = CalculateMorphingConstraints(200, minimized, medium, large);
+  constraints =
+      CalculateMorphingConstraints(200, minimized, medium, large, medium);
   EXPECT_EQ(200.0, constraints.actual_height);
   EXPECT_EQ(
       kMorphingBaseMargin + (kMorphingMediumMargin - kMorphingBaseMargin) * 0.5,
@@ -50,7 +53,8 @@ TEST_F(AssistantContainerLayoutUtilsTest, CalculateConstraints_AllDetents) {
   EXPECT_EQ(0.0, constraints.background_dimming_alpha);
 
   // Exactly at medium.
-  constraints = CalculateMorphingConstraints(300, minimized, medium, large);
+  constraints =
+      CalculateMorphingConstraints(300, minimized, medium, large, medium);
   EXPECT_EQ(300.0, constraints.actual_height);
   EXPECT_EQ(kMorphingMediumMargin, constraints.side_margin);
   EXPECT_EQ(kMorphingMediumMargin, constraints.bottom_margin);
@@ -61,7 +65,8 @@ TEST_F(AssistantContainerLayoutUtilsTest, CalculateConstraints_AllDetents) {
 
   // Between medium and large at progress 0.5.
   CGFloat progress = 0.5;
-  constraints = CalculateMorphingConstraints(450, minimized, medium, large);
+  constraints =
+      CalculateMorphingConstraints(450, minimized, medium, large, medium);
   EXPECT_EQ(450.0, constraints.actual_height);
   EXPECT_EQ(kMorphingMediumMargin + (0.0 - kMorphingMediumMargin) * progress,
             constraints.side_margin);
@@ -74,7 +79,8 @@ TEST_F(AssistantContainerLayoutUtilsTest, CalculateConstraints_AllDetents) {
             constraints.background_dimming_alpha);
 
   // Exactly at large (bottom margin reaches 0, bottom mask drops).
-  constraints = CalculateMorphingConstraints(600, minimized, medium, large);
+  constraints =
+      CalculateMorphingConstraints(600, minimized, medium, large, medium);
   EXPECT_EQ(600.0, constraints.actual_height);
   EXPECT_EQ(0.0, constraints.side_margin);
   EXPECT_EQ(0.0, constraints.bottom_margin);
@@ -92,7 +98,7 @@ TEST_F(AssistantContainerLayoutUtilsTest, CalculateConstraints_NoMediumDetent) {
   // Between minimized and large at progress 0.5.
   CGFloat progress = 0.5;
   auto constraints =
-      CalculateMorphingConstraints(350, minimized, medium, large);
+      CalculateMorphingConstraints(350, minimized, medium, large, medium);
   EXPECT_EQ(350.0, constraints.actual_height);
   EXPECT_EQ(kMorphingBaseMargin + (0.0 - kMorphingBaseMargin) * progress,
             constraints.side_margin);
@@ -113,7 +119,7 @@ TEST_F(AssistantContainerLayoutUtilsTest, CalculateConstraints_NoLargeDetent) {
   // Exceeding the top-most available detent (medium) should lock to medium
   // properties.
   auto constraints =
-      CalculateMorphingConstraints(450, minimized, medium, large);
+      CalculateMorphingConstraints(450, minimized, medium, large, medium);
   EXPECT_EQ(450.0, constraints.actual_height);
   EXPECT_EQ(kMorphingMediumMargin, constraints.side_margin);
   EXPECT_EQ(kMorphingMediumMargin, constraints.bottom_margin);
@@ -133,7 +139,7 @@ TEST_F(AssistantContainerLayoutUtilsTest,
   // Below the lowest available detent (medium) should lock to medium
   // properties.
   auto constraints =
-      CalculateMorphingConstraints(150, minimized, medium, large);
+      CalculateMorphingConstraints(150, minimized, medium, large, medium);
   EXPECT_EQ(300.0, constraints.actual_height);
   EXPECT_EQ(kMorphingMediumMargin, constraints.side_margin);
   EXPECT_EQ(kMorphingMediumMargin - 150.0, constraints.bottom_margin);
@@ -153,7 +159,7 @@ TEST_F(AssistantContainerLayoutUtilsTest,
   // Exceeding the only available detent (minimized) should keep properties
   // locked.
   auto constraints =
-      CalculateMorphingConstraints(800, minimized, medium, large);
+      CalculateMorphingConstraints(800, minimized, medium, large, medium);
   EXPECT_EQ(800.0, constraints.actual_height);
   EXPECT_EQ(kMorphingBaseMargin, constraints.side_margin);
   EXPECT_EQ(kMorphingBaseMargin, constraints.bottom_margin);
@@ -171,7 +177,7 @@ TEST_F(AssistantContainerLayoutUtilsTest,
 
   // Values should always remain explicitly glued to medium properties.
   auto constraints =
-      CalculateMorphingConstraints(150, minimized, medium, large);
+      CalculateMorphingConstraints(150, minimized, medium, large, medium);
   EXPECT_EQ(300.0, constraints.actual_height);
   EXPECT_EQ(kMorphingMediumMargin, constraints.side_margin);
   EXPECT_EQ(kMorphingMediumMargin - 150.0, constraints.bottom_margin);
@@ -180,7 +186,8 @@ TEST_F(AssistantContainerLayoutUtilsTest,
             constraints.bottom_corner_radius);
   EXPECT_EQ(0.0, constraints.background_dimming_alpha);
 
-  constraints = CalculateMorphingConstraints(800, minimized, medium, large);
+  constraints =
+      CalculateMorphingConstraints(800, minimized, medium, large, medium);
   EXPECT_EQ(800.0, constraints.actual_height);
   EXPECT_EQ(kMorphingMediumMargin, constraints.side_margin);
   EXPECT_EQ(kMorphingMediumMargin, constraints.bottom_margin);
@@ -199,11 +206,44 @@ TEST_F(AssistantContainerLayoutUtilsTest,
 
   // Below the only available detent (large) should strictly reduce height.
   auto constraints =
-      CalculateMorphingConstraints(150, minimized, medium, large);
+      CalculateMorphingConstraints(150, minimized, medium, large, medium);
   EXPECT_EQ(150.0, constraints.actual_height);
   EXPECT_EQ(0.0, constraints.side_margin);
   EXPECT_EQ(0.0, constraints.bottom_margin);
   EXPECT_EQ(kMorphingBaseCornerRadius, constraints.top_corner_radius);
   EXPECT_EQ(0.0, constraints.bottom_corner_radius);
   EXPECT_EQ(kMaxBackgroundDimmingAlpha, constraints.background_dimming_alpha);
+}
+
+// Tests dimming constraints when largest_undimmed_detent_height is minimized or
+// large.
+TEST_F(AssistantContainerLayoutUtilsTest,
+       CalculateConstraints_LargestUndimmedDetentVariants) {
+  NSInteger minimized = 100;
+  NSInteger medium = 300;
+  NSInteger large = 600;
+
+  // When largest_undimmed_detent_height is minimized, dimming starts after
+  // minimized and reaches max at medium.
+  auto constraints =
+      CalculateMorphingConstraints(100, minimized, medium, large, minimized);
+  EXPECT_EQ(0.0, constraints.background_dimming_alpha);
+
+  constraints =
+      CalculateMorphingConstraints(200, minimized, medium, large, minimized);
+  EXPECT_EQ(0.5 * kMaxBackgroundDimmingAlpha,
+            constraints.background_dimming_alpha);
+
+  constraints =
+      CalculateMorphingConstraints(300, minimized, medium, large, minimized);
+  EXPECT_EQ(kMaxBackgroundDimmingAlpha, constraints.background_dimming_alpha);
+
+  constraints =
+      CalculateMorphingConstraints(450, minimized, medium, large, minimized);
+  EXPECT_EQ(kMaxBackgroundDimmingAlpha, constraints.background_dimming_alpha);
+
+  // When largest_undimmed_detent_height is large, no detent is dimmed.
+  constraints =
+      CalculateMorphingConstraints(600, minimized, medium, large, large);
+  EXPECT_EQ(0.0, constraints.background_dimming_alpha);
 }

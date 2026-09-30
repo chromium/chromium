@@ -27,4 +27,9 @@ enum class AssistantContainerDetent : NSInteger {
   kLarge,
 };
 
+// Default largest detent that does not dim the view underneath the Assistant
+// Container.
+inline constexpr AssistantContainerDetent kDefaultLargestUndimmedDetent =
+    AssistantContainerDetent::kMedium;
+
 #endif  // IOS_CHROME_BROWSER_ASSISTANT_UI_ASSISTANT_CONTAINER_DETENT_H_

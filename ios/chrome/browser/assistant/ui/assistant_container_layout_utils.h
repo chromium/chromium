@@ -83,11 +83,13 @@ CGFloat InterpolateValue(CGFloat start_value,
                          CGFloat end_value,
                          CGFloat progress);
 
-// Calculates dynamic layout dimensions for a given height and detent bounds.
+// Calculates dynamic layout dimensions for a given height, detent heights, and
+// largest undimmed detent height.
 ContainerMorphingConstraints CalculateMorphingConstraints(
     CGFloat height,
     CGFloat minimized_height,
     CGFloat medium_height,
-    CGFloat large_height);
+    CGFloat large_height,
+    CGFloat largest_undimmed_detent_height);
 
 #endif  // IOS_CHROME_BROWSER_ASSISTANT_UI_ASSISTANT_CONTAINER_LAYOUT_UTILS_H_

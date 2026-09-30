@@ -67,6 +67,8 @@ enum class TransitionState {
   ProceduralBlock _dismissalCompletion;
   // The available detents for the container.
   std::vector<AssistantContainerDetent> _detents;
+  // The largest detent that doesn't dim the view underneath the sheet.
+  AssistantContainerDetent _largestUndimmedDetent;
   // The height for the minimized detent.
   NSInteger _minimizedDetentHeight;
   // Whether the grabber button is hidden.
@@ -79,6 +81,7 @@ enum class TransitionState {
                                    browser:(Browser*)browser {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
+    _largestUndimmedDetent = kDefaultLargestUndimmedDetent;
     _minimizedDetentHeight = kAssistantContainerMinimizedDetentHeight;
     _transitionState = TransitionState::kIdle;
   }
@@ -134,6 +137,7 @@ enum class TransitionState {
   _containerViewController = [[AssistantContainerViewController alloc]
       initWithViewController:_contentViewController];
   _containerViewController.delegate = _delegate;
+  _containerViewController.largestUndimmedDetent = _largestUndimmedDetent;
   _containerViewController.minimizedDetentHeight = _minimizedDetentHeight;
   [_containerViewController setGrabberHidden:_grabberHidden animated:NO];
   if (!_detents.empty()) {
@@ -245,6 +249,12 @@ enum class TransitionState {
     (std::vector<AssistantContainerDetent>)detents {
   _detents = detents;
   [_containerViewController setDetents:detents];
+}
+
+- (void)setAssistantContainerLargestUndimmedDetent:
+    (AssistantContainerDetent)detent {
+  _largestUndimmedDetent = detent;
+  _containerViewController.largestUndimmedDetent = detent;
 }
 
 - (void)animateAssistantContainerToDetent:(AssistantContainerDetent)detent {
@@ -391,6 +401,7 @@ enum class TransitionState {
   _contentViewController = nil;
   _delegate = nil;
   _detents.clear();
+  _largestUndimmedDetent = kDefaultLargestUndimmedDetent;
   _grabberHidden = NO;
 
   if (_dismissalCompletion) {
