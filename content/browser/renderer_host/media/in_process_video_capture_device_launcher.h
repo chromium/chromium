@@ -69,25 +69,29 @@ class InProcessVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
                        base::OnceClosure done_cb,
                        std::unique_ptr<media::VideoCaptureDevice> device);
 
-  void DoStartTabCaptureOnDeviceThread(
+  static void DoStartTabCaptureOnDeviceThread(
       const std::string& device_id,
       const media::VideoCaptureParams& params,
       std::unique_ptr<media::VideoFrameReceiver> receiver,
       ReceiveDeviceCallback result_callback);
 
-  void DoStartVizFrameSinkWindowCaptureOnDeviceThread(
+#if defined(USE_AURA) || BUILDFLAG(IS_MAC)
+  static void DoStartVizFrameSinkWindowCaptureOnDeviceThread(
       const DesktopMediaID& device_id,
       const media::VideoCaptureParams& params,
       std::unique_ptr<media::VideoFrameReceiver> receiver,
       ReceiveDeviceCallback result_callback);
+#endif  // defined(USE_AURA) || BUILDFLAG(IS_MAC)
 
-  void DoStartDesktopCaptureOnDeviceThread(
+  static void DoStartDesktopCaptureOnDeviceThread(
+      NativeScreenCapturePicker* picker,
       const DesktopMediaID& desktop_id,
       const media::VideoCaptureParams& params,
       std::unique_ptr<media::VideoCaptureDeviceClient> client,
       ReceiveDeviceCallback result_callback);
 
-  void OnPipScreenCaptureCoordinatorProxyCreated(
+  static void OnPipScreenCaptureCoordinatorProxyCreated(
+      NativeScreenCapturePicker* picker,
       const DesktopMediaID& desktop_id,
       const media::VideoCaptureParams& params,
       std::unique_ptr<media::VideoCaptureDeviceClient> device_client,
@@ -95,19 +99,14 @@ class InProcessVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
       std::unique_ptr<PipScreenCaptureCoordinatorProxy>
           pip_screen_capture_coordinator_proxy);
 
-  void DoStartDesktopCaptureWithReceiverOnDeviceThread(
-      const DesktopMediaID& desktop_id,
-      const media::VideoCaptureParams& params,
-      std::unique_ptr<media::VideoFrameReceiver> receiver,
-      ReceiveDeviceCallback result_callback);
-
-  void DoStartFakeDisplayCaptureOnDeviceThread(
+  static void DoStartFakeDisplayCaptureOnDeviceThread(
       const DesktopMediaID& desktop_id,
       const media::VideoCaptureParams& params,
       std::unique_ptr<media::VideoCaptureDeviceClient> client,
       ReceiveDeviceCallback result_callback);
 
-  void OnFakeDevicesEnumerated(
+  static void OnFakeDevicesEnumerated(
+      std::unique_ptr<media::FakeVideoCaptureDeviceFactory> fake_device_factory,
       const media::VideoCaptureParams& params,
       std::unique_ptr<media::VideoCaptureDeviceClient> device_client,
       ReceiveDeviceCallback result_callback,
@@ -115,7 +114,6 @@ class InProcessVideoCaptureDeviceLauncher : public VideoCaptureDeviceLauncher {
 
   const scoped_refptr<base::SingleThreadTaskRunner> device_task_runner_;
   State state_;
-  std::unique_ptr<media::FakeVideoCaptureDeviceFactory> fake_device_factory_;
   raw_ptr<NativeScreenCapturePicker> native_screen_capture_picker_;
   base::WeakPtrFactory<InProcessVideoCaptureDeviceLauncher> weak_factory_{this};
 };
