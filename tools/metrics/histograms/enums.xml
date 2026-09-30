@@ -5091,6 +5091,7 @@ shown properly on the user-facing crash UI.
   <int value="-2147024726" label="ERROR_BUSY"/>
   <int value="-2147024713" label="ERROR_ALREADY_EXISTS"/>
   <int value="-2147024703" label="ERROR_BAD_EXE_FORMAT"/>
+  <int value="-2147024696" label="ERROR_RING2SEG_MUST_BE_MOVABLE"/>
   <int value="-2147024671" label="ERROR_VIRUS_INFECTED"/>
   <int value="-2147024663" label="ERROR_PIPE_NOT_CONNECTED"/>
   <int value="-2147024641" label="ERROR_EA_LIST_INCONSISTENT"/>
@@ -5104,6 +5105,7 @@ shown properly on the user-facing crash UI.
   <int value="-2147024156" label="ERROR_ELEVATION_REQUIRED"/>
   <int value="-2147024110" label="ERROR_ACCESS_DISABLED_NO_SAFER_UI_BY_POLICY"/>
   <int value="-2147023901" label="ERROR_OPERATION_ABORTED"/>
+  <int value="-2147023897" label="ERROR_SWAPERROR"/>
   <int value="-2147023878" label="ERROR_KEY_DELETED"/>
   <int value="-2147023843" label="ERROR_SERVICE_REQUEST_TIMEOUT"/>
   <int value="-2147023838" label="ERROR_SERVICE_DISABLED"/>
@@ -5274,6 +5276,7 @@ shown properly on the user-facing crash UI.
   <int value="-1073741801" label="STATUS_INVALID_PARAMETER_2"/>
   <int value="-1073741795" label="STATUS_ILLEGAL_INSTRUCTION"/>
   <int value="-1073741790" label="STATUS_ACCESS_DENIED"/>
+  <int value="-1073741772" label="STATUS_OBJECT_NAME_NOT_FOUND"/>
   <int value="-1073741670" label="STATUS_INSUFFICIENT_RESOURCES"/>
   <int value="-1073741571" label="STATUS_STACK_OVERFLOW"/>
   <int value="-1073741523" label="STATUS_CANT_WAIT"/>
