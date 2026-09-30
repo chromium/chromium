@@ -526,7 +526,7 @@ std::unique_ptr<views::View> TaskManagerView::CreateSearchBar(
   const int horizontal_spacing = provider->GetDistanceMetric(
       DISTANCE_TASK_MANAGER_SEARCH_BAR_ICON_AND_BUTTON_HORIZONTAL_SPACING);
   const int search_bar_container_radius = provider->GetCornerRadiusMetric(
-      views::ShapeContextTokens::kOmniboxExpandedRadius);
+      ChromeShapeContextTokens::kOmniboxExpandedRadius);
 
   auto search_bar_layout = std::make_unique<views::BoxLayout>();
   search_bar_layout->SetOrientation(views::LayoutOrientation::kHorizontal);

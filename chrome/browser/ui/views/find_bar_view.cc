@@ -339,7 +339,7 @@ FindBarView::FindBarView(FindBarHost* host) {
   AddChildView(std::move(main_container));
 
   const float corner_radius = layout_provider->GetCornerRadiusMetric(
-      views::ShapeContextTokens::kFindBarViewRadius);
+      ChromeShapeContextTokens::kFindBarViewRadius);
   {
     auto border = std::make_unique<views::BubbleBorder>(
         views::BubbleBorder::NONE, views::BubbleBorder::STANDARD_SHADOW);

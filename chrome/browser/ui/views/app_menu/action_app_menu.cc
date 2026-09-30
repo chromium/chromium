@@ -502,16 +502,14 @@ void ActionAppMenu::ConfigureMenuItem(views::MenuItemView* menu_item,
 
   // Get the styling from the ActionItem and apply it to its menu item.
   if (container_color != ui::kColorMenuBackground) {
-    const int top_radius =
-        round_top_corners
-            ? provider->GetDistanceMetric(
-                  DISTANCE_ACTION_APP_MENU_CONTAINER_CORNER_RADIUS)
-            : 0;
-    const int bottom_radius =
-        round_bottom_corners
-            ? provider->GetDistanceMetric(
-                  DISTANCE_ACTION_APP_MENU_CONTAINER_CORNER_RADIUS)
-            : 0;
+    const int top_radius = round_top_corners
+                               ? provider->GetCornerRadiusMetric(
+                                     kActionAppMenuContainerCornerRadius)
+                               : 0;
+    const int bottom_radius = round_bottom_corners
+                                  ? provider->GetCornerRadiusMetric(
+                                        kActionAppMenuContainerCornerRadius)
+                                  : 0;
 
     menu_item->SetMenuItemBackground(views::MenuItemView::MenuItemBackground(
         container_color, top_radius, bottom_radius,

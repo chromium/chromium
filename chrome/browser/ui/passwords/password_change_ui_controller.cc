@@ -226,8 +226,8 @@ std::unique_ptr<views::View> CreateInfoBoxRow(
 std::unique_ptr<views::View> CreatePrivateInferenceNoticeBox(
     base::RepeatingClosure navigate_to_settings_callback) {
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
-  const int radius = layout_provider->GetDistanceMetric(
-      DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_ROUNDED_BORDER_RADIUS);
+  const int radius = layout_provider->GetCornerRadiusMetric(
+      kFeatureFirstRunInfoBoxRoundedBorderRadius);
 
   // Label 1: Data sharing notice.
   auto label1 =

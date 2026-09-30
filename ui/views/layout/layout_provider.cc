@@ -203,20 +203,16 @@ int LayoutProvider::GetCornerRadiusMetric(Emphasis emphasis,
   }
 }
 
-ShapeSysTokens GetShapeSysToken(ShapeContextTokens id) {
+ShapeSysTokens GetShapeSysToken(ShapeContextToken id) {
   static constexpr auto shape_token_map =
       base::MakeFixedFlatMap<ShapeContextTokens, ShapeSysTokens>({
           {ShapeContextTokens::kBadgeRadius, ShapeSysTokens::kXSmall},
           {ShapeContextTokens::kButtonRadius, ShapeSysTokens::kFull},
           {ShapeContextTokens::kComboboxRadius, ShapeSysTokens::kSmall},
           {ShapeContextTokens::kDialogRadius, ShapeSysTokens::kMediumSmall},
-          {ShapeContextTokens::kExtensionsMenuButtonRadius,
-           ShapeSysTokens::kXSmall},
-          {ShapeContextTokens::kFindBarViewRadius, ShapeSysTokens::kSmall},
           {ShapeContextTokens::kMenuRadius, ShapeSysTokens::kMediumSmall},
           {ShapeContextTokens::kMenuAuxRadius, ShapeSysTokens::kMediumSmall},
           {ShapeContextTokens::kMenuTouchRadius, ShapeSysTokens::kMediumSmall},
-          {ShapeContextTokens::kOmniboxExpandedRadius, ShapeSysTokens::kMedium},
           {ShapeContextTokens::kTextfieldRadius, ShapeSysTokens::kSmall},
           {ShapeContextTokens::kContentSeparatorRadius, ShapeSysTokens::kSmall},
       });
@@ -224,11 +220,31 @@ ShapeSysTokens GetShapeSysToken(ShapeContextTokens id) {
   return it == shape_token_map.end() ? ShapeSysTokens::kDefault : it->second;
 }
 
-int LayoutProvider::GetCornerRadiusMetric(ShapeContextTokens id,
+int LayoutProvider::GetCornerRadiusMetric(ShapeContextToken id,
                                           const gfx::Size& size) const {
   ShapeSysTokens token = GetShapeSysToken(id);
   DCHECK_NE(token, ShapeSysTokens::kDefault)
       << "kDefault token means there is a missing mapping between shape tokens";
+  return GetCornerRadiusMetric(token, size);
+}
+
+int LayoutProvider::GetShadowElevationMetric(Emphasis emphasis) const {
+  switch (emphasis) {
+    case Emphasis::kNone:
+      return 0;
+    case Emphasis::kLow:
+      return 1;
+    case Emphasis::kMedium:
+      return 2;
+    case Emphasis::kHigh:
+      return 3;
+    case Emphasis::kMaximum:
+      return 16;
+  }
+}
+
+int LayoutProvider::GetCornerRadiusMetric(ShapeSysTokens token,
+                                          const gfx::Size& size) const {
   switch (token) {
     case ShapeSysTokens::kXSmall:
       return 4;
@@ -244,21 +260,6 @@ int LayoutProvider::GetCornerRadiusMetric(ShapeContextTokens id,
       return std::min(size.width(), size.height()) / 2;
     default:
       return 0;
-  }
-}
-
-int LayoutProvider::GetShadowElevationMetric(Emphasis emphasis) const {
-  switch (emphasis) {
-    case Emphasis::kNone:
-      return 0;
-    case Emphasis::kLow:
-      return 1;
-    case Emphasis::kMedium:
-      return 2;
-    case Emphasis::kHigh:
-      return 3;
-    case Emphasis::kMaximum:
-      return 16;
   }
 }
 

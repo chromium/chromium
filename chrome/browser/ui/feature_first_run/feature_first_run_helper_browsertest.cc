@@ -124,8 +124,8 @@ IN_PROC_BROWSER_TEST_F(FeatureFirstRunDialogHelperBrowserTest,
   const gfx::VectorIcon& icon = features::IsRoundedIconsEnabled()
                                     ? kTextAnalysisIcon
                                     : kTextAnalysisOldIcon;
-  const int radius = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_ROUNDED_BORDER_RADIUS);
+  const int radius = ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+      kFeatureFirstRunInfoBoxRoundedBorderRadius);
 
   auto info_box_start =
       CreateInfoBoxContainer(title, description, icon, InfoBoxPosition::kStart);

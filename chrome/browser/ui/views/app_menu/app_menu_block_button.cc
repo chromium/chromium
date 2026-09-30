@@ -36,8 +36,8 @@ AppMenuBlockButton::AppMenuBlockButton(PressedCallback callback)
       DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_ICON_SIZE);
   const int between_spacing = provider->GetDistanceMetric(
       DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_BETWEEN_CHILD_SPACING);
-  const int corner_radius = provider->GetDistanceMetric(
-      DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_CORNER_RADIUS);
+  const int corner_radius =
+      provider->GetCornerRadiusMetric(kActionAppMenuBlockEntryCornerRadius);
 
   auto layout = std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,

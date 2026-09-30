@@ -165,19 +165,19 @@ enum class Emphasis {
 // This includes components such as Buttons, Labels, Textfields, Dropdowns, etc.
 // These context tokens are granular to the entire client and will map to
 // sys token values (see below).
-enum class ShapeContextTokens {
+using ShapeContextToken = int;
+enum ShapeContextTokens : ShapeContextToken {
+  kShapeContextTokenStart = 0,
   kBadgeRadius,
   kButtonRadius,
   kComboboxRadius,
   kDialogRadius,
-  kExtensionsMenuButtonRadius,
-  kFindBarViewRadius,
   kMenuRadius,
   kMenuAuxRadius,
   kMenuTouchRadius,
-  kOmniboxExpandedRadius,
   kTextfieldRadius,
   kContentSeparatorRadius,
+  kShapeContextTokenEnd
 };
 
 // ShapeSysTokens are tokens that map to a fixed value that aligns with UX/UI.
@@ -253,13 +253,16 @@ class VIEWS_EXPORT LayoutProvider {
   // Returns the corner radius related to a specific context token.
   // TODO(crbug.com/40255130): Replace GetCornerRadiusMetric(Emphasis...) with
   // context tokens.
-  int GetCornerRadiusMetric(ShapeContextTokens token,
-                            const gfx::Size& size = gfx::Size()) const;
+  virtual int GetCornerRadiusMetric(ShapeContextToken token,
+                                    const gfx::Size& size = gfx::Size()) const;
 
  protected:
   static constexpr int kSmallDialogWidth = 320;
   static constexpr int kMediumDialogWidth = 448;
   static constexpr int kLargeDialogWidth = 512;
+
+  int GetCornerRadiusMetric(ShapeSysTokens token,
+                            const gfx::Size& size = gfx::Size()) const;
 
  private:
   TypographyProvider typography_provider_;

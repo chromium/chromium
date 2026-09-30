@@ -227,7 +227,7 @@ ExtensionsMenuEntryView::ExtensionsMenuEntryView(
                       // in between menu items.
                       .SetBorder(views::CreateEmptyBorder(gfx::Insets(0)))
                       .SetFocusRingCornerRadius(provider->GetCornerRadiusMetric(
-                          views::ShapeContextTokens::
+                          ChromeShapeContextTokens::
                               kExtensionsMenuButtonRadius))
                       .SetFocusBehavior(views::View::FocusBehavior::ALWAYS),
                   // Site access toggle.
@@ -327,7 +327,7 @@ ExtensionsMenuEntryView::ExtensionsMenuEntryView(
   // Add rounded corners to the site permissions button.
   site_permissions_button_->SetFocusRingCornerRadius(
       views::LayoutProvider::Get()->GetCornerRadiusMetric(
-          views::ShapeContextTokens::kExtensionsMenuButtonRadius));
+          ChromeShapeContextTokens::kExtensionsMenuButtonRadius));
 }
 
 ExtensionsMenuEntryView::~ExtensionsMenuEntryView() = default;

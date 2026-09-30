@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/full_webui_omnibox_frame.h"
@@ -55,7 +56,7 @@ void EmbeddedWebView::AddedToWidget() {
   // frame.
   const float corner_radius =
       views::LayoutProvider::Get()->GetCornerRadiusMetric(
-          views::ShapeContextTokens::kOmniboxExpandedRadius);
+          ChromeShapeContextTokens::kOmniboxExpandedRadius);
   gfx::RoundedCornersF rounded_corner_radii = gfx::RoundedCornersF(
       corner_radius, corner_radius, corner_radius, corner_radius);
   holder()->SetNativeViewCornerRadii(rounded_corner_radii);

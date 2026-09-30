@@ -6,12 +6,14 @@
 
 #include <algorithm>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/gfx/shadow_value.h"
+#include "ui/views/layout/layout_provider.h"
 
 namespace {
 
@@ -174,8 +176,6 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 20;
     case DISTANCE_SIDE_PANEL_HEADER_INTERIOR_MARGIN_HORIZONTAL:
       return 4;
-    case DISTANCE_SIDE_PANEL_CONTENT_RADIUS:
-      return 8;
     case DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW:
       return 20;
     case DISTANCE_INFOBAR_HORIZONTAL_ICON_LABEL_PADDING:
@@ -230,16 +230,12 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 32;
     case DISTANCE_RECENT_ACTIVITY_AVATAR_FALLBACK_SIZE:
       return 24;
-    case DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_RADIUS:
-      return 9;
     case DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_BORDER_WIDTH:
       return 2;
     case DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_PADDING:
       return 4;
     case DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_OFFSET_FROM_AVATAR:
       return 2;
-    case DISTANCE_RECENT_ACTIVITY_CONTAINER_RADIUS:
-      return 8;
     case DISTANCE_RECENT_ACTIVITY_CONTAINER_VERTICAL_MARGIN:
       return 10;
     case DISTANCE_RECENT_ACTIVITY_CONTAINER_VERTICAL_PADDING:
@@ -258,16 +254,11 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
       return 16;
     case DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_PADDING:
       return 12;
-    case DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_ROUNDED_BORDER_RADIUS:
-      return 12;
     case DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_VERTICAL:
       return 1;
     case DISTANCE_INFOBAR_BUTTON_VERTICAL_PADDING:
       return 8;
     case DISTANCE_INFOBAR_BUTTON_HORIZONTAL_PADDING:
-      return 12;
-    // Block-style Action App Menu layout constants.
-    case DISTANCE_ACTION_APP_MENU_CONTAINER_CORNER_RADIUS:
       return 12;
     case DISTANCE_ACTION_APP_MENU_ICON_SIZE:
       return 16;
@@ -291,12 +282,9 @@ int ChromeLayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_ACTION_APP_MENU_NOTIFICATION_MARGIN:
       return 12;
     case DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_BETWEEN_CHILD_SPACING:
-    case DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_CORNER_RADIUS:
     case DISTANCE_ACTION_APP_MENU_HEADER_VERTICAL_MARGIN:
     case DISTANCE_ACTION_APP_MENU_BLOCK_ROW_SPACING:
       return 8;
-    case DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_CORNER_RADIUS:
-      return 12;
     case DISTANCE_ACTION_APP_MENU_BLOCK_ENTRY_BETWEEN_CHILD_SPACING:
       return 4;
     case DISTANCE_ACTION_APP_MENU_MAX_WIDTH:
@@ -323,4 +311,52 @@ const views::TypographyProvider& ChromeLayoutProvider::GetTypographyProvider()
 
 bool ChromeLayoutProvider::ShouldShowWindowIcon() const {
   return false;
+}
+
+views::ShapeSysTokens GetShapeSysToken(views::ShapeContextToken id) {
+  static constexpr auto shape_token_map =
+      base::MakeFixedFlatMap<views::ShapeContextToken, views::ShapeSysTokens>({
+          {kExtensionsMenuButtonRadius, views::ShapeSysTokens::kXSmall},
+          {kFindBarViewRadius, views::ShapeSysTokens::kSmall},
+          {kSidePanelContentRadius, views::ShapeSysTokens::kSmall},
+          {kRecentActivityContainerRadius, views::ShapeSysTokens::kSmall},
+          {kActionAppMenuFooterButtonCornerRadius,
+           views::ShapeSysTokens::kSmall},
+          {kFeatureFirstRunInfoBoxRoundedBorderRadius,
+           views::ShapeSysTokens::kMediumSmall},
+          {kActionAppMenuContainerCornerRadius,
+           views::ShapeSysTokens::kMediumSmall},
+          {kActionAppMenuBlockEntryCornerRadius,
+           views::ShapeSysTokens::kMediumSmall},
+          {kOmniboxExpandedRadius, views::ShapeSysTokens::kMedium},
+      });
+  const auto it = shape_token_map.find(id);
+  return it == shape_token_map.end() ? views::ShapeSysTokens::kDefault
+                                     : it->second;
+}
+
+int ChromeLayoutProvider::GetCornerRadiusMetric(views::ShapeContextToken token,
+                                                const gfx::Size& size) const {
+  DCHECK_GE(token, views::kShapeContextTokenStart);
+  DCHECK_LT(token, kChromeShapeContextTokenEnd);
+
+  if (token < views::ShapeContextTokens::kShapeContextTokenEnd) {
+    return LayoutProvider::GetCornerRadiusMetric(token, size);
+  }
+
+  switch (token) {
+    case kSidePanelContentRadius:
+    case kRecentActivityContainerRadius:
+    case kActionAppMenuFooterButtonCornerRadius:
+    case kFeatureFirstRunInfoBoxRoundedBorderRadius:
+    case kActionAppMenuContainerCornerRadius:
+    case kActionAppMenuBlockEntryCornerRadius:
+    case kExtensionsMenuButtonRadius:
+    case kFindBarViewRadius:
+    case kOmniboxExpandedRadius:
+      return GetCornerRadiusMetric(GetShapeSysToken(token));
+    case kRecentActivityFaviconContainerRadius:
+      return 9;
+  }
+  NOTREACHED();
 }

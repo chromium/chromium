@@ -25,7 +25,7 @@ ReadWriteCardsView::ReadWriteCardsView(
   context_menu_bounds_ = read_write_cards_ui_controller_->context_menu_bounds();
 
   view_shadow_->SetRoundedCornerRadius(
-      GetLayoutProvider()->GetCornerRadiusMetric(
+      views::LayoutProvider::Get()->GetCornerRadiusMetric(
           views::ShapeContextTokens::kMenuRadius));
 
   CHECK(layer()) << "A layer should be created by the constructor of "

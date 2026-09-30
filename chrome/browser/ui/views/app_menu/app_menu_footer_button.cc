@@ -161,8 +161,8 @@ void AppMenuFooterButton::SetUseRowStyle(bool use_row_style) {
     label_->SetTextStyle(views::style::STYLE_BODY_4_EMPHASIS);
     label_->SetEnabledColor(kColorAppMenuFooterButtonForeground);
 
-    const int corner_radius = provider->GetDistanceMetric(
-        DISTANCE_ACTION_APP_MENU_FOOTER_BUTTON_CORNER_RADIUS);
+    const int corner_radius =
+        provider->GetCornerRadiusMetric(kActionAppMenuFooterButtonCornerRadius);
     views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
                                                   corner_radius);
     SetBackground(views::CreateRoundedRectBackground(ui::kColorMenuBackground,

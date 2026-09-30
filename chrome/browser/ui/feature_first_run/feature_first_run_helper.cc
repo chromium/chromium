@@ -59,8 +59,8 @@ std::unique_ptr<ui::DialogModel> CreateGenericFeatureFirstRunDialogModel(
 
 gfx::RoundedCornersF CalculateInfoBoxBorderRadius(InfoBoxPosition position) {
   const int rounded_corner_radius =
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_FEATURE_FIRST_RUN_INFO_BOX_ROUNDED_BORDER_RADIUS);
+      ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+          kFeatureFirstRunInfoBoxRoundedBorderRadius);
 
   switch (position) {
     case InfoBoxPosition::kStart:

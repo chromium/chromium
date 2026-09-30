@@ -240,8 +240,9 @@ void RecentActivityBubbleDialogView::CreateTabActivity() {
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_RECENT_ACTIVITY_CONTAINER_VERTICAL_PADDING);
   // Border radius for the container.
-  const int container_radius = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_RECENT_ACTIVITY_CONTAINER_RADIUS);
+  const int container_radius =
+      ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+          kRecentActivityContainerRadius);
 
   // Tab activity container label.
   auto* label = AddChildView(std::make_unique<views::Label>(
@@ -301,8 +302,9 @@ void RecentActivityBubbleDialogView::CreateGroupActivity() {
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_RECENT_ACTIVITY_CONTAINER_VERTICAL_PADDING);
   // Border radius for the container.
-  const int container_radius = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_RECENT_ACTIVITY_CONTAINER_RADIUS);
+  const int container_radius =
+      ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+          kRecentActivityContainerRadius);
 
   // Group activity container label.
   auto* label = AddChildView(std::make_unique<views::Label>(
@@ -671,8 +673,8 @@ RecentActivityRowImageView::RecentActivityRowImageView(ActivityLogItem item,
   const int avatar_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       DISTANCE_RECENT_ACTIVITY_AVATAR_SIZE);
   const int favicon_container_radius =
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_RADIUS);
+      ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+          kRecentActivityFaviconContainerRadius);
   const int favicon_container_offset =
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_OFFSET_FROM_AVATAR);
@@ -799,8 +801,8 @@ void RecentActivityRowImageView::FetchFavicon() {
 void RecentActivityRowImageView::SetFavicon(
     const favicon_base::FaviconImageResult& favicon) {
   const int favicon_container_radius =
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_RADIUS);
+      ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+          kRecentActivityFaviconContainerRadius);
   const int favicon_container_padding =
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_PADDING);
@@ -821,8 +823,8 @@ void RecentActivityRowImageView::SetFavicon(
 void RecentActivityRowImageView::PaintFavicon(gfx::Canvas* canvas,
                                               const gfx::Rect& avatar_bounds) {
   const int favicon_container_radius =
-      ChromeLayoutProvider::Get()->GetDistanceMetric(
-          DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_RADIUS);
+      ChromeLayoutProvider::Get()->GetCornerRadiusMetric(
+          kRecentActivityFaviconContainerRadius);
   const int favicon_container_border_width =
       ChromeLayoutProvider::Get()->GetDistanceMetric(
           DISTANCE_RECENT_ACTIVITY_FAVICON_CONTAINER_BORDER_WIDTH);

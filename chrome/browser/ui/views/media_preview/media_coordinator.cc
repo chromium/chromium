@@ -42,7 +42,7 @@ MediaCoordinator::MediaCoordinator(
   if (!is_subsection) {
     auto* provider = ChromeLayoutProvider::Get();
     const int kRoundedRadius = provider->GetCornerRadiusMetric(
-        views::ShapeContextTokens::kOmniboxExpandedRadius);
+        ChromeShapeContextTokens::kOmniboxExpandedRadius);
     const int kBorderThickness =
         provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL);
 

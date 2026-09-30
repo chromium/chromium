@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
@@ -86,7 +87,7 @@ void FullWebUIOmniboxFrame::SetElevation(int elevation) {
   }
 
   const int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
-      views::ShapeContextTokens::kOmniboxExpandedRadius);
+      ChromeShapeContextTokens::kOmniboxExpandedRadius);
   auto border = std::make_unique<views::BubbleBorder>(
       views::BubbleBorder::Arrow::NONE,
       views::BubbleBorder::Shadow::STANDARD_SHADOW);

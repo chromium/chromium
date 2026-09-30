@@ -218,12 +218,10 @@ class ContentParentView : public views::View, public views::ViewObserver {
   }
 
   gfx::RoundedCornersF GetRoundedCorners() {
-    ChromeDistanceMetric corner_radius =
-        ChromeDistanceMetric::DISTANCE_SIDE_PANEL_CONTENT_RADIUS;
-    return GetLayoutProvider()
-               ? gfx::RoundedCornersF(
-                     GetLayoutProvider()->GetDistanceMetric(corner_radius))
-               : gfx::RoundedCornersF();
+    return GetLayoutProvider() ? gfx::RoundedCornersF(
+                                     GetLayoutProvider()->GetCornerRadiusMetric(
+                                         kSidePanelContentRadius))
+                               : gfx::RoundedCornersF();
   }
 
   const raw_ptr<BrowserView> browser_view_;
