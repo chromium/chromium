@@ -15,6 +15,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_command_line.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -60,6 +61,7 @@ class MockNetworkContext : public network::TestNetworkContext {
     create_called = true;
     pending_handshake_client = std::move(handshake_client);
     additional_headers_ = std::move(additional_headers);
+    options_ = options;
   }
 
   std::optional<std::string> GetHeader(std::string_view name) const {
@@ -75,6 +77,7 @@ class MockNetworkContext : public network::TestNetworkContext {
   mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
       pending_handshake_client;
   std::vector<network::mojom::HttpHeaderPtr> additional_headers_;
+  std::optional<uint32_t> options_;
 };
 
 class FakeWebSocket : public network::mojom::WebSocket {
@@ -323,6 +326,27 @@ TEST_F(StreamingWebSocketClientTest, AdditionalHeaders) {
   EXPECT_EQ(network_context_.GetHeader("X-WebChannel-Content-Type"),
             "application/x-protobuf");
   EXPECT_EQ(network_context_.GetHeader("Custom-Header"), "custom-value");
+}
+
+TEST_F(StreamingWebSocketClientTest, WebSocketOptionsDefault) {
+  client_.Connect();
+
+  EXPECT_TRUE(network_context_.create_called);
+  EXPECT_EQ(network_context_.options_,
+            network::mojom::kWebSocketOptionBlockAllCookies);
+}
+
+TEST_F(StreamingWebSocketClientTest,
+       WebSocketOptionsWithModelExecutionUrlSwitch) {
+  base::test::ScopedCommandLine scoped_command_line;
+  scoped_command_line.GetProcessCommandLine()->AppendSwitchASCII(
+      "optimization-guide-service-model-execution-url",
+      "wss://example.com/websocket");
+
+  client_.Connect();
+
+  EXPECT_TRUE(network_context_.create_called);
+  EXPECT_EQ(network_context_.options_, network::mojom::kWebSocketOptionNone);
 }
 
 TEST_F(StreamingWebSocketClientTest, InvalidFrameType) {

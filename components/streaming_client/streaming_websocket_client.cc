@@ -9,6 +9,7 @@
 #include <string>
 #include <utility>
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/strcat.h"
@@ -107,14 +108,21 @@ void StreamingWebSocketClient::Connect() {
   additional_headers.push_back(network::mojom::HttpHeader::New(
       "X-WebChannel-Content-Type", "application/x-protobuf"));
 
+  // When using a manual URL we usually need to send cookies for auth (to hit
+  // internal servers).
+  const uint32_t options =
+      base::CommandLine::ForCurrentProcess()->HasSwitch(
+          "optimization-guide-service-model-execution-url")
+          ? network::mojom::kWebSocketOptionNone
+          : network::mojom::kWebSocketOptionBlockAllCookies;
+
   network_context->CreateWebSocket(
       service_url_, requested_protocols, net::StorageAccessApiStatus::kNone,
       net::IsolationInfo::CreateForInternalRequest(
           url::Origin::Create(service_url_)),
       std::move(additional_headers), network::OriginatingProcessId::browser(),
       url::Origin::Create(service_url_),
-      network::mojom::ClientSecurityState::New(),
-      network::mojom::kWebSocketOptionBlockAllCookies,
+      network::mojom::ClientSecurityState::New(), options,
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation_),
       std::move(handshake_remote),
       /*url_loader_network_observer=*/mojo::NullRemote(),
