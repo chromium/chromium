@@ -8,12 +8,11 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -39,23 +38,28 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /** Tests for {@link HeaderDecoration}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class HeaderDecorationUnitTest {
+    private static final String HEADER_TEXT = "Test Header";
+
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock private RecyclerView mRecyclerView;
-    @Mock private View mChildViewWithHeader;
-    @Mock private View mChildViewWithNoHeader;
     @Mock private RecyclerView.State mState;
     @Mock private Canvas mCanvas;
 
+    private TestRecyclerView mRecyclerView;
+    private View mChildViewWithHeader;
+    private View mChildViewWithNoHeader;
+
     private SimpleRecyclerViewAdapter.ViewHolder mShowHeaderViewHolder;
     private SimpleRecyclerViewAdapter.ViewHolder mNoHeaderViewHolder;
-
-    private static final String HEADER_TEXT = "Test Header";
 
     private PropertyModel mShowHeaderModel;
     private PropertyModel mNoHeaderModel;
@@ -89,6 +93,10 @@ public class HeaderDecorationUnitTest {
                         .getResources()
                         .getDimensionPixelSize(R.dimen.omnibox_suggestion_header_height);
 
+        mRecyclerView = new TestRecyclerView(mActivity);
+        mChildViewWithHeader = new View(mActivity);
+        mChildViewWithNoHeader = new View(mActivity);
+
         mShowHeaderViewHolder =
                 new SimpleRecyclerViewAdapter.ViewHolder(mChildViewWithHeader, null);
         mNoHeaderViewHolder =
@@ -96,18 +104,8 @@ public class HeaderDecorationUnitTest {
         mShowHeaderViewHolder.model = mShowHeaderModel;
         mNoHeaderViewHolder.model = mNoHeaderModel;
 
-        lenient()
-                .doReturn(mShowHeaderViewHolder)
-                .when(mRecyclerView)
-                .getChildViewHolder(mChildViewWithHeader);
-        lenient()
-                .doReturn(mNoHeaderViewHolder)
-                .when(mRecyclerView)
-                .getChildViewHolder(mChildViewWithNoHeader);
-
-        lenient().doReturn(2).when(mRecyclerView).getChildCount();
-        lenient().doReturn(mChildViewWithHeader).when(mRecyclerView).getChildAt(0);
-        lenient().doReturn(mChildViewWithNoHeader).when(mRecyclerView).getChildAt(1);
+        mRecyclerView.registerViewHolder(mChildViewWithHeader, mShowHeaderViewHolder);
+        mRecyclerView.registerViewHolder(mChildViewWithNoHeader, mNoHeaderViewHolder);
     }
 
     @After
@@ -137,12 +135,9 @@ public class HeaderDecorationUnitTest {
 
     @Test
     public void testDraw_withHeader() {
-        doReturn(0).when(mChildViewWithHeader).getTop();
-        doReturn(0.0f).when(mChildViewWithHeader).getTranslationY();
-        doReturn(100).when(mRecyclerView).getWidth();
-        doReturn(0).when(mRecyclerView).getPaddingLeft();
-        doReturn(0).when(mRecyclerView).getPaddingRight();
-        doReturn(View.LAYOUT_DIRECTION_LTR).when(mRecyclerView).getLayoutDirection();
+        mRecyclerView.addView(mChildViewWithHeader);
+        mRecyclerView.addView(mChildViewWithNoHeader);
+        mRecyclerView.setRight(100);
 
         mDecoration.onDraw(mCanvas, mRecyclerView, mState);
         verify(mCanvas).drawText(eq(HEADER_TEXT), anyFloat(), anyFloat(), any(Paint.class));
@@ -150,10 +145,42 @@ public class HeaderDecorationUnitTest {
 
     @Test
     public void testDraw_noHeader() {
-        doReturn(1).when(mRecyclerView).getChildCount();
-        doReturn(mChildViewWithNoHeader).when(mRecyclerView).getChildAt(0);
+        mRecyclerView.addView(mChildViewWithNoHeader);
 
         mDecoration.onDraw(mCanvas, mRecyclerView, mState);
         verifyNoInteractions(mCanvas);
+    }
+
+    private static class TestRecyclerView extends RecyclerView {
+        private final List<View> mChildren = new ArrayList<>();
+        private final Map<View, ViewHolder> mViewHolders = new HashMap<>();
+
+        TestRecyclerView(Context context) {
+            super(context);
+        }
+
+        void registerViewHolder(View view, ViewHolder holder) {
+            mViewHolders.put(view, holder);
+        }
+
+        @Override
+        public void addView(View child) {
+            mChildren.add(child);
+        }
+
+        @Override
+        public int getChildCount() {
+            return mChildren.size();
+        }
+
+        @Override
+        public View getChildAt(int index) {
+            return mChildren.get(index);
+        }
+
+        @Override
+        public ViewHolder getChildViewHolder(View child) {
+            return mViewHolders.get(child);
+        }
     }
 }
