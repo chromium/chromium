@@ -1,4 +1,10 @@
+monorail: {
+  component: "UI>Browser>Autofill"
+}
 team_email: "chrome-autofill-team@google.com"
+buganizer: {
+  component_id: 472
+}
 buganizer_public: {
-    component_id: 1833737
+  component_id: 1456764
 }

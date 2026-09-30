@@ -1,0 +1,10 @@
+monorail: {
+  component: "UI>Browser>Autofill>Payments"
+}
+team_email: "chrome-payments-eng@google.com"
+buganizer: {
+  component_id: 1355673
+}
+buganizer_public: {
+  component_id: 1457039
+}
