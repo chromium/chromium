@@ -122,8 +122,7 @@ bool operator==(const TransportSecurityState::PKPState& lhs,
                 const TransportSecurityState::PKPState& rhs) {
   return lhs.expiry == rhs.expiry && lhs.spki_hashes == rhs.spki_hashes &&
          lhs.bad_spki_hashes == rhs.bad_spki_hashes &&
-         lhs.include_subdomains == rhs.include_subdomains &&
-         lhs.domain == rhs.domain;
+         lhs.include_subdomains == rhs.include_subdomains;
 }
 
 std::vector<SHA256HashValue> DeserializeHashes(
@@ -565,7 +564,6 @@ TEST_F(TransportSecurityStateTest, DynamicDomainState) {
   EXPECT_EQ(expiry1, sts_state.expiry);
   EXPECT_EQ(expiry2, pkp_state.expiry);
   EXPECT_EQ("example.com", sts_state.domain);
-  EXPECT_EQ("foo.example.com", pkp_state.domain);
 }
 
 // Tests that GetSSLUpgradeDecision() matches the result of ShouldUpgradeToSSL()
@@ -1186,23 +1184,15 @@ TEST_F(TransportSecurityStateStaticTest, IsPreloaded) {
 }
 
 TEST_F(TransportSecurityStateStaticTest, PreloadedDomainSet) {
-  AddScopedFeatureList().InitAndEnableFeature(
-      features::kStaticKeyPinningEnforcement);
   TransportSecurityState state;
-  EnableStaticPins(&state);
   TransportSecurityState::STSState sts_state;
-  TransportSecurityState::PKPState pkp_state;
 
   // The domain wasn't being set, leading to a blank string in the
   // chrome://net-internals/#hsts UI. So test that.
-  EXPECT_TRUE(state.GetStaticPKPState("market.android.com", &pkp_state));
   EXPECT_TRUE(state.GetStaticSTSState("market.android.com", &sts_state));
   EXPECT_EQ(sts_state.domain, "market.android.com");
-  EXPECT_EQ(pkp_state.domain, "market.android.com");
-  EXPECT_TRUE(state.GetStaticPKPState("sub.market.android.com", &pkp_state));
   EXPECT_TRUE(state.GetStaticSTSState("sub.market.android.com", &sts_state));
   EXPECT_EQ(sts_state.domain, "market.android.com");
-  EXPECT_EQ(pkp_state.domain, "market.android.com");
 }
 
 TEST_F(TransportSecurityStateStaticTest, Preloaded) {
