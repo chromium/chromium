@@ -29,10 +29,12 @@ source_set("compose") {
     "//components/prefs",
     "//components/segmentation_platform/public",
     "//components/signin/public/identity_manager",
+    "//components/tabs:public",
     "//components/translate/core/browser",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//services/metrics/public/cpp:metrics_cpp",
+    "//ui/base/unowned_user_data",
   ]
 }
 

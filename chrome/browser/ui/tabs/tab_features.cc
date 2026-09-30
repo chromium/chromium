@@ -258,6 +258,12 @@
 #include "components/captive_portal/content/captive_portal_tab_helper.h"
 #endif
 
+#include "components/compose/buildflags.h"
+#if BUILDFLAG(ENABLE_COMPOSE)
+#include "chrome/browser/compose/chrome_compose_client.h"
+#include "components/autofill/content/browser/content_autofill_client.h"
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/app_tab_helper.h"
 #endif
@@ -909,6 +915,18 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
           tab.GetContents(), false));
 #endif
 
+#if BUILDFLAG(ENABLE_COMPOSE)
+  // We need to create the ChromeComposeClient to listen for the feature
+  // being turned on, even if it is not enabled yet.
+  // FieldChangeObserver in ChromeComposeClient uses
+  // ScopedAutofillManagersObservation which expects ContentAutofillClient.
+  if (!profile->IsOffTheRecord() &&
+      autofill::ContentAutofillClient::FromWebContents(tab.GetContents())) {
+    compose_client_ = GetUserDataFactory().CreateInstance<ChromeComposeClient>(
+        tab, tab, tab.GetContents());
+  }
+#endif
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   app_tab_helper_ =
       std::make_unique<extensions::AppTabHelper>(tab, tab.GetContents());
@@ -1319,6 +1337,15 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
       base::BindRepeating(
           &ChromeSecurityBlockingPageFactory::OpenLoginTabForWebContents,
           new_contents, false));
+#endif
+
+#if BUILDFLAG(ENABLE_COMPOSE)
+  compose_client_.reset();
+  if (!profile->IsOffTheRecord() &&
+      autofill::ContentAutofillClient::FromWebContents(new_contents)) {
+    compose_client_ = GetUserDataFactory().CreateInstance<ChromeComposeClient>(
+        *tab, *tab, new_contents);
+  }
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

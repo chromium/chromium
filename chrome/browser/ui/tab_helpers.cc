@@ -78,7 +78,6 @@
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "components/commerce/content/browser/commerce_tab_helper.h"
 #include "components/commerce/core/commerce_feature_list.h"
-#include "components/compose/buildflags.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/enterprise/buildflags/buildflags.h"
@@ -170,10 +169,6 @@
 
 #if BUILDFLAG(ENABLE_PRINTING)
 #include "chrome/browser/printing/printing_init.h"
-#endif
-
-#if BUILDFLAG(ENABLE_COMPOSE)
-#include "chrome/browser/compose/chrome_compose_client.h"
 #endif
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
@@ -496,17 +491,6 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents,
 #if BUILDFLAG(ENABLE_WEBUI_NTP)
   if (search::IsInstantExtendedAPIEnabled()) {
     SearchTabHelper::CreateForWebContents(web_contents);
-  }
-#endif
-
-#if BUILDFLAG(ENABLE_COMPOSE)
-  // We need to create the ChromeComposeClient to listen for the feature
-  // being turned on, even if it is not enabled yet.
-  // FieldChangeObserver in ChromeComposeClient uses
-  // ScopedAutofillManagersObservation which expects ContentAutofillClient
-  // (gated by enable_browser_autofill).
-  if (enable_browser_autofill && !profile->IsOffTheRecord()) {
-    ChromeComposeClient::CreateForWebContents(web_contents);
   }
 #endif
 

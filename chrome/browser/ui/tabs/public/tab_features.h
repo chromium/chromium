@@ -32,6 +32,7 @@
 #include "base/callback_list.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/common/buildflags.h"
+#include "components/compose/buildflags.h"
 #include "components/offline_pages/buildflags/buildflags.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -319,6 +320,10 @@ class ChromeRLZTrackerWebContentsObserver;
 
 #if BUILDFLAG(ENABLE_PLUGINS)
 class PluginObserver;
+#endif
+
+#if BUILDFLAG(ENABLE_COMPOSE)
+class ChromeComposeClient;
 #endif
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -846,6 +851,10 @@ class TabFeatures {
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   std::unique_ptr<PluginObserver> plugin_observer_;
+#endif
+
+#if BUILDFLAG(ENABLE_COMPOSE)
+  std::unique_ptr<ChromeComposeClient> compose_client_;
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

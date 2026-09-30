@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -183,9 +184,8 @@ class ChromeComposeClientTest : public ChromeRenderViewHostTestHarness {
     profile()->GetPrefs()->SetBoolean(prefs::kPrefHasCompletedComposeFRE, true);
     SetPrefsForComposeMSBBState(true);
     NavigateAndCommit(GetPageUrl());
-    ChromeComposeClient::CreateForWebContents(web_contents());
 
-    client_ = ChromeComposeClient::FromWebContents(web_contents());
+    client_ = base::WrapUnique(new ChromeComposeClient(web_contents()));
     client_->SetModelExecutorForTest(&model_executor_);
     client_->SetModelQualityLogsUploaderServiceForTest(
         GetOptimizationGuide().GetModelQualityLogsUploaderService());
@@ -254,7 +254,7 @@ class ChromeComposeClientTest : public ChromeRenderViewHostTestHarness {
     // Clear default actions for safe teardown.
     mock_hats_service_ = nullptr;
     testing::Mock::VerifyAndClear(&GetSegmentationPlatformService());
-    client_ = nullptr;
+    client_.reset();
     scoped_feature_list_.Reset();
     ukm_recorder_.reset();
     // Needed for feature params to reset.
@@ -448,7 +448,7 @@ class ChromeComposeClientTest : public ChromeRenderViewHostTestHarness {
 
  private:
   base::ScopedMockElapsedTimersForTest test_timer_;
-  raw_ptr<ChromeComposeClient> client_;
+  std::unique_ptr<ChromeComposeClient> client_;
   testing::NiceMock<optimization_guide::MockRemoteModelExecutor>
       model_executor_;
   testing::NiceMock<MockInnerText> model_inner_text_;
