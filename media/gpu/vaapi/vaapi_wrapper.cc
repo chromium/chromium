@@ -818,7 +818,7 @@ void FillNV12Padding(const VAImage& image,
     base::CheckedNumeric<size_t> num_bytes_above(visible_height);
     num_bytes_above *= base::checked_cast<size_t>(stride);
     libyuv::SetPlane(
-        /*dst_y=*/plane_data + num_bytes_above.ValueOrDie(),
+        /*dst_y=*/UNSAFE_TODO(plane_data + num_bytes_above.ValueOrDie()),
         /*dst_stride_y=*/stride,
         /*width=*/stride,
         /*height=*/base::checked_cast<int>(image_height - visible_height),

@@ -364,24 +364,40 @@ BASE_NUMERIC_ARITHMETIC_OPERATORS(Checked, Check, Xor, ^, ^=)
 BASE_NUMERIC_ARITHMETIC_VARIADIC(Checked, Check, Max)
 BASE_NUMERIC_ARITHMETIC_VARIADIC(Checked, Check, Min)
 
+#if defined(__has_cpp_attribute) && \
+    __has_cpp_attribute(clang::unsafe_buffer_usage)
+#define BASE_NUMERICS_UNSAFE_BUFFER_USAGE [[clang::unsafe_buffer_usage]]
+#else
+#define BASE_NUMERICS_UNSAFE_BUFFER_USAGE
+#endif
+
 // These are some extra StrictNumeric operators to support simple pointer
 // arithmetic with our result types. Since wrapping on a pointer is always
 // bad, we trigger the CHECK condition here.
+//
+// PRECONDITIONS:
+// `lhs` must point to an allocation of at least `rhs` elements of type `L`
+// past `lhs`.
 template <typename L, typename R>
-L* operator+(L* lhs, StrictNumeric<R> rhs) {
+BASE_NUMERICS_UNSAFE_BUFFER_USAGE L* operator+(L* lhs, StrictNumeric<R> rhs) {
   const uintptr_t result = CheckAdd(reinterpret_cast<uintptr_t>(lhs),
                                     CheckMul(sizeof(L), static_cast<R>(rhs)))
                                .template ValueOrDie<uintptr_t>();
   return reinterpret_cast<L*>(result);
 }
 
+// PRECONDITIONS:
+// `lhs` must point to an allocation of at least `rhs` elements of type `L`
+// before `lhs`.
 template <typename L, typename R>
-L* operator-(L* lhs, StrictNumeric<R> rhs) {
+BASE_NUMERICS_UNSAFE_BUFFER_USAGE L* operator-(L* lhs, StrictNumeric<R> rhs) {
   const uintptr_t result = CheckSub(reinterpret_cast<uintptr_t>(lhs),
                                     CheckMul(sizeof(L), static_cast<R>(rhs)))
                                .template ValueOrDie<uintptr_t>();
   return reinterpret_cast<L*>(result);
 }
+
+#undef BASE_NUMERICS_UNSAFE_BUFFER_USAGE
 
 }  // namespace numerics_internal
 

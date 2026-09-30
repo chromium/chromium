@@ -216,14 +216,18 @@ void TestStrictPointerMath() {
   Dst dummy_value = 0;
   Dst* dummy_ptr = &dummy_value;
   static const Dst kDummyOffset = 2;  // Don't want to go too far.
-  EXPECT_EQ(UNSAFE_TODO(dummy_ptr + kDummyOffset),
-            UNSAFE_TODO(dummy_ptr + StrictNumeric<Dst>(kDummyOffset)));
-  EXPECT_EQ(UNSAFE_TODO(dummy_ptr - kDummyOffset),
-            UNSAFE_TODO(dummy_ptr - StrictNumeric<Dst>(kDummyOffset)));
-  EXPECT_NE(dummy_ptr, dummy_ptr + StrictNumeric<Dst>(kDummyOffset));
-  EXPECT_NE(dummy_ptr, dummy_ptr - StrictNumeric<Dst>(kDummyOffset));
+  // SAFETY: Pointers aren't dereferenced.
+  EXPECT_EQ(UNSAFE_BUFFERS(dummy_ptr + kDummyOffset),
+            UNSAFE_BUFFERS(dummy_ptr + StrictNumeric<Dst>(kDummyOffset)));
+  EXPECT_EQ(UNSAFE_BUFFERS(dummy_ptr - kDummyOffset),
+            UNSAFE_BUFFERS(dummy_ptr - StrictNumeric<Dst>(kDummyOffset)));
+  EXPECT_NE(dummy_ptr,
+            UNSAFE_BUFFERS(dummy_ptr + StrictNumeric<Dst>(kDummyOffset)));
+  EXPECT_NE(dummy_ptr,
+            UNSAFE_BUFFERS(dummy_ptr - StrictNumeric<Dst>(kDummyOffset)));
   EXPECT_DEATH_IF_SUPPORTED(
-      dummy_ptr + StrictNumeric<size_t>(std::numeric_limits<size_t>::max()),
+      UNSAFE_BUFFERS(dummy_ptr +
+                     StrictNumeric<size_t>(std::numeric_limits<size_t>::max())),
       "");
 }
 
