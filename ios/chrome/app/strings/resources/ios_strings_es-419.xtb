@@ -457,7 +457,7 @@
 <translation id="2403129868389095715">No se puede entregar el paquete</translation>
 <translation id="2410754283952462441">Elegir una cuenta</translation>
 <translation id="2422174748424038845">Si lo borras, todos los usuarios perderán de inmediato el acceso al grupo de pestañas "<ph name="GROUP_NAME" />", y se borrará de todos los dispositivos.</translation>
-<translation id="2424805048070062787">Continúa en esta pestaña</translation>
+<translation id="2424805048070062787">Retoma esta pestaña</translation>
 <translation id="2426805022920575512">Seleccionar otra cuenta</translation>
 <translation id="2428543302546523788">Se muestran los vínculos cuando el modo de lectura está activado</translation>
 <translation id="243275146591958220">Cancelar descarga</translation>
@@ -1464,7 +1464,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="5745598824054949526">No se encontró texto</translation>
 <translation id="5745916533876677730">Ir a la pestaña anterior</translation>
 <translation id="574762237186762643">Eventos</translation>
-<translation id="5749158352074143502">Continuar en esta pestaña</translation>
+<translation id="5749158352074143502">Retomar esta pestaña</translation>
 <translation id="5753021559215751319">Guardar contraseña</translation>
 <translation id="5756525336488841345">Ocultar la opción Favoritos</translation>
 <translation id="5758631781033351321">Aquí encontrarás tu lista de lectura</translation>
