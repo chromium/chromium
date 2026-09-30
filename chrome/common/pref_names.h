@@ -2442,6 +2442,10 @@ inline constexpr char kHardwareAccelerationModePrevious[] =
 
 
 #if !BUILDFLAG(IS_ANDROID)
+// A boolean specifying whether dynamic child module patching is enabled.
+inline constexpr char kDynamicPatchingEnabled[] =
+    "child_module.dynamic_patching_enabled";
+
 // A boolean where true means that the browser has previously attempted to
 // enable autoupdate and failed, so the next out-of-date browser start should
 // not prompt the user to enable autoupdate, it should offer to reinstall Chrome

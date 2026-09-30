@@ -1488,6 +1488,7 @@ policies:
   1487: DeviceMaxUserProfiles
   1488: AutoLaunchAndroidApps
   1489: LaunchOnStartupEnabled
+  1490: DynamicPatchingEnabled
 
 atomic_groups:
   1: Homepage

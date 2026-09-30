@@ -281,8 +281,8 @@ void GlobalFeatures::Init() {
 void GlobalFeatures::PreMainMessageLoopRun() {
 #if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(child_module::features::kDynamicPatching)) {
-    child_module_manager_ =
-        std::make_unique<child_module::ChildModuleManager>();
+    child_module_manager_ = std::make_unique<child_module::ChildModuleManager>(
+        *g_browser_process->local_state());
   }
 #endif
 

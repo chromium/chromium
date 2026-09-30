@@ -14,7 +14,10 @@
 #include "base/test/task_environment.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/common/child_module/child_module_helper.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -38,7 +41,9 @@ namespace child_module {
 
 class ChildModuleManagerTest : public testing::Test {
  protected:
-  void SetUp() override { ASSERT_TRUE(base::CreateDirectory(GetModulesDir())); }
+  void SetUp() override {
+    ASSERT_TRUE(base::CreateDirectory(GetModulesDir()));
+  }
 
   // Creates a child module directory for `version` under `GetModulesDir()`.
   // If `with_manifest` is true, writes an empty sentinel manifest file.
@@ -55,7 +60,7 @@ class ChildModuleManagerTest : public testing::Test {
   // Instantiates `manager_` in-place and waits until its initial background
   // directory scan has completed.
   void CreateManager() {
-    manager_.emplace();
+    manager_.emplace(*g_browser_process->local_state());
     manager_->WaitForInitialScanForTesting();
   }
 
@@ -74,7 +79,7 @@ TEST_F(ChildModuleManagerTest, NoVersionsYieldsNullopt) {
   CreateManager();
 
   EXPECT_EQ(manager_->GetLatestVersion(), std::nullopt);
-  EXPECT_THAT(manager_->GetAvailableVersions(), IsEmpty());
+  EXPECT_THAT(manager_->GetAvailableVersionsForTesting(), IsEmpty());
   EXPECT_EQ(manager_->GetRendererBinaryPath(base::Version("1.0.0.0")),
             base::FilePath());
 }
@@ -105,7 +110,7 @@ TEST_F(ChildModuleManagerTest, SelectsHighestVersion) {
   CreateManager();
 
   EXPECT_THAT(manager_->GetLatestVersion(), Optional(kVersion52));
-  EXPECT_THAT(manager_->GetAvailableVersions(),
+  EXPECT_THAT(manager_->GetAvailableVersionsForTesting(),
               ElementsAre(kVersion52, kVersion51, kVersion50));
 }
 
@@ -129,7 +134,7 @@ TEST_F(ChildModuleManagerTest, IgnoresInvalidDirectories) {
   CreateManager();
 
   EXPECT_EQ(manager_->GetLatestVersion(), std::nullopt);
-  EXPECT_THAT(manager_->GetAvailableVersions(), IsEmpty());
+  EXPECT_THAT(manager_->GetAvailableVersionsForTesting(), IsEmpty());
 }
 
 TEST_F(ChildModuleManagerTest, DetectsDynamicallyAddedVersion) {
@@ -168,7 +173,8 @@ TEST_F(ChildModuleManagerTest, DetectsDynamicallyRemovedVersionWithFallback) {
 
   EXPECT_TRUE(base::test::RunUntil(
       [&]() { return manager_->GetLatestVersion() == kVersion50; }));
-  EXPECT_THAT(manager_->GetAvailableVersions(), ElementsAre(kVersion50));
+  EXPECT_THAT(manager_->GetAvailableVersionsForTesting(),
+              ElementsAre(kVersion50));
 }
 
 TEST_F(ChildModuleManagerTest, DetectsVersionWhenManifestAppearsLater) {
@@ -196,7 +202,7 @@ TEST_F(ChildModuleManagerTest, IgnoresManifestWhenItIsADirectory) {
 
   CreateManager();
   EXPECT_EQ(manager_->GetLatestVersion(), std::nullopt);
-  EXPECT_THAT(manager_->GetAvailableVersions(), IsEmpty());
+  EXPECT_THAT(manager_->GetAvailableVersionsForTesting(), IsEmpty());
 }
 
 #if BUILDFLAG(IS_POSIX)
@@ -212,7 +218,7 @@ TEST_F(ChildModuleManagerTest, IgnoresSymbolicLinks) {
 
   CreateManager();
   EXPECT_EQ(manager_->GetLatestVersion(), std::nullopt);
-  EXPECT_THAT(manager_->GetAvailableVersions(), IsEmpty());
+  EXPECT_THAT(manager_->GetAvailableVersionsForTesting(), IsEmpty());
 }
 #endif  // BUILDFLAG(IS_POSIX)
 
@@ -222,7 +228,45 @@ TEST_F(ChildModuleManagerTest, NonExistentDirectoryGraceful) {
   CreateManager();
 
   EXPECT_EQ(manager_->GetLatestVersion(), std::nullopt);
-  EXPECT_THAT(manager_->GetAvailableVersions(), IsEmpty());
+  EXPECT_THAT(manager_->GetAvailableVersionsForTesting(), IsEmpty());
+}
+
+TEST_F(ChildModuleManagerTest, DisabledByPolicyOnStartup) {
+  const base::Version kVersion("147.0.7727.51");
+  StageVersion(kVersion);
+  g_browser_process->local_state()->SetBoolean(prefs::kDynamicPatchingEnabled,
+                                               false);
+
+  CreateManager();
+
+  EXPECT_EQ(manager_->GetLatestVersion(), std::nullopt);
+  EXPECT_THAT(manager_->GetAvailableVersionsForTesting(),
+              ElementsAre(kVersion));
+}
+
+TEST_F(ChildModuleManagerTest, DynamicallyToggledByPolicy) {
+  PrefService* local_state = g_browser_process->local_state();
+  EXPECT_TRUE(local_state->GetBoolean(prefs::kDynamicPatchingEnabled));
+
+  const base::Version kVersion("147.0.7727.51");
+  StageVersion(kVersion);
+
+  CreateManager();
+  EXPECT_THAT(manager_->GetLatestVersion(), Optional(kVersion));
+  EXPECT_THAT(manager_->GetAvailableVersionsForTesting(),
+              ElementsAre(kVersion));
+
+  local_state->SetBoolean(prefs::kDynamicPatchingEnabled, false);
+  EXPECT_EQ(manager_->GetLatestVersion(), std::nullopt);
+  EXPECT_THAT(manager_->GetAvailableVersionsForTesting(),
+              ElementsAre(kVersion));
+
+  local_state->SetBoolean(prefs::kDynamicPatchingEnabled, true);
+  EXPECT_THAT(manager_->GetLatestVersion(), Optional(kVersion));
+  EXPECT_THAT(manager_->GetAvailableVersionsForTesting(),
+              ElementsAre(kVersion));
+  EXPECT_EQ(manager_->GetRendererBinaryPath(kVersion),
+              child_module::GetRendererBinaryPath(kVersion));
 }
 
 }  // namespace child_module

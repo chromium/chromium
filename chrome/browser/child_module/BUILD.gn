@@ -21,6 +21,11 @@ source_set("child_module") {
     "//base",
     "//chrome/common/child_module",
   ]
+
+  deps = [
+    "//chrome/common:constants",
+    "//components/prefs",
+  ]
 }
 
 source_set("unit_tests") {
@@ -32,8 +37,10 @@ source_set("unit_tests") {
     ":child_module",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser:browser_process",
     "//chrome/common:constants",
     "//chrome/common/child_module",
+    "//components/prefs:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

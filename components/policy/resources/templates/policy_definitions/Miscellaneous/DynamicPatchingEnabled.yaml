@@ -1,0 +1,31 @@
+caption: Enable dynamic child module patching
+default: true
+desc: |-
+  Controls whether <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> dynamically applies staged security updates to newly launched child processes (such as renderer processes) without requiring a full browser restart.
+
+  If <ph name="COMPONENT_UPDATES_ENABLED_POLICY_NAME">ComponentUpdatesEnabled</ph> is disabled, no new modules will be installed for use.
+
+  If this policy is set to Enabled or left unset, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> may launch new child processes using dynamically staged child module binaries when available.
+
+  If this policy is set to Disabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will immediately cease applying dynamically staged child module binaries to newly launched child processes (including any updates already downloaded or staged locally), and will require a full browser restart to apply updates. Already running child processes will continue as they are. This setting disables dynamic patching without disabling all component updates.
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: false
+future_on:
+- chrome.win
+- chrome.mac
+items:
+- caption: Enable dynamic child module patching
+  value: true
+- caption: Disable dynamic child module patching
+  value: false
+owners:
+- toyoshim@chromium.org
+- grt@chromium.org
+- file://chrome/browser/child_module/OWNERS
+schema:
+  type: boolean
+tags:
+- system-security
+type: main

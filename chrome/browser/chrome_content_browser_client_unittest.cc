@@ -3216,6 +3216,39 @@ TEST_F(ChromeContentBrowserClientDynamicPatchTest,
   EXPECT_FALSE(cmd.HasSwitch(switches::kChildModuleVersion));
 #endif
 }
+
+TEST_F(ChromeContentBrowserClientDynamicPatchTest, DynamicallyToggledByPolicy) {
+  ChromeContentBrowserClient client;
+  base::FilePath patched_binary = StagePatch(base::Version("9999.0.0.1"));
+  PrefService* local_state = TestingBrowserProcess::GetGlobal()->local_state();
+
+  local_state->SetBoolean(prefs::kDynamicPatchingEnabled, false);
+#if BUILDFLAG(IS_LINUX)
+  EXPECT_EQ(
+      client.GetChildProcessPath(content::ChildProcessHost::CHILD_RENDERER),
+      GetUnpatchedRendererPath());
+#elif BUILDFLAG(IS_WIN)
+  base::CommandLine disabled_cmd(base::CommandLine::NO_PROGRAM);
+  disabled_cmd.AppendSwitchASCII(switches::kProcessType,
+                                 switches::kRendererProcess);
+  client.AppendExtraCommandLineSwitches(&disabled_cmd, /*child_process_id=*/1);
+  EXPECT_FALSE(disabled_cmd.HasSwitch(switches::kChildModuleVersion));
+#endif
+
+  local_state->SetBoolean(prefs::kDynamicPatchingEnabled, true);
+#if BUILDFLAG(IS_LINUX)
+  EXPECT_EQ(
+      client.GetChildProcessPath(content::ChildProcessHost::CHILD_RENDERER),
+      patched_binary);
+#elif BUILDFLAG(IS_WIN)
+  base::CommandLine enabled_cmd(base::CommandLine::NO_PROGRAM);
+  enabled_cmd.AppendSwitchASCII(switches::kProcessType,
+                                switches::kRendererProcess);
+  client.AppendExtraCommandLineSwitches(&enabled_cmd, /*child_process_id=*/1);
+  EXPECT_EQ(enabled_cmd.GetSwitchValueASCII(switches::kChildModuleVersion),
+            "9999.0.0.1");
+#endif
+}
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 
 class ChromeContentBrowserClientDiskCacheDirTest

@@ -2589,6 +2589,7 @@ chromium-metrics-reviews@google.com.
   <int value="1487" label="DeviceMaxUserProfiles"/>
   <int value="1488" label="AutoLaunchAndroidApps"/>
   <int value="1489" label="LaunchOnStartupEnabled"/>
+  <int value="1490" label="DynamicPatchingEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">
