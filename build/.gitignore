@@ -16,6 +16,7 @@ ciopfs
 /Release_x64
 /win_toolchain.json
 /util/LASTCHANGE*
+/util/MINIBRANCH
 /util/support
 /x64/
 /linux/debian_*-sysroot/

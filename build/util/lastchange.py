@@ -13,6 +13,7 @@ import hashlib
 import json
 import logging
 import os
+import re
 import subprocess
 import sys
 
@@ -548,6 +549,74 @@ def GetFlexibleCppHeaderContents(path, version_info, description, keys):
     return header_contents
 
 
+# Minibranches are named "<parent branch>_<base build PATCH>", e.g.
+# refs/branch-heads/4844_74 was cut from 99.0.4844.74.
+_MINIBRANCH_REF_RE = re.compile(r'^refs/branch-heads/(\d+)_(\d+)$')
+
+
+def ParseMinibranchBaseVersion(description, major, minor):
+    """
+    Parses a commit's description for the version its minibranch was cut from.
+
+    Args:
+      description: The full commit message, including Cr-* footers.
+      major: The MAJOR component from chrome/VERSION.
+      minor: The MINOR component from chrome/VERSION.
+    Returns:
+      The base version string (e.g. "99.0.4844.74"), or an empty string if the
+      commit is not on a minibranch.
+    """
+    position = ''
+    for line in description.splitlines():
+        if line.startswith('Cr-Commit-Position:'):
+            position = line.removeprefix('Cr-Commit-Position:').strip()
+
+    ref = position.split('@', 1)[0]
+    match = _MINIBRANCH_REF_RE.match(ref)
+    if not match:
+        return ''
+
+    build, patch = match.groups()
+    return f'{major}.{minor}.{build}.{patch}'
+
+
+def ReadVersionFile(version_file):
+    """Returns a dict of the KEY=VALUE pairs in a chrome/VERSION file."""
+    values = {}
+    with open(version_file, 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if '=' in line:
+                key, val = line.split('=', 1)
+                values[key] = val
+    return values
+
+
+def GetMinibranchContents(source_dir, version_file, merge_base_ref):
+    """
+    Returns the contents of the MINIBRANCH file for the given checkout.
+
+    The information is derived from the nearest ancestor of HEAD that has
+    a `Cr-Commit-Position` footer.
+    """
+    base_version = ''
+    version_info = GetVersion(
+        source_dir, '^Cr-Commit-Position:', merge_base_ref
+    )
+    if version_info and version_info.commit_position:
+        try:
+            description = GetCommitDescription(
+                source_dir, version_info.revision_id
+            )
+            version = ReadVersionFile(version_file)
+            base_version = ParseMinibranchBaseVersion(
+                description, version.get('MAJOR', ''), version.get('MINOR', '')
+            )
+        except (RuntimeError, EnvironmentError) as e:
+            logging.error(f"Failed to compute minibranch info: {e}")
+    return f'MINIBRANCH_BASE_VERSION={base_version}\n'
+
+
 def _PrintJsonOutput(version_info, source_dir):
     """Writes all available commit information as a JSON object."""
     commit_description = GetCommitDescription(
@@ -707,6 +776,25 @@ def main(argv=None):
         ),
         default='^Change-Id:',
     )
+    parser.add_argument(
+        "--minibranch-out",
+        metavar="FILE",
+        help=(
+            "Write the version that the current minibranch was branched "
+            "from to FILE, as a MINIBRANCH_BASE_VERSION=... line. The value "
+            "is empty if the checkout is not on a minibranch. Ignores "
+            "--filter and all other output options."
+        ),
+    )
+    parser.add_argument(
+        "--version-file",
+        metavar="FILE",
+        default=os.path.join(_THIS_DIR, '..', '..', 'chrome', 'VERSION'),
+        help=(
+            "chrome/VERSION file to read MAJOR and MINOR from when using "
+            "--minibranch-out."
+        ),
+    )
 
     args, extras = parser.parse_known_args(argv[1:])
 
@@ -728,6 +816,15 @@ def main(argv=None):
         sys.exit(2)
 
     source_dir = args.source_dir or os.path.dirname(os.path.abspath(__file__))
+
+    if args.minibranch_out:
+        WriteIfChanged(
+            args.minibranch_out,
+            GetMinibranchContents(
+                source_dir, args.version_file, args.merge_base_ref
+            ),
+        )
+        return 0
 
     version_info = GetVersion(source_dir, commit_filter, args.merge_base_ref)
 

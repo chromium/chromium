@@ -207,6 +207,7 @@ if (!is_android && !is_mac) {
         ":chrome_dll",
         ":chrome_exe_version",
         ":copy_first_run",
+        ":copy_minibranch",
         ":visual_elements_resources",
         "//base",
         "//build:branding_buildflags",
@@ -483,6 +484,11 @@ if (is_win) {
   copy("copy_first_run") {
     sources = [ "app/FirstRun" ]
     outputs = [ "$root_out_dir/First Run" ]
+  }
+
+  copy("copy_minibranch") {
+    sources = [ "//build/util/MINIBRANCH" ]
+    outputs = [ "$root_out_dir/MINIBRANCH" ]
   }
 } else if (is_mac) {
   chrome_helper_name = chrome_product_full_name + " Helper"
