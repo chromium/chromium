@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.tail;
 
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
+import static org.junit.Assert.assertEquals;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
@@ -13,12 +12,8 @@ import android.view.ContextThemeWrapper;
 import androidx.annotation.ColorInt;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-import org.mockito.quality.Strictness;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -33,11 +28,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Tests for {@link TailSuggestionViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TailSuggestionViewBinderUnitTest {
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
-
     private PropertyModel mModel;
     private Context mContext;
 
@@ -50,7 +41,7 @@ public class TailSuggestionViewBinderUnitTest {
         mContext =
                 new ContextThemeWrapper(
                         ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
-        mTailSuggestionView = spy(new TailSuggestionView(mContext));
+        mTailSuggestionView = new TailSuggestionView(mContext);
         mResourceProvider = new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
         mModel =
                 new PropertyModel.Builder(TailSuggestionViewProperties.ALL_KEYS)
@@ -65,7 +56,7 @@ public class TailSuggestionViewBinderUnitTest {
         AlignmentManager alignmentManager = new AlignmentManager();
 
         mModel.set(TailSuggestionViewProperties.ALIGNMENT_MANAGER, alignmentManager);
-        verify(mTailSuggestionView).setAlignmentManager(alignmentManager);
+        assertEquals(alignmentManager, mTailSuggestionView.getAlignmentManagerForTesting());
     }
 
     @Test
@@ -73,7 +64,7 @@ public class TailSuggestionViewBinderUnitTest {
         final SuggestionSpannable span = new SuggestionSpannable("test");
 
         mModel.set(TailSuggestionViewProperties.TEXT, span);
-        verify(mTailSuggestionView).setTailText(span);
+        assertEquals(span.toString(), mTailSuggestionView.getText().toString());
     }
 
     @Test
@@ -81,7 +72,9 @@ public class TailSuggestionViewBinderUnitTest {
         final String test = "test";
 
         mModel.set(TailSuggestionViewProperties.FILL_INTO_EDIT, test);
-        verify(mTailSuggestionView).setFullText(test);
+        assertEquals(
+                (int) mTailSuggestionView.getPaint().measureText(test, 0, test.length()),
+                mTailSuggestionView.getFullTextWidthForTesting());
     }
 
     @Test
@@ -91,6 +84,6 @@ public class TailSuggestionViewBinderUnitTest {
         final @ColorInt int color = mResourceProvider.getSuggestionPrimaryTextColor();
 
         mModel.set(SuggestionCommonProperties.COLOR_SCHEME, colorScheme);
-        verify(mTailSuggestionView).setTextColor(color);
+        assertEquals(color, mTailSuggestionView.getCurrentTextColor());
     }
 }

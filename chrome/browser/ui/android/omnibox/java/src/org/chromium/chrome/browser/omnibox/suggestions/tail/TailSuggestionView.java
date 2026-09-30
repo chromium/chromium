@@ -79,4 +79,12 @@ public class TailSuggestionView extends TextView {
 
         super.layout(left, top, right, bottom);
     }
+
+    @Nullable AlignmentManager getAlignmentManagerForTesting() {
+        return mAlignmentManager;
+    }
+
+    int getFullTextWidthForTesting() {
+        return mFullTextWidth;
+    }
 }
