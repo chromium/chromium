@@ -3119,8 +3119,8 @@ void PDFiumEngine::HandleAccessibilityAction(
       return;
     }
     case AccessibilityAction::kSetSelection: {
-      if (IsPageCharacterIndexInBounds(action_data.selection_start_index) &&
-          IsPageCharacterIndexInBounds(action_data.selection_end_index)) {
+      if (IsSelectionBoundaryInBounds(action_data.selection_start_index) &&
+          IsSelectionBoundaryInBounds(action_data.selection_end_index)) {
         SetSelection(action_data.selection_start_index,
                      action_data.selection_end_index);
         gfx::Rect target_rect = action_data.target_rect;
@@ -4948,10 +4948,17 @@ void PDFiumEngine::KillTouchTimer() {
   touch_timer_.Stop();
 }
 
-bool PDFiumEngine::IsPageCharacterIndexInBounds(
+bool PDFiumEngine::IsSelectionBoundaryInBounds(
     const PageCharacterIndex& index) const {
-  return PageIndexInBounds(index.page_index) &&
-         pages_[index.page_index]->IsCharIndexInBounds(index.char_index);
+  if (!PageIndexInBounds(index.page_index)) {
+    return false;
+  }
+  // Selection boundaries are between characters, so the index just past the
+  // last character is valid, e.g. for a selection that ends at the end of a
+  // page's text. SetSelection() treats the end index as exclusive.
+  int char_count = pages_[index.page_index]->GetCharCount();
+  return char_count >= 0 &&
+         index.char_index <= static_cast<uint32_t>(char_count);
 }
 
 FPDF_BOOL PDFiumEngine::Pause_NeedToPauseNow(IFSDK_PAUSE* param) {

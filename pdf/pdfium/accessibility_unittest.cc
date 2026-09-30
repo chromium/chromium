@@ -827,6 +827,44 @@ TEST_P(AccessibilityTest, SelectionActionHandling) {
   }
 }
 
+// Tests that a selection can end just past the last character of a page, e.g.
+// to select a page's last paragraph, since the end index is exclusive.
+TEST_P(AccessibilityTest, SetSelectionToEndOfPage) {
+  TestClient client(/*use_skia_renderer=*/GetParam());
+  std::unique_ptr<PDFiumEngine> engine =
+      InitializeEngine(&client, FILE_PATH_LITERAL("hello_world2.pdf"));
+  ASSERT_TRUE(engine);
+
+  const int char_count = GetPDFiumPage(*engine, 0).GetCharCount();
+  ASSERT_GT(char_count, 5);
+  const uint32_t end_of_page = static_cast<uint32_t>(char_count);
+
+  AccessibilityActionData action_data;
+  action_data.action = AccessibilityAction::kSetSelection;
+  action_data.selection_start_index = {0, 5};
+  action_data.selection_end_index = {0, end_of_page};
+  action_data.target_rect = gfx::Rect();
+  engine->HandleAccessibilityAction(action_data);
+
+  std::optional<Selection> selection = engine->GetSelection();
+  ASSERT_TRUE(selection.has_value());
+  EXPECT_EQ(0u, selection->start.page_index);
+  EXPECT_EQ(5u, selection->start.char_index);
+  EXPECT_EQ(0u, selection->end.page_index);
+  EXPECT_EQ(end_of_page, selection->end.char_index);
+
+  // An index past the end of the page is still rejected, keeping the previous
+  // selection.
+  action_data.selection_start_index = {0, 0};
+  action_data.selection_end_index = {0, end_of_page + 1};
+  engine->HandleAccessibilityAction(action_data);
+
+  selection = engine->GetSelection();
+  ASSERT_TRUE(selection.has_value());
+  EXPECT_EQ(5u, selection->start.char_index);
+  EXPECT_EQ(end_of_page, selection->end.char_index);
+}
+
 // Tests if PP_PDF_SET_SELECTION updates scroll offsets if the selection is not
 // in the current visible rect.
 TEST_P(AccessibilityTest, SetSelectionAndScroll) {

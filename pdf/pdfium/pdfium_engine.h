@@ -1118,7 +1118,9 @@ class PDFiumEngine : public DocumentLoader::Client,
   bool IsAnnotationAnEditableFormTextArea(FPDF_ANNOTATION annot,
                                           int form_type) const;
 
-  bool IsPageCharacterIndexInBounds(const PageCharacterIndex& index) const;
+  // Whether `index` is a valid selection boundary: a character index on an
+  // existing page, or the index just past that page's last character.
+  bool IsSelectionBoundaryInBounds(const PageCharacterIndex& index) const;
 
   void ScheduleTouchTimer(const blink::WebTouchEvent& event);
   void KillTouchTimer();
