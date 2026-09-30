@@ -282,7 +282,7 @@ void ZeroArrayBuffers(v8::Isolate* isolate,
 bool ParamValueMapMatchesToParamsObject(
     v8::Isolate* isolate,
     v8::Local<v8::Context> context,
-    const HashMap<String, std::unique_ptr<AudioFloatArray>>& param_value_map,
+    const HashMap<String, base::span<const float>>& param_value_map,
     const TraceWrapperV8Reference<v8::Object>& params) {
   v8::TryCatch try_catch(isolate);
 
@@ -294,18 +294,8 @@ bool ParamValueMapMatchesToParamsObject(
 
   for (const auto& entry : param_value_map) {
     const String param_name = entry.key;
-    const auto* param_float_array = entry.value.get();
+    const base::span<const float> param_values = entry.value;
     v8::Local<v8::String> v8_param_name = V8String(isolate, param_name);
-
-    // TODO(crbug.com/1095113): Remove this check and move the logic to
-    // AudioWorkletHandler.
-    unsigned array_size = 1;
-    for (unsigned k = 1; k < param_float_array->size(); ++k) {
-      if (param_float_array->at(k) != param_float_array->at(0)) {
-        array_size = param_float_array->size();
-        break;
-      }
-    }
 
     // The `param_name` should exist in the `param` object.
     v8::Local<v8::Value> param_array_value;
@@ -319,7 +309,7 @@ bool ParamValueMapMatchesToParamsObject(
     // buffer is transferred, we have to reallocate.
     v8::Local<v8::Float32Array> float32_array =
         param_array_value.As<v8::Float32Array>();
-    if (float32_array->Length() != array_size ||
+    if (float32_array->Length() != param_values.size() ||
         float32_array->Buffer()->ByteLength() == 0) {
       return false;
     }
@@ -333,11 +323,10 @@ bool ParamValueMapMatchesToParamsObject(
 bool CloneParamValueMapToObject(
     v8::Isolate* isolate,
     v8::Local<v8::Context> context,
-    const HashMap<String, std::unique_ptr<AudioFloatArray>>& param_value_map,
+    const HashMap<String, base::span<const float>>& param_value_map,
     TraceWrapperV8Reference<v8::Object>& params) {
-  TRACE_EVENT0(
-      TRACE_DISABLED_BY_DEFAULT("audio-worklet"),
-      "AudioWorkletProcessor::Process (AudioParam memory allocation)");
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("audio-worklet"),
+               "AudioWorkletProcessor::Process (AudioParam memory allocation)");
 
   v8::TryCatch try_catch(isolate);
 
@@ -345,19 +334,8 @@ bool CloneParamValueMapToObject(
 
   for (const auto& entry : param_value_map) {
     const String param_name = entry.key;
-    const auto* param_float_array = entry.value.get();
+    const size_t array_size = entry.value.size();
     v8::Local<v8::String> v8_param_name = V8String(isolate, param_name);
-
-    // TODO(crbug.com/1095113): Remove this check and move the logic to
-    // AudioWorkletHandler.
-    unsigned array_size = 1;
-    for (unsigned k = 1; k < param_float_array->size(); ++k) {
-      if (param_float_array->at(k) != param_float_array->at(0)) {
-        array_size = param_float_array->size();
-        break;
-      }
-    }
-    DCHECK(array_size == 1 || array_size == param_float_array->size());
 
     v8::Local<v8::ArrayBuffer> array_buffer =
         v8::ArrayBuffer::New(isolate, array_size * sizeof(float));
@@ -387,7 +365,7 @@ bool CloneParamValueMapToObject(
 bool CopyParamValueMapToObject(
     v8::Isolate* isolate,
     v8::Local<v8::Context> context,
-    const HashMap<String, std::unique_ptr<AudioFloatArray>>& param_value_map,
+    const HashMap<String, base::span<const float>>& param_value_map,
     TraceWrapperV8Reference<v8::Object>& params) {
   v8::TryCatch try_catch(isolate);
 
@@ -395,11 +373,11 @@ bool CopyParamValueMapToObject(
 
   for (const auto& entry : param_value_map) {
     const String param_name = entry.key;
-    const AudioFloatArray* param_array = entry.value.get();
+    const base::span<const float> param_values = entry.value;
 
     v8::Local<v8::Value> param_array_value;
     if (!params_object->Get(context, V8String(isolate, param_name))
-                      .ToLocal(&param_array_value) ||
+             .ToLocal(&param_array_value) ||
         !param_array_value->IsFloat32Array()) {
       return false;
     }
@@ -408,9 +386,9 @@ bool CopyParamValueMapToObject(
         param_array_value.As<v8::Float32Array>();
     size_t array_length = float32_array->Length();
 
-    // The `float32_array` is neither 1 nor render quantum frames, or the array
-    // buffer is transferred/detached, do not proceed.
-    if ((array_length != 1 && array_length != param_array->size()) ||
+    // The `float32_array` length does not match or the array buffer is
+    // transferred/detached, do not proceed.
+    if (array_length != param_values.size() ||
         float32_array->Buffer()->ByteLength() == 0) {
       return false;
     }
@@ -419,7 +397,7 @@ bool CopyParamValueMapToObject(
         ArrayBufferContents(float32_array->Buffer()->GetBackingStore())
             .ByteSpan()
             .subspan(float32_array->ByteOffset(), array_length * sizeof(float)))
-        .copy_from(param_array->as_span().first(array_length));
+        .copy_from(param_values);
   }
 
   return true;
@@ -472,7 +450,7 @@ AudioWorkletProcessor::~AudioWorkletProcessor() {
 bool AudioWorkletProcessor::Process(
     const Vector<scoped_refptr<AudioBus>>& inputs,
     Vector<scoped_refptr<AudioBus>>& outputs,
-    const HashMap<String, std::unique_ptr<AudioFloatArray>>& param_value_map) {
+    const HashMap<String, base::span<const float>>& param_value_map) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("audio-worklet"),
                "AudioWorkletProcessor::Process");
 

@@ -25,12 +25,21 @@
 
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 
+#include <limits>
 #include <sstream>
 
+#include "base/check_op.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/fdlibm/ieee754.h"
+
+#if defined(ARCH_CPU_X86_FAMILY)
+#include <xmmintrin.h>
+#elif defined(CPU_ARM_NEON)
+#include <arm_neon.h>
+#endif
 
 namespace blink::audio_utilities {
 
@@ -212,6 +221,70 @@ size_t RoundUpToMultiple(size_t value, size_t modulus) {
   CHECK_GT(modulus, 0u);
   CHECK_LE(value, SIZE_MAX - modulus);
   return ((value + modulus - 1) / modulus) * modulus;
+}
+
+bool HasConstantValues(base::span<const float> values) {
+  if (values.size() <= 1) {
+    return true;
+  }
+
+  // Load the initial value.
+  const float value = values[0];
+
+  // Initialize to 1 to avoid redundantly comparing the first frame in the
+  // non-SIMD path, although this will be re-initialized to 0 on platforms with
+  // SIMD enabled for byte alignment purposes so it is only an optimization on
+  // platforms without SIMD.
+  int processed_frames = 1;
+  // Due to `values_size - 3` below this value could be negative, so to save
+  // having multiple static_cast<int>, we do it once and just use that to
+  // silence warnings about comparing unsigned and signed.
+  DCHECK_LE(values.size(),
+            static_cast<size_t>(std::numeric_limits<int>::max()));
+  const int values_size = static_cast<int>(values.size());
+
+#if defined(ARCH_CPU_X86_FAMILY)
+  // Process 4 floats at a time using SIMD.
+  __m128 value_vec = _mm_set1_ps(value);
+  // Start at 0 for byte alignment.
+  for (processed_frames = 0; processed_frames < values_size - 3;
+       processed_frames += 4) {
+    // Load 4 floats from memory.
+    __m128 input_vec = _mm_loadu_ps(&values[processed_frames]);
+    // Compare the 4 floats with the value.
+    __m128 cmp_vec = _mm_cmpneq_ps(input_vec, value_vec);
+    // Check if any of the floats are not equal to the value.
+    if (_mm_movemask_ps(cmp_vec) != 0) {
+      return false;
+    }
+  }
+#elif defined(CPU_ARM_NEON)
+  // Process 4 floats at a time using SIMD.
+  float32x4_t value_vec = vdupq_n_f32(value);
+  // Start at 0 for byte alignment.
+  for (processed_frames = 0; processed_frames < values_size - 3;
+       processed_frames += 4) {
+    // Load 4 floats from memory.
+    float32x4_t input_vec = vld1q_f32(&values[processed_frames]);
+    // Compare the 4 floats with the value.
+    uint32x4_t cmp_vec = vceqq_f32(input_vec, value_vec);
+    // Accumulate the elements of the cmp_vec vector using bitwise AND.
+    uint32x2_t cmp_reduced_32 =
+        vand_u32(vget_low_u32(cmp_vec), vget_high_u32(cmp_vec));
+    // Check if any of the floats are not equal to the value.
+    if (vget_lane_u32(vpmin_u32(cmp_reduced_32, cmp_reduced_32), 0) == 0) {
+      return false;
+    }
+  }
+#endif
+  // Fallback implementation without SIMD optimization.
+  while (processed_frames < values_size) {
+    if (values[processed_frames] != value) {
+      return false;
+    }
+    processed_frames++;
+  }
+  return true;
 }
 
 }  // namespace blink::audio_utilities

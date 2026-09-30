@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/scoped_feature_list.h"
 #include "media/base/audio_bus.h"
@@ -24,6 +25,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_param_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_audio_worklet_node_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_automation_rate.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/worker_devtools_params.h"
@@ -40,9 +44,19 @@
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 #include "third_party/blink/renderer/core/workers/worklet_module_responses_map.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_buffer.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_destination_node.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_param.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_param_map.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_worklet_handler.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_worklet_node.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_worklet_processor_definition.h"
+#include "third_party/blink/renderer/modules/webaudio/cross_thread_audio_worklet_processor_info.h"
+#include "third_party/blink/renderer/modules/webaudio/deferred_task_handler.h"
+#include "third_party/blink/renderer/modules/webaudio/offline_audio_context.h"
 #include "third_party/blink/renderer/modules/webaudio/offline_audio_worklet_thread.h"
+#include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/denormal_disabler.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -162,6 +176,100 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
     waitable_event.Wait();
   }
 
+  void RunAudioParamProcessTest(WorkerThread* thread) {
+    base::WaitableEvent waitable_event;
+    PostCrossThreadTask(
+        *thread->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+        CrossThreadBindOnce(&AudioWorkletGlobalScopeTest::
+                                RunAudioParamProcessTestOnWorkletThread,
+                            CrossThreadUnretained(this),
+                            CrossThreadUnretained(thread),
+                            CrossThreadUnretained(&waitable_event)));
+    waitable_event.Wait();
+  }
+
+  void RunAudioWorkletHandlerProcessTest(WorkerThread* thread) {
+    DummyExceptionStateForTesting exception_state;
+    OfflineAudioContext* context = OfflineAudioContext::Create(
+        GetFrame().DomWindow(), 2, kRenderQuantumFrames, 48000,
+        exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+
+    AudioWorkletNodeOptions* options = AudioWorkletNodeOptions::Create();
+    options->setNumberOfInputs(0);
+    options->setNumberOfOutputs(1);
+    options->setOutputChannelCount({2});
+
+    auto create_descriptor = [](const String& name, V8AutomationRate::Enum rate,
+                                float default_value) {
+      AudioParamDescriptor* desc = AudioParamDescriptor::Create();
+      desc->setName(name);
+      desc->setAutomationRate(rate);
+      desc->setDefaultValue(default_value);
+      desc->setMinValue(-1000.0f);
+      desc->setMaxValue(1000.0f);
+      return CrossThreadAudioParamInfo(desc);
+    };
+
+    Vector<CrossThreadAudioParamInfo> param_info_list;
+    param_info_list.push_back(
+        create_descriptor("kRateParam", V8AutomationRate::Enum::kKRate, 5.0f));
+    param_info_list.push_back(create_descriptor(
+        "unautomatedARateParam", V8AutomationRate::Enum::kARate, 7.0f));
+    param_info_list.push_back(create_descriptor(
+        "constantARateParam", V8AutomationRate::Enum::kARate, 10.0f));
+    param_info_list.push_back(create_descriptor(
+        "varyingARateParam", V8AutomationRate::Enum::kARate, 20.0f));
+
+    auto* node_channel =
+        MakeGarbageCollected<MessageChannel>(GetFrame().DomWindow());
+    AudioWorkletNode* worklet_node = MakeGarbageCollected<AudioWorkletNode>(
+        *context, "handlerParamTestProcessor", options, param_info_list,
+        node_channel->port1());
+    worklet_node->connect(context->destinationNode(), 0, 0, exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+
+    const auto& param_map = worklet_node->parameters()->GetHashMap();
+    // Schedule a ramp on `kRateParam` so `HasSampleAccurateValues()` is true,
+    // verifying `k-rate` parameters still collapse to length 1.
+    param_map.at("kRateParam")
+        ->linearRampToValueAtTime(50.0f, 1.0, exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+
+    // Schedule two events on `constantARateParam` so
+    // `HasSampleAccurateValues()` is true while values across the first render
+    // quantum remain constant at 10.0f, verifying `HasConstantValues()`
+    // collapses the span to length 1.
+    AudioParam* constant_a_rate = param_map.at("constantARateParam");
+    constant_a_rate->setValueAtTime(10.0f, 0.0, exception_state);
+    constant_a_rate->setValueAtTime(20.0f, 1.0, exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+
+    // Schedule a linear ramp across the first render quantum on
+    // `varyingARateParam` so values vary per frame and the span retains length
+    // `kRenderQuantumFrames`.
+    AudioParam* varying_a_rate = param_map.at("varyingARateParam");
+    varying_a_rate->setValueAtTime(20.0f, 0.0, exception_state);
+    varying_a_rate->linearRampToValueAtTime(
+        20.0f + static_cast<float>(kRenderQuantumFrames),
+        static_cast<double>(kRenderQuantumFrames) / 48000.0, exception_state);
+    ASSERT_FALSE(exception_state.HadException());
+
+    scoped_refptr<AudioWorkletHandler> handler = WrapRefCounted(
+        &static_cast<AudioWorkletHandler&>(worklet_node->Handler()));
+
+    base::WaitableEvent waitable_event;
+    PostCrossThreadTask(
+        *thread->GetTaskRunner(TaskType::kInternalTest), FROM_HERE,
+        CrossThreadBindOnce(
+            &AudioWorkletGlobalScopeTest::
+                RunAudioWorkletHandlerProcessTestOnWorkletThread,
+            CrossThreadUnretained(this), CrossThreadUnretained(thread),
+            WrapCrossThreadPersistent(context), handler,
+            CrossThreadUnretained(&waitable_event)));
+    waitable_event.Wait();
+  }
+
  private:
   void ExpectEvaluateScriptModule(AudioWorkletGlobalScope* global_scope,
                                   const String& source_code,
@@ -225,8 +333,7 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
     MessagePortChannel dummy_port_channel = channel->port2()->Disentangle();
 
     AudioWorkletProcessor* processor =
-        global_scope->CreateProcessor("testProcessor",
-                                      dummy_port_channel,
+        global_scope->CreateProcessor("testProcessor", dummy_port_channel,
                                       SerializedScriptValue::NullValue());
     EXPECT_TRUE(processor);
     EXPECT_EQ(processor->Name(), "testProcessor");
@@ -328,14 +435,13 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
     auto* channel = MakeGarbageCollected<MessageChannel>(thread->GlobalScope());
     MessagePortChannel dummy_port_channel = channel->port2()->Disentangle();
     AudioWorkletProcessor* processor =
-        global_scope->CreateProcessor("testProcessor",
-                                      dummy_port_channel,
+        global_scope->CreateProcessor("testProcessor", dummy_port_channel,
                                       SerializedScriptValue::NullValue());
     EXPECT_TRUE(processor);
 
     Vector<scoped_refptr<AudioBus>> input_buses;
     Vector<scoped_refptr<AudioBus>> output_buses;
-    HashMap<String, std::unique_ptr<AudioFloatArray>> param_data_map;
+    HashMap<String, base::span<const float>> param_data_map;
     scoped_refptr<AudioBus> input_bus =
         AudioBus::Create(1, kRenderQuantumFrames);
     scoped_refptr<AudioBus> output_bus =
@@ -400,14 +506,13 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
     auto* channel = MakeGarbageCollected<MessageChannel>(thread->GlobalScope());
     MessagePortChannel dummy_port_channel = channel->port2()->Disentangle();
     AudioWorkletProcessor* processor =
-        global_scope->CreateProcessor("testProcessor",
-                                      dummy_port_channel,
+        global_scope->CreateProcessor("testProcessor", dummy_port_channel,
                                       SerializedScriptValue::NullValue());
     EXPECT_TRUE(processor);
 
     Vector<scoped_refptr<AudioBus>> input_buses;
     Vector<scoped_refptr<AudioBus>> output_buses;
-    HashMap<String, std::unique_ptr<AudioFloatArray>> param_data_map;
+    HashMap<String, base::span<const float>> param_data_map;
     scoped_refptr<AudioBus> input_bus =
         AudioBus::Create(1, kRenderQuantumFrames);
     scoped_refptr<AudioBus> output_bus =
@@ -480,28 +585,225 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
     wait_event->Signal();
   }
 
+  void RunAudioParamProcessTestOnWorkletThread(
+      WorkerThread* thread,
+      base::WaitableEvent* wait_event) {
+    EXPECT_TRUE(thread->IsCurrentThread());
+
+    auto* global_scope = To<AudioWorkletGlobalScope>(thread->GlobalScope());
+    ScriptState* script_state =
+        global_scope->ScriptController()->GetScriptState();
+
+    ScriptState::Scope scope(script_state);
+
+    String source_code =
+        R"JS(
+          class ParamTestProcessor extends AudioWorkletProcessor {
+            static get parameterDescriptors() {
+              return [
+                { name: 'kRateParam', automationRate: 'k-rate' },
+                { name: 'aRateParam', automationRate: 'a-rate' }
+              ];
+            }
+            process(inputs, outputs, parameters) {
+              const metaChannel = outputs[0][0];
+              const valueChannel = outputs[0][1];
+              metaChannel[0] = parameters.kRateParam.length;
+              metaChannel[1] = parameters.kRateParam[0];
+              metaChannel[2] = parameters.aRateParam.length;
+              for (let i = 0; i < parameters.aRateParam.length; ++i) {
+                valueChannel[i] = parameters.aRateParam[i];
+              }
+              return true;
+            }
+          }
+          registerProcessor('paramTestProcessor', ParamTestProcessor);
+        )JS";
+    ExpectEvaluateScriptModule(global_scope, source_code, true);
+
+    auto* channel = MakeGarbageCollected<MessageChannel>(thread->GlobalScope());
+    MessagePortChannel dummy_port_channel = channel->port2()->Disentangle();
+    AudioWorkletProcessor* processor =
+        global_scope->CreateProcessor("paramTestProcessor", dummy_port_channel,
+                                      SerializedScriptValue::NullValue());
+    EXPECT_TRUE(processor);
+
+    Vector<scoped_refptr<AudioBus>> input_buses;
+    Vector<scoped_refptr<AudioBus>> output_buses;
+    scoped_refptr<AudioBus> output_bus =
+        AudioBus::Create(2, kRenderQuantumFrames);
+    output_bus->Zero();
+    output_buses.push_back(output_bus.get());
+
+    AudioFloatArray k_rate_array(1);
+    k_rate_array[0] = 5.0f;
+
+    AudioFloatArray a_rate_array(kRenderQuantumFrames);
+    for (size_t i = 0; i < kRenderQuantumFrames; ++i) {
+      a_rate_array[i] = 10.0f + static_cast<float>(i);
+    }
+
+    HashMap<String, base::span<const float>> param_data_map;
+    param_data_map.Set("kRateParam", k_rate_array.as_span());
+    param_data_map.Set("aRateParam", a_rate_array.as_span());
+
+    // Quantum 1: kRateParam has length 1, aRateParam has length 128 with
+    // non-constant values.
+    processor->Process(input_buses, output_buses, param_data_map);
+
+    AudioChannel* meta_channel = output_bus->Channel(0);
+    AudioChannel* value_channel = output_bus->Channel(1);
+    EXPECT_EQ(meta_channel->Span()[0], 1.0f);
+    EXPECT_EQ(meta_channel->Span()[1], 5.0f);
+    EXPECT_EQ(meta_channel->Span()[2],
+              static_cast<float>(kRenderQuantumFrames));
+    for (size_t i = 0; i < kRenderQuantumFrames; ++i) {
+      EXPECT_EQ(value_channel->Span()[i], 10.0f + static_cast<float>(i));
+    }
+
+    // Quantum 2: Transition aRateParam from length 128 to length 1, exercising
+    // ParamValueMapMatchesToParamsObject -> CloneParamValueMapToObject.
+    output_bus->Zero();
+    a_rate_array[0] = 42.0f;
+    param_data_map.Set("aRateParam", a_rate_array.as_span().first(1u));
+    processor->Process(input_buses, output_buses, param_data_map);
+
+    EXPECT_EQ(meta_channel->Span()[0], 1.0f);
+    EXPECT_EQ(meta_channel->Span()[1], 5.0f);
+    EXPECT_EQ(meta_channel->Span()[2], 1.0f);
+    EXPECT_EQ(value_channel->Span()[0], 42.0f);
+
+    // Quantum 3: Transition aRateParam back from length 1 to 128.
+    output_bus->Zero();
+    for (size_t i = 0; i < kRenderQuantumFrames; ++i) {
+      a_rate_array[i] = 100.0f + static_cast<float>(i);
+    }
+    param_data_map.Set("aRateParam", a_rate_array.as_span());
+    processor->Process(input_buses, output_buses, param_data_map);
+
+    EXPECT_EQ(meta_channel->Span()[2],
+              static_cast<float>(kRenderQuantumFrames));
+    for (size_t i = 0; i < kRenderQuantumFrames; ++i) {
+      EXPECT_EQ(value_channel->Span()[i], 100.0f + static_cast<float>(i));
+    }
+
+    wait_event->Signal();
+  }
+
+  void RunAudioWorkletHandlerProcessTestOnWorkletThread(
+      WorkerThread* thread,
+      OfflineAudioContext* context,
+      scoped_refptr<AudioWorkletHandler> handler,
+      base::WaitableEvent* wait_event) {
+    EXPECT_TRUE(thread->IsCurrentThread());
+
+    auto* global_scope = To<AudioWorkletGlobalScope>(thread->GlobalScope());
+    ScriptState* script_state =
+        global_scope->ScriptController()->GetScriptState();
+    ScriptState::Scope scope(script_state);
+
+    String source_code =
+        R"JS(
+          class HandlerParamTestProcessor extends AudioWorkletProcessor {
+            static get parameterDescriptors() {
+              return [
+                { name: 'kRateParam', automationRate: 'k-rate' },
+                { name: 'unautomatedARateParam', automationRate: 'a-rate' },
+                { name: 'constantARateParam', automationRate: 'a-rate' },
+                { name: 'varyingARateParam', automationRate: 'a-rate' }
+              ];
+            }
+            process(inputs, outputs, parameters) {
+              const metaChannel = outputs[0][0];
+              const valueChannel = outputs[0][1];
+              metaChannel[0] = parameters.kRateParam.length;
+              metaChannel[1] = parameters.kRateParam[0];
+              metaChannel[2] = parameters.unautomatedARateParam.length;
+              metaChannel[3] = parameters.unautomatedARateParam[0];
+              metaChannel[4] = parameters.constantARateParam.length;
+              metaChannel[5] = parameters.constantARateParam[0];
+              metaChannel[6] = parameters.varyingARateParam.length;
+              for (let i = 0; i < parameters.varyingARateParam.length; ++i) {
+                valueChannel[i] = parameters.varyingARateParam[i];
+              }
+              return false;
+            }
+          }
+          registerProcessor(
+              'handlerParamTestProcessor', HandlerParamTestProcessor);
+        )JS";
+    ExpectEvaluateScriptModule(global_scope, source_code, true);
+
+    auto* channel = MakeGarbageCollected<MessageChannel>(thread->GlobalScope());
+    MessagePortChannel dummy_port_channel = channel->port2()->Disentangle();
+    AudioWorkletProcessor* processor = global_scope->CreateProcessor(
+        "handlerParamTestProcessor", dummy_port_channel,
+        SerializedScriptValue::NullValue());
+    EXPECT_TRUE(processor);
+
+    DeferredTaskHandler& deferred_task_handler =
+        context->GetDeferredTaskHandler();
+    deferred_task_handler.SetAudioThreadToCurrentThread();
+    {
+      DeferredTaskHandler::GraphAutoLocker locker(deferred_task_handler);
+      deferred_task_handler.HandleDeferredTasks();
+      handler->Output(0).UpdateRenderingState();
+    }
+
+    handler->SetProcessorOnRenderThread(processor);
+    handler->Output(0).Bus()->Zero();
+    handler->Process(kRenderQuantumFrames);
+
+    AudioChannel* meta_channel = handler->Output(0).Bus()->Channel(0);
+    AudioChannel* value_channel = handler->Output(0).Bus()->Channel(1);
+
+    // k-rate parameter with active ramp automation -> length 1, value 5.0f.
+    EXPECT_EQ(meta_channel->Span()[0], 1.0f);
+    EXPECT_FLOAT_EQ(meta_channel->Span()[1], 5.0f);
+
+    // a-rate parameter without automation -> length 1, value 7.0f.
+    EXPECT_EQ(meta_channel->Span()[2], 1.0f);
+    EXPECT_FLOAT_EQ(meta_channel->Span()[3], 7.0f);
+
+    // a-rate parameter with sample-accurate automation that is constant across
+    // the render quantum -> collapsed to length 1, value 10.0f.
+    EXPECT_EQ(meta_channel->Span()[4], 1.0f);
+    EXPECT_FLOAT_EQ(meta_channel->Span()[5], 10.0f);
+
+    // a-rate parameter with sample-accurate linear ramp across the render
+    // quantum -> length kRenderQuantumFrames (128), values 20.0f .. 147.0f.
+    EXPECT_EQ(meta_channel->Span()[6],
+              static_cast<float>(kRenderQuantumFrames));
+    for (size_t i = 0; i < kRenderQuantumFrames; ++i) {
+      EXPECT_NEAR(value_channel->Span()[i], 20.0f + static_cast<float>(i),
+                  1e-3f);
+    }
+
+    wait_event->Signal();
+  }
+
   std::unique_ptr<WorkerReportingProxy> reporting_proxy_;
 };
 
 TEST_F(AudioWorkletGlobalScopeTest, Basic) {
-  std::unique_ptr<OfflineAudioWorkletThread> thread
-      = CreateAudioWorkletThread();
+  std::unique_ptr<OfflineAudioWorkletThread> thread =
+      CreateAudioWorkletThread();
   RunBasicTest(thread.get());
   thread->Terminate();
   thread->WaitForShutdownForTesting();
 }
 
 TEST_F(AudioWorkletGlobalScopeTest, Parsing) {
-  std::unique_ptr<OfflineAudioWorkletThread> thread
-      = CreateAudioWorkletThread();
+  std::unique_ptr<OfflineAudioWorkletThread> thread =
+      CreateAudioWorkletThread();
   RunParsingTest(thread.get());
   thread->Terminate();
   thread->WaitForShutdownForTesting();
 }
 
 TEST_F(AudioWorkletGlobalScopeTest, BufferProcessing) {
-  std::unique_ptr<OfflineAudioWorkletThread> thread
-      = CreateAudioWorkletThread();
+  std::unique_ptr<OfflineAudioWorkletThread> thread =
+      CreateAudioWorkletThread();
   RunSimpleProcessTest(thread.get());
   thread->Terminate();
   thread->WaitForShutdownForTesting();
@@ -532,9 +834,25 @@ TEST_F(AudioWorkletGlobalScopeTest, DenormalProcessing_FeatureDisabled) {
 }
 
 TEST_F(AudioWorkletGlobalScopeTest, ParsingParameterDescriptor) {
-  std::unique_ptr<OfflineAudioWorkletThread> thread
-      = CreateAudioWorkletThread();
+  std::unique_ptr<OfflineAudioWorkletThread> thread =
+      CreateAudioWorkletThread();
   RunParsingParameterDescriptorTest(thread.get());
+  thread->Terminate();
+  thread->WaitForShutdownForTesting();
+}
+
+TEST_F(AudioWorkletGlobalScopeTest, AudioParamProcessing) {
+  std::unique_ptr<OfflineAudioWorkletThread> thread =
+      CreateAudioWorkletThread();
+  RunAudioParamProcessTest(thread.get());
+  thread->Terminate();
+  thread->WaitForShutdownForTesting();
+}
+
+TEST_F(AudioWorkletGlobalScopeTest, AudioWorkletHandlerParamSizing) {
+  std::unique_ptr<OfflineAudioWorkletThread> thread =
+      CreateAudioWorkletThread();
+  RunAudioWorkletHandlerProcessTest(thread.get());
   thread->Terminate();
   thread->WaitForShutdownForTesting();
 }

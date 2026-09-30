@@ -53,10 +53,13 @@ AudioWorkletHandler::AudioWorkletHandler(
       param_handler_map_(param_handler_map) {
   DCHECK(IsMainThread());
 
+  const uint32_t render_quantum_frames =
+      GetDeferredTaskHandler().RenderQuantumFrames();
   for (const auto& param_name : param_handler_map_.Keys()) {
-    param_value_map_.Set(param_name,
-                         std::make_unique<AudioFloatArray>(
-                             GetDeferredTaskHandler().RenderQuantumFrames()));
+    auto param_buffer =
+        std::make_unique<AudioFloatArray>(render_quantum_frames);
+    param_value_map_.Set(param_name, param_buffer->as_span());
+    param_buffers_.Set(param_name, std::move(param_buffer));
   }
 
   for (unsigned i = 0; i < options->numberOfInputs(); ++i) {
@@ -98,6 +101,7 @@ AudioWorkletHandler::~AudioWorkletHandler() {
   unconnected_outputs_.clear();
   param_handler_map_.clear();
   param_value_map_.clear();
+  param_buffers_.clear();
   Uninitialize();
 }
 
@@ -182,12 +186,17 @@ void AudioWorkletHandler::Process(uint32_t frames_to_process) {
 
   for (auto& entry : param_value_map_) {
     auto* const param_handler = param_handler_map_.at(entry.key);
-    auto param_values = entry.value->as_span().first(frames_to_process);
-    if (param_handler->HasSampleAccurateValues() &&
-        param_handler->IsAudioRate()) {
+    base::span<float> param_buffer = param_buffers_.at(entry.key)->as_span();
+    if (param_handler->IsAudioRate() &&
+        param_handler->HasSampleAccurateValues() && frames_to_process > 0) {
+      base::span<float> param_values = param_buffer.first(frames_to_process);
       param_handler->CalculateSampleAccurateValues(param_values);
+      entry.value = audio_utilities::HasConstantValues(param_values)
+                        ? param_values.first(1u)
+                        : param_values;
     } else {
-      std::ranges::fill(param_values, param_handler->FinalValue());
+      param_buffer[0] = param_handler->FinalValue();
+      entry.value = param_buffer.first(1u);
     }
   }
 

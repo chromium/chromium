@@ -8,12 +8,12 @@
 
 #include "base/containers/span.h"
 #include "base/synchronization/lock.h"
-#include "build/build_config.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
+#include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/audio/biquad.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
@@ -21,12 +21,6 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
-
-#if defined(ARCH_CPU_X86_FAMILY)
-#include <xmmintrin.h>
-#elif defined(CPU_ARM_NEON)
-#include <arm_neon.h>
-#endif
 
 namespace blink {
 
@@ -39,70 +33,6 @@ constexpr unsigned kDefaultNumberOfOutputChannels = 1;
 // this, limit the maximum to this value so that we don't keep such nodes alive
 // "forever". Investigate if we can adjust this to a smaller value.
 constexpr double kMaxTailTime = 30.0;
-
-bool HasConstantValues(base::span<float> values) {
-  if (values.size() <= 1) {
-    return true;
-  }
-
-  // Load the initial value
-  const float value = values[0];
-
-  // Initialize to 1 to avoid redundantly comparing the first frame in the
-  // non-SIMD path, although this will be re-initialized to 0 on platforms with
-  // SIMD enabled for byte alignment purposes so it is only an optimization on
-  // platforms without SIMD.
-  int processed_frames = 1;
-  // Due to `values_size - 3` below this value could be negative, so to save
-  // having multiple static_cast<int>, we do it once and just use that to
-  // silence warnings about comparing unsigned and signed.
-  DCHECK_LE(values.size(),
-            static_cast<size_t>(std::numeric_limits<int>::max()));
-  const int values_size = static_cast<int>(values.size());
-
-#if defined(ARCH_CPU_X86_FAMILY)
-  // Process 4 floats at a time using SIMD
-  __m128 value_vec = _mm_set1_ps(value);
-  // Start at 0 for byte alignment
-  for (processed_frames = 0; processed_frames < values_size - 3;
-       processed_frames += 4) {
-    // Load 4 floats from memory
-    __m128 input_vec = _mm_loadu_ps(&values[processed_frames]);
-    // Compare the 4 floats with the value
-    __m128 cmp_vec = _mm_cmpneq_ps(input_vec, value_vec);
-    // Check if any of the floats are not equal to the value
-    if (_mm_movemask_ps(cmp_vec) != 0) {
-      return false;
-    }
-  }
-#elif defined(CPU_ARM_NEON)
-  // Process 4 floats at a time using SIMD
-  float32x4_t value_vec = vdupq_n_f32(value);
-  // Start at 0 for byte alignment
-  for (processed_frames = 0; processed_frames < values_size - 3;
-       processed_frames += 4) {
-    // Load 4 floats from memory
-    float32x4_t input_vec = vld1q_f32(&values[processed_frames]);
-    // Compare the 4 floats with the value
-    uint32x4_t cmp_vec = vceqq_f32(input_vec, value_vec);
-    // Accumulate the elements of the cmp_vec vector using bitwise AND
-    uint32x2_t cmp_reduced_32 =
-        vand_u32(vget_low_u32(cmp_vec), vget_high_u32(cmp_vec));
-    // Check if any of the floats are not equal to the value
-    if (vget_lane_u32(vpmin_u32(cmp_reduced_32, cmp_reduced_32), 0) == 0) {
-      return false;
-    }
-  }
-#endif
-  // Fallback implementation without SIMD optimization
-  while (processed_frames < values_size) {
-    if (values[processed_frames] != value) {
-      return false;
-    }
-    processed_frames++;
-  }
-  return true;
-}
 
 // Convert from Hertz to normalized frequency 0 -> 1.
 double NormalizeFrequency(float frequency, double nyquist, float detune) {
@@ -333,14 +263,14 @@ void BiquadFilterHandler::Process(uint32_t frames_to_process) {
           // don't need to compute filter coefficients for each frame since
           // they would be the same as the first.
           bool is_constant =
-              HasConstantValues(
+              audio_utilities::HasConstantValues(
                   cutoff_frequency_sample_accurate_values_.as_span().first(
                       frames_count)) &&
-              HasConstantValues(
+              audio_utilities::HasConstantValues(
                   q_sample_accurate_values_.as_span().first(frames_count)) &&
-              HasConstantValues(
+              audio_utilities::HasConstantValues(
                   gain_sample_accurate_values_.as_span().first(frames_count)) &&
-              HasConstantValues(
+              audio_utilities::HasConstantValues(
                   detune_sample_accurate_values_.as_span().first(frames_count));
           size_t needed_frames = is_constant ? 1 : frames_count;
           // Convert from Hertz to normalized frequency 0 -> 1.
@@ -585,7 +515,7 @@ void BiquadFilterHandler::NotifyBadState() const {
 
 bool BiquadFilterHandler::HasConstantValuesForTesting(
     base::span<float> values) {
-  return HasConstantValues(values);
+  return audio_utilities::HasConstantValues(values);
 }
 
 }  // namespace blink

@@ -28,6 +28,7 @@
 
 #include <cstddef>
 
+#include "base/containers/span.h"
 #include "base/time/time.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/platform/web_audio_latency_hint.h"
@@ -78,6 +79,10 @@ PLATFORM_EXPORT uint32_t MaxRenderQuantumSize(float sample_rate);
 // Returns `value` rounded up to the smallest multiple of `modulus`, safe
 // against integer overflow. `modulus` must be strictly greater than 0.
 PLATFORM_EXPORT size_t RoundUpToMultiple(size_t value, size_t modulus);
+
+// Returns true if all elements in `values` are identical (or `values.size() <=
+// 1`).
+PLATFORM_EXPORT bool HasConstantValues(base::span<const float> values);
 
 PLATFORM_EXPORT const std::string GetSinkIdForTracing(
     blink::WebAudioSinkDescriptor sink_descriptor);
