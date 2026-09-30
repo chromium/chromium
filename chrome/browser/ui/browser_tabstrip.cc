@@ -131,11 +131,8 @@ void CloseWebContents(BrowserWindowInterface* browser,
                       content::WebContents* contents,
                       bool add_to_history) {
   int index = browser->GetTabStripModel()->GetIndexOfWebContents(contents);
-  if (index == TabStripModel::kNoTab) {
-    DUMP_WILL_BE_NOTREACHED()
-        << "CloseWebContents called for tab not in our strip";
-    return;
-  }
+  CHECK_NE(index, TabStripModel::kNoTab)
+      << "CloseWebContents called for tab not in our strip";
 
   uint32_t close_types = TabCloseTypes::CLOSE_NONE;
   if (auto* data = TabCloseTypesData::FromWebContents(contents)) {

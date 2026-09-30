@@ -259,10 +259,40 @@ void UnloadController::BeforeUnloadFired(content::WebContents* web_contents,
 }
 
 bool UnloadController::CanCloseContents(content::WebContents* contents) {
+  // TODO(crbug.com/40075474): Despite its query-like name, CanCloseContents()
+  // has side effects via ClearUnloadState() (which can advance unload
+  // processing and even close the browser window). Separate the side-effecting
+  // unload completion notification from the pure closability check.
+  //
   // Don't try to close the tab when the whole browser is being closed, since
   // that avoids the fast shutdown path where we just kill all the renderers.
   if (is_attempting_to_close_browser()) {
     ClearUnloadState(contents, true);
+  }
+
+  // In kIdle, kRunningBeforeUnloadForShutdown, and kBeforeUnloadConfirmed,
+  // HandleBeforeClose() has not started closing this window
+  // (RunBeforeUnloadForShutdown only runs beforeunload confirmation and never
+  // calls ClosePage()), so any CanCloseContents() call is for an individual tab
+  // close (e.g. window.close() or Cmd+W) and can proceed if the tab is
+  // closable.
+  //
+  // Once HandleBeforeClose() starts closing this window
+  // (kRunningBeforeUnloadForWindowClose, kRunningUnload, kUnloadCompleted),
+  // return false before inspecting `contents` (which `ClearUnloadState()` may
+  // have already detached and destroyed via `OnWindowClosing()` ->
+  // `CloseAllTabs()`). Keeping all tabs in TabStripModel until
+  // `OnWindowClosing()` ensures `TabRestoreService` records the full window and
+  // closes all tabs together via `TabStripModel::CloseAllTabs()`.
+  switch (state_) {
+    case State::kIdle:
+    case State::kRunningBeforeUnloadForShutdown:
+    case State::kBeforeUnloadConfirmed:
+      break;
+    case State::kRunningBeforeUnloadForWindowClose:
+    case State::kRunningUnload:
+    case State::kUnloadCompleted:
+      return false;
   }
 
   if (!web_app::IsTabClosable(
@@ -280,30 +310,7 @@ bool UnloadController::CanCloseContents(content::WebContents* contents) {
   }
 #endif
 
-  // In kIdle, kRunningBeforeUnloadForShutdown, and kBeforeUnloadConfirmed,
-  // HandleBeforeClose() has not started closing this window
-  // (RunBeforeUnloadForShutdown only runs beforeunload confirmation and never
-  // calls ClosePage()), so any CanCloseContents() call is for an individual tab
-  // close (e.g. window.close() or Cmd+W) and must return true.
-  //
-  // Once HandleBeforeClose() starts closing this window
-  // (kRunningBeforeUnloadForWindowClose, kRunningUnload, kUnloadCompleted),
-  // return false so tabs are not detached from TabStripModel one by one (note
-  // that ClearUnloadState() above may also transition from kRunningUnload back
-  // to kRunningBeforeUnloadForWindowClose if another tab added a beforeunload
-  // listener while closing). Keeping all tabs in TabStripModel ensures
-  // OnWindowClosing() records the full window in TabRestoreService and closes
-  // all tabs together via TabStripModel::CloseAllTabs().
-  switch (state_) {
-    case State::kIdle:
-    case State::kRunningBeforeUnloadForShutdown:
-    case State::kBeforeUnloadConfirmed:
-      return true;
-    case State::kRunningBeforeUnloadForWindowClose:
-    case State::kRunningUnload:
-    case State::kUnloadCompleted:
-      return false;
-  }
+  return true;
 }
 
 bool UnloadController::ShouldRunUnloadEventsHelper(
