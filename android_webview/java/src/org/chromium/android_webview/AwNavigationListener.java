@@ -16,12 +16,12 @@ import java.util.Map;
 public interface AwNavigationListener {
     /* WebViewNavigationClient */ InvocationHandler getSupportLibInvocationHandler();
 
-    void onNavigationStarted(AwNavigation navigation);
+    void onNavigationStarted(AwNavigationState navigationState);
 
     /**
      * Called when the navigation is redirected.
      *
-     * @param navigation The navigation that was redirected.
+     * @param navigationState The NavigationState of the navigation that was redirected.
      * @param responseHeaders The headers of the response that caused the redirect. Note that these
      *     are not the headers of the navigation's final response, which are available from {@link
      *     AwNavigation#getResponseHeaders()} once the navigation has completed.
@@ -30,21 +30,21 @@ public interface AwNavigationListener {
      *     {@link AwNavigation#getStatusCode()} once the navigation has completed.
      */
     void onNavigationRedirected(
-            AwNavigation navigation, Map<String, String> responseHeaders, int statusCode);
+            AwNavigationState navigationState, Map<String, String> responseHeaders, int statusCode);
 
-    void onNavigationCompleted(AwNavigation navigation);
+    void onNavigationCompleted(AwNavigationState navigationState);
 
-    void onNavigationVisible(AwNavigation navigation);
+    void onNavigationVisible(AwNavigationState navigationState);
 
-    void onPageDeleted(AwPage page);
+    void onPageDeleted(AwPageState pageState);
 
-    void onPageLoadEventFired(AwPage page);
+    void onPageLoadEventFired(AwPageState pageState);
 
-    void onPageDOMContentLoadedEventFired(AwPage page);
+    void onPageDOMContentLoadedEventFired(AwPageState pageState);
 
-    void onFirstContentfulPaint(AwPage page, long durationMs);
+    void onFirstContentfulPaint(AwPageState pageState, long durationMs);
 
-    void onLargestContentfulPaint(AwPage page, long durationMs);
+    void onLargestContentfulPaint(AwPageState pageState, long durationMs);
 
-    void onPerformanceMark(AwPage page, String markName, long markNameMs);
+    void onPerformanceMark(AwPageState pageState, String markName, long markNameMs);
 }

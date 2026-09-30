@@ -8,6 +8,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 
 import androidx.annotation.AnyThread;
 import androidx.annotation.UiThread;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 
@@ -115,41 +116,43 @@ public class AwNavigationClient implements Page.PageDeletionListener {
     @UiThread
     public void onNavigationStarted(NavigationHandle navigation) {
         ThreadUtils.assertOnUiThread();
-        AwNavigation awNavigation = getOrUpdateAwNavigationFor(navigation);
+        AwNavigationState awNavigationState = getLatestAwNavigationStateFor(navigation);
         for (AwNavigationListener listener : mNavigationListeners) {
-            listener.onNavigationStarted(awNavigation);
+            listener.onNavigationStarted(awNavigationState);
         }
     }
 
     @UiThread
     public void onNavigationRedirected(NavigationHandle navigation) {
         ThreadUtils.assertOnUiThread();
-        AwNavigation awNavigation = getOrUpdateAwNavigationFor(navigation);
+        AwNavigationState awNavigationState = getLatestAwNavigationStateFor(navigation);
+
         // The headers are guaranteed to be set, as NavigationHandle#didRedirect is called before
         // observers are notified of the redirect.
         Map<String, String> responseHeaders =
                 assumeNonNull(navigation.getRedirectResponseHeaders());
         int statusCode = navigation.redirectHttpStatusCode();
+
         for (AwNavigationListener listener : mNavigationListeners) {
-            listener.onNavigationRedirected(awNavigation, responseHeaders, statusCode);
+            listener.onNavigationRedirected(awNavigationState, responseHeaders, statusCode);
         }
     }
 
     @UiThread
     public void onNavigationCompleted(NavigationHandle navigation) {
         ThreadUtils.assertOnUiThread();
-        AwNavigation awNavigation = getOrUpdateAwNavigationFor(navigation);
+        AwNavigationState awNavigationState = getLatestAwNavigationStateFor(navigation);
         for (AwNavigationListener listener : mNavigationListeners) {
-            listener.onNavigationCompleted(awNavigation);
+            listener.onNavigationCompleted(awNavigationState);
         }
     }
 
     @UiThread
     public void onNavigationVisible(NavigationHandle navigation) {
         ThreadUtils.assertOnUiThread();
-        AwNavigation awNavigation = getOrUpdateAwNavigationFor(navigation);
+        AwNavigationState awNavigationState = getLatestAwNavigationStateFor(navigation);
         for (AwNavigationListener listener : mNavigationListeners) {
-            listener.onNavigationVisible(awNavigation);
+            listener.onNavigationVisible(awNavigationState);
         }
     }
 
@@ -159,9 +162,9 @@ public class AwNavigationClient implements Page.PageDeletionListener {
     public void onWillDeletePage(Page page) {
         ThreadUtils.assertOnUiThread();
         if (!page.isPrerendering()) {
-            AwPage awPage = getAwPageFor(page);
+            AwPageState awPageState = getLatestAwPageStateFor(page);
             for (AwNavigationListener listener : mNavigationListeners) {
-                listener.onPageDeleted(awPage);
+                listener.onPageDeleted(awPageState);
             }
         }
     }
@@ -169,18 +172,18 @@ public class AwNavigationClient implements Page.PageDeletionListener {
     @UiThread
     public void onPageLoadEventFired(Page page) {
         ThreadUtils.assertOnUiThread();
-        AwPage awPage = getAwPageFor(page);
+        AwPageState awPageState = getLatestAwPageStateFor(page);
         for (AwNavigationListener listener : mNavigationListeners) {
-            listener.onPageLoadEventFired(awPage);
+            listener.onPageLoadEventFired(awPageState);
         }
     }
 
     @UiThread
     public void onPageDOMContentLoadedEventFired(Page page) {
         ThreadUtils.assertOnUiThread();
-        AwPage awPage = getAwPageFor(page);
+        AwPageState awPageState = getLatestAwPageStateFor(page);
         for (AwNavigationListener listener : mNavigationListeners) {
-            listener.onPageDOMContentLoadedEventFired(awPage);
+            listener.onPageDOMContentLoadedEventFired(awPageState);
         }
     }
 
@@ -188,9 +191,9 @@ public class AwNavigationClient implements Page.PageDeletionListener {
     @CalledByNative
     public void onFirstContentfulPaint(Page page, long durationMs) {
         ThreadUtils.assertOnUiThread();
-        AwPage awPage = getAwPageFor(page);
+        AwPageState awPageState = getLatestAwPageStateFor(page);
         for (AwNavigationListener listener : mNavigationListeners) {
-            listener.onFirstContentfulPaint(awPage, durationMs);
+            listener.onFirstContentfulPaint(awPageState, durationMs);
         }
     }
 
@@ -198,9 +201,9 @@ public class AwNavigationClient implements Page.PageDeletionListener {
     @CalledByNative
     public void onLargestContentfulPaint(Page page, long durationMs) {
         ThreadUtils.assertOnUiThread();
-        AwPage awPage = getAwPageFor(page);
+        AwPageState awPageState = getLatestAwPageStateFor(page);
         for (AwNavigationListener listener : mNavigationListeners) {
-            listener.onLargestContentfulPaint(awPage, durationMs);
+            listener.onLargestContentfulPaint(awPageState, durationMs);
         }
     }
 
@@ -209,10 +212,24 @@ public class AwNavigationClient implements Page.PageDeletionListener {
     public void onPerformanceMark(
             Page page, @JniType("std::string") String markName, long markTimeMs) {
         ThreadUtils.assertOnUiThread();
-        AwPage awPage = getAwPageFor(page);
+        AwPageState awPageState = getLatestAwPageStateFor(page);
         for (AwNavigationListener listener : mNavigationListeners) {
-            listener.onPerformanceMark(awPage, markName, markTimeMs);
+            listener.onPerformanceMark(awPageState, markName, markTimeMs);
         }
+    }
+
+    private AwNavigationState getLatestAwNavigationStateFor(NavigationHandle navigation) {
+        AwNavigation awNavigation = getOrUpdateAwNavigationFor(navigation);
+        // For this code to be threadsafe onNavigationStarted must be called sometime after the
+        // NavigationHandle is updated synchronously other the NavigationState could have out of
+        // sync data. This is the case in the current implementation and is threadsafe for all other
+        // callbacks in this class.
+        return getAwNavigationStateFor(navigation, awNavigation);
+    }
+
+    private AwPageState getLatestAwPageStateFor(Page page) {
+        AwPage awPage = getAwPageFor(page);
+        return getAwPageStateFor(awPage, page.getMostRecentPageState());
     }
 
     /**

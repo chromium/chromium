@@ -25,8 +25,8 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContents.VisualStateCallback;
 import org.chromium.android_webview.AwContentsClient;
-import org.chromium.android_webview.AwNavigation;
-import org.chromium.android_webview.AwPage;
+import org.chromium.android_webview.AwNavigationState;
+import org.chromium.android_webview.AwPageState;
 import org.chromium.android_webview.AwWebResourceRequest;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.android_webview.test.util.GraphicsTestUtils;
@@ -340,16 +340,16 @@ public class VisualStateTest extends AwParameterizedTest {
         final TestAwNavigationListener listener =
                 new TestAwNavigationListener(new CallbackHelper()) {
                     @Override
-                    public void onNavigationVisible(AwNavigation navigation) {
-                        super.onNavigationVisible(navigation);
+                    public void onNavigationVisible(AwNavigationState navigationState) {
+                        super.onNavigationVisible(navigationState);
                         Bitmap bitmap = GraphicsTestUtils.drawAwContents(awContents, 256, 256);
                         Assert.assertEquals(Color.GREEN, bitmap.getPixel(128, 128));
                         navigationVisibleCallbackOccurred.countDown();
                     }
 
                     @Override
-                    public void onPageLoadEventFired(AwPage page) {
-                        super.onPageLoadEventFired(page);
+                    public void onPageLoadEventFired(AwPageState pageState) {
+                        super.onPageLoadEventFired(pageState);
                         awContents.insertVisualStateCallback(10, visualStateCallback);
                     }
                 };

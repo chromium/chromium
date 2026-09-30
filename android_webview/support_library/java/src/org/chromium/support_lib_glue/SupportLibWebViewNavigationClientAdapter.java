@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 package org.chromium.support_lib_glue;
 
-import org.chromium.android_webview.AwNavigation;
 import org.chromium.android_webview.AwNavigationListener;
-import org.chromium.android_webview.AwPage;
+import org.chromium.android_webview.AwNavigationState;
+import org.chromium.android_webview.AwPageState;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.support_lib_boundary.WebViewNavigationClientBoundaryInterface;
@@ -42,19 +42,21 @@ class SupportLibWebViewNavigationClientAdapter implements AwNavigationListener {
     }
 
     @Override
-    public void onNavigationStarted(AwNavigation navigation) {
+    public void onNavigationStarted(AwNavigationState navigationState) {
         if (!BoundaryInterfaceReflectionUtil.containsFeature(
                 mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE)) {
             return;
         }
         mClientImpl.onNavigationStarted(
                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                        new SupportLibWebViewNavigationAdapter(navigation)));
+                        new SupportLibWebViewNavigationAdapter(navigationState.getNavigation())));
     }
 
     @Override
     public void onNavigationRedirected(
-            AwNavigation navigation, Map<String, String> responseHeaders, int statusCode) {
+            AwNavigationState navigationState,
+            Map<String, String> responseHeaders,
+            int statusCode) {
         if (!BoundaryInterfaceReflectionUtil.containsFeature(
                 mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE)) {
             return;
@@ -63,76 +65,76 @@ class SupportLibWebViewNavigationClientAdapter implements AwNavigationListener {
         // client is set to be deprecated in favour of {@link #AwNavigationListener}.
         mClientImpl.onNavigationRedirected(
                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                        new SupportLibWebViewNavigationAdapter(navigation)));
+                        new SupportLibWebViewNavigationAdapter(navigationState.getNavigation())));
     }
 
     @Override
-    public void onNavigationCompleted(AwNavigation navigation) {
+    public void onNavigationCompleted(AwNavigationState navigationState) {
         if (!BoundaryInterfaceReflectionUtil.containsFeature(
                 mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE)) {
             return;
         }
         mClientImpl.onNavigationCompleted(
                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                        new SupportLibWebViewNavigationAdapter(navigation)));
+                        new SupportLibWebViewNavigationAdapter(navigationState.getNavigation())));
     }
 
     // Not implemented as this navigation client is set to be deprecated in favour of
     // {@link #AwNavigationListener}
     @Override
-    public void onNavigationVisible(AwNavigation navigation) {}
+    public void onNavigationVisible(AwNavigationState navigationState) {}
 
     @Override
-    public void onPageDeleted(AwPage page) {
+    public void onPageDeleted(AwPageState pageState) {
         if (!BoundaryInterfaceReflectionUtil.containsFeature(
                 mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE)) {
             return;
         }
         mClientImpl.onPageDeleted(
                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                        new SupportLibWebViewPageAdapter(page)));
+                        new SupportLibWebViewPageAdapter(pageState.getPage())));
     }
 
     @Override
-    public void onPageLoadEventFired(AwPage page) {
+    public void onPageLoadEventFired(AwPageState pageState) {
         if (!BoundaryInterfaceReflectionUtil.containsFeature(
                 mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE)) {
             return;
         }
         mClientImpl.onPageLoadEventFired(
                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                        new SupportLibWebViewPageAdapter(page)));
+                        new SupportLibWebViewPageAdapter(pageState.getPage())));
     }
 
     @Override
-    public void onPageDOMContentLoadedEventFired(AwPage page) {
+    public void onPageDOMContentLoadedEventFired(AwPageState pageState) {
         if (!BoundaryInterfaceReflectionUtil.containsFeature(
                 mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE)) {
             return;
         }
         mClientImpl.onPageDOMContentLoadedEventFired(
                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                        new SupportLibWebViewPageAdapter(page)));
+                        new SupportLibWebViewPageAdapter(pageState.getPage())));
     }
 
     @Override
-    public void onFirstContentfulPaint(AwPage page, long loadTimeUs) {
+    public void onFirstContentfulPaint(AwPageState pageState, long loadTimeUs) {
         if (!BoundaryInterfaceReflectionUtil.containsFeature(
                 mSupportedFeatures, Features.WEB_VIEW_NAVIGATION_CLIENT_BASIC_USAGE)) {
             return;
         }
         mClientImpl.onFirstContentfulPaint(
                 BoundaryInterfaceReflectionUtil.createInvocationHandlerFor(
-                        new SupportLibWebViewPageAdapter(page)));
+                        new SupportLibWebViewPageAdapter(pageState.getPage())));
     }
 
     // Not implemented as this navigation client is set to be deprecated in favour of
     // {@link #AwNavigationListener}
     @Override
-    public void onLargestContentfulPaint(AwPage page, long durationMs) {}
+    public void onLargestContentfulPaint(AwPageState pageState, long durationMs) {}
 
     // Not implemented as this navigation client is set to be deprecated in favour of
     // {@link #AwNavigationListener}
     @Override
-    public void onPerformanceMark(AwPage page, String markName, long markNameMs) {}
+    public void onPerformanceMark(AwPageState pageState, String markName, long markNameMs) {}
 }

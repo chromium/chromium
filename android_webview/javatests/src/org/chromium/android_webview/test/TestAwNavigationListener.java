@@ -8,7 +8,9 @@ import org.junit.Assert;
 
 import org.chromium.android_webview.AwNavigation;
 import org.chromium.android_webview.AwNavigationListener;
+import org.chromium.android_webview.AwNavigationState;
 import org.chromium.android_webview.AwPage;
+import org.chromium.android_webview.AwPageState;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.build.annotations.Nullable;
 
@@ -125,7 +127,8 @@ public class TestAwNavigationListener implements AwNavigationListener {
     }
 
     @Override
-    public void onNavigationStarted(AwNavigation navigation) {
+    public void onNavigationStarted(AwNavigationState navigationState) {
+        AwNavigation navigation = navigationState.getNavigation();
         Assert.assertFalse(
                 "onNavigationStarted should not be called twice for the same navigation",
                 mStartedNavigations.contains(navigation));
@@ -134,7 +137,10 @@ public class TestAwNavigationListener implements AwNavigationListener {
 
     @Override
     public void onNavigationRedirected(
-            AwNavigation navigation, Map<String, String> responseHeaders, int statusCode) {
+            AwNavigationState navigationState,
+            Map<String, String> responseHeaders,
+            int statusCode) {
+        AwNavigation navigation = navigationState.getNavigation();
         Assert.assertTrue(
                 "onNavigationRedirected should only be called for a started navigation",
                 mStartedNavigations.contains(navigation));
@@ -147,7 +153,8 @@ public class TestAwNavigationListener implements AwNavigationListener {
     }
 
     @Override
-    public void onNavigationCompleted(AwNavigation navigation) {
+    public void onNavigationCompleted(AwNavigationState navigationState) {
+        AwNavigation navigation = navigationState.getNavigation();
         Assert.assertTrue(
                 "onNavigationCompleted should only be called for a started navigation",
                 mStartedNavigations.contains(navigation));
@@ -158,7 +165,8 @@ public class TestAwNavigationListener implements AwNavigationListener {
     }
 
     @Override
-    public void onNavigationVisible(AwNavigation navigation) {
+    public void onNavigationVisible(AwNavigationState navigationState) {
+        AwNavigation navigation = navigationState.getNavigation();
         Assert.assertTrue(
                 "onNavigationVisible should only be called for a completed navigation",
                 mCompletedNavigations.contains(navigation));
@@ -169,33 +177,33 @@ public class TestAwNavigationListener implements AwNavigationListener {
     }
 
     @Override
-    public void onPageDeleted(AwPage page) {
-        mDeletedPages.add(page);
+    public void onPageDeleted(AwPageState pageState) {
+        mDeletedPages.add(pageState.getPage());
     }
 
     @Override
-    public void onPageLoadEventFired(AwPage page) {
-        mPagesWithLoadEventFired.add(page);
+    public void onPageLoadEventFired(AwPageState pageState) {
+        mPagesWithLoadEventFired.add(pageState.getPage());
     }
 
     @Override
-    public void onPageDOMContentLoadedEventFired(AwPage page) {
-        mPagesWithDOMContentLoadEventFired.add(page);
+    public void onPageDOMContentLoadedEventFired(AwPageState pageState) {
+        mPagesWithDOMContentLoadEventFired.add(pageState.getPage());
     }
 
     @Override
-    public void onFirstContentfulPaint(AwPage page, long durationMs) {
+    public void onFirstContentfulPaint(AwPageState pageState, long durationMs) {
         mFirstContentfulPaintLoadTimes.add(durationMs);
         mCallbackHelper.notifyCalled();
     }
 
     @Override
-    public void onLargestContentfulPaint(AwPage page, long durationMs) {
+    public void onLargestContentfulPaint(AwPageState pageState, long durationMs) {
         mLargestContentfulPaintLoadTimes.add(durationMs);
     }
 
     @Override
-    public void onPerformanceMark(AwPage page, String markName, long markTimeMs) {
+    public void onPerformanceMark(AwPageState pageState, String markName, long markTimeMs) {
         mPerformanceMarks.add(new PerformanceMark(markName, markTimeMs));
         mCallbackHelper.notifyCalled();
     }
