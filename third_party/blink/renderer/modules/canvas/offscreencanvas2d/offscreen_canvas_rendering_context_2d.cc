@@ -497,10 +497,6 @@ void OffscreenCanvasRenderingContext2D::LoseContext(LostContextMode lost_mode) {
                                                   FROM_HERE);
 }
 
-bool OffscreenCanvasRenderingContext2D::IsPaintable() const {
-  return shared_image_provider_ != nullptr || bitmap_provider_ != nullptr;
-}
-
 bool OffscreenCanvasRenderingContext2D::WritePixels(
     const SkImageInfo& orig_info,
     const void* pixels,

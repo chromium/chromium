@@ -153,6 +153,7 @@ class MODULES_EXPORT BaseRenderingContext2D
 
   virtual bool CanCreateResourceProvider() = 0;
   virtual bool InitializeResourceProvider() = 0;
+  bool HasResourceProvider() const;
 
   std::optional<cc::PaintRecord> FlushCanvas(FlushReason) override = 0;
 
@@ -268,6 +269,7 @@ class MODULES_EXPORT BaseRenderingContext2D
   bool IsOpaque() const final {
     return color_params_.GetAlphaType() == kOpaque_SkAlphaType;
   }
+  bool IsPaintable() const override;
   void DisableAccelerationForCanvas2D() final { DisableAcceleration(); }
   void PageVisibilityChanged() override {}
   void Reset() override;

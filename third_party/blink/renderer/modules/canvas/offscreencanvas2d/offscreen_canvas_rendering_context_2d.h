@@ -144,8 +144,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
  private:
   void FinalizeFrame(FlushReason) final;
 
-  bool IsPaintable() const final;
-
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason);
 
   bool InitializeResourceProvider() override;

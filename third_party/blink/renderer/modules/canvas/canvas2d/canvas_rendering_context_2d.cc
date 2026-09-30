@@ -887,7 +887,7 @@ ExecutionContext* CanvasRenderingContext2D::GetTopExecutionContext() const {
 }
 
 bool CanvasRenderingContext2D::IsPaintable() const {
-  return canvas() && HasResourceProvider();
+  return canvas() && BaseRenderingContext2D::IsPaintable();
 }
 
 bool CanvasRenderingContext2D::IsHibernating() const {
@@ -1230,7 +1230,7 @@ Canvas2DResourceProvider* CanvasRenderingContext2D::GetSharedImageProvider()
 }
 
 bool CanvasRenderingContext2D::HasResourceProvider() const {
-  return shared_image_provider_ != nullptr || bitmap_provider_ != nullptr;
+  return BaseRenderingContext2D::HasResourceProvider();
 }
 
 bool CanvasRenderingContext2D::InitializeResourceProvider() {
