@@ -888,7 +888,14 @@ source_set("unit_tests") {
 
   if (!is_android) {
     sources += [ "policy_path_parser_unittest.cc" ]
-    deps += [ ":path_parser" ]
+    deps += [
+      ":path_parser",
+      "//chrome/browser/device_api",
+      "//chrome/browser/web_applications",
+      "//chrome/browser/web_applications:web_applications_test_support",
+      "//components/webapps/isolated_web_apps",
+      "//services/data_decoder/public/cpp:test_support",
+    ]
   }
 
   if (enable_extensions_core) {
@@ -1416,14 +1423,19 @@ source_set("impl") {
     sources += [
       "device_account_initializer.cc",
       "managed_account_policy_handler.cc",
+      "value_provider/web_app_managed_configuration_value_provider.cc",
+      "value_provider/web_app_managed_configuration_value_provider.h",
     ]
     deps += [
+      "//chrome/browser/device_api",
       "//chrome/browser/device_identity",
       "//chrome/browser/indigo",
       "//chrome/browser/performance_manager/public/user_tuning",
       "//chrome/browser/web_applications",
       "//components/headless/policy",
       "//components/live_caption",
+      "//components/web_package",
+      "//components/webapps/isolated_web_apps",
     ]
 
     if (!is_chromeos) {
