@@ -9,8 +9,10 @@
 #include <variant>
 
 #include "base/containers/flat_set.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/run_until.h"
@@ -1505,12 +1507,13 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
 
   auto* service = static_cast<MockGlicKeyedService*>(
       GlicKeyedServiceFactory::GetGlicKeyedService(profile_, false));
+  base::OnceCallback<void(GlicInvokeError)> on_error;
   EXPECT_CALL(*service,
               InvokeWithAutoSubmit(testing::_, testing::_, testing::_))
-      .WillOnce([this](InvokeWithAutoSubmitPasskey passkey,
-                       GlicInvokeOptions options,
-                       GlicInvokeWithAutoSubmitOptions auto_submit_options) {
-        std::move(options.on_error).Run(GlicInvokeError::kSuperseded);
+      .WillOnce([&](InvokeWithAutoSubmitPasskey passkey,
+                    GlicInvokeOptions options,
+                    GlicInvokeWithAutoSubmitOptions auto_submit_options) {
+        on_error = std::move(options.on_error);
         return mock_glic_instance_.GetWeakPtr();
       });
 
@@ -1521,12 +1524,161 @@ TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
   request.payload = TriggerActuationRequest{.initial_prompt = "test"};
 
   SendRequest(request);
+
+  // Simulate the invocation being superseded by some other, unrelated
+  // invocation (i.e. not from within this handler's own invoke call).
+  ASSERT_TRUE(on_error);
+  std::move(on_error).Run(GlicInvokeError::kSuperseded);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return coordinator_->GetUpdatesHandlerMapSizeForTesting() == 0;
   }));
 
   histogram_tester.ExpectTotalCount(
       "Glic.ExperimentalTriggering.ExecutionOutcome", 0);
+}
+
+// Regression test: a continuation request supersedes the in-flight invocation
+// started by the trigger request on the same context. Since both requests share
+// one updates handler, the superseded invocation's error must not tear down the
+// handler, otherwise updates for the continuation are dropped.
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       ContinuationSupersedingOwnInvocation_KeepsReceivingUpdates) {
+  base::HistogramTester histogram_tester;
+
+  auto* service = static_cast<MockGlicKeyedService*>(
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_, false));
+  base::OnceCallback<void(GlicInvokeError)> trigger_on_error;
+  EXPECT_CALL(*service,
+              InvokeWithAutoSubmit(testing::_, testing::_, testing::_))
+      .WillOnce([&](InvokeWithAutoSubmitPasskey passkey,
+                    GlicInvokeOptions options,
+                    GlicInvokeWithAutoSubmitOptions auto_submit_options) {
+        EXPECT_FALSE(options.supersede_if_in_progress);
+        std::move(options.on_panel_opened).Run();
+        std::move(options.on_client_connected)
+            .Run(mock_glic_instance_.GetWeakPtr());
+        // The trigger invocation stays in progress.
+        trigger_on_error = std::move(options.on_error);
+        return mock_glic_instance_.GetWeakPtr();
+      })
+      .WillOnce([&](InvokeWithAutoSubmitPasskey passkey,
+                    GlicInvokeOptions options,
+                    GlicInvokeWithAutoSubmitOptions auto_submit_options) {
+        EXPECT_TRUE(options.supersede_if_in_progress);
+        // Mirrors GlicInstanceCoordinatorImpl, which cancels the in-progress
+        // invocation before starting the superseding one. Like
+        // GlicInvokeHandler::OnError(), the error callback is posted.
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(trigger_on_error),
+                                      GlicInvokeError::kSuperseded));
+        std::move(options.on_panel_opened).Run();
+        std::move(options.on_client_connected)
+            .Run(mock_glic_instance_.GetWeakPtr());
+        return mock_glic_instance_.GetWeakPtr();
+      });
+
+  StartActuationSession();
+
+  ExperimentalTriggeringRequest continue_request;
+  continue_request.version = 1;
+  continue_request.context_id = kTestContextId;
+  continue_request.task_metadata = TaskMetadata{.conversation_id = "conv_123"};
+  continue_request.payload =
+      ContinueActuationRequest{.continuation_prompt = "keep going"};
+
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
+  auto response = coordinator_->OnRequest(
+      kTestContextId, continue_request,
+      ScopedIncomingMessageResultLogger(
+          ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+      update_future.GetRepeatingCallback(), nullptr);
+  ASSERT_TRUE(response.has_value());
+  ASSERT_TRUE(response->task_update.has_value());
+  EXPECT_EQ(response->task_update->state, TaskUpdate::State::kStarting);
+
+  // Updates for the continuation must still be delivered. If the handler had
+  // been torn down, its receiver would already be disconnected and this update
+  // would never arrive.
+  auto update = mojom::ExperimentalTriggeringUpdate::New();
+  update->type = mojom::ExperimentalTriggeringUpdateType::kWorklog;
+  update->data = "continuing";
+  test_triggering_manager_.SendUpdate(
+      std::move(update), mojom::SubscriberObservationType::kUpdate);
+
+  // Flushing runs the loop until the update is dispatched, so any posted
+  // cleanup has also run by now.
+  test_triggering_manager_.FlushForTesting();
+  ASSERT_TRUE(update_future.IsReady());
+  auto async_response = update_future.Take();
+  ASSERT_TRUE(async_response.task_update.has_value());
+  EXPECT_EQ(async_response.task_update->state, TaskUpdate::State::kRunning);
+  EXPECT_EQ(async_response.task_update->data_type,
+            TaskUpdate::DataType::kWorklog);
+  EXPECT_EQ(async_response.task_update->data, "continuing");
+
+  EXPECT_EQ(coordinator_->GetUpdatesHandlerMapSizeForTesting(), 1u);
+
+  // The self-supersede must not have been recorded as an outcome.
+  histogram_tester.ExpectTotalCount(
+      "Glic.ExperimentalTriggering.ExecutionOutcome", 0);
+}
+
+// A duplicate trigger request while the first invocation is still in flight
+// fails with kInvokeInProgress. Unlike kSuperseded, that error must still be
+// surfaced as a FAILED update even though another invocation is pending.
+TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,
+       DuplicateTriggerWhileInvocationInFlight_ReportsFailure) {
+  base::HistogramTester histogram_tester;
+
+  auto* service = static_cast<MockGlicKeyedService*>(
+      GlicKeyedServiceFactory::GetGlicKeyedService(profile_, false));
+  base::OnceCallback<void(GlicInvokeError)> trigger_on_error;
+  EXPECT_CALL(*service,
+              InvokeWithAutoSubmit(testing::_, testing::_, testing::_))
+      .WillOnce([&](InvokeWithAutoSubmitPasskey passkey,
+                    GlicInvokeOptions options,
+                    GlicInvokeWithAutoSubmitOptions auto_submit_options) {
+        // The first invocation stays in progress.
+        trigger_on_error = std::move(options.on_error);
+        return mock_glic_instance_.GetWeakPtr();
+      })
+      .WillOnce([&](InvokeWithAutoSubmitPasskey passkey,
+                    GlicInvokeOptions options,
+                    GlicInvokeWithAutoSubmitOptions auto_submit_options) {
+        std::move(options.on_error).Run(GlicInvokeError::kInvokeInProgress);
+        return mock_glic_instance_.GetWeakPtr();
+      });
+
+  ExperimentalTriggeringRequest request;
+  request.version = 1;
+  request.context_id = kTestContextId;
+  request.task_metadata = TaskMetadata{.conversation_id = "conv_123"};
+  request.payload = TriggerActuationRequest{.initial_prompt = "test"};
+
+  base::test::TestFuture<ExperimentalTriggeringResponse> update_future;
+  for (int i = 0; i < 2; ++i) {
+    auto response = coordinator_->OnRequest(
+        kTestContextId, request,
+        ScopedIncomingMessageResultLogger(
+            ScopedIncomingMessageResultLogger::Channel::kSharingMessage),
+        update_future.GetRepeatingCallback(), nullptr);
+    ASSERT_TRUE(response.has_value());
+    ASSERT_TRUE(response->task_update.has_value());
+    EXPECT_EQ(response->task_update->state, TaskUpdate::State::kStarting);
+  }
+  ASSERT_TRUE(trigger_on_error);
+
+  auto failure = update_future.Take();
+  ASSERT_TRUE(failure.task_update.has_value());
+  EXPECT_EQ(failure.task_update->state, TaskUpdate::State::kFailed);
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return coordinator_->GetUpdatesHandlerMapSizeForTesting() == 0;
+  }));
+
+  histogram_tester.ExpectUniqueSample(
+      "Glic.ExperimentalTriggering.ExecutionOutcome",
+      GlicExperimentalTriggeringExecutionOutcome::kInvokeErrorInvokeInProgress,
+      1);
 }
 
 TEST_F(GlicExperimentalTriggeringCoordinatorWithTabTest,

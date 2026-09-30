@@ -12,6 +12,7 @@
 
 #include "base/atomic_sequence_num.h"
 #include "base/check.h"
+#include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -609,8 +610,20 @@ class ExperimentalTriggeringUpdatesHandler
     SubscribeForTriggeringUpdates(std::move(instance));
   }
 
-  void OnInvokeError(GlicInvokeError error) {
+  void OnInvokeSuccess(int invoke_id) { pending_invoke_ids_.erase(invoke_id); }
+
+  void OnInvokeError(int invoke_id, GlicInvokeError error) {
+    pending_invoke_ids_.erase(invoke_id);
     if (error == GlicInvokeError::kSuperseded) {
+      // Handlers are shared per context id, so a continuation request invokes
+      // on the same handler that owns the in-flight invocation it supersedes.
+      // If another invocation started by this handler is still in flight, it
+      // is the one that superseded this invocation and is now responsible for
+      // this handler, so it must not be torn down.
+      if (!pending_invoke_ids_.empty()) {
+        return;
+      }
+      // Superseded by some other (non experimental triggering) invocation.
       outcome_recorded_ = true;
       CleanupAsync();
       return;
@@ -772,9 +785,14 @@ class ExperimentalTriggeringUpdatesHandler
     options.on_client_connected =
         base::BindOnce(&ExperimentalTriggeringUpdatesHandler::OnClientConnected,
                        weak_ptr_factory_.GetWeakPtr());
+    const int invoke_id = next_invoke_id_++;
+    pending_invoke_ids_.insert(invoke_id);
+    options.on_success =
+        base::BindOnce(&ExperimentalTriggeringUpdatesHandler::OnInvokeSuccess,
+                       weak_ptr_factory_.GetWeakPtr(), invoke_id);
     options.on_error =
         base::BindOnce(&ExperimentalTriggeringUpdatesHandler::OnInvokeError,
-                       weak_ptr_factory_.GetWeakPtr());
+                       weak_ptr_factory_.GetWeakPtr(), invoke_id);
 
     auto response = CreateResponseMessage(
         context_id_, TaskUpdate::State::kStarting, std::nullopt, "",
@@ -1452,6 +1470,10 @@ class ExperimentalTriggeringUpdatesHandler
   bool first_response_received_ = false;
   bool outcome_recorded_ = false;
   bool is_cleaning_up_ = false;
+  // Ids of invocations started by this handler that have neither succeeded nor
+  // failed yet.
+  base::flat_set<int> pending_invoke_ids_;
+  int next_invoke_id_ = 0;
   base::TimeTicks task_start_time_;
   base::TimeTicks turn_start_time_;
 
