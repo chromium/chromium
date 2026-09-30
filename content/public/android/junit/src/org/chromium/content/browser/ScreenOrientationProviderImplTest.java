@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -25,6 +26,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.content_public.browser.WebContents;
@@ -40,14 +42,13 @@ import java.lang.ref.WeakReference;
 /** Unit tests for {@link ScreenOrientationProviderImpl } */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ContentFeatures.RESTRICT_INTERACTIONS_IN_SWIPE_REGION_ON_FULLSCREEN)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public final class ScreenOrientationProviderImplTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private WebContents mWebContents;
-    @Mock private ViewGroup mContainerView;
     @Mock private EventForwarder mEventForwarder;
 
+    private final ViewGroup mContainerView = new FrameLayout(ContextUtils.getApplicationContext());
     private Activity mActivity;
     private ActivityWindowAndroid mWindow;
 

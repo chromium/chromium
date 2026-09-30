@@ -44,6 +44,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
@@ -72,18 +73,17 @@ import java.util.List;
 
 /** Unit tests for NfcImpl and NdefMessageUtils classes. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class NFCTest {
     private TestNfcDelegate mDelegate;
     private int mNextWatchId;
     @Mock private Context mContext;
     @Mock private NfcManager mNfcManager;
     @Mock private NfcAdapter mNfcAdapter;
-    @Mock private Activity mActivity;
     @Mock private NfcClient mNfcClient;
     @Mock private NfcTagHandler mNfcTagHandler;
     @Captor private ArgumentCaptor<NdefError> mErrorCaptor;
     @Captor private ArgumentCaptor<int[]> mOnWatchCallbackCaptor;
+    private Activity mActivity;
 
     // Constants used for the test.
     private static final String DUMMY_EXTERNAL_TYPE = "abc.com:xyz";
@@ -134,6 +134,7 @@ public class NFCTest {
 
     @Before
     public void setUp() {
+        mActivity = Robolectric.buildActivity(Activity.class).get();
         mDelegate = new TestNfcDelegate(mActivity);
         doReturn(mNfcManager).when(mContext).getSystemService(Context.NFC_SERVICE);
         doReturn(mNfcAdapter).when(mNfcManager).getDefaultAdapter();

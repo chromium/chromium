@@ -12,6 +12,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import org.junit.After;
 import org.junit.Before;
@@ -22,23 +23,27 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewAndroidDelegate;
 
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SensitiveContentClientUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private WebContents mWebContents;
-    private ViewAndroidDelegate mViewAndroidDelegate;
-    private ViewAndroidDelegate mSecondViewAndroidDelegate;
-    @Mock private ViewGroup mFirstContainerView;
-    @Mock private ViewGroup mSecondContainerView;
-    @Mock private ViewGroup mThirdContainerView;
     @Mock private SensitiveContentClient.ContentSensitivitySetter mContentSensitivitySetter;
     @Mock private SensitiveContentClient.Observer mObserver;
+
+    private ViewAndroidDelegate mViewAndroidDelegate;
+    private ViewAndroidDelegate mSecondViewAndroidDelegate;
+    private final ViewGroup mFirstContainerView =
+            new FrameLayout(ContextUtils.getApplicationContext());
+    private final ViewGroup mSecondContainerView =
+            new FrameLayout(ContextUtils.getApplicationContext());
+    private final ViewGroup mThirdContainerView =
+            new FrameLayout(ContextUtils.getApplicationContext());
 
     private SensitiveContentClient mClient;
 

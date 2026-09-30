@@ -34,6 +34,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -45,7 +46,6 @@ import java.util.Set;
 
 /** Test suite for the SplitCompatEngine class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SplitCompatEngineTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private SplitInstallManager mManager;
@@ -75,13 +75,13 @@ public class SplitCompatEngineTest {
     @Test
     public void whenInitActivity_verifyActivityInstalled() {
         // Arrange.
-        Activity activityMock = mock(Activity.class);
+        Activity activity = Robolectric.buildActivity(Activity.class).get();
 
         // Act.
-        mInstaller.initActivity(activityMock);
+        mInstaller.initActivity(activity);
 
         // Assert.
-        verify(mInstallerFacade, times(1)).installActivity(activityMock);
+        verify(mInstallerFacade, times(1)).installActivity(activity);
     }
 
     @Test

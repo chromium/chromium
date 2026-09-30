@@ -20,6 +20,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -30,19 +31,17 @@ import java.util.List;
 
 /** Test suite for the ActivityObserver class. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ActivityObserverTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private InstallEngine mInstallEngineMock;
 
-    @Mock private Activity mActivityMock;
-
+    private Activity mActivity;
     private ActivityObserverFacade mFacade;
     private ActivityObserver mObserver;
 
     @Before
     public void setUp() {
-
+        mActivity = Robolectric.buildActivity(Activity.class).get();
         mFacade = mock(ActivityObserverFacade.class);
 
         mObserver = new ActivityObserver(mFacade, mInstallEngineMock);
@@ -57,10 +56,10 @@ public class ActivityObserverTest {
         @ActivityState Integer newState = ActivityState.CREATED;
 
         // Act.
-        mObserver.onActivityStateChange(mActivityMock, newState);
+        mObserver.onActivityStateChange(mActivity, newState);
 
         // Assert.
-        verify(mInstallEngineMock, times(1)).initActivity(mActivityMock);
+        verify(mInstallEngineMock, times(1)).initActivity(mActivity);
     }
 
     @Test
@@ -69,10 +68,10 @@ public class ActivityObserverTest {
         @ActivityState Integer newState = ActivityState.RESUMED;
 
         // Act.
-        mObserver.onActivityStateChange(mActivityMock, newState);
+        mObserver.onActivityStateChange(mActivity, newState);
 
         // Assert.
-        verify(mInstallEngineMock, times(1)).initActivity(mActivityMock);
+        verify(mInstallEngineMock, times(1)).initActivity(mActivity);
     }
 
     @Test
@@ -81,11 +80,11 @@ public class ActivityObserverTest {
         @ActivityState Integer newState = ActivityState.RESUMED;
 
         // Act.
-        mObserver.onActivityStateChange(mActivityMock, newState);
-        mObserver.onActivityStateChange(mActivityMock, newState);
+        mObserver.onActivityStateChange(mActivity, newState);
+        mObserver.onActivityStateChange(mActivity, newState);
 
         // Assert.
-        verify(mInstallEngineMock, times(1)).initActivity(mActivityMock);
+        verify(mInstallEngineMock, times(1)).initActivity(mActivity);
     }
 
     @Test
@@ -94,24 +93,24 @@ public class ActivityObserverTest {
         @ActivityState Integer newState = ActivityState.RESUMED;
 
         // Act.
-        mObserver.onActivityStateChange(mActivityMock, newState);
+        mObserver.onActivityStateChange(mActivity, newState);
         mObserver.onModuleInstalled();
-        mObserver.onActivityStateChange(mActivityMock, newState);
+        mObserver.onActivityStateChange(mActivity, newState);
 
         // Assert.
-        verify(mInstallEngineMock, times(2)).initActivity(mActivityMock);
+        verify(mInstallEngineMock, times(2)).initActivity(mActivity);
     }
 
     @Test
     public void whenNotOnResumeOrNotOnCreate_verifyNotSplitCompatted() {
         // Act.
-        mObserver.onActivityStateChange(mActivityMock, ActivityState.STARTED);
-        mObserver.onActivityStateChange(mActivityMock, ActivityState.PAUSED);
-        mObserver.onActivityStateChange(mActivityMock, ActivityState.STOPPED);
-        mObserver.onActivityStateChange(mActivityMock, ActivityState.DESTROYED);
+        mObserver.onActivityStateChange(mActivity, ActivityState.STARTED);
+        mObserver.onActivityStateChange(mActivity, ActivityState.PAUSED);
+        mObserver.onActivityStateChange(mActivity, ActivityState.STOPPED);
+        mObserver.onActivityStateChange(mActivity, ActivityState.DESTROYED);
 
         // Assert.
-        verify(mInstallEngineMock, never()).initActivity(mActivityMock);
+        verify(mInstallEngineMock, never()).initActivity(mActivity);
     }
 
     @Test
@@ -121,30 +120,30 @@ public class ActivityObserverTest {
         ActivityObserver newObserver = new ActivityObserver(mFacade, mInstallEngineMock);
 
         // Act.
-        mObserver.onActivityStateChange(mActivityMock, newState);
-        newObserver.onActivityStateChange(mActivityMock, newState);
+        mObserver.onActivityStateChange(mActivity, newState);
+        newObserver.onActivityStateChange(mActivity, newState);
 
         // Assert.
-        verify(mInstallEngineMock, times(1)).initActivity(mActivityMock);
+        verify(mInstallEngineMock, times(1)).initActivity(mActivity);
     }
 
     @Test
     public void whenOnModuleInstalled_verifyOnlyResumedActivitiesAreSplitCompatted() {
         // Arrange.
         List<Activity> activitiesList = new ArrayList<>();
-        Activity activityMock1 = mock(Activity.class);
-        Activity activityMock2 = mock(Activity.class);
-        Activity activityMock3 = mock(Activity.class);
+        Activity activity1 = Robolectric.buildActivity(Activity.class).get();
+        Activity activity2 = Robolectric.buildActivity(Activity.class).get();
+        Activity activity3 = Robolectric.buildActivity(Activity.class).get();
 
-        activitiesList.add(activityMock1);
-        activitiesList.add(activityMock2);
-        activitiesList.add(activityMock3);
+        activitiesList.add(activity1);
+        activitiesList.add(activity2);
+        activitiesList.add(activity3);
 
         doReturn(activitiesList).when(mFacade).getRunningActivities();
 
-        doReturn(ActivityState.RESUMED).when(mFacade).getStateForActivity(activityMock1);
-        doReturn(ActivityState.PAUSED).when(mFacade).getStateForActivity(activityMock2);
-        doReturn(ActivityState.DESTROYED).when(mFacade).getStateForActivity(activityMock3);
+        doReturn(ActivityState.RESUMED).when(mFacade).getStateForActivity(activity1);
+        doReturn(ActivityState.PAUSED).when(mFacade).getStateForActivity(activity2);
+        doReturn(ActivityState.DESTROYED).when(mFacade).getStateForActivity(activity3);
 
         // Act.
         mObserver.onModuleInstalled();

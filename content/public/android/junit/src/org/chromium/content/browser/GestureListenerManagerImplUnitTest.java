@@ -16,6 +16,7 @@ import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.NONE;
 import static org.chromium.cc.mojom.RootScrollOffsetUpdateFrequency.ON_SCROLL_END;
 
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,6 +28,7 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -42,16 +44,16 @@ import org.chromium.ui.base.ViewAndroidDelegate;
 @RunWith(BaseRobolectricTestRunner.class)
 @DisableFeatures({ContentFeatureList.CONTINUE_GESTURE_ON_LOSING_FOCUS})
 @EnableFeatures({ContentFeatureList.HIDE_PASTE_POPUP_ON_GSB})
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class GestureListenerManagerImplUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock WebContentsImpl mWebContents;
-    @Mock ViewGroup mViewGroup;
     @Mock GestureListenerManagerImpl.Natives mMockJniGestureListenerManager;
     @Mock GestureStateListener mGestureStateListener;
     @Mock private GestureStateListener mListener1;
     @Mock private GestureStateListener mListener2;
+
+    private final ViewGroup mViewGroup = new FrameLayout(ContextUtils.getApplicationContext());
 
     private GestureListenerManagerImpl mGestureManager;
 

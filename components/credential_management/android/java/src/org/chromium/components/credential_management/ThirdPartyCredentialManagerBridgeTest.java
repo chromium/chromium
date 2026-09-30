@@ -35,6 +35,7 @@ import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Callback;
@@ -50,7 +51,6 @@ import java.util.concurrent.Executor;
 
 /** Tests for the ThirdPartyCredentialManagerBridge. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ThirdPartyCredentialManagerBridgeTest {
 
     private static final String USERNAME = "username";
@@ -64,12 +64,13 @@ public class ThirdPartyCredentialManagerBridgeTest {
     @Mock private Callback<Boolean> mStoreCallback;
     @Mock private WebContents mWebContents;
     @Mock private WindowAndroid mWindowAndroid;
-    @Mock private Activity mActivity;
 
+    private Activity mActivity;
     private ThirdPartyCredentialManagerBridge mBridge;
 
     @Before
     public void setUp() {
+        mActivity = Robolectric.buildActivity(Activity.class).get();
         mBridge = new ThirdPartyCredentialManagerBridge();
         mBridge.setCredentialManagerForTesting(mCredentialManager);
 

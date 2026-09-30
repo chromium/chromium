@@ -29,6 +29,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.DisableFeatures;
@@ -83,14 +84,12 @@ import java.lang.ref.WeakReference;
     SigninFeatures.MAKE_IDENTITY_MANAGER_SOURCE_OF_ACCOUNTS,
     SigninFeatures.ENABLE_ACTIVITYLESS_SIGNIN_ALL_ENTRY_POINT
 })
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AccountMenuMediatorTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
 
-    @Mock private Activity mActivity;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private @Nullable Profile mProfile;
     @Mock private TabCreator mIncognitoTabCreator;
@@ -106,12 +105,14 @@ public class AccountMenuMediatorTest {
     @Mock private SigninAndHistorySyncActivityLauncher mSigninLauncher;
     @Mock private SigninMetricsUtils.Natives mSigninMetricsUtilsNativeMock;
 
+    private Activity mActivity;
     private Context mContext;
     private ModelList mModelList;
     private AccountMenuMediator mMediator;
 
     @Before
     public void setUp() {
+        mActivity = Robolectric.buildActivity(Activity.class).get();
         mContext = ApplicationProvider.getApplicationContext();
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
