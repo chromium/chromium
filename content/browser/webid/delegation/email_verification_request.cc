@@ -22,6 +22,7 @@
 #include "content/browser/webid/delegation/evt_verifier.h"
 #include "content/browser/webid/delegation/jwt_signer.h"
 #include "content/browser/webid/delegation/sd_jwt.h"
+#include "content/browser/webid/flags.h"
 #include "content/browser/webid/mappers.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/public/browser/browser_context.h"
@@ -362,12 +363,32 @@ void EmailVerificationRequest::OnDnsRequestComplete(
     return;
   }
 
+  // The record carries `iss=` followed by a host name (§3.1), and the issuer
+  // identifier is "https://" followed by that host, with no port, path or
+  // trailing slash (§3.2):
+  // https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html#name-dns-delegation
+  // https://dickhardt.github.io/email-verification/draft-hardt-email-verification.html#name-issuer-identifier
+  // Reject anything that is not exactly a canonical host, e.g. one with a
+  // port, path, query, userinfo or uppercase letters, rather than letting GURL
+  // normalize it into a different identifier.
+  // Tests serve the issuer on an ephemeral port, so a port is allowed there.
+  const std::string issuer_spec = base::StrCat({"https://", iss});
+  GURL issuer(issuer_spec);
+  url::Origin issuer_origin = url::Origin::Create(issuer);
+  const bool is_valid_issuer = IsPreservePortsForTestingEnabled()
+                                   ? (!issuer_origin.opaque() &&
+                                      issuer_origin.Serialize() == issuer_spec)
+                                   : (issuer_origin.host() == iss);
+  if (!is_valid_issuer) {
+    CompleteIsVerifiableRequest(
+        std::move(callback), std::nullopt,
+        EmailVerificationRequestResult::kDnsInvalidRecord);
+    return;
+  }
+
   if (on_dns_resolved_callback) {
     std::move(on_dns_resolved_callback).Run();
   }
-
-  GURL issuer(base::StrCat({"https://", iss}));
-  url::Origin issuer_origin = url::Origin::Create(issuer);
 
   auto well_known = base::MakeRefCounted<WellKnownOrError>();
   auto accounts = base::MakeRefCounted<AccountsOrError>();
