@@ -111,6 +111,13 @@ suite('TabPickerTest', () => {
     assertTrue(isVisible(label));
     assert(label);
     assertEquals('Add tabs', label.textContent.trim());
+
+    const triggerStyle = window.getComputedStyle(app.$.shareTabsTrigger);
+    assertEquals('14px', triggerStyle.fontSize);
+    assertEquals(
+        '20px', triggerStyle.getPropertyValue('--iron-icon-height').trim());
+    assertEquals(
+        '20px', triggerStyle.getPropertyValue('--iron-icon-width').trim());
   });
 
   test(
