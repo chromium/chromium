@@ -4418,12 +4418,6 @@ inline constexpr char kSafetyCheckUnusedSitePermissionsDescription[] =
     "When enabled, adds the unused sites permission module to Safety Check on "
     "desktop. The module will be shown depending on the browser state.";
 
-inline constexpr char kSafetyHubDisruptiveNotificationRevocationName[] =
-    "Safety Hub - Disruptive notification revocation";
-inline constexpr char kSafetyHubDisruptiveNotificationRevocationDescription[] =
-    "Enables autorevoking notifications with high volume and low site "
-    "engagement score";
-
 inline constexpr char kSafetyHubUnusedPermissionRevocationForAllSurfacesName[] =
     "Safety Hub -  unused permission revocation from all surfaces";
 inline constexpr char

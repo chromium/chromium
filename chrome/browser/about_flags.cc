@@ -3971,28 +3971,6 @@ const FeatureEntry::FeatureVariation kDiskCacheBackendExperimentVariations[] = {
     {"experimental sql backend", kDiskCacheBackendExperimentVariations_Sql,
      nullptr}};
 
-const FeatureEntry::FeatureParam
-    kSafetyHubDisruptiveNotificationRevocationVariations_RevokeAll[] = {
-        {"max_engagement_score", "100.0"},
-        {"min_notification_count", "0"},
-        {"waiting_time_as_proposed", "0d"},
-        {"waiting_for_metrics_days", "0"}};
-const FeatureEntry::FeatureParam
-    kSafetyHubDisruptiveNotificationRevocationVariations_Moderate[] = {
-        {"max_engagement_score", "0.0"},
-        {"min_notification_count", "4"},
-        {"waiting_time_as_proposed", "4d"},
-        {"waiting_for_metrics_days", "0"}};
-const FeatureEntry::FeatureVariation
-    kSafetyHubDisruptiveNotificationRevocationVariations[] = {
-        {"- Revoke all for testing",
-         kSafetyHubDisruptiveNotificationRevocationVariations_RevokeAll,
-         nullptr},
-        {"- Moderate",
-         kSafetyHubDisruptiveNotificationRevocationVariations_Moderate,
-         nullptr},
-};
-
 #if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kCCTResetTimeoutParams_1min[] = {
     {"reset_timeout_mins_override", "1"},
@@ -11948,15 +11926,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(lens::features::kLensOverlayEduActionChip)},
 
 #endif
-
-    {"safety-hub-disruptive-notification-revocation",
-     flag_descriptions::kSafetyHubDisruptiveNotificationRevocationName,
-     flag_descriptions::kSafetyHubDisruptiveNotificationRevocationDescription,
-     kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         features::kSafetyHubDisruptiveNotificationRevocation,
-         kSafetyHubDisruptiveNotificationRevocationVariations,
-         "SafetyHubDisruptiveNotificationRevocation")},
 
     {"safety-hub-unused-permission-revocation-for-all-surfaces",
      flag_descriptions::kSafetyHubUnusedPermissionRevocationForAllSurfacesName,

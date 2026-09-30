@@ -8828,14 +8828,6 @@
     "expiry_milestone": 162
   },
   {
-    "name": "safety-hub-disruptive-notification-revocation",
-    "owners": [
-      "olesiamarukhno@google.com",
-      "antoniosartori@chromium.org"
-    ],
-    "expiry_milestone": 170
-  },
-  {
     "name": "safety-hub-local-passwords-module",
     "owners": [
       "fsenra@google.com",
