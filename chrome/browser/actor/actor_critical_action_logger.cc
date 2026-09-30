@@ -8,9 +8,7 @@
 #include <string>
 #include <string_view>
 #include <utility>
-#include <vector>
 
-#include "base/check.h"
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/json/json_writer.h"
@@ -22,7 +20,6 @@
 #include "chrome/browser/actor/tools/attempt_otp_filling_tool_request.h"
 #include "chrome/browser/actor/tools/script_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
-#include "chrome/browser/actor/tools/type_tool_request.h"
 #include "chrome/browser/critical_actions/critical_action_factory.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"

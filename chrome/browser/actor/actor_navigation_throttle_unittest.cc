@@ -4,8 +4,6 @@
 
 #include "chrome/browser/actor/actor_navigation_throttle.h"
 
-#include <algorithm>
-#include <optional>
 #include <string>
 #include <string_view>
 

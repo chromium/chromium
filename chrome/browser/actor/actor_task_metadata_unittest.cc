@@ -4,7 +4,6 @@
 
 #include "chrome/browser/actor/actor_task_metadata.h"
 
-#include "base/test/protobuf_matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"

@@ -9,7 +9,6 @@
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
@@ -22,8 +21,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/actor_webui.mojom.h"
 #include "components/actor/core/task_source_info.h"
-#include "content/public/browser/render_frame_host.h"
-#include "url/gurl.h"
 
 namespace actor {
 

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/actor/actor_keyed_service_fake.h"
 
-#include "base/test/bind.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"

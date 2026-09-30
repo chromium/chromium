@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/common/chrome_features.h"
 #include "components/optimization_guide/proto/features/common_quality_data.equal.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 namespace actor {

@@ -4,7 +4,6 @@
 
 #include "chrome/browser/actor/tab_annotation_manager.h"
 
-#include <memory>
 #include <string>
 
 #include "base/functional/bind.h"

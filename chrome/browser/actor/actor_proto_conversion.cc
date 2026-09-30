@@ -11,14 +11,12 @@
 #include <optional>
 #include <string>
 #include <utility>
-#include <variant>
 
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
@@ -72,7 +70,6 @@
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/origin_gating/core/task_policy_config.h"
-#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/browser_context.h"

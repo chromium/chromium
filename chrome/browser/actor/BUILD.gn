@@ -287,7 +287,6 @@ source_set("impl") {
     "//third_party/perfetto:libperfetto",
     "//third_party/perfetto/protos/perfetto/config:zero_gen",
     "//third_party/perfetto/protos/perfetto/trace/perfetto:zero_gen",
-    "//ui/base/metadata",
     "//ui/gfx/codec",
     "//url",
   ]
@@ -551,7 +550,6 @@ source_set("browser_tests") {
     "//chrome/browser/safe_browsing",
     "//chrome/browser/subscription_eligibility",
     "//chrome/browser/ui",
-    "//chrome/browser/ui:ui_features",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/zoom",
     "//chrome/test:test_support",

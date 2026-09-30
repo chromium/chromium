@@ -15,7 +15,6 @@
 #include "chrome/browser/actor/site_policy.h"
 #include "components/actor/core/actor_features.h"
 #include "components/actor/core/journal_details_builder.h"
-#include "components/actor/public/mojom/actor_types.mojom.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/commit_deferring_condition.h"
 #include "content/public/browser/navigation_handle.h"

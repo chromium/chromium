@@ -9,7 +9,6 @@
 #include <ostream>
 
 #include "base/barrier_callback.h"
-#include "base/cancelable_callback.h"
 #include "base/containers/map_util.h"
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
