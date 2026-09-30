@@ -966,10 +966,11 @@ class CrossbenchTest(object):
     if self.is_android:
       # Set Android CPU governor due to crbug.com/487175106.
       # In most cases, use "performance" to be consistent with Telemetry.
-      # But for CBB (indicated by using official build of Chrome),
-      # use "sched_pixel", which is the default mode for Pixel Tablets
-      # (see crbug.com/495679726).
-      if self.cb_options.official_browser:
+      # But for CBB (indicated by using official build of Chrome), or for
+      # idle power regression tests, use "sched_pixel", which is the default
+      # mode for Pixel Tablets (see crbug.com/495679726).
+      is_web_power = self.options.benchmarks.startswith('web-power')
+      if self.cb_options.official_browser or is_web_power:
         power_mode = 'sched_pixel'
       else:
         power_mode = 'performance'

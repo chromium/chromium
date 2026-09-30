@@ -509,6 +509,30 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     expected_browser = crossbench_test.CHROME_BROWSER % expected_hjson
     self.assertEqual(crossbench_test.browser, expected_browser)
 
+  @mock.patch.object(run_performance_tests.browser_finder, 'FindBrowser')
+  def testCrossbenchAndroidDefaultPowerMode(self, _):
+    fake_args = _create_crossbench_args('android-chrome-bundle')
+    options = run_performance_tests.parse_arguments(fake_args)
+
+    crossbench_test = run_performance_tests.CrossbenchTest(options, 'dir')
+
+    self.assertEqual(
+      crossbench_test.env, ['--env={"cpu_power_mode":"performance"}']
+    )
+
+  @mock.patch.object(run_performance_tests.browser_finder, 'FindBrowser')
+  def testCrossbenchAndroidWebPowerUsesSchedPixel(self, _):
+    fake_args = _create_crossbench_args(
+      'android-chrome-bundle', benchmarks='web-power'
+    )
+    options = run_performance_tests.parse_arguments(fake_args)
+
+    crossbench_test = run_performance_tests.CrossbenchTest(options, 'dir')
+
+    self.assertEqual(
+      crossbench_test.env, ['--env={"cpu_power_mode":"sched_pixel"}']
+    )
+
   def testCrossbenchOfficialBrowser(self):
     fake_args = _create_crossbench_args()
     fake_args.append('--official-browser=chrome-stable-1.2.3.4')
@@ -547,11 +571,11 @@ class TelemetryCommandGeneratorTest(unittest.TestCase):
     self.assertEqual(command_list[pos + 1 :], expected_list)
 
 
-def _create_crossbench_args(browser='./chrome'):
+def _create_crossbench_args(browser='./chrome', benchmarks='speedometer_3.0'):
   return [
     './cb.py',
     '--isolated-script-test-output=output',
-    '--benchmarks=speedometer_3.0',
+    f'--benchmarks={benchmarks}',
     '--benchmark-display-name=speedometer3.crossbench',
     f'--browser={browser}',
   ]
