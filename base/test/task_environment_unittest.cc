@@ -232,6 +232,8 @@ void DelayedTasksTest(TaskEnvironment::TimeSource time_source) {
   if (time_source == TaskEnvironment::TimeSource::MOCK_TIME) {
     const TimeTicks start_time = task_environment.NowTicks();
     const LiveTicks live_start_time = task_environment.NowLiveTicks();
+    const time_internal::RealTicks real_start_time =
+        task_environment.NowRealTicks();
 
     // Delay inferior to the delay of the first posted task.
     constexpr base::TimeDelta kInferiorTaskDelay = Seconds(1);
@@ -245,6 +247,8 @@ void DelayedTasksTest(TaskEnvironment::TimeSource time_source) {
     EXPECT_EQ(task_environment.NowTicks() - start_time, kInferiorTaskDelay);
     EXPECT_EQ(task_environment.NowLiveTicks() - live_start_time,
               kInferiorTaskDelay);
+    EXPECT_EQ(task_environment.NowRealTicks() - real_start_time,
+              kInferiorTaskDelay);
 
     task_environment.FastForwardBy(kShortTaskDelay - kInferiorTaskDelay);
     expected_value += 4;
@@ -252,6 +256,8 @@ void DelayedTasksTest(TaskEnvironment::TimeSource time_source) {
     EXPECT_EQ(expected_value, counter.load(std::memory_order_relaxed));
     EXPECT_EQ(task_environment.NowTicks() - start_time, kShortTaskDelay);
     EXPECT_EQ(task_environment.NowLiveTicks() - live_start_time,
+              kShortTaskDelay);
+    EXPECT_EQ(task_environment.NowRealTicks() - real_start_time,
               kShortTaskDelay);
 
     task_environment.FastForwardUntilNoTasksRemain();
@@ -263,6 +269,8 @@ void DelayedTasksTest(TaskEnvironment::TimeSource time_source) {
     EXPECT_EQ(expected_value, counter.load(std::memory_order_relaxed));
     EXPECT_EQ(task_environment.NowTicks() - start_time, kLongTaskDelay * 4);
     EXPECT_EQ(task_environment.NowLiveTicks() - live_start_time,
+              kLongTaskDelay * 4);
+    EXPECT_EQ(task_environment.NowRealTicks() - real_start_time,
               kLongTaskDelay * 4);
   }
 }
@@ -500,15 +508,28 @@ TEST_F(TaskEnvironmentTest, AdvanceClockAdvancesLiveTicks) {
   EXPECT_EQ(start_time + kDelay, base::LiveTicks::Now());
 }
 
+TEST_F(TaskEnvironmentTest, AdvanceClockAdvancesRealTicks) {
+  constexpr base::TimeDelta kDelay = Seconds(42);
+  TaskEnvironment task_environment(TaskEnvironment::TimeSource::MOCK_TIME);
+
+  const time_internal::RealTicks start_time =
+      base::time_internal::RealTicks::Now();
+  task_environment.AdvanceClock(kDelay);
+  EXPECT_EQ(start_time + kDelay, base::time_internal::RealTicks::Now());
+}
+
 TEST_F(TaskEnvironmentTest, SuspendedAdvanceClockDoesntAdvanceLiveTicks) {
   constexpr base::TimeDelta kDelay = Seconds(42);
   TaskEnvironment task_environment(TaskEnvironment::TimeSource::MOCK_TIME);
 
   const TimeTicks start_time = base::TimeTicks::Now();
   const LiveTicks live_start_time = base::LiveTicks::Now();
+  const time_internal::RealTicks real_start_time =
+      base::time_internal::RealTicks::Now();
   task_environment.SuspendedAdvanceClock(kDelay);
   EXPECT_EQ(live_start_time, base::LiveTicks::Now());
   EXPECT_EQ(start_time + kDelay, base::TimeTicks::Now());
+  EXPECT_EQ(real_start_time + kDelay, base::time_internal::RealTicks::Now());
 }
 
 TEST_F(TaskEnvironmentTest, AdvanceClockDoesNotRunTasks) {
@@ -608,6 +629,8 @@ TEST_F(TaskEnvironmentTest, SuspendedFastForwardOnlyAdvancesWhenIdle) {
 
   const TimeTicks start_time = base::TimeTicks::Now();
   const LiveTicks live_start_time = base::LiveTicks::Now();
+  const time_internal::RealTicks real_start_time =
+      base::time_internal::RealTicks::Now();
 
   constexpr base::TimeDelta kDelay = Seconds(42);
   constexpr base::TimeDelta kFastForwardUntil = Seconds(100);
@@ -615,16 +638,21 @@ TEST_F(TaskEnvironmentTest, SuspendedFastForwardOnlyAdvancesWhenIdle) {
       FROM_HERE, BindLambdaForTesting([&] {
         EXPECT_EQ(start_time, base::TimeTicks::Now());
         EXPECT_EQ(live_start_time, base::LiveTicks::Now());
+        EXPECT_EQ(real_start_time, base::time_internal::RealTicks::Now());
       }));
   SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, BindLambdaForTesting([&] {
         EXPECT_EQ(start_time + kDelay, base::TimeTicks::Now());
         EXPECT_EQ(live_start_time, base::LiveTicks::Now());
+        EXPECT_EQ(real_start_time + kDelay,
+                  base::time_internal::RealTicks::Now());
       }),
       kDelay);
   task_environment.SuspendedFastForwardBy(kFastForwardUntil);
   EXPECT_EQ(start_time + kFastForwardUntil, base::TimeTicks::Now());
   EXPECT_EQ(live_start_time, base::LiveTicks::Now());
+  EXPECT_EQ(real_start_time + kFastForwardUntil,
+            base::time_internal::RealTicks::Now());
 }
 
 // FastForwardBy(0) should be equivalent of RunUntilIdle().
@@ -1393,11 +1421,16 @@ TEST_F(TaskEnvironmentTest, TimeSourceMockTimeAlsoMocksNow) {
   const LiveTicks start_live_ticks = task_environment.NowLiveTicks();
   EXPECT_EQ(LiveTicks::Now(), start_live_ticks);
 
+  const time_internal::RealTicks start_real_ticks =
+      task_environment.NowRealTicks();
+  EXPECT_EQ(time_internal::RealTicks::Now(), start_real_ticks);
+
   constexpr TimeDelta kDelay = Seconds(10);
   task_environment.FastForwardBy(kDelay);
   EXPECT_EQ(TimeTicks::Now(), start_ticks + kDelay);
   EXPECT_EQ(Time::Now(), start_time + kDelay);
   EXPECT_EQ(LiveTicks::Now(), start_live_ticks + kDelay);
+  EXPECT_EQ(time_internal::RealTicks::Now(), start_real_ticks + kDelay);
 }
 
 TEST_F(TaskEnvironmentTest, SingleThread) {

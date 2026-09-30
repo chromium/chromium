@@ -221,12 +221,17 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
     return current_mock_time_domain_->NowLiveTicks();
   }
 
+  static time_internal::RealTicks GetRealTicks() {
+    return current_mock_time_domain_->NowRealTicks();
+  }
+
   void AdvanceClock(TimeDelta delta) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     {
       AutoLock lock(now_ticks_lock_);
       now_ticks_ += delta;
       live_ticks_ += delta;
+      real_ticks_ += delta;
     }
 
     if (thread_pool_) {
@@ -239,6 +244,7 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
     {
       AutoLock lock(now_ticks_lock_);
       now_ticks_ += delta;
+      real_ticks_ += delta;
     }
 
     if (thread_pool_) {
@@ -285,6 +291,11 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
     return live_ticks_;
   }
 
+  time_internal::RealTicks NowRealTicks() const {
+    AutoLock lock(now_ticks_lock_);
+    return real_ticks_;
+  }
+
   // Used by FastForwardToNextTaskOrCap() to return which task source time was
   // advanced to.
   enum class NextTaskSource {
@@ -302,9 +313,11 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
     AutoLock lock(now_ticks_lock_);
 
     TimeTicks next_now = std::max(now_ticks_, next_task_time);
+    const TimeDelta delta = next_now - now_ticks_;
     if (advance_live_ticks) {
-      live_ticks_ += (next_now - now_ticks_);
+      live_ticks_ += delta;
     }
+    real_ticks_ += delta;
     now_ticks_ = next_now;
   }
 
@@ -416,6 +429,11 @@ class TaskEnvironment::MockTimeDomain : public sequence_manager::TimeDomain {
   // of zero to give a more realistic view to tests.
   LiveTicks live_ticks_ GUARDED_BY(now_ticks_lock_){
       base::subtle::LiveTicksNowIgnoringOverride()};
+
+  // Only ever written to from the main sequence. Start from real Now() instead
+  // of zero to give a more realistic view to tests.
+  time_internal::RealTicks real_ticks_ GUARDED_BY(now_ticks_lock_){
+      base::subtle::RealTicksNowIgnoringOverride()};
 };
 
 TaskEnvironment::MockTimeDomain*
@@ -453,7 +471,9 @@ TaskEnvironment::TaskEnvironment(
                                 &MockTimeDomain::GetTime,
                                 &MockTimeDomain::GetTimeTicks,
                                 nullptr,
-                                &MockTimeDomain::GetLiveTicks)
+                                &MockTimeDomain::GetLiveTicks,
+                                nullptr,
+                                &MockTimeDomain::GetRealTicks)
                           : nullptr),
       mock_clock_(mock_time_domain_ ? std::make_unique<TickClockBasedClock>(
                                           mock_time_domain_.get())
@@ -866,6 +886,11 @@ base::TimeTicks TaskEnvironment::NowTicks() const {
 base::LiveTicks TaskEnvironment::NowLiveTicks() const {
   DCHECK(mock_time_domain_);
   return mock_time_domain_->NowLiveTicks();
+}
+
+base::time_internal::RealTicks TaskEnvironment::NowRealTicks() const {
+  DCHECK(mock_time_domain_);
+  return mock_time_domain_->NowRealTicks();
 }
 
 const Clock* TaskEnvironment::GetMockClock() const {

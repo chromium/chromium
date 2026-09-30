@@ -335,6 +335,13 @@ class TaskEnvironment {
   // TimeSource::MOCK_TIME.
   base::LiveTicks NowLiveTicks() const;
 
+  // Only valid for instances using TimeSource::MOCK_TIME. Returns the current
+  // virtual real time (based on a realistic Now(), sampled when this
+  // TaskEnvironment was created, and manually advanced from that point on).
+  // This is always equivalent to base::time_internal::RealTicks::Now() under
+  // TimeSource::MOCK_TIME.
+  time_internal::RealTicks NowRealTicks() const;
+
   // Only valid for instances using TimeSource::MOCK_TIME. Returns the number of
   // pending tasks (delayed and non-delayed) of the main thread's TaskRunner.
   // When debugging, you can use DescribeCurrentTasks() to see what those are.
