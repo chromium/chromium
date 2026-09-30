@@ -205,6 +205,14 @@ bool IsCollapsed(const AXNode* node) {
   return node && node->HasState(ax::mojom::State::kCollapsed);
 }
 
+// `AXComputedNodeData` includes the contents of child trees, so a change to a
+// child tree also invalidates its host node and all of that node's ancestors.
+void ClearComputedNodeDataCrossingTreeBoundary(AXNode* node) {
+  for (; node; node = node->GetParentCrossingTreeBoundary()) {
+    node->ClearComputedNodeData();
+  }
+}
+
 }  // namespace
 
 // static
@@ -1535,6 +1543,11 @@ bool AXTree::Unserialize(const AXTreeUpdate& update) {
 
   }  // tree_update_in_progress.
 
+  if (!update_state.node_data_changed_ids.empty()) {
+    ClearComputedNodeDataCrossingTreeBoundary(
+        root_->GetParentCrossingTreeBoundary());
+  }
+
   if (update_state.old_tree_data) {
     DCHECK(update.has_tree_data)
         << "If `UpdateState::old_tree_data` exists, then there must be a "
@@ -2182,6 +2195,7 @@ void AXTree::NotifyNodeHasBeenReparentedOrCreated(
 void AXTree::NotifyChildTreeConnectionChanged(AXNode* node,
                                               AXTree* child_tree) {
   DCHECK(node->tree() == this);
+  ClearComputedNodeDataCrossingTreeBoundary(node);
   observers_.Notify(&AXTreeObserver::OnChildTreeConnectionChanged, node);
 }
 

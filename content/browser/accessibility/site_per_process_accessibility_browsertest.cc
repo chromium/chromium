@@ -26,7 +26,9 @@
 #include "content/test/render_document_feature.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/accessibility/ax_mode.h"
+#include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "url/gurl.h"
@@ -197,6 +199,35 @@ IN_PROC_BROWSER_TEST_P(MAYBE_SitePerProcessAccessibilityBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), b_url));
   WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
                                                 "Title Of Awesomeness");
+}
+
+IN_PROC_BROWSER_TEST_P(MAYBE_SitePerProcessAccessibilityBrowserTest,
+                       TextContentFollowsCrossSiteIframe) {
+  ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
+
+  GURL main_url(embedded_test_server()->GetURL("/site_per_process_main.html"));
+  ASSERT_TRUE(NavigateToURL(shell(), main_url));
+
+  FrameTreeNode* child = static_cast<WebContentsImpl*>(shell()->web_contents())
+                             ->GetPrimaryFrameTree()
+                             .root()
+                             ->child_at(0);
+  LoadCrossSitePageIntoFrame(child, "/title2.html", "foo.com");
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "This page has a title.");
+
+  ui::AXNode* ax_root = static_cast<RenderFrameHostImpl*>(
+                            shell()->web_contents()->GetPrimaryMainFrame())
+                            ->browser_accessibility_manager()
+                            ->GetRoot();
+  EXPECT_THAT(ax_root->GetTextContentUTF8(),
+              testing::HasSubstr("This page has a title."));
+
+  ASSERT_TRUE(ExecJs(child, "document.body.textContent = 'Changed text';"));
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Changed text");
+  EXPECT_THAT(ax_root->GetTextContentUTF8(),
+              testing::HasSubstr("Changed text"));
 }
 
 INSTANTIATE_TEST_SUITE_P(
