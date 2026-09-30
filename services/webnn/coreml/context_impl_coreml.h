@@ -36,6 +36,8 @@ class API_AVAILABLE(macos(14.4)) ContextImplCoreml final
       scoped_refptr<base::SingleThreadTaskRunner> main_task_runner,
       mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver);
 
+  static ContextProperties GetContextProperties();
+
   ContextImplCoreml(
       mojo::PendingReceiver<mojom::WebNNContext> receiver,
       base::WeakPtr<WebNNContextProviderImpl> context_provider,

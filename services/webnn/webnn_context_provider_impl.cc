@@ -54,7 +54,6 @@
 
 #if BUILDFLAG(IS_APPLE)
 #include "services/webnn/coreml/context_impl_coreml.h"  // nogncheck
-#include "services/webnn/coreml/graph_builder_coreml.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(WEBNN_USE_LITERT)
@@ -524,7 +523,7 @@ void WebNNContextProviderImpl::CreateWebNNContext(
             std::move(model_loader_receiver));
         webnn_browser_host_->RequestCompilerContext(
             std::move(options),
-            coreml::GraphBuilderCoreml::GetContextProperties(),
+            coreml::ContextImplCoreml::GetContextProperties(),
             std::move(compiler_context_receiver),
             std::move(model_loader_remote), std::move(reply));
         return;

@@ -50,6 +50,11 @@ ContextImplCoreml::Create(
   return context_impl;
 }
 
+// static
+ContextProperties ContextImplCoreml::GetContextProperties() {
+  return GraphBuilderCoreml::GetContextProperties();
+}
+
 ContextImplCoreml::ContextImplCoreml(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     base::WeakPtr<WebNNContextProviderImpl> context_provider,
@@ -63,7 +68,7 @@ ContextImplCoreml::ContextImplCoreml(
     : WebNNContextImpl(std::move(receiver),
                        std::move(context_provider),
                        ContextBackendUma::kCoreML,
-                       GraphBuilderCoreml::GetContextProperties(),
+                       GetContextProperties(),
                        std::move(options),
                        mojo::ScopedDataPipeConsumerHandle(),
                        mojo::ScopedDataPipeProducerHandle(),
