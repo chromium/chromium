@@ -1281,6 +1281,24 @@
             ]
         }
     ],
+    "AppMenuGlowUp": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AppMenuGlowUp"
+                    ]
+                }
+            ]
+        }
+    ],
     "ApplyDeviceChoiceRenewal": [
         {
             "platforms": [
