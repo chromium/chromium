@@ -2687,6 +2687,7 @@ CacheStorageCache::CalculateRequiredSafeSpaceForResponse(
     const blink::mojom::FetchAPIResponsePtr& response) {
   base::CheckedNumeric<uint64_t> safe_space_required = 0;
   safe_space_required += (response->blob ? response->blob->size : 0);
+  safe_space_required += base::CheckedNumeric<uint64_t>(response->padding);
   safe_space_required += response->status_text.size();
 
   for (const auto& header : response->headers) {

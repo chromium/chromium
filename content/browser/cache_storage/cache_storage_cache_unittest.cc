@@ -2496,6 +2496,57 @@ TEST_P(CacheStorageCacheTestP, PutSafeSpaceIsEnough) {
   EXPECT_TRUE(Put(body_request_, std::move(response)));
 }
 
+TEST_P(CacheStorageCacheTestP, PutIncludesResponsePaddingInQuotaCheck) {
+  blink::mojom::FetchAPIResponsePtr response = CreateOpaqueResponse();
+  const int64_t padding = response->padding;
+  ASSERT_GT(padding, 0);
+
+  response->padding = 0;
+  base::CheckedNumeric<uint64_t> required_without_padding =
+      cache_->GetRequiredSafeSpaceForRequest(body_request_) +
+      cache_->GetRequiredSafeSpaceForResponse(response);
+  ASSERT_TRUE(required_without_padding.IsValid());
+  SetQuota(required_without_padding.ValueOrDie());
+
+  response->padding = padding;
+  EXPECT_FALSE(Put(body_request_, std::move(response)));
+  EXPECT_EQ(CacheStorageError::kErrorQuotaExceeded, callback_error_);
+}
+
+TEST_P(CacheStorageCacheTestP, PutRejectsNegativeResponsePadding) {
+  base::HistogramTester histogram_tester;
+  blink::mojom::FetchAPIResponsePtr response = CreateOpaqueResponse();
+  response->padding = -1;
+
+  EXPECT_FALSE(Put(body_request_, std::move(response)));
+  EXPECT_EQ(CacheStorageError::kErrorStorage, callback_error_);
+  histogram_tester.ExpectBucketCount("ServiceWorkerCache.ErrorStorageType",
+                                     ErrorStorageType::kBatchInvalidSpace, 1);
+  EXPECT_EQ("CSDH_UNEXPECTED_OPERATION", bad_message_reason_);
+}
+
+TEST_P(CacheStorageCacheTestP, PutRejectsOverflowingResponsePadding) {
+  base::HistogramTester histogram_tester;
+  blink::mojom::FetchAPIResponsePtr response = CreateOpaqueResponse();
+  const int64_t padding = response->padding;
+  const uint64_t blob_size = response->blob->size;
+  response->padding = 0;
+  base::CheckedNumeric<uint64_t> required_without_padding =
+      cache_->GetRequiredSafeSpaceForRequest(body_request_) +
+      cache_->GetRequiredSafeSpaceForResponse(response);
+  ASSERT_TRUE(required_without_padding.IsValid());
+  const uint64_t other_size =
+      uint64_t{required_without_padding.ValueOrDie()} - blob_size;
+  response->blob->size = std::numeric_limits<uint64_t>::max() - other_size;
+  response->padding = padding;
+
+  EXPECT_FALSE(Put(body_request_, std::move(response)));
+  EXPECT_EQ(CacheStorageError::kErrorStorage, callback_error_);
+  histogram_tester.ExpectBucketCount("ServiceWorkerCache.ErrorStorageType",
+                                     ErrorStorageType::kBatchInvalidSpace, 1);
+  EXPECT_EQ("CSDH_UNEXPECTED_OPERATION", bad_message_reason_);
+}
+
 TEST_P(CacheStorageCacheTestP, PutRequestUrlObeysQuotaLimits) {
   const GURL url("http://example.com/body.html");
   const GURL longerUrl("http://example.com/longer-body.html");
