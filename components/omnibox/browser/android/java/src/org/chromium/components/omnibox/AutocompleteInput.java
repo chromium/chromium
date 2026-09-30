@@ -631,6 +631,7 @@ public class AutocompleteInput implements UserData {
 
     /** Returns whether current context enables suggestions caching. */
     public boolean isInCacheableContext() {
+        if (!OmniboxFeatures.sServeJavaCachedZeroSuggest.isEnabled()) return false;
         if (!isInZeroPrefixContext()) return false;
 
         switch (mPageClassification) {

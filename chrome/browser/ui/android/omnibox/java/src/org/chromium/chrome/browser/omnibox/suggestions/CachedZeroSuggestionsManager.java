@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.url_constants.UrlConstantResolverFactory;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
 import org.chromium.components.omnibox.AutocompleteProto.AutocompleteResultProto;
 import org.chromium.components.omnibox.AutocompleteResult;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.url.GURL;
 
 import java.util.Locale;
@@ -90,6 +91,7 @@ public class CachedZeroSuggestionsManager {
     @SuppressWarnings("ApplySharedPref")
     public static void saveToCache(
             @PageClassification int pageClass, AutocompleteResult resultToCache) {
+        if (!OmniboxFeatures.sServeJavaCachedZeroSuggest.isEnabled()) return;
         if (sOverridesForTesting != null) {
             sOverridesForTesting.saveToCache(pageClass, resultToCache);
             return;
@@ -112,12 +114,14 @@ public class CachedZeroSuggestionsManager {
 
     /** Save the details related to currently selected Search Engine. */
     public static void saveSearchEngineMetadata(SearchEngineMetadata metadata) {
+        if (!OmniboxFeatures.sServeJavaCachedZeroSuggest.isEnabled()) return;
         SharedPreferences.Editor editor = ContextUtils.getAppSharedPreferences().edit();
         editor.putString(KEY_DSE_KEYWORD, metadata.keyword).apply();
     }
 
     /** Returns the details of the currently persisted Search Engine. */
     public static @Nullable SearchEngineMetadata readSearchEngineMetadata() {
+        if (!OmniboxFeatures.sServeJavaCachedZeroSuggest.isEnabled()) return null;
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         var keyword = prefs.getString(KEY_DSE_KEYWORD, null);
         if (TextUtils.isEmpty(keyword)) return null;
@@ -132,6 +136,9 @@ public class CachedZeroSuggestionsManager {
      * @return AutocompleteResult populated with the content of the SharedPreferences cache.
      */
     static AutocompleteResult readFromCache(@PageClassification int pageClass) {
+        if (!OmniboxFeatures.sServeJavaCachedZeroSuggest.isEnabled()) {
+            return AutocompleteResult.fromCache(null, null);
+        }
         if (sOverridesForTesting != null) {
             return sOverridesForTesting.readFromCache(pageClass);
         }
@@ -161,6 +168,7 @@ public class CachedZeroSuggestionsManager {
      * @param pageClass the PageClassification to clear cache for
      */
     static void eraseCachedSuggestionsByPageClass(@PageClassification int pageClass) {
+        if (!OmniboxFeatures.sServeJavaCachedZeroSuggest.isEnabled()) return;
         SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         String key = getCacheKey(pageClass);
         prefs.edit().remove(key).apply();
@@ -169,6 +177,7 @@ public class CachedZeroSuggestionsManager {
     /** Save the context of the most recently visited page. */
     @SuppressWarnings("ApplySharedPref")
     public static void saveJumpStartContext(@Nullable JumpStartContext jsContext) {
+        if (!OmniboxFeatures.sServeJavaCachedZeroSuggest.isEnabled()) return;
         SharedPreferences.Editor editor = ContextUtils.getAppSharedPreferences().edit();
         if (jsContext == null || GURL.isEmptyOrInvalid(jsContext.url)) {
             editor.remove(KEY_JUMP_START_URL);
@@ -190,9 +199,14 @@ public class CachedZeroSuggestionsManager {
      * to the context of a NTP.
      */
     public static JumpStartContext readJumpStartContext() {
-        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         UrlConstantResolver defaultResolver =
                 UrlConstantResolverFactory.getForProfile(/* profile= */ null);
+        if (!OmniboxFeatures.sServeJavaCachedZeroSuggest.isEnabled()) {
+            return new JumpStartContext(
+                    new GURL(defaultResolver.getNtpUrl()),
+                    PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS);
+        }
+        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
         String url = prefs.getString(KEY_JUMP_START_URL, defaultResolver.getNtpUrl());
         @PageClassification
         int pageClass =
@@ -204,6 +218,7 @@ public class CachedZeroSuggestionsManager {
 
     /** Clean up data persisted by current Chrome versions. */
     public static void eraseCachedData() {
+        if (!OmniboxFeatures.sServeJavaCachedZeroSuggest.isEnabled()) return;
         SharedPreferences.Editor editor = ContextUtils.getAppSharedPreferences().edit();
 
         for (@PageClassification int pageClass = PageClassification.MIN_VALUE;

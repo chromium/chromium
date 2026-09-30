@@ -1999,6 +1999,22 @@ public class AutocompleteMediatorUnitTest {
     }
 
     @Test
+    @DisableFeatures(OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST)
+    public void cachedZeroSuggest_notInvokedWhenFeatureDisabled() {
+        for (@PageClassification int pageClass = PageClassification.MIN_VALUE;
+                pageClass <= PageClassification.MAX_VALUE;
+                pageClass++) {
+            var session = createSession(PAGE_URL, PAGE_TITLE, pageClass);
+            mMediator.beginInput(session);
+            mMediator.serveCachedZeroSuggest(session.getAutocompleteInput());
+            mMediator.onSuggestionsReceived(mAutocompleteResult, true);
+
+            verify(mMockCachedZeroSuggestionsManager, never()).readFromCache(anyInt());
+            verify(mMockCachedZeroSuggestionsManager, never()).saveToCache(anyInt(), any());
+        }
+    }
+
+    @Test
     public void updateVisualsForState_informsVisualStateObserver() {
         mResourceProvider.setBrandedColorScheme(BrandedColorScheme.LIGHT_BRANDED_THEME);
         mMediator.updateVisualsForState(BrandedColorScheme.LIGHT_BRANDED_THEME);

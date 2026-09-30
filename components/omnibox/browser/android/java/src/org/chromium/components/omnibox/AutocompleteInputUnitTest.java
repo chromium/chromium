@@ -121,6 +121,15 @@ public class AutocompleteInputUnitTest {
     }
 
     @Test
+    @DisableFeatures(OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST)
+    @EnableFeatures(
+            OmniboxFeatureList.JUMP_START_OMNIBOX + ":jump_start_cover_recently_visited_page/true")
+    public void isInCacheableContext_serveJavaCachedZeroSuggestDisabled() {
+        OmniboxFeatures.setJumpStartOmniboxEnabled(true);
+        verifyCacheablePageClasses(Set.of());
+    }
+
+    @Test
     public void setUserText() {
         mInput.setUserText("test");
         assertEquals("test", mInput.getUserText());

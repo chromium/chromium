@@ -413,7 +413,7 @@ class AutocompleteMediator
     /**
      * Specifies the visual state to be used by the suggestions.
      *
-     * @param brandedColorScheme The {@link @BrandedColorScheme}.
+     * @param brandedColorScheme The {@link BrandedColorScheme}.
      */
     void updateVisualsForState(@BrandedColorScheme int brandedColorScheme) {
         @FuseboxLayoutMode int fuseboxLayoutMode = getFuseboxLayoutMode();
@@ -2303,7 +2303,10 @@ class AutocompleteMediator
         // pressing the home screen, or, in windowed/split screen mode, user interacting with a
         // different app. This gives us enough head room to retrieve and cache relevant information.
         // Note: onPause and onUserLeaveHint happen much too late.
-        if (!OmniboxFeatures.isJumpStartOmniboxEnabled()) return;
+        if (!OmniboxFeatures.isJumpStartOmniboxEnabled()
+                || !OmniboxFeatures.sServeJavaCachedZeroSuggest.isEnabled()) {
+            return;
+        }
 
         // Abort early if Autocomplete has not initialized yet.
         if (!isInInputSession()) return;

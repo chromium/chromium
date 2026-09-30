@@ -21,6 +21,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager.SearchEngineMetadata;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.components.metrics.OmniboxEventProtosIntDef.PageClassification;
@@ -28,6 +29,7 @@ import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.GroupsProto.GroupsInfo;
+import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
 import org.chromium.url.GURL;
 
@@ -348,5 +350,28 @@ public class CachedZeroSuggestionsManagerUnitTest {
         var persisted = CachedZeroSuggestionsManager.readSearchEngineMetadata();
         assertNotNull(persisted);
         assertEquals("keyword", persisted.keyword);
+    }
+
+    @Test
+    @DisableFeatures(OmniboxFeatureList.SERVE_JAVA_CACHED_ZERO_SUGGEST)
+    public void featureDisabled_allOperationsAreNoOp() {
+        var prefs = ContextUtils.getAppSharedPreferences();
+        prefs.edit().clear().apply();
+
+        var dataToCache = AutocompleteResult.fromCache(buildSimpleSuggestionsList("test", 2), null);
+        CachedZeroSuggestionsManager.saveToCache(PAGE_CLASS, dataToCache);
+        assertFalse(prefs.contains(CachedZeroSuggestionsManager.getCacheKey(PAGE_CLASS)));
+        assertAutocompleteResultEquals(
+                EMPTY_RESULT, CachedZeroSuggestionsManager.readFromCache(PAGE_CLASS));
+
+        CachedZeroSuggestionsManager.saveSearchEngineMetadata(new SearchEngineMetadata("keyword"));
+        assertNull(CachedZeroSuggestionsManager.readSearchEngineMetadata());
+
+        saveJumpStartContext("https://abc.xyz", 123);
+        assertFalse(prefs.contains(KEY_JUMP_START_URL));
+        assertFalse(prefs.contains(KEY_JUMP_START_PAGE_CLASS));
+        var jsContext = CachedZeroSuggestionsManager.readJumpStartContext();
+        assertEquals(
+                PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS, jsContext.pageClass);
     }
 }
