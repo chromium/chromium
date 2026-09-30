@@ -4,16 +4,16 @@
 
 package org.chromium.chrome.browser.omnibox;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
+
+import static org.chromium.ui.test.util.MockitoHelper.clearInvocations;
 
 import android.app.Activity;
 import android.content.Context;
@@ -24,8 +24,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -34,6 +32,7 @@ import org.robolectric.Robolectric;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.RobolectricUtil;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -41,19 +40,35 @@ import org.chromium.ui.KeyboardVisibilityDelegate;
 
 /** Unit tests for {@link UrlBarCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class UrlBarCoordinatorUnitTest {
+    private static class TestUrlBar extends UrlBarApi26 {
+        private boolean mCursorVisible;
+        private Callback<Boolean> mTextWrappingChangeListener;
+
+        TestUrlBar(Context context) {
+            super(context, null);
+        }
+
+        @Override
+        public void setCursorVisible(boolean visible) {
+            mCursorVisible = visible;
+            super.setCursorVisible(visible);
+        }
+
+        @Override
+        public void setUrlTextWrappingChangeListener(Callback<Boolean> listener) {
+            mTextWrappingChangeListener = listener;
+            super.setUrlTextWrappingChangeListener(listener);
+        }
+    }
+
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    private static final long DEBOUNCE_DELAY_MS = UrlBarCoordinator.KEYBOARD_DEBOUNCE_DELAY_MS;
-
-    private UrlBar mUrlBar;
+    private TestUrlBar mUrlBar;
     @Mock private UrlBarDelegate mDelegate;
     @Mock private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     @Mock private Callback<UrlBarFocusChangeInfo> mFocusChangeCallback;
-    @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
-    @Captor private ArgumentCaptor<Callback<Boolean>> mTextWrappingCallbackCaptor;
 
     private Context mContext;
     private UrlBarCoordinator mCoordinator;
@@ -65,7 +80,8 @@ public class UrlBarCoordinatorUnitTest {
         OmniboxResourceProvider.setUrlBarHintTextColorForTesting(Color.LTGRAY);
         Activity activity = Robolectric.buildActivity(Activity.class).setup().get();
         mContext = activity;
-        mUrlBar = spy(new UrlBarApi26(activity, null));
+        mUrlBar = new TestUrlBar(activity);
+        activity.setContentView(mUrlBar);
         doReturn(false).when(mKeyboardVisibilityDelegate).isKeyboardShowing(mUrlBar);
         mCoordinator =
                 new UrlBarCoordinator(
@@ -99,8 +115,8 @@ public class UrlBarCoordinatorUnitTest {
         // Hide keyboard with delay schedules mKeyboardHideTask
         mCoordinator.setKeyboardVisibility(
                 /* showKeyboard= */ false, /* shouldDelayHiding= */ true);
-        verify(mUrlBar).postDelayed(mRunnableCaptor.capture(), eq(150L));
-        mRunnableCaptor.getValue().run();
+        verify(mKeyboardVisibilityDelegate, never()).hideKeyboard(any());
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mKeyboardVisibilityDelegate).hideKeyboard(mUrlBar);
     }
 
@@ -109,11 +125,10 @@ public class UrlBarCoordinatorUnitTest {
         mCoordinator.setKeyboardVisibility(
                 /* showKeyboard= */ true, /* shouldDelayHiding= */ false);
 
-        verify(mUrlBar).postDelayed(mRunnableCaptor.capture(), eq(DEBOUNCE_DELAY_MS));
         verify(mKeyboardVisibilityDelegate, never()).showKeyboard(any());
 
         // When runnable fires, keyboard is shown
-        mRunnableCaptor.getValue().run();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mKeyboardVisibilityDelegate).showKeyboard(mUrlBar);
     }
 
@@ -121,33 +136,32 @@ public class UrlBarCoordinatorUnitTest {
     public void setKeyboardVisibility_showWhenAlreadyShowingOrShown_noOp() {
         mCoordinator.setKeyboardVisibility(
                 /* showKeyboard= */ true, /* shouldDelayHiding= */ false);
-        verify(mUrlBar).postDelayed(any(), eq(DEBOUNCE_DELAY_MS));
 
         // Subsequent show requests while SHOWING are no-ops
         mCoordinator.setKeyboardVisibility(
                 /* showKeyboard= */ true, /* shouldDelayHiding= */ false);
-        verify(mUrlBar).postDelayed(any(), eq(DEBOUNCE_DELAY_MS));
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        verify(mKeyboardVisibilityDelegate).showKeyboard(mUrlBar);
+        clearInvocations(mKeyboardVisibilityDelegate);
 
         // When confirmed SHOWN, show requests are still no-ops
         mCoordinator.keyboardVisibilityChanged(/* isKeyboardShowing= */ true);
         mCoordinator.setKeyboardVisibility(
                 /* showKeyboard= */ true, /* shouldDelayHiding= */ false);
-        verify(mUrlBar).postDelayed(any(), eq(DEBOUNCE_DELAY_MS));
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        verify(mKeyboardVisibilityDelegate, never()).showKeyboard(any());
     }
 
     @Test
     public void setKeyboardVisibility_hideWhileShowing_cancelsDebounceWithoutCallingHide() {
         mCoordinator.setKeyboardVisibility(
                 /* showKeyboard= */ true, /* shouldDelayHiding= */ false);
-        verify(mUrlBar).postDelayed(mRunnableCaptor.capture(), eq(DEBOUNCE_DELAY_MS));
 
         // Hide requested while show is still pending: cancels without scheduling hide
-        clearInvocations(mUrlBar);
         mCoordinator.setKeyboardVisibility(
                 /* showKeyboard= */ false, /* shouldDelayHiding= */ false);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
-        verify(mUrlBar).removeCallbacks(mRunnableCaptor.getValue());
-        verify(mUrlBar, never()).postDelayed(any(), anyLong());
         verify(mKeyboardVisibilityDelegate, never()).hideKeyboard(any());
         verify(mKeyboardVisibilityDelegate, never()).showKeyboard(any());
     }
@@ -158,11 +172,10 @@ public class UrlBarCoordinatorUnitTest {
 
         mCoordinator.setKeyboardVisibility(
                 /* showKeyboard= */ false, /* shouldDelayHiding= */ false);
-        verify(mUrlBar).postDelayed(mRunnableCaptor.capture(), eq(DEBOUNCE_DELAY_MS));
         verify(mKeyboardVisibilityDelegate, never()).hideKeyboard(any());
 
         // When runnable fires, keyboard is hidden
-        mRunnableCaptor.getValue().run();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mKeyboardVisibilityDelegate).hideKeyboard(mUrlBar);
     }
 
@@ -171,20 +184,19 @@ public class UrlBarCoordinatorUnitTest {
         // Initial state is HIDDEN -> hide is no-op
         mCoordinator.setKeyboardVisibility(
                 /* showKeyboard= */ false, /* shouldDelayHiding= */ false);
-        verify(mUrlBar, never()).postDelayed(any(), anyLong());
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        verify(mKeyboardVisibilityDelegate, never()).hideKeyboard(any());
 
         // Move to SHOWN
         mCoordinator.keyboardVisibilityChanged(/* isKeyboardShowing= */ true);
 
-        // First hide schedules debounce
+        // First hide schedules debounce; second hide while HIDING is a no-op
         mCoordinator.setKeyboardVisibility(
                 /* showKeyboard= */ false, /* shouldDelayHiding= */ false);
-        verify(mUrlBar).postDelayed(any(), eq(DEBOUNCE_DELAY_MS));
-
-        // Second hide while HIDING is a no-op
         mCoordinator.setKeyboardVisibility(
                 /* showKeyboard= */ false, /* shouldDelayHiding= */ false);
-        verify(mUrlBar).postDelayed(any(), eq(DEBOUNCE_DELAY_MS));
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        verify(mKeyboardVisibilityDelegate).hideKeyboard(mUrlBar);
     }
 
     @Test
@@ -193,15 +205,10 @@ public class UrlBarCoordinatorUnitTest {
         mCoordinator.setKeyboardVisibility(
                 /* showKeyboard= */ false, /* shouldDelayHiding= */ false);
 
-        verify(mUrlBar).postDelayed(mRunnableCaptor.capture(), eq(DEBOUNCE_DELAY_MS));
-        Runnable hideRunnable = mRunnableCaptor.getValue();
-
-        clearInvocations(mUrlBar);
         mCoordinator.setKeyboardVisibility(
                 /* showKeyboard= */ true, /* shouldDelayHiding= */ false);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
 
-        verify(mUrlBar).removeCallbacks(hideRunnable);
-        verify(mUrlBar, never()).postDelayed(any(), anyLong());
         verify(mKeyboardVisibilityDelegate, never()).showKeyboard(any());
         verify(mKeyboardVisibilityDelegate, never()).hideKeyboard(any());
     }
@@ -210,44 +217,40 @@ public class UrlBarCoordinatorUnitTest {
     public void keyboardVisibilityChanged_updatesCursorAndCancelsPending() {
         mCoordinator.setKeyboardVisibility(
                 /* showKeyboard= */ true, /* shouldDelayHiding= */ false);
-        verify(mUrlBar).postDelayed(mRunnableCaptor.capture(), eq(DEBOUNCE_DELAY_MS));
 
-        clearInvocations(mUrlBar);
         // OS notifies that keyboard showed
         mCoordinator.keyboardVisibilityChanged(/* isKeyboardShowing= */ true);
-        verify(mUrlBar).removeCallbacks(mRunnableCaptor.getValue());
-        verify(mUrlBar).setCursorVisible(true);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+        verify(mKeyboardVisibilityDelegate, never()).showKeyboard(any());
+        assertTrue(mUrlBar.mCursorVisible);
 
         // OS notifies that keyboard hid
         mCoordinator.keyboardVisibilityChanged(/* isKeyboardShowing= */ false);
-        verify(mUrlBar).setCursorVisible(false);
+        assertFalse(mUrlBar.mCursorVisible);
     }
 
     @Test
     public void setKeyboardVisibility_hideAfterShowRunnableFiresBeforeOsCallback_schedulesHide() {
         mCoordinator.setKeyboardVisibility(
                 /* showKeyboard= */ true, /* shouldDelayHiding= */ false);
-        verify(mUrlBar).postDelayed(mRunnableCaptor.capture(), eq(DEBOUNCE_DELAY_MS));
-        mRunnableCaptor.getValue().run();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mKeyboardVisibilityDelegate).showKeyboard(mUrlBar);
 
-        clearInvocations(mUrlBar);
         mCoordinator.setKeyboardVisibility(
                 /* showKeyboard= */ false, /* shouldDelayHiding= */ false);
-        verify(mUrlBar).postDelayed(mRunnableCaptor.capture(), eq(DEBOUNCE_DELAY_MS));
 
         // Late OS show callback must not cancel the pending hide runnable.
         mCoordinator.keyboardVisibilityChanged(/* isKeyboardShowing= */ true);
-        verify(mUrlBar, never()).removeCallbacks(mRunnableCaptor.getValue());
-
-        mRunnableCaptor.getValue().run();
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
         verify(mKeyboardVisibilityDelegate).hideKeyboard(mUrlBar);
     }
 
     @Test
     public void testSelectAllText_delegates() {
+        mUrlBar.setText("test");
         mCoordinator.selectAllText();
-        verify(mUrlBar).selectAll();
+        assertEquals(0, mUrlBar.getSelectionStart());
+        assertEquals(4, mUrlBar.getSelectionEnd());
     }
 
     @Test
@@ -256,13 +259,13 @@ public class UrlBarCoordinatorUnitTest {
         assertFalse(supplier.get());
         assertFalse(mCoordinator.isTextWrapped());
 
-        verify(mUrlBar).setUrlTextWrappingChangeListener(mTextWrappingCallbackCaptor.capture());
+        assertNotNull(mUrlBar.mTextWrappingChangeListener);
 
-        mTextWrappingCallbackCaptor.getValue().onResult(true);
+        mUrlBar.mTextWrappingChangeListener.onResult(true);
         assertTrue(supplier.get());
         assertTrue(mCoordinator.isTextWrapped());
 
-        mTextWrappingCallbackCaptor.getValue().onResult(false);
+        mUrlBar.mTextWrappingChangeListener.onResult(false);
         assertFalse(supplier.get());
         assertFalse(mCoordinator.isTextWrapped());
     }
