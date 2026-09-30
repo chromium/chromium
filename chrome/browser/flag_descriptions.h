@@ -1961,6 +1961,12 @@ inline constexpr char kGlicMarketingAutoOpenName[] = "Glic Marketing Auto Open";
 inline constexpr char kGlicMarketingAutoOpenDescription[] =
     "Enables Glic to auto-open on promotion pages.";
 
+inline constexpr char kGlicMessageFirstFreName[] = "Glic Message First FRE";
+inline constexpr char kGlicMessageFirstFreDescription[] =
+    "Enables the message-first first run experience (FRE), which opens Glic "
+    "directly to chat with inline consent instead of the standard FRE when "
+    "the user has not yet consented.";
+
 inline constexpr char kGlicMessageFirstFreForContextualCueName[] =
     "Glic Message First FRE for Contextual Cue";
 inline constexpr char kGlicMessageFirstFreForContextualCueDescription[] =

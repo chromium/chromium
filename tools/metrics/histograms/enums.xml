@@ -10513,6 +10513,7 @@ from previous Chrome versions.
   <int value="-1346261029" label="PageInfoAboutThisSiteMoreLangs:disabled"/>
   <int value="-1346055284" label="WebSerialWiredDevicesAndroid:enabled"/>
   <int value="-1345931804" label="TabbedAppOverflowMenuIcons:disabled"/>
+  <int value="-1345569802" label="GlicMessageFirstFre:enabled"/>
   <int value="-1345471133" label="JourneysOmniboxAction:enabled"/>
   <int value="-1344775211"
       label="SyncChromeOSExplicitPassphraseSharing:disabled"/>
@@ -19898,6 +19899,7 @@ from previous Chrome versions.
   <int value="1519067750" label="ActionableContentSettings:disabled"/>
   <int value="1519228932" label="OmniboxAnswerActions:enabled"/>
   <int value="1519310490" label="FloatingSnackbar:disabled"/>
+  <int value="1519509694" label="GlicMessageFirstFre:disabled"/>
   <int value="1520181151" label="PrintServerScaling:disabled"/>
   <int value="1520232917" label="NewTabPageTriggerForPrefetch:enabled"/>
   <int value="1520754417" label="ConfirmationChip:enabled"/>
