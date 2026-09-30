@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ACTOR_TOOLS_MEDIA_CONTROL_TOOL_REQUEST_H_
 #define CHROME_BROWSER_ACTOR_TOOLS_MEDIA_CONTROL_TOOL_REQUEST_H_
 
+#include <optional>
+#include <string_view>
 #include <variant>
 
 #include "chrome/browser/actor/tools/tool_request.h"
@@ -19,6 +21,10 @@ struct PauseMedia {};
 
 // A media control action to seek to a specific time in the media.
 struct SeekMedia {
+  // Parses a timecode of the form "S", "M:SS" or "H:MM:SS" (e.g. "30", "1:45",
+  // "1:02:15"). Returns std::nullopt if `timecode` is malformed.
+  static std::optional<SeekMedia> FromTimecode(std::string_view timecode);
+
   int64_t seek_time_milliseconds;
 };
 

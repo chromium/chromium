@@ -73,6 +73,9 @@ class ToolControllerBrowserTest : public TtcCoreBrowserTestBase {
   void SetUpOnMainThread() override {
     TtcCoreBrowserTestBase::SetUpOnMainThread();
     host_resolver()->AddRule("*", "127.0.0.1");
+    // For actor test pages such as /actor/media.html.
+    embedded_https_test_server().ServeFilesFromSourceDirectory(
+        "components/test/data");
     ASSERT_TRUE(embedded_https_test_server().Start());
   }
 };
@@ -480,6 +483,129 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
                     actor::mojom::ActionResultCode::kArgumentsInvalid);
 }
 
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, PauseAndPlayVideo) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL("example.com", "/actor/media.html")));
+
+  // Start playback so there's an active media session.
+  ASSERT_TRUE(content::ExecJs(web_contents(), "play()"));
+  ASSERT_EQ(true, content::EvalJs(web_contents(), "waitForEvent('play')"));
+
+  {
+    base::test::TestFuture<ToolResponse> future;
+    ToolRequest tool_request;
+    tool_request.name = "pause_video";
+    session_controller->ProcessToolCall(std::move(tool_request),
+                                        future.GetCallback());
+    EXPECT_TRUE(future.Take().Ok());
+    EXPECT_EQ(true, content::EvalJs(web_contents(), "waitForEvent('pause')"));
+  }
+
+  {
+    base::test::TestFuture<ToolResponse> future;
+    ToolRequest tool_request;
+    tool_request.name = "play_video";
+    session_controller->ProcessToolCall(std::move(tool_request),
+                                        future.GetCallback());
+    EXPECT_TRUE(future.Take().Ok());
+    EXPECT_EQ(true, content::EvalJs(web_contents(), "waitForEvent('play')"));
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, PlayVideoNoMedia) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL("example.com", "/title1.html")));
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "play_video";
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  ASSERT_FALSE(response.Ok());
+  EXPECT_TOOL_ERROR(response,
+                    actor::mojom::ActionResultCode::kMediaControlNoMedia);
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, SeekToTimestamp) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_https_test_server().GetURL("example.com", "/actor/media.html")));
+
+  // Start playback to initialize the media session, then pause so that
+  // currentTime doesn't drift during the seek.
+  ASSERT_TRUE(content::ExecJs(web_contents(), "play()"));
+  ASSERT_EQ(true, content::EvalJs(web_contents(), "waitForEvent('play')"));
+  ASSERT_TRUE(content::ExecJs(web_contents(), "video.pause()"));
+  ASSERT_EQ(true, content::EvalJs(web_contents(), "waitForEvent('pause')"));
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "seek_to_timestamp";
+  tool_request.arguments.Set("timecode", "0:01");
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  EXPECT_TRUE(future.Take().Ok());
+  EXPECT_EQ(true, content::EvalJs(web_contents(), "waitForSeek(1.0)"));
+  EXPECT_EQ(
+      1.0,
+      content::EvalJs(web_contents(), "video.currentTime").ExtractDouble());
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
+                       SeekToTimestampInvalidTimecode) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  for (const char* timecode : {"abc", "-5", "1:2:3:4", ""}) {
+    SCOPED_TRACE(timecode);
+    base::test::TestFuture<ToolResponse> future;
+    ToolRequest tool_request;
+    tool_request.name = "seek_to_timestamp";
+    tool_request.arguments.Set("timecode", timecode);
+    session_controller->ProcessToolCall(std::move(tool_request),
+                                        future.GetCallback());
+
+    ToolResponse response = future.Take();
+    EXPECT_TOOL_ERROR(response,
+                      actor::mojom::ActionResultCode::kArgumentsInvalid);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest,
+                       SeekToTimestampMissingTimecode) {
+  ttc_service().StartSession();
+  auto* session_controller = ttc_service().session_controller();
+  ASSERT_TRUE(session_controller);
+
+  base::test::TestFuture<ToolResponse> future;
+  ToolRequest tool_request;
+  tool_request.name = "seek_to_timestamp";
+  session_controller->ProcessToolCall(std::move(tool_request),
+                                      future.GetCallback());
+
+  ToolResponse response = future.Take();
+  EXPECT_TOOL_ERROR(response,
+                    actor::mojom::ActionResultCode::kArgumentsInvalid);
+}
+
 IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, UnsupportedTool) {
   ttc_service().StartSession();
   auto* session_controller = ttc_service().session_controller();
@@ -505,7 +631,7 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
   ASSERT_TRUE(session_controller);
 
   std::vector<ToolDefinition> tools = session_controller->GetToolDefinitions();
-  ASSERT_EQ(tools.size(), 9u);
+  ASSERT_EQ(tools.size(), 12u);
 
   const ToolDefinition& open_url = tools[0];
   EXPECT_EQ(open_url.name, "open_url");
@@ -654,6 +780,47 @@ IN_PROC_BROWSER_TEST_F(ToolControllerBrowserTest, GetToolDefinitions) {
       highlight_schema.FindList("required");
   ASSERT_TRUE(highlight_required);
   EXPECT_EQ(*highlight_required, base::ListValue().Append("query"));
+
+  const ToolDefinition& play_video = tools[9];
+  EXPECT_EQ(play_video.name, "play_video");
+  EXPECT_FALSE(play_video.description.empty());
+  EXPECT_EQ(play_video.behavior, ToolDefinition::Behavior::kBlocking);
+  EXPECT_EQ(play_video.verbalization,
+            ToolDefinition::Verbalization::kSilentAction);
+
+  // The tool takes no arguments.
+  EXPECT_TRUE(play_video.parameters_json_schema.empty());
+
+  const ToolDefinition& pause_video = tools[10];
+  EXPECT_EQ(pause_video.name, "pause_video");
+  EXPECT_FALSE(pause_video.description.empty());
+  EXPECT_EQ(pause_video.behavior, ToolDefinition::Behavior::kBlocking);
+  EXPECT_EQ(pause_video.verbalization,
+            ToolDefinition::Verbalization::kSilentAction);
+
+  // The tool takes no arguments.
+  EXPECT_TRUE(pause_video.parameters_json_schema.empty());
+
+  const ToolDefinition& seek_to_timestamp = tools[11];
+  EXPECT_EQ(seek_to_timestamp.name, "seek_to_timestamp");
+  EXPECT_FALSE(seek_to_timestamp.description.empty());
+  EXPECT_EQ(seek_to_timestamp.behavior, ToolDefinition::Behavior::kBlocking);
+  EXPECT_EQ(seek_to_timestamp.verbalization,
+            ToolDefinition::Verbalization::kSilentAction);
+
+  const base::DictValue& seek_schema = seek_to_timestamp.parameters_json_schema;
+  const std::string* seek_schema_type = seek_schema.FindString("type");
+  ASSERT_TRUE(seek_schema_type);
+  EXPECT_EQ(*seek_schema_type, "object");
+
+  const std::string* seek_timecode_type =
+      seek_schema.FindStringByDottedPath("properties.timecode.type");
+  ASSERT_TRUE(seek_timecode_type);
+  EXPECT_EQ(*seek_timecode_type, "string");
+
+  const base::ListValue* seek_required = seek_schema.FindList("required");
+  ASSERT_TRUE(seek_required);
+  EXPECT_EQ(*seek_required, base::ListValue().Append("timecode"));
 }
 
 class ToolControllerActorDisabledBrowserTest

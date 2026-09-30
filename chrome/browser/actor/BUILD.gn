@@ -434,6 +434,7 @@ source_set("unit_tests") {
     "tools/click_tool_request_unittest.cc",
     "tools/file_upload_tool_request_unittest.cc",
     "tools/file_upload_tool_unittest.cc",
+    "tools/media_control_tool_request_unittest.cc",
     "tools/page_search_utils_unittest.cc",
     "tools/type_tool_request_unittest.cc",
   ]

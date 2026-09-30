@@ -5,6 +5,7 @@
 #include "chrome/browser/ttc/core/tool_controller.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>
@@ -25,6 +26,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/tools/find_and_highlight_tool_request.h"
 #include "chrome/browser/actor/tools/history_tool_request.h"
+#include "chrome/browser/actor/tools/media_control_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/open_known_page_tool_request.h"
 #include "chrome/browser/actor/tools/perform_search_tool_request.h"
@@ -97,6 +99,21 @@ void ToolController::ProcessToolCall(const ToolRequest& tool_request,
   }
   if (tool_request.name == "find_and_highlight") {
     FindAndHighlight(tool_request.arguments, std::move(callback));
+    return;
+  }
+
+  if (tool_request.name == "play_video") {
+    PlayVideo(std::move(callback));
+    return;
+  }
+
+  if (tool_request.name == "pause_video") {
+    PauseVideo(std::move(callback));
+    return;
+  }
+
+  if (tool_request.name == "seek_to_timestamp") {
+    SeekToTimestamp(tool_request.arguments, std::move(callback));
     return;
   }
 #endif
@@ -256,6 +273,43 @@ std::vector<ToolDefinition> ToolController::GetToolDefinitions() {
   find_and_highlight.verbalization =
       ToolDefinition::Verbalization::kSilentAction;
   tools.push_back(std::move(find_and_highlight));
+
+  ToolDefinition play_video;
+  play_video.name = "play_video";
+  play_video.description = "Resume video playback.";
+  // The tool takes no arguments, so its schema is left empty.
+  play_video.behavior = ToolDefinition::Behavior::kBlocking;
+  play_video.verbalization = ToolDefinition::Verbalization::kSilentAction;
+  tools.push_back(std::move(play_video));
+
+  ToolDefinition pause_video;
+  pause_video.name = "pause_video";
+  pause_video.description = "Pause video playback.";
+  // The tool takes no arguments, so its schema is left empty.
+  pause_video.behavior = ToolDefinition::Behavior::kBlocking;
+  pause_video.verbalization = ToolDefinition::Verbalization::kSilentAction;
+  tools.push_back(std::move(pause_video));
+
+  ToolDefinition seek_to_timestamp;
+  seek_to_timestamp.name = "seek_to_timestamp";
+  seek_to_timestamp.description = "Jump the video to a specific timecode.";
+  seek_to_timestamp.parameters_json_schema =
+      base::DictValue()
+          .Set("type", "object")
+          .Set("properties",
+               base::DictValue().Set(
+                   "timecode",
+                   base::DictValue()
+                       .Set("type", "string")
+                       .Set("description",
+                            "The timecode to seek to, from the video "
+                            "transcript. Format: \"1:45\", \"0:30\", "
+                            "\"1:02:15\".")))
+          .Set("required", base::ListValue().Append("timecode"));
+  seek_to_timestamp.behavior = ToolDefinition::Behavior::kBlocking;
+  seek_to_timestamp.verbalization =
+      ToolDefinition::Verbalization::kSilentAction;
+  tools.push_back(std::move(seek_to_timestamp));
 #endif
 
   return tools;
@@ -423,6 +477,51 @@ void ToolController::FindAndHighlight(const base::DictValue& arguments,
           tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
         return std::make_unique<actor::FindAndHighlightToolRequest>(tab_handle,
                                                                     *query);
+      },
+      std::move(callback));
+}
+
+void ToolController::PlayVideo(ToolResponseCallback callback) {
+  PerformActionOnActiveTab(
+      [](tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::MediaControlToolRequest>(
+            tab_handle, actor::PlayMedia());
+      },
+      std::move(callback));
+}
+
+void ToolController::PauseVideo(ToolResponseCallback callback) {
+  PerformActionOnActiveTab(
+      [](tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::MediaControlToolRequest>(
+            tab_handle, actor::PauseMedia());
+      },
+      std::move(callback));
+}
+
+void ToolController::SeekToTimestamp(const base::DictValue& arguments,
+                                     ToolResponseCallback callback) {
+  const std::string* timecode = arguments.FindString("timecode");
+  if (!timecode) {
+    std::move(callback).Run(
+        ToolResponse::Error(actor::mojom::ActionResultCode::kArgumentsInvalid,
+                            "Missing timecode argument"));
+    return;
+  }
+
+  std::optional<actor::SeekMedia> seek =
+      actor::SeekMedia::FromTimecode(*timecode);
+  if (!seek) {
+    std::move(callback).Run(ToolResponse::Error(
+        actor::mojom::ActionResultCode::kArgumentsInvalid, "Invalid timecode"));
+    return;
+  }
+
+  PerformActionOnActiveTab(
+      [&seek](
+          tabs::TabHandle tab_handle) -> std::unique_ptr<actor::ToolRequest> {
+        return std::make_unique<actor::MediaControlToolRequest>(tab_handle,
+                                                                *seek);
       },
       std::move(callback));
 }

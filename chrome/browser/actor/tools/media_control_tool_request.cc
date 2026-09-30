@@ -4,6 +4,12 @@
 
 #include "chrome/browser/actor/tools/media_control_tool_request.h"
 
+#include <string_view>
+#include <vector>
+
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/time/time.h"
 #include "chrome/browser/actor/tools/media_control_tool.h"
 #include "chrome/browser/actor/tools/tool_request_visitor_functor.h"
 #include "chrome/common/actor.mojom.h"
@@ -22,6 +28,37 @@ struct MediaControlNameVisitor {
 };
 
 }  // namespace
+
+// static
+std::optional<SeekMedia> SeekMedia::FromTimecode(std::string_view timecode) {
+  std::vector<std::string_view> parts = base::SplitStringPiece(
+      timecode, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+  // Minutes and seconds following a ':' must be in the range [0, 60).
+  auto is_sexagesimal = [](int value) { return value >= 0 && value < 60; };
+  auto make_seek = [](base::TimeDelta seek_time) {
+    return SeekMedia{.seek_time_milliseconds = seek_time.InMilliseconds()};
+  };
+  if (parts.size() == 1) {
+    int s;
+    if (base::StringToInt(parts[0], &s) && s >= 0) {
+      return make_seek(base::Seconds(s));
+    }
+  } else if (parts.size() == 2) {
+    int m, s;
+    if (base::StringToInt(parts[0], &m) && base::StringToInt(parts[1], &s) &&
+        m >= 0 && is_sexagesimal(s)) {
+      return make_seek(base::Minutes(m) + base::Seconds(s));
+    }
+  } else if (parts.size() == 3) {
+    int h, m, s;
+    if (base::StringToInt(parts[0], &h) && base::StringToInt(parts[1], &m) &&
+        base::StringToInt(parts[2], &s) && h >= 0 && is_sexagesimal(m) &&
+        is_sexagesimal(s)) {
+      return make_seek(base::Hours(h) + base::Minutes(m) + base::Seconds(s));
+    }
+  }
+  return std::nullopt;
+}
 
 std::string MediaControlName(const MediaControl& media_control) {
   return std::visit(MediaControlNameVisitor{}, media_control);
