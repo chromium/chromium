@@ -12,7 +12,8 @@ namespace {
 
 struct API_AVAILABLE(macos(13.3)) FakeImpl : public Fake {
  public:
-  FakeImpl(std::optional<bool> permission)
+  FakeImpl(std::optional<bool> permission,
+           bool is_configured_for_passkeys = true)
       : fake_(base::MakeRefCounted<FakeSystemInterface>()) {
     if (!permission) {
       fake_->set_auth_state(SystemInterface::kAuthNotAuthorized);
@@ -21,6 +22,7 @@ struct API_AVAILABLE(macos(13.3)) FakeImpl : public Fake {
     } else {
       fake_->set_auth_state(SystemInterface::kAuthDenied);
     }
+    fake_->set_is_configured_for_passkeys(is_configured_for_passkeys);
     SetSystemInterfaceForTesting(fake_);
   }
 
@@ -33,6 +35,14 @@ struct API_AVAILABLE(macos(13.3)) FakeImpl : public Fake {
 
 std::unique_ptr<Fake> NewFake() {
   return NewFakeWithPermission(true);
+}
+
+std::unique_ptr<Fake> NewFakeWithDeviceNotConfiguredForPasskeys() {
+  if (@available(macOS 13.5, *)) {
+    return std::make_unique<FakeImpl>(/*permission=*/true,
+                                      /*is_configured_for_passkeys=*/false);
+  }
+  return nullptr;
 }
 
 std::unique_ptr<Fake> NewFakeWithPermission(std::optional<bool> permission) {

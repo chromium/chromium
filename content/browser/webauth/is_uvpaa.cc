@@ -12,9 +12,12 @@
 #include "content/public/common/content_client.h"
 
 #if BUILDFLAG(IS_MAC)
+#include "base/feature_list.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_authentication_delegate.h"
 #include "device/fido/mac/authenticator.h"
+#include "device/fido/mac/icloud_keychain.h"
+#include "device/fido/public/features.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -32,6 +35,17 @@ namespace content {
 void IsUVPlatformAuthenticatorAvailable(
     BrowserContext* browser_context,
     IsUVPlatformAuthenticatorAvailableCallback callback) {
+  if (base::FeatureList::IsEnabled(
+          device::kWebAuthnICloudKeychainUseDeviceConfiguredForPasskeys) &&
+      device::fido::icloud_keychain::IsSupported()) {
+    if (__builtin_available(macOS 26.2, *)) {
+      if (device::fido::icloud_keychain::IsConfiguredForPasskeys()) {
+        std::move(callback).Run(true);
+        return;
+      }
+    }
+  }
+
   const std::optional<device::fido::mac::AuthenticatorConfig> config =
       GetContentClient()
           ->browser()

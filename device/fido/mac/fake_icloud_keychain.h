@@ -18,6 +18,11 @@ struct Fake {
 // has granted iCloud Keychain permission.
 std::unique_ptr<Fake> NewFake();
 
+// Override iCloud Keychain actions with a fake that reports that the user has
+// granted iCloud Keychain permission, but the device is not configured for
+// passkeys.
+std::unique_ptr<Fake> NewFakeWithDeviceNotConfiguredForPasskeys();
+
 // Override iCloud Keychain actions with a fake that reports the given
 // permission value.
 std::unique_ptr<Fake> NewFakeWithPermission(std::optional<bool> permission);
