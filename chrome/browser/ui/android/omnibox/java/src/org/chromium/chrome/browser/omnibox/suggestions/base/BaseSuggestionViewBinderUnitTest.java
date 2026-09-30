@@ -12,7 +12,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -22,7 +21,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 import android.view.View;
 import android.view.ViewGroup.MarginLayoutParams;
@@ -32,8 +30,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -65,14 +61,12 @@ import java.util.List;
 
 /** Tests for {@link BaseSuggestionViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BaseSuggestionViewBinderUnitTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
     @Mock private Runnable mRunnable;
-    @Mock private View mView;
-    @Captor private ArgumentCaptor<Drawable> mBackgroundCaptor;
+    private View mView;
     private Context mBareContext;
     private Context mContext;
     private Resources mResources;
@@ -89,7 +83,8 @@ public class BaseSuggestionViewBinderUnitTest {
         mContext = new ContextThemeWrapper(mBareContext, R.style.Theme_BrowserUI_DayNight);
         mResources = mContext.getResources();
 
-        mBaseView = spy(new BaseSuggestionView<>(new ImageView(mContext)));
+        mView = new View(mContext);
+        mBaseView = new BaseSuggestionView<>(new ImageView(mContext));
         mIconView = mBaseView.decorationIcon;
 
         mResourceProvider = new OmniboxResourceProvider(mContext, BrandedColorScheme.APP_DEFAULT);
@@ -162,7 +157,7 @@ public class BaseSuggestionViewBinderUnitTest {
         assertEquals(View.VISIBLE, actionButtons.get(0).getVisibility());
         assertEquals(list.get(0).icon.drawable, actionButtons.get(0).getDrawable());
         assertNull(actionButtons.get(0).getBackground());
-        verify(mBaseView).addView(actionButtons.get(0));
+        assertEquals(mBaseView, actionButtons.get(0).getParent());
 
         assertTrue(actionButtons.get(0).performClick());
         assertTrue(actionButtons.get(0).performClick());
@@ -201,9 +196,9 @@ public class BaseSuggestionViewBinderUnitTest {
         assertEquals(View.VISIBLE, actionButtons.get(1).getVisibility());
         assertEquals(View.VISIBLE, actionButtons.get(2).getVisibility());
 
-        verify(mBaseView).addView(actionButtons.get(0));
-        verify(mBaseView).addView(actionButtons.get(1));
-        verify(mBaseView).addView(actionButtons.get(2));
+        assertEquals(mBaseView, actionButtons.get(0).getParent());
+        assertEquals(mBaseView, actionButtons.get(1).getParent());
+        assertEquals(mBaseView, actionButtons.get(2).getParent());
 
         assertEquals(list.get(0).icon.drawable, actionButtons.get(0).getDrawable());
         assertEquals(list.get(1).icon.drawable, actionButtons.get(1).getDrawable());
@@ -243,21 +238,21 @@ public class BaseSuggestionViewBinderUnitTest {
         final View actionButton1 = actionButtons.get(0);
         final View actionButton2 = actionButtons.get(1);
         final View actionButton3 = actionButtons.get(2);
-        verify(mBaseView).addView(actionButton1);
-        verify(mBaseView).addView(actionButton2);
-        verify(mBaseView).addView(actionButton3);
+        assertEquals(mBaseView, actionButton1.getParent());
+        assertEquals(mBaseView, actionButton2.getParent());
+        assertEquals(mBaseView, actionButton3.getParent());
 
         mModel.set(BaseSuggestionViewProperties.ACTION_BUTTONS, list.subList(0, 2));
         assertEquals(2, actionButtons.size());
-        verify(mBaseView).removeView(actionButton3);
+        assertNull(actionButton3.getParent());
 
         mModel.set(BaseSuggestionViewProperties.ACTION_BUTTONS, list.subList(0, 1));
         assertEquals(1, actionButtons.size());
-        verify(mBaseView).removeView(actionButton2);
+        assertNull(actionButton2.getParent());
 
         mModel.set(BaseSuggestionViewProperties.ACTION_BUTTONS, null);
         assertEquals(0, actionButtons.size());
-        verify(mBaseView).removeView(actionButton1);
+        assertNull(actionButton1.getParent());
     }
 
     @Test
@@ -390,9 +385,8 @@ public class BaseSuggestionViewBinderUnitTest {
                 new ColorDrawable(Color.MAGENTA).getConstantState();
 
         BaseSuggestionViewBinder.applySelectableBackground(mModel, mView, mResourceProvider);
-        verify(mView).setBackground(mBackgroundCaptor.capture());
 
-        var color = ((ColorDrawable) mBackgroundCaptor.getValue()).getColor();
+        var color = ((ColorDrawable) mView.getBackground()).getColor();
 
         assertEquals(Color.MAGENTA, color);
     }
@@ -432,7 +426,7 @@ public class BaseSuggestionViewBinderUnitTest {
         var state1 = BaseSuggestionViewBinder.getFocusableDrawableStateForTesting();
 
         // Create a second MVP setup. Use Bare context that has no theme data.
-        var viewWithNoContext = spy(new BaseSuggestionView<>(new ImageView(mBareContext)));
+        var viewWithNoContext = new BaseSuggestionView<>(new ImageView(mBareContext));
         OmniboxResourceProvider bareResourceProvider =
                 new OmniboxResourceProvider(mBareContext, BrandedColorScheme.APP_DEFAULT);
         var newModel =
