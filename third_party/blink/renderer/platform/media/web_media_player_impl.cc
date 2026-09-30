@@ -681,9 +681,11 @@ void WebMediaPlayerImpl::Shutdown() {
   }
 
   // Destruct compositor resources in the proper order.
-  client_->SetCcLayer(nullptr);
+  if (client_) {
+    client_->SetCcLayer(nullptr);
 
-  client_->MediaRemotingStopped(MediaPlayerClient::kMediaRemotingStopNoText);
+    client_->MediaRemotingStopped(MediaPlayerClient::kMediaRemotingStopNoText);
+  }
 
   // These hold Unretained(this), so must be destructed here.
   watch_time_reporter_.reset();

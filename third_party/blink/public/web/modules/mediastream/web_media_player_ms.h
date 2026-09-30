@@ -283,7 +283,10 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
 
   const WebTimeRanges buffered_;
 
-  WebPrivatePtrForGC<MediaPlayerClient> client_;
+  WebPrivatePtrForGC<MediaPlayerClient,
+                     WebPrivatePtrDestruction::kSameThread,
+                     WebPrivatePtrStrength::kWeak>
+      client_;
 
   // WebMediaPlayer notifies the |delegate_| of playback state changes using
   // |delegate_id_|; an id provided after registering with the delegate.  The

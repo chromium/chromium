@@ -408,7 +408,9 @@ void WebMediaPlayerMS::Shutdown() {
   }
 
   // Destruct compositor resources in the proper order.
-  get_client()->SetCcLayer(nullptr);
+  if (get_client()) {
+    get_client()->SetCcLayer(nullptr);
+  }
 
   if (frame_deliverer_) {
     video_task_runner_->DeleteSoon(FROM_HERE, std::move(frame_deliverer_));

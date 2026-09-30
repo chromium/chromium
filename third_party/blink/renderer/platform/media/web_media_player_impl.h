@@ -840,7 +840,7 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   // this flag is set, it may never be unset.
   bool is_origin_tainted_ = false;
 
-  Persistent<MediaPlayerClient> client_ = nullptr;
+  WeakPersistent<MediaPlayerClient> client_ = nullptr;
   raw_ptr<WebMediaPlayerEncryptedMediaClient> encrypted_client_ = nullptr;
 
   // WebMediaPlayer notifies the |delegate_| of playback state changes using
