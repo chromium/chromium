@@ -105,8 +105,7 @@ TEST_F(AudioDataS16ConverterTest, ConvertToAudioDataS16_AudioBuffer) {
       kTestVectorSize);
 
   // Populate manually.
-  auto raw_channel = buffer->channels()[0];
-  auto bus_span = base::subtle::reinterpret_span<int16_t>(raw_channel);
+  auto bus_span = buffer->interleaved_data_cast<int16_t>();
   ASSERT_EQ(bus_span.size(), kTestVectorSize);
   bus_span.copy_from(kTestVectorContents);
 
@@ -131,8 +130,7 @@ TEST_F(AudioDataS16ConverterTest,
       kStereoFrameCount);
 
   // Populate interleaved stereo data manually.
-  auto raw_channel = buffer->channels()[0];
-  auto bus_span = base::subtle::reinterpret_span<int16_t>(raw_channel);
+  auto bus_span = buffer->interleaved_data_cast<int16_t>();
   ASSERT_EQ(bus_span.size(), kTestVectorSize);
   bus_span.copy_from(kTestVectorContents);
 

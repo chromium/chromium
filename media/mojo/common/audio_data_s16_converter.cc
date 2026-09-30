@@ -38,9 +38,8 @@ mojom::AudioDataS16Ptr AudioDataS16Converter::ConvertToAudioDataS16(
     signed_buffer->channel_count = buffer->channel_count();
     signed_buffer->frame_count = buffer->frame_count();
     signed_buffer->sample_rate = buffer->sample_rate();
-    auto audio_span =
-        base::subtle::reinterpret_span<const int16_t>(buffer->channels()[0]);
-    signed_buffer->data = base::ToVector(audio_span);
+    signed_buffer->data =
+        base::ToVector(buffer->interleaved_data_cast<const int16_t>());
     return signed_buffer;
   }
 
