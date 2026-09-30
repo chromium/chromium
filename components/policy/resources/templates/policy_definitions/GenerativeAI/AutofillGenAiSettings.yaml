@@ -50,11 +50,11 @@ schema:
   - 1
   - 2
   type: integer
-future_on:
-- android
-- chrome.*
-- chrome_os
-- ios
+supported_on:
+- android:156-
+- chrome.*:156-
+- chrome_os:156-
+- ios:156-
 tags:
 - google-sharing
 type: int-enum
