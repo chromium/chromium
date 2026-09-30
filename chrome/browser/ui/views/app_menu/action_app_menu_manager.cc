@@ -71,6 +71,7 @@
 #include "chrome/browser/ui/views/app_menu/send_tab_to_self_dynamic_menu.h"
 #include "chrome/browser/ui/views/app_menu/tab_group_dynamic_menu.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_button_menu_highlighter.h"
 #include "chrome/browser/ui/web_applications/web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_page_handler.h"
 #include "chrome/browser/user_education/user_education_service.h"
@@ -96,6 +97,7 @@
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_ui_util.h"
 #endif
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -157,20 +159,24 @@ class AppMenuBuilder {
 
   AppMenuBuilder(actions::ActionItem* parent,
                  BrowserWindowInterface* browser_window_interface,
+                 ui::ElementIdentifier highlighted_menu_identifier,
                  std::optional<ui::ColorId> bg_color = std::nullopt,
                  DisplayType default_display_type = DisplayType::kRow)
       : AppMenuBuilder(static_cast<actions::BaseAction*>(parent),
                        browser_window_interface,
+                       highlighted_menu_identifier,
                        bg_color,
                        default_display_type) {}
   AppMenuBuilder(actions::BaseAction* parent,
                  BrowserWindowInterface* browser_window_interface,
+                 ui::ElementIdentifier highlighted_menu_identifier,
                  std::optional<ui::ColorId> bg_color = std::nullopt,
                  DisplayType default_display_type = DisplayType::kRow)
       : parent_(parent),
         browser_window_interface_(browser_window_interface),
         scope_(BrowserActions::From(browser_window_interface_)
                    ->root_action_item()),
+        highlighted_menu_identifier_(highlighted_menu_identifier),
         bg_color_(bg_color),
         default_display_type_(default_display_type) {}
   AppMenuBuilder(const AppMenuBuilder&) = delete;
@@ -240,11 +246,12 @@ class AppMenuBuilder {
       return *this;
     }
     auto* item_ptr = parent_->AddChild(std::move(item));
-    AppMenuBuilder sub_builder(item_ptr, browser_window_interface_);
+    AppMenuBuilder sub_builder(item_ptr, browser_window_interface_,
+                               highlighted_menu_identifier_);
     build_submenu(sub_builder);
-    // If any item inside the submenu is alerted as part of a running tutorial,
-    // also alert this parent submenu row so the user knows which submenu to
-    // open, and propagate the alerted state up to any outer submenu.
+    // If any item inside the submenu is alerted as part of a running tutorial
+    // or IPH promo, also alert this parent submenu row so the user knows which
+    // submenu to open, and propagate the alerted state up to any outer submenu.
     if (sub_builder.has_alerted_child_) {
       item_ptr->SetProperty(AppMenuActionItem::kIsAlertedKey, true);
     }
@@ -274,6 +281,7 @@ class AppMenuBuilder {
     auto* item_ptr = parent_->AddChild(std::move(item));
     if (build_section.has_value()) {
       AppMenuBuilder section_builder(item_ptr, browser_window_interface_,
+                                     highlighted_menu_identifier_,
                                      section_bg_color);
       (*build_section)(section_builder);
     }
@@ -301,7 +309,8 @@ class AppMenuBuilder {
     }
     bool sub_alerted = false;
     if (build_submenu.has_value()) {
-      AppMenuBuilder sub_builder(item.get(), browser_window_interface_);
+      AppMenuBuilder sub_builder(item.get(), browser_window_interface_,
+                                 highlighted_menu_identifier_);
       (*build_submenu)(sub_builder);
       sub_alerted = sub_builder.has_alerted_child_;
     }
@@ -330,12 +339,16 @@ class AppMenuBuilder {
   }
 
  private:
-  // Returns true if `element_id` is targeted by any step (or conditional branch
-  // step) of a currently running tutorial for this profile, so the menu item
-  // can be highlighted with a pulsing alert indicator.
+  // Returns true if `element_id` is targeted by an active IPH promo anchored to
+  // the app menu button or by any step (or conditional branch step) of a
+  // currently running tutorial for this profile, so the menu item can be
+  // highlighted with a pulsing alert indicator.
   bool IsElementIdAlerted(ui::ElementIdentifier element_id) const {
     if (!element_id) {
       return false;
+    }
+    if (element_id == highlighted_menu_identifier_) {
+      return true;
     }
     auto* const user_ed_service =
         UserEducationServiceFactory::GetForBrowserContext(
@@ -372,11 +385,12 @@ class AppMenuBuilder {
   raw_ptr<actions::BaseAction> parent_;
   raw_ptr<BrowserWindowInterface> browser_window_interface_;
   raw_ptr<actions::ActionItem> scope_;
+  ui::ElementIdentifier highlighted_menu_identifier_;
   std::optional<ui::ColorId> bg_color_;
   DisplayType default_display_type_ = DisplayType::kRow;
   // Tracks whether any action or nested submenu added by this builder is
   // alerted, so parent submenu rows can also be highlighted when a child item
-  // inside the submenu is targeted by a tutorial.
+  // inside the submenu is targeted by a tutorial or IPH promo.
   bool has_alerted_child_ = false;
 };
 
@@ -410,6 +424,12 @@ void ActionAppMenuManager::CreateMenuHierarchy() {
     return;
   }
 
+  if (auto highlight_info = ToolbarButtonMenuHighlighter::MaybeHighlight(
+          browser_window_interface_, kToolbarAppMenuButtonElementId)) {
+    highlighted_menu_identifier_ = highlight_info->highlighted_menu_identifier;
+    promo_handle_ = std::move(highlight_info->promo_handle);
+  }
+
   AddNotificationActions(root);
   AddSearchBarAction(root);
   AddBlockHeaderActions(root);
@@ -419,6 +439,8 @@ void ActionAppMenuManager::CreateMenuHierarchy() {
 }
 
 void ActionAppMenuManager::OnMenuClosed() {
+  promo_handle_.Release();
+  highlighted_menu_identifier_ = ui::ElementIdentifier();
   if (safety_hub_notification_timer_.has_value()) {
     safety_hub_util::MaybeNotifyMenuNotificationSeen(
         browser_window_interface_->GetProfile(),
@@ -431,7 +453,7 @@ void ActionAppMenuManager::OnMenuClosed() {
 void ActionAppMenuManager::AddNotificationActions(actions::ActionItem* root) {
   actions::ActionItem* scope =
       BrowserActions::From(browser_window_interface_)->root_action_item();
-  AppMenuBuilder(root, browser_window_interface_,
+  AppMenuBuilder(root, browser_window_interface_, highlighted_menu_identifier_,
                  ui::kColorAppMenuUpgradeRowBackground)
       .AddSection(DisplayType::kSection, [this,
                                           scope](AppMenuBuilder& section) {
@@ -507,13 +529,14 @@ void ActionAppMenuManager::AddNotificationActions(actions::ActionItem* root) {
 
 void ActionAppMenuManager::AddSearchBarAction(actions::ActionItem* root) {
   if (base::FeatureList::IsEnabled(features::kChroMenuSearch)) {
-    AppMenuBuilder(root, browser_window_interface_)
+    AppMenuBuilder(root, browser_window_interface_,
+                   highlighted_menu_identifier_)
         .AddSection(DisplayType::kSearch);
   }
 }
 
 void ActionAppMenuManager::AddBlockHeaderActions(actions::ActionItem* root) {
-  AppMenuBuilder(root, browser_window_interface_)
+  AppMenuBuilder(root, browser_window_interface_, highlighted_menu_identifier_)
       .AddSection(DisplayType::kBlock, [this](AppMenuBuilder& section) {
         Profile* profile = browser_window_interface_->GetProfile();
         std::optional<std::u16string> new_tab_text_override;
@@ -560,7 +583,7 @@ void ActionAppMenuManager::AddBlockHeaderActions(actions::ActionItem* root) {
 }
 
 void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
-  AppMenuBuilder(root, browser_window_interface_,
+  AppMenuBuilder(root, browser_window_interface_, highlighted_menu_identifier_,
                  kColorAppMenuYourChromeBackground)
       .AddSection(DisplayType::kSection, [this](AppMenuBuilder& section) {
         section.AddHeader(IDS_APP_MENU_YOUR_CHROME_HEADER);
@@ -764,7 +787,7 @@ void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
 
 void ActionAppMenuManager::AddToolsAndActionsActions(
     actions::ActionItem* root) {
-  AppMenuBuilder(root, browser_window_interface_,
+  AppMenuBuilder(root, browser_window_interface_, highlighted_menu_identifier_,
                  kColorAppMenuToolsAndActionsBackground)
       .AddSection(DisplayType::kSection, [this](AppMenuBuilder& section) {
         section.AddHeader(IDS_APP_MENU_TOOLS_AND_ACTIONS_HEADER)
@@ -1019,7 +1042,7 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
 }
 
 void ActionAppMenuManager::AddFooterActions(actions::ActionItem* root) {
-  AppMenuBuilder(root, browser_window_interface_)
+  AppMenuBuilder(root, browser_window_interface_, highlighted_menu_identifier_)
       .AddSection(DisplayType::kFooter, [browser_window_interface =
                                              browser_window_interface_.get()](
                                             AppMenuBuilder& section) {

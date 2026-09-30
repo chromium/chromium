@@ -23,3 +23,26 @@ void ToolbarButtonMenuHighlighter::MaybeHighlight(
         button->GetProperty(views::kElementIdentifierKey), menu_model);
   }
 }
+
+// static
+std::optional<ToolbarButtonMenuHighlighter::HighlightInfo>
+ToolbarButtonMenuHighlighter::MaybeHighlight(
+    BrowserWindowInterface* browser,
+    ui::ElementIdentifier button_element_id) {
+  if (auto* const service = UserEducationServiceFactory::GetForBrowserContext(
+          browser->GetProfile())) {
+    if (auto* const controller = service->GetFeaturePromoController(
+            base::PassKey<ToolbarButtonMenuHighlighter>())) {
+      if (const auto* const spec =
+              controller->GetCurrentPromoSpecificationForAnchor(
+                  button_element_id)) {
+        return HighlightInfo{
+            .highlighted_menu_identifier = spec->highlighted_menu_identifier(),
+            .promo_handle =
+                controller->CloseBubbleAndContinuePromo(*spec->feature()),
+        };
+      }
+    }
+  }
+  return std::nullopt;
+}

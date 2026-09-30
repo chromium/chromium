@@ -13,9 +13,11 @@
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/app_menu/app_menu_action_item.h"
+#include "components/user_education/common/feature_promo/feature_promo_handle.h"
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
 #include "ui/base/class_property.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/color/color_id.h"
@@ -62,6 +64,8 @@ class ActionAppMenuManager {
   std::unique_ptr<SendTabToSelfDynamicMenu> send_tab_to_self_menu_;
   std::unique_ptr<ProfileDynamicMenu> profile_menu_;
   std::optional<base::ElapsedTimer> safety_hub_notification_timer_;
+  ui::ElementIdentifier highlighted_menu_identifier_;
+  user_education::FeaturePromoHandle promo_handle_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APP_MENU_ACTION_APP_MENU_MANAGER_H_

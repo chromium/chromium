@@ -39,6 +39,7 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
 
 using ::testing::_;
@@ -80,14 +81,6 @@ class BrowserAppMenuButtonInteractiveTest : public InteractiveFeaturePromoTest {
                 BookmarkSubMenuModel::kShowBookmarkSidePanelItem)));
   }
 
-  auto CheckAlertStatus(ui::ElementIdentifier element_id, bool is_alerted) {
-    return Check([this, element_id, is_alerted]() mutable {
-      AppMenuTestAccessor accessor(browser());
-      EXPECT_EQ(accessor.IsElementIdAlerted(element_id), is_alerted);
-      return true;
-    });
-  }
-
   auto CloseMenu() {
     return Do([this]() mutable { AppMenuTestAccessor(browser()).CloseMenu(); });
   }
@@ -115,7 +108,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAppMenuButtonInteractiveTest,
       SelectMenuItem(AppMenuModel::kBookmarksMenuItem),
       // Verify that the promo is still active and the item is highlighted.
       CheckPromoActive(kMenuPromoTestFeature, true),
-      CheckAlertStatus(BookmarkSubMenuModel::kShowBookmarkSidePanelItem, true),
+      CheckViewProperty(BookmarkSubMenuModel::kShowBookmarkSidePanelItem,
+                        &views::MenuItemView::is_alerted, true),
       CloseMenu(),
       // Open the menu again, this time without the IPH.
       PressButton(kToolbarAppMenuButtonElementId),
@@ -123,8 +117,8 @@ IN_PROC_BROWSER_TEST_F(BrowserAppMenuButtonInteractiveTest,
       // Verify that the promo is not still active and the item is not
       // highlighted.
       CheckPromoActive(kMenuPromoTestFeature, false),
-      CheckAlertStatus(BookmarkSubMenuModel::kShowBookmarkSidePanelItem,
-                       false));
+      CheckViewProperty(BookmarkSubMenuModel::kShowBookmarkSidePanelItem,
+                        &views::MenuItemView::is_alerted, false));
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserAppMenuButtonInteractiveTest, AnimationDisabled) {
