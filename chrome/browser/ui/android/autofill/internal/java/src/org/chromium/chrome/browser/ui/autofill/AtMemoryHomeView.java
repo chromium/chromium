@@ -87,10 +87,6 @@ public class AtMemoryHomeView extends LinearLayout {
         mSearchBarView.focusSearchArea();
     }
 
-    public void clearSearchText() {
-        mSearchBarView.clearSearchText();
-    }
-
     public void hideKeyboardAndClearFocus() {
         mSearchBarView.hideKeyboardAndClearFocus();
     }

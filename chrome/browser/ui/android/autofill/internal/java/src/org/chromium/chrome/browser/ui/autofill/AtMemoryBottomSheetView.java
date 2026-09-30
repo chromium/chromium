@@ -68,10 +68,6 @@ public class AtMemoryBottomSheetView implements HomeProperties.SearchDelegate {
         mHomeView.focusSearchArea();
     }
 
-    public void clearSearchText() {
-        mHomeView.clearSearchText();
-    }
-
     /**
      * Handles back navigation events, such as a back button press or edge swipe gesture, returning
      * from the flyout screen to the home screen.
