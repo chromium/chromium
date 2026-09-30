@@ -19,6 +19,8 @@
 #import "base/no_destructor.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/task/task_traits.h"
+#import "base/task/thread_pool.h"
 #import "base/time/time.h"
 #import "base/values.h"
 #import "build/branding_buildflags.h"
@@ -30,8 +32,6 @@
 #import "ios/chrome/browser/upgrade/model/upgrade_constants.h"
 #import "ios/chrome/browser/upgrade/model/upgrade_recommended_details.h"
 #import "ios/public/provider/chrome/browser/omaha/omaha_api.h"
-#import "ios/web/public/thread/web_task_traits.h"
-#import "ios/web/public/thread/web_thread.h"
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "url/gurl.h"
 
@@ -58,11 +58,13 @@ OmahaService::OmahaService(const PrefService& local_state,
       const base::Time app_install = base::Time::FromTimeT(
           local_state.GetInt64(metrics::prefs::kInstallDate));
 
-      backend_.emplace(web::GetIOThreadTaskRunner({}),
-                       /*locale_lang=*/std::string(language_tag.tag_string()),
-                       /*app_install=*/app_install,
-                       /*omaha_server_url=*/std::move(omaha_server_url),
-                       /*auto_schedule=*/true);
+      backend_.emplace(
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
+          /*locale_lang=*/std::string(language_tag.tag_string()),
+          /*app_install=*/app_install,
+          /*omaha_server_url=*/std::move(omaha_server_url),
+          /*auto_schedule=*/true);
     }
   }
 }

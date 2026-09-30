@@ -19,7 +19,6 @@ source_set("model") {
     "//components/prefs",
     "//ios/chrome/app:tests_hook",
     "//ios/public/provider/chrome/browser/omaha:omaha_api",
-    "//ios/web/public/thread",
     "//services/network/public/cpp",
     "//url",
   ]

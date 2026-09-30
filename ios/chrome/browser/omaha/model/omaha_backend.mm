@@ -22,6 +22,7 @@
 #import "base/system/sys_info.h"
 #import "base/task/bind_post_task.h"
 #import "base/task/sequenced_task_runner.h"
+#import "base/threading/scoped_blocking_call.h"
 #import "base/time/time.h"
 #import "base/version.h"
 #import "components/version_info/version_info.h"
@@ -142,6 +143,9 @@ void OmahaBackend::Start(
     SavePersistentStateCallback save_persistent_state_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!url_loader_factory_) << "Start(...) must only be called once.";
+
+  // OmahaBackend must be used on a sequence where blocking is allowed.
+  base::ScopedBlockingCall blocking(FROM_HERE, base::BlockingType::MAY_BLOCK);
 
   CHECK(!pending_url_loader_factory.is_null());
   CHECK(!save_persistent_state_callback.is_null());
@@ -272,6 +276,9 @@ void OmahaBackend::ScheduleNextPing() {
 void OmahaBackend::SendPing() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!current_url_loader_);
+
+  // OmahaBackend must be used on a sequence where blocking is allowed.
+  base::ScopedBlockingCall blocking(FROM_HERE, base::BlockingType::MAY_BLOCK);
 
   // Cancel any pending timer (it will be restarted when the response from
   // the server is received and parsed). This is safe to call if the timer
