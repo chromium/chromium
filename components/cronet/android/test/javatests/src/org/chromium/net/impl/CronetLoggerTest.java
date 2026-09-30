@@ -470,7 +470,7 @@ public final class CronetLoggerTest {
 
         final CronetTrafficInfo trafficInfo = mTestLogger.getLastCronetTrafficInfo();
         assertThat(trafficInfo.getRequestHeaderSizeInBytes()).isEqualTo(0);
-        assertThat(trafficInfo.getRequestBodySizeInBytes()).isNotEqualTo(0);
+        assertThat(trafficInfo.getRequestBodySizeInBytes()).isEqualTo(0);
         assertThat(trafficInfo.getResponseHeaderSizeInBytes()).isNotEqualTo(0);
         assertThat(trafficInfo.getResponseBodySizeInBytes()).isNotEqualTo(0);
         assertThat(trafficInfo.getResponseStatusCode()).isEqualTo(200);
@@ -517,7 +517,8 @@ public final class CronetLoggerTest {
 
         final CronetTrafficInfo trafficInfo1 = mTestLogger.getLastCronetTrafficInfo();
         assertThat(trafficInfo1.getResponseHeaderSizeInBytes()).isGreaterThan(0);
-        assertThat(trafficInfo1.getResponseBodySizeInBytes()).isGreaterThan(0);
+        assertThat(trafficInfo1.getResponseBodySizeInBytes())
+                .isEqualTo(callback1.mHttpResponseDataLength);
         assertThat(trafficInfo1.getResponseStatusCode()).isEqualTo(200);
         assertThat(trafficInfo1.getTerminalState())
                 .isEqualTo(CronetTrafficInfo.RequestTerminalState.SUCCEEDED);
@@ -528,10 +529,13 @@ public final class CronetLoggerTest {
         callback2.blockForDone();
         assertThat(callback2.getResponseInfoWithChecks()).hasHttpStatusCodeThat().isEqualTo(200);
         assertThat(callback2.getResponseInfoWithChecks().wasCached()).isTrue();
+        assertThat(callback2.mHttpResponseDataLength).isGreaterThan(0);
         mTestLogger.waitForLogCronetTrafficInfo();
 
         final CronetTrafficInfo trafficInfo2 = mTestLogger.getLastCronetTrafficInfo();
         assertThat(trafficInfo2.getResponseHeaderSizeInBytes()).isGreaterThan(0);
+        assertThat(trafficInfo2.getResponseBodySizeInBytes())
+                .isEqualTo(callback2.mHttpResponseDataLength);
         assertThat(trafficInfo2.getResponseStatusCode()).isEqualTo(200);
         assertThat(trafficInfo2.getTerminalState())
                 .isEqualTo(CronetTrafficInfo.RequestTerminalState.SUCCEEDED);
@@ -711,6 +715,9 @@ public final class CronetLoggerTest {
 
         mTestLogger.waitForLogCronetTrafficInfo();
         assertThat(mTestLogger.getLastCronetTrafficInfo().getOnUploadReadCount()).isGreaterThan(0);
+        assertThat(mTestLogger.getLastCronetTrafficInfo().getRequestBodySizeInBytes()).isEqualTo(4);
+        assertThat(mTestLogger.getLastCronetTrafficInfo().getResponseBodySizeInBytes())
+                .isEqualTo(4);
         assertThat(mTestLogger.getLastCronetTrafficInfo().getCacheState())
                 .isEqualTo(CronetTrafficInfo.CacheState.NOT_CACHED);
     }

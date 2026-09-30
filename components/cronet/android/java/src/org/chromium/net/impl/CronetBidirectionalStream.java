@@ -4,8 +4,6 @@
 
 package org.chromium.net.impl;
 
-import static java.lang.Math.max;
-
 import android.os.Build;
 import android.os.Process;
 
@@ -151,6 +149,8 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
     private int mNonfinalUserCallbackExceptionCount;
     private int mReadCount;
     private int mFlushCount;
+    private long mRequestBodyBytesSent;
+    private long mResponseBodyBytesReceived;
     private boolean mFinalUserCallbackThrew;
 
     /*
@@ -678,6 +678,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
             failWithException(new CronetExceptionImpl("Invalid number of bytes read", null));
             return;
         }
+        mResponseBodyBytesReceived += bytesRead;
         byteBuffer.position(initialPosition + bytesRead);
         assert mOnReadCompletedTask.mByteBuffer == null;
         mOnReadCompletedTask.mByteBuffer = byteBuffer;
@@ -710,6 +711,7 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
                                 "ByteBuffer modified externally during write", null));
                 return;
             }
+            mRequestBodyBytesSent += initialLimits[i] - initialPositions[i];
             // Current implementation always writes the complete buffer.
             buffer.position(buffer.limit());
             postTaskToExecutor(
@@ -976,19 +978,12 @@ public class CronetBidirectionalStream extends ExperimentalBidirectionalStream {
             cacheState = CronetTrafficInfo.CacheState.UNSPECIFIED;
         }
 
-        // TODO(stefanoduo): A better approach might be keeping track of the total length of an
-        // upload and use that value as the request body size instead.
-        final long requestTotalSizeInBytes = mMetrics.getSentByteCount();
         final long requestHeaderSizeInBytes =
                 CronetRequestCommon.estimateHeadersSizeInBytes(mRequestHeaders);
-        final long requestBodySizeInBytes =
-                max(0, requestTotalSizeInBytes - requestHeaderSizeInBytes);
-
-        final long responseTotalSizeInBytes = mMetrics.getReceivedByteCount();
+        final long requestBodySizeInBytes = mRequestBodyBytesSent;
         final long responseHeaderSizeInBytes =
                 CronetRequestCommon.estimateHeadersSizeInBytes(responseHeaders);
-        final long responseBodySizeInBytes =
-                max(0, responseTotalSizeInBytes - responseHeaderSizeInBytes);
+        final long responseBodySizeInBytes = mResponseBodyBytesReceived;
 
         final Duration totalLatency;
         if (mMetrics.getRequestStart() != null && mMetrics.getRequestEnd() != null) {

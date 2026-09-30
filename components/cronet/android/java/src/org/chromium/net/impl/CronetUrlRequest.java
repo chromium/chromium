@@ -4,8 +4,6 @@
 
 package org.chromium.net.impl;
 
-import static java.lang.Math.max;
-
 import android.os.Build;
 import android.os.Process;
 
@@ -121,6 +119,7 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
     private boolean mQuicConnectionMigrationAttempted;
     private boolean mQuicConnectionMigrationSuccessful;
     private int mReadCount;
+    private long mResponseBodyBytesReceived;
     private int mNonfinalUserCallbackExceptionCount;
     private boolean mFinalUserCallbackThrew;
 
@@ -731,6 +730,7 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
                     new CronetExceptionImpl("ByteBuffer modified externally during read", null));
             return;
         }
+        mResponseBodyBytesReceived += bytesRead;
         if (mOnReadCompletedTask == null) {
             mOnReadCompletedTask = new OnReadCompletedRunnable();
         }
@@ -1031,19 +1031,13 @@ public final class CronetUrlRequest extends ExperimentalUrlRequest {
             cacheState = CronetTrafficInfo.CacheState.UNSPECIFIED;
         }
 
-        // TODO(stefanoduo): A better approach might be keeping track of the total length of an
-        // upload and use that value as the request body size instead.
-        final long requestTotalSizeInBytes = mMetrics.getSentByteCount();
         final long requestHeaderSizeInBytes =
                 CronetRequestCommon.estimateHeadersSizeInBytes(mRequestHeaders);
         final long requestBodySizeInBytes =
-                max(0, requestTotalSizeInBytes - requestHeaderSizeInBytes);
-
-        final long responseTotalSizeInBytes = mMetrics.getReceivedByteCount();
+                mUploadDataStream == null ? 0 : mUploadDataStream.getUploadedByteCount();
         final long responseHeaderSizeInBytes =
                 CronetRequestCommon.estimateHeadersSizeInBytes(responseHeaders);
-        final long responseBodySizeInBytes =
-                max(0, responseTotalSizeInBytes - responseHeaderSizeInBytes);
+        final long responseBodySizeInBytes = mResponseBodyBytesReceived;
 
         final Duration totalLatency;
         if (mMetrics.getRequestStart() != null && mMetrics.getRequestEnd() != null) {

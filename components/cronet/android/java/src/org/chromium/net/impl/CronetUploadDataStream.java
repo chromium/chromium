@@ -25,6 +25,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.concurrent.GuardedBy;
 
@@ -52,6 +53,7 @@ public final class CronetUploadDataStream extends UploadDataSink {
     // run at the same time we are issuing a read, especially if the request fails or is cancelled
     // while uploading.
     private final AtomicInteger mReadCount = new AtomicInteger();
+    private final AtomicLong mUploadedByteCount = new AtomicLong();
 
     // Reusable read task, to reduce redundant memory allocation.
     private final Runnable mReadTask =
@@ -273,6 +275,7 @@ public final class CronetUploadDataStream extends UploadDataSink {
                                     "Read upload data length %d exceeds expected length %d",
                                     mLength - mRemainingLength, mLength));
                 }
+                mUploadedByteCount.addAndGet(bytesRead);
                 mByteBuffer.position(0);
                 mByteBuffer = null;
                 mInWhichUserCallback = UserCallback.NOT_IN_CALLBACK;
@@ -306,6 +309,7 @@ public final class CronetUploadDataStream extends UploadDataSink {
                 checkState(UserCallback.REWIND);
                 mInWhichUserCallback = UserCallback.NOT_IN_CALLBACK;
                 mRemainingLength = mLength;
+                mUploadedByteCount.set(0);
                 // Request may been canceled already.
                 if (mUploadDataStreamAdapter == 0) {
                     return;
@@ -465,6 +469,10 @@ public final class CronetUploadDataStream extends UploadDataSink {
 
     int getReadCount() {
         return mReadCount.get();
+    }
+
+    long getUploadedByteCount() {
+        return mUploadedByteCount.get();
     }
 
     // Native methods are implemented in upload_data_stream_adapter.cc.
