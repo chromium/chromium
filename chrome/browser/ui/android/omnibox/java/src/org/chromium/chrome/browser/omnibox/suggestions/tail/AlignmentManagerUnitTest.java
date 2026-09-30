@@ -10,6 +10,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import android.content.Context;
+import android.view.ContextThemeWrapper;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -19,24 +22,53 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.omnibox.R;
 
 /** Tests for {@link AlignmentManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AlignmentManagerUnitTest {
     private static final int TEXT_AREA_WIDTH = 100;
+
+    private static class TestTailSuggestionView extends TailSuggestionView {
+        private final Runnable mOnRequestLayout;
+
+        TestTailSuggestionView(Context context, Runnable onRequestLayout) {
+            super(context);
+            mOnRequestLayout = onRequestLayout;
+        }
+
+        @Override
+        public void requestLayout() {
+            super.requestLayout();
+            if (mOnRequestLayout != null) {
+                mOnRequestLayout.run();
+            }
+        }
+    }
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock private TailSuggestionView mTailView1;
-    @Mock private TailSuggestionView mTailView2;
-    @Mock private TailSuggestionView mTailView3;
+    @Mock private Runnable mLayoutCallback1;
+    @Mock private Runnable mLayoutCallback2;
+    @Mock private Runnable mLayoutCallback3;
+
+    private TailSuggestionView mTailView1;
+    private TailSuggestionView mTailView2;
+    private TailSuggestionView mTailView3;
     private AlignmentManager mManager;
 
     @Before
     public void setUp() {
+        Context context =
+                new ContextThemeWrapper(
+                        ContextUtils.getApplicationContext(), R.style.Theme_BrowserUI_DayNight);
+        mTailView1 = new TestTailSuggestionView(context, mLayoutCallback1);
+        mTailView2 = new TestTailSuggestionView(context, mLayoutCallback2);
+        mTailView3 = new TestTailSuggestionView(context, mLayoutCallback3);
+
         mManager = new AlignmentManager();
         mManager.registerView(mTailView1);
         mManager.registerView(mTailView2);
@@ -71,9 +103,9 @@ public class AlignmentManagerUnitTest {
         assertEquals(inputWidth, paddingFor(mTailView3, query3Width, fullText3Width));
 
         // Confirm no re-layouts requested.
-        verify(mTailView1, never()).requestLayout();
-        verify(mTailView2, never()).requestLayout();
-        verify(mTailView3, never()).requestLayout();
+        verify(mLayoutCallback1, never()).run();
+        verify(mLayoutCallback2, never()).run();
+        verify(mLayoutCallback3, never()).run();
     }
 
     @Test
@@ -96,9 +128,9 @@ public class AlignmentManagerUnitTest {
         assertEquals(expectedTargetAlignment, paddingFor(mTailView3, queryWidth, fullText3Width));
 
         // Confirm re-layouts requested everywhere but the view that triggered relayout.
-        verify(mTailView1).requestLayout();
-        verify(mTailView2).requestLayout();
-        verify(mTailView3, never()).requestLayout();
+        verify(mLayoutCallback1).run();
+        verify(mLayoutCallback2).run();
+        verify(mLayoutCallback3, never()).run();
 
         // Confirm that all views are left-aligned to each other.
         assertEquals(expectedTargetAlignment, paddingFor(mTailView1, queryWidth, fullText1Width));
@@ -122,24 +154,24 @@ public class AlignmentManagerUnitTest {
         // Second query does not fit, and is the longest one yet. Should force relayout.
         final int expectedAlignment1 = TEXT_AREA_WIDTH - query2Width;
         assertEquals(expectedAlignment1, paddingFor(mTailView2, query2Width, fullText2Width));
-        verify(mTailView1).requestLayout();
-        verify(mTailView3).requestLayout();
+        verify(mLayoutCallback1).run();
+        verify(mLayoutCallback3).run();
         // Confirm that on re-layout, first query gets aligned to the second.
         assertEquals(expectedAlignment1, paddingFor(mTailView1, query1Width, fullText1Width));
 
-        verifyNoMoreInteractions(mTailView1, mTailView2, mTailView3);
-        clearInvocations(mTailView1, mTailView2, mTailView3);
+        verifyNoMoreInteractions(mLayoutCallback1, mLayoutCallback2, mLayoutCallback3);
+        clearInvocations(mLayoutCallback1, mLayoutCallback2, mLayoutCallback3);
 
         // Third query does not fit, too, and is the next longest query. Should force relayout.
         final int expectedAlignment2 = TEXT_AREA_WIDTH - query3Width;
         assertEquals(expectedAlignment2, paddingFor(mTailView3, query3Width, fullText3Width));
-        verify(mTailView1).requestLayout();
-        verify(mTailView2).requestLayout();
+        verify(mLayoutCallback1).run();
+        verify(mLayoutCallback2).run();
         // Confirm that on re-layout, first two queries get aligned to the third.
         assertEquals(expectedAlignment2, paddingFor(mTailView1, query1Width, fullText1Width));
         assertEquals(expectedAlignment2, paddingFor(mTailView1, query2Width, fullText2Width));
 
-        verifyNoMoreInteractions(mTailView1, mTailView2, mTailView3);
+        verifyNoMoreInteractions(mLayoutCallback1, mLayoutCallback2, mLayoutCallback3);
     }
 
     @Test
@@ -158,8 +190,8 @@ public class AlignmentManagerUnitTest {
         // Second query does not fit, and is the longest one here. Should force relayout.
         final int expectedTargetAlignment = TEXT_AREA_WIDTH - query2Width;
         assertEquals(expectedTargetAlignment, paddingFor(mTailView2, query2Width, fullText2Width));
-        verify(mTailView1).requestLayout();
-        verify(mTailView3).requestLayout();
+        verify(mLayoutCallback1).run();
+        verify(mLayoutCallback3).run();
         // Confirm that on re-layout, first query gets aligned to the second.
         assertEquals(expectedTargetAlignment, paddingFor(mTailView1, query1Width, fullText1Width));
 
@@ -169,6 +201,6 @@ public class AlignmentManagerUnitTest {
         assertEquals(expectedTargetAlignment, paddingFor(mTailView1, query1Width, fullText1Width));
         assertEquals(expectedTargetAlignment, paddingFor(mTailView1, query2Width, fullText2Width));
 
-        verifyNoMoreInteractions(mTailView1, mTailView2, mTailView3);
+        verifyNoMoreInteractions(mLayoutCallback1, mLayoutCallback2, mLayoutCallback3);
     }
 }
