@@ -1878,7 +1878,6 @@ android_library("chrome_test_java_various") {
     "//chrome/browser/gsa:java",
     "//chrome/browser/ntp_customization:java",
     "//chrome/browser/omaha/android:ui_java",
-    "//chrome/browser/personal_context/first_run:java",
     "//chrome/browser/ui/android/bottombar:java",
     "//chrome/browser/ui/android/logo:utils_java",
     "//chrome/browser/ui/android/toolbar:adaptive_features_java",

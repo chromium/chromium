@@ -24,8 +24,6 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.personal_context.first_run.PersonalContextFirstRunService;
-import org.chromium.chrome.browser.personal_context.first_run.PersonalContextFirstRunServiceJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.Acceptability;
 import org.chromium.components.autofill.AtMemoryPayload;
@@ -48,14 +46,12 @@ public class AtMemoryBottomSheetBridgeTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private Profile mProfile;
-    @Mock private PersonalContextFirstRunService.Natives mFirstRunServiceJniMock;
 
     private AtMemoryBottomSheetBridge mBridge;
 
     @Before
     public void setUp() throws Exception {
         AtMemoryBottomSheetBridgeJni.setInstanceForTesting(mNativeMock);
-        PersonalContextFirstRunServiceJni.setInstanceForTesting(mFirstRunServiceJniMock);
         Context context =
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),

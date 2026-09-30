@@ -31,8 +31,6 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.personal_context.first_run.PersonalContextFirstRunService;
-import org.chromium.chrome.browser.personal_context.first_run.PersonalContextFirstRunServiceJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.autofill.internal.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -50,13 +48,11 @@ public class AtMemoryBottomSheetCoordinatorTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private AtMemoryBottomSheetCoordinator.Delegate mMockDelegate;
     @Mock private Profile mProfile;
-    @Mock private PersonalContextFirstRunService.Natives mFirstRunServiceJniMock;
 
     private AtMemoryBottomSheetCoordinator mCoordinator;
 
     @Before
     public void setUp() {
-        PersonalContextFirstRunServiceJni.setInstanceForTesting(mFirstRunServiceJniMock);
         mCoordinator =
                 new AtMemoryBottomSheetCoordinator(
                         new ContextThemeWrapper(

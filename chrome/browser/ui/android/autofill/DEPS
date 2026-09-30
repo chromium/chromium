@@ -1,5 +1,4 @@
 include_rules = {
   "+components/autofill/android/payments",
   "+components/browser_ui/bottomsheet/android",
-  "+components/personal_context/first_run",
 }

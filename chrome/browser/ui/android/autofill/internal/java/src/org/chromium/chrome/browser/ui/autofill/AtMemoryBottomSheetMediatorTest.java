@@ -48,8 +48,6 @@ import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsFrag
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.autofill.settings.personal_context.AutofillPersonalContextFragment;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.personal_context.first_run.PersonalContextFirstRunService;
-import org.chromium.chrome.browser.personal_context.first_run.PersonalContextFirstRunServiceJni;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.ui.autofill.AtMemoryBottomSheetProperties.FlyoutProperties;
@@ -80,7 +78,6 @@ public class AtMemoryBottomSheetMediatorTest {
 
     @Mock private AtMemoryBottomSheetCoordinator.Delegate mDelegate;
     @Mock private HomeProperties.SearchDelegate mSearchDelegate;
-    @Mock private PersonalContextFirstRunService.Natives mFirstRunServiceJniMock;
     @Mock private SettingsNavigation mSettingsNavigation;
     @Mock private UserPrefs.Natives mUserPrefsJniMock;
     @Mock private PrefService mPrefService;
@@ -93,7 +90,6 @@ public class AtMemoryBottomSheetMediatorTest {
 
     @Before
     public void setUp() {
-        PersonalContextFirstRunServiceJni.setInstanceForTesting(mFirstRunServiceJniMock);
         SettingsNavigationFactory.setInstanceForTesting(mSettingsNavigation);
         UserPrefsJni.setInstanceForTesting(mUserPrefsJniMock);
         when(mUserPrefsJniMock.get(mProfile)).thenReturn(mPrefService);
