@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
+#include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
@@ -133,6 +134,18 @@ Decision EvaluateActorContainerConfig(
 }
 
 }  // namespace
+
+// static
+std::unique_ptr<OriginGatingChecker> OriginGatingChecker::CreateForTesting(
+    base::WeakPtr<Delegate> delegate,
+    OriginGatingConfiguration config) {
+  return base::WrapUnique(new OriginGatingChecker(delegate, std::move(config)));
+}
+
+OriginGatingChecker::OriginGatingChecker(base::PassKey<OriginGatingService>,
+                                         base::WeakPtr<Delegate> delegate,
+                                         OriginGatingConfiguration config)
+    : OriginGatingChecker(delegate, std::move(config)) {}
 
 OriginGatingChecker::OriginGatingChecker(base::WeakPtr<Delegate> delegate,
                                          OriginGatingConfiguration config)

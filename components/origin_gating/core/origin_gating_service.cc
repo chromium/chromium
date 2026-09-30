@@ -35,8 +35,9 @@ OriginGatingService::CreateAndRegisterChecker(
     OriginGatingConfiguration config) {
   CHECK(!is_shutdown_);
   CheckerId id = id_generator_.GenerateNextId();
-  checkers_.emplace(
-      id, std::make_unique<OriginGatingChecker>(delegate, std::move(config)));
+  checkers_.emplace(id, std::make_unique<OriginGatingChecker>(
+                            base::PassKey<OriginGatingService>(), delegate,
+                            std::move(config)));
   return std::make_unique<OriginGatingRegistration>(
       base::PassKey<OriginGatingService>(), *this, id);
 }

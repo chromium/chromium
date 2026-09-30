@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
+#include "base/types/pass_key.h"
 #include "components/origin_gating/core/origin_gating_cache.h"
 #include "components/origin_gating/core/origin_gating_configuration.h"
 #include "components/origin_gating/core/task_policy_config_slot.h"
@@ -22,6 +23,8 @@
 #include "url/origin.h"
 
 namespace origin_gating {
+
+class OriginGatingService;
 
 // Evaluates origin gating decisions for navigations and page actions against a
 // configured pipeline of predicates and embedder delegate callbacks.
@@ -81,10 +84,12 @@ class OriginGatingChecker {
         base::OnceCallback<void(NoVerdictResult)> callback) = 0;
   };
 
-  // TODO(http://b/545563794): Make this constructor take a
-  // `base::PassKey<OriginGatingService>` once
-  // DevToolsNavigationGatingRuleManager is migrated to a KeyedService.
-  OriginGatingChecker(base::WeakPtr<Delegate> delegate,
+  static std::unique_ptr<OriginGatingChecker> CreateForTesting(
+      base::WeakPtr<Delegate> delegate,
+      OriginGatingConfiguration config);
+
+  OriginGatingChecker(base::PassKey<OriginGatingService>,
+                      base::WeakPtr<Delegate> delegate,
                       OriginGatingConfiguration config);
   ~OriginGatingChecker();
 
@@ -222,6 +227,9 @@ class OriginGatingChecker {
       GUARDED_BY_CONTEXT(sequence_checker_);
   base::WeakPtrFactory<OriginGatingChecker> weak_ptr_factory_
       GUARDED_BY_CONTEXT(sequence_checker_){this};
+
+  OriginGatingChecker(base::WeakPtr<Delegate> delegate,
+                      OriginGatingConfiguration config);
 };
 
 }  // namespace origin_gating
