@@ -11355,6 +11355,13 @@
      "element": {
       "manual": {
        "draw-element-image": {
+        "date-input-slot-assignment-crash.tentative.html": [
+         "d7edfdade67179fd85407ef4ca0a50f3dec51b85",
+         [
+          null,
+          {}
+         ]
+        ],
         "fullscreen-child-crash.tentative.html": [
          "9dabde9613bc167995ab4ede4a2571d3d62e4777",
          [
@@ -14287,7 +14294,7 @@
       ]
      ],
      "selection-modify-extend-foward-line-across-video-in-html.html": [
-      "072cbacc19c96bf744f5706351943e559814a019",
+      "de982419366c5f243a3a9b515dbd3e92e0f957dd",
       [
        null,
        {}
@@ -85192,7 +85199,7 @@
       ]
      ],
      "position-visibility-anchor-valid-001.html": [
-      "eb3b9d68e5ca06dd718f4778e2cb6461ea1ba094",
+      "b06ba11e370844d72a8f5ab06af8cd495613affc",
       [
        null,
        [
@@ -372591,6 +372598,58 @@
     },
     "relations": {
      "css-styling": {
+      "anchor-displaystyle-001.html": [
+       "3a9652e35f7636f120d9dc6a73b3c246c322d28a",
+       [
+        null,
+        [
+         [
+          "/mathml/relations/css-styling/anchor-displaystyle-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "anchor-mathbackground-001.html": [
+       "319420e8bd077cf9185f3887cc07d36f27b1bf68",
+       [
+        null,
+        [
+         [
+          "/mathml/relations/css-styling/anchor-mathbackground-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "anchor-mathcolor-001.html": [
+       "9b0838f2e09a29a66065b4c36a231d0ff654c20d",
+       [
+        null,
+        [
+         [
+          "/mathml/relations/css-styling/anchor-mathcolor-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "anchor-mathsize-001.html": [
+       "c5af5454b7b7d1c33e36e7a2af20f385c588c77f",
+       [
+        null,
+        [
+         [
+          "/mathml/relations/css-styling/anchor-mathsize-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "blur-filter.html": [
        "92a894bf34de0e6d084b56848961754ec5430ee4",
        [
@@ -384184,6 +384243,34 @@
       ]
      }
     }
+   },
+   "webgl": {
+    "blitFramebuffer-presents-drawing-buffer.html": [
+     "f699b4f089ef8a28543f348af1d0cb11af2af2d3",
+     [
+      null,
+      [
+       [
+        "/webgl/drawing-buffer-presented-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ],
+    "clearBufferfv-presents-drawing-buffer.html": [
+     "f7db3726474daaf8c218d7326512fa0649c16d18",
+     [
+      null,
+      [
+       [
+        "/webgl/drawing-buffer-presented-ref.html",
+        "=="
+       ]
+      ],
+      {}
+     ]
+    ]
    },
    "webvtt": {
     "rendering": {
@@ -404017,7 +404104,7 @@
       []
      ],
      "position-visibility-anchor-valid-001-ref.html": [
-      "0515db38b124f4379b60fcbb5edee569b6a04ff8",
+      "02b5a16c0f4779f43f189e486e1ea8f1d5f89e43",
       []
      ],
      "position-visibility-anchor-valid-dynamic-ref.html": [
@@ -498757,6 +498844,22 @@
        "503f241adeadc67c912230aa6caa0aaf932a0958",
        []
       ],
+      "anchor-displaystyle-001-ref.html": [
+       "64d952919cbb288c0d490d78d3aae001076a4d97",
+       []
+      ],
+      "anchor-mathbackground-001-ref.html": [
+       "9bdbb8c6e0d3bbaeb6cab12110be6bec9a789de9",
+       []
+      ],
+      "anchor-mathcolor-001-ref.html": [
+       "f27ba67cfe298bc74767ba54b4b59d82ca04d23d",
+       []
+      ],
+      "anchor-mathsize-001-ref.html": [
+       "82cb5dd12fb3d7283ec00e917d49454d0f878d12",
+       []
+      ],
       "blur-filter-ref.html": [
        "21fc165b7da477a619933185c2f45df3c3e9ab09",
        []
@@ -522588,7 +522691,7 @@
          []
         ],
         "headers_name_standard_tentative-expected.txt": [
-         "40a885b6f9ef3d5af192cbcb2010a71de6e10e75",
+         "5460b5ab79fe7807d687e72fe70e82b403221ffb",
          []
         ]
        },
@@ -523643,6 +523746,10 @@
     ],
     "common.js": [
      "416c21ce9330d3f73576b6b5aa01dab06c5798ee",
+     []
+    ],
+    "drawing-buffer-presented-ref.html": [
+     "39c77d1742734113a833d4b91069363cce5e939f",
      []
     ],
     "idlharness.any-expected.txt": [
@@ -591302,6 +591409,13 @@
    "css": {
     "CSS2": {
      "abspos": {
+      "abspos-in-block-in-inline-in-relpos-inline-002.html": [
+       "75ba2ef5c4a465bdd6171f39b684986f9e2ebaf7",
+       [
+        null,
+        {}
+       ]
+      ],
       "abspos-in-block-in-inline-in-relpos-inline.html": [
        "478251bcf152602f7f639671b5d861e092f63eb8",
        [
@@ -599404,6 +599518,13 @@
      ],
      "color-initial-canvastext.html": [
       "97ea2b7b68f899c1385b490c745ef69201460f63",
+      [
+       null,
+       {}
+      ]
+     ],
+     "color-mix-currentcolor-parent-change.html": [
+      "6d81246bc3f3ffa15a06325cb425cf4806c594e1",
       [
        null,
        {}
@@ -655152,6 +655273,13 @@
         {}
        ]
       ],
+      "moveBefore-disconnected-id-map.html": [
+       "2ce20bbdcb1a41ff97685ebfc9bd7aaa29ac3b37",
+       [
+        null,
+        {}
+       ]
+      ],
       "moveBefore-from-light-to-shadow.html": [
        "d0ca56887012bdc4ef39d5c3bea6665a2b5cf41b",
        [
@@ -655196,6 +655324,20 @@
       ],
       "moveBefore-selector-matching.html": [
        "aae0b75d0c629fabb2c0225139ed22c6ca2f36d9",
+       [
+        null,
+        {}
+       ]
+      ],
+      "moveBefore-shadow-boundary-id-change.html": [
+       "b12a617dbe86db36f1ee59bd276d37b28c93ada4",
+       [
+        null,
+        {}
+       ]
+      ],
+      "moveBefore-shadow-host-id-map.html": [
+       "da0ea157ffd41e188e7c397bf84df86b0e51354b",
        [
         null,
         {}
@@ -656852,7 +656994,7 @@
       ]
      ],
      "stream-html-custom-element-sanitizer.html": [
-      "5bec06b30bc3c656ae590857bc697b27821a1368",
+      "b70300614cb4f91a4b6d7d96601d4ca007dfedd6",
       [
        null,
        {}
@@ -711205,6 +711347,13 @@
         ],
         "moved-nested-content-drawable-canvas.tentative.html": [
          "66d22be9e5209190d695815770eaab4bfa86b405",
+         [
+          null,
+          {}
+         ]
+        ],
+        "moved-webgl-canvas.tentative.html": [
+         "ec885a622bf71e270630cb8ea9ea727929edfcad",
          [
           null,
           {}
@@ -789589,6 +789738,13 @@
        {}
       ]
      ],
+     "fcp-requires-both-paintable-and-contentful.html": [
+      "cd4fb7694eba9c4cbda2223a8402db5b2e50d0ad",
+      [
+       null,
+       {}
+      ]
+     ],
      "fcp-svg.html": [
       "bcd2372cfc3b7374ecba7e4ee1cd077b3e51f798",
       [
@@ -797083,7 +797239,7 @@
      ]
     ],
     "percentage-height-calculation.html": [
-     "a40b8b7d3fccb139a2850f2a92e1b0cb15e0ebf8",
+     "408c25194f29c4692b7a9535b7ed27c26b44266b",
      [
       null,
       {}
@@ -838041,7 +838197,7 @@
       ]
      ],
      "animateMotion-calcMode-discrete-path-curves.html": [
-      "68676f69bf57266c28e7c6e603ffc617e23754c0",
+      "5d90e149cd14aa54f8671f835698ca11fa2cbd12",
       [
        null,
        {}
