@@ -45,6 +45,12 @@ def GetScopedUnitTests(input_api, build_android_dir, *, is_upload):
             'local_device_instrumentation_test_run_test.py',
         ),
         J('pylib', 'local', 'device', 'local_device_test_run_test.py'),
+        J(
+            'pylib',
+            'local',
+            'device',
+            'local_device_network_environment_test.py',
+        ),
         J('pylib', 'local', 'emulator', 'avd_test.py'),
         J('pylib', 'local', 'emulator', 'ini_test.py'),
         J('pylib', 'local', 'machine', 'local_machine_junit_test_run_test.py'),
