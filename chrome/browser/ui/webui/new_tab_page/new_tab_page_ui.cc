@@ -90,7 +90,6 @@
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
 #include "components/contextual_search/contextual_search_service.h"
 #include "components/favicon_base/favicon_url_parser.h"
-#include "components/google/core/common/google_util.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/history_clusters/core/features.h"
 #include "components/lens/lens_features.h"
@@ -189,6 +188,9 @@ constexpr char kAIMDisplayMode[] = "50";
 // The value for the "atvm" (AIM Threads Visibility Mode) query parameter.
 // value "3" corresponds to Threads Visibility Mode "Always Open".
 constexpr char kAIMThreadsVisibilityMode[] = "3";
+// The address for Lens server connection prewarming; called by the lens form
+// iframe when users are taken to the upload image dialog.
+constexpr char kLensPrewarmURL[] = "https://lens.google.com/gen204";
 
 bool HasCredentials(Profile* profile) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
@@ -841,16 +843,16 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(
   }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-  // Allow embedding of iframes for the doodle and
-  // chrome-untrusted://new-tab-page for other external content and resources.
-  // NOTE: Use caution when overriding content security policies as that cean
+  // Allow embedding of chrome-untrusted://new-tab-page and
+  // chrome-untrusted://ntp-microsoft-auth for external content and resources.
+  // NOTE: Use caution when overriding content security policies as that can
   // lead to subtle security bugs such as https://crbug.com/40057334.
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ChildSrc,
-      base::StringPrintf("child-src https: %s %s %s;",
-                         google_util::CommandLineGoogleBaseURL().spec().c_str(),
+      base::StringPrintf("child-src %s %s %s;",
                          chrome::kChromeUIUntrustedNewTabPageUrl,
-                         chrome::kChromeUIUntrustedNtpMicrosoftAuthURL));
+                         chrome::kChromeUIUntrustedNtpMicrosoftAuthURL,
+                         kLensPrewarmURL));
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::MediaSrc,
       "media-src blob: data: 'self';");
