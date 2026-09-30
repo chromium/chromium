@@ -699,6 +699,7 @@ if (enable_devtools_frontend) {
       "//chrome/browser/sync/test/integration:sync_integration_test_support",
       "//chrome/browser/ui/autofill",
       "//chrome/test:test_support",
+      "//chrome/test/base:browser_test_waiters",
       "//chrome/test/base:chrome_test_utils",
       "//components/autofill/content/browser:test_support",
       "//components/autofill/core/browser:test_support",
