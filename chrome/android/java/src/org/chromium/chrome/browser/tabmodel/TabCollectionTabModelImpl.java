@@ -1267,14 +1267,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public void moveRelatedTabs(@TabId int id, int newIndex) {
-        assertOnUiThread();
-        try (ScopedStorageBatch ignored = mBatchFactory.get()) {
-            moveRelatedTabsInternal(id, newIndex);
-        }
-    }
-
-    @Override
     public void moveGroupToIndex(Token tabGroupId, int newIndex) {
         assertOnUiThread();
         if (mNativeTabCollectionTabModelImplPtr == 0) return;
@@ -1719,27 +1711,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         } else if (undoGroupMetadata.wasDestinationTabGroupCollapsed) {
             setTabGroupCollapsed(tabGroupId, /* isCollapsed= */ true);
         }
-    }
-
-    private void moveRelatedTabsInternal(@TabId int id, int newIndex) {
-        Tab tab = getTabById(id);
-        if (tab == null) return;
-
-        // Move a tab group.
-        Token tabGroupId = tab.getTabGroupId();
-        if (tabGroupId != null) {
-            moveGroupToIndex(tabGroupId, newIndex);
-            return;
-        }
-
-        // Move an individual tab.
-        moveTabInternal(
-                tab,
-                indexOf(tab),
-                newIndex,
-                /* newTabGroupId= */ null,
-                /* isPinned= */ tab.getIsPinned(),
-                /* isDestinationTab= */ false);
     }
 
     private @Nullable Token addTabsToGroupInternal(@Nullable Token tabGroupId, List<Tab> tabs) {

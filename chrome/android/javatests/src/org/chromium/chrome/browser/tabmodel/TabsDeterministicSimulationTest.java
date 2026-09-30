@@ -207,16 +207,34 @@ public class TabsDeterministicSimulationTest {
                     int count = mCollectionModel.getCount();
                     if (count == 0 && !mGlobalRandom.nextBoolean()) return;
 
-                    int tabId;
-                    if (count > 0 && mGlobalRandom.nextBoolean()) {
-                        tabId = mCollectionModel.getTabAt(mGlobalRandom.nextInt(count)).getId();
-                    } else {
-                        tabId = Tab.INVALID_TAB_ID;
-                    }
+                    Tab tab =
+                            count > 0 && mGlobalRandom.nextBoolean()
+                                    ? mCollectionModel.getTabAt(mGlobalRandom.nextInt(count))
+                                    : null;
 
                     int newIndex = count > 0 ? mGlobalRandom.nextInt(count) : 0;
-                    Log.i(TAG, "moveTabOrGroup: moveRelatedTabs(" + tabId + ", " + newIndex + ")");
-                    mCollectionModel.moveRelatedTabs(tabId, newIndex);
+                    if (tab != null) {
+                        Token tabGroupId = tab.getTabGroupId();
+                        if (tabGroupId != null) {
+                            Log.i(
+                                    TAG,
+                                    "moveTabOrGroup: moveGroupToIndex("
+                                            + tabGroupId
+                                            + ", "
+                                            + newIndex
+                                            + ")");
+                            mCollectionModel.moveGroupToIndex(tabGroupId, newIndex);
+                        } else {
+                            Log.i(
+                                    TAG,
+                                    "moveTabOrGroup: moveTab("
+                                            + tab.getId()
+                                            + ", "
+                                            + newIndex
+                                            + ")");
+                            mCollectionModel.moveTab(tab.getId(), newIndex);
+                        }
+                    }
                 });
     }
 

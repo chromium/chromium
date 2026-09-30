@@ -585,11 +585,6 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public void moveRelatedTabs(int id, int newIndex) {
-        mDelegateModel.moveRelatedTabs(id, newIndex);
-    }
-
-    @Override
     public void moveGroupToIndex(Token tabGroupId, int newIndex) {
         mDelegateModel.moveGroupToIndex(tabGroupId, newIndex);
     }

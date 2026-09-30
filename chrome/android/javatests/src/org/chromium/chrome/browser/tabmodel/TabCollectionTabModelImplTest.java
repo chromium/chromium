@@ -1225,7 +1225,7 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
-    public void testMoveRelatedTabs_BasicObserver() throws Exception {
+    public void testMoveGroupToIndex_BasicObserver() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
         Tab tab2 = createTab();
@@ -1275,7 +1275,7 @@ public class TabCollectionTabModelImplTest {
                     mCollectionModel.addTabGroupObserver(groupObserver);
                     mCollectionModel.addObserver(modelObserver);
                     // Move group to the end.
-                    mCollectionModel.moveRelatedTabs(tab1.getId(), 4);
+                    mCollectionModel.moveGroupToIndex(groupId, 4);
                     mCollectionModel.removeTabGroupObserver(groupObserver);
                     mCollectionModel.removeObserver(modelObserver);
                 });
@@ -1288,7 +1288,7 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
-    public void testMoveRelatedTabs_Advanced() throws Exception {
+    public void testMoveGroupToIndex_Advanced() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();
         Tab tab2 = createTab();
@@ -1313,88 +1313,39 @@ public class TabCollectionTabModelImplTest {
         assertEquals(groupId2, tab6.getTabGroupId());
         assertNull(tab7.getTabGroupId());
 
-        moveRelatedTabs(tab1, 0);
+        moveGroupToIndex(groupId1, 0);
         assertTabsInOrderAre(List.of(tab1, tab2, tab0, tab3, tab4, tab5, tab6, tab7));
 
         // Moving to an index inside the group does not result in change.
-        moveRelatedTabs(tab1, 1);
+        moveGroupToIndex(groupId1, 1);
         assertTabsInOrderAre(List.of(tab1, tab2, tab0, tab3, tab4, tab5, tab6, tab7));
 
-        moveRelatedTabs(tab1, 2);
+        moveGroupToIndex(groupId1, 2);
         assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7));
 
         // Moving to an index inside the group does not result in change.
-        moveRelatedTabs(tab1, 1);
+        moveGroupToIndex(groupId1, 1);
         assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7));
-        moveRelatedTabs(tab1, 2);
+        moveGroupToIndex(groupId1, 2);
         assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7));
 
-        moveRelatedTabs(tab1, 3);
+        moveGroupToIndex(groupId1, 3);
         assertTabsInOrderAre(List.of(tab0, tab3, tab1, tab2, tab4, tab5, tab6, tab7));
 
-        moveRelatedTabs(tab1, 4);
+        moveGroupToIndex(groupId1, 4);
         assertTabsInOrderAre(List.of(tab0, tab3, tab1, tab2, tab4, tab5, tab6, tab7));
 
-        moveRelatedTabs(tab1, 5);
+        moveGroupToIndex(groupId1, 5);
         assertTabsInOrderAre(List.of(tab0, tab3, tab1, tab2, tab4, tab5, tab6, tab7));
 
-        moveRelatedTabs(tab1, 6);
+        moveGroupToIndex(groupId1, 6);
         assertTabsInOrderAre(List.of(tab0, tab3, tab4, tab5, tab6, tab1, tab2, tab7));
 
-        moveRelatedTabs(tab1, 1);
+        moveGroupToIndex(groupId1, 1);
         assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7));
 
-        moveRelatedTabs(tab1, 50);
+        moveGroupToIndex(groupId1, 50);
         assertTabsInOrderAre(List.of(tab0, tab3, tab4, tab5, tab6, tab7, tab1, tab2));
-    }
-
-    @Test
-    @MediumTest
-    public void testMoveRelatedTabs_IndividualTab() throws Exception {
-        Tab tab0 = getTabAt(0);
-        Tab tab1 = createTab();
-        Tab tab2 = createTab();
-        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
-
-        CallbackHelper didMoveTabHelper = new CallbackHelper();
-
-        TabGroupObserver groupObserver =
-                new TabGroupObserver() {
-                    @Override
-                    public void willMoveTabGroup(Token tabGroupId) {
-                        fail("willMoveTabGroup should not be called for individual tab.");
-                    }
-
-                    @Override
-                    public void didMoveTabGroup(
-                            Token tabGroupId, int tabModelOldIndex, int tabModelNewIndex) {
-                        fail("didMoveTabGroup should not be called for individual tab.");
-                    }
-                };
-        TabModelObserver modelObserver =
-                new TabModelObserver() {
-                    @Override
-                    public void didMoveTab(Tab tab, int newIndex, int oldIndex) {
-                        assertEquals(tab1, tab);
-                        assertEquals(2, newIndex);
-                        assertEquals(1, oldIndex);
-                        didMoveTabHelper.notifyCalled();
-                    }
-                };
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mCollectionModel.addTabGroupObserver(groupObserver);
-                    mCollectionModel.addObserver(modelObserver);
-                    // Move tab1 to the end.
-                    mCollectionModel.moveRelatedTabs(tab1.getId(), 3);
-                    mCollectionModel.removeTabGroupObserver(groupObserver);
-                    mCollectionModel.removeObserver(modelObserver);
-                });
-
-        didMoveTabHelper.waitForOnly();
-
-        assertTabsInOrderAre(List.of(tab0, tab2, tab1));
     }
 
     @Test
@@ -3464,9 +3415,8 @@ public class TabCollectionTabModelImplTest {
         return ThreadUtils.runOnUiThreadBlocking(() -> mRegularModel.getTabAt(index));
     }
 
-    private void moveRelatedTabs(Tab tab, int index) {
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mCollectionModel.moveRelatedTabs(tab.getId(), index));
+    private void moveGroupToIndex(Token groupId, int index) {
+        ThreadUtils.runOnUiThreadBlocking(() -> mCollectionModel.moveGroupToIndex(groupId, index));
     }
 
     private void moveTab(Tab tab, int index) {

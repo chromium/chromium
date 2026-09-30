@@ -410,9 +410,6 @@ public class EmptyTabModel implements IncognitoTabModelInternal {
     }
 
     @Override
-    public void moveRelatedTabs(int id, int newIndex) {}
-
-    @Override
     public void moveGroupToIndex(Token tabGroupId, int newIndex) {}
 
     @Override

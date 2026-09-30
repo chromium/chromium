@@ -457,20 +457,6 @@ public interface TabModel extends TabList {
     int getGroupLastShownTabId(@Nullable Token tabGroupId);
 
     /**
-     * This method moves the tab group which contains the tab with tab {@code id} to {@code
-     * newIndex} in TabModel.
-     *
-     * @param id The id of the tab whose related tabs are being moved.
-     * @param newIndex The new index in TabModel that these tabs are being moved to.
-     * @deprecated Use {@link #moveGroupToIndex(Token, int)} instead.
-     */
-    // TODO(crbug.com/517544602): Migrate all callers to moveGroupToIndex and remove. When moving
-    // a tab group, this method internally resolves the group ID and routes to moveGroupToIndex;
-    // callers should invoke moveGroupToIndex directly.
-    @Deprecated
-    void moveRelatedTabs(@TabId int id, int newIndex);
-
-    /**
      * Moves the tab group with {@code tabGroupId} to the position with {@code newIndex} in
      * TabModel.
      *

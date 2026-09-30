@@ -589,7 +589,8 @@ public class TabbedModeTabModelStoreTest {
         runOnUiThreadBlocking(
                 () -> {
                     mTabModel.mergeTabsToGroup(tabId1, tabId0);
-                    mTabModel.moveRelatedTabs(tabId0, 2);
+                    Token tabGroupId = mTabModel.getTabById(tabId0).getTabGroupId();
+                    mTabModel.moveGroupToIndex(tabGroupId, 2);
                 });
 
         StorageLoadedData data = loadAllDataSync(WINDOW_TAG, false);
