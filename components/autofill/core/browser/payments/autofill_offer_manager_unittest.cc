@@ -116,7 +116,6 @@ TEST_F(AutofillOfferManagerTest, IsUrlEligible) {
       {GURL("http://www.google.com"), GURL("http://www.youtube.com")}));
   payments_data_manager().AddAutofillOfferData(CreateCreditCardOfferForCard(
       card2, "10%", /*expired=*/false, {GURL("http://maps.google.com")}));
-  autofill_offer_manager_->UpdateEligibleMerchantDomains();
 
   EXPECT_TRUE(
       autofill_offer_manager_->IsUrlEligible(GURL("http://www.google.com")));

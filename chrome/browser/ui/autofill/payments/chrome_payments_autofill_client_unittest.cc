@@ -17,6 +17,10 @@
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/virtual_card_enroll_bubble_controller_impl_test_api.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
+#include "components/autofill/core/browser/data_manager/personal_data_manager.h"
+#include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
@@ -61,6 +65,7 @@
 #include "ui/android/window_android.h"
 #else  // !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/omnibox_autofill_page_action_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller_impl.h"
 #include "chrome/browser/ui/page_action/test_support/mock_page_action_controller.h"
@@ -914,6 +919,65 @@ TEST_F(ChromePaymentsAutofillClientTest,
 
   EXPECT_FALSE(chrome_payments_client()->IsAutofillPaymentMethodsEnabled());
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+class TestOfferNotificationBubbleController
+    : public OfferNotificationBubbleControllerImpl {
+ public:
+  explicit TestOfferNotificationBubbleController(
+      content::WebContents* web_contents)
+      : OfferNotificationBubbleControllerImpl(web_contents) {}
+
+ private:
+  // OfferNotificationBubbleControllerImpl:
+  void UpdatePageActionIcon() override {}
+  bool IsWebContentsActive() override { return false; }
+};
+
+// Enables the offer notification before the client is created, since the
+// client only observes the payments data if it is enabled.
+class ChromePaymentsAutofillClientOfferNotificationTest
+    : public ChromePaymentsAutofillClientTest {
+ public:
+  ChromePaymentsAutofillClientOfferNotificationTest() {
+    feature_list_.InitWithFeatures(
+        {features::kAutofillEnableWalletDirectOffers,
+         features::kAutofillEnableWalletDirectOffersNotificationBubble},
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that offers arriving after the navigation update the offer
+// notification for the current page.
+TEST_F(ChromePaymentsAutofillClientOfferNotificationTest,
+       PaymentsDataChanged_UpdatesOfferNotification) {
+  tabs::MockTabInterface mock_tab_interface;
+  tabs::TabLookupFromWebContents::CreateForWebContents(web_contents(),
+                                                       &mock_tab_interface);
+  web_contents()->SetUserData(
+      OfferNotificationBubbleControllerImpl::UserDataKey(),
+      std::make_unique<TestOfferNotificationBubbleController>(web_contents()));
+  const OfferNotificationBubbleControllerImpl* const controller =
+      OfferNotificationBubbleControllerImpl::FromWebContents(web_contents());
+  PaymentsDataManager& payments_data_manager =
+      client()->GetPersonalDataManager().payments_data_manager();
+  payments_data_manager.SetSyncingForTest(true);
+  NavigateAndCommit(GURL("https://www.example.com/checkout"));
+  ASSERT_FALSE(controller->IsIconVisible());
+
+  const AutofillOfferData offer =
+      test::GetPromoCodeOfferData(GURL("https://www.example.com"));
+  test_api(payments_data_manager)
+      .AddOfferData(std::make_unique<AutofillOfferData>(offer));
+  test_api(payments_data_manager).NotifyObservers();
+
+  EXPECT_TRUE(controller->IsIconVisible());
+  EXPECT_EQ(*controller->GetOffer(), offer);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
 class ChromePaymentsAutofillClientWalletBrandingTest

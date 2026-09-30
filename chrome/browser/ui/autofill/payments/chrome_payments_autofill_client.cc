@@ -157,6 +157,15 @@ ChromePaymentsAutofillClient::ChromePaymentsAutofillClient(
         std::make_unique<OmniboxAutofillDelegate>(&client_.get());
   }
 #endif
+  // Only needed to update the offer notification, which is otherwise not
+  // shown.
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableWalletDirectOffers) &&
+      base::FeatureList::IsEnabled(
+          features::kAutofillEnableWalletDirectOffersNotificationBubble)) {
+    payments_data_manager_observation_.Observe(
+        &client_->GetPersonalDataManager().payments_data_manager());
+  }
 }
 
 ChromePaymentsAutofillClient::~ChromePaymentsAutofillClient() = default;
@@ -1423,6 +1432,30 @@ void ChromePaymentsAutofillClient::
       std::move(touch_to_fill_payment_method_controller);
 }
 #endif  // #if BUILDFLAG(IS_ANDROID)
+
+void ChromePaymentsAutofillClient::OnPaymentsDataChanged() {
+  // The offers are per profile, but the offer notification is per tab, so each
+  // tab re-evaluates it for its current page.
+  // TODO(crbug.com/546252995): Make `OfferNotificationHandler` per tab and
+  // owned by this client, and move this observation as well as the navigation
+  // and visibility handling into it. `AutofillOfferManager` would then only
+  // keep the offer lookup and the per-profile set of already shown
+  // notifications.
+#if !BUILDFLAG(IS_ANDROID)
+  // This is sent for any change to the payments data, e.g. to cards or to
+  // offers for other sites. Leave a showing bubble alone, since re-evaluating
+  // would collapse it to its icon.
+  if (OfferNotificationBubbleControllerImpl* controller =
+          OfferNotificationBubbleControllerImpl::FromWebContents(
+              web_contents());
+      controller && controller->IsShowingBubble()) {
+    return;
+  }
+#endif
+  if (AutofillOfferManager* offer_manager = GetAutofillOfferManager()) {
+    offer_manager->UpdateOfferNotificationVisibility(*client_);
+  }
+}
 
 std::u16string ChromePaymentsAutofillClient::GetAccountHolderName() const {
   if (!web_contents()) {

@@ -12,6 +12,8 @@
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
+#include "base/scoped_observation.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/autofill/core/browser/payments/autofill_error_dialog_context.h"
 #include "components/autofill/core/browser/payments/iban_manager.h"
@@ -64,7 +66,6 @@ class MerchantPromoCodeManager;
 struct OfferNotificationOptions;
 class OtpUnmaskDelegate;
 enum class OtpUnmaskResult;
-class PaymentsDataManager;
 class SaveAndFillDialogControllerImpl;
 class SaveAndFillManager;
 class TouchToFillPaymentMethodDelegate;
@@ -90,7 +91,8 @@ class WalletReminderNoticeUiDelegate;
 // ChromeAutofillClient when it is needed, and it observes the same
 // WebContents as its owning ChromeAutofillClient.
 class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
-                                     public content::WebContentsObserver {
+                                     public content::WebContentsObserver,
+                                     public PaymentsDataManager::Observer {
  public:
   explicit ChromePaymentsAutofillClient(ContentAutofillClient* client);
   ChromePaymentsAutofillClient(const ChromePaymentsAutofillClient&) = delete;
@@ -312,6 +314,9 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
 #endif
 
  private:
+  // PaymentsDataManager::Observer:
+  void OnPaymentsDataChanged() override;
+
   std::u16string GetAccountHolderName() const;
 
   const raw_ref<ContentAutofillClient> client_;
@@ -428,6 +433,9 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   // uploading and filling) should be disabled for the given WebContents `this`
   // is owned by.
   bool autofill_payment_methods_supported_ = true;
+
+  base::ScopedObservation<PaymentsDataManager, PaymentsDataManager::Observer>
+      payments_data_manager_observation_{this};
 };
 
 }  // namespace payments
