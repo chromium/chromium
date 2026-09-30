@@ -140,6 +140,35 @@ TEST_F(FrameCaretTest, CaretAnimationNone) {
   EXPECT_TRUE(IsVisibleIfActive(caret)) << "The caret blinks on normally.";
 }
 
+TEST_F(FrameCaretTest, BlinkingDisabledByFeature) {
+  ScopedCaretBlinkingForTest caret_blinking(false);
+  FrameCaret& caret = Selection().FrameCaretForTesting();
+  scoped_refptr<scheduler::FakeTaskRunner> task_runner =
+      base::MakeRefCounted<scheduler::FakeTaskRunner>();
+  task_runner->SetTime(0);
+  caret.RecreateCaretBlinkTimerForTesting(task_runner.get(),
+                                          task_runner->GetMockTickClock());
+  const double kInterval = 1;
+  LayoutTheme::GetTheme().SetCaretBlinkInterval(base::Seconds(kInterval));
+  GetFocusController().SetActive(true);
+  GetFocusController().SetFocused(true);
+
+  SetBodyContent("<textarea>");
+  auto* editor = To<Element>(GetDocument().body()->firstChild());
+  editor->Focus();
+  UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_TRUE(caret.IsActive());
+  EXPECT_TRUE(IsVisibleIfActive(caret))
+      << "Initially a caret should be in visible cycle.";
+
+  task_runner->AdvanceTimeAndRun(kInterval + 0.1);
+  EXPECT_TRUE(IsVisibleIfActive(caret)) << "The caret stays on.";
+
+  task_runner->AdvanceTimeAndRun(kInterval + 0.1);
+  EXPECT_TRUE(IsVisibleIfActive(caret)) << "The caret is still on.";
+}
+
 TEST_F(FrameCaretTest, CaretAnimationManual) {
   ScopedCSSCaretAnimationForTest css_caret_animation_enabled(true);
   FrameCaret& caret = Selection().FrameCaretForTesting();

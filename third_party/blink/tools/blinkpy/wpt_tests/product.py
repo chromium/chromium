@@ -136,6 +136,8 @@ class DesktopProduct(Product):
             '--js-flags=--expose-gc',
             # Disable overlay scrollbar fadeout for consistent screenshots.
             '--disable-features=ScrollbarAnimations',
+            # Keep focused carets visible for deterministic screenshots.
+            '--disable-blink-features=CaretBlinking',
         ]
         fs = self._host.filesystem
         if (self._options.wrapper

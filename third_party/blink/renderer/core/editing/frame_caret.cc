@@ -162,9 +162,11 @@ void FrameCaret::StopCaretBlinkTimer() {
 void FrameCaret::StartBlinkCaret() {
   // Start blinking with a black caret. Be sure not to restart if we're
   // already blinking in the right location at the right rate.
+  const bool blinking_disabled =
+      IsBlinkingDisabled() || !RuntimeEnabledFeatures::CaretBlinkingEnabled();
   base::TimeDelta blink_interval =
-      IsBlinkingDisabled() ? base::TimeDelta()
-                           : LayoutTheme::GetTheme().CaretBlinkInterval();
+      blinking_disabled ? base::TimeDelta()
+                        : LayoutTheme::GetTheme().CaretBlinkInterval();
   if (caret_blink_timer_.IsActive()) {
     if (blink_interval == caret_blink_timer_.RepeatInterval()) {
       // Already blinking at the right rate.
