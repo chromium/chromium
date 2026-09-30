@@ -9,7 +9,7 @@
 #define REMOTING_PROTOCOL_CLIPBOARD_THREAD_PROXY_H_
 
 #include "base/memory/weak_ptr.h"
-#include "base/task/task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "remoting/protocol/clipboard_stub.h"
 
 namespace remoting::protocol {
@@ -21,11 +21,12 @@ class ClipboardThreadProxy : public ClipboardStub {
 
   ~ClipboardThreadProxy() override;
 
-  // Constructs a proxy for |clipboard_stub| which will trampoline invocations
-  // to |clipboard_stub_task_runner|.
+  // Constructs a proxy for `clipboard_stub` which will trampoline invocations
+  // to `clipboard_stub_task_runner`, or invoke `clipboard_stub` directly if
+  // already called on that sequence.
   ClipboardThreadProxy(
       const base::WeakPtr<ClipboardStub>& clipboard_stub,
-      scoped_refptr<base::TaskRunner> clipboard_stub_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> clipboard_stub_task_runner);
 
   // ClipboardStub implementation.
   void InjectClipboardEvent(const ClipboardEvent& event) override;
@@ -38,7 +39,7 @@ class ClipboardThreadProxy : public ClipboardStub {
       const ClipboardEvent& event);
 
   base::WeakPtr<ClipboardStub> clipboard_stub_;
-  scoped_refptr<base::TaskRunner> clipboard_stub_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> clipboard_stub_task_runner_;
 };
 
 }  // namespace remoting::protocol

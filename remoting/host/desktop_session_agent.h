@@ -197,6 +197,8 @@ class DesktopSessionAgent
   void StopAudioCapturer();
 
  private:
+  class ClipboardAdapter;
+
   void OnDesktopEnvironmentCreated(
       const ScreenResolution& resolution,
       StartCallback callback,
@@ -236,6 +238,11 @@ class DesktopSessionAgent
 
   // Executes keyboard, mouse and clipboard events.
   std::unique_ptr<InputInjector> input_injector_;
+
+  // Bound to `caller_task_runner_`. Receives local clipboard events from
+  // `input_injector_` via a `protocol::ClipboardThreadProxy`, which hops
+  // threads if the events originate elsewhere (e.g. on the input thread).
+  std::unique_ptr<ClipboardAdapter> clipboard_adapter_;
 
   // Tracker used to release pressed keys and buttons when disconnecting.
   std::unique_ptr<protocol::InputEventTracker> input_tracker_;

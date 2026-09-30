@@ -330,6 +330,7 @@ source_set("unit_tests") {
     "chromium_socket_factory_unittest.cc",
     "clipboard_echo_filter_unittest.cc",
     "clipboard_filter_unittest.cc",
+    "clipboard_thread_proxy_unittest.cc",
     "coordinate_conversion_test.cc",
     "coordinate_converter_unittest.cc",
     "data_channel_manager_unittest.cc",

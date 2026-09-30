@@ -15,6 +15,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
@@ -49,6 +50,7 @@
 #include "remoting/proto/event.pb.h"
 #include "remoting/proto/url_forwarder_control.pb.h"
 #include "remoting/protocol/clipboard_stub.h"
+#include "remoting/protocol/clipboard_thread_proxy.h"
 #include "remoting/protocol/input_event_tracker.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
@@ -66,37 +68,47 @@ namespace {
 using SetUpUrlForwarderResponse =
     protocol::UrlForwarderControl::SetUpUrlForwarderResponse;
 
-// Routes local clipboard events though the IPC channel to the network process.
-class DesktopSessionClipboardStub : public protocol::ClipboardStub {
+}  // namespace
+
+// Forwards local clipboard events to `OnClipboardEvent()`, which sends them
+// through the IPC channel to the network process. Provides a
+// `WeakPtr<protocol::ClipboardStub>` for `protocol::ClipboardThreadProxy`.
+// Must be created, used and destroyed on `caller_task_runner_` (enforced by
+// `Stop()` and the `DCHECK` in the agent's destructor).
+class DesktopSessionAgent::ClipboardAdapter : public protocol::ClipboardStub {
  public:
-  explicit DesktopSessionClipboardStub(
-      scoped_refptr<DesktopSessionAgent> desktop_session_agent);
+  explicit ClipboardAdapter(DesktopSessionAgent* desktop_session_agent);
 
-  DesktopSessionClipboardStub(const DesktopSessionClipboardStub&) = delete;
-  DesktopSessionClipboardStub& operator=(const DesktopSessionClipboardStub&) =
-      delete;
+  ClipboardAdapter(const ClipboardAdapter&) = delete;
+  ClipboardAdapter& operator=(const ClipboardAdapter&) = delete;
 
-  ~DesktopSessionClipboardStub() override;
+  ~ClipboardAdapter() override;
+
+  base::WeakPtr<protocol::ClipboardStub> GetWeakPtr();
 
   // protocol::ClipboardStub implementation.
   void InjectClipboardEvent(const protocol::ClipboardEvent& event) override;
 
  private:
-  scoped_refptr<DesktopSessionAgent> desktop_session_agent_;
+  raw_ptr<DesktopSessionAgent> desktop_session_agent_;
+  base::WeakPtrFactory<protocol::ClipboardStub> weak_factory_{this};
 };
 
-DesktopSessionClipboardStub::DesktopSessionClipboardStub(
-    scoped_refptr<DesktopSessionAgent> desktop_session_agent)
+DesktopSessionAgent::ClipboardAdapter::ClipboardAdapter(
+    DesktopSessionAgent* desktop_session_agent)
     : desktop_session_agent_(desktop_session_agent) {}
 
-DesktopSessionClipboardStub::~DesktopSessionClipboardStub() = default;
+DesktopSessionAgent::ClipboardAdapter::~ClipboardAdapter() = default;
 
-void DesktopSessionClipboardStub::InjectClipboardEvent(
+base::WeakPtr<protocol::ClipboardStub>
+DesktopSessionAgent::ClipboardAdapter::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
+void DesktopSessionAgent::ClipboardAdapter::InjectClipboardEvent(
     const protocol::ClipboardEvent& event) {
   desktop_session_agent_->OnClipboardEvent(event);
 }
-
-}  // namespace
 
 DesktopSessionAgent::Delegate::~Delegate() = default;
 
@@ -155,6 +167,7 @@ void DesktopSessionAgent::OnAssociatedInterfaceRequest(
 DesktopSessionAgent::~DesktopSessionAgent() {
   DCHECK(!audio_capturer_);
   DCHECK(!desktop_environment_);
+  DCHECK(!clipboard_adapter_);
   DCHECK(!network_channel_);
   DCHECK(!screen_controls_);
   DCHECK(video_capturers_.IsEmpty());
@@ -412,6 +425,7 @@ void DesktopSessionAgent::Stop() {
 
     desktop_environment_.reset();
     action_executor_.reset();
+    clipboard_adapter_.reset();
     input_injector_.reset();
     screen_controls_.reset();
     keyboard_layout_monitor_.reset();
@@ -687,10 +701,12 @@ void DesktopSessionAgent::OnDesktopEnvironmentCreated(
   }
 #endif
 
-  // Start the input injector.
-  std::unique_ptr<protocol::ClipboardStub> clipboard_stub(
-      new DesktopSessionClipboardStub(this));
-  input_injector_->Start(std::move(clipboard_stub));
+  // Start the input injector. The clipboard may send events from a different
+  // thread (e.g. `ClipboardX11` on the input thread), so wrap the adapter in a
+  // proxy.
+  clipboard_adapter_ = std::make_unique<ClipboardAdapter>(this);
+  input_injector_->Start(std::make_unique<protocol::ClipboardThreadProxy>(
+      clipboard_adapter_->GetWeakPtr(), caller_task_runner_));
 
   // Start the audio capturer.
   if (delegate_->desktop_environment_factory().SupportsAudioCapture()) {

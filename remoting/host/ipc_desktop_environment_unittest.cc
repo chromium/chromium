@@ -328,6 +328,11 @@ class IpcDesktopEnvironmentTest : public testing::Test {
   raw_ptr<MockInputInjector, AcrossTasksDanglingUntriaged>
       remote_input_injector_;
 
+  // Clipboard stub passed by the desktop session agent to
+  // `remote_input_injector_`. It holds a reference to the desktop process's
+  // caller task runner, so it must be released in DestroyDesktopProcess().
+  std::unique_ptr<protocol::ClipboardStub> remote_clipboard_stub_;
+
   base::WeakPtr<protocol::FakeDesktopCapturer> remote_desktop_capturer_;
 
   // Will be transferred to the caller of
@@ -531,7 +536,10 @@ IpcDesktopEnvironmentTest::CreateInputInjector() {
   EXPECT_TRUE(remote_input_injector_ == nullptr);
   remote_input_injector_ = remote_input_injector.get();
 
-  EXPECT_CALL(*remote_input_injector_, Start(_));
+  EXPECT_CALL(*remote_input_injector_, Start(_))
+      .WillOnce([this](std::unique_ptr<protocol::ClipboardStub> stub) {
+        remote_clipboard_stub_ = std::move(stub);
+      });
   return remote_input_injector;
 }
 
@@ -628,6 +636,7 @@ void IpcDesktopEnvironmentTest::DestroyDesktopProcess() {
   }
   desktop_listener_.Disconnect();
   remote_input_injector_ = nullptr;
+  remote_clipboard_stub_.reset();
 }
 
 void IpcDesktopEnvironmentTest::ResetRemoteUrlForwarderConfigurator() {
@@ -894,6 +903,35 @@ TEST_F(IpcDesktopEnvironmentTest, InjectClipboardEvent) {
   event.set_mime_type(kMimeTypeTextUtf8);
   event.set_data("a");
   input_injector_->InjectClipboardEvent(event);
+}
+
+// Tests that local clipboard events reported by the desktop's input injector on
+// a different thread (e.g. `ClipboardX11` on the input thread) are forwarded to
+// the network process.
+TEST_F(IpcDesktopEnvironmentTest, InjectClipboardEventFromAnotherThread) {
+  auto clipboard_stub = std::make_unique<protocol::MockClipboardStub>();
+
+  // Stop the test when a clipboard event is received from the desktop process.
+  EXPECT_CALL(*clipboard_stub, InjectClipboardEvent(_))
+      .WillOnce(InvokeWithoutArgs(
+          this, &IpcDesktopEnvironmentTest::DeleteDesktopEnvironment));
+
+  // Start the input injector and screen capturer.
+  input_injector_->Start(std::move(clipboard_stub));
+  video_capturer_->Start(&desktop_capturer_callback_);
+
+  // Run the message loop until the desktop is attached.
+  setup_run_loop_->Run();
+  ASSERT_TRUE(remote_clipboard_stub_);
+
+  // Report a local clipboard event from the IO thread.
+  protocol::ClipboardEvent event;
+  event.set_mime_type(kMimeTypeTextUtf8);
+  event.set_data("a");
+  io_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&protocol::ClipboardStub::InjectClipboardEvent,
+                     base::Unretained(remote_clipboard_stub_.get()), event));
 }
 
 // Tests injection of key events.
