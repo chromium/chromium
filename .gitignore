@@ -123,9 +123,9 @@ vs-chromium-project.txt
 /ceee/internal/
 /chrome/android/orderfiles/
 /chrome/android/profiles/afdo.prof
-/chrome/android/profiles/afdo.prof.new.xz
+/chrome/android/profiles/afdo.prof.new*
 /chrome/android/profiles/arm.afdo.prof
-/chrome/android/profiles/arm.afdo.prof.new.xz
+/chrome/android/profiles/arm.afdo.prof.new*
 /chrome/android/profiles/arm.local.txt
 /chrome/android/profiles/local.txt
 /chrome/angle_unittests_run.xml
@@ -202,7 +202,7 @@ vs-chromium-project.txt
 /chromeos/profiles/chromeos.orderfile.txt
 /chromeos/profiles/*.local.txt
 /chromeos/profiles/*.afdo.prof
-/chromeos/profiles/*.afdo.prof.new.xz
+/chromeos/profiles/*.afdo.prof.new*
 /cipd_cache/
 /components/chrome_settings_proto_generated_compile.xml
 /components/cloud_policy_proto_generated_compile.xml
