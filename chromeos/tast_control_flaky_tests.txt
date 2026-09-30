@@ -44,3 +44,6 @@ tast.vm.AudioResumeAfterCrasRestarted.virtio_cras_snd@brya
 
 # b/567359111
 tast.ui.ChromeCrashReporterMetrics.success_crashpad@trogdor
+
+# b/555577489
+tast.ui.ChromeCrashReporterMetrics.miss_crashpad
