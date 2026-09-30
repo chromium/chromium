@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/views/toolbar/test_support/app_menu_test_accessor.h"
+#include "chrome/browser/ui/views/toolbar/webui_test_utils.h"
 #include "chrome/test/user_education/interactive_feature_promo_test.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/user_education/views/help_bubble_view.h"
@@ -27,6 +28,11 @@ class MemorySaverIphUiTest : public InteractiveFeaturePromoTest {
       : InteractiveFeaturePromoTest(UseDefaultTrackerAllowingPromos(
             {feature_engagement::kIPHMemorySaverModeFeature})) {}
   ~MemorySaverIphUiTest() override = default;
+
+  void SetUpOnMainThread() override {
+    InteractiveFeaturePromoTest::SetUpOnMainThread();
+    WaitForInitialWebUIToolbar(browser());
+  }
 
   auto TriggerMemorySaverPromo() {
     auto steps = Steps(
