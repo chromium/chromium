@@ -309,10 +309,6 @@ CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
 
   resource_ = NewOrRecycledResource();
   FlushForImageListener::Get()->AddObserver(this);
-
-  if (resource_) {
-    EnsureWriteAccess();
-  }
 }
 
 CanvasNon2DResourceProvider::CanvasNon2DResourceProvider(
@@ -416,31 +412,6 @@ bool CanvasNon2DResourceProvider::IsValid() const {
 gpu::SharedImageUsageSet CanvasNon2DResourceProvider::GetSharedImageUsageFlags()
     const {
   return image_pool_->GetImageInfo().usage;
-}
-
-void CanvasNon2DResourceProvider::EnsureWriteAccess() {
-  DCHECK(resource_);
-  // In software mode, we don't need write access to the resource during
-  // drawing since it is executed on CPU memory managed by Skia.
-  DCHECK(resource_->HasOneRef() || IsSingleBuffered() || is_software_)
-      << "Write access requires exclusive access to the resource";
-  DCHECK(!resource()->is_cross_thread())
-      << "Write access is only allowed on the owning thread";
-
-  if (current_resource_has_write_access_ || IsGpuContextLost()) {
-    return;
-  }
-  current_resource_has_write_access_ = true;
-}
-
-void CanvasNon2DResourceProvider::EndWriteAccess() {
-  DCHECK(!resource()->is_cross_thread());
-
-  if (!current_resource_has_write_access_ || IsGpuContextLost()) {
-    return;
-  }
-
-  current_resource_has_write_access_ = false;
 }
 
 void CanvasNon2DResourceProvider::OnContextLost() {
@@ -571,11 +542,6 @@ CanvasNon2DResourceProvider::BeginExternalOverwrite(
     return nullptr;
   }
 
-  // End the internal write access before calling EnsureResourceReadyForDraw(),
-  // which has a precondition that there should be no current write access on
-  // the resource.
-  EndWriteAccess();
-
   EnsureResourceReadyForDraw();
 
   // NOTE: Performing a raster access here ensures that any pending
@@ -631,11 +597,6 @@ CanvasNon2DResourceProvider::DoExternalOverdrawAndProduceResource(
     return software_resource;
   }
 
-  // We are about to give the caller read access to this resource (and its
-  // backing SharedImage). Hence, we must give up the current write access
-  // (if any).
-  EndWriteAccess();
-
   return resource_;
 }
 
@@ -669,8 +630,6 @@ void CanvasNon2DResourceProvider::EnsureResourceReadyForDraw() {
   // Determine if a new resource is needed.
   if (ShouldReplaceTargetBuffer(cached_content_id_)) {
     cached_content_id_ = PaintImage::kInvalidContentId;
-    DCHECK(!current_resource_has_write_access_)
-        << "Write access must be released before sharing the resource";
 
     resource_ = NewOrRecycledResource();
 
@@ -704,10 +663,6 @@ CanvasNon2DResourceProvider::ProduceCanvasResource() {
     return nullptr;
   }
 
-  // We are about to give the caller read access to this resource (and its
-  // backing SharedImage). Hence, we must give up any write access.
-  EndWriteAccess();
-
   return resource_;
 }
 
@@ -718,10 +673,6 @@ scoped_refptr<StaticBitmapImage> CanvasNon2DResourceProvider::Snapshot(
     return nullptr;
   }
 
-  // We don't need to EndWriteAccess here since that's required to upload the
-  // rendering results to the resource's SharedImage (e.g., for GPU compositing)
-  // while in this case we are simply returning the rendered CPU-side results to
-  // the client.
   if (is_software_) {
     cc::PaintImage paint_image;
 
@@ -752,7 +703,6 @@ scoped_refptr<StaticBitmapImage> CanvasNon2DResourceProvider::Snapshot(
   }
 
   if (!cached_snapshot_) {
-    EndWriteAccess();
     cached_snapshot_ = resource_->Bitmap();
 
     // We'll record its content_id to be used by the FlushForImageListener.
@@ -770,7 +720,6 @@ scoped_refptr<StaticBitmapImage> CanvasNon2DResourceProvider::Snapshot(
   }
 
   DCHECK(cached_snapshot_);
-  DCHECK(!current_resource_has_write_access_);
   return cached_snapshot_;
 }
 
@@ -833,7 +782,6 @@ void CanvasNon2DResourceProvider::FlushRecording(
     skia_canvas_->drawPicture(std::move(last_recording));
   } else if (!IsGpuContextLost()) {
     EnsureResourceReadyForDraw();
-    EnsureWriteAccess();
 
     const bool needs_clear = !is_cleared_;
     is_cleared_ = true;
