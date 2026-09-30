@@ -1341,6 +1341,11 @@ public final class ProductionSupportedFlagList {
                 "When enabled, after start up the thread pool in PostTask.java"
                         + " will be shutdown so it doesn't consume resources when not needed."),
         Flag.baseFeature(
+                "AsyncThreadPoolInit",
+                "When enabled, thread pool initialization creates various thread groups'"
+                        + " initial threads asynchronously on the service thread instead of"
+                        + " synchronously on UI thread."),
+        Flag.baseFeature(
                 AwFeatures.WEBVIEW_PERSIST_HTTP_SERVER_PROPERTIES,
                 "When enabled, WebView will save Alt-Svc information across sessions."),
         Flag.baseFeature(
