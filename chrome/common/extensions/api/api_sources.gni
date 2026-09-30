@@ -125,7 +125,6 @@ if (enable_extensions) {
       "image_loader_private.webidl",
       "login.webidl",
       "login_screen_storage.webidl",
-      "login_screen_ui.webidl",
       "login_state.idl",
       "odfs_config_private.idl",
       "platform_keys.idl",

@@ -112,6 +112,10 @@
       "chrome://settings/*"
     ]
   }],
+  "loginScreenUi": {
+    "dependencies": ["permission:loginScreenUi"],
+    "contexts": ["privileged_extension"]
+  },
   "speechRecognitionPrivate": {
     "dependencies": ["permission:speechRecognitionPrivate"],
     "contexts": ["privileged_extension"]

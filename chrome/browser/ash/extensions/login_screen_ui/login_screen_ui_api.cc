@@ -5,7 +5,7 @@
 #include "chrome/browser/ash/extensions/login_screen_ui/login_screen_ui_api.h"
 
 #include "chrome/browser/ash/extensions/login_screen_ui/ui_handler.h"
-#include "chrome/common/extensions/api/login_screen_ui.h"
+#include "chromeos/ash/experiences/extensions/common/api/login_screen_ui.h"
 
 namespace login_screen_ui = extensions::api::login_screen_ui;
 

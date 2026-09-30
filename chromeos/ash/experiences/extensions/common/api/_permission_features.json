@@ -57,6 +57,23 @@
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"],
     "location": "component"
   }],
+  "loginScreenUi": [{
+    "channel": "stable",
+    "dependencies": ["behavior:imprivata_login_screen_extension"],
+    "extension_types": ["login_screen_extension"],
+    "location": "policy",
+    "platforms": ["chromeos"]
+  }, {
+    "channel": "stable",
+    "extension_types": ["login_screen_extension"],
+    "location": "policy",
+    "platforms": ["chromeos"],
+    "allowlist": [
+      "7FE4A999359A456C4B0FB7B7AD85CEA29CA50519", // Login screen APIs test extension
+      // https://crbug.com/433867146
+      "4B7E9789426EBD1BB3F99D72690DAE303FC042DF"  // AuthX Secure for ChromeOS
+    ]
+  }],
   "speechRecognitionPrivate": {
     "channel": "stable",
     "extension_types": ["extension"],

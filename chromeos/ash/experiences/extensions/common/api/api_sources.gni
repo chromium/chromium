@@ -14,6 +14,7 @@ chromeos_schema_sources_ = [
   "file_system_provider.webidl",
   "file_system_provider_internal.idl",
   "input_method_private.json",
+  "login_screen_ui.webidl",
   "speech_recognition_private.idl",
 ]
 

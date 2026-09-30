@@ -26,6 +26,7 @@ constexpr APIPermissionInfo::InitInfo kPermissionsToRegister[] = {
      APIPermissionInfo::kFlagCannotBeOptional},
     {APIPermissionID::kInputMethodPrivate, "inputMethodPrivate",
      APIPermissionInfo::kFlagCannotBeOptional},
+    {APIPermissionID::kLoginScreenUi, "loginScreenUi"},
     {APIPermissionID::kSpeechRecognitionPrivate, "speechRecognitionPrivate",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
 
