@@ -44,6 +44,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
+#include "url/origin.h"
 
 namespace web_app {
 
@@ -508,6 +509,68 @@ IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
       GetNavigationCapturingFinalDisplayMetric(histograms),
       testing::ElementsAre(
           NavigationCapturingDisplayModeResult::kAppStandaloneFinalStandalone));
+}
+
+// Regression test for b/534356407: an app window showing an in-scope document
+// that committed an opaque origin (here via `Content-Security-Policy: sandbox`)
+// is cross-origin to the app, so it must not be chosen for focus-existing. The
+// captured navigation must not be cancelled and dispatched into it (which would
+// leak the URL and swallow the navigation); a new app window should open at the
+// target URL instead.
+IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,
+                       FocusExistingSkipsOpaqueOriginAppWindow) {
+  const webapps::AppId& app_id =
+      InstallWebAppInNewTabAndClose(browser(), GetFocusExistingUrl());
+  const GURL sandboxed_url = embedded_test_server()->GetURL(
+      "/web_apps/simple_focus_existing/sandboxed.html");
+
+  // Put the only app window on the sandboxed, in-scope page.
+  BrowserWindowInterface* sandboxed_app_browser = LaunchWebAppBrowser(app_id);
+  content::WebContents* sandboxed_contents =
+      sandboxed_app_browser->GetTabStripModel()->GetActiveWebContents();
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(sandboxed_app_browser, sandboxed_url));
+  ASSERT_TRUE(content::WaitForLoadStop(sandboxed_contents));
+  ASSERT_TRUE(sandboxed_contents->GetPrimaryMainFrame()
+                  ->GetLastCommittedOrigin()
+                  .opaque());
+  // The page really did install a launch consumer, so the empty-launch-params
+  // check below is meaningful.
+  ASSERT_EQ(true,
+            content::EvalJs(sandboxed_contents, "launchConsumerInstalled"));
+
+  // Capture a link click from a browser tab into the app.
+  ui_test_utils::BrowserCreatedObserver browser_created_observer;
+  {
+    NavigateParams params(browser()->GetProfile(), GetFocusExistingSecondUrl(),
+                          ui::PAGE_TRANSITION_LINK);
+    params.source_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+    Navigate(&params);
+  }
+  BrowserWindowInterface* new_app_browser = browser_created_observer.Wait();
+
+  test::CompletePageLoadForAllWebContents();
+  apps::test::FlushLaunchQueuesForAllBrowserTabs();
+
+  ASSERT_NE(new_app_browser, sandboxed_app_browser);
+  EXPECT_TRUE(WebAppBrowserController::IsForWebApp(new_app_browser, app_id));
+
+  // The navigation happened, in a new app window, and that window got the
+  // launch.
+  content::WebContents* new_contents =
+      new_app_browser->GetTabStripModel()->GetActiveWebContents();
+  EXPECT_EQ(GetFocusExistingSecondUrl(), new_contents->GetLastCommittedURL());
+  EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
+                  new_contents, "launchParamsTargetUrls"),
+              testing::ElementsAre(GetFocusExistingSecondUrl()));
+
+  // The sandboxed window was left alone and received nothing.
+  EXPECT_EQ(sandboxed_url, sandboxed_contents->GetLastCommittedURL());
+  EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
+                  sandboxed_contents, "launchParamsTargetUrls"),
+              testing::IsEmpty());
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationCapturingBrowserNavigatorBrowserTest,

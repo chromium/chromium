@@ -26,12 +26,14 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/embedder_support/switches.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/base/page_transition_types.h"
+#include "url/origin.h"
 
 namespace web_app {
 
@@ -450,6 +452,50 @@ IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest, GlobalLaunchQueue) {
 
   histogram_tester.ExpectUniqueSample(kLaunchHandlerHistogram,
                                       ClientMode::kAuto, 1);
+}
+
+// Regression test for b/534356407: a document that committed an opaque origin
+// (e.g. via `Content-Security-Policy: sandbox`) is not an eligible target for
+// in-place `focus-existing`, even though its URL is inside the app's scope.
+// The launch must fall back to navigating to the real, same-origin launch URL
+// rather than being swallowed by the sandboxed document.
+IN_PROC_BROWSER_TEST_F(WebAppLaunchHandlerBrowserTest,
+                       ClientModeFocusExistingSkipsOpaqueOriginDocument) {
+  webapps::AppId app_id = InstallTestWebApp(
+      "/web_apps/get_manifest.html?"
+      "launch_handler_client_mode_focus_existing.json");
+  ASSERT_EQ(ClientMode::kFocusExisting,
+            GetLaunchHandler(app_id)->parsed_client_mode());
+
+  BrowserWindowInterface* app_browser = LaunchWebAppBrowserAndWait(app_id);
+  content::WebContents* web_contents =
+      app_browser->GetTabStripModel()->GetActiveWebContents();
+
+  // Put the app window on an in-scope page that commits an opaque origin. The
+  // app's scope is /web_apps/, so this page is in scope.
+  const GURL sandboxed_url = embedded_test_server()->GetURL(
+      "/web_apps/simple_focus_existing/sandboxed.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents, sandboxed_url));
+  ASSERT_EQ(web_contents->GetLastCommittedURL(), sandboxed_url);
+  ASSERT_TRUE(
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
+
+  // Launching again must not reuse the opaque document in place.
+  const GURL launch_url =
+      WebAppProvider::GetForTest(profile())->registrar_unsafe().GetAppLaunchUrl(
+          app_id);
+  content::TestNavigationObserver navigation_observer(launch_url);
+  navigation_observer.WatchExistingWebContents();
+  BrowserWindowInterface* second_browser = LaunchWebAppBrowser(app_id);
+  navigation_observer.Wait();
+
+  EXPECT_EQ(second_browser, app_browser);
+  content::WebContents* launched_contents =
+      app_browser->GetTabStripModel()->GetActiveWebContents();
+  EXPECT_EQ(launched_contents->GetLastCommittedURL(), launch_url);
+  EXPECT_FALSE(launched_contents->GetPrimaryMainFrame()
+                   ->GetLastCommittedOrigin()
+                   .opaque());
 }
 
 }  // namespace web_app

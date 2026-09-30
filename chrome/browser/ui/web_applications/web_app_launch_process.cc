@@ -296,7 +296,14 @@ content::WebContents* WebAppLaunchProcess::Run() {
       return existing_tab;
     }
 
-    if (registrar_->IsUrlInAppExtendedScope(existing_tab->GetLastCommittedURL(),
+    // `CanBeUsedForFocusExisting()` is the single definition of whether a tab
+    // may be reused in place; it is shared with navigation capturing. It
+    // rejects documents that committed an opaque origin (e.g. those served
+    // with `Content-Security-Policy: sandbox`), which are cross-origin to the
+    // app, and documents that cannot set a launch consumer. Those fall through
+    // to navigating to the real target URL instead.
+    if (tab_helper->CanBeUsedForFocusExisting() &&
+        registrar_->IsUrlInAppExtendedScope(existing_tab->GetLastCommittedURL(),
                                             params_->app_id)) {
       // If the web contents is currently navigating then interrupt it. The
       // current page is now being used for this app launch.

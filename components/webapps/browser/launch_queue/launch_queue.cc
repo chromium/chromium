@@ -18,6 +18,7 @@
 #include "components/webapps/browser/launch_queue/launch_queue_delegate.h"
 #include "content/public/browser/file_system_access_entry_factory.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -121,6 +122,30 @@ void LaunchQueue::SendLaunchParams(LaunchParams launch_params,
   DCHECK(delegate_->IsInScope(launch_params, current_url))
       << current_url.spec();
   CHECK(launch_params.target_url().is_valid());
+
+  // Launch params are routed to a document by URL scope (see
+  // `LaunchQueueDelegate::IsInScope()`), but URL scope does not describe the
+  // effective origin of the document that receives them. An in-scope document
+  // can commit an opaque origin, e.g. when the app serves it with
+  // `Content-Security-Policy: sandbox` without `allow-same-origin`, or when a
+  // navigation fails and commits an error page. Such a document is
+  // cross-origin to the app and must not receive the app's launch params:
+  //  - File and directory entries are origin-bound capabilities minted for the
+  //    app's origin, and the user's one-time file-handling approval was granted
+  //    to the app, not to an opaque document.
+  //  - The target URL may carry tokens or query parameters, and when the
+  //    document was not navigated to it, delivering it leaks it across the
+  //    origin boundary.
+  //
+  // Callers that reuse an existing document in place already reject opaque
+  // documents (see `WebAppTabHelper::CanBeUsedForFocusExisting()`), but this
+  // is also reached after a launch navigation commits, and whether that commit
+  // is opaque depends on the response. So this is a runtime conditional, not a
+  // CHECK: it is reachable by web content.
+  if (web_contents_->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque()) {
+    return;
+  }
+
   mojo::AssociatedRemote<blink::mojom::WebLaunchService> launch_service;
   web_contents_->GetPrimaryMainFrame()
       ->GetRemoteAssociatedInterfaces()

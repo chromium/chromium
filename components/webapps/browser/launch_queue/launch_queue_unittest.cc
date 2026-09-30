@@ -13,16 +13,20 @@
 #include "components/webapps/browser/launch_queue/launch_params.h"
 #include "components/webapps/browser/launch_queue/launch_queue_delegate.h"
 #include "content/public/browser/file_system_access_permission_context.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_response_headers.h"
+#include "net/http/http_version.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom.h"
 #include "third_party/blink/public/mojom/web_launch/web_launch.mojom.h"
+#include "url/origin.h"
 
 namespace webapps {
 
@@ -128,6 +132,24 @@ class LaunchQueueTest : public content::RenderViewHostTestHarness {
     return params;
   }
 
+  // Commits a navigation to `url` and re-binds the fake WebLaunchService, since
+  // committing may swap in a new RenderFrameHost. When `sandboxed` is true the
+  // response carries a `Content-Security-Policy: sandbox` header, so the
+  // committed document has an opaque origin while its URL stays unchanged.
+  void CommitNavigation(const GURL& url, bool sandboxed) {
+    std::unique_ptr<content::NavigationSimulator> simulator =
+        content::NavigationSimulator::CreateBrowserInitiated(url,
+                                                             web_contents());
+    if (sandboxed) {
+      simulator->SetResponseHeaders(
+          net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200 OK")
+              .AddHeader("Content-Security-Policy", "sandbox allow-scripts")
+              .Build());
+    }
+    simulator->Commit();
+    InitTestApi(web_contents()->GetPrimaryMainFrame());
+  }
+
   std::unique_ptr<LaunchQueue> launch_queue_;
   raw_ptr<MockLaunchQueueDelegate> delegate_;
   FakeWebLaunchService fake_launch_service_;
@@ -135,6 +157,7 @@ class LaunchQueueTest : public content::RenderViewHostTestHarness {
 
 TEST_F(LaunchQueueTest, EnqueueImmediatelyDispatches) {
   GURL launch_url("https://example.com/launch");
+  CommitNavigation(launch_url, /*sandboxed=*/false);
   LaunchParams params =
       CreateLaunchParams(launch_url, /*started_new_navigation=*/false);
 
@@ -147,6 +170,7 @@ TEST_F(LaunchQueueTest, EnqueueImmediatelyDispatches) {
 
 TEST_F(LaunchQueueTest, EnqueueInvalidParams) {
   GURL launch_url("https://example.com/launch");
+  CommitNavigation(launch_url, /*sandboxed=*/false);
   LaunchParams params = CreateLaunchParams(launch_url);
   params.set_paths({base::FilePath(FILE_PATH_LITERAL("sensitive_file.txt"))});
 
@@ -154,9 +178,6 @@ TEST_F(LaunchQueueTest, EnqueueInvalidParams) {
       .WillOnce(testing::Return(false));
 
   launch_queue_->Enqueue(std::move(params));
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(),
-                                                             launch_url);
-
   launch_queue_->FlushForTesting();
 
   EXPECT_TRUE(fake_launch_service_.enqueue_called());
@@ -188,6 +209,10 @@ TEST_F(LaunchQueueTest, LaunchParamsDefaultWritePermissions) {
 
 TEST_F(LaunchQueueTest, EnqueueValidParamsWithFiles) {
   GURL launch_url("https://example.com/launch");
+  CommitNavigation(launch_url, /*sandboxed=*/false);
+  ASSERT_FALSE(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
+
   LaunchParams params =
       CreateLaunchParams(launch_url, /*started_new_navigation=*/false);
   base::FilePath file_path(FILE_PATH_LITERAL("test_file.txt"));
@@ -202,6 +227,75 @@ TEST_F(LaunchQueueTest, EnqueueValidParamsWithFiles) {
   EXPECT_TRUE(fake_launch_service_.enqueue_called());
   EXPECT_EQ(fake_launch_service_.launched_url(), launch_url);
   EXPECT_EQ(1u, fake_launch_service_.files().size());
+}
+
+TEST_F(LaunchQueueTest, EnqueueValidParamsWithDirectory) {
+  GURL launch_url("https://example.com/launch");
+  CommitNavigation(launch_url, /*sandboxed=*/false);
+
+  LaunchParams params =
+      CreateLaunchParams(launch_url, /*started_new_navigation=*/false);
+  base::FilePath dir_path(FILE_PATH_LITERAL("test_dir"));
+  params.set_dir(dir_path);
+
+  EXPECT_CALL(*delegate_, GetPathInfo(dir_path))
+      .WillOnce(testing::Return(content::PathInfo(dir_path)));
+
+  launch_queue_->Enqueue(std::move(params));
+  launch_queue_->FlushForTesting();
+
+  EXPECT_TRUE(fake_launch_service_.enqueue_called());
+  EXPECT_EQ(1u, fake_launch_service_.files().size());
+}
+
+// Regression test for b/534356407: an in-scope document that committed an
+// opaque origin (e.g. via `Content-Security-Policy: sandbox`) must not receive
+// any launch params when reused in place: not file or directory handles minted
+// for the app's origin, and not the target URL, which it was never navigated to
+// and which may carry tokens.
+TEST_F(LaunchQueueTest, OpaqueOriginReceivesNothingInPlace) {
+  GURL launch_url("https://example.com/launch");
+  // The document stays in scope by URL, but its origin is opaque.
+  GURL sandboxed_url("https://example.com/preview");
+  CommitNavigation(sandboxed_url, /*sandboxed=*/true);
+  ASSERT_TRUE(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
+
+  LaunchParams params =
+      CreateLaunchParams(launch_url, /*started_new_navigation=*/false);
+  params.set_paths({base::FilePath(FILE_PATH_LITERAL("test_file.txt"))});
+  params.set_dir(base::FilePath(FILE_PATH_LITERAL("test_dir")));
+
+  // No entry should be minted, so no path should ever be resolved.
+  EXPECT_CALL(*delegate_, GetPathInfo(testing::_)).Times(0);
+
+  launch_queue_->Enqueue(std::move(params));
+  launch_queue_->FlushForTesting();
+
+  EXPECT_FALSE(fake_launch_service_.enqueue_called());
+}
+
+// A launch navigation can itself commit an opaque origin, e.g. if the launch
+// URL is served with `Content-Security-Policy: sandbox`. This cannot be
+// predicted before the response arrives, so the document must still receive
+// nothing.
+TEST_F(LaunchQueueTest, OpaqueOriginReceivesNothingAfterNavigation) {
+  GURL launch_url("https://example.com/launch");
+  CommitNavigation(launch_url, /*sandboxed=*/true);
+  ASSERT_TRUE(
+      web_contents()->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
+
+  LaunchParams params =
+      CreateLaunchParams(launch_url, /*started_new_navigation=*/true);
+  params.set_paths({base::FilePath(FILE_PATH_LITERAL("test_file.txt"))});
+  params.set_dir(base::FilePath(FILE_PATH_LITERAL("test_dir")));
+
+  EXPECT_CALL(*delegate_, GetPathInfo(testing::_)).Times(0);
+
+  launch_queue_->Enqueue(std::move(params));
+  launch_queue_->FlushForTesting();
+
+  EXPECT_FALSE(fake_launch_service_.enqueue_called());
 }
 
 }  // namespace webapps

@@ -198,14 +198,20 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   // launch queue messages have been sent to the renderer.
   void FlushLaunchQueueForTesting() const;
 
-  // Returns if the current web contents can be used for the 'focus-existing'
-  // behavior of navigation capturing, where the tab is focused and a
+  // Returns if the current web contents can be reused in place for the
+  // 'focus-existing' launch handler behavior, where the tab is focused and a
   // 'LaunchParams' is given to a javascript 'launch consumer' on the page. This
-  // returns if the current page can feasibly run javascript to actually set
-  // this launch consumer, as without that, any captured links would simply do
-  // nothing.
-  // Specifically, this turns `true` if the current page's mime-type is html or
-  // xhtml.
+  // is the single eligibility rule for in-place reuse, consulted by both
+  // navigation capturing and direct app launches (`WebAppLaunchProcess`).
+  //
+  // Returns `true` only if both:
+  //  - The committed origin is not opaque. A document that committed an opaque
+  //    origin (e.g. one served with `Content-Security-Policy: sandbox`, or an
+  //    error page) is cross-origin to the app even when its URL is in scope,
+  //    and must not receive the app's launch params.
+  //  - The current page's mime-type is html or xhtml, so it can feasibly run
+  //    javascript to set a launch consumer. Without one, a launch would simply
+  //    do nothing.
   bool CanBeUsedForFocusExisting() const;
 
  private:

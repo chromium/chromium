@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+
+Served with `Content-Security-Policy: sandbox allow-scripts` (see the
+accompanying .mock-http-headers file). The URL stays inside the test web app's
+scope, but the document commits an opaque origin, so it must never be treated
+as an eligible target for in-place `focus-existing` launches.
+-->
+<html>
+<head>
+  <title>Sandboxed in-scope page</title>
+</head>
+<body>
+<script>
+  // Records every launch this document consumes, using the same variable name
+  // as launch_params_detector.js so tests can read it with
+  // `apps::test::GetLaunchParamUrlsInContents()`. It should stay empty.
+  var launchParamsTargetUrls = [];
+  // Lets tests confirm a consumer was really installed, so an empty
+  // `launchParamsTargetUrls` is meaningful.
+  var launchConsumerInstalled = false;
+  if (window.launchQueue) {
+    window.launchQueue.setConsumer(launchParams => {
+      launchParamsTargetUrls.push(launchParams.targetURL);
+    });
+    launchConsumerInstalled = true;
+  }
+</script>
+</body>
+</html>

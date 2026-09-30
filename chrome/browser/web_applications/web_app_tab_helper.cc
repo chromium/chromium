@@ -39,12 +39,14 @@
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "chrome/browser/web_applications/os_integration/mac/web_app_shortcut_mac.h"
@@ -180,7 +182,6 @@ void WebAppTabHelper::SetState(std::optional<webapps::AppId> app_id,
              *app_id, WebAppFilter::IsAppSurfaceableToUser()) ||
          provider_->registrar_unsafe().IsUninstalling(*app_id));
 
-
   if (app_id_ == app_id && window_app_id_ == window_app_id) {
     // This can be triggered for navigations that are happening in the same app
     // window, like if a navigation is captured in an open window causing a page
@@ -314,6 +315,26 @@ WebAppTabHelper::WebAppTabHelper(tabs::TabInterface* tab,
 }
 
 bool WebAppTabHelper::CanBeUsedForFocusExisting() const {
+  // Origins, not URL scopes, are the Web's security boundary. A document served
+  // with `Content-Security-Policy: sandbox` (without `allow-same-origin`)
+  // commits an opaque origin, which is cross-origin to the app that served it,
+  // even though its URL is still inside the app's scope.
+  //
+  // Reusing such a document in place would hand launch params -- the target
+  // URL, and any file handles minted for them -- to a context the app has
+  // explicitly declared untrusted, leaking URLs that may carry tokens or query
+  // parameters. It also breaks the user's intent: the navigation they asked for
+  // is cancelled and swallowed by a document that cannot act on it.
+  //
+  // Disqualify the document so callers fall back to navigating to the real,
+  // same-origin target URL, where the launch can actually be handled.
+  if (web_contents()
+          ->GetPrimaryMainFrame()
+          ->GetLastCommittedOrigin()
+          .opaque()) {
+    return false;
+  }
+
   constexpr std::array<std::string_view, 3>
       kMimeTypesWithExpectedLaunchConsumer = {
           "text/html",

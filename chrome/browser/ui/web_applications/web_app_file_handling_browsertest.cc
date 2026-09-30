@@ -48,6 +48,7 @@
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/browser/features.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_launcher.h"
@@ -56,7 +57,10 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/common/manifest/manifest.h"
+#include "third_party/blink/public/mojom/manifest/manifest_launch_handler.mojom-shared.h"
 #include "ui/base/window_open_disposition.h"
+#include "url/origin.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ash/file_manager/file_manager_test_util.h"
@@ -502,6 +506,82 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest, LaunchQueueSetOnReload) {
     AttachTestConsumer(web_contents_);
   }
   EXPECT_FALSE(HasLaunchParams());
+}
+
+// Regression test for b/534356407: with `launch_handler.client_mode:
+// "focus-existing"`, a file launch must not reuse an in-scope document that
+// committed an opaque origin (here via `Content-Security-Policy: sandbox`).
+// That document is cross-origin to the app and must never receive file handles
+// minted for it. Instead the app window is navigated to the real file handler,
+// which receives the file.
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
+                       FocusExistingFileLaunchSkipsOpaqueOriginDocument) {
+  const GURL start_url = embedded_https_test_server().GetURL(
+      "app.com", "/web_app_file_handling/index.html");
+  const GURL handler_url = embedded_https_test_server().GetURL(
+      "app.com", "/web_app_file_handling/handle_files.html");
+  const GURL sandboxed_url = embedded_https_test_server().GetURL(
+      "app.com", "/web_app_file_handling/sandboxed.html");
+
+  auto web_app_info =
+      WebAppInstallInfo::CreateWithStartUrlForTesting(start_url);
+  web_app_info->scope = start_url.GetWithoutFilename();
+  web_app_info->title = u"A focus-existing file handling app";
+  web_app_info->launch_handler = blink::Manifest::LaunchHandler(
+      blink::mojom::ManifestLaunchHandler_ClientMode::kFocusExisting);
+  apps::FileHandler entry;
+  entry.action = handler_url;
+  entry.accept.emplace_back();
+  entry.accept[0].mime_type = "text/*";
+  entry.accept[0].file_extensions.insert(".txt");
+  web_app_info->file_handlers.push_back(std::move(entry));
+  const webapps::AppId app_id =
+      WebAppBrowserTestBase::InstallWebApp(std::move(web_app_info));
+
+  // Open the app and put its window on an in-scope page with an opaque origin.
+  content::WebContents* app_contents =
+      LaunchApplication(profile(), app_id, start_url);
+  ASSERT_TRUE(content::NavigateToURL(app_contents, sandboxed_url));
+  ASSERT_TRUE(
+      app_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
+
+  // Launch the app with a file.
+  const base::FilePath file = CreateTestFileWithExtension("txt");
+  auto launch_infos =
+      file_handler_manager().GetMatchingFileHandlerUrls(app_id, {file});
+  ASSERT_EQ(1u, launch_infos.size());
+  const auto& [url, launch_files] = launch_infos[0];
+  // Not NEW_WINDOW: that always opens a new window and would bypass
+  // focus-existing entirely.
+  apps::AppLaunchParams params(app_id,
+                               apps::LaunchContainer::kLaunchContainerWindow,
+                               WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                               apps::LaunchSource::kFromFileManager);
+  params.launch_files = launch_files;
+  params.override_url = url;
+
+  content::TestNavigationObserver navigation_observer(handler_url);
+  navigation_observer.WatchExistingWebContents();
+  navigation_observer.StartWatchingNewWebContents();
+  base::test::TestFuture<base::WeakPtr<BrowserWindowInterface>,
+                         base::WeakPtr<content::WebContents>,
+                         apps::LaunchContainer>
+      future;
+  provider()->scheduler().LaunchAppWithCustomParams(std::move(params),
+                                                    future.GetCallback());
+  web_contents_ = future.Get<1>().get();
+  ASSERT_TRUE(web_contents_);
+  navigation_observer.Wait();
+  AttachTestConsumer(web_contents_);
+
+  // The existing app window was navigated to the real handler rather than
+  // reused in place, and the handler received the file.
+  EXPECT_EQ(web_contents_, app_contents);
+  EXPECT_EQ(handler_url, web_contents_->GetLastCommittedURL());
+  EXPECT_FALSE(
+      web_contents_->GetPrimaryMainFrame()->GetLastCommittedOrigin().opaque());
+  VerifyPwaDidReceiveFileLaunchParams(file);
+  EXPECT_EQ(GetLaunchParamsTargetUrl(), handler_url);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,

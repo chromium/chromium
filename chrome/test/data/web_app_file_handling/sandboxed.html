@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+
+Served with `Content-Security-Policy: sandbox allow-scripts` (see the
+accompanying .mock-http-headers file). The URL stays inside the file handling
+test app's scope, but the document commits an opaque origin, so it must never
+receive file handles minted for the app.
+-->
+<html>
+<head>
+  <title>Sandboxed in-scope page</title>
+</head>
+<body>
+</body>
+</html>
