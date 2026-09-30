@@ -2195,7 +2195,14 @@ WebInputEventResult EventHandler::SendContextMenuEvent(
 
   PhysicalOffset position_in_contents(v->ConvertFromRootFrame(
       gfx::ToFlooredPoint(event.PositionInRootFrame())));
-  HitTestRequest request(HitTestRequest::kActive);
+  HitTestRequest::HitTestRequestType hit_type = HitTestRequest::kActive;
+  if (RuntimeEnabledFeatures::LongPressReleasesActiveStateEnabled()) {
+    // This hit test must not modify the hover/active state. The input event
+    // handler calling into this method should have done it by now
+    // (https://crbug.com/358393574).
+    hit_type |= HitTestRequest::kReadOnly;
+  }
+  HitTestRequest request(hit_type);
   Document& document = *frame_->GetDocument();
   MouseEventWithHitTestResults mev =
       document.PerformMouseEventHitTest(request, position_in_contents, event);

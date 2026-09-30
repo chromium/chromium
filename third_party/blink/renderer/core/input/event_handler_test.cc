@@ -208,6 +208,21 @@ class LongPressEventBuilder : public WebGestureEvent {
   }
 };
 
+class LongTapEventBuilder : public WebGestureEvent {
+ public:
+  explicit LongTapEventBuilder(gfx::PointF position)
+      : WebGestureEvent(WebInputEvent::Type::kGestureLongTap,
+                        WebInputEvent::kNoModifiers,
+                        base::TimeTicks::Now(),
+                        WebGestureDevice::kTouchscreen) {
+    SetPositionInWidget(position);
+    SetPositionInScreen(position);
+    data.long_press.width = 5;
+    data.long_press.height = 5;
+    frame_scale_ = 1;
+  }
+};
+
 class MousePressEventBuilder : public WebMouseEvent {
  public:
   MousePressEventBuilder(gfx::Point position_param,
@@ -1026,6 +1041,64 @@ TEST_F(EventHandlerTest, NonEmptyTextfieldInsertionOnLongPress) {
 
   ASSERT_TRUE(Selection().GetSelectionInDomTree().IsCaret());
   ASSERT_TRUE(Selection().IsHandleVisible());
+}
+
+// A long-press followed by lifting the finger produces a GestureLongTap
+// (without any GestureTap or GestureTapCancel).  The :active state set by
+// GestureShowPress must be released at that point.  https://crbug.com/358393574
+TEST_F(EventHandlerTest, ActiveStateClearedOnLongTap) {
+  SetHtmlInnerHTML(
+      "<button style='width:100px;height:100px;margin:0'>button</button>");
+
+  gfx::PointF tap_point(50, 50);
+  TapDownEventBuilder tap_down_event(tap_point);
+  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
+      tap_down_event);
+
+  ShowPressEventBuilder show_press_event(tap_point);
+  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
+      show_press_event);
+  EXPECT_TRUE(GetDocument().GetActiveElement());
+
+  LongPressEventBuilder long_press_event(tap_point);
+  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
+      long_press_event);
+  EXPECT_TRUE(GetDocument().GetActiveElement());
+
+  LongTapEventBuilder long_tap_event(tap_point);
+  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
+      long_tap_event);
+  EXPECT_FALSE(GetDocument().GetActiveElement());
+}
+
+// Same as ActiveStateClearedOnLongTap, but with the context menu deferred to
+// the release (Windows behavior).  The focus hit-test performed while sending
+// the deferred context menu event must not re-apply the active state that the
+// GestureLongTap just released.  https://crbug.com/358393574
+TEST_F(EventHandlerTest, ActiveStateClearedOnLongTapWithContextMenuOnMouseUp) {
+  GetDocument().GetSettings()->SetShowContextMenuOnMouseUp(true);
+  SetHtmlInnerHTML(
+      "<button style='width:100px;height:100px;margin:0'>button</button>");
+
+  gfx::PointF tap_point(50, 50);
+  TapDownEventBuilder tap_down_event(tap_point);
+  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
+      tap_down_event);
+
+  ShowPressEventBuilder show_press_event(tap_point);
+  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
+      show_press_event);
+  EXPECT_TRUE(GetDocument().GetActiveElement());
+
+  LongPressEventBuilder long_press_event(tap_point);
+  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
+      long_press_event);
+  EXPECT_TRUE(GetDocument().GetActiveElement());
+
+  LongTapEventBuilder long_tap_event(tap_point);
+  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
+      long_tap_event);
+  EXPECT_FALSE(GetDocument().GetActiveElement());
 }
 
 TEST_F(EventHandlerTest, SelectionOnDoublePress) {
