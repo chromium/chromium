@@ -460,7 +460,9 @@ allow_first_party_usage = true
 allow_unsafe = true
 testonly = false
 visibility = [
+  "//:*",
   "//base/i18n/*",
+  "//v8/*",
 ]
 
 [crate.icu_casemap.extra_kv]

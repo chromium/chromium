@@ -98,7 +98,11 @@ cargo_crate("lib") {
   ]
 
   visibility = []
-  visibility += [ "//base/i18n/*" ]
+  visibility += [
+    "//:*",
+    "//base/i18n/*",
+    "//v8/*",
+  ]
 
   #####################################################################
   # Tweaking which GN `config`s apply to this target.
