@@ -329,6 +329,76 @@ class CrossbenchResultConverterTest(unittest.TestCase):
     )
     self.check_result(results, 'total_cpu_time', 400.75, 'ms_smallerIsBetter')
 
+  def test_web_power_power_results(self):
+    csv_content = (
+      'power_rail_name,avg_power_mw,cb_browser,cb_story,cb_temperature,cb_run\n'
+      'power.CPU_BIG,100.0,BrowserA,story1,0_default,0\n'
+      'power.GPU,200.0,BrowserA,story1,0_default,0\n'
+      'power.CPU_BIG,150.0,BrowserA,story1,0_default,1\n'
+      'power.GPU,250.0,BrowserA,story1,0_default,1\n'
+      'power.EMPTY,,BrowserA,story1,0_default,1\n'
+    )
+    with tempfile.TemporaryDirectory() as temp_dir:
+      csv_path = pathlib.Path(temp_dir) / 'power_rails.csv'
+      csv_path.write_text(csv_content)
+
+      # pylint: disable=protected-access
+      hist_set = crossbench_result_converter._web_power_power_results(csv_path)
+      results = self.list_to_dict(hist_set.AsDicts())
+
+    self.assertEqual(set(results), {'soc_power'})
+    # One sample per run: the sum of that run's rails, converted mW -> W.
+    samples = results['soc_power']['sampleValues']
+    self.assertEqual(len(samples), 2)
+    self.assertAlmostEqual(samples[0], 0.3)
+    self.assertAlmostEqual(samples[1], 0.4)
+    self.assertEqual(results['soc_power']['unit'], 'W_smallerIsBetter')
+    hist = histogram.Histogram.FromDict(results['soc_power'])
+    self.assertEqual(
+      hist.diagnostics[reserved_infos.STORIES.name].GetOnlyElement(),
+      'story1',
+    )
+
+  def test_web_power_convert_with_power_rails(self):
+    cpu_csv_content = (
+      'thread_name,cpu_time_ms,cb_browser,cb_story,cb_temperature,cb_run\n'
+      'CrBrowserMain,100.5,BrowserA,story1,0_default,0\n'
+    )
+    power_csv_content = (
+      'power_rail_name,avg_power_mw,cb_browser,cb_story,cb_temperature,cb_run\n'
+      'power.CPU_BIG,460.0,BrowserA,story1,0_default,0\n'
+    )
+    with tempfile.TemporaryDirectory() as temp_dir:
+      dir_path = pathlib.Path(temp_dir)
+      cpu_csv_path = dir_path / 'web_power_cpu_time.csv'
+      cpu_csv_path.write_text(cpu_csv_content)
+      power_csv_path = dir_path / 'power_rails.csv'
+      power_csv_path.write_text(power_csv_content)
+      cb_results = {
+        'probes': {
+          'trace_processor': {
+            'csv': [str(power_csv_path), str(cpu_csv_path)],
+          }
+        },
+        # Real crossbench output lists every probe per browser, using null
+        # for probes without browser-level results.
+        'browsers': {'BrowserA': {'probes': {'trace_processor': None}}},
+      }
+      (dir_path / 'cb.results.json').write_text(json.dumps(cb_results))
+
+      out_file = dir_path / 'out.json'
+      crossbench_result_converter.convert(
+        dir_path, out_file, benchmark='web_power.crossbench'
+      )
+      results = self.list_to_dict(json.loads(out_file.read_text()))
+
+    self.assertEqual(len(results), 3)
+    self.check_result(
+      results, 'CrBrowserMain_cpu_time', 100.5, 'ms_smallerIsBetter'
+    )
+    self.check_result(results, 'total_cpu_time', 100.5, 'ms_smallerIsBetter')
+    self.check_result(results, 'soc_power', 0.46, 'W_smallerIsBetter')
+
 
 if __name__ == '__main__':
   unittest.main()

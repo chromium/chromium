@@ -316,6 +316,76 @@ def _web_power_results(
   return results
 
 
+def _web_power_power_results(
+  power_rails_csv: pathlib.Path,
+) -> histogram_set.HistogramSet:
+  """Converts per-rail average power into one `soc_power` per story.
+
+  Each sample is one run's SoC power: the sum of all rails' avg_power_mw,
+  converted to watts. The rail set comes from the device model's crossbench
+  SQL, so values are not comparable across device models.
+  """
+  results = histogram_set.HistogramSet()
+  story_run_totals = collections.defaultdict(
+    lambda: collections.defaultdict(float)
+  )
+  browser_name = None
+
+  with power_rails_csv.open() as f:
+    for line in csv.DictReader(f):
+      power_mw_str = line.get('avg_power_mw')
+      if not power_mw_str:
+        continue
+      story_name = line.get('cb_story') or 'Default'
+      run_id = line.get('cb_run') or '0'
+      story_run_totals[story_name][run_id] += float(power_mw_str) / 1000
+      browser_name = browser_name or line.get('cb_browser')
+
+  for story_name, run_totals in story_run_totals.items():
+    h = histogram.Histogram.Create(
+      'soc_power', 'W_smallerIsBetter', list(run_totals.values())
+    )
+    h.diagnostics[reserved_infos.STORIES.name] = generic_set.GenericSet(
+      [story_name]
+    )
+    results.AddHistogram(h)
+
+  if browser_name:
+    results.AddSharedDiagnosticToAllHistograms(
+      'browser', generic_set.GenericSet([browser_name])
+    )
+
+  return results
+
+
+def _trace_processor_csvs(probes: Optional[dict]) -> list:
+  """Returns the trace_processor CSV paths in a `probes` dict.
+
+  Crossbench writes null for probes without results, so None is treated the
+  same as a missing entry.
+  """
+  trace_processor = (probes or {}).get('trace_processor') or {}
+  return trace_processor.get('csv') or []
+
+
+def _find_trace_processor_csv(
+  crossbench_result: dict, csv_name: str
+) -> Optional[pathlib.Path]:
+  """Returns the first trace_processor CSV named `csv_name`, or None.
+
+  Run-level probe results are searched before per-browser ones.
+  """
+  browsers = (crossbench_result.get('browsers') or {}).values()
+  candidates = [
+    *_trace_processor_csvs(crossbench_result.get('probes')),
+    *(p for b in browsers for p in _trace_processor_csvs(b.get('probes'))),
+  ]
+  for p in candidates:
+    if pathlib.Path(p).name == csv_name:
+      return pathlib.Path(p)
+  return None
+
+
 def _web_power(
   crossbench_out_dir: pathlib.Path,
   out_filename: pathlib.Path,
@@ -332,27 +402,21 @@ def _web_power(
   with crossbench_json_filename.open() as f:
     crossbench_result = json.load(f)
 
-  trace_processor_data = crossbench_result.get('probes', {}).get(
-    'trace_processor', {}
+  cpu_time_csv = _find_trace_processor_csv(
+    crossbench_result, 'web_power_cpu_time.csv'
   )
-  cpu_time_csvs = [
-    p
-    for p in trace_processor_data.get('csv', [])
-    if pathlib.Path(p).name == 'web_power_cpu_time.csv'
-  ]
-  if not cpu_time_csvs:
-    # Check browser-level probes as fallback.
-    for browser_info in crossbench_result.get('browsers', {}).values():
-      for p in (
-        browser_info.get('probes', {}).get('trace_processor', {}).get('csv', [])
-      ):
-        if pathlib.Path(p).name == 'web_power_cpu_time.csv':
-          cpu_time_csvs.append(p)
-
-  if not cpu_time_csvs:
+  if not cpu_time_csv:
     raise ValueError('Missing web_power_cpu_time.csv probe results')
 
-  results = _web_power_results(pathlib.Path(cpu_time_csvs[0]))
+  results = _web_power_results(cpu_time_csv)
+
+  # Power rails are optional: not every device exposes ODPM power rails, and
+  # their absence must not drop the CPU time results.
+  power_rails_csv = _find_trace_processor_csv(
+    crossbench_result, 'power_rails.csv'
+  )
+  if power_rails_csv:
+    results.Merge(_web_power_power_results(power_rails_csv))
 
   if benchmark:
     results.AddSharedDiagnosticToAllHistograms(
