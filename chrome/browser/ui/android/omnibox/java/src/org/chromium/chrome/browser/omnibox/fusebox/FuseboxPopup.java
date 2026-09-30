@@ -190,11 +190,7 @@ class FuseboxPopup {
         mPinnedSectionBottomDivider =
                 contentView.findViewById(R.id.fusebox_pinned_section_bottom_divider);
 
-        initializeItem(
-                mAddCurrentTab,
-                isBottomSheet ? R.string.fusebox_add_tab : R.string.fusebox_add_current_tab,
-                0,
-                0);
+        initializeItem(mAddCurrentTab, R.string.fusebox_add_tab, 0, 0);
         initializeItem(
                 mTabButton,
                 R.string.omnibox_navattach_tabs,
@@ -217,7 +213,9 @@ class FuseboxPopup {
                 OmniboxCapabilities.isDesktopPlatform()
                         ? R.string.omnibox_navattach_add_files
                         : R.string.omnibox_navattach_files,
-                R.drawable.ic_attach_file_24dp,
+                isBottomSheet && currentTabPlacement != CurrentTabPlacement.WITH_ATTACHMENTS
+                        ? R.drawable.ic_folder_24dp
+                        : R.drawable.ic_attach_file_24dp,
                 R.string.accessibility_omnibox_add_files);
         initializeItem(
                 mDriveButton,
@@ -266,6 +264,10 @@ class FuseboxPopup {
                                 mToolsDivider,
                                 mModelsDivider);
         mHeaders = List.of(mRecentTabsHeader, mToolsHeader, mModelsHeader);
+
+        if (useScrollableCarousel) {
+            applyScrollableCarouselTileSize();
+        }
     }
 
     void destroy() {
@@ -378,6 +380,20 @@ class FuseboxPopup {
         if (!isShowing() || mCurrentState == PopupState.HIDDEN) return;
         updateInsets();
         updateDesiredWidth();
+    }
+
+    /**
+     * Sizes the attachment icon tiles for the scrollable carousel. The item layout is shared with
+     * the weighted carousel, which keeps its default tile height.
+     */
+    private void applyScrollableCarouselTileSize() {
+        int tileSize =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.fusebox_scrollable_carousel_tile_size);
+        for (View button : mAttachmentButtons) {
+            button.findViewById(R.id.start_icon_background).getLayoutParams().height = tileSize;
+        }
     }
 
     private void initializeItem(View item, int textRes, int iconRes, int a11yRes) {

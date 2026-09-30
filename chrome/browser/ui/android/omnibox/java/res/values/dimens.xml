@@ -59,7 +59,6 @@ found in the LICENSE file.
     <dimen name="fusebox_button_size">56dp</dimen>
     <dimen name="fusebox_carousel_item_icon_bg_padding">16dp</dimen>
     <dimen name="fusebox_carousel_item_text_margin_top">4dp</dimen>
-    <dimen name="fusebox_carousel_item_width">120dp</dimen>
     <!-- Combined with parent's 8dp padding to make exactly 16dp total edge spacing -->
     <dimen name="fusebox_carousel_padding_bottom">16dp</dimen>
     <dimen name="fusebox_carousel_padding_horizontal">4dp</dimen>
@@ -75,6 +74,7 @@ found in the LICENSE file.
     <dimen name="fusebox_popup_item_icon_size">20dp</dimen>
     <dimen name="fusebox_popup_item_spacing">16dp</dimen>
     <dimen name="fusebox_popup_width">250dp</dimen>
+    <dimen name="fusebox_scrollable_carousel_tile_size">80dp</dimen>
     <dimen name="fusebox_url_bar_translation_y">4dp</dimen>
     <dimen name="fusebox_vertical_space_above_popup">32dp</dimen>
     <dimen name="incognito_badge_lateral_padding_end">4dp</dimen>

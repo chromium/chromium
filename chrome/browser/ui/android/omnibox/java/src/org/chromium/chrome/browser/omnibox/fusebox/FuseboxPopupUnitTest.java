@@ -26,6 +26,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.PopupWindow.OnDismissListener;
 
 import androidx.core.graphics.Insets;
@@ -374,6 +375,93 @@ public class FuseboxPopupUnitTest {
                 CurrentTabPlacement.WITH_ATTACHMENTS);
         assertEquals(R.id.fusebox_pick_file_button_accordion, mFuseboxPopup.mFileButton.getId());
         assertEquals(R.id.fusebox_pick_drive_button_accordion, mFuseboxPopup.mDriveButton.getId());
+    }
+
+    @Test
+    public void fileIcon_variationsBottomSheetCarousel_isFolder() {
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ true,
+                /* useCarousel= */ true,
+                /* useScrollableCarousel= */ false,
+                CurrentTabPlacement.BELOW_ATTACHMENTS);
+        assertEquals(R.drawable.ic_folder_24dp, getFileIconResId());
+    }
+
+    @Test
+    public void fileIcon_variationsBottomSheetVertical_isFolder() {
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ true,
+                /* useCarousel= */ false,
+                /* useScrollableCarousel= */ false,
+                CurrentTabPlacement.ABOVE_ATTACHMENTS);
+        assertEquals(R.drawable.ic_folder_24dp, getFileIconResId());
+    }
+
+    @Test
+    public void fileIcon_variationsDisabledBottomSheetCarousel_isAttachFile() {
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ true,
+                /* useCarousel= */ true,
+                /* useScrollableCarousel= */ false,
+                CurrentTabPlacement.WITH_ATTACHMENTS);
+        assertEquals(R.drawable.ic_attach_file_24dp, getFileIconResId());
+    }
+
+    @Test
+    public void fileIcon_bottomSheetScrollableCarousel_isAttachFile() {
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ true,
+                /* useCarousel= */ true,
+                /* useScrollableCarousel= */ true,
+                CurrentTabPlacement.WITH_ATTACHMENTS);
+        assertEquals(R.drawable.ic_attach_file_24dp, getFileIconResId());
+    }
+
+    @Test
+    public void fileIcon_contextMenu_isAttachFile() {
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ false,
+                /* useCarousel= */ false,
+                /* useScrollableCarousel= */ false,
+                CurrentTabPlacement.WITH_ATTACHMENTS);
+        assertEquals(R.drawable.ic_attach_file_24dp, getFileIconResId());
+    }
+
+    private int getFileIconResId() {
+        ImageView icon = mFuseboxPopup.mFileButton.findViewById(R.id.start_icon);
+        return Shadows.shadowOf(icon.getDrawable()).getCreatedFromResId();
+    }
+
+    @Test
+    public void carouselTile_scrollable_usesScrollableTileSize() {
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ true,
+                /* useCarousel= */ true,
+                /* useScrollableCarousel= */ true,
+                CurrentTabPlacement.WITH_ATTACHMENTS);
+        assertEquals(
+                getDimenPx(R.dimen.fusebox_scrollable_carousel_tile_size),
+                getTileHeight(mFuseboxPopup.mCameraButton));
+    }
+
+    @Test
+    public void carouselTile_weighted_keepsDefaultTileSize() {
+        recreateFuseboxPopup(
+                /* isBottomSheet= */ true,
+                /* useCarousel= */ true,
+                /* useScrollableCarousel= */ false,
+                CurrentTabPlacement.WITH_ATTACHMENTS);
+        assertEquals(
+                getDimenPx(R.dimen.fusebox_bottom_sheet_attachment_button_height),
+                getTileHeight(mFuseboxPopup.mCameraButton));
+    }
+
+    private int getTileHeight(View button) {
+        return button.findViewById(R.id.start_icon_background).getLayoutParams().height;
+    }
+
+    private int getDimenPx(int dimenRes) {
+        return mActivity.getResources().getDimensionPixelSize(dimenRes);
     }
 
     @Test
