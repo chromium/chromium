@@ -1750,6 +1750,63 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
   run_loop.Run();
 }
 
+// Regression test for b/567111042: deleting a delayed (auto-suggested) tab must
+// not report an upload status to the page, since the tab was never uploaded
+// and the deletion was initiated by the page itself.
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       DeleteContext_Delayed_DoesNotNotifyPageOfExpiration) {
+  tabs::TabInterface* active_tab =
+      TabListInterface::From(browser())->GetActiveTab();
+  int32_t active_tab_id = active_tab->GetHandle().raw_value();
+  std::optional<base::UnguessableToken> token_opt;
+  base::MockCallback<ContextualSearchboxHandler::AddTabContextCallback>
+      callback;
+  EXPECT_CALL(callback, Run(testing::_)).WillOnce([&](const auto& result) {
+    ASSERT_TRUE(result.has_value());
+    token_opt = result.value();
+  });
+  handler_->AddTabContext(active_tab_id, /*delay_upload=*/true,
+                          searchbox::mojom::TabAttachmentSource::kContextMenu,
+                          callback.Get());
+  ASSERT_TRUE(token_opt.has_value());
+  ASSERT_EQ(handler_->GetNumTabsDelayed(), 1);
+
+  EXPECT_CALL(
+      *handler_,
+      OnContextUploadStatusChanged(
+          *token_opt, testing::_,
+          contextual_search::ContextUploadStatus::kUploadExpired, testing::_))
+      .Times(0);
+  EXPECT_CALL(mock_searchbox_page_, OnContextualInputStatusChanged(
+                                        *token_opt, testing::_, testing::_))
+      .Times(0);
+
+  handler_->DeleteContext(*token_opt, /*from_automatic_chip=*/true);
+  searchbox_page_receiver_.FlushForTesting();
+
+  EXPECT_EQ(handler_->GetNumTabsDelayed(), 0);
+  EXPECT_FALSE(handler_->IsAnyContextUploading());
+}
+
+// Verifies that a genuine upload expiration reported by the context controller
+// is still forwarded to the page.
+IN_PROC_BROWSER_TEST_F(ContextualTasksComposeboxHandlerTest,
+                       OnContextUploadStatusChanged_ExpiredIsForwardedToPage) {
+  base::UnguessableToken token = base::UnguessableToken::Create();
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_searchbox_page_,
+              OnContextualInputStatusChanged(
+                  token, contextual_search::ContextUploadStatus::kUploadExpired,
+                  testing::_))
+      .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
+
+  SimulateUploadStatusChanged(
+      token, lens::MimeType::kImage,
+      contextual_search::ContextUploadStatus::kUploadExpired, std::nullopt);
+  run_loop.Run();
+}
+
 IN_PROC_BROWSER_TEST_F(
     ContextualTasksComposeboxHandlerTestWithContextManagementEnabled,
     RestoreTabIds) {
