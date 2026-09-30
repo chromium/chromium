@@ -3343,27 +3343,6 @@ recorded in the same way, even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.ReadAnything.Images" enum="BooleanEnabled"
-    expires_after="2027-02-07">
-  <owner>lwinston@google.com</owner>
-  <owner>komo-eng@google.com</owner>
-  <summary>
-    Records whether images are enabled in the Read Anything panel when the panel
-    is closed.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.ReadAnything.Language" enum="LocaleCodeBCP47"
-    expires_after="2027-02-07">
-  <owner>lwinston@google.com</owner>
-  <owner>komo-eng@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records the language of the web page shown in Read Anything after the
-    corresponding AXTree is distilled.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.ReadAnything.LetterSpacing"
     enum="ReadAnythingLetterSpacing" expires_after="2027-06-01">
   <owner>lwinston@google.com</owner>
@@ -3444,16 +3423,6 @@ recorded in the same way, even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.ReadAnything.Links" enum="BooleanEnabled"
-    expires_after="2027-02-07">
-  <owner>lwinston@google.com</owner>
-  <owner>komo-eng@google.com</owner>
-  <summary>
-    Records whether links are enabled in the Read Anything panel when the panel
-    is closed.
-  </summary>
-</histogram>
-
 <histogram
     name="Accessibility.ReadAnything.ListenToThisPage.AudioPlaybackStartedWithin5Seconds"
     enum="Boolean" expires_after="2027-06-01">
@@ -3475,22 +3444,6 @@ recorded in the same way, even if they fit the naming pattern. -->
     moment Reading Mode was opened. Recorded once per Reading Mode session (Open
     to Close), excluding tab switches or view-mode transitions.
   </summary>
-</histogram>
-
-<histogram name="Accessibility.ReadAnything.MergedDistillationTime.{Result}"
-    units="ms" expires_after="2027-02-07">
-  <owner>lwinston@google.com</owner>
-  <owner>komo-eng@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records the time taken to distill a web page using the merged algorithm that
-    combines results from the rules based algorithm and the ML model. Refer to
-    AXTreeDistiller::Distill for details.
-  </summary>
-  <token key="Result">
-    <variant name="Failure" summary="has failed"/>
-    <variant name="Success" summary="has succeeded"/>
-  </token>
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.NewPage" enum="ReadAnythingNewPage"
@@ -3552,7 +3505,7 @@ recorded in the same way, even if they fit the naming pattern. -->
 </histogram>
 
 <histogram
-    name="Accessibility.ReadAnything.PageStructure.EnglishKeyPointsInReadingMode"
+    name="Accessibility.ReadAnything.PageStructure.EnglishKeyPoints{Location}"
     enum="Boolean" expires_after="2027-07-01">
   <owner>lwinston@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
@@ -3561,24 +3514,13 @@ recorded in the same way, even if they fit the naming pattern. -->
     English. Estimates whether a section with a heading containing key points
     related keywords (&quot;Key points&quot;, &quot;Summary&quot;,
     &quot;TL;DR&quot;, &quot;Takeaways&quot;, &quot;What to Know&quot;) was
-    present in the distilled reading mode content. This is a heuristic guess and
-    not 100% accurate.
+    present {Location}. This is a heuristic guess and not 100% accurate.
   </summary>
-</histogram>
-
-<histogram
-    name="Accessibility.ReadAnything.PageStructure.EnglishKeyPointsOnPage"
-    enum="Boolean" expires_after="2027-07-01">
-  <owner>lwinston@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Logged when a page is opened in Reading Mode and the page language is
-    English. Estimates whether a section with a heading containing key points
-    related keywords (&quot;Key points&quot;, &quot;Summary&quot;,
-    &quot;TL;DR&quot;, &quot;Takeaways&quot;, &quot;What to Know&quot;) was
-    present on the original webpage. This is a heuristic guess and not 100%
-    accurate.
-  </summary>
+  <token key="Location">
+    <variant name="InReadingMode"
+        summary="in the distilled reading mode content"/>
+    <variant name="OnPage" summary="on the original webpage"/>
+  </token>
 </histogram>
 
 <histogram name="Accessibility.ReadAnything.Pdf.Headings.{HeadingLevel}"
@@ -3706,16 +3648,6 @@ recorded in the same way, even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.ReadAnything.ReadAloud.Language"
-    enum="LocaleCodeBCP47" expires_after="2027-02-07">
-  <owner>kristislee@google.com</owner>
-  <owner>komo-eng@google.com</owner>
-  <summary>
-    Records which language the user is using to read aloud text in the Read
-    Anything panel.
-  </summary>
-</histogram>
-
 <histogram name="Accessibility.ReadAnything.ReadAloud.PlaybackContext"
     enum="ReadAnythingPlaybackContext" expires_after="2027-03-07">
   <owner>ericchao@google.com</owner>
@@ -3808,21 +3740,6 @@ recorded in the same way, even if they fit the naming pattern. -->
   </token>
 </histogram>
 
-<histogram name="Accessibility.ReadAnything.RulesDistillationTime.{Result}"
-    units="ms" expires_after="2027-02-07">
-  <owner>lwinston@google.com</owner>
-  <owner>komo-eng@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Records the time taken to distill a web page using the rules based
-    algorithm. Refer to AXTreeDistiller::DistillViaAlgorithm for details.
-  </summary>
-  <token key="Result">
-    <variant name="Failure" summary="has failed"/>
-    <variant name="Success" summary="has succeeded"/>
-  </token>
-</histogram>
-
 <histogram name="Accessibility.ReadAnything.ScrollEvent"
     enum="ReadAnythingScrollEvent" expires_after="2027-02-07">
   <owner>lwinston@google.com</owner>
@@ -3898,30 +3815,6 @@ recorded in the same way, even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
-<histogram name="Accessibility.ReadAnything.SpeechPlaybackSession" units="ms"
-    expires_after="2027-02-07">
-  <owner>lwinston@google.com</owner>
-  <owner>komo-eng@google.com</owner>
-  <summary>
-    Records the length of time of a speech playback session from play to pause
-    or from play to speech stopped, either due to reaching the end of content or
-    an error. To not disrupt any active experiments, this metric will remain,
-    but in a few milestones the team will evaluate if the metric below can
-    replace this entirely.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.ReadAnything.SpeechPlaybackSession.PerPage"
-    units="ms" expires_after="2027-02-07">
-  <owner>lwinston@google.com</owner>
-  <owner>komo-eng@google.com</owner>
-  <summary>
-    Records the total cumulative length of time of speech playback for a single
-    page from when content is loaded until the page changes or the panel is
-    closed. Only recorded if speech was played on the page.
-  </summary>
-</histogram>
-
 <histogram
     name="Accessibility.ReadAnything.SpeechPlaybackSession.{PageType}In{ViewMode}"
     units="ms" expires_after="2027-02-07">
@@ -3939,6 +3832,27 @@ recorded in the same way, even if they fit the naming pattern. -->
   <token key="ViewMode">
     <variant name="FullPage" summary="Full page immersive view"/>
     <variant name="SidePanel" summary="Side panel view"/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.ReadAnything.SpeechPlaybackSession{Scope}"
+    units="ms" expires_after="2027-02-07">
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records the length of time of speech playback in Read Aloud {Scope}
+  </summary>
+  <token key="Scope">
+    <variant name=""
+        summary="for a single session, from play to pause or from play to
+                 speech stopped, either due to reaching the end of content or
+                 an error. To not disrupt any active experiments, this metric
+                 will remain, but in a few milestones the team will evaluate
+                 if the .PerPage variant can replace this entirely."/>
+    <variant name=".PerPage"
+        summary="cumulatively for a single page, from when content is loaded
+                 until the page changes or the panel is closed. Only recorded
+                 if speech was played on the page."/>
   </token>
 </histogram>
 
@@ -3962,28 +3876,22 @@ recorded in the same way, even if they fit the naming pattern. -->
 </histogram>
 
 <histogram
-    name="Accessibility.ReadAnything.TimeFromActiveAXTreeIDChangedToAXTreeReady"
+    name="Accessibility.ReadAnything.TimeFromActiveAXTreeIDChangedTo{Event}"
     units="ms" expires_after="2027-06-01">
   <owner>martinglopez@google.com</owner>
   <owner>chrome-irm-devs@google.com</owner>
   <summary>
     Records the time elapsed from when the browser triggers
     OnActiveAXTreeIDChanged (due to page navigation, or sidebar opening) to when
-    the AXTree is ready in the Read Anything App model.
+    {Event}.
   </summary>
-</histogram>
-
-<histogram
-    name="Accessibility.ReadAnything.TimeFromActiveAXTreeIDChangedToRenderedTextBlocks"
-    units="ms" expires_after="2027-06-01">
-  <owner>martinglopez@google.com</owner>
-  <owner>chrome-irm-devs@google.com</owner>
-  <summary>
-    Records the time elapsed from when the browser triggers
-    OnActiveAXTreeIDChanged (due to page navigation, or sidebar opening) to when
-    the WebUI finishes layout and renders the distilled text content in the
-    viewport.
-  </summary>
+  <token key="Event">
+    <variant name="AXTreeReady"
+        summary="the AXTree is ready in the Read Anything App model"/>
+    <variant name="RenderedTextBlocks"
+        summary="the WebUI finishes layout and renders the distilled text
+                 content in the viewport"/>
+  </token>
 </histogram>
 
 <histogram
@@ -4078,30 +3986,82 @@ recorded in the same way, even if they fit the naming pattern. -->
   </token>
 </histogram>
 
-<histogram name="Accessibility.ReadAnything.WordsHeard" units="words"
+<histogram name="Accessibility.ReadAnything.Words{Action}" units="words"
     expires_after="2027-02-28">
   <owner>kristislee@google.com</owner>
-  <owner>komo-eng@google.com</owner>
-  <summary>
-    Records an estimate of how many words were heard via Read aloud before
-    switching pages or closing Reading mode. This is very accurate if the voice
-    being used to speak supports word boundaries (e.g. Google's Natural voices),
-    but may not be very accurate when the voice does not support word
-    boundaries, especially for languages that don't separate words with
-    whitespace.
-  </summary>
-</histogram>
-
-<histogram name="Accessibility.ReadAnything.WordsSeen" units="words"
-    expires_after="2027-02-07">
+  <owner>lwinston@google.com</owner>
   <owner>ammedina@google.com</owner>
-  <owner>kristislee@google.com</owner>
   <owner>komo-eng@google.com</owner>
   <summary>
-    Records an estimate of how many words were seen in the Reading mode panel
-    before switching pages or closing Reading mode. Currently works only for
+    Records an estimate of how many words were {Action} before switching pages
+    or closing Reading mode.
+
+    WordsHeard is very accurate if the voice being used to speak supports word
+    boundaries (e.g. Google's Natural voices), but may not be very accurate when
+    the voice does not support word boundaries, especially for languages that
+    don't separate words with whitespace. WordsSeen currently works only for
     languages that separate words with whitespace.
   </summary>
+  <token key="Action">
+    <variant name="Heard" summary="heard via Read aloud"/>
+    <variant name="Seen" summary="seen in the Reading mode panel"/>
+  </token>
+</histogram>
+
+<histogram
+    name="Accessibility.ReadAnything.{Algorithm}DistillationTime.{Result}"
+    units="ms" expires_after="2027-02-07">
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the time taken to distill a web page using {Algorithm}. Recorded
+    when distillation {Result}.
+  </summary>
+  <token key="Algorithm">
+    <variant name="Merged"
+        summary="the merged algorithm that combines results from the rules
+                 based algorithm and the ML model. Refer to
+                 AXTreeDistiller::Distill for details"/>
+    <variant name="Rules"
+        summary="the rules based algorithm. Refer to
+                 AXTreeDistiller::DistillViaAlgorithm for details"/>
+  </token>
+  <token key="Result">
+    <variant name="Failure" summary="has failed"/>
+    <variant name="Success" summary="has succeeded"/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.ReadAnything.{Context}Language"
+    enum="LocaleCodeBCP47" expires_after="2027-02-07">
+  <owner>lwinston@google.com</owner>
+  <owner>kristislee@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Records {Context}</summary>
+  <token key="Context">
+    <variant name=""
+        summary="the language of the web page shown in Read Anything after
+                 the corresponding AXTree is distilled."/>
+    <variant name="ReadAloud."
+        summary="which language the user is using to read aloud text in the
+                 Read Anything panel."/>
+  </token>
+</histogram>
+
+<histogram name="Accessibility.ReadAnything.{Setting}" enum="BooleanEnabled"
+    expires_after="2027-02-07">
+  <owner>lwinston@google.com</owner>
+  <owner>komo-eng@google.com</owner>
+  <summary>
+    Records whether {Setting} are enabled in the Read Anything panel when the
+    panel is closed.
+  </summary>
+  <token key="Setting">
+    <variant name="Images" summary="images"/>
+    <variant name="Links" summary="links"/>
+  </token>
 </histogram>
 
 <histogram name="Accessibility.Reliability.Tree.UnserializeError"
