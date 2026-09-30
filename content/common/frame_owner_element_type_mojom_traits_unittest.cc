@@ -49,6 +49,7 @@ TEST_F(FrameOwnerElementTypeDeathTest, SerializeInvalid) {
   constexpr blink::FrameOwnerElementType kUnconvertibleValues[] = {
       blink::FrameOwnerElementType::kNone,
       blink::FrameOwnerElementType::kFencedframe,
+      blink::FrameOwnerElementType::kPersistentwidget,
   };
 
   for (const auto type : kUnconvertibleValues) {

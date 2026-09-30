@@ -183,6 +183,7 @@ enum FrameOwnerElementType {
   kEmbed,
   kFrame,
   kFencedframe,
+  kPersistentwidget,
 };
 
 enum NavigationApiEntryRestoreReason {

@@ -8487,6 +8487,7 @@ bool AXObject::IsFrame(const Node* node) {
     case FrameOwnerElementType::kIframe:
     case FrameOwnerElementType::kFrame:
     case FrameOwnerElementType::kFencedframe:
+    case FrameOwnerElementType::kPersistentwidget:
       return true;
     case FrameOwnerElementType::kObject:
     case FrameOwnerElementType::kEmbed:

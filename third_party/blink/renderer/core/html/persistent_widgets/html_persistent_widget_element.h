@@ -24,9 +24,7 @@ class CORE_EXPORT HTMLPersistentWidgetElement : public HTMLFrameOwnerElement {
 
   // HTMLFrameOwnerElement overrides:
   FrameOwnerElementType OwnerType() const override {
-    // TODO(crbug.com/537818859): Replace this with new FrameOwnerElementType
-    // for persistent widgets.
-    NOTREACHED();
+    return FrameOwnerElementType::kPersistentwidget;
   }
   network::ParsedPermissionsPolicy ConstructContainerPolicy() const override {
     return network::ParsedPermissionsPolicy();

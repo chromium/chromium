@@ -161,6 +161,8 @@ AtomicString GetFrameOwnerType(HTMLFrameOwnerElement* frame_owner) {
       return html_names::kFrameTag.LocalName();
     case FrameOwnerElementType::kFencedframe:
       return html_names::kFencedframeTag.LocalName();
+    case FrameOwnerElementType::kPersistentwidget:
+      return html_names::kPersistentwidgetTag.LocalName();
   }
   NOTREACHED();
 }

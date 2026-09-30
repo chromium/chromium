@@ -770,6 +770,9 @@ network::mojom::RequestDestination GetDestinationFromFrameTreeNode(
     case blink::FrameOwnerElementType::kFencedframe:
       // Fenced frames are handled above.
       NOTREACHED();
+    case blink::FrameOwnerElementType::kPersistentwidget:
+      // Persistent widget frames are handled above.
+      NOTREACHED();
   }
 }
 

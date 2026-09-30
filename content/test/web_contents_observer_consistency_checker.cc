@@ -158,7 +158,9 @@ void WebContentsObserverConsistencyChecker::RenderFrameHostChanged(
     // in the renderer process.
     bool is_render_frame_created_needed_for_child =
         new_host->GetFrameOwnerElementType() !=
-        blink::FrameOwnerElementType::kFencedframe;
+            blink::FrameOwnerElementType::kFencedframe &&
+        new_host->GetFrameOwnerElementType() !=
+            blink::FrameOwnerElementType::kPersistentwidget;
     if (is_render_frame_created_needed_for_child) {
       AssertRenderFrameExists(new_host);
     }

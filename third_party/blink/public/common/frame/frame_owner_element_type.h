@@ -15,7 +15,8 @@ enum class FrameOwnerElementType {
   kEmbed,
   kFrame,
   kFencedframe,
-  kMaxValue = kFencedframe,
+  kPersistentwidget,
+  kMaxValue = kPersistentwidget,
 };
 
 }  // namespace blink

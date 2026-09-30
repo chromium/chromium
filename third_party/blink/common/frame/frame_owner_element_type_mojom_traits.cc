@@ -23,6 +23,8 @@ blink::mojom::FrameOwnerElementType EnumTraits<
       return blink::mojom::FrameOwnerElementType::kFrame;
     case blink::FrameOwnerElementType::kFencedframe:
       return blink::mojom::FrameOwnerElementType::kFencedframe;
+    case blink::FrameOwnerElementType::kPersistentwidget:
+      return blink::mojom::FrameOwnerElementType::kPersistentwidget;
     case blink::FrameOwnerElementType::kNone:
       return blink::mojom::FrameOwnerElementType::kNone;
   }
@@ -43,6 +45,8 @@ EnumTraits<blink::mojom::FrameOwnerElementType, blink::FrameOwnerElementType>::
       return blink::FrameOwnerElementType::kFrame;
     case blink::mojom::FrameOwnerElementType::kFencedframe:
       return blink::FrameOwnerElementType::kFencedframe;
+    case blink::mojom::FrameOwnerElementType::kPersistentwidget:
+      return blink::FrameOwnerElementType::kPersistentwidget;
     case blink::mojom::FrameOwnerElementType::kNone:
       NOTREACHED();
   }
