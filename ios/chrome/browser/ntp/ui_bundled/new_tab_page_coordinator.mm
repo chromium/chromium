@@ -52,6 +52,7 @@
 #import "ios/chrome/browser/composebox/coordinator/composebox_availability.h"
 #import "ios/chrome/browser/composebox/menu/coordinator/composebox_menu_coordinator.h"
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
+#import "ios/chrome/browser/composebox/public/composebox_focus_params.h"
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_coordinator.h"
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_delegate.h"
 #import "ios/chrome/browser/content_suggestions/coordinator/content_suggestions_mediator.h"
@@ -2356,8 +2357,20 @@ using ntp_tiles::AimButtonRefactorArm;
 - (void)openAIMImageGeneration {
   CHECK_EQ(ntp_tiles::GetAimButtonRefactorArm(),
            ntp_tiles::AimButtonRefactorArm::kImageGenerationQuickAction);
-  // TODO(crbug.com/549020046): Implement this method and add metrics recording
-  // hooks.
+
+  // TODO(crbug.com/549020046): Add metrics recording hooks and a fallback to
+  // AIM web if the composebox cannot be shown.
+  if (![self canFocusComposeboxForAIM]) {
+    return;
+  }
+
+  ComposeboxFocusParams* params = [[ComposeboxFocusParams alloc]
+      initWithEntrypoint:ComposeboxEntrypoint::kNTPImageGenerationButton
+                   query:nil
+                toolMode:ComposeboxMode::kImageGeneration
+               modelMode:ComposeboxModelOption::kNone
+          attachmentList:nil];
+  ShowComposebox(self.browser, params);
 }
 
 - (void)openAIMAttachImage {

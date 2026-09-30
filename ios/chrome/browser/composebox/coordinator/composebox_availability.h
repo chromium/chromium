@@ -10,10 +10,14 @@
 #import "ios/chrome/browser/composebox/public/composebox_entrypoint.h"
 
 class Browser;
+@class ComposeboxFocusParams;
 
 /// Maybe shows the composebox and returns whether it has been shown.
 bool MaybeShowComposebox(Browser* browser,
                          ComposeboxEntrypoint entrypoint,
                          NSString* query = nil);
+
+/// Shows the composebox with `params`.
+void ShowComposebox(Browser* browser, ComposeboxFocusParams* params);
 
 #endif  // IOS_CHROME_BROWSER_COMPOSEBOX_COORDINATOR_COMPOSEBOX_AVAILABILITY_H_

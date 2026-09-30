@@ -17,3 +17,9 @@ bool MaybeShowComposebox(Browser* browser,
   [commands showComposeboxFromEntrypoint:entrypoint withQuery:query];
   return true;
 }
+
+void ShowComposebox(Browser* browser, ComposeboxFocusParams* params) {
+  id<BrowserCoordinatorCommands> commands = HandlerForProtocol(
+      browser->GetCommandDispatcher(), BrowserCoordinatorCommands);
+  [commands showComposeboxWithParams:params];
+}

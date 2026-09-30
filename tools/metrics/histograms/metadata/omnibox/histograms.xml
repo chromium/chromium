@@ -112,6 +112,8 @@ chromium-metrics-reviews@google.com.
   <variant name=".Cobrowse" summary="Cobrowse entrypoint"/>
   <variant name=".NTPAIMButton" summary="NTP AIM button entrypoint"/>
   <variant name=".NTPFakebox" summary="NTP fakebox entrypoint"/>
+  <variant name=".NTPImageGenerationButton"
+      summary="NTP image generation button entrypoint"/>
   <variant name=".NTPPlusButton" summary="NTP plus button entrypoint"/>
   <variant name=".Other" summary="Other entrypoint (Omnibox)"/>
 </variants>

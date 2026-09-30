@@ -152,6 +152,8 @@ std::string GetStringForEntrypoint(ComposeboxEntrypoint entrypoint) {
   switch (entrypoint) {
     case ComposeboxEntrypoint::kNTPAIMButton:
       return ".NTPAIMButton";
+    case ComposeboxEntrypoint::kNTPImageGenerationButton:
+      return ".NTPImageGenerationButton";
     case ComposeboxEntrypoint::kNTPFakebox:
       return ".NTPFakebox";
     case ComposeboxEntrypoint::kNTPPlusButton:
