@@ -313,12 +313,12 @@ void ResetAuthentication() {
       // Synchronization off due to an infinite spinner if the keyboard is
       // visible.
       ScopedSynchronizationDisabler disabler;
-      // Restore the Duo simulator to Closed/Portrait. These calls are no-ops
-      // when already in that state.
+      // Restore the Duo simulator to Portrait before closing the hinge so the
+      // cover display doesn't have to rotate during the fold transition.
+      [ChromeEarlGrey setSimulatedDuoOrientation:UIDeviceOrientationPortrait];
       if (@available(iOS 27.1, *)) {
         [ChromeEarlGrey setSimulatedDuoHingeStatus:UIHingeStatusClosed];
       }
-      [ChromeEarlGrey setSimulatedDuoOrientation:UIDeviceOrientationPortrait];
     } else if ([ChromeEarlGrey interfaceOrientation] != _originalOrientation) {
       // Synchronization off due to an infinite spinner if the keyboard is
       // visible.
@@ -493,6 +493,7 @@ void ResetAuthentication() {
   // Enforce the assumption that the tests are running in portrait.
   if ([ChromeEarlGrey isDuoSimulator]) {
     // Reset the Duo simulator to Closed/Portrait via its virtual HID service.
+    [ChromeEarlGrey setSimulatedDuoOrientation:UIDeviceOrientationPortrait];
     if (@available(iOS 27.1, *)) {
       [ChromeEarlGrey setSimulatedDuoHingeStatus:UIHingeStatusClosed];
     }
@@ -576,6 +577,72 @@ void ResetAuthentication() {
       }
     }
   }
+}
+
+@end
+
+#pragma mark - EarlGreyImpl Swizzling for iPhone Duo
+
+@interface EarlGreyImpl (DuoSimulator)
+@end
+
+@implementation EarlGreyImpl (DuoSimulator)
+
++ (void)load {
+  static dispatch_once_t once_token;
+  dispatch_once(&once_token, ^{
+    Class cls = [EarlGreyImpl class];
+    SEL original_selector = @selector(rotateInterfaceToOrientation:error:);
+    SEL swizzled_selector = @selector(cr_rotateInterfaceToOrientation:error:);
+
+    Method original_method = class_getInstanceMethod(cls, original_selector);
+    Method swizzled_method = class_getInstanceMethod(cls, swizzled_selector);
+
+    BOOL did_add_method = class_addMethod(
+        cls, original_selector, method_getImplementation(swizzled_method),
+        method_getTypeEncoding(swizzled_method));
+
+    if (did_add_method) {
+      class_replaceMethod(cls, swizzled_selector,
+                          method_getImplementation(original_method),
+                          method_getTypeEncoding(original_method));
+    } else {
+      method_exchangeImplementations(original_method, swizzled_method);
+    }
+  });
+}
+
+- (BOOL)cr_rotateInterfaceToOrientation:
+            (UIInterfaceOrientation)interfaceOrientation
+                                  error:(NSError**)error {
+  if (![ChromeEarlGrey isDuoSimulator]) {
+    return [self cr_rotateInterfaceToOrientation:interfaceOrientation
+                                           error:error];
+  }
+
+  // On Duo, standard XCUIDevice.setOrientation does not trigger simulator
+  // rotation. Map requested interface orientation to device orientation.
+  UIDeviceOrientation deviceOrientation = [GREYConstants
+      deviceOrientationForInterfaceOrientation:interfaceOrientation];
+
+  // If the Duo is unfolded (inner display), holding it in portrait yields a
+  // landscape interface aspect ratio, and vice versa. Invert device orientation
+  // accordingly so the interface orientation matches what was requested.
+  if (![ChromeEarlGrey isCompactWidth]) {
+    if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
+      deviceOrientation = UIDeviceOrientationLandscapeRight;
+    } else if (UIInterfaceOrientationIsLandscape(interfaceOrientation)) {
+      deviceOrientation = UIDeviceOrientationPortrait;
+    }
+  }
+
+  [ChromeEarlGrey setSimulatedDuoOrientation:deviceOrientation];
+  [[XCUIDevice sharedDevice] setOrientation:deviceOrientation];
+
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:UIDeviceOrientationDidChangeNotification
+                    object:nil];
+  return YES;
 }
 
 @end

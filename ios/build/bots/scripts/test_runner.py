@@ -899,6 +899,13 @@ class SimulatorTestRunner(TestRunner):
     self.start_time = None
     self.version = version
     self.clones = kwargs.get('clones') or 1
+    if self.platform and 'duo' in self.platform.lower() and self.clones > 1:
+      LOGGER.info(
+        'Forcing clones=1 for %s because parallel simulator clones interfere '
+        'with vendor HID posture and orientation events.',
+        self.platform,
+      )
+      self.clones = 1
     self.use_simulator_cache = kwargs.get('use_simulator_cache') or False
     self.udid = iossim_util.get_simulator(
       self.platform, self.version, self.out_dir, self.use_simulator_cache

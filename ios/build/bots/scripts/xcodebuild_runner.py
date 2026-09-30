@@ -312,6 +312,13 @@ class SimulatorParallelTestRunner(test_runner.SimulatorTestRunner):
     super(SimulatorParallelTestRunner, self).__init__(
       app_path, iossim_path, platform, version, out_dir, **kwargs
     )
+    if self.platform and 'duo' in self.platform.lower() and self.clones > 1:
+      LOGGER.info(
+        'Forcing clones=1 for %s because parallel simulator clones interfere '
+        'with vendor HID posture and orientation events.',
+        self.platform,
+      )
+      self.clones = 1
     self.set_up()
     self.host_app_path = None
     if host_app_path != 'NO_PATH':

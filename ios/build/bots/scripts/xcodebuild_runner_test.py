@@ -719,6 +719,20 @@ class SimulatorParallelTestRunnerTest(test_runner_test.SimulatorTestRunnerTest):
     )
     self.assertEqual(tr.all_eg_test_names, [])
 
+  def test_clones_forced_to_one_for_duo(self):
+    """Tests that clones is forced to 1 for iPhone Duo simulator."""
+    tr = xcodebuild_runner.SimulatorParallelTestRunner(
+      "fake-app-path",
+      "fake-host-app-path",
+      "fake-iossim_path",
+      "fake-version",
+      "iPhone Duo",
+      "fake-out-dir",
+      clones=2,
+      skip_enumerate_tests=True,
+    )
+    self.assertEqual(tr.clones, 1)
+
 
 if __name__ == '__main__':
   logging.basicConfig(

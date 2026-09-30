@@ -152,6 +152,19 @@ class SimulatorTestRunnerTest(TestCase):
 
     self.assertTrue(tr)
 
+  def test_init_duo_forces_clones_to_one(self):
+    """Ensures clones is forced to 1 for Duo simulator."""
+    tr = test_runner.SimulatorTestRunner(
+      'fake-app',
+      'fake-iossim',
+      'iPhone Duo',
+      '27.1',
+      'out-dir',
+      clones=2,
+    )
+
+    self.assertEqual(tr.clones, 1)
+
   @mock.patch('test_runner.SimulatorTestRunner.tear_down')
   @mock.patch('test_runner.SimulatorTestRunner.set_up')
   @mock.patch('test_runner.TestRunner._run')
