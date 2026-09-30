@@ -1486,6 +1486,9 @@ bool Sanitizer::isValid() const {
 }
 
 bool Sanitizer::AllowIsAttribute(const QualifiedName& element_name) const {
+  if (!IsElementAllowed(element_name)) {
+    return false;
+  }
   const auto allow_per_element_iter =
       allow_attrs_per_element_.find(element_name);
   const SanitizerNameSet* allow_per_element =

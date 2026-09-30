@@ -304,7 +304,7 @@ StreamingSanitizer* HTMLConstructionSite::ActiveSanitizer(
 
   auto* default_sanitizer = sanitizer_.Get();
 
-  if (!RuntimeEnabledFeatures::DeclarativeFragmentEnabled()) {
+  if (!RuntimeEnabledFeatures::DeclarativeFragmentEnabled() || IsEmpty()) {
     return default_sanitizer;
   }
 
