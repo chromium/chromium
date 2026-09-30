@@ -683,15 +683,6 @@ class COMPONENT_EXPORT(SQL) Database {
     return is_open() && transaction_nesting_ > 0;
   }
 
-  // Deprecated in favor of HasActiveTransactions().
-  //
-  // Returns the current transaction nesting, which will be 0 if there are
-  // no open transactions.
-  int transaction_nesting() const {
-    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-    return transaction_nesting_;
-  }
-
   // Attached databases---------------------------------------------------------
 
   // Attaches an existing database to this connection.

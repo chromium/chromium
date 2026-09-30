@@ -177,62 +177,51 @@ TEST_F(SQLTransactionTest, NestedRollback) {
   ASSERT_TRUE(db.Execute("CREATE TABLE foo (a, b)"));
 
   EXPECT_FALSE(db.HasActiveTransactions());
-  EXPECT_EQ(0, db.transaction_nesting());
 
   // Outermost transaction.
   {
     Transaction outer_txn(&db);
     EXPECT_FALSE(db.HasActiveTransactions());
-    EXPECT_EQ(0, db.transaction_nesting());
 
     ASSERT_TRUE(outer_txn.Begin());
     EXPECT_TRUE(db.HasActiveTransactions());
-    EXPECT_EQ(1, db.transaction_nesting());
 
     // First inner transaction is committed.
     {
       Transaction committed_inner_txn(&db);
       EXPECT_TRUE(db.HasActiveTransactions());
-      EXPECT_EQ(1, db.transaction_nesting());
 
       ASSERT_TRUE(committed_inner_txn.Begin());
       EXPECT_TRUE(db.HasActiveTransactions());
-      EXPECT_EQ(2, db.transaction_nesting());
 
       ASSERT_TRUE(db.Execute("INSERT INTO foo (a, b) VALUES (1, 2)"));
       ASSERT_EQ(1, CountFoo(db)) << "INSERT did not work as intended";
 
       committed_inner_txn.Commit();
       EXPECT_TRUE(db.HasActiveTransactions());
-      EXPECT_EQ(1, db.transaction_nesting());
     }
 
     EXPECT_TRUE(db.HasActiveTransactions());
-    EXPECT_EQ(1, db.transaction_nesting());
     EXPECT_EQ(1, CountFoo(db)) << "First inner transaction did not commit";
 
     // Second inner transaction is rolled back.
     {
       Transaction rolled_back_inner_txn(&db);
       EXPECT_TRUE(db.HasActiveTransactions());
-      EXPECT_EQ(1, db.transaction_nesting());
 
       ASSERT_TRUE(rolled_back_inner_txn.Begin());
       EXPECT_TRUE(db.HasActiveTransactions());
-      EXPECT_EQ(2, db.transaction_nesting());
 
       ASSERT_TRUE(db.Execute("INSERT INTO foo (a, b) VALUES (2, 3)"));
       ASSERT_EQ(2, CountFoo(db)) << "INSERT did not work as intended";
 
       rolled_back_inner_txn.Rollback();
       EXPECT_TRUE(db.HasActiveTransactions());
-      EXPECT_EQ(1, db.transaction_nesting());
       EXPECT_EQ(2, CountFoo(db))
           << "Nested transaction rollback deferred to top-level transaction";
     }
 
     EXPECT_TRUE(db.HasActiveTransactions());
-    EXPECT_EQ(1, db.transaction_nesting());
     EXPECT_EQ(2, CountFoo(db))
         << "Nested transaction rollback deferred to top-level transaction";
 
@@ -241,16 +230,13 @@ TEST_F(SQLTransactionTest, NestedRollback) {
     {
       Transaction failed_inner_txn(&db);
       EXPECT_TRUE(db.HasActiveTransactions());
-      EXPECT_EQ(1, db.transaction_nesting());
 
       EXPECT_FALSE(failed_inner_txn.Begin());
       EXPECT_TRUE(db.HasActiveTransactions());
-      EXPECT_EQ(1, db.transaction_nesting());
     }
   }
 
   EXPECT_FALSE(db.HasActiveTransactions());
-  EXPECT_EQ(0, db.transaction_nesting());
   EXPECT_EQ(0, CountFoo(db));
 }
 
