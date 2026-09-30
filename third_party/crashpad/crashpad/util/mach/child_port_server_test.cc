@@ -37,6 +37,9 @@ constexpr mach_port_t kCheckInPort = 0x06060606;
 
 // Other fake values.
 constexpr mach_msg_type_name_t kCheckInPortRightType = MACH_MSG_TYPE_PORT_SEND;
+constexpr mach_port_t kEmbedderPort = 0x07070707;
+constexpr mach_msg_type_name_t kEmbedderPortRightType =
+    MACH_MSG_TYPE_PORT_RECEIVE;
 constexpr child_port_token_t kCheckInToken = 0xfedcba9876543210;
 
 // The definition of the request structure from child_port.h isn’t available
@@ -53,10 +56,13 @@ struct __attribute__((packed, aligned(4))) ChildPortCheckInRequest {
     Head.msgh_remote_port = MACH_PORT_NULL;
     Head.msgh_local_port = kServerLocalPort;
     Head.msgh_id = 10011;
-    msgh_body.msgh_descriptor_count = 1;
+    msgh_body.msgh_descriptor_count = 2;
     port.name = kCheckInPort;
     port.disposition = kCheckInPortRightType;
     port.type = MACH_MSG_PORT_DESCRIPTOR;
+    embedder_port.name = kEmbedderPort;
+    embedder_port.disposition = kEmbedderPortRightType;
+    embedder_port.type = MACH_MSG_PORT_DESCRIPTOR;
     NDR = NDR_record;
     token = kCheckInToken;
   }
@@ -64,6 +70,7 @@ struct __attribute__((packed, aligned(4))) ChildPortCheckInRequest {
   mach_msg_header_t Head;
   mach_msg_body_t msgh_body;
   mach_msg_port_descriptor_t port;
+  mach_msg_port_descriptor_t embedder_port;
   NDR_record_t NDR;
   child_port_token_t token;
   mach_msg_trailer_t trailer;
@@ -95,6 +102,7 @@ class MockChildPortServerInterface : public ChildPortServer::Interface {
                const child_port_token_t token,
                mach_port_t port,
                mach_msg_type_name_t right_type,
+               mach_port_t embedder_port,
                const mach_msg_trailer_t* trailer,
                bool* destroy_request));
 };
@@ -118,6 +126,7 @@ TEST(ChildPortServer, MockChildPortCheckIn) {
                                      kCheckInToken,
                                      kCheckInPort,
                                      kCheckInPortRightType,
+                                     kEmbedderPort,
                                      Eq(&request.trailer),
                                      Pointee(Eq(false))))
       .WillOnce(Return(MIG_NO_REPLY))

@@ -128,6 +128,11 @@ class CrashpadClient {
   //!     may be needed, such as until background startup completes when
   //!     `asynchronous_start` is `true`, or across handler restarts when
   //!     `restartable` is `true`.
+  //! \param[in] embedder_port An optional Mach receive right for transferring
+  //!     embedder-specific data from client process to handler process over
+  //!     Mach (macOS only). This will be passed to the callback received by
+  //!     `HandlerMain()` (if one was received) when the handshake completes.
+  //!     Not preserved across handler restarts.
   //!
   //! \return `true` on success, `false` on failure with a message logged.
   bool StartHandler(const base::FilePath& handler,
@@ -139,7 +144,13 @@ class CrashpadClient {
                     bool restartable,
                     bool asynchronous_start,
                     const std::vector<base::FilePath>& attachments = {},
-                    const std::set<FileHandle>& preserve_file_handles = {});
+                    const std::set<FileHandle>& preserve_file_handles = {}
+#if BUILDFLAG(IS_APPLE)
+                    ,
+                    base::apple::ScopedMachReceiveRight embedder_port =
+                        base::apple::ScopedMachReceiveRight()
+#endif
+  );
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
     DOXYGEN

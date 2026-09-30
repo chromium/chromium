@@ -154,6 +154,15 @@ class ChildPortHandshake {
     kSendRight,
   };
 
+  //! \brief The port rights returned by the server after the handshake.
+  struct HandshakePorts {
+    //! \brief The primary port right provided by the client.
+    mach_port_t port = MACH_PORT_NULL;
+
+    //! \brief An optional port right provided by the client for embedder use.
+    mach_port_t embedder_port = MACH_PORT_NULL;
+  };
+
   ChildPortHandshake();
 
   ChildPortHandshake(const ChildPortHandshake&) = delete;
@@ -183,7 +192,7 @@ class ChildPortHandshake {
   //! ClientReadFD() has already been called in the server process, the caller
   //! must ensure that the file descriptor returned by ClientReadFD() is closed
   //! prior to calling this method.
-  mach_port_t RunServer(PortRightType port_right_type);
+  HandshakePorts RunServer(PortRightType port_right_type);
 
   //! \brief Runs the client.
   //!
@@ -195,7 +204,9 @@ class ChildPortHandshake {
   //! prior to calling this method.
   //!
   //! \return `true` on success, `false` on failure with a message logged.
-  bool RunClient(mach_port_t port, mach_msg_type_name_t right_type);
+  bool RunClient(mach_port_t port,
+                 mach_msg_type_name_t right_type,
+                 mach_port_t embedder_port = MACH_PORT_NULL);
 
   //! \brief Runs the server.
   //!
@@ -218,7 +229,7 @@ class ChildPortHandshake {
   //!    are properly formatted and have the correct token. The right carried in
   //!    a valid message will be returned. If a message is not valid, this
   //!    method will continue waiting for pipe EOF or a valid message.
-  //!  - When notified of pipe EOF, returns `MACH_PORT_NULL`.
+  //!  - When notified of pipe EOF, returns `MACH_PORT_NULL` for all ports.
   //!  - Regardless of return value, destroys the server’s receive right and
   //!    closes the pipe.
   //!
@@ -226,18 +237,20 @@ class ChildPortHandshake {
   //!     client process. This function takes ownership of this file descriptor,
   //!     and will close it prior to returning.
   //! \param[in] port_right_type The port right type expected to be received
-  //!     from the client. If the port right received from the client does not
-  //!     match the expected type, the received port right will be destroyed,
-  //!     and `MACH_PORT_NULL` will be returned.
+  //!     from the client for \a HandshakePorts::port. If the port right
+  //!     received from the client does not match the expected type, the
+  //!     received port right will be destroyed, and `MACH_PORT_NULL` will be
+  //!     returned.
   //!
-  //! \return On success, the port right provided by the client. The caller
-  //!     takes ownership of this right. On failure, `MACH_PORT_NULL`,
-  //!     indicating that the client did not check in properly before
-  //!     terminating, where termination is detected by detecting that the read
-  //!     side of the shared pipe has closed. On failure, a message indicating
-  //!     the nature of the failure will be logged.
-  static mach_port_t RunServerForFD(base::ScopedFD server_write_fd,
-                                    PortRightType port_right_type);
+  //! \return On success, a struct containing the port rights provided by the
+  //!     client. The caller takes ownership of these rights. On failure, both
+  //!     ports are `MACH_PORT_NULL`, indicating that the client did not check
+  //!     in properly before terminating, where termination is detected by
+  //!     detecting that the read side of the shared pipe has closed. On
+  //!     failure, a message indicating the nature of the failure will be
+  //!     logged.
+  static HandshakePorts RunServerForFD(base::ScopedFD server_write_fd,
+                                       PortRightType port_right_type);
 
   //! \brief Runs the client.
   //!
@@ -271,14 +284,17 @@ class ChildPortHandshake {
   //!     be `MACH_MSG_TYPE_MOVE_SEND_ONCE`. If \a port is a receive right, this
   //!     can be `MACH_MSG_TYPE_MAKE_SEND`, `MACH_MSG_TYPE_MAKE_SEND_ONCE`, or
   //!     `MACH_MSG_TYPE_MOVE_RECEIVE`.
+  //! \param[in] embedder_port An optional second receive right to pass to the
+  //!     server for embedder use.
   //!
   //! \return `true` on success, `false` on failure with a message logged. On
-  //!     failure, the port right corresponding to a \a right_type of
-  //!     `MACH_MSG_TYPE_MOVE_*` is not consumed, and the caller must dispose of
-  //!     the right if necessary.
+  //!     failure, port rights corresponding to a right type of
+  //!     `MACH_MSG_TYPE_MOVE_*` are not consumed, and the caller must dispose
+  //!     of the rights if necessary.
   static bool RunClientForFD(base::ScopedFD client_read_fd,
                              mach_port_t port,
-                             mach_msg_type_name_t right_type);
+                             mach_msg_type_name_t right_type,
+                             mach_port_t embedder_port = MACH_PORT_NULL);
 
  private:
   //! \brief Runs the read-from-pipe portion of the client’s side of the
@@ -314,12 +330,16 @@ class ChildPortHandshake {
   //! \param[in] port The port that will be passed to the server by
   //!     `child_port_check_in()`.
   //! \param[in] right_type The right type to furnish the server with.
+  //! \param[in] embedder_port An optional second receive right to pass to the
+  //!     server for embedder use.
   //!
   //! \return `true` on success, `false` on failure with a message logged.
-  static bool RunClientInternal_SendCheckIn(const std::string& service_name,
-                                            child_port_token_t token,
-                                            mach_port_t port,
-                                            mach_msg_type_name_t right_type);
+  static bool RunClientInternal_SendCheckIn(
+      const std::string& service_name,
+      child_port_token_t token,
+      mach_port_t port,
+      mach_msg_type_name_t right_type,
+      mach_port_t embedder_port = MACH_PORT_NULL);
 
   base::ScopedFD client_read_fd_;
   base::ScopedFD server_write_fd_;

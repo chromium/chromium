@@ -49,6 +49,8 @@ import "util/mach/child_port_types.h";
 //     the intended client. |server| will reject requests with an invalid
 //     |token|.
 // port[in]: A port right to transfer to the server.
+// embedder_port[in]: An optional receive right to transfer to the server for
+//     embedder use, or MACH_PORT_NULL if not provided.
 //
 // Return value: As this is a “simpleroutine”, the server does not respond to
 //     the client request, and the client does not block waiting for a response
@@ -59,4 +61,5 @@ import "util/mach/child_port_types.h";
 //     indicating the nature of the error.
 simpleroutine child_port_check_in(server: child_port_server_t;
                                   token: child_port_token_t;
-                                  port: mach_port_poly_t);
+                                  port: mach_port_poly_t;
+                                  embedder_port: mach_port_receive_t);

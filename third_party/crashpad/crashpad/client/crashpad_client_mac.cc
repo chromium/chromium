@@ -141,7 +141,8 @@ class HandlerStarter final : public NotifyServer::DefaultInterface {
       const std::vector<std::string>& arguments,
       bool restartable,
       const std::vector<base::FilePath>& attachments,
-      const std::set<FileHandle>& preserve_file_handles) {
+      const std::set<FileHandle>& preserve_file_handles,
+      base::apple::ScopedMachReceiveRight embedder_port) {
     base::apple::ScopedMachReceiveRight receive_right(
         NewMachPort(MACH_PORT_RIGHT_RECEIVE));
     if (!receive_right.is_valid()) {
@@ -184,7 +185,8 @@ class HandlerStarter final : public NotifyServer::DefaultInterface {
                      handler_restarter.get(),
                      false,
                      attachments,
-                     preserve_file_handles)) {
+                     preserve_file_handles,
+                     std::move(embedder_port))) {
       return base::apple::ScopedMachSendRight();
     }
 
@@ -223,7 +225,7 @@ class HandlerStarter final : public NotifyServer::DefaultInterface {
       return KERN_FAILURE;
     }
 
-    // If CommonStart() fails, the receive right will die, and this will just
+    // If CommonStart() fails, all receive rights will die, and this will just
     // be called again for another try.
     CommonStart(handler_,
                 database_,
@@ -235,7 +237,10 @@ class HandlerStarter final : public NotifyServer::DefaultInterface {
                 this,
                 true,
                 attachments_,
-                preserve_file_handles_);
+                preserve_file_handles_,
+                // The embedder port can't be restored during restart because
+                // the client has already transferred ownership.
+                base::apple::ScopedMachReceiveRight());
 
     return KERN_SUCCESS;
   }
@@ -281,7 +286,8 @@ class HandlerStarter final : public NotifyServer::DefaultInterface {
                           HandlerStarter* handler_restarter,
                           bool restart,
                           const std::vector<base::FilePath>& attachments,
-                          const std::set<FileHandle>& preserve_file_handles) {
+                          const std::set<FileHandle>& preserve_file_handles,
+                          base::apple::ScopedMachReceiveRight embedder_port) {
     DCHECK(!restart || handler_restarter);
 
     if (handler_restarter) {
@@ -387,11 +393,13 @@ class HandlerStarter final : public NotifyServer::DefaultInterface {
 
     // Rendezvous with the handler running in the grandchild process.
     if (!child_port_handshake.RunClient(receive_right.get(),
-                                        MACH_MSG_TYPE_MOVE_RECEIVE)) {
+                                        MACH_MSG_TYPE_MOVE_RECEIVE,
+                                        embedder_port.get())) {
       return false;
     }
 
     std::ignore = receive_right.release();
+    std::ignore = embedder_port.release();
     return true;
   }
 
@@ -485,7 +493,8 @@ bool CrashpadClient::StartHandler(
     bool restartable,
     bool asynchronous_start,
     const std::vector<base::FilePath>& attachments,
-    const std::set<FileHandle>& preserve_file_handles) {
+    const std::set<FileHandle>& preserve_file_handles,
+    base::apple::ScopedMachReceiveRight embedder_port) {
   // The “restartable” behavior can only be selected on OS X 10.10 and later. In
   // previous OS versions, if the initial client were to crash while attempting
   // to restart the handler, it would become an unkillable process.
@@ -499,7 +508,8 @@ bool CrashpadClient::StartHandler(
       restartable && (__MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_10 ||
                       MacOSVersionNumber() >= 10'10'00),
       attachments,
-      preserve_file_handles));
+      preserve_file_handles,
+      std::move(embedder_port)));
   if (!exception_port.is_valid()) {
     return false;
   }

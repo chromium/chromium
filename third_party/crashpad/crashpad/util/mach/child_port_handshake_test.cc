@@ -75,6 +75,9 @@ class ChildPortHandshakeTest : public Multiprocess {
     // verification.
     kTokenIncorrectThenCorrect,
 
+    // The client checks in with the primary port and an optional embedder port.
+    kClientChecksIn_WithEmbedderPort,
+
     // The server dies. The failure should be reported in the client. This test
     // type is only compatible with ClientProcess::kParentClient.
     kServerDies,
@@ -101,17 +104,33 @@ class ChildPortHandshakeTest : public Multiprocess {
 
     base::apple::ScopedMachReceiveRight receive_right;
     base::apple::ScopedMachSendRight send_right;
+    base::apple::ScopedMachReceiveRight embedder_port;
     if (test_type_ == TestType::kClientChecksIn_ReceiveRight) {
-      receive_right.reset(child_port_handshake_.RunServer(
-          ChildPortHandshake::PortRightType::kReceiveRight));
+      receive_right.reset(
+          child_port_handshake_
+              .RunServer(ChildPortHandshake::PortRightType::kReceiveRight)
+              .port);
+    } else if (test_type_ == TestType::kClientChecksIn_WithEmbedderPort) {
+      ChildPortHandshake::HandshakePorts ports =
+          child_port_handshake_.RunServer(
+              ChildPortHandshake::PortRightType::kReceiveRight);
+      receive_right.reset(ports.port);
+      embedder_port.reset(ports.embedder_port);
     } else {
-      send_right.reset(child_port_handshake_.RunServer(
-          ChildPortHandshake::PortRightType::kSendRight));
+      send_right.reset(
+          child_port_handshake_
+              .RunServer(ChildPortHandshake::PortRightType::kSendRight)
+              .port);
     }
 
     switch (test_type_) {
       case TestType::kClientChecksIn_ReceiveRight:
         EXPECT_TRUE(receive_right.is_valid());
+        break;
+
+      case TestType::kClientChecksIn_WithEmbedderPort:
+        EXPECT_TRUE(receive_right.is_valid());
+        EXPECT_TRUE(embedder_port.is_valid());
         break;
 
       case TestType::kClientChecksIn_SendRight:
@@ -148,6 +167,14 @@ class ChildPortHandshakeTest : public Multiprocess {
         mach_port_t receive_right = NewMachPort(MACH_PORT_RIGHT_RECEIVE);
         ASSERT_TRUE(child_port_handshake_.RunClient(
               receive_right, MACH_MSG_TYPE_MOVE_RECEIVE));
+        break;
+      }
+
+      case TestType::kClientChecksIn_WithEmbedderPort: {
+        mach_port_t receive_right = NewMachPort(MACH_PORT_RIGHT_RECEIVE);
+        mach_port_t embedder_port = NewMachPort(MACH_PORT_RIGHT_RECEIVE);
+        ASSERT_TRUE(child_port_handshake_.RunClient(
+            receive_right, MACH_MSG_TYPE_MOVE_RECEIVE, embedder_port));
         break;
       }
 
@@ -372,9 +399,18 @@ TEST(ChildPortHandshake, NoClient) {
   // is similar to kClientDoesNotCheckIn, but because there’s no client at all,
   // the server is guaranteed to see that its pipe partner is gone.
   ChildPortHandshake child_port_handshake;
-  base::apple::ScopedMachSendRight child_port(child_port_handshake.RunServer(
-      ChildPortHandshake::PortRightType::kSendRight));
+  base::apple::ScopedMachSendRight child_port(
+      child_port_handshake
+          .RunServer(ChildPortHandshake::PortRightType::kSendRight)
+          .port);
   EXPECT_FALSE(child_port.is_valid());
+}
+
+TEST(ChildPortHandshake, ChildClientChecksIn_WithEmbedderPort) {
+  ChildPortHandshakeTest test(
+      ChildPortHandshakeTest::ClientProcess::kChildClient,
+      ChildPortHandshakeTest::TestType::kClientChecksIn_WithEmbedderPort);
+  test.Run();
 }
 
 }  // namespace

@@ -56,31 +56,17 @@ namespace crashpad {
 namespace internal {
 
 IOSSystemDataCollector::IOSSystemDataCollector()
-    : major_version_(0),
-      minor_version_(0),
-      patch_version_(0),
-      build_(),
-      machine_description_(),
-      orientation_(0),
-      processor_count_(0),
-      cpu_vendor_(),
-      has_next_daylight_saving_time_(false),
-      is_daylight_saving_time_(false),
-      standard_offset_seconds_(0),
-      daylight_offset_seconds_(0),
-      standard_name_(),
-      daylight_name_(),
+    : build_(ReadStringSysctlByName("kern.osversion", false)),
+      bundle_identifier_(
+          base::SysNSStringToUTF8([[NSBundle mainBundle] bundleIdentifier])),
+      processor_count_(base::saturated_cast<int>(
+          [[NSProcessInfo processInfo] processorCount])),
       initialization_time_ns_(ClockMonotonicNanoseconds()) {
   NSOperatingSystemVersion version =
       [[NSProcessInfo processInfo] operatingSystemVersion];
   major_version_ = base::saturated_cast<int>(version.majorVersion);
   minor_version_ = base::saturated_cast<int>(version.minorVersion);
   patch_version_ = base::saturated_cast<int>(version.patchVersion);
-  processor_count_ =
-      base::saturated_cast<int>([[NSProcessInfo processInfo] processorCount]);
-  build_ = ReadStringSysctlByName("kern.osversion", false);
-  bundle_identifier_ =
-      base::SysNSStringToUTF8([[NSBundle mainBundle] bundleIdentifier]);
 // If CRASHPAD_IS_IOS_APP_EXTENSION is defined, then the code is compiled with
 // -fapplication-extension and can only be used in an app extension. Otherwise
 // check at runtime whether the code is executing in an app extension or not.

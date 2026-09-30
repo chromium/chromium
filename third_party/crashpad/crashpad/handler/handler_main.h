@@ -18,7 +18,18 @@
 #include "build/build_config.h"
 #include "handler/user_stream_data_source.h"
 
+#if BUILDFLAG(IS_APPLE)
+#include <functional>
+
+#include "base/apple/scoped_mach_port.h"
+#endif
+
 namespace crashpad {
+
+#if BUILDFLAG(IS_APPLE)
+using EmbedderPortCallback =
+    std::function<void(base::apple::ScopedMachReceiveRight)>;
+#endif
 
 //! \brief The `main()` of the `crashpad_handler` binary.
 //!
@@ -31,9 +42,19 @@ namespace crashpad {
 //!     extensibility data sources to call on crash. Each time a minidump is
 //!     created, the sources are called in turn. Any streams returned are added
 //!     to the minidump.
+//! \param[in] embedder_port_callback An optional callback, to be invoked after
+//!     the initial handshake and passed the Mach receive right sent by the
+//!     client (if sent) in `CrashpadClient::StartHandler()`. This enables the
+//!     embedder's handler main function to connect to the client via Mach, if
+//!     needed.
 int HandlerMain(int argc,
                 char* argv[],
-                const UserStreamDataSources* user_stream_sources);
+                const UserStreamDataSources* user_stream_sources
+#if BUILDFLAG(IS_APPLE)
+                ,
+                EmbedderPortCallback embedder_port_callback = {}
+#endif  // BUILDFLAG(IS_APPLE)
+);
 
 #if BUILDFLAG(IS_ANDROID)
 //! \brief The `main()` entry point for Android libraries.
