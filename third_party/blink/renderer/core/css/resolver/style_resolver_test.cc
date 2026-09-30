@@ -450,6 +450,85 @@ TEST_F(StyleResolverTest,
             ComputedValue("font-size", *StyleForId("target")));
 }
 
+TEST_F(StyleResolverTest, TransitionOnNewlyInsertedElement) {
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #target {
+        opacity: 0;
+        transition: opacity 1000s steps(2, start);
+      }
+      #target.visible { opacity: 1; }
+      #no-transition {
+        opacity: 0;
+        transition: none;
+      }
+      #no-transition.visible { opacity: 1; }
+    </style>
+    <div id=target></div>
+    <div id=no-transition></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  ASSERT_TRUE(target);
+  // Merely declaring a transition does not require a base computed style.
+  EXPECT_FALSE(target->GetElementAnimations());
+  EXPECT_FALSE(target->GetComputedStyle()->GetBaseComputedStyle());
+  EXPECT_EQ("0", ComputedValue("opacity", *StyleForId("target")));
+
+  Element* no_transition =
+      GetDocument().getElementById(AtomicString("no-transition"));
+  ASSERT_TRUE(no_transition);
+  EXPECT_FALSE(no_transition->GetElementAnimations());
+  EXPECT_FALSE(no_transition->GetComputedStyle()->GetBaseComputedStyle());
+
+  target->setAttribute(html_names::kClassAttr, AtomicString("visible"));
+  no_transition->setAttribute(html_names::kClassAttr, AtomicString("visible"));
+  UpdateAllLifecyclePhasesForTest();
+
+  ElementAnimations* element_animations = target->GetElementAnimations();
+  ASSERT_TRUE(element_animations);
+  EXPECT_EQ(1u, element_animations->Animations().size());
+  EXPECT_TRUE(target->GetComputedStyle()->GetBaseComputedStyle());
+  EXPECT_EQ("0.5", ComputedValue("opacity", *StyleForId("target")));
+
+  EXPECT_FALSE(no_transition->GetElementAnimations());
+  EXPECT_FALSE(no_transition->GetComputedStyle()->GetBaseComputedStyle());
+  EXPECT_EQ("1", ComputedValue("opacity", *StyleForId("no-transition")));
+}
+
+TEST_F(StyleResolverTest, TransitionWithIncrementalInlineStyle) {
+  GetDocument().documentElement()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #target {
+        transition: opacity 1000s steps(2, start);
+      }
+    </style>
+    <div id=target style="opacity: 0"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* target = GetDocument().getElementById(AtomicString("target"));
+  ASSERT_TRUE(target);
+  EXPECT_FALSE(target->GetElementAnimations());
+  EXPECT_FALSE(target->GetComputedStyle()->GetBaseComputedStyle());
+  EXPECT_EQ("0", ComputedValue("opacity", *StyleForId("target")));
+
+  // Mutating an existing independent inline property via CSSStyleDeclaration
+  // sets kInlineIndependentStyleChange, which must still fall back to full
+  // cascade resolution when a transition can start.
+  target->style()->setProperty(GetDocument().GetExecutionContext(), "opacity",
+                               "1", "", ASSERT_NO_EXCEPTION);
+  EXPECT_EQ(kInlineIndependentStyleChange, target->GetStyleChangeType());
+  UpdateAllLifecyclePhasesForTest();
+
+  ElementAnimations* element_animations = target->GetElementAnimations();
+  ASSERT_TRUE(element_animations);
+  EXPECT_EQ(1u, element_animations->Animations().size());
+  EXPECT_TRUE(target->GetComputedStyle()->GetBaseComputedStyle());
+  EXPECT_EQ("0.5", ComputedValue("opacity", *StyleForId("target")));
+}
+
 class StyleResolverFontRelativeUnitTest
     : public testing::WithParamInterface<const char*>,
       public StyleResolverTest {};

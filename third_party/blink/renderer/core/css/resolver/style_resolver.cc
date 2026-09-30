@@ -260,11 +260,39 @@ const Element& UltimateOriginatingElementOrSelf(const Element& element) {
   return To<PseudoElement>(element).UltimateOriginatingElement();
 }
 
+bool CanStartTransitions(const CSSTransitionData* transition_data) {
+  if (!transition_data) {
+    return false;
+  }
+  for (wtf_size_t i = 0; i < transition_data->PropertyList().size(); ++i) {
+    if (transition_data->PropertyList()[i].property_type ==
+        CSSTransitionData::kTransitionNone) {
+      continue;
+    }
+    AnimationTimeDelta delay =
+        CSSTimingData::GetRepeated(transition_data->DelayStartList(), i)
+            .AsTimeValue();
+    AnimationTimeDelta duration = ANIMATION_TIME_DELTA_FROM_SECONDS(
+        CSSTimingData::GetRepeated(transition_data->DurationList(), i).value());
+    if (delay + duration > AnimationTimeDelta()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool HasAnimationsOrTransitions(const StyleResolverState& state) {
-  return state.StyleBuilder().Animations() ||
-         state.StyleBuilder().Transitions() ||
-         (state.GetAnimatingElement() &&
-          state.GetAnimatingElement()->HasAnimations());
+  if (state.StyleBuilder().Animations() ||
+      (state.GetAnimatingElement() &&
+       state.GetAnimatingElement()->HasAnimations())) {
+    return true;
+  }
+  if (!state.CanTriggerAnimations() ||
+      !CSSAnimations::CanStartTransitionsForStyle(state.OldStyle(),
+                                                  state.GetDocument())) {
+    return false;
+  }
+  return CanStartTransitions(state.StyleBuilder().Transitions());
 }
 
 bool HasTimelines(const StyleResolverState& state) {
@@ -1669,7 +1697,14 @@ bool CanApplyInlineStyleIncrementally(Element* element,
   // style onto the base as opposed to the computed style itself,
   // and we don't support that. It should be rare to animate elements
   // _both_ with animations and mutating inline style anyway.
-  if (GetElementAnimations(state) || element->GetComputedStyle()->BaseData()) {
+  //
+  // Elements that merely declare animations or transitions (without any
+  // running) do not get a BaseData (see ApplyAnimatedStyle()), but the
+  // incremental change may still start a transition, which needs a populated
+  // StyleCascade. Hence the explicit Animations()/Transitions() checks.
+  if (GetElementAnimations(state) || element->GetComputedStyle()->BaseData() ||
+      element->GetComputedStyle()->Animations() ||
+      CanStartTransitions(element->GetComputedStyle()->Transitions())) {
     return false;
   }
 
@@ -2633,6 +2668,11 @@ bool StyleResolver::ApplyAnimatedStyle(
       state.OldStyle(), style_recalc_context, state.CanTriggerAnimations());
 
   bool apply = state.AnimationUpdate().HasActiveInterpolations();
+  if (!apply && !animating_element->HasAnimations() &&
+      state.AnimationUpdate().IsEmpty()) {
+    state.StyleBuilder().SetBaseData(nullptr);
+    return false;
+  }
   if (apply) {
     const ActiveInterpolationsMap& animations =
         state.AnimationUpdate().ActiveInterpolationsForAnimations();

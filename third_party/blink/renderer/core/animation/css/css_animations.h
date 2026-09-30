@@ -118,6 +118,18 @@ class CORE_EXPORT CSSAnimations final {
       const AtomicString& animation_name,
       const AnimationEffect::EventDelegate* old_event_delegate);
 
+  // Returns true if `old_style` can be used as the before-change style to start
+  // transitions. Style updates can be forced while render-blocking resources
+  // are still loading (e.g. from DevTools or getComputedStyle() queries),
+  // populating ComputedStyle on elements before rendering has begun. We must
+  // not start transitions from such styles on the first rendered frame unless
+  // @starting-style is used.
+  static bool CanStartTransitionsForStyle(const ComputedStyle* old_style,
+                                          const Document& document) {
+    return old_style && (old_style->IsStartingStyle() ||
+                         document.RenderingHadBegunForLastStyleUpdate());
+  }
+
   static void CalculateTransitionUpdate(
       CSSAnimationUpdate&,
       Element& animating_element,
