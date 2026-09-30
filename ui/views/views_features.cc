@@ -54,6 +54,13 @@ BASE_FEATURE(kKeyboardAccessibleTooltipInViews,
 BASE_FEATURE(kNativeViewHostManagesLayers, base::FEATURE_ENABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_MAC)
+// When enabled, tell the browser compositor when the window is on an inactive
+// space, to allow it to reclaim resources. Should be enabled alongside
+// `features::kDetectSpaceChangeViaOcclusion` so that windows become visible
+// immediately during interactive space swipe gestures.
+BASE_FEATURE(kNotifyCompositorOfSpaceVisibilityOnMacOs,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, tell the browser compositor when the window is hidden, to allow
 // it to reclaim resources.
 BASE_FEATURE(kNotifyCompositorOfWindowVisibilityOnMacOs,

@@ -96,6 +96,7 @@ class WidgetModalVisibilityObserver : public views::WidgetObserver {
 @interface NativeWidgetMacTestWindow : NativeWidgetMacNSWindow
 @property(readonly, nonatomic) int invalidateShadowCount;
 @property(assign, nonatomic) BOOL fakeOnInactiveSpace;
+@property(assign, nonatomic) BOOL fakeOcclusionStateVisible;
 @property(assign, nonatomic) bool* deallocFlag;
 @end
 
@@ -1167,6 +1168,64 @@ TEST_F(NativeWidgetMacTest, CloseWhileMinimized) {
   EXPECT_FALSE(widget->GetCompositor()->IsVisible());
 
   // Close the widget while minimized and invisible.
+  widget->CloseNow();
+}
+
+// Tests that switching to an inactive space hides the compositor, and
+// that the window becoming visible via occlusion notifications (e.g. during a
+// swipe gesture before the active space finishes changing) wakes up the
+// compositor early and resumes painting.
+TEST_F(NativeWidgetMacTest, CompositorVisibilityOnSpaceChange) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kNotifyCompositorOfSpaceVisibilityOnMacOs,
+       ::features::kDetectSpaceChangeViaOcclusion},
+      /*disabled_features=*/{});
+
+  NativeWidgetMacTestWindow* test_window;
+  Widget::InitParams init_params =
+      CreateParams(Widget::InitParams::TYPE_WINDOW);
+  init_params.bounds = gfx::Rect(100, 100, 300, 300);
+  Widget* widget =
+      CreateWidgetWithTestWindow(std::move(init_params), &test_window);
+
+  auto* view = widget->GetContentsView()->AddChildView(
+      std::make_unique<PaintCountView>());
+  view->WaitForPaintCount(1);
+  ASSERT_NE(nullptr, widget->GetCompositor());
+  EXPECT_TRUE(widget->GetCompositor()->IsVisible());
+
+  // 1. Move to inactive space -> compositor becomes invisible.
+  test_window.fakeOnInactiveSpace = YES;
+  [NSWorkspace.sharedWorkspace.notificationCenter
+      postNotificationName:NSWorkspaceActiveSpaceDidChangeNotification
+                    object:NSWorkspace.sharedWorkspace];
+  EXPECT_FALSE(widget->GetCompositor()->IsVisible());
+
+  // 2. Window gestures into view during a swipe (occlusion state becomes
+  // visible before the active space transition commits).
+  test_window.fakeOcclusionStateVisible = YES;
+  [NSNotificationCenter.defaultCenter
+      postNotificationName:NSWindowDidChangeOcclusionStateNotification
+                    object:test_window];
+  EXPECT_TRUE(widget->GetCompositor()->IsVisible());
+  view->WaitForPaintCount(2);
+
+  // 3. Reset fake occlusion state, then complete space transition.
+  test_window.fakeOcclusionStateVisible = NO;
+  [NSNotificationCenter.defaultCenter
+      postNotificationName:NSWindowDidChangeOcclusionStateNotification
+                    object:test_window];
+  EXPECT_FALSE(widget->GetCompositor()->IsVisible());
+
+  test_window.fakeOnInactiveSpace = NO;
+  [NSWorkspace.sharedWorkspace.notificationCenter
+      postNotificationName:NSWorkspaceActiveSpaceDidChangeNotification
+                    object:NSWorkspace.sharedWorkspace];
+  EXPECT_TRUE(widget->GetCompositor()->IsVisible());
+  view->WaitForPaintCount(3);
+
   widget->CloseNow();
 }
 
@@ -3447,6 +3506,7 @@ TEST_F(NativeWidgetMacTest, SizeChangeNotifiedBeforeMoveChange) {
 
 @synthesize invalidateShadowCount = _invalidateShadowCount;
 @synthesize fakeOnInactiveSpace = _fakeOnInactiveSpace;
+@synthesize fakeOcclusionStateVisible = _fakeOcclusionStateVisible;
 @synthesize deallocFlag = _deallocFlag;
 
 - (void)dealloc {
@@ -3463,6 +3523,16 @@ TEST_F(NativeWidgetMacTest, SizeChangeNotifiedBeforeMoveChange) {
 
 - (BOOL)isOnActiveSpace {
   return !_fakeOnInactiveSpace;
+}
+
+- (NSWindowOcclusionState)occlusionState {
+  if (_fakeOcclusionStateVisible) {
+    return [super occlusionState] | NSWindowOcclusionStateVisible;
+  }
+  if (_fakeOnInactiveSpace) {
+    return [super occlusionState] & ~NSWindowOcclusionStateVisible;
+  }
+  return [super occlusionState];
 }
 
 @end

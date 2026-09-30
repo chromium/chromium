@@ -163,21 +163,22 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // being reordered in (or out of) the screen list.
   void OnVisibilityChanged();
 
-  // Called when -[NSWindow isOnActiveSpace] may have changed.
+  // Called when -[NSWindow isOnActiveSpace] or the window's on-screen
+  // visibility may have changed.
   //
-  // This value can change in two main scenarios,
+  // This value can change in two main scenarios:
   //   1. The user switches the active space.
   //      - Detected using NSWorkspaceActiveSpaceDidChangeNotification.
   //   2. The user moves the window to a different space (e.g., via Mission
-  //   Control).
+  //      Control, or gestures into view).
   //      - Detected using -windowDidChangeOcclusionState:.
   //
-  // Relying solely on windowDidChangeOcclusionState: is insufficient. It
-  // appears that during space switch this notification is sent before
-  // isOnActiveSpace is updated.
-  //
-  // Note that although `onActiveSpace` is a property, it cannot be KVO
-  // observed, thus this callback.
+  // During an interactive space swipe, the incoming space is immediately
+  // considered un-occluded (`NSWindowOcclusionStateVisible` is set), and
+  // -windowDidChangeOcclusionState: is sent before -[NSWindow isOnActiveSpace]
+  // is updated. Combining onActiveSpace with NSWindowOcclusionStateVisible
+  // allows detecting window visibility as soon as it enters the display during
+  // gestures.
   void OnSpaceActivationMayHaveChanged();
 
   // Called by the NSWindowDelegate when the system colors change.

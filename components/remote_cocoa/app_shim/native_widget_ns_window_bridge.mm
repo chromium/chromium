@@ -1563,11 +1563,18 @@ void NativeWidgetNSWindowBridge::OnVisibilityChanged() {
     invalidate_shadow_on_frame_swap_ = true;
 
   NotifyVisibilityChangeDown();
+  OnSpaceActivationMayHaveChanged();
   host_->OnVisibilityChanged(window_visible_);
 }
 
 void NativeWidgetNSWindowBridge::OnSpaceActivationMayHaveChanged() {
-  host_->OnSpaceActivationChanged(window_.onActiveSpace);
+  bool is_visible_on_screen = window_.onActiveSpace;
+  if (base::FeatureList::IsEnabled(features::kDetectSpaceChangeViaOcclusion)) {
+    is_visible_on_screen =
+        is_visible_on_screen ||
+        (([window_ occlusionState] & NSWindowOcclusionStateVisible) != 0);
+  }
+  host_->OnSpaceActivationChanged(is_visible_on_screen);
 }
 
 void NativeWidgetNSWindowBridge::OnSystemColorsChanged() {

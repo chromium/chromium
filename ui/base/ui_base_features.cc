@@ -91,6 +91,12 @@ BASE_FEATURE(kAsyncLiveResize, base::FEATURE_DISABLED_BY_DEFAULT);
 // Keeps the NSWindow invisible (via its `alphaValue`) until the first
 // compositor frame has been received.
 BASE_FEATURE(kAlphaInsteadOfCATransaction, base::FEATURE_ENABLED_BY_DEFAULT);
+
+// When enabled, uses the window's occlusion state
+// (NSWindowOcclusionStateVisible) in addition to -[NSWindow isOnActiveSpace] to
+// detect when a window becomes visible during space transition gestures before
+// the active space changes.
+BASE_FEATURE(kDetectSpaceChangeViaOcclusion, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_CHROMEOS)
