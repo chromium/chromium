@@ -2346,7 +2346,7 @@ deps = {
       'packages': [
         {
           'package': 'infra/3pp/tools/gperf/${{platform}}',
-          'version': 'version:3@3.2',
+          'version': 'version:3@3.2.chromium.1',
         },
       ],
       'condition': 'host_os == "linux" and non_git_source',
