@@ -643,13 +643,20 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
         "ContextualTasks.EphemeralToolbarButton.Shown"));
     base::UmaHistogramBoolean("ContextualTasks.EphemeralToolbarButton.Shown",
                               true);
-    MaybeShowFeaturePromo();
   } else {
     if (!will_be_visible) {
       if (layer() && layer()->GetAnimator()) {
         layer()->GetAnimator()->AbortAllAnimations();
       }
       ClearDropShadow();
+      if (was_visible) {
+        if (auto* const user_ed = BrowserUserEducationInterface::From(
+                browser_window_interface_)) {
+          user_ed->AbortFeaturePromo(
+              feature_engagement::
+                  kIPHContextualTasksEphemeralToolbarButtonFeature);
+        }
+      }
     } else if (!drop_shadow_painted_layer_) {
       UpdateDropShadow();
     }
@@ -658,6 +665,9 @@ void ContextualTasksButton::MaybeUpdateVisibility() {
 }
 
 void ContextualTasksButton::MaybeShowFeaturePromo() {
+  if (!GetVisible()) {
+    return;
+  }
   if (auto* const user_ed =
           BrowserUserEducationInterface::From(browser_window_interface_)) {
     user_ed->MaybeShowFeaturePromo(
@@ -720,13 +730,18 @@ void ContextualTasksButton::UpdateDropShadowLayerBounds() {
 void ContextualTasksButton::AnimateShow() {
   UpdateDropShadow(/*force_paint=*/true, /*initial_opacity=*/0.0f);
   if (!layer()) {
+    MaybeShowFeaturePromo();
     return;
   }
   views::AnimationBuilder builder;
-  auto& sequence = builder.Once()
-                       .SetDuration(base::Milliseconds(
-                           features::kSidePanelFlyoverDurationMs.Get()))
-                       .SetOpacity(layer(), 1.0f);
+  auto& sequence =
+      builder
+          .OnEnded(base::BindOnce(&ContextualTasksButton::MaybeShowFeaturePromo,
+                                  weak_ptr_factory_.GetWeakPtr()))
+          .Once()
+          .SetDuration(base::Milliseconds(
+              features::kSidePanelFlyoverDurationMs.Get()))
+          .SetOpacity(layer(), 1.0f);
 
   if (drop_shadow_painted_layer_) {
     drop_shadow_painted_layer_->layer()->SetOpacity(0.0f);
