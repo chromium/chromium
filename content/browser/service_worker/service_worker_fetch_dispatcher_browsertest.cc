@@ -24,6 +24,13 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "net/base/load_timing_internal_info.h"
+#include "net/ssl/ssl_info.h"
+#include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/load_timing_internal_info.mojom.h"
+#include "services/network/public/mojom/url_loader.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "services/network/test/test_url_loader_client.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
 
@@ -295,6 +302,56 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerFetchDispatcherBrowserTest,
   WaitForNoWork(version);
 
   EXPECT_TRUE(version->HasNoWork());
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerFetchDispatcherBrowserTest,
+                       DelegatingURLLoaderClientRobustness) {
+  network::ResourceRequest request;
+  request.url = GURL("https://example.com");
+
+  {
+    network::TestURLLoaderClient test_client;
+    auto delegating_client =
+        ServiceWorkerFetchDispatcher::CreateDelegatingURLLoaderClientForTesting(
+            test_client.CreateRemote(), request);
+
+    auto head = network::mojom::URLResponseHead::New();
+    head->load_timing_internal_info = net::LoadTimingInternalInfo();
+    head->load_timing_internal_info->create_stream_delay =
+        base::Milliseconds(10);
+    head->ssl_info.emplace();
+
+    delegating_client->OnReceiveResponse(
+        std::move(head), mojo::ScopedDataPipeConsumerHandle(), std::nullopt);
+    test_client.RunUntilResponseReceived();
+
+    ASSERT_TRUE(test_client.response_head());
+    EXPECT_FALSE(
+        test_client.response_head()->load_timing_internal_info.has_value());
+    EXPECT_FALSE(test_client.response_head()->ssl_info.has_value());
+  }
+
+  {
+    network::TestURLLoaderClient test_client;
+    auto delegating_client =
+        ServiceWorkerFetchDispatcher::CreateDelegatingURLLoaderClientForTesting(
+            test_client.CreateRemote(), request);
+
+    auto head = network::mojom::URLResponseHead::New();
+    head->load_timing_internal_info = net::LoadTimingInternalInfo();
+    head->load_timing_internal_info->create_stream_delay =
+        base::Milliseconds(15);
+    head->ssl_info.emplace();
+    net::RedirectInfo redirect_info;
+
+    delegating_client->OnReceiveRedirect(redirect_info, std::move(head));
+    test_client.RunUntilRedirectReceived();
+
+    ASSERT_TRUE(test_client.response_head());
+    EXPECT_FALSE(
+        test_client.response_head()->load_timing_internal_info.has_value());
+    EXPECT_FALSE(test_client.response_head()->ssl_info.has_value());
+  }
 }
 
 }  // namespace content

@@ -89,6 +89,11 @@ class CONTENT_EXPORT ServiceWorkerFetchDispatcher {
   static void ForceDisableHighPriorityFetchResponseCallbackForTesting(
       bool force_disable);
 
+  static std::unique_ptr<network::mojom::URLLoaderClient>
+  CreateDelegatingURLLoaderClientForTesting(
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+      const network::ResourceRequest& request);
+
   void set_race_network_request_token(base::UnguessableToken token) {
     race_network_request_token_ = token;
   }

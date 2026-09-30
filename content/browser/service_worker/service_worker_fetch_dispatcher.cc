@@ -82,6 +82,17 @@ void NotifyNavigationPreloadCompleted(
       worker_id.first, worker_id.second, request_id, status);
 }
 
+// The fetch handler observes the response as a subresource fetch and does not
+// require navigation-only internal timing or SSL info.
+void SanitizeResponseHeadForFetchHandler(
+    network::mojom::URLResponseHeadPtr& head) {
+  if (!head) {
+    return;
+  }
+  head->load_timing_internal_info.reset();
+  head->ssl_info.reset();
+}
+
 // DelegatingURLLoaderClient is the URLLoaderClient for the navigation preload
 // network request. It watches as the response comes in, and pipes the response
 // back to the service worker while also doing extra processing like notifying
@@ -154,6 +165,7 @@ class DelegatingURLLoaderClient final : public network::mojom::URLLoaderClient {
           base::BindOnce(&NotifyNavigationPreloadResponseReceived, url_,
                          std::move(deep_copied_response)));
     }
+    SanitizeResponseHeadForFetchHandler(head);
     client_->OnReceiveResponse(std::move(head), std::move(body),
                                std::move(cached_metadata));
   }
@@ -175,6 +187,7 @@ class DelegatingURLLoaderClient final : public network::mojom::URLLoaderClient {
           base::BindOnce(&NotifyNavigationPreloadCompleted, status));
     }
     completed_ = true;
+    SanitizeResponseHeadForFetchHandler(head);
     // When the server returns a redirect response, we only send
     // OnReceiveRedirect IPC and don't send OnComplete IPC. The service worker
     // will clean up the preload request when OnReceiveRedirect() is called.
@@ -463,6 +476,15 @@ class ServiceWorkerFetchDispatcher::URLLoaderAssets
   // Both:
   std::unique_ptr<DelegatingURLLoaderClient> url_loader_client_;
 };
+
+// static
+std::unique_ptr<network::mojom::URLLoaderClient>
+ServiceWorkerFetchDispatcher::CreateDelegatingURLLoaderClientForTesting(
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+    const network::ResourceRequest& request) {
+  return std::make_unique<DelegatingURLLoaderClient>(std::move(client),
+                                                     request);
+}
 
 ServiceWorkerFetchDispatcher::ServiceWorkerFetchDispatcher(
     blink::mojom::FetchAPIRequestPtr request,
