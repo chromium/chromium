@@ -124,6 +124,11 @@ class CORE_EXPORT StyleRecalcContext {
 
   // True if this element has a container-type:anchored ancestor.
   bool has_anchored_container = false;
+
+  // True if the flat tree parent is an overscroll container, or has been one
+  // and may still track overscroll areas. Only such children need
+  // OverscrollAreaTracker::UpdateOverscrollArea().
+  bool is_overscroll_container_child = false;
 };
 
 }  // namespace blink

@@ -10,6 +10,7 @@
 #include "third_party/blink/public/mojom/scroll/scroll_enums.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_pointer_event_init.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
+#include "third_party/blink/renderer/core/css/style_recalc_context.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -1371,6 +1372,38 @@ TEST_F(OverscrollAreaTrackerPageTest, OverscrollContainerTypeNone) {
   EXPECT_FALSE(foo->GetPseudoElement(kPseudoIdOverscrollAreaParent));
   EXPECT_TRUE(
       container->GetOverscrollAreaTracker()->DOMSortedElements().empty());
+}
+
+TEST_F(OverscrollAreaTrackerPageTest, StyleRecalcContextContainerChild) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="container" overscrollcontainer>
+      <div id="area" overscrollarea>
+        <div id="grandchild"></div>
+      </div>
+    </div>
+    <button command="toggle-overscroll" commandfor="area"></button>
+  )HTML");
+  Element* container = GetElementById("container");
+  Element* area = GetElementById("area");
+  Element* grandchild = GetElementById("grandchild");
+
+  EXPECT_FALSE(StyleRecalcContext::FromAncestors(*container)
+                   .is_overscroll_container_child);
+  EXPECT_TRUE(
+      StyleRecalcContext::FromAncestors(*area).is_overscroll_container_child);
+  EXPECT_FALSE(StyleRecalcContext::FromAncestors(*grandchild)
+                   .is_overscroll_container_child);
+  EXPECT_FALSE(StyleRecalcContext::FromParentContext(
+                   StyleRecalcContext::FromAncestors(*area), *area)
+                   .is_overscroll_container_child);
+
+  // The area of a former container still needs to be unregistered.
+  container->SetInlineStyleProperty(CSSPropertyID::kOverscrollContainerType,
+                                    "none");
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(area->IsValidOverscrollArea());
+  EXPECT_TRUE(
+      StyleRecalcContext::FromAncestors(*area).is_overscroll_container_child);
 }
 
 TEST_F(OverscrollAreaTrackerPageTest, OverscrollContainerSubtreeTracking) {

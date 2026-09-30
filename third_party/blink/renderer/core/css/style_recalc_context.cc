@@ -9,13 +9,31 @@
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
+
+namespace {
+
+// A former overscroll container still has a tracker with areas to remove.
+bool IsOrWasOverscrollContainer(const Element& element) {
+  if (!RuntimeEnabledFeatures::OverscrollGesturesEnabled()) {
+    return false;
+  }
+  const ComputedStyle* style = element.GetComputedStyle();
+  return (style && style->EffectiveOverscrollContainerType() !=
+                       EOverscrollContainerType::kNone) ||
+         element.GetOverscrollAreaTracker();
+}
+
+}  // namespace
 
 StyleRecalcContext StyleRecalcContext::FromInclusiveAncestors(
     Element& start_element,
     PseudoId pseudo_id) {
   StyleRecalcContext result;
+  result.is_overscroll_container_child =
+      IsOrWasOverscrollContainer(start_element);
   for (Element* element = &start_element; element;
        element = FlatTreeTraversal::ParentElement(*element)) {
     if (const ComputedStyle* style = element->GetComputedStyle()) {
@@ -92,6 +110,7 @@ StyleRecalcContext StyleRecalcContext::FromParentContext(
   result.anchor_evaluator = nullptr;
   result.try_set = nullptr;
   result.try_tactics_set = nullptr;
+  result.is_overscroll_container_child = IsOrWasOverscrollContainer(element);
 
   if (!result.has_content_visibility_auto_locked_ancestor) {
     if (const DisplayLockContext* display_lock_context =

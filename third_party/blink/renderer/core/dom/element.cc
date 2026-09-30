@@ -5334,6 +5334,7 @@ void Element::RecalcStyle(const StyleRecalcChange change,
     // run before rule collection because of potentially matching
     // pseudo-classes.
     bool overscroll_container_changed =
+        style_recalc_context.is_overscroll_container_child &&
         OverscrollAreaTracker::UpdateOverscrollArea(*this);
     child_change = RecalcOwnStyle(change, local_style_recalc_context);
     if (overscroll_container_changed) {
