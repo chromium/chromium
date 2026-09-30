@@ -336,4 +336,34 @@ suite('TabPickerTest', () => {
         assert(reopenedItem0);
         assertTrue(isVisible(reopenedItem0.querySelector('.share-tabs-check')));
       });
+
+  test('Dark mode reflects attribute correctly', async () => {
+    assertFalse(app.getDarkModeForTesting());
+    assertFalse(app.hasAttribute('dark-mode'));
+
+    app.setDarkModeForTesting(true);
+    await microtasksFinished();
+    assertTrue(app.hasAttribute('dark-mode'));
+
+    app.setDarkModeForTesting(false);
+    await microtasksFinished();
+    assertFalse(app.hasAttribute('dark-mode'));
+  });
+
+  test('Flyout item text color adapts in dark mode', async () => {
+    app.$.shareTabsTrigger.click();
+    await microtasksFinished();
+    assertTrue(app.$.tabMenu.open);
+
+    const items =
+        app.$.tabMenu.querySelectorAll<HTMLButtonElement>('.dropdown-item');
+    const [item0] = items;
+    assert(item0);
+
+    app.setDarkModeForTesting(true);
+    await microtasksFinished();
+
+    const color = window.getComputedStyle(item0).color;
+    assertEquals('rgb(230, 232, 240)', color);
+  });
 });
