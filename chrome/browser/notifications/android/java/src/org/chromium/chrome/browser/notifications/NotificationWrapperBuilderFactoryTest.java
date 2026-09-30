@@ -7,17 +7,13 @@ package org.chromium.chrome.browser.notifications;
 import android.app.Notification;
 import android.app.NotificationChannel;
 
-import androidx.test.filters.MediumTest;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
@@ -29,8 +25,7 @@ import org.chromium.components.browser_ui.notifications.NotificationWrapperBuild
  * NotificationWrapperBuilderFactory#createNotificationWrapperBuilder(String)} can be built and the
  * notifications they build don't cause a crash when passed to NotificationManager#notify.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@RunWith(BaseRobolectricTestRunner.class)
 public class NotificationWrapperBuilderFactoryTest {
     private static final int TEST_NOTIFICATION_ID = 101;
 
@@ -58,7 +53,6 @@ public class NotificationWrapperBuilderFactoryTest {
         }
     }
 
-    @MediumTest
     @Test
     public void buildNotificationAndNotifyDoesNotCrash() {
         NotificationWrapperBuilder notificationBuilder =
@@ -74,7 +68,6 @@ public class NotificationWrapperBuilderFactoryTest {
         mNotificationManager.notify(TEST_NOTIFICATION_ID, notification);
     }
 
-    @MediumTest
     @Test
     public void buildNotificationWrapper() {
         NotificationWrapperBuilder builder =

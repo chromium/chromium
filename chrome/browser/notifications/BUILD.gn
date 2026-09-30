@@ -704,6 +704,7 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationIntentInterceptorTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationSystemStatusUtilUnitTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/NotificationTestUtil.java",
+      "android/java/src/org/chromium/chrome/browser/notifications/NotificationWrapperBuilderFactoryTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/PendingIntentProviderTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/StandardNotificationBuilderTest.java",
       "android/java/src/org/chromium/chrome/browser/notifications/ThrottlingNotificationSchedulerTest.java",
@@ -746,36 +747,6 @@ if (is_android) {
       "//third_party/mockito:mockito_java",
       "//ui/android:ui_java_test_support",
       "//ui/android:ui_no_recycler_view_java",
-    ]
-  }
-
-  android_library("javatests") {
-    testonly = true
-    resources_package = "org.chromium.chrome.browser.notifications"
-
-    sources = [ "android/java/src/org/chromium/chrome/browser/notifications/NotificationWrapperBuilderFactoryTest.java" ]
-
-    deps = [
-      ":java",
-      ":java_resources",
-      "//base:base_java",
-      "//base:base_java_test_support",
-      "//chrome/browser/flags:java",
-      "//chrome/browser/preferences:java",
-      "//chrome/test/android:chrome_java_integration_test_support",
-      "//components/browser_ui/notifications/android:java",
-      "//components/browser_ui/util/android:java",
-      "//components/browser_ui/widget/android:java",
-      "//content/public/test/android:content_java_test_support",
-      "//third_party/androidx:androidx_annotation_annotation_java",
-      "//third_party/androidx:androidx_test_core_java",
-      "//third_party/androidx:androidx_test_monitor_java",
-      "//third_party/androidx:androidx_test_runner_java",
-      "//third_party/hamcrest:hamcrest_core_java",
-      "//third_party/hamcrest:hamcrest_library_java",
-      "//third_party/junit",
-      "//third_party/mockito:mockito_java",
-      "//url:gurl_java",
     ]
   }
 

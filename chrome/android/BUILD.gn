@@ -1560,7 +1560,6 @@ if (_is_default_toolchain) {
       "//chrome/browser/image_descriptions:javatests",
       "//chrome/browser/incognito:incognito_java_tests",
       "//chrome/browser/language/android:javatests",
-      "//chrome/browser/notifications:javatests",
       "//chrome/browser/optimization_guide/android:javatests",
       "//chrome/browser/prefetch/android:javatests",
       "//chrome/browser/privacy_guide/android:javatests",
