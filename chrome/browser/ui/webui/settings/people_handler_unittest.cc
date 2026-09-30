@@ -74,6 +74,7 @@
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/test_web_ui.h"
 #include "content/public/test/web_contents_tester.h"
+#include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -1415,6 +1416,22 @@ TEST_F(PeopleHandlerTest, ChromeSigninUserChoice) {
   histogram_tester.ExpectBucketCount(
       "Signin.Settings.ChromeSigninSettingModification",
       /*`ChromeSigninSettingModification::kToSignin`*/ 2, 1);
+}
+
+// The settings page may send an email whose account has since been removed.
+// The request must be ignored rather than stored under an empty `GaiaId`.
+TEST_F(PeopleHandlerTest, ChromeSigninUserChoiceIgnoredForUnknownAccount) {
+  base::HistogramTester histogram_tester;
+  CreatePeopleHandler();
+
+  SimulateHandleSetChromeSigninUserChoiceInfo(
+      "unknown@gmail.com", ChromeSigninUserChoice::kDoNotSignin);
+
+  EXPECT_EQ(SigninPrefs(*profile()->GetPrefs())
+                .GetChromeSigninInterceptionUserChoice(GaiaId()),
+            ChromeSigninUserChoice::kNoChoice);
+  histogram_tester.ExpectTotalCount(
+      "Signin.Settings.ChromeSigninSettingModification", 0);
 }
 
 TEST_F(PeopleHandlerTest,

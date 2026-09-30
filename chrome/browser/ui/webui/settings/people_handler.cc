@@ -1486,6 +1486,14 @@ void PeopleHandler::HandleSetChromeSigninUserChoice(
   AccountInfo account =
       IdentityManagerFactory::GetForProfile(profile_)
           ->FindExtendedAccountInfoByEmailAddress(signed_in_email);
+  // The page is refreshed when the signed-in accounts change, but this request
+  // is asynchronous: it can race with the account being removed, and
+  // `signed_in_email` comes from the renderer. Ignore unknown accounts rather
+  // than using an empty `GaiaId`.
+  if (account.IsEmpty()) {
+    return;
+  }
+
   SigninPrefs signin_prefs(*profile_->GetPrefs());
   // Early return to avoid recording histogram settings modifications. Also
   // guarantees that the `user_choice` is from a user modification through the
