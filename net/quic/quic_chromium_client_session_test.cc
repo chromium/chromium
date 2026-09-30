@@ -2486,9 +2486,8 @@ TEST_P(QuicChromiumClientSessionTest, ProbingFailsWithNoUnusedConnectionId) {
       "Net.Quic.Migration.Attempt.SpuriousOutcome", 0);
   histogram_tester.ExpectTotalCount(
       "Net.Quic.Migration.Attempt.UnclassifiedOutcome", 0);
-  histogram_tester.ExpectUniqueSample(
-      "Net.QuicSession.ConnectionMigration",
-      MIGRATION_STATUS_INTERNAL_ERROR, 1);
+  histogram_tester.ExpectUniqueSample("Net.QuicSession.ConnectionMigration",
+                                      MIGRATION_STATUS_INTERNAL_ERROR, 1);
 }
 
 TEST_P(QuicChromiumClientSessionTest, MaybeCancelProbing_IneligibleReason) {
@@ -2612,9 +2611,9 @@ TEST_P(QuicChromiumClientSessionTest, MaybeCancelProbing_SupersededReason) {
                                QuicMigrationAttemptCause::kOnWriteError);
 
   histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.Eligible", 0);
-  histogram_tester.ExpectUniqueSample(
-      "Net.Quic.Migration.Attempt.Superseded",
-      QuicMigrationAttemptCause::kOnWriteError, 1);
+  histogram_tester.ExpectUniqueSample("Net.Quic.Migration.Attempt.Superseded",
+                                      QuicMigrationAttemptCause::kOnWriteError,
+                                      1);
   histogram_tester.ExpectTotalCount("Net.Quic.Migration.Attempt.FailureReason",
                                     0);
   histogram_tester.ExpectTotalCount(
@@ -4330,6 +4329,62 @@ TEST_P(QuicChromiumClientSessionTest,
   histogram_tester.ExpectTotalCount(
       "Net.QuicSession.GoogleSearch.EstablishmentReason2.NonPreconnect.Used",
       0);
+}
+
+TEST_P(QuicChromiumClientSessionTest, SupersededReasonMapping) {
+  constexpr QuicMigrationAttemptCause kCauses[] = {
+      QuicMigrationAttemptCause::kUnknown,
+      QuicMigrationAttemptCause::kOnNetworkDisconnected,
+      QuicMigrationAttemptCause::kOnWriteError,
+      QuicMigrationAttemptCause::kOnNetworkMadeDefault,
+      QuicMigrationAttemptCause::kOnMigrateBackToDefaultNetwork,
+      QuicMigrationAttemptCause::kChangeNetworkOnPathDegrading,
+      QuicMigrationAttemptCause::kChangePortOnPathDegrading,
+      QuicMigrationAttemptCause::kNewNetworkConnectedPostPathDegrading,
+      QuicMigrationAttemptCause::kOnServerPreferredAddressAvailable,
+      QuicMigrationAttemptCause::kMultiPortPath,
+  };
+
+  for (QuicMigrationAttemptCause cause : kCauses) {
+    quic::PathValidationFailure::Reason reason =
+        QuicChromiumClientSession::ChromiumMigrationCauseToQuicheFailureReason(
+            cause);
+    EXPECT_EQ(
+        QuicChromiumClientSession::QuicheFailureReasonToChromiumMigrationCause(
+            reason),
+        cause);
+  }
+
+  // Non-superseded reasons should return kUnknown.
+  EXPECT_EQ(
+      QuicChromiumClientSession::QuicheFailureReasonToChromiumMigrationCause(
+          quic::PathValidationFailure::Reason::kUnknown),
+      QuicMigrationAttemptCause::kUnknown);
+  EXPECT_EQ(
+      QuicChromiumClientSession::QuicheFailureReasonToChromiumMigrationCause(
+          quic::PathValidationFailure::Reason::kStatelessReset),
+      QuicMigrationAttemptCause::kUnknown);
+  EXPECT_EQ(
+      QuicChromiumClientSession::QuicheFailureReasonToChromiumMigrationCause(
+          quic::PathValidationFailure::Reason::kRetryTimeout),
+      QuicMigrationAttemptCause::kUnknown);
+  EXPECT_EQ(
+      QuicChromiumClientSession::QuicheFailureReasonToChromiumMigrationCause(
+          quic::PathValidationFailure::Reason::kNotConnected),
+      QuicMigrationAttemptCause::kUnknown);
+  EXPECT_EQ(
+      QuicChromiumClientSession::QuicheFailureReasonToChromiumMigrationCause(
+          quic::PathValidationFailure::Reason::kNoAvailableConnectionId),
+      QuicMigrationAttemptCause::kUnknown);
+  EXPECT_EQ(
+      QuicChromiumClientSession::QuicheFailureReasonToChromiumMigrationCause(
+          quic::PathValidationFailure::Reason::kWriterError),
+      QuicMigrationAttemptCause::kUnknown);
+  EXPECT_EQ(
+      QuicChromiumClientSession::QuicheFailureReasonToChromiumMigrationCause(
+          quic::PathValidationFailure::Reason::
+              kNewerValidationOnNetworkConnected),
+      QuicMigrationAttemptCause::kUnknown);
 }
 
 }  // namespace

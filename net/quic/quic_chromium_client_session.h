@@ -183,6 +183,14 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   // Only for testing.
   static void SetMidMigrationCallbackForTesting(base::OnceClosure callback);
 
+  // Maps between Chromium's QuicMigrationAttemptCause and QUICHE's
+  // quic::PathValidationFailure::Reason for path validations superseded by
+  // a new migration.
+  static quic::PathValidationFailure::Reason
+  ChromiumMigrationCauseToQuicheFailureReason(QuicMigrationAttemptCause cause);
+  static QuicMigrationAttemptCause QuicheFailureReasonToChromiumMigrationCause(
+      quic::PathValidationFailure::Reason reason);
+
   class StreamRequest;
 
   // An interface that when implemented and added via

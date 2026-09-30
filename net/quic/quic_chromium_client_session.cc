@@ -495,6 +495,79 @@ void QuicChromiumClientSession::SetMidMigrationCallbackForTesting(
   MidMigrationCallbackForTesting() = std::move(callback);  // IN-TEST
 }
 
+// static
+quic::PathValidationFailure::Reason
+QuicChromiumClientSession::ChromiumMigrationCauseToQuicheFailureReason(
+    QuicMigrationAttemptCause cause) {
+  using enum quic::PathValidationFailure::Reason;
+  switch (cause) {
+    case QuicMigrationAttemptCause::kChangeNetworkOnPathDegrading:
+      return kNewerValidationOnChangeNetworkOnPathDegrading;
+    case QuicMigrationAttemptCause::kChangePortOnPathDegrading:
+      return kNewerValidationOnChangePortOnPathDegrading;
+    case QuicMigrationAttemptCause::kOnMigrateBackToDefaultNetwork:
+      return kNewerValidationOnMigrateBackToDefaultNetwork;
+    case QuicMigrationAttemptCause::kMultiPortPath:
+      return kNewerValidationOnMultiPortPath;
+    case QuicMigrationAttemptCause::kNewNetworkConnectedPostPathDegrading:
+      return kNewerValidationOnNewNetworkConnectedPostPathDegrading;
+    case QuicMigrationAttemptCause::kOnNetworkDisconnected:
+      return kNewerValidationOnNetworkDisconnected;
+    case QuicMigrationAttemptCause::kOnNetworkMadeDefault:
+      return kNewerValidationOnNetworkMadeDefault;
+    case QuicMigrationAttemptCause::kOnServerPreferredAddressAvailable:
+      return kNewerValidationOnServerPreferredAddressAvailable;
+    case QuicMigrationAttemptCause::kUnknown:
+      return kNewerValidation;
+    case QuicMigrationAttemptCause::kOnWriteError:
+      return kNewerValidationOnWriteError;
+  }
+}
+
+// static
+QuicMigrationAttemptCause
+QuicChromiumClientSession::QuicheFailureReasonToChromiumMigrationCause(
+    quic::PathValidationFailure::Reason reason) {
+  using enum quic::PathValidationFailure::Reason;
+  switch (reason) {
+    case kNewerValidationOnChangeNetworkOnPathDegrading:
+      return QuicMigrationAttemptCause::kChangeNetworkOnPathDegrading;
+    case kNewerValidationOnChangePortOnPathDegrading:
+      return QuicMigrationAttemptCause::kChangePortOnPathDegrading;
+    case kNewerValidationOnMigrateBackToDefaultNetwork:
+      return QuicMigrationAttemptCause::kOnMigrateBackToDefaultNetwork;
+    case kNewerValidationOnMultiPortPath:
+      return QuicMigrationAttemptCause::kMultiPortPath;
+    case kNewerValidationOnNetworkDisconnected:
+      return QuicMigrationAttemptCause::kOnNetworkDisconnected;
+    case kNewerValidationOnNetworkMadeDefault:
+      return QuicMigrationAttemptCause::kOnNetworkMadeDefault;
+    case kNewerValidationOnNewNetworkConnectedPostPathDegrading:
+      return QuicMigrationAttemptCause::kNewNetworkConnectedPostPathDegrading;
+    case kNewerValidationOnServerPreferredAddressAvailable:
+      return QuicMigrationAttemptCause::kOnServerPreferredAddressAvailable;
+    case kNewerValidationOnWriteError:
+      return QuicMigrationAttemptCause::kOnWriteError;
+    // This can only happen when an in-progress validation is not explicitly
+    // cancelled by Chromium before starting a new one. After
+    // https://crrev.com/c/8461077 this should no longer happen.
+    case kNewerValidation:
+      return QuicMigrationAttemptCause::kUnknown;
+    // Values that are not tracked yet in Chromium.
+    case kNewerValidationOnNetworkConnected:
+      return QuicMigrationAttemptCause::kUnknown;
+    // Values that should never happen as they cannot be the trigger for a new
+    // migration attempt.
+    case kNoAvailableConnectionId:
+    case kNotConnected:
+    case kRetryTimeout:
+    case kStatelessReset:
+    case kUnknown:
+    case kWriterError:
+      return QuicMigrationAttemptCause::kUnknown;
+  }
+}
+
 QuicChromiumClientSession::Handle::Handle(
     const base::WeakPtr<QuicChromiumClientSession>& session,
     url::SchemeHostPort destination)
@@ -2767,15 +2840,9 @@ void QuicChromiumClientSession::MaybeCancelProbing(
       failure_reason = quic::PathValidationFailure::Reason::kNotConnected;
       break;
     case ProbingCancellationReason::kSuperseded:
-      // We need to set the superseded cause here because within
-      // LogPathValidationFailure we do not have access to the new attempt that
-      // is superseding this one. TODO(crbug.com/557126867): Consider, for
-      // example, extending QUICHE's quic::PathValidationFailure::Reason to
-      // support all of QuicMigrationAttemptCause's values. This would let us
-      // move all logging for probes to LogPathValidationFailure.
       CHECK(superseded_cause.has_value());
-      context->migration_context()->SetSuperseded(*superseded_cause);
-      failure_reason = quic::PathValidationFailure::Reason::kNewerValidation;
+      failure_reason =
+          ChromiumMigrationCauseToQuicheFailureReason(*superseded_cause);
       break;
   }
 
@@ -3602,10 +3669,11 @@ void QuicChromiumClientSession::FinishStartProbing(
   QuicMigrationAttemptCause cause = context->cause();
   if (auto* existing_context = static_cast<QuicChromiumPathValidationContext*>(
           connection()->GetPathValidationContext())) {
-    // If present, mark the existing probing attempt as superseded to record
-    // what type of migration attempt caused this superseding. The validation
-    // itself will be canceled by `ValidatePath`.
-    existing_context->migration_context()->SetSuperseded(cause);
+    // If a probe is currently in flight, explicitly cancel it with its
+    // superseding cause before ValidatePath() starts the new one.
+    MaybeCancelProbing(existing_context->network(),
+                       existing_context->peer_address(),
+                       ProbingCancellationReason::kSuperseded, cause);
   }
 
   context->reader()->StartReading();
@@ -3936,7 +4004,8 @@ void QuicChromiumClientSession::LogPathValidationFailure(
   CHECK(context->migration_context());
   QuicMigrationAttemptContext* migration_context = context->migration_context();
 
-  switch (context->failure_reason().value_or(kUnknown)) {
+  const auto failure_reason = context->failure_reason().value_or(kUnknown);
+  switch (failure_reason) {
     case kUnknown:
       // This should never happen. We should CHECK-fail, but we're not 100%
       // certain yet that it won't happen in production. Consider CHECK-failing
@@ -3970,8 +4039,6 @@ void QuicChromiumClientSession::LogPathValidationFailure(
       migration_context->SetFailure(
           QuicMigrationAttemptFailureReason::kStatelessReset);
       break;
-    // TODO(crbug.com/557126867): Correctly report the new kNewerValidation*
-    // variants separately.
     case kNewerValidationOnNetworkConnected:
     case kNewerValidationOnNetworkDisconnected:
     case kNewerValidationOnWriteError:
@@ -3985,10 +4052,8 @@ void QuicChromiumClientSession::LogPathValidationFailure(
     case kNewerValidation:
       status = MIGRATION_STATUS_CANCELED_BY_NEWER_VALIDATION;
       reason = "New migration, canceling old validation";
-      // Active cancellations originating from Chromium (e.g., a newer probe
-      // in `FinishStartProbing` or immediate migration in
-      // `MigrateNetworkImmediately`) will have already marked the attempt with
-      // the specific superseded cause before path validation is canceled.
+      migration_context->SetSuperseded(
+          QuicheFailureReasonToChromiumMigrationCause(failure_reason));
       break;
     case kRetryTimeout:
       status = MIGRATION_STATUS_TIMEOUT;
