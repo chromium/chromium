@@ -42,29 +42,26 @@ class TabModelJniBridge : public TabModel {
                     std::optional<chrome::android::CustomTabProfileType>
                         custom_tab_profile_type,
                     TabModelType tab_model_type);
-  void Destroy(JNIEnv* env);
+  void Destroy();
 
   TabModelJniBridge(const TabModelJniBridge&) = delete;
   TabModelJniBridge& operator=(const TabModelJniBridge&) = delete;
 
   ~TabModelJniBridge() override;
 
-  void AssociateWithBrowserWindow(JNIEnv* env,
-                                  long native_android_browser_window);
-  void DissociateWithBrowserWindow(JNIEnv* env);
-  void TabAddedToModel(JNIEnv* env, TabAndroid* tab);
+  void AssociateWithBrowserWindow(int64_t native_android_browser_window);
+  void DissociateWithBrowserWindow();
+  void TabAddedToModel(TabAndroid* tab);
   TabAndroid* DuplicateTab(JNIEnv* env, TabAndroid* tab);
-  void MoveTabToWindowForTesting(JNIEnv* env,
-                                 TabAndroid* tab,
-                                 long native_browser_window_ptr,
+  void MoveTabToWindowForTesting(TabAndroid* tab,
+                                 int64_t native_browser_window_ptr,
                                  int new_index);
-  bool MoveTabGroupToWindowForTesting(JNIEnv* env,
-                                      const base::Token& group_id,
-                                      long native_browser_window_ptr,
+  bool MoveTabGroupToWindowForTesting(const base::Token& group_id,
+                                      int64_t native_browser_window_ptr,
                                       int new_index);
-  void SetMuteSetting(JNIEnv* env, std::vector<TabAndroid*> tabs, bool mute);
-  int32_t GetSessionIdForTesting(JNIEnv* env);
-  chrome::android::ActivityType GetActivityTypeForTesting(JNIEnv* env);
+  void SetMuteSetting(const std::vector<TabAndroid*>& tabs, bool mute);
+  int32_t GetSessionIdForTesting();
+  chrome::android::ActivityType GetActivityTypeForTesting();
 
   // TabModel::
   void AddTabListInterfaceObserver(TabListInterfaceObserver* observer) override;
@@ -77,7 +74,7 @@ class TabModelJniBridge : public TabModel {
   content::WebContents* GetWebContentsAt(int index) const override;
   TabAndroid* GetTabAt(int index) const override;
   bool HasTab(TabAndroid* tab) const override;
-  base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const override;
+  jni_zero::ScopedJavaLocalRef<jobject> GetJavaObject() const override;
 
   void SetActiveIndex(int index) override;
   void ForceCloseAllTabs() override;
@@ -109,7 +106,7 @@ class TabModelJniBridge : public TabModel {
 
   // Instructs the TabModel to broadcast a notification that all tabs are now
   // loaded from storage.
-  void BroadcastSessionRestoreComplete(JNIEnv* env);
+  void BroadcastSessionRestoreComplete();
 
   int GetTabCountNavigatedInTimeWindow(
       const base::Time& begin_time,

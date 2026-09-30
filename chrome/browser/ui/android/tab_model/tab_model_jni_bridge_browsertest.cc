@@ -67,7 +67,7 @@ class TabModelJniBridgeTest : public AndroidBrowserTest {
 
   // Calls SetMuteSetting on the bridge.
   void SetMuteSetting(const std::vector<TabAndroid*>& tabs, bool mute) {
-    bridge()->SetMuteSetting(/*env=*/nullptr, tabs, mute);
+    bridge()->SetMuteSetting(tabs, mute);
   }
 
   // Navigates the given tab to the URL and waits for completion.
@@ -437,7 +437,7 @@ IN_PROC_BROWSER_TEST_F(TabModelJniBridgeBackgroundTabLoadingTest,
   ASSERT_EQ(tab2->GetContents()->GetLastCommittedURL(), url2);
 
   content::TestNavigationObserver observer(tab2->GetContents());
-  bridge()->BroadcastSessionRestoreComplete(/*env=*/nullptr);
+  bridge()->BroadcastSessionRestoreComplete();
   observer.WaitForNavigationFinished();
 
   EXPECT_FALSE(tab2->GetContents()->GetController().NeedsReload());
@@ -480,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(TabModelJniBridgeDisabledBackgroundTabLoadingTest,
   ASSERT_TRUE(tab2->GetContents()->GetController().NeedsReload());
 
   EXPECT_FALSE(performance_manager::policies::CanScheduleLoadForRestoredTabs());
-  bridge()->BroadcastSessionRestoreComplete(/*env=*/nullptr);
+  bridge()->BroadcastSessionRestoreComplete();
 
   // Should still need reload because background loading policy was not active.
   EXPECT_TRUE(tab2->GetContents()->GetController().NeedsReload());

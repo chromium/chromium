@@ -504,7 +504,7 @@ public class ExtensionsMenuCoordinator
     }
 
     @Override
-    public void onActiveWebContentsChanged(WebContents webContents) {
+    public void onActiveWebContentsChanged(@Nullable WebContents webContents) {
         updateButtonState(webContents);
     }
 

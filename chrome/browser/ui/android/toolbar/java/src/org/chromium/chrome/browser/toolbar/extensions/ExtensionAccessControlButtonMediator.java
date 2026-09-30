@@ -324,9 +324,9 @@ class ExtensionAccessControlButtonMediator implements Destroyable {
 
     private class ToolbarObserver implements ExtensionsToolbarBridge.Observer {
         @Override
-        public void onActiveWebContentsChanged(WebContents webContents) {
+        public void onActiveWebContentsChanged(@Nullable WebContents webContents) {
             clearAllowedTextStateIfDifferentWebContents(webContents);
-            if (mIsShowingAllowedText) return;
+            if (mIsShowingAllowedText || webContents == null) return;
             refreshRequestAccessButtonWithWebContents(webContents);
         }
 

@@ -7,20 +7,13 @@
 #include "base/android/jni_string.h"
 #include "components/omnibox/browser/omnibox_text_util.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/ui/android/omnibox/jni_headers/OmniboxViewUtil_jni.h"
 
-using base::android::JavaRef;
-using base::android::ScopedJavaLocalRef;
-
 // static
-static ScopedJavaLocalRef<jstring> JNI_OmniboxViewUtil_SanitizeTextForPaste(
-    JNIEnv* env,
-    const JavaRef<jstring>& jtext) {
-  std::u16string pasted_text(
-      base::android::ConvertJavaStringToUTF16(env, jtext));
-  pasted_text = omnibox::SanitizeTextForPaste(pasted_text);
-  return base::android::ConvertUTF16ToJavaString(env, pasted_text);
+static std::u16string JNI_OmniboxViewUtil_SanitizeTextForPaste(
+    const std::u16string& text) {
+  return omnibox::SanitizeTextForPaste(text);
 }
 
 DEFINE_JNI(OmniboxViewUtil)

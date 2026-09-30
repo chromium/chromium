@@ -23,9 +23,9 @@ public class ExtensionsMenuButtonState {
 
     @CalledByNative
     public ExtensionsMenuButtonState(
-            @JniType("std::string") String tooltip,
-            @JniType("std::string") String accessibleText,
-            @Nullable Bitmap icon) {
+            @JniType("std::u16string") String tooltip,
+            @JniType("std::u16string") String accessibleText,
+            @JniType("SkBitmap") @Nullable Bitmap icon) {
         mTooltip = tooltip;
         mAccessibleText = accessibleText;
         mIcon = icon;

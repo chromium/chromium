@@ -56,6 +56,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/resource_request_body_android.h"
 #include "content/public/common/url_constants.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "third_party/jni_zero/jni_zero.h"
 #include "ui/android/window_android.h"
 #include "ui/base/base_window.h"
@@ -65,16 +66,15 @@
 #include "url/android/gurl_android.h"
 #include "url/origin.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/android/chrome_jni_headers/TabModelJniBridge_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaRef;
-using base::android::ScopedJavaLocalRef;
 using chrome::android::ActivityType;
 using chrome::android::CustomTabProfileType;
 using content::WebContents;
+using jni_zero::JavaRef;
+using jni_zero::ScopedJavaLocalRef;
 using tab_groups::TabGroupColorId;
 using tab_groups::TabGroupVisualData;
 
@@ -134,13 +134,12 @@ TabModelJniBridge::TabModelJniBridge(
   }
 }
 
-void TabModelJniBridge::Destroy(JNIEnv* env) {
+void TabModelJniBridge::Destroy() {
   delete this;
 }
 
 void TabModelJniBridge::AssociateWithBrowserWindow(
-    JNIEnv* env,
-    long native_android_browser_window) {
+    int64_t native_android_browser_window) {
   BrowserWindowInterface* android_browser_window =
       reinterpret_cast<BrowserWindowInterface*>(native_android_browser_window);
   CHECK(android_browser_window != nullptr);
@@ -151,14 +150,13 @@ void TabModelJniBridge::AssociateWithBrowserWindow(
   SetSessionId(android_browser_window->GetSessionID());
 }
 
-void TabModelJniBridge::DissociateWithBrowserWindow(JNIEnv* env) {
+void TabModelJniBridge::DissociateWithBrowserWindow() {
   CHECK(scoped_unowned_user_data_ != nullptr);
   scoped_unowned_user_data_.reset();
   SetSessionId(SessionID::InvalidValue());
 }
 
-void TabModelJniBridge::TabAddedToModel(JNIEnv* env,
-                                        TabAndroid* tab) {
+void TabModelJniBridge::TabAddedToModel(TabAndroid* tab) {
   // Tab#initialize() should have been called by now otherwise we can't push
   // the window id.
   if (tab) {
@@ -179,9 +177,8 @@ TabAndroid* TabModelJniBridge::DuplicateTab(JNIEnv* env, TabAndroid* tab) {
 }
 
 void TabModelJniBridge::MoveTabToWindowForTesting(
-    JNIEnv* env,
     TabAndroid* tab,
-    long native_browser_window_ptr,
+    int64_t native_browser_window_ptr,
     int new_index) {
   SessionID destination_window_id =
       reinterpret_cast<BrowserWindowInterface*>(native_browser_window_ptr)
@@ -190,9 +187,8 @@ void TabModelJniBridge::MoveTabToWindowForTesting(
 }
 
 bool TabModelJniBridge::MoveTabGroupToWindowForTesting(
-    JNIEnv* env,
     const base::Token& group_id,
-    long native_browser_window_ptr,
+    int64_t native_browser_window_ptr,
     int new_index) {
   SessionID destination_window_id =
       reinterpret_cast<BrowserWindowInterface*>(native_browser_window_ptr)
@@ -217,8 +213,7 @@ bool TabModelJniBridge::IsClosingAllTabs() {
   return Java_TabModelJniBridge_isClosingAllTabs(env, java_object_.get(env));
 }
 
-void TabModelJniBridge::SetMuteSetting(JNIEnv* env,
-                                       std::vector<TabAndroid*> tabs,
+void TabModelJniBridge::SetMuteSetting(const std::vector<TabAndroid*>& tabs,
                                        bool mute) {
   Profile* profile = GetProfile();
   HostContentSettingsMap* map =
@@ -286,11 +281,11 @@ void TabModelJniBridge::SetMuteSetting(JNIEnv* env,
   }
 }
 
-int32_t TabModelJniBridge::GetSessionIdForTesting(JNIEnv* env) {
+int32_t TabModelJniBridge::GetSessionIdForTesting() {
   return GetSessionId().id();
 }
 
-ActivityType TabModelJniBridge::GetActivityTypeForTesting(JNIEnv* env) {
+ActivityType TabModelJniBridge::GetActivityTypeForTesting() {
   return activity_type();
 }
 
@@ -359,8 +354,7 @@ tabs::TabInterface* TabModelJniBridge::CreateTab(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
   TabAndroid* new_tab = Java_TabModelJniBridge_createTabWithWebContents(
-      env, java_object_.get(env), (parent ? parent->GetJavaObject() : nullptr),
-      profile->GetJavaObject(), web_contents->GetJavaWebContents(), index,
+      env, java_object_.get(env), parent, profile, web_contents.get(), index,
       static_cast<int>(type), should_pin);
   // If new tab creation is successful, Java assumes ownership of the lifetime
   // of the cloned WebContents.
@@ -391,15 +385,11 @@ void TabModelJniBridge::HandlePopupNavigation(TabAndroid* parent,
   const GURL& url = params->url;
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
-  ScopedJavaLocalRef<jobject> jurl = url::GURLAndroid::FromNativeGURL(env, url);
-  ScopedJavaLocalRef<jobject> jinitiator_origin =
-      params->initiator_origin ? params->initiator_origin->ToJavaObject(env)
-                               : nullptr;
   ScopedJavaLocalRef<jobject> jpost_data =
       content::ConvertResourceRequestBodyToJavaObject(env, params->post_data);
   Java_TabModelJniBridge_openNewTab(
-      env, jobj, parent->GetJavaObject(), jurl, jinitiator_origin,
-      params->extra_headers, jpost_data, static_cast<int>(disposition),
+      env, jobj, parent, url, params->initiator_origin, params->extra_headers,
+      jpost_data, static_cast<int>(disposition),
       params->opened_by_another_window, params->is_renderer_initiated,
       params->user_gesture);
 }
@@ -448,8 +438,7 @@ WebContents* TabModelJniBridge::CreateNewTabForDevTools(const GURL& url,
   //                    WebContents, which we can load the URL on and return.
   JNIEnv* env = AttachCurrentThread();
   TabAndroid* tab = Java_TabModelJniBridge_createNewTabForDevTools(
-      env, java_object_.get(env), url::GURLAndroid::FromNativeGURL(env, url),
-      new_window);
+      env, java_object_.get(env), url, new_window);
   if (!tab) {
     VLOG(0) << "Failed to create java tab";
     return nullptr;
@@ -487,7 +476,7 @@ void TabModelJniBridge::RemoveObserver(TabModelObserver* observer) {
   }
 }
 
-void TabModelJniBridge::BroadcastSessionRestoreComplete(JNIEnv* env) {
+void TabModelJniBridge::BroadcastSessionRestoreComplete() {
   if (GetTabModelType() == TabModelType::kArchived) {
     return;
   }
@@ -573,10 +562,9 @@ tabs::TabInterface* TabModelJniBridge::OpenTab(const GURL& url,
                                                bool foreground) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
-  ScopedJavaLocalRef<jobject> jurl = url::GURLAndroid::FromNativeGURL(env, url);
 
   tabs::TabInterface* tab = Java_TabModelJniBridge_openTabProgrammatically(
-      env, jobj, jurl, index, foreground);
+      env, jobj, url, index, foreground);
   if (foreground && tab) {
     ActivateTab(tab->GetHandle());
   }
@@ -612,8 +600,8 @@ tabs::TabInterface* TabModelJniBridge::InsertWebContentsAt(
   JNIEnv* env = AttachCurrentThread();
 
   TabAndroid* new_tab = Java_TabModelJniBridge_insertWebContentsAt(
-      env, java_object_.get(env), index, web_contents->GetJavaWebContents(),
-      should_pin, tab_groups::TabGroupId::ToOptionalToken(group));
+      env, java_object_.get(env), index, web_contents.get(), should_pin,
+      tab_groups::TabGroupId::ToOptionalToken(group));
 
   // If new tab creation is successful, Java assumes ownership of the lifetime
   // of the WebContents.
@@ -823,7 +811,7 @@ gfx::Range TabModelJniBridge::GetTabGroupTabIndices(
     tab_groups::TabGroupId group_id) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
-  std::vector<int> range =
+  std::vector<int32_t> range =
       Java_TabModelJniBridge_getTabGroupTabIndices(env, jobj, group_id.token());
   if (range.empty()) {
     return {};
@@ -906,7 +894,7 @@ void TabModelJniBridge::MoveGroupTo(tab_groups::TabGroupId group_id,
                                     int index) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> jobj = java_object_.get(env);
-  std::vector<int> range =
+  std::vector<int32_t> range =
       Java_TabModelJniBridge_getTabGroupTabIndices(env, jobj, group_id.token());
   if (range.empty()) {
     LOG(ERROR) << "No tab group found to move.";

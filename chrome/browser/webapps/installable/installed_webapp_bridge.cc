@@ -10,7 +10,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/android/jni_utils.h"
 #include "base/containers/id_map.h"
 #include "base/memory/safety_checks.h"
 #include "base/no_destructor.h"
@@ -22,11 +21,10 @@
 #include "components/permissions/resolvers/permission_prompt_options.h"
 #include "url/gurl.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/android/chrome_jni_headers/InstalledWebappBridge_jni.h"
 
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ScopedJavaLocalRef;
+using jni_zero::ScopedJavaLocalRef;
 
 namespace {
 
@@ -55,9 +53,8 @@ GetPermissionCallbacks() {
 }  // namespace
 
 static void JNI_InstalledWebappBridge_NotifyPermissionsChange(
-    JNIEnv* env,
     int64_t j_provider,
-    int type_int) {
+    int32_t type_int) {
   ContentSettingsType type = static_cast<ContentSettingsType>(type_int);
   DCHECK(IsKnownEnumValue(type));
   InstalledWebappProvider* provider =
@@ -65,10 +62,9 @@ static void JNI_InstalledWebappBridge_NotifyPermissionsChange(
   provider->Notify(type);
 }
 
-static void JNI_InstalledWebappBridge_RunPermissionCallback(JNIEnv* env,
-                                                            int64_t callback_id,
-                                                            int setting) {
-  DCHECK_LE(setting, static_cast<int>(PermissionDecision::kMaxValue));
+static void JNI_InstalledWebappBridge_RunPermissionCallback(int64_t callback_id,
+                                                            int32_t setting) {
+  DCHECK_LE(setting, static_cast<int32_t>(PermissionDecision::kMaxValue));
   auto* callback = GetPermissionCallbacks().Lookup(callback_id);
   if (!callback) {
     return;
@@ -80,7 +76,7 @@ static void JNI_InstalledWebappBridge_RunPermissionCallback(JNIEnv* env,
 
 InstalledWebappProvider::RuleList
 InstalledWebappBridge::GetInstalledWebappPermissions(ContentSettingsType type) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
   ScopedJavaLocalRef<jobjectArray> j_permissions =
       Java_InstalledWebappBridge_getPermissions(env, static_cast<int>(type));
 
@@ -108,14 +104,14 @@ InstalledWebappBridge::GetInstalledWebappPermissions(ContentSettingsType type) {
 void InstalledWebappBridge::SetProviderInstance(
     InstalledWebappProvider* provider) {
   Java_InstalledWebappBridge_setInstalledWebappProvider(
-      base::android::AttachCurrentThread(), (int64_t)provider);
+      jni_zero::AttachCurrentThread(), reinterpret_cast<int64_t>(provider));
 }
 
 void InstalledWebappBridge::DecidePermission(ContentSettingsType type,
                                              const GURL& origin_url,
                                              const GURL& last_committed_url,
                                              PermissionCallback callback) {
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = jni_zero::AttachCurrentThread();
 
   // TODO(crbug.com/470038595): IWAs don't fully support
   // GEOLOCATION_WITH_OPTIONS yet, so we hardcode precise accuracy as the

@@ -19,6 +19,7 @@
 #include "extensions/browser/install_prompt_data.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "ui/android/modal_dialog_manager_bridge.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -27,11 +28,9 @@
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/android/java_bitmap.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/ui/android/extensions/jni_headers/ExtensionInstallDialogBridge_jni.h"
 
-using base::android::ConvertUTF16ToJavaString;
-using base::android::ScopedJavaLocalRef;
 using extensions::InstallPromptData;
 
 namespace {
@@ -93,45 +92,41 @@ void ExtensionInstallDialogViewAndroid::ShowDialog(
     ui::WindowAndroid* window_android) {
   JNIEnv* env = base::android::AttachCurrentThread();
   java_object_.Reset(Java_ExtensionInstallDialogBridge_create(
-      env, reinterpret_cast<intptr_t>(this), window_android->GetJavaObject()));
+      env, reinterpret_cast<intptr_t>(this), window_android));
 
   BuildPropertyModel();
   Java_ExtensionInstallDialogBridge_showDialog(env, java_object_);
 }
 
 void ExtensionInstallDialogViewAndroid::OnDialogAccepted(
-    JNIEnv* env,
-    const base::android::JavaRef<jstring>& justification_text) {
-  std::string justification =
-      base::android::ConvertJavaStringToUTF8(env, justification_text);
+    const std::string& justification_text) {
   prompt_->OnDialogAccepted();
   std::move(done_callback_)
       .Run(ExtensionInstallPrompt::DoneCallbackPayload(
-          ExtensionInstallPrompt::Result::ACCEPTED, justification));
+          ExtensionInstallPrompt::Result::ACCEPTED, justification_text));
 }
 
-void ExtensionInstallDialogViewAndroid::OnDialogCanceled(JNIEnv* env) {
-  OnDialogDismissed(env);
+void ExtensionInstallDialogViewAndroid::OnDialogCanceled() {
+  OnDialogDismissed();
 }
 
-void ExtensionInstallDialogViewAndroid::OnDialogDismissed(JNIEnv* env) {
+void ExtensionInstallDialogViewAndroid::OnDialogDismissed() {
   prompt_->OnDialogCanceled();
   std::move(done_callback_)
       .Run(ExtensionInstallPrompt::DoneCallbackPayload(
           ExtensionInstallPrompt::Result::USER_CANCELED));
 }
 
-void ExtensionInstallDialogViewAndroid::Destroy(JNIEnv* env) {
+void ExtensionInstallDialogViewAndroid::Destroy() {
   delete this;
 }
 
 void ExtensionInstallDialogViewAndroid::OnStoreLinkClicked(
-    JNIEnv* env,
-    const base::android::JavaRef<jstring>& url) {
+    const std::string& url) {
   if (!web_contents_) {
     return;
   }
-  GURL gurl(base::android::ConvertJavaStringToUTF8(env, url));
+  GURL gurl(url);
   content::OpenURLParams params =
       content::OpenURLParams::CreateBrowserInitiated(
           gurl, WindowOpenDisposition::NEW_FOREGROUND_TAB,

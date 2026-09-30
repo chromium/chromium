@@ -35,20 +35,20 @@ class CredentialLeakDialogViewAndroid {
   void Show(ui::WindowAndroid* window_android);
 
   // Called from Java via JNI.
-  void Accepted(JNIEnv* env);
+  void Accepted();
 
   // Called from Java via JNI.
-  void Cancelled(JNIEnv* env);
+  void Cancelled();
 
   // Called from Java via JNI.
-  void Closed(JNIEnv* env);
+  void Closed();
 
  private:
   // The controller which owns this dialog and handles the dialog events.
   raw_ptr<CredentialLeakControllerAndroid> controller_;
 
   // The corresponding java object.
-  base::android::ScopedJavaGlobalRef<jobject> java_object_;
+  jni_zero::ScopedJavaGlobalRef<jobject> java_object_;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_PASSWORDS_CREDENTIAL_LEAK_DIALOG_VIEW_ANDROID_H_

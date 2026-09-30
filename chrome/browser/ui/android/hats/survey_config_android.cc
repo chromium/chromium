@@ -7,17 +7,15 @@
 #include <optional>
 
 #include "base/android/jni_android.h"
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "chrome/browser/profiles/profile.h"
+#include "third_party/jni_zero/default_conversions.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/ui/android/hats/jni_headers/SurveyConfig_jni.h"
 
 using base::android::AttachCurrentThread;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaRef;
-using base::android::ScopedJavaLocalRef;
+using jni_zero::JavaRef;
 
 namespace hats {
 
@@ -35,44 +33,32 @@ SurveyConfigHolder::~SurveyConfigHolder() = default;
 void SurveyConfigHolder::InitJavaHolder(Profile* profile) {
   JNIEnv* env = AttachCurrentThread();
 
-  for (auto entry : survey_configs_by_triggers_) {
-    auto survey_config = entry.second;
-
-    ScopedJavaLocalRef<jstring> jtrigger =
-        ConvertUTF8ToJavaString(env, survey_config.trigger);
-    ScopedJavaLocalRef<jstring> jtrigger_id =
-        ConvertUTF8ToJavaString(env, survey_config.trigger_id);
-    ScopedJavaLocalRef<jobjectArray> jpsd_bits_data_fields =
-        base::android::ToJavaArrayOfStrings(
-            env, survey_config.product_specific_bits_data_fields);
-    ScopedJavaLocalRef<jobjectArray> jpsd_string_data_fields =
-        base::android::ToJavaArrayOfStrings(
-            env, survey_config.product_specific_string_data_fields);
-    bool juser_prompted = survey_config.user_prompted;
-    double jprobability = survey_config.probability;
+  for (const auto& [trigger, survey_config] : survey_configs_by_triggers_) {
+    bool user_prompted = survey_config.user_prompted;
+    double probability = survey_config.probability;
     int32_t requested_browser_type = survey_config.requested_browser_type;
     int32_t profile_age_requirement =
         static_cast<int32_t>(survey_config.profile_age_requirement);
 
     Java_SurveyConfig_addActiveSurveyConfigToHolder(
-        env, jobj_, jtrigger, jtrigger_id, jprobability, juser_prompted,
-        jpsd_bits_data_fields, jpsd_string_data_fields, requested_browser_type,
-        profile_age_requirement);
+        env, jobj_, survey_config.trigger, survey_config.trigger_id,
+        probability, user_prompted,
+        survey_config.product_specific_bits_data_fields,
+        survey_config.product_specific_string_data_fields,
+        requested_browser_type, profile_age_requirement);
   }
 }
 
-void SurveyConfigHolder::Destroy(JNIEnv* env) {
+void SurveyConfigHolder::Destroy() {
   survey_configs_by_triggers_.clear();
   jobj_.Reset();
 }
 
 // static
-static int64_t JNI_SurveyConfig_InitHolder(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& caller,
-    const JavaRef<jobject>& profile) {
-  SurveyConfigHolder* holder =
-      new SurveyConfigHolder(env, caller, Profile::FromJavaObject(profile));
+static int64_t JNI_SurveyConfig_InitHolder(JNIEnv* env,
+                                           const JavaRef<jobject>& caller,
+                                           Profile* profile) {
+  SurveyConfigHolder* holder = new SurveyConfigHolder(env, caller, profile);
   return reinterpret_cast<intptr_t>(holder);
 }
 

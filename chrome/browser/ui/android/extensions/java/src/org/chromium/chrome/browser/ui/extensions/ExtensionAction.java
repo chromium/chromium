@@ -42,10 +42,10 @@ public class ExtensionAction {
         @CalledByNative
         public HoverCardState(
                 @SiteAccess int siteAccess,
-                @JniType("std::optional<std::string>") @Nullable String siteAccessTitle,
-                @JniType("std::optional<std::string>") @Nullable String siteAccessDescription,
+                @JniType("std::optional<std::u16string>") @Nullable String siteAccessTitle,
+                @JniType("std::optional<std::u16string>") @Nullable String siteAccessDescription,
                 @AdminPolicy int policy,
-                @JniType("std::optional<std::string>") @Nullable String policyText) {
+                @JniType("std::optional<std::u16string>") @Nullable String policyText) {
             mSiteAccess = siteAccess;
             mSiteAccessTitle = siteAccessTitle;
             mSiteAccessDescription = siteAccessDescription;
@@ -78,9 +78,9 @@ public class ExtensionAction {
     @VisibleForTesting
     public ExtensionAction(
             @JniType("std::string") String id,
-            @JniType("std::string") String name,
-            @JniType("std::string") String title,
-            @JniType("std::string") String accessibleName,
+            @JniType("std::u16string") String name,
+            @JniType("std::u16string") String title,
+            @JniType("std::u16string") String accessibleName,
             HoverCardState hoverCardState) {
         mId = id;
         mName = name;

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.ui.hats;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 /**
  * Helper class that C++ can setup the survey testing environment. Java tests should instead use the
@@ -28,7 +29,7 @@ public class TestSurveyUtilsBridge {
     }
 
     @CalledByNative
-    private static String getLastShownTriggerId() {
+    private static @JniType("std::string") String getLastShownTriggerId() {
         SurveyClientFactory instance = SurveyClientFactory.getInstance();
 
         assert instance instanceof TestSurveyUtils.TestSurveyFactory;

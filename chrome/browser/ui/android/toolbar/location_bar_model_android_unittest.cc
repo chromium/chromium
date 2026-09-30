@@ -11,8 +11,7 @@ namespace {
 
 class TestLocationBarModelAndroid : public LocationBarModelAndroid {
  public:
-  TestLocationBarModelAndroid()
-      : LocationBarModelAndroid(nullptr, base::android::JavaRef<jobject>()) {}
+  TestLocationBarModelAndroid() : LocationBarModelAndroid(nullptr) {}
   ~TestLocationBarModelAndroid() override = default;
 
   // LocationBarModelDelegate:
@@ -34,12 +33,12 @@ TEST(LocationBarModelAndroidTest, ClassifyAndroidNativeNewTabPage) {
   location_bar_model_android.SetURL(GURL(chrome::kChromeUINativeNewTabURL));
   EXPECT_EQ(
       metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
-      location_bar_model_android.GetPageClassification(nullptr, false));
+      location_bar_model_android.GetPageClassification(false));
 
   std::string ntp_with_path_and_query =
       std::string(chrome::kChromeUINativeNewTabURL) + "foopath?foo=bar";
   location_bar_model_android.SetURL(GURL(ntp_with_path_and_query));
   EXPECT_EQ(
       metrics::OmniboxEventProto::INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS,
-      location_bar_model_android.GetPageClassification(nullptr, false));
+      location_bar_model_android.GetPageClassification(false));
 }

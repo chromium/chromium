@@ -139,16 +139,16 @@ public class LogoBridge {
 
     @CalledByNative
     private static Logo createLogo(
-            Bitmap image,
-            @Nullable Bitmap darkImage,
-            @Nullable String onClickUrl,
-            @Nullable String altText,
-            @Nullable String gifUrl,
-            @Nullable String darkGifUrl,
-            @Nullable String logUrl,
-            @Nullable String darkLogUrl,
-            @Nullable String ctaLogUrl,
-            @Nullable String darkCtaLogUrl) {
+            @JniType("SkBitmap") Bitmap image,
+            @JniType("SkBitmap") @Nullable Bitmap darkImage,
+            @JniType("std::optional<std::string>") @Nullable String onClickUrl,
+            @JniType("std::optional<std::string>") @Nullable String altText,
+            @JniType("std::optional<std::string>") @Nullable String gifUrl,
+            @JniType("std::optional<std::string>") @Nullable String darkGifUrl,
+            @JniType("std::optional<std::string>") @Nullable String logUrl,
+            @JniType("std::optional<std::string>") @Nullable String darkLogUrl,
+            @JniType("std::optional<std::string>") @Nullable String ctaLogUrl,
+            @JniType("std::optional<std::string>") @Nullable String darkCtaLogUrl) {
         return new Logo(
                 image,
                 darkImage,

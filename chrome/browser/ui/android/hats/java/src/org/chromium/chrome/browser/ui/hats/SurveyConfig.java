@@ -10,6 +10,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ResettersForTesting;
@@ -183,12 +184,12 @@ public class SurveyConfig {
     @CalledByNative
     private static void addActiveSurveyConfigToHolder(
             Holder holder,
-            String trigger,
-            String triggerId,
+            @JniType("std::string") String trigger,
+            @JniType("std::string") String triggerId,
             double probability,
             boolean userPrompted,
-            String[] psdBitDataFields,
-            String[] psdStringDataFields,
+            @JniType("std::vector<std::string>") String[] psdBitDataFields,
+            @JniType("std::vector<std::string>") String[] psdStringDataFields,
             @RequestedBrowserType int requestedBrowserType,
             @ProfileAgeRequirement int profileAgeRequirement) {
         holder.mTriggers.put(
@@ -242,7 +243,7 @@ public class SurveyConfig {
     @NativeMethods
     interface Natives {
 
-        long initHolder(Holder caller, Profile profile);
+        long initHolder(Holder caller, @JniType("Profile*") Profile profile);
 
         void destroy(long nativeSurveyConfigHolder);
     }

@@ -44,8 +44,8 @@ class AllPasswordsBottomSheetBridge implements AllPasswordsBottomSheetCoordinato
     @CalledByNative
     private static @Nullable AllPasswordsBottomSheetBridge create(
             long nativeView,
-            Profile profile,
-            @Nullable WindowAndroid windowAndroid,
+            @JniType("Profile*") Profile profile,
+            @JniType("ui::WindowAndroid*") @Nullable WindowAndroid windowAndroid,
             @JniType("std::string") String origin) {
         if (windowAndroid == null) {
             return null;

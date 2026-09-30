@@ -32,7 +32,9 @@ public class IdentityProviderData {
             IdentityProviderMetadata idpMetadata,
             ClientIdMetadata clientMetadata,
             @RpContext.EnumType int rpContext,
-            @IdentityRequestDialogDisclosureField int[] disclosureFields,
+            @JniType("std::vector<content::IdentityRequestDialogDisclosureField>")
+                    @IdentityRequestDialogDisclosureField
+                    int[] disclosureFields,
             boolean hasLoginStatusMismatch) {
         mIdpForDisplay = idpForDisplay;
         mIdpMetadata = idpMetadata;

@@ -9,7 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/ui/android/hats/test/jni_headers/TestSurveyUtilsBridge_jni.h"
 
 namespace hats {
@@ -29,10 +29,7 @@ void TestSurveyUtilsBridge::ResetJavaTestSurveyFactory() {
 // static
 std::string TestSurveyUtilsBridge::GetLastShownSurveyTriggerId() {
   JNIEnv* env = base::android::AttachCurrentThread();
-  base::android::ScopedJavaLocalRef<jstring> jtrigger_id =
-      Java_TestSurveyUtilsBridge_getLastShownTriggerId(env);
-
-  return base::android::ConvertJavaStringToUTF8(jtrigger_id);
+  return Java_TestSurveyUtilsBridge_getLastShownTriggerId(env);
 }
 
 }  // namespace hats

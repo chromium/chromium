@@ -9,45 +9,38 @@
 #include "chrome/browser/wallet/android/boarding_pass_detector.h"
 #include "content/public/browser/web_contents.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/wallet/android/jni_headers/BoardingPassBridge_jni.h"
 
-using base::android::ConvertJavaStringToUTF8;
-using base::android::JavaRef;
+using jni_zero::JavaRef;
 
 namespace wallet {
 
 namespace {
 base::OnceCallback<void(const std::vector<std::string>&)> AdaptCallbackForJava(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& jcallback) {
-  auto adaptor = [](const base::android::JavaRef<jobject>& jcallback,
+    const JavaRef<jobject>& jcallback) {
+  auto adaptor = [](const JavaRef<jobject>& jcallback,
                     const std::vector<std::string>& result) {
-    JNIEnv* env = base::android::AttachCurrentThread();
+    JNIEnv* env = jni_zero::AttachCurrentThread();
     base::android::RunObjectCallbackAndroid(
         jcallback, base::android::ToJavaArrayOfStrings(env, std::move(result)));
   };
 
   return base::BindOnce(adaptor,
-                        base::android::ScopedJavaGlobalRef<jobject>(jcallback));
+                        jni_zero::ScopedJavaGlobalRef<jobject>(jcallback));
 }
 }  // namespace
 
-static bool JNI_BoardingPassBridge_ShouldDetect(JNIEnv* env,
-                                                const JavaRef<jstring>& jurl) {
-  return BoardingPassDetector::ShouldDetect(ConvertJavaStringToUTF8(env, jurl));
+static bool JNI_BoardingPassBridge_ShouldDetect(const std::string& url) {
+  return BoardingPassDetector::ShouldDetect(url);
 }
 
 static void JNI_BoardingPassBridge_DetectBoardingPass(
-    JNIEnv* env,
-    const JavaRef<jobject>& jweb_contents,
+    content::WebContents* web_contents,
     const JavaRef<jobject>& jcallback) {
-  content::WebContents* web_contents =
-      content::WebContents::FromJavaWebContents(jweb_contents);
-
-  // BoardignPassDetector is auto deleting.
+  // BoardingPassDetector is auto deleting.
   BoardingPassDetector* detector = new BoardingPassDetector();
-  auto callback = AdaptCallbackForJava(env, jcallback);
+  auto callback = AdaptCallbackForJava(jcallback);
   detector->DetectBoardingPass(web_contents, std::move(callback));
 }
 

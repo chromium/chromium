@@ -32,14 +32,11 @@ class ExtensionInstallDialogViewAndroid {
   void ShowDialog(ui::WindowAndroid* window_android);
 
   // JNI methods.
-  void OnDialogAccepted(
-      JNIEnv* env,
-      const base::android::JavaRef<jstring>& justification_text);
-  void OnDialogCanceled(JNIEnv* env);
-  void OnDialogDismissed(JNIEnv* env);
-  void Destroy(JNIEnv* env);
-  void OnStoreLinkClicked(JNIEnv* env,
-                          const base::android::JavaRef<jstring>& url);
+  void OnDialogAccepted(const std::string& justification_text);
+  void OnDialogCanceled();
+  void OnDialogDismissed();
+  void Destroy();
+  void OnStoreLinkClicked(const std::string& url);
 
  private:
   // Builds java PropertyModel from `prompt_`.
@@ -49,7 +46,7 @@ class ExtensionInstallDialogViewAndroid {
   std::unique_ptr<InstallPromptData> prompt_;
   ExtensionInstallPrompt::DoneCallback done_callback_;
 
-  base::android::ScopedJavaGlobalRef<jobject> java_object_;
+  jni_zero::ScopedJavaGlobalRef<jobject> java_object_;
 };
 
 }  // namespace extensions

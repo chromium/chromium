@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.ui.android.webid;
 
 import android.content.res.Resources;
 
-import androidx.annotation.Nullable;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -15,6 +13,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.blink.mojom.RpContext;
 import org.chromium.blink.mojom.RpMode;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
@@ -31,7 +30,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.GURL;
 
-import java.util.Arrays;
+import java.util.List;
 
 /**
  * This bridge creates and initializes a {@link AccountSelectionComponent} on construction and
@@ -84,8 +83,8 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     @CalledByNative
     private static @Nullable AccountSelectionBridge create(
             long nativeView,
-            WebContents webContents,
-            WindowAndroid windowAndroid,
+            @JniType("content::WebContents*") WebContents webContents,
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid,
             @RpMode.EnumType int rpMode,
             boolean canShowUi) {
         BottomSheetController bottomSheetController =
@@ -120,15 +119,11 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     @CalledByNative
     private boolean showAccounts(
             RelyingPartyData rpData,
-            Account[] accounts,
-            IdentityProviderData[] idpDataList,
-            Account[] newAccounts) {
-        assert accounts != null && accounts.length > 0;
-        return mAccountSelectionComponent.showAccounts(
-                rpData,
-                Arrays.asList(accounts),
-                Arrays.asList(idpDataList),
-                Arrays.asList(newAccounts));
+            @JniType("std::vector") List<Account> accounts,
+            @JniType("std::vector") List<IdentityProviderData> idpDataList,
+            @JniType("std::vector") List<Account> newAccounts) {
+        assert accounts != null && !accounts.isEmpty();
+        return mAccountSelectionComponent.showAccounts(rpData, accounts, idpDataList, newAccounts);
     }
 
     /**
@@ -230,7 +225,8 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     }
 
     @CalledByNative
-    private WebContents showModalDialog(@JniType("GURL") GURL url) {
+    private @JniType("content::WebContents*") @Nullable WebContents showModalDialog(
+            @JniType("GURL") GURL url) {
         return mAccountSelectionComponent.showModalDialog(url);
     }
 
@@ -240,7 +236,7 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     }
 
     @CalledByNative
-    private WebContents getRpWebContents() {
+    private @JniType("content::WebContents*") @Nullable WebContents getRpWebContents() {
         return mAccountSelectionComponent.getRpWebContents();
     }
 

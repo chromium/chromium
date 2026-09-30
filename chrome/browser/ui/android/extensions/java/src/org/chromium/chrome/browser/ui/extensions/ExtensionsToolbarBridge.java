@@ -281,7 +281,8 @@ public class ExtensionsToolbarBridge implements Destroyable {
     }
 
     @CalledByNative
-    public void onActiveWebContentsChanged(WebContents webContents) {
+    public void onActiveWebContentsChanged(
+            @JniType("content::WebContents*") @Nullable WebContents webContents) {
         for (Observer observer : mObservers) {
             observer.onActiveWebContentsChanged(webContents);
         }
@@ -304,7 +305,7 @@ public class ExtensionsToolbarBridge implements Destroyable {
         default void onPinnedActionsChanged() {}
 
         // Called when the active web contents changes due to e.g. navigation or tab change.
-        default void onActiveWebContentsChanged(WebContents webContents) {}
+        default void onActiveWebContentsChanged(@Nullable WebContents webContents) {}
 
         // Called when the request access button parameters have changed.
         default void onRequestAccessButtonParamsChanged() {}
@@ -353,12 +354,13 @@ public class ExtensionsToolbarBridge implements Destroyable {
         @Nullable ExtensionAction getAction(
                 long nativeExtensionsToolbarAndroid,
                 @JniType("std::string") String actionId,
-                @Nullable @JniType("content::WebContents*") WebContents webContents);
+                @JniType("content::WebContents*") @Nullable WebContents webContents);
 
+        @JniType("SkBitmap")
         @Nullable Bitmap getIcon(
                 long nativeExtensionsToolbarAndroid,
                 @JniType("std::string") String actionId,
-                @Nullable @JniType("content::WebContents*") WebContents webContents,
+                @JniType("content::WebContents*") @Nullable WebContents webContents,
                 int canvasWidthDp,
                 int canvasHeightDp,
                 float scaleFactor);

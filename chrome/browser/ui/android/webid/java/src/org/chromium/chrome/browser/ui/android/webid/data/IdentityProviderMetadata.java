@@ -19,7 +19,7 @@ import org.chromium.url.GURL;
 public class IdentityProviderMetadata {
     private final @Nullable Integer mBrandTextColor;
     private final @Nullable Integer mBrandBackgroundColor;
-    private final Bitmap mBrandIconBitmap;
+    private final @Nullable Bitmap mBrandIconBitmap;
     private final GURL mConfigUrl;
     private final GURL mLoginUrl;
     // Whether use a different account button needs to be shown, whether due to the IDP requesting
@@ -30,7 +30,7 @@ public class IdentityProviderMetadata {
     public IdentityProviderMetadata(
             long brandTextColor,
             long brandBackgroundColor,
-            Bitmap brandIconBitmap,
+            @JniType("SkBitmap") @Nullable Bitmap brandIconBitmap,
             @JniType("GURL") GURL configUrl,
             @JniType("GURL") GURL loginUrl,
             boolean showUseDifferentAccountButton) {
@@ -55,7 +55,7 @@ public class IdentityProviderMetadata {
         return mBrandBackgroundColor;
     }
 
-    public Bitmap getBrandIconBitmap() {
+    public @Nullable Bitmap getBrandIconBitmap() {
         return mBrandIconBitmap;
     }
 

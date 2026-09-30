@@ -19,14 +19,12 @@
 #include "ui/base/device_form_factor.h"
 #include "url/android/gurl_android.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/ui/android/toolbar/jni_headers/LocationBarModel_jni.h"
 
-using base::android::JavaRef;
-using base::android::ScopedJavaLocalRef;
+using jni_zero::JavaRef;
 
-LocationBarModelAndroid::LocationBarModelAndroid(JNIEnv* env,
-                                                 const JavaRef<jobject>& obj)
+LocationBarModelAndroid::LocationBarModelAndroid(const JavaRef<jobject>& obj)
     : location_bar_model_(
           std::make_unique<LocationBarModelImpl>(this,
                                                  content::kMaxURLDisplayChars)),
@@ -34,37 +32,29 @@ LocationBarModelAndroid::LocationBarModelAndroid(JNIEnv* env,
 
 LocationBarModelAndroid::~LocationBarModelAndroid() = default;
 
-void LocationBarModelAndroid::Destroy(JNIEnv* env) {
+void LocationBarModelAndroid::Destroy() {
   delete this;
 }
 
-ScopedJavaLocalRef<jstring> LocationBarModelAndroid::GetFormattedFullURL(
-    JNIEnv* env) {
-  return base::android::ConvertUTF16ToJavaString(
-      env, location_bar_model_->GetFormattedFullURL());
+std::u16string LocationBarModelAndroid::GetFormattedFullURL() {
+  return location_bar_model_->GetFormattedFullURL();
 }
 
-ScopedJavaLocalRef<jstring> LocationBarModelAndroid::GetURLForDisplay(
-    JNIEnv* env) {
-  return base::android::ConvertUTF16ToJavaString(
-      env, location_bar_model_->GetURLForDisplay());
+std::u16string LocationBarModelAndroid::GetURLForDisplay() {
+  return location_bar_model_->GetURLForDisplay();
 }
 
-ScopedJavaLocalRef<jobject>
-LocationBarModelAndroid::GetUrlOfVisibleNavigationEntry(JNIEnv* env) {
-  return url::GURLAndroid::FromNativeGURL(env, location_bar_model_->GetURL());
+GURL LocationBarModelAndroid::GetUrlOfVisibleNavigationEntry() {
+  return location_bar_model_->GetURL();
 }
 
-int32_t LocationBarModelAndroid::GetPageClassification(JNIEnv* env,
-                                                       bool is_prefetch) const {
+int32_t LocationBarModelAndroid::GetPageClassification(bool is_prefetch) const {
   return location_bar_model_->GetPageClassification(is_prefetch);
 }
 
 content::WebContents* LocationBarModelAndroid::GetActiveWebContents() const {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> jweb_contents =
-      Java_LocationBarModel_getWebContents(env, java_object_);
-  return content::WebContents::FromJavaWebContents(jweb_contents);
+  JNIEnv* env = jni_zero::AttachCurrentThread();
+  return Java_LocationBarModel_getWebContents(env, java_object_);
 }
 
 bool LocationBarModelAndroid::IsNewTabPage() const {
@@ -87,9 +77,8 @@ bool LocationBarModelAndroid::IsNewTabPage() const {
 }
 
 // static
-static int64_t JNI_LocationBarModel_Init(JNIEnv* env,
-                                         const JavaRef<jobject>& obj) {
-  return reinterpret_cast<intptr_t>(new LocationBarModelAndroid(env, obj));
+static int64_t JNI_LocationBarModel_Init(const JavaRef<jobject>& obj) {
+  return reinterpret_cast<intptr_t>(new LocationBarModelAndroid(obj));
 }
 
 DEFINE_JNI(LocationBarModel)

@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/android/jni_android.h"
-#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,108 +20,50 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "url/gurl.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/ui/android/logo/jni_headers/LogoBridge_jni.h"
 
-using base::android::ConvertJavaStringToUTF8;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaRef;
-using base::android::ScopedJavaLocalRef;
-using base::android::ToJavaByteArray;
+using jni_zero::JavaRef;
+using jni_zero::ScopedJavaLocalRef;
 
 namespace {
 
-static ScopedJavaLocalRef<jobject> JNI_LogoBridge_MakeJavaLogo(
-    JNIEnv* env,
-    const SkBitmap& bitmap,
-    const SkBitmap& dark_bitmap,
-    const GURL& on_click_url,
-    const std::string& alt_text,
-    const GURL& animated_url,
-    const GURL& dark_animated_url,
-    const GURL& log_url,
-    const GURL& dark_log_url,
-    const GURL& cta_log_url,
-    const GURL& dark_cta_log_url) {
-  ScopedJavaLocalRef<jobject> j_bitmap = gfx::ConvertToJavaBitmap(bitmap);
-
-  ScopedJavaLocalRef<jobject> j_dark_bitmap;
-  if (!dark_bitmap.drawsNothing()) {
-    j_dark_bitmap = gfx::ConvertToJavaBitmap(dark_bitmap);
-  }
-
-  ScopedJavaLocalRef<jstring> j_on_click_url;
-  if (on_click_url.is_valid()) {
-    j_on_click_url = ConvertUTF8ToJavaString(env, on_click_url.spec());
-  }
-
-  ScopedJavaLocalRef<jstring> j_alt_text;
-  if (!alt_text.empty()) {
-    j_alt_text = ConvertUTF8ToJavaString(env, alt_text);
-  }
-
-  ScopedJavaLocalRef<jstring> j_animated_url;
-  if (animated_url.is_valid()) {
-    j_animated_url = ConvertUTF8ToJavaString(env, animated_url.spec());
-  }
-
-  ScopedJavaLocalRef<jstring> j_dark_animated_url;
-  if (dark_animated_url.is_valid()) {
-    j_dark_animated_url =
-        ConvertUTF8ToJavaString(env, dark_animated_url.spec());
-  }
-
-  ScopedJavaLocalRef<jstring> j_log_url;
-  if (log_url.is_valid()) {
-    j_log_url = ConvertUTF8ToJavaString(env, log_url.spec());
-  }
-
-  ScopedJavaLocalRef<jstring> j_dark_log_url;
-  if (dark_log_url.is_valid()) {
-    j_dark_log_url = ConvertUTF8ToJavaString(env, dark_log_url.spec());
-  }
-
-  ScopedJavaLocalRef<jstring> j_cta_log_url;
-  if (cta_log_url.is_valid()) {
-    j_cta_log_url = ConvertUTF8ToJavaString(env, cta_log_url.spec());
-  }
-
-  ScopedJavaLocalRef<jstring> j_dark_cta_log_url;
-  if (dark_cta_log_url.is_valid()) {
-    j_dark_cta_log_url = ConvertUTF8ToJavaString(env, dark_cta_log_url.spec());
-  }
-
-  return Java_LogoBridge_createLogo(
-      env, j_bitmap, j_dark_bitmap, j_on_click_url, j_alt_text, j_animated_url,
-      j_dark_animated_url, j_log_url, j_dark_log_url, j_cta_log_url,
-      j_dark_cta_log_url);
+std::optional<std::string> ValidUrlToOptionalSpec(const GURL& url) {
+  return url.is_valid() ? std::make_optional(url.spec()) : std::nullopt;
 }
 
 // Converts a C++ Logo to a Java Logo.
-static ScopedJavaLocalRef<jobject> JNI_LogoBridge_ConvertLogoToJavaObject(
+ScopedJavaLocalRef<jobject> JNI_LogoBridge_ConvertLogoToJavaObject(
     JNIEnv* env,
     const search_provider_logos::Logo* logo) {
   if (!logo) {
-    return ScopedJavaLocalRef<jobject>();
+    return nullptr;
   }
 
-  return JNI_LogoBridge_MakeJavaLogo(
-      env, logo->image, logo->dark_image, GURL(logo->metadata.on_click_url),
-      logo->metadata.alt_text, GURL(logo->metadata.animated_url),
-      GURL(logo->metadata.dark_animated_url), GURL(logo->metadata.log_url),
-      GURL(logo->metadata.dark_log_url), GURL(logo->metadata.cta_log_url),
-      GURL(logo->metadata.dark_cta_log_url));
+  return Java_LogoBridge_createLogo(
+      env, logo->image, logo->dark_image,
+      ValidUrlToOptionalSpec(logo->metadata.on_click_url),
+      logo->metadata.alt_text.empty()
+          ? std::nullopt
+          : std::make_optional(logo->metadata.alt_text),
+      ValidUrlToOptionalSpec(logo->metadata.animated_url),
+      ValidUrlToOptionalSpec(logo->metadata.dark_animated_url),
+      ValidUrlToOptionalSpec(logo->metadata.log_url),
+      ValidUrlToOptionalSpec(logo->metadata.dark_log_url),
+      ValidUrlToOptionalSpec(logo->metadata.cta_log_url),
+      ValidUrlToOptionalSpec(logo->metadata.dark_cta_log_url));
 }
 
 class LogoObserverAndroid : public search_provider_logos::LogoObserver {
  public:
   LogoObserverAndroid(base::WeakPtr<LogoBridge> logo_bridge,
                       JNIEnv* env,
-                      const base::android::JavaRef<jobject>& j_logo_observer)
+                      const jni_zero::JavaRef<jobject>& j_logo_observer)
       : logo_bridge_(logo_bridge) {
     j_logo_observer_.Reset(env, j_logo_observer);
   }
@@ -153,12 +94,12 @@ class LogoObserverAndroid : public search_provider_logos::LogoObserver {
   // been destroyed.
   base::WeakPtr<LogoBridge> logo_bridge_;
 
-  base::android::ScopedJavaGlobalRef<jobject> j_logo_observer_;
+  jni_zero::ScopedJavaGlobalRef<jobject> j_logo_observer_;
 };
 
 }  // namespace
 
-static int64_t JNI_LogoBridge_Init(JNIEnv* env, Profile* profile) {
+static int64_t JNI_LogoBridge_Init(Profile* profile) {
   LogoBridge* logo_bridge = new LogoBridge(profile);
   return reinterpret_cast<intptr_t>(logo_bridge);
 }
@@ -173,7 +114,7 @@ LogoBridge::LogoBridge(Profile* profile)
 
 LogoBridge::~LogoBridge() = default;
 
-void LogoBridge::Destroy(JNIEnv* env) {
+void LogoBridge::Destroy() {
   delete this;
 }
 
@@ -185,7 +126,7 @@ void LogoBridge::GetCurrentLogo(JNIEnv* env,
   logo_service_->GetLogo(observer);
 }
 
-void LogoBridge::RecordImpression(JNIEnv* env, std::string_view log_url) {
+void LogoBridge::RecordImpression(std::string_view log_url) {
   GURL url(log_url);
   if (!url.is_valid()) {
     return;

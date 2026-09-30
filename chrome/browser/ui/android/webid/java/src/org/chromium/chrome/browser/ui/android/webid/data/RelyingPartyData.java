@@ -35,7 +35,7 @@ public class RelyingPartyData {
     public RelyingPartyData(
             @JniType("std::u16string") String rpForDisplay,
             @JniType("std::u16string") String iframeForDisplay,
-            @Nullable Bitmap rpIcon,
+            @JniType("SkBitmap") @Nullable Bitmap rpIcon,
             boolean displayStringsMayChange) {
         mRpForDisplay = rpForDisplay;
         mIframeForDisplay = iframeForDisplay;

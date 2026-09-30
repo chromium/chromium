@@ -12,6 +12,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 
 import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
@@ -43,11 +44,11 @@ class SurveyClientBridge implements SurveyClient {
     @CalledByNative
     @VisibleForTesting
     static @Nullable SurveyClientBridge create(
-            String trigger,
+            @JniType("std::string") String trigger,
             SurveyUiDelegate uiDelegate,
-            Profile profile,
-            String suppliedTriggerId,
-            WindowAndroid windowAndroid) {
+            @JniType("Profile*") Profile profile,
+            @JniType("std::string") String suppliedTriggerId,
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         assert SurveyClientFactory.getInstance() != null;
         SurveyConfig config = SurveyConfig.get(profile, trigger, suppliedTriggerId);
         if (config == null) {
@@ -90,11 +91,11 @@ class SurveyClientBridge implements SurveyClient {
     /** Called when a C++ client wants to display a survey with PSD. */
     @CalledByNative
     void showSurvey(
-            WindowAndroid windowAndroid,
-            String[] surveyPsdBitFields,
-            boolean[] surveyPsdBitValues,
-            String[] surveyPsdStringFields,
-            String[] surveyPsdStringValues) {
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid,
+            @JniType("std::vector<std::string>") String[] surveyPsdBitFields,
+            @JniType("std::vector<bool>") boolean[] surveyPsdBitValues,
+            @JniType("std::vector<std::string>") String[] surveyPsdStringFields,
+            @JniType("std::vector<std::string>") String[] surveyPsdStringValues) {
         assert surveyPsdBitFields.length == surveyPsdBitValues.length;
         assert surveyPsdStringFields.length == surveyPsdStringValues.length;
 

@@ -75,7 +75,8 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
      */
     @CalledByNative
     private static @Nullable ExtensionInstallDialogBridge create(
-            long nativeExtensionInstallDialogView, WindowAndroid windowAndroid) {
+            long nativeExtensionInstallDialogView,
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid) {
         Context context = windowAndroid.getActivity().get();
         ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
         if (context == null || modalDialogManager == null) {
@@ -342,7 +343,8 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
     @NativeMethods
     interface Natives {
         void onDialogAccepted(
-                long nativeExtensionInstallDialogViewAndroid, String justificationText);
+                long nativeExtensionInstallDialogViewAndroid,
+                @JniType("std::string") String justificationText);
 
         void onDialogCanceled(long nativeExtensionInstallDialogViewAndroid);
 
@@ -350,6 +352,8 @@ public class ExtensionInstallDialogBridge implements ModalDialogProperties.Contr
 
         void destroy(long nativeExtensionInstallDialogViewAndroid);
 
-        void onStoreLinkClicked(long nativeExtensionInstallDialogViewAndroid, String storeUrl);
+        void onStoreLinkClicked(
+                long nativeExtensionInstallDialogViewAndroid,
+                @JniType("std::string") String storeUrl);
     }
 }

@@ -53,7 +53,7 @@ public class CredentialLeakDialogBridge {
 
     @CalledByNative
     public static CredentialLeakDialogBridge create(
-            WindowAndroid windowAndroid, long nativeDialog) {
+            @JniType("ui::WindowAndroid*") WindowAndroid windowAndroid, long nativeDialog) {
         return new CredentialLeakDialogBridge(windowAndroid, nativeDialog);
     }
 
@@ -62,7 +62,7 @@ public class CredentialLeakDialogBridge {
             @JniType("std::u16string") String credentialLeakTitle,
             @JniType("std::u16string") String credentialLeakDetails,
             @JniType("std::u16string") String positiveButton,
-            @Nullable String negativeButton) {
+            @JniType("std::optional<std::u16string>") @Nullable String negativeButton) {
         Activity activity = mWindowAndroid.getActivity().get();
         if (activity == null) return;
 

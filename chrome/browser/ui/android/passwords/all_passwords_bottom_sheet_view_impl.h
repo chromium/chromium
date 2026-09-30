@@ -36,23 +36,22 @@ class AllPasswordsBottomSheetViewImpl : public AllPasswordsBottomSheetView {
 
   // Invoked in case the user chooses an entry from the credential list
   // presented to them.
-  void OnCredentialSelected(JNIEnv* env,
-                            const std::u16string& username,
+  void OnCredentialSelected(const std::u16string& username,
                             const std::u16string& password,
                             bool requests_to_fill_password);
 
   // Called from Java bridge when user dismisses the BottomSheet.
   // Redirects the call to the controller.
-  void OnDismiss(JNIEnv* env);
+  void OnDismiss();
 
  private:
   // Returns either the fully initialized java counterpart of this bridge or
   // a is_null() reference if the creation failed. By using this method, the
   // bridge will try to recreate the java object if it failed previously (e.g.
   // because there was no native window available).
-  base::android::ScopedJavaGlobalRef<jobject> GetOrCreateJavaObject();
+  jni_zero::ScopedJavaGlobalRef<jobject> GetOrCreateJavaObject();
 
-  base::android::ScopedJavaGlobalRef<jobject> java_object_internal_;
+  jni_zero::ScopedJavaGlobalRef<jobject> java_object_internal_;
   raw_ptr<AllPasswordsBottomSheetController> controller_;
 };
 

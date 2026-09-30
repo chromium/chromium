@@ -10,8 +10,6 @@
 #include "base/android/jni_android.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 
-using base::android::JavaRef;
-
 class Profile;
 
 namespace hats {
@@ -19,11 +17,11 @@ namespace hats {
 class SurveyConfigHolder {
  public:
   SurveyConfigHolder(JNIEnv* env,
-                     const JavaRef<jobject>& obj,
+                     const jni_zero::JavaRef<jobject>& obj,
                      Profile* profile);
   ~SurveyConfigHolder();
 
-  void Destroy(JNIEnv* env);
+  void Destroy();
 
  private:
   // Initialize Java holders

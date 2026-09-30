@@ -314,9 +314,9 @@ public abstract class TabModelJniBridge implements TabModelInternal {
      */
     @CalledByNative
     private @JniType("TabAndroid*") @Nullable Tab createTabWithWebContents(
-            @Nullable Tab parent,
-            Profile profile,
-            WebContents webContents,
+            @JniType("TabAndroid*") @Nullable Tab parent,
+            @JniType("Profile*") Profile profile,
+            @JniType("content::WebContents*") WebContents webContents,
             int index,
             @TabLaunchType int type,
             boolean shouldPin) {
@@ -343,7 +343,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     @CalledByNative
     private @JniType("TabAndroid*") @Nullable Tab insertWebContentsAt(
             int index,
-            WebContents webContents,
+            @JniType("content::WebContents*") WebContents webContents,
             boolean shouldPin,
             @JniType("std::optional<base::Token>") @Nullable Token tabGroupId) {
         Tab tab =
@@ -363,9 +363,9 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     @CalledByNative
     @VisibleForTesting
     public void openNewTab(
-            Tab parent,
-            GURL url,
-            @Nullable Origin initiatorOrigin,
+            @JniType("TabAndroid*") Tab parent,
+            @JniType("GURL") GURL url,
+            @JniType("std::optional<url::Origin>") @Nullable Origin initiatorOrigin,
             @JniType("std::string") String extraHeaders,
             ResourceRequestBody postData,
             int disposition,
@@ -420,7 +420,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
      */
     @CalledByNative
     private @JniType("TabAndroid*") @Nullable Tab createNewTabForDevTools(
-            GURL url, boolean newWindow) {
+            @JniType("GURL") GURL url, boolean newWindow) {
         LoadUrlParams loadParams = new LoadUrlParams(url);
         @TabLaunchType int launchType = TabLaunchType.FROM_CHROME_UI;
         if (!newWindow
@@ -512,7 +512,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
 
     @CalledByNative
     @Override
-    public abstract @Nullable @JniType("tabs::TabStripCollection*") TabStripCollection
+    public abstract @JniType("tabs::TabStripCollection*") @Nullable TabStripCollection
             getTabStripCollection();
 
     /** Returns whether or not a sync session is currently being restored. */
@@ -529,7 +529,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     @CalledByNative
     @VisibleForTesting
     public @JniType("TabAndroid*") @Nullable Tab openTabProgrammatically(
-            GURL url, int index, boolean foreground) {
+            @JniType("GURL") GURL url, int index, boolean foreground) {
         LoadUrlParams loadParams = new LoadUrlParams(url);
         @TabLaunchType
         int launchType =
@@ -547,7 +547,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     }
 
     @CalledByNative
-    private @Nullable @JniType("TabAndroid*") Tab getOpenerForTab(
+    private @JniType("TabAndroid*") @Nullable Tab getOpenerForTab(
             @JniType("TabAndroid*") Tab target) {
         return getTabById(target.getParentId());
     }
@@ -617,7 +617,7 @@ public abstract class TabModelJniBridge implements TabModelInternal {
      * spans (startIndex, endIndex + 1).
      */
     @CalledByNative
-    protected abstract @JniType("std::vector<int>") int[] getTabGroupTabIndices(
+    protected abstract @JniType("std::vector<int32_t>") int[] getTabGroupTabIndices(
             @JniType("base::Token") Token tabGroupId);
 
     @CalledByNative
@@ -760,8 +760,8 @@ public abstract class TabModelJniBridge implements TabModelInternal {
                 TabModelJniBridge self,
                 @JniType("Profile*") Profile profile,
                 @ActivityType int activityType,
-                @JniType("std::optional<int32_t>") @Nullable @CustomTabProfileType
-                        Integer customTabProfileType,
+                @JniType("std::optional<int32_t>") @CustomTabProfileType
+                        @Nullable Integer customTabProfileType,
                 @TabModelType int tabModelType);
 
         void broadcastSessionRestoreComplete(long nativeTabModelJniBridge);

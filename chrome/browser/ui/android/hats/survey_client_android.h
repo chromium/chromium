@@ -14,8 +14,7 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ui/android/hats/survey_ui_delegate_android.h"
 #include "chrome/browser/ui/hats/survey_config.h"
-
-using base::android::JavaRef;
+#include "third_party/jni_zero/jni_zero.h"
 
 class Profile;
 
@@ -57,7 +56,7 @@ class SurveyClientAndroid {
 
  private:
   std::unique_ptr<SurveyUiDelegateAndroid> ui_delegate_;
-  base::android::ScopedJavaGlobalRef<jobject> jobj_;
+  jni_zero::ScopedJavaGlobalRef<jobject> jobj_;
 };
 
 }  // namespace hats

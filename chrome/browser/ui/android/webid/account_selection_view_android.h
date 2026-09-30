@@ -68,19 +68,16 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
   content::WebContents* GetRpWebContents() override;
   void SetCanShowUi(bool can_show_ui) override;
 
-  void OnAccountSelected(JNIEnv* env,
-                         const GURL& idp_config_url,
+  void OnAccountSelected(const GURL& idp_config_url,
                          const std::string& account_id,
                          bool is_sign_in);
-  void OnDismiss(JNIEnv* env, int32_t dismiss_reason);
-  void OnLoginToIdP(JNIEnv* env,
-                    const GURL& idp_config_url,
-                    const GURL& idp_login_url);
-  void OnMoreDetails(JNIEnv* env);
-  void OnAccountsDisplayed(JNIEnv* env);
-  void OnNativeAppResult(JNIEnv* env, const std::string& token);
-  void OnNativeAppError(JNIEnv* env, const std::string& code, const GURL& url);
-  void OnNativeAppLoginFinished(JNIEnv* env);
+  void OnDismiss(int32_t dismiss_reason);
+  void OnLoginToIdP(const GURL& idp_config_url, const GURL& idp_login_url);
+  void OnMoreDetails();
+  void OnAccountsDisplayed();
+  void OnNativeAppResult(const std::string& token);
+  void OnNativeAppError(const std::string& code, const GURL& url);
+  void OnNativeAppLoginFinished();
 
  private:
   base::android::ScopedJavaLocalRef<jobject>
@@ -94,7 +91,7 @@ class AccountSelectionViewAndroid : public AccountSelectionView {
 
   // Applies to both active mode (modal) and passive mode (widget/bottom sheet).
   bool can_show_ui_ = true;
-  base::android::ScopedJavaGlobalRef<jobject> java_object_internal_;
+  jni_zero::ScopedJavaGlobalRef<jobject> java_object_internal_;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_WEBID_ACCOUNT_SELECTION_VIEW_ANDROID_H_

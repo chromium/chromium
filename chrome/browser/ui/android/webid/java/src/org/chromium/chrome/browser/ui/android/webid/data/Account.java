@@ -28,8 +28,8 @@ public class Account {
     // multi IDP. The text contains the IDP origin and possibly the last used timestamp if this is
     // an account that has been used in the device before.
     private final @Nullable String mSecondaryDescription;
-    private final Bitmap mPictureBitmap;
-    private final Bitmap mCircledBadgedPictureBitmap;
+    private final @Nullable Bitmap mPictureBitmap;
+    private final @Nullable Bitmap mCircledBadgedPictureBitmap;
     private final boolean mIsIdpClaimedSignIn;
     private final boolean mIsBrowserTrustedSignIn;
     private final boolean mIsFilteredOut;
@@ -63,12 +63,14 @@ public class Account {
             @JniType("std::string") String displayName,
             @JniType("std::string") String givenName,
             @JniType("std::optional<std::string>") @Nullable String secondaryDescription,
-            Bitmap pictureBitmap,
-            Bitmap circledBadgedPictureBitmap,
+            @JniType("SkBitmap") @Nullable Bitmap pictureBitmap,
+            @JniType("SkBitmap") @Nullable Bitmap circledBadgedPictureBitmap,
             boolean isIdpClaimedSignIn,
             boolean isBrowserTrustedSignIn,
             boolean isFilteredOut,
-            @IdentityRequestDialogDisclosureField int[] fields,
+            @JniType("std::vector<content::IdentityRequestDialogDisclosureField>")
+                    @IdentityRequestDialogDisclosureField
+                    int[] fields,
             IdentityProviderData identityProviderData) {
         mId = id;
         mDisplayIdentifier = displayIdentifier;
@@ -104,11 +106,11 @@ public class Account {
         return mSecondaryDescription;
     }
 
-    public Bitmap getPictureBitmap() {
+    public @Nullable Bitmap getPictureBitmap() {
         return mPictureBitmap;
     }
 
-    public Bitmap getCircledBadgedPictureBitmap() {
+    public @Nullable Bitmap getCircledBadgedPictureBitmap() {
         return mCircledBadgedPictureBitmap;
     }
 

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox;
 
 import android.text.Spanned;
 
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
@@ -80,6 +81,7 @@ public class OmniboxViewUtil {
 
     @NativeMethods
     interface Natives {
-        String sanitizeTextForPaste(String clipboardString);
+        @JniType("std::u16string")
+        String sanitizeTextForPaste(@JniType("std::u16string") String clipboardString);
     }
 }

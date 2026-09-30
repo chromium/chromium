@@ -31,7 +31,7 @@ class LogoBridge {
   LogoBridge(const LogoBridge&) = delete;
   LogoBridge& operator=(const LogoBridge&) = delete;
 
-  void Destroy(JNIEnv* env);
+  void Destroy();
 
   // Gets the current non-animated logo (downloading it if necessary) and passes
   // it to the observer.
@@ -40,11 +40,11 @@ class LogoBridge {
   // b) A new doodle is available.
   // c) Not having a doodle was revalidated.
   void GetCurrentLogo(JNIEnv* env,
-                      const base::android::JavaRef<jobject>& j_logo_observer);
+                      const jni_zero::JavaRef<jobject>& j_logo_observer);
 
   // Fires a fire-and-forget HTTP GET request to the specified |log_url| to
   // record a Doodle impression on the server.
-  void RecordImpression(JNIEnv* env, std::string_view log_url);
+  void RecordImpression(std::string_view log_url);
 
  private:
   virtual ~LogoBridge();

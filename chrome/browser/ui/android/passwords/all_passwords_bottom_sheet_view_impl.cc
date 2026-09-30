@@ -16,19 +16,16 @@
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
+#include "third_party/jni_zero/default_conversions.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 
-// Must come after all headers that specialize FromJniType() / ToJniType().
+// Must come after headers that provide symbols used by @JniType.
 #include "chrome/browser/keyboard_accessory/android/internal/jni/AllPasswordsBottomSheetBridge_jni.h"
 #include "chrome/browser/keyboard_accessory/android/internal/jni/Credential_jni.h"
 
 using autofill::mojom::FocusedFieldType;
 using base::android::AttachCurrentThread;
-using base::android::ConvertJavaStringToUTF16;
-using base::android::ConvertUTF16ToJavaString;
-using base::android::ConvertUTF8ToJavaString;
-using base::android::JavaRef;
 
 AllPasswordsBottomSheetViewImpl::AllPasswordsBottomSheetViewImpl(
     AllPasswordsBottomSheetController* controller)
@@ -52,7 +49,7 @@ void AllPasswordsBottomSheetViewImpl::Show(
 
   JNIEnv* env = AttachCurrentThread();
 
-  std::vector<base::android::ScopedJavaLocalRef<jobject>> java_credentials;
+  std::vector<jni_zero::ScopedJavaLocalRef<jobject>> java_credentials;
   java_credentials.reserve(credentials.size());
   for (const auto& credential : credentials) {
     auto facet = affiliations::FacetURI::FromPotentiallyInvalidSpec(
@@ -77,7 +74,6 @@ void AllPasswordsBottomSheetViewImpl::Show(
 }
 
 void AllPasswordsBottomSheetViewImpl::OnCredentialSelected(
-    JNIEnv* env,
     const std::u16string& username,
     const std::u16string& password,
     bool requests_to_fill_password) {
@@ -87,11 +83,11 @@ void AllPasswordsBottomSheetViewImpl::OnCredentialSelected(
           requests_to_fill_password));
 }
 
-void AllPasswordsBottomSheetViewImpl::OnDismiss(JNIEnv* env) {
+void AllPasswordsBottomSheetViewImpl::OnDismiss() {
   controller_->OnDismiss();
 }
 
-base::android::ScopedJavaGlobalRef<jobject>
+jni_zero::ScopedJavaGlobalRef<jobject>
 AllPasswordsBottomSheetViewImpl::GetOrCreateJavaObject() {
   if (java_object_internal_) {
     return java_object_internal_;
@@ -102,8 +98,8 @@ AllPasswordsBottomSheetViewImpl::GetOrCreateJavaObject() {
   }
   return java_object_internal_ = Java_AllPasswordsBottomSheetBridge_create(
              AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
-             controller_->GetProfile()->GetJavaObject(),
-             controller_->GetNativeView()->GetWindowAndroid()->GetJavaObject(),
+             controller_->GetProfile(),
+             controller_->GetNativeView()->GetWindowAndroid(),
              controller_->GetFrameOriginUrl().spec());
 }
 

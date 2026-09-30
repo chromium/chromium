@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.wallet;
 
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
@@ -54,8 +55,10 @@ public class BoardingPassBridge {
 
     @NativeMethods
     public interface Natives {
-        boolean shouldDetect(String url);
+        boolean shouldDetect(@JniType("std::string") String url);
 
-        void detectBoardingPass(@Nullable WebContents webContents, Callback<String[]> callback);
+        void detectBoardingPass(
+                @JniType("content::WebContents*") @Nullable WebContents webContents,
+                Callback<String[]> callback);
     }
 }
