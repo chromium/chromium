@@ -326,11 +326,13 @@ class ClientSideDetectionHostIOSTest : public PlatformTest {
     return fake_wrapper;
   }
 
-  std::unique_ptr<ClientSideDetectionHostIOS> CreateHost() {
+  std::unique_ptr<ClientSideDetectionHostIOS> CreateHost(
+      safe_browsing::IntelligentScanDelegate* intelligent_scan_delegate =
+          nullptr) {
     return std::make_unique<ClientSideDetectionHostIOS>(
         &web_state_, &mock_service_,
         VerdictCacheManagerFactory::GetForProfile(profile_.get()),
-        profile_->GetPrefs(),
+        intelligent_scan_delegate, profile_->GetPrefs(),
         IdentityManagerFactory::GetForProfile(profile_.get()),
         ios::HistoryServiceFactory::GetForProfile(
             profile_.get(), ServiceAccessType::EXPLICIT_ACCESS));
@@ -2343,8 +2345,7 @@ TEST_F(ClientSideDetectionHostIOSTest,
       {{"CsdEnforceIos", "true"}});
 
   MockIntelligentScanDelegate mock_delegate;
-  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
-  host->set_intelligent_scan_delegate_for_testing(&mock_delegate);
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost(&mock_delegate);
 
   EXPECT_CALL(mock_delegate, OnScamWarningShown()).Times(1);
 
@@ -2869,8 +2870,7 @@ TEST_F(ClientSideDetectionHostIOSTest,
       {{"CsdEnforceIos", "true"}});
 
   MockIntelligentScanDelegate mock_delegate;
-  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
-  host->set_intelligent_scan_delegate_for_testing(&mock_delegate);
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost(&mock_delegate);
 
   EXPECT_CALL(mock_delegate, OnScamWarningShown()).Times(0);
 
@@ -3884,6 +3884,158 @@ TEST_F(ClientSideDetectionHostIOSTest,
   [fake_wrapper respondWithInnerText:kTestInnerText];
 
   EXPECT_FALSE(future.IsReady());
+}
+
+// Test that when intelligent scan is requested and yields a scam verdict, a
+// scam warning blocking page is shown.
+TEST_F(ClientSideDetectionHostIOSTest,
+       IntelligentScanTriggeredAndShowsScamWarning) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      safe_browsing::kClientSideDetectionEnabledIos,
+      {{"CsdEnforceIos", "true"}});
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+
+  MockIntelligentScanDelegate mock_delegate;
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost(&mock_delegate);
+  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
+      CreateAndStubPageContextWrapper();
+
+  EXPECT_CALL(mock_service_, ClassifyPhishingThroughThresholds(testing::_))
+      .WillOnce([](safe_browsing::ClientPhishingRequest* verdict) {
+        verdict->set_is_phishing(false);
+        verdict->set_client_side_detection_type(
+            safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
+      });
+
+  EXPECT_CALL(mock_delegate, ShouldRequestIntelligentScan(testing::_))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(mock_delegate, GetIntelligentScanModelType(true))
+      .WillOnce(testing::Return(
+          safe_browsing::IntelligentScanDelegate::ModelType::kServerSide));
+  EXPECT_CALL(mock_delegate,
+              StartIntelligentScan(testing::_, testing::_, testing::_))
+      .WillOnce(
+          [](std::string rendered_texts, std::string url,
+             safe_browsing::IntelligentScanDelegate::IntelligentScanDoneCallback
+                 callback) {
+            EXPECT_EQ(rendered_texts, std::string(100, 'a'));
+            EXPECT_EQ(url, GURL(kPhishingUrl).spec());
+            std::move(callback).Run(
+                safe_browsing::IntelligentScanDelegate::IntelligentScanResult::
+                    Success("ExampleBrand", "ExampleIntent", 1000,
+                            safe_browsing::IntelligentScanDelegate::ModelType::
+                                kServerSide,
+                            0.9f));
+            return base::UnguessableToken::Create();
+          });
+
+  EXPECT_CALL(mock_service_, SendClientReportPhishingRequest(
+                                 testing::_, testing::_, testing::_))
+      .WillOnce([](std::unique_ptr<safe_browsing::ClientPhishingRequest>
+                       verdict,
+                   safe_browsing::ClientSideDetectionService::
+                       ClientReportPhishingRequestCallback callback,
+                   const std::string& access_token) {
+        EXPECT_TRUE(verdict->has_intelligent_scan_info());
+        EXPECT_EQ(verdict->intelligent_scan_info().brand(), "ExampleBrand");
+        EXPECT_EQ(verdict->intelligent_scan_info().intent(), "ExampleIntent");
+        std::move(callback).Run(
+            GURL(kPhishingUrl), /*is_phishing=*/false, net::HTTP_OK,
+            safe_browsing::IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1);
+      });
+
+  EXPECT_CALL(
+      mock_delegate,
+      ShouldShowScamWarning(std::optional<
+                            safe_browsing::IntelligentScanVerdict>(
+          safe_browsing::IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1)))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(mock_delegate, OnScamWarningShown()).Times(1);
+
+  host->OnVisualClassificationDoneForTesting(GURL(kPhishingUrl), {0.1, 0.2});
+
+  EXPECT_TRUE([fake_wrapper populateCalled]);
+  [fake_wrapper respondWithInnerText:std::string(100, 'a')];
+
+  SafeBrowsingUnsafeResourceContainer* container =
+      SafeBrowsingUnsafeResourceContainer::FromWebState(&web_state_);
+  ASSERT_TRUE(container);
+  const security_interstitials::UnsafeResource* resource =
+      container->GetMainFrameUnsafeResource();
+  ASSERT_TRUE(resource);
+  EXPECT_EQ(resource->threat_subtype,
+            safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_VERDICT_1);
+
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.IsIntelligentScanAvailableAtInquiryTime", true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.IsIntelligentScanAvailableAtInquiryTime.ForceRequest",
+      true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.IntelligentScanInnerTextSize", 100, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.IntelligentScanHasSuccessfulResponse", true, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.IntelligentScanVerdict",
+      safe_browsing::IntelligentScanVerdict::SCAM_EXPERIMENT_VERDICT_1, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionEvent",
+      safe_browsing::ClientSideDetectionEvent::kIntelligentScanBegin, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionEvent",
+      safe_browsing::ClientSideDetectionEvent::kIntelligentScanComplete, 1);
+  histogram_tester_.ExpectBucketCount(
+      "SBClientPhishing.ClientSideDetectionEvent",
+      safe_browsing::ClientSideDetectionEvent::kWarningShown, 1);
+}
+
+// Test that cancelling pending requests cancels an ongoing intelligent scan.
+TEST_F(ClientSideDetectionHostIOSTest,
+       IntelligentScanCancelledOnPendingRequestCancellation) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      safe_browsing::kClientSideDetectionEnabledIos,
+      {{"CsdEnforceIos", "true"}});
+  profile_->GetPrefs()->SetBoolean(prefs::kSafeBrowsingEnhanced, true);
+
+  MockIntelligentScanDelegate mock_delegate;
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost(&mock_delegate);
+  FakeClientSideDetectionPageContextWrapper* fake_wrapper =
+      CreateAndStubPageContextWrapper();
+
+  base::UnguessableToken scan_id = base::UnguessableToken::Create();
+
+  EXPECT_CALL(mock_service_, ClassifyPhishingThroughThresholds(testing::_))
+      .WillOnce([](safe_browsing::ClientPhishingRequest* verdict) {
+        verdict->set_is_phishing(false);
+        verdict->set_client_side_detection_type(
+            safe_browsing::ClientSideDetectionType::FORCE_REQUEST);
+      });
+
+  EXPECT_CALL(mock_delegate, ShouldRequestIntelligentScan(testing::_))
+      .WillOnce(testing::Return(true));
+  EXPECT_CALL(mock_delegate, GetIntelligentScanModelType(true))
+      .WillOnce(testing::Return(
+          safe_browsing::IntelligentScanDelegate::ModelType::kServerSide));
+  EXPECT_CALL(mock_delegate,
+              StartIntelligentScan(testing::_, testing::_, testing::_))
+      .WillOnce([scan_id](std::string rendered_texts, std::string url,
+                          safe_browsing::IntelligentScanDelegate::
+                              IntelligentScanDoneCallback callback) {
+        return scan_id;
+      });
+
+  host->OnVisualClassificationDoneForTesting(GURL(kPhishingUrl), {0.1, 0.2});
+
+  EXPECT_TRUE([fake_wrapper populateCalled]);
+  [fake_wrapper respondWithInnerText:std::string(100, 'a')];
+
+  EXPECT_CALL(mock_delegate, CancelIntelligentScan(scan_id))
+      .Times(testing::AtLeast(1))
+      .WillRepeatedly(testing::Return(true));
+
+  host->CancelPendingRequests();
 }
 
 }  // namespace safe_browsing

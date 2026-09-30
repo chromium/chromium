@@ -11,6 +11,7 @@
 #import "components/enterprise/connectors/core/reporting_event_router.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/prefs/pref_service.h"
+#import "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 #import "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -23,6 +24,7 @@
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/prerender/model/prerender_tab_helper.h"
 #import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_host_ios.h"
+#import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_intelligent_scan_delegate_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/client_side_detection/client_side_detection_service_factory.h"
 #import "ios/chrome/browser/safe_browsing/model/verdict_cache_manager_factory.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -155,9 +157,13 @@ SafeBrowsingClientImpl::CreateClientSideDetectionHost(
     return nullptr;
   }
 
+  safe_browsing::IntelligentScanDelegate* intelligent_scan_delegate =
+      ClientSideDetectionIntelligentScanDelegateFactory::GetForProfile(profile);
+
   return std::make_unique<safe_browsing::ClientSideDetectionHostIOS>(
       web_state, csd_service,
-      VerdictCacheManagerFactory::GetForProfile(profile), profile->GetPrefs(),
+      VerdictCacheManagerFactory::GetForProfile(profile),
+      intelligent_scan_delegate, profile->GetPrefs(),
       IdentityManagerFactory::GetForProfile(profile),
       ios::HistoryServiceFactory::GetForProfile(
           profile, ServiceAccessType::EXPLICIT_ACCESS));

@@ -129,13 +129,14 @@ ClientSideDetectionHostIOS::ClientSideDetectionHostIOS(
     web::WebState* web_state,
     ClientSideDetectionService* service,
     VerdictCacheManager* cache_manager,
+    IntelligentScanDelegate* intelligent_scan_delegate,
     PrefService* pref_service,
     signin::IdentityManager* identity_manager,
     history::HistoryService* history_service)
     : ClientSideDetectionHostBase(
           service ? service->GetWeakPtr() : nullptr,
           cache_manager,
-          /*intelligent_scan_delegate=*/nullptr,
+          intelligent_scan_delegate,
           pref_service,
           identity_manager
               ? std::make_unique<SafeBrowsingPrimaryAccountTokenFetcher>(

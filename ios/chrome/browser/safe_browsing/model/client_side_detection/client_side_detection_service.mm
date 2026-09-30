@@ -172,6 +172,13 @@ void ClientSideDetectionService::SetScorerForTesting(  // IN-TEST
   SetScorer(std::move(scorer));
 }
 
+void ClientSideDetectionService::
+    SetSharedURLLoaderFactoryForTesting(  // IN-TEST
+        scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  url_loader_factory_ = std::move(url_loader_factory);
+}
+
 void ClientSideDetectionService::AddObserver(Observer* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   observers_.AddObserver(observer);
