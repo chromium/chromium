@@ -573,6 +573,9 @@ void FileSystemAccessDirectoryHandleImpl::ResolveImpl(
     FileSystemAccessTransferTokenImpl* possible_child) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // TODO(crbug.com/526039697): Consider restricting topology resolution in
+  // third-party contexts if the directory handle lacks active read permissions.
+
   if (!possible_child ||
       possible_child->origin() != context().storage_key.origin()) {
     std::move(callback).Run(

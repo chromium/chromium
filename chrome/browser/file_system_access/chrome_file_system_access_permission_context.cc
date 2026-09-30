@@ -938,12 +938,55 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
     return path_info_.display_name;
   }
 
+  // Validates that the requesting frame is authorized to access the File System
+  // Access API before checking or granting permissions.
+  //
+  // Returns a failure outcome if `rfh` is null, embedded within a fenced frame,
+  // or executing in a cross-origin or third-party context. Returns base::ok()
+  // when the frame context is authorized.
+  base::expected<void, PermissionRequestOutcome> ValidateRequestingFrame(
+      content::RenderFrameHost* rfh) {
+    if (!rfh) {
+      return base::unexpected(PermissionRequestOutcome::kInvalidFrame);
+    }
+
+    // Fenced frames must not access local file system data or prompt the user.
+    if (rfh->IsNestedWithinFencedFrame()) {
+      return base::unexpected(PermissionRequestOutcome::kInvalidFrame);
+    }
+
+    // Reject third-party iframes and partitioned contexts before checking
+    // existing grants. This prevents cross-origin frames from inheriting or
+    // upgrading permissions granted to the top-level origin.
+    url::Origin embedding_origin = url::Origin::Create(
+        permissions::PermissionUtil::GetLastCommittedOriginAsURL(
+            rfh->GetMainFrame()));
+    if (embedding_origin != origin_ ||
+        rfh->GetStorageKey().IsThirdPartyContext()) {
+      return base::unexpected(PermissionRequestOutcome::kThirdPartyContext);
+    }
+
+    return base::ok();
+  }
+
   void RequestPermission(
       content::GlobalRenderFrameHostId frame_id,
       UserActivationState user_activation_state,
       base::OnceCallback<void(PermissionRequestOutcome)> callback) override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     scoped_refptr<PermissionGrantImpl> self(this);
+
+    content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(frame_id);
+
+    // Validate the security context of the calling frame before evaluating
+    // grants. Cross-origin frames must be rejected even if the target origin
+    // already holds an active or persisted grant.
+    if (auto validation_result = ValidateRequestingFrame(rfh);
+        !validation_result.has_value()) {
+      RunCallbackAndRecordPermissionRequestOutcome(std::move(callback),
+                                                   validation_result.error());
+      return;
+    }
 
     // Check if a permission request has already been processed previously. This
     // check is done first because we don't want to reset the status of a
@@ -1010,24 +1053,9 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       return;
     }
 
-    // Otherwise, perform checks and ask the user for permission.
-
-    content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(frame_id);
-    if (!rfh) {
-      // Requested from a no longer valid RenderFrameHost.
-      RunCallbackAndRecordPermissionRequestOutcome(
-          std::move(callback), PermissionRequestOutcome::kInvalidFrame);
-      return;
-    }
-
-    // Don't show request permission UI for an inactive RenderFrameHost as the
-    // page might not distinguish properly between user denying the permission
-    // and automatic rejection, leading to an inconsistent UX once the page
-    // becomes active again.
-    // - If this is called when RenderFrameHost is in BackForwardCache, evict
-    //   the document from the cache.
-    // - If this is called when RenderFrameHost is in prerendering, cancel
-    //   prerendering.
+    // Verify prerequisites for prompting the user. Inactive documents in
+    // BackForwardCache or prerendering cannot present dialogs; evict or cancel
+    // them to prevent inconsistent UI state.
     if (rfh->IsInactiveAndDisallowActivation(
             content::DisallowActivationReasonId::
                 kFileSystemAccessPermissionRequest)) {
@@ -1035,13 +1063,8 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
           std::move(callback), PermissionRequestOutcome::kInvalidFrame);
       return;
     }
-    // We don't allow file system access from fenced frames.
-    if (rfh->IsNestedWithinFencedFrame()) {
-      RunCallbackAndRecordPermissionRequestOutcome(
-          std::move(callback), PermissionRequestOutcome::kInvalidFrame);
-      return;
-    }
 
+    // Prevent background permission dialog spam by requiring a user gesture.
     if (user_activation_state == UserActivationState::kRequired &&
         !rfh->HasTransientUserActivation()) {
       // No permission prompts without user activation.
@@ -1056,16 +1079,6 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       // Requested from a worker, or a no longer existing tab.
       RunCallbackAndRecordPermissionRequestOutcome(
           std::move(callback), PermissionRequestOutcome::kInvalidFrame);
-      return;
-    }
-
-    url::Origin embedding_origin = url::Origin::Create(
-        permissions::PermissionUtil::GetLastCommittedOriginAsURL(
-            rfh->GetMainFrame()));
-    if (embedding_origin != origin_) {
-      // Third party iframes are not allowed to request more permissions.
-      RunCallbackAndRecordPermissionRequestOutcome(
-          std::move(callback), PermissionRequestOutcome::kThirdPartyContext);
       return;
     }
 

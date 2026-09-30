@@ -3248,4 +3248,170 @@ TEST_F(FileSystemAccessManagerImplTest, IsSafePathComponent) {
   }
 }
 
+// Verifies that redeeming a first-party `FileSystemAccessTransferToken` with
+// `PermissionStatus::GRANTED` inside a third-party `BindingContext` (such as
+// via `postMessage` or `StorageAccessHandle.indexedDB`) downgrades
+// non-sandboxed file and directory handles to `PermissionStatus::DENIED`, while
+// preserving `PermissionStatus::GRANTED` for sandboxed (OPFS) handles.
+TEST_F(FileSystemAccessManagerImplTest,
+       GetHandleFromToken_ThirdPartyContextBlocksNonSandboxedReadAndWrite) {
+  const blink::StorageKey kThirdPartyStorageKey = blink::StorageKey::Create(
+      kTestStorageKey.origin(), net::SchemefulSite(GURL("https://other.com")),
+      blink::mojom::AncestorChainBit::kCrossSite);
+  const FileSystemAccessManagerImpl::BindingContext third_party_context = {
+      kThirdPartyStorageKey, kTestURL, frame_id_};
+  mojo::Remote<blink::mojom::FileSystemAccessManager> third_party_manager;
+  manager_->BindReceiver(third_party_context,
+                         third_party_manager.BindNewPipeAndPassReceiver());
+
+  // 1. Non-sandboxed file token minted in 1P context with GRANTED permissions.
+  auto local_file_url = file_system_context_->CreateCrackedFileSystemURL(
+      kTestStorageKey, storage::kFileSystemTypeLocal,
+      dir_.GetPath().AppendASCII("local_file.txt"));
+  FileSystemAccessFileHandleImpl first_party_file(
+      manager_.get(), binding_context_, local_file_url, "local_file.txt",
+      {allow_grant_, allow_grant_});
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
+      file_token_remote;
+  manager_->CreateTransferToken(
+      first_party_file, file_token_remote.InitWithNewPipeAndPassReceiver());
+
+  mojo::Remote<blink::mojom::FileSystemAccessFileHandle> third_party_file;
+  third_party_manager->GetFileHandleFromToken(
+      std::move(file_token_remote),
+      third_party_file.BindNewPipeAndPassReceiver());
+  EXPECT_EQ(PermissionStatus::DENIED,
+            GetPermissionStatusSync(
+                blink::mojom::FileSystemAccessPermissionMode::kRead,
+                third_party_file.get()));
+  EXPECT_EQ(PermissionStatus::DENIED,
+            GetPermissionStatusSync(
+                blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
+                third_party_file.get()));
+
+  // 2. Non-sandboxed directory token minted in 1P context with GRANTED
+  // permissions.
+  auto local_dir_url = file_system_context_->CreateCrackedFileSystemURL(
+      kTestStorageKey, storage::kFileSystemTypeLocal,
+      dir_.GetPath().AppendASCII("local_dir"));
+  FileSystemAccessDirectoryHandleImpl first_party_dir(
+      manager_.get(), binding_context_, local_dir_url,
+      {allow_grant_, allow_grant_});
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
+      dir_token_remote;
+  manager_->CreateTransferToken(
+      first_party_dir, dir_token_remote.InitWithNewPipeAndPassReceiver());
+
+  mojo::Remote<blink::mojom::FileSystemAccessDirectoryHandle> third_party_dir;
+  third_party_manager->GetDirectoryHandleFromToken(
+      std::move(dir_token_remote),
+      third_party_dir.BindNewPipeAndPassReceiver());
+  EXPECT_EQ(PermissionStatus::DENIED,
+            GetPermissionStatusSync(
+                blink::mojom::FileSystemAccessPermissionMode::kRead,
+                third_party_dir.get()));
+  EXPECT_EQ(PermissionStatus::DENIED,
+            GetPermissionStatusSync(
+                blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
+                third_party_dir.get()));
+
+  // 3. Sandboxed (OPFS) file token redeemed in 3P context retains GRANTED.
+  ASSERT_OK_AND_ASSIGN(auto default_bucket,
+                       CreateSandboxFileSystemAndGetDefaultBucket());
+  auto sandboxed_url = file_system_context_->CreateCrackedFileSystemURL(
+      kTestStorageKey, storage::kFileSystemTypeTemporary,
+      base::FilePath::FromUTF8Unsafe("opfs_file.txt"));
+  sandboxed_url.SetBucket(default_bucket);
+  FileSystemAccessFileHandleImpl sandboxed_file(
+      manager_.get(), binding_context_, sandboxed_url, "opfs_file.txt",
+      {allow_grant_, allow_grant_});
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
+      sandboxed_token_remote;
+  manager_->CreateTransferToken(
+      sandboxed_file, sandboxed_token_remote.InitWithNewPipeAndPassReceiver());
+
+  mojo::Remote<blink::mojom::FileSystemAccessFileHandle>
+      third_party_sandboxed_file;
+  third_party_manager->GetFileHandleFromToken(
+      std::move(sandboxed_token_remote),
+      third_party_sandboxed_file.BindNewPipeAndPassReceiver());
+  EXPECT_EQ(PermissionStatus::GRANTED,
+            GetPermissionStatusSync(
+                blink::mojom::FileSystemAccessPermissionMode::kRead,
+                third_party_sandboxed_file.get()));
+  EXPECT_EQ(PermissionStatus::GRANTED,
+            GetPermissionStatusSync(
+                blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
+                third_party_sandboxed_file.get()));
+}
+
+// Verifies that a native file handle deserialized with a first-party storage
+// key, as `BucketContext` does for unpartitioned IndexedDB reached through
+// `document.requestStorageAccess({indexedDB: true})`, is not readable once
+// redeemed in a third-party `BindingContext`, even if the origin holds
+// `PermissionStatus::GRANTED`.
+TEST_F(FileSystemAccessManagerImplTest,
+       DeserializeHandle_FirstPartyKey_RedeemedInThirdPartyContext_Denied) {
+  const PathInfo kTestPathInfo(dir_.GetPath().AppendASCII("foo"));
+  auto grant = base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+      FixedFileSystemAccessPermissionGrant::PermissionStatus::GRANTED,
+      kTestPathInfo);
+
+  // The first-party origin holds GRANTED for both the initial open and the
+  // later load from storage.
+  EXPECT_CALL(permission_context_,
+              GetReadPermissionGrant(kTestStorageKey.origin(), kTestPathInfo,
+                                     HandleType::kFile, testing::_))
+      .WillRepeatedly(testing::Return(grant));
+  EXPECT_CALL(permission_context_,
+              GetWritePermissionGrant(kTestStorageKey.origin(), kTestPathInfo,
+                                      HandleType::kFile, testing::_))
+      .WillRepeatedly(testing::Return(grant));
+
+  blink::mojom::FileSystemAccessEntryPtr entry =
+      manager_->CreateFileEntryFromPath(
+          binding_context_, kTestPathInfo,
+          FileSystemAccessPermissionContext::AccessTrigger::kOpen);
+  mojo::Remote<blink::mojom::FileSystemAccessFileHandle> handle(
+      std::move(entry->entry_handle->get_file()));
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken> token_remote;
+  handle->Transfer(token_remote.InitWithNewPipeAndPassReceiver());
+
+  // Serialize, then deserialize with the first-party storage key.
+  base::test::TestFuture<std::vector<uint8_t>> serialize_future;
+  manager_->SerializeHandle(
+      std::move(token_remote),
+      serialize_future.GetCallback<const std::vector<uint8_t>&>());
+  std::vector<uint8_t> serialized = serialize_future.Take();
+  ASSERT_FALSE(serialized.empty());
+  mojo::PendingRemote<blink::mojom::FileSystemAccessTransferToken>
+      deserialized_token;
+  manager_->DeserializeHandle(
+      kTestStorageKey, serialized,
+      deserialized_token.InitWithNewPipeAndPassReceiver());
+
+  // Redeem the token in a third-party context.
+  const blink::StorageKey kThirdPartyStorageKey = blink::StorageKey::Create(
+      kTestStorageKey.origin(), net::SchemefulSite(GURL("https://other.com")),
+      blink::mojom::AncestorChainBit::kCrossSite);
+  const FileSystemAccessManagerImpl::BindingContext third_party_context = {
+      kThirdPartyStorageKey, kTestURL, frame_id_};
+  mojo::Remote<blink::mojom::FileSystemAccessManager> third_party_manager;
+  manager_->BindReceiver(third_party_context,
+                         third_party_manager.BindNewPipeAndPassReceiver());
+  mojo::Remote<blink::mojom::FileSystemAccessFileHandle> third_party_file;
+  third_party_manager->GetFileHandleFromToken(
+      std::move(deserialized_token),
+      third_party_file.BindNewPipeAndPassReceiver());
+
+  EXPECT_EQ(PermissionStatus::DENIED,
+            GetPermissionStatusSync(
+                blink::mojom::FileSystemAccessPermissionMode::kRead,
+                third_party_file.get()));
+  EXPECT_EQ(PermissionStatus::DENIED,
+            GetPermissionStatusSync(
+                blink::mojom::FileSystemAccessPermissionMode::kReadWrite,
+                third_party_file.get()));
+}
+
 }  // namespace content

@@ -2135,8 +2135,23 @@ FileSystemAccessManagerImpl::GetSharedHandleStateForNonSandboxedPath(
     HandleType handle_type,
     FileSystemAccessPermissionContext::AccessTrigger access_trigger) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   scoped_refptr<FileSystemAccessPermissionGrant> read_grant, write_grant;
-  if (permission_context_) {
+  if (storage_key.IsThirdPartyContext()) {
+    // Non-sandboxed paths in third-party contexts bypass embedder permission
+    // prompts. Drag-and-drop explicitly confers transient read access via user
+    // drop intent, while writes and non-drop reads are strictly denied.
+    if (access_trigger ==
+        FileSystemAccessPermissionContext::AccessTrigger::kDragAndDrop) {
+      read_grant = base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+          PermissionStatus::GRANTED, path_info);
+    } else {
+      read_grant = base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+          PermissionStatus::DENIED, path_info);
+    }
+    write_grant = base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+        PermissionStatus::DENIED, path_info);
+  } else if (permission_context_) {
     read_grant = permission_context_->GetReadPermissionGrant(
         storage_key.origin(), path_info, handle_type, access_trigger);
     write_grant = permission_context_->GetWritePermissionGrant(

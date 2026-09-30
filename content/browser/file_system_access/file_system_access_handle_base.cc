@@ -33,6 +33,7 @@
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom-forward.h"
 
 namespace content {
@@ -91,12 +92,34 @@ FileSystemAccessHandleBase::~FileSystemAccessHandleBase() {
 FileSystemAccessHandleBase::PermissionStatus
 FileSystemAccessHandleBase::GetReadPermissionStatus() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return handle_state_.read_grant->GetStatus();
+  // In 3P contexts, user permission prompts are blocked and ambient origin
+  // permissions cannot be upgraded. Read access is permitted only if the
+  // handle already holds an active `GRANTED` capability minted for explicit
+  // Drag & Drop user gestures. Write access remains blocked regardless of
+  // grant status.
+  const PermissionStatus status = handle_state_.read_grant->GetStatus();
+  if (IsThirdPartyContext() && status != PermissionStatus::GRANTED) {
+    return PermissionStatus::DENIED;
+  }
+  return status;
 }
 
 base::expected<void, blink::mojom::FileSystemAccessErrorPtr>
 FileSystemAccessHandleBase::CheckReadAccess() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // In 3P contexts, accessing non-sandboxed files without an active explicit
+  // grant (e.g. from user drop) violates the security boundary and must return
+  // `kSecurityError`, mapping to SecurityError in JS.
+  if (IsThirdPartyContext() &&
+      GetReadPermissionStatus() != PermissionStatus::GRANTED) {
+    return base::unexpected(file_system_access_error::FromStatus(
+        blink::mojom::FileSystemAccessStatus::kSecurityError,
+        "Not allowed to access files or directories in a third-party "
+        "context."));
+  }
+
+  // In 1P contexts, standard permission denial or unprompted state returns
+  // `kPermissionDenied`, mapping to `NotAllowedError` in JS.
   if (GetReadPermissionStatus() != PermissionStatus::GRANTED) {
     return base::unexpected(file_system_access_error::FromStatus(
         blink::mojom::FileSystemAccessStatus::kPermissionDenied));
@@ -115,12 +138,18 @@ FileSystemAccessHandleBase::GetWritePermissionStatus() {
     mojo::ReportBadMessage("feature 'FileSystemAccessWriteMode' not enabled");
     NOTREACHED();
   }
+  if (IsThirdPartyContext()) {
+    return PermissionStatus::DENIED;
+  }
   return handle_state_.write_grant->GetStatus();
 }
 
 FileSystemAccessHandleBase::PermissionStatus
 FileSystemAccessHandleBase::GetReadWritePermissionStatus() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (IsThirdPartyContext()) {
+    return PermissionStatus::DENIED;
+  }
   PermissionStatus read_status = GetReadPermissionStatus();
   if (read_status != PermissionStatus::GRANTED) {
     return read_status;
@@ -155,6 +184,15 @@ void FileSystemAccessHandleBase::DoRequestPermission(
     // Rejects invalid mode at the very beginning.
     mojo::ReportBadMessage("feature 'FileSystemAccessWriteMode' not enabled");
     NOTREACHED();
+  }
+
+  if (IsThirdPartyContext()) {
+    std::move(callback).Run(
+        file_system_access_error::FromStatus(
+            blink::mojom::FileSystemAccessStatus::kSecurityError,
+            "Not allowed to request permissions in a third-party context."),
+        PermissionStatus::DENIED);
+    return;
   }
 
   PermissionStatus current_status = GetPermissionStatusForMode(mode);
@@ -278,7 +316,7 @@ void FileSystemAccessHandleBase::DidRequestPermission(
       std::move(callback).Run(
           file_system_access_error::FromStatus(
               blink::mojom::FileSystemAccessStatus::kSecurityError,
-              "Not allowed to request permissions in this context."),
+              "Not allowed to request permissions in a third-party context."),
           GetPermissionStatusForMode(mode));
       return;
     case Outcome::kNoUserActivation:
@@ -854,6 +892,19 @@ FileSystemAccessHandleBase::GetPermissionStatusForMode(
     case blink::mojom::FileSystemAccessPermissionMode::kWrite:
       return GetWritePermissionStatus();
   }
+}
+
+bool FileSystemAccessHandleBase::IsThirdPartyContext() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return IsThirdPartyContext(url_, context_.storage_key);
+}
+
+// static
+bool FileSystemAccessHandleBase::IsThirdPartyContext(
+    const storage::FileSystemURL& url,
+    const blink::StorageKey& storage_key) {
+  return url.type() != storage::kFileSystemTypeTemporary &&
+         storage_key.IsThirdPartyContext();
 }
 
 }  // namespace content

@@ -6,12 +6,35 @@
 
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_file_handle_impl.h"
+#include "content/browser/file_system_access/fixed_file_system_access_permission_grant.h"
+#include "storage/common/file_system/file_system_types.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom.h"
 
 namespace content {
 
 using HandleType = FileSystemAccessPermissionContext::HandleType;
 using SharedHandleState = FileSystemAccessManagerImpl::SharedHandleState;
+
+namespace {
+
+// Non-sandboxed transfer tokens redeemed into a third-party context (such as
+// via `postMessage` or `document.requestStorageAccess({indexedDB: true})`) must
+// not inherit first-party permission grants.
+SharedHandleState GetEffectiveHandleStateForContext(
+    const storage::FileSystemURL& url,
+    const FileSystemAccessManagerImpl::BindingContext& binding_context,
+    const SharedHandleState& handle_state) {
+  if (url.type() != storage::kFileSystemTypeTemporary &&
+      binding_context.storage_key.IsThirdPartyContext()) {
+    auto denied_grant =
+        base::MakeRefCounted<FixedFileSystemAccessPermissionGrant>(
+            blink::mojom::PermissionStatus::DENIED, PathInfo(url.path()));
+    return SharedHandleState(denied_grant, denied_grant);
+  }
+  return handle_state;
+}
+
+}  // namespace
 
 FileSystemAccessTransferTokenImpl::FileSystemAccessTransferTokenImpl(
     const storage::FileSystemURL& url,
@@ -48,7 +71,8 @@ FileSystemAccessTransferTokenImpl::CreateFileHandle(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(handle_type_, HandleType::kFile, base::NotFatalUntil::M159);
   return std::make_unique<FileSystemAccessFileHandleImpl>(
-      manager_, binding_context, url_, display_name_, handle_state_);
+      manager_, binding_context, url_, display_name_,
+      GetEffectiveHandleStateForContext(url_, binding_context, handle_state_));
 }
 
 std::unique_ptr<FileSystemAccessDirectoryHandleImpl>
@@ -57,7 +81,8 @@ FileSystemAccessTransferTokenImpl::CreateDirectoryHandle(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(handle_type_, HandleType::kDirectory, base::NotFatalUntil::M159);
   return std::make_unique<FileSystemAccessDirectoryHandleImpl>(
-      manager_, binding_context, url_, handle_state_);
+      manager_, binding_context, url_,
+      GetEffectiveHandleStateForContext(url_, binding_context, handle_state_));
 }
 
 FileSystemAccessPermissionGrant*

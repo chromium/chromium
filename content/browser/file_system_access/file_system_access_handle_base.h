@@ -98,6 +98,12 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
   base::expected<void, blink::mojom::FileSystemAccessErrorPtr>
   CheckReadAccess();
 
+  // Checks whether a file system URL and storage key represent a non-sandboxed
+  // file system path bound to a third-party execution context. Sandboxed file
+  // systems (OPFS) are partitioned by storage key and exempt from third-party
+  // restrictions.
+  static bool IsThirdPartyContext(const storage::FileSystemURL& url,
+                                  const blink::StorageKey& storage_key);
   storage::FileSystemURL GetParentURLForTesting() { return GetParentURL(); }
 
   // Implementation for the GetPermissionStatus method in the
@@ -162,6 +168,11 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
 
  protected:
   virtual base::WeakPtr<FileSystemAccessHandleBase> AsWeakPtr() = 0;
+
+  // Checks whether the handle represents a non-sandboxed file system path
+  // bound to a third-party execution context. Sandboxed file systems (OPFS)
+  // are partitioned by storage key and exempt from third-party restrictions.
+  bool IsThirdPartyContext() const;
 
   // Returns the effective write permission status.
   // This currently returns permission status for kReadWrite, but will switch to
