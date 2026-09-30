@@ -45,7 +45,8 @@
 #include "chromeos/constants/chromeos_features.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-class HorizontalTabStripRegionViewBrowserBaseTest : public InProcessBrowserTest {
+class HorizontalTabStripRegionViewBrowserBaseTest
+    : public InteractiveBrowserTest {
  public:
   HorizontalTabStripRegionViewBrowserBaseTest() = default;
   HorizontalTabStripRegionViewBrowserBaseTest(const HorizontalTabStripRegionViewBrowserBaseTest&) =
@@ -54,7 +55,7 @@ class HorizontalTabStripRegionViewBrowserBaseTest : public InProcessBrowserTest 
       const HorizontalTabStripRegionViewBrowserBaseTest&) = delete;
   ~HorizontalTabStripRegionViewBrowserBaseTest() override = default;
 
-  void SetUp() override { InProcessBrowserTest::SetUp(); }
+  void SetUp() override { InteractiveBrowserTest::SetUp(); }
 
   void AppendTab() { chrome::AddTabAt(browser(), GURL(), -1, false); }
 
@@ -297,6 +298,30 @@ IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewBrowserTest,
   EXPECT_TRUE(tab_strip()->IsTabSelected(tab_2));
   EXPECT_TRUE(tab_strip()->IsTabSelected(tab_3));
   EXPECT_TRUE(tab_0->IsActive());
+}
+
+class HorizontalTabStripRegionViewTabSearchStartsUnpinned
+    : public HorizontalTabStripRegionViewBrowserTest {
+ public:
+  HorizontalTabStripRegionViewTabSearchStartsUnpinned() = default;
+  ~HorizontalTabStripRegionViewTabSearchStartsUnpinned() override = default;
+
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    HorizontalTabStripRegionViewBrowserTest::SetUpBrowserContextKeyedServices(
+        context);
+    Profile::FromBrowserContext(context)->GetPrefs()->SetBoolean(
+        prefs::kTabSearchPinnedToTabstrip, false);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(HorizontalTabStripRegionViewTabSearchStartsUnpinned,
+                       PinTabSearch) {
+  RunTestSequence(EnsureNotPresent(kTabSearchButtonElementId), Do([this]() {
+                    browser()->GetProfile()->GetPrefs()->SetBoolean(
+                        prefs::kTabSearchPinnedToTabstrip, true);
+                  }),
+                  WaitForShow(kTabSearchButtonElementId));
 }
 
 class HorizontalTabStripRegionViewNewInteractiveUiTest

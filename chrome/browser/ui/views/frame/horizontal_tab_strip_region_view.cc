@@ -174,6 +174,10 @@ HorizontalTabStripRegionViewOld::HorizontalTabStripRegionViewOld(
         browser, TabStripComboButton::Context::kHorizontalTabStrip));
     combo_button_->SetProperty(views::kCrossAxisAlignmentKey,
                                views::LayoutAlignment::kCenter);
+    // Set ignore layout here before Layout() runs so that the layout manager
+    // does not set visibility of the combo button to false. This can happen
+    // when it reports a preferred size of 0. See b/567198990.
+    combo_button_->SetProperty(views::kViewIgnoredByLayoutKey, true);
     combo_button_->MaybeShowIPH();
   }
 
@@ -697,7 +701,6 @@ void HorizontalTabStripRegionViewOld::UpdateTabStripMargin() {
                          combo_button_->end_button()->GetVisible()))) {
     combo_button_->SetPaintToLayer();
     combo_button_->layer()->SetFillsBoundsOpaquely(false);
-    combo_button_->SetProperty(views::kViewIgnoredByLayoutKey, true);
     current_leading_width +=
         combo_button_->GetPreferredSize().width() +
         GetLayoutConstant(LayoutConstant::kTabStripPadding);
