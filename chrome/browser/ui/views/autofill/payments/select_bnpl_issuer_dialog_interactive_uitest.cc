@@ -414,7 +414,7 @@ IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
       InSameContext(WithView(
           SelectBnplIssuerDialog::kFootnoteViewId, [](views::View* view) {
             ASSERT_TRUE(view);
-            ASSERT_GT(view->children().size(), 0);
+            ASSERT_GT(view->children().size(), 0u);
             views::StyledLabel* styled_label =
                 views::AsViewClass<views::StyledLabel>(view->children()[0]);
             std::u16string bold_text = u"";
@@ -450,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
       InSameContext(WithView(
           SelectBnplIssuerDialog::kFootnoteViewId, [](views::View* view) {
             ASSERT_TRUE(view);
-            ASSERT_GT(view->children().size(), 0);
+            ASSERT_GT(view->children().size(), 0u);
             views::StyledLabel* styled_label =
                 views::AsViewClass<views::StyledLabel>(view->children()[0]);
 

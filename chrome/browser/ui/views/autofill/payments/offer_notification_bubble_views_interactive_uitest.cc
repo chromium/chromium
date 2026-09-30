@@ -209,7 +209,7 @@ IN_PROC_BROWSER_TEST_P(
   GURL::Replacements replace_scheme;
   replace_scheme.SetSchemeStr("http");
 
-  static const struct {
+  const struct {
     GURL url_navigated_to;
     bool bubble_should_be_visible;
   } test_cases[] = {

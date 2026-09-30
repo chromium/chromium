@@ -2238,7 +2238,7 @@ IN_PROC_BROWSER_TEST_P(SaveCardBubbleViewsFullFormBrowserTest,
 
   base::HistogramTester histogram_tester;
   EXPECT_EQ(
-      0, histogram_tester.GetAllSamples("Autofill.ManageCardsPrompt").size());
+      0u, histogram_tester.GetAllSamples("Autofill.ManageCardsPrompt").size());
   // No bubble should be showing now and metrics should be recorded correctly.
   EXPECT_EQ(nullptr, GetSaveCardBubbleViews());
 }
