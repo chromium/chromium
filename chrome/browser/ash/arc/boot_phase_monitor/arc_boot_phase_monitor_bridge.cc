@@ -13,8 +13,7 @@
 #include "base/one_shot_event.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -56,6 +55,14 @@ class DefaultDelegateImpl : public ArcBootPhaseMonitorBridge::Delegate {
     UMA_HISTOGRAM_EXACT_LINEAR("Arc.AppRequestedInSession", num_requested, 30);
   }
 };
+
+// Returns the AccountId annotated on `context`, or EmptyAccountId() if there is
+// none. Some tests build this bridge for a profile with no user attached, which
+// multi_user_util::GetAccountIdFromProfile() used to answer the same way.
+AccountId GetAccountId(content::BrowserContext* context) {
+  const AccountId* account_id = ash::AnnotatedAccountId::Get(context);
+  return account_id ? *account_id : EmptyAccountId();
+}
 
 }  // namespace
 
@@ -107,8 +114,7 @@ ArcBootPhaseMonitorBridge::ArcBootPhaseMonitorBridge(
     ArcBridgeService* bridge_service,
     std::unique_ptr<Delegate> delegate)
     : arc_bridge_service_(bridge_service),
-      account_id_(multi_user_util::GetAccountIdFromProfile(
-          Profile::FromBrowserContext(context))),
+      account_id_(GetAccountId(context)),
       delegate_(std::move(delegate)),
       pref_service_(user_prefs::UserPrefs::Get(context)) {
   arc_bridge_service_->boot_phase_monitor()->SetHost(this);

@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -59,6 +60,8 @@ class ArcBootPhaseMonitorBridgeTest : public testing::Test {
     user_session_test_environment_->LogIn(account_id);
 
     testing_profile_ = std::make_unique<TestingProfile>();
+    // TODO(crbug.com/40225390): Use ProfileUserManagerController.
+    ash::AnnotatedAccountId::Set(testing_profile_.get(), account_id);
   }
 
   ArcBootPhaseMonitorBridgeTest(const ArcBootPhaseMonitorBridgeTest&) = delete;

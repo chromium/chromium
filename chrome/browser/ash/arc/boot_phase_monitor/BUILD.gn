@@ -18,7 +18,7 @@ static_library("boot_phase_monitor") {
   deps = [
     "//base",
     "//chrome/browser/ash/arc:arc_util",
-    "//chrome/browser/profiles:profile",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus",
     "//chromeos/ash/components/dbus/session_manager",
@@ -43,6 +43,7 @@ source_set("unit_tests") {
     "//chrome/browser/ash/arc/test:arc_test_support",
     "//chrome/test:test_support",
     "//chrome/test/base:testing_browser_process",
+    "//chromeos/ash/components/browser_context_helper",
     "//chromeos/ash/components/dbus/concierge",
     "//chromeos/ash/components/dbus/session_manager",
     "//chromeos/ash/experiences/arc",
