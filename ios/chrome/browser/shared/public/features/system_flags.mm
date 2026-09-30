@@ -62,7 +62,6 @@ BASE_FEATURE(kEnableThirdPartyKeyboardWorkaround,
              base::FEATURE_ENABLED_BY_DEFAULT);
 NSString* const kTipsMagicStackLensShopWithImage =
     @"TipsMagicStackLensShopWithImage";
-NSString* const kTipsMagicStackStateOverride = @"TipsMagicStackStateOverride";
 NSString* const kUniversalOptOutEligibilityOverride =
     @"UniversalOptOutEligibilityOverride";
 NSString* const kInactiveTabsDemoMode = @"InactiveTabsDemoMode";
@@ -321,17 +320,6 @@ std::optional<int> GetForcedInactivityThresholdForSafetyCheckNotifications() {
   }
 
   return threshold;
-}
-
-std::optional<int> GetForcedTipsMagicStackState() {
-  int tipsIdentifier = [[NSUserDefaults standardUserDefaults]
-      integerForKey:kTipsMagicStackStateOverride];
-
-  if (tipsIdentifier == 0) {
-    return std::nullopt;
-  }
-
-  return tipsIdentifier;
 }
 
 bool ShouldDisplayLensShopTipWithImage() {
