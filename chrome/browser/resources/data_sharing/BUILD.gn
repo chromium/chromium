@@ -57,7 +57,8 @@ build_webui("build") {
 
     # Use the mojo_files rules to copy the ts type file to the preprocess dir.
     # This helps to make sure third_party code is in sync with Chrome.
-    mojo_files += [ "//third_party/data_sharing_sdk/data_sharing_sdk_types.ts" ]
+    mojo_files +=
+        [ "//third_party/data_sharing_sdk/cipd/data_sharing_sdk_types.ts" ]
   } else {
     static_files += [ "data_sharing_sdk.css" ]
     ts_files += [
@@ -83,9 +84,9 @@ if (is_chrome_branded) {
 
   copy("copy_data_sharing_sdk") {
     sources = [
-      "//third_party/data_sharing_sdk/data_sharing_sdk.css",
-      "//third_party/data_sharing_sdk/data_sharing_sdk.js",
-      "//third_party/data_sharing_sdk/data_sharing_sdk_version.js",
+      "//third_party/data_sharing_sdk/cipd/data_sharing_sdk.css",
+      "//third_party/data_sharing_sdk/cipd/data_sharing_sdk.js",
+      "//third_party/data_sharing_sdk/cipd/data_sharing_sdk_version.js",
       "data_sharing_sdk_version.d.ts",
     ]
 

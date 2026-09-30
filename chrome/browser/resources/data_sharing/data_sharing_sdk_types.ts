@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // IMPORTANT: This file should be kept in sync with
-// third_party/data_sharing_sdk/data_sharing_sdk_types.ts
+// third_party/data_sharing_sdk/cipd/data_sharing_sdk_types.ts
 // Only update this file by copying the content from that file and fix the
 // formatting.
 /* eslint-disable */

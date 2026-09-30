@@ -1,0 +1,17 @@
+Name: Data Sharing SDK (ShareKit)
+URL: Google Internal
+Version: N/A
+Revision: DEPS
+Update Mechanism: Manual
+License: Google-Internal
+Shipped: no
+Security Critical: yes
+
+Description:
+Google-internal ShareKit web UI SDK.
+
+This is not shipped in chromium. It is shipped in Chrome, but set to Shipped: no
+so as to not appear in about://credits.
+
+Local Modifications:
+None

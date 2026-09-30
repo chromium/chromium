@@ -42,7 +42,7 @@
 /cros
 /custom_tabs_client/src
 /cygwin
-/data_sharing_sdk
+/data_sharing_sdk/cipd
 /devserver
 /directxsdk
 /dragonbox/src
