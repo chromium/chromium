@@ -305,6 +305,18 @@ class BMPSuiteEntry {
   std::string revision_;
 };
 
+// Helper to generate readable test names - sanitizes invalid characters
+std::string BMPSuiteTestName(const BMPSuiteEntry& entry) {
+  std::string name = entry.entry_dir() + "_" + entry.entry_bmp();
+  for (char& c : name) {
+    // Replace invalid characters (dashes, etc.) with underscores
+    if (!IsAsciiAlphanumeric(c) && c != '_') {
+      c = '_';
+    }
+  }
+  return name;
+}
+
 class BMPImageDecoderSuiteTest : public testing::TestWithParam<BMPSuiteEntry> {
 };
 
@@ -462,8 +474,10 @@ INSTANTIATE_TEST_SUITE_P(
         BMPSuiteEntry{"bad", "reallybig"},
         BMPSuiteEntry{"bad", "rgb16-880"},
         BMPSuiteEntry{"bad", "rletopdown"},
-        BMPSuiteEntry{"bad", "rletopdown"},
-        BMPSuiteEntry{"bad", "shortfile"}));
+        BMPSuiteEntry{"bad", "shortfile"}),
+    [](const testing::TestParamInfo<BMPSuiteEntry>& info) {
+      return BMPSuiteTestName(info.param);
+    });
 
 class BMPImageDecoderCorpusTest : public ImageDecoderBaseTest {
  public:
