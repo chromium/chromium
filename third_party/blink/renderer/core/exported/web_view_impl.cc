@@ -2968,7 +2968,7 @@ void ValidatePausedStateConsistency() {
       }
       const bool microtasks_are_paused =
           window->GetAgent()->event_loop()->AreMicrotasksPaused();
-      CHECK(!microtasks_are_paused, base::NotFatalUntil::M156) << window->Url();
+      CHECK(!microtasks_are_paused, base::NotFatalUntil::M162) << window->Url();
     }
   }
 }
