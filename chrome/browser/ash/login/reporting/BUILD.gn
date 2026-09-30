@@ -33,6 +33,7 @@ static_library("reporting") {
     "//chromeos/ash/components/settings",
     "//components/policy/core/common",
     "//components/prefs",
+    "//components/session_manager/core",
     "//components/user_manager",
     "//content/public/browser",
   ]
@@ -99,6 +100,7 @@ source_set("browser_tests") {
     "//components/policy/proto",
     "//components/reporting/proto:record_constants",
     "//components/reporting/proto:record_proto",
+    "//components/session_manager/core",
     "//components/signin/public/identity_manager:test_support",
     "//components/user_manager",
     "//content/test:test_support",

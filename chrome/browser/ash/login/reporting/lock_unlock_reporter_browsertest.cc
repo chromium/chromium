@@ -26,6 +26,8 @@
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
 #include "components/reporting/proto/synced/record.pb.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -129,7 +131,7 @@ IN_PROC_BROWSER_TEST_P(LockUnlockReporterBrowserTest, ReportLockAndUnlockTest) {
   LoginUser(managed_user_);
 
   const AccountId account_id =
-      user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId();
+      session_manager::SessionManager::Get()->GetPrimarySession()->account_id();
   ScreenLockerTester screen_locker_tester;
 
   // Lock the screen and verify the event.

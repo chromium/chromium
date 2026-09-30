@@ -7,6 +7,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
@@ -15,7 +16,10 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/user.h"
+#include "components/user_manager/user_manager.h"
 #include "components/user_manager/user_names.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -87,8 +91,12 @@ void LockUnlockReporter::MaybeReportEvent(LockUnlockRecord record) {
   if (!helper_->ReportingEnabled(kReportDeviceLoginLogout)) {
     return;
   }
+  const AccountId& account_id =
+      CHECK_DEREF(session_manager::SessionManager::Get()->GetPrimarySession())
+          .account_id();
   const std::string& user_email =
-      user_manager::UserManager::Get()->GetPrimaryUser()->GetDisplayEmail();
+      CHECK_DEREF(user_manager::UserManager::Get()->FindUser(account_id))
+          .GetDisplayEmail();
   if (helper_->ShouldReportUser(user_email)) {
     record.mutable_affiliated_user()->set_user_email(user_email);
   } else if (const auto user_id =
