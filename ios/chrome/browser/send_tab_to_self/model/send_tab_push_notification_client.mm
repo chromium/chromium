@@ -129,7 +129,7 @@ SendTabPushNotificationClient::RegisterActionableNotifications() {
 
 void SendTabPushNotificationClient::LoadSendTabUrlInNewTab(
     const GURL& url,
-    std::string_view identifier,
+    std::string_view entry_guid,
     Browser* browser) {
   send_tab_to_self::SendTabToSelfSyncService* sync_service =
       SendTabToSelfSyncServiceFactory::GetForProfile(browser->GetProfile());
@@ -140,35 +140,35 @@ void SendTabPushNotificationClient::LoadSendTabUrlInNewTab(
       sync_service->GetSendTabToSelfModel();
 
   const send_tab_to_self::SendTabToSelfEntry* entry =
-      send_tab_model->GetEntryByGUID(identifier);
+      send_tab_model->GetEntryByGUID(entry_guid);
 
   OpenNewTabCommand* command = nil;
   if (entry) {
     command = send_tab_to_self::CreateOpenNewTabCommand(entry);
   } else {
     command = [OpenNewTabCommand commandWithURLFromChrome:url];
-    if (!identifier.empty()) {
+    if (!entry_guid.empty()) {
       // Attach the entry GUID even if the entry is not in the model yet so that
       // navigation tracking attributes the tab to the Send Tab to Self entry.
-      command.sendTabToSelfEntryGUID = base::SysUTF8ToNSString(identifier);
+      command.sendTabToSelfEntryGUID = base::SysUTF8ToNSString(entry_guid);
     }
   }
 
-  id<SceneCommands> handler =
-      HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
-  [handler openURLInNewTab:command];
-
-  if (!identifier.empty()) {
+  if (!entry_guid.empty()) {
     // Mark the entry opened and activated even if `entry` is null (not yet in
     // the model). The underlying bridge buffers these IDs in
     // `unknown_opened_entries_` / `unknown_activated_entries_`, preventing the
     // auto-open logic from opening a duplicate tab when sync later finishes
     // receiving the entry.
-    send_tab_model->MarkEntryOpened(identifier);
+    send_tab_model->MarkEntryOpened(entry_guid);
     send_tab_model->MarkEntryActivated(
-        identifier,
+        entry_guid,
         send_tab_to_self::ShareActivatedEntryPoint::kMobileNotification);
   }
+
+  id<SceneCommands> handler =
+      HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
+  [handler openURLInNewTab:command];
 
   send_tab_to_self::RecordAutoOpenOutcome(
       send_tab_to_self::AutoOpenOutcome::kTabOpenedViaNotification);

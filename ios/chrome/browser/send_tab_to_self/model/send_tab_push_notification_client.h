@@ -45,7 +45,7 @@ class SendTabPushNotificationClient : public PushNotificationClient {
   // Extracts the scroll text fragment if present and opens the URL in a new
   // tab.
   void LoadSendTabUrlInNewTab(const GURL& url,
-                              std::string_view identifier,
+                              std::string_view entry_guid,
                               Browser* browser);
 
   // Subscriptions for delayed actions.

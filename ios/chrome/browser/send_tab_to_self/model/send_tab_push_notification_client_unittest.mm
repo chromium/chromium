@@ -7,10 +7,14 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/metrics/user_action_tester.h"
+#import "base/test/scoped_feature_list.h"
 #import "components/prefs/scoped_user_pref_update.h"
 #import "components/send_tab_to_self/fake_send_tab_to_self_model.h"
+#import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/metrics_util.h"
 #import "components/send_tab_to_self/stub_send_tab_to_self_sync_service.h"
+#import "ios/chrome/browser/send_tab_to_self/model/send_tab_to_self_browser_agent.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -37,6 +41,8 @@
 namespace {
 
 NSString* const kTestUrl = @"https://www.example.com";
+constexpr char kAutoOpenOutcomeHistogram[] =
+    "Sharing.SendTabToSelf.AutoOpenOutcome2";
 
 }  // namespace
 
@@ -165,6 +171,11 @@ TEST_F(SendTabPushNotificationClientTest, TestNotificationInteraction) {
         EXPECT_EQ(GURL(base::SysNSStringToUTF8(kTestUrl)), command.URL);
         EXPECT_NSEQ(base::SysUTF8ToNSString(guid),
                     command.sendTabToSelfEntryGUID);
+        // Verify that the entry was marked opened in the model BEFORE opening
+        // the new tab to prevent reentrancy issues from creating duplicate
+        // tabs in SendTabToSelfBrowserAgent.
+        EXPECT_EQ(guid, model_->last_opened_guid());
+        EXPECT_EQ(guid, model_->last_activated_guid());
         return YES;
       }]]);
 
@@ -185,6 +196,69 @@ TEST_F(SendTabPushNotificationClientTest, TestNotificationInteraction) {
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "IOS.Notifications.SendTab.Interaction"),
             1);
+}
+
+// Tests that opening a tab via notification interaction does not cause
+// SendTabToSelfBrowserAgent's WebStateListDidChange observer to reentrantly
+// treat the entry as unopened and spawn a duplicate background tab or duplicate
+// metrics (crbug.com/563304530).
+TEST_F(SendTabPushNotificationClientTest,
+       TestNotificationInteraction_DoesNotTriggerReentrantDuplicateTab) {
+  base::test::ScopedFeatureList feature_list(
+      send_tab_to_self::kSendTabToSelfAutoOpen);
+  base::HistogramTester histogram_tester;
+
+  model_->SetLocalCacheGuid("device");
+  const send_tab_to_self::SendTabToSelfEntry* entry = model_->AddEntryRemotely(
+      GURL(base::SysNSStringToUTF8(kTestUrl)), "title", "device",
+      send_tab_to_self::PageContext(), send_tab_to_self::NavigationHistory());
+  ASSERT_NE(nullptr, entry);
+  std::string guid = entry->GetGUID();
+
+  // Attach SendTabToSelfBrowserAgent to observe WebStateList changes.
+  SendTabToSelfBrowserAgent::CreateForBrowser(browser_.get());
+  ASSERT_NE(nullptr, SendTabToSelfBrowserAgent::FromBrowser(browser_.get()));
+
+  // When openURLInNewTab is dispatched, simulate creating and inserting the
+  // new active WebState into the browser's WebStateList. This fires
+  // WebStateListDidChange synchronously and tests reentrancy.
+  OCMExpect([application_handler_
+      openURLInNewTab:[OCMArg checkWithBlock:^(OpenNewTabCommand* command) {
+        EXPECT_EQ(GURL(base::SysNSStringToUTF8(kTestUrl)), command.URL);
+        EXPECT_NSEQ(base::SysUTF8ToNSString(guid),
+                    command.sendTabToSelfEntryGUID);
+        // Verify that the entry was marked opened in the model BEFORE opening
+        // the new tab to prevent reentrancy issues from creating duplicate
+        // tabs in SendTabToSelfBrowserAgent.
+        EXPECT_EQ(guid, model_->last_opened_guid());
+        EXPECT_EQ(guid, model_->last_activated_guid());
+
+        auto fake_web_state = std::make_unique<web::FakeWebState>();
+        fake_web_state->SetCurrentURL(command.URL);
+        fake_web_state->WasShown();
+        browser_->GetWebStateList()->InsertWebState(
+            std::move(fake_web_state),
+            WebStateList::InsertionParams::Automatic().Activate(true));
+        return YES;
+      }]]);
+
+  bool handle_interaction = client_->HandleNotificationInteraction(
+      MockRequestResponse(/*is_send_tab_notification=*/true, guid));
+  EXPECT_TRUE(handle_interaction);
+
+  // Exactly one tab should exist in the WebStateList (the one opened by the
+  // notification), and NO duplicate background tabs should have been created.
+  EXPECT_EQ(1, browser_->GetWebStateList()->count());
+
+  // Verify that only the single notification outcome was recorded, and NO
+  // reentrant kTabsOpenedInBackgroundUponActivation was recorded.
+  histogram_tester.ExpectUniqueSample(
+      kAutoOpenOutcomeHistogram,
+      send_tab_to_self::AutoOpenOutcome::kTabOpenedViaNotification, 1);
+  histogram_tester.ExpectBucketCount(
+      kAutoOpenOutcomeHistogram,
+      send_tab_to_self::AutoOpenOutcome::kTabsOpenedInBackgroundUponActivation,
+      0);
 }
 
 // Tests that interacting with a send tab notification when the entry has not
@@ -220,7 +294,7 @@ TEST_F(SendTabPushNotificationClientTest,
             send_tab_to_self::ShareActivatedEntryPoint::kMobileNotification);
 
   histogram_tester.ExpectUniqueSample(
-      "Sharing.SendTabToSelf.AutoOpenOutcome2",
+      kAutoOpenOutcomeHistogram,
       send_tab_to_self::AutoOpenOutcome::kTabOpenedViaNotification, 1);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "IOS.Notifications.SendTab.Interaction"),
@@ -239,8 +313,7 @@ TEST_F(SendTabPushNotificationClientTest,
   OCMReject([application_handler_ openURLInNewTab:[OCMArg any]]);
   EXPECT_FALSE(handle_interaction);
 
-  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.AutoOpenOutcome2",
-                                    0);
+  histogram_tester.ExpectTotalCount(kAutoOpenOutcomeHistogram, 0);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "IOS.Notifications.SendTab.Interaction"),
             0);
@@ -257,8 +330,7 @@ TEST_F(SendTabPushNotificationClientTest,
           /*is_send_tab_notification=*/true, "guid123", @"not-a-valid-url"));
   EXPECT_FALSE(handle_interaction);
 
-  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.AutoOpenOutcome2",
-                                    0);
+  histogram_tester.ExpectTotalCount(kAutoOpenOutcomeHistogram, 0);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "IOS.Notifications.SendTab.Interaction"),
             0);
@@ -275,8 +347,7 @@ TEST_F(SendTabPushNotificationClientTest,
           /*is_send_tab_notification=*/true, "guid123", @""));
   EXPECT_FALSE(handle_interaction);
 
-  histogram_tester.ExpectTotalCount("Sharing.SendTabToSelf.AutoOpenOutcome2",
-                                    0);
+  histogram_tester.ExpectTotalCount(kAutoOpenOutcomeHistogram, 0);
   EXPECT_EQ(user_action_tester.GetActionCount(
                 "IOS.Notifications.SendTab.Interaction"),
             0);
