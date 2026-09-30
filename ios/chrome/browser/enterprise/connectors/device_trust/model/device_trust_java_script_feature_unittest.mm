@@ -230,7 +230,7 @@ TEST_F(DeviceTrustJavaScriptFeatureTest,
 // the DeviceTrustService is disabled.
 TEST_F(DeviceTrustJavaScriptFeatureTest,
        DefaultRoutingReturnsServiceUnavailableWhenServiceDisabled) {
-  DeviceTrustChallengeTabHelper::CreateForWebState(web_state());
+  DeviceTrustChallengeTabHelper::CreateForWebState(web_state(), mock_service());
   ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(false));
   ResetReply();
   base::RunLoop run_loop;
@@ -253,7 +253,7 @@ TEST_F(DeviceTrustJavaScriptFeatureTest,
 // Verifies that the default production routing returns URL_NOT_ALLOWED when the
 // URL is not in the Device Trust allowlist.
 TEST_F(DeviceTrustJavaScriptFeatureTest, DefaultRoutingReturnsUrlNotAllowed) {
-  DeviceTrustChallengeTabHelper::CreateForWebState(web_state());
+  DeviceTrustChallengeTabHelper::CreateForWebState(web_state(), mock_service());
   ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(true));
   EXPECT_CALL(*mock_service(), Watches(GURL(kExampleUrl)))
       .WillOnce(
@@ -280,7 +280,7 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, DefaultRoutingReturnsUrlNotAllowed) {
 // requesting security origin is opaque.
 TEST_F(DeviceTrustJavaScriptFeatureTest,
        DefaultRoutingReturnsInvalidOriginForOpaqueOrigin) {
-  DeviceTrustChallengeTabHelper::CreateForWebState(web_state());
+  DeviceTrustChallengeTabHelper::CreateForWebState(web_state(), mock_service());
   ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(true));
   EXPECT_CALL(*mock_service(), Watches(testing::_)).Times(0);
   ResetReply();
@@ -305,7 +305,7 @@ TEST_F(DeviceTrustJavaScriptFeatureTest,
 // messages are routed to the service, while the subsequent request is rejected
 // with TOO_MANY_REQUESTS before reaching the service.
 TEST_F(DeviceTrustJavaScriptFeatureTest, PendingRequestsLimitEnforced) {
-  DeviceTrustChallengeTabHelper::CreateForWebState(web_state());
+  DeviceTrustChallengeTabHelper::CreateForWebState(web_state(), mock_service());
   ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(true));
   const std::set<enterprise_connectors::DTCPolicyLevel> levels = {
       enterprise_connectors::DTCPolicyLevel::kUser};
@@ -354,13 +354,14 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, PendingRequestsLimitEnforced) {
 // block attestation requests on a different WebState.
 TEST_F(DeviceTrustJavaScriptFeatureTest,
        PendingRequestsIsolatedBetweenWebStates) {
-  DeviceTrustChallengeTabHelper::CreateForWebState(web_state());
+  DeviceTrustChallengeTabHelper::CreateForWebState(web_state(), mock_service());
   auto second_web_state = std::make_unique<web::FakeWebState>();
   second_web_state->SetBrowserState(profile_.get());
   second_web_state->SetWebFramesManager(
       web::ContentWorld::kPageContentWorld,
       std::make_unique<web::FakeWebFramesManager>());
-  DeviceTrustChallengeTabHelper::CreateForWebState(second_web_state.get());
+  DeviceTrustChallengeTabHelper::CreateForWebState(second_web_state.get(),
+                                                   mock_service());
   ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(true));
   const std::set<enterprise_connectors::DTCPolicyLevel> levels = {
       enterprise_connectors::DTCPolicyLevel::kUser};
@@ -412,7 +413,7 @@ TEST_F(DeviceTrustJavaScriptFeatureTest,
 // and challenge to the service, and resolves the promise with the signed
 // payload.
 TEST_F(DeviceTrustJavaScriptFeatureTest, DefaultRoutingResolvesSuccessPayload) {
-  DeviceTrustChallengeTabHelper::CreateForWebState(web_state());
+  DeviceTrustChallengeTabHelper::CreateForWebState(web_state(), mock_service());
   const url::Origin expected_origin = url::Origin::Create(GURL(kExampleUrl));
   const GURL expected_url(kAllowedUrl);
   ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(true));
@@ -453,7 +454,7 @@ TEST_F(DeviceTrustJavaScriptFeatureTest, DefaultRoutingResolvesSuccessPayload) {
 // respond, the originating script message reply is rejected with
 // ATTESTATION_TIMEOUT.
 TEST_F(DeviceTrustJavaScriptFeatureTest, DefaultRoutingTimesOut) {
-  DeviceTrustChallengeTabHelper::CreateForWebState(web_state());
+  DeviceTrustChallengeTabHelper::CreateForWebState(web_state(), mock_service());
   ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(true));
   const std::set<enterprise_connectors::DTCPolicyLevel> levels = {
       enterprise_connectors::DTCPolicyLevel::kUser};

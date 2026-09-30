@@ -7,13 +7,10 @@
 #import <utility>
 
 #import "base/check.h"
-#import "base/check_deref.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/enterprise/device_trust/core/common_types.h"
 #import "components/enterprise/device_trust/core/device_trust_service.h"
 #import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_java_script_feature.h"
-#import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_service_factory_ios.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
@@ -23,6 +20,20 @@
 namespace {
 // Browser-side timeout for device attestation requests.
 constexpr base::TimeDelta kAttestationTimeout = base::Seconds(25);
+
+// Determines the URL to evaluate against Device Trust allowlist policies.
+// By default, uses the security origin's base URL. If a candidate URL is
+// present and is same-origin with `security_origin`, prefers the candidate URL
+// so that path-scoped allowlist patterns (e.g. "https://example.com/login") can
+// match.
+GURL DeterminePolicyCheckUrl(const url::Origin& security_origin,
+                             const std::optional<GURL>& candidate_url) {
+  if (candidate_url.has_value() &&
+      security_origin.IsSameOriginWith(*candidate_url)) {
+    return *candidate_url;
+  }
+  return security_origin.GetURL();
+}
 }  // namespace
 
 DeviceTrustChallengeTabHelper::PendingRequest::PendingRequest(
@@ -32,9 +43,11 @@ DeviceTrustChallengeTabHelper::PendingRequest::PendingRequest(
 DeviceTrustChallengeTabHelper::PendingRequest::~PendingRequest() = default;
 
 DeviceTrustChallengeTabHelper::DeviceTrustChallengeTabHelper(
-    web::WebState* web_state)
-    : web_state_(CHECK_DEREF(web_state)) {
+    web::WebState* web_state,
+    enterprise_connectors::DeviceTrustService* device_trust_service)
+    : device_trust_service_(device_trust_service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(web_state);
 
   web_state_observation_.Observe(web_state);
 
@@ -64,13 +77,7 @@ void DeviceTrustChallengeTabHelper::BuildChallengeResponse(
     AttestationCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  ProfileIOS* profile =
-      ProfileIOS::FromBrowserState(web_state_->GetBrowserState());
-  CHECK(profile);
-  enterprise_connectors::DeviceTrustService* service =
-      DeviceTrustServiceFactoryIOS::GetForProfile(profile);
-
-  if (!service || !service->IsEnabled()) {
+  if (!device_trust_service_ || !device_trust_service_->IsEnabled()) {
     PostError(std::move(callback),
               enterprise_connectors::DeviceTrustError::kServiceUnavailable);
     return;
@@ -83,20 +90,11 @@ void DeviceTrustChallengeTabHelper::BuildChallengeResponse(
     return;
   }
 
-  // Determine the URL to evaluate against Device Trust allowlist policies.
-  // By default, use the security origin's base URL. If a valid request URL is
-  // present and matches the security origin, prefer the request URL so that
-  // path-scoped allowlist patterns (e.g. "https://example.com/login") can
-  // match.
-  GURL policy_check_url = security_origin.GetURL();
-  if (request_url.has_value() && request_url->is_valid()) {
-    if (url::Origin::Create(*request_url) == security_origin) {
-      policy_check_url = *request_url;
-    }
-  }
+  const GURL policy_check_url =
+      DeterminePolicyCheckUrl(security_origin, request_url);
 
   const std::set<enterprise_connectors::DTCPolicyLevel> levels =
-      service->Watches(policy_check_url);
+      device_trust_service_->Watches(policy_check_url);
   if (levels.empty()) {
     PostError(std::move(callback),
               enterprise_connectors::DeviceTrustError::kUrlNotAllowed);
@@ -117,7 +115,7 @@ void DeviceTrustChallengeTabHelper::BuildChallengeResponse(
                      weak_factory_.GetWeakPtr(), request_id));
   pending_requests_.emplace(request_id, std::move(request));
 
-  service->BuildChallengeResponse(
+  device_trust_service_->BuildChallengeResponse(
       challenge, levels,
       base::BindOnce(&DeviceTrustChallengeTabHelper::OnChallengeResponseReady,
                      weak_factory_.GetWeakPtr(), request_id));
@@ -203,7 +201,26 @@ void DeviceTrustChallengeTabHelper::MaybeSetupDeviceTrustAPI(
     return;
   }
 
-  // TODO(crbug.com/517112324): Check DeviceTrustService::Watches(url).
+  const url::Origin security_origin = web_frame->GetSecurityOrigin();
+  if (security_origin.opaque()) {
+    return;
+  }
+
+  if (!device_trust_service_ || !device_trust_service_->IsEnabled()) {
+    return;
+  }
+
+  // WebFrame::GetUrl() is only used to refine the check within the frame's
+  // security origin (for path-scoped allowlist patterns); a cross-origin URL
+  // falls back to the security origin. This only controls whether the API is
+  // exposed; the request-time check in BuildChallengeResponse() remains the
+  // security boundary.
+  const GURL policy_check_url =
+      DeterminePolicyCheckUrl(security_origin, web_frame->GetUrl());
+  if (device_trust_service_->Watches(policy_check_url).empty()) {
+    return;
+  }
+
   DeviceTrustJavaScriptFeature::GetInstance()->SetupDeviceTrustAPI(web_frame);
 }
 
@@ -213,6 +230,7 @@ void DeviceTrustChallengeTabHelper::WebStateDestroyed(
 
   web_state_observation_.Reset();
   web_frames_manager_observation_.Reset();
+  device_trust_service_ = nullptr;
   weak_factory_.InvalidateWeakPtrs();
   pending_requests_.clear();
 }

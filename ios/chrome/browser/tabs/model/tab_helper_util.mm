@@ -53,6 +53,7 @@
 #import "ios/chrome/browser/drive/model/drive_tab_helper.h"
 #import "ios/chrome/browser/enterprise/connectors/device_trust/features.h"
 #import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_challenge_tab_helper.h"
+#import "ios/chrome/browser/enterprise/connectors/device_trust/model/device_trust_service_factory_ios.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
 #import "ios/chrome/browser/enterprise/data_protection/model/data_protection_tab_helper.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
@@ -433,9 +434,11 @@ void AttachTabHelpers(web::WebState* web_state, TabHelperFilter filter_flags) {
   attacher.Create<NetExportTabHelper>();
   attacher.Create<TranslatePDFMetricLogger>();
 
-  attacher.CreateWhen<DeviceTrustChallengeTabHelper>(
-      base::FeatureList::IsEnabled(
-          enterprise_connectors::features::kEnableIOSDeviceTrustConnector));
+  attacher
+      .CreateDeferredWhen<DeviceTrustChallengeTabHelper>(
+          base::FeatureList::IsEnabled(
+              enterprise_connectors::features::kEnableIOSDeviceTrustConnector))
+      .WithFactory<DeviceTrustServiceFactoryIOS>(profile);
 
   if (web::features::IsCobaltEnabled()) {
     ios::provider::AttachCobaltTabHelpers(attacher);

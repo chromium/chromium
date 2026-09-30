@@ -45,6 +45,7 @@ namespace {
 const char kExampleUrl[] = "https://example.com";
 const char kExampleLoginUrl[] = "https://example.com/login";
 const char kExampleOtherUrl[] = "https://example.com/other";
+const char kAttackerUrl[] = "https://attacker.com";
 const char kAttackerLoginUrl[] = "https://attacker.com/login";
 const char kWildcardPattern[] = "*";
 const char16_t kExpectedSetupScript[] =
@@ -76,7 +77,8 @@ class DeviceTrustChallengeTabHelperTest : public PlatformTest {
     web_state_->SetWebFramesManager(web::ContentWorld::kPageContentWorld,
                                     std::move(frames_manager));
 
-    DeviceTrustChallengeTabHelper::CreateForWebState(web_state_.get());
+    DeviceTrustChallengeTabHelper::CreateForWebState(web_state_.get(),
+                                                     mock_service());
   }
 
   DeviceTrustChallengeTabHelper* helper() {
@@ -165,16 +167,22 @@ TEST_F(DeviceTrustChallengeTabHelperTest, CreatesSuccessfully) {
   EXPECT_NE(helper(), nullptr);
 }
 
-// Verifies that when a main web frame becomes available, the Device Trust API
-// setup script is executed on that frame.
+// Verifies that when a main web frame becomes available (with only its
+// security origin set and an empty frame URL), the policy check falls back to
+// the security origin URL and executes the Device Trust API setup script if
+// allowlisted.
 TEST_F(DeviceTrustChallengeTabHelperTest, SetUpAPIForMainFrame) {
-  web::FakeWebFrame* main_frame_ptr = SetupMainFrame(GURL(kExampleUrl));
+  SetAllowlistPatterns({kExampleUrl});
+  web::FakeWebFrame* main_frame_ptr =
+      SetupMainFrame(url::Origin::Create(GURL(kExampleUrl)));
   EXPECT_EQ(main_frame_ptr->GetJavaScriptCallHistory().size(), 1u);
   EXPECT_EQ(main_frame_ptr->GetLastJavaScriptCall(), kExpectedSetupScript);
 }
 
-// Verifies that non-main (child) frames do not trigger the API setup.
+// Verifies that non-main (child) frames do not trigger the API setup even if
+// allowlisted.
 TEST_F(DeviceTrustChallengeTabHelperTest, IgnoreChildFrame) {
+  SetAllowlistPatterns({kExampleUrl});
   auto child_frame = web::FakeWebFrame::CreateChildWebFrame(GURL(kExampleUrl));
   child_frame->set_browser_state(profile_.get());
   web::FakeWebFrame* child_frame_ptr = child_frame.get();
@@ -182,16 +190,124 @@ TEST_F(DeviceTrustChallengeTabHelperTest, IgnoreChildFrame) {
   EXPECT_EQ(child_frame_ptr->GetJavaScriptCallHistory().size(), 0u);
 }
 
+// Verifies that a non-opaque main frame triggers the API setup when a wildcard
+// allowlist pattern ("*") is configured.
+TEST_F(DeviceTrustChallengeTabHelperTest, SetUpAPIForWildcardAllowlist) {
+  SetAllowlistPatterns({kWildcardPattern});
+  web::FakeWebFrame* main_frame_ptr = SetupMainFrame(GURL(kExampleUrl));
+  EXPECT_EQ(main_frame_ptr->GetJavaScriptCallHistory().size(), 1u);
+  EXPECT_EQ(main_frame_ptr->GetLastJavaScriptCall(), kExpectedSetupScript);
+}
+
+// Verifies that main frames with an opaque origin do not trigger the API setup
+// even with a wildcard allowlist, without querying the policy matcher.
+TEST_F(DeviceTrustChallengeTabHelperTest, IgnoreOpaqueOrigin) {
+  SetAllowlistPatterns({kWildcardPattern});
+  EXPECT_CALL(*mock_service(), Watches(testing::_)).Times(0);
+  web::FakeWebFrame* main_frame_ptr = SetupMainFrame(url::Origin());
+  EXPECT_EQ(main_frame_ptr->GetJavaScriptCallHistory().size(), 0u);
+}
+
+// Verifies that when no DeviceTrustService is available, main frames do not
+// trigger the API setup.
+TEST_F(DeviceTrustChallengeTabHelperTest,
+       IgnoreMainFrameWhenServiceUnavailable) {
+  DeviceTrustChallengeTabHelper::RemoveFromWebState(web_state_.get());
+  DeviceTrustChallengeTabHelper::CreateForWebState(
+      web_state_.get(), /*device_trust_service=*/nullptr);
+  web::FakeWebFrame* main_frame_ptr = SetupMainFrame(GURL(kExampleUrl));
+  EXPECT_EQ(main_frame_ptr->GetJavaScriptCallHistory().size(), 0u);
+}
+
+// Verifies that when DeviceTrustService is disabled, main frames do not
+// trigger the API setup even if the origin is allowlisted, without querying
+// the policy matcher.
+TEST_F(DeviceTrustChallengeTabHelperTest, IgnoreDisabledService) {
+  SetAllowlistPatterns({kExampleUrl});
+  ON_CALL(*mock_service(), IsEnabled()).WillByDefault(testing::Return(false));
+  EXPECT_CALL(*mock_service(), Watches(testing::_)).Times(0);
+  web::FakeWebFrame* main_frame_ptr = SetupMainFrame(GURL(kExampleUrl));
+  EXPECT_EQ(main_frame_ptr->GetJavaScriptCallHistory().size(), 0u);
+}
+
+// Verifies that when an allowlist pattern is path-scoped, the API is set up on
+// a main frame navigating to the matching path.
+TEST_F(DeviceTrustChallengeTabHelperTest, SetupAPIForMatchingPath) {
+  SetAllowlistPatterns({kExampleLoginUrl});
+  web::FakeWebFrame* main_frame_ptr = SetupMainFrame(GURL(kExampleLoginUrl));
+  EXPECT_EQ(main_frame_ptr->GetJavaScriptCallHistory().size(), 1u);
+  EXPECT_EQ(main_frame_ptr->GetLastJavaScriptCall(), kExpectedSetupScript);
+}
+
+// Verifies that when an allowlist pattern is path-scoped, the API is not set up
+// on a main frame navigating to a non-matching path within the same origin.
+TEST_F(DeviceTrustChallengeTabHelperTest, IgnoreNonMatchingPath) {
+  SetAllowlistPatterns({kExampleLoginUrl});
+  web::FakeWebFrame* main_frame_ptr = SetupMainFrame(GURL(kExampleOtherUrl));
+  EXPECT_EQ(main_frame_ptr->GetJavaScriptCallHistory().size(), 0u);
+}
+
+// Verifies that when an allowlist pattern is path-scoped and the main frame's
+// GetUrl() is empty (fallback to security origin URL), the API is not set up
+// because the base origin URL does not match the path-scoped pattern.
+TEST_F(DeviceTrustChallengeTabHelperTest, IgnorePathScopedWhenUrlNotSet) {
+  SetAllowlistPatterns({kExampleLoginUrl});
+  // Pass only the security origin so GetUrl() remains empty and policy check
+  // falls back to the origin URL ("https://example.com/"), which does not
+  // match "/login".
+  web::FakeWebFrame* main_frame_ptr =
+      SetupMainFrame(url::Origin::Create(GURL(kExampleUrl)));
+  EXPECT_EQ(main_frame_ptr->GetJavaScriptCallHistory().size(), 0u);
+}
+
+// Verifies that when the main frame's GetUrl() does not match its security
+// origin, the candidate URL is ignored and the policy check evaluates the
+// security origin. If the security origin is not allowlisted, the API is not
+// set up even if GetUrl() would have matched the allowlist.
+TEST_F(DeviceTrustChallengeTabHelperTest,
+       IgnoreAllowedUrlWhenOriginNotAllowlisted) {
+  SetAllowlistPatterns({kExampleUrl});
+  web::FakeWebFrame* main_frame_ptr = SetupMainFrame(
+      url::Origin::Create(GURL(kAttackerUrl)), GURL(kExampleUrl));
+  EXPECT_EQ(main_frame_ptr->GetJavaScriptCallHistory().size(), 0u);
+}
+
 // Verifies that removing the current main frame does not prevent the API from
 // being set up in a replacement main frame.
 TEST_F(DeviceTrustChallengeTabHelperTest, SetupAPIAfterMainFrameRemoved) {
+  SetAllowlistPatterns({kExampleUrl});
   web::FakeWebFrame* main_frame_ptr = SetupMainFrame(GURL(kExampleUrl));
-  const std::string frame_id = main_frame_ptr->GetFrameId();
-  web_frames_manager_->RemoveWebFrame(frame_id);
+  web_frames_manager_->RemoveWebFrame(main_frame_ptr->GetFrameId());
   web::FakeWebFrame* replacement_frame_ptr = SetupMainFrame(GURL(kExampleUrl));
   EXPECT_EQ(replacement_frame_ptr->GetJavaScriptCallHistory().size(), 1u);
   EXPECT_EQ(replacement_frame_ptr->GetLastJavaScriptCall(),
             kExpectedSetupScript);
+}
+
+// Verifies that when the tab helper is created after an allowlisted main frame
+// is already available (e.g. deferred tab helper creation), the constructor
+// sets up the API on that existing frame.
+TEST_F(DeviceTrustChallengeTabHelperTest, SetupAPIForExistingMainFrame) {
+  DeviceTrustChallengeTabHelper::RemoveFromWebState(web_state_.get());
+  SetAllowlistPatterns({kExampleUrl});
+  web::FakeWebFrame* main_frame_ptr = SetupMainFrame(GURL(kExampleUrl));
+  ASSERT_EQ(main_frame_ptr->GetJavaScriptCallHistory().size(), 0u);
+  DeviceTrustChallengeTabHelper::CreateForWebState(web_state_.get(),
+                                                   mock_service());
+  EXPECT_EQ(main_frame_ptr->GetJavaScriptCallHistory().size(), 1u);
+  EXPECT_EQ(main_frame_ptr->GetLastJavaScriptCall(), kExpectedSetupScript);
+}
+
+// Verifies that when the tab helper is created after a non-allowlisted main
+// frame is already available, the constructor does not set up the API.
+TEST_F(DeviceTrustChallengeTabHelperTest,
+       IgnoreExistingNonAllowlistedMainFrame) {
+  DeviceTrustChallengeTabHelper::RemoveFromWebState(web_state_.get());
+  SetAllowlistPatterns({kExampleUrl});
+  web::FakeWebFrame* main_frame_ptr = SetupMainFrame(GURL(kAttackerUrl));
+  DeviceTrustChallengeTabHelper::CreateForWebState(web_state_.get(),
+                                                   mock_service());
+  EXPECT_EQ(main_frame_ptr->GetJavaScriptCallHistory().size(), 0u);
 }
 
 // Destroying the WebState invokes WebStateDestroyed() on the helper, which
@@ -205,20 +321,13 @@ TEST_F(DeviceTrustChallengeTabHelperTest, DestroyWebStateDoesNotCrash) {
 // available.
 TEST_F(DeviceTrustChallengeTabHelperTest,
        BuildChallengeResponseFailsWhenNoService) {
-  std::unique_ptr<TestProfileIOS> empty_profile =
-      TestProfileIOS::Builder().Build();
-  auto web_state = std::make_unique<web::FakeWebState>();
-  web_state->SetBrowserState(empty_profile.get());
-  auto frames_manager = std::make_unique<web::FakeWebFramesManager>();
-  web_state->SetWebFramesManager(web::ContentWorld::kPageContentWorld,
-                                 std::move(frames_manager));
-  DeviceTrustChallengeTabHelper::CreateForWebState(web_state.get());
-  DeviceTrustChallengeTabHelper* helper =
-      DeviceTrustChallengeTabHelper::FromWebState(web_state.get());
+  DeviceTrustChallengeTabHelper::RemoveFromWebState(web_state_.get());
+  DeviceTrustChallengeTabHelper::CreateForWebState(
+      web_state_.get(), /*device_trust_service=*/nullptr);
   base::RunLoop run_loop;
   AttestationResult response;
   int count = 0;
-  helper->BuildChallengeResponse(
+  helper()->BuildChallengeResponse(
       url::Origin::Create(GURL(kExampleUrl)), GURL(kExampleUrl), "challenge",
       CaptureResponseCallback(&response, &count, run_loop.QuitClosure()));
   EXPECT_EQ(count, 0);

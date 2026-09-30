@@ -13,7 +13,7 @@
 
 #import "base/containers/flat_map.h"
 #import "base/functional/callback.h"
-#import "base/memory/raw_ref.h"
+#import "base/memory/raw_ptr.h"
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_observation.h"
 #import "base/sequence_checker.h"
@@ -27,6 +27,10 @@
 #import "url/origin.h"
 
 class GURL;
+
+namespace enterprise_connectors {
+class DeviceTrustService;
+}  // namespace enterprise_connectors
 
 namespace web {
 class WebFrame;
@@ -79,7 +83,15 @@ class DeviceTrustChallengeTabHelper
 
  private:
   friend class web::WebStateUserData<DeviceTrustChallengeTabHelper>;
-  explicit DeviceTrustChallengeTabHelper(web::WebState* web_state);
+
+  // `device_trust_service` is the profile's DeviceTrustService. It is null for
+  // off-the-record profiles (and in tests without a testing factory), in which
+  // case the API is never set up and attestation requests fail with
+  // `kServiceUnavailable`. Otherwise, it must outlive this tab helper; the
+  // pointer is cleared in WebStateDestroyed().
+  DeviceTrustChallengeTabHelper(
+      web::WebState* web_state,
+      enterprise_connectors::DeviceTrustService* device_trust_service);
 
   // State for a request awaiting a reply: `callback` answers the JavaScript
   // promise, while `timer` answers with a timeout error if the service is
@@ -121,7 +133,8 @@ class DeviceTrustChallengeTabHelper
                       enterprise_connectors::DeviceTrustError error);
 
   SEQUENCE_CHECKER(sequence_checker_);
-  const raw_ref<web::WebState> web_state_;
+  raw_ptr<enterprise_connectors::DeviceTrustService> device_trust_service_ =
+      nullptr;
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
   base::ScopedObservation<web::WebFramesManager,
