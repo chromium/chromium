@@ -1,0 +1,20 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos)
+
+# The enum and its extension-API conversion are a leaf: keep them in their own
+# target so consumers do not have to pull in the extensions API provider.
+source_set("speech_recognition_constants") {
+  sources = [
+    "speech_recognition_constants.cc",
+    "speech_recognition_constants.h",
+  ]
+
+  deps = [
+    "//base",
+    "//build:buildflag_header_h",
+    "//chromeos/ash/experiences/extensions/common/api",
+  ]
+}

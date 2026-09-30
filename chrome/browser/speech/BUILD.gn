@@ -50,7 +50,6 @@ source_set("speech") {
       "cros_speech_recognition_service.h",
       "cros_speech_recognition_service_factory.h",
       "network_speech_recognizer.h",
-      "speech_recognition_constants.h",
       "speech_recognition_recognizer_client_impl.h",
       "speech_recognizer.h",
       "speech_recognizer_delegate.h",
@@ -147,7 +146,6 @@ source_set("impl") {
       "cros_speech_recognition_service.cc",
       "cros_speech_recognition_service_factory.cc",
       "network_speech_recognizer.cc",
-      "speech_recognition_constants.cc",
       "speech_recognition_recognizer_client_impl.cc",
       "speech_recognizer.cc",
       "tts_chromeos.cc",
@@ -232,6 +230,7 @@ if (!is_android) {
         "//content/test:test_support",
       ]
       deps += [
+        "//chromeos/ash/experiences/extensions/browser/speech:speech_recognition_constants",
         "//components/soda",
         "//components/soda:constants",
       ]

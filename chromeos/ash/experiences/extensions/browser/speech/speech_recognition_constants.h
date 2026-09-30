@@ -2,9 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SPEECH_SPEECH_RECOGNITION_CONSTANTS_H_
-#define CHROME_BROWSER_SPEECH_SPEECH_RECOGNITION_CONSTANTS_H_
+#ifndef CHROMEOS_ASH_EXPERIENCES_EXTENSIONS_BROWSER_SPEECH_SPEECH_RECOGNITION_CONSTANTS_H_
+#define CHROMEOS_ASH_EXPERIENCES_EXTENSIONS_BROWSER_SPEECH_SPEECH_RECOGNITION_CONSTANTS_H_
 
+#include "build/build_config.h"
 #include "chromeos/ash/experiences/extensions/common/api/speech_recognition_private.h"
 
 static_assert(BUILDFLAG(IS_CHROMEOS));
@@ -18,4 +19,4 @@ SpeechRecognitionTypeToApiType(SpeechRecognitionType type);
 
 }  // namespace speech
 
-#endif  // CHROME_BROWSER_SPEECH_SPEECH_RECOGNITION_CONSTANTS_H_
+#endif  // CHROMEOS_ASH_EXPERIENCES_EXTENSIONS_BROWSER_SPEECH_SPEECH_RECOGNITION_CONSTANTS_H_

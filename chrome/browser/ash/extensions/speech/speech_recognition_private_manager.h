@@ -13,7 +13,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_delegate.h"
-#include "chrome/browser/speech/speech_recognition_constants.h"
+#include "chromeos/ash/experiences/extensions/browser/speech/speech_recognition_constants.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace content {

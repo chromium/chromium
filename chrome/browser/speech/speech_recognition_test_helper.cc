@@ -11,7 +11,7 @@
 #include "chrome/browser/speech/cros_speech_recognition_service_factory.h"
 #include "chrome/browser/speech/fake_speech_recognition_service.h"
 #include "chrome/browser/speech/fake_speech_recognizer.h"
-#include "chrome/browser/speech/speech_recognition_constants.h"
+#include "chromeos/ash/experiences/extensions/browser/speech/speech_recognition_constants.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/soda/soda_installer.h"
 #include "content/public/browser/browser_context.h"

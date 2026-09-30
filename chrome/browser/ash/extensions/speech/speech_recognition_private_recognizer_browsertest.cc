@@ -9,7 +9,7 @@
 #include "chrome/browser/ash/extensions/speech/speech_recognition_private_delegate.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/speech/fake_speech_recognition_service.h"
-#include "chrome/browser/speech/speech_recognition_constants.h"
+#include "chromeos/ash/experiences/extensions/browser/speech/speech_recognition_constants.h"
 #include "content/public/test/fake_speech_recognition_manager.h"
 
 namespace {
