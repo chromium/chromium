@@ -132,7 +132,7 @@ class MEDIA_GPU_EXPORT MFAudioEncoder : public AudioEncoder {
   // Processes the input data from `audio_bus` into an `InputData` struct and
   // adds it to the `input_queue_`. If the `state_` is `kIdle` it will run
   // `TryProcessInput()`.
-  void EnqueueInput(std::unique_ptr<AudioBus> audio_bus,
+  bool EnqueueInput(std::unique_ptr<AudioBus> audio_bus,
                     base::TimeTicks capture_time,
                     EncoderStatusCB done_cb);
 
@@ -189,10 +189,6 @@ class MEDIA_GPU_EXPORT MFAudioEncoder : public AudioEncoder {
   // We can't produce output until at least `kMinSamplesForOutput` have been
   // provided. Until then, `output_cb_` will not be run.
   bool can_produce_output_ = false;
-
-  // Calls to `Flush()` will fail until at least `kMinSamplesForFlush` have been
-  // provided.
-  bool can_flush_ = false;
 
   // Prevents us from queuing unnecessary input/output tasks, which can happen
   // if the caller treats us as a synchronous encoder.

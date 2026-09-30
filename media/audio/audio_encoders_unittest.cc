@@ -291,7 +291,7 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
 #if BUILDFLAG(IS_MAC)
     if (options_.codec == AudioCodec::kAAC)
       return 2112;
-#elif BUILDFLAG(IS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
     if (options_.codec == AudioCodec::kAAC && input_frames > 0 &&
         input_frames < 2 * static_cast<size_t>(frames_per_buffer_)) {
       return frames_per_buffer_;
@@ -430,12 +430,6 @@ TEST_P(AudioEncodersTest, ShortInputAndFlush) {
   if (EncoderHasDelay()) {
     return;
   }
-
-#if BUILDFLAG(IS_WIN)
-  if (options_.codec == AudioCodec::kAAC) {
-    GTEST_SKIP() << "MFAudioEncoder requires at least 3 frames before flush.";
-  }
-#endif
 
   InitializeEncoder();
   ProduceAudioAndEncode(
@@ -1026,19 +1020,6 @@ class AACAudioEncoderTest : public AudioEncodersTest {
   int decoder_output_callback_count = 0;
 #endif  // BUILDFLAG(ENABLE_FFMPEG) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 };
-
-#if BUILDFLAG(IS_WIN)
-// `MFAudioEncoder` requires `kMinSamplesForOutput` before `Flush` can be called
-// successfully.
-TEST_P(AACAudioEncoderTest, FlushWithTooLittleInput) {
-  InitializeEncoder(base::DoNothing());
-  ProduceAudioAndEncode();
-
-  FlushAndVerifyStatus(EncoderStatus::Codes::kEncoderFailedFlush);
-
-  ValidateDoneCallbacksRun();
-}
-#endif
 
 #if BUILDFLAG(ENABLE_FFMPEG) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 TEST_P(AACAudioEncoderTest, FullCycleEncodeDecode) {
