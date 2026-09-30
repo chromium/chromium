@@ -4,10 +4,12 @@
 
 #include "components/cbor/diagnostic_writer.h"
 
+#include <utility>
+#include <vector>
+
 #include "base/strings/stringprintf.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
-
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cbor {
@@ -23,21 +25,21 @@ TEST(CBORDiagnosticWriterTest, Basic) {
   Value::MapValue submap;
   submap.emplace(5, true);
   submap.emplace(6, false);
-  map.emplace(5, cbor::Value(submap));
+  map.emplace(5, cbor::Value(std::move(submap)));
 
   Value::ArrayValue array;
   array.emplace_back(1);
   array.emplace_back(2);
   array.emplace_back(3);
   array.emplace_back("foo");
-  map.emplace(6, cbor::Value(array));
+  map.emplace(6, cbor::Value(std::move(array)));
 
   map.emplace(7, "es\'cap\\in\ng");
 
   EXPECT_EQ(
       "{1: 1, 2: -2, 3: \"test\", 4: h'01020304', 5: {5: true, 6: false}, 6: "
       "[1, 2, 3, \"foo\"], 7: \"es'cap\\\\in\\ng\"}",
-      DiagnosticWriter::Write(cbor::Value(map)));
+      DiagnosticWriter::Write(cbor::Value(std::move(map))));
 }
 
 TEST(CBORDiagnosticWriterTest, SizeLimit) {
@@ -48,10 +50,10 @@ TEST(CBORDiagnosticWriterTest, SizeLimit) {
   EXPECT_EQ("[1, 2, 3]", DiagnosticWriter::Write(cbor::Value(array)));
   // A limit of zero is set, but it's only rough, so a few bytes might be
   // produced.
-  EXPECT_LT(
-      DiagnosticWriter::Write(cbor::Value(array), /*rough_max_output_bytes=*/0)
-          .size(),
-      3u);
+  EXPECT_LT(DiagnosticWriter::Write(cbor::Value(std::move(array)),
+                                    /*rough_max_output_bytes=*/0)
+                .size(),
+            3u);
 
   std::vector<uint8_t> bytes;
   bytes.resize(100);
@@ -95,7 +97,7 @@ TEST(CBORDiagnosticWriterTest, LargeBytestrings) {
     }
 
     EXPECT_EQ(expected,
-              DiagnosticWriter::Write(cbor::Value(array),
+              DiagnosticWriter::Write(cbor::Value(std::move(array)),
                                       /*rough_max_output_bytes=*/128));
   }
 }
