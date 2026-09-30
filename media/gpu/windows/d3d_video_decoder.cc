@@ -855,10 +855,7 @@ bool D3DVideoDecoder::OutputResult(const CodecPicture* picture,
   }
 
   frame->metadata().is_webgpu_compatible =
-      !(gpu_workarounds_.disable_sharing_nv12_from_d3d11_to_d3d12 &&
-        texture_selector_->OutputSharedImageFormat() ==
-            viz::MultiPlaneFormat::kNV12) &&
-      use_shared_handle_;
+      shared_image->usage().Has(gpu::SHARED_IMAGE_USAGE_WEBGPU_READ);
 
   output_cb_.Run(frame);
   return true;

@@ -15,6 +15,7 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/service/shared_image/shared_image_representation.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/command_buffer_helper.h"
 #include "media/gpu/media_gpu_export.h"
@@ -94,7 +95,8 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
   DefaultTexture2DWrapper(const gfx::Size& size,
                           const gfx::ColorSpace& output_color_space,
                           viz::SharedImageFormat output_si_format,
-                          ComD3D11Device device);
+                          ComD3D11Device device,
+                          gpu::GpuDriverBugWorkarounds workarounds);
   ~DefaultTexture2DWrapper() override;
 
   D3DStatus Init(scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner,
@@ -135,7 +137,8 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
                  ComD3D11Texture2D texture,
                  size_t array_slice,
                  scoped_refptr<media::D3DPictureBuffer> picture_buffer,
-                 GPUResourceInitCB gpu_resource_init_cb);
+                 GPUResourceInitCB gpu_resource_init_cb,
+                 const gpu::GpuDriverBugWorkarounds& workarounds);
     GpuResources(const GpuResources&) = delete;
     GpuResources& operator=(const GpuResources&) = delete;
     ~GpuResources();
@@ -163,6 +166,7 @@ class MEDIA_GPU_EXPORT DefaultTexture2DWrapper : public Texture2DWrapper {
       shared_image_access_;
 
   ComD3D11Device video_device_;
+  const gpu::GpuDriverBugWorkarounds workarounds_;
 
   Texture2DWrapper::PictureBufferGPUResourceInitDoneCB
       picture_buffer_gpu_resource_init_done_cb_;

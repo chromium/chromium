@@ -32,7 +32,8 @@ class MEDIA_GPU_EXPORT TextureSelector {
                   viz::SharedImageFormat output_si_format,
                   ComD3D11VideoDevice1 video_device,
                   ComD3D11DeviceContext d3d11_device_context,
-                  bool use_shared_handle);
+                  bool use_shared_handle,
+                  gpu::GpuDriverBugWorkarounds workarounds = {});
   virtual ~TextureSelector();
 
   static std::unique_ptr<TextureSelector> Create(
@@ -80,6 +81,7 @@ class MEDIA_GPU_EXPORT TextureSelector {
   ComD3D11DeviceContext device_context_;
 
   bool shared_image_use_shared_handle_;
+  const gpu::GpuDriverBugWorkarounds workarounds_;
 };
 
 class MEDIA_GPU_EXPORT CopyTextureSelector : public TextureSelector {
@@ -102,7 +104,6 @@ class MEDIA_GPU_EXPORT CopyTextureSelector : public TextureSelector {
   bool WillCopyForTesting() const override;
 
  private:
-  const gpu::GpuDriverBugWorkarounds workarounds_;
   scoped_refptr<VideoProcessorProxy> video_processor_proxy_;
 };
 

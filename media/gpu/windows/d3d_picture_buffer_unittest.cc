@@ -20,7 +20,7 @@ class D3DPictureBufferTest : public ::testing::Test {
     const gfx::Size size_{100, 200};
     auto wrapper = std::make_unique<DefaultTexture2DWrapper>(
         size_, gfx::ColorSpace::CreateREC709(), viz::MultiPlaneFormat::kNV12,
-        /*device=*/nullptr);
+        /*device=*/nullptr, gpu::GpuDriverBugWorkarounds());
     picture_buffer_ = base::MakeRefCounted<D3DPictureBuffer>(
         task_environment_.GetMainThreadTaskRunner(), nullptr, 0,
         std::move(wrapper), 0);
