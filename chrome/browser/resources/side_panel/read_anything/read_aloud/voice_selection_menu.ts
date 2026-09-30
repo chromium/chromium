@@ -26,7 +26,6 @@ import {ReadAnythingLogger} from '../shared/read_anything_logger.js';
 
 import type {AudioBrowserProxy} from './audio_browser_proxy.js';
 import {AudioBrowserProxyImpl} from './audio_browser_proxy.js';
-import type {LanguageMenuElement} from './language_menu.js';
 import type {NotificationType} from './voice_language_conversions.js';
 import type {VoiceDropdownGroup, VoiceDropdownItem} from './voice_menu_display.js';
 import {computeDownloadingMessages, computeErrorMessages, computeVoiceDropdown, isVoicePreviewSpinning} from './voice_menu_display.js';
@@ -38,7 +37,6 @@ import {getHtml} from './voice_selection_menu.html.js';
 export interface VoiceSelectionMenuElement {
   $: {
     voiceSelectionMenu: CrLazyRenderLitElement<CrActionMenuElement>,
-    languageMenu: LanguageMenuElement,
   };
 }
 

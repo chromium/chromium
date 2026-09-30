@@ -28,12 +28,6 @@ import {SkillsPageBrowserProxy} from './skills_page_browser_proxy.js';
 // The default category name for all skills.
 const kAllCategoriesString: string = loadTimeData.getString('all');
 
-export interface DiscoverSkillsPageElement {
-  $: {
-    invalidSkillToast: CrToastElement,
-  };
-}
-
 export class DiscoverSkillsPageElement extends CrLitElement {
   static get is() {
     return 'discover-skills-page';
@@ -113,7 +107,8 @@ export class DiscoverSkillsPageElement extends CrLitElement {
       if (success) {
         this.proxy_.handler.openSkillsDialog(SkillsDialogType.kAdd, savedSkill);
       } else {
-        this.$.invalidSkillToast.show();
+        this.shadowRoot.querySelector<CrToastElement>(
+                           '#invalidSkillToast')!.show();
         this.skillsPendingRemoval_ =
             new Set([...this.skillsPendingRemoval_, savedSkill.id]);
       }

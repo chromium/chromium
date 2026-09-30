@@ -11,7 +11,6 @@ import '//resources/cr_elements/cr_icon/cr_icon.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_toast/cr_toast.js';
 
-import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import type {CrToastElement} from '//resources/cr_elements/cr_toast/cr_toast.js';
 import {assertNotReached} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
@@ -60,14 +59,6 @@ export function saveStoredUpdateOptions(
   }
   window.localStorage.setItem(
       getUpdateOptionsStorageKey(appId), JSON.stringify(options));
-}
-
-export interface IwaDevAppElement {
-  $: {
-    installButton: CrButtonElement,
-    installDialog: IwaDevInstallDialogElement,
-    toast: CrToastElement,
-  };
 }
 
 export class IwaDevAppElement extends CrLitElement {
@@ -141,7 +132,7 @@ export class IwaDevAppElement extends CrLitElement {
       this.toastMessage_ = `Update failed: ${errorMsg}`;
     } finally {
       await timerPromise;
-      this.$.toast.show();
+      this.shadowRoot.querySelector<CrToastElement>('#toast')!.show();
       this.updatingAppIds_ =
           this.updatingAppIds_.filter(id => id !== app.appId);
     }
@@ -152,7 +143,7 @@ export class IwaDevAppElement extends CrLitElement {
         await this.browserProxy_.handler.launchApp(e.detail.app.appId);
     if (!result.success) {
       this.toastMessage_ = 'Failed to launch app.';
-      this.$.toast.show();
+      this.shadowRoot.querySelector<CrToastElement>('#toast')!.show();
     }
   }
 
@@ -206,12 +197,13 @@ export class IwaDevAppElement extends CrLitElement {
       const errorMsg = (err as {message?: string})?.message || String(err);
       this.toastMessage_ = `Failed to set update channel: ${errorMsg}`;
     } finally {
-      this.$.toast.show();
+      this.shadowRoot.querySelector<CrToastElement>('#toast')!.show();
     }
   }
 
   protected onOpenInstallDialogClick_() {
-    this.$.installDialog.showDialog();
+    this.shadowRoot.querySelector<IwaDevInstallDialogElement>(
+                       '#installDialog')!.showDialog();
   }
 
   protected async onRequestInstallFromDevProxy_(e: CustomEvent<{url: Url}>) {
@@ -245,14 +237,15 @@ export class IwaDevAppElement extends CrLitElement {
   }
 
   private processInstallRequest_(installPromise: Promise<Empty>) {
-    const dialog = this.$.installDialog;
+    const dialog = this.shadowRoot.querySelector<IwaDevInstallDialogElement>(
+        '#installDialog')!;
     dialog.startInstallation();
 
     return installPromise
         .then(() => {
           dialog.onInstallationFinished(null);
           this.toastMessage_ = 'Installation successful!';
-          this.$.toast.show();
+          this.shadowRoot.querySelector<CrToastElement>('#toast')!.show();
         })
         .catch(err => {
           const errorMessage =

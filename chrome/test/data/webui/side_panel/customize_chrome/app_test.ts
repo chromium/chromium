@@ -57,30 +57,32 @@ suite('AppTest', () => {
         new Event('edit-theme-click'));
     await microtasksFinished();
     // Current page should now be categories.
-    assertTrue(
-        customizeChromeApp.$.categoriesPage.classList.contains('selected'));
+    const categoriesPage =
+        customizeChromeApp.shadowRoot.querySelector('#categoriesPage');
+    assertTrue(!!categoriesPage);
+    assertTrue(categoriesPage.classList.contains('selected'));
     assertEquals(customizeChromeApp, document.activeElement);
 
     // Send event for category selected.
-    customizeChromeApp.$.categoriesPage.dispatchEvent(
-        new CustomEvent<BackgroundCollection>(
-            'collection-select', {detail: testCollection}));
+    categoriesPage.dispatchEvent(new CustomEvent<BackgroundCollection>(
+        'collection-select', {detail: testCollection}));
     await microtasksFinished();
     // Current page should now be themes.
-    assertTrue(customizeChromeApp.$.themesPage.classList.contains('selected'));
+    const themesPage =
+        customizeChromeApp.shadowRoot.querySelector('#themesPage');
+    assertTrue(!!themesPage);
+    assertTrue(themesPage.classList.contains('selected'));
     assertEquals(customizeChromeApp, document.activeElement);
 
     // Send event for back click.
-    customizeChromeApp.$.themesPage.dispatchEvent(new Event('back-click'));
+    themesPage.dispatchEvent(new Event('back-click'));
     await microtasksFinished();
     // Current page should now be categories.
-    assertTrue(
-        customizeChromeApp.$.categoriesPage.classList.contains('selected'));
+    assertTrue(categoriesPage.classList.contains('selected'));
     assertEquals(customizeChromeApp, document.activeElement);
 
     // Send event for upload image.
-    customizeChromeApp.$.categoriesPage.dispatchEvent(
-        new Event('local-image-upload'));
+    categoriesPage.dispatchEvent(new Event('local-image-upload'));
     await microtasksFinished();
     // Current page should now be overview.
     assertTrue(
@@ -94,7 +96,7 @@ suite('AppTest', () => {
     assertEquals(customizeChromeApp, document.activeElement);
 
     // Send event for back click.
-    customizeChromeApp.$.categoriesPage.dispatchEvent(new Event('back-click'));
+    categoriesPage.dispatchEvent(new Event('back-click'));
     await microtasksFinished();
     // Current page should now be overview.
     assertTrue(
@@ -357,8 +359,10 @@ suite('AppTest', () => {
           await microtasksFinished();
 
           // Current page should now be categories.
-          assertTrue(customizeChromeApp.$.categoriesPage.classList.contains(
-              'selected'));
+          const categoriesPage =
+              customizeChromeApp.shadowRoot.querySelector('#categoriesPage');
+          assertTrue(!!categoriesPage);
+          assertTrue(categoriesPage.classList.contains('selected'));
           assertEquals(customizeChromeApp, document.activeElement);
 
           callbackRouter.attachedTabStateUpdated(NewTabPageType.kExtension);

@@ -4,11 +4,14 @@
 
 import 'chrome://skills/app.js';
 
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {CrRouter} from 'chrome://resources/js/cr_router.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {SkillsAppElement} from 'chrome://skills/app.js';
+import type {SkillsSidebarElement} from 'chrome://skills/sidebar.js';
 import {SkillsManagementAction, SkillsManagementPage} from 'chrome://skills/skill_metrics.mojom-webui.js';
 import {SkillsPageBrowserProxy} from 'chrome://skills/skills_page_browser_proxy.js';
+import type {UserSkillsPageElement} from 'chrome://skills/user_skills_page.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
@@ -17,6 +20,12 @@ import {TestSkillsBrowserProxy} from './test_skills_browser_proxy.js';
 suite('SkillsAppPage', function() {
   let app: SkillsAppElement;
   let browserProxy: TestSkillsBrowserProxy;
+
+  function getMenu(): SkillsSidebarElement {
+    const menu = app.shadowRoot.querySelector<SkillsSidebarElement>('#menu');
+    assertTrue(!!menu);
+    return menu;
+  }
 
   setup(function() {
     loadTimeData.overrideValues({isGlicEnabled: true, isSkillsEnabled: true});
@@ -38,8 +47,8 @@ suite('SkillsAppPage', function() {
   test('InitialPageLoadsCorrectly', async function() {
     assertEquals(loadTimeData.getString('skillsTitle'), app.$.toolbar.pageName);
 
-    const tabs = app.$.menu.shadowRoot.querySelectorAll<HTMLElement>(
-        '.cr-nav-menu-item');
+    const tabs =
+        getMenu().shadowRoot.querySelectorAll<HTMLElement>('.cr-nav-menu-item');
     assertTrue(!!tabs);
     assertEquals(2, tabs.length);
 
@@ -51,8 +60,8 @@ suite('SkillsAppPage', function() {
   });
 
   test('SkillMenuTabsNavigateCorrectly', async function() {
-    const tabs = app.$.menu.shadowRoot.querySelectorAll<HTMLElement>(
-        '.cr-nav-menu-item');
+    const tabs =
+        getMenu().shadowRoot.querySelectorAll<HTMLElement>('.cr-nav-menu-item');
     assertTrue(!!tabs);
 
     tabs[0]!.click();
@@ -84,11 +93,12 @@ suite('SkillsAppPage', function() {
     navigateTo('/test');
     await microtasksFinished();
     const selectedTab =
-        app.$.menu.shadowRoot.querySelector('.cr-nav-menu-item[selected]');
+        getMenu().shadowRoot.querySelector('.cr-nav-menu-item[selected]');
+    assertTrue(!!selectedTab);
     assertEquals('chrome://skills/browse', window.location.href);
     assertEquals(
         loadTimeData.getString('browseSkillsTitle'),
-        selectedTab!.querySelector('.name')!.textContent.trim());
+        selectedTab.querySelector('.name')?.textContent?.trim());
   });
 
   test('DiscoverSkillsPageLoadsCorrectly', async function() {
@@ -97,10 +107,11 @@ suite('SkillsAppPage', function() {
     assertEquals('chrome://skills/browse', window.location.href);
     await microtasksFinished();
     const selectedTab =
-        app.$.menu.shadowRoot.querySelector('.cr-nav-menu-item[selected]');
+        getMenu().shadowRoot.querySelector('.cr-nav-menu-item[selected]');
+    assertTrue(!!selectedTab);
     assertEquals(
         loadTimeData.getString('browseSkillsTitle'),
-        selectedTab!.querySelector('.name')!.textContent.trim());
+        selectedTab.querySelector('.name')?.textContent?.trim());
     await browserProxy.handler.whenCalled('recordSkillsManagementAction')
         .then((args) => {
           assertEquals(SkillsManagementPage.kBrowseSkills, args[0]);
@@ -114,26 +125,31 @@ suite('SkillsAppPage', function() {
     assertEquals('chrome://skills/yourSkills', window.location.href);
     await microtasksFinished();
     const selectedTab =
-        app.$.menu.shadowRoot.querySelector('.cr-nav-menu-item[selected]');
+        getMenu().shadowRoot.querySelector('.cr-nav-menu-item[selected]');
+    assertTrue(!!selectedTab);
     assertEquals(
         loadTimeData.getString('userSkillsTitle'),
-        selectedTab!.querySelector('.name')!.textContent.trim());
+        selectedTab.querySelector('.name')?.textContent?.trim());
   });
 
   test('BrowseSkillsButtonNavigatesToDiscoverSkills', async function() {
     navigateTo('/yourSkills');
     await microtasksFinished();
-    const button = app.$.userSkillsPage.shadowRoot.querySelector<HTMLElement>(
+    const userSkillsPage =
+        app.shadowRoot.querySelector<UserSkillsPageElement>('#userSkillsPage');
+    assertTrue(!!userSkillsPage);
+    const button = userSkillsPage.shadowRoot.querySelector<CrButtonElement>(
         '#browseSkillsButton');
     assertTrue(!!button);
     button.click();
     await microtasksFinished();
     assertEquals('/browse', CrRouter.getInstance().getPath());
     const selectedTab =
-        app.$.menu.shadowRoot.querySelector('.cr-nav-menu-item[selected]');
+        getMenu().shadowRoot.querySelector('.cr-nav-menu-item[selected]');
+    assertTrue(!!selectedTab);
     assertEquals(
         loadTimeData.getString('browseSkillsTitle'),
-        selectedTab!.querySelector('.name')!.textContent.trim());
+        selectedTab.querySelector('.name')?.textContent?.trim());
   });
 
   test('NarrowModeHidesSidebarAndShowsDrawer', async function() {
@@ -141,7 +157,7 @@ suite('SkillsAppPage', function() {
     await microtasksFinished();
     assertTrue(app.$.toolbar.showMenu);
     assertFalse(app.$.drawer.open);
-    assertTrue(app.$.menu.parentElement!.hidden);
+    assertTrue(getMenu().parentElement!.hidden);
 
     const drawerOpened = eventToPromise('cr-drawer-opened', app.$.drawer);
     app.$.toolbar.dispatchEvent(new CustomEvent('cr-toolbar-menu-click'));
@@ -163,7 +179,7 @@ suite('SkillsAppPage', function() {
     await drawerClosed;
     assertFalse(app.$.toolbar.showMenu);
     assertFalse(app.$.drawer.open);
-    assertFalse(app.$.menu.parentElement!.hidden);
+    assertFalse(getMenu().parentElement!.hidden);
   });
 
   test('DrawerClosesCorrectly', async function() {
@@ -197,8 +213,8 @@ suite('SkillsAppPage', function() {
     navigateTo('/yourSkills');
     await microtasksFinished();
 
-    const tabs = app.$.menu.shadowRoot.querySelectorAll<HTMLElement>(
-        '.cr-nav-menu-item');
+    const tabs =
+        getMenu().shadowRoot.querySelectorAll<HTMLElement>('.cr-nav-menu-item');
     const discoverSkillsTab = tabs[0]!;
     const userSkillsTab = tabs[1]!;
 

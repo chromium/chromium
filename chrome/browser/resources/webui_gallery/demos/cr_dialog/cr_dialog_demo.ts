@@ -15,12 +15,6 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './cr_dialog_demo.css.js';
 import {getHtml} from './cr_dialog_demo.html.js';
 
-export interface CrDialogDemoElement {
-  $: {
-    dialog: CrDialogElement,
-  };
-}
-
 export class CrDialogDemoElement extends CrLitElement {
   static get is() {
     return 'cr-dialog-demo';

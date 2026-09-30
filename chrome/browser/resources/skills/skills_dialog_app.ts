@@ -17,11 +17,7 @@ import './icons.html.js';
 import './skills_emoji_picker.js';
 
 import { ColorChangeUpdater } from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
-import type { CrButtonElement } from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type { CrDialogElement } from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
-import type { CrIconElement } from 'chrome://resources/cr_elements/cr_icon/cr_icon.js';
-import type { CrIconButtonElement } from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
-import type { CrInputElement } from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import { assert } from 'chrome://resources/js/assert.js';
 import { loadTimeData } from 'chrome://resources/js/load_time_data.js';
 import { CrLitElement } from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -70,31 +66,6 @@ export class WindowProxyImpl implements WindowProxy {
   static setInstance(obj: WindowProxy) {
     windowProxyInstance = obj;
   }
-}
-
-export interface SkillsDialogAppElement {
-  $: {
-    accountInfo: HTMLElement,
-    cancelButton: HTMLElement,
-    deleteButton: CrButtonElement,
-    dialog: CrDialogElement,
-    emojiTrigger: HTMLInputElement,
-    emojiZeroStateIcon: CrIconElement,
-    header: HTMLElement,
-    iconRedo: CrIconButtonElement,
-    iconRefine: CrIconButtonElement,
-    iconUndo: CrIconButtonElement,
-    instructionsText: HTMLTextAreaElement,
-    nameLoaderContainer: HTMLElement,
-    nameText: CrInputElement,
-    nameErrorMessage: HTMLElement,
-    errorMessage: HTMLElement,
-    saveButton: CrButtonElement,
-    saveErrorContainer: HTMLElement,
-    textareaWrapper: HTMLElement,
-    generatedPlaceholder: HTMLElement,
-    generatedNameText: HTMLElement,
-  };
 }
 
 export class SkillsDialogAppElement extends CrLitElement {
@@ -242,7 +213,9 @@ export class SkillsDialogAppElement extends CrLitElement {
       // always has size 0x0, so does not trigger child size changes required to
       // expand the dialog.
       this.dialogResizeObserver_ = new ResizeObserver(() => {
-        const dialog = this.$.dialog?.getNative();
+        const dialog =
+            this.shadowRoot.querySelector<CrDialogElement>('#dialog')
+                ?.getNative();
         if (dialog) {
           document.body.style.height = `${dialog.offsetHeight}px`;
         }
@@ -295,8 +268,9 @@ export class SkillsDialogAppElement extends CrLitElement {
       });
     }
 
-    if (this.dialogResizeObserver_ && this.$.dialog) {
-      this.dialogResizeObserver_.observe(this.$.dialog.getNative());
+    const dialog = this.shadowRoot.querySelector<CrDialogElement>('#dialog');
+    if (this.dialogResizeObserver_ && dialog) {
+      this.dialogResizeObserver_.observe(dialog.getNative());
     }
   }
 
@@ -341,12 +315,12 @@ export class SkillsDialogAppElement extends CrLitElement {
   protected onEmojiSelected_(event: CustomEvent<{ emoji: string }>) {
     this.skill_ = { ...this.skill_, icon: event.detail.emoji };
     this.showEmojiPicker_ = false;
-    this.$.emojiTrigger.focus();
+    this.shadowRoot.querySelector<HTMLInputElement>('#emojiTrigger')!.focus();
   }
 
   protected onEmojiPickerClose_() {
     this.showEmojiPicker_ = false;
-    this.$.emojiTrigger.focus();
+    this.shadowRoot.querySelector<HTMLInputElement>('#emojiTrigger')!.focus();
   }
 
   protected onEmojiKeydown_(event: KeyboardEvent) {

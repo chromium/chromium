@@ -12,7 +12,6 @@ import '//resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import './icons.html.js';
 
 import type {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
@@ -36,13 +35,6 @@ export interface SkillCardElement {
   $: {
     name: HTMLElement,
     icon: HTMLElement,
-    menu: CrActionMenuElement,
-    deleteButton: CrButtonElement,
-    copyButton: CrButtonElement,
-    moreButton: CrButtonElement,
-    saveButton: CrButtonElement,
-    editButton: CrButtonElement,
-    illustrationImage: HTMLImageElement,
   };
 }
 
@@ -136,7 +128,8 @@ export class SkillCardElement extends CrLitElement {
   }
 
   protected onMoreButtonClick_(event: MouseEvent) {
-    this.$.menu.showAt(event.target as HTMLElement);
+    this.shadowRoot.querySelector<CrActionMenuElement>('#menu')!.showAt(
+        event.target as HTMLElement);
   }
 
   protected onCopyButtonClick_() {
@@ -144,13 +137,13 @@ export class SkillCardElement extends CrLitElement {
     // successful.
     navigator.clipboard.writeText(this.skill.prompt);
     this.logCardAction_(SkillsManagementAction.kClickedCopyInstructions);
-    this.$.menu.close();
+    this.shadowRoot.querySelector<CrActionMenuElement>('#menu')!.close();
   }
 
   protected onDeleteButtonClick_() {
     this.logCardAction_(SkillsManagementAction.kClickedDeleteSkill);
     this.proxy_.handler.deleteSkill(this.skill.id);
-    this.$.menu.close();
+    this.shadowRoot.querySelector<CrActionMenuElement>('#menu')!.close();
   }
   protected logCardAction_(action: SkillsManagementAction) {
     this.proxy_.handler.recordSkillsManagementAction(

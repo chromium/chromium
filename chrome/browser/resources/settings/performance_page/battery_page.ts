@@ -14,9 +14,6 @@ import {PrefServiceObserverMixinLit} from '/shared/settings/prefs2/pref_service_
 import {OpenWindowProxyImpl} from 'chrome://resources/js/open_window_proxy.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
-import type {ControlledRadioButtonElement} from '../controls/controlled_radio_button.js';
-import type {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
-import type {SettingsToggleButtonElement} from '../controls/settings_toggle_button.js';
 import {loadTimeData} from '../i18n_setup.js';
 
 import {getCss} from './battery_page.css.js';
@@ -27,14 +24,6 @@ import {BatterySaverModeState, PerformanceMetricsProxyImpl} from './performance_
 
 export const BATTERY_SAVER_MODE_PREF =
     'performance_tuning.battery_saver_mode.state';
-
-export interface SettingsBatteryPageElement {
-  $: {
-    enabledOnBatteryButton: ControlledRadioButtonElement,
-    radioGroup: SettingsRadioGroupElement,
-    toggleButton: SettingsToggleButtonElement,
-  };
-}
 
 const SettingsBatteryPageElementBase =
     PrefServiceObserverMixinLit(CrLitElement);

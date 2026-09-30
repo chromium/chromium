@@ -208,14 +208,19 @@ suite('ManagedUserProfileNoticeRefreshTest', function() {
     browserProxy.setMatchMediaMatches(false);
     await microtasksFinished();
 
-    const avatarAnimation = targetElement.$.avatarAnimation;
+    const avatarAnimation =
+        targetElement.shadowRoot.querySelector<HTMLElement>('#avatarAnimation');
+    assertTrue(!!avatarAnimation);
     assertTrue(isVisible(avatarAnimation));
-    assertFalse(
-        avatarAnimation.getAttribute('animation-url')!.includes('dark'));
+    const animationUrlLight = avatarAnimation.getAttribute('animation-url');
+    assertTrue(!!animationUrlLight);
+    assertFalse(animationUrlLight.includes('dark'));
 
     browserProxy.setMatchMediaMatches(true);
     await microtasksFinished();
 
-    assertTrue(avatarAnimation.getAttribute('animation-url')!.includes('dark'));
+    const animationUrlDark = avatarAnimation.getAttribute('animation-url');
+    assertTrue(!!animationUrlDark);
+    assertTrue(animationUrlDark.includes('dark'));
   });
 });

@@ -75,7 +75,6 @@ export interface SettingsPaymentsPageElement {
     menuRemoveCreditCard: HTMLElement,
     menuAddVirtualCard: HTMLElement,
     menuRemoveVirtualCard: HTMLElement,
-    paymentMethodsActionMenu: CrLazyRenderLitElement<CrActionMenuElement>,
     paymentsList: SettingsPaymentsListElement,
   };
 }
@@ -346,12 +345,20 @@ export class SettingsPaymentsPageElement extends
     return this.showIbanSettingsEnabled_;
   }
 
+  private getPaymentMethodsActionMenu_(): CrActionMenuElement {
+    const el = this.shadowRoot
+                   .querySelector<CrLazyRenderLitElement<CrActionMenuElement>>(
+                       '#paymentMethodsActionMenu');
+    assert(el);
+    return el.get();
+  }
+
   /**
    * Opens the dropdown menu to add a credit/debit card or IBAN.
    */
   protected onAddPaymentMethodClick_(e: Event) {
     const target = e.currentTarget as HTMLElement;
-    this.$.paymentMethodsActionMenu.get().showAt(target, {
+    this.getPaymentMethodsActionMenu_().showAt(target, {
       anchorAlignmentX: AnchorAlignment.BEFORE_END,
       anchorAlignmentY: AnchorAlignment.AFTER_END,
       noOffset: true,
@@ -396,7 +403,7 @@ export class SettingsPaymentsPageElement extends
     };
     this.showCreditCardDialog_ = true;
     if (this.showIbanSettingsEnabled_) {
-      this.$.paymentMethodsActionMenu.get().close();
+      this.getPaymentMethodsActionMenu_().close();
     }
   }
 
@@ -411,7 +418,7 @@ export class SettingsPaymentsPageElement extends
   protected onAddIbanClick_(e: Event) {
     e.preventDefault();
     this.showIbanDialog_ = true;
-    this.$.paymentMethodsActionMenu.get().close();
+    this.getPaymentMethodsActionMenu_().close();
   }
 
   protected onIbanDialogClose_() {

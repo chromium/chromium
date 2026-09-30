@@ -12,7 +12,6 @@ import 'chrome://resources/cr_components/composebox/composebox_voice_search.js';
 import 'chrome://resources/cr_components/search/animated_glow.js';
 
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
-import type {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {GlifAnimationState} from 'chrome://resources/cr_components/composebox/common.js';
 import type {ComposeboxState} from 'chrome://resources/cr_components/composebox/common.js';
@@ -175,14 +174,9 @@ const AppElementBase = HelpBubbleMixinLit(CrLitElement);
 
 export interface AppElement {
   $: {
-    customizeButtons: CustomizeButtonsElement,
     oneGoogleBarClipPath: HTMLElement,
     logo: LogoElement,
     searchbox: NtpSearchboxElement,
-    composebox: NtpComposeboxElement,
-    undoToast: CrToastElement,
-    undoToastMessage: HTMLElement,
-    voiceSearchDialog: HTMLDialogElement,
   };
 }
 
@@ -1829,14 +1823,16 @@ export class AppElement extends AppElementBase {
       return;
     }
 
-    if (this.$.undoToast.open) {
+    const undoToast =
+        this.shadowRoot.querySelector<CrToastElement>('#undoToast')!;
+    if (undoToast.open) {
       return;
     }
 
     const undoToastContext = this.pendingUndoToasts_.shift()!;
     this.undoToastCallback_ = undoToastContext.undo;
     this.undoToastMessage_ = undoToastContext.message;
-    this.$.undoToast.show();
+    undoToast.show();
   }
 
   /**
@@ -1845,7 +1841,7 @@ export class AppElement extends AppElementBase {
    * toast (if any).
    */
   protected onUndoButtonClick_() {
-    this.$.undoToast.hide();
+    this.shadowRoot.querySelector<CrToastElement>('#undoToast')!.hide();
     this.undoToastCallback_?.();
     this.undoToastCallback_ = null;
     this.undoToastMessage_ = null;

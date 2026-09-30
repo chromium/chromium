@@ -118,7 +118,9 @@ suite('IndividualPromosTest', () => {
     menuButton.click();
     await waitForVisibilityEvents();
 
-    const actionMenu = individualPromos.$.actionMenu;
+    const actionMenu =
+        individualPromos.shadowRoot.querySelector('cr-action-menu');
+    assertTrue(!!actionMenu);
     assertTrue(actionMenu.open);
 
     const dismissOption =

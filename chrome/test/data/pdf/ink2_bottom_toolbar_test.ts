@@ -131,7 +131,9 @@ chrome.test.runTests([
 
     // Change the pen size.
     const bottomToolbar = getBottomToolbar();
-    await clickDropdownButton(bottomToolbar.$.size);
+    const sizeDropdown = getRequiredElement<ViewerBottomToolbarDropdownElement>(
+        bottomToolbar, '#size');
+    await clickDropdownButton(sizeDropdown);
     const sizeSelector = getRequiredElement<InkSizeSelectorElement>(
         bottomToolbar, 'ink-size-selector');
     const sizeButtons = getSizeButtons(sizeSelector);
@@ -206,7 +208,10 @@ chrome.test.runTests([
     assertDropdownSizeIcon('pdf-ink:highlighter-size-3');
 
     // Change the highlighter size.
-    await clickDropdownButton(bottomToolbar.$.size);
+    const highlighterSizeDropdown =
+        getRequiredElement<ViewerBottomToolbarDropdownElement>(
+            bottomToolbar, '#size');
+    await clickDropdownButton(highlighterSizeDropdown);
     const sizeSelector = getRequiredElement<InkSizeSelectorElement>(
         bottomToolbar, 'ink-size-selector');
     const sizeButtons = getSizeButtons(sizeSelector);

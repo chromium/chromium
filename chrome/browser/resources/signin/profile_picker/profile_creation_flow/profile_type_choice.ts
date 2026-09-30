@@ -27,8 +27,6 @@ import {getHtml} from './profile_type_choice.html.js';
 export interface ProfileTypeChoiceElement {
   $: {
     backButton: CrButtonElement,
-    notNowButton: CrButtonElement,
-    signInButton: CrButtonElement,
   };
 }
 

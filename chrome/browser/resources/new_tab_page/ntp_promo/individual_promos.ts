@@ -23,7 +23,6 @@ import {NtpPromoProxyImpl} from './ntp_promo_proxy.js';
 
 export interface IndividualPromosElement {
   $: {
-    actionMenu: CrActionMenuElement,
     promos: HTMLElement,
   };
 }
@@ -99,12 +98,13 @@ export class IndividualPromosElement extends CrLitElement {
 
   protected onMenuButtonClick_(e: Event) {
     e.stopPropagation();
-    this.$.actionMenu.showAt(e.target as HTMLElement);
+    this.shadowRoot.querySelector<CrActionMenuElement>('#actionMenu')!.showAt(
+        e.target as HTMLElement);
   }
 
   protected onPromoDismissed_(e: Event) {
     e.stopPropagation();
-    this.$.actionMenu.close();
+    this.shadowRoot.querySelector<CrActionMenuElement>('#actionMenu')!.close();
     if (this.promo_) {
       this.handler_.onPromoDismissed(this.promo_.id);
       this.promo_ = null;

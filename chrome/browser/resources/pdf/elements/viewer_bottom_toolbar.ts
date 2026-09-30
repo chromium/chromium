@@ -21,13 +21,6 @@ import {HIGHLIGHTER_SIZES, PEN_SIZES} from './ink_size_selector.js';
 import type {SizeOption} from './ink_size_selector.js';
 import {getCss} from './viewer_bottom_toolbar.css.js';
 import {getHtml} from './viewer_bottom_toolbar.html.js';
-import type {ViewerBottomToolbarDropdownElement} from './viewer_bottom_toolbar_dropdown.js';
-
-export interface ViewerBottomToolbarElement {
-  $: {
-    size: ViewerBottomToolbarDropdownElement,
-  };
-}
 
 const ViewerBottomToolbarElementBase = InkAnnotationBrushMixin(CrLitElement);
 

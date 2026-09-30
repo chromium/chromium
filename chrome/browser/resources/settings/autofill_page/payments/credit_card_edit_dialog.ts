@@ -52,7 +52,6 @@ declare global {
 export interface SettingsCreditCardEditDialogElement {
   $: {
     cancelButton: CrButtonElement,
-    cvcInput: CrInputElement,
     dialog: CrDialogElement,
     expiredError: HTMLElement,
     month: HTMLSelectElement,

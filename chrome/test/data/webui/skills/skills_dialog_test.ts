@@ -4,6 +4,8 @@
 
 import 'chrome://skills/skills_dialog_app.js';
 
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import type {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import type {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
@@ -45,6 +47,13 @@ class TestWindowProxy implements WindowProxy {
 }
 
 suite('SkillsDialogAppPage', function() {
+  function getRequiredElement<T extends HTMLElement = HTMLElement>(id: string):
+      T {
+    const el = skillsDialogApp.shadowRoot.querySelector<T>(`#${id}`);
+    assertTrue(!!el);
+    return el;
+  }
+
   let skillsDialogApp: SkillsDialogAppElement;
   let dialogHandler: TestMock<DialogHandlerRemote>&DialogHandlerRemote;
   let testWindowProxy: TestWindowProxy;
@@ -105,7 +114,7 @@ suite('SkillsDialogAppPage', function() {
   }
 
   async function updateName(name: string) {
-    const nameInput = skillsDialogApp.$.nameText;
+    const nameInput = getRequiredElement<CrInputElement>('nameText');
 
     nameInput.value = name;
     nameInput.dispatchEvent(
@@ -114,7 +123,8 @@ suite('SkillsDialogAppPage', function() {
   }
 
   async function updateInstructions(prompt: string) {
-    const instructionsInput = skillsDialogApp.$.instructionsText;
+    const instructionsInput =
+        getRequiredElement<HTMLTextAreaElement>('instructionsText');
 
     instructionsInput.value = prompt;
     instructionsInput.dispatchEvent(new Event('input'));
@@ -122,7 +132,7 @@ suite('SkillsDialogAppPage', function() {
   }
 
   test('SkillsDialogAppLoads', function() {
-    assertEquals('Add skill', skillsDialogApp.$.header.textContent);
+    assertEquals('Add skill', getRequiredElement('header').textContent);
   });
 
   test('SkillsDialogPrepopulatesInitialSkill', async function() {
@@ -135,8 +145,11 @@ suite('SkillsDialogAppPage', function() {
     });
     await setupDialogInitialState(testSkill);
 
-    assertEquals(testSkill.name, skillsDialogApp.$.nameText.value);
-    assertEquals(testSkill.prompt, skillsDialogApp.$.instructionsText.value);
+    assertEquals(
+        testSkill.name, getRequiredElement<CrInputElement>('nameText').value);
+    assertEquals(
+        testSkill.prompt,
+        getRequiredElement<HTMLTextAreaElement>('instructionsText').value);
   });
 
   test('AddingFirstPartySkill', async function() {
@@ -149,7 +162,7 @@ suite('SkillsDialogAppPage', function() {
     });
     await setupDialogInitialState(testSkill);
 
-    assertEquals('Add skill', skillsDialogApp.$.header.textContent);
+    assertEquals('Add skill', getRequiredElement('header').textContent);
   });
 
   test('EditingUserCreatedSkill', async function() {
@@ -162,11 +175,11 @@ suite('SkillsDialogAppPage', function() {
     });
     await setupDialogInitialState(testSkill, SkillsDialogType.kEdit);
 
-    assertEquals('Edit skill', skillsDialogApp.$.header.textContent);
+    assertEquals('Edit skill', getRequiredElement('header').textContent);
   });
 
   test('SaveButtonDisabledStates', async function() {
-    const saveButton = skillsDialogApp.$.saveButton;
+    const saveButton = getRequiredElement<CrButtonElement>('saveButton');
 
     // 1. Initial state: disabled.
     assertTrue(saveButton.disabled);
@@ -192,7 +205,7 @@ suite('SkillsDialogAppPage', function() {
     await updateInstructions(testPrompt);
 
     // Click the save button and verify the proxy call.
-    skillsDialogApp.$.saveButton.click();
+    getRequiredElement<CrButtonElement>('saveButton').click();
     await microtasksFinished();
     const [submittedSkill, refinementOutcome] =
         await dialogHandler.whenCalled('submitSkill');
@@ -203,7 +216,7 @@ suite('SkillsDialogAppPage', function() {
     assertEquals(SkillSource.kUserCreated, submittedSkill.source);
 
     // Verify save error message is not shown.
-    assertTrue(skillsDialogApp.$.saveErrorContainer.hidden);
+    assertTrue(getRequiredElement('saveErrorContainer').hidden);
   });
 
   test('SubmitsRemixedSkill', async function() {
@@ -224,7 +237,7 @@ suite('SkillsDialogAppPage', function() {
     await updateInstructions(remixedPrompt);
 
     // Click the save button and verify the proxy call.
-    skillsDialogApp.$.saveButton.click();
+    getRequiredElement<CrButtonElement>('saveButton').click();
     const [submittedSkill, refinementOutcome] =
         await dialogHandler.whenCalled('submitSkill');
     assertEquals(SkillsPromptRefinementOutcome.kNotRefined, refinementOutcome);
@@ -252,7 +265,7 @@ suite('SkillsDialogAppPage', function() {
     await updateInstructions(editedPrompt);
 
     // Click the save button and verify the proxy call.
-    skillsDialogApp.$.saveButton.click();
+    getRequiredElement<CrButtonElement>('saveButton').click();
     const [submittedSkill, refinementOutcome] =
         await dialogHandler.whenCalled('submitSkill');
     assertEquals(SkillsPromptRefinementOutcome.kNotRefined, refinementOutcome);
@@ -281,7 +294,7 @@ suite('SkillsDialogAppPage', function() {
     await updateInstructions(editedPrompt);
 
     // Click the save button and verify the proxy call.
-    skillsDialogApp.$.saveButton.click();
+    getRequiredElement<CrButtonElement>('saveButton').click();
     const [submittedSkill, refinementOutcome] =
         await dialogHandler.whenCalled('submitSkill');
     assertEquals(SkillsPromptRefinementOutcome.kNotRefined, refinementOutcome);
@@ -300,7 +313,7 @@ suite('SkillsDialogAppPage', function() {
     await microtasksFinished();
 
     // Verify save error message is not shown initially.
-    assertTrue(skillsDialogApp.$.saveErrorContainer.hidden);
+    assertTrue(getRequiredElement('saveErrorContainer').hidden);
 
     // Populate the fields to enable the save button.
     const testName = 'test skill';
@@ -309,14 +322,14 @@ suite('SkillsDialogAppPage', function() {
     await updateInstructions(testPrompt);
 
     // Verify save error message is shown.
-    skillsDialogApp.$.saveButton.click();
+    getRequiredElement<CrButtonElement>('saveButton').click();
     await microtasksFinished();
     await dialogHandler.whenCalled('submitSkill');
-    assertFalse(skillsDialogApp.$.saveErrorContainer.hidden);
+    assertFalse(getRequiredElement('saveErrorContainer').hidden);
   });
 
   test('HidesDeleteButtonForAddingSkill', function() {
-    assertTrue(skillsDialogApp.$.deleteButton.hidden);
+    assertTrue(getRequiredElement<CrButtonElement>('deleteButton').hidden);
   });
 
   test('DeleteSkill', async function() {
@@ -329,9 +342,9 @@ suite('SkillsDialogAppPage', function() {
     });
     await setupDialogInitialState(testSkill, SkillsDialogType.kEdit);
 
-    assertFalse(skillsDialogApp.$.deleteButton.hidden);
+    assertFalse(getRequiredElement<CrButtonElement>('deleteButton').hidden);
 
-    skillsDialogApp.$.deleteButton.click();
+    getRequiredElement<CrButtonElement>('deleteButton').click();
     assertEquals(1, dialogHandler.getCallCount('deleteSkill'));
   });
 
@@ -345,8 +358,8 @@ suite('SkillsDialogAppPage', function() {
     });
     await setupDialogInitialState(emptyIconSkill, SkillsDialogType.kAdd);
 
-    const zeroStateIcon = skillsDialogApp.$.emojiZeroStateIcon;
-    const emojiTrigger = skillsDialogApp.$.emojiTrigger;
+    const zeroStateIcon = getRequiredElement('emojiZeroStateIcon');
+    const emojiTrigger = getRequiredElement<HTMLInputElement>('emojiTrigger');
 
     // Verify initial state: Icon should be visible (hidden=false) because icon
     // is empty.
@@ -365,7 +378,7 @@ suite('SkillsDialogAppPage', function() {
   });
 
   test('EmojiTriggerOpensPicker', async function() {
-    const emojiTrigger = skillsDialogApp.$.emojiTrigger;
+    const emojiTrigger = getRequiredElement<HTMLInputElement>('emojiTrigger');
 
     emojiTrigger.click();
 
@@ -374,7 +387,7 @@ suite('SkillsDialogAppPage', function() {
   });
 
   test('EmojiInputUpdatesStateAndSanitizes', async function() {
-    const emojiTrigger = skillsDialogApp.$.emojiTrigger;
+    const emojiTrigger = getRequiredElement<HTMLInputElement>('emojiTrigger');
 
     emojiTrigger.value = '⚡🐶';
     emojiTrigger.dispatchEvent(new InputEvent('input'));
@@ -386,13 +399,13 @@ suite('SkillsDialogAppPage', function() {
     await updateName('name');
     await updateInstructions('prompt');
 
-    skillsDialogApp.$.saveButton.click();
+    getRequiredElement<CrButtonElement>('saveButton').click();
     const [submittedSkill] = await dialogHandler.whenCalled('submitSkill');
     assertEquals('🐶', submittedSkill.icon);
   });
 
   test('EmojiSelectedUpdatesStateAndClosesPicker', async function() {
-    const emojiTrigger = skillsDialogApp.$.emojiTrigger;
+    const emojiTrigger = getRequiredElement<HTMLInputElement>('emojiTrigger');
     emojiTrigger.click();
     await microtasksFinished();
 
@@ -421,13 +434,13 @@ suite('SkillsDialogAppPage', function() {
     await setupDialogInitialState(emptyIconSkill, SkillsDialogType.kEdit);
 
     // Click the save button and verify the proxy call.
-    skillsDialogApp.$.saveButton.click();
+    getRequiredElement<CrButtonElement>('saveButton').click();
     const [submittedSkill] = await dialogHandler.whenCalled('submitSkill');
     assertEquals('⚡', submittedSkill.icon);
   });
 
   test('EmojiPreventsManualTyping', async function() {
-    const emojiTrigger = skillsDialogApp.$.emojiTrigger;
+    const emojiTrigger = getRequiredElement<HTMLInputElement>('emojiTrigger');
     const enterEvent = new KeyboardEvent('keydown', {
       key: 'Enter',
       cancelable: true,
@@ -442,16 +455,16 @@ suite('SkillsDialogAppPage', function() {
 
   test('RefineUndoRedoFlow', async function() {
     // 1. Initial State: Empty
-    assertTrue(skillsDialogApp.$.iconRefine.disabled);
-    assertTrue(skillsDialogApp.$.iconUndo.disabled);
-    assertTrue(skillsDialogApp.$.iconRedo.disabled);
+    assertTrue(getRequiredElement<CrIconButtonElement>('iconRefine').disabled);
+    assertTrue(getRequiredElement<CrIconButtonElement>('iconUndo').disabled);
+    assertTrue(getRequiredElement<CrIconButtonElement>('iconRedo').disabled);
 
     // 2. Type something
     const originalText = 'Original Prompt';
     await updateInstructions(originalText);
 
-    assertFalse(skillsDialogApp.$.iconRefine.disabled);
-    assertTrue(skillsDialogApp.$.iconUndo.disabled);
+    assertFalse(getRequiredElement<CrIconButtonElement>('iconRefine').disabled);
+    assertTrue(getRequiredElement<CrIconButtonElement>('iconUndo').disabled);
 
     // 3. Mock the refine call and Click Refine
     const refinedMockText = 'AI Refined Prompt';
@@ -460,7 +473,7 @@ suite('SkillsDialogAppPage', function() {
       refinedSkill: createSkill({prompt: refinedMockText}),
     }));
 
-    skillsDialogApp.$.iconRefine.click();
+    getRequiredElement<CrIconButtonElement>('iconRefine').click();
     await dialogHandler.whenCalled('refineSkill');
     await microtasksFinished();
 
@@ -474,34 +487,34 @@ suite('SkillsDialogAppPage', function() {
     assertEquals(refinedMockText, instructionsInput.value);
 
     // Check buttons
-    assertFalse(skillsDialogApp.$.iconUndo.disabled);
-    assertTrue(skillsDialogApp.$.iconRedo.disabled);
+    assertFalse(getRequiredElement<CrIconButtonElement>('iconUndo').disabled);
+    assertTrue(getRequiredElement<CrIconButtonElement>('iconRedo').disabled);
 
     // 4. Click Undo
-    skillsDialogApp.$.iconUndo.click();
+    getRequiredElement<CrIconButtonElement>('iconUndo').click();
     await microtasksFinished();
 
     instructionsInput = skillsDialogApp.shadowRoot.querySelector('textarea');
     assertTrue(!!instructionsInput);
     assertEquals(originalText, instructionsInput.value);
-    assertTrue(skillsDialogApp.$.iconUndo.disabled);
-    assertFalse(skillsDialogApp.$.iconRedo.disabled);
+    assertTrue(getRequiredElement<CrIconButtonElement>('iconUndo').disabled);
+    assertFalse(getRequiredElement<CrIconButtonElement>('iconRedo').disabled);
 
     // 5. Click Redo
-    skillsDialogApp.$.iconRedo.click();
+    getRequiredElement<CrIconButtonElement>('iconRedo').click();
     await microtasksFinished();
 
     instructionsInput = skillsDialogApp.shadowRoot.querySelector('textarea');
     assertTrue(!!instructionsInput);
     assertEquals(refinedMockText, instructionsInput.value);
-    assertFalse(skillsDialogApp.$.iconUndo.disabled);
-    assertTrue(skillsDialogApp.$.iconRedo.disabled);
+    assertFalse(getRequiredElement<CrIconButtonElement>('iconUndo').disabled);
+    assertTrue(getRequiredElement<CrIconButtonElement>('iconRedo').disabled);
 
     // 6. Manual edit clears history
     await updateInstructions('New manual edit');
 
-    assertTrue(skillsDialogApp.$.iconUndo.disabled);
-    assertTrue(skillsDialogApp.$.iconRedo.disabled);
+    assertTrue(getRequiredElement<CrIconButtonElement>('iconUndo').disabled);
+    assertTrue(getRequiredElement<CrIconButtonElement>('iconRedo').disabled);
   });
 
   test('SubmitsRefinedSkillLogsOutcome', async function() {
@@ -514,12 +527,12 @@ suite('SkillsDialogAppPage', function() {
       refinedSkill: createSkill({prompt: refinedText}),
     }));
 
-    skillsDialogApp.$.iconRefine.click();
+    getRequiredElement<CrIconButtonElement>('iconRefine').click();
     await dialogHandler.whenCalled('refineSkill');
     await microtasksFinished();
 
     // 2. Submit
-    skillsDialogApp.$.saveButton.click();
+    getRequiredElement<CrButtonElement>('saveButton').click();
     await microtasksFinished();
 
     const [submittedSkill, refinementOutcome] =
@@ -549,7 +562,7 @@ suite('SkillsDialogAppPage', function() {
       refinedSkill: createSkill({prompt: firstRefinedText}),
     }));
 
-    skillsDialogApp.$.iconRefine.click();
+    getRequiredElement<CrIconButtonElement>('iconRefine').click();
 
     let calledSkill = await dialogHandler.whenCalled('refineSkill');
     assertEquals(originalText, calledSkill.prompt);
@@ -568,7 +581,7 @@ suite('SkillsDialogAppPage', function() {
       refinedSkill: createSkill({prompt: secondRefinedText}),
     }));
 
-    skillsDialogApp.$.iconRefine.click();
+    getRequiredElement<CrIconButtonElement>('iconRefine').click();
 
     calledSkill = await dialogHandler.whenCalled('refineSkill');
     assertEquals(originalText, calledSkill.prompt);
@@ -594,17 +607,17 @@ suite('SkillsDialogAppPage', function() {
 
     await microtasksFinished();
 
-    const accountInfoElement = skillsDialogApp.$.accountInfo;
+    const accountInfoElement = getRequiredElement('accountInfo');
 
     assertTrue(!!accountInfoElement);
     assertTrue(accountInfoElement.textContent.includes(testEmail));
   });
 
   test('RefineShowsErrorOnFailure', async function() {
-    const refineBtn = skillsDialogApp.$.iconRefine;
+    const refineBtn = getRequiredElement<CrIconButtonElement>('iconRefine');
     // Query these elements dynamically in assertion to ensure freshness
-    const textareaWrapper = skillsDialogApp.$.textareaWrapper;
-    const errorMessage = skillsDialogApp.$.errorMessage;
+    const textareaWrapper = getRequiredElement('textareaWrapper');
+    const errorMessage = getRequiredElement('errorMessage');
 
     // 1. Setup Input
     await updateInstructions('Start text');
@@ -622,11 +635,11 @@ suite('SkillsDialogAppPage', function() {
   });
 
   test('TypingClearsRefineError', async function() {
-    const refineBtn = skillsDialogApp.$.iconRefine;
+    const refineBtn = getRequiredElement<CrIconButtonElement>('iconRefine');
 
     // Helper functions to get fresh DOM elements
-    const textareaWrapper = skillsDialogApp.$.textareaWrapper;
-    const errorMessage = skillsDialogApp.$.errorMessage;
+    const textareaWrapper = getRequiredElement('textareaWrapper');
+    const errorMessage = getRequiredElement('errorMessage');
 
     // 1. Setup Input and Trigger Error
     await updateInstructions('Start');
@@ -647,7 +660,7 @@ suite('SkillsDialogAppPage', function() {
   });
 
   test('RefineLoadingState', async function() {
-    const refineBtn = skillsDialogApp.$.iconRefine;
+    const refineBtn = getRequiredElement<CrIconButtonElement>('iconRefine');
 
     // 1. Setup Input
     await updateInstructions('Start');
@@ -661,9 +674,9 @@ suite('SkillsDialogAppPage', function() {
 
     // 3. ASSERT LOADING STATE
     assertTrue(refineBtn.disabled);
-    assertTrue(skillsDialogApp.$.iconUndo.disabled);
-    assertTrue(skillsDialogApp.$.iconRedo.disabled);
-    assertTrue(skillsDialogApp.$.textareaWrapper.hasAttribute('loading'));
+    assertTrue(getRequiredElement<CrIconButtonElement>('iconUndo').disabled);
+    assertTrue(getRequiredElement<CrIconButtonElement>('iconRedo').disabled);
+    assertTrue(getRequiredElement('textareaWrapper').hasAttribute('loading'));
     const textarea =
         skillsDialogApp.shadowRoot.querySelector('#instructionsText');
     assertEquals(null, textarea);
@@ -680,8 +693,8 @@ suite('SkillsDialogAppPage', function() {
 
     // 5. ASSERT NORMAL STATE
     assertFalse(refineBtn.disabled);
-    assertFalse(skillsDialogApp.$.iconUndo.disabled);
-    assertFalse(skillsDialogApp.$.textareaWrapper.hasAttribute('loading'));
+    assertFalse(getRequiredElement<CrIconButtonElement>('iconUndo').disabled);
+    assertFalse(getRequiredElement('textareaWrapper').hasAttribute('loading'));
     const loaderAfter =
         skillsDialogApp.shadowRoot.querySelector('#instructionsLoader');
     assertEquals(null, loaderAfter);
@@ -692,9 +705,9 @@ suite('SkillsDialogAppPage', function() {
   });
 
   test('LateResponseDoesNotOverwriteError', async function() {
-    const refineBtn = skillsDialogApp.$.iconRefine;
-    const textareaWrapper = skillsDialogApp.$.textareaWrapper;
-    const errorMessage = skillsDialogApp.$.errorMessage;
+    const refineBtn = getRequiredElement<CrIconButtonElement>('iconRefine');
+    const textareaWrapper = getRequiredElement('textareaWrapper');
+    const errorMessage = getRequiredElement('errorMessage');
 
     // 1. Setup Initial State
     await updateInstructions('Original Text');
@@ -755,8 +768,11 @@ suite('SkillsDialogAppPage', function() {
     await setupDialogInitialState(newSkill, SkillsDialogType.kAdd);
 
     // 4. Assert that values updated automatically
-    assertEquals(generatedName, skillsDialogApp.$.nameText.value);
-    assertEquals(generatedIcon, skillsDialogApp.$.emojiTrigger.value);
+    assertEquals(
+        generatedName, getRequiredElement<CrInputElement>('nameText').value);
+    assertEquals(
+        generatedIcon,
+        getRequiredElement<HTMLInputElement>('emojiTrigger').value);
   });
 
   test('AutoPopulatesNameAndIconOnLoadDisabledByFlag', async function() {
@@ -783,8 +799,9 @@ suite('SkillsDialogAppPage', function() {
 
     // Verify it was never called because the flag is off
     assertEquals(0, dialogHandler.getCallCount('generateNameAndEmoji'));
-    assertEquals('', skillsDialogApp.$.nameText.value);
-    assertEquals('', skillsDialogApp.$.emojiTrigger.value);
+    assertEquals('', getRequiredElement<CrInputElement>('nameText').value);
+    assertEquals(
+        '', getRequiredElement<HTMLInputElement>('emojiTrigger').value);
   });
 
   test('AutoPopulateDoesNotOverwriteExistingData', async function() {
@@ -809,8 +826,11 @@ suite('SkillsDialogAppPage', function() {
     await setupDialogInitialState(customSkill);
 
     // 4. Assert values were preserved
-    assertEquals(existingName, skillsDialogApp.$.nameText.value);
-    assertEquals(existingIcon, skillsDialogApp.$.emojiTrigger.value);
+    assertEquals(
+        existingName, getRequiredElement<CrInputElement>('nameText').value);
+    assertEquals(
+        existingIcon,
+        getRequiredElement<HTMLInputElement>('emojiTrigger').value);
   });
 
   test('AutoPopulateLoadingState', async function() {
@@ -888,7 +908,8 @@ suite('SkillsDialogAppPage', function() {
 
     // Values should remain defaults
     assertEquals('', (nameInput as CrInputElement).value);
-    assertEquals('⚡', skillsDialogApp.$.emojiTrigger.value);
+    assertEquals(
+        '⚡', getRequiredElement<HTMLInputElement>('emojiTrigger').value);
   });
 
   test('AutoPopulateSkippedWhenNameIsNotEmpty', async function() {
@@ -910,7 +931,9 @@ suite('SkillsDialogAppPage', function() {
     const loader =
         skillsDialogApp.shadowRoot.querySelector('#nameLoaderContainer');
     assertEquals(null, loader);
-    assertEquals('Pre-existing Name', skillsDialogApp.$.nameText.value);
+    assertEquals(
+        'Pre-existing Name',
+        getRequiredElement<CrInputElement>('nameText').value);
   });
 
   test('CharLimitErrorDisplaysCorrectly', async function() {
@@ -921,15 +944,15 @@ suite('SkillsDialogAppPage', function() {
     await updateInstructions(longPrompt);
 
     // Check error message visibility
-    const charLimitErrorMessage = skillsDialogApp.$.errorMessage;
+    const charLimitErrorMessage = getRequiredElement('errorMessage');
     assertTrue(!!charLimitErrorMessage);
     assertFalse(charLimitErrorMessage.hidden);
-    assertTrue(skillsDialogApp.$.textareaWrapper.hasAttribute('error'));
+    assertTrue(getRequiredElement('textareaWrapper').hasAttribute('error'));
 
     // 2. Under limit again: enabled.
     await updateInstructions('a');
     assertTrue(charLimitErrorMessage.hidden);
-    assertFalse(skillsDialogApp.$.textareaWrapper.hasAttribute('error'));
+    assertFalse(getRequiredElement('textareaWrapper').hasAttribute('error'));
   });
 
   test('NameCharLimitErrorDisplaysCorrectly', async function() {
@@ -937,21 +960,24 @@ suite('SkillsDialogAppPage', function() {
     const longName = 'a'.repeat(MAX_NAME_CHAR_COUNT);
     await updateName(longName);
 
-    const nameErrorMessage = skillsDialogApp.$.nameErrorMessage;
+    const nameErrorMessage = getRequiredElement('nameErrorMessage');
     assertTrue(!!nameErrorMessage);
     assertFalse(nameErrorMessage.hidden);
-    assertTrue(skillsDialogApp.$.nameText.hasAttribute('invalid'));
+    assertTrue(
+        getRequiredElement<CrInputElement>('nameText').hasAttribute('invalid'));
 
     // 2. Under limit again: returns to normal.
     await updateName('Valid Name');
     assertTrue(nameErrorMessage.hidden);
-    assertFalse(skillsDialogApp.$.nameText.hasAttribute('invalid'));
+    assertFalse(
+        getRequiredElement<CrInputElement>('nameText').hasAttribute('invalid'));
   });
 
   test('AutocompleteIgnoresShortPromptOnNameFocus', async function() {
     // Type a short prompt, shouldn't trigger
     await updateInstructions('short');
-    skillsDialogApp.$.nameText.dispatchEvent(new Event('focus'));
+    getRequiredElement<CrInputElement>('nameText')
+        .dispatchEvent(new Event('focus'));
     await microtasksFinished();
     assertEquals(0, dialogHandler.getCallCount('generateNameAndEmoji'));
   });
@@ -983,7 +1009,8 @@ suite('SkillsDialogAppPage', function() {
     assertEquals(0, dialogHandler.getCallCount('generateNameAndEmoji'));
 
     // Focus the name input
-    skillsDialogApp.$.nameText.dispatchEvent(new Event('focus'));
+    getRequiredElement<CrInputElement>('nameText')
+        .dispatchEvent(new Event('focus'));
     await microtasksFinished();
 
     // Verify proxy was called
@@ -992,16 +1019,21 @@ suite('SkillsDialogAppPage', function() {
 
     // Placeholders should be hidden initially (already done above implicitly or
     // explicitly via tests logic but let's keep assertions)
-    assertFalse(skillsDialogApp.$.generatedPlaceholder.hidden);
-    const generatedNameText = skillsDialogApp.$.generatedNameText.textContent;
+    assertFalse(getRequiredElement('generatedPlaceholder').hidden);
+    const generatedNameText =
+        getRequiredElement('generatedNameText').textContent;
     assertEquals(generatedName, generatedNameText);
-    assertEquals(generatedIcon, skillsDialogApp.$.emojiTrigger.value);
-    assertTrue(skillsDialogApp.$.emojiZeroStateIcon.hidden);
-    assertEquals('', skillsDialogApp.$.nameText.placeholder);
+    assertEquals(
+        generatedIcon,
+        getRequiredElement<HTMLInputElement>('emojiTrigger').value);
+    assertTrue(getRequiredElement('emojiZeroStateIcon').hidden);
+    assertEquals(
+        '', getRequiredElement<CrInputElement>('nameText').placeholder);
 
     // Ensure icon got the gray styling
     assertTrue(
-        skillsDialogApp.$.emojiTrigger.classList.contains('placeholder-icon'));
+        getRequiredElement<HTMLInputElement>('emojiTrigger')
+            .classList.contains('placeholder-icon'));
   });
 
   test('AutocompleteTabAcceptsSuggestion', async function() {
@@ -1026,7 +1058,8 @@ suite('SkillsDialogAppPage', function() {
     await updateInstructions(longPrompt);
 
     // Focus to trigger the fetch
-    skillsDialogApp.$.nameText.dispatchEvent(new Event('focus'));
+    getRequiredElement<CrInputElement>('nameText')
+        .dispatchEvent(new Event('focus'));
     await dialogHandler.whenCalled('generateNameAndEmoji');
     await microtasksFinished();
 
@@ -1037,7 +1070,7 @@ suite('SkillsDialogAppPage', function() {
       bubbles: true,
       composed: true,
     });
-    skillsDialogApp.$.nameText.dispatchEvent(tabEvent);
+    getRequiredElement<CrInputElement>('nameText').dispatchEvent(tabEvent);
 
     await microtasksFinished();
 
@@ -1046,9 +1079,13 @@ suite('SkillsDialogAppPage', function() {
 
     // The attributes should be formally set on the skill, removing placeholder
     // styling
-    assertEquals(generatedName, skillsDialogApp.$.nameText.value);
-    assertEquals(generatedIcon, skillsDialogApp.$.emojiTrigger.value);
+    assertEquals(
+        generatedName, getRequiredElement<CrInputElement>('nameText').value);
+    assertEquals(
+        generatedIcon,
+        getRequiredElement<HTMLInputElement>('emojiTrigger').value);
     assertFalse(
-        skillsDialogApp.$.emojiTrigger.classList.contains('placeholder-icon'));
+        getRequiredElement<HTMLInputElement>('emojiTrigger')
+            .classList.contains('placeholder-icon'));
   });
 });

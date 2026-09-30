@@ -16,8 +16,6 @@ import './signin_error_dialog.js';
 
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
-import type {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
-import type {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {WebUiListenerMixinLit} from 'chrome://resources/cr_elements/web_ui_listener_mixin_lit.js';
 import {assert} from 'chrome://resources/js/assert.js';
@@ -39,7 +37,6 @@ import type {SigninErrorDialogElement} from './signin_error_dialog.js';
 export interface ProfilePickerMainViewElement {
   $: {
     addProfile: CrButtonElement,
-    askOnStartup: CrCheckboxElement|CrToggleElement,
     pickerLogo: HTMLElement,
     browseAsGuestButton: HTMLElement,
     profilesContainer: HTMLElement,

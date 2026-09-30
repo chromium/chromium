@@ -86,6 +86,8 @@ suite('NewTabPageAppTest', () => {
     handler.setPromiseResolveFor('getModulesIdNames', {data: []});
     handler.setPromiseResolveFor('getModulesOrder', {data: []});
     handler.setPromiseResolveFor(
+        'getModulesEligibleForRemoval', {moduleIds: []});
+    handler.setPromiseResolveFor(
         'canShowRealboxContextMenuAnimation', {canShow: false});
     windowProxy.setResultMapperFor(
         'matchMedia', (query: string) => ({
@@ -144,8 +146,10 @@ suite('NewTabPageAppTest', () => {
     app = document.createElement('ntp-app');
     document.body.appendChild(app);
     await microtasksFinished();
-
-    customizeButtons = app.$.customizeButtons;
+    const buttons = app.shadowRoot.querySelector<CustomizeButtonsElement>(
+        '#customizeButtons');
+    assertTrue(!!buttons);
+    customizeButtons = buttons;
   });
 
   async function recreateApp() {
@@ -2749,6 +2753,20 @@ suite('NewTabPageAppTest', () => {
       });
     });
 
+    function getUndoToast(): CrToastElement {
+      const undoToast =
+          app.shadowRoot.querySelector<CrToastElement>('#undoToast');
+      assertTrue(!!undoToast);
+      return undoToast;
+    }
+
+    function getUndoToastMessage(): HTMLElement {
+      const undoToastMessage =
+          app.shadowRoot.querySelector<HTMLElement>('#undoToastMessage');
+      assertTrue(!!undoToastMessage);
+      return undoToastMessage;
+    }
+
     test('displays single toast', async () => {
       // Arrange.
       const modules = app.shadowRoot.querySelector('ntp-modules');
@@ -2760,8 +2778,8 @@ suite('NewTabPageAppTest', () => {
       await microtasksFinished();
 
       // Assert.
-      assertTrue(app.$.undoToast.open);
-      assertEquals('Module removed', app.$.undoToastMessage.textContent.trim());
+      assertTrue(getUndoToast().open);
+      assertEquals('Module removed', getUndoToastMessage().textContent.trim());
     });
 
     test('queues multiple toasts', async () => {
@@ -2783,8 +2801,8 @@ suite('NewTabPageAppTest', () => {
       await microtasksFinished();
 
       // Assert.
-      assertTrue(app.$.undoToast.open);
-      assertEquals('Modules hidden', app.$.undoToastMessage.textContent.trim());
+      assertTrue(getUndoToast().open);
+      assertEquals('Modules hidden', getUndoToastMessage().textContent.trim());
 
       // Act - clicking undo on the first toast.
       let undoButton = app.shadowRoot.querySelector<HTMLElement>('#undoButton');
@@ -2793,9 +2811,9 @@ suite('NewTabPageAppTest', () => {
       await microtasksFinished();
 
       // Assert.
-      assertTrue(app.$.undoToast.open);
+      assertTrue(getUndoToast().open);
       assertEquals(
-          'Shortcuts hidden', app.$.undoToastMessage.textContent.trim());
+          'Shortcuts hidden', getUndoToastMessage().textContent.trim());
 
       // Act - clicking undo on the second toast.
       undoButton = app.shadowRoot.querySelector<HTMLElement>('#undoButton');
@@ -2804,7 +2822,7 @@ suite('NewTabPageAppTest', () => {
       await microtasksFinished();
 
       // Assert.
-      assertFalse(app.$.undoToast.open);
+      assertFalse(getUndoToast().open);
     });
 
     test('toast with null undo callback', async () => {
@@ -2826,8 +2844,8 @@ suite('NewTabPageAppTest', () => {
       await microtasksFinished();
 
       // Assert.
-      assertTrue(app.$.undoToast.open);
-      assertEquals('Module removed', app.$.undoToastMessage.textContent.trim());
+      assertTrue(getUndoToast().open);
+      assertEquals('Module removed', getUndoToastMessage().textContent.trim());
 
       // Act - clicking undo on the first toast does not crash.
       let undoButton = app.shadowRoot.querySelector<HTMLElement>('#undoButton');
@@ -2836,9 +2854,9 @@ suite('NewTabPageAppTest', () => {
       await microtasksFinished();
 
       // Assert.
-      assertTrue(app.$.undoToast.open);
+      assertTrue(getUndoToast().open);
       assertEquals(
-          'Shortcuts hidden', app.$.undoToastMessage.textContent.trim());
+          'Shortcuts hidden', getUndoToastMessage().textContent.trim());
 
       // Act - clicking undo on the second toast.
       undoButton = app.shadowRoot.querySelector<HTMLElement>('#undoButton');
@@ -2847,7 +2865,7 @@ suite('NewTabPageAppTest', () => {
       await microtasksFinished();
 
       // Assert - no crash and toast closed.
-      assertFalse(app.$.undoToast.open);
+      assertFalse(getUndoToast().open);
     });
   });
 
@@ -3468,7 +3486,7 @@ suite('NewTabPageAppTest', () => {
           button.click();
           await microtasksFinished();
 
-          assertTrue(!!app.$.composebox);
+          assertTrue(!!app.shadowRoot.querySelector('#composebox'));
           assertEquals(1, searchboxHandler.getCallCount('setActiveModelMode'));
           assertEquals(
               ModelMode.kGeminiPro,

@@ -72,6 +72,18 @@ suite('<iwa-dev-app>', () => {
     document.body.appendChild(app);
   }
 
+  function getToast() {
+    const toast = app.shadowRoot.querySelector('cr-toast');
+    assertTrue(!!toast);
+    return toast;
+  }
+
+  function getInstallDialog() {
+    const dialog = app.shadowRoot.querySelector('iwa-dev-install-dialog');
+    assertTrue(!!dialog);
+    return dialog;
+  }
+
   function createBundleInstalledAppInfo(): IwaDevModeAppInfo {
     return {
       appId: 'test-bundle-app-id',
@@ -385,8 +397,8 @@ suite('<iwa-dev-app>', () => {
         assertEquals('test-bundle-app-id', appId);
 
         await waitForUpdateCompletion();
-        assertTrue(app.$.toast.open);
-        assertEquals('Update successful!', app.$.toast.textContent?.trim());
+        assertTrue(getToast().open);
+        assertEquals('Update successful!', getToast().textContent?.trim());
       });
 
   test(
@@ -411,9 +423,9 @@ suite('<iwa-dev-app>', () => {
         await handler.whenCalled('selectAndUpdateAppFromLocalWebBundle');
         await waitForUpdateCompletion();
 
-        assertTrue(app.$.toast.open);
+        assertTrue(getToast().open);
         assertEquals(
-            'Update failed: User cancelled', app.$.toast.textContent?.trim());
+            'Update failed: User cancelled', getToast().textContent?.trim());
       });
 
   test(
@@ -437,8 +449,8 @@ suite('<iwa-dev-app>', () => {
         assertEquals('test-app-id', appId);
 
         await waitForUpdateCompletion();
-        assertTrue(app.$.toast.open);
-        assertEquals('Update successful!', app.$.toast.textContent?.trim());
+        assertTrue(getToast().open);
+        assertEquals('Update successful!', getToast().textContent?.trim());
       });
 
   test(
@@ -463,9 +475,9 @@ suite('<iwa-dev-app>', () => {
         await handler.whenCalled('updateDevProxyInstalledApp');
         await waitForUpdateCompletion();
 
-        assertTrue(app.$.toast.open);
+        assertTrue(getToast().open);
         assertEquals(
-            'Update failed: Network error', app.$.toast.textContent?.trim());
+            'Update failed: Network error', getToast().textContent?.trim());
       });
 
   test(
@@ -486,8 +498,8 @@ suite('<iwa-dev-app>', () => {
             {allowDowngrades: false, pinnedVersion: null}, options);
 
         await waitForUpdateCompletion();
-        assertTrue(app.$.toast.open);
-        assertEquals('Update successful!', app.$.toast.textContent?.trim());
+        assertTrue(getToast().open);
+        assertEquals('Update successful!', getToast().textContent?.trim());
       });
 
   test(
@@ -506,10 +518,10 @@ suite('<iwa-dev-app>', () => {
         await handler.whenCalled('updateManifestInstalledApp');
         await waitForUpdateCompletion();
 
-        assertTrue(app.$.toast.open);
+        assertTrue(getToast().open);
         assertEquals(
             'Update failed: App is already on the latest version.',
-            app.$.toast.textContent?.trim());
+            getToast().textContent?.trim());
       });
 
   test('disables update button while update is in progress', async () => {
@@ -544,14 +556,14 @@ suite('<iwa-dev-app>', () => {
     await handler.whenCalled('getInstalledAppsInfo');
     await microtasksFinished();
 
-    const dialog = app.$.installDialog;
-    assertTrue(!!dialog);
+    const dialog = getInstallDialog();
 
     const crDialog = dialog.$.dialog;
     assertTrue(!!crDialog);
     assertFalse(crDialog.open);
 
-    const installButton = app.$.installButton;
+    const installButton =
+        app.shadowRoot.querySelector<HTMLElement>('#installButton');
     assertTrue(!!installButton);
     installButton.click();
     await microtasksFinished();
@@ -571,8 +583,7 @@ suite('<iwa-dev-app>', () => {
         await handler.whenCalled('getInstalledAppsInfo');
         await microtasksFinished();
 
-        const dialog = app.$.installDialog;
-        assertTrue(!!dialog);
+        const dialog = getInstallDialog();
 
         const devProxyUrl = 'http://localhost:8080';
         dialog.dispatchEvent(new CustomEvent('request-install-from-dev-proxy', {
@@ -582,9 +593,9 @@ suite('<iwa-dev-app>', () => {
         assertEquals(devProxyUrl, url);
 
         await microtasksFinished();
-        assertTrue(app.$.toast.open);
+        assertTrue(getToast().open);
         assertEquals(
-            'Installation successful!', app.$.toast.textContent?.trim());
+            'Installation successful!', getToast().textContent?.trim());
       });
 
   test(
@@ -600,8 +611,7 @@ suite('<iwa-dev-app>', () => {
         await handler.whenCalled('getInstalledAppsInfo');
         await microtasksFinished();
 
-        const dialog = app.$.installDialog;
-        assertTrue(!!dialog);
+        const dialog = getInstallDialog();
 
         dialog.dispatchEvent(
             new CustomEvent('request-install-from-local-bundle'));
@@ -611,9 +621,9 @@ suite('<iwa-dev-app>', () => {
         const crDialog = dialog.$.dialog;
         assertTrue(!!crDialog);
         assertFalse(crDialog.open);
-        assertTrue(app.$.toast.open);
+        assertTrue(getToast().open);
         assertEquals(
-            'Installation successful!', app.$.toast.textContent?.trim());
+            'Installation successful!', getToast().textContent?.trim());
       });
 
   test(
@@ -629,8 +639,7 @@ suite('<iwa-dev-app>', () => {
         await handler.whenCalled('getInstalledAppsInfo');
         await microtasksFinished();
 
-        const dialog = app.$.installDialog;
-        assertTrue(!!dialog);
+        const dialog = getInstallDialog();
 
         dialog.dispatchEvent(
             new CustomEvent('request-install-from-local-bundle'));
@@ -656,7 +665,7 @@ suite('<iwa-dev-app>', () => {
     const testUrl = 'https://example.com/manifest.json';
     let callbackResult: {success?: UpdateManifest, error?: string}|undefined;
 
-    app.$.installDialog.dispatchEvent(
+    getInstallDialog().dispatchEvent(
         new CustomEvent('request-parse-update-manifest-from-url', {
           detail: {
             url: testUrl,
@@ -718,7 +727,7 @@ suite('<iwa-dev-app>', () => {
           updateManifestUrl: 'http://localhost:8080/manifest.json',
           updateChannel: 'stable',
         };
-        app.$.installDialog.dispatchEvent(
+        getInstallDialog().dispatchEvent(
             new CustomEvent('request-install-from-update-manifest', {
               detail: {webBundleUrl, updateInfo},
             }));
@@ -728,9 +737,9 @@ suite('<iwa-dev-app>', () => {
         assertDeepEquals(updateInfo, updateInfoArg);
 
         await microtasksFinished();
-        assertTrue(app.$.toast.open);
+        assertTrue(getToast().open);
         assertEquals(
-            'Installation successful!', app.$.toast.textContent?.trim());
+            'Installation successful!', getToast().textContent?.trim());
       });
 
   test(
@@ -868,8 +877,8 @@ suite('<iwa-dev-app>', () => {
     assertEquals('beta', channelArg);
 
     await microtasksFinished();
-    assertTrue(app.$.toast.open);
-    assertEquals(expectedToast, app.$.toast.textContent?.trim());
+    assertTrue(getToast().open);
+    assertEquals(expectedToast, getToast().textContent?.trim());
   }
 
   test('calls setUpdateChannel on update-options-saved (success)', async () => {
@@ -899,8 +908,8 @@ suite('<iwa-dev-app>', () => {
     }));
 
     await microtasksFinished();
-    assertTrue(app.$.toast.open);
-    assertEquals('Update options saved', app.$.toast.textContent?.trim());
+    assertTrue(getToast().open);
+    assertEquals('Update options saved', getToast().textContent?.trim());
     assertEquals('1.2.0', getStoredUpdateOptions(appInfo.appId).pinnedVersion);
   });
 
@@ -930,8 +939,8 @@ suite('<iwa-dev-app>', () => {
     assertEquals('beta', channelArg);
 
     await microtasksFinished();
-    assertTrue(app.$.toast.open);
-    assertEquals('Update options saved', app.$.toast.textContent?.trim());
+    assertTrue(getToast().open);
+    assertEquals('Update options saved', getToast().textContent?.trim());
     assertEquals('1.2.0', getStoredUpdateOptions(appInfo.appId).pinnedVersion);
   });
 
@@ -952,8 +961,8 @@ suite('<iwa-dev-app>', () => {
     }));
 
     await microtasksFinished();
-    assertTrue(app.$.toast.open);
-    assertEquals('Update options saved', app.$.toast.textContent?.trim());
+    assertTrue(getToast().open);
+    assertEquals('Update options saved', getToast().textContent?.trim());
     assertTrue(getStoredUpdateOptions(appInfo.appId).allowDowngrades);
   });
 
@@ -1019,8 +1028,8 @@ suite('<iwa-dev-app>', () => {
         }));
 
         await microtasksFinished();
-        assertTrue(app.$.toast.open);
-        assertEquals('Update options saved', app.$.toast.textContent?.trim());
+        assertTrue(getToast().open);
+        assertEquals('Update options saved', getToast().textContent?.trim());
         assertEquals(
             null,
             window.localStorage.getItem(
@@ -1055,7 +1064,7 @@ suite('<iwa-dev-app>', () => {
       const appId = await handler.whenCalled('launchApp');
       assertEquals(appInfo.appId, appId);
       await microtasksFinished();
-      assertFalse(app.$.toast.open);
+      assertFalse(getToast().open);
     });
 
     test(
@@ -1068,9 +1077,8 @@ suite('<iwa-dev-app>', () => {
 
           await handler.whenCalled('launchApp');
           await microtasksFinished();
-          assertTrue(app.$.toast.open);
-          assertEquals(
-              'Failed to launch app.', app.$.toast.textContent?.trim());
+          assertTrue(getToast().open);
+          assertEquals('Failed to launch app.', getToast().textContent?.trim());
         });
   }
 });

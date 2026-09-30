@@ -6,6 +6,7 @@ import 'chrome://profile-picker/profile_picker.js';
 
 import type {ProfilePickerAppElement} from 'chrome://profile-picker/profile_picker.js';
 import {ensureLazyLoaded, ManageProfilesBrowserProxyImpl, navigateTo, Routes} from 'chrome://profile-picker/profile_picker.js';
+import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -91,10 +92,16 @@ suite('ProfilePickerAppTest', function() {
     await waitForProfileCreationLoad();
     const choice = testElement.shadowRoot.querySelector('profile-type-choice');
     assertTrue(!!choice);
-    choice.$.signInButton.click();
+    const signInButton =
+        choice.shadowRoot.querySelector<CrButtonElement>('#signInButton');
+    assertTrue(!!signInButton);
+    const notNowButton =
+        choice.shadowRoot.querySelector<CrButtonElement>('#notNowButton');
+    assertTrue(!!notNowButton);
+    signInButton.click();
     await microtasksFinished();
-    assertTrue(choice.$.signInButton.disabled);
-    assertTrue(choice.$.notNowButton.disabled);
+    assertTrue(signInButton.disabled);
+    assertTrue(notNowButton.disabled);
     assertTrue(choice.$.backButton.disabled);
     return browserProxy.whenCalled('selectNewAccount');
   });
@@ -137,14 +144,20 @@ suite('ProfilePickerAppTest', function() {
     assertTrue(!!choice);
     await whenCheck(choice, () => choice.classList.contains('active'));
     verifyProfileCreationViewStyle(choice);
-    choice.$.notNowButton.click();
+    const notNowButton =
+        choice.shadowRoot.querySelector<CrButtonElement>('#notNowButton');
+    assertTrue(!!notNowButton);
+    notNowButton.click();
     await microtasksFinished();
     const args = await browserProxy.whenCalled('continueWithoutAccount');
     assertEquals(args[0], browserProxy.profileThemeInfo.color);
     assertTrue(testElement.profileCreationInProgress);
     assertTrue(choice.profileCreationInProgress);
-    assertTrue(choice.$.signInButton.disabled);
-    assertTrue(choice.$.notNowButton.disabled);
+    const signInButton =
+        choice.shadowRoot.querySelector<CrButtonElement>('#signInButton');
+    assertTrue(!!signInButton);
+    assertTrue(signInButton.disabled);
+    assertTrue(notNowButton.disabled);
     assertTrue(choice.$.backButton.disabled);
   });
 

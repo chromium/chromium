@@ -25,8 +25,6 @@ import {ComposeboxEmbedderMixin} from '//resources/cr_components/composebox/comp
 import type {ComposeboxEmbedderMixinInterface} from '//resources/cr_components/composebox/composebox_mixin.js';
 import {ComposeboxProxyImpl} from '//resources/cr_components/composebox/composebox_proxy.js';
 import type {ContextualEntrypointAndMenuElement} from '//resources/cr_components/composebox/contextual_entrypoint_and_menu.js';
-import type {ErrorScrimElement} from '//resources/cr_components/composebox/error_scrim.js';
-import type {ComposeboxFileCarouselElement} from '//resources/cr_components/composebox/file_carousel.js';
 import {GlowAnimationState} from '//resources/cr_components/search/constants.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -44,8 +42,6 @@ export interface NtpComposeboxElement extends ComposeboxEmbedderMixinInterface {
     composebox: HTMLElement,
     matches: ComposeboxDropdownElement,
     fileInputs: ComposeboxFileInputsElement,
-    carousel: ComposeboxFileCarouselElement,
-    errorScrim: ErrorScrimElement,
   };
 }
 

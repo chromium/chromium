@@ -278,11 +278,13 @@ suite('UserSkillsPage', function() {
 
     const skillCard = page.shadowRoot.querySelector('skill-card');
     assertTrue(!!skillCard);
-    const menuButton = skillCard.$.moreButton;
+    const menuButton =
+        skillCard.shadowRoot.querySelector<HTMLElement>('#moreButton');
     assertTrue(!!menuButton);
     menuButton.click();
     await page.updateComplete;
-    const copyButton = skillCard.$.copyButton;
+    const copyButton =
+        skillCard.shadowRoot.querySelector<HTMLElement>('#copyButton');
     assertTrue(!!copyButton);
     copyButton.click();
     await page.updateComplete;
@@ -306,11 +308,13 @@ suite('UserSkillsPage', function() {
 
     const skillCard = page.shadowRoot.querySelector('skill-card');
     assertTrue(!!skillCard);
-    const menuButton = skillCard.$.moreButton;
+    const menuButton =
+        skillCard.shadowRoot.querySelector<HTMLElement>('#moreButton');
     assertTrue(!!menuButton);
     menuButton.click();
     await page.updateComplete;
-    const editButton = skillCard.$.editButton;
+    const editButton =
+        skillCard.shadowRoot.querySelector<HTMLElement>('#editButton');
     assertTrue(!!editButton);
     editButton.click();
     await browserProxy.handler.whenCalled('recordSkillsManagementAction')
@@ -329,11 +333,13 @@ suite('UserSkillsPage', function() {
 
     const skillCard = page.shadowRoot.querySelector('skill-card');
     assertTrue(!!skillCard);
-    const menuButton = skillCard.$.moreButton;
+    const menuButton =
+        skillCard.shadowRoot.querySelector<HTMLElement>('#moreButton');
     assertTrue(!!menuButton);
     menuButton.click();
     await page.updateComplete;
-    const deleteButton = skillCard.$.deleteButton;
+    const deleteButton =
+        skillCard.shadowRoot.querySelector<HTMLElement>('#deleteButton');
     assertTrue(!!deleteButton);
     deleteButton.click();
     await browserProxy.handler.whenCalled('recordSkillsManagementAction')
@@ -346,9 +352,10 @@ suite('UserSkillsPage', function() {
   test('RecordsMetricOnExploreButtonClick', async function() {
     await setUserSkills([]);
 
-    const exploreButton = page.shadowRoot.querySelector('#browseSkillsButton');
+    const exploreButton =
+        page.shadowRoot.querySelector<HTMLElement>('#browseSkillsButton');
     assertTrue(!!exploreButton);
-    (exploreButton as HTMLElement).click();
+    exploreButton.click();
     await browserProxy.handler.whenCalled('recordSkillsManagementAction')
         .then((args) => {
           assertEquals(SkillsManagementPage.kYourSkills, args[0]);
