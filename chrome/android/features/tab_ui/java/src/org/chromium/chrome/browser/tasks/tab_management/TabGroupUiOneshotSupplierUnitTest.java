@@ -14,6 +14,7 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import org.junit.After;
 import org.junit.Before;
@@ -25,6 +26,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -55,13 +57,10 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link TabGroupUiOneshotSupplier}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabGroupUiOneshotSupplierUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private TabModelSelector mTabModelSelector;
-    @Mock private Activity mActivity;
-    @Mock private ViewGroup mViewGroup;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private ScrimManager mScrimManager;
     @Mock private BottomSheetController mBottomSheetController;
@@ -88,10 +87,14 @@ public class TabGroupUiOneshotSupplierUnitTest {
     private final OneshotSupplier<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
 
+    private Activity mActivity;
+    private ViewGroup mViewGroup;
     private TabGroupUiOneshotSupplier mTabGroupUiOneshotSupplier;
 
     @Before
     public void setUp() {
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
+        mViewGroup = new FrameLayout(mActivity);
         when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
         when(mTab.isIncognito()).thenReturn(false);
         mTabGroupUiOneshotSupplier =

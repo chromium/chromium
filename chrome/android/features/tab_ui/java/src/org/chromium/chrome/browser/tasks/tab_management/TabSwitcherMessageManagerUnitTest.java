@@ -16,7 +16,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
@@ -80,7 +79,6 @@ import java.util.function.Supplier;
 /** Unit tests for the TabSwitcherMessageManager. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.TAB_SWITCHER_GROUP_SUGGESTIONS_ANDROID)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabSwitcherMessageManagerUnitTest {
     private static final int INITIAL_TAB_COUNT = 0;
     private static final int TAB1_ID = 456;
@@ -106,7 +104,6 @@ public class TabSwitcherMessageManagerUnitTest {
     @Mock private MessageUpdateObserver mMessageUpdateObserver;
     @Mock private BrowserControlsStateProvider mBrowserControlsStateProvider;
     @Mock private TabContentManager mTabContentManager;
-    @Mock private ViewGroup mRootView;
     @Mock private TabCreator mRegularTabCreator;
     @Mock private BackPressManager mBackPressManager;
     @Mock private OnTabSelectingListener mOnTabSelectingListener;
@@ -174,7 +171,7 @@ public class TabSwitcherMessageManagerUnitTest {
                         mModalDialogManager,
                         mBrowserControlsStateProvider,
                         mTabContentManager,
-                        mRootView,
+                        new FrameLayout(activity),
                         mRegularTabCreator,
                         mBackPressManager,
                         /* desktopWindowStateManager= */ null,

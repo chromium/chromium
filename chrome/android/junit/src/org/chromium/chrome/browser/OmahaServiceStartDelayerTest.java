@@ -19,10 +19,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.shadows.ShadowPowerManager;
 
@@ -34,10 +34,9 @@ import org.chromium.base.test.util.Feature;
 
 /** Tests for the {@link OmahaServiceStartDelayer}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class OmahaServiceStartDelayerTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-    @Mock private Activity mActivity;
+    private Activity mActivity;
 
     @Spy private Runnable mRunnable;
     private OmahaServiceStartDelayer mOmahaServiceStartDelayer;
@@ -45,6 +44,8 @@ public class OmahaServiceStartDelayerTest {
 
     @Before
     public void setUp() throws Exception {
+        // Lifecycle is not driven by Robolectric; states are set via ApplicationStatus below.
+        mActivity = Robolectric.buildActivity(Activity.class).get();
         Context appContext = ApplicationProvider.getApplicationContext();
         mShadowPowerManager =
                 Shadows.shadowOf((PowerManager) appContext.getSystemService(Context.POWER_SERVICE));

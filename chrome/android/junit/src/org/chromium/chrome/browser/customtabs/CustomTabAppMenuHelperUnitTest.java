@@ -19,6 +19,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -35,7 +36,6 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link CustomTabAppMenuHelper}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class CustomTabAppMenuHelperUnitTest {
     private static final String PACKAGE_NAME = "org.foo.bar";
 
@@ -44,11 +44,12 @@ public class CustomTabAppMenuHelperUnitTest {
     @Mock private Supplier<Profile> mProfileSupplier;
     @Mock private AppMenuCoordinator mAppMenuCoordinator;
     @Mock private AppMenuHandler mAppMenuHandler;
-    @Mock private Activity mActivity;
+    private Activity mActivity;
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
 
     @Before
     public void setUp() {
+        mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         // Testing conditions other than version-specific/flag-controlled ones.
         CustomTabAppMenuHelper.setAppHistoryEnabledForTesting(true);
     }

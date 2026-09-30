@@ -15,6 +15,7 @@ import android.content.res.Resources;
 import android.graphics.RectF;
 import android.util.DisplayMetrics;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,6 +27,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.stubbing.Answer;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -43,7 +45,6 @@ import java.util.Map;
 
 /** Tests for {@link SceneOverlay} interactions. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SceneOverlayTest {
     @Rule public MockitoRule mMockitoJUnit = MockitoJUnit.rule();
     @Mock private Context mContext;
@@ -51,8 +52,6 @@ public class SceneOverlayTest {
     @Mock private Resources mResources;
 
     @Mock private LayoutManagerHost mLayoutManagerHost;
-
-    @Mock private ViewGroup mContainerView;
 
     @Mock private ToolbarThemeColorProvider mToolbarThemeColorProvider;
 
@@ -67,6 +66,7 @@ public class SceneOverlayTest {
     @Mock private SceneOverlay mOverlay6;
     @Mock private Layout mLayout;
 
+    private final ViewGroup mContainerView = new FrameLayout(ContextUtils.getApplicationContext());
     private final DisplayMetrics mDisplayMetrics = new DisplayMetrics();
     private final MonotonicObservableSupplier<TabContentManager> mTabContentManagerSupplier =
             ObservableSuppliers.alwaysNull();

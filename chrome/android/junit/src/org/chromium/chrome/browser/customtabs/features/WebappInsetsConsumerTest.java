@@ -24,6 +24,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer.InsetConsumerSource;
@@ -31,7 +32,6 @@ import org.chromium.ui.insets.InsetObserver.WindowInsetsConsumer.InsetConsumerSo
 /** Tests for {@link WebappInsetsConsumer}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = {Build.VERSION_CODES.R, BaseRobolectricTestRunner.MAX_SDK})
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class WebappInsetsConsumerTest {
     private static final Insets STATUS_BAR_INSETS = Insets.of(0, 100, 0, 0);
     private static final Insets NAV_BAR_INSETS = Insets.of(0, 0, 0, 150);
@@ -41,7 +41,7 @@ public class WebappInsetsConsumerTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private InsetObserver mInsetObserver;
-    @Mock private View mView;
+    private final View mView = new View(ContextUtils.getApplicationContext());
 
     private WebappInsetsConsumer mConsumer;
     private WindowInsetsCompat mWindowInsets;

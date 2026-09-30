@@ -52,6 +52,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
@@ -111,13 +112,7 @@ import java.util.Collections;
 import java.util.List;
 
 /** Tests for {@link TabGroupUiMediator}. */
-// TODO(567604165): Remove mocking of Views / Activities
-@SuppressWarnings({
-    "ResultOfMethodCallIgnored",
-    "ArraysAsListWithZeroOrOneArgument",
-    "unchecked",
-    "DoNotMock"
-})
+@SuppressWarnings({"ResultOfMethodCallIgnored", "ArraysAsListWithZeroOrOneArgument", "unchecked"})
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures(ChromeFeatureList.DATA_SHARING)
 public class TabGroupUiMediatorUnitTest {
@@ -151,7 +146,6 @@ public class TabGroupUiMediatorUnitTest {
     @Mock private LayoutStateProvider mLayoutManager;
     @Spy private TabModel mTabModel;
     @Mock private TabModel mIncognitoTabModel;
-    @Mock private View mView;
     @Mock private TabGridDialogMediator.DialogController mTabGridDialogController;
     @Mock private SharedImageTilesCoordinator mSharedImageTilesCoordinator;
     @Mock private SharedImageTilesConfig.Builder mSharedImageTilesConfigBuilder;
@@ -171,6 +165,7 @@ public class TabGroupUiMediatorUnitTest {
     @Captor private ArgumentCaptor<ThemeColorObserver> mThemeColorObserverCaptor;
     @Captor private ArgumentCaptor<TintObserver> mTintObserverCaptor;
 
+    private final View mView = new View(ContextUtils.getApplicationContext());
     private final SettableMonotonicObservableSupplier<TabModel> mTabModelSupplier =
             ObservableSuppliers.createMonotonic();
     private final SettableNonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier =

@@ -45,6 +45,7 @@ import android.annotation.StringRes;
 import android.app.Activity;
 import android.graphics.Rect;
 import android.graphics.drawable.GradientDrawable;
+import android.os.Bundle;
 import android.os.SystemClock;
 import android.text.Spannable;
 import android.view.MotionEvent;
@@ -64,6 +65,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.DeviceInfo;
@@ -131,6 +133,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncherSupplier;
+import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.util.motion.MotionEventTestUtils;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.list_view.FakeListViewTouchTracker;
@@ -163,6 +166,7 @@ import org.chromium.ui.widget.RectProvider;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -204,7 +208,6 @@ import java.util.function.BiConsumer;
     TabGroupsFeatureMap.UPDATE_TAB_GROUP_COLORS,
     ChromeFeatureList.CLANK_GLIC_CONTEXT_MENU
 })
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class TabContextMenuCoordinatorUnitTest {
     private static final int TAB_ID = 1;
     private static final int TAB_OUTSIDE_OF_GROUP_ID = 2;
@@ -271,6 +274,29 @@ public class TabContextMenuCoordinatorUnitTest {
                     LAST_ACCESSED_TIME,
                     /* closureTime= */ 0);
 
+    /** Activity that records calls to {@link MenuOrKeyboardActionController}. */
+    public static class MenuActionRecordingActivity extends Activity
+            implements MenuOrKeyboardActionController {
+        /** Each entry is [id, fromMenu, menuItemData, triggeringMotion]. */
+        final List<List<Object>> mRecordedCalls = new ArrayList<>();
+
+        @Override
+        public void registerMenuOrKeyboardActionHandler(MenuOrKeyboardActionHandler handler) {}
+
+        @Override
+        public void unregisterMenuOrKeyboardActionHandler(MenuOrKeyboardActionHandler handler) {}
+
+        @Override
+        public boolean onMenuOrKeyboardAction(
+                int id,
+                boolean fromMenu,
+                @Nullable Bundle menuItemData,
+                @Nullable MotionEventInfo triggeringMotion) {
+            mRecordedCalls.add(Arrays.asList(id, fromMenu, menuItemData, triggeringMotion));
+            return true;
+        }
+    }
+
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Rule
@@ -314,7 +340,6 @@ public class TabContextMenuCoordinatorUnitTest {
     @Mock private CollaborationService mCollaborationService;
     @Mock private ServiceStatus mServiceStatus;
     @Mock private WeakReference<Activity> mWeakReferenceActivity;
-    @Mock private View mView;
     @Mock private WebContents mWebContents;
     @Mock private Tab mChromeSchemeTabWithWebContents;
     @Mock private Tab mChromeSchemeTabWithoutWebContents;
@@ -323,6 +348,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Mock private BiConsumer<AnchorInfo, Boolean> mReorderFunction;
 
     private Activity mActivity;
+    private View mView;
     private SettableNonNullObservableSupplier<Integer> mTotalTabCountSupplier;
 
     @Before
@@ -342,6 +368,7 @@ public class TabContextMenuCoordinatorUnitTest {
         MultiWindowUtils.setMultiInstanceApi31EnabledForTesting(true);
 
         mActivityScenarioRule.getScenario().onActivity(activity -> mActivity = activity);
+        mView = new View(mActivity);
         when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardVisibilityDelegate);
         when(mWindowAndroid.getActivity()).thenReturn(mWeakReferenceActivity);
         when(mWeakReferenceActivity.get()).thenReturn(mActivity);
@@ -3353,14 +3380,10 @@ public class TabContextMenuCoordinatorUnitTest {
                 isVerticalTabsEnabled ? TabStripLayoutType.VERTICAL : TabStripLayoutType.HORIZONTAL;
         initializeCoordinatorForTesting(layout);
 
-        Activity mockMenuActivity =
-                Mockito.mock(
-                        Activity.class,
-                        Mockito.withSettings()
-                                .extraInterfaces(MenuOrKeyboardActionController.class));
-        when(mockMenuActivity.getResources()).thenReturn(mActivity.getResources());
+        MenuActionRecordingActivity menuActivity =
+                Robolectric.buildActivity(MenuActionRecordingActivity.class).setup().get();
 
-        // Pass the mock activity controller here.
+        // Pass the menu action controller activity here.
         mOnItemClickedCallback =
                 TabContextMenuCoordinator.getMenuItemClickedCallback(
                         () -> mTabModel,
@@ -3370,7 +3393,7 @@ public class TabContextMenuCoordinatorUnitTest {
                         ObservableSuppliers.createMonotonic(mShareDelegate),
                         () -> mTabBookmarker,
                         mWindowAndroid,
-                        mockMenuActivity,
+                        menuActivity,
                         mSnackbarManager,
                         mActivityResultTracker,
                         mModalDialogManager,
@@ -3412,8 +3435,14 @@ public class TabContextMenuCoordinatorUnitTest {
 
         assertNotNull("Menu item property model should remain intact.", verticalTabsItem.model);
 
-        verify((MenuOrKeyboardActionController) mockMenuActivity, times(1))
-                .onMenuOrKeyboardAction(eq(R.id.toggle_tab_layout_menu_id), eq(false));
+        assertEquals(
+                List.of(
+                        Arrays.asList(
+                                R.id.toggle_tab_layout_menu_id,
+                                /* fromMenu= */ false,
+                                /* menuItemData= */ null,
+                                /* triggeringMotion= */ null)),
+                menuActivity.mRecordedCalls);
     }
 
     @Test
