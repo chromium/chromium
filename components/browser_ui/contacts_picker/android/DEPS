@@ -2,5 +2,10 @@ include_rules = [
   "+components/browser_ui/widget/android",
   "+content/public/android",
   "+content/public/test/android",
+  "+services/data_decoder/public/cpp",
+  "+services/data_decoder/public/mojom",
+  "+skia/ext",
+  "+third_party/skia",
   "+ui/android",
+  "+ui/gfx",
 ]

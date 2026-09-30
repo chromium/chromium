@@ -13,7 +13,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
@@ -28,7 +27,9 @@ import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
@@ -61,10 +62,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.Callable;
-import java.util.concurrent.CancellationException;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * A class for keeping track of common data associated with showing contact details in the contacts
@@ -475,40 +473,24 @@ public class PickerCategoryView extends OptimizedFrameLayout
                         return;
                     }
 
-                    SystemContactsWorkerTask workerTask =
-                            new SystemContactsWorkerTask(
-                                    getContext().getContentResolver(), sessionUri);
                     WeakReference<PickerCategoryView> viewRef = new WeakReference<>(this);
-                    FutureTask<SystemContactsWorkerTask.Result> futureTask =
-                            new FutureTask<SystemContactsWorkerTask.Result>(workerTask) {
-                                @Override
-                                protected void done() {
-                                    try {
-                                        SystemContactsWorkerTask.Result result = get();
-                                        PostTask.postTask(
-                                                TaskTraits.UI_DEFAULT,
-                                                () -> {
-                                                    PickerCategoryView view = viewRef.get();
-                                                    if (view == null) return;
-                                                    for (Map.Entry<String, Bitmap> entry :
-                                                            result.bitmaps.entrySet()) {
-                                                        view.getIconCache()
-                                                                .putBitmap(
-                                                                        entry.getKey(),
-                                                                        entry.getValue());
-                                                    }
-                                                    view.onSystemContactsRetrieved(result.contacts);
-                                                });
-                                    } catch (CancellationException e) {
-                                        // Ignore
-                                    } catch (ExecutionException e) {
-                                        throw new RuntimeException(e);
-                                    } catch (InterruptedException e) {
-                                        // Ignore
-                                    }
+                    int iconSize =
+                            getContext()
+                                    .getResources()
+                                    .getDimensionPixelSize(R.dimen.contact_picker_icon_size);
+                    SystemContactsWorkerTask.load(
+                            getContext().getContentResolver(),
+                            sessionUri,
+                            iconSize,
+                            (result) -> {
+                                PickerCategoryView view = viewRef.get();
+                                if (view == null) return;
+                                for (Map.Entry<String, @Nullable Bitmap> entry :
+                                        result.bitmaps.entrySet()) {
+                                    view.getIconCache().putBitmap(entry.getKey(), entry.getValue());
                                 }
-                            };
-                    PostTask.postTask(TaskTraits.USER_VISIBLE_MAY_BLOCK, futureTask);
+                                view.onSystemContactsRetrieved(result.contacts);
+                            });
                 },
                 null);
     }
@@ -544,7 +526,7 @@ public class PickerCategoryView extends OptimizedFrameLayout
         public final List<PaymentAddress> addresses = new ArrayList<>();
         public byte @Nullable [] photoBytes;
 
-        public ContactDetailsBuilder(String id, String displayName) {
+        public ContactDetailsBuilder(String id, @Nullable String displayName) {
             this.id = id;
             if (displayName != null) this.displayName = displayName;
         }
@@ -554,14 +536,25 @@ public class PickerCategoryView extends OptimizedFrameLayout
         }
     }
 
-    static class SystemContactsWorkerTask implements Callable<SystemContactsWorkerTask.Result> {
+    static class SystemContactsWorkerTask {
         public static class Result {
             public final List<ContactDetails> contacts;
-            public final Map<String, Bitmap> bitmaps;
+            public final Map<String, @Nullable Bitmap> bitmaps;
 
-            public Result(List<ContactDetails> contacts, Map<String, Bitmap> bitmaps) {
+            public Result(List<ContactDetails> contacts, Map<String, @Nullable Bitmap> bitmaps) {
                 this.contacts = contacts;
                 this.bitmaps = bitmaps;
+            }
+        }
+
+        static class RawResult {
+            public final List<ContactDetails> contacts;
+            public final Map<String, byte @Nullable []> rawPhotos;
+
+            public RawResult(
+                    List<ContactDetails> contacts, Map<String, byte @Nullable []> rawPhotos) {
+                this.contacts = contacts;
+                this.rawPhotos = rawPhotos;
             }
         }
 
@@ -573,12 +566,39 @@ public class PickerCategoryView extends OptimizedFrameLayout
             mSessionUri = sessionUri;
         }
 
-        @Override
-        public Result call() throws Exception {
+        /**
+         * Loads contacts and decodes avatar bitmaps out-of-process.
+         *
+         * @param contentResolver The ContentResolver to query.
+         * @param sessionUri The session URI to query.
+         * @param iconSize The desired avatar thumbnail size.
+         * @param callback The callback invoked on the UI thread when complete.
+         */
+        public static void load(
+                ContentResolver contentResolver,
+                Uri sessionUri,
+                int iconSize,
+                Callback<Result> callback) {
+            ThreadUtils.assertOnUiThread();
+            SystemContactsWorkerTask task =
+                    new SystemContactsWorkerTask(contentResolver, sessionUri);
+            PostTask.postTask(
+                    TaskTraits.USER_VISIBLE_MAY_BLOCK,
+                    () -> {
+                        RawResult rawResult = task.queryRawContacts();
+                        PostTask.postTask(
+                                TaskTraits.UI_DEFAULT,
+                                () -> {
+                                    task.decodeBitmapsAndComplete(rawResult, iconSize, callback);
+                                });
+                    });
+        }
+
+        RawResult queryRawContacts() {
             Map<String, ContactDetailsBuilder> builders = new LinkedHashMap<>();
             try (Cursor cursor = mContentResolver.query(mSessionUri, null, null, null, null)) {
                 if (cursor == null) {
-                    return new Result(Collections.emptyList(), Collections.emptyMap());
+                    return new RawResult(Collections.emptyList(), Collections.emptyMap());
                 }
 
                 int idColumn = cursor.getColumnIndexOrThrow(ContactsContract.Data.CONTACT_ID);
@@ -644,36 +664,72 @@ public class PickerCategoryView extends OptimizedFrameLayout
                             ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE)) {
                         int photoIdx =
                                 cursor.getColumnIndex(ContactsContract.CommonDataKinds.Photo.PHOTO);
-                        byte[] photo = photoIdx != -1 ? cursor.getBlob(photoIdx) : null;
-                        // Cap the photo size at 1 MB to prevent OutOfMemoryErrors from malicious
-                        // or excessively large blobs.
-                        if (photo != null && photo.length <= 1024 * 1024) {
-                            builder.photoBytes = photo;
+                        try {
+                            byte @Nullable [] photo =
+                                    photoIdx != -1 ? cursor.getBlob(photoIdx) : null;
+                            // Cap the photo size at 1 MB to prevent OutOfMemoryErrors from
+                            // malicious or excessively large blobs.
+                            if (photo != null
+                                    && photo.length
+                                            <= ContactsPickerImageDecoder.MAX_IMAGE_SIZE_BYTES) {
+                                builder.photoBytes = photo;
+                            }
+                        } catch (Exception e) {
+                            Log.w(TAG, "Error reading contact photo blob", e);
                         }
                     }
                 }
             } catch (Exception e) {
                 Log.e(TAG, "Error querying system picker results", e);
-                return new Result(Collections.emptyList(), Collections.emptyMap());
+                return new RawResult(Collections.emptyList(), Collections.emptyMap());
             }
 
             List<ContactDetails> contacts = new ArrayList<>();
-            Map<String, Bitmap> bitmaps = new LinkedHashMap<>();
+            Map<String, byte @Nullable []> rawPhotos = new LinkedHashMap<>();
             for (ContactDetailsBuilder builder : builders.values()) {
                 contacts.add(builder.build());
-                Bitmap bitmap = null;
-                if (builder.photoBytes != null && builder.photoBytes.length > 0) {
-                    try {
-                        bitmap =
-                                BitmapFactory.decodeByteArray(
-                                        builder.photoBytes, 0, builder.photoBytes.length);
-                    } catch (OutOfMemoryError e) {
-                        Log.e(TAG, "OutOfMemoryError while decoding contact photo");
-                    }
-                }
-                bitmaps.put(builder.id, bitmap);
+                rawPhotos.put(builder.id, builder.photoBytes);
             }
-            return new Result(contacts, bitmaps);
+            return new RawResult(contacts, rawPhotos);
+        }
+
+        void decodeBitmapsAndComplete(
+                RawResult rawResult, int iconSize, Callback<Result> callback) {
+            ThreadUtils.assertOnUiThread();
+            Map<String, @Nullable Bitmap> bitmaps = new LinkedHashMap<>();
+            for (String id : rawResult.rawPhotos.keySet()) {
+                bitmaps.put(id, null);
+            }
+
+            int decodesToPerform = 0;
+            for (byte @Nullable [] photoBytes : rawResult.rawPhotos.values()) {
+                if (photoBytes != null && photoBytes.length > 0) {
+                    decodesToPerform++;
+                }
+            }
+
+            if (decodesToPerform == 0) {
+                callback.onResult(new Result(rawResult.contacts, bitmaps));
+                return;
+            }
+
+            final List<ContactDetails> contacts = rawResult.contacts;
+            AtomicInteger pendingDecodes = new AtomicInteger(decodesToPerform);
+            for (Map.Entry<String, byte @Nullable []> entry : rawResult.rawPhotos.entrySet()) {
+                byte @Nullable [] photoBytes = entry.getValue();
+                if (photoBytes != null && photoBytes.length > 0) {
+                    String contactId = entry.getKey();
+                    ContactsPickerImageDecoder.decodeImage(
+                            photoBytes,
+                            iconSize,
+                            (bitmap) -> {
+                                bitmaps.put(contactId, bitmap);
+                                if (pendingDecodes.decrementAndGet() == 0) {
+                                    callback.onResult(new Result(contacts, bitmaps));
+                                }
+                            });
+                }
+            }
         }
 
         private PaymentAddress createAddress(

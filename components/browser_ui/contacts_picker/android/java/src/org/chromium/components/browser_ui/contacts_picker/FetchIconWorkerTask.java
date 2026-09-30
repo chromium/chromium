@@ -7,8 +7,6 @@ package org.chromium.components.browser_ui.contacts_picker;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.provider.ContactsContract;
 
@@ -18,11 +16,9 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.ContactsFetcher;
 
-import java.io.ByteArrayInputStream;
-
 /** A worker task to retrieve images for contacts. */
 @NullMarked
-class FetchIconWorkerTask extends AsyncTask<@Nullable Bitmap> {
+class FetchIconWorkerTask extends AsyncTask<byte @Nullable []> {
     // The ID of the contact to look up.
     private final String mContactId;
 
@@ -67,40 +63,40 @@ class FetchIconWorkerTask extends AsyncTask<@Nullable Bitmap> {
     /**
      * Fetches the icon of a particular contact (in a background thread).
      *
-     * @return The icon representing a contact (returned as Bitmap).
+     * @return The icon data representing a contact (returned as byte[]).
      */
     @Override
-    protected @Nullable Bitmap doInBackground() {
+    protected byte @Nullable [] doInBackground() {
         assert !ThreadUtils.runningOnUiThread();
 
         if (isCancelled()) return null;
 
-        Uri contactUri =
-                ContentUris.withAppendedId(
-                        ContactsContract.Contacts.CONTENT_URI, Long.parseLong(mContactId));
-        Uri photoUri =
-                Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
-        Cursor cursor =
-                mContentResolver.query(
-                        photoUri,
-                        new String[] {ContactsContract.Contacts.Photo.PHOTO},
-                        null,
-                        null,
-                        null);
-        if (cursor == null) return null;
         try {
-            if (cursor.moveToFirst()) {
-                byte[] data = cursor.getBlob(0);
-                if (data != null) {
-                    Bitmap icon = BitmapFactory.decodeStream(new ByteArrayInputStream(data));
-                    return mDesiredIconSize > 0
-                            ? Bitmap.createScaledBitmap(
-                                    icon, mDesiredIconSize, mDesiredIconSize, true)
-                            : icon;
+            Uri contactUri =
+                    ContentUris.withAppendedId(
+                            ContactsContract.Contacts.CONTENT_URI, Long.parseLong(mContactId));
+            Uri photoUri =
+                    Uri.withAppendedPath(
+                            contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
+            try (Cursor cursor =
+                    mContentResolver.query(
+                            photoUri,
+                            new String[] {ContactsContract.Contacts.Photo.PHOTO},
+                            null,
+                            null,
+                            null)) {
+                if (cursor != null && cursor.moveToFirst()) {
+                    byte @Nullable [] data = cursor.getBlob(0);
+                    // Cap the photo size at 1 MB to prevent excessive memory usage.
+                    if (data != null
+                            && data.length <= ContactsPickerImageDecoder.MAX_IMAGE_SIZE_BYTES) {
+                        return data;
+                    }
                 }
             }
-        } finally {
-            cursor.close();
+        } catch (Exception e) {
+            // Guard against SecurityException or SQLiteBlobTooBigException.
+            return null;
         }
         return null;
     }
@@ -108,14 +104,29 @@ class FetchIconWorkerTask extends AsyncTask<@Nullable Bitmap> {
     /**
      * Communicates the results back to the client. Called on the UI thread.
      *
-     * @param icon The icon retrieved.
+     * @param data The icon byte data retrieved.
      */
     @Override
-    protected void onPostExecute(@Nullable Bitmap icon) {
+    protected void onPostExecute(byte @Nullable [] data) {
         assert ThreadUtils.runningOnUiThread();
 
-        if (isCancelled()) return;
+        if (isCancelled()) {
+            return;
+        }
 
-        mCallback.iconRetrieved(icon, mContactId);
+        if (data == null || data.length == 0) {
+            mCallback.iconRetrieved(null, mContactId);
+            return;
+        }
+
+        ContactsPickerImageDecoder.decodeImage(
+                data,
+                mDesiredIconSize,
+                (bitmap) -> {
+                    if (isCancelled()) {
+                        return;
+                    }
+                    mCallback.iconRetrieved(bitmap, mContactId);
+                });
     }
 }

@@ -8,12 +8,29 @@ import("//third_party/jni_zero/jni_zero.gni")
 source_set("android") {
   sources = [
     "contacts_picker_feature_map.cc",
+    "contacts_picker_image_decoder.cc",
+    "contacts_picker_image_decoder.h",
     "features.cc",
     "features.h",
   ]
+  public_deps = [ "//skia" ]
   deps = [
     ":contacts_picker_jni_headers",
     "//base",
+    "//services/data_decoder/public/cpp",
+    "//services/data_decoder/public/mojom",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "contacts_picker_image_decoder_unittest.cc" ]
+  deps = [
+    ":android",
+    "//skia",
+    "//testing/gtest",
   ]
 }
 
@@ -29,6 +46,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/contacts_picker/ContactsPickerDialog.java",
     "java/src/org/chromium/components/browser_ui/contacts_picker/ContactsPickerFeatureList.java",
     "java/src/org/chromium/components/browser_ui/contacts_picker/ContactsPickerFeatureMap.java",
+    "java/src/org/chromium/components/browser_ui/contacts_picker/ContactsPickerImageDecoder.java",
     "java/src/org/chromium/components/browser_ui/contacts_picker/ContactsPickerToolbar.java",
     "java/src/org/chromium/components/browser_ui/contacts_picker/FetchIconWorkerTask.java",
     "java/src/org/chromium/components/browser_ui/contacts_picker/PickerAdapter.java",
@@ -60,7 +78,10 @@ android_library("java") {
 }
 
 generate_jni("contacts_picker_jni_headers") {
-  sources = [ "java/src/org/chromium/components/browser_ui/contacts_picker/ContactsPickerFeatureMap.java" ]
+  sources = [
+    "java/src/org/chromium/components/browser_ui/contacts_picker/ContactsPickerFeatureMap.java",
+    "java/src/org/chromium/components/browser_ui/contacts_picker/ContactsPickerImageDecoder.java",
+  ]
 }
 
 android_resources("java_resources") {
@@ -87,6 +108,24 @@ android_resources("java_resources") {
   ]
 }
 
+robolectric_library("junit") {
+  sources = [
+    "java/src/org/chromium/components/browser_ui/contacts_picker/FetchIconWorkerTaskTest.java",
+    "java/src/org/chromium/components/browser_ui/contacts_picker/SystemContactsWorkerTaskTest.java",
+  ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_junit_test_support",
+    "//build/android:build_java",
+    "//components/payments/mojom:mojom_java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}
+
 android_library("unit_device_javatests") {
   testonly = true
 
@@ -96,7 +135,6 @@ android_library("unit_device_javatests") {
     "java/src/org/chromium/components/browser_ui/contacts_picker/ContactsFetcherTestImpl.java",
     "java/src/org/chromium/components/browser_ui/contacts_picker/ContactsPickerDialogTest.java",
     "java/src/org/chromium/components/browser_ui/contacts_picker/SystemContactsPickerTest.java",
-    "java/src/org/chromium/components/browser_ui/contacts_picker/SystemContactsWorkerTaskTest.java",
   ]
   deps = [
     ":java",
