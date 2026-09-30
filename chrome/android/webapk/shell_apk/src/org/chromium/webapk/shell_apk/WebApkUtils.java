@@ -305,8 +305,15 @@ public class WebApkUtils {
             }
         }
         for (Uri uri : uris) {
-            context.grantUriPermission(
-                    params.getHostBrowserPackageName(), uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            if (uri == null) continue;
+            try {
+                context.grantUriPermission(
+                        params.getHostBrowserPackageName(),
+                        uri,
+                        Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            } catch (SecurityException e) {
+                Log.w(TAG, "Unable to grant Uri permission", e);
+            }
         }
     }
 
