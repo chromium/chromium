@@ -8645,6 +8645,8 @@
                     "enable_features": [
                         "ActorPageToolTimeout",
                         "GlicActor",
+                        "GlicActorEligibleTiers",
+                        "GlicActorEnterprisePrefDefault",
                         "GlicActorUi"
                     ]
                 },
@@ -8657,6 +8659,8 @@
                     },
                     "enable_features": [
                         "GlicActor",
+                        "GlicActorEligibleTiers",
+                        "GlicActorEnterprisePrefDefault",
                         "GlicActorUi"
                     ]
                 }

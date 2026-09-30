@@ -4654,12 +4654,15 @@ IN_PROC_BROWSER_TEST_P(GlicApiTest,
 class GlicApiTestWithGeminiActOnWebPolicy : public GlicApiTest {
  public:
   GlicApiTestWithGeminiActOnWebPolicy() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGlicActor,
-        {{features::kGlicActorEnterprisePrefDefault.name,
-          features::kGlicActorEnterprisePrefDefault.GetName(
-              features::GlicActorEnterprisePrefDefault::kDisabledByDefault)},
-         {features::kGlicActorPolicyControlExemption.name, "false"}});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicActor,
+          {{features::kGlicActorPolicyControlExemption.name, "false"}}},
+         {features::kGlicActorEnterprisePrefDefault,
+          {{features::kGlicActorEnterprisePrefDefaultParam.name,
+            features::kGlicActorEnterprisePrefDefaultParam.GetName(
+                features::GlicActorEnterprisePrefDefault::
+                    kDisabledByDefault)}}}},
+        {});
   }
   ~GlicApiTestWithGeminiActOnWebPolicy() override = default;
 

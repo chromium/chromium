@@ -147,6 +147,29 @@ const base::flat_set<int32_t>& GetGlicTieredRolloutV2EligibleTiers() {
   return *eligible_tiers;
 }
 
+BASE_FEATURE(kGlicActorEligibleTiers, FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);
+const base::FeatureParam<std::string> kGlicActorEligibleTiersParam{
+    &kGlicActorEligibleTiers, "glic-actor-eligible-tiers", "1,2"};
+
+BASE_FEATURE(kGlicActorEnterprisePrefDefault,
+             FEATURE_ENABLED_BY_DEFAULT_ALL_PLATFORMS);
+
+constexpr base::FeatureParam<GlicActorEnterprisePrefDefault>::Option
+    kGlicActorEnterprisePrefDefaultOptions[] = {
+        {GlicActorEnterprisePrefDefault::kEnabledByDefault,
+         "enabled_by_default"},
+        {GlicActorEnterprisePrefDefault::kDisabledByDefault,
+         "disabled_by_default"},
+        {GlicActorEnterprisePrefDefault::kForcedDisabled, "forced_disabled"},
+};
+
+BASE_FEATURE_ENUM_PARAM(GlicActorEnterprisePrefDefault,
+                        kGlicActorEnterprisePrefDefaultParam,
+                        &kGlicActorEnterprisePrefDefault,
+                        "glic_actor_enterprise_pref_default",
+                        GlicActorEnterprisePrefDefault::kDisabledByDefault,
+                        &kGlicActorEnterprisePrefDefaultOptions);
+
 namespace {
 
 base::flat_set<std::string> ParseBenefitList(const std::string& benefit_list) {

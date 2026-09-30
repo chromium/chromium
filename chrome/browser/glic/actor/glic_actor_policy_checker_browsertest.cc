@@ -26,6 +26,7 @@
 #include "chrome/browser/glic/actor/glic_actor_test_util.h"
 #include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_browser_test.h"
@@ -260,8 +261,9 @@ class GlicActorPolicyCheckerBrowserTestNonManagedBrowser
   GlicActorPolicyCheckerBrowserTestNonManagedBrowser() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features = */
-        {{features::kGlicActor,
-          {{features::kGlicActorEligibleTiers.name,
+        {{features::kGlicActor, {}},
+         {features::kGlicActorEligibleTiers,
+          {{features::kGlicActorEligibleTiersParam.name,
             base::ToString(kAllowedTier)}}}},
         /* disabled_features = */ {});
   }
@@ -359,9 +361,10 @@ class GlicActorPolicyCheckerBrowserTestManagedBrowser
     // by the policy value.
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features = */
-        {{features::kGlicActor,
-          {{features::kGlicActorEnterprisePrefDefault.name,
-            features::kGlicActorEnterprisePrefDefault.GetName(
+        {{features::kGlicActor, {}},
+         {features::kGlicActorEnterprisePrefDefault,
+          {{features::kGlicActorEnterprisePrefDefaultParam.name,
+            features::kGlicActorEnterprisePrefDefaultParam.GetName(
                 features::GlicActorEnterprisePrefDefault::
                     kDisabledByDefault)}}}},
         /* disabled_features = */ {});
@@ -839,9 +842,10 @@ class GlicActorPolicyCheckerBrowserTestManagedWithForcedDisabledDefaultPref
   GlicActorPolicyCheckerBrowserTestManagedWithForcedDisabledDefaultPref() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features = */
-        {{features::kGlicActor,
-          {{features::kGlicActorEnterprisePrefDefault.name,
-            features::kGlicActorEnterprisePrefDefault.GetName(
+        {{features::kGlicActor, {}},
+         {features::kGlicActorEnterprisePrefDefault,
+          {{features::kGlicActorEnterprisePrefDefaultParam.name,
+            features::kGlicActorEnterprisePrefDefaultParam.GetName(
                 features::GlicActorEnterprisePrefDefault::kForcedDisabled)}}}},
         /* disabled_features = */ {});
   }
@@ -872,9 +876,10 @@ class GlicActorPolicyCheckerBrowserTestManagedPolicyNotSet
   GlicActorPolicyCheckerBrowserTestManagedPolicyNotSet() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features = */
-        {{features::kGlicActor,
-          {{features::kGlicActorEnterprisePrefDefault.name,
-            features::kGlicActorEnterprisePrefDefault.GetName(
+        {{features::kGlicActor, {}},
+         {features::kGlicActorEnterprisePrefDefault,
+          {{features::kGlicActorEnterprisePrefDefaultParam.name,
+            features::kGlicActorEnterprisePrefDefaultParam.GetName(
                 features::GlicActorEnterprisePrefDefault::
                     kDisabledByDefault)}}}},
         /* disabled_features = */ {});
@@ -911,9 +916,10 @@ class GlicActorPolicyCheckerBrowserTestManagedPolicyChangesCapability
   GlicActorPolicyCheckerBrowserTestManagedPolicyChangesCapability() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features = */
-        {{features::kGlicActor,
-          {{features::kGlicActorEnterprisePrefDefault.name,
-            features::kGlicActorEnterprisePrefDefault.GetName(
+        {{features::kGlicActor, {}},
+         {features::kGlicActorEnterprisePrefDefault,
+          {{features::kGlicActorEnterprisePrefDefaultParam.name,
+            features::kGlicActorEnterprisePrefDefaultParam.GetName(
                 features::GlicActorEnterprisePrefDefault::
                     kDisabledByDefault)}}}},
         /* disabled_features = */ {});
@@ -950,15 +956,17 @@ class GlicActorPolicyCheckerBrowserTestWithManagedAccount
   GlicActorPolicyCheckerBrowserTestWithManagedAccount() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features = */
-        {{features::kGlicActor,
-          {{features::kGlicActorEnterprisePrefDefault.name,
-            features::kGlicActorEnterprisePrefDefault.GetName(
+        {{features::kGlicActor, {}},
+         {features::kGlicActorEnterprisePrefDefault,
+          {{features::kGlicActorEnterprisePrefDefaultParam.name,
+            features::kGlicActorEnterprisePrefDefaultParam.GetName(
                 IsPolicyDefaultPrefEnabled()
                     ? features::GlicActorEnterprisePrefDefault::
                           kEnabledByDefault
                     : features::GlicActorEnterprisePrefDefault::
-                          kDisabledByDefault)},
-           {features::kGlicActorEligibleTiers.name,
+                          kDisabledByDefault)}}},
+         {features::kGlicActorEligibleTiers,
+          {{features::kGlicActorEligibleTiersParam.name,
             base::ToString(kAllowedTier)}}}},
         /* disabled_features = */ {});
   }
@@ -1118,8 +1126,9 @@ class GlicApiActorPolicyCheckerBrowserTest
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features = */
         {{features::kGlicActor,
-          {{features::kGlicActorPolicyControlExemption.name, "false"},
-           {features::kGlicActorEligibleTiers.name, "1"}}}},
+          {{features::kGlicActorPolicyControlExemption.name, "false"}}},
+         {features::kGlicActorEligibleTiers,
+          {{features::kGlicActorEligibleTiersParam.name, "1"}}}},
         /* disabled_features = */ {});
   }
   ~GlicApiActorPolicyCheckerBrowserTest() override = default;
@@ -1368,8 +1377,9 @@ class GlicApiActorPolicyCheckerBrowserTestExemption
     scoped_feature_list_.InitWithFeaturesAndParameters(
         /* enabled_features = */
         {{features::kGlicActor,
-          {{features::kGlicActorPolicyControlExemption.name, "true"},
-           {features::kGlicActorEligibleTiers.name, "1"}}}},
+          {{features::kGlicActorPolicyControlExemption.name, "true"}}},
+         {features::kGlicActorEligibleTiers,
+          {{features::kGlicActorEligibleTiersParam.name, "1"}}}},
         /* disabled_features = */ {});
   }
   ~GlicApiActorPolicyCheckerBrowserTestExemption() override = default;

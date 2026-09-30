@@ -772,7 +772,6 @@ class SettingsGlicSubPageWebActuationTableTest
     const WebActuationTestParams& p = GetParam();
 
     base::FieldTrialParams actor_params;
-    actor_params[features::kGlicActorEligibleTiers.name] = p.eligible_tiers;
     actor_params[features::kGlicActorPolicyControlExemption.name] =
         p.policy_control_exemption ? "true" : "false";
 
@@ -795,6 +794,9 @@ class SettingsGlicSubPageWebActuationTableTest
     }
 
     enabled.emplace_back(features::kGlicActor, actor_params);
+    enabled.push_back(
+        {features::kGlicActorEligibleTiers,
+         {{features::kGlicActorEligibleTiersParam.name, p.eligible_tiers}}});
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled, disabled);
   }
 

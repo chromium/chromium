@@ -126,7 +126,7 @@ bool ActuationEnabledForManagedUser(Profile& profile,
                                     actor::AggregatedJournal& journal,
                                     bool emit_metric) {
   features::GlicActorEnterprisePrefDefault default_pref =
-      features::kGlicActorEnterprisePrefDefault.Get();
+      features::kGlicActorEnterprisePrefDefaultParam.Get();
   auto* pref_service = profile.GetPrefs();
   CHECK(pref_service);
 
@@ -209,7 +209,7 @@ bool AccountHasChromeBenefits(Profile& profile,
       GURL(), actor::TaskId(), "AccountHasChromeBenefits",
       actor::JournalDetailsBuilder()
           .Add("subscription_tier", subscription_tier)
-          .Add("eligible_tiers", features::kGlicActorEligibleTiers.Get())
+          .Add("eligible_tiers", features::kGlicActorEligibleTiersParam.Get())
           .Add("subscription_benefits", subscription_benefits_str)
           .Build());
   return eligible_tiers.contains(subscription_tier);
@@ -263,7 +263,7 @@ GlicActorPolicyChecker::~GlicActorPolicyChecker() = default;
 // static
 const base::flat_set<int32_t>& GlicActorPolicyChecker::GetActorEligibleTiers() {
   static const base::NoDestructor<base::flat_set<int32_t>> eligible_tiers([] {
-    std::string tier_list = features::kGlicActorEligibleTiers.Get();
+    std::string tier_list = features::kGlicActorEligibleTiersParam.Get();
     std::vector<std::string_view> tier_pieces = base::SplitStringPiece(
         tier_list, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     base::flat_set<int32_t> tiers;
@@ -458,7 +458,7 @@ GlicActorPolicyChecker::ComputeActOnWebCapability(bool disable_for_enterprise) {
       // over a domain requires management). Fallback to the default policy pref
       // value. This should be extremely rare.
       bool default_pref_enabled =
-          features::kGlicActorEnterprisePrefDefault.Get() ==
+          features::kGlicActorEnterprisePrefDefaultParam.Get() ==
           features::GlicActorEnterprisePrefDefault::kEnabledByDefault;
       if (default_pref_enabled) {
         return log_and_return(
