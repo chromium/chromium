@@ -1124,29 +1124,29 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") UncheckedIterator {
   }
 
   UNSAFE_BUFFER_USAGE UncheckedIterator& operator++() {
-    CheckModifications();
+    DCheckModifications();
     ++current_;
     return *this;
   }
   UNSAFE_BUFFER_USAGE UncheckedIterator operator++(int) {
-    CheckModifications();
+    DCheckModifications();
     auto old = *this;
     ++current_;
     return old;
   }
   UNSAFE_BUFFER_USAGE UncheckedIterator& operator--() {
-    CheckModifications();
+    DCheckModifications();
     --current_;
     return *this;
   }
   UNSAFE_BUFFER_USAGE UncheckedIterator operator--(int) {
-    CheckModifications();
+    DCheckModifications();
     auto old = *this;
     --current_;
     return old;
   }
   UNSAFE_BUFFER_USAGE UncheckedIterator& operator+=(difference_type rhs) {
-    CheckModifications();
+    DCheckModifications();
     current_ += rhs;
     return *this;
   }
@@ -1161,7 +1161,7 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") UncheckedIterator {
     return rhs + lhs;
   }
   UNSAFE_BUFFER_USAGE UncheckedIterator& operator-=(difference_type rhs) {
-    CheckModifications();
+    DCheckModifications();
     current_ -= rhs;
     return *this;
   }
@@ -1194,6 +1194,12 @@ class GC_PLUGIN_IGNORE("crbug.com/428987863") UncheckedIterator {
   }
 
  private:
+  ALWAYS_INLINE void DCheckModifications() const {
+#if DCHECK_IS_ON()
+    CheckModifications();
+#endif
+  }
+
   ALWAYS_INLINE void CheckModifications() const {
     if constexpr (kCheckModifications) {
       if (modification_state_.modifications_ptr) {
