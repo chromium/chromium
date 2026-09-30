@@ -8817,7 +8817,7 @@
   {
     "name": "safety-check-unused-site-permissions",
     "owners": ["sideyilmaz@chromium.org"],
-    "expiry_milestone": 136
+    "expiry_milestone": 170
   },
   {
     "name": "safety-fre-promo",
@@ -8833,7 +8833,7 @@
       "olesiamarukhno@google.com",
       "antoniosartori@chromium.org"
     ],
-    "expiry_milestone": 143
+    "expiry_milestone": 170
   },
   {
     "name": "safety-hub-local-passwords-module",
@@ -8842,7 +8842,7 @@
       "sideyilmaz@chromium.org",
       "chrome-browser-privacy-team@google.com"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 170
   },
   {
     "name": "safety-hub-unified-passwords-module",
@@ -8851,7 +8851,7 @@
       "sideyilmaz@chromium.org",
       "chrome-browser-privacy-team@google.com"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 170
   },
   {
     "name": "safety-hub-unused-permission-revocation-for-all-surfaces",
@@ -8860,7 +8860,7 @@
       "fsenra@google.com",
       "chrome-browser-privacy-team@google.com"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 170
   },
   {
     "name": "safety-hub-weak-reused-passwords",
@@ -8869,7 +8869,7 @@
       "sideyilmaz@chromium.org",
       "chrome-browser-privacy-team@google.com"
     ],
-    "expiry_milestone": 150
+    "expiry_milestone": 170
   },
   {
     "name": "schedule-window-cleaning",
