@@ -161,10 +161,11 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
 - (UIBarButtonItem*)deleteButton {
   if (!_deleteButton) {
     _deleteButton = [[UIBarButtonItem alloc]
-        initWithTitle:l10n_util::GetNSString(IDS_IOS_SETTINGS_TOOLBAR_DELETE)
-                style:UIBarButtonItemStylePlain
-               target:self
-               action:@selector(deleteButtonCallback)];
+        initWithBarButtonSystemItem:UIBarButtonSystemItemTrash
+                             target:self
+                             action:@selector(deleteButtonCallback)];
+    _deleteButton.accessibilityLabel =
+        l10n_util::GetNSString(IDS_IOS_SETTINGS_TOOLBAR_DELETE);
     _deleteButton.accessibilityIdentifier = kSettingsToolbarDeleteButtonId;
     _deleteButton.tintColor = [UIColor colorNamed:kRedColor];
   }
