@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions.base;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.clearInvocations;
@@ -11,6 +12,7 @@ import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
+import android.content.Context;
 import android.view.KeyEvent;
 import android.view.View;
 
@@ -18,7 +20,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
@@ -29,19 +30,36 @@ import org.chromium.chrome.browser.omnibox.suggestions.RecyclerViewSelectionCont
 
 /** Tests for {@link ActionChipsView}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class ActionChipsViewUnitTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
+    private static class TestActionChipsView extends ActionChipsView {
+        int mSuperOnKeyDownCalls;
+
+        TestActionChipsView(Context context) {
+            super(context);
+        }
+
+        @Override
+        public boolean superOnKeyDown(int keyCode, KeyEvent event) {
+            mSuperOnKeyDownCalls++;
+            return super.superOnKeyDown(keyCode, event);
+        }
+    }
+
     @Mock private RecyclerViewSelectionController mController;
-    @Mock private View mChild;
-    @Spy private ActionChipsView mView = new ActionChipsView(ContextUtils.getApplicationContext());
+    @Mock private View.OnClickListener mOnClickListener;
+
+    private final View mChild = new View(ContextUtils.getApplicationContext());
+    private final TestActionChipsView mView =
+            new TestActionChipsView(ContextUtils.getApplicationContext());
 
     private void installAdapter() {
+        mChild.setOnClickListener(mOnClickListener);
         mView.setSelectionControllerForTesting(mController);
         clearInvocations(mController);
-        clearInvocations(mView);
+        mView.mSuperOnKeyDownCalls = 0;
     }
 
     @Test
@@ -95,9 +113,7 @@ public class ActionChipsViewUnitTest {
         var event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER);
         assertFalse(event.dispatch(mView));
 
-        verify(mView).onKeyDown(event.getKeyCode(), event);
-        verify(mView).superOnKeyDown(event.getKeyCode(), event);
-        verifyNoMoreInteractions(mView);
+        assertEquals(1, mView.mSuperOnKeyDownCalls);
 
         verify(mController).getSelectedView();
         verifyNoMoreInteractions(mController);
@@ -108,15 +124,12 @@ public class ActionChipsViewUnitTest {
         installAdapter();
 
         doReturn(mChild).when(mController).getSelectedView();
-        doReturn(true).when(mChild).performClick();
-        clearInvocations(mView);
 
         var event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_ENTER);
         assertTrue(event.dispatch(mView));
 
-        verify(mChild).performClick();
-        verify(mView).onKeyDown(event.getKeyCode(), event);
-        verifyNoMoreInteractions(mView);
+        verify(mOnClickListener).onClick(mChild);
+        assertEquals(0, mView.mSuperOnKeyDownCalls);
 
         verify(mController).getSelectedView();
         verifyNoMoreInteractions(mController);
@@ -129,9 +142,7 @@ public class ActionChipsViewUnitTest {
         var event = new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_T);
         assertFalse(event.dispatch(mView));
 
-        verify(mView).onKeyDown(KeyEvent.KEYCODE_T, event);
-        verify(mView).superOnKeyDown(KeyEvent.KEYCODE_T, event);
-        verifyNoMoreInteractions(mView);
+        assertEquals(1, mView.mSuperOnKeyDownCalls);
 
         verifyNoMoreInteractions(mController);
     }
