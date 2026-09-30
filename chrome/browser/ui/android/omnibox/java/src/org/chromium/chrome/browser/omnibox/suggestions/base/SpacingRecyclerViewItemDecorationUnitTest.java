@@ -7,9 +7,9 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
 
+import android.content.Context;
 import android.graphics.Rect;
 import android.view.View;
 
@@ -24,11 +24,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
 /** Tests for {@link SpacingRecyclerViewItemDecoration}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class SpacingRecyclerViewItemDecorationUnitTest {
     private static final int LEAD_IN_SPACE = 10;
     private static final int ELEMENT_SPACE = 17;
@@ -40,16 +40,19 @@ public class SpacingRecyclerViewItemDecorationUnitTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock private RecyclerView mRecyclerView;
     @Mock private RecyclerView.Adapter mAdapter;
-    @Mock private View mChildView;
+    private TestRecyclerView mRecyclerView;
+    private View mChildView;
     private SpacingRecyclerViewItemDecoration mDecoration;
     private Rect mOffsets;
 
     @Before
     public void setUp() {
+        Context context = ContextUtils.getApplicationContext();
         mDecoration = new SpacingRecyclerViewItemDecoration(LEAD_IN_SPACE, ELEMENT_SPACE);
-        lenient().doReturn(mAdapter).when(mRecyclerView).getAdapter();
+        mRecyclerView = new TestRecyclerView(context);
+        mChildView = new View(context);
+        mRecyclerView.setAdapter(mAdapter);
         lenient().doReturn(ITEM_COUNT).when(mAdapter).getItemCount();
         mOffsets = new Rect();
     }
@@ -63,8 +66,8 @@ public class SpacingRecyclerViewItemDecorationUnitTest {
 
     @Test
     public void testSpacing_firstElementLTR() {
-        doReturn(ITEM_FIRST).when(mRecyclerView).getChildAdapterPosition(mChildView);
-        doReturn(View.LAYOUT_DIRECTION_LTR).when(mRecyclerView).getLayoutDirection();
+        mRecyclerView.setChildAdapterPosition(ITEM_FIRST);
+        mRecyclerView.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /* state= */ null);
         assertEquals(LEAD_IN_SPACE, mOffsets.left);
         assertEquals(ELEMENT_SPACE / 2, mOffsets.right);
@@ -74,8 +77,8 @@ public class SpacingRecyclerViewItemDecorationUnitTest {
 
     @Test
     public void testSpacing_firstElementRTL() {
-        doReturn(ITEM_FIRST).when(mRecyclerView).getChildAdapterPosition(mChildView);
-        doReturn(View.LAYOUT_DIRECTION_RTL).when(mRecyclerView).getLayoutDirection();
+        mRecyclerView.setChildAdapterPosition(ITEM_FIRST);
+        mRecyclerView.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /* state= */ null);
         assertEquals(ELEMENT_SPACE / 2, mOffsets.left);
         assertEquals(LEAD_IN_SPACE, mOffsets.right);
@@ -85,8 +88,8 @@ public class SpacingRecyclerViewItemDecorationUnitTest {
 
     @Test
     public void testSpacing_lastElementLTR() {
-        doReturn(ITEM_LAST).when(mRecyclerView).getChildAdapterPosition(mChildView);
-        doReturn(View.LAYOUT_DIRECTION_LTR).when(mRecyclerView).getLayoutDirection();
+        mRecyclerView.setChildAdapterPosition(ITEM_LAST);
+        mRecyclerView.setLayoutDirection(View.LAYOUT_DIRECTION_LTR);
         mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /* state= */ null);
         assertEquals(ELEMENT_SPACE / 2, mOffsets.left);
         assertEquals(LEAD_IN_SPACE, mOffsets.right);
@@ -96,8 +99,8 @@ public class SpacingRecyclerViewItemDecorationUnitTest {
 
     @Test
     public void testSpacing_lastElementRTL() {
-        doReturn(ITEM_LAST).when(mRecyclerView).getChildAdapterPosition(mChildView);
-        doReturn(View.LAYOUT_DIRECTION_RTL).when(mRecyclerView).getLayoutDirection();
+        mRecyclerView.setChildAdapterPosition(ITEM_LAST);
+        mRecyclerView.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
         mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /* state= */ null);
         assertEquals(LEAD_IN_SPACE, mOffsets.left);
         assertEquals(ELEMENT_SPACE / 2, mOffsets.right);
@@ -107,7 +110,7 @@ public class SpacingRecyclerViewItemDecorationUnitTest {
 
     @Test
     public void testSpacing_middleElement() {
-        doReturn(ITEM_MIDDLE).when(mRecyclerView).getChildAdapterPosition(mChildView);
+        mRecyclerView.setChildAdapterPosition(ITEM_MIDDLE);
         mDecoration.getItemOffsets(mOffsets, mChildView, mRecyclerView, /* state= */ null);
         assertEquals(ELEMENT_SPACE / 2, mOffsets.left);
         assertEquals(ELEMENT_SPACE / 2, mOffsets.right);
@@ -135,5 +138,44 @@ public class SpacingRecyclerViewItemDecorationUnitTest {
         assertEquals(0, mOffsets.top);
         assertEquals(0, mOffsets.bottom);
         assertEquals(2 * ELEMENT_SPACE, mDecoration.getElementSpace());
+    }
+
+    private static class TestRecyclerView extends RecyclerView {
+        private Adapter mTestAdapter;
+        private int mChildAdapterPosition;
+        private int mTestLayoutDirection = View.LAYOUT_DIRECTION_LTR;
+
+        TestRecyclerView(Context context) {
+            super(context);
+        }
+
+        @Override
+        public void setAdapter(Adapter adapter) {
+            mTestAdapter = adapter;
+        }
+
+        @Override
+        public Adapter getAdapter() {
+            return mTestAdapter;
+        }
+
+        void setChildAdapterPosition(int position) {
+            mChildAdapterPosition = position;
+        }
+
+        @Override
+        public int getChildAdapterPosition(View child) {
+            return mChildAdapterPosition;
+        }
+
+        @Override
+        public void setLayoutDirection(int layoutDirection) {
+            mTestLayoutDirection = layoutDirection;
+        }
+
+        @Override
+        public int getLayoutDirection() {
+            return mTestLayoutDirection;
+        }
     }
 }
