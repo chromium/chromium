@@ -214,7 +214,17 @@ const Value::ArrayValue& Value::GetArray() const {
   return array_value_;
 }
 
+Value::ArrayValue& Value::GetArray() {
+  CHECK(is_array());
+  return array_value_;
+}
+
 const Value::MapValue& Value::GetMap() const {
+  CHECK(is_map());
+  return map_value_;
+}
+
+Value::MapValue& Value::GetMap() {
   CHECK(is_map());
   return map_value_;
 }

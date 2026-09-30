@@ -170,16 +170,14 @@ class Ctap2DeviceOperation : public DeviceOperation<Request, Response> {
         return;
       }
 
-      if (string_fixup_predicate_) {
-        cbor = FixInvalidUTF8(std::move(*cbor), string_fixup_predicate_);
-        if (!cbor) {
-          FIDO_LOG(ERROR)
-              << "-> (CBOR with unfixable UTF-8 errors from raw message "
-              << base::HexEncode(device_response.value()) << ")";
-          std::move(this->callback())
-              .Run(CtapDeviceResponseCode::kCtap2ErrInvalidCBOR, std::nullopt);
-          return;
-        }
+      if (string_fixup_predicate_ &&
+          !FixInvalidUTF8(*cbor, string_fixup_predicate_)) {
+        FIDO_LOG(ERROR)
+            << "-> (CBOR with unfixable UTF-8 errors from raw message "
+            << base::HexEncode(device_response.value()) << ")";
+        std::move(this->callback())
+            .Run(CtapDeviceResponseCode::kCtap2ErrInvalidCBOR, std::nullopt);
+        return;
       }
 
       response = std::move(std::move(device_response_parser_).Run(cbor));

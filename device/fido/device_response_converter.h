@@ -49,9 +49,14 @@ COMPONENT_EXPORT(DEVICE_FIDO)
 std::optional<AuthenticatorGetInfoResponse> ReadCTAPGetInfoResponse(
     base::span<const uint8_t> buffer);
 
-COMPONENT_EXPORT(DEVICE_FIDO)
-std::optional<cbor::Value> FixInvalidUTF8(
-    cbor::Value in,
+// Repairs truncated UTF-8 strings in `in` in-place at paths permitted by
+// `predicate`. Returns true if all `INVALID_UTF8` values in `in` were
+// successfully repaired (or none were present), and false if any `INVALID_UTF8`
+// value could not be repaired or was not permitted by `predicate`, or if an
+// unsupported map key type was encountered. When false is returned, `in` may be
+// in a partially mutated state.
+[[nodiscard]] COMPONENT_EXPORT(DEVICE_FIDO) bool FixInvalidUTF8(
+    cbor::Value& in,
     bool (*predicate)(const std::vector<const cbor::Value*>&));
 
 // Converts |in| to the equivalent |PINUVAuthProtocol|.

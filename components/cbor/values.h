@@ -219,7 +219,9 @@ class CBOR_EXPORT Value {
   // Returned string may contain NUL characters.
   const std::string& GetString() const LIFETIME_BOUND;
   const ArrayValue& GetArray() const LIFETIME_BOUND;
+  ArrayValue& GetArray() LIFETIME_BOUND;
   const MapValue& GetMap() const LIFETIME_BOUND;
+  MapValue& GetMap() LIFETIME_BOUND;
   const BinaryValue& GetInvalidUTF8() const LIFETIME_BOUND;
 
  private:

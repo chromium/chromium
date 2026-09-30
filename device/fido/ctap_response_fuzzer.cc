@@ -39,12 +39,12 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   config.allow_invalid_utf8 = true;
   std::vector<uint8_t> input(data, UNSAFE_TODO(data + size));
   std::optional<cbor::Value> input_cbor = cbor::Reader::Read(input, config);
-  if (input_cbor) {
-    input_cbor =
-        FixInvalidUTF8(std::move(*input_cbor),
-                       [](const std::vector<const cbor::Value*>& path) {
-                         return path.size() == 2;
-                       });
+  if (input_cbor &&
+      !FixInvalidUTF8(*input_cbor,
+                      [](const std::vector<const cbor::Value*>& path) {
+                        return path.size() == 2;
+                      })) {
+    input_cbor.reset();
   }
 
   std::array<uint8_t, 32> relying_party_id_hash = {};

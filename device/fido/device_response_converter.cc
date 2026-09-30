@@ -911,21 +911,27 @@ static std::optional<std::string> FixInvalidUTF8String(
 
 typedef bool (*PathPredicate)(const std::vector<const cbor::Value*>&);
 
-static std::optional<cbor::Value> FixInvalidUTF8Value(
-    const cbor::Value& v,
-    std::vector<const cbor::Value*>* path,
+// Recursively repairs truncated UTF-8 strings in `v` in-place at paths
+// permitted by `predicate`. Returns true if all `INVALID_UTF8` values in `v`
+// were successfully repaired (or none were present), and false if any
+// `INVALID_UTF8` value could not be repaired or was not permitted by
+// `predicate`, or if an unsupported map key type was encountered.
+[[nodiscard]] static bool FixInvalidUTF8Value(
+    cbor::Value& v,
+    std::vector<const cbor::Value*>& path,
     PathPredicate predicate) {
   switch (v.type()) {
     case cbor::Value::Type::INVALID_UTF8: {
-      if (!predicate(*path)) {
-        return std::nullopt;
+      if (!predicate(path)) {
+        return false;
       }
       std::optional<std::string> maybe_fixed(
           FixInvalidUTF8String(v.GetInvalidUTF8()));
       if (!maybe_fixed) {
-        return std::nullopt;
+        return false;
       }
-      return cbor::Value(*maybe_fixed);
+      v = cbor::Value(*std::move(maybe_fixed));
+      return true;
     }
 
     case cbor::Value::Type::UNSIGNED:
@@ -933,35 +939,24 @@ static std::optional<cbor::Value> FixInvalidUTF8Value(
     case cbor::Value::Type::BYTE_STRING:
     case cbor::Value::Type::STRING:
     case cbor::Value::Type::SIMPLE_VALUE:
-      return v.Clone();
+      return true;
 
     case cbor::Value::Type::ARRAY: {
-      const cbor::Value::ArrayValue& old_array = v.GetArray();
-      cbor::Value::ArrayValue new_array;
-      new_array.reserve(old_array.size());
-
-      for (const auto& child : old_array) {
-        std::optional<cbor::Value> maybe_fixed =
-            FixInvalidUTF8Value(child, path, predicate);
-        if (!maybe_fixed) {
-          return std::nullopt;
+      for (cbor::Value& child : v.GetArray()) {
+        if (!FixInvalidUTF8Value(child, path, predicate)) {
+          return false;
         }
-        new_array.emplace_back(std::move(*maybe_fixed));
       }
 
-      return cbor::Value(std::move(new_array));
+      return true;
     }
 
     case cbor::Value::Type::MAP: {
-      const cbor::Value::MapValue& old_map = v.GetMap();
-      cbor::Value::MapValue new_map;
-      new_map.reserve(old_map.size());
-
-      for (const auto& it : old_map) {
-        switch (it.first.type()) {
+      for (auto& [key, value] : v.GetMap()) {
+        switch (key.type()) {
           case cbor::Value::Type::INVALID_UTF8:
             // Invalid strings in map keys are not supported.
-            return std::nullopt;
+            return false;
 
           case cbor::Value::Type::UNSIGNED:
           case cbor::Value::Type::NEGATIVE:
@@ -970,74 +965,25 @@ static std::optional<cbor::Value> FixInvalidUTF8Value(
 
           default:
             // Other types are not permitted as map keys in CTAP2.
-            return std::nullopt;
+            return false;
         }
 
-        path->push_back(&it.first);
-        std::optional<cbor::Value> maybe_fixed =
-            FixInvalidUTF8Value(it.second, path, predicate);
-        path->pop_back();
-        if (!maybe_fixed) {
-          return std::nullopt;
+        path.push_back(&key);
+        const bool ok = FixInvalidUTF8Value(value, path, predicate);
+        path.pop_back();
+        if (!ok) {
+          return false;
         }
-
-        new_map.emplace(it.first.Clone(), std::move(*maybe_fixed));
       }
 
-      return cbor::Value(std::move(new_map));
-    }
-  }
-}
-
-// ContainsInvalidUTF8 returns true if any element of |v| (recursively) contains
-// a string with invalid UTF-8. It bases this determination purely on the type
-// of the nodes and doesn't actually check the contents of the strings
-// themselves.
-static bool ContainsInvalidUTF8(const cbor::Value& v) {
-  switch (v.type()) {
-    case cbor::Value::Type::INVALID_UTF8:
       return true;
-
-    case cbor::Value::Type::UNSIGNED:
-    case cbor::Value::Type::NEGATIVE:
-    case cbor::Value::Type::BYTE_STRING:
-    case cbor::Value::Type::STRING:
-    case cbor::Value::Type::SIMPLE_VALUE:
-      return false;
-
-    case cbor::Value::Type::ARRAY: {
-      const cbor::Value::ArrayValue& array = v.GetArray();
-      for (const auto& child : array) {
-        if (ContainsInvalidUTF8(child)) {
-          return true;
-        }
-      }
-
-      return false;
-    }
-
-    case cbor::Value::Type::MAP: {
-      const cbor::Value::MapValue& map = v.GetMap();
-      for (const auto& it : map) {
-        if (ContainsInvalidUTF8(it.first) || ContainsInvalidUTF8(it.second)) {
-          return true;
-        }
-      }
-
-      return false;
     }
   }
 }
 
-std::optional<cbor::Value> FixInvalidUTF8(cbor::Value in,
-                                          PathPredicate predicate) {
-  if (!ContainsInvalidUTF8(in)) {
-    // Common case that everything is fine.
-    return in;
-  }
-
+bool FixInvalidUTF8(cbor::Value& in, PathPredicate predicate) {
   std::vector<const cbor::Value*> path;
-  return FixInvalidUTF8Value(in, &path, predicate);
+  return FixInvalidUTF8Value(in, path, predicate);
 }
 
 std::optional<PINUVAuthProtocol> ToPINUVAuthProtocol(int64_t in) {
