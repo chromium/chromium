@@ -118,8 +118,23 @@ void DateTimeSymbolicFieldElement::Initialize(const AtomicString& pseudo,
 void DateTimeSymbolicFieldElement::SetEmptyValue(EventBehavior event_behavior) {
   if (IsDisabled())
     return;
+  type_ahead_.ResetSession();
   selected_index_ = kInvalidIndex;
   UpdateVisibleValue(event_behavior);
+}
+
+void DateTimeSymbolicFieldElement::ResetTypeAhead() {
+  type_ahead_.ResetSession();
+}
+
+void DateTimeSymbolicFieldElement::SetFocused(
+    bool value,
+    mojom::blink::FocusType focus_type,
+    BlurEventBehavior blur_event_behavior) {
+  if (!value) {
+    type_ahead_.ResetSession();
+  }
+  DateTimeFieldElement::SetFocused(value, focus_type, blur_event_behavior);
 }
 
 void DateTimeSymbolicFieldElement::SetValueAsInteger(

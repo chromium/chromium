@@ -54,6 +54,8 @@ class PLATFORM_EXPORT DateComponents {
  public:
   DateComponents() = default;
 
+  bool operator==(const DateComponents&) const = default;
+
   enum Type {
     kInvalid,
     kDate,

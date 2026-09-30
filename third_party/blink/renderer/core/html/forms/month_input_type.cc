@@ -143,7 +143,7 @@ String MonthInputType::FormatDateTimeFieldsState(
 void MonthInputType::SetupLayoutParameters(
     DateTimeEditElement::LayoutParameters& layout_parameters,
     const DateComponents& date) const {
-  layout_parameters.date_time_format = layout_parameters.locale.MonthFormat();
+  layout_parameters.date_time_format = layout_parameters.locale->MonthFormat();
   layout_parameters.fallback_date_time_format = "yyyy-MM";
   if (!ParseToDateComponents(
           GetElement().FastGetAttribute(html_names::kMinAttr),

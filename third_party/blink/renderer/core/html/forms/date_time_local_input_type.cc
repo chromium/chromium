@@ -165,17 +165,17 @@ void DateTimeLocalInputType::SetupLayoutParameters(
     const DateComponents& date) const {
   if (ShouldHaveSecondField(date)) {
     layout_parameters.date_time_format =
-        layout_parameters.locale.DateTimeFormatWithSeconds();
+        layout_parameters.locale->DateTimeFormatWithSeconds();
     layout_parameters.fallback_date_time_format = "yyyy-MM-dd'T'HH:mm:ss";
   } else {
     layout_parameters.date_time_format =
-        layout_parameters.locale.DateTimeFormatWithoutSeconds();
+        layout_parameters.locale->DateTimeFormatWithoutSeconds();
     layout_parameters.fallback_date_time_format = "yyyy-MM-dd'T'HH:mm";
   }
 
   // Workaround for an Arabic date-time format issue.
   // TODO(crbug.com/40153320): Support ARABIC COMMA.
-  if (layout_parameters.locale.IsRtl()) {
+  if (layout_parameters.locale->IsRtl()) {
     layout_parameters.date_time_format =
         layout_parameters.date_time_format.RemoveCharacters(
             [](UChar ch) -> bool { return ch == uchar::kArabicComma; });
@@ -195,6 +195,16 @@ void DateTimeLocalInputType::SetupLayoutParameters(
       GetLocale().QueryString(IDS_FORM_PLACEHOLDER_FOR_MONTH_FIELD);
   layout_parameters.placeholder_for_year =
       GetLocale().QueryString(IDS_FORM_PLACEHOLDER_FOR_YEAR_FIELD);
+  static constexpr int kMillisecondsPerSecond =
+      static_cast<int>(base::Time::kMillisecondsPerSecond);
+  layout_parameters.need_millisecond_field =
+      date.Millisecond() ||
+      !layout_parameters.step_range.Minimum()
+           .Remainder(kMillisecondsPerSecond)
+           .IsZero() ||
+      !layout_parameters.step_range.Step()
+           .Remainder(kMillisecondsPerSecond)
+           .IsZero();
 }
 
 bool DateTimeLocalInputType::IsValidFormat(bool has_year,

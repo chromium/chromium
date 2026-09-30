@@ -150,11 +150,7 @@ bool DateTimeEditBuilder::Build(const String& format_string) {
 }
 
 bool DateTimeEditBuilder::NeedMillisecondField() const {
-  static constexpr int kMillisecondsPerSecond =
-      static_cast<int>(base::Time::kMillisecondsPerSecond);
-  return date_value_.Millisecond() ||
-         !GetStepRange().Minimum().Remainder(kMillisecondsPerSecond).IsZero() ||
-         !GetStepRange().Step().Remainder(kMillisecondsPerSecond).IsZero();
+  return parameters_.need_millisecond_field;
 }
 
 void DateTimeEditBuilder::VisitField(date_time_format::FieldType field_type,
@@ -244,16 +240,16 @@ void DateTimeEditBuilder::VisitField(date_time_format::FieldType field_type,
           field = MakeGarbageCollected<DateTimeSymbolicMonthFieldElement>(
               document, EditElement(),
               field_type == FieldType::kFieldTypeMonth
-                  ? parameters_.locale.ShortMonthLabels()
-                  : parameters_.locale.ShortStandAloneMonthLabels(),
+                  ? parameters_.locale->ShortMonthLabels()
+                  : parameters_.locale->ShortStandAloneMonthLabels(),
               min_month, max_month);
           break;
         case kCountForFullMonth:
           field = MakeGarbageCollected<DateTimeSymbolicMonthFieldElement>(
               document, EditElement(),
               field_type == FieldType::kFieldTypeMonth
-                  ? parameters_.locale.MonthLabels()
-                  : parameters_.locale.StandAloneMonthLabels(),
+                  ? parameters_.locale->MonthLabels()
+                  : parameters_.locale->StandAloneMonthLabels(),
               min_month, max_month);
           break;
         default:
@@ -276,7 +272,7 @@ void DateTimeEditBuilder::VisitField(date_time_format::FieldType field_type,
     case FieldType::kFieldTypePeriodFlexible: {
       DateTimeFieldElement* field =
           MakeGarbageCollected<DateTimeAMPMFieldElement>(
-              document, EditElement(), parameters_.locale.TimeAmPmLabels());
+              document, EditElement(), parameters_.locale->TimeAmPmLabels());
       EditElement().AddField(field);
       return;
     }
@@ -290,7 +286,7 @@ void DateTimeEditBuilder::VisitField(date_time_format::FieldType field_type,
       EditElement().AddField(field);
 
       if (NeedMillisecondField()) {
-        VisitLiteral(parameters_.locale.LocalizedDecimalSeparator());
+        VisitLiteral(parameters_.locale->LocalizedDecimalSeparator());
         VisitField(FieldType::kFieldTypeFractionalSecond, 3);
       }
       return;
@@ -454,7 +450,7 @@ void DateTimeEditBuilder::VisitLiteral(const String& text) {
   element->SetShadowPseudoId(text_pseudo_id);
   element->SetInlineStyleProperty(CSSPropertyID::kUnicodeBidi,
                                   CSSValueID::kNormal);
-  if (parameters_.locale.IsRtl() && text.length()) {
+  if (parameters_.locale->IsRtl() && text.length()) {
     unicode::CharDirection dir = unicode::Direction(text[0]);
     if (dir == unicode::kSegmentSeparator ||
         dir == unicode::kWhiteSpaceNeutral || dir == unicode::kOtherNeutral) {
@@ -727,6 +723,16 @@ bool DateTimeEditElement::IsReadOnly() const {
 
 void DateTimeEditElement::GetLayout(const LayoutParameters& layout_parameters,
                                     const DateComponents& date_value) {
+  // Don't rebuild the layout if the parameters are unchanged.  This is not
+  // just an optimization since it prevents us from trying to do things to
+  // nodes at times when that is inappropriate, such as within
+  // SetIsInCanvasSubtree().
+  if (layout_parameters == current_layout_parameters_) {
+    CHECK(HasChildren());
+    return;
+  }
+  current_layout_parameters_.emplace(layout_parameters);
+
   // TODO(tkent): We assume this function never dispatches events. However this
   // can dispatch 'blur' event in Node::removeChild().
 
@@ -815,22 +821,40 @@ void DateTimeEditElement::SetValueAsDate(
     const LayoutParameters& layout_parameters,
     const DateComponents& date) {
   GetLayout(layout_parameters, date);
-  for (const auto& field : fields_)
+  for (const auto& field : fields_) {
+    field->ResetTypeAhead();
     field->SetValueAsDate(date);
+  }
+  // Make CustomStyleForLayoutObject rerun, since it depends on the value.
+  SetNeedsStyleRecalc(
+      kSubtreeStyleChange,
+      StyleChangeReasonForTracing::Create(style_change_reason::kControlValue));
 }
 
 void DateTimeEditElement::SetValueAsDateTimeFieldsState(
     const DateTimeFieldsState& date_time_fields_state) {
-  for (const auto& field : fields_)
+  for (const auto& field : fields_) {
+    field->ResetTypeAhead();
     field->SetValueAsDateTimeFieldsState(date_time_fields_state);
+  }
+  // Make CustomStyleForLayoutObject rerun, since it depends on the value.
+  SetNeedsStyleRecalc(
+      kSubtreeStyleChange,
+      StyleChangeReasonForTracing::Create(style_change_reason::kControlValue));
 }
 
 void DateTimeEditElement::SetEmptyValue(
     const LayoutParameters& layout_parameters,
     const DateComponents& date_for_read_only_field) {
   GetLayout(layout_parameters, date_for_read_only_field);
-  for (const auto& field : fields_)
+  for (const auto& field : fields_) {
+    field->ResetTypeAhead();
     field->SetEmptyValue(DateTimeFieldElement::kDispatchNoEvent);
+  }
+  // Make CustomStyleForLayoutObject rerun, since it depends on the value.
+  SetNeedsStyleRecalc(
+      kSubtreeStyleChange,
+      StyleChangeReasonForTracing::Create(style_change_reason::kControlValue));
 }
 
 DateTimeFieldElement* DateTimeEditElement::GetField(DateTimeField type) const {

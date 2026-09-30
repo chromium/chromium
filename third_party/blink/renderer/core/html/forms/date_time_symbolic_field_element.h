@@ -68,11 +68,15 @@ class DateTimeSymbolicFieldElement : public DateTimeFieldElement,
   void HandleKeyboardEvent(KeyboardEvent&) final;
   float MaximumWidth(const ComputedStyle&) override;
   String Placeholder() const override;
+  void ResetTypeAhead() override;
   void StepDown() final;
   void StepUp() final;
   String Value() const final;
   int ValueForARIAValueNow() const final;
   String VisibleValue() const final;
+
+  // Node functions.
+  void SetFocused(bool, mojom::blink::FocusType, BlurEventBehavior) override;
 
   // TypeAheadDataSource functions.
   int IndexOfSelectedOption() const override;
