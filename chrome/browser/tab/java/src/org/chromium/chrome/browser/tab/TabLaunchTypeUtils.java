@@ -165,4 +165,62 @@ public final class TabLaunchTypeUtils {
             default -> false;
         };
     }
+
+    /**
+     * Converts a {@link TabLaunchType} to a histogram key used in the {@code
+     * Android.Tab.CreateNewTabDuration.{TabLaunchType}} histogram. These must be kept in sync.
+     *
+     * @param tabLaunchType The tab launch type.
+     * @return The histogram suffix string.
+     */
+    public static String tabLaunchTypeToHistogramKey(@TabLaunchType int tabLaunchType) {
+        assertValidLaunchType(tabLaunchType);
+        return switch (tabLaunchType) {
+            case TabLaunchType.FROM_LINK -> "Link";
+            case TabLaunchType.FROM_EXTERNAL_APP -> "ExternalApp";
+            case TabLaunchType.FROM_CHROME_UI -> "ChromeUI";
+            case TabLaunchType.FROM_RESTORE -> "Restore";
+            case TabLaunchType.FROM_LONGPRESS_FOREGROUND ->
+                    "LongressForeground"; // Preserved typo for UMA continuity
+            case TabLaunchType.FROM_LONGPRESS_BACKGROUND -> "LongpressBackground";
+            case TabLaunchType.FROM_REPARENTING -> "Reparenting";
+            case TabLaunchType.FROM_LAUNCHER_SHORTCUT -> "LauncherShortcut";
+            case TabLaunchType.FROM_SPECULATIVE_BACKGROUND_CREATION ->
+                    "SpeculativeBackgroundCreation";
+            case TabLaunchType.FROM_BROWSER_ACTIONS -> "BrowserActions";
+            case TabLaunchType.FROM_LAUNCH_NEW_INCOGNITO_TAB -> "NewIncognitoTab";
+            case TabLaunchType.FROM_STARTUP -> "Startup";
+            case TabLaunchType.FROM_SESSION_STARTUP_WITH_URLS_PREF -> "SessionStartupWithUrlsPref";
+            case TabLaunchType.FROM_START_SURFACE -> "StartSurface";
+            case TabLaunchType.FROM_TAB_GROUP_UI -> "TabGroupUI";
+            case TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP -> "LongpressBackgroundInGroup";
+            case TabLaunchType.FROM_APP_WIDGET -> "AppWidget";
+            case TabLaunchType.FROM_LONGPRESS_INCOGNITO -> "LongpressIncognito";
+            case TabLaunchType.FROM_RECENT_TABS -> "RecentTabs";
+            case TabLaunchType.FROM_READING_LIST -> "ReadingList";
+            case TabLaunchType.FROM_TAB_SWITCHER_UI -> "TabSwitcherUI";
+            case TabLaunchType.FROM_RESTORE_TABS_UI -> "RestoreTabsUI";
+            case TabLaunchType.FROM_OMNIBOX -> "Omnibox";
+            case TabLaunchType.FROM_OMNIBOX_BACKGROUND -> "OmniboxBackground";
+            case TabLaunchType.UNSET -> "Unset";
+            case TabLaunchType.FROM_SYNC_BACKGROUND -> "SyncBackground";
+            case TabLaunchType.FROM_RECENT_TABS_FOREGROUND -> "RecentTabsForeground";
+            case TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP ->
+                    "CollaborationBackgroundInGroup";
+            case TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND -> "BookmarkBarBackground";
+            case TabLaunchType.FROM_REPARENTING_BACKGROUND -> "ReparentingBackground";
+            case TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND -> "HistoryNavigationBackground";
+            case TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND ->
+                    "HistoryNavigationBackground"; // Preserved legacy alias
+            case TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP -> "LongpressForegroundInGroup";
+            case TabLaunchType.FROM_TAB_LIST_INTERFACE -> "TabListInterface";
+            case TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW -> "LinkToNewWindow";
+            case TabLaunchType.FROM_TIPS_NOTIFICATIONS -> "TipsNotifications";
+            case TabLaunchType.FROM_TAB_LIST_INTERFACE_BACKGROUND -> "TabListInterfaceBackground";
+            default -> {
+                assert false : "Unexpected serialization of tabLaunchType: " + tabLaunchType;
+                yield "TypeUnknown";
+            }
+        };
+    }
 }

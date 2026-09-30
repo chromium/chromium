@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tab;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
 
 import org.junit.Test;
@@ -12,6 +13,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
+import java.util.Map;
 import java.util.Set;
 
 /** Unit tests for {@link TabLaunchTypeUtils}. */
@@ -68,9 +70,66 @@ public class TabLaunchTypeUtilsUnitTest {
                     TabLaunchType.FROM_APP_WIDGET,
                     TabLaunchType.FROM_SYNC_BACKGROUND);
 
+    private static final Map<Integer, String> EXPECTED_HISTOGRAM_KEYS =
+            Map.ofEntries(
+                    Map.entry(TabLaunchType.FROM_LINK, "Link"),
+                    Map.entry(TabLaunchType.FROM_EXTERNAL_APP, "ExternalApp"),
+                    Map.entry(TabLaunchType.FROM_CHROME_UI, "ChromeUI"),
+                    Map.entry(TabLaunchType.FROM_RESTORE, "Restore"),
+                    Map.entry(TabLaunchType.FROM_LONGPRESS_FOREGROUND, "LongressForeground"),
+                    Map.entry(TabLaunchType.FROM_LONGPRESS_BACKGROUND, "LongpressBackground"),
+                    Map.entry(TabLaunchType.FROM_REPARENTING, "Reparenting"),
+                    Map.entry(TabLaunchType.FROM_LAUNCHER_SHORTCUT, "LauncherShortcut"),
+                    Map.entry(
+                            TabLaunchType.FROM_SPECULATIVE_BACKGROUND_CREATION,
+                            "SpeculativeBackgroundCreation"),
+                    Map.entry(TabLaunchType.FROM_BROWSER_ACTIONS, "BrowserActions"),
+                    Map.entry(TabLaunchType.FROM_LAUNCH_NEW_INCOGNITO_TAB, "NewIncognitoTab"),
+                    Map.entry(TabLaunchType.FROM_STARTUP, "Startup"),
+                    Map.entry(
+                            TabLaunchType.FROM_SESSION_STARTUP_WITH_URLS_PREF,
+                            "SessionStartupWithUrlsPref"),
+                    Map.entry(TabLaunchType.FROM_START_SURFACE, "StartSurface"),
+                    Map.entry(TabLaunchType.FROM_TAB_GROUP_UI, "TabGroupUI"),
+                    Map.entry(
+                            TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
+                            "LongpressBackgroundInGroup"),
+                    Map.entry(TabLaunchType.FROM_APP_WIDGET, "AppWidget"),
+                    Map.entry(TabLaunchType.FROM_LONGPRESS_INCOGNITO, "LongpressIncognito"),
+                    Map.entry(TabLaunchType.FROM_RECENT_TABS, "RecentTabs"),
+                    Map.entry(TabLaunchType.FROM_READING_LIST, "ReadingList"),
+                    Map.entry(TabLaunchType.FROM_TAB_SWITCHER_UI, "TabSwitcherUI"),
+                    Map.entry(TabLaunchType.FROM_RESTORE_TABS_UI, "RestoreTabsUI"),
+                    Map.entry(TabLaunchType.FROM_OMNIBOX, "Omnibox"),
+                    Map.entry(TabLaunchType.FROM_OMNIBOX_BACKGROUND, "OmniboxBackground"),
+                    Map.entry(TabLaunchType.UNSET, "Unset"),
+                    Map.entry(TabLaunchType.FROM_SYNC_BACKGROUND, "SyncBackground"),
+                    Map.entry(TabLaunchType.FROM_RECENT_TABS_FOREGROUND, "RecentTabsForeground"),
+                    Map.entry(
+                            TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP,
+                            "CollaborationBackgroundInGroup"),
+                    Map.entry(TabLaunchType.FROM_BOOKMARK_BAR_BACKGROUND, "BookmarkBarBackground"),
+                    Map.entry(TabLaunchType.FROM_REPARENTING_BACKGROUND, "ReparentingBackground"),
+                    Map.entry(
+                            TabLaunchType.FROM_HISTORY_NAVIGATION_BACKGROUND,
+                            "HistoryNavigationBackground"),
+                    Map.entry(
+                            TabLaunchType.FROM_HISTORY_NAVIGATION_FOREGROUND,
+                            "HistoryNavigationBackground"),
+                    Map.entry(
+                            TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP,
+                            "LongpressForegroundInGroup"),
+                    Map.entry(TabLaunchType.FROM_TAB_LIST_INTERFACE, "TabListInterface"),
+                    Map.entry(TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW, "LinkToNewWindow"),
+                    Map.entry(TabLaunchType.FROM_TIPS_NOTIFICATIONS, "TipsNotifications"),
+                    Map.entry(
+                            TabLaunchType.FROM_TAB_LIST_INTERFACE_BACKGROUND,
+                            "TabListInterfaceBackground"));
+
     @Test
     public void testEnumSizeConstant() {
         assertEquals("TabLaunchType.SIZE is expected to be 37", 37, TabLaunchType.SIZE);
+        assertEquals("Expected 37 histogram key mappings", 37, EXPECTED_HISTOGRAM_KEYS.size());
     }
 
     @Test
@@ -122,6 +181,14 @@ public class TabLaunchTypeUtilsUnitTest {
                     "shouldSkipTabCreatingAnimation mismatch for type " + type,
                     SKIP_TAB_CREATING_ANIMATION_TYPES.contains(type),
                     TabLaunchTypeUtils.shouldSkipTabCreatingAnimation(type));
+            assertEquals(
+                    "tabLaunchTypeToHistogramKey mismatch for type " + type,
+                    EXPECTED_HISTOGRAM_KEYS.get(type),
+                    TabLaunchTypeUtils.tabLaunchTypeToHistogramKey(type));
+            assertNotEquals(
+                    "tabLaunchTypeToHistogramKey returned TypeUnknown for type " + type,
+                    "TypeUnknown",
+                    TabLaunchTypeUtils.tabLaunchTypeToHistogramKey(type));
         }
     }
 
@@ -158,6 +225,10 @@ public class TabLaunchTypeUtilsUnitTest {
                     "shouldSkipTabCreatingAnimation should assert for invalid type " + type,
                     AssertionError.class,
                     () -> TabLaunchTypeUtils.shouldSkipTabCreatingAnimation(type));
+            assertThrows(
+                    "tabLaunchTypeToHistogramKey should assert for invalid type " + type,
+                    AssertionError.class,
+                    () -> TabLaunchTypeUtils.tabLaunchTypeToHistogramKey(type));
         }
     }
 }
