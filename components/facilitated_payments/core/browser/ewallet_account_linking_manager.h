@@ -17,9 +17,11 @@
 #include "components/facilitated_payments/core/browser/account_linking_result.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/native_account_linking_handler.h"
+#include "components/facilitated_payments/core/utils/facilitated_payments_ui_utils.h"
 
 namespace payments::facilitated {
 
+enum class AccountLinkingFlowExitedReason;
 class EwalletAccountLinkingStrikeDatabase;
 
 class EwalletAccountLinkingManager : public NativeAccountLinkingHandler {
@@ -54,6 +56,7 @@ class EwalletAccountLinkingManager : public NativeAccountLinkingHandler {
   // NativeAccountLinkingHandler:
   void DoOnClientTokenReceived(
       const std::vector<uint8_t>& client_token) override;
+  void DoOnAccepted() override;
   void DoOnAccountLinkingResult(AccountLinkingResult result) override;
   std::optional<AccountLinkingParams> CreateAccountLinkingParams() override;
   void DoOnGetDetailsForCreatePaymentInstrumentResponse(
@@ -67,7 +70,15 @@ class EwalletAccountLinkingManager : public NativeAccountLinkingHandler {
  private:
   friend class EwalletAccountLinkingManagerTestApi;
 
+  // Called by the view to communicate UI events for the account linking prompt.
+  void OnUiScreenEvent(UiEvent ui_event_type);
+
+  // Resets UI state to hidden and logs prompt exit telemetry when the bottom
+  // sheet closes or fails to show.
+  void ResetUiStateOnScreenClosed(AccountLinkingFlowExitedReason exit_reason);
+
   const autofill::Ewallet ewallet_creation_option_;
+  bool is_prompt_accepted_ = false;
 
   EwalletAccountLinkingStrikeDatabase* GetOrCreateStrikeDatabase();
 

@@ -639,6 +639,9 @@ PaymentLinkManager::GetOrCreateStrikeDatabase() {
 
 void PaymentLinkManager::OnAccountLinkingResult(const GURL& payment_link_url,
                                                 AccountLinkingResult result) {
+  client_->SetUiEventListener(base::BindRepeating(
+      &PaymentLinkManager::OnUiScreenEvent, weak_ptr_factory_.GetWeakPtr()));
+
   // Reset the latency timer as the user just spent time in the account linking
   // flow.
   payment_flow_triggered_timestamp_ = base::TimeTicks::Now();

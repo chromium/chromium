@@ -2648,4 +2648,59 @@ TEST_F(PaymentLinkManagerTest,
       ukm::UkmRecorder::GetNewSourceID());
 }
 
+TEST_F(PaymentLinkManagerTest,
+       OnAccountLinkingResult_ResultError_RestoresListenerAndShowsErrorScreen) {
+  base::HistogramTester histogram_tester;
+  GURL payment_link_url("shopeepay://shopeepay.com.my?code=123");
+  base::RepeatingCallback<void(UiEvent)> restored_listener;
+  EXPECT_CALL(client_, SetUiEventListener(testing::_))
+      .WillOnce(testing::SaveArg<0>(&restored_listener));
+  EXPECT_CALL(client_, ShowErrorScreen).Times(1);
+
+  test_api(*payment_link_manager_)
+      .OnAccountLinkingResult(
+          payment_link_url,
+          AccountLinkingResult{/*is_successful=*/false, /*instrument_id=*/0,
+                               AccountLinkingResultCode::kResultError});
+
+  EXPECT_EQ(test_api(*payment_link_manager_).ui_state(), UiState::kErrorScreen);
+  EXPECT_EQ(test_api(*payment_link_manager_).ewallet_account_linking_manager(),
+            nullptr);
+
+  // Verify the restored listener is bound to
+  // PaymentLinkManager::OnUiScreenEvent and handles kNewScreenShown for the
+  // Error Screen without crashing.
+  ASSERT_TRUE(restored_listener);
+  restored_listener.Run(UiEvent::kNewScreenShown);
+  histogram_tester.ExpectUniqueSample(
+      "FacilitatedPayments.Ewallet.UiScreenShown", UiState::kErrorScreen, 1);
+}
+
+TEST_F(PaymentLinkManagerTest,
+       OnAccountLinkingResult_CouldNotInvoke_ResetsStateWithoutErrorScreen) {
+  GURL payment_link_url("shopeepay://shopeepay.com.my?code=123");
+  base::RepeatingCallback<void(UiEvent)> restored_listener;
+  EXPECT_CALL(client_, SetUiEventListener(testing::_))
+      .WillOnce(testing::SaveArg<0>(&restored_listener));
+  EXPECT_CALL(client_, ShowErrorScreen).Times(0);
+
+  test_api(*payment_link_manager_)
+      .OnAccountLinkingResult(
+          payment_link_url,
+          AccountLinkingResult{/*is_successful=*/false, /*instrument_id=*/0,
+                               AccountLinkingResultCode::kCouldNotInvoke});
+
+  EXPECT_EQ(test_api(*payment_link_manager_).ui_state(), UiState::kHidden);
+  EXPECT_EQ(test_api(*payment_link_manager_).ewallet_account_linking_manager(),
+            nullptr);
+
+  // Verify that Reset() invalidated the WeakPtr bound to the listener so that
+  // any subsequent UI events (including kNewScreenShown) while ui_state_ ==
+  // UiState::kHidden are safely ignored and do not trigger CHECK_NE(ui_state_,
+  // UiState::kHidden).
+  EXPECT_TRUE(restored_listener.IsCancelled());
+  restored_listener.Run(UiEvent::kNewScreenShown);
+  restored_listener.Run(UiEvent::kScreenClosedNotByUser);
+}
+
 }  // namespace payments::facilitated

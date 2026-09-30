@@ -39,6 +39,31 @@ class EwalletAccountLinkingManagerTestApi {
     manager_->DoOnAccountLinkingResult(result);
   }
 
+  void DoOnAccepted() { manager_->DoOnAccepted(); }
+
+  void OnUiScreenEvent(UiEvent ui_event_type) {
+    manager_->OnUiScreenEvent(ui_event_type);
+  }
+
+  void ShowAccountLinkingLoadingScreen() {
+    manager_->ShowAccountLinkingLoadingScreen();
+  }
+
+  bool is_prompt_showing() const {
+    return manager_->ui_state_ ==
+           EwalletAccountLinkingManager::UiState::kPrompt;
+  }
+
+  bool is_progress_screen_showing() const {
+    return manager_->ui_state_ ==
+           EwalletAccountLinkingManager::UiState::kProgressScreen;
+  }
+
+  bool is_hidden() const {
+    return manager_->ui_state_ ==
+           EwalletAccountLinkingManager::UiState::kHidden;
+  }
+
   base::DictValue GetPayloadForGetDetailsForCreatePaymentInstrument() {
     return manager_->GetPayloadForGetDetailsForCreatePaymentInstrument();
   }

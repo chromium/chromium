@@ -135,6 +135,10 @@ class PaymentLinkManagerTestApi {
     payment_link_manager_->OnAccountLinkingResult(payment_link_url, result);
   }
 
+  EwalletAccountLinkingManager* ewallet_account_linking_manager() {
+    return payment_link_manager_->ewallet_account_linking_manager_.get();
+  }
+
  private:
   const raw_ref<PaymentLinkManager> payment_link_manager_;
 };
