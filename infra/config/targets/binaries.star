@@ -1398,6 +1398,14 @@ targets.binaries.generated_script(
 )
 
 targets.binaries.generated_script(
+    name = "ios_chrome_all_eg2tests_module",
+    label = "//ios/chrome/test/earl_grey2:ios_chrome_all_eg2tests_module",
+    # All references have been moved to starlark
+    skip_usage_check = True,
+    module_scheme = "xctest",
+)
+
+targets.binaries.generated_script(
     name = "ios_chrome_bookmarks_eg2tests_module",
     label = "//ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module",
     # All references have been moved to starlark

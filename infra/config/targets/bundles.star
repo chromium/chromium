@@ -5417,6 +5417,20 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "ios_eg2_tests_all",
+    targets = [
+        "ios_chrome_all_eg2tests_module",
+    ],
+    per_test_modifications = {
+        "ios_chrome_all_eg2tests_module": targets.mixin(
+            swarming = targets.swarming(
+                shards = 66,
+            ),
+        ),
+    },
+)
+
+targets.bundle(
     name = "ios_screen_size_dependent_tests",
     targets = [
         "base_unittests",
@@ -5532,8 +5546,6 @@ targets.bundle(
     ],
 )
 
-# TODO(crbug.com/441038354): comebine simulators into the same test targets once
-# iOS26 performance issue is resolved on the VMs
 targets.bundle(
     name = "ios_simulator_noncq_tests",
     targets = [
@@ -5549,32 +5561,14 @@ targets.bundle(
             ],
         ),
         targets.bundle(
-            targets = "ios_vm_eg2_cq_tests",
+            targets = [
+                "ios_eg2_tests_all",
+                "ios_web_shell_eg2tests_module",
+            ],
             mixins = [
                 "xcodebuild_sim_runner",
                 "record_failed_tests",
                 "mac_26_vm_optional",
-            ],
-            variants = [
-                "SIM_IPAD_AIR_6TH_GEN_18_5",
-            ],
-        ),
-        targets.bundle(
-            targets = "ios_eg2_cq_tests",
-            mixins = [
-                "xcodebuild_sim_runner",
-                "record_failed_tests",
-            ],
-            variants = [
-                "SIM_IPAD_AIR_6TH_GEN_26_5",
-                "SIM_IPAD_A16_27_0",
-            ],
-        ),
-        targets.bundle(
-            targets = "ios_eg2_tests",
-            mixins = [
-                "xcodebuild_sim_runner",
-                "record_failed_tests",
             ],
             variants = [
                 "SIM_IPAD_PRO_7TH_GEN_18_5",

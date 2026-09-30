@@ -1287,6 +1287,12 @@
     "type": "additional_compile_target",
     "skip_usage_check": True,
   },
+  "ios_chrome_all_eg2tests_module": {
+    "label": "//ios/chrome/test/earl_grey2:ios_chrome_all_eg2tests_module",
+    "type": "generated_script",
+    "module_scheme": "xctest",
+    "skip_usage_check": True,
+  },
   "ios_chrome_bookmarks_eg2tests_module": {
     "label": "//ios/chrome/test/earl_grey2:ios_chrome_bookmarks_eg2tests_module",
     "type": "generated_script",

@@ -1545,6 +1545,10 @@ targets.tests.isolated_script_test(
 )
 
 targets.tests.isolated_script_test(
+    name = "ios_chrome_all_eg2tests_module",
+)
+
+targets.tests.isolated_script_test(
     name = "ios_chrome_bookmarks_eg2tests_module",
 )
 
