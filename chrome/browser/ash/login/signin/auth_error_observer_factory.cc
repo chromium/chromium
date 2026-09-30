@@ -7,6 +7,7 @@
 #include "chrome/browser/ash/login/signin/auth_error_observer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_error_controller_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 
@@ -25,6 +26,7 @@ AuthErrorObserverFactory::AuthErrorObserverFactory()
               .WithAshInternals(ProfileSelection::kOriginalOnly)
               .Build()) {
   DependsOn(SyncServiceFactory::GetInstance());
+  DependsOn(IdentityManagerFactory::GetInstance());
   DependsOn(SigninErrorControllerFactory::GetInstance());
 }
 
@@ -53,6 +55,8 @@ AuthErrorObserverFactory::BuildServiceInstanceForBrowserContext(
   // base::NoDestructor.
   return std::make_unique<AuthErrorObserver>(
       g_browser_process->local_state(), profile,
+      IdentityManagerFactory::GetForProfile(profile),
+      SigninErrorControllerFactory::GetForProfile(profile),
       SyncServiceFactory::GetForProfile(profile));
 }
 

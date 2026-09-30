@@ -13,13 +13,12 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/account_id_from_account_info.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 
 namespace ash {
@@ -46,12 +45,24 @@ bool IsTerminalState(const signin_metrics::AccountReconcilorState& state) {
   }
 }
 
+// ChromeOS equivalent of //chrome's AccountIdFromAccountInfo(): the AccountId
+// for a signed-in account always comes from KnownUser.
+AccountId AccountIdFromAccountInfo(const CoreAccountInfo& account_info) {
+  user_manager::KnownUser known_user(
+      user_manager::UserManager::Get()->GetLocalState());
+  return known_user.GetAccountId(
+      account_info.email, account_info.gaia.ToString(), AccountType::GOOGLE);
+}
+
 }  // namespace
 
-OAuth2LoginManager::OAuth2LoginManager(Profile* user_profile)
+OAuth2LoginManager::OAuth2LoginManager(
+    Profile* user_profile,
+    signin::IdentityManager* identity_manager)
     : user_profile_(user_profile),
+      identity_manager_(identity_manager),
       state_(SESSION_RESTORE_NOT_STARTED) {
-  GetIdentityManager()->AddObserver(this);
+  identity_manager_->AddObserver(this);
 
   // For telemetry, we mark session restore completed to avoid warnings from
   // MergeSessionThrottle.
@@ -106,10 +117,8 @@ void OAuth2LoginManager::ContinueSessionRestore() {
 }
 
 void OAuth2LoginManager::CheckIfTokensHaveBeenLoaded() {
-  signin::IdentityManager* identity_manager = GetIdentityManager();
-
-  if (identity_manager->AreRefreshTokensLoaded() &&
-      identity_manager->HasAccountWithRefreshToken(
+  if (identity_manager_->AreRefreshTokensLoaded() &&
+      identity_manager_->HasAccountWithRefreshToken(
           GetUnconsentedPrimaryAccountId())) {
     // Tokens have been loaded in `IdentityManager`. Nothing to do.
     // `OnRefreshTokenUpdatedForAccount()` / `OnStateChanged()` will handle the
@@ -126,7 +135,7 @@ void OAuth2LoginManager::CheckIfTokensHaveBeenLoaded() {
   // cause user to go through Gaia in next login to obtain a new refresh
   // token.
   const CoreAccountInfo account_info =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   if (!account_info.IsEmpty()) {
     // Primary account is empty when Active Directory accounts are used.
     user_manager::UserManager::Get()->SaveUserOAuthStatus(
@@ -199,10 +208,6 @@ void OAuth2LoginManager::OnStateChanged(
   RecordSessionRestoreOutcome(session_restore_outcome, session_restore_state);
 }
 
-signin::IdentityManager* OAuth2LoginManager::GetIdentityManager() {
-  return IdentityManagerFactory::GetForProfile(user_profile_);
-}
-
 AccountReconcilor* OAuth2LoginManager::GetAccountReconcilor() {
   return AccountReconcilorFactory::GetForProfile(user_profile_);
 }
@@ -210,13 +215,13 @@ AccountReconcilor* OAuth2LoginManager::GetAccountReconcilor() {
 CoreAccountId OAuth2LoginManager::GetUnconsentedPrimaryAccountId() {
   // Use the primary ID whether or not the user has consented to browser sync.
   const CoreAccountId primary_account_id =
-      GetIdentityManager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
   LOG_IF(ERROR, primary_account_id.empty()) << "Primary account id is empty.";
   return primary_account_id;
 }
 
 void OAuth2LoginManager::Shutdown() {
-  GetIdentityManager()->RemoveObserver(this);
+  identity_manager_->RemoveObserver(this);
   account_reconcilor_observation_.Reset();
 }
 

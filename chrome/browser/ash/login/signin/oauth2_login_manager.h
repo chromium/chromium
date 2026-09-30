@@ -58,7 +58,8 @@ class OAuth2LoginManager : public KeyedService,
     virtual void OnSessionAuthenticated(Profile* user_profile) {}
   };
 
-  explicit OAuth2LoginManager(Profile* user_profile);
+  OAuth2LoginManager(Profile* user_profile,
+                     signin::IdentityManager* identity_manager);
 
   OAuth2LoginManager(const OAuth2LoginManager&) = delete;
   OAuth2LoginManager& operator=(const OAuth2LoginManager&) = delete;
@@ -135,10 +136,9 @@ class OAuth2LoginManager : public KeyedService,
   // process.
   void CompleteAuthentication();
 
-  // Retrieves IdentityManager for `user_profile_`.
-  signin::IdentityManager* GetIdentityManager();
-
-  // Retrieves AccountReconcilor for `user_profile_`.
+  // Retrieves AccountReconcilor for `user_profile_`. Deliberately looked up
+  // lazily: creating it eagerly would start a reconcile cycle earlier than
+  // we want.
   AccountReconcilor* GetAccountReconcilor();
 
   // Retrieves the primary account ID for `user_profile_`.
@@ -162,6 +162,7 @@ class OAuth2LoginManager : public KeyedService,
                                    SessionRestoreState state);
 
   raw_ptr<Profile> user_profile_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
   SessionRestoreState state_;
 
   // Whether there is pending TokenService::LoadCredentials call.

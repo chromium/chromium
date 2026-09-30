@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/login/signin/token_handle_store_factory.h"
 #include "chrome/browser/ash/login/signin/token_handle_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -190,12 +189,13 @@ SigninErrorNotifier::SigninErrorNotifier(
     PrefService* local_state,
     SigninErrorController* controller,
     Profile* profile,
+    signin::IdentityManager* identity_manager,
     supervised_user::SupervisedUserService* supervised_user_service)
     : local_state_(CHECK_DEREF(local_state)),
       error_controller_(controller),
       profile_(profile),
       supervised_user_service_(CHECK_DEREF(supervised_user_service)),
-      identity_manager_(IdentityManagerFactory::GetForProfile(profile_)),
+      identity_manager_(identity_manager),
       account_manager_(AccountManagerFactory::Get()->GetAccountManager(
           profile_->GetPath().value())),
       token_handle_store_(

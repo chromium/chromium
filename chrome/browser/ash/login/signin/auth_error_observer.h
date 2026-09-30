@@ -15,6 +15,10 @@ class GoogleServiceAuthError;
 class PrefService;
 class Profile;
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace ash {
 
 // This class is responsible for detecting authentication problems reported
@@ -30,6 +34,8 @@ class AuthErrorObserver : public KeyedService,
   // `local_state` must be non-null and must outlive `this`.
   AuthErrorObserver(PrefService* local_state,
                     Profile* profile,
+                    signin::IdentityManager* identity_manager,
+                    SigninErrorController* error_controller,
                     syncer::SyncService* sync_service);
 
   AuthErrorObserver(const AuthErrorObserver&) = delete;
@@ -61,6 +67,8 @@ class AuthErrorObserver : public KeyedService,
 
   const raw_ref<PrefService> local_state_;
   const raw_ptr<Profile> profile_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
+  const raw_ptr<SigninErrorController> error_controller_;
   const raw_ptr<syncer::SyncService> sync_service_;
 };
 

@@ -11,8 +11,6 @@
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/signin/signin_error_notifier.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_error_controller_factory.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/service/sync_service.h"
@@ -29,9 +27,13 @@ bool AuthErrorObserver::ShouldObserve(Profile* profile) {
 
 AuthErrorObserver::AuthErrorObserver(PrefService* local_state,
                                      Profile* profile,
+                                     signin::IdentityManager* identity_manager,
+                                     SigninErrorController* error_controller,
                                      syncer::SyncService* sync_service)
     : local_state_(CHECK_DEREF(local_state)),
       profile_(profile),
+      identity_manager_(identity_manager),
+      error_controller_(error_controller),
       sync_service_(sync_service) {
   DCHECK(ShouldObserve(profile));
 }
@@ -43,10 +45,8 @@ void AuthErrorObserver::StartObserving() {
     sync_service_->AddObserver(this);
   }
 
-  SigninErrorController* const error_controller =
-      SigninErrorControllerFactory::GetForProfile(profile_);
-  if (error_controller) {
-    error_controller->AddObserver(this);
+  if (error_controller_) {
+    error_controller_->AddObserver(this);
     OnErrorChanged();
   }
 }
@@ -56,10 +56,9 @@ void AuthErrorObserver::Shutdown() {
     sync_service_->RemoveObserver(this);
   }
 
-  SigninErrorController* const error_controller =
-      SigninErrorControllerFactory::GetForProfile(profile_);
-  if (error_controller)
-    error_controller->RemoveObserver(this);
+  if (error_controller_) {
+    error_controller_->RemoveObserver(this);
+  }
 }
 
 void AuthErrorObserver::OnStateChanged(syncer::SyncService* sync) {
@@ -74,10 +73,8 @@ void AuthErrorObserver::OnSyncShutdown(syncer::SyncService* sync) {
 void AuthErrorObserver::OnErrorChanged() {
   // This notification could have come for any account but we are only
   // interested in errors for the Primary Account.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile_);
-  HandleAuthError(identity_manager->GetErrorStateOfRefreshTokenForAccount(
-      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin)));
+  HandleAuthError(identity_manager_->GetErrorStateOfRefreshTokenForAccount(
+      identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin)));
 }
 
 void AuthErrorObserver::HandleAuthError(

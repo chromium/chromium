@@ -45,7 +45,8 @@ TokenHandleServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
   return std::make_unique<TokenHandleService>(
-      profile, TokenHandleStoreFactory::Get()->GetTokenHandleStore());
+      profile, IdentityManagerFactory::GetForProfile(profile),
+      TokenHandleStoreFactory::Get()->GetTokenHandleStore());
 }
 
 }  // namespace ash

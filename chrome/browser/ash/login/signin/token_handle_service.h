@@ -22,8 +22,9 @@ class TokenHandleStore;
 class TokenHandleService : public KeyedService,
                            public signin::IdentityManager::Observer {
  public:
-  explicit TokenHandleService(Profile* profile,
-                              TokenHandleStore* token_handle_store);
+  TokenHandleService(Profile* profile,
+                     signin::IdentityManager* identity_manager,
+                     TokenHandleStore* token_handle_store);
 
   TokenHandleService(const TokenHandleService&) = delete;
   TokenHandleService& operator=(const TokenHandleService&) = delete;

@@ -9,7 +9,6 @@
 #include "chrome/browser/ash/login/signin/token_handle_store_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_id/account_id.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
@@ -35,12 +34,15 @@ account_manager::AccountManager* GetAccountManager(Profile* profile) {
 
 }  // namespace
 
-TokenHandleService::TokenHandleService(Profile* profile,
-                                       TokenHandleStore* token_handle_store)
-    : profile_(profile), token_handle_store_(token_handle_store) {
-  identity_manager_ = IdentityManagerFactory::GetForProfile(profile_);
+TokenHandleService::TokenHandleService(
+    Profile* profile,
+    signin::IdentityManager* identity_manager,
+    TokenHandleStore* token_handle_store)
+    : profile_(profile),
+      identity_manager_(identity_manager),
+      token_handle_store_(token_handle_store) {
   // We expect identity_manager_ to be non-null, since we declare an explicit
-  // dependency in `TokenHandleStoreFactory`.
+  // dependency in `TokenHandleServiceFactory`.
   CHECK(identity_manager_);
 
   StartObserving();
@@ -88,17 +90,13 @@ void TokenHandleService::OnRefreshTokenUpdatedForAccount(
 
 void TokenHandleService::FetchAccessToken(const AccountId& account_id) {
   VLOG(1) << "TokenHandleService::FetchAccessToken";
-  if (signin::IdentityManager* const identity_manager =
-          IdentityManagerFactory::GetForProfile(profile_);
-      identity_manager) {
-    access_token_fetcher_ =
-        std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
-            signin::OAuthConsumerId::kTokenHandleService, identity_manager,
-            base::BindOnce(&TokenHandleService::OnAccessTokenFetchComplete,
-                           weak_factory_.GetWeakPtr(), account_id),
-            signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
-            signin::ConsentLevel::kSignin);
-  }
+  access_token_fetcher_ =
+      std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
+          signin::OAuthConsumerId::kTokenHandleService, identity_manager_,
+          base::BindOnce(&TokenHandleService::OnAccessTokenFetchComplete,
+                         weak_factory_.GetWeakPtr(), account_id),
+          signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable,
+          signin::ConsentLevel::kSignin);
 }
 
 void TokenHandleService::OnAccessTokenFetchComplete(

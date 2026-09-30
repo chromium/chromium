@@ -48,6 +48,7 @@ class SigninErrorNotifier : public SigninErrorController::Observer,
       PrefService* local_state,
       SigninErrorController* controller,
       Profile* profile,
+      signin::IdentityManager* identity_manager,
       supervised_user::SupervisedUserService* supervised_user_service);
 
   SigninErrorNotifier(const SigninErrorNotifier&) = delete;

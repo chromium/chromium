@@ -45,7 +45,8 @@ std::unique_ptr<KeyedService>
 OAuth2LoginManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
-  return std::make_unique<OAuth2LoginManager>(profile);
+  return std::make_unique<OAuth2LoginManager>(
+      profile, IdentityManagerFactory::GetForProfile(profile));
 }
 
 }  // namespace ash
