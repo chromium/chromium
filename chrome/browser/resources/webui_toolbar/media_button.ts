@@ -9,6 +9,7 @@ import './icons.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
+import {getContextMenuPosition, HelpBubbleAnchorMixin, PressHandler} from '/shared/toolbar_button.js';
 import type {MediaControlState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
 import {BrowserProxyImpl, ContextMenuType} from './browser_proxy.js';
@@ -16,7 +17,6 @@ import type {BrowserProxy} from './browser_proxy.js';
 import {getHtml} from './media_button.html.js';
 import {OverflowableButtonMixin} from './overflowable_button.js';
 import {getCss} from './toolbar_button.css.js';
-import {getContextMenuPosition, HelpBubbleAnchorMixin, PressHandler} from './toolbar_button.js';
 
 const MediaButtonElementBase =
     HelpBubbleAnchorMixin(OverflowableButtonMixin(CrLitElement));

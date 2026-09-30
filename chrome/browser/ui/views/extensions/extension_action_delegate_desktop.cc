@@ -176,7 +176,7 @@ void ExtensionActionDelegateDesktop::HidePopup() {
   }
 }
 
-gfx::NativeView ExtensionActionDelegateDesktop::GetPopupNativeView() {
+gfx::NativeView ExtensionActionDelegateDesktop::GetPopupNativeViewForTesting() {
   if (!popup_host_ || !popup_host_->view()) {
     return gfx::NativeView();
   }

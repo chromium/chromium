@@ -6,13 +6,13 @@ import {assert} from '//resources/js/assert.js';
 import {TrackedElementManager} from '//resources/js/tracked_element/tracked_element_manager.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
+import {getContextMenuPosition} from '/shared/toolbar_button.js';
 import type {OverflowMenuItem} from '/shared/toolbar_ui_api.mojom-webui.js';
 import type {ContextMenuType} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
 import type {ToolbarAppElement} from './app.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {ResponsiveControl} from './responsive_control.js';
-import {getContextMenuPosition} from './toolbar_button.js';
 
 /**
  * Common fields of the state object that the OverflowableButtonMixin makes use

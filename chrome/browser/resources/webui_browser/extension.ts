@@ -10,6 +10,7 @@ import {TrackedElementManager} from '//resources/js/tracked_element/tracked_elem
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 import type {IconHandle} from '/shared/icon_handle.mojom-webui.js';
+import {shouldSkipNextClick} from '/shared/toolbar_button.js';
 
 import {getCss} from './extension.css.js';
 import {getHtml} from './extension.html.js';
@@ -40,6 +41,11 @@ export class ExtensionElement extends CrLitElement {
 
   private bar: ExtensionsBarElement;
   private extensionId: string;
+  // Set if the TrackedElementManager indicates the element should be
+  // highlighted.
+  private trackedHighlighted: boolean = false;
+  private lastUnhighlightedTime: number = 0;
+  private skipNextClick_: boolean = false;
 
   constructor(extensionId: string, bar: ExtensionsBarElement) {
     super();
@@ -50,8 +56,15 @@ export class ExtensionElement extends CrLitElement {
   override connectedCallback() {
     super.connectedCallback();
     TrackedElementManager.getInstance().startTracking(
-        this, 'kToolbarActionViewElementId',
-        {secondaryId: 'ext:' + this.extensionId});
+        this, 'kToolbarActionViewElementId', {
+          secondaryId: 'ext:' + this.extensionId,
+          onHighlightChanged: (highlighted: boolean) => {
+            if (this.trackedHighlighted && !highlighted) {
+              this.lastUnhighlightedTime = performance.now();
+            }
+            this.trackedHighlighted = highlighted;
+          },
+        });
   }
 
   override disconnectedCallback() {
@@ -59,14 +72,17 @@ export class ExtensionElement extends CrLitElement {
     TrackedElementManager.getInstance().stopTracking(this);
   }
 
-  protected onClick(e: PointerEvent) {
-    this.bar.onClick(this.extensionId, e.pointerType !== '');
+  protected onPointerdown_(e: PointerEvent) {
+    this.skipNextClick_ = shouldSkipNextClick(
+        e, this.trackedHighlighted, this.lastUnhighlightedTime);
   }
 
-  protected onPointerdown_(e: PointerEvent) {
-    if (e.button === 0) {
-      this.bar.onPointerDown(this.extensionId);
+  protected onClick(e: PointerEvent) {
+    if (this.skipNextClick_ && e.pointerType !== '') {
+      this.skipNextClick_ = false;
+      return;
     }
+    this.bar.onClick(this.extensionId);
   }
 
   protected onContextmenu_(event: PointerEvent) {

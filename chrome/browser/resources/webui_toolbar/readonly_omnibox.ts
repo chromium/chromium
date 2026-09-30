@@ -13,6 +13,7 @@ import {TrackedElementManager} from '//resources/js/tracked_element/tracked_elem
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {type Range as MojomRange} from '//resources/mojo/ui/gfx/range/mojom/range.mojom-webui.js';
+import {BUTTON_LEFT, BUTTON_RIGHT, getEventDispositionFlags} from '/shared/toolbar_button.js';
 import type {AdjustOmniboxTextForCopyResult} from '/shared/toolbar_ui_api.mojom-webui.js';
 import type {OmniboxActionDropFile, OmniboxActionDropText, OmniboxActionFocusChange, OmniboxActionPointer, OmniboxActionTextInput, OmniboxTextPortion, OmniboxViewState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {FocusRequestTarget, OmniboxTextColor} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
@@ -22,7 +23,6 @@ import {BrowserProxyImpl, INVALID_FOCUS_REQUEST_HANDLE} from './browser_proxy.js
 import type {BrowserProxy, FocusRequestHandle} from './browser_proxy.js';
 import {getCss} from './readonly_omnibox.css.js';
 import {getHtml} from './readonly_omnibox.html.js';
-import {BUTTON_LEFT, BUTTON_RIGHT, getEventDispositionFlags} from './toolbar_button.js';
 
 export interface ReadonlyOmniboxElement {
   $: {

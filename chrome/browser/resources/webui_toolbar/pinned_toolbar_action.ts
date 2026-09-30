@@ -13,6 +13,7 @@ import {assertNotReachedCase} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {IconTable} from '/shared/icon_table.js';
+import {getContextMenuPosition, getContextMenuSourceType, shouldSkipNextClick} from '/shared/toolbar_button.js';
 import type {OverflowMenuItem} from '/shared/toolbar_ui_api.mojom-webui.js';
 import {PinnedToolbarAction} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {PinnedToolbarActionState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
@@ -24,7 +25,6 @@ import {OverflowableToolbarActionMixin} from './overflowable_toolbar_action_mixi
 import {getHtml} from './pinned_toolbar_action.html.js';
 import {ToolbarActionMixin} from './toolbar_action_mixin.js';
 import {getCss} from './toolbar_button.css.js';
-import {getContextMenuPosition, getContextMenuSourceType, shouldSkipNextClick} from './toolbar_button.js';
 
 const initialState: PinnedToolbarActionState = {
   action: PinnedToolbarAction.kUnspecified,

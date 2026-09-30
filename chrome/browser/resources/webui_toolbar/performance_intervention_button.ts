@@ -7,13 +7,13 @@ import '/strings.m.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {HelpBubbleAnchorMixin} from '/shared/toolbar_button.js';
 import type {PerformanceInterventionControlState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './performance_intervention_button.css.js';
 import {getHtml} from './performance_intervention_button.html.js';
-import {HelpBubbleAnchorMixin} from './toolbar_button.js';
 
 const PerformanceInterventionButtonElementBase =
     HelpBubbleAnchorMixin(CrLitElement);

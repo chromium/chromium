@@ -4,10 +4,9 @@
 
 import {assertNotReached} from '//resources/js/assert.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import type {HelpBubbleAnchor} from '/shared/toolbar_button.js';
+import {HelpBubbleAnchorMixin, setHasHelpBubble} from '/shared/toolbar_button.js';
 import type {HelpBubbleMixinInterface} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_interface.js';
-
-import type {HelpBubbleAnchor} from './toolbar_button.js';
-import {HelpBubbleAnchorMixin, setHasHelpBubble} from './toolbar_button.js';
 
 type Constructor<T> = new (...args: any[]) => T;
 

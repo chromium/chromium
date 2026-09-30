@@ -8,13 +8,13 @@ import './icons.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {getContextMenuPosition, getContextMenuSourceType, HelpBubbleAnchorMixin, setHasHelpBubble} from '/shared/toolbar_button.js';
 import type {GlicButtonState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
 import {BrowserProxyImpl, ContextMenuType} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './glic_button.css.js';
 import {getHtml} from './glic_button.html.js';
-import {getContextMenuPosition, getContextMenuSourceType, HelpBubbleAnchorMixin, setHasHelpBubble} from './toolbar_button.js';
 import type {ToolbarChipButtonElement} from './toolbar_chip_button.js';
 
 export interface GlicButtonElement {

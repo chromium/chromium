@@ -10,7 +10,7 @@ import type {HelpBubbleMixinInterface} from 'chrome://resources/cr_components/he
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import {isMac} from 'chrome://resources/js/platform.js';
 
-import {EventDispositionFlag} from './browser_proxy.js';
+import {EventDispositionFlag} from './browser_controls_api_data_model.mojom-webui.js';
 import {TimerHelper} from './timer_helper.js';
 
 export const BUTTON_LEFT = 0;

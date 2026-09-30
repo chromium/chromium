@@ -247,10 +247,6 @@ class MockToolbarUIDelegate
   MOCK_METHOD(void, OnAppMenuFocusChanged, (bool), (override));
   MOCK_METHOD(void,
               ExecuteExtensionAction,
-              (const std::string& extension_id, bool is_pointer_interaction),
-              (override));
-  MOCK_METHOD(void,
-              OnExtensionActionPointerDown,
               (const std::string& extension_id),
               (override));
   MOCK_METHOD(void,

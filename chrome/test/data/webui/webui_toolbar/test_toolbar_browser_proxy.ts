@@ -26,7 +26,6 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
       'onAppMenuFocusChanged',
       'onAvatarButtonMousePressed',
       'onContentSettingImagePointerDown',
-      'onExtensionActionPointerDown',
       'onGlicButtonClicked',
       'onHomeButtonDropFile',
       'onHomeButtonDropText',
@@ -207,13 +206,8 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
     this.methodCalled('onAppMenuFocusChanged', focused);
   }
 
-  executeExtensionAction(extensionId: string, isPointerInteraction: boolean) {
-    this.methodCalled(
-        'executeExtensionAction', [extensionId, isPointerInteraction]);
-  }
-
-  onExtensionActionPointerDown(extensionId: string) {
-    this.methodCalled('onExtensionActionPointerDown', extensionId);
+  executeExtensionAction(extensionId: string) {
+    this.methodCalled('executeExtensionAction', [extensionId]);
   }
 
   showExtensionContextMenu(extensionId: string, source: MenuSourceType) {

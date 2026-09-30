@@ -13,6 +13,8 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 import {ReloadInputType} from '/shared/browser_controls_api.mojom-webui.js';
 import type {ReloadInteractionMetadata} from '/shared/browser_controls_api.mojom-webui.js';
+import {TimerHelper} from '/shared/timer_helper.js';
+import {BUTTON_LEFT, getContextMenuPosition, getEventDispositionFlags, HelpBubbleAnchorMixin, playIconAnimation, PressHandler, roundedIconsEnabled} from '/shared/toolbar_button.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
@@ -21,8 +23,6 @@ import type {BrowserProxy, ReloadControlState} from './browser_proxy.js';
 import {ReloadButtonInputType} from './metrics_recorder.js';
 import {getCss} from './reload_button.css.js';
 import {getHtml} from './reload_button.html.js';
-import {TimerHelper} from './timer_helper.js';
-import {BUTTON_LEFT, getContextMenuPosition, getEventDispositionFlags, HelpBubbleAnchorMixin, playIconAnimation, PressHandler, roundedIconsEnabled} from './toolbar_button.js';
 
 // go/keep-sorted start
 const RELOAD_BUTTON_ACC_NAME_RELOAD = 'reloadButtonAccNameReload';

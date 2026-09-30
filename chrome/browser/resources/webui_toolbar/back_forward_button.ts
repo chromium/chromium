@@ -10,13 +10,13 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import type {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
+import {getContextMenuPosition, getEventDispositionFlags, HelpBubbleAnchorMixin, playIconAnimation, PressHandler, roundedIconsEnabled} from '/shared/toolbar_button.js';
 
 import {getCss} from './back_forward_button.css.js';
 import {getHtml} from './back_forward_button.html.js';
 import {BrowserProxyImpl, ContextMenuType} from './browser_proxy.js';
 import type {BackForwardButtonState, BrowserProxy} from './browser_proxy.js';
 import {OverflowableButtonMixin} from './overflowable_button.js';
-import {getContextMenuPosition, getEventDispositionFlags, HelpBubbleAnchorMixin, playIconAnimation, PressHandler, roundedIconsEnabled} from './toolbar_button.js';
 
 const BackForwardButtonElementBase =
     HelpBubbleAnchorMixin(OverflowableButtonMixin(CrLitElement));

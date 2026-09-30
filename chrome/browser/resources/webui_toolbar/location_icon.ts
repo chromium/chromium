@@ -11,6 +11,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {DragEventSource} from '//resources/mojo/ui/base/dragdrop/mojom/drag_drop_types.mojom-webui.js';
 import {IconTable} from '/shared/icon_table.js';
+import {TimerHelper} from '/shared/timer_helper.js';
 import {LhsChipIdentifier, SecurityChipRole, SecurityLevel} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {SecurityChipState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
@@ -19,7 +20,6 @@ import {BrowserProxyImpl} from './browser_proxy.js';
 import {getCss} from './location_icon.css.js';
 import {getHtml} from './location_icon.html.js';
 import {PointerProxyImpl} from './pointer_proxy.js';
-import {TimerHelper} from './timer_helper.js';
 
 export interface LocationIconElement {
   $: {

@@ -10,6 +10,8 @@ import '//resources/cr_elements/icons.html.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {TimerHelper} from '/shared/timer_helper.js';
+import {BUTTON_LEFT, getClickSourceType, getContextMenuPosition, HelpBubbleAnchorMixin, setHasHelpBubble} from '/shared/toolbar_button.js';
 import {AppMenuIconType, AppMenuSeverity, ContextMenuType, FocusRequestTarget} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {AppMenuControlState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
@@ -17,8 +19,6 @@ import {getCss} from './app_menu_button.css.js';
 import {getHtml} from './app_menu_button.html.js';
 import {BrowserProxyImpl, INVALID_FOCUS_REQUEST_HANDLE} from './browser_proxy.js';
 import type {FocusRequestHandle} from './browser_proxy.js';
-import {TimerHelper} from './timer_helper.js';
-import {BUTTON_LEFT, getClickSourceType, getContextMenuPosition, HelpBubbleAnchorMixin, setHasHelpBubble} from './toolbar_button.js';
 import type {ToolbarChipButtonElement} from './toolbar_chip_button.js';
 
 // Matches the 250ms animation in icons.ts and Views BrowserAppMenuButton.

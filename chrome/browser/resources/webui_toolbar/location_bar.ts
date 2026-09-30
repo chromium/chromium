@@ -13,6 +13,7 @@ import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {PressHandler} from '/shared/toolbar_button.js';
 import type {OverflowMenuItem} from '/shared/toolbar_ui_api.mojom-webui.js';
 import {SecurityChipRole} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {LocationBarState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
@@ -26,7 +27,6 @@ import {getHtml} from './location_bar.html.js';
 import type {PageActionIconsElement} from './page_action_icons.js';
 import type {ReadonlyOmniboxElement} from './readonly_omnibox.js';
 import type {ResponsiveControl} from './responsive_control.js';
-import {PressHandler} from './toolbar_button.js';
 
 export interface LocationBarElement {
   $: {

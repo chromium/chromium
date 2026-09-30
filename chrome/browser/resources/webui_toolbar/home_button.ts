@@ -8,6 +8,7 @@ import '/strings.m.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
+import {getContextMenuPosition, getEventDispositionFlags, HelpBubbleAnchorMixin, PressHandler, roundedIconsEnabled} from '/shared/toolbar_button.js';
 import type {HomeControlState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
 import {BrowserProxyImpl, ContextMenuType} from './browser_proxy.js';
@@ -15,7 +16,6 @@ import type {BrowserProxy} from './browser_proxy.js';
 import {getHtml} from './home_button.html.js';
 import {OverflowableButtonMixin} from './overflowable_button.js';
 import {getCss} from './toolbar_button.css.js';
-import {getContextMenuPosition, getEventDispositionFlags, HelpBubbleAnchorMixin, PressHandler, roundedIconsEnabled} from './toolbar_button.js';
 
 const HomeButtonElementBase =
     HelpBubbleAnchorMixin(OverflowableButtonMixin(CrLitElement));

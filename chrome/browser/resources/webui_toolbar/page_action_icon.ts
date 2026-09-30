@@ -13,6 +13,7 @@ import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 import {AnimationTracker} from '/shared/animation_tracker.js';
 import {IconTable} from '/shared/icon_table.js';
+import {getClickSourceType, playIconAnimation} from '/shared/toolbar_button.js';
 import type {PageActionState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {PageActionAnimationStyle, PageActionId, PageActionTrigger} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
@@ -22,7 +23,6 @@ import type {BrowserProxy} from './browser_proxy.js';
 import {getCss} from './page_action_icon.css.js';
 import {getHtml} from './page_action_icon.html.js';
 import {ToolbarActionMixin} from './toolbar_action_mixin.js';
-import {getClickSourceType, playIconAnimation} from './toolbar_button.js';
 import type {ToolbarChipButtonElement} from './toolbar_chip_button.js';
 
 export interface PageActionIconElement {

@@ -9,6 +9,7 @@ import './icons.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
+import {BUTTON_LEFT, getClickSourceType, getContextMenuPosition, getContextMenuSourceType, HelpBubbleAnchorMixin, roundedIconsEnabled} from '/shared/toolbar_button.js';
 import {ContextMenuType, SplitTabActiveLocation} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {SplitTabsControlState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
@@ -17,7 +18,6 @@ import type {BrowserProxy} from './browser_proxy.js';
 import {OverflowableButtonMixin} from './overflowable_button.js';
 import {getHtml} from './split_tabs_button.html.js';
 import {getCss} from './toolbar_button.css.js';
-import {BUTTON_LEFT, getClickSourceType, getContextMenuPosition, getContextMenuSourceType, HelpBubbleAnchorMixin, roundedIconsEnabled} from './toolbar_button.js';
 
 const SplitTabsButtonElementBase =
     HelpBubbleAnchorMixin(OverflowableButtonMixin(CrLitElement));

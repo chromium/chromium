@@ -23,6 +23,8 @@ build_webui("build") {
     "permission_chip_delegate.ts",
     "permission_dashboard.html.ts",
     "permission_dashboard.ts",
+    "timer_helper.ts",
+    "toolbar_button.ts",
   ]
 
   css_files = [

@@ -9,6 +9,7 @@ import '/shared/icon_from_table.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
+import {BUTTON_LEFT, HelpBubbleAnchorMixin, setHasHelpBubble} from '/shared/toolbar_button.js';
 import type {AvatarControlState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import {AvatarToolbarButtonState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
@@ -16,7 +17,6 @@ import {getCss} from './avatar_button.css.js';
 import {getHtml} from './avatar_button.html.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {OverflowableButtonMixin} from './overflowable_button.js';
-import {BUTTON_LEFT, HelpBubbleAnchorMixin, setHasHelpBubble} from './toolbar_button.js';
 import type {ToolbarChipButtonElement} from './toolbar_chip_button.js';
 
 export interface AvatarButtonElement {

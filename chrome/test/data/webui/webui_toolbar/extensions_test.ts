@@ -11,6 +11,7 @@ import type {ExtensionsElement} from 'chrome://webui-toolbar.top-chrome/app.js';
 
 suite('Extensions', function() {
   let container: ExtensionsElement;
+  let executeCalls: string[] = [];
   let moveCalls: Array<{extensionId: string, index: number}> = [];
   let moveByCalls: Array<{extensionId: string, delta: number}> = [];
 
@@ -51,10 +52,14 @@ suite('Extensions', function() {
   setup(async () => {
     channels = [];  // Reset active channels
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    executeCalls = [];
     moveCalls = [];
     moveByCalls = [];
 
     const mockHandler = {
+      executeExtensionAction: (extensionId: string) => {
+        executeCalls.push(extensionId);
+      },
       moveExtensionAction: (extensionId: string, index: number) => {
         moveCalls.push({extensionId, index});
       },
@@ -1103,5 +1108,48 @@ suite('Extensions', function() {
     assertEquals('action-1', actionElements[0]!.getAttribute('data-key'));
     assertEquals('action-2', actionElements[1]!.getAttribute('data-key'));
     assertEquals('', actionElements[2]!.getAttribute('data-key'));
+  });
+
+  test('Click suppression when bubble is open or recently closed', () => {
+    const actionElements =
+        container.shadowRoot.querySelectorAll('webui-toolbar-extension');
+    const firstAction = actionElements[0]!;
+    const button = firstAction.shadowRoot.querySelector('cr-button')!;
+
+    const dispatchMouseClick = () => {
+      button.dispatchEvent(new PointerEvent(
+          'pointerdown', {bubbles: true, button: 0, pointerType: 'mouse'}));
+      button.dispatchEvent(new PointerEvent(
+          'click', {bubbles: true, button: 0, pointerType: 'mouse'}));
+    };
+
+    // 1. Normal click when bubble is closed executes the action.
+    dispatchMouseClick();
+    assertEquals(1, executeCalls.length);
+    assertEquals('action-1', executeCalls[0]);
+
+    // 2. Click while highlighted (bubble open) is suppressed.
+    firstAction.trackedHighlighted = true;
+    dispatchMouseClick();
+    assertEquals(1, executeCalls.length);
+
+    // 3. Click right after unhighlighting (< 100ms) is suppressed.
+    firstAction.trackedHighlighted = false;
+    firstAction.lastUnhighlightedTime = performance.now() + 10000;
+    dispatchMouseClick();
+    assertEquals(1, executeCalls.length);
+
+    // 4. Keyboard activation (empty pointerType) is not suppressed even after
+    // a pointerdown that armed skipNextClick_.
+    button.dispatchEvent(new PointerEvent(
+        'pointerdown', {bubbles: true, button: 0, pointerType: 'mouse'}));
+    button.dispatchEvent(
+        new PointerEvent('click', {bubbles: true, button: 0, pointerType: ''}));
+    assertEquals(2, executeCalls.length);
+
+    // 5. Click after >= 100ms since bubble closed executes the action.
+    firstAction.lastUnhighlightedTime = performance.now() - 200;
+    dispatchMouseClick();
+    assertEquals(3, executeCalls.length);
   });
 });

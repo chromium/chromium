@@ -9,6 +9,7 @@ import './icons.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import {getContextMenuPosition, getContextMenuSourceType} from '/shared/toolbar_button.js';
 import type {BatterySaverControlState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 
 import {getHtml} from './battery_saver_button.html.js';
@@ -16,7 +17,6 @@ import {BrowserProxyImpl, ContextMenuType} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
 import {OverflowableButtonMixin} from './overflowable_button.js';
 import {getCss} from './toolbar_button.css.js';
-import {getContextMenuPosition, getContextMenuSourceType} from './toolbar_button.js';
 
 export interface BatterySaverButtonElement {
   $: {

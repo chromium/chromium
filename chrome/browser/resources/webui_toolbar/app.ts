@@ -27,6 +27,7 @@ import {TrackedElementManager} from '//resources/js/tracked_element/tracked_elem
 import {CrLitElement, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {IconTable} from '/shared/icon_table.js';
+import {setHasHelpBubble} from '/shared/toolbar_button.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 
@@ -36,7 +37,6 @@ import {BrowserProxyImpl, EventDispositionFlag, INVALID_NAVIGATION_CONTROLS_STAT
 import type {BrowserProxy, FocusRequestHandle, FocusRequestListener, IconUpdate, NavigationControlsState, NavigationControlsStateListener, NavigationControlsStateListenerHandle, ShowSplitTabsContextMenuHandle, ShowSplitTabsContextMenuListener} from './browser_proxy.js';
 import type {OverflowButtonElement} from './overflow_button.js';
 import type {ResponsiveControl} from './responsive_control.js';
-import {setHasHelpBubble} from './toolbar_button.js';
 
 // clang-format off
 // Helper so tests can find what they needed when optimization is on.
@@ -68,6 +68,7 @@ import type {GlicButtonState, OmniboxAction, LocationBarState, PageActionState, 
 import type {AdjustOmniboxTextForCopyResult, InitialState, OverflowMenuItem, ToolbarUIServiceInterface} from '/shared/toolbar_ui_api.mojom-webui.js';
 import {PermissionChipElement} from '/shared/permission_chip.js';
 import type {PermissionDashboardElement} from '/shared/permission_dashboard.js';
+import {getClickSourceType, getContextMenuSourceType, PressHandler, shouldSkipNextClick} from '/shared/toolbar_button.js';
 
 import {INVALID_FOCUS_REQUEST_HANDLE} from './browser_proxy.js';
 import {AppMenuButtonElement} from './app_menu_button.js';
@@ -96,7 +97,6 @@ import {OverflowableToolbarActionContainerMixin} from './overflowable_toolbar_ac
 import type {OverflowableToolbarActionContainer} from './overflowable_toolbar_action_container_mixin.js';
 import {OverflowableToolbarActionMixin} from './overflowable_toolbar_action_mixin.js';
 import type {OverflowableToolbarActionElement, OverflowableToolbarActionMixinInterface} from './overflowable_toolbar_action_mixin.js';
-import {getClickSourceType, getContextMenuSourceType, PressHandler, shouldSkipNextClick} from './toolbar_button.js';
 import {ToolbarChipButtonElement} from './toolbar_chip_button.js';
 
 import {CrLazyIconset} from '/shared/cr_lazy_iconset.js';
