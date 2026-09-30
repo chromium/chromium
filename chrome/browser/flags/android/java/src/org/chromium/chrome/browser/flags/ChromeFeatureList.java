@@ -881,14 +881,6 @@ public abstract class ChromeFeatureList {
     public static final String TOUCH_TO_SEARCH_CALLOUT = "TouchToSearchCallout";
     public static final String TRUSTED_WEB_ACTIVITY_CONTACTS_DELEGATION =
             "TrustedWebActivityContactsDelegation";
-    public static final String TWEAK_APPLICATION_PRELOAD_LOAD_NATIVE_FIRST =
-            "TweakApplicationPreloadLoadNativeFirst";
-    public static final String TWEAK_APPLICATION_PRELOAD_MOVE_WARM_UP =
-            "TweakApplicationPreloadMoveWarmUp";
-    public static final String TWEAK_APPLICATION_PRELOAD_SKIP_NEW_INSTANCE =
-            "TweakApplicationPreloadSkipNewInstance";
-    public static final String TWEAK_APPLICATION_PRELOAD_SKIP_WARM_UP =
-            "TweakApplicationPreloadSkipWarmUp";
     public static final String UMA_SESSION_CORRECTNESS_FIXES = "UmaSessionCorrectnessFixes";
     public static final String UNDOABLE_TAB_CLOSURE_REWORK = "UndoableTabClosureRework";
     public static final String UNIVERSAL_KEYBOARD_HANDLING = "UniversalKeyboardHandling";
@@ -1478,17 +1470,6 @@ public abstract class ChromeFeatureList {
                     TOUCH_TO_SEARCH_CALLOUT,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sTweakApplicationPreloadLoadNativeFirst =
-            newCachedFlag(TWEAK_APPLICATION_PRELOAD_LOAD_NATIVE_FIRST, /* defaultValue= */ false);
-    public static final CachedFlag sTweakApplicationPreloadMoveWarmUp =
-            newCachedFlag(
-                    TWEAK_APPLICATION_PRELOAD_MOVE_WARM_UP,
-                    /* defaultValue= */ false,
-                    /* defaultValueInTests= */ true);
-    public static final CachedFlag sTweakApplicationPreloadSkipNewInstance =
-            newCachedFlag(TWEAK_APPLICATION_PRELOAD_SKIP_NEW_INSTANCE, /* defaultValue= */ false);
-    public static final CachedFlag sTweakApplicationPreloadSkipWarmUp =
-            newCachedFlag(TWEAK_APPLICATION_PRELOAD_SKIP_WARM_UP, /* defaultValue= */ false);
     public static final CachedFlag sUnparcelIntentFileDescriptors =
             newCachedFlag(UNPARCEL_INTENT_FILE_DESCRIPTORS, /* defaultValue= */ true);
     public static final CachedFlag sUseActivityManagerForTabActivation =
@@ -1713,10 +1694,6 @@ public abstract class ChromeFeatureList {
                     sToolbarSnapshotRefactor,
                     sToolbarTabletResizeRefactor,
                     sTouchToSearchCallout,
-                    sTweakApplicationPreloadLoadNativeFirst,
-                    sTweakApplicationPreloadMoveWarmUp,
-                    sTweakApplicationPreloadSkipNewInstance,
-                    sTweakApplicationPreloadSkipWarmUp,
                     sUnparcelIntentFileDescriptors,
                     sUseActivityManagerForTabActivation,
                     sUseAppTaskForCustomTabActivation,
