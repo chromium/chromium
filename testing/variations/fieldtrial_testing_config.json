@@ -1573,6 +1573,24 @@
             ]
         }
     ],
+    "AutoPictureInPictureOnWindowOccluded": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutoPictureInPictureOnWindowOccluded"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutoPictureInPictureSurveys_VideoConferencing": [
         {
             "platforms": [
