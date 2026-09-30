@@ -113,6 +113,8 @@ const DeepQuery kLensSearchButton = {"ntp-app", "ntp-searchbox",
                                      "#lensSearchButton"};
 const DeepQuery kComposeButton = {"ntp-app", "ntp-searchbox", "#composeButton",
                                   "#composeButton"};
+const DeepQuery kComposeButtonHost = {"ntp-app", "ntp-searchbox",
+                                      "#composeButton"};
 const DeepQuery kComposeboxVoiceSearchButton = {"ntp-app", "#composebox",
                                                 "#voiceSearchButton"};
 const DeepQuery kContextualEntrypoint = {"ntp-app", "ntp-searchbox", "#context",
@@ -1374,26 +1376,33 @@ IN_PROC_BROWSER_TEST_F(NtpRealboxDefaultExperienceInteractiveTest,
       ClickElement(kNtpElementId, kRealboxInput),
       WaitForElementVisibilityChange(kSearchboxDropdown,
                                      /*expected_visible=*/true),
-      // Pressing Tab should focus the AIM button.
+      // Pressing Tab moves virtual focus to the AIM button.
       SendKeyPress(kNtpElementId, ui::VKEY_TAB),
-      WaitForJsConditionAt(kNtpElementId, kComposeButton,
-                           "(el) => el && el.matches(':focus')"),
-      // Pressing Tab again should focus the inline autocomplete match.
+      WaitForJsConditionAt(
+          kNtpElementId, kComposeButtonHost,
+          "(el) => el && el.hasAttribute('has-virtual-focus')"),
+      // Pressing Tab again selects the inline autocomplete match.
       SendKeyPress(kNtpElementId, ui::VKEY_TAB),
       WaitForJsConditionAt(kNtpElementId, kRealboxInput,
                            "(el) => el.value === 'b'"),
-      // Pressing Tab again should focus the remove button.
+      // Pressing Tab again selects the match remove button.
       SendKeyPress(kNtpElementId, ui::VKEY_TAB),
       WaitForJsConditionAt(kNtpElementId, kRealboxMatchRemoveButton,
-                           "(el) => el && el.matches(':focus')"),
+                           "(el) => el && el.classList.contains('selected')"),
       // Trigger the remove button via ENTER
       SendKeyPress(kNtpElementId, ui::VKEY_RETURN),
-      // After removing the current match, the next match remove button should
-      // be focused.
+      // After removing the match, the next match is selected.
       WaitForJsConditionAt(kNtpElementId, kRealboxInput,
                            "(el) => el.value === 'a'"),
+      // Pressing Tab selects the next match's remove button.
+      SendKeyPress(kNtpElementId, ui::VKEY_TAB),
+      WaitForJsConditionAt(kNtpElementId, kRealboxMatchRemoveButton,
+                           "(el) => el && el.classList.contains('selected')"),
+      // Trigger the remove button via ENTER
       SendKeyPress(kNtpElementId, ui::VKEY_RETURN),
-      // After all matches are removed, the input should be empty.
-      WaitForJsConditionAt(kNtpElementId, kRealboxInput,
-                           "(el) => el.value === ''"));
+      // After all history matches are removed, verify none remain.
+      WaitForJsConditionAt(
+          kNtpElementId, kSearchboxDropdown,
+          "(el) => el && ![...el.shadowRoot.querySelectorAll("
+          "'cr-searchbox-match')].some(m => m.match.supportsDeletion)"));
 }
