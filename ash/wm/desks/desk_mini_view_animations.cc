@@ -316,8 +316,8 @@ void AnimateDeskIconButtonScale(DeskIconButton* button,
 }  // namespace
 
 void PerformAddDeskMiniViewAnimation(
-    std::vector<DeskMiniView*> new_mini_views) {
-  for (auto* mini_view : new_mini_views) {
+    std::vector<raw_ptr<DeskMiniView, DanglingUntriaged>> new_mini_views) {
+  for (DeskMiniView* mini_view : new_mini_views) {
     if (!mini_view->desk()->is_desk_being_removed()) {
       ScaleUpAndFadeInView(mini_view);
     }
