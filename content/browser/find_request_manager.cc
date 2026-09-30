@@ -83,13 +83,9 @@ RenderFrameHostImpl* GetAncestor(RenderFrameHostImpl* rfh) {
 }
 
 // Returns the previous sibling RenderFrameHostImpl of |rfh|, if one exists,
-// or nullptr otherwise.
+// or nullptr otherwise. Siblings come from GetChildren() so that an inner
+// WebContents is its main frame here too, not its outer delegate frame.
 RenderFrameHostImpl* GetPreviousSibling(RenderFrameHostImpl* rfh) {
-  if (rfh->PreviousSibling()) {
-    return rfh->PreviousSibling()->current_frame_host();
-  }
-
-  // The previous sibling may be in another WebContents.
   if (RenderFrameHostImpl* parent = GetAncestor(rfh)) {
     auto children = GetChildren(parent);
     auto it = std::ranges::find(children, rfh);
@@ -104,12 +100,8 @@ RenderFrameHostImpl* GetPreviousSibling(RenderFrameHostImpl* rfh) {
 }
 
 // Returns the next sibling RenderFrameHostImpl of |rfh|, if one exists, or
-// nullptr otherwise.
+// nullptr otherwise. See GetPreviousSibling().
 RenderFrameHostImpl* GetNextSibling(RenderFrameHostImpl* rfh) {
-  if (rfh->NextSibling())
-    return rfh->NextSibling()->current_frame_host();
-
-  // The next sibling may be in another WebContents.
   if (RenderFrameHostImpl* parent = GetAncestor(rfh)) {
     auto children = GetChildren(parent);
     auto it = std::ranges::find(children, rfh);

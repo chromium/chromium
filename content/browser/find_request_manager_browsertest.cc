@@ -1809,4 +1809,74 @@ IN_PROC_BROWSER_TEST_F(FindRequestManagerTest, FindNextOnCrashedPage) {
   EXPECT_EQ(0, results.active_match_ordinal);
 }
 
+// Runs find sessions on an inner WebContents whose embedder also has a plain
+// child frame.
+class FindRequestManagerInnerContentsTest : public FindRequestManagerTestBase {
+ protected:
+  void TearDownOnMainThread() override {
+    inner_delegate_.Observe(nullptr);
+    inner_contents_ = nullptr;
+    FindRequestManagerTestBase::TearDownOnMainThread();
+  }
+
+  void AttachInnerContentsAt(size_t child_index) {
+    LoadAndWait("/find_in_page_multi_frame.html");
+    ASSERT_EQ(2u, root()->child_count());
+    inner_contents_ = CreateAndAttachInnerContents(
+        root()->child_at(child_index)->current_frame_host());
+    inner_contents_->SetDelegate(&inner_delegate_);
+    inner_delegate_.Observe(inner_contents_);
+    ASSERT_TRUE(NavigateToURLFromRenderer(
+        inner_contents_,
+        embedded_test_server()->GetURL("b.com", "/find_in_simple_page.html")));
+  }
+
+  FindResults FindInInnerContents(bool new_session, bool forward) {
+    auto options = blink::mojom::FindOptions::New();
+    options->run_synchronously_for_testing = true;
+    options->new_session = new_session;
+    options->forward = forward;
+    inner_contents_->Find(u"result", std::move(options), /*skip_delay=*/false,
+                          [this](int request_id) {
+                            inner_delegate_.UpdateLastRequest(request_id);
+                          });
+    inner_delegate_.WaitForFinalReply();
+    return inner_delegate_.GetFindResults();
+  }
+
+ private:
+  FindTestWebContentsDelegate inner_delegate_;
+  raw_ptr<WebContents> inner_contents_ = nullptr;
+};
+
+IN_PROC_BROWSER_TEST_F(FindRequestManagerInnerContentsTest,
+                       WrapsForwardAfterSiblingFrame) {
+  ASSERT_NO_FATAL_FAILURE(AttachInnerContentsAt(1));
+
+  FindResults results =
+      FindInInnerContents(/*new_session=*/true, /*forward=*/true);
+  EXPECT_EQ(5, results.number_of_matches);
+  EXPECT_EQ(1, results.active_match_ordinal);
+
+  for (int i = 2; i <= 5; ++i) {
+    results = FindInInnerContents(/*new_session=*/false, /*forward=*/true);
+    EXPECT_EQ(i, results.active_match_ordinal);
+  }
+  results = FindInInnerContents(/*new_session=*/false, /*forward=*/true);
+  EXPECT_EQ(1, results.active_match_ordinal);
+}
+
+IN_PROC_BROWSER_TEST_F(FindRequestManagerInnerContentsTest,
+                       WrapsBackwardBeforeSiblingFrame) {
+  ASSERT_NO_FATAL_FAILURE(AttachInnerContentsAt(0));
+
+  FindResults results =
+      FindInInnerContents(/*new_session=*/true, /*forward=*/true);
+  EXPECT_EQ(5, results.number_of_matches);
+  EXPECT_EQ(1, results.active_match_ordinal);
+
+  results = FindInInnerContents(/*new_session=*/false, /*forward=*/false);
+  EXPECT_EQ(5, results.active_match_ordinal);
+}
+
 }  // namespace content
