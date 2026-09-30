@@ -3164,6 +3164,11 @@ public class ToolbarPhone extends ToolbarLayout
                 getPaddingBottom());
     }
 
+    @Override
+    public int getEdgeToEdgeTopPadding() {
+        return mTopPaddingForEdgeToEdgeNtp;
+    }
+
     /** Checks if the given visual state represents a New Tab Page. */
     private static boolean isNtpVisualState(@VisualState int visualState) {
         return visualState == VisualState.NEW_TAB_NORMAL

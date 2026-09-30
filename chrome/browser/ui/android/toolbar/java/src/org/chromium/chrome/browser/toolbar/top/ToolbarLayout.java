@@ -962,6 +962,15 @@ public abstract class ToolbarLayout extends FrameLayout
      */
     public void onToEdgeChange(int newTopPadding) {}
 
+    /**
+     * @return The top padding most recently applied by {@link #onToEdgeChange(int)}, or 0 if this
+     *     toolbar doesn't support drawing edge-to-edge.
+     * @see Toolbar#getEdgeToEdgeTopPadding()
+     */
+    public int getEdgeToEdgeTopPadding() {
+        return 0;
+    }
+
     public void setIsBottomMostTopControlsLayer(boolean isBottomMostLayer) {
         mIsBottomMostTopControlsLayer = isBottomMostLayer;
         updateHairlineVisibility();

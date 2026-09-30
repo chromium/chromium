@@ -834,6 +834,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
         private final int[] mTempPosition = new int[2];
         private final Rect mLocationBarRect = new Rect();
         private final Rect mToolbarRect = new Rect();
+        private int mToolbarTopOffsetInCapture;
         private final View mToolbarContainer;
         private final ToolbarHairlineView mToolbarHairline;
         private final Callback<Boolean> mOnCompositorInMotionChange =
@@ -1105,6 +1106,12 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
                     mTempPosition[1],
                     mToolbarContainer.getWidth(),
                     mTempPosition[1] + mToolbar.getHeight());
+            // When drawing edge-to-edge (e.g. a themed NTP), the toolbar is padded at the top to
+            // extend behind the status bar. That strip is part of the bitmap, but not part of the
+            // toolbar height the browser controls reserve, so, like the tab strip, it counts as
+            // capture content sitting above the toolbar. This is deliberately kept out of
+            // mToolbarRect, which also sizes the compositor's toolbar background layer.
+            mToolbarTopOffsetInCapture = mTempPosition[1] + mToolbar.getEdgeToEdgeTopPadding();
 
             mToolbar.getLocationBarContentRect(mLocationBarRect);
             mLocationBarRect.offset(mTempPosition[0], mTempPosition[1]);
@@ -1112,6 +1119,20 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
             int shadowHeight = mToolbarHairline.getHeight();
             return ResourceFactory.createToolbarContainerResource(
                     mToolbarRect, mLocationBarRect, shadowHeight);
+        }
+
+        /**
+         * Returns where the toolbar's content starts inside the most recent capture: the toolbar's
+         * top edge, plus any edge-to-edge top padding drawn above its content. It is written only
+         * by {@link #createNativeResource()}, so it keeps describing the bitmap the compositor is
+         * holding even after the view hierarchy has been re-laid out (e.g. the edge-to-edge padding
+         * is removed on navigating away from the NTP before a new capture is taken). 0 until the
+         * first capture, when there is no bitmap to position.
+         *
+         * @see ToolbarControlContainer#getToolbarTopOffsetInCapture()
+         */
+        int getToolbarTopOffsetInCapture() {
+            return mToolbarTopOffsetInCapture;
         }
 
         public void onPageLoadStopped() {
@@ -1315,6 +1336,18 @@ public class ToolbarControlContainer extends OptimizedFrameLayout
     /** Returns the measured height of the entire container, minus the tabstrip's height. */
     public int getControlContainerHeightExcludingTabStrip() {
         return getMeasuredHeight() - mToolbar.getTabStripHeight();
+    }
+
+    /**
+     * Returns the y-offset, in px, at which the toolbar's content appears inside the current
+     * capture; that is, how much of the capture sits above the toolbar, such as the tabstrip or the
+     * status bar padding added when drawing edge-to-edge. Measured against the view that is
+     * actually rasterized, at the moment of rasterization, so it needs no reconciliation with
+     * separately measured view heights and stays correct while the capture is stale.
+     */
+    public int getToolbarTopOffsetInCapture() {
+        return ((ToolbarViewResourceAdapter) getToolbarResourceAdapter())
+                .getToolbarTopOffsetInCapture();
     }
 
     private class SwipeGestureListenerImpl extends SwipeGestureListener {

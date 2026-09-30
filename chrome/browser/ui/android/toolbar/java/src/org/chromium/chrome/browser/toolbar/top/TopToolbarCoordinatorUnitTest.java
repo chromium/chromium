@@ -321,7 +321,6 @@ public class TopToolbarCoordinatorUnitTest {
         when(mControlContainer.getToolbarHeight()).thenReturn(147);
         when(mControlContainer.getToolbarHairlineHeight()).thenReturn(3);
         when(mControlContainer.getToolbarCaptureHeight()).thenReturn(150);
-        when(mControlContainer.getControlContainerHeightExcludingTabStrip()).thenReturn(150);
 
         mCoordinator.onBrowserControlsOffsetUpdate(-147, /* reachRestingPosition= */ true);
 
@@ -342,11 +341,87 @@ public class TopToolbarCoordinatorUnitTest {
         when(mControlContainer.getToolbarHeight()).thenReturn(147);
         when(mControlContainer.getToolbarHairlineHeight()).thenReturn(3);
         when(mControlContainer.getToolbarCaptureHeight()).thenReturn(150);
-        when(mControlContainer.getControlContainerHeightExcludingTabStrip()).thenReturn(150);
 
         mCoordinator.onBrowserControlsOffsetUpdate(0, /* reachRestingPosition= */ true);
 
         verify(mOverlayCoordinator).setYOffset(0);
+    }
+
+    @Test
+    public void testSceneLayerYOffset_ShiftedUpByToolbarOffsetInCapture() {
+        // The capture starts at the tab strip, so the toolbar sits 40px down into the bitmap. The
+        // scene layer has to be shifted up by that much for the toolbar itself to land on the
+        // offset the browser controls asked for.
+        mCoordinator.setOverlayCoordinatorForTesting(mOverlayCoordinator);
+        setUpVisibleRestingControls();
+
+        when(mControlContainer.getToolbarCaptureHeight()).thenReturn(190);
+        when(mControlContainer.getToolbarTopOffsetInCapture()).thenReturn(40);
+
+        // Fully visible: finalYOffset = 40 - 40 = 0.
+        mCoordinator.onBrowserControlsOffsetUpdate(40, /* reachRestingPosition= */ false);
+
+        verify(mOverlayCoordinator).setYOffset(0);
+
+        // Partially scrolled off: finalYOffset = 20 - 40 = -20.
+        mCoordinator.onBrowserControlsOffsetUpdate(20, /* reachRestingPosition= */ false);
+
+        verify(mOverlayCoordinator).setYOffset(-20);
+    }
+
+    @Test
+    public void testSceneLayerYOffset_NothingAboveToolbarInCapture() {
+        // Nothing in the capture sits above the toolbar, either because there is no tab strip
+        // (phones), or because there is no capture yet, in which case there is no bitmap to
+        // position and the offset reads 0. The scene layer is not shifted either way.
+        mCoordinator.setOverlayCoordinatorForTesting(mOverlayCoordinator);
+        setUpVisibleRestingControls();
+
+        when(mControlContainer.getToolbarTopOffsetInCapture()).thenReturn(0);
+
+        for (int captureHeight : new int[] {150, 0}) {
+            clearInvocations(mOverlayCoordinator);
+            when(mControlContainer.getToolbarCaptureHeight()).thenReturn(captureHeight);
+
+            // finalYOffset = 40 - 0 = 40.
+            mCoordinator.onBrowserControlsOffsetUpdate(40, /* reachRestingPosition= */ false);
+
+            verify(mOverlayCoordinator).setYOffset(40);
+        }
+    }
+
+    @Test
+    public void testSceneLayerYOffset_CaptureHeightIsIrrelevant() {
+        // The offset is measured against the view that is rasterized rather than derived from
+        // separately measured view heights, so the capture's height never enters the computation:
+        // neither dp -> px rounding jitter (189/191), nor extra height below the toolbar such as
+        // an open fusebox (240), nor a stale bitmap whose container has since grown.
+        mCoordinator.setOverlayCoordinatorForTesting(mOverlayCoordinator);
+        setUpVisibleRestingControls();
+
+        when(mControlContainer.getToolbarTopOffsetInCapture()).thenReturn(40);
+
+        for (int captureHeight : new int[] {189, 190, 191, 240}) {
+            clearInvocations(mOverlayCoordinator);
+            when(mControlContainer.getToolbarCaptureHeight()).thenReturn(captureHeight);
+
+            mCoordinator.onBrowserControlsOffsetUpdate(40, /* reachRestingPosition= */ false);
+
+            verify(mOverlayCoordinator).setYOffset(0);
+        }
+    }
+
+    /**
+     * Stubs browser controls that are fully visible and at rest, which is the state in which no
+     * hairline adjustment is applied, leaving the scene layer offset to be purely capture math.
+     */
+    private void setUpVisibleRestingControls() {
+        when(mBrowserControlsVisibilityManager.getBrowserVisibilityDelegate())
+                .thenReturn(mBrowserStateBrowserControlsVisibilityDelegate);
+        when(mBrowserControlsVisibilityManager.getTopControlsMinHeight()).thenReturn(0);
+        when(mBrowserControlsVisibilityManager.getTopControlsHairlineHeight()).thenReturn(3);
+        when(mBrowserControlsVisibilityManager.getContentOffset()).thenReturn(0);
+        when(mBrowserControlsVisibilityManager.getBrowserControlHiddenRatio()).thenReturn(0f);
     }
 
     @Test
