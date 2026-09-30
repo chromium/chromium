@@ -200,11 +200,13 @@ std::optional<RTCVideoDecoderFallbackReason> NeedSoftwareFallback(
       buffer.side_data() && !buffer.side_data()->spatial_layers.empty();
   if (codec == media::VideoCodec::kVP9 && is_spatial_layer_buffer &&
       !media::IsVp9kSVCHWDecodingEnabled()) {
+    LOG(ERROR) << "No VP9 spatial layers support";
     return RTCVideoDecoderFallbackReason::kSpatialLayers;
   }
 
   if (codec == media::VideoCodec::kAV1 && is_spatial_layer_buffer) {
     // No hardware decoder supports AV1 SVC stream.
+    LOG(ERROR) << "No AV1 spatial layers support";
     return RTCVideoDecoderFallbackReason::kSpatialLayers;
   }
   return std::nullopt;
@@ -251,9 +253,6 @@ class RTCVideoDecoderAdapter::Impl {
   bool IsDecoderConfigSupported(const media::VideoDecoderConfig& config) const;
 
  private:
-  std::optional<RTCVideoDecoderFallbackReason> NeedSoftwareFallback(
-      media::VideoCodec codec,
-      const media::DecoderBuffer& buffer) const;
   void DecodePendingBuffers();
   void OnDecodeDone(media::DecoderStatus status);
   void OnOutput(scoped_refptr<media::VideoFrame> frame);
@@ -404,11 +403,11 @@ RTCVideoDecoderAdapter::Impl::EnqueueBuffer(
       pending_buffers_.size() >= kMaxPendingBuffers) {
     // We are severely behind. Drop pending buffers and request a keyframe to
     // catch up as quickly as possible.
-    DVLOG(2) << "Pending buffers overflow";
     pending_buffers_.clear();
     // Actually we just discarded a frame. We must wait for the key frame and
     // drop any other non-key frame.
     if (++consecutive_error_count_ > kMaxConsecutiveErrors) {
+      LOG(ERROR) << "Pending buffers overflow happens too many times";
       decode_timestamps_.clear();
       return RTCVideoDecoderFallbackReason::kConsecutivePendingBufferOverflow;
     }
@@ -753,6 +752,7 @@ RTCVideoDecoderAdapter::DecodeInternal(const webrtc::EncodedImage& input_image,
     config_.set_color_space_info(media::VideoColorSpace::FromGfxColorSpace(
         blink::WebRtcToGfxColorSpace(*input_image.ColorSpace())));
     if (!ReinitializeSync(config_)) {
+      LOG(ERROR) << "ReinitializeSync failed";
       RecordRTCVideoDecoderFallbackReason(
           config_.codec(),
           RTCVideoDecoderFallbackReason::kReinitializationFailed);
@@ -771,6 +771,7 @@ RTCVideoDecoderAdapter::DecodeInternal(const webrtc::EncodedImage& input_image,
   }
   if (auto fallback_reason =
           NeedSoftwareFallback(config_.codec(), *buffer, decoder_type_)) {
+    LOG(ERROR) << "Fallback to software due to spatial layers";
     RecordRTCVideoDecoderFallbackReason(config_.codec(), *fallback_reason);
     return std::nullopt;
   }
@@ -803,7 +804,7 @@ bool RTCVideoDecoderAdapter::CheckResolutionAndNumInstances(
   std::optional<gfx::Size> resolution =
       resolution_monitor_->GetResolution(buffer);
   if (!resolution) {
-    DVLOG(1) << "Stream parse error";
+    LOG(ERROR) << "Failed parsing stream to get resolution";
     RecordRTCVideoDecoderFallbackReason(
         config_.codec(),
         RTCVideoDecoderFallbackReason::kParseErrorOnResolutionCheck);
@@ -813,7 +814,7 @@ bool RTCVideoDecoderAdapter::CheckResolutionAndNumInstances(
   if (config_.coded_size() != *resolution) {
     config_.set_coded_size(*resolution);
     if (!impl_->IsDecoderConfigSupported(config_)) {
-      DVLOG(1) << "Unsupported resolution";
+      LOG(ERROR) << "Unsupported resolution: " << resolution->ToString();
       RecordRTCVideoDecoderFallbackReason(
           config_.codec(),
           RTCVideoDecoderFallbackReason::kUnsupportedResolution);
@@ -838,7 +839,7 @@ bool RTCVideoDecoderAdapter::CheckResolutionAndNumInstances(
     g_num_decoders_ -= 1;
     CHECK_GE(g_num_decoders_, 0);
     have_started_decoding_ = false;
-    DVLOG(1) << "Too many decoder instances";
+    LOG(ERROR) << "Too many decoder instances";
     RecordRTCVideoDecoderFallbackReason(
         config_.codec(),
         RTCVideoDecoderFallbackReason::kTooManyInstancesAndSmallResolution);
@@ -869,6 +870,7 @@ int32_t RTCVideoDecoderAdapter::RegisterDecodeCompleteCallback(
   }
 
   if (status_ == Status::kError) {
+    LOG(ERROR) << "Previous error on RegisterDecodeCompleteCallback";
     RecordRTCVideoDecoderFallbackReason(
         config_.codec(),
         RTCVideoDecoderFallbackReason::kPreviousErrorOnRegisterCallback);
