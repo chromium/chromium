@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_IMAGE_FETCHER_IMAGE_FETCHER_SERVICE_PROVIDER_H_
-#define COMPONENTS_IMAGE_FETCHER_IMAGE_FETCHER_SERVICE_PROVIDER_H_
+#ifndef COMPONENTS_IMAGE_FETCHER_ANDROID_IMAGE_FETCHER_SERVICE_PROVIDER_H_
+#define COMPONENTS_IMAGE_FETCHER_ANDROID_IMAGE_FETCHER_SERVICE_PROVIDER_H_
 
 #include "base/functional/callback.h"
 
@@ -29,4 +29,4 @@ std::string GetImageFetcherCachePath(SimpleFactoryKey* key, std::string path);
 
 }  // namespace image_fetcher
 
-#endif  // COMPONENTS_IMAGE_FETCHER_IMAGE_FETCHER_SERVICE_PROVIDER_H_
+#endif  // COMPONENTS_IMAGE_FETCHER_ANDROID_IMAGE_FETCHER_SERVICE_PROVIDER_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/image_fetcher/image_fetcher_bridge.h"
+#include "components/image_fetcher/android/image_fetcher_bridge.h"
 
 #include <jni.h>
 
@@ -15,11 +15,11 @@
 #include "base/functional/bind.h"
 #include "base/no_destructor.h"
 #include "components/embedder_support/android/simple_factory_key/simple_factory_key_handle.h"
+#include "components/image_fetcher/android/image_fetcher_service_provider.h"
 #include "components/image_fetcher/core/cache/image_cache.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/image_fetcher/core/image_fetcher_metrics_reporter.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
-#include "components/image_fetcher/image_fetcher_service_provider.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/image/image.h"

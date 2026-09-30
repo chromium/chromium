@@ -42,10 +42,10 @@ generate_jni("jni_headers") {
 
 source_set("android") {
   sources = [
-    "image_fetcher_bridge.cc",
-    "image_fetcher_bridge.h",
-    "image_fetcher_service_provider.cc",
-    "image_fetcher_service_provider.h",
+    "android/image_fetcher_bridge.cc",
+    "android/image_fetcher_bridge.h",
+    "android/image_fetcher_service_provider.cc",
+    "android/image_fetcher_service_provider.h",
   ]
   deps = [
     ":jni_headers",

@@ -256,7 +256,7 @@ Refer to README.md for content description and update process.
  <item id="download_bitmap" added_in_milestone="98" content_hash_code="0632ef37" os_list="android" file_path="chrome/browser/share/bitmap_download_request.cc" />
  <item id="supervised_user_classify_url" added_in_milestone="98" content_hash_code="05877932" os_list="android,chromeos,linux,windows" file_path="components/supervised_user/core/browser/fetcher_config.cc" />
  <item id="supervised_user_list_family_members" added_in_milestone="98" content_hash_code="00627698" os_list="android,chromeos,linux,windows" file_path="components/supervised_user/core/browser/fetcher_config.cc" />
- <item id="cached_image_fetcher" added_in_milestone="98" content_hash_code="06334a2d" os_list="android" file_path="components/image_fetcher/image_fetcher_bridge.cc" />
+ <item id="cached_image_fetcher" added_in_milestone="98" content_hash_code="06334a2d" os_list="android" file_path="components/image_fetcher/android/image_fetcher_bridge.cc" />
  <item id="chrome_cast_discovery_api" added_in_milestone="98" content_hash_code="0502b792" os_list="linux,windows,chromeos" file_path="chrome/browser/media/router/discovery/access_code/access_code_cast_discovery_interface.cc" />
  <item id="fedcm" added_in_milestone="98" content_hash_code="082197eb" os_list="linux,windows,chromeos,android" file_path="content/browser/webid/idp_network_request_manager.cc" />
  <item id="minidump_uploader_android" added_in_milestone="98" content_hash_code="0327544e" os_list="android" file_path="components/minidump_uploader/android/java/src/org/chromium/components/minidump_uploader/util/HttpURLConnectionFactoryImpl.java" />

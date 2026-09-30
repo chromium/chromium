@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_IMAGE_FETCHER_IMAGE_FETCHER_BRIDGE_H_
-#define COMPONENTS_IMAGE_FETCHER_IMAGE_FETCHER_BRIDGE_H_
+#ifndef COMPONENTS_IMAGE_FETCHER_ANDROID_IMAGE_FETCHER_BRIDGE_H_
+#define COMPONENTS_IMAGE_FETCHER_ANDROID_IMAGE_FETCHER_BRIDGE_H_
 
 #include <jni.h>
 
@@ -93,4 +93,4 @@ class ImageFetcherBridge {
 
 }  // namespace image_fetcher
 
-#endif  // COMPONENTS_IMAGE_FETCHER_IMAGE_FETCHER_BRIDGE_H_
+#endif  // COMPONENTS_IMAGE_FETCHER_ANDROID_IMAGE_FETCHER_BRIDGE_H_

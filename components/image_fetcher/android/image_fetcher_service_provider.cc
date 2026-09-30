@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/image_fetcher/image_fetcher_service_provider.h"
+#include "components/image_fetcher/android/image_fetcher_service_provider.h"
 
 #include "base/no_destructor.h"
 

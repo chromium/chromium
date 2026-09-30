@@ -29,7 +29,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "components/image_fetcher/image_fetcher_service_provider.h"
+#include "components/image_fetcher/android/image_fetcher_service_provider.h"
 #endif
 
 namespace {
