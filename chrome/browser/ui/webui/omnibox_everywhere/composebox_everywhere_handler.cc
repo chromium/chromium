@@ -68,7 +68,9 @@ void ComposeboxEverywhereHandler::OnDriveUploadClicked(
     OnDriveUploadClickedCallback callback) {
   // Notify the service that the Google Drive picker is being opened so it can
   // suppress auto-dismissal of the standalone Omnibox Everywhere widget.
-  service_->OnDrivePickerOpened();
+  if (service_) {
+    service_->OnDrivePickerOpened();
+  }
 
   // Since the Omnibox Everywhere widget is a standalone popup without a native
   // embedding browser window, we must dynamically associate the WebContents
@@ -115,7 +117,9 @@ void ComposeboxEverywhereHandler::CleanupDrivePicker() {
   // Notify the service that the Drive picker has closed (either via success,
   // cancel, or error) so that the widget can regain focus and restore standard
   // auto-dismissal.
-  service_->OnDrivePickerClosed();
+  if (service_) {
+    service_->OnDrivePickerClosed();
+  }
 }
 
 void ComposeboxEverywhereHandler::OpenUrl(
