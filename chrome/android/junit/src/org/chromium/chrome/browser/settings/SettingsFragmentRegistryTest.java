@@ -673,15 +673,20 @@ public class SettingsFragmentRegistryTest {
     }
 
     @Test
-    public void testResolveShowsMainSettingsForUnroutedUrls() {
+    public void testResolveRedirectsUnroutedUrlsToTheSettingsRoot() {
+        // An unknown path with no registered ancestor redirects to the root, rather than showing
+        // main settings in place, so the unknown Url does not stay in the omnibox and history.
+        assertRedirects("chrome://settings/notAPage", "chrome://settings");
+        assertRedirects("chrome://settings/foo?bar=baz", "chrome://settings");
+        assertRedirects("chrome-native://settings/foo/", "chrome://settings");
+
         // ChosenObjectSettings has no URL: it is identified by a serialized device descriptor.
-        SettingsFragmentRegistry.Resolution resolution = resolve("chrome://settings/chosenObject");
-        assertNull(resolution.redirectUrl);
-        assertEquals(MainSettings.class, resolution.fragmentClass);
+        assertRedirects("chrome://settings/chosenObject", "chrome://settings");
         assertNull(
                 SettingsFragmentRegistry.getFragmentClassForUrl("chrome://settings/chosenObject"));
 
-        resolution = resolve("chrome://settings/notAPage");
+        // The root itself is shown, so the redirect cannot loop.
+        SettingsFragmentRegistry.Resolution resolution = resolve("chrome://settings");
         assertNull(resolution.redirectUrl);
         assertEquals(MainSettings.class, resolution.fragmentClass);
     }
