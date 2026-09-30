@@ -1314,16 +1314,12 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
       page_load_metrics::UserActivationStatus::kReceivedActivation, 2);
 }
 
-// TODO(https://crbug.com/559786964): Fix flakiness on ASan/MSan builds.
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER)
-#define MAYBE_DocOverwritesNavigation DISABLED_DocOverwritesNavigation
-#else
-#define MAYBE_DocOverwritesNavigation DocOverwritesNavigation
-#endif
+// TODO(crbug.com/567716811, crbug.com/559786964, crbug.com/40286659): Fix
+// flakiness and re-enable.
 // Test that a subframe that aborts (due to doc.write) doesn't cause a crash
 // if it continues to load resources.
 IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
-                       MAYBE_DocOverwritesNavigation) {
+                       DISABLED_DocOverwritesNavigation) {
   // Ensure that the previous page won't be stored in the back/forward cache, so
   // that the histogram will be recorded when the previous page is unloaded.
   // TODO(https://crbug.com/40189815): Investigate if this needs further fix.
