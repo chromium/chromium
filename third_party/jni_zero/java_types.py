@@ -601,7 +601,7 @@ class TypeResolver:
 
     return java_class.full_name_with_dots
 
-  # Test coverage for this is in parse_test.py.
+  # Test coverage for this is in test/parse_test.py.
   def resolve(self, name):
     """Resolves the given string to a JavaClass.
 
