@@ -10,7 +10,7 @@
 #include "chrome/browser/ash/fileapi/file_change_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 
-class Profile;
+class ChromeFileSystemAccessPermissionContext;
 
 namespace ash {
 
@@ -19,7 +19,10 @@ namespace ash {
 // changes across all file system contexts within a browser context.
 class FileChangeService : public KeyedService {
  public:
-  explicit FileChangeService(Profile* profile);
+  // `permission_context` is the one belonging to the profile this service is
+  // keyed on, and must outlive `this`.
+  explicit FileChangeService(
+      ChromeFileSystemAccessPermissionContext* permission_context);
   FileChangeService(const FileChangeService& other) = delete;
   FileChangeService& operator=(const FileChangeService& other) = delete;
   ~FileChangeService() override;

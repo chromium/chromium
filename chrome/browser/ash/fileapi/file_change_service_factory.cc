@@ -46,7 +46,8 @@ FileChangeServiceFactory::BuildServiceInstanceForBrowserContext(
   Profile* const profile = Profile::FromBrowserContext(context);
   if (profile->IsOffTheRecord())
     CHECK(profile->IsGuestSession());
-  return std::make_unique<FileChangeService>(profile);
+  return std::make_unique<FileChangeService>(
+      FileSystemAccessPermissionContextFactory::GetForProfile(profile));
 }
 
 }  // namespace ash

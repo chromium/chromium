@@ -4,15 +4,14 @@
 
 #include "chrome/browser/ash/fileapi/file_change_service.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
-#include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
-#include "chrome/browser/profiles/profile.h"
 
 namespace ash {
 
-FileChangeService::FileChangeService(Profile* profile) {
+FileChangeService::FileChangeService(
+    ChromeFileSystemAccessPermissionContext* permission_context) {
   file_created_from_show_save_file_picker_subscription_ =
-      FileSystemAccessPermissionContextFactory::GetForProfile(profile)
-          ->AddFileCreatedFromShowSaveFilePickerCallback(base::BindRepeating(
+      permission_context->AddFileCreatedFromShowSaveFilePickerCallback(
+          base::BindRepeating(
               &FileChangeService::NotifyFileCreatedFromShowSaveFilePicker,
               base::Unretained(this)));
 }

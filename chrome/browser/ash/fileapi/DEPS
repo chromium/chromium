@@ -23,9 +23,16 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/browser_process.h",
   "+chrome/browser/extensions/extension_util.h",
-  "+chrome/browser/file_system_access",
   "+chrome/browser/media_galleries/fileapi",
   "+chrome/browser/profiles",
   "+chrome/test/base",
   "+chromeos/ash/experiences/extensions/common/api/file_manager_private.h",
 ]
+
+specific_include_rules = {
+  # FileChangeService subscribes to the permission context it is handed;
+  # its keyed service factory is what resolves that from the profile.
+  "file_change_service(_factory|_unittest)?\\.cc": [
+    "+chrome/browser/file_system_access",
+  ],
+}
