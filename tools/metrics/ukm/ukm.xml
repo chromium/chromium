@@ -751,7 +751,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Actor.Login">
-  <owner>npm@google.com</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Metrics recorded for an actor login request. Recorded once per request when
@@ -4837,7 +4837,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Blink.EmailVerificationProtocol">
-  <owner>npm@google.com</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records metrics for the Email Verification Protocol (EVP) flow. Surfaced
@@ -4888,7 +4888,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Blink.EmailVerificationProtocol.FormSubmission">
-  <owner>npm@google.com</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records metrics for the Email Verification Protocol (EVP) when a form
@@ -5358,7 +5358,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Blink.FedCmIdp">
-  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records performance metrics for FedCM (Federated Credential Management) API.
@@ -6032,7 +6032,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Blink.PaintTiming" singular="True">
-  <owner>npm@chromium.org</owner>
   <owner>sullivan@chromium.org</owner>
   <summary>
     Paint timing metrics recorded in Blink, usually used as debugging metrics
@@ -8499,7 +8498,6 @@ be describing additional metrics about the same event.
 
 <event name="ContentManagementSystemPageLoad" singular="True">
   <owner>felixarntz@google.com</owner>
-  <owner>npm@chromium.org</owner>
   <summary>
     Metrics stating whether the main frame of a page uses certain content
     management systems. This event is recorded when the page is going to be
@@ -12321,7 +12319,6 @@ be describing additional metrics about the same event.
 
 <event name="JavascriptFrameworkPageLoad" singular="True">
   <owner>houssein@chromium.org</owner>
-  <owner>npm@chromium.org</owner>
   <summary>
     Metrics stating whether the main frame of a page uses certain JavaScript
     frameworks. This event is recorded when the page is going to be unloaded or
@@ -18548,7 +18545,7 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="PageLoad.Internal" singular="True">
-  <owner>npm@chromium.org</owner>
+  <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <summary>
     Debugging metrics for the PageLoad event that do not require the same amount
@@ -21725,7 +21722,6 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="ResponsivenessMeasurement">
-  <owner>npm@chromium.org</owner>
   <owner>tdresser@chromium.org</owner>
   <summary>
     Responsiveness metrics recorded once every 5 seconds.

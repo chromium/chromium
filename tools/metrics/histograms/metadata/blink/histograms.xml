@@ -1609,7 +1609,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.AccountChosenPosition.Desktop" units="count"
     expires_after="2026-12-27">
-  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the 0-based position of the account that was selected by the user in
@@ -1737,7 +1737,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.AutoReauthn.BlockedByContentSettings"
     enum="Boolean" expires_after="2027-09-05">
-  <owner>npm@chromium.org</owner>
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1750,7 +1749,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.AutoReauthn.BlockedByEmbargo" enum="Boolean"
     expires_after="2027-09-05">
-  <owner>npm@chromium.org</owner>
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1763,7 +1761,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.AutoReauthn.BlockedByEmbedder" enum="Boolean"
     expires_after="2026-12-12">
-  <owner>npm@chromium.org</owner>
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1775,7 +1772,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.AutoReauthn.BlockedByPreventSilentAccess"
     enum="Boolean" expires_after="2027-09-05">
-  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records whether the FedCM auto re-authn call is blocked because
@@ -1787,7 +1784,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.AutoReauthn.ReturningAccounts"
     enum="FedCmNumAccounts" expires_after="2027-09-05">
-  <owner>npm@chromium.org</owner>
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1800,7 +1796,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.AutoReauthn.Succeeded" enum="Boolean"
     expires_after="2027-02-28">
-  <owner>npm@chromium.org</owner>
   <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
@@ -1891,7 +1886,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.ClosedSheetType.Android" enum="FedCmSheetType"
     expires_after="2027-09-05">
-  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the type of FedCM Android UI sheet that is being displayed when the
@@ -1902,7 +1897,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.ClosedSheetType.Desktop" enum="FedCmSheetType"
     expires_after="2027-09-05">
-  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the type of FedCM desktop UI sheet that is being displayed when the
@@ -1948,7 +1943,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.DidShowUI" enum="Boolean"
     expires_after="2027-03-07">
-  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records whether the FedCM UI is shown or not. Records a sample when the
@@ -1959,7 +1954,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.Disconnect.FrameType"
     enum="FedCmRequesterFrameType" expires_after="2026-12-28">
-  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the type of frame that invokes disconnect(). Records once for each
@@ -1971,7 +1966,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.DomainHint.NumMatchingAccounts"
     enum="FedCmNumAccounts" expires_after="2026-12-28">
-  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the number of accounts that match a domain hint. Records at the time
@@ -2033,7 +2028,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.HasNonce" enum="BooleanHit"
     expires_after="2027-09-05">
-  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records a 1 whenever a FedCM API call includes the nonce parameter. Records
@@ -2044,7 +2039,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.HasNonceOutsideParamsOnly" enum="BooleanHit"
     expires_after="2027-03-07">
-  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records a 1 whenever a FedCM API call includes the nonce parameter, but does
@@ -2068,7 +2063,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.IdentityProvidersCount" units="count"
     expires_after="2027-04-26">
-  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the count of identity providers right before fetching endpoints with
@@ -2143,7 +2138,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.LoginHint.NumMatchingAccounts"
     enum="FedCmNumAccounts" expires_after="2026-12-28">
-  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the number of accounts that match a login hint. Records at the time
@@ -2160,7 +2155,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.MismatchDialogType" enum="FedCmMismatchDialogType"
     expires_after="2027-01-03">
-  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the type of mismatch dialog shown: whether it is the first mismatch
@@ -2218,7 +2213,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.RpContext" enum="FedCmRpContext"
     expires_after="2027-02-28">
-  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the RP Context used in a FedCM call. Records only when the RP
@@ -2228,7 +2223,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.RpMode" enum="FedCmRpMode"
     expires_after="2027-02-28">
-  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the RP mode of the FedCM API. Recorded once per API call together
@@ -2261,7 +2256,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.SignInStatusSetToSignout.NetError"
     enum="NetErrorCodes" expires_after="2027-09-05">
-  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the NetError from the accounts list endpoint. This histogram is only
@@ -2309,7 +2304,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.Status.Disconnect" enum="FedCmDisconnectStatus"
     expires_after="2026-12-28">
-  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the status of a disconnect call to the FedCM API. Recorded once per
@@ -2332,7 +2327,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.Status.MediationRequirement"
     enum="CredentialManagerMediationRequirement" expires_after="2026-12-28">
-  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the mediation requirement of a request token call to the FedCM API.
@@ -2427,7 +2422,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.Timing.Disconnect" units="ms"
     expires_after="2027-09-05">
-  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the time from when the disconnect() request is received by the
@@ -2538,7 +2533,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.UseOtherAccountResult"
     enum="FedCmUseOtherAccountResult" expires_after="2026-12-22">
-  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the outcome of the user clicking on the &quot;use other
@@ -2552,7 +2547,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.UserInfo.NumAccounts" enum="FedCmNumAccounts"
     expires_after="2027-09-05">
-  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the number of accounts returned by a getUserInfo() call. Records
@@ -2563,7 +2558,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.UserInfo.Status" enum="FedCmUserInfoStatus"
     expires_after="2027-09-05">
-  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the status of a getUserInfo() call. Records once per request when
@@ -2573,7 +2568,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.UserInfo.TimeToRequestCompleted" units="ms"
     expires_after="2027-09-05">
-  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
     Records the time from when a getUserInfo() call is received on the browser
@@ -2615,7 +2610,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Blink.FedCm.WebIdentitySubdomain.DiscoverySucceeded"
     enum="BooleanSuccess" expires_after="2027-05-08">
-  <owner>npm@chromium.org</owner>
+  <owner>yigu@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <owner>sureshpotti@microsoft.com</owner>
   <summary>

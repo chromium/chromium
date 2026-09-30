@@ -5,7 +5,6 @@ per-file enums.xml=*
 # Prefer sending CLs to the owners listed below.
 # Use chromium-metrics-reviews@google.com as a backup.
 iclelland@chromium.org
-npm@chromium.org
 # For BlinkGC.* and related changes.
 mlippautz@chromium.org
 toyoshim@chromium.org

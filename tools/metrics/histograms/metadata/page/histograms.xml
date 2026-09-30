@@ -5299,7 +5299,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PageLoad.Experimental.TotalForegroundDuration" units="ms"
     expires_after="2027-02-28">
-  <owner>npm@chromium.org</owner>
+  <owner>mmocny@chromium.org</owner>
   <owner>speed-metrics-dev@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
   <summary>
