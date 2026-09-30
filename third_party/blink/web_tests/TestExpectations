@@ -9111,3 +9111,6 @@ crbug.com/560925587 [ Debug Linux ] external/wpt/webdriver/tests/bidi/network/ge
 crbug.com/560925587 [ Debug Linux ] external/wpt/webdriver/tests/classic/forward/user_prompts.py [ Crash Failure Pass Timeout ]
 crbug.com/560925587 [ Debug Linux ] external/wpt/webdriver/tests/classic/fullscreen_window/user_prompts.py [ Crash Failure Pass Timeout ]
 crbug.com/560925587 [ Debug Linux ] external/wpt/webdriver/tests/classic/perform_actions/user_prompts.py [ Crash Failure Pass Timeout ]
+
+# Gardener 2026-09-30
+crbug.com/567713221 [ Debug Linux ] external/wpt/css/css-display/select-4-option-optgroup-display-none.html [ Failure Pass ]
