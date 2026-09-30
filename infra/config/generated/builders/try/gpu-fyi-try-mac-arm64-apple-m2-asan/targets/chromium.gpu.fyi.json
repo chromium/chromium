@@ -32,8 +32,7 @@
         "args": [
           "--use-cmd-decoder=passthrough",
           "--use-gl=angle",
-          "--use-gpu-in-tests",
-          "--test-launcher-filter-file=../../testing/buildbot/filters/mac.m2.asan.gl_tests_passthrough.filter"
+          "--use-gpu-in-tests"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

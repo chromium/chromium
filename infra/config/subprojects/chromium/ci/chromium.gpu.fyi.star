@@ -2513,11 +2513,6 @@ ci.thin_tester(
                     "--extra-browser-args=--disable-metal-shader-cache",
                 ],
             ),
-            "gl_tests_passthrough": targets.mixin(
-                args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/mac.m2.asan.gl_tests_passthrough.filter",
-                ],
-            ),
         },
     ),
     targets_settings = targets.settings(
