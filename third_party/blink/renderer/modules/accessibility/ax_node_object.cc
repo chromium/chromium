@@ -396,6 +396,25 @@ bool IsNeutralWithinTable(blink::AXObject* obj) {
          role == ax::mojom::blink::Role::kRowGroup;
 }
 
+// HTML-AAM excludes captions hidden from the accessibility tree from naming
+// their parent table. Use the first child caption that can provide a name.
+// https://w3c.github.io/aria/html-aam/#el-table
+AXObject* FirstUnhiddenTableCaption(HTMLTableElement& table,
+                                    AXObjectCacheImpl& cache) {
+  for (HTMLTableCaptionElement* caption =
+           Traversal<HTMLTableCaptionElement>::FirstChild(table);
+       caption;
+       caption = Traversal<HTMLTableCaptionElement>::NextSibling(*caption)) {
+    AXObject* caption_ax_object = cache.Get(caption);
+    if (caption_ax_object &&
+        !caption_ax_object->IsHiddenForTextAlternativeCalculation(nullptr)) {
+      return caption_ax_object;
+    }
+  }
+
+  return nullptr;
+}
+
 // Within a table, provide the accessible, semantic parent of |node|,
 // by traversing the DOM tree, ignoring elements that are neutral in a table.
 // Return the AXObject for the ancestor.
@@ -7555,28 +7574,26 @@ String AXNodeObject::NativeTextAlternative(
       name_sources->back().type = name_from;
       name_sources->back().native_source = kAXTextFromNativeHTMLTableCaption;
     }
-    HTMLTableCaptionElement* caption = table_element->caption();
-    if (caption) {
-      AXObject* caption_ax_object = AXObjectCache().Get(caption);
-      if (caption_ax_object) {
-        text_alternative =
-            RecursiveTextAlternative(*caption_ax_object, nullptr, visited);
-        if (related_objects) {
-          local_related_objects.push_back(
-              MakeGarbageCollected<NameSourceRelatedObject>(caption_ax_object,
-                                                            text_alternative));
-          *related_objects = local_related_objects;
-          local_related_objects.clear();
-        }
+    AXObject* caption_ax_object =
+        FirstUnhiddenTableCaption(*table_element, AXObjectCache());
+    if (caption_ax_object) {
+      text_alternative =
+          RecursiveTextAlternative(*caption_ax_object, nullptr, visited);
+      if (related_objects) {
+        local_related_objects.push_back(
+            MakeGarbageCollected<NameSourceRelatedObject>(caption_ax_object,
+                                                          text_alternative));
+        *related_objects = local_related_objects;
+        local_related_objects.clear();
+      }
 
-        if (name_sources) {
-          NameSource& source = name_sources->back();
-          source.related_objects = *related_objects;
-          source.text = text_alternative;
-          *found_text_alternative = true;
-        } else {
-          return text_alternative;
-        }
+      if (name_sources) {
+        NameSource& source = name_sources->back();
+        source.related_objects = *related_objects;
+        source.text = text_alternative;
+        *found_text_alternative = true;
+      } else {
+        return text_alternative;
       }
     }
 
@@ -8043,27 +8060,25 @@ String AXNodeObject::Description(
       description_sources->back().native_source =
           kAXTextFromNativeHTMLTableCaption;
     }
-    HTMLTableCaptionElement* caption = table_element->caption();
-    if (caption) {
-      AXObject* caption_ax_object = AXObjectCache().Get(caption);
-      if (caption_ax_object) {
-        AXObjectSet visited;
-        description =
-            RecursiveTextAlternative(*caption_ax_object, nullptr, visited);
-        if (related_objects) {
-          related_objects->push_back(
-              MakeGarbageCollected<NameSourceRelatedObject>(caption_ax_object,
-                                                            description));
-        }
+    AXObject* caption_ax_object =
+        FirstUnhiddenTableCaption(*table_element, AXObjectCache());
+    if (caption_ax_object) {
+      AXObjectSet visited;
+      description =
+          RecursiveTextAlternative(*caption_ax_object, nullptr, visited);
+      if (related_objects) {
+        related_objects->push_back(
+            MakeGarbageCollected<NameSourceRelatedObject>(caption_ax_object,
+                                                          description));
+      }
 
-        if (description_sources) {
-          DescriptionSource& source = description_sources->back();
-          source.related_objects = *related_objects;
-          source.text = description;
-          found_description = true;
-        } else {
-          return description;
-        }
+      if (description_sources) {
+        DescriptionSource& source = description_sources->back();
+        source.related_objects = *related_objects;
+        source.text = description;
+        found_description = true;
+      } else {
+        return description;
       }
     }
   }

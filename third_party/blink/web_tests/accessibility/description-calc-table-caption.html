@@ -39,3 +39,35 @@ test(function(t) {
     assert_equals(axTable2.descriptionElementAtIndex(0).role, "AXRole: AXCaption");
 }, "Table with caption and aria-label.");
 </script>
+
+<script>
+for (const hiddenAttribute of [
+    'hidden',
+    'style="display: none"',
+    'style="visibility: hidden"',
+    'aria-hidden="true"',
+]) {
+    test(function(t) {
+        const container = document.createElement("div");
+        container.innerHTML = `
+            <table id="hidden-caption-table" border=1 aria-label="Label">
+                <caption ${hiddenAttribute}>Hidden caption</caption>
+                <caption id="visible-caption">Visible caption</caption>
+                <tr><td>Cell 1</td><td>Cell 2</td></tr>
+            </table>`;
+        document.body.appendChild(container);
+        t.add_cleanup(() => container.remove());
+
+        const axTable = accessibilityController.accessibleElementById(
+            "hidden-caption-table");
+        const axCaption = accessibilityController.accessibleElementById(
+            "visible-caption");
+        assert_equals(axTable.name, "Label");
+        assert_equals(axTable.nameFrom, "attribute");
+        assert_equals(axTable.description, "Visible caption");
+        assert_equals(axTable.descriptionFrom, "tableCaption");
+        assert_equals(axTable.descriptionElementCount(), 1);
+        assert_true(axTable.descriptionElementAtIndex(0).isEqual(axCaption));
+    }, `Table with aria-label skips first caption with ${hiddenAttribute} for description.`);
+}
+</script>
