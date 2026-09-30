@@ -121,6 +121,7 @@ public class OmniboxPedalsTest {
                 });
         if (mTargetActivity != null) {
             ApplicationTestUtils.finishActivity(mTargetActivity);
+            mTargetActivity = null;
         }
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -172,6 +173,7 @@ public class OmniboxPedalsTest {
 
         CriteriaHelper.pollUiThread(
                 () -> {
+                    Criteria.checkThat(mTargetActivity, Matchers.notNullValue());
                     Fragment fragment =
                             mTargetActivity
                                     .getSupportFragmentManager()
