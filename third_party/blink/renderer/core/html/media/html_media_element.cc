@@ -927,8 +927,7 @@ Node::InsertionNotificationRequest HTMLMediaElement::InsertedInto(
     if (lazy_media_load_state_ == LazyMediaLoadState::kDeferred) {
       LazyMediaHelper::StartMonitoring(this);
     } else if ((!FastGetAttribute(html_names::kSrcAttr).empty() ||
-                src_object_stream_descriptor_ ||
-                src_object_media_source_handle_) &&
+                HasSrcObject()) &&
                network_state_ == kNetworkEmpty) {
       ignore_preload_none_ = false;
       InvokeLoadAlgorithm();
@@ -1327,7 +1326,7 @@ void HTMLMediaElement::SelectMediaResource() {
 
   // 6 - If the media element has an assigned media provider object, then let
   //     mode be object.
-  if (src_object_stream_descriptor_ || src_object_media_source_handle_) {
+  if (HasSrcObject()) {
     mode = kObject;
   } else if (FastHasAttribute(html_names::kSrcAttr)) {
     // Otherwise, if the media element has no assigned media provider object
@@ -3069,8 +3068,7 @@ void HTMLMediaElement::LoadDeferredTracks() {
 }
 
 bool HTMLMediaElement::HasMediaSources() const {
-  return FastHasAttribute(html_names::kSrcAttr) ||
-         src_object_stream_descriptor_ || src_object_media_source_handle_ ||
+  return FastHasAttribute(html_names::kSrcAttr) || HasSrcObject() ||
          Traversal<HTMLSourceElement>::FirstChild(*this);
 }
 
@@ -3936,10 +3934,11 @@ void HTMLMediaElement::SourceWasAdded(HTMLSourceElement* source) {
   DVLOG(3) << "sourceWasAdded(" << *this << ") - 'src' is "
            << UrlForLoggingMedia(url);
 
-  // We should only consider a <source> element when there is not src attribute
-  // at all.
-  if (FastHasAttribute(html_names::kSrcAttr))
+  // We should only consider a <source> element when there is neither a
+  // srcObject nor a src attribute at all.
+  if (FastHasAttribute(html_names::kSrcAttr) || HasSrcObject()) {
     return;
+  }
 
   // 4.8.8 - If a source element is inserted as a child of a media element that
   // has no src attribute and whose networkState has the value NETWORK_EMPTY,
@@ -3965,8 +3964,17 @@ void HTMLMediaElement::SourceWasAdded(HTMLSourceElement* source) {
   if (next_child_node_to_consider_)
     return;
 
-  if (load_state_ != kWaitingForSource)
+  // Step 21 ("Wait until the node after pointer is a node other than the end of
+  // the list") only applies when the resource selection algorithm is in the
+  // source elements section and waiting at the Wait step, which sets
+  // networkState to NETWORK_NO_SOURCE. If networkState is not NETWORK_NO_SOURCE
+  // (e.g. NETWORK_IDLE after a decode error where MediaEngineError() aborted
+  // resource selection but set load_state_ = kWaitingForSource), we must not
+  // resume candidate selection.
+  if (load_state_ != kWaitingForSource ||
+      network_state_ != HTMLMediaElement::kNetworkNoSource) {
     return;
+  }
 
   // 4.8.9.5, resource selection algorithm, source elements section:
   // 21. Wait until the node after pointer is a node other than the end of the
@@ -4000,6 +4008,12 @@ void HTMLMediaElement::SourceWasRemoved(HTMLSourceElement* source) {
   KURL url = source->GetNonEmptyURLAttribute(html_names::kSrcAttr);
   DVLOG(3) << "sourceWasRemoved(" << *this << ") - 'src' is "
            << UrlForLoggingMedia(url);
+
+  // We should only consider a <source> element when there is neither a
+  // srcObject nor a src attribute at all.
+  if (FastHasAttribute(html_names::kSrcAttr) || HasSrcObject()) {
+    return;
+  }
 
   if (source != current_source_node_ && source != next_child_node_to_consider_)
     return;
