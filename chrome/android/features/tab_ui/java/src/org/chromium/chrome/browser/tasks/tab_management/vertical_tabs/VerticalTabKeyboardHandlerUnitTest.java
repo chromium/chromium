@@ -183,6 +183,7 @@ public class VerticalTabKeyboardHandlerUnitTest {
 
     @Test
     public void testReorderKeyboardFocusedItem_TabGroupHeader() {
+        when(mTab1.getTabGroupId()).thenReturn(GROUP_ID);
         PropertyModel headerModel =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
                         .with(TabProperties.TAB_ID, TAB_ID_1)
@@ -204,7 +205,7 @@ public class VerticalTabKeyboardHandlerUnitTest {
         when(mTabModel.getRelatedTabList(TAB_ID_2)).thenReturn(List.of(mTab2));
 
         assertTrue(mHandler.reorderKeyboardFocusedItem(/* toPrevious= */ false));
-        verify(mTabModel).moveRelatedTabs(TAB_ID_1, 1);
+        verify(mTabModel).moveGroupToIndex(GROUP_ID, 1);
     }
 
     @Test

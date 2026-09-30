@@ -53,6 +53,10 @@ public class TabKeyEventHandler {
             return;
         }
 
+        // TODO(crbug.com/517544602): This directional group jumping logic is identical to
+        // NestedTabReorderUtils#reorderTabGroupByAnchorTabId. Combine them into a shared utility
+        // that operates directly on Token groupId instead of querying related tabs via tabId.
+        //
         // Tab group case: find the adjacent group and then get the index before or after the
         // adjacent group and move there. Note in this context an adjacent group might just be a
         // single tab.
@@ -74,7 +78,12 @@ public class TabKeyEventHandler {
             newIndex = TabGroupUtils.getLastTabModelIndexForList(tabModel, adjacentGroup);
         }
 
-        tabModel.moveRelatedTabs(tabId, newIndex);
+        Token tabGroupId = tab.getTabGroupId();
+        if (tabGroupId != null) {
+            tabModel.moveGroupToIndex(tabGroupId, newIndex);
+        } else {
+            tabModel.moveTab(tabId, newIndex);
+        }
     }
 
     /**

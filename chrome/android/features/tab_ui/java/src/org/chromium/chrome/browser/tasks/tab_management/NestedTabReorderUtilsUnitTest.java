@@ -62,6 +62,8 @@ public class NestedTabReorderUtilsUnitTest {
         when(mTab1.getId()).thenReturn(TAB_ID_1);
         when(mTab2.getId()).thenReturn(TAB_ID_2);
         when(mTab3.getId()).thenReturn(TAB_ID_3);
+        when(mTab1.getTabGroupId()).thenReturn(GROUP_ID);
+        when(mTab2.getTabGroupId()).thenReturn(GROUP_ID);
 
         when(mTabModel.getTabById(TAB_ID_1)).thenReturn(mTab1);
         when(mTabModel.getTabById(TAB_ID_2)).thenReturn(mTab2);
@@ -100,7 +102,7 @@ public class NestedTabReorderUtilsUnitTest {
         assertTrue(
                 NestedTabReorderUtils.reorderItem(
                         mTabModel, mModelList, /* fromIndex= */ 0, /* toIndex= */ 1));
-        verify(mTabModel).moveRelatedTabs(TAB_ID_1, 1);
+        verify(mTabModel).moveGroupToIndex(GROUP_ID, 1);
     }
 
     @Test
@@ -495,7 +497,7 @@ public class NestedTabReorderUtilsUnitTest {
         assertTrue(
                 NestedTabReorderUtils.reorderItemInDirection(
                         mTabModel, mModelList, /* pos= */ 2, /* toPrevious= */ true));
-        verify(mTabModel).moveRelatedTabs(TAB_ID_1, 0);
+        verify(mTabModel).moveGroupToIndex(GROUP_ID, 0);
     }
 
     @Test
@@ -509,7 +511,7 @@ public class NestedTabReorderUtilsUnitTest {
         assertTrue(
                 NestedTabReorderUtils.reorderTabGroup(
                         mTabModel, GROUP_ID, /* toPrevious= */ false));
-        verify(mTabModel).moveRelatedTabs(TAB_ID_1, 2);
+        verify(mTabModel).moveGroupToIndex(GROUP_ID, 2);
 
         // Null model or unknown group returns false
         assertFalse(NestedTabReorderUtils.reorderTabGroup(null, GROUP_ID, /* toPrevious= */ false));
@@ -529,7 +531,8 @@ public class NestedTabReorderUtilsUnitTest {
 
         assertFalse(
                 NestedTabReorderUtils.reorderTabGroup(mTabModel, GROUP_ID, /* toPrevious= */ true));
-        verify(mTabModel, never()).moveRelatedTabs(anyInt(), anyInt());
+        verify(mTabModel, never()).moveGroupToIndex(any(), anyInt());
+        verify(mTabModel, never()).moveTab(anyInt(), anyInt());
     }
 
     @Test

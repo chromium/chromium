@@ -170,7 +170,7 @@ public class NestedTabReorderUtils {
     /**
      * Performs basic list reordering by updating the {@link TabModel} immediately.
      *
-     * <p>- Group headers use moveRelatedTabs() to fire didMoveTabGroup(), which TabListMediator
+     * <p>- Group headers use moveGroupToIndex() to fire didMoveTabGroup(), which TabListMediator
      * observes to update top-level UI rows.
      *
      * <p>- Child tabs use moveTab() because they move within their group, firing
@@ -186,7 +186,11 @@ public class NestedTabReorderUtils {
     public static void moveTabOrGroup(
             TabModel tabModel, int currentTabId, int destinationIndex, boolean isGroup) {
         if (isGroup) {
-            tabModel.moveRelatedTabs(currentTabId, destinationIndex);
+            Tab currentTab = tabModel.getTabById(currentTabId);
+            Token tabGroupId = currentTab != null ? currentTab.getTabGroupId() : null;
+            if (tabGroupId != null) {
+                tabModel.moveGroupToIndex(tabGroupId, destinationIndex);
+            }
         } else {
             tabModel.moveTab(currentTabId, destinationIndex);
         }
@@ -412,6 +416,9 @@ public class NestedTabReorderUtils {
      * @param toPrevious Whether to move forward (up / previous) or backward (down / next).
      * @return Whether the group was successfully reordered.
      */
+    // TODO(crbug.com/517544602): Refactor this helper to take Token groupId directly instead of
+    // an anchor tabId. It is only used for directional shortcuts, and unwrapping a group Token
+    // to an anchor tab ID forces redundant getRelatedTabList() reconstructions.
     private static boolean reorderTabGroupByAnchorTabId(
             TabModel tabModel, @TabId int tabId, boolean toPrevious) {
         List<Tab> currentGroup = tabModel.getRelatedTabList(tabId);
@@ -432,7 +439,7 @@ public class NestedTabReorderUtils {
             newIndex = TabGroupUtils.getLastTabModelIndexForList(tabModel, adjacentGroup);
         }
 
-        tabModel.moveRelatedTabs(tabId, newIndex);
+        moveTabOrGroup(tabModel, tabId, newIndex, /* isGroup= */ true);
         return true;
     }
 

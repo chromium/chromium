@@ -217,6 +217,7 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
             RecyclerView recyclerView,
             RecyclerView.ViewHolder fromViewHolder,
             RecyclerView.ViewHolder toViewHolder) {
+        assert !isMessageType(fromViewHolder);
         assert !(fromViewHolder instanceof SimpleRecyclerViewAdapter.ViewHolder)
                 || hasTabPropertiesModel(fromViewHolder);
 
@@ -240,19 +241,33 @@ public class TabGridItemTouchHelperCallback extends TabListItemTouchHelperCallba
         @TabId int destinationTabId = model.get(TabProperties.TAB_ID);
         int distance = toViewHolder.getAdapterPosition() - fromViewHolder.getAdapterPosition();
         TabModel tabModel = mCurrentTabModelSupplier.get();
+        Tab destinationTab = tabModel.getTabById(destinationTabId);
         if (mLayoutType == TabListLayoutType.FLAT) {
-            int destinationIndex = tabModel.indexOf(tabModel.getTabById(destinationTabId));
-            tabModel.moveTab(currentTabId, destinationIndex);
+            tabModel.moveTab(currentTabId, tabModel.indexOf(destinationTab));
         } else {
-            List<Tab> destinationTabGroup = getRelatedTabsForId(destinationTabId);
-            int newIndex =
-                    distance >= 0
-                            ? TabGroupUtils.getLastTabModelIndexForList(
-                                    tabModel, destinationTabGroup)
-                            : TabGroupUtils.getFirstTabModelIndexForList(
-                                    tabModel, destinationTabGroup);
+            // In the Tab Switcher (GROUPED), the destination card can be an entire tab
+            // group. Target the edge of that group based on drag direction.
+            Token destGroupId = destinationTab != null ? destinationTab.getTabGroupId() : null;
+            int newIndex;
+            if (destGroupId != null) {
+                List<Tab> destinationTabs = tabModel.getTabsInGroup(destGroupId);
+                newIndex =
+                        distance >= 0
+                                ? TabGroupUtils.getLastTabModelIndexForList(
+                                        tabModel, destinationTabs)
+                                : TabGroupUtils.getFirstTabModelIndexForList(
+                                        tabModel, destinationTabs);
+            } else {
+                newIndex = tabModel.indexOf(destinationTab);
+            }
             newIndex = adjustIndexBasedOnPinning(tabModel, currentTabId, newIndex);
-            tabModel.moveRelatedTabs(currentTabId, newIndex);
+            Tab currentTab = tabModel.getTabById(currentTabId);
+            Token tabGroupId = currentTab != null ? currentTab.getTabGroupId() : null;
+            if (tabGroupId != null) {
+                tabModel.moveGroupToIndex(tabGroupId, newIndex);
+            } else {
+                tabModel.moveTab(currentTabId, newIndex);
+            }
         }
         RecordUserAction.record("TabGrid.Drag.Reordered." + mComponentName);
         mActionAttempted = true;

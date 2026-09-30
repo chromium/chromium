@@ -1334,9 +1334,6 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         when(mTab1.getIsPinned()).thenReturn(true);
         when(mTab2.getIsPinned()).thenReturn(true);
         when(mTab3.getIsPinned()).thenReturn(false);
-        when(mTab4.getIsPinned()).thenReturn(false);
-        when(mTabModel.getRelatedTabList(TAB1_ID)).thenReturn(List.of(mTab1));
-        when(mTabModel.getRelatedTabList(TAB2_ID)).thenReturn(List.of(mTab2));
         when(mTabModel.indexOf(mTab1)).thenReturn(0);
         when(mTabModel.indexOf(mTab2)).thenReturn(1);
         when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(2);
@@ -1344,7 +1341,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         // Drag pinned tab1 to pinned tab2's position.
         mItemTouchHelperCallback.onMove(mRecyclerView, mMockViewHolder1, mMockViewHolder2);
         // Verify that tab1 is moved to index 1.
-        verify(mTabModel).moveRelatedTabs(TAB1_ID, 1);
+        verify(mTabModel).moveTab(TAB1_ID, 1);
     }
 
     @Test
@@ -1353,9 +1350,6 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         when(mTab1.getIsPinned()).thenReturn(true);
         when(mTab2.getIsPinned()).thenReturn(true);
         when(mTab3.getIsPinned()).thenReturn(false);
-        when(mTab4.getIsPinned()).thenReturn(false);
-        when(mTabModel.getRelatedTabList(TAB3_ID)).thenReturn(List.of(mTab3));
-        when(mTabModel.getRelatedTabList(TAB4_ID)).thenReturn(List.of(mTab4));
         when(mTabModel.indexOf(mTab1)).thenReturn(0);
         when(mTabModel.indexOf(mTab2)).thenReturn(1);
         when(mTabModel.indexOf(mTab3)).thenReturn(2);
@@ -1366,7 +1360,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         mItemTouchHelperCallback.onMove(mRecyclerView, mMockViewHolder3, mMockViewHolder4);
 
         // Verify that tab3 is moved to index 3.
-        verify(mTabModel).moveRelatedTabs(TAB3_ID, 3);
+        verify(mTabModel).moveTab(TAB3_ID, 3);
     }
 
     @Test
@@ -1380,10 +1374,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         when(mTab3.getTabGroupId()).thenReturn(groupId);
         when(mTab4.getTabGroupId()).thenReturn(groupId);
 
-        when(mTabModel.getRelatedTabList(TAB1_ID)).thenReturn(List.of(mTab1));
-        when(mTabModel.getRelatedTabList(TAB2_ID)).thenReturn(List.of(mTab2));
-        when(mTabModel.getRelatedTabList(TAB3_ID)).thenReturn(List.of(mTab3, mTab4));
-        when(mTabModel.getRelatedTabList(TAB4_ID)).thenReturn(List.of(mTab3, mTab4));
+        when(mTabModel.getTabsInGroup(groupId)).thenReturn(List.of(mTab3, mTab4));
 
         when(mTabModel.indexOf(mTab1)).thenReturn(0);
         when(mTabModel.indexOf(mTab2)).thenReturn(1);
@@ -1395,7 +1386,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         mItemTouchHelperCallback.onMove(mRecyclerView, mMockViewHolder1, mMockViewHolder4);
 
         // Verify that the tab is moved to index 1, the last possible position for a pinned tab.
-        verify(mTabModel).moveRelatedTabs(TAB1_ID, 1);
+        verify(mTabModel).moveTab(TAB1_ID, 1);
     }
 
     @Test
@@ -1407,13 +1398,6 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         when(mTab4.getIsPinned()).thenReturn(false);
         Token groupId = Token.createRandom();
         when(mTab3.getTabGroupId()).thenReturn(groupId);
-        when(mTab4.getTabGroupId()).thenReturn(groupId);
-
-        when(mTabModel.getRelatedTabList(TAB1_ID)).thenReturn(List.of(mTab1));
-        when(mTabModel.getRelatedTabList(TAB2_ID)).thenReturn(List.of(mTab2));
-        when(mTabModel.getRelatedTabList(TAB3_ID)).thenReturn(List.of(mTab3, mTab4));
-        when(mTabModel.getRelatedTabList(TAB4_ID)).thenReturn(List.of(mTab3, mTab4));
-
         when(mTabModel.indexOf(mTab1)).thenReturn(0);
         when(mTabModel.indexOf(mTab2)).thenReturn(1);
         when(mTabModel.indexOf(mTab3)).thenReturn(2);
@@ -1425,7 +1409,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
 
         // Verify that the tab is moved to index 2, the first possible position for an unpinned
         // tab.
-        verify(mTabModel).moveRelatedTabs(TAB3_ID, 2);
+        verify(mTabModel).moveGroupToIndex(groupId, 2);
     }
 
     @Test
@@ -1434,9 +1418,6 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         when(mTab1.getIsPinned()).thenReturn(false);
         when(mTab2.getIsPinned()).thenReturn(false);
         when(mTab3.getIsPinned()).thenReturn(false);
-        when(mTab4.getIsPinned()).thenReturn(false);
-        when(mTabModel.getRelatedTabList(TAB1_ID)).thenReturn(List.of(mTab1));
-        when(mTabModel.getRelatedTabList(TAB4_ID)).thenReturn(List.of(mTab4));
         when(mTabModel.indexOf(mTab1)).thenReturn(0);
         when(mTabModel.indexOf(mTab4)).thenReturn(3);
         when(mTabModel.findFirstNonPinnedTabIndex()).thenReturn(0);
@@ -1445,7 +1426,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         mItemTouchHelperCallback.onMove(mRecyclerView, mMockViewHolder1, mMockViewHolder4);
 
         // Verify that tab1 is moved to index 3.
-        verify(mTabModel).moveRelatedTabs(TAB1_ID, 3);
+        verify(mTabModel).moveTab(TAB1_ID, 3);
     }
 
     @Test
@@ -1454,9 +1435,6 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         when(mTab1.getIsPinned()).thenReturn(true);
         when(mTab2.getIsPinned()).thenReturn(true);
         when(mTab3.getIsPinned()).thenReturn(true);
-        when(mTab4.getIsPinned()).thenReturn(true);
-        when(mTabModel.getRelatedTabList(TAB1_ID)).thenReturn(List.of(mTab1));
-        when(mTabModel.getRelatedTabList(TAB4_ID)).thenReturn(List.of(mTab4));
         when(mTabModel.indexOf(mTab1)).thenReturn(0);
         when(mTabModel.indexOf(mTab4)).thenReturn(3);
         // All tabs are pinned, so the first non-pinned tab is at the end of the list.
@@ -1466,7 +1444,7 @@ public class TabGridItemTouchHelperCallbackUnitTest {
         mItemTouchHelperCallback.onMove(mRecyclerView, mMockViewHolder1, mMockViewHolder4);
 
         // Verify that tab1 is moved to index 3.
-        verify(mTabModel).moveRelatedTabs(TAB1_ID, 3);
+        verify(mTabModel).moveTab(TAB1_ID, 3);
     }
 
     @Test

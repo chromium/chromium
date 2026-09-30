@@ -130,7 +130,7 @@ public class PinnedTabStripItemTouchHelperCallback extends ItemTouchHelper2.Simp
 
         mSelectedTabIndex = destinationIndex;
         @TabId int currentTabId = model.get(TabProperties.TAB_ID);
-        tabModel.moveRelatedTabs(currentTabId, destinationIndex);
+        tabModel.moveTab(currentTabId, destinationIndex);
         mModel.move(fromPosition, destinationIndex);
         return true;
     }

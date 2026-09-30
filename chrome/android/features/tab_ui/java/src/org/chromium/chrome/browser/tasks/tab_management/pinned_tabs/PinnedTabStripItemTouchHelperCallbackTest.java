@@ -117,7 +117,7 @@ public class PinnedTabStripItemTouchHelperCallbackTest {
     public void testOnMove() {
         assertTrue(mCallback.onMove(null, mMockViewHolder1, mMockViewHolder2));
 
-        verify(mTabModel).moveRelatedTabs(TAB_ID1, POSITION2);
+        verify(mTabModel).moveTab(TAB_ID1, POSITION2);
         verify(mTabListModel).move(POSITION1, POSITION2);
     }
 

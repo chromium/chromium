@@ -105,7 +105,7 @@ public class TabKeyEventHandlerUnitTest {
                 mTabModel,
                 /* moveSingleTab= */ false);
 
-        verify(mTabModel).moveRelatedTabs(tab.getId(), 2);
+        verify(mTabModel).moveTab(tab.getId(), 2);
     }
 
     @Test
@@ -118,7 +118,21 @@ public class TabKeyEventHandlerUnitTest {
                 mTabModel,
                 /* moveSingleTab= */ false);
 
-        verify(mTabModel).moveRelatedTabs(tab.getId(), 0);
+        verify(mTabModel).moveTab(tab.getId(), 0);
+    }
+
+    @Test
+    public void testMoveBackwardGroupedTab() {
+        List<Tab> group = addTabGroup();
+        Tab tab = group.get(0);
+        addTab();
+
+        TabKeyEventHandler.onPageKeyEvent(
+                new TabKeyEventData(tab.getId(), KEYCODE_PAGE_DOWN),
+                mTabModel,
+                /* moveSingleTab= */ false);
+
+        verify(mTabModel).moveGroupToIndex(tab.getTabGroupId(), 2);
     }
 
     @Test
