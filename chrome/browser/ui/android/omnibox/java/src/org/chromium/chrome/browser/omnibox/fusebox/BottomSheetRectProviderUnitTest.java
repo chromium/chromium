@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.omnibox.fusebox;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
-import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.content.res.Configuration;
@@ -16,13 +15,8 @@ import android.view.View;
 import androidx.window.layout.WindowMetricsCalculator;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-import org.mockito.quality.Strictness;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
@@ -34,24 +28,25 @@ import org.chromium.ui.base.TestActivity;
 
 /** Unit tests for {@link BottomSheetRectProvider}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class BottomSheetRectProviderUnitTest {
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
-
-    @Mock private View mAnchorView;
+    private View mAnchorView;
     private Activity mActivity;
     private BottomSheetRectProvider mProvider;
 
     @Before
     public void setUp() {
         mActivity = Robolectric.setupActivity(TestActivity.class);
+        mAnchorView = new View(mActivity);
         mProvider = new BottomSheetRectProvider(mActivity, mAnchorView);
     }
 
     @Test
     public void testConstructor_registersLayoutChangeListener() {
-        verify(mAnchorView).addOnLayoutChangeListener(mProvider);
+        Rect initialRect = new Rect(mProvider.getRect());
+        RuntimeEnvironment.setQualifiers("w1000dp-h800dp");
+        mAnchorView.layout(0, 0, 1000, 800);
+        ShadowLooper.idleMainLooper();
+        assertNotEquals(initialRect, mProvider.getRect());
     }
 
     @Test
@@ -79,8 +74,12 @@ public class BottomSheetRectProviderUnitTest {
 
     @Test
     public void testDestroy_removesListener() {
+        Rect initialRect = new Rect(mProvider.getRect());
         mProvider.destroy();
-        verify(mAnchorView).removeOnLayoutChangeListener(mProvider);
+        RuntimeEnvironment.setQualifiers("w1000dp-h800dp");
+        mAnchorView.layout(0, 0, 1000, 800);
+        ShadowLooper.idleMainLooper();
+        assertEquals(initialRect, mProvider.getRect());
     }
 
     @Test
