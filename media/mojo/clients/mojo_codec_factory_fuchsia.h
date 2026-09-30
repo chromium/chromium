@@ -5,6 +5,7 @@
 #ifndef MEDIA_MOJO_CLIENTS_MOJO_CODEC_FACTORY_FUCHSIA_H_
 #define MEDIA_MOJO_CLIENTS_MOJO_CODEC_FACTORY_FUCHSIA_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/overlay_info.h"
 #include "media/base/video_decoder.h"
@@ -50,6 +51,8 @@ class MojoCodecFactoryFuchsia final : public media::MojoCodecFactory {
 
   mojo::SharedRemote<media::mojom::FuchsiaMediaCodecProvider>
       media_codec_provider_;
+
+  base::WeakPtrFactory<MojoCodecFactoryFuchsia> weak_factory_{this};
 };
 
 }  // namespace media

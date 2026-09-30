@@ -33,7 +33,7 @@ MojoCodecFactoryMojoDecoder::MojoCodecFactoryMojoDecoder(
                        std::move(pending_vea_provider_remote)) {
   media_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&MojoCodecFactoryMojoDecoder::BindOnTaskRunner,
-                                base::Unretained(this),
+                                weak_factory_.GetWeakPtr(),
                                 std::move(pending_interface_factory_remote)));
 }
 MojoCodecFactoryMojoDecoder::~MojoCodecFactoryMojoDecoder() = default;
@@ -76,18 +76,15 @@ void MojoCodecFactoryMojoDecoder::BindOnTaskRunner(
   // example a GPU driver failure. Set a disconnect handler to watch these
   // types of failures and treat them as if there are no supported decoder
   // configs.
-  // Unretained is safe since MojoCodecFactory is never destroyed.
-  // It lives until the process shuts down.
-
   mojo::Remote<media::mojom::VideoDecoder> video_decoder;
   interface_factory_->CreateVideoDecoder(
       video_decoder.BindNewPipeAndPassReceiver(), /*dst_video_decoder=*/{});
   video_decoder.set_disconnect_handler(
       base::BindOnce(&MojoCodecFactoryMojoDecoder::OnDecoderSupportFailed,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
   video_decoder->GetSupportedConfigs(
       base::BindOnce(&MojoCodecFactoryMojoDecoder::OnGetSupportedDecoderConfigs,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
   video_decoder_ = std::move(video_decoder);
 }
 

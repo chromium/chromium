@@ -33,7 +33,7 @@ MojoCodecFactory::MojoCodecFactory(
       video_encode_accelerator_enabled_(video_encode_accelerator_enabled) {
   media_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(&MojoCodecFactory::BindOnTaskRunner,
-                                base::Unretained(this),
+                                weak_factory_.GetWeakPtr(),
                                 std::move(pending_vea_provider_remote)));
 }
 MojoCodecFactory::~MojoCodecFactory() = default;
@@ -211,13 +211,11 @@ void MojoCodecFactory::BindOnTaskRunner(
     // example a GPU driver failure. Set a disconnect handler to watch these
     // types of failures and treat them as if there are no supported encoder
     // profiles.
-    // Unretained is safe since MojoCodecFactory is never destroyed.
-    // It lives until the process shuts down.
     vea_provider_.set_disconnect_handler(base::BindOnce(
-        &MojoCodecFactory::OnEncoderSupportFailed, base::Unretained(this)));
+        &MojoCodecFactory::OnEncoderSupportFailed, weak_factory_.GetWeakPtr()));
     vea_provider_->GetVideoEncodeAcceleratorSupportedProfiles(base::BindOnce(
         &MojoCodecFactory::OnGetVideoEncodeAcceleratorSupportedProfiles,
-        base::Unretained(this)));
+        weak_factory_.GetWeakPtr()));
   } else {
     OnEncoderSupportFailed();
   }

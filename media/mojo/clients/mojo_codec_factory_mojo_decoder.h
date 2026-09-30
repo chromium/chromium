@@ -8,6 +8,7 @@
 #include <memory>
 #include <variant>
 
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/decoder.h"
 #include "media/base/overlay_info.h"
@@ -52,6 +53,8 @@ class MojoCodecFactoryMojoDecoder final : public media::MojoCodecFactory {
   mojo::Remote<media::mojom::InterfaceFactory> interface_factory_;
 
   mojo::Remote<media::mojom::VideoDecoder> video_decoder_;
+
+  base::WeakPtrFactory<MojoCodecFactoryMojoDecoder> weak_factory_{this};
 };
 
 }  // namespace media

@@ -36,7 +36,7 @@ MojoCodecFactoryFuchsia::MojoCodecFactoryFuchsia(
   media_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&MojoCodecFactoryFuchsia::BindOnTaskRunner,
-                     base::Unretained(this),
+                     weak_factory_.GetWeakPtr(),
                      std::move(pending_media_codec_provider_remote)));
 }
 MojoCodecFactoryFuchsia::~MojoCodecFactoryFuchsia() = default;
@@ -70,15 +70,13 @@ void MojoCodecFactoryFuchsia::BindOnTaskRunner(
   // example a decoder driver failure. Set a disconnect handler to watch these
   // types of failures and treat them as if there are no supported decoder
   // configs.
-  // Unretained is safe since MojoCodecFactory is never destroyed.
-  // It lives until the process shuts down.
   media_codec_provider_.set_disconnect_handler(
       base::BindOnce(&MojoCodecFactoryFuchsia::OnDecoderSupportFailed,
-                     base::Unretained(this)),
+                     weak_factory_.GetWeakPtr()),
       media_task_runner_);
   media_codec_provider_->GetSupportedVideoDecoderConfigs(
       base::BindOnce(&MojoCodecFactoryFuchsia::OnGetSupportedDecoderConfigs,
-                     base::Unretained(this)));
+                     weak_factory_.GetWeakPtr()));
 }
 
 void MojoCodecFactoryFuchsia::OnGetSupportedDecoderConfigs(

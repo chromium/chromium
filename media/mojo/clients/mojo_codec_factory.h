@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "media/base/decoder.h"
 #include "media/base/media_log.h"
@@ -179,6 +180,8 @@ class MojoCodecFactory {
   mojo::Remote<mojom::VideoEncodeAcceleratorProvider> vea_provider_;
   base::UnguessableToken channel_token_;
   int32_t route_id_;
+
+  base::WeakPtrFactory<MojoCodecFactory> weak_factory_{this};
 };
 
 // MojoCodecFactoryDefault is the default derived class, which has no

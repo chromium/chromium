@@ -718,4 +718,17 @@ TEST_F(MojoGpuVideoAcceleratorFactoriesTest, DefaultMojoCodecFactory) {
 }
 #endif  // BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER) || BUILDFLAG(IS_FUCHSIA)
 
+TEST_F(MojoGpuVideoAcceleratorFactoriesTest, DestroyBeforeTaskRunnerRuns) {
+  std::unique_ptr<MojoCodecFactory> codec_factory =
+      CreateMojoCodecFactory(mock_context_provider_, true, true);
+  auto gpu_factories = MojoGpuVideoAcceleratorFactories::Create(
+      gpu_channel_host_, task_environment_.GetMainThreadTaskRunner(),
+      task_environment_.GetMainThreadTaskRunner(), mock_context_provider_,
+      std::move(codec_factory), true, true, true, true);
+  gpu_factories.reset();
+  task_environment_.GetMainThreadTaskRunner()->PostTask(
+      FROM_HERE, task_environment_.QuitClosure());
+  task_environment_.RunUntilQuit();
+}
+
 }  // namespace media
