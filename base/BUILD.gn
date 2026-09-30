@@ -2604,6 +2604,9 @@ component("base") {
 
   if (is_win) {
     sources += [
+      # Depends on trace_event/trace_logging_minimal_win.h below.
+      "allocator/etw_allocation_observer_win.cc",
+      "allocator/etw_allocation_observer_win.h",
       "trace_event/etw_interceptor_win.cc",
       "trace_event/etw_interceptor_win.h",
       "trace_event/trace_logging_minimal_win.cc",
@@ -4794,7 +4797,10 @@ test("base_unittests") {
   }
 
   if (is_win) {
-    sources += [ "trace_event/trace_logging_minimal_win_unittest.cc" ]
+    sources += [
+      "allocator/etw_allocation_observer_win_unittest.cc",
+      "trace_event/trace_logging_minimal_win_unittest.cc",
+    ]
   }
 
   deps += [

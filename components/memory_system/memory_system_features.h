@@ -7,11 +7,29 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "build/build_config.h"
 
 namespace memory_system::features {
 
 BASE_DECLARE_FEATURE(kAllocationTraceRecorder);
 BASE_DECLARE_FEATURE_PARAM(bool, kAllocationTraceRecorderForceAllProcesses);
+
+#if BUILDFLAG(IS_WIN)
+BASE_DECLARE_FEATURE(kAllocationEtwTracing);
+
+// The processes kAllocationEtwTracing installs the ETW allocation observer in.
+enum class AllocationEtwTracingProcesses {
+  kBrowserOnly,
+  kRendererOnly,
+  kGpuOnly,
+  kBrowserAndRenderer,
+  kBrowserAndGpu,
+  kNonRenderer,
+  kAllProcesses,
+};
+BASE_DECLARE_FEATURE_PARAM(AllocationEtwTracingProcesses,
+                           kAllocationEtwTracingProcesses);
+#endif
 
 }  // namespace memory_system::features
 

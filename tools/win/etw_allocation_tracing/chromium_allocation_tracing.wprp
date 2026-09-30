@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+
+Records Chromium's allocation ETW provider. See README.md in this directory.
+
+The target browser must be launched with the AllocationEtwTracing feature
+enabled (see README.md) or the provider is never connected to the allocator
+and no events are written.
+-->
+<WindowsPerformanceRecorder Version="1.0" Author="The Chromium Authors" Comments="Chromium allocation tracing">
+  <Profiles>
+
+    <SystemCollector Id="SystemCollector_Chromium_Alloc" Name="Chromium Allocation System Collector">
+      <BufferSize Value="1024"/>
+      <Buffers Value="64"/>
+    </SystemCollector>
+
+    <!-- Allocation events are small (~164 bytes on disk each, more with a
+         stack) but extremely numerous: a busy renderer can produce millions
+         per second. Undersized buffers show up as lost events in WPA's
+         Trace Statistics. -->
+    <EventCollector Id="EventCollector_Chromium_Alloc" Name="Chromium Allocation Event Collector">
+      <BufferSize Value="1024"/>
+      <Buffers Value="512"/>
+    </EventCollector>
+
+    <!-- ProcessThread and Loader are what let WPA turn the raw return
+         addresses on each event into module!function. Without them the stacks
+         are collected but never symbolicate. -->
+    <SystemProvider Id="SystemProvider_Chromium_Alloc">
+      <Keywords>
+        <Keyword Value="ProcessThread"/>
+        <Keyword Value="Loader"/>
+      </Keywords>
+    </SystemProvider>
+
+    <!-- Name="*Chromium.AllocationTracing" would resolve to the same GUID,
+         because the provider GUID is the standard TraceLogging hash of the
+         provider name. The GUID is spelled out here so the profile does not
+         depend on that.
+
+         Keyword 0x1 = allocations, 0x2 = frees. Enabling with a
+         MatchAnyKeyword of 0 would leave the provider silent. Adding process
+         type bits traces those processes only, e.g. 0x23 for renderers only:
+         0x10 = browser, 0x20 = renderers, 0x40 = GPU, 0x80 = utility,
+         0x100 = any other type.
+
+         Stack="true" sets EVENT_ENABLE_PROPERTY_STACK_TRACE, and
+         StackEventNameFilters narrows stack walking to the two allocation
+         events. Frees still get recorded, they just do not pay for a stack
+         walk, which is the single most expensive part of the capture and is
+         useless on a free anyway: the interesting stack is the one that
+         allocated the memory.
+
+         Note that <StackFilters> (EVENT_FILTER_TYPE_STACKWALK) is explicitly
+         documented to be *ignored* for TraceLogging providers, because
+         TraceLogging events have no static event IDs. Filtering by event
+         name (EVENT_FILTER_TYPE_STACKWALK_NAME) is the mechanism that works.
+         Requires Windows 10 1709 or later. -->
+    <EventProvider Id="EventProvider_Chromium_Alloc" Name="C9D77D7A-5129-51F6-3C45-3E0FD0418284" Level="5" Stack="true">
+      <Keywords>
+        <Keyword Value="0x3"/>
+      </Keywords>
+      <StackEventNameFilters FilterIn="true">
+        <EventName Value="Alloc"/>
+        <EventName Value="PAAlloc"/>
+      </StackEventNameFilters>
+    </EventProvider>
+
+    <!-- Same provider with no stack walking at all. Much cheaper, and enough
+         to answer "how much is being allocated and how fast", just not
+         "by whom". -->
+    <EventProvider Id="EventProvider_Chromium_Alloc_NoStacks" Name="C9D77D7A-5129-51F6-3C45-3E0FD0418284" Level="5">
+      <Keywords>
+        <Keyword Value="0x3"/>
+      </Keywords>
+    </EventProvider>
+
+    <Profile Id="ChromiumAllocationTracing.Verbose.File"
+             Name="ChromiumAllocationTracing"
+             Description="Chromium allocations and frees, with call stacks on allocations"
+             LoggingMode="File"
+             DetailLevel="Verbose">
+      <Collectors>
+        <SystemCollectorId Value="SystemCollector_Chromium_Alloc">
+          <SystemProviderId Value="SystemProvider_Chromium_Alloc"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_Chromium_Alloc">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_Chromium_Alloc"/>
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="ChromiumAllocationTracing.Light.File"
+             Name="ChromiumAllocationTracing"
+             Description="Chromium allocations and frees, with call stacks on allocations"
+             Base="ChromiumAllocationTracing.Verbose.File"
+             LoggingMode="File"
+             DetailLevel="Light"/>
+
+    <Profile Id="ChromiumAllocationTracingNoStacks.Verbose.File"
+             Name="ChromiumAllocationTracingNoStacks"
+             Description="Chromium allocations and frees, without call stacks"
+             LoggingMode="File"
+             DetailLevel="Verbose">
+      <Collectors>
+        <SystemCollectorId Value="SystemCollector_Chromium_Alloc">
+          <SystemProviderId Value="SystemProvider_Chromium_Alloc"/>
+        </SystemCollectorId>
+        <EventCollectorId Value="EventCollector_Chromium_Alloc">
+          <EventProviders>
+            <EventProviderId Value="EventProvider_Chromium_Alloc_NoStacks"/>
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="ChromiumAllocationTracingNoStacks.Light.File"
+             Name="ChromiumAllocationTracingNoStacks"
+             Description="Chromium allocations and frees, without call stacks"
+             Base="ChromiumAllocationTracingNoStacks.Verbose.File"
+             LoggingMode="File"
+             DetailLevel="Light"/>
+
+  </Profiles>
+</WindowsPerformanceRecorder>

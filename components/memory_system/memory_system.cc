@@ -8,6 +8,7 @@
 #include "base/allocator/dispatcher/initializer.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/debugging_buildflags.h"
+#include "base/feature_list.h"
 #include "build/build_config.h"
 #include "components/gwp_asan/buildflags/buildflags.h"
 #include "components/memory_system/memory_system_features.h"
@@ -56,6 +57,10 @@
 #include "components/memory_system/allocation_trace_recorder_statistics_reporter.h"
 #endif  // BUILDFLAG(ENABLE_ALLOCATION_TRACE_RECORDER_FULL_REPORTING)
 #endif  // BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
+
+#if BUILDFLAG(IS_WIN)
+#include "base/allocator/etw_allocation_observer_win.h"
+#endif
 
 namespace memory_system {
 namespace {
@@ -109,6 +114,13 @@ struct MemorySystem::Impl {
 
   // Has the allocator shim been initialized successfully?
   bool IsAllocatorShimInitialized();
+
+#if BUILDFLAG(IS_WIN)
+  // Check if the dispatcher should include the EtwAllocationObserver as an
+  // observer.
+  bool DispatcherIncludesEtwAllocationObserver(
+      const DispatcherParameters& dispatcher_parameters);
+#endif
 
 #if HEAP_PROFILING_SUPPORTED
   // Check if the the dispatcher should include the PoissonAllocationSampler as
@@ -301,6 +313,39 @@ bool MemorySystem::Impl::DispatcherIncludesAllocationTraceRecorder(
 }
 #endif
 
+#if BUILDFLAG(IS_WIN)
+bool MemorySystem::Impl::DispatcherIncludesEtwAllocationObserver(
+    const DispatcherParameters& dispatcher_parameters) {
+  if (!base::FeatureList::IsEnabled(features::kAllocationEtwTracing)) {
+    return false;
+  }
+
+  using base::allocator::EtwProcessTypeKeyword;
+  using features::AllocationEtwTracingProcesses;
+  const EtwProcessTypeKeyword process =
+      base::allocator::GetEtwProcessTypeKeyword(
+          dispatcher_parameters.process_type);
+  switch (features::kAllocationEtwTracingProcesses.Get()) {
+    case AllocationEtwTracingProcesses::kBrowserOnly:
+      return process == EtwProcessTypeKeyword::kBrowser;
+    case AllocationEtwTracingProcesses::kRendererOnly:
+      return process == EtwProcessTypeKeyword::kRenderer;
+    case AllocationEtwTracingProcesses::kGpuOnly:
+      return process == EtwProcessTypeKeyword::kGpu;
+    case AllocationEtwTracingProcesses::kBrowserAndRenderer:
+      return process == EtwProcessTypeKeyword::kBrowser ||
+             process == EtwProcessTypeKeyword::kRenderer;
+    case AllocationEtwTracingProcesses::kBrowserAndGpu:
+      return process == EtwProcessTypeKeyword::kBrowser ||
+             process == EtwProcessTypeKeyword::kGpu;
+    case AllocationEtwTracingProcesses::kNonRenderer:
+      return process != EtwProcessTypeKeyword::kRenderer;
+    case AllocationEtwTracingProcesses::kAllProcesses:
+      return true;
+  }
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 void MemorySystem::Impl::InitializeDispatcher(
     const DispatcherParameters& dispatcher_parameters,
     InitializationData& initialization_data) {
@@ -342,12 +387,25 @@ void MemorySystem::Impl::InitializeDispatcher(
   }
 #endif  // BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
 
+#if BUILDFLAG(IS_WIN)
+  base::allocator::EtwAllocationObserver* etw_allocation_observer = nullptr;
+  if (DispatcherIncludesEtwAllocationObserver(dispatcher_parameters)) {
+    etw_allocation_observer = base::allocator::EtwAllocationObserver::Get();
+    // Registering allocates, so it has to happen before the observer is
+    // connected to the allocation hooks below.
+    etw_allocation_observer->Register(dispatcher_parameters.process_type);
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   base::allocator::dispatcher::CreateInitializer()
 #if HEAP_PROFILING_SUPPORTED
       .AddOptionalObservers(poisson_allocation_sampler)
 #endif
 #if BUILDFLAG(ENABLE_ALLOCATION_STACK_TRACE_RECORDER)
       .AddOptionalObservers(allocation_recording_.recorder.get())
+#endif
+#if BUILDFLAG(IS_WIN)
+      .AddOptionalObservers(etw_allocation_observer)
 #endif
       .DoInitialize(base::allocator::dispatcher::Dispatcher::GetInstance());
 }
