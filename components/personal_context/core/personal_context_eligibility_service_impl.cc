@@ -119,13 +119,6 @@ SatisfiesAccountSettingRequirements(
     return std::pair{false, std::nullopt};
   }
 
-  if (!account_settings->GetBoolean(account_settings::kAccountSettingContext)
-           .value_or(false)) {
-    MaybeOutputReason(debug_message, "Account is opted out of context");
-    return std::pair{false,
-                     PersonalContextNonEligibilityReason::kNotOptedInToContext};
-  }
-
   if (!account_settings
            ->GetBoolean(account_settings::kAccountSettingContextWorkspace)
            .value_or(false) &&

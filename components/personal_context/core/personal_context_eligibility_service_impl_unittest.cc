@@ -227,33 +227,10 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
             PersonalContextEligibilityState::kDisabledNotEligible);
 }
 
-// Verifies that the service is disabled if the user has explicitly opted
-// out of personal context in their global account settings.
-TEST_F(PersonalContextEligibilityServiceImplTest,
-       DisabledWhenAccountOptedOutOfContext) {
-  EXPECT_CALL(mock_account_settings_service_,
-              GetBoolean(AccountSettingWithName(
-                  account_settings::kAccountSettingContext.name)))
-      .WillOnce(Return(false));
-
-  service().OnAccountSettingDataUpdated(
-      account_settings::kAccountSettingContext.name);
-  EXPECT_EQ(service().GetEligibilityState(),
-            PersonalContextEligibilityState::kDisabledNotEligible);
-
-  histogram_tester().ExpectBucketCount(
-      "Autofill.PersonalContext.NonEligibilityReason",
-      PersonalContextNonEligibilityReason::kNotOptedInToContext, 1);
-}
-
 // Verifies that the service is disabled if no specific context sources
-// (e.g. Photos, Workspace) are enabled, even if the global opt-in is on.
+// (e.g. Photos, Workspace) are enabled.
 TEST_F(PersonalContextEligibilityServiceImplTest,
        DisabledWhenNoContextSourcesEnabled) {
-  EXPECT_CALL(mock_account_settings_service_,
-              GetBoolean(AccountSettingWithName(
-                  account_settings::kAccountSettingContext.name)))
-      .WillOnce(Return(true));
   EXPECT_CALL(mock_account_settings_service_,
               GetBoolean(AccountSettingWithName(
                   account_settings::kAccountSettingContextWorkspace.name)))
@@ -264,7 +241,7 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
       .WillOnce(Return(false));
 
   service().OnAccountSettingDataUpdated(
-      account_settings::kAccountSettingContext.name);
+      account_settings::kAccountSettingContextWorkspace.name);
   EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNotEligible);
 
@@ -277,10 +254,6 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
 // is enabled.
 TEST_F(PersonalContextEligibilityServiceImplTest,
        EnabledWhenAtLeastOneContextSourceEnabled) {
-  EXPECT_CALL(mock_account_settings_service_,
-              GetBoolean(AccountSettingWithName(
-                  account_settings::kAccountSettingContext.name)))
-      .WillRepeatedly(Return(true));
   {
     // Only Workspace enabled.
     EXPECT_CALL(mock_account_settings_service_,
@@ -293,7 +266,7 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
         .WillOnce(Return(false));
 
     service().OnAccountSettingDataUpdated(
-        account_settings::kAccountSettingContext.name);
+        account_settings::kAccountSettingContextWorkspace.name);
     EXPECT_EQ(service().GetEligibilityState(),
               PersonalContextEligibilityState::kEligible);
     EXPECT_FALSE(service().IsEligibleForEncryption());
@@ -310,7 +283,7 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
         .WillRepeatedly(Return(true));
 
     service().OnAccountSettingDataUpdated(
-        account_settings::kAccountSettingContext.name);
+        account_settings::kAccountSettingContextPhotos.name);
     EXPECT_EQ(service().GetEligibilityState(),
               PersonalContextEligibilityState::kEligible);
     EXPECT_TRUE(service().IsEligibleForEncryption());
@@ -325,25 +298,25 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
   ASSERT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kEligible);
 
-  // Opt out of context in account settings.
+  // Opt out of context sources in account settings.
   EXPECT_CALL(mock_account_settings_service_,
               GetBoolean(AccountSettingWithName(
-                  account_settings::kAccountSettingContext.name)))
+                  account_settings::kAccountSettingContextWorkspace.name)))
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(mock_account_settings_service_,
+              GetBoolean(AccountSettingWithName(
+                  account_settings::kAccountSettingContextPhotos.name)))
       .WillRepeatedly(Return(false));
 
   // Notify the service that an account setting has changed.
   service().OnAccountSettingDataUpdated(
-      account_settings::kAccountSettingContext.name);
+      account_settings::kAccountSettingContextWorkspace.name);
 
   // The cache should be updated to kDisabledNotEligible.
   EXPECT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kDisabledNotEligible);
 
   // Opt back in.
-  EXPECT_CALL(mock_account_settings_service_,
-              GetBoolean(AccountSettingWithName(
-                  account_settings::kAccountSettingContext.name)))
-      .WillRepeatedly(Return(true));
   EXPECT_CALL(mock_account_settings_service_,
               GetBoolean(AccountSettingWithName(
                   account_settings::kAccountSettingContextWorkspace.name)))
@@ -355,7 +328,7 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
 
   // Notify again.
   service().OnAccountSettingDataUpdated(
-      account_settings::kAccountSettingContext.name);
+      account_settings::kAccountSettingContextWorkspace.name);
 
   // The cache should be updated back to kEligible.
   EXPECT_EQ(service().GetEligibilityState(),
@@ -511,10 +484,14 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
   ASSERT_EQ(service().GetEligibilityState(),
             PersonalContextEligibilityState::kEligible);
 
-  // Opt out of context in account settings.
+  // Opt out of context sources in account settings.
   ON_CALL(mock_account_settings_service_,
           GetBoolean(AccountSettingWithName(
-              account_settings::kAccountSettingContext.name)))
+              account_settings::kAccountSettingContextWorkspace.name)))
+      .WillByDefault(Return(false));
+  ON_CALL(mock_account_settings_service_,
+          GetBoolean(AccountSettingWithName(
+              account_settings::kAccountSettingContextPhotos.name)))
       .WillByDefault(Return(false));
 
   // Notify the service that data has been loaded from disk.
@@ -537,7 +514,11 @@ TEST_F(PersonalContextEligibilityServiceImplTest,
 
   ON_CALL(mock_account_settings_service_,
           GetBoolean(AccountSettingWithName(
-              account_settings::kAccountSettingContext.name)))
+              account_settings::kAccountSettingContextWorkspace.name)))
+      .WillByDefault(Return(false));
+  ON_CALL(mock_account_settings_service_,
+          GetBoolean(AccountSettingWithName(
+              account_settings::kAccountSettingContextPhotos.name)))
       .WillByDefault(Return(false));
 
   EXPECT_CALL(observer,
