@@ -113,8 +113,11 @@ blink_core_sources_loader = [
   "progress_tracker.h",
   "resource/css_style_sheet_resource.cc",
   "resource/css_style_sheet_resource.h",
-  "resource/font_resource.cc",
-  "resource/font_resource.h",
+
+  # resource/font_resource.{h,cc} are compiled in separate targets in
+  # //third_party/blink/renderer/core/BUILD.gn so that Crubit-generated headers
+  # from //third_party/blink/renderer/platform:font_rust_headers do not block
+  # compilation of the rest of core and its dependents.
   "resource/image_resource.cc",
   "resource/image_resource.h",
   "resource/image_resource_content.cc",

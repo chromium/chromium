@@ -370,6 +370,7 @@ component("core") {
     ":buildflags",
     ":core_generated",
     ":core_hot",
+    ":font_resource_header",
     "//cc",
     "//skia",
     "//third_party/blink/public/mojom:mojom_core_blink",
@@ -404,6 +405,7 @@ component("core") {
   }
 
   deps = [
+    ":font_resource",
     ":generate_eventhandler_names",
     ":make_deprecation_info",
     ":xml_ffi",
@@ -436,7 +438,6 @@ component("core") {
     "//third_party/blink/public/strings:generate_permission_element_strings_mono_grd",
     "//third_party/blink/public/strings:permission_element_generated_strings",
     "//third_party/blink/public/strings:permission_element_strings_grit",
-    "//third_party/blink/renderer/platform:font_rust_headers",
     "//third_party/rust/xml/v1:lib",
     "//tools/v8_context_snapshot:buildflags",
     "//ui/base/cursor/mojom:cursor_type_blink",
@@ -477,6 +478,31 @@ component("core") {
       "Carbon.framework",
     ]
   }
+}
+
+# Isolate loader/resource/font_resource.{h,cc} from component("core") because
+# font_resource.cc is the only non-test file in core that includes
+# //third_party/blink/renderer/platform:font_rust_headers. Keeping
+# :font_rust_headers on a headerless target (":font_resource") prevents
+# Crubit-generated font bindings from being added to core's harddeps and
+# blocking compilation of core and its downstream dependents.
+#
+# These use blink_core_sources (like ":core_hot") so that they inherit the
+# common configs and deps of core from core.gni.
+blink_core_sources("font_resource_header") {
+  sources = [ "loader/resource/font_resource.h" ]
+}
+
+blink_core_sources("font_resource") {
+  public = []
+  sources = [ "loader/resource/font_resource.cc" ]
+
+  deps = [
+    ":buildflags",
+    ":font_resource_header",
+    "//third_party/blink/public/common",
+    "//third_party/blink/renderer/platform:font_rust_headers",
+  ]
 }
 
 # Certain sources should be compiled with heavy optimization enabled.

@@ -33,8 +33,8 @@ core_config_remove += [ "//build/config/compiler:default_symbols" ]
 core_config_add += blink_symbols_config
 
 # Use this to generate a static library or source set that gets linked into
-# "core". This will either be a source_set (component build), or a static
-# library.
+# "core". This will either be a source_set (component build or header-only
+# targets), or a static library.
 #
 # Special values (all unlisted values are forwarded to the underlying library):
 #
@@ -52,7 +52,12 @@ core_config_add += blink_symbols_config
 #   visibility
 #      Normal meaning if defined. If undefined, defaults to everything in core.
 template("blink_core_sources") {
-  if (is_component_build) {
+  # Header-only targets are always source_sets because an empty
+  # static_library fails to be created on some platforms (e.g. lld-link /lib
+  # on Windows treats "no input files" as an error).
+  if (is_component_build ||
+      (defined(invoker.sources) &&
+       filter_exclude(invoker.sources, [ "*.h" ]) == [])) {
     target_type = "source_set"
   } else {
     target_type = "static_library"
