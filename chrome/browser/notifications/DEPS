@@ -7,3 +7,10 @@ include_rules = [
   "+dbus",
   "+ui/message_center",
 ]
+
+specific_include_rules = {
+  "platform_notification_service_unittest\.cc": [
+    "+components/web_package/signed_web_bundles",
+    "+components/webapps/services/web_app_origin_association",
+  ],
+}

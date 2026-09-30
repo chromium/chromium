@@ -28,8 +28,9 @@ NavigationCapturingSettingsImpl::GetCapturingWebAppForUrl(const GURL& url) {
           ->registrar_unsafe();
   if (std::optional<webapps::AppId> iwa_id =
           registrar.FindBestAppWithUrlInScope(
-              url, WebAppFilter::IsIsolatedApp() |
-                       WebAppFilter::IsIsolatedSubApp())) {
+              url,
+              WebAppFilter::IsIsolatedApp() | WebAppFilter::IsIsolatedSubApp(),
+              {.include_isolated_web_app_scope_extensions = true})) {
     // IWA URLs are always captured.
     return *iwa_id;
   }

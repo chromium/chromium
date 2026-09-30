@@ -11,8 +11,10 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_writer.h"
 #include "base/json/values_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
@@ -77,21 +79,29 @@
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
+#include "chrome/browser/web_applications/web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"  // nogncheck
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/services/web_app_origin_association/test/test_web_app_origin_association_fetcher.h"
+#include "url/origin.h"
 #endif
 
 using blink::NotificationResources;
@@ -755,6 +765,110 @@ TEST_F(PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
       icon_and_title->icon.GetRepresentation(1.0f).GetBitmap().getColor(0, 0));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+#if !BUILDFLAG(IS_ANDROID)
+class PlatformNotificationServiceTest_IsolatedWebApp
+    : public web_app::IsolatedWebAppTest {
+ public:
+  void SetUp() override {
+    web_app::IsolatedWebAppTest::SetUp();
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+
+    auto origin_association_fetcher =
+        std::make_unique<webapps::TestWebAppOriginAssociationFetcher>();
+    origin_association_fetcher_ = origin_association_fetcher.get();
+    provider().origin_association_manager().SetFetcherForTest(
+        std::move(origin_association_fetcher));
+  }
+
+  void TearDown() override {
+    // The fetcher is owned by the provider, which is shut down below.
+    origin_association_fetcher_ = nullptr;
+    web_app::IsolatedWebAppTest::TearDown();
+  }
+
+ protected:
+  PlatformNotificationServiceImpl* service() {
+    return PlatformNotificationServiceFactory::GetForProfile(profile());
+  }
+
+  // Installs an Isolated Web App whose manifest extends its scope
+  // to `extended_origin`.
+  web_app::IsolatedWebAppUrlInfo InstallIsolatedWebApp(
+      const url::Origin& extended_origin) {
+    std::unique_ptr<web_app::ScopedBundledIsolatedWebApp> bundle =
+        web_app::IsolatedWebAppBuilder(
+            web_app::ManifestBuilder()
+                .SetName("Isolated Web App")
+                .AddScopeExtension(extended_origin,
+                                   /*has_origin_wildcard=*/false))
+            .BuildBundle();
+    bundle->FakeInstallPageState(profile());
+    bundle->TrustSigningKey();
+    origin_association_fetcher_->SetData(
+        {{extended_origin,
+          *base::WriteJson(base::DictValue().Set(
+              base::StrCat(
+                  {"isolated-app://", bundle->web_bundle_id().id(), "/"}),
+              base::DictValue().Set("scope", "/")))}});
+
+    web_app::IsolatedWebAppUrlInfo url_info = bundle->InstallChecked(profile());
+    CHECK(!provider()
+               .registrar_unsafe()
+               .GetAppById(url_info.app_id())
+               ->validated_scope_extensions()
+               .empty());
+    return url_info;
+  }
+
+ private:
+  raw_ptr<webapps::TestWebAppOriginAssociationFetcher>
+      origin_association_fetcher_ = nullptr;
+};
+
+// Regression tests for crbug.com/553308853: an https origin that is
+// associated with an Isolated Web App through the scope
+// extensions must not be attributed to the IWA.
+TEST_F(PlatformNotificationServiceTest_IsolatedWebApp,
+       FindWebAppId_IgnoresScopeExtensions) {
+  const GURL extended_url{"https://ext.example/"};
+  const web_app::IsolatedWebAppUrlInfo url_info =
+      InstallIsolatedWebApp(url::Origin::Create(extended_url));
+
+  EXPECT_EQ(std::nullopt, service()->FindWebAppId(extended_url));
+
+  // The IWA is still attributed for notifications sent by the IWA itself.
+  EXPECT_EQ(url_info.app_id(),
+            service()->FindWebAppId(url_info.origin().GetURL()));
+}
+
+TEST_F(PlatformNotificationServiceTest_IsolatedWebApp,
+       FindWebAppIconAndTitle_IgnoresScopeExtensions) {
+  const GURL extended_url{"https://ext.example/"};
+  const web_app::IsolatedWebAppUrlInfo url_info =
+      InstallIsolatedWebApp(url::Origin::Create(extended_url));
+
+  EXPECT_FALSE(service()->FindWebAppIconAndTitle(extended_url).has_value());
+
+  // The IWA is still attributed for notifications sent by the IWA itself.
+  EXPECT_TRUE(service()
+                  ->FindWebAppIconAndTitle(url_info.origin().GetURL())
+                  .has_value());
+}
+
+TEST_F(PlatformNotificationServiceTest_IsolatedWebApp,
+       IsActivelyInstalledWebAppScope_IgnoresScopeExtensions) {
+  const GURL extended_url{"https://ext.example/"};
+  const web_app::IsolatedWebAppUrlInfo url_info =
+      InstallIsolatedWebApp(url::Origin::Create(extended_url));
+
+  EXPECT_FALSE(service()->IsActivelyInstalledWebAppScope(extended_url));
+
+  // The IWA's own scope is still considered actively installed.
+  EXPECT_TRUE(
+      service()->IsActivelyInstalledWebAppScope(url_info.origin().GetURL()));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 class PlatformNotificationServiceTest_NotificationContentDetection

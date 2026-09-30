@@ -90,7 +90,7 @@ bool CheckNewWebAppConflictsWithExistingInstallation(
   std::optional<AppId> non_diy_primary_scope_app_id =
       provider->registrar_unsafe().FindBestAppWithUrlInScope(
           start_url, web_app::WebAppFilter::IsCraftedApp(),
-          {.exclude_scope_extensions = true});
+          {.scope_score_options = {.exclude_scope_extensions = true}});
   if (non_diy_primary_scope_app_id) {
     return true;
   }
@@ -100,7 +100,7 @@ bool CheckNewWebAppConflictsWithExistingInstallation(
           start_url,
           web_app::WebAppFilter::IsCraftedApp() &
               web_app::WebAppFilter::OpensInDedicatedWindow(),
-          {.exclude_scope_extensions = false});
+          {.include_isolated_web_app_scope_extensions = true});
   if (non_diy_extended_scope_app_id) {
     return true;
   }

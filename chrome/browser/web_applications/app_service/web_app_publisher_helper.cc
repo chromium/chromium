@@ -1994,9 +1994,10 @@ void WebAppPublisherHelper::MaybeAddWebPageNotifications(
 
   if (persistent_metadata) {
     // For persistent notifications, find the web app with the SW scope url.
-    std::optional<webapps::AppId> app_id = FindInstalledAppWithUrlInScope(
-        profile(), persistent_metadata->service_worker_scope,
-        /*window_only=*/false);
+    std::optional<webapps::AppId> app_id =
+        registrar().FindBestAppWithUrlInScope(
+            persistent_metadata->service_worker_scope,
+            WebAppFilter::SupportsOsNotifications());
     if (app_id.has_value()) {
       MaybeAddNotification(app_id.value(), notification.id());
     }

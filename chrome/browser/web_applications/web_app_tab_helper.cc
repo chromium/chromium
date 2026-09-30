@@ -58,20 +58,8 @@ namespace web_app {
 std::optional<webapps::AppId> WebAppTabHelper::FindAppIdForUrl(
     WebAppRegistrar& registrar,
     const GURL& url) {
-  // 1. Check for IWAs or Isolated Sub-Apps, strictly excluding scope
-  // extensions.
-  std::optional<webapps::AppId> app_id = registrar.FindBestAppWithUrlInScope(
-      url, WebAppFilter::IsIsolatedApp() | WebAppFilter::IsIsolatedSubApp(),
-      {.exclude_scope_extensions = true});
-  if (app_id) {
-    return app_id;
-  }
-  // 2. Fallback to regular apps in Chrome, excluding IWAs, allowing scope
-  // extensions.
-  return registrar.FindBestAppWithUrlInScope(
-      url,
-      WebAppFilter::InstalledInChrome() &
-          !(WebAppFilter::IsIsolatedApp() | WebAppFilter::IsIsolatedSubApp()));
+  return registrar.FindBestAppWithUrlInScope(url,
+                                             WebAppFilter::InstalledInChrome());
 }
 
 // static
@@ -516,7 +504,7 @@ void WebAppTabHelper::MaybeSchedulePreinstallUpdate() {
       provider_->registrar_unsafe().FindBestAppWithUrlInScope(
           web_contents()->GetLastCommittedURL(),
           web_app::WebAppFilter::InstalledInChrome(),
-          {.exclude_scope_extensions = true});
+          {.scope_score_options = {.exclude_scope_extensions = true}});
   if (in_scope_app == window_app_id()) {
     return;
   }

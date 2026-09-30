@@ -582,7 +582,8 @@ void IntentPickerTabHelper::OnWebAppWillBeUninstalled(
   std::optional<webapps::AppId> local_app_id =
       registrar_->FindBestAppWithUrlInScope(
           web_contents()->GetLastCommittedURL(),
-          web_app::WebAppFilter::InstalledInChrome());
+          web_app::WebAppFilter::InstalledInChrome(),
+          {.include_isolated_web_app_scope_extensions = true});
   if (app_id == local_app_id) {
     ShowOrHideIcon(web_contents(), /*should_show_icon=*/false);
   }

@@ -109,9 +109,9 @@ bool IsDevModeInstalledIwaOrigin(content::RenderFrameHost& host,
   ASSIGN_OR_RETURN(const web_app::WebAppRegistrar& registrar,
                    GetRegistrar(host), [] { return false; });
   return registrar
-      .FindBestAppWithUrlInScope(origin.GetURL(),
-                                 web_app::WebAppFilter::IsDevModeIsolatedApp(),
-                                 {.exclude_scope_extensions = true})
+      .FindBestAppWithUrlInScope(
+          origin.GetURL(), web_app::WebAppFilter::IsDevModeIsolatedApp(),
+          {.scope_score_options = {.exclude_scope_extensions = true}})
       .has_value();
 }
 
@@ -153,7 +153,7 @@ bool IsTrustedContext(content::RenderFrameHost& host,
           origin.GetURL(),
           web_app::WebAppFilter::PolicyInstalledIsolatedWebApp() |
               web_app::WebAppFilter::IsDevModeIsolatedApp(),
-          {.exclude_scope_extensions = true})
+          {.scope_score_options = {.exclude_scope_extensions = true}})
       .has_value();
 }
 

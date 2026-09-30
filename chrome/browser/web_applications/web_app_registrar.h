@@ -95,10 +95,6 @@ using AppsHavingTrustedIconsCount =
     base::StrongAlias<class AppsHavingTrustedIconsCountTag, int>;
 
 struct FindBestAppInScopeOptions {
-  // Sets the `filter` applied to the best match only.
-  explicit FindBestAppInScopeOptions(WebAppFilter filter);
-  ~FindBestAppInScopeOptions();
-
   // Only apps that pass this filter are considered when ranking apps for scope
   // control over a URL.
   WebAppFilter eligibility_filter = WebAppFilter::InstalledInChrome();
@@ -107,11 +103,12 @@ struct FindBestAppInScopeOptions {
   // app.
   WebAppScopeScoreOptions scope_score_options = {};
 
-  // After determining the best app to control a given url, this filter is
-  // checked with the final app. If it does not pass, then std::nullopt is
-  // returned. This is a nice shortcut as most callers also have a specific set
-  // of constraints the app needs to satisfy, like having OS integration, etc.
-  WebAppFilter filter;
+  // By default, scope extensions of Isolated Web Apps (and their sub apps) are
+  // ignored (with `only_consider_scope_extensions`, IWAs are skipped): an https
+  // URL in an IWA's `scope_extensions` never loads inside the IWA, so it must
+  // not be attributed to it. Set to true only when asking which app claims the
+  // URL, e.g. for navigation capturing.
+  bool include_isolated_web_app_scope_extensions = false;
 };
 
 // Enabling this will force all apps that are exclusively preinstalled and open
@@ -205,8 +202,11 @@ class WebAppRegistrar {
 
   // Returns the AppId of an app that best matches the specified filter.
   // 'Best' is determined by the longest scope that is a prefix of `url`.
-  // Note that this method doesn't consider suggested apps (from migration or
-  // from another device).
+  // The `filter` is checked only against the final best app: if it does not
+  // pass, std::nullopt is returned. See `FindBestAppInScopeOptions` for which
+  // apps are ranked and how. Note that by default this method doesn't consider
+  // suggested apps (from migration or from another device), nor the scope
+  // extensions of Isolated Web Apps.
   //
   // Example usage:
   //    std::optional<webapps::AppId> app_ip = FindBestAppWithUrlInScope(
@@ -214,13 +214,7 @@ class WebAppRegistrar {
   std::optional<webapps::AppId> FindBestAppWithUrlInScope(
       const GURL& url,
       const WebAppFilter& filter,
-      WebAppScopeScoreOptions scope_score_options = {}) const;
-
-  // A more granular overload of the function above: allows the caller to
-  // include suggested apps, for instance.
-  std::optional<webapps::AppId> FindBestAppWithUrlInScope(
-      const GURL& url,
-      const FindBestAppInScopeOptions& options) const;
+      const FindBestAppInScopeOptions& options = {}) const;
 
   // Finds all apps that have scopes that are nested within the given
   // `outer_scope`, and match the specified filter.

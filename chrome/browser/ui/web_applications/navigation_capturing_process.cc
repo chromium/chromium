@@ -1054,7 +1054,7 @@ void NavigationCapturingProcess::MaybeNotifyIwaTabCounterService(
 
     iwa_opener_app_id = provider->registrar_unsafe().FindBestAppWithUrlInScope(
         initiator_origin->GetURL(), WebAppFilter::IsIsolatedApp(),
-        {.exclude_scope_extensions = true});
+        {.scope_score_options = {.exclude_scope_extensions = true}});
   }
 
   // If the "iwa_opener_app_id" is still not found, then there is a chance that

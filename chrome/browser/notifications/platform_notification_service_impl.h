@@ -108,6 +108,13 @@ class PlatformNotificationServiceImpl
   FRIEND_TEST_ALL_PREFIXES(
       PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
       FindWebAppIconAndTitle);
+  FRIEND_TEST_ALL_PREFIXES(PlatformNotificationServiceTest_IsolatedWebApp,
+                           FindWebAppId_IgnoresScopeExtensions);
+  FRIEND_TEST_ALL_PREFIXES(PlatformNotificationServiceTest_IsolatedWebApp,
+                           FindWebAppIconAndTitle_IgnoresScopeExtensions);
+  FRIEND_TEST_ALL_PREFIXES(
+      PlatformNotificationServiceTest_IsolatedWebApp,
+      IsActivelyInstalledWebAppScope_IgnoresScopeExtensions);
   FRIEND_TEST_ALL_PREFIXES(
       PlatformNotificationServiceTest_ReportNotificationContentDetectionData,
       UpdateNotificationDatabaseMetadata);
