@@ -784,6 +784,12 @@ class MediaCodecBridge {
             request.setPresentationTimeUs(presentationTimeUs);
             request.setFlags(flags);
             request.queue();
+        } catch (MediaCodec.CodecException e) {
+            Log.e(TAG, "Failed to queue input block", e);
+            return convertCodecException(e);
+        } catch (IllegalStateException e) {
+            Log.e(TAG, "Failed to queue input block", e);
+            return MediaCodecStatus.ILLEGAL_STATE;
         } catch (Exception e) {
             Log.e(TAG, "Failed to queue input block", e);
             return MediaCodecStatus.INPUT_SLOT_UNAVAILABLE;
@@ -838,7 +844,7 @@ class MediaCodecBridge {
             request.queue();
         } catch (MediaCodec.CryptoException e) {
             if (e.getErrorCode() == MediaDrm.ErrorCodes.ERROR_NO_KEY) {
-                Log.d(TAG, QUEUE_SECURE_INPUT_BLOCK_ERR_MSG + "CryptoException.ERROR_NO_KEY");
+                Log.d(TAG, "%sCryptoException.ERROR_NO_KEY", QUEUE_SECURE_INPUT_BLOCK_ERR_MSG);
                 return MediaCodecStatus.NO_KEY;
             }
             // Anything other than ERROR_NO_KEY is unexpected.

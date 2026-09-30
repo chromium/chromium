@@ -683,6 +683,7 @@ MediaCodecResult MediaCodecBridgeImpl::QueueSecureInputBuffer(
     ScopedJavaLocalRef<jobject> j_block =
         Java_ObtainBlockResult_block(env, j_result);
     if (j_block.is_null()) {
+      ReportAnyErrorToUMA(MediaCodecStatus::MEDIA_CODEC_LINEAR_BLOCK_EXCEPTION);
       return {MediaCodecResult::Codes::kError, "Unable to obtain input block."};
     }
 
