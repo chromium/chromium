@@ -26,6 +26,8 @@ typedef NS_ENUM(NSInteger, GeminiEntryFlowResult) {
   kGeminiEntryFlowResultPageIneligible,
   // Eligibility check timed out and Gemini started optimistically.
   kGeminiEntryFlowResultTimeout,
+  // User did not give consent.
+  kGeminiEntryFlowResultNoConsent,
 };
 
 // Completion block called with the final result of the Gemini entry flow.
