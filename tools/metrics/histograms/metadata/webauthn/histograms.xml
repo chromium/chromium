@@ -969,6 +969,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebAuthentication.Windows.ApiVersion" units="version"
+    expires_after="2027-09-29">
+  <owner>nsatragno@chromium.org</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <summary>
+    Records the API version reported by the Windows WebAuthn DLL (webauthn.dll)
+    via WebAuthNGetApiVersionNumber. A value of 0 means the DLL predates that
+    function (early Windows 10 RS5). Recorded when the DLL is successfully
+    loaded and bound, which happens at most once per browser process, the first
+    time Chrome uses the Windows WebAuthn API. Windows only.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.Windows.FindHelloDialogIterationCount"
     units="iterations" expires_after="2027-06-30">
   <owner>kenrb@chromium.org</owner>
