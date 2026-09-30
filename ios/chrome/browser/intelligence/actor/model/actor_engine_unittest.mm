@@ -399,6 +399,8 @@ TEST_F(ActorEngineTest, ActWithNullTool) {
   EXPECT_FALSE(results[0].tool_result.IsOk());
   EXPECT_EQ(results[0].tool_result.code(),
             mojom::ActionResultCode::kToolUnknown);
+  EXPECT_TRUE(HasJournalEntryWithDetail(*journal_, "ExecutionEngine::Act",
+                                        "Actions[0]", "null tool"));
 }
 
 // Test that FailCurrentTool is a safe no-op when the engine is not in the

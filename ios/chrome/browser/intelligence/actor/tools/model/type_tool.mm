@@ -9,6 +9,7 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/strings/stringprintf.h"
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/action_target.h"
@@ -74,6 +75,15 @@ base::WeakPtr<web::WebState> TypeTool::GetTargetWebState() const {
 
 ToolType TypeTool::GetToolType() const {
   return ToolType::kType;
+}
+
+std::string TypeTool::DebugString() const {
+  return base::StringPrintf(
+      "TypeTool[%s;text(%s);mode(%s);FollowByEnter(%s)]",
+      target_.DebugString().c_str(), action_.text().c_str(),
+      optimization_guide::proto::TypeAction::TypeMode_Name(action_.mode())
+          .c_str(),
+      action_.follow_by_enter() ? "true" : "false");
 }
 
 TypeTool::TypeTool(base::WeakPtr<web::WebState> web_state,

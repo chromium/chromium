@@ -120,6 +120,35 @@ TEST_F(WaitToolTest, GetToolType) {
   }
 }
 
+// Tests that DebugString returns the expected string containing duration.
+TEST_F(WaitToolTest, DebugString) {
+  {
+    optimization_guide::proto::WaitAction action;
+    action.set_wait_time_ms(1500);
+    base::expected<std::unique_ptr<WaitTool>, ToolExecutionResult> result =
+        CreateToolAndValidate(action, nullptr);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value()->DebugString(), "WaitTool[duration=1500ms]");
+  }
+
+  {
+    optimization_guide::proto::WaitAction action;
+    action.set_wait_time_ms(0);
+    base::expected<std::unique_ptr<WaitTool>, ToolExecutionResult> result =
+        CreateToolAndValidate(action, nullptr);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value()->DebugString(), "WaitTool[duration=0ms]");
+  }
+
+  {
+    optimization_guide::proto::WaitAction action;
+    base::expected<std::unique_ptr<WaitTool>, ToolExecutionResult> result =
+        CreateToolAndValidate(action, nullptr);
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(result.value()->DebugString(), "WaitTool[duration=3000ms]");
+  }
+}
+
 }  // namespace
 
 }  // namespace actor

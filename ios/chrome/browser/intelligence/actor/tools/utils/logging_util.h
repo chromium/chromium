@@ -23,8 +23,7 @@ void LogJournalEvent(
     const GURL& url,
     ActorTaskId task_id,
     std::string_view event_name,
-    const std::vector<std::pair<std::string, std::string>>& details =
-        {});
+    const std::vector<std::pair<std::string, std::string>>& details = {});
 
 // Logs a ToolExecutionResult immediately to the AggregatedJournal.
 //
@@ -43,7 +42,8 @@ std::unique_ptr<AggregatedJournal::PendingAsyncEntry> StartAsyncJournalEntry(
     const GURL& url,
     ActorTaskId task_id,
     const std::string& tool_name,
-    const std::string& event_name);
+    const std::string& event_name,
+    std::string_view tool_debug_string);
 
 // Ends an async event with the given result.
 void EndAsyncJournalEntry(AggregatedJournal::PendingAsyncEntry* entry,

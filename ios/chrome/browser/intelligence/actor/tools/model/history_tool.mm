@@ -75,6 +75,10 @@ ToolType HistoryTool::GetToolType() const {
   return is_back_action_ ? ToolType::kBack : ToolType::kForward;
 }
 
+std::string HistoryTool::DebugString() const {
+  return is_back_action_ ? "HistoryTool[Back]" : "HistoryTool[Forward]";
+}
+
 HistoryTool::HistoryTool(base::WeakPtr<web::WebState> web_state,
                          bool is_back_action)
     : is_back_action_(is_back_action), web_state_(web_state) {}

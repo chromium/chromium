@@ -149,6 +149,12 @@ ToolType AttemptLoginTool::GetToolType() const {
   return ToolType::kAttemptLogin;
 }
 
+std::string AttemptLoginTool::DebugString() const {
+  // TODO(crbug.com/553024962): Include non-sensitive action parameters (do NOT
+  // log credentials or PII) in the debug string.
+  return "AttemptLoginTool";
+}
+
 void AttemptLoginTool::OnGetCredentials(
     actor_login::CredentialsOrError credentials) {
   if (!credentials.has_value()) {

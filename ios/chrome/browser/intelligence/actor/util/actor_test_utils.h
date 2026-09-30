@@ -6,9 +6,13 @@
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_UTIL_ACTOR_TEST_UTILS_H_
 
 #import <memory>
+#import <optional>
+#import <string_view>
 
 #import "base/functional/callback.h"
 #import "base/memory/weak_ptr.h"
+#import "components/actor/core/aggregated_journal.h"
+#import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/origin_gating/core/origin_gating_checker.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/web/public/web_state_id.h"
@@ -61,6 +65,23 @@ std::unique_ptr<ActorToolRequest> MakeFailingActorToolRequest();
 
 // Creates an Action proto that will fail execution.
 optimization_guide::proto::Action MakeFailingActorAction();
+
+// Returns true if `journal` contains an entry matching `event_name` and, if
+// specified, `entry_type`.
+bool HasJournalEntry(
+    const AggregatedJournal& journal,
+    std::string_view event_name,
+    std::optional<mojom::JournalEntryType> entry_type = std::nullopt);
+
+// Returns true if `journal` contains an entry matching `event_name` (and, if
+// specified, `entry_type`) with a detail entry matching `detail_key` and
+// `detail_value`.
+bool HasJournalEntryWithDetail(
+    const AggregatedJournal& journal,
+    std::string_view event_name,
+    std::string_view detail_key,
+    std::string_view detail_value,
+    std::optional<mojom::JournalEntryType> entry_type = std::nullopt);
 
 }  // namespace actor
 

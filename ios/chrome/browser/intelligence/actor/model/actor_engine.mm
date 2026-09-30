@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_request.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/tool_controller.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
+#import "ios/chrome/browser/intelligence/actor/tools/utils/actor_tool_utils.h"
 #import "ios/chrome/browser/intelligence/actor/tools/utils/logging_util.h"
 
 namespace actor {
@@ -104,8 +105,12 @@ void LogActStart(
     const std::vector<std::unique_ptr<ActorToolRequest>>& actions) {
   std::vector<std::pair<std::string, std::string>> details;
   for (size_t i = 0; i < actions.size(); ++i) {
-    details.push_back({base::StringPrintf("Actions[%zu]", i),
-                       base::StringPrintf("Tool %zu", i)});
+    std::string tool_name =
+        actions[i] ? std::string(ActorActionCaseToToolName(
+                                     actions[i]->action().action_case())
+                                     .value_or("unknown tool"))
+                   : "null tool";
+    details.push_back({base::StringPrintf("Actions[%zu]", i), tool_name});
   }
   LogJournalEvent(journal, GURL(), task_id, "ExecutionEngine::Act", details);
 }

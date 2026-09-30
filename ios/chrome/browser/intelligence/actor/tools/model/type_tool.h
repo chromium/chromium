@@ -38,6 +38,7 @@ class TypeTool : public WebActorTool {
   void Execute(ToolExecutionCallback callback) override;
   base::WeakPtr<web::WebState> GetTargetWebState() const override;
   ToolType GetToolType() const override;
+  std::string DebugString() const override;
 
  private:
   TypeTool(base::WeakPtr<web::WebState> web_state,

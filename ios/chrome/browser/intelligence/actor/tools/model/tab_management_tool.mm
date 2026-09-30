@@ -7,6 +7,8 @@
 #import "base/functional/callback.h"
 #import "base/memory/ptr_util.h"
 #import "base/memory/weak_ptr.h"
+#import "base/notreached.h"
+#import "base/strings/stringprintf.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -189,6 +191,24 @@ ToolType TabManagementTool::GetToolType() const {
     case ActionType::kActivate:
       return ToolType::kActivateTab;
   }
+}
+
+std::string TabManagementTool::DebugString() const {
+  switch (action_type_) {
+    case ActionType::kCreate:
+      return base::StringPrintf(
+          "TabManagementTool:CreateTab[window_id=%d, foreground=%s]",
+          window_id_, foreground_ ? "true" : "false");
+    case ActionType::kClose:
+      return base::StringPrintf(
+          "TabManagementTool:CloseTab[web_state_id=%d]",
+          web_state_ ? web_state_->GetUniqueIdentifier().identifier() : 0);
+    case ActionType::kActivate:
+      return base::StringPrintf(
+          "TabManagementTool:ActivateTab[web_state_id=%d]",
+          web_state_ ? web_state_->GetUniqueIdentifier().identifier() : 0);
+  }
+  NOTREACHED();
 }
 
 TabManagementTool::TabManagementTool(base::WeakPtr<web::WebState> web_state,

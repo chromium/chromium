@@ -153,7 +153,7 @@ void ToolController::CreateToolAndValidate(const ActorToolRequest& request,
 
   std::unique_ptr<AggregatedJournal::PendingAsyncEntry> journal_entry =
       StartAsyncJournalEntry(journal(), journal_url, task_id(), tool_name,
-                             "Execute Tool");
+                             "Execute Tool", tool->DebugString());
 
   active_state_.emplace(std::move(tool), std::move(callback),
                         std::move(journal_entry));

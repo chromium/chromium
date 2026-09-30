@@ -529,6 +529,29 @@ TEST_F(ActorServiceTest, PerformActions_NoLoading_InstantCompletion) {
   browser_list->RemoveBrowser(test_browser.get());
 }
 
+// Tests that PerformActions logs the actions proto to AggregatedJournal.
+TEST_F(ActorServiceTest, PerformActions_LogsActionsToJournal) {
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  ActorTaskId invalid_task_id = ActorTaskId(999);
+
+  optimization_guide::proto::Action action;
+  action.mutable_wait()->set_wait_time_ms(0);
+  std::vector<optimization_guide::proto::Action> actions = {action};
+
+  base::test::TestFuture<PerformActionsResult> future;
+  service->PerformActions(invalid_task_id, actions, "Update",
+                          future.GetCallback());
+  PerformActionsResult result = future.Take();
+  EXPECT_TRUE(result.action_results.empty());
+
+  EXPECT_TRUE(HasJournalEntry(*GetJournal(service), "PerformActions"));
+  EXPECT_TRUE(HasJournalEntryWithDetail(
+      *GetJournal(service), "PerformActions", "proto_type",
+      "chrome_intelligence_proto_features.Actions"));
+}
+
 // Tests that PerformActions is deferred when the WebState is loading, and only
 // resolves when loading completes.
 TEST_F(ActorServiceTest, PerformActions_Loading_DeferredUntilStopLoading) {

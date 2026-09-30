@@ -5,14 +5,16 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/attempt_form_filling_tool.h"
 
 #import <optional>
+#import <vector>
 
 #import "base/barrier_closure.h"
 #import "base/functional/bind.h"
 #import "base/notimplemented.h"
 #import "base/notreached.h"
-#import "base/strings/string_number_conversions.h"
+#import "base/strings/string_util.h"
 #import "base/types/expected.h"
 #import "components/autofill/core/browser/actor/actor_form_filling_service.h"
+#import "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #import "components/autofill/ios/browser/autofill_client_ios.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/action_target.h"
@@ -531,6 +533,18 @@ base::WeakPtr<web::WebState> AttemptFormFillingTool::GetTargetWebState() const {
 
 ToolType AttemptFormFillingTool::GetToolType() const {
   return ToolType::kAttemptFormFilling;
+}
+
+std::string AttemptFormFillingTool::DebugString() const {
+  std::vector<std::string> requested_data_strings;
+  requested_data_strings.reserve(tool_requests_.size());
+  for (const auto& form_filling_request : tool_requests_) {
+    requested_data_strings.push_back(
+        std::string(autofill::ActorFormFillingRequestedDataToStringView(
+            form_filling_request.requested_data)));
+  }
+  return "AttemptFormFillingTool([" +
+         base::JoinString(requested_data_strings, ", ") + "])";
 }
 
 }  // namespace actor

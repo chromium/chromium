@@ -12,6 +12,7 @@
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/actor/core/aggregated_journal.h"
+#import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/background_task/background_continued_processing_app_agent.h"
 #import "ios/chrome/app/background_task/background_continued_processing_task_configuration.h"
@@ -38,8 +39,34 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/browser_util.h"
 #import "ios/web/public/web_state.h"
+#import "url/gurl.h"
 
 namespace actor {
+
+namespace {
+
+// Serializes and logs the given batch of `actions` as an Actions proto
+// associated with `task_id` to `journal` for Protoshop inspection and Perfetto
+// tracing.
+void LogActionsProto(
+    AggregatedJournal* journal,
+    ActorTaskId task_id,
+    const std::vector<optimization_guide::proto::Action>& actions) {
+  if (!journal) {
+    return;
+  }
+  optimization_guide::proto::Actions actions_proto;
+  actions_proto.set_task_id(task_id.value());
+  actions_proto.mutable_actions()->Reserve(actions.size());
+  for (const auto& action : actions) {
+    *actions_proto.add_actions() = action;
+  }
+  journal->LogProto(GURL(), task_id, "PerformActions", /*details=*/{},
+                    actions_proto,
+                    "chrome_intelligence_proto_features.Actions");
+}
+
+}  // namespace
 
 ActorService::ActorService(ProfileIOS* profile)
     : profile_(profile),
@@ -85,6 +112,8 @@ void ActorService::PerformActions(
     const std::string& task_update,
     PerformActionsCallback callback) {
   CHECK(IsActorEnabled());
+
+  LogActionsProto(journal_.get(), task_id, actions);
 
   auto it = active_tasks_.find(task_id);
   if (it == active_tasks_.end()) {

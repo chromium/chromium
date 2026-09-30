@@ -7,6 +7,7 @@
 #import <utility>
 
 #import "base/check.h"
+#import "base/strings/stringprintf.h"
 #import "base/values.h"
 
 namespace actor {
@@ -55,6 +56,21 @@ base::DictValue ActionTarget::ToDictValue() const {
     dict.Set("contentNodeId", static_cast<int>(node_id_->content_node_id));
   }
   return dict;
+}
+
+std::string ActionTarget::DebugString() const {
+  if (coordinate_.has_value()) {
+    return base::StringPrintf(
+        "target(XY[%s]=%d,%d)",
+        optimization_guide::proto::Coordinate::PixelType_Name(
+            coordinate_->pixel_type)
+            .c_str(),
+        coordinate_->x, coordinate_->y);
+  }
+  if (node_id_.has_value()) {
+    return base::StringPrintf("target(ID=%d)", node_id_->content_node_id);
+  }
+  return "target(null)";
 }
 
 }  // namespace actor

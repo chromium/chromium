@@ -9,6 +9,7 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/strings/stringprintf.h"
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/action_target.h"
@@ -78,6 +79,12 @@ base::WeakPtr<web::WebState> SelectTool::GetTargetWebState() const {
 
 ToolType SelectTool::GetToolType() const {
   return ToolType::kSelect;
+}
+
+std::string SelectTool::DebugString() const {
+  return base::StringPrintf("SelectTool[%s;value(%s)]",
+                            target_.DebugString().c_str(),
+                            value_.value_or("").c_str());
 }
 
 SelectTool::SelectTool(base::WeakPtr<web::WebState> web_state,

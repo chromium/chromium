@@ -147,4 +147,8 @@ ToolType NavigateTool::GetToolType() const {
   return ToolType::kNavigate;
 }
 
+std::string NavigateTool::DebugString() const {
+  return "NavigateTool[" + url_.value_or("") + "]";
+}
+
 }  // namespace actor

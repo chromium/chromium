@@ -10,6 +10,8 @@ source_set("test_support") {
   ]
   public_deps = [
     "//base",
+    "//components/actor/core:journal",
+    "//components/actor/public/mojom:mojo_bindings",
     "//components/origin_gating/core",
     "//ios/chrome/browser/intelligence/actor/tools/model:actor_tool_interface",
     "//ios/web/public",

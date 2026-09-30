@@ -54,6 +54,7 @@ class TabManagementTool : public ActorTool {
   void Cancel() override;
   base::WeakPtr<web::WebState> GetTargetWebState() const override;
   ToolType GetToolType() const override;
+  std::string DebugString() const override;
 
  private:
   enum class ActionType {

@@ -69,6 +69,9 @@ class ActionTarget {
   // Converts the target to a dictionary value for JavaScript execution.
   base::DictValue ToDictValue() const;
 
+  // Returns a human-readable string representation of the target for logging.
+  std::string DebugString() const;
+
   bool operator==(const ActionTarget& other) const = default;
 
  private:

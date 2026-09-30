@@ -66,6 +66,7 @@ class SyncActorTool : public ActorTool {
     return nullptr;
   }
   ToolType GetToolType() const override { return ToolType::kWait; }
+  std::string DebugString() const override { return "SyncActorTool"; }
 
  private:
   bool* tool_destroyed_flag_;
@@ -107,6 +108,7 @@ class AsyncActorTool : public ActorTool {
     return nullptr;
   }
   ToolType GetToolType() const override { return ToolType::kWait; }
+  std::string DebugString() const override { return "AsyncActorTool"; }
 };
 
 class AsyncActorToolFactory : public ActorToolFactory {
@@ -134,6 +136,7 @@ class StabilizingActorTool : public ActorTool {
     return web_state_;
   }
   ToolType GetToolType() const override { return ToolType::kWait; }
+  std::string DebugString() const override { return "StabilizingActorTool"; }
 
   void SetWebState(base::WeakPtr<web::WebState> web_state) {
     web_state_ = web_state;
@@ -447,5 +450,24 @@ TEST_F(ToolControllerTest, FailCurrentToolMidExecution) {
   EXPECT_EQ(result.code(),
             mojom::ActionResultCode::kTriggeredNavigationBlocked);
 }
+
+// Test that CreateToolAndValidate logs the tool's DebugString in the
+// AggregatedJournal rather than duplicating the generic tool name.
+TEST_F(ToolControllerTest, LogsToolDebugStringToJournal) {
+  tool_factory_ = std::make_unique<SyncActorToolFactory>(
+      profile_.get(), /*tool_destroyed_flag=*/nullptr,
+      /*callback_completed_flag=*/nullptr);
+  controller_ = std::make_unique<ToolController>(this);
+  std::unique_ptr<ActorToolRequest> request = MakeSuccessfulActorToolRequest();
+
+  base::test::TestFuture<ToolExecutionResult> future;
+  controller_->CreateToolAndValidate(*request, future.GetCallback());
+  ASSERT_TRUE(future.Get().IsOk());
+
+  EXPECT_TRUE(HasJournalEntryWithDetail(*journal_, "Execute Tool: WaitTool",
+                                        "tool", "SyncActorTool"));
+  controller_->Cancel();
+}
+
 }  // namespace
 }  // namespace actor

@@ -9,6 +9,7 @@
 #import "base/unguessable_token.h"
 #import "base/values.h"
 #import "components/autofill/core/browser/actor/mock_actor_form_filling_service.h"
+#import "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_util.h"
 #import "components/autofill/ios/browser/test_autofill_client_ios.h"
@@ -865,6 +866,35 @@ TEST_F(AttemptFormFillingToolTest, Execute_FillSuggestionsError) {
   EXPECT_FALSE(result.IsOk());
   EXPECT_EQ(result.code(),
             mojom::ActionResultCode::kFormFillingUnknownAutofillError);
+}
+
+// Test that `DebugString` formats actions with zero, one, and multiple form
+// filling requests without trailing commas.
+TEST_F(AttemptFormFillingToolTest, DebugString) {
+  web::FakeWebState* web_state = CreateAndInsertWebState();
+
+  optimization_guide::proto::AttemptFormFillingAction empty_action;
+  std::unique_ptr<AttemptFormFillingTool> empty_tool =
+      CreateTool(empty_action, web_state);
+  ASSERT_TRUE(empty_tool);
+  EXPECT_EQ("AttemptFormFillingTool([])", empty_tool->DebugString());
+
+  optimization_guide::proto::AttemptFormFillingAction single_action =
+      CreateAction(/*is_address=*/true);
+  std::unique_ptr<AttemptFormFillingTool> single_tool =
+      CreateTool(single_action, web_state);
+  ASSERT_TRUE(single_tool);
+  EXPECT_EQ("AttemptFormFillingTool([kAddress])", single_tool->DebugString());
+
+  optimization_guide::proto::AttemptFormFillingAction multi_action =
+      CreateAction(/*is_address=*/true);
+  AddFormFillingRequestToAction(multi_action, /*is_address=*/false,
+                                /*use_coordinates=*/true);
+  std::unique_ptr<AttemptFormFillingTool> multi_tool =
+      CreateTool(multi_action, web_state);
+  ASSERT_TRUE(multi_tool);
+  EXPECT_EQ("AttemptFormFillingTool([kAddress, kCreditCard])",
+            multi_tool->DebugString());
 }
 
 }  // namespace actor

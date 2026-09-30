@@ -10,6 +10,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/memory/ptr_util.h"
+#import "base/strings/stringprintf.h"
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/action_target.h"
@@ -69,6 +70,12 @@ base::WeakPtr<web::WebState> DragAndReleaseTool::GetTargetWebState() const {
 
 ToolType DragAndReleaseTool::GetToolType() const {
   return ToolType::kDragAndRelease;
+}
+
+std::string DragAndReleaseTool::DebugString() const {
+  return base::StringPrintf("DragAndReleaseTool[from-%s -> to-%s]",
+                            from_target_.DebugString().c_str(),
+                            to_target_.DebugString().c_str());
 }
 
 DragAndReleaseTool::DragAndReleaseTool(base::WeakPtr<web::WebState> web_state,

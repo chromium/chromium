@@ -53,11 +53,12 @@ std::unique_ptr<AggregatedJournal::PendingAsyncEntry> StartAsyncJournalEntry(
     const GURL& url,
     ActorTaskId task_id,
     const std::string& tool_name,
-    const std::string& event_name) {
+    const std::string& event_name,
+    std::string_view tool_debug_string) {
   return journal.CreatePendingAsyncEntry(
       url, task_id, journal.AllocateDynamicTrackUUID(),
       base::StringPrintf("%s: %s", event_name.c_str(), tool_name.c_str()),
-      /*details=*/{});
+      JournalDetailsBuilder().Add("tool", tool_debug_string).Build());
 }
 
 void EndAsyncJournalEntry(AggregatedJournal::PendingAsyncEntry* entry,

@@ -37,6 +37,7 @@ class WaitTool : public ActorTool {
   void Execute(ToolExecutionCallback callback) override;
   base::WeakPtr<web::WebState> GetTargetWebState() const override;
   ToolType GetToolType() const override;
+  std::string DebugString() const override;
 
  private:
   WaitTool(base::TimeDelta wait_duration,

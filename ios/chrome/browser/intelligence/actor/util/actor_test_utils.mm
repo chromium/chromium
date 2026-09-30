@@ -74,4 +74,62 @@ optimization_guide::proto::Action MakeFailingActorAction() {
   return action;
 }
 
+namespace {
+
+// Returns true if `journal` contains an entry matching `event_name`,
+// `entry_type` (if specified), and optional `detail_key`/`detail_value` filter.
+bool HasMatchingJournalEntry(
+    const AggregatedJournal& journal,
+    std::string_view event_name,
+    std::optional<mojom::JournalEntryType> entry_type,
+    std::optional<std::string_view> detail_key = std::nullopt,
+    std::optional<std::string_view> detail_value = std::nullopt) {
+  for (auto it = journal.Items(); it; ++it) {
+    const std::unique_ptr<AggregatedJournal::Entry>* entry_ptr = *it;
+    if (!entry_ptr || !*entry_ptr || !(*entry_ptr)->data) {
+      continue;
+    }
+    const AggregatedJournal::Entry* entry = entry_ptr->get();
+    if (entry->data->event != event_name) {
+      continue;
+    }
+    if (entry_type.has_value() && entry->data->type != *entry_type) {
+      continue;
+    }
+    if (detail_key.has_value() && detail_value.has_value()) {
+      bool found_detail = false;
+      for (const auto& detail : entry->data->details) {
+        if (detail && detail->key == *detail_key &&
+            detail->value == *detail_value) {
+          found_detail = true;
+          break;
+        }
+      }
+      if (!found_detail) {
+        continue;
+      }
+    }
+    return true;
+  }
+  return false;
+}
+
+}  // namespace
+
+bool HasJournalEntry(const AggregatedJournal& journal,
+                     std::string_view event_name,
+                     std::optional<mojom::JournalEntryType> entry_type) {
+  return HasMatchingJournalEntry(journal, event_name, entry_type);
+}
+
+bool HasJournalEntryWithDetail(
+    const AggregatedJournal& journal,
+    std::string_view event_name,
+    std::string_view detail_key,
+    std::string_view detail_value,
+    std::optional<mojom::JournalEntryType> entry_type) {
+  return HasMatchingJournalEntry(journal, event_name, entry_type, detail_key,
+                                 detail_value);
+}
+
 }  // namespace actor

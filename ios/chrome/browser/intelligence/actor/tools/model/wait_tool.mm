@@ -6,8 +6,10 @@
 
 #import <utility>
 
+#import "base/format_macros.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/strings/stringprintf.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -62,6 +64,11 @@ ToolType WaitTool::GetToolType() const {
     return ToolType::kWaitZeroDuration;
   }
   return ToolType::kWait;
+}
+
+std::string WaitTool::DebugString() const {
+  return base::StringPrintf("WaitTool[duration=%" PRId64 "ms]",
+                            wait_duration_.InMilliseconds());
 }
 
 void WaitTool::OnDelayFinished(ToolExecutionCallback callback) {

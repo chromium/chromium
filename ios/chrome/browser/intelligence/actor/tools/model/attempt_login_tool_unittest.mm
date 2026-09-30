@@ -890,4 +890,16 @@ TEST_F(AttemptLoginToolTest,
   EXPECT_EQ(reparse_call_count(), 1);
 }
 
+// Tests that DebugString returns the expected string.
+TEST_F(AttemptLoginToolTest, DebugString) {
+  optimization_guide::proto::AttemptLoginAction action;
+  web::FakeWebState* web_state = CreateAndInsertWebState();
+  action.set_tab_id(web_state->GetUniqueIdentifier().identifier());
+
+  auto result = CreateToolAndValidate(action, web_state);
+  ASSERT_TRUE(result.has_value());
+  std::unique_ptr<AttemptLoginTool> tool = std::move(result.value());
+  EXPECT_EQ(tool->DebugString(), "AttemptLoginTool");
+}
+
 }  // namespace actor

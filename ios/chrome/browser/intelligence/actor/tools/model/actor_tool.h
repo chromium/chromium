@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_ACTOR_TOOL_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_ACTOR_TOOLS_MODEL_ACTOR_TOOL_H_
 
+#import <string>
+
 #import "base/functional/callback_forward.h"
 #import "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/intelligence/actor/tools/public/actor_tool_types.h"
@@ -38,6 +40,10 @@ class ActorTool {
 
   // Returns the type of this tool.
   virtual ToolType GetToolType() const = 0;
+
+  // Returns a human-readable description of the tool and its arguments for
+  // debugging and trace logging.
+  virtual std::string DebugString() const = 0;
 };
 
 }  // namespace actor

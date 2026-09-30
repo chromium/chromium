@@ -9,6 +9,7 @@
 
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
+#import "base/strings/stringprintf.h"
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/action_target.h"
@@ -89,6 +90,16 @@ base::WeakPtr<web::WebState> ScrollTool::GetTargetWebState() const {
 
 ToolType ScrollTool::GetToolType() const {
   return ToolType::kScroll;
+}
+
+std::string ScrollTool::DebugString() const {
+  return base::StringPrintf(
+      "ScrollTool[%s;direction(%s);distance(%f)]",
+      target_.DebugString().c_str(),
+      optimization_guide::proto::ScrollAction::ScrollDirection_Name(
+          action_.direction())
+          .c_str(),
+      action_.distance());
 }
 
 ScrollTool::ScrollTool(base::WeakPtr<web::WebState> web_state,

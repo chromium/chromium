@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/actor/tools/model/click_tool.h"
 
 #import "base/functional/callback.h"
+#import "base/strings/stringprintf.h"
 #import "base/types/expected.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/action_target.h"
@@ -69,6 +70,17 @@ base::WeakPtr<web::WebState> ClickTool::GetTargetWebState() const {
 
 ToolType ClickTool::GetToolType() const {
   return ToolType::kClick;
+}
+
+std::string ClickTool::DebugString() const {
+  return base::StringPrintf(
+      "ClickTool[%s;type(%s);count(%s)]", target_.DebugString().c_str(),
+      optimization_guide::proto::ClickAction::ClickType_Name(
+          action_.click_type())
+          .c_str(),
+      optimization_guide::proto::ClickAction::ClickCount_Name(
+          action_.click_count())
+          .c_str());
 }
 
 void ClickTool::OnTargetFrameResolved(

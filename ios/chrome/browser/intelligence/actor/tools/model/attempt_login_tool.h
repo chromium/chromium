@@ -60,6 +60,7 @@ class AttemptLoginTool : public ActorTool,
   void Cancel() override;
   base::WeakPtr<web::WebState> GetTargetWebState() const override;
   ToolType GetToolType() const override;
+  std::string DebugString() const override;
 
   // password_manager::PasswordFormManagerObserver:
   void OnPasswordFormParsed(

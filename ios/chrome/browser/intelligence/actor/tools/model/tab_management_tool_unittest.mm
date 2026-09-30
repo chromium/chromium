@@ -7,6 +7,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/run_loop.h"
 #import "base/scoped_observation.h"
+#import "base/strings/stringprintf.h"
 #import "base/test/task_environment.h"
 #import "base/test/test_future.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -822,6 +823,56 @@ TEST_F(TabManagementToolTest, ActivateTab_InTabGroup_Success) {
   ASSERT_TRUE(execute_future.Get().IsOk());
 
   EXPECT_EQ(index_1, web_state_list->active_index());
+}
+
+// Tests that DebugString returns the expected string for each action type.
+TEST_F(TabManagementToolTest, DebugString) {
+  auto fake_web_state = std::make_unique<web::FakeWebState>();
+  int32_t web_state_id = fake_web_state->GetUniqueIdentifier().identifier();
+
+  optimization_guide::proto::CreateTabAction create_action;
+  create_action.set_window_id(1);
+  create_action.set_foreground(true);
+  FakeToolDelegate delegate;
+  std::unique_ptr<TabManagementTool> create_tool =
+      TabManagementTool::CreateTabTool(create_action, &delegate);
+  ASSERT_TRUE(create_tool);
+  EXPECT_EQ(create_tool->DebugString(),
+            "TabManagementTool:CreateTab[window_id=1, foreground=true]");
+
+  // Test CreateTab with foreground=false.
+  optimization_guide::proto::CreateTabAction background_action;
+  background_action.set_window_id(2);
+  background_action.set_foreground(false);
+  std::unique_ptr<TabManagementTool> background_tool =
+      TabManagementTool::CreateTabTool(background_action, &delegate);
+  ASSERT_TRUE(background_tool);
+  EXPECT_EQ(background_tool->DebugString(),
+            "TabManagementTool:CreateTab[window_id=2, foreground=false]");
+
+  std::unique_ptr<TabManagementTool> close_tool =
+      TabManagementTool::CreateCloseTabTool(fake_web_state->GetWeakPtr(),
+                                            /*web_state_list=*/nullptr);
+  ASSERT_TRUE(close_tool);
+  EXPECT_EQ(close_tool->DebugString(),
+            base::StringPrintf("TabManagementTool:CloseTab[web_state_id=%d]",
+                               web_state_id));
+
+  std::unique_ptr<TabManagementTool> activate_tool =
+      TabManagementTool::CreateActivateTabTool(fake_web_state->GetWeakPtr(),
+                                               /*web_state_list=*/nullptr);
+  ASSERT_TRUE(activate_tool);
+  EXPECT_EQ(activate_tool->DebugString(),
+            base::StringPrintf("TabManagementTool:ActivateTab[web_state_id=%d]",
+                               web_state_id));
+
+  // Test with null WebState.
+  std::unique_ptr<TabManagementTool> null_close_tool =
+      TabManagementTool::CreateCloseTabTool(nullptr,
+                                            /*web_state_list=*/nullptr);
+  ASSERT_TRUE(null_close_tool);
+  EXPECT_EQ(null_close_tool->DebugString(),
+            "TabManagementTool:CloseTab[web_state_id=0]");
 }
 
 }  // namespace actor
