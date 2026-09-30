@@ -817,11 +817,13 @@ class SaveAndShareSubMenuModel : public ui::SimpleMenuModel {
 void SaveAndShareSubMenuModel::BuildSendTabToSelfSubmenu(
     BrowserWindowInterface* browser,
     content::WebContents* web_contents) {
-  CHECK(web_contents);
-
   send_tab_to_self_submenu_delegate_ =
-      std::make_unique<send_tab_to_self::SendTabToSelfContextMenuDelegate>(
+      send_tab_to_self::SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
           web_contents, send_tab_to_self::ShareEntryPoint::kShareMenu);
+  if (!send_tab_to_self_submenu_delegate_) {
+    BuildSendTabToSelfSimpleItem();
+    return;
+  }
   send_tab_to_self_submenu_ = std::make_unique<ui::SimpleMenuModel>(
       send_tab_to_self_submenu_delegate_.get());
   send_tab_to_self_submenu_delegate_->PopulateSubmenu(
@@ -892,23 +894,10 @@ SaveAndShareSubMenuModel::SaveAndShareSubMenuModel(
           features::IsRoundedIconsEnabled() ? vector_icons::kLinkIcon
                                             : kLinkChromeRefreshOldIcon);
 
-      // WebContents is required to query target devices and display state for
-      // Send Tab to Self.
-      content::WebContents* web_contents =
-          browser->tab_strip_model()->GetActiveWebContents();
-      std::optional<send_tab_to_self::EntryPointDisplayReason> reason =
-          web_contents
-              ? send_tab_to_self::GetEntryPointDisplayReason(web_contents)
-              : std::nullopt;
-
-      // When enhanced desktop UI v2 feature flag is enabled and feature is
-      // offered, build submenu with available devices. Otherwise, build simple
-      // command item.
-      if (web_contents &&
-          base::FeatureList::IsEnabled(
-              send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2) &&
-          reason == send_tab_to_self::EntryPointDisplayReason::kOfferFeature) {
-        BuildSendTabToSelfSubmenu(browser, web_contents);
+      if (base::FeatureList::IsEnabled(
+              send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2)) {
+        BuildSendTabToSelfSubmenu(
+            browser, browser->tab_strip_model()->GetActiveWebContents());
       } else {
         BuildSendTabToSelfSimpleItem();
       }

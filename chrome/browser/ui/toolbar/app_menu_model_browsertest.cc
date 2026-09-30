@@ -1267,4 +1267,109 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelSendTabToSelfEnhancedEnabledTest,
   EXPECT_FALSE(save_and_share_menu->IsEnabledAt(send_tab_index.value()));
 }
 
+class AppMenuModelSendTabToSelfSigninPromosTest
+    : public AppMenuModelSendTabToSelfTest {
+ public:
+  AppMenuModelSendTabToSelfSigninPromosTest() {
+    feature_list_.InitWithFeatures(
+        {kSendTabToSelfEnhancedDesktopUIv2,
+         send_tab_to_self::kSendTabToSelfSubmenuSigninPromos,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+         send_tab_to_self::kSendTabToSelfNoTargetDeviceQrCode
+#endif
+        },
+        {});
+  }
+};
+
+// Tests that when `kOfferSignIn` is returned and
+// `kSendTabToSelfSubmenuSigninPromos` is enabled, the "Send to your device"
+// item in the Save and Share submenu is a submenu model.
+IN_PROC_BROWSER_TEST_F(AppMenuModelSendTabToSelfSigninPromosTest,
+                       SendTabToSelfSaveAndShareOfferSignIn) {
+  auto* sync_service = static_cast<StubSendTabToSelfSyncService*>(
+      SendTabToSelfSyncServiceFactory::GetForProfile(profile()));
+  sync_service->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kOfferSignIn);
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com")));
+
+  AppMenuModel model(this, browser());
+  model.Init();
+
+  const size_t save_and_share_index =
+      model.GetIndexOfCommandId(AppMenuModel::kSaveAndShareMenuPlaceholder)
+          .value();
+  ui::SimpleMenuModel* save_and_share_menu = static_cast<ui::SimpleMenuModel*>(
+      model.GetSubmenuModelAt(save_and_share_index));
+
+  const size_t send_tab_index =
+      save_and_share_menu->GetIndexOfCommandId(IDC_SEND_TAB_TO_SELF).value();
+  EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU,
+            save_and_share_menu->GetTypeAt(send_tab_index));
+  EXPECT_NE(nullptr, save_and_share_menu->GetSubmenuModelAt(send_tab_index));
+}
+
+// Tests that when `kOfferReauth` is returned and
+// `kSendTabToSelfSubmenuSigninPromos` is enabled, the "Send to your device"
+// item in the Save and Share submenu is a submenu model.
+IN_PROC_BROWSER_TEST_F(AppMenuModelSendTabToSelfSigninPromosTest,
+                       SendTabToSelfSaveAndShareOfferReauth) {
+  auto* sync_service = static_cast<StubSendTabToSelfSyncService*>(
+      SendTabToSelfSyncServiceFactory::GetForProfile(profile()));
+  sync_service->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kOfferReauth);
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com")));
+
+  AppMenuModel model(this, browser());
+  model.Init();
+
+  const size_t save_and_share_index =
+      model.GetIndexOfCommandId(AppMenuModel::kSaveAndShareMenuPlaceholder)
+          .value();
+  ui::SimpleMenuModel* save_and_share_menu = static_cast<ui::SimpleMenuModel*>(
+      model.GetSubmenuModelAt(save_and_share_index));
+
+  const size_t send_tab_index =
+      save_and_share_menu->GetIndexOfCommandId(IDC_SEND_TAB_TO_SELF).value();
+  EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU,
+            save_and_share_menu->GetTypeAt(send_tab_index));
+  EXPECT_NE(nullptr, save_and_share_menu->GetSubmenuModelAt(send_tab_index));
+}
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Tests that when `kInformNoTargetDevice` is returned and both
+// `kSendTabToSelfSubmenuSigninPromos` and `kSendTabToSelfNoTargetDeviceQrCode`
+// are enabled, the "Send to your device" item in the Save and Share submenu is
+// a submenu model.
+IN_PROC_BROWSER_TEST_F(AppMenuModelSendTabToSelfSigninPromosTest,
+                       SendTabToSelfSaveAndShareInformNoTargetDevice) {
+  auto* sync_service = static_cast<StubSendTabToSelfSyncService*>(
+      SendTabToSelfSyncServiceFactory::GetForProfile(profile()));
+  sync_service->SetEntryPointDisplayReason(
+      EntryPointDisplayReason::kInformNoTargetDevice);
+
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com")));
+
+  AppMenuModel model(this, browser());
+  model.Init();
+
+  const size_t save_and_share_index =
+      model.GetIndexOfCommandId(AppMenuModel::kSaveAndShareMenuPlaceholder)
+          .value();
+  ui::SimpleMenuModel* save_and_share_menu = static_cast<ui::SimpleMenuModel*>(
+      model.GetSubmenuModelAt(save_and_share_index));
+
+  const size_t send_tab_index =
+      save_and_share_menu->GetIndexOfCommandId(IDC_SEND_TAB_TO_SELF).value();
+  EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU,
+            save_and_share_menu->GetTypeAt(send_tab_index));
+  EXPECT_NE(nullptr, save_and_share_menu->GetSubmenuModelAt(send_tab_index));
+}
+#endif
+
 }  // namespace

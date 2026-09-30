@@ -42,6 +42,9 @@ source_set("impl") {
   ]
   deps = [
     ":send_tab_to_self",
+    "//chrome/app:branded_strings",
+    "//chrome/app:generated_resources",
+    "//chrome/app/vector_icons",
     "//chrome/browser:primitives",
     "//chrome/browser/feature_engagement",
     "//chrome/browser/profiles:profile",
@@ -57,6 +60,9 @@ source_set("impl") {
     "//chrome/browser/user_education",
     "//components/feature_engagement/public",
     "//components/send_tab_to_self",
+    "//components/vector_icons",
+    "//ui/base",
+    "//ui/color:color_headers",
     "//ui/strings:ui_strings_grit",
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
@@ -141,7 +147,9 @@ source_set("unit_tests") {
     ":send_tab_to_self",
     "//base",
     "//base/test:test_support",
+    "//chrome/app:branded_strings",
     "//chrome/app:command_ids",
+    "//chrome/app:generated_resources",
     "//chrome/browser/send_tab_to_self",
     "//chrome/browser/sync",
     "//chrome/browser/ui/tabs:test_support",

@@ -3604,6 +3604,16 @@ If this page isn’t working as expected, try allowing optimization.
       <message name="IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_BUTTON_LABEL" desc="Label of the sign-in button in the send-tab-to-self sign-in promo bubble.">
         Sign in to Chromium
       </message>
+      <if expr="not use_titlecase">
+        <message name="IDS_CONTEXT_MENU_SEND_TAB_TO_SELF_SIGN_IN" desc="The label for a menu item to sign in to Chromium in the Send Tab to Self context menu when signed out.">
+          Sign in to Chromium
+        </message>
+      </if>
+      <if expr="use_titlecase">
+        <message name="IDS_CONTEXT_MENU_SEND_TAB_TO_SELF_SIGN_IN" desc="In Title Case: The label for a menu item to sign in to Chromium in the Send Tab to Self context menu when signed out.">
+          Sign In to Chromium
+        </message>
+      </if>
 
       <!-- Contextual Tasks -->
       <message name="IDS_CONTEXTUAL_TASKS_EPHEMERAL_BUTTON_CONTEXT_MENU_REMOVE" desc="The label of the context menu item for removing the contextual tasks ephemeral toolbar button and hiding the side panel.">

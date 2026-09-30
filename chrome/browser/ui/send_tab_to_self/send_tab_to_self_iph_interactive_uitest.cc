@@ -410,8 +410,9 @@ class SendTabToSelfIphInteractiveUiTest : public InteractiveFeaturePromoTest {
   void SendTabAndCloseContextMenu() {
     content::WebContents* const web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
-    SendTabToSelfContextMenuDelegate(web_contents, ShareEntryPoint::kTabMenu)
-        .ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
+    SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+        web_contents, ShareEntryPoint::kTabMenu)
+        ->ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
 
     static_cast<BrowserTabStripController*>(
         BrowserView::GetBrowserViewForBrowser(browser())

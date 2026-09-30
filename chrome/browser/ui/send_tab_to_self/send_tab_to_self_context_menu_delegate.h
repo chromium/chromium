@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_CONTEXT_MENU_DELEGATE_H_
 #define CHROME_BROWSER_UI_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_CONTEXT_MENU_DELEGATE_H_
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -12,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "components/send_tab_to_self/entry_point_display_reason.h"
 #include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "ui/menus/simple_menu_model.h"
@@ -29,17 +31,14 @@ inline constexpr int IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE_LAST =
     IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1 + kMaxDevices - 1;
 
 // A delegate class to manage Send Tab to Self items in context menus.
-// Acts as the ui::SimpleMenuModel::Delegate for the submenu.
-//
-// Precondition: Must only be instantiated with a valid, non-null WebContents,
-// when Send Tab To Self is enabled, and when there is at least one target
-// device available to display (e.g. `ShouldOfferFeature()` has been verified by
-// the caller).
+// Acts as the `ui::SimpleMenuModel::Delegate` for the submenu.
 class SendTabToSelfContextMenuDelegate : public ui::SimpleMenuModel::Delegate {
  public:
-  // Single-tab flow (e.g., page or hyperlink context menu).
-  // Accepts optional `target_url` and `target_title` (e.g., link anchor text).
-  SendTabToSelfContextMenuDelegate(
+  // Single-tab flow (e.g., page or hyperlink context menu, or Save and Share
+  // app menu). Accepts optional `target_url` and `target_title` (e.g., link
+  // anchor text). Returns nullptr if the preconditions for showing the submenu
+  // are not met.
+  static std::unique_ptr<SendTabToSelfContextMenuDelegate> MaybeCreateForTab(
       content::WebContents* web_contents,
       ShareEntryPoint entry_point,
       const GURL& target_url = GURL(),
@@ -47,8 +46,10 @@ class SendTabToSelfContextMenuDelegate : public ui::SimpleMenuModel::Delegate {
 
   // Multi-tab flow (e.g., tab strip context menu for multiple selected tabs).
   // Target URL/title are not applicable here as each tab resolves its own
-  // URL/title.
-  SendTabToSelfContextMenuDelegate(
+  // URL/title. Returns nullptr if the preconditions for showing the submenu are
+  // not met.
+  static std::unique_ptr<SendTabToSelfContextMenuDelegate>
+  MaybeCreateForMultipleTabs(
       content::WebContents* primary_web_contents,
       base::span<content::WebContents* const> web_contents_list,
       ShareEntryPoint entry_point);
@@ -60,8 +61,8 @@ class SendTabToSelfContextMenuDelegate : public ui::SimpleMenuModel::Delegate {
 
   ~SendTabToSelfContextMenuDelegate() override;
 
-  // Populates the given `model` with the device items and "Manage Devices"
-  // item.
+  // Populates the given `model` with the submenu items appropriate for the
+  // active `EntryPointDisplayReason`.
   void PopulateSubmenu(ui::SimpleMenuModel* model);
 
   // ui::SimpleMenuModel::Delegate:
@@ -70,11 +71,19 @@ class SendTabToSelfContextMenuDelegate : public ui::SimpleMenuModel::Delegate {
   void OnMenuWillShow(ui::SimpleMenuModel* source) override;
 
  private:
+  SendTabToSelfContextMenuDelegate(content::WebContents* primary_web_contents,
+                                   EntryPointDisplayReason display_reason,
+                                   std::vector<TargetDeviceInfo> devices,
+                                   ShareEntryPoint entry_point,
+                                   const GURL& target_url,
+                                   const std::string& target_title);
+
   // Returns the label to show for a device in the context menu.
   static std::u16string GetDeviceItemLabel(const TargetDeviceInfo& device);
 
   base::WeakPtr<content::WebContents> primary_web_contents_;
   std::vector<base::WeakPtr<content::WebContents>> web_contents_list_;
+  const EntryPointDisplayReason display_reason_;
   const std::vector<TargetDeviceInfo> devices_;
   const ShareEntryPoint entry_point_;
   const GURL target_url_;

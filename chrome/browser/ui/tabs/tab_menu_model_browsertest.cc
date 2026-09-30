@@ -8,6 +8,8 @@
 #include "base/feature_list.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
@@ -31,6 +33,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -793,3 +796,90 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelSendTabToSelfBrowserTest,
   }
   EXPECT_THAT(sent_urls, testing::UnorderedElementsAre(url2, url3));
 }
+
+class TabMenuModelSendTabToSelfSigninPromosBrowserTest
+    : public TabMenuModelSendTabToSelfBrowserTest {
+ public:
+  TabMenuModelSendTabToSelfSigninPromosBrowserTest() {
+    signin_promos_feature_list_.InitWithFeatures(
+        {send_tab_to_self::kSendTabToSelfSubmenuSigninPromos,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+         send_tab_to_self::kSendTabToSelfNoTargetDeviceQrCode
+#endif
+        },
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList signin_promos_feature_list_;
+};
+
+// Tests that for `kOfferSignIn`, the tab context menu renders Send Tab to Self
+// as a submenu and that activating the submenu item opens the promo bubble.
+IN_PROC_BROWSER_TEST_F(TabMenuModelSendTabToSelfSigninPromosBrowserTest,
+                       SubmenuForOfferSignIn) {
+  auto* sync_service =
+      static_cast<send_tab_to_self::StubSendTabToSelfSyncService*>(
+          SendTabToSelfSyncServiceFactory::GetForProfile(profile()));
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  sync_service->SetEntryPointDisplayReason(
+      send_tab_to_self::EntryPointDisplayReason::kOfferSignIn);
+
+  TabMenuModel menu(&delegate_, TabMenuModelDelegate::From(browser()),
+                    tab_strip, 0);
+  std::optional<size_t> index =
+      menu.GetIndexOfCommandId(TabStripModel::CommandSendTabToSelf);
+  ASSERT_TRUE(index.has_value());
+  EXPECT_EQ(menu.GetTypeAt(*index), ui::MenuModel::TYPE_SUBMENU);
+
+  ui::SimpleMenuModel* submenu =
+      static_cast<ui::SimpleMenuModel*>(menu.GetSubmenuModelAt(*index));
+  ASSERT_NE(submenu, nullptr);
+  ASSERT_EQ(submenu->GetItemCount(), 2u);
+  EXPECT_EQ(submenu->GetTypeAt(0), ui::MenuModel::TYPE_TITLE);
+  EXPECT_EQ(submenu->GetCommandIdAt(1),
+            IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_SIGN_IN);
+
+  submenu->ActivatedAt(1);
+  EXPECT_TRUE(send_tab_to_self::SendTabToSelfBubbleController::
+                  GetOrCreateForWebContents(tab_strip->GetActiveWebContents())
+                      ->IsBubbleShown());
+}
+
+// Tests that for `kOfferReauth`, the tab context menu renders Send Tab to Self
+// as a submenu.
+IN_PROC_BROWSER_TEST_F(TabMenuModelSendTabToSelfSigninPromosBrowserTest,
+                       SubmenuForOfferReauth) {
+  auto* sync_service =
+      static_cast<send_tab_to_self::StubSendTabToSelfSyncService*>(
+          SendTabToSelfSyncServiceFactory::GetForProfile(profile()));
+  sync_service->SetEntryPointDisplayReason(
+      send_tab_to_self::EntryPointDisplayReason::kOfferReauth);
+
+  TabMenuModel menu(&delegate_, TabMenuModelDelegate::From(browser()),
+                    browser()->tab_strip_model(), 0);
+  std::optional<size_t> index =
+      menu.GetIndexOfCommandId(TabStripModel::CommandSendTabToSelf);
+  ASSERT_TRUE(index.has_value());
+  EXPECT_EQ(menu.GetTypeAt(*index), ui::MenuModel::TYPE_SUBMENU);
+}
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Tests that for `kInformNoTargetDevice`, the tab context menu renders Send Tab
+// to Self as a submenu when `kSendTabToSelfNoTargetDeviceQrCode` is enabled.
+IN_PROC_BROWSER_TEST_F(TabMenuModelSendTabToSelfSigninPromosBrowserTest,
+                       SubmenuForInformNoTargetDevice) {
+  auto* sync_service =
+      static_cast<send_tab_to_self::StubSendTabToSelfSyncService*>(
+          SendTabToSelfSyncServiceFactory::GetForProfile(profile()));
+  sync_service->SetEntryPointDisplayReason(
+      send_tab_to_self::EntryPointDisplayReason::kInformNoTargetDevice);
+
+  TabMenuModel menu(&delegate_, TabMenuModelDelegate::From(browser()),
+                    browser()->tab_strip_model(), 0);
+  std::optional<size_t> index =
+      menu.GetIndexOfCommandId(TabStripModel::CommandSendTabToSelf);
+  ASSERT_TRUE(index.has_value());
+  EXPECT_EQ(menu.GetTypeAt(*index), ui::MenuModel::TYPE_SUBMENU);
+}
+#endif

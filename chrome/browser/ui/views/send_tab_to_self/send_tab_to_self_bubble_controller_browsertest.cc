@@ -326,9 +326,11 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfPostSendToastBrowserTest,
   TestSendTabToSelfModelObserver observer(
       sync_service->GetSendTabToSelfModel());
 
-  SendTabToSelfContextMenuDelegate delegate(web_contents,
-                                            ShareEntryPoint::kContentMenu);
-  delegate.ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
+  std::unique_ptr<SendTabToSelfContextMenuDelegate> delegate =
+      SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
+          web_contents, ShareEntryPoint::kContentMenu);
+  ASSERT_TRUE(delegate);
+  delegate->ExecuteCommand(IDC_CONTENT_CONTEXT_SEND_TAB_TO_SELF_DEVICE1, 0);
 
   observer.WaitForNextEntry();
 

@@ -2712,6 +2712,66 @@ TEST_F(RenderViewContextMenuSendTabToSelfPageTest,
             menu->menu_model().GetLabelAt(index.value()));
 }
 
+class RenderViewContextMenuSendTabToSelfPageSigninPromosTest
+    : public RenderViewContextMenuSendTabToSelfPageTest {
+ public:
+  RenderViewContextMenuSendTabToSelfPageSigninPromosTest() {
+    feature_list_.InitWithFeatures(
+        {send_tab_to_self::kSendTabToSelfEnhancedDesktopUI,
+         send_tab_to_self::kSendTabToSelfSubmenuSigninPromos,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+         send_tab_to_self::kSendTabToSelfNoTargetDeviceQrCode
+#endif
+        },
+        {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that Send Tab to Self is displayed as a submenu for `kOfferSignIn` when
+// `kSendTabToSelfSubmenuSigninPromos` is enabled.
+TEST_F(RenderViewContextMenuSendTabToSelfPageSigninPromosTest,
+       SubmenuPresentWhenOfferSignIn) {
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreatePageMenu(EntryPointDisplayReason::kOfferSignIn);
+  std::optional<size_t> index =
+      menu->menu_model().GetIndexOfCommandId(IDC_SEND_TAB_TO_SELF);
+  ASSERT_TRUE(index.has_value());
+  EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU,
+            menu->menu_model().GetTypeAt(index.value()));
+}
+
+// Tests that Send Tab to Self is displayed as a submenu for `kOfferReauth` when
+// `kSendTabToSelfSubmenuSigninPromos` is enabled.
+TEST_F(RenderViewContextMenuSendTabToSelfPageSigninPromosTest,
+       SubmenuPresentWhenOfferReauth) {
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreatePageMenu(EntryPointDisplayReason::kOfferReauth);
+  std::optional<size_t> index =
+      menu->menu_model().GetIndexOfCommandId(IDC_SEND_TAB_TO_SELF);
+  ASSERT_TRUE(index.has_value());
+  EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU,
+            menu->menu_model().GetTypeAt(index.value()));
+}
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Tests that Send Tab to Self is displayed as a submenu for
+// `kInformNoTargetDevice` when both `kSendTabToSelfSubmenuSigninPromos` and
+// `kSendTabToSelfNoTargetDeviceQrCode` are enabled.
+TEST_F(RenderViewContextMenuSendTabToSelfPageSigninPromosTest,
+       SubmenuPresentWhenInformNoTargetDevice) {
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreatePageMenu(EntryPointDisplayReason::kInformNoTargetDevice);
+  std::optional<size_t> index =
+      menu->menu_model().GetIndexOfCommandId(IDC_SEND_TAB_TO_SELF);
+  ASSERT_TRUE(index.has_value());
+  EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU,
+            menu->menu_model().GetTypeAt(index.value()));
+}
+#endif
+
 // Tests that Send Tab to Self is displayed as a submenu when
 // `kSendTabToSelfEnhancedDesktopUI` is enabled and target devices are
 // available.
@@ -2970,6 +3030,88 @@ TEST_F(RenderViewContextMenuSendTabToSelfLinkTest,
   EXPECT_EQ(ui::MenuModel::TYPE_COMMAND,
             menu.menu_model().GetTypeAt(index.value()));
 }
+
+class RenderViewContextMenuSendTabToSelfLinkSigninPromosTest
+    : public RenderViewContextMenuSendTabToSelfLinkTest {
+ public:
+  RenderViewContextMenuSendTabToSelfLinkSigninPromosTest() {
+    feature_list_.InitWithFeatures(
+        {send_tab_to_self::kSendTabToSelfEnhancedDesktopUI,
+         send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2,
+         send_tab_to_self::kSendTabToSelfSubmenuSigninPromos,
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+         send_tab_to_self::kSendTabToSelfNoTargetDeviceQrCode
+#endif
+        },
+        {});
+  }
+
+  std::unique_ptr<TestRenderViewContextMenu> CreateLinkMenu(
+      EntryPointDisplayReason display_reason) {
+    auto* sync_service = static_cast<StubSendTabToSelfSyncService*>(
+        SendTabToSelfSyncServiceFactory::GetForProfile(profile()));
+    sync_service->SetEntryPointDisplayReason(display_reason);
+
+    content::ContextMenuParams params = CreateParams(MenuItem::LINK);
+    params.unfiltered_link_url = params.link_url =
+        GURL("https://example.com/link");
+
+    auto menu = std::make_unique<TestRenderViewContextMenu>(
+        *web_contents()->GetPrimaryMainFrame(), params);
+    menu->SetBrowser(GetBrowser());
+    menu->set_protocol_handler_registry(protocol_handler_registry());
+    menu->Init();
+    return menu;
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests that when right-clicking a hyperlink for `kOfferSignIn`, the Send Tab
+// to Self item is appended as a submenu when
+// `kSendTabToSelfSubmenuSigninPromos` is enabled.
+TEST_F(RenderViewContextMenuSendTabToSelfLinkSigninPromosTest,
+       SubmenuPresentForLinkWhenOfferSignIn) {
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateLinkMenu(EntryPointDisplayReason::kOfferSignIn);
+  std::optional<size_t> index =
+      menu->menu_model().GetIndexOfCommandId(IDC_SEND_TAB_TO_SELF);
+  ASSERT_TRUE(index.has_value());
+  EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU,
+            menu->menu_model().GetTypeAt(index.value()));
+}
+
+// Tests that when right-clicking a hyperlink for `kOfferReauth`, the Send Tab
+// to Self item is appended as a submenu when
+// `kSendTabToSelfSubmenuSigninPromos` is enabled.
+TEST_F(RenderViewContextMenuSendTabToSelfLinkSigninPromosTest,
+       SubmenuPresentForLinkWhenOfferReauth) {
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateLinkMenu(EntryPointDisplayReason::kOfferReauth);
+  std::optional<size_t> index =
+      menu->menu_model().GetIndexOfCommandId(IDC_SEND_TAB_TO_SELF);
+  ASSERT_TRUE(index.has_value());
+  EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU,
+            menu->menu_model().GetTypeAt(index.value()));
+}
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// Tests that when right-clicking a hyperlink for `kInformNoTargetDevice`, the
+// Send Tab to Self item is appended as a submenu when both
+// `kSendTabToSelfSubmenuSigninPromos` and `kSendTabToSelfNoTargetDeviceQrCode`
+// are enabled.
+TEST_F(RenderViewContextMenuSendTabToSelfLinkSigninPromosTest,
+       SubmenuPresentForLinkWhenInformNoTargetDevice) {
+  std::unique_ptr<TestRenderViewContextMenu> menu =
+      CreateLinkMenu(EntryPointDisplayReason::kInformNoTargetDevice);
+  std::optional<size_t> index =
+      menu->menu_model().GetIndexOfCommandId(IDC_SEND_TAB_TO_SELF);
+  ASSERT_TRUE(index.has_value());
+  EXPECT_EQ(ui::MenuModel::TYPE_SUBMENU,
+            menu->menu_model().GetTypeAt(index.value()));
+}
+#endif
 
 // Tests that right-clicking a hyperlink does NOT append the Send Tab to Self
 // item at all when enhanced desktop UI v2 is disabled (even if v1 is enabled).

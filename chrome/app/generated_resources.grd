@@ -14017,6 +14017,12 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       <message name="IDS_SEND_TAB_TO_SELF_MANAGE_DEVICES" desc="Label for a menu item to manage the devices that can receive tabs.">
         Manage your devices
       </message>
+      <message name="IDS_SEND_TAB_TO_SELF_NO_OTHER_DEVICE_FOUND_TITLE" desc="Title for the Send Tab to Self submenu when no target devices are available.">
+        No other device found
+      </message>
+      <message name="IDS_SEND_TAB_TO_SELF_SIGN_IN_ON_PHONE" desc="Label for a menu item in the Send Tab to Self submenu to sign in on a phone when no target devices are available.">
+        Sign in on your phone
+      </message>
       <message name="IDS_SEND_TAB_TO_SELF_SENDING_ANNOUNCE" desc="Text read by a screenreader when a tab is sent to a target device." is_accessibility_with_no_ui="true">
         Sending link to <ph name="DEVICE_NAME">$1<ex>Ted's Pixel2</ex></ph>
       </message>

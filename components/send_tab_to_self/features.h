@@ -71,6 +71,12 @@ BASE_DECLARE_FEATURE(kSendTabToSelfNoTargetDeviceQrCode);
 // part of the enhanced desktop UI v2.
 BASE_DECLARE_FEATURE(kSendTabToSelfEnhancedDesktopUIv2);
 
+// If this feature is enabled, desktop entry points show a submenu with a
+// sign-in promo for the signed-out, sign-in pending (reauth), and
+// no-target-device (when `kSendTabToSelfNoTargetDeviceQrCode` is also enabled)
+// states instead of a single command item.
+BASE_DECLARE_FEATURE(kSendTabToSelfSubmenuSigninPromos);
+
 // If this feature is enabled, multi-tab sharing via Send Tab to Self is
 // supported.
 BASE_DECLARE_FEATURE(kSendTabToSelfMultiTabShare);

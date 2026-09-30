@@ -4736,26 +4736,24 @@ void RenderViewContextMenu::AppendSendTabToSelfItem(bool add_separator) {
     menu_model_.AddSeparator(ui::NORMAL_SEPARATOR);
   }
 
-  const bool should_offer_submenu =
-      (base::FeatureList::IsEnabled(
-           send_tab_to_self::kSendTabToSelfEnhancedDesktopUI) ||
-       base::FeatureList::IsEnabled(
-           send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2)) &&
-      (*display_reason ==
-       send_tab_to_self::EntryPointDisplayReason::kOfferFeature);
-
-  if (should_offer_submenu) {
+  if (base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfEnhancedDesktopUI) ||
+      base::FeatureList::IsEnabled(
+          send_tab_to_self::kSendTabToSelfEnhancedDesktopUIv2)) {
     // TODO(crbug.com/530097533): Investigate improved title handling when the
     // user interacts with the right-click flow on a hyperlink (e.g., fetching
     // the destination page title or using a domain fallback if anchor text is
     // empty).
     send_tab_to_self_submenu_delegate_ =
-        std::make_unique<send_tab_to_self::SendTabToSelfContextMenuDelegate>(
+        send_tab_to_self::SendTabToSelfContextMenuDelegate::MaybeCreateForTab(
             embedder_web_contents_,
             is_link ? send_tab_to_self::ShareEntryPoint::kLinkMenu
                     : send_tab_to_self::ShareEntryPoint::kContentMenu,
             target_url,
             is_link ? base::UTF16ToUTF8(params_.link_text) : std::string());
+  }
+
+  if (send_tab_to_self_submenu_delegate_) {
     send_tab_to_self_submenu_ = std::make_unique<ui::SimpleMenuModel>(
         send_tab_to_self_submenu_delegate_.get());
     send_tab_to_self_submenu_delegate_->PopulateSubmenu(

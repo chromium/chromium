@@ -61,6 +61,9 @@ BASE_FEATURE(kSendTabToSelfEnhancedDesktopUIv2,
              "SendTabToSelfEnhancedDesktopUIv2",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kSendTabToSelfSubmenuSigninPromos,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kSendTabToSelfMultiTabShare, base::FEATURE_DISABLED_BY_DEFAULT);
 
 #if BUILDFLAG(IS_ANDROID)

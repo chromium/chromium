@@ -211,10 +211,14 @@ void TabMenuModel::BuildSendTabToSelfSubmenu(int index,
     web_contents_list.push_back(tab_strip_->GetWebContentsAt(i));
   }
 
-  send_tab_to_self_submenu_delegate_ =
-      std::make_unique<send_tab_to_self::SendTabToSelfContextMenuDelegate>(
+  send_tab_to_self_submenu_delegate_ = send_tab_to_self::
+      SendTabToSelfContextMenuDelegate::MaybeCreateForMultipleTabs(
           tab_strip_->GetWebContentsAt(index), web_contents_list,
           send_tab_to_self::ShareEntryPoint::kTabMenu);
+  if (!send_tab_to_self_submenu_delegate_) {
+    BuildLegacySendTabToSelfItem();
+    return;
+  }
   send_tab_to_self_submenu_ = std::make_unique<ui::SimpleMenuModel>(
       send_tab_to_self_submenu_delegate_.get());
 
@@ -584,9 +588,7 @@ void TabMenuModel::Build(int index) {
 
   if (display_send_to_self) {
     if (base::FeatureList::IsEnabled(
-            send_tab_to_self::kSendTabToSelfEnhancedDesktopUI) &&
-        send_tab_to_self_reason ==
-            send_tab_to_self::EntryPointDisplayReason::kOfferFeature) {
+            send_tab_to_self::kSendTabToSelfEnhancedDesktopUI)) {
       BuildSendTabToSelfSubmenu(index, indices);
     } else {
       BuildLegacySendTabToSelfItem();
