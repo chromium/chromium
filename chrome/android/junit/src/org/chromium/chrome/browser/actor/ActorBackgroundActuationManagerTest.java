@@ -103,48 +103,29 @@ public class ActorBackgroundActuationManagerTest {
     public void setUp() {
         ProfileResolverJni.setInstanceForTesting(mProfileResolverNatives);
         when(mProfileResolverNatives.tokenizeProfile(any())).thenReturn("mock_token");
-        when(mProfile.isOffTheRecord()).thenReturn(false);
-        when(mProfile.isNativeInitialized()).thenReturn(true);
-        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        when(mTab.getId()).thenReturn(TAB_ID);
-        when(mTab.getProfile()).thenReturn(mProfile);
-        when(mTabModel.getProfile()).thenReturn(mProfile);
 
-        ProfileManager.setLastUsedProfileForTesting(mProfile);
         ActorKeyedServiceFactory.setForTesting(mActorKeyedService);
         OffscreenRenderingManager.setInstanceForTesting(mOffscreenRenderingManager);
         TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
 
         when(mOffscreenRenderingManager.getOffscreenWindow()).thenReturn(mWindowAndroid);
         TabBuilder.setTabForTesting(mTab);
+        when(mTab.getId()).thenReturn(TAB_ID);
 
-        when(mActivity.getWindowAndroid()).thenReturn(mWindowAndroid);
-        doCallRealMethod().when(mActivity).setTabModelOrchestratorForTesting(any());
-        mActivity.setTabModelOrchestratorForTesting(mTabModelOrchestrator);
-        when(mTabModelOrchestrator.getTabPersistentStore()).thenReturn(mTabPersistentStore);
         when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
-        when(mTabModelSelector.getTabCreatorManager()).thenReturn(mTabCreatorManager);
-        when(mTabCreatorManager.getTabCreator(false)).thenReturn(mTabCreator);
-        when(mTabCreator.createDefaultTabDelegateFactory()).thenReturn(mTabDelegateFactory);
-        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
+        when(mTabModel.getProfile()).thenReturn(mProfile);
+        when(mProfile.isOffTheRecord()).thenReturn(false);
         when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
-        when(mTabModel.indexOf(mTab)).thenReturn(0);
-        when(mTabModel.iterator()).thenAnswer(inv -> Collections.singletonList(mTab).iterator());
-        when(mPlaceholderTab.getId()).thenReturn(101);
-        when(mTabCreator.createFrozenTab(any(), anyInt(), anyInt())).thenReturn(mPlaceholderTab);
-        when(mTabWindowManager.getWindowIdForSelector(mTabModelSelector)).thenReturn(42);
-        when(mTabWindowManager.getIdForWindow(mActivity)).thenReturn(42);
-        when(mTabWindowManager.getTabModelSelectorById(42)).thenReturn(mTabModelSelector);
-        TabStateExtractor.setTabStateForTesting(100, new TabState());
 
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
         mManager = new ActorBackgroundActuationManager();
     }
 
     @After
     public void tearDown() {
         ProfileResolverJni.setInstanceForTesting(null);
-        BackgroundTabPoolManager.resetForTesting();
         ProfileManager.resetForTesting();
+        BackgroundTabPoolManager.resetForTesting();
         ActorKeyedServiceFactory.setForTesting(null);
         OffscreenRenderingManager.setInstanceForTesting(null);
         ApplicationStatus.destroyForJUnitTests();
@@ -152,6 +133,34 @@ public class ActorBackgroundActuationManagerTest {
         TabWindowManagerSingleton.setTabWindowManagerForTesting(null);
         TabStateExtractor.resetTabStatesForTesting();
         MultiWindowTestUtils.resetInstanceInfo();
+    }
+
+    private void setupWarmActivityMocks() {
+        when(mActivity.isFinishing()).thenReturn(false);
+        when(mActivity.isDestroyed()).thenReturn(false);
+        when(mActivity.getWindowAndroid()).thenReturn(mWindowAndroid);
+        doCallRealMethod().when(mActivity).setTabModelOrchestratorForTesting(any());
+        mActivity.setTabModelOrchestratorForTesting(mTabModelOrchestrator);
+        when(mTabModelOrchestrator.getTabPersistentStore()).thenReturn(mTabPersistentStore);
+
+        when(mTabWindowManager.getIdForWindow(mActivity)).thenReturn(42);
+        when(mTabWindowManager.getTabModelSelectorById(42)).thenReturn(mTabModelSelector);
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mTabModelSelector.getTabCreatorManager()).thenReturn(mTabCreatorManager);
+        when(mTabCreatorManager.getTabCreator(false)).thenReturn(mTabCreator);
+        when(mTabCreator.createDefaultTabDelegateFactory()).thenReturn(mTabDelegateFactory);
+    }
+
+    private void setupTransitionMocks() {
+        when(mTabWindowManager.getWindowIdForSelector(mTabModelSelector)).thenReturn(42);
+        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        when(mTabModel.getTabCreator()).thenReturn(mTabCreator);
+        when(mTabModel.indexOf(mTab)).thenReturn(0);
+        when(mTabModel.iterator()).thenAnswer(inv -> Collections.singletonList(mTab).iterator());
+
+        when(mPlaceholderTab.getId()).thenReturn(101);
+        when(mTabCreator.createFrozenTab(any(), anyInt(), anyInt())).thenReturn(mPlaceholderTab);
+        TabStateExtractor.setTabStateForTesting(TAB_ID, new TabState());
     }
 
     private void triggerPageLoadFinished() {
@@ -250,19 +259,7 @@ public class ActorBackgroundActuationManagerTest {
 
     @Test
     public void testTransitionActiveTasksToBackground() {
-        TabState testTabState = new TabState();
-        TabStateExtractor.setTabStateForTesting(100, testTabState);
-
-        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
-        when(mTabModel.getProfile()).thenReturn(mProfile);
-        when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
-        when(mTabModel.getCount()).thenReturn(1);
-        when(mTabModel.getTabAt(0)).thenReturn(mTab);
-        when(mTabModel.iterator()).thenReturn(Collections.singletonList(mTab).iterator());
-
-        when(mTab.getId()).thenReturn(100);
-        when(mTab.getProfile()).thenReturn(mProfile);
-        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+        setupTransitionMocks();
 
         when(mActorKeyedService.getActiveTasksCount()).thenReturn(1);
         when(mActorKeyedService.getActiveTaskIdOnTab(100, false)).thenReturn(123);
@@ -296,30 +293,18 @@ public class ActorBackgroundActuationManagerTest {
 
     @Test
     public void testTransitionActiveTasksToBackground_MultipleTabs() {
-        TabStateExtractor.setTabStateForTesting(100, new TabState());
+        setupTransitionMocks();
         TabStateExtractor.setTabStateForTesting(200, new TabState());
 
         Tab tab2 = mock(Tab.class);
         when(tab2.getId()).thenReturn(200);
-        when(tab2.getProfile()).thenReturn(mProfile);
         when(mTabModel.indexOf(tab2)).thenReturn(1);
-
         when(mTabModel.iterator()).thenReturn(Arrays.asList(mTab, tab2).iterator());
 
-        Tab placeholderTab1 = mock(Tab.class);
-        when(placeholderTab1.getId()).thenReturn(101);
         Tab placeholderTab2 = mock(Tab.class);
         when(placeholderTab2.getId()).thenReturn(201);
         when(mTabCreator.createFrozenTab(any(), anyInt(), anyInt()))
-                .thenReturn(placeholderTab1, placeholderTab2);
-
-        when(mTabModelSelector.getModel(false)).thenReturn(mTabModel);
-        when(mTabModel.getProfile()).thenReturn(mProfile);
-        when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
-
-        when(mTab.getId()).thenReturn(100);
-        when(mTab.getProfile()).thenReturn(mProfile);
-        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
+                .thenReturn(mPlaceholderTab, placeholderTab2);
 
         when(mActorKeyedService.getActiveTasksCount()).thenReturn(1);
         when(mActorKeyedService.getActiveTaskIdOnTab(100, false)).thenReturn(123);
@@ -382,8 +367,7 @@ public class ActorBackgroundActuationManagerTest {
 
     @Test
     public void testProvisionBackgroundTabForTask_ExistingSession() {
-        TabState testTabState = new TabState();
-        TabStateExtractor.setTabStateForTesting(100, testTabState);
+        setupTransitionMocks();
 
         when(mActorKeyedService.getActiveTasksCount()).thenReturn(1);
         when(mActorKeyedService.getActiveTaskIdOnTab(100, false)).thenReturn(123);
@@ -393,14 +377,6 @@ public class ActorBackgroundActuationManagerTest {
         when(task.getTabs()).thenReturn(Collections.singleton(100));
         when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(task));
 
-        when(mTab.getId()).thenReturn(100);
-        when(mTab.getProfile()).thenReturn(mProfile);
-        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        when(mTabModel.getProfile()).thenReturn(mProfile);
-        when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
-        when(mTabModel.getCount()).thenReturn(1);
-        when(mTabModel.getTabAt(0)).thenReturn(mTab);
-        when(mTabModel.iterator()).thenReturn(Collections.singletonList(mTab).iterator());
         mManager.transitionActiveTasksToBackground(mTabModelSelector);
 
         @SuppressWarnings("unchecked")
@@ -484,9 +460,7 @@ public class ActorBackgroundActuationManagerTest {
 
     @Test
     public void testDestroy_WarmActivity_RestoresTabsBeforeClear() {
-        when(mActivity.isFinishing()).thenReturn(false);
-        when(mActivity.isDestroyed()).thenReturn(false);
-        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        setupWarmActivityMocks();
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
 
@@ -503,8 +477,7 @@ public class ActorBackgroundActuationManagerTest {
 
     @Test
     public void testDestroy_TabStateNotInitialized_SkipsRestoration() {
-        when(mActivity.isFinishing()).thenReturn(false);
-        when(mActivity.isDestroyed()).thenReturn(false);
+        setupWarmActivityMocks();
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(false);
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
@@ -543,15 +516,13 @@ public class ActorBackgroundActuationManagerTest {
 
     @Test
     public void testDestroy_MixedWarmAndColdActivities() {
+        setupWarmActivityMocks();
+
         AsyncInitializationActivity coldActivity = mock(AsyncInitializationActivity.class);
         TabModelSelector coldSelector = mock(TabModelSelector.class);
         when(coldActivity.isFinishing()).thenReturn(true);
         when(mTabWindowManager.getIdForWindow(coldActivity)).thenReturn(84);
         when(mTabWindowManager.getTabModelSelectorById(84)).thenReturn(coldSelector);
-
-        when(mActivity.isFinishing()).thenReturn(false);
-        when(mActivity.isDestroyed()).thenReturn(false);
-        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
 
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
         ApplicationStatus.onStateChangeForTesting(coldActivity, ActivityState.CREATED);
@@ -570,9 +541,7 @@ public class ActorBackgroundActuationManagerTest {
 
     @Test
     public void testCleanupContext_WarmActivity_RestoresTabsBeforeStop() {
-        when(mActivity.isFinishing()).thenReturn(false);
-        when(mActivity.isDestroyed()).thenReturn(false);
-        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        setupWarmActivityMocks();
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
 
@@ -607,9 +576,8 @@ public class ActorBackgroundActuationManagerTest {
 
     @Test
     public void testOnTaskCompleted_WarmActivity_RestoresTabsBeforeStop() {
-        when(mActivity.isFinishing()).thenReturn(false);
-        when(mActivity.isDestroyed()).thenReturn(false);
-        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        setupTransitionMocks();
+        setupWarmActivityMocks();
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.STOPPED);
 
@@ -620,15 +588,6 @@ public class ActorBackgroundActuationManagerTest {
         when(task.isUnderActorControl()).thenReturn(true);
         when(task.getTabs()).thenReturn(Collections.singleton(100));
         when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(task));
-
-        when(mTab.getId()).thenReturn(100);
-        when(mTab.getProfile()).thenReturn(mProfile);
-        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        when(mTabModel.getProfile()).thenReturn(mProfile);
-        when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
-        when(mTabModel.getCount()).thenReturn(1);
-        when(mTabModel.getTabAt(0)).thenReturn(mTab);
-        when(mTabModel.iterator()).thenReturn(Collections.singletonList(mTab).iterator());
 
         mManager.transitionActiveTasksToBackground(mTabModelSelector);
         assertEquals(1, mManager.getBackgroundSessions().size());
@@ -648,9 +607,7 @@ public class ActorBackgroundActuationManagerTest {
 
     @Test
     public void testDestroy_DefaultDelegateFactoryNull_SkipsRestoration() {
-        when(mActivity.isFinishing()).thenReturn(false);
-        when(mActivity.isDestroyed()).thenReturn(false);
-        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        setupWarmActivityMocks();
         when(mTabCreator.createDefaultTabDelegateFactory()).thenReturn(null);
 
         ApplicationStatus.onStateChangeForTesting(mActivity, ActivityState.CREATED);
@@ -921,13 +878,7 @@ public class ActorBackgroundActuationManagerTest {
         when(task.getTabs()).thenReturn(Collections.singleton(100));
         when(mActorKeyedService.getActiveTasks()).thenReturn(Collections.singletonList(task));
 
-        when(mTab.getProfile()).thenReturn(mProfile);
-        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-        when(mTabModel.getProfile()).thenReturn(mProfile);
-        when(mTabModel.getTabRemover()).thenReturn(mTabRemover);
-        when(mTabModel.getCount()).thenReturn(1);
-        when(mTabModel.getTabAt(0)).thenReturn(mTab);
-        when(mTabModel.iterator()).thenReturn(Collections.singletonList(mTab).iterator());
+        setupTransitionMocks();
 
         mManager.transitionActiveTasksToBackground(mTabModelSelector);
         assertEquals(1, mManager.getBackgroundSessions().size());
