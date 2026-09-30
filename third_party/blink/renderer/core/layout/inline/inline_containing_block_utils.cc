@@ -122,6 +122,8 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometry(
   if (inline_containing_block_map->empty())
     return;
 
+  DCHECK(container_builder->ItemsBuilder());
+
   // This function requires that we have the final size of the fragment set
   // upon the builder.
   DCHECK_GE(container_builder->InlineSize(), LayoutUnit());
@@ -129,46 +131,16 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometry(
 
   HeapHashMap<Member<const LayoutObject>, LineBoxPair> containing_linebox_map;
 
-  if (container_builder->ItemsBuilder()) {
-    // To access the items correctly we need to convert them to the physical
-    // coordinate space.
-    DCHECK_EQ(container_builder->ItemsBuilder()->GetWritingMode(),
-              container_builder->GetWritingMode());
-    DCHECK_EQ(container_builder->ItemsBuilder()->Direction(),
-              container_builder->Direction());
-    GatherInlineContainerFragmentsFromItems(
-        container_builder->ItemsBuilder()->Items(ToPhysicalSize(
-            container_builder->Size(), container_builder->GetWritingMode())),
-        PhysicalOffset(), inline_containing_block_map, &containing_linebox_map);
-    return;
-  }
-
-  // If we have children which are anonymous block, we might contain split
-  // inlines, this can occur in the following example:
-  // <div>
-  //    Some text <span style="position: relative;">text
-  //    <div>block</div>
-  //    text </span> text.
-  // </div>
-  for (const auto& child : container_builder->Children()) {
-    if (!child.fragment->IsAnonymousBlockFlow()) {
-      continue;
-    }
-
-    const auto& child_fragment = To<PhysicalBoxFragment>(*child.fragment);
-    const auto* items = child_fragment.Items();
-    if (!items)
-      continue;
-
-    const PhysicalOffset child_offset = child.offset.ConvertToPhysical(
-        container_builder->GetWritingDirection(),
-        ToPhysicalSize(container_builder->Size(),
-                       container_builder->GetWritingMode()),
-        child_fragment.Size());
-    GatherInlineContainerFragmentsFromItems(items->Items(), child_offset,
-                                            inline_containing_block_map,
-                                            &containing_linebox_map);
-  }
+  // To access the items correctly we need to convert them to the physical
+  // coordinate space.
+  DCHECK_EQ(container_builder->ItemsBuilder()->GetWritingMode(),
+            container_builder->GetWritingMode());
+  DCHECK_EQ(container_builder->ItemsBuilder()->Direction(),
+            container_builder->Direction());
+  GatherInlineContainerFragmentsFromItems(
+      container_builder->ItemsBuilder()->Items(ToPhysicalSize(
+          container_builder->Size(), container_builder->GetWritingMode())),
+      PhysicalOffset(), inline_containing_block_map, &containing_linebox_map);
 }
 
 void InlineContainingBlockUtils::ComputeInlineContainerGeometryForFragmentainer(
@@ -201,28 +173,6 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometryForFragmentainer(
           physical_fragment.Items()->Items(), offset,
           inline_containing_block_map, &containing_linebox_map,
           &current_fragment_converter, &containing_block_converter);
-    } else {
-      // If we have children which are anonymous block, we might contain split
-      // inlines, this can occur in the following example:
-      // <div>
-      //    Some text <span style="position: relative;">text
-      //    <div>block</div>
-      //    text </span> text.
-      // </div>
-      for (const auto& child : physical_fragment.Children()) {
-        if (!child.fragment->IsAnonymousBlockFlow()) {
-          continue;
-        }
-
-        const auto& child_fragment = To<PhysicalBoxFragment>(*child.fragment);
-        if (!child_fragment.HasItems())
-          continue;
-
-        GatherInlineContainerFragmentsFromItems(
-            child_fragment.Items()->Items(), child.offset + offset,
-            inline_containing_block_map, &containing_linebox_map,
-            &current_fragment_converter, &containing_block_converter);
-      }
     }
     if (const BlockBreakToken* break_token =
             physical_fragment.GetBreakToken()) {
