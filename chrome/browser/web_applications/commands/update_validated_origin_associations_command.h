@@ -8,28 +8,29 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
-#include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/scheduler/update_validated_origin_associations_result.h"
-#include "chrome/browser/web_applications/web_app_origin_association_manager.h"
+#include "components/webapps/common/web_app_id.h"
 
 namespace web_app {
 
-// The command revalidates existing origin associations,
-// effectively treating server side values as source of truth,
-// meaning previously validated items might be removed, if server
-// is no longer returning them.
-// The revalidation logic runs once every 24 hours for a single
-// app, and does not run if the user is offline.
+struct OriginAssociations;
+
+// Revalidates existing origin associations against server-side values, removing
+// previously validated items that are no longer authorized. Revalidation is
+// skipped when offline and rate-limited to once per 24 hours for each app.
+// When requested, the immediate pending migration destination is checked
+// independently, even when the source app is ineligible or throttled.
 class UpdateValidatedOriginAssociationsCommand
     : public WebAppCommand<AppLock, UpdateValidatedOriginAssociationsResult> {
  public:
   UpdateValidatedOriginAssociationsCommand(
       const webapps::AppId& app_id,
       base::OnceCallback<void(UpdateValidatedOriginAssociationsResult)>
-          callback);
+          callback,
+      bool revalidate_migration_destination);
   ~UpdateValidatedOriginAssociationsCommand() override;
 
  protected:
@@ -40,6 +41,7 @@ class UpdateValidatedOriginAssociationsCommand
       OriginAssociations validated_origin_associations);
 
   webapps::AppId app_id_;
+  const bool revalidate_migration_destination_;
   std::unique_ptr<AppLock> lock_;
   base::WeakPtrFactory<UpdateValidatedOriginAssociationsCommand> weak_factory_{
       this};

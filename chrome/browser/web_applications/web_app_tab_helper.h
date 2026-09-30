@@ -174,6 +174,12 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   std::optional<webapps::AppId> pending_launch_app_id() const;
 
   webapps::LaunchQueue& EnsureLaunchQueue();
+
+  // Schedules origin-association revalidation for `app_id`. Also used for
+  // launches that only activate an existing tab, without inserting it,
+  // navigating, or delivering launch params.
+  void ScheduleOriginAssociationRevalidation(const webapps::AppId& app_id);
+
   void EnqueueLaunchParams(webapps::LaunchParams launch_params);
 
   // content::WebContentsObserver:

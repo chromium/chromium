@@ -4,9 +4,7 @@
 
 #include "chrome/browser/web_applications/commands/launch_web_app_command.h"
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
 #include "base/functional/concurrent_closures.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,10 +14,8 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-shared.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_test_override.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
-#include "chrome/browser/web_applications/scheduler/update_validated_origin_associations_result.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
-#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -28,7 +24,6 @@
 #include "components/services/app_service/public/cpp/app_launch_params.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
 #include "components/webapps/common/web_app_id.h"
-#include "third_party/blink/public/common/features.h"
 
 namespace web_app {
 
@@ -147,41 +142,6 @@ void LaunchWebAppCommand::OnAppLaunched(
     base::WeakPtr<content::WebContents> web_contents,
     apps::LaunchContainer container,
     base::Value debug_value) {
-  const WebApp* app = lock_->registrar().GetAppById(app_id_);
-  bool is_iwa = lock_->registrar().AppMatches(
-      app_id_,
-      WebAppFilter::IsIsolatedApp() | WebAppFilter::IsIsolatedSubApp());
-  bool has_scope_extensions = app && !app->scope_extensions().empty();
-  bool has_migration_sources_for_revalidation =
-      app && !app->unvalidated_migration_sources().empty();
-
-  bool should_validate = false;
-  if (is_iwa) {
-    // Retrigger validation for IWAs if scope extensions are enabled for IWAs,
-    // and it is set to open in a new container window.
-    should_validate =
-        base::FeatureList::IsEnabled(
-            blink::features::kWebAppEnableScopeExtensionsForIsolatedWebApps) &&
-        container == apps::LaunchContainer::kLaunchContainerWindow;
-  } else {
-    // PWAs should retrigger validation regardless of launch container, if they
-    // have scope extensions and/or migration sources.
-    should_validate =
-        (has_scope_extensions || has_migration_sources_for_revalidation);
-  }
-
-  if (should_validate) {
-    provider_->scheduler().UpdateValidatedOriginAssociations(app_id_,
-                                                             base::DoNothing());
-  }
-
-  if (app && app->pending_migration_info().has_value()) {
-    webapps::AppId destination_app_id = GenerateAppIdFromManifestId(
-        app->pending_migration_info()->manifest_id());
-    provider_->scheduler().UpdateValidatedOriginAssociations(destination_app_id,
-                                                             base::DoNothing());
-  }
-
   GetMutableDebugValue().Set("launch_web_app_debug_value",
                              std::move(debug_value));
   CompleteAndSelfDestruct(CommandResult::kSuccess, std::move(browser),

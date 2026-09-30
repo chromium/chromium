@@ -61,7 +61,6 @@
 #include "chrome/browser/ui/web_applications/web_app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_navigation_handle_user_data.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_process.h"
-#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_tabbed_utils.h"
 #include "chrome/browser/web_applications/link_capturing_features.h"
 #include "chrome/browser/web_applications/locks/app_lock.h"
@@ -899,10 +898,10 @@ void LaunchWebApp(apps::AppLaunchParams params,
       } else {
         web_contents = WebAppLaunchProcess::CreateAndRun(
             profile, lock.registrar(), lock.os_integration_manager(), params);
-      }
-      if (web_contents) {
-        browser = GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
-            web_contents);
+        if (web_contents) {
+          browser = GlobalBrowserCollection::GetInstance()->FindBrowserWithTab(
+              web_contents);
+        }
       }
     } else {
       debug_value.Set("error", "Unknown app id.");

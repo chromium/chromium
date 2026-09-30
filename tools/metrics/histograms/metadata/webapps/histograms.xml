@@ -3146,9 +3146,9 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the outcome of validating a web app's scope extensions and migration
     sources. Logged results indicate if the validation succeeded, left
-    unvalidated items, was skipped because it was unneeded, or was throttled by
-    the daily network check limit. The command is triggered on every launch of
-    an Isolated Web App.
+    unvalidated items, was skipped because the user was offline, or was
+    throttled because the app was ineligible or its next check was not due. The
+    command is triggered by app launches and tab lifecycle events.
   </summary>
 </histogram>
 

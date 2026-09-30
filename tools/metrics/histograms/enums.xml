@@ -28083,6 +28083,9 @@ Called by update_net_error_codes.py.-->
 <enum name="UpdateValidatedOriginAssociationsResult">
   <int value="0" label="Success"/>
   <int value="1" label="(Obsolete) NotNeeded"/>
+<!-- Revalidation was skipped because the app is ineligible or its next check
+     is not yet due. -->
+
   <int value="2" label="Throttled"/>
   <int value="3" label="WebAppNotInstalled"/>
   <int value="4" label="UnvalidatedItemsRemain"/>

@@ -9,6 +9,7 @@
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
+#include "chrome/browser/web_applications/scheduler/update_validated_origin_associations_result.h"
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -80,6 +81,32 @@ TEST_F(WebAppCommandSchedulerTest, PersistFileHandlersUserChoice) {
       "app id", /*allowed=*/true, after_shutdown.GetCallback());
   EXPECT_EQ(fake_provider().command_manager().GetCommandCountForTesting(), 0u);
   ASSERT_TRUE(after_shutdown.Wait());
+}
+
+TEST_F(WebAppCommandSchedulerTest, OriginRevalidationWaitsForStartup) {
+  EXPECT_FALSE(fake_provider().is_registry_ready());
+  base::test::TestFuture<UpdateValidatedOriginAssociationsResult> result;
+  fake_provider().scheduler().UpdateValidatedOriginAssociations(
+      "missing", result.GetCallback());
+  EXPECT_FALSE(result.IsReady());
+  EXPECT_EQ(fake_provider().command_manager().GetCommandCountForTesting(), 1u);
+  EXPECT_EQ(
+      fake_provider().command_manager().GetStartedCommandCountForTesting(), 0);
+
+  fake_provider().StartWithSubsystems();
+  test::WaitUntilReady(&fake_provider());
+  EXPECT_EQ(UpdateValidatedOriginAssociationsResult::kWebAppNotInstalled,
+            result.Get());
+  fake_provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  fake_provider().Shutdown();
+  base::test::TestFuture<UpdateValidatedOriginAssociationsResult>
+      after_shutdown;
+  fake_provider().scheduler().UpdateValidatedOriginAssociations(
+      "missing", after_shutdown.GetCallback());
+  EXPECT_EQ(UpdateValidatedOriginAssociationsResult::kShutdown,
+            after_shutdown.Get());
+  EXPECT_EQ(fake_provider().command_manager().GetCommandCountForTesting(), 0u);
 }
 
 class WebAppCommandSchedulerPolicyDisabledTest

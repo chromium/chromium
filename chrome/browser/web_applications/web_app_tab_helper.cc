@@ -157,7 +157,15 @@ webapps::LaunchQueue& WebAppTabHelper::EnsureLaunchQueue() {
   return *launch_queue_;
 }
 
+void WebAppTabHelper::ScheduleOriginAssociationRevalidation(
+    const webapps::AppId& app_id) {
+  provider_->scheduler().UpdateValidatedOriginAssociations(app_id,
+                                                           base::DoNothing());
+}
+
 void WebAppTabHelper::EnqueueLaunchParams(webapps::LaunchParams launch_params) {
+  // Capturing can deliver a focus-existing launch without navigating.
+  ScheduleOriginAssociationRevalidation(launch_params.app_id());
   EnsureLaunchQueue().Enqueue(std::move(launch_params));
 }
 
@@ -207,6 +215,9 @@ void WebAppTabHelper::SetAppId(std::optional<webapps::AppId> app_id) {
 void WebAppTabHelper::SetIsInAppWindow(
     std::optional<webapps::AppId> window_app_id) {
   SetState(app_id(), std::move(window_app_id));
+  if (window_app_id_) {
+    ScheduleOriginAssociationRevalidation(*window_app_id_);
+  }
 }
 
 void WebAppTabHelper::NotifyIsFirstWebContentsInAppWindow(
@@ -266,6 +277,11 @@ void WebAppTabHelper::PrimaryPageChanged(content::Page& page) {
       page.GetMainDocument().GetLastCommittedURL());
 
   MaybeSchedulePreinstallUpdate();
+  if (window_app_id_) {
+    // Use the window's app, not the app associated with the current URL: app
+    // windows can display another app's scope or an out-of-scope page.
+    ScheduleOriginAssociationRevalidation(*window_app_id_);
+  }
 }
 
 void WebAppTabHelper::DidFinishLoad(content::RenderFrameHost* render_frame_host,

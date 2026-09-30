@@ -4,14 +4,13 @@
 
 #include "chrome/browser/web_applications/commands/update_validated_origin_associations_command.h"
 
-#include <algorithm>
-#include <ranges>
-#include <vector>
+#include <utility>
 
 #include "base/check_deref.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
@@ -19,12 +18,13 @@
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/commands/command_result.h"
 #include "chrome/browser/web_applications/model/migration_source.h"
+#include "chrome/browser/web_applications/model/pending_migration_info.h"
 #include "chrome/browser/web_applications/scheduler/update_validated_origin_associations_result.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_origin_association_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
@@ -39,9 +39,10 @@ UpdateValidatedOriginAssociationsCommand::
     UpdateValidatedOriginAssociationsCommand(
         const webapps::AppId& app_id,
         base::OnceCallback<void(UpdateValidatedOriginAssociationsResult)>
-            callback)
+            callback,
+        bool revalidate_migration_destination)
     : WebAppCommand<AppLock, UpdateValidatedOriginAssociationsResult>(
-          "UpdateValidatedOriginAssociationsResult",
+          "UpdateValidatedOriginAssociationsCommand",
           AppLockDescription(app_id),
           base::BindOnce([](UpdateValidatedOriginAssociationsResult result) {
             base::UmaHistogramEnumeration(
@@ -50,7 +51,8 @@ UpdateValidatedOriginAssociationsCommand::
           }).Then(std::move(callback)),
           /*args_for_shutdown=*/
           UpdateValidatedOriginAssociationsResult::kShutdown),
-      app_id_(app_id) {}
+      app_id_(app_id),
+      revalidate_migration_destination_(revalidate_migration_destination) {}
 
 UpdateValidatedOriginAssociationsCommand::
     ~UpdateValidatedOriginAssociationsCommand() = default;
@@ -74,6 +76,33 @@ void UpdateValidatedOriginAssociationsCommand::StartWithLock(
     CompleteAndSelfDestruct(
         CommandResult::kSuccess,
         UpdateValidatedOriginAssociationsResult::kWebAppNotInstalled);
+    return;
+  }
+
+  // Migration consent is stored on the destination. Check it even if the
+  // source has no associations or was checked recently, without following
+  // migration chains back to an app that already scheduled this request.
+  if (revalidate_migration_destination_ && app->pending_migration_info()) {
+    lock_->scheduler().UpdateValidatedOriginAssociations(
+        GenerateAppIdFromManifestId(
+            app->pending_migration_info()->manifest_id()),
+        base::DoNothing(), /*revalidate_migration_destination=*/false);
+  }
+
+  const bool is_iwa =
+      registrar.AppMatches(app_id_, WebAppFilter::IsIsolatedApp() |
+                                        WebAppFilter::IsIsolatedSubApp());
+  const bool eligible =
+      is_iwa ? base::FeatureList::IsEnabled(
+                   blink::features::
+                       kWebAppEnableScopeExtensionsForIsolatedWebApps) &&
+                   !app->scope_extensions().empty()
+             : !app->scope_extensions().empty() ||
+                   !app->unvalidated_migration_sources().empty();
+  if (!eligible) {
+    CompleteAndSelfDestruct(
+        CommandResult::kSuccess,
+        UpdateValidatedOriginAssociationsResult::kThrottled);
     return;
   }
 

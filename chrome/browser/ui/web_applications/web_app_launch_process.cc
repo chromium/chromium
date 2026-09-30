@@ -116,8 +116,17 @@ content::WebContents* WebAppLaunchProcess::CreateAndRun(
     WebAppRegistrar& registrar,
     OsIntegrationManager& os_integration_manager,
     const apps::AppLaunchParams& params) {
-  return WebAppLaunchProcess(profile, registrar, os_integration_manager, params)
-      .Run();
+  content::WebContents* web_contents =
+      WebAppLaunchProcess(profile, registrar, os_integration_manager, params)
+          .Run();
+  if (web_contents) {
+    // A launch can reuse a pinned home tab without navigating. Request
+    // revalidation even when no launch params will be delivered.
+    if (auto* tab_helper = WebAppTabHelper::FromWebContents(web_contents)) {
+      tab_helper->ScheduleOriginAssociationRevalidation(params.app_id);
+    }
+  }
+  return web_contents;
 }
 
 // static

@@ -726,10 +726,17 @@ class WebAppCommandScheduler {
       base::OnceClosure callback,
       const base::Location& location = FROM_HERE);
 
+  // Schedules revalidation for `app_id`.
+  //
+  // If `revalidate_migration_destination` is true, also schedules a separate
+  // check of the app's immediate pending migration destination. That request
+  // passes false to check only the destination app, preventing migration cycles
+  // such as A -> B -> A from continually scheduling checks for each other.
   void UpdateValidatedOriginAssociations(
       const webapps::AppId& app_id,
       base::OnceCallback<void(UpdateValidatedOriginAssociationsResult)>
           callback,
+      bool revalidate_migration_destination = true,
       const base::Location& location = FROM_HERE);
 
   // Schedules a command to install a web app from a "migrate_from" field in

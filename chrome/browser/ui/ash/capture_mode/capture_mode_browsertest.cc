@@ -52,6 +52,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_frame.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -927,8 +928,20 @@ IN_PROC_BROWSER_TEST_F(CaptureModeProjectorBrowserTests,
   ash::CaptureModeTestApi test_api;
   ASSERT_TRUE(test_api.GetCameraPreviewWidget());
   test_api.SetCaptureModeSource(ash::CaptureModeSource::kWindow);
+
+  auto* app_browser = FindSystemWebAppBrowser(browser()->GetProfile(),
+                                              ash::SystemWebAppType::PROJECTOR,
+                                              ash::BrowserType::kApp);
+  ASSERT_TRUE(app_browser);
+  ASSERT_TRUE(app_browser->IsMinimized());
+  // Escape asynchronously relaunches the existing Projector window. Wait for a
+  // fresh activation so teardown cannot race with that launch.
+  ui_test_utils::BrowserDidBecomeActiveWaiter app_relaunched_waiter(
+      &app_browser->GetBrowser(), /*wait_for_set_last_active_observed=*/true);
   SendKeyEvent(browser(), ui::VKEY_ESCAPE);
   EXPECT_FALSE(test_api.IsSessionActive());
+  app_relaunched_waiter.Wait();
+  ASSERT_TRUE(content::WaitForLoadStop(app_browser->GetActiveWebContents()));
 }
 
 class CaptureModeVideoConferenceBrowserTests

@@ -18,8 +18,8 @@ enum class UpdateValidatedOriginAssociationsResult {
   // Removed, don't reuse this value.
   // kNotNeeded = 1,
 
-  // The validation command was throttled (rate-limited). The caller needs to
-  // wait for more time before revalidation can happen.
+  // Revalidation was skipped because the app is ineligible or its next check
+  // is not yet due.
   kThrottled = 2,
   // Web App was not found with specified app id.
   kWebAppNotInstalled = 3,
