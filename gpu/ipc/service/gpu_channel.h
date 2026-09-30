@@ -31,6 +31,7 @@
 #include "gpu/ipc/service/shared_image_stub.h"
 #include "ipc/ipc_channel_proxy.h"
 #include "mojo/public/cpp/bindings/generic_pending_associated_receiver.h"
+#include "services/viz/privileged/mojom/gl/gpu_client_type.mojom.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_extra_info.h"
 #include "ui/gfx/native_ui_types.h"
@@ -65,8 +66,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       int32_t client_id,
       uint64_t client_tracing_id,
-      bool is_gpu_host,
-      bool enable_extra_handles_validation,
+      viz::mojom::GpuClientType client_type,
       const gfx::GpuExtraInfo& gpu_extra_info,
       const gpu::GPUInfo& gpu_info,
       const gpu::GpuFeatureInfo& gpu_feature_info);
@@ -115,10 +115,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
     return io_task_runner_;
   }
 
-  bool is_gpu_host() const { return is_gpu_host_; }
-  bool enable_extra_handles_validation() const {
-    return enable_extra_handles_validation_;
-  }
+  viz::mojom::GpuClientType client_type() const { return client_type_; }
 
   // IPC::Listener implementation:
   void OnChannelError() override;
@@ -231,8 +228,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
              scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
              int32_t client_id,
              uint64_t client_tracing_id,
-             bool is_gpu_host,
-             bool enable_extra_handles_validation,
+             viz::mojom::GpuClientType client_type,
              const gfx::GpuExtraInfo& gpu_extra_info,
              const gpu::GPUInfo& gpu_info,
              const gpu::GpuFeatureInfo& gpu_feature_info);
@@ -290,8 +286,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannel : public IPC::Listener,
 
   std::unique_ptr<SharedImageStub> shared_image_stub_;
 
-  const bool is_gpu_host_;
-  const bool enable_extra_handles_validation_;
+  const viz::mojom::GpuClientType client_type_;
 
 #if BUILDFLAG(IS_WIN)
   // Set of active DCOMPTextures.

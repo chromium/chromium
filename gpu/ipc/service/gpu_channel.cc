@@ -712,8 +712,7 @@ GpuChannel::GpuChannel(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     int32_t client_id,
     uint64_t client_tracing_id,
-    bool is_gpu_host,
-    bool enable_extra_handles_validation,
+    viz::mojom::GpuClientType client_type,
     const gfx::GpuExtraInfo& gpu_extra_info,
     const gpu::GPUInfo& gpu_info,
     const gpu::GpuFeatureInfo& gpu_feature_info)
@@ -727,8 +726,7 @@ GpuChannel::GpuChannel(
       task_runner_(task_runner),
       io_task_runner_(io_task_runner),
       share_group_(share_group),
-      is_gpu_host_(is_gpu_host),
-      enable_extra_handles_validation_(enable_extra_handles_validation),
+      client_type_(client_type),
       filter_(base::MakeRefCounted<GpuChannelMessageFilter>(
           this,
           channel_token,
@@ -738,7 +736,6 @@ GpuChannel::GpuChannel(
           std::move(io_task_runner))) {
   DCHECK(gpu_channel_manager_);
   DCHECK(client_id_);
-  DCHECK(!(is_gpu_host_ && enable_extra_handles_validation_));
 }
 
 GpuChannel::~GpuChannel() {
@@ -770,16 +767,14 @@ std::unique_ptr<GpuChannel> GpuChannel::Create(
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
     int32_t client_id,
     uint64_t client_tracing_id,
-    bool is_gpu_host,
-    bool enable_extra_handles_validation,
+    viz::mojom::GpuClientType client_type,
     const gfx::GpuExtraInfo& gpu_extra_info,
     const gpu::GPUInfo& gpu_info,
     const gpu::GpuFeatureInfo& gpu_feature_info) {
   auto gpu_channel = base::WrapUnique(new GpuChannel(
       gpu_channel_manager, channel_token, scheduler, sync_point_manager,
       std::move(share_group), std::move(task_runner), std::move(io_task_runner),
-      client_id, client_tracing_id, is_gpu_host,
-      enable_extra_handles_validation, gpu_extra_info, gpu_info,
+      client_id, client_tracing_id, client_type, gpu_extra_info, gpu_info,
       gpu_feature_info));
 
   if (!gpu_channel->CreateSharedImageStub(gpu_extra_info)) {

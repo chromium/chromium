@@ -85,7 +85,8 @@ gpu::ContextResult RasterCommandBufferStub::Initialize(
           this, command_buffer_.get(), manager->outputter(),
           manager->gpu_feature_info(), manager->gpu_preferences(),
           memory_tracker_, manager->shared_image_manager(),
-          shared_context_state, channel()->is_gpu_host());
+          shared_context_state,
+          channel()->client_type() == viz::mojom::GpuClientType::kBrowser);
 
   scoped_sync_point_client_state_ =
       channel_->scheduler()->CreateSyncPointClientState(

@@ -23,6 +23,7 @@ import "services/webnn/public/mojom/webnn_service_introspection.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gl/mojom/gpu_preference.mojom";
+import "services/viz/privileged/mojom/gl/gpu_client_type.mojom";
 
 [EnableIf=is_chromeos]
 import "chromeos/ash/experiences/arc/mojom/protected_buffer_manager.mojom";
@@ -60,15 +61,6 @@ enum MemoryInvalidAccessType {
   kHeapUnderflow,
   kUseAfterFree,
   kMemberDereferenceAfterFree,
-};
-
-enum GpuClientType {
-    kBrowser,
-    kRenderer,
-    kOOPVD,
-    kVideoCapture,
-    kXR,
-    kCastMirroring
 };
 
 interface GpuService {

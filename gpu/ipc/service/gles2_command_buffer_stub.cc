@@ -81,7 +81,7 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
 
 #if !BUILDFLAG(IS_WIN)
   if (attribs.context_type == CONTEXT_TYPE_OPENGLES2 &&
-      !channel_->is_gpu_host()) {
+      channel_->client_type() != viz::mojom::GpuClientType::kBrowser) {
     LOG(ERROR) << "ContextResult::kFatalFailure: CONTEXT_TYPE_OPENGLES2 is not "
                   "allowed";
     return gpu::ContextResult::kFatalFailure;

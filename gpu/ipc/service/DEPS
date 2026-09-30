@@ -6,6 +6,7 @@ include_rules = [
   "+components/viz/common/resources/shared_image_format_utils.h",
   "+mojo/public",
   "+services/on_device_model/ml_internal_buildflags.h",
+  "+services/viz/privileged/mojom/gl/gpu_client_type.mojom.h",
   "+services/webnn/public/mojom/features.mojom-features.h",
   "+skia/buildflags.h",
   "+third_party/dawn/include",

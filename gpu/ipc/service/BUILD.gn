@@ -60,6 +60,7 @@ component("service") {
     "//gpu/config",
     "//gpu/ipc/common",
     "//ipc",
+    "//services/viz/privileged/mojom/gl:gpu_client_type",
     "//ui/base",
     "//ui/display",
     "//ui/gfx",

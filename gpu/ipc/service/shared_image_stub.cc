@@ -302,7 +302,7 @@ void SharedImageStub::OnCreateSharedImageWithBuffer(
   gfx::GpuMemoryBufferHandle buffer_handle = std::move(params->buffer_handle);
 
 #if BUILDFLAG(IS_OZONE)
-  if (channel_->enable_extra_handles_validation() &&
+  if (channel_->client_type() == viz::mojom::GpuClientType::kOOPVD &&
       buffer_handle.type == gfx::NATIVE_PIXMAP) {
     const auto& pixmap_handle = buffer_handle.native_pixmap_handle();
     auto format = params->si_info->meta.format;
