@@ -4,18 +4,16 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
 import android.view.KeyEvent;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.test.core.app.ApplicationProvider;
 
@@ -42,8 +40,28 @@ import java.util.function.Supplier;
 
 /** Unit tests for {@link AutocompleteCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class AutocompleteCoordinatorUnitTest {
+    private static class TestOmniboxSuggestionsContainer extends OmniboxSuggestionsContainer {
+        private boolean mIsShown;
+        private boolean mHandleKeyDown;
+        private int mLastKeyDownKeyCode;
+
+        TestOmniboxSuggestionsContainer(Context context) {
+            super(context, null);
+        }
+
+        @Override
+        public boolean isShown() {
+            return mIsShown;
+        }
+
+        @Override
+        public boolean onKeyDown(int keyCode, KeyEvent event) {
+            mLastKeyDownKeyCode = keyCode;
+            return mHandleKeyDown;
+        }
+    }
+
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
@@ -54,10 +72,11 @@ public class AutocompleteCoordinatorUnitTest {
     @Mock private AutocompleteMediator mAutocompleteMediator;
     @Mock private Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     @Mock private LocationBarEmbedder mLocationBarEmbedder;
-    @Mock private OmniboxSuggestionsContainer mSuggestionsContainer;
-    @Mock private ViewGroup mParentView;
     @Mock private OmniboxResourceProvider mResourceProvider;
     @Mock private Profile mProfile;
+
+    private TestOmniboxSuggestionsContainer mSuggestionsContainer;
+    private ViewGroup mParentView;
 
     @Before
     public void setUp() {
@@ -66,7 +85,8 @@ public class AutocompleteCoordinatorUnitTest {
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
 
-        lenient().when(mParentView.getContext()).thenReturn(context);
+        mParentView = new FrameLayout(context);
+        mSuggestionsContainer = new TestOmniboxSuggestionsContainer(context);
 
         mAutocompleteCoordinator =
                 new AutocompleteCoordinator(
@@ -83,10 +103,8 @@ public class AutocompleteCoordinatorUnitTest {
     @Test
     public void testHandleKeyEvent() {
         // Suggestions are shown.
-        doReturn(true).when(mSuggestionsContainer).isShown();
-        doReturn(true)
-                .when(mSuggestionsContainer)
-                .onKeyDown(eq(KeyEvent.KEYCODE_TAB), any(KeyEvent.class));
+        mSuggestionsContainer.mIsShown = true;
+        mSuggestionsContainer.mHandleKeyDown = true;
 
         // Tab navigation is handled.
         assertTrue(sendKeyDownEvent(KeyEvent.KEYCODE_TAB, 0));
@@ -103,32 +121,32 @@ public class AutocompleteCoordinatorUnitTest {
 
     @Test
     public void testHandleKeyEvent_enter_delegatesToContainer() {
-        doReturn(true).when(mSuggestionsContainer).isShown();
+        mSuggestionsContainer.mIsShown = true;
 
         // Container handles Enter.
-        doReturn(true).when(mSuggestionsContainer).onKeyDown(eq(KeyEvent.KEYCODE_ENTER), any());
+        mSuggestionsContainer.mHandleKeyDown = true;
         assertTrue(sendKeyDownEvent(KeyEvent.KEYCODE_ENTER, 0));
-        verify(mSuggestionsContainer).onKeyDown(eq(KeyEvent.KEYCODE_ENTER), any());
+        assertEquals(KeyEvent.KEYCODE_ENTER, mSuggestionsContainer.mLastKeyDownKeyCode);
 
         // Container does not handle Enter.
-        doReturn(false).when(mSuggestionsContainer).onKeyDown(eq(KeyEvent.KEYCODE_ENTER), any());
+        mSuggestionsContainer.mHandleKeyDown = false;
         assertFalse(sendKeyDownEvent(KeyEvent.KEYCODE_ENTER, 0));
     }
 
     @Test
     public void testHandleKeyEvent_altEnter_delegatesToContainer() {
-        doReturn(true).when(mSuggestionsContainer).isShown();
-        doReturn(true).when(mSuggestionsContainer).onKeyDown(eq(KeyEvent.KEYCODE_ENTER), any());
+        mSuggestionsContainer.mIsShown = true;
+        mSuggestionsContainer.mHandleKeyDown = true;
         assertTrue(sendKeyDownEvent(KeyEvent.KEYCODE_ENTER, KeyEvent.META_ALT_ON));
-        verify(mSuggestionsContainer).onKeyDown(eq(KeyEvent.KEYCODE_ENTER), any());
+        assertEquals(KeyEvent.KEYCODE_ENTER, mSuggestionsContainer.mLastKeyDownKeyCode);
     }
 
     @Test
     public void testHandleKeyEvent_shiftEnter_delegatesToContainer() {
-        doReturn(true).when(mSuggestionsContainer).isShown();
-        doReturn(false).when(mSuggestionsContainer).onKeyDown(eq(KeyEvent.KEYCODE_ENTER), any());
+        mSuggestionsContainer.mIsShown = true;
+        mSuggestionsContainer.mHandleKeyDown = false;
         assertFalse(sendKeyDownEvent(KeyEvent.KEYCODE_ENTER, KeyEvent.META_SHIFT_ON));
-        verify(mSuggestionsContainer).onKeyDown(eq(KeyEvent.KEYCODE_ENTER), any());
+        assertEquals(KeyEvent.KEYCODE_ENTER, mSuggestionsContainer.mLastKeyDownKeyCode);
     }
 
     @Test
