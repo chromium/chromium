@@ -15876,28 +15876,6 @@
             ]
         }
     ],
-    "RealboxVirtualFocusNavigation": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "form_factors": [
-                "desktop"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RealboxVirtualFocusNavigation"
-                    ]
-                }
-            ]
-        }
-    ],
     "RebindServiceBatchApi": [
         {
             "platforms": [
