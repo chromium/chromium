@@ -107,11 +107,12 @@ bool IsPrefetch(content::UsedInstantLoad used_instant_load) {
 
 std::string GetNavigationInitiatorString(
     content::NavigationHandle& navigation_handle) {
-  if (ui::PageTransitionCoreTypeIs(navigation_handle.GetPageTransition(),
-                                   ui::PAGE_TRANSITION_RELOAD)) {
-    return "Reload";
-  }
-
+  // Back/forward navigation and BFCache restore must be checked before reload
+  // because back/forward navigations to an entry that was previously reloaded
+  // have a transition type of `PAGE_TRANSITION_RELOAD |
+  // PAGE_TRANSITION_FORWARD_BACK`. `PageTransitionCoreTypeIs()` strips
+  // qualifiers like `PAGE_TRANSITION_FORWARD_BACK`, so checking for reload
+  // first would misclassify back/forward navigations as "Reload".
   if ((navigation_handle.GetPageTransition() &
        ui::PAGE_TRANSITION_FORWARD_BACK) ||
       navigation_handle.IsServedFromBackForwardCache()) {
@@ -124,7 +125,15 @@ std::string GetNavigationInitiatorString(
       return "Backward";
     }
 
-    return "Other";
+    // `history_offset` can be 0 when a reload navigation is served from BFCache
+    // (crbug.com/420769973). Fall through to the subsequent checks so that it
+    // is classified as `kReload`.
+    // TODO(crbug.com/420769973): Fix this behavior, and avoid the fall-through.
+  }
+
+  if (ui::PageTransitionCoreTypeIs(navigation_handle.GetPageTransition(),
+                                   ui::PAGE_TRANSITION_RELOAD)) {
+    return "Reload";
   }
 
   auto* user_data =
