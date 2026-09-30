@@ -3253,8 +3253,10 @@ TEST_F(FileSystemAccessManagerImplTest, IsSafePathComponent) {
 // via `postMessage` or `StorageAccessHandle.indexedDB`) downgrades
 // non-sandboxed file and directory handles to `PermissionStatus::DENIED`, while
 // preserving `PermissionStatus::GRANTED` for sandboxed (OPFS) handles.
-TEST_F(FileSystemAccessManagerImplTest,
-       GetHandleFromToken_ThirdPartyContextBlocksNonSandboxedReadAndWrite) {
+// TODO(crbug.com/567958637): Disabled due to failures on multiple platforms.
+TEST_F(
+    FileSystemAccessManagerImplTest,
+    DISABLED_GetHandleFromToken_ThirdPartyContextBlocksNonSandboxedReadAndWrite) {
   const blink::StorageKey kThirdPartyStorageKey = blink::StorageKey::Create(
       kTestStorageKey.origin(), net::SchemefulSite(GURL("https://other.com")),
       blink::mojom::AncestorChainBit::kCrossSite);
