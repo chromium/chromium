@@ -300,6 +300,10 @@ PA_ALWAYS_INLINE constexpr size_t MaxGigaAllocationSize() {
   return MaxAllocationSize();
 #endif
 }
+// As in `internal::BucketSizeDetails`, which cannot see this function.
+static_assert(MaxGigaAllocationSize() + internal::kSuperPageSize <=
+                  internal::BucketSizeDetails::kMaxSlotSize,
+              "slot_size no longer fits in BucketSizeDetails");
 
 // When trying to conserve memory, set the thread cache limit to this.
 static inline constexpr size_t kThreadCacheDefaultSizeThreshold = 512;

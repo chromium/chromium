@@ -37,6 +37,7 @@
 #include <limits>
 #include <utility>
 
+#include "partition_alloc/bucket_lookup.h"
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/free_hint.h"
@@ -589,7 +590,7 @@ class alignas(internal::kPartitionCachelineSize)
       SlotStart slot_start,
       SlotSpanMetadata* slot_span,
       FreeHintType<FreeHintFlags(flags)> hint,
-      const internal::BucketSizeDetails& size_details);
+      internal::BucketSizeDetails size_details);
 
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   // Actual free operation on BRP dequarantine.
@@ -610,7 +611,7 @@ class alignas(internal::kPartitionCachelineSize)
   PA_ALWAYS_INLINE size_t
   GetSlotUsableSize(const SlotSpanMetadata* slot_span) const;
   PA_ALWAYS_INLINE size_t
-  GetSlotUsableSize(const internal::BucketSizeDetails& size_details,
+  GetSlotUsableSize(internal::BucketSizeDetails size_details,
                     const SlotSpanMetadata* slot_span) const;
 
   // Note: this static method is the most friendly to external callers.
@@ -695,7 +696,7 @@ class alignas(internal::kPartitionCachelineSize)
 
   PA_ALWAYS_INLINE void RawFreeWithThreadCache(
       SlotStart slot_start,
-      const internal::BucketSizeDetails& size_details,
+      internal::BucketSizeDetails size_details,
       SlotSpanMetadata* slot_span);
 
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
@@ -838,7 +839,7 @@ class alignas(internal::kPartitionCachelineSize)
   GetSlotSizeFromRequestedSizeForTesting(size_t requested_size) const;
 
   PA_ALWAYS_INLINE bool IsSchedulerLoopQuarantineTarget(
-      const internal::BucketSizeDetails& size_details);
+      internal::BucketSizeDetails size_details);
 
  private:
   static inline StraightenLargerSlotSpanFreeListsMode
@@ -969,7 +970,7 @@ class alignas(internal::kPartitionCachelineSize)
   PA_ALWAYS_INLINE void SchedulerLoopQuarantine(
       SlotStart slot_start,
       SlotSpanMetadata* slot_span,
-      const internal::BucketSizeDetails& size_details);
+      internal::BucketSizeDetails size_details);
 
   PA_ALWAYS_INLINE AllocationNotificationData
   CreateAllocationNotificationData(void* object,

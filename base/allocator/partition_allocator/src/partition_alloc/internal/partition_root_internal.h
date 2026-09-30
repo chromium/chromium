@@ -76,13 +76,6 @@ struct AllocInfo {
   } allocs[kAllocInfoSize] = {};
 };
 
-// Represents the detailed size information for a given requested allocation
-// size.
-struct BucketSizeDetails {
-  uint16_t bucket_index;
-  size_t slot_size;
-};
-
 #if PA_BUILDFLAG(CHECKED_SPAN_HAS_METADATA_SUPPORT)
 using CheckedSpanSmuggledRequestedSize = uint32_t;
 static_assert(std::numeric_limits<CheckedSpanSmuggledRequestedSize>::max() >
@@ -160,12 +153,12 @@ PartitionRoot::GetSlotUsableSize(const SlotSpanMetadata* slot_span) const {
   return AdjustSizeForExtrasSubtract(slot_span->GetUtilizedSlotSize());
 }
 
-PA_ALWAYS_INLINE size_t PartitionRoot::GetSlotUsableSize(
-    const internal::BucketSizeDetails& size_details,
-    const SlotSpanMetadata* slot_span) const {
-  if (size_details.slot_size <= kThreadCacheLargeSizeThreshold) [[likely]] {
+PA_ALWAYS_INLINE size_t
+PartitionRoot::GetSlotUsableSize(internal::BucketSizeDetails size_details,
+                                 const SlotSpanMetadata* slot_span) const {
+  if (size_details.slot_size() <= kThreadCacheLargeSizeThreshold) [[likely]] {
     PA_DCHECK(!slot_span->CanStoreRawSize());
-    auto usable_size = AdjustSizeForExtrasSubtract(size_details.slot_size);
+    auto usable_size = AdjustSizeForExtrasSubtract(size_details.slot_size());
     PA_DCHECK(usable_size == GetSlotUsableSize(slot_span));
     return usable_size;
   }
@@ -668,7 +661,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediateInternal(
     SlotStart slot_start,
     SlotSpanMetadata* slot_span,
     FreeHintType<FreeHintFlags(flags)> hint,
-    const internal::BucketSizeDetails& size_details) {
+    internal::BucketSizeDetails size_details) {
   // The thread cache is added "in the middle" of the main allocator, that is:
   // - After all the cookie/in-slot metadata management
   // - Before the "raw" allocator.
@@ -709,7 +702,7 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediateInternal(
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
   if (brp_enabled()) [[likely]] {
     auto* ref_count = internal::InSlotMetadata::From(
-        {slot_start.Untag(), size_details.slot_size});
+        {slot_start.Untag(), size_details.slot_size()});
     // If there are no more references to the allocation, it can be freed
     // immediately. Otherwise, defer the operation and zap the memory to turn
     // potential use-after-free issues into unexploitable crashes. Zapping must
@@ -757,8 +750,8 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeNoHooksImmediateInternal(
       type_id = hint.type_id;
     }
     Zap(slot_start, slot_span, type_id);
-    RecordLeakSizePerTypeId(type_id, size_details.slot_size);
-    intended_leak_size_.fetch_add(size_details.slot_size);
+    RecordLeakSizePerTypeId(type_id, size_details.slot_size());
+    intended_leak_size_.fetch_add(size_details.slot_size());
     return;  // Leak
   }
 
@@ -847,11 +840,9 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeAfterBRPQuarantine(
 
   internal::InSlotMetadata* metadata =
       internal::InSlotMetadata::From(slot_and_size);
-  auto size_details = internal::BucketSizeDetails{
-      .bucket_index =
-          SizeToBucketIndex(slot_and_size.size, root->GetBucketDistribution()),
-      .slot_size = slot_and_size.size,
-  };
+  auto size_details = internal::BucketSizeDetails(
+      SizeToBucketIndex(slot_and_size.size, root->GetBucketDistribution()),
+      slot_and_size.size);
   PA_DCHECK(slot_and_size.size == slot_span->bucket->slot_size);
 
   // `FreeFlags::kSchedulerLoopQuarantine` was used for the original `Free()`
@@ -967,10 +958,10 @@ PA_ALWAYS_INLINE void PartitionRoot::RetagSlotIfNeeded(
 
 PA_ALWAYS_INLINE void PartitionRoot::RawFreeWithThreadCache(
     SlotStart slot_start,
-    const internal::BucketSizeDetails& size_details,
+    internal::BucketSizeDetails size_details,
     SlotSpanMetadata* slot_span) {
 #if PA_BUILDFLAG(HAS_MEMORY_TAGGING)
-  RetagSlotIfNeeded(slot_start.Untag(), size_details.slot_size);
+  RetagSlotIfNeeded(slot_start.Untag(), size_details.slot_size());
   slot_start = slot_start.Untag().Tag();
 #endif
 
@@ -982,11 +973,11 @@ PA_ALWAYS_INLINE void PartitionRoot::RawFreeWithThreadCache(
   // variable, remove the initialization check in `IsValid` and reuse the
   // `bucket_index > largest_active_bucket_index_` within `MaybePutInCache`.
   if (internal::ThreadCache::IsValid(thread_cache) &&
-      (size_details.slot_size <= BucketIndexLookup::kMaxBucketSize))
+      (size_details.slot_size() <= BucketIndexLookup::kMaxBucketSize))
       [[likely]] {
     PA_DCHECK(!IsDirectMappedBucket(slot_span->bucket));
     std::optional<size_t> slot_size = thread_cache->MaybePutInCache(
-        slot_start.Untag(), size_details.bucket_index);
+        slot_start.Untag(), size_details.bucket_index());
     if (slot_size.has_value()) [[likely]] {
       // This is a fast path, avoid calling GetSlotUsableSize() in Release
       // builds as it is costlier. Copy its small bucket path instead.
@@ -1024,8 +1015,8 @@ PA_ALWAYS_INLINE void PartitionRoot::RawFreeWithThreadCache(
     // kIntendedLeakUnknownTypeId.
     uint32_t type_id = internal::kIntendedLeakUnknownTypeId;
     Zap(slot_start, slot_span, type_id);
-    RecordLeakSizePerTypeId(type_id, size_details.slot_size);
-    intended_leak_size_.fetch_add(size_details.slot_size);
+    RecordLeakSizePerTypeId(type_id, size_details.slot_size());
+    intended_leak_size_.fetch_add(size_details.slot_size());
     return;
   }
 
@@ -1280,11 +1271,9 @@ PartitionRoot::SizeToBucketIndex(size_t size,
 PA_ALWAYS_INLINE internal::BucketSizeDetails
 PartitionRoot::SlotSpanToBucketSizeDetails(
     const SlotSpanMetadata* slot_span) const {
-  return internal::BucketSizeDetails{
-      .bucket_index =
-          static_cast<uint16_t>(slot_span->bucket - this->buckets_.data()),
-      .slot_size = slot_span->bucket->slot_size,
-  };
+  return internal::BucketSizeDetails(
+      static_cast<uint16_t>(slot_span->bucket - this->buckets_.data()),
+      slot_span->bucket->slot_size);
 }
 
 PA_ALWAYS_INLINE internal::BucketSizeDetails
@@ -1301,10 +1290,7 @@ PartitionRoot::SizeToBucketSizeDetails(
     PA_CHECK(bucket_index ==
              static_cast<uint16_t>(slot_span->bucket - this->buckets_.data()));
     PA_CHECK(slot_size == slot_span->bucket->slot_size);
-    return internal::BucketSizeDetails{
-        .bucket_index = bucket_index,
-        .slot_size = slot_size,
-    };
+    return internal::BucketSizeDetails(bucket_index, slot_size);
   }
   // For direct-mapped allocations, `slot_size` is derived from `slot_span`.
   // `bucket_index` is also populated from `slot_span` although its value is
@@ -1966,7 +1952,7 @@ PartitionRoot::GetSchedulerLoopQuarantineRoot() {
 }
 
 bool PartitionRoot::IsSchedulerLoopQuarantineTarget(
-    const internal::BucketSizeDetails& size_details) {
+    internal::BucketSizeDetails size_details) {
   internal::ThreadCache* thread_cache = GetThreadCache();
   if (internal::ThreadCache::IsValid(thread_cache)) [[likely]] {
     return thread_cache->GetSchedulerLoopQuarantineBranch().IsQuarantineTarget(
@@ -1979,7 +1965,7 @@ bool PartitionRoot::IsSchedulerLoopQuarantineTarget(
 void PartitionRoot::SchedulerLoopQuarantine(
     SlotStart slot_start,
     SlotSpanMetadata* slot_span,
-    const internal::BucketSizeDetails& size_details) {
+    internal::BucketSizeDetails size_details) {
   internal::ThreadCache* thread_cache = GetThreadCache();
   if (internal::ThreadCache::IsValid(thread_cache)) [[likely]] {
     thread_cache->GetSchedulerLoopQuarantineBranch().Quarantine(

@@ -18,6 +18,7 @@
 #include "partition_alloc/partition_alloc_base/compiler_specific.h"
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_forward.h"
+#include "partition_alloc/partition_alloc_public_constants.h"
 
 // `BucketIndexLookup` class provides 2-way mapping between "allocation size"
 // and "bucket index".
@@ -223,5 +224,49 @@ class BucketIndexLookup final {
 }  // namespace partition_alloc
 
 // LINT.ThenChange(//tools/memory/partition_allocator/objects_per_size.py)
+
+namespace partition_alloc::internal {
+
+// A slot's bucket index in `PartitionRoot::buckets_` and its slot size.
+// `bucket_index` is only meaningful for non-direct-mapped slots.
+//
+// The two values are packed into a single 64-bit word rather than declared as
+// separate members. A `uint16_t` next to a `size_t` leaves a six-byte interior
+// padding hole, and Chromium builds with `-ftrivial-auto-var-init=pattern`, so
+// every construction emits extra stores purely to poison that hole. This type
+// is constructed on the deallocation fast path and passed by value, so it
+// should also fit in a single general-purpose register.
+class BucketSizeDetails {
+ public:
+  // The largest `slot_size` the packed representation holds.
+  static constexpr uint64_t kMaxSlotSize = (uint64_t{1} << 48) - 1;
+
+  constexpr BucketSizeDetails() = default;
+  constexpr BucketSizeDetails(uint16_t bucket_index, size_t slot_size)
+      : bits_((static_cast<uint64_t>(bucket_index) << kSlotSizeBits) |
+              static_cast<uint64_t>(slot_size)) {}
+
+  PA_ALWAYS_INLINE constexpr uint16_t bucket_index() const {
+    return static_cast<uint16_t>(bits_ >> kSlotSizeBits);
+  }
+  PA_ALWAYS_INLINE constexpr size_t slot_size() const {
+    return static_cast<size_t>(bits_ & kMaxSlotSize);
+  }
+
+ private:
+  static constexpr int kSlotSizeBits = std::bit_width(kMaxSlotSize);
+
+  // A slot is at most the largest allocation PartitionAlloc hands out, rounded
+  // up to the direct-map reservation granularity. `kSuperPageSize` bounds that
+  // rounding, so this is a conservative ceiling. Allocations with
+  // `AllocFlags::kAllowGigaAllocations` can be larger; they are checked next
+  // to `MaxGigaAllocationSize()`.
+  static_assert(MaxAllocationSize() + kSuperPageSize <= kMaxSlotSize,
+                "slot_size no longer fits in the packed representation");
+
+  uint64_t bits_ = 0;
+};
+
+}  // namespace partition_alloc::internal
 
 #endif  // PARTITION_ALLOC_BUCKET_LOOKUP_H_

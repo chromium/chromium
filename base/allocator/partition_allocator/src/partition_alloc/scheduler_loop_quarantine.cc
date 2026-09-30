@@ -120,7 +120,7 @@ BatchFreeQueue<QuarantineTarget::kSanitizedObjects>::Purge() {
 #if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     if (root_->brp_enabled()) {
       auto* metadata =
-          InSlotMetadata::From({entry.slot_start, size_details.slot_size});
+          InSlotMetadata::From({entry.slot_start, size_details.slot_size()});
       if (metadata->IsAlive()) {
         // Since `FreeNoHooksImmediateInternal()` checks double-free, see if
         // the object is still alive.
@@ -272,15 +272,15 @@ bool SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::
 
 template <bool thread_bound, QuarantineTarget quarantine_target>
 bool SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::
-    IsQuarantineTarget(const internal::BucketSizeDetails& size_details) const {
+    IsQuarantineTarget(internal::BucketSizeDetails size_details) const {
   if (!enable_quarantine_ || pause_quarantine_) [[unlikely]] {
     return false;
   }
-  if (size_details.slot_size > BucketIndexLookup::kMaxBucketSize ||
-      largest_bucket_index_ < size_details.bucket_index) [[unlikely]] {
+  if (size_details.slot_size() > BucketIndexLookup::kMaxBucketSize ||
+      largest_bucket_index_ < size_details.bucket_index()) [[unlikely]] {
     return false;
   }
-  const size_t slot_size = size_details.slot_size;
+  const size_t slot_size = size_details.slot_size();
   const size_t capacity_in_bytes =
       branch_capacity_in_bytes_.load(std::memory_order_relaxed);
   if (capacity_in_bytes < slot_size) [[unlikely]] {
@@ -317,7 +317,7 @@ template <bool thread_bound, QuarantineTarget quarantine_target>
 void SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::Quarantine(
     SlotStart slot_start,
     SlotSpanMetadata* slot_span,
-    const internal::BucketSizeDetails& size_details) {
+    internal::BucketSizeDetails size_details) {
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   PA_DCHECK(!being_destructed_);
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
@@ -325,8 +325,8 @@ void SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::Quarantine(
     return allocator_root_->RawFreeWithThreadCache(slot_start, size_details,
                                                    slot_span);
   }
-  if (size_details.slot_size > BucketIndexLookup::kMaxBucketSize ||
-      largest_bucket_index_ < size_details.bucket_index) [[unlikely]] {
+  if (size_details.slot_size() > BucketIndexLookup::kMaxBucketSize ||
+      largest_bucket_index_ < size_details.bucket_index()) [[unlikely]] {
     // The allocation is direct-mapped or larger than `largest_bucket_index_`.
     return allocator_root_->RawFreeWithThreadCache(slot_start, size_details,
                                                    slot_span);
@@ -337,7 +337,7 @@ void SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::Quarantine(
       slot_span->bucket <=
           PA_UNSAFE_TODO(&allocator_root_->buckets_[largest_bucket_index_]));
 
-  const size_t slot_size = size_details.slot_size;
+  const size_t slot_size = size_details.slot_size();
   const size_t capacity_in_bytes =
       branch_capacity_in_bytes_.load(std::memory_order_relaxed);
   if (capacity_in_bytes < slot_size) [[unlikely]] {
@@ -358,7 +358,7 @@ void SchedulerLoopQuarantineBranch<thread_bound, quarantine_target>::Quarantine(
   branch_size_in_bytes_ += slot_size;
   slots_.push_back({
       .slot_start = slot_start,
-      .bucket_index = size_details.bucket_index,
+      .bucket_index = size_details.bucket_index(),
   });
 
   // Swap randomly so that the quarantine list remain shuffled.
