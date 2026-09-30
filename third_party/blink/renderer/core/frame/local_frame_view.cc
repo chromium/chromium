@@ -233,7 +233,7 @@ std::optional<cc::PaintRecord> GetCanvasSnapshot(DOMNodeId id) {
       return cc::PaintRecord();
     }
     if (scoped_refptr<StaticBitmapImage> snapshot =
-            nested_canvas->Snapshot(kFrontBuffer)) {
+            nested_canvas->Snapshot(kBackBuffer)) {
       PaintRecordBuilder builder;
       gfx::RectF dest_rect(
           gfx::SizeF(nested_layout_obj->PhysicalContentBoxRect().size));
