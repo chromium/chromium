@@ -42,10 +42,32 @@ public interface BottomSheetObserver {
     /**
      * An event for when the sheet changes state.
      *
+     * <p>When the sheet becomes {@link SheetState#HIDDEN} because its content was hidden, every
+     * observer is notified before the sheet shows its next content. During this call, {@link
+     * BottomSheetController#getCurrentSheetContent()} still returns the content that was hidden. It
+     * isn't destroyed until every observer has been notified. {@link #onSheetContentChanged} for
+     * the next content (or null) follows. Compare {@link
+     * BottomSheetController#getCurrentSheetContent()} with your content to tell whether this {@link
+     * SheetState#HIDDEN} concerns it. Your content can also be hidden without being dismissed, e.g.
+     * when the sheet is suppressed or your content is replaced by higher priority content and
+     * queued again.
+     *
      * @param newState The new sheet state. See {@link SheetState}.
      * @param reason The {@link StateChangeReason} that the sheet's state changed.
      */
     default void onSheetStateChanged(@SheetState int newState, @StateChangeReason int reason) {}
+
+    /**
+     * Called after every observer has been notified of a state change through {@link
+     * #onSheetStateChanged}. State changes that observers make while being notified are committed
+     * together once the outermost one has been dispatched.
+     *
+     * @param newState The sheet's state once every observer has been notified. See {@link
+     *     SheetState}.
+     * @param reason The {@link StateChangeReason} of the latest state change.
+     */
+    default void onSheetStateChangeCommitted(
+            @SheetState int newState, @StateChangeReason int reason) {}
 
     /**
      * An event for when the sheet content changes.

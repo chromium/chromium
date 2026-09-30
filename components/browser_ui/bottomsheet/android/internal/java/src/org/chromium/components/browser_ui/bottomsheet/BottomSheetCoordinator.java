@@ -152,6 +152,12 @@ class BottomSheetCoordinator
     /** Whether {@link #destroy()} has been called. */
     private boolean mIsDestroyed;
 
+    /** How many {@link #setInternalCurrentState} dispatches are currently running. */
+    private int mStateDispatchDepth;
+
+    /** The reason for the latest state change dispatched to observers. */
+    private @StateChangeReason int mLastStateChangeReason = StateChangeReason.NONE;
+
     /** The ratio in the range [0, 1] that the browser controls are hidden. */
     private float mBrowserControlsHiddenRatio;
 
@@ -1098,7 +1104,18 @@ class BottomSheetCoordinator
             }
         }
 
-        mMediator.notifySheetStateChanged(state, reason);
+        // Observers can change the sheet state while being notified, which dispatches again from
+        // inside this call. Only commit the state once the outermost dispatch has returned.
+        mLastStateChangeReason = reason;
+        mStateDispatchDepth++;
+        try {
+            mMediator.notifySheetStateChanged(state, reason);
+        } finally {
+            mStateDispatchDepth--;
+        }
+        if (mStateDispatchDepth == 0) {
+            mMediator.notifySheetStateChangeCommitted(getSheetState(), mLastStateChangeReason);
+        }
     }
 
     /**

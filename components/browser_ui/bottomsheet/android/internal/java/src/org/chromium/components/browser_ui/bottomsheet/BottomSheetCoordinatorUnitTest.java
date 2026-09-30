@@ -1513,6 +1513,60 @@ public class BottomSheetCoordinatorUnitTest {
         assertEquals(1 + BottomSheet.MAX_ANIMATIONS_ENDED_FOR_TESTING, settleCount[0]);
     }
 
+    @Test
+    public void testSheetStateChangeCommitted_CalledOnceAfterOutermostChange() {
+        mBottomSheet.showContent(buildContent(/* supportsLargeFormFactor= */ false, 0.5f, 1.0f));
+        mBottomSheet.setSheetState(SheetState.FULL, false);
+        List<String> events = new ArrayList<>();
+        mBottomSheet.addObserver(
+                new BottomSheetObserver() {
+                    @Override
+                    public void onSheetStateChanged(
+                            @SheetState int newState, @StateChangeReason int reason) {
+                        events.add("first:state:" + newState);
+                        // Change the state again while observers are being notified.
+                        if (newState == SheetState.HIDDEN) {
+                            mBottomSheet.setSheetState(
+                                    SheetState.FULL, false, StateChangeReason.BACK_PRESS);
+                        }
+                    }
+
+                    @Override
+                    public void onSheetStateChangeCommitted(
+                            @SheetState int newState, @StateChangeReason int reason) {
+                        events.add("first:committed:" + newState + ":" + reason);
+                    }
+                });
+        mBottomSheet.addObserver(
+                new BottomSheetObserver() {
+                    @Override
+                    public void onSheetStateChanged(
+                            @SheetState int newState, @StateChangeReason int reason) {
+                        events.add("second:state:" + newState);
+                    }
+
+                    @Override
+                    public void onSheetStateChangeCommitted(
+                            @SheetState int newState, @StateChangeReason int reason) {
+                        events.add("second:committed:" + newState + ":" + reason);
+                    }
+                });
+
+        mBottomSheet.setSheetState(SheetState.HIDDEN, false, StateChangeReason.SWIPE);
+
+        // Both changes are committed once, with the latest state and reason, after every observer
+        // has been notified of both.
+        assertEquals(
+                List.of(
+                        "first:state:" + SheetState.HIDDEN,
+                        "first:state:" + SheetState.FULL,
+                        "second:state:" + SheetState.FULL,
+                        "second:state:" + SheetState.HIDDEN,
+                        "first:committed:" + SheetState.FULL + ":" + StateChangeReason.BACK_PRESS,
+                        "second:committed:" + SheetState.FULL + ":" + StateChangeReason.BACK_PRESS),
+                events);
+    }
+
     private void doTestEndAnimationsKeepsAnimationStartedWhileEnding() {
         mBottomSheet.showContent(buildContent(/* supportsLargeFormFactor= */ false, 0.5f, 1.0f));
         mBottomSheet.setSheetState(SheetState.FULL, false);

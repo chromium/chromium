@@ -382,6 +382,18 @@ class BottomSheetMediator implements TouchHandler {
     }
 
     /**
+     * Notifies observers that every observer has been notified of the latest state change.
+     *
+     * @param newState The current sheet state.
+     * @param reason The reason for the latest state change.
+     */
+    void notifySheetStateChangeCommitted(@SheetState int newState, @StateChangeReason int reason) {
+        for (BottomSheetObserver o : mObservers) {
+            o.onSheetStateChangeCommitted(newState, reason);
+        }
+    }
+
+    /**
      * Notifies observers that the sheet offset changed.
      *
      * @param heightFraction The height fraction of the sheet.

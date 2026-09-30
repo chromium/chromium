@@ -106,11 +106,16 @@ public interface BottomSheetController {
     /**
      * Request that some content be shown in the bottom sheet.
      *
+     * <p>While the sheet is between hiding one content and showing the next one, e.g. when called
+     * from {@link BottomSheetObserver#onSheetStateChanged} for {@link SheetState#HIDDEN}, the
+     * content is only queued.
+     *
      * @param content The content to be shown in the bottom sheet.
      * @param animate Whether the appearance of the bottom sheet should be animated.
      * @return True if the content was shown, false if it was suppressed. Content is suppressed if
      *     higher priority content is in the sheet, the sheet is expanded beyond the peeking state,
-     *     or the browser is in a mode that does not support showing the sheet.
+     *     or the browser is in a mode that does not support showing the sheet. If the content was
+     *     only queued, returns whether it is currently next in line.
      */
     boolean requestShowContent(BottomSheetContent content, boolean animate);
 
@@ -158,7 +163,11 @@ public interface BottomSheetController {
      */
     boolean collapseSheet(boolean animate);
 
-    /** Returns the content currently showing in the bottom sheet. */
+    /**
+     * Returns the content currently showing in the bottom sheet. While observers are notified of
+     * {@link SheetState#HIDDEN}, this is still the content that was hidden. See {@link
+     * BottomSheetObserver#onSheetStateChanged}.
+     */
     @Nullable BottomSheetContent getCurrentSheetContent();
 
     /** Returns the current state of the bottom sheet. */

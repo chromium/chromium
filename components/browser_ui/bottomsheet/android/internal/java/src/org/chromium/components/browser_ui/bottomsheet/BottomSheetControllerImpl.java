@@ -121,6 +121,14 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     /** The content being shown prior to the sheet being suppressed. */
     private @Nullable BottomSheetContent mContentWhenSuppressed;
 
+    // TODO: Avoid the controller changing state while observers are being notified of a state
+    // change, so this pending swap state isn't needed.
+    /**
+     * Whether the sheet was hidden and its content is replaced (and destroyed) once every observer
+     * has been notified of {@link SheetState#HIDDEN}. See {@link #finishPendingContentSwap}.
+     */
+    private boolean mHasPendingContentSwap;
+
     private boolean mScrimVisible;
     private int mAppHeaderHeight;
     private int mBottomControlsOffset;
@@ -341,6 +349,14 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
                                 || (!mIsProcessingHideRequest && mSuppressionTokens.hasTokens())) {
                             return;
                         }
+                        if (BottomSheetFeatureMap.sBottomSheetDeferContentSwapOnHidden
+                                .isEnabled()) {
+                            // Let every observer see HIDDEN for the current content before it is
+                            // replaced and destroyed. See finishPendingContentSwap().
+                            mHasPendingContentSwap = true;
+                            updateBackPressStateChangedSupplier();
+                            return;
+                        }
                         if (mBottomSheet.getCurrentSheetContent() != null
                                 && !mIsSuppressingCurrentContent) {
                             recordBottomSheetClosedMetric(reason);
@@ -350,6 +366,12 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
                         mIsProcessingHideRequest = false;
                         showNextContent(true);
                         updateBackPressStateChangedSupplier();
+                    }
+
+                    @Override
+                    public void onSheetStateChangeCommitted(
+                            @SheetState int state, @StateChangeReason int reason) {
+                        finishPendingContentSwap(reason);
                     }
 
                     @Override
@@ -369,6 +391,49 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         }
         mPendingSheetObservers.clear();
         mSheetInitializer = null;
+    }
+
+    /**
+     * Once every observer has been notified that the sheet was hidden, shows the next content (or
+     * drops the hidden content if the sheet is suppressed), then destroys the hidden content unless
+     * it was only pushed aside by higher priority content.
+     *
+     * @param reason The reason the sheet was hidden.
+     */
+    private void finishPendingContentSwap(@StateChangeReason int reason) {
+        if (!mHasPendingContentSwap || mBottomSheet == null) return;
+        mHasPendingContentSwap = false;
+        BottomSheetContent hiddenContent = mBottomSheet.getCurrentSheetContent();
+        boolean wasDismissed = !mIsSuppressingCurrentContent;
+        mIsSuppressingCurrentContent = false;
+        mIsProcessingHideRequest = false;
+        // Do nothing if the sheet was opened again while observers were notified.
+        if (mBottomSheet.getSheetState() != SheetState.HIDDEN) {
+            updateBackPressStateChangedSupplier();
+            return;
+        }
+
+        if (mSuppressionTokens.hasTokens()) {
+            // The sheet was suppressed while observers were notified. Drop the hidden content;
+            // |undoSuppression| will show the next content.
+            if (mContentWhenSuppressed == hiddenContent) mContentWhenSuppressed = null;
+            if (hiddenContent != null) {
+                hiddenContent
+                        .getBackPressStateChangedSupplier()
+                        .removeObserver(mContentBackPressStateChangedObserver);
+                mBottomSheet.showContent(null);
+                adjustBottomSheetZAxis(mScrimVisible);
+            }
+        } else {
+            showNextContent(true);
+        }
+        // Destroy the hidden content after the swap, like hideContent() does, so that calls made
+        // by destroy() don't act on it as the current content.
+        if (hiddenContent != null && wasDismissed) {
+            recordBottomSheetClosedMetric(reason);
+            hiddenContent.destroy();
+        }
+        updateBackPressStateChangedSupplier();
     }
 
     @Override
@@ -401,6 +466,12 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     // Destroyable implementation.
     @Override
     public void destroy() {
+        if (mHasPendingContentSwap) {
+            // Torn down while observers are notified of HIDDEN. Still destroy the hidden content.
+            mHasPendingContentSwap = false;
+            BottomSheetContent hiddenContent = assumeNonNull(mBottomSheet).getCurrentSheetContent();
+            if (hiddenContent != null && !mIsSuppressingCurrentContent) hiddenContent.destroy();
+        }
         if (mBottomSheet != null) mBottomSheet.destroy();
         if (mDesktopWindowStateManager != null) {
             mDesktopWindowStateManager.removeObserver(this);
@@ -541,6 +612,13 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
     private void undoSuppression() {
         if (mBottomSheet == null) return;
 
+        if (mHasPendingContentSwap) {
+            // The hidden content must not be restored; the pending swap shows the next content.
+            mContentWhenSuppressed = null;
+            mSheetStateBeforeSuppress = SheetState.NONE;
+            return;
+        }
+
         if (mBottomSheet.getCurrentSheetContent() != null) {
             boolean shouldRestoreState =
                     mBottomSheet.getCurrentSheetContent().shouldRestoreStateOnUnsuppress();
@@ -601,6 +679,17 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
         }
         assumeNonNull(mContentQueue);
 
+        if (mHasPendingContentSwap) {
+            // The sheet is between hiding one content and showing the next one. Only queue the
+            // content; the pending swap shows the content with the highest precedence. The hidden
+            // content isn't queued here: it is either destroyed after the swap or already queued.
+            if (content != mBottomSheet.getCurrentSheetContent()
+                    && !mContentQueue.contains(content)) {
+                mContentQueue.add(content);
+            }
+            return mContentQueue.peek() == content && !mSuppressionTokens.hasTokens();
+        }
+
         // If already showing (or queued to show) the requested content, do nothing.
         if (content == mBottomSheet.getCurrentSheetContent() || mContentQueue.contains(content)) {
             return content == mBottomSheet.getCurrentSheetContent();
@@ -659,6 +748,9 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
             }
         }
 
+        // The hidden content is already being replaced by the pending swap.
+        if (mHasPendingContentSwap && content == mBottomSheet.getCurrentSheetContent()) return;
+
         if (content != mBottomSheet.getCurrentSheetContent()) {
             return;
         }
@@ -690,7 +782,10 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
 
     @Override
     public void expandSheet(boolean animate) {
-        if (mBottomSheet == null || mSuppressionTokens.hasTokens() || mBottomSheet.isHiding()) {
+        if (mBottomSheet == null
+                || mSuppressionTokens.hasTokens()
+                || mBottomSheet.isHiding()
+                || mHasPendingContentSwap) {
             return;
         }
 
@@ -700,7 +795,10 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
 
     @Override
     public boolean collapseSheet(boolean animate) {
-        if (mBottomSheet == null || mSuppressionTokens.hasTokens() || mBottomSheet.isHiding()) {
+        if (mBottomSheet == null
+                || mSuppressionTokens.hasTokens()
+                || mBottomSheet.isHiding()
+                || mHasPendingContentSwap) {
             return false;
         }
         if (mBottomSheet.isSheetOpen() && mBottomSheet.isPeekStateEnabled()) {
@@ -905,12 +1003,14 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController {
 
     /**
      * Update the supplier to hold true when the sheet is in a valid state and holds sheet content,
-     * and when there are no suppression tokens, false otherwise.
+     * and when there are no suppression tokens, false otherwise. Content that was hidden and is
+     * waiting to be replaced doesn't count.
      */
     private void updateBackPressStateChangedSupplier() {
         mBackPressStateChangedSupplier.set(
                 mBottomSheet != null
                         && !mSuppressionTokens.hasTokens()
+                        && !mHasPendingContentSwap
                         && mBottomSheet.getCurrentSheetContent() != null
                         && (mBottomSheet
                                         .getCurrentSheetContent()
