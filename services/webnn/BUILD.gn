@@ -242,8 +242,6 @@ component("webnn_service") {
       "ort/tensor_impl_ort.cc",
       "ort/tensor_impl_ort.h",
       "ort/trivial_model.h",
-      "webnn_compiler_service_impl.cc",
-      "webnn_compiler_service_impl.h",
     ]
     deps += [
       "//services/webnn/public/cpp:win",
@@ -251,6 +249,13 @@ component("webnn_service") {
     ]
 
     libs = [ "runtimeobject.lib" ]
+  }
+
+  if (is_win || is_apple) {
+    sources += [
+      "webnn_compiler_service_impl.cc",
+      "webnn_compiler_service_impl.h",
+    ]
   }
 
   if (is_apple || webnn_use_tflite || webnn_use_litert) {

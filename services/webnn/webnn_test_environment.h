@@ -8,6 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/service/scheduler.h"
+#include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/webnn/webnn_context_provider_impl.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -33,10 +34,14 @@ class FakeWebNNBrowserHostForTesting : public mojom::WebNNBrowserHost {
 #if BUILDFLAG(IS_WIN)
   void EnsureExecutionProvidersReady(
       EnsureExecutionProvidersReadyCallback callback) override;
+#endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   void RequestCompilerContext(
       webnn::mojom::CreateContextOptionsPtr context_options,
       const webnn::ContextProperties& context_properties,
+#if BUILDFLAG(IS_WIN)
       const webnn::EpDeviceInfo& target_device,
+#endif
       mojo::PendingReceiver<webnn::mojom::WebNNCompilerContext>
           compiler_context_receiver,
       mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote,

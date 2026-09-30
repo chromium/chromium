@@ -55,13 +55,15 @@ mojom_component("mojom") {
   ]
 
   if (is_win || is_apple) {
-    sources += [ "webnn_model_loader.mojom" ]
+    sources += [
+      "webnn_compiler_service.mojom",
+      "webnn_model_loader.mojom",
+    ]
   }
   if (is_win) {
     sources += [
       "ep_device_info.mojom",
       "ep_package_info.mojom",
-      "webnn_compiler_service.mojom",
     ]
   }
 

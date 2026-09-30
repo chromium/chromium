@@ -154,7 +154,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
       ContextProperties properties,
 #if BUILDFLAG(IS_WIN)
       EpDeviceInfo target_device,
-#endif  // BUILDFLAG(IS_WIN)
+#endif
       mojo::PendingReceiver<mojom::WebNNCompilerContext>
           compiler_context_receiver,
       mojo::PendingRemote<mojom::WebNNModelLoader> model_loader_remote);
@@ -202,11 +202,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   // This associates the context with this provider on the specified sequence.
   void OnCreateWebNNContextImpl(
       CreateWebNNContextCallback callback,
-      mojo::PendingRemote<::webnn::mojom::WebNNContext> remote,
+      mojo::PendingRemote<mojom::WebNNContext> remote,
       mojo::ScopedDataPipeProducerHandle write_tensor_producer,
       mojo::ScopedDataPipeConsumerHandle read_tensor_consumer,
       gpu::SequenceId sequence_id,
       gpu::CommandBufferId command_buffer_id,
+      mojo::PendingRemote<mojom::WebNNCompilerContext> compiler_context_remote,
       WebNNContextImplPtr context_impl);
 
   void FallbackToTFLite(ScopedTrace scoped_trace,
@@ -291,6 +292,22 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextProviderImpl
   void ForceOrtEnvironmentCreationForIntrospection(
       ForceOrtEnvironmentCreationForIntrospectionCallback callback) override;
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_APPLE)
+  void OnCoreMLCompilerContextRequested(
+      ScopedTrace scoped_trace,
+      mojom::CreateContextOptionsPtr options,
+      std::unique_ptr<GpuTaskScheduler> gpu_task_scheduler,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+      CreateWebNNContextCallback callback,
+      bool is_incognito,
+      scoped_refptr<gpu::MemoryTracker> memory_tracker,
+      gpu::SequenceId sequence_id,
+      gpu::CommandBufferId command_buffer_id,
+      mojo::PendingRemote<mojom::WebNNCompilerContext> compiler_context_remote,
+      mojo::PendingReceiver<mojom::WebNNModelLoader> model_loader_receiver,
+      bool success) API_AVAILABLE(macos(14.4));
+#endif  // BUILDFLAG(IS_APPLE)
 
   const gpu::GpuFeatureInfo gpu_feature_info_;
   const gpu::GPUInfo gpu_info_;

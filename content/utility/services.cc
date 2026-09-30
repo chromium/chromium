@@ -69,8 +69,6 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #include "sandbox/win/src/sandbox.h"
-#include "services/webnn/public/mojom/webnn_compiler_service.mojom.h"
-#include "services/webnn/webnn_compiler_service_impl.h"
 extern sandbox::TargetServices* g_utility_target_services;
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -91,6 +89,11 @@ extern sandbox::TargetServices* g_utility_target_services;
 #include "media/mojo/mojom/media_foundation_service.mojom.h"  // nogncheck
 #include "media/mojo/services/media_foundation_service_broker.h"  // nogncheck
 #endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
+#include "services/webnn/public/mojom/webnn_compiler_service.mojom.h"  // nogncheck
+#include "services/webnn/webnn_compiler_service_impl.h"
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_ANDROID)
 #include "media/mojo/mojom/mediadrm_support.mojom.h"       // nogncheck
@@ -299,12 +302,14 @@ auto RunMediaFoundationServiceBroker(
   return std::make_unique<media::MediaFoundationServiceBroker>(
       std::move(receiver), base::BindOnce(&EnsureSandboxedWin));
 }
+#endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 auto RunWebNNCompilerService(
     mojo::PendingReceiver<webnn::mojom::WebNNCompilerService> receiver) {
   return std::make_unique<webnn::WebNNCompilerServiceImpl>(std::move(receiver));
 }
-#endif  // BUILDFLAG(IS_WIN)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_ANDROID)
 auto RunMediaDrmSupportService(
@@ -428,6 +433,10 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 
   services.Add(RunOnDeviceModel);
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
+  services.Add(RunWebNNCompilerService);
+#endif
+
 #if BUILDFLAG(IS_WIN) || (BUILDFLAG(GOOGLE_CHROME_BRANDING) && \
                           (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)))
   services.Add(RunShapeDetectionService);
@@ -442,7 +451,6 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
 
 #if BUILDFLAG(IS_WIN)
   services.Add(RunMediaFoundationServiceBroker);
-  services.Add(RunWebNNCompilerService);
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)

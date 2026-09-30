@@ -9,23 +9,30 @@
 #include "base/containers/flat_map.h"
 #include "base/timer/timer.h"
 #include "base/types/pass_key.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
+#if BUILDFLAG(IS_WIN)
 #include "services/webnn/public/cpp/ep_device_info.h"
+#endif
 #include "services/webnn/public/mojom/webnn_compiler_context.mojom.h"
 #include "services/webnn/public/mojom/webnn_compiler_service.mojom.h"
 
 namespace webnn {
 
+#if BUILDFLAG(IS_WIN)
 namespace ort {
 class CompilerContextImplOrt;
 }  // namespace ort
+#elif BUILDFLAG(IS_APPLE)
+namespace coreml {
+class CompilerContextImplCoreml;
+}  // namespace coreml
+#endif
 
 // Maintains a set of WebNNCompilerContext instances. Runs in the WebNN Compiler
 // utility process.
-//
-// Currently only used by the ORT backend on Windows.
 class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNCompilerServiceImpl
     : public mojom::WebNNCompilerService {
  public:
@@ -37,10 +44,18 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNCompilerServiceImpl
 
   ~WebNNCompilerServiceImpl() override;
 
+#if BUILDFLAG(IS_WIN)
   // Called by a compiler context to destroy itself.
   void RemoveCompilerContext(
       mojo::ReceiverId receiver_id,
       base::PassKey<ort::CompilerContextImplOrt> pass_key);
+#elif BUILDFLAG(IS_APPLE)
+  // Called by a compiler context to destroy itself.
+  API_AVAILABLE(macos(14.4))
+  void RemoveCompilerContext(
+      mojo::ReceiverId receiver_id,
+      base::PassKey<coreml::CompilerContextImplCoreml> pass_key);
+#endif
 
  private:
   // mojom::WebNNCompilerService:
@@ -57,8 +72,10 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNCompilerServiceImpl
   // Called when the idle timer fires with no active compiler contexts.
   void OnIdleTimeout();
 
+#if BUILDFLAG(IS_WIN)
   // The target EP device for this compiler service.
   const EpDeviceInfo target_device_;
+#endif
 
   mojo::UniqueReceiverSet<mojom::WebNNCompilerContext> compiler_contexts_;
 

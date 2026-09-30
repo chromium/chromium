@@ -6,10 +6,16 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
-#include "services/webnn/ort/compiler_context_impl_ort.h"
+#include "build/build_config.h"
 #include "services/webnn/public/cpp/compiler_disconnect_reason.h"
-#include "services/webnn/public/cpp/ep_device_info.h"
 #include "services/webnn/webnn_switches.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "services/webnn/ort/compiler_context_impl_ort.h"
+#include "services/webnn/public/cpp/ep_device_info.h"
+#elif BUILDFLAG(IS_APPLE)
+#include "services/webnn/coreml/compiler_context_impl_coreml.h"
+#endif
 
 namespace webnn {
 
@@ -23,12 +29,17 @@ constexpr base::TimeDelta kIdleTimeout = base::Seconds(30);
 
 WebNNCompilerServiceImpl::WebNNCompilerServiceImpl(
     mojo::PendingReceiver<mojom::WebNNCompilerService> receiver)
+#if BUILDFLAG(IS_WIN)
     // The switch is already parsed and validated in PreSandboxInit() so it is
     // guaranteed to be valid.
     : target_device_(EpDeviceInfo::FromSwitchValue(
           base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
               switches::kWebNNCompilerEpDeviceInfo))),
-      receiver_(this, std::move(receiver)) {
+      receiver_(this, std::move(receiver))
+#else
+    : receiver_(this, std::move(receiver))
+#endif
+{
   compiler_contexts_.set_disconnect_handler(base::BindRepeating(
       &WebNNCompilerServiceImpl::OnCompilerContextDisconnected,
       base::Unretained(this)));
@@ -51,8 +62,10 @@ void WebNNCompilerServiceImpl::CreateCompilerContext(
     mojo::PendingRemote<mojom::WebNNModelLoader> model_loader,
     mojo::PendingReceiver<mojom::WebNNCompilerContext> receiver,
     CreateCompilerContextCallback callback) {
+#if BUILDFLAG(IS_WIN)
   // A new context is being added — cancel any pending idle shutdown.
   idle_timer_.Stop();
+
   // WebNNCompilerContext instances should be created based on the context
   // options. Currently the compiler service is only used by the ORT backend, so
   // here create CompilerContextImplOrt directly.
@@ -66,8 +79,26 @@ void WebNNCompilerServiceImpl::CreateCompilerContext(
   // Bind the context's lifetime to the ModelLoader pipe.
   compiler_context_ptr->SetId(receiver_id,
                               base::PassKey<WebNNCompilerServiceImpl>());
-
   std::move(callback).Run(true);
+#elif BUILDFLAG(IS_APPLE)
+  if (__builtin_available(macOS 14.4, *)) {
+    idle_timer_.Stop();
+    auto compiler_context = std::make_unique<coreml::CompilerContextImplCoreml>(
+        *this, std::move(context_options), context_properties,
+        std::move(model_loader));
+    coreml::CompilerContextImplCoreml* compiler_context_ptr =
+        compiler_context.get();
+    mojo::ReceiverId receiver_id = compiler_contexts_.Add(
+        std::move(compiler_context), std::move(receiver));
+
+    // Bind the context's lifetime to the ModelLoader pipe.
+    compiler_context_ptr->SetId(receiver_id,
+                                base::PassKey<WebNNCompilerServiceImpl>());
+    std::move(callback).Run(true);
+    return;
+  }
+  std::move(callback).Run(false);
+#endif
 }
 
 void WebNNCompilerServiceImpl::OnCompilerContextDisconnected() {
@@ -78,6 +109,7 @@ void WebNNCompilerServiceImpl::OnCompilerContextDisconnected() {
   }
 }
 
+#if BUILDFLAG(IS_WIN)
 void WebNNCompilerServiceImpl::RemoveCompilerContext(
     mojo::ReceiverId receiver_id,
     base::PassKey<ort::CompilerContextImplOrt> /*pass_key*/) {
@@ -86,6 +118,16 @@ void WebNNCompilerServiceImpl::RemoveCompilerContext(
   // give idle shutdown a chance to start here too.
   OnCompilerContextDisconnected();
 }
+#elif BUILDFLAG(IS_APPLE)
+void API_AVAILABLE(macos(14.4)) WebNNCompilerServiceImpl::RemoveCompilerContext(
+    mojo::ReceiverId receiver_id,
+    base::PassKey<coreml::CompilerContextImplCoreml> /*pass_key*/) {
+  compiler_contexts_.Remove(receiver_id);
+  // Explicit removal does not run the receiver set's disconnect handler, so
+  // give idle shutdown a chance to start here too.
+  OnCompilerContextDisconnected();
+}
+#endif
 
 void WebNNCompilerServiceImpl::OnIdleTimeout() {
   // Re-check in case a new context was added between the timer firing and

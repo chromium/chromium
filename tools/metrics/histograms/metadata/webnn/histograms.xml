@@ -62,6 +62,19 @@ chromium-metrics-reviews@google.com.
   <variant name="WebGpuExecutionProvider"/>
 </variants>
 
+<histogram name="WebNN.CompilerProcess.CrashCount.CoreML" units="count"
+    expires_after="2027-06-27">
+  <owner>phillis@chromium.org</owner>
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    Records the cumulative number of unexpected WebNN Compiler process
+    disconnections (crashes) for CoreML within a single browser session. Logged
+    each time the Compiler process disconnects unexpectedly. Values range from 1
+    to 3, after which the Compiler process is no longer relaunched.
+  </summary>
+</histogram>
+
 <histogram
     name="WebNN.CompilerProcess.CrashCount.{WebNNOrtExecutionProvider}.{DeviceType}"
     units="count" expires_after="2027-06-27">

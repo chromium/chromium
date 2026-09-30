@@ -131,6 +131,13 @@ source_set("utility") {
     ]
   }
 
+  if (is_win || is_apple) {
+    deps += [
+      "//services/webnn:webnn_service",
+      "//services/webnn/public/mojom",
+    ]
+  }
+
   # PAC execution is done in process on Android.
   if (!is_android) {
     deps += [ "//services/proxy_resolver:lib" ]
@@ -156,11 +163,7 @@ source_set("utility") {
   }
 
   if (is_win) {
-    deps += [
-      ":delegate_data",
-      "//services/webnn:webnn_service",
-      "//services/webnn/public/mojom",
-    ]
+    deps += [ ":delegate_data" ]
   }
 }
 

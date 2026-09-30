@@ -12,12 +12,14 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/expected.h"
 #include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "services/webnn/graph_builder_context.h"
@@ -26,6 +28,7 @@
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph_builder.mojom.h"
 #include "services/webnn/public/mojom/webnn_model_loader.mojom.h"
+#include "services/webnn/webnn_compiler_service_impl.h"
 
 namespace webnn::coreml {
 
@@ -37,6 +40,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) API_AVAILABLE(macos(14.4))
                                       public mojom::WebNNCompilerContext {
  public:
   CompilerContextImplCoreml(
+      WebNNCompilerServiceImpl& service,
       mojom::CreateContextOptionsPtr options,
       ContextProperties properties,
       mojo::PendingRemote<mojom::WebNNModelLoader> model_loader);
@@ -46,6 +50,9 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) API_AVAILABLE(macos(14.4))
       delete;
 
   ~CompilerContextImplCoreml() override;
+
+  void SetId(mojo::ReceiverId id,
+             base::PassKey<WebNNCompilerServiceImpl> pass_key);
 
   // mojom::WebNNCompilerContext:
   void CreateGraphBuilder(
@@ -87,6 +94,11 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) API_AVAILABLE(macos(14.4))
   void DidCompile(BuildGraphCallback callback,
                   base::expected<std::unique_ptr<CompilationResult>,
                                  mojom::ErrorPtr> result);
+
+  void OnModelLoaderDisconnected();
+
+  const raw_ref<WebNNCompilerServiceImpl> service_;
+  mojo::ReceiverId id_;
 
   ContextProperties properties_;
   mojom::CreateContextOptionsPtr options_;

@@ -15,16 +15,19 @@ import "services/webnn/public/mojom/ep_device_info.mojom";
 [EnableIf=is_win]
 import "services/webnn/public/mojom/ep_package_info.mojom";
 
-[EnableIf=is_win]
+[EnableIf=is_win|is_apple]
+import "services/webnn/public/mojom/features.mojom";
+
+[EnableIf=is_win|is_apple]
 import "services/webnn/public/mojom/webnn_compiler_context.mojom";
 
-[EnableIf=is_win]
+[EnableIf=is_win|is_apple]
 import "services/webnn/public/mojom/webnn_context_properties.mojom";
 
-[EnableIf=is_win]
+[EnableIf=is_win|is_apple]
 import "services/webnn/public/mojom/webnn_context_provider.mojom";
 
-[EnableIf=is_win]
+[EnableIf=is_win|is_apple]
 import "services/webnn/public/mojom/webnn_model_loader.mojom";
 
 // Communication channel from the GPU process (where the WebNN service lives) to
@@ -50,11 +53,12 @@ interface WebNNBrowserHost {
   // The GPU process creates both pipes and passes the endpoints here. The
   // browser forwards them to the Compiler process. Returns true if the compiler
   // context was created successfully, false otherwise.
-  [EnableIf=is_win]
+  [EnableIf=is_win|is_apple,
+   RuntimeFeature=webnn.mojom.features.kWebNNCompilerProcess]
   RequestCompilerContext(
       CreateContextOptions context_options,
       ContextProperties context_properties,
-      EpDeviceInfo target_device,
+      [EnableIf=is_win]EpDeviceInfo target_device,
       pending_receiver<WebNNCompilerContext> compiler_context_receiver,
       pending_remote<WebNNModelLoader> model_loader_remote)
       => (bool success);
@@ -72,7 +76,8 @@ interface WebNNBrowserHost {
   // Compiler process's temp directory to the GPU process's temp directory.
   // Returns the new path in the GPU process's temp directory, or null if the
   // copy failed.
-  [EnableIf=is_apple]
+  [EnableIf=is_apple,
+   RuntimeFeature=webnn.mojom.features.kWebNNCompilerProcess]
   CopyCompiledModel(mojo_base.mojom.FilePath compiler_model_path)
       => (mojo_base.mojom.FilePath? gpu_model_path);
 };

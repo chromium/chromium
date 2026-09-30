@@ -127,11 +127,15 @@ void FakeWebNNBrowserHostForTesting::EnsureExecutionProvidersReady(
   // Initializes the execution providers used by the WebNN ORT backend.
   webnn::EnsureExecutionProvidersReady(std::move(callback));
 }
+#endif
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 void FakeWebNNBrowserHostForTesting::RequestCompilerContext(
     webnn::mojom::CreateContextOptionsPtr context_options,
     const webnn::ContextProperties& context_properties,
+#if BUILDFLAG(IS_WIN)
     const webnn::EpDeviceInfo& target_device,
+#endif
     mojo::PendingReceiver<webnn::mojom::WebNNCompilerContext>
         compiler_context_receiver,
     mojo::PendingRemote<webnn::mojom::WebNNModelLoader> model_loader_remote,
