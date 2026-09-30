@@ -36,6 +36,7 @@ TODO(crbug.com/40196262): Do a proper 3-stage build
 import argparse
 import base64
 import collections
+import functools
 import hashlib
 import json
 import platform
@@ -423,12 +424,7 @@ class XPy:
             self._env['LD'] = os.path.join(self._llvm_bins_path, 'clang')
 
         if sys.platform == 'darwin':
-            # The system/xcode compiler would find system SDK correctly, but
-            # the Clang we've built does not. See
-            # https://github.com/llvm/llvm-project/issues/45225
-            sdk_path = subprocess.check_output(
-                ['xcrun', '--show-sdk-path'], text=True
-            ).rstrip()
+            sdk_path = GetMacSdkPath()
             self._env['CFLAGS'] += f' -isysroot {sdk_path}'
             self._env['CXXFLAGS'] += f' -isysroot {sdk_path}'
             self._env['LDFLAGS'] += f' -isysroot {sdk_path}'
@@ -664,6 +660,16 @@ def RustTargetTriple():
         return 'x86_64-pc-windows-msvc'
     else:
         return 'x86_64-unknown-linux-gnu'
+
+
+@functools.cache
+def GetMacSdkPath():
+    # The system/xcode compiler would find system SDK correctly, but
+    # the Clang we've built does not. See
+    # https://github.com/llvm/llvm-project/issues/45225
+    return subprocess.check_output(
+        ['xcrun', '--show-sdk-path'], text=True
+    ).rstrip()
 
 
 # Build the LLVM libraries and install them .

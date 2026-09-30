@@ -10,7 +10,6 @@ import os
 from pathlib import Path
 import platform
 import shutil
-import subprocess
 import sys
 
 from build_rust import (
@@ -20,6 +19,13 @@ from build_rust import (
     InstallBetaPackage,
     RustTargetTriple,
     RUST_HOST_LLVM_INSTALL_DIR,
+)
+from host_tools import (
+    GetHostCcTools,
+    GetHostCFlags,
+    GetHostLinkArgs,
+    GetHostLinker,
+    GetHostLinkerRustFlags,
 )
 
 from update_rust import (
@@ -39,7 +45,6 @@ from build import (
     CheckoutGitRepo,
     DownloadAndUnpack,
     LLVM_BUILD_TOOLS_DIR,
-    DownloadDebianSysroot,
     RunCommand,
 )
 from update import RmTree
@@ -117,7 +122,6 @@ def RunCargo(cargo_args):
         )
         sys.exit(1)
 
-    clang_bins_dir = os.path.join(RUST_HOST_LLVM_INSTALL_DIR, 'bin')
     llvm_dir = RUST_HOST_LLVM_INSTALL_DIR
 
     if not os.path.exists(os.path.join(llvm_dir, 'bin', f'llvm-config{EXE}')):
@@ -144,52 +148,22 @@ def RunCargo(cargo_args):
         env['LIBCLANG_PATH'] = os.path.join(llvm_dir, 'lib')
     env['LIBCLANG_STATIC_PATH'] = os.path.join(llvm_dir, 'lib')
 
-    if sys.platform == 'win32':
-        env['CC'] = os.path.join(clang_bins_dir, 'clang-cl')
-        env['CXX'] = os.path.join(clang_bins_dir, 'clang-cl')
-    else:
-        env['CC'] = os.path.join(clang_bins_dir, 'clang')
-        env['CXX'] = os.path.join(clang_bins_dir, 'clang++')
+    cc, cxx, ar = GetHostCcTools()
+    env['CC'] = cc
+    env['CXX'] = cxx
+    env['AR'] = ar
+    env['LD'] = GetHostLinker()
 
-    # Windows uses lld-link for MSVC compat. Otherwise, we use lld via clang.
-    if sys.platform == 'win32':
-        linker = os.path.join(clang_bins_dir, 'lld-link')
-    else:
-        linker = os.path.join(clang_bins_dir, 'clang')
-        env['LDFLAGS'] += ' -fuse-ld=lld'
-        env['RUSTFLAGS'] += ' -Clink-arg=-fuse-ld=lld'
-    env['LD'] = linker
-    env['RUSTFLAGS'] += f' -Clinker={linker}'
-
-    if sys.platform.startswith('linux'):
-        # We use these flags to avoid linking with the system libstdc++.
-        sysroot = DownloadDebianSysroot('amd64')
-        sysroot_flag = f'--sysroot={sysroot}'
-        env['CFLAGS'] += f' {sysroot_flag}'
-        env['CXXFLAGS'] += f' {sysroot_flag}'
-        env['LDFLAGS'] += f' {sysroot_flag}'
-        env['RUSTFLAGS'] += f' -Clink-arg={sysroot_flag}'
+    env['CFLAGS'] += ' ' + ' '.join(GetHostCFlags())
+    env['CXXFLAGS'] += ' ' + ' '.join(GetHostCFlags())
+    env['LDFLAGS'] += ' ' + ' '.join(GetHostLinkArgs())
+    env['RUSTFLAGS'] += ' ' + ' '.join(GetHostLinkerRustFlags())
 
     if ncursesw_dir:
         env['CFLAGS'] += f' -I{ncursesw_dir}/include'
         env['CXXFLAGS'] += f' -I{ncursesw_dir}/include'
         env['LDFLAGS'] += f' -L{ncursesw_dir}/lib'
         env['RUSTFLAGS'] += f' -Clink-arg=-L{ncursesw_dir}/lib'
-
-    if sys.platform == 'darwin':
-        # The system/xcode compiler would find system SDK correctly, but
-        # the Clang we've built does not. See
-        # https://github.com/llvm/llvm-project/issues/45225
-        sdk_path = subprocess.check_output(
-            ['xcrun', '--show-sdk-path'], text=True
-        ).rstrip()
-        env['CFLAGS'] += f' -isysroot {sdk_path}'
-        env['CXXFLAGS'] += f' -isysroot {sdk_path}'
-        env['LDFLAGS'] += f' -isysroot {sdk_path}'
-        env['RUSTFLAGS'] += f' -Clink-arg=-isysroot -Clink-arg={sdk_path}'
-        if 'x86_64' in RustTargetTriple():
-            env['LDFLAGS'] += ' -fapple-link-rtlib'
-            env['RUSTFLAGS'] += ' -Clink-arg=-fapple-link-rtlib'
 
     # This will `fail_hard` and not return if `cargo` reports problems.
     RunCommand([cargo_bin] + cargo_args, setenv=True, env=env)

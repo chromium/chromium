@@ -529,6 +529,28 @@ def GetLibXml2Dirs():
   return LibXmlDirs()
 
 
+def GetThirdPartyCMakeArgs(cc, cxx, cmake_sysroot, mac_deployment_target):
+  """Returns the CMake args for building a third-party static library.
+
+  The library can then be linked into LLVM (see `BuildLibXml2` and
+  `BuildZStd`), or into other toolchain binaries (e.g. see
+  `//tools/rust/build_crubit.py`).  The caller has to add
+  `CMAKE_INSTALL_PREFIX` and the library-specific args.
+  """
+  cmake_args = [
+    '-DCMAKE_C_COMPILER=' + cc,
+    '-DCMAKE_CXX_COMPILER=' + cxx,
+    '-DCMAKE_BUILD_TYPE=Release',
+    '-DCMAKE_INSTALL_LIBDIR=lib',
+    '-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded',  # /MT to match LLVM.
+  ]
+  if cmake_sysroot:
+    cmake_args.append('-DCMAKE_SYSROOT=' + cmake_sysroot)
+  if sys.platform == 'darwin':
+    cmake_args.append('-DCMAKE_OSX_DEPLOYMENT_TARGET=' + mac_deployment_target)
+  return cmake_args
+
+
 def BuildLibXml2(cc, cxx, cmake_sysroot, mac_deployment_target):
   """Download and build libxml2"""
   # The .tar.gz on GCS was uploaded as follows.
@@ -551,13 +573,10 @@ def BuildLibXml2(cc, cxx, cmake_sysroot, mac_deployment_target):
   # Disable everything except WITH_TREE and WITH_OUTPUT, both needed by LLVM's
   # WindowsManifestMerger.
   # Also enable WITH_THREADS, else libxml doesn't compile on Linux.
-  cmake_args = [
-    '-DCMAKE_C_COMPILER=' + cc,
-    '-DCMAKE_CXX_COMPILER=' + cxx,
-    '-DCMAKE_BUILD_TYPE=Release',
+  cmake_args = GetThirdPartyCMakeArgs(
+    cc, cxx, cmake_sysroot, mac_deployment_target
+  ) + [
     '-DCMAKE_INSTALL_PREFIX=install',
-    '-DCMAKE_INSTALL_LIBDIR=lib',
-    '-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded',  # /MT to match LLVM.
     '-DBUILD_SHARED_LIBS=OFF',
     '-DLIBXML2_WITH_C14N=OFF',
     '-DLIBXML2_WITH_CATALOG=OFF',
@@ -595,10 +614,6 @@ def BuildLibXml2(cc, cxx, cmake_sysroot, mac_deployment_target):
     '-DLIBXML2_WITH_XPTR=OFF',
     '-DLIBXML2_WITH_ZLIB=OFF',
   ]
-  if cmake_sysroot:
-    cmake_args.append('-DCMAKE_SYSROOT=' + cmake_sysroot)
-  if sys.platform == 'darwin':
-    cmake_args.append('-DCMAKE_OSX_DEPLOYMENT_TARGET=' + mac_deployment_target)
 
   RunCommand(['cmake', '-GNinja'] + cmake_args + ['..'], setenv=True)
   RunCommand(['ninja', 'install'], setenv=True)
@@ -662,19 +677,12 @@ def BuildZStd(cc, cxx, cmake_sysroot, mac_deployment_target):
   os.mkdir(dirs.build_dir)
   os.chdir(dirs.build_dir)
 
-  cmake_args = [
-    '-DCMAKE_C_COMPILER=' + cc,
-    '-DCMAKE_CXX_COMPILER=' + cxx,
-    '-DCMAKE_BUILD_TYPE=Release',
+  cmake_args = GetThirdPartyCMakeArgs(
+    cc, cxx, cmake_sysroot, mac_deployment_target
+  ) + [
     '-DCMAKE_INSTALL_PREFIX=install',
-    '-DCMAKE_INSTALL_LIBDIR=lib',
-    '-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreaded',  # /MT to match LLVM.
     '-DZSTD_BUILD_SHARED=OFF',
   ]
-  if cmake_sysroot:
-    cmake_args.append('-DCMAKE_SYSROOT=' + cmake_sysroot)
-  if sys.platform == 'darwin':
-    cmake_args.append('-DCMAKE_OSX_DEPLOYMENT_TARGET=' + mac_deployment_target)
   RunCommand(
     ['cmake', '-GNinja'] + cmake_args + ['../build/cmake'], setenv=True
   )
