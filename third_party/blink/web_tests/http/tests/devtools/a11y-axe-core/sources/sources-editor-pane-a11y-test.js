@@ -52,7 +52,11 @@ import * as Workspace from 'devtools/models/workspace/workspace.js';
     const sourcesView =
         Sources.SourcesPanel.SourcesPanel.instance().sourcesView();
     await sourcesView.updateComplete;
-    const tabbedPane = sourcesView.editorContainer.tabbedPane;
+    // `SourcesView.editorContainer` is removed by https://crrev.com/c/8467811.
+    // Drop the fallback once that change has rolled.
+    const editorContainer = sourcesView.editorContainer ??
+        UI.Context.Context.instance().flavor(Sources.TabbedEditorContainer.TabbedEditorContainer);
+    const tabbedPane = editorContainer.tabbedPane;
     const tabs = tabbedPane.tabs;
     TestRunner.addResult('All tabs:');
     tabs.forEach(tab => TestRunner.addResult(tab.title));
