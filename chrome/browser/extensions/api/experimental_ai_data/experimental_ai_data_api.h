@@ -5,6 +5,11 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_EXPERIMENTAL_AI_DATA_EXPERIMENTAL_AI_DATA_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_EXPERIMENTAL_AI_DATA_EXPERIMENTAL_AI_DATA_API_H_
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <vector>
+
 #include "chrome/browser/ai/ai_data_keyed_service.h"
 #include "chrome/common/extensions/api/experimental_ai_data.h"
 #include "extensions/browser/extension_function.h"
@@ -23,10 +28,24 @@ class ExperimentalAiDataApiFunction : public ExtensionFunction {
  protected:
   ~ExperimentalAiDataApiFunction() override;
 
+  // Observe the target page until the response, plus the first
+  // `max_tabs_for_text_collection` tabs in tab order whose text the service
+  // will collect.
+  // Other tabs contribute only metadata and do not need page guards.
+  std::optional<std::string> StartDataCollection(
+      content::WebContents* web_contents,
+      int max_tabs_for_text_collection = 0);
+  std::optional<std::string> GetDataCollectionError() const;
+  content::WebContents* GetTargetWebContents() const;
+
   // Called when data collection is complete to return a result to the
   // extension.
   void OnDataCollected(AiDataKeyedService::AiData browser_collected_data);
   bool PreRunValidation(std::string* error) override;
+
+ private:
+  class CollectionPageGuard;
+  std::vector<std::unique_ptr<CollectionPageGuard>> collection_page_guards_;
 };
 
 // Collects data from the user for a private AI extension.

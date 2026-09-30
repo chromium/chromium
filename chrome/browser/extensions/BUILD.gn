@@ -2126,9 +2126,11 @@ source_set("unit_tests") {
   }
 
   if (enable_extensions) {
+    deps += [ "//chrome/browser/extensions/api/experimental_ai_data" ]
     sources += [
       "api/device_permissions_manager_unittest.cc",
       "api/enterprise_reporting_private/enterprise_reporting_private_unittest.cc",
+      "api/experimental_ai_data/experimental_ai_data_policy_unittest.cc",
       "api/file_system/file_system_api_unittest.cc",
       "api/identity/gaia_remote_consent_flow_unittest.cc",
       "api/identity/web_auth_flow_info_bar_delegate_unittest.cc",
@@ -3002,6 +3004,13 @@ source_set("browser_tests") {
 
     if (enable_pdf) {
       sources += [ "api/pdf_viewer_private/pdf_viewer_private_apitest.cc" ]
+    }
+
+    if (is_win || is_linux || is_mac || is_chromeos) {
+      sources += [
+        "api/experimental_ai_data/experimental_ai_data_policy_browsertest.cc",
+      ]
+      deps += [ "//chrome/browser/extensions/api/experimental_ai_data" ]
     }
 
     if (is_win || is_linux || is_mac) {

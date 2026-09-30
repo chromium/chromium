@@ -15,11 +15,20 @@ source_set("experimental_ai_data") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
+  public_deps = [
     "//base",
     "//chrome/browser/ai",
+    "//chrome/common/extensions/api",
+    "//extensions/browser",
+  ]
+
+  deps = [
     "//chrome/browser/extensions",
-    "//chrome/browser/ui",
-    "//pdf/mojom",
+    "//chrome/browser/tab_list",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//extensions/common",
+    "//url",
   ]
 }

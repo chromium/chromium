@@ -408,7 +408,7 @@ void FillTabInfo(content::WebContents* web_contents,
 
 // Create an AiData with the tab and tab group information.
 void GetTabDataForModelPrototyping(
-    int tabs_for_inner_text,
+    int max_tabs_for_text_collection,
     content::WebContents* web_contents,
     base::ConcurrentCallbacks<AiDataKeyedService::AiData>& concurrent) {
   TRACE_EVENT0("browser", "GetTabDataForModelPrototyping");
@@ -430,7 +430,7 @@ void GetTabDataForModelPrototyping(
         tab_strip_model->GetWebContentsAt(index);
     auto title = base::UTF16ToUTF8(tab_web_contents->GetTitle());
     auto url = tab_web_contents->GetLastCommittedURL().spec();
-    if (index >= tabs_for_inner_text) {
+    if (index >= max_tabs_for_text_collection) {
       OnGetTabInnerText(index, std::move(title), std::move(url),
                         concurrent.CreateCallback(), nullptr);
     } else {
@@ -657,11 +657,11 @@ void GetModelPrototypingAiData(AiDataKeyedService::AiDataSpecifier specifiers,
     // All tabs metadata is collected, but the tab limit is only used to
     // determine if inner text should be collected.
     auto general_tab_specifier = tab_specifier.general_tab_specifier();
-    int tabs_for_inner_text =
+    int max_tabs_for_text_collection =
         general_tab_specifier.page_context_specifier().inner_text()
             ? general_tab_specifier.tab_limit()
             : 0;
-    GetTabDataForModelPrototyping(tabs_for_inner_text, web_contents,
+    GetTabDataForModelPrototyping(max_tabs_for_text_collection, web_contents,
                                   concurrent);
   }
   if (page_context_specifier.has_field_global_id()) {
@@ -728,7 +728,7 @@ void AiDataKeyedService::GetAiData(int dom_node_id,
                                    content::WebContents* web_contents,
                                    std::string user_input,
                                    AiDataCallback callback,
-                                   int tabs_for_inner_text) {
+                                   int max_tabs_for_text_collection) {
   TRACE_EVENT0("browser", "AiDataKeyedService::GetAiData");
   // Configure a default set of specifier.
   AiDataSpecifier specifier;
@@ -743,7 +743,7 @@ void AiDataKeyedService::GetAiData(int dom_node_id,
           ->mutable_general_tab_specifier();
   general_tabs_context_specifier->mutable_page_context_specifier()
       ->set_inner_text(true);
-  general_tabs_context_specifier->set_tab_limit(tabs_for_inner_text);
+  general_tabs_context_specifier->set_tab_limit(max_tabs_for_text_collection);
 
   browser_data_collection_specifier->set_site_engagement(true);
   browser_data_collection_specifier->set_tab_groups(true);
