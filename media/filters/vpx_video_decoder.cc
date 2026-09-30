@@ -75,6 +75,15 @@ static std::unique_ptr<vpx_codec_ctx> InitializeVpxContext(
   return nullptr;
 }
 
+// libvpx may decode a corrupted VP8 delta frame with error and still return
+// VPX_CODEC_OK; the corruption is only reported via VP8D_GET_FRAME_CORRUPTED.
+static bool IsVp8FrameCorrupted(vpx_codec_ctx* context) {
+  int corrupted = 0;
+  return vpx_codec_control(context, VP8D_GET_FRAME_CORRUPTED, &corrupted) !=
+             VPX_CODEC_OK ||
+         corrupted != 0;
+}
+
 static int32_t GetVP9FrameBuffer(void* user_priv,
                                  size_t min_size,
                                  vpx_codec_frame_buffer* fb) {
@@ -317,6 +326,12 @@ bool VpxVideoDecoder::VpxDecode(const DecoderBuffer* buffer,
                   << vpx_codec_err_to_string(status);
       return false;
     }
+    if (config_.codec() == VideoCodec::kVP8 &&
+        IsVp8FrameCorrupted(vpx_codec_.get())) {
+      error_status_ = DecoderStatus::Codes::kMalformedBitstream;
+      DLOG(ERROR) << "Corrupted VP8 frame.";
+      return false;
+    }
   }
 
   // Gets pointer to decoded data.
@@ -440,6 +455,12 @@ VpxVideoDecoder::AlphaDecodeStatus VpxVideoDecoder::DecodeAlphaPlane(
       }
       DLOG(ERROR) << "vpx_codec_decode() failed for the alpha: "
                   << vpx_codec_error(vpx_codec_alpha_.get());
+      return kAlphaPlaneError;
+    }
+    if (config_.codec() == VideoCodec::kVP8 &&
+        IsVp8FrameCorrupted(vpx_codec_alpha_.get())) {
+      error_status_ = DecoderStatus::Codes::kMalformedBitstream;
+      DLOG(ERROR) << "Corrupted VP8 frame (alpha).";
       return kAlphaPlaneError;
     }
   }

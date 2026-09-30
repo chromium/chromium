@@ -239,6 +239,22 @@ TEST_F(VpxVideoDecoderTest, DecodeFrame_OOM) {
   EXPECT_TRUE(output_frames_.empty());
 }
 
+TEST_F(VpxVideoDecoderTest, DecodeFrame_CorruptedVp8DeltaFrame) {
+  InitializeWithConfig(TestVideoConfig::Normal(VideoCodec::kVP8));
+  EXPECT_TRUE(Decode(ReadTestDataFile("vp8-I-frame-320x240")).is_ok());
+  ASSERT_EQ(1U, output_frames_.size());
+
+  // Truncate the delta frame so libvpx decodes it with error but still
+  // returns VPX_CODEC_OK.
+  scoped_refptr<DecoderBuffer> p_frame =
+      ReadTestDataFile("vp8-P-frame-320x240");
+  auto truncated =
+      DecoderBuffer::CopyFrom(base::span(*p_frame).first(p_frame->size() / 2));
+  EXPECT_EQ(Decode(truncated).code(),
+            DecoderStatus::Codes::kMalformedBitstream);
+  EXPECT_EQ(1U, output_frames_.size());
+}
+
 // Decode |i_frame_buffer_| and then a frame with a larger width and verify
 // the output size was adjusted.
 TEST_F(VpxVideoDecoderTest, DecodeFrame_LargerWidth) {
