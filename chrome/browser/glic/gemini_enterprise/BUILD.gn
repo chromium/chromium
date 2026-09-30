@@ -40,6 +40,8 @@ source_set("url_allowlist") {
 
 source_set("gemini_enterprise") {
   sources = [
+    "geic_managed_tab.cc",
+    "geic_managed_tab.h",
     "glic_gemini_enterprise_manager.cc",
     "glic_gemini_enterprise_manager.h",
   ]
@@ -59,6 +61,7 @@ source_set("gemini_enterprise") {
     "//content/public/browser",
     "//google_apis",
     "//mojo/public/cpp/bindings",
+    "//ui/base",
     "//url",
   ]
 }

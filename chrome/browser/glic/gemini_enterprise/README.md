@@ -26,11 +26,28 @@ for Gemini Enterprise features.
 
 ## Key Responsibilities
 
-- **Authentication & Sign-in Tab Management**: Coordinates opening
-  authentication endpoints (`OpenSignInTab`) in a top-level browser tab while
-  enforcing HTTPS and allowed authentication origins (e.g. Gaia), and closing
-  the tab (`CloseSignInTab`) while restoring focus to the user's originating
-  tab.
+- **Auth Tab Management**: `OpenAuthTab` / `CloseAuthTab` open and close a
+  top-level browser tab on behalf of the web client for a fixed
+  `AuthTabPurpose`:
+  - `kSignIn`: GEiC sign-in. The URL must be HTTPS on the Gaia or configured
+    guest origin.
+  - `kConnectorOauth`: 3P connector OAuth consent. The URL must be the GE OAuth
+    redirector (`/oauth-redirect`) on the default GE redirector origin
+    (`vertexaisearch.cloud.google.com`, `DEFAULT_REDIRECT_ORIGIN` in the GE web
+    client's auth service) or the guest origin. The 3P provider it forwards to
+    (`continue_uri`) is not validated.
+
+  Chrome tracks at most one tab per purpose, using `GeicManagedTab`. The tab
+  is only reused or closed while it is still on an origin expected for its
+  purpose; if the user navigates it elsewhere it is left alone. Closing only
+  ever affects the tab opened for that purpose, and restores focus to the tab
+  that was active before it was opened if the closed tab was still active. `OpenSignInTab` / `CloseSignInTab`
+  are deprecated aliases for `kSignIn`.
+- **Cross-Repository Contract with GE Web Client**:
+  The connector OAuth redirector allowlist in `GeicManagedTab` is coupled to `auth_service.ts` in Google3 (`//depot/google3/google/cloud/discoveryengine/apps/ucs_widget/services/auth_service.ts`):
+  - **Redirector Origins**: Standard 3P connectors trampoline through `DEFAULT_REDIRECT_URI` (`https://vertexaisearch.cloud.google.com/oauth-redirect`). Origin-specific connectors use the app's own origin (`${window.location.origin}/oauth-redirect`), which matches `guest_origin_`.
+  - **Version Skew & Rollouts**: If GE adds a new redirector origin or changes `/oauth-redirect`, Chrome must be updated first before GE points traffic to it (future work can allow loading dynamic redirector origins via a Finch `base::FeatureParam`).
+  - **Monitoring & Alerting**: Violations of the allowlist record `kErrorDisallowedUrl` to `Geic.AuthTab.OpenResult.ConnectorOAuth`, allowing alerting on anomalous spikes to detect configuration mismatch or skew.
 - **Mojo IPC Plumbing**: Implements and binds `mojom::GeminiEnterpriseHandler`,
   which is wired to the Glic WebClient through `GlicInstanceImpl` and
   `GlicWebClientHandler`.

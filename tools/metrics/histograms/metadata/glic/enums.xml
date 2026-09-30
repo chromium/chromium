@@ -75,6 +75,33 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/glic/glic_metrics.h:DisplayPosition) -->
 
+<!-- LINT.IfChange(GeicCloseAuthTabResult) -->
+
+<enum name="GeicCloseAuthTabResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Closed (active, restored focus)"/>
+  <int value="2" label="Closed (inactive, focus undisturbed)"/>
+  <int value="3" label="Already closed"/>
+  <int value="4" label="No auth tab"/>
+  <int value="5" label="Error: Invalid purpose"/>
+  <int value="6" label="Navigated away"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/gemini_enterprise/gemini_enterprise.mojom:CloseAuthTabResult) -->
+
+<!-- LINT.IfChange(GeicOpenAuthTabResult) -->
+
+<enum name="GeicOpenAuthTabResult">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Error: No URL"/>
+  <int value="3" label="Error: Disallowed URL"/>
+  <int value="4" label="Error: Failure"/>
+  <int value="5" label="Error: Invalid purpose"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/gemini_enterprise/gemini_enterprise.mojom:OpenAuthTabResult) -->
+
 <!-- LINT.IfChange(GeminiNavigationCaptureResult) -->
 
 <enum name="GeminiNavigationCaptureResult">

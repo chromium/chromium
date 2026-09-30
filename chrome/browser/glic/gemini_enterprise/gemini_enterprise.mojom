@@ -37,7 +37,8 @@ enum CloseSignInTabResult {
 // @generate glic_api
 // Options for opening the sign-in tab.
 struct OpenSignInTabOptions {
-  // The URL to navigate to for sign-in.
+  // The URL to navigate to. If not provided or empty, the openSignInTab
+  // method will return `kErrorNoUrl`.
   url.mojom.Url? signin_url;
 };
 
@@ -45,8 +46,114 @@ struct OpenSignInTabOptions {
 // Options for closing the sign-in tab.
 struct CloseSignInTabOptions {};
 
+// The use case for a browser tab opened via `OpenAuthTab`. Each purpose has
+// its own browser-side URL allowlist, its own tracked tab, and its own metrics.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(AuthTabPurpose)
+// @generate glic_api
+[Extensible]
+enum AuthTabPurpose {
+  // Unknown or unsupported purpose (e.g. sent by a newer web client). Always
+  // rejected.
+  [Default] kUnknown = 0,
+  // GEiC sign-in. The URL must be on the GAIA or configured guest origin.
+  kSignIn = 1,
+  // 3P connector OAuth consent. The URL must be the GE OAuth redirector
+  // (path `/oauth-redirect`) on the default GE redirector origin
+  // (vertexaisearch.cloud.google.com) or the configured guest origin. The 3P
+  // provider URL (`continue_uri`) is intentionally not validated.
+  kConnectorOauth = 2,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/histograms.xml:GeicAuthTabPurpose, //chrome/browser/glic/gemini_enterprise/glic_gemini_enterprise_manager.cc:GeicAuthTabPurposeSuffix)
+
+// Result of attempting to open an auth tab.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(OpenAuthTabResult)
+// @generate glic_api
+[Extensible]
+enum OpenAuthTabResult {
+  [Default] kUnknown = 0,
+  // The auth tab was opened (or an existing one for the same purpose reused).
+  kSuccess = 1,
+  // No URL was provided in options.
+  kErrorNoUrl = 2,
+  // The provided URL was disallowed for the requested purpose.
+  kErrorDisallowedUrl = 3,
+  // Failed to open the tab (e.g. off-the-record profile, no browser window).
+  kErrorFailure = 4,
+  // The requested purpose is unknown or unsupported.
+  kErrorInvalidPurpose = 5,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GeicOpenAuthTabResult)
+
+// Result of attempting to close an auth tab.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(CloseAuthTabResult)
+// @generate glic_api
+[Extensible]
+enum CloseAuthTabResult {
+  [Default] kUnknown = 0,
+  // The active auth tab was found and closed, and focus was restored to the
+  // originating tab.
+  kClosedActive = 1,
+  // The auth tab was closed, but it was not the active tab when closed, so
+  // focus was left undisturbed.
+  kClosedInactive = 2,
+  // An auth tab was previously opened for this purpose, but had already been
+  // closed.
+  kAlreadyClosed = 3,
+  // No auth tab was open or tracked for this purpose.
+  kNoAuthTab = 4,
+  // The requested purpose is unknown or unsupported.
+  kErrorInvalidPurpose = 5,
+  // The tab opened for this purpose was navigated away from the flow by the
+  // user (e.g. to an unrelated site), so it was left open and is no longer
+  // tracked.
+  kNavigatedAway = 6,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GeicCloseAuthTabResult)
+
+// @generate glic_api
+// Options for opening an auth tab.
+struct OpenAuthTabOptions {
+  // The use case for the tab; selects the URL allowlist and tracked tab.
+  AuthTabPurpose purpose;
+  // The URL to navigate to. If not provided or empty, the openAuthTab
+  // method will return `kErrorNoUrl`.
+  url.mojom.Url? url;
+};
+
+// @generate glic_api
+// Options for closing an auth tab.
+struct CloseAuthTabOptions {
+  // The use case whose tab should be closed.
+  AuthTabPurpose purpose;
+};
+
+// @generate glic_api
+// Response for `OpenAuthTab`. A struct (rather than a bare enum) so that
+// fields can be added later without breaking the glic API's backwards
+// compatibility.
+struct OpenAuthTabResponse {
+  // The result of attempting to open the auth tab.
+  OpenAuthTabResult result;
+};
+
+// @generate glic_api
+// Response for `CloseAuthTab`. A struct (rather than a bare enum) so that
+// fields can be added later without breaking the glic API's backwards
+// compatibility.
+struct CloseAuthTabResponse {
+  // The result of attempting to close the auth tab.
+  CloseAuthTabResult result;
+};
+
 // Interface for Gemini Enterprise functionality, used by the web client.
 interface GeminiEnterpriseHandler {
+  // Deprecated: use `OpenAuthTab` with `AuthTabPurpose::kSignIn`.
   // Opens the authentication endpoint in a new top-level browser tab
   // and captures the originating tab for focus restoration.
   // Returns the status of the operation.
@@ -55,8 +162,26 @@ interface GeminiEnterpriseHandler {
   OpenSignInTab(OpenSignInTabOptions? options)
       => (OpenSignInTabResult result);
 
+  // Deprecated: use `CloseAuthTab` with `AuthTabPurpose::kSignIn`.
   // Closes the active sign-in tab (if open) and restores focus to the
   // user's originating tab. Returns the status of the operation.
   CloseSignInTab(CloseSignInTabOptions? options)
       => (CloseSignInTabResult result);
+
+  // Opens `options.url` in a new top-level browser tab for
+  // `options.purpose`, and captures the originating tab for focus
+  // restoration. Chrome tracks at most one tab per purpose; if that tab is
+  // still open it is reused instead of opening a duplicate. The URL is
+  // validated browser-side against the purpose's allowlist (see
+  // `AuthTabPurpose`).
+  OpenAuthTab(OpenAuthTabOptions options)
+      => (OpenAuthTabResponse response);
+
+  // Closes the tab previously opened by `OpenAuthTab` for `options.purpose`,
+  // if it is still open and still on an origin expected for that purpose. If
+  // it was the active tab, focus is restored to the user's originating tab.
+  // This can never close a tab that was not opened by `OpenAuthTab` for the
+  // same purpose, or one the user has navigated elsewhere.
+  CloseAuthTab(CloseAuthTabOptions options)
+      => (CloseAuthTabResponse response);
 };

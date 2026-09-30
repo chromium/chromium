@@ -8,13 +8,12 @@
 #include <optional>
 
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/glic/gemini_enterprise/geic_managed_tab.h"
 #include "chrome/browser/glic/gemini_enterprise/gemini_enterprise.mojom.h"
-#include "components/tabs/public/tab_interface.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
-class BrowserWindowInterface;
 class Profile;
 
 namespace glic {
@@ -35,21 +34,32 @@ class GlicGeminiEnterpriseManager : public mojom::GeminiEnterpriseHandler {
                      OpenSignInTabCallback callback) override;
   void CloseSignInTab(mojom::CloseSignInTabOptionsPtr options,
                       CloseSignInTabCallback callback) override;
-
-  bool IsSignInURLAllowedForTesting(const GURL& url) const {
-    return IsSignInURLAllowed(url);
-  }
+  void OpenAuthTab(mojom::OpenAuthTabOptionsPtr options,
+                   OpenAuthTabCallback callback) override;
+  void CloseAuthTab(mojom::CloseAuthTabOptionsPtr options,
+                    CloseAuthTabCallback callback) override;
 
  private:
-  bool IsSignInURLAllowed(const GURL& url) const;
-  BrowserWindowInterface* GetLastActiveBrowserWindowForCurrentProfile() const;
+  GlicGeminiEnterpriseManager(Profile* profile,
+                              const url::Origin& guest_origin);
+
+  // Shared implementation of `OpenAuthTab` (and the deprecated
+  // `OpenSignInTab`). Records metrics.
+  mojom::OpenAuthTabResponsePtr OpenAuthTabImpl(mojom::AuthTabPurpose purpose,
+                                                const std::optional<GURL>& url);
+  // Shared implementation of `CloseAuthTab` (and the deprecated
+  // `CloseSignInTab`). Records metrics.
+  mojom::CloseAuthTabResponsePtr CloseAuthTabImpl(
+      mojom::AuthTabPurpose purpose);
+
+  // Returns the tracked tab for `purpose`, or null if `purpose` is invalid.
+  GeicManagedTab* GetAuthTab(mojom::AuthTabPurpose purpose);
+
+  bool IsAuthTabURLAllowed(mojom::AuthTabPurpose purpose, const GURL& url);
 
   raw_ptr<Profile> profile_ = nullptr;
-  url::Origin gaia_origin_;
-  std::optional<url::Origin> guest_origin_;
-  tabs::TabHandle tab_active_before_signin_;
-  tabs::TabHandle signin_tab_;
-  bool has_opened_signin_tab_ = false;
+  GeicManagedTab signin_tab_;
+  GeicManagedTab connector_oauth_tab_;
 
   mojo::Receiver<mojom::GeminiEnterpriseHandler> receiver_{this};
 };

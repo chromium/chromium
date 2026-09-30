@@ -152,6 +152,16 @@ chromium-metrics-reviews@google.com.
   <variant name="Tab" summary="a tab embedder"/>
 </variants>
 
+<!-- LINT.IfChange(GeicAuthTabPurpose) -->
+
+<variants name="GeicAuthTabPurpose">
+  <variant name="ConnectorOAuth" summary="3P connector OAuth consent"/>
+  <variant name="SignIn" summary="GEiC sign-in"/>
+  <variant name="Unknown" summary="an unknown or unsupported purpose"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/glic/gemini_enterprise/gemini_enterprise.mojom:AuthTabPurpose, //chrome/browser/glic/gemini_enterprise/glic_gemini_enterprise_manager.cc:GeicAuthTabPurposeSuffix) -->
+
 <!-- LINT.IfChange(GlicInvocationSource) -->
 
 <variants name="GlicInvocationSource">
@@ -257,6 +267,30 @@ chromium-metrics-reviews@google.com.
   <variant name="Audio"/>
   <variant name="Text"/>
 </variants>
+
+<histogram name="Geic.AuthTab.CloseResult.{Purpose}"
+    enum="GeicCloseAuthTabResult" expires_after="2026-12-25">
+  <owner>ssalbiz@google.com</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Records the result of a Gemini Enterprise in Chrome (GEiC) web client
+    request to close the browser tab it opened for {Purpose}. Recorded each time
+    the web client calls closeAuthTab (or the deprecated closeSignInTab).
+  </summary>
+  <token key="Purpose" variants="GeicAuthTabPurpose"/>
+</histogram>
+
+<histogram name="Geic.AuthTab.OpenResult.{Purpose}"
+    enum="GeicOpenAuthTabResult" expires_after="2026-12-25">
+  <owner>ssalbiz@google.com</owner>
+  <owner>glic-dev@google.com</owner>
+  <summary>
+    Records the result of a Gemini Enterprise in Chrome (GEiC) web client
+    request to open a browser tab for {Purpose}. Recorded each time the web
+    client calls openAuthTab (or the deprecated openSignInTab).
+  </summary>
+  <token key="Purpose" variants="GeicAuthTabPurpose"/>
+</histogram>
 
 <histogram name="Glic.ActivateTabWithConversation.CandidateTabCount"
     units="tabs" expires_after="2027-06-01">
