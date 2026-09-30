@@ -11,6 +11,7 @@
 #include "base/environment.h"
 #include "base/logging.h"
 #include "ui/base/ozone_buildflags.h"
+#include "ui/gfx/switches.h"
 #include "ui/ozone/public/ozone_switches.h"
 
 #if BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
@@ -25,23 +26,33 @@ namespace ui {
 namespace {
 
 #if BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
-bool InspectWaylandDisplay(base::Environment& env) {
-  std::optional<std::string> wayland_display = env.GetVar("WAYLAND_DISPLAY");
-  if (wayland_display.has_value()) {
-    return true;
-  }
+constexpr char kDefaultWaylandSocketName[] = "wayland-0";
 
-  std::optional<std::string> xdg_runtime_dir = env.GetVar("XDG_RUNTIME_DIR");
-  if (xdg_runtime_dir.has_value()) {
-    constexpr char kDefaultWaylandSocketName[] = "wayland-0";
-    const auto wayland_socket_path =
-        base::FilePath(*xdg_runtime_dir).Append(kDefaultWaylandSocketName);
-    if (base::PathExists(wayland_socket_path)) {
-      env.SetVar("WAYLAND_DISPLAY", kDefaultWaylandSocketName);
-      return true;
-    }
+// Looks where wl_display_connect(nullptr) does. A variable that is set but
+// empty hides the sources after it, as it does there.
+bool CanConnectToWayland(base::Environment& env) {
+  if (std::optional<std::string> socket = env.GetVar("WAYLAND_SOCKET")) {
+    return !socket->empty();
   }
-  return false;
+  if (std::optional<std::string> display = env.GetVar("WAYLAND_DISPLAY")) {
+    return !display->empty();
+  }
+  std::optional<std::string> xdg_runtime_dir = env.GetVar("XDG_RUNTIME_DIR");
+  return xdg_runtime_dir.has_value() &&
+         base::PathExists(base::FilePath(*xdg_runtime_dir)
+                              .Append(kDefaultWaylandSocketName));
+}
+
+bool InspectWaylandDisplay(base::Environment& env) {
+  const bool uses_default_socket =
+      !env.HasVar("WAYLAND_SOCKET") && !env.HasVar("WAYLAND_DISPLAY");
+  if (!CanConnectToWayland(env)) {
+    return false;
+  }
+  if (uses_default_socket) {
+    env.SetVar("WAYLAND_DISPLAY", kDefaultWaylandSocketName);
+  }
+  return true;
 }
 #endif  // BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
 
@@ -56,9 +67,18 @@ void SetOzonePlatformForLinuxIfNeeded(base::CommandLine& command_line) {
 
 #if BUILDFLAG(SUPPORTS_OZONE_WAYLAND)
   auto env = base::Environment::Create();
-  std::optional<std::string> xdg_session_type =
-      env->GetVar(base::nix::kXdgSessionTypeEnvVar);
-  if (xdg_session_type.has_value() && *xdg_session_type == "wayland") {
+  bool use_wayland = env->GetVar(base::nix::kXdgSessionTypeEnvVar) == "wayland";
+#if BUILDFLAG(SUPPORTS_OZONE_X11)
+  // The session type may be unset (no logind) or describe another session
+  // (ssh -X, containers), so it only breaks ties.
+  const bool has_wayland = CanConnectToWayland(*env);
+  const bool has_x11 =
+      HasX11Display(*env) || command_line.HasSwitch(switches::kX11Display);
+  if (has_wayland != has_x11) {
+    use_wayland = has_wayland;
+  }
+#endif
+  if (use_wayland) {
     command_line.AppendSwitchASCII(switches::kOzonePlatform, "wayland");
     return;
   }
@@ -82,7 +102,7 @@ bool HasX11Display(base::Environment& env) {
 #if !BUILDFLAG(SUPPORTS_OZONE_X11)
   return false;
 #else
-  return env.GetVar("DISPLAY").has_value();
+  return !env.GetVar("DISPLAY").value_or(std::string()).empty();
 #endif  // !BUILDFLAG(SUPPORTS_OZONE_X11)
 }
 

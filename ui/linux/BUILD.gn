@@ -82,6 +82,20 @@ source_set("display_server_utils") {
     "//third_party/angle:angle_gpu_info_util",
     "//ui/base:features",
     "//ui/base:ozone_buildflags",
+    "//ui/gfx:gfx_switches",
+    "//ui/ozone",
+  ]
+}
+
+source_set("display_server_utils_unittests") {
+  testonly = true
+  sources = [ "display_server_utils_unittest.cc" ]
+  deps = [
+    ":display_server_utils",
+    "//base",
+    "//testing/gtest",
+    "//ui/base:ozone_buildflags",
+    "//ui/gfx:gfx_switches",
     "//ui/ozone",
   ]
 }

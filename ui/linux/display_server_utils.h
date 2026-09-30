@@ -13,10 +13,10 @@ class Environment;
 namespace ui {
 
 // Ensures Ozone platform command line option is properly set for Linux Desktop
-// environment. Unless it is already set in `command_line`, this function
-// combines information from required environment variables, eg: DISPLAY for
-// X11, WAYLAND_DISPLAY for Wayland, etc, in order to determine which Ozone
-// platform backend must be selected.
+// environment. Unless it is already set in `command_line`, this function picks
+// the display server that can be reached, going by DISPLAY or --display for
+// X11 and WAYLAND_SOCKET, WAYLAND_DISPLAY or the default socket for Wayland.
+// If both or neither can, XDG_SESSION_TYPE decides.
 void SetOzonePlatformForLinuxIfNeeded(base::CommandLine& command_line);
 
 // Returns true if Wayland display variable or socket file is available.

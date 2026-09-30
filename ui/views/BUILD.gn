@@ -1511,6 +1511,7 @@ test("views_unittests") {
     ]
     deps += [
       "//ui/base/ime/linux",
+      "//ui/linux:display_server_utils_unittests",
       "//ui/linux:test_support",
     ]
     if (use_dbus) {
