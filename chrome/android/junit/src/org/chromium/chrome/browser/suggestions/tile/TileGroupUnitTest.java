@@ -107,7 +107,6 @@ public class TileGroupUnitTest {
     }
 
     @Test
-    @DisabledTest(message = "https://crbug.com/40819365")
     public void testInitialiseWithTileList() {
         mMostVisitedSites.setTileSuggestionsPassive(URLS);
 
