@@ -5,6 +5,7 @@
 #ifndef UI_GFX_DISPLAY_COLOR_SPACES_H_
 #define UI_GFX_DISPLAY_COLOR_SPACES_H_
 
+#include <array>
 #include <optional>
 #include <string>
 #include <vector>
@@ -139,7 +140,7 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
 
   void AsValueInto(base::trace_event::TracedValue* value) const;
 
-  bool operator==(const DisplayColorSpaces& other) const;
+  bool operator==(const DisplayColorSpaces& other) const = default;
 
   // Return true if the two parameters are equal except for their
   // `hdr_max_luminance_relative_` member.
@@ -152,8 +153,8 @@ class COLOR_SPACE_EXPORT DisplayColorSpaces {
   friend struct mojo::StructTraits<gfx::mojom::DisplayColorSpacesDataView,
                                    gfx::DisplayColorSpaces>;
 
-  gfx::ColorSpace color_spaces_[kConfigCount];
-  viz::SharedImageFormat formats_[kConfigCount];
+  std::array<gfx::ColorSpace, kConfigCount> color_spaces_;
+  std::array<viz::SharedImageFormat, kConfigCount> formats_;
   SkColorSpacePrimaries primaries_ = SkNamedPrimariesExt::kSRGB;
   float sdr_max_luminance_nits_ = ColorSpace::kDefaultSDRWhiteLevel;
   float hdr_max_luminance_relative_ = 1.f;

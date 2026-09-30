@@ -7,6 +7,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include <array>
+
 #import "base/apple/foundation_util.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
@@ -343,19 +345,22 @@ bool AreWindowServerEffectsDisabled() {
   if (AreWindowServerEffectsDisabled())
     return;
 
-  KeyFrame frames[] = {
-      {0.00, 1.0}, {0.40, 1.02}, {0.60, 1.02}, {1.00, 1.0},
-  };
+  constexpr std::array<KeyFrame, 4> frames = {{
+      {0.00, 1.0},
+      {0.40, 1.02},
+      {0.60, 1.02},
+      {1.00, 1.0},
+  }};
 
   CGFloat scale = 1;
-  for (int i = std::size(frames) - 2; i >= 0; --i) {
-    if (value >= UNSAFE_TODO(frames[i]).value) {
-      CGFloat delta =
-          UNSAFE_TODO(frames[i + 1]).value - UNSAFE_TODO(frames[i]).value;
-      CGFloat frame_progress = (value - UNSAFE_TODO(frames[i]).value) / delta;
-      scale = gfx::Tween::FloatValueBetween(frame_progress,
-                                            UNSAFE_TODO(frames[i]).scale,
-                                            UNSAFE_TODO(frames[i + 1]).scale);
+  for (size_t i = frames.size() - 1; i > 0; --i) {
+    const KeyFrame& from = frames[i - 1];
+    const KeyFrame& to = frames[i];
+    if (value >= from.value) {
+      CGFloat delta = to.value - from.value;
+      CGFloat frame_progress = (value - from.value) / delta;
+      scale =
+          gfx::Tween::FloatValueBetween(frame_progress, from.scale, to.scale);
       break;
     }
   }
