@@ -1996,6 +1996,11 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                 maybeHandleOpenTabGroupIntent(intent);
                 maybeHandleUrlIntent(intent);
             }
+            if (IntentHandler.hasPendingActorTaskExtra(intent)) {
+                if (mRootUiCoordinator != null) {
+                    ((TabbedRootUiCoordinator) mRootUiCoordinator).onPendingActorTaskTrigger();
+                }
+            }
 
             if (IntentUtils.isMainIntentFromLauncher(intent)) {
                 logMainIntentBehavior(intent);

@@ -154,6 +154,7 @@ public class Snackbar {
     public static final int UMA_GLIC_UNPIN_UNDO = 95;
     public static final int UMA_GLIC_MIC_DISABLED = 96;
     public static final int UMA_AUTOFILL_AI_SUPPRESSION_UNDO = 97;
+    public static final int UMA_ACTOR_EXTERNAL_TRIGGER = 98;
     // LINT.ThenChange(//tools/metrics/histograms/metadata/ui/enums.xml:SnackbarIdentifier)
 
     private final @Nullable SnackbarController mController;

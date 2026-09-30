@@ -1864,6 +1864,16 @@ public class IntentHandler {
         return IntentUtils.safeGetStringExtra(intent, GlicIntentConstants.EXTRA_CONVERSATION_ID);
     }
 
+    /**
+     * @return True if the intent is a trusted Chrome intent containing the Glic pending actor task
+     *     extra.
+     */
+    public static boolean hasPendingActorTaskExtra(@Nullable Intent intent) {
+        if (intent == null || !wasIntentSenderChrome(intent)) return false;
+        return IntentUtils.safeGetBooleanExtra(
+                intent, GlicIntentConstants.EXTRA_GLIC_PENDING_ACTOR_TASK, false);
+    }
+
     /** Sets the Tab Id extra for a given intent. Will only be usable by trusted Chrome intents. */
     public static void setTabId(Intent intent, int tabId) {
         intent.putExtra(IntentHandler.EXTRA_TAB_ID, tabId);
