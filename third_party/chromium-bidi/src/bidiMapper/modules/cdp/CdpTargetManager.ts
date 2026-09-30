@@ -369,10 +369,15 @@ export class CdpTargetManager {
     userContext: Browser.UserContext,
   ) {
     this.#setEventListeners(targetCdpClient);
-    this.#preloadScriptStorage.onCdpTargetCreated(
-      targetInfo.targetId,
-      userContext,
-    );
+    const isFrameTarget =
+      targetInfo.type === 'page' || targetInfo.type === 'iframe';
+    if (isFrameTarget) {
+      // Preload scripts only apply to window realms.
+      this.#preloadScriptStorage.onCdpTargetCreated(
+        targetInfo.targetId,
+        userContext,
+      );
+    }
 
     const target = CdpTarget.create(
       targetInfo.targetId,
@@ -388,12 +393,15 @@ export class CdpTargetManager {
       userContext,
       // Pass the cached default User Agent to the new target.
       this.#defaultUserAgent,
+      targetInfo.type,
       this.#logger,
     );
 
     this.#networkStorage.onCdpTargetCreated(target);
-    this.#bluetoothProcessor.onCdpTargetCreated(target);
-    this.#speculationProcessor.onCdpTargetCreated(target);
+    if (isFrameTarget) {
+      this.#bluetoothProcessor.onCdpTargetCreated(target);
+      this.#speculationProcessor.onCdpTargetCreated(target);
+    }
 
     return target;
   }

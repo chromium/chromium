@@ -22,10 +22,12 @@ from test_helpers import (
     ANY_TIMESTAMP,
     AnyExtending,
     execute_command,
+    goto_url,
     read_JSON_message,
     send_JSON_command,
     subscribe,
     wait_for_event,
+    wait_for_filtered_event,
 )
 
 
@@ -286,3 +288,185 @@ async def test_cdp_subscribe_custom_session(websocket, context_id):
             },
         }
     )
+
+
+@pytest.mark.asyncio
+async def test_cdp_no_errors_on_non_page_targets(
+    websocket,
+    context_id,
+    create_context,
+    get_cdp_session_id,
+    html,
+    iframe,
+):
+    targets = await execute_command(
+        websocket,
+        {
+            "method": "goog:cdp.sendCommand",
+            "params": {"method": "Target.getTargets", "params": {}},
+        },
+    )
+    mapper_target_id = next(
+        t["targetId"]
+        for t in targets["result"]["targetInfos"]
+        if t["title"] == "BiDi-CDP Mapper"
+    )
+    session_id = await get_cdp_session_id(context_id)
+    custom_session = await execute_command(
+        websocket,
+        {
+            "method": "goog:cdp.sendCommand",
+            "params": {
+                "method": "Target.attachToTarget",
+                "params": {"targetId": context_id, "flatten": True},
+                "session": session_id,
+            },
+        },
+    )
+    mapper_session = await execute_command(
+        websocket,
+        {
+            "method": "goog:cdp.sendCommand",
+            "params": {
+                "method": "Target.attachToTarget",
+                "params": {"targetId": mapper_target_id, "flatten": True},
+                "session": custom_session["result"]["sessionId"],
+            },
+        },
+    )
+    mapper_session_id = mapper_session["result"]["sessionId"]
+
+    await execute_command(
+        websocket,
+        {
+            "method": "goog:cdp.sendCommand",
+            "params": {
+                "method": "Runtime.evaluate",
+                "params": {
+                    "expression": """
+                        window.cdpErrors = [];
+                        const origSendDebugMessage = window.sendDebugMessage;
+                        window.sendDebugMessage = (json) => {
+                            origSendDebugMessage?.(json);
+                            const data = JSON.parse(json);
+                            if (data.logType === 'cdp:RECV ◂' && data.messages?.[0]?.error) {
+                                window.cdpErrors.push(data.messages[0]);
+                            }
+                        };
+                    """,
+                },
+                "session": mapper_session_id,
+            },
+        },
+    )
+
+    await subscribe(
+        websocket,
+        ["script.realmCreated", "bluetooth", "speculation"],
+    )
+    await execute_command(
+        websocket,
+        {
+            "method": "browsingContext.setViewport",
+            "params": {
+                "userContexts": ["default"],
+                "viewport": {"width": 500, "height": 400},
+            },
+        },
+    )
+    await execute_command(
+        websocket,
+        {
+            "method": "emulation.setGeolocationOverride",
+            "params": {
+                "userContexts": ["default"],
+                "coordinates": {"latitude": 10, "longitude": 20},
+            },
+        },
+    )
+    await execute_command(
+        websocket,
+        {
+            "method": "emulation.setTouchOverride",
+            "params": {"userContexts": ["default"], "maxTouchPoints": 5},
+        },
+    )
+    await execute_command(
+        websocket,
+        {
+            "method": "emulation.setMediaFeaturesOverride",
+            "params": {
+                "userContexts": ["default"],
+                "features": {"prefers-color-scheme": "dark"},
+            },
+        },
+    )
+    await execute_command(
+        websocket,
+        {
+            "method": "emulation.setScriptingEnabled",
+            "params": {
+                "userContexts": ["default"],
+                "enabled": False,
+            },
+        },
+    )
+    await execute_command(
+        websocket,
+        {
+            "method": "script.addPreloadScript",
+            "params": {"functionDeclaration": "() => {}"},
+        },
+    )
+
+    new_context_id = await create_context()
+    oopif_url = html("<h1>OOPIF</h1>", same_origin=False)
+    await goto_url(websocket, new_context_id, html(iframe(oopif_url)))
+
+    await execute_command(
+        websocket,
+        {
+            "method": "network.addIntercept",
+            "params": {
+                "phases": ["beforeRequestSent"],
+                "urlPatterns": [{"type": "string", "pattern": "https://example.com/"}],
+            },
+        },
+    )
+
+    worker_url = "data:application/javascript,setInterval(() => {}, 1000)"
+    await send_JSON_command(
+        websocket,
+        {
+            "method": "script.evaluate",
+            "params": {
+                "expression": f"window.w = new Worker('{worker_url}')",
+                "target": {"context": new_context_id},
+                "awaitPromise": False,
+            },
+        },
+    )
+
+    await wait_for_filtered_event(
+        websocket,
+        lambda e: (
+            e["method"] == "script.realmCreated"
+            and e["params"]["type"] == "dedicated-worker"
+        ),
+    )
+
+    errors_result = await execute_command(
+        websocket,
+        {
+            "method": "goog:cdp.sendCommand",
+            "params": {
+                "method": "Runtime.evaluate",
+                "params": {
+                    "expression": "window.cdpErrors",
+                    "returnByValue": True,
+                },
+                "session": mapper_session_id,
+            },
+        },
+    )
+    assert errors_result["result"]["result"]["value"] == []
