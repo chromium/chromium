@@ -2388,8 +2388,13 @@ ScrollNode* InputHandler::FindNodeToLatch(ScrollState* scroll_state,
 }
 
 void InputHandler::UpdateRootLayerStateForSynchronousInputHandler() {
-  if (!input_handler_client_)
+  // If the active tree doesn't have an inner viewport scroll node yet, the
+  // compositor is uninitialized/unactivated and page scale factor defaults to
+  // 1.0. Avoid sending premature scale updates to the client until the root
+  // viewport scroll node is ready.
+  if (!input_handler_client_ || !ActiveTree().InnerViewportScrollNode()) {
     return;
+  }
   input_handler_client_->UpdateRootLayerStateForSynchronousInputHandler(
       ActiveTree().TotalScrollOffset(), ActiveTree().TotalMaxScrollOffset(),
       ActiveTree().ScrollableSize(), ActiveTree().current_page_scale_factor(),

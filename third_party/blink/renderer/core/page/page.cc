@@ -504,6 +504,12 @@ void Page::TakePropertiesForLocalMainFrameSwap(Page* old_page) {
   // renderer-side opener is only set during construction and might be stale.
   // When we create the new page, we get the latest opener frame token, so the
   // new page's opener should be the most up-to-date opener.
+
+  // Transfer user agent page scale constraints (such as initial scale set by
+  // the embedder) to the new Page so that scale settings persist across main
+  // frame swaps.
+  SetUserAgentPageScaleConstraints(
+      old_page->GetPageScaleConstraintsSet().UserAgentConstraints());
 }
 
 LocalFrame* Page::DeprecatedLocalMainFrame() const {

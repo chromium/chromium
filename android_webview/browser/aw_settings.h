@@ -71,9 +71,6 @@ class AwSettings : public content::WebContentsObserver {
   MixedContentMode GetMixedContentMode();
   bool IsPrerender2Allowed();
   bool IsBackForwardCacheEnabled();
-  bool initial_page_scale_is_non_default() {
-    return initial_page_scale_is_non_default_;
-  }
 
   // Called from Java. Methods with "Locked" suffix require that the settings
   // access lock is held during their execution.
@@ -189,16 +186,6 @@ class AwSettings : public content::WebContentsObserver {
   int back_forward_cache_max_pages_in_cache_{0};
   bool back_forward_cache_keep_forward_entries_{true};
   bool geolocation_enabled_{false};
-
-  // Whether the settings that would affect the initial page scale is set to a
-  // non-default value or not. This includes directly changing the initial page
-  // scale and also setting the "load with overview mode" setting. This is
-  // temporarily needed to prevent same-site RenderFrameHost swaps due to
-  // RenderDocument, because these settings are not carried over immediately
-  // during the swap, causing the initial page scale to not be used.
-  // TODO(https://crbug.com/40615943): Remove this once we carry over the
-  // initial page scale correctly.
-  bool initial_page_scale_is_non_default_ = false;
 
   JavaObjectWeakGlobalRef aw_settings_;
 
