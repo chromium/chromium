@@ -779,6 +779,7 @@ class LocalDeviceInstrumentationTestRun(
             @measures.timed_func('device_setup', 'setup_soft_keyboard')
             @trace_event.traced
             def setup_soft_keyboard(dev):
+                self._CleanUpCtsMockIme(dev)
                 flags = self._test_instance.flags
                 # Treat as desktop if the flag is present.
                 is_desktop = dev.is_desktop or any(
@@ -955,6 +956,17 @@ class LocalDeviceInstrumentationTestRun(
                 # pylint: enable=no-member
 
         self._env.parallel_devices.pMap(individual_device_tear_down)
+
+    def _CleanUpCtsMockIme(self, dev):
+        # Clean up leftover CTS MockIme from prior tasks on shared Swarming
+        # devices (https://crbug.com/567650995).
+        try:
+            if dev.GetApplicationPaths('com.android.cts.mockime'):
+                logging.warning('Removing leftover com.android.cts.mockime')
+                dev.Uninstall('com.android.cts.mockime')
+                dev.RunShellCommand(['ime', 'reset'], check_return=True)
+        except device_errors.CommandFailedError as e:
+            logging.warning('Failed to clean up CTS MockIme: %s', e)
 
     def _SetDefaultBrowserApp(self, dev):
         # Safely granting the browser role requires the

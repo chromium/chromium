@@ -335,6 +335,26 @@ class LocalDeviceInstrumentationTestRunTest(unittest.TestCase):
             as_root=False,
         )
 
+    def test_CleanUpCtsMockIme_installed(self):
+        device = mock.MagicMock()
+        device.GetApplicationPaths.return_value = ['/data/app/mockime/base.apk']
+
+        self._obj._CleanUpCtsMockIme(device)
+
+        device.Uninstall.assert_called_once_with('com.android.cts.mockime')
+        device.RunShellCommand.assert_called_once_with(
+            ['ime', 'reset'], check_return=True
+        )
+
+    def test_CleanUpCtsMockIme_notInstalled(self):
+        device = mock.MagicMock()
+        device.GetApplicationPaths.return_value = []
+
+        self._obj._CleanUpCtsMockIme(device)
+
+        device.Uninstall.assert_not_called()
+        device.RunShellCommand.assert_not_called()
+
 
 def create_test(annotation_dict, class_name, method_name):
     # Helper function to generate test dict
