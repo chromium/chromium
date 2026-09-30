@@ -1441,9 +1441,18 @@ component("net") {
     sources += [
       "base/network_change_notifier_linux.cc",
       "base/network_change_notifier_linux.h",
+      "base/network_change_notifier_linux_portal.h",
       "proxy_resolution/proxy_config_service_linux.cc",
       "proxy_resolution/proxy_config_service_linux.h",
     ]
+    deps += [ "//build/config/linux/dbus:buildflags" ]
+    if (use_dbus && !is_cronet_build) {
+      sources += [ "base/network_change_notifier_linux_portal.cc" ]
+      deps += [
+        "//components/dbus",
+        "//dbus",
+      ]
+    }
     if (use_glib) {
       deps += [ "//ui/base/glib" ]
     }
@@ -3407,6 +3416,17 @@ target(_test_target_type, "net_unittests") {
     "//url",
     "//url:buildflags",
   ]
+
+  if (is_linux) {
+    deps += [ "//build/config/linux/dbus:buildflags" ]
+    if (use_dbus && !is_cronet_build) {
+      deps += [
+        "//components/dbus",
+        "//dbus",
+        "//dbus:test_support",
+      ]
+    }
+  }
 
   if (!is_cronet_build) {
     sources += [

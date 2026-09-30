@@ -91,6 +91,11 @@ specific_include_rules = {
     "+mojo/public/cpp/bindings/default_construct_tag.h",
   ],
 
+  "network_change_notifier_linux_(portal|unittest)\\.cc": [
+    "+components/dbus",
+    "+dbus",
+  ],
+
   "proxy_config_service_linux\\.cc": [
     "+ui/base/glib",
   ],
