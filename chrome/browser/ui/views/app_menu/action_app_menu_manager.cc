@@ -25,6 +25,7 @@
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ttc/core/ttc_keyed_service.h"
@@ -207,9 +208,11 @@ class AppMenuBuilder {
   }
 
   // Adds a header item to the current parent without modifying the parent.
-  AppMenuBuilder& AddHeader(int string_id) {
+  AppMenuBuilder& AddHeader(
+      int string_id,
+      ui::ElementIdentifier element_id = ui::ElementIdentifier()) {
     auto header_item = AppMenuActionItem::CreateHeader(
-        l10n_util::GetStringUTF16(string_id), bg_color_);
+        l10n_util::GetStringUTF16(string_id), bg_color_, element_id);
     if (parent_) {
       parent_->AddChild(std::move(header_item));
     }
@@ -424,6 +427,9 @@ void ActionAppMenuManager::CreateMenuHierarchy() {
     return;
   }
 
+  app_menu_timer_ = base::ElapsedTimer();
+  is_showing_safety_hub_notification_ = false;
+
   if (auto highlight_info = ToolbarButtonMenuHighlighter::MaybeHighlight(
           browser_window_interface_, kToolbarAppMenuButtonElementId)) {
     highlighted_menu_identifier_ = highlight_info->highlighted_menu_identifier;
@@ -441,13 +447,16 @@ void ActionAppMenuManager::CreateMenuHierarchy() {
 void ActionAppMenuManager::OnMenuClosed() {
   promo_handle_.Release();
   highlighted_menu_identifier_ = ui::ElementIdentifier();
-  if (safety_hub_notification_timer_.has_value()) {
+  if (is_showing_safety_hub_notification_) {
     safety_hub_util::MaybeNotifyMenuNotificationSeen(
-        browser_window_interface_->GetProfile(),
-        safety_hub_notification_timer_->Elapsed());
-    safety_hub_notification_timer_.reset();
+        browser_window_interface_->GetProfile(), app_menu_timer_.Elapsed());
+    is_showing_safety_hub_notification_ = false;
   }
   GetAppMenuRoot()->ResetActionList();
+}
+
+void ActionAppMenuManager::SetTimerForTesting(base::ElapsedTimer timer) {
+  app_menu_timer_ = std::move(timer);
 }
 
 void ActionAppMenuManager::AddNotificationActions(actions::ActionItem* root) {
@@ -508,7 +517,7 @@ void ActionAppMenuManager::AddNotificationActions(actions::ActionItem* root) {
                                               notification->module)})) {
                 safety_hub_util::LogMenuNotificationImpression(
                     notification->module);
-                safety_hub_notification_timer_.emplace();
+                is_showing_safety_hub_notification_ = true;
                 return;
               }
             }
@@ -613,11 +622,14 @@ void ActionAppMenuManager::AddYourChromeActions(actions::ActionItem* root) {
                   .AddDynamicSection([this](actions::BaseAction* parent) {
                     profile_menu_->BuildOtherProfiles(parent);
                   })
-                  .AddAction(kActionAddNewProfile)
-                  .AddAction(
-                      kActionOpenGuestProfile,
-                      {.element_id = AppMenuModel::kProfileOpenGuestItem})
-                  .AddAction(kActionManageChromeProfiles);
+                  .AddAction(kActionAddNewProfile);
+              if (!g_browser_process || !g_browser_process->profile_manager() ||
+                  profiles::IsGuestModeEnabled(*profile)) {
+                sub.AddAction(
+                    kActionOpenGuestProfile,
+                    {.element_id = AppMenuModel::kProfileOpenGuestItem});
+              }
+              sub.AddAction(kActionManageChromeProfiles);
             },
             {.text_override = profile_name.empty()
                                   ? std::nullopt
@@ -845,7 +857,8 @@ void ActionAppMenuManager::AddToolsAndActionsActions(
             [this](AppMenuBuilder& sub) {
               Profile* profile = browser_window_interface_->GetProfile();
               if (media_router::MediaRouterEnabled(profile)) {
-                sub.AddHeader(IDS_SAVE_AND_SHARE_MENU_CAST)
+                sub.AddHeader(IDS_SAVE_AND_SHARE_MENU_CAST,
+                              AppMenuModel::kCastTitleItem)
                     .AddAction(kActionRouteMedia)
                     .AddDivider();
               }

@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/lifetime/application_lifetime_desktop.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/toolbar/bookmark_sub_menu_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -41,7 +43,11 @@ namespace {
 
 class AppMenuDragAndDropInteractiveTest : public InteractiveBrowserTest {
  public:
-  AppMenuDragAndDropInteractiveTest() = default;
+  AppMenuDragAndDropInteractiveTest() {
+    // TODO(crbug.com/562058660): Re-enable kAppMenuGlowUp once bookmarks drag
+    // and drop is implemented in the action app menu.
+    scoped_feature_list_.InitAndDisableFeature(features::kAppMenuGlowUp);
+  }
   ~AppMenuDragAndDropInteractiveTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -104,6 +110,9 @@ class AppMenuDragAndDropInteractiveTest : public InteractiveBrowserTest {
       return false;
     });
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(AppMenuDragAndDropInteractiveTest,

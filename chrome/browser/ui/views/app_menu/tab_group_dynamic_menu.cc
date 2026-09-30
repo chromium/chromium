@@ -342,7 +342,9 @@ void TabGroupDynamicMenu::BuildTabGroupData(
     favicon::FaviconService* favicon_service,
     actions::ActionItem* parent_item) {
   auto header_item = AppMenuActionItem::CreateHeader(
-      l10n_util::GetStringUTF16(IDS_TABS_TITLE_CXMENU));
+      l10n_util::GetStringUTF16(IDS_TABS_TITLE_CXMENU),
+      /*container_color=*/std::nullopt,
+      tab_groups::STGTabsMenuModel::kTabsTitleItem);
   parent_item->AddChild(std::move(header_item));
 
   const auto& saved_tabs = group->saved_tabs();

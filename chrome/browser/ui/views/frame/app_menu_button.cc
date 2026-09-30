@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/observer_list.h"
 #include "base/types/pass_key.h"
+#include "chrome/browser/ui/actions/command_action_updater.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -66,10 +67,13 @@ bool AppMenuButton::IsDrawn() const {
 }
 
 bool AppMenuButton::IsMenuShowing() const {
-  if (base::FeatureList::IsEnabled(features::kAppMenuGlowUp)) {
-    return action_menu_ && action_menu_->IsShowing();
-  }
-  return menu_ && menu_->IsShowing();
+  // Check both `action_menu_` and `menu_`, as `WebAppMenuButton`
+  // unconditionally uses the original `AppMenu` even when `kAppMenuGlowUp` is
+  // enabled.
+  // TODO(crbug.com/532143665): Check the proper menu depending on the feature
+  // flag once PWAs use the action menu.
+  return (action_menu_ && action_menu_->IsShowing()) ||
+         (menu_ && menu_->IsShowing());
 }
 
 views::DialogDelegate* AppMenuButton::GetDialogDelegate() {
@@ -77,13 +81,15 @@ views::DialogDelegate* AppMenuButton::GetDialogDelegate() {
 }
 
 void AppMenuButton::CloseMenu() {
-  if (base::FeatureList::IsEnabled(features::kAppMenuGlowUp)) {
-    if (action_menu_) {
-      action_menu_->CloseMenu();
-    }
-    action_menu_.reset();
-    return;
+  // Check both `action_menu_` and `menu_`, as `WebAppMenuButton`
+  // unconditionally uses the original `AppMenu` even when `kAppMenuGlowUp` is
+  // enabled.
+  // TODO(crbug.com/532143665): Check the proper menu depending on the feature
+  // flag once PWAs use the action menu.
+  if (action_menu_) {
+    action_menu_->CloseMenu();
   }
+  action_menu_.reset();
   if (menu_) {
     menu_->CloseMenu();
   }
@@ -94,12 +100,26 @@ void AppMenuButton::ShowMenu() {
   menu_button_controller_->Activate(nullptr);
 }
 
-AppMenu* AppMenuButton::GetAppMenu() {
-  return menu_.get();
+views::MenuItemView* AppMenuButton::GetRootMenuItemViewForTesting() {
+  if (action_menu_) {
+    return action_menu_->root_menu_item_for_testing();  // IN-TEST
+  }
+  return menu_ ? menu_->root_menu_item() : nullptr;
 }
 
-AppMenuModel* AppMenuButton::GetAppMenuModel() {
-  return menu_model_.get();
+void AppMenuButton::ExecuteCommandForTesting(int command_id,
+                                             int mouse_event_flags) {
+  if (action_menu_) {
+    int id = command_id;
+    if (std::optional<actions::ActionId> action_id =
+            chrome::CommandActionUpdater::GetActionId(command_id)) {
+      id = action_id.value();
+    }
+    action_menu_->ExecuteCommand(id, mouse_event_flags);
+    return;
+  }
+  CHECK(menu_);
+  menu_->ExecuteCommand(command_id, mouse_event_flags);
 }
 
 void AppMenuButton::AddObserver(AppMenuButtonObserver* observer) {
@@ -148,7 +168,11 @@ void AppMenuButton::RunActionMenu(
 }
 
 void AppMenuButton::SetMenuTimerForTesting(base::ElapsedTimer timer) {
-  menu_->SetTimerForTesting(std::move(timer));  // IN-TEST
+  if (action_menu_) {
+    action_menu_->SetTimerForTesting(std::move(timer));  // IN-TEST
+  } else if (menu_) {
+    menu_->SetTimerForTesting(std::move(timer));  // IN-TEST
+  }
 }
 
 bool AppMenuButton::HasFocus() const {

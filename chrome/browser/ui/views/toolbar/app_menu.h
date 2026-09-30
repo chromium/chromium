@@ -140,7 +140,7 @@ class AppMenu final : public views::MenuDelegate,
   // GlobalErrorObserver:
   void OnGlobalErrorsChanged() override;
 
-  views::View* GetZoomAppMenuViewForTest();
+  static views::View* GetZoomAppMenuViewForTest(views::MenuItemView* root);
 
  private:
   class CutCopyPasteView;

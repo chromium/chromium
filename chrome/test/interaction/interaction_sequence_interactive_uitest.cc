@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/base/interaction/interaction_sequence.h"
+
 #include <string.h>
 
 #include "base/functional/bind.h"
@@ -10,16 +12,18 @@
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/browser_app_menu_button.h"
+#include "chrome/browser/ui/views/toolbar/test_support/app_menu_test_accessor.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
-#include "ui/base/interaction/interaction_sequence.h"
 #include "ui/base/interaction/interaction_sequence_test_util.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
@@ -95,9 +99,13 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceUiTest, OpenMainMenuAndViewHelpItem) {
   // Verify that we found the correct element and it is visible.
   EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->IsElementVisible(
       AppMenuModel::kHistoryMenuItem, context));
+  const int history_menu_item_id =
+      base::FeatureList::IsEnabled(features::kAppMenuGlowUp)
+          ? static_cast<int>(kActionRecentTabsSubmenu)
+          : AppMenuModel::kRecentTabsMenuPlaceholder;
   views::MenuItemView* const history_menu_item =
-      app_menu_button->app_menu()->root_menu_item()->GetMenuItemByID(
-          AppMenuModel::kRecentTabsMenuPlaceholder);
+      AppMenuTestAccessor(browser()).GetRootMenuItemView()->GetMenuItemByID(
+          history_menu_item_id);
   EXPECT_EQ(history_menu_item,
             views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
                 AppMenuModel::kHistoryMenuItem, context));

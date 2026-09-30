@@ -301,6 +301,11 @@ int ActionAppMenu::GetMaxWidthForMenu(views::MenuItemView* menu) {
       DISTANCE_ACTION_APP_MENU_MAX_WIDTH);
 }
 
+void ActionAppMenu::SetTimerForTesting(base::ElapsedTimer timer) {
+  menu_manager_->SetTimerForTesting(timer);       // IN-TEST
+  metrics_.SetTimerForTesting(std::move(timer));  // IN-TEST
+}
+
 void ActionAppMenu::CancelAndEvaluate(actions::ActionId action_id,
                                       int mouse_event_flags) {
   if (!action_to_execute_on_close_.has_value()) {
@@ -570,6 +575,10 @@ void ActionAppMenu::PopulateHeader(views::MenuItemView* view_parent,
       header_base_action->GetActionItem();
   auto* const header_menu_item =
       view_parent->AppendTitle(std::u16string(header_action_item->GetText()));
+  if (const ui::ElementIdentifier element_id =
+          header_base_action->GetProperty(views::kElementIdentifierKey)) {
+    header_menu_item->SetProperty(views::kElementIdentifierKey, element_id);
+  }
   const int command_id = next_id_++;
   header_menu_item->SetCommand(command_id);
   command_to_action_map_[command_id] = header_base_action;

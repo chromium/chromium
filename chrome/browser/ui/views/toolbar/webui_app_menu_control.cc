@@ -128,12 +128,19 @@ void WebUIAppMenuControl::ShowMenuWithFlags(int run_types) {
   RunMenu(GetAnchor().GetAnchorRect(), source, run_types);
 }
 
-AppMenu* WebUIAppMenuControl::GetAppMenu() {
-  return menu_.get();
+views::MenuItemView* WebUIAppMenuControl::GetRootMenuItemViewForTesting() {
+  return menu_ ? menu_->root_menu_item() : nullptr;
 }
 
-AppMenuModel* WebUIAppMenuControl::GetAppMenuModel() {
-  return menu_model_.get();
+void WebUIAppMenuControl::ExecuteCommandForTesting(int command_id,
+                                                   int mouse_event_flags) {
+  CHECK(menu_);
+  menu_->ExecuteCommand(command_id, mouse_event_flags);
+}
+
+void WebUIAppMenuControl::SetMenuTimerForTesting(base::ElapsedTimer timer) {
+  CHECK(menu_);
+  menu_->SetTimerForTesting(std::move(timer));
 }
 
 void WebUIAppMenuControl::AddObserver(AppMenuButtonObserver* observer) {

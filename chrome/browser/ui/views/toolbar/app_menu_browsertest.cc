@@ -99,7 +99,8 @@ class AppMenuBrowserTest : public UiBrowserTest {
     // disruptive notification revocation (or other SH feature).
     scoped_feature_list_.InitWithFeatures(
         {}, /*disabled_features=*/{
-            features::kSafetyHubDisruptiveNotificationRevocation});
+            features::kSafetyHubDisruptiveNotificationRevocation,
+            features::kAppMenuGlowUp});
   }
 
   // UiBrowserTest:
@@ -340,8 +341,8 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, DISABLED_InvokeUi_more_tools) {
 
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, AppMenuViewAccessibleProperties) {
   app_menu_test_accessor().ShowMenu(views::MenuRunner::SHOULD_SHOW_MNEMONICS);
-  auto* app_menu_view =
-      app_menu_test_accessor().GetAppMenu()->GetZoomAppMenuViewForTest();
+  auto* app_menu_view = AppMenu::GetZoomAppMenuViewForTest(
+      app_menu_test_accessor().GetRootMenuItemView());
   ui::AXNodeData data;
 
   ASSERT_TRUE(app_menu_view);
@@ -351,8 +352,8 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, AppMenuViewAccessibleProperties) {
 
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, FullscreenButtonState) {
   app_menu_test_accessor().ShowMenu(views::MenuRunner::NO_FLAGS);
-  views::View& zoom_view = CHECK_DEREF(
-      app_menu_test_accessor().GetAppMenu()->GetZoomAppMenuViewForTest());
+  views::View& zoom_view = CHECK_DEREF(AppMenu::GetZoomAppMenuViewForTest(
+      app_menu_test_accessor().GetRootMenuItemView()));
 
   EXPECT_THAT(
       zoom_view.GetChildrenInZOrder(),
@@ -384,8 +385,8 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, FullscreenButtonStateInFullscreen) {
   ASSERT_TRUE(BrowserView::GetBrowserViewForBrowser(browser())->IsFullscreen());
 
   app_menu_test_accessor().ShowMenu(views::MenuRunner::NO_FLAGS);
-  views::View& zoom_view = CHECK_DEREF(
-      app_menu_test_accessor().GetAppMenu()->GetZoomAppMenuViewForTest());
+  views::View& zoom_view = CHECK_DEREF(AppMenu::GetZoomAppMenuViewForTest(
+      app_menu_test_accessor().GetRootMenuItemView()));
 
   EXPECT_THAT(
       zoom_view.GetChildrenInZOrder(),
@@ -678,9 +679,8 @@ class AppMenuProfileGradientRingBrowserTest : public AppMenuBrowserTest {
   }
 
   int GetProfileIconWidth() {
-    AppMenu* app_menu = app_menu_test_accessor().GetAppMenu();
-    CHECK(app_menu);
-    views::MenuItemView* menu_root = app_menu->root_menu_item();
+    views::MenuItemView* menu_root =
+        app_menu_test_accessor().GetRootMenuItemView();
     CHECK(menu_root);
     views::MenuItemView* profile_item =
         menu_root->GetMenuItemByID(AppMenuModel::kProfileMenuPlaceholder);
@@ -691,9 +691,8 @@ class AppMenuProfileGradientRingBrowserTest : public AppMenuBrowserTest {
   }
 
   void CloseMenuAndWait() {
-    AppMenu* app_menu = app_menu_test_accessor().GetAppMenu();
-    ASSERT_TRUE(app_menu);
-    views::MenuItemView* menu_root = app_menu->root_menu_item();
+    views::MenuItemView* menu_root =
+        app_menu_test_accessor().GetRootMenuItemView();
     ASSERT_TRUE(menu_root);
     views::SubmenuView* submenu = menu_root->GetSubmenu();
     ASSERT_TRUE(submenu);

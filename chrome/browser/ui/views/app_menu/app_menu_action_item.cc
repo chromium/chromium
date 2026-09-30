@@ -165,13 +165,18 @@ std::unique_ptr<actions::IndirectActionItem> AppMenuActionItem::CreateIndirect(
 
 std::unique_ptr<actions::ActionItem> AppMenuActionItem::CreateHeader(
     std::u16string text,
-    std::optional<ui::ColorId> container_color) {
+    std::optional<ui::ColorId> container_color,
+    ui::ElementIdentifier element_id) {
   auto header_item = actions::ActionItem::Builder().SetText(text).Build();
 
   header_item->SetProperty(kDisplayTypeKey, DisplayType::kHeader);
 
   if (container_color.has_value()) {
     header_item->SetProperty(kContainerColorKey, container_color.value());
+  }
+
+  if (element_id) {
+    header_item->SetProperty(views::kElementIdentifierKey, element_id);
   }
 
   return header_item;

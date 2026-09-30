@@ -178,7 +178,9 @@ IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, PerformanceNavigation) {
 
 IN_PROC_BROWSER_TEST_F(AppMenuModelInteractiveTest, IncognitoMenuItem) {
   RunTestSequence(PressButton(kToolbarAppMenuButtonElementId),
-                  SelectMenuItem(AppMenuModel::kIncognitoMenuItem),
+                  base::FeatureList::IsEnabled(features::kAppMenuGlowUp)
+                      ? PressButton(AppMenuModel::kIncognitoMenuItem)
+                      : SelectMenuItem(AppMenuModel::kIncognitoMenuItem),
                   CheckIncognitoWindowOpened(browser()));
 }
 
@@ -393,8 +395,11 @@ IN_PROC_BROWSER_TEST_P(AppMenuModelExtensionsInteractiveTest,
 class AppMenuModelSkillsInteractiveTest : public AppMenuModelInteractiveTest {
  public:
   AppMenuModelSkillsInteractiveTest() {
+    // TODO(crbug.com/562074283): Remove kAppMenuGlowUp from disabled features
+    // once there is a skills entry in the action app menu.
     feature_list_.InitWithFeatures(
-        {features::kSkillsEnabled, features::kSkillsAppMenu}, {});
+        {features::kSkillsEnabled, features::kSkillsAppMenu},
+        {features::kAppMenuGlowUp});
   }
 
   ~AppMenuModelSkillsInteractiveTest() override = default;

@@ -476,6 +476,7 @@ source_set("app_menu_button_impl") {
     "//chrome/browser/ui:browser_window_header",
     "//chrome/browser/ui:layout_constants",
     "//chrome/browser/ui:ui_features",
+    "//chrome/browser/ui/actions",
     "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/toolbar",
     "//chrome/browser/ui/views:layout_provider",

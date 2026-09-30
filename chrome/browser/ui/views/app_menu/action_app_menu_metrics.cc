@@ -82,6 +82,10 @@ void ActionAppMenuMetrics::LogMenuAction(actions::BaseAction* base_action) {
   }
 }
 
+void ActionAppMenuMetrics::SetTimerForTesting(base::ElapsedTimer timer) {
+  menu_opened_timer_ = std::move(timer);
+}
+
 void ActionAppMenuMetrics::RecordAction(
     int action_id,
     std::string_view time_to_action_suffix) {

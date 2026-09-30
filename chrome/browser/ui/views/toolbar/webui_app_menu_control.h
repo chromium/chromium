@@ -41,8 +41,9 @@ class WebUIAppMenuControl : public AppMenuControl {
   void CloseMenu() override;
   void ShowMenu() override;
   void ShowMenuWithFlags(int run_types) override;
-  AppMenu* GetAppMenu() override;
-  AppMenuModel* GetAppMenuModel() override;
+  views::MenuItemView* GetRootMenuItemViewForTesting() override;
+  void ExecuteCommandForTesting(int command_id, int mouse_event_flags) override;
+  void SetMenuTimerForTesting(base::ElapsedTimer timer) override;
   void AddObserver(AppMenuButtonObserver* observer) override;
   void RemoveObserver(AppMenuButtonObserver* observer) override;
   bool HasFocus() const override;

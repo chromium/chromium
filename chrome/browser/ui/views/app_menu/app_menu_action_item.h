@@ -93,7 +93,8 @@ class AppMenuActionItem {
   // Creates the Action Item for the headers of each section in the app menu.
   static std::unique_ptr<actions::ActionItem> CreateHeader(
       std::u16string text,
-      std::optional<ui::ColorId> container_color = std::nullopt);
+      std::optional<ui::ColorId> container_color = std::nullopt,
+      ui::ElementIdentifier element_id = ui::ElementIdentifier());
 
   static std::unique_ptr<actions::ActionItem> CreateDivider(
       ui::MenuSeparatorType separator_type =

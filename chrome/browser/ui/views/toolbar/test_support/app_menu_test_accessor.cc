@@ -10,10 +10,8 @@
 #include "base/notreached.h"
 #include "base/test/run_until.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
-#include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/app_menu_control.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
@@ -21,14 +19,38 @@
 #include "content/public/test/browser_test_utils.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/bubble/bubble_anchor.h"
 #include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/view.h"
+#include "ui/views/view_class_properties.h"
 #include "ui/views/view_utils.h"
 
 namespace {
+
+const views::MenuItemView* FindMenuItemByElementId(
+    const views::MenuItemView* item,
+    ui::ElementIdentifier element_id) {
+  if (!item) {
+    return nullptr;
+  }
+  if (item->GetProperty(views::kElementIdentifierKey) == element_id) {
+    return item;
+  }
+  if (item->HasSubmenu()) {
+    for (const views::MenuItemView* child :
+         item->GetSubmenu()->GetMenuItems()) {
+      if (const views::MenuItemView* found =
+              FindMenuItemByElementId(child, element_id)) {
+        return found;
+      }
+    }
+  }
+  return nullptr;
+}
 
 content::WebContents* GetWebContentsFromView(views::View* view) {
   if (!view) {
@@ -77,39 +99,27 @@ bool AppMenuTestAccessor::IsMenuShowing() const {
   return control_->IsMenuShowing();
 }
 
-AppMenu* AppMenuTestAccessor::GetAppMenu() const {
-  CHECK(control_);
-  return control_->GetAppMenu();
-}
-
-AppMenuModel* AppMenuTestAccessor::GetAppMenuModel() const {
-  CHECK(control_);
-  return control_->GetAppMenuModel();
-}
-
 views::MenuItemView* AppMenuTestAccessor::GetRootMenuItemView() const {
-  AppMenu* menu = GetAppMenu();
-  return menu ? menu->root_menu_item() : nullptr;
+  CHECK(control_);
+  return control_->GetRootMenuItemViewForTesting();
 }
 
 void AppMenuTestAccessor::ExecuteCommand(int command_id,
                                          int mouse_event_flags) {
-  AppMenu* menu = GetAppMenu();
-  CHECK(menu);
-  menu->ExecuteCommand(command_id, mouse_event_flags);
+  CHECK(control_);
+  control_->ExecuteCommandForTesting(command_id, mouse_event_flags);
 }
 
 bool AppMenuTestAccessor::IsElementIdAlerted(
     ui::ElementIdentifier element_id) const {
-  AppMenuModel* model = GetAppMenuModel();
-  CHECK(model);
-  return model->IsElementIdAlerted(element_id);
+  const views::MenuItemView* item =
+      FindMenuItemByElementId(GetRootMenuItemView(), element_id);
+  return item && item->is_alerted();
 }
 
 void AppMenuTestAccessor::SetMenuTimerForTesting(base::ElapsedTimer timer) {
-  AppMenu* menu = GetAppMenu();
-  CHECK(menu);
-  menu->SetTimerForTesting(std::move(timer));
+  CHECK(control_);
+  control_->SetMenuTimerForTesting(std::move(timer));
 }
 
 bool AppMenuTestAccessor::HandleAccessibleAction(

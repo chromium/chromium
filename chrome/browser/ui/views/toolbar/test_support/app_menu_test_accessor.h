@@ -9,9 +9,7 @@
 #include "base/timer/elapsed_timer.h"
 #include "ui/views/controls/menu/menu_runner.h"
 
-class AppMenu;
 class AppMenuControl;
-class AppMenuModel;
 class BrowserWindowInterface;
 
 namespace ui {
@@ -43,12 +41,6 @@ class AppMenuTestAccessor {
 
   // Returns true if the app menu is currently showing.
   bool IsMenuShowing() const;
-
-  // Returns the AppMenu instance, or nullptr if none exists.
-  AppMenu* GetAppMenu() const;
-
-  // Returns the AppMenuModel instance, or nullptr if none exists.
-  AppMenuModel* GetAppMenuModel() const;
 
   // Returns the root MenuItemView of the open menu, or nullptr if not showing.
   views::MenuItemView* GetRootMenuItemView() const;

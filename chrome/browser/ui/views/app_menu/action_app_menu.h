@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/views/app_menu/action_app_menu_metrics.h"
 #include "ui/actions/action_id.h"
 #include "ui/base/command_id_constants.h"
@@ -57,6 +58,7 @@ class ActionAppMenu : public views::MenuDelegate {
 
   views::MenuItemView* root_menu_item_for_testing() { return root_; }
   AppMenuSearchBarView* search_bar_for_testing() { return search_bar_; }
+  void SetTimerForTesting(base::ElapsedTimer timer);
 
  private:
   void CancelAndEvaluate(actions::ActionId action_id, int mouse_event_flags);

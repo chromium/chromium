@@ -49,6 +49,8 @@ class ActionAppMenuManager {
 
   actions::ActionItem* GetAppMenuRoot() const;
 
+  void SetTimerForTesting(base::ElapsedTimer timer);
+
  private:
   void AddNotificationActions(actions::ActionItem* root);
   void AddSearchBarAction(actions::ActionItem* root);
@@ -63,7 +65,8 @@ class ActionAppMenuManager {
   std::unique_ptr<TabGroupDynamicMenu> tab_groups_menu_;
   std::unique_ptr<SendTabToSelfDynamicMenu> send_tab_to_self_menu_;
   std::unique_ptr<ProfileDynamicMenu> profile_menu_;
-  std::optional<base::ElapsedTimer> safety_hub_notification_timer_;
+  base::ElapsedTimer app_menu_timer_;
+  bool is_showing_safety_hub_notification_ = false;
   ui::ElementIdentifier highlighted_menu_identifier_;
   user_education::FeaturePromoHandle promo_handle_;
 };
