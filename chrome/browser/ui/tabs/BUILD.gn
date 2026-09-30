@@ -5,6 +5,7 @@
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 import("//chrome/common/features.gni")
+import("//components/captive_portal/core/features.gni")
 import("//components/offline_pages/buildflags/features.gni")
 import("//components/signin/features.gni")
 import("//content/public/common/features.gni")
@@ -656,6 +657,7 @@ if (!is_android) {
       "//chrome/browser/vr",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications/isolated_web_apps:isolated_web_apps_no_pwa_core_deps",
+      "//components/captive_portal/core:buildflags",
       "//components/client_hints/browser",
       "//components/content_settings/core/browser",
       "//components/contextual_tasks/public",
@@ -752,6 +754,13 @@ if (!is_android) {
       deps += [
         "//chrome/browser/contextual_tasks:ui",
         "//components/signin/public/base:signin_switches",
+      ]
+    }
+
+    if (enable_captive_portal_detection) {
+      deps += [
+        "//chrome/browser/captive_portal",
+        "//components/captive_portal/content",
       ]
     }
 

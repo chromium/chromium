@@ -17,6 +17,10 @@ _TAB_FEATURES_CC = 'tab_features.cc'
 # justified in the CL description and reviewed by chrome/browser/ui/tabs
 # OWNERS.
 _ALLOWED_CREATE_FOR_CALLS = (
+    # CaptivePortalTabHelper lives in //components/captive_portal/content and
+    # is also attached to non-tab GuestView WebContents in
+    # ChromeGuestViewManagerDelegate, so the WebContents must own it.
+    'captive_portal::CaptivePortalTabHelper::CreateForWebContents',
     # DlpContentTabHelper is also attached to non-tab Chrome App window
     # WebContents in ChromeAppDelegate and looked up from arbitrary WebContents
     # by DlpContentManager, so the WebContents must own it.

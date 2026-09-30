@@ -1453,13 +1453,6 @@ source_set("tab_helpers_impl") {
     deps += [ "//chrome/browser/ui/search" ]
   }
 
-  if (enable_captive_portal_detection) {
-    deps += [
-      "//chrome/browser/captive_portal",
-      "//components/captive_portal/content",
-    ]
-  }
-
   if (enable_extensions_core) {
     deps += [
       "//chrome/browser/extensions",
