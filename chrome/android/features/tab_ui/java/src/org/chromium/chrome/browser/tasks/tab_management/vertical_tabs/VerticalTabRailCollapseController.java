@@ -49,6 +49,28 @@ class VerticalTabRailCollapseController {
         void handleUserRequestedStateChange();
     }
 
+    /**
+     * Positioning rule: where rail items sit. Returns whether rail items use collapsed margins and
+     * positions in the given state. True for {@link RailCollapseState#COLLAPSED} and {@link
+     * RailCollapseState#EXPANDED_FOR_HOVERING}, so items keep their collapsed positions while the
+     * rail is expanded for hovering. See {@link #shouldShowIconOnly} for what each item shows.
+     */
+    static boolean shouldUseCollapsedPositioning(@RailCollapseState int state) {
+        return state == RailCollapseState.COLLAPSED
+                || state == RailCollapseState.EXPANDED_FOR_HOVERING;
+    }
+
+    /**
+     * Content rule: what each rail item shows. Returns whether an item shows icon-only content (no
+     * title, centered icon). True when the rail is {@link RailCollapseState#COLLAPSED}, or for
+     * pinned items unless the rail is {@link RailCollapseState#EXPANDED_FOR_HOVERING}. See {@link
+     * #shouldUseCollapsedPositioning} for where items sit.
+     */
+    static boolean shouldShowIconOnly(@RailCollapseState int state, boolean isPinned) {
+        return state == RailCollapseState.COLLAPSED
+                || (isPinned && state != RailCollapseState.EXPANDED_FOR_HOVERING);
+    }
+
     private final Callback<@RailCollapseState Integer> mSetRailCollapseStateCallback;
     private final Callback<Boolean> mSetCollapseButtonEnabledCallback;
     private final SettableNonNullObservableSupplier<@RailCollapseState Integer>

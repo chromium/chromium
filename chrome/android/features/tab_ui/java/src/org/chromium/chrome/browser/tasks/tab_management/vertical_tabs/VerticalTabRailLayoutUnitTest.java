@@ -55,6 +55,7 @@ import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTa
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link VerticalTabRailLayout} and {@link VerticalTabListViewBinder}. */
@@ -240,6 +241,54 @@ public class VerticalTabRailLayoutUnitTest {
         // Subsequent PropertyModel bind preserves the vertical layout params.
         VerticalTabListViewBinder.bind(mModel, mRailLayout, VerticalTabListProperties.IS_INCOGNITO);
         assertEquals(LinearLayout.VERTICAL, header.getOrientation());
+    }
+
+    @Test
+    public void testExpandedForHovering_HeaderKeepsCollapsedPositions() {
+        LinearLayout header = mRailLayout.getHeaderContainer();
+        View collapseButton = mRailLayout.findViewById(R.id.collapse_button);
+        View searchButton = mRailLayout.findViewById(R.id.tab_search_button);
+        View headerSpacer = mRailLayout.findViewById(R.id.header_spacer);
+
+        mRailLayout.setCollapseState(RailCollapseState.EXPANDED_FOR_HOVERING);
+
+        // Header buttons stay stacked vertically, start-aligned at their collapsed centered offset.
+        int collapsedRailWidth =
+                ViewUtils.dpToPx(mActivity, VerticalTabUtils.SIDE_UI_CONTAINER_COLLAPSED_WIDTH_DP);
+        int expectedButtonMarginStart =
+                (collapsedRailWidth - mRailLayout.getHeaderButtonWidthPxForTesting()) / 2
+                        - mRailLayout.getPaddingStart();
+        assertEquals(LinearLayout.VERTICAL, header.getOrientation());
+        assertEquals(Gravity.START, header.getGravity() & Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK);
+        assertEquals(View.GONE, headerSpacer.getVisibility());
+        assertEquals(
+                expectedButtonMarginStart,
+                ((ViewGroup.MarginLayoutParams) collapseButton.getLayoutParams()).getMarginStart());
+        assertEquals(
+                expectedButtonMarginStart,
+                ((ViewGroup.MarginLayoutParams) searchButton.getLayoutParams()).getMarginStart());
+
+        // The footer keeps the expanded layout.
+        assertEquals(LinearLayout.HORIZONTAL, mRailLayout.getFooterContainer().getOrientation());
+
+        // Collapsing keeps the exact same positions.
+        mRailLayout.setCollapseState(RailCollapseState.COLLAPSED);
+        assertEquals(Gravity.START, header.getGravity() & Gravity.RELATIVE_HORIZONTAL_GRAVITY_MASK);
+        assertEquals(
+                expectedButtonMarginStart,
+                ((ViewGroup.MarginLayoutParams) collapseButton.getLayoutParams()).getMarginStart());
+        assertEquals(
+                expectedButtonMarginStart,
+                ((ViewGroup.MarginLayoutParams) searchButton.getLayoutParams()).getMarginStart());
+
+        // Expanding resets the explicit offsets.
+        mRailLayout.setCollapseState(RailCollapseState.EXPANDED);
+        assertEquals(
+                0,
+                ((ViewGroup.MarginLayoutParams) collapseButton.getLayoutParams()).getMarginStart());
+        assertEquals(
+                0,
+                ((ViewGroup.MarginLayoutParams) searchButton.getLayoutParams()).getMarginStart());
     }
 
     @Test

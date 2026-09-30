@@ -46,7 +46,6 @@ import org.chromium.components.browser_ui.util.TextResolver;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.tab_groups.TabGroupColorPickerUtils;
 import org.chromium.components.tabs.TabAlert;
-import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -77,12 +76,12 @@ class TabVerticalViewBinder {
 
         if (TabProperties.TITLE == propertyKey) {
             updateTitle(R.id.tab_title, model, view);
-            updateParentPadding(model, view, /* isHeader= */ false);
+            updateParentPadding(model, view);
         } else if (TabProperties.IS_SELECTED == propertyKey
                 || TabProperties.IS_MULTI_SELECTED == propertyKey
                 || TabProperties.IS_INCOGNITO == propertyKey) {
             updateRegularColors(model, view);
-            updateParentPadding(model, view, /* isHeader= */ false);
+            updateParentPadding(model, view);
         } else if (TabProperties.TAB_ACTION_BUTTON_DATA == propertyKey) {
             TabListViewBinderUtils.bindActionButton(
                     model, view.getActionButton(), model.get(TabProperties.TAB_ACTION_BUTTON_DATA));
@@ -91,7 +90,7 @@ class TabVerticalViewBinder {
             updateChildRowPadding(model, view);
         } else if (TabProperties.RAIL_COLLAPSE_STATE == propertyKey) {
             updateTitle(R.id.tab_title, model, view);
-            updateParentPadding(model, view, /* isHeader= */ false);
+            updateParentPadding(model, view);
             updateIcons(model, view);
         }
     }
@@ -116,6 +115,8 @@ class TabVerticalViewBinder {
                 || TabProperties.IS_MULTI_SELECTED == propertyKey
                 || TabProperties.IS_INCOGNITO == propertyKey) {
             updatePinnedColors(model, view);
+        } else if (TabProperties.RAIL_COLLAPSE_STATE == propertyKey) {
+            updateIcons(model, view);
         }
     }
 
@@ -131,7 +132,7 @@ class TabVerticalViewBinder {
 
         if (TabProperties.TITLE == propertyKey) {
             updateTitle(R.id.group_title, model, view);
-            updateParentPadding(model, view, /* isHeader= */ true);
+            updateParentPadding(model, view);
         } else if (TabProperties.TAB_GROUP_CARD_COLOR == propertyKey
                 || TabProperties.IS_INCOGNITO == propertyKey) {
             updateGroupHeaderColors(model, view);
@@ -143,7 +144,7 @@ class TabVerticalViewBinder {
             updateTabItemSize(model, view, ViewGroup.LayoutParams.MATCH_PARENT, itemHeight);
             updateTitle(R.id.group_title, model, view);
             updateChildRowPadding(model, view);
-            updateParentPadding(model, view, /* isHeader= */ true);
+            updateParentPadding(model, view);
             updateGroupHeaderIcons(model, view, view.isHovered());
         } else if (TabProperties.TAB_ACTION_BUTTON_DATA == propertyKey) {
             View menuButton = view.findViewById(R.id.menu_button);
@@ -309,10 +310,8 @@ class TabVerticalViewBinder {
 
     private static void updateIcons(
             PropertyModel model, VerticalTabItemLayout view, boolean isHovered) {
-        boolean isRailCollapsed =
-                model.get(TabProperties.RAIL_COLLAPSE_STATE) == RailCollapseState.COLLAPSED;
         boolean isPinned = isPinned(model, view);
-        boolean isIconCompact = isRailCollapsed || isPinned;
+        boolean showIconOnly = shouldShowIconOnly(model, view);
         boolean isSelected = model.get(TabProperties.IS_SELECTED);
 
         View actionButton = view.findViewById(R.id.action_button);
@@ -328,7 +327,7 @@ class TabVerticalViewBinder {
                 !isPinned
                         && actionButton != null
                         && actionData != null
-                        && (isIconCompact
+                        && (showIconOnly
                                 ? (isSelected && (!DeviceInfo.isDesktop() || isHovered))
                                 : (!DeviceInfo.isDesktop() || isSelected || isHovered));
         @TabAlert
@@ -345,7 +344,7 @@ class TabVerticalViewBinder {
 
         // 2. Apply priority rules for collapsed state.
         // Priority: Close > Tab Alert (Recording/Sharing > Actor > Audio/PiP) > Loading/Favicon.
-        if (isIconCompact) {
+        if (showIconOnly) {
             if (actionWanted) {
                 alertWanted = false;
                 loadingWanted = false;
@@ -363,7 +362,7 @@ class TabVerticalViewBinder {
                         ? getLoadingSpinnerColor(model, view.getContext())
                         : Color.TRANSPARENT;
         view.updateIconDisplay(
-                isIconCompact,
+                showIconOnly,
                 /* showActionButton= */ actionWanted,
                 /* showAlertIndicator= */ alertWanted,
                 /* isDynamicActorAlert= */ alertWanted && alertState == TabAlert.ACTOR_ACCESSING,
@@ -604,14 +603,18 @@ class TabVerticalViewBinder {
 
     private static void updateTabItemSize(
             PropertyModel model, ViewGroup view, int expandedWidth, int expandedHeight) {
-        boolean isRailCollapsed =
-                model.get(TabProperties.RAIL_COLLAPSE_STATE) == RailCollapseState.COLLAPSED;
+        @RailCollapseState int railCollapseState = model.get(TabProperties.RAIL_COLLAPSE_STATE);
+        boolean isRailCollapsed = railCollapseState == RailCollapseState.COLLAPSED;
+        // Rows stretch to fit the expanded content when the rail is expanded for hovering, but keep
+        // the collapsed height.
+        boolean usesCollapsedPositioning =
+                VerticalTabRailCollapseController.shouldUseCollapsedPositioning(railCollapseState);
         Context context = view.getContext();
         ViewGroup.LayoutParams params = view.getLayoutParams();
         if (params == null) return;
 
         int width = isRailCollapsed ? getCollapsedTabItemWidth(context) : expandedWidth;
-        int height = isRailCollapsed ? getCollapsedTabItemHeight(context) : expandedHeight;
+        int height = usesCollapsedPositioning ? getCollapsedTabItemHeight(context) : expandedHeight;
 
         if (params.width != width || params.height != height) {
             params.width = width;
@@ -640,9 +643,7 @@ class TabVerticalViewBinder {
         TextView titleView = view.findViewById(titleViewId);
         if (titleView == null) return;
 
-        boolean isRailCollapsed =
-                model.get(TabProperties.RAIL_COLLAPSE_STATE) == RailCollapseState.COLLAPSED;
-        if (isRailCollapsed) {
+        if (shouldShowIconOnly(model, view)) {
             titleView.setVisibility(View.GONE);
         } else {
             titleView.setVisibility(View.VISIBLE);
@@ -712,16 +713,19 @@ class TabVerticalViewBinder {
 
     private static void updateChildRowPadding(PropertyModel model, View view) {
         boolean isInGroup = model.get(TabProperties.TAB_GROUP_ID) != null;
-        boolean isRailCollapsed =
-                model.get(TabProperties.RAIL_COLLAPSE_STATE) == RailCollapseState.COLLAPSED;
+        boolean usesCollapsedPositioning =
+                VerticalTabRailCollapseController.shouldUseCollapsedPositioning(
+                        model.get(TabProperties.RAIL_COLLAPSE_STATE));
 
         boolean isPinned = isPinned(model, view);
         Context context = view.getContext();
         boolean isTablet = isTablet(context);
 
         int marginStart = 0;
-        if (isRailCollapsed) {
-            marginStart = getCollapsedChildMarginStart(context);
+        if (usesCollapsedPositioning) {
+            marginStart =
+                    VerticalTabRailLayout.getCollapsedRailCenteringMarginStart(
+                            context, getCollapsedTabItemWidth(context));
         } else if (isInGroup) {
             marginStart =
                     view.getResources()
@@ -749,27 +753,11 @@ class TabVerticalViewBinder {
     }
 
     /**
-     * Calculates the start margin in pixels for a tab item when the rail is collapsed.
-     *
-     * <p>Horizontally centers the tab item within the collapsed rail container. Because the parent
-     * RecyclerView is asymmetric due to the scrollbar end margin, the child item's start margin is
-     * explicitly computed as: (rail_collapsed_width - tab_item_collapsed_size) / 2 -
-     * rail_horizontal_margin.
+     * Updates the row padding. Rows never have start padding: the start inset comes from the first
+     * child (favicon or group title) margin. Non-compact rows add end padding to inset the trailing
+     * icons, while compact rows keep symmetric padding so their centered icon stays centered.
      */
-    @VisibleForTesting
-    static int getCollapsedChildMarginStart(Context context) {
-        int railWidth =
-                ViewUtils.dpToPx(context, VerticalTabUtils.SIDE_UI_CONTAINER_COLLAPSED_WIDTH_DP);
-        int itemWidth = getCollapsedTabItemWidth(context);
-        int railStartMargin =
-                context.getResources()
-                        .getDimensionPixelSize(R.dimen.vertical_tabs_rail_horizontal_margin);
-        return (railWidth - itemWidth) / 2 - railStartMargin;
-    }
-
-    private static void updateParentPadding(PropertyModel model, ViewGroup view, boolean isHeader) {
-        boolean isRailCollapsed =
-                model.get(TabProperties.RAIL_COLLAPSE_STATE) == RailCollapseState.COLLAPSED;
+    private static void updateParentPadding(PropertyModel model, ViewGroup view) {
         Context context = view.getContext();
         Resources resources = context.getResources();
         updateBackgroundInsets(view);
@@ -778,15 +766,12 @@ class TabVerticalViewBinder {
                         isTablet(context)
                                 ? R.dimen.vertical_tab_item_padding_vertical_tablet
                                 : R.dimen.vertical_tab_item_padding_vertical);
-        if (isRailCollapsed) {
-            view.setPadding(0, paddingVertical, 0, paddingVertical);
-        } else {
-            int paddingHorizontal =
-                    resources.getDimensionPixelSize(R.dimen.vertical_tab_item_padding_horizontal);
-            int paddingStart = isHeader ? paddingHorizontal : 0;
-            view.setPaddingRelative(
-                    paddingStart, paddingVertical, paddingHorizontal, paddingVertical);
-        }
+        int paddingEnd =
+                shouldShowIconOnly(model, view)
+                        ? 0
+                        : resources.getDimensionPixelSize(
+                                R.dimen.vertical_tab_item_padding_horizontal);
+        view.setPaddingRelative(0, paddingVertical, paddingEnd, paddingVertical);
     }
 
     private static void updateBackgroundInsets(View view) {
@@ -992,16 +977,21 @@ class TabVerticalViewBinder {
 
     private static void updateGroupHeaderIcons(
             PropertyModel model, ViewGroup view, boolean isHovered) {
-        boolean isRailCollapsed =
-                model.get(TabProperties.RAIL_COLLAPSE_STATE) == RailCollapseState.COLLAPSED;
         View menuButton = view.findViewById(R.id.menu_button);
         if (menuButton != null) {
-            menuButton.setVisibility(!isRailCollapsed && isHovered ? View.VISIBLE : View.GONE);
+            menuButton.setVisibility(
+                    !shouldShowIconOnly(model, view) && isHovered ? View.VISIBLE : View.GONE);
         }
     }
 
     private static boolean isPinned(PropertyModel model, View view) {
         return (view instanceof VerticalTabItemLayout itemLayout && itemLayout.isPinned())
                 || TabProperties.isPinnedTab(model);
+    }
+
+    /** See {@link VerticalTabRailCollapseController#shouldShowIconOnly}. */
+    private static boolean shouldShowIconOnly(PropertyModel model, View view) {
+        return VerticalTabRailCollapseController.shouldShowIconOnly(
+                model.get(TabProperties.RAIL_COLLAPSE_STATE), isPinned(model, view));
     }
 }

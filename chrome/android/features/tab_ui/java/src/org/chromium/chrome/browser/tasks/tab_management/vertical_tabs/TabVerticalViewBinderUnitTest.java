@@ -1873,8 +1873,7 @@ public class TabVerticalViewBinderUnitTest {
         // Verify padding is collapsed margin
         ViewGroup.MarginLayoutParams lp =
                 (ViewGroup.MarginLayoutParams) mItemView.getLayoutParams();
-        int expectedMargin =
-                TabVerticalViewBinder.getCollapsedChildMarginStart(mItemView.getContext());
+        int expectedMargin = getCollapsedChildMarginStart(mItemView.getContext());
         assertEquals(expectedMargin, lp.getMarginStart());
     }
 
@@ -1932,6 +1931,134 @@ public class TabVerticalViewBinderUnitTest {
                         .getResources()
                         .getDimensionPixelSize(R.dimen.vertical_tab_child_nesting_margin);
         assertEquals(expectedMargin, lp.getMarginStart());
+    }
+
+    @Test
+    public void testBindTab_RailExpandedForHovering_InGroup() {
+        mItemView.setLayoutParams(
+                new ViewGroup.MarginLayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mModel.set(TabProperties.TITLE, "Google");
+        mModel.set(TabProperties.FAVICON_FETCHER, mFaviconFetcher);
+        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.EXPANDED_FOR_HOVERING);
+        mModel.set(TabProperties.IS_SELECTED, true);
+        mModel.set(TabProperties.TAB_GROUP_ID, new Token(1L, 2L)); // In group
+        mModel.set(
+                TabProperties.TAB_ACTION_BUTTON_DATA,
+                new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener));
+
+        TabVerticalViewBinder.bindTab(mModel, mItemView, TabProperties.RAIL_COLLAPSE_STATE);
+
+        Context context = mItemView.getContext();
+        boolean isTablet = VerticalTabUtils.isTablet(context);
+        int collapsedHeight =
+                mItemView
+                        .getResources()
+                        .getDimensionPixelSize(
+                                isTablet
+                                        ? R.dimen.vertical_tab_item_collapsed_height_tablet
+                                        : R.dimen.vertical_tab_item_collapsed_size);
+        // Expanded content needs the full width, but the height matches the collapsed row.
+        assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, mItemView.getLayoutParams().width);
+        assertEquals(collapsedHeight, mItemView.getLayoutParams().height);
+
+        // Expanded content.
+        assertEquals(View.VISIBLE, mTitleView.getVisibility());
+        assertEquals("Google", mTitleView.getText());
+        assertEquals(View.VISIBLE, mCloseButton.getVisibility());
+
+        // Collapsed start margin (no nesting) with the expanded horizontal padding.
+        ViewGroup.MarginLayoutParams lp =
+                (ViewGroup.MarginLayoutParams) mItemView.getLayoutParams();
+        assertEquals(getCollapsedChildMarginStart(context), lp.getMarginStart());
+        assertEquals(0, mItemView.getPaddingStart());
+        assertEquals(
+                mItemView
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_item_padding_horizontal),
+                mItemView.getPaddingEnd());
+
+        // The favicon uses the expanded, start-aligned constraints.
+        View faviconContainer = mItemView.findViewById(R.id.favicon_container);
+        ConstraintLayout.LayoutParams faviconParams =
+                (ConstraintLayout.LayoutParams) faviconContainer.getLayoutParams();
+        assertEquals(ConstraintLayout.LayoutParams.PARENT_ID, faviconParams.startToStart);
+        assertEquals(ConstraintLayout.LayoutParams.UNSET, faviconParams.endToEnd);
+        assertEquals(
+                mItemView
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_item_padding_horizontal),
+                faviconParams.getMarginStart());
+    }
+
+    @Test
+    public void testBindTabGroupHeader_RailExpandedForHovering() {
+        ViewGroup headerView = inflateGroupHeaderView();
+        headerView.setLayoutParams(
+                new ViewGroup.MarginLayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        TextView titleView = headerView.findViewById(R.id.group_title);
+
+        mModel.set(TabProperties.TITLE, "My Group");
+        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.EXPANDED_FOR_HOVERING);
+
+        TabVerticalViewBinder.bindTabGroupHeader(
+                mModel, headerView, TabProperties.RAIL_COLLAPSE_STATE);
+
+        Context context = headerView.getContext();
+        int collapsedHeight =
+                headerView
+                        .getResources()
+                        .getDimensionPixelSize(
+                                VerticalTabUtils.isTablet(context)
+                                        ? R.dimen.vertical_tab_item_collapsed_height_tablet
+                                        : R.dimen.vertical_tab_item_collapsed_size);
+        assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, headerView.getLayoutParams().width);
+        assertEquals(collapsedHeight, headerView.getLayoutParams().height);
+        assertEquals(View.VISIBLE, titleView.getVisibility());
+        assertEquals("My Group", titleView.getText());
+
+        ViewGroup.MarginLayoutParams lp =
+                (ViewGroup.MarginLayoutParams) headerView.getLayoutParams();
+        assertEquals(getCollapsedChildMarginStart(context), lp.getMarginStart());
+        int paddingHorizontal =
+                headerView
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_item_padding_horizontal);
+        // The start inset comes from the title margin, the end inset from the row padding.
+        assertEquals(0, headerView.getPaddingStart());
+        assertEquals(paddingHorizontal, headerView.getPaddingEnd());
+        assertEquals(
+                paddingHorizontal,
+                ((ViewGroup.MarginLayoutParams) titleView.getLayoutParams()).getMarginStart());
+    }
+
+    @Test
+    public void testBindPinnedTab_RailExpandedForHovering_MatchesRegularRowPositioning() {
+        VerticalTabItemLayout pinnedView = inflatePinnedTabView();
+        pinnedView.setLayoutParams(
+                new ViewGroup.MarginLayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        mModel.set(TabProperties.IS_PINNED, true);
+        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.EXPANDED_FOR_HOVERING);
+
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.RAIL_COLLAPSE_STATE);
+
+        // Same as a regular row: full width for expanded content, collapsed height and start
+        // margin.
+        Context context = pinnedView.getContext();
+        int expectedHeight =
+                pinnedView
+                        .getResources()
+                        .getDimensionPixelSize(
+                                VerticalTabUtils.isTablet(context)
+                                        ? R.dimen.vertical_tab_item_collapsed_height_tablet
+                                        : R.dimen.vertical_tab_item_collapsed_size);
+        assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, pinnedView.getLayoutParams().width);
+        assertEquals(expectedHeight, pinnedView.getLayoutParams().height);
+        ViewGroup.MarginLayoutParams lp =
+                (ViewGroup.MarginLayoutParams) pinnedView.getLayoutParams();
+        assertEquals(getCollapsedChildMarginStart(context), lp.getMarginStart());
     }
 
     @Test
@@ -2026,8 +2153,7 @@ public class TabVerticalViewBinderUnitTest {
         // Verify padding is collapsed margin
         ViewGroup.MarginLayoutParams lp =
                 (ViewGroup.MarginLayoutParams) headerView.getLayoutParams();
-        int expectedMargin =
-                TabVerticalViewBinder.getCollapsedChildMarginStart(headerView.getContext());
+        int expectedMargin = getCollapsedChildMarginStart(headerView.getContext());
         assertEquals(expectedMargin, lp.getMarginStart());
 
         // Verify chevron is centered within the collapsed view
@@ -2300,7 +2426,8 @@ public class TabVerticalViewBinderUnitTest {
                 mActivity
                         .getResources()
                         .getDimensionPixelSize(R.dimen.vertical_tab_item_padding_horizontal);
-        assertEquals(expectedTouchPaddingHorizontal, headerView.getPaddingStart());
+        assertEquals(0, headerView.getPaddingStart());
+        assertEquals(expectedTouchPaddingHorizontal, headerView.getPaddingEnd());
         assertEquals(expectedTouchPadding, headerView.getPaddingTop());
         assertEquals(expectedTouchPadding, headerView.getPaddingBottom());
         assertTrue(headerView.getBackground() instanceof InsetDrawable);
@@ -2450,7 +2577,7 @@ public class TabVerticalViewBinderUnitTest {
 
         ViewGroup.MarginLayoutParams lp =
                 (ViewGroup.MarginLayoutParams) pinnedView.getLayoutParams();
-        int expectedMarginStart = TabVerticalViewBinder.getCollapsedChildMarginStart(context);
+        int expectedMarginStart = getCollapsedChildMarginStart(context);
         assertEquals(expectedMarginStart, lp.getMarginStart());
 
         int expectedMarginBottom =
@@ -2666,14 +2793,11 @@ public class TabVerticalViewBinderUnitTest {
                 TabProperties.TAB_ACTION_BUTTON_DATA,
                 new TabActionButtonData(TabActionButtonType.CLOSE, mCloseListener));
 
-        // Pinned rows look the same in every rail state: no title, no close button, centered
-        // favicon.
-        // TODO(crbug.com/542280452): EXPANDED_FOR_HOVERING UI will be updated.
+        // Pinned rows look the same in the expanded and collapsed rail: no title, no close button,
+        // centered favicon.
         for (int railCollapseState :
                 new @RailCollapseState int[] {
-                    RailCollapseState.EXPANDED,
-                    RailCollapseState.EXPANDED_FOR_HOVERING,
-                    RailCollapseState.COLLAPSED
+                    RailCollapseState.EXPANDED, RailCollapseState.COLLAPSED
                 }) {
             mModel.set(TabProperties.RAIL_COLLAPSE_STATE, railCollapseState);
             TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.TITLE);
@@ -2689,6 +2813,19 @@ public class TabVerticalViewBinderUnitTest {
                     message, ConstraintLayout.LayoutParams.PARENT_ID, faviconParams.startToStart);
             assertEquals(message, ConstraintLayout.LayoutParams.PARENT_ID, faviconParams.endToEnd);
         }
+
+        // While the rail is expanded for hovering, pinned rows are not compact: the favicon is
+        // start-aligned. They still never show a title or close button.
+        mModel.set(TabProperties.FAVICON_FETCHER, mFaviconFetcher);
+        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.EXPANDED_FOR_HOVERING);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.TITLE);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.RAIL_COLLAPSE_STATE);
+        assertEquals(View.GONE, titleView.getVisibility());
+        assertEquals(View.GONE, actionButton.getVisibility());
+        ConstraintLayout.LayoutParams faviconParams =
+                (ConstraintLayout.LayoutParams) faviconContainer.getLayoutParams();
+        assertEquals(ConstraintLayout.LayoutParams.PARENT_ID, faviconParams.startToStart);
+        assertEquals(ConstraintLayout.LayoutParams.UNSET, faviconParams.endToEnd);
     }
 
     @Test
@@ -2731,5 +2868,16 @@ public class TabVerticalViewBinderUnitTest {
         assertEquals(
                 mActivity.getResources().getDimensionPixelSize(R.dimen.vertical_tab_item_height),
                 TabVerticalViewBinder.getTabItemHeight(mActivity));
+    }
+
+    private static int getCollapsedChildMarginStart(Context context) {
+        int collapsedItemWidth =
+                context.getResources()
+                        .getDimensionPixelSize(
+                                VerticalTabUtils.isTablet(context)
+                                        ? R.dimen.vertical_tab_item_collapsed_width_tablet
+                                        : R.dimen.vertical_tab_item_collapsed_size);
+        return VerticalTabRailLayout.getCollapsedRailCenteringMarginStart(
+                context, collapsedItemWidth);
     }
 }

@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListRecyclerView;
 import org.chromium.chrome.browser.tasks.tab_management.vertical_tabs.VerticalTabListProperties.RailCollapseState;
 import org.chromium.chrome.browser.ui.vertical_tabs.VerticalTabUtils;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.ui.base.ViewUtils;
 
 /**
  * Root layout for the vertical tab rail container. Encapsulates child view layout styling based on
@@ -349,16 +350,24 @@ public class VerticalTabRailLayout extends ConstraintLayout {
         }
         mLastAppliedCollapseState = mCollapseState;
 
-        boolean isCollapsed = mCollapseState == RailCollapseState.COLLAPSED;
-        boolean showSingleRowHeader = !isCollapsed;
+        // The collapsed and hover-expanded rails keep the header buttons in their collapsed
+        // positions.
+        boolean showSingleRowHeader =
+                !VerticalTabRailCollapseController.shouldUseCollapsedPositioning(mCollapseState);
 
         Resources res = getResources();
         boolean isTablet = VerticalTabUtils.isTablet(getContext());
 
-        // The whole header button container
+        // The whole header button container. The buttons are start-aligned with an explicit offset
+        // rather than centered, so they keep the same position when the rail is expanded for
+        // hovering.
         mHeaderContainer.setOrientation(
                 showSingleRowHeader ? LinearLayout.HORIZONTAL : LinearLayout.VERTICAL);
-        mHeaderContainer.setGravity(isCollapsed ? Gravity.CENTER_HORIZONTAL : Gravity.NO_GRAVITY);
+        mHeaderContainer.setGravity(showSingleRowHeader ? Gravity.NO_GRAVITY : Gravity.START);
+        int headerButtonMarginStart =
+                showSingleRowHeader
+                        ? 0
+                        : getCollapsedRailCenteringMarginStart(getContext(), mHeaderButtonWidthPx);
 
         // Collapse button
         boolean isManuallyExpanded = mCollapseState == RailCollapseState.EXPANDED;
@@ -366,6 +375,7 @@ public class VerticalTabRailLayout extends ConstraintLayout {
                 (ViewGroup.MarginLayoutParams) mCollapseButton.getLayoutParams();
         collapseParams.width = mHeaderButtonWidthPx;
         collapseParams.height = mHeaderButtonHeightPx;
+        collapseParams.setMarginStart(headerButtonMarginStart);
         collapseParams.bottomMargin =
                 showSingleRowHeader
                         ? 0
@@ -397,10 +407,24 @@ public class VerticalTabRailLayout extends ConstraintLayout {
                 (LinearLayout.LayoutParams) mSearchButton.getLayoutParams();
         searchParams.width = mHeaderButtonWidthPx;
         searchParams.height = mHeaderButtonHeightPx;
+        searchParams.setMarginStart(headerButtonMarginStart);
 
         mCollapseButton.setLayoutParams(collapseParams);
         mSearchButton.setLayoutParams(searchParams);
         updateFooterLayout();
+    }
+
+    /**
+     * Returns the start margin in pixels that places a rail child of the given width at the same
+     * horizontal position it has when centered in the collapsed rail.
+     */
+    static @Px int getCollapsedRailCenteringMarginStart(Context context, @Px int childWidthPx) {
+        int collapsedRailWidthPx =
+                ViewUtils.dpToPx(context, VerticalTabUtils.SIDE_UI_CONTAINER_COLLAPSED_WIDTH_DP);
+        int railPaddingStartPx =
+                context.getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tabs_rail_horizontal_margin);
+        return (collapsedRailWidthPx - childWidthPx) / 2 - railPaddingStartPx;
     }
 
     /**
