@@ -12,9 +12,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.spy;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.view.Gravity;
@@ -71,8 +71,52 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for LocationBarTablet. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class LocationBarTabletUnitTest {
+    private static class TestLocationBarTablet extends LocationBarTablet {
+        private Integer mUrlBarTextWidth;
+        private Integer mActivationChipCompactWidthDelta;
+        private Integer mUrlBarWidth;
+        private Boolean mIsActivationChipCompact;
+
+        TestLocationBarTablet(Context context) {
+            super(context, null);
+        }
+
+        void setOverflowTestParams(
+                int urlBarTextWidth,
+                int activationChipCompactWidthDelta,
+                int urlBarWidth,
+                boolean isActivationChipCompact) {
+            mUrlBarTextWidth = urlBarTextWidth;
+            mActivationChipCompactWidthDelta = activationChipCompactWidthDelta;
+            mUrlBarWidth = urlBarWidth;
+            mIsActivationChipCompact = isActivationChipCompact;
+        }
+
+        @Override
+        int getUrlBarTextWidth() {
+            return mUrlBarTextWidth != null ? mUrlBarTextWidth : super.getUrlBarTextWidth();
+        }
+
+        @Override
+        int getActivationChipCompactWidthDelta() {
+            return mActivationChipCompactWidthDelta != null
+                    ? mActivationChipCompactWidthDelta
+                    : super.getActivationChipCompactWidthDelta();
+        }
+
+        @Override
+        int getUrlBarWidth() {
+            return mUrlBarWidth != null ? mUrlBarWidth : super.getUrlBarWidth();
+        }
+
+        @Override
+        boolean isActivationChipCompact() {
+            return mIsActivationChipCompact != null
+                    ? mIsActivationChipCompact
+                    : super.isActivationChipCompact();
+        }
+    }
 
     private static final float DIP_SCALE = 2.0f;
     private static final int POPUP_INSET_DP = 8;
@@ -90,7 +134,7 @@ public class LocationBarTabletUnitTest {
     @Mock private ViewOutlineProvider mOutlineProvider;
 
     private Activity mActivity;
-    private LocationBarTablet mLocationBarTablet;
+    private TestLocationBarTablet mLocationBarTablet;
     private FrameLayout mHolderView;
     private View mContainerView;
 
@@ -100,7 +144,7 @@ public class LocationBarTabletUnitTest {
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         LinearLayout contentView = new LinearLayout(mActivity);
         mHolderView = new FrameLayout(mActivity);
-        mLocationBarTablet = new LocationBarTablet(mActivity, null);
+        mLocationBarTablet = new TestLocationBarTablet(mActivity);
         mLocationBarTablet.setBackgroundResource(
                 R.drawable.modern_toolbar_tablet_text_box_background);
         LayoutParams params =
@@ -965,38 +1009,37 @@ public class LocationBarTabletUnitTest {
 
     @Test
     public void isUrlBarTextOverflowing_overflowsWhenExpanded() {
-        LocationBarTablet spyTablet = spy(mLocationBarTablet);
-        doReturn(150).when(spyTablet).getUrlBarTextWidth();
-        doReturn(50).when(spyTablet).getActivationChipCompactWidthDelta();
-        doReturn(100).when(spyTablet).getUrlBarWidth();
-        doReturn(false).when(spyTablet).isActivationChipCompact();
+        mLocationBarTablet.setOverflowTestParams(
+                /* urlBarTextWidth= */ 150,
+                /* activationChipCompactWidthDelta= */ 50,
+                /* urlBarWidth= */ 100,
+                /* isActivationChipCompact= */ false);
 
-        assertTrue(spyTablet.isUrlBarTextOverflowing());
+        assertTrue(mLocationBarTablet.isUrlBarTextOverflowing());
     }
 
     @Test
     public void isUrlBarTextOverflowing_doesNotOverflowWhenTextFits() {
-        LocationBarTablet spyTablet = spy(mLocationBarTablet);
-        doReturn(50).when(spyTablet).getUrlBarTextWidth();
-        doReturn(50).when(spyTablet).getActivationChipCompactWidthDelta();
-        doReturn(150).when(spyTablet).getUrlBarWidth();
-        doReturn(false).when(spyTablet).isActivationChipCompact();
+        mLocationBarTablet.setOverflowTestParams(
+                /* urlBarTextWidth= */ 50,
+                /* activationChipCompactWidthDelta= */ 50,
+                /* urlBarWidth= */ 150,
+                /* isActivationChipCompact= */ false);
 
-        assertFalse(spyTablet.isUrlBarTextOverflowing());
+        assertFalse(mLocationBarTablet.isUrlBarTextOverflowing());
     }
 
     @Test
     public void isUrlBarTextOverflowing_safeAgainstOscillationWhenCompact() {
-        LocationBarTablet spyTablet = spy(mLocationBarTablet);
-        doReturn(120).when(spyTablet).getUrlBarTextWidth();
-        doReturn(50).when(spyTablet).getActivationChipCompactWidthDelta();
-
         // When compact, url bar width grew to 150 because chip shrank by 50.
         // Effective expanded baseline is 150 - 50 = 100 < 120 text width -> still overflowing.
-        doReturn(150).when(spyTablet).getUrlBarWidth();
-        doReturn(true).when(spyTablet).isActivationChipCompact();
+        mLocationBarTablet.setOverflowTestParams(
+                /* urlBarTextWidth= */ 120,
+                /* activationChipCompactWidthDelta= */ 50,
+                /* urlBarWidth= */ 150,
+                /* isActivationChipCompact= */ true);
 
-        assertTrue(spyTablet.isUrlBarTextOverflowing());
+        assertTrue(mLocationBarTablet.isUrlBarTextOverflowing());
     }
 
     // The class-level @Restriction does not configure Robolectric's screen size; without a
