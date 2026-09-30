@@ -2295,7 +2295,6 @@ static_library("ui") {
       # WebUI interface binders for desktop, which need this target's headers.
       "//chrome/browser/chrome_browser_interface_binders_webui_parts_desktop.cc",
       "browser.cc",
-      "browser.h",
       "browser_tabstrip.cc",
       "browser_tabstrip.h",
     ]
