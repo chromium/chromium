@@ -6,9 +6,12 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <functional>
 #include <utility>
 #include <vector>
 
+#include "base/containers/extend.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
@@ -518,7 +521,8 @@ void CriticalActionDatabase::AddTimeRangeConditions(
 
 // static
 std::string CriticalActionDatabase::BuildGetCriticalActionsQuery(
-    const CriticalActionQueryOptions& options) {
+    const CriticalActionQueryOptions& options,
+    size_t batch_visit_ids_count) {
   std::vector<std::string> conditions;
   std::string sql_query =
       "SELECT e.critical_action_id, e.timestamp, v.visit_id, "
@@ -542,9 +546,8 @@ std::string CriticalActionDatabase::BuildGetCriticalActionsQuery(
   // not synced between devices. As a result, visits that occurred on
   // other devices will not have matching critical actions in the local
   // database.
-  if (!options.visit_ids.empty()) {
-    conditions.push_back(
-        BuildInCondition("v.visit_id", options.visit_ids.size()));
+  if (batch_visit_ids_count > 0) {
+    conditions.push_back(BuildInCondition("v.visit_id", batch_visit_ids_count));
   }
   if (options.conversation_id.has_value()) {
     conditions.push_back("c.conversation_id = ?");
@@ -570,7 +573,8 @@ std::string CriticalActionDatabase::BuildGetCriticalActionsQuery(
 // static
 void CriticalActionDatabase::BindQueryOptions(
     sql::Statement& statement,
-    const CriticalActionQueryOptions& options) {
+    const CriticalActionQueryOptions& options,
+    base::span<const int64_t> batch_visit_ids) {
   int bind_index = 0;
   if (options.begin_time.has_value()) {
     statement.BindTime(bind_index++, *options.begin_time);
@@ -583,10 +587,8 @@ void CriticalActionDatabase::BindQueryOptions(
       statement.BindInt(bind_index++, static_cast<int>(type));
     }
   }
-  if (!options.visit_ids.empty()) {
-    for (int64_t visit_id : options.visit_ids) {
-      statement.BindInt64(bind_index++, visit_id);
-    }
+  for (int64_t visit_id : batch_visit_ids) {
+    statement.BindInt64(bind_index++, visit_id);
   }
   if (options.conversation_id.has_value()) {
     statement.BindString(bind_index++, *options.conversation_id);
@@ -613,21 +615,58 @@ CriticalActionEntry CriticalActionDatabase::StatementToEntry(
   return entry;
 }
 
-std::vector<CriticalActionEntry> CriticalActionDatabase::GetCriticalActions(
-    const CriticalActionQueryOptions& options) {
+std::vector<CriticalActionEntry>
+CriticalActionDatabase::GetCriticalActionsBatch(
+    const CriticalActionQueryOptions& options,
+    base::span<const int64_t> batch_visit_ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  std::string sql_query =
+      BuildGetCriticalActionsQuery(options, batch_visit_ids.size());
+  sql::Statement statement(db_.GetReadonlyStatement(sql_query));
+  if (!statement.is_valid()) {
+    return {};
+  }
+  BindQueryOptions(statement, options, batch_visit_ids);
+
   std::vector<CriticalActionEntry> entries;
-
-  std::string sql_query = BuildGetCriticalActionsQuery(options);
-  sql::Statement statement(db_.GetUniqueStatement(sql_query));
-
-  BindQueryOptions(statement, options);
-
   while (statement.Step()) {
     entries.push_back(StatementToEntry(statement));
   }
 
   return entries;
+}
+
+std::vector<CriticalActionEntry> CriticalActionDatabase::GetCriticalActions(
+    const CriticalActionQueryOptions& options) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (options.visit_ids.size() <= kMaxBatchSize) {
+    return GetCriticalActionsBatch(options, options.visit_ids);
+  }
+
+  base::span<const int64_t> visit_ids_span(options.visit_ids);
+  std::vector<CriticalActionEntry> all_entries;
+
+  for (size_t batch_start_index = 0; batch_start_index < visit_ids_span.size();
+       batch_start_index += kMaxBatchSize) {
+    const size_t batch_size =
+        std::min(kMaxBatchSize, visit_ids_span.size() - batch_start_index);
+    base::Extend(all_entries, GetCriticalActionsBatch(
+                                  options, visit_ids_span.subspan(
+                                               batch_start_index, batch_size)));
+  }
+
+  // Preserve the expected ORDER BY timestamp DESC across all batches.
+  std::ranges::sort(all_entries, std::ranges::greater{},
+                    &CriticalActionEntry::timestamp);
+
+  if (options.max_count.has_value() &&
+      all_entries.size() > *options.max_count) {
+    all_entries.resize(*options.max_count);
+  }
+
+  return all_entries;
 }
 
 bool CriticalActionDatabase::DeleteCriticalAction(

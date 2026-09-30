@@ -11,6 +11,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/sequence_checker.h"
 #include "base/thread_annotations.h"
@@ -55,7 +56,8 @@ class CriticalActionDatabase {
 
   // Retrieves critical action records matching the given `options`.
   // Returns a list of matching critical action entries, sorted by timestamp
-  // descending.
+  // descending. `options.visit_ids` must not contain duplicates, as IDs split
+  // across batched queries would return duplicate entries.
   std::vector<CriticalActionEntry> GetCriticalActions(
       const CriticalActionQueryOptions& options);
 
@@ -100,14 +102,25 @@ class CriticalActionDatabase {
       std::optional<base::Time> begin_time,
       std::optional<base::Time> end_time);
 
-  // Builds the SQL query string for `GetCriticalActions` given `options`.
+  // Builds the SQL query string for `GetCriticalActions` given `options` and
+  // `batch_visit_ids_count` placeholders for the visit_id IN (...) clause.
   static std::string BuildGetCriticalActionsQuery(
-      const CriticalActionQueryOptions& options);
+      const CriticalActionQueryOptions& options,
+      size_t batch_visit_ids_count);
 
  private:
-  // Binds the filter values from `options` into `statement`.
+  // Executes a single SELECT query using the filters in `options` and the
+  // given batch_visit_ids (where batch_visit_ids.size() <= kMaxBatchSize).
+  std::vector<CriticalActionEntry> GetCriticalActionsBatch(
+      const CriticalActionQueryOptions& options,
+      base::span<const int64_t> batch_visit_ids);
+
+  // Binds the filter values from `options` into `statement`, using
+  // batch_visit_ids so that batched queries only bind the current batch's slice
+  // of visit IDs.
   static void BindQueryOptions(sql::Statement& statement,
-                               const CriticalActionQueryOptions& options);
+                               const CriticalActionQueryOptions& options,
+                               base::span<const int64_t> batch_visit_ids);
 
   // Constructs a CriticalActionEntry from the current row of `statement`.
   static CriticalActionEntry StatementToEntry(sql::Statement& statement);

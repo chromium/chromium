@@ -326,6 +326,64 @@ TEST_F(CriticalActionDatabaseTest, GetCriticalActionsWithOptions) {
   database.Close();
 }
 
+TEST_F(CriticalActionDatabaseTest, GetCriticalActionsBatchesLargeVisitIds) {
+  CriticalActionDatabase database(db_path_);
+  ASSERT_TRUE(database.Init());
+
+  base::Time base_time = base::Time::Now();
+
+  // Add entries across three different 500-item batches (1..500, 501..1000,
+  // 1001..1200).
+  CriticalActionEntry entry_batch1 = CreateDefaultEntry();
+  entry_batch1.visit_id = 10;
+  entry_batch1.timestamp = base_time - base::Hours(3);
+  ASSERT_TRUE(database.AddCriticalAction(entry_batch1));
+
+  CriticalActionEntry entry_batch2 = CreateDefaultEntry();
+  entry_batch2.visit_id = 600;
+  entry_batch2.timestamp = base_time - base::Hours(1);
+  ASSERT_TRUE(database.AddCriticalAction(entry_batch2));
+
+  CriticalActionEntry entry_batch3 = CreateDefaultEntry();
+  entry_batch3.visit_id = 1100;
+  entry_batch3.timestamp = base_time - base::Hours(2);
+  ASSERT_TRUE(database.AddCriticalAction(entry_batch3));
+
+  // Add an entry with a visit_id outside the queried range (1..1200) to verify
+  // it is excluded.
+  CriticalActionEntry entry_unmatched = CreateDefaultEntry();
+  entry_unmatched.visit_id = 2000;
+  entry_unmatched.timestamp = base_time;
+  ASSERT_TRUE(database.AddCriticalAction(entry_unmatched));
+
+  // Query with 1200 visit IDs (exceeding both kMaxBatchSize=500 and SQLite's
+  // 999 parameter limit).
+  CriticalActionQueryOptions options;
+  options.visit_ids.resize(1200);
+  for (size_t i = 0; i < options.visit_ids.size(); ++i) {
+    options.visit_ids[i] = static_cast<int64_t>(i + 1);
+  }
+
+  {
+    auto results = database.GetCriticalActions(options);
+    ASSERT_EQ(results.size(), 3u);
+    EXPECT_EQ(results[0].critical_action_id, entry_batch2.critical_action_id);
+    EXPECT_EQ(results[1].critical_action_id, entry_batch3.critical_action_id);
+    EXPECT_EQ(results[2].critical_action_id, entry_batch1.critical_action_id);
+  }
+
+  // Verify max_count is respected after merging and sorting batches.
+  {
+    options.max_count = 2;
+    auto results = database.GetCriticalActions(options);
+    ASSERT_EQ(results.size(), 2u);
+    EXPECT_EQ(results[0].critical_action_id, entry_batch2.critical_action_id);
+    EXPECT_EQ(results[1].critical_action_id, entry_batch3.critical_action_id);
+  }
+
+  database.Close();
+}
+
 TEST_F(CriticalActionDatabaseTest, MigrationV1ToV2) {
   // 1. Manually set up a V1 database using raw SQLite.
   {
@@ -566,8 +624,8 @@ TEST(CriticalActionDatabaseHelpersTest, AddTimeRangeConditions) {
 TEST(CriticalActionDatabaseHelpersTest,
      BuildGetCriticalActionsQuery_DefaultOptions) {
   CriticalActionQueryOptions options;
-  std::string query =
-      CriticalActionDatabase::BuildGetCriticalActionsQuery(options);
+  std::string query = CriticalActionDatabase::BuildGetCriticalActionsQuery(
+      options, /*batch_visit_ids_count=*/0);
   EXPECT_THAT(query, HasSubstr("SELECT e.critical_action_id"));
   EXPECT_THAT(query, Not(HasSubstr("e.url")));
   EXPECT_THAT(query, Not(HasSubstr("WHERE")));
@@ -580,8 +638,8 @@ TEST(CriticalActionDatabaseHelpersTest,
   CriticalActionQueryOptions options;
   options.begin_time = base::Time::FromTimeT(1000);
   options.end_time = base::Time::FromTimeT(2000);
-  std::string query =
-      CriticalActionDatabase::BuildGetCriticalActionsQuery(options);
+  std::string query = CriticalActionDatabase::BuildGetCriticalActionsQuery(
+      options, /*batch_visit_ids_count=*/0);
   EXPECT_THAT(query, HasSubstr("WHERE e.timestamp >= ? AND e.timestamp < ?"));
   EXPECT_THAT(query, HasSubstr("ORDER BY e.timestamp DESC"));
   EXPECT_THAT(query, Not(HasSubstr("LIMIT")));
@@ -596,8 +654,8 @@ TEST(CriticalActionDatabaseHelpersTest,
   options.actor_task_id = "test_task";
   options.max_count = 50;
 
-  std::string query =
-      CriticalActionDatabase::BuildGetCriticalActionsQuery(options);
+  std::string query = CriticalActionDatabase::BuildGetCriticalActionsQuery(
+      options, options.visit_ids.size());
   EXPECT_THAT(query, HasSubstr("WHERE e.action_type IN (?,?) AND "
                                "v.visit_id IN (?,?,?) AND "
                                "c.conversation_id = ? AND "
