@@ -45,13 +45,6 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
     contents.ByteSpan().copy_from(source);
     return Create(std::move(contents));
   }
-  static DOMArrayBuffer* CreateDetached() {
-    DOMArrayBuffer* result =
-        MakeGarbageCollected<DOMArrayBuffer>(ArrayBufferContents());
-    result->is_detached_ = true;
-    return result;
-  }
-
   static DOMArrayBuffer* Create(scoped_refptr<SharedBuffer>);
   static DOMArrayBuffer* Create(const Vector<base::span<const uint8_t>>&);
 
@@ -68,6 +61,8 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
   static DOMArrayBuffer* CreateUninitializedOrNull(size_t num_elements,
                                                    size_t element_byte_size);
 
+  // Note: passing an invalid ArrayBufferContents (such as created by
+  // the default constructor) results in a detached ArrayBuffer.
   explicit DOMArrayBuffer(ArrayBufferContents contents)
       : DOMArrayBufferBase(std::move(contents)) {}
 
@@ -100,7 +95,7 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
 
   static void SetArrayBufferDetachCallback(v8::Isolate* isolate);
 
-  bool IsDetached() const { return is_detached_; }
+  bool IsDetached() const { return !contents_.BackingStore(); }
 
   // Blink-side code generally does not need to detach array buffers, so this
   // method is just for tests. In production, a common way to detach a buffer
@@ -108,7 +103,6 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
   void DetachForTesting() {
     CHECK_IS_TEST();
     contents_.Reset();
-    is_detached_ = true;
   }
 
   v8::Local<v8::Object> AssociateWithWrapper(
@@ -134,9 +128,6 @@ class CORE_EXPORT DOMArrayBuffer : public DOMArrayBufferBase {
   // we can write `array_buffer->SetDetachKey(isolate, "my key")`.
   TraceWrapperV8Reference<v8::String> detach_key_;
 
-  // TODO(caseq): see if we can get rid of it in favor of checking
-  // contents_.IsValid().
-  bool is_detached_ = false;
   bool has_non_main_world_wrappers_ = false;
 };
 

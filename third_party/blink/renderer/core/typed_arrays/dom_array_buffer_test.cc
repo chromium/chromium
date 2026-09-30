@@ -60,8 +60,8 @@ TEST(DOMArrayBufferTest, TransferredArrayBufferIsDetached) {
 TEST(DOMArrayBufferTest, TransferredEmptyArrayBufferIsDetached) {
   test::TaskEnvironment task_environment;
   V8TestingScope v8_scope;
-  ArrayBufferContents src;
-  auto* buffer = DOMArrayBuffer::Create(src);
+  auto* buffer = DOMArrayBuffer::Create(0, 1);
+  ASSERT_FALSE(buffer->IsDetached());
   ArrayBufferContents dst;
   ASSERT_TRUE(buffer->Transfer(v8_scope.GetIsolate(), dst,
                                v8_scope.GetExceptionState()));
@@ -70,13 +70,25 @@ TEST(DOMArrayBufferTest, TransferredEmptyArrayBufferIsDetached) {
   EXPECT_TRUE(dst.IsValid());
 }
 
-TEST(DOMArrayBufferTest, WrapEmpty) {
+TEST(DOMArrayBufferTest, WrapDetached) {
   test::TaskEnvironment task_environment;
   V8TestingScope v8_scope;
   ArrayBufferContents src;
   auto* buffer = DOMArrayBuffer::Create(src);
+  EXPECT_TRUE(buffer->IsDetached());
   v8::Local<v8::Value> wrapped = buffer->Wrap(v8_scope.GetScriptState());
   ASSERT_FALSE(wrapped.IsEmpty());
+  EXPECT_TRUE(wrapped.As<v8::ArrayBuffer>()->WasDetached());
+}
+
+TEST(DOMArrayBufferTest, WrapEmpty) {
+  test::TaskEnvironment task_environment;
+  V8TestingScope v8_scope;
+  auto* buffer = DOMArrayBuffer::Create(0, 1);
+  EXPECT_FALSE(buffer->IsDetached());
+  v8::Local<v8::Value> wrapped = buffer->Wrap(v8_scope.GetScriptState());
+  ASSERT_FALSE(wrapped.IsEmpty());
+  EXPECT_FALSE(wrapped.As<v8::ArrayBuffer>()->WasDetached());
 }
 
 TEST(DOMArrayBufferTest, TransferCopiesWhenBackingStoreHasMultipleRefs) {

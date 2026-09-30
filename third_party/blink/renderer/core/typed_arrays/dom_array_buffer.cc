@@ -156,11 +156,12 @@ void DOMArrayBuffer::OnArrayBufferDetached(v8::Isolate* isolate,
                                            v8::Local<v8::ArrayBuffer> buffer) {
   auto* array_buffer = ToScriptWrappable<DOMArrayBuffer>(isolate, buffer);
   CHECK(array_buffer);  // We should only be called for AB wrapping something.
-  if (array_buffer->is_detached_) {
+  // Note this method may be re-entered via DetachWrappers()->v8::AB::Detach(),
+  // but the below line would prevent further recursion.
+  if (array_buffer->IsDetached()) {
     return;
   }
   array_buffer->contents_.Reset();
-  array_buffer->is_detached_ = true;
 
   if (array_buffer->has_non_main_world_wrappers()) {
     CHECK(array_buffer->DetachWrappers(isolate,
@@ -229,18 +230,10 @@ v8::Maybe<bool> DOMArrayBuffer::TransferDetachable(
     return v8::Nothing<bool>();
   }
 
-  if (!contents.IsValid()) {
-    // We transfer an empty ArrayBuffer, we can just allocate an empty content.
-    result = ArrayBufferContents(
-        0, 1, ArrayBufferContents::kNotShared,
-        ArrayBufferContents::kDontInitialize,
-        ArrayBufferContents::AllocationFailureBehavior::kCrash);
-  } else {
-    contents.TransferOrCopy(result);
-  }
+  CHECK(contents.BackingStore());
+  CHECK(IsDetached());
 
-  CHECK(!contents_.IsValid());
-  is_detached_ = true;
+  contents.TransferOrCopy(result);
   return v8::Just(true);
 }
 
@@ -330,15 +323,16 @@ v8::Local<v8::Value> DOMArrayBuffer::Wrap(ScriptState* script_state) {
   {
     v8::Context::Scope context_scope(script_state->GetContext());
     std::shared_ptr<v8::BackingStore> backing_store = Content()->BackingStore();
-    wrapper = backing_store
-                  ? v8::ArrayBuffer::New(script_state->GetIsolate(),
-                                         std::move(backing_store))
-                  : v8::ArrayBuffer::New(script_state->GetIsolate(), 0);
 
-    if (is_detached_) {
+    if (backing_store) {
+      wrapper = v8::ArrayBuffer::New(script_state->GetIsolate(),
+                                     std::move(backing_store));
+      if (!detach_key_.IsEmpty()) {
+        wrapper->SetDetachKey(detach_key_.Get(script_state->GetIsolate()));
+      }
+    } else {
+      wrapper = v8::ArrayBuffer::New(script_state->GetIsolate(), 0);
       wrapper->Detach(v8::Local<v8::Value>()).Check();
-    } else if (!detach_key_.IsEmpty()) {
-      wrapper->SetDetachKey(detach_key_.Get(script_state->GetIsolate()));
     }
   }
 
