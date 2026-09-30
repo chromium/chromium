@@ -27,7 +27,6 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -42,7 +41,6 @@
 #include "sql/test/test_helpers.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_database.h"
-#include "storage/browser/quota/quota_features.h"
 #include "storage/browser/quota/quota_internals.mojom.h"
 #include "storage/browser/quota/quota_manager_impl.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -652,7 +650,6 @@ class QuotaManagerImplTest : public testing::Test {
 struct ReportedQuotaParams {
   bool is_incognito;
   bool report_static_storage_quota;
-  bool incognito_flag_enabled;
   int64_t expected_quota;
   std::string test_name;
 };
@@ -3290,12 +3287,6 @@ TEST_F(QuotaManagerImplTest, StaticReportedQuota_Bucket_BucketNotFound) {
 TEST_P(QuotaManagerImplParamTest, ReportedQuotaConfigurability) {
   const auto& params = GetParam();
 
-  base::test::ScopedFeatureList feature_list;
-  if (params.incognito_flag_enabled) {
-    feature_list.InitAndEnableFeature(features::kIncognitoStaticStorageQuota);
-  } else {
-    feature_list.InitAndDisableFeature(features::kIncognitoStaticStorageQuota);
-  }
   ResetQuotaManagerImpl(params.is_incognito,
                         params.report_static_storage_quota);
 
@@ -3326,24 +3317,14 @@ INSTANTIATE_TEST_SUITE_P(
     QuotaManagerImplParamTest,
     ::testing::Values(
         // report_static_storage_quota = true
-        ReportedQuotaParams{true, true, true, kIncognitoStaticQuota,
-                            "Incognito_Static_FlagEnabled"},
-        ReportedQuotaParams{true, true, false, kStaticQuota,
-                            "Incognito_Static_FlagDisabled"},
-        ReportedQuotaParams{false, true, true, kStaticQuota,
-                            "NotIncognito_Static_FlagEnabled"},
-        ReportedQuotaParams{false, true, false, kStaticQuota,
-                            "NotIncognito_Static_FlagDisabled"},
+        ReportedQuotaParams{true, true, kIncognitoStaticQuota,
+                            "Incognito_Static"},
+        ReportedQuotaParams{false, true, kStaticQuota, "NotIncognito_Static"},
 
         // report_static_storage_quota = false (Dynamic Quota)
-        ReportedQuotaParams{true, false, true, kDynamicQuota,
-                            "Incognito_Dynamic_FlagEnabled"},
-        ReportedQuotaParams{true, false, false, kDynamicQuota,
-                            "Incognito_Dynamic_FlagDisabled"},
-        ReportedQuotaParams{false, false, true, kDynamicQuota,
-                            "NotIncognito_Dynamic_FlagEnabled"},
-        ReportedQuotaParams{false, false, false, kDynamicQuota,
-                            "NotIncognito_Dynamic_FlagDisabled"}),
+        ReportedQuotaParams{true, false, kDynamicQuota, "Incognito_Dynamic"},
+        ReportedQuotaParams{false, false, kDynamicQuota,
+                            "NotIncognito_Dynamic"}),
     [](const ::testing::TestParamInfo<QuotaManagerImplParamTest::ParamType>&
            info) { return info.param.test_name; });
 

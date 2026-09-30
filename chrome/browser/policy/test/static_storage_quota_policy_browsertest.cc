@@ -30,7 +30,6 @@ const int64_t kGBytes = 1024 * 1024 * 1024;
 
 const int64_t kDynamicQuotaForTestBrowser = 5 * 1024 * 1024;  // 5 MB
 
-const int64_t kMinBucketStaticQuota = 1 * kGBytes;       // 1 GB
 const int64_t kDefaultBucketStaticQuota = 10 * kGBytes;  // 10 GB
 }  // namespace
 
@@ -85,59 +84,23 @@ class StaticStorageQuotaFeatureDisabledTest
   }
 };
 
-// Tests for kIncognitoStaticStorageQuota feature which ensures consistent
-// quota reporting in Incognito mode to prevent Incognito detection.
-// This flag is expected to be merged into kStaticStorageQuota once it reaches
-// 100% stable (see b/491017282).
-class IncognitoStaticStorageQuotaEnabledTest
-    : public StaticStorageQuotaPolicyTest {
- public:
-  IncognitoStaticStorageQuotaEnabledTest() {
-    feature_list_.InitWithFeatureStates(
-        {{storage::features::kIncognitoStaticStorageQuota, true},
-         {storage::features::kStaticStorageQuota, true}});
-  }
-};
-
-class IncognitoStaticStorageQuotaDisabledTest
-    : public StaticStorageQuotaPolicyTest {
- public:
-  IncognitoStaticStorageQuotaDisabledTest() {
-    feature_list_.InitWithFeatureStates(
-        {{storage::features::kIncognitoStaticStorageQuota, false},
-         {storage::features::kStaticStorageQuota, true}});
-  }
-};
-
 IN_PROC_BROWSER_TEST_F(StaticStorageQuotaFeatureEnabledTest, RegularSession) {
   NavigateToEmptyPage(browser());
   // Expect reported quota to be exactly 10 GiB.
   EXPECT_EQ(GetEstimatedQuota(browser()), kDefaultBucketStaticQuota);
 }
 
-IN_PROC_BROWSER_TEST_F(StaticStorageQuotaFeatureDisabledTest, RegularSession) {
-  NavigateToEmptyPage(browser());
-  EXPECT_EQ(GetEstimatedQuota(browser()), kDynamicQuotaForTestBrowser);
-}
-
-IN_PROC_BROWSER_TEST_F(IncognitoStaticStorageQuotaEnabledTest,
-                       IncognitoSession) {
+IN_PROC_BROWSER_TEST_F(StaticStorageQuotaFeatureEnabledTest, IncognitoSession) {
   BrowserWindowInterface* incognito_browser =
       OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
   NavigateToEmptyPage(incognito_browser);
-  // Expect reported quota to be exactly 10 GiB in Incognito mode with the
-  // kIncognitoStaticStorageQuota feature enabled.
+  // Expect reported quota to be exactly 10 GiB in Incognito mode.
   EXPECT_EQ(GetEstimatedQuota(incognito_browser), kDefaultBucketStaticQuota);
 }
 
-IN_PROC_BROWSER_TEST_F(IncognitoStaticStorageQuotaDisabledTest,
-                       IncognitoSession) {
-  BrowserWindowInterface* incognito_browser =
-      OpenURLOffTheRecord(browser()->GetProfile(), GURL("about:blank"));
-  NavigateToEmptyPage(incognito_browser);
-  // Expect quota in Incognito to be trimmed to 1 GiB, minimal value for the
-  // static quota enabled.
-  EXPECT_EQ(GetEstimatedQuota(incognito_browser), kMinBucketStaticQuota);
+IN_PROC_BROWSER_TEST_F(StaticStorageQuotaFeatureDisabledTest, RegularSession) {
+  NavigateToEmptyPage(browser());
+  EXPECT_EQ(GetEstimatedQuota(browser()), kDynamicQuotaForTestBrowser);
 }
 
 }  // namespace policy

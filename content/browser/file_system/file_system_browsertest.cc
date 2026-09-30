@@ -39,13 +39,11 @@ namespace content {
 // and the actual implementation that lives in the browser side.
 class FileSystemBrowserTest
     : public ContentBrowserTest,
-      public testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public testing::WithParamInterface<std::tuple<bool, bool>> {
  public:
   FileSystemBrowserTest() {
-    feature_list_.InitWithFeatureStates(
-        {{storage::features::kStaticStorageQuota, should_report_static_quota()},
-         {storage::features::kIncognitoStaticStorageQuota,
-          should_report_fixed_quota_in_incognito()}});
+    feature_list_.InitWithFeatureState(storage::features::kStaticStorageQuota,
+                                       should_report_static_quota());
   }
 
   void SetUpOnMainThread() override {
@@ -80,9 +78,6 @@ class FileSystemBrowserTest
 
   bool is_incognito() { return testing::get<0>(GetParam()); }
   bool should_report_static_quota() { return testing::get<1>(GetParam()); }
-  bool should_report_fixed_quota_in_incognito() {
-    return testing::get<2>(GetParam());
-  }
 
  protected:
   bool is_incognito_;
@@ -93,7 +88,6 @@ class FileSystemBrowserTest
 INSTANTIATE_TEST_SUITE_P(All,
                          FileSystemBrowserTest,
                          ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool(),
                                             ::testing::Bool()));
 
 class FileSystemBrowserTestWithLowQuota : public FileSystemBrowserTest {
@@ -131,7 +125,6 @@ class FileSystemBrowserTestWithLowQuota : public FileSystemBrowserTest {
 INSTANTIATE_TEST_SUITE_P(All,
                          FileSystemBrowserTestWithLowQuota,
                          ::testing::Combine(::testing::Bool(),
-                                            ::testing::Bool(),
                                             ::testing::Bool()));
 
 IN_PROC_BROWSER_TEST_P(FileSystemBrowserTest, RequestTest) {
@@ -154,13 +147,11 @@ IN_PROC_BROWSER_TEST_P(FileSystemBrowserTestWithLowQuota, QuotaTest) {
   }
   int64_t disk_quota_GiB = std::min(int64_t{10}, (disk_size - 1) / kGiB + 1);
 
-  // Incognito reports a static quota of 1 GiB unless the flag
-  // kIncognitoStaticStorageQuota is set to true, when it always reports 10 GiB.
-  const int64_t static_incognito_quota =
-      should_report_fixed_quota_in_incognito() ? 10 : 1;
+  // Incognito always reports 10 GiB when static quota is enabled.
+  constexpr int64_t kStaticIncognitoQuotaGiB = 10;
   const int64_t quota =
       should_report_static_quota()
-          ? (is_incognito() ? static_incognito_quota : disk_quota_GiB) * kGiB
+          ? (is_incognito() ? kStaticIncognitoQuotaGiB : disk_quota_GiB) * kGiB
           : 5 * kMeg;
 
   SimpleTest(embedded_test_server()->GetURL("/fileapi/quota_test.html?quota=" +

@@ -19,7 +19,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -61,7 +60,6 @@
 #include "storage/browser/quota/client_usage_tracker.h"
 #include "storage/browser/quota/quota_callbacks.h"
 #include "storage/browser/quota/quota_client_type.h"
-#include "storage/browser/quota/quota_features.h"
 #include "storage/browser/quota/quota_macros.h"
 #include "storage/browser/quota/quota_manager_observer.mojom.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -141,13 +139,8 @@ int64_t CalculateReportedQuota(int64_t total_space_bytes,
   base::ClampedNumeric<int64_t> clamped_total_space_bytes(total_space_bytes);
   base::ClampedNumeric<int64_t> clamped_usage_bytes(usage_bytes);
 
-  // The flag kIncognitoStaticStorageQuota fixes the return value in incognito
-  // to 10 GiB + usage, as in regular mode.
-  bool enforce_static_quota_for_incognito =
-      (is_incognito &&
-       base::FeatureList::IsEnabled(features::kIncognitoStaticStorageQuota));
   if ((clamped_total_space_bytes >= 10 * QuotaManagerImpl::kGBytes) ||
-      enforce_static_quota_for_incognito) {
+      is_incognito) {
     return clamped_usage_bytes + 10 * QuotaManagerImpl::kGBytes;
   }
 
