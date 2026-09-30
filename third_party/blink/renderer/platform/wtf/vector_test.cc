@@ -895,6 +895,19 @@ TEST(VectorTest, EraseDuringIteration) {
   EXPECT_CHECK_DEATH_WITH([[maybe_unused]] int val = *it,
                           "Vector modified while being iterated.");
 }
+
+TEST(VectorTest, ResizeAndShrinkDuringIteration) {
+  Vector<int> vector = {1, 2, 3};
+  auto it = vector.begin();
+  // No-op resize and Shrink should not register a modification.
+  vector.resize(3);
+  vector.Shrink(3);
+  EXPECT_EQ(*it, 1);
+
+  vector.Shrink(2);
+  EXPECT_CHECK_DEATH_WITH([[maybe_unused]] int val = *it,
+                          "Vector modified while being iterated.");
+}
 #endif
 
 }  // anonymous namespace

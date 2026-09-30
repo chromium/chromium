@@ -2252,6 +2252,9 @@ inline U* Vector<T, kInlineCapacity, Allocator>::ExpandCapacity(
 
 template <typename T, wtf_size_t kInlineCapacity, typename Allocator>
 inline void Vector<T, kInlineCapacity, Allocator>::resize(wtf_size_t size) {
+  if (size == size_) {
+    return;
+  }
   this->RegisterModification();
   if (size <= size_) {
     T* new_end = UNSAFE_TODO(data() + size);
@@ -2275,8 +2278,11 @@ inline void Vector<T, kInlineCapacity, Allocator>::resize(wtf_size_t size) {
 
 template <typename T, wtf_size_t kInlineCapacity, typename Allocator>
 void Vector<T, kInlineCapacity, Allocator>::Shrink(wtf_size_t size) {
-  this->RegisterModification();
+  if (size == size_) {
+    return;
+  }
   CHECK_LE(size, size_);
+  this->RegisterModification();
   T* new_end = UNSAFE_TODO(data() + size);
   TypeOperations::Destruct(new_end, DataEnd());
   // SAFETY: CHECK above ensures `new_end` is valid.
