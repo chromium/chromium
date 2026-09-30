@@ -440,16 +440,6 @@ void CanvasNon2DResourceProvider::EndWriteAccess() {
     return;
   }
 
-  if (is_software_) {
-    if (ShouldReplaceTargetBuffer()) {
-      resource_ = NewOrRecycledResource();
-    }
-    if (!resource() || !GetSkSurface()) {
-      return;
-    }
-    resource()->UploadSoftwareRenderingResults(GetSkSurface());
-  }
-
   current_resource_has_write_access_ = false;
 }
 
