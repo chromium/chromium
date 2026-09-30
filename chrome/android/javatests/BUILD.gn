@@ -972,7 +972,10 @@ android_library("chrome_test_java_org.chromium.chrome.browser.metrics") {
     "src/org/chromium/chrome/browser/metrics/UmaActivityObserverTest.java",
   ]
 
-  deps = [ ":chrome_test_java_helper" ]
+  deps = [
+    ":chrome_test_java_helper",
+    "//chrome/browser/android/metrics:base_java",
+  ]
 }
 
 android_library("chrome_test_java_org.chromium.chrome.browser.native_page") {
@@ -1866,6 +1869,7 @@ android_library("chrome_test_java_various") {
     "//base:tristate_java",
     "//base/test:leak_canary_java",
     "//chrome/browser/actor/android:java",
+    "//chrome/browser/android/metrics:base_java",
     "//chrome/browser/educational_tip:java",
     "//chrome/browser/glic:public_java",
     "//chrome/browser/glic/android:java",

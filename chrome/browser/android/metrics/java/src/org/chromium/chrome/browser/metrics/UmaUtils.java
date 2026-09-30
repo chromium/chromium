@@ -112,8 +112,8 @@ public class UmaUtils {
      * Record the time at which Chrome was brought to foreground. Should be recorded only after
      * post-native initialization has started.
      *
-     * A notable exception is FRE. It records foreground time in OnResume(), which can happen before
-     * native. It was made in 2016 to allow native initialization in FRE without errors. See
+     * <p>A notable exception is FRE. It records foreground time in OnResume(), which can happen
+     * before native. It was made in 2016 to allow native initialization in FRE without errors. See
      * http://crrev.com/436530.
      */
     public static void recordForegroundStartTimeWithNative() {
@@ -137,7 +137,7 @@ public class UmaUtils {
     /**
      * Record the time at which Chrome was sent to background.
      *
-     * Should not be called before post-native initialization.
+     * <p>Should not be called before post-native initialization.
      */
     public static void recordBackgroundTimeWithNative() {
         sBackgroundWithNativeTimeMs = SystemClock.uptimeMillis();

@@ -11,7 +11,7 @@
 #include "components/metrics/metrics_reporting_default_state.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
-#include "chrome/android/base_module_jni/UmaUtils_jni.h"
+#include "chrome/browser/android/metrics/base_jni_headers/UmaUtils_jni.h"
 
 using jni_zero::JavaRef;
 

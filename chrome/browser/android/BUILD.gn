@@ -631,6 +631,7 @@ if (is_android) {
       "//chrome/browser/android/httpclient:jni_headers",
       "//chrome/browser/android/locale",
       "//chrome/browser/android/messages:jni_headers",
+      "//chrome/browser/android/metrics:base_jni_headers",
       "//chrome/browser/android/metrics:jni_headers",
       "//chrome/browser/android/omnibox",
       "//chrome/browser/android/omnibox:impl",

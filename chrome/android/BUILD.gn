@@ -421,6 +421,7 @@ if (_is_default_toolchain) {
       "//base:supplier_java",
       "//chrome/browser/actor/android:java",
       "//chrome/browser/android/customtabs/branding:branding_common_java",
+      "//chrome/browser/android/metrics:base_java",
       "//chrome/browser/autofill/android:third_party_provider_java",
       "//chrome/browser/automotivetoolbar:java",
       "//chrome/browser/collaboration:utils_java",
@@ -2155,7 +2156,6 @@ if (_is_default_toolchain) {
   generate_jni("base_module_jni") {
     sources = [
       "java/src/org/chromium/chrome/browser/init/InitializeFeatureList.java",
-      "java/src/org/chromium/chrome/browser/metrics/UmaUtils.java",
     ]
   }
 
@@ -2198,8 +2198,6 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/init/InitializeFeatureList.java",
       "java/src/org/chromium/chrome/browser/media/MediaCaptureNotificationService.java",
       "java/src/org/chromium/chrome/browser/media/ui/ChromeMediaNotificationControllerServices.java",
-      "java/src/org/chromium/chrome/browser/metrics/SimpleStartupForegroundSessionDetector.java",
-      "java/src/org/chromium/chrome/browser/metrics/UmaUtils.java",
       "java/src/org/chromium/chrome/browser/notifications/NotificationIntentInterceptorService.java",
       "java/src/org/chromium/chrome/browser/notifications/NotificationJobService.java",
       "java/src/org/chromium/chrome/browser/notifications/NotificationService.java",
@@ -2218,6 +2216,7 @@ if (_is_default_toolchain) {
       "$google_play_services_package:google_firebase_firebase_messaging_java",
       "//base:base_java",
       "//base:tristate_java",
+      "//chrome/browser/android/metrics:base_java",
       "//chrome/browser/autofill/android:third_party_provider_java",
       "//chrome/browser/crash/android:java",
       "//chrome/browser/download/android:file_provider_java",

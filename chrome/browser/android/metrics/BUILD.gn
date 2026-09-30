@@ -14,6 +14,19 @@ if (is_android) {
 
   _test_jni_sources = [ "javatests/src/org/chromium/chrome/browser/metrics/util/UkmUtilsForTest.java" ]
 
+  android_library("base_java") {
+    srcjar_deps = [ ":base_jni_headers" ]
+    sources = [
+      "java/src/org/chromium/chrome/browser/metrics/SimpleStartupForegroundSessionDetector.java",
+      "java/src/org/chromium/chrome/browser/metrics/UmaUtils.java",
+    ]
+    deps = [
+      "//base:base_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
   android_library("java") {
     srcjar_deps = [ ":jni_headers" ]
     sources = [ "java/src/org/chromium/chrome/browser/metrics/MainIntentBehaviorMetrics.java" ]
@@ -28,7 +41,6 @@ if (is_android) {
       "//chrome/browser/profiles/android:java",
       "//chrome/browser/ui/android/default_browser_promo:java",
       "//components/ukm/android:java",
-      "//content/public/android:content_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:jni_zero_java",
     ]
@@ -61,6 +73,10 @@ if (is_android) {
       "//components/metrics_services_manager",
       "//components/ukm",
     ]
+  }
+
+  generate_jni("base_jni_headers") {
+    sources = [ "java/src/org/chromium/chrome/browser/metrics/UmaUtils.java" ]
   }
 
   generate_jni("jni_headers") {
