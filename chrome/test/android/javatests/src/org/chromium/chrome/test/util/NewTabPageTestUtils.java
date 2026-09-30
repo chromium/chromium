@@ -66,61 +66,69 @@ public class NewTabPageTestUtils {
                 });
     }
 
+    public static List<SiteSuggestion> createFakeSiteSuggestions() {
+        return createFakeSiteSuggestions("http://127.0.0.1" + TEST_PAGE);
+    }
+
     public static List<SiteSuggestion> createFakeSiteSuggestions(EmbeddedTestServer testServer) {
+        return createFakeSiteSuggestions(testServer.getURL(TEST_PAGE));
+    }
+
+    public static List<SiteSuggestion> createFakeSiteSuggestions(String baseUrl) {
         List<SiteSuggestion> siteSuggestions = new ArrayList<>();
         siteSuggestions.add(
                 new SiteSuggestion(
                         "0 TOP_SITES",
-                        new GURL(testServer.getURL(TEST_PAGE) + "#0"),
+                        new GURL(baseUrl + "#0"),
                         TileTitleSource.TITLE_TAG,
                         TileSource.TOP_SITES,
                         TileSectionType.PERSONALIZED));
         siteSuggestions.add(
                 new SiteSuggestion(
                         "1 ALLOWLIST",
-                        new GURL(testServer.getURL(TEST_PAGE) + "#1"),
+                        new GURL(baseUrl + "#1"),
                         TileTitleSource.UNKNOWN,
                         TileSource.ALLOWLIST,
                         TileSectionType.PERSONALIZED));
         siteSuggestions.add(
                 new SiteSuggestion(
                         "2 TOP_SITES",
-                        new GURL(testServer.getURL(TEST_PAGE) + "#2"),
+                        new GURL(baseUrl + "#2"),
                         TileTitleSource.TITLE_TAG,
                         TileSource.TOP_SITES,
                         TileSectionType.PERSONALIZED));
         siteSuggestions.add(
                 new SiteSuggestion(
                         "3 TOP_SITES",
-                        new GURL(testServer.getURL(TEST_PAGE) + "#3"),
+                        new GURL(baseUrl + "#3"),
                         TileTitleSource.TITLE_TAG,
                         TileSource.TOP_SITES,
                         TileSectionType.PERSONALIZED));
         siteSuggestions.add(
                 new SiteSuggestion(
                         "4 TOP_SITES",
-                        new GURL(testServer.getURL(TEST_PAGE) + "#4"),
+                        new GURL(baseUrl + "#4"),
                         TileTitleSource.TITLE_TAG,
                         TileSource.TOP_SITES,
                         TileSectionType.PERSONALIZED));
         siteSuggestions.add(
                 new SiteSuggestion(
                         "5 TOP_SITES",
-                        new GURL(testServer.getURL(TEST_PAGE) + "#5"),
+                        new GURL(baseUrl + "#5"),
                         TileTitleSource.TITLE_TAG,
                         TileSource.TOP_SITES,
                         TileSectionType.PERSONALIZED));
         siteSuggestions.add(
                 new SiteSuggestion(
                         "6 TOP_SITES",
-                        new GURL(testServer.getURL(TEST_PAGE) + "#6"),
+                        new GURL(baseUrl + "#6"),
                         TileTitleSource.TITLE_TAG,
                         TileSource.TOP_SITES,
                         TileSectionType.PERSONALIZED));
         siteSuggestions.add(
                 new SiteSuggestion(
                         "7 TOP_SITES",
-                        new GURL(testServer.getURL(TEST_PAGE) + "#7"),
+                        new GURL(baseUrl + "#7"),
                         TileTitleSource.TITLE_TAG,
                         TileSource.TOP_SITES,
                         TileSectionType.PERSONALIZED));

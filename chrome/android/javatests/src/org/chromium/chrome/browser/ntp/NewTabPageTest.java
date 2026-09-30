@@ -200,11 +200,7 @@ public class NewTabPageTest {
 
         mOmnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
 
-        mTestServer =
-                EmbeddedTestServer.createAndStartServer(
-                        ApplicationProvider.getApplicationContext());
-
-        mSiteSuggestions = NewTabPageTestUtils.createFakeSiteSuggestions(mTestServer);
+        mSiteSuggestions = NewTabPageTestUtils.createFakeSiteSuggestions();
         mMostVisitedSites = new FakeMostVisitedSites();
         mMostVisitedSites.setTileSuggestions(mSiteSuggestions);
         mSuggestionsDeps.getFactory().mostVisitedSites = mMostVisitedSites;
@@ -218,6 +214,24 @@ public class NewTabPageTest {
         mFakebox = mNtp.getView().findViewById(R.id.search_box);
         mMvTilesLayout = mNtp.getView().findViewById(R.id.mv_tiles_layout);
         Assert.assertEquals(mSiteSuggestions.size(), mMvTilesLayout.getTileCount());
+    }
+
+    private void ensureTestServerStarted() {
+        if (mTestServer != null) return;
+        mTestServer =
+                EmbeddedTestServer.createAndStartServer(
+                        ApplicationProvider.getApplicationContext());
+        mSiteSuggestions = NewTabPageTestUtils.createFakeSiteSuggestions(mTestServer);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mMostVisitedSites.setTileSuggestions(mSiteSuggestions));
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    TileView firstTile = mMvTilesLayout.getTileAt(0);
+                    return firstTile != null
+                            && firstTile.getWidth() > 0
+                            && firstTile.getHeight() > 0
+                            && !mMvTilesLayout.isLayoutRequested();
+                });
     }
 
     @Test
@@ -347,6 +361,7 @@ public class NewTabPageTest {
     @SmallTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     public void testClickMostVisitedItem() {
+        ensureTestServerStarted();
         Assert.assertNotNull(mMvTilesLayout);
         HistogramWatcher histogramWatcher = expectMostVisitedTilesRecordForNtpModuleClick();
 
@@ -368,6 +383,7 @@ public class NewTabPageTest {
     @Feature({"NewTabPage", "FeedNewTabPage"})
     @DisabledTest(message = "Flaky - crbug.com/40440132")
     public void testOpenMostVisitedItemInNewTab() throws ExecutionException {
+        ensureTestServerStarted();
         Assert.assertNotNull(mMvTilesLayout);
         ChromeTabUtils.invokeContextMenuAndOpenInANewTab(
                 mActivityTestRule.getActivity(),
@@ -406,6 +422,7 @@ public class NewTabPageTest {
     @MediumTest
     @Feature({"NewTabPage", "FeedNewTabPage"})
     public void testUrlFocusAnimationsDisabledOnLoad() {
+        ensureTestServerStarted();
         Assert.assertFalse(getUrlFocusAnimationsDisabled());
         ChromeTabUtils.waitForTabPageLoaded(
                 mTab,
@@ -638,6 +655,7 @@ public class NewTabPageTest {
     @SmallTest
     @DisabledTest(message = "https://crbug.com/40904417")
     public void testRecordHistogramMostVisitedItemClick_Ntp() {
+        ensureTestServerStarted();
         Tile tileForTest = new Tile(mSiteSuggestions.get(0), 0);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
