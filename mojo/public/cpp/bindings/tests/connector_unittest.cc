@@ -5,13 +5,16 @@
 #include "mojo/public/cpp/bindings/connector.h"
 
 #include <stddef.h>
+#include <stdint.h>
 #include <stdlib.h>
-#include <string.h>
 
 #include <array>
+#include <string_view>
 #include <utility>
+#include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/containers/extend.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -20,6 +23,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
+#include "mojo/public/cpp/bindings/lib/message_internal.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/tests/message_queue.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -104,13 +108,18 @@ class ConnectorTest : public testing::Test {
   void TearDown() override {}
 
   Message CreateMessage(
-      const char* text,
+      std::string_view text,
       std::vector<ScopedHandle> handles = std::vector<ScopedHandle>()) {
-    const size_t size = strlen(text) + 1;  // Plus null terminator.
-    Message message(1, 0, size, 0, &handles);
-    UNSAFE_TODO(
-        memcpy(message.payload_buffer()->AllocateAndGet(size), text, size));
-    return message;
+    internal::MessageHeader header = {};
+    header.num_bytes = sizeof(header);
+    header.name = 1;
+
+    std::vector<uint8_t> bytes;
+    bytes.reserve(sizeof(header) + text.size() + 1);  // Plus null terminator.
+    base::Extend(bytes, base::byte_span_from_ref(header));
+    base::Extend(bytes, base::as_byte_span(text));
+    bytes.push_back('\0');
+    return Message(bytes, handles);
   }
 
  protected:
