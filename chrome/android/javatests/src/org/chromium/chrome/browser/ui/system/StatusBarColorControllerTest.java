@@ -305,8 +305,11 @@ public class StatusBarColorControllerTest {
         waitForStatusBarColor(activity, Color.RED);
 
         mOmniboxUtils.requestFocus();
+        mOmniboxUtils.waitAnimationsComplete();
+        mOmniboxUtils.checkFocus(true);
         waitForStatusBarColor(activity, expectedFocusedColor);
         mOmniboxUtils.clearFocus();
+        mOmniboxUtils.waitAnimationsComplete();
         waitForStatusBarColor(activity, Color.RED);
     }
 
