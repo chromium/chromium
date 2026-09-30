@@ -5769,24 +5769,6 @@
             ]
         }
     ],
-    "CtrlTabMru": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CtrlTabMru"
-                    ]
-                }
-            ]
-        }
-    ],
     "D3D12VideoEncodeAccelerator": [
         {
             "platforms": [
