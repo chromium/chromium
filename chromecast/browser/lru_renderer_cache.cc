@@ -140,8 +140,7 @@ void LRURendererCache::OnUpdateMemoryLimit() {
     // preventing growth without triggering immediate eviction.
     // The target size is calculated by scaling the baseline maximum
     // |max_renderers_basis_| by the memory allocation ratio.
-    size_t target_size =
-        base::ScaleByMemoryLimit(max_renderers_basis_, memory_limit());
+    size_t target_size = memory_limit().Scale(max_renderers_basis_);
     current_max_renderers_ =
         std::max(in_use_count_ + cache_.size(), target_size);
   }
@@ -149,8 +148,7 @@ void LRURendererCache::OnUpdateMemoryLimit() {
 
 void LRURendererCache::OnReleaseMemory() {
   if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
-    current_max_renderers_ =
-        base::ScaleByMemoryLimit(max_renderers_basis_, memory_limit());
+    current_max_renderers_ = memory_limit().Scale(max_renderers_basis_);
     EvictCache();
   } else if (memory_limit() <= base::kCriticalMemoryPressureThreshold) {
     DLOG(INFO) << "Dropping prelauncher cache due to memory coordinator "

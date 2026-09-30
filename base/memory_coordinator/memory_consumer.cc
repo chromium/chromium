@@ -109,8 +109,4 @@ void MemoryConsumerRegistration::OnBeforeMemoryConsumerRegistryDestroyed() {
   registry_ = nullptr;
 }
 
-ByteSize ScaleByMemoryLimit(ByteSize baseline, MemoryLimit memory_limit) {
-  return memory_limit.Scale(baseline);
-}
-
 }  // namespace base

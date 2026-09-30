@@ -804,8 +804,8 @@ void BlobMemoryController::OnStorageLimitsCalculated(BlobStorageLimits limits) {
   limits_ = limits;
 
   if (base::FeatureList::IsEnabled(base::kStatefulMemoryPressure)) {
-    size_t target_max_memory = base::ScaleByMemoryLimit(
-        base_limits_.max_blob_in_memory_space, memory_limit());
+    size_t target_max_memory =
+        memory_limit().Scale(base_limits_.max_blob_in_memory_space);
     limits_.max_blob_in_memory_space =
         std::max(blob_memory_used_, target_max_memory);
   }

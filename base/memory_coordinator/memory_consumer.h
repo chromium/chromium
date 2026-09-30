@@ -9,7 +9,6 @@
 #include <string_view>
 
 #include "base/base_export.h"
-#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/memory_consumer_registry_destruction_observer.h"
@@ -204,18 +203,6 @@ class BASE_EXPORT MemoryConsumerRegistration
 
   raw_ptr<MemoryConsumerRegistry> registry_;
 };
-
-// Scales a baseline value linearly by the provided `memory_limit`.
-//
-// Deprecated: Use `memory_limit.Scale(baseline)` directly.
-// TODO(crbug.com/441951621): Remove after migration to base::MemoryLimit is
-// complete.
-template <typename T>
-T ScaleByMemoryLimit(T baseline, MemoryLimit memory_limit) {
-  return memory_limit.Scale(baseline);
-}
-
-ByteSize ScaleByMemoryLimit(ByteSize baseline, MemoryLimit memory_limit);
 
 }  // namespace base
 

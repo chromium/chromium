@@ -562,7 +562,7 @@ bool MemoryCache::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
 size_t MemoryCache::GetTargetStrongReferencesMaxSize() const {
   const size_t baseline = static_cast<size_t>(
       features::kMemoryCacheStrongReferenceTotalSizeThresholdParam.Get());
-  return base::ScaleByMemoryLimit(baseline, memory_limit());
+  return memory_limit().Scale(baseline);
 }
 
 void MemoryCache::OnReleaseMemory() {

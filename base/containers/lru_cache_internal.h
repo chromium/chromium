@@ -125,9 +125,8 @@ class LRUCacheBase : public PassiveMemoryConsumer {
     // MemoryCoordinator is >= 1, but we still need to honor a caller-passed max
     // size of 0.
     return std::max<size_type>(
-        1, ScaleByMemoryLimit(
-               baseline_max_size_.value(),
-               current_memory_limit_.load(std::memory_order_relaxed)));
+        1, current_memory_limit_.load(std::memory_order_relaxed)
+               .Scale(baseline_max_size_.value()));
   }
 
   void UpdateMaxSize(size_type new_max_size) {
