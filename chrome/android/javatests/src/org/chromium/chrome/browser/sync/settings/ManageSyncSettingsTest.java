@@ -160,7 +160,7 @@ import java.util.Set;
 @Restriction(GmsCoreVersionRestriction.RESTRICTION_TYPE_VERSION_GE_24W15)
 @DisableFeatures(ChromeFeatureList.SETTINGS_MULTI_COLUMN)
 public class ManageSyncSettingsTest {
-    private static final int RENDER_TEST_REVISION = 13;
+    private static final int RENDER_TEST_REVISION = 12;
 
     /** Maps selected types to their Account UI element IDs. */
     private static final Map<Integer, String> ACCOUNT_UI_DATATYPES =
@@ -222,7 +222,7 @@ public class ManageSyncSettingsTest {
     public final ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus()
                     .setRevision(RENDER_TEST_REVISION)
-                    .setDescription("Add Search AI Mode connected apps entry")
+                    .setDescription("Ligatures and contextual alternates disabled in UI text")
                     .setBugComponent(ChromeRenderTestRule.Component.SERVICES_SYNC)
                     .build();
 
@@ -337,10 +337,6 @@ public class ManageSyncSettingsTest {
         Assert.assertFalse(accountAdvancedHeader.isIconSpaceReserved());
 
         scrollToAndVerifyPresence(R.string.sync_encryption);
-
-        scrollToAndVerifyPresence(R.string.account_search_ai_mode_connected_apps_title);
-        onView(withText(R.string.account_search_ai_mode_connected_apps_summary))
-                .check(matches(isDisplayed()));
 
         scrollToAndVerifyPresence(R.string.account_data_dashboard_title);
         onView(withText(R.string.account_data_dashboard_subtitle)).check(matches(isDisplayed()));

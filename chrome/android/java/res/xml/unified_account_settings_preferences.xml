@@ -96,11 +96,6 @@ found in the LICENSE file.
         android:title="@string/sync_encryption"/>
 
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
-        android:key="search_ai_mode_connected_apps"
-        android:title="@string/account_search_ai_mode_connected_apps_title"
-        android:summary="@string/account_search_ai_mode_connected_apps_summary"/>
-
-    <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="account_data_dashboard"
         android:title="@string/account_data_dashboard_title"
         android:summary="@string/account_data_dashboard_subtitle"/>
