@@ -120,6 +120,8 @@ source_set("unit_tests") {
   deps = [
     ":autofill",
     "//base/test:test_support",
+    "//components/account_settings",
+    "//components/account_settings:test_support",
     "//components/application_locale_storage",
     "//components/autofill/core/browser",
     "//components/autofill/core/browser:test_support",
@@ -129,6 +131,7 @@ source_set("unit_tests") {
     "//components/strings",
     "//components/sync:test_support",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/account_settings/model",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/autofill/model/message",
     "//ios/chrome/browser/autofill/ui_bundled:ui_type",

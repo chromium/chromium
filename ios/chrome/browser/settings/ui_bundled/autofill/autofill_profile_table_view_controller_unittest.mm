@@ -13,6 +13,8 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/with_feature_override.h"
 #import "base/uuid.h"
+#import "components/account_settings/account_settings.h"
+#import "components/account_settings/mock_account_setting_service.h"
 #import "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
 #import "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -20,6 +22,7 @@
 #import "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
 #import "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
 #import "components/autofill/core/browser/geo/alternative_state_name_map_updater.h"
+#import "components/autofill/core/browser/network/autofill_ai/mock_wallet_pass_access_manager.h"
 #import "components/autofill/core/browser/test_utils/entity_data_test_util.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
@@ -30,8 +33,10 @@
 #import "components/signin/public/identity_manager/identity_test_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/test/test_sync_service.h"
+#import "ios/chrome/browser/account_settings/model/ios_account_setting_service_factory.h"
 #import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/ios_wallet_pass_access_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/personal_context/model/ios_personal_context_eligibility_service_factory.h"
 #import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_item.h"
@@ -78,6 +83,21 @@ std::unique_ptr<KeyedService> CreateMockPersonalContextEligibilityService(
   return service;
 }
 
+std::unique_ptr<KeyedService> CreateMockAccountSettingService(
+    ProfileIOS* profile) {
+  auto service = std::make_unique<
+      testing::NiceMock<account_settings::MockAccountSettingService>>();
+  ON_CALL(*service, GetBoolean(testing::_))
+      .WillByDefault(testing::Return(true));
+  return service;
+}
+
+std::unique_ptr<KeyedService> CreateMockWalletPassAccessManager(
+    ProfileIOS* profile) {
+  return std::make_unique<
+      testing::NiceMock<autofill::MockWalletPassAccessManager>>();
+}
+
 class AutofillProfileTableViewControllerTest
     : public LegacyChromeTableViewControllerTest {
  protected:
@@ -100,6 +120,12 @@ class AutofillProfileTableViewControllerTest
     builder.AddTestingFactory(
         IOSPersonalContextEligibilityServiceFactory::GetInstance(),
         base::BindRepeating(&CreateMockPersonalContextEligibilityService));
+    builder.AddTestingFactory(
+        IOSAccountSettingServiceFactory::GetInstance(),
+        base::BindRepeating(&CreateMockAccountSettingService));
+    builder.AddTestingFactory(
+        IOSWalletPassAccessManagerFactory::GetInstance(),
+        base::BindRepeating(&CreateMockWalletPassAccessManager));
     profile_ = profile_manager_.AddProfileWithBuilder(std::move(builder));
     browser_ = std::make_unique<TestBrowser>(profile_);
 
@@ -718,6 +744,119 @@ TEST_F(AutofillProfileTableViewControllerYourSavedInfoEnabledTest,
   // Expect only 1 section (SectionIdentifierSwitches) since no profiles are
   // added.
   EXPECT_EQ(1, NumberOfSections());
+}
+
+// Tests that vehicle disclosure details are preloaded when the view loads if
+// the feature is enabled and the user can add entities and save to Wallet.
+TEST_F(AutofillProfileTableViewControllerTest,
+       TestPreloadVehicleDetailsWhenEligibleAndFeatureEnabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {autofill::features::kAutofillEnableWalletDisclosureNoticePublicPass,
+       autofill::features::kAutofillAiAvailableByDefault,
+       autofill::features::kAutofillAiIgnoreGeoIp,
+       autofill::features::kAutofillAiWalletVehicleRegistration},
+      /*disabled_features=*/{kYourSavedInfoSettingsPageIos});
+  SignIn();
+
+  auto* mock_pass_manager = static_cast<autofill::MockWalletPassAccessManager*>(
+      IOSWalletPassAccessManagerFactory::GetForProfile(profile_));
+  EXPECT_CALL(*mock_pass_manager,
+              PreloadDetailsForUpsertPass(
+                  autofill::EntityType(autofill::EntityTypeName::kVehicle)));
+
+  CreateController();
+}
+
+// Tests that vehicle disclosure details are not preloaded by the initializer
+// alone, since the preload is deferred until the view loads.
+TEST_F(AutofillProfileTableViewControllerTest,
+       TestPreloadNotTriggeredBeforeViewLoads) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {autofill::features::kAutofillEnableWalletDisclosureNoticePublicPass,
+       autofill::features::kAutofillAiAvailableByDefault,
+       autofill::features::kAutofillAiIgnoreGeoIp,
+       autofill::features::kAutofillAiWalletVehicleRegistration},
+      /*disabled_features=*/{kYourSavedInfoSettingsPageIos});
+  SignIn();
+
+  auto* mock_pass_manager = static_cast<autofill::MockWalletPassAccessManager*>(
+      IOSWalletPassAccessManagerFactory::GetForProfile(profile_));
+  EXPECT_CALL(*mock_pass_manager, PreloadDetailsForUpsertPass).Times(0);
+
+  CreateControllerWithoutView();
+}
+
+// Tests that vehicle disclosure details are not preloaded when public pass
+// storage is disabled in account settings.
+TEST_F(AutofillProfileTableViewControllerTest,
+       TestPreloadNotTriggeredWhenWalletPublicPassStorageDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {autofill::features::kAutofillEnableWalletDisclosureNoticePublicPass,
+       autofill::features::kAutofillAiAvailableByDefault,
+       autofill::features::kAutofillAiIgnoreGeoIp,
+       autofill::features::kAutofillAiWalletVehicleRegistration},
+      /*disabled_features=*/{kYourSavedInfoSettingsPageIos});
+  SignIn();
+
+  auto* mock_account_service =
+      static_cast<account_settings::MockAccountSettingService*>(
+          IOSAccountSettingServiceFactory::GetForProfile(profile_));
+  ON_CALL(*mock_account_service, GetBoolean(testing::_))
+      .WillByDefault(testing::Return(false));
+
+  auto* mock_pass_manager = static_cast<autofill::MockWalletPassAccessManager*>(
+      IOSWalletPassAccessManagerFactory::GetForProfile(profile_));
+  EXPECT_CALL(*mock_pass_manager, PreloadDetailsForUpsertPass).Times(0);
+
+  CreateController();
+}
+
+// Tests that vehicle disclosure details are not preloaded when the user is
+// signed out, since they cannot save the entity to Wallet.
+TEST_F(AutofillProfileTableViewControllerTest,
+       TestPreloadNotTriggeredWhenCannotImportToWallet) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {autofill::features::kAutofillEnableWalletDisclosureNoticePublicPass,
+       autofill::features::kAutofillAiAvailableByDefault,
+       autofill::features::kAutofillAiIgnoreGeoIp,
+       autofill::features::kAutofillAiWalletVehicleRegistration},
+      /*disabled_features=*/{kYourSavedInfoSettingsPageIos});
+
+  auto* mock_pass_manager = static_cast<autofill::MockWalletPassAccessManager*>(
+      IOSWalletPassAccessManagerFactory::GetForProfile(profile_));
+  EXPECT_CALL(*mock_pass_manager, PreloadDetailsForUpsertPass).Times(0);
+
+  CreateController();
+}
+
+// Tests that vehicle disclosure details are not preloaded when entities cannot
+// be added from this page, which is the case when
+// `YourSavedInfoSettingsPageIos` is enabled.
+TEST_F(AutofillProfileTableViewControllerYourSavedInfoEnabledTest,
+       TestPreloadNotTriggeredWhenCannotAddEntities) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/
+      {autofill::features::kAutofillEnableWalletDisclosureNoticePublicPass,
+       autofill::features::kAutofillAiAvailableByDefault,
+       autofill::features::kAutofillAiIgnoreGeoIp,
+       autofill::features::kAutofillAiWalletVehicleRegistration},
+      /*disabled_features=*/{});
+  SignIn();
+
+  auto* mock_pass_manager = static_cast<autofill::MockWalletPassAccessManager*>(
+      IOSWalletPassAccessManagerFactory::GetForProfile(profile_));
+  EXPECT_CALL(*mock_pass_manager, PreloadDetailsForUpsertPass).Times(0);
+
+  CreateController();
 }
 
 }  // namespace

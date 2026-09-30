@@ -24,8 +24,10 @@
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #import "components/autofill/core/browser/data_quality/addresses/address_import_requirement_util.h"
 #import "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_labels.h"
+#import "components/autofill/core/browser/integrators/autofill_ai/autofill_ai_wallet_util.h"
 #import "components/autofill/core/browser/integrators/autofill_ai/management_util.h"
 #import "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_metrics.h"
+#import "components/autofill/core/browser/network/autofill_ai/wallet_pass_access_manager.h"
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
@@ -41,6 +43,7 @@
 #import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/ios_autofill_entity_data_manager_observer_bridge.h"
+#import "ios/chrome/browser/autofill/model/ios_wallet_pass_access_manager_factory.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_edit_profile_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/settings_autofill_edit_profile_bottom_sheet_handler.h"
@@ -223,6 +226,9 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
 
 #pragma mark - AutofillProfileTableViewController
 
+// TODO(crbug.com/560036149): AutofillProfileTableViewController combines
+// Coordinator, Mediator, and View Controller responsibilities. Refactor it to
+// follow the CMV pattern.
 @interface AutofillProfileTableViewController () <
     AutofillAIAddEntitiesMenuDelegate,
     AutofillAIEntityEditCoordinatorDelegate,
@@ -373,6 +379,14 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   [self determineUserEmail];
   [self updateUIForEditState];
   [self loadModel];
+
+  // Vehicle is currently the only entity type that is both stored as a public
+  // Wallet pass and creatable from settings (the other public pass types are
+  // read-only), so it is the only type whose disclosure needs pre-fetching.
+  // Add other types here as they become eligible.
+  [self
+      prefetchDisclosureForEntityType:autofill::EntityType(
+                                          autofill::EntityTypeName::kVehicle)];
 }
 
 - (void)loadModel {
@@ -1452,6 +1466,38 @@ ItemType ItemTypeForEntitySectionHeader(SectionIdentifier section_identifier) {
   _autofillAiEntityEditCoordinator.delegate = self;
 
   [_autofillAiEntityEditCoordinator start];
+}
+
+- (void)prefetchDisclosureForEntityType:(autofill::EntityType)entityType {
+  if (_settingsAreDismissed) {
+    return;
+  }
+
+  // Only prefetch for users who can actually create this entity from settings
+  // and save it to Wallet; otherwise the disclosure is never shown and the
+  // network request would be wasted.
+  ProfileIOS* profile = _browser->GetProfile();
+  if (![self canAddEntities] ||
+      !autofill::CanPerformAutofillAiAction(
+          profile, autofill::AutofillAiAction::kImportToWallet, entityType) ||
+      !autofill::IsEligibleForWalletNotice(
+          entityType, autofill::EntityInstance::RecordType::kServerWallet) ||
+      !autofill::IsWalletPublicPassStorageEnabled(profile) ||
+      !base::FeatureList::IsEnabled(
+          autofill::features::
+              kAutofillEnableWalletDisclosureNoticePublicPass)) {
+    return;
+  }
+
+  autofill::WalletPassAccessManager* walletPassManager =
+      IOSWalletPassAccessManagerFactory::GetForProfile(profile);
+  if (!walletPassManager) {
+    return;
+  }
+
+  // `WalletPassAccessManager` owns the cache and deduplicates in-flight or
+  // already cached preloads, so this is safe to call repeatedly.
+  walletPassManager->PreloadDetailsForUpsertPass(entityType);
 }
 
 - (void)stopAutofillAIEntityEditCoordinator {
