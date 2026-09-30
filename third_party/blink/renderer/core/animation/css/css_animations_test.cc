@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
 #include "third_party/blink/renderer/core/css/post_style_update_scope.h"
 #include "third_party/blink/renderer/core/css/properties/computed_style_utils.h"
+#include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -4101,6 +4102,39 @@ TEST_P(CSSAnimationsTest, AttrTaintedStyleQueryUrlBlocking) {
   if (control && control->GetComputedStyle()) {
     EXPECT_TRUE(control->GetComputedStyle()->HasBackgroundImage());
   }
+}
+
+TEST_P(CSSAnimationsTest, ColorAnimationUsesIndependentInheritedFastPath) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes anim {
+        to {
+          color: rgb(200, 200, 200);
+        }
+      }
+      #animator {
+        animation: anim 10s linear paused;
+      }
+    </style>
+    <div id="animator">
+      <div id="child"></div>
+    </div>
+  )HTML");
+  Animation* animation = GetElementById("animator")->getAnimations()[0];
+
+  unsigned count = GetStyleEngine().StyleForElementCount();
+  animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(5000),
+                            ASSERT_NO_EXCEPTION);
+  UpdateAllLifecyclePhasesForTest();
+
+  // Only #animator resolves style; #child takes the fast path.
+  EXPECT_EQ(1u, GetStyleEngine().StyleForElementCount() - count);
+  const ComputedStyle* animator_style =
+      GetElementById("animator")->GetComputedStyle();
+  const ComputedStyle* child_style =
+      GetElementById("child")->GetComputedStyle();
+  EXPECT_EQ(animator_style->VisitedDependentColor(GetCSSPropertyColor()),
+            child_style->VisitedDependentColor(GetCSSPropertyColor()));
 }
 
 }  // namespace blink

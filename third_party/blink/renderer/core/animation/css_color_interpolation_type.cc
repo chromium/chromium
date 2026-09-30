@@ -415,11 +415,13 @@ void CSSColorInterpolationType::ApplyStandardPropertyValue(
       ResolveInterpolableColor(
           *color_pair.Get(kUnvisited), state, false,
           CssProperty().PropertyID() == CSSPropertyID::kTextDecorationColor));
-  ColorPropertyFunctions::SetVisitedColor(
-      CssProperty(), state.StyleBuilder(),
-      ResolveInterpolableColor(
-          *color_pair.Get(kVisited), state, true,
-          CssProperty().PropertyID() == CSSPropertyID::kTextDecorationColor));
+  if (state.StyleBuilder().InsideLink() != EInsideLink::kNotInsideLink) {
+    ColorPropertyFunctions::SetVisitedColor(
+        CssProperty(), state.StyleBuilder(),
+        ResolveInterpolableColor(
+            *color_pair.Get(kVisited), state, true,
+            CssProperty().PropertyID() == CSSPropertyID::kTextDecorationColor));
+  }
 }
 
 const CSSValue* CSSColorInterpolationType::CreateCSSValue(

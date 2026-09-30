@@ -910,7 +910,7 @@ void StyleCascade::ApplyInterpolation(
     To<TransitionInterpolation>(interpolation).Apply(environment);
   }
 
-  // Applying a color property interpolation will also unconditionally apply
+  // Applying a color property interpolation inside a link will also apply
   // the -internal-visited- counterpart (see CSSColorInterpolationType::
   // ApplyStandardPropertyValue). To make sure !important rules in :visited
   // selectors win over animations, we re-apply the -internal-visited property

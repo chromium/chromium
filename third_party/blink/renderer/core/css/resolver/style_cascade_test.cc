@@ -2821,6 +2821,7 @@ TEST_F(StyleCascadeTest, AnimatedVisitedHighPrio) {
     )HTML");
 
   TestCascade cascade(GetDocument());
+  cascade.State().StyleBuilder().SetInsideLink(EInsideLink::kInsideVisitedLink);
   cascade.Add("color:red");
   cascade.Add("animation:test 10s -5s linear");
   cascade.Apply();
