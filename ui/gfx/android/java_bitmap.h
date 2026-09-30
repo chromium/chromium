@@ -6,11 +6,13 @@
 #define UI_GFX_ANDROID_JAVA_BITMAP_H_
 
 #include <jni.h>
-#include <stdint.h>
+
+#include <cstdint>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
+#include "base/numerics/checked_math.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -40,20 +42,21 @@ class COMPONENT_EXPORT(GFX) JavaBitmap {
 
   ~JavaBitmap();
 
-  inline void* pixels() { return pixels_; }
-  inline const void* pixels() const { return pixels_; }
-  inline const gfx::Size& size() const { return size_; }
-  inline BitmapFormat format() const { return format_; }
-  inline uint32_t bytes_per_row() const { return bytes_per_row_; }
-  inline int byte_count() const { return byte_count_; }
+  void* pixels() { return pixels_; }
+  const void* pixels() const { return pixels_; }
+  const gfx::Size& size() const { return size_; }
+  BitmapFormat format() const { return format_; }
+  uint32_t bytes_per_row() const { return bytes_per_row_; }
+  int byte_count() const {
+    return base::CheckMul<int>(bytes_per_row_, size_.height()).ValueOrDie();
+  }
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> bitmap_;
   raw_ptr<void> pixels_ = nullptr;
   gfx::Size size_;
-  BitmapFormat format_;
-  uint32_t bytes_per_row_;
-  int byte_count_;
+  BitmapFormat format_ = BITMAP_FORMAT_NO_CONFIG;
+  uint32_t bytes_per_row_ = 0;
 };
 
 enum class OomBehavior {
@@ -73,11 +76,6 @@ base::android::ScopedJavaLocalRef<jobject> ConvertToJavaBitmap(
 // Note: |jbitmap| is assumed to be non-null, non-empty and of format RGBA_8888.
 COMPONENT_EXPORT(GFX)
 SkBitmap CreateSkBitmapFromJavaBitmap(const JavaBitmap& jbitmap);
-
-// Returns a Skia color type value for the requested input java Bitmap.Config.
-COMPONENT_EXPORT(GFX)
-SkColorType ConvertToSkiaColorType(
-    const base::android::JavaRef<jobject>& jbitmap_config);
 
 }  // namespace gfx
 

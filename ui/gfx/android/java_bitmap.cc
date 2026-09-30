@@ -6,21 +6,19 @@
 
 #include <android/bitmap.h>
 
-#include "base/android/jni_string.h"
+#include "base/android/jni_android.h"
 #include "base/bits.h"
+#include "base/check.h"
 #include "base/check_op.h"
 #include "base/debug/crash_logging.h"
 #include "base/notreached.h"
-#include "base/numerics/safe_conversions.h"
-#include "ui/gfx/geometry/size.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "ui/gfx/gfx_jni_headers/BitmapHelper_jni.h"
 
-using base::android::ConvertUTF8ToJavaString;
+using base::android::AttachCurrentThread;
 using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
-using jni_zero::AttachCurrentThread;
 
 namespace jni_zero {
 
@@ -47,7 +45,7 @@ ScopedJavaLocalRef<jobject> ToJniType<SkBitmap>(JNIEnv* env,
 namespace gfx {
 namespace {
 
-int SkColorTypeToBitmapFormat(SkColorType color_type) {
+BitmapFormat SkColorTypeToBitmapFormat(SkColorType color_type) {
   switch (color_type) {
     case kN32_SkColorType:
       return BITMAP_FORMAT_ARGB_8888;
@@ -56,9 +54,8 @@ int SkColorTypeToBitmapFormat(SkColorType color_type) {
     default:
       // A bad format can cause out-of-bounds issues when copying pixels into or
       // out of the java bitmap's pixel buffer.
-      CHECK_NE(color_type, color_type);
+      NOTREACHED();
   }
-  return BITMAP_FORMAT_NO_CONFIG;
 }
 
 SkColorType BitmapFormatToSkColorType(BitmapFormat bitmap_format) {
@@ -75,8 +72,7 @@ SkColorType BitmapFormatToSkColorType(BitmapFormat bitmap_format) {
     default:
       SCOPED_CRASH_KEY_NUMBER("gfx", "bitmap_format",
                               static_cast<int>(bitmap_format));
-      CHECK_NE(bitmap_format, bitmap_format);
-      return kUnknown_SkColorType;
+      NOTREACHED();
   }
 }
 
@@ -94,9 +90,9 @@ SkPixmap WrapJavaBitmapAsPixmap(const JavaBitmap& bitmap) {
 }  // namespace
 
 #define ASSERT_ENUM_EQ(a, b) \
-  static_assert(static_cast<int>(a) == static_cast<int>(b), "")
+  static_assert(static_cast<int>(a) == static_cast<int>(b))
 
-// BitmapFormat has the same values as AndroidBitmapFormat, for simplicitly, so
+// BitmapFormat has the same values as AndroidBitmapFormat, for simplicity, so
 // that SkColorTypeToBitmapFormat() and the JavaBitmap::format() have the same
 // values.
 ASSERT_ENUM_EQ(BITMAP_FORMAT_NO_CONFIG, ANDROID_BITMAP_FORMAT_NONE);
@@ -105,24 +101,28 @@ ASSERT_ENUM_EQ(BITMAP_FORMAT_ARGB_4444, ANDROID_BITMAP_FORMAT_RGBA_4444);
 ASSERT_ENUM_EQ(BITMAP_FORMAT_ARGB_8888, ANDROID_BITMAP_FORMAT_RGBA_8888);
 ASSERT_ENUM_EQ(BITMAP_FORMAT_RGB_565, ANDROID_BITMAP_FORMAT_RGB_565);
 
-JavaBitmap::JavaBitmap(const JavaRef<jobject>& bitmap) : bitmap_(bitmap) {
-  int err = AndroidBitmap_lockPixels(AttachCurrentThread(), bitmap_.obj(),
-                                     &pixels_.AsEphemeralRawAddr());
-  DCHECK(!err);
-  DCHECK(pixels_);
+#undef ASSERT_ENUM_EQ
+
+JavaBitmap::JavaBitmap(const JavaRef<jobject>& bitmap) {
+  JNIEnv* env = AttachCurrentThread();
+  bitmap_.Reset(env, bitmap);
+  CHECK_EQ(AndroidBitmap_lockPixels(env, bitmap_.obj(),
+                                    &pixels_.AsEphemeralRawAddr()),
+           ANDROID_BITMAP_RESULT_SUCCESS);
+  CHECK(pixels_);
 
   AndroidBitmapInfo info;
-  err = AndroidBitmap_getInfo(AttachCurrentThread(), bitmap_.obj(), &info);
-  DCHECK(!err);
+  CHECK_EQ(AndroidBitmap_getInfo(env, bitmap_.obj(), &info),
+           ANDROID_BITMAP_RESULT_SUCCESS);
   size_ = gfx::Size(info.width, info.height);
   format_ = static_cast<BitmapFormat>(info.format);
   bytes_per_row_ = info.stride;
-  byte_count_ = Java_BitmapHelper_getByteCount(AttachCurrentThread(), bitmap_);
 }
 
 JavaBitmap::~JavaBitmap() {
-  int err = AndroidBitmap_unlockPixels(AttachCurrentThread(), bitmap_.obj());
-  DCHECK(!err);
+  pixels_ = nullptr;
+  CHECK_EQ(AndroidBitmap_unlockPixels(AttachCurrentThread(), bitmap_.obj()),
+           ANDROID_BITMAP_RESULT_SUCCESS);
 }
 
 ScopedJavaLocalRef<jobject> ConvertToJavaBitmap(const SkBitmap& skbitmap,
@@ -131,7 +131,8 @@ ScopedJavaLocalRef<jobject> ConvertToJavaBitmap(const SkBitmap& skbitmap,
   DCHECK_GT(skbitmap.width(), 0);
   DCHECK_GT(skbitmap.height(), 0);
 
-  int java_bitmap_format = SkColorTypeToBitmapFormat(skbitmap.colorType());
+  BitmapFormat java_bitmap_format =
+      SkColorTypeToBitmapFormat(skbitmap.colorType());
 
   ScopedJavaLocalRef<jobject> jbitmap = Java_BitmapHelper_createBitmap(
       AttachCurrentThread(), skbitmap.width(), skbitmap.height(),
@@ -164,13 +165,6 @@ SkBitmap CreateSkBitmapFromJavaBitmap(const JavaBitmap& jbitmap) {
   return skbitmap;
 }
 
-SkColorType ConvertToSkiaColorType(const JavaRef<jobject>& bitmap_config) {
-  BitmapFormat jbitmap_format =
-      static_cast<BitmapFormat>(Java_BitmapHelper_getBitmapFormatForConfig(
-          AttachCurrentThread(), bitmap_config));
-  return BitmapFormatToSkColorType(jbitmap_format);
-}
-
-}  //  namespace gfx
+}  // namespace gfx
 
 DEFINE_JNI(BitmapHelper)
