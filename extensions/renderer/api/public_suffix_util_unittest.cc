@@ -66,9 +66,6 @@ TEST_F(PublicSuffixUtilTest, KnownSuffix) {
   EXPECT_EQ(GetKnownSuffix("192.168.2.1"), std::nullopt);
   EXPECT_EQ(GetKnownSuffix("green.banana"), std::nullopt);
 
-  EXPECT_EQ(GetKnownSuffix(".jp"), "jp");
-  EXPECT_EQ(GetKnownSuffix(".bar.baz.com"), "bar.baz.com");
-
   EXPECT_EQ(IsKnownSuffix("jp"), true);
   EXPECT_EQ(IsKnownSuffix("foo.jp"), false);
   EXPECT_EQ(IsKnownSuffix("priv.no"), true);
@@ -93,7 +90,7 @@ TEST_F(PublicSuffixUtilTest, KnownSuffix) {
   EXPECT_EQ(IsKnownSuffix("b.c"), false);
   EXPECT_EQ(GetKnownSuffix("b.c"), "c");
 
-  // Unlike a leading dot, a trailing dot should not be trimmed.
+  // Trailing dot should not be trimmed.
   EXPECT_EQ(GetKnownSuffix("jp."), "jp.");
   EXPECT_EQ(GetKnownSuffix("example.jp."), "jp.");
   EXPECT_EQ(IsKnownSuffix("jp."), true);
@@ -104,7 +101,6 @@ TEST_F(PublicSuffixUtilTest, GetDomain) {
   EXPECT_EQ(GetDomain("sub.domain.jp", DomainOptions()), "domain.jp");
   EXPECT_EQ(GetDomain("a.b.bar.baz.com", DomainOptions()), "b.bar.baz.com");
   EXPECT_EQ(GetDomain("EXAMPLE.JP", DomainOptions()), "example.jp");
-  EXPECT_EQ(GetDomain(".example.jp", DomainOptions()), "example.jp");
   EXPECT_EQ(GetDomain("example.jp.", DomainOptions()), "example.jp.");
 
   // Wildcard rules.
@@ -141,7 +137,6 @@ TEST_F(PublicSuffixUtilTest, GetDomainAllowUnknownSuffix) {
 
 TEST_F(PublicSuffixUtilTest, GetDomainAllowPlainSuffix) {
   EXPECT_EQ(GetDomain("jp", DomainOptions()), std::nullopt);
-  EXPECT_EQ(GetDomain(".jp", DomainOptions()), std::nullopt);
   EXPECT_EQ(GetDomain("priv.no", DomainOptions()), std::nullopt);
   EXPECT_EQ(GetDomain("bar.baz.com", DomainOptions()), std::nullopt);
   EXPECT_EQ(GetDomain("blah.bar.jp", DomainOptions()), std::nullopt);
@@ -152,7 +147,6 @@ TEST_F(PublicSuffixUtilTest, GetDomainAllowPlainSuffix) {
   EXPECT_EQ(GetDomain("priv.no", allow_plain), "priv.no");
   EXPECT_EQ(GetDomain("bar.baz.com", allow_plain), "bar.baz.com");
   EXPECT_EQ(GetDomain("blah.bar.jp", allow_plain), "blah.bar.jp");
-  EXPECT_EQ(GetDomain(".jp", allow_plain), "jp");
 }
 
 TEST_F(PublicSuffixUtilTest, GetDomainAllowIPAddress) {
@@ -190,12 +184,16 @@ TEST_F(PublicSuffixUtilTest, InvalidHostnames) {
   EXPECT_TRUE(IsInvalidHostname("user@website.example"));
   EXPECT_TRUE(IsInvalidHostname("https://website.example"));
   EXPECT_TRUE(IsInvalidHostname("website..example"));
+  // Leading dots are considered invalid.
+  EXPECT_TRUE(IsInvalidHostname(".example"));
+  EXPECT_TRUE(IsInvalidHostname(".website.example"));
+  EXPECT_TRUE(IsInvalidHostname("..website.example"));
   // "。" normalizes to ".", so this must still reject the empty label.
-  EXPECT_TRUE(IsInvalidHostname(".。website.example"));
+  EXPECT_TRUE(IsInvalidHostname("。website.example"));
   EXPECT_TRUE(IsInvalidHostname("website.example.."));
   EXPECT_TRUE(IsInvalidHostname("*.com"));
   EXPECT_TRUE(IsInvalidHostname("::1"));
-  // A single leading dot is accepted for hostnames, but not for IP addresses.
+  // A leading dot is not accepted for IP addresses either.
   EXPECT_TRUE(IsInvalidHostname(".192.168.2.1"));
   EXPECT_TRUE(IsInvalidHostname(".[::1]"));
 }

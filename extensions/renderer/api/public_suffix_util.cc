@@ -57,14 +57,6 @@ std::optional<ParsedHostname> ParseHostname(std::string_view hostname) {
     return ParsedHostname{std::move(normalized_host), true};
   }
 
-  // The `IsCanonicalizedHostCompliant()` function rejects any leading dots,
-  // whereas the `chrome.publicSuffix` API is spec'd to accept one. So trim the
-  // first one, but let the `IsCanonicalizedHostCompliant()` check fail if there
-  // were multiple.
-  if (normalized_host.starts_with('.')) {
-    normalized_host.erase(0, 1);
-  }
-
   if (!net::IsCanonicalizedHostCompliant(normalized_host)) {
     return std::nullopt;
   }

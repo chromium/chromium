@@ -21,7 +21,7 @@ struct ParsedHostname {
 };
 
 // Parses, normalizes, and validates `hostname`. Returns std::nullopt for
-// invalid hostnames, but note that a single leading dot is accepted.
+// invalid hostnames.
 std::optional<ParsedHostname> ParseHostname(std::string_view hostname);
 
 // Determines whether `hostname` is itself a known public suffix.
