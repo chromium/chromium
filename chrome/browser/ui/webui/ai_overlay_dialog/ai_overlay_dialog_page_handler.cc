@@ -22,6 +22,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
+#include "build/android_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/ai_overlay_dialog/ai_overlay_dialog_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -42,7 +44,9 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+#include "chrome/browser/ui/android/ai_overlay_dialog/ai_overlay_dialog_bridge.h"
+#else
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -179,7 +183,9 @@ void AiOverlayDialogPageHandler::GetMockAudioData(
 }
 
 void AiOverlayDialogPageHandler::UpdateAudioEnergy(float energy) {
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_DESKTOP_ANDROID)
+  ttc::UpdateAudioEnergyJni(browser_, energy);
+#else
   if (!overlay_action_item_) {
     overlay_action_item_ = actions::ActionManager::Get().FindAction(
         kActionShowAiOverlayDialog,

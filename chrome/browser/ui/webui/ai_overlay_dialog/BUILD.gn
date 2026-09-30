@@ -57,6 +57,7 @@ source_set("impl") {
   ]
   public_deps = [ ":ai_overlay_dialog" ]
   deps = [
+    "//build:android_buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser/bookmarks",
     "//chrome/browser/glic",
@@ -99,6 +100,12 @@ source_set("impl") {
       "//chrome/browser/ui:browser_commands",
       "//chrome/browser/ui:browser_window_header",
       "//chrome/browser/ui/tabs:tab_strip",
+    ]
+  }
+  if (is_desktop_android) {
+    deps += [
+      "//chrome/browser/ui/android/ai_overlay_dialog",
+      "//chrome/browser/ui/android/ai_overlay_dialog:jni_headers",
     ]
   }
 }

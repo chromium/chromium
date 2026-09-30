@@ -279,6 +279,7 @@ android_library("core_java") {
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/tabwindow:java",
     "//chrome/browser/ui/android/actions:java",
+    "//chrome/browser/ui/android/ai_overlay_dialog:java",
     "//chrome/browser/ui/android/appmenu:java",
     "//chrome/browser/ui/android/bars_common:java",
     "//chrome/browser/ui/android/bottombar:config_java",

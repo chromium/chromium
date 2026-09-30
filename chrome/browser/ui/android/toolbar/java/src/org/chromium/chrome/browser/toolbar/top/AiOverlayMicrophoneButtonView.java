@@ -13,12 +13,14 @@ import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.ai_overlay_dialog.AiOverlayDialogBridge;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.ui.widget.ChromeImageButton;
 
 /** Button view for the AI overlay microphone in the toolbar. */
 @NullMarked
-public class AiOverlayMicrophoneButtonView extends ChromeImageButton {
+public class AiOverlayMicrophoneButtonView extends ChromeImageButton
+        implements AiOverlayDialogBridge.AudioEnergyListener {
 
     // The default icon size in dp (matching ic_mic_white_24dp).
     private static final float BASE_ICON_SIZE_DP = 24f;
@@ -50,6 +52,13 @@ public class AiOverlayMicrophoneButtonView extends ChromeImageButton {
             setImageResource(R.drawable.ic_mic_white_24dp);
         }
         updateTint();
+    }
+
+    @Override
+    public void onAudioEnergyUpdated(float energy) {
+        if (isAttachedToWindow()) {
+            updateAudioEnergy(energy);
+        }
     }
 
     /**

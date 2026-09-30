@@ -1973,6 +1973,16 @@ static_library("ui") {
     "//chrome/browser/ui/views/file_system_access:impl",
   ]
 
+  # The AI overlay dialog Java class is pulled into every Android APK by
+  # toolbar code, so its JNI must be registered in all Android builds. The
+  # bridge itself no-ops when not Desktop Android.
+  if (is_android) {
+    deps += [
+      "//chrome/browser/ui/android/ai_overlay_dialog",
+      "//chrome/browser/ui/android/ai_overlay_dialog:jni_headers",
+    ]
+  }
+
   # Desktop-Android-only dependencies.
   if (is_desktop_android) {
     deps += [

@@ -1,0 +1,50 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//third_party/jni_zero/jni_zero.gni")
+
+android_library("java") {
+  sources = [ "java/src/org/chromium/chrome/browser/ai_overlay_dialog/AiOverlayDialogBridge.java" ]
+  deps = [
+    "//base:base_java",
+    "//build/android:build_java",
+    "//chrome/browser/ui/browser_window/public/android:java",
+    "//content/public/android:content_java",
+    "//third_party/jni_zero:jni_zero_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+  srcjar_deps = [ ":jni_headers" ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/ai_overlay_dialog/AiOverlayDialogBridge.java" ]
+}
+
+# Built on all Android configs: the Java class (and therefore its JNI) is
+# pulled into every Android APK by toolbar code, so the native library must
+# always depend on the generated JNI. The overlay implementation itself is
+# Desktop-Android-only and is #if-guarded inside the bridge.
+source_set("ai_overlay_dialog") {
+  sources = [
+    "ai_overlay_dialog_bridge.cc",
+    "ai_overlay_dialog_bridge.h",
+  ]
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//build:android_buildflags",
+    "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tabs_public",
+    "//components/tabs:public",
+    "//content/public/browser",
+    "//third_party/jni_zero",
+    "//ui/android",
+    "//ui/base",
+  ]
+
+  if (is_desktop_android) {
+    deps += [ "//chrome/browser/ui/ai_overlay_dialog" ]
+  }
+}

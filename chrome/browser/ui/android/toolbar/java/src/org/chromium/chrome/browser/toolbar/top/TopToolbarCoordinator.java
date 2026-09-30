@@ -31,6 +31,7 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.ai_overlay_dialog.AiOverlayDialogBridge;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider.ControlsPosition;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
@@ -58,6 +59,7 @@ import org.chromium.chrome.browser.theme.ToolbarThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.toolbar.R;
 import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
+import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarProgressBar;
 import org.chromium.chrome.browser.toolbar.ToolbarTabController;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
@@ -165,6 +167,12 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
     private @Nullable Runnable mToggleGlicCallback;
     private @Nullable Callback<Boolean> mGlicVerticalTabsObserver;
     private IncognitoStateProvider.@Nullable IncognitoStateObserver mIncognitoStateObserver;
+
+    /**
+     * The window this coordinator registered its {@link AiOverlayDialogBridge.AudioEnergyListener}
+     * against, or null if the AI overlay is disabled or the mic button is absent.
+     */
+    private @Nullable WindowAndroid mAiOverlayWindowAndroid;
 
     /**
      * Creates a new {@link TopToolbarCoordinator}.
@@ -325,6 +333,21 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
                             /* isWebApp= */ false);
         }
 
+        if (ToolbarFeatures.isAiOverlayDialogEnabled()) {
+            AiOverlayMicrophoneButtonView micButtonView =
+                    mToolbarLayout.findViewById(R.id.ai_overlay_microphone_button);
+            if (micButtonView != null) {
+                // Scoped to this window: each window has its own overlay and mic button.
+                mAiOverlayWindowAndroid = windowAndroid;
+                AiOverlayDialogBridge.setAudioEnergyListener(windowAndroid, micButtonView);
+                micButtonView.setOnClickListener(
+                        v -> {
+                            Tab currentTab = toolbarDataProvider.getTab();
+                            AiOverlayDialogBridge.toggleOverlay(
+                                    currentTab != null ? currentTab.getWebContents() : null);
+                        });
+            }
+        }
         controlContainer.setPostInitializationDependencies(
                 this,
                 toolbarLayout,
@@ -573,6 +596,10 @@ public class TopToolbarCoordinator implements Toolbar, TopControlLayer {
     /** Cleans up any code as necessary. */
     @SuppressWarnings("NullAway")
     public void destroy() {
+        if (ToolbarFeatures.isAiOverlayDialogEnabled() && mAiOverlayWindowAndroid != null) {
+            AiOverlayDialogBridge.setAudioEnergyListener(mAiOverlayWindowAndroid, null);
+            mAiOverlayWindowAndroid = null;
+        }
         if (mOverlayCoordinator != null) {
             mOverlayCoordinator.destroy();
             mOverlayCoordinator = null;

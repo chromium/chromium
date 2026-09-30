@@ -68,6 +68,7 @@ import org.chromium.chrome.browser.SwipeRefreshHandler;
 import org.chromium.chrome.browser.accessibility.PageZoomIphController;
 import org.chromium.chrome.browser.actor.ActorMetrics;
 import org.chromium.chrome.browser.actor.ui.ActorOverlayCoordinator;
+import org.chromium.chrome.browser.ai_overlay_dialog.AiOverlayDialogBridge;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.bookmarks.BookmarkManagerOpener;
@@ -1625,6 +1626,20 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                                         mWindowAndroid),
                                 () -> mContextualTasksBridge);
             }
+        }
+
+        // Activity-scoped so the native AiOverlayDialogControllerAndroid, which attaches itself to
+        // the native BrowserWindowInterface, is destroyed before that window.
+        if (ChromeFeatureList.sAiOverlayDialog.isEnabled()
+                && mChromeAndroidTaskSupplier.get() != null) {
+            mChromeAndroidTaskSupplier
+                    .get()
+                    .addFeature(
+                            new ChromeAndroidTaskFeatureKey(
+                                    AiOverlayDialogBridge.class,
+                                    currentlySelectedProfile,
+                                    mWindowAndroid),
+                            AiOverlayDialogBridge::new);
         }
     }
 
