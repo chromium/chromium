@@ -24,6 +24,7 @@ from codegen import proxy_impl_java
 import common
 import java_parse
 import java_types
+import parse_common
 import proxy
 
 
@@ -793,7 +794,7 @@ def GenerateFromSource(parser, args, jni_mode):
                 allow_private_called_by_natives,
                 type_catalog=type_catalog,
                 enable_safe_pointers=args.enable_safe_pointers))
-      except java_parse.ParseError as e:
+      except parse_common.ParseError as e:
         errors.append(e)
 
     if errors:
@@ -830,7 +831,7 @@ def GenerateFromSource(parser, args, jni_mode):
       common.write_depfile(args.depfile, first_out, loaded_type_catalogs)
     if args.resolved_types_path:
       _WriteResolvedTypes(args.resolved_types_path, jni_objs)
-  except java_parse.ParseError as e:
+  except parse_common.ParseError as e:
     sys.stderr.write(f'{e}\n')
     sys.exit(1)
 
@@ -896,7 +897,7 @@ def GenerateFromJar(parser, args, jni_mode):
 
   try:
     jni_objs = _ParseClassFiles(args.jar_file, args.input_files, args)
-  except java_parse.ParseError as e:
+  except parse_common.ParseError as e:
     sys.stderr.write(f'{e}\n')
     sys.exit(1)
 

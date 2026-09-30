@@ -9,6 +9,7 @@ import pprint
 import common
 import java_parse
 import java_types
+import parse_common
 
 
 def _parsed_file_to_string(parsed_file):
@@ -85,36 +86,36 @@ class TestParse(unittest.TestCase):
 
   def testSplitByDelimiter(self):
     # Test basic split by comma
-    self.assertEqual(java_parse._split_by_delimiter('a, b, c', ','),
+    self.assertEqual(parse_common.split_by_delimiter('a, b, c', ','),
                      ['a', 'b', 'c'])
     # Test split with generics
-    self.assertEqual(java_parse._split_by_delimiter('a<b, c>, d', ','),
+    self.assertEqual(parse_common.split_by_delimiter('a<b, c>, d', ','),
                      ['a<b, c>', 'd'])
     # Test split with nested generics
     self.assertEqual(
-        java_parse._split_by_delimiter('Map<String, Map<String, String>>, int',
-                                       ','),
+        parse_common.split_by_delimiter('Map<String, Map<String, String>>, int',
+                                        ','),
         ['Map<String, Map<String, String>>', 'int'])
     # Test empty cases
-    self.assertEqual(java_parse._split_by_delimiter('', ','), [])
-    self.assertEqual(java_parse._split_by_delimiter('   ', ','), [''])
-    self.assertEqual(java_parse._split_by_delimiter('a, b,', ','),
+    self.assertEqual(parse_common.split_by_delimiter('', ','), [])
+    self.assertEqual(parse_common.split_by_delimiter('   ', ','), [''])
+    self.assertEqual(parse_common.split_by_delimiter('a, b,', ','),
                      ['a', 'b', ''])
     # Test split by space
-    self.assertEqual(java_parse._split_by_delimiter('List<String> arg0', ' '),
+    self.assertEqual(parse_common.split_by_delimiter('List<String> arg0', ' '),
                      ['List<String>', 'arg0'])
     self.assertEqual(
-        java_parse._split_by_delimiter(
+        parse_common.split_by_delimiter(
             'Map<? super String, ? extends String> arg0', ' '),
         ['Map<? super String, ? extends String>', 'arg0'])
     # Test complex cases
     self.assertEqual(
-        java_parse._split_by_delimiter('Callback<List<String>> c, int x', ','),
+        parse_common.split_by_delimiter('Callback<List<String>> c, int x', ','),
         ['Callback<List<String>> c', 'int x'])
     # Test edge case: no delimiters
-    self.assertEqual(java_parse._split_by_delimiter('a<b>', ','), ['a<b>'])
+    self.assertEqual(parse_common.split_by_delimiter('a<b>', ','), ['a<b>'])
     # Test fast path (no generics)
-    self.assertEqual(java_parse._split_by_delimiter('x,y,z', ','),
+    self.assertEqual(parse_common.split_by_delimiter('x,y,z', ','),
                      ['x', 'y', 'z'])
 
   def testParseJavaClassesNestedGenericsWithNewlines(self):
@@ -451,7 +452,7 @@ public class FlagTest {
   public static void foo(JniPtr<NativeFoo> ptr) {}
 }
 """
-    with self.assertRaisesRegex(java_parse.ParseError,
+    with self.assertRaisesRegex(parse_common.ParseError,
                                 "Safe JNI pointers are not enabled"):
       _parse_java_file_data('FlagTest.java',
                             contents,
@@ -465,7 +466,7 @@ public class RawSafePtrTest {
   public static void foo(JniPtr ptr) {}
 }
 """
-    with self.assertRaises(java_parse.ParseError):
+    with self.assertRaises(parse_common.ParseError):
       _parse_java_file_data('RawSafePtrTest.java',
                             contents,
                             enable_safe_pointers=True)
@@ -480,7 +481,7 @@ public class MissingJniTypeTest {
   public static void foo(JniPtr<NativeFoo> ptr) {}
 }
 """
-    with self.assertRaises(java_parse.ParseError):
+    with self.assertRaises(parse_common.ParseError):
       _parse_and_resolve('MissingJniTypeTest.java', contents)
 
   def testParseMaliciousGenerics(self):
@@ -491,7 +492,7 @@ public class MaliciousGenericsTest {
   public static void foo(JniUniquePtr<? extends JniTypeToken> ptr) {}
 }
 """
-    with self.assertRaisesRegex(java_parse.ParseError,
+    with self.assertRaisesRegex(parse_common.ParseError,
                                 "does not resolve to a C\\+\\+ type"):
       _parse_and_resolve('MaliciousGenericsTest.java', contents)
 
@@ -503,7 +504,7 @@ public class PrimitiveInnerTest {
   public static void foo(JniUniquePtr<int> ptr) {}
 }
 """
-    with self.assertRaises(java_parse.ParseError):
+    with self.assertRaises(parse_common.ParseError):
       _parse_java_file_data('PrimitiveInnerTest.java',
                             contents,
                             enable_safe_pointers=True)
@@ -521,7 +522,7 @@ public class ProxyReturnTest {
   }
 }
 """
-    with self.assertRaises(java_parse.ParseError):
+    with self.assertRaises(parse_common.ParseError):
       _parse_java_file_data('ProxyReturnTest.java',
                             contents,
                             enable_safe_pointers=True)
@@ -538,7 +539,8 @@ public class ProxyReturnTest {
 }
 """
     with self.assertRaisesRegex(
-        java_parse.ParseError, r'@CalledByNative return types must use JniPtr'):
+        parse_common.ParseError,
+        r'@CalledByNative return types must use JniPtr'):
       _parse_java_file_data('ProxyReturnTest.java',
                             contents,
                             enable_safe_pointers=True)
@@ -555,7 +557,8 @@ public class ProxyReturnTest {
 }
 """
     with self.assertRaisesRegex(
-        java_parse.ParseError, r'@CalledByNative return types must use JniPtr'):
+        parse_common.ParseError,
+        r'@CalledByNative return types must use JniPtr'):
       _parse_java_file_data('ProxyReturnTest.java',
                             contents,
                             enable_safe_pointers=True)
@@ -618,7 +621,7 @@ public class SafePointerArrayTest {
   public static void foo(JniPtr<NativeFoo>[] ptrs) {}
 }
 """
-    with self.assertRaisesRegex(java_parse.ParseError,
+    with self.assertRaisesRegex(parse_common.ParseError,
                                 "Arrays of safe pointers .* are not supported"):
       _parse_java_file_data('SafePointerArrayTest.java',
                             contents,
@@ -639,7 +642,7 @@ public class TestClass {{
 }}
 """
         with self.assertRaisesRegex(
-            java_parse.ParseError,
+            parse_common.ParseError,
             r"Arrays of safe pointers .* are not supported"):
           _parse_java_file_data('TestClass.java',
                                 contents_cbn_param,
@@ -655,7 +658,7 @@ public class TestClass {{
 }}
 """
         with self.assertRaisesRegex(
-            java_parse.ParseError,
+            parse_common.ParseError,
             r"Arrays of safe pointers .* are not supported"):
           _parse_java_file_data('TestClass.java',
                                 contents_cbn_ret,
@@ -673,7 +676,7 @@ public class TestClass {{
 }}
 """
         with self.assertRaisesRegex(
-            java_parse.ParseError,
+            parse_common.ParseError,
             r"Arrays of safe pointers .* are not supported"):
           _parse_java_file_data('TestClass.java',
                                 contents_native_param,
@@ -691,7 +694,7 @@ public class TestClass {{
 }}
 """
         with self.assertRaisesRegex(
-            java_parse.ParseError,
+            parse_common.ParseError,
             r"Arrays of safe pointers .* are not supported"):
           _parse_java_file_data('TestClass.java',
                                 contents_native_ret,
@@ -711,7 +714,8 @@ public class ProxyParamTest {
 }
 """
     with self.assertRaisesRegex(
-        java_parse.ParseError, r'@NativeMethods parameters must use JniPtr<T>'):
+        parse_common.ParseError,
+        r'@NativeMethods parameters must use JniPtr<T>'):
       _parse_java_file_data('ProxyParamTest.java',
                             contents,
                             enable_safe_pointers=True)
@@ -730,7 +734,8 @@ public class NullableMemberTest {
   }
 }
 """
-    with self.assertRaisesRegex(java_parse.ParseError, r'cannot be @Nullable'):
+    with self.assertRaisesRegex(parse_common.ParseError,
+                                r'cannot be @Nullable'):
       _parse_java_file_data('NullableMemberTest.java',
                             contents,
                             enable_safe_pointers=True)
@@ -750,7 +755,7 @@ public class ConflictClassTest {
 }
 """
     with self.assertRaisesRegex(
-        java_parse.ParseError,
+        parse_common.ParseError,
         r'specifies both @NativeClassQualifiedName and a safe pointer'):
       _parse_java_file_data('ConflictClassTest.java',
                             contents,
@@ -770,7 +775,7 @@ public class NativePrefixMemberTest {
 }
 """
     with self.assertRaisesRegex(
-        java_parse.ParseError,
+        parse_common.ParseError,
         r'Use "self" to dispatch to a C\+\+ member function'):
       _parse_java_file_data('NativePrefixMemberTest.java',
                             contents,
@@ -790,7 +795,8 @@ public class ProxyParamTest {
 }
 """
     with self.assertRaisesRegex(
-        java_parse.ParseError, r'@NativeMethods parameters must use JniPtr<T>'):
+        parse_common.ParseError,
+        r'@NativeMethods parameters must use JniPtr<T>'):
       _parse_java_file_data('ProxyParamTest.java',
                             contents,
                             enable_safe_pointers=True)
@@ -804,7 +810,7 @@ public class VectorTest {
 }
 """
     with self.assertRaisesRegex(
-        java_parse.ParseError,
+        parse_common.ParseError,
         r'Found non-templatized @JniType\("std::vector"\)'):
       _parse_java_file_data('VectorTest.java',
                             contents,
