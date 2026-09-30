@@ -2083,35 +2083,19 @@ const ShapeResult* ShapeResult::CreateForStretchyMathOperator(
 }
 
 void ShapeResult::ToString(StringBuilder* output) const {
-  output->Append("#chars=");
-  output->AppendNumber(num_characters_);
-  output->Append(", dir=");
-  output->AppendNumber(direction_);
-  output->Append(", runs[");
-  output->AppendNumber(runs_.size());
-  output->Append("]{");
-  for (wtf_size_t run_index = 0; run_index < runs_.size(); ++run_index) {
-    output->AppendNumber(run_index);
-    const auto& run = *runs_[run_index];
-    output->Append(":{start=");
-    output->AppendNumber(run.start_index_);
-    output->Append(", #chars=");
-    output->AppendNumber(run.num_characters_);
-    output->Append(", dir=");
-    output->AppendNumber(run.hb_direction_);
-    FormatTo(*output, ", script={}{}{}{}", HB_UNTAG(run.script_));
-    output->Append(", glyphs[");
-    output->AppendNumber(run.glyph_data_.size());
-    output->Append("]{");
-    for (wtf_size_t glyph_index = 0; glyph_index < run.glyph_data_.size();
+  FormatTo(*output, "#chars={}, dir={}, runs[{}]{{", num_characters_,
+           direction_, runs_.size());
+  for (wtf_size_t run_index = 0; const auto& run : runs_) {
+    FormatTo(*output,
+             "{}:{{start={}, #chars={}, dir={}, script={}{}{}{}, glyphs[{}]{{",
+             run_index++, run->start_index_, run->num_characters_,
+             run->hb_direction_, HB_UNTAG(run->script_),
+             run->glyph_data_.size());
+    for (wtf_size_t glyph_index = 0; glyph_index < run->glyph_data_.size();
          ++glyph_index) {
-      output->AppendNumber(glyph_index);
-      const auto& glyph_data = run.glyph_data_.GlyphAt(glyph_index);
-      output->Append(":{char=");
-      output->AppendNumber(glyph_data.character_index);
-      output->Append(", glyph=");
-      output->AppendNumber(glyph_data.glyph);
-      output->Append("}");
+      const auto& glyph_data = run->glyph_data_.GlyphAt(glyph_index);
+      FormatTo(*output, "{}:{{char={}, glyph={}}}", glyph_index,
+               glyph_data.character_index, glyph_data.glyph);
     }
     output->Append("}}");
   }
