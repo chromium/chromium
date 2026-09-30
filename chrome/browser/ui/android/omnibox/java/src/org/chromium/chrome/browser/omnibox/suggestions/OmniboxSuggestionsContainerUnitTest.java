@@ -9,11 +9,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.intThat;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.view.ContextThemeWrapper;
@@ -24,17 +19,11 @@ import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.FrameLayout.LayoutParams;
 
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
-import org.mockito.quality.Strictness;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
@@ -48,15 +37,23 @@ import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionsDropdow
 /** Unit tests for {@link OmniboxSuggestionsContainer}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(sdk = BaseRobolectricTestRunner.MIN_SDK)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class OmniboxSuggestionsContainerUnitTest {
-    @Rule
-    public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
+    private static class TestOmniboxSuggestionsDropdown extends OmniboxSuggestionsDropdown {
+        private int mLastHeightMeasureSpec;
 
-    @Mock private OmniboxSuggestionsDropdown mDropdown;
-    @Mock private RecyclerView.RecycledViewPool mRecycledViewPool;
+        public TestOmniboxSuggestionsDropdown(Context context) {
+            super(context, null);
+        }
+
+        @Override
+        protected void onMeasure(int widthSpec, int heightSpec) {
+            mLastHeightMeasureSpec = heightSpec;
+            setMeasuredDimension(MeasureSpec.getSize(widthSpec), MeasureSpec.getSize(heightSpec));
+        }
+    }
 
     private Context mContext;
+    private TestOmniboxSuggestionsDropdown mDropdown;
     private TestOmniboxSuggestionsContainer mContainer;
     private OmniboxAlignment mOmniboxAlignment;
     private final SettableNullableObservableSupplier<OmniboxAlignment> mOmniboxAlignmentSupplier =
@@ -131,18 +128,13 @@ public class OmniboxSuggestionsContainerUnitTest {
                 new ContextThemeWrapper(
                         ApplicationProvider.getApplicationContext(),
                         R.style.Theme_BrowserUI_DayNight);
+        mDropdown = new TestOmniboxSuggestionsDropdown(mContext);
+        mDropdown.setId(R.id.omnibox_suggestions_dropdown);
+        mDropdown.setLayoutParams(
+                new LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         mContainer = new TestOmniboxSuggestionsContainer(mContext);
         mContainer.setSuggestionsDropdownForTest(mDropdown);
-
-        // Replace the view created via inflation with a mock.
-        lenient().when(mDropdown.getId()).thenReturn(R.id.omnibox_suggestions_dropdown);
-        lenient().when(mDropdown.getRecycledViewPool()).thenReturn(mRecycledViewPool);
-        lenient()
-                .when(mDropdown.getLayoutParams())
-                .thenReturn(
-                        new LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.WRAP_CONTENT));
         mContainer.addView(mDropdown);
     }
 
@@ -238,7 +230,6 @@ public class OmniboxSuggestionsContainerUnitTest {
     }
 
     @Test
-    @SuppressWarnings("DirectInvocationOnMock")
     public void testAlignmentProvider_bottomPaddingChange() {
         mContainer.setEmbedder(mEmbedder);
         mContainer.onOmniboxSessionStateChange(/* urlHasFocus= */ true);
@@ -246,24 +237,22 @@ public class OmniboxSuggestionsContainerUnitTest {
                 new LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        when(mDropdown.getPaddingBottom()).thenReturn(4);
-        when(mDropdown.getBaseBottomPadding()).thenReturn(4);
+        mDropdown.setVerticalPadding(1, 4);
 
         int bottomPadding = 40;
         mOmniboxAlignment = new OmniboxAlignment(0, 80, 600, 400, 10, 10, 0, bottomPadding);
         mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
 
-        assertEquals(4, mDropdown.getPaddingBottom());
+        assertEquals(44, mDropdown.getPaddingBottom());
 
         bottomPadding = 20;
         mOmniboxAlignment = new OmniboxAlignment(0, 80, 600, 400, 10, 10, 0, bottomPadding);
         mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
 
-        assertEquals(4, mDropdown.getPaddingBottom());
+        assertEquals(24, mDropdown.getPaddingBottom());
     }
 
     @Test
-    @SuppressWarnings("DirectInvocationOnMock")
     public void testAlignmentProvider_topPaddingChange() {
         mContainer.setEmbedder(mEmbedder);
         mContainer.onOmniboxSessionStateChange(/* urlHasFocus= */ true);
@@ -271,20 +260,19 @@ public class OmniboxSuggestionsContainerUnitTest {
                 new LayoutParams(
                         ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        when(mDropdown.getPaddingTop()).thenReturn(1);
-        when(mDropdown.getBaseTopPadding()).thenReturn(1);
+        mDropdown.setVerticalPadding(1, 4);
 
         int topPadding = 40;
         mOmniboxAlignment = new OmniboxAlignment(0, 80, 600, 400, 10, 10, topPadding, 0);
         mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
 
-        assertEquals(1, mDropdown.getPaddingTop());
+        assertEquals(41, mDropdown.getPaddingTop());
 
         topPadding = 20;
         mOmniboxAlignment = new OmniboxAlignment(0, 80, 600, 400, 10, 10, topPadding, 0);
         mOmniboxAlignmentSupplier.set(mOmniboxAlignment);
 
-        assertEquals(1, mDropdown.getPaddingTop());
+        assertEquals(21, mDropdown.getPaddingTop());
     }
 
     @Test
@@ -343,10 +331,7 @@ public class OmniboxSuggestionsContainerUnitTest {
 
         layoutDropdown(600, 800);
 
-        verify(mDropdown)
-                .measure(
-                        anyInt(),
-                        intThat(argument -> MeasureSpec.getMode(argument) == MeasureSpec.AT_MOST));
+        assertEquals(MeasureSpec.AT_MOST, MeasureSpec.getMode(mDropdown.mLastHeightMeasureSpec));
     }
 
     @Test
