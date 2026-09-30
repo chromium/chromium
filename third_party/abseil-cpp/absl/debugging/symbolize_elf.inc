@@ -80,10 +80,6 @@
 #include "absl/debugging/internal/vdso_support.h"
 #include "absl/strings/string_view.h"
 
-#if defined(__FreeBSD__) && !defined(ElfW)
-#define ElfW(x) __ElfN(x)
-#endif
-
 namespace absl {
 ABSL_NAMESPACE_BEGIN
 
@@ -386,11 +382,7 @@ static std::atomic<Symbolizer *> g_cached_symbolizer;
 }  // namespace
 
 static size_t SymbolizerSize() {
-#if defined(__wasm__) || defined(__asmjs__)
-  auto pagesize = static_cast<size_t>(getpagesize());
-#else
   auto pagesize = static_cast<size_t>(sysconf(_SC_PAGESIZE));
-#endif
   return ((sizeof(Symbolizer) - 1) / pagesize + 1) * pagesize;
 }
 

@@ -424,7 +424,10 @@ TEST(Symbolize, SetSymbolDecorator) {
 static int in_data_section = 1;
 
 TEST(Symbolize, ForEachSection) {
-  int fd = TEMP_FAILURE_RETRY(open("/proc/self/exe", O_RDONLY));
+  int fd;
+  do {
+    fd = open("/proc/self/exe", O_RDONLY);
+  } while (fd == -1 && errno == EINTR);
   ASSERT_NE(fd, -1);
 
   std::vector<std::string> sections;

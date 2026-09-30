@@ -570,7 +570,24 @@
 #ifdef ABSL_ATTRIBUTE_UNUSED
 #error "ABSL_ATTRIBUTE_UNUSED should not be defined."
 #endif
+#if defined(__cplusplus) && defined(__clang__) && \
+    ABSL_HAVE_ATTRIBUTE(diagnose_if) && !defined(SWIG)
+struct [[deprecated("Use [[maybe_unused]] instead.")]] _absl_unused_macro;
+// Trick: We use __attribute__((diagnose_if(...))) to refer to our own
+// deprecated symbol, which then causes a deprecation message to be emitted when
+// the macro is used. Since diagnose_if() isn't valid on every declaration, we
+// also suppress the warning regarding that.
+#define ABSL_ATTRIBUTE_UNUSED                                                \
+  [[maybe_unused]]                                                           \
+  _Pragma("clang diagnostic push") /*                                     */ \
+      _Pragma("clang diagnostic ignored \"-Wignored-attributes\"")           \
+          __attribute__((diagnose_if(                                        \
+              sizeof(_absl_unused_macro*) == 0, "",                          \
+              "warning"))) /*                                             */ \
+          _Pragma("clang diagnostic pop")
+#else
 #define ABSL_ATTRIBUTE_UNUSED [[maybe_unused]]
+#endif
 
 // ABSL_ATTRIBUTE_INITIAL_EXEC
 //

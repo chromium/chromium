@@ -1358,36 +1358,32 @@ TEST(SwisstableCollisions, LowEntropyInts) {
 }
 
 struct NameView {
-  absl::string_view name;
-  absl::string_view lang;
+  absl::string_view first;
+  absl::string_view last;
 
   friend bool operator==(const NameView& lhs, const NameView& rhs) {
-    return lhs.name == rhs.name && lhs.lang == rhs.lang;
+    return lhs.first == rhs.first && lhs.last == rhs.last;
   }
 
   template <typename H>
   friend H AbslHashValue(H h, const NameView& name) {
-    return H::combine(std::move(h), name.name, name.lang);
+    return H::combine(std::move(h), name.first, name.last);
   }
 };
 
 struct Name {
-  std::string name;
-  std::string lang;
+  std::string first;
+  std::string last;
 
   friend bool operator==(const Name& lhs, const Name& rhs) {
-    return lhs.name == rhs.name && lhs.lang == rhs.lang;
+    return lhs.first == rhs.first && lhs.last == rhs.last;
   }
-  friend bool operator==(const NameView& lhs, const Name& rhs) {
-    return lhs.name == rhs.name && lhs.lang == rhs.lang;
-  }
-  friend bool operator==(const Name& lhs, const NameView& rhs) {
-    return lhs.name == rhs.name && lhs.lang == rhs.lang;
-  }
+
+  operator NameView() const { return NameView{first, last}; }  // NOLINT
 
   template <typename H>
   friend H AbslHashValue(H h, const Name& name) {
-    return H::combine(std::move(h), name.name, name.lang);
+    return H::combine(std::move(h), name.first, name.last);
   }
 
   using absl_container_hash = absl::TransparentHash<NameView, Name>;
@@ -1412,29 +1408,29 @@ TYPED_TEST(TransparentHashTest, BasicUsage) {
   EXPECT_FALSE((std::is_convertible_v<NameHash, absl::Hash<Name>>));
   EXPECT_FALSE((std::is_convertible_v<NameHash, absl::Hash<NameView>>));
 
-  EXPECT_EQ(NameHash{}(Name{"foo", "en"}), NameHash{}(NameView{"foo", "en"}));
+  EXPECT_EQ(NameHash{}(Name{"John", "Doe"}),
+            NameHash{}(NameView{"John", "Doe"}));
 
-  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly(
-      std::make_tuple(Name{"foo", "en"}, NameView{"foo", "en"},
-                      Name{"bar", "en"}, NameView{"bar", "en"},
-                      Name{"foo", "de"}, NameView{"foo", "de"},
-                      Name{"bar", "de"}, NameView{"bar", "de"})));
+  EXPECT_TRUE(absl::VerifyTypeImplementsAbslHashCorrectly(std::make_tuple(
+      Name{"John", "Doe"}, NameView{"John", "Doe"}, Name{"Jack", "Doe"},
+      NameView{"Jack", "Doe"}, Name{"John", "Smith"}, NameView{"John", "Smith"},
+      Name{"Jack", "Smith"}, NameView{"Jack", "Smith"})));
 
   absl::flat_hash_set<Name, NameHash, std::equal_to<>> set;
-  set.insert(Name{"foo", "en"});
-  EXPECT_TRUE(set.contains(NameView{"foo", "en"}));
-  EXPECT_TRUE(set.contains(Name{"foo", "en"}));
+  set.insert(Name{"John", "Doe"});
+  EXPECT_TRUE(set.contains(NameView{"John", "Doe"}));
+  EXPECT_TRUE(set.contains(Name{"John", "Doe"}));
 
   std::unordered_set<Name, NameHash, std::equal_to<>> std_set;
-  std_set.insert(Name{"foo", "en"});
-  EXPECT_TRUE(std_set.find(Name{"foo", "en"}) != std_set.end());
+  std_set.insert(Name{"John", "Doe"});
+  EXPECT_TRUE(std_set.find(Name{"John", "Doe"}) != std_set.end());
 }
 
 TEST(HashTest, TransparentHashDefaultLookUp) {
   absl::flat_hash_set<Name> set;
-  set.insert(Name{"foo", "en"});
-  EXPECT_TRUE(set.contains(NameView{"foo", "en"}));
-  EXPECT_TRUE(set.contains(Name{"foo", "en"}));
+  set.insert(Name{"John", "Doe"});
+  EXPECT_TRUE(set.contains(NameView{"John", "Doe"}));
+  EXPECT_TRUE(set.contains(Name{"John", "Doe"}));
 }
 
 struct MyString {

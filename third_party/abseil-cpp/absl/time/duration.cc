@@ -64,6 +64,7 @@
 #include "absl/base/attributes.h"
 #include "absl/base/casts.h"
 #include "absl/base/config.h"
+#include "absl/base/optimization.h"
 #include "absl/numeric/int128.h"
 #include "absl/strings/string_view.h"
 #include "absl/strings/strip.h"
@@ -417,9 +418,15 @@ int64_t IDivDuration(Duration num, Duration den, Duration* rem) {
 Duration& Duration::operator+=(Duration rhs) {
   if (time_internal::IsInfiniteDuration(*this)) return *this;
   if (time_internal::IsInfiniteDuration(rhs)) return *this = rhs;
+  // Once we know the operands are finite, we can assume the low (subsecond)
+  // part of the representation is less than kTicksPerSecond.
+  ABSL_ASSUME(rep_lo_ < kTicksPerSecond);
+  ABSL_ASSUME(rhs.rep_lo_ < kTicksPerSecond);
   const int64_t orig_rep_hi = rep_hi_.Get();
   rep_hi_ = DecodeTwosComp(EncodeTwosComp(rep_hi_.Get()) +
                            EncodeTwosComp(rhs.rep_hi_.Get()));
+  // The ABSL_ASSUMEs above prevent the compiler from emitting unreachable carry
+  // logic for the next line.
   if (rep_lo_ >= kTicksPerSecond - rhs.rep_lo_) {
     rep_hi_ = DecodeTwosComp(EncodeTwosComp(rep_hi_.Get()) + 1);
     rep_lo_ -= kTicksPerSecond;
