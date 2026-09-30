@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tab;
 
 import org.chromium.base.SysUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.PageTransition;
 
 /** Utility methods for querying behavioral traits and predicates of {@link TabLaunchType}. */
@@ -342,6 +343,52 @@ public final class TabLaunchTypeUtils {
             case TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP,
                     TabLaunchType.FROM_TIPS_NOTIFICATIONS ->
                     true;
+            default -> false;
+        };
+    }
+
+    /**
+     * Returns true if adding a tab with the given launch type should trigger the "Opened in new
+     * tab" toast notification.
+     *
+     * @param type The launch type to inspect.
+     * @param animationsEnabled Whether device-class animations are enabled.
+     * @return True if the open-in-new-tab toast should be shown.
+     */
+    public static boolean shouldShowOpenInNewTabToast(
+            @TabLaunchType int type, boolean animationsEnabled) {
+        assertValidLaunchType(type);
+        return isLongpressBackgroundLaunch(type)
+                || (type == TabLaunchType.FROM_RECENT_TABS && !animationsEnabled);
+    }
+
+    /**
+     * Returns true if pressing the back button on a tab with no navigation history should close the
+     * tab rather than sending the activity to the background.
+     *
+     * @param tab The tab to inspect.
+     * @return True if pressing back should close the tab.
+     */
+    public static boolean shouldCloseTabOnBackPress(Tab tab) {
+        @TabLaunchType int type = tab.getLaunchType();
+        assertValidLaunchType(type);
+        boolean hasParent = tab.getParentId() != Tab.INVALID_TAB_ID;
+        return switch (type) {
+            case TabLaunchType.FROM_LINK,
+                    TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW,
+                    TabLaunchType.FROM_EXTERNAL_APP,
+                    TabLaunchType.FROM_READING_LIST,
+                    TabLaunchType.FROM_LONGPRESS_FOREGROUND,
+                    TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP,
+                    TabLaunchType.FROM_LONGPRESS_INCOGNITO,
+                    TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                    TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
+                    TabLaunchType.FROM_RECENT_TABS,
+                    TabLaunchType.FROM_RECENT_TABS_FOREGROUND ->
+                    true;
+            case TabLaunchType.FROM_CHROME_UI, TabLaunchType.FROM_RESTORE -> hasParent;
+            case TabLaunchType.FROM_SYNC_BACKGROUND ->
+                    hasParent && ChromeFeatureList.sSendTabToSelfSwitchToParentOnBack.isEnabled();
             default -> false;
         };
     }

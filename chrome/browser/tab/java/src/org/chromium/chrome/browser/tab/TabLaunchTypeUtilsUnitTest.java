@@ -7,12 +7,16 @@ package org.chromium.chrome.browser.tab;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.FeatureOverrides;
 import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.ui.base.PageTransition;
 
 import java.util.Map;
@@ -192,6 +196,23 @@ public class TabLaunchTypeUtilsUnitTest {
                     TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP,
                     TabLaunchType.FROM_TIPS_NOTIFICATIONS);
 
+    private static final Set<Integer> UNCONDITIONAL_CLOSE_ON_BACK_PRESS_TYPES =
+            Set.of(
+                    TabLaunchType.FROM_LINK,
+                    TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW,
+                    TabLaunchType.FROM_EXTERNAL_APP,
+                    TabLaunchType.FROM_READING_LIST,
+                    TabLaunchType.FROM_LONGPRESS_FOREGROUND,
+                    TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP,
+                    TabLaunchType.FROM_LONGPRESS_INCOGNITO,
+                    TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                    TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
+                    TabLaunchType.FROM_RECENT_TABS,
+                    TabLaunchType.FROM_RECENT_TABS_FOREGROUND);
+
+    private static final Set<Integer> PARENT_DEPENDENT_CLOSE_ON_BACK_PRESS_TYPES =
+            Set.of(TabLaunchType.FROM_CHROME_UI, TabLaunchType.FROM_RESTORE);
+
     @Test
     public void testEnumSizeConstant() {
         assertEquals("TabLaunchType.SIZE is expected to be 37", 37, TabLaunchType.SIZE);
@@ -267,6 +288,49 @@ public class TabLaunchTypeUtilsUnitTest {
                     "shouldKeepCurrentTabOnAnimation mismatch for type " + type,
                     KEEP_CURRENT_TAB_ON_ANIMATION_TYPES.contains(type),
                     TabLaunchTypeUtils.shouldKeepCurrentTabOnAnimation(type));
+            assertEquals(
+                    "shouldShowOpenInNewTabToast(true) mismatch for type " + type,
+                    LONGPRESS_BACKGROUND_TYPES.contains(type),
+                    TabLaunchTypeUtils.shouldShowOpenInNewTabToast(
+                            type, /* animationsEnabled= */ true));
+            assertEquals(
+                    "shouldShowOpenInNewTabToast(false) mismatch for type " + type,
+                    LONGPRESS_BACKGROUND_TYPES.contains(type)
+                            || type == TabLaunchType.FROM_RECENT_TABS,
+                    TabLaunchTypeUtils.shouldShowOpenInNewTabToast(
+                            type, /* animationsEnabled= */ false));
+
+            Tab tab = mock(Tab.class);
+            when(tab.getLaunchType()).thenReturn(type);
+
+            when(tab.getParentId()).thenReturn(Tab.INVALID_TAB_ID);
+            FeatureOverrides.disable(ChromeFeatureList.SEND_TAB_TO_SELF_SWITCH_TO_PARENT_ON_BACK);
+            assertEquals(
+                    "shouldCloseTabOnBackPress(noParent, flagDisabled) mismatch for type " + type,
+                    UNCONDITIONAL_CLOSE_ON_BACK_PRESS_TYPES.contains(type),
+                    TabLaunchTypeUtils.shouldCloseTabOnBackPress(tab));
+
+            FeatureOverrides.enable(ChromeFeatureList.SEND_TAB_TO_SELF_SWITCH_TO_PARENT_ON_BACK);
+            assertEquals(
+                    "shouldCloseTabOnBackPress(noParent, flagEnabled) mismatch for type " + type,
+                    UNCONDITIONAL_CLOSE_ON_BACK_PRESS_TYPES.contains(type),
+                    TabLaunchTypeUtils.shouldCloseTabOnBackPress(tab));
+
+            when(tab.getParentId()).thenReturn(1);
+            FeatureOverrides.disable(ChromeFeatureList.SEND_TAB_TO_SELF_SWITCH_TO_PARENT_ON_BACK);
+            assertEquals(
+                    "shouldCloseTabOnBackPress(hasParent, flagDisabled) mismatch for type " + type,
+                    UNCONDITIONAL_CLOSE_ON_BACK_PRESS_TYPES.contains(type)
+                            || PARENT_DEPENDENT_CLOSE_ON_BACK_PRESS_TYPES.contains(type),
+                    TabLaunchTypeUtils.shouldCloseTabOnBackPress(tab));
+
+            FeatureOverrides.enable(ChromeFeatureList.SEND_TAB_TO_SELF_SWITCH_TO_PARENT_ON_BACK);
+            assertEquals(
+                    "shouldCloseTabOnBackPress(hasParent, flagEnabled) mismatch for type " + type,
+                    UNCONDITIONAL_CLOSE_ON_BACK_PRESS_TYPES.contains(type)
+                            || PARENT_DEPENDENT_CLOSE_ON_BACK_PRESS_TYPES.contains(type)
+                            || type == TabLaunchType.FROM_SYNC_BACKGROUND,
+                    TabLaunchTypeUtils.shouldCloseTabOnBackPress(tab));
         }
     }
 
@@ -417,6 +481,16 @@ public class TabLaunchTypeUtilsUnitTest {
                     "shouldKeepCurrentTabOnAnimation should assert for invalid type " + type,
                     AssertionError.class,
                     () -> TabLaunchTypeUtils.shouldKeepCurrentTabOnAnimation(type));
+            assertThrows(
+                    "shouldShowOpenInNewTabToast should assert for invalid type " + type,
+                    AssertionError.class,
+                    () -> TabLaunchTypeUtils.shouldShowOpenInNewTabToast(type, true));
+            Tab invalidTab = mock(Tab.class);
+            when(invalidTab.getLaunchType()).thenReturn(type);
+            assertThrows(
+                    "shouldCloseTabOnBackPress should assert for invalid type " + type,
+                    AssertionError.class,
+                    () -> TabLaunchTypeUtils.shouldCloseTabOnBackPress(invalidTab));
         }
     }
 }

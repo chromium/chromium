@@ -278,6 +278,7 @@ import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabDestroyStatus;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabLaunchTypeUtils;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
@@ -1010,10 +1011,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                                 @TabLaunchType int type,
                                 @TabCreationState int creationState,
                                 boolean markedForSelection) {
-                            if (type == TabLaunchType.FROM_LONGPRESS_BACKGROUND
-                                    || type == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
-                                    || (type == TabLaunchType.FROM_RECENT_TABS
-                                            && !DeviceClassManager.enableAnimations())) {
+                            if (TabLaunchTypeUtils.shouldShowOpenInNewTabToast(
+                                    type, DeviceClassManager.enableAnimations())) {
                                 // Post the toast to allow the browser controls to start to update.
                                 PostTask.postTask(
                                         TaskTraits.UI_DEFAULT,
@@ -5192,24 +5191,7 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             return false;
         }
 
-        @TabLaunchType int type = tab.getLaunchType();
-
-        return type == TabLaunchType.FROM_LINK
-                || type == TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW
-                || type == TabLaunchType.FROM_EXTERNAL_APP
-                || type == TabLaunchType.FROM_READING_LIST
-                || type == TabLaunchType.FROM_LONGPRESS_FOREGROUND
-                || type == TabLaunchType.FROM_LONGPRESS_FOREGROUND_IN_GROUP
-                || type == TabLaunchType.FROM_LONGPRESS_INCOGNITO
-                || type == TabLaunchType.FROM_LONGPRESS_BACKGROUND
-                || type == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
-                || type == TabLaunchType.FROM_RECENT_TABS
-                || type == TabLaunchType.FROM_RECENT_TABS_FOREGROUND
-                || (type == TabLaunchType.FROM_CHROME_UI && tab.getParentId() != Tab.INVALID_TAB_ID)
-                || (type == TabLaunchType.FROM_RESTORE && tab.getParentId() != Tab.INVALID_TAB_ID)
-                || (type == TabLaunchType.FROM_SYNC_BACKGROUND
-                        && tab.getParentId() != Tab.INVALID_TAB_ID
-                        && ChromeFeatureList.sSendTabToSelfSwitchToParentOnBack.isEnabled());
+        return TabLaunchTypeUtils.shouldCloseTabOnBackPress(tab);
     }
 
     /**
