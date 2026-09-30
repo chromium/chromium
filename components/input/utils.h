@@ -20,6 +20,8 @@ class COMPONENT_EXPORT(INPUT) InputUtils {
   // only on Android 16+.
   static bool IsTransferInputToVizSupported();
 #if BUILDFLAG(IS_ANDROID)
+  // Whether the desktop or mobile fling curve should be used.
+  static bool ShouldUseMobileFlingCurve();
   static void RunGarbageCollection();
 #endif
 };

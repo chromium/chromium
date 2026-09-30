@@ -4,13 +4,12 @@
 
 #include "content/browser/renderer_host/input/fling_scheduler_android.h"
 
-#include "base/feature_list.h"
 #include "build/build_config.h"
+#include "components/input/utils.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/public/common/content_features.h"
 #include "ui/android/view_android.h"
-#include "ui/base/ui_base_features.h"
 
 namespace content {
 
@@ -66,10 +65,7 @@ bool FlingSchedulerAndroid::ProgressFlingOnFlingStart() {
 }
 
 bool FlingSchedulerAndroid::ShouldUseMobileFlingCurve() {
-  if (base::FeatureList::IsEnabled(features::kDesktopFlingCurveOnAndroid)) {
-    return false;
-  }
-  return true;
+  return input::InputUtils::ShouldUseMobileFlingCurve();
 }
 
 gfx::Vector2dF FlingSchedulerAndroid::GetPixelsPerInch(

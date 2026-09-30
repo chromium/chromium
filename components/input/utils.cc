@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
@@ -15,6 +16,7 @@
 #include "base/android/jni_android.h"
 #include "components/input/android/jni_headers/InputUtils_jni.h"
 #include "components/input/features.h"
+#include "ui/base/ui_base_features.h"
 #endif
 
 namespace input {
@@ -55,6 +57,11 @@ bool InputUtils::IsTransferInputToVizSupported() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
+
+// static
+bool InputUtils::ShouldUseMobileFlingCurve() {
+  return !base::FeatureList::IsEnabled(::features::kDesktopFlingCurveOnAndroid);
+}
 
 void InputUtils::RunGarbageCollection() {
   Java_InputUtils_runGarbageCollection(base::android::AttachCurrentThread());

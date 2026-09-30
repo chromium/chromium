@@ -6,6 +6,7 @@
 
 #include "components/input/fling_controller.h"
 #include "components/input/render_input_router.h"
+#include "components/input/utils.h"
 
 namespace viz {
 
@@ -40,7 +41,7 @@ bool FlingSchedulerAndroid::ProgressFlingOnFlingStart() {
 }
 
 bool FlingSchedulerAndroid::ShouldUseMobileFlingCurve() {
-  return true;
+  return input::InputUtils::ShouldUseMobileFlingCurve();
 }
 
 gfx::Vector2dF FlingSchedulerAndroid::GetPixelsPerInch(
