@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <utility>
 #include <vector>
 
 #include "base/debug/crash_logging.h"
@@ -13,16 +14,25 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "content/browser/accessibility/render_accessibility_host.h"
 #include "content/browser/back_forward_cache/back_forward_cache_impl.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
+#include "content/browser/blob_storage/file_backed_blob_factory_frame_impl.h"
+#include "content/browser/digital_credentials/digital_identity_request_impl.h"
 #include "content/browser/file_system/file_system_manager_impl.h"
 #include "content/browser/geolocation/geolocation_service_impl.h"
 #include "content/browser/manifest/manifest_manager_host.h"
+#include "content/browser/media/key_system_support_impl.h"
+#include "content/browser/media/media_interface_proxy.h"
+#include "content/browser/renderer_host/input/input_injector_impl.h"
+#include "content/browser/renderer_host/media/peer_connection_tracker_host.h"
+#include "content/browser/renderer_host/model_context_user_data.h"
 #include "content/browser/renderer_host/page_lifecycle_state_manager.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
+#include "content/browser/webid/request_service.h"
 #include "content/common/dom_automation_controller.mojom.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/browser/active_url_message_filter.h"
@@ -31,8 +41,10 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "media/mojo/mojom/media_player.mojom.h"
+#include "media/mojo/services/mojo_video_encoder_metrics_provider_service.h"
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/features.h"
 #include "services/device/public/mojom/screen_orientation.mojom.h"
 #include "services/network/public/cpp/features.h"
@@ -67,8 +79,9 @@ class MessageFilterChain final : public mojo::MessageFilter {
 
   bool WillDispatch(mojo::Message* message) override {
     for (auto& filter : filters_) {
-      if (!filter->WillDispatch(message))
+      if (!filter->WillDispatch(message)) {
         return false;
+      }
     }
     return true;
   }
@@ -107,8 +120,9 @@ class BackForwardCacheMessageFilter : public mojo::MessageFilter {
  private:
   // mojo::MessageFilter overrides.
   bool WillDispatch(mojo::Message* message) override {
-    if (!render_frame_host_->render_view_host())
+    if (!render_frame_host_->render_view_host()) {
       return false;
+    }
     if (render_frame_host_->render_view_host()
             ->GetPageLifecycleStateManager()
             ->RendererExpectedToSendChannelAssociatedIpcs() ||
@@ -370,6 +384,112 @@ void RenderFrameHostImpl::TearDownMojoConnection() {
   // will never fire.
   audio_service_audio_output_stream_factory_.reset();
   audio_service_audio_input_stream_factory_.reset();
+}
+
+void RenderFrameHostImpl::BindAssociatedInterfaceProviderReceiver(
+    mojo::PendingAssociatedReceiver<blink::mojom::AssociatedInterfaceProvider>
+        receiver) {
+  CHECK(receiver.is_valid());
+  associated_interface_provider_receiver_.Bind(std::move(receiver));
+}
+
+void RenderFrameHostImpl::BindDomOperationControllerHostReceiver(
+    mojo::PendingAssociatedReceiver<mojom::DomAutomationControllerHost>
+        receiver) {
+  CHECK(receiver.is_valid());
+  // In the renderer side, the remote is document-associated so the receiver on
+  // the browser side can be reused after a cross-document navigation.
+  // TODO(dcheng): Make this document-associated?
+  dom_automation_controller_receiver_.reset();
+  dom_automation_controller_receiver_.Bind(std::move(receiver));
+  dom_automation_controller_receiver_.SetFilter(
+      CreateMessageFilterForAssociatedReceiver(
+          mojom::DomAutomationControllerHost::Name_));
+}
+
+void RenderFrameHostImpl::BindDevToolsAgent(
+    mojo::PendingAssociatedRemote<blink::mojom::DevToolsAgentHost> host,
+    mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> receiver) {
+  GetAssociatedLocalFrame()->BindDevToolsAgent(std::move(host),
+                                               std::move(receiver));
+}
+
+void RenderFrameHostImpl::BindNonAssociatedLocalFrameHost(
+    mojo::PendingReceiver<blink::mojom::NonAssociatedLocalFrameHost> receiver) {
+  if (non_associated_local_frame_host_receiver_.is_bound()) {
+    mojo::ReportBadMessage("NonAssociatedLocalFrameHost is already bound.");
+    return;
+  }
+  non_associated_local_frame_host_receiver_.Bind(std::move(receiver));
+}
+
+void RenderFrameHostImpl::BindMediaInterfaceFactoryReceiver(
+    mojo::PendingReceiver<media::mojom::InterfaceFactory> receiver) {
+  MediaInterfaceProxy::GetOrCreateForCurrentDocument(this)->Bind(
+      std::move(receiver));
+}
+
+void RenderFrameHostImpl::BindKeySystemSupportReceiver(
+    mojo::PendingReceiver<media::mojom::KeySystemSupport> receiver) {
+  KeySystemSupportImpl::GetOrCreateForCurrentDocument(this)->Bind(
+      std::move(receiver));
+}
+
+void RenderFrameHostImpl::BindVideoEncoderMetricsProviderReceiver(
+    mojo::PendingReceiver<media::mojom::VideoEncoderMetricsProvider> receiver) {
+  // Ensure the frame is not in the prerendering state as we don't record UKM
+  // while prerendering. This is ensured as the BrowserInterfaceBinders defers
+  // binding until the frame's activation.
+  CHECK(!IsInLifecycleState(LifecycleState::kPrerendering));
+  media::MojoVideoEncoderMetricsProviderService::Create(GetPageUkmSourceId(),
+                                                        std::move(receiver));
+}
+
+#if BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_IOS_TVOS))
+void RenderFrameHostImpl::BindNFCReceiver(
+    mojo::PendingReceiver<device::mojom::NFC> receiver) {
+  delegate_->GetNFC(this, std::move(receiver));
+}
+#endif
+
+void RenderFrameHostImpl::BindModelContextHost(
+    mojo::PendingReceiver<blink::mojom::ModelContextHost> receiver) {
+  ModelContextUserData::Bind(this, std::move(receiver));
+}
+
+void RenderFrameHostImpl::BindInputInjectorReceiver(
+    mojo::PendingReceiver<mojom::InputInjector> receiver) {
+  InputInjectorImpl::Create(weak_ptr_factory_.GetWeakPtr(),
+                            std::move(receiver));
+}
+
+void RenderFrameHostImpl::BindDigitalIdentityRequestReceiver(
+    mojo::PendingReceiver<blink::mojom::DigitalIdentityRequest> receiver) {
+  DigitalIdentityRequestImpl::CreateInstance(*this, std::move(receiver));
+}
+
+void RenderFrameHostImpl::BindFederatedRequestServiceReceiver(
+    mojo::PendingReceiver<blink::mojom::FederatedRequestService> receiver) {
+  webid::RequestService* service =
+      webid::RequestService::GetOrCreateForCurrentDocument(this);
+  service->BindFederatedRequestService(std::move(receiver));
+}
+
+void RenderFrameHostImpl::BindReportingObserver(
+    mojo::PendingReceiver<blink::mojom::ReportingObserver> receiver) {
+  GetAssociatedLocalFrame()->BindReportingObserver(std::move(receiver));
+}
+
+void RenderFrameHostImpl::BindPeerConnectionTrackerHost(
+    mojo::PendingReceiver<blink::mojom::PeerConnectionTrackerHost> receiver) {
+  GetPeerConnectionTrackerHost().BindReceiver(std::move(receiver));
+}
+
+void RenderFrameHostImpl::BindFileBackedBlobFactory(
+    mojo::PendingAssociatedReceiver<blink::mojom::FileBackedBlobFactory>
+        receiver) {
+  FileBackedBlobFactoryFrameImpl::CreateForCurrentDocument(this,
+                                                           std::move(receiver));
 }
 
 }  // namespace content
