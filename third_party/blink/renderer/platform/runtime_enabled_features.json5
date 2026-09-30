@@ -4280,11 +4280,6 @@
       status: "experimental",
     },
     {
-      // Killswitch M149.
-      name: "MergeFixedLayers",
-      status: "stable",
-    },
-    {
       // Killswitch M149. Functionality changed in M151.
       name: "MergeStickyLayers",
       status: "stable",

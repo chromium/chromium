@@ -45,8 +45,7 @@ TransformCompositingBoundaryType InSameTransformCompositingBoundary(
   const auto* composited_ancestor2 = t2.NearestDirectlyCompositedAncestor();
   if (composited_ancestor1 != composited_ancestor2) {
     if (composited_ancestor1 && composited_ancestor2) {
-      if (RuntimeEnabledFeatures::MergeFixedLayersEnabled() &&
-          composited_ancestor1->CanMergeForFixedPosition(
+      if (composited_ancestor1->CanMergeForFixedPosition(
               *composited_ancestor2)) {
         return kThroughMergeableComposited;
       }
@@ -138,8 +137,6 @@ std::optional<PropertyTreeState::UpcastResult> PropertyTreeState::CanUpcastWith(
       if (same_boundary == kThroughMergeableCompositedScrollRangeDependent) {
         scroll_range_dependent = true;
       }
-      CHECK(RuntimeEnabledFeatures::MergeFixedLayersEnabled() ||
-            RuntimeEnabledFeatures::MergeStickyLayersEnabled());
       const auto* composited1 = Transform().NearestDirectlyCompositedAncestor();
       const auto* composited2 =
           guest.Transform().NearestDirectlyCompositedAncestor();
