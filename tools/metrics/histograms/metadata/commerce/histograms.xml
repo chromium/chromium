@@ -827,20 +827,6 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
   </summary>
 </histogram>
 
-<histogram name="Commerce.Subscriptions.TabEligible" enum="Boolean"
-    expires_after="2023-04-25">
-  <owner>zhiyuancai@chromium.org</owner>
-  <owner>ayman@chromium.org</owner>
-  <owner>chrome-shopping@google.com</owner>
-  <summary>
-    Records whether a tab is eligible for commerce subscriptions. True when the
-    tab has offer and the tab is stale (Last opened time between 1 and 90 days).
-    Recorded when we initialize commerce subscriptions (For eligible users, we
-    initialize subscriptions when Chrome becomes foreground app but at most once
-    in a one-day moving window). Implemented for Android.
-  </summary>
-</histogram>
-
 <histogram name="Commerce.Subscriptions.TrackResult"
     enum="ShoppingSubscriptionsRequestStatus" expires_after="2027-03-07">
   <owner>mdjones@chromium.org</owner>
