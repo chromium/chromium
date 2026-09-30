@@ -55,8 +55,11 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/permission_request_observer.h"
+#include "components/prefs/pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/url_formatter/elide_url.h"
 #include "components/webapps/browser/install_result_code.h"
@@ -114,6 +117,13 @@ constexpr int kMaxInstalledBySize = 10;
 constexpr char kTestPageWithId[] = "/banners/manifest_with_id_test_page.html";
 constexpr char kValidManifestNoId[] = "/banners/manifest.json";
 constexpr char kValidManifestWithId[] = "/banners/manifest_with_id.json";
+constexpr char kCrossOriginManifestPath[] =
+    "/controlled_cross_origin_manifest.webmanifest";
+constexpr char kCrossOriginManifestCookie[] =
+    "manifest_cookie=1; SameSite=None; Secure";
+constexpr char kCrossOriginManifestIdPath[] = "/cross-origin-app";
+constexpr char kCrossOriginManifestStartUrlPath[] =
+    "/banners/manifest_with_id_test_page.html";
 constexpr webapps::WebappInstallSource kInstallSource =
     webapps::WebappInstallSource::WEB_INSTALL;
 constexpr apps::LaunchSource kLaunchSource =
@@ -179,8 +189,7 @@ class WebInstallFromManifestBrowserTest : public WebAppBrowserTestBase {
         &WebInstallFromManifestBrowserTest::HandleDynamicRequest,
         base::Unretained(this)));
     WebAppBrowserTestBase::SetUpOnMainThread();
-    // A second HTTPS origin, used to navigate the initiating page cross-origin
-    // mid-install.
+    // A second HTTPS server for tests that require an independent origin.
     secondary_server_.AddDefaultHandlers(GetChromeTestDataDir());
     ASSERT_TRUE(secondary_server_.Start());
   }
@@ -233,6 +242,20 @@ class WebInstallFromManifestBrowserTest : public WebAppBrowserTestBase {
         ".then(result => { webInstallResult = result; })"
         ".catch(error => { webInstallError = error; });",
         manifest_url.spec());
+    return content::ExecJs(wc, script,
+                           content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES);
+  }
+
+  bool FireInstallFromManifestNoResolve(
+      const GURL& manifest_url,
+      const GURL& manifest_id,
+      content::WebContents* contents = nullptr) {
+    content::WebContents* wc = contents ? contents : web_contents();
+    const std::string script = content::JsReplace(
+        "navigator.install({manifest: $1, manifestId: $2})"
+        ".then(result => { webInstallResult = result; })"
+        ".catch(error => { webInstallError = error; });",
+        manifest_url.spec(), manifest_id.spec());
     return content::ExecJs(wc, script,
                            content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES);
   }
@@ -554,6 +577,197 @@ IN_PROC_BROWSER_TEST_F(WebInstallFromManifestBrowserTest,
       GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id));
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
+}
+
+class WebInstallFromCrossOriginManifestBrowserTest
+    : public WebInstallFromManifestBrowserTest {
+ public:
+  void SetUpOnMainThread() override {
+    manifest_response_ =
+        std::make_unique<net::test_server::ControllableHttpResponse>(
+            &secondary_server_, kCrossOriginManifestPath);
+    WebInstallFromManifestBrowserTest::SetUpOnMainThread();
+  }
+
+ protected:
+  static constexpr char kCrossOriginManifest[] = R"json({
+    "name": "Cross-origin manifest app",
+    "id": "/cross-origin-app",
+    "start_url": "/banners/manifest_with_id_test_page.html",
+    "scope": "/",
+    "display": "standalone",
+    "icons": [{
+      "src": "/banners/image-512px.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }]
+  })json";
+
+  net::test_server::ControllableHttpResponse& manifest_response() {
+    return *manifest_response_;
+  }
+
+ private:
+  std::unique_ptr<net::test_server::ControllableHttpResponse>
+      manifest_response_;
+};
+
+IN_PROC_BROWSER_TEST_F(WebInstallFromCrossOriginManifestBrowserTest,
+                       ManifestOnly_Succeeds) {
+  // Navigate to a.test and use a manifest on b.test so the manifest fetch is
+  // both cross-origin and cross-site.
+  const GURL initiating_url =
+      embedded_https_test_server().GetURL("a.test", "/simple.html");
+  const GURL manifest_url =
+      secondary_server_.GetURL("b.test", kCrossOriginManifestPath);
+  const GURL manifest_id = manifest_url.Resolve(kCrossOriginManifestIdPath);
+
+  // Allow third-party cookies and seed b.test with an eligible cookie so the
+  // request assertion below detects a credentialed manifest fetch.
+  profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kOff));
+  ASSERT_TRUE(
+      content::SetCookie(profile(), manifest_url, kCrossOriginManifestCookie));
+
+  ASSERT_FALSE(url::Origin::Create(initiating_url)
+                   .IsSameOriginWith(url::Origin::Create(manifest_url)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initiating_url));
+  SetPermissionResponse(/*permission_granted=*/true);
+  base::AutoReset<web_app::InstallDialogTestResponse> auto_accept_pwa =
+      web_app::SetPwaInstallationAutoRespondForTesting(
+          web_app::InstallDialogTestResponse::kAcceptAndLaunch);
+
+  // Start an install using only the manifest URL.
+  permissions::PermissionRequestObserver observer(web_contents());
+  ASSERT_TRUE(FireInstallFromManifestNoResolve(manifest_url));
+
+  // Verify the browser-owned GET reached b.test without Origin, Referer, or
+  // Cookie headers.
+  manifest_response().WaitForRequest();
+  const net::test_server::HttpRequest& request =
+      *manifest_response().http_request();
+  EXPECT_EQ(request.method, net::test_server::METHOD_GET);
+  const auto host = request.headers.find("Host");
+  ASSERT_NE(host, request.headers.end());
+  EXPECT_EQ(host->second,
+            "b.test:" + base::NumberToString(secondary_server_.port()));
+  EXPECT_FALSE(request.headers.contains("Origin"));
+  EXPECT_FALSE(request.headers.contains("Referer"));
+  EXPECT_FALSE(request.headers.contains("Cookie"));
+
+  // Send no Access-Control-Allow-Origin header. Arbitrary manifest servers do
+  // not need to opt in to this browser-owned fetch.
+  manifest_response().Send(net::HTTP_OK, "application/manifest+json",
+                           kCrossOriginManifest);
+  manifest_response().Done();
+  observer.Wait();
+
+  // Wait for installation to complete and verify the API call succeeded.
+  EXPECT_TRUE(observer.request_shown());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(web_contents(),
+                           "typeof webInstallResult !== 'undefined' || "
+                           "typeof webInstallError !== 'undefined'")
+        .ExtractBool();
+  }));
+  ASSERT_TRUE(ResultExists());
+  EXPECT_FALSE(ErrorExists());
+  EXPECT_FALSE(
+      content::EvalJs(web_contents(), "'manifestId' in webInstallResult")
+          .ExtractBool());
+
+  // Verify the installed app uses the manifest's identity and start URL.
+  const webapps::AppId app_id =
+      GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id));
+  ASSERT_TRUE(provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::LaunchableFromInstallApi()));
+  EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id),
+            manifest_url.Resolve(kCrossOriginManifestStartUrlPath));
+
+  // Verify the install is attributed to the initiating page on a.test.
+  const std::deque<AppInstalledBy> installed_by = GetInstalledBy(app_id);
+  ASSERT_EQ(installed_by.size(), 1u);
+  EXPECT_EQ(installed_by.front().requesting_url(), initiating_url);
+}
+
+IN_PROC_BROWSER_TEST_F(WebInstallFromCrossOriginManifestBrowserTest,
+                       ManifestAndId_Succeeds) {
+  // Navigate to a.test and use a manifest on b.test so the manifest fetch is
+  // both cross-origin and cross-site.
+  const GURL initiating_url =
+      embedded_https_test_server().GetURL("a.test", "/simple.html");
+  const GURL manifest_url =
+      secondary_server_.GetURL("b.test", kCrossOriginManifestPath);
+  const GURL manifest_id = manifest_url.Resolve(kCrossOriginManifestIdPath);
+
+  // Allow third-party cookies and seed b.test with an eligible cookie so the
+  // request assertion below detects a credentialed manifest fetch.
+  profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kOff));
+  ASSERT_TRUE(
+      content::SetCookie(profile(), manifest_url, kCrossOriginManifestCookie));
+
+  ASSERT_FALSE(url::Origin::Create(initiating_url)
+                   .IsSameOriginWith(url::Origin::Create(manifest_url)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initiating_url));
+  SetPermissionResponse(/*permission_granted=*/true);
+  base::AutoReset<web_app::InstallDialogTestResponse> auto_accept_pwa =
+      web_app::SetPwaInstallationAutoRespondForTesting(
+          web_app::InstallDialogTestResponse::kAcceptAndLaunch);
+
+  // Start an install using both the manifest URL and manifest ID.
+  permissions::PermissionRequestObserver observer(web_contents());
+  ASSERT_TRUE(FireInstallFromManifestNoResolve(manifest_url, manifest_id));
+
+  // Verify the browser-owned GET reached b.test without Origin, Referer, or
+  // Cookie headers.
+  manifest_response().WaitForRequest();
+  const net::test_server::HttpRequest& request =
+      *manifest_response().http_request();
+  EXPECT_EQ(request.method, net::test_server::METHOD_GET);
+  const auto host = request.headers.find("Host");
+  ASSERT_NE(host, request.headers.end());
+  EXPECT_EQ(host->second,
+            "b.test:" + base::NumberToString(secondary_server_.port()));
+  EXPECT_FALSE(request.headers.contains("Origin"));
+  EXPECT_FALSE(request.headers.contains("Referer"));
+  EXPECT_FALSE(request.headers.contains("Cookie"));
+
+  // Send no Access-Control-Allow-Origin header. Arbitrary manifest servers do
+  // not need to opt in to this browser-owned fetch.
+  manifest_response().Send(net::HTTP_OK, "application/manifest+json",
+                           kCrossOriginManifest);
+  manifest_response().Done();
+  observer.Wait();
+
+  // Wait for installation to complete and verify the API call succeeded.
+  EXPECT_TRUE(observer.request_shown());
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    return content::EvalJs(web_contents(),
+                           "typeof webInstallResult !== 'undefined' || "
+                           "typeof webInstallError !== 'undefined'")
+        .ExtractBool();
+  }));
+  ASSERT_TRUE(ResultExists());
+  EXPECT_FALSE(ErrorExists());
+  EXPECT_FALSE(
+      content::EvalJs(web_contents(), "'manifestId' in webInstallResult")
+          .ExtractBool());
+
+  // Verify the installed app uses the manifest's identity and start URL.
+  const webapps::AppId app_id =
+      GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id));
+  ASSERT_TRUE(provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::LaunchableFromInstallApi()));
+  EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id),
+            manifest_url.Resolve(kCrossOriginManifestStartUrlPath));
+
+  // Verify the install is attributed to the initiating page on a.test.
+  const std::deque<AppInstalledBy> installed_by = GetInstalledBy(app_id);
+  ASSERT_EQ(installed_by.size(), 1u);
+  EXPECT_EQ(installed_by.front().requesting_url(), initiating_url);
 }
 
 // When the user denies the Web Install permission prompt, the install is

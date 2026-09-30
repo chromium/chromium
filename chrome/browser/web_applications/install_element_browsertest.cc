@@ -7,6 +7,7 @@
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
@@ -26,15 +27,20 @@
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_dialogs.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_install_service_impl.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/test/permission_request_observer.h"
+#include "components/prefs/pref_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
@@ -42,6 +48,9 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
@@ -52,6 +61,7 @@
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/window/dialog_delegate.h"
+#include "url/origin.h"
 
 namespace {
 constexpr char kInstallElementId[] = "install-app";
@@ -66,6 +76,10 @@ constexpr char kInstallElementPageStartUrl[] =
 constexpr char kInstallElementPageId[] = "/some_id";
 constexpr char kInstallElementManifestUrl[] =
     "/web_apps/install_element/manifest.json";
+constexpr char kCrossOriginManifestPath[] =
+    "/controlled_cross_origin_manifest.webmanifest";
+constexpr char kCrossOriginManifestCookie[] =
+    "manifest_cookie=1; SameSite=None; Secure";
 constexpr char kCustomIdPageInstallUrl[] =
     "/web_apps/custom_id/install_url.html";
 constexpr char kElementRequestingPageUkm[] = "ElementResultByRequestingPage";
@@ -536,6 +550,108 @@ IN_PROC_BROWSER_TEST_P(InstallElementBrowserTest,
       GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id));
   EXPECT_TRUE(provider().registrar_unsafe().AppMatches(
       app_id, WebAppFilter::LaunchableFromInstallApi()));
+}
+
+class InstallElementCrossOriginManifestBrowserTest
+    : public InstallElementBrowserTestBase {
+ public:
+  void SetUpOnMainThread() override {
+    manifest_response_ =
+        std::make_unique<net::test_server::ControllableHttpResponse>(
+            &embedded_https_test_server(), kCrossOriginManifestPath);
+    InstallElementBrowserTestBase::SetUpOnMainThread();
+  }
+
+ protected:
+  net::test_server::ControllableHttpResponse& manifest_response() {
+    return *manifest_response_;
+  }
+
+ private:
+  std::unique_ptr<net::test_server::ControllableHttpResponse>
+      manifest_response_;
+};
+
+IN_PROC_BROWSER_TEST_F(InstallElementCrossOriginManifestBrowserTest,
+                       InstallWithManifest) {
+  // Navigate to a.test and configure the element with a manifest on b.test so
+  // the manifest fetch is both cross-origin and cross-site.
+  const GURL initiating_url = embedded_https_test_server().GetURL(
+      "a.test", kInstallElementPageStartUrl);
+  const GURL manifest_url =
+      embedded_https_test_server().GetURL("b.test", kCrossOriginManifestPath);
+  const GURL manifest_id =
+      manifest_url.Resolve("/cross-origin-install-element-app");
+
+  // Allow third-party cookies and seed b.test with an eligible cookie so the
+  // request assertion below detects a credentialed manifest fetch.
+  profile()->GetPrefs()->SetInteger(
+      prefs::kCookieControlsMode,
+      static_cast<int>(content_settings::CookieControlsMode::kOff));
+  ASSERT_TRUE(
+      content::SetCookie(profile(), manifest_url, kCrossOriginManifestCookie));
+
+  ASSERT_FALSE(url::Origin::Create(initiating_url)
+                   .IsSameOriginWith(url::Origin::Create(manifest_url)));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initiating_url));
+  ASSERT_TRUE(SetButtonManifest(manifest_url));
+  base::AutoReset<web_app::InstallDialogTestResponse> auto_accept_pwa =
+      web_app::SetPwaInstallationAutoRespondForTesting(
+          web_app::InstallDialogTestResponse::kAcceptNoLaunch);
+
+  // Click the element to start the install.
+  content::WebContentsConsoleObserver success_observer(web_contents());
+  success_observer.SetPattern(std::string(kInstallElementId) +
+                              "-installresult-success");
+  ASSERT_TRUE(ClickElementWithId(kInstallElementId));
+
+  // Verify the browser-owned GET reached b.test without Origin, Referer, or
+  // Cookie headers.
+  manifest_response().WaitForRequest();
+  const net::test_server::HttpRequest& request =
+      *manifest_response().http_request();
+  EXPECT_EQ(request.method, net::test_server::METHOD_GET);
+  const auto host = request.headers.find("Host");
+  ASSERT_NE(host, request.headers.end());
+  EXPECT_EQ(host->second, "b.test:" + base::NumberToString(
+                                          embedded_https_test_server().port()));
+  EXPECT_FALSE(request.headers.contains("Origin"));
+  EXPECT_FALSE(request.headers.contains("Referer"));
+  EXPECT_FALSE(request.headers.contains("Cookie"));
+
+  // Send no Access-Control-Allow-Origin header. Arbitrary manifest servers do
+  // not need to opt in to this browser-owned fetch.
+  manifest_response().Send(net::HTTP_OK, "application/manifest+json",
+                           R"json({
+        "name": "Cross-origin install element app",
+        "id": "/cross-origin-install-element-app",
+        "start_url": "/web_apps/install_element/index.html",
+        "scope": "/",
+        "display": "standalone",
+        "icons": [{
+          "src": "/web_apps/install_element/launcher-icon-3x.png",
+          "sizes": "144x144",
+          "type": "image/png"
+        }]
+      })json");
+  manifest_response().Done();
+
+  // Wait for the element to report that installation succeeded.
+  ASSERT_TRUE(success_observer.Wait());
+
+  // Verify the installed app uses the manifest's identity and start URL.
+  const webapps::AppId app_id =
+      GenerateAppIdFromManifestId(webapps::ManifestId(manifest_id));
+  ASSERT_TRUE(provider().registrar_unsafe().AppMatches(
+      app_id, WebAppFilter::LaunchableFromInstallApi()));
+  EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id),
+            manifest_url.Resolve("/web_apps/install_element/index.html"));
+
+  // Verify the install is attributed to the initiating page on a.test.
+  const WebApp* app = provider().registrar_unsafe().GetAppById(app_id);
+  ASSERT_TRUE(app);
+  ASSERT_EQ(app->installed_by().size(), 1u);
+  EXPECT_EQ(app->installed_by().front().requesting_url(), initiating_url);
 }
 
 // The user declines the install dialog, so no app is installed.
