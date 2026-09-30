@@ -63,10 +63,21 @@ constexpr char kMojoFuzzerHtml[] = R"(
 <script src="gen/mojo/public/js/mojo_bindings_lite.js"></script>
 <script src="gen/mojo/public/mojom/base/big_buffer.mojom-lite.js"></script>
 <script src="gen/mojo/public/mojom/base/string16.mojom-lite.js"></script>
+<script src="gen/mojo/public/mojom/base/time.mojom-lite.js"></script>
+<script
+ src="gen/mojo/public/mojom/base/unguessable_token.mojom-lite.js">
+</script>
 <script src="gen/url/mojom/scheme_host_port.mojom-lite.js"></script>
+<script src="gen/url/mojom/origin.mojom-lite.js"></script>
 <script src="gen/url/mojom/url.mojom-lite.js"></script>
 <script
+ src="gen/components/payments/mojom/payment_request_data.mojom-lite.js">
+</script>
+<script
  src="gen/third_party/blink/public/mojom/credentialmanagement/credential_manager.mojom-lite.js">
+</script>
+<script
+ src="gen/third_party/blink/public/mojom/webauthn/authenticator.mojom-lite.js">
 </script>
 <script
  src="gen/third_party/blink/public/mojom/locks/lock_manager.mojom-lite.js">
