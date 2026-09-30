@@ -94,6 +94,7 @@ public class OmniboxActionsTest {
         mOmniboxUtils.checkSuggestionsShown();
         SuggestionInfo<BaseSuggestionView> info = mOmniboxUtils.findSuggestionWithActionChips();
         Assert.assertNotNull("No suggestions with actions", info);
+        mOmniboxUtils.waitAnimationsComplete();
     }
 
     /** Returns a fake AutocompleteMatch that features *all* of supplied actions. */
