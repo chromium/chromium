@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
 
 #include <algorithm>
+#include <array>
 #include <optional>
 #include <string>
 #include <utility>
@@ -103,6 +104,18 @@ bool ShouldEnforcePaintChecks(AutofillSuggestionTriggerSource trigger_source) {
   }
 }
 
+// Returns the AtMemory search bar placeholders: the default one, followed by
+// the example queries in order.
+std::vector<std::u16string> GetAtMemoryPlaceholders() {
+  static constexpr auto kMessageIds = std::to_array<int>(
+      {IDS_AUTOFILL_AT_MEMORY_POPUP_SEARCH_BAR_PLACEHOLDER,
+       IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE_ORDER_NUMBER,
+       IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE_FLIGHT_CONFIRMATION_CODE,
+       IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE_TRACKING_NUMBER,
+       IDS_AUTOFILL_AT_MEMORY_ZERO_STATE_SUBTITLE_HOTEL_ADDRESS});
+  return base::ToVector(kMessageIds, &l10n_util::GetStringUTF16);
+}
+
 std::optional<AutofillPopupView::SearchBarConfig> GetSearchBarConfig(
     AutofillSuggestionTriggerSource trigger_source,
     const std::u16string& search_bar_initial_value) {
@@ -111,14 +124,13 @@ std::optional<AutofillPopupView::SearchBarConfig> GetSearchBarConfig(
     case AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
     case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
       return AutofillPopupView::SearchBarConfig{
-          .placeholder = l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_AT_MEMORY_POPUP_SEARCH_BAR_PLACEHOLDER),
+          .placeholders = GetAtMemoryPlaceholders(),
           .initial_value = search_bar_initial_value,
           .no_results_message = u""};
     case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
       return AutofillPopupView::SearchBarConfig{
-          .placeholder = l10n_util::GetStringUTF16(
-              IDS_AUTOFILL_POPUP_SEARCH_BAR_PASSWORDS_INPUT_PLACEHOLDER),
+          .placeholders = {l10n_util::GetStringUTF16(
+              IDS_AUTOFILL_POPUP_SEARCH_BAR_PASSWORDS_INPUT_PLACEHOLDER)},
           .initial_value = {},
           .no_results_message = l10n_util::GetStringUTF16(
               IDS_AUTOFILL_POPUP_SEARCH_BAR_PASSWORDS_NOT_FOUND)};

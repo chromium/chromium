@@ -18,6 +18,7 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/containers/extend.h"
+#include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -1314,8 +1315,12 @@ void PopupViewViews::InitViews() {
     const bool is_at_memory =
         controller_ &&
         controller_->GetMainFillingProduct() == FillingProduct::kAtMemory;
+    base::span<const std::u16string> placeholders =
+        search_bar_config_->placeholders;
+    CHECK(!placeholders.empty());
     search_bar_ = AddChildView(std::make_unique<PopupSearchBarView>(
-        search_bar_config_->placeholder, search_bar_config_->initial_value,
+        placeholders.front(), search_bar_config_->initial_value,
+        /*rotating_placeholders=*/base::ToVector(placeholders.subspan(1u)),
         *this,
         /*show_search_icon_sparkle=*/is_at_memory,
         /*debounce_delay=*/

@@ -5,7 +5,9 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_search_bar_view.h"
 
 #include <memory>
+#include <string>
 #include <string_view>
+#include <vector>
 
 #include "base/time/time.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -21,6 +23,7 @@
 namespace autofill {
 namespace {
 
+using ::testing::AnyOf;
 using ::testing::Eq;
 using ::testing::InSequence;
 using ::testing::Mock;
@@ -73,7 +76,9 @@ class PopupSearchBarViewTest : public ChromeViewsTestBase {
 TEST_F(PopupSearchBarViewTest, SetsFocusOnTextfield) {
   PopupSearchBarView* view =
       widget().SetContentsView(std::make_unique<PopupSearchBarView>(
-          u"placeholder", /*initial_value=*/u"", delegate()));
+          u"placeholder",
+          /*initial_value=*/u"",
+          /*rotating_placeholders=*/std::vector<std::u16string>(), delegate()));
   widget().Show();
   view->Focus();
 
@@ -85,7 +90,9 @@ TEST_F(PopupSearchBarViewTest, SetsFocusOnTextfield) {
 TEST_F(PopupSearchBarViewTest, OnFocusLostCalled) {
   PopupSearchBarView* view =
       widget().SetContentsView(std::make_unique<PopupSearchBarView>(
-          u"placeholder", /*initial_value=*/u"", delegate()));
+          u"placeholder",
+          /*initial_value=*/u"",
+          /*rotating_placeholders=*/std::vector<std::u16string>(), delegate()));
   widget().Show();
   view->Focus();
   ASSERT_NE(widget().GetFocusManager()->GetFocusedView(), nullptr);
@@ -96,7 +103,8 @@ TEST_F(PopupSearchBarViewTest, OnFocusLostCalled) {
 
 TEST_F(PopupSearchBarViewTest, OnInputChangedIsCalledAfterDelay) {
   auto view = std::make_unique<PopupSearchBarView>(
-      u"placeholder", /*initial_value=*/u"", delegate());
+      u"placeholder", /*initial_value=*/u"",
+      /*rotating_placeholders=*/std::vector<std::u16string>(), delegate());
 
   MockFunction<void()> check;
   {
@@ -117,7 +125,8 @@ TEST_F(PopupSearchBarViewTest, OnInputChangedIsCalledAfterDelay) {
 // delegate on the current tick without advancing mock time.
 TEST_F(PopupSearchBarViewTest, OnInputChangedIsCalledImmediatelyWithZeroDelay) {
   auto view = std::make_unique<PopupSearchBarView>(
-      u"placeholder", /*initial_value=*/u"", delegate(),
+      u"placeholder", /*initial_value=*/u"",
+      /*rotating_placeholders=*/std::vector<std::u16string>(), delegate(),
       /*show_search_icon_sparkle=*/false, /*debounce_delay=*/base::TimeDelta());
 
   EXPECT_CALL(delegate(), SearchBarOnInputChanged(Eq(u"input text")));
@@ -127,7 +136,8 @@ TEST_F(PopupSearchBarViewTest, OnInputChangedIsCalledImmediatelyWithZeroDelay) {
 
 TEST_F(PopupSearchBarViewTest, OnInputChangedCallbackIsThrottled) {
   auto view = std::make_unique<PopupSearchBarView>(
-      u"placeholder", /*initial_value=*/u"", delegate());
+      u"placeholder", /*initial_value=*/u"",
+      /*rotating_placeholders=*/std::vector<std::u16string>(), delegate());
 
   MockFunction<void()> check;
   {
@@ -151,7 +161,9 @@ TEST_F(PopupSearchBarViewTest, OnInputChangedCallbackIsThrottled) {
 TEST_F(PopupSearchBarViewTest, KeyPressedFromTextfieldPassedToDelegateFirst) {
   PopupSearchBarView* view =
       widget().SetContentsView(std::make_unique<PopupSearchBarView>(
-          u"placeholder", /*initial_value=*/u"", delegate()));
+          u"placeholder",
+          /*initial_value=*/u"",
+          /*rotating_placeholders=*/std::vector<std::u16string>(), delegate()));
   widget().Show();
   view->Focus();
 
@@ -175,7 +187,9 @@ TEST_F(PopupSearchBarViewTest, KeyPressedFromTextfieldPassedToDelegateFirst) {
 TEST_F(PopupSearchBarViewTest, ClearButton) {
   PopupSearchBarView* view =
       widget().SetContentsView(std::make_unique<PopupSearchBarView>(
-          u"placeholder", /*initial_value=*/u"", delegate()));
+          u"placeholder",
+          /*initial_value=*/u"",
+          /*rotating_placeholders=*/std::vector<std::u16string>(), delegate()));
   widget().Show();
   view->Focus();
 
@@ -203,7 +217,9 @@ TEST_F(PopupSearchBarViewTest, ClearButton) {
 TEST_F(PopupSearchBarViewTest, ClearButtonVisibility) {
   PopupSearchBarView* view =
       widget().SetContentsView(std::make_unique<PopupSearchBarView>(
-          u"placeholder", /*initial_value=*/u"", delegate()));
+          u"placeholder",
+          /*initial_value=*/u"",
+          /*rotating_placeholders=*/std::vector<std::u16string>(), delegate()));
   widget().Show();
 
   EXPECT_FALSE(view->IsClearButtonVisibleForTesting());
@@ -218,7 +234,8 @@ TEST_F(PopupSearchBarViewTest, ClearButtonVisibility) {
 TEST_F(PopupSearchBarViewTest, InitialText) {
   PopupSearchBarView* view =
       widget().SetContentsView(std::make_unique<PopupSearchBarView>(
-          u"placeholder", u"initial query", delegate(),
+          u"placeholder", u"initial query",
+          /*rotating_placeholders=*/std::vector<std::u16string>(), delegate(),
           /*show_search_icon_sparkle=*/false,
           /*debounce_delay=*/PopupSearchBarView::kInputChangeCallbackDelay));
   widget().Show();
@@ -229,7 +246,9 @@ TEST_F(PopupSearchBarViewTest, InitialText) {
 TEST_F(PopupSearchBarViewTest, SetLoading) {
   PopupSearchBarView* view =
       widget().SetContentsView(std::make_unique<PopupSearchBarView>(
-          u"placeholder", /*initial_value=*/u"", delegate()));
+          u"placeholder",
+          /*initial_value=*/u"",
+          /*rotating_placeholders=*/std::vector<std::u16string>(), delegate()));
   widget().Show();
 
   view->SetLoading(true);
@@ -247,7 +266,9 @@ TEST_F(PopupSearchBarViewTest, SetLoading) {
 TEST_F(PopupSearchBarViewTest, PressingEnterStopsInputChangedTimer) {
   PopupSearchBarView* view =
       widget().SetContentsView(std::make_unique<PopupSearchBarView>(
-          u"placeholder", /*initial_value=*/u"", delegate()));
+          u"placeholder",
+          /*initial_value=*/u"",
+          /*rotating_placeholders=*/std::vector<std::u16string>(), delegate()));
   widget().Show();
   view->Focus();
 
@@ -278,7 +299,9 @@ TEST_F(PopupSearchBarViewTest, PressingEnterStopsInputChangedTimer) {
 TEST_F(PopupSearchBarViewTest, TabKeyCyclesToClearButtonWhenVisible) {
   PopupSearchBarView* view =
       widget().SetContentsView(std::make_unique<PopupSearchBarView>(
-          u"placeholder", /*initial_value=*/u"", delegate()));
+          u"placeholder",
+          /*initial_value=*/u"",
+          /*rotating_placeholders=*/std::vector<std::u16string>(), delegate()));
   widget().Show();
   view->Focus();
 
@@ -310,7 +333,9 @@ TEST_F(PopupSearchBarViewTest, TabKeyCyclesToClearButtonWhenVisible) {
 TEST_F(PopupSearchBarViewTest, ShiftTabKeyCyclesToClearButtonWhenVisible) {
   PopupSearchBarView* view =
       widget().SetContentsView(std::make_unique<PopupSearchBarView>(
-          u"placeholder", /*initial_value=*/u"", delegate()));
+          u"placeholder",
+          /*initial_value=*/u"",
+          /*rotating_placeholders=*/std::vector<std::u16string>(), delegate()));
   widget().Show();
   view->Focus();
 
@@ -337,7 +362,9 @@ TEST_F(PopupSearchBarViewTest, ShiftTabKeyCyclesToClearButtonWhenVisible) {
 TEST_F(PopupSearchBarViewTest, TabKeyStaysOnTextfieldWhenClearButtonHidden) {
   PopupSearchBarView* view =
       widget().SetContentsView(std::make_unique<PopupSearchBarView>(
-          u"placeholder", /*initial_value=*/u"", delegate()));
+          u"placeholder",
+          /*initial_value=*/u"",
+          /*rotating_placeholders=*/std::vector<std::u16string>(), delegate()));
   widget().Show();
   view->Focus();
 
@@ -357,7 +384,9 @@ TEST_F(PopupSearchBarViewTest, TabKeyStaysOnTextfieldWhenClearButtonHidden) {
 TEST_F(PopupSearchBarViewTest, TabKeyHandledByDelegateFirst) {
   PopupSearchBarView* view =
       widget().SetContentsView(std::make_unique<PopupSearchBarView>(
-          u"placeholder", /*initial_value=*/u"", delegate()));
+          u"placeholder",
+          /*initial_value=*/u"",
+          /*rotating_placeholders=*/std::vector<std::u16string>(), delegate()));
   widget().Show();
   view->Focus();
 
@@ -384,7 +413,9 @@ TEST_F(PopupSearchBarViewTest, TabKeyHandledByDelegateFirst) {
 TEST_F(PopupSearchBarViewTest, EnterOnClearButtonClearsTextAndFocusesInput) {
   PopupSearchBarView* view =
       widget().SetContentsView(std::make_unique<PopupSearchBarView>(
-          u"placeholder", /*initial_value=*/u"abc", delegate()));
+          u"placeholder",
+          /*initial_value=*/u"abc",
+          /*rotating_placeholders=*/std::vector<std::u16string>(), delegate()));
   widget().Show();
   view->Focus();
 
@@ -407,6 +438,59 @@ TEST_F(PopupSearchBarViewTest, EnterOnClearButtonClearsTextAndFocusesInput) {
             "SearchBarTextfield");
 
   Mock::VerifyAndClearExpectations(&delegate());
+}
+
+class PopupSearchBarViewRotatingPlaceholdersTest
+    : public PopupSearchBarViewTest {
+ protected:
+  static constexpr base::TimeDelta kInterval =
+      PopupSearchBarView::kPlaceholderRotationInterval;
+
+  std::unique_ptr<PopupSearchBarView> CreateView(
+      const std::u16string& initial_value = u"") {
+    return std::make_unique<PopupSearchBarView>(
+        u"placeholder", initial_value,
+        /*rotating_placeholders=*/std::vector<std::u16string>{u"a", u"b"},
+        delegate());
+  }
+};
+
+// Tests that `placeholder` is shown for one interval, followed by the rotating
+// placeholders in a loop, starting at a random one.
+TEST_F(PopupSearchBarViewRotatingPlaceholdersTest, Rotation) {
+  auto view = CreateView();
+  EXPECT_EQ(view->GetPlaceholderTextForTesting(), u"placeholder");
+  task_environment()->FastForwardBy(kInterval);
+  const std::u16string first(view->GetPlaceholderTextForTesting());
+  ASSERT_THAT(first, AnyOf(u"a", u"b"));
+  const std::u16string second = first == u"a" ? u"b" : u"a";
+  task_environment()->FastForwardBy(kInterval);
+  EXPECT_EQ(view->GetPlaceholderTextForTesting(), second);
+  task_environment()->FastForwardBy(kInterval);
+  EXPECT_EQ(view->GetPlaceholderTextForTesting(), first);
+}
+
+// Tests that typing stops the rotation and restores `placeholder`, and that
+// clearing the input restarts it.
+TEST_F(PopupSearchBarViewRotatingPlaceholdersTest, TypingAndClearing) {
+  auto view = CreateView();
+  task_environment()->FastForwardBy(kInterval);
+
+  view->SetInputTextForTesting(u"query");
+  task_environment()->FastForwardBy(kInterval);
+  EXPECT_EQ(view->GetPlaceholderTextForTesting(), u"placeholder");
+
+  view->SetInputTextForTesting(u"");
+  EXPECT_EQ(view->GetPlaceholderTextForTesting(), u"placeholder");
+  task_environment()->FastForwardBy(kInterval);
+  EXPECT_THAT(view->GetPlaceholderTextForTesting(), AnyOf(u"a", u"b"));
+}
+
+// Tests that the rotation doesn't start when there is an initial value.
+TEST_F(PopupSearchBarViewRotatingPlaceholdersTest, InitialValue) {
+  auto view = CreateView(u"query");
+  task_environment()->FastForwardBy(kInterval);
+  EXPECT_EQ(view->GetPlaceholderTextForTesting(), u"placeholder");
 }
 
 }  // namespace

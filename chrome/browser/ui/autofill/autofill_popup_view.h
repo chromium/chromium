@@ -9,6 +9,7 @@
 
 #include <optional>
 #include <string>
+#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -30,7 +31,10 @@ class AutofillPopupController;
 class AutofillPopupView {
  public:
   struct SearchBarConfig {
-    std::u16string placeholder;
+    // Must not be empty. The first entry is the default placeholder. If there
+    // are more, the search bar cycles through the remaining ones, in order and
+    // starting at a random one, while its input field is empty.
+    std::vector<std::u16string> placeholders;
     std::u16string initial_value;
     std::u16string no_results_message;
   };

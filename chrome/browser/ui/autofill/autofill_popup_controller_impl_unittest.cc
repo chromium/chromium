@@ -1170,7 +1170,7 @@ TEST_F(AutofillPopupControllerImplTest,
   EXPECT_FALSE(
       client().suggestion_controller(manager()).ShouldShowNoSuggestionsMessage(
           AutofillPopupView::SearchBarConfig{
-              .placeholder = u"Recall from memory",
+              .placeholders = {u"Recall from memory"},
               .initial_value = {},
               .no_results_message = u""}));
 }
@@ -1184,7 +1184,7 @@ TEST_F(AutofillPopupControllerImplTest,
   EXPECT_FALSE(
       client().suggestion_controller(manager()).ShouldShowNoSuggestionsMessage(
           AutofillPopupView::SearchBarConfig{
-              .placeholder = u"Recall from memory",
+              .placeholders = {u"Recall from memory"},
               .initial_value = {},
               .no_results_message = u""}));
 }
@@ -1216,7 +1216,7 @@ TEST_F(AutofillPopupControllerImplTest,
   EXPECT_FALSE(
       client().suggestion_controller(manager()).ShouldShowNoSuggestionsMessage(
           AutofillPopupView::SearchBarConfig{
-              .placeholder = u"Recall from memory",
+              .placeholders = {u"Recall from memory"},
               .initial_value = {},
               .no_results_message = u""}));
 }
