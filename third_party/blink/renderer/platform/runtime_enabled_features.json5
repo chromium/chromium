@@ -4866,6 +4866,10 @@
       status: "experimental",
     },
     {
+      name: "PermissionsPolicyForSharedWorkers",
+      status: "experimental",
+    },
+    {
       name: "PermissionsRequestRevoke",
       status: "experimental",
     },
