@@ -1021,7 +1021,7 @@
   {
     "name": "autofill-android-keyboard-accessory-hover-preview",
     "owners": [ "lkuba@google.com", "piotrkotynia@google.com" ],
-    "expiry_milestone": 155
+    "expiry_milestone": 164
   },
   {
     "name": "autofill-bottom-sheet-new-blur",
