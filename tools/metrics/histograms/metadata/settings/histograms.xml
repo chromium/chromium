@@ -704,207 +704,9 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram
-    name="Settings.SafetyHub.DisruptiveNotificationRevocations.DailyDistribution.{RevocationState}.SiteEngagement"
-    units="EngagementScore" expires_after="2026-08-26">
-  <owner>olesiamarukhnno@google.com</owner>
-  <owner>antoniosartori@chromium.org</owner>
-  <owner>chrome-browser-privacy-team@google.com</owner>
-  <summary>
-    Records the site engagement for revoked disruptive notification sites.
-    Recorded on every run of the disruptive notification sites Safety Hub check.
-  </summary>
-  <token key="RevocationState">
-    <variant name="Acknowledged"/>
-    <variant name="Proposed"/>
-    <variant name="Regranted"/>
-    <variant name="Revoked"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Settings.SafetyHub.DisruptiveNotificationRevocations.DailyDistribution.{RevocationState}.SiteEngagement{SiteEngagement}.DaysSinceRevocation"
-    units="days" expires_after="2026-09-06">
-  <owner>olesiamarukhnno@google.com</owner>
-  <owner>antoniosartori@chromium.org</owner>
-  <owner>chrome-browser-privacy-team@google.com</owner>
-  <summary>
-    Records the number of days since revocation for revoked disruptive
-    notification sites, and their current state and site engagement. Recorded on
-    every run of the disruptive notification sites Safety Hub check. For
-    proposed revocation, days are computed since the proposal.
-  </summary>
-  <token key="RevocationState">
-    <variant name="Acknowledged"/>
-    <variant name="Proposed"/>
-    <variant name="Regranted"/>
-    <variant name="Revoked"/>
-  </token>
-  <token key="SiteEngagement">
-    <variant name="0"/>
-    <variant name="1"/>
-    <variant name="2"/>
-    <variant name="3"/>
-    <variant name="4"/>
-    <variant name="5"/>
-    <variant name="6-7"/>
-    <variant name="8-10"/>
-    <variant name="11-15"/>
-    <variant name="&gt;15"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Settings.SafetyHub.DisruptiveNotificationRevocations.FalsePositive.DailyAverageVolume"
-    units="count" expires_after="2026-05-03">
-  <owner>olesiamarukhnno@google.com</owner>
-  <owner>antoniosartori@chromium.org</owner>
-  <summary>
-    Tracks the distribution of the average daily notification volume for
-    detected false positive sites that were previously marked for revocation of
-    disruptive notifications.
-
-    The metric is only reported if all false positive conditions are satified
-    (the interaction happened within min, max days since the revocation, site
-    engagement score has increased by min delta).
-  </summary>
-</histogram>
-
-<histogram
-    name="Settings.SafetyHub.DisruptiveNotificationRevocations.FalsePositive.DaysSinceProposedRevocation"
-    units="count" expires_after="2026-07-05">
-  <owner>olesiamarukhnno@google.com</owner>
-  <owner>antoniosartori@chromium.org</owner>
-  <summary>
-    Tracks the distribution of the days since proposed revocation for detected
-    false positive sites that were previously marked for revocation of
-    disruptive notifications.
-
-    The metric is only reported if all false positive conditions are satified
-    (the interaction happened within min, max days since the revocation, site
-    engagement score has increased by min delta).
-  </summary>
-</histogram>
-
-<histogram
-    name="Settings.SafetyHub.DisruptiveNotificationRevocations.FalsePositive.NotificationClickCount"
-    units="count" expires_after="2026-08-26">
-  <owner>olesiamarukhnno@google.com</owner>
-  <owner>antoniosartori@chromium.org</owner>
-  <owner>chrome-browser-privacy-team@google.com</owner>
-  <summary>
-    Tracks the distribution of the number of notification clicks that occured
-    during the cooldown period for detected false positive sites that were
-    previously marked for revocation of disruptive notifications.
-
-    The metric is only reported if all false positive conditions are satified
-    (the interaction happened within min, max days since the revocation, site
-    engagement score has increased by min delta).
-  </summary>
-</histogram>
-
-<histogram
-    name="Settings.SafetyHub.DisruptiveNotificationRevocations.FalsePositive.PageVisitCount"
-    units="count" expires_after="2026-05-03">
-  <owner>olesiamarukhnno@google.com</owner>
-  <owner>antoniosartori@chromium.org</owner>
-  <summary>
-    Tracks the distribution of the number of page visits that occured during the
-    cooldown period for detected false positive sites that were previously
-    marked for revocation of disruptive notifications.
-
-    The metric is only reported if all false positive conditions are satified
-    (the interaction happened within min, max days since the revocation, site
-    engagement score has increased by min delta).
-  </summary>
-</histogram>
-
-<histogram
-    name="Settings.SafetyHub.DisruptiveNotificationRevocations.FalsePositive.SiteEngagement"
-    units="EngagementScore" expires_after="2026-05-03">
-  <owner>olesiamarukhnno@google.com</owner>
-  <owner>antoniosartori@chromium.org</owner>
-  <summary>
-    Tracks the distribution of the site engagement score for detected false
-    positive sites that were previously marked for revocation of disruptive
-    notifications.
-
-    The metric is only reported if all false positive conditions are satified
-    (the interaction happened within min, max days since the revocation, site
-    engagement score has increased by min delta).
-  </summary>
-</histogram>
-
-<histogram
-    name="Settings.SafetyHub.DisruptiveNotificationRevocations.HasReportedMetricsBeforeRevocation"
-    units="count" expires_after="2026-05-03">
-  <owner>olesiamarukhnno@google.com</owner>
-  <owner>antoniosartori@chromium.org</owner>
-  <summary>
-    Tracks how often a disruptive notification is revoked without reporting a
-    proposed disruptive notification UKM beforehand. The UKM can only be
-    reported on a notification interaction or a page visit. The revocation is
-    delayed to report the proposed metric when a notification is shown. After
-    the cooldown runs out, the revocation will happen even without reporting
-    metrics.
-  </summary>
-</histogram>
-
-<histogram
-    name="Settings.SafetyHub.DisruptiveNotificationRevocations.NotDisruptiveAnymore.DaysSinceProposedRevocation"
-    units="count" expires_after="2026-08-26">
-  <owner>olesiamarukhnno@google.com</owner>
-  <owner>antoniosartori@chromium.org</owner>
-  <owner>chrome-browser-privacy-team@google.com</owner>
-  <summary>
-    Tracks the distribution of the days since proposed revocation for sites that
-    were previously marked for revocation of disruptive notifications but are
-    not classified as disruptive anymore (due to site engagement score increase
-    or decline in the daily average notification count).
-  </summary>
-</histogram>
-
-<histogram
-    name="Settings.SafetyHub.DisruptiveNotificationRevocations.NotDisruptiveAnymore.NotificationCountDecreased"
-    units="count" expires_after="2026-08-26">
-  <owner>olesiamarukhnno@google.com</owner>
-  <owner>antoniosartori@chromium.org</owner>
-  <owner>chrome-browser-privacy-team@google.com</owner>
-  <summary>
-    Tracks the distribution of the new daily average notification count (over
-    the last 7 days) for sites that were previously marked for revocation of
-    disruptive notifications but are not classified as disruptive anymore, due
-    to the notification count decrease.
-  </summary>
-</histogram>
-
-<histogram
-    name="Settings.SafetyHub.DisruptiveNotificationRevocations.NotDisruptiveAnymore.SiteEngagementIncreased"
-    units="count" expires_after="2026-07-05">
-  <owner>olesiamarukhnno@google.com</owner>
-  <owner>antoniosartori@chromium.org</owner>
-  <summary>
-    Tracks the distribution of the new site engagement score for sites that were
-    previously marked for revocation of disruptive notifications but are not
-    classified as disruptive anymore, due to the site engagement score increase.
-  </summary>
-</histogram>
-
-<histogram
-    name="Settings.SafetyHub.DisruptiveNotificationRevocations.Proposed.NotificationCount"
-    units="count" expires_after="2026-09-06">
-  <owner>olesiamarukhnno@google.com</owner>
-  <owner>antoniosartori@chromium.org</owner>
-  <owner>chrome-browser-privacy-team@google.com</owner>
-  <summary>
-    Tracks the distribution of the average daily notification count for proposed
-    revocation of disruptive notifications.
-  </summary>
-</histogram>
-
-<histogram
     name="Settings.SafetyHub.DisruptiveNotificationRevocations.RevocationResult"
     enum="DisruptiveNotificationRevocationResult" expires_after="2026-12-27">
-  <owner>olesiamarukhnno@google.com</owner>
+  <owner>olesiamarukhno@google.com</owner>
   <owner>antoniosartori@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
@@ -918,7 +720,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 <histogram
     name="Settings.SafetyHub.DisruptiveNotificationRevocations.Revoke.DaysSinceProposedRevocation"
     units="count" expires_after="2027-02-28">
-  <owner>olesiamarukhnno@google.com</owner>
+  <owner>olesiamarukhno@google.com</owner>
   <owner>antoniosartori@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
@@ -931,7 +733,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 <histogram
     name="Settings.SafetyHub.DisruptiveNotificationRevocations.RevokedWebsitesCount"
     units="count" expires_after="2027-01-17">
-  <owner>olesiamarukhnno@google.com</owner>
+  <owner>olesiamarukhno@google.com</owner>
   <owner>antoniosartori@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
@@ -944,40 +746,13 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 <histogram
     name="Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant.{RegrantType}.DaysSinceProposedRevocation"
     units="days" expires_after="2027-02-07">
-  <owner>olesiamarukhnno@google.com</owner>
+  <owner>olesiamarukhno@google.com</owner>
   <owner>antoniosartori@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>
     Recorded when users regrant notification permissions after a disruptive
     notification revocation. Measures how many days passed since the proposed
     revocation.
-  </summary>
-  <token key="RegrantType" variants="RegrantType"/>
-</histogram>
-
-<histogram
-    name="Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant.{RegrantType}.NewSiteEngagement"
-    units="days" expires_after="2026-05-03">
-  <owner>olesiamarukhnno@google.com</owner>
-  <owner>antoniosartori@chromium.org</owner>
-  <summary>
-    Recorded when users regrant notification permissions after a disruptive
-    notification revocation. Measures how many days passed since the proposed
-    revocation.
-  </summary>
-  <token key="RegrantType" variants="RegrantType"/>
-</histogram>
-
-<histogram
-    name="Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant.{RegrantType}.PreviousNotificationCount"
-    units="count" expires_after="2026-10-25">
-  <owner>olesiamarukhnno@google.com</owner>
-  <owner>antoniosartori@chromium.org</owner>
-  <owner>chrome-browser-privacy-team@google.com</owner>
-  <summary>
-    Recorded when users regrant notification permissions after a disruptive
-    notification revocation. Reports the average daily notification count when
-    the revocation was proposed.
   </summary>
   <token key="RegrantType" variants="RegrantType"/>
 </histogram>
@@ -985,7 +760,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 <histogram
     name="Settings.SafetyHub.DisruptiveNotificationRevocations.{RevocationState}.FalsePositiveInteraction"
     enum="DisruptiveNotificationFalsePositiveReason" expires_after="2026-11-29">
-  <owner>olesiamarukhnno@google.com</owner>
+  <owner>olesiamarukhno@google.com</owner>
   <owner>antoniosartori@chromium.org</owner>
   <owner>chrome-browser-privacy-team@google.com</owner>
   <summary>

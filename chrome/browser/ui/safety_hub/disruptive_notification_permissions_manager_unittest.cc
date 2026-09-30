@@ -56,9 +56,6 @@ using testing::Pair;
 
 constexpr char kRevocationResultHistogram[] =
     "Settings.SafetyHub.DisruptiveNotificationRevocations.RevocationResult";
-constexpr char kNotificationCountHistogram[] =
-    "Settings.SafetyHub.DisruptiveNotificationRevocations.Proposed."
-    "NotificationCount";
 constexpr char kRevokedWebsitesCountHistogram[] =
     "Settings.SafetyHub.DisruptiveNotificationRevocations.RevokedWebsitesCount";
 constexpr char kSafeBrowsingNotificationRevocationSourceHistogram[] =
@@ -452,7 +449,6 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kProposedRevoke, 1);
   t.ExpectBucketCount(kRevokedWebsitesCountHistogram, 1, 1);
-  t.ExpectBucketCount(kNotificationCountHistogram, kHighNotificationCount, 1);
 
   clock()->Advance(base::Days(3));
 
@@ -476,10 +472,6 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
       "Revoke.DaysSinceProposedRevocation",
       3, 1);
   t.ExpectBucketCount(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations."
-      "HasReportedMetricsBeforeRevocation",
-      true, 1);
-  t.ExpectBucketCount(
       kSafeBrowsingNotificationRevocationSourceHistogram,
       safe_browsing::NotificationRevocationSource::kDisruptiveAutoRevocation,
       1);
@@ -492,19 +484,6 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kProposedRevoke, 1);
   t.ExpectBucketCount(kRevocationResultHistogram, RevocationResult::kRevoke, 1);
-
-  t.ExpectBucketCount(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations.DailyDistribution."
-      "Proposed.SiteEngagement0.DaysSinceRevocation",
-      0, 1);
-  t.ExpectBucketCount(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations.DailyDistribution."
-      "Revoked.SiteEngagement0.DaysSinceRevocation",
-      0, 1);
-  t.ExpectBucketCount(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations.DailyDistribution."
-      "Revoked.SiteEngagement0.DaysSinceRevocation",
-      1, 1);
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
@@ -590,14 +569,6 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
                       RevocationResult::kProposedRevoke, 1);
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kAlreadyInProposedRevokeList, 1);
-  t.ExpectBucketCount(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations."
-      "HasReportedMetricsBeforeRevocation",
-      false, 0);
-  t.ExpectBucketCount(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations."
-      "HasReportedMetricsBeforeRevocation",
-      true, 0);
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
@@ -638,10 +609,6 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
       "Settings.SafetyHub.DisruptiveNotificationRevocations."
       "Revoke.DaysSinceProposedRevocation",
       10, 1);
-  t.ExpectBucketCount(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations."
-      "HasReportedMetricsBeforeRevocation",
-      false, 1);
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
@@ -665,7 +632,6 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kProposedRevoke, 1);
   t.ExpectBucketCount(kRevokedWebsitesCountHistogram, 1, 1);
-  t.ExpectBucketCount(kNotificationCountHistogram, kHighNotificationCount, 1);
 
   site_engagement_service()->ResetBaseScoreForURL(url, 10);
 
@@ -712,7 +678,6 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   t.ExpectBucketCount(kRevocationResultHistogram,
                       RevocationResult::kNotDisruptive, 1);
   t.ExpectBucketCount(kRevokedWebsitesCountHistogram, 2, 1);
-  t.ExpectBucketCount(kNotificationCountHistogram, kHighNotificationCount, 2);
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
@@ -992,14 +957,6 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
       "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
       "InSafetyHub.DaysSinceProposedRevocation",
       5, 1);
-  t.ExpectUniqueSample(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
-      "InSafetyHub.NewSiteEngagement",
-      0, 1);
-  t.ExpectUniqueSample(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
-      "InSafetyHub.PreviousNotificationCount",
-      kHighNotificationCount, 1);
 
   manager()->RevokeDisruptiveNotifications();
   // The site is reported as ignored for revocation and not revoked.
@@ -1272,14 +1229,6 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
       "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
       "OutsideSafetyHub.DaysSinceProposedRevocation",
       5, 1);
-  t.ExpectUniqueSample(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
-      "OutsideSafetyHub.NewSiteEngagement",
-      7, 1);
-  t.ExpectUniqueSample(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations.UserRegrant."
-      "OutsideSafetyHub.PreviousNotificationCount",
-      kHighNotificationCount, 1);
 }
 
 TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
@@ -1319,15 +1268,6 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   // The next safety check run, the entry is removed from proposal list and
   // reported as not disruptive anymore.
   manager()->RevokeDisruptiveNotifications();
-
-  t.ExpectBucketCount(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations."
-      "NotDisruptiveAnymore.DaysSinceProposedRevocation",
-      5, 1);
-  t.ExpectBucketCount(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations."
-      "NotDisruptiveAnymore.SiteEngagementIncreased",
-      3, 1);
 
   EXPECT_THAT(ContentSettingHelper(*hcsm()).GetRevocationEntry(url),
               Eq(std::nullopt));
@@ -1449,7 +1389,6 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
 
 TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
        ProposedNotificationCountDecreased) {
-  base::HistogramTester t;
   GURL url("https://chrome.test/");
 
   SetNotificationPermission(url, CONTENT_SETTING_ALLOW);
@@ -1461,15 +1400,6 @@ TEST_F(DisruptiveNotificationPermissionsManagerRevocationTest,
   // The next safety check run, the entry is removed from proposal list because
   // the notification count is low (1) and reported as not disruptive anymore.
   manager()->RevokeDisruptiveNotifications();
-
-  t.ExpectBucketCount(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations."
-      "NotDisruptiveAnymore.DaysSinceProposedRevocation",
-      5, 1);
-  t.ExpectBucketCount(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations."
-      "NotDisruptiveAnymore.NotificationCountDecreased",
-      1, 1);
 
   EXPECT_THAT(ContentSettingHelper(*hcsm()).GetRevocationEntry(url),
               Eq(std::nullopt));

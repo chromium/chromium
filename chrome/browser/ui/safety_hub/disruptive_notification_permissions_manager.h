@@ -266,9 +266,6 @@ class DisruptiveNotificationPermissionsManager {
                              RevocationEntry revocation_entry,
                              bool regranted_in_safety_hub);
 
-  // Report metrics for the daily run.
-  void ReportDailyRunMetrics();
-
   // Pointer to a browser context whose permissions are being updated.
   raw_ptr<content::BrowserContext> browser_context_;
 

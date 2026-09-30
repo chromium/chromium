@@ -414,25 +414,6 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
         case RevocationState::kProposed:
           if (!is_disruptive) {
             // Not disruptive anymore, clean up proposed revocation.
-            base::UmaHistogramCustomCounts(
-                base::StrCat(
-                    {"Settings.SafetyHub.DisruptiveNotificationRevocations."
-                     "NotDisruptiveAnymore.DaysSinceProposedRevocation"}),
-                (clock_->Now() - revocation_entry->timestamp).InDays(), 1, 30,
-                30);
-            if (!IsSiteEngagementScoreLow(site_engagement_score)) {
-              base::UmaHistogramCounts100(
-                  "Settings.SafetyHub.DisruptiveNotificationRevocations."
-                  "NotDisruptiveAnymore.SiteEngagementIncreased",
-                  site_engagement_service_->GetScore(url));
-            }
-            if (!IsDailyNotificationCountHigh(notification_count)) {
-              base::UmaHistogramCounts100(
-                  "Settings.SafetyHub.DisruptiveNotificationRevocations."
-                  "NotDisruptiveAnymore.NotificationCountDecreased",
-                  notification_count);
-            }
-
             ContentSettingHelper(*hcsm_).DeleteRevocationEntry(url);
           } else {
             if (CanRevokeNotifications(url, *revocation_entry)) {
@@ -472,10 +453,6 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
         /*daily_notification_count=*/notification_count,
         /*timestamp=*/clock_->Now());
     ContentSettingHelper(*hcsm_).PersistRevocationEntry(url, entry);
-    base::UmaHistogramCounts100(
-        "Settings.SafetyHub.DisruptiveNotificationRevocations.Proposed."
-        "NotificationCount",
-        notification_count);
     base::UmaHistogramEnumeration(kRevocationResultHistogram,
                                   RevocationResult::kProposedRevoke);
     proposed_revoked_sites_count++;
@@ -487,55 +464,6 @@ void DisruptiveNotificationPermissionsManager::RevokeDisruptiveNotifications() {
 
   if (revoked_anything && revoked_permissions_notification_display_manager_) {
     revoked_permissions_notification_display_manager_->DisplayNotification();
-  }
-
-  ReportDailyRunMetrics();
-}
-
-void DisruptiveNotificationPermissionsManager::ReportDailyRunMetrics() {
-  base::Time now = clock_->Now();
-  for (const auto& [url, revocation_entry] :
-       ContentSettingHelper(*hcsm_).GetAllEntries()) {
-    if (now - revocation_entry.timestamp >
-        safety_check::GetUnusedSitePermissionsRevocationCleanUpThreshold()) {
-      // Since ignored entries don't expire while revoked do, report entries
-      // only for a limited amount of time in order to ensure that the
-      // distribution makes sense.
-      continue;
-    }
-
-    std::string_view revocation_state =
-        GetRevocationStateString(revocation_entry.revocation_state);
-
-    std::string_view site_engagement;
-    double score = site_engagement_service_->GetScore(url);
-    if (score == 0.0) {
-      site_engagement = "0";
-    } else if (score <= 1) {
-      site_engagement = "1";
-    } else if (score <= 2) {
-      site_engagement = "2";
-    } else if (score <= 3) {
-      site_engagement = "3";
-    } else if (score <= 4) {
-      site_engagement = "4";
-    } else if (score <= 5) {
-      site_engagement = "5";
-    } else if (score <= 7) {
-      site_engagement = "6-7";
-    } else if (score <= 10) {
-      site_engagement = "8-10";
-    } else if (score <= 15) {
-      site_engagement = "11-15";
-    } else {
-      site_engagement = ">15";
-    }
-    base::UmaHistogramCustomCounts(
-        base::StrCat({"Settings.SafetyHub.DisruptiveNotificationRevocations."
-                      "DailyDistribution.",
-                      revocation_state, ".SiteEngagement", site_engagement,
-                      ".DaysSinceRevocation"}),
-        (now - revocation_entry.timestamp).InDays(), 1, 30, 30);
   }
 }
 
@@ -576,10 +504,6 @@ void DisruptiveNotificationPermissionsManager::RevokeNotifications(
       "Settings.SafetyHub.DisruptiveNotificationRevocations."
       "Revoke.DaysSinceProposedRevocation",
       delta_since_proposed_revocation.InDays());
-  base::UmaHistogramBoolean(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations."
-      "HasReportedMetricsBeforeRevocation",
-      revocation_entry.has_reported_proposal);
   safe_browsing::SafeBrowsingMetricsCollector::
       LogSafeBrowsingNotificationRevocationSourceHistogram(
           safe_browsing::NotificationRevocationSource::
@@ -651,12 +575,6 @@ void DisruptiveNotificationPermissionsManager::OnPermissionRegranted(
   base::UmaHistogramCounts100(
       base::StrCat({uma_metric_prefix, "DaysSinceProposedRevocation"}),
       (clock_->Now() - revocation_entry.timestamp).InDays());
-  base::UmaHistogramCounts100(
-      base::StrCat({uma_metric_prefix, "NewSiteEngagement"}),
-      site_engagement_service_->GetScore(url));
-  base::UmaHistogramCounts100(
-      base::StrCat({uma_metric_prefix, "PreviousNotificationCount"}),
-      revocation_entry.daily_notification_count);
 }
 
 void DisruptiveNotificationPermissionsManager::UndoRegrantPermissionForUrl(
@@ -828,27 +746,6 @@ void DisruptiveNotificationPermissionsManager::MaybeReportFalsePositive(
           .SetOldSiteEngagement(old_site_engagement_score)
           .SetDailyAverageVolume(revocation_entry->daily_notification_count)
           .Record(ukm::UkmRecorder::Get());
-
-  base::UmaHistogramCounts100(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations."
-      "FalsePositive.SiteEngagement",
-      new_site_engagement_score);
-  base::UmaHistogramCounts100(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations."
-      "FalsePositive.PageVisitCount",
-      revocation_entry->page_visit_count);
-  base::UmaHistogramCounts100(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations."
-      "FalsePositive.NotificationClickCount",
-      revocation_entry->notification_click_count);
-  base::UmaHistogramCounts100(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations."
-      "FalsePositive.DaysSinceProposedRevocation",
-      days_since_proposed_revocation);
-  base::UmaHistogramCounts100(
-      "Settings.SafetyHub.DisruptiveNotificationRevocations."
-      "FalsePositive.DailyAverageVolume",
-      revocation_entry->daily_notification_count);
 
   revocation_entry->has_reported_false_positive = true;
   ContentSettingHelper(*hcsm).PersistRevocationEntry(url, *revocation_entry);
