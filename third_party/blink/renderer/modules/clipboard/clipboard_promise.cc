@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_clipboard_read_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_clipboard_unsanitized_formats.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/commands/clipboard_commands.h"
@@ -65,7 +65,7 @@ using mojom::blink::PermissionService;
 ScriptPromise<IDLSequence<ClipboardItem>> ClipboardPromise::CreateForRead(
     ExecutionContext* context,
     ScriptState* script_state,
-    ClipboardReadOptions* options,
+    ClipboardUnsanitizedFormats* formats,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     return ScriptPromise<IDLSequence<ClipboardItem>>();
@@ -76,7 +76,7 @@ ScriptPromise<IDLSequence<ClipboardItem>> ClipboardPromise::CreateForRead(
   auto promise = resolver->Promise();
   ClipboardPromise* clipboard_promise = MakeGarbageCollected<ClipboardPromise>(
       context, resolver, exception_state);
-  clipboard_promise->HandleRead(options);
+  clipboard_promise->HandleRead(formats);
   return promise;
 }
 
@@ -196,11 +196,11 @@ void ClipboardPromise::RejectFromReadOrDecodeFailure() {
               "."}));
 }
 
-void ClipboardPromise::HandleRead(ClipboardReadOptions* options) {
+void ClipboardPromise::HandleRead(ClipboardUnsanitizedFormats* formats) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (options && options->hasUnsanitized() && !options->unsanitized().empty()) {
-    Vector<String> unsanitized_formats = options->unsanitized();
+  if (formats && formats->hasUnsanitized() && !formats->unsanitized().empty()) {
+    Vector<String> unsanitized_formats = formats->unsanitized();
     if (unsanitized_formats.size() > 1) {
       script_promise_resolver_->RejectWithDOMException(
           DOMExceptionCode::kNotAllowedError,
@@ -219,18 +219,6 @@ void ClipboardPromise::HandleRead(ClipboardReadOptions* options) {
     will_read_unprocessed_html_ = true;
   }
 
-  if (RuntimeEnabledFeatures::SelectiveClipboardFormatReadEnabled() &&
-      options && options->hasTypes()) {
-    read_clipboard_item_types_ = HashSet<String>();
-    if (options->types().has_value()) {
-      const auto& types = options->types();
-      for (const String& type : *types) {
-        if (ClipboardItem::supports(GetExecutionContext(), type)) {
-          read_clipboard_item_types_->insert(type);
-        }
-      }
-    }
-  }
   ValidatePreconditions(mojom::blink::PermissionName::CLIPBOARD_READ,
                         /*will_be_sanitized=*/false,
                         BindOnce(&ClipboardPromise::HandleReadWithPermission,
@@ -383,26 +371,14 @@ void ClipboardPromise::OnReadAvailableFormatNames(
     return;
   }
 
-  const bool check_types_to_read =
-      RuntimeEnabledFeatures::SelectiveClipboardFormatReadEnabled() &&
-      read_clipboard_item_types_.has_value();
-  if (check_types_to_read && read_clipboard_item_types_->empty()) {
-    ResolveRead();  // No supported types to read.
-    return;
-  }
   if (RuntimeEnabledFeatures::
           ReadClipboardDataOnClipboardItemGetTypeEnabled()) {
     item_mime_types_.ReserveInitialCapacity(format_names.size());
   } else {
-    clipboard_item_data_.ReserveInitialCapacity(
-        check_types_to_read
-            ? std::min(format_names.size(), read_clipboard_item_types_->size())
-            : format_names.size());
+    clipboard_item_data_.ReserveInitialCapacity(format_names.size());
   }
   for (const String& format_name : format_names) {
-    if (ClipboardItem::supports(GetExecutionContext(), format_name) &&
-        (!check_types_to_read ||
-         read_clipboard_item_types_->Contains(format_name))) {
+    if (ClipboardItem::supports(GetExecutionContext(), format_name)) {
       if (RuntimeEnabledFeatures::
               ReadClipboardDataOnClipboardItemGetTypeEnabled()) {
         item_mime_types_.emplace_back(format_name);

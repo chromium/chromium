@@ -54,10 +54,10 @@ Clipboard::Clipboard(NavigatorBase& navigator)
 
 ScriptPromise<IDLSequence<ClipboardItem>> Clipboard::read(
     ScriptState* script_state,
-    ClipboardReadOptions* options,
+    ClipboardUnsanitizedFormats* formats,
     ExceptionState& exception_state) {
   return ClipboardPromise::CreateForRead(GetExecutionContext(), script_state,
-                                         options, exception_state);
+                                         formats, exception_state);
 }
 
 ScriptPromise<IDLString> Clipboard::readText(ScriptState* script_state,

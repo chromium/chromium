@@ -14,7 +14,7 @@
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_clipboard_read_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_clipboard_unsanitized_formats.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -495,7 +495,7 @@ TEST_F(ClipboardChangeEventPrerenderTest,
 
   ScriptPromise<IDLSequence<ClipboardItem>> read_promise =
       ClipboardPromise::CreateForRead(window, script_state,
-                                      ClipboardReadOptions::Create(),
+                                      ClipboardUnsanitizedFormats::Create(),
                                       exception_state);
   ScriptPromiseTester read_tester(script_state, read_promise);
   read_tester.WaitUntilSettled();

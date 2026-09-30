@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_clipboard_read_options.h"
 #include "third_party/blink/renderer/core/clipboard/paste_mode.h"
 #include "third_party/blink/renderer/core/clipboard/system_clipboard.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -45,31 +44,6 @@
 namespace blink {
 
 using ::testing::WithArg;
-
-// Helper class that validates ClipboardItem types match expected format list.
-class ClipboardItemTypesValidator final
-    : public ThenCallable<IDLSequence<ClipboardItem>,
-                          ClipboardItemTypesValidator,
-                          IDLBoolean> {
- public:
-  explicit ClipboardItemTypesValidator(const Vector<String>& expected_types)
-      : expected_types_(expected_types) {}
-
-  bool React(ScriptState* script_state,
-             HeapVector<Member<ClipboardItem>> clipboard_items) {
-    if (clipboard_items.empty()) {
-      return expected_types_.empty();
-    }
-    auto& clipboard_item = clipboard_items[0];
-    Vector<String> available_types = clipboard_item->types();
-    std::sort(available_types.begin(), available_types.end(),
-              CodeUnitCompareLessThan);
-    return available_types == expected_types_;
-  }
-
- private:
-  Vector<String> expected_types_;
-};
 
 class ClipboardItemGetType final
     : public ThenCallable<IDLSequence<ClipboardItem>,
@@ -253,95 +227,6 @@ TEST_F(ClipboardTest, ReadTextRejectedWhenFocusLostBeforePermissionResponse) {
 
   executionContext->GetBrowserInterfaceBroker().SetBinderForTesting(
       mojom::blink::PermissionService::Name_, {});
-}
-
-// Tests reading specific clipboard formats using ClipboardReadOptions.
-// Verifies that only requested formats are returned when clipboard contains
-// multiple formats.
-TEST_F(ClipboardTest, SelectiveClipboardFormatRead) {
-  V8TestingScope scope;
-  ExecutionContext* executionContext = GetFrame().DomWindow();
-  String testing_string = "TestStringForClipboardTesting";
-  String html_to_paste = "<p>TestHtmlForClipboardTesting</p>";
-  WritePlainTextToClipboard(testing_string);
-  WriteHtmlToClipboard(html_to_paste);
-
-  // Async read clipboard API requires the clipboard read permission.
-  EXPECT_CALL(permission_service_, RequestPermission)
-      .WillOnce(WithArg<1>(
-          [](mojom::blink::PermissionService::RequestPermissionCallback
-                 callback) {
-            std::move(callback).Run(
-                mojom::blink::PermissionStatusWithDetails::New(
-                    mojom::blink::PermissionStatus::GRANTED, nullptr));
-          }));
-  BindMockPermissionService(executionContext);
-
-  SetSecureOrigin(executionContext);
-  SetPageFocus(true);
-  // Create ClipboardReadOptions to filter for specific formats only.
-  ClipboardReadOptions* options = ClipboardReadOptions::Create();
-  Vector<String> requested_types;
-  requested_types.emplace_back("text/plain");
-  options->setTypes(requested_types);
-
-  ScriptPromise<IDLSequence<ClipboardItem>> promise =
-      ClipboardPromise::CreateForRead(executionContext, scope.GetScriptState(),
-                                      options, scope.GetExceptionState());
-  Vector<String> expected_types_in_result;
-  expected_types_in_result.emplace_back("text/plain");
-  // Validate that only plain text format is returned by the clipboard read.
-  auto chained_promise = promise.Then(
-      scope.GetScriptState(), MakeGarbageCollected<ClipboardItemTypesValidator>(
-                                  expected_types_in_result));
-  ScriptPromiseTester promise_tester(scope.GetScriptState(), chained_promise);
-  promise_tester.WaitUntilSettled();
-  EXPECT_TRUE(promise_tester.IsFulfilled());
-  String validation_result;
-  promise_tester.Value().ToString(validation_result);
-  EXPECT_EQ(validation_result, "true");
-}
-
-// Verifies that all formats are returned when no specific types are requested.
-TEST_F(ClipboardTest, ReadAllClipboardFormats) {
-  V8TestingScope scope;
-  ExecutionContext* executionContext = GetFrame().DomWindow();
-  String testing_string = "TestStringForClipboardTesting";
-  String html_to_paste = "<p>TestHtmlForClipboardTesting</p>";
-  WritePlainTextToClipboard(testing_string);
-  WriteHtmlToClipboard(html_to_paste);
-
-  // Async read clipboard API requires the clipboard read permission.
-  EXPECT_CALL(permission_service_, RequestPermission)
-      .WillOnce(WithArg<1>(
-          [](mojom::blink::PermissionService::RequestPermissionCallback
-                 callback) {
-            std::move(callback).Run(
-                mojom::blink::PermissionStatusWithDetails::New(
-                    mojom::blink::PermissionStatus::GRANTED, nullptr));
-          }));
-  BindMockPermissionService(executionContext);
-
-  SetSecureOrigin(executionContext);
-  SetPageFocus(true);
-
-  // Pass nullptr for options to read all available clipboard formats without
-  // filtering.
-  ScriptPromise<IDLSequence<ClipboardItem>> promise =
-      ClipboardPromise::CreateForRead(executionContext, scope.GetScriptState(),
-                                      nullptr, scope.GetExceptionState());
-  Vector<String> expected_types_in_result;
-  expected_types_in_result.emplace_back("text/html");
-  expected_types_in_result.emplace_back("text/plain");
-  auto chained_promise = promise.Then(
-      scope.GetScriptState(), MakeGarbageCollected<ClipboardItemTypesValidator>(
-                                  expected_types_in_result));
-  ScriptPromiseTester promise_tester(scope.GetScriptState(), chained_promise);
-  promise_tester.WaitUntilSettled();
-  EXPECT_TRUE(promise_tester.IsFulfilled());
-  String validation_result;
-  promise_tester.Value().ToString(validation_result);
-  EXPECT_EQ(validation_result, "true");
 }
 
 // Test verifies that CreateForRead performs lazy loading by directly checking

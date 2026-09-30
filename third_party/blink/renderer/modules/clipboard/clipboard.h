@@ -18,7 +18,7 @@ namespace blink {
 class ExceptionState;
 class NavigatorBase;
 class ScriptState;
-class ClipboardReadOptions;
+class ClipboardUnsanitizedFormats;
 
 class MODULES_EXPORT Clipboard : public EventTarget,
                                  public Supplement<NavigatorBase> {
@@ -33,7 +33,7 @@ class MODULES_EXPORT Clipboard : public EventTarget,
   Clipboard& operator=(const Clipboard&) = delete;
 
   ScriptPromise<IDLSequence<ClipboardItem>> read(ScriptState*,
-                                                 ClipboardReadOptions* options,
+                                                 ClipboardUnsanitizedFormats*,
                                                  ExceptionState&);
   ScriptPromise<IDLSequence<ClipboardItem>> read(
       ScriptState* script_state,
