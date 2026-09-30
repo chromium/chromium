@@ -545,13 +545,6 @@ std::optional<cc::PaintRecord> OffscreenCanvasRenderingContext2D::FlushCanvas(
   return FlushCanvasInternal(reason);
 }
 
-bool OffscreenCanvasRenderingContext2D::IsResourceProviderValid() const {
-  if (shared_image_provider_) {
-    return shared_image_provider_->IsValid();
-  }
-  return bitmap_provider_ != nullptr;
-}
-
 OffscreenCanvas* OffscreenCanvasRenderingContext2D::HostAsOffscreenCanvas()
     const {
   return static_cast<OffscreenCanvas*>(Host());

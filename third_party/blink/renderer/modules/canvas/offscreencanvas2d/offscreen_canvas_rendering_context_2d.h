@@ -142,7 +142,6 @@ class MODULES_EXPORT OffscreenCanvasRenderingContext2D final
   scoped_refptr<CanvasResource> ProduceCanvasResource(FlushReason);
 
   bool InitializeResourceProvider() override;
-  bool IsResourceProviderValid() const;
   void ResetResourceProvider();
 };
 
