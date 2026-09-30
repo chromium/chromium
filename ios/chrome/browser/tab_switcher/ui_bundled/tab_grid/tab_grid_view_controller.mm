@@ -16,6 +16,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/notimplemented.h"
 #import "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_view.h"
 #import "ios/chrome/browser/bubble/ui_bundled/gesture_iph/gesture_in_product_help_view_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
@@ -1459,6 +1460,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   inset.right = self.scrollView.safeAreaInsets.right;
   inset.top += self.scrollView.safeAreaInsets.top;
 
+  if (IsChromeNextIaEnabled()) {
+    if (self.layoutState.appBarPosition == AppBarPosition::kRight) {
+      inset.right += AppBarHeightLandscape();
+    } else if (self.layoutState.appBarPosition == AppBarPosition::kLeft) {
+      inset.left += AppBarHeightLandscape();
+    }
+  }
+
   return inset;
 }
 
@@ -2146,6 +2155,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   if (IsPinnedTabsEnabled()) {
     [self updatePinnedTabsViewControllerConstraints];
   }
+  [self setInsetForGridViews];
 }
 
 - (id<UIContextMenuInteractionAnimating>)activeContextMenuAnimator {

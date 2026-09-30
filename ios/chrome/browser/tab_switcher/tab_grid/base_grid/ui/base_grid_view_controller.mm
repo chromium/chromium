@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_group_confirmation_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/suggested_actions/suggested_actions_delegate.h"
 #import "ios/chrome/browser/tab_switcher/tab_grid/base_grid/suggested_actions/suggested_actions_grid_cell.h"
@@ -476,8 +477,10 @@ typedef NS_ENUM(NSInteger, DragEntrySide) {
   // This is a workaround, as setting the horizontal insets on the collection
   // view isn't honored by the layout when computing the item sizes (items are
   // too big in landscape iPhones with a notch or Dynamic Island).
-  self.gridLayout.sectionInsets = NSDirectionalEdgeInsetsMake(
-      0, contentInsets.left, 0, contentInsets.right);
+  CGFloat leading = UseRTLLayout() ? contentInsets.right : contentInsets.left;
+  CGFloat trailing = UseRTLLayout() ? contentInsets.left : contentInsets.right;
+  self.gridLayout.sectionInsets =
+      NSDirectionalEdgeInsetsMake(0, leading, 0, trailing);
   _contentInsets = contentInsets;
 }
 

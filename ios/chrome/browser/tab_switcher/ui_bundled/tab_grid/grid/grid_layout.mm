@@ -373,6 +373,8 @@ NSCollectionLayoutSection* SuggestedActionsSection(
   NSArray<NSIndexPath*>* _indexPathsOfInsertingItems;
 }
 
+@synthesize sectionInsets = _sectionInsets;
+
 - (instancetype)init {
   // Use a `futureSelf` variable as the super init requires a closure, and as
   // `self` is not instantiated yet, it can't be used.
@@ -388,6 +390,17 @@ NSCollectionLayoutSection* SuggestedActionsSection(
     _animatesItemUpdates = YES;
   }
   return self;
+}
+
+#pragma mark - Public
+
+- (void)setSectionInsets:(NSDirectionalEdgeInsets)sectionInsets {
+  if (NSDirectionalEdgeInsetsEqualToDirectionalEdgeInsets(_sectionInsets,
+                                                          sectionInsets)) {
+    return;
+  }
+  _sectionInsets = sectionInsets;
+  [self invalidateLayout];
 }
 
 #pragma mark - UICollectionViewLayout

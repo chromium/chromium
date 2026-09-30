@@ -5,14 +5,20 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_view_controller.h"
 
 #import "base/test/metrics/user_action_tester.h"
+#import "base/test/scoped_feature_list.h"
+#import "ios/chrome/browser/app_bar/ui/app_bar_constants.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/scene_layout_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_source_tab_helper.h"
 #import "ios/chrome/browser/snapshots/model/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/grid_container_view_controller.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/incognito/incognito_grid_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/pinned_tabs/pinned_tabs_view_controller.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_mutator.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
@@ -62,8 +68,10 @@ class TabGridViewControllerTest : public PlatformTest,
   void InitializeViewController(TabGridPageConfiguration configuration) {
     view_controller_ =
         [[TabGridViewController alloc] initWithPageConfiguration:configuration];
+    LayoutGuideCenter* layoutGuideCenter = [[LayoutGuideCenter alloc] init];
+    view_controller_.layoutGuideCenter = layoutGuideCenter;
     view_controller_.topToolbar =
-        [[TabGridTopToolbar alloc] initWithLayoutGuideCenter:nil];
+        [[TabGridTopToolbar alloc] initWithLayoutGuideCenter:layoutGuideCenter];
     view_controller_.bottomToolbar =
         [[TabGridBottomToolbar alloc] initWithFrame:CGRectZero];
 
@@ -279,6 +287,47 @@ TEST_F(TabGridViewControllerTest, UnfocusesSearchBarOnTransitionToTabGroups) {
 
   EXPECT_OCMOCK_VERIFY(mock_top_toolbar);
   [mock_top_toolbar stopMocking];
+}
+
+// Tests that grid view insets account for the App Bar in landscape when
+// kChromeNextIA is enabled.
+TEST_F(TabGridViewControllerTest, InsetsAccountForAppBarInLandscape) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({kChromeNextIa, kFullscreenRefactoring},
+                                       {});
+  InitializeViewController(TabGridPageConfiguration::kAllPagesEnabled);
+
+  // Load the view.
+  std::ignore = view_controller_.view;
+
+  IncognitoGridViewController* incognito_grid =
+      [[IncognitoGridViewController alloc] init];
+  view_controller_.incognitoTabsViewController = incognito_grid;
+
+  __block AppBarPosition current_app_bar_position = AppBarPosition::kRight;
+  id mock_layout_state = OCMClassMock([SceneLayoutState class]);
+  OCMStub([mock_layout_state appBarPosition]).andDo(^(NSInvocation* inv) {
+    [inv setReturnValue:&current_app_bar_position];
+  });
+  view_controller_.layoutState = mock_layout_state;
+
+  // Simulate App Bar position change to kRight.
+  current_app_bar_position = AppBarPosition::kRight;
+  [static_cast<id<SceneLayoutStateObserver>>(view_controller_)
+                  layoutState:mock_layout_state
+      didChangeAppBarPosition:AppBarPosition::kRight];
+
+  UIEdgeInsets insets = incognito_grid.contentInsets;
+  EXPECT_GE(insets.right, AppBarHeightLandscape());
+
+  // Simulate App Bar position change to kLeft.
+  current_app_bar_position = AppBarPosition::kLeft;
+  [static_cast<id<SceneLayoutStateObserver>>(view_controller_)
+                  layoutState:mock_layout_state
+      didChangeAppBarPosition:AppBarPosition::kLeft];
+
+  insets = incognito_grid.contentInsets;
+  EXPECT_GE(insets.left, AppBarHeightLandscape());
 }
 
 }  // namespace
