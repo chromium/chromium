@@ -906,7 +906,7 @@ TEST_F(DiceHeaderHelperTest, AppendOrRemoveDiceRequestHeader_GaiaSyncDisabled) {
       GURL("https://accounts.google.com"), GaiaId("0123456789"),
       base::StringPrintf("version=%s,client_id=%s,device_id=DeviceID,signin_"
                          "mode=all_accounts,signout_mode=show_confirmation",
-                         kDiceProtocolVersion, client_id.c_str()));
+                         kDiceProtocolVersion2, client_id.c_str()));
 }
 
 TEST_F(DiceHeaderHelperTest, AppendOrRemoveDiceRequestHeader_GaiaSyncEnabled) {
@@ -920,7 +920,7 @@ TEST_F(DiceHeaderHelperTest, AppendOrRemoveDiceRequestHeader_GaiaSyncEnabled) {
       base::StringPrintf(
           "version=%s,client_id=%s,device_id=DeviceID,sync_account_id="
           "0123456789,signin_mode=all_accounts,signout_mode=show_confirmation",
-          kDiceProtocolVersion, client_id.c_str()));
+          kDiceProtocolVersion2, client_id.c_str()));
 }
 
 // When cookies are blocked, the Dice header is still sent.
@@ -935,7 +935,7 @@ TEST_F(DiceHeaderHelperTest, AppendOrRemoveDiceRequestHeader_CookiesBlocked) {
       GURL("https://accounts.google.com"), GaiaId("0123456789"),
       base::StringPrintf("version=%s,client_id=%s,device_id=DeviceID,signin_"
                          "mode=all_accounts,signout_mode=show_confirmation",
-                         kDiceProtocolVersion, client_id.c_str()));
+                         kDiceProtocolVersion2, client_id.c_str()));
 }
 
 TEST_F(DiceHeaderHelperTest, AppendOrRemoveDiceRequestHeader_DiceDisabled) {
@@ -951,7 +951,7 @@ TEST_F(DiceHeaderHelperTest, AppendOrRemoveDiceRequestHeader_EmptyDeviceID) {
   const GURL url("https://accounts.google.com");
   std::string client_id = GaiaUrls::GetInstance()->oauth2_chrome_client_id();
   CheckDiceHeaderRequest(url, GaiaId("0123456789"),
-                         "version=" + std::string(kDiceProtocolVersion) +
+                         "version=" + std::string(kDiceProtocolVersion2) +
                              ",client_id=" + client_id +
                              ",signin_mode=all_accounts,signout_mode=show_"
                              "confirmation");
@@ -1022,9 +1022,9 @@ TEST_F(
 }
 
 TEST_F(DiceHeaderHelperTest,
-       AppendOrRemoveDiceRequestHeader_DiceHeaderVersion2Enabled) {
+       AppendOrRemoveDiceRequestHeader_DiceHeaderVersion2Disabled) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(switches::kDiceHeaderVersion2);
+  scoped_feature_list.InitAndDisableFeature(switches::kDiceHeaderVersion2);
 
   account_consistency_ = AccountConsistencyMethod::kDice;
   sync_enabled_ = false;
@@ -1035,7 +1035,7 @@ TEST_F(DiceHeaderHelperTest,
       GURL("https://accounts.google.com"), GaiaId("0123456789"),
       base::StringPrintf("version=%s,client_id=%s,device_id=DeviceID,signin_"
                          "mode=all_accounts,signout_mode=show_confirmation",
-                         kDiceProtocolVersion2, client_id.c_str()));
+                         kDiceProtocolVersion, client_id.c_str()));
 }
 
 }  // namespace signin

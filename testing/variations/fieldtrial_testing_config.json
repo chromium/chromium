@@ -6606,23 +6606,6 @@
             ]
         }
     ],
-    "DiceProtocolVersion2": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20260716",
-                    "enable_features": [
-                        "DiceHeaderVersion2"
-                    ]
-                }
-            ]
-        }
-    ],
     "Dictation": [
         {
             "platforms": [
