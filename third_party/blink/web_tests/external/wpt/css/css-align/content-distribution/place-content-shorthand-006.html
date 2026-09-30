@@ -21,7 +21,7 @@
             let expectedJustifyValue = computedClasses2[key2];
             var value = (alignValue + " " + justifyValue).trim();
             test(function() {
-                checkPlaceShorhand(
+                checkPlaceShorthand(
                     "place-content", value, alignValue, justifyValue,
                     expectedAlignValue, expectedJustifyValue)
             }, "Checking place-content: " + value);

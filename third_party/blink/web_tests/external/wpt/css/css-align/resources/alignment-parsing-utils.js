@@ -24,7 +24,7 @@ var invalidDistributionValues = ["space-between left", "space-around center", "s
                                  "space-between safe", "space-between stretch", "stretch start",
                                  "stretch baseline", "first baseline space-around"];
 
-function checkPlaceShorhand(shorthand, shorthandValue, alignValue, justifyValue,
+function checkPlaceShorthand(shorthand, shorthandValue, alignValue, justifyValue,
                             expectedAlignValue = alignValue,
                             expectedJustifyValue = justifyValue)
 {
@@ -60,7 +60,7 @@ function checkPlaceShorhand(shorthand, shorthandValue, alignValue, justifyValue,
     assert_in_array(resolvedValue, ["", expectedResolvedValue], shorthand + " resolved value");
 }
 
-function checkPlaceShorhandLonghands(shorthand, alignLonghand, justifyLonghand, alignValue, justifyValue = "")
+function checkPlaceShorthandLonghands(shorthand, alignLonghand, justifyLonghand, alignValue, justifyValue = "")
 {
     var div = document.createElement("div");
     div.setAttribute("style", shorthand + ": " + alignValue + " " + justifyValue);
