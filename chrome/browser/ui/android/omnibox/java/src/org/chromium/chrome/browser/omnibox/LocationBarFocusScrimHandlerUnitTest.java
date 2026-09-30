@@ -37,19 +37,18 @@ import org.chromium.components.omnibox.OmniboxFeatureList;
 
 /** Unit tests for {@link LocationBarFocusScrimHandler}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@SuppressWarnings("DoNotMock") // TODO(567604165): Remove mocking of Views / Activities
 public class LocationBarFocusScrimHandlerUnitTest {
     private static final int BOTTOM_CHIN_HEIGHT = 37;
 
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
 
-    @Mock private View mScrimTarget;
     @Mock private Runnable mClickDelegate;
     @Mock private LocationBarDataProvider mLocationBarDataProvider;
     @Mock private ScrimManager mScrimManager;
     @Mock private BottomControlsStacker mBottomControlsStacker;
 
+    private final View mScrimTarget = new View(ContextUtils.getApplicationContext());
     LocationBarFocusScrimHandler mScrimHandler;
 
     private final SettableNonNullObservableSupplier<Integer> mTabStripHeightSupplier =
