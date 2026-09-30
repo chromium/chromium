@@ -8,7 +8,6 @@ import androidx.annotation.IntDef;
 
 import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.tab_groups.TabGroupColorId;
 
@@ -48,16 +47,16 @@ public interface TabGroupObserver {
      *
      * @param tabGroupId The tab group id of the group being moved.
      */
+    // TODO(crbug.com/517544602): tabGroupId is unused across call sites. Evaluate updating/removing
+    // this method.
     default void willMoveTabGroup(Token tabGroupId) {}
 
     /**
      * This method is called before a tab within a group is moved out of the group.
      *
      * @param movedTab The tab which will be moved.
-     * @param tabGroupId The tabGroupId the tab will have after the move, may be null if not in a
-     *     group.
      */
-    default void willMoveTabOutOfGroup(Tab movedTab, @Nullable Token destinationTabGroupId) {}
+    default void willMoveTabOutOfGroup(Tab movedTab) {}
 
     /**
      * This method is called after a tab is moved to a group.

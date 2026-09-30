@@ -170,7 +170,7 @@ public class UndoGroupSnackbarControllerUnitTest {
         verify(mSnackbarManager, never()).showSnackbar(any());
 
         // Drag out of group triggers willMoveTabOutOfGroup.
-        mTabGroupObserver.willMoveTabOutOfGroup(mTab, null);
+        mTabGroupObserver.willMoveTabOutOfGroup(mTab);
 
         // Dismissing snackbars while throttled must expire the pending operation.
         verify(mTabModel).undoGroupOperationExpired(mUndoGroupMetadata);
@@ -243,7 +243,7 @@ public class UndoGroupSnackbarControllerUnitTest {
 
     @Test
     public void testWillMoveTabOutOfGroup_DismissesSnackbar() {
-        mTabGroupObserver.willMoveTabOutOfGroup(mTab, null);
+        mTabGroupObserver.willMoveTabOutOfGroup(mTab);
 
         verify(mSnackbarManager).dismissSnackbars(mController);
     }

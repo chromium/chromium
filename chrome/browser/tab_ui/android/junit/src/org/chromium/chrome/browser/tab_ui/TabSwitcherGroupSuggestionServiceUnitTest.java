@@ -297,7 +297,7 @@ public class TabSwitcherGroupSuggestionServiceUnitTest {
         verify(mSuggestionLifecycleObserverHandler).onSuggestionIgnored();
 
         reset(mSuggestionLifecycleObserverHandler);
-        observer.willMoveTabOutOfGroup(mockTab, null);
+        observer.willMoveTabOutOfGroup(mockTab);
         verify(mSuggestionLifecycleObserverHandler).onSuggestionIgnored();
 
         Token tabGroupId = new Token(1L, 2L);

@@ -204,8 +204,7 @@ public class TabSwitcherGroupSuggestionService {
                 }
 
                 @Override
-                public void willMoveTabOutOfGroup(
-                        Tab movedTab, @Nullable Token destinationTabGroupId) {
+                public void willMoveTabOutOfGroup(Tab movedTab) {
                     clearSuggestions();
                 }
 

@@ -72,10 +72,7 @@ public class StubTabModel extends EmptyTabModel {
     }
 
     @Override
-    public void pinTab(
-            int tabId,
-            boolean showUngroupDialog,
-            @Nullable TabModelActionListener tabModelActionListener) {
+    public void pinTab(int tabId, boolean showUngroupDialog) {
         throw error();
     }
 

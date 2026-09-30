@@ -749,9 +749,9 @@ public abstract class TabModelJniBridge implements TabModelInternal {
                 type, isNewTabIncognitoBranded, isCurrentModelIncognitoBranded);
     }
 
+    /** Returns whether the model is currently in the process of closing all of its tabs. */
     @CalledByNative
-    @Override
-    public abstract boolean isClosingAllTabs();
+    protected abstract boolean isClosingAllTabs();
 
     @NativeMethods
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

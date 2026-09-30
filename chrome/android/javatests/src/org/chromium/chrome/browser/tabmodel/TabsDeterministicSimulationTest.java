@@ -242,7 +242,7 @@ public class TabsDeterministicSimulationTest {
                     } else {
                         // This may ungroup the tab if it is in a group.
                         Log.i(TAG, "pinOrUnpin: pinTab(" + tabId + ")");
-                        mCollectionModel.pinTab(tabId, false, null);
+                        mCollectionModel.pinTab(tabId, /* showUngroupDialog= */ false);
                     }
                 });
     }

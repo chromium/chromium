@@ -17,7 +17,6 @@ import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
  */
 @NullMarked
 /*package*/ class TabPinnerActionListener implements TabModelActionListener {
-    private final @Nullable TabModelActionListener mInnerListener;
     private final OnceRunnable mDoPinRunnable;
     private boolean mCollaborationDialogShown;
 
@@ -37,10 +36,11 @@ import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
         }
     }
 
-    public TabPinnerActionListener(
-            Runnable doPinRunnable, @Nullable TabModelActionListener innerListener) {
+    /**
+     * @param doPinRunnable The {@link Runnable} to execute when the pin operation should proceed.
+     */
+    /*package*/ TabPinnerActionListener(Runnable doPinRunnable) {
         mDoPinRunnable = new OnceRunnable(doPinRunnable);
-        mInnerListener = innerListener;
     }
 
     /**
@@ -55,18 +55,12 @@ import org.chromium.components.browser_ui.widget.ActionConfirmationResult;
 
     @Override
     public void willPerformActionOrShowDialog(@DialogType int dialogType, boolean willSkipDialog) {
-        if (mInnerListener != null) {
-            mInnerListener.willPerformActionOrShowDialog(dialogType, willSkipDialog);
-        }
         mCollaborationDialogShown = dialogType == DialogType.COLLABORATION && !willSkipDialog;
     }
 
     @Override
     public void onConfirmationDialogResult(
             @DialogType int dialogType, @ActionConfirmationResult int result) {
-        if (mInnerListener != null) {
-            mInnerListener.onConfirmationDialogResult(dialogType, result);
-        }
         switch (dialogType) {
             case DialogType.SYNC:
                 handleSyncDialogResult(result);

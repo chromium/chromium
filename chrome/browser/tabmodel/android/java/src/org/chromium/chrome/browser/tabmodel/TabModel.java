@@ -206,23 +206,7 @@ public interface TabModel extends TabList {
      * @param showUngroupDialog Whether to possibly show a dialog to the user when pinning the last
      *     tab in a group.
      */
-    default void pinTab(int tabId, boolean showUngroupDialog) {
-        pinTab(tabId, showUngroupDialog, /* tabModelActionListener= */ null);
-    }
-
-    /**
-     * Pins a tab to the model.
-     *
-     * @param tabId The id of the tab to pin.
-     * @param showUngroupDialog Whether to possibly show a dialog to the user when pinning the last
-     *     tab in a group.
-     * @param tabModelActionListener A listener that is notified in response to the user actions
-     *     taken in the ungroup dialog (if shown).
-     */
-    void pinTab(
-            int tabId,
-            boolean showUngroupDialog,
-            @Nullable TabModelActionListener tabModelActionListener);
+    void pinTab(int tabId, boolean showUngroupDialog);
 
     /**
      * Unpins a tab from the model.
@@ -376,9 +360,6 @@ public interface TabModel extends TabList {
 
     /** Duplicates the given tab. */
     @Nullable Tab duplicateTab(Tab tab);
-
-    /** Whether the model is currently in the process of closing all of its tabs. */
-    boolean isClosingAllTabs();
 
     // ---------------------------------------------------------------------------------------------
     // Tab group methods.
@@ -581,16 +562,6 @@ public interface TabModel extends TabList {
     /** Get all tab group IDs that are associated with tab groups. */
     Set<Token> getAllTabGroupIds();
 
-    /**
-     * Returns a valid position to add or move a tab to this model in the context of any related
-     * tabs.
-     *
-     * @param tab The tab to be added/moved.
-     * @param proposedPosition The current or proposed position of the tab in the model.
-     * @return a valid position close to proposedPosition that respects related tab ordering rules.
-     */
-    int getValidPosition(Tab tab, int proposedPosition);
-
     /** Returns whether the tab model is fully restored. */
     boolean isTabModelRestored();
 
@@ -641,9 +612,6 @@ public interface TabModel extends TabList {
 
     /** Stores the given color for the tab group. */
     void setTabGroupColor(Token tabGroupId, @TabGroupColorId int color);
-
-    /** Deletes the color that was recorded for the group. */
-    void deleteTabGroupColor(Token tabGroupId);
 
     /** Returns whether the tab group is expanded or collapsed. */
     boolean getTabGroupCollapsed(Token tabGroupId);

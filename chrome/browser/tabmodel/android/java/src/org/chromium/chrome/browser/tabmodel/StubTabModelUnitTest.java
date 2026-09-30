@@ -51,7 +51,6 @@ public class StubTabModelUnitTest {
                             "getNativeSessionIdForTesting",
                             "isMuted",
                             "getTabStripCollection",
-                            "isClosingAllTabs",
                             "getTabModel",
                             "getRepresentativeTabList",
                             "getIndividualTabAndGroupCount",
@@ -77,7 +76,6 @@ public class StubTabModelUnitTest {
                             "isTabModelRestored",
                             "associateWithBrowserWindow",
                             "dissociateWithBrowserWindow",
-                            "addDelegateModelObserver",
                             "addIncognitoObserver",
                             "removeIncognitoObserver",
                             "addObserver",
@@ -103,11 +101,9 @@ public class StubTabModelUnitTest {
                             "willMergingCreateNewGroup",
                             "performUndoGroupOperation",
                             "undoGroupOperationExpired",
-                            "getValidPosition",
                             "setTabGroupTitle",
                             "deleteTabGroupTitle",
                             "setTabGroupColor",
-                            "deleteTabGroupColor",
                             "deleteTabGroupCollapsed",
                             "getTabAtChecked",
                             "spliterator",
@@ -115,7 +111,6 @@ public class StubTabModelUnitTest {
                             "destroy",
                             // Default methods in interface that delegate to throwing methods.
                             // They are safe to inherit because they will eventually throw.
-                            "pinTab",
                             "mergeListOfTabsToGroup"));
 
     @Test

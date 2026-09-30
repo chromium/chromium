@@ -9,7 +9,6 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import android.content.Context;
 
 import org.chromium.base.Callback;
-import org.chromium.base.Token;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -60,8 +59,7 @@ public class UndoGroupSnackbarController
         mTabGroupObserver =
                 new TabGroupObserver() {
                     @Override
-                    public void willMoveTabOutOfGroup(
-                            Tab movedTab, @Nullable Token destinationTabGroupId) {
+                    public void willMoveTabOutOfGroup(Tab movedTab) {
                         // Fix for b/338511492 is to dismiss the snackbar if an ungroup operation
                         // happens because information that allowed the group action to be undone
                         // may no longer be usable (incorrect indices, group IDs, etc.).

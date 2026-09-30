@@ -55,8 +55,6 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     private final ObserverList<IncognitoTabModelObserver> mIncognitoObservers =
             new ObserverList<>();
     private final ObserverList<TabGroupObserver> mTabGroupObservers = new ObserverList<>();
-    private final ObserverList<Callback<TabModelInternal>> mDelegateModelObservers =
-            new ObserverList<>();
     private final Callback<@Nullable Tab> mDelegateModelCurrentTabSupplierObserver;
     private final SettableNullableObservableSupplier<Tab> mCurrentTabSupplier =
             ObservableSuppliers.createNullable();
@@ -135,9 +133,6 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
         for (TabGroupObserver observer : mTabGroupObservers) {
             mDelegateModel.addTabGroupObserver(observer);
         }
-        for (Callback<TabModelInternal> delegateModelObserver : mDelegateModelObservers) {
-            delegateModelObserver.onResult(mDelegateModel);
-        }
         for (IncognitoTabModelObserver observer : mIncognitoObservers) {
             observer.onIncognitoModelCreated();
         }
@@ -168,9 +163,6 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
         mTabCountSupplier.set(0);
 
         mDelegateModel = EmptyTabModel.getInstance(true);
-        for (Callback<TabModelInternal> delegateModelObserver : mDelegateModelObservers) {
-            delegateModelObserver.onResult(mDelegateModel);
-        }
     }
 
     private boolean isEmpty() {
@@ -304,11 +296,8 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public void pinTab(
-            int tabId,
-            boolean showUngroupDialog,
-            @Nullable TabModelActionListener tabModelActionListener) {
-        mDelegateModel.pinTab(tabId, showUngroupDialog, tabModelActionListener);
+    public void pinTab(int tabId, boolean showUngroupDialog) {
+        mDelegateModel.pinTab(tabId, showUngroupDialog);
     }
 
     @Override
@@ -387,14 +376,6 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     public void removeObserver(TabModelObserver observer) {
         mObservers.removeObserver(observer);
         mDelegateModel.removeObserver(observer);
-    }
-
-    @Override
-    public void addDelegateModelObserver(Callback<TabModelInternal> delegateModelObserver) {
-        mDelegateModelObservers.addObserver(delegateModelObserver);
-        if (mDelegateModel != null) {
-            delegateModelObserver.onResult(mDelegateModel);
-        }
     }
 
     @Override
@@ -519,11 +500,6 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     @Override
     public @Nullable Tab duplicateTab(Tab tab) {
         return mDelegateModel.duplicateTab(tab);
-    }
-
-    @Override
-    public boolean isClosingAllTabs() {
-        return mDelegateModel.isClosingAllTabs();
     }
 
     @Override
@@ -680,11 +656,6 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     }
 
     @Override
-    public int getValidPosition(Tab tab, int proposedPosition) {
-        return mDelegateModel.getValidPosition(tab, proposedPosition);
-    }
-
-    @Override
     public boolean isTabModelRestored() {
         return mDelegateModel.isTabModelRestored();
     }
@@ -728,11 +699,6 @@ class IncognitoTabModelImpl implements IncognitoTabModelInternal {
     @Override
     public void setTabGroupColor(Token tabGroupId, int color) {
         mDelegateModel.setTabGroupColor(tabGroupId, color);
-    }
-
-    @Override
-    public void deleteTabGroupColor(Token tabGroupId) {
-        mDelegateModel.deleteTabGroupColor(tabGroupId);
     }
 
     @Override

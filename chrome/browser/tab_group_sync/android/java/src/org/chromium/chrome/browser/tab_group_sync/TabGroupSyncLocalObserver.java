@@ -279,7 +279,7 @@ public final class TabGroupSyncLocalObserver {
             }
 
             @Override
-            public void willMoveTabOutOfGroup(Tab movedTab, @Nullable Token destinationTabGroupId) {
+            public void willMoveTabOutOfGroup(Tab movedTab) {
                 if (!mIsObserving) return;
                 LogUtils.log(TAG, "willMoveTabOutOfGroup, tab id = " + movedTab.getId());
 

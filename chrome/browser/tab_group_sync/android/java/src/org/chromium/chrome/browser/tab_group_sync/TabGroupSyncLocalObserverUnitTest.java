@@ -701,12 +701,9 @@ public class TabGroupSyncLocalObserverUnitTest {
                 mTab1, 0, TabLaunchType.FROM_TAB_GROUP_UI, TabCreationState.LIVE_IN_BACKGROUND);
         mTabModel.addTab(
                 mTab2, 1, TabLaunchType.FROM_TAB_GROUP_UI, TabCreationState.LIVE_IN_BACKGROUND);
-        when(mTabModel.getRepresentativeTabAt(0)).thenReturn(mTab1);
 
         // Move tab 2 out of group and verify.
-        mTabGroupObserverCaptor
-                .getValue()
-                .willMoveTabOutOfGroup(mTab2, /* destinationTabGroupId= */ null);
+        mTabGroupObserverCaptor.getValue().willMoveTabOutOfGroup(mTab2);
         verify(mTabGroupSyncService, times(1)).removeTab(eq(LOCAL_TAB_GROUP_ID_1), eq(2));
     }
 

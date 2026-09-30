@@ -692,18 +692,13 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public void pinTab(
-            int tabId,
-            boolean showUngroupDialog,
-            @Nullable TabModelActionListener tabModelActionListener) {
+    public void pinTab(int tabId, boolean showUngroupDialog) {
         Tab tab = getTabById(tabId);
         if (tab == null) return;
         if (tab.getIsPinned()) return;
 
         TabPinnerActionListener listener =
-                new TabPinnerActionListener(
-                        () -> updatePinnedState(tabId, /* isPinned= */ true),
-                        tabModelActionListener);
+                new TabPinnerActionListener(() -> updatePinnedState(tabId, /* isPinned= */ true));
         getTabUngrouper()
                 .ungroupTabs(
                         Collections.singletonList(tab),
@@ -1168,7 +1163,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public boolean isClosingAllTabs() {
+    protected boolean isClosingAllTabs() {
         if (mClosingTabsCount == null) return false;
         int tabCount = getCount();
         return tabCount == 0 || mClosingTabsCount == tabCount;
@@ -1428,15 +1423,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
     }
 
     @Override
-    public int getValidPosition(Tab tab, int proposedPosition) {
-        // Return the proposedPosition. In the TabModel implementation the implementation of this
-        // method makes an effort to ensure tab groups remain contiguous. This behavior is now
-        // enforced when operating on the TabStripCollection in C++ so this method can effectively
-        // no-op.
-        return proposedPosition;
-    }
-
-    @Override
     public boolean isTabModelRestored() {
         return mModelDelegate.isTabModelRestored();
     }
@@ -1527,17 +1513,6 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
                 tabGroupId,
                 /* title= */ null,
                 color,
-                /* isCollapsed= */ null,
-                /* animate= */ false);
-    }
-
-    @Override
-    public void deleteTabGroupColor(Token tabGroupId) {
-        if (!tabGroupExists(tabGroupId)) return;
-        updateTabGroupVisualData(
-                tabGroupId,
-                /* title= */ null,
-                TabGroupColorUtils.INVALID_COLOR_ID,
                 /* isCollapsed= */ null,
                 /* animate= */ false);
     }
@@ -2514,7 +2489,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
             assumeNonNull(oldTabGroupId);
             assumeNonNull(groupObservers);
             while (groupObservers.hasNext()) {
-                groupObservers.next().willMoveTabOutOfGroup(tab, newTabGroupId);
+                groupObservers.next().willMoveTabOutOfGroup(tab);
             }
             if (getLastShownTabForGroup(oldTabGroupId) == tab) {
                 Tab nextGroupTab =
