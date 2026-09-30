@@ -447,7 +447,11 @@ ComputedStyle::ComputeDifferenceIgnoringInheritedFirstLineStyle(
   }
   if (old_style.Display() != new_style.Display() &&
       (old_style.BlockifiesChildren() != new_style.BlockifiesChildren() ||
-       old_style.InlinifiesChildren() != new_style.InlinifiesChildren())) {
+       old_style.InlinifiesChildren() != new_style.InlinifiesChildren() ||
+       (old_style.Display() == EDisplay::kContents &&
+        old_style.IsContentDrawableCanvasChild()) !=
+           (new_style.Display() == EDisplay::kContents &&
+            new_style.IsContentDrawableCanvasChild()))) {
     return Difference::kDescendantAffecting;
   }
   if (old_style.ScrollMarkerGroupNone() != new_style.ScrollMarkerGroupNone()) {

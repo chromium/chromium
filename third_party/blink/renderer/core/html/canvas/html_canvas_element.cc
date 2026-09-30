@@ -67,7 +67,7 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
-#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -1021,7 +1021,7 @@ bool HTMLCanvasElement::VerifyDrawElementImageEligibility(
   }
 
   const Element* parent =
-      FlatTreeTraversal::ParentElementSkippingSlots(*element);
+      LayoutTreeBuilderTraversal::LayoutParentElement(*element);
   bool is_direct_child = parent == this;
   if (!is_direct_child && element->CanvasForDrawing() != this) {
     exception_state.ThrowDOMException(

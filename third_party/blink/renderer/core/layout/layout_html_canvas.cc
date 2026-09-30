@@ -136,12 +136,28 @@ void LayoutHTMLCanvas::Trace(Visitor* visitor) const {
 bool LayoutHTMLCanvas::IsChildAllowed(LayoutObject* child,
                                       const ComputedStyle& style) const {
   NOT_DESTROYED();
-  if (!IsA<Element>(GetNode()) || child->IsText()) {
+  const auto* canvas = To<HTMLCanvasElement>(GetNode());
+  if (!canvas->IsContentDrawable()) {
     return false;
   }
 
-  const auto* canvas = To<HTMLCanvasElement>(GetNode());
-  return canvas->IsContentDrawable();
+  // <canvas> supports laying out children as in-flow block level boxes, all
+  // sized by the <canvas> box. The StyleAdjuster will blockify and force static
+  // positioning on children as necessary.
+  //
+  // Text boxes, their anonymous inline wrappers, or elements which cannot be
+  // blockified are rejected below.
+  //
+  // TODO(crbug.com/564820084): Support pseudo-element children (e.g.,
+  // `::before`/`::after` on the canvas or on `display: contents` children) so
+  // their generated content is exposed in the accessibility tree.
+  auto* child_element = DynamicTo<Element>(child->GetNode());
+  if (!child->IsBox() || !child_element || child_element->IsPseudoElement()) {
+    return false;
+  }
+
+  CHECK(!style.IsDisplayInlineType());
+  return true;
 }
 
 }  // namespace blink

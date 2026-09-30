@@ -1061,6 +1061,18 @@
       default_value: "false",
       custom_compare: true,
     },
+    // Set to true on elements which are either:
+    // 1. An element that generates a child box of a content=drawable <canvas>
+    // 2. display:contents ancestors of (1).
+    //
+    // The flag is used to invalidate style such that old/new direct child box
+    // elements are updated correctly for display type changes.
+    {
+      name: "IsContentDrawableCanvasChild",
+      field_template: "monotonic_flag",
+      default_value: "false",
+      custom_compare: true,
+    },
     {
       name: "IsSpecifiedDisplayWebkitBox",
       name_for_methods: "IsSpecifiedDisplayWebkitBox",

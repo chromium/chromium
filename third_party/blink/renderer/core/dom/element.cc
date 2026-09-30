@@ -1056,8 +1056,7 @@ bool Element::IsFocusableStyle(UpdateBehavior update_behavior) const {
       if (canvas) {
         break;
       }
-      if (const Element* parent =
-              FlatTreeTraversal::ParentElementSkippingSlots(*element)) {
+      if (const Element* parent = FlatTreeTraversal::ParentElement(*element)) {
         element = parent;
       } else if (element->isConnected()) {
         element = element->GetDocument().LocalOwner();
@@ -10716,7 +10715,7 @@ HTMLCanvasElement* Element::CanvasForDrawing() const {
   // TODO(paint-dev): The check for `drawable` purposely skips immediate
   // canvas children, to ease migration. Ultimately it must apply to
   // immediate children as well.
-  Element* ancestor = FlatTreeTraversal::ParentElementSkippingSlots(*this);
+  Element* ancestor = LayoutTreeBuilderTraversal::LayoutParentElement(*this);
   if (auto* ancestor_canvas = DynamicTo<HTMLCanvasElement>(ancestor)) {
     return ancestor_canvas->IsContentDrawable() ? ancestor_canvas : nullptr;
   }
@@ -10724,7 +10723,7 @@ HTMLCanvasElement* Element::CanvasForDrawing() const {
     return nullptr;
   }
   while (ancestor) {
-    ancestor = FlatTreeTraversal::ParentElementSkippingSlots(*ancestor);
+    ancestor = FlatTreeTraversal::ParentElement(*ancestor);
     if (auto* ancestor_canvas = DynamicTo<HTMLCanvasElement>(ancestor)) {
       return ancestor_canvas->IsContentDrawable() ? ancestor_canvas : nullptr;
     }

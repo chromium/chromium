@@ -7574,8 +7574,7 @@ const Node* AXObject::GetParentNodeAcrossFrames(const Node* node) {
   if (!node) {
     return nullptr;
   }
-  if (const Element* parent =
-          FlatTreeTraversal::ParentElementSkippingSlots(*node)) {
+  if (const Element* parent = FlatTreeTraversal::ParentElement(*node)) {
     return parent;
   }
   return node->GetDocument().LocalOwner();

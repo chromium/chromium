@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
+#include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/event_handler_registry.h"
@@ -768,7 +769,7 @@ static bool IsContentDrawableCanvasChild(const Element* element) {
     return false;
   }
   const auto* parent_canvas = DynamicTo<HTMLCanvasElement>(
-      FlatTreeTraversal::ParentElementSkippingSlots(*element));
+      LayoutTreeBuilderTraversal::LayoutParentElement(*element));
   return parent_canvas && parent_canvas->IsContentDrawable();
 }
 
@@ -797,6 +798,7 @@ void StyleAdjuster::AdjustStyleForDisplay(
     }
 
     if (is_immediate_canvas_child) {
+      builder.SetIsContentDrawableCanvasChild();
       builder.SetPosition(EPosition::kStatic);
     }
   }
