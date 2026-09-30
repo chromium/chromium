@@ -21,6 +21,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "components/webapps/browser/image_visual_diff.h"
 #include "components/webapps/common/web_app_id.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace web_app {

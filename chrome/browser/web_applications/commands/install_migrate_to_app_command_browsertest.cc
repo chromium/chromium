@@ -4,6 +4,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
@@ -18,6 +19,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace web_app {
 namespace {

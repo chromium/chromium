@@ -41,6 +41,7 @@
 #include "components/sync/protocol/web_app_specifics.pb.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace web_app {

@@ -11,6 +11,7 @@
 #include "base/barrier_callback.h"
 #include "base/check_is_test.h"
 #include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -65,6 +66,7 @@
 #include "components/webapps/browser/web_app_url_config.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/browser_thread.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/origin.h"
 

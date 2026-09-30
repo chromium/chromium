@@ -10,6 +10,7 @@
 #include "base/barrier_closure.h"
 #include "base/check_is_test.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -448,7 +449,9 @@ void WebAppCommandScheduler::InstallFromSync(const WebApp& web_app,
     theme_color = web_app.sync_proto().theme_color();
   }
   std::optional<webapps::ManifestId> migrated_from_manifest_id;
-  if (web_app.sync_proto().has_migrated_from_manifest_id()) {
+  if (base::FeatureList::IsEnabled(
+          features::kWebAppHandleAppMigrationViaSync) &&
+      web_app.sync_proto().has_migrated_from_manifest_id()) {
     migrated_from_manifest_id = webapps::ManifestId::Create(
         GURL(web_app.sync_proto().migrated_from_manifest_id()));
   }

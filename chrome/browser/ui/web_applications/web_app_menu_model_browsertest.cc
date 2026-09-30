@@ -25,6 +25,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/gfx/image/image_unittest_util.h"
@@ -166,7 +167,11 @@ IN_PROC_BROWSER_TEST_F(WebAppMenuModelBrowserTest, HasPendingUpdate) {
   UninstallWebApp(app_id);
 }
 
-class WebAppMenuModelMigrationBrowserTest : public WebAppBrowserTestBase {};
+class WebAppMenuModelMigrationBrowserTest : public WebAppBrowserTestBase {
+ public:
+  WebAppMenuModelMigrationBrowserTest() = default;
+  ~WebAppMenuModelMigrationBrowserTest() override = default;
+};
 
 IN_PROC_BROWSER_TEST_F(WebAppMenuModelMigrationBrowserTest,
                        HasPendingMigration) {
