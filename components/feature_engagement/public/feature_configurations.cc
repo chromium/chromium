@@ -1761,6 +1761,34 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHBookmarkBarVisibilityFeature.name == feature->name) {
+    // Allows an IPH telling the user they can show the Bookmark Bar on Android:
+    // * At most once per 7 days.
+    // * If the user has never opened the appearance settings page.
+    // * Up to 3 times total (over 10 years).
+    IPHBookmarkBarVisibilityVariant variant =
+        kIPHBookmarkBarVisibilityVariantParam.Get();
+    bool is_tracking_only =
+        (variant == IPHBookmarkBarVisibilityVariant::kMediumTrackingOnly ||
+         variant == IPHBookmarkBarVisibilityVariant::kHighTrackingOnly);
+    std::string trigger_event =
+        is_tracking_only ? "bookmark_bar_visibility_iph_triggered_tracking_only"
+                         : "bookmark_bar_visibility_iph_triggered";
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = kAlwaysAvailable;
+    config.session_rate = kNoRestrictions;
+    config.trigger =
+        EventConfig(trigger_event, Comparator(EQUAL, 0), 7, kMaxStoragePeriod);
+    config.used = EventConfig("settings_appearance_opened",
+                              Comparator(EQUAL, 0), 360, 360);
+    config.event_configs.insert(
+        EventConfig(trigger_event, Comparator(LESS_THAN, 3), kMaxStoragePeriod,
+                    kMaxStoragePeriod));
+    config.tracking_only = is_tracking_only;
+    return config;
+  }
+
   if (kIPHInstanceSwitcherFeature.name == feature->name) {
     // A config that allows the 'Manage windows' text bubble IPH to be shown
     // only once when the user starts using the multi-instance feature by

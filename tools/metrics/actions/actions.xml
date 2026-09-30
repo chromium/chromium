@@ -325,6 +325,9 @@ should be able to be added at any place in this file.
   <variant name="_Bookmark" summary="For Bookmark feature."/>
   <variant name="_BookmarkBarSimplified"
       summary="For bookmark bar simplified auto-hide toast."/>
+  <variant name="_BookmarkBarVisibility"
+      summary="For the IPH telling users they can show the Bookmark Bar on
+               Android"/>
   <variant name="_BookmarksBar"
       summary="For Bookmarks Bar feature. (obsolete)"/>
   <variant name="_BottomToolbarTip" summary="For BottomToolbarTip feature."/>

@@ -421,9 +421,24 @@ BASE_FEATURE(kIPHAutoDarkUserEducationMessageFeature,
 BASE_FEATURE(kIPHAutoDarkUserEducationMessageOptInFeature,
              "IPH_AutoDarkUserEducationMessageOptIn",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHBookmarksBarFeature,
-             "IPH_BookmarksBar",
+BASE_FEATURE(kIPHBookmarkBarVisibilityFeature,
+             "IPH_BookmarkBarVisibility",
              base::FEATURE_DISABLED_BY_DEFAULT);
+constexpr base::FeatureParam<IPHBookmarkBarVisibilityVariant>::Option
+    kIPHBookmarkBarVisibilityVariantOptions[] = {
+        {IPHBookmarkBarVisibilityVariant::kMedium, "medium"},
+        {IPHBookmarkBarVisibilityVariant::kMediumTrackingOnly,
+         "medium_tracking_only"},
+        {IPHBookmarkBarVisibilityVariant::kHigh, "high"},
+        {IPHBookmarkBarVisibilityVariant::kHighTrackingOnly,
+         "high_tracking_only"},
+};
+BASE_FEATURE_ENUM_PARAM(IPHBookmarkBarVisibilityVariant,
+                        kIPHBookmarkBarVisibilityVariantParam,
+                        &kIPHBookmarkBarVisibilityFeature,
+                        "IPH_BookmarkBarVisibility_x_variant",
+                        IPHBookmarkBarVisibilityVariant::kMedium,
+                        &kIPHBookmarkBarVisibilityVariantOptions);
 BASE_FEATURE(kIPHCCTHistory,
              "IPH_CCTHistory",
              base::FEATURE_ENABLED_BY_DEFAULT);

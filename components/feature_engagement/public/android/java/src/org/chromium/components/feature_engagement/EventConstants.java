@@ -244,6 +244,9 @@ public final class EventConstants {
     /** The user clicked on the Sent Tab to Self entry point in the omnibox long-press menu. */
     public static final String SEND_TAB_TO_SELF_OMNIBOX_USED = "send_tab_to_self_omnibox_used";
 
+    /** Appearance settings page opened. */
+    public static final String SETTINGS_APPEARANCE_OPENED = "settings_appearance_opened";
+
     /** Screenshot events */
     public static final String SHARE_SCREENSHOT_SELECTED = "share_screenshot_clicked";
 

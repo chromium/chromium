@@ -153,6 +153,8 @@ chromium-metrics-reviews@google.com.
   <variant name="IPH_Bookmark" summary="bookmark"/>
   <variant name="IPH_BookmarkBarSimplified"
       summary="bookmark bar simplified auto-hide toast"/>
+  <variant name="IPH_BookmarkBarVisibility"
+      summary="message shown to inform users about the bookmark bar"/>
   <variant name="IPH_BottomToolbarTip" summary="bottom toolbar"/>
   <variant name="IPH_CCTHistory" summary="CCT history action"/>
   <variant name="IPH_CCTMinimized" summary="CCT minimize action"/>
