@@ -974,6 +974,7 @@ void OutOfFlowLayoutPart::AddInlineContainingBlockInfo(
   // Transform the start/end fragments into a ContainingBlockInfo.
   for (const auto& block_info : inline_container_fragments) {
     DCHECK(block_info.value.has_value());
+    const InlineContainingBlockGeometry& geometry = *block_info.value;
 
     // The calculation below determines the size of the inline containing block
     // rect.
@@ -1028,58 +1029,34 @@ void OutOfFlowLayoutPart::AddInlineContainingBlockInfo(
     // Note in cases [2a, 2b] we don't allow a "negative" containing block size,
     // we clamp negative sizes to zero.
     const ComputedStyle& inline_cb_style = block_info.key->StyleRef();
-
-    const auto inline_writing_direction = inline_cb_style.GetWritingDirection();
-    BoxStrut inline_cb_borders = ComputeBordersForInline(inline_cb_style);
+    const WritingDirectionMode inline_writing_direction =
+        inline_cb_style.GetWritingDirection();
     DCHECK_EQ(container_writing_direction.GetWritingMode(),
               inline_writing_direction.GetWritingMode());
 
-    bool is_same_direction =
-        container_writing_direction == inline_writing_direction;
+    BoxStrut borders = ComputeBordersForInline(inline_cb_style);
+    if (container_writing_direction.Direction() !=
+        inline_writing_direction.Direction()) {
+      // Ignore inline borders if the blocks are in opposite directions.
+      borders.inline_start = borders.inline_end = LayoutUnit();
+    }
+
+    const WritingModeConverter converter(container_writing_direction,
+                                         container_builder_size);
 
     // Step 1 - determine the start_offset.
-    const PhysicalRect& start_rect =
-        block_info.value->start_fragment_union_rect;
-    const WritingModeConverter container_converter{container_writing_direction,
-                                                   container_builder_size};
+    const PhysicalRect& start_rect = geometry.start_fragment_union_rect;
     LogicalOffset start_offset =
-        container_converter.ToLogical(start_rect.offset, start_rect.size);
-
-    // Make sure we add the inline borders, we don't need to do this in the
-    // inline direction if the blocks are in opposite directions.
-    start_offset.block_offset += inline_cb_borders.block_start;
-    if (is_same_direction)
-      start_offset.inline_offset += inline_cb_borders.inline_start;
+        converter.ToLogical(start_rect).offset + borders.StartOffset();
 
     // Step 2 - determine the end_offset.
-    const PhysicalRect& end_rect = block_info.value->end_fragment_union_rect;
+    const PhysicalRect& end_rect = geometry.end_fragment_union_rect;
     LogicalOffset end_offset =
-        container_converter.ToLogical(end_rect.offset, end_rect.size);
-
-    // Add in the size of the fragment to get the logical end of the fragment.
-    end_offset += ToLogicalSize(end_rect.size,
-                                container_writing_direction.GetWritingMode());
-
-    // Make sure we subtract the inline borders, we don't need to do this in the
-    // inline direction if the blocks are in opposite directions.
-    end_offset.block_offset -= inline_cb_borders.block_end;
-    if (is_same_direction)
-      end_offset.inline_offset -= inline_cb_borders.inline_end;
-
-    // Make sure we don't end up with a rectangle with "negative" size.
-    end_offset.inline_offset =
-        std::max(end_offset.inline_offset, start_offset.inline_offset);
-    end_offset.block_offset =
-        std::max(end_offset.block_offset, start_offset.block_offset);
+        converter.ToLogical(end_rect).EndOffset() - borders.EndOffset();
 
     // Step 3 - determine the logical rectangle.
-
-    // Determine the logical size of the containing block.
-    LogicalSize inline_cb_size = {
-        end_offset.inline_offset - start_offset.inline_offset,
-        end_offset.block_offset - start_offset.block_offset};
-    DCHECK_GE(inline_cb_size.inline_size, LayoutUnit());
-    DCHECK_GE(inline_cb_size.block_size, LayoutUnit());
+    LogicalSize inline_cb_size =
+        LogicalDelta(end_offset - start_offset).ClampNegativeToZero();
 
     if (adjust_for_fragmentation) {
       // When fragmenting, the containing block will not be associated with the
@@ -1099,14 +1076,13 @@ void OutOfFlowLayoutPart::AddInlineContainingBlockInfo(
     // Subtract out the inline relative offset, if set, so that it can be
     // applied after fragmentation is performed on the fragmentainer
     // descendants.
-    DCHECK((block_info.value->relative_offset == LogicalOffset() &&
+    DCHECK((geometry.relative_offset == LogicalOffset() &&
             containing_block_relative_offset == LogicalOffset() &&
             containing_block_offset == LogicalOffset()) ||
            container_builder_.IsBlockFragmentationContextRoot());
-    LogicalOffset container_offset =
-        start_offset - block_info.value->relative_offset;
+    LogicalOffset container_offset = start_offset - geometry.relative_offset;
     LogicalOffset total_relative_offset =
-        containing_block_relative_offset + block_info.value->relative_offset;
+        containing_block_relative_offset + geometry.relative_offset;
 
     // The offset of the container is currently relative to the containing
     // block. Add the offset of the containng block to the fragmentation context
@@ -1117,7 +1093,7 @@ void OutOfFlowLayoutPart::AddInlineContainingBlockInfo(
         block_info.key.Get(),
         ContainingBlockInfo{inline_writing_direction,
                             /* is_scroll_container */ false,
-                            block_info.value->is_hidden_for_paint,
+                            geometry.is_hidden_for_paint,
                             LogicalRect(container_offset, inline_cb_size),
                             /* scroll_rect */ std::nullopt,
                             /* scroll_limit_rect */ std::nullopt,

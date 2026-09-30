@@ -62,6 +62,7 @@ struct CORE_EXPORT BoxStrut {
   LayoutUnit BlockSum() const { return block_start + block_end; }
 
   LogicalOffset StartOffset() const { return {inline_start, block_start}; }
+  LogicalOffset EndOffset() const { return {inline_end, block_end}; }
 
   bool IsEmpty() const { return *this == BoxStrut(); }
 
