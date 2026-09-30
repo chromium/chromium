@@ -144,7 +144,6 @@
 <translation id="1408847409015257906">แตะ "ความเป็นส่วนตัวและความปลอดภัย"</translation>
 <translation id="1411386976162024013">การค้นหาภาพด้วย Lens</translation>
 <translation id="1414315029670184034">ไม่อนุญาตให้เว็บไซต์ใช้กล้องของคุณ</translation>
-<translation id="1417474386970818917">ออกจากระบบและลบ</translation>
 <translation id="1426410128494586442">ใช่</translation>
 <translation id="1430915738399379752">พิมพ์</translation>
 <translation id="1433478348197382180">โหมดการอ่าน</translation>
@@ -304,6 +303,7 @@
 <translation id="188237709236611317">จัดเรียงแถบเมนูแบบอัจฉริยะ</translation>
 <translation id="1883255238294161206">ยุบรายการ</translation>
 <translation id="1883898928879467646">นำแท็บออกแล้ว</translation>
+<translation id="188779312703122101">กำลังทำงาน</translation>
 <translation id="1888854257756214946">เลือกรหัสผ่าน…</translation>
 <translation id="1890237935065108104">การตั้งค่านี้ไม่พร้อมใช้งาน</translation>
 <translation id="1894023287452300670">ติดตามราคาที่นี่</translation>
@@ -792,7 +792,6 @@
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" />เกี่ยวกับเนื้อหาที่แนะนำ</translation>
 <translation id="349446645805573740">เลือกตำแหน่งที่จะบันทึก "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
 <translation id="3504377992102007712">การตั้งค่า</translation>
-<translation id="3507556793108992994">{count,plural, =1{จัดระเบียบแท็บแล้ว 1 แท็บ}other{จัดระเบียบแท็บแล้ว # แท็บ}}</translation>
 <translation id="35083190962747987">เปิด ${url}</translation>
 <translation id="3511519535430890904">เพิ่มการปกป้องขณะท่องเว็บ</translation>
 <translation id="3512572904898385012">ตอนนี้คุณเลือกซื้อและแปลภาษาด้วยกล้องได้แล้ว แตะเพื่อลองใช้</translation>
@@ -941,7 +940,6 @@
 <translation id="3962326069546168954">บันทึก</translation>
 <translation id="3967327056943561740">บุ๊กมาร์ก</translation>
 <translation id="3967822245660637423">ดาวน์โหลดเสร็จสมบูรณ์</translation>
-<translation id="3968685670440571540">ตั้งแต่ใช้รหัสผ่านและป้อนข้อความอัตโนมัติ</translation>
 <translation id="3973560090698854095">การดำเนินการนี้จะลบที่อยู่ที่บันทึกไว้ในบัญชี Google <ph name="USER_EMAIL" /></translation>
 <translation id="398604237578616937">ลงชื่อเข้าใช้ด้วย <ph name="USER_EMAIL" /> เปิดเมนูบัญชี</translation>
 <translation id="3986739045730058129">ไปที่แท็บ</translation>
@@ -1356,7 +1354,6 @@
 <translation id="5250371859659394278">จากแหล่งที่มาที่ไม่รู้จัก</translation>
 <translation id="525510229763628836">ลดขนาดให้เล็กสุดแล้ว</translation>
 <translation id="5260842098960755113">ปิดชุดข้อความแล้ว</translation>
-<translation id="5269913829202614649">ปรับแต่งหน้าแรก</translation>
 <translation id="5271265092610673171">{count,plural, =1{ไม่มีข้อมูลในช่องที่ต้องกรอก โปรดป้อนข้อมูลก่อนบันทึก}other{ไม่มีข้อมูลในช่องที่ต้องกรอกบางช่อง โปรดป้อนข้อมูลเหล่านี้ก่อนบันทึก}}</translation>
 <translation id="5271549068863921519">บันทึกรหัสผ่าน</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) ต้องการให้คุณเข้าร่วมกลุ่มแท็บ ทุกคนที่มีลิงก์จะแก้ไขแท็บทั้งหมดได้ ดังนั้นโปรดเข้าร่วมอย่างระมัดระวัง ลิงก์จะหมดอายุใน 48 ชม.</translation>
@@ -1466,7 +1463,6 @@
 <translation id="5632194969640946913">ดูข้อมูลเพิ่มเติมขณะท่องเว็บและค้นหาสิ่งที่คุณเห็นในหน้าใดก็ได้เพื่อสำรวจเกี่ยวกับผลิตภัณฑ์ สถานที่ และข้อความต่างๆ</translation>
 <translation id="5632485077360054581">แสดงวิธีการ</translation>
 <translation id="5633237939819267663">{count,plural, =1{บันทึกบุ๊กมาร์กไปยัง "{title}" แล้ว}other{บันทึกบุ๊กมาร์ก {count} รายการไปยัง "{title}" แล้ว}}</translation>
-<translation id="564170563478022912">ออกจากระบบไหม ระบบจะลบข้อมูลบัญชีที่ไม่ได้บันทึก</translation>
 <translation id="5642707040609478753">ทำเครื่องหมายว่ายังไม่ได้อ่าน</translation>
 <translation id="5646376287012673985">ตำแหน่ง</translation>
 <translation id="5647096944343801045">จุดแรกเข้าขนาดใหญ่</translation>
@@ -1482,7 +1478,6 @@
 <translation id="5669528293118408608">www</translation>
 <translation id="5676124785522323481">จัดการแอปที่เชื่อมต่อ</translation>
 <translation id="567881659373499783">รุ่น <ph name="PRODUCT_VERSION" /></translation>
-<translation id="5680012489335339762">ต้องการเปลี่ยนบัญชีไหม ระบบจะลบข้อมูลบัญชีที่ไม่ได้บันทึก</translation>
 <translation id="5683499062697987550">โปรดยืนยันว่าเป็นคุณเพื่อใช้และบันทึกรหัสผ่านในบัญชี Google</translation>
 <translation id="5684761169742812828">รหัสผ่านนี้ถูกเปิดเผยจากการละเมิดข้อมูลบนอินเทอร์เน็ต หากคุณยังไม่มีเวลาเปลี่ยนรหัสในตอนนี้ Google ขอแนะนำให้เก็บคำเตือนนี้ไว้เพื่อช่วยเตือนคุณในภายหลัง</translation>
 <translation id="5694848685995373177">บันทึกในไดรฟ์สำหรับ <ph name="USER_EMAIL" /> แล้ว</translation>
@@ -1758,7 +1753,6 @@
 <translation id="6506996418997555004">แชร์กลุ่มแท็บ "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">ลงชื่อเข้าใช้เพื่อรับเรื่องรออ่านในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="6518133107902771759">ยืนยัน</translation>
-<translation id="6518861084553706202">ระบบจะปิดแท็บ และข้อมูลที่ลบอาจรวมถึงรหัสผ่าน ประวัติการท่องเว็บ คุกกี้ และอื่นๆ</translation>
 <translation id="6523575793810663688">แสดงวิธีการ</translation>
 <translation id="6524082013156754186">บันทึกในบัญชี</translation>
 <translation id="6524918542306337007">โหมดไม่ระบุตัวตนไม่พร้อมใช้งาน</translation>
@@ -1985,7 +1979,6 @@
 <translation id="721218676460477064">สรุปบทความนี้</translation>
 <translation id="7215621211572884440">อนุญาตให้แสดงป๊อปอัป</translation>
 <translation id="7218491361283758048">รหัสไปรษณีย์</translation>
-<translation id="7220786058474068424">กำลังดำเนินการ</translation>
 <translation id="7221173315674413369">สำรวจฟีเจอร์และเคล็ดลับใหม่ๆ ใน "มีอะไรใหม่"</translation>
 <translation id="7223102419539744003">ปิดแท็บ</translation>
 <translation id="7223134495231529579">บันทึกลงในรายการที่ดาวน์โหลด</translation>
@@ -2073,7 +2066,6 @@
 <translation id="7491161827858509164">หากต้องการดูไฟล์ที่คุณดาวน์โหลดไว้ก่อนหน้านี้ ให้เปิด<ph name="BEGIN_LINK" />ไฟล์<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">แก้ไขต่อ</translation>
 <translation id="7500244509706269886">ป้อนข้อความอัตโนมัติในแบบฟอร์ม</translation>
-<translation id="7504841985386528758">ตั้งแต่เรียนรู้เกี่ยวกับกลุ่มแท็บ</translation>
 <translation id="750493650310597496">เลือก 0 รายการ</translation>
 <translation id="7505402981231763928">คุณต้องลงชื่อเข้าใช้เพื่อใช้ Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
@@ -2320,6 +2312,7 @@
 <translation id="823339794112333264">เปิดไมโครโฟน</translation>
 <translation id="8240217649914883113">เพิ่มรายการนี้ลงในปฏิทินของฉัน</translation>
 <translation id="824379025871762038">ไม่อนุญาตเลย</translation>
+<translation id="8244387390464017490">ปรับแต่งหน้าแท็บใหม่</translation>
 <translation id="8250920743982581267">เอกสาร</translation>
 <translation id="8258734532103758067">ส่งออกข้อมูลแล้ว</translation>
 <translation id="8258999165172757081">มีแล้ว</translation>

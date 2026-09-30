@@ -144,7 +144,6 @@
 <translation id="1408847409015257906">[プライバシーとセキュリティ] をタップします。</translation>
 <translation id="1411386976162024013">Google レンズの画像検索</translation>
 <translation id="1414315029670184034">サイトにカメラの使用を許可しない</translation>
-<translation id="1417474386970818917">ログアウトして削除</translation>
 <translation id="1426410128494586442">はい</translation>
 <translation id="1430915738399379752">印刷</translation>
 <translation id="1433478348197382180">リーディング モード</translation>
@@ -304,6 +303,7 @@
 <translation id="188237709236611317">スマートソート メニューバー</translation>
 <translation id="1883255238294161206">リストを折りたたむ</translation>
 <translation id="1883898928879467646">タブを削除しました</translation>
+<translation id="188779312703122101">認識中</translation>
 <translation id="1888854257756214946">パスワードを選択…</translation>
 <translation id="1890237935065108104">この設定は使用できません。</translation>
 <translation id="1894023287452300670">ここで価格をトラッキングできます</translation>
@@ -792,7 +792,6 @@
 <translation id="3493531032208478708">詳しくは、<ph name="BEGIN_LINK" />おすすめのコンテンツ<ph name="END_LINK" />についての説明をご覧ください</translation>
 <translation id="349446645805573740">「<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />」の保存先を選択してください</translation>
 <translation id="3504377992102007712">設定</translation>
-<translation id="3507556793108992994">{count,plural, =1{1 個のタブを整理}other{# 個のタブを整理}}</translation>
 <translation id="35083190962747987">${url} を開く</translation>
 <translation id="3511519535430890904">ブラウジングの保護を強化してください</translation>
 <translation id="3512572904898385012">カメラで撮影したアイテムを購入、翻訳できるようになりました。タップして試してみましょう。</translation>
@@ -941,7 +940,6 @@
 <translation id="3962326069546168954">保存</translation>
 <translation id="3967327056943561740">ブックマーク</translation>
 <translation id="3967822245660637423">ダウンロード完了</translation>
-<translation id="3968685670440571540">「パスワードと自動入力」を使用してから</translation>
 <translation id="3973560090698854095">Google アカウント（<ph name="USER_EMAIL" />）に保存されている住所が削除されます。</translation>
 <translation id="398604237578616937"><ph name="USER_EMAIL" /> としてログインしています。アカウント メニューを開きます。</translation>
 <translation id="3986739045730058129">タブに移動</translation>
@@ -1356,7 +1354,6 @@
 <translation id="5250371859659394278">提供元不明のアプリから</translation>
 <translation id="525510229763628836">最小化</translation>
 <translation id="5260842098960755113">スレッドを閉じました</translation>
-<translation id="5269913829202614649">ホームページのカスタマイズ</translation>
 <translation id="5271265092610673171">{count,plural, =1{必須項目が空白です。保存する前に入力してください。}other{一部の必須項目が空白です。保存する前に入力してください。}}</translation>
 <translation id="5271549068863921519">パスワードを保存</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" />（<ph name="USER_EMAIL" />）さんからタブグループに招待されています。リンクを知っているユーザーは誰でも、すべてのタブを編集できます。参加は慎重に行ってください。リンクは 48 時間で期限切れになります。</translation>
@@ -1466,7 +1463,6 @@
 <translation id="5632194969640946913">ページ上で見たものを検索して、商品、場所、テキストを調べることができます。</translation>
 <translation id="5632485077360054581">手順を見る</translation>
 <translation id="5633237939819267663">{count,plural, =1{ブックマークを「{title}」に保存しました}other{{count} 件のブックマークを「{title}」に保存しました}}</translation>
-<translation id="564170563478022912">ログアウトしますか？保存されていないアカウント データは削除されます。</translation>
 <translation id="5642707040609478753">未読にする</translation>
 <translation id="5646376287012673985">保存先</translation>
 <translation id="5647096944343801045">大きなエントリー ポイント</translation>
@@ -1482,7 +1478,6 @@
 <translation id="5669528293118408608">www</translation>
 <translation id="5676124785522323481">接続済みのアプリを管理</translation>
 <translation id="567881659373499783">バージョン <ph name="PRODUCT_VERSION" /></translation>
-<translation id="5680012489335339762">アカウントを切り替えますか？保存されていないアカウント データは削除されます。</translation>
 <translation id="5683499062697987550">Google アカウントでパスワードを使用して保存するには、本人確認を行ってください。</translation>
 <translation id="5684761169742812828">このパスワードはインターネット上のデータ侵害で漏洩しました。今すぐパスワードを変更できない場合は、この警告を残し、後で確認することをおすすめします。</translation>
 <translation id="5694848685995373177"><ph name="USER_EMAIL" /> のドライブに保存しました。</translation>
@@ -1758,7 +1753,6 @@
 <translation id="6506996418997555004">「<ph name="GROUP_NAME" />」タブグループを共有</translation>
 <translation id="6507973708545996744">ログインすると、どのデバイスでもリーディング リストを利用できます。</translation>
 <translation id="6518133107902771759">確認</translation>
-<translation id="6518861084553706202">タブは閉じられ、パスワード、閲覧履歴、Cookie などのデータが削除されます。</translation>
 <translation id="6523575793810663688">手順を見る</translation>
 <translation id="6524082013156754186">アカウントに保存</translation>
 <translation id="6524918542306337007">シークレット モードは使用できません</translation>
@@ -1985,7 +1979,6 @@
 <translation id="721218676460477064">この記事を要約</translation>
 <translation id="7215621211572884440">ポップアップを許可</translation>
 <translation id="7218491361283758048">郵便番号</translation>
-<translation id="7220786058474068424">処理しています</translation>
 <translation id="7221173315674413369">「新機能」で新しい機能とヒントをチェック</translation>
 <translation id="7223102419539744003">タブを閉じる</translation>
 <translation id="7223134495231529579">"ダウンロード” に保存</translation>
@@ -2073,7 +2066,6 @@ Level Up はいつでも再開できます。</translation>
 <translation id="7491161827858509164">以前にダウンロードしたファイルを表示するには、<ph name="BEGIN_LINK" />ファイル<ph name="END_LINK" />を開きます</translation>
 <translation id="7498234416455752244">編集を続ける</translation>
 <translation id="7500244509706269886">フォームに自動入力</translation>
-<translation id="7504841985386528758">タブグループについて学んでから</translation>
 <translation id="750493650310597496">選択されていません</translation>
 <translation id="7505402981231763928">Gemini を使用するにはログインする必要があります</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" />（<ph name="FILESIZE" />）。</translation>
@@ -2320,6 +2312,7 @@ Level Up はいつでも再開できます。</translation>
 <translation id="823339794112333264">マイクをオンにする</translation>
 <translation id="8240217649914883113">カレンダーに追加</translation>
 <translation id="824379025871762038">許可しない</translation>
+<translation id="8244387390464017490">新しいタブページを編集</translation>
 <translation id="8250920743982581267">ドキュメント</translation>
 <translation id="8258734532103758067">完了</translation>
 <translation id="8258999165172757081">追加済み</translation>

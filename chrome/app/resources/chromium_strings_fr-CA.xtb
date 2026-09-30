@@ -44,6 +44,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="141901961143729572">Faites part de vos commentaires</translation>
 <translation id="1465192221147974788">Pour partager votre fenêtre, autorisez l'enregistrement de l'écran pour Chromium dans les Réglages système.</translation>
 <translation id="1478370723027452770">Obtenir de l'aide avec Chrome for Testing</translation>
+<translation id="147870194906295621">Pour obtenir vos informations enregistrées et plus encore à partir de <ph name="DEVICE" />, connectez-vous à Chromium</translation>
 <translation id="1497802159252041924">Erreur d'installation : <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Cette page est protégée</translation>
 <translation id="1524282610922162960">Partager un onglet de Chromium</translation>
@@ -191,6 +192,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3012615494352020668">{count,plural, =1{Chromium doit vérifier votre identité avant que certaines données puissent être enregistrées dans votre compte Google et utilisées sur tous vos appareils. Si vous vous déconnectez maintenant, ces données (1 élément) seront supprimées.}one{Chromium doit vérifier votre identité avant que certaines données puissent être enregistrées dans votre compte Google et utilisées sur tous vos appareils. Si vous vous déconnectez maintenant, ces données ({count} élément) seront supprimées.}other{Chromium doit vérifier votre identité avant que certaines données puissent être enregistrées dans votre compte Google et utilisées sur tous vos appareils. Si vous vous déconnectez maintenant, ces données ({count} éléments) seront supprimées.}}</translation>
 <translation id="3013473503895162900">Ouvrez l'URL <ph name="URL" /> dans un nouvel onglet dans Chromium.</translation>
 <translation id="302551344979399011">Les innovations d'IA telles que les compétences sont enregistrées dans votre compte Google et gérées séparément de la synchronisation Chromium</translation>
+<translation id="3032219013429286568">Pour obtenir vos extensions et plus encore sur tous vos appareils, connectez-vous à Chromium</translation>
 <translation id="3032787606318309379">Ajout à Chromium en cours...</translation>
 <translation id="3038232873781883849">Installation en attente…</translation>
 <translation id="3045032126857188731">Langue de la traduction : <ph name="LANGUAGE" /></translation>
@@ -201,6 +203,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3068515742935458733">Aidez-nous à améliorer Chromium en nous envoyant des rapports d'erreur et des <ph name="UMA_LINK" />.</translation>
 <translation id="3071024987058544609">Utilisez l'appli Chromium pour profiter de la sécurité de Google en déplacement</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Une ou plusieurs extensions Chromium ont accédé à 1 appareil USB}=1{Une ou plusieurs extensions Chromium ont accédé à 1 appareil USB}one{Une ou plusieurs extensions Chromium ont accédé à # appareil USB}other{Une ou plusieurs extensions Chromium ont accédé à # appareils USB}}</translation>
+<translation id="3090734884397229414">Pour récupérer votre liste de lecture et plus encore à partir de <ph name="DEVICE" />, connectez-vous à Chromium</translation>
 <translation id="3095811995836568724">Historique de Chromium</translation>
 <translation id="3103660991484857065">Le programme d'installation n'a pas réussi à décompresser l'archive. Veuillez télécharger Chromium de nouveau.</translation>
 <translation id="310459126943037700">Impossible de terminer la ou les tâches.</translation>
@@ -222,6 +225,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Emportez vos outils d'IA de Google préférés partout avec vous grâce à Chromium sur iOS.</translation>
+<translation id="3264761466044851269">Pour obtenir vos extensions et plus encore à partir de <ph name="DEVICE" />, connectez-vous à Chromium</translation>
 <translation id="3286538390144397061">Redémarrer maintenant</translation>
 <translation id="328888136576916638">Les clés d'API Google sont manquantes. Certaines fonctionnalités de Chromium seront désactivées</translation>
 <translation id="3296368748942286671">Continuer l'exécution d'applications en arrière-plan après la fermeture de Chromium</translation>
@@ -233,6 +237,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3387527074123400161">Chromium OS</translation>
 <translation id="3406848076815591792">Passer au profil Chromium existant?</translation>
 <translation id="3412460710772753638">Dans le gestionnaire de mots de passe sur cet appareil</translation>
+<translation id="3427159664004296878">Pour obtenir vos favoris et plus encore à partir de <ph name="DEVICE" />, connectez-vous à Chromium</translation>
 <translation id="3438772217992559640">Rechercher cet onglet avec la recherche d'images</translation>
 <translation id="3455907671758333080">Étendez la navigation sécurisée améliorée avec Chromium sur votre téléphone</translation>
 <translation id="3461644266919055473">Personnaliser Chromium</translation>
@@ -265,6 +270,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 
           **Suggérer des questions :** génère une liste à puces de trois à cinq questions stimulantes qu'un utilisateur pourrait poser pour mieux comprendre la capture d'écran. Ces questions doivent inclure au moins une question portant précisément sur un objet visuel, sa conception ou son emplacement.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> – Chromium</translation>
+<translation id="386243222263310720">Pour obtenir vos favoris et plus encore sur tous vos appareils, connectez-vous à Chromium</translation>
 <translation id="3885770153807205175">Sélecteur de langue</translation>
 <translation id="388648406173476553">Personnaliser et gérer Chromium. Votre attention est requise – cliquez pour plus de détails.</translation>
 <translation id="3889543394854987837">Cliquez sur votre nom pour ouvrir Chromium et commencer à naviguer.</translation>
@@ -273,6 +279,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3909353120217047026">Cette extension enfreint la politique de la boutique en ligne Chrome Web Store et peut être dangereuse. Retirez-la de Chromium afin qu'elle ne puisse plus voir ni modifier vos données sur les sites que vous visitez, y compris vos renseignements personnels.</translation>
 <translation id="3941890832296813527">Erreur d'installation : le nom du fichier du programme d'installation n'est pas valide ou n'est pas pris en charge.</translation>
 <translation id="3945058413678539331">Chromium essaie de copier des mots de passe. Pour autoriser cette action, entrez votre mot de passe Windows.</translation>
+<translation id="3950481960271781644">Pour obtenir vos informations enregistrées et plus encore sur tous vos appareils, connectez-vous à Chromium</translation>
 <translation id="3954172517175569325">Vos adresses, vos mots de passe et vos modes de paiement que vous avez enregistrés dans votre compte Google seront retirés de cet appareil. Pour les utiliser à nouveau dans Chromium, reconnectez-vous.</translation>
 <translation id="395904275706073188">Les pages protégées ne peuvent pas être lues. Essayez une autre page.</translation>
 <translation id="3962647064319009959">Découvrez comment Chromium assure votre sécurité</translation>
@@ -361,6 +368,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="4893347770495441059">Relancer &amp;Chromium pour le mettre à jour</translation>
 <translation id="4918086044614829423">Accepter</translation>
 <translation id="4918844574251943176">Image copiée</translation>
+<translation id="4919431996536326528">Pour obtenir votre liste de lecture et plus encore sur tous vos appareils, connectez-vous à Chromium</translation>
 <translation id="4943838377383847465">Chromium fonctionne en mode arrière-plan.</translation>
 <translation id="494490797786467921">Cliquer sur le bouton pour fermer la boîte de dialogue de connexion à Chromium</translation>
 <translation id="4950660488495335294">Avec les profils Chromium, vous pouvez séparer toutes vos données Chromium. Créez des profils pour vos amis et votre famille, ou pour dissocier travail et divertissement.</translation>
@@ -791,6 +799,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="904366664621834601">Chromium a bloqué ce téléchargement, car le fichier d'archive comprend d'autres fichiers qui pourraient cacher des logiciels malveillants</translation>
 <translation id="9053882453960391422">Gardez vos mots de passe, vos favoris et votre historique parfaitement synchronisés sur tous vos appareils. Accédez facilement aux fonctionnalités que vous connaissez et que vous aimez en mettant à jour votre navigateur par défaut vers Chromium. Chromium sera épinglé à votre barre des tâches pour un accès rapide.</translation>
 <translation id="9056398481763999048">Utilisez les meilleurs outils d'IA de Google avec l'appli Chromium sur votre téléphone</translation>
+<translation id="9057625473949801035">Pour obtenir vos mots de passe et plus encore à partir de <ph name="DEVICE" />, connectez-vous à Chromium</translation>
 <translation id="9062666675513499497">Vous connecter à Chromium lorsque vous vous connectez à d'autres services Google</translation>
 <translation id="9078733879136747090">Chromium a été automatiquement fermé</translation>
 <translation id="9089354809943900324">Chromium n'est pas à jour</translation>

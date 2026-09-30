@@ -5304,6 +5304,7 @@
 <translation id="5008936837313706385">ॲक्टिव्हिटीचे नाव</translation>
 <translation id="5009463889040999939">प्रोफाइलचे नाव बदलत आहे. याला काही मिनिटे लागू शकतात.</translation>
 <translation id="5010886807652684893">व्हिज्युअल दृश्य</translation>
+<translation id="5012016139642806466">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड आणि आणखी बरेच काही मिळवा</translation>
 <translation id="5012523644916800014">पासवर्ड आणि पासकी व्यवस्थापित करा</translation>
 <translation id="501394389332262641">बॅटरी कमी असल्याचा आवाज</translation>
 <translation id="5014286001996333986">सद्य गट बदलायचा आहे की नवीन गट तयार करायचा आहे?</translation>
@@ -6906,6 +6907,7 @@ I feel - विटांची इमारत</translation>
 <translation id="6273677812470008672">गुणवत्ता</translation>
 <translation id="6274089201566806618"><ph name="HOST_DEVICE_NAME" /> शी कनेक्ट करत आहे</translation>
 <translation id="6274202259872570803">Screencast</translation>
+<translation id="6276246115230302286">तुमच्या सर्व डिव्हाइसवरील बुकमार्क वापरून तुमच्या आवडत्या साइटवर झटपट जाण्यासाठी, <ph name="EMAIL" /> म्हणून साइन इन करा</translation>
 <translation id="6277105963844135994">नेटवर्क कालबाह्य</translation>
 <translation id="6277518330158259200">स्क्रीनशॉट घ्या</translation>
 <translation id="6278428485366576908">थीम</translation>
@@ -8508,6 +8510,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7501957181231305652">किंवा</translation>
 <translation id="7502220299952823578">"या साइट नेहमी अ‍ॅक्टिव्ह ठेवा" सूचीमध्ये जोडा</translation>
 <translation id="7502528909759062987"><ph name="DEVICE_NAME" /> वर टॅब कास्ट करणे थांबवा</translation>
+<translation id="750275011730776314">Gemini वर परत जा</translation>
 <translation id="7502804472671406749">शेअर केलेले टॅब स्क्रोल आणि झूम केले जाऊ शकतात</translation>
 <translation id="750314150962284310">ओळीनुसार फोकस</translation>
 <translation id="7503191893372251637">Netscape सर्टिफिकेट प्रकार</translation>
@@ -8749,6 +8752,7 @@ I feel - विटांची इमारत</translation>
 <translation id="7684718995427157417">तुमची अ‍ॅप्स तयार करण्यासाठी आणि त्यांची चाचणी करण्यासाठी, Android डीबग ब्रिज (ADB) सुरू करा. लक्षात ठेवा की, ही क्रिया Google ने पडताळणी न केलेली Android अ‍ॅप्स इंस्टॉल करण्याची अनुमती देते आणि यासाठी फॅक्टरी रीसेट बंद करण्याची आवश्यकता आहे.</translation>
 <translation id="7684803937028953000">तुमच्या संस्थेने या फाइलचे स्थानिक डाउनलोड ब्लॉक केले आहे.</translation>
 <translation id="7684913007876670600">या पेजचे सरलीकृत दृश्य दाखवण्यासाठी, साइड पॅनल उघडा आणि वाचन मोड निवडा</translation>
+<translation id="7684957383619170952"><ph name="DEVICE" /> वरून तुमचे बुकमार्क आणि आणखी बरेच काही मिळवा</translation>
 <translation id="7685038817958445325">कास्ट करता आले नाही</translation>
 <translation id="7685049629764448582">JavaScript मेमरी</translation>
 <translation id="7685087414635069102">पिन आवश्यक</translation>

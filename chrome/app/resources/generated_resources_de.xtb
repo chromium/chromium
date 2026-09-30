@@ -1557,6 +1557,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2198625180564913276">Profil wird hinzugefügt. Das kann einige Minuten dauern.</translation>
 <translation id="2198712775285959645">Bearbeiten</translation>
 <translation id="2199298570273670671">Fehler</translation>
+<translation id="2199546617947317537">Wenn du deinen Verlauf von deinen anderen Geräten abrufen möchtest, melde dich an und synchronisiere deinen Verlauf und deine Tabs mit <ph name="EMAIL" />. Du kannst dann auch auf allen deinen Geräten auf deine Passwörter und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="220006241671843310">Wähle aus, ob Chrome KI-Modelle verwenden soll, die direkt auf deinem Gerät ausgeführt werden</translation>
 <translation id="2200094388063410062">E-Mail</translation>
 <translation id="2200781749203116929">ChromeOS-Systemprotokolle</translation>
@@ -2334,6 +2335,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2777525873368474674">Bildlink einfügen</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{1 Website mit vielen Benachrichtigungen gefunden}other{{NUM_SITES} Websites mit vielen Benachrichtigungen gefunden}}</translation>
 <translation id="2778471504622896352">Remote-Apps zum Chrome OS-Launcher hinzufügen</translation>
+<translation id="2781037472881921606">Wenn du deinen Verlauf von deinen anderen Geräten abrufen möchtest, synchronisiere deinen Verlauf. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783952358106015700">Sicherheitsschlüssel mit <ph name="APP_NAME" /> verwenden</translation>
@@ -2396,6 +2398,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2826576843404243001">Du wirst gewarnt, wenn du eine Website aufrufen möchtest, die keine sicheren Verbindungen unterstützt. Du kannst diese Einstellung nicht ändern, da das erweiterte Sicherheitsprogramm aktiviert ist.</translation>
 <translation id="2828375943530438449">Von der Anmeldungsseite zurückgehen</translation>
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> freigegeben</translation>
+<translation id="2828851448902426206">Wenn du deine Tabs von deinen anderen Geräten abrufen möchtest, melde dich an und synchronisiere deinen Verlauf. Du kannst dann auch auf allen deinen Geräten auf deine gespeicherten Informationen und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="2833144527504272627">Mit Textcursor navigieren</translation>
 <translation id="2833727845850279275">Diese Datei enthält Malware oder stammt von einer verdächtigen Website.</translation>
 <translation id="2835177225987815960">Deine aktuelle Scankonfiguration wird zurückgesetzt, einschließlich aller Einstellungen für zugewiesene Schalter und für die Geschwindigkeit des automatischen Scans.</translation>
@@ -2762,6 +2765,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3102309003841389927">Aktualisierung des Logos überprüfen</translation>
 <translation id="310297983047869047">Vorherige Folie</translation>
 <translation id="3103451787721578293">Bitte gib einen Grund für das Hochladen dieser Daten an:</translation>
+<translation id="3105253709809514429">Wenn du deine Tabs von deinen anderen Geräten abrufen möchtest, melde dich an und synchronisiere deinen Verlauf. Du kannst dann auch auf allen deinen Geräten auf deine Erweiterungen und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="3105339775057145050">Letztes fehlgeschlagenes Update</translation>
 <translation id="3105796011181310544">Wieder zu Google wechseln?</translation>
 <translation id="3105820656234755131">Passwort aktualisiert</translation>
@@ -2773,6 +2777,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3109206895301430738">Gespeicherte Tabgruppen</translation>
 <translation id="3109724472072898302">Minimiert</translation>
 <translation id="3112292765614504292">App-Größe: <ph name="APP_SIZE" /></translation>
+<translation id="3112532142993641404">Wenn du deine Tabs von deinen anderen Geräten abrufen möchtest, melde dich an und synchronisiere deinen Verlauf. Du kannst dann auch auf allen deinen Geräten auf deine Lesezeichen und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="311347022006935575">Tab wurde hinzugefügt</translation>
 <translation id="311394601889664316">Websites dürfen keine Dateien oder Ordner auf meinem Gerät bearbeiten</translation>
 <translation id="3113970906450647715">Button losgelöst</translation>
@@ -3277,6 +3282,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3498138244916757538">Nach der Änderung der Mikrofoneinstellungen muss <ph name="SPECIFIC_NAME" /> heruntergefahren werden. Fahre <ph name="SPECIFIC_NAME" /> herunter, um fortzufahren.</translation>
 <translation id="3500417806337761827">Fehler beim Bereitstellen der Freigabe. Es wurden schon zu viele SMB-Freigaben bereitgestellt.</translation>
 <translation id="3500764001796099683">Isolierte Web-Apps aktivieren</translation>
+<translation id="3501134531169168291">Wenn du deine Tabs von <ph name="DEVICE" /> abrufen möchtest, melde dich an und synchronisiere deinen Verlauf. Du kannst dann auch auf allen deinen Geräten auf deine Erweiterungen und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="3505100368357440862">Shopping-Vorschläge</translation>
 <translation id="3507650052590605702">Passwort verwalten</translation>
 <translation id="3507888235492474624">Noch einmal nach Bluetooth-Geräten suchen</translation>
@@ -3763,6 +3769,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3838085852053358637">Fehler beim Laden der Erweiterung</translation>
 <translation id="3838486795898716504">Weitere <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">Keine Websites wurden vergrößert oder verkleinert</translation>
+<translation id="3839108710633244251">Wenn du deinen Verlauf von deinen anderen Geräten abrufen möchtest, melde dich an und synchronisiere deinen Verlauf und deine Tabs mit <ph name="EMAIL" />. Du kannst dann auch auf allen deinen Geräten auf deine gespeicherten Informationen und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="3839516600093027468">Immer verhindern, dass <ph name="HOST" /> die Zwischenablage abruft</translation>
 <translation id="3840096463915153852">Unterhaltungsverlauf</translation>
 <translation id="3841319830220785495">Natürliche Stimme – Standard</translation>
@@ -4285,6 +4292,7 @@ Möchtest du <ph name="CONTROL_PANEL_APPLET_NAME" /> starten?</translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Gruppe beibehalten}other{Gruppen beibehalten}}</translation>
 <translation id="4261429981378979799">Erweiterungsberechtigungen</translation>
 <translation id="4262004481148703251">Warnung schließen</translation>
+<translation id="4262060800239714974">Wenn du deine Tabs von <ph name="DEVICE" /> abrufen möchtest, synchronisiere deinen Verlauf und deine Tabs mit <ph name="EMAIL" />. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="4263470758446311292">Du erzielst maximale Arbeitsspeichereinsparungen. Deine Tabs werden nach kürzerer Zeit inaktiv.</translation>
 <translation id="4263824086525632">Aurora Borealis</translation>
 <translation id="4265096510956307240">Identität bestätigen</translation>
@@ -4921,8 +4929,10 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4750185073185658673">Auf deinem Smartphone kannst du weitere Berechtigungen prüfen. Bluetooth und WLAN müssen auf dem Gerät aktiviert sein.</translation>
 <translation id="4750394297954878236">Vorschläge</translation>
 <translation id="475088594373173692">Erster Nutzer</translation>
+<translation id="4751925628341802838">Wenn du deinen Verlauf von deinen anderen Geräten abrufen möchtest, melde dich an und synchronisiere deinen Verlauf und deine Tabs mit <ph name="EMAIL" />. Du kannst dann auch auf allen deinen Geräten auf deine Erweiterungen und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="4753084533826742808">Muss mindestens 1 Zeichen lang sein</translation>
 <translation id="4754590344707355551">Browser mit Erweiterungen optimieren</translation>
+<translation id="4756130875344525429">Wenn du deinen Verlauf von <ph name="DEVICE" /> abrufen möchtest, melde dich an und synchronisiere deinen Verlauf und deine Tabs mit <ph name="EMAIL" />. Du kannst dann auch auf allen deinen Geräten auf deine gespeicherten Informationen und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="4756378406049221019">Stopp/Neu laden</translation>
 <translation id="4756388243121344051">&amp;Verlauf</translation>
 <translation id="4756627014339714615">Weiterleiten</translation>
@@ -5232,6 +5242,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="497403230787583386">Die Sicherheitsprüfungen wurden abgeschlossen. Dein Dokument wird gedruckt.</translation>
 <translation id="4974442344472293753">Update-Ergebnis</translation>
 <translation id="4975771730019223894">App-Benachrichtigungssymbol</translation>
+<translation id="4976647810464861866">Wenn du deine Tabs von deinen anderen Geräten abrufen möchtest, melde dich an und synchronisiere deinen Verlauf. Du kannst dann auch auf allen deinen Geräten auf deine Leseliste und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Zugriff bestätigen</translation>
 <translation id="4979263087381759787">Entwickleroptionen</translation>
@@ -5271,6 +5282,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5008936837313706385">Aktivitätsname</translation>
 <translation id="5009463889040999939">Profil wird umbenannt. Das kann einige Minuten dauern.</translation>
 <translation id="5010886807652684893">Visuelle Ansicht</translation>
+<translation id="5012016139642806466">Passwörter und andere Daten auf allen deinen Geräten abrufen</translation>
 <translation id="5012523644916800014">Passwörter und Passkeys verwalten</translation>
 <translation id="501394389332262641">Ton bei niedrigem Akkustand</translation>
 <translation id="5014286001996333986">Ersetzen oder neue Gruppe erstellen?</translation>
@@ -5403,6 +5415,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="511313294362309725">Schnelles Pairing einschalten</translation>
 <translation id="5113992879909788634">Weitere Informationen zum automatischen Browsen in Chrome</translation>
 <translation id="51143538739122961">Stecke deinen Sicherheitsschlüssel ein und tippe darauf</translation>
+<translation id="5114635223409082546">Wenn du deine Tabs von <ph name="DEVICE" /> abrufen möchtest, melde dich an und synchronisiere deinen Verlauf. Du kannst dann auch auf allen deinen Geräten auf deine Lesezeichen und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="5115338116365931134">SSO</translation>
 <translation id="5116628073786783676">Audio &amp;speichern unter...</translation>
 <translation id="5117139026559873716">Smartphone vom <ph name="DEVICE_TYPE" /> trennen. Die Geräte werden nicht mehr automatisch miteinander verbunden.</translation>
@@ -5826,6 +5839,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5457795687441958389">Abgemeldet bleiben</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">Du hast zu oft eine falsche PIN eingegeben. Damit du weiterhin auf deine Passkeys und Passwörter zugreifen kannst, musst du deine PIN ändern.</translation>
+<translation id="5459251585760045919">Wenn du deinen Verlauf von <ph name="DEVICE" /> abrufen möchtest, melde dich an und synchronisiere deinen Verlauf und deine Tabs mit <ph name="EMAIL" />. Du kannst dann auch auf allen deinen Geräten auf deine Erweiterungen und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="5459470938885464873">Fehler beim Importieren des Zertifikats</translation>
 <translation id="5459864179070366255">Trotzdem installieren</translation>
 <translation id="5460861858595506978">Zur Inspiration</translation>
@@ -5997,6 +6011,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="5583640892426849032">Rücktaste</translation>
 <translation id="5584088138253955452">Nutzername speichern?</translation>
 <translation id="5585019845078534178">Karten</translation>
+<translation id="5585064628683466904">Wenn du deinen Verlauf von deinen anderen Geräten abrufen möchtest, melde dich an und synchronisiere deinen Verlauf und deine Tabs mit <ph name="EMAIL" />. Du kannst dann auch auf allen deinen Geräten auf deine Leseliste und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="5585118885427931890">Lesezeichenordner konnte nicht erstellt werden.</translation>
 <translation id="558563010977877295">Bestimmte Seite oder Seiten öffnen</translation>
 <translation id="5587592231724900065">Diese Einstellung wird von einer Erweiterung gesteuert</translation>
@@ -6731,6 +6746,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6175910054050815932">Link abrufen</translation>
 <translation id="6177478397823976397">Keine Geräte gefunden. Durch Klicken wird ein Hilfe-Artikel in einem neuen Tab geöffnet.</translation>
 <translation id="6177779807714496775">Link in Ansicht links öffnen</translation>
+<translation id="6178186430790239237">Wenn du deine Tabs von deinen anderen Geräten abrufen möchtest, synchronisiere deinen Verlauf und deine Tabs mit <ph name="EMAIL" />. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="6178664161104547336">Zertifikat auswählen</translation>
 <translation id="6178682841350631965">Deine Anmeldedaten wurden aktualisiert</translation>
 <translation id="6179830757749383456">Browser wird von <ph name="BROWSER_DOMAIN" /> verwaltet, Profil wird von <ph name="PROFILE_DOMAIN" /> verwaltet</translation>
@@ -7041,6 +7057,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6430202563517028640">Link zur Leseliste hinzufügen</translation>
 <translation id="6430814529589430811">Base64-codierter ASCII-Code, Einzelzertifikat</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> richtet automatische Updates für alle Nutzer dieses Computers ein.</translation>
+<translation id="6431970976661940755">Wenn du deine Tabs von <ph name="DEVICE" /> abrufen möchtest, melde dich an und synchronisiere deinen Verlauf. Du kannst dann auch auf allen deinen Geräten auf deine Leseliste und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="6434104957329207050">Punktscan-Geschwindigkeit</translation>
 <translation id="6434309073475700221">Verwerfen</translation>
 <translation id="6434755719322447931">Chaotisch</translation>
@@ -7205,6 +7222,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6556903358015358733">Design und Hintergrund</translation>
 <translation id="6557199166823345360">Füge weitere Details hinzu oder stelle eine Frage zu deiner Auswahl, um die Suche einzugrenzen</translation>
 <translation id="6557290421156335491">Meine Verknüpfungen</translation>
+<translation id="655745275895381718">Wenn du deine Tabs von <ph name="DEVICE" /> abrufen möchtest, melde dich an und synchronisiere deinen Verlauf. Du kannst dann auch auf allen deinen Geräten auf deine gespeicherten Informationen und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="6558098963164662391">&amp;Aus Wörterbuch entfernen</translation>
 <translation id="6560061709899140565">Andere Streamingsitzungen einblenden</translation>
 <translation id="656065428026159829">Mehr anzeigen</translation>
@@ -7892,6 +7910,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{1 Passwort wurde für <ph name="USER_EMAIL" /> in <ph name="BRAND" /> importiert}other{{NUM_PASSWORDS} Passwörter wurden für <ph name="USER_EMAIL" /> in <ph name="BRAND" /> importiert}}</translation>
 <translation id="7065534935986314333">Systeminformationen</translation>
 <translation id="706626672220389329">Fehler beim Bereitstellen der Freigabe. Die angegebene Freigabe ist schon bereitgestellt.</translation>
+<translation id="7066357648902789011">Wenn du deinen Verlauf von <ph name="DEVICE" /> abrufen möchtest, melde dich an und synchronisiere deinen Verlauf und deine Tabs mit <ph name="EMAIL" />. Du kannst dann auch auf allen deinen Geräten auf deine Passwörter und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="7067396782363924830">Umgebungsfarben</translation>
 <translation id="7067725467529581407">Nicht mehr anzeigen.</translation>
 <translation id="7068539819344620805">Du kannst deinem Browser jetzt jederzeit über das Menü „Chrome anpassen“ einen neuen Look verleihen</translation>
@@ -8077,6 +8096,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7214047272988222011">Zugelassen – <ph name="PERMISSION_DETAILS" />. Aktiviere den <ph name="LINK_BEGIN" />Kamerazugriff für Systemdienste<ph name="LINK_END" />.</translation>
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Neuer Tab in „1 Tab“}other{Neuer Tab in „# Tabs“}}</translation>
 <translation id="721490496276866468">Passwörter importieren</translation>
+<translation id="7216638029417040861">Wenn du deinen Verlauf von deinen anderen Geräten abrufen möchtest, melde dich an und synchronisiere deinen Verlauf und deine Tabs mit <ph name="EMAIL" />. Du kannst dann auch auf allen deinen Geräten auf deine Lesezeichen und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="7217208603285112910">Auswahl nicht auf <ph name="LANGUAGE" /> verfügbar</translation>
 <translation id="7217317914610152390">Mit dem neuen Tool „Textanmerkungen“ kannst du Text, Kommentare und Notizen hinzufügen</translation>
 <translation id="7219254577985949841">Websitedaten löschen?</translation>
@@ -8087,6 +8107,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7222232353993864120">E-Mail-Adresse</translation>
 <translation id="7222335051802562841">Update abschließen</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7222513457790351522">Wenn du deinen Verlauf von <ph name="DEVICE" /> abrufen möchtest, melde dich an und synchronisiere deinen Verlauf und deine Tabs mit <ph name="EMAIL" />. Du kannst dann auch auf allen deinen Geräten auf deine Leseliste und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="7223027547122518521">Datei auswählen, die von dieser Website gelesen werden kann</translation>
 <translation id="7223952304612664117">Dadurch dürfen Systemdienste die Einstellung „Standortgenauigkeit“ nutzen, um deinen Standort zu ermitteln. „Standortgenauigkeit“ verwendet Informationen zu drahtlosen Signalen sowie Sensordaten, um den Standort des Geräts einzuschätzen.</translation>
 <translation id="7225082563376899794">Windows Hello beim Ausfüllen von Passwörtern verwenden</translation>
@@ -8974,6 +8995,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7911118814695487383">Linux</translation>
 <translation id="791247712619243506">Einrichtung abbrechen</translation>
 <translation id="7912974581251770345">Übersetzung</translation>
+<translation id="7913805372428124107">Wenn du deine Tabs von <ph name="DEVICE" /> abrufen möchtest, melde dich an und synchronisiere deinen Verlauf. Du kannst dann auch auf allen deinen Geräten auf deine Passwörter und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="7914399737746719723">App wurde installiert</translation>
 <translation id="7915457674565721553">Es ist eine Internetverbindung notwendig, um Jugendschutzeinstellungen einzurichten</translation>
 <translation id="7916364730877325865">Deine Organisation lässt die Synchronisierung mit diesem Konto nicht zu</translation>
@@ -9222,6 +9244,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8081989000209387414">ADB-Fehlerbehebung deaktivieren?</translation>
 <translation id="8082132721957920509">Deine Karte wurde gespeichert</translation>
 <translation id="8082390128630131497">Wenn du die ADB-Fehlerbehebung deaktivierst, wird <ph name="DEVICE_TYPE" /> auf die Werkseinstellungen zurückgesetzt. Alle Benutzerkonten und lokalen Daten werden entfernt.</translation>
+<translation id="8082737802704584539">Deine Organisation hat das Speichern des Verlaufs in deinem Google-Konto deaktiviert</translation>
 <translation id="8084114998886531721">Gespeichertes Passwort</translation>
 <translation id="8084417885464859041">Gemini sicher verwenden</translation>
 <translation id="8084429490152575036">Einstellungen für Mobilfunk-APN</translation>
@@ -9254,6 +9277,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="810362914482827094">Passkeys durchsuchen</translation>
 <translation id="8104088837833760645">eSIM-Profil herunterladen</translation>
 <translation id="8104388155778519213">Inhalte auf dem Bildschirm mit Google Lens teilen</translation>
+<translation id="8104412594956510627">Wenn du deinen Verlauf von <ph name="DEVICE" /> abrufen möchtest, synchronisiere ihn. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="8104778744208707085">Erfordert deine Aufmerksamkeit</translation>
 <translation id="8105273883928376822">Melde dich an, um fortzufahren.</translation>
 <translation id="8106114112474206597">Verwende „i“, um eine Maustaste zu drücken</translation>
@@ -9284,6 +9308,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8124313775439841391">Verwaltete ONC-Eigenschaften</translation>
 <translation id="8125651784723647184">Das Teilen von Passwörtern wird von deinem Administrator verwaltet</translation>
 <translation id="8126355825906412872">Lächeln</translation>
+<translation id="8126498026310640675">Wenn du deinen Verlauf von <ph name="DEVICE" /> abrufen möchtest, melde dich an und synchronisiere deinen Verlauf und deine Tabs mit <ph name="EMAIL" />. Du kannst dann auch auf allen deinen Geräten auf deine Lesezeichen und weitere Daten zugreifen. Du kannst die Synchronisierung jederzeit in den Einstellungen beenden. Google kann die Google Suche und andere Dienste auf der Grundlage deines Verlaufs personalisieren.</translation>
 <translation id="813082847718468539">Website-Informationen anzeigen</translation>
 <translation id="8131740175452115882">Bestätigen</translation>
 <translation id="8133297578569873332">Akzeptabel – UKW</translation>

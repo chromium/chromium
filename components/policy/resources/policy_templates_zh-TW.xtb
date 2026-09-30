@@ -121,11 +121,6 @@
 <translation id="1076751984131277498">卸除式 USB 裝置許可清單</translation>
 <translation id="1077675271127011209">停用使用量和當機相關資料的報告功能</translation>
 <translation id="1079498696402787191">如果 TLS 握手程序中允許使用雜湊，則使用預設值。</translation>
-<translation id="1081263326166769685">如果將這項政策設為啟用，<ph name="PRODUCT_OS_NAME" /> 會將使用指標和診斷資料 (包括當機報告) 回報給 Google。如果設為停用，系統會關閉指標和診斷資料的報告功能。
-
-如果是受管理的裝置，系統預設會啟用這項政策，並將指標傳送給 Google。
-
-如果是未受管理的裝置，使用者可以在未設定政策時決定是否要傳送指標。</translation>
 <translation id="1081470306474387129">Controlled Frame API (適用於隔離網頁應用程式 (IWA) 等特定隔離情境) 可讓應用程式嵌入及操控任何內容。
 詳情請參閱 https://github.com/WICG/controlled-frame。
 
@@ -3631,17 +3626,6 @@ Microsoft Outlook 資訊卡需要額外的管理員設定。想進一步瞭解�
 
 如果將這項政策設為 True 或不設定，系統會將 Crostini 容器的 Root 權限授予這位使用者。
 如果將這項政策設為 False，系統不會將現有或新 Crostini 容器的 Root 權限授予這位使用者。</translation>
-<translation id="3370759229531293665">你可以設定網站網址模式清單，指定哪些網站不得在 JIT (Just In Time) 編譯器啟用時執行 JavaScript。
-
-          如果停用 JavaScript JIT，<ph name="PRODUCT_NAME" /> 顯示網路內容的速度可能會變慢，JavaScript 中的 WebAssembly 等程式語言也可能會一併停用，但可讓 <ph name="PRODUCT_NAME" /> 以更安全的設定顯示網路內容。
-
-          如要進一步瞭解有效的網址模式，請參閱 https://chromeenterprise.google/policies/url-patterns。指定時可使用萬用字元 (<ph name="WILDCARD_VALUE" />)。
-
-          系統只會對網站細分層級 (eTLD+1) 強制執行 JavaScript JIT 政策的例外狀況。如果只針對 subdomain.site.com 設定政策，系統就不會將政策正確套用到 site.com 或 subdomain.site.com，因為這兩個網址都會解析為相同的 eTLD+1 (site.com)，而解析後的網址並未設定任何政策。在此情況下，如要將政策正確套用到 site.com 與 subdomain.site.com，就必須針對 site.com 設定政策。
-
-          這項政策是按照個別頁框逐一套用，而不只是完全以頂層來源網址為依據。因此，如果 site-one.com 列在 <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" /> 政策清單，但 site-one.com 載入的頁框含有 site-two.com，則 site-one.com 會停用 JavaScript JIT。不過，site-two.com 會採用 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> 政策 (如果已設定)，否則會預設啟用 JavaScript JIT。
-
-          如果未針對某個網站設定這項政策，該網站就會套用 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> 政策 (如果已設定)，否則會啟用 JavaScript JIT。</translation>
 <translation id="3373381043600809954">啟用「<ph name="PRODUCT_NAME" />」</translation>
 <translation id="3374587000313305002">設定 <ph name="PRODUCT_NAME" /> 用來儲存使用者資料的目錄。
 
@@ -5675,16 +5659,6 @@ https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。</t
 <translation id="4722761845551711583">登入畫面螢幕保護程式有多張可顯示的圖片時，設定圖片的顯示間隔時間 (秒)。
 
 有效值範圍介於 1 秒到 9999 秒之間。如未設定這項政策，<ph name="PRODUCT_OS_NAME" /> 會使用預設值 (60 秒)。如果將 <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_ENABLED_POLICY_NAME" /> 政策設為 False，這項政策將不會有任何作用。</translation>
-<translation id="4723615546736863060">你可以設定網站網址模式清單，指定要在哪些網站啟用進階 JavaScript 最佳化功能。
-
-如要進一步瞭解有效的網站網址模式，請參閱 https://chromeenterprise.google/policies/url-patterns。
-指定時可使用萬用字元 (<ph name="WILDCARD_VALUE" />)。
-
-系統只會對網站細分層級 (eTLD+1) 強制執行 JavaScript 最佳化政策的例外狀況。如果只針對 subdomain.site.com 設定政策，系統就不會將政策正確套用到 site.com 或 subdomain.site.com，因為這兩個網址都會解析為相同的 eTLD+1 (site.com)，而解析後的網址並未設定任何政策。在此情況下，如要將政策正確套用到 site.com 與 subdomain.site.com，就必須針對 site.com 設定政策。
-
-這項政策是按照個別頁框逐一套用，而不只是完全以頂層來源網址為依據。因此，如果 site-one.com 列在 <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> 政策清單，但 site-one.com 載入的頁框含有 site-two.com，則 site-one.com 會啟用 JavaScript 最佳化功能。不過，site-two.com 會採用 <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> 政策 (如果已設定)，否則會預設啟用 JavaScript 最佳化功能。封鎖清單項目的優先順序高於許可清單項目，而許可清單項目的優先順序高於預設值。
-
-如果未針對某個網站設定這項政策，該網站就會套用 <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> 政策 (如果已設定)，否則會啟用 JavaScript 最佳化功能。</translation>
 <translation id="4723829699367336876">允許遠端存取用戶端穿越防火牆</translation>
 <translation id="4725528134735324213">啟用 Android 備份服務</translation>
 <translation id="4725691087141147920">登入時顯示同步同意聲明</translation>
@@ -6086,13 +6060,6 @@ https://developers.google.com/privacy-sandbox/cookies/storage-partitioning。</t
 <translation id="494924690085329212">在 Android 已啟動的前提下，於使用者登出時重新啟動。</translation>
 <translation id="4950447493143157880">永不使用內建 DNS 用戶端</translation>
 <translation id="4953541641325278286">禁止任何網站偵測使用者的閒置狀態</translation>
-<translation id="4954185885991137927">如果將這項政策設為啟用，<ph name="PRODUCT_NAME" /> 會開啟安全瀏覽模式的進階回報功能，將傳送更多系統資訊和網頁內容給 Google，協助偵測危險的應用程式和網站。
-
-      如果將這項政策設為停用，系統就不會傳送任何報告。
-
-      如果設定這項政策，使用者將無法變更。如果未設定這項政策，則使用者可自行決定是否要傳送報告。
-
-      如要進一步瞭解「安全瀏覽」功能，請前往 https://developers.google.com/safe-browsing。</translation>
 <translation id="4954352279763128540">這項政策會將預填網域加到 Kerberos 驗證對話方塊。
 
           如果設定了這項政策，「Kerberos 使用者名稱」欄位右方會顯示預填的網域。使用者輸入使用者名稱後，系統就會將名稱連結到該預填網域。如果使用者的輸入內容含有「@」，系統就不會顯示預填網域，輸入內容也不會受到影響。
@@ -7407,13 +7374,6 @@ https://chromeenterprise.google/policies/url-patterns。系統支援萬用字元
 如果設為停用或不設定，系統將根據瀏覽器功能推出程序，決定是否要使用自動調節緩衝功能。</translation>
 <translation id="579556027056000499">網址內容的 SHA-256 雜湊。</translation>
 <translation id="5800329278018669527">停用離線時的網路設定提示</translation>
-<translation id="5800627752428920394">這項政策控管網頁進入往返快取時，是否要中斷運作中的 WebSocket 連線。在以往，運作中的 WebSocket 連線會導致網頁無法存入往返快取。不過，<ph name="PRODUCT_NAME" /> 調整了這項機制，改為直接中斷 WebSocket 連線，讓網頁能順利快取，並在使用者回到該頁時維持斷線狀態。
-
-如果將這項政策設為啟用或未設定，網頁進入往返快取時，系統會中斷 WebSocket 連線。
-
-如果設為停用，網頁進入往返快取時，WebSocket 連線就不會中斷。往返快取不支援運作中的 WebSocket，因此含有運作中 WebSocket 的網頁無法存入快取。
-
-這項政策僅是暫時性措施，日後將會移除。</translation>
 <translation id="5802931736499687181">停用加密報告管道</translation>
 <translation id="5803715507113569033">這項政策可允許管理員設定 <ph name="MICROSOFT_ONE_DRIVE_NAME" /> 的掛接程序。
 
@@ -8028,21 +7988,6 @@ IP 位址空間覆寫有兩種形式：
 <translation id="6207673917710036736">啟用擴充功能的原生評論提示和評分連結</translation>
 <translation id="6208896993204286313">回報 <ph name="PRODUCT_NAME" /> 政策資訊</translation>
 <translation id="6210259502936598222">回報作業系統和 <ph name="PRODUCT_NAME" /> 版本資訊</translation>
-<translation id="6214712395769944855">這項政策會設定 <ph name="PRODUCT_NAME" /> 在 TLS 1.3 中偏好的加密演算法順序，優先採用特定法規遵循標準核准的演算法。
-
-設定這項政策無法保證一定會協商採用特定演算法。
-
-這項政策讓伺服器業者可區分用戶端是否有法規遵循需求，並只在用戶端明確指定偏好時，使用加密強度更高的特定非預設演算法。
-
-如果將政策設為「<ph name="CNSA_NAME" />」，<ph name="PRODUCT_NAME" /> 就會優先採用符合商用國家安全演算法套件 1.0 和 2.0 版 (CNSA 1.0 和 2.0) 規定的加密演算法。
-
-如果不設定這項政策或設為「<ph name="DEFAULT_NAME" />」，<ph name="PRODUCT_NAME" /> 會使用預設的加密演算法。
-
-設定這項政策並非安全性必要措施。<ph name="PRODUCT_NAME" /> 預設使用的加密技術強度極高，即使用盡太陽的全部能量發動蠻力攻擊，也無法攻破。
-
-如果設定這項政策，<ph name="PRODUCT_NAME" /> 存取網站的速度會變慢。
-
-這項政策只會影響 TLS 1.3 和 QUIC，不影響舊版 TLS。</translation>
 <translation id="6219841576688651072">禁止使用生成式 AI 總覽視窗分組功能。</translation>
 <translation id="6220835555850906733">如果將這項政策設為啟用或不設定，系統會在使用者的裝置上允許所有支援的音訊輸出。
 
@@ -9371,18 +9316,6 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
 如果將這項政策設為<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_DISABLED" /> (值 0)，瀏覽器將無法要求用戶端憑證。如果先前啟用這項政策時已佈建設定檔的受管理用戶端憑證，系統將不會刪除憑證，但該憑證將無法用於 mTLS 連線，而且到期時不會更新。</translation>
 <translation id="7013484314513229844">啟用「連接 AC 電源時啟動」功能</translation>
 <translation id="7014427417852575165">註冊進階保護計畫的使用者將享有額外防護機制</translation>
-<translation id="7015750050379345684">你可以設定網站網址模式清單，指定要在哪些網站停用進階 JavaScript 最佳化功能。
-
-如果停用 JavaScript 最佳化功能，<ph name="PRODUCT_NAME" /> 顯示網路內容的速度可能會變慢。
-
-如要進一步瞭解有效的網址模式，請參閱 https://chromeenterprise.google/policies/url-patterns。
-指定時可使用萬用字元 (<ph name="WILDCARD_VALUE" />)。
-
-系統只會對網站細分層級 (eTLD+1) 強制執行 JavaScript 最佳化政策的例外狀況。如果只針對 subdomain.site.com 設定政策，系統就不會將政策正確套用到 site.com 或 subdomain.site.com，因為這兩個網址都會解析為相同的 eTLD+1 (site.com)，而解析後的網址並未設定任何政策。在此情況下，如要將政策正確套用到 site.com 與 subdomain.site.com，就必須針對 site.com 設定政策。
-
-這項政策是按照個別頁框逐一套用，而不只是完全以頂層來源網址為依據。因此，如果 site-one.com 列在 <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" /> 政策清單，但 site-one.com 載入的頁框含有 site-two.com，則 site-one.com 會停用 JavaScript 最佳化功能。不過，site-two.com 會採用 <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> 政策 (如果已設定)，否則會預設啟用 JavaScript 最佳化功能。封鎖清單項目的優先順序高於許可清單項目，而許可清單項目的優先順序高於預設值。
-
-如果未針對某個網站設定這項政策，該網站就會套用 <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> 政策 (如果已設定)，否則會啟用 JavaScript 最佳化功能。</translation>
 <translation id="7016587686120059767">停用訪客模式</translation>
 <translation id="7019805045859631636">快</translation>
 <translation id="7021590945154530517">啟用裝置健康狀態監控功能</translation>
@@ -10033,15 +9966,6 @@ Origin-Agent-Cluster HTTP 標頭會控制文件要在 origin-keyed 代理程式�
       例外狀況：裝置搭載 M95 以下版本，且 TPM 資訊是由 <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> 所控制。</translation>
 <translation id="739556497251174388">允許重複使用 <ph name="PRODUCT_OS_NAME" />登入憑證進行網路驗證</translation>
 <translation id="7395790871181951311">禁止智慧卡連線到隔離應用程式</translation>
-<translation id="7396487166653169044">你可以設定網站網址模式清單，指定哪些網站能在 JIT (Just In Time) 編譯器啟用時執行 JavaScript。
-
-          如要進一步瞭解有效的網站網址模式，請參閱 https://chromeenterprise.google/policies/url-patterns。指定時可使用萬用字元 (<ph name="WILDCARD_VALUE" />)。
-
-          系統只會對網站細分層級 (eTLD+1) 強制執行 JavaScript JIT 政策的例外狀況。如果只針對 subdomain.site.com 設定政策，系統就不會將政策正確套用到 site.com 或 subdomain.site.com，因為這兩個網址都會解析為相同的 eTLD+1 (site.com)，而解析後的網址並未設定任何政策。在此情況下，如要將政策正確套用到 site.com 與 subdomain.site.com，就必須針對 site.com 設定政策。
-
-          這項政策是按照個別頁框逐一套用，而不只是完全以頂層來源網址為依據。因此，如果 site-one.com 列在 <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" /> 政策清單，但 site-one.com 載入的頁框含有 site-two.com，則 site-one.com 會啟用 JavaScript JIT。不過，site-two.com 會採用 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> 政策 (如果已設定)，否則會預設啟用 JavaScript JIT。
-
-          如果未針對某個網站設定這項政策，該網站就會套用 <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> 政策 (如果已設定)，否則會啟用 JavaScript JIT。</translation>
 <translation id="7400208209734208176">預設在 Chrome 瀏覽器中開啟連結</translation>
 <translation id="7402257017733669351">防止瀏覽器程序建立動態程式碼</translation>
 <translation id="7406039009275722824">停用 <ph name="CHROME_SYNC_NAME" />會造成 Android 備份與還原功能無法正常運作。</translation>
@@ -10443,21 +10367,6 @@ Gemini 啟動功能僅支援部分國家/地區和語言。設定這項政策無
 
 如果不設定這項政策，瀏覽器會自動選擇 PDF 轉譯器。</translation>
 <translation id="7704244074621846004">允許 SharedWorkers 的延長生命週期</translation>
-<translation id="7705886216383850895">調整 <ph name="PRODUCT_NAME" /> 內建 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 的連線設定。
-
-如要設定 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />，管理員必須提供下列其中一項：
-* <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 網頁應用程式網址 (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />)
-* 以下三個舊版參數：<ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />、<ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" /> 和 <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />。如果未完整指定這三個參數，且未提供網址，系統就不會設定 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />。
-
-<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 參數必須是有效網址，採用 HTTPS 配置，且不含使用者名稱或密碼。如果不符合這些規定，系統會忽略這項政策，且不會設定 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />。
-
-如果同時設定 <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 參數和舊版參數，系統會優先採用 <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> 參數。
-
-如果設定這項政策，系統會為登入代管帳戶或受管理瀏覽器的使用者完成 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> 設定。
-
-如果未設定這項政策，系統就不會設定 <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />。
-
-請注意，這項政策不會控管一般的 <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> 整合功能，該功能可透過 <ph name="GEMINI_SETTINGS_POLICY_NAME" /> 政策管理。</translation>
 <translation id="7707869387893611318">啟用充電音效功能。
 
           這項功能可以播放充電音效。
@@ -11005,21 +10914,6 @@ Topics API 已淘汰，因此這項政策已在 <ph name="PRODUCT_NAME" /> 144 �
 <translation id="8062485064082966327">使用去識別化的 Google 服務，針對無標籤圖片提供自動產生的說明</translation>
 <translation id="8064875716442437829">啟用轉譯器無障礙功能</translation>
 <translation id="8066428282805800713">傳送 ChromeOS Flex 上的其他硬體資料</translation>
-<translation id="8069233292746468045">這項政策會設定 <ph name="PRODUCT_NAME" /> 在 TLS 1.3 中偏好的金鑰協議演算法 (支援的群組) 順序，優先採用特定法規遵循標準核准的演算法。
-
-設定這項政策無法保證一定會協商採用特定演算法。
-
-這項政策讓伺服器業者可區分用戶端是否有法規遵循需求，並只在用戶端明確指定偏好時，使用加密強度更高的特定非預設演算法。
-
-如果將政策設為「<ph name="CNSA2_NAME" />」，<ph name="PRODUCT_NAME" /> 就會優先採用符合商用國家安全演算法套件 2.0 (CNSA 2.0) 規定的金鑰交換方法。
-
-如果不設定這項政策或設為「<ph name="DEFAULT_NAME" />」，<ph name="PRODUCT_NAME" /> 會採用預設的金鑰交換方法。
-
-設定這項政策並非安全性必要措施。<ph name="PRODUCT_NAME" /> 預設使用的加密技術強度極高，即使用盡太陽的全部能量發動蠻力攻擊，也無法攻破。
-
-如果設定這項政策，<ph name="PRODUCT_NAME" /> 存取網站的速度會變慢。
-
-這項政策只會影響 TLS 1.3 和 QUIC，不影響舊版 TLS。</translation>
 <translation id="8071371098891664137">如果在 <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> 中選擇了 <ph name="PRINTERS_BLOCKLIST" />，系統會根據 <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> 的設定指定使用者不能操作的印表機。除了這項政策所列 ID 的印表機外，其他印表機皆可供使用。印表機 ID 必須與 <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> 政策指定檔案的 <ph name="ID_FIELD" /> 或 <ph name="GUID_FIELD" /> 欄位值相符。</translation>
 <translation id="8076539570602616846">限制符合資格的 Google 帳戶，禁止透過 <ph name="PRODUCT_NAME" /> PDF 檢視器將 PDF 檔案儲存至 Google 雲端硬碟</translation>
 <translation id="8078297389450285582">如果將這項政策設為啟用或不設定，系統會開啟智慧調光模式，並可延後螢幕調暗時間。一旦延後螢幕調暗時間，螢幕關閉、螢幕鎖定和閒置狀態的延遲時間也會隨之調整，以維持與原先設定相同的間隔時間。

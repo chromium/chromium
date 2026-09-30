@@ -144,7 +144,6 @@
 <translation id="1408847409015257906">Tryck på Integritet och säkerhet.</translation>
 <translation id="1411386976162024013">Visuell sökning med Lens</translation>
 <translation id="1414315029670184034">Tillåt inte att webbplatser använder kameran</translation>
-<translation id="1417474386970818917">Logga ut och radera</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1433478348197382180">Läsläge</translation>
@@ -304,6 +303,7 @@
 <translation id="188237709236611317">Menyrad med smart sortering</translation>
 <translation id="1883255238294161206">Komprimera lista</translation>
 <translation id="1883898928879467646">Fliken har tagits bort</translation>
+<translation id="188779312703122101">Bearbetar</translation>
 <translation id="1888854257756214946">Välj lösenord …</translation>
 <translation id="1890237935065108104">Inställningen är inte tillgänglig.</translation>
 <translation id="1894023287452300670">Bevaka pris här</translation>
@@ -792,7 +792,6 @@
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /> om förslag på innehåll</translation>
 <translation id="349446645805573740">Välj var du vill spara <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /></translation>
 <translation id="3504377992102007712">Inställningar</translation>
-<translation id="3507556793108992994">{count,plural, =1{1 flik har rensats}other{# flikar har rensats}}</translation>
 <translation id="35083190962747987">Öppna ${url}</translation>
 <translation id="3511519535430890904">Lägg till surfningsskydd</translation>
 <translation id="3512572904898385012">Nu kan du shoppa och översätta med kameran. Tryck här för att testa.</translation>
@@ -941,7 +940,6 @@
 <translation id="3962326069546168954">Spara</translation>
 <translation id="3967327056943561740">Bokmärken</translation>
 <translation id="3967822245660637423">Nedladdning slutförd</translation>
-<translation id="3968685670440571540">sedan du började använda Lösenord och Autofyll</translation>
 <translation id="3973560090698854095">Detta raderar adresser som har sparats i Google-kontot <ph name="USER_EMAIL" />.</translation>
 <translation id="398604237578616937">Inloggad som <ph name="USER_EMAIL" />. Öppna kontomenyn</translation>
 <translation id="3986739045730058129">Öppna fliken</translation>
@@ -1356,7 +1354,6 @@
 <translation id="5250371859659394278">Från en okänd källa</translation>
 <translation id="525510229763628836">Minimerat</translation>
 <translation id="5260842098960755113">Tråden har stängts</translation>
-<translation id="5269913829202614649">Anpassa startsida</translation>
 <translation id="5271265092610673171">{count,plural, =1{Ett obligatoriskt fält är tomt. Fyll i det innan du sparar.}other{Vissa obligatoriska fält är tomma. Fyll i dem innan du sparar.}}</translation>
 <translation id="5271549068863921519">Spara lösenord</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) vill att du ska gå med i en flikgrupp. Alla som har länken kan redigera alla flikar, så tänk efter innan du går med. Länken löper ut om 48 timmar.</translation>
@@ -1466,7 +1463,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5632194969640946913">Läs mer när du surfar och sök efter det du ser på en sida för att utforska produkter, platser och text.</translation>
 <translation id="5632485077360054581">Visa hur man gör</translation>
 <translation id="5633237939819267663">{count,plural, =1{Bokmärket har sparats i {title}}other{{count} bokmärken har sparats i {title}}}</translation>
-<translation id="564170563478022912">Vill du logga ut? Kontodata som inte har sparats raderas.</translation>
 <translation id="5642707040609478753">Markera som oläst</translation>
 <translation id="5646376287012673985">Plats</translation>
 <translation id="5647096944343801045">Stor ingångspunkt</translation>
@@ -1482,7 +1478,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="5669528293118408608">www</translation>
 <translation id="5676124785522323481">Hantera Anslutna appar</translation>
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
-<translation id="5680012489335339762">Vill du byta konto? Kontodata som inte har sparats raderas.</translation>
 <translation id="5683499062697987550">Verifiera din identitet för att använda och spara lösenord i Google-kontot.</translation>
 <translation id="5684761169742812828">Det här lösenordet har läckt ut vid ett dataintrång på internet. Om du inte har tid att ändra det just nu rekommenderar Google att du behåller den här varningen som en påminnelse att göra det senare.</translation>
 <translation id="5694848685995373177">Har sparats i Drive för <ph name="USER_EMAIL" />.</translation>
@@ -1758,7 +1753,6 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6506996418997555004">Dela flikgruppen <ph name="GROUP_NAME" /></translation>
 <translation id="6507973708545996744">Logga in om du vill ha läslistan på alla dina enheter.</translation>
 <translation id="6518133107902771759">Verifiera</translation>
-<translation id="6518861084553706202">Flikarna stängs och data som raderas kan omfatta lösenord, webbhistorik, cookies med mera.</translation>
 <translation id="6523575793810663688">Visa hur man gör</translation>
 <translation id="6524082013156754186">Spara i kontot</translation>
 <translation id="6524918542306337007">Inkognitoläget är inte tillgängligt</translation>
@@ -1801,6 +1795,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6626281667717553020">CPS URI</translation>
 <translation id="6627583120233659107">Redigera mapp</translation>
 <translation id="6629759408545977279">Från: <ph name="ORIGINATING_HOST" /></translation>
+<translation id="6634065271963947588">Logga in på ditt konto om du vill komma åt historiken och annat</translation>
 <translation id="6634432609054530164">Organisationen har inaktiverat inkognitoläge</translation>
 <translation id="6637478299472506933">Nedladdningen misslyckades</translation>
 <translation id="6638511529934826365">Zooma text …</translation>
@@ -1984,7 +1979,6 @@ Byt till <ph name="OTHER_EMAIL" /> om du vill fortsätta på datorn. Du får lö
 <translation id="721218676460477064">Sammanfatta den här artikeln</translation>
 <translation id="7215621211572884440">Popupfönster tillåts</translation>
 <translation id="7218491361283758048">Postnummer</translation>
-<translation id="7220786058474068424">Bearbetning pågår</translation>
 <translation id="7221173315674413369">Utforska nya funktioner och tips i Nyheter</translation>
 <translation id="7223102419539744003">Stäng fliken</translation>
 <translation id="7223134495231529579">Spara i nedladdningar</translation>
@@ -2072,7 +2066,6 @@ Du kan starta om när som helst.</translation>
 <translation id="7491161827858509164">Du kan se filer du har laddat ned tidigare i <ph name="BEGIN_LINK" />Filer<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Fortsätt redigera</translation>
 <translation id="7500244509706269886">Autofyll formulär</translation>
-<translation id="7504841985386528758">sedan du lärde dig om flikgrupper</translation>
 <translation id="750493650310597496">0 valda</translation>
 <translation id="7505402981231763928">Du måste logga in för att använda Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
@@ -2319,6 +2312,7 @@ Du kan starta om när som helst.</translation>
 <translation id="823339794112333264">Slå på mikrofonen</translation>
 <translation id="8240217649914883113">Lägg till detta i min kalender</translation>
 <translation id="824379025871762038">Tillåt aldrig</translation>
+<translation id="8244387390464017490">Anpassa sidan Ny flik</translation>
 <translation id="8250920743982581267">Dokument</translation>
 <translation id="8258734532103758067">Jag har exporterat min data</translation>
 <translation id="8258999165172757081">Tillagt</translation>

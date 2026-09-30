@@ -332,6 +332,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1231572247662419826">Werwe kan vra om jou muisinteraksie vas te vang en te gebruik</translation>
 <translation id="1232569758102978740">Titelloos</translation>
 <translation id="1233497634904001272">Raak jou sekuriteitsleutel weer om die versoek te voltooi.</translation>
+<translation id="1233566345244684257">Enigiemand met toegang tot jou Gemini-apps kan jou Chrome-blaaier beheer.</translation>
 <translation id="1233721473400465416">Taal</translation>
 <translation id="1233835246554936745">{0,plural, =1{Stoor 1 item in rekening}other{Stoor # items in rekening}}</translation>
 <translation id="1234736487471201993">Skep QR-kode vir hierdie prent</translation>
@@ -554,6 +555,7 @@ Gaan jou wagwoorde enige tyd na in <ph name="GOOGLE_PASSWORD_MANAGER" />.</trans
 <translation id="1421514190500081936">Voer asseblief ’n rede in hoekom jy hierdie data aflaai:</translation>
 <translation id="1422159345171879700">Laai onveilige skripte</translation>
 <translation id="1425040197660226913">Kan nie oplaai nie. Gebruik ’n prent kleiner as 20 MB.</translation>
+<translation id="1426154609634610063">Gaan die risiko’s van die gebruik van Gemini na</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> word geblokkeer</translation>
 <translation id="1427179946227469514">Teks-na-spraak-toonhoogte</translation>
@@ -1567,6 +1569,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2198625180564913276">Voeg tans profiel by. Dit kan 'n paar minute neem.</translation>
 <translation id="2198712775285959645">Wysig</translation>
 <translation id="2199298570273670671">Fout</translation>
+<translation id="2199546617947317537">Meld aan en sinkroniseer jou geskiedenis en oortjies met <ph name="EMAIL" /> om jou geskiedenis van jou ander toestelle af te kry. Jy sal ook jou wagwoorde en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="220006241671843310">Kies of Chrome KI-modelle gebruik wat direk op jou toestel loop</translation>
 <translation id="2200094388063410062">E-pos</translation>
 <translation id="2200781749203116929">ChromeOS-stelselloglêers</translation>
@@ -1842,6 +1845,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2416435988630956212">Sleutelbordfunksiesleutels</translation>
 <translation id="2419131370336513030">Bekyk geïnstalleerde programme</translation>
 <translation id="2419706071571366386">Vir sekuriteitredes moet jy afmeld wanneer jou rekenaar nie gebruik word nie.</translation>
+<translation id="2423226060967554289">Wys boekmerkbalk</translation>
 <translation id="2423506062824112361">Kon weens ’n onbekende rede nie inhoud aflaai nie.</translation>
 <translation id="2423578206845792524">Stoor prent as …</translation>
 <translation id="2424424966051154874">{0,plural, =1{Gas}other{Gas (#)}}</translation>
@@ -2079,6 +2083,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2588271083332682494">Hou alles georganiseerd met oortjiegroepe</translation>
 <translation id="2588636910004461974">Toestelle van <ph name="VENDOR_NAME" /> af</translation>
 <translation id="2589658397149952302">Moet nooit Drive-lêers wys nie</translation>
+<translation id="2595270892115552212">Wanneer jy ’n taak vanaf ander Gemini-apps begin, insluitend gemini.google.com en Gemini-apps vir mobiele toestelle, kan Gemini Chrome-outonavigeer op hierdie toestel gebruik om met werwe interaksie te hê en take namens jou te voltooi. <ph name="LINK_BEGIN" />Meer inligting<ph name="LINK_END" /></translation>
 <translation id="2597073208962000830">Nabydeling gebruik Bluetooth-skandering om toestelle in die omtrek te soek.</translation>
 <translation id="2598136842498757793">Pasmaak nutsbalkknoppies</translation>
 <translation id="2598710988533271874">Nuwe Chrome is beskikbaar</translation>
@@ -2347,6 +2352,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2777525873368474674">Plak prentskakel</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{1 werf met baie kennisgewings is gevind}other{{NUM_SITES} werwe met baie kennisgewings is gevind}}</translation>
 <translation id="2778471504622896352">Voeg afstandprogramme by die Chrome-bedryfstelsellanseerder</translation>
+<translation id="2781037472881921606">Sinkroniseer geskiedenis om jou geskiedenis van jou ander toestelle af te kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783952358106015700">Gebruik jou sekuriteitsleutel met <ph name="APP_NAME" /></translation>
@@ -2409,6 +2415,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="2826576843404243001">Kry waarskuwings oor werwe wat nie veilige verbindings steun nie, voordat jy die werf besoek. Jy kan nie hierdie instelling verander nie omdat Gevorderde Beskerming geaktiveer is.</translation>
 <translation id="2828375943530438449">Terug vanaf aanmelding</translation>
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> is beskikbaar gemaak</translation>
+<translation id="2828851448902426206">Meld aan en sinkroniseer geskiedenis om jou geskiedenis van jou ander toestelle af te kry. Jy sal ook jou gestoorde inligting en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="2833144527504272627">Navigeer met teksskermpyltjie</translation>
 <translation id="2833727845850279275">Hierdie lêer bevat wanware of kom van ’n verdagte werf af.</translation>
 <translation id="2835177225987815960">Jou huidige skanderingopstelling sal teruggestel word, insluitend enige toegewysde skakelaars en outoskandeerspoedvoorkeure.</translation>
@@ -2775,6 +2782,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3102309003841389927">Hersien logo-opdatering</translation>
 <translation id="310297983047869047">Vorige skyfie</translation>
 <translation id="3103451787721578293">Voer asseblief 'n rede in hoekom jy hierdie data oplaai:</translation>
+<translation id="3105253709809514429">Meld aan en sinkroniseer geskiedenis om jou geskiedenis van jou ander toestelle af te kry. Jy sal ook jou uitbreidings en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="3105339775057145050">Laas onsuksesvol opgedateer</translation>
 <translation id="3105796011181310544">Verander terug na Google?</translation>
 <translation id="3105820656234755131">Wagwoord is opgedateer</translation>
@@ -2786,6 +2794,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3109206895301430738">Gestoorde oortjiegroepe</translation>
 <translation id="3109724472072898302">Ingevou</translation>
 <translation id="3112292765614504292">Programgrootte: <ph name="APP_SIZE" /></translation>
+<translation id="3112532142993641404">Meld aan en sinkroniseer geskiedenis om jou geskiedenis van jou ander toestelle af te kry. Jy sal ook jou boekmerke en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="311347022006935575">Het hierdie oortjie bygevoeg</translation>
 <translation id="311394601889664316">Moenie werwe toelaat om lêers of vouers op jou toestel te wysig nie</translation>
 <translation id="3113970906450647715">Knoppie is ontspeld</translation>
@@ -2816,6 +2825,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3132996321662585180">Herlaai daagliks</translation>
 <translation id="3134312457920437826">Kan nie uitbreiding installeer nie, want dit gebruik ’n ongesteunde manifesweergawe.</translation>
 <translation id="3134393957315651797">Kies eksperimenttoestand vir die <ph name="EXPERIMENT_NAME" />-eksperiment. Eksperimentbeskrywing: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3134822828309700120">Laat ander Gemini-apps oor ’n afstand van enige toestel af blaai</translation>
 <translation id="3139925690611372679">Verstek- geel avatar</translation>
 <translation id="314095642664111744">Skakel fokus af</translation>
 <translation id="3141093262818886744">Maak nogtans oop</translation>
@@ -3292,6 +3302,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3498138244916757538">Die verandering aan mikrofooninstelling vereis dat <ph name="SPECIFIC_NAME" /> afgeskakel word. Skakel <ph name="SPECIFIC_NAME" /> af om voort te gaan.</translation>
 <translation id="3500417806337761827">Kan nie deling monteer nie. Te veel SMB-delings is reeds gemonteer.</translation>
 <translation id="3500764001796099683">Aktiveer geïsoleerde webapps</translation>
+<translation id="3501134531169168291">Meld aan en sinkroniseer geskiedenis om jou oortjies van <ph name="DEVICE" /> af te kry. Jy sal ook jou uitbreidings en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="3505100368357440862">Inkopievoorstelle</translation>
 <translation id="3507650052590605702">Bestuur wagwoord</translation>
 <translation id="3507888235492474624">Soek weer na Bluetooth-toestelle</translation>
@@ -3630,6 +3641,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3736487688526377259">Kies die toestel waar jy hierdie skakel wil kry.</translation>
 <translation id="3737058101969549870">Wil jy bestaande blaaierdata apart van hierdie nuwe profiel hou?</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
+<translation id="3739203168951159754">Gemini kan outonavigeer op hierdie toestel gebruik slegs as die toestel wakker is en Chrome loop.</translation>
 <translation id="3739254215541673094">Maak <ph name="APPLICATION" /> oop?</translation>
 <translation id="3739349485749941749">Werwe kan vra om drukkers wat vir jou toestel toeganklik is, te soek en te gebruik</translation>
 <translation id="3741056951918180319">Jy kan altyd die uitbreiding klik om dit op enige werf te gebruik</translation>
@@ -3778,6 +3790,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3838085852053358637">Kon nie uitbreiding laai nie</translation>
 <translation id="3838486795898716504">Meer <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">Geen werwe is in- of uitgezoem nie</translation>
+<translation id="3839108710633244251">Meld aan en sinkroniseer jou geskiedenis en oortjies met <ph name="EMAIL" /> om jou geskiedenis van jou ander toestelle af te kry. Jy sal ook jou gestoorde inligting en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="3839516600093027468">Blokkeer <ph name="HOST" /> altyd om die knipbord te sien</translation>
 <translation id="3840096463915153852">Gesprekgeskiedenis</translation>
 <translation id="3841319830220785495">Verstek- natuurlike stem</translation>
@@ -3985,6 +3998,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="3987993985790029246">Kopieer skakel</translation>
 <translation id="3988124842897276887">Hierdie oortjie is aan ’n USB-toestel gekoppel</translation>
 <translation id="3989635538409502728">Meld af</translation>
+<translation id="399132041334931433">Voeg oortjies by nuwe groep</translation>
 <translation id="399179161741278232">Ingevoer</translation>
 <translation id="3992008114154328194">Laai tans <ph name="FILE_NAME" /> af; <ph name="STATUS" /></translation>
 <translation id="3994075804072562819">Gee <ph name="SPECIFIC_NAME" /> beheer oor USB-toestelle.</translation>
@@ -4300,6 +4314,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-app op jou t
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Hou groep}other{Hou groepe}}</translation>
 <translation id="4261429981378979799">Uitbreidingtoestemmings</translation>
 <translation id="4262004481148703251">Maak waarskuwing toe</translation>
+<translation id="4262060800239714974">Sinkroniseer jou geskiedenis en oortjies met <ph name="EMAIL" /> om jou oortjies van <ph name="DEVICE" /> af te kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="4263470758446311292">Kry maksimum geheuebesparings Jou oortjies word ná ’n korter tydperk onaktief.</translation>
 <translation id="4263824086525632">Noorderlig</translation>
 <translation id="4265096510956307240">Verifieer dat dit jy is</translation>
@@ -4936,8 +4951,10 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="4750185073185658673">Gaan na jou foon om nog ’n paar toestemmings na te gaan. Maak seker dat jou foon se Bluetooth en wi-fi aangeskakel is.</translation>
 <translation id="4750394297954878236">Voorstelle</translation>
 <translation id="475088594373173692">Eerste gebruiker</translation>
+<translation id="4751925628341802838">Meld aan en sinkroniseer jou geskiedenis en oortjies met <ph name="EMAIL" /> om jou geskiedenis van jou ander toestelle af te kry. Jy sal ook jou uitbreidings en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="4753084533826742808">Moet ten minste 1 karakter wees</translation>
 <translation id="4754590344707355551">Verbeter jou blaaier met uitbreidings</translation>
+<translation id="4756130875344525429">Meld aan en sinkroniseer jou geskiedenis en oortjies met <ph name="EMAIL" /> om jou geskiedenis van <ph name="DEVICE" /> af te kry. Jy sal ook jou gestoorde inligting en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="4756378406049221019">Stop/Herlaai</translation>
 <translation id="4756388243121344051">Geskiedenis</translation>
 <translation id="4756627014339714615">Herlei</translation>
@@ -5214,6 +5231,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="495170559598752135">Handelinge</translation>
 <translation id="4951966678293618079">Moet nooit wagwoorde vir hierdie werf stoor nie</translation>
 <translation id="4952580838083306838">Versteek organiseerder</translation>
+<translation id="4952628481830269193">Wys boekmerkbalk</translation>
 <translation id="4953808748584563296">Verstek- oranje avatar</translation>
 <translation id="4954652437333037880">Lêer</translation>
 <translation id="4954831709600868883">Vra oor <ph name="TEXT" /></translation>
@@ -5248,6 +5266,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="497403230787583386">Sekuriteitkontroles is afgehandel. Jou dokument sal gedruk word.</translation>
 <translation id="4974442344472293753">Opdateringuitkoms</translation>
 <translation id="4975771730019223894">Programkentekens</translation>
+<translation id="4976647810464861866">Meld aan en sinkroniseer geskiedenis om jou geskiedenis van jou ander toestelle af te kry. Jy sal ook jou leeslys en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Bevestig toegang</translation>
 <translation id="4979263087381759787">Ontwikkelaaropsies</translation>
@@ -5287,6 +5306,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5008936837313706385">Aktiwiteitnaam</translation>
 <translation id="5009463889040999939">Hernoem tans profiel. Dit kan 'n paar minute neem.</translation>
 <translation id="5010886807652684893">Visuele aansig</translation>
+<translation id="5012016139642806466">Kry jou wagwoorde en meer op al jou toestelle</translation>
 <translation id="5012523644916800014">Bestuur wagwoorde en toegangsleutels</translation>
 <translation id="501394389332262641">Papbatteryklank</translation>
 <translation id="5014286001996333986">Vervang of skep nuwe groep?</translation>
@@ -5419,6 +5439,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="511313294362309725">Skakel Kitsbind aan</translation>
 <translation id="5113992879909788634">Kry meer inligting oor Chrome-outonavigeer</translation>
 <translation id="51143538739122961">Sit jou sekuriteitsleutel in en raak daaraan</translation>
+<translation id="5114635223409082546">Meld aan en sinkroniseer geskiedenis om jou oortjies van <ph name="DEVICE" /> af te kry. Jy sal ook jou boekmerke en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="5115338116365931134">SSO</translation>
 <translation id="5116628073786783676">Stoor oudio as …</translation>
 <translation id="5117139026559873716">Ontkoppel jou foon van jou <ph name="DEVICE_TYPE" />. Hulle sal nie meer outomaties koppel nie.</translation>
@@ -5466,6 +5487,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5149602533174716626">Kopieer videoraam</translation>
 <translation id="5150254825601720210">Netscape-sertifikaat se SSL-bedienernaam</translation>
 <translation id="5151354047782775295">Maak skyfspasie beskikbaar, anders kan sekere data outomaties uitgevee word</translation>
+<translation id="5152719737931716272">Taak is gedoen en teruggegee aan Gemini</translation>
 <translation id="5153074793829217329">Gebruik jou sleutelbord of ’n numeriese syferbord om jou muisskermpyltjie te beheer</translation>
 <translation id="5153234146675181447">Vergeet foon</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -5783,6 +5805,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5414836363063783498">Verifieer tans …</translation>
 <translation id="5415497281076257439">Frase</translation>
 <translation id="5415871492522952905">Jy sal jou geskiedenis en oortjies op al jou toestelle hê sodat jy kan voortgaan waarmee jy besig was</translation>
+<translation id="5417160551295347092">Gemini kan foute maak, soos om jou inligting te deel of aankope te doen sonder om te vra. <ph name="LINK_BEGIN" />Gaan die risiko’s na<ph name="LINK_END" />.</translation>
 <translation id="5417293056300086453">Hierdie werf kan identifiseerders gebruik om beskermde inhoud te speel.</translation>
 <translation id="5417312524372586921">Blaaiertemas</translation>
 <translation id="541737483547792035">Vergroot skerm</translation>
@@ -5843,6 +5866,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5457795687441958389">Bly afgemeld</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">Jy het te veel kere die verkeerde PIN ingevoer. Verander jou PIN om toegang te kry tot jou toegangsleutels en wagwoorde.</translation>
+<translation id="5459251585760045919">Meld aan en sinkroniseer jou geskiedenis en oortjies met <ph name="EMAIL" /> om jou geskiedenis van <ph name="DEVICE" /> af te kry. Jy sal ook jou uitbreidings en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="5459470938885464873">Kon nie sertifikaat invoer nie</translation>
 <translation id="5459864179070366255">Hou aan installeer</translation>
 <translation id="5460861858595506978">Inspirasie</translation>
@@ -6014,6 +6038,7 @@ Jy kan veelvuldige skakelaars vir hierdie handeling toewys.</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">Stoor gebruikernaam?</translation>
 <translation id="5585019845078534178">Kaarte</translation>
+<translation id="5585064628683466904">Meld aan en sinkroniseer jou geskiedenis en oortjies met <ph name="EMAIL" /> om jou geskiedenis van jou ander toestelle af te kry. Jy sal ook jou leeslys en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="5585118885427931890">Kon nie boekmerkvouer skep nie.</translation>
 <translation id="558563010977877295">Maak 'n spesifieke bladsy of 'n stel bladsye oop</translation>
 <translation id="5587592231724900065">’n Uitbreiding beheer hierdie instelling</translation>
@@ -6538,6 +6563,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6003143259071779217">Verwyder e-SIM-selnetwerk</translation>
 <translation id="6003479444341796444">Titelbalk wys nou</translation>
 <translation id="6003582434972667631">Tema word deur jou organisasie gestel</translation>
+<translation id="600407115562756795">Gemini sal besluit watter handelinge om uit te voer op grond van die take wat jy begin of opdateer.</translation>
 <translation id="6005045517426700202">Baksteengebou</translation>
 <translation id="6006484371116297560">Klassiek</translation>
 <translation id="6007053304250788613">Net een skerm kan in spieëlmodus uitgesluit word</translation>
@@ -6752,6 +6778,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6175910054050815932">Kry ’n skakel</translation>
 <translation id="6177478397823976397">Geen toestelle gekry nie. Maak 'n hulpsentrumartikel in 'n nuwe oortjie oop</translation>
 <translation id="6177779807714496775">Maak skakel in linkeraansig oop</translation>
+<translation id="6178186430790239237">Sinkroniseer jou geskiedenis en oortjies met <ph name="EMAIL" /> om jou oortjies van ander toestelle af te kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="6178664161104547336">Kies 'n sertifikaat</translation>
 <translation id="6178682841350631965">Jou aanmelddata is opgedateer</translation>
 <translation id="6179830757749383456">Blaaier word deur <ph name="BROWSER_DOMAIN" /> bestuur, profiel word deur <ph name="PROFILE_DOMAIN" /> bestuur</translation>
@@ -7062,6 +7089,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6430202563517028640">Voeg skakel by leeslys</translation>
 <translation id="6430814529589430811">Base64-geënkodeerde ASCII, enkele sertifikaat</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> wil outomatiese opdaterings vir alle gebruikers van hierdie rekening opstel.</translation>
+<translation id="6431970976661940755">Meld aan en sinkroniseer geskiedenis om jou oortjies van <ph name="DEVICE" /> af te kry. Jy sal ook jou leeslys en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="6434104957329207050">Puntskandeerspoed</translation>
 <translation id="6434309073475700221">Gooi weg</translation>
 <translation id="6434755719322447931">Chaoties</translation>
@@ -7226,6 +7254,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6556903358015358733">Tema en muurpapier</translation>
 <translation id="6557199166823345360">Voeg meer besonderhede by of vra ’n vraag oor jou seleksie om jou soektog te verfyn</translation>
 <translation id="6557290421156335491">My kortpaaie</translation>
+<translation id="655745275895381718">Meld aan en sinkroniseer geskiedenis om jou oortjies van <ph name="DEVICE" /> af te kry. Jy sal ook jou gestoorde inligting en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="6558098963164662391">Verwyder uit woordeboek</translation>
 <translation id="6560061709899140565">Wys ander uitsaaisessies</translation>
 <translation id="656065428026159829">Sien meer</translation>
@@ -7912,6 +7941,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{1 wagwoord is ingevoer by <ph name="BRAND" /> vir <ph name="USER_EMAIL" />}other{{NUM_PASSWORDS} wagwoorde is ingevoer by <ph name="BRAND" /> vir <ph name="USER_EMAIL" />}}</translation>
 <translation id="7065534935986314333">Meer oor stelsel</translation>
 <translation id="706626672220389329">Kon nie deling monteer nie. Die gespesifiseerde deling is reeds gemonteer.</translation>
+<translation id="7066357648902789011">Meld aan en sinkroniseer jou geskiedenis en oortjies met <ph name="EMAIL" /> om jou geskiedenis van <ph name="DEVICE" /> af te kry. Jy sal ook jou wagwoorde en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="7067396782363924830">Agtergrondkleure</translation>
 <translation id="7067725467529581407">Moet dit nooit weer wys nie.</translation>
 <translation id="7068539819344620805">Jy kan nou enige tyd vir jou blaaier ’n nuwe voorkoms gee vanaf die Pasmaak Chrome-kieslys</translation>
@@ -8097,6 +8127,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7214047272988222011">Toegelaat – <ph name="PERMISSION_DETAILS" />. Skakel <ph name="LINK_BEGIN" />stelselkameratoegang<ph name="LINK_END" /> aan.</translation>
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Nuwe oortjie in 1 oortjie}other{Nuwe oortjie in # oortjies}}</translation>
 <translation id="721490496276866468">Voer wagwoorde in</translation>
+<translation id="7216638029417040861">Meld aan en sinkroniseer jou geskiedenis en oortjies met <ph name="EMAIL" /> om jou geskiedenis van jou ander toestelle af te kry. Jy sal ook jou boekmerke en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="7217208603285112910">Seleksie nie in <ph name="LANGUAGE" /> nie</translation>
 <translation id="7217317914610152390">Voeg teks, opmerkings en notas by met die nuwe Teksannotasies-nutsding</translation>
 <translation id="7219254577985949841">Vee werfdata uit?</translation>
@@ -8107,6 +8138,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7222232353993864120">E-posadres</translation>
 <translation id="7222335051802562841">Voltooi opdatering</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7222513457790351522">Meld aan en sinkroniseer jou geskiedenis en oortjies met <ph name="EMAIL" /> om jou geskiedenis van <ph name="DEVICE" /> af te kry. Jy sal ook jou leeslys en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="7223027547122518521">Kies ’n lêer wat hierdie werf kan lees</translation>
 <translation id="7223952304612664117">Dit laat stelseldienste toe om Liggingakkuraatheid te gebruik om jou ligging te bepaal. Liggingakkuraatheid gebruik inligting oor draadlose seine en sensors om toestelligging te skat.</translation>
 <translation id="7225082563376899794">Gebruik Windows Hello wanneer wagwoorde ingevul word</translation>
@@ -8513,6 +8545,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7523117833414447032">Wanneer hoofletters gelees word</translation>
 <translation id="7523585675576642403">Hernoem profiel</translation>
 <translation id="7525067979554623046">Skep</translation>
+<translation id="7526083414913154899">Kry meer inligting oor Gemini-take</translation>
 <translation id="7528224636098571080">Moenie oopmaak nie</translation>
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{Ongroepeer oortjiegroep?}other{Ongroepeer oortjiegroepe?}}</translation>
 <translation id="7529411698175791732">Gaan jou internetverbinding na. As die probleem voortduur, probeer afmeld en weer aanmeld.</translation>
@@ -8994,6 +9027,7 @@ Druk 'n toegewese skakelaar of sleutel om toewysing te verwyder.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="791247712619243506">Kanselleer opstelling</translation>
 <translation id="7912974581251770345">Vertaling</translation>
+<translation id="7913805372428124107">Meld aan en sinkroniseer geskiedenis om jou oortjies van <ph name="DEVICE" /> af te kry. Jy sal ook jou wagwoorde en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="7914399737746719723">App is geïnstalleer</translation>
 <translation id="7915457674565721553">Koppel aan die internet om ouerkontroles op te stel</translation>
 <translation id="7916364730877325865">Jou organisasie laat jou nie toe om sinkronisering met hierdie rekening aan te skakel nie</translation>
@@ -9274,6 +9308,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="810362914482827094">Soek toegangsleutels</translation>
 <translation id="8104088837833760645">Laai e-SIM-profiel af</translation>
 <translation id="8104388155778519213">Deel wat op jou skerm is met Google Lens</translation>
+<translation id="8104412594956510627">Sinkroniseer geskiedenis om jou geskiedenis van <ph name="DEVICE" /> af te kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="8104778744208707085">Het jou aandag nodig</translation>
 <translation id="8105273883928376822">Meld asseblief aan om voort te gaan.</translation>
 <translation id="8106114112474206597">Gebruik “i” om ’n muisknoppie te druk</translation>
@@ -9304,6 +9339,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8124313775439841391">Bestuurde ONC</translation>
 <translation id="8125651784723647184">Wagwoorddeling word deur jou administrateur bestuur</translation>
 <translation id="8126355825906412872">Glimlag</translation>
+<translation id="8126498026310640675">Meld aan en sinkroniseer jou geskiedenis en oortjies met <ph name="EMAIL" /> om jou geskiedenis van <ph name="DEVICE" /> af te kry. Jy sal ook jou boekmerke en meer op al jou toestelle kry. Jy kan enige tyd in instellings ophou sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="813082847718468539">Bekyk werfinligting</translation>
 <translation id="8131740175452115882">Bevestig</translation>
 <translation id="8133297578569873332">Aanvaarbaar – FM</translation>
@@ -9365,6 +9401,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Drukker <ph name="ITEM_POSITION" /> van <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Energiebespaarder is aangeskakel</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" kan prente, video en klanklêers by die gemerkte liggings lees en uitvee.</translation>
+<translation id="8181132988581553950">Gemini sal toegang hê tot dieselfde werwe as jy, insluitend die werwe waarby jy aangemeld is. Dit sal noodsaaklike inligting met derde partye deel, wat persoonlike inligting kan insluit wat jy dalk sensitief vind.</translation>
 <translation id="8183703640399301650">Jou toestel se EID is <ph name="EID_NUMBER" /> en jou toestel se IMEI is <ph name="IMEI_NUMBER" />. Hierdie nommers kan gebruik word om diens te help aktiveer.</translation>
 <translation id="8184288427634747179">Skakel oor na <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Meer inligting</translation>

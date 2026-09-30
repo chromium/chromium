@@ -213,6 +213,7 @@
 <translation id="1343830902827845050">Մուտք գործեք Chrome</translation>
 <translation id="1346748346194534595">Աջ</translation>
 <translation id="1348779747280417563">Անվան հաստատում</translation>
+<translation id="1353546633704510580">Ընտրված տարածք</translation>
 <translation id="1357195169723583938">Ով է վերջերս օգտագործել սարքը և երբ</translation>
 <translation id="1358187717814494928">Ստեղծել աղյուսակ</translation>
 <translation id="1358223345833465883">Ձեր որոնողական համակարգը Chromium-ում</translation>
@@ -352,6 +353,7 @@
 <translation id="1574714699824202614">Վճարման եղանակի հաստատում</translation>
 <translation id="1576277203042721907">Գնումների վիճակագրություն</translation>
 <translation id="1579189948231786790">Այս կայքը արգելափակվել է ձեր կազմակերպության կողմից</translation>
+<translation id="1579940597679293608">Փակել բոլոր մեկուսացված պատուհանները</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Չհաջողվեց բացել վեբէջը:</translation>
 <translation id="1585306568496579337">«<ph name="EXTENSION_NAME" />» ընդլայնումն ուզում է <ph name="HANDLER_HOSTNAME" />-ի միջոցով «<ph name="PROTOCOL" />» տեսակի հղումներ բացել</translation>
@@ -1095,6 +1097,7 @@
 <translation id="2858134430383535011">200 x 300 մմ</translation>
 <translation id="2859383374160668142">Դուք ցանկացած պահի կարող եք դիտել հետագծվող ապրանքների գների նվազումները։</translation>
 <translation id="2859806420264540918">Այս կայքը հոգնեցնող կամ մոլորեցնող գովազդ է ցուցադրում։</translation>
+<translation id="2864493683872263351">Գրեք կոդ, տեքստեր կամ ստեղծեք սլայդներ</translation>
 <translation id="2873317327342476681">Dino խաղ, խաղալու համար հպեք դինոզավրին կամ սեղմեք բացատի ստեղնը</translation>
 <translation id="287387905105155974">Օգնության ամպիկ</translation>
 <translation id="2875109558992200904">Երբ անվտանգությանը սպառնացող գործողություններ են հայտնաբերվում Chrome-ի կողմից, դրանց մասին համապատասխան տվյալներն ուղարկվում են ձեր ադմինիստրատորին։ Տվյալները կարող են ներառել Chrome-ում ձեր այցելած էջերի հասցեները և վերնագրերը, այն էջերի URL-ները, որտեղից տվյալներ եք պատճենել, ֆայլերի անվանումներ կամ մետատվյալներ, IP հասցեներ, տվյալներ դիտարկիչի կամ ներդիրների խափանումների մասին, ինչպես նաև օգտանուններ, որոնք օգտագործում եք՝ վեբ հավելվածներում, ձեր սարքում կամ Chrome-ում հաշիվ մտնելու համար։</translation>
@@ -1202,6 +1205,7 @@
 <translation id="3041176923638368519">Տեսնել քարտի առավելությունների պայմանները</translation>
 <translation id="3041584414879052436">Ապառիկ գնման ծառայությունների ցանկով էկրանը փակված է։</translation>
 <translation id="3041612393474885105">Վկայագրի տեղեկությունները</translation>
+<translation id="3041835740069544003">Chrome-ն այժմ կարող է ավելի շատ ձևեր հայտնաբերել և լրացնել՝ ձևերի խելացի ինքնալրացման շնորհիվ։ Դրա համար էջի բովանդակությունն ու URL-ները կարող են մշակվել ամպային սերվերների մասնավոր տարածքում։ Կարգավորումներում կարող եք փոխել այս պարամետրը։</translation>
 <translation id="3047054686095898948">Պահեք ձեր տեղեկությունները <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" />-ում, որպեսզի ավելի արագ կատարեք տարբեր գործողություններ, օրինակ՝ ձևեր լրացնեք Google-ի պրոդուկտներում։ Դուք կարող եք <ph name="BEGIN_LINK" />կառավարել ձեր տեղեկությունները<ph name="END_LINK" /> <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" />-ում՝ <ph name="ACCOUNT" /> հաշվի համար</translation>
 <translation id="305162504811187366">Chrome հեռակա աշխատասեղանի պատմությունը, այդ թվում՝ ժամադրոշմները, խնամորդները և սպասառուների աշխատաշրջանների նույնացուցիչները</translation>
 <translation id="3052868890529250114">Սովորաբար դուք անվտանգ եղանակով եք միանում այս կայքերին, սակայն այս անգամ Chrome-ին չհաջողվեց ապահով միացում օգտագործել։ Հաքերները կարող են փորձել լրտեսել ձեր կապը կամ փոփոխել այն։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին այս նախազգուշացման մասին<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1277,6 +1281,7 @@
 <translation id="3162559335345991374">Անլար կապը, որից օգտվում եք, կարող է պահանջել, որպեսզի դուք այցելեք նրա մուտքի էջը:</translation>
 <translation id="316542773973815724">Նավիգացիա</translation>
 <translation id="316638481603975524">Կարող է խնդրել տեղադրել վեբ ծրագրեր</translation>
+<translation id="3166688462674378969">«Փակել մեկուսացված պատուհանները» կոճակ․ ակտիվացրեք՝ այս պահին բաց բոլոր մեկուսացված պատուհանները փակելու համար</translation>
 <translation id="3166788340998560642">Հաջորդ անգամ, երբ օգտագործեք դրանք, Chrome-ը կառաջարկի պահել <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />-ում</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3176929007561373547">Ստուգեք ձեր պրոքսի սերվերի կարգավորումները կամ կապվեք
@@ -1305,6 +1310,7 @@
 <translation id="3211727636285361260">Բացել հղումները (<ph name="PROTOCOL" />) <ph name="HANDLER_HOSTNAME" />-ի միջոցով</translation>
 <translation id="3212468046572043669">Ներբեռնումը սկսվել է։ Այն տեսնելու համար քաշեք էկրանի վերևից և հպեք «Հետ» կոճակին</translation>
 <translation id="3212581601480735796">Ձեր գործողությունները <ph name="HOSTNAME" /> կայքում հետագծվում են</translation>
+<translation id="3215018171871590528">{NUM_SOURCES,plural, =1{Chrome-ն այլևս չի առաջարկի այս տեղեկությունները։ Սկզբնական աղբյուրը չի ջնջվի։}one{Chrome-ն այլևս չի առաջարկի այս տեղեկությունները։ Սկզբնական աղբյուրը չի ջնջվի։}other{Chrome-ն այլևս չի առաջարկի այս տեղեկությունները։ Սկզբնական աղբյուրները չեն ջնջվի։}}</translation>
 <translation id="3215092763954878852">Չհաջողվեց օգտագործել WebAuthn-ը</translation>
 <translation id="3215311088819828484">Արդյունքը թարմացվել է</translation>
 <translation id="3218181027817787318">Հարաբերական</translation>
@@ -1456,6 +1462,7 @@
 <translation id="3474392552865647225">«Կարգավորել տառատեսակները Chrome-ում» կոճակ․ ակտիվացրեք՝ Chrome-ում տառատեսակները և դրանց չափերը կարգավորելու համար</translation>
 <translation id="3478033058537426179">Ըստ խմբի</translation>
 <translation id="3479552764303398839">Հիմա չէ</translation>
+<translation id="3481315707647070701">Գեներացրեք և խմբագրեք պատկերներ</translation>
 <translation id="3484560055331845446">Հնարավոր է՝ չկարողանաք մտնել ձեր Google հաշիվ։ Chrome-ը խորհուրդ է տալիս փոխել գաղտնաբառը, որից հետո հարկավոր կլինի նորից մուտք գործել։</translation>
 <translation id="3484861421501147767">Հիշեցում․ առկա է պահված պրոմոկոդ</translation>
 <translation id="3485901585646640838">Ձեր Google հաշվում պահված գաղտնաբառերը և մյուս տվյալներն օգտագործելու համար հաստատեք ձեր ինքնությունը</translation>
@@ -1541,6 +1548,7 @@
 <translation id="3614001939154393113">Հաքերները կարող են փորձել <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> կայքից տվյալներ հափշտակել (օրինակ՝ գաղտնաբառեր, հաղորդագրություններ և վարկային քարտերի տվյալներ): <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին այս նախազգուշացման մասին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="361438452008624280">«<ph name="LANGUAGE_ID" />» ցանկի տարր․ լեզուն չի աջակցվում կամ հայտնի չէ։</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Chrome-ի կարգավորումներում անվտանգության ստուգում անցնելու համար սեղմեք «Tab», ապա՝ «Enter»։</translation>
+<translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Չհաջողվեց IBAN համարը պահել Google Wallet-ում։ Փոխարենը այն պահվել է Chrome-ում՝ այս սարքում։ Chrome-ը կառաջարկի կրկնել փորձը, երբ դուք նորից օգտագործեք այս IBAN համարը։</translation>
 <translation id="3621401353678567613">Կարգավորումներում միացրեք ծանուցումները, որպեսզի ստանաք այն ապրանքների գների իջեցման մասին ծանուցումներ, որոնց հետևում եք։</translation>
 <translation id="362276910939193118">Ցույց տալ ամբողջ պատմությունը</translation>
@@ -1706,6 +1714,7 @@
 <translation id="3865339060090354361">Ծանոթացեք <ph name="CREDIT_CARD_NAME" />-ի օգտագործման պայմաններին</translation>
 <translation id="3869939189466884821">Ձեր տեղական ֆայլերը կջնջվեն <ph name="MINUTES" /> րոպեից</translation>
 <translation id="3875783148670536197">Ցույց տալ, թե ինչպես</translation>
+<translation id="3877021395754842994">Փակել այս պահին բաց բոլոր մեկուսացված պատուհանները</translation>
 <translation id="3877603629930976930">Չկիսվել</translation>
 <translation id="3878445208930547646">Այս կայքից պատճենումն արգելված է</translation>
 <translation id="3879674895057686427">Ընտրեք թարգմանության լեզուն</translation>
@@ -2047,6 +2056,7 @@
 <translation id="4409271659088619928">Դուք օգտագործում եք <ph name="DSE" /> որոնողական համակարգը։ Որոնումների պատմությունը ջնջելու համար կարդացեք համապատասխան ցուցումները։</translation>
 <translation id="4409556632583862731">Նոր նամակագրություն</translation>
 <translation id="4410614037742891410">Ապահով կերպով թարմացրեք ID քարտը Google Wallet-ում</translation>
+<translation id="441152911646545600"><ph name="CLOSE_ISOLATED_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Այս պահին բաց բոլոր մեկուսացված պատուհանները փակելու համար սեղմեք Tab, ապա՝ Enter</translation>
 <translation id="4412074349188076601">Այս կազմաձևը նշված է որպես տեղադրման համար հասանելի, բայց քանի որ այս կառուցվածքի համար պատկեր տրամադրված չէ, այն հնարավոր չէ տեղադրել։</translation>
 <translation id="4412377069090572315">Օգտատերերի կարծիքները</translation>
 <translation id="4414515549596849729">քուքիներ և կայքի տվյալներ</translation>
@@ -2318,6 +2328,7 @@
 <translation id="4887406273302438710">Պաշտպանեք գաղտնաբառերը Windows Hello-ի միջոցով</translation>
 <translation id="4887785555357166111">Պահել տեսանյութի կադրը</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ի կարգավորումներում այցելությունների պատմությունը, քուքիները, քեշը և այլ տվյալներ ջնջելու համար սեղմեք Tab, ապա՝ Enter։</translation>
+<translation id="4892391379033030113">«Բացել մեկուսացված պատուհան» կոճակ․ ակտիվացրեք՝ նոր մեկուսացված պատուհան բացելու համար</translation>
 <translation id="4892518386797173871">Հետևի կողմ</translation>
 <translation id="4894390983254799375">Օրինակ՝ սարքի ID-ն, անվանումը, օպերացիոն համակարգի տարբերակը և օպերացիոն համակարգի օգտանունը</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -2993,6 +3004,7 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (համաժամացված)</translation>
 <translation id="6025471531651464742">Ավելացնել ֆայլեր</translation>
 <translation id="6028591542479806248">Կառավարեք բջջային և փոստային ծանուցումները</translation>
+<translation id="6029805223627823735"><ph name="LAUNCH_ISOLATED_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Նոր մեկուսացված պատուհան բացելու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="603068602130820122">Երկու ամրակ աջ կողմում</translation>
 <translation id="6031824805267965302">Օգտագործեք ձեր շարժման սենսորները</translation>
 <translation id="6032524144326295339">Փոստարկղ 2</translation>
@@ -3405,6 +3417,7 @@
 <translation id="671076103358959139">Գրանցման թոքեն՝</translation>
 <translation id="6711464428925977395">Պրոքսի սերվերի հետ ինչ-որ բան այն չէ, կամ հասցեն սխալ է:</translation>
 <translation id="6711700233707023861">Տարատեսակների տողը պատճենվեց սեղմատախտակին</translation>
+<translation id="6712003214447962889">Ավելի խելացի, ավելի արագ պատասխաններ</translation>
 <translation id="6712343563085762261">Տեղափոխվեց վերև</translation>
 <translation id="6716039223770814796">Համեմատել՝ <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> տարր</translation>
 <translation id="6716672519412350405"><ph name="URL" /> կայքն ուզում է ստեղծել ձեր շրջակայքի եռաչափ քարտեզը և հետագծել տեսախցիկի դիրքը</translation>
@@ -3748,6 +3761,7 @@
 <translation id="7316521168101843192">Ֆայլը պահվում է Microsoft OneDrive-ում</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Օգնություն կապի խնդիրների դեպքում</translation>
+<translation id="7328315434053660512">Բացել մեկուսացված պատուհան</translation>
 <translation id="733354035281974745">Լոկալ հաշվի փոփոխում սարքում</translation>
 <translation id="7334320624316649418">&amp;Վերարկել վերադասավորումը</translation>
 <translation id="7335157162773372339">Կարող է հայցել տեսախցիկն օգտագործելու թույլտվություն</translation>
@@ -3796,6 +3810,7 @@
 <translation id="7402375256128852434">Ավելացնել վերջին ներդիրները</translation>
 <translation id="7403392780200267761">Կիսվել այս ներդիրով՝ ուղարկելով հղում կամ ստեղծելով QR կոդ, հեռարձակում և այլն</translation>
 <translation id="7403591733719184120">Ձեր <ph name="DEVICE_NAME" /> սարքը կառավարվում է</translation>
+<translation id="7404785524901232736">{NUM_SOURCES,plural, =1{Առաջարկը հեռացվեց։ Սկզբնական աղբյուրը չի ջնջվի։}one{Առաջարկը հեռացվեց։ Սկզբնական աղբյուրը չի ջնջվի։}other{Առաջարկը հեռացվեց։ Սկզբնական աղբյուրները չեն ջնջվի։}}</translation>
 <translation id="7405878640835614059">Այս կայքը (<ph name="ENROLLMENT_DOMAIN" />) լրացուցիչ գործառույթների համար հավելվածներ է տեղադրել։ Ձեր տվյալների մի մասը հասանելի է այդ հավելվածներին։</translation>
 <translation id="740691708085211707">Հեռացնե՞լ աշխատանքային հասցեն Chrome-ի ինքնալրացման տվյալներից</translation>
 <translation id="7407424307057130981">&lt;p&gt;Այս սխալը կցուցադրվի, եթե ձեր Windows համակարգչում տեղադրված է Superfish ծրագիրը։&lt;/p&gt;
@@ -4014,6 +4029,7 @@
 <translation id="7718626066800460799">Չհաջողվեց պահել սկանավորված փաստաթուղթը</translation>
 <translation id="772128550427553158">CVC կոդը նշված է քարտի դիմերեսին։</translation>
 <translation id="7724603315864178912">Կտրել</translation>
+<translation id="7726402116075326231">Բացել նոր մեկուսացված պատուհան գաղտնի դիտարկման համար</translation>
 <translation id="7730057435797792985">Տեսակավորել</translation>
 <translation id="7734285854693414638">Արագ ստեղծել ձև Google Ձևաթղթերում</translation>
 <translation id="773466115871691567">Միշտ թարգմանել <ph name="SOURCE_LANGUAGE" /> էջերը</translation>
@@ -4205,6 +4221,7 @@
 <translation id="8075898834294118863">Կառավարել կայքի կարգավորումները</translation>
 <translation id="8076492880354921740">Ներդիրներ</translation>
 <translation id="8076880883123051368">Ձեր Google հաշվում կարող են լինել այցելությունների պատմության այլ ձևեր ևս, օրինակ՝ <ph name="BEGIN_LINK_GAA" />Gemini հավելվածներում գործողությունների պատմությունը<ph name="END_LINK_GAA" />։ Դրանք կգտնեք <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> էջում։</translation>
+<translation id="8077465698530018904">Հեռացնել ընտրված տարածաշրջանը</translation>
 <translation id="8077669823243888800">Envelope Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Վերբեռնե՞լ կոնֆիդենցիալ ֆայլը}one{Վերբեռնե՞լ կոնֆիդենցիալ ֆայլը}other{Վերբեռնե՞լ կոնֆիդենցիալ ֆայլերը}}</translation>
 <translation id="8079031581361219619">Վերաբեռնե՞լ կայքը</translation>

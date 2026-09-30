@@ -121,11 +121,6 @@ Hinweis: Weitere Informationen zu Prozessschutzrichtlinien findest du unter http
 <translation id="1076751984131277498">Zulassungsliste von trennbaren USB-Geräten</translation>
 <translation id="1077675271127011209">Berichte mit Nutzungs- und Absturzdaten deaktivieren</translation>
 <translation id="1079498696402787191">Standardwert für Hashes verwenden, die in TLS-Handshakes zulässig sind.</translation>
-<translation id="1081263326166769685">Wenn die Richtlinie aktiviert ist, meldet <ph name="PRODUCT_OS_NAME" /> Messwerte zur Nutzung und Diagnosedaten wie Absturzberichte an Google. Ist die Richtlinie deaktiviert, werden Messwerte und Diagnosedaten nicht gemeldet.
-
-Bei verwalteten Geräten ist diese Richtlinie standardmäßig aktiviert und sendet Messwerte an Google.
-
-Bei nicht verwalteten Geräten kann der Nutzer entscheiden, ob Messwerte gesendet werden sollen, wenn die Richtlinie nicht konfiguriert ist.</translation>
 <translation id="1081470306474387129">Die Controlled Frame API, die für bestimmte isolierte Kontexte wie isolierte Web‑Apps (IWAs) verfügbar ist, ermöglicht es einer App, beliebige Inhalte einzubetten und zu manipulieren.
 Weitere Informationen findest du unter https://github.com/WICG/controlled-frame.
 
@@ -3722,17 +3717,6 @@ Wenn du die Richtlinie auf „False“ setzt oder nicht konfigurierst, führt di
 
 Wenn diese Richtlinie auf „true“ gesetzt oder nicht konfiguriert ist, wird dem Nutzer Root-Zugriff auf Crostini-Container gewährt.
 Wenn sie auf „false“ gesetzt ist, wird dem Nutzer weder auf vorhandene noch auf neue Crostini-Container Root-Zugriff gewährt.</translation>
-<translation id="3370759229531293665">Mit dieser Richtlinie kannst du eine Liste mit URL‑Mustern für Websites erstellen, durch die angegeben wird, welche Websites JavaScript mit aktiviertem JIT‑Compiler (Just In Time) nicht ausführen dürfen.
-
-          Wenn JavaScript JIT deaktiviert ist, rendert <ph name="PRODUCT_NAME" /> Webinhalte möglicherweise langsamer und Teile von JavaScript, einschließlich WebAssembly, werden eventuell deaktiviert. Außerdem darf <ph name="PRODUCT_NAME" /> Webinhalte möglicherweise in einer sichereren Konfiguration rendern, sollte JavaScript JIT deaktiviert sein.
-
-          Ausführliche Informationen zu gültigen URL‑Mustern findest du unter https://chromeenterprise.google/policies/url-patterns. Platzhalter wie „<ph name="WILDCARD_VALUE" />“ sind zulässig.
-
-          JavaScript JIT-Richtlinienausnahmen werden nur für die jeweilige Website (eTLD+1) erzwungen. Eine nur für subdomain.beispiel.de konfigurierte Richtlinie wird nicht korrekt auf beispiel.de oder subdomain.beispiel.de angewendet, weil beide in beispiel.de (eTLD+1) aufgelöst werden, wofür es keine Richtlinie gibt. In diesem Fall muss die Richtlinie für beispiel.de konfiguriert sein, damit sie sowohl für beispiel.de als auch subdomain.beispiel.de korrekt angewendet wird.
-
-          Diese Richtlinie wird auf Basis einzelner Frames angewendet und nicht nur auf Basis der Ursprungs‑URL auf oberster Ebene. Wenn etwa beispiel‑eins.de in der Richtlinie „<ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" />“ aufgelistet ist, aber beispiel‑eins.de einen Frame mit beispiel‑zwei.de lädt, ist für beispiel‑eins.de JavaScript JIT deaktiviert. Für beispiel‑zwei.de wird jedoch die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />“ verwendet, falls konfiguriert, oder JavaScript JIT ist standardmäßig aktiviert.
-
-          Wenn diese Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />“ für die Website, falls konfiguriert. Andernfalls ist JavaScript JIT für die Website aktiviert.</translation>
 <translation id="3373381043600809954">"<ph name="PRODUCT_NAME" />" aktivieren</translation>
 <translation id="3374587000313305002">Hiermit wird das Verzeichnis konfiguriert, in dem <ph name="PRODUCT_NAME" /> die Nutzerdaten speichert.
 
@@ -5799,16 +5783,6 @@ Ausführliche Informationen zu gültigen <ph name="URL_LABEL" />‑Mustern finde
 Gültige Werte reichen von 1 Sekunde bis 9.999 Sekunden. Ist diese Richtlinie nicht konfiguriert, verwendet <ph name="PRODUCT_OS_NAME" /> den Standardwert von 60 Sekunden.
 
 Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_ENABLED_POLICY_NAME" /> auf „false“ gesetzt ist.</translation>
-<translation id="4723615546736863060">Mit dieser Richtlinie kannst du eine Liste mit URL‑Mustern festlegen, die angeben, für welche Websites erweiterte JavaScript-Optimierungen aktiviert werden.
-
-Ausführliche Informationen zu gültigen Website-URL-Mustern findest du unter https://chromeenterprise.google/policies/url-patterns.
-Platzhalter wie <ph name="WILDCARD_VALUE" /> sind zulässig.
-
-Richtlinienausnahmen für JavaScript-Optimierungen werden nur für die jeweilige Website (eTLD+1) erzwungen. Eine nur für subdomain.beispiel.de konfigurierte Richtlinie wird nicht korrekt auf beispiel.de oder subdomain.beispiel.de angewendet, weil beide in beispiel.de (eTLD+1) aufgelöst werden, wofür es keine Richtlinie gibt. In diesem Fall muss die Richtlinie für beispiel.de konfiguriert sein, damit sie sowohl für beispiel.de als auch subdomain.beispiel.de korrekt angewendet wird.
-
-Diese Richtlinie wird auf Basis einzelner Frames angewendet und nicht nur auf Basis der Ursprungs‑URL auf oberster Ebene. Wenn z. B. beispiel‑eins.de in der Richtlinie „<ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" />“ aufgelistet ist, aber beispiel‑eins.de einen Frame mit beispiel‑zwei.de lädt, sind für beispiel‑eins.de JavaScript-Optimierungen aktiviert. Für beispiel‑zwei.de wird jedoch die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />“ verwendet, falls konfiguriert, oder die JavaScript-Optimierung ist standardmäßig aktiviert. Einträge in der Sperrliste haben eine höhere Priorität als Einträge in der Zulassungsliste, die wiederum eine höhere Priorität als der konfigurierte Standardwert haben.
-
-Wenn diese Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />“ für die Website, falls konfiguriert. Andernfalls ist die JavaScript-Optimierung für die Website aktiviert.</translation>
 <translation id="4723829699367336876">Firewallausnahme über Client für Remote-Zugriff aktivieren</translation>
 <translation id="4725528134735324213">Android Backup Service aktivieren</translation>
 <translation id="4725691087141147920">Einwilligung zur Synchronisierung während der Anmeldung anzeigen</translation>
@@ -6235,13 +6209,6 @@ Diese Einstellung steuert die Darstellung von Werbeinhalten, einschließlich Beg
 <translation id="494924690085329212">Nach Nutzerabmeldung neu starten, wenn Android gestartet wurde.</translation>
 <translation id="4950447493143157880">Integrierten DNS-Client nie verwenden</translation>
 <translation id="4953541641325278286">Keiner Website erlauben, den Inaktivitätsstatus des Nutzers zu erkennen</translation>
-<translation id="4954185885991137927">Wenn diese Richtlinie aktiviert ist, wird die erweiterte Berichterstellung bei der Verwendung von Safe Browsing in <ph name="PRODUCT_NAME" /> aktiviert. Einige Systeminformationen und Seiteninhalte werden dadurch an Google gesendet, um bei der Erkennung schädlicher Apps und Websites zu helfen.
-
-      Ist die Richtlinie deaktiviert, werden keine Berichte gesendet.
-
-      Wenn du diese Richtlinie konfigurierst, kann sie von Nutzern nicht geändert werden. Wenn die Richtlinie nicht konfiguriert ist, können Nutzer selbst entscheiden, ob sie Berichte senden möchten.
-
-      Weitere Informationen zu Safe Browsing findest du unter https://developers.google.com/safe-browsing.</translation>
 <translation id="4954352279763128540">Dadurch wird dem Dialogfeld für die Kerberos-Authentifizierung eine vorausgefüllte Domain hinzugefügt.
 
           Wenn diese Richtlinie konfiguriert ist, wird rechts im Feld „Kerberos-Nutzername“ die vorausgefüllte Domain angezeigt. Gibt der Nutzer seinen Nutzernamen ein, wird er mit der vorausgefüllten Domain verkettet. Falls die Eingabe des Nutzers „@“ enthält, wird die vorausgefüllte Domain nicht angezeigt und hat keine Auswirkungen auf die Eingabe.
@@ -7576,13 +7543,6 @@ Wenn die Richtlinie aktiviert ist, wird immer adaptives Zwischenspeichern verwen
 Ist sie deaktiviert oder nicht konfiguriert, wird über den Funktionseinführungsprozess des Browsers entschieden, ob adaptives Zwischenspeichern verwendet wird.</translation>
 <translation id="579556027056000499">Der SHA-256-Hash des Inhalts unter der URL.</translation>
 <translation id="5800329278018669527">Eingabeaufforderung zur Netzwerkkonfiguration im Offlinemodus deaktivieren</translation>
-<translation id="5800627752428920394">Mit dieser Richtlinie wird festgelegt, ob aktive WebSocket-Verbindungen getrennt werden, wenn eine Seite im Back-Forward-Cache gespeichert wird. Aktive WebSocket-Verbindungen haben bisher verhindert, dass eine Seite im Back-Forward-Cache gespeichert wird. <ph name="PRODUCT_NAME" /> hat dieses Verhalten jedoch geändert und trennt stattdessen die WebSockets, sodass die Seite im Cache gespeichert und in einem getrennten Zustand wiederhergestellt werden kann.
-
-Wenn diese Richtlinie aktiviert oder nicht konfiguriert ist, werden WebSockets getrennt, wenn eine Seite im Back-Forward-Cache gespeichert wird.
-
-Wenn diese Richtlinie deaktiviert ist, werden WebSockets nicht getrennt, wenn eine Seite im Back-Forward-Cache gespeichert wird. Da der Back-Forward-Cache keine aktiven WebSockets unterstützt, werden Seiten mit aktiven WebSockets nicht im Cache gespeichert.
-
-Diese Richtlinie ist vorübergehend und wird zukünftig entfernt.</translation>
 <translation id="5802931736499687181">Verschlüsselte Pipeline für die Berichterstellung deaktivieren</translation>
 <translation id="5803715507113569033">Mit dieser Richtlinie können Administratoren die Bereitstellung von <ph name="MICROSOFT_ONE_DRIVE_NAME" /> konfigurieren.
 
@@ -8203,21 +8163,6 @@ Ist diese Richtlinie nicht konfiguriert, wird für alle Websites der globale Sta
 <translation id="6207673917710036736">Native Rezensionsaufforderungen und Bewertungslinks für Erweiterungen aktivieren</translation>
 <translation id="6208896993204286313"><ph name="PRODUCT_NAME" />-Richtliniendaten erfassen</translation>
 <translation id="6210259502936598222">Informationen zu Betriebssystem und <ph name="PRODUCT_NAME" />-Version erfassen</translation>
-<translation id="6214712395769944855">Diese Richtlinie konfiguriert <ph name="PRODUCT_NAME" /> so, dass die bevorzugten Chiffren für Verschlüsselungen in TLS 1.3 nach einer bestimmten Compliance-Regelung genehmigte Algorithmen bevorzugen.
-
-Durch das Festlegen dieser Richtlinie wird nicht garantiert, dass bestimmte Algorithmen ausgehandelt werden.
-
-Diese Richtlinie ermöglicht es Serverbetreibern, die Clients mit und ohne Compliance-Anforderungen unterstützen möchten, zwischen diesen Clients zu unterscheiden. Bestimmte nicht-standardmäßige Algorithmen mit erhöhter kryptographischer Stärke werden nur für diejenigen Clients verwendet, die ausdrücklich so konfiguriert wurden, dass sie diese bevorzugen.
-
-Wird die Richtlinie auf „<ph name="CNSA_NAME" />“ festgelegt, wird <ph name="PRODUCT_NAME" /> so konfiguriert, dass die für die Compliance mit der Commercial National Security Algorithm Suite 1.0 und 2.0 (CNSA 1.0 und 2.0) erforderlichen Chiffren bevorzugt werden.
-
-Wenn die Richtlinie nicht konfiguriert oder auf „<ph name="DEFAULT_NAME" />“ gesetzt ist, verwendet <ph name="PRODUCT_NAME" /> die standardmäßigen Chiffren.
-
-Das Festlegen dieser Richtlinie ist für die Sicherheit nicht erforderlich. Die Standardkryptografie, die von <ph name="PRODUCT_NAME" /> verwendet wird, ist stark genug, um einem Brute-Force-Angriff mit der gesamten Energie der Sonne standzuhalten.
-
-Wenn du diese Richtlinie festlegst, wird <ph name="PRODUCT_NAME" /> beim Zugriff auf Websites langsamer.
-
-Diese Richtlinie wirkt sich nur auf TLS 1.3 und QUIC aus, nicht auf frühere Versionen von TLS.</translation>
 <translation id="6219841576688651072">Fenstergruppierung für „Generative AI – Übersicht“ nicht zulassen.</translation>
 <translation id="6220835555850906733">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, ist jede unterstützte Audioausgabe auf den Geräten der Nutzer zulässig.
 
@@ -9586,18 +9531,6 @@ Ausführliche Informationen zu gültigen URL-Mustern findest du unter https://ch
 Wenn diese Richtlinie auf „<ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_DISABLED" />“ (Wert 0) gesetzt ist, kann der Browser das Clientzertifikat nicht anfordern. Wenn das Clientzertifikat eines verwalteten Profils bereits zur Verfügung gestellt wurde, weil diese Richtlinie zuvor aktiviert war, wird es nicht gelöscht, aber es ist nicht für mTLS-Verbindungen verfügbar und wird nach Ablauf nicht verlängert.</translation>
 <translation id="7013484314513229844">Starten bei anliegender Netzspannung aktivieren</translation>
 <translation id="7014427417852575165">Nutzer, die am erweiterten Sicherheitsprogramm teilnehmen, werden durch zusätzliche Funktionen geschützt</translation>
-<translation id="7015750050379345684">Mit dieser Richtlinie kannst du eine Liste mit URL‑Mustern festlegen, durch die angegeben wird, für welche Websites erweiterte JavaScript-Optimierungen deaktiviert werden.
-
-Wenn JavaScript-Optimierungen deaktiviert sind, rendert <ph name="PRODUCT_NAME" /> Webinhalte möglicherweise langsamer.
-
-Ausführliche Informationen zu gültigen URL‑Mustern findest du unter https://chromeenterprise.google/policies/url-patterns.
-Platzhalter wie „<ph name="WILDCARD_VALUE" />“ sind zulässig.
-
-Richtlinienausnahmen für JavaScript-Optimierungen werden nur für die jeweilige Website (eTLD+1) erzwungen. Eine nur für subdomain.beispiel.de konfigurierte Richtlinie wird nicht korrekt auf beispiel.de oder subdomain.beispiel.de angewendet, weil beide in beispiel.de (eTLD+1) aufgelöst werden, wofür es keine Richtlinie gibt. In diesem Fall muss die Richtlinie für beispiel.de konfiguriert sein, damit sie sowohl für beispiel.de als auch subdomain.beispiel.de korrekt angewendet wird.
-
-Diese Richtlinie wird auf Basis einzelner Frames angewendet und nicht nur auf Basis der Ursprungs‑URL auf oberster Ebene. Wenn etwa beispiel‑eins.de in der Richtlinie „<ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />“ aufgelistet ist, aber beispiel‑eins.de einen Frame mit beispiel‑zwei.de lädt, sind für beispiel‑eins.de JavaScript-Optimierungen deaktiviert. Für beispiel‑zwei.de wird jedoch die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />“ verwendet, falls konfiguriert, oder JavaScript-Optimierungen sind standardmäßig aktiviert. Einträge in der Sperrliste haben eine höhere Priorität als Einträge in der Zulassungsliste, die wiederum eine höhere Priorität als der konfigurierte Standardwert haben.
-
-Wenn diese Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" />“ für die Website, falls konfiguriert. Andernfalls ist die JavaScript-Optimierung für die Website aktiviert.</translation>
 <translation id="7016587686120059767">Gastmodus deaktivieren</translation>
 <translation id="7019805045859631636">Schnell</translation>
 <translation id="7021590945154530517">Überwachung des Gerätestatus aktivieren</translation>
@@ -10270,15 +10203,6 @@ Tatsächliche Werte sensibler Daten (z. B. Cookies oder Eingabewerte) werden NI
       Ausnahme: TPM-Informationen werden für M95 und niedriger von <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> gesteuert.</translation>
 <translation id="739556497251174388">Verwenden der <ph name="PRODUCT_OS_NAME" />-Anmeldedaten für die Netzwerkauthentifizierung zulassen</translation>
 <translation id="7395790871181951311">Isolierten Apps verweigern, eine Verbindung zu Smartcards herzustellen</translation>
-<translation id="7396487166653169044">Mit dieser Richtlinie kannst du eine Liste mit URL‑Mustern für Websites erstellen, durch die angegeben wird, welche Websites JavaScript mit aktiviertem JIT‑Compiler (Just In Time) ausführen dürfen.
-
-          Ausführliche Informationen zu gültigen Website-URL‑Mustern findest du unter https://chromeenterprise.google/policies/url-patterns. Platzhalter wie „<ph name="WILDCARD_VALUE" />“ sind zulässig.
-
-          JavaScript JIT-Richtlinienausnahmen werden nur für die jeweilige Website (eTLD+1) erzwungen. Eine nur für subdomain.beispiel.de konfigurierte Richtlinie wird nicht korrekt auf beispiel.de oder subdomain.beispiel.de angewendet, weil beide in beispiel.de (eTLD+1) aufgelöst werden, wofür es keine Richtlinie gibt. In diesem Fall muss die Richtlinie für beispiel.de konfiguriert sein, damit sie sowohl für beispiel.de als auch subdomain.beispiel.de korrekt angewendet wird.
-
-          Diese Richtlinie wird auf Basis einzelner Frames angewendet und nicht nur auf Basis der Ursprungs‑URL auf oberster Ebene. Wenn etwa beispiel‑eins.de in der Richtlinie „<ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" />“ aufgelistet ist, aber beispiel‑eins.de einen Frame mit beispiel‑zwei.de lädt, ist für beispiel‑eins.de JavaScript JIT aktiviert. Für beispiel‑zwei.de wird jedoch die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />“ verwendet, falls konfiguriert, oder JavaScript JIT ist standardmäßig aktiviert.
-
-          Wenn diese Richtlinie für eine Website nicht konfiguriert ist, gilt die Richtlinie aus „<ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" />“ für die Website, falls konfiguriert. Andernfalls ist JavaScript JIT für die Website aktiviert.</translation>
 <translation id="7400208209734208176">Links standardmäßig im Chrome-Browser öffnen</translation>
 <translation id="7402257017733669351">Erstellen von dynamischem Code im Browserprozess verhindern</translation>
 <translation id="7406039009275722824">Wenn du die <ph name="CHROME_SYNC_NAME" /> deaktivierst, funktioniert der Android-Dienst „Sichern und wiederherstellen“ nicht mehr richtig.</translation>
@@ -10691,21 +10615,6 @@ Wenn diese Richtlinie deaktiviert ist, verwendet er den aktuellen AGG-Renderer.
 
 Wenn diese Richtlinie nicht konfiguriert ist, wird der PDF-Renderer vom Browser ausgewählt.</translation>
 <translation id="7704244074621846004">Verlängerte Lebensdauer für SharedWorker aktivieren</translation>
-<translation id="7705886216383850895">Konfiguriert die Verbindungseinstellungen für <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> in <ph name="PRODUCT_NAME" />.
-
-Zum Konfigurieren von <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> müssen Administratoren Folgendes angeben:
-* Die URL der <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />-Webanwendung (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) ODER
-* Alle drei Legacy-Parameter zusammen: „<ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />“, „<ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" />“ und „<ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />“. Wenn nur eine Teilmenge der drei Parameter ohne URL angeben wird, bleibt <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> nicht konfiguriert.
-
-Der Parameter „<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />“ muss eine gültige URL sein, die das HTTPS-Schema verwendet und weder einen Nutzernamen noch ein Passwort enthält. Wenn sie diese Anforderungen nicht erfüllt, wird die Richtlinie ignoriert und <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> bleibt nicht konfiguriert.
-
-Falls sowohl der Parameter „<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />“ als auch die Legacy-Parameter konfiguriert sind, hat der Parameter „<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />“ Vorrang.
-
-Ist diese Richtlinie konfiguriert, wird <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> für Nutzer konfiguriert, die mit einem verwalteten Konto oder einem verwalteten Browser angemeldet sind.
-
-Wenn diese Richtlinie nicht konfiguriert ist, wird <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> nicht konfiguriert.
-
-Diese Richtlinie steuert nicht die allgemeine <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />-Anbindung, die über die Richtlinie „<ph name="GEMINI_SETTINGS_POLICY_NAME" />“ gesteuert werden kann.</translation>
 <translation id="7707869387893611318">Dadurch wird die Funktion für Ladetöne aktiviert.
 
           Diese Funktion sorgt dafür, dass die Ladetöne abgespielt werden.
@@ -11263,21 +11172,6 @@ Es gibt mehrere Richtlinien, die Ursprünge auflisten, die sich auf Anfragen an 
 <translation id="8062485064082966327">Einen anonymen Google-Dienst verwenden, um automatische Beschreibungen für unbeschriftete Bilder zu erhalten</translation>
 <translation id="8064875716442437829">Bedienungshilfen für Renderer aktivieren</translation>
 <translation id="8066428282805800713">Zusätzliche Hardwaredaten unter ChromeOS Flex senden</translation>
-<translation id="8069233292746468045">Diese Richtlinie konfiguriert <ph name="PRODUCT_NAME" /> so, dass die bevorzugten Algorithmen für Schlüsselvereinbarungen (unterstützte Gruppen) für TLS 1.3 so angeordnet werden, dass Algorithmen Vorrang erhalten, die von einer bestimmten Compliance-Regelung zugelassen sind.
-
-Durch das Festlegen dieser Richtlinie wird nicht garantiert, dass bestimmte Algorithmen ausgehandelt werden.
-
-Diese Richtlinie ermöglicht es Serverbetreibern, die Clients mit und ohne Compliance-Anforderungen unterstützen möchten, zwischen diesen Clients zu unterscheiden. Bestimmte nicht standardmäßige Algorithmen mit erhöhter kryptographischer Stärke werden nur für diejenigen Clients verwendet, die ausdrücklich so konfiguriert wurden, dass sie diese bevorzugen.
-
-Wird die Richtlinie auf „<ph name="CNSA2_NAME" />“ festgelegt, wird <ph name="PRODUCT_NAME" /> so konfiguriert, dass die für die Compliance mit der Commercial National Security Algorithm Suite 2.0 (CNSA 2.0) erforderlichen Methoden zum Schlüsselaustausch bevorzugt werden.
-
-Wenn die Richtlinie nicht konfiguriert oder auf „<ph name="DEFAULT_NAME" />“ gesetzt ist, verwendet <ph name="PRODUCT_NAME" /> die standardmäßigen Methoden für den Schlüsselaustausch.
-
-Das Festlegen dieser Richtlinie ist für die Sicherheit nicht erforderlich. Die Standardkryptografie, die von <ph name="PRODUCT_NAME" /> verwendet wird, ist stark genug, um einem Brute-Force-Angriff mit der gesamten Energie der Sonne standzuhalten.
-
-Wenn du diese Richtlinie festlegst, wird <ph name="PRODUCT_NAME" /> beim Zugriff auf Websites langsamer.
-
-Diese Richtlinie wirkt sich nur auf TLS 1.3 und QUIC aus, nicht auf frühere Versionen von TLS.</translation>
 <translation id="8071371098891664137">Wenn <ph name="PRINTERS_BLOCKLIST" /> für <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> ausgewählt ist, wird durch Festlegen von <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> angegeben, welche Drucker die Nutzer nicht verwenden können. Mit Ausnahme der in dieser Richtlinie aufgeführten IDs können die Nutzer auf alle Drucker zugreifen. Die IDs müssen dem Feld <ph name="ID_FIELD" /> oder dem Feld <ph name="GUID_FIELD" /> in der Datei entsprechen, die in <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> angegeben ist.</translation>
 <translation id="8076539570602616846">Das Speichern von PDF-Dateien in Google Drive über den PDF-Viewer von <ph name="PRODUCT_NAME" /> auf zulässige Google-Konten beschränken</translation>
 <translation id="8078297389450285582">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, wird das intelligente Dimm-Modell verwendet und der Zeitraum bis zum Dimmen des Bildschirms kann verlängert werden. Wenn das Dimmen des Bildschirms durch das Modell verzögert wird, werden die Verzögerungen für das Ausschalten des Bildschirms, die Bildschirmsperre und die Inaktivität entsprechend angepasst, um die ursprünglich konfigurierten Abstände beizubehalten.

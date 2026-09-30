@@ -213,6 +213,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1343830902827845050">In Chrome anmelden</translation>
 <translation id="1346748346194534595">Rechts</translation>
 <translation id="1348779747280417563">Namen bestätigen</translation>
+<translation id="1353546633704510580">Ausgewählter Bereich</translation>
 <translation id="1357195169723583938">Letzte Nutzer dieses Geräts und Zeitpunkt der Verwendung</translation>
 <translation id="1358187717814494928">Tabelle erstellen</translation>
 <translation id="1358223345833465883">Deine Suchmaschine in Chromium</translation>
@@ -352,6 +353,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="1574714699824202614">Zahlungsmethode wird bestätigt</translation>
 <translation id="1576277203042721907">Shopping Insights</translation>
 <translation id="1579189948231786790">Diese Website wurde von deiner Organisation blockiert</translation>
+<translation id="1579940597679293608">Alle isolierten Fenster schließen</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Fehler beim Anzeigen dieser Webseite.</translation>
 <translation id="1585306568496579337">Die Erweiterung „<ph name="EXTENSION_NAME" />“ möchte Links vom Typ „<ph name="PROTOCOL" />“ über <ph name="HANDLER_HOSTNAME" /> öffnen</translation>
@@ -1095,6 +1097,7 @@ Du kannst diesen Vorschlag aus Chrome entfernen. Die ursprüngliche Quelle wird 
 <translation id="2858134430383535011">200 × 300 mm</translation>
 <translation id="2859383374160668142">Du kannst dir jederzeit Preissenkungen für beobachtete Produkte ansehen.</translation>
 <translation id="2859806420264540918">Diese Website zeigt aufdringliche oder irreführende Werbung an.</translation>
+<translation id="2864493683872263351">Programmieren, schreiben oder Präsentationen erstellen</translation>
 <translation id="2873317327342476681">Dino-Spiel – tippe auf den Dino oder drücke die Leertaste, um das Spiel zu starten</translation>
 <translation id="287387905105155974">Infofeld</translation>
 <translation id="2875109558992200904">Wenn Chrome Sicherheitshinweise meldet, werden relevante Informationen an deinen Administrator gesendet. Dazu gehören z. B. URLs und Titel der von dir in Chrome besuchten Seiten, URLs von Seiten, von denen du Daten kopiert hast, Dateinamen oder Metadaten, IP-Adressen, Browser- oder Tab-Abstürze sowie der Nutzername, den du zum Anmelden in Webanwendungen, auf deinem Gerät und in Chrome verwendest.</translation>
@@ -1202,6 +1205,7 @@ Du kannst diesen Vorschlag aus Chrome entfernen. Die ursprüngliche Quelle wird 
 <translation id="3041176923638368519">Nutzungsbedingungen für Kartenvorteile ansehen</translation>
 <translation id="3041584414879052436">Die Liste der Anbieter von „Jetzt kaufen, später bezahlen“ ist geschlossen.</translation>
 <translation id="3041612393474885105">Zertifikatinformationen</translation>
+<translation id="3041835740069544003">Chrome kann jetzt dank der optimierten Formularbearbeitung noch mehr Formulare erkennen und ausfüllen. Dazu können Seiteninhalte und URLs in einem vertraulichen Profil in der Cloud verarbeitet werden. Du kannst diese Funktion in den Einstellungen verwalten.</translation>
 <translation id="3047054686095898948">Wenn du deine Daten in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> speicherst, lassen sich viele Dinge schneller erledigen, z. B. das Ausfüllen von Formularen in Google-Produkten. <ph name="BEGIN_LINK" />Über diesen Link<ph name="END_LINK" /> kannst du deine Daten für <ph name="ACCOUNT" /> in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> verwalten.</translation>
 <translation id="305162504811187366">Chrome Remote Desktop-Verlauf, einschließlich Zeitstempeln, Hosts und Client-Sitzungs-IDs</translation>
 <translation id="3052868890529250114">Normalerweise verbindest du dich auf sichere Weise mit Websites, aber Chrome konnte dieses Mal keine verschlüsselte Verbindung herstellen. Möglicherweise versucht ein Angreifer, deine Onlineaktivitäten zu beobachten oder deine Netzwerkverbindung zu modifizieren. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1277,6 +1281,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3162559335345991374">Unter Umständen musst du die Anmeldeseite des verwendeten WLAN-Netzwerken aufrufen.</translation>
 <translation id="316542773973815724">Navigation</translation>
 <translation id="316638481603975524">Darf nachfragen, ob Web-Apps installiert werden können</translation>
+<translation id="3166688462674378969">Button „Isolierte Fenster schließen“ – aktivieren, um alle derzeit geöffneten isolierten Fenster zu schließen</translation>
 <translation id="3166788340998560642">Wenn du das nächste Mal auf die Daten zugreifst, wirst du von Chrome gefragt, ob sie in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> gespeichert werden sollen</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3176929007561373547">Vergewissere dich, dass der Proxyserver funktioniert. Überprüfe die
@@ -1305,6 +1310,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3211727636285361260"><ph name="PROTOCOL" />-Links über <ph name="HANDLER_HOSTNAME" /> öffnen</translation>
 <translation id="3212468046572043669">Download gestartet. Zum Ansehen: von oben ziehen und auf den Button „Zurück“ tippen</translation>
 <translation id="3212581601480735796">Deine Aktivität auf <ph name="HOSTNAME" /> wird überwacht</translation>
+<translation id="3215018171871590528">{NUM_SOURCES,plural, =1{Chrome schlägt diese Informationen nicht mehr vor. Die ursprüngliche Quelle wird nicht gelöscht.}other{Chrome schlägt diese Informationen nicht mehr vor. Die ursprünglichen Quellen werden nicht gelöscht.}}</translation>
 <translation id="3215092763954878852">WebAuthn konnte nicht verwendet werden</translation>
 <translation id="3215311088819828484">Ergebnis aktualisiert</translation>
 <translation id="3218181027817787318">Relativ</translation>
@@ -1456,6 +1462,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3474392552865647225">Button „Schriftarten anpassen“ – aktivieren, um Schriftgrößen und Schriftarten in Chrome anzupassen</translation>
 <translation id="3478033058537426179">Nach Gruppe</translation>
 <translation id="3479552764303398839">Jetzt nicht</translation>
+<translation id="3481315707647070701">Visualisieren und bearbeiten</translation>
 <translation id="3484560055331845446">Du könntest den Zugriff auf dein Google-Konto verlieren. Chrome empfiehlt dir, dein Passwort jetzt zu ändern. Du wirst dazu aufgefordert, dich anzumelden.</translation>
 <translation id="3484861421501147767">Erinnerung: gespeicherter Gutscheincode verfügbar</translation>
 <translation id="3485901585646640838">Bestätige deine Identität, um Passwörter und andere Daten in deinem Google-Konto verwenden zu können</translation>
@@ -1540,6 +1547,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3614001939154393113">Angreifer könnten versuchen, deine Informationen von <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> zu stehlen, etwa Passwörter, Nachrichten oder Kreditkartendaten. <ph name="BEGIN_LEARN_MORE_LINK" />Weitere Informationen zu dieser Warnung<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="361438452008624280">Listeneintrag "<ph name="LANGUAGE_ID" />": Unbekannte oder nicht unterstützte Sprache.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um den Sicherheitscheck in den Chrome-Einstellungen auszuführen</translation>
+<translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Diese IBAN konnte nicht in Google Wallet gespeichert werden. Sie wurde stattdessen in Chrome auf diesem Gerät gespeichert. Wenn du diese IBAN das nächste Mal verwendest, fragt Chrome dich noch einmal.</translation>
 <translation id="3621401353678567613">Wenn du Benachrichtigungen zu Preissenkungen für Produkte erhalten möchtest, die du beobachtest, musst du in den Einstellungen Benachrichtigungen aktivieren.</translation>
 <translation id="362276910939193118">Gesamtverlauf anzeigen</translation>
@@ -1704,6 +1712,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="3865339060090354361">Hier findest du die Nutzungsbedingungen für <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3869939189466884821">Deine lokalen Dateien werden in <ph name="MINUTES" /> Minuten gelöscht</translation>
 <translation id="3875783148670536197">So gehts</translation>
+<translation id="3877021395754842994">Alle derzeit geöffneten isolierten Fenster schließen</translation>
 <translation id="3877603629930976930">Nicht teilen</translation>
 <translation id="3878445208930547646">Das Kopieren von dieser Website ist nicht zulässig</translation>
 <translation id="3879674895057686427">Sprache auswählen, in die übersetzt werden soll</translation>
@@ -2047,6 +2056,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4409271659088619928">Du hast <ph name="DSE" /> als Suchmaschine festgelegt. Informationen zum Löschen deines Suchverlaufs findest du in der zugehörigen Anleitung.</translation>
 <translation id="4409556632583862731">Neue Unterhaltung</translation>
 <translation id="4410614037742891410">Personalausweis sicher in Google Wallet aktualisieren</translation>
+<translation id="441152911646545600"><ph name="CLOSE_ISOLATED_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – Tabulatortaste und dann Eingabetaste drücken, um alle isolierten Fenster zu schließen, die derzeit geöffnet sind</translation>
 <translation id="4412074349188076601">Diese Konfiguration ist als installierbar gekennzeichnet, aber für diese Architektur ist kein Image verfügbar, weshalb sie nicht installiert werden kann.</translation>
 <translation id="4412377069090572315">Was andere Nutzer sagen</translation>
 <translation id="4414515549596849729">Cookies und Websitedaten</translation>
@@ -2318,6 +2328,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="4887406273302438710">Passwörter mit Windows Hello schützen</translation>
 <translation id="4887785555357166111">Videoframe speichern</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um in den Chrome-Einstellungen deinen Browserverlauf, deine Cookies und andere Daten zu löschen sowie den Cache zu leeren</translation>
+<translation id="4892391379033030113">Button „Isoliertes Fenster öffnen“ – aktivieren, um ein neues isoliertes Fenster zu öffnen und privat zu surfen</translation>
 <translation id="4892518386797173871">Hinten</translation>
 <translation id="4894390983254799375">Beispielsweise Geräte-ID, Name sowie Version und Nutzername des Betriebssystems</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -2992,6 +3003,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (synchronisiert)</translation>
 <translation id="6025471531651464742">Dateien hinzufügen</translation>
 <translation id="6028591542479806248">Hier kannst du deine mobilen Benachrichtigungen und E-Mail-Benachrichtigungen einrichten</translation>
+<translation id="6029805223627823735"><ph name="LAUNCH_ISOLATED_FOCUSED_FRIENDLY_MATCH_TEXT" /> – Tabulatortaste und Eingabetaste drücken, um ein neues isoliertes Fenster zu öffnen und privat zu surfen</translation>
 <translation id="603068602130820122">Zwei Heftklammern rechts</translation>
 <translation id="6031824805267965302">Bewegungssensoren verwenden</translation>
 <translation id="6032524144326295339">Ablage 2</translation>
@@ -3404,6 +3416,7 @@ Wenn du die Optionen für „Später bezahlen“ ausblenden möchtest, rufe die 
 <translation id="671076103358959139">Registrierungstoken:</translation>
 <translation id="6711464428925977395">Mit dem Proxyserver ist ein Problem aufgetreten oder die Adresse ist falsch.</translation>
 <translation id="6711700233707023861">Varianten-String in Zwischenablage kopiert</translation>
+<translation id="6712003214447962889">Intelligentere, schnellere Antworten</translation>
 <translation id="6712343563085762261">Nach oben verschoben</translation>
 <translation id="6716039223770814796"><ph name="COMPARE_SET_NAME" /> vergleichen · <ph name="ITEMS" /> Elemente</translation>
 <translation id="6716672519412350405"><ph name="URL" /> möchte eine 3D-Karte deiner Umgebung erstellen und die Kameraposition verfolgen</translation>
@@ -3748,6 +3761,7 @@ Weitere Details:
 <translation id="7316521168101843192">Datei wird in Microsoft OneDrive gespeichert</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Hilfe bei der Verbindungsherstellung</translation>
+<translation id="7328315434053660512">Isoliertes Fenster öffnen</translation>
 <translation id="733354035281974745">Durch Sitzung mit einem lokalen Gerätekonto überschrieben</translation>
 <translation id="7334320624316649418">&amp;Neu anordnen wiederholen</translation>
 <translation id="7335157162773372339">Darf nachfragen, wenn sie meine Kamera verwenden möchte</translation>
@@ -3796,6 +3810,7 @@ Weitere Details:
 <translation id="7402375256128852434">Zuletzt geöffnete Tabs hinzufügen</translation>
 <translation id="7403392780200267761">Diesen Tab über den Link, über einen QR-Code, über Streamen usw. teilen</translation>
 <translation id="7403591733719184120">Dein <ph name="DEVICE_NAME" /> wird verwaltet</translation>
+<translation id="7404785524901232736">{NUM_SOURCES,plural, =1{Vorschlag entfernt. Die ursprüngliche Quelle wird nicht gelöscht.}other{Vorschlag entfernt. Die ursprünglichen Quellen werden nicht gelöscht.}}</translation>
 <translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> hat Anwendungen für zusätzliche Funktionen installiert. Diese Anwendungen können auf einige deiner Daten zugreifen.</translation>
 <translation id="740691708085211707">Arbeitsadresse aus Chrome Autofill entfernen?</translation>
 <translation id="7407424307057130981">&lt;p&gt;Du erhältst diese Fehlermeldung, wenn auf deinem Windows-Computer Superfish-Software installiert ist.&lt;/p&gt;
@@ -4014,6 +4029,7 @@ Weitere Details:
 <translation id="7718626066800460799">Scan kann nicht gespeichert werden</translation>
 <translation id="772128550427553158">Der CVC befindet sich auf der Vorderseite deiner Karte.</translation>
 <translation id="7724603315864178912">Ausschneiden</translation>
+<translation id="7726402116075326231">Neues isoliertes Fenster öffnen, um privat zu surfen</translation>
 <translation id="7730057435797792985">Sortieren</translation>
 <translation id="7734285854693414638">Schnell ein neues Formular in Google Formulare erstellen</translation>
 <translation id="773466115871691567">Seiten auf <ph name="SOURCE_LANGUAGE" /> immer übersetzen</translation>
@@ -4205,6 +4221,7 @@ Weitere Details:
 <translation id="8075898834294118863">Website-Einstellungen verwalten</translation>
 <translation id="8076492880354921740">Tabs</translation>
 <translation id="8076880883123051368">Unter <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> sind möglicherweise weitere Arten von Browserverlaufsdaten für dein Google-Konto gespeichert, z. B. dein <ph name="BEGIN_LINK_GAA" />Aktivitätsverlauf in Gemini-Apps<ph name="END_LINK_GAA" /></translation>
+<translation id="8077465698530018904">Ausgewählten Bereich entfernen</translation>
 <translation id="8077669823243888800">Umschlag Chinesisch Nr. 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Vertrauliche Datei hochladen?}other{Vertrauliche Dateien hochladen?}}</translation>
 <translation id="8079031581361219619">Website neu laden?</translation>

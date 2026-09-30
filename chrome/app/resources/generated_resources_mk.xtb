@@ -332,6 +332,7 @@
 <translation id="1231572247662419826">Сајтовите може да бараат да го заклучуваат и да го користат дејството со глувче</translation>
 <translation id="1232569758102978740">Без наслов</translation>
 <translation id="1233497634904001272">Допрете го безбедносниот клуч повторно за да се комплетира барањето.</translation>
+<translation id="1233566345244684257">Секој што има пристап до вашите апликации Gemini може да го контролира вашиот прелистувач Chrome.</translation>
 <translation id="1233721473400465416">Локал</translation>
 <translation id="1233835246554936745">{0,plural, =1{Зачувајте 1 ставка во сметката}one{Зачувајте # ставка во сметката}other{Зачувајте # ставки во сметката}}</translation>
 <translation id="1234736487471201993">Создајте QR-код за сликава</translation>
@@ -554,6 +555,7 @@
 <translation id="1421514190500081936">Внесете причина за преземање на податоциве:</translation>
 <translation id="1422159345171879700">Вчитај ги небезбедните скрипти</translation>
 <translation id="1425040197660226913">Не може да се прикачи. Користете слика помала од 20 MB.</translation>
+<translation id="1426154609634610063">Прегледајте ги ризиците од користењето на Gemini</translation>
 <translation id="1426410128494586442">Да</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> е блокирана</translation>
 <translation id="1427179946227469514">Висина на гласот за „Од текст во говор“</translation>
@@ -1842,6 +1844,7 @@
 <translation id="2416435988630956212">Функциски копчиња на тастатурата</translation>
 <translation id="2419131370336513030">Приказ на инсталирани апликации</translation>
 <translation id="2419706071571366386">Од безбедносни причини, одјавете се од компјутерот кога не го користите.</translation>
+<translation id="2423226060967554289">Прикажи ја лентата со обележувачи</translation>
 <translation id="2423506062824112361">Преземањето на содржините не успеа поради непозната причина.</translation>
 <translation id="2423578206845792524">Сни&amp;ми слика како…</translation>
 <translation id="2424424966051154874">{0,plural, =1{Гостин}one{Гости (#)}other{Гости (#)}}</translation>
@@ -2079,6 +2082,7 @@
 <translation id="2588271083332682494">Расчистете со групите картички</translation>
 <translation id="2588636910004461974">Уреди од <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Никогаш не прикажувај датотеки на Drive</translation>
+<translation id="2595270892115552212">Кога ќе започнете задача од други апликации Gemini, вклучително и gemini.google.com и мобилните апликации Gemini, Gemini може да ја користи „Автоматско прелистување“ во Chrome на уредов за да стапува во интеракции со сајтовите и да завршува задачи во ваше име. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="2597073208962000830">„Споделување во близина“ користи скенирање со Bluetooth за да најде уреди во близина.</translation>
 <translation id="2598136842498757793">Приспособете ги копчињата на алатникот</translation>
 <translation id="2598710988533271874">Достапна е нова верзија на Chrome</translation>
@@ -2816,6 +2820,7 @@
 <translation id="3132996321662585180">Освежувај дневно</translation>
 <translation id="3134312457920437826">Не може да се инсталира екстензија бидејќи користи неподдржана верзија на манифестот.</translation>
 <translation id="3134393957315651797">Изберете состојба на експериментот за <ph name="EXPERIMENT_NAME" />. Опис на експериментот: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3134822828309700120">Дозволете им на другите апликации Gemini да прелистуваат далечински од кој било уред</translation>
 <translation id="3139925690611372679">Стандарден жолт аватар</translation>
 <translation id="314095642664111744">Исклучи го фокусот</translation>
 <translation id="3141093262818886744">Сепак отвори</translation>
@@ -3630,6 +3635,7 @@
 <translation id="3736487688526377259">Изберете го уредот каде што сакате да го добиете линков.</translation>
 <translation id="3737058101969549870">Да се чуваат постојните податоци од прелистување одделно од новиов профил?</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
+<translation id="3739203168951159754">Gemini може да ја користи „Автоматско прелистување“ на уредов само ако уредот е буден и Chrome е активен.</translation>
 <translation id="3739254215541673094">Да се отвори <ph name="APPLICATION" />?</translation>
 <translation id="3739349485749941749">Сајтовите може да бараат и да користат печатачи до коишто може да пристапи вашиот уред</translation>
 <translation id="3741056951918180319">Секогаш може да кликнете на екстензијата за да ја користите на кој било сајт</translation>
@@ -3985,6 +3991,7 @@
 <translation id="3987993985790029246">Копирај линк</translation>
 <translation id="3988124842897276887">Картичкава е поврзана со USB-уред</translation>
 <translation id="3989635538409502728">Одјави се</translation>
+<translation id="399132041334931433">Додајте картички во нова група</translation>
 <translation id="399179161741278232">Увезени</translation>
 <translation id="3992008114154328194">Се презема <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
 <translation id="3994075804072562819">Дозволете <ph name="SPECIFIC_NAME" /> да ги контролира USB-уредите.</translation>
@@ -5214,6 +5221,7 @@
 <translation id="495170559598752135">Дејства</translation>
 <translation id="4951966678293618079">Никогаш не зачувувај лозинки за сајтов</translation>
 <translation id="4952580838083306838">Скриј го организаторот</translation>
+<translation id="4952628481830269193">Прикажи ја лентата со обележувачи</translation>
 <translation id="4953808748584563296">Стандарден портокалов аватар</translation>
 <translation id="4954652437333037880">Датотека</translation>
 <translation id="4954831709600868883">Прашајте за <ph name="TEXT" /></translation>
@@ -5287,6 +5295,7 @@
 <translation id="5008936837313706385">Име на активноста</translation>
 <translation id="5009463889040999939">Се преименува профилот. Може да потрае неколку минути.</translation>
 <translation id="5010886807652684893">Визуелен приказ</translation>
+<translation id="5012016139642806466">Добијте ги лозинките и друго на сите ваши уреди</translation>
 <translation id="5012523644916800014">Управувајте со лозинките и криптографските клучеви</translation>
 <translation id="501394389332262641">Звук за слаба батерија</translation>
 <translation id="5014286001996333986">Да се замени или да се создаде нова група?</translation>
@@ -5466,6 +5475,7 @@
 <translation id="5149602533174716626">Копирај видеокадар</translation>
 <translation id="5150254825601720210">Име на Netscape-сертификат за SSL-сервер</translation>
 <translation id="5151354047782775295">Ослободете простор на дискот или избрани податоци може автоматски да се избришат</translation>
+<translation id="5152719737931716272">Задачата е завршена и вратена во Gemini</translation>
 <translation id="5153074793829217329">Користете ја вашата тастатура или нумеричка тастатура за да го контролирате курсорот на глувчето</translation>
 <translation id="5153234146675181447">Заборави го телефонот</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -5783,6 +5793,7 @@
 <translation id="5414836363063783498">Се проверува…</translation>
 <translation id="5415497281076257439">Фраза</translation>
 <translation id="5415871492522952905">Ќе ги имате вашите картички и историја на сите ваши уреди, па ќе може да продолжувате со тоа што сте го правеле</translation>
+<translation id="5417160551295347092">Gemini може да прави грешки, како споделување на вашите податоци или купување без да побара дозвола. <ph name="LINK_BEGIN" />Прегледајте ги ризиците<ph name="LINK_END" />.</translation>
 <translation id="5417293056300086453">Сајтов може да користи идентификатори за да пушта заштитени содржини.</translation>
 <translation id="5417312524372586921">Теми на прелистувачот</translation>
 <translation id="541737483547792035">Зголеми го екранот</translation>
@@ -6537,6 +6548,7 @@
 <translation id="6003143259071779217">Отстранете ја мобилната мрежа на eSIM</translation>
 <translation id="6003479444341796444">Сега се прикажува лентата за наслов</translation>
 <translation id="6003582434972667631">Темата е поставена од вашата организација</translation>
+<translation id="600407115562756795">Gemini ќе одлучи кои дејства ќе ги преземе според задачите што ги започнувате или ги ажурирате.</translation>
 <translation id="6005045517426700202">Објект од тули</translation>
 <translation id="6006484371116297560">Класична</translation>
 <translation id="6007053304250788613">Може да се изостави само еден екран во „Режим на огледало“</translation>
@@ -8514,6 +8526,7 @@
 <translation id="7523117833414447032">При читање големи букви</translation>
 <translation id="7523585675576642403">Преименувајте го профилот</translation>
 <translation id="7525067979554623046">Создај</translation>
+<translation id="7526083414913154899">Дознајте повеќе за задачите во Gemini</translation>
 <translation id="7528224636098571080">Не отворај</translation>
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{Да се одгрупира групата картички?}one{Да се одгрупираат групите картички?}other{Да се одгрупираат групите картички?}}</translation>
 <translation id="7529411698175791732">Проверете ја врската со интернет. Ако проблемот опстојува, обидете се да се одјавите и да се најавите повторно.</translation>
@@ -9243,6 +9256,7 @@
 <translation id="8081989000209387414">Да се оневозможи отстранување грешки на ADB?</translation>
 <translation id="8082132721957920509">Вашата картичка е зачувана</translation>
 <translation id="8082390128630131497">Оневозможувањето на ADB ќе го ресетира <ph name="DEVICE_TYPE" /> на фабричките поставки. Сите кориснички сметки и локални податоци ќе бидат избришани.</translation>
+<translation id="8082737802704584539">Вашата организација го исклучи зачувувањето историја во вашата сметка на Google</translation>
 <translation id="8084114998886531721">Зачувана лозинка</translation>
 <translation id="8084417885464859041">Користете го Gemini безбедно</translation>
 <translation id="8084429490152575036">Поставки за APN за мобилна мрежа</translation>
@@ -9366,6 +9380,7 @@
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Печатач <ph name="ITEM_POSITION" /> од <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">„Штедачот на енергија“ е вклучен</translation>
 <translation id="8180786512391440389">„<ph name="EXTENSION" />“ може да чита и да брише слики, видео- и аудиодатотеки на означените локации.</translation>
+<translation id="8181132988581553950">Gemini ќе има пристап до истите сајтови како и вие, вклучително и сајтовите на кои сте најавени. Ќе ги споделува неопходните податоци со трети страни, вклучително и лични податоци што може да ги сметате за чувствителни.</translation>
 <translation id="8183703640399301650">EID-бројот на вашиот уред е <ph name="EID_NUMBER" />, а IMEI-бројот на уредот е <ph name="IMEI_NUMBER" />. Броевиве може да се користат за активирање услуга.</translation>
 <translation id="8184288427634747179">Префрли се на <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Повеќе информации</translation>

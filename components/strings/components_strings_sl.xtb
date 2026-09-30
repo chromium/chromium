@@ -213,6 +213,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1343830902827845050">Prijava v Chrome</translation>
 <translation id="1346748346194534595">V desno</translation>
 <translation id="1348779747280417563">Potrditev imena</translation>
+<translation id="1353546633704510580">Izbrana regija</translation>
 <translation id="1357195169723583938">Kdo je nedavno uporabljal napravo in kdaj</translation>
 <translation id="1358187717814494928">Ustvari preglednico</translation>
 <translation id="1358223345833465883">Vaš iskalnik v Chromiumu</translation>
@@ -352,6 +353,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1574714699824202614">Preverjanje plačilnega sredstva</translation>
 <translation id="1576277203042721907">Vpogledi v Nakupovanje</translation>
 <translation id="1579189948231786790">To spletno mesto je blokirala vaša organizacija</translation>
+<translation id="1579940597679293608">Zapiranje vseh izoliranih oken</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Med prikazom spletne strani je prišlo do napake.</translation>
 <translation id="1585306568496579337">Razširitev »<ph name="EXTENSION_NAME" />« želi odpreti povezave <ph name="PROTOCOL" /> prek rutine za obravnavo <ph name="HANDLER_HOSTNAME" /></translation>
@@ -1095,6 +1097,7 @@ Ta predlog lahko odstranite iz Chroma. Izvirni vir ne bo izbrisan. <ph name="MAN
 <translation id="2858134430383535011">200 x 300 mm</translation>
 <translation id="2859383374160668142">Znižanja cen za izdelke, ki jih spremljate, si lahko kadar koli ogledate.</translation>
 <translation id="2859806420264540918">To spletno mesto prikazuje vsiljive ali zavajajoče oglase.</translation>
+<translation id="2864493683872263351">Kodirajte, pišite ali ustvarjajte diapozitive</translation>
 <translation id="2873317327342476681">Igra z dinozavrom, dotaknite se dinozavra ali pritisnite preslednico, če želite igrati</translation>
 <translation id="287387905105155974">Oblaček s pomočjo</translation>
 <translation id="2875109558992200904">Ko Chrome opozori na varnostne dogodke, se ustrezni podatki glede dogodkov pošljejo skrbniku. To lahko vključuje URL-je in naslove strani, ki jih obiščete v Chromu, URL-je strani, s katerih ste kopirali podatke, imena ali metapodatke datotek, naslove IP, zrušitve brskalnika ali zavihkov ter uporabniško ime, s katerim se prijavite v spletne aplikacije, napravo in Chrome.</translation>
@@ -1202,6 +1205,7 @@ Ta predlog lahko odstranite iz Chroma. Izvirni vir ne bo izbrisan. <ph name="MAN
 <translation id="3041176923638368519">Oglejte si pogoje za ugodnosti kartice</translation>
 <translation id="3041584414879052436">Seznam izdajateljev za »Kupi zdaj, plačaj pozneje« je zaprt.</translation>
 <translation id="3041612393474885105">Informacije o potrdilu</translation>
+<translation id="3041835740069544003">Chrome lahko zdaj zazna in izpolni več obrazcev s pametnejšim razumevanjem obrazcev. V ta namen se lahko vsebina strani in URL-ji obdelujejo v zasebnem prostoru v oblaku. To možnost upravljate v nastavitvah.</translation>
 <translation id="3047054686095898948">Shranite podatke v storitvi <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> in hitreje opravite delo, na primer izpolnite obrazce v Googlovih izdelkih. <ph name="BEGIN_LINK" />Podatke lahko upravljate<ph name="END_LINK" /> v denarnici <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> za račun <ph name="ACCOUNT" />.</translation>
 <translation id="305162504811187366">Zgodovina Oddaljenega namizja Chrome, vključno s časovnimi žigi, gostitelji in ID-ji sej odjemalca</translation>
 <translation id="3052868890529250114">S temi spletnimi mesti se običajno varno povežete, vendar Chrome varne povezave tokrat ni mogel uporabiti. Napadalec morda poskuša prisluškovati ali spremeniti vašo omrežno povezavo. <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem opozorilu<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1277,6 +1281,7 @@ Ta predlog lahko odstranite iz Chroma. Izvirni vir ne bo izbrisan. <ph name="MAN
 <translation id="3162559335345991374">Omrežje Wi-Fi, ki ga uporabljate, morda zahteva, da obiščete stran za prijavo.</translation>
 <translation id="316542773973815724">Krmarjenje</translation>
 <translation id="316638481603975524">Lahko zahteva namestitev spletnih aplikacij</translation>
+<translation id="3166688462674378969">Gumb za zapiranje izoliranih oken, aktivirajte, če želite zapreti vsa trenutno odprta izolirana okna</translation>
 <translation id="3166788340998560642">Chrome bo ob naslednji uporabi ponudil, da jih shranite tukaj: <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /></translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3176929007561373547">Preverite nastavitve strežnika proxy ali se obrnite na skrbnika omrežja in
@@ -1305,6 +1310,7 @@ Ta predlog lahko odstranite iz Chroma. Izvirni vir ne bo izbrisan. <ph name="MAN
 <translation id="3211727636285361260">Odpirati <ph name="PROTOCOL" /> prek <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">Prenos se je začel. Če si ga želite ogledati, povlecite z vrha in se dotaknite gumba za nazaj</translation>
 <translation id="3212581601480735796">Vaša dejavnost v gostitelju <ph name="HOSTNAME" /> je nadzorovana</translation>
+<translation id="3215018171871590528">{NUM_SOURCES,plural, =1{Chrome ne bo več predlagal teh podatkov. Izvirni vir ne bo izbrisan.}one{Chrome ne bo več predlagal teh podatkov. Izvirni viri ne bodo izbrisani.}two{Chrome ne bo več predlagal teh podatkov. Izvirni viri ne bodo izbrisani.}few{Chrome ne bo več predlagal teh podatkov. Izvirni viri ne bodo izbrisani.}other{Chrome ne bo več predlagal teh podatkov. Izvirni viri ne bodo izbrisani.}}</translation>
 <translation id="3215092763954878852">Ni bilo mogoče uporabiti WebAuthn</translation>
 <translation id="3215311088819828484">Rezultat je posodobljen</translation>
 <translation id="3218181027817787318">Relativno</translation>
@@ -1456,6 +1462,7 @@ Ta predlog lahko odstranite iz Chroma. Izvirni vir ne bo izbrisan. <ph name="MAN
 <translation id="3474392552865647225">Gumb za prilagajanje pisav v Chromu, aktivirajte, če želite prilagoditi velikosti pisav in tipografije v Chromu</translation>
 <translation id="3478033058537426179">Po skupini</translation>
 <translation id="3479552764303398839">Ne zdaj</translation>
+<translation id="3481315707647070701">Vizualiziranje in urejanje</translation>
 <translation id="3484560055331845446">Izgubite lahko dostop do Google Računa. Chrome priporoča, da spremenite geslo. Pozvani boste, da se prijavite.</translation>
 <translation id="3484861421501147767">Opomnik: Shranjena promocijska koda je na voljo</translation>
 <translation id="3485901585646640838">Če želite uporabljati gesla in druge podatke, shranjene v računu Google, potrdite, da ste to vi</translation>
@@ -1541,6 +1548,7 @@ Ta predlog lahko odstranite iz Chroma. Izvirni vir ne bo izbrisan. <ph name="MAN
 <translation id="3614001939154393113">Morda poskušajo napadalci ukrasti vaše podatke s spletnega mesta <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (na primer gesla, sporočila ali kreditne kartice). <ph name="BEGIN_LEARN_MORE_LINK" />Več o tem opozorilu<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="361438452008624280">Vnos na seznamu »<ph name="LANGUAGE_ID" />«: neznan ali nepodprt jezik.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite v nastavitvah Chroma zagnati varnostno preverjanje.</translation>
+<translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">Te številke IBAN ni bilo mogoče shraniti v Google Denarnici. Namesto tega je shranjena v Chromu v tej napravi. Chrome vas bo ob naslednji uporabi te številke IBAN znova vprašal.</translation>
 <translation id="3621401353678567613">Če želite prejemati opozorila o znižanju cen za izdelke, ki jih spremljate, v nastavitvah vklopite obvestila.</translation>
 <translation id="362276910939193118">Prikaži celotno zgodovino</translation>
@@ -1706,6 +1714,7 @@ Ta predlog lahko odstranite iz Chroma. Izvirni vir ne bo izbrisan. <ph name="MAN
 <translation id="3865339060090354361">Tukaj si oglejte pogoje za kartico <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3869939189466884821">Lokalne datoteke bodo izbrisane čez <ph name="MINUTES" /> min</translation>
 <translation id="3875783148670536197">Postopek</translation>
+<translation id="3877021395754842994">Zapiranje vseh trenutno odprtih izoliranih oken</translation>
 <translation id="3877603629930976930">Ne deli</translation>
 <translation id="3878445208930547646">Kopiranje s tega spletnega mesta ni dovoljeno</translation>
 <translation id="3879674895057686427">Izberite jezik, v katerega želite prevod</translation>
@@ -2049,6 +2058,7 @@ Ta predlog lahko odstranite iz Chroma. Izvirni vir ne bo izbrisan. <ph name="MAN
 <translation id="4409271659088619928">Vaš iskalnik je <ph name="DSE" />. Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</translation>
 <translation id="4409556632583862731">Nova nit</translation>
 <translation id="4410614037742891410">Varno posodobite osebno izkaznico v Google Denarnici</translation>
+<translation id="441152911646545600"><ph name="CLOSE_ISOLATED_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite zapreti vsa trenutno odprta izolirana okna</translation>
 <translation id="4412074349188076601">Ta konfiguracija je označena kot namestljiva, vendar za to arhitekturo ni bila posredovana nobena slika, zato je ni mogoče namestiti.</translation>
 <translation id="4412377069090572315">Kaj menijo drugi</translation>
 <translation id="4414515549596849729">piškotki in podatki spletnih mest</translation>
@@ -2320,6 +2330,7 @@ Ta predlog lahko odstranite iz Chroma. Izvirni vir ne bo izbrisan. <ph name="MAN
 <translation id="4887406273302438710">Zaščita gesel s funkcijo Windows Hello</translation>
 <translation id="4887785555357166111">Shrani videosličico</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite izbrisati zgodovino brskanja, piškotke, predpomnilnik in drugo v Chromovih nastavitvah</translation>
+<translation id="4892391379033030113">Gumb za odpiranje izoliranega okna, aktivirajte, če želite odpreti novo izolirano okno za zasebno brskanje</translation>
 <translation id="4892518386797173871">Zadaj</translation>
 <translation id="4894390983254799375">Na primer ID naprave, ime, različica operacijskega sistema in uporabniško ime operacijskega sistema</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -2994,6 +3005,7 @@ Ta predlog lahko odstranite iz Chroma. Izvirni vir ne bo izbrisan. <ph name="MAN
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (sinhronizirano)</translation>
 <translation id="6025471531651464742">Dodaj datoteke</translation>
 <translation id="6028591542479806248">Upravljanje obvestil v mobilnih napravah in po e-pošti.</translation>
+<translation id="6029805223627823735"><ph name="LAUNCH_ISOLATED_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite odpreti novo izolirano okno za zasebno brskanje</translation>
 <translation id="603068602130820122">Dvojno spenjanje na desni</translation>
 <translation id="6031824805267965302">Uporaba tipal gibanja</translation>
 <translation id="6032524144326295339">Nabiralnik 2</translation>
@@ -3406,6 +3418,7 @@ Ta predlog lahko odstranite iz Chroma. Izvirni vir ne bo izbrisan. <ph name="MAN
 <translation id="671076103358959139">Žeton za včlanitev:</translation>
 <translation id="6711464428925977395">Nekaj je narobe s strežnikom proxy ali pa naslov ni pravilen.</translation>
 <translation id="6711700233707023861">Niz različic je kopiran v odložišče</translation>
+<translation id="6712003214447962889">Pametnejši in hitrejši odgovori</translation>
 <translation id="6712343563085762261">Premaknjeno navzgor</translation>
 <translation id="6716039223770814796">Primerjava: <ph name="COMPARE_SET_NAME" /> · št. izdelkov: <ph name="ITEMS" /></translation>
 <translation id="6716672519412350405"><ph name="URL" /> želi ustvariti 3D-zemljevid vaše okolice in spremljati položaj kamere</translation>
@@ -3750,6 +3763,7 @@ Dodatne podrobnosti:
 <translation id="7316521168101843192">Shranjevanje datoteke v storitvi Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Pomoč pri povezavi</translation>
+<translation id="7328315434053660512">Odpiranje izoliranega okna</translation>
 <translation id="733354035281974745">Preglasitev lokalnega računa v napravi</translation>
 <translation id="7334320624316649418">&amp;Uveljavi razvrstitev</translation>
 <translation id="7335157162773372339">Lahko zahteva uporabo fotoaparata.</translation>
@@ -3798,6 +3812,7 @@ Dodatne podrobnosti:
 <translation id="7402375256128852434">Dodajte nedavne zavihke</translation>
 <translation id="7403392780200267761">Delite ta zavihek z drugimi tako, da delite povezavo, ustvarite kodo QR, ga predvajate oziroma na kak drug način.</translation>
 <translation id="7403591733719184120">Naprava <ph name="DEVICE_NAME" /> je upravljana</translation>
+<translation id="7404785524901232736">{NUM_SOURCES,plural, =1{Predlog je odstranjen. Izvirni vir ne bo izbrisan.}one{Predlog je odstranjen. Izvirni viri ne bodo izbrisani.}two{Predlog je odstranjen. Izvirni viri ne bodo izbrisani.}few{Predlog je odstranjen. Izvirni viri ne bodo izbrisani.}other{Predlog je odstranjen. Izvirni viri ne bodo izbrisani.}}</translation>
 <translation id="7405878640835614059">Skrbnik <ph name="ENROLLMENT_DOMAIN" /> je namestil aplikacije zaradi dodatnih funkcij. Aplikacije imajo dostop do nekaterih vaših podatkov.</translation>
 <translation id="740691708085211707">Želite službeni naslov odstraniti iz samodejnega izpolnjevanja v Chromu?</translation>
 <translation id="7407424307057130981">&lt;p&gt;To napako boste videli, če imate v računalniku s sistemom Windows programsko opremo Superfish.&lt;/p&gt;
@@ -4016,6 +4031,7 @@ Dodatne podrobnosti:
 <translation id="7718626066800460799">Optičnega branja ni mogoče shraniti</translation>
 <translation id="772128550427553158">Koda CVC je na sprednji strani kartice.</translation>
 <translation id="7724603315864178912">Izreži</translation>
+<translation id="7726402116075326231">Odpiranje novega izoliranega okna za zasebno brskanje</translation>
 <translation id="7730057435797792985">Razvrsti</translation>
 <translation id="7734285854693414638">Hitro ustvarjanje novega obrazca v Google Obrazcih</translation>
 <translation id="773466115871691567">Vedno prevedi strani v jeziku <ph name="SOURCE_LANGUAGE" /></translation>
@@ -4207,6 +4223,7 @@ Dodatne podrobnosti:
 <translation id="8075898834294118863">Upravljanje nastavitev spletnega mesta</translation>
 <translation id="8076492880354921740">Zavihki</translation>
 <translation id="8076880883123051368">V računu Google so morda druge vrste zgodovine brskanja na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, kot je <ph name="BEGIN_LINK_GAA" />dejavnost v aplikacijah Gemini<ph name="END_LINK_GAA" /></translation>
+<translation id="8077465698530018904">Odstranitev izbrane regije</translation>
 <translation id="8077669823243888800">Kitajska kuverta št. 8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Želite naložiti zaupno datoteko?}one{Želite naložiti zaupne datoteke?}two{Želite naložiti zaupne datoteke?}few{Želite naložiti zaupne datoteke?}other{Želite naložiti zaupne datoteke?}}</translation>
 <translation id="8079031581361219619">Želite znova naložiti spletno mesto?</translation>

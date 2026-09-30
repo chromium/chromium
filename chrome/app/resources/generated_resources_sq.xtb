@@ -332,6 +332,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1231572247662419826">Sajtet mund të kërkojnë që të regjistrojnë dhe të përdorin veprimet me miun</translation>
 <translation id="1232569758102978740">Pa titull</translation>
 <translation id="1233497634904001272">Prek përsëri çelësin tënd të sigurisë për të përfunduar kërkesën.</translation>
+<translation id="1233566345244684257">Çdo person që ka qasje tek aplikacionet Gemini mund të kontrollojë shfletuesin tënd të Chrome.</translation>
 <translation id="1233721473400465416">Cilësimet rajonale</translation>
 <translation id="1233835246554936745">{0,plural, =1{Ruaj 1 artikull te llogaria}other{Ruaj # artikuj te llogaria}}</translation>
 <translation id="1234736487471201993">Krijo kodin QR për këtë imazh</translation>
@@ -554,6 +555,7 @@ Kontrolloji fjalëkalimet e tua në çdo kohë te <ph name="GOOGLE_PASSWORD_MANA
 <translation id="1421514190500081936">Jep një arsye për shkarkimin e këtyre të dhënave:</translation>
 <translation id="1422159345171879700">Ngarko skriptet e pasigurta</translation>
 <translation id="1425040197660226913">Nuk mund të ngarkohet. Përdor një imazh më të vogël se 20 MB.</translation>
+<translation id="1426154609634610063">Rishiko rreziqet e përdorimit të Gemini</translation>
 <translation id="1426410128494586442">Po</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> është bllokuar</translation>
 <translation id="1427179946227469514">Tonaliteti i "tekstit në ligjërim"</translation>
@@ -1556,6 +1558,7 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2198625180564913276">Po shton profilin. Kjo mund të zgjasë disa minuta.</translation>
 <translation id="2198712775285959645">Modifiko</translation>
 <translation id="2199298570273670671">Gabim</translation>
+<translation id="2199546617947317537">Për të marrë historikun nga pajisjet e tua të tjera, identifikohu dhe sinkronizo historikun dhe skedat e tua me <ph name="EMAIL" />. Do të marrësh gjithashtu fjalëkalimet dhe më shumë në të gjitha pajisjet e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="220006241671843310">Zgjidh nëse Chrome përdor modele të IA-së që ekzekutohen drejtpërdrejt në pajisjen tënde</translation>
 <translation id="2200094388063410062">Email-i</translation>
 <translation id="2200781749203116929">Evidencat e sistemit të ChromeOS</translation>
@@ -1829,6 +1832,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2416435988630956212">Tastet e funksionit të tastierës</translation>
 <translation id="2419131370336513030">Shiko aplikacionet e instaluara</translation>
 <translation id="2419706071571366386">Për siguri, dil kur kompjuteri yt nuk po përdoret.</translation>
+<translation id="2423226060967554289">Shfaq shiritin e faqeshënuesve</translation>
 <translation id="2423506062824112361">Shkarkimi i përmbajtjes dështoi për shkak të një arsyeje të panjohur.</translation>
 <translation id="2423578206845792524">Ru&amp;aje imazhin si...</translation>
 <translation id="2424424966051154874">{0,plural, =1{I ftuar}other{I ftuar (#)}}</translation>
@@ -2066,6 +2070,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2588271083332682494">Organizohu me grupet e skedave</translation>
 <translation id="2588636910004461974">Pajisjet nga <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Mos i shfaq asnjëherë skedarët e "Diskut"</translation>
+<translation id="2595270892115552212">Kur fillon një detyrë nga aplikacionet e tjera Gemini, duke përfshirë gemini.google.com dhe aplikacionet Gemini për celular, Gemini mund të përdorë shfletimin automatik të Chrome në këtë pajisje për të ndërvepruar me sajtet dhe për të përfunduar detyrat në emrin tënd. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="2597073208962000830">"Ndarja në afërsi" përdor skanimin përmes Bluetooth-it për të gjetur pajisjet në afërsi.</translation>
 <translation id="2598136842498757793">Personalizo butonat e shiritit të veglave</translation>
 <translation id="2598710988533271874">Ofrohet një versioni i ri i Chrome</translation>
@@ -2334,6 +2339,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2777525873368474674">Ngjit lidhjen e imazhit</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{U gjet 1 sajt me shumë njoftime}other{U gjetën {NUM_SITES} sajte me shumë njoftime}}</translation>
 <translation id="2778471504622896352">Shto aplikacione në distancë te nisësi i ChromeOS</translation>
+<translation id="2781037472881921606">Për të marrë historikun nga pajisjet e tua të tjera, sinkronizo historikun. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783952358106015700">Përdore çelësin e sigurisë me <ph name="APP_NAME" /></translation>
@@ -2396,6 +2402,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2826576843404243001">Për sajtet që nuk i mbështesin lidhjet e sigurta, merr paralajmërime para se të vizitosh sajtin. Nuk mund ta ndryshosh këtë cilësim sepse ke të aktivizuar "Mbrojtjen e përparuar".</translation>
 <translation id="2828375943530438449">Kthehu nga identifikimi</translation>
 <translation id="2828833307884755422">Memoria e liruar: <ph name="MEMORY_SAVINGS" /></translation>
+<translation id="2828851448902426206">Për të marrë skedat nga pajisjet e tua të tjera, identifikohu dhe sinkronizo historikun. Do të marrësh gjithashtu informacionet e ruajtura dhe më shumë në të gjitha pajisjet e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="2833144527504272627">Navigo me kursorin e tekstit</translation>
 <translation id="2833727845850279275">Ky skedar përmban softuer keqdashës ose vjen nga një sajt i dyshimtë.</translation>
 <translation id="2835177225987815960">Konfigurimi yt aktual i skanimit do të rivendoset, duke përfshirë çdo çelës të caktuar dhe preferencë të shpejtësisë së skanimit automatik.</translation>
@@ -2762,6 +2769,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3102309003841389927">Rishiko përditësimin e logos</translation>
 <translation id="310297983047869047">Diapozitivi i mëparshëm</translation>
 <translation id="3103451787721578293">Jep një arsye për ngarkimin e këtyre të dhënave:</translation>
+<translation id="3105253709809514429">Për të marrë skedat nga pajisjet e tua të tjera, identifikohu dhe sinkronizo historikun. Do të marrësh gjithashtu shtesat dhe më shumë në të gjitha pajisjet e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="3105339775057145050">Përditësimi i fundit i pasuksesshëm</translation>
 <translation id="3105796011181310544">Të ndryshohet përsëri në Google?</translation>
 <translation id="3105820656234755131">Fjalëkalimi u përditësua</translation>
@@ -2773,6 +2781,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3109206895301430738">Grupet e ruajtura të skedave</translation>
 <translation id="3109724472072898302">Palosur</translation>
 <translation id="3112292765614504292">Madhësia e aplikacionit: <ph name="APP_SIZE" /></translation>
+<translation id="3112532142993641404">Për të marrë skedat nga pajisjet e tua të tjera, identifikohu dhe sinkronizo historikun. Do të marrësh gjithashtu faqeshënuesit dhe më shumë në të gjitha pajisjet e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="311347022006935575">Kjo skedë u shtua</translation>
 <translation id="311394601889664316">Mos lejo që sajtet të modifikojnë skedarët ose dosjet në pajisjen tënde</translation>
 <translation id="3113970906450647715">Butoni i zhgozhdua</translation>
@@ -2803,6 +2812,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3132996321662585180">Rifresko çdo ditë</translation>
 <translation id="3134312457920437826">Shtesa nuk mund të instalohet sepse përdor një version të manifestit që nuk mbështetet.</translation>
 <translation id="3134393957315651797">Zgjidh gjendjen e eksperimentit për eksperimentin <ph name="EXPERIMENT_NAME" />. Përshkrimi i eksperimentit: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3134822828309700120">Lejo që aplikacionet e tjera Gemini të shfletojnë në distancë nga çdo pajisje</translation>
 <translation id="3139925690611372679">Avatari i parazgjedhur i verdhë</translation>
 <translation id="314095642664111744">Çaktivizo fokusin</translation>
 <translation id="3141093262818886744">Hape sidoqoftë</translation>
@@ -3279,6 +3289,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3498138244916757538">Ndryshimi në cilësimin e mikrofonit kërkon që të fiket <ph name="SPECIFIC_NAME" />. Fik <ph name="SPECIFIC_NAME" /> për të vazhduar.</translation>
 <translation id="3500417806337761827">Gabim në montimin e ndarjes. Janë montuar tashmë shumë ndarje SMB.</translation>
 <translation id="3500764001796099683">Aktivizo aplikacionet e izoluara të uebit</translation>
+<translation id="3501134531169168291">Për të marrë skedat nga <ph name="DEVICE" />, identifikohu dhe sinkronizo historikun. Do të marrësh gjithashtu shtesat dhe më shumë në të gjitha pajisjet e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="3505100368357440862">Sugjerimet për blerje</translation>
 <translation id="3507650052590605702">Menaxho fjalëkalimin</translation>
 <translation id="3507888235492474624">Skano sërish pajisjet me Bluetooth</translation>
@@ -3617,6 +3628,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3736487688526377259">Zgjidh pajisjen ku dëshiron ta marrësh këtë lidhje.</translation>
 <translation id="3737058101969549870">Të mbahen të dhënat e shfletimit veçmas nga profili yt i ri?</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
+<translation id="3739203168951159754">Gemini mund të përdorë shfletimin automatik në këtë pajisje vetëm nëse pajisja është e ndezur dhe Chrome po ekzekutohet.</translation>
 <translation id="3739254215541673094">Të hapet <ph name="APPLICATION" />?</translation>
 <translation id="3739349485749941749">Sajtet mund të kërkojnë leje që të kërkojnë për printerët e qasshëm nga pajisja jote dhe që t'i përdorin ata</translation>
 <translation id="3741056951918180319">Mund të klikosh gjithmonë te shtesa për ta përdorur atë në çdo sajt</translation>
@@ -3765,6 +3777,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3838085852053358637">Dështoi në ngarkimin e shtesës</translation>
 <translation id="3838486795898716504">Më shumë <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">Asnjë sajt nuk është zmadhuar apo zvogëluar</translation>
+<translation id="3839108710633244251">Për të marrë historikun nga pajisjet e tua të tjera, identifikohu dhe sinkronizo historikun dhe skedat e tua me <ph name="EMAIL" />. Do të marrësh gjithashtu informacionet e ruajtura dhe më shumë në të gjitha pajisjet e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="3839516600093027468">Blloko gjithmonë <ph name="HOST" /> që të mos shikojë kujtesën e fragmenteve</translation>
 <translation id="3840096463915153852">Historiku i bisedave</translation>
 <translation id="3841319830220785495">Zëri i parazgjedhur natyral</translation>
@@ -3972,6 +3985,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3987993985790029246">Kopjo lidhjen</translation>
 <translation id="3988124842897276887">Kjo skedë është e lidhur me një pajisje me USB</translation>
 <translation id="3989635538409502728">Dil</translation>
+<translation id="399132041334931433">Shto skeda te grupi i ri</translation>
 <translation id="399179161741278232">Të importuara</translation>
 <translation id="3992008114154328194">Po shkarkohet <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
 <translation id="3994075804072562819">Jepi <ph name="SPECIFIC_NAME" /> kontrollin mbi pajisjet USB.</translation>
@@ -4287,6 +4301,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Mbaje grupin}other{Mbaji grupet}}</translation>
 <translation id="4261429981378979799">Lejet e shtesave</translation>
 <translation id="4262004481148703251">Hiq paralajmërimin</translation>
+<translation id="4262060800239714974">Për të marrë skedat nga <ph name="DEVICE" />, sinkronizo historikun dhe skedat me <ph name="EMAIL" />. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="4263470758446311292">Merr kursim maksimal të memories. Skedat e tua bëhen joaktive pas një periudhe më të shkurtër kohore.</translation>
 <translation id="4263824086525632">Aurora polare</translation>
 <translation id="4265096510956307240">Verifiko që je ti</translation>
@@ -4923,8 +4938,10 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="4750185073185658673">Shko te telefoni për të shqyrtuar disa leje të tjera. Sigurohu që Bluetooth-i dhe Wi-Fi në telefon të jenë aktive.</translation>
 <translation id="4750394297954878236">Sugjerime</translation>
 <translation id="475088594373173692">Përdoruesi i parë</translation>
+<translation id="4751925628341802838">Për të marrë historikun nga pajisjet e tua të tjera, identifikohu dhe sinkronizo historikun dhe skedat e tua me <ph name="EMAIL" />. Do të marrësh gjithashtu shtesat dhe më shumë në të gjitha pajisjet e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="4753084533826742808">Duhet të ketë të paktën 1 karakter</translation>
 <translation id="4754590344707355551">Përmirëso shfletuesin tënd me shtesat</translation>
+<translation id="4756130875344525429">Për të marrë historikun nga <ph name="DEVICE" />, identifikohu dhe sinkronizo historikun dhe skedat e tua me <ph name="EMAIL" />. Do të marrësh gjithashtu informacionet e ruajtura dhe më shumë në të gjitha pajisjet e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="4756378406049221019">Ndalo/Ringarko</translation>
 <translation id="4756388243121344051">&amp;Historiku</translation>
 <translation id="4756627014339714615">Ridrejtimi</translation>
@@ -5200,6 +5217,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="495170559598752135">Veprimet</translation>
 <translation id="4951966678293618079">Mos i ruaj asnjëherë fjalëkalimet për këtë sajt</translation>
 <translation id="4952580838083306838">Fshih organizuesin</translation>
+<translation id="4952628481830269193">Shfaq shiritin e faqeshënuesve</translation>
 <translation id="4953808748584563296">Avatari i parazgjedhur portokalli</translation>
 <translation id="4954652437333037880">Skedari</translation>
 <translation id="4954831709600868883">Pyet në lidhje me <ph name="TEXT" /></translation>
@@ -5234,6 +5252,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="497403230787583386">Kontrollet e sigurisë përfunduan. Dokumenti yt do të printohet.</translation>
 <translation id="4974442344472293753">Rezultati i përditësimit</translation>
 <translation id="4975771730019223894">Distinktivi i aplikacionit</translation>
+<translation id="4976647810464861866">Për të marrë skedat nga pajisjet e tua të tjera, identifikohu dhe sinkronizo historikun. Do të marrësh gjithashtu listën e leximit dhe më shumë në të gjitha pajisjet e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Konfirmo qasjen</translation>
 <translation id="4979263087381759787">Opsionet e zhvilluesit</translation>
@@ -5273,6 +5292,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5008936837313706385">Emri i aktivitetit</translation>
 <translation id="5009463889040999939">Profili po riemërtohet. Kjo mund të zgjasë disa minuta.</translation>
 <translation id="5010886807652684893">Pamja vizuale</translation>
+<translation id="5012016139642806466">Merr fjalëkalimet etj. në të gjitha pajisjet e tua</translation>
 <translation id="5012523644916800014">Menaxho fjalëkalimet dhe çelësat e kalimit</translation>
 <translation id="501394389332262641">Tingulli i nivelit të ulët të baterisë</translation>
 <translation id="5014286001996333986">Të zëvendësohet apo të krijohet një grup i ri?</translation>
@@ -5405,6 +5425,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="511313294362309725">Aktivizo "Çiftimin e shpejtë"</translation>
 <translation id="5113992879909788634">Mëso më shumë rreth shfletimit automatik të Chrome</translation>
 <translation id="51143538739122961">Fut kodin e sigurisë dhe preke</translation>
+<translation id="5114635223409082546">Për të marrë skedat nga <ph name="DEVICE" />, identifikohu dhe sinkronizo historikun. Do të marrësh gjithashtu faqeshënuesit dhe më shumë në të gjitha pajisjet e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="5115338116365931134">SSO</translation>
 <translation id="5116628073786783676">Ru&amp;aje audion si...</translation>
 <translation id="5117139026559873716">Shkëpute telefonin nga pajisja jote <ph name="DEVICE_TYPE" />. Ato nuk do të lidhen më automatikisht.</translation>
@@ -5452,6 +5473,7 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5149602533174716626">Kopj&amp;o kuadrin e videos</translation>
 <translation id="5150254825601720210">Emri i serverit SSL të certifikatës së Netscape</translation>
 <translation id="5151354047782775295">Liro hapësirë në disk ose të dhëna të caktuara mund të fshihen automatikisht</translation>
+<translation id="5152719737931716272">Detyra u krye dhe u kthye te Gemini</translation>
 <translation id="5153074793829217329">Përdor tastierën ose një bllok tastesh numerike për të kontrolluar kursorin e miut</translation>
 <translation id="5153234146675181447">Harro telefonin</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -5768,6 +5790,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5414836363063783498">Po verifikon…</translation>
 <translation id="5415497281076257439">Frazë</translation>
 <translation id="5415871492522952905">Do të kesh të gjitha skedat dhe historikun tënd në të gjitha pajisjet e tua, në mënyrë që të mund të vazhdosh atë që po bëje</translation>
+<translation id="5417160551295347092">Gemini mund të bëjë gabime, si p.sh. të ndajë informacionet e tua ose të bëjë blerje pa të pyetur. <ph name="LINK_BEGIN" />Rishiko rreziqet<ph name="LINK_END" />.</translation>
 <translation id="5417293056300086453">Ky sajt mund të përdorë identifikuesit për të luajtur përmbajtjet e mbrojtura.</translation>
 <translation id="5417312524372586921">Temat e shfletuesit</translation>
 <translation id="541737483547792035">Zmadho ekranin</translation>
@@ -5828,6 +5851,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5457795687441958389">Qëndro i paidentifikuar</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">Ke futur shumë herë një kod të gabuar PIN. Për t'u qasur te çelësat e kalimit dhe fjalëkalimet, ndrysho kodin PIN.</translation>
+<translation id="5459251585760045919">Për të marrë historikun nga <ph name="DEVICE" />, identifikohu dhe sinkronizo historikun dhe skedat e tua me <ph name="EMAIL" />. Do të marrësh gjithashtu shtesat dhe më shumë në të gjitha pajisjet e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="5459470938885464873">Gabim gjatë importimit të certifikatave</translation>
 <translation id="5459864179070366255">Vazhdo me instalimin</translation>
 <translation id="5460861858595506978">Frymëzim</translation>
@@ -5999,6 +6023,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="5583640892426849032">Hapësirë prapa</translation>
 <translation id="5584088138253955452">Të ruhet emri i përdoruesit?</translation>
 <translation id="5585019845078534178">Kartat</translation>
+<translation id="5585064628683466904">Për të marrë historikun nga pajisjet e tua të tjera, identifikohu dhe sinkronizo historikun dhe skedat e tua me <ph name="EMAIL" />. Do të marrësh gjithashtu listën e leximit dhe më shumë në të gjitha pajisjet e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="5585118885427931890">Dosja e faqeshënuesve nuk mund të krijohej.</translation>
 <translation id="558563010977877295">Hap një faqe ose një seri faqesh specifike</translation>
 <translation id="5587592231724900065">Një shtesë po e kontrollon këtë cilësim</translation>
@@ -6522,6 +6547,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6003143259071779217">Hiq rrjetin celular të eSIM</translation>
 <translation id="6003479444341796444">Shiriti i titullit tani po shfaqet</translation>
 <translation id="6003582434972667631">Tema është caktuar nga organizata jote</translation>
+<translation id="600407115562756795">Gemini do të vendosë se cilat veprime do të kryejë bazuar në detyrat që ti fillon ose përditëson.</translation>
 <translation id="6005045517426700202">Ndërtesë me tulla</translation>
 <translation id="6006484371116297560">Klasike</translation>
 <translation id="6007053304250788613">Vetëm një ekran mund të përjashtohet nga modaliteti i pasqyrës</translation>
@@ -6736,6 +6762,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6175910054050815932">Merr një lidhje</translation>
 <translation id="6177478397823976397">Nuk u gjet asnjë pajisje. Hap një artikull të "Qendrës së ndihmës" në një skedë të re</translation>
 <translation id="6177779807714496775">Hape lidhjen në pamjen majtas</translation>
+<translation id="6178186430790239237">Për të marrë skedat nga pajisjet e tua të tjera, sinkronizo historikun dhe skedat e tua me <ph name="EMAIL" />. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="6178664161104547336">Përzgjidh një certifikatë</translation>
 <translation id="6178682841350631965">Të dhënat e tua të identifikimit u përditësuan</translation>
 <translation id="6179830757749383456">Shfletuesi menaxhohet nga <ph name="BROWSER_DOMAIN" />; profili menaxhohet nga <ph name="PROFILE_DOMAIN" /></translation>
@@ -7046,6 +7073,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6430202563517028640">Shto lidhjen te "Lista e leximit"</translation>
 <translation id="6430814529589430811">ASCII e koduar me Base64, një certifikatë</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> do të caktojë përditësime automatike për të gjithë përdoruesit e këtij kompjuteri.</translation>
+<translation id="6431970976661940755">Për të marrë skedat nga <ph name="DEVICE" />, identifikohu dhe sinkronizo historikun. Do të marrësh gjithashtu listën e leximit dhe më shumë në të gjitha pajisjet e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="6434104957329207050">Shpejtësia e skanimit të pikës</translation>
 <translation id="6434309073475700221">Hidhe</translation>
 <translation id="6434755719322447931">Kaotike</translation>
@@ -7210,6 +7238,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="6556903358015358733">Tema dhe imazhi i sfondit</translation>
 <translation id="6557199166823345360">Shto më shumë detaje ose bëj një pyetje për zgjedhjen tënde për ta përmirësuar kërkimin</translation>
 <translation id="6557290421156335491">Shkurtoret e mia</translation>
+<translation id="655745275895381718">Për të marrë skedat nga <ph name="DEVICE" />, identifikohu dhe sinkronizo historikun. Do të marrësh gjithashtu informacionet e ruajtura dhe më shumë në të gjitha pajisjet e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="6558098963164662391">&amp;Hiq nga "Fjalori"</translation>
 <translation id="6560061709899140565">Shfaq seancat e tjera të transmetimit</translation>
 <translation id="656065428026159829">Shiko më shumë</translation>
@@ -7896,6 +7925,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{1 fjalëkalim u importua te "<ph name="BRAND" />" për <ph name="USER_EMAIL" />}other{{NUM_PASSWORDS} fjalëkalime u importuan te "<ph name="BRAND" />" për <ph name="USER_EMAIL" />}}</translation>
 <translation id="7065534935986314333">Rreth sistemit</translation>
 <translation id="706626672220389329">Gabim gjatë montimit të ndarjes. Ndarja e specifikuar është e montuar tashmë.</translation>
+<translation id="7066357648902789011">Për të marrë historikun nga <ph name="DEVICE" />, identifikohu dhe sinkronizo historikun dhe skedat e tua me <ph name="EMAIL" />. Do të marrësh gjithashtu fjalëkalimet dhe më shumë në të gjitha pajisjet e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="7067396782363924830">Ngjyrat e ambientit</translation>
 <translation id="7067725467529581407">Mos e shfaq më asnjëherë këtë.</translation>
 <translation id="7068539819344620805">Tani mund t'i japësh në çdo kohë një pamje të re shfletuesit tënd nga menyja "Personalizo Chrome"</translation>
@@ -8081,6 +8111,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7214047272988222011">Lejohet - <ph name="PERMISSION_DETAILS" />. Aktivizo <ph name="LINK_BEGIN" />qasjen te kamera e sistemit<ph name="LINK_END" />.</translation>
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Skedë e re në 1 skedë}other{Skedë e re në # skeda}}</translation>
 <translation id="721490496276866468">Importo fjalëkalimet</translation>
+<translation id="7216638029417040861">Për të marrë historikun nga pajisjet e tua të tjera, identifikohu dhe sinkronizo historikun dhe skedat e tua me <ph name="EMAIL" />. Do të marrësh gjithashtu faqeshënuesit dhe më shumë në të gjitha pajisjet e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="7217208603285112910">Zgjedhja nuk është në <ph name="LANGUAGE" /></translation>
 <translation id="7217317914610152390">Shto tekst, komente dhe shënime me veglën e re "Shënimet me tekst"</translation>
 <translation id="7219254577985949841">Të fshihen të dhënat e sajtit?</translation>
@@ -8091,6 +8122,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7222232353993864120">Adresë mail-i</translation>
 <translation id="7222335051802562841">Përfundo përditësimin</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7222513457790351522">Për të marrë historikun nga <ph name="DEVICE" />, identifikohu dhe sinkronizo historikun dhe skedat e tua me <ph name="EMAIL" />. Do të marrësh gjithashtu listën e leximit dhe më shumë në të gjitha pajisjet e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="7223027547122518521">Zgjidh një skedar që mund ta lexojë ky sajt</translation>
 <translation id="7223952304612664117">Kjo i lejon shërbimet e sistemit që të përdorin "Saktësinë e vendndodhjes" për të përcaktuar vendndodhjen tënde. "Saktësia e vendndodhjes" përdor informacionet për sinjalet wireless dhe sensorët për të përllogaritur vendndodhjen e pajisjes.</translation>
 <translation id="7225082563376899794">Përdor Windows Hello kur plotëson fjalëkalimet</translation>
@@ -8497,6 +8529,7 @@ Ke edhe # fjalëkalime të tjera të komprometuara. "Menaxheri i fjalëkalimeve 
 <translation id="7523117833414447032">Kur lexon kapitale</translation>
 <translation id="7523585675576642403">Riemërtoje profilin</translation>
 <translation id="7525067979554623046">Krijo</translation>
+<translation id="7526083414913154899">Mëso më shumë rreth detyrave të Gemini</translation>
 <translation id="7528224636098571080">Mos e hap</translation>
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{Të anulohet grupimi për grupin e skedave?}other{Të anulohet grupimi për grupet e skedave?}}</translation>
 <translation id="7529411698175791732">Kontrollo lidhjen e internetit. Nëse problemi vazhdon, provo të dalësh dhe të identifikohesh përsëri.</translation>
@@ -8978,6 +9011,7 @@ Shtyp një çelës ose tast të caktuar për të hequr detyrën.</translation>
 <translation id="7911118814695487383">Linux</translation>
 <translation id="791247712619243506">Anulo konfigurimin</translation>
 <translation id="7912974581251770345">Përkthimi</translation>
+<translation id="7913805372428124107">Për të marrë skedat nga <ph name="DEVICE" />, identifikohu dhe sinkronizo historikun. Do të marrësh gjithashtu fjalëkalimet dhe më shumë në të gjitha pajisjet e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="7914399737746719723">Aplikacioni u instalua</translation>
 <translation id="7915457674565721553">Lidhu në internet për të konfiguruar kontrollet prindërore</translation>
 <translation id="7916364730877325865">Organizata jote nuk të lejon të aktivizosh sinkronizimin me këtë llogari</translation>
@@ -9259,6 +9293,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="810362914482827094">Kërko te çelësat e kalimit</translation>
 <translation id="8104088837833760645">Shkarko profilin e kartës eSIM</translation>
 <translation id="8104388155778519213">Ndaj atë që është në ekranin tënd me "Lenten e Google"</translation>
+<translation id="8104412594956510627">Për të marrë historikun nga <ph name="DEVICE" />, sinkronizo historikun. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="8104778744208707085">Ka nevojë për vëmendjen tënde</translation>
 <translation id="8105273883928376822">Identifikohu për të vazhduar.</translation>
 <translation id="8106114112474206597">Përdor “i” për të shtypur një buton të miut</translation>
@@ -9289,6 +9324,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8124313775439841391">ONC-ja e menaxhuar</translation>
 <translation id="8125651784723647184">Ndarja e fjalëkalimeve menaxhohet nga administratori yt</translation>
 <translation id="8126355825906412872">Buzëqesh</translation>
+<translation id="8126498026310640675">Për të marrë historikun nga <ph name="DEVICE" />, identifikohu dhe sinkronizo historikun dhe skedat e tua me <ph name="EMAIL" />. Do të marrësh gjithashtu faqeshënuesit dhe më shumë në të gjitha pajisjet e tua. Mund ta ndalosh sinkronizimin në çdo kohë te cilësimet. Google mund t'i personalizojë "Kërko" dhe shërbimet e tjera bazuar në historikun tënd.</translation>
 <translation id="813082847718468539">Shiko informacionin rreth faqes</translation>
 <translation id="8131740175452115882">Konfirmo</translation>
 <translation id="8133297578569873332">E pranueshme - FM</translation>
@@ -9350,6 +9386,7 @@ Mbaje skedarin e çelësit tënd në një vend të sigurt. Do të të duhet për
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Printeri <ph name="ITEM_POSITION" /> nga <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">"Kursyesi i energjisë" u aktivizua</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" mund të lexojë dhe fshijë imazhe, video dhe skedarë audio në vendndodhjet e verifikuara.</translation>
+<translation id="8181132988581553950">Gemini do të ketë qasje në të njëjtat sajte si ti, duke përfshirë sajtet ku je identifikuar. Ai do të ndajë informacionet e nevojshme me palët e treta, të cilat mund të përfshijnë informacione personale që mund t'i konsiderosh delikate.</translation>
 <translation id="8183703640399301650">Numri EID i pajisjes sate është <ph name="EID_NUMBER" /> dhe numri IMEI i pajisjes sate është <ph name="IMEI_NUMBER" />. Këta numra mund të përdoren për të ndihmuar në aktivizimin e shërbimit.</translation>
 <translation id="8184288427634747179">Kalo te <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Më shumë informacione</translation>

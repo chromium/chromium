@@ -144,7 +144,6 @@
 <translation id="1408847409015257906">'개인 정보 보호 및 보안'을 탭합니다.</translation>
 <translation id="1411386976162024013">렌즈 시각적 검색</translation>
 <translation id="1414315029670184034">사이트에서 카메라를 사용하도록 허용하지 않음</translation>
-<translation id="1417474386970818917">로그아웃 및 삭제</translation>
 <translation id="1426410128494586442">예</translation>
 <translation id="1430915738399379752">인쇄</translation>
 <translation id="1433478348197382180">읽기 모드</translation>
@@ -304,6 +303,7 @@
 <translation id="188237709236611317">스마트 정렬 메뉴 바</translation>
 <translation id="1883255238294161206">접기 목록</translation>
 <translation id="1883898928879467646">탭 삭제됨</translation>
+<translation id="188779312703122101">작업 중</translation>
 <translation id="1888854257756214946">비밀번호 선택…</translation>
 <translation id="1890237935065108104">사용할 수 없는 설정입니다.</translation>
 <translation id="1894023287452300670">여기에서 가격을 추적하세요.</translation>
@@ -792,7 +792,6 @@
 <translation id="3493531032208478708">추천 콘텐츠 <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="349446645805573740">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" 저장 위치 선택</translation>
 <translation id="3504377992102007712">설정</translation>
-<translation id="3507556793108992994">{count,plural, =1{탭 1개 정리됨}other{탭 #개 정리됨}}</translation>
 <translation id="35083190962747987">${url} 열기</translation>
 <translation id="3511519535430890904">브라우징 보호 기능 추가</translation>
 <translation id="3512572904898385012">이제 카메라를 사용해 쇼핑하고 번역할 수 있습니다. 탭하여 사용해 보세요.</translation>
@@ -941,7 +940,6 @@
 <translation id="3962326069546168954">저장</translation>
 <translation id="3967327056943561740">북마크</translation>
 <translation id="3967822245660637423">다운로드 완료</translation>
-<translation id="3968685670440571540">비밀번호 및 자동 완성 사용 이후</translation>
 <translation id="3973560090698854095">Google 계정(<ph name="USER_EMAIL" />)에 저장된 주소가 삭제됩니다</translation>
 <translation id="398604237578616937"><ph name="USER_EMAIL" /> 계정으로 로그인되었습니다. 계정 메뉴를 엽니다.</translation>
 <translation id="3986739045730058129">탭으로 이동</translation>
@@ -1356,7 +1354,6 @@
 <translation id="5250371859659394278">알 수 없는 소스에서 다운로드됨</translation>
 <translation id="525510229763628836">최소화됨</translation>
 <translation id="5260842098960755113">대화목록 닫힘</translation>
-<translation id="5269913829202614649">홈페이지 맞춤설정</translation>
 <translation id="5271265092610673171">{count,plural, =1{필수 입력란이 비어 있습니다. 저장하기 전에 필수 입력란을 작성하세요.}other{일부 필수 입력란이 비어 있습니다. 저장하기 전에 필수 입력란을 작성하세요.}}</translation>
 <translation id="5271549068863921519">비밀번호 저장</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" />(<ph name="USER_EMAIL" />)님이 내가 탭 그룹에 참여하기를 바랍니다. 링크가 있는 사용자는 모든 탭을 수정할 수 있으므로, 신중하게 참여하세요. 링크는 48시간 후에 만료됩니다.</translation>
@@ -1466,7 +1463,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="5632194969640946913">인터넷을 탐색하면서 페이지에 있는 제품, 장소, 텍스트를 검색하고 자세히 알아보세요.</translation>
 <translation id="5632485077360054581">방법 보기</translation>
 <translation id="5633237939819267663">{count,plural, =1{"{title}"에 북마크가 저장되었습니다.}other{"{title}"에 북마크 {count}개가 저장되었습니다.}}</translation>
-<translation id="564170563478022912">로그아웃하시겠습니까? 저장되지 않은 계정 데이터가 삭제됩니다</translation>
 <translation id="5642707040609478753">읽지않음으로 표시</translation>
 <translation id="5646376287012673985">위치</translation>
 <translation id="5647096944343801045">크게 표시된 진입점</translation>
@@ -1482,7 +1478,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="5669528293118408608">www</translation>
 <translation id="5676124785522323481">연결된 앱 관리</translation>
 <translation id="567881659373499783">버전 <ph name="PRODUCT_VERSION" /></translation>
-<translation id="5680012489335339762">계정을 전환하시겠습니까? 저장되지 않은 계정 데이터가 삭제됩니다</translation>
 <translation id="5683499062697987550">Google 계정에서 비밀번호를 사용하고 저장하려면 본인 인증을 완료하세요.</translation>
 <translation id="5684761169742812828">이 비밀번호는 정보 유출로 인해 인터넷에 노출되었습니다. 지금 변경할 수 없는 경우 나중에 다시 참고하도록 이 경고를 유지하는 것이 좋습니다.</translation>
 <translation id="5694848685995373177"><ph name="USER_EMAIL" />의 Drive에 저장되었습니다.</translation>
@@ -1758,7 +1753,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="6506996418997555004">'<ph name="GROUP_NAME" />' 탭 그룹 공유</translation>
 <translation id="6507973708545996744">모든 기기에서 읽기 목록을 확인하려면 로그인하세요.</translation>
 <translation id="6518133107902771759">확인</translation>
-<translation id="6518861084553706202">탭이 닫히고 비밀번호, 방문 기록, 쿠키 등의 데이터가 삭제될 수 있습니다.</translation>
 <translation id="6523575793810663688">방법 보기</translation>
 <translation id="6524082013156754186">계정에 저장</translation>
 <translation id="6524918542306337007">시크릿 모드를 사용할 수 없음</translation>
@@ -1985,7 +1979,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="721218676460477064">이 기사 요약해 줘</translation>
 <translation id="7215621211572884440">팝업 허용</translation>
 <translation id="7218491361283758048">우편번호</translation>
-<translation id="7220786058474068424">처리 중</translation>
 <translation id="7221173315674413369">'새로운 기능'에서 새로운 기능과 팁을 살펴보세요.</translation>
 <translation id="7223102419539744003">탭 닫기</translation>
 <translation id="7223134495231529579">다운로드에 저장</translation>
@@ -2073,7 +2066,6 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="7491161827858509164">이전에 다운로드한 파일을 보려면 <ph name="BEGIN_LINK" />파일<ph name="END_LINK" />을 여세요.</translation>
 <translation id="7498234416455752244">계속 수정</translation>
 <translation id="7500244509706269886">양식 자동 완성</translation>
-<translation id="7504841985386528758">탭 그룹에 대해 알게 된 이후</translation>
 <translation id="750493650310597496">선택된 항목 없음</translation>
 <translation id="7505402981231763928">Gemini를 사용하려면 로그인해야 합니다.</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" />(<ph name="FILESIZE" />).</translation>
@@ -2320,6 +2312,7 @@ Handoff는 설정의 일반 섹션에서도 사용 설정할 수 있으며, 이�
 <translation id="823339794112333264">마이크 켜기</translation>
 <translation id="8240217649914883113">캘린더에 추가해 줘</translation>
 <translation id="824379025871762038">허용 안함</translation>
+<translation id="8244387390464017490">새 탭 페이지 맞춤설정</translation>
 <translation id="8250920743982581267">문서</translation>
 <translation id="8258734532103758067">데이터를 내보냈습니다</translation>
 <translation id="8258999165172757081">추가됨</translation>

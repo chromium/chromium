@@ -332,6 +332,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1231572247662419826">Les sites peuvent demander à capturer et utiliser votre saisie à la souris</translation>
 <translation id="1232569758102978740">Sans titre</translation>
 <translation id="1233497634904001272">Appuyez de nouveau sur votre clé de sécurité pour finaliser la requête.</translation>
+<translation id="1233566345244684257">Toute personne ayant accès à vos applis Gemini pourrait contrôler votre navigateur Chrome.</translation>
 <translation id="1233721473400465416">Paramètres régionaux</translation>
 <translation id="1233835246554936745">{0,plural, =1{Enregistrer 1 élément dans le compte}one{Enregistrer # élément dans le compte}other{Enregistrer # éléments dans le compte}}</translation>
 <translation id="1234736487471201993">Créer un QR code pour cette image</translation>
@@ -554,6 +555,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1421514190500081936">Veuillez indiquer la raison pour laquelle vous téléchargez ces données :</translation>
 <translation id="1422159345171879700">Charger les scripts à risque</translation>
 <translation id="1425040197660226913">Impossible d'importer. Utilisez une image de moins de 20 Mo.</translation>
+<translation id="1426154609634610063">Examiner les risques liés à l'utilisation de Gemini</translation>
 <translation id="1426410128494586442">Oui</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> est bloqué</translation>
 <translation id="1427179946227469514">Ton de la voix de la synthèse vocale</translation>
@@ -1829,6 +1831,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2416435988630956212">Touches de fonction du clavier</translation>
 <translation id="2419131370336513030">Afficher les applis installées</translation>
 <translation id="2419706071571366386">Par sécurité, déconnectez-vous lorsque vous n'utilisez plus votre ordinateur.</translation>
+<translation id="2423226060967554289">Afficher la barre de favoris</translation>
 <translation id="2423506062824112361">Échec du téléchargement du contenu pour une raison inconnue.</translation>
 <translation id="2423578206845792524">En&amp;registrer l'image sous...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Invité}one{Invité (#)}other{Invité (#)}}</translation>
@@ -2066,6 +2069,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2588271083332682494">Rangez vos onglets en groupes</translation>
 <translation id="2588636910004461974">Appareils de <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Ne jamais afficher les fichiers Drive</translation>
+<translation id="2595270892115552212">Lorsque vous lancez une tâche depuis d'autres applis Gemini, y compris gemini.google.com et les applis mobiles Gemini, Gemini peut utiliser la navigation automatique dans Chrome sur cet appareil pour interagir avec des sites et effectuer des tâches à votre place. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="2597073208962000830">La fonctionnalité Partage à proximité utilise la recherche Bluetooth pour trouver les appareils à proximité.</translation>
 <translation id="2598136842498757793">Personnaliser les boutons de la barre d'outils</translation>
 <translation id="2598710988533271874">Nouvelle version de Chrome disponible</translation>
@@ -2803,6 +2807,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3132996321662585180">Actualiser quotidiennement</translation>
 <translation id="3134312457920437826">Impossible d'installer l'extension, car elle utilise une version de fichier manifeste non compatible.</translation>
 <translation id="3134393957315651797">Sélectionnez l'état du test pour <ph name="EXPERIMENT_NAME" />. Description du test : <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3134822828309700120">Autoriser d'autres applis Gemini à naviguer à distance depuis n'importe quel appareil</translation>
 <translation id="3139925690611372679">Avatar jaune par défaut</translation>
 <translation id="314095642664111744">Désactiver le mode Sans distractions</translation>
 <translation id="3141093262818886744">Ouvrir quand même</translation>
@@ -3615,6 +3620,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3736487688526377259">Sélectionnez l'appareil sur lequel vous souhaitez recevoir ce lien.</translation>
 <translation id="3737058101969549870">Séparer les données de navigation existantes de ce nouveau profil ?</translation>
 <translation id="3738924763801731196"><ph name="OID" /> :</translation>
+<translation id="3739203168951159754">Gemini peut uniquement utiliser la navigation automatique sur cet appareil s'il est allumé et si Chrome est en cours d'exécution.</translation>
 <translation id="3739254215541673094">Ouvrir <ph name="APPLICATION" /> ?</translation>
 <translation id="3739349485749941749">Les sites peuvent demander à rechercher et à utiliser les imprimantes accessibles à votre appareil</translation>
 <translation id="3741056951918180319">Vous pouvez toujours cliquer sur l'extension pour l'utiliser sur n'importe quel site</translation>
@@ -3970,6 +3976,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" /> ?</translation>
 <translation id="3987993985790029246">Copier lien</translation>
 <translation id="3988124842897276887">Cet onglet est associé à un périphérique USB</translation>
 <translation id="3989635538409502728">Déconnexion</translation>
+<translation id="399132041334931433">Ajouter les onglets à un nouveau groupe</translation>
 <translation id="399179161741278232">Importés</translation>
 <translation id="3992008114154328194">Téléchargement en cours de <ph name="FILE_NAME" />, <ph name="STATUS" /></translation>
 <translation id="3994075804072562819">Autoriser <ph name="SPECIFIC_NAME" /> à contrôler les appareils USB.</translation>
@@ -5198,6 +5205,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="495170559598752135">Actions</translation>
 <translation id="4951966678293618079">Ne jamais enregistrer les mots de passe pour ce site</translation>
 <translation id="4952580838083306838">Masquer l'organisateur</translation>
+<translation id="4952628481830269193">Afficher la barre de favoris</translation>
 <translation id="4953808748584563296">Avatar orange par défaut</translation>
 <translation id="4954652437333037880">Fichier</translation>
 <translation id="4954831709600868883">Demander des infos sur <ph name="TEXT" /></translation>
@@ -5271,6 +5279,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5008936837313706385">Nom de l'activité</translation>
 <translation id="5009463889040999939">Changement de nom du profil… Cela peut prendre quelques minutes.</translation>
 <translation id="5010886807652684893">Vue étendue</translation>
+<translation id="5012016139642806466">Accédez à vos mots de passe et plus encore sur tous vos appareils</translation>
 <translation id="5012523644916800014">Gérer les mots de passe et les clés d'accès</translation>
 <translation id="501394389332262641">Signal audio de batterie faible</translation>
 <translation id="5014286001996333986">Remplacer ou créer un groupe ?</translation>
@@ -5450,6 +5459,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5149602533174716626">Cop&amp;ier l'image vidéo</translation>
 <translation id="5150254825601720210">Nom du serveur SSL du certificat Netscape</translation>
 <translation id="5151354047782775295">Libérez de l'espace disque, car certaines informations risquent d'être supprimées automatiquement.</translation>
+<translation id="5152719737931716272">Tâche terminée et renvoyée à Gemini</translation>
 <translation id="5153074793829217329">Utiliser votre clavier ou un clavier numérique pour contrôler le curseur de la souris</translation>
 <translation id="5153234146675181447">Oublier le téléphone</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -5766,6 +5776,7 @@ Vous pouvez associer plusieurs contacteurs à cette action.</translation>
 <translation id="5414836363063783498">Validation…</translation>
 <translation id="5415497281076257439">Expression</translation>
 <translation id="5415871492522952905">Comme vous aurez accès à votre historique et à vos onglets sur tous vos appareils, vous pourrez continuer vos activités</translation>
+<translation id="5417160551295347092">Gemini peut faire des erreurs, comme partager vos informations ou effectuer des achats sans vous demander votre avis. <ph name="LINK_BEGIN" />Prenez connaissance des risques.<ph name="LINK_END" /></translation>
 <translation id="5417293056300086453">Ce site peut utiliser des identifiants pour lire du contenu protégé.</translation>
 <translation id="5417312524372586921">Thèmes du navigateur</translation>
 <translation id="541737483547792035">Agrandir l'écran</translation>
@@ -6521,6 +6532,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6003143259071779217">Supprimer le réseau mobile de l'eSIM</translation>
 <translation id="6003479444341796444">La barre de titre est désormais affichée</translation>
 <translation id="6003582434972667631">Thème défini par votre organisation</translation>
+<translation id="600407115562756795">Gemini décidera des actions à effectuer en fonction des tâches que vous démarrez ou mettez à jour.</translation>
 <translation id="6005045517426700202">Bâtiment en briques</translation>
 <translation id="6006484371116297560">Classique</translation>
 <translation id="6007053304250788613">Vous ne pouvez exclure qu'un seul écran en mode miroir</translation>
@@ -8499,6 +8511,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="7523117833414447032">Lors de la lecture de majuscules</translation>
 <translation id="7523585675576642403">Renommer le profil</translation>
 <translation id="7525067979554623046">Créer</translation>
+<translation id="7526083414913154899">En savoir plus sur les tâches Gemini</translation>
 <translation id="7528224636098571080">Ne pas ouvrir</translation>
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{Dégrouper le groupe d'onglets ?}one{Dégrouper le groupe d'onglets ?}other{Dégrouper les groupes d'onglets ?}}</translation>
 <translation id="7529411698175791732">Vérifiez votre connexion Internet. Si le problème persiste, essayez de vous déconnecter, puis de vous reconnecter.</translation>
@@ -9351,6 +9364,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. Imprimante <ph name="ITEM_POSITION" /> sur <ph name="NUM_PRINTERS" />.</translation>
 <translation id="8180785270975217276">Économiseur d'énergie activé</translation>
 <translation id="8180786512391440389">"<ph name="EXTENSION" />" dispose d'un droit d'accès en lecture/écriture sur les images, les vidéos et les fichiers audio figurant aux emplacements indiqués.</translation>
+<translation id="8181132988581553950">Gemini aura accès aux mêmes sites que vous, y compris ceux auxquels vous êtes connecté. Il partagera les informations nécessaires avec des tiers, y compris des informations personnelles que vous pourriez considérer comme sensibles.</translation>
 <translation id="8183703640399301650">L'EID de votre appareil est <ph name="EID_NUMBER" /> et son code IMEI est <ph name="IMEI_NUMBER" />. Ces numéros peuvent servir à activer le service.</translation>
 <translation id="8184288427634747179">Passer à <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">Plus d'infos</translation>

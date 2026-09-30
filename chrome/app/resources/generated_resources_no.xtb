@@ -332,7 +332,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1231572247662419826">Nettsteder kan be om å få registrere og bruke museinndataene dine</translation>
 <translation id="1232569758102978740">Uten tittel</translation>
 <translation id="1233497634904001272">Berør sikkerhetsnøkkelen en gang til for å fullføre forespørselen.</translation>
-<translation id="1233566345244684257">Alle som har tilgang til Gemini-appene dine, kan kontrollere Chrome-nettleseren.</translation>
+<translation id="1233566345244684257">Alle som har tilgang til Gemini-appene, kan kontrollere Chrome-nettleseren.</translation>
 <translation id="1233721473400465416">Lokalitet</translation>
 <translation id="1233835246554936745">{0,plural, =1{Lagre 1 element i kontoen}other{Lagre # elementer i kontoen}}</translation>
 <translation id="1234736487471201993">Opprett en QR-kode for dette bildet</translation>
@@ -2079,7 +2079,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2588271083332682494">Rydd opp med fanegrupper</translation>
 <translation id="2588636910004461974">Enheter fra <ph name="VENDOR_NAME" /></translation>
 <translation id="2589658397149952302">Vis aldri Disk-filer</translation>
-<translation id="2595270892115552212">Når du starter en oppgave fra andre Gemini-apper, inkludert gemini.google.com og Gemini-mobilapper, kan Gemini bruke automatisk Chrome-navigering på denne enheten til å samhandle med nettsteder og fullføre oppgaver på dine vegne. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
+<translation id="2595270892115552212">Når du starter en oppgave fra andre Gemini-apper, inkludert gemini.google.com og Gemini-mobilapper, kan Gemini bruke auto-navigering i Chrome på denne enheten til å samhandle med nettsteder og fullføre oppgaver på dine vegne. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="2597073208962000830">Nærdeling bruker Bluetooth-skanning for å finne enheter i nærheten.</translation>
 <translation id="2598136842498757793">Tilpass knapper på verktøylinjen</translation>
 <translation id="2598710988533271874">En ny Chrome-versjon er tilgjengelig</translation>
@@ -5289,6 +5289,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5008936837313706385">Aktivitetsnavn</translation>
 <translation id="5009463889040999939">Gir profilen nytt navn. Dette kan ta noen minutter.</translation>
 <translation id="5010886807652684893">Visuell visning</translation>
+<translation id="5012016139642806466">Få passordene dine med mer på alle enhetene dine</translation>
 <translation id="5012523644916800014">Administrer passord og passnøkler</translation>
 <translation id="501394389332262641">Lyd for lavt batterinivå</translation>
 <translation id="5014286001996333986">Vil du erstatte eller opprette en ny gruppe?</translation>

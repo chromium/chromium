@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">這不是其他人經常下載的檔案類型，可能有危險，因此 Chrome 已禁止下載</translation>
 <translation id="1197860368385086056">下次在 <ph name="DEVICE_TYPE" /> 上開啟 Chrome 時，系統會提示你啟用價格追蹤通知。</translation>
 <translation id="1203500561924088507">感謝你安裝本服務。你必須重新啟動瀏覽器，才能使用 <ph name="BUNDLE_NAME" />。</translation>
+<translation id="1226003169284463347">如要在所有裝置上存取書籤和其他資料，請登入 Chrome</translation>
 <translation id="1278833599417554002">重新啟動以更新 &amp;Chrome</translation>
 <translation id="1289911795790071537">開啟「使用 Chrome 搜尋」</translation>
 <translation id="1290883685122687410">設定錯誤：<ph name="METAINSTALLER_EXIT_CODE" />。<ph name="WINDOWS_ERROR" /></translation>
@@ -118,6 +119,7 @@
 <translation id="2096213354152647998">由於近期並未造訪，Chrome 已移除<ph name="PERMISSION" />權限。</translation>
 <translation id="2106831557840787829">ChromeOS Flex 藉助了其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />的相關技術才得以問世，<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開發環境<ph name="END_LINK_LINUX_OSS" />也是如此。</translation>
 <translation id="2108778574543343055">停用 Chrome 在應用程式背景執行的功能</translation>
+<translation id="2111985952714409792">如要在所有裝置上使用擴充功能和其他資料，請登入 Chrome</translation>
 <translation id="2120620239521071941">登出後，系統會將 <ph name="ITEMS_COUNT" /> 個項目從這個裝置上刪除。日後如要重新取得你的資料，請以 <ph name="USER_EMAIL" /> 身分登入 Chrome。</translation>
 <translation id="2121284319307530122">重新啟動以更新 &amp;Chrome</translation>
 <translation id="2123055963409958220">只要回報<ph name="BEGIN_LINK" />目前的設定<ph name="END_LINK" />，就能助我們一臂之力，讓 Chrome 更臻完美</translation>
@@ -144,6 +146,7 @@
 <translation id="2307973900865360088">保留在 Dock 上</translation>
 <translation id="2309047409763057870">這是以並存形式安裝的次要 Google Chrome，無法設為您的預設瀏覽器。</translation>
 <translation id="2345992953227471816">Chrome 偵測到下列擴充功能含有惡意軟體：</translation>
+<translation id="2358140144860869442">如要在所有裝置上存取閱讀清單和其他資料，請登入 Chrome</translation>
 <translation id="2359808026110333948">繼續</translation>
 <translation id="2403703063067034158">啟動時發生錯誤：目前正在執行其他設定作業，請稍後再試。</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{至少有 1 個 Chrome 擴充功能當時正在存取 1 部 HID 裝置}=1{至少有 1 個 Chrome 擴充功能正在存取 1 部 HID 裝置}other{至少有 1 個 Chrome 擴充功能正在存取 # 部 HID 裝置}}</translation>
@@ -170,6 +173,7 @@
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome 會定期檢查，確保瀏覽器採用最安全的設定。如有任何需要你檢查的事項，我們會通知你。</translation>
 <translation id="2652691236519827073">在新的 Chrome 分頁中開啟連結(&amp;T)</translation>
+<translation id="2661616016316841783">如要存取<ph name="DEVICE" />中的擴充功能和其他資料，請登入 Chrome</translation>
 <translation id="2665296953892887393">將當機報告和<ph name="UMA_LINK" />傳送給 Google，助我們一臂之力，讓 Google Chrome 更臻完美</translation>
 <translation id="2668094785979141847">按一下即可退出 Google 智慧鏡頭</translation>
 <translation id="2674238339205910678">你的帳戶登入詳細資料未更新，因此 ChromeOS Flex 無法將 Chrome 資料儲存到 Google 帳戶</translation>
@@ -241,6 +245,7 @@
 <translation id="3242486428260808857">在 <ph name="DEVICE_TYPE" /> 上使用 Chrome 應用程式，享受更豐富的線上購物體驗</translation>
 <translation id="3245429137663807393">如果你一併提供 Chrome 使用報告，這些報告中會包含你造訪的網址</translation>
 <translation id="3249558306861350254">在 Windows 設定中，點選「設定預設值」<ph name="BEGIN_BOLD" /><ph name="END_BOLD" />。</translation>
+<translation id="3258706751219502154">如要存取<ph name="DEVICE" />中的書籤和其他資料，請登入 Chrome</translation>
 <translation id="3259748324892322072">下載 Chrome 應用程式</translation>
 <translation id="3282568296779691940">登入 Chrome</translation>
 <translation id="3286538390144397061">立即重新啟動</translation>
@@ -339,6 +344,7 @@
 <translation id="4280647692742956593">在手機上下載 Chrome，隨時隨地開啟/建立新的分頁群組。</translation>
 <translation id="4281844954008187215">服務條款</translation>
 <translation id="430327780270213103">允許擴充功能在 Chrome 工具列中顯示存取要求</translation>
+<translation id="4312908933392839680">如要在所有裝置上存取已儲存的資訊和其他內容，請登入 Chrome</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome 建議暫停導致瀏覽器運作緩慢的分頁}other{Chrome 建議暫停導致瀏覽器運作緩慢的分頁}}</translation>
 <translation id="4328355335528187361">Google Chrome 開發人員版 (mDNS-In)</translation>
 <translation id="4329315893554541805">如要享有個人化服務和其他功能，請在「網路和應用程式活動」與「已連結的 Google 服務」中納入 Chrome</translation>
@@ -506,7 +512,9 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6046028983725193307">如要分享系統音訊，請開啟「系統設定」，允許 Chrome 使用「僅限系統錄音」權限，接著重新啟動 Chrome。</translation>
 <translation id="6069027071882229820">複製為圖片</translation>
 <translation id="6070348360322141662">為了提升安全性，Google Chrome 會將你的資料加密保護</translation>
+<translation id="6071642418303142778">如要存取<ph name="DEVICE" />中的密碼和其他資料，請登入 Chrome</translation>
 <translation id="6075300983329039771">貴機構 (<ph name="MANAGER" />) 要求你登入 Chrome</translation>
+<translation id="6077365059401096066">如要存取<ph name="DEVICE" />中的閱讀清單和其他資料，請登入 Chrome</translation>
 <translation id="6113794647360055231">Chrome 變得更好用了</translation>
 <translation id="6116004140911290070">在 Chrome 中啟用「技能」</translation>
 <translation id="6116252277240876590">這個語言會用於顯示 Chrome 中的選單、設定、快訊和其他文字</translation>
@@ -704,6 +712,7 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="7804947029129221742">搜尋引擎被 Chrome 以外的程式變更。Chrome 已將這項設定重設為原始預設值，保護你的安全。<ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">從 Chrome 中移除...</translation>
 <translation id="7827099906024714326">Chrome 必須先驗證身分，才能將這些資料儲存到 Google 帳戶，讓你在所有裝置上使用。如果現在登出，系統將刪除這類資料。</translation>
+<translation id="7829850924999627855">如要存取儲存在<ph name="DEVICE" />的資訊和其他內容，請登入 Chrome</translation>
 <translation id="7832314606810669113">如要在所有裝置上存取書籤和其他資料，請登入 Chrome。登入後，這個書籤就會儲存到 Google 帳戶。</translation>
 <translation id="7845233973568007926">感謝你安裝本服務。你必須重新啟動電腦，才能使用 <ph name="BUNDLE_NAME" />。</translation>
 <translation id="7847170235260850604">在 Windows 啟動時開啟 Chrome</translation>

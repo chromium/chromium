@@ -30,6 +30,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="1194807384646768652">Chrome a bloqué ce téléchargement, car le type de fichier n'est pas souvent téléchargé et pourrait être dangereux</translation>
 <translation id="1197860368385086056">La prochaine fois que vous ouvrirez Chrome sur votre <ph name="DEVICE_TYPE" />, une invite vous proposera d'activer les alertes de suivi des prix.</translation>
 <translation id="1203500561924088507">Merci pour l'installation. Vous devez redémarrer votre navigateur avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1226003169284463347">Pour obtenir vos favoris et plus encore sur tous vos appareils, connectez-vous à Chrome</translation>
 <translation id="1278833599417554002">Relancer &amp;Chrome pour le mettre à jour</translation>
 <translation id="1289911795790071537">Ouvrir la recherche avec Chrome</translation>
 <translation id="1290883685122687410">Erreur de configuration : <ph name="METAINSTALLER_EXIT_CODE" /> <ph name="WINDOWS_ERROR" /></translation>
@@ -122,6 +123,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="2096213354152647998">Vous n'avez pas effectué de visite récemment. Chrome a retiré <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">Chrome OS Flex fonctionne grâce à d'autres <ph name="BEGIN_LINK_CROS_OSS" />logiciels libres<ph name="END_LINK_CROS_OSS" />, tout comme l'<ph name="BEGIN_LINK_LINUX_OSS" />environnement de développement Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Désactiver l'exécution de Chrome en arrière-plan pour les applis</translation>
+<translation id="2111985952714409792">Pour obtenir vos extensions et plus encore sur tous vos appareils, connectez-vous à Chrome</translation>
 <translation id="2120620239521071941">Cette action entraînera la suppression de <ph name="ITEMS_COUNT" /> éléments sur cet appareil. Pour récupérer vos données plus tard, connectez-vous à Chrome en tant que <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Relancer &amp;Chrome pour le mettre à jour</translation>
 <translation id="2123055963409958220">Aidez-nous à améliorer Google Chrome en nous signalant les <ph name="BEGIN_LINK" />paramètres actuels<ph name="END_LINK" /></translation>
@@ -148,6 +150,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="2307973900865360088">Garder dans le Dock</translation>
 <translation id="2309047409763057870">Cette installation de Google Chrome est secondaire. Celui-ci ne peut donc pas servir de navigateur par défaut.</translation>
 <translation id="2345992953227471816">Chrome a constaté que ces extensions contiennent un logiciel malveillant :</translation>
+<translation id="2358140144860869442">Pour obtenir votre liste de lecture et plus encore sur tous vos appareils, connectez-vous à Chrome</translation>
 <translation id="2359808026110333948">Continuer</translation>
 <translation id="2403703063067034158">Erreur de démarrage : une autre instance de configuration est actuellement en cours d'exécution, veuillez réessayer plus tard.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Une ou plusieurs extensions Chrome ont accédé à 1 appareil HID}=1{Une ou plusieurs extensions Chrome ont accédé à 1 appareil HID}one{Une ou plusieurs extensions Chrome ont accédé à # appareils HID}other{Une ou plusieurs extensions Chrome ont accédé à # appareils HID}}</translation>
@@ -176,6 +179,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome vérifie régulièrement que votre navigateur dispose des paramètres les plus sûrs. Nous vous informerons si nous avons besoin de votre avis pour quelque chose.</translation>
 <translation id="2652691236519827073">Ouvrir le lien dans un nouvel ongle&amp;t Chrome</translation>
+<translation id="2661616016316841783">Pour obtenir vos extensions et plus encore à partir de <ph name="DEVICE" />, connectez-vous à Chrome</translation>
 <translation id="2665296953892887393">Aidez-nous à améliorer Google Chrome en nous envoyant des rapports d'erreur et des <ph name="UMA_LINK" />.</translation>
 <translation id="2668094785979141847">Cliquer pour quitter Lentille Google</translation>
 <translation id="2674238339205910678">ChromeOS Flex n'a pas pu enregistrer les données Chrome dans votre compte Google parce que les détails de connexion de votre compte ne sont plus à jour</translation>
@@ -247,6 +251,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="3242486428260808857">Tirez le meilleur parti du magasinage en ligne lorsque vous utilisez l'appli Chrome sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="3245429137663807393">Si vous partagez aussi les rapports d'utilisation de Chrome, ceux-ci incluent les URL que vous consultez</translation>
 <translation id="3249558306861350254">Cliquez sur <ph name="BEGIN_BOLD" />Définir par défaut<ph name="END_BOLD" /> dans vos paramètres Windows.</translation>
+<translation id="3258706751219502154">Pour obtenir vos favoris et plus encore à partir de <ph name="DEVICE" />, connectez-vous à Chrome</translation>
 <translation id="3259748324892322072">Obtenir l'appli Chrome</translation>
 <translation id="3282568296779691940">Connexion à Chrome</translation>
 <translation id="3286538390144397061">Redémarrer maintenant</translation>
@@ -345,6 +350,7 @@ Si cette page ne fonctionne pas comme prévu, essayez d'autoriser l'optimisation
 <translation id="4280647692742956593">Téléchargez Chrome sur votre téléphone pour ouvrir des groupes d'onglets ou en créer de nouveaux en déplacement.</translation>
 <translation id="4281844954008187215">Conditions d'utilisation</translation>
 <translation id="430327780270213103">Autoriser l'extension à afficher les demandes d'accès dans la barre d'outils Chrome</translation>
+<translation id="4312908933392839680">Pour obtenir vos informations enregistrées et plus encore sur tous vos appareils, connectez-vous à Chrome</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome recommande de suspendre l'onglet qui ralentit votre navigateur}one{Chrome recommande de suspendre l'onglet qui ralentit votre navigateur}other{Chrome recommande de suspendre les onglets qui ralentissent votre navigateur}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Pour bénéficier de la personnalisation et d'autres fonctionnalités, incluez Chrome dans l'activité sur le Web et dans les applications et les services Google associés</translation>
@@ -514,7 +520,9 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6046028983725193307">Pour partager l'audio du système, ouvrez les paramètres système et autorisez « Enregistrement audio du système uniquement » pour Chrome. Vous devrez ensuite redémarrer Chrome.</translation>
 <translation id="6069027071882229820">Copier en tant qu'image</translation>
 <translation id="6070348360322141662">Pour une sécurité accrue, Google Chrome va crypter vos données</translation>
+<translation id="6071642418303142778">Pour obtenir vos mots de passe et plus encore à partir de <ph name="DEVICE" />, connectez-vous à Chrome</translation>
 <translation id="6075300983329039771">Votre organisation, <ph name="MANAGER" />, vous demande de vous connecter à Chrome</translation>
+<translation id="6077365059401096066">Pour récupérer votre liste de lecture et plus encore à partir de <ph name="DEVICE" />, connectez-vous à Chrome</translation>
 <translation id="6113794647360055231">Google Chrome vient de s'améliorer</translation>
 <translation id="6116004140911290070">Activer les compétences dans Chrome</translation>
 <translation id="6116252277240876590">Cette langue est utilisée pour afficher les menus, les paramètres, les alertes et d'autres textes dans Chrome</translation>
@@ -712,6 +720,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="7804947029129221742">Votre moteur de recherche a été modifié en dehors de Chrome. Pour vous protéger, Chrome l'a réinitialisé à sa valeur par défaut d'origine. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Supprimer de Google Chrome...</translation>
 <translation id="7827099906024714326">Chrome doit confirmer votre identité avant que certaines données puissent être enregistrées dans votre compte Google et utilisées sur tous vos appareils. Si vous vous déconnectez maintenant, ces données seront supprimées.</translation>
+<translation id="7829850924999627855">Pour obtenir vos informations enregistrées et plus encore à partir de <ph name="DEVICE" />, connectez-vous à Chrome</translation>
 <translation id="7832314606810669113">Pour obtenir vos favoris et plus encore sur tous vos appareils, connectez-vous à Chrome. Ce favori sera enregistré dans votre compte Google après votre connexion.</translation>
 <translation id="7845233973568007926">Merci pour l'installation. Vous devez redémarrer votre ordinateur avant d'utiliser <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847170235260850604">Lancer Chrome au démarrage de Windows</translation>

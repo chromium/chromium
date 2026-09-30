@@ -30,6 +30,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1194807384646768652">Chrome e bllokoi këtë shkarkim sepse lloji i skedarit nuk është shkarkuar zakonisht dhe mund të jetë i rrezikshëm</translation>
 <translation id="1197860368385086056">Herën tjetër që të hapësh Chrome në <ph name="DEVICE_TYPE" />, do të shikosh një kërkesë për të aktivizuar sinjalizimet për monitorimin e çmimeve.</translation>
 <translation id="1203500561924088507">Faleminderit që e instalove. Duhet të rinisësh shfletuesin përpara se të përdorësh <ph name="BUNDLE_NAME" />.</translation>
+<translation id="1226003169284463347">Për të marrë faqeshënuesit etj. në të gjitha pajisjet e tua, identifikohu në Chrome</translation>
 <translation id="1278833599417554002">Nise përsëri për të përditësuar &amp;Chrome</translation>
 <translation id="1289911795790071537">Hap kërkimin me Chrome</translation>
 <translation id="1290883685122687410">Gabim në konfigurim: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -122,6 +123,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2096213354152647998">Nuk ke vizituar së fundi. Chrome ka hequr lejen "<ph name="PERMISSION" />".</translation>
 <translation id="2106831557840787829">ChromeOS Flex mundësohet nga <ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />, si p.sh. <ph name="BEGIN_LINK_LINUX_OSS" />mjedisi i zhvillimit të Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Çaktivizo ekzekutimin e Chrome në sfond për aplikacionet</translation>
+<translation id="2111985952714409792">Për të marrë shtesat e tua etj në të gjitha pajisjet e tua, identifikohu në Chrome</translation>
 <translation id="2120620239521071941">Kjo do të fshijë <ph name="ITEMS_COUNT" /> artikuj nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chrome si <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Nise përsëri për të përditësuar &amp;Chrome</translation>
 <translation id="2123055963409958220">Ndihmo në përmirësimin e Chrome duke raportuar <ph name="BEGIN_LINK" />cilësimet aktuale<ph name="END_LINK" /></translation>
@@ -148,6 +150,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2307973900865360088">Mbaje në "Stacion"</translation>
 <translation id="2309047409763057870">Ky është instalim dytësor i Google Chrome dhe nuk mund të bëhet shfletuesi yt i parazgjedhur.</translation>
 <translation id="2345992953227471816">Chrome vuri re se këto shtesa përmbajnë softuer keqdashës:</translation>
+<translation id="2358140144860869442">Për të marrë listën tënde të leximit etj. në të gjitha pajisjet e tua, identifikohu në Chrome</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2403703063067034158">Gabim në nisje: aktualisht po ekzekutohet një shembull tjetër i konfigurimit; provo përsëri më vonë.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Një ose disa shtesa të Chrome kanë pasur qasje në 1 pajisje HID}=1{Një ose disa shtesa të Chrome kanë qasje në 1 pajisje HID}other{Një ose disa shtesa të Chrome kanë qasje në # pajisje HID}}</translation>
@@ -176,6 +179,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome kontrollon rregullisht për t'u siguruar që shfletuesi yt ka cilësimet më të sigurta. Do të të informojmë nëse ka nevojë të rishikosh diçka.</translation>
 <translation id="2652691236519827073">Hape lidhjen në një &amp;skedë të re të Chrome</translation>
+<translation id="2661616016316841783">Për të marrë shtesat e tua etj. nga <ph name="DEVICE" />, identifikohu në Chrome</translation>
 <translation id="2665296953892887393">Ndihmo në përmirësimin e Google Chrome duke dërguar te Google raportet e ndërprerjeve aksidentale dhe <ph name="UMA_LINK" /></translation>
 <translation id="2668094785979141847">Kliko për të dalë nga "Lentja e Google"</translation>
 <translation id="2674238339205910678">ChromeOS Flex nuk mund t'i ruante të dhënat e Chrome në "Llogarinë tënde të Google" sepse detajet e identifikimit të llogarisë janë të papërditësuara</translation>
@@ -247,6 +251,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="3242486428260808857">Përfito më shumë nga blerjet online kur përdor aplikacionin e Chrome në <ph name="DEVICE_TYPE" /></translation>
 <translation id="3245429137663807393">Nëse ndan edhe raportet e përdorimit të Chrome, ato raporte përfshijnë URL-të që viziton</translation>
 <translation id="3249558306861350254">Kliko te <ph name="BEGIN_BOLD" />Cakto si të parazgjedhur<ph name="END_BOLD" /> te cilësimet e Windows.</translation>
+<translation id="3258706751219502154">Për të marrë faqeshënuesit etj. nga <ph name="DEVICE" />, identifikohu në Chrome</translation>
 <translation id="3259748324892322072">Merr aplikacionin e Chrome</translation>
 <translation id="3282568296779691940">Identifikohu në Chrome</translation>
 <translation id="3286538390144397061">Rindiz tani</translation>
@@ -345,6 +350,7 @@ Nëse kjo faqe nuk funksionon siç pritet, provo të lejosh optimizimin.</transl
 <translation id="4280647692742956593">Shkarko Chrome në telefon për të hapur ose krijuar grupe të reja skedash kur je në lëvizje.</translation>
 <translation id="4281844954008187215">Kushtet e shërbimit</translation>
 <translation id="430327780270213103">Lejo që shtesat të shfaqin kërkesat për qasje në shiritin e veglave të Chrome</translation>
+<translation id="4312908933392839680">Për të marrë informacionet e tua të ruajtura etj. në të gjitha pajisjet e tua, identifikohu në Chrome</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome rekomandon vendosjen në pauzë të skedës që ngadalëson shfletuesin}other{Chrome rekomandon vendosjen në pauzë të skedave që ngadalësojnë shfletuesin}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Për të marrë personalizimin dhe veçoritë e tjera, përfshi Chrome në "Aktivitetin e uebit dhe të aplikacioneve" dhe në shërbimet e lidhura të Google</translation>
@@ -514,7 +520,9 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6046028983725193307">Për të ndarë audion e sistemit, hap "Cilësimet e sistemit" dhe lejo "Vetëm regjistrimin e audios së sistemit" për Chrome. Më pas do të të duhet të rinisësh Chrome.</translation>
 <translation id="6069027071882229820">Kopjo si imazh</translation>
 <translation id="6070348360322141662">Për më shumë siguri, Google Chrome do t'i enkriptojë të dhënat e tua</translation>
+<translation id="6071642418303142778">Për të marrë fjalëkalimet e tua etj. nga <ph name="DEVICE" />, identifikohu në Chrome</translation>
 <translation id="6075300983329039771">Organizata jote, <ph name="MANAGER" />, kërkon që të identifikohesh në Chrome</translation>
+<translation id="6077365059401096066">Për të marrë listën tënde të leximit etj. nga <ph name="DEVICE" />, identifikohu në Chrome</translation>
 <translation id="6113794647360055231">Chrome sapo është përmirësuar</translation>
 <translation id="6116004140911290070">Aktivizo "Aftësitë" në Chrome</translation>
 <translation id="6116252277240876590">Kjo gjuhë përdoret për të shfaqur menytë, cilësimet, sinjalizimet dhe tekste të tjera në Chrome</translation>
@@ -712,6 +720,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7804947029129221742">Motori i kërkimit u ndryshua nga jashtë Chrome. Për të të mbrojtur, Chrome e rivendosi atë në parazgjedhjen e tij origjinale. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Hiqe nga Chrome...</translation>
 <translation id="7827099906024714326">Chrome duhet të verifikojë që je ti përpara se të mund të ruhen disa të dhëna në "Llogarinë tënde të Google" dhe të përdoren në të gjitha pajisjet e tua. Nëse del tani, këto të dhëna do të fshihen.</translation>
+<translation id="7829850924999627855">Për të marrë informacionet e tua të ruajtura etj. nga <ph name="DEVICE" />, identifikohu në Chrome</translation>
 <translation id="7832314606810669113">Për të marrë faqeshënuesit etj. në të gjitha pajisjet e tua, identifikohu në Chrome. Ky faqeshënues do të ruhet në "Llogarinë tënde të Google" pasi të identifikohesh.</translation>
 <translation id="7845233973568007926">Faleminderit që e instalove. Duhet të rinisësh kompjuterin përpara se të përdorësh <ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847170235260850604">Nis Chrome kur të niset Windows</translation>

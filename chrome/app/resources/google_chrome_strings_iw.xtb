@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">‏Chrome חסם את ההורדה הזאת כי לרוב לא מתבצעת הורדה של קבצים מהסוג הזה ויכול להיות שהקובץ מסוכן</translation>
 <translation id="1197860368385086056">‏בפתיחה הבאה של Chrome במכשיר <ph name="DEVICE_TYPE" />, תופיע הנחיה להפעיל התראות על מעקב מחירים.</translation>
 <translation id="1203500561924088507">תודה שהתקנת. עליך להפעיל מחדש את הדפדפן לפני השימוש ב-<ph name="BUNDLE_NAME" />.</translation>
+<translation id="1226003169284463347">‏כדי לקבל גישה לסימניות ולנתונים נוספים בכל המכשירים, צריך להיכנס ל-Chrome</translation>
 <translation id="1278833599417554002">‏הפעלה מחדש לצורך עדכון &amp;Chrome</translation>
 <translation id="1289911795790071537">‏פתיחת החיפוש באמצעות Chrome</translation>
 <translation id="1290883685122687410">שגיאה בהגדרה: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -118,6 +119,7 @@
 <translation id="2096213354152647998">‏לא נכנסת לאתר הזה בזמן האחרון. ‫Chrome הסיר את ההרשאה "<ph name="PERMISSION" />".</translation>
 <translation id="2106831557840787829">‏השימוש ב-ChromeOS Flex מתאפשר בזכות <ph name="BEGIN_LINK_CROS_OSS" />תוכנת קוד פתוח<ph name="END_LINK_CROS_OSS" /> נוספת כמו <ph name="BEGIN_LINK_LINUX_OSS" />סביבת הפיתוח של Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">‏השבתת הפעילות של Chrome ברקע לאפליקציות</translation>
+<translation id="2111985952714409792">‏כדי לקבל גישה לתוספים ולנתונים נוספים בכל המכשירים, צריך להיכנס ל-Chrome</translation>
 <translation id="2120620239521071941">‏פעולה זו תמחק <ph name="ITEMS_COUNT" /> פריטים מהמכשיר. כדי לשחזר את הנתונים מאוחר יותר, יש להיכנס אל Chrome עם <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">‏הפעלה מחדש לצורך עדכון &amp;Chrome</translation>
 <translation id="2123055963409958220">‏דיווח על <ph name="BEGIN_LINK" />ההגדרות הנוכחיות<ph name="END_LINK" /> יעזור לשפר את Chrome</translation>
@@ -144,6 +146,7 @@
 <translation id="2307973900865360088">‏אני רוצה להשאיר את Chromium ב-Dock</translation>
 <translation id="2309047409763057870">‏זוהי התקנה משנית של Google Chrome, ולא ניתן להפוך אותו לדפדפן ברירת המחדל שלך.</translation>
 <translation id="2345992953227471816">‏התוספים האלה שנמצאו ב-Chrome מכילים תכונה זדונית:</translation>
+<translation id="2358140144860869442">‏כדי לקבל גישה לרשימת הקריאה ולנתונים נוספים בכל המכשירים, צריך להיכנס ל-Chrome</translation>
 <translation id="2359808026110333948">המשך</translation>
 <translation id="2403703063067034158">שגיאה בזמן ההפעלה: יש עוד הגדרה שפועלת כרגע. אפשר לנסות שוב מאוחר יותר.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{‏תוסף אחד לפחות ל-Chrome ניגש למכשיר ממשק אנושי (HID) אחד}=1{‏תוסף אחד לפחות ל-Chrome ניגש למכשיר ממשק אנושי (HID) אחד}one{‏תוסף אחד לפחות ל-Chrome ניגש ל-# מכשירי ממשק אנושי (HID)}two{‏תוסף אחד לפחות ל-Chrome ניגש ל-# מכשירי ממשק אנושי (HID)}other{‏תוסף אחד לפחות ל-Chrome ניגש ל-# מכשירי ממשק אנושי (HID)}}</translation>
@@ -172,6 +175,7 @@
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">‏Chrome מוודא בקביעות שלדפדפן שלך יש את ההגדרות הבטוחות ביותר. נודיע לך אם צריך לבדוק משהו.</translation>
 <translation id="2652691236519827073">‏פתיחת הקישור ב&amp;כרטיסיית Chrome חדשה</translation>
+<translation id="2661616016316841783">‏כדי לקבל גישה לתוספים ולפריטים נוספים מתוך <ph name="DEVICE" />, צריך להיכנס ל-Chrome</translation>
 <translation id="2665296953892887393">‏שיפור Google Chrome על ידי שליחת <ph name="UMA_LINK" /> ודוחות קריסה אל Google</translation>
 <translation id="2668094785979141847">‏צריך ללחוץ כדי לצאת מ-Google Lens</translation>
 <translation id="2674238339205910678">‏הנתונים מ-Chrome לא נשמרו בחשבון Google שלך ב-ChromeOS Flex כי פרטי הכניסה לחשבון לא מעודכנים</translation>
@@ -243,6 +247,7 @@
 <translation id="3242486428260808857">‏עם אפליקציית Chrome במכשיר <ph name="DEVICE_TYPE" />, אפשר ליהנות עוד יותר מהקניות באינטרנט</translation>
 <translation id="3245429137663807393">‏אם בנוסף ישותפו דוחות שימוש ב-Chrome, הדוחות האלה יכללו את כתובות ה-URL שבהן ביקרת</translation>
 <translation id="3249558306861350254">‏בהגדרות של Windows, צריך ללחוץ על <ph name="BEGIN_BOLD" />הגדרה כברירת מחדל<ph name="END_BOLD" />.</translation>
+<translation id="3258706751219502154">‏כדי לקבל גישה לסימניות ולנתונים נוספים מתוך <ph name="DEVICE" />, צריך להיכנס ל-Chrome</translation>
 <translation id="3259748324892322072">‏הורדת אפליקציית Chrome</translation>
 <translation id="3282568296779691940">‏כניסה ל-Chrome</translation>
 <translation id="3286538390144397061">הפעל מחדש כעת</translation>
@@ -342,6 +347,7 @@
 <translation id="4280647692742956593">‏כדי לפתוח או ליצור קבוצות חדשות של כרטיסיות תוך כדי תנועה, צריך להוריד את Chrome לטלפון שלך.</translation>
 <translation id="4281844954008187215">תנאי שירות</translation>
 <translation id="430327780270213103">‏מתן הרשאה לתוסף להציג בקשות גישה בסרגל הכלים של Chrome</translation>
+<translation id="4312908933392839680">‏כדי לקבל גישה למידע השמור ולנתונים נוספים בכל המכשירים, צריך להיכנס ל-Chrome</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{‏ההמלצה של Chrome היא להשהות את הכרטיסייה שמאטה את הדפדפן}one{‏ההמלצה של Chrome היא להשהות את הכרטיסיות שמאטות את הדפדפן}two{‏ההמלצה של Chrome היא להשהות את הכרטיסיות שמאטות את הדפדפן}other{‏ההמלצה של Chrome היא להשהות את הכרטיסיות שמאטות את הדפדפן}}</translation>
 <translation id="4328355335528187361">‏גרסת הפיתוח של Google Chrome ‏(mDNS-In)</translation>
 <translation id="4329315893554541805">‏כדי להשתמש בהתאמה אישית ובתכונות אחרות, צריך לכלול את Chrome ב'פעילות באינטרנט ובאפליקציות' ובשירותי Google המקושרים</translation>
@@ -507,7 +513,9 @@
 <translation id="6046028983725193307">‏כדי לשתף אודיו מהמערכת, צריך לפתוח את הגדרות המערכת ולבחור באפשרות "הקלטת אודיו של המערכת בלבד" ל-Chrome. לאחר מכן צריך להפעיל מחדש את Chrome.</translation>
 <translation id="6069027071882229820">העתקה כתמונה</translation>
 <translation id="6070348360322141662">‏לשיפור האבטחה, Google Chrome יצפין את הנתונים</translation>
+<translation id="6071642418303142778">‏כדי לקבל גישה לסיסמאות ולנתונים נוספים מתוך <ph name="DEVICE" />, צריך להיכנס ל-Chrome</translation>
 <translation id="6075300983329039771">‏לפי דרישת הארגון שלך, <ph name="MANAGER" />, עליך להיכנס לחשבון ב-Chrome</translation>
+<translation id="6077365059401096066">‏כדי לקבל גישה לרשימת הקריאה ולנתונים נוספים מתוך <ph name="DEVICE" />, צריך להיכנס ל-Chrome</translation>
 <translation id="6113794647360055231">‏Chrome השתפר</translation>
 <translation id="6116004140911290070">‏הפעלת מיומנויות ב-Chrome</translation>
 <translation id="6116252277240876590">‏זו השפה שבה מוצגים תפריטים, הגדרות, התראות וטקסטים אחרים ב-Chrome</translation>
@@ -705,6 +713,7 @@
 <translation id="7804947029129221742">‏בוצע שינוי מחוץ ל-Chrome במנוע החיפוש שמוגדר כברירת המחדל. כדי להגן עליך, Chrome איפס את ההגדרה לערך ברירת המחדל המקורי. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">‏הסרה מ-Chrome...</translation>
 <translation id="7827099906024714326">‏‫Chrome צריך לאמת את הזהות שלך לפני שאפשר יהיה לשמור חלק מהנתונים בחשבון Google ולהשתמש בהם בכל המכשירים שלך. אם תתבצע יציאה מהחשבון, הנתונים האלה יימחקו.</translation>
+<translation id="7829850924999627855">‏כדי לקבל גישה למידע השמור ולנתונים נוספים מתוך <ph name="DEVICE" />, צריך להיכנס ל-Chrome</translation>
 <translation id="7832314606810669113">‏כדי לקבל גישה לסימניות ולנתונים נוספים בכל המכשירים, צריך להיכנס ל-Chrome. לאחר הכניסה, הסימנייה הזו תישמר בחשבון Google.</translation>
 <translation id="7845233973568007926">תודה שהתקנת. עליך להפעיל מחדש את המחשב לפני השימוש ב-<ph name="BUNDLE_NAME" />.</translation>
 <translation id="7847170235260850604">‏הפעלת Chrome יחד עם Windows</translation>

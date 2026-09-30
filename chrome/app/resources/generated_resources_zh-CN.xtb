@@ -1559,6 +1559,7 @@
 <translation id="2198625180564913276">正在添加配置文件。这可能需要几分钟的时间。</translation>
 <translation id="2198712775285959645">修改</translation>
 <translation id="2199298570273670671">错误</translation>
+<translation id="2199546617947317537">如需获取其他设备上的历史记录，请登录并将历史记录和标签页同步到 <ph name="EMAIL" />。这样一来，您还可在所有设备上获取密码等内容。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="220006241671843310">选择 Chrome 是否使用直接在设备上运行的 AI 模型</translation>
 <translation id="2200094388063410062">电子邮件</translation>
 <translation id="2200781749203116929">ChromeOS 系统日志</translation>
@@ -2338,6 +2339,7 @@
 <translation id="2777525873368474674">粘贴图片链接</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{发现了 1 个向用户发送大量通知的网站}other{发现了 {NUM_SITES} 个向用户发送大量通知的网站}}</translation>
 <translation id="2778471504622896352">将远程应用添加到 ChromeOS 启动器</translation>
+<translation id="2781037472881921606">如需获取其他设备上的历史记录，请同步历史记录。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />，<ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783952358106015700">使用您的安全密钥在 <ph name="APP_NAME" /> 上进行身份验证</translation>
@@ -2400,6 +2402,7 @@
 <translation id="2826576843404243001">在您访问不支持安全连接的网站前，系统会发出警告。您无法更改此设置，因为您已启用“高级保护”。</translation>
 <translation id="2828375943530438449">从“登录”页面返回</translation>
 <translation id="2828833307884755422">已释放 <ph name="MEMORY_SAVINGS" /></translation>
+<translation id="2828851448902426206">如需获取其他设备上的标签页，请登录并同步历史记录。这样一来，您还可在所有设备上获取保存的信息等内容。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="2833144527504272627">使用文本光标导航</translation>
 <translation id="2833727845850279275">此文件包含恶意软件或来自可疑网站。</translation>
 <translation id="2835177225987815960">您当前的扫描设置将被重置，包括已分配的所有开关以及自动扫描速度偏好设置。</translation>
@@ -2766,6 +2769,7 @@
 <translation id="3102309003841389927">查看徽标更新</translation>
 <translation id="310297983047869047">上一张幻灯片</translation>
 <translation id="3103451787721578293">请输入上传此数据的原因：</translation>
+<translation id="3105253709809514429">如需获取其他设备上的标签页，请登录并同步历史记录。这样一来，您还可在所有设备上获取扩展程序等内容。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="3105339775057145050">上次失败的更新</translation>
 <translation id="3105796011181310544">改回 Google？</translation>
 <translation id="3105820656234755131">密码已更新</translation>
@@ -2777,6 +2781,7 @@
 <translation id="3109206895301430738">已保存的标签页分组</translation>
 <translation id="3109724472072898302">已收起</translation>
 <translation id="3112292765614504292">应用大小：<ph name="APP_SIZE" /></translation>
+<translation id="3112532142993641404">如需获取其他设备上的标签页，请登录并同步历史记录。这样一来，您还可在所有设备上获取书签等内容。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="311347022006935575">添加了此标签页</translation>
 <translation id="311394601889664316">不允许网站修改您设备上的文件或文件夹</translation>
 <translation id="3113970906450647715">按钮已取消固定</translation>
@@ -3282,6 +3287,7 @@
 <translation id="3498138244916757538">您必须关闭 <ph name="SPECIFIC_NAME" /> 才能更改麦克风设置。请关闭 <ph name="SPECIFIC_NAME" /> 以继续操作。</translation>
 <translation id="3500417806337761827">装载文件共享时出错。已装载太多 SMB 文件共享。</translation>
 <translation id="3500764001796099683">启用独立式 Web 应用</translation>
+<translation id="3501134531169168291">如需获取<ph name="DEVICE" />上的标签页，请登录并同步历史记录。这样一来，您还可在所有设备上获取扩展程序等内容。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="3505100368357440862">购物建议</translation>
 <translation id="3507650052590605702">管理密码</translation>
 <translation id="3507888235492474624">重新扫描蓝牙设备</translation>
@@ -3769,6 +3775,7 @@
 <translation id="3838085852053358637">未能成功加载扩展程序</translation>
 <translation id="3838486795898716504">更多“<ph name="PAGE_TITLE" />”</translation>
 <translation id="383891835335927981">未对任何网站设置缩放级别</translation>
+<translation id="3839108710633244251">如需获取其他设备上的历史记录，请登录并将历史记录和标签页同步到 <ph name="EMAIL" />。这样一来，您还可在所有设备上获取保存的信息等内容。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="3839516600093027468">始终禁止 <ph name="HOST" /> 查看剪贴板</translation>
 <translation id="3840096463915153852">对话记录</translation>
 <translation id="3841319830220785495">默认自然语音</translation>
@@ -4291,6 +4298,7 @@
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{保留分组}other{保留分组}}</translation>
 <translation id="4261429981378979799">扩展程序权限</translation>
 <translation id="4262004481148703251">忽略警告</translation>
+<translation id="4262060800239714974">如需获取<ph name="DEVICE" />上的标签页，请将历史记录和标签页同步到 <ph name="EMAIL" />。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="4263470758446311292">最大限度节省内存。标签页会在更短的一段时间后变为非活跃状态。</translation>
 <translation id="4263824086525632">北极光</translation>
 <translation id="4265096510956307240">验证身份</translation>
@@ -4927,8 +4935,10 @@
 <translation id="4750185073185658673">请在您的手机上查看另外几项权限。确保手机已开启蓝牙和 Wi-Fi。</translation>
 <translation id="4750394297954878236">建议</translation>
 <translation id="475088594373173692">第 1 位用户</translation>
+<translation id="4751925628341802838">如需获取其他设备上的历史记录，请登录并将历史记录和标签页同步到 <ph name="EMAIL" />。这样一来，您还可在所有设备上获取扩展程序等内容。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="4753084533826742808">字符数不得少于 1 个</translation>
 <translation id="4754590344707355551">使用扩展程序增强浏览器</translation>
+<translation id="4756130875344525429">如需获取<ph name="DEVICE" />上的历史记录，请登录并将历史记录和标签页同步到 <ph name="EMAIL" />。这样一来，您还可在所有设备上获取保存的信息等内容。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="4756378406049221019">停止/重新加载</translation>
 <translation id="4756388243121344051">历史记录(&amp;H)</translation>
 <translation id="4756627014339714615">重定向</translation>
@@ -5239,6 +5249,7 @@
 <translation id="497403230787583386">已完成安全检查。即将打印您的文档。</translation>
 <translation id="4974442344472293753">更新结果</translation>
 <translation id="4975771730019223894">应用通知数量标志</translation>
+<translation id="4976647810464861866">如需获取其他设备上的标签页，请登录并同步历史记录。这样一来，您还可在所有设备上获取阅读清单等内容。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">确认访问</translation>
 <translation id="4979263087381759787">开发者选项</translation>
@@ -5278,6 +5289,7 @@
 <translation id="5008936837313706385">活动名称</translation>
 <translation id="5009463889040999939">正在重命名配置文件。这可能需要几分钟的时间。</translation>
 <translation id="5010886807652684893">直观视图</translation>
+<translation id="5012016139642806466">在您的所有设备上获取密码等信息</translation>
 <translation id="5012523644916800014">管理密码和通行密钥</translation>
 <translation id="501394389332262641">电池电量低提示音</translation>
 <translation id="5014286001996333986">要替换还是创建新分组？</translation>
@@ -5410,6 +5422,7 @@
 <translation id="511313294362309725">开启快速配对</translation>
 <translation id="5113992879909788634">详细了解 Chrome 自动浏览功能</translation>
 <translation id="51143538739122961">请插入您的安全密钥并轻触它</translation>
+<translation id="5114635223409082546">如需获取<ph name="DEVICE" />上的标签页，请登录并同步历史记录。这样一来，您还可在所有设备上获取书签等内容。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="5115338116365931134">SSO</translation>
 <translation id="5116628073786783676">音频存储为(&amp;V)...</translation>
 <translation id="5117139026559873716">断开手机与 <ph name="DEVICE_TYPE" /> 的连接。断开后，它们将无法再自动连接。</translation>
@@ -5835,6 +5848,7 @@
 <translation id="5457795687441958389">保持未登录状态</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">您输错 PIN 码的次数过多。如需访问您的通行密钥和密码，请更改 PIN 码。</translation>
+<translation id="5459251585760045919">如需获取<ph name="DEVICE" />上的历史记录，请登录并将历史记录和标签页同步到 <ph name="EMAIL" />。这样一来，您还可在所有设备上获取扩展程序等内容。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="5459470938885464873">导入证书时出错</translation>
 <translation id="5459864179070366255">继续安装</translation>
 <translation id="5460861858595506978">灵感示例</translation>
@@ -6006,6 +6020,7 @@
 <translation id="5583640892426849032">退格</translation>
 <translation id="5584088138253955452">保存用户名？</translation>
 <translation id="5585019845078534178">卡片</translation>
+<translation id="5585064628683466904">如需获取其他设备上的历史记录，请登录并将历史记录和标签页同步到 <ph name="EMAIL" />。这样一来，您还可在所有设备上获取阅读清单等内容。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="5585118885427931890">无法创建书签文件夹。</translation>
 <translation id="558563010977877295">打开特定网页或一组网页</translation>
 <translation id="5587592231724900065">此设置目前由一个扩展程序控制</translation>
@@ -6741,6 +6756,7 @@
 <translation id="6175910054050815932">获取链接</translation>
 <translation id="6177478397823976397">找不到设备。请在新的标签页中打开帮助中心文章</translation>
 <translation id="6177779807714496775">在左侧视图中打开链接</translation>
+<translation id="6178186430790239237">如需获取其他设备上的标签页，请将历史记录和标签页同步到 <ph name="EMAIL" />。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="6178664161104547336">选择证书</translation>
 <translation id="6178682841350631965">您的登录数据已更新</translation>
 <translation id="6179830757749383456">浏览器由“<ph name="BROWSER_DOMAIN" />”管理，个人资料由“<ph name="PROFILE_DOMAIN" />”管理</translation>
@@ -7051,6 +7067,7 @@
 <translation id="6430202563517028640">将链接添加到阅读清单</translation>
 <translation id="6430814529589430811">Base64 编码 ASCII，单一证书</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" />将为此计算机上的所有用户设置自动更新。</translation>
+<translation id="6431970976661940755">如需获取<ph name="DEVICE" />上的标签页，请登录并同步历史记录。这样一来，您还可在所有设备上获取阅读清单等内容。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="6434104957329207050">点扫描速度</translation>
 <translation id="6434309073475700221">舍弃</translation>
 <translation id="6434755719322447931">混乱</translation>
@@ -7215,6 +7232,7 @@
 <translation id="6556903358015358733">主题背景和壁纸</translation>
 <translation id="6557199166823345360">添加更多详情或提出与您的选择相关的问题，以优化搜索结果</translation>
 <translation id="6557290421156335491">我的快捷方式</translation>
+<translation id="655745275895381718">如需获取<ph name="DEVICE" />上的标签页，请登录并同步历史记录。这样一来，您还可在所有设备上获取保存的信息等内容。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="6558098963164662391">从字典中移除(&amp;R)</translation>
 <translation id="6560061709899140565">显示其他投屏会话</translation>
 <translation id="656065428026159829">查看更多</translation>
@@ -7902,6 +7920,7 @@
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{已将 1 个密码导入到 <ph name="USER_EMAIL" /> 的 <ph name="BRAND" />}other{已将 {NUM_PASSWORDS} 个密码导入到 <ph name="USER_EMAIL" /> 的 <ph name="BRAND" />}}</translation>
 <translation id="7065534935986314333">关于系统</translation>
 <translation id="706626672220389329">装载共享资源时出错。所指定的共享资源此前就已装载完毕。</translation>
+<translation id="7066357648902789011">如需获取<ph name="DEVICE" />上的历史记录，请登录并将历史记录和标签页同步到 <ph name="EMAIL" />。这样一来，您还可在所有设备上获取密码等内容。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="7067396782363924830">环境颜色</translation>
 <translation id="7067725467529581407">不再显示此气泡。</translation>
 <translation id="7068539819344620805">您现在可以随时通过“自定义 Chrome”菜单为浏览器换上全新外观</translation>
@@ -8087,6 +8106,7 @@
 <translation id="7214047272988222011">已允许 - <ph name="PERMISSION_DETAILS" />。请开启<ph name="LINK_BEGIN" />系统相机使用权<ph name="LINK_END" />。</translation>
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{在包含 1 个标签页的分组中新增标签页}other{在包含 # 个标签页的分组中新增标签页}}</translation>
 <translation id="721490496276866468">导入密码</translation>
+<translation id="7216638029417040861">如需获取其他设备上的历史记录，请登录并将历史记录和标签页同步到 <ph name="EMAIL" />。这样一来，您还可在所有设备上获取书签等内容。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="7217208603285112910">所选内容不是<ph name="LANGUAGE" /></translation>
 <translation id="7217317914610152390">使用新的“文字注释”工具，轻松添加文字、评论和备注</translation>
 <translation id="7219254577985949841">删除网站数据？</translation>
@@ -8097,6 +8117,7 @@
 <translation id="7222232353993864120">邮箱</translation>
 <translation id="7222335051802562841">完成更新</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7222513457790351522">如需获取<ph name="DEVICE" />上的历史记录，请登录并将历史记录和标签页同步到 <ph name="EMAIL" />。这样一来，您还可在所有设备上获取阅读清单等内容。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="7223027547122518521">选择允许此网站读取的文件</translation>
 <translation id="7223952304612664117">这将允许系统服务使用“位置信息精确度”设置来确定您的位置。“位置信息精确度”设置会使用无线信号和传感器的相关信息来估算设备位置。</translation>
 <translation id="7225082563376899794">填充密码时使用 Windows Hello</translation>
@@ -8985,6 +9006,7 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="791247712619243506">取消设置</translation>
 <translation id="7912974581251770345">翻译</translation>
+<translation id="7913805372428124107">如需获取<ph name="DEVICE" />上的标签页，请登录并同步历史记录。这样一来，您还可在所有设备上获取密码等内容。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="7914399737746719723">已安装应用</translation>
 <translation id="7915457674565721553">请连接到互联网以设置家长控制</translation>
 <translation id="7916364730877325865">贵组织不允许您使用此账号开启同步功能</translation>
@@ -9233,6 +9255,7 @@
 <translation id="8081989000209387414">停用 ADB 调试？</translation>
 <translation id="8082132721957920509">您的卡已保存</translation>
 <translation id="8082390128630131497">停用 ADB 调试会将此<ph name="DEVICE_TYPE" />恢复出厂设置。所有用户账号和本地数据都会被清空。</translation>
+<translation id="8082737802704584539">组织已关闭在 Google 账号中保存历史记录的功能</translation>
 <translation id="8084114998886531721">保存的密码</translation>
 <translation id="8084417885464859041">安全使用 Gemini</translation>
 <translation id="8084429490152575036">移动网络 APN 设置</translation>
@@ -9265,6 +9288,7 @@
 <translation id="810362914482827094">搜索密钥</translation>
 <translation id="8104088837833760645">下载 eSIM 卡配置文件</translation>
 <translation id="8104388155778519213">与 Google 智能镜头分享屏幕上的内容</translation>
+<translation id="8104412594956510627">如需获取<ph name="DEVICE" />上的历史记录，请同步历史记录。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="8104778744208707085">需要您注意</translation>
 <translation id="8105273883928376822">若要继续，请先登录。</translation>
 <translation id="8106114112474206597">按下“i”键表示按下鼠标按键</translation>
@@ -9295,6 +9319,7 @@
 <translation id="8124313775439841391">受管理的 ONC</translation>
 <translation id="8125651784723647184">密码分享功能由您的管理员管理</translation>
 <translation id="8126355825906412872">微笑</translation>
+<translation id="8126498026310640675">如需获取<ph name="DEVICE" />上的历史记录，请登录并将历史记录和标签页同步到 <ph name="EMAIL" />。这样一来，您还可在所有设备上获取书签等内容。您可以随时在设置中停止同步。Google 可能会根据历史记录在 Google 搜索及其他服务中提供个性化的体验。</translation>
 <translation id="813082847718468539">查看网站信息</translation>
 <translation id="8131740175452115882">确认</translation>
 <translation id="8133297578569873332">可接受 - FM</translation>

@@ -213,6 +213,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1343830902827845050">Login ke Chrome</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1348779747280417563">Konfirmasi nama</translation>
+<translation id="1353546633704510580">Wilayah yang dipilih</translation>
 <translation id="1357195169723583938">Siapa saja yang baru saja menggunakan perangkat dan kapan itu dilakukan</translation>
 <translation id="1358187717814494928">Buat sheet</translation>
 <translation id="1358223345833465883">Mesin telusur Anda di Chromium</translation>
@@ -352,6 +353,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="1574714699824202614">Memverifikasi metode pembayaran</translation>
 <translation id="1576277203042721907">Shopping Insights</translation>
 <translation id="1579189948231786790">Situs ini diblokir oleh organisasi Anda</translation>
+<translation id="1579940597679293608">Tutup semua Jendela terisolasi</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Terjadi masalah sewaktu menampilkan halaman web ini.</translation>
 <translation id="1585306568496579337">Ekstensi "<ph name="EXTENSION_NAME" />" ingin membuka link <ph name="PROTOCOL" /> melalui <ph name="HANDLER_HOSTNAME" /></translation>
@@ -1096,6 +1098,7 @@ Anda dapat menghapus saran ini dari Chrome. Sumber asli Anda tidak akan dihapus.
 <translation id="2858134430383535011">200 x 300 mm</translation>
 <translation id="2859383374160668142">Anda dapat melihat penurunan harga untuk produk yang Anda pantau kapan saja.</translation>
 <translation id="2859806420264540918">Situs ini menampilkan iklan yang mengganggu atau menyesatkan.</translation>
+<translation id="2864493683872263351">Buat kode, tulis teks, atau buat slide</translation>
 <translation id="2873317327342476681">Game Dino, ketuk dino atau tekan spasi untuk bermain</translation>
 <translation id="287387905105155974">Balon bantuan</translation>
 <translation id="2875109558992200904">Saat peristiwa keamanan ditandai oleh Chrome, data yang relevan dengan peristiwa tersebut akan dikirimkan kepada administrator Anda. Data ini dapat mencakup URL dan judul halaman yang Anda kunjungi di Chrome, URL halaman tempat Anda menyalin data, nama file atau metadata, alamat IP, error browser atau tab yang tidak bekerja, serta nama pengguna yang Anda gunakan untuk login ke aplikasi berbasis web, perangkat Anda, dan Chrome.</translation>
@@ -1203,6 +1206,7 @@ Anda dapat menghapus saran ini dari Chrome. Sumber asli Anda tidak akan dihapus.
 <translation id="3041176923638368519">Lihat persyaratan manfaat kartu</translation>
 <translation id="3041584414879052436">Daftar penerbit Beli Sekarang Bayar Nanti ditutup.</translation>
 <translation id="3041612393474885105">Informasi Sertifikat</translation>
+<translation id="3041835740069544003">Chrome kini dapat mendeteksi dan mengisi lebih banyak formulir dengan pemahaman formulir yang lebih cerdas. Untuk melakukannya, konten halaman dan URL dapat diproses di ruang privasi di cloud. Kelola di setelan.</translation>
 <translation id="3047054686095898948">Simpan info Anda di <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> dan lakukan berbagai hal lebih cepat, misalnya mengisi formulir di produk-produk Google. Anda dapat <ph name="BEGIN_LINK" />mengelola info Anda<ph name="END_LINK" /> di <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> untuk <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Histori Chrome Desktop Jarak Jauh, termasuk stempel waktu, host, dan ID sesi klien</translation>
 <translation id="3052868890529250114">Anda biasanya terhubung ke situs dengan aman, tetapi Chrome tidak dapat menggunakan koneksi yang aman untuk saat ini. Penyerang mungkin mencoba menyadap atau mengubah koneksi jaringan Anda. <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut peringatan ini<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1278,6 +1282,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3162559335345991374">Wi-Fi yang digunakan mungkin mewajibkan Anda mengunjungi halaman masuknya.</translation>
 <translation id="316542773973815724">Navigasi</translation>
 <translation id="316638481603975524">Dapat meminta untuk menginstal aplikasi web</translation>
+<translation id="3166688462674378969">Tombol Tutup jendela Terisolasi, aktifkan untuk menutup semua jendela Terisolasi yang saat ini terbuka</translation>
 <translation id="3166788340998560642">Chrome akan menawarkan untuk menyimpannya ke <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> saat Anda menggunakannya lagi</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3176929007561373547">Periksa setelan proxy atau hubungi administrator jaringan untuk
@@ -1306,6 +1311,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3211727636285361260">Buka link <ph name="PROTOCOL" /> melalui <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">Download dimulai. Untuk melihatnya, tarik dari bagian atas layar dan sentuh tombol kembali</translation>
 <translation id="3212581601480735796">Aktivitas Anda di <ph name="HOSTNAME" /> sedang dipantau</translation>
+<translation id="3215018171871590528">{NUM_SOURCES,plural, =1{Chrome akan berhenti menyarankan info ini. Sumber asli Anda tidak akan dihapus.}other{Chrome akan berhenti menyarankan info ini. Sumber asli Anda tidak akan dihapus.}}</translation>
 <translation id="3215092763954878852">Tidak dapat menggunakan WebAuthn</translation>
 <translation id="3215311088819828484">Hasil diperbarui</translation>
 <translation id="3218181027817787318">Relatif</translation>
@@ -1457,6 +1463,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3474392552865647225">Tombol Sesuaikan font di Chrome, aktifkan untuk menyesuaikan ukuran font dan rupa huruf di Chrome</translation>
 <translation id="3478033058537426179">Menurut grup</translation>
 <translation id="3479552764303398839">Jangan sekarang</translation>
+<translation id="3481315707647070701">Visualisasikan dan edit</translation>
 <translation id="3484560055331845446">Anda dapat kehilangan akses ke Akun Google Anda. Chrome merekomendasikan untuk mengubah sandi Anda sekarang. Anda akan diminta untuk login.</translation>
 <translation id="3484861421501147767">Pengingat: Kode promo yang disimpan tersedia</translation>
 <translation id="3485901585646640838">Untuk menggunakan sandi dan lainnya yang disimpan di Akun Google Anda, verifikasi diri Anda</translation>
@@ -1541,6 +1548,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3614001939154393113">Penyerang mungkin mencoba mencuri informasi Anda dari <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (misalnya, sandi, pesan, atau kartu kredit). <ph name="BEGIN_LEARN_MORE_LINK" />Pelajari lebih lanjut peringatan ini<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="361438452008624280">Entri daftar "<ph name="LANGUAGE_ID" />": Bahasa tidak dikenal atau tidak didukung.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk menjalankan pemeriksaan keamanan di setelan Chrome</translation>
+<translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">IBAN ini tidak dapat disimpan di Google Wallet. Sebaliknya, IBAN tersebut disimpan ke Chrome di perangkat ini. Chrome akan menanyakan hal ini lagi saat Anda menggunakan IBAN tersebut di lain waktu.</translation>
 <translation id="3621401353678567613">Untuk mendapatkan notifikasi penurunan harga untuk produk yang Anda pantau, aktifkan notifikasi di setelan.</translation>
 <translation id="362276910939193118">Tampilkan Histori Lengkap</translation>
@@ -1706,6 +1714,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3865339060090354361">Lihat persyaratan di sini untuk <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3869939189466884821">File lokal Anda akan dihapus dalam <ph name="MINUTES" /> menit</translation>
 <translation id="3875783148670536197">Lihat Caranya</translation>
+<translation id="3877021395754842994">Tutup semua jendela Terisolasi yang saat ini terbuka</translation>
 <translation id="3877603629930976930">Jangan bagikan</translation>
 <translation id="3878445208930547646">Menyalin dari situs ini tidak diizinkan</translation>
 <translation id="3879674895057686427">Pilih Target Bahasa Terjemahan</translation>
@@ -2049,6 +2058,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4409271659088619928">Mesin telusur Anda adalah <ph name="DSE" />. Lihat petunjuknya untuk menghapus histori penelusuran Anda, jika memungkinkan.</translation>
 <translation id="4409556632583862731">Rangkaian pesan baru</translation>
 <translation id="4410614037742891410">Perbarui kartu tanda pengenal dengan aman di Google Wallet</translation>
+<translation id="441152911646545600"><ph name="CLOSE_ISOLATED_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab lalu Enter untuk menutup semua jendela Terisolasi yang saat ini terbuka</translation>
 <translation id="4412074349188076601">Konfigurasi ini ditandai sebagai dapat diinstal, tetapi tidak ada gambar yang disediakan untuk arsitektur ini, sehingga tidak dapat diinstal.</translation>
 <translation id="4412377069090572315">Pendapat orang lain</translation>
 <translation id="4414515549596849729">cookie dan data situs</translation>
@@ -2320,6 +2330,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4887406273302438710">Lindungi sandi dengan Windows Hello</translation>
 <translation id="4887785555357166111">Simpan frame video</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk menghapus histori penjelajahan, cookie, cache, dan lainnya di setelan Chrome</translation>
+<translation id="4892391379033030113">Tombol Buka Jendela Terisolasi, aktifkan untuk membuka jendela Terisolasi baru guna menjelajah secara pribadi</translation>
 <translation id="4892518386797173871">Belakang</translation>
 <translation id="4894390983254799375">Seperti ID perangkat, nama, versi OS, dan nama pengguna OS</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -2994,6 +3005,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (disinkronkan)</translation>
 <translation id="6025471531651464742">Tambahkan file</translation>
 <translation id="6028591542479806248">Kelola notifikasi seluler dan email</translation>
+<translation id="6029805223627823735"><ph name="LAUNCH_ISOLATED_FOCUSED_FRIENDLY_MATCH_TEXT" />, tekan Tab lalu Enter untuk membuka jendela Terisolasi baru dan menjelajah secara pribadi</translation>
 <translation id="603068602130820122">Dua jepretan di kanan</translation>
 <translation id="6031824805267965302">Gunakan sensor gerakan</translation>
 <translation id="6032524144326295339">Kotak surat 2</translation>
@@ -3406,6 +3418,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="671076103358959139">Token Pendaftaran:</translation>
 <translation id="6711464428925977395">Ada yang salah dengan server proxy, atau alamat tidak benar.</translation>
 <translation id="6711700233707023861">String variasi disalin ke papan klip</translation>
+<translation id="6712003214447962889">Jawaban yang lebih cerdas dan lebih cepat</translation>
 <translation id="6712343563085762261">Dipindahkan ke atas</translation>
 <translation id="6716039223770814796">Bandingkan <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> item</translation>
 <translation id="6716672519412350405"><ph name="URL" /> ingin membuat peta 3D untuk area di sekeliling Anda dan melacak posisi kamera</translation>
@@ -3748,6 +3761,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7316521168101843192">Menyimpan file ke Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Bantuan Koneksi</translation>
+<translation id="7328315434053660512">Buka Jendela Terisolasi</translation>
 <translation id="733354035281974745">Penggantian akun lokal perangkat</translation>
 <translation id="7334320624316649418">&amp;Ulangi pengaturan ulang</translation>
 <translation id="7335157162773372339">Dapat meminta untuk menggunakan kamera Anda</translation>
@@ -3796,6 +3810,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7402375256128852434">Tambahkan tab terbaru</translation>
 <translation id="7403392780200267761">Bagikan tab ini dengan membagikan link, membuat kode QR, melakukan transmisi, dan lainnya</translation>
 <translation id="7403591733719184120"><ph name="DEVICE_NAME" /> Anda dikelola</translation>
+<translation id="7404785524901232736">{NUM_SOURCES,plural, =1{Saran dihapus. Sumber asli Anda tidak akan dihapus.}other{Saran dihapus. Sumber asli Anda tidak akan dihapus.}}</translation>
 <translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> telah menginstal aplikasi untuk fungsi tambahan. Aplikasi memiliki akses ke sebagian data Anda.</translation>
 <translation id="740691708085211707">Hapus alamat kantor dari isi otomatis Chrome?</translation>
 <translation id="7407424307057130981">&lt;p&gt;Anda akan melihat error ini jika memiliki software Superfish di komputer Windows.&lt;/p&gt;
@@ -4014,6 +4029,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7718626066800460799">Tidak dapat menyimpan hasil pemindaian</translation>
 <translation id="772128550427553158">CVC terletak di bagian depan kartu Anda.</translation>
 <translation id="7724603315864178912">Potong</translation>
+<translation id="7726402116075326231">Buka jendela Terisolasi baru untuk menjelajah secara pribadi</translation>
 <translation id="7730057435797792985">Urutkan</translation>
 <translation id="7734285854693414638">Buat formulir baru di Google Formulir dengan cepat</translation>
 <translation id="773466115871691567">Selalu terjemahkan halaman dalam bahasa <ph name="SOURCE_LANGUAGE" /></translation>
@@ -4205,6 +4221,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="8075898834294118863">Kelola setelan situs</translation>
 <translation id="8076492880354921740">Tab</translation>
 <translation id="8076880883123051368">Akun Google Anda mungkin memiliki bentuk histori penjelajahan lainnya di <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, seperti <ph name="BEGIN_LINK_GAA" />Aktivitas Aplikasi Gemini<ph name="END_LINK_GAA" /> Anda</translation>
+<translation id="8077465698530018904">Hapus wilayah yang dipilih</translation>
 <translation id="8077669823243888800">Envelope Chinese #8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Upload file rahasia?}other{Upload file rahasia?}}</translation>
 <translation id="8079031581361219619">Muat ulang situs?</translation>

@@ -144,7 +144,6 @@
 <translation id="1408847409015257906">点按“隐私与安全”。</translation>
 <translation id="1411386976162024013">智能镜头视觉搜索</translation>
 <translation id="1414315029670184034">不允许网站使用您的摄像头</translation>
-<translation id="1417474386970818917">退出账号并删除</translation>
 <translation id="1426410128494586442">是</translation>
 <translation id="1430915738399379752">打印</translation>
 <translation id="1433478348197382180">阅读模式</translation>
@@ -304,6 +303,7 @@
 <translation id="188237709236611317">菜单栏智能排序</translation>
 <translation id="1883255238294161206">收起列表</translation>
 <translation id="1883898928879467646">已移除标签页</translation>
+<translation id="188779312703122101">正在处理</translation>
 <translation id="1888854257756214946">选择密码…</translation>
 <translation id="1890237935065108104">无法使用此设置。</translation>
 <translation id="1894023287452300670">在此处跟踪价格</translation>
@@ -792,7 +792,6 @@
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />详细了解<ph name="END_LINK" />推荐内容</translation>
 <translation id="349446645805573740">选择保存“<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />”的位置</translation>
 <translation id="3504377992102007712">设置</translation>
-<translation id="3507556793108992994">{count,plural, =1{已清理 1 个标签页}other{已清理 # 个标签页}}</translation>
 <translation id="35083190962747987">打开 ${url}</translation>
 <translation id="3511519535430890904">添加浏览保护功能</translation>
 <translation id="3512572904898385012">现在，您可以使用摄像头拍照购物和进行翻译了。点按即可试用。</translation>
@@ -941,7 +940,6 @@
 <translation id="3962326069546168954">保存</translation>
 <translation id="3967327056943561740">书签</translation>
 <translation id="3967822245660637423">下载完毕</translation>
-<translation id="3968685670440571540">使用密码和自动填充功能以来</translation>
 <translation id="3973560090698854095">此操作会删除保存在 Google 账号 <ph name="USER_EMAIL" /> 中的地址。</translation>
 <translation id="398604237578616937">目前登录的账号是 <ph name="USER_EMAIL" />。打开账号菜单。</translation>
 <translation id="3986739045730058129">前往标签页</translation>
@@ -1356,7 +1354,6 @@
 <translation id="5250371859659394278">来自未知来源</translation>
 <translation id="525510229763628836">已最小化</translation>
 <translation id="5260842098960755113">已关闭会话串</translation>
-<translation id="5269913829202614649">自定义首页</translation>
 <translation id="5271265092610673171">{count,plural, =1{有一个必填字段是空的。请先填写这个字段，然后再保存。}other{有一些必填字段是空的。请先填写这些字段，然后再保存。}}</translation>
 <translation id="5271549068863921519">保存密码</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) 邀请您加入一个标签页分组。知道链接的任何人都能修改所有标签页，因此请谨慎加入。链接将在 48 小时后失效。</translation>
@@ -1466,7 +1463,6 @@
 <translation id="5632194969640946913">在浏览和搜索时，可对任意页面内容进行探索，深入了解商品、地点及文本信息。</translation>
 <translation id="5632485077360054581">操作步骤</translation>
 <translation id="5633237939819267663">{count,plural, =1{书签已保存到“{title}”}other{{count} 个书签已保存到“{title}”}}</translation>
-<translation id="564170563478022912">要退出账号？未保存的账号数据将被删除。</translation>
 <translation id="5642707040609478753">标为未读</translation>
 <translation id="5646376287012673985">位置信息</translation>
 <translation id="5647096944343801045">大型入口点</translation>
@@ -1482,7 +1478,6 @@
 <translation id="5669528293118408608">www</translation>
 <translation id="5676124785522323481">管理关联的应用</translation>
 <translation id="567881659373499783">版本 <ph name="PRODUCT_VERSION" /></translation>
-<translation id="5680012489335339762">要切换账号？未保存的账号数据将被删除。</translation>
 <translation id="5683499062697987550">要使用 Google 账号中的密码或将密码保存到 Google 账号，请验证是您本人在操作。</translation>
 <translation id="5684761169742812828">此密码已在互联网上遭遇数据泄露。如果您现在没有时间更改密码，Google 建议您保留此警告，以便之后继续提醒自己。</translation>
 <translation id="5694848685995373177">已保存到 <ph name="USER_EMAIL" /> 的云端硬盘中。</translation>
@@ -1758,7 +1753,6 @@
 <translation id="6506996418997555004">分享标签页分组“<ph name="GROUP_NAME" />”</translation>
 <translation id="6507973708545996744">登录后即可将您的阅读清单同步到您的所有设备上。</translation>
 <translation id="6518133107902771759">验证</translation>
-<translation id="6518861084553706202">系统将关闭标签页，并可能删除密码、浏览记录、Cookie 等数据。</translation>
 <translation id="6523575793810663688">显示具体操作</translation>
 <translation id="6524082013156754186">保存到账号</translation>
 <translation id="6524918542306337007">无痕模式不可用</translation>
@@ -1801,6 +1795,7 @@
 <translation id="6626281667717553020">CPS URI</translation>
 <translation id="6627583120233659107">修改文件夹</translation>
 <translation id="6629759408545977279">下载触发者：<ph name="ORIGINATING_HOST" /></translation>
+<translation id="6634065271963947588">若要访问历史记录和其他信息，请登录账号</translation>
 <translation id="6634432609054530164">贵单位关闭了无痕模式</translation>
 <translation id="6637478299472506933">下载失败</translation>
 <translation id="6638511529934826365">缩放文字…</translation>
@@ -1984,7 +1979,6 @@
 <translation id="721218676460477064">总结这篇文章</translation>
 <translation id="7215621211572884440">允许显示弹出式窗口</translation>
 <translation id="7218491361283758048">邮编</translation>
-<translation id="7220786058474068424">正在处理</translation>
 <translation id="7221173315674413369">探索“新变化”中的新功能和提示</translation>
 <translation id="7223102419539744003">关闭这个标签页</translation>
 <translation id="7223134495231529579">存储到“下载”</translation>
@@ -2072,7 +2066,6 @@
 <translation id="7491161827858509164">如需查看您之前下载的文件，请打开<ph name="BEGIN_LINK" />文件<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">继续修改</translation>
 <translation id="7500244509706269886">自动填充表单</translation>
-<translation id="7504841985386528758">了解标签页分组以来</translation>
 <translation id="750493650310597496">未选中任何项</translation>
 <translation id="7505402981231763928">您需要登录账号，才能使用 Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />)。</translation>
@@ -2319,6 +2312,7 @@
 <translation id="823339794112333264">开启麦克风</translation>
 <translation id="8240217649914883113">将此添加到我的日历</translation>
 <translation id="824379025871762038">永不允许</translation>
+<translation id="8244387390464017490">自定义新标签页页面</translation>
 <translation id="8250920743982581267">文档</translation>
 <translation id="8258734532103758067">数据已导出</translation>
 <translation id="8258999165172757081">已添加</translation>

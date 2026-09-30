@@ -1559,6 +1559,7 @@ Instala a aplicación Family Link no teu dispositivo e poderás xestionar a conf
 <translation id="2198625180564913276">Engadindo perfil. Esta acción pode tardar uns minutos.</translation>
 <translation id="2198712775285959645">Editar</translation>
 <translation id="2199298570273670671">Erro</translation>
+<translation id="2199546617947317537">Para ver o teu historial dos teus outros dispositivos, inicia sesión e sincroniza o historial e as pestanas con <ph name="EMAIL" />. Tamén poderás acceder aos teus contrasinais e moito máis en todos os teus dispositivos. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="220006241671843310">Escolle se queres que Chrome use modelos de IA que se executan directamente no teu dispositivo</translation>
 <translation id="2200094388063410062">Correo electrónico</translation>
 <translation id="2200781749203116929">Rexistros do sistema de ChromeOS</translation>
@@ -2338,6 +2339,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2777525873368474674">Copia a ligazón da imaxe</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{Atopouse 1 sitio con moitas notificacións}other{Atopáronse {NUM_SITES} sitios con moitas notificacións}}</translation>
 <translation id="2778471504622896352">Engadir aplicacións remotas ao menú de aplicacións de ChromeOS</translation>
+<translation id="2781037472881921606">Para acceder ao teu historial dos teus outros dispositivos, sincronízao. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783952358106015700">Utiliza a chave de seguranza coa aplicación <ph name="APP_NAME" /></translation>
@@ -2400,6 +2402,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="2826576843404243001">Recibe un aviso antes de visitar sitios que non admitan conexións seguras. Non podes cambiar esta opción de configuración porque tes activada a opción Protección avanzada.</translation>
 <translation id="2828375943530438449">Ir atrás desde a páxina de inicio de sesión</translation>
 <translation id="2828833307884755422">Espazo liberado: <ph name="MEMORY_SAVINGS" /></translation>
+<translation id="2828851448902426206">Para ver as túas pestanas dos teus outros dispositivos, inicia sesión e sincroniza o historial. Tamén poderás acceder á túa información gardada e moito máis en todos os teus dispositivos. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="2833144527504272627">Navegar co cursor de texto</translation>
 <translation id="2833727845850279275">Este ficheiro contén software malicioso ou procede dun sitio sospeitoso.</translation>
 <translation id="2835177225987815960">Restablecerase a configuración actual de exploración, dentro da que se inclúen as asignacións de interruptores e as preferencias de velocidade da exploración automática.</translation>
@@ -2766,6 +2769,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3102309003841389927">Revisa a actualización do logotipo</translation>
 <translation id="310297983047869047">Diapositiva anterior</translation>
 <translation id="3103451787721578293">Indica un motivo para cargar estes datos:</translation>
+<translation id="3105253709809514429">Para ver as túas pestanas dos teus outros dispositivos, inicia sesión e sincroniza o historial. Tamén poderás acceder ás túas extensións e moito máis en todos os teus dispositivos. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="3105339775057145050">Última actualización incorrecta</translation>
 <translation id="3105796011181310544">Queres volver cambiar a Google?</translation>
 <translation id="3105820656234755131">Actualizouse o contrasinal</translation>
@@ -2777,6 +2781,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3109206895301430738">Grupos de pestanas gardados</translation>
 <translation id="3109724472072898302">Contraído</translation>
 <translation id="3112292765614504292">Tamaño da aplicación: <ph name="APP_SIZE" /></translation>
+<translation id="3112532142993641404">Para ver as túas pestanas dos teus outros dispositivos, inicia sesión e sincroniza o historial. Tamén poderás acceder aos teus marcadores e moito máis en todos os teus dispositivos. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="311347022006935575">Pestana engadida</translation>
 <translation id="311394601889664316">Non permitir que os sitios editen ficheiros nin cartafoles do teu dispositivo</translation>
 <translation id="3113970906450647715">Deixouse de fixar o botón</translation>
@@ -3284,6 +3289,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3498138244916757538">Para cambiar a configuración do micrófono é necesario pechar <ph name="SPECIFIC_NAME" />. Pecha <ph name="SPECIFIC_NAME" /> to continuar.</translation>
 <translation id="3500417806337761827">Produciuse un erro ao montar o recurso compartido. Xa hai montados demasiados recursos compartidos SMB.</translation>
 <translation id="3500764001796099683">Activar aplicacións web illadas</translation>
+<translation id="3501134531169168291">Para ver as túas pestanas de <ph name="DEVICE" />, inicia sesión e sincroniza o historial. Tamén poderás acceder ás túas extensións e moito máis en todos os teus dispositivos. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="3505100368357440862">Suxestións de compras</translation>
 <translation id="3507650052590605702">Xestionar contrasinal</translation>
 <translation id="3507888235492474624">Volver buscar dispositivos Bluetooth</translation>
@@ -3774,6 +3780,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="3838085852053358637">Produciuse un erro ao cargar a extensión</translation>
 <translation id="3838486795898716504">Máis <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">Non se achegou nin se afastou o zoom en ningún sitio</translation>
+<translation id="3839108710633244251">Para ver o teu historial dos teus outros dispositivos, inicia sesión e sincroniza o historial e as pestanas con <ph name="EMAIL" />. Tamén poderás acceder á túa información gardada e moito máis en todos os teus dispositivos. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="3839516600093027468">Impedir sempre que o host <ph name="HOST" /> vexa o contido do portapapeis</translation>
 <translation id="3840096463915153852">Historial de conversa</translation>
 <translation id="3841319830220785495">Voz natural predeterminada</translation>
@@ -4297,6 +4304,7 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Manter grupo}other{Manter grupos}}</translation>
 <translation id="4261429981378979799">Permisos para extensións</translation>
 <translation id="4262004481148703251">Ignorar advertencia</translation>
+<translation id="4262060800239714974">Para ver as túas pestanas de <ph name="DEVICE" />, sincroniza o historial e as pestanas con <ph name="EMAIL" />. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="4263470758446311292">Aforra o máximo de memoria. As túas pestanas pasarán a estar inactivas despois dun período curto de tempo.</translation>
 <translation id="4263824086525632">Aurora boreal</translation>
 <translation id="4265096510956307240">Verificar a túa identidade</translation>
@@ -4933,8 +4941,10 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="4750185073185658673">Colle o teléfono para revisar uns cantos permisos máis. Asegúrate de que ter o Bluetooth e a wifi activados.</translation>
 <translation id="4750394297954878236">Suxestións</translation>
 <translation id="475088594373173692">Primeiro usuario</translation>
+<translation id="4751925628341802838">Para ver o teu historial dos teus outros dispositivos, inicia sesión e sincroniza o historial e as pestanas con <ph name="EMAIL" />. Tamén poderás acceder ás túas extensións e moito máis en todos os teus dispositivos. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="4753084533826742808">Debe conter polo menos 1 carácter</translation>
 <translation id="4754590344707355551">Mellora o navegador con extensións</translation>
+<translation id="4756130875344525429">Para ver o teu historial de <ph name="DEVICE" />, inicia sesión e sincroniza o historial e as pestanas con <ph name="EMAIL" />. Tamén poderás acceder á túa información gardada e moito máis en todos os teus dispositivos. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="4756378406049221019">Deter/Volver cargar</translation>
 <translation id="4756388243121344051">&amp;Historial</translation>
 <translation id="4756627014339714615">Redirección</translation>
@@ -5246,6 +5256,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="497403230787583386">Xa se realizaron as comprobacións de seguranza. Vaise imprimir o teu documento.</translation>
 <translation id="4974442344472293753">Resultado da actualización</translation>
 <translation id="4975771730019223894">Indicadores de notificacións</translation>
+<translation id="4976647810464861866">Para ver as túas pestanas dos teus outros dispositivos, inicia sesión e sincroniza o historial. Tamén poderás acceder á túa lista de lectura e moito máis en todos os teus dispositivos. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Confirmar acceso</translation>
 <translation id="4979263087381759787">Opcións de programación</translation>
@@ -5285,6 +5296,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5008936837313706385">Nome da actividade</translation>
 <translation id="5009463889040999939">Cambiando nome de perfil. Esta acción pode tardar uns minutos.</translation>
 <translation id="5010886807652684893">Vista visual</translation>
+<translation id="5012016139642806466">Accede aos teus contrasinais e moito máis en todos os teus dispositivos</translation>
 <translation id="5012523644916800014">Xestionar contrasinais e claves de acceso</translation>
 <translation id="501394389332262641">Son de batería baixa</translation>
 <translation id="5014286001996333986">Queres substituír o grupo ou crear un novo?</translation>
@@ -5417,6 +5429,7 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="511313294362309725">Activar Vinculación rápida</translation>
 <translation id="5113992879909788634">Máis información sobre a navegación automática de Chrome</translation>
 <translation id="51143538739122961">Introduce a túa chave de seguranza e tócaa</translation>
+<translation id="5114635223409082546">Para ver as túas pestanas de <ph name="DEVICE" />, inicia sesión e sincroniza o historial. Tamén poderás acceder aos teus marcadores e moito máis en todos os teus dispositivos. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="5115338116365931134">Inicio de sesión único</translation>
 <translation id="5116628073786783676">G&amp;ardar audio como...</translation>
 <translation id="5117139026559873716">Desconecta o teléfono do <ph name="DEVICE_TYPE" /> e deixarán de conectarse automaticamente.</translation>
@@ -5843,6 +5856,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5457795687441958389">Seguir coa sesión pechada</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">Metiches un PIN incorrecto demasiadas veces. Para poder acceder ás claves de acceso e contrasinais, cámbiao.</translation>
+<translation id="5459251585760045919">Para ver o teu historial de <ph name="DEVICE" />, inicia sesión e sincroniza o historial e as pestanas con <ph name="EMAIL" />. Tamén poderás acceder ás túas extensións e moito máis en todos os teus dispositivos. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="5459470938885464873">Produciuse un erro ao importar o certificado</translation>
 <translation id="5459864179070366255">Continuar e instalar</translation>
 <translation id="5460861858595506978">Inspiración</translation>
@@ -6014,6 +6028,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="5583640892426849032">Retroceso</translation>
 <translation id="5584088138253955452">Queres gardar o nome de usuario?</translation>
 <translation id="5585019845078534178">Tarxetas</translation>
+<translation id="5585064628683466904">Para ver o teu historial dos teus outros dispositivos, inicia sesión e sincroniza o historial e as pestanas con <ph name="EMAIL" />. Tamén poderás acceder á túa lista de lectura e moito máis en todos os teus dispositivos. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="5585118885427931890">Erro ao crear o cartafol de marcadores.</translation>
 <translation id="558563010977877295">Abrir unha páxina específica ou un conxunto de páxinas</translation>
 <translation id="5587592231724900065">Hai unha extensión que está controlando esta opción de configuración</translation>
@@ -6749,6 +6764,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6175910054050815932">Obter unha ligazón</translation>
 <translation id="6177478397823976397">Non se atopou ningún dispositivo. Abre un artigo do Centro de axuda nunha nova pestana</translation>
 <translation id="6177779807714496775">Abrir ligazón na vista esquerda</translation>
+<translation id="6178186430790239237">Para ver as túas pestanas dos teus outros dispositivos, sincroniza o historial e as pestanas con <ph name="EMAIL" />. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="6178664161104547336">Selecciona un certificado</translation>
 <translation id="6178682841350631965">Actualizáronse os teus datos de inicio de sesión</translation>
 <translation id="6179830757749383456">Navegador xestionado por <ph name="BROWSER_DOMAIN" />, perfil xestionado por <ph name="PROFILE_DOMAIN" /></translation>
@@ -7059,6 +7075,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6430202563517028640">Engadir ligazón á lista de lectura</translation>
 <translation id="6430814529589430811">ASCII con codificación Base64, certificado único</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> configurará actualizacións automáticas para todos os usuarios deste ordenador.</translation>
+<translation id="6431970976661940755">Para ver as túas pestanas de <ph name="DEVICE" />, inicia sesión e sincroniza o historial. Tamén poderás acceder á túa lista de lectura e moito máis en todos os teus dispositivos. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="6434104957329207050">Velocidade da exploración por punto</translation>
 <translation id="6434309073475700221">Descartar</translation>
 <translation id="6434755719322447931">Caótico</translation>
@@ -7223,6 +7240,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="6556903358015358733">Tema e fondo de pantalla</translation>
 <translation id="6557199166823345360">Engade máis detalles ou fai unha pregunta sobre a túa selección para acoutar a busca</translation>
 <translation id="6557290421156335491">Os meus atallos</translation>
+<translation id="655745275895381718">Para ver as túas pestanas de <ph name="DEVICE" />, inicia sesión e sincroniza o historial. Tamén poderás acceder á túa información gardada e moito máis en todos os teus dispositivos. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="6558098963164662391">&amp;Quitar do dicionario</translation>
 <translation id="6560061709899140565">Mostrar outras sesións de emisión de contido</translation>
 <translation id="656065428026159829">Ver máis</translation>
@@ -7909,6 +7927,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{Importouse 1 contrasinal de <ph name="USER_EMAIL" /> ao <ph name="BRAND" />}other{Importáronse {NUM_PASSWORDS} contrasinais de <ph name="USER_EMAIL" /> ao <ph name="BRAND" />}}</translation>
 <translation id="7065534935986314333">Acerca do sistema</translation>
 <translation id="706626672220389329">Produciuse un erro ao montar a localización compartida. A localización compartida especificada xa está montada.</translation>
+<translation id="7066357648902789011">Para ver o teu historial de <ph name="DEVICE" />, inicia sesión e sincroniza o historial e as pestanas con <ph name="EMAIL" />. Tamén poderás acceder aos teus contrasinais e moito máis en todos os teus dispositivos. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="7067396782363924830">Cores de ambiente</translation>
 <translation id="7067725467529581407">Non volver mostrar nunca.</translation>
 <translation id="7068539819344620805">Xa podes cambiar o deseño do teu navegador cando queiras desde o menú Personalizar Chrome</translation>
@@ -8094,6 +8113,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7214047272988222011">Permiso concedido: <ph name="PERMISSION_DETAILS" />. Activa o <ph name="LINK_BEGIN" />acceso á cámara do sistema<ph name="LINK_END" />.</translation>
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Nova pestana en 1 pestana}other{Nova pestana en # pestanas}}</translation>
 <translation id="721490496276866468">Importar contrasinais</translation>
+<translation id="7216638029417040861">Para ver o teu historial dos teus outros dispositivos, inicia sesión e sincroniza o historial e as pestanas con <ph name="EMAIL" />. Tamén poderás acceder aos teus marcadores e moito máis en todos os teus dispositivos. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="7217208603285112910">A selección non está en <ph name="LANGUAGE" /></translation>
 <translation id="7217317914610152390">Engade texto, comentarios e notas coa nova ferramenta de anotacións de texto</translation>
 <translation id="7219254577985949841">Eliminar datos do sitio?</translation>
@@ -8104,6 +8124,7 @@ Quédanche # máis. O xestor de contrasinais de Google recomenda que comprobes e
 <translation id="7222232353993864120">Enderezo de correo electrónico</translation>
 <translation id="7222335051802562841">Completar actualización</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7222513457790351522">Para ver o teu historial de <ph name="DEVICE" />, inicia sesión e sincroniza o historial e as pestanas con <ph name="EMAIL" />. Tamén poderás acceder á túa lista de lectura e moito máis en todos os teus dispositivos. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="7223027547122518521">Seleccionar un ficheiro que este sitio poida ler</translation>
 <translation id="7223952304612664117">Se aceptas, permitirás que os servizos do sistema utilicen a opción Precisión da localización para determinar a túa posición. Precisión da localización usa a información dos sensores e sinais sen fíos para calcular onde está o dispositivo.</translation>
 <translation id="7225082563376899794">Usar Windows Hello ao completar contrasinais</translation>
@@ -8992,6 +9013,7 @@ Para quitar unha asignación, preme un interruptor ou unha tecla que teñan unha
 <translation id="7911118814695487383">Linux</translation>
 <translation id="791247712619243506">Cancelar configuración</translation>
 <translation id="7912974581251770345">Tradución</translation>
+<translation id="7913805372428124107">Para ver as túas pestanas de <ph name="DEVICE" />, inicia sesión e sincroniza o historial. Tamén poderás acceder aos teus contrasinais e moito máis en todos os teus dispositivos. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="7914399737746719723">Instalouse a aplicación</translation>
 <translation id="7915457674565721553">Conéctate a Internet para configurar a función Controis parentais</translation>
 <translation id="7916364730877325865">A túa organización non che permite activar a sincronización con esta conta</translation>
@@ -9273,6 +9295,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="810362914482827094">Buscar claves de acceso</translation>
 <translation id="8104088837833760645">Descargar perfil de eSIM</translation>
 <translation id="8104388155778519213">Comparte o que aparece na pantalla con Google Lens</translation>
+<translation id="8104412594956510627">Para ver o teu historial de <ph name="DEVICE" />, sincronízao. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="8104778744208707085">A tarefa precisa a túa atención</translation>
 <translation id="8105273883928376822">Inicia sesión para continuar.</translation>
 <translation id="8106114112474206597">Usa a tecla I para premer un botón do rato</translation>
@@ -9303,6 +9326,7 @@ Mantén o ficheiro de clave nun lugar seguro, xa que o precisarás para crear no
 <translation id="8124313775439841391">ONC xestionado</translation>
 <translation id="8125651784723647184">O uso compartido de contrasinais está xestionado pola persoa que administra a túa conta</translation>
 <translation id="8126355825906412872">Sorrir</translation>
+<translation id="8126498026310640675">Para ver o teu historial de <ph name="DEVICE" />, inicia sesión e sincroniza o historial e as pestanas con <ph name="EMAIL" />. Tamén poderás acceder aos teus marcadores e moito máis en todos os teus dispositivos. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="813082847718468539">Consulta a información do sitio</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8133297578569873332">Aceptable (FM)</translation>

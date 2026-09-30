@@ -144,7 +144,6 @@
 <translation id="1408847409015257906">Tryk på "Sikkerhed og privatliv".</translation>
 <translation id="1411386976162024013">Visuel søgning med Lens</translation>
 <translation id="1414315029670184034">Tillad ikke, at websites anvender dit kamera</translation>
-<translation id="1417474386970818917">Log ud og slet</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1430915738399379752">Udskriv</translation>
 <translation id="1433478348197382180">Læsetilstand</translation>
@@ -304,6 +303,7 @@
 <translation id="188237709236611317">Menulinje for smartsortering</translation>
 <translation id="1883255238294161206">Skjul liste</translation>
 <translation id="1883898928879467646">Fanen er fjernet</translation>
+<translation id="188779312703122101">Behandler</translation>
 <translation id="1888854257756214946">Vælg adgangskode…</translation>
 <translation id="1890237935065108104">Denne indstilling er ikke tilgængelig.</translation>
 <translation id="1894023287452300670">Hold øje med prisen her</translation>
@@ -792,7 +792,6 @@
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /> om anbefalet indhold</translation>
 <translation id="349446645805573740">Vælg, hvor du vil gemme "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
 <translation id="3504377992102007712">Indstillinger</translation>
-<translation id="3507556793108992994">{count,plural, =1{1 fane er ryddet op}one{# fane er ryddet op}other{# faner er ryddet op}}</translation>
 <translation id="35083190962747987">Åbn ${url}</translation>
 <translation id="3511519535430890904">Tilføj browserbeskyttelse</translation>
 <translation id="3512572904898385012">Nu kan du shoppe og oversætte med dit kamera. Tryk for at prøve det.</translation>
@@ -941,7 +940,6 @@
 <translation id="3962326069546168954">Gem</translation>
 <translation id="3967327056943561740">Bogmærker</translation>
 <translation id="3967822245660637423">Download fuldført</translation>
-<translation id="3968685670440571540">siden anvendelsen af Adgangskoder og autofyld</translation>
 <translation id="3973560090698854095">Denne handling sletter adresser, der er gemt på din Google-konto <ph name="USER_EMAIL" />.</translation>
 <translation id="398604237578616937">Logget ind som <ph name="USER_EMAIL" />. Åbn kontomenu.</translation>
 <translation id="3986739045730058129">Gå til fane</translation>
@@ -1356,7 +1354,6 @@
 <translation id="5250371859659394278">Via en ukendt kilde</translation>
 <translation id="525510229763628836">Minimeret</translation>
 <translation id="5260842098960755113">Tråden er lukket</translation>
-<translation id="5269913829202614649">Tilpas startsiden</translation>
 <translation id="5271265092610673171">{count,plural, =1{Et obligatorisk felt er tomt. Udfyld det, inden du gemmer.}one{Et obligatorisk felt er tomt. Udfyld det, inden du gemmer.}other{Nogle obligatoriske felter er tomme. Udfyld dem, inden du gemmer.}}</translation>
 <translation id="5271549068863921519">Gem adgangskode</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) vil gerne invitere dig til en fanegruppe. Alle med linket kan redigere alle faner, så vær opmærksom på det, når du deltager. Linket udløber om 48 timer.</translation>
@@ -1466,7 +1463,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5632194969640946913">Få flere oplysninger, når du browser, og søg efter det, du ser på en hvilken som helst side, så du kan undersøge produkter, steder og tekst nærmere.</translation>
 <translation id="5632485077360054581">Vis mig hvordan</translation>
 <translation id="5633237939819267663">{count,plural, =1{Bogmærket er gemt i "{title}"}one{{count} bogmærke er gemt i "{title}"}other{{count} bogmærker er gemt i "{title}"}}</translation>
-<translation id="564170563478022912">Vil du logge ud? Kontodata, der ikke er gemt, slettes.</translation>
 <translation id="5642707040609478753">Markér som ulæst</translation>
 <translation id="5646376287012673985">Placering</translation>
 <translation id="5647096944343801045">Stort indgangspunkt</translation>
@@ -1482,7 +1478,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5669528293118408608">www</translation>
 <translation id="5676124785522323481">Administrer tilknyttede apps</translation>
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
-<translation id="5680012489335339762">Vil du skifte konto? Kontodata, der ikke er gemt, slettes.</translation>
 <translation id="5683499062697987550">Verificer din identitet for at bruge og gemme adgangskoder på din Google-konto.</translation>
 <translation id="5684761169742812828">Denne adgangskode er blevet offentliggjort i forbindelse med et brud på datasikkerheden på internettet. Hvis du ikke har tid til at ændre den lige nu, anbefaler Google, at du gemmer denne advarsel for at minde dig selv om det senere.</translation>
 <translation id="5694848685995373177">Gemt i Drev for <ph name="USER_EMAIL" />.</translation>
@@ -1758,7 +1753,6 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6506996418997555004">Del fanegruppen "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">Log ind for at se din læseliste på alle dine enheder.</translation>
 <translation id="6518133107902771759">Verificer</translation>
-<translation id="6518861084553706202">Fanerne lukkes, og de data, der slettes, kan omfatte adgangskoder, browserhistorik, cookies m.m.</translation>
 <translation id="6523575793810663688">Vis mig hvordan</translation>
 <translation id="6524082013156754186">Gem på konto</translation>
 <translation id="6524918542306337007">Inkognitotilstand er ikke tilgængelig</translation>
@@ -1801,6 +1795,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="6626281667717553020">CPS URI</translation>
 <translation id="6627583120233659107">Rediger mappen</translation>
 <translation id="6629759408545977279">Fra: <ph name="ORIGINATING_HOST" /></translation>
+<translation id="6634065271963947588">Log ind på din konto for at få adgang til historik m.m.</translation>
 <translation id="6634432609054530164">Din organisation har deaktiveret inkognitotilstand</translation>
 <translation id="6637478299472506933">Download mislykkedes</translation>
 <translation id="6638511529934826365">Zoom ind/ud på tekst…</translation>
@@ -1984,7 +1979,6 @@ Skift til <ph name="OTHER_EMAIL" /> for at fortsætte på din computer. Du får 
 <translation id="721218676460477064">Opsummer denne artikel</translation>
 <translation id="7215621211572884440">Pop op-vinduer er tilladt</translation>
 <translation id="7218491361283758048">Postnummer</translation>
-<translation id="7220786058474068424">Behandler</translation>
 <translation id="7221173315674413369">Se nye funktioner og tips i Nyheder</translation>
 <translation id="7223102419539744003">Luk fane</translation>
 <translation id="7223134495231529579">Gem i downloads</translation>
@@ -2072,7 +2066,6 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="7491161827858509164">Hvis du vil se filer, du har downloadet før, kan du åbne <ph name="BEGIN_LINK" />Filer<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Fortsæt redigering</translation>
 <translation id="7500244509706269886">Udfyld formularen automatisk</translation>
-<translation id="7504841985386528758">siden vejledning i fanegrupper</translation>
 <translation id="750493650310597496">0 valgt</translation>
 <translation id="7505402981231763928">Du skal logge ind for at bruge Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
@@ -2319,6 +2312,7 @@ Du kan til enhver tid genstarte.</translation>
 <translation id="823339794112333264">Aktivér mikrofon</translation>
 <translation id="8240217649914883113">Føj dette til min kalender</translation>
 <translation id="824379025871762038">Tillad aldrig</translation>
+<translation id="8244387390464017490">Tilpas siden Ny fane</translation>
 <translation id="8250920743982581267">Dokumenter</translation>
 <translation id="8258734532103758067">Jeg har eksporteret mine data</translation>
 <translation id="8258999165172757081">Tilføjet</translation>

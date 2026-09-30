@@ -144,7 +144,6 @@
 <translation id="1408847409015257906">Πατήστε Απόρρητο και ασφάλεια.</translation>
 <translation id="1411386976162024013">Οπτική αναζήτηση Lens</translation>
 <translation id="1414315029670184034">Να μην επιτρέπεται στους ιστοτόπους να χρησιμοποιούν την κάμερά σας</translation>
-<translation id="1417474386970818917">Αποσύνδεση και διαγραφή</translation>
 <translation id="1426410128494586442">Ναι</translation>
 <translation id="1430915738399379752">Εκτύπωση</translation>
 <translation id="1433478348197382180">Λειτουργία ανάγνωσης</translation>
@@ -304,6 +303,7 @@
 <translation id="188237709236611317">Γραμμή μενού έξυπνης ταξινόμησης</translation>
 <translation id="1883255238294161206">Σύμπτυξη λίστας</translation>
 <translation id="1883898928879467646">Η καρτέλα καταργήθηκε</translation>
+<translation id="188779312703122101">Γίνεται επεξεργασία</translation>
 <translation id="1888854257756214946">Επιλογή κωδικού πρόσβασης…</translation>
 <translation id="1890237935065108104">Αυτή η ρύθμιση δεν είναι διαθέσιμη.</translation>
 <translation id="1894023287452300670">Παρακολούθηση τιμής εδώ</translation>
@@ -792,7 +792,6 @@
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /> σχετικά με το προτεινόμενο περιεχόμενο</translation>
 <translation id="349446645805573740">Επιλέξτε πού θα αποθηκευτεί το αρχείο <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /></translation>
 <translation id="3504377992102007712">Ρυθμίσεις</translation>
-<translation id="3507556793108992994">{count,plural, =1{Τακτοποιήθηκε 1 καρτέλα}other{Τακτοποιήθηκαν # καρτέλες}}</translation>
 <translation id="35083190962747987">Άνοιγμα ${url}</translation>
 <translation id="3511519535430890904">Προσθήκη προστασίας περιήγησης</translation>
 <translation id="3512572904898385012">Τώρα μπορείτε να κάνετε αγορές και μεταφράσεις με την κάμερά σας. Πατήστε για δοκιμή.</translation>
@@ -941,7 +940,6 @@
 <translation id="3962326069546168954">Αποθήκευση</translation>
 <translation id="3967327056943561740">Σελιδοδείκτες</translation>
 <translation id="3967822245660637423">Ολοκλήρωση λήψης</translation>
-<translation id="3968685670440571540">από τότε που χρησιμοποιείτε την επιλογή Κωδικοί πρόσβασης και αυτόματη συμπλήρωση</translation>
 <translation id="3973560090698854095">Αυτή η ενέργεια διαγράφει τις διευθύνσεις που έχουν αποθηκευτεί στον Λογαριασμό σας Google <ph name="USER_EMAIL" />.</translation>
 <translation id="398604237578616937">Συνδεθήκατε ως <ph name="USER_EMAIL" />. Άνοιγμα μενού λογαριασμού.</translation>
 <translation id="3986739045730058129">Μετάβαση στην καρτέλα</translation>
@@ -1356,7 +1354,6 @@
 <translation id="5250371859659394278">Από μια άγνωστη πηγή</translation>
 <translation id="525510229763628836">Ελαχιστοποιήθηκε</translation>
 <translation id="5260842098960755113">Το νήμα έκλεισε</translation>
-<translation id="5269913829202614649">Προσαρμογή αρχικής σελίδας</translation>
 <translation id="5271265092610673171">{count,plural, =1{Ένα απαιτούμενο πεδίο είναι κενό. Συμπληρώστε το πριν κάνετε αποθήκευση.}other{Ορισμένα απαιτούμενα πεδία είναι κενά. Συμπληρώστε τα πριν κάνετε αποθήκευση.}}</translation>
 <translation id="5271549068863921519">Αποθήκευση κωδικού πρόσβασης</translation>
 <translation id="5275912569557792098">Ο χρήστης <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) θέλει να συμμετάσχετε σε μια ομάδα καρτελών. Οποιοσδήποτε διαθέτει τον σύνδεσμο μπορεί να επεξεργαστεί όλες τις καρτέλες, επομένως, εξετάστε προσεκτικά το ενδεχόμενο συμμετοχής σας. Ο σύνδεσμος λήγει σε 48 ώρες.</translation>
@@ -1466,7 +1463,6 @@
 <translation id="5632194969640946913">Μάθετε περισσότερα καθώς περιηγείστε και αναζητάτε αυτά που βλέπετε σε οποιαδήποτε σελίδα, για να εξερευνήσετε προϊόντα, μέρη και κείμενο.</translation>
 <translation id="5632485077360054581">Οδηγίες</translation>
 <translation id="5633237939819267663">{count,plural, =1{Ο σελιδοδείκτης αποθηκεύτηκε στην ενότητα {title}}other{{count} σελιδοδείκτες αποθηκεύτηκαν στην ενότητα {title}}}</translation>
-<translation id="564170563478022912">Να γίνει αποσύνδεση; Τα μη αποθηκευμένα δεδομένα λογαριασμού θα διαγραφούν.</translation>
 <translation id="5642707040609478753">Επισήμανση ως μη αναγνωσμένου</translation>
 <translation id="5646376287012673985">Τοποθεσία</translation>
 <translation id="5647096944343801045">Μεγάλο σημείο εισόδου</translation>
@@ -1482,7 +1478,6 @@
 <translation id="5669528293118408608">www</translation>
 <translation id="5676124785522323481">Διαχείριση συνδεδεμένων εφαρμογών</translation>
 <translation id="567881659373499783">Έκδοση <ph name="PRODUCT_VERSION" /></translation>
-<translation id="5680012489335339762">Να γίνει εναλλαγή λογαριασμών; Τα μη αποθηκευμένα δεδομένα λογαριασμού θα διαγραφούν.</translation>
 <translation id="5683499062697987550">Για να χρησιμοποιείτε και να αποθηκεύετε κωδικούς πρόσβασης στον Λογαριασμό σας Google, επαληθεύστε την ταυτότητά σας.</translation>
 <translation id="5684761169742812828">Αυτός ο κωδικός πρόσβασης έχει εκτεθεί σε μια παραβίαση δεδομένων στο διαδίκτυο. Εάν δεν έχετε χρόνο να τον αλλάξετε αυτήν τη στιγμή, η Google συνιστά να διατηρήσετε αυτή την ειδοποίηση για να θυμηθείτε να τον αλλάξετε αργότερα.</translation>
 <translation id="5694848685995373177">Αποθηκεύτηκε στο Drive για τον λογαριασμό <ph name="USER_EMAIL" />.</translation>
@@ -1759,7 +1754,6 @@
 <translation id="6506996418997555004">Κοινή χρήση ομάδας καρτελών <ph name="GROUP_NAME" /></translation>
 <translation id="6507973708545996744">Συνδεθείτε για να λάβετε τη Λίστα ανάγνωσης σε όλες τις συσκευές σας.</translation>
 <translation id="6518133107902771759">Επαλήθευση</translation>
-<translation id="6518861084553706202">Οι καρτέλες θα κλείσουν και τα δεδομένα που θα διαγραφούν μπορεί να περιλαμβάνουν κωδικούς πρόσβασης, ιστορικό περιήγησης, cookie και άλλα.</translation>
 <translation id="6523575793810663688">Οδηγίες</translation>
 <translation id="6524082013156754186">Αποθήκευση στον λογαριασμό</translation>
 <translation id="6524918542306337007">Η κατάσταση ανώνυμης περιήγησης δεν είναι διαθέσιμη</translation>
@@ -1802,6 +1796,7 @@
 <translation id="6626281667717553020">URI CPS</translation>
 <translation id="6627583120233659107">Επεξεργασία φακέλου</translation>
 <translation id="6629759408545977279">Από: <ph name="ORIGINATING_HOST" /></translation>
+<translation id="6634065271963947588">Για πρόσβαση στο ιστορικό και άλλες λειτουργίες, συνδεθείτε στον λογαριασμό σας</translation>
 <translation id="6634432609054530164">Ο οργανισμός σας απενεργοποίησε την κατάσταση ανώνυμης περιήγησης</translation>
 <translation id="6637478299472506933">Αποτυχία λήψης</translation>
 <translation id="6638511529934826365">Εστίαση στο κείμενο…</translation>
@@ -1985,7 +1980,6 @@
 <translation id="721218676460477064">Σύνοψη αυτού του άρθρου</translation>
 <translation id="7215621211572884440">Επιτρέπονται αναδυόμ.</translation>
 <translation id="7218491361283758048">Ταχυδρομικός κώδικας</translation>
-<translation id="7220786058474068424">Επεξεργασία</translation>
 <translation id="7221173315674413369">Εξερευνήστε νέες λειτουργίες και συμβουλές στην ενότητα Τι νέο υπάρχει</translation>
 <translation id="7223102419539744003">Κλείσιμο καρτέλας</translation>
 <translation id="7223134495231529579">Αποθήκευση στις λήψεις</translation>
@@ -2073,7 +2067,6 @@
 <translation id="7491161827858509164">Για να δείτε αρχεία που έχετε κατεβάσει στο παρελθόν, ανοίξτε την εφαρμογή <ph name="BEGIN_LINK" />Αρχεία<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Συνέχιση επεξεργασίας</translation>
 <translation id="7500244509706269886">Φόρμα αυτόματης συμπλήρωσης</translation>
-<translation id="7504841985386528758">από τότε που μάθατε για τις Ομάδες καρτελών</translation>
 <translation id="750493650310597496">0 στοιχεία επιλεγμένα</translation>
 <translation id="7505402981231763928">Πρέπει να συνδεθείτε για να χρησιμοποιήσετε το Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
@@ -2320,6 +2313,7 @@
 <translation id="823339794112333264">Ενεργοποίηση μικροφώνου</translation>
 <translation id="8240217649914883113">Πρόσθεσέ το στο ημερολόγιό μου</translation>
 <translation id="824379025871762038">Να μην επιτρέπεται ποτέ</translation>
+<translation id="8244387390464017490">Προσαρμ. σελ. νέας καρτέλας</translation>
 <translation id="8250920743982581267">Έγγραφα</translation>
 <translation id="8258734532103758067">Έχω εξαγάγει τα δεδομένα μου</translation>
 <translation id="8258999165172757081">Προστέθηκε</translation>

@@ -43,6 +43,7 @@
 <translation id="141901961143729572">Envie feedback</translation>
 <translation id="1465192221147974788">Para compartilhar a janela, use os Ajustes do Sistema para permitir a gravação de tela do Chromium.</translation>
 <translation id="1478370723027452770">Receber ajuda com o Chrome for Testing</translation>
+<translation id="147870194906295621">Para acessar suas informações salvas e muito mais do <ph name="DEVICE" />, faça login no Chromium</translation>
 <translation id="1497802159252041924">Erro de instalação: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Esta página está protegida</translation>
 <translation id="1524282610922162960">Compartilhar uma guia do Chromium</translation>
@@ -190,6 +191,7 @@
 <translation id="3012615494352020668">{count,plural, =1{O Chromium precisa confirmar sua identidade para que alguns dados sejam salvos na sua Conta do Google e usados em todos os seus dispositivos. Se você sair agora, esses dados (1 item) serão excluídos.}one{O Chromium precisa confirmar sua identidade para que alguns dados sejam salvos na sua Conta do Google e usados em todos os seus dispositivos. Se você sair agora, esses dados ({count} item) serão excluídos.}other{O Chromium precisa confirmar sua identidade para que alguns dados sejam salvos na sua Conta do Google e usados em todos os seus dispositivos. Se você sair agora, esses dados ({count} itens) serão excluídos.}}</translation>
 <translation id="3013473503895162900">Abrir <ph name="URL" /> em uma nova guia do Chromium.</translation>
 <translation id="302551344979399011">As inovações de IA, como as habilidades, são salvas na Conta do Google e gerenciadas separadamente da sincronização do Chromium</translation>
+<translation id="3032219013429286568">Para acessar extensões e muito mais em todos os seus dispositivos, faça login no Chromium</translation>
 <translation id="3032787606318309379">Adicionando ao Chromium...</translation>
 <translation id="3038232873781883849">Aguardando instalação...</translation>
 <translation id="3045032126857188731">Idioma traduzido: <ph name="LANGUAGE" /></translation>
@@ -200,6 +202,7 @@
 <translation id="3068515742935458733">Ajude a melhorar o Chromium. Envie relatórios de erros e <ph name="UMA_LINK" /> para o Google</translation>
 <translation id="3071024987058544609">Use o app Chromium para levar a segurança do Google com você</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{unused plural form}=1{Uma ou mais extensões do Chromium estavam acessando 1 dispositivo USB}one{Uma ou mais extensões do Chromium estavam acessando # dispositivo USB}other{Uma ou mais extensões do Chromium estavam acessando # dispositivos USB}}</translation>
+<translation id="3090734884397229414">Para acessar sua lista de leitura e muito mais do <ph name="DEVICE" />, faça login no Chromium</translation>
 <translation id="3095811995836568724">Histórico do Chromium</translation>
 <translation id="3103660991484857065">Ocorreu uma falha no instalador ao descompactar o arquivo. Baixe o Chromium novamente.</translation>
 <translation id="310459126943037700">Falha ao encerrar tarefas.</translation>
@@ -219,6 +222,7 @@
 <translation id="3234316605225071811">Mais tarde, o Chromium pode perguntar se você quer usar as informações salvas para preencher formulários automaticamente</translation>
 <translation id="3258596308407688501">O Chromium não pode ler e gravar neste diretório de dados: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Leve suas ferramentas de IA favoritas do Google para onde quiser com o Chromium no iOS.</translation>
+<translation id="3264761466044851269">Para acessar suas extensões e muito mais do <ph name="DEVICE" />, faça login no Chromium</translation>
 <translation id="3286538390144397061">Reiniciar agora</translation>
 <translation id="328888136576916638">As chaves da API do Google não foram encontradas. Algumas funcionalidades do Chromium serão desativadas.</translation>
 <translation id="3296368748942286671">Continuar executando os aplicativos em segundo plano quando o Chromium for fechado</translation>
@@ -230,6 +234,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Mudar para perfil existente do Chromium?</translation>
 <translation id="3412460710772753638">No Gerenciador de senhas neste dispositivo</translation>
+<translation id="3427159664004296878">Para acessar seus favoritos e muito mais do <ph name="DEVICE" />, faça login no Chromium</translation>
 <translation id="3438772217992559640">Procurar Esta Guia com a Pesquisa por Imagens</translation>
 <translation id="3455907671758333080">Amplie a Navegação Segura com Maior Proteção com o Chromium no seu celular</translation>
 <translation id="3461644266919055473">Deixe o Chromium do seu jeito</translation>
@@ -262,6 +267,7 @@
 
           **Sugira perguntas**: gere uma lista com marcadores contendo de 3 a 5 perguntas instigantes que um usuário poderia fazer para entender melhor a captura de tela. Essas perguntas precisam incluir pelo menos uma que seja especificamente sobre um objeto visual, o design ou a posição dele.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> - Chromium</translation>
+<translation id="386243222263310720">Para acessar seus favoritos e muito mais em todos os seus dispositivos, faça login no Chromium</translation>
 <translation id="3885770153807205175">Seletor de idioma</translation>
 <translation id="388648406173476553">Personalize e controle o Chromium. Algo precisa da sua atenção. Clique para ver mais detalhes.</translation>
 <translation id="3889543394854987837">Clique no seu nome para abrir o Chromium e começar a navegar.</translation>
@@ -270,6 +276,7 @@
 <translation id="3909353120217047026">Esta extensão viola a política da Chrome Web Store e pode não ser segura. Remova do Chromium para que ela não apareça mais e altere seus dados nos sites que você visitar, incluindo suas informações pessoais.</translation>
 <translation id="3941890832296813527">Erro de instalação: o nome do arquivo do instalador é inválido ou não tem suporte.</translation>
 <translation id="3945058413678539331">O Chromium está tentando copiar senhas. Digite a senha do Windows para permitir essa ação.</translation>
+<translation id="3950481960271781644">Para acessar suas informações salvas e muito mais em todos os seus dispositivos, faça login no Chromium</translation>
 <translation id="3954172517175569325">As senhas, as formas de pagamento e os endereços salvos na sua Conta do Google serão removidos deste dispositivo. Para usá-los de novo no Chromium, faça login novamente.</translation>
 <translation id="395904275706073188">Não é possível ler páginas protegidas. Tente acessar outra.</translation>
 <translation id="3962647064319009959">Saiba como o Chromium protege você</translation>
@@ -358,6 +365,7 @@
 <translation id="4893347770495441059">Reinicializar para atualizar o &amp;Chromium</translation>
 <translation id="4918086044614829423">Aceitar</translation>
 <translation id="4918844574251943176">Imagem copiada</translation>
+<translation id="4919431996536326528">Para acessar sua lista de leitura e muito mais em todos os seus dispositivos, faça login no Chromium</translation>
 <translation id="4943838377383847465">O Chromium está em modo de segundo plano.</translation>
 <translation id="494490797786467921">Clique para fechar a caixa de diálogo de login do Chromium</translation>
 <translation id="4950660488495335294">Você pode usar os perfis do Chromium para separar todos seus dados nele. Crie perfis para amigos e familiares ou separe trabalho de lazer.</translation>
@@ -784,6 +792,7 @@ Exclua alguns dos favoritos da sua conta para poder salvar novos. Se você sair 
 <translation id="904366664621834601">O Chromium bloqueou o download porque o arquivo inclui outros arquivos que podem estar ocultando malware</translation>
 <translation id="9053882453960391422">Mantenha senhas, favoritos e histórico sincronizados em todos os dispositivos. Acesse com facilidade seus recursos favoritos definindo o Chromium como o navegador padrão. O Chromium será fixado na barra de tarefas para agilizar o acesso.</translation>
 <translation id="9056398481763999048">Use as melhores ferramentas de IA do Google com o app Chromium no seu celular</translation>
+<translation id="9057625473949801035">Para acessar suas senhas e muito mais do <ph name="DEVICE" />, faça login no Chromium</translation>
 <translation id="9062666675513499497">Fazer login no Chromium ao se conectar a outros Serviços do Google</translation>
 <translation id="9078733879136747090">O Chromium foi fechado automaticamente</translation>
 <translation id="9089354809943900324">O Chromium está desatualizado</translation>

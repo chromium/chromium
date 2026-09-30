@@ -5281,6 +5281,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5008936837313706385">Naziv aktivnosti</translation>
 <translation id="5009463889040999939">U tijeku je preimenovanje profila. To može potrajati nekoliko minuta.</translation>
 <translation id="5010886807652684893">Vizualni prikaz</translation>
+<translation id="5012016139642806466">Pristupajte svojim zaporkama i drugim podacima na svim svojim uređajima</translation>
 <translation id="5012523644916800014">Upravljajte zaporkama i pristupnim ključevima</translation>
 <translation id="501394389332262641">Zvuk slabe baterije</translation>
 <translation id="5014286001996333986">Želite li zamijeniti grupu ili izraditi novu?</translation>
@@ -9240,6 +9241,7 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8081989000209387414">Onemogućiti ADB otklanjanje pogrešaka?</translation>
 <translation id="8082132721957920509">Vaša je kartica spremljena</translation>
 <translation id="8082390128630131497">Onemogućivanje ADB otklanjanja pogrešaka vratit će uređaj <ph name="DEVICE_TYPE" /> na tvorničke postavke. Izbrisat će se svi korisnički računi i lokalni podaci.</translation>
+<translation id="8082737802704584539">Vaša organizacija isključila je spremanje povijesti na vaš Google račun</translation>
 <translation id="8084114998886531721">Spremljena zaporka</translation>
 <translation id="8084417885464859041">Sigurno upotrebljavajte Gemini</translation>
 <translation id="8084429490152575036">Postavke APN-a mobilne mreže</translation>

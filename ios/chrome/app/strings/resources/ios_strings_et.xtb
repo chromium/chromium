@@ -144,7 +144,6 @@
 <translation id="1408847409015257906">Puudutage valikut „Privaatsus ja turvalisus“.</translation>
 <translation id="1411386976162024013">Lensi visuaalne otsing</translation>
 <translation id="1414315029670184034">Ära luba saitidel kasutada minu kaamerat</translation>
-<translation id="1417474386970818917">Logi välja ja kustuta</translation>
 <translation id="1426410128494586442">Jah</translation>
 <translation id="1430915738399379752">Printimine</translation>
 <translation id="1433478348197382180">Lugemisrežiim</translation>
@@ -304,6 +303,7 @@
 <translation id="188237709236611317">Nutika sortimise menüüriba</translation>
 <translation id="1883255238294161206">Ahenda loend</translation>
 <translation id="1883898928879467646">Vaheleht eemaldati</translation>
+<translation id="188779312703122101">Töötamine</translation>
 <translation id="1888854257756214946">Valige parool …</translation>
 <translation id="1890237935065108104">See seade pole saadaval.</translation>
 <translation id="1894023287452300670">Siin saate hinda jälgida</translation>
@@ -792,7 +792,6 @@
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /> soovitatud sisu kohta</translation>
 <translation id="349446645805573740">Valige, kuhu salvestada fail „<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />”.</translation>
 <translation id="3504377992102007712">Seaded</translation>
-<translation id="3507556793108992994">{count,plural, =1{1 vaheleht korrastatud}other{# vahelehte korrastatud}}</translation>
 <translation id="35083190962747987">Avage ${url}</translation>
 <translation id="3511519535430890904">Lisage sirvimise kaitse</translation>
 <translation id="3512572904898385012">Nüüd saate oma kaamera abil ostelda ja tõlkida. Puudutage seda proovimiseks.</translation>
@@ -941,7 +940,6 @@
 <translation id="3962326069546168954">Salvesta</translation>
 <translation id="3967327056943561740">Järjehoidjad</translation>
 <translation id="3967822245660637423">Allalaadimine on lõpule viidud</translation>
-<translation id="3968685670440571540">alates paroolide ja automaattäite kasutuselevõtmisest</translation>
 <translation id="3973560090698854095">See kustutab teie Google'i kontole <ph name="USER_EMAIL" /> salvestatud aadressid.</translation>
 <translation id="398604237578616937">Sisse logitud kasutajana <ph name="USER_EMAIL" />. Avage kontomenüü.</translation>
 <translation id="3986739045730058129">Ava vaheleht</translation>
@@ -1356,7 +1354,6 @@
 <translation id="5250371859659394278">Tundmatust allikast</translation>
 <translation id="525510229763628836">Minimeeritud</translation>
 <translation id="5260842098960755113">Lõim suleti</translation>
-<translation id="5269913829202614649">Avalehe kohandamine</translation>
 <translation id="5271265092610673171">{count,plural, =1{Kohustuslik väli on tühi. Täitke see enne salvestamist.}other{Mõned kohustuslikud väljad on tühjad. Täitke need enne salvestamist.}}</translation>
 <translation id="5271549068863921519">Salvesta parool</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) soovib, et liituksite vahelehegrupiga. Olge liitumisel tähelepanelik, sest kõiki vahelehti saab muuta igaüks, kellel on link. Link aegub 48 tunni pärast.</translation>
@@ -1466,7 +1463,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5632194969640946913">Vaadake sirvides lisateavet ja otsige seda, mida mis tahes lehel näete, et uurida teavet toodete, kohtade ja teksti kohta.</translation>
 <translation id="5632485077360054581">Kuva juhised</translation>
 <translation id="5633237939819267663">{count,plural, =1{Järjehoidja salvestati kausta „{title}“}other{{count} järjehoidjat salvestati kausta „{title}“}}</translation>
-<translation id="564170563478022912">Kas logida välja? Salvestamata kontoandmed kustutatakse.</translation>
 <translation id="5642707040609478753">Märgi mitteloetuks</translation>
 <translation id="5646376287012673985">Asukoht</translation>
 <translation id="5647096944343801045">Suur sisenemispunkt</translation>
@@ -1482,7 +1478,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5669528293118408608">www</translation>
 <translation id="5676124785522323481">Ühendatud rakenduste haldamine</translation>
 <translation id="567881659373499783">Versioon <ph name="PRODUCT_VERSION" /></translation>
-<translation id="5680012489335339762">Kas vahetada kontot? Salvestamata kontoandmed kustutatakse.</translation>
 <translation id="5683499062697987550">Selleks, et saaksite oma Google'i kontol paroole kasutada ja salvestada, kinnitage oma isik.</translation>
 <translation id="5684761169742812828">See parool langes Internetis andme turberikkumise ohvriks. Kui teil pole praegu aega seda muuta, soovitab Google selle hoiatuse hiljem tegutsemise meeldetuletusena alles hoida.</translation>
 <translation id="5694848685995373177">Kasutajale <ph name="USER_EMAIL" /> Drive'i salvestatud.</translation>
@@ -1758,7 +1753,6 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6506996418997555004">Jagamine vahelehegrupiga „<ph name="GROUP_NAME" />“</translation>
 <translation id="6507973708545996744">Logige sisse, et hankida lugemisloend kõigisse oma seadmetesse.</translation>
 <translation id="6518133107902771759">Kinnita</translation>
-<translation id="6518861084553706202">Vahelehed kustutatakse ja kustutatavad andmed võivad hõlmata paroole, sirvimisajalugu, küpsisefaile ja muud.</translation>
 <translation id="6523575793810663688">Näita, kuidas seda teha</translation>
 <translation id="6524082013156754186">Salvesta kontole</translation>
 <translation id="6524918542306337007">Inkognito režiim pole saadaval</translation>
@@ -1801,6 +1795,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="6626281667717553020">CPS URI</translation>
 <translation id="6627583120233659107">Muuda kausta</translation>
 <translation id="6629759408545977279">Allikas: <ph name="ORIGINATING_HOST" /></translation>
+<translation id="6634065271963947588">Ajaloo jm nägemiseks logige sisse oma kontole.</translation>
 <translation id="6634432609054530164">Teie organisatsioon lülitas inkognito režiimi välja</translation>
 <translation id="6637478299472506933">Allalaadimine nurjus</translation>
 <translation id="6638511529934826365">Teksti suumimine …</translation>
@@ -1984,7 +1979,6 @@ Arvutis jätkamiseks minge üle kontole <ph name="OTHER_EMAIL" />. Saate selle k
 <translation id="721218676460477064">Tee sellest artiklist kokkuvõte</translation>
 <translation id="7215621211572884440">Hüpikud on lubatud</translation>
 <translation id="7218491361283758048">Sihtnumber</translation>
-<translation id="7220786058474068424">Töötlemine</translation>
 <translation id="7221173315674413369">Jaotises „Mis on uut?“ näete uusi funktsioone ja nõuandeid</translation>
 <translation id="7223102419539744003">Vahelehe sulgemine</translation>
 <translation id="7223134495231529579">Salvesta allalaaditud failide hulka</translation>
@@ -2072,7 +2066,6 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="7491161827858509164">Varem allalaaditud failide nägemiseks avage rakendus <ph name="BEGIN_LINK" />Failid<ph name="END_LINK" />.</translation>
 <translation id="7498234416455752244">Jätka muutmist</translation>
 <translation id="7500244509706269886">Täida vorm automaatselt</translation>
-<translation id="7504841985386528758">alates vahelehegruppide kohta teada saamisest</translation>
 <translation id="750493650310597496">0 valitud</translation>
 <translation id="7505402981231763928">Gemini kasutamiseks peate sisse logima</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
@@ -2319,6 +2312,7 @@ Saate igal ajal uuesti alustada.</translation>
 <translation id="823339794112333264">Lülita mikrofon sisse</translation>
 <translation id="8240217649914883113">Lisa see minu kalendrisse</translation>
 <translation id="824379025871762038">Ära luba kunagi</translation>
+<translation id="8244387390464017490">Uue vahelehe kohandamine</translation>
 <translation id="8250920743982581267">Dokumendid</translation>
 <translation id="8258734532103758067">Olen oma andmed eksportinud</translation>
 <translation id="8258999165172757081">Lisatud</translation>

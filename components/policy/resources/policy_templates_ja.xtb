@@ -117,11 +117,6 @@
 <translation id="1076751984131277498">取り外し可能な USB デバイスの許可リスト</translation>
 <translation id="1077675271127011209">使用状況とクラッシュ関連データのレポートを無効にする</translation>
 <translation id="1079498696402787191">TLS ハンドシェイクで許可されるデフォルトのハッシュ値を使用する。</translation>
-<translation id="1081263326166769685">このポリシーを有効に設定すると、<ph name="PRODUCT_OS_NAME" /> から Google に、使用状況に関する統計情報と診断データが送信されます。このポリシーを無効に設定すると、統計情報と診断データは送信されません。
-
-管理対象デバイスでは、このポリシーがデフォルトで有効であり、Google に統計情報が送信されます。
-
-管理対象デバイス以外では、ポリシーが未設定の場合、統計情報を送信するかどうかをユーザーが指定できます。</translation>
 <translation id="1081470306474387129">Controlled Frame API を使用すると、独立したウェブアプリ（IWA）といった特定の独立したコンテキストで、任意のコンテンツを埋め込んだり操作したりできます。詳細については、https://github.com/WICG/controlled-frame をご覧ください。
 
 このポリシーでは、Controlled Frame API の使用を許可しないサイトの URL パターンのリストを指定できます。
@@ -3604,17 +3599,6 @@ Microsoft Outlook カードには、追加の管理者設定が必要です。Ch
 
 このポリシーが true または未設定の場合、Crostini コンテナへのルートアクセスがユーザーに許可されます。
 このポリシーが false の場合、Crostini コンテナ（新規、既存の両方）へのルートアクセスはユーザーに許可されません。</translation>
-<translation id="3370759229531293665">JIT（Just In Time）コンパイラを有効にした JavaScript の実行を許可しないサイトの URL パターンのリストを設定できます。
-
-          JavaScript JIT を無効にした場合、<ph name="PRODUCT_NAME" /> でウェブ コンテンツの表示に時間がかかったり、WebAssembly を使用する JavaScript の一部が無効になったりする可能性があります。JavaScript JIT を無効にすると、<ph name="PRODUCT_NAME" /> でのウェブ コンテンツの表示をより安全な設定で行えるようになります。
-
-          有効な URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns をご覧ください。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。
-
-          JavaScript JIT ポリシーの例外は、サイトの詳細レベル（eTLD+1）でのみ適用されます。ポリシーを subdomain.site.com でのみ設定した場合は、site.com にも subdomain.site.com にも正しく適用されません。これは、どちらも同じ eTLD+1（site.com）に解決され、これにポリシーは設定されていないためです。この場合、site.com と subdomain.site.com の両方に正しく適用するには、ポリシーを site.com で設定する必要があります。
-
-          このポリシーは、最上位のオリジン URL のみに基づいて適用されるのではなく、フレーム単位で適用されます。したがって、たとえば <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" /> ポリシーで指定している site-one.com で site-two.com が含まれるフレームを読み込む場合、site-one.com では JavaScript JIT が無効になりますが、site-two.com では <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> のポリシーが使用されます（ポリシーを設定しているか、デフォルトで JavaScript JIT を有効にしている場合）。
-
-          サイトでこのポリシーが設定されていない場合、<ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> のポリシーがサイトに適用されます（ポリシーを設定しているか、JavaScript JIT をサイトで有効にしている場合）。</translation>
 <translation id="3373381043600809954"><ph name="PRODUCT_NAME" /> を有効にする</translation>
 <translation id="3374587000313305002"><ph name="PRODUCT_NAME" /> でユーザーデータの保存に使用するディレクトリを設定します。
 
@@ -5676,15 +5660,6 @@ URL が <ph name="SERIAL_ASK_FOR_URLS_POLICY_NAME" /> の URL パターンと競
 有効な値の範囲は 1〜9,999 秒です。このポリシーを未設定のままにした場合、<ph name="PRODUCT_OS_NAME" /> ではデフォルト値である 60 秒が使用されます。
 
 <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_ENABLED_POLICY_NAME" /> ポリシーが false に設定されている場合、このポリシーは無視されます。</translation>
-<translation id="4723615546736863060">JavaScript の高度な最適化を有効にするサイトの URL パターンのリストを指定できます。
-
-有効なサイトの URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns をご覧ください。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。
-
-JavaScript の最適化ポリシーの例外は、サイトの詳細レベル（eTLD+1）でのみ適用されます。ポリシーを subdomain.site.com でのみ設定した場合は、site.com にも subdomain.site.com にも正しく適用されません。これは、どちらも同じ eTLD+1（site.com）に解決され、これにポリシーは設定されていないためです。この場合、site.com と subdomain.site.com の両方に正しく適用するには、ポリシーを site.com で設定する必要があります。
-
-このポリシーは、最上位のオリジン URL のみに基づいて適用されるのではなく、フレーム単位で適用されます。したがって、たとえば <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> ポリシーで指定している site-one.com で site-two.com が含まれるフレームを読み込む場合、site-one.com では JavaScript の最適化が有効になりますが、site-two.com では <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> のポリシーが使用されます（このポリシーが設定されているか、デフォルトで JavaScript の最適化が有効になっている場合）。ブロックリストのエントリの優先度は許可リストのエントリより高く、許可リストのエントリの優先度は設定されたデフォルト値より高くなります。
-
-サイトでこのポリシーが設定されていない場合は、<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> のポリシーがサイトに適用されます（このポリシーが設定されているか、サイトで JavaScript の最適化が有効になっている場合）。</translation>
 <translation id="4723829699367336876">リモート アクセス クライアントからのファイアウォール トラバーサルを有効にする</translation>
 <translation id="4725528134735324213">Android バックアップ サービスを有効にする</translation>
 <translation id="4725691087141147920">ログイン時に同期の同意メッセージを表示する</translation>
@@ -6052,13 +6027,6 @@ Chrome 114 までは、このポリシーを使用するには <ph name="SYNC_DI
 <translation id="494924690085329212">Android が起動している場合、ユーザーのログアウト時に再起動します。</translation>
 <translation id="4950447493143157880">組み込みの DNS クライアントを使用しない</translation>
 <translation id="4953541641325278286">ユーザーのアイドル状態の検出をどのサイトにも許可しない</translation>
-<translation id="4954185885991137927">このポリシーを有効に設定した場合、<ph name="PRODUCT_NAME" /> でセーフ ブラウジングの詳細レポートが有効になり、危険なアプリやサイトの検出に役立てる目的でシステム情報の一部やページのコンテンツが Google サーバーに送信されます。
-
-      このポリシーを無効に設定した場合、レポートは送信されません。
-
-      このポリシーを設定した場合、ユーザーは設定を変更できません。設定しない場合、レポートを送信するかどうかをユーザーが指定できます。
-
-      セーフ ブラウジングについて詳しくは、https://developers.google.com/safe-browsing をご覧ください。</translation>
 <translation id="4954352279763128540">事前入力されたドメインを Kerberos 認証ダイアログに追加します。このポリシーを設定すると、[Kerberos ユーザー名] 欄の右側に事前入力されたドメインが表示されます。ユーザーが自分のユーザー名を入力すると、事前入力されたドメインと連結されます。ユーザーの入力に「@」が含まれている場合、事前入力されたドメインは表示されず、入力には影響しません。このポリシーを未設定のままにすると、追加情報は表示されず、通常どおりにチケットの作成が行われます。</translation>
 <translation id="4960597185231686653">画面キーボードで音声入力を有効にするかどうかを示すブール値のフラグです。</translation>
 <translation id="49677896192199414">自動字幕起こし機能を有効にします。
@@ -7348,13 +7316,6 @@ URL がリスト内の複数のパターンに一致する場合は、一致す�
 このポリシーを無効に設定するか未設定のままにした場合、ブラウザ機能の起動プロセスで、アダプティブ バッファリングを使用するかどうかが決められます。</translation>
 <translation id="579556027056000499">URL のコンテンツの SHA-256 ハッシュです。</translation>
 <translation id="5800329278018669527">オフライン時のネットワーク設定メッセージの表示を無効にする</translation>
-<translation id="5800627752428920394">このポリシーでは、ページがバックフォワード キャッシュに保存されたときにアクティブな WebSocket 接続を切断するかどうかを制御します。以前は、アクティブな WebSocket 接続があるとページをバックフォワード キャッシュに保存できませんでしたが、<ph name="PRODUCT_NAME" /> では代わりに WebSocket を切断するように動作が変更されました。これにより、ページをキャッシュに保存して、切断された状態で復元することが可能になります。
-
-このポリシーを有効に設定するか未設定のままにした場合、ページがバックフォワード キャッシュに保存されると WebSocket が切断されます。
-
-このポリシーを無効に設定した場合、ページがバックフォワード キャッシュに保存されても WebSocket は切断されません。バックフォワード キャッシュはアクティブな WebSocket をサポートしていないため、アクティブな WebSocket を使用するページはキャッシュに保存されません。
-
-このポリシーは一時的なもので、将来的には削除されます。</translation>
 <translation id="5802931736499687181">暗号化されたレポート パイプラインを無効にする</translation>
 <translation id="5803715507113569033">このポリシーでは、管理者が <ph name="MICROSOFT_ONE_DRIVE_NAME" /> のマウントを設定できます。
 
@@ -7961,21 +7922,6 @@ false に設定した場合、教師はこの機能にアクセスできませ�
 <translation id="6207673917710036736">ネイティブ拡張機能のレビュー プロンプトと評価リンクを有効にする</translation>
 <translation id="6208896993204286313"><ph name="PRODUCT_NAME" /> のポリシー情報に関するレポートを作成</translation>
 <translation id="6210259502936598222">OS と <ph name="PRODUCT_NAME" /> のバージョン情報に関するレポートを作成</translation>
-<translation id="6214712395769944855">このポリシーでは、<ph name="PRODUCT_NAME" /> で優先する TLS 1.3 の暗号化の順序を指定し、特定のコンプライアンス体制で承認されたアルゴリズムの優先順序を反映するように設定します。
-
-このポリシーを設定しても、特定のアルゴリズムがネゴシエートされるとは限りません。
-
-このポリシーは、コンプライアンス要件の有無にかかわらずクライアントをサポートしたいサーバー オペレーターが、それらのクライアントを区別し、暗号化強度の高い特定のデフォルト以外のアルゴリズムを優先するように明示的に設定されたクライアントに対してのみ使用できるようにするためのものです。
-
-このポリシーを「<ph name="CNSA_NAME" />」に設定した場合は、<ph name="PRODUCT_NAME" /> で Commercial National Security Algorithm Suite バージョン 1.0 および 2.0（CNSA 1.0 および 2.0）に準拠するために必要な暗号を優先するように設定します。
-
-このポリシーを設定しない場合、または「<ph name="DEFAULT_NAME" />」に設定した場合、<ph name="PRODUCT_NAME" /> でデフォルトの暗号化を使用するように設定します。
-
-このポリシーの設定はセキュリティ上必須ではありません。<ph name="PRODUCT_NAME" /> で使用するデフォルトの暗号化は、いかなる総当たり攻撃にも十分耐えうるほど強力です。
-
-このポリシーを設定すると、ウェブサイトにアクセスする際に <ph name="PRODUCT_NAME" /> の動作が遅くなる場合があります。
-
-このポリシーは TLS 1.3 と QUIC にのみ影響し、以前のバージョンの TLS には影響しません。</translation>
 <translation id="6219841576688651072">生成 AI による概要ウィンドウのグループ化を許可しない。</translation>
 <translation id="6220835555850906733">このポリシーを有効に設定するか未設定のままにした場合、ユーザーのデバイスでサポートされているすべての音声出力が許可されます。
 
@@ -9286,18 +9232,6 @@ SkyVault ユーザーのみ、つまり LocalUserFilesAllowed が false の場�
 このポリシーを <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_DISABLED" />（値 0）に設定した場合、ブラウザはクライアント証明書をリクエストできません。このポリシーが以前に有効になっていたため、プロフィールの管理対象クライアント証明書がすでにプロビジョニングされている場合、証明書が削除されることはありませんが、mTLS 接続では使用できず、期限切れになると更新されません。</translation>
 <translation id="7013484314513229844">AC 電源接続時の起動を有効にする</translation>
 <translation id="7014427417852575165">高度な保護機能プログラムに登録済みのユーザーが追加の保護機能を使用できるようにする</translation>
-<translation id="7015750050379345684">JavaScript の高度な最適化を無効にするサイトの URL パターンのリストを指定できます。
-
-JavaScript の最適化を無効にした場合、<ph name="PRODUCT_NAME" /> でウェブ コンテンツの表示に時間がかかる可能性があります。
-
-有効な URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns をご覧ください。
-ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。
-
-JavaScript の最適化ポリシーの例外は、サイトの詳細レベル（eTLD+1）でのみ適用されます。ポリシーを subdomain.site.com でのみ設定した場合は、site.com にも subdomain.site.com にも正しく適用されません。これは、どちらも同じ eTLD+1（site.com）に解決され、これにポリシーは設定されていないためです。この場合、site.com と subdomain.site.com の両方に正しく適用するには、ポリシーを site.com で設定する必要があります。
-
-このポリシーは、最上位のオリジン URL のみに基づいて適用されるのではなく、フレーム単位で適用されます。したがって、たとえば <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" /> ポリシーで指定している site-one.com で site-two.com が含まれるフレームを読み込む場合、site-one.com では JavaScript の最適化が無効になりますが、site-two.com では <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> のポリシーが使用されます（このポリシーが設定されているか、デフォルトで JavaScript の最適化が有効になっている場合）。ブロックリストのエントリの優先度は許可リストのエントリより高く、許可リストのエントリの優先度は設定されたデフォルト値より高くなります。
-
-サイトでこのポリシーが設定されていない場合は、<ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> のポリシーがサイトに適用されます（このポリシーが設定されているか、サイトで JavaScript の最適化が有効になっている場合）。</translation>
 <translation id="7016587686120059767">ゲストモードを無効にする</translation>
 <translation id="7019805045859631636">速い</translation>
 <translation id="7021590945154530517">デバイスの稼働状況の監視を有効にする</translation>
@@ -9925,15 +9859,6 @@ URL パターンは、<ph name="WEB_PRINTING_ALLOWED_FOR_URLS_POLICY_NAME" /> �
       例外: M95 以前では、TPM の情報は <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> によって制御されます。</translation>
 <translation id="739556497251174388"><ph name="PRODUCT_OS_NAME" /> のログイン認証情報をネットワーク認証で再利用することを許可する</translation>
 <translation id="7395790871181951311">独立したアプリによるスマートカードへの接続をブロックする</translation>
-<translation id="7396487166653169044">JIT（Just In Time）コンパイラを有効にした JavaScript の実行を許可するサイトの URL パターンのリストを設定できます。
-
-          有効なサイトの URL パターンについて詳しくは、https://chromeenterprise.google/policies/url-patterns をご覧ください。ワイルドカード（<ph name="WILDCARD_VALUE" />）を使用できます。
-
-          JavaScript JIT ポリシーの例外は、サイトの詳細レベル（eTLD+1）でのみ適用されます。ポリシーを subdomain.site.com でのみ設定した場合は、site.com にも subdomain.site.com にも正しく適用されません。これは、どちらも同じ eTLD+1（site.com）に解決され、これにポリシーは設定されていないためです。この場合、site.com と subdomain.site.com の両方に正しく適用するには、ポリシーを site.com で設定する必要があります。
-
-          このポリシーは、最上位のオリジン URL のみに基づいて適用されるのではなく、フレーム単位で適用されます。したがって、たとえば <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" /> ポリシーで指定している site-one.com で site-two.com が含まれるフレームを読み込む場合、site-one.com では JavaScript JIT が有効になりますが、site-two.com では <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> のポリシーが使用されます（ポリシーを設定しているか、デフォルトで JavaScript JIT を有効にしている場合）。
-
-          サイトでこのポリシーが設定されていない場合、<ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> のポリシーがサイトに適用されます（ポリシーを設定しているか、JavaScript JIT をサイトで有効にしている場合）。</translation>
 <translation id="7400208209734208176">デフォルトで Chrome ブラウザを使用してリンクを開く</translation>
 <translation id="7402257017733669351">ブラウザ プロセスで動的コードが作成されないようにする</translation>
 <translation id="7406039009275722824"><ph name="CHROME_SYNC_NAME" /> を無効にすると、Android のバックアップと復旧が適切に機能しなくなります。</translation>
@@ -10334,21 +10259,6 @@ URL パターンは、<ph name="WEB_PRINTING_BLOCKED_FOR_URLS_POLICY_NAME" /> �
 
 このポリシーを設定しない場合、PDF のレンダラはブラウザによって選択されます。</translation>
 <translation id="7704244074621846004">SharedWorker の有効期間の延長を有効にする</translation>
-<translation id="7705886216383850895"><ph name="PRODUCT_NAME" /> で <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> の接続設定を構成します。
-
-<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> を構成するには、管理者は次のいずれかを指定する必要があります。
-* <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ウェブ アプリケーションの URL（<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />）または
-* 3 つのレガシー パラメータ（<ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />、<ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" />、<ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />）すべてURL を指定せずに、これら 3 つのパラメータの一部のみを指定した場合、<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> は未設定のままになります。
-
-<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> パラメータは、HTTPS スキームを使用する有効な URL で、ユーザー名やパスワードを含まないものである必要があります。これらの要件を満たしていない場合、ポリシーは無視され、<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> は未設定のままになります。
-
-<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> パラメータとレガシー パラメータの両方を指定した場合は、<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> パラメータが優先されます。
-
-このポリシーを設定した場合、管理対象アカウントまたは管理対象ブラウザでログインしたユーザーに対して <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> が構成されます。
-
-このポリシーを未設定のままにした場合、<ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> は構成されません。
-
-なお、このポリシーは、<ph name="GEMINI_SETTINGS_POLICY_NAME" /> ポリシーで制御できる全般的な <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> の統合を制御するものではありません。</translation>
 <translation id="7707869387893611318">充電時のサウンド機能を有効にします。
 
           これは充電器に接続したときにサウンドを鳴らす機能です。
@@ -10896,21 +10806,6 @@ Topics API のサポート終了により、このポリシーは <ph name="PROD
 <translation id="8062485064082966327">匿名の Google サービスを使用して、ラベル付けがない画像の説明を自動的に取得する</translation>
 <translation id="8064875716442437829">レンダラのユーザー補助を有効にする</translation>
 <translation id="8066428282805800713">ChromeOS Flex で追加のハードウェア データを送信する</translation>
-<translation id="8069233292746468045">このポリシーでは、<ph name="PRODUCT_NAME" /> で優先する TLS 1.3 の鍵交換アルゴリズム（サポートされているグループ）の順序を指定し、特定のコンプライアンス体制で承認されたアルゴリズムの優先順序を反映するように設定します。
-
-このポリシーを設定しても、特定のアルゴリズムがネゴシエートされるとは限りません。
-
-このポリシーは、コンプライアンス要件の有無にかかわらずクライアントをサポートしたいサーバー オペレーターが、それらのクライアントを区別し、暗号化強度の高い特定のデフォルトではないアルゴリズムを優先するように明示的に設定されたクライアントに対してのみ使用できるようにするためのものです。
-
-このポリシーを「<ph name="CNSA2_NAME" />」に設定した場合は、<ph name="PRODUCT_NAME" /> で Commercial National Security Algorithm Suite 2.0（CNSA 2.0）に準拠するために必要な鍵交換方式を優先するように設定します。
-
-このポリシーを設定しない場合、または「<ph name="DEFAULT_NAME" />」に設定した場合、<ph name="PRODUCT_NAME" /> でデフォルトの鍵交換方式を使用するように設定します。
-
-このポリシーの設定はセキュリティ上必須ではありません。<ph name="PRODUCT_NAME" /> で使用するデフォルトの暗号化は、いかなる総当たり攻撃にも十分耐えうるほど強力です。
-
-このポリシーを設定すると、ウェブサイトにアクセスする際に <ph name="PRODUCT_NAME" /> の動作が遅くなる場合があります。
-
-このポリシーは TLS 1.3 と QUIC にのみ影響し、以前のバージョンの TLS には影響しません。</translation>
 <translation id="8071371098891664137"><ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> の値に <ph name="PRINTERS_BLOCKLIST" /> が選択されている場合、<ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> でユーザーが使用できないプリンタを指定できます。ユーザーは、このポリシーで指定されている ID 以外のすべてのプリンタを使用できます。この ID は、<ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> で指定されたファイル内の「<ph name="ID_FIELD" />」または「<ph name="GUID_FIELD" />」フィールドに対応している必要があります。</translation>
 <translation id="8076539570602616846"><ph name="PRODUCT_NAME" /> PDF ビューアから Google ドライブに PDF ファイルを保存できる Google アカウントを制限する</translation>
 <translation id="8078297389450285582">このポリシーを有効に設定するか未設定のままにした場合、スマート消灯モデルが有効になり、画面を暗くするまでの時間を延長できます。時間が延長された場合は、画面オフまでの時間、画面ロックまでの時間、およびアイドル時間が調整され、画面を暗くするまでの時間との差が元の設定と同じに維持されます。

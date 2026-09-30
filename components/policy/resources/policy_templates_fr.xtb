@@ -121,11 +121,6 @@ Remarque : pour en savoir plus sur les règles d'atténuation des risques liés
 <translation id="1076751984131277498">Liste d'autorisation des appareils USB amovibles</translation>
 <translation id="1077675271127011209">Désactiver la création de rapports sur l'utilisation et les plantages</translation>
 <translation id="1079498696402787191">Utilisez la valeur par défaut pour les hachages autorisés lors de handshakes TLS.</translation>
-<translation id="1081263326166769685">Si cette règle est activée, <ph name="PRODUCT_OS_NAME" /> envoie à Google les métriques d'utilisation et les données de diagnostic, y compris les rapports d'erreur. Si cette règle est désactivée, ces métriques et ces données ne sont pas envoyées.
-
-Pour les appareils gérés, cette règle est activée par défaut et envoie les métriques à Google.
-
-Pour les appareils non gérés, l'utilisateur peut décider d'envoyer les métriques lorsque la règle n'est pas configurée.</translation>
 <translation id="1081470306474387129">L'API Controlled Frame, disponible pour certains contextes isolés tels que les applications Web isolées (AWI), permet à une appli d'intégrer et de manipuler du contenu arbitraire.
 Pour en savoir plus, veuillez consulter https://github.com/WICG/controlled-frame.
 
@@ -3721,17 +3716,6 @@ Si cette règle est définie sur "False" ou n'est pas configurée, les touches s
 
 Si la règle est définie sur "True" ou n'est pas définie, l'utilisateur a accès à la racine des conteneurs Crostini.
 Si la règle est définie sur "False", l'utilisateur n'a pas accès à la racine des conteneurs Crostini (existants ou nouveaux).</translation>
-<translation id="3370759229531293665">Permet de lister les formats d'URL pour lesquels les sites ne sont pas autorisés à exécuter JavaScript avec le compilateur JIT (Just In Time) activé.
-
-          Si le JIT pour JavaScript est désactivé, <ph name="PRODUCT_NAME" /> peut afficher le contenu Web plus lentement et aussi désactiver des parties de JavaScript, y compris WebAssembly. Cette désactivation peut également permettre à <ph name="PRODUCT_NAME" /> d'afficher le contenu Web dans une configuration plus sûre.
-
-          Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.
-
-          Les exceptions aux règles liées au JIT pour JavaScript ne seront appliquées qu'à un niveau de site (eTLD+1). Une règle qui n'est définie que pour subdomain.site.com ne s'appliquera pas correctement à site.com ni à subdomain.site.com, car tous les deux se résolvent sur le même eTLD+1 (site.com) pour lequel il n'y a aucune règle. Dans ce cas, la règle doit être définie sur site.com pour s'appliquer correctement à la fois à site.com et à subdomain.site.com.
-
-          Cette règle s'applique frame par frame et ne repose pas que sur l'URL d'origine de premier niveau. Par exemple, si site-one.com est spécifié dans la règle <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" />, mais qu'il charge un frame contenant site-two.com, alors le JIT pour JavaScript sera désactivé pour site-one.com, mais site-two.com utilisera la règle <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> (si elle est configurée) ou le JIT pour JavaScript sera activé par défaut.
-
-          Si cette règle n'est pas configurée pour un site, alors la règle <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> s'applique au site (si elle est configurée). Sinon, le JIT pour JavaScript est activé pour le site.</translation>
 <translation id="3373381043600809954">Activer <ph name="PRODUCT_NAME" />.</translation>
 <translation id="3374587000313305002">Permet de configurer le répertoire utilisé par <ph name="PRODUCT_NAME" /> pour le stockage des données de l'utilisateur.
 
@@ -5810,16 +5794,6 @@ Pour en savoir plus sur les formats d‘<ph name="URL_LABEL" /> valides, veuille
 Les valeurs valides sont comprises entre 1 seconde et 9 999 secondes. Si cette règle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> utilise la valeur par défaut (60 secondes).
 
 Cette règle n'a aucune incidence lorsque la règle <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_ENABLED_POLICY_NAME" /> est définie sur "False".</translation>
-<translation id="4723615546736863060">Permet de lister les formats d'URL des sites pour lesquels les optimisations JavaScript avancées sont activées.
-
-Pour en savoir plus sur les formats d'URL de site valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns.
-Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.
-
-Les exceptions aux règles liées aux optimisations JavaScript ne seront appliquées qu'à un niveau de site (eTLD+1). Une règle qui n'est configurée que pour subdomain.site.com ne s'appliquera pas correctement à site.com ni à subdomain.site.com, car tous les deux se résolvent sur le même eTLD+1 (site.com) pour lequel il n'y a aucune règle. Dans ce cas, la règle doit être définie sur site.com pour s'appliquer correctement à la fois à site.com et à subdomain.site.com.
-
-Cette règle s'applique frame par frame et ne repose pas que sur l'URL d'origine de premier niveau. Par exemple, si site-one.com est spécifié dans la règle <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" />, mais qu'il charge un frame contenant site-two.com, alors les optimisations JavaScript seront activées pour site-one.com, mais site-two.com utilisera la règle <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> (si elle est configurée) ou les optimisations JavaScript seront activées par défaut. Les entrées de la liste de blocage ont une priorité plus élevée que celles de la liste d'autorisation, qui ont une priorité plus élevée que la valeur configurée par défaut.
-
-Si cette règle n'est pas configurée pour un site, alors la règle <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> s'applique au site (si elle est configurée). Sinon, les optimisations JavaScript sont activées pour le site.</translation>
 <translation id="4723829699367336876">Activer la traversée de pare-feu depuis le client d'accès à distance</translation>
 <translation id="4725528134735324213">Activer Android Backup Service</translation>
 <translation id="4725691087141147920">Afficher l'autorisation de synchronisation lors de la procédure de connexion</translation>
@@ -6237,13 +6211,6 @@ Cette règle permet de contrôler la présentation de contenus promotionnels, y 
 <translation id="494924690085329212">Redémarrer en cas de déconnexion de l'utilisateur si Android est lancé.</translation>
 <translation id="4950447493143157880">Ne jamais utiliser le client DNS intégré</translation>
 <translation id="4953541641325278286">Interdire à tous les sites de détecter l'état d'inactivité de l'utilisateur</translation>
-<translation id="4954185885991137927">Si cette règle est activée, la création de rapports détaillés dans le cadre de la navigation privée dans <ph name="PRODUCT_NAME" /> est autorisée. Des informations système et des contenus de pages sont alors transmis aux serveurs Google pour détecter plus facilement les applications et les sites dangereux.
-
-      Si cette règle est désactivée, ces rapports ne sont jamais envoyés.
-
-      Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si cette règle n'est pas configurée, les utilisateurs peuvent décider d'envoyer ou non les rapports.
-
-      Pour en savoir plus sur la navigation sécurisée, consultez la page https://developers.google.com/safe-browsing.</translation>
 <translation id="4954352279763128540">Ajoute un domaine prérempli à la boîte de dialogue d'authentification Kerberos.
 
           Si cette règle est définie, le champ "Nom d'utilisateur Kerberos" affiche le domaine prérempli à sa droite. Si l'utilisateur saisit son nom d'utilisateur, il sera concaténé avec le domaine prérempli. Si la saisie de l'utilisateur contient "@", le domaine prérempli ne s'affiche pas et n'a aucune incidence sur la saisie.
@@ -7589,13 +7556,6 @@ Si cette règle est activée, la mise en mémoire tampon adaptative est toujours
 Si cette règle est désactivée ou qu'elle n'est pas configurée, le processus de lancement de fonctionnalités du navigateur détermine si la mise en mémoire tampon adaptative est utilisée.</translation>
 <translation id="579556027056000499">Hachage SHA-256 du contenu affiché à l'URL.</translation>
 <translation id="5800329278018669527">Désactiver l'invite de configuration réseau lorsque l'utilisateur n'est pas connecté</translation>
-<translation id="5800627752428920394">Cette règle détermine si les connexions WebSocket actives sont déconnectées lorsqu'une page est stockée dans le cache back/forward. Auparavant, les connexions WebSocket actives empêchaient une page d'être stockée dans le cache back/forward. Toutefois, <ph name="PRODUCT_NAME" /> se comporte différemment et déconnecte les connexions WebSocket à la place, ce qui permet de mettre la page en cache et de la restaurer dans un état déconnecté.
-
-Si cette règle est activée ou n'est pas configurée, les connexions WebSocket sont déconnectées lorsqu'une page est stockée dans le cache back/forward.
-
-Si cette règle est désactivée, les connexions WebSocket ne sont pas déconnectées lorsqu'une page est stockée dans le cache back/forward. Comme le cache back/forward n'est pas compatible avec les connexions WebSocket actives, les pages contenant des connexions de ce type actives ne seront pas mises en cache.
-
-Cette règle est provisoire et sera supprimée prochainement.</translation>
 <translation id="5802931736499687181">Désactiver le pipeline de rapports chiffrés</translation>
 <translation id="5803715507113569033">Cette règle permet aux administrateurs de configurer l'installation de <ph name="MICROSOFT_ONE_DRIVE_NAME" />.
 
@@ -8216,21 +8176,6 @@ Si cette règle n'est pas configurée, la valeur globale par défaut est utilis�
 <translation id="6207673917710036736">Activer les invites d'avis et les liens d'évaluation natifs des extensions</translation>
 <translation id="6208896993204286313">Enregistrer les informations sur les règles concernant <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Enregistrer les informations sur la version de <ph name="PRODUCT_NAME" /> et l'OS</translation>
-<translation id="6214712395769944855">Cette règle configure <ph name="PRODUCT_NAME" /> pour qu'il ordonne ses algorithmes de chiffrement préférés dans TLS 1.3 afin de refléter une préférence pour les algorithmes approuvés par un régime de conformité spécifique.
-
-Configurer cette règle ne garantit pas que des algorithmes spécifiques seront négociés.
-
-Cette règle permet aux opérateurs de serveur qui souhaitent prendre en charge les clients avec et sans exigences de conformité de faire la distinction entre ces clients, et d'utiliser uniquement certains algorithmes non définis par défaut avec une force cryptographique accrue pour ceux dont la préférence est explicitement configurée.
-
-Si vous définissez la règle sur "<ph name="CNSA_NAME" />", <ph name="PRODUCT_NAME" /> privilégie les algorithmes de chiffrement requis pour la conformité avec les versions 1.0 et 2.0 de la suite Commercial National Security Algorithm (CNSA 1.0 et 2.0, suite d'algorithmes de sécurité nationale commerciale).
-
-Si vous ne configurez pas la règle ou si vous la définissez sur "<ph name="DEFAULT_NAME" />", <ph name="PRODUCT_NAME" /> utilise ses algorithmes de chiffrement par défaut.
-
-La configuration de cette règle n'est pas requise pour la sécurité. La cryptographie par défaut utilisée par <ph name="PRODUCT_NAME" /> est suffisamment robuste pour résister à une attaque par force brute utilisant toute la puissance du Soleil.
-
-Si vous configurez cette règle, <ph name="PRODUCT_NAME" /> sera plus lent lors de l'accès aux sites Web.
-
-Cette règle n'affecte que TLS 1.3 et QUIC. Elle n'affecte pas les versions antérieures de TLS.</translation>
 <translation id="6219841576688651072">Ne pas autoriser le regroupement des fenêtres d'aperçu de l'IA générative.</translation>
 <translation id="6220835555850906733">Si cette règle est activée ou si elle n'est pas configurée, toutes les sorties audio compatibles sur les appareils des utilisateurs sont autorisées.
 
@@ -9602,18 +9547,6 @@ Pour en savoir plus sur les formats d'URL valides, consultez https://chromeenter
 Si cette règle est définie sur <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_DISABLED" /> (valeur 0), le navigateur ne peut pas demander le certificat client. Si le certificat client géré d'un profil a déjà été provisionné en raison de l'activation de cette règle auparavant, il ne sera pas supprimé. Toutefois, il ne sera pas disponible pour les connexions mTLS ni renouvelé quand il arrivera à expiration.</translation>
 <translation id="7013484314513229844">Activer le démarrage sur secteur</translation>
 <translation id="7014427417852575165">Les utilisateurs inscrits au Programme Protection Avancée bénéficieront de protections supplémentaires</translation>
-<translation id="7015750050379345684">Permet de lister les formats d'URL des sites pour lesquels les optimisations JavaScript avancées sont désactivées.
-
-Si les optimisations JavaScript sont désactivées, <ph name="PRODUCT_NAME" /> peut afficher le contenu Web plus lentement.
-
-Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns.
-Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.
-
-Les exceptions aux règles liées aux optimisations JavaScript ne seront appliquées qu'à un niveau de site (eTLD+1). Une règle qui n'est configurée que pour subdomain.site.com ne s'appliquera pas correctement à site.com ni à subdomain.site.com, car tous les deux se résolvent sur le même eTLD+1 (site.com) pour lequel il n'y a aucune règle. Dans ce cas, la règle doit être définie sur site.com pour s'appliquer correctement à la fois à site.com et à subdomain.site.com.
-
-Cette règle s'applique frame par frame et ne repose pas que sur l'URL d'origine de premier niveau. Par exemple, si site-one.com est spécifié dans la règle <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" />, mais qu'il charge un frame contenant site-two.com, alors les optimisations JavaScript seront désactivées pour site-one.com, mais site-two.com utilisera la règle <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> (si elle est configurée) ou les optimisations JavaScript seront activées par défaut. Les entrées de la liste de blocage ont une priorité plus élevée que celles de la liste d'autorisation, qui ont une priorité plus élevée que la valeur configurée par défaut.
-
-Si cette règle n'est pas configurée pour un site, alors la règle <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> s'applique au site (si elle est configurée). Sinon, les optimisations JavaScript sont activées pour le site.</translation>
 <translation id="7016587686120059767">Désactiver le mode Invité</translation>
 <translation id="7019805045859631636">Rapide</translation>
 <translation id="7021590945154530517">Activer le contrôle de l'état de l'appareil</translation>
@@ -10286,15 +10219,6 @@ Les valeurs réelles des données sensibles (comme les cookies ou les valeurs d'
       Exception : Sur les versions M95 et antérieures, les informations concernant le TPM sont contrôlées par la règle <ph name="REPORT_DEVICE_HARDWARE_STATUS" />.</translation>
 <translation id="739556497251174388">Autoriser la réutilisation des identifiants de connexion <ph name="PRODUCT_OS_NAME" /> pour l'authentification réseau</translation>
 <translation id="7395790871181951311">Bloquer la connexion aux cartes à puce pour les applications isolées</translation>
-<translation id="7396487166653169044">Permet de lister les formats d'URL pour lesquels les sites sont autorisés à exécuter JavaScript avec le compilateur JIT (Just In Time) activé.
-
-          Pour en savoir plus sur les formats d'URL de sites valides, veuillez consulter https://chromeenterprise.google/policies/url-patterns. Les caractères génériques (<ph name="WILDCARD_VALUE" />) sont autorisés.
-
-          Les exceptions aux règles liées au JIT pour JavaScript ne seront appliquées qu'à un niveau de site (eTLD+1). Une règle qui n'est définie que pour subdomain.site.com ne s'appliquera pas correctement à site.com ni à subdomain.site.com, car tous les deux se résolvent sur le même eTLD+1 (site.com) pour lequel il n'y a aucune règle. Dans ce cas, la règle doit être définie sur site.com pour s'appliquer correctement à la fois à site.com et à subdomain.site.com.
-
-          Cette règle s'applique frame par frame et ne repose pas que sur l'URL d'origine de premier niveau. Par exemple, si site-one.com est spécifié dans la règle <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" />, mais qu'il charge un frame contenant site-two.com, alors le JIT pour JavaScript sera activé pour site-one.com, mais site-two.com utilisera la règle <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> (si elle est configurée) ou le JIT pour JavaScript sera activé par défaut.
-
-          Si cette règle n'est pas configurée pour un site, alors la règle <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> s'applique au site (si elle est configurée). Sinon, le JIT pour JavaScript est activé pour le site.</translation>
 <translation id="7400208209734208176">Ouvrir les liens dans le navigateur Chrome par défaut</translation>
 <translation id="7402257017733669351">Empêcher le processus du navigateur de créer du code dynamique</translation>
 <translation id="7406039009275722824">Si vous désactivez <ph name="CHROME_SYNC_NAME" />, la sauvegarde et la restauration Android ne fonctionneront pas correctement.</translation>
@@ -10709,21 +10633,6 @@ Si elle est désactivée, la visionneuse de PDF utilise son moteur de rendu AGG 
 
 Si cette règle n'est pas configurée, le moteur de rendu des PDF est sélectionné par le navigateur.</translation>
 <translation id="7704244074621846004">Activer la durée de vie étendue pour les SharedWorkers</translation>
-<translation id="7705886216383850895">Configure les paramètres de connexion pour <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> dans <ph name="PRODUCT_NAME" />.
-
-Pour configurer <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, les administrateurs doivent fournir :
-* l'URL de l'application Web <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) ; OU
-* les trois anciens paramètres ensemble : <ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" /> et <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />. Si uniquement un sous-ensemble partiel de ces trois paramètres est indiqué sans URL, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> n'est pas configuré.
-
-Le paramètre <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> doit être une URL valide qui utilise le schéma HTTPS et n'inclut pas de nom d'utilisateur ni de mot de passe. S'il ne respecte pas ces exigences, la règle est ignorée et <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> n'est pas configuré.
-
-Si le paramètre <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> et les anciens paramètres sont tous deux configurés, le paramètre <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> prévaut.
-
-Si cette règle est définie, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> sera configuré pour les utilisateurs connectés avec un compte ou un navigateur géré.
-
-Si cette règle n'est pas définie, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> ne sera pas configuré.
-
-Notez que cette règle ne gère pas l'intégration globale de <ph name="GOOGLE_GEMINI_PRODUCT_NAME" />, laquelle peut être contrôlée à l'aide de la règle <ph name="GEMINI_SETTINGS_POLICY_NAME" />.</translation>
 <translation id="7707869387893611318">Active la fonctionnalité des sons de recharge.
 
           Cette fonctionnalité permet d'émettre les sons de recharge.
@@ -11288,21 +11197,6 @@ Plusieurs règles listent des origines qui ont un impact sur les requêtes adres
 <translation id="8062485064082966327">Utiliser un service Google anonyme pour qu'une description soit ajoutée automatiquement aux images sans libellé</translation>
 <translation id="8064875716442437829">Activer l'accessibilité du moteur de rendu</translation>
 <translation id="8066428282805800713">Envoyer des données matérielles supplémentaires sur ChromeOS Flex</translation>
-<translation id="8069233292746468045">Cette règle configure <ph name="PRODUCT_NAME" /> pour qu'il ordonne ses algorithmes d'accord de clé préférés (groupes compatibles) dans TLS 1.3 afin de refléter une préférence pour les algorithmes approuvés par un régime de conformité spécifique.
-
-Configurer cette règle ne garantit pas que des algorithmes spécifiques seront négociés.
-
-Cette règle permet aux opérateurs de serveur qui souhaitent prendre en charge les clients avec et sans exigences de conformité de faire la distinction entre ces clients, et d'utiliser uniquement certains algorithmes non définis par défaut avec une force cryptographique accrue pour ceux dont la préférence est explicitement configurée.
-
-Si vous définissez la règle sur "<ph name="CNSA2_NAME" />", <ph name="PRODUCT_NAME" /> privilégie les méthodes d'échange de clés requises pour la conformité avec la suite Commercial National Security Algorithm 2.0 (CNSA 2.0, suite d'algorithmes de sécurité nationale commerciale).
-
-Si vous ne configurez pas la règle ou si vous la définissez sur "<ph name="DEFAULT_NAME" />", <ph name="PRODUCT_NAME" /> utilise ses méthodes d'échange de clés par défaut.
-
-La configuration de cette règle n'est pas requise pour la sécurité. La cryptographie par défaut utilisée par <ph name="PRODUCT_NAME" /> est suffisamment robuste pour résister à une attaque par force brute utilisant toute la puissance du Soleil.
-
-Si vous configurez cette règle, <ph name="PRODUCT_NAME" /> sera plus lent lors de l'accès aux sites Web.
-
-Cette règle n'affecte que TLS 1.3 et QUIC. Elle n'affecte pas les versions antérieures de TLS.</translation>
 <translation id="8071371098891664137">Si <ph name="PRINTERS_BLOCKLIST" /> est choisi pour <ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" />, le fait de définir <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> indique les imprimantes indisponibles pour les utilisateurs. Toutes les imprimantes sont proposées aux utilisateurs, sauf celles dont les ID sont répertoriés dans cette règle. Ces ID doivent correspondre à ceux indiqués dans les champs <ph name="ID_FIELD" /> ou <ph name="GUID_FIELD" /> du fichier spécifié dans la règle <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" />.</translation>
 <translation id="8076539570602616846">Limiter les comptes Google éligibles à l'enregistrement de fichiers PDF dans Google Drive à partir du lecteur PDF <ph name="PRODUCT_NAME" /></translation>
 <translation id="8078297389450285582">Si cette règle est activée ou qu'elle n'est pas configurée, le modèle de réduction intelligente de la luminosité est activé, et le délai d'assombrissement de l'écran peut être augmenté. L'ajustement de ce délai décale d'autant le moment où l'écran doit s'éteindre, se verrouiller et se mettre en veille, ceci afin de maintenir l'intervalle initialement configuré.

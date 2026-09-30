@@ -121,11 +121,6 @@ Not: İşlem çözüm politikaları hakkında daha fazla bilgi edinin (https://c
 <translation id="1076751984131277498">İzin verilen çıkarılabilir USB cihazların listesi</translation>
 <translation id="1077675271127011209">Kullanım ve kilitlenme ile ilgili verilerin raporlanmasını devre dışı bırak</translation>
 <translation id="1079498696402787191">TLS El Sıkışmalarında İzin Verilen Karmalarda Varsayılan Değeri Kullan</translation>
-<translation id="1081263326166769685">Politika, Etkin değerine ayarlanırsa <ph name="PRODUCT_OS_NAME" />, kilitlenme raporları da dahil olmak üzere kullanım metriklerini ve teşhis verilerini Google'a bildirir. Politika, Devre Dışı değerine ayarlanırsa metrikler ve teşhis verisi raporlama devre dışı bırakılır.
-
-Yönetilen cihazlarda bu politika varsayılan olarak etkindir ve metrikleri Google'a gönderir.
-
-Politika ayarlanmadığında yönetilmeyen cihazlarda metriklerin gönderilip gönderilmeyeceğine kullanıcı karar verebilir.</translation>
 <translation id="1081470306474387129">Yalıtılmış web uygulamaları (IWA) gibi belirli yalıtılmış bağlamlarda kullanılabilen Controlled Frame API, bir uygulamanın rastgele içerikleri yerleştirip işlemesine olanak tanır.
 Ayrıntılar için lütfen https://github.com/WICG/controlled-frame adresini ziyaret edin.
 
@@ -3805,17 +3800,6 @@ Yanlış değerine ayarlanırsa veya ayarlanmazsa klavye varsayılan olarak medy
 
 Politika, Doğru değerine ayarlanırsa veya ayarlanmadan bırakılırsa kullanıcıya Crostini kapsayıcılarına root erişimi izni verilir.
 Politika, Yanlış değerine ayarlanırsa kullanıcıya hem mevcut hem de yeni Crostini kapsayıcılara root erişimi izni verilmez.</translation>
-<translation id="3370759229531293665">JIT (Just In Time) derleyicisi etkinken JavaScript çalıştırmasına izin verilmeyen sitelerin belirtildiği bir site URL kalıpları listesini ayarlamanıza olanak tanır.
-
-          JavaScript JIT'in devre dışı bırakılması, <ph name="PRODUCT_NAME" /> tarayıcının, web içeriğini daha yavaş oluşturabileceği, ayrıca JavaScript'in WebAssembly gibi bazı bölümlerini devre dışı bırakabileceği anlamına gelir. JavaScript JIT'in devre dışı bırakılması, <ph name="PRODUCT_NAME" /> tarayıcının, web içeriğini daha güvenli bir konfigürasyonda oluşturmasına imkan sağlayabilir.
-
-          Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.
-
-          JavaScript JIT politika istisnaları yalnızca site ayrıntı düzeyinde (eTLD+1) uygulanır. Hem site.com hem de altalan.site.com, politikaya tabi olmayan aynı eTLD+1'e (site.com) çözümlendiğinden yalnızca altalan.site.com için ayarlanan bir politika, bu URL'lerde doğru şekilde uygulanmaz. Bu durumda, hem site.com hem de altalan.site.com'da doğru şekilde uygulanması için politikanın site.com üzerinde ayarlanması gerekir.
-
-          Bu politika, yalnızca üst seviye kaynak URL'si üzerinde değil, çerçeve bazında geçerlidir. Örneğin <ph name="JAVA_SCRIPT_JIT_BLOCKED_FOR_SITES_POLICY_NAME" /> politikasında listelenmiş olan site-bir.com, site-iki.com'u içeren bir çerçeve yüklerse site-bir.com'da JavaScript JIT devre dışı bırakılır. Ancak site-iki.com, ayarlanmışsa <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> ayarının politikasını veya varsayılan olarak JavaScript JIT etkin ayarını kullanır.
-
-          Bu politikanın ayarlanmadığı bir site için mevcutsa <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> ayarının politikası geçerli olur, mevcut değilse JavaScript JIT site için etkinleştirilir.</translation>
 <translation id="3373381043600809954"><ph name="PRODUCT_NAME" /> özelliğini etkinleştir</translation>
 <translation id="3374587000313305002"><ph name="PRODUCT_NAME" /> uygulamasının kullanıcı verilerini depolamak için kullanacağı dizini yapılandırır.
 
@@ -5917,17 +5901,6 @@ Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için 
 Geçerli değerler, 1 saniye ile 9.999 saniye aralığındadır. Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_OS_NAME" />, 60 saniye olan varsayılan değeri kullanır.
 
 <ph name="DEVICE_SCREENSAVER_LOGIN_SCREEN_ENABLED_POLICY_NAME" /> politikası Yanlış değerine ayarlandığında bu politikanın hiçbir etkisi olmaz.</translation>
-<translation id="4723615546736863060">Gelişmiş JavaScript optimizasyonlarının etkinleştirildiği siteleri belirten site URL kalıplarının listesini oluşturmanıza olanak tanır.
-
-Geçerli site URL kalıpları hakkında ayrıntılı bilgi için
-https://chromeenterprise.google/policies/url-patterns adresine bakabilirsiniz.
-Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.
-
-JavaScript optimizasyon politikası istisnaları, yalnızca site ayrıntı düzeyinde (eTLD+1) uygulanır. Hem site.com hem de altalan.site.com, politikaya tabi olmayan aynı eTLD+1'e (site.com) çözümlendiğinden yalnızca altalan.site.com için ayarlanan bir politika, bu URL'lerde doğru şekilde uygulanmaz. Bu durumda, hem site.com hem de altalan.site.com'da doğru şekilde uygulanması için politikanın site.com üzerinde ayarlanması gerekir.
-
-Bu politika, yalnızca üst seviye kaynak URL'si üzerinde değil, çerçeve bazında geçerlidir. Örneğin <ph name="JAVA_SCRIPT_OPTIMIZER_ALLOWED_FOR_SITES_POLICY_NAME" /> politikasında listelenmiş olan site-bir.com, site-iki.com'u içeren bir çerçeve yüklerse site-bir.com'da JavaScript optimizasyonları etkin olur. Ancak site-iki.com, ayarlanmışsa <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> ayarının politikasını veya varsayılan olarak JavaScript optimizasyonları etkin ayarını kullanır. Engellenenler listesindeki girişler, izin verilenler listesindeki girişlere göre daha yüksek önceliğe sahiptir. İzin verilenler listesindeki girişler de yapılandırılmış varsayılan değere göre daha yüksek önceliğe sahiptir.
-
-Bu politikanın ayarlanmadığı bir site için mevcutsa <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> ayarının politikası geçerli olur, mevcut değilse JavaScript optimizasyonu site için etkinleştirilir.</translation>
 <translation id="4723829699367336876">Uzaktan erişim istemcisinden güvenlik duvarı geçişini etkinleştir</translation>
 <translation id="4725528134735324213">Android Backup Service'ı etkinleştir</translation>
 <translation id="4725691087141147920">Oturum açma sırasında senkronizasyon iznini göster</translation>
@@ -6344,13 +6317,6 @@ Bu politika, kullanıcıların <ph name="PRODUCT_NAME" /> ürününde oturum aç
 <translation id="494924690085329212">Android başlatılmışsa kullanıcı oturumu kapatıldığında cihazı yeniden başlat.</translation>
 <translation id="4950447493143157880">Yerleşik DNS istemcisini hiçbir zaman kullanma</translation>
 <translation id="4953541641325278286">Hiçbir sitenin kullanıcının boşta kalma durumunu algılamasına izin verme</translation>
-<translation id="4954185885991137927">Politika Etkin değerine ayarlanırsa <ph name="PRODUCT_NAME" /> adlı ürünün Güvenli Tarama Genişletilmiş Raporlaması etkinleştirilir. Bu da tehlikeli uygulama ve sitelerin tespit edilmesine yardımcı olmak için Google'a bazı sistem bilgileri ile sayfa içeriklerini gönderir.
-
-      Politika Devre dışı değerine ayarlanırsa raporlar hiçbir zaman gönderilmez.
-
-      Bu politikayı ayarlarsanız kullanıcılar tarafından değiştirilemez. Bu politika ayarlanmazsa kullanıcılar raporların gönderilip gönderilmeyeceğine karar verebilirler.
-
-      Güvenli tarama hakkında daha fazla bilgi edinin (https://developers.google.com/safe-browsing).</translation>
 <translation id="4954352279763128540">Kerberos kimlik doğrulaması iletişim kutusuna önceden doldurulmuş bir alan adı ekler.
 
           Bu politika ayarlanırsa "Kerberos kullanıcı adı" alanı, önceden doldurulmuş alan adını sağ tarafta gösterir. Kullanıcının girdiği kullanıcı adı, önceden doldurulmuş alan adıyla birleştirilir. Kullanıcı girişinde "@" varsa önceden doldurulmuş alan adı gösterilmez ve girişi etkilemez.
@@ -7711,13 +7677,6 @@ Politika, Devre Dışı değerine ayarlanır veya ayarlanmadan bırakılırsa uy
 arabelleğe alma özelliğinin kullanılıp kullanılmayacağına, özelliğin tarayıcıda kullanıma sunulma süreci karar verir.</translation>
 <translation id="579556027056000499">URL'deki içeriğin SHA-256 karması.</translation>
 <translation id="5800329278018669527">Çevrimdışıyken ağ yapılandırması istemini devre dışı bırak</translation>
-<translation id="5800627752428920394">Bu politika, bir sayfa geri-ileri önbelleğe girdiğinde etkin WebSocket bağlantılarının kesilip kesilmeyeceğini kontrol eder. Etkin WebSocket bağlantıları eskiden bir sayfanın geri-ileri önbellekte saklanmasını engelliyordu. Ancak <ph name="PRODUCT_NAME" />, bu davranışı değiştirerek bunun yerine WebSocket bağlantılarını kesmeye başladı. Böylece sayfa önbelleğe alınabiliyor ve bağlantısı kesilmiş durumda geri yüklenebiliyor.
-
-Bu politika, Etkin değerine ayarlanır veya ayarlanmadan bırakılırsa bir sayfa geri-ileri önbelleğe girdiğinde WebSocket bağlantıları kesilir.
-
-Bu politika, Devre Dışı değerine ayarlanırsa bir sayfa geri-ileri önbelleğe girdiğinde WebSocket bağlantıları kesilmez. Geri-ileri önbellek etkin WebSocket'ları desteklemediğinden etkin WebSocket'ları olan sayfalar önbelleğe alınmaz.
-
-Bu politika, geçici olarak tasarlanmıştır ve gelecekte kaldırılacaktır.</translation>
 <translation id="5802931736499687181">Şifrelenmiş Raporlama Ardışık Düzeni'ni devre dışı bırak</translation>
 <translation id="5803715507113569033">Bu politika ile yöneticiler, <ph name="MICROSOFT_ONE_DRIVE_NAME" /> ekleme işlemini yapılandırabilir.
 
@@ -8346,21 +8305,6 @@ Politika ayarlanmadan bırakılırsa genel varsayılan değer tüm siteler için
 <translation id="6207673917710036736">Yerel uzantı inceleme istemlerini ve puanlama bağlantılarını etkinleştir</translation>
 <translation id="6208896993204286313"><ph name="PRODUCT_NAME" /> Politika Bilgilerini bildir</translation>
 <translation id="6210259502936598222">OS ve <ph name="PRODUCT_NAME" /> Sürümü Bilgilerini bildir</translation>
-<translation id="6214712395769944855">Bu politika, <ph name="PRODUCT_NAME" /> ürününü, TLS 1.3'te tercih edilen şifreleme şifrelerini belirli bir uyumluluk rejimi tarafından onaylanmış algoritmalara öncelik verecek şekilde sıralamak için yapılandırır.
-
-Bu politikanın ayarlanması, belirli herhangi bir algoritmada anlaşılacağını garanti edilmez.
-
-Bu politika, uyumluluk gereksinimlerini karşılayan ve karşılamayan istemcileri desteklemek isteyen sunucu operatörlerinin, bu istemcileri ayırt etmesine ve yalnızca açıkça tercih edecek şekilde yapılandırılmış istemciler için kriptografik gücü artırılmış belirli, varsayılan olmayan algoritmaları kullanmasına olanak tanımak amacıyla tasarlanmıştır.
-
-Politika, "<ph name="CNSA_NAME" />" değerine ayarlanırsa <ph name="PRODUCT_NAME" />, Commercial National Security Algorithm Suite 1.0 ve 2.0 (CNSA 1.0 ve 2.0) ile uygunluk için gerekli olan şifreleri tercih edecek şekilde yapılandırılır.
-
-Politika ayarlanmazsa veya "<ph name="DEFAULT_NAME" />" değerine ayarlanırsa <ph name="PRODUCT_NAME" />, varsayılan şifrelerini kullanacak şekilde yapılandırılır.
-
-Güvenlik için bu politikanın ayarlanması gerekmez. <ph name="PRODUCT_NAME" /> tarafından kullanılan varsayılan kriptografi, Güneş'teki tüm enerjiyi kullanarak yapılacak kaba kuvvet saldırısına dayanacak kadar güçlüdür.
-
-Bu politika ayarlanırsa web sitelerine erişirken <ph name="PRODUCT_NAME" /> daha yavaş çalışır.
-
-Bu politika yalnızca TLS 1.3 ve QUIC'i etkiler. TLS'nin önceki sürümlerini etkilemez.</translation>
 <translation id="6219841576688651072">Üretken yapay zeka özet penceresi gruplandırmasına izin verme.</translation>
 <translation id="6220835555850906733">Politikayı Etkin değerine ayarlamak veya ayarlamadan bırakmak, kullanıcıların cihazlarında tüm desteklenen ses çıkışlarına izin verir.
 
@@ -9765,19 +9709,6 @@ Geçerli URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterp
 Bu politika <ph name="PROVISION_MANAGED_CLIENT_CERTIFICATE_FOR_USER_DISABLED" /> (0 değeri) olarak ayarlanırsa tarayıcının, istemci sertifikası istemesi engellenir. Bir profilin yönetilen istemci sertifikasının temel hazırlığı daha önce yapılmışsa bu politikanın daha önce etkinleştirilmesi nedeniyle sertifika silinmez ancak mTLS bağlantılarında kullanılamaz ve süresi dolduğunda yenilenmez.</translation>
 <translation id="7013484314513229844">Prize takılıyken otomatik başla özelliğini etkinleştir</translation>
 <translation id="7014427417852575165">Gelişmiş Koruma Programı'na kaydolan kullanıcılara ekstra korumalar sunulur</translation>
-<translation id="7015750050379345684">Gelişmiş JavaScript optimizasyonlarının devre dışı bırakıldığı siteleri belirten site URL kalıplarının listesini oluşturmanıza olanak tanır.
-
-JavaScript optimizasyonlarının devre dışı bırakılması, <ph name="PRODUCT_NAME" /> tarayıcının web içeriğini daha yavaş oluşturabileceği anlamına gelir.
-
-Geçerli URL kalıpları hakkında ayrıntılı bilgi için
-https://chromeenterprise.google/policies/url-patterns adresine bakabilirsiniz.
-Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.
-
-JavaScript optimizasyon politikası istisnaları, yalnızca site ayrıntı düzeyinde (eTLD+1) uygulanır. Hem site.com hem de altalan.site.com, politikaya tabi olmayan aynı eTLD+1'e (site.com) çözümlendiğinden yalnızca altalan.site.com için ayarlanan bir politika, bu URL'lerde doğru şekilde uygulanmaz. Bu durumda, hem site.com hem de altalan.site.com'da doğru şekilde uygulanması için politikanın site.com üzerinde ayarlanması gerekir.
-
-Bu politika, yalnızca üst seviye kaynak URL'si üzerinde değil, çerçeve bazında geçerlidir. Örneğin <ph name="JAVA_SCRIPT_OPTIMIZER_BLOCKED_FOR_SITES_POLICY_NAME" /> politikasında listelenmiş olan site-bir.com, site-iki.com'u içeren bir çerçeve yüklerse site-bir.com'da JavaScript optimizasyonları devre dışı bırakılır. Ancak site-iki.com, ayarlanmışsa <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> ayarının politikasını veya varsayılan olarak JavaScript optimizasyonları etkin ayarını kullanır. Engellenenler listesindeki girişler, izin verilenler listesindeki girişlere göre daha yüksek önceliğe sahiptir. İzin verilenler listesindeki girişler de yapılandırılmış varsayılan değere göre daha yüksek önceliğe sahiptir.
-
-Bu politikanın ayarlanmadığı bir site için mevcutsa <ph name="DEFAULT_JAVA_SCRIPT_OPTIMIZER_SETTING_POLICY_NAME" /> ayarının politikası geçerli olur, mevcut değilse JavaScript optimizasyonu site için etkinleştirilir.</translation>
 <translation id="7016587686120059767">Misafir modunu devre dışı bırak</translation>
 <translation id="7019805045859631636">Hızlı</translation>
 <translation id="7021590945154530517">Cihaz sağlığını izlemeyi etkinleştir</translation>
@@ -10471,14 +10402,6 @@ Hassas verilerin (ör. çerezler veya giriş değerleri) gerçek değerleri TOPL
       İstisna: M95 ve önceki sürümlerde TPM bilgileri <ph name="REPORT_DEVICE_HARDWARE_STATUS" /> tarafından kontrol edilir.</translation>
 <translation id="739556497251174388">Ağ kimlik doğrulaması için <ph name="PRODUCT_OS_NAME" /> giriş kimlik bilgilerinin yeniden kullanılmasına izin ver</translation>
 <translation id="7395790871181951311">Yalıtılmış uygulamaların akıllı kartlara bağlanmasını engelle</translation>
-<translation id="7396487166653169044">JIT (Just In Time) derleyicisi etkinken JavaScript çalıştırmasına izin verilen sitelerin belirtildiği bir site URL kalıpları listesini ayarlamanıza olanak tanır.
-
-          Geçerli site URL kalıpları hakkında ayrıntılı bilgi için https://chromeenterprise.google/policies/url-patterns adresine bakabilirsiniz. Joker karakterlere (<ph name="WILDCARD_VALUE" />) izin verilir.
-
-          JavaScript JIT politika istisnaları yalnızca site ayrıntı düzeyinde (eTLD+1) uygulanır. Hem site.com hem de altalan.site.com, politikaya tabi olmayan aynı eTLD+1'e (site.com) çözümlendiğinden yalnızca altalan.site.com için ayarlanan bir politika, bu URL'lerde doğru şekilde uygulanmaz. Bu durumda, hem site.com hem de altalan.site.com'da doğru şekilde uygulanması için politikanın site.com üzerinde ayarlanması gerekir.
-          Bu politika, yalnızca üst seviye kaynak URL'si üzerinde değil, çerçeve bazında geçerlidir. Örneğin <ph name="JAVA_SCRIPT_JIT_ALLOWED_FOR_SITES_POLICY_NAME" /> politikasında listelenmiş olan site-bir.com, site-iki.com'u içeren bir çerçeve yüklerse site-bir.com'da JavaScript JIT etkin olur. Ancak site-iki.com, ayarlanmışsa <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> ayarının politikasını veya varsayılan olarak JavaScript JIT etkin ayarını kullanır.
-
-          Bu politikanın ayarlanmadığı bir site için mevcutsa <ph name="DEFAULT_JAVA_SCRIPT_JIT_SETTING_POLICY_NAME" /> ayarının politikası geçerli olur, mevcut değilse JavaScript JIT site için etkinleştirilir.</translation>
 <translation id="7400208209734208176">Bağlantıları varsayılan olarak Chrome tarayıcıda aç</translation>
 <translation id="7402257017733669351">Tarayıcı işleminin dinamik kod oluşturmasını engelle</translation>
 <translation id="7406039009275722824"><ph name="CHROME_SYNC_NAME" /> devre dışı bırakıldığında Android Yedekleme ve Geri Yükleme özelliği düzgün çalışmaz.</translation>
@@ -10901,21 +10824,6 @@ Bu politika devre dışı bırakılırsa PDF görüntüleyici kendi AGG oluştur
 
 Bu politika ayarlanmadan bırakılırsa PDF oluşturucu tarayıcı tarafından seçilir.</translation>
 <translation id="7704244074621846004">SharedWorker'lar için uzatılmış kullanım ömrünü etkinleştir.</translation>
-<translation id="7705886216383850895"><ph name="PRODUCT_NAME" /> hizmetinde <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> için bağlantı ayarlarını yapılandırır.
-
-Yöneticilerin, <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> hizmetini yapılandırmak için şunlardan birini sağlaması gerekir:
-* <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> web uygulaması URL'si (<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" />) VEYA
-* Üç eski parametrenin tümü: <ph name="GEMINI_ENTERPRISE_SETTINGS_PROJECT_ID_POLICY_VALUE" />, <ph name="GEMINI_ENTERPRISE_SETTINGS_APP_ID_POLICY_VALUE" /> ve <ph name="GEMINI_ENTERPRISE_SETTINGS_LOCATION_POLICY_VALUE" />. Bu üç parametrenin alt kümesi yalnızca kısmen URL olmadan belirtilirse <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> politikası yapılandırılamaz.
-
-<ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> parametresi, https şemasını kullanan ve kullanıcı adı veya şifre içermeyen geçerli bir URL olmalıdır. Bu koşullar karşılanmazsa politika yoksayılır ve <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> yapılandırılmadan bırakılır.
-
-Hem <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> parametresi hem de eski parametreler yapılandırılmışsa <ph name="GEMINI_ENTERPRISE_SETTINGS_URL_POLICY_VALUE" /> parametresi öncelikli olur.
-
-Bu politika ayarlanırsa <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" />, yönetilen bir hesap veya yönetilen tarayıcıyla oturum açan kullanıcılar için yapılandırılır.
-
-Bu politika ayarlanmazsa <ph name="GEMINI_ENTERPRISE_PRODUCT_NAME" /> yapılandırılmaz.
-
-Bu politikanın, <ph name="GEMINI_SETTINGS_POLICY_NAME" /> politikası tarafından kontrol edilebilen genel <ph name="GOOGLE_GEMINI_PRODUCT_NAME" /> entegrasyonunu kontrol etmediğini unutmayın.</translation>
 <translation id="7707869387893611318">Şarj sesleri özelliğini etkinleştirin.
 
           Bu özellik, şarj seslerini çalmaktan sorumludur.
@@ -11499,21 +11407,6 @@ Yerel cihaza yönelik istekleri etkileyen ve içinde kaynakların listelendiği 
 <translation id="8062485064082966327">Etiketlenmemiş resimlere otomatik olarak açıklama sağlamak için anonim bir Google hizmeti kullan</translation>
 <translation id="8064875716442437829">Oluşturucu erişilebilirliğini etkinleştirme</translation>
 <translation id="8066428282805800713">ChromeOS Flex'te ek donanım verisi gönder</translation>
-<translation id="8069233292746468045">Bu politika, <ph name="PRODUCT_NAME" /> ürününü, TLS 1.3'te tercih edilen anahtar anlaşması algoritmalarını (desteklenen gruplar) belirli bir uyumluluk rejimi tarafından onaylanmış algoritmalara öncelik verecek şekilde sıralamak için yapılandırır.
-
-Bu politikanın ayarlanması, belirli herhangi bir algoritmada anlaşılacağını garanti edilmez.
-
-Bu politika, uyumluluk gereksinimlerini karşılayan ve karşılamayan istemcileri desteklemek isteyen sunucu operatörlerinin, bu istemcileri ayırt etmesine ve yalnızca açıkça tercih edecek şekilde yapılandırılmış istemciler için kriptografik gücü artırılmış belirli, varsayılan olmayan algoritmaları kullanmasına olanak tanımak amacıyla tasarlanmıştır.
-
-Politika, "<ph name="CNSA2_NAME" />" değerine ayarlanırsa <ph name="PRODUCT_NAME" />, Commercial National Security Algorithm Suite 2.0 (CNSA 2.0) ile uygunluk için gerekli olan anahtar değişim yöntemlerini tercih edecek şekilde yapılandırılır.
-
-Politika ayarlanmazsa veya "<ph name="DEFAULT_NAME" />" değerine ayarlanırsa <ph name="PRODUCT_NAME" />, varsayılan anahtar değişimi yöntemlerini kullanacak şekilde yapılandırılır.
-
-Güvenlik için bu politikanın ayarlanması gerekmez. <ph name="PRODUCT_NAME" /> tarafından kullanılan varsayılan kriptografi, Güneş'teki tüm enerjiyi kullanarak yapılacak kaba kuvvet saldırısına dayanacak kadar güçlüdür.
-
-Bu politika ayarlanırsa web sitelerine erişirken <ph name="PRODUCT_NAME" /> daha yavaş çalışır.
-
-Bu politika yalnızca TLS 1.3 ve QUIC'i etkiler. TLS'nin önceki sürümlerini etkilemez.</translation>
 <translation id="8071371098891664137"><ph name="PRINTERS_BULK_ACCESS_MODE_POLICY_NAME" /> için <ph name="PRINTERS_BLOCKLIST" /> seçiliyken <ph name="PRINTERS_BULK_BLOCKLIST_POLICY_NAME" /> politikası ayarlanırsa kullanıcıların hangi yazıcıları kullanamayacağı belirlenir. Bu politikada listelenen kimlikler dışında kalan tüm yazıcılar kullanıcıya sağlanır. Kimliklerin, <ph name="PRINTERS_BULK_CONFIGURATION_POLICY_NAME" /> politikasında belirtilen dosyadaki <ph name="ID_FIELD" /> veya <ph name="GUID_FIELD" /> alanlarına karşılık gelmesi gerekir.</translation>
 <translation id="8076539570602616846"><ph name="PRODUCT_NAME" /> PDF görüntüleyicideki PDF dosyalarını Google Drive'a kaydetmeye uygun Google Hesaplarını kısıtla</translation>
 <translation id="8078297389450285582">Politikayı Etkin değerine ayarlamak veya ayarlamadan bırakmak, akıllı karartma modelini etkinleştirir ve ekran kararana kadar geçen süreyi uzatabilir. Süreyi geciktirirse ekran kapanması, ekran kilidi ve boşta kalma gecikmeleriyle ilgili süreler, orijinal olarak ayarlanan ekran kararma gecikmesine göre aynı oran korunacak biçimde düzenlenir.

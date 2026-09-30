@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">‏‫Chrome این بارگیری را مسدود کرد زیرا این نوع فایل معمولاً بارگیری نمی‌شود و ممکن است خطرناک باشد</translation>
 <translation id="1197860368385086056">‏دفعه بعد که Chrome را در <ph name="DEVICE_TYPE" /> باز می‌کنید، پیام‌واره‌ای برای فعال کردن هشدارهای ردگیری قیمت خواهید دید.</translation>
 <translation id="1203500561924088507">بابت نصب از شما سپاس‌گزاریم. قبل‌از استفاده از <ph name="BUNDLE_NAME" />، باید مرورگر را بازراه‌اندازی کنید.</translation>
+<translation id="1226003169284463347">‏برای دریافت نشانک‌ها و سایر موارد در همه دستگاه‌هایتان، به سیستم Chrome وارد شوید</translation>
 <translation id="1278833599417554002">‏راه‌اندازی مجدد برای به‌روزرسانی Chrome</translation>
 <translation id="1289911795790071537">‏باز کردن جستجو با Chrome</translation>
 <translation id="1290883685122687410">خطای راه‌اندازی: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -118,6 +119,7 @@
 <translation id="2096213354152647998">‏اخیراً بازدیدی نداشته‌اید. ‫Chrome ‏<ph name="PERMISSION" /> را برداشت.</translation>
 <translation id="2106831557840787829">‏ارائه ChromeOS Flex با <ph name="BEGIN_LINK_CROS_OSS" />نرم‌افزارهای متن‌باز<ph name="END_LINK_CROS_OSS" /> تکمیلی مانند <ph name="BEGIN_LINK_LINUX_OSS" />محیط توسعه نرم‌افزاری Linux<ph name="END_LINK_LINUX_OSS" /> ممکن شده است.</translation>
 <translation id="2108778574543343055">‏غیرفعال کردن اجرای Chrome در پس‌زمینه برای برنامه‌ها</translation>
+<translation id="2111985952714409792">‏برای دریافت افزونه‌ها و سایر موارد در همه دستگاه‌هایتان، به سیستم Chrome وارد شوید</translation>
 <translation id="2120620239521071941">‏این کار <ph name="ITEMS_COUNT" /> مورد را از این دستگاه حذف می‌کند. برای بازیابی داده‌هایتان در فرصتی دیگر، با <ph name="USER_EMAIL" /> وارد سیستم Chrome شوید.</translation>
 <translation id="2121284319307530122">‏راه‌اندازی مجدد برای به‌روزرسانی Chrome</translation>
 <translation id="2123055963409958220">‏با گزارش <ph name="BEGIN_LINK" />تنظیمات کنونی<ph name="END_LINK" />، به بهتر شدن Chrome کمک کنید</translation>
@@ -144,6 +146,7 @@
 <translation id="2307973900865360088">‏نگه داشتن در Dock</translation>
 <translation id="2309047409763057870">‏این نصب ثانویه Google Chrome است و نمی‌تواند مرورگر پیش‌فرضتان شود.</translation>
 <translation id="2345992953227471816">‏Chrome متوجه شده است که این افزونه‌ها حاوی بدافزار هستند:</translation>
+<translation id="2358140144860869442">‏برای دریافت فهرست خواندن و سایر موارد در همه دستگاه‌هایتان، به سیستم Chrome وارد شوید</translation>
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2403703063067034158">خطای راه‌اندازی: فعلاً راه‌اندازی دیگری درحال اجرا است، لطفاً کمی بعد دوباره امتحان کنید.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{‏یک یا چند افزونه Chrome به یک «دستگاه میانای انسانی» (HID) دسترسی داشتند}=1{‏یک یا چند افزونه Chrome به یک «دستگاه میانای انسانی» (HID) دسترسی دارند}one{‏یک یا چند افزونه Chrome به # «دستگاه میانای انسانی» (HID) دسترسی دارند}other{‏یک یا چند افزونه Chrome به # «دستگاه میانای انسانی» (HID) دسترسی دارند}}</translation>
@@ -172,6 +175,7 @@
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">‏Chrome به‌طور منظم بررسی می‌کند تا مطمئن شود مرورگرتان ایمن‌ترین تنظیمات را دارد. اگر موردی به بازبینی شما نیاز داشته باشد، به شما اطلاع خواهیم داد.</translation>
 <translation id="2652691236519827073">‏باز کردن پیوند در &amp;برگه جدید Chrome</translation>
+<translation id="2661616016316841783">‏برای دریافت افزونه‌ها و سایر موارد از <ph name="DEVICE" />، به سیستم Chrome وارد شوید</translation>
 <translation id="2665296953892887393">‏با ارسال گزارش‌های خرابی و <ph name="UMA_LINK" /> به Google، به بهبود Google Chrome کمک کنید.</translation>
 <translation id="2668094785979141847">‏برای خروج از «لنز Google»، کلیک کنید</translation>
 <translation id="2674238339205910678">‏‫ChromeOS Flex نتوانست داده‌های Chrome را در «حساب Google» شما ذخیره کند زیرا جزئیات ورود به سیستم حسابتان به‌روز نیست</translation>
@@ -243,6 +247,7 @@
 <translation id="3242486428260808857">‏وقتی از برنامه Chrome در <ph name="DEVICE_TYPE" /> استفاده می‌کنید، از خرید آنلاین بهره بیشتری می‌برید</translation>
 <translation id="3245429137663807393">‏اگر گزارش‌های استفاده از Chrome را نیز هم‌رسانی کنید، این گزارش‌ها نشانی‌های وبی را که بازدید می‌کنید دربرمی‌گیرند.</translation>
 <translation id="3249558306861350254">‏در تنظیمات Windows، روی <ph name="BEGIN_BOLD" />Set Default (تنظیم پیش‌فرض)<ph name="END_BOLD" /> کلیک کنید.</translation>
+<translation id="3258706751219502154">‏برای دریافت نشانک‌ها و سایر موارد از <ph name="DEVICE" />، به سیستم Chrome وارد شوید</translation>
 <translation id="3259748324892322072">‏دریافت برنامه Chrome</translation>
 <translation id="3282568296779691940">‏ورود به سیستم Chrome</translation>
 <translation id="3286538390144397061">راه‌اندازی مجدد اکنون</translation>
@@ -342,6 +347,7 @@
 <translation id="4280647692742956593">‏‫‫Chrome را در تلفنتان بارگیری کنید تا بتوانید گروه‌های زبانه جدید را درحال حرکت باز کنید یا بسازید.</translation>
 <translation id="4281844954008187215">شرایط استفاده از سرویس</translation>
 <translation id="430327780270213103">‏مجاز کردن افزونه برای نمایش درخواست‌های دسترسی در نوارابزار Chrome</translation>
+<translation id="4312908933392839680">‏برای دریافت اطلاعات ذخیره‌شده و سایر موارد در همه دستگاه‌هایتان، به سیستم Chrome وارد شوید</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{‏‫Chrome توصیه می‌کند زبانه‌ای را که باعث کند شدن مرورگرتان شده است موقتاً متوقف کنید}one{‏‫Chrome توصیه می‌کند زبانه‌ای را که باعث کند شدن مرورگرتان شده است موقتاً متوقف کنید}other{‏‫Chrome توصیه می‌کند زبانه‌هایی را که باعث کند شدن مرورگرتان شده است موقتاً متوقف کنید}}</translation>
 <translation id="4328355335528187361">‏Google Chrome نسخه Dev‏، (mDNS-In)</translation>
 <translation id="4329315893554541805">‏برای گرفتن شخصی‌سازی‌ها و ویژگی‌های دیگر، Chrome را به «فعالیت‌ها در وب و برنامه» و سرویس‌های پیوندشده Google اضافه کنید</translation>
@@ -507,7 +513,9 @@
 <translation id="6046028983725193307">‏برای هم‌رسانی کردن صدای سیستم، «تنظیمات سیستم» را باز کنید و «فقط ضبط صدای سیستم» را برای Chrome مجاز کنید. سپس باید Chrome را بازراه‌اندازی کنید.</translation>
 <translation id="6069027071882229820">کپی کردن به‌عنوان تصویر</translation>
 <translation id="6070348360322141662">‏برای امنیت بیشتر، Google Chrome داده‌های شما را رمزگذاری می‌کند</translation>
+<translation id="6071642418303142778">‏برای دریافت گذرواژه‌ها و سایر موارد از <ph name="DEVICE" />، به سیستم Chrome وارد شوید</translation>
 <translation id="6075300983329039771">‏سازمانتان (<ph name="MANAGER" />) شما را ملزم می‌کند به سیستم Chrome وارد شوید</translation>
+<translation id="6077365059401096066">‏برای دریافت فهرست خواندن و سایر موارد از <ph name="DEVICE" />، به سیستم Chrome وارد شوید</translation>
 <translation id="6113794647360055231">‏Chrome اکنون بهتر شده است</translation>
 <translation id="6116004140911290070">‏فعال کردن «مهارت‌ها» در Chrome</translation>
 <translation id="6116252277240876590">‏این زبان برای نمایش منوها، تنظیمات، هشدارها، و نوشتارهای دیگر در Chrome استفاده می‌شود</translation>
@@ -705,6 +713,7 @@
 <translation id="7804947029129221742">‏موتور جستجوی شما از خارج از Chrome تغییر کرد. برای محافظت از شما، Chrome آن را به پیش‌فرض اصلی‌اش بازنشانی کرد. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">‏حذف از Chrome...</translation>
 <translation id="7827099906024714326">‏قبل‌از اینکه بتوان برخی‌از داده‌ها را در «حساب Google» شما ذخیره کرد و در همه دستگاه‌هایتان استفاده کرد، Chrome باید هویت شما را تأیید کند. اگر اکنون از سیستم خارج شوید، این داده‌ها حذف خواهد شد.</translation>
+<translation id="7829850924999627855">‏برای دریافت اطلاعات ذخیره‌شده و سایر موارد از <ph name="DEVICE" />، به سیستم Chrome وارد شوید</translation>
 <translation id="7832314606810669113">‏برای دریافت نشانک‌ها و موارد دیگر در همه دستگاه‌هایتان، به سیستم Chrome وارد شوید. بعداز اینکه به سیستم وارد شدید، این نشانک در «حساب Google» شما ذخیره خواهد شد.</translation>
 <translation id="7845233973568007926">بابت نصب از شما سپاس‌گزاریم. قبل‌از استفاده از <ph name="BUNDLE_NAME" />، باید رایانه را بازراه‌اندازی کنید.</translation>
 <translation id="7847170235260850604">‏راه‌اندازی Chrome هنگام شروع Windows</translation>

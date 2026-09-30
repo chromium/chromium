@@ -143,7 +143,6 @@
 <translation id="1408847409015257906">Tippe auf „Datenschutz und Sicherheit“.</translation>
 <translation id="1411386976162024013">Visuelle Suche mit Lens</translation>
 <translation id="1414315029670184034">Websites dürfen nicht meine Kamera verwenden</translation>
-<translation id="1417474386970818917">Abmelden und löschen</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1430915738399379752">Drucken</translation>
 <translation id="1433478348197382180">Lesemodus</translation>
@@ -302,6 +301,7 @@
 <translation id="188237709236611317">Menüleiste mit intelligenter Sortierung</translation>
 <translation id="1883255238294161206">Liste ausblenden</translation>
 <translation id="1883898928879467646">Tab entfernt</translation>
+<translation id="188779312703122101">In Bearbeitung</translation>
 <translation id="1888854257756214946">Passwort auswählen…</translation>
 <translation id="1890237935065108104">Diese Einstellung ist nicht verfügbar.</translation>
 <translation id="1894023287452300670">Hier den Preis beobachten</translation>
@@ -782,7 +782,6 @@
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /> zu vorgeschlagenen Inhalten</translation>
 <translation id="349446645805573740">Wähle einen Speicherort für die Datei <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> aus</translation>
 <translation id="3504377992102007712">Einstellungen</translation>
-<translation id="3507556793108992994">{count,plural, =1{1 Tab aufgeräumt}other{# Tabs aufgeräumt}}</translation>
 <translation id="35083190962747987">${url} öffnen</translation>
 <translation id="3511519535430890904">Browsing-Schutz hinzufügen</translation>
 <translation id="3512572904898385012">Du kannst jetzt mit deiner Kamera einkaufen und Texte übersetzen lassen. Tippe, um es auszuprobieren.</translation>
@@ -929,7 +928,6 @@
 <translation id="3962326069546168954">Speichern</translation>
 <translation id="3967327056943561740">Lesezeichen</translation>
 <translation id="3967822245660637423">Download abgeschlossen</translation>
-<translation id="3968685670440571540">seitdem du „Passwörter und Autofill“ verwendest</translation>
 <translation id="3973560090698854095">Dadurch werden Adressen gelöscht, die in deinem Google-Konto <ph name="USER_EMAIL" /> gespeichert sind.</translation>
 <translation id="398604237578616937">Angemeldet als <ph name="USER_EMAIL" />. Öffne das Kontomenü.</translation>
 <translation id="3986739045730058129">Zum Tab</translation>
@@ -1342,7 +1340,6 @@
 <translation id="5250371859659394278">Von einer unbekannten Quelle</translation>
 <translation id="525510229763628836">Minimiert</translation>
 <translation id="5260842098960755113">Thread geschlossen</translation>
-<translation id="5269913829202614649">Startseite anpassen</translation>
 <translation id="5271265092610673171">{count,plural, =1{Ein Pflichtfeld ist leer. Bitte fülle es vor dem Speichern aus.}other{Einige Pflichtfelder sind leer. Bitte fülle sie vor dem Speichern aus.}}</translation>
 <translation id="5271549068863921519">Passwort speichern</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) möchte, dass du einer Tabgruppe beitrittst. Alle Nutzer mit dem Link können alle Tabs bearbeiten. Überlege dir also gut, ob du beitrittst. Der Link läuft in 48 Stunden ab.</translation>
@@ -1452,7 +1449,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5632194969640946913">Du kannst jetzt ganz einfach beim Surfen und Suchen mehr über Produkte, Orte und Text auf einer Seite erfahren.</translation>
 <translation id="5632485077360054581">So gehts</translation>
 <translation id="5633237939819267663">{count,plural, =1{Lesezeichen unter „{title}“ gespeichert}other{{count} Lesezeichen unter „{title}“ gespeichert}}</translation>
-<translation id="564170563478022912">Abmelden? Nicht gespeicherte Kontodaten werden gelöscht.</translation>
 <translation id="5642707040609478753">Als ungelesen markieren</translation>
 <translation id="5646376287012673985">Standort</translation>
 <translation id="5647096944343801045">Großer Einstiegspunkt</translation>
@@ -1468,7 +1464,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5669528293118408608">www</translation>
 <translation id="5676124785522323481">Verbundene Apps verwalten</translation>
 <translation id="567881659373499783">Version <ph name="PRODUCT_VERSION" /></translation>
-<translation id="5680012489335339762">Konto wechseln? Nicht gespeicherte Kontodaten werden gelöscht.</translation>
 <translation id="5683499062697987550">Bestätige deine Identität, um Passwörter in deinem Google-Konto zu verwenden und zu speichern.</translation>
 <translation id="5684761169742812828">Dieses Passwort wurde aufgrund einer Datenpanne im Internet preisgegeben. Falls du gerade keine Zeit hast, das Passwort zu ändern, empfiehlt Google, diese Warnung offen zu lassen, damit du später daran erinnert wirst.</translation>
 <translation id="5694848685995373177">In Google Drive für <ph name="USER_EMAIL" /> gespeichert.</translation>
@@ -1744,7 +1739,6 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6506996418997555004">Tabgruppe „<ph name="GROUP_NAME" />“ teilen</translation>
 <translation id="6507973708545996744">Melde dich an, um deine Lesezeichen auf allen deinen Geräten abrufen zu können.</translation>
 <translation id="6518133107902771759">Bestätigen</translation>
-<translation id="6518861084553706202">Tabs werden geschlossen und gelöschte Daten können z. B. Passwörter, Browserverlauf und Cookies umfassen.</translation>
 <translation id="6523575793810663688">Anleitung</translation>
 <translation id="6524082013156754186">Im Konto speichern</translation>
 <translation id="6524918542306337007">Inkognitomodus ist nicht verfügbar</translation>
@@ -1787,6 +1781,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="6626281667717553020">CPS-URI</translation>
 <translation id="6627583120233659107">Ordner bearbeiten</translation>
 <translation id="6629759408545977279">Von: <ph name="ORIGINATING_HOST" /></translation>
+<translation id="6634065271963947588">Melde dich in deinem Konto an, um auf den Verlauf und mehr zuzugreifen</translation>
 <translation id="6634432609054530164">Deine Organisation hat den Inkognitomodus deaktiviert</translation>
 <translation id="6637478299472506933">Fehler beim Download</translation>
 <translation id="6638511529934826365">Text zoomen…</translation>
@@ -1968,7 +1963,6 @@ Wenn du auf deinem Computer fortfahren möchtest, wechsle zu <ph name="OTHER_EMA
 <translation id="721218676460477064">Diesen Artikel zusammenfassen</translation>
 <translation id="7215621211572884440">Pop-ups erlaubt</translation>
 <translation id="7218491361283758048">Postleitzahl</translation>
-<translation id="7220786058474068424">Verarbeitung läuft</translation>
 <translation id="7221173315674413369">Entdecke unter „Neue Funktionen“ Tipps und neue Funktionen</translation>
 <translation id="7223102419539744003">Tab schließen</translation>
 <translation id="7223134495231529579">In Downloads speichern</translation>
@@ -2056,7 +2050,6 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="7491161827858509164">Wenn du Dateien sehen möchtest, die du zuvor heruntergeladen hast, öffne die App <ph name="BEGIN_LINK" />Dateien<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Weiter bearbeiten</translation>
 <translation id="7500244509706269886">Autofill-Formular</translation>
-<translation id="7504841985386528758">seitdem du von Tabgruppen erfahren hast</translation>
 <translation id="750493650310597496">0 ausgewählt</translation>
 <translation id="7505402981231763928">Melde dich an, um Gemini zu verwenden</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
@@ -2297,6 +2290,7 @@ Du kannst „Level Up“ jederzeit wieder aktivieren.</translation>
 <translation id="823339794112333264">Mikrofon einschalten</translation>
 <translation id="8240217649914883113">Meinem Kalender hinzufügen</translation>
 <translation id="824379025871762038">Nie zulassen</translation>
+<translation id="8244387390464017490">„Neuer Tab“ anpassen</translation>
 <translation id="8250920743982581267">Dokumente</translation>
 <translation id="8258734532103758067">Ich habe meine Daten exportiert</translation>
 <translation id="8258999165172757081">Hinzugefügt</translation>

@@ -144,7 +144,6 @@
 <translation id="1408847409015257906">"Məxfilik və güvənlik" üzərinə toxunun.</translation>
 <translation id="1411386976162024013">Linza ilə vizual axtarış</translation>
 <translation id="1414315029670184034">Saytlara kameranızdan istifadə etmək icazəsi verməyin</translation>
-<translation id="1417474386970818917">Çıxış edin və silin</translation>
 <translation id="1426410128494586442">Bəli</translation>
 <translation id="1430915738399379752">Çap edin</translation>
 <translation id="1433478348197382180">Oxu Rejimi</translation>
@@ -792,7 +791,6 @@
 <translation id="3493531032208478708">Təklif məzmunu haqqında <ph name="BEGIN_LINK" />daha ətraflı<ph name="END_LINK" /></translation>
 <translation id="349446645805573740">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" faylını harada yadda saxlayacağınızı seçin</translation>
 <translation id="3504377992102007712">Ayarlar</translation>
-<translation id="3507556793108992994">{count,plural, =1{1 tab qruplaşdırıldı}other{# tab qruplaşdırıldı}}</translation>
 <translation id="35083190962747987">${url} keçidini açın</translation>
 <translation id="3511519535430890904">Baxış qoruması əlavə edin</translation>
 <translation id="3512572904898385012">İndi kamera ilə alış-veriş və tərcümə edə bilərsiniz. Toxunaraq sınayın.</translation>
@@ -941,7 +939,6 @@
 <translation id="3962326069546168954">Yadda saxlayın</translation>
 <translation id="3967327056943561740">Əlfəcinlər</translation>
 <translation id="3967822245660637423">Endirmə tamamdır</translation>
-<translation id="3968685670440571540">Parollar və Avtodoldurmadan istifadə etdikdən bəri</translation>
 <translation id="3973560090698854095">Bu, Google Hesabınızda (<ph name="USER_EMAIL" />) yadda saxlanılmış ünvanları silir.</translation>
 <translation id="398604237578616937"><ph name="USER_EMAIL" /> kimi daxil olunub. Hesab menyusunu açın.</translation>
 <translation id="3986739045730058129">Taba keçin</translation>
@@ -1356,7 +1353,6 @@
 <translation id="5250371859659394278">Naməlum mənbədən</translation>
 <translation id="525510229763628836">Kiçildildi</translation>
 <translation id="5260842098960755113">Mövzu bağlandı</translation>
-<translation id="5269913829202614649">Əsas səhifəni fərdiləşdirin</translation>
 <translation id="5271265092610673171">{count,plural, =1{Lazımi sahə boşdur. Yadda saxlamazdan əvvəl doldurun.}other{Bəzi lazımi sahələr boşdur. Yadda saxlamazdan əvvəl doldurun.}}</translation>
 <translation id="5271549068863921519">Şifrəni yadda saxlayın</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) tab qrupuna qoşulmağınızı istəyir. Keçidi olan hər kəs bütün tabları redaktə edə bilər, ona görə də qoşularkən diqqətli olun. Keçidin müddəti 48 saat sonra bitir.</translation>
@@ -1466,7 +1462,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5632194969640946913">Axtarış etdikcə daha çox öyrənin və istənilən səhifədə gördüklərinizi axtararaq məhsulları, məkanları və mətnləri kəşf edin.</translation>
 <translation id="5632485077360054581">İstifadə qaydasını göstərin</translation>
 <translation id="5633237939819267663">{count,plural, =1{Əlfəcin "{title}" bölməsində yadda saxlandı}other{{count} əlfəcin "{title}" bölməsində yadda saxlandı}}</translation>
-<translation id="564170563478022912">Hesabdan çıxılsın? Yadda saxlanılmamış hesab datası silinəcək.</translation>
 <translation id="5642707040609478753">Oxunmamış olaraq qeyd edin</translation>
 <translation id="5646376287012673985">Məkan</translation>
 <translation id="5647096944343801045">Geniş giriş nöqtəsi</translation>
@@ -1482,7 +1477,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5669528293118408608">www</translation>
 <translation id="5676124785522323481">Birləşdirilmiş tətbiqləri idarə edin</translation>
 <translation id="567881659373499783">Versiya <ph name="PRODUCT_VERSION" /></translation>
-<translation id="5680012489335339762">Hesablar dəyişdirilsin? Yadda saxlanılmamış hesab datası silinəcək.</translation>
 <translation id="5683499062697987550">Google Hesabında parolları istifadə etmək və yadda saxlamaq üçün kimliyinizi təsdiq edin.</translation>
 <translation id="5684761169742812828">Bu parol internetdə verilənlərin pozulması nəticəsində ifşa olunub. İndi dəyişməyə vaxt yoxdursa, Google bu xəbərdarlığı sonra xatırlamaq üçün saxlamağı tövsiyə edir.</translation>
 <translation id="5694848685995373177"><ph name="USER_EMAIL" /> üçün Diskdə yadda saxlandı.</translation>
@@ -1758,7 +1752,6 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6506996418997555004">"<ph name="GROUP_NAME" />" tab qrupunu paylaşın</translation>
 <translation id="6507973708545996744">Bütün cihazlarda oxu siyahısı əldə etmək üçün daxil olun.</translation>
 <translation id="6518133107902771759">Doğrulayın</translation>
-<translation id="6518861084553706202">Tablar bağlanılacaq və silinən dataya parollar, brauzer tarixçəsi, kukilər və s. daxil ola bilər.</translation>
 <translation id="6523575793810663688">İstifadə qaydasını göstərin</translation>
 <translation id="6524082013156754186">Hesabda yadda saxlayın</translation>
 <translation id="6524918542306337007">Anonim rejim əlçatan deyil</translation>
@@ -1985,7 +1978,6 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="721218676460477064">Məqaləni ümumiləşdir</translation>
 <translation id="7215621211572884440">Popaplara icazə verilib</translation>
 <translation id="7218491361283758048">Poçt indeksi</translation>
-<translation id="7220786058474068424">Prosesdən keçirilir...</translation>
 <translation id="7221173315674413369">Yeniliklər bölməsində yeni funksiyaları və məsləhətləri araşdırın</translation>
 <translation id="7223102419539744003">Tabı bağlayın</translation>
 <translation id="7223134495231529579">Endirmələrdə yadda saxlayın</translation>
@@ -2073,7 +2065,6 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="7491161827858509164">Əvvəl endirdiyiniz fayllara baxmaq üçün <ph name="BEGIN_LINK" />Fayllar<ph name="END_LINK" /> tətbiqini açın</translation>
 <translation id="7498234416455752244">Düzəlişə davam edin</translation>
 <translation id="7500244509706269886">Formanı avtomatik doldurun</translation>
-<translation id="7504841985386528758">Tab Qrupları haqqında məlumat əldə etdikdən bəri</translation>
 <translation id="750493650310597496">1 ədəd seçilib</translation>
 <translation id="7505402981231763928">Gemini-dan istifadə etmək üçün hesaba daxil olmalısınız</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
@@ -2320,6 +2311,7 @@ Kompüterinizdə davam etmək üçün <ph name="OTHER_EMAIL" /> hesabına keçin
 <translation id="823339794112333264">Mikrofonu aktiv edin</translation>
 <translation id="8240217649914883113">Bunu təqvimimə əlavə et</translation>
 <translation id="824379025871762038">Heç vaxt icazə verilməsin</translation>
+<translation id="8244387390464017490">Yeni tab səhifəsini fərdiləşdirin</translation>
 <translation id="8250920743982581267">Sənədlər</translation>
 <translation id="8258734532103758067">Datamı eksport etdim</translation>
 <translation id="8258999165172757081">Əlavə edilib</translation>

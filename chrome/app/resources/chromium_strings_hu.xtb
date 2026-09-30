@@ -43,6 +43,7 @@
 <translation id="141901961143729572">Ossza meg gondolatait</translation>
 <translation id="1465192221147974788">Az ablak megosztásához engedélyezze a Chromium számára a képernyőrögzítést a Rendszerbeállításokban.</translation>
 <translation id="1478370723027452770">Segítség kérése a Chrome for Testing verzióval kapcsolatban</translation>
+<translation id="147870194906295621">Ha hozzá szeretne férni a(z) <ph name="DEVICE" /> eszközön lévő mentett adataihoz és egyebekhez, jelentkezzen be a Chromiumba</translation>
 <translation id="1497802159252041924">Telepítési hiba: <ph name="INSTALL_ERROR" /></translation>
 <translation id="1518627427551567882">Ez az oldal védett</translation>
 <translation id="1524282610922162960">Chromium-lap megosztása</translation>
@@ -190,6 +191,7 @@
 <translation id="3012615494352020668">{count,plural, =1{A Chromiumnak ellenőriznie kell az Ön személyazonosságát, mielőtt bizonyos adatokat menthetne az Ön Google-fiókjába, és minden eszközén használhatná őket. Ha most jelentkezik ki, akkor ezek az adatok (1 elem) törlődnek.}other{A Chromiumnak ellenőriznie kell az Ön személyazonosságát, mielőtt bizonyos adatokat menthetne az Ön Google-fiókjába, és minden eszközén használhatná őket. Ha most jelentkezik ki, akkor ezek az adatok ({count} elem) törlődnek.}}</translation>
 <translation id="3013473503895162900">A(z) <ph name="URL" /> megnyitása új Chromium-lapon.</translation>
 <translation id="302551344979399011">Az olyan AI-innovációk, mint a készségek, a Google-fiókjába kerülnek mentésre, és a Chromium-szinkronizálástól elkülönítve kezelhetők</translation>
+<translation id="3032219013429286568">Ha az összes eszközén hozzá szeretne férni a bővítményeihez és egyebekhez, jelentkezzen be a Chromiumba</translation>
 <translation id="3032787606318309379">Hozzáadás a Chromiumhoz...</translation>
 <translation id="3038232873781883849">Várakozás a telepítésre…</translation>
 <translation id="3045032126857188731">Fordítás nyelve: <ph name="LANGUAGE" /></translation>
@@ -200,6 +202,7 @@
 <translation id="3068515742935458733">Segítse a Chromium fejlesztését azáltal, hogy elküldi a Google-nak a következőket: hibajelentések és <ph name="UMA_LINK" /></translation>
 <translation id="3071024987058544609">A Chromium app használatával útközben is élvezheti a Google biztonságát</translation>
 <translation id="3079753320517721795">{NUM_DEVICES,plural, =0{Valamelyik (akár több is) Chromium-bővítmény hozzáfért 1 USB-eszközhöz}=1{Valamelyik (akár több is) Chromium-bővítmény éppen hozzáfér 1 USB-eszközhöz}other{Valamelyik (akár több is) Chromium-bővítmény éppen hozzáfér # USB-eszközhöz}}</translation>
+<translation id="3090734884397229414">Ha hozzá szeretne férni a(z) <ph name="DEVICE" /> eszközön lévő olvasólistájához és egyebekhez, jelentkezzen be a Chromiumba</translation>
 <translation id="3095811995836568724">Chromium-előzmények</translation>
 <translation id="3103660991484857065">Nem sikerült a telepítőnek kibontani a tömörített állományt. Kérjük, töltse le újra a Chromium böngészőt.</translation>
 <translation id="310459126943037700">A feladatok befejezése nem sikerült.</translation>
@@ -221,6 +224,7 @@
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3263249950597659484">Kedvenc Google AI-eszközeit útközben is használhatja a Chromium iOS-alkalmazásban.</translation>
+<translation id="3264761466044851269">Ha hozzá szeretne férni a(z) <ph name="DEVICE" /> eszközön lévő bővítményeihez és egyebekhez, jelentkezzen be a Chromiumba</translation>
 <translation id="3286538390144397061">Újraindítás most</translation>
 <translation id="328888136576916638">Hiányoznak Google API-kulcsok. A Chromium egyes funkciói kikapcsolnak.</translation>
 <translation id="3296368748942286671">A háttéralkalmazások továbbfuttatása, ha a Chromiumot bezárják</translation>
@@ -232,6 +236,7 @@
 <translation id="3387527074123400161">ChromiumOS</translation>
 <translation id="3406848076815591792">Szeretne a meglévő Chromium-profilra váltani?</translation>
 <translation id="3412460710772753638">Az eszközön található Jelszókezelőben</translation>
+<translation id="3427159664004296878">Ha hozzá szeretne férni a(z) <ph name="DEVICE" /> eszközön lévő könyvjelzőihez és egyebekhez, jelentkezzen be a Chromiumba</translation>
 <translation id="3438772217992559640">Keresés ezen a lapon a képkereső használatával</translation>
 <translation id="3455907671758333080">A Biztonságos Böngészés fokozott védelemmel funkció használatának kiterjesztésre a telefonra a Chromiummal</translation>
 <translation id="3461644266919055473">A Chromium személyre szabása…</translation>
@@ -264,6 +269,7 @@
 
           **Kérdések javaslása:** Generálj egy pontokba szedett listát 3–5 olyan elgondolkodtató kérdéssel, amelyet a felhasználó feltehet a képernyőkép jobb megértése érdekében. E kérdések közül legalább egynek kifejezetten egy vizuális objektumra, illetve annak dizájnjára vagy elhelyezésére kell vonatkoznia.</translation>
 <translation id="3848258323044014972"><ph name="PAGE_TITLE" /> -- Chromium</translation>
+<translation id="386243222263310720">Ha az összes eszközén szeretne hozzáférni könyvjelzőihez és egyebekhez, jelentkezzen be a Chromiumba</translation>
 <translation id="3885770153807205175">Nyelvválasztó</translation>
 <translation id="388648406173476553">Személyre szabhatja a Chromium működését. Figyelmet kell fordítania valamire – a részletekért kattintson.</translation>
 <translation id="3889543394854987837">Kattintson a nevére a Chromium megnyitásához és a böngészés megkezdéséhez.</translation>
@@ -272,6 +278,7 @@
 <translation id="3909353120217047026">Ez a bővítmény sérti a Chrome Webáruház irányelveit, és előfordulhat, hogy nem biztonságos. Távolítsa el a Chromiumból, így a továbbiakban már nem láthatja és módosíthatja az Ön felkeresett webhelyekkel kapcsolatos adatait, beleértve a személyes adatokat is.</translation>
 <translation id="3941890832296813527">Telepítési hiba: A telepítő fájlneve érvénytelen vagy nem támogatott.</translation>
 <translation id="3945058413678539331">A Chromium megpróbálkozik a jelszavak másolásával. Ennek engedélyezéséhez írja be Windows-jelszavát.</translation>
+<translation id="3950481960271781644">Ha az összes eszközén szeretne hozzáférni mentett adataihoz és egyebekhez, jelentkezzen be a Chromiumba</translation>
 <translation id="3954172517175569325">A Google-fiókjába mentett jelszavai, fizetési módjai és címei el lesznek távolítva erről az eszközről. Ha újra használni szeretné őket a Chromiumban, jelentkezzen be újra.</translation>
 <translation id="395904275706073188">A védett oldalakat nem lehet olvasni. Próbálkozzon másik oldallal.</translation>
 <translation id="3962647064319009959">További információ arról, hogy miként gondoskodik a Chromium az Ön biztonságáról</translation>
@@ -360,6 +367,7 @@
 <translation id="4893347770495441059">Indítsa újra a Chromium frissítéshez</translation>
 <translation id="4918086044614829423">Elfogadás</translation>
 <translation id="4918844574251943176">Kép másolva</translation>
+<translation id="4919431996536326528">Ha az összes eszközén szeretne hozzáférni az olvasólistájához és egyebekhez, jelentkezzen be a Chromiumba</translation>
 <translation id="4943838377383847465">A Chromium háttérmódban van.</translation>
 <translation id="494490797786467921">Kattintson a Chromium bejelentkezési párbeszédpaneljének bezárásához</translation>
 <translation id="4950660488495335294">A Chromium-profilokkal különválaszthatja minden Chromium-anyagát. Létrehozhat profilokat ismerőseinek és családtagjainak, vagy elkülönítheti egymástól a munkát és a szórakozást.</translation>
@@ -788,6 +796,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="904366664621834601">A Chromium letiltotta ezt a letöltést, mert az archívumfájl olyan egyéb fájlokat is tartalmaz, amelyek rosszindulatú programokat is rejthetnek</translation>
 <translation id="9053882453960391422">Jelszavai, könyvjelzői és előzményei tökéletesen szinkronizálódnak az eszközök között. Ha a Chromiumot állítja be alapértelmezett böngészőként, könnyen hozzáférhet a már ismert és szeretett funkciókhoz. A Chromium a gyors hozzáférés érdekében ki lesz tűzve a tálcára.</translation>
 <translation id="9056398481763999048">A Google legjobb AI-eszközeinek használata a telefonjára telepített Chromium alkalmazással</translation>
+<translation id="9057625473949801035">Ha hozzá szeretne férni a(z) <ph name="DEVICE" /> eszközön tárolt jelszavaihoz és egyebekhez, jelentkezzen be a Chromiumba</translation>
 <translation id="9062666675513499497">Bejelentkezés a Chromiumba, amikor más Google-szolgáltatásokba is bejelentkezik</translation>
 <translation id="9078733879136747090">A Chromium automatikusan bezárult</translation>
 <translation id="9089354809943900324">A Chromium elavult</translation>

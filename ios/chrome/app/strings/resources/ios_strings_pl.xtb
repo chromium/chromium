@@ -144,7 +144,6 @@
 <translation id="1408847409015257906">Kliknij „Prywatność i bezpieczeństwo”.</translation>
 <translation id="1411386976162024013">Wyszukiwanie wizualne za pomocą Obiektywu</translation>
 <translation id="1414315029670184034">Nie zezwalaj witrynom na używanie kamery</translation>
-<translation id="1417474386970818917">Wyloguj się i usuń</translation>
 <translation id="1426410128494586442">Tak</translation>
 <translation id="1430915738399379752">Drukuj</translation>
 <translation id="1433478348197382180">Tryb czytania</translation>
@@ -304,6 +303,7 @@
 <translation id="188237709236611317">Pasek menu inteligentnego sortowania</translation>
 <translation id="1883255238294161206">Zwiń listę</translation>
 <translation id="1883898928879467646">Karta została usunięta</translation>
+<translation id="188779312703122101">Trwa przetwarzanie</translation>
 <translation id="1888854257756214946">Wybierz hasło…</translation>
 <translation id="1890237935065108104">To ustawienie jest niedostępne.</translation>
 <translation id="1894023287452300670">Tutaj możesz monitorować cenę</translation>
@@ -792,7 +792,6 @@
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Dowiedz się więcej<ph name="END_LINK" /> o proponowanej treści</translation>
 <translation id="349446645805573740">Wybierz, gdzie zapisać plik „<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />”</translation>
 <translation id="3504377992102007712">Ustawienia</translation>
-<translation id="3507556793108992994">{count,plural, =1{Uporządkowano 1 kartę}few{Uporządkowano # karty}many{Uporządkowano # kart}other{Uporządkowano # karty}}</translation>
 <translation id="35083190962747987">Otwórz ${url}</translation>
 <translation id="3511519535430890904">Dodaj Bezpieczne przeglądanie</translation>
 <translation id="3512572904898385012">Teraz możesz kupować i tłumaczyć za pomocą aparatu. Kliknij, aby spróbować.</translation>
@@ -941,7 +940,6 @@
 <translation id="3962326069546168954">Zapisz</translation>
 <translation id="3967327056943561740">Zakładki</translation>
 <translation id="3967822245660637423">Pobieranie zakończone</translation>
-<translation id="3968685670440571540">od kiedy używasz haseł i autouzupełniania</translation>
 <translation id="3973560090698854095">Spowoduje to usunięcie adresów zapisanych na koncie Google <ph name="USER_EMAIL" />.</translation>
 <translation id="398604237578616937">Zalogowano jako <ph name="USER_EMAIL" />. Otwórz menu konta.</translation>
 <translation id="3986739045730058129">Przejdź do karty</translation>
@@ -1356,7 +1354,6 @@
 <translation id="5250371859659394278">Z nieznanego źródła</translation>
 <translation id="525510229763628836">Zminimalizowane</translation>
 <translation id="5260842098960755113">Wątek został zamknięty</translation>
-<translation id="5269913829202614649">Dostosuj stronę główną</translation>
 <translation id="5271265092610673171">{count,plural, =1{Wymagane pole jest puste. Wypełnij je przed zapisaniem.}few{Niektóre wymagane pola są puste. Wypełnij je przed zapisaniem.}many{Niektóre wymagane pola są puste. Wypełnij je przed zapisaniem.}other{Niektóre wymagane pola są puste. Wypełnij je przed zapisaniem.}}</translation>
 <translation id="5271549068863921519">Zapisz hasło</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) zaprasza Cię do grupy kart. Każda osoba mająca link może edytować wszystkie karty, więc zachowaj ostrożność. Link wygaśnie za 48 godzin.</translation>
@@ -1466,7 +1463,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5632194969640946913">Uzyskuj dodatkowe informacje podczas przeglądania i wyszukuj to, co widzisz na dowolnej stronie, aby odkrywać produkty, miejsca i teksty.</translation>
 <translation id="5632485077360054581">Pokaż jak</translation>
 <translation id="5633237939819267663">{count,plural, =1{Zakładka została zapisana w folderze „{title}”}few{{count} zakładki zostały zapisane w folderze „{title}”}many{{count} zakładek zostało zapisanych w folderze „{title}”}other{{count} zakładki zostało zapisane w folderze „{title}”}}</translation>
-<translation id="564170563478022912">Chcesz się wylogować? Niezapisane dane na koncie zostaną usunięte.</translation>
 <translation id="5642707040609478753">Oznacz jako nieprzeczytane</translation>
 <translation id="5646376287012673985">Lokalizacja</translation>
 <translation id="5647096944343801045">Duży punkt wejścia</translation>
@@ -1482,7 +1478,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="5669528293118408608">www</translation>
 <translation id="5676124785522323481">Zarządzaj połączonymi aplikacjami</translation>
 <translation id="567881659373499783">Wersja <ph name="PRODUCT_VERSION" /></translation>
-<translation id="5680012489335339762">Zmienić konto? Niezapisane dane na koncie zostaną usunięte.</translation>
 <translation id="5683499062697987550">Aby móc zapisywać hasła na koncie Google i ich używać, potwierdź swoją tożsamość.</translation>
 <translation id="5684761169742812828">To hasło zostało ujawnione w wyniku naruszenia bezpieczeństwa danych w internecie. Jeśli nie masz teraz czasu na zmianę tego ustawienia, Google zaleca, żeby zachować to ostrzeżenie – dzięki temu o nim nie zapomnisz.</translation>
 <translation id="5694848685995373177">Zapisano na Dysku użytkownika <ph name="USER_EMAIL" />.</translation>
@@ -1758,7 +1753,6 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6506996418997555004">Udostępnij grupę kart „<ph name="GROUP_NAME" />”</translation>
 <translation id="6507973708545996744">Zaloguj się, aby pobrać listę Do przeczytania na wszystkich urządzeniach.</translation>
 <translation id="6518133107902771759">Zweryfikuj</translation>
-<translation id="6518861084553706202">Karty zostaną zamknięte, a dane – w tym hasła, historia przeglądania i pliki cookie – usunięte.</translation>
 <translation id="6523575793810663688">Pokaż jak</translation>
 <translation id="6524082013156754186">Zapisz na koncie</translation>
 <translation id="6524918542306337007">Tryb incognito jest niedostępny</translation>
@@ -1985,7 +1979,6 @@ Aby kontynuować na komputerze, przełącz się na <ph name="OTHER_EMAIL" />. B�
 <translation id="721218676460477064">Podsumuj ten artykuł</translation>
 <translation id="7215621211572884440">Wyskakujące okienka dozwolone</translation>
 <translation id="7218491361283758048">Kod pocztowy</translation>
-<translation id="7220786058474068424">Przetwarzanie</translation>
 <translation id="7221173315674413369">Poznaj nowe funkcje i wskazówki przedstawione na stronie Nowe funkcje</translation>
 <translation id="7223102419539744003">Zamknij kartę</translation>
 <translation id="7223134495231529579">Zapisz w pobranych plikach</translation>
@@ -2073,7 +2066,6 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="7491161827858509164">Aby zobaczyć wcześniej pobrane pliki, otwórz <ph name="BEGIN_LINK" />Pliki<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Edytuj dalej</translation>
 <translation id="7500244509706269886">Automatycznie uzupełnij formularz</translation>
-<translation id="7504841985386528758">od kiedy używasz grup kart</translation>
 <translation id="750493650310597496">Nic nie wybrałeś</translation>
 <translation id="7505402981231763928">Aby korzystać z Gemini, musisz się zalogować</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
@@ -2320,6 +2312,7 @@ Możesz to wznowić w dowolnym momencie.</translation>
 <translation id="823339794112333264">Włącz mikrofon</translation>
 <translation id="8240217649914883113">Dodaj do mojego kalendarza</translation>
 <translation id="824379025871762038">Nigdy nie zezwalaj</translation>
+<translation id="8244387390464017490">Dostosuj stronę nowej karty</translation>
 <translation id="8250920743982581267">Dokumenty</translation>
 <translation id="8258734532103758067">Dane zostały wyeksportowane</translation>
 <translation id="8258999165172757081">Dodano</translation>

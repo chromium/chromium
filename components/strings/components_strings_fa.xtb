@@ -213,6 +213,7 @@
 <translation id="1343830902827845050">‏وارد سیستم Chrome شوید</translation>
 <translation id="1346748346194534595">راست</translation>
 <translation id="1348779747280417563">تأیید نام</translation>
+<translation id="1353546633704510580">منطقه انتخاب‌شده</translation>
 <translation id="1357195169723583938">افرادی که اخیراً از دستگاه استفاده کرده‌اند و زمان استفاده آن‌ها</translation>
 <translation id="1358187717814494928">ایجاد کاربرگ</translation>
 <translation id="1358223345833465883">‏موتور جستجوی شما در Chromium</translation>
@@ -352,6 +353,7 @@
 <translation id="1574714699824202614">درحال درستی‌سنجی روش پرداخت</translation>
 <translation id="1576277203042721907">اطلاعات آماری خرید</translation>
 <translation id="1579189948231786790">سازمانتان این سایت را مسدود کرده است</translation>
+<translation id="1579940597679293608">بستن همه پنجره‌های «مجزا»</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">هنگام نمایش این صفحه وب مشکلی پیش آمد.</translation>
 <translation id="1585306568496579337">افزونه «<ph name="EXTENSION_NAME" />» می‌خواهد <ph name="PROTOCOL" /> پیوند را ازطریق <ph name="HANDLER_HOSTNAME" /> باز کند</translation>
@@ -1096,6 +1098,7 @@
 <translation id="2858134430383535011">۳۰۰ × ۲۰۰ میلی‌متر</translation>
 <translation id="2859383374160668142">هرزمان خواستید می‌توانید کاهش قیمت محصولاتی را که پیگیری می‌کنید مشاهده کنید.</translation>
 <translation id="2859806420264540918">این سایتْ آگهی‌های مزاحم یا گمراه‌کننده نشان می‌دهد.</translation>
+<translation id="2864493683872263351">کدنویسی کنید، بنویسید، یا اسلاید بسازید</translation>
 <translation id="2873317327342476681">بازی دایناسور، برای بازی کردن روی دایناسور تک‌ضرب بزنید یا کلید فاصله را فشار دهید.</translation>
 <translation id="287387905105155974">حبابک راهنما</translation>
 <translation id="2875109558992200904">‏وقتی Chrome رویدادهای امنیتی را پرچم‌گذاری می‌کند، داده‌های مرتبط درباره این رویدادها به سرپرستتان ارسال می‌شود. این داده‌ها می‌تواند شامل این موارد باشد: نشانی‌های وب صفحه‌هایی که در Chrome بازدید می‌کنید، نشانی‌های وب صفحه‌هایی که داده‌ها را از آن‌ها کپی کرده‌اید، نام فایل‌ها یا فراداده‌ها، نشانی‌های IP، خرابی‌های مرورگر یا زبانه‌ها، و نام کاربری‌ای که برای ورود به سیستم برنامه‌های تحت وب، دستگاه و Chrome استفاده می‌کنید.</translation>
@@ -1203,6 +1206,7 @@
 <translation id="3041176923638368519">دیدن شرایط مزایای کارت</translation>
 <translation id="3041584414879052436">فهرست صادرکنندگان «الآن خریدن، پراخت بعداً» بسته شده است.</translation>
 <translation id="3041612393474885105">اطلاعات گواهی</translation>
+<translation id="3041835740069544003">‏‫Chrome اکنون می‌تواند فرم‌های بیشتری را با «درک هوشمند فرم» تشخیص دهد و پر کند. برای انجام این کار، محتوا و نشانی‌های وب صفحه می‌توانند در یک فضای خصوصی در فضای ابری پردازش شوند. در تنظیمات مدیریت کنید.</translation>
 <translation id="3047054686095898948">‏اطلاعاتتان را در <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> ذخیره کنید تا کارهایی مانند پر کردن فرم‌ها در محصولات Google را سریع‌تر انجام دهید. در <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> مربوط به <ph name="ACCOUNT" /> می‌توانید <ph name="BEGIN_LINK" />اطلاعاتتان را مدیریت کنید<ph name="END_LINK" /></translation>
 <translation id="305162504811187366">‏سابقه «رایانه ازدور Chrome»، ازجمله مُهرهای زمان، میزبان‌ها، و شناسه‌های جلسه کارخواه</translation>
 <translation id="3052868890529250114">‏معمولاً ازطریق اتصال ایمن به سایت‌ها متصل می‌شوید، اما این بار Chrome نتوانست از اتصال ایمن استفاده کند. ممکن است مهاجمی درحال تلاش برای استراق سمع یا تغییر اتصال شبکه شما باشد. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1278,6 +1282,7 @@
 <translation id="3162559335345991374">‏شبکه Wi-Fi مورد استفاده‌تان احتمالاً نیاز دارد که به یک صفحه ورود به سیستم بروید.</translation>
 <translation id="316542773973815724">پیمایش</translation>
 <translation id="316638481603975524">می‌تواند نصب کردن برنامه‌های وب را درخواست کند</translation>
+<translation id="3166688462674378969">دکمه «بستن پنجره‌های مجزا»، برای بستن همه پنجره‌های مجزایی که درحال‌حاضر باز هستند آن را فعال کنید</translation>
 <translation id="3166788340998560642">‏دفعه بعدی که از آن استفاده کنید، Chrome پیشنهاد می‌دهد آن را در <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> ذخیره کنید.</translation>
 <translation id="3169472444629675720">کاوش</translation>
 <translation id="3176929007561373547">تنظیمات پروکسی‌ را بررسی کنید یا با سرپرست شبکه‌‌تان تماس بگیرید تا
@@ -1306,6 +1311,7 @@
 <translation id="3211727636285361260">باز کردن <ph name="PROTOCOL" /> پیوندها ازطریق <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">بارگیری شروع شد. برای دیدن بارگیری، از بالا بکشید و «دکمه برگشتن» را لمس کنید</translation>
 <translation id="3212581601480735796">بر فعالیت شما در <ph name="HOSTNAME" /> نظارت می‌شود</translation>
+<translation id="3215018171871590528">{NUM_SOURCES,plural, =1{‏‫Chrome دیگر این اطلاعات را پیشنهاد نخواهد داد. منبع اصلی‌تان حذف نخواهد شد.}one{‏‫Chrome دیگر این اطلاعات را پیشنهاد نخواهد داد. منابع اصلی‌تان حذف نخواهد شد.}other{‏‫Chrome دیگر این اطلاعات را پیشنهاد نخواهد داد. منابع اصلی‌تان حذف نخواهد شد.}}</translation>
 <translation id="3215092763954878852">‏استفاده از WebAuthn ممکن نشد</translation>
 <translation id="3215311088819828484">نتیجه به‌روز شد</translation>
 <translation id="3218181027817787318">خویشاوند</translation>
@@ -1457,6 +1463,7 @@
 <translation id="3474392552865647225">‏دکمه «سفارشی‌سازی قلم‌ها در Chrome»؛ برای سفارشی‌سازی اندازه قلم‌ها و طرح حروف در Chrome، آن را فعال کنید</translation>
 <translation id="3478033058537426179">براساس گروه</translation>
 <translation id="3479552764303398839">حالا نه</translation>
+<translation id="3481315707647070701">دیداری‌سازی و ویرایش کردن</translation>
 <translation id="3484560055331845446">‏ممکن است دسترسی به حساب Google را از دست بدهید. Chrome توصیه می‌کند اکنون گذرواژه‌تان را تغییر دهید. از شما خواسته می‌شود به سیستم وارد شوید.</translation>
 <translation id="3484861421501147767">یادآوری: کد ترویجی ذخیره‌شده دردسترس است</translation>
 <translation id="3485901585646640838">‏برای استفاده از گذرواژه‌ها و دیگر موارد ذخیره‌شده در «حساب Google»، هویتتان را درستی‌سنجی کنید</translation>
@@ -1542,6 +1549,7 @@
 <translation id="3614001939154393113">ممکن است مهاجمان قصد داشته باشند اطلاعات شما (مثل گذرواژه‌ها، پیام‌ها، یا کارت‌های اعتباری) را از <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> به‌سرقت ببرند. <ph name="BEGIN_LEARN_MORE_LINK" />درباره این هشدار بیشتر بدانید<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="361438452008624280">ورودی فهرست «<ph name="LANGUAGE_ID" />»: زبان ناشناس یا پشتیبانی‌نشده.</translation>
 <translation id="3614934205542186002">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای اجرای «بررسی ایمنی» در تنظیمات Chrome، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
+<translation id="3615354126333642335">‫<ph name="TEXT" />،‏ <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">‏این کارت در «کیف پول Google» ذخیره نشد. درعوض، در Chrome این دستگاه ذخیره شد. دفعه بعدی که از این IBAN استفاده کنید، Chrome دوباره این شماره را از شما درخواست خواهد کرد.</translation>
 <translation id="3621401353678567613">برای دریافت هشدار کاهش قیمت برای محصولاتی که ردیابی می‌کنید، اعلان‌ها را در تنظیمات روشن کنید.</translation>
 <translation id="362276910939193118">نمایش کل سابقه</translation>
@@ -1707,6 +1715,7 @@
 <translation id="3865339060090354361">شرایط <ph name="CREDIT_CARD_NAME" /> را در اینجا ببینید</translation>
 <translation id="3869939189466884821">فایل‌های محلی شما تا <ph name="MINUTES" /> دقیقه دیگر حذف خواهد شد</translation>
 <translation id="3875783148670536197">نشان دادن روش کار</translation>
+<translation id="3877021395754842994">بستن همه «پنجره‌های مجزا» که درحال‌حاضر باز هستند</translation>
 <translation id="3877603629930976930">هم‌رسانی نشود</translation>
 <translation id="3878445208930547646">کپی کردن از این سایت مجاز نیست</translation>
 <translation id="3879674895057686427">انتخاب زبان مقصد برای ترجمه</translation>
@@ -2050,6 +2059,7 @@
 <translation id="4409271659088619928">موتور جستجوی شما <ph name="DSE" /> است. برای اینکه سابقه جستجویتان را درصورت امکان حذف کنید، دستورالعمل‌های آن موتور جستجو را ببینید.</translation>
 <translation id="4409556632583862731">رشته جدید</translation>
 <translation id="4410614037742891410">‏به‌روز کردن کارت شناسایی به‌طور امن در «کیف پول Google»</translation>
+<translation id="441152911646545600">‏‫<ph name="CLOSE_ISOLATED_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای بستن همه پنجره‌های «مجزا» که درحال‌حاضر باز هستند، کلید Tab و سپس کلید Enter را فشار دهید</translation>
 <translation id="4412074349188076601">این پیکربندی به‌عنوان نصب‌شدنی علامت‌گذاری شده است اما هیچ تصویری برای این معماری ارائه نشده است، بنابراین نمی‌توان آن را نصب کرد.</translation>
 <translation id="4412377069090572315">نظرات دیگران</translation>
 <translation id="4414515549596849729">کوکی‌ها و داده‌های سایت</translation>
@@ -2321,6 +2331,7 @@
 <translation id="4887406273302438710">‏محافظت از گذرواژه‌ها با Windows Hello</translation>
 <translation id="4887785555357166111">ذخیره کردن فریم ویدیو</translation>
 <translation id="4891425819480327855">‏‫<ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای حذف کردن سابقه مرور، کوکی‌ها، حافظه نهان، و غیره در تنظیمات Chrome، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
+<translation id="4892391379033030113">دکمه «باز کردن پنجره مجزا»؛ برای باز کردن «پنجره مجزا» جدید و مرور کردن به‌صورت خصوصی، آن را فعال کنید</translation>
 <translation id="4892518386797173871">عقب</translation>
 <translation id="4894390983254799375">مانند شناسه، نام، نسخه سیستم‌عامل، و نام کاربری سیستم‌عامل دستگاه</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />،‏ <ph name="TYPE_2" />،‏ <ph name="TYPE_3" /></translation>
@@ -2995,6 +3006,7 @@
 <translation id="6025416945513303461"><ph name="TYPE_1" />، <ph name="TYPE_2" />، <ph name="TYPE_3" /> (همگام‌سازی‌شده)</translation>
 <translation id="6025471531651464742">افزودن فایل</translation>
 <translation id="6028591542479806248">مدیریت تلفن همراه و اعلان‌های ایمیلی</translation>
+<translation id="6029805223627823735">‏‫<ph name="LAUNCH_ISOLATED_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای باز کردن «پنجره مجزا» جدید و مرور کردن به‌صورت خصوصی، کلید Tab و سپس کلید Enter را فشار دهید</translation>
 <translation id="603068602130820122">دو منگنه در راست</translation>
 <translation id="6031824805267965302">استفاده از حسگرهای حرکتی</translation>
 <translation id="6032524144326295339">صندوق پست ۲</translation>
@@ -3407,6 +3419,7 @@
 <translation id="671076103358959139">کد ثبت‌نام:</translation>
 <translation id="6711464428925977395">مشکلی در سرور پروکسی وجود دارد یا این آدرس درست نیست.</translation>
 <translation id="6711700233707023861">رشته گونه‌ها در بریده‌دان کپی شد</translation>
+<translation id="6712003214447962889">پاسخ‌های هوشمندانه‌تر و سریع‌تر</translation>
 <translation id="6712343563085762261">به بالا منتقل شد</translation>
 <translation id="6716039223770814796">مقایسه <ph name="COMPARE_SET_NAME" /> · ‏<ph name="ITEMS" /> مورد</translation>
 <translation id="6716672519412350405"><ph name="URL" /> می‌خواهد نقشه‌ای سه‌بعدی از محیط ایجاد کند و موقعیت دوربین را ردیابی کند</translation>
@@ -3751,6 +3764,7 @@
 <translation id="7316521168101843192">‏درحال ذخیره کردن فایل در Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">راهنمای اتصال</translation>
+<translation id="7328315434053660512">باز کردن «پنجره مجزا»</translation>
 <translation id="733354035281974745">لغو حساب محلی دستگاه</translation>
 <translation id="7334320624316649418">&amp;بازانجام تغییر ترتیب</translation>
 <translation id="7335157162773372339">می‌تواند برای استفاده از دوربین درخواست دهد</translation>
@@ -3799,6 +3813,7 @@
 <translation id="7402375256128852434">افزودن زبانه‌های اخیر</translation>
 <translation id="7403392780200267761">هم‌رسانی این زبانه ازطریق هم‌رسانی پیوند، ایجاد رمزینه پاسخ‌سریع، پخش محتوا، و موارد دیگر</translation>
 <translation id="7403591733719184120">دستگاه <ph name="DEVICE_NAME" /> تحت مدیریت است</translation>
+<translation id="7404785524901232736">{NUM_SOURCES,plural, =1{پیشنهاد برداشته شد. منبع اصلی‌تان حذف نخواهد شد.}one{پیشنهاد برداشته شد. منابع اصلی‌تان حذف نخواهد شد.}other{پیشنهاد برداشته شد. منابع اصلی‌تان حذف نخواهد شد.}}</translation>
 <translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> برنامه‌هایی را برای افزودن عملکردهای بیشتر نصب کرده است. این برنامه‌ها به برخی‌از داده‌های شما دسترسی دارند.</translation>
 <translation id="740691708085211707">‏نشانی محل کار از تکمیل خودکار Chrome برداشته شود؟</translation>
 <translation id="7407424307057130981">‏&lt;p&gt;اگر در رایانه Windows نرم‌افزار Superfish داشته باشید، این خطا را می‌بینید.&lt;/p&gt;
@@ -4017,6 +4032,7 @@
 <translation id="7718626066800460799">اسکن ذخیره نشد.</translation>
 <translation id="772128550427553158">‏کد تأیید کارت (CVC) روی کارتتان است.</translation>
 <translation id="7724603315864178912">برش</translation>
+<translation id="7726402116075326231">برای مرور خصوصی، «پنجره مجزا» جدیدی باز کنید</translation>
 <translation id="7730057435797792985">مرتب‌سازی</translation>
 <translation id="7734285854693414638">‏ایجاد سریع فرم جدید در «فرم‌نگار Google»</translation>
 <translation id="773466115871691567">صفحه‌های <ph name="SOURCE_LANGUAGE" /> همیشه ترجمه شوند</translation>
@@ -4208,6 +4224,7 @@
 <translation id="8075898834294118863">مدیریت تنظیمات سایت</translation>
 <translation id="8076492880354921740">زبانه‌ها</translation>
 <translation id="8076880883123051368">‏«حساب Google» شما ممکن است دربردارنده شکل‌های دیگری از سابقه مرور در <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />باشد، مانند <ph name="BEGIN_LINK_GAA" />فعالیت برنامه‌های Gemini<ph name="END_LINK_GAA" /></translation>
+<translation id="8077465698530018904">برداشتن منطقه انتخاب‌شده</translation>
 <translation id="8077669823243888800">پاکت چینی شماره ۸</translation>
 <translation id="8078006011486731853">{0,plural, =1{فایل محرمانه بارگذاری شود؟}one{فایل محرمانه بارگذاری شود؟}other{فایل‌های محرمانه بارگذاری شود؟}}</translation>
 <translation id="8079031581361219619">سایت بار کردن مجدد شود؟</translation>

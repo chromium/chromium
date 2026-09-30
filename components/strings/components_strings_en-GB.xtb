@@ -213,6 +213,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1343830902827845050">Sign in to Chrome</translation>
 <translation id="1346748346194534595">Right</translation>
 <translation id="1348779747280417563">Confirm name</translation>
+<translation id="1353546633704510580">Selected region</translation>
 <translation id="1357195169723583938">Who has used the device recently and when</translation>
 <translation id="1358187717814494928">Create sheet</translation>
 <translation id="1358223345833465883">Your search engine in Chromium</translation>
@@ -352,6 +353,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1574714699824202614">Verifying payment method</translation>
 <translation id="1576277203042721907">Shopping insights</translation>
 <translation id="1579189948231786790">This site is blocked by your organisation</translation>
+<translation id="1579940597679293608">Close all Isolated Windows</translation>
 <translation id="1581080074034554886">CVC</translation>
 <translation id="1583429793053364125">Something went wrong while displaying this web page.</translation>
 <translation id="1585306568496579337">The extension '<ph name="EXTENSION_NAME" />' wants to open <ph name="PROTOCOL" /> links through <ph name="HANDLER_HOSTNAME" /></translation>
@@ -1095,6 +1097,7 @@ You can remove this suggestion from Chrome. Your original source won't be delete
 <translation id="2858134430383535011">200 mm x 300 mm</translation>
 <translation id="2859383374160668142">You can view price drops for products you track at any time.</translation>
 <translation id="2859806420264540918">This site shows intrusive or misleading ads.</translation>
+<translation id="2864493683872263351">Code, write or make slides</translation>
 <translation id="2873317327342476681">Dino game, tap the dino or press space to play</translation>
 <translation id="287387905105155974">Help bubble</translation>
 <translation id="2875109558992200904">When security events are flagged by Chrome, relevant data about the events is sent to your administrator. This can include URLs and titles of pages that you visit in Chrome, URLs of pages that you copied data from, file names or metadata, IP addresses, browser or tab crashes, and the username that you use to sign in to web-based applications, your device and Chrome.</translation>
@@ -1202,6 +1205,7 @@ You can remove this suggestion from Chrome. Your original source won't be delete
 <translation id="3041176923638368519">See card benefit terms</translation>
 <translation id="3041584414879052436">List of buy-now, pay-later issuers is closed.</translation>
 <translation id="3041612393474885105">Certificate Information</translation>
+<translation id="3041835740069544003">Chrome can now detect and fill more forms with Smarter form understanding. To do this, page content and URLs can be processed in a private space in the cloud. Manage in settings.</translation>
 <translation id="3047054686095898948">Save your info in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_1" /> and get things done faster, like filling forms across Google products. You can <ph name="BEGIN_LINK" />manage your info<ph name="END_LINK" /> in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE_2" /> for <ph name="ACCOUNT" /></translation>
 <translation id="305162504811187366">Chrome Remote Desktop history, including timestamps, hosts and client session ids</translation>
 <translation id="3052868890529250114">You usually connect to sites securely, but Chrome couldn't use a secure connection this time. An attacker might be trying to eavesdrop or modify your network connection. <ph name="BEGIN_LEARN_MORE_LINK" />Learn more about this warning<ph name="END_LEARN_MORE_LINK" /></translation>
@@ -1277,6 +1281,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3162559335345991374">The Wi-Fi that you are using may require you to visit its login page.</translation>
 <translation id="316542773973815724">Navigation</translation>
 <translation id="316638481603975524">Can ask to install web apps</translation>
+<translation id="3166688462674378969">Close Isolated Windows button, activate to close all Isolated Windows that are currently open</translation>
 <translation id="3166788340998560642">Chrome will offer to save it to <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> next time you use it</translation>
 <translation id="3169472444629675720">Discover</translation>
 <translation id="3176929007561373547">Check your proxy settings or contact your network administrator to
@@ -1305,6 +1310,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3211727636285361260">Open <ph name="PROTOCOL" /> links through <ph name="HANDLER_HOSTNAME" /></translation>
 <translation id="3212468046572043669">Download started. To see it, drag from the top and touch the back button</translation>
 <translation id="3212581601480735796">Your activity on <ph name="HOSTNAME" /> is being monitored</translation>
+<translation id="3215018171871590528">{NUM_SOURCES,plural, =1{Chrome will stop suggesting this info. Your original source won't be deleted.}other{Chrome will stop suggesting this info. Your original sources won't be deleted.}}</translation>
 <translation id="3215092763954878852">Couldn't use WebAuthn</translation>
 <translation id="3215311088819828484">Result updated</translation>
 <translation id="3218181027817787318">Relative</translation>
@@ -1456,6 +1462,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3474392552865647225">Customise fonts in Chrome button, activate to customise font sizes and typefaces in Chrome</translation>
 <translation id="3478033058537426179">By group</translation>
 <translation id="3479552764303398839">Not now</translation>
+<translation id="3481315707647070701">Visualise and edit</translation>
 <translation id="3484560055331845446">You could lose access to your Google Account. Chrome recommends changing your password now. You'll be asked to sign in.</translation>
 <translation id="3484861421501147767">Reminder: Saved promo code available</translation>
 <translation id="3485901585646640838">To use the passwords and more saved in your Google Account, verify that it's you</translation>
@@ -1541,6 +1548,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3614001939154393113">Attackers might be trying to steal your information from <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> (for example, passwords, messages or credit cards). <ph name="BEGIN_LEARN_MORE_LINK" />Learn more about this warning<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="361438452008624280">List entry '<ph name="LANGUAGE_ID" />': unknown or unsupported language.</translation>
 <translation id="3614934205542186002"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />; press tab and then Enter to run a safety check in Chrome settings</translation>
+<translation id="3615354126333642335"><ph name="TEXT" />, <ph name="SUBTEXT" /></translation>
 <translation id="3620865353340165509">This IBAN couldn't be saved in Google Wallet. It's been saved to Chrome on this device instead. Chrome will ask you again the next time that you use this IBAN.</translation>
 <translation id="3621401353678567613">To get price drop alerts for products that you track, turn on notifications in settings.</translation>
 <translation id="362276910939193118">Show full history</translation>
@@ -1706,6 +1714,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3865339060090354361">See terms here for <ph name="CREDIT_CARD_NAME" /></translation>
 <translation id="3869939189466884821">Your local files will be deleted in <ph name="MINUTES" /> minutes</translation>
 <translation id="3875783148670536197">Show me how</translation>
+<translation id="3877021395754842994">Close all Isolated Windows that are currently open</translation>
 <translation id="3877603629930976930">Don't share</translation>
 <translation id="3878445208930547646">Copying from this site is not allowed</translation>
 <translation id="3879674895057686427">Choose language to translate to</translation>
@@ -2049,6 +2058,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4409271659088619928">Your search engine is <ph name="DSE" />. See their instructions for deleting your search history, if applicable.</translation>
 <translation id="4409556632583862731">New thread</translation>
 <translation id="4410614037742891410">Update ID card securely in Google Wallet</translation>
+<translation id="441152911646545600"><ph name="CLOSE_ISOLATED_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Press Tab then Enter to close all Isolated Windows that are currently open</translation>
 <translation id="4412074349188076601">This configuration is marked as installable, but no image is provided for this architecture, so it cannot be installed.</translation>
 <translation id="4412377069090572315">What people are saying</translation>
 <translation id="4414515549596849729">cookies and site data</translation>
@@ -2320,6 +2330,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4887406273302438710">Protect passwords with Windows Hello</translation>
 <translation id="4887785555357166111">Save video frame</translation>
 <translation id="4891425819480327855"><ph name="CLEAR_BROWSING_DATA_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab, then Enter to delete your browsing history, cookies, cache and more in Chrome settings</translation>
+<translation id="4892391379033030113">Open Isolated Window button, activate to open a new Isolated Window to browse privately</translation>
 <translation id="4892518386797173871">Rear</translation>
 <translation id="4894390983254799375">Such as device ID, name, OS version and OS username</translation>
 <translation id="4895877746940133817"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /></translation>
@@ -2994,6 +3005,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6025416945513303461"><ph name="TYPE_1" />, <ph name="TYPE_2" />, <ph name="TYPE_3" /> (synced)</translation>
 <translation id="6025471531651464742">Add files</translation>
 <translation id="6028591542479806248">Manage mobile and email notifications</translation>
+<translation id="6029805223627823735"><ph name="LAUNCH_ISOLATED_FOCUSED_FRIENDLY_MATCH_TEXT" />, press Tab then Enter to open a new Isolated Window to browse privately</translation>
 <translation id="603068602130820122">Dual staple right</translation>
 <translation id="6031824805267965302">Use your motion sensors</translation>
 <translation id="6032524144326295339">Mailbox 2</translation>
@@ -3406,6 +3418,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="671076103358959139">Enrolment Token:</translation>
 <translation id="6711464428925977395">There is something wrong with the proxy server or the address is incorrect.</translation>
 <translation id="6711700233707023861">Copied variations string to clipboard</translation>
+<translation id="6712003214447962889">Smarter, faster answers</translation>
 <translation id="6712343563085762261">Moved up</translation>
 <translation id="6716039223770814796">Compare <ph name="COMPARE_SET_NAME" /> · <ph name="ITEMS" /> items</translation>
 <translation id="6716672519412350405"><ph name="URL" /> wants to create a 3D map of your surroundings and track camera position</translation>
@@ -3750,6 +3763,7 @@ Additional details:
 <translation id="7316521168101843192">Saving file to Microsoft OneDrive</translation>
 <translation id="7319430975418800333">A3</translation>
 <translation id="7320336641823683070">Connection help</translation>
+<translation id="7328315434053660512">Open Isolated Window</translation>
 <translation id="733354035281974745">Device local account override</translation>
 <translation id="7334320624316649418">&amp;Redo reorder</translation>
 <translation id="7335157162773372339">Can ask to use your camera</translation>
@@ -3798,6 +3812,7 @@ Additional details:
 <translation id="7402375256128852434">Add recent tabs</translation>
 <translation id="7403392780200267761">Share this tab by sharing the link, creating a QR code, casting and more</translation>
 <translation id="7403591733719184120">Your <ph name="DEVICE_NAME" /> is managed</translation>
+<translation id="7404785524901232736">{NUM_SOURCES,plural, =1{Suggestion removed. Your original source won't be deleted.}other{Suggestion removed. Your original sources won't be deleted.}}</translation>
 <translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> has installed applications for additional functions. Applications have access to some of your data.</translation>
 <translation id="740691708085211707">Remove work address from Chrome autofill?</translation>
 <translation id="7407424307057130981">&lt;p&gt;You'll see this error if you have Superfish software on your Windows computer.&lt;/p&gt;
@@ -4016,6 +4031,7 @@ Additional details:
 <translation id="7718626066800460799">Unable to save scan</translation>
 <translation id="772128550427553158">The CVC is located on the front of your card.</translation>
 <translation id="7724603315864178912">Cut</translation>
+<translation id="7726402116075326231">Open a new Isolated Window to browse privately</translation>
 <translation id="7730057435797792985">Sort</translation>
 <translation id="7734285854693414638">Create a new form in Google Forms quickly</translation>
 <translation id="773466115871691567">Always translate pages in <ph name="SOURCE_LANGUAGE" /></translation>
@@ -4207,6 +4223,7 @@ Additional details:
 <translation id="8075898834294118863">Manage site settings</translation>
 <translation id="8076492880354921740">Tabs</translation>
 <translation id="8076880883123051368">Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />, such as your <ph name="BEGIN_LINK_GAA" />Gemini Apps activity<ph name="END_LINK_GAA" /></translation>
+<translation id="8077465698530018904">Remove selected region</translation>
 <translation id="8077669823243888800">Envelope Chinese no.8</translation>
 <translation id="8078006011486731853">{0,plural, =1{Upload confidential file?}other{Upload confidential files?}}</translation>
 <translation id="8079031581361219619">Reload site?</translation>

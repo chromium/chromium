@@ -144,7 +144,6 @@
 <translation id="1408847409015257906">Valitse "Yksityisyys ja turvallisuus".</translation>
 <translation id="1411386976162024013">Lensin visuaalinen haku</translation>
 <translation id="1414315029670184034">Älä salli sivustojen käyttää kameraasi</translation>
-<translation id="1417474386970818917">Kirjaudu ulos ja poista</translation>
 <translation id="1426410128494586442">Kyllä</translation>
 <translation id="1430915738399379752">Tulosta</translation>
 <translation id="1433478348197382180">Lukutila</translation>
@@ -304,6 +303,7 @@
 <translation id="188237709236611317">Älykkään lajittelun valikkopalkki</translation>
 <translation id="1883255238294161206">Tiivistä luettelo</translation>
 <translation id="1883898928879467646">Välilehti poistettu</translation>
+<translation id="188779312703122101">Työstetään</translation>
 <translation id="1888854257756214946">Valitse salasana…</translation>
 <translation id="1890237935065108104">Asetus ei ole käytettävissä.</translation>
 <translation id="1894023287452300670">Seuraa hintaa täältä</translation>
@@ -792,7 +792,6 @@
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Lue lisätietoja<ph name="END_LINK" /> suositellusta sisällöstä.</translation>
 <translation id="349446645805573740">Valitse, minne "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" tallennetaan</translation>
 <translation id="3504377992102007712">Asetukset</translation>
-<translation id="3507556793108992994">{count,plural, =1{1 välilehti siivottu}other{# välilehteä siivottu}}</translation>
 <translation id="35083190962747987">Avaa ${url}</translation>
 <translation id="3511519535430890904">Lisää selaussuoja</translation>
 <translation id="3512572904898385012">Voit nyt tehdä ostoksia ja kääntää kameran avulla. Kokeile napauttamalla.</translation>
@@ -941,7 +940,6 @@
 <translation id="3962326069546168954">Tallenna</translation>
 <translation id="3967327056943561740">Kirjanmerkit</translation>
 <translation id="3967822245660637423">Lataus on valmis</translation>
-<translation id="3968685670440571540">Salasanojen ja automaattisen täytön käytön alusta</translation>
 <translation id="3973560090698854095">Tämä poistaa Google-tilille (<ph name="USER_EMAIL" />) tallennetut osoitteet.</translation>
 <translation id="398604237578616937">Kirjautuneena käyttäjänä <ph name="USER_EMAIL" />. Avaa tilivalikko.</translation>
 <translation id="3986739045730058129">Siirry välilehdelle</translation>
@@ -1356,7 +1354,6 @@
 <translation id="5250371859659394278">Tuntemattomasta lähteestä</translation>
 <translation id="525510229763628836">Pienennetty</translation>
 <translation id="5260842098960755113">Viestiketju suljettu</translation>
-<translation id="5269913829202614649">Muokkaa etusivua</translation>
 <translation id="5271265092610673171">{count,plural, =1{Pakollinen kenttä on tyhjä. Täytä se ennen tallentamista.}other{Jotkin pakolliset kentät ovat tyhjiä. Täytä ne ennen tallentamista.}}</translation>
 <translation id="5271549068863921519">Tallenna salasana</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) haluaa sinun liittyvän välilehtiryhmään. Kaikki linkin saaneet voivat muokata kaikkia välilehtiä, joten liity harkiten. Linkki vanhenee 48 tunnin kuluttua.</translation>
@@ -1466,7 +1463,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5632194969640946913">Hakemalla sivulla näkemiäsi asioita voit saada lisätietoa tuotteista, paikoista ja tekstistä.</translation>
 <translation id="5632485077360054581">Näytä miten</translation>
 <translation id="5633237939819267663">{count,plural, =1{Kirjanmerkki tallennettu tänne: "{title}"}other{{count} kirjanmerkkiä tallennettu tänne: "{title}"}}</translation>
-<translation id="564170563478022912">Kirjaudutaanko ulos? Tallentamaton tilidata poistetaan.</translation>
 <translation id="5642707040609478753">Merkitse lukemattomaksi</translation>
 <translation id="5646376287012673985">Sijainti</translation>
 <translation id="5647096944343801045">Suuri aloituskohta</translation>
@@ -1482,7 +1478,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5669528293118408608">www</translation>
 <translation id="5676124785522323481">Ylläpidä yhdistettyjä sovelluksia</translation>
 <translation id="567881659373499783">Versio <ph name="PRODUCT_VERSION" /></translation>
-<translation id="5680012489335339762">Haluatko vaihtaa tiliä? Tallentamaton tilidata poistetaan.</translation>
 <translation id="5683499062697987550">Vahvista henkilöllisyytesi, jotta voit käyttää ja tallentaa salasanoja Google-tililläsi.</translation>
 <translation id="5684761169742812828">Tämä salasana vaarantui tietosuojaloukkauksessa internetissä. Jos sinulla ei ole aikaa muuttaa sitä juuri nyt, Google suosittelee, että säilytät tämän varoituksen myöhempää varten.</translation>
 <translation id="5694848685995373177">Tallennettu Driveen tilille <ph name="USER_EMAIL" />.</translation>
@@ -1758,7 +1753,6 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="6506996418997555004">Jaa välilehtiryhmä "<ph name="GROUP_NAME" />"</translation>
 <translation id="6507973708545996744">Kirjaudu sisään, niin näet lukulistan kaikilla laitteillasi.</translation>
 <translation id="6518133107902771759">Vahvista</translation>
-<translation id="6518861084553706202">Välilehdet suljetaan ja data poistetaan. Dataan voi sisältyä esimerkiksi salasanoja, selaushistoriaa ja evästeitä.</translation>
 <translation id="6523575793810663688">Näytä miten</translation>
 <translation id="6524082013156754186">Tallenna tilille</translation>
 <translation id="6524918542306337007">Incognito-tila ei ole käytettävissä</translation>
@@ -1984,7 +1978,6 @@ Jos haluat jatkaa tietokoneella, vaihda tiliksi <ph name="OTHER_EMAIL" />. Saat 
 <translation id="721218676460477064">Tee yhteenveto tästä artikkelista</translation>
 <translation id="7215621211572884440">Ponnahdusikkunat sallittu</translation>
 <translation id="7218491361283758048">Postinumero</translation>
-<translation id="7220786058474068424">Käsitellään.</translation>
 <translation id="7221173315674413369">Tutustu uusiin ominaisuuksiin ja vinkkeihin Uutta-ominaisuudessa</translation>
 <translation id="7223102419539744003">Sulje välilehti</translation>
 <translation id="7223134495231529579">Tallenna latauksiin</translation>
@@ -2072,7 +2065,6 @@ Voit aloittaa uudelleen milloin tahansa.</translation>
 <translation id="7491161827858509164">Jos haluat nähdä aiemmin lataamasi tiedostot, avaa <ph name="BEGIN_LINK" />Tiedostot<ph name="END_LINK" /></translation>
 <translation id="7498234416455752244">Jatka muokkausta</translation>
 <translation id="7500244509706269886">Täytä lomake automaattisesti</translation>
-<translation id="7504841985386528758">välilehtiryhmistä kuulemisen jälkeen</translation>
 <translation id="750493650310597496">0 valittu</translation>
 <translation id="7505402981231763928">Sinun on kirjauduttava sisään, jotta voit käyttää Geminiä</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
@@ -2319,6 +2311,7 @@ Voit aloittaa uudelleen milloin tahansa.</translation>
 <translation id="823339794112333264">Käynnistä mikrofoni</translation>
 <translation id="8240217649914883113">Lisää tämä kalenteriini</translation>
 <translation id="824379025871762038">Älä koskaan salli</translation>
+<translation id="8244387390464017490">Muuta Uusi välilehti ‑sivua</translation>
 <translation id="8250920743982581267">Dokumentit</translation>
 <translation id="8258734532103758067">Olen vienyt datani</translation>
 <translation id="8258999165172757081">Lisätty</translation>

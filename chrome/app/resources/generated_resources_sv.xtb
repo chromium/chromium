@@ -1569,6 +1569,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2198625180564913276">Lägger till profil. Det kan ta några minuter.</translation>
 <translation id="2198712775285959645">Redigera</translation>
 <translation id="2199298570273670671">Fel</translation>
+<translation id="2199546617947317537">Logga in och synkronisera flikar och historik med <ph name="EMAIL" /> om du vill få tillgång till historiken från dina andra enheter. Du får även dina lösenord med mera på alla dina enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="220006241671843310">Välj om Chrome ska använda AI-modeller som körs direkt på enheten</translation>
 <translation id="2200094388063410062">E-post</translation>
 <translation id="2200781749203116929">Systemloggar för ChromeOS</translation>
@@ -2351,6 +2352,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2777525873368474674">Klistra in bildlänk</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{1 webbplats med många aviseringar hittades}other{{NUM_SITES} webbplatser med många aviseringar hittades}}</translation>
 <translation id="2778471504622896352">Lägg till fjärrappar i ChromeOS-startaren</translation>
+<translation id="2781037472881921606">Synkronisera historik om du vill få tillgång till historiken från dina andra enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783952358106015700">Använd säkerhetsnyckeln med <ph name="APP_NAME" /></translation>
@@ -2413,6 +2415,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2826576843404243001">Om webbplatsen inte har stöd för säkra anslutningar får du en varning innan du besöker webbplatsen. Det går inte att ändra den här inställningen eftersom Avancerat skydd är aktiverat.</translation>
 <translation id="2828375943530438449">Tillbaka från inloggningssidan</translation>
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> har frigjorts</translation>
+<translation id="2828851448902426206">Logga in och synkronisera historik om du vill få tillgång till flikarna från dina andra enheter. Du får även din sparade information med mera på alla dina enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="2833144527504272627">Navigera med markören</translation>
 <translation id="2833727845850279275">Den här filen innehåller skadlig kod eller kommer från en misstänkt webbplats.</translation>
 <translation id="2835177225987815960">Din nuvarande konfiguration för genomsökning återställs, inklusive brytartilldelningar och hastighetsinställning för automatisk genomsökning.</translation>
@@ -2779,6 +2782,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3102309003841389927">Granska logotypuppdatering</translation>
 <translation id="310297983047869047">Föregående bild</translation>
 <translation id="3103451787721578293">Ange en anledning till att du laddar upp datan:</translation>
+<translation id="3105253709809514429">Logga in och synkronisera historik om du vill få tillgång till flikarna från dina andra enheter. Du får även dina tillägg med mera på alla dina enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="3105339775057145050">Den senaste misslyckade uppdateringen</translation>
 <translation id="3105796011181310544">Vill du byta tillbaka till Google?</translation>
 <translation id="3105820656234755131">Lösenordet har uppdaterats</translation>
@@ -2790,6 +2794,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3109206895301430738">Sparade flikgrupper</translation>
 <translation id="3109724472072898302">Komprimerat</translation>
 <translation id="3112292765614504292">Appstorlek: <ph name="APP_SIZE" /></translation>
+<translation id="3112532142993641404">Logga in och synkronisera historik om du vill få tillgång till flikarna från dina andra enheter. Du får även dina bokmärken med mera på alla dina enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="311347022006935575">Lade till den här fliken</translation>
 <translation id="311394601889664316">Tillåt inte att webbplatser redigerar filer eller mappar på enheten</translation>
 <translation id="3113970906450647715">Knappen har lossats</translation>
@@ -3297,6 +3302,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3498138244916757538">Ändringen av mikrofoninställning kräver att <ph name="SPECIFIC_NAME" /> avslutas. Stäng av <ph name="SPECIFIC_NAME" /> för att fortsätta.</translation>
 <translation id="3500417806337761827">Det gick inte att montera filresursen. För många SMB-filresurser har redan monterats.</translation>
 <translation id="3500764001796099683">Aktivera isolerade webbappar</translation>
+<translation id="3501134531169168291">Logga in och synkronisera historik om du vill få tillgång till flikarna från <ph name="DEVICE" />. Du får även dina tillägg med mera på alla dina enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="3505100368357440862">Shoppingstips</translation>
 <translation id="3507650052590605702">Hantera lösenord</translation>
 <translation id="3507888235492474624">Sök efter Bluetooth-enheter igen</translation>
@@ -3784,6 +3790,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3838085852053358637">Det gick inte att läsa in tillägget</translation>
 <translation id="3838486795898716504">Mer <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">Inga webbplatser har zoomats in eller ut</translation>
+<translation id="3839108710633244251">Logga in och synkronisera flikar och historik med <ph name="EMAIL" /> om du vill få tillgång till historiken från dina andra enheter. Du får även din sparade information med mera på alla dina enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="3839516600093027468">Blockera alltid tillgången till Urklipp för <ph name="HOST" /></translation>
 <translation id="3840096463915153852">Konversationshistorik</translation>
 <translation id="3841319830220785495">Naturlig standardröst</translation>
@@ -4307,6 +4314,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Behåll gruppen}other{Behåll grupperna}}</translation>
 <translation id="4261429981378979799">Behörigheter för tillägg</translation>
 <translation id="4262004481148703251">Ignorera varning</translation>
+<translation id="4262060800239714974">Synkronisera flikar och historik med <ph name="EMAIL" /> om du vill få tillgång till flikarna från <ph name="DEVICE" />. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="4263470758446311292">Spara maximalt med minne. Flikarna blir inaktiva efter en kortare tid.</translation>
 <translation id="4263824086525632">Norrsken</translation>
 <translation id="4265096510956307240">Verifiera din identitet</translation>
@@ -4943,8 +4951,10 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="4750185073185658673">Granska fler behörigheter på telefonen. Kontrollera att Bluetooth och wifi är aktiverat på telefonen.</translation>
 <translation id="4750394297954878236">Förslag</translation>
 <translation id="475088594373173692">Första användare</translation>
+<translation id="4751925628341802838">Logga in och synkronisera flikar och historik med <ph name="EMAIL" /> om du vill få tillgång till historiken från dina andra enheter. Du får även dina tillägg med mera på alla dina enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="4753084533826742808">Måste innehålla minst ett tecken</translation>
 <translation id="4754590344707355551">Förbättra webbläsaren med tillägg</translation>
+<translation id="4756130875344525429">Logga in och synkronisera historik och flikar med <ph name="EMAIL" /> om du vill få tillgång till historiken från <ph name="DEVICE" />. Du får även din sparade information med mera på alla dina enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="4756378406049221019">Stoppa inläsningen/läs in igen</translation>
 <translation id="4756388243121344051">&amp;Historik</translation>
 <translation id="4756627014339714615">Omdirigera</translation>
@@ -5256,6 +5266,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="497403230787583386">Säkerhetskontrollen är klar. Dokumentet skrivs ut.</translation>
 <translation id="4974442344472293753">Uppdateringsresultat</translation>
 <translation id="4975771730019223894">Appmärkning</translation>
+<translation id="4976647810464861866">Logga in och synkronisera historik om du vill få tillgång till flikarna från dina andra enheter. Du får även din läslista med mera på alla dina enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Bekräfta åtkomst</translation>
 <translation id="4979263087381759787">Utvecklaralternativ</translation>
@@ -5295,6 +5306,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5008936837313706385">Aktivitetsnamn</translation>
 <translation id="5009463889040999939">Byter namn på profilen. Det kan ta några minuter.</translation>
 <translation id="5010886807652684893">Visuell vy</translation>
+<translation id="5012016139642806466">Använd dina lösenord med mera på alla dina enheter</translation>
 <translation id="5012523644916800014">Hantera lösenord och nycklar</translation>
 <translation id="501394389332262641">Ljud för låg batterinivå</translation>
 <translation id="5014286001996333986">Vill du ersätta eller skapa en ny grupp?</translation>
@@ -5427,6 +5439,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="511313294362309725">Aktivera Snabb parkoppling</translation>
 <translation id="5113992879909788634">Läs mer om automatisk webbsökning i Chrome</translation>
 <translation id="51143538739122961">Sätt i säkerhetsnyckeln och tryck på den</translation>
+<translation id="5114635223409082546">Logga in och synkronisera historik om du vill få tillgång till flikarna från <ph name="DEVICE" />. Du får även dina bokmärken med mera på alla dina enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="5115338116365931134">SSO</translation>
 <translation id="5116628073786783676">S&amp;para ljud som...</translation>
 <translation id="5117139026559873716">Koppla från telefonen från <ph name="DEVICE_TYPE" />. De ansluts inte längre till varandra automatiskt.</translation>
@@ -5853,6 +5866,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5457795687441958389">Förbli utloggad</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">Du har angett fel pinkod för många gånger. Ändra pinkoden för att komma åt dina nycklar och lösenord.</translation>
+<translation id="5459251585760045919">Logga in och synkronisera historik och flikar med <ph name="EMAIL" /> om du vill få tillgång till historiken från <ph name="DEVICE" />. Du får även dina tillägg med mera på alla dina enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="5459470938885464873">Fel vid import av certifikatet</translation>
 <translation id="5459864179070366255">Fortsätt installera</translation>
 <translation id="5460861858595506978">Inspiration</translation>
@@ -6024,6 +6038,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="5583640892426849032">Backsteg</translation>
 <translation id="5584088138253955452">Vill du spara användarnamnet?</translation>
 <translation id="5585019845078534178">Kort</translation>
+<translation id="5585064628683466904">Logga in och synkronisera flikar och historik med <ph name="EMAIL" /> om du vill få tillgång till historiken från dina andra enheter. Du får även din läslista med mera på alla dina enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="5585118885427931890">Det gick inte att skapa bokmärkesmappen.</translation>
 <translation id="558563010977877295">Öppna en viss sida eller en grupp med sidor</translation>
 <translation id="5587592231724900065">Ett tillägg styr den här inställningen</translation>
@@ -6762,6 +6777,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6175910054050815932">Få en länk</translation>
 <translation id="6177478397823976397">Inga enheter hittades. Öppna en hjälpcenterartikel på en ny flik</translation>
 <translation id="6177779807714496775">Öppna länken i vänster vy</translation>
+<translation id="6178186430790239237">Synkronisera flikar och historik med <ph name="EMAIL" /> om du vill få tillgång till flikarna från dina andra enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="6178664161104547336">Välj ett certifikat</translation>
 <translation id="6178682841350631965">Inloggningsuppgifterna har uppdaterats</translation>
 <translation id="6179830757749383456">Webbläsaren hanteras av <ph name="BROWSER_DOMAIN" />, profilen hanteras av <ph name="PROFILE_DOMAIN" /></translation>
@@ -7072,6 +7088,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6430202563517028640">Lägg till länken i läslistan</translation>
 <translation id="6430814529589430811">Base64-kodad ASCII, enstaka certifikat</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> konfigurerar automatiska uppdateringar för alla användare på den här datorn.</translation>
+<translation id="6431970976661940755">Logga in och synkronisera historik om du vill få tillgång till flikarna från <ph name="DEVICE" />. Du får även din läslista med mera på alla dina enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="6434104957329207050">Hastighet för punktgenomsökning</translation>
 <translation id="6434309073475700221">Släng</translation>
 <translation id="6434755719322447931">Kaotisk</translation>
@@ -7236,6 +7253,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="6556903358015358733">Tema och bakgrund</translation>
 <translation id="6557199166823345360">Lägg till mer information eller ställ en fråga om ditt val för att finjustera sökningen</translation>
 <translation id="6557290421156335491">Mina genvägar</translation>
+<translation id="655745275895381718">Logga in och synkronisera historik om du vill få tillgång till flikarna från <ph name="DEVICE" />. Du får även din sparade information med mera på alla dina enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="6558098963164662391">&amp;Ta bort från ordlistan</translation>
 <translation id="6560061709899140565">Visa andra Cast-sessioner</translation>
 <translation id="656065428026159829">Visa fler</translation>
@@ -7923,6 +7941,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{1 lösenord har importerats till <ph name="BRAND" /> för <ph name="USER_EMAIL" />}other{{NUM_PASSWORDS} lösenord har importerats till <ph name="BRAND" /> för <ph name="USER_EMAIL" />}}</translation>
 <translation id="7065534935986314333">Om systemet</translation>
 <translation id="706626672220389329">Det gick inte att montera den delade resursen. Den angivna resursen har redan monterats.</translation>
+<translation id="7066357648902789011">Logga in och synkronisera historik och flikar med <ph name="EMAIL" /> om du vill få tillgång till historiken från <ph name="DEVICE" />. Du får även dina lösenord med mera på alla dina enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="7067396782363924830">Omgivningsfärger</translation>
 <translation id="7067725467529581407">Visa aldrig detta igen.</translation>
 <translation id="7068539819344620805">Nu kan du ge webbläsaren ett nytt utseende när som helst från menyn Anpassa Chrome</translation>
@@ -8108,6 +8127,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7214047272988222011">Tillåts – <ph name="PERMISSION_DETAILS" />. Aktivera <ph name="LINK_BEGIN" />systemets kameraåtkomst<ph name="LINK_END" />.</translation>
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Ny flik i 1 flik}other{Ny flik i # flikar}}</translation>
 <translation id="721490496276866468">Importera lösenord</translation>
+<translation id="7216638029417040861">Logga in och synkronisera flikar och historik med <ph name="EMAIL" /> om du vill få tillgång till historiken från dina andra enheter. Du får även dina bokmärken med mera på alla dina enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="7217208603285112910">Markerad text är inte på <ph name="LANGUAGE" /></translation>
 <translation id="7217317914610152390">Lägg till text, kommentarer och anteckningar med det nya verktyget Textannoteringar</translation>
 <translation id="7219254577985949841">Vill du radera webbplatsdata?</translation>
@@ -8118,6 +8138,7 @@ Det finns # utsatta lösenord till. Du rekommenderas av Google Lösenordshanteri
 <translation id="7222232353993864120">E-postadress</translation>
 <translation id="7222335051802562841">Slutför uppdatering</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7222513457790351522">Logga in och synkronisera historik och flikar med <ph name="EMAIL" /> om du vill få tillgång till historiken från <ph name="DEVICE" />. Du får även din läslista med mera på alla dina enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="7223027547122518521">Välj en fil som webbplatsen kan läsa</translation>
 <translation id="7223952304612664117">Detta gör att systemtjänster kan använda Platsangivelsens exakthet för att fastställa din plats. Platsangivelsens exakthet använder information om trådlösa signaler och sensorer för att beräkna enhetens plats.</translation>
 <translation id="7225082563376899794">Fyll i lösenord med Windows Hello</translation>
@@ -9006,6 +9027,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7911118814695487383">Linux</translation>
 <translation id="791247712619243506">Avbryt konfigureringen</translation>
 <translation id="7912974581251770345">Översättning</translation>
+<translation id="7913805372428124107">Logga in och synkronisera historik om du vill få tillgång till flikarna från <ph name="DEVICE" />. Du får även dina lösenord med mera på alla dina enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="7914399737746719723">Appen har installerats</translation>
 <translation id="7915457674565721553">Anslut till internet om du vill ställa in föräldrakontroller</translation>
 <translation id="7916364730877325865">Organisationen tillåter inte att du aktiverar synkronisering med det här kontot</translation>
@@ -9254,6 +9276,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8081989000209387414">Vill du inaktivera felsökning med ADB?</translation>
 <translation id="8082132721957920509">Kortet har sparats</translation>
 <translation id="8082390128630131497">Denna <ph name="DEVICE_TYPE" /> återställs till standardinställningarna om du inaktiverar felsökning med ADB. Alla användarkonton och all lokal data rensas.</translation>
+<translation id="8082737802704584539">Organisationen har inaktiverat möjligheten att spara historik i Google-kontot</translation>
 <translation id="8084114998886531721">Sparat lösenord</translation>
 <translation id="8084417885464859041">Använd Gemini på ett säkert sätt</translation>
 <translation id="8084429490152575036">APN-inställningar för mobilnätverk</translation>
@@ -9286,6 +9309,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="810362914482827094">Sök efter nycklar</translation>
 <translation id="8104088837833760645">Ladda ned eSIM-profil</translation>
 <translation id="8104388155778519213">Dela det som finns på skärmen med Google Lens</translation>
+<translation id="8104412594956510627">Synkronisera historik om du vill få tillgång till historiken från <ph name="DEVICE" />. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="8104778744208707085">Behöver åtgärdas</translation>
 <translation id="8105273883928376822">Logga in om du vill fortsätta.</translation>
 <translation id="8106114112474206597">Använd i för att trycka på en musknapp</translation>
@@ -9316,6 +9340,7 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8124313775439841391">Hanterad ONC</translation>
 <translation id="8125651784723647184">Lösenordsdelning hanteras av administratören</translation>
 <translation id="8126355825906412872">Le</translation>
+<translation id="8126498026310640675">Logga in och synkronisera historik och flikar med <ph name="EMAIL" /> om du vill få tillgång till historiken från <ph name="DEVICE" />. Du får även dina bokmärken med mera på alla dina enheter. Du kan sluta synkronisera när som helst i inställningarna. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="813082847718468539">Visa information om webbplatsen</translation>
 <translation id="8131740175452115882">Bekräfta</translation>
 <translation id="8133297578569873332">Acceptabel – FM</translation>

@@ -1568,6 +1568,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2198625180564913276">Dodajanje profila. To lahko traja nekaj minut.</translation>
 <translation id="2198712775285959645">Uredi</translation>
 <translation id="2199298570273670671">Napaka</translation>
+<translation id="2199546617947317537">Če želite dostopati do zgodovine iz drugih naprav, se prijavite ter sinhronizirajte zgodovino in zavihke z računom <ph name="EMAIL" />. V vseh svojih napravah boste imeli na voljo tudi gesla in drugo. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="220006241671843310">Izberite, ali Chrome uporablja modele umetne inteligence, ki se izvajajo neposredno v vaši napravi</translation>
 <translation id="2200094388063410062">E-pošta</translation>
 <translation id="2200781749203116929">Sistemski dnevniki za ChromeOS</translation>
@@ -2350,6 +2351,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2777525873368474674">Prilepite povezavo do slike</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{Najdeno je bilo 1 spletno mesto z veliko obvestili}one{Najdeno je bilo {NUM_SITES} spletno mesto z veliko obvestili}two{Najdeni sta bili {NUM_SITES} spletni mesti z veliko obvestili}few{Najdena so bila {NUM_SITES} spletna mesta z veliko obvestili}other{Najdenih je bilo {NUM_SITES} spletnih mest z veliko obvestili}}</translation>
 <translation id="2778471504622896352">Dodajanje oddaljenih aplikacij v zaganjalnik sistema ChromeOS</translation>
+<translation id="2781037472881921606">Če želite dostopati do zgodovine iz drugih naprav, sinhronizirajte zgodovino. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783952358106015700">Uporaba varnostnega ključa z aplikacijo <ph name="APP_NAME" /></translation>
@@ -2412,6 +2414,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2826576843404243001">Prejmite opozorilo pred obiskom spletnih mest, ki ne podpirajo varnih povezav. Te nastavitve ne morete spremeniti, ker je omogočena dodatna zaščita.</translation>
 <translation id="2828375943530438449">Nazaj s prijave</translation>
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> sproščeno</translation>
+<translation id="2828851448902426206">Če želite dostopati do zavihkov iz drugih naprav, se prijavite in sinhronizirajte zgodovino. V vseh svojih napravah boste imeli na voljo tudi shranjene informacije in drugo. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="2833144527504272627">Premikanje s kazalcem besedila</translation>
 <translation id="2833727845850279275">Ta datoteka vsebuje zlonamerno programsko opremo ali izvira s sumljivega spletnega mesta.</translation>
 <translation id="2835177225987815960">Trenutna nastavitev optičnega branja bo ponastavljena, vključno z vsemi dodeljenimi stikali in nastavitvami hitrosti samodejnega iskanja.</translation>
@@ -2778,6 +2781,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3102309003841389927">Pregled posodobitve logotipa</translation>
 <translation id="310297983047869047">Prejšnji diapozitiv</translation>
 <translation id="3103451787721578293">Navedite razlog za nalaganje teh podatkov:</translation>
+<translation id="3105253709809514429">Če želite dostopati do zavihkov iz drugih naprav, se prijavite in sinhronizirajte zgodovino. V vseh svojih napravah boste imeli na voljo tudi razširitve in drugo. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="3105339775057145050">Zadnja neuspešna posodobitev</translation>
 <translation id="3105796011181310544">Želite preklopiti nazaj na Google?</translation>
 <translation id="3105820656234755131">Geslo je bilo posodobljeno</translation>
@@ -2789,6 +2793,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3109206895301430738">Shranjene skupine zavihkov</translation>
 <translation id="3109724472072898302">Strnjeno</translation>
 <translation id="3112292765614504292">Velikost aplikacije: <ph name="APP_SIZE" /></translation>
+<translation id="3112532142993641404">Če želite dostopati do zavihkov iz drugih naprav, se prijavite in sinhronizirajte zgodovino. V vseh svojih napravah boste imeli na voljo tudi zaznamke in drugo. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="311347022006935575">Dodal(-a) ta zavihek</translation>
 <translation id="311394601889664316">Spletnim mestom ni dovoljeno urejanje datotek ali map v napravi.</translation>
 <translation id="3113970906450647715">Gumb je odpet</translation>
@@ -3296,6 +3301,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3498138244916757538">Sprememba nastavitve mikrofona zahteva, da se zaustavi <ph name="SPECIFIC_NAME" />. Za nadaljevanje zaustavite <ph name="SPECIFIC_NAME" />.</translation>
 <translation id="3500417806337761827">Napaka pri vpenjanju deljenja. Vpetih je preveč deljenj SMB.</translation>
 <translation id="3500764001796099683">Omogočanje izoliranih spletnih aplikacij</translation>
+<translation id="3501134531169168291">Če želite dostopati do zavihkov iz naprave <ph name="DEVICE" />, se prijavite in sinhronizirajte zgodovino. V vseh svojih napravah boste imeli na voljo tudi razširitve in drugo. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="3505100368357440862">Predlogi za nakupovanje</translation>
 <translation id="3507650052590605702">Upravljanje gesla</translation>
 <translation id="3507888235492474624">Vnovično iskanje naprav Bluetooth</translation>
@@ -3783,6 +3789,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="3838085852053358637">Ni bilo mogoče naložiti razširitve</translation>
 <translation id="3838486795898716504">Več <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">Nobeno spletno mesto ni povečano ali pomanjšano</translation>
+<translation id="3839108710633244251">Če želite dostopati do zgodovine iz drugih naprav, se prijavite ter sinhronizirajte zgodovino in zavihke z računom <ph name="EMAIL" />. V vseh svojih napravah boste imeli na voljo tudi shranjene informacije in drugo. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="3839516600093027468">Vedno prepreči naslovu <ph name="HOST" /> ogled odložišča</translation>
 <translation id="3840096463915153852">Zgodovina pogovorov</translation>
 <translation id="3841319830220785495">Privzeti naravni glas</translation>
@@ -4306,6 +4313,7 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Ohrani skupino}one{Ohrani skupine}two{Ohrani skupine}few{Ohrani skupine}other{Ohrani skupine}}</translation>
 <translation id="4261429981378979799">Dovoljenja za razširitve</translation>
 <translation id="4262004481148703251">Opusti opozorilo</translation>
+<translation id="4262060800239714974">Če želite dostopati do zavihkov iz naprave <ph name="DEVICE" />, sinhronizirajte zgodovino in zavihke z računom <ph name="EMAIL" />. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="4263470758446311292">Največji prihranki količine uporabljenega pomnilnika. Zavihki postanejo neaktivni po krajšem časovnem obdobju.</translation>
 <translation id="4263824086525632">Severni sij</translation>
 <translation id="4265096510956307240">Potrditev identitete</translation>
@@ -4942,8 +4950,10 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="4750185073185658673">V telefonu lahko pregledate še nekaj več dovoljenj. V telefonu morata biti vklopljena Bluetooth in Wi-Fi.</translation>
 <translation id="4750394297954878236">Predlogi</translation>
 <translation id="475088594373173692">Prvi uporabnik</translation>
+<translation id="4751925628341802838">Če želite dostopati do zgodovine iz drugih naprav, se prijavite ter sinhronizirajte zgodovino in zavihke z računom <ph name="EMAIL" />. V vseh svojih napravah boste imeli na voljo tudi razširitve in drugo. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="4753084533826742808">Vsebovati mora vsaj 1 znak</translation>
 <translation id="4754590344707355551">Izboljšajte brskalnik z razširitvami</translation>
+<translation id="4756130875344525429">Če želite dostopati do zgodovine iz naprave <ph name="DEVICE" />, se prijavite in sinhronizirajte zgodovino in zavihke z računom <ph name="EMAIL" />. V vseh svojih napravah boste imeli na voljo tudi shranjene informacije in drugo. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="4756378406049221019">Ustavi/znova naloži</translation>
 <translation id="4756388243121344051">&amp;Zgodovina</translation>
 <translation id="4756627014339714615">Preusmeri</translation>
@@ -5255,6 +5265,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="497403230787583386">Varnostni pregledi so opravljeni. Vaš dokument bo natisnjen.</translation>
 <translation id="4974442344472293753">Izid posodobitve</translation>
 <translation id="4975771730019223894">Označevanje aplikacij z značko</translation>
+<translation id="4976647810464861866">Če želite dostopati do zavihkov iz drugih naprav, se prijavite in sinhronizirajte zgodovino. V vseh svojih napravah boste imeli na voljo tudi bralni seznam in drugo. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Potrditev dostopa</translation>
 <translation id="4979263087381759787">Možnosti za razvijalce</translation>
@@ -5294,6 +5305,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5008936837313706385">Ime dejavnosti</translation>
 <translation id="5009463889040999939">Preimenovanje profila. To lahko traja nekaj minut.</translation>
 <translation id="5010886807652684893">Vizualni pogled</translation>
+<translation id="5012016139642806466">Dostop do gesel in drugih podatkov v vseh vaših napravah</translation>
 <translation id="5012523644916800014">Upravljanje gesel in ključev za dostop</translation>
 <translation id="501394389332262641">Zvok za skoraj prazno baterijo</translation>
 <translation id="5014286001996333986">Želite zamenjati ali ustvariti novo skupino?</translation>
@@ -5426,6 +5438,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="511313294362309725">Vklopi hitro seznanitev</translation>
 <translation id="5113992879909788634">Preberite več o samodejnem brskanju v Chromu</translation>
 <translation id="51143538739122961">Vstavite varnostni ključ in se ga dotaknite</translation>
+<translation id="5114635223409082546">Če želite dostopati do zavihkov iz naprave <ph name="DEVICE" />, se prijavite in sinhronizirajte zgodovino. V vseh svojih napravah boste imeli na voljo tudi zaznamke in drugo. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="5115338116365931134">Enotna prijava</translation>
 <translation id="5116628073786783676">Shr&amp;ani zvok kot ...</translation>
 <translation id="5117139026559873716">Prekličite povezavo telefona in naprave <ph name="DEVICE_TYPE" />. Ne bosta se več samodejno povezala.</translation>
@@ -5852,6 +5865,7 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5457795687441958389">Ostanite odjavljeni</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">Prevečkrat ste vnesli napačno kodo PIN. Če želite dostopati do ključev za dostop in gesel, spremenite kodo PIN.</translation>
+<translation id="5459251585760045919">Če želite dostopati do zgodovine iz naprave <ph name="DEVICE" />, se prijavite in sinhronizirajte zgodovino in zavihke z računom <ph name="EMAIL" />. V vseh svojih napravah boste imeli na voljo tudi razširitve in drugo. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="5459470938885464873">Napaka pri uvozu potrdila</translation>
 <translation id="5459864179070366255">Na namestitev</translation>
 <translation id="5460861858595506978">Navdih</translation>
@@ -6023,6 +6037,7 @@ Temu dejanju lahko dodelite več stikal.</translation>
 <translation id="5583640892426849032">Vračalka</translation>
 <translation id="5584088138253955452">Želite shraniti uporabniško ime?</translation>
 <translation id="5585019845078534178">Kartice</translation>
+<translation id="5585064628683466904">Če želite dostopati do zgodovine iz drugih naprav, se prijavite ter sinhronizirajte zgodovino in zavihke z računom <ph name="EMAIL" />. V vseh svojih napravah boste imeli na voljo tudi bralni seznam in drugo. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="5585118885427931890">Mape z zaznamkom ni bilo mogoče ustvariti.</translation>
 <translation id="558563010977877295">Odpri ustrezno stran ali več strani</translation>
 <translation id="5587592231724900065">Razširitev nadzira to nastavitev</translation>
@@ -6762,6 +6777,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6175910054050815932">Pridobite povezavo</translation>
 <translation id="6177478397823976397">Ni naprav. Odprite članek v centru za pomoč v novem zavihku</translation>
 <translation id="6177779807714496775">Odpiranje povezave v levem pogledu</translation>
+<translation id="6178186430790239237">Če želite pridobiti zavihke iz drugih naprav, sinhronizirajte zgodovino in zavihke z računom <ph name="EMAIL" />. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="6178664161104547336">Izberite potrdilo</translation>
 <translation id="6178682841350631965">Podatki za prijavo so bili posodobljeni</translation>
 <translation id="6179830757749383456">Brskalnik upravlja <ph name="BROWSER_DOMAIN" />, profil pa upravlja <ph name="PROFILE_DOMAIN" /></translation>
@@ -7072,6 +7088,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6430202563517028640">Dodajanje povezave na bralni seznam</translation>
 <translation id="6430814529589430811">Base64 kodiran ASCII, enojno potrdilo</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> nastavi samodejne posodobitve za vse uporabnike tega računalnika.</translation>
+<translation id="6431970976661940755">Če želite dostopati do zavihkov iz naprave <ph name="DEVICE" />, se prijavite in sinhronizirajte zgodovino. V vseh svojih napravah boste imeli na voljo tudi bralni seznam in drugo. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="6434104957329207050">Hitrost točkovnega iskanja</translation>
 <translation id="6434309073475700221">Zavrzi</translation>
 <translation id="6434755719322447931">Kaotično</translation>
@@ -7236,6 +7253,7 @@ Poskrbite, da ne boste razkrili morebitnih občutljivih podatkov.</translation>
 <translation id="6556903358015358733">Tema in zaslonsko ozadje</translation>
 <translation id="6557199166823345360">Dodajte več podrobnosti ali postavite vprašanje o svoji izbiri, da spremenite iskanje</translation>
 <translation id="6557290421156335491">Moje bližnjice</translation>
+<translation id="655745275895381718">Če želite dostopati do zavihkov iz naprave <ph name="DEVICE" />, se prijavite in sinhronizirajte zgodovino. V vseh svojih napravah boste imeli na voljo tudi shranjene informacije in drugo. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="6558098963164662391">&amp;Odstrani iz slovarja</translation>
 <translation id="6560061709899140565">Prikaz drugih sej za predvajanje</translation>
 <translation id="656065428026159829">Prikaži več</translation>
@@ -7929,6 +7947,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{1 geslo je bilo uvoženo v storitev <ph name="BRAND" /> za račun <ph name="USER_EMAIL" />.}one{{NUM_PASSWORDS} geslo je bilo uvoženo v storitev <ph name="BRAND" /> za račun <ph name="USER_EMAIL" />.}two{{NUM_PASSWORDS} gesli sta bili uvoženi v storitev <ph name="BRAND" /> za račun <ph name="USER_EMAIL" />.}few{{NUM_PASSWORDS} gesla so bila uvožena v storitev <ph name="BRAND" /> za račun <ph name="USER_EMAIL" />.}other{{NUM_PASSWORDS} gesel je bilo uvoženih v storitev <ph name="BRAND" /> za račun <ph name="USER_EMAIL" />.}}</translation>
 <translation id="7065534935986314333">O sistemu</translation>
 <translation id="706626672220389329">Napaka pri vpenjanju datotečnega sredstva v skupni rabi. Določeno datotečno sredstvo v skupni rabi je že vpeto.</translation>
+<translation id="7066357648902789011">Če želite dostopati do zgodovine iz naprave <ph name="DEVICE" />, se prijavite in sinhronizirajte zgodovino in zavihke z računom <ph name="EMAIL" />. V vseh svojih napravah boste imeli na voljo tudi gesla in drugo. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="7067396782363924830">Barve okolja</translation>
 <translation id="7067725467529581407">Tega ne prikaži nikoli več</translation>
 <translation id="7068539819344620805">Zdaj lahko v meniju za prilagajanje Chroma brskalniku kadar koli daste nov videz</translation>
@@ -8114,6 +8133,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7214047272988222011">Dovoljeno – <ph name="PERMISSION_DETAILS" />. Vklopite <ph name="LINK_BEGIN" />dostop do sistemske kamere<ph name="LINK_END" />.</translation>
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Nov zavihek v 1 zavihku}one{Nov zavihek v # zavihku}two{Nov zavihek v # zavihkih}few{Nov zavihek v # zavihkih}other{Nov zavihek v # zavihkih}}</translation>
 <translation id="721490496276866468">Uvoz gesel</translation>
+<translation id="7216638029417040861">Če želite dostopati do zgodovine iz drugih naprav, se prijavite ter sinhronizirajte zgodovino in zavihke z računom <ph name="EMAIL" />. V vseh svojih napravah boste imeli na voljo tudi zaznamke in drugo. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="7217208603285112910">Izbor ni v jeziku <ph name="LANGUAGE" /></translation>
 <translation id="7217317914610152390">Z novim orodjem za besedilne pripise dodajte besedilo, komentarje in zapiske</translation>
 <translation id="7219254577985949841">Želite izbrisati podatke spletnega mesta?</translation>
@@ -8124,6 +8144,7 @@ Imate še # ogroženih gesel. Googlov upravitelj gesel priporoča, da takoj prev
 <translation id="7222232353993864120">E-poštni naslov</translation>
 <translation id="7222335051802562841">Dokončaj posodobitev</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7222513457790351522">Če želite dostopati do zgodovine iz naprave <ph name="DEVICE" />, se prijavite in sinhronizirajte zgodovino in zavihke z računom <ph name="EMAIL" />. V vseh svojih napravah boste imeli na voljo tudi bralni seznam in drugo. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="7223027547122518521">Izberite datoteko, ki jo to spletno mesto lahko bere</translation>
 <translation id="7223952304612664117">To sistemskim storitvam omogoča uporabo natančnosti zaznavanja lokacije za določanje vaše lokacije. Natančnost zaznavanja lokacije za oceno lokacije naprave uporablja podatke o brezžičnih signalih in tipalih.</translation>
 <translation id="7225082563376899794">Uporaba funkcije Windows Hello pri izpolnjevanju gesel</translation>
@@ -9012,6 +9033,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7911118814695487383">Linux</translation>
 <translation id="791247712619243506">Prekliči nastavitev</translation>
 <translation id="7912974581251770345">Prevod</translation>
+<translation id="7913805372428124107">Če želite dostopati do zavihkov iz naprave <ph name="DEVICE" />, se prijavite in sinhronizirajte zgodovino. V vseh svojih napravah boste imeli na voljo tudi gesla in drugo. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="7914399737746719723">Aplikacija je nameščena</translation>
 <translation id="7915457674565721553">Vzpostavite povezavo z internetom, če želite nastaviti starševski nadzor</translation>
 <translation id="7916364730877325865">Vaša organizacija vam ne dovoli vklopa sinhronizacije s tem računom.</translation>
@@ -9260,6 +9282,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8081989000209387414">Želite onemogočiti odpravljanje napak z mostom za odpravljanje težav s sistemom Android (ADB)?</translation>
 <translation id="8082132721957920509">Vaša kartica je shranjena</translation>
 <translation id="8082390128630131497">Če onemogočite odpravljanje napak z mostom za odpravljanje težav s sistemom Android (ADB), bo ta naprava <ph name="DEVICE_TYPE" /> ponastavljena na tovarniške nastavitve. Izbrisani bodo vsi uporabniški računi in lokalni podatki.</translation>
+<translation id="8082737802704584539">Vaša organizacija je izklopila shranjevanje zgodovine v računu Google</translation>
 <translation id="8084114998886531721">Shranjeno geslo</translation>
 <translation id="8084417885464859041">Varno uporabljajte Geminija</translation>
 <translation id="8084429490152575036">Nastavitve APN-ja pri mobilnem omrežju</translation>
@@ -9292,6 +9315,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="810362914482827094">Iskanje gesel</translation>
 <translation id="8104088837833760645">Prenesi profil za e-SIM</translation>
 <translation id="8104388155778519213">Delite vsebino na zaslonu z Googlom Lens</translation>
+<translation id="8104412594956510627">Če želite dostopati do zgodovine iz naprave <ph name="DEVICE" />, sinhronizirajte zgodovino. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="8104778744208707085">Preverite</translation>
 <translation id="8105273883928376822">Če želite nadaljevati, se prijavite.</translation>
 <translation id="8106114112474206597">Uporabite »i« za pritisk gumba miške</translation>
@@ -9322,6 +9346,7 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8124313775439841391">Upravljan ONC</translation>
 <translation id="8125651784723647184">Deljenje gesel upravlja skrbnik</translation>
 <translation id="8126355825906412872">Nasmeh</translation>
+<translation id="8126498026310640675">Če želite dostopati do zgodovine iz naprave <ph name="DEVICE" />, se prijavite in sinhronizirajte zgodovino in zavihke z računom <ph name="EMAIL" />. V vseh svojih napravah boste imeli na voljo tudi zaznamke in drugo. Sinhronizacijo lahko kadar koli ustavite v nastavitvah. Google lahko prilagodi Iskanje Google in druge storitve glede na vašo zgodovino.</translation>
 <translation id="813082847718468539">Ogled podatkov o mestu</translation>
 <translation id="8131740175452115882">Potrdi</translation>
 <translation id="8133297578569873332">Sprejemljivo – FM</translation>

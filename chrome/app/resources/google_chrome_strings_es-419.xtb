@@ -28,6 +28,7 @@
 <translation id="1194807384646768652">Chrome bloqueó esta descarga porque el tipo de archivo no se descarga con frecuencia y puede ser peligroso</translation>
 <translation id="1197860368385086056">La próxima vez que abras Chrome en tu <ph name="DEVICE_TYPE" />, verás un mensaje para habilitar las alertas de seguimiento de precios.</translation>
 <translation id="1203500561924088507">Gracias por instalar <ph name="BUNDLE_NAME" />. Debes reiniciar tu navegador antes de usarlo.</translation>
+<translation id="1226003169284463347">Para obtener tus favoritos y más en todos tus dispositivos, accede a Chrome</translation>
 <translation id="1278833599417554002">Reiniciar para actualizar &amp;Chrome</translation>
 <translation id="1289911795790071537">Abrir la búsqueda con Chrome</translation>
 <translation id="1290883685122687410">Error de configuración: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
@@ -118,6 +119,7 @@
 <translation id="2096213354152647998">No lo visitaste recientemente. Chrome quitó el permiso <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">ChromeOS Flex funciona gracias a <ph name="BEGIN_LINK_CROS_OSS" />software de código abierto<ph name="END_LINK_CROS_OSS" /> adicional, como <ph name="BEGIN_LINK_LINUX_OSS" />el entorno de desarrollo de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Inhabilitar la ejecución de Chrome en segundo plano para las apps</translation>
+<translation id="2111985952714409792">Para obtener a tus extensiones y más en todos tus dispositivos, accede a Chrome</translation>
 <translation id="2120620239521071941">Esta acción borrará <ph name="ITEMS_COUNT" /> elementos de este dispositivo. Si más adelante deseas recuperar los datos, accede a tu cuenta en Chrome como <ph name="USER_EMAIL" />.</translation>
 <translation id="2121284319307530122">Reiniciar para actualizar &amp;Chrome</translation>
 <translation id="2123055963409958220">Informa tu <ph name="BEGIN_LINK" />configuración actual<ph name="END_LINK" /> para ayudarnos a mejorar Chrome</translation>
@@ -144,6 +146,7 @@
 <translation id="2307973900865360088">Mantener en el Dock</translation>
 <translation id="2309047409763057870">Como esta es una instalación secundaria de Google Chrome, no puede establecerse como tu navegador predeterminado.</translation>
 <translation id="2345992953227471816">Chrome detectó que las siguientes extensiones contienen software malicioso:</translation>
+<translation id="2358140144860869442">Para obtener tu lista de lectura y más en todos tus dispositivos, accede a Chrome</translation>
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2403703063067034158">Error de inicio: Se está ejecutando otra instancia de configuración. Vuelve a intentarlo más tarde.</translation>
 <translation id="2409816192575564775">{NUM_DEVICES,plural, =0{Una o más extensiones de Chrome tenían acceso a 1 dispositivo HID}=1{Una o más extensiones de Chrome tienen acceso a 1 dispositivo HID}other{Una o más extensiones de Chrome tienen acceso a # dispositivos HID}}</translation>
@@ -172,6 +175,7 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="2645435784669275700">ChromeOS</translation>
 <translation id="2649768380733403658">Chrome verifica con regularidad que el navegador tenga la configuración más segura. Te avisaremos si hay algo que debas revisar.</translation>
 <translation id="2652691236519827073">Abrir vínculo en una pes&amp;taña nueva de Chrome</translation>
+<translation id="2661616016316841783">Para obtener tus extensiones y más de <ph name="DEVICE" />, accede a Chrome</translation>
 <translation id="2665296953892887393">Envía a Google informes de fallos y <ph name="UMA_LINK" /> para ayudar a mejorar Google Chrome.</translation>
 <translation id="2668094785979141847">Hacer clic para salir de Google Lens</translation>
 <translation id="2674238339205910678">ChromeOS Flex no pudo guardar los datos de Chrome en tu Cuenta de Google porque los detalles de acceso de la cuenta están desactualizados</translation>
@@ -243,6 +247,7 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="3242486428260808857">Aprovecha más las compras en línea cuando usas la app de Chrome en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="3245429137663807393">Si también compartes los informes de uso de Chrome, estos incluirán las URLs que visites</translation>
 <translation id="3249558306861350254">Haz clic en <ph name="BEGIN_BOLD" />Establecer como predeterminado<ph name="END_BOLD" /> en la configuración de Windows.</translation>
+<translation id="3258706751219502154">Para obtener tus favoritos y más de <ph name="DEVICE" />, accede a Chrome</translation>
 <translation id="3259748324892322072">Obtener la app de Chrome</translation>
 <translation id="3282568296779691940">Acceder a Chrome</translation>
 <translation id="3286538390144397061">Reiniciar ahora</translation>
@@ -342,6 +347,7 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="4280647692742956593">Descarga Chrome en tu teléfono para abrir o crear grupos de pestañas nuevos estés donde estés.</translation>
 <translation id="4281844954008187215">Condiciones del Servicio</translation>
 <translation id="430327780270213103">Permitir que la extensión muestre solicitudes de acceso en la barra de herramientas de Chrome</translation>
+<translation id="4312908933392839680">Para obtener tu información guardada y más en todos tus dispositivos, accede a Chrome</translation>
 <translation id="4326552909330437744">{NUM_TABS,plural, =1{Chrome recomienda pausar la pestaña que ralentiza tu navegador}other{Chrome recomienda pausar las pestañas que ralentizan tu navegador}}</translation>
 <translation id="4328355335528187361">Google Chrome Dev (mDNS-In)</translation>
 <translation id="4329315893554541805">Para obtener la personalización y otras funciones, incluye Chrome en la Actividad web y de aplicaciones y los servicios de Google vinculados</translation>
@@ -507,7 +513,9 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="6046028983725193307">Para compartir el audio del sistema, abre la configuración del sistema y permite "Solo grabación de audio del sistema" para Chrome. Luego, deberás reiniciar Chrome.</translation>
 <translation id="6069027071882229820">Copiar como imagen</translation>
 <translation id="6070348360322141662">Para mejorar la seguridad, Google Chrome encriptará los datos</translation>
+<translation id="6071642418303142778">Para obtener tus contraseñas y más de <ph name="DEVICE" />, accede a Chrome</translation>
 <translation id="6075300983329039771">Tu organización, <ph name="MANAGER" />, requiere que accedas a Chrome</translation>
+<translation id="6077365059401096066">Para obtener tu lista de lectura y más de <ph name="DEVICE" />, accede a Chrome</translation>
 <translation id="6113794647360055231">Chrome mejorado</translation>
 <translation id="6116004140911290070">Habilitar habilidades en Chrome</translation>
 <translation id="6116252277240876590">Este idioma se usa para mostrar menús, parámetros de configuración, alertas y otros textos en Chrome</translation>
@@ -705,6 +713,7 @@ Si esta página no funciona como debería, intenta permitir la optimización.</t
 <translation id="7804947029129221742">Se cambió tu motor de búsqueda fuera de Chrome. Chrome lo restableció a su configuración predeterminada original para protegerte. <ph name="LEARN_MORE_LINK" /></translation>
 <translation id="7808348361785373670">Eliminar de Chrome…</translation>
 <translation id="7827099906024714326">Chrome debe verificar tu identidad para guardar algunos datos en tu Cuenta de Google y que puedan usarse en todos tus dispositivos. Si sales ahora, se borrarán estos datos.</translation>
+<translation id="7829850924999627855">Para obtener tu información guardada y más de <ph name="DEVICE" />, accede a Chrome</translation>
 <translation id="7832314606810669113">Para usar tus favoritos y más en todos tus dispositivos, accede a Chrome. Este favorito se guardará en tu Cuenta de Google después de que accedas.</translation>
 <translation id="7845233973568007926">Gracias por instalar <ph name="BUNDLE_NAME" />. Debes reiniciar tu computadora antes de usarlo.</translation>
 <translation id="7847170235260850604">Ejecutar Chrome cuando se inicie Windows</translation>

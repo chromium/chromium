@@ -100,6 +100,7 @@
 <translation id="1293556467332435079">Dosyalar</translation>
 <translation id="129553762522093515">Son kapatılanlar</translation>
 <translation id="1296581780163690620">Dosya indirilsin mi? (<ph name="FILE_SIZE" />)</translation>
+<translation id="1300812261204968311">"AI Modu ile arama yapın" görevi tamamlandı.</translation>
 <translation id="1305822519689023679">Google Hesabınızdaki şifreleri her zaman kullanabildiğinizden emin olmak için kimliğinizi doğrulayın.</translation>
 <translation id="1310362642333088424">Dosya, fotoğraf ve diğer içerikleri indirmek için daha fazla depolama alanınız olması gerekiyor.</translation>
 <translation id="1312168552565502328">Çerezler, site verileri</translation>
@@ -143,7 +144,6 @@
 <translation id="1408847409015257906">"Gizlilik ve Güvenlik"e dokunun.</translation>
 <translation id="1411386976162024013">Lens görsel arama</translation>
 <translation id="1414315029670184034">Sitelerin kameramı kullanmasına izin verme</translation>
-<translation id="1417474386970818917">Oturumu Kapat ve Sil</translation>
 <translation id="1426410128494586442">Evet</translation>
 <translation id="1430915738399379752">Yazdır</translation>
 <translation id="1433478348197382180">Okuma Modu</translation>
@@ -235,6 +235,7 @@
 <translation id="1670861525135254448">Aracı kaydedin</translation>
 <translation id="1671568970992212376">Fotoğrafları Google Fotoğraflar'ınıza kaydedin ve istediğiniz zaman onlara erişin.</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> dilinden <ph name="TARGET_LANGUAGE" /> diline</translation>
+<translation id="1676102443145105381">Aramak için ekranınızdaki herhangi bir öğeyi daire içine alın, vurgulayın veya öğeye dokunun.</translation>
 <translation id="1678855624321223424">Bu dosya, kuruluşunuzun politikaları uyarınca hassas bilgiler içeriyor olabilir</translation>
 <translation id="1689333818294560261">Takma ad</translation>
 <translation id="169048873465870056">Sekme kaldırılıp grup silinsin mi?</translation>
@@ -302,6 +303,7 @@
 <translation id="188237709236611317">Menü çubuğunu akıllı sıralama</translation>
 <translation id="1883255238294161206">Listeyi daralt</translation>
 <translation id="1883898928879467646">Sekme kaldırıldı</translation>
+<translation id="188779312703122101">Çalışma</translation>
 <translation id="1888854257756214946">Şifreyi seç…</translation>
 <translation id="1890237935065108104">Bu ayar kullanılamıyor.</translation>
 <translation id="1894023287452300670">Fiyatı buradan takip edin</translation>
@@ -313,6 +315,7 @@
 <translation id="1909201414196501151">Site eklendi ve sabitlendi</translation>
 <translation id="1911619930368729126">Google Drive'a yükle</translation>
 <translation id="1925706052394657380">iOS'te <ph name="BEGIN_BOLD" />Varsayılan Uygulamalar<ph name="END_BOLD" /> ayarlarını açın.</translation>
+<translation id="1929759944176590572">"Kameranızı kullanarak Google Lens ile arama yapın" görevi tamamlandı.</translation>
 <translation id="1938871630297275912">{count,plural, =1{Bağlantı alındı}other{{count} bağlantı alındı}}</translation>
 <translation id="1941314575388338491">Kopyalamak için iki kez dokunun.</translation>
 <translation id="1943478190258551035">Menü → Ayarlar</translation>
@@ -377,6 +380,7 @@
 <translation id="2120553909046681540">Kuruluşunuz gizli taramayı kapattı.</translation>
 <translation id="2122754583996902531">Tarayıcınız yönetilmektedir. <ph name="BEGIN_LINK" />Daha Fazla Bilgi<ph name="END_LINK" /></translation>
 <translation id="2139867232736819575">Kopyalanan Metni Ara</translation>
+<translation id="2140913838150159519">Sekme sabitleme</translation>
 <translation id="2147127444698817042">Yalnızca iPhone'da kullanılabilir</translation>
 <translation id="2148326276832455306">Sohbetler incelenir ve Google Yapay Zeka'yı daha iyi hale getirmek için kullanılır. Konumunuzla ilgili bilgiler de dahil olmak üzere <ph name="BEGIN_LINK" />etkinliğinizi yönetebilirsiniz<ph name="END_LINK" />. <ph name="BEGIN_LINK" />Seçenekleriniz hakkında daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="2148799636999124959">Kayıtlı şifrelerinizle sitelerde ve uygulamalarda hızla oturum açın.</translation>
@@ -415,6 +419,7 @@
 <translation id="2251686759395008410">Menü → Geçmiş</translation>
 <translation id="2252378061043785266">Bu Siteyi Asla Gösterme</translation>
 <translation id="2252749852083403809"><ph name="USER_EMAIL" /> için Drive'a kaydediliyor.</translation>
+<translation id="2253113628055975493">Sınır, <ph name="RESET_TIME" /> itibarıyla sıfırlanır</translation>
 <translation id="225614027745146050">Hoş Geldiniz</translation>
 <translation id="2256933947031277845">Kuruluşunuz yalnızca belirli hesaplarla oturum açmanıza izin vermektedir.</translation>
 <translation id="2257567812274161158">Senkronizasyon çalışmıyor.</translation>
@@ -502,6 +507,7 @@
 <translation id="2520787026086861736">Bu özelliği kapatmak için <ph name="BEGIN_LINK" />Otomatik Doldurma ve Parolalar<ph name="END_LINK" /> bölümüne gidin</translation>
 <translation id="2523295204312809179">Kapattığınız sekme grupları otomatik olarak buraya kaydedilir</translation>
 <translation id="2524699375503213836">Safari'deki verilerinizi taşıyın</translation>
+<translation id="2526166285241366046">Şifre kaydedin</translation>
 <translation id="2529021024822217800">Tümünü Aç</translation>
 <translation id="2536991091671391962">Kayıtlı şifrelerinizi istediğiniz cihazda kullanabilirsiniz. Şifreleriniz <ph name="EMAIL" /> için Google Şifre Yöneticisi'ne kaydedilir.</translation>
 <translation id="2538103551183528357">Gizli, şifre</translation>
@@ -512,6 +518,7 @@
 <translation id="2551153019974022505">Hesap hatası</translation>
 <translation id="2559785333866467778">Gemini önerileri</translation>
 <translation id="2559843230610279254">Sekme grubu, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> sekme.</translation>
+<translation id="2568950541173263955">"Gemini'a soru sorun" görevi tamamlandı.</translation>
 <translation id="257088987046510401">Temalar</translation>
 <translation id="2573117291489209663">Bitti</translation>
 <translation id="2577522251608256362">Mahalle</translation>
@@ -524,6 +531,7 @@
 <translation id="2601778637777010194">Ürünlerdeki fiyat düşüşlerini takip edin</translation>
 <translation id="2602372807870028932">Bu cihaza kaydedilen seçili bilgiler silinecek</translation>
 <translation id="260378315836159338">Ekranın üst tarafındaki + simgesine dokunun.</translation>
+<translation id="2612625650119459859">"Sekme sabitleyin" görevi tamamlandı.</translation>
 <translation id="2612676031748830579">Kart numarası</translation>
 <translation id="261305050785128654">Konuştuğunuz dilleri web sitelerine bildirin. Mümkün olduğunda bu dillerde içerik gösterirler.</translation>
 <translation id="2613747923081026172">Grup oluştur</translation>
@@ -645,6 +653,7 @@
 <translation id="3016518775797983090">Sayfa paylaşılamıyor</translation>
 <translation id="3020183492814296499">Kısayollar</translation>
 <translation id="3021342271734507256">Aramak için ekranınızdaki herhangi bir öğeyi daire içine alın, vurgulayın veya öğeye dokunun.</translation>
+<translation id="3022709384337560248">Önemli noktaları öğrenin, kavramları netleştirin, yanıtlar bulun ve daha fazlasını yapın</translation>
 <translation id="3023690182746510369">Web sayfasındaki içeriklerle takvim etkinliğinizi güçlendirmek için yapay zekayı kullanıyoruz. Lütfen bekleyin.</translation>
 <translation id="3030138564564344289">Tekrar indirmeyi dene.</translation>
 <translation id="3032704072014531631">"<ph name="GROUP_NAME" />" sekme grubuna erişiminizi anında kaybedersiniz ve <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) artık Google hizmetlerinde sizinle etkileşim kuramaz</translation>
@@ -757,6 +766,7 @@
 <translation id="340669334496430859">En Son Değişiklik Zamanı</translation>
 <translation id="3409785640040772790">Haritalar</translation>
 <translation id="3416023309465857378">25 Ekim 2023</translation>
+<translation id="3416904994126232207">"Şifre kaydedin" görevi tamamlandı.</translation>
 <translation id="3419787211763835342">Gelişmiş otomatik doldurma özelliğinin iyileştirilmesine yardım edin</translation>
 <translation id="3430407169377889553">Gemini'ı dikkatli bir şekilde kullanın ve gerekirse kontrolü ele alın. Gemini'ın görevler sırasında yaptığı işlemler sizin sorumluluğunuzdadır.</translation>
 <translation id="3435738964857648380">Güvenlik</translation>
@@ -782,7 +792,6 @@
 <translation id="3493531032208478708">Önerilen içerik hakkında <ph name="BEGIN_LINK" />daha fazla bilgi edinin<ph name="END_LINK" /></translation>
 <translation id="349446645805573740">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" dosyasının nereye kaydedileceğini seçin</translation>
 <translation id="3504377992102007712">Ayarlar</translation>
-<translation id="3507556793108992994">{count,plural, =1{1 sekme düzenlendi}other{# sekme düzenlendi}}</translation>
 <translation id="35083190962747987">Aç: ${url}</translation>
 <translation id="3511519535430890904">Tarama koruması ekleyin</translation>
 <translation id="3512572904898385012">Artık kameranızı kullanarak alışveriş ve çeviri yapabilirsiniz. Denemek için dokunun.</translation>
@@ -816,6 +825,7 @@
 <translation id="3581564640715911333">Diğer dillerdeki sayfaları çevirmeyi öner</translation>
 <translation id="3585482760087850407">Bu site için kamera erişimi</translation>
 <translation id="3587482841069643663">Tümü</translation>
+<translation id="3587558433833997099">Kameranızla veya bir resimle gördüklerinizi tanımlayın, satın alın ya da çevirin</translation>
 <translation id="3587885837929752825">Google Hesabınıza kaydedebileceğiniz öğeler kuruluşunuz tarafından kısıtlanmıştır.</translation>
 <translation id="3588820906588687999">Resmi Yeni Sekmede Aç</translation>
 <translation id="3595252146048399851">Neyin senkronize edileceğini istediğiniz zaman <ph name="BEGIN_LINK" />ayarlardan<ph name="END_LINK" /> seçebilirsiniz. Google, geçmişinize dayalı olarak Arama'yı ve diğer hizmetleri kişiselleştirebilir.</translation>
@@ -892,6 +902,7 @@
 <translation id="3875783148670536197">Nasıl Yapıldığını Göster</translation>
 <translation id="3877211858413020188">"<ph name="SITE_DOMAIN" />" sitesinin mikrofonunuza erişmesi engellendi</translation>
 <translation id="3878657761594430423">Sayfa tutucu</translation>
+<translation id="3884810423191119660">Sitelerde ve uygulamalarda kolayca oturum açabilmek için şifreleri güvenli bir şekilde kaydedin</translation>
 <translation id="3885587018298784481">Aile grubuna katılın</translation>
 <translation id="3888230626190453136">Gizli modda tarama</translation>
 <translation id="3888863481921783344">Bu bilgiler, etkinliğinize katılması muhtemel olan davetlileri göstermek için kullanılır.</translation>
@@ -929,7 +940,6 @@
 <translation id="3962326069546168954">Kaydet</translation>
 <translation id="3967327056943561740">Yer İşaretleri</translation>
 <translation id="3967822245660637423">İndirme tamamlandı</translation>
-<translation id="3968685670440571540">Şifreler ve Otomatik Doldurma'yı kullanmaya başladığınızdan beri</translation>
 <translation id="3973560090698854095">Ayrıca, <ph name="USER_EMAIL" /> Google Hesabınızda kayıtlı adresler de silinir.</translation>
 <translation id="398604237578616937"><ph name="USER_EMAIL" /> olarak oturum açtınız. Hesap menüsünü açın.</translation>
 <translation id="3986739045730058129">Sekmeye gidin</translation>
@@ -1053,6 +1063,7 @@
 <translation id="4389019817280890563">Dili değiştirmek için dokunun.</translation>
 <translation id="4390649422783033958"><ph name="USER_NAME" /> olarak oturum açtınız. <ph name="USER_EMAIL" />, Google üyeliği. Hesap menüsünü açın.</translation>
 <translation id="4393294364304621138">{COUNT,plural, =1{1 gün sonra}other{{COUNT} gün sonra}}</translation>
+<translation id="4398257142135160064">Gemini'a soru sorun</translation>
 <translation id="4402672425188312225">{COUNT,plural, =1{1 sekme}other{# sekme}}</translation>
 <translation id="4404790787924017676">Takip ettiğiniz ürünlerle ilgili fiyat düşüşü uyarıları alın</translation>
 <translation id="4405320213589929829">Yerel bilgileri ve yol tariflerini görmek için web sayfalarındaki adresleri kullanın.</translation>
@@ -1316,6 +1327,7 @@
 <translation id="519530786644929958">İndirme başarısız oldu ve tekrar denenemez.</translation>
 <translation id="519620255540220054">Ana sayfayı özelleştirin</translation>
 <translation id="5197255632782567636">İnternet</translation>
+<translation id="519726997675893421">Sekmelerinizi gruplar halinde düzenleyin</translation>
 <translation id="5200894869889836319">İzin verme seçenekleri</translation>
 <translation id="5203051773066903947">Gir</translation>
 <translation id="5206453674369664567">Oturumu kapat ve verileri temizle</translation>
@@ -1342,7 +1354,6 @@
 <translation id="5250371859659394278">Bilinmeyen bir kaynaktan</translation>
 <translation id="525510229763628836">Simge durumuna küçültülmüş</translation>
 <translation id="5260842098960755113">İleti dizisi kapatıldı</translation>
-<translation id="5269913829202614649">Ana sayfayı özelleştirin</translation>
 <translation id="5271265092610673171">{count,plural, =1{Zorunlu bir alan boş. Kaydetmeden önce bu alanı doldurun.}other{Bazı zorunlu alanlar boş. Kaydetmeden önce bu alanları doldurun.}}</translation>
 <translation id="5271549068863921519">Şifreyi kaydet</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) bir sekme grubuna katılmanızı istiyor. Bağlantıya sahip olan herkes tüm sekmeleri düzenleyebilir. Bu nedenle katılırken dikkatli olun. Bağlantı 48 saat süreyle geçerlidir.</translation>
@@ -1452,7 +1463,6 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5632194969640946913">Ürünleri, yerleri ve metinleri keşfetmek için herhangi bir sayfada gördüğünüz içeriklere göz atarken ve arama yaparken daha fazla bilgi edinin.</translation>
 <translation id="5632485077360054581">Nasıl yapıldığını göster</translation>
 <translation id="5633237939819267663">{count,plural, =1{Yer işareti "{title}" konumuna kaydedildi}other{{count} yer işareti "{title}" konumuna kaydedildi}}</translation>
-<translation id="564170563478022912">Oturum kapatılsın mı? Kaydedilmemiş hesap verileri silinecek.</translation>
 <translation id="5642707040609478753">Okunmadı olarak işaretle</translation>
 <translation id="5646376287012673985">Konum</translation>
 <translation id="5647096944343801045">Büyük giriş noktası</translation>
@@ -1468,7 +1478,6 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5669528293118408608">www</translation>
 <translation id="5676124785522323481">Bağlı Uygulamalar'ı yönetin</translation>
 <translation id="567881659373499783">Sürüm <ph name="PRODUCT_VERSION" /></translation>
-<translation id="5680012489335339762">Hesap değiştirilsin mi? Kaydedilmemiş hesap verileri silinecek.</translation>
 <translation id="5683499062697987550">Şifreleri kullanmak ve Google Hesabınıza kaydetmek için kimliğinizi doğrulayın.</translation>
 <translation id="5684761169742812828">Bu şifre, internette bir veri ihlalinde açığa çıktı. Şu anda şifreyi değiştirecek vaktiniz yoksa Google daha sonra hatırlamanız için bu uyarıyı saklamanızı önerir.</translation>
 <translation id="5694848685995373177"><ph name="USER_EMAIL" /> için Drive'a kaydedildi.</translation>
@@ -1744,7 +1753,6 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="6506996418997555004">"<ph name="GROUP_NAME" />" sekme grubunu paylaşma</translation>
 <translation id="6507973708545996744">Okuma listenize tüm cihazlarınızdan erişmek için oturum açın.</translation>
 <translation id="6518133107902771759">Doğrula</translation>
-<translation id="6518861084553706202">Sekmeler kapatılarak şifreler, tarama geçmişi, çerezler ve diğer veriler silinecek.</translation>
 <translation id="6523575793810663688">Nasıl yapıldığını göster</translation>
 <translation id="6524082013156754186">Hesaba kaydet</translation>
 <translation id="6524918542306337007">Gizli Mod Kullanılamıyor</translation>
@@ -1897,6 +1905,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="6945221475159498467">Seç</translation>
 <translation id="6946722113367118030">Düşünme</translation>
 <translation id="6950522403736391608">Gizli</translation>
+<translation id="695965663642079255">Daha hızlı ödeme yapmak için ödeme bilgilerini kaydedip yönetin</translation>
 <translation id="6962809930976936328">Gemini ile analizleri görün</translation>
 <translation id="6964300328304469089">Şu anda <ph name="NAME" />, <ph name="EMAIL" /> seçili. Bir hesap seçin.</translation>
 <translation id="6964760285928603117">Gruptan Kaldır</translation>
@@ -1939,6 +1948,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="7102005569666697658">İndiriliyor… <ph name="FILE_SIZE" /></translation>
 <translation id="7104701424653979232">Menü → Ayarlar → Ödeme yöntemleri</translation>
 <translation id="7108338896283013870">Gizle</translation>
+<translation id="7116108700874517630">"Ödeme yöntemlerini yönetin" görevi tamamlandı.</translation>
 <translation id="7119533351103192286">Gemini'ı kullan</translation>
 <translation id="7127922377013221748">Araç Çubuğu'nu gizle</translation>
 <translation id="7128693485119315539">Kuruluşunuzun, yönetilen hesabınıza bağlı tarama geçmişiniz ve şifreleriniz gibi tarama verilerini görmesi ve yönetmesi gerekebilir.</translation>
@@ -1968,7 +1978,6 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="721218676460477064">Bu makaleyi özetle</translation>
 <translation id="7215621211572884440">Pop-up'lara izin verildi</translation>
 <translation id="7218491361283758048">Posta kodu</translation>
-<translation id="7220786058474068424">İşleme koyuluyor</translation>
 <translation id="7221173315674413369">Yenilikler bölümünde yeni özellikleri ve ipuçlarını keşfedin</translation>
 <translation id="7223102419539744003">Sekmeyi Kapat</translation>
 <translation id="7223134495231529579">İndirilenlere kaydet</translation>
@@ -2056,7 +2065,6 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="7491161827858509164">Daha önce indirdiğiniz dosyaları görmek için <ph name="BEGIN_LINK" />Dosyalar<ph name="END_LINK" /> uygulamasını açın</translation>
 <translation id="7498234416455752244">Düzenlemeye devam et</translation>
 <translation id="7500244509706269886">Formu otomatik doldur</translation>
-<translation id="7504841985386528758">sekme grupları hakkında bilgi edindiğinizden beri</translation>
 <translation id="750493650310597496">0 yer işareti seçildi</translation>
 <translation id="7505402981231763928">Gemini'ı kullanmak için oturum açmanız gerekir</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
@@ -2101,6 +2109,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="7642277834834046856">Sekmelerinizdeki fiyat düşüşleri</translation>
 <translation id="7646263789464975852">Menü → Ayarlar → Güvenlik Kontrolü</translation>
 <translation id="7646772052135772216">Şifre senkronizasyonu çalışmıyor</translation>
+<translation id="7647899850076995563">Kameranızı kullanarak Google Lens ile arama yapın</translation>
 <translation id="764827086632467055">Varsayılan Tarayıcı Uygulaması'na dokunun</translation>
 <translation id="7648666127045672239">Tek dokunuşla buraya gelin</translation>
 <translation id="7649070708921625228">Yardım</translation>
@@ -2114,6 +2123,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="7669493687462784703"><ph name="WEBSITE" /> sitesinden yapılandırma profili indirme işlemine devam edilsin mi?</translation>
 <translation id="7673346542062368520">Gizli modda göz atmak için sola kaydırabilirsiniz.</translation>
 <translation id="7679915578945954324">Site adresleri kopyalandı</translation>
+<translation id="76830702375944649">"Sekme grubu oluşturun" görevi tamamlandı.</translation>
 <translation id="7695953765525234038">Arama çubuğu</translation>
 <translation id="7696316012653762532">Sayfayı çevirme seçenekleri</translation>
 <translation id="7700527812567437847">Ekranda Google Lens ile Arama Yap</translation>
@@ -2133,6 +2143,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="7738120385185846461">Sorun Bildir…</translation>
 <translation id="7744192722284567281">Veri ihlali kapsamında bulundu</translation>
 <translation id="7749790401023484470">Metin seçmediniz.</translation>
+<translation id="7753518506804173312">Daha sonra kolayca erişmek için favori sitelerinizi sabitleyin</translation>
 <translation id="7757015014239760147">Kullanıcı adı yok ••••••••</translation>
 <translation id="775755486779745798">Son kullanma tarihinin ay kısmını (<ph name="MONTH" />) otomatik doldur</translation>
 <translation id="7758789811447313947">Mor tema</translation>
@@ -2215,6 +2226,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="7987685713885608670">Ek güvenlik için, Google Şifre Yöneticisi'ne kaydedilmeden önce şifrelerinizi cihazınızda şifreleyin</translation>
 <translation id="798991908416757345">Sekme grupları kullanılamıyor</translation>
 <translation id="7993170188789685695">Bu bildirimi kapatmak için iki kez dokunun.</translation>
+<translation id="799539252161113331">"Google Lens ile ekranınızda arama yapın" görevi tamamlandı.</translation>
 <translation id="7996239959906074962">Kur…</translation>
 <translation id="800361585186029508">Girilen URL'leri Google Chrome'da açar.</translation>
 <translation id="8005666035647241369">Bu cihazdaki Google Şifre Yöneticisi'ne</translation>
@@ -2258,6 +2270,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="8102130909719902723">Y</translation>
 <translation id="8105368624971345109">Kapat</translation>
 <translation id="8106442513853561174">Tam konum paylaşın</translation>
+<translation id="8110348296858341492">Google Arama'da AI Modu ile yapay zeka destekli yanıtlar alma</translation>
 <translation id="8110894698020598040">{count,plural, =1{1 şifre otomatik olarak dolduruldu}other{# şifre otomatik olarak dolduruldu}}</translation>
 <translation id="8114753159095730575">Dosya indirme işlevi kullanılabilir. Seçenekler ekranın alt tarafındadır.</translation>
 <translation id="8123502380991596210">Yenilikler seçeneğini gizle</translation>
@@ -2278,6 +2291,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="8184895727539791845">Gemini'ın kameranızı kullanmasına izin vermek için iOS ayarlarında Kamera'yı etkinleştirin</translation>
 <translation id="8185076488803799132">İçe aktar</translation>
 <translation id="8187200657863701733">Mevcut Chrome Düzeyi</translation>
+<translation id="8189484403434216074">Sekme grubu oluşturma</translation>
 <translation id="8189615296021678665">Bir sonraki oturum açma işleminizde bu şifreye kolayca erişmek için "Kaydet"e dokunun.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Cihazlarınız<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Şifre ekleyin</translation>
@@ -2297,6 +2311,7 @@ Bilgisayarınızdan devam etmek için <ph name="OTHER_EMAIL" /> hesabına geçin
 <translation id="823339794112333264">Mikrofonu aç</translation>
 <translation id="8240217649914883113">Bunu takvimime ekle</translation>
 <translation id="824379025871762038">Asla İzin Verme</translation>
+<translation id="8244387390464017490">Yeni sekmeyi özelleştir</translation>
 <translation id="8250920743982581267">Dokümanlar</translation>
 <translation id="8258734532103758067">Verilerimi dışa aktardım</translation>
 <translation id="8258999165172757081">Eklendi</translation>

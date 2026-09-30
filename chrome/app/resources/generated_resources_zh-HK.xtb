@@ -1568,6 +1568,7 @@
 <translation id="2198625180564913276">正在新增設定檔。這項操作可能需時數分鐘。</translation>
 <translation id="2198712775285959645">編輯</translation>
 <translation id="2199298570273670671">錯誤</translation>
+<translation id="2199546617947317537">如要取用其他裝置上的記錄，請登入並同步記錄和分頁至 <ph name="EMAIL" />。你也可在你的所有裝置上取得密碼及其他內容。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="220006241671843310">選擇是否讓 Chrome 使用直接在裝置上執行的 AI 模型</translation>
 <translation id="2200094388063410062">電郵</translation>
 <translation id="2200781749203116929">ChromeOS 系統記錄</translation>
@@ -2350,6 +2351,7 @@
 <translation id="2777525873368474674">貼上圖片連結</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{找到 1 個傳送大量通知的網站}other{找到 {NUM_SITES} 個傳送大量通知的網站}}</translation>
 <translation id="2778471504622896352">將遠端應用程式新增至 Chrome OS 啟動器</translation>
+<translation id="2781037472881921606">如要取用其他裝置上的記錄，請同步記錄。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />、<ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783952358106015700">透過 <ph name="APP_NAME" /> 使用安全密鑰</translation>
@@ -2412,6 +2414,7 @@
 <translation id="2826576843404243001">如果網站不支援安全連線，系統會在瀏覽前發出警告。由於已啟用「進階保護」功能，因此你無法變更此設定。</translation>
 <translation id="2828375943530438449">從「登入」頁面返回</translation>
 <translation id="2828833307884755422">已釋出 <ph name="MEMORY_SAVINGS" /></translation>
+<translation id="2828851448902426206">如要取用其他裝置上的分頁，請登入並同步記錄。你也可在你的所有裝置上取用已儲存的資料及其他內容。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="2833144527504272627">使用文字游標瀏覽</translation>
 <translation id="2833727845850279275">此檔案包含惡意軟件，或來自可疑網站。</translation>
 <translation id="2835177225987815960">系統將會重設目前的掃瞄設定，包括任何已指派的按鈕裝置和自動掃瞄速度偏好設定。</translation>
@@ -2778,6 +2781,7 @@
 <translation id="3102309003841389927">查看標誌更新</translation>
 <translation id="310297983047869047">上一張投影片</translation>
 <translation id="3103451787721578293">請提供上載這些資料的原因：</translation>
+<translation id="3105253709809514429">如要取用其他裝置上的分頁，請登入並同步記錄。你也可在你的所有裝置上取用擴充程式及其他內容。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="3105339775057145050">上次不成功的更新</translation>
 <translation id="3105796011181310544">要改回使用 Google 嗎？</translation>
 <translation id="3105820656234755131">已更新密碼</translation>
@@ -2789,6 +2793,7 @@
 <translation id="3109206895301430738">儲存咗嘅分頁群組</translation>
 <translation id="3109724472072898302">已收合</translation>
 <translation id="3112292765614504292">應用程式大小：<ph name="APP_SIZE" /></translation>
+<translation id="3112532142993641404">如要取用其他裝置上的分頁，請登入並同步記錄。你也可在你的所有裝置上取用書籤及其他內容。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="311347022006935575">已加入此分頁</translation>
 <translation id="311394601889664316">不允許網站編輯裝置上的檔案或資料夾</translation>
 <translation id="3113970906450647715">按鈕取消咗固定</translation>
@@ -3294,6 +3299,7 @@
 <translation id="3498138244916757538"><ph name="SPECIFIC_NAME" /> 需要關閉，麥克風設定的變更才會生效。請關閉 <ph name="SPECIFIC_NAME" /> 以繼續。</translation>
 <translation id="3500417806337761827">連接共用檔案時發生錯誤。已連接過多 SMB 共用檔案。</translation>
 <translation id="3500764001796099683">啟用隔離的網絡應用程式</translation>
+<translation id="3501134531169168291">如要取用<ph name="DEVICE" />上的分頁，請登入並同步記錄。你也可在你的所有裝置上取用擴充程式及其他內容。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="3505100368357440862">購物建議</translation>
 <translation id="3507650052590605702">管理密碼</translation>
 <translation id="3507888235492474624">重新掃瞄藍牙裝置</translation>
@@ -3781,6 +3787,7 @@
 <translation id="3838085852053358637">無法載入擴充程式</translation>
 <translation id="3838486795898716504">更多<ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">沒有已放大或縮小的網站</translation>
+<translation id="3839108710633244251">如要取用其他裝置上的記錄，請登入並同步記錄和分頁至 <ph name="EMAIL" />。你也可在你的所有裝置上取用已儲存的資料及其他內容。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="3839516600093027468">一律禁止 <ph name="HOST" /> 查看剪貼簿</translation>
 <translation id="3840096463915153852">對話記錄</translation>
 <translation id="3841319830220785495">預設自然語音</translation>
@@ -4304,6 +4311,7 @@
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{保留群組}other{保留群組}}</translation>
 <translation id="4261429981378979799">擴充程式權限</translation>
 <translation id="4262004481148703251">關閉警告</translation>
+<translation id="4262060800239714974">如要取用<ph name="DEVICE" />上的分頁，請同步記錄和分頁至 <ph name="EMAIL" />。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="4263470758446311292">節省最多記憶體。分頁會在較短時段過後進入閒置狀態。</translation>
 <translation id="4263824086525632">北極光</translation>
 <translation id="4265096510956307240">驗證身分</translation>
@@ -4940,8 +4948,10 @@
 <translation id="4750185073185658673">在手機上查看其他權限。請確保手機的藍牙和 Wi-Fi 已開啟。</translation>
 <translation id="4750394297954878236">建議</translation>
 <translation id="475088594373173692">第一位使用者</translation>
+<translation id="4751925628341802838">如要取用其他裝置上的記錄，請登入並同步記錄和分頁至 <ph name="EMAIL" />。你也可在你的所有裝置上取用擴充程式及其他內容。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="4753084533826742808">必須有至少 1 個字元</translation>
 <translation id="4754590344707355551">使用擴充程式增強瀏覽器功能</translation>
+<translation id="4756130875344525429">如要取用<ph name="DEVICE" />上的記錄，請登入並將記錄和分頁同步至 <ph name="EMAIL" />。你也可在你的所有裝置上取用已儲存的資料及其他內容。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="4756378406049221019">停止/重新載入</translation>
 <translation id="4756388243121344051">記錄(&amp;H)</translation>
 <translation id="4756627014339714615">重新導向</translation>
@@ -5252,6 +5262,7 @@
 <translation id="497403230787583386">已完成安全檢查。即將列印文件。</translation>
 <translation id="4974442344472293753">更新結果</translation>
 <translation id="4975771730019223894">應用程式徽章</translation>
+<translation id="4976647810464861866">如要取用其他裝置上的分頁，請登入並同步記錄。你也可在你的所有裝置上取用閱讀清單及其他內容。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">確認存取權</translation>
 <translation id="4979263087381759787">開發人員選項</translation>
@@ -5291,6 +5302,7 @@
 <translation id="5008936837313706385">活動名稱</translation>
 <translation id="5009463889040999939">正在重新命名設定檔。這項操作可能需時數分鐘。</translation>
 <translation id="5010886807652684893">視覺化檢視</translation>
+<translation id="5012016139642806466">在所有裝置上存取密碼及其他設定</translation>
 <translation id="5012523644916800014">管理密碼和密鑰</translation>
 <translation id="501394389332262641">低電量音效</translation>
 <translation id="5014286001996333986">要取代還是建立新群組？</translation>
@@ -5423,6 +5435,7 @@
 <translation id="511313294362309725">開啟「快速配對」</translation>
 <translation id="5113992879909788634">進一步了解 Chrome 自動瀏覽功能</translation>
 <translation id="51143538739122961">插入並輕觸安全密鑰</translation>
+<translation id="5114635223409082546">如要取用<ph name="DEVICE" />上的分頁，請登入並同步記錄。你也可在你的所有裝置上取用書籤及其他內容。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="5115338116365931134">SSO</translation>
 <translation id="5116628073786783676">另存音效檔案(&amp;V)…</translation>
 <translation id="5117139026559873716">解除 <ph name="DEVICE_TYPE" /> 和手機的連接。日後這兩部裝置將不會自動連接。</translation>
@@ -5848,6 +5861,7 @@
 <translation id="5457795687441958389">保持不登入狀態</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">PIN 輸入錯誤的次數過多。如要存取密鑰和密碼，請變更 PIN。</translation>
+<translation id="5459251585760045919">如要取用<ph name="DEVICE" />上的記錄，請登入並將記錄和分頁同步至 <ph name="EMAIL" />。你也可在你的所有裝置上取用擴充程式及其他內容。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="5459470938885464873">匯入憑證時發生錯誤</translation>
 <translation id="5459864179070366255">繼續安裝</translation>
 <translation id="5460861858595506978">靈感</translation>
@@ -6019,6 +6033,7 @@
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">要儲存使用者名稱嗎？</translation>
 <translation id="5585019845078534178">付款卡</translation>
+<translation id="5585064628683466904">如要取用其他裝置上的記錄，請登入並同步記錄和分頁至 <ph name="EMAIL" />。你也可在你的所有裝置上取用閱讀清單及其他內容。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="5585118885427931890">無法建立書籤資料夾。</translation>
 <translation id="558563010977877295">開啟特定網頁或一組網頁</translation>
 <translation id="5587592231724900065">擴充程式正在控制此設定</translation>
@@ -6754,6 +6769,7 @@
 <translation id="6175910054050815932">取得連結</translation>
 <translation id="6177478397823976397">搵唔到裝置。你可以喺新分頁度開說明中心文章</translation>
 <translation id="6177779807714496775">在左邊畫面中開啟連結</translation>
+<translation id="6178186430790239237">如要取用其他裝置上的分頁，請同步記錄和分頁至 <ph name="EMAIL" />。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="6178664161104547336">選取憑證</translation>
 <translation id="6178682841350631965">您的登入資料已更新</translation>
 <translation id="6179830757749383456">瀏覽器由 <ph name="BROWSER_DOMAIN" /> 管理，個人檔案由 <ph name="PROFILE_DOMAIN" /> 管理</translation>
@@ -7064,6 +7080,7 @@
 <translation id="6430202563517028640">將連結加入閱讀清單</translation>
 <translation id="6430814529589430811">Base64 編碼 ASCII，單一憑證</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> 將為這部電腦的所有使用者設定自動更新。</translation>
+<translation id="6431970976661940755">如要取用<ph name="DEVICE" />上的分頁，請登入並同步記錄。你也可在你的所有裝置上取用閱讀清單及其他內容。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="6434104957329207050">點掃瞄速度</translation>
 <translation id="6434309073475700221">捨棄</translation>
 <translation id="6434755719322447931">混亂</translation>
@@ -7228,6 +7245,7 @@
 <translation id="6556903358015358733">主題和桌布</translation>
 <translation id="6557199166823345360">就所選項目加入更多資料或提問以修正搜尋</translation>
 <translation id="6557290421156335491">我的捷徑</translation>
+<translation id="655745275895381718">如要取用<ph name="DEVICE" />上的分頁，請登入並同步記錄。你也可在你的所有裝置上取用已儲存的資料及其他內容。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="6558098963164662391">從字典中移除(&amp;R)</translation>
 <translation id="6560061709899140565">顯示其他投放工作階段</translation>
 <translation id="656065428026159829">查看更多</translation>
@@ -7915,6 +7933,7 @@
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{已將 1 個密碼匯入至 <ph name="USER_EMAIL" /> 的「<ph name="BRAND" />」}other{已將 {NUM_PASSWORDS} 個密碼匯入至 <ph name="USER_EMAIL" /> 的「<ph name="BRAND" />」}}</translation>
 <translation id="7065534935986314333">關於系統</translation>
 <translation id="706626672220389329">連接共用裝置時發生錯誤。指定的共用裝置已連接。</translation>
+<translation id="7066357648902789011">如要取用<ph name="DEVICE" />上的記錄，請登入並將記錄和分頁同步至 <ph name="EMAIL" />。你也可在你的所有裝置上取得密碼及其他內容。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="7067396782363924830">氛圍顏色</translation>
 <translation id="7067725467529581407">不再顯示此訊息。</translation>
 <translation id="7068539819344620805">你現在可以隨時透過「自訂 Chrome」選單為瀏覽器換上新風格</translation>
@@ -8100,6 +8119,7 @@
 <translation id="7214047272988222011">已允許 – <ph name="PERMISSION_DETAILS" />。開啟<ph name="LINK_BEGIN" />系統相機存取權<ph name="LINK_END" />。</translation>
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{在 1 個分頁的群組中新增分頁}other{在 # 個分頁的群組中新增分頁}}</translation>
 <translation id="721490496276866468">匯入密碼</translation>
+<translation id="7216638029417040861">如要取用其他裝置上的記錄，請登入並同步記錄和分頁至 <ph name="EMAIL" />。你也可在你的所有裝置上取用書籤及其他內容。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="7217208603285112910">所選內容不是<ph name="LANGUAGE" /></translation>
 <translation id="7217317914610152390">使用全新「文字註解」工具加入文字、留言和附註</translation>
 <translation id="7219254577985949841">要刪除網站資料嗎？</translation>
@@ -8110,6 +8130,7 @@
 <translation id="7222232353993864120">電郵地址</translation>
 <translation id="7222335051802562841">完成更新</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7222513457790351522">如要取用<ph name="DEVICE" />上的記錄，請登入並將記錄和分頁同步至 <ph name="EMAIL" />。你也可在你的所有裝置上取用閱讀清單及其他內容。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="7223027547122518521">選取此網站能讀取的檔案</translation>
 <translation id="7223952304612664117">此操作會允許系統服務使用「定位精確度」以判斷你的位置。「定位精確度」會使用無線訊號和感應器資料，估算裝置位置。</translation>
 <translation id="7225082563376899794">在填寫密碼時使用 Windows Hello</translation>
@@ -8995,6 +9016,7 @@
 <translation id="7911118814695487383">Linux</translation>
 <translation id="791247712619243506">取消設定</translation>
 <translation id="7912974581251770345">翻譯</translation>
+<translation id="7913805372428124107">如要取用<ph name="DEVICE" />上的分頁，請登入並同步記錄。你也可在你的所有裝置上取得密碼及其他內容。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="7914399737746719723">已安裝應用程式</translation>
 <translation id="7915457674565721553">連線至互聯網即可設定家長監控設定</translation>
 <translation id="7916364730877325865">您的機構不允許您開啟此帳戶的同步功能</translation>
@@ -9276,6 +9298,7 @@
 <translation id="810362914482827094">搜尋密鑰</translation>
 <translation id="8104088837833760645">下載 eSIM 卡設定檔</translation>
 <translation id="8104388155778519213">使用「Google 智能鏡頭」分享畫面內容</translation>
+<translation id="8104412594956510627">如要取用<ph name="DEVICE" />上的記錄，請同步記錄。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="8104778744208707085">有待處理</translation>
 <translation id="8105273883928376822">如要繼續，請登入帳戶。</translation>
 <translation id="8106114112474206597">按下「i」代表按下滑鼠按鍵</translation>
@@ -9306,6 +9329,7 @@
 <translation id="8124313775439841391">管理 ONC</translation>
 <translation id="8125651784723647184">分享密碼功能是由管理員管理</translation>
 <translation id="8126355825906412872">微笑</translation>
+<translation id="8126498026310640675">如要取用<ph name="DEVICE" />上的記錄，請登入並將記錄和分頁同步至 <ph name="EMAIL" />。你也可在你的所有裝置上取用書籤及其他內容。你可在設定中隨時停止同步。Google 可能會根據你的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="813082847718468539">檢視網站資料</translation>
 <translation id="8131740175452115882">確定</translation>
 <translation id="8133297578569873332">可以接受 - FM</translation>

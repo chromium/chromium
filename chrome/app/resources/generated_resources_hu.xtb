@@ -332,6 +332,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1231572247662419826">A webhelyek engedélyt kérhetnek az egéralapú bevitelre és használatra</translation>
 <translation id="1232569758102978740">Névtelen</translation>
 <translation id="1233497634904001272">A kérelem befejezéséhez érintse meg újra a biztonsági hardverkulcsot.</translation>
+<translation id="1233566345244684257">A Gemini-appokhoz hozzáféréssel rendelkező személyek vezérelhetik az Ön Chrome böngészőjét.</translation>
 <translation id="1233721473400465416">Nyelv</translation>
 <translation id="1233835246554936745">{0,plural, =1{1 elem mentése a fiókba}other{# elem mentése a fiókba}}</translation>
 <translation id="1234736487471201993">QR-kód létrehozása ehhez a képhez</translation>
@@ -554,6 +555,7 @@ Jelszavait bármikor ellenőrizheti itt: <ph name="GOOGLE_PASSWORD_MANAGER" />.<
 <translation id="1421514190500081936">Adja meg az adat letöltésének okát:</translation>
 <translation id="1422159345171879700">Nem biztonságos szkriptek betöltése</translation>
 <translation id="1425040197660226913">Nem sikerült a feltöltés. 20 MB-nál kisebb képet használjon.</translation>
+<translation id="1426154609634610063">A Gemini használatával járó kockázatok áttekintése</translation>
 <translation id="1426410128494586442">Igen</translation>
 <translation id="142655739075382478"><ph name="APP_NAME" /> letiltva</translation>
 <translation id="1427179946227469514">Szövegfelolvasó hangmagassága</translation>
@@ -1840,6 +1842,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2416435988630956212">Billentyűzet funkciógombjai</translation>
 <translation id="2419131370336513030">Telepített alkalmazások megtekintése</translation>
 <translation id="2419706071571366386">A biztonság érdekében jelentkezzen ki, amikor nem használja a számítógépet.</translation>
+<translation id="2423226060967554289">Könyvjelzősáv megjelenítése</translation>
 <translation id="2423506062824112361">Ismeretlen okból nem sikerült letölteni a tartalmat.</translation>
 <translation id="2423578206845792524">Ké&amp;p mentése másként...</translation>
 <translation id="2424424966051154874">{0,plural, =1{Vendég}other{Vendég (#)}}</translation>
@@ -2077,6 +2080,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2588271083332682494">Rendszerezés lapcsoportokkal</translation>
 <translation id="2588636910004461974"><ph name="VENDOR_NAME" /> gyártótól származó eszközök</translation>
 <translation id="2589658397149952302">Soha ne jelenjenek meg Drive-fájlok</translation>
+<translation id="2595270892115552212">Amikor más Gemini-appokból (beleértve a gemini.google.com webhelyet és a Gemini mobilalkalmazásokat) indít el egy feladatot, a Gemini használhatja a Chrome automatikus böngészés funkcióját ezen az eszközön a webhelyekkel való interakcióhoz, valamint feladatok elvégzéséhez az Ön nevében. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="2597073208962000830">A Közeli megosztás funkció a Bluetooth használatával keres közelben lévő eszközöket.</translation>
 <translation id="2598136842498757793">Eszköztár gombjainak személyre szabása</translation>
 <translation id="2598710988533271874">Rendelkezésre áll az új Chrome</translation>
@@ -2814,6 +2818,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3132996321662585180">Frissítés naponta</translation>
 <translation id="3134312457920437826">Nem lehet telepíteni a bővítményt, mert nem támogatott manifest-verziót használ.</translation>
 <translation id="3134393957315651797">Válasszon ki kísérleti állapotot a(z) <ph name="EXPERIMENT_NAME" /> kísérlethez. Kísérlet leírása: <ph name="EXPERIMENT_DESCRIPTION" /></translation>
+<translation id="3134822828309700120">A többi Gemini-app böngészhet távolról bármely eszközről</translation>
 <translation id="3139925690611372679">Alapértelmezett sárga avatar</translation>
 <translation id="314095642664111744">Fókusz kikapcsolása</translation>
 <translation id="3141093262818886744">Megnyitás mindenképpen</translation>
@@ -3628,6 +3633,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="3736487688526377259">Válassza ki azt az eszközt, amelyen meg szeretné kapni ezt a linket.</translation>
 <translation id="3737058101969549870">Elkülönítve legyenek a meglévő böngészési adatai ettől az új profiltól?</translation>
 <translation id="3738924763801731196"><ph name="OID" />:</translation>
+<translation id="3739203168951159754">A Gemini csak akkor használhatja az automatikus böngészést ezen az eszközön, ha az eszköz fel van ébresztve, és a Chrome fut.</translation>
 <translation id="3739254215541673094">Megnyitja: <ph name="APPLICATION" />?</translation>
 <translation id="3739349485749941749">A webhelyek engedélyt kérhetnek arra, hogy az Ön eszköze számára hozzáférhető nyomtatókat keressenek és használjanak</translation>
 <translation id="3741056951918180319">Bármikor, bármely webhelyen használhatja a bővítményt, ha rákattint</translation>
@@ -3982,6 +3988,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="3987993985790029246">Link másolása</translation>
 <translation id="3988124842897276887">Ez a lap USB-eszközhöz csatlakozik</translation>
 <translation id="3989635538409502728">Kijelentkezés</translation>
+<translation id="399132041334931433">Lapok hozzáadása új csoporthoz</translation>
 <translation id="399179161741278232">Importált</translation>
 <translation id="3992008114154328194"><ph name="FILE_NAME" /> letöltése folyamatban; állapot: <ph name="STATUS" /></translation>
 <translation id="3994075804072562819">Az USB-eszközök feletti irányítás átadása a következőnek: <ph name="SPECIFIC_NAME" />.</translation>
@@ -5211,6 +5218,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="495170559598752135">Műveletek</translation>
 <translation id="4951966678293618079">Soha ne mentsen jelszavakat ehhez a webhelyhez</translation>
 <translation id="4952580838083306838">Rendező elrejtése</translation>
+<translation id="4952628481830269193">Könyvjelzősáv megjelenítése</translation>
 <translation id="4953808748584563296">Alapértelmezett narancssárga avatar</translation>
 <translation id="4954652437333037880">Fájl</translation>
 <translation id="4954831709600868883">Kérdés feltevése a következőről: <ph name="TEXT" /></translation>
@@ -5284,6 +5292,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5008936837313706385">Tevékenység neve</translation>
 <translation id="5009463889040999939">Profil átnevezése. Ez eltarthat néhány percig.</translation>
 <translation id="5010886807652684893">Vizuális nézet</translation>
+<translation id="5012016139642806466">Bármely eszközéről hozzáférhet jelszavaihoz és egyebekhez</translation>
 <translation id="5012523644916800014">Jelszavak és azonosítókulcsok kezelése</translation>
 <translation id="501394389332262641">Hangjelzés az alacsony akkumulátorszintről</translation>
 <translation id="5014286001996333986">Lecseréli, vagy pedig új csoportot hoz létre?</translation>
@@ -5463,6 +5472,7 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5149602533174716626">Videóképkocka másolása</translation>
 <translation id="5150254825601720210">Netscape tanúsítvány - SSL-szerver neve</translation>
 <translation id="5151354047782775295">Szabadítson fel tárhelyet, vagy bizonyos adatok automatikusan törlődhetnek</translation>
+<translation id="5152719737931716272">Feladat kész és visszaküldve a Gemini szolgáltatásba</translation>
 <translation id="5153074793829217329">Az egérkurzor vezérlése a billentyűzettel vagy a numerikus billentyűzettel</translation>
 <translation id="5153234146675181447">Telefon elfelejtése</translation>
 <translation id="5153907427821264830"><ph name="STATUS" /> • <ph name="MESSAGE" /></translation>
@@ -5780,6 +5790,7 @@ Több kapcsolót is hozzárendelhet ehhez a művelethez.</translation>
 <translation id="5414836363063783498">Ellenőrzés...</translation>
 <translation id="5415497281076257439">Kifejezés</translation>
 <translation id="5415871492522952905">Előzményeihez és lapjaihoz minden eszközén hozzáférhet, így ott folytathatja a böngészést, ahol abbahagyta.</translation>
+<translation id="5417160551295347092">A Gemini hibázhat, például engedélykérés nélkül megoszthatja az Ön adatait, illetve végrehajthat vásárlásokat. <ph name="LINK_BEGIN" />Tekintse át a kockázatokat<ph name="LINK_END" />.</translation>
 <translation id="5417293056300086453">Ez a webhely használhat azonosítókat védett a tartalmak lejátszásához.</translation>
 <translation id="5417312524372586921">Böngészőtémák</translation>
 <translation id="541737483547792035">Képernyő nagyítása</translation>
@@ -6535,6 +6546,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6003143259071779217">Az eSIM-hez kapcsolódó mobilhálózat eltávolítása</translation>
 <translation id="6003479444341796444">A címsáv most látható</translation>
 <translation id="6003582434972667631">A témát az Ön szervezete állította be</translation>
+<translation id="600407115562756795">A Gemini dönti el, hogy milyen műveleteket hajtson végre az elkezdett vagy frissített feladatok alapján.</translation>
 <translation id="6005045517426700202">Téglaépület</translation>
 <translation id="6006484371116297560">Klasszikus</translation>
 <translation id="6007053304250788613">Csak egy kijelző zárható ki Tükör módban</translation>
@@ -8510,6 +8522,7 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="7523117833414447032">Nagy kezdőbetűk felolvasásakor</translation>
 <translation id="7523585675576642403">Profil átnevezése</translation>
 <translation id="7525067979554623046">Létrehozás</translation>
+<translation id="7526083414913154899">További információ a Gemini-feladatokról</translation>
 <translation id="7528224636098571080">Ne nyissa meg</translation>
 <translation id="7528440855533975803">{GROUP_COUNT,plural, =1{Megszünteti a lapcsoport csoportosítását?}other{Megszünteti a lapcsoportok csoportosítását?}}</translation>
 <translation id="7529411698175791732">Ellenőrizze az internetkapcsolatot. Ha a probléma továbbra is fennáll, próbáljon ki-, majd újra bejelentkezni.</translation>
@@ -9239,6 +9252,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8081989000209387414">Letiltja az ADB-hibakeresést?</translation>
 <translation id="8082132721957920509">Kártya elmentve</translation>
 <translation id="8082390128630131497">Az ADB-hibakeresés letiltásával visszaállítja a gyári beállításokat ezen a(z) <ph name="DEVICE_TYPE" /> eszközön. Az összes felhasználói fiók és helyi adat törlődik.</translation>
+<translation id="8082737802704584539">Szervezete kikapcsolta az előzmények mentését az Ön Google-fiókjában</translation>
 <translation id="8084114998886531721">Mentett jelszó</translation>
 <translation id="8084417885464859041">A Gemini biztonságos használata</translation>
 <translation id="8084429490152575036">Mobilhálózati APN-beállítások</translation>
@@ -9362,6 +9376,7 @@ A kulcsfájlt tartsa biztonságos helyen. Szüksége lesz rá ahhoz, hogy új ve
 <translation id="8180295062887074137"><ph name="PRINTER_NAME" /> <ph name="PRINTER_STATUS" />. <ph name="NUM_PRINTERS" />/<ph name="ITEM_POSITION" />. nyomtató.</translation>
 <translation id="8180785270975217276">Az energiatakarékos mód be van kapcsolva</translation>
 <translation id="8180786512391440389">A(z) „<ph name="EXTENSION" />” olvashat és törölhet képeket, videókat és hangfájlokat a megjelölt helyeken.</translation>
+<translation id="8181132988581553950">A Gemini ugyanazokhoz a webhelyekhez fog hozzáférni, mint Ön, beleértve azokat a webhelyeket is, amelyeken Ön be van jelentkezve. A szükséges információkat harmadik felekkel is megosztja, és ezek között olyan személyes adatok is lehetnek, amelyeket Ön bizalmasnak talál.</translation>
 <translation id="8183703640399301650">Eszköze EID-azonosítója <ph name="EID_NUMBER" />, IMEI-azonosítója pedig <ph name="IMEI_NUMBER" />. Ezek a számok a szolgáltatás aktiválására használhatók.</translation>
 <translation id="8184288427634747179">Váltás a következő profilra: <ph name="AVATAR_NAME" /></translation>
 <translation id="8184318863960255706">További információ</translation>

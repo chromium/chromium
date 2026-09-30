@@ -5303,6 +5303,7 @@
 <translation id="5008936837313706385">ឈ្មោះសកម្មភាព</translation>
 <translation id="5009463889040999939">កំពុងប្ដូរឈ្មោះ​កម្រងព័ត៌មាន។ ដំណើរការនេះ​អាចចំណាយ​ពេលពីរបីនាទី។</translation>
 <translation id="5010886807652684893">ទិដ្ឋភាព​មើលឃើញ</translation>
+<translation id="5012016139642806466">ទទួលបាន​ពាក្យ​សម្ងាត់​របស់អ្នក និងអ្វីៗជា​ច្រើនទៀត​នៅលើ​ឧបករណ៍​ទាំងអស់​របស់អ្នក</translation>
 <translation id="5012523644916800014">គ្រប់គ្រង​ពាក្យសម្ងាត់ និង​កូដសម្ងាត់</translation>
 <translation id="501394389332262641">សំឡេងពេលថ្មសល់តិច</translation>
 <translation id="5014286001996333986">ជំនួស ឬ​បង្កើត​ក្រុមថ្មីឬ?</translation>
@@ -6903,6 +6904,7 @@
 <translation id="6273677812470008672">គុណភាព</translation>
 <translation id="6274089201566806618">កំពុងភ្ជាប់​ជាមួយ <ph name="HOST_DEVICE_NAME" /></translation>
 <translation id="6274202259872570803">ការថតអេក្រង់</translation>
+<translation id="6276246115230302286">ដើម្បី​ចូលទៅកាន់​គេហទំព័រ​ដែលអ្នក​ពេញចិត្ត​បានរហ័ស​ដោយប្រើ​ចំណាំ​ពីឧបករណ៍​នានា​របស់អ្នក សូម​ចូលគណនីជា <ph name="EMAIL" /></translation>
 <translation id="6277105963844135994">បណ្តាញអស់ពេល</translation>
 <translation id="6277518330158259200">ថតអេក្រង់</translation>
 <translation id="6278428485366576908">ធីម</translation>
@@ -8504,6 +8506,7 @@
 <translation id="7501957181231305652">ឬ</translation>
 <translation id="7502220299952823578">បញ្ចូល​ទៅ​ក្នុង​បញ្ជី "រក្សា​គេហទំព័រ​ទាំងនេះ​ឱ្យសកម្ម​ជានិច្ច"</translation>
 <translation id="7502528909759062987">ផ្អាក​ការបញ្ជូន​ផ្ទាំងទៅ <ph name="DEVICE_NAME" /></translation>
+<translation id="750275011730776314">ត្រឡប់ទៅ Gemini វិញ</translation>
 <translation id="7502804472671406749">អាចរំកិល និង​ពង្រីកបង្រួម​ផ្ទាំង​ដែលបាន​ចែករំលែក</translation>
 <translation id="750314150962284310">ការផ្ដោតលើបន្ទាត់</translation>
 <translation id="7503191893372251637">ប្រភេទវិញ្ញាបនប័ត្រ Netscape</translation>
@@ -8745,6 +8748,7 @@
 <translation id="7684718995427157417">ដើម្បី​បង្កើត និងធ្វើតេស្ត​កម្មវិធី​របស់អ្នក សូមបើក Android Debug Bridge (ADB)។ សូម​ចំណាំថា សកម្មភាពនេះ​អនុញ្ញាតការដំឡើង​កម្មវិធី Android ដែល​មិនមាន​ការផ្ទៀងផ្ទាត់ពី Google និងតម្រូវឱ្យ​កំណត់ដូចដើមឡើងវិញ ដើម្បី​បិទ។</translation>
 <translation id="7684803937028953000">ស្ថាប័ន​របស់អ្នក​បានទប់ស្កាត់​ការទាញយក​ឯកសារនេះ​ដាក់ក្នុង​ឧបករណ៍។</translation>
 <translation id="7684913007876670600">ដើម្បីបង្ហាញទិដ្ឋភាពសាមញ្ញនៃទំព័រនេះ សូមបើកផ្ទាំងចំហៀង រួចជ្រើសរើសមុខងារអាន</translation>
+<translation id="7684957383619170952">ទទួលបាន​ចំណាំ​របស់អ្នក និង​អ្វីៗជាច្រើនទៀត​ពី<ph name="DEVICE" /></translation>
 <translation id="7685038817958445325">មិន​អាច​បញ្ជូនបានទេ</translation>
 <translation id="7685049629764448582">មេម៉ូរី JavaScript</translation>
 <translation id="7685087414635069102">តម្រូវឱ្យមានកូដ PIN</translation>

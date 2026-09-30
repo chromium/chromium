@@ -1570,6 +1570,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2198625180564913276">Profilen tilføjes. Dette kan tage et par minutter.</translation>
 <translation id="2198712775285959645">Rediger</translation>
 <translation id="2199298570273670671">Fejl</translation>
+<translation id="2199546617947317537">Hvis du vil have adgang til din historik på dine andre enheder, skal du logge ind og synkronisere din historik og dine faner via <ph name="EMAIL" />. Du kan også se dine adgangskoder m.m. på alle dine enheder. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="220006241671843310">Vælg, om Chrome skal bruge AI-modeller, der kører direkte på din enhed</translation>
 <translation id="2200094388063410062">Mail</translation>
 <translation id="2200781749203116929">ChromeOS-systemlogs</translation>
@@ -2352,6 +2353,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2777525873368474674">Indsæt billedlink</translation>
 <translation id="2777815813197804919">{NUM_SITES,plural, =1{Der blev fundet 1 website med mange notifikationer}one{Der blev fundet {NUM_SITES} website med mange notifikationer}other{Der blev fundet {NUM_SITES} websites med mange notifikationer}}</translation>
 <translation id="2778471504622896352">Føj eksterne apps til ChromeOS-applisten</translation>
+<translation id="2781037472881921606">Synkroniser historikken for at få adgang til din historik fra dine andre enheder. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="2781459437789641557"><ph name="ATTRIBUTION_LINE_1" />, <ph name="ATTRIBUTION_LINE_2" /></translation>
 <translation id="2781692009645368755">Google Pay</translation>
 <translation id="2783952358106015700">Brug din sikkerhedsnøgle med <ph name="APP_NAME" /></translation>
@@ -2414,6 +2416,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2826576843404243001">Bliv advaret, før du besøger et website, som ikke understøtter sikre forbindelser. Du kan ikke ændre denne indstilling, fordi du har aktiveret Avanceret beskyttelse.</translation>
 <translation id="2828375943530438449">Tilbage fra loginsiden</translation>
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> er frigjort</translation>
+<translation id="2828851448902426206">Log ind, og synkroniser historikken for at få adgang til dine faner fra dine andre enheder. Du kan også se dine gemte oplysninger og meget mere på alle dine enheder. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="2833144527504272627">Naviger med tekstmarkør</translation>
 <translation id="2833727845850279275">Denne fil indeholder malware eller stammer fra et mistænkeligt website.</translation>
 <translation id="2835177225987815960">Din aktuelle konfiguration af scanning nulstilles, herunder præferencerne for tildelte kontakter og hastigheden ved automatisk scanning.</translation>
@@ -2780,6 +2783,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3102309003841389927">Gennemgå opdatering af logo</translation>
 <translation id="310297983047869047">Forrige dias</translation>
 <translation id="3103451787721578293">Angiv en årsag til upload af disse data:</translation>
+<translation id="3105253709809514429">Log ind, og synkroniser historikken for at få adgang til dine faner fra dine andre enheder. Du kan også se dine udvidelser og meget mere på alle dine enheder. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="3105339775057145050">Seneste mislykkede opdatering</translation>
 <translation id="3105796011181310544">Vil du skifte tilbage til Google?</translation>
 <translation id="3105820656234755131">Adgangskoden er opdateret</translation>
@@ -2791,6 +2795,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3109206895301430738">Gemte fanegrupper</translation>
 <translation id="3109724472072898302">Skjult</translation>
 <translation id="3112292765614504292">Appstørrelse: <ph name="APP_SIZE" /></translation>
+<translation id="3112532142993641404">Log ind, og synkroniser historikken for at få adgang til dine faner fra dine andre enheder. Du kan også se dine bogmærker og meget mere på alle dine enheder. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="311347022006935575">Har tilføjet denne fane</translation>
 <translation id="311394601889664316">Tillad ikke, at websites redigerer filer og mapper på din enhed</translation>
 <translation id="3113970906450647715">Knappen er frigjort</translation>
@@ -3298,6 +3303,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3498138244916757538">Ændringen af mikrofonindstillingen kræver, at <ph name="SPECIFIC_NAME" /> skal lukkes ned. Sluk <ph name="SPECIFIC_NAME" /> for at fortsætte.</translation>
 <translation id="3500417806337761827">Delingen kunne ikke tilføjes. Der er allerede tilføjet for mange SMB-delinger.</translation>
 <translation id="3500764001796099683">Aktivér isolerede webapps</translation>
+<translation id="3501134531169168291">Log ind, og synkroniser historikken for at få adgang til dine faner fra <ph name="DEVICE" />. Du kan også se dine udvidelser og meget mere på alle dine enheder. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="3505100368357440862">Forslag til shopping</translation>
 <translation id="3507650052590605702">Administrer adgangskode</translation>
 <translation id="3507888235492474624">Søg efter Bluetooth-enheder igen</translation>
@@ -3785,6 +3791,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3838085852053358637">Udvidelsen kunne ikke indlæses</translation>
 <translation id="3838486795898716504">Flere <ph name="PAGE_TITLE" /></translation>
 <translation id="383891835335927981">Der er ikke zoomet ind eller ud på nogen websites</translation>
+<translation id="3839108710633244251">Hvis du vil have adgang til din historik på dine andre enheder, skal du logge ind og synkronisere din historik og dine faner via <ph name="EMAIL" />. Du kan også se dine gemte oplysninger og meget mere på alle dine enheder. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="3839516600093027468">Bloker altid <ph name="HOST" /> fra at se udklipsholderen</translation>
 <translation id="3840096463915153852">Samtalehistorik</translation>
 <translation id="3841319830220785495">Naturlig standardstemme</translation>
@@ -4308,6 +4315,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4258860425202724393">{NUM_GROUPS,plural, =1{Behold gruppen}one{Behold gruppen}other{Behold grupper}}</translation>
 <translation id="4261429981378979799">Tilladelser for udvidelser</translation>
 <translation id="4262004481148703251">Luk advarsel</translation>
+<translation id="4262060800239714974">Synkroniser din historik og dine faner via <ph name="EMAIL" /> for at få adgang til dine faner fra <ph name="DEVICE" />. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="4263470758446311292">Få maksimale hukommelsesbesparelser. Dine faner bliver inaktive efter en kortere periode.</translation>
 <translation id="4263824086525632">Nordlys</translation>
 <translation id="4265096510956307240">Verificer din identitet</translation>
@@ -4944,8 +4952,10 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4750185073185658673">Gennemgå et par tilladelser mere på din telefon. Sørg for, at Bluetooth og Wi-Fi er aktiveret på din telefon.</translation>
 <translation id="4750394297954878236">Forslag</translation>
 <translation id="475088594373173692">Første bruger</translation>
+<translation id="4751925628341802838">Hvis du vil have adgang til din historik på dine andre enheder, skal du logge ind og synkronisere din historik og dine faner via <ph name="EMAIL" />. Du kan også se dine udvidelser og meget mere på alle dine enheder. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="4753084533826742808">Skal være mindst 1 tegn</translation>
 <translation id="4754590344707355551">Få mere ud af din browser med udvidelser</translation>
+<translation id="4756130875344525429">Hvis du vil have adgang til din historik fra <ph name="DEVICE" />, skal du logge ind og synkronisere din historik og dine faner med <ph name="EMAIL" />. Du kan også se dine gemte oplysninger og meget mere på alle dine enheder. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="4756378406049221019">Stop/genindlæs</translation>
 <translation id="4756388243121344051">&amp;Historik</translation>
 <translation id="4756627014339714615">Omdiriger</translation>
@@ -5257,6 +5267,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="497403230787583386">Sikkerhedstjekkene blev gennemført. Dit dokument udskrives.</translation>
 <translation id="4974442344472293753">Opdateringsresultat</translation>
 <translation id="4975771730019223894">Appbadges</translation>
+<translation id="4976647810464861866">Log ind, og synkroniser historikken for at få adgang til dine faner fra dine andre enheder. Du kan også se din læseliste og meget mere på alle dine enheder. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="4977882548591990850"><ph name="CHARACTER_COUNT" />/<ph name="CHARACTER_LIMIT" /></translation>
 <translation id="4977942889532008999">Bekræft adgang</translation>
 <translation id="4979263087381759787">Indstillinger for udviklere</translation>
@@ -5296,6 +5307,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5008936837313706385">Aktivitetsnavn</translation>
 <translation id="5009463889040999939">Profilen omdøbes. Dette kan tage et par minutter.</translation>
 <translation id="5010886807652684893">Visuel visning</translation>
+<translation id="5012016139642806466">Få dine adgangskoder og meget mere på alle dine enheder</translation>
 <translation id="5012523644916800014">Administrer adgangskoder og adgangsnøgler</translation>
 <translation id="501394389332262641">Lyd for lavt batteriniveau</translation>
 <translation id="5014286001996333986">Vil du erstatte den eller oprette en ny gruppe?</translation>
@@ -5428,6 +5440,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="511313294362309725">Slå Hurtig parring til</translation>
 <translation id="5113992879909788634">Få flere oplysninger om automatisk browsing i Chrome</translation>
 <translation id="51143538739122961">Indsæt din sikkerhedsnøgle, og tryk på den</translation>
+<translation id="5114635223409082546">Log ind, og synkroniser historikken for at få adgang til dine faner fra <ph name="DEVICE" />. Du kan også se dine bogmærker og meget mere på alle dine enheder. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="5115338116365931134">SSO</translation>
 <translation id="5116628073786783676">Ge&amp;m lyd som...</translation>
 <translation id="5117139026559873716">Afbryd forbindelsen mellem din telefon og din <ph name="DEVICE_TYPE" />. Der oprettes ikke længere automatisk forbindelse.</translation>
@@ -5854,6 +5867,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5457795687441958389">Forbliv logget ud</translation>
 <translation id="5458214261780477893">Dvorak</translation>
 <translation id="5458716506062529991">Du har angivet en forkert pinkode for mange gange. Skift din pinkode for at få adgang til dine adgangsnøgler og adgangskoder.</translation>
+<translation id="5459251585760045919">Hvis du vil have adgang til din historik fra <ph name="DEVICE" />, skal du logge ind og synkronisere din historik og dine faner med <ph name="EMAIL" />. Du kan også se dine udvidelser og meget mere på alle dine enheder. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="5459470938885464873">Der opstod en fejl under importen af certifikatet</translation>
 <translation id="5459864179070366255">Fortsæt installation</translation>
 <translation id="5460861858595506978">Inspiration</translation>
@@ -6025,6 +6039,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5584088138253955452">Vil du gemme brugernavnet?</translation>
 <translation id="5585019845078534178">Kort</translation>
+<translation id="5585064628683466904">Hvis du vil have adgang til din historik på dine andre enheder, skal du logge ind og synkronisere din historik og dine faner via <ph name="EMAIL" />. Du kan også se din læseliste og meget mere på alle dine enheder. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="5585118885427931890">Bogmærkemappen blev ikke oprettet.</translation>
 <translation id="558563010977877295">Åbn en bestemt side eller en række sider</translation>
 <translation id="5587592231724900065">En udvidelse styrer denne indstilling</translation>
@@ -6763,6 +6778,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6175910054050815932">Få et link</translation>
 <translation id="6177478397823976397">Der blev ikke fundet nogen enheder. Åbn en artikel i Hjælp på en ny fane</translation>
 <translation id="6177779807714496775">Åbn link i venstre visning</translation>
+<translation id="6178186430790239237">Synkroniser din historik og dine faner via <ph name="EMAIL" />, så du kan få adgang til dine faner på dine andre enheder. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="6178664161104547336">Vælg et certifikat</translation>
 <translation id="6178682841350631965">Dine logindata er opdateret</translation>
 <translation id="6179830757749383456">Browseren administreres af <ph name="BROWSER_DOMAIN" />, profilen administreres af <ph name="PROFILE_DOMAIN" /></translation>
@@ -7073,6 +7089,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6430202563517028640">Føj link til læseliste</translation>
 <translation id="6430814529589430811">Base64-kodet ASCII, enkeltcertifikat</translation>
 <translation id="6431347207794742960"><ph name="PRODUCT_NAME" /> konfigurerer automatiske opdateringer for alle brugere af denne computer.</translation>
+<translation id="6431970976661940755">Log ind, og synkroniser historikken for at få adgang til dine faner fra <ph name="DEVICE" />. Du kan også se din læseliste og meget mere på alle dine enheder. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="6434104957329207050">Hastighed for punktscanning</translation>
 <translation id="6434309073475700221">Kassér</translation>
 <translation id="6434755719322447931">Kaotisk</translation>
@@ -7237,6 +7254,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6556903358015358733">Tema og baggrund</translation>
 <translation id="6557199166823345360">Tilføj flere oplysninger, eller stil et spørgsmål om dit valg for at finjustere din søgning</translation>
 <translation id="6557290421156335491">Mine genveje</translation>
+<translation id="655745275895381718">Log ind, og synkroniser historikken for at få adgang til dine faner fra <ph name="DEVICE" />. Du kan også se dine gemte oplysninger og meget mere på alle dine enheder. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="6558098963164662391">&amp;Fjern fra ordbog</translation>
 <translation id="6560061709899140565">Vis andre Cast-sessioner</translation>
 <translation id="656065428026159829">Se mere</translation>
@@ -7926,6 +7944,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7065343991414968778">{NUM_PASSWORDS,plural, =1{1 adgangskode er importeret til <ph name="BRAND" /> for <ph name="USER_EMAIL" />}one{{NUM_PASSWORDS} adgangskode er importeret til <ph name="BRAND" /> for <ph name="USER_EMAIL" />}other{{NUM_PASSWORDS} adgangskoder er importeret til <ph name="BRAND" /> for <ph name="USER_EMAIL" />}}</translation>
 <translation id="7065534935986314333">Om systemet</translation>
 <translation id="706626672220389329">Der opstod en fejl ved anvendelse af deling. Den angivne deling anvendes allerede.</translation>
+<translation id="7066357648902789011">Hvis du vil have adgang til din historik fra <ph name="DEVICE" />, skal du logge ind og synkronisere din historik og dine faner med <ph name="EMAIL" />. Du kan også se dine adgangskoder m.m. på alle dine enheder. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="7067396782363924830">Omgivende farver</translation>
 <translation id="7067725467529581407">Vis aldrig dette igen.</translation>
 <translation id="7068539819344620805">Nu kan du give din browser et nyt udseende, når du har lyst, via menuen Tilpas Chrome</translation>
@@ -8111,6 +8130,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7214047272988222011">Tilladt – <ph name="PERMISSION_DETAILS" />. Aktivér <ph name="LINK_BEGIN" />systemets kameraadgang<ph name="LINK_END" />.</translation>
 <translation id="7214104268140700348">{NUM_TABS,plural, =1{Ny fane på 1 fane}one{Ny fane på # fane}other{Ny fane på # faner}}</translation>
 <translation id="721490496276866468">Importér adgangskoder</translation>
+<translation id="7216638029417040861">Hvis du vil have adgang til din historik på dine andre enheder, skal du logge ind og synkronisere din historik og dine faner via <ph name="EMAIL" />. Du kan også se dine bogmærker og meget mere på alle dine enheder. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="7217208603285112910">Ikke tilgængelig på <ph name="LANGUAGE" /></translation>
 <translation id="7217317914610152390">Tilføj tekst, kommentarer og noter med det nye værktøj Tekstannoteringer</translation>
 <translation id="7219254577985949841">Vil du slette websitedata?</translation>
@@ -8121,6 +8141,7 @@ Du har # andre kompromitterede adgangskoder. Google Adgangs­kode­admin­istrat
 <translation id="7222232353993864120">Mailadresse</translation>
 <translation id="7222335051802562841">Gennemfør opdatering</translation>
 <translation id="7222373446505536781">F11</translation>
+<translation id="7222513457790351522">Hvis du vil have adgang til din historik fra <ph name="DEVICE" />, skal du logge ind og synkronisere din historik og dine faner med <ph name="EMAIL" />. Du kan også se din læseliste og meget mere på alle dine enheder. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="7223027547122518521">Vælg en fil, som dette website kan læse</translation>
 <translation id="7223952304612664117">Dette giver systemtjenester tilladelse til at anvende Lokationsnøjagtighed til at fastslå din lokation. Lokationsnøjagtighed anvender oplysninger om trådløse signaler og sensorer til at estimere enhedens lokation.</translation>
 <translation id="7225082563376899794">Brug Windows Hello til at udfylde adgangskoder</translation>
@@ -9009,6 +9030,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7911118814695487383">Linux</translation>
 <translation id="791247712619243506">Annuller konfiguration</translation>
 <translation id="7912974581251770345">Oversættelse</translation>
+<translation id="7913805372428124107">Log ind, og synkroniser historikken for at få adgang til dine faner fra <ph name="DEVICE" />. Du kan også se dine adgangskoder m.m. på alle dine enheder. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="7914399737746719723">Appen blev installeret</translation>
 <translation id="7915457674565721553">Opret forbindelse til internettet for at konfigurere børnesikring</translation>
 <translation id="7916364730877325865">Din organisation tillader ikke, at du aktiverer synkronisering med denne konto</translation>
@@ -9257,6 +9279,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8081989000209387414">Vil du deaktivere ADB-fejlretning?</translation>
 <translation id="8082132721957920509">Dit kort er gemt</translation>
 <translation id="8082390128630131497">Hvis du deaktiverer ADB-fejlretning, gendannes fabriksindstillingerne på denne <ph name="DEVICE_TYPE" />. Alle brugerkonti og lokale data ryddes.</translation>
+<translation id="8082737802704584539">Din organisation har deaktiveret lagring af historik på din Google-konto</translation>
 <translation id="8084114998886531721">Gemt adgangskode</translation>
 <translation id="8084417885464859041">Brug Gemini på en sikker måde</translation>
 <translation id="8084429490152575036">Indstillinger for APN-mobilnetværk</translation>
@@ -9289,6 +9312,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="810362914482827094">Søg efter adgangskoder</translation>
 <translation id="8104088837833760645">Download eSIM-kortprofilen</translation>
 <translation id="8104388155778519213">Del det, der vises på din skærm, med Google Lens</translation>
+<translation id="8104412594956510627">Synkroniser historikken for at få adgang til din historik fra <ph name="DEVICE" />. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="8104778744208707085">Kræver gennemgang</translation>
 <translation id="8105273883928376822">Log ind for at fortsætte.</translation>
 <translation id="8106114112474206597">Brug "i" til at trykke på en museknap</translation>
@@ -9319,6 +9343,7 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8124313775439841391">Administreret ONC</translation>
 <translation id="8125651784723647184">Deling af adgangskoder håndteres af din administrator</translation>
 <translation id="8126355825906412872">Smil</translation>
+<translation id="8126498026310640675">Hvis du vil have adgang til din historik fra <ph name="DEVICE" />, skal du logge ind og synkronisere din historik og dine faner med <ph name="EMAIL" />. Du kan også se dine bogmærker og meget mere på alle dine enheder. Du kan til enhver tid stoppe med at synkronisere ved at gå til indstillingerne. Google kan tilpasse Søgning og andre tjenester baseret på din historik.</translation>
 <translation id="813082847718468539">Se websiteoplysninger</translation>
 <translation id="8131740175452115882">Bekræft</translation>
 <translation id="8133297578569873332">Acceptabel – FM-kvalitet</translation>

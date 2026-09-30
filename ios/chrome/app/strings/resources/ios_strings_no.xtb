@@ -144,7 +144,6 @@
 <translation id="1408847409015257906">Trykk på «Personvern og sikkerhet».</translation>
 <translation id="1411386976162024013">Visuelt søk med Lens</translation>
 <translation id="1414315029670184034">Ikke la nettsteder bruke kameraet</translation>
-<translation id="1417474386970818917">Logg av og slett</translation>
 <translation id="1426410128494586442">Ja</translation>
 <translation id="1430915738399379752">Skriv ut</translation>
 <translation id="1433478348197382180">Lesemodus</translation>
@@ -304,6 +303,7 @@
 <translation id="188237709236611317">Menylinje for smart sortering</translation>
 <translation id="1883255238294161206">Skjul liste</translation>
 <translation id="1883898928879467646">Fanen er fjernet</translation>
+<translation id="188779312703122101">Jobber</translation>
 <translation id="1888854257756214946">Velg passord…</translation>
 <translation id="1890237935065108104">Denne innstillingen er ikke tilgjengelig.</translation>
 <translation id="1894023287452300670">Spor prisen her</translation>
@@ -792,7 +792,6 @@
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /> om foreslått innhold</translation>
 <translation id="349446645805573740">Velg hvor du vil lagre «<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />»</translation>
 <translation id="3504377992102007712">Innstillinger</translation>
-<translation id="3507556793108992994">{count,plural, =1{1 fane er ryddet}other{# faner er ryddet}}</translation>
 <translation id="35083190962747987">Åpne ${url}</translation>
 <translation id="3511519535430890904">Legg til nettleserbeskyttelse</translation>
 <translation id="3512572904898385012">Nå kan du handle og oversette med kameraet. Trykk for å prøve.</translation>
@@ -941,7 +940,6 @@
 <translation id="3962326069546168954">Lagre</translation>
 <translation id="3967327056943561740">Bokmerker</translation>
 <translation id="3967822245660637423">Nedlasting fullført</translation>
-<translation id="3968685670440571540">siden du begynte å bruke Passord og autofyll</translation>
 <translation id="3973560090698854095">Dette sletter adresser som er lagret i Google-kontoen din (<ph name="USER_EMAIL" />).</translation>
 <translation id="398604237578616937">Logget på som <ph name="USER_EMAIL" />. Åpne kontomenyen.</translation>
 <translation id="3986739045730058129">Gå til fanen</translation>
@@ -1329,7 +1327,7 @@
 <translation id="519530786644929958">Nedlastingen mislyktes. Det er ikke mulig å prøve på nytt.</translation>
 <translation id="519620255540220054">Tilpass startsiden</translation>
 <translation id="5197255632782567636">Internett</translation>
-<translation id="519726997675893421">Organiser fanene dine i grupper</translation>
+<translation id="519726997675893421">Organiser fanene i grupper</translation>
 <translation id="5200894869889836319">Alternativer for konfigurering av tillatelser</translation>
 <translation id="5203051773066903947">Skriv inn</translation>
 <translation id="5206453674369664567">Logg av og slett data</translation>
@@ -1356,7 +1354,6 @@
 <translation id="5250371859659394278">Fra en ukjent kilde</translation>
 <translation id="525510229763628836">Minimert</translation>
 <translation id="5260842098960755113">Tråden er lukket</translation>
-<translation id="5269913829202614649">Tilpass startsiden</translation>
 <translation id="5271265092610673171">{count,plural, =1{Et obligatorisk felt er tomt. Fyll det ut før du lagrer.}other{Noen obligatoriske felt er tomme. Fyll dem ut før du lagrer.}}</translation>
 <translation id="5271549068863921519">Lagre passord</translation>
 <translation id="5275912569557792098"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) vil ha deg med i en fanegruppe. Alle som har linken, kan endre alle fanene, så vær forsiktig hvis du velger å bli med. Linken utløper om 48 timer.</translation>
@@ -1466,7 +1463,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5632194969640946913">Finn ut mer mens du blar gjennom og søker etter det du ser på hvilken som helst side, for å utforske produkter, steder og tekst.</translation>
 <translation id="5632485077360054581">Vis meg hvordan</translation>
 <translation id="5633237939819267663">{count,plural, =1{Bokmerket er lagret i «{title}»}other{{count} bokmerker er lagret i «{title}»}}</translation>
-<translation id="564170563478022912">Vil du logge av? Ulagrede kontodata slettes.</translation>
 <translation id="5642707040609478753">Merk som ulest</translation>
 <translation id="5646376287012673985">Posisjon</translation>
 <translation id="5647096944343801045">Stort inngangspunkt</translation>
@@ -1482,7 +1478,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5669528293118408608">www</translation>
 <translation id="5676124785522323481">Administrer tilknyttede apper</translation>
 <translation id="567881659373499783">Versjon <ph name="PRODUCT_VERSION" /></translation>
-<translation id="5680012489335339762">Vil du bytte konto? Ulagrede kontodata slettes.</translation>
 <translation id="5683499062697987550">For å bruke og lagre passord i Google-kontoen din, må du bekrefte at det er deg.</translation>
 <translation id="5684761169742812828">Dette passordet er avdekket i et databrudd på internett. Hvis du ikke har tid til å endre det akkurat nå, anbefaler Google at du beholder denne advarselen, slik at du får en påminnelse senere.</translation>
 <translation id="5694848685995373177">Lagret i Disk for <ph name="USER_EMAIL" />.</translation>
@@ -1758,7 +1753,6 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6506996418997555004">Del fanegruppen «<ph name="GROUP_NAME" />»</translation>
 <translation id="6507973708545996744">Logg på for å få leselisten din på alle enhetene dine.</translation>
 <translation id="6518133107902771759">Bekreft</translation>
-<translation id="6518861084553706202">Faner lukkes og data slettes. Dette kan omfatte passord, nettleserloggen, informasjonskapsler med mer.</translation>
 <translation id="6523575793810663688">Vis meg hvordan</translation>
 <translation id="6524082013156754186">Lagre i kontoen</translation>
 <translation id="6524918542306337007">Inkognitomodus er ikke tilgjengelig</translation>
@@ -1984,7 +1978,6 @@ Bytt til <ph name="OTHER_EMAIL" /> for å fortsette fra datamaskinen. Du får pa
 <translation id="721218676460477064">Oppsummer denne artikkelen</translation>
 <translation id="7215621211572884440">Tillat forgrunnsvinduer</translation>
 <translation id="7218491361283758048">Postnummer</translation>
-<translation id="7220786058474068424">Behandler</translation>
 <translation id="7221173315674413369">Utforsk nye funksjoner og tips i Nyheter</translation>
 <translation id="7223102419539744003">Lukk fane</translation>
 <translation id="7223134495231529579">Lagre i nedlastinger</translation>
@@ -2072,7 +2065,6 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="7491161827858509164">Åpne <ph name="BEGIN_LINK" />Filer<ph name="END_LINK" /> for å se filer du har lastet ned tidligere.</translation>
 <translation id="7498234416455752244">Fortsett å endre</translation>
 <translation id="7500244509706269886">Autofyll skjema</translation>
-<translation id="7504841985386528758">siden du lærte om fanegrupper</translation>
 <translation id="750493650310597496">0 er valgt</translation>
 <translation id="7505402981231763928">Du må logge på for å bruke Gemini</translation>
 <translation id="7506817096924591340"><ph name="FILENAME" /> (<ph name="FILESIZE" />).</translation>
@@ -2151,7 +2143,7 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="7738120385185846461">Rapporter et problem…</translation>
 <translation id="7744192722284567281">Funnet i databrudd</translation>
 <translation id="7749790401023484470">Du har ikke merket noe tekst.</translation>
-<translation id="7753518506804173312">Fest favorittnettstedene dine, slik at du har enkel tilgang til dem senere</translation>
+<translation id="7753518506804173312">Fest favorittnettstedene, slik at du har enkel tilgang til dem senere</translation>
 <translation id="7757015014239760147">Uten brukernavn ••••••••</translation>
 <translation id="775755486779745798">Autofyll utløpsmåneden <ph name="MONTH" /></translation>
 <translation id="7758789811447313947">Fiolett tema</translation>
@@ -2319,6 +2311,7 @@ Du kan starte på nytt når som helst.</translation>
 <translation id="823339794112333264">Slå på mikrofonen</translation>
 <translation id="8240217649914883113">Legg til dette i kalenderen min</translation>
 <translation id="824379025871762038">Aldri tillat</translation>
+<translation id="8244387390464017490">Tilpass Ny fane-siden</translation>
 <translation id="8250920743982581267">Dokumenter</translation>
 <translation id="8258734532103758067">Jeg har eksportert dataene mine</translation>
 <translation id="8258999165172757081">Lagt til</translation>
