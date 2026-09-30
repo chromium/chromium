@@ -287,7 +287,8 @@ class ChromeAimEligibilityServiceBrowserTest
 
     // Needed for bots with field trial testing configs explicitly disabled.
     enabled_features.push_back(
-        {omnibox::kAimEligibilityServiceIdentityImprovements, {}});
+        {omnibox::kAimEligibilityServiceIdentityImprovements,
+         {{"refresh_on_cookie_changes", "false"}}});
     enabled_features.push_back(
         {omnibox::kAimServerEligibilityForPrimaryAccountEnabled, {}});
     enabled_features.push_back({omnibox::kAimUrlNavigationFetchEnabled, {}});
