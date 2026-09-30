@@ -7004,11 +7004,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "migrate-ios-keychain-accessibility",
-    "owners": [ "marq@chromium.org", "fedegermi@google.com" ],
-    "expiry_milestone": 156
-  },
-  {
     "name": "migrate-syncing-user-to-signed-in",
     "owners": [ "ankushkush@google.com", "chrome-sync-client-team+flags@google.com"],
     "expiry_milestone": 160

@@ -99,7 +99,6 @@
 #import "components/webui/flags/feature_entry_macros.h"
 #import "components/webui/flags/flags_storage.h"
 #import "components/webui/flags/flags_ui_switches.h"
-#import "crypto/features.h"
 #import "ios/chrome/app/background_mode_buildflags.h"
 #import "ios/chrome/browser/autofill/model/features.h"
 #import "ios/chrome/browser/badges/model/features.h"
@@ -1620,11 +1619,6 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kViewCertificateInformationDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(page_info_certificate::kViewCertificateInformation)},
-    {"migrate-ios-keychain-accessibility",
-     flag_descriptions::kMigrateIOSKeychainAccessibilityName,
-     flag_descriptions::kMigrateIOSKeychainAccessibilityDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(crypto::features::kMigrateIOSKeychainAccessibility)},
     {"search-engine-choice-screen-snackbar",
      flag_descriptions::kSearchEngineChoiceScreenSnackbarName,
      flag_descriptions::kSearchEngineChoiceScreenSnackbarDescription,

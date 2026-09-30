@@ -1330,12 +1330,6 @@ inline constexpr char kMetrickitNonCrashReportDescription[] =
     "Enables sending Metrickit reports for non crash type (hang, "
     "cpu-exception, diskwrite-exception)";
 
-inline constexpr char kMigrateIOSKeychainAccessibilityName[] =
-    "Migrate iOS Keychain Accessibility";
-inline constexpr char kMigrateIOSKeychainAccessibilityDescription[] =
-    "Migrate the accessibility attribute in the iOS keychain to 'after first "
-    "unlock'.";
-
 inline constexpr char kMobilePromoOnDesktopName[] = "Mobile Promo On Desktop";
 inline constexpr char kMobilePromoOnDesktopDescription[] =
     "When enabled, shows a mobile promo on the desktop new tab page.";

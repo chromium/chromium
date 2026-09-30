@@ -26,8 +26,8 @@ CRYPTO_EXPORT bool ExecutableHasKeychainAccessGroupEntitlement(
 #endif  // !BUILDFLAG(IS_IOS)
 
 // Returns the accessibility attribute to use for new keychain items.
-// On iOS, this depends on the kMigrateIOSKeychainAccessibility feature.
-// On macOS, it returns kSecAttrAccessibleWhenUnlocked.
+// On iOS, it returns `kSecAttrAccessibleAfterFirstUnlock`.
+// On macOS, it returns `kSecAttrAccessibleWhenUnlocked`.
 CRYPTO_EXPORT CFStringRef GetKeychainAccessibilityAttribute();
 
 #if BUILDFLAG(IS_IOS)

@@ -9,10 +9,8 @@
 #include "base/apple/bridging.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "crypto/apple/fake_keychain_v2.h"
 #include "crypto/apple/scoped_fake_keychain_v2.h"
-#include "crypto/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -36,9 +34,6 @@ TEST_F(AppleKeychainUtilTest, ExecutableHasKeychainAccessGroupEntitlement) {
 
 #if BUILDFLAG(IS_IOS)
 TEST_F(AppleKeychainUtilTest, MigrateKeychainItemAccessibilityIfNeeded) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      crypto::features::kMigrateIOSKeychainAccessibility);
-
   NSDictionary* query = @{
     base::apple::CFToNSPtrCast(kSecClass) :
         base::apple::CFToNSPtrCast(kSecClassGenericPassword),
@@ -114,7 +109,6 @@ TEST_F(AppleKeychainUtilTest, MigrateKeychainItemAccessibilityIfNeeded) {
                                        0, 1);
   }
 }
-
 
 #endif  // BUILDFLAG(IS_IOS)
 

@@ -59,8 +59,6 @@ component("crypto") {
     "encrypt.h",
     "evp.cc",
     "evp.h",
-    "features.cc",
-    "features.h",
     "hash.cc",
     "hash.h",
     "hmac.cc",

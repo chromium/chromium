@@ -15,7 +15,6 @@
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
 #import "components/test/ios/test_utils.h"
-#import "crypto/features.h"
 #import "ios/chrome/app/application_delegate/app_init_stage.h"
 #import "ios/chrome/app/application_delegate/app_init_stage_test_utils.h"
 #import "ios/chrome/app/application_delegate/app_state+Testing.h"
@@ -219,10 +218,6 @@ typedef void (^TaskExpirationBlock)();
 class BackgroundRefreshAppAgentTest : public PlatformTest {
  protected:
   BackgroundRefreshAppAgentTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {kEnableAppBackgroundRefresh,
-         crypto::features::kMigrateIOSKeychainAccessibility},
-        {});
     TestingApplicationContext* application_context =
         TestingApplicationContext::GetGlobal();
 
@@ -351,7 +346,8 @@ class BackgroundRefreshAppAgentTest : public PlatformTest {
   }
 
   // By default, enable background refresh for all tests.
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      kEnableAppBackgroundRefresh};
   // Local state for test application context.
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   // Threads.

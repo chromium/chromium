@@ -14,7 +14,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "crypto/apple/keychain_v2.h"
-#include "crypto/features.h"
 
 namespace crypto::apple {
 
@@ -75,22 +74,15 @@ base::apple::ScopedCFTypeRef<CFDictionaryRef> MakeAttributeMigrationQuery() {
 
 CFStringRef GetKeychainAccessibilityAttribute() {
 #if BUILDFLAG(IS_IOS)
-  if (base::FeatureList::IsEnabled(
-          crypto::features::kMigrateIOSKeychainAccessibility)) {
-    return kSecAttrAccessibleAfterFirstUnlock;
-  }
-#endif  // BUILDFLAG(IS_IOS)
+  return kSecAttrAccessibleAfterFirstUnlock;
+#else
   return kSecAttrAccessibleWhenUnlocked;
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 #if BUILDFLAG(IS_IOS)
 bool MigrateKeychainItemAccessibilityIfNeeded(CFDictionaryRef attributes,
                                               CFDictionaryRef query) {
-  if (!base::FeatureList::IsEnabled(
-          crypto::features::kMigrateIOSKeychainAccessibility)) {
-    return false;
-  }
-
   CFStringRef accessibility = base::apple::GetValueFromDictionary<CFStringRef>(
       attributes, kSecAttrAccessible);
   if (CFStringCompare(accessibility, kSecAttrAccessibleWhenUnlocked, 0) ==
@@ -114,8 +106,6 @@ bool MigrateKeychainItemAccessibilityIfNeeded(CFDictionaryRef attributes,
                                 KeychainMigrationResult::kNotNeeded);
   return false;
 }
-
-
 
 base::apple::ScopedCFTypeRef<CFDictionaryRef>
 GenerateGenericPasswordUpdateQuery(std::string_view account_name) {
