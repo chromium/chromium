@@ -16914,6 +16914,7 @@
     "SharedMemorySystemProfileMinidump": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "linux",
                 "windows"

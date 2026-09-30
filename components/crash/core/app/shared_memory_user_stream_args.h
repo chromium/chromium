@@ -10,12 +10,12 @@
 // Crashpad process via command-line arguments (`argc`/`argv`).
 //
 // Currently supported on platforms that pass Crashpad handler initialization
-// handles via command line arguments (e.g., Windows, Linux, ChromeOS).
+// handles via command line arguments (e.g., Windows, Linux, ChromeOS, Android).
 
 #include "build/build_config.h"
 
 static_assert(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) ||
-                  BUILDFLAG(IS_CHROMEOS),
+                  BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID),
               "Unsupported platform.");
 
 #include <set>
@@ -39,9 +39,10 @@ inline constexpr std::string_view kUserStreamRegionSwitch =
 //   descriptor on POSIX) into `preserve_handles` so it can be inherited by
 //   the spawned Crashpad process.
 //
-// Assumes the caller retains the original `regions` throughout the
-// Crashpad-process spawn logic so the platform handles are not prematurely
-// closed.
+// Assumes the caller retains the original `regions` until the Crashpad
+// process is spawned (or throughout the browser process's lifetime on
+// platforms like Android where the handler is spawned on demand) so the
+// platform handles are not prematurely closed.
 void AppendSharedMemoryUserStreamArgs(
     const std::vector<base::ReadOnlySharedMemoryRegion>& regions,
     std::vector<std::string>* command_line_arguments,

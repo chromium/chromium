@@ -27,7 +27,7 @@
 #include "components/allocation_recorder/crash_handler/user_stream_data_source.h"  // nogncheck
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include "components/crash/core/app/shared_memory_user_stream_args.h"  // nogncheck
 #endif
 
@@ -43,7 +43,7 @@ __attribute__((visibility("default"), used)) int CrashpadHandlerMain(
       std::make_unique<stability_report::UserStreamDataSourcePosix>());
 #endif
 
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   // Extract shared memory user stream regions from the command line and create
   // data sources for them.
   std::vector<base::ReadOnlySharedMemoryRegion> regions =

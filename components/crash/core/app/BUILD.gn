@@ -41,7 +41,7 @@ if (!is_ios) {
     ]
   }
 
-  if (is_win || is_linux || is_chromeos) {
+  if (is_win || is_linux || is_chromeos || is_android) {
     source_set("shared_memory_user_stream_args") {
       sources = [
         "shared_memory_user_stream_args.cc",
@@ -64,7 +64,7 @@ if (!is_ios) {
       "//third_party/crashpad/crashpad/minidump",
     ]
 
-    if (is_linux || is_chromeos) {
+    if (is_linux || is_chromeos || is_android) {
       deps += [ ":shared_memory_user_stream_args" ]
     }
 
@@ -141,7 +141,7 @@ static_library("app") {
     libs = [ "log" ]
   }
 
-  if (is_win || is_linux || is_chromeos) {
+  if (is_win || is_linux || is_chromeos || is_android) {
     deps += [ ":shared_memory_user_stream_args" ]
   }
 
@@ -362,7 +362,7 @@ source_set("unit_tests") {
       ":shared_memory_data_source",
     ]
 
-    if (is_win || is_linux || is_chromeos) {
+    if (is_win || is_linux || is_chromeos || is_android) {
       sources += [ "shared_memory_user_stream_args_unittest.cc" ]
       deps += [ ":shared_memory_user_stream_args" ]
     }

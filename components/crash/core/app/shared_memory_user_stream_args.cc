@@ -7,7 +7,7 @@
 #include "build/build_config.h"
 
 static_assert(BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) ||
-                  BUILDFLAG(IS_CHROMEOS),
+                  BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID),
               "Unsupported platform.");
 
 #include <stdint.h>
@@ -75,11 +75,7 @@ DeserializeSharedMemoryUserStreamArgument(std::string_view handle_and_size) {
     return std::nullopt;
   }
 
-  base::win::ScopedHandle platform_handle(raw_handle);
-  auto platform_region = base::subtle::PlatformSharedMemoryRegion::TakeOrFail(
-      std::move(platform_handle),
-      base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly, size,
-      base::UnguessableToken::Create());
+  base::subtle::ScopedPlatformSharedMemoryHandle platform_handle(raw_handle);
 #else
   if (!base::IsValueInRangeForNumericType<int>(handle_value)) {
     return std::nullopt;
@@ -96,12 +92,19 @@ DeserializeSharedMemoryUserStreamArgument(std::string_view handle_and_size) {
     return std::nullopt;
   }
 
-  base::ScopedFD platform_handle(fd);
+#if BUILDFLAG(IS_ANDROID)
+  base::subtle::ScopedPlatformSharedMemoryHandle platform_handle(fd);
+#else
+  base::subtle::ScopedPlatformSharedMemoryHandle platform_handle(
+      base::ScopedFD(fd), base::ScopedFD{});
+#endif
+
+#endif
+
   auto platform_region = base::subtle::PlatformSharedMemoryRegion::TakeOrFail(
-      base::subtle::ScopedFDPair(std::move(platform_handle), base::ScopedFD()),
+      std::move(platform_handle),
       base::subtle::PlatformSharedMemoryRegion::Mode::kReadOnly, size,
       base::UnguessableToken::Create());
-#endif
 
   if (!platform_region.has_value()) {
     return std::nullopt;
@@ -132,6 +135,9 @@ void AppendSharedMemoryUserStreamArgs(
 #if BUILDFLAG(IS_WIN)
     handle = region.GetPlatformHandle();
     handle_value = reinterpret_cast<size_t>(handle);
+#elif BUILDFLAG(IS_ANDROID)
+    handle = region.GetPlatformHandle();
+    handle_value = static_cast<size_t>(handle);
 #else
     handle = region.GetPlatformHandle().fd;
     handle_value = static_cast<size_t>(handle);
