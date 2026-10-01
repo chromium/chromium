@@ -9192,6 +9192,7 @@ from previous Chrome versions.
   <int value="-1740093155" label="UnifiedMediaView:disabled"/>
   <int value="-1739547247"
       label="ShowWarningsForSuspiciousNotifications:enabled"/>
+  <int value="-1739501103" label="CopyTextJourneys:disabled"/>
   <int value="-1739475391" label="AppCollectionFolderRefresh:disabled"/>
   <int value="-1738416948" label="OptimizationHints:enabled"/>
   <int value="-1738273185"
@@ -17693,6 +17694,7 @@ from previous Chrome versions.
   <int value="842432903" label="CaptureThumbnailOnNavigatingAway:enabled"/>
   <int value="842543328" label="ActorScriptToolSkipPageContent:enabled"/>
   <int value="842789526" label="CloudPrinterHandler:disabled"/>
+  <int value="843351347" label="CopyTextJourneys:enabled"/>
   <int value="843857704" label="PassExplicitSyncPassphraseToGmsCore:enabled"/>
   <int value="843896452" label="UserActivationV2:enabled"/>
   <int value="844065049" label="AndroidComposeplateLFF:disabled"/>
