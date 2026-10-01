@@ -36,6 +36,7 @@ class OutputDevice;
 
 namespace media {
 class AudioBus;
+class AudioPushFifo;
 class AudioSystem;
 }  // namespace media
 
@@ -154,8 +155,8 @@ class AudioController : public media::AudioCapturerSource::CaptureCallback,
   void OnInputDeviceParametersReceived(
       const std::string& device_id,
       const std::optional<media::AudioParameters>& device_params);
-  // Called on the realtime capture thread.
-  void DeliverCapturedAudio(const media::AudioBus& audio_bus);
+  // Called on the realtime capture thread, from `capture_fifo_`.
+  void DeliverCapturedAudio(const media::AudioBus& audio_bus, int frame_delay);
   void OnCapturedAudioOnMainThread(std::vector<int16_t> pcm_data,
                                    media::AudioParameters params,
                                    float energy);
@@ -187,7 +188,11 @@ class AudioController : public media::AudioCapturerSource::CaptureCallback,
   scoped_refptr<media::AudioCapturerSource> audio_capturer_source_;
   // Created before the capture stream is started and destroyed after it is
   // stopped; only used on the realtime capture thread in between.
+  // `capture_converter_` is only needed when the audio service doesn't already
+  // deliver audio in GetBackendInputAudioParameters() format.
   std::unique_ptr<CaptureConverter> capture_converter_;
+  // Re-buffers converted audio into the chunk size delivered to listeners.
+  std::unique_ptr<media::AudioPushFifo> capture_fifo_;
 
   std::unique_ptr<audio::OutputDevice> output_device_;
 

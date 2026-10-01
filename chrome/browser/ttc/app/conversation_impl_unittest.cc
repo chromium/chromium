@@ -265,7 +265,12 @@ TEST_F(ConversationImplTest, CapturedAudioRoutedToBackend) {
 
   // Use values that have exact representations in float:
   // e.g. 4096 = 4096/32768 = 0.125f, 8192 = 0.25f, 16384 = 0.5f.
-  std::vector<int16_t> samples = {4096, 8192, 16384};
+  // The FIFO expects a full 100ms chunk (1600 frames at 16kHz) to emit.
+  const size_t kNumFrames = 1600;
+  std::vector<int16_t> samples(kNumFrames);
+  for (size_t i = 0; i < kNumFrames; ++i) {
+    samples[i] = (i % 2 == 0) ? 4096 : 8192;
+  }
 
   base::RunLoop run_loop;
   EXPECT_CALL(backend(), SendAudioChunk(testing::ElementsAreArray(samples)))

@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/ttc/app/public/error_codes.h"
@@ -24,6 +25,13 @@
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
+#include "media/base/media_switches.h"
+#include "media/media_buildflags.h"
+#include "media/mojo/mojom/audio_data_pipe.mojom.h"
+#include "media/mojo/mojom/audio_input_stream.mojom.h"
+#include "media/mojo/mojom/audio_processing.mojom.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -131,7 +139,7 @@ TEST_F(AudioControllerTest, LoopbackWithDelay) {
         capture_loop.Quit();
       }));
 
-  const int frames = 800;
+  const int frames = 1600;
   auto input_bus = media::AudioBus::Create(1, frames);
   for (int i = 0; i < frames; ++i) {
     input_bus->channel(0)[i] = 0.25f;
@@ -395,6 +403,228 @@ TEST_F(AudioControllerTest, CaptureErrorIsDroppedIfControllerIsDestroyed) {
   run_loop.Run();
 
   EXPECT_FALSE(error_reported);
+}
+
+class FakeStreamFactoryForAec : public media::mojom::AudioStreamFactory {
+ public:
+  FakeStreamFactoryForAec() = default;
+  ~FakeStreamFactoryForAec() override = default;
+
+  void Bind(mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
+    receiver_.Bind(std::move(receiver));
+  }
+
+  void CreateInputStream(
+      mojo::PendingReceiver<media::mojom::AudioInputStream> stream_receiver,
+      mojo::PendingRemote<media::mojom::AudioInputStreamClient> client,
+      mojo::PendingRemote<media::mojom::AudioInputStreamObserver> observer,
+      mojo::PendingRemote<media::mojom::AudioLog> log,
+      const std::string& device_id,
+      const media::AudioParameters& params,
+      const base::UnguessableToken& group_id,
+      uint32_t shared_memory_count,
+      bool enable_agc,
+      media::mojom::AudioProcessingConfigPtr processing_config,
+      CreateInputStreamCallback created_callback) override {
+    stream_created_ = true;
+    last_device_id_ = device_id;
+    last_params_ = params;
+    has_processing_config_ = !processing_config.is_null();
+    if (processing_config) {
+      last_processing_settings_ = processing_config->settings;
+    }
+    std::move(created_callback)
+        .Run(nullptr, /*initially_muted=*/false, std::nullopt);
+  }
+
+  void AssociateInputAndOutputForAec(
+      const base::UnguessableToken& input_stream_id,
+      const std::string& output_device_id) override {
+    last_aec_output_device_id_ = output_device_id;
+  }
+
+  void CreateOutputStream(
+      mojo::PendingReceiver<media::mojom::AudioOutputStream> stream,
+      mojo::PendingAssociatedRemote<media::mojom::AudioOutputStreamObserver>
+          observer,
+      mojo::PendingRemote<media::mojom::AudioLog> log,
+      const std::string& device_id,
+      const media::AudioParameters& params,
+      const base::UnguessableToken& group_id,
+      CreateOutputStreamCallback created_callback) override {}
+
+  void CreateSwitchableOutputStream(
+      mojo::PendingReceiver<media::mojom::AudioOutputStream> stream_receiver,
+      mojo::PendingReceiver<media::mojom::DeviceSwitchInterface>
+          device_switch_receiver,
+      mojo::PendingAssociatedRemote<media::mojom::AudioOutputStreamObserver>
+          observer,
+      mojo::PendingRemote<media::mojom::AudioLog> log,
+      const std::string& output_device_id,
+      const media::AudioParameters& params,
+      const base::UnguessableToken& group_id,
+      CreateOutputStreamCallback created_callback) override {}
+
+  void BindMuter(
+      mojo::PendingAssociatedReceiver<media::mojom::LocalMuter> receiver,
+      const base::UnguessableToken& group_id) override {}
+
+  void CreateLoopbackStream(
+      mojo::PendingReceiver<media::mojom::AudioInputStream> receiver,
+      mojo::PendingRemote<media::mojom::AudioInputStreamClient> client,
+      mojo::PendingRemote<media::mojom::AudioInputStreamObserver> observer,
+      const media::AudioParameters& params,
+      uint32_t shared_memory_count,
+      const base::UnguessableToken& group_id,
+      CreateLoopbackStreamCallback created_callback) override {}
+
+  bool stream_created() const { return stream_created_; }
+  const std::string& last_device_id() const { return last_device_id_; }
+  const media::AudioParameters& last_params() const { return last_params_; }
+  bool has_processing_config() const { return has_processing_config_; }
+  const std::optional<media::AudioProcessingSettings>&
+  last_processing_settings() const {
+    return last_processing_settings_;
+  }
+  const std::string& last_aec_output_device_id() const {
+    return last_aec_output_device_id_;
+  }
+
+ private:
+  mojo::Receiver<media::mojom::AudioStreamFactory> receiver_{this};
+  std::string last_device_id_;
+  media::AudioParameters last_params_;
+  bool stream_created_ = false;
+  bool has_processing_config_ = false;
+  std::optional<media::AudioProcessingSettings> last_processing_settings_;
+  std::string last_aec_output_device_id_;
+};
+
+TEST_F(AudioControllerTest, HardwareAecDeviceDoesNotEngageSoftwareAec) {
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kChromeWideEchoCancellation);
+#endif
+
+  // Configure hardware device parameters with ECHO_CANCELLER effect.
+  media::AudioParameters hw_params(
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      media::ChannelLayoutConfig::Mono(), 48000, 480);
+  hw_params.set_effects(media::AudioParameters::ECHO_CANCELLER);
+  audio_manager_.SetInputStreamParameters(hw_params);
+
+  FakeStreamFactoryForAec fake_factory;
+  auto fake_binder = base::BindLambdaForTesting(
+      [&](mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
+        fake_factory.Bind(std::move(receiver));
+      });
+
+  AudioController controller(fake_binder, GetAudioSystemFactory());
+  controller.StartCapture();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return fake_factory.last_params().sample_rate() > 0; }));
+
+  // Hardware AEC preferred: software processing config should NOT be sent.
+  EXPECT_FALSE(fake_factory.has_processing_config());
+  // The input device should be opened with native hardware sample rate.
+  EXPECT_EQ(fake_factory.last_params().sample_rate(), 48000);
+}
+
+TEST_F(AudioControllerTest, HardwareLackingAecEngagesSoftwareAec) {
+#if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(media::kChromeWideEchoCancellation);
+
+  // Configure device parameters WITHOUT ECHO_CANCELLER effect.
+  media::AudioParameters no_hw_aec_params(
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      media::ChannelLayoutConfig::Mono(), 44100, 441);
+  audio_manager_.SetInputStreamParameters(no_hw_aec_params);
+
+  FakeStreamFactoryForAec fake_factory;
+  auto fake_binder = base::BindLambdaForTesting(
+      [&](mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
+        fake_factory.Bind(std::move(receiver));
+      });
+
+  AudioController controller(fake_binder, GetAudioSystemFactory());
+  controller.StartCapture();
+  ASSERT_TRUE(base::test::RunUntil(
+      [&]() { return fake_factory.last_params().sample_rate() > 0; }));
+
+  // Software fallback: WebRTC processing config must be sent.
+  EXPECT_TRUE(fake_factory.has_processing_config());
+  ASSERT_TRUE(fake_factory.last_processing_settings().has_value());
+  EXPECT_TRUE(fake_factory.last_processing_settings()->echo_cancellation);
+  EXPECT_TRUE(fake_factory.last_processing_settings()->noise_suppression);
+  EXPECT_TRUE(fake_factory.last_processing_settings()->automatic_gain_control);
+
+  // Audio service delivers 10ms (160 frames) at 16kHz mono.
+  EXPECT_EQ(fake_factory.last_params().sample_rate(), 16000);
+  EXPECT_EQ(fake_factory.last_params().frames_per_buffer(), 160);
+#endif
+}
+
+TEST_F(AudioControllerTest, FifoAggregatesTen10msChunksIntoOne100msChunk) {
+  AudioController controller;
+
+  int callback_count = 0;
+  std::vector<int16_t> delivered_pcm;
+  base::RunLoop capture_loop;
+  auto capture_sub = controller.AddAudioCaptureListener(
+      base::BindLambdaForTesting([&](base::span<const int16_t> pcm_data,
+                                     const media::AudioParameters& params) {
+        callback_count++;
+        delivered_pcm.assign(pcm_data.begin(), pcm_data.end());
+        EXPECT_EQ(params.sample_rate(), 16000);
+        EXPECT_EQ(params.frames_per_buffer(), 1600);
+        capture_loop.Quit();
+      }));
+
+  // Deliver nine 10ms chunks (160 frames each at 16kHz) -> total 1440 frames.
+  // Should NOT trigger delivery yet (1600 required).
+  auto chunk_bus = media::AudioBus::Create(1, 160);
+  chunk_bus->Zero();
+  for (int i = 0; i < 9; ++i) {
+    controller.Capture(chunk_bus.get(), base::TimeTicks::Now(), {}, 1.0);
+  }
+  EXPECT_EQ(callback_count, 0);
+
+  // Deliver the 10th 10ms chunk (total reaches 1600 frames).
+  // Exactly one 100ms chunk (1600 frames) should be emitted.
+  controller.Capture(chunk_bus.get(), base::TimeTicks::Now(), {}, 1.0);
+  capture_loop.Run();
+
+  EXPECT_EQ(callback_count, 1);
+  EXPECT_EQ(delivered_pcm.size(), 1600u);
+}
+
+TEST_F(AudioControllerTest, StopCaptureFlushesFifo) {
+  AudioController controller;
+
+  int callback_count = 0;
+  auto capture_sub =
+      controller.AddAudioCaptureListener(base::BindLambdaForTesting(
+          [&](base::span<const int16_t> pcm_data,
+              const media::AudioParameters& params) { callback_count++; }));
+
+  // Push partial audio into FIFO (5 chunks of 160 frames = 800 frames).
+  auto chunk_bus = media::AudioBus::Create(1, 160);
+  chunk_bus->Zero();
+  for (int i = 0; i < 5; ++i) {
+    controller.Capture(chunk_bus.get(), base::TimeTicks::Now(), {}, 1.0);
+  }
+  EXPECT_EQ(callback_count, 0);
+
+  // StopCapture resets the FIFO.
+  controller.StopCapture();
+
+  // In a new session, pushing 5 more chunks (800 frames) should NOT trigger
+  // delivery from old leftover frames (it would if old 800 + new 800 = 1600).
+  for (int i = 0; i < 5; ++i) {
+    controller.Capture(chunk_bus.get(), base::TimeTicks::Now(), {}, 1.0);
+  }
+  EXPECT_EQ(callback_count, 0);
 }
 
 }  // namespace ttc
