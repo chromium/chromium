@@ -337,6 +337,16 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
     return {nullptr, base::OnTaskRunnerDeleter(nullptr)};
   }
 
+  // Struct holding loaded model info returned from background loading thread.
+  struct LoadedModelInfo {
+    FileDeleteOnTaskRunner model_fb = NullFileDeleteOnTaskRunner();
+    // Result of building the model execution task on the loading thread.
+    // Unset if the model execution task wasn't built on the loading thread.
+    std::optional<base::expected<std::unique_ptr<ModelExecutionTaskType>,
+                                 ExecutionStatus>>
+        build_result;
+  };
+
   // Loads the model file in the background thread, and calls a callback on
   // model file loaded in memory on the model execution thread.
   void LoadModelFile(
@@ -359,22 +369,28 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
     // avoid blocking the main thread, e.g., the UI thread.
     model_loading_task_runner_->PostTaskAndReplyWithResult(
         FROM_HERE,
-        // Anomynous model file loading function to be called on the background
-        // thread, which returns the memory-mapped model file or nullptr if
-        // failed to load.
-        base::BindOnce(&TFLiteModelExecutor::OpenModelFile, model_file_path_,
-                       optimization_target_, model_loading_task_runner_),
+        // Anonymous model file loading function to be called on the background
+        // thread, which returns the opened model file and optionally the result
+        // of building the model execution task, or an error if failed to open.
+        base::BindOnce(
+            &TFLiteModelExecutor::OpenAndBuildModelFile, model_file_path_,
+            optimization_target_, model_loading_task_runner_,
+            base::FeatureList::IsEnabled(
+                features::kBuildTFLiteModelExecutionTaskOnLoadingThread)
+                ? GetBuildModelExecutionTaskCallback()
+                : base::NullCallback()),
         base::BindOnce(&TFLiteModelExecutor::OnModelFileLoadedInMemory,
                        GetWeakPtrForExecutionThread(),
                        std::move(model_loaded_callback)));
   }
 
-  static base::expected<FileDeleteOnTaskRunner, ExecutionStatus> OpenModelFile(
+  static base::expected<LoadedModelInfo, ExecutionStatus> OpenAndBuildModelFile(
       const std::optional<base::FilePath> model_file_path,
       proto::OptimizationTarget optimization_target,
-      scoped_refptr<base::SequencedTaskRunner> model_loading_task_runner) {
-    TRACE_EVENT("optimization_guide", "TFLiteModelExecutor::OpenModelFile",
-                "target",
+      scoped_refptr<base::SequencedTaskRunner> model_loading_task_runner,
+      BuildModelExecutionTaskCallback build_model_execution_task_callback) {
+    TRACE_EVENT("optimization_guide",
+                "TFLiteModelExecutor::OpenAndBuildModelFile", "target",
                 GetStringNameForOptimizationTarget(optimization_target));
 
     base::TimeTicks loading_start_time = base::TimeTicks::Now();
@@ -382,28 +398,37 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
       return base::unexpected(ExecutionStatus::kErrorModelFileNotAvailable);
     }
 
-    FileDeleteOnTaskRunner model_fb(
+    LoadedModelInfo model_info;
+    model_info.model_fb = FileDeleteOnTaskRunner(
         new base::File(*model_file_path,
                        base::File::FLAG_OPEN | base::File::FLAG_READ),
         base::OnTaskRunnerDeleter(std::move(model_loading_task_runner)));
-    if (!model_fb->IsValid()) {
+    if (!model_info.model_fb->IsValid()) {
       return base::unexpected(ExecutionStatus::kErrorModelFileNotValid);
     }
 
-    // We only want to record successful loading times.
+    // We only want to record successful loading times. This intentionally
+    // excludes the time to build the model execution task, so that the
+    // histogram has the same meaning whether or not it is built here.
     base::UmaHistogramTimes(
         base::StrCat({"OptimizationGuide.ModelExecutor.ModelLoadingDuration2.",
                       GetStringNameForOptimizationTarget(optimization_target)}),
         base::TimeTicks::Now() - loading_start_time);
 
-    return std::move(model_fb);
+    if (build_model_execution_task_callback) {
+      model_info.build_result =
+          build_model_execution_task_callback.Run(*model_info.model_fb);
+    }
+
+    return model_info;
   }
 
   // Called on model file loaded in memory. Builds the model execution task from
-  // the memory-mapped file, and calls `model_loaded_callback`.
+  // the model file if it wasn't already built on the background thread, and
+  // calls `model_loaded_callback`.
   void OnModelFileLoadedInMemory(
       base::OnceCallback<void(ExecutionStatus)> model_loaded_callback,
-      base::expected<FileDeleteOnTaskRunner, ExecutionStatus> model_fb) {
+      base::expected<LoadedModelInfo, ExecutionStatus> model_info) {
     DCHECK(execution_task_runner_->RunsTasksInCurrentSequence());
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -411,13 +436,16 @@ class TFLiteModelExecutor : public ModelExecutor<OutputType, InputType> {
     // blockable thread.
     UnloadModel();
 
-    if (!model_fb.has_value()) {
-      std::move(model_loaded_callback).Run(model_fb.error());
+    if (!model_info.has_value()) {
+      std::move(model_loaded_callback).Run(model_info.error());
       return;
     }
-    model_fb_ = std::move(*model_fb);
+    model_fb_ = std::move(model_info->model_fb);
 
-    auto build_result = GetBuildModelExecutionTaskCallback().Run(*model_fb_);
+    auto build_result =
+        model_info->build_result.has_value()
+            ? std::move(*model_info->build_result)
+            : GetBuildModelExecutionTaskCallback().Run(*model_fb_);
     if (build_result.has_value()) {
       loaded_model_ = std::move(build_result.value());
     }

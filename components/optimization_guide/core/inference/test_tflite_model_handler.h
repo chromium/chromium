@@ -18,14 +18,17 @@ class TestTFLiteModelHandler
       OptimizationGuideModelProvider* model_provider,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       std::unique_ptr<TestTFLiteModelExecutor> executor =
-          std::make_unique<TestTFLiteModelExecutor>())
+          std::make_unique<TestTFLiteModelExecutor>(),
+      scoped_refptr<base::SequencedTaskRunner> model_loading_task_runner =
+          nullptr)
       : ModelHandler<std::vector<float>, const std::vector<float>&>(
             model_provider,
             background_task_runner,
             std::move(executor),
             /*model_inference_timeout=*/std::nullopt,
             proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
-            /*model_metadata=*/std::nullopt) {}
+            /*model_metadata=*/std::nullopt,
+            model_loading_task_runner) {}
   ~TestTFLiteModelHandler() override = default;
   TestTFLiteModelHandler(const TestTFLiteModelHandler&) = delete;
   TestTFLiteModelHandler& operator=(const TestTFLiteModelHandler&) = delete;

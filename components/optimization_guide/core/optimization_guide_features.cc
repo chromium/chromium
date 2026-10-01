@@ -78,6 +78,12 @@ BASE_FEATURE(kPreventLongRunningPredictionModels,
 BASE_FEATURE(kOverrideNumThreadsForModelExecution,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables building the TFLite model execution task (memory mapping, FlatBuffer
+// verification, interpreter initialization) on the background loading thread
+// instead of the execution thread.
+BASE_FEATURE(kBuildTFLiteModelExecutionTaskOnLoadingThread,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Killswitch for fetching on search results from a remote Optimization Guide
 // Service.
 BASE_FEATURE(kOptimizationGuideFetchingForSRP,

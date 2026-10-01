@@ -9,6 +9,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_waitable_event.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
@@ -128,6 +129,8 @@ class TFLiteModelExecutorTest : public testing::Test {
   }
 
   TestTFLiteModelHandler* model_handler() { return model_handler_.get(); }
+
+  const base::FilePath& model_file_path() const { return model_file_path_; }
 
   TestOptimizationGuideModelProvider* test_model_provider() {
     return test_model_provider_.get();
@@ -996,6 +999,271 @@ TEST_F(ForegroundTFLiteModelExecutorTest, LoadAndUpdateAndUnloadModel) {
 
   // Wait for everything to be cleaned up on background threads.
   RunUntilIdle();
+}
+
+class ThreadCheckingModelExecutor : public TestTFLiteModelExecutor {
+ public:
+  ThreadCheckingModelExecutor(
+      scoped_refptr<base::SequencedTaskRunner> expected_loading_runner,
+      scoped_refptr<base::SequencedTaskRunner> expected_execution_runner,
+      base::RepeatingClosure on_build_callback,
+      bool build_succeeds = true)
+      : expected_loading_runner_(expected_loading_runner),
+        expected_execution_runner_(expected_execution_runner),
+        on_build_callback_(on_build_callback),
+        build_succeeds_(build_succeeds) {}
+
+  BuildModelExecutionTaskCallback GetBuildModelExecutionTaskCallback()
+      override {
+    return base::BindRepeating(
+        &ThreadCheckingModelExecutor::BuildModelExecutionTaskWithCheck,
+        expected_loading_runner_, expected_execution_runner_,
+        on_build_callback_, build_succeeds_,
+        TestTFLiteModelExecutor::GetBuildModelExecutionTaskCallback());
+  }
+
+ private:
+  static base::expected<std::unique_ptr<ModelExecutionTask>, ExecutionStatus>
+  BuildModelExecutionTaskWithCheck(
+      scoped_refptr<base::SequencedTaskRunner> expected_loading_runner,
+      scoped_refptr<base::SequencedTaskRunner> expected_execution_runner,
+      base::RepeatingClosure on_build_callback,
+      bool build_succeeds,
+      BuildModelExecutionTaskCallback base_builder,
+      base::File& model_file) {
+    if (base::FeatureList::IsEnabled(
+            features::kBuildTFLiteModelExecutionTaskOnLoadingThread)) {
+      EXPECT_TRUE(expected_loading_runner->RunsTasksInCurrentSequence());
+    } else {
+      EXPECT_TRUE(expected_execution_runner->RunsTasksInCurrentSequence());
+    }
+    on_build_callback.Run();
+    if (!build_succeeds) {
+      return base::unexpected(ExecutionStatus::kErrorModelFileNotValid);
+    }
+    return base_builder.Run(model_file);
+  }
+
+  scoped_refptr<base::SequencedTaskRunner> expected_loading_runner_;
+  scoped_refptr<base::SequencedTaskRunner> expected_execution_runner_;
+  base::RepeatingClosure on_build_callback_;
+  bool build_succeeds_;
+};
+
+class TFLiteModelExecutorLoadingThreadTest
+    : public TFLiteModelExecutorTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  TFLiteModelExecutorLoadingThreadTest() {
+    if (IsLoadingThreadFeatureEnabled()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          features::kBuildTFLiteModelExecutionTaskOnLoadingThread);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          features::kBuildTFLiteModelExecutionTaskOnLoadingThread);
+    }
+  }
+
+  bool IsLoadingThreadFeatureEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         TFLiteModelExecutorLoadingThreadTest,
+                         testing::Bool());
+
+TEST_P(TFLiteModelExecutorLoadingThreadTest, ModelExecutionOnLoadingThread) {
+  base::HistogramTester histogram_tester;
+  scoped_refptr<base::SequencedTaskRunner> loading_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+  scoped_refptr<base::SequencedTaskRunner> execution_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
+
+  bool build_called = false;
+  auto executor = std::make_unique<ThreadCheckingModelExecutor>(
+      loading_runner, execution_runner,
+      base::BindRepeating([](bool* called) { *called = true; }, &build_called));
+
+  model_handler_ = std::make_unique<TestTFLiteModelHandler>(
+      test_model_provider(), execution_runner, std::move(executor),
+      loading_runner);
+
+  PushModelFileToModelExecutor(
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      /*model_metadata=*/std::nullopt);
+  EXPECT_TRUE(model_handler()->ModelAvailable());
+
+  std::vector<float> input(1 * 32 * 32 * 3, 1.0f);
+  base::RunLoop run_loop;
+  model_handler()->ExecuteModelWithInput(
+      base::BindOnce(
+          [](base::RunLoop* run_loop,
+             const std::optional<std::vector<float>>& output) {
+            EXPECT_TRUE(output.has_value());
+            run_loop->Quit();
+          },
+          &run_loop),
+      input);
+  run_loop.Run();
+
+  EXPECT_TRUE(build_called);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"OptimizationGuide.ModelExecutor.ModelLoadedSuccessfully.",
+                    optimization_guide::GetStringNameForOptimizationTarget(
+                        proto::OptimizationTarget::
+                            OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)}),
+      true, 1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({"OptimizationGuide.ModelExecutor.ModelLoadingDuration2.",
+                    optimization_guide::GetStringNameForOptimizationTarget(
+                        proto::OptimizationTarget::
+                            OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)}),
+      1);
+
+  model_handler()->UnloadModel();
+  RunUntilIdle();
+}
+
+TEST_P(TFLiteModelExecutorLoadingThreadTest, PreloadOnLoadingThread) {
+  base::HistogramTester histogram_tester;
+  scoped_refptr<base::SequencedTaskRunner> loading_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+  scoped_refptr<base::SequencedTaskRunner> execution_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
+
+  bool build_called = false;
+  model_handler_ = std::make_unique<TestTFLiteModelHandler>(
+      test_model_provider(), execution_runner,
+      std::make_unique<ThreadCheckingModelExecutor>(
+          loading_runner, execution_runner,
+          base::BindRepeating([](bool* called) { *called = true; },
+                              &build_called)),
+      loading_runner);
+
+  model_handler_->SetShouldPreloadModel(true);
+  // Runs until idle, so the model is fully loaded when this returns.
+  PushModelFileToModelExecutor(
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      /*model_metadata=*/std::nullopt);
+
+  EXPECT_TRUE(build_called);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"OptimizationGuide.ModelExecutor.ModelLoadedSuccessfully.",
+                    optimization_guide::GetStringNameForOptimizationTarget(
+                        proto::OptimizationTarget::
+                            OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)}),
+      true, 1);
+
+  model_handler_->UnloadModel();
+  RunUntilIdle();
+}
+
+// Verifies that a failure to build the model execution task is reported the
+// same way whether the task is built on the loading or the execution thread.
+TEST_P(TFLiteModelExecutorLoadingThreadTest, BuildFailure) {
+  base::HistogramTester histogram_tester;
+  scoped_refptr<base::SequencedTaskRunner> loading_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+  scoped_refptr<base::SequencedTaskRunner> execution_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
+
+  bool build_called = false;
+  model_handler_ = std::make_unique<TestTFLiteModelHandler>(
+      test_model_provider(), execution_runner,
+      std::make_unique<ThreadCheckingModelExecutor>(
+          loading_runner, execution_runner,
+          base::BindRepeating([](bool* called) { *called = true; },
+                              &build_called),
+          /*build_succeeds=*/false),
+      loading_runner);
+
+  PushModelFileToModelExecutor(
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      /*model_metadata=*/std::nullopt);
+
+  std::vector<float> input(1 * 32 * 32 * 3, 1.0f);
+  base::RunLoop run_loop;
+  model_handler()->ExecuteModelWithInput(
+      base::BindOnce(
+          [](base::RunLoop* run_loop,
+             const std::optional<std::vector<float>>& output) {
+            EXPECT_FALSE(output.has_value());
+            run_loop->Quit();
+          },
+          &run_loop),
+      input);
+  run_loop.Run();
+  RunUntilIdle();
+
+  EXPECT_TRUE(build_called);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"OptimizationGuide.ModelExecutor.ExecutionStatus.",
+                    optimization_guide::GetStringNameForOptimizationTarget(
+                        proto::OptimizationTarget::
+                            OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)}),
+      ExecutionStatus::kErrorModelFileNotValid, 1);
+  histogram_tester.ExpectUniqueSample(
+      base::StrCat({"OptimizationGuide.ModelExecutor.ModelLoadedSuccessfully.",
+                    optimization_guide::GetStringNameForOptimizationTarget(
+                        proto::OptimizationTarget::
+                            OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)}),
+      false, 1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({"OptimizationGuide.ModelExecutor.ModelLoadingDuration2.",
+                    optimization_guide::GetStringNameForOptimizationTarget(
+                        proto::OptimizationTarget::
+                            OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD)}),
+      1);
+}
+
+TEST_P(TFLiteModelExecutorLoadingThreadTest,
+       DestroyHandlerWithInFlightLoading) {
+  scoped_refptr<base::SequencedTaskRunner> loading_runner =
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
+  scoped_refptr<base::SequencedTaskRunner> execution_runner =
+      base::SequencedTaskRunner::GetCurrentDefault();
+
+  bool build_called = false;
+  model_handler_ = std::make_unique<TestTFLiteModelHandler>(
+      test_model_provider(), execution_runner,
+      std::make_unique<ThreadCheckingModelExecutor>(
+          loading_runner, execution_runner,
+          base::BindRepeating([](bool* called) { *called = true; },
+                              &build_called)),
+      loading_runner);
+  model_handler_->SetShouldPreloadModel(true);
+
+  // Block the loading sequence so that the model load is still pending when
+  // the handler (and its executor) is destroyed.
+  base::TestWaitableEvent unblock_loading;
+  loading_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce([](base::TestWaitableEvent* event) { event->Wait(); },
+                     base::Unretained(&unblock_loading)));
+
+  // Don't use `PushModelFileToModelExecutor()`, since it waits for the
+  // (blocked) loading sequence to be idle. Only run tasks on the execution
+  // sequence, which posts the model load to the loading sequence.
+  ModelInfo model_info = {.model_file_path = model_file_path()};
+  model_handler_->OnModelUpdated(
+      proto::OptimizationTarget::OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD,
+      model_info);
+  base::RunLoop().RunUntilIdle();
+
+  // Destroy the handler. The executor is deleted on the execution sequence.
+  model_handler_.reset();
+  base::RunLoop().RunUntilIdle();
+
+  // Let the model load complete. Its reply is dropped since the executor is
+  // gone, so the loaded model (if built) is destroyed with the reply.
+  unblock_loading.Signal();
+  RunUntilIdle();
+
+  // The model execution task is only built if it is built on the loading
+  // sequence, since the reply to the execution sequence is dropped.
+  EXPECT_EQ(build_called, IsLoadingThreadFeatureEnabled());
 }
 
 }  // namespace
