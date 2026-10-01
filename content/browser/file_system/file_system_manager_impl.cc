@@ -4,6 +4,7 @@
 
 #include "content/browser/file_system/file_system_manager_impl.h"
 
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"
@@ -11,6 +12,8 @@
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
+#include "base/strings/escape.h"
+#include "base/strings/string_util.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
@@ -63,6 +66,87 @@ void RevokeFilePermission(ChildProcessId child_id, const base::FilePath& path) {
   // effect.
   ChildProcessSecurityPolicyImpl::GetInstance()->RevokeAllPermissionsForFile(
       child_id, path);
+}
+
+bool IsUncrackedTopLevelSiblingInIsolatedFileSystem(
+    const FileSystemURL& source,
+    const GURL& destination,
+    const blink::StorageKey& storage_key) {
+  if (source.mount_type() != storage::kFileSystemTypeIsolated ||
+      source.virtual_path().GetComponents().size() != 2) {
+    return false;
+  }
+
+  // A new top-level entry in an isolated file system cannot be cracked until
+  // it is registered, so it appears to have an invalid URL before the write
+  // permission check. Check the uncracked URL to distinguish this from a
+  // malformed destination URL.
+  GURL origin;
+  storage::FileSystemType type;
+  base::FilePath virtual_path;
+  if (!storage::ParseFileSystemSchemeURL(destination, &origin, &type,
+                                         &virtual_path) ||
+      !storage_key.origin().IsSameOriginWith(origin) ||
+      type != storage::kFileSystemTypeIsolated ||
+      virtual_path.GetComponents().size() != 2 ||
+      virtual_path.DirName() != source.virtual_path().DirName()) {
+    return false;
+  }
+
+  // The parsed path can hide encoded separators or a NUL (which FilePath
+  // truncates). Require a valid single sibling name in the same mount.
+  // GURL keeps the mount type ("/isolated") in destination.inner_url()->path();
+  // destination.path() contains only "/<filesystem_id>/<name>".
+  const std::string path(destination.path());
+  const std::string mount_prefix = "/" + source.mount_filesystem_id() + "/";
+  if (!base::StartsWith(path, mount_prefix, base::CompareCase::SENSITIVE)) {
+    return false;
+  }
+  const std::string name =
+      base::UnescapeBinaryURLComponent(path.substr(mount_prefix.size()));
+  return !name.empty() && base::IsStringUTF8(name) &&
+         name.find('/') == std::string::npos &&
+         name.find('\0') == std::string::npos &&
+         name.find('\\') == std::string::npos;
+}
+
+using CopyOrMovePermissionCheck =
+    bool (ChildProcessSecurityPolicyImpl::Handle::*)(const FileSystemURL&,
+                                                     const FileSystemURL&);
+
+void ReplyToInvalidCopyOrMoveDestination(
+    const FileSystemURL& source_url,
+    const FileSystemURL& destination_url,
+    const GURL& destination_path,
+    const blink::StorageKey& storage_key,
+    ChildProcessSecurityPolicyImpl::Handle& security_policy_handle,
+    CopyOrMovePermissionCheck permission_check,
+    base::File::Error error,
+    base::OnceCallback<void(base::File::Error)> callback) {
+  if (destination_url.is_valid() ||
+      !IsUncrackedTopLevelSiblingInIsolatedFileSystem(
+          source_url, destination_path, storage_key)) {
+    std::move(callback).Run(error);
+    return;
+  }
+
+  // Isolated file system permissions are granted per file system. Check the
+  // source URL as the destination so an uncrackable sibling can still use the
+  // same write grant.
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(permission_check,
+                     std::make_unique<ChildProcessSecurityPolicyImpl::Handle>(
+                         security_policy_handle.Duplicate()),
+                     source_url, source_url),
+      base::BindOnce(
+          [](base::OnceCallback<void(base::File::Error)> callback,
+             bool has_permission) {
+            std::move(callback).Run(has_permission
+                                        ? base::File::FILE_ERROR_INVALID_URL
+                                        : base::File::FILE_ERROR_SECURITY);
+          },
+          std::move(callback)));
 }
 
 storage::FileSystemType ToStorageFileSystemType(
@@ -305,11 +389,16 @@ void FileSystemManagerImpl::Move(const GURL& src_path,
       context_->CrackURL(src_path, receivers_.current_context()));
   FileSystemURL dest_url(
       context_->CrackURL(dest_path, receivers_.current_context()));
-  std::optional<base::File::Error> opt_error = ValidateFileSystemURL(src_url);
-  if (!opt_error)
-    opt_error = ValidateFileSystemURL(dest_url);
-  if (opt_error) {
-    std::move(callback).Run(opt_error.value());
+  if (auto error = ValidateFileSystemURL(src_url)) {
+    std::move(callback).Run(*error);
+    return;
+  }
+  if (auto error = ValidateFileSystemURL(dest_url)) {
+    ReplyToInvalidCopyOrMoveDestination(
+        src_url, dest_url, dest_path, receivers_.current_context(),
+        security_policy_handle_,
+        &ChildProcessSecurityPolicyImpl::Handle::CanMoveFileSystemFile, *error,
+        std::move(callback));
     return;
   }
   // Run the access check on the UI thread using a duplicated
@@ -361,11 +450,16 @@ void FileSystemManagerImpl::Copy(const GURL& src_path,
       context_->CrackURL(src_path, receivers_.current_context()));
   FileSystemURL dest_url(
       context_->CrackURL(dest_path, receivers_.current_context()));
-  std::optional<base::File::Error> opt_error = ValidateFileSystemURL(src_url);
-  if (!opt_error)
-    opt_error = ValidateFileSystemURL(dest_url);
-  if (opt_error) {
-    std::move(callback).Run(opt_error.value());
+  if (auto error = ValidateFileSystemURL(src_url)) {
+    std::move(callback).Run(*error);
+    return;
+  }
+  if (auto error = ValidateFileSystemURL(dest_url)) {
+    ReplyToInvalidCopyOrMoveDestination(
+        src_url, dest_url, dest_path, receivers_.current_context(),
+        security_policy_handle_,
+        &ChildProcessSecurityPolicyImpl::Handle::CanCopyFileSystemFile, *error,
+        std::move(callback));
     return;
   }
 

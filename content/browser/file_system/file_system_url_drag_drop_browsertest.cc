@@ -4,17 +4,27 @@
 
 #include <string>
 
+#include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/test/test_future.h"
+#include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/browser/security/cpsp/child_process_security_policy_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/shell/browser/shell.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/file_system/isolated_context.h"
+#include "storage/common/file_system/file_system_util.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -309,5 +319,137 @@ IN_PROC_BROWSER_TEST_F(FileSystemURLDragDropBrowserTest, FileSystemFileLeave) {
   EXPECT_EQ("done", EvalJs(shell(), "p"));
 
   EXPECT_TRUE(external_mount_points->RevokeFileSystem(testMountName));
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemURLDragDropBrowserTest,
+                       IsolatedCopyMoveErrorPrecedence) {
+  const GURL page_url = embedded_test_server()->GetURL("/title1.html");
+  ASSERT_TRUE(NavigateToURL(shell(), page_url));
+  auto* process = static_cast<RenderProcessHostImpl*>(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetProcess());
+
+  storage::IsolatedContext::FileInfoSet files;
+  const base::FilePath file_path =
+      CreateTestFileInDirectory(temp_dir_.GetPath(), "test");
+  ASSERT_TRUE(files.AddPathWithName(file_path, "source.txt"));
+  const std::string id =
+      storage::IsolatedContext::GetInstance()->RegisterDraggedFileSystem(files);
+  ASSERT_FALSE(id.empty());
+  storage::IsolatedContext::ScopedFSHandle handle(id);
+  ChildProcessSecurityPolicyImpl::GetInstance()->GrantReadFileSystem(
+      process->GetID(), id);
+
+  mojo::Remote<blink::mojom::FileSystemManager> manager;
+  process->BindFileSystemManager(
+      shell()->web_contents()->GetPrimaryMainFrame()->GetStorageKey(),
+      manager.BindNewPipeAndPassReceiver());
+
+  const GURL root = storage::GetFileSystemRootURI(
+      url::Origin::Create(page_url).GetURL(), storage::kFileSystemTypeIsolated);
+  const GURL source(root.spec() + id + "/source.txt");
+  const GURL source_root(root.spec() + id + "/");
+  const auto expect_errors = [&](const GURL& from, const GURL& to,
+                                 base::File::Error expected) {
+    SCOPED_TRACE(from.spec() + " -> " + to.spec());
+    base::test::TestFuture<base::File::Error> copy_result;
+    manager->Copy(from, to, copy_result.GetCallback());
+    EXPECT_EQ(expected, copy_result.Get());
+    base::test::TestFuture<base::File::Error> move_result;
+    manager->Move(from, to, move_result.GetCallback());
+    EXPECT_EQ(expected, move_result.Get());
+  };
+
+  expect_errors(source, GURL(root.spec() + id + "/new.txt"),
+                base::File::FILE_ERROR_SECURITY);
+  expect_errors(source, GURL(root.spec() + id + "/new%20name.txt"),
+                base::File::FILE_ERROR_SECURITY);
+  expect_errors(source, source_root, base::File::FILE_ERROR_SECURITY);
+  expect_errors(source, GURL(root.spec() + id + "/source.txt/child.txt"),
+                base::File::FILE_ERROR_SECURITY);
+  expect_errors(source_root, GURL(root.spec() + id + "-unknown/"),
+                base::File::FILE_ERROR_INVALID_URL);
+  expect_errors(source, GURL(root.spec() + id + "-unknown/new.txt"),
+                base::File::FILE_ERROR_INVALID_URL);
+  const std::string other_id =
+      storage::IsolatedContext::GetInstance()->RegisterDraggedFileSystem(files);
+  ASSERT_FALSE(other_id.empty());
+  storage::IsolatedContext::ScopedFSHandle other_handle(other_id);
+  expect_errors(source, GURL(root.spec() + other_id + "/source.txt"),
+                base::File::FILE_ERROR_SECURITY);
+  expect_errors(source, GURL("not-a-filesystem-url"),
+                base::File::FILE_ERROR_INVALID_URL);
+  expect_errors(
+      source,
+      GURL("filesystem:" + url::Origin::Create(page_url).GetURL().spec() +
+           "badtype/" + id + "/new.txt"),
+      base::File::FILE_ERROR_INVALID_URL);
+  expect_errors(source, GURL(root.spec() + id + "/new%00name.txt"),
+                base::File::FILE_ERROR_INVALID_URL);
+  expect_errors(source, GURL(root.spec() + id + "/new%FFname.txt"),
+                base::File::FILE_ERROR_INVALID_URL);
+  expect_errors(source, GURL(root.spec() + id + "/new%5Cname.txt"),
+                base::File::FILE_ERROR_INVALID_URL);
+  expect_errors(source, GURL(root.spec() + id + "/%2Fnew.txt"),
+                base::File::FILE_ERROR_INVALID_URL);
+  expect_errors(source, GURL(root.spec() + id + "%2Fnew.txt"),
+                base::File::FILE_ERROR_INVALID_URL);
+  expect_errors(source, GURL(root.spec() + id + "/%2E%2E/new.txt"),
+                base::File::FILE_ERROR_INVALID_URL);
+  expect_errors(
+      source,
+      GURL(storage::GetFileSystemRootURI(GURL("http://example.com"),
+                                         storage::kFileSystemTypeIsolated)
+               .spec() +
+           id + "/new.txt"),
+      base::File::FILE_ERROR_INVALID_URL);
+  expect_errors(
+      source,
+      GURL(storage::GetFileSystemRootURI(url::Origin::Create(page_url).GetURL(),
+                                         storage::kFileSystemTypeExternal)
+               .spec() +
+           id + "/new.txt"),
+      base::File::FILE_ERROR_INVALID_URL);
+  const GURL temporary_root =
+      storage::GetFileSystemRootURI(url::Origin::Create(page_url).GetURL(),
+                                    storage::kFileSystemTypeTemporary);
+  expect_errors(GURL(temporary_root.spec() + "source.txt"),
+                GURL(root.spec() + id + "/new.txt"),
+                base::File::FILE_ERROR_INVALID_URL);
+
+  // A different receiver StorageKey cannot validate the source URL.
+  mojo::Remote<blink::mojom::FileSystemManager> other_manager;
+  process->BindFileSystemManager(
+      blink::StorageKey::CreateFirstParty(
+          url::Origin::Create(GURL("http://example.com"))),
+      other_manager.BindNewPipeAndPassReceiver());
+  base::test::TestFuture<base::File::Error> other_copy_result;
+  other_manager->Copy(source, GURL(root.spec() + id + "/new.txt"),
+                      other_copy_result.GetCallback());
+  EXPECT_EQ(base::File::FILE_ERROR_INVALID_URL, other_copy_result.Get());
+  base::test::TestFuture<base::File::Error> other_move_result;
+  other_manager->Move(source, GURL(root.spec() + id + "/new.txt"),
+                      other_move_result.GetCallback());
+  EXPECT_EQ(base::File::FILE_ERROR_INVALID_URL, other_move_result.Get());
+
+  // Copy and move have different write grants on the same isolated file
+  // system. With the write grant, an unregistered sibling is still invalid.
+  ChildProcessSecurityPolicyImpl::GetInstance()->GrantCopyIntoFileSystem(
+      process->GetID().GetUnsafeValue(), id);
+  base::test::TestFuture<base::File::Error> writable_copy_result;
+  manager->Copy(source, GURL(root.spec() + id + "/new.txt"),
+                writable_copy_result.GetCallback());
+  EXPECT_EQ(base::File::FILE_ERROR_INVALID_URL, writable_copy_result.Get());
+  base::test::TestFuture<base::File::Error> no_delete_move_result;
+  manager->Move(source, GURL(root.spec() + id + "/new.txt"),
+                no_delete_move_result.GetCallback());
+  EXPECT_EQ(base::File::FILE_ERROR_SECURITY, no_delete_move_result.Get());
+  ChildProcessSecurityPolicyImpl::GetInstance()->GrantCreateFileForFileSystem(
+      process->GetID().GetUnsafeValue(), id);
+  ChildProcessSecurityPolicyImpl::GetInstance()->GrantDeleteFromFileSystem(
+      process->GetID().GetUnsafeValue(), id);
+  base::test::TestFuture<base::File::Error> writable_move_result;
+  manager->Move(source, GURL(root.spec() + id + "/new.txt"),
+                writable_move_result.GetCallback());
+  EXPECT_EQ(base::File::FILE_ERROR_INVALID_URL, writable_move_result.Get());
 }
 }  // namespace content
