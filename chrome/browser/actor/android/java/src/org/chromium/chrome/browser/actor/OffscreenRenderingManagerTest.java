@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.actor;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -13,6 +17,9 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,12 +28,16 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.Shadows;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewAndroidDelegate;
+import org.chromium.ui.base.WindowAndroid;
 
 /** Unit tests for {@link OffscreenRenderingManager}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -128,5 +139,35 @@ public class OffscreenRenderingManagerTest {
         verify(mNativeMock).stopOffscreenRendering(eq(12345L), eq(mWebContents1));
         verify(mTab).stopOffscreenRendering();
         verify(mNativeMock).destroy(eq(12345L));
+    }
+
+    @Test
+    public void testOffscreenWindowAndroidPermissionDelegate() {
+        WindowAndroid window = mManager.getOffscreenWindow();
+        assertNotNull(window);
+
+        assertFalse(window.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION));
+        Shadows.shadowOf(RuntimeEnvironment.getApplication())
+                .grantPermissions(Manifest.permission.ACCESS_FINE_LOCATION);
+        assertTrue(window.hasPermission(Manifest.permission.ACCESS_FINE_LOCATION));
+
+        assertFalse(window.canRequestPermission(Manifest.permission.ACCESS_FINE_LOCATION));
+
+        boolean expectedPolicyRevoked =
+                ContextUtils.getApplicationContext()
+                        .getPackageManager()
+                        .isPermissionRevokedByPolicy(
+                                Manifest.permission.ACCESS_FINE_LOCATION,
+                                ContextUtils.getApplicationContext().getPackageName());
+        assertEquals(
+                expectedPolicyRevoked,
+                window.isPermissionRevokedByPolicy(Manifest.permission.ACCESS_FINE_LOCATION));
+
+        int[] grantedResults = new int[1];
+        window.requestPermissions(
+                new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
+                (permissions, grantResults) -> grantedResults[0] = grantResults[0]);
+        assertEquals(PackageManager.PERMISSION_DENIED, grantedResults[0]);
+        assertFalse(window.handlePermissionResult(0, new String[0], new int[0]));
     }
 }

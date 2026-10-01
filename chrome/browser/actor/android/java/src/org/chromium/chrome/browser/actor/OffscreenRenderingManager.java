@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.actor;
 
 import android.content.pm.PackageManager;
+import android.os.Process;
 import android.util.DisplayMetrics;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -14,6 +15,7 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
@@ -101,13 +103,20 @@ public class OffscreenRenderingManager {
                         ContextUtils.getApplicationContext(),
                         /* occlusionTrackingAllowed= */ false);
         // Offscreen windows do not have an associated Activity, so they cannot support or
-        // request permissions. We set a dummy delegate that denies all permissions to avoid
-        // crashing when permission checks are performed during navigation.
+        // request new permissions. We query the real application-level permission status
+        // for read operations (as permissions are granted per application package on Android)
+        // to ensure permission state consistency across windows. Interactive prompts and
+        // requests are rejected as there is no Activity to present UI.
         mOffscreenWindow.setAndroidPermissionDelegate(
                 new AndroidPermissionDelegate() {
                     @Override
                     public boolean hasPermission(String permission) {
-                        return false;
+                        return ApiCompatibilityUtils.checkPermission(
+                                        ContextUtils.getApplicationContext(),
+                                        permission,
+                                        Process.myPid(),
+                                        Process.myUid())
+                                == PackageManager.PERMISSION_GRANTED;
                     }
 
                     @Override
@@ -117,7 +126,11 @@ public class OffscreenRenderingManager {
 
                     @Override
                     public boolean isPermissionRevokedByPolicy(String permission) {
-                        return false;
+                        return ContextUtils.getApplicationContext()
+                                .getPackageManager()
+                                .isPermissionRevokedByPolicy(
+                                        permission,
+                                        ContextUtils.getApplicationContext().getPackageName());
                     }
 
                     @Override
