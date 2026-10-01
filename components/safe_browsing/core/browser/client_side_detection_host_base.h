@@ -237,6 +237,12 @@ class ClientSideDetectionHostBase : public autofill::AutofillManager::Observer,
   static safe_browsing::ThreatSubtype GetThreatSubtype(
       IntelligentScanVerdict intelligent_scan_verdict);
 
+  // Returns the allowlist match result enum based on whether the CSD and
+  // High-Confidence allowlists matched.
+  static ClientSideAllowlistMatchResult GetClientSideAllowlistMatchResult(
+      bool match_csd_allowlist,
+      bool match_hc_allowlist);
+
   // Cancels any pending asynchronous requests bound to this host.
   // Intended to handle the case where the primary page changes while there is
   // a pending phishing report request. We have to cancel it to make sure we

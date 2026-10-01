@@ -88,12 +88,16 @@ chromium-metrics-reviews@google.com.
   <int value="4" label="Zoom level is above maximum value"/>
 </enum>
 
+<!-- LINT.IfChange(ClientSideAllowlistMatchResult) -->
+
 <enum name="ClientSideAllowlistMatchResult">
   <int value="0" label="No match"/>
   <int value="1" label="CSD match"/>
   <int value="2" label="High confidence match"/>
-  <int value="3" label="CSD and high confidence match"/>
+  <int value="3" label="CSD and high confidence match (deprecated)"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/safe_browsing/core/common/client_side_detection_enums.h:ClientSideAllowlistMatchResult) -->
 
 <!-- LINT.IfChange(ClientSideDetectionEvent) -->
 

@@ -70,6 +70,7 @@
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
+#include "components/safe_browsing/core/common/client_side_detection_enums.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -253,6 +254,7 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
       CheckUrlForHighConfidenceAllowlistCallback callback) override {
     std::string url = gurl.spec();
     DCHECK(urls_allowlist_match_.contains(url));
+    hc_check_count_++;
 
     ui_task_runner()->PostTask(
         FROM_HERE,
@@ -267,11 +269,14 @@ class MockSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
     urls_allowlist_match_[url] = match;
   }
 
+  int hc_check_count() const { return hc_check_count_; }
+
  protected:
   ~MockSafeBrowsingDatabaseManager() override = default;
 
  private:
   base::flat_map<std::string, bool> urls_allowlist_match_;
+  int hc_check_count_ = 0;
 };
 
 class MockClientSideDetectionHostDelegate
@@ -1591,13 +1596,97 @@ TEST_F(ClientSideDetectionHostTest,
       1);
 }
 
+// Tests that high confidence allowlist checking is skipped when CSD allowlist
+// matches, and no classification takes place.
 TEST_F(ClientSideDetectionHostTest,
        TestPreClassificationCheckMatchCSDAllowlist) {
+  base::HistogramTester histogram_tester;
   GURL url("http://host.com/");
-  database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
   ExpectPreClassificationChecks(url, &kFalse, &kTrue, nullptr, nullptr);
   NavigateAndCommit(url);
   WaitAndCheckPreClassificationChecks();
+
+  EXPECT_EQ(database_manager_->hc_check_count(), 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.HighConfidenceAllowlistCheckDuration", 0);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.MatchHighConfidenceAllowlist",
+      ClientSideAllowlistMatchResult::kCsdMatch, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.MatchHighConfidenceAllowlist.TriggerModel",
+      ClientSideAllowlistMatchResult::kCsdMatch, 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult",
+      PreClassificationCheckResult::NO_CLASSIFY_MATCH_CSD_ALLOWLIST, 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult.TriggerModel",
+      PreClassificationCheckResult::NO_CLASSIFY_MATCH_CSD_ALLOWLIST, 1);
+}
+
+// Tests that high confidence allowlist checking is skipped when CSD allowlist
+// matches even if a sample ping is triggered.
+TEST_F(ClientSideDetectionHostTest,
+       TestPreClassificationCheckMatchCSDAllowlistWithSamplePing) {
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+  csd_host_->set_sample_ping_rate_for_testing(1.0f);
+  base::HistogramTester histogram_tester;
+
+  GURL url("http://host.com/");
+  ExpectPreClassificationChecks(url, &kFalse, &kTrue, &kFalse, &kFalse);
+  NavigateAndCommit(url);
+  WaitAndCheckPreClassificationChecks();
+
+  fake_phishing_detector_.CheckMessage(&url);
+
+  EXPECT_EQ(database_manager_->hc_check_count(), 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.HighConfidenceAllowlistCheckDuration", 0);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.MatchHighConfidenceAllowlist",
+      ClientSideAllowlistMatchResult::kCsdMatch, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.MatchHighConfidenceAllowlist.TriggerModel",
+      ClientSideAllowlistMatchResult::kCsdMatch, 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult",
+      PreClassificationCheckResult::CLASSIFY, 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult.TriggerModel",
+      PreClassificationCheckResult::CLASSIFY, 1);
+}
+
+// Tests that high confidence allowlist checking is skipped even when a sample
+// ping is triggered, and that an HC allowlist match no longer suppresses a
+// sampled CSD-allowlisted ping (classification proceeds).
+TEST_F(ClientSideDetectionHostTest,
+       TestPreClassificationCheckMatchCSDAllowlistWithSamplePingAndMatchHC) {
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+  csd_host_->set_sample_ping_rate_for_testing(1.0f);
+  SetHighConfidenceAllowlistAcceptanceRate(1.0f);
+  base::HistogramTester histogram_tester;
+
+  GURL url("http://host.com/");
+  ExpectPreClassificationChecks(url, &kFalse, &kTrue, &kFalse, &kFalse);
+  NavigateAndCommit(url);
+  WaitAndCheckPreClassificationChecks();
+
+  fake_phishing_detector_.CheckMessage(&url);
+
+  EXPECT_EQ(database_manager_->hc_check_count(), 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.HighConfidenceAllowlistCheckDuration", 0);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.MatchHighConfidenceAllowlist",
+      ClientSideAllowlistMatchResult::kCsdMatch, 1);
+  histogram_tester.ExpectUniqueSample(
+      "SBClientPhishing.MatchHighConfidenceAllowlist.TriggerModel",
+      ClientSideAllowlistMatchResult::kCsdMatch, 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult",
+      PreClassificationCheckResult::CLASSIFY, 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult.TriggerModel",
+      PreClassificationCheckResult::CLASSIFY, 1);
 }
 
 TEST_F(ClientSideDetectionHostTest,
@@ -1678,13 +1767,25 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckTwoNavigations) {
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckCancelActor) {
   base::HistogramTester histogram_tester;
 
+  // Explicitly ensure that url1 and url2 do not match the CSD allowlist. Since
+  // matching the CSD allowlist skips high-confidence allowlist checking and
+  // completes preclassification synchronously, a CSD allowlist match would
+  // finish immediately and prevent url1 from staying in-flight and being
+  // cancelled by url2.
+  EXPECT_CALL(*database_manager_.get(), CanCheckUrl(_))
+      .WillRepeatedly(Return(true));
+
   // Although we'll navigate to url1 and keep loading, we will not complete the
   // preclassification check and continue loading, so that url2 can cancel it.
   GURL url1("http://host1.com/");
+  EXPECT_CALL(*database_manager_.get(), CheckCsdAllowlistUrl(url1, _))
+      .WillOnce(Return(AsyncMatch::NO_MATCH));
   database_manager_->SetAllowlistLookupDetailsForUrl(url1, false);
   NavigateAndCommit(url1);
 
   GURL url2("http://host2.com/");
+  EXPECT_CALL(*database_manager_.get(), CheckCsdAllowlistUrl(url2, _))
+      .WillOnce(Return(AsyncMatch::NO_MATCH));
   database_manager_->SetAllowlistLookupDetailsForUrl(url2, false);
   NavigateAndCommit(url2);
 

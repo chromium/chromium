@@ -21,6 +21,7 @@
 #import "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 #import "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 #import "components/safe_browsing/core/browser/verdict_cache_manager.h"
+#import "components/safe_browsing/core/common/client_side_detection_enums.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/phishing_classifier/phishing_classifier.h"
 #import "components/safe_browsing/core/common/phishing_classifier/phishing_image_embedder.h"
@@ -62,29 +63,6 @@ constexpr base::TimeDelta kStabilizationDelay = base::Milliseconds(750);
 
 // Whether local resource / localhost checks should be bypassed for testing.
 bool g_bypass_local_resource_check_for_testing = false;
-
-// Matches enum in tools/metrics/histograms/metadata/sb_client/enums.xml.
-enum class ClientSideAllowlistMatchResult {
-  kNoMatch = 0,
-  kCsdMatch = 1,
-  kHighConfidenceMatch = 2,
-  kCsdAndHighConfidenceMatch = 3,
-  kMaxValue = kCsdAndHighConfidenceMatch,
-};
-
-ClientSideAllowlistMatchResult GetClientSideAllowlistMatchResult(
-    bool match_csd_allowlist,
-    bool match_hc_allowlist) {
-  if (match_csd_allowlist && match_hc_allowlist) {
-    return ClientSideAllowlistMatchResult::kCsdAndHighConfidenceMatch;
-  } else if (match_csd_allowlist) {
-    return ClientSideAllowlistMatchResult::kCsdMatch;
-  } else if (match_hc_allowlist) {
-    return ClientSideAllowlistMatchResult::kHighConfidenceMatch;
-  } else {
-    return ClientSideAllowlistMatchResult::kNoMatch;
-  }
-}
 
 PhishingDetectorResult GetPhishingDetectorResult(
     PhishingClassifier::Result result) {
@@ -850,6 +828,42 @@ void ClientSideDetectionHostIOS::OnAllowlistCheckDone(const GURL& url,
       break;
   }
 
+  // If the URL matches the CSD allowlist, high confidence allowlist checking is
+  // skipped. Log the allowlist match result, reset the high confidence
+  // allowlist match state, and continue classification.
+  if (match_allowlist) {
+    // The CSD allowlist matched and the high-confidence allowlist check is
+    // skipped, so `match_csd_allowlist` is true and `match_hc_allowlist` is
+    // false.
+    ClientSideAllowlistMatchResult match_result =
+        GetClientSideAllowlistMatchResult(
+            /*match_csd_allowlist=*/true,
+            /*match_hc_allowlist=*/false);
+    base::UmaHistogramEnumeration(
+        "SBClientPhishing.MatchHighConfidenceAllowlist", match_result);
+    base::UmaHistogramEnumeration(
+        base::StrCat({"SBClientPhishing.MatchHighConfidenceAllowlist.",
+                      safe_browsing::GetRequestTypeName(last_request_type())}),
+        match_result);
+
+    // On CSD allowlist match, we still want to send a ping on a rare chance.
+    PreClassificationCheckResult phishing_reason =
+        send_sample_ping_
+            ? PreClassificationCheckResult::NO_CLASSIFY_MAX
+            : PreClassificationCheckResult::NO_CLASSIFY_MATCH_CSD_ALLOWLIST;
+
+    // Unlike the content/ implementation, where `ShouldClassifyUrlRequest` is
+    // constructed per request, this member persists across pre-classification
+    // attempts for the same navigation. Reset it so a result from an earlier
+    // attempt does not leak into this one.
+    did_match_high_confidence_allowlist_ = std::nullopt;
+
+    // Skip the asynchronous high-confidence check and proceed directly to
+    // classification.
+    ContinueClassificationAfterAllowlistChecks(url, phishing_reason);
+    return;
+  }
+
   scoped_refptr<safe_browsing::SafeBrowsingDatabaseManager> database_manager =
       GetApplicationContext()->GetSafeBrowsingService()
           ? GetApplicationContext()
@@ -857,8 +871,8 @@ void ClientSideDetectionHostIOS::OnAllowlistCheckDone(const GURL& url,
                 ->GetDatabaseManager()
           : nullptr;
   if (!database_manager) {
-    OnHighConfidenceAllowlistCheckDone(
-        url, match_allowlist, tick_clock()->NowTicks(), false, std::nullopt);
+    OnHighConfidenceAllowlistCheckDone(url, tick_clock()->NowTicks(), false,
+                                       std::nullopt);
     return;
   }
 
@@ -867,18 +881,14 @@ void ClientSideDetectionHostIOS::OnAllowlistCheckDone(const GURL& url,
                               HighConfidenceAllowlistCheckLoggingDetails>)>
       hc_callback = base::BindOnce(
           &ClientSideDetectionHostIOS::OnHighConfidenceAllowlistCheckDone,
-          weak_ptr_factory_.GetWeakPtr(), url, match_allowlist,
-          tick_clock()->NowTicks());
+          weak_ptr_factory_.GetWeakPtr(), url, tick_clock()->NowTicks());
 
-  // TODO(crbug.com/551707094): High confidence allowlist checking should be
-  // skipped if the CSD allowlist has a match.
   database_manager->CheckUrlForHighConfidenceAllowlist(url,
                                                        std::move(hc_callback));
 }
 
 void ClientSideDetectionHostIOS::OnHighConfidenceAllowlistCheckDone(
     const GURL& url,
-    bool match_allowlist,
     base::TimeTicks check_start_time,
     bool url_on_high_confidence_allowlist,
     std::optional<safe_browsing::SafeBrowsingDatabaseManager::
@@ -888,8 +898,10 @@ void ClientSideDetectionHostIOS::OnHighConfidenceAllowlistCheckDone(
       "SBClientPhishing.HighConfidenceAllowlistCheckDuration",
       tick_clock()->NowTicks() - check_start_time);
 
+  // Reaching this callback means the URL did not match the CSD allowlist, so
+  // `match_csd_allowlist` is always false here.
   ClientSideAllowlistMatchResult match_result =
-      GetClientSideAllowlistMatchResult(match_allowlist && !send_sample_ping_,
+      GetClientSideAllowlistMatchResult(/*match_csd_allowlist=*/false,
                                         url_on_high_confidence_allowlist);
 
   base::UmaHistogramEnumeration("SBClientPhishing.MatchHighConfidenceAllowlist",
@@ -902,13 +914,7 @@ void ClientSideDetectionHostIOS::OnHighConfidenceAllowlistCheckDone(
   PreClassificationCheckResult phishing_reason =
       PreClassificationCheckResult::NO_CLASSIFY_MAX;
 
-  if (match_allowlist && !send_sample_ping_) {
-    phishing_reason =
-        PreClassificationCheckResult::NO_CLASSIFY_MATCH_CSD_ALLOWLIST;
-  }
-
-  if (phishing_reason == PreClassificationCheckResult::NO_CLASSIFY_MAX &&
-      ShouldAcceptHCAllowlist(last_request_type(),
+  if (ShouldAcceptHCAllowlist(last_request_type(),
                               url_on_high_confidence_allowlist)) {
     phishing_reason =
         PreClassificationCheckResult::NO_CLASSIFY_MATCH_HC_ALLOWLIST;

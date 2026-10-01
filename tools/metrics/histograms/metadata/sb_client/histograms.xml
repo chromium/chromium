@@ -772,6 +772,9 @@ useful for Chirp alerts (go/crca-alerts). -->
   <summary>
     Records the duration it takes for high confidence allowlist check to
     complete. This occurs in the client side detection PreClassificationCheck.
+
+    Starting in M156, this check is skipped (and this metric is not recorded) if
+    the URL matches the CSD allowlist.
   </summary>
 </histogram>
 
@@ -1028,6 +1031,10 @@ useful for Chirp alerts (go/crca-alerts). -->
   <summary>
     Record the match result of allowlists for specific {RequestType}. This is
     logged during the client side detection host PreClassificationCheck.
+
+    Starting in M156, if the URL matches the CSD allowlist, high confidence
+    allowlist checking is skipped, so the &quot;CSD and high confidence
+    match&quot; bucket is deprecated and no longer recorded.
   </summary>
   <token key="RequestType" variants="ClientSideDetectionRequestType"/>
 </histogram>

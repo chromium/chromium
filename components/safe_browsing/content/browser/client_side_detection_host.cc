@@ -50,6 +50,7 @@
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
+#include "components/safe_browsing/core/common/client_side_detection_enums.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -371,18 +372,6 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
   friend class base::RefCountedThreadSafe<
       ClientSideDetectionHost::ShouldClassifyUrlRequest>;
 
-  // This enum is used to track the result of the allowlists we use before we
-  // decide to classify. Currently, only the CSD match can halt classification
-  // from going forward. These values are persisted to logs. Entries should not
-  // be renumbered and numeric values should never be reused.
-  enum class ClientSideAllowlistMatchResult {
-    kNoMatch = 0,
-    kCsdMatch = 1,
-    kHighConfidenceMatch = 2,
-    kCsdAndHighConfidenceMatch = 3,
-    kMaxValue = kCsdAndHighConfidenceMatch
-  };
-
   void DontClassifyForPhishing(PreClassificationCheckResult reason) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (ShouldClassifyForPhishing()) {
@@ -485,9 +474,30 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
         default:
           break;
       }
-      // This check is also for logging purposes although the CSD allowlist
-      // could be matched or not checked at all. Once it completes,
-      // preclassification check will continue.
+      // If the URL matches the CSD allowlist, high confidence allowlist
+      // checking is skipped. Log the allowlist match result and proceed
+      // directly to checking the cache.
+      if (match_allowlist) {
+        // High-confidence allowlist check is skipped, so `match_hc_allowlist`
+        // is false, and `match_csd_allowlist` is true.
+        ClientSideAllowlistMatchResult match_result =
+            ClientSideDetectionHostBase::GetClientSideAllowlistMatchResult(
+                /*match_csd_allowlist=*/true,
+                /*match_hc_allowlist=*/false);
+        base::UmaHistogramEnumeration(
+            "SBClientPhishing.MatchHighConfidenceAllowlist", match_result);
+        base::UmaHistogramEnumeration(
+            base::StrCat(
+                {"SBClientPhishing.MatchHighConfidenceAllowlist.",
+                 GetRequestTypeName(phishing_detection_request_type_)}),
+            match_result);
+
+        // Skip the asynchronous high-confidence check and proceed directly to
+        // cache checking.
+        CheckCache(phishing_reason);
+        return;
+      }
+
       database_manager_->CheckUrlForHighConfidenceAllowlist(
           url,
           base::BindOnce(&ClientSideDetectionHost::ShouldClassifyUrlRequest::
@@ -515,11 +525,11 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
     // PreClassificationCheckResult through |phishing_reason|, but logged
     // separately now because a new field PreClassificationCheckResult results
     // in a new server data to be sent through debugging metadata.
+    // Reaching this callback means the URL did not match the CSD allowlist, so
+    // `match_csd_allowlist` is always false here.
     ClientSideAllowlistMatchResult match_result =
-        GetClientSideAllowlistMatchResult(
-            phishing_reason ==
-                PreClassificationCheckResult::NO_CLASSIFY_MATCH_CSD_ALLOWLIST,
-            did_match_high_confidence_allowlist);
+        ClientSideDetectionHostBase::GetClientSideAllowlistMatchResult(
+            /*match_csd_allowlist=*/false, did_match_high_confidence_allowlist);
 
     base::UmaHistogramEnumeration(
         "SBClientPhishing.MatchHighConfidenceAllowlist", match_result);
@@ -630,20 +640,6 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
     return host_ && host_->ShouldAcceptHCAllowlist(
                         phishing_detection_request_type_,
                         did_match_high_confidence_allowlist_.value_or(false));
-  }
-
-  ClientSideAllowlistMatchResult GetClientSideAllowlistMatchResult(
-      bool match_csd_allowlist,
-      bool match_hc_allowlist) {
-    if (match_csd_allowlist && match_hc_allowlist) {
-      return ClientSideAllowlistMatchResult::kCsdAndHighConfidenceMatch;
-    } else if (match_csd_allowlist) {
-      return ClientSideAllowlistMatchResult::kCsdMatch;
-    } else if (match_hc_allowlist) {
-      return ClientSideAllowlistMatchResult::kHighConfidenceMatch;
-    } else {
-      return ClientSideAllowlistMatchResult::kNoMatch;
-    }
   }
 
   const GURL url_;

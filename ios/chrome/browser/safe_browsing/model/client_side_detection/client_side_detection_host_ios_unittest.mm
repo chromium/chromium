@@ -23,6 +23,7 @@
 #import "components/safe_browsing/core/browser/db/test_database_manager.h"
 #import "components/safe_browsing/core/browser/intelligent_scan_delegate.h"
 #import "components/safe_browsing/core/browser/verdict_cache_manager.h"
+#import "components/safe_browsing/core/common/client_side_detection_enums.h"
 #import "components/safe_browsing/core/common/features.h"
 #import "components/safe_browsing/core/common/phishing_classifier/phishing_image_embedder.h"
 #import "components/safe_browsing/core/common/phishing_classifier/scorer.h"
@@ -184,11 +185,13 @@ class FakeSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
   void CheckUrlForHighConfidenceAllowlist(
       const GURL& url,
       CheckUrlForHighConfidenceAllowlistCallback callback) override {
+    hc_check_count_++;
     std::move(callback).Run(match_hc_allowlist_, std::nullopt);
   }
 
   void SetMatchCsdAllowlist(bool match) { match_csd_allowlist_ = match; }
   void SetMatchHcAllowlist(bool match) { match_hc_allowlist_ = match; }
+  int hc_check_count() const { return hc_check_count_; }
 
  protected:
   ~FakeSafeBrowsingDatabaseManager() override = default;
@@ -196,6 +199,7 @@ class FakeSafeBrowsingDatabaseManager : public TestSafeBrowsingDatabaseManager {
  private:
   bool match_csd_allowlist_;
   bool match_hc_allowlist_;
+  int hc_check_count_ = 0;
 };
 
 class FakeOptimizationGuideModelProvider
@@ -448,6 +452,11 @@ class ClientSideDetectionHostIOSTest : public PlatformTest {
 
   PageContextWrapper* page_context_wrapper(ClientSideDetectionHostIOS* host) {
     return host->page_context_wrapper_;
+  }
+
+  std::optional<bool> did_match_high_confidence_allowlist(
+      ClientSideDetectionHostIOS* host) {
+    return host->did_match_high_confidence_allowlist_;
   }
 
   void MaybeStartImageEmbedding(
@@ -2368,8 +2377,47 @@ TEST_F(ClientSideDetectionHostIOSTest,
             safe_browsing::ThreatSubtype::SCAM_EXPERIMENT_VERDICT_1);
 }
 
-// Tests that High Confidence and CSD allowlist telemetry metrics are emitted.
+// Tests that High Confidence allowlist telemetry metrics are emitted when CSD
+// allowlist does not match.
 TEST_F(ClientSideDetectionHostIOSTest, AllowlistTelemetryMetricsEmitted) {
+  safe_browsing::SetSafeBrowsingState(
+      profile_->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+  database_manager_->SetMatchCsdAllowlist(false);
+  database_manager_->SetMatchHcAllowlist(true);
+
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+
+  SnapshotTabHelper::CreateForWebState(&web_state_);
+  web_state_.SetContentsMimeType("text/html");
+
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL(kExampleUrl));
+  context.SetHasCommitted(true);
+  context.SetIsSameDocument(false);
+  web_state_.SetCurrentURL(GURL(kExampleUrl));
+  web_state_.OnNavigationFinished(&context);
+
+  host->MaybeStartPreClassification(
+      safe_browsing::ClientSideDetectionType::TRIGGER_MODELS);
+
+  EXPECT_EQ(database_manager_->hc_check_count(), 1);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.HighConfidenceAllowlistCheckDuration", 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.MatchHighConfidenceAllowlist",
+      safe_browsing::ClientSideAllowlistMatchResult::kHighConfidenceMatch, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.MatchHighConfidenceAllowlist.TriggerModel",
+      safe_browsing::ClientSideAllowlistMatchResult::kHighConfidenceMatch, 1);
+  ASSERT_TRUE(did_match_high_confidence_allowlist(host.get()).has_value());
+  EXPECT_TRUE(did_match_high_confidence_allowlist(host.get()).value());
+}
+
+// Tests that High Confidence allowlist checking is skipped when CSD allowlist
+// matches.
+TEST_F(ClientSideDetectionHostIOSTest,
+       HighConfidenceAllowlistCheckSkippedOnCsdMatch) {
   safe_browsing::SetSafeBrowsingState(
       profile_->GetPrefs(),
       safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
@@ -2391,13 +2439,122 @@ TEST_F(ClientSideDetectionHostIOSTest, AllowlistTelemetryMetricsEmitted) {
   host->MaybeStartPreClassification(
       safe_browsing::ClientSideDetectionType::TRIGGER_MODELS);
 
+  EXPECT_EQ(database_manager_->hc_check_count(), 0);
   histogram_tester_.ExpectTotalCount(
-      "SBClientPhishing.HighConfidenceAllowlistCheckDuration", 1);
-  // ClientSideAllowlistMatchResult::kCsdAndHighConfidenceMatch is 3.
+      "SBClientPhishing.HighConfidenceAllowlistCheckDuration", 0);
   histogram_tester_.ExpectUniqueSample(
-      "SBClientPhishing.MatchHighConfidenceAllowlist", 3, 1);
+      "SBClientPhishing.MatchHighConfidenceAllowlist",
+      safe_browsing::ClientSideAllowlistMatchResult::kCsdMatch, 1);
   histogram_tester_.ExpectUniqueSample(
-      "SBClientPhishing.MatchHighConfidenceAllowlist.TriggerModel", 3, 1);
+      "SBClientPhishing.MatchHighConfidenceAllowlist.TriggerModel",
+      safe_browsing::ClientSideAllowlistMatchResult::kCsdMatch, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.PreClassificationCheckResult",
+      safe_browsing::PreClassificationCheckResult::
+          NO_CLASSIFY_MATCH_CSD_ALLOWLIST,
+      1);
+  EXPECT_FALSE(did_match_high_confidence_allowlist(host.get()).has_value());
+}
+
+// Tests that High Confidence allowlist checking is skipped when the CSD
+// allowlist matches even if a sample ping is triggered, and that the sampled
+// ping still proceeds to classification.
+TEST_F(ClientSideDetectionHostIOSTest,
+       HighConfidenceAllowlistCheckSkippedOnCsdMatchWithSamplePing) {
+  safe_browsing::SetSafeBrowsingState(
+      profile_->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+  database_manager_->SetMatchCsdAllowlist(true);
+  database_manager_->SetMatchHcAllowlist(false);
+
+  EXPECT_CALL(mock_service_, IsModelAvailable())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(mock_service_, GetValidCachedResult(testing::_, testing::_))
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(mock_service_, AtPhishingReportLimit())
+      .WillRepeatedly(testing::Return(false));
+  mock_service_.SetScorerForTesting(std::make_unique<safe_browsing::Scorer>());
+
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+  host->set_sample_ping_rate_for_testing(1.0);
+
+  SnapshotTabHelper::CreateForWebState(&web_state_);
+  web_state_.SetContentsMimeType("text/html");
+
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL(kExampleUrl));
+  context.SetHasCommitted(true);
+  context.SetIsSameDocument(false);
+  web_state_.SetCurrentURL(GURL(kExampleUrl));
+  web_state_.OnNavigationFinished(&context);
+
+  host->MaybeStartPreClassification(
+      safe_browsing::ClientSideDetectionType::TRIGGER_MODELS);
+
+  EXPECT_EQ(database_manager_->hc_check_count(), 0);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.HighConfidenceAllowlistCheckDuration", 0);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.MatchHighConfidenceAllowlist",
+      safe_browsing::ClientSideAllowlistMatchResult::kCsdMatch, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.MatchHighConfidenceAllowlist.TriggerModel",
+      safe_browsing::ClientSideAllowlistMatchResult::kCsdMatch, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.PreClassificationCheckResult",
+      safe_browsing::PreClassificationCheckResult::CLASSIFY, 1);
+  EXPECT_FALSE(did_match_high_confidence_allowlist(host.get()).has_value());
+}
+
+// Tests that a High Confidence allowlist match no longer suppresses a sampled
+// ping for a CSD-allowlisted URL. Because the High Confidence allowlist is
+// never consulted once the CSD allowlist matches, classification proceeds.
+TEST_F(ClientSideDetectionHostIOSTest,
+       HighConfidenceAllowlistMatchDoesNotSuppressSampledCsdAllowlistedPing) {
+  safe_browsing::SetSafeBrowsingState(
+      profile_->GetPrefs(),
+      safe_browsing::SafeBrowsingState::ENHANCED_PROTECTION);
+  database_manager_->SetMatchCsdAllowlist(true);
+  database_manager_->SetMatchHcAllowlist(true);
+
+  EXPECT_CALL(mock_service_, IsModelAvailable())
+      .WillRepeatedly(testing::Return(true));
+  EXPECT_CALL(mock_service_, GetValidCachedResult(testing::_, testing::_))
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(mock_service_, AtPhishingReportLimit())
+      .WillRepeatedly(testing::Return(false));
+  mock_service_.SetScorerForTesting(std::make_unique<safe_browsing::Scorer>());
+
+  std::unique_ptr<ClientSideDetectionHostIOS> host = CreateHost();
+  host->set_sample_ping_rate_for_testing(1.0);
+  host->set_high_confidence_allowlist_acceptance_rate_for_testing(1.0);
+
+  SnapshotTabHelper::CreateForWebState(&web_state_);
+  web_state_.SetContentsMimeType("text/html");
+
+  web::FakeNavigationContext context;
+  context.SetUrl(GURL(kExampleUrl));
+  context.SetHasCommitted(true);
+  context.SetIsSameDocument(false);
+  web_state_.SetCurrentURL(GURL(kExampleUrl));
+  web_state_.OnNavigationFinished(&context);
+
+  host->MaybeStartPreClassification(
+      safe_browsing::ClientSideDetectionType::TRIGGER_MODELS);
+
+  EXPECT_EQ(database_manager_->hc_check_count(), 0);
+  histogram_tester_.ExpectTotalCount(
+      "SBClientPhishing.HighConfidenceAllowlistCheckDuration", 0);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.MatchHighConfidenceAllowlist",
+      safe_browsing::ClientSideAllowlistMatchResult::kCsdMatch, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.MatchHighConfidenceAllowlist.TriggerModel",
+      safe_browsing::ClientSideAllowlistMatchResult::kCsdMatch, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "SBClientPhishing.PreClassificationCheckResult",
+      safe_browsing::PreClassificationCheckResult::CLASSIFY, 1);
+  EXPECT_FALSE(did_match_high_confidence_allowlist(host.get()).has_value());
 }
 
 // Tests the different enum outcomes of MatchHighConfidenceAllowlist telemetry.
@@ -2416,7 +2573,7 @@ TEST_F(ClientSideDetectionHostIOSTest,
   SnapshotTabHelper::CreateForWebState(&web_state_);
   web_state_.SetContentsMimeType("text/html");
 
-  // Outcome 1: CSD match only (kCsdMatch = 1).
+  // Outcome 1: CSD match only.
   {
     base::HistogramTester tester;
     database_manager_->SetMatchCsdAllowlist(true);
@@ -2433,11 +2590,12 @@ TEST_F(ClientSideDetectionHostIOSTest,
     host->MaybeStartPreClassification(
         safe_browsing::ClientSideDetectionType::TRIGGER_MODELS);
 
-    tester.ExpectUniqueSample("SBClientPhishing.MatchHighConfidenceAllowlist",
-                              1, 1);
+    tester.ExpectUniqueSample(
+        "SBClientPhishing.MatchHighConfidenceAllowlist",
+        safe_browsing::ClientSideAllowlistMatchResult::kCsdMatch, 1);
   }
 
-  // Outcome 2: HC match only (kHighConfidenceMatch = 2).
+  // Outcome 2: HC match only.
   {
     base::HistogramTester tester;
     database_manager_->SetMatchCsdAllowlist(false);
@@ -2454,11 +2612,12 @@ TEST_F(ClientSideDetectionHostIOSTest,
     host->MaybeStartPreClassification(
         safe_browsing::ClientSideDetectionType::TRIGGER_MODELS);
 
-    tester.ExpectUniqueSample("SBClientPhishing.MatchHighConfidenceAllowlist",
-                              2, 1);
+    tester.ExpectUniqueSample(
+        "SBClientPhishing.MatchHighConfidenceAllowlist",
+        safe_browsing::ClientSideAllowlistMatchResult::kHighConfidenceMatch, 1);
   }
 
-  // Outcome 3: No match on either allowlist (kNoMatch = 0).
+  // Outcome 3: No match on either allowlist.
   {
     base::HistogramTester tester;
     database_manager_->SetMatchCsdAllowlist(false);
@@ -2475,11 +2634,14 @@ TEST_F(ClientSideDetectionHostIOSTest,
     host->MaybeStartPreClassification(
         safe_browsing::ClientSideDetectionType::TRIGGER_MODELS);
 
-    tester.ExpectUniqueSample("SBClientPhishing.MatchHighConfidenceAllowlist",
-                              0, 1);
+    tester.ExpectUniqueSample(
+        "SBClientPhishing.MatchHighConfidenceAllowlist",
+        safe_browsing::ClientSideAllowlistMatchResult::kNoMatch, 1);
   }
 
-  // Outcome 4: CSD match with send_sample_ping_ == true (kNoMatch = 0).
+  // Outcome 4: CSD match with `send_sample_ping_` == true. Sample pinging does
+  // not change the logged result, since the high confidence allowlist is
+  // skipped on any CSD match.
   {
     base::HistogramTester tester;
     database_manager_->SetMatchCsdAllowlist(true);
@@ -2498,8 +2660,9 @@ TEST_F(ClientSideDetectionHostIOSTest,
     host->MaybeStartPreClassification(
         safe_browsing::ClientSideDetectionType::TRIGGER_MODELS);
 
-    tester.ExpectUniqueSample("SBClientPhishing.MatchHighConfidenceAllowlist",
-                              0, 1);
+    tester.ExpectUniqueSample(
+        "SBClientPhishing.MatchHighConfidenceAllowlist",
+        safe_browsing::ClientSideAllowlistMatchResult::kCsdMatch, 1);
   }
 }
 

@@ -29,6 +29,20 @@ enum class ClientSideDetectionEvent {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/sb_client/enums.xml:ClientSideDetectionEvent)
 
+// This enum is used to track the result of the allowlists we use before we
+// decide to classify. Currently, only the CSD match can halt classification
+// from going forward. These values are persisted to logs. Entries should not
+// be renumbered and numeric values should never be reused.
+// LINT.IfChange(ClientSideAllowlistMatchResult)
+enum class ClientSideAllowlistMatchResult {
+  kNoMatch = 0,
+  kCsdMatch = 1,
+  kHighConfidenceMatch = 2,
+  kDeprecatedCsdAndHighConfidenceMatch = 3,  // Deprecated
+  kMaxValue = kDeprecatedCsdAndHighConfidenceMatch,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/sb_client/enums.xml:ClientSideAllowlistMatchResult)
+
 }  // namespace safe_browsing
 
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_CLIENT_SIDE_DETECTION_ENUMS_H_
