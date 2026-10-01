@@ -502,6 +502,8 @@ android_resources("java_test_resources") {
     "test/java/res/layout/rich_radio_button_list_render_test.xml",
     "test/java/res/layout/rich_radio_button_list_selection_test.xml",
     "test/java/res/layout/rich_radio_button_render_test.xml",
+    "test/java/res/layout/selectable_list_layout_test.xml",
+    "test/java/res/layout/selectable_list_toolbar_test.xml",
     "test/java/res/layout/touch_tracking_list_view_test.xml",
     "test/java/res/layout/touch_tracking_list_view_test_item.xml",
     "test/java/res/layout/two_line_chip_view_test_item.xml",
@@ -542,6 +544,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/components/browser_ui/widget/search/SearchBoxViewBinderUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/security/SecurityTouchEventInterceptionHelperUnitTest.java",
     "java/src/org/chromium/components/browser_ui/widget/selectable_list/SelectableItemViewBaseTest.java",
+    "java/src/org/chromium/components/browser_ui/widget/selectable_list/SelectableListLayoutTest.java",
     "java/src/org/chromium/components/browser_ui/widget/selectable_list/SelectionDelegateTest.java",
     "java/src/org/chromium/components/browser_ui/widget/tile/TileViewBinderTest.java",
   ]

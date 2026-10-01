@@ -78,6 +78,7 @@ public class SelectableListLayout<E> extends FrameLayout
     private View mEmptyViewWrapper;
     private ImageView mEmptyImageView;
     private LoadingView mLoadingView;
+    private View mListContent;
     private RecyclerView mRecyclerView;
     private @Nullable ItemAnimator mItemAnimator;
     SelectableListToolbar<E> mToolbar;
@@ -149,6 +150,7 @@ public class SelectableListLayout<E> extends FrameLayout
         mEmptyViewWrapper = findViewById(R.id.empty_view_wrapper);
         mLoadingView = findViewById(R.id.loading_view);
         mLoadingView.showLoadingUi();
+        mListContent = findViewById(R.id.list_content);
 
         mToolbarStub = findViewById(R.id.action_bar_stub);
 
@@ -164,9 +166,16 @@ public class SelectableListLayout<E> extends FrameLayout
     }
 
     @Override
-    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
-        super.onSizeChanged(w, h, oldw, oldh);
-        if (mUiConfig != null) mUiConfig.updateDisplayStyle();
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int oldWidth = getMeasuredWidth();
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        if (mUiConfig == null || getMeasuredWidth() == oldWidth) return;
+
+        // Wide display padding must be applied before the children's final measure: a
+        // requestLayout() issued during layout is dropped, and the children keep measurements
+        // taken with stale padding (crbug.com/535920575).
+        mUiConfig.updateDisplayStyle();
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     /**
@@ -474,7 +483,9 @@ public class SelectableListLayout<E> extends FrameLayout
 
     @Override
     public void onDisplayStyleChanged(DisplayStyle newDisplayStyle) {
-        int padding = getPaddingForDisplayStyle(newDisplayStyle, mRecyclerView, getResources());
+        // Not the RecyclerView itself: it is GONE while the list is empty, so its measured width
+        // can be stale.
+        int padding = getPaddingForDisplayStyle(newDisplayStyle, mListContent, getResources());
         mRecyclerView.setPaddingRelative(
                 padding, mRecyclerView.getPaddingTop(), padding, mRecyclerView.getPaddingBottom());
     }
