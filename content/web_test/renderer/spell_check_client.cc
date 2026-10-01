@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/web_test/renderer/web_test_grammar_checker.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
@@ -33,6 +34,11 @@ void SpellCheckClient::SetEnabled(bool enabled) {
 void SpellCheckClient::Reset() {
   enabled_ = false;
   resolved_callback_.Reset();
+  ClearDocumentCustomWords();
+}
+
+void SpellCheckClient::ClearDocumentCustomWords() {
+  document_custom_words_.clear();
 }
 
 bool SpellCheckClient::IsSpellCheckingEnabled() const {
@@ -53,6 +59,11 @@ void SpellCheckClient::CheckSpelling(
 
   // Check the spelling of the given text.
   spell_checker_.SpellCheckWord(text, &misspelled_offset, &misspelled_length);
+  if (IsDocumentCustomWord(text.Utf16(), misspelled_offset,
+                           misspelled_length)) {
+    misspelled_offset = 0;
+    misspelled_length = 0;
+  }
 }
 
 void SpellCheckClient::RequestCheckingOfText(
@@ -104,6 +115,11 @@ void SpellCheckClient::FinishLastTextCheck() {
                                     &misspelled_position, &misspelled_length);
       if (!misspelled_length)
         break;
+      if (IsDocumentCustomWord(text, misspelled_position, misspelled_length)) {
+        text = text.substr(misspelled_position + misspelled_length);
+        offset += misspelled_position + misspelled_length;
+        continue;
+      }
       std::vector<blink::WebString> suggestions;
       spell_checker_.FillSuggestionList(
           blink::WebString::FromUtf16(
@@ -121,6 +137,32 @@ void SpellCheckClient::FinishLastTextCheck() {
   last_requested_text_checking_completion_->DidFinishCheckingText(results);
   last_requested_text_checking_completion_.reset();
   RequestResolved();
+}
+
+void SpellCheckClient::SpellCheckCustomDictionaryChanged(
+    const std::vector<std::string>& words_added,
+    const std::vector<std::string>& words_removed) {
+  for (const std::string& word : words_removed) {
+    document_custom_words_.erase(base::UTF8ToUTF16(word));
+  }
+  std::vector<blink::WebString> added;
+  added.reserve(words_added.size());
+  for (const std::string& word : words_added) {
+    if (document_custom_words_.insert(base::UTF8ToUTF16(word)).second) {
+      added.push_back(blink::WebString::FromUtf8(word));
+    }
+  }
+  // Like SpellCheckProvider, drop existing markers under the added words.
+  // Blink re-checks after removals itself.
+  if (!added.empty()) {
+    frame_->RemoveSpellingMarkersUnderWords(added);
+  }
+}
+
+bool SpellCheckClient::IsDocumentCustomWord(const std::u16string& text,
+                                            size_t offset,
+                                            size_t length) const {
+  return length && document_custom_words_.contains(text.substr(offset, length));
 }
 
 void SpellCheckClient::SetSpellCheckResolvedCallback(

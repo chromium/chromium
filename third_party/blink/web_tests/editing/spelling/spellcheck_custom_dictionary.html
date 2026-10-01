@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<title>SpellCheckCustomDictionary suppresses and restores spelling markers</title>
+<link rel="help" href="https://github.com/Igalia/explainers/tree/main/spell-check-dictionary">
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script src="spellcheck_test.js"></script>
+
+<script>
+// The mock spellchecker in content_shell reports "zz" and "baz" as misspelled.
+
+spellcheck_test(
+    '<div contenteditable>zz baz|</div>',
+    document => document.spellCheckCustomDictionary.addWords(['zz']),
+    '<div contenteditable>zz #baz#</div>',
+    {
+      title: 'Words added before checking are not marked',
+      needsFullCheck: true,
+    });
+
+spellcheck_test(
+    '<textarea>zz baz|</textarea>',
+    document => {
+      document.spellCheckCustomDictionary.addWords(['baz']);
+      document.querySelector('textarea').focus();
+    },
+    '<textarea>#zz# baz</textarea>',
+    {
+      title: 'Words added to the dictionary apply to text controls',
+      needsFullCheck: true,
+    });
+
+spellcheck_test(
+    '<div contenteditable>zz baz|</div>',
+    document => document.spellCheckCustomDictionary.addWords([' zz', 'zz ', '']),
+    '<div contenteditable>#zz# #baz#</div>',
+    {
+      title: 'Empty and whitespace-padded words are ignored',
+      needsFullCheck: true,
+    });
+
+const step1 = () => spellcheck_test(
+    '<div contenteditable>zz baz zz|</div>',
+    () => {},
+    '<div contenteditable>#zz# #baz# #zz#</div>',
+    {
+      title: 'Step 1: Misspellings are marked',
+      needsFullCheck: true,
+      callback: step2,
+    });
+
+const step2 = sample => spellcheck_test(
+    sample,
+    document => document.spellCheckCustomDictionary.addWords(['zz']),
+    '<div contenteditable>zz #baz# zz</div>',
+    {
+      title: 'Step 2: Adding a word removes existing markers under it',
+      needsFullCheck: true,
+      callback: step3,
+    });
+
+const step3 = sample => spellcheck_test(
+    sample,
+    document => document.spellCheckCustomDictionary.removeWords(['zz']),
+    '<div contenteditable>#zz# #baz# #zz#</div>',
+    {
+      title: 'Step 3: Removing a word restores its markers',
+      needsFullCheck: true,
+      callback: step4,
+    });
+
+const step4 = () => spellcheck_test(
+    '<div contenteditable>zz baz|</div>',
+    () => document.spellCheckCustomDictionary.addWords(['zz', 'baz']),
+    '<div contenteditable>#zz# #baz#</div>',
+    {
+      title: "The parent document's words do not apply in a child frame",
+      needsFullCheck: true,
+    });
+
+step1();
+</script>

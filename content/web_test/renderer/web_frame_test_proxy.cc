@@ -777,6 +777,9 @@ void WebFrameTestProxy::DidCommitNavigation(
     should_block_parsing_in_next_commit_ = false;
     GetWebFrame()->BlockParserForTesting();
   }
+  // Words added through the SpellCheckCustomDictionary web API belong to the
+  // outgoing document.
+  spell_check_->ClearDocumentCustomWords();
   RenderFrameImpl::DidCommitNavigation(
       commit_type, should_reset_browser_interface_broker,
       permissions_policy_header, document_policy_header);

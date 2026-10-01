@@ -7,6 +7,8 @@
 
 #include <stdint.h>
 
+#include <set>
+#include <string>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -42,6 +44,11 @@ class SpellCheckClient : public blink::WebTextCheckClient {
 
   void Reset();
 
+  // Drops the words added through the SpellCheckCustomDictionary web API. The
+  // word set is document-scoped, so this is called when a new document is
+  // committed in the frame.
+  void ClearDocumentCustomWords();
+
   // blink::WebSpellCheckClient implementation.
   bool IsSpellCheckingEnabled() const override;
   void CheckSpelling(
@@ -55,8 +62,17 @@ class SpellCheckClient : public blink::WebTextCheckClient {
       blink::WebTextCheckClient::ShouldForceRefreshTextCheckService
           should_force_refresh,
       std::unique_ptr<blink::WebTextCheckingCompletion> completion) override;
+  void SpellCheckCustomDictionaryChanged(
+      const std::vector<std::string>& words_added,
+      const std::vector<std::string>& words_removed) override;
 
  private:
+  // Returns true if the misspelling at [offset, offset + length) of |text| is
+  // a word added through the SpellCheckCustomDictionary web API.
+  bool IsDocumentCustomWord(const std::u16string& text,
+                            size_t offset,
+                            size_t length) const;
+
   void FinishLastTextCheck();
 
   void RequestResolved();
@@ -73,6 +89,11 @@ class SpellCheckClient : public blink::WebTextCheckClient {
   blink::WebString last_requested_text_check_string_;
   std::unique_ptr<blink::WebTextCheckingCompletion>
       last_requested_text_checking_completion_;
+
+  // Words added through the SpellCheckCustomDictionary web API. Misspellings
+  // matching one of these words are not reported, mirroring
+  // SpellCheckProvider in //components/spellcheck.
+  std::set<std::u16string> document_custom_words_;
 
   v8::Persistent<v8::Function> resolved_callback_;
 
