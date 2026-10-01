@@ -46,6 +46,7 @@
 #include "chrome/browser/ui/startup/oscryptasync_availability_infobar_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/js_optimization/js_optimizations_infobar_delegate.h"
 #include "chrome/browser/ui/views/site_data/page_specific_site_data_dialog_controller.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -138,6 +139,7 @@ TriggerRequirements RequirementsFor(InfoBarType type) {
     case InfoBarType::kDevTools:
     case InfoBarType::kDevToolsSharedProcess:
     case InfoBarType::kGoogleApiKeys:
+    case InfoBarType::kJsOptimizations:
     case InfoBarType::kKnownInterception:
     case InfoBarType::kObsoleteSystem:
     case InfoBarType::kOSCryptAsyncAvailability:
@@ -306,6 +308,11 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
             "trigger resets any browser state that prevents it from showing, "
             "then requests a show.");
 #endif
+
+  add_entry(InfoBarType::kJsOptimizations, "JS Optimizations",
+            "The JS Optimizations infobar asks the user to reload the page "
+            "after changing the JavaScript optimizations setting for a site. "
+            "This trigger shows the infobar.");
 
 #if BUILDFLAG(IS_MAC) && BUILDFLAG(ENABLE_UPDATER)
   add_entry(InfoBarType::kKeystone, "Keystone",
@@ -706,6 +713,15 @@ bool InfoBarInternalsHandler::PerformInfoBarActionInternal(
       return false;
     }
 #endif
+    case InfoBarType::kJsOptimizations: {
+      infobars::ContentInfoBarManager* infobar_manager =
+          infobars::ContentInfoBarManager::FromWebContents(web_contents);
+      if (!infobar_manager) {
+        return false;
+      }
+      JsOptimizationsInfoBarDelegate::Create(infobar_manager);
+      return true;
+    }
 #if BUILDFLAG(IS_MAC)
     case InfoBarType::kKeystone: {
 #if BUILDFLAG(ENABLE_UPDATER)
