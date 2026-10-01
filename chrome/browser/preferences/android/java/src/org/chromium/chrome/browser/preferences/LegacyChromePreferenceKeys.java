@@ -60,7 +60,7 @@ public class LegacyChromePreferenceKeys {
                 ChromePreferenceKeys.HISTORY_SHOW_HISTORY_INFO,
                 ChromePreferenceKeys.HOMEPAGE_ENABLED,
                 ChromePreferenceKeys.HOMEPAGE_USE_DEFAULT_URI,
-                ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED,
+                ChromePreferenceKeys.DYNAMIC_SHORTCUTS_ADDED,
                 ChromePreferenceKeys.LATEST_UNSUPPORTED_VERSION,
                 ChromePreferenceKeys.LOCALE_MANAGER_AUTO_SWITCH,
                 ChromePreferenceKeys.LOCALE_MANAGER_MISSING_TIMEZONES,

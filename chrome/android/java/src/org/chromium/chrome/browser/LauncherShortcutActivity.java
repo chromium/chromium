@@ -135,7 +135,7 @@ public class LauncherShortcutActivity extends Activity {
     }
 
     /**
-     * Updates the dynamic launcher shortcuts based on whether incognito mode is enabled.
+     * Updates the dynamic launcher shortcuts.
      *
      * <p>This method performs the ShortcutManager updates asynchronously on a background thread to
      * avoid blocking the main thread. However, the shortcut info itself is pre-built on the UI
@@ -145,19 +145,18 @@ public class LauncherShortcutActivity extends Activity {
      */
     public static void updateDynamicLauncherShortcuts(Profile profile) {
         boolean incognitoEnabled = IncognitoUtils.isIncognitoModeEnabled(profile);
-        List<ShortcutInfo> shortcuts = incognitoEnabled ? getExtraLauncherShortcuts() : null;
+        List<ShortcutInfo> shortcuts = getExtraLauncherShortcuts(incognitoEnabled);
         sTaskRunner.execute(
                 () -> {
                     SharedPreferencesManager preferences = ChromeSharedPreferences.getInstance();
-                    boolean incognitoShortcutAdded =
+                    boolean dynamicShortcutsAdded =
                             preferences.readBoolean(
-                                    ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, false);
+                                    ChromePreferenceKeys.DYNAMIC_SHORTCUTS_ADDED, false);
 
                     // Re-add the shortcuts regardless of whether they were previously added, in
                     // case the locale has changed since the last addition.
                     // TODO(crbug.com/40125673): Investigate better locale change handling.
-                    if (incognitoEnabled) {
-                        assumeNonNull(shortcuts);
+                    if (!shortcuts.isEmpty()) {
                         ShortcutManager shortcutManager =
                                 ContextUtils.getApplicationContext()
                                         .getSystemService(ShortcutManager.class);
@@ -173,7 +172,7 @@ public class LauncherShortcutActivity extends Activity {
                             }
                             if (shortcutManager.addDynamicShortcuts(shortcuts)) {
                                 preferences.writeBoolean(
-                                        ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, true);
+                                        ChromePreferenceKeys.DYNAMIC_SHORTCUTS_ADDED, true);
                             } else {
                                 Log.e(TAG, "addDynamicShortcuts is rate-limited");
                                 RecordHistogram.recordEnumeratedHistogram(
@@ -194,32 +193,36 @@ public class LauncherShortcutActivity extends Activity {
                                     UpdateFailure.ILLEGAL_STATE,
                                     UpdateFailure.NUM_ENTRIES);
                         }
-                    } else if (incognitoShortcutAdded) {
+                    } else if (dynamicShortcutsAdded) {
                         removeLauncherShortcuts();
                         preferences.writeBoolean(
-                                ChromePreferenceKeys.INCOGNITO_SHORTCUT_ADDED, false);
+                                ChromePreferenceKeys.DYNAMIC_SHORTCUTS_ADDED, false);
                     }
                 });
     }
 
     /**
      * Builds a list of "New incognito tab" or "New window" and "New incognito window" dynamic
-     * launcher shortcuts based on whether mixed windows are supported.
+     * launcher shortcuts based on whether mixed windows are supported and whether incognito mode is
+     * enabled.
      *
+     * @param incognitoEnabled Whether incognito mode is enabled.
      * @return List of shortcuts to be set.
      */
-    private static List<ShortcutInfo> getExtraLauncherShortcuts() {
+    private static List<ShortcutInfo> getExtraLauncherShortcuts(boolean incognitoEnabled) {
         List<ShortcutInfo> shortcuts = new ArrayList<>();
         int nextRank = 0;
         boolean supportedMixedWindows = !IncognitoUtils.shouldOpenIncognitoAsWindow();
         if (supportedMixedWindows) {
-            shortcuts.add(
-                    buildLauncherShortcut(
-                            DYNAMIC_OPEN_NEW_INCOGNITO_TAB_ID,
-                            LauncherShortcutActivity.ACTION_OPEN_NEW_INCOGNITO_TAB,
-                            R.string.menu_new_incognito_tab,
-                            R.drawable.shortcut_incognito,
-                            nextRank++));
+            if (incognitoEnabled) {
+                shortcuts.add(
+                        buildLauncherShortcut(
+                                DYNAMIC_OPEN_NEW_INCOGNITO_TAB_ID,
+                                LauncherShortcutActivity.ACTION_OPEN_NEW_INCOGNITO_TAB,
+                                R.string.menu_new_incognito_tab,
+                                R.drawable.shortcut_incognito,
+                                nextRank++));
+            }
         } else {
             if (!DeviceInfo.isDesktop()) {
                 shortcuts.add(
@@ -230,13 +233,15 @@ public class LauncherShortcutActivity extends Activity {
                                 R.drawable.shortcut_newwindow,
                                 nextRank++));
             }
-            shortcuts.add(
-                    buildLauncherShortcut(
-                            DYNAMIC_OPEN_NEW_INCOGNITO_TAB_ID,
-                            LauncherShortcutActivity.ACTION_OPEN_NEW_INCOGNITO_WINDOW,
-                            R.string.menu_new_incognito_window,
-                            R.drawable.shortcut_incognito,
-                            nextRank++));
+            if (incognitoEnabled) {
+                shortcuts.add(
+                        buildLauncherShortcut(
+                                DYNAMIC_OPEN_NEW_INCOGNITO_TAB_ID,
+                                LauncherShortcutActivity.ACTION_OPEN_NEW_INCOGNITO_WINDOW,
+                                R.string.menu_new_incognito_window,
+                                R.drawable.shortcut_incognito,
+                                nextRank++));
+            }
         }
         return shortcuts;
     }

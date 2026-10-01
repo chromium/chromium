@@ -482,7 +482,9 @@ public final class ChromePreferenceKeys {
     public static final String IMAGE_DESCRIPTIONS_DONT_ASK_AGAIN =
             "Chrome.ImageDescriptions.DontAskAgain";
 
-    public static final String INCOGNITO_SHORTCUT_ADDED = "incognito-shortcut-added";
+    // DYNAMIC_SHORTCUTS_ADDED used to only track the incognito launcher shortcut, thus the
+    // "incognito-" prefix. The string should NOT be changed without some sort of migration.
+    public static final String DYNAMIC_SHORTCUTS_ADDED = "incognito-shortcut-added";
 
     /** Indicates how many times the Incognito re-auth promo card was shown in the tab switcher. */
     public static final String INCOGNITO_REAUTH_PROMO_SHOW_COUNT =
