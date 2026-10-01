@@ -36,16 +36,13 @@ import org.chromium.base.supplier.SettableNonNullObservableSupplier;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.RobolectricUtil;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerScrollBehavior;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.glic.GlicEnabling;
 import org.chromium.chrome.browser.glic.GlicKeyedService;
 import org.chromium.chrome.browser.glic.GlicKeyedServiceFactory;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.bottom.BottomControlsCoordinator.BottomControlsVisibilityController;
@@ -60,7 +57,6 @@ import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarUtils;
 import org.chromium.chrome.browser.ui.bottombar.R;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -83,7 +79,6 @@ public class BottomBarContainerCoordinatorUnitTest {
     @Mock private ModalDialogManager mModalDialogManager;
     @Mock private UpdateMenuItemHelper mUpdateMenuItemHelper;
     @Mock private GlicKeyedService mGlicKeyedService;
-    @Mock private TemplateUrlService mTemplateUrlService;
     @Mock private LayoutStateProvider mLayoutStateProvider;
 
     private final SettableNullableObservableSupplier<Tab> mTabSupplier =
@@ -91,8 +86,6 @@ public class BottomBarContainerCoordinatorUnitTest {
     private final SettableNullableObservableSupplier<PropertyModel> mActionSupplier =
             ObservableSuppliers.createNullable();
     private final SettableNullableObservableSupplier<PropertyModel> mGlicActionSupplier =
-            ObservableSuppliers.createNullable();
-    private final SettableNullableObservableSupplier<PropertyModel> mAiModeActionSupplier =
             ObservableSuppliers.createNullable();
     private final SettableNullableObservableSupplier<PropertyModel> mMenuActionSupplier =
             ObservableSuppliers.createNullable();
@@ -114,15 +107,12 @@ public class BottomBarContainerCoordinatorUnitTest {
         mTabSupplier.set(null);
         when(mActionRegistry.get(anyInt())).thenReturn(mActionSupplier);
         when(mActionRegistry.get(ActionId.GLIC)).thenReturn(mGlicActionSupplier);
-        when(mActionRegistry.get(ActionId.AI_MODE)).thenReturn(mAiModeActionSupplier);
         when(mActionRegistry.get(ActionId.APP_MENU)).thenReturn(mMenuActionSupplier);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         UpdateMenuItemHelper.setInstanceForTesting(mUpdateMenuItemHelper);
         when(mUpdateMenuItemHelper.getUiState()).thenReturn(new MenuUiState());
         GlicKeyedServiceFactory.setForTesting(mGlicKeyedService);
         GlicEnabling.setEnabledForTesting(false);
-        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
-        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
 
         mActivityScenarioRule
                 .getScenario()
@@ -378,65 +368,6 @@ public class BottomBarContainerCoordinatorUnitTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM,
-        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":bypass_aim_geofencing/true"
-    })
-    public void testCountrySupplier_AuCountry_BindsAiModeExtraButton() {
-        GlicEnabling.setEnabledForTesting(/* isEnabled= */ true);
-        when(mProfile.getOriginalProfile()).thenReturn(mProfile);
-
-        OneshotSupplierImpl<String> countrySupplier = new OneshotSupplierImpl<>();
-        mCoordinator.destroy();
-
-        PropertyModel glicModel =
-                new PropertyModel.Builder(GlicActionProperties.ALL_KEYS)
-                        .with(
-                                ActionProperties.CONTENT_DESCRIPTION_RESOLVER,
-                                context -> "Ask Gemini")
-                        .with(ActionProperties.TOOLTIP_TEXT_RESOLVER, context -> "Ask Gemini")
-                        .build();
-        PropertyModel aiModeModel =
-                new PropertyModel.Builder(ActionProperties.ALL_KEYS)
-                        .with(
-                                ActionProperties.CONTENT_DESCRIPTION_RESOLVER,
-                                context -> "Ask AI Mode")
-                        .with(ActionProperties.TOOLTIP_TEXT_RESOLVER, context -> "Ask AI Mode")
-                        .build();
-        mGlicActionSupplier.set(glicModel);
-        mAiModeActionSupplier.set(aiModeModel);
-
-        mCoordinator =
-                new BottomBarContainerCoordinator(
-                        mBottomBarContainer,
-                        mRequestLayerUpdateCallback,
-                        mActionRegistry,
-                        mTabSupplier,
-                        mThemeColorProvider,
-                        mHomepageEnabledSupplier,
-                        mProfileSupplier,
-                        countrySupplier,
-                        mOmniboxFocusStateSupplier,
-                        mModalDialogManagerSupplier,
-                        new OneshotSupplierImpl<AppMenuCoordinator>(),
-                        mLayoutStateProvider);
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        View extraButton = mCoordinator.getBottomBar().getView().findViewById(R.id.extra_button);
-        assertNull(extraButton);
-
-        // "au" is in AIM_ALLOWED_COUNTRIES, but not GLIC_ALLOWED_COUNTRIES.
-        countrySupplier.set("au");
-        RobolectricUtil.runAllBackgroundAndUi();
-
-        extraButton = mCoordinator.getBottomBar().getView().findViewById(R.id.extra_button);
-        assertNotNull(extraButton);
-        assertEquals(View.VISIBLE, extraButton.getVisibility());
-        assertEquals("Ask AI Mode", extraButton.getContentDescription());
-    }
-
-    @Test
-    @EnableFeatures(ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM)
     public void testCountrySupplier_FrCountry_FailsClosedAndRemainsHidden() {
         GlicEnabling.setEnabledForTesting(/* isEnabled= */ true);
         when(mProfile.getOriginalProfile()).thenReturn(mProfile);
@@ -451,15 +382,7 @@ public class BottomBarContainerCoordinatorUnitTest {
                                 context -> "Ask Gemini")
                         .with(ActionProperties.TOOLTIP_TEXT_RESOLVER, context -> "Ask Gemini")
                         .build();
-        PropertyModel aiModeModel =
-                new PropertyModel.Builder(ActionProperties.ALL_KEYS)
-                        .with(
-                                ActionProperties.CONTENT_DESCRIPTION_RESOLVER,
-                                context -> "Ask AI Mode")
-                        .with(ActionProperties.TOOLTIP_TEXT_RESOLVER, context -> "Ask AI Mode")
-                        .build();
         mGlicActionSupplier.set(glicModel);
-        mAiModeActionSupplier.set(aiModeModel);
 
         mCoordinator =
                 new BottomBarContainerCoordinator(
@@ -477,7 +400,7 @@ public class BottomBarContainerCoordinatorUnitTest {
                         mLayoutStateProvider);
         RobolectricUtil.runAllBackgroundAndUi();
 
-        // "fr" is not in GLIC_ALLOWED_COUNTRIES and not in AIM_ALLOWED_COUNTRIES.
+        // "fr" is not in GLIC_ALLOWED_COUNTRIES.
         countrySupplier.set("fr");
         RobolectricUtil.runAllBackgroundAndUi();
 

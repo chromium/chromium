@@ -225,7 +225,6 @@ import org.chromium.chrome.browser.ui.actions.tabswitcher.TabSwitcherActionProvi
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuDelegate;
 import org.chromium.chrome.browser.ui.appmenu.MenuButtonDelegate;
-import org.chromium.chrome.browser.ui.bottombar.AiModeActionCoordinator;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarConfigUtils;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarUtils;
@@ -469,7 +468,6 @@ public class ToolbarManager
     private final OneshotSupplier<Boolean> mPromoShownOneshotSupplier;
     private final GlicButtonDelegate mToggleGlicCallback;
     private @Nullable GlicActionCoordinator mGlicActionCoordinator;
-    private @Nullable AiModeActionCoordinator mAiModeActionCoordinator;
 
     private final TabStripTopControlLayer mTabStripTopControlLayer;
     private final @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
@@ -769,7 +767,7 @@ public class ToolbarManager
      * @param activityLifecycleDispatcher Allows monitoring the activity lifecycle.
      * @param multiWindowModeStateDispatcher Allows monitoring the multi-window mode state.
      * @param bottomSheetController Controls the state of the bottom sheet.
-     * @param dataSharingTabManager The {@link} DataSharingTabManager managing communication between
+     * @param dataSharingTabManager The {@link DataSharingTabManager} managing communication between
      *     UI and DataSharing services.
      * @param tabContentManager Manages the content of tabs.
      * @param tabCreatorManager Manages the creation of tabs.
@@ -2721,9 +2719,7 @@ public class ToolbarManager
                                 mTabCreatorManager.getTabCreator(
                                         tabModelSelector.isIncognitoSelected()));
                     });
-        }
 
-        if (mActionRegistry != null) {
             mGlicActionCoordinator =
                     new GlicActionCoordinator(
                             mActivity,
@@ -2734,12 +2730,6 @@ public class ToolbarManager
                             mBrowserControlsSizer,
                             mTabModelSelectorSupplier,
                             mSnackbarManager,
-                            mUserEducationHelper);
-            mAiModeActionCoordinator =
-                    new AiModeActionCoordinator(
-                            mActivity,
-                            mActionRegistry,
-                            mActivityTabProvider.asObservable(),
                             mUserEducationHelper);
         }
 
@@ -3149,11 +3139,6 @@ public class ToolbarManager
         if (mGlicActionCoordinator != null) {
             mGlicActionCoordinator.destroy();
             mGlicActionCoordinator = null;
-        }
-
-        if (mAiModeActionCoordinator != null) {
-            mAiModeActionCoordinator.destroy();
-            mAiModeActionCoordinator = null;
         }
 
         if (mExtensionsToolbarCoordinator != null) {

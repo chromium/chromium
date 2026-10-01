@@ -145,13 +145,6 @@ public class BottomBarCoordinator implements BottomBar, Destroyable {
                         GlicActionButtonBinder::bind,
                         BottomBarProperties.IS_EXTRA_BUTTON_VISIBLE,
                         /* initiallyVisible= */ false));
-        configs.add(
-                new ActionConfig(
-                        ActionId.AI_MODE,
-                        extraContainer,
-                        ActionButtonBinder::bind,
-                        BottomBarProperties.IS_EXTRA_BUTTON_VISIBLE,
-                        /* initiallyVisible= */ false));
 
         BottomBarButtonContainer newTabContainer = view.getContainerForAction(ActionId.NEW_TAB);
         assert newTabContainer != null : "New tab container not found";

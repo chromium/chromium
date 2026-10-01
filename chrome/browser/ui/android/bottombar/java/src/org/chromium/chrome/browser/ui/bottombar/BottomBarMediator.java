@@ -28,7 +28,6 @@ import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserv
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -37,7 +36,6 @@ import org.chromium.chrome.browser.ui.actions.ActionProperties;
 import org.chromium.chrome.browser.ui.actions.ActionRegistry;
 import org.chromium.chrome.browser.ui.android.bars_common.IphIntent;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarHostManager.Host;
-import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.AimIneligibilityReason;
 import org.chromium.chrome.browser.ui.bottombar.BottomBarMetrics.CandidateAction;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
@@ -45,8 +43,6 @@ import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.Highl
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.components.search_engines.TemplateUrlService;
-import org.chromium.components.search_engines.TemplateUrlService.TemplateUrlServiceObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for the bottom bar */
@@ -87,7 +83,6 @@ public class BottomBarMediator
     private final NullableObservableSupplier<Profile> mProfileSupplier;
     private final OneshotSupplier<String> mCountrySupplier;
     private final NullableObservableSupplier<PropertyModel> mGlicActionSupplier;
-    private final NullableObservableSupplier<PropertyModel> mAiModeActionSupplier;
     private final NullableObservableSupplier<PropertyModel> mNewTabActionSupplier;
     private final boolean mShouldIncludeHomeButton;
 
@@ -106,8 +101,6 @@ public class BottomBarMediator
     private @Nullable Tab mCurrentTab;
     private @TriState int mIsVisible;
     private @Nullable IphIntent mNewTabIphIntent;
-    private @Nullable TemplateUrlService mTemplateUrlService;
-    private @Nullable TemplateUrlServiceObserver mTemplateUrlServiceObserver;
     private @Nullable LayoutStateProvider mLayoutStateProvider;
     private @Nullable @ActionId Integer mResolvedCandidateExtraAction;
 
@@ -166,7 +159,6 @@ public class BottomBarMediator
         mOmniboxFocusStateSupplier = omniboxFocusStateSupplier;
         mPromoDialogCoordinator = promoDialogCoordinator;
         mGlicActionSupplier = actionRegistry.get(ActionId.GLIC);
-        mAiModeActionSupplier = actionRegistry.get(ActionId.AI_MODE);
         mNewTabActionSupplier = actionRegistry.get(ActionId.NEW_TAB);
         mGlicTimeToAppearRecorded = false;
 
@@ -309,7 +301,6 @@ public class BottomBarMediator
         Profile profile = mProfileSupplier.get();
         if (profile == null) {
             setButtonVisibility(ActionId.GLIC, false);
-            setButtonVisibility(ActionId.AI_MODE, false);
             return;
         }
 
@@ -321,7 +312,6 @@ public class BottomBarMediator
             if (!BottomBarActionEligibility.isCandidateResolutionReady(originalProfile, country)) {
                 // Country code not yet populated and geofencing not bypassed: defer decision.
                 setButtonVisibility(ActionId.GLIC, /* visible= */ false);
-                setButtonVisibility(ActionId.AI_MODE, /* visible= */ false);
                 return;
             }
 
@@ -333,14 +323,11 @@ public class BottomBarMediator
             long decisionDuration = SystemClock.uptimeMillis() - startTime;
             BottomBarMetrics.recordCandidateDecisionTime(decisionDuration);
 
-            @CandidateAction int candidateMetric;
-            if (candidateExtraAction != null && candidateExtraAction == ActionId.GLIC) {
-                candidateMetric = CandidateAction.GLIC;
-            } else if (candidateExtraAction != null && candidateExtraAction == ActionId.AI_MODE) {
-                candidateMetric = CandidateAction.AIM;
-            } else {
-                candidateMetric = CandidateAction.NONE;
-            }
+            @CandidateAction
+            int candidateMetric =
+                    candidateExtraAction != null && candidateExtraAction == ActionId.GLIC
+                            ? CandidateAction.GLIC
+                            : CandidateAction.NONE;
             BottomBarMetrics.recordCandidateExtraAction(candidateMetric);
         }
 
@@ -349,11 +336,8 @@ public class BottomBarMediator
         Integer candidateExtraAction = mResolvedCandidateExtraAction;
         if (candidateExtraAction != null && candidateExtraAction == ActionId.GLIC) {
             updateGlicVisibility(originalProfile);
-        } else if (candidateExtraAction != null && candidateExtraAction == ActionId.AI_MODE) {
-            updateAiModeVisibility();
         } else {
             setButtonVisibility(ActionId.GLIC, /* visible= */ false);
-            setButtonVisibility(ActionId.AI_MODE, /* visible= */ false);
         }
     }
 
@@ -382,27 +366,7 @@ public class BottomBarMediator
         }
         mGlicWasVisible = visible;
 
-        setButtonVisibility(ActionId.AI_MODE, /* visible= */ false);
         setButtonVisibility(ActionId.GLIC, visible);
-    }
-
-    private void updateAiModeVisibility() {
-        Integer candidateExtraAction = mResolvedCandidateExtraAction;
-        if (candidateExtraAction == null || candidateExtraAction != ActionId.AI_MODE) {
-            setButtonVisibility(ActionId.AI_MODE, /* visible= */ false);
-            return;
-        }
-
-        boolean visible =
-                mTemplateUrlService != null && mTemplateUrlService.isDefaultSearchEngineGoogle();
-
-        if (!visible) {
-            BottomBarMetrics.recordAimIneligibilityReason(
-                    AimIneligibilityReason.DEFAULT_SEARCH_ENGINE_NOT_GOOGLE);
-        }
-
-        setButtonVisibility(ActionId.GLIC, /* visible= */ false);
-        setButtonVisibility(ActionId.AI_MODE, visible);
     }
 
     private void updateObservers(@Nullable Profile originalProfile) {
@@ -419,11 +383,6 @@ public class BottomBarMediator
             ContextUtils.getAppSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
             mObservingSharedPrefs = false;
         }
-        if (mTemplateUrlService != null && mTemplateUrlServiceObserver != null) {
-            mTemplateUrlService.removeObserver(mTemplateUrlServiceObserver);
-            mTemplateUrlService = null;
-            mTemplateUrlServiceObserver = null;
-        }
 
         Integer candidateExtraAction = mResolvedCandidateExtraAction;
         if (originalProfile == null || candidateExtraAction == null) {
@@ -439,21 +398,11 @@ public class BottomBarMediator
             }
             ContextUtils.getAppSharedPreferences().registerOnSharedPreferenceChangeListener(this);
             mObservingSharedPrefs = true;
-        } else if (candidateExtraAction == ActionId.AI_MODE) {
-            mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(originalProfile);
-            if (mTemplateUrlService != null) {
-                mTemplateUrlServiceObserver = this::onTemplateURLServiceChanged;
-                mTemplateUrlService.addObserver(mTemplateUrlServiceObserver);
-            }
         }
     }
 
     private void onGlicAllowedChanged() {
         updateGlicVisibility(mOriginalProfile);
-    }
-
-    private void onTemplateURLServiceChanged() {
-        updateAiModeVisibility();
     }
 
     @Override
@@ -520,22 +469,7 @@ public class BottomBarMediator
 
     @Override
     public void onPromoDialogAccepted() {
-        @ActionId int eligibleAction = mModel.get(BottomBarProperties.EXTRA_BUTTON_ACTION_ID);
-
-        PropertyModel actionModel;
-        int stringResId;
-        String featureTracker;
-
-        if (eligibleAction == ActionId.AI_MODE) {
-            actionModel = mAiModeActionSupplier.get();
-            stringResId = R.string.iph_android_bottom_bar_aim;
-            featureTracker = FeatureConstants.ANDROID_BOTTOM_BAR_AIM;
-        } else {
-            actionModel = mGlicActionSupplier.get();
-            stringResId = R.string.iph_android_bottom_bar_glic;
-            featureTracker = FeatureConstants.ANDROID_BOTTOM_BAR_GLIC;
-        }
-
+        PropertyModel actionModel = mGlicActionSupplier.get();
         if (actionModel == null) return;
 
         HighlightParams highlightParams = new HighlightParams(HighlightShape.RECTANGLE);
@@ -545,25 +479,21 @@ public class BottomBarMediator
                         .getDimensionPixelSize(R.dimen.bottom_bar_button_highlight_radius);
         highlightParams.setCornerRadius(circleRadius);
 
-        @BottomBarMetrics.IphFeature
-        String iphFeatureType =
-                eligibleAction == ActionId.AI_MODE
-                        ? BottomBarMetrics.IphFeature.AIM
-                        : BottomBarMetrics.IphFeature.GLIC;
-
         IphIntent iphIntent =
-                new IphIntent.Builder(featureTracker)
-                        .setStringResId(stringResId)
-                        .setAccessibilityResId(stringResId)
+                new IphIntent.Builder(FeatureConstants.ANDROID_BOTTOM_BAR_GLIC)
+                        .setStringResId(R.string.iph_android_bottom_bar_glic)
+                        .setAccessibilityResId(R.string.iph_android_bottom_bar_glic)
                         .setHighlightParams(highlightParams)
                         .setOnShowCallback(
                                 () ->
                                         BottomBarMetrics.recordIphEvent(
-                                                BottomBarMetrics.IphEvent.SHOWN, iphFeatureType))
+                                                BottomBarMetrics.IphEvent.SHOWN,
+                                                BottomBarMetrics.IphFeature.GLIC))
                         .setOnDismissCallback(
                                 () -> {
                                     BottomBarMetrics.recordIphEvent(
-                                            BottomBarMetrics.IphEvent.DISMISSED, iphFeatureType);
+                                            BottomBarMetrics.IphEvent.DISMISSED,
+                                            BottomBarMetrics.IphFeature.GLIC);
                                     triggerNewTabIph();
                                 })
                         .build();
@@ -645,11 +575,6 @@ public class BottomBarMediator
             mGlicKeyedService.removeAllowedChangedObserver(mAllowedChangedObserver);
             mGlicKeyedService = null;
         }
-        if (mTemplateUrlService != null && mTemplateUrlServiceObserver != null) {
-            mTemplateUrlService.removeObserver(mTemplateUrlServiceObserver);
-            mTemplateUrlService = null;
-            mTemplateUrlServiceObserver = null;
-        }
 
         mOmniboxFocusStateSupplier.removeObserver(mOmniboxFocusObserver);
 
@@ -661,10 +586,6 @@ public class BottomBarMediator
         PropertyModel glicModel = mGlicActionSupplier.get();
         if (glicModel != null) {
             glicModel.set(ActionProperties.IPH_INTENT, null);
-        }
-        PropertyModel aiModeModel = mAiModeActionSupplier.get();
-        if (aiModeModel != null) {
-            aiModeModel.set(ActionProperties.IPH_INTENT, null);
         }
         PropertyModel newTabModel = mNewTabActionSupplier.get();
         if (newTabModel != null) {

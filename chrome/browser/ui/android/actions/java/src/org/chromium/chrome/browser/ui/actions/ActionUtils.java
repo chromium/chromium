@@ -88,15 +88,6 @@ public class ActionUtils {
                 R.string.glic_button_entrypoint_ask_gemini_label,
                 R.string.glic_button_entrypoint_ask_gemini_label);
 
-        // Register AI Mode button.
-        registerAction(
-                registry,
-                ActionId.AI_MODE,
-                ActionProperties.BASE_KEYS,
-                R.drawable.ic_search_spark_24dp,
-                R.string.accessibility_bottom_bar_ai_mode_button,
-                R.string.accessibility_bottom_bar_ai_mode_button);
-
         // Register new tab button.
         registerAction(
                 registry,

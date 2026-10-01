@@ -80,9 +80,9 @@ public class BottomBarButtonManager implements Destroyable {
          *     bottom bar upon registration.
          *     <p>Standard standalone buttons (e.g., Home, New Tab, Tab Switcher, App Menu) should
          *     pass {@code true} so they become visible as soon as their models are supplied.
-         *     <p>Mutually exclusive candidates (e.g., GLIC and AI Mode) MUST pass {@code false}.
-         *     This defers {@link PropertyModelChangeProcessor} creation until later once statically
-         *     resolved to avoid the view data not updating due to the MCP already being bound.
+         *     <p>Mutually exclusive candidates (e.g., GLIC) MUST pass {@code false}. This defers
+         *     {@link PropertyModelChangeProcessor} creation until later once statically resolved to
+         *     avoid the view data not updating due to the MCP already being bound.
          */
         public ActionConfig(
                 @ActionId int actionId,
@@ -293,8 +293,8 @@ public class BottomBarButtonManager implements Destroyable {
             boolean visible = isVisible(state);
             // Bind the PropertyModelChangeProcessor when the button becomes visible,
             // and destroy it when it becomes invisible. This ensures that on a shared slot
-            // (like GLIC and AI_MODE sharing the extra container), only the active action's
-            // binder is active, preventing clobbering.
+            // (sharing the extra container), only the active action's binder is active,
+            // preventing clobbering.
             if (visible) {
                 if (state.mMcp == null && state.mModel != null) {
                     state.mMcp =

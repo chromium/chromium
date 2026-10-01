@@ -120,48 +120,8 @@ public class BottomBarIntegrationTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({"variations-override-country=au"})
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_BOTTOM_BAR
-                + ":show_glic_setting_toggle/false/bypass_aim_geofencing/true",
-        ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM
-    })
-    public void testBottomBarExtraButton_WithAuCountry_ShowsAiModeButton() {
-        mPage = mActivityTestRule.startOnBlankPage();
-        mTabbedRootUiCoordinator =
-                (TabbedRootUiCoordinator) mPage.getActivity().getRootUiCoordinatorForTesting();
-
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    var countrySupplier = mTabbedRootUiCoordinator.getCountrySupplierForTesting();
-                    checkThat(countrySupplier, notNullValue());
-                    assert countrySupplier != null;
-                    checkThat(countrySupplier.get(), is("au"));
-
-                    final ChromeTabbedActivity activity = mActivityTestRule.getActivity();
-                    View extraContainer = activity.findViewById(R.id.extra_button_container);
-                    checkThat(extraContainer, notNullValue());
-                    assert extraContainer != null;
-                    checkThat(extraContainer.getVisibility(), is(View.VISIBLE));
-
-                    View extraButton = activity.findViewById(R.id.extra_button);
-                    checkThat(extraButton, notNullValue());
-                    assert extraButton != null;
-                    checkThat(extraButton.getVisibility(), is(View.VISIBLE));
-                    CharSequence contentDescription = extraButton.getContentDescription();
-                    checkThat(contentDescription, notNullValue());
-                    assert contentDescription != null;
-                    checkThat(contentDescription.toString(), containsString("AI Mode"));
-                });
-    }
-
-    @Test
-    @MediumTest
     @CommandLineFlags.Add({"variations-override-country=fr"})
-    @EnableFeatures({
-        ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/false",
-        ChromeFeatureList.ANDROID_BOTTOM_BAR_AIM
-    })
+    @EnableFeatures({ChromeFeatureList.ANDROID_BOTTOM_BAR + ":show_glic_setting_toggle/false"})
     public void testBottomBarExtraButton_WithFrCountry_HidesExtraButton() {
         mPage = mActivityTestRule.startOnBlankPage();
         mTabbedRootUiCoordinator =

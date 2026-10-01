@@ -11,8 +11,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Configuration containing the lists of allowed and blocked country codes for bottom bar extra
- * actions (GLIC and AI Mode).
+ * Configuration containing the list of allowed country codes for bottom bar extra actions.
  *
  * <p><strong>CRITICAL:</strong> All lists of country codes in this file must remain sorted
  * alphabetically. This sorting is strictly enforced by Chromium's keep-sorted presubmit hook.
@@ -36,10 +35,4 @@ public final class BottomBarGeofencingConfig {
                             "us" // United States
                             // keep-sorted end
                             ));
-
-    /** Countries where GLIC (Gemini) is launching soon (currently gated). */
-    public static final List<String> GLIC_SOON_COUNTRIES = Collections.emptyList();
-
-    /** Countries where AI Mode (search fallback) is allowed. */
-    public static final List<String> AIM_ALLOWED_COUNTRIES = Collections.emptyList();
 }

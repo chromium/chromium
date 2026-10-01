@@ -9,9 +9,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/color-night/bottom_bar_promo_glow_transparent.xml",
     "java/res/color/bottom_bar_promo_glow_transparent.xml",
-    "java/res/drawable-night/bottom_bar_aim_promo_illustration.xml",
     "java/res/drawable-night/bottom_bar_promo_illustration.xml",
-    "java/res/drawable/bottom_bar_aim_promo_illustration.xml",
     "java/res/drawable/bottom_bar_new_tab_background.xml",
     "java/res/drawable/bottom_bar_promo_illustration.xml",
     "java/res/layout/bottom_bar_app_menu_template.xml",
@@ -58,7 +56,6 @@ android_library("metrics_java") {
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/ui/bottombar/AiModeActionCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/AppMenuActionButtonBinder.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBar.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarActionEligibility.java",
@@ -87,7 +84,6 @@ android_library("java") {
     "//chrome/browser/glic/android:common_java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
-    "//chrome/browser/search_engines/android:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/ui/android/actions:java",
@@ -100,10 +96,8 @@ android_library("java") {
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
     "//components/feature_engagement/public:public_java",
-    "//components/search_engines/android:java",
     "//components/signin/public/android:java",
     "//components/sync/android:sync_java",
-    "//content/public/android:content_full_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_core_core_java",
@@ -120,7 +114,6 @@ android_library("java") {
 
 robolectric_library("junit") {
   sources = [
-    "java/src/org/chromium/chrome/browser/ui/bottombar/AiModeActionCoordinatorUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/AppMenuActionButtonBinderUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarActionEligibilityUnitTest.java",
     "java/src/org/chromium/chrome/browser/ui/bottombar/BottomBarButtonContainerUnitTest.java",
@@ -146,7 +139,6 @@ robolectric_library("junit") {
     "//chrome/browser/glic/android:jni_headers_java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
-    "//chrome/browser/search_engines/android:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/sync/android:java",
     "//chrome/browser/tab:java",
@@ -162,10 +154,8 @@ robolectric_library("junit") {
     "//components/browser_ui/widget/android:java",
     "//components/embedder_support/android:util_java",
     "//components/feature_engagement:feature_engagement_java",
-    "//components/search_engines/android:java",
     "//components/signin/public/android:java",
     "//components/sync/android:sync_java",
-    "//content/public/android:content_full_java",
     "//google_apis/gaia/android:java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_ext_junit_java",
