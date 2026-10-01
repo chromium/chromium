@@ -22,7 +22,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -849,7 +848,7 @@ void Transaction::BlobWriteComplete(base::TimeTicks start_time, Status result) {
 
 Status Transaction::DoPendingCommit() {
   TRACE_EVENT1("IndexedDB", "Transaction::DoPendingCommit", "txn.id", id());
-  CHECK(is_commit_pending_, base::NotFatalUntil::M145);
+  CHECK(is_commit_pending_);
 
   timeout_timer_.Stop();
 
@@ -1181,9 +1180,9 @@ void Transaction::NotifyOfIdbInternalsRelevantChange() {
 
 void Transaction::OnInactivityTimeout() {
   // The timeout timer should only be running when these conditions are met:
-  CHECK(used_, base::NotFatalUntil::M145);
-  CHECK(task_queue_.empty(), base::NotFatalUntil::M145);
-  CHECK(preemptive_task_queue_.empty(), base::NotFatalUntil::M145);
+  CHECK(used_);
+  CHECK(task_queue_.empty());
+  CHECK(preemptive_task_queue_.empty());
 
   const size_t num_transactions_across_all_connections =
       database_->GetNumTransactionsAcrossAllConnections();

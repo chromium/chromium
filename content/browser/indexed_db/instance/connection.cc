@@ -22,7 +22,6 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/task/bind_post_task.h"
@@ -838,7 +837,7 @@ bool Connection::IsHoldingLocks(
 void Connection::RecordCreateTransactionHistograms(
     blink::mojom::IDBTransactionMode mode) {
   const bool db_exists = database_.get() != nullptr;
-  CHECK(db_exists, base::NotFatalUntil::M145);
+  CHECK(db_exists);
 
   // Histograms to diagnose memory leak crbug.com/381086791.
   // TODO(crbug.com/381086791): Remove after the leak is fixed.

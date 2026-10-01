@@ -32,7 +32,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
@@ -13364,7 +13363,7 @@ void NavigationRequest::ValidateCommitOrigin(
     // In the meantime, it’s safe for a stale committed_origin() to stick
     // around **only** if there’s no origin-related state (e.g., PageState)
     // being sent in commit_params_.
-    CHECK(commit_params_->page_state.empty(), base::NotFatalUntil::M140)
+    CHECK(commit_params_->page_state.empty())
         << "PageState wasn't cleared after a commit origin mismatch."
         << "expected_origin: " << expected_origin
         << ", origin_to_commit: " << origin_to_commit;
