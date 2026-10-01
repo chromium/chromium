@@ -42,18 +42,19 @@ subsystem is split across distinct layers:
 ### 1. App Window Lifecycle & Controllers
 
 ```
-Browser (is_type_app) ──► AppBrowserController (WebAppBrowserController)
-                                   │
-                                   ├──► Observes WebAppRegistrar (theme color, title, manifest updates)
-                                   ├──► Observes WebAppInstallManager (install/uninstall events)
-                                   └──► Controls BrowserView / Titlebar Frame
+BrowserWindowInterface (TYPE_APP) ──► AppBrowserController (WebAppBrowserController)
+                                                   │
+                                                   ├──► Observes WebAppRegistrar (theme color, title, manifest updates)
+                                                   ├──► Observes WebAppInstallManager (install/uninstall events)
+                                                   └──► Controls BrowserView / Titlebar Frame
 ```
 
-- When a `Browser` instance is created for an installed web app
-  (`browser->is_type_app()` or `is_type_app_popup()`), an
+- When a `BrowserWindowInterface` instance is created for an installed web app
+  (`browser->GetType() == BrowserWindowInterface::Type::TYPE_APP` or
+  `BrowserWindowInterface::Type::TYPE_APP_POPUP`), an
   **[`AppBrowserController`](app_browser_controller.h)** (concretely
   **[`WebAppBrowserController`](web_app_browser_controller.h)**) is attached to
-  the `Browser`.
+  the `BrowserWindowInterface` (via its `UnownedUserDataHost`).
 - **Dynamic State Synchronization:** `WebAppBrowserController` observes the
   [`WebAppRegistrar`](/chrome/browser/web_applications/web_app_registrar.h) and
   [`WebAppInstallManager`](/chrome/browser/web_applications/web_app_install_manager.h).

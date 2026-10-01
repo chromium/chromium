@@ -37,10 +37,10 @@ sequenced correctly.
 - **Callback Guarantee:** The command's completion callback (passed to the base
   class on construction) is automatically called by the command infrastructure
   when `CompleteAndSelfDestruct` is called or if the system is shut down. This
-  requires commands to **ensure** that `CompleteAndSelfDestruct()` is called after `StartWithLock()` is called,
-  , otherwise the entire system can hang. Commands can assume the
-  callback will be called after the command is destroyed, so no reentry is
-  possible.
+  requires commands to **ensure** that `CompleteAndSelfDestruct()` is called
+  after `StartWithLock()` is called, otherwise the entire system can hang.
+  Commands can assume the callback will be called after the command is
+  destroyed, so no reentry is possible.
 - **Debugging:** The command's `GetMutableDebugValue()` is visible in
   `chrome://web-app-internals`, making it extremely useful to populate with
   detailed progression or error states. `DVLOG`s exist in the

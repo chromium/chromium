@@ -46,7 +46,7 @@ and Web App Manifest processing in Chromium.
 - **Android Native WebAPK** (`chrome/browser/android/webapk/`):
   [Rules](/chrome/browser/android/webapk/AGENTS.md) ·
   [README](/chrome/browser/android/webapk/README.md) Browser-process native
-  WebAPK services and sync.
+  WebAPK services, minting, and update dispatch.
 - **Manifest Parsing** (`third_party/blink/renderer/modules/manifest/`):
   [Rules](/third_party/blink/renderer/modules/manifest/AGENTS.md) ·
   [Common](/third_party/blink/public/common/manifest/AGENTS.md) ·

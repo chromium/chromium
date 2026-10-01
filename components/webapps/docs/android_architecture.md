@@ -108,7 +108,7 @@ This section covers details specific to WebAPKs.
 ### Component Overview (WebAPK)
 
 - **`WebApkActivityCoordinator`**: Orchestrates the startup and deferred startup
-  tasks for a WebAPK activity. It triggers sync, update checks, and permission
+  tasks for a WebAPK activity. It triggers update checks and permission
   registration.
 - **`WebApkUpdateManager`**: Manages checking for updates to the Web Manifest
   and scheduling background update tasks.
@@ -313,7 +313,8 @@ This section covers details specific to TWAs.
 - **`TrustedWebActivityModel`**: Holds the state for the TWA, particularly
   regarding the disclosure UI.
 - **`DisclosureUiPicker`**: Chooses the appropriate disclosure UI (Notification,
-  Snackbar, or Infobar) based on user settings and intent parameters.
+  Snackbar, or Persistent Snackbar) based on user settings and intent
+  parameters.
 
 ### Interactions Graph
 
@@ -423,8 +424,9 @@ when a TWA is launched.
    - **Notification**: High or low priority silent notification, used if
      notifications are enabled.
    - **Snackbar**: Auto-dismissing snackbar, used if notifications are disabled.
-   - **Infobar**: The old persistent infobar, used as a fallback or if
-     explicitly requested by intent.
+   - **Persistent Snackbar**: The fallback persistent snackbar
+     (DisclosurePersistentSnackbar), used if explicitly requested by intent or
+     as fallback.
 3. **State**: The choice and state are maintained in `TrustedWebActivityModel`.
 
 ### UI Mode Switching

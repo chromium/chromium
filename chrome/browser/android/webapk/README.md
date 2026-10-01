@@ -5,9 +5,8 @@ Chromium on Android.
 
 Following Chromium's
 [documentation guidelines](/docs/documentation_guidelines.md), this document
-describes **how native WebAPK components bridge Java UI/coordinators, the WebAPK
-minting server, and Chrome Sync**. For class-specific API details, see the
-header files.
+describes **how native WebAPK components bridge Java UI/coordinators and the
+WebAPK minting server**. For class-specific API details, see the header files.
 
 For the comprehensive architectural guide covering the complete Java/C++ call
 graphs, see

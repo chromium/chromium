@@ -2,8 +2,8 @@
 
 **Parent:** [WebApps Central Hub](/components/webapps/AGENTS.md)
 
-C++ browser-process components bridging Java WebAPK UI/coordinators, the WebAPK
-minting server, and Chrome Sync.
+C++ browser-process components bridging Java WebAPK UI/coordinators and the
+WebAPK minting server.
 
 ## Canonical Docs
 

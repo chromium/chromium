@@ -14,8 +14,8 @@ light on how the whole manifest update system works in Chrome.
   `short_name`) require explicit user approval.
 - Updates to the app's icon follow the `Cache-Control:immutable` behavior of
   HTML, where updates are triggered **ONLY** if the icon url has changed.
-  - If the icon url **HAS** changed, but the a pixel by pixel comparison of the
-    old and new icon shows a difference of \<10%, the icon is updated silently.
+  - If the icon url **HAS** changed, but a pixel-by-pixel comparison of the old
+    and new icon shows a difference of \<10%, the icon is updated silently.
 - Updates to non-security sensitive fields are silent.
 
 This helps ensure:
@@ -89,9 +89,8 @@ The user can choose to either:
   contains browser tests for the entire end-to-end working of the manifest
   update process. Please look at the
   [critical user journeys](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/webapps/data/critical_user_journeys.md?q=%22App%20identity%20updating%22%20f:critical_user_journeys.md&ss=chromium%2Fchromium%2Fsrc)
-  and
-  [integration testing framework](https://source.chromium.org/chromium/chromium/src/+/main:chrome/test/webapps/data/critical_user_journeys.md?q=%22App%20identity%20updating%22%20f:critical_user_journeys.md&ss=chromium%2Fchromium%2Fsrc)
-  for more documentation on how to parse these tests.
+  and [integration testing framework](/chrome/test/webapps/README.md) for more
+  documentation on how to parse these tests.
 - [`ManifestSilentUpdateCommandTest`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/web_applications/commands/manifest_silent_update_command_unittest.cc)
   contains unit tests for the determination part of the manifest update
   operation that determines if the updates need to happen silently, or if
@@ -106,3 +105,6 @@ The user can choose to either:
 - [`WebAppUpdateReviewDialogBrowserTests`](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ui/views/web_apps/web_app_update_review_dialog_browsertest.cc)
   contains browser tests for the end to end flow, including the triggering of
   the dialog and verification of the expanded label available on the web app.
+
+[1] Security-sensitive fields are identity fields whose changes could deceive
+the user, specifically app name, short name, and icons.

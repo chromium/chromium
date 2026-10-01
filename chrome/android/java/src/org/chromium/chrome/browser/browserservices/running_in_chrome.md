@@ -54,8 +54,7 @@ is appropriate:
 
 * The `DisclosureNotification` if notifications are enabled.
 * The `DisclosureSnackbar` if notifications are not enabled.
-* The `DisclosureInfobar` containing the old behavior which is only kept around as a fall back in 
-  case the new behavior breaks something.
+* The `DisclosurePersistentSnackbar` containing the persistent fallback behavior.
 
 The `DisclosureUiPicker` is responsible for choosing which View to instantiate.
 
