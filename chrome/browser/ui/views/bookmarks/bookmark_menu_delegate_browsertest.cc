@@ -1129,4 +1129,3 @@ IN_PROC_BROWSER_TEST_F(BookmarkMenuDelegateTest,
   bookmark_menu_delegate_->SetMenuStartIndex(bookmark_bar_folder, 2u);
   EXPECT_EQ(menu(), nullptr);
 }
-

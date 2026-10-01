@@ -1081,4 +1081,3 @@ void BookmarkMenuDelegate::BuildOtherNodeMenuHeader(MenuItemView* menu) {
     other_node_menu_separator_ = menu->GetSubmenu()->children().back().get();
   }
 }
-
