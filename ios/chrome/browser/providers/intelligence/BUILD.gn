@@ -7,10 +7,21 @@ source_set("chromium_intelligence") {
     "classification_metrics_tab_helper_api.mm",
     "page_classification_api.mm",
     "page_context_wrapper_api.mm",
+    "ttc_api.mm",
   ]
   deps = [
     "//ios/public/provider/chrome/browser/intelligence:intelligence_api",
     "//ios/web",
     "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "chromium_ttc_api_unittest.mm" ]
+  deps = [
+    "//ios/chrome/test/providers/intelligence",
+    "//ios/public/provider/chrome/browser/intelligence:intelligence_api",
+    "//testing/gtest",
   ]
 }

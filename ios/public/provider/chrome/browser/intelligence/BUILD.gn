@@ -7,5 +7,6 @@ source_set("intelligence_api") {
     "classification_metrics_tab_helper_api.h",
     "page_classification_api.h",
     "page_context_wrapper_api.h",
+    "ttc_api.h",
   ]
 }
