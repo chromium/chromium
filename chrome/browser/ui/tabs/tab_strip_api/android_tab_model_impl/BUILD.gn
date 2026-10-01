@@ -3,9 +3,6 @@
 # found in the LICENSE file.
 
 source_set("android_tab_model_impl") {
-  # TODO(crbug.com/494284032): Remove once impl is usable.
-  testonly = true
-
   sources = [
     "android_browser_adapter_impl.cc",
     "android_browser_adapter_impl.h",
