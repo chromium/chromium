@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_browsertest.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -24,15 +25,13 @@ class ExtensionsToolbarButtonBrowserTest : public ExtensionsToolbarBrowserTest {
   ExtensionsMenuCoordinator* extensions_coordinator();
 
   void ClickExtensionsButton();
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-ExtensionsToolbarButtonBrowserTest::ExtensionsToolbarButtonBrowserTest() {
-  scoped_feature_list_.InitAndEnableFeature(
-      extensions_features::kExtensionsMenuAccessControl);
-}
+ExtensionsToolbarButtonBrowserTest::ExtensionsToolbarButtonBrowserTest()
+    : ExtensionsToolbarBrowserTest(
+          /*enabled_features=*/{extensions_features::
+                                    kExtensionsMenuAccessControl},
+          /*disabled_features=*/{features::kWebUIExtensionsContainer}) {}
 
 ExtensionsMenuCoordinator*
 ExtensionsToolbarButtonBrowserTest::extensions_coordinator() {
