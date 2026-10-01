@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.button_group_compon
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.AT_MEMORY_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.AT_MEMORY_ENABLED;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.BUTTON_SELECTION_CALLBACKS;
+import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.SELECTED_BUTTON;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.TABS;
 
 import org.chromium.build.annotations.NullMarked;
@@ -59,6 +60,12 @@ public class KeyboardAccessoryButtonGroupViewBinder
     private void updateAllButtons(
             KeyboardAccessoryButtonGroupView view, ListModel<KeyboardAccessoryData.Tab> model) {
         view.removeAllButtons();
+        // The AtMemory button must be added before the tab buttons.
+        // KeyboardAccessoryButtonGroupMediator#clickSelectedButton relies on this order to map
+        // the selected layout position to either the AtMemory button or a tab index.
+        // TODO(crbug.com/567835843): Keep a single ordered list of buttons (AtMemory and tabs)
+        // as the source of truth for both rendering and click handling, so that the mediator
+        // does not need to know this order.
         view.addAtMemoryButton();
         if (model.size() <= 0) return;
         for (int i = 0; i < model.size(); i++) {
@@ -102,6 +109,8 @@ public class KeyboardAccessoryButtonGroupViewBinder
                     KeyboardAccessoryButtonGroupCoordinator.createButtonGroupViewBinder(
                             model, view);
             viewBinder.updateAllButtons(view, model.get(TABS));
+        } else if (propertyKey == SELECTED_BUTTON) {
+            view.setSelectedButton(model.get(SELECTED_BUTTON));
         } else {
             assert false : "Every possible property update needs to be handled!";
         }

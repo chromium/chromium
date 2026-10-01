@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.keyboard_accessory.button_group_component;
 
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.ACTIVE_TAB;
+import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.SELECTED_BUTTON;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.TABS;
 
 import android.view.View;
@@ -28,6 +29,7 @@ public class KeyboardAccessoryButtonGroupCoordinator {
             new PropertyModel.Builder(KeyboardAccessoryButtonGroupProperties.ALL_KEYS)
                     .with(TABS, new ListModel<>())
                     .with(ACTIVE_TAB, null)
+                    .with(SELECTED_BUTTON, null)
                     .build();
     private final KeyboardAccessoryButtonGroupMediator mMediator;
 

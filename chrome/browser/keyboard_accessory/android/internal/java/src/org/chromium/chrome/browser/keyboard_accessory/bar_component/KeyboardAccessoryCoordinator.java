@@ -119,6 +119,22 @@ public class KeyboardAccessoryCoordinator implements KeyboardAccessoryVisualStat
          * @return True if there is at least one tab, false otherwise.
          */
         boolean hasTabs();
+
+        /**
+         * Returns the number of buttons (tabs and the optional AtMemory button) in layout order.
+         */
+        int getButtonCount();
+
+        /** Returns the index of the keyboard-selected button or null. */
+        @Nullable Integer getSelectedButton();
+
+        /**
+         * Highlights the button at {@code buttonIndex} as keyboard-selected, or clears it if null.
+         */
+        void setSelectedButton(@Nullable Integer buttonIndex);
+
+        /** Clicks the keyboard-selected button. Returns false if none is selected. */
+        boolean clickSelectedButton();
     }
 
     /** Interface for callbacks related to the At Memory feature. */

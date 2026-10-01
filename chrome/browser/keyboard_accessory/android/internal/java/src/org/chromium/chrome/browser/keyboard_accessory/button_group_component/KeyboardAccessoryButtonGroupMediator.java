@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.button_group_compon
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.AT_MEMORY_CALLBACK;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.AT_MEMORY_ENABLED;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.BUTTON_SELECTION_CALLBACKS;
+import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.SELECTED_BUTTON;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.TABS;
 
 import org.chromium.build.annotations.NullMarked;
@@ -55,7 +56,8 @@ class KeyboardAccessoryButtonGroupMediator
         }
         if (propertyKey == BUTTON_SELECTION_CALLBACKS
                 || propertyKey == AT_MEMORY_CALLBACK
-                || propertyKey == AT_MEMORY_ENABLED) {
+                || propertyKey == AT_MEMORY_ENABLED
+                || propertyKey == SELECTED_BUTTON) {
             return;
         }
         assert false : "Every property update needs to be handled explicitly!";
@@ -63,6 +65,7 @@ class KeyboardAccessoryButtonGroupMediator
 
     @Override
     public void setTabs(KeyboardAccessoryData.Tab[] tabs) {
+        mModel.set(SELECTED_BUTTON, null);
         mModel.get(TABS).set(tabs);
     }
 
@@ -101,18 +104,63 @@ class KeyboardAccessoryButtonGroupMediator
     }
 
     @Override
+    public int getButtonCount() {
+        return mModel.get(TABS).size() + (mModel.get(AT_MEMORY_ENABLED) ? 1 : 0);
+    }
+
+    @Override
+    public @Nullable Integer getSelectedButton() {
+        return mModel.get(SELECTED_BUTTON);
+    }
+
+    @Override
+    public void setSelectedButton(@Nullable Integer buttonIndex) {
+        mModel.set(SELECTED_BUTTON, buttonIndex);
+    }
+
+    @Override
+    public boolean clickSelectedButton() {
+        Integer selectedButtonIndex = mModel.get(SELECTED_BUTTON);
+        if (selectedButtonIndex == null) return false;
+        mModel.set(SELECTED_BUTTON, null);
+        int tabIndex = toTabIndex(selectedButtonIndex);
+        if (tabIndex >= 0) {
+            onButtonClicked(tabIndex);
+        } else if (mModel.get(AT_MEMORY_CALLBACK) != null) {
+            mModel.get(AT_MEMORY_CALLBACK).run();
+        }
+        return true;
+    }
+
+    /**
+     * Maps a button's layout index to a tab index, or returns a negative value for the AtMemory
+     * button. Mirrors the order in KeyboardAccessoryButtonGroupViewBinder#updateAllButtons.
+     */
+    private int toTabIndex(int buttonIndex) {
+        return mModel.get(AT_MEMORY_ENABLED) ? buttonIndex - 1 : buttonIndex;
+    }
+
+    @Override
     public void onButtonClicked(int position) {
+        mModel.set(SELECTED_BUTTON, null);
         mModel.set(ACTIVE_TAB, position >= mModel.get(TABS).size() ? null : position);
     }
 
     @Override
     public void setAtMemoryEnabled(boolean enabled) {
+        if (mModel.get(AT_MEMORY_ENABLED) == enabled) return;
+        mModel.set(SELECTED_BUTTON, null);
         mModel.set(AT_MEMORY_ENABLED, enabled);
     }
 
     @Override
     public void setAtMemoryCallback(Runnable callback) {
-        mModel.set(AT_MEMORY_CALLBACK, callback);
+        mModel.set(
+                AT_MEMORY_CALLBACK,
+                () -> {
+                    mModel.set(SELECTED_BUTTON, null);
+                    callback.run();
+                });
     }
 
     void setTabObserver(AccessoryTabObserver accessoryTabObserver) {

@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.keyboard_accessory.button_group_component;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.Mockito.never;
@@ -15,7 +16,13 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.ACTIVE_TAB;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.AT_MEMORY_CALLBACK;
+import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.SELECTED_BUTTON;
 import static org.chromium.chrome.browser.keyboard_accessory.button_group_component.KeyboardAccessoryButtonGroupProperties.TABS;
+
+import android.content.Context;
+import android.widget.ImageButton;
+
+import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,6 +33,8 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.keyboard_accessory.R;
+import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator.TabSwitchingDelegate;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -62,7 +71,8 @@ public class KeyboardAccessoryButtonGroupControllerTest {
     @Test
     public void testSetsAtMemoryCallback() {
         mCoordinator.getAtMemoryDelegate().setAtMemoryCallback(mMockAtMemoryCallback);
-        assertThat(mModel.get(AT_MEMORY_CALLBACK), is(mMockAtMemoryCallback));
+        mModel.get(AT_MEMORY_CALLBACK).run();
+        verify(mMockAtMemoryCallback).run();
     }
 
     @Test
@@ -145,5 +155,123 @@ public class KeyboardAccessoryButtonGroupControllerTest {
 
         // Set the active tab type to 1 which is different from the recording_type of `mTestTab`.
         mCoordinator.getTabSwitchingDelegate().setActiveTab(1);
+    }
+
+    @Test
+    public void testGetButtonCount() {
+        TabSwitchingDelegate delegate = mCoordinator.getTabSwitchingDelegate();
+        assertThat(delegate.getButtonCount(), is(0));
+
+        delegate.setTabs(new KeyboardAccessoryData.Tab[] {mTestTab});
+        assertThat(delegate.getButtonCount(), is(1));
+
+        mCoordinator.getAtMemoryDelegate().setAtMemoryEnabled(true);
+        assertThat(delegate.getButtonCount(), is(2));
+    }
+
+    @Test
+    public void testSetAndResetSelectedButton() {
+        TabSwitchingDelegate delegate = mCoordinator.getTabSwitchingDelegate();
+        delegate.setTabs(new KeyboardAccessoryData.Tab[] {mTestTab});
+        assertThat(delegate.getSelectedButton(), is(nullValue()));
+
+        delegate.setSelectedButton(0);
+        assertThat(delegate.getSelectedButton(), is(0));
+        assertThat(mModel.get(SELECTED_BUTTON), is(0));
+
+        delegate.setTabs(new KeyboardAccessoryData.Tab[] {mTestTab});
+        assertThat(delegate.getSelectedButton(), is(nullValue()));
+
+        delegate.setSelectedButton(0);
+        mCoordinator.getAtMemoryDelegate().setAtMemoryEnabled(true);
+        assertThat(delegate.getSelectedButton(), is(nullValue()));
+    }
+
+    @Test
+    public void testClickSelectedButton() {
+        TabSwitchingDelegate delegate = mCoordinator.getTabSwitchingDelegate();
+        delegate.setTabs(new KeyboardAccessoryData.Tab[] {mTestTab});
+        mCoordinator.getAtMemoryDelegate().setAtMemoryCallback(mMockAtMemoryCallback);
+
+        // Nothing selected.
+        assertThat(delegate.clickSelectedButton(), is(false));
+        assertThat(mModel.get(ACTIVE_TAB), is(nullValue()));
+
+        // Select and click tab when AtMemory is disabled.
+        delegate.setSelectedButton(0);
+        assertThat(delegate.clickSelectedButton(), is(true));
+        assertThat(delegate.getSelectedButton(), is(nullValue()));
+        assertThat(mModel.get(ACTIVE_TAB), is(0));
+
+        // Enable AtMemory: index 0 is AtMemory, index 1 is the tab.
+        mCoordinator.getAtMemoryDelegate().setAtMemoryEnabled(true);
+        delegate.closeActiveTab();
+
+        delegate.setSelectedButton(0);
+        assertThat(delegate.clickSelectedButton(), is(true));
+        assertThat(delegate.getSelectedButton(), is(nullValue()));
+        verify(mMockAtMemoryCallback).run();
+        assertThat(mModel.get(ACTIVE_TAB), is(nullValue()));
+
+        delegate.setSelectedButton(1);
+        assertThat(delegate.clickSelectedButton(), is(true));
+        assertThat(delegate.getSelectedButton(), is(nullValue()));
+        assertThat(mModel.get(ACTIVE_TAB), is(0));
+    }
+
+    @Test
+    public void testSelectionSurvivesButtonRebuild() {
+        KeyboardAccessoryData.Tab otherTab =
+                new KeyboardAccessoryData.Tab("Addresses", 0, null, 0, 1, null);
+        mCoordinator
+                .getTabSwitchingDelegate()
+                .setTabs(new KeyboardAccessoryData.Tab[] {mTestTab, otherTab});
+        KeyboardAccessoryButtonGroupView view = createBoundView();
+
+        mCoordinator.getTabSwitchingDelegate().setSelectedButton(1);
+        assertThat(view.getButtons().get(0).isHovered(), is(false));
+        assertThat(view.getButtons().get(1).isHovered(), is(true));
+
+        // Changing an icon recreates all buttons.
+        ImageButton oldButton = view.getButtons().get(1);
+        otherTab.setIconId(R.drawable.search_spark);
+        assertThat(view.getButtons().get(1), is(not(oldButton)));
+        assertThat(view.getButtons().get(0).isHovered(), is(false));
+        assertThat(view.getButtons().get(1).isHovered(), is(true));
+    }
+
+    @Test
+    public void testTappingButtonClearsSelection() {
+        KeyboardAccessoryData.Tab otherTab =
+                new KeyboardAccessoryData.Tab("Addresses", 0, null, 0, 1, null);
+        mCoordinator
+                .getTabSwitchingDelegate()
+                .setTabs(new KeyboardAccessoryData.Tab[] {mTestTab, otherTab});
+        mCoordinator.getAtMemoryDelegate().setAtMemoryCallback(mMockAtMemoryCallback);
+        mCoordinator.getAtMemoryDelegate().setAtMemoryEnabled(true);
+        KeyboardAccessoryButtonGroupView view = createBoundView();
+        // Layout order: AtMemory, mTestTab, otherTab.
+
+        // Tapping a tab that is not selected opens it and clears the selection.
+        mCoordinator.getTabSwitchingDelegate().setSelectedButton(1);
+        view.getButtons().get(2).performClick();
+        assertThat(mModel.get(ACTIVE_TAB), is(1));
+        assertThat(mModel.get(SELECTED_BUTTON), is(nullValue()));
+        assertThat(view.getButtons().get(1).isHovered(), is(false));
+
+        // Tapping AtMemory runs the callback and clears the selection.
+        mCoordinator.getTabSwitchingDelegate().setSelectedButton(1);
+        view.getButtons().get(0).performClick();
+        verify(mMockAtMemoryCallback).run();
+        assertThat(mModel.get(SELECTED_BUTTON), is(nullValue()));
+        assertThat(view.getButtons().get(1).isHovered(), is(false));
+    }
+
+    private KeyboardAccessoryButtonGroupView createBoundView() {
+        Context context = ApplicationProvider.getApplicationContext();
+        context.setTheme(R.style.Theme_BrowserUI_DayNight);
+        KeyboardAccessoryButtonGroupView view = new KeyboardAccessoryButtonGroupView(context, null);
+        mCoordinator.getSheetOpenerCallbacks().onViewBound(view);
+        return view;
     }
 }
