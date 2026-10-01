@@ -4,11 +4,11 @@
 
 #include "components/subresource_filter/tools/rule_parser/rule_parser.h"
 
+#include <array>
 #include <string>
 #include <string_view>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "components/subresource_filter/tools/rule_parser/rule.h"
 #include "components/subresource_filter/tools/rule_parser/rule_options.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
@@ -55,14 +55,14 @@ void ParseAndExpectStyleRule(std::string_view line,
 TEST(RuleParserTest, ParseComment) {
   RuleParser parser;
 
-  static const char* kLines[] = {
+  static constexpr std::array<std::string_view, 4> kLines = {
       "! this is a comment",
       "   ! this is a comment too",
       "[ and this",
       "    [ as well as this",
   };
 
-  for (const char* line : kLines) {
+  for (std::string_view line : kLines) {
     EXPECT_EQ(url_pattern_index::proto::RULE_TYPE_COMMENT, parser.Parse(line));
     EXPECT_EQ(url_pattern_index::proto::RULE_TYPE_COMMENT, parser.rule_type());
   }
@@ -96,10 +96,10 @@ TEST(RuleParserTest, UrlRuleMatchCase) {
 }
 
 TEST(RuleParserTest, ParseAllowlistUrlRule) {
-  static const char* kLine = "@@?param=";
+  static constexpr std::string_view kLine = "@@?param=";
   UrlRule expected_rule;
   expected_rule.is_allowlist = true;
-  expected_rule.url_pattern = UNSAFE_TODO(kLine + 2);
+  expected_rule.url_pattern = kLine.substr(2);
   expected_rule.url_pattern_type =
       url_pattern_index::proto::URL_PATTERN_TYPE_SUBSTRING;
 
@@ -158,12 +158,12 @@ TEST(RuleParserTest, ParseMultipleTypeOptions) {
 }
 
 TEST(RuleParserTest, ParseContradictingTypeOptions) {
-  static const char* kLines[2] = {
+  static constexpr std::array<std::string_view, 2> kLines = {
       "?param=$image,~image",
       "?param=$popup,image,~image",
   };
 
-  for (size_t i = 0; i < 2; ++i) {
+  for (size_t i = 0; i < kLines.size(); ++i) {
     UrlRule expected_rule;
     expected_rule.url_pattern = "?param=";
     expected_rule.url_pattern_type =
@@ -173,7 +173,7 @@ TEST(RuleParserTest, ParseContradictingTypeOptions) {
       expected_rule.type_mask |=
           type_mask_for(url_pattern_index::proto::ELEMENT_TYPE_POPUP);
     }
-    ParseAndExpectUrlRule(UNSAFE_TODO(kLines[i]), expected_rule);
+    ParseAndExpectUrlRule(kLines[i], expected_rule);
   }
 }
 

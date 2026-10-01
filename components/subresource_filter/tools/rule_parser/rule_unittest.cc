@@ -6,9 +6,10 @@
 
 #include <stddef.h>
 
+#include <array>
 #include <memory>
+#include <string>
 
-#include "base/compiler_specific.h"
 #include "components/subresource_filter/tools/rule_parser/rule_options.h"
 #include "components/subresource_filter/tools/rule_parser/rule_parser.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
@@ -92,24 +93,15 @@ TEST(RuleTest, CanonicalizeUrlPattern) {
 }
 
 TEST(RuleTest, CanonicalizeDomainList) {
-  static const size_t kMaxDomainsCount = 3;
-  static const char* const kTestCases[][kMaxDomainsCount] = {
-      {"a.com", "c.com", "b.com"},
-      {"a.com", "aa.aa.com", "long-example.com"},
-      {"~sub.ex1.com", "ex2.com", "ex1.com"},
-      {"example.com", "b.exmpl.com", "~a.b.example.com"},
-      {"~example.com", "b.example.com", "~a.b.example.com"},
-  };
+  std::array<std::array<std::string, 3>, 5> test_cases = {
+      {{{"a.com", "c.com", "b.com"}},
+       {{"a.com", "aa.aa.com", "long-example.com"}},
+       {{"~sub.ex1.com", "ex2.com", "ex1.com"}},
+       {{"example.com", "b.exmpl.com", "~a.b.example.com"}},
+       {{"~example.com", "b.example.com", "~a.b.example.com"}}}};
 
-  for (const auto& test_case : kTestCases) {
-    std::vector<std::string> domains;
-    size_t count = 0;
-    for (; count < kMaxDomainsCount && UNSAFE_TODO(test_case[count]); ++count) {
-      domains.push_back(UNSAFE_TODO(test_case[count]));
-    }
-
-    CanonicalizeDomainList(&domains);
-    EXPECT_EQ(count, domains.size());
+  for (auto& domains : test_cases) {
+    CanonicalizeDomainList(domains);
     for (size_t i = 1; i < domains.size(); ++i) {
       EXPECT_GE(domains[i - 1].size(), domains[i].size());
       if (domains[i - 1].size() == domains[i].size()) {

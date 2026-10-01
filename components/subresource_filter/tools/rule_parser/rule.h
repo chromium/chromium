@@ -22,6 +22,7 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "components/subresource_filter/tools/rule_parser/rule_options.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
 
@@ -119,7 +120,7 @@ struct StyleRule {
 
 // Sorts domain patterns in decreasing order of length (and alphabetically
 // within same-length groups).
-void CanonicalizeDomainList(std::vector<std::string>* domains);
+void CanonicalizeDomainList(base::span<std::string> domains);
 
 // Converts protobuf |rule| into its canonical EasyList string representation.
 std::string ToString(const url_pattern_index::proto::UrlRule& rule);

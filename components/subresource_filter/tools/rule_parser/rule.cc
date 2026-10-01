@@ -137,7 +137,7 @@ url_pattern_index::proto::UrlRule UrlRule::ToProtobuf() const {
 void UrlRule::Canonicalize() {
   url_pattern_type = GetUrlPatternType(*this);
   CanonicalizeUrlPattern();
-  CanonicalizeDomainList(&domains);
+  CanonicalizeDomainList(domains);
 }
 
 StyleRule::StyleRule() = default;
@@ -176,7 +176,7 @@ url_pattern_index::proto::StyleRule StyleRule::ToProtobuf() const {
 }
 
 void StyleRule::Canonicalize() {
-  CanonicalizeDomainList(&domains);
+  CanonicalizeDomainList(domains);
 }
 
 void UrlRule::CanonicalizeUrlPattern() {
@@ -196,14 +196,11 @@ void UrlRule::CanonicalizeUrlPattern() {
   }
 }
 
-void CanonicalizeDomainList(std::vector<std::string>* domains) {
-  if (!domains->empty()) {
-    std::sort(domains->begin(), domains->end(),
-              [](const std::string& lhs, const std::string& rhs) {
-                return lhs.size() > rhs.size() ||
-                       (lhs.size() == rhs.size() && lhs < rhs);
-              });
-  }
+void CanonicalizeDomainList(base::span<std::string> domains) {
+  std::ranges::sort(domains, [](const std::string& lhs,
+                                const std::string& rhs) {
+    return lhs.size() > rhs.size() || (lhs.size() == rhs.size() && lhs < rhs);
+  });
 }
 
 std::string ToString(const url_pattern_index::proto::UrlRule& rule) {
