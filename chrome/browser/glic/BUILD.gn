@@ -273,7 +273,10 @@ if (is_android) {
 }
 
 source_set("enum") {
-  sources = [ "glic_enums.h" ]
+  sources = [
+    "glic_enums.cc",
+    "glic_enums.h",
+  ]
 }
 
 source_set("public_types") {

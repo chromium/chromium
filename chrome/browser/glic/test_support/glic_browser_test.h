@@ -30,6 +30,7 @@
 #include "build/android_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/glic/common/local_hotkey_manager.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/host/glic_no_webview_contents_manager.h"
 #include "chrome/browser/glic/host/glic_overlay.mojom.h"
@@ -1107,12 +1108,19 @@ class GlicBrowserTestMixin : public T {
 
   GURL GetGuestURL() { return glic_test_environment_.GetGuestURL(); }
 
+  // Waits for the glic client to become usable.
+  //
+  // This waits on `ClientLoadState`, not on the raw connection: a client that
+  // connected and then failed is not something a test can drive, so waiting
+  // for `kReady` is what callers actually want. It also makes the failure
+  // message say which states were seen instead of just "not connected".
   [[nodiscard]] TestResult<void> WaitForGlicClient(
       GlicInstance* instance = nullptr) {
     auto* instance_impl = GetInstanceImpl(instance);
     return RunUntilEqual(
-        [&]() { return instance_impl->host().IsWebClientConnected(); }, true,
-        "WaitForGlicClient: client client did not connect");
+        [&]() { return instance_impl->host().client_load_state(); },
+        ClientLoadState::kReady,
+        "WaitForGlicClient: client did not become ready");
   }
 
   // Create an actor task for the instance.

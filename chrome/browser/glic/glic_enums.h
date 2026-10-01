@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_ENUMS_H_
 #define CHROME_BROWSER_GLIC_GLIC_ENUMS_H_
 
+#include <iosfwd>
+
 namespace glic {
 
 // Add here Glic enums that should be visible to external code. If the enum is
@@ -137,6 +139,8 @@ enum class ClientLoadState {
   // reloaded.
   kError,
 };
+
+std::ostream& operator<<(std::ostream& os, ClientLoadState state);
 
 // Why the Glic client failed to load, i.e. failed to become usable. Scoped to
 // failures that prevent the client from reaching a usable state; errors raised
