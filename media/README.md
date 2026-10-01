@@ -14,9 +14,9 @@ processes.
 Clickable directory names are linked to their respective readme file.
 ***
 
-* audio/ - Code for audio input and output. Includes platform specific output
-and input implementations. Due to use of platform APIs, can not normally be used
-from within a sandboxed process.
+* [audio/](audio/README.md) - Code for audio input and output. Includes platform
+specific output and input implementations. Due to use of platform APIs, can not
+normally be used from within a sandboxed process.
 
 * base/ - Contains miscellaneous enums, utility classes, and shuttling
 primitives used throughout `media/` and beyond; i.e. `AudioBus`, `AudioCodec`,
