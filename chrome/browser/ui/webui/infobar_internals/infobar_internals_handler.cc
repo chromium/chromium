@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/collected_cookies_infobar_delegate.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_navigation_observer.h"
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
+#include "chrome/browser/ui/select_file_policy/chrome_select_file_policy.h"
 #include "chrome/browser/ui/startup/automation_infobar_delegate.h"
 #include "chrome/browser/ui/startup/bad_flags_prompt.h"
 #include "chrome/browser/ui/startup/google_api_keys_infobar_delegate.h"
@@ -138,6 +139,7 @@ TriggerRequirements RequirementsFor(InfoBarType type) {
     case InfoBarType::kCollectedCookies:
     case InfoBarType::kDevTools:
     case InfoBarType::kDevToolsSharedProcess:
+    case InfoBarType::kFileAccessDisabled:
     case InfoBarType::kGoogleApiKeys:
     case InfoBarType::kJsOptimizations:
     case InfoBarType::kKnownInterception:
@@ -288,6 +290,11 @@ void InfoBarInternalsHandler::GetInfoBars(GetInfoBarsCallback callback) {
             "that an extension is debugging the browser. This trigger shows "
             "the infobar.",
             InfoBarAction::kShowGlobally);
+
+  add_entry(InfoBarType::kFileAccessDisabled, "File Access Disabled",
+            "The File Access Disabled infobar is shown when a page tries to "
+            "open a file selection dialog while the AllowFileSelectionDialogs "
+            "policy blocks them. This trigger shows the infobar.");
 
   add_entry(InfoBarType::kGoogleApiKeys, "Google API Keys",
             "The Google API Keys infobar warns users when Google API keys are "
@@ -595,6 +602,10 @@ bool InfoBarInternalsHandler::PerformInfoBarActionInternal(
 #else
       return false;
 #endif
+    }
+    case InfoBarType::kFileAccessDisabled: {
+      ChromeSelectFilePolicy(web_contents).SelectFileDenied();
+      return true;
     }
     case InfoBarType::kGoogleApiKeys: {
       if (infobars::IsInfoBarMigrated(

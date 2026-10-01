@@ -44,6 +44,9 @@ enum InfoBarType {
   // Extension DevTools infobar.
   kExtensionDevTools,
 
+  // File access disabled infobar.
+  kFileAccessDisabled,
+
   // Google API keys infobar.
   kGoogleApiKeys,
 
