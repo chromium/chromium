@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_content_container.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
@@ -115,6 +116,9 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
     NOT_DESTROYED();
     return local_to_border_box_transform_;
   }
+  // Like LocalToBorderBoxTransform(), but also includes the root's
+  // perspective (under SvgCss3dTransforms).
+  gfx::Transform LocalToBorderBoxTransform3D() const;
   gfx::RectF ViewBoxRect() const;
   gfx::SizeF ViewportSize() const;
 

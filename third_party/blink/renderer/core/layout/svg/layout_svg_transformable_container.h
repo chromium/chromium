@@ -22,6 +22,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_TRANSFORMABLE_CONTAINER_H_
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_container.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
@@ -46,6 +47,11 @@ class LayoutSVGTransformableContainer : public LayoutSVGContainer {
     NOT_DESTROYED();
     return local_transform_;
   }
+
+  // The local transform (CSS transform, motion transform and the <use>
+  // element x/y translation), preserving 3D components. LocalSVGTransform()
+  // is the flattened version of this.
+  gfx::Transform ComputeLocalTransform3D(const gfx::RectF& reference_box) const;
 
   virtual bool HasAdditionalTransform() const {
     NOT_DESTROYED();

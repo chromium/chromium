@@ -219,8 +219,7 @@ bool LayoutSVGImage::NodeAtPoint(HitTestResult& result,
     return false;
   }
 
-  TransformedHitTestLocation local_location(hit_test_location,
-                                            LocalToSVGParentTransform());
+  TransformedHitTestLocation local_location(hit_test_location, *this);
   if (!local_location)
     return false;
   if (HasClipPath() && !ClipPathClipper::HitTest(*this, *local_location)) {

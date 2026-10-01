@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -53,6 +54,61 @@ TEST_F(SVGLayoutSupportTest, VisualRectInAncestorSpaceContainerWithFilter) {
   PhysicalRect result_rect = VisualRectInDocument(*target);
 
   EXPECT_EQ(result_rect, PhysicalRect(8, 8, 220, 220));
+}
+
+class SVGLayoutSupport3DTransformTest : public SVGLayoutSupportTest {
+ protected:
+  ScopedSvgCss3dTransformsForTest svg_css_3d_transforms_{true};
+};
+
+TEST_F(SVGLayoutSupport3DTransformTest, VisualRectInDocumentWith3DTransform) {
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin: 0; }</style>
+    <svg width="200" height="200">
+      <rect id="rect" x="50" y="50" width="100" height="100"
+            style="transform: perspective(300px) translateZ(-100px);
+                   transform-origin: 100px 100px"/>
+    </svg>
+  )HTML");
+
+  // The rect renders scaled by 300 / (300 + 100) = 0.75 about the transform
+  // origin (100, 100), covering 62.5..137.5 on both axes.
+  EXPECT_EQ(PhysicalRect(62, 62, 76, 76),
+            VisualRectInDocument(*GetLayoutObjectByElementId("rect")));
+}
+
+TEST_F(SVGLayoutSupport3DTransformTest,
+       VisualRectInDocumentUnderSVGRootPerspective) {
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin: 0; }</style>
+    <svg width="200" height="200" style="perspective: 300px">
+      <rect id="rect" x="50" y="50" width="100" height="100"
+            style="transform: translateZ(-100px)"/>
+    </svg>
+  )HTML");
+
+  // Scaled by 0.75 about the default perspective origin (100, 100).
+  EXPECT_EQ(PhysicalRect(62, 62, 76, 76),
+            VisualRectInDocument(*GetLayoutObjectByElementId("rect")));
+}
+
+TEST_F(SVGLayoutSupport3DTransformTest,
+       AbsoluteBoundingBoxUnderSVGRootPerspective) {
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin: 0; }</style>
+    <svg width="200" height="200" style="perspective: 300px">
+      <g style="fill: green; transform-style: preserve-3d">
+        <rect id="rect" x="50" y="50" width="100" height="100"
+              style="transform: translateZ(-100px)"/>
+      </g>
+    </svg>
+  )HTML");
+
+  // Scaled by 0.75 about the default perspective origin (100, 100). The
+  // intermediate <g> preserves 3D, so the rect's transform is not flattened
+  // before the root's perspective applies.
+  EXPECT_EQ(gfx::Rect(62, 62, 76, 76),
+            GetLayoutObjectByElementId("rect")->AbsoluteBoundingBoxRect());
 }
 
 }  // namespace blink

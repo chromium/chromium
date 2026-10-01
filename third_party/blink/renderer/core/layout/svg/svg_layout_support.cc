@@ -33,6 +33,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
+#include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/paint/css_mask_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
@@ -41,6 +42,7 @@
 #include "third_party/blink/renderer/platform/geometry/infinite_int_rect.h"
 #include "third_party/blink/renderer/platform/geometry/stroke_data.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/clear_collection_scope.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
@@ -115,16 +117,17 @@ static gfx::RectF MapToSVGRootIncludingFilter(
   const LayoutObject* parent = &object;
   for (; !parent->IsSVGRoot(); parent = parent->Parent()) {
     visual_rect = SVGLayoutSupport::ApplyFiltersToRect(*parent, visual_rect);
-    visual_rect = parent->LocalToSVGParentTransform().MapRect(visual_rect);
+    visual_rect = TransformHelper::LocalToSVGParentTransform3D(*parent).MapRect(
+        visual_rect);
   }
 
-  return To<LayoutSVGRoot>(*parent).LocalToBorderBoxTransform().MapRect(
+  return To<LayoutSVGRoot>(*parent).LocalToBorderBoxTransform3D().MapRect(
       visual_rect);
 }
 
 static const LayoutSVGRoot& ComputeTransformToSVGRoot(
     const LayoutObject& object,
-    AffineTransform& root_border_box_transform,
+    gfx::Transform& root_border_box_transform,
     bool* filter_skipped) {
   DCHECK(object.IsSVGChild());
 
@@ -132,11 +135,12 @@ static const LayoutSVGRoot& ComputeTransformToSVGRoot(
   for (; !parent->IsSVGRoot(); parent = parent->Parent()) {
     if (filter_skipped && parent->StyleRef().HasFilter())
       *filter_skipped = true;
-    root_border_box_transform.PostConcat(parent->LocalToSVGParentTransform());
+    root_border_box_transform.PostConcat(
+        TransformHelper::LocalToSVGParentTransform3D(*parent));
   }
 
   const auto& svg_root = To<LayoutSVGRoot>(*parent);
-  root_border_box_transform.PostConcat(svg_root.LocalToBorderBoxTransform());
+  root_border_box_transform.PostConcat(svg_root.LocalToBorderBoxTransform3D());
   return svg_root;
 }
 
@@ -146,7 +150,7 @@ bool SVGLayoutSupport::MapToVisualRectInAncestorSpace(
     const gfx::RectF& local_visual_rect,
     PhysicalRect& result_rect,
     VisualRectFlags visual_rect_flags) {
-  AffineTransform root_border_box_transform;
+  gfx::Transform root_border_box_transform;
   bool filter_skipped = false;
   const LayoutSVGRoot& svg_root = ComputeTransformToSVGRoot(
       object, root_border_box_transform, &filter_skipped);
@@ -189,17 +193,27 @@ void SVGLayoutSupport::MapLocalToAncestor(const LayoutObject* object,
   if (object == ancestor) {
     return;
   }
-  transform_state.ApplyTransform(object->LocalToSVGParentTransform());
-
   LayoutObject* parent = object->Parent();
+  gfx::Transform transform =
+      TransformHelper::LocalToSVGParentTransform3D(*object);
 
   // At the SVG/HTML boundary (aka LayoutSVGRoot), we apply the
   // localToBorderBoxTransform to map an element from SVG viewport coordinates
-  // to CSS box coordinates.
-  // LayoutSVGRoot's mapLocalToAncestor method expects CSS box coordinates.
-  if (auto* svg_root = DynamicTo<LayoutSVGRoot>(*parent)) {
-    transform_state.ApplyTransform(svg_root->LocalToBorderBoxTransform());
+  // to CSS box coordinates. The root's perspective composes with the local
+  // transform before any flattening, as in
+  // LayoutObject::GetTransformFromContainer().
+  if (auto* svg_root = DynamicTo<LayoutSVGRoot>(parent)) {
+    transform.PostConcat(svg_root->LocalToBorderBoxTransform3D());
   }
+
+  // As in LayoutObject::MapLocalToContainer(), the parent's used
+  // transform-style determines whether 3D is preserved across this boundary.
+  const bool preserves_3d =
+      RuntimeEnabledFeatures::SvgCss3dTransformsEnabled() &&
+      parent->StyleRef().Preserves3D();
+  transform_state.ApplyTransform(
+      transform, preserves_3d ? TransformState::kAccumulateTransform
+                              : TransformState::kFlattenTransform);
 
   parent->MapLocalToAncestor(ancestor, transform_state, flags);
 }
@@ -216,7 +230,7 @@ void SVGLayoutSupport::MapAncestorToLocal(const LayoutObject& object,
   DCHECK(object.IsSVGContainer() || object.IsSVGShape() ||
          object.IsSVGImage() || object.IsSVGText() ||
          object.IsSVGForeignObject());
-  AffineTransform local_to_svg_root;
+  gfx::Transform local_to_svg_root;
   const LayoutSVGRoot& svg_root =
       ComputeTransformToSVGRoot(object, local_to_svg_root, nullptr);
 

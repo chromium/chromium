@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace gfx {
 class RectF;
@@ -36,12 +37,30 @@ class TransformHelper {
   // 'transform-box'. Applies zoom if needed.
   static gfx::RectF ComputeReferenceBox(const LayoutObject&);
 
+  // True if the object's style has 3D transform components (including
+  // perspective()) that would be lost when flattening to an AffineTransform,
+  // and the object is on the SvgCss3dTransforms rendering path.
+  static bool HasCss3DTransform(const LayoutObject&);
+
   // Compute the transform for the LayoutObject based on the various
-  // 'transform*' properties.
+  // 'transform*' properties. Flattens any 3D components to 2D affine.
   static AffineTransform ComputeTransform(UseCounter&,
                                           const ComputedStyle&,
                                           const gfx::RectF& reference_box,
                                           ComputedStyle::ApplyTransformOrigin);
+
+  // Like the above, but preserves 3D components (perspective(), rotateX/Y,
+  // translateZ, ...) of the transform.
+  static gfx::Transform ComputeTransform3D(UseCounter&,
+                                           const ComputedStyle&,
+                                           const gfx::RectF& reference_box,
+                                           ComputedStyle::ApplyTransformOrigin);
+
+  // The object's complete local-to-parent transform (CSS transform, <use>
+  // x/y translation and motion transform), preserving 3D components.
+  // Returns the (flattened) LocalToSVGParentTransform() for objects without
+  // 3D transform components.
+  static gfx::Transform LocalToSVGParentTransform3D(const LayoutObject&);
 
   // Compute the transform for the SVGElement (which is assumed to have an
   // associated LayoutObject) based on the various 'transform*' properties,
@@ -54,6 +73,11 @@ class TransformHelper {
   // Like the above, but also computes the reference box.
   static AffineTransform ComputeTransformIncludingMotion(
       const SVGElement& element);
+
+  // Like the above, but preserves 3D components of the transform.
+  static gfx::Transform ComputeTransformIncludingMotion3D(
+      const SVGElement& element,
+      const gfx::RectF& reference_box);
 
   static gfx::PointF ComputeTransformOrigin(const ComputedStyle&,
                                             const gfx::RectF& reference_box);

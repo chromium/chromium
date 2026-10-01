@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/format.h"
 #include "ui/gfx/geometry/quad_f.h"
 
@@ -527,6 +528,82 @@ TEST_F(HitTestingTest, OcclusionHitTestWithFlattenedPreserve3DOccluder) {
   UpdateAllLifecyclePhasesForTest();
   result = HitTestForOcclusion(*target);
   EXPECT_EQ(result.InnerNode(), occluder);
+}
+
+class SVGChild3DTransformHitTest : public HitTestingTest {
+ protected:
+  Node* HitNode(int x, int y) {
+    const HitTestRequest hit_request(HitTestRequest::kReadOnly |
+                                     HitTestRequest::kActive);
+    const HitTestLocation hit_location(PhysicalOffset(x, y));
+    HitTestResult hit_result(hit_request, hit_location);
+    GetLayoutView().HitTest(hit_location, hit_result);
+    return hit_result.InnerNode();
+  }
+
+  ScopedSvgCss3dTransformsForTest svg_css_3d_transforms_{true};
+};
+
+// A shape whose own transform list contains 3D components must be hit
+// tested against the projected (rendered) geometry, not the flattened one.
+TEST_F(SVGChild3DTransformHitTest, ShapeWithPerspectiveFunction) {
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin: 0; }</style>
+    <svg id='svg' width='200' height='200'>
+      <rect id='rect' x='50' y='50' width='100' height='100'
+            style='transform: perspective(300px) translateZ(-100px);
+                   transform-origin: 100px 100px'/>
+    </svg>
+  )HTML");
+
+  // The rect renders scaled by 300 / (300 + 100) = 0.75 about the transform
+  // origin (100, 100), covering 62.5..137.5 on both axes.
+  // (Note: without an explicit transform-origin, SVG elements use 0 0.)
+  Element* rect = GetElementById("rect");
+  EXPECT_EQ(rect, HitNode(100, 100));
+  EXPECT_EQ(rect, HitNode(65, 65));
+  EXPECT_EQ(rect, HitNode(136, 136));
+  // Inside the flattened 100x100 footprint, but outside the rendered rect.
+  EXPECT_NE(rect, HitNode(55, 100));
+  EXPECT_NE(rect, HitNode(100, 55));
+  EXPECT_NE(rect, HitNode(144, 144));
+}
+
+// Perspective inherited from the svg root must be part of the hit test
+// projection of 3D-transformed children.
+TEST_F(SVGChild3DTransformHitTest, ShapeUnderSVGRootPerspective) {
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin: 0; }</style>
+    <svg id='svg' width='200' height='200' style='perspective: 300px'>
+      <rect id='rect' x='50' y='50' width='100' height='100'
+            style='transform: translateZ(-100px)'/>
+    </svg>
+  )HTML");
+
+  Element* rect = GetElementById("rect");
+  EXPECT_EQ(rect, HitNode(100, 100));
+  EXPECT_EQ(rect, HitNode(65, 65));
+  // Inside the flattened footprint, outside the rendered (75%-scaled) rect.
+  EXPECT_NE(rect, HitNode(55, 100));
+  EXPECT_NE(rect, HitNode(144, 144));
+}
+
+// Same as the above, but with the 3D transform on a container.
+TEST_F(SVGChild3DTransformHitTest, ContainerUnderSVGRootPerspective) {
+  SetBodyInnerHTML(R"HTML(
+    <style>body { margin: 0; }</style>
+    <svg id='svg' width='200' height='200' style='perspective: 300px'>
+      <g id='g' style='transform: translateZ(-100px)'>
+        <rect id='rect' x='50' y='50' width='100' height='100'/>
+      </g>
+    </svg>
+  )HTML");
+
+  Element* rect = GetElementById("rect");
+  EXPECT_EQ(rect, HitNode(100, 100));
+  EXPECT_EQ(rect, HitNode(65, 65));
+  EXPECT_NE(rect, HitNode(55, 100));
+  EXPECT_NE(rect, HitNode(144, 144));
 }
 
 }  // namespace blink

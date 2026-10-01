@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_zoom_migration.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -452,6 +453,22 @@ SVGTransformChange LayoutSVGRoot::BuildLocalToBorderBoxTransform(
   view_to_border_box_transform.Scale(svg->currentScale());
   local_to_border_box_transform_.PostConcat(view_to_border_box_transform);
   return change_detector.ComputeChange(local_to_border_box_transform_);
+}
+
+gfx::Transform LayoutSVGRoot::LocalToBorderBoxTransform3D() const {
+  NOT_DESTROYED();
+  gfx::Transform transform = local_to_border_box_transform_.ToTransform();
+  const ComputedStyle& style = StyleRef();
+  if (!RuntimeEnabledFeatures::SvgCss3dTransformsEnabled() ||
+      !style.HasPerspective()) {
+    return transform;
+  }
+  gfx::Transform perspective;
+  perspective.ApplyPerspectiveDepth(style.UsedPerspective());
+  const gfx::PointF origin = PerspectiveOrigin();
+  perspective.ApplyTransformOrigin(origin.x(), origin.y(), 0);
+  transform.PostConcat(perspective);
+  return transform;
 }
 
 AffineTransform LayoutSVGRoot::LocalToSVGParentTransform() const {

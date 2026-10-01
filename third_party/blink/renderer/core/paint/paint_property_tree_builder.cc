@@ -1283,6 +1283,11 @@ static bool NeedsTransformForSVGChild(
   if (direct_compositing_reasons.HasAny(reasons)) {
     return true;
   }
+  // A purely-3D transform (e.g. translateZ()) has an identity
+  // LocalToSVGParentTransform().
+  if (TransformHelper::HasCss3DTransform(object)) {
+    return true;
+  }
   return !object.LocalToSVGParentTransform().IsIdentity();
 }
 
@@ -1304,13 +1309,21 @@ FragmentPaintPropertyTreeBuilder::TransformAndOriginForSVGChild() const {
                 object_.LocalToSVGParentTransform());
       // For composited transform animation to work, we need to store transform
       // origin separately. It's baked in object_.LocalToSVGParentTransform().
-      return {TransformHelper::ComputeTransform(
-                  object_.GetDocument(), object_.StyleRef(), reference_box,
-                  ComputedStyle::kExcludeTransformOrigin)
-                  .ToTransform(),
-              gfx::Point3F(TransformHelper::ComputeTransformOrigin(
-                  object_.StyleRef(), reference_box))};
+      gfx::Transform matrix =
+          TransformHelper::HasCss3DTransform(object_)
+              ? TransformHelper::ComputeTransform3D(
+                    object_.GetDocument(), object_.StyleRef(), reference_box,
+                    ComputedStyle::kExcludeTransformOrigin)
+              : TransformHelper::ComputeTransform(
+                    object_.GetDocument(), object_.StyleRef(), reference_box,
+                    ComputedStyle::kExcludeTransformOrigin)
+                    .ToTransform();
+      return {matrix, gfx::Point3F(TransformHelper::ComputeTransformOrigin(
+                          object_.StyleRef(), reference_box))};
     }
+  }
+  if (TransformHelper::HasCss3DTransform(object_)) {
+    return {TransformHelper::LocalToSVGParentTransform3D(object_)};
   }
   return {object_.LocalToSVGParentTransform().ToTransform()};
 }
@@ -3506,6 +3519,14 @@ void FragmentPaintPropertyTreeBuilder::UpdateReplacedContentTransform() {
     context_.current.paint_offset = PhysicalOffset();
     context_.current.directly_composited_container_paint_offset_subpixel_delta =
         PhysicalOffset();
+
+    // The root's perspective node (an ancestor of the replaced content
+    // transform) must not be flattened away, so that it applies to
+    // 3D-transformed SVG children.
+    if (RuntimeEnabledFeatures::SvgCss3dTransformsEnabled() &&
+        properties_->Perspective()) {
+      context_.should_flatten_inherited_transform = false;
+    }
   }
 }
 

@@ -6,12 +6,14 @@
 
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_transformable_container.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/reference_offset_path_operation.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_functions.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 
@@ -116,7 +118,35 @@ gfx::RectF TransformHelper::ComputeReferenceBox(
   return reference_box;
 }
 
+bool TransformHelper::HasCss3DTransform(const LayoutObject& object) {
+  if (!RuntimeEnabledFeatures::SvgCss3dTransformsEnabled()) {
+    return false;
+  }
+  // TODO(crbug.com/41310059): Viewport containers (<svg>/<symbol>) and
+  // <foreignObject> compose additional transforms into
+  // LocalToSVGParentTransform(), so they still take the flattened path.
+  // Their 3D transform components should be preserved as well.
+  if (!object.IsSVGShape() && !object.IsSVGImage() &&
+      !object.IsSVGTransformableContainer()) {
+    return false;
+  }
+  const ComputedStyle& style = object.StyleRef();
+  // Unlike ComputedStyle::Has3DTransformOperation(), a perspective()
+  // operation in the transform list also requires the 3D path.
+  return style.Has3DTransformOperation() || style.Transform().Has3DOperation();
+}
+
 AffineTransform TransformHelper::ComputeTransform(
+    UseCounter& use_counter,
+    const ComputedStyle& style,
+    const gfx::RectF& reference_box,
+    ComputedStyle::ApplyTransformOrigin apply_transform_origin) {
+  // Flatten any 3D transform.
+  return AffineTransform::FromTransform(ComputeTransform3D(
+      use_counter, style, reference_box, apply_transform_origin));
+}
+
+gfx::Transform TransformHelper::ComputeTransform3D(
     UseCounter& use_counter,
     const ComputedStyle& style,
     const gfx::RectF& reference_box,
@@ -145,22 +175,45 @@ AffineTransform TransformHelper::ComputeTransform(
   const float zoom = style.EffectiveZoom();
   if (zoom != 1)
     transform.Zoom(1 / zoom);
-  // Flatten any 3D transform.
-  return AffineTransform::FromTransform(transform);
+  return transform;
+}
+
+gfx::Transform TransformHelper::LocalToSVGParentTransform3D(
+    const LayoutObject& object) {
+  if (!HasCss3DTransform(object)) {
+    return object.LocalToSVGParentTransform().ToTransform();
+  }
+  const gfx::RectF reference_box = ComputeReferenceBox(object);
+  if (const auto* container =
+          DynamicTo<LayoutSVGTransformableContainer>(object)) {
+    return container->ComputeLocalTransform3D(reference_box);
+  }
+  return ComputeTransformIncludingMotion3D(To<SVGElement>(*object.GetNode()),
+                                           reference_box);
 }
 
 AffineTransform TransformHelper::ComputeTransformIncludingMotion(
     const SVGElement& element,
     const gfx::RectF& reference_box) {
+  // Flatten any 3D transform.
+  return AffineTransform::FromTransform(
+      ComputeTransformIncludingMotion3D(element, reference_box));
+}
+
+gfx::Transform TransformHelper::ComputeTransformIncludingMotion3D(
+    const SVGElement& element,
+    const gfx::RectF& reference_box) {
   const LayoutObject& layout_object = *element.GetLayoutObject();
+  gfx::Transform matrix;
   if (layout_object.HasTransform() || element.HasMotionTransform()) {
-    AffineTransform matrix =
-        ComputeTransform(element.GetDocument(), layout_object.StyleRef(),
-                         reference_box, ComputedStyle::kIncludeTransformOrigin);
-    element.ApplyMotionTransform(matrix);
-    return matrix;
+    matrix = ComputeTransform3D(element.GetDocument(), layout_object.StyleRef(),
+                                reference_box,
+                                ComputedStyle::kIncludeTransformOrigin);
+    AffineTransform motion;
+    element.ApplyMotionTransform(motion);
+    matrix.PostConcat(motion.ToTransform());
   }
-  return AffineTransform();
+  return matrix;
 }
 
 AffineTransform TransformHelper::ComputeTransformIncludingMotion(

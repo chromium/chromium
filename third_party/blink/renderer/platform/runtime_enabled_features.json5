@@ -6260,6 +6260,14 @@
       status: "stable",
     },
     {
+      // Apply CSS 3D transforms (perspective(), rotateX/Y, translateZ, ...)
+      // to SVG child elements when painting instead of flattening them to a
+      // 2D affine matrix.
+      // https://issues.chromium.org/41310059
+      name: "SvgCss3dTransforms",
+      status: "experimental",
+    },
+    {
       // Treat SVG documents in <object>/<embed> as replaced elements
       // https://issues.chromium.org/41302806
       name: "SVGEmbeddedAsReplacedElement",

@@ -231,8 +231,7 @@ bool LayoutSVGContainer::NodeAtPoint(HitTestResult& result,
                                      HitTestPhase phase) {
   NOT_DESTROYED();
   DCHECK_EQ(accumulated_offset, PhysicalOffset());
-  TransformedHitTestLocation local_location(hit_test_location,
-                                            LocalToSVGParentTransform());
+  TransformedHitTestLocation local_location(hit_test_location, *this);
   if (!local_location)
     return false;
   if (HasClipPath() && !ClipPathClipper::HitTest(*this, *local_location)) {

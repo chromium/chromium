@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
+#include "third_party/blink/renderer/core/layout/svg/transform_helper.h"
 #include "third_party/blink/renderer/core/layout/svg/transformed_hit_test_location.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
@@ -43,12 +44,22 @@ namespace {
 
 enum class ClipStrategy { kNone, kMask, kPath };
 
-ClipStrategy ModifyStrategyForClipPath(const ComputedStyle& style,
+// A kPath strategy requires the clip shape to be representable as a path.
+ClipStrategy ModifyStrategyForClipPath(const LayoutObject& layout_object,
                                        ClipStrategy strategy) {
-  // If the shape in the clip-path gets clipped too then fallback to masking.
-  if (strategy != ClipStrategy::kPath || !style.HasClipPath())
+  if (strategy != ClipStrategy::kPath) {
     return strategy;
-  return ClipStrategy::kMask;
+  }
+  // The shape in the clip-path gets clipped too.
+  if (layout_object.StyleRef().HasClipPath()) {
+    return ClipStrategy::kMask;
+  }
+  // PathFromElement() would flatten a 3D transform.
+  // TODO(crbug.com/41310059): Support 3D transforms on clip path content.
+  if (TransformHelper::HasCss3DTransform(layout_object)) {
+    return ClipStrategy::kMask;
+  }
+  return strategy;
 }
 
 ClipStrategy DetermineClipStrategy(const SVGGraphicsElement& element) {
@@ -70,7 +81,7 @@ ClipStrategy DetermineClipStrategy(const SVGGraphicsElement& element) {
     // Text requires masking.
     strategy = ClipStrategy::kMask;
   }
-  return ModifyStrategyForClipPath(style, strategy);
+  return ModifyStrategyForClipPath(*layout_object, strategy);
 }
 
 ClipStrategy DetermineClipStrategy(const SVGElement& element) {
@@ -90,8 +101,7 @@ ClipStrategy DetermineClipStrategy(const SVGElement& element) {
     if (!shape_element)
       return ClipStrategy::kNone;
     ClipStrategy shape_strategy = DetermineClipStrategy(*shape_element);
-    return ModifyStrategyForClipPath(use_layout_object->StyleRef(),
-                                     shape_strategy);
+    return ModifyStrategyForClipPath(*use_layout_object, shape_strategy);
   }
   auto* svg_graphics_element = DynamicTo<SVGGraphicsElement>(element);
   if (!svg_graphics_element)
