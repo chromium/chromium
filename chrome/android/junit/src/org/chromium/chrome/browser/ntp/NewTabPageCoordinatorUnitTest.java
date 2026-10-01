@@ -109,6 +109,7 @@ import org.chromium.components.browser_ui.widget.displaystyle.DisplayStyleObserv
 import org.chromium.components.browser_ui.widget.displaystyle.HorizontalDisplayStyle;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.VerticalDisplayStyle;
+import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.OmniboxCapabilities;
 import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.components.search_engines.AiModeButtonUiConfig;
@@ -1526,5 +1527,22 @@ public class NewTabPageCoordinatorUnitTest {
         mDisplayStyleObserverCaptor.getValue().onDisplayStyleChanged(null);
 
         verify(mMockLogo).updateDoodleOnTablet(anyBoolean());
+    }
+
+    @Test
+    public void testSearchBoxTextWatcher_ForwardsTextAndClearsSearchBox() {
+        TextView searchBoxTextView = mNewTabPageLayout.findViewById(R.id.search_box_text);
+        assertNotNull(searchBoxTextView);
+
+        searchBoxTextView.setText("first paste");
+        verify(mManager)
+                .focusSearchBox(false, AutocompleteRequestType.SEARCH, false, "first paste");
+        assertEquals("", searchBoxTextView.getText().toString());
+
+        clearInvocations(mManager);
+        searchBoxTextView.setText("second paste");
+        verify(mManager)
+                .focusSearchBox(false, AutocompleteRequestType.SEARCH, false, "second paste");
+        assertEquals("", searchBoxTextView.getText().toString());
     }
 }

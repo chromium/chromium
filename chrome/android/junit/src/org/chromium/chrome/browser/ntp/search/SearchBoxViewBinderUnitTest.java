@@ -160,6 +160,18 @@ public class SearchBoxViewBinderUnitTest {
     }
 
     @Test
+    public void testSetSearchText_RepeatedClearAfterDirectEdit() {
+        mSearchBoxLayout.mHintTextView.setText("pasted 1");
+        mPropertyModel.set(SearchBoxProperties.SEARCH_TEXT, "");
+        assertEquals("", mSearchBoxLayout.mHintTextView.getText().toString());
+
+        // Simulate a second paste directly into the EditText without updating PropertyModel.
+        mSearchBoxLayout.mHintTextView.setText("pasted 2");
+        mPropertyModel.set(SearchBoxProperties.SEARCH_TEXT, "");
+        assertEquals("", mSearchBoxLayout.mHintTextView.getText().toString());
+    }
+
+    @Test
     public void testSetPlusButtonVisibility() {
         mPropertyModel.set(SearchBoxProperties.PLUS_BUTTON_VISIBILITY, true);
         assertEquals(View.VISIBLE, mSearchBoxLayout.mPlusButton.getVisibility());
