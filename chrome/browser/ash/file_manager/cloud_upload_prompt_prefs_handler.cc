@@ -10,10 +10,10 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -62,14 +62,7 @@ constexpr PrefInfo kCloudUploadPrefs[] = {
      ash::cloud_upload::CloudProvider::kOneDrive},
 };
 
-bool IsProfileEnterpriseManaged(Profile* profile) {
-  return profile->GetProfilePolicyConnector()->IsManaged() &&
-         !profile->IsChild();
-}
-
-bool IsSyncEnabled(Profile* profile) {
-  const syncer::SyncService* sync_service =
-      SyncServiceFactory::GetForProfile(profile);
+bool IsSyncEnabled(const syncer::SyncService* sync_service) {
   if (!sync_service) {
     VLOG(1) << "Sync service not available";
     return false;
@@ -88,9 +81,11 @@ bool IsCloudUploadAutomated(Profile* profile,
 
 // Checks the values of local and syncable prefs, and logs if they're different
 // when expected to be the same.
-void MaybeLogMismatchedValues(Profile* profile, const PrefInfo& pref_info) {
+void MaybeLogMismatchedValues(Profile* profile,
+                              const syncer::SyncService* sync_service,
+                              const PrefInfo& pref_info) {
   // Don't check if the feature isn't enabled.
-  if (IsSyncEnabled(profile) ||
+  if (IsSyncEnabled(sync_service) ||
       !IsCloudUploadAutomated(profile, pref_info.cloud_provider)) {
     return;
   }
@@ -109,6 +104,7 @@ void MaybeLogMismatchedValues(Profile* profile, const PrefInfo& pref_info) {
 // Initializes syncable prefs with local pref values if uninitialized,
 // otherwise logs unexpected mismatches.
 void InitializeSyncablePrefs(Profile* profile,
+                             const syncer::SyncService* sync_service,
                              base::span<const PrefInfo> prefs) {
   for (const PrefInfo& pref_info : prefs) {
     const PrefService::Preference* pref =
@@ -122,14 +118,15 @@ void InitializeSyncablePrefs(Profile* profile,
       profile->GetPrefs()->SetBoolean(pref_info.syncable_pref, local_value);
       continue;
     }
-    MaybeLogMismatchedValues(profile, pref_info);
+    MaybeLogMismatchedValues(profile, sync_service, pref_info);
   }
 }
 
 class CloudUploadPromptPrefsHandler : public KeyedService {
  public:
   static std::unique_ptr<CloudUploadPromptPrefsHandler> Create(
-      Profile* profile);
+      Profile* profile,
+      syncer::SyncService* sync_service);
 
   CloudUploadPromptPrefsHandler(const CloudUploadPromptPrefsHandler&) = delete;
   CloudUploadPromptPrefsHandler& operator=(
@@ -137,14 +134,12 @@ class CloudUploadPromptPrefsHandler : public KeyedService {
 
   ~CloudUploadPromptPrefsHandler() override;
 
-  // Registers preferences related to enterprise cloud upload flows.
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
-
   // KeyedService:
   void Shutdown() override;
 
  private:
-  explicit CloudUploadPromptPrefsHandler(Profile* profile);
+  CloudUploadPromptPrefsHandler(Profile* profile,
+                                syncer::SyncService* sync_service);
 
   // Callbacks for pref changes. Synchronize local and syncable prefs, if
   // needed.
@@ -153,39 +148,36 @@ class CloudUploadPromptPrefsHandler : public KeyedService {
   void OnCloudUploadPrefChanged();
 
   raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<syncer::SyncService> sync_service_ = nullptr;
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 };
 
 // static
 std::unique_ptr<CloudUploadPromptPrefsHandler>
-CloudUploadPromptPrefsHandler::Create(Profile* profile) {
-  return base::WrapUnique(new CloudUploadPromptPrefsHandler(profile));
+CloudUploadPromptPrefsHandler::Create(Profile* profile,
+                                      syncer::SyncService* sync_service) {
+  return base::WrapUnique(
+      new CloudUploadPromptPrefsHandler(profile, sync_service));
 }
 
 CloudUploadPromptPrefsHandler::~CloudUploadPromptPrefsHandler() = default;
-
-// static
-void CloudUploadPromptPrefsHandler::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  for (const PrefInfo& pref_info : kCloudUploadPrefs) {
-    registry->RegisterBooleanPref(
-        pref_info.syncable_pref, false,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
-  }
-}
 
 // KeyedService:
 void CloudUploadPromptPrefsHandler::Shutdown() {
   pref_change_registrar_.reset();
   profile_ = nullptr;
+  sync_service_ = nullptr;
 }
 
-CloudUploadPromptPrefsHandler::CloudUploadPromptPrefsHandler(Profile* profile)
+CloudUploadPromptPrefsHandler::CloudUploadPromptPrefsHandler(
+    Profile* profile,
+    syncer::SyncService* sync_service)
     : profile_(profile),
+      sync_service_(sync_service),
       pref_change_registrar_(std::make_unique<PrefChangeRegistrar>()) {
   // Initially set the syncable prefs to match the local values.
-  InitializeSyncablePrefs(profile_, kCloudUploadPrefs);
+  InitializeSyncablePrefs(profile_, sync_service_, kCloudUploadPrefs);
 
   pref_change_registrar_->Init(profile_->GetPrefs());
   for (const PrefInfo& pref_info : kCloudUploadPrefs) {
@@ -244,7 +236,7 @@ void CloudUploadPromptPrefsHandler::OnCloudUploadPrefChanged() {
   if (google_workspace_automated && microsoft_office_automated) {
     return;
   }
-  if (!IsSyncEnabled(profile_)) {
+  if (!IsSyncEnabled(sync_service_)) {
     return;
   }
 
@@ -255,37 +247,24 @@ void CloudUploadPromptPrefsHandler::OnCloudUploadPrefChanged() {
 
 }  // namespace
 
-// static
-CloudUploadPromptPrefsHandlerFactory*
-CloudUploadPromptPrefsHandlerFactory::GetInstance() {
-  static base::NoDestructor<CloudUploadPromptPrefsHandlerFactory> instance;
-  return instance.get();
-}
-
-CloudUploadPromptPrefsHandlerFactory::CloudUploadPromptPrefsHandlerFactory()
-    : ProfileKeyedServiceFactory("CloudUploadPromptPrefsHandlerFactory") {}
-
-CloudUploadPromptPrefsHandlerFactory::~CloudUploadPromptPrefsHandlerFactory() =
-    default;
-
-void CloudUploadPromptPrefsHandlerFactory::RegisterProfilePrefs(
+void RegisterCloudUploadPromptProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  CloudUploadPromptPrefsHandler::RegisterProfilePrefs(registry);
-}
-
-std::unique_ptr<KeyedService>
-CloudUploadPromptPrefsHandlerFactory::BuildServiceInstanceForBrowserContext(
-    content::BrowserContext* context) const {
-  if (!IsProfileEnterpriseManaged(Profile::FromBrowserContext(context))) {
-    return nullptr;
+  for (const PrefInfo& pref_info : kCloudUploadPrefs) {
+    registry->RegisterBooleanPref(
+        pref_info.syncable_pref, false,
+        user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   }
-  return CloudUploadPromptPrefsHandler::Create(
-      Profile::FromBrowserContext(context));
 }
 
-bool CloudUploadPromptPrefsHandlerFactory::ServiceIsCreatedWithBrowserContext()
-    const {
-  return true;
+bool ShouldCreateCloudUploadPromptPrefsHandler(Profile* profile) {
+  return profile->GetProfilePolicyConnector()->IsManaged() &&
+         !profile->IsChild();
+}
+
+std::unique_ptr<KeyedService> CreateCloudUploadPromptPrefsHandler(
+    Profile* profile,
+    syncer::SyncService* sync_service) {
+  return CloudUploadPromptPrefsHandler::Create(profile, sync_service);
 }
 
 }  // namespace chromeos::cloud_upload

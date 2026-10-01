@@ -15,6 +15,8 @@ static_library("file_manager") {
     "cloud_upload_prefs_watcher.h",
     "cloud_upload_prompt_prefs_handler.cc",
     "cloud_upload_prompt_prefs_handler.h",
+    "cloud_upload_prompt_prefs_handler_factory.cc",
+    "cloud_upload_prompt_prefs_handler_factory.h",
     "copy_or_move_encrypted_hook_delegate.cc",
     "copy_or_move_encrypted_hook_delegate.h",
     "copy_or_move_io_task.cc",

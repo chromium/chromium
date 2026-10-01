@@ -5,41 +5,33 @@
 #ifndef CHROME_BROWSER_ASH_FILE_MANAGER_CLOUD_UPLOAD_PROMPT_PREFS_HANDLER_H_
 #define CHROME_BROWSER_ASH_FILE_MANAGER_CLOUD_UPLOAD_PROMPT_PREFS_HANDLER_H_
 
-#include "base/no_destructor.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "components/keyed_service/core/keyed_service.h"
+#include <memory>
 
-namespace content {
-class BrowserContext;
-}  // namespace content
+class KeyedService;
+class Profile;
+
+namespace syncer {
+class SyncService;
+}  // namespace syncer
+
+namespace user_prefs {
+class PrefRegistrySyncable;
+}  // namespace user_prefs
 
 namespace chromeos::cloud_upload {
 
-// This factory reacts to profile creation and instantiates profile-keyed
-// services that set up handlers for prefs related to Cloud Upload move
-// confirmation prompts.
-class CloudUploadPromptPrefsHandlerFactory : public ProfileKeyedServiceFactory {
- public:
-  CloudUploadPromptPrefsHandlerFactory(
-      const CloudUploadPromptPrefsHandlerFactory&) = delete;
-  CloudUploadPromptPrefsHandlerFactory& operator=(
-      const CloudUploadPromptPrefsHandlerFactory&) = delete;
+// Registers preferences related to enterprise cloud upload flows.
+void RegisterCloudUploadPromptProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry);
 
-  static CloudUploadPromptPrefsHandlerFactory* GetInstance();
+// Whether `profile` needs a cloud upload prompt prefs handler at all.
+bool ShouldCreateCloudUploadPromptPrefsHandler(Profile* profile);
 
- private:
-  friend base::NoDestructor<CloudUploadPromptPrefsHandlerFactory>;
-
-  CloudUploadPromptPrefsHandlerFactory();
-  ~CloudUploadPromptPrefsHandlerFactory() override;
-
-  // BrowserContextKeyedServiceFactory:
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
-  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
-      content::BrowserContext* context) const override;
-  bool ServiceIsCreatedWithBrowserContext() const override;
-};
+// Creates the keyed service that keeps the local and syncable cloud upload
+// prompt prefs in sync for `profile`. `sync_service` may be null.
+std::unique_ptr<KeyedService> CreateCloudUploadPromptPrefsHandler(
+    Profile* profile,
+    syncer::SyncService* sync_service);
 
 }  // namespace chromeos::cloud_upload
 

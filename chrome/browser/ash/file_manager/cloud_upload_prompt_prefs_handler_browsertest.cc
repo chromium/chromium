@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/file_manager/cloud_upload_prompt_prefs_handler.h"
-
 #include <algorithm>
 #include <tuple>
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
+#include "chrome/browser/ash/file_manager/cloud_upload_prompt_prefs_handler_factory.h"
 #include "chrome/browser/chromeos/upload_office_to_cloud/upload_office_to_cloud.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"

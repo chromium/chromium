@@ -43,7 +43,6 @@ include_rules = [
   "+chrome/browser/platform_util.h",
   "+chrome/browser/policy",
   "+chrome/browser/profiles",
-  "+chrome/browser/sync/sync_service_factory.h",
   "+chrome/browser/sync_file_system",
   "+chrome/browser/ui/ash",
   "+chrome/browser/ui/browser_select_file_dialog_controller.h",
@@ -77,6 +76,7 @@ specific_include_rules = {
     "+chrome/browser/extensions/test_extension_system.h",
     "+chrome/browser/global_features.h",
     "+chrome/browser/signin/identity_manager_factory.h",
+    "+chrome/browser/sync/sync_service_factory.h",
     "+chrome/browser/ui/browser_window.h",
     "+chrome/browser/ui/browser_window/public/browser_window_interface.h",
     "+chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h",
@@ -86,6 +86,9 @@ specific_include_rules = {
     "+chrome/browser/web_applications/test",
     "+chrome/test/base",
     "+chrome/test/interaction",
+  ],
+  "cloud_upload_prompt_prefs_handler_factory\\.cc": [
+    "+chrome/browser/sync/sync_service_factory.h",
   ],
   "file_manager_browsertest_base\\.cc": [
     "+chrome/common/pref_names.h",
