@@ -7,7 +7,11 @@
 
 #include <map>
 #include <memory>
+#include <optional>
+#include <string>
+#include <vector>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -22,8 +26,8 @@
 #include "components/sessions/core/session_id.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/lens_server_proto/lens_overlay_request_id.pb.h"
+#include "url/gurl.h"
 
-class GURL;
 class PrefService;
 
 namespace contextual_tasks {
@@ -46,9 +50,71 @@ class ContextualSearchService;
 using AddFileContextCallback =
     base::OnceCallback<void(const ::base::UnguessableToken&)>;
 
+// Information about a tab attached to or restored in the contextual search
+// session.
+struct TabInfo {
+  bool operator==(const TabInfo& other) const;
+
+  // Stable client-side identifier, taken from `FileInfo::file_token`.
+  // Empty for restored tabs (`restored_from_aim == true`), as they
+  // were not uploaded by this session.
+  base::UnguessableToken context_token;
+
+  // Browser tab SessionID (`FileInfo::tab_session_id->id()`), if known.
+  std::optional<int32_t> tab_id;
+
+  // Server-side Lens request ID for this tab upload, if assigned.
+  std::optional<lens::LensOverlayRequestId> request_id;
+
+  GURL url;
+  std::string title;
+
+  // True if the tab is explicitly uploaded (no delay) or persisted in the
+  // session; false for tabs not uploaded: delayed/implicit uploads
+  // (uploaded at submit time) and restored tabs.
+  bool uploaded = false;
+
+  // True if the tab was restored from durable task context (e.g. an AIM
+  // thread's history) rather than attached in this session.
+  bool restored_from_aim = false;
+
+  // True once the tab has been sent to the server in a submitted query AND
+  // the server has acknowledged it received it. Tabs are remembered after
+  // submitting so they can be removed if the user manually removes them.
+  bool ack_by_server = false;
+};
+
+// The set of tabs attached or restored as context for a session, as a snapshot.
+//
+// `attached` and `restored` are vectors rather than maps keyed by tab ID:
+// - Order matters. Entries stay in the order tabs were attached (or the order
+//   the server returned them), which the UI relies on to render chips and
+//   favicons.
+// - Lookups by tab ID are O(n), but n is small (a few dozen tabs at most), so
+//   a linear scan is cheap.
+// - `std::map` is not contiguous: every entry is a separate heap allocation,
+//   so for small collections it is usually slower to search and iterate than
+//   a vector. See base/containers/README.md.
+struct TabContextState {
+  bool operator==(const TabContextState& other) const;
+
+  // Tabs that have been selected in the tab picker, in the order they were
+  // attached. These may be uploaded, or may not be uploaded. At most one entry
+  // per tab ID.
+  std::vector<TabInfo> attached;
+
+  // Tabs carried from past history in this thread from the server, in the
+  // order the server returned them. May overlap with `attached` if a restored
+  // tab is also re-attached in this session; frontend surfaces that render
+  // both should deduplicate on URL.
+  std::vector<TabInfo> restored;
+};
+
 // RAII handle for managing the lifetime of a ComposeboxQueryController.
 class ContextualSearchSessionHandle {
  public:
+  using TabContextSubscriber =
+      base::RepeatingCallback<void(const TabContextState&)>;
   // Interface to perform platform-specific validation of tabs that were
   // previously uploaded as context.
   class TabValidator {
@@ -362,6 +428,25 @@ class ContextualSearchSessionHandle {
     return previous_turns_;
   }
 
+  // Adds a subscriber that is notified whenever the set of attached or
+  // restored tabs changes. Call `GetTabContextState()` for the value at
+  // subscribe time.
+  //
+  // Lifetime: `base::CallbackListSubscription` will automatically unregister
+  // and cancel the callback if the subscriber is destroyed.
+  [[nodiscard]] base::CallbackListSubscription SubscribeTabContext(
+      TabContextSubscriber callback);
+
+  // Returns the current snapshot of attached and restored tabs.
+  const TabContextState& GetTabContextState() const;
+
+  // Replace the set of tabs restored from durable task context. Unlike
+  // attached tabs, these come from the AIM thread's history in this thread from
+  // the server. Each restored tab has `restored_from_aim` set to true
+  // and `uploaded` set to false. Notifies tab context subscribers if the set
+  // changed.
+  void SetRestoredTabs(std::vector<TabInfo> tabs);
+
  private:
   friend class ContextualSearchService;
   friend class MockContextualSearchSessionHandle;
@@ -373,6 +458,9 @@ class ContextualSearchSessionHandle {
       base::WeakPtr<ContextualSearchService> service,
       const SessionId& session_id,
       std::optional<lens::LensOverlayInvocationSource> invocation_source);
+
+  // Notifies tab context subscribers of the current `tab_context_`.
+  void NotifyTabContextSubscribers();
 
   // Notifies the metrics recorder that a query has been submitted, providing
   // information about the presence of tab and non-tab context.
@@ -416,6 +504,13 @@ class ContextualSearchSessionHandle {
   // Tracks tabs explicitly deselected by the user. Map key is the SessionID,
   // and value is the GURL of the tab at the time of deselection.
   mutable DeselectedTabsMap deselected_tabs_urls_;
+
+  // Current snapshot of attached and restored tabs.
+  TabContextState tab_context_;
+
+  // Subscribers to changes in the tab context state.
+  base::RepeatingCallbackList<void(const TabContextState&)>
+      tab_context_subscribers_;
 
   // Whether the SearchContentSharingSettings policy has been checked.
   bool policy_checked_ = false;

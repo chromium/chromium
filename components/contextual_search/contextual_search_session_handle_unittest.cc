@@ -8,6 +8,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "components/contextual_search/contextual_search_metrics_recorder.h"
@@ -2239,6 +2240,91 @@ TEST_F(ContextualSearchSessionHandleTest,
           });
 
   local_handle->CreateClientToAimRequest(std::move(request_info));
+}
+
+namespace {
+
+TabInfo MakeRestoredTab(const std::string& url,
+                        const std::string& title,
+                        std::optional<int32_t> tab_id = std::nullopt) {
+  TabInfo info;
+  info.tab_id = tab_id;
+  info.url = GURL(url);
+  info.title = title;
+  info.restored_from_aim = true;
+  info.uploaded = false;
+  return info;
+}
+
+}  // namespace
+
+TEST_F(ContextualSearchSessionHandleTest,
+       TabInfoAndTabContextStateCopyAndEquality) {
+  TabInfo tab1;
+  tab1.context_token = base::UnguessableToken::Create();
+  tab1.tab_id = 10;
+  lens::LensOverlayRequestId req_id;
+  req_id.set_uuid(777);
+  tab1.request_id = req_id;
+  tab1.url = GURL("https://example.com/a");
+  tab1.title = "Tab A";
+  tab1.uploaded = true;
+  tab1.restored_from_aim = false;
+
+  TabContextState state1;
+  state1.attached.push_back(std::move(tab1));
+
+  // Copy via copy constructor should compare equal.
+  TabContextState state2 = state1;
+  EXPECT_EQ(state1, state2);
+  ASSERT_EQ(1u, state2.attached.size());
+  ASSERT_TRUE(state2.attached[0].request_id.has_value());
+  EXPECT_EQ(777u, state2.attached[0].request_id->uuid());
+
+  // Changing request_id makes states unequal.
+  lens::LensOverlayRequestId diff_req_id;
+  diff_req_id.set_uuid(888);
+  state2.attached[0].request_id = diff_req_id;
+  EXPECT_NE(state1, state2);
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       SetRestoredTabsKeepsServerOrderAndNotifiesSubscriber) {
+  auto mock_controller =
+      std::make_unique<MockContextualSearchContextController>();
+  auto local_handle =
+      service_->CreateSessionForTesting(std::move(mock_controller), nullptr);
+  local_handle->CheckSearchContentSharingSettings(&prefs_);
+
+  base::MockCallback<ContextualSearchSessionHandle::TabContextSubscriber>
+      callback;
+  auto subscription = local_handle->SubscribeTabContext(callback.Get());
+
+  TabContextState observed;
+  EXPECT_CALL(callback, Run(testing::_))
+      .WillOnce(
+          [&observed](const TabContextState& state) { observed = state; });
+
+  TabInfo tab20 = MakeRestoredTab("https://example.com/20", "Tab 20", 20);
+  tab20.uploaded = true;  // Should be forced to false by SetRestoredTabs.
+  TabInfo tab10 = MakeRestoredTab("https://example.com/10", "Tab 10", 10);
+
+  // The duplicate of tab 20 is dropped.
+  local_handle->SetRestoredTabs({tab20, tab10, tab20});
+
+  ASSERT_EQ(2u, observed.restored.size());
+  EXPECT_EQ(20, observed.restored[0].tab_id);
+  EXPECT_EQ("Tab 20", observed.restored[0].title);
+  EXPECT_TRUE(observed.restored[0].restored_from_aim);
+  EXPECT_FALSE(observed.restored[0].uploaded);
+  EXPECT_EQ(10, observed.restored[1].tab_id);
+  EXPECT_EQ("Tab 10", observed.restored[1].title);
+  EXPECT_TRUE(observed.restored[1].restored_from_aim);
+  EXPECT_FALSE(observed.restored[1].uploaded);
+
+  // Setting the same restored tabs is a no-op and does not notify.
+  EXPECT_CALL(callback, Run(testing::_)).Times(0);
+  local_handle->SetRestoredTabs({tab20, tab10});
 }
 
 }  // namespace contextual_search

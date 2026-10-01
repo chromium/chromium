@@ -5,6 +5,7 @@
 #include "components/contextual_search/contextual_search_session_handle.h"
 
 #include <algorithm>
+#include <set>
 #include <vector>
 
 #include "base/containers/flat_set.h"
@@ -28,6 +29,24 @@
 #include "third_party/lens_server_proto/modality_chip_props.pb.h"
 
 namespace contextual_search {
+bool TabInfo::operator==(const TabInfo& other) const {
+  if (context_token != other.context_token || tab_id != other.tab_id ||
+      url != other.url || title != other.title || uploaded != other.uploaded ||
+      restored_from_aim != other.restored_from_aim ||
+      ack_by_server != other.ack_by_server ||
+      request_id.has_value() != other.request_id.has_value()) {
+    return false;
+  }
+  if (request_id.has_value() && request_id->SerializeAsString() !=
+                                    other.request_id->SerializeAsString()) {
+    return false;
+  }
+  return true;
+}
+
+bool TabContextState::operator==(const TabContextState& other) const {
+  return attached == other.attached && restored == other.restored;
+}
 
 namespace {
 
@@ -929,6 +948,44 @@ void ContextualSearchSessionHandle::set_submitted_context_tokens(
 void ContextualSearchSessionHandle::set_persisted_tabs(
     PersistedTabsMap persisted_tabs) {
   persisted_tabs_ = std::move(persisted_tabs);
+}
+
+base::CallbackListSubscription
+ContextualSearchSessionHandle::SubscribeTabContext(
+    TabContextSubscriber callback) {
+  if (!callback) {
+    return {};
+  }
+  return tab_context_subscribers_.Add(std::move(callback));
+}
+
+const TabContextState& ContextualSearchSessionHandle::GetTabContextState()
+    const {
+  return tab_context_;
+}
+
+void ContextualSearchSessionHandle::SetRestoredTabs(std::vector<TabInfo> tabs) {
+  std::vector<TabInfo> rebuilt_restored;
+  rebuilt_restored.reserve(tabs.size());
+  std::set<int32_t> seen_tab_ids;
+  for (TabInfo& tab : tabs) {
+    // Keep the first entry if the server returns the same tab more than once.
+    if (tab.tab_id.has_value() && !seen_tab_ids.insert(*tab.tab_id).second) {
+      continue;
+    }
+    tab.restored_from_aim = true;
+    tab.uploaded = false;
+    rebuilt_restored.push_back(std::move(tab));
+  }
+  if (rebuilt_restored == tab_context_.restored) {
+    return;
+  }
+  tab_context_.restored = std::move(rebuilt_restored);
+  NotifyTabContextSubscribers();
+}
+
+void ContextualSearchSessionHandle::NotifyTabContextSubscribers() {
+  tab_context_subscribers_.Notify(tab_context_);
 }
 
 bool ContextualSearchSessionHandle::IsTabInContext(SessionID session_id) const {
