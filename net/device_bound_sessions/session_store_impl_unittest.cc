@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -52,6 +53,7 @@ namespace {
 
 using ::base::test::ErrorIs;
 using ::base::test::ValueIs;
+using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::IsEmpty;
 using ::testing::Key;
@@ -264,7 +266,7 @@ class SessionStoreImplTest : public net::TestWithTaskEnvironment {
   void RestoreSessionBindingKey(const SchemefulSite& site, Session* session) {
     base::RunLoop run_loop;
     store_->RestoreSessionBindingKey(
-        SessionKey{site, session->id()},
+        SessionKey{site, session->id()}, kTaskPriority,
         base::BindLambdaForTesting(
             [&run_loop, session](unexportable_keys::ServiceErrorOr<
                                  unexportable_keys::UnexportableSigningKeyId>
@@ -279,7 +281,7 @@ class SessionStoreImplTest : public net::TestWithTaskEnvironment {
                                     Session* session) {
     base::RunLoop run_loop;
     store_->RestoreSessionAttestationKey(
-        SessionKey{site, session->id()},
+        SessionKey{site, session->id()}, kTaskPriority,
         base::BindLambdaForTesting(
             [&run_loop,
              session](unexportable_keys::ServiceErrorOr<
@@ -1715,9 +1717,69 @@ TEST_F(SessionStoreImplTest, RestoreSessionAttestationKeyNoKey) {
       unexportable_keys::UnexportableAttestationKeyId>>
       future;
   store().RestoreSessionAttestationKey(SessionKey{site, restored_session->id()},
-                                       future.GetCallback());
+                                       kTaskPriority, future.GetCallback());
   EXPECT_THAT(future.Get(),
               ErrorIs(unexportable_keys::ServiceError::kKeyNotFound));
+}
+
+// Verifies that the caller's priority is forwarded to the key service instead
+// of a hard-coded one.
+TEST_F(SessionStoreImplTest, RestoreSessionKeysForwardPriority) {
+  CreateStoreAndLoadSessions();
+
+  static constexpr std::string_view kFooSite = "https://foo.test";
+  auto site = net::SchemefulSite(GURL(kFooSite));
+  std::unique_ptr<Session> session = CreateSessionHelper(
+      GenerateNewSigningKey(unexportable_key_service()), kFooSite, kSessionId,
+      kFooSite, GenerateNewAttestationKey(unexportable_key_service()));
+  store().SaveSession(site, *session,
+                      SessionStore::SaveSessionMode::kNewSession);
+  DeleteStore();
+
+  // Reopen the same database with a mock key service.
+  testing::StrictMock<unexportable_keys::MockUnexportableKeyService>
+      mock_key_service;
+  auto mock_store =
+      std::make_unique<SessionStoreImpl>(GetDBPath(), mock_key_service);
+  base::test::TestFuture<SessionStore::SessionsMap> load_future;
+  mock_store->LoadSessions(load_future.GetCallback());
+  ASSERT_EQ(load_future.Take().size(), 1u);
+
+  // Use two different priorities, neither of which is the old hard-coded
+  // `kUserVisible`.
+  EXPECT_CALL(
+      mock_key_service,
+      FromWrappedSigningKeySlowlyAsync(
+          _, unexportable_keys::BackgroundTaskPriority::kUserBlocking, _))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          base::unexpected(unexportable_keys::ServiceError::kKeyNotFound)));
+  EXPECT_CALL(mock_key_service,
+              FromWrappedAttestationKeySlowlyAsync(
+                  _, unexportable_keys::BackgroundTaskPriority::kBestEffort, _))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          base::unexpected(unexportable_keys::ServiceError::kKeyNotFound)));
+
+  const SessionKey session_key{site, session->id()};
+  base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+      unexportable_keys::UnexportableSigningKeyId>>
+      binding_future;
+  mock_store->RestoreSessionBindingKey(
+      session_key, unexportable_keys::BackgroundTaskPriority::kUserBlocking,
+      binding_future.GetCallback());
+  EXPECT_TRUE(binding_future.IsReady());
+
+  base::test::TestFuture<unexportable_keys::ServiceErrorOr<
+      unexportable_keys::UnexportableAttestationKeyId>>
+      attestation_future;
+  mock_store->RestoreSessionAttestationKey(
+      session_key, unexportable_keys::BackgroundTaskPriority::kBestEffort,
+      attestation_future.GetCallback());
+  EXPECT_TRUE(attestation_future.IsReady());
+
+  base::RunLoop run_loop;
+  mock_store->SetShutdownCallbackForTesting(run_loop.QuitClosure());
+  mock_store.reset();
+  run_loop.Run();
 }
 
 }  // namespace net::device_bound_sessions

@@ -83,9 +83,11 @@ class NET_EXPORT SessionStoreImpl : public SessionStore {
   SessionsMap GetAllSessions() const override;
   void RestoreSessionBindingKey(
       const SessionKey& session_key,
+      unexportable_keys::BackgroundTaskPriority priority,
       RestoreSessionBindingKeyCallback callback) override;
   void RestoreSessionAttestationKey(
       const SessionKey& session_key,
+      unexportable_keys::BackgroundTaskPriority priority,
       RestoreSessionAttestationKeyCallback callback) override;
 
   DBStatus db_status() const { return db_status_; }

@@ -3031,11 +3031,11 @@ TEST_F(SessionServiceImplWithStoreTest, RequestDestroyedDuringAsyncKeyRestore) {
       kSessionId, kUrlString, kOrigin);
 
   SessionStore::RestoreSessionBindingKeyCallback restore_key_callback;
-  EXPECT_CALL(
-      store(),
-      RestoreSessionBindingKey(
-          SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)), _))
-      .WillOnce(SaveArgByMove<1>(&restore_key_callback));
+  EXPECT_CALL(store(),
+              RestoreSessionBindingKey(
+                  SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)),
+                  unexportable_keys::BackgroundTaskPriority::kUserBlocking, _))
+      .WillOnce(SaveArgByMove<2>(&restore_key_callback));
   service().DeferRequestForRefresh(*dbsc_request, *maybe_deferral,
                                    base::DoNothing());
   // Simulate the request being cleaned up before the callback has been called.
@@ -3080,11 +3080,11 @@ TEST_F(SessionServiceImplWithStoreTest,
 
   // Now actually defer request1 to trigger RestoreSessionBindingKey
   SessionStore::RestoreSessionBindingKeyCallback restore_key_callback;
-  EXPECT_CALL(
-      store(),
-      RestoreSessionBindingKey(
-          SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)), _))
-      .WillOnce(SaveArgByMove<1>(&restore_key_callback));
+  EXPECT_CALL(store(),
+              RestoreSessionBindingKey(
+                  SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)),
+                  unexportable_keys::BackgroundTaskPriority::kUserBlocking, _))
+      .WillOnce(SaveArgByMove<2>(&restore_key_callback));
   service().DeferRequestForRefresh(*dbsc_request1, *deferral1,
                                    base::DoNothing());
   ASSERT_TRUE(restore_key_callback);
@@ -3156,12 +3156,12 @@ TEST_F(SessionServiceImplWithStoreTest, SessionKeyRestoredOnUse) {
   auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
       kSessionId, kUrlString, kOrigin);
   EXPECT_CALL(store(), SaveSession);
-  EXPECT_CALL(
-      store(),
-      RestoreSessionBindingKey(
-          SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)), _))
+  EXPECT_CALL(store(),
+              RestoreSessionBindingKey(
+                  SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)),
+                  unexportable_keys::BackgroundTaskPriority::kUserBlocking, _))
       .WillOnce(
-          RunOnceCallback<1>(unexportable_keys::UnexportableSigningKeyId()));
+          RunOnceCallback<2>(unexportable_keys::UnexportableSigningKeyId()));
 
   base::test::TestFuture<RefreshResult> future;
   service().DeferRequestForRefresh(dbsc_request, *maybe_deferral,
@@ -3200,11 +3200,11 @@ TEST_F(SessionServiceImplWithStoreTest, RecoveryFromTransientSigningError) {
 
   // Mock transient failure for Request A
   SessionStore::RestoreSessionBindingKeyCallback restore_key_callback_a;
-  EXPECT_CALL(
-      store(),
-      RestoreSessionBindingKey(
-          SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)), _))
-      .WillOnce(SaveArgByMove<1>(&restore_key_callback_a));
+  EXPECT_CALL(store(),
+              RestoreSessionBindingKey(
+                  SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)),
+                  unexportable_keys::BackgroundTaskPriority::kUserBlocking, _))
+      .WillOnce(SaveArgByMove<2>(&restore_key_callback_a));
 
   base::test::TestFuture<RefreshResult> future_a;
   service().DeferRequestForRefresh(dbsc_request_a, *maybe_deferral_a,
@@ -3234,12 +3234,12 @@ TEST_F(SessionServiceImplWithStoreTest, RecoveryFromTransientSigningError) {
   auto scoped_test_fetcher = ScopedTestRegistrationFetcher::CreateWithSuccess(
       kSessionId, kUrlString, kOrigin);
   EXPECT_CALL(store(), SaveSession);
-  EXPECT_CALL(
-      store(),
-      RestoreSessionBindingKey(
-          SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)), _))
+  EXPECT_CALL(store(),
+              RestoreSessionBindingKey(
+                  SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)),
+                  unexportable_keys::BackgroundTaskPriority::kUserBlocking, _))
       .WillOnce(
-          RunOnceCallback<1>(unexportable_keys::UnexportableSigningKeyId()));
+          RunOnceCallback<2>(unexportable_keys::UnexportableSigningKeyId()));
 
   base::test::TestFuture<RefreshResult> future_b;
   service().DeferRequestForRefresh(dbsc_request_b, *maybe_deferral_b,
@@ -3264,8 +3264,11 @@ TEST_F(SessionServiceImplWithStoreTest,
   FinishLoadingSessions(std::move(session_map));
 
   SessionKey session_key{SchemefulSite(kTestUrl), Session::Id(kSessionId)};
-  EXPECT_CALL(store(), RestoreSessionBindingKey(session_key, _))
-      .WillOnce(RunOnceCallback<1>(
+  EXPECT_CALL(store(),
+              RestoreSessionBindingKey(
+                  session_key,
+                  unexportable_keys::BackgroundTaskPriority::kUserVisible, _))
+      .WillOnce(RunOnceCallback<2>(
           base::unexpected(unexportable_keys::ServiceError::kKeyNotFound)));
 
   EXPECT_CALL(store(), DeleteSession(session_key)).Times(1);
@@ -3295,8 +3298,11 @@ TEST_F(SessionServiceImplWithStoreTest,
   SessionKey session_key{SchemefulSite(kTestUrl), Session::Id(kSessionId)};
 
   SessionStore::RestoreSessionBindingKeyCallback restore_callback;
-  EXPECT_CALL(store(), RestoreSessionBindingKey(session_key, _))
-      .WillOnce(SaveArgByMove<1>(&restore_callback));
+  EXPECT_CALL(store(),
+              RestoreSessionBindingKey(
+                  session_key,
+                  unexportable_keys::BackgroundTaskPriority::kUserVisible, _))
+      .WillOnce(SaveArgByMove<2>(&restore_callback));
 
   base::test::TestFuture<SessionPrewarmResult> future;
   service().PrewarmSessionsForUrl(kTestUrl, future.GetCallback());
@@ -3377,11 +3383,11 @@ TEST_F(SessionServiceImplWithStoreTest, FederatedRegistrationKeyUnrestored) {
           .provider_session_id = Session::Id(kSessionId)});
 
   // Mock persistent failure for RestoreSessionBindingKey
-  EXPECT_CALL(
-      store(),
-      RestoreSessionBindingKey(
-          SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)), _))
-      .WillOnce(RunOnceCallback<1>(
+  EXPECT_CALL(store(),
+              RestoreSessionBindingKey(
+                  SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)),
+                  unexportable_keys::BackgroundTaskPriority::kUserVisible, _))
+      .WillOnce(RunOnceCallback<2>(
           base::unexpected(unexportable_keys::ServiceError::kKeyNotFound)));
 
   EXPECT_CALL(store(), DeleteSession(SessionKey(SchemefulSite(kTestUrl),
@@ -3466,11 +3472,11 @@ TEST_F(SessionServiceImplWithStoreTest,
           .provider_key = key_thumbprint,
           .provider_url = kTestUrl,
           .provider_session_id = Session::Id(kSessionId)});
-  EXPECT_CALL(
-      store(),
-      RestoreSessionBindingKey(
-          SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)), _))
-      .WillOnce(RunOnceCallback<1>(key));
+  EXPECT_CALL(store(),
+              RestoreSessionBindingKey(
+                  SessionKey(SchemefulSite(kTestUrl), Session::Id(kSessionId)),
+                  unexportable_keys::BackgroundTaskPriority::kUserVisible, _))
+      .WillOnce(RunOnceCallback<2>(key));
   EXPECT_CALL(store(), SaveSession);
   service().RegisterBoundSession(
       SessionService::OnAccessCallback(), std::move(fetch_param),

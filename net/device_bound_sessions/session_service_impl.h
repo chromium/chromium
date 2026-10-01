@@ -129,10 +129,9 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
                               DeferralParams deferral,
                               RefreshCompleteCallback callback) override;
 
-  void SetChallengeForBoundSession(
-      OnAccessCallback on_access_callback,
-      DbscRequest& request,
-      const SessionChallengeParam& param) override;
+  void SetChallengeForBoundSession(OnAccessCallback on_access_callback,
+                                   DbscRequest& request,
+                                   const SessionChallengeParam& param) override;
 
   void GetAllSessionsAsync(
       base::OnceCallback<void(const std::vector<SessionKey>&)> callback)
@@ -358,10 +357,12 @@ class NET_EXPORT SessionServiceImpl : public SessionService {
   // Helper for restoring the key for the session identified by
   // `session_key`. If restoring the key succeeds, calls `callback` with
   // the key. If restoring the key fails, deletes the session and calls
-  // `callback` with `std::nullopt`.
+  // `callback` with `std::nullopt`. The key is unwrapped at `priority`, but
+  // never below `kUserVisible`.
   void RestoreSessionKey(
       const SessionKey& session_key,
       OnAccessCallback on_access_callback,
+      unexportable_keys::BackgroundTaskPriority priority,
       base::OnceCallback<
           void(std::optional<unexportable_keys::UnexportableSigningKeyId>)>
           callback);

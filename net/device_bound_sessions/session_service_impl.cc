@@ -512,7 +512,7 @@ void SessionServiceImpl::RegisterFederatedBoundSession(
     RegistrationParams params,
     SessionErrorOr<Session*> federated_provider_session) {
   ASSIGN_OR_RETURN(
-      Session* provider_session, std::move(federated_provider_session),
+      Session * provider_session, std::move(federated_provider_session),
       [&](SessionError::ErrorType error) {
         OnRegistrationComplete(params.access_callback,
                                params.fetcher_param.registration_endpoint(),
@@ -611,6 +611,7 @@ void SessionServiceImpl::GetFederatedProviderSessionIfValid(
   if (!provider_session->unexportable_key_id().has_value()) {
     RestoreSessionKey(
         provider_session_key, on_access_callback,
+        unexportable_keys::BackgroundTaskPriority::kUserVisible,
         base::BindOnce(&SessionServiceImpl::CheckFederatedProviderKey,
                        weak_factory_.GetWeakPtr(), provider_session_key,
                        std::move(provider_params.provider_key),
@@ -1550,13 +1551,22 @@ SessionError::ErrorType SessionServiceImpl::OnRefreshRequestCompletionInternal(
 void SessionServiceImpl::RestoreSessionKey(
     const SessionKey& session_key,
     OnAccessCallback on_access_callback,
+    unexportable_keys::BackgroundTaskPriority priority,
     base::OnceCallback<void(
         std::optional<unexportable_keys::UnexportableSigningKeyId>)> callback) {
+  // Never unwrap below `kUserVisible`, even for best-effort refreshes (e.g.
+  // prewarm). The key service coalesces concurrent unwraps of the same key at
+  // the first caller's priority, and `DeferRequestForRefresh` joins an
+  // in-flight proactive refresh, so a deferred request could otherwise end up
+  // waiting on a best-effort unwrap.
+  const unexportable_keys::BackgroundTaskPriority unwrap_priority = std::max(
+      priority, unexportable_keys::BackgroundTaskPriority::kUserVisible);
   if (session_store_) {
     session_store_->RestoreSessionBindingKey(
-        session_key, base::BindOnce(&SessionServiceImpl::OnSessionKeyRestored,
-                                    weak_factory_.GetWeakPtr(), session_key,
-                                    on_access_callback, std::move(callback)));
+        session_key, unwrap_priority,
+        base::BindOnce(&SessionServiceImpl::OnSessionKeyRestored,
+                       weak_factory_.GetWeakPtr(), session_key,
+                       on_access_callback, std::move(callback)));
   } else {
     OnSessionKeyRestored(
         session_key, on_access_callback, std::move(callback),
@@ -1607,8 +1617,10 @@ void SessionServiceImpl::StartSessionRefresh(const SessionKey& session_key,
   if (!key_id.has_value()) {
     if (key_id.error() == unexportable_keys::ServiceError::kKeyNotReady) {
       SessionService::OnAccessCallback access_callback = params.access_callback;
+      const unexportable_keys::BackgroundTaskPriority priority =
+          params.priority;
       RestoreSessionKey(
-          session_key, access_callback,
+          session_key, access_callback, priority,
           base::BindOnce(&SessionServiceImpl::RefreshSessionInternal,
                          weak_factory_.GetWeakPtr(), std::move(params),
                          session_key));

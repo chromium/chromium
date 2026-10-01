@@ -406,25 +406,25 @@ std::optional<proto::Session> SessionStoreImpl::GetSessionProto(
 
 void SessionStoreImpl::RestoreSessionBindingKey(
     const SessionKey& session_key,
+    unexportable_keys::BackgroundTaskPriority priority,
     RestoreSessionBindingKeyCallback callback) {
   std::optional<proto::Session> session_proto = GetSessionProto(session_key);
   session_proto ? key_service_->FromWrappedSigningKeySlowlyAsync(
                       base::as_byte_span(session_proto->wrapped_key()),
-                      unexportable_keys::BackgroundTaskPriority::kUserVisible,
-                      std::move(callback))
+                      priority, std::move(callback))
                 : std::move(callback).Run(base::unexpected(
                       unexportable_keys::ServiceError::kKeyNotFound));
 }
 
 void SessionStoreImpl::RestoreSessionAttestationKey(
     const SessionKey& session_key,
+    unexportable_keys::BackgroundTaskPriority priority,
     RestoreSessionAttestationKeyCallback callback) {
   std::optional<proto::Session> session_proto = GetSessionProto(session_key);
   (session_proto && session_proto->has_wrapped_attestation_key())
       ? key_service_->FromWrappedAttestationKeySlowlyAsync(
             base::as_byte_span(session_proto->wrapped_attestation_key()),
-            unexportable_keys::BackgroundTaskPriority::kUserVisible,
-            std::move(callback))
+            priority, std::move(callback))
       : std::move(callback).Run(
             base::unexpected(unexportable_keys::ServiceError::kKeyNotFound));
 }

@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
+#include "components/unexportable_keys/background_task_priority.h"
 #include "components/unexportable_keys/unexportable_key_service.h"
 #include "net/device_bound_sessions/session.h"
 #include "net/device_bound_sessions/session_key.h"
@@ -56,21 +57,25 @@ class NET_EXPORT SessionStore {
   virtual SessionsMap GetAllSessions() const = 0;
 
   // Asynchronously retrieves the unwrapped session binding key
-  // from its persistent form saved in the store.
+  // from its persistent form saved in the store. `priority` is the task
+  // priority used for the unwrap in the unexportable key service.
   using RestoreSessionBindingKeyCallback =
       base::OnceCallback<void(unexportable_keys::ServiceErrorOr<
                               unexportable_keys::UnexportableSigningKeyId>)>;
   virtual void RestoreSessionBindingKey(
       const SessionKey& session_key,
+      unexportable_keys::BackgroundTaskPriority priority,
       RestoreSessionBindingKeyCallback callback) = 0;
 
   // Asynchronously retrieves the unwrapped session attestation key
-  // from its persistent form saved in the store.
+  // from its persistent form saved in the store. `priority` is the task
+  // priority used for the unwrap in the unexportable key service.
   using RestoreSessionAttestationKeyCallback = base::OnceCallback<void(
       unexportable_keys::ServiceErrorOr<
           unexportable_keys::UnexportableAttestationKeyId>)>;
   virtual void RestoreSessionAttestationKey(
       const SessionKey& session_key,
+      unexportable_keys::BackgroundTaskPriority priority,
       RestoreSessionAttestationKeyCallback callback) = 0;
 
  protected:

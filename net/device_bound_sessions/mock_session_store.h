@@ -30,11 +30,13 @@ class SessionStoreMock : public SessionStore {
   MOCK_METHOD(void,
               RestoreSessionBindingKey,
               (const SessionKey& session_key,
+               unexportable_keys::BackgroundTaskPriority priority,
                RestoreSessionBindingKeyCallback callback),
               (override));
   MOCK_METHOD(void,
               RestoreSessionAttestationKey,
               (const SessionKey& session_key,
+               unexportable_keys::BackgroundTaskPriority priority,
                RestoreSessionAttestationKeyCallback callback),
               (override));
 };
