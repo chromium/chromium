@@ -35,6 +35,7 @@ import org.chromium.base.Token;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.ImportantFormFactors;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -117,6 +118,7 @@ public class TabModelMultiWindowTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "https://crbug.com/568380656")
     public void testMoveTabGroupToWindow() {
         ChromeTabbedActivity activity1 = mActivityTestRule.getActivity();
         TabModel tabModel = activity1.getTabModelSelector().getModel(false);
