@@ -41,6 +41,7 @@ source_set("unit_tests") {
     "//base",
     "//chrome/common/extensions/api",
     "//chrome/test:test_support",
+    "//chrome/test/base:test_browser_window",
     "//components/crx_file",
     "//content/public/browser",
     "//content/test:test_support",

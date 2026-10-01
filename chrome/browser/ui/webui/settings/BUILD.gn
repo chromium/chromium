@@ -468,6 +468,7 @@ source_set("browser_tests") {
     "//chrome/browser/ui/toolbar/pinned_toolbar",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//chrome/test/base:test_browser_window",
     "//components/browsing_data/core",
     "//components/country_codes",
     "//components/password_manager/core/browser/actor_login:common",

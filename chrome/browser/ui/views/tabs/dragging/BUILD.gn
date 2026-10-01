@@ -243,7 +243,10 @@ if (!is_chromeos_device) {
     }
 
     if (use_aura) {
-      deps += [ "//ui/aura" ]
+      deps += [
+        "//ui/aura",
+        "//ui/aura:test_support",
+      ]
       if (!is_chromeos) {
         deps += [ "//chrome/browser/ui/views/frame:browser_native_widget_aura" ]
       }

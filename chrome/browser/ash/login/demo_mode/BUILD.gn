@@ -256,6 +256,7 @@ source_set("unit_tests") {
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chrome/test:test_support_unit",
+    "//chrome/test/base:test_browser_window",
     "//chrome/test/base:testing_browser_process",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus",

@@ -481,7 +481,6 @@ static_library("test_support") {
       deps += [ "//chrome/browser/compose" ]
     }
 
-    public_deps += [ "//chrome/test/base:test_browser_window" ]
     allow_circular_includes_from += [
       ":test_support_ui",
       "//chrome/browser/ui/views/tabs/common:impl",
@@ -2232,6 +2231,7 @@ if (!is_android) {
       "//chrome/services/removable_storage_writer:lib",
       "//chrome/test/base:browser_tests",
       "//chrome/test/base:browser_tests_runner",
+      "//chrome/test/base:test_browser_window",
       "//chrome/test/base:testing_browser_process",
       "//chrome/test/base:testing_browser_process_impl",
       "//chrome/test/components_tests:browser_tests",
@@ -8191,6 +8191,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/test/base:browser_test_waiters",
       "//chrome/test/base:chrome_test_launcher",
       "//chrome/test/base:chrome_test_suite",
+      "//chrome/test/base:test_browser_window",
       "//chrome/test/base:testing_browser_process",
       "//chrome/test/base:testing_browser_process_impl",
       "//chrome/test/media:performance_tests",

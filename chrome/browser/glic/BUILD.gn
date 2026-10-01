@@ -1008,6 +1008,11 @@ source_set("browser_tests") {
     "//chrome/test/base:chrome_test_utils",
     "//chrome/test/base:profile_lifecycle_test_utils",
     "//chrome/test/base:testing_browser_process",
+  ]
+  if (!is_android) {
+    deps += [ "//chrome/test/base:test_browser_window" ]
+  }
+  deps += [
     "//components/actor/core",
     "//components/actor/public/mojom:mojo_bindings",
     "//components/contextual_tasks/public:feature_list",
