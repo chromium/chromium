@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -36,6 +37,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/vector_icons/vector_icons.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -104,6 +106,8 @@ bool IsEscapeEvent(const input::NativeWebKeyboardEvent& event) {
 }
 
 constexpr int kSelectionPaddingDip = 5;
+constexpr int kMaxSurroundingTextLength = 2000;
+constexpr base::TimeDelta kSurroundingTextTimeout = base::Seconds(1);
 
 selection::SelectedRegionPtr CreateRegionFromBounds(
     gfx::Rect selection_bounds,
@@ -427,15 +431,33 @@ void SelectionOverlayController::Show(mojom::TabContextOptionsPtr options) {
 }
 
 void SelectionOverlayController::ShowWithSelection(
+    content::RenderFrameHost* selected_frame,
     const gfx::Rect& selection_bounds) {
   selected_regions_.clear();
   active_region_id_.reset();
+  surrounding_text_timer_.Stop();
   if (tab_ && tab_->GetContents()) {
     if (auto region = CreateRegionFromBounds(
             selection_bounds, tab_->GetContents()->GetViewBounds())) {
       base::UnguessableToken id = region->id;
       active_region_id_ = id;
-      selected_regions_.emplace(id, SelectedRegionData(std::move(region)));
+      auto [it, _] =
+          selected_regions_.emplace(id, SelectedRegionData(std::move(region)));
+      if (selected_frame && selected_frame->IsRenderFrameLive()) {
+        it->second.waiting_for_surrounding_text = true;
+        selected_frame->RequestTextSurroundingSelection(
+            base::BindOnce(&SelectionOverlayController::
+                               OnTextSurroundingSelectionAvailable,
+                           weak_factory_.GetWeakPtr(), id,
+                           it->second.generation),
+            kMaxSurroundingTextLength);
+        surrounding_text_timer_.Start(
+            FROM_HERE, kSurroundingTextTimeout,
+            base::BindOnce(&SelectionOverlayController::
+                               OnTextSurroundingSelectionAvailable,
+                           weak_factory_.GetWeakPtr(), id,
+                           it->second.generation, std::u16string(), 0, 0));
+      }
     }
   }
   Show(/*options=*/nullptr);
@@ -723,6 +745,9 @@ void SelectionOverlayController::AdjustRegion(
   if (SelectedRegionData* region_data =
           base::FindOrNull(selected_regions_, target->id)) {
     region_data->region = std::move(target);
+    region_data->selected_text.reset();
+    region_data->text_surrounding_selection.reset();
+    region_data->waiting_for_surrounding_text = false;
     region_data->suggestions.clear();
     region_data->suggestions_requested = false;
     region_data->suggestions_complete = false;
@@ -819,12 +844,41 @@ void SelectionOverlayController::GetSuggestedActions(
   RequestNewSuggestions(*region_data);
 }
 
+void SelectionOverlayController::OnTextSurroundingSelectionAvailable(
+    const base::UnguessableToken& region_id,
+    uint64_t generation,
+    const std::u16string& content,
+    uint32_t start_offset,
+    uint32_t end_offset) {
+  surrounding_text_timer_.Stop();
+  SelectedRegionData* region_data =
+      base::FindOrNull(selected_regions_, region_id);
+  if (!region_data || region_data->generation != generation ||
+      !region_data->waiting_for_surrounding_text) {
+    return;
+  }
+  region_data->waiting_for_surrounding_text = false;
+  if (!content.empty() && start_offset < end_offset &&
+      end_offset <= content.length()) {
+    region_data->selected_text =
+        content.substr(start_offset, end_offset - start_offset);
+    region_data->text_surrounding_selection = content;
+  }
+  if (active_region_id_ == region_id && !region_data->suggestions_requested &&
+      suggested_actions_listener_.is_bound()) {
+    RequestNewSuggestions(*region_data);
+  }
+}
+
 void SelectionOverlayController::RequestNewSuggestions(
     SelectedRegionData& region_data) {
   ::selection::SuggestionService* suggestion_service =
       ::selection::SuggestionService::From(tab_);
   if (!suggestion_service || redacted_screenshot_.empty()) {
     suggested_actions_listener_->OnSuggestedActionsAvailable({});
+    return;
+  }
+  if (region_data.waiting_for_surrounding_text) {
     return;
   }
 
@@ -834,6 +888,8 @@ void SelectionOverlayController::RequestNewSuggestions(
 
   ::selection::AreaOfInterest aoi;
   aoi.screenshot = redacted_screenshot_;
+  aoi.selected_text = region_data.selected_text;
+  aoi.text_surrounding_selection = region_data.text_surrounding_selection;
   const auto& region = region_data.region;
   if (region->shape->is_rect()) {
     gfx::RectF gfx_rect =
@@ -970,6 +1026,7 @@ void SelectionOverlayController::Reset() {
   screenshot_available_ = false;
   selected_regions_.clear();
   active_region_id_.reset();
+  surrounding_text_timer_.Stop();
   suggested_actions_listener_.reset();
   tab_context_.reset();
   capture_region_observer_.reset();

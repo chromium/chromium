@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -29,6 +30,7 @@
 #include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 
 namespace content {
+class RenderFrameHost;
 class WebContents;
 }
 
@@ -93,7 +95,8 @@ class SelectionOverlayController
   void Show(mojom::TabContextOptionsPtr options);
   // Shows the overlay with a region pre-selected around `selection_bounds`,
   // which is in screen coordinates.
-  void ShowWithSelection(const gfx::Rect& selection_bounds);
+  void ShowWithSelection(content::RenderFrameHost* selected_frame,
+                         const gfx::Rect& selection_bounds);
   void Close();
 
   // `selection::SelectionOverlayPageHandler`:
@@ -179,6 +182,9 @@ class SelectionOverlayController
     ~SelectedRegionData();
 
     selection::SelectedRegionPtr region;
+    std::optional<std::u16string> selected_text;
+    std::optional<std::u16string> text_surrounding_selection;
+    bool waiting_for_surrounding_text = false;
     std::vector<std::pair<base::UnguessableToken,
                           std::unique_ptr<::selection::Suggestion>>>
         suggestions;
@@ -190,6 +196,12 @@ class SelectionOverlayController
   };
 
   void Reset();
+  void OnTextSurroundingSelectionAvailable(
+      const base::UnguessableToken& region_id,
+      uint64_t generation,
+      const std::u16string& content,
+      uint32_t start_offset,
+      uint32_t end_offset);
   void RequestNewSuggestions(SelectedRegionData& region_data);
   void OnSuggestionsReceived(
       const base::UnguessableToken& region_id,
@@ -223,6 +235,7 @@ class SelectionOverlayController
   // rendered on top of `initial_screenshot_`.
   base::flat_map<base::UnguessableToken, SelectedRegionData> selected_regions_;
   std::optional<base::UnguessableToken> active_region_id_;
+  base::OneShotTimer surrounding_text_timer_;
   mojo::Remote<selection::SuggestedActionsListener> suggested_actions_listener_;
   // Subscription for `OverlayBaseController::overlay_web_view_` taking focus.
   // Scoped to the lifetime of that WebView.

@@ -1226,15 +1226,17 @@ void GlicSelectionObserver::ShowSelectionOverlay() {
     return;
   }
 
+  content::RenderFrameHost* selected_frame = nullptr;
   std::optional<gfx::Rect> bounds;
   if (last_selection_frame_token_.has_value()) {
-    if (auto* selected_frame = content::RenderFrameHost::FromFrameToken(
-            *last_selection_frame_token_)) {
+    selected_frame = content::RenderFrameHost::FromFrameToken(
+        *last_selection_frame_token_);
+    if (selected_frame) {
       bounds = web_contents()->GetTextSelectionBounds(selected_frame);
     }
   }
   if (bounds.has_value() && !bounds->IsEmpty()) {
-    controller->ShowWithSelection(*bounds);
+    controller->ShowWithSelection(selected_frame, *bounds);
   } else {
     controller->Show(/*options=*/nullptr);
   }

@@ -394,7 +394,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   gfx::Rect view_bounds = web_contents->GetViewBounds();
   gfx::Rect selection_bounds(view_bounds.x() + 10, view_bounds.y() + 10, 100,
                              50);
-  controller->ShowWithSelection(selection_bounds);
+  controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
+                                selection_bounds);
 
   EXPECT_EQ(controller->GetSelectedRegionCount(), 1u);
 
@@ -414,7 +415,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   gfx::Rect view_bounds = web_contents->GetViewBounds();
   gfx::Rect selection_bounds(view_bounds.x() + 10, view_bounds.y() + 10, 100,
                              50);
-  controller->ShowWithSelection(selection_bounds);
+  controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
+                                selection_bounds);
 
   EXPECT_EQ(controller->GetSelectedRegionCount(), 1u);
 
@@ -491,6 +493,9 @@ class CountingSelectionSuggestionTool
     request_count_++;
     last_aoi_screenshot_ = processed_area.screenshot;
     last_aoi_apc_ = processed_area.apc;
+    last_selected_text_ = processed_area.selected_text;
+    last_text_surrounding_selection_ =
+        processed_area.text_surrounding_selection;
     if (std::holds_alternative<gfx::Rect>(processed_area.bounds)) {
       last_rect_ = std::get<gfx::Rect>(processed_area.bounds);
     }
@@ -508,6 +513,12 @@ class CountingSelectionSuggestionTool
   const optimization_guide::proto::AnnotatedPageContent& last_aoi_apc() const {
     return last_aoi_apc_;
   }
+  const std::optional<std::u16string>& last_selected_text() const {
+    return last_selected_text_;
+  }
+  const std::optional<std::u16string>& last_text_surrounding_selection() const {
+    return last_text_surrounding_selection_;
+  }
 
  private:
   raw_ptr<tabs::TabInterface> tab_;
@@ -515,9 +526,58 @@ class CountingSelectionSuggestionTool
   gfx::Rect last_rect_;
   SkBitmap last_aoi_screenshot_;
   optimization_guide::proto::AnnotatedPageContent last_aoi_apc_;
+  std::optional<std::u16string> last_selected_text_;
+  std::optional<std::u16string> last_text_surrounding_selection_;
 };
 
 }  // namespace
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
+                       ShowWithSelectionPopulatesSurroundingText) {
+  tabs::TabInterface* tab = CreateAndActivateTab(GetSimpleTestUrl());
+  content::WebContents* web_contents = tab->GetContents();
+
+  auto* suggestion_service = ::selection::SuggestionService::From(tab);
+  ASSERT_TRUE(suggestion_service);
+  CountingSelectionSuggestionTool counting_tool(tab);
+  ScopedToolRegistration registration(suggestion_service, &counting_tool);
+
+  ASSERT_TRUE(content::ExecJs(web_contents, R"(
+    document.body.innerText = 'Before text Selected target After text';
+    const textNode = document.body.firstChild;
+    const range = document.createRange();
+    range.setStart(textNode, 12);
+    range.setEnd(textNode, 27);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+  )"));
+
+  auto* controller =
+      SelectionOverlayController::FromTabWebContents(web_contents);
+  ASSERT_TRUE(controller);
+
+  gfx::Rect view_bounds = web_contents->GetViewBounds();
+  gfx::Rect selection_bounds(view_bounds.x() + 10, view_bounds.y() + 10, 100,
+                             50);
+  controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
+                                selection_bounds);
+  ASSERT_OK(RunUntilEqual(
+      [&]() { return controller->state(); },
+      SelectionOverlayController::State::kOverlay,
+      "Timeout waiting for SelectionOverlayController state to be kOverlay"));
+
+  auto* handler =
+      static_cast<selection::SelectionOverlayPageHandler*>(controller);
+  TestSuggestedActionsListener listener;
+  handler->GetSuggestedActions(listener.BindNewPipeAndPassRemote());
+  listener.WaitForBatches(1);
+
+  EXPECT_EQ(counting_tool.request_count(), 1);
+  EXPECT_EQ(counting_tool.last_selected_text(), u"Selected target");
+  EXPECT_EQ(counting_tool.last_text_surrounding_selection(),
+            u"Before text Selected target After text");
+}
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
                        SuggestionsCachedPerRegionAndRefetchedOnAdjust) {

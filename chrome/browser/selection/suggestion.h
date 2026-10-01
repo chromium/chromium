@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SELECTION_SUGGESTION_H_
 #define CHROME_BROWSER_SELECTION_SUGGESTION_H_
 
+#include <optional>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -36,6 +37,8 @@ struct AreaOfInterest {
   optimization_guide::proto::AnnotatedPageContent apc;
   SkBitmap screenshot;
   std::variant<gfx::Rect, std::vector<gfx::Point>> bounds;
+  std::optional<std::u16string> selected_text;
+  std::optional<std::u16string> text_surrounding_selection;
 };
 
 class Suggestion {
