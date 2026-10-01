@@ -18,7 +18,6 @@ import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabObserver;
@@ -446,23 +445,27 @@ abstract class TabListLayoutDelegate implements TabGroupObserver, TabObserver {
         mModelList.add(finalIndex, item);
     }
 
+    @Override
+    public void onContentChanged(Tab tab) {
+        if (!mMediator.isTrackingTabs()) return;
+        if (isChildTabRepresentedByGroupCard(tab)) {
+            updateGroupThumbnailForTab(tab);
+            return;
+        }
+
+        PropertyModel model = getModelFromTabId(tab.getId());
+        if (model != null) {
+            mMediator.updateActorUiState(model, tab);
+        }
+    }
+
     /**
      * Handles UI model updates when a tab's Actor UI state changes.
      *
      * @param updatedTab The {@link Tab} whose Actor UI state changed.
-     * @param state The new {@link UiTabState}.
      */
-    void onUiTabStateChanged(Tab updatedTab, UiTabState state) {
-        if (!mMediator.isTrackingTabs()) return;
-        if (isChildTabRepresentedByGroupCard(updatedTab)) {
-            updateGroupThumbnailForTab(updatedTab);
-            return;
-        }
-
-        PropertyModel model = getModelFromTabId(updatedTab.getId());
-        if (model != null) {
-            mMediator.updateActorUiState(model, state);
-        }
+    void onUiTabStateChanged(Tab updatedTab) {
+        onContentChanged(updatedTab);
     }
 
     /**

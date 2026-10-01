@@ -484,6 +484,47 @@ public class ActorOverlayCoordinatorTest {
     }
 
     @Test
+    public void testUpdateCanShowOverlayOnContentChanged() {
+        verify(mTab).addObserver(mTabObserverCaptor.capture());
+
+        ActorUiTabController tabController = ActorUiTabController.from(mTab);
+        tabController.onUiTabStateChange(
+                new UiTabState(
+                        /* tabId= */ TAB_ID,
+                        /* actorOverlay= */ new ActorOverlayState(
+                                /* isActive= */ true,
+                                /* borderGlowVisible= */ false,
+                                /* mouseDown= */ false),
+                        /* handoffButton= */ new HandoffButtonState(
+                                /* isActive= */ true, /* controller= */ 0),
+                        /* tabIndicator= */ 0,
+                        /* borderGlowVisible= */ false));
+
+        // Tab starts on a native page (e.g. NTP). Overlay and handoff button should be hidden.
+        Mockito.when(mTab.isNativePage()).thenReturn(true);
+        clearInvocations(mView);
+        mTabObserverCaptor.getValue().onContentChanged(mTab);
+        verify(mView).setVisibility(View.GONE);
+        Assert.assertFalse(mCoordinator.getModelForTesting().get(ActorOverlayProperties.VISIBLE));
+        Assert.assertFalse(
+                mCoordinator
+                        .getModelForTesting()
+                        .get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
+
+        // Tab navigates away from the native page to a web page. Overlay and handoff button should
+        // become visible immediately on content change.
+        Mockito.when(mTab.isNativePage()).thenReturn(false);
+        clearInvocations(mView);
+        mTabObserverCaptor.getValue().onContentChanged(mTab);
+        verify(mView).setVisibility(View.VISIBLE);
+        Assert.assertTrue(mCoordinator.getModelForTesting().get(ActorOverlayProperties.VISIBLE));
+        Assert.assertTrue(
+                mCoordinator
+                        .getModelForTesting()
+                        .get(ActorOverlayProperties.TAKE_OVER_TASK_BUTTON_VISIBLE));
+    }
+
+    @Test
     public void testTabSwitchToNullHidesOverlay() {
         mCurrentTabSupplier.set(mTab);
 

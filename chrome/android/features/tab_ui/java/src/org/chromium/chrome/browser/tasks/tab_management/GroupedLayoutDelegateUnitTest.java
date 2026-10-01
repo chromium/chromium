@@ -553,6 +553,32 @@ public class GroupedLayoutDelegateUnitTest {
 
         mDelegate.onAlertStateChanged(mTab1, TabAlert.AUDIO_PLAYING);
         verify(mMediator, never()).updateDescriptionString(any());
+
+        mDelegate.onContentChanged(mTab1);
+        verify(mMediator, never()).updateThumbnailFetcher(any(), anyInt());
+        verify(mMediator, never()).updateActorUiState(any(), any(Tab.class));
+    }
+
+    @Test
+    public void testOnContentChanged_InTabGroup() {
+        when(mMediator.isTabInTabGroup(mTab2)).thenReturn(true);
+        when(mTabModel.getTabById(TAB2_ID)).thenReturn(mTab2);
+        when(mTab2.getTabGroupId()).thenReturn(TAB_GROUP_ID);
+        PropertyModel groupModel = createAndAddGroupCardModel(TAB_GROUP_ID, TAB1_ID);
+
+        mDelegate.onContentChanged(mTab2);
+        verify(mMediator).updateThumbnailFetcher(groupModel, TAB2_ID);
+        verify(mMediator, never()).updateActorUiState(any(), any(Tab.class));
+    }
+
+    @Test
+    public void testOnContentChanged_NotInTabGroup() {
+        when(mMediator.isTabInTabGroup(mTab1)).thenReturn(false);
+        PropertyModel tabModel = createAndAddPropertyModel(TAB1_ID);
+
+        mDelegate.onContentChanged(mTab1);
+        verify(mMediator).updateActorUiState(tabModel, mTab1);
+        verify(mMediator, never()).updateThumbnailFetcher(any(), anyInt());
     }
 
     @Test
@@ -563,7 +589,7 @@ public class GroupedLayoutDelegateUnitTest {
         when(mMediator.getIndexForTabIdWithRelatedTabs(TAB2_ID)).thenReturn(0);
         UiTabState state = new UiTabState(TAB2_ID, null, null, TabIndicatorStatus.DYNAMIC, false);
 
-        mDelegate.onUiTabStateChanged(mTab2, state);
+        mDelegate.onUiTabStateChanged(mTab2);
         verify(mMediator).updateThumbnailFetcher(groupModel, TAB2_ID);
         verify(mMediator, never()).updateActorUiState(any(), any());
     }
@@ -576,7 +602,7 @@ public class GroupedLayoutDelegateUnitTest {
         PropertyModel groupModel = createAndAddGroupCardModel(TAB_GROUP_ID, TAB1_ID);
         UiTabState state = new UiTabState(TAB2_ID, null, null, TabIndicatorStatus.DYNAMIC, false);
 
-        mDelegate.onUiTabStateChanged(mTab2, state);
+        mDelegate.onUiTabStateChanged(mTab2);
         verify(mMediator).updateThumbnailFetcher(groupModel, TAB2_ID);
         verify(mMediator, never()).updateActorUiState(any(), any());
     }
@@ -587,8 +613,8 @@ public class GroupedLayoutDelegateUnitTest {
         PropertyModel tabModel = createAndAddPropertyModel(TAB1_ID);
         UiTabState state = new UiTabState(TAB1_ID, null, null, TabIndicatorStatus.DYNAMIC, false);
 
-        mDelegate.onUiTabStateChanged(mTab1, state);
-        verify(mMediator).updateActorUiState(tabModel, state);
+        mDelegate.onUiTabStateChanged(mTab1);
+        verify(mMediator).updateActorUiState(tabModel, mTab1);
         verify(mMediator, never()).updateThumbnailFetcher(any(), anyInt());
     }
 

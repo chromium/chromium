@@ -160,6 +160,7 @@ import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider.TabFaviconMetad
 import org.chromium.chrome.browser.tab_ui.TabListMode;
 import org.chromium.chrome.browser.tab_ui.ThumbnailFetcher;
 import org.chromium.chrome.browser.tab_ui.ThumbnailProvider;
+import org.chromium.chrome.browser.tab_ui.ThumbnailProvider.MultiThumbnailMetadata;
 import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabGroupObserver;
@@ -6601,6 +6602,85 @@ public class TabListMediatorUnitTest {
                 TabIndicatorStatus.DYNAMIC, model.get(TabProperties.ACTOR_UI_STATE).tabIndicator);
     }
 
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    @Test
+    public void testActorUiState_SuppressedOnNativePage() {
+        when(mTab1.isNativePage()).thenReturn(true);
+        setUpActorState(mTab1, TabIndicatorStatus.DYNAMIC);
+        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+
+        PropertyModel model = mModelList.get(0).model;
+        assertNull(model.get(TabProperties.ACTOR_UI_STATE));
+
+        ArgumentCaptor<ActorUiTabController.Observer> observerCaptor =
+                ArgumentCaptor.forClass(ActorUiTabController.Observer.class);
+        verify(mActorUiTabController).addObserver(observerCaptor.capture());
+
+        // Observer updates while still on a native page should remain suppressed.
+        UiTabState dynamicState =
+                new UiTabState(TAB1_ID, null, null, TabIndicatorStatus.DYNAMIC, false);
+        observerCaptor.getValue().onUiTabStateChanged(dynamicState);
+        assertNull(model.get(TabProperties.ACTOR_UI_STATE));
+
+        // Navigating away from the native page should immediately restore the actor indicator.
+        when(mTab1.isNativePage()).thenReturn(false);
+        mTabObserverCaptor.getValue().onContentChanged(mTab1);
+        assertNotNull(model.get(TabProperties.ACTOR_UI_STATE));
+        assertEquals(
+                TabIndicatorStatus.DYNAMIC, model.get(TabProperties.ACTOR_UI_STATE).tabIndicator);
+
+        // Navigating back to a native page should clear the actor indicator.
+        when(mTab1.isNativePage()).thenReturn(true);
+        mTabObserverCaptor.getValue().onContentChanged(mTab1);
+        assertNull(model.get(TabProperties.ACTOR_UI_STATE));
+    }
+
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    @Test
+    public void testActorUiState_GroupedLayout_SuppressedOnNativePage() {
+        List<Tab> groupTabs = List.of(mTab1, mTab2);
+        Token tabGroupId = new Token(1L, 2L);
+        when(mTab1.getTabGroupId()).thenReturn(tabGroupId);
+        when(mTab2.getTabGroupId()).thenReturn(tabGroupId);
+        when(mTabModel.getRelatedTabList(TAB1_ID)).thenReturn(groupTabs);
+        when(mTabModel.getRelatedTabList(TAB2_ID)).thenReturn(groupTabs);
+        when(mTabModel.isTabInTabGroup(mTab1)).thenReturn(true);
+        when(mTabModel.isTabInTabGroup(mTab2)).thenReturn(true);
+        when(mTabModel.tabGroupExists(tabGroupId)).thenReturn(true);
+        when(mTabModel.getTabsInGroup(tabGroupId)).thenReturn(groupTabs);
+
+        when(mTab1.isNativePage()).thenReturn(true);
+        when(mTab2.isNativePage()).thenReturn(false);
+        setUpActorState(mTab1, TabIndicatorStatus.DYNAMIC);
+        setUpActorState(mTab2, TabIndicatorStatus.DYNAMIC);
+
+        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+
+        assertEquals(1, mModelList.size());
+        PropertyModel groupModel = mModelList.get(0).model;
+        ThumbnailFetcher fetcher = groupModel.get(TabProperties.THUMBNAIL_FETCHER);
+        assertNotNull(fetcher);
+
+        ArgumentCaptor<MultiThumbnailMetadata> metadataCaptor =
+                ArgumentCaptor.forClass(MultiThumbnailMetadata.class);
+        fetcher.fetch(new Size(100, 100), false, d -> {});
+        verify(mThumbnailProvider, atLeastOnce())
+                .getTabThumbnailWithCallback(metadataCaptor.capture(), any(), anyBoolean(), any());
+        assertEquals(List.of(TAB2_ID), metadataCaptor.getValue().actingTabIds);
+
+        // Navigating Tab 1 off the native page refreshes the group card thumbnail to include Tab 1.
+        when(mTab1.isNativePage()).thenReturn(false);
+        mTabObserverCaptor.getValue().onContentChanged(mTab1);
+
+        ThumbnailFetcher updatedFetcher = groupModel.get(TabProperties.THUMBNAIL_FETCHER);
+        assertNotNull(updatedFetcher);
+        Mockito.clearInvocations(mThumbnailProvider);
+        updatedFetcher.fetch(new Size(100, 100), false, d -> {});
+        verify(mThumbnailProvider, atLeastOnce())
+                .getTabThumbnailWithCallback(metadataCaptor.capture(), any(), anyBoolean(), any());
+        assertEquals(List.of(TAB1_ID, TAB2_ID), metadataCaptor.getValue().actingTabIds);
+    }
+
     @Test
     public void testTabUnderlineManager_NullInGridMode() {
         setUpTabListMediator(TabListMediatorType.TAB_SWITCHER, TabListMode.GRID);
@@ -7275,7 +7355,7 @@ public class TabListMediatorUnitTest {
     }
 
     private ThumbnailProvider getTabThumbnailCallback() {
-        return new TabContentManagerThumbnailProvider(mTabContentManager);
+        return spy(new TabContentManagerThumbnailProvider(mTabContentManager));
     }
 
     private static void setPriceTrackingEnabledForTesting(boolean value) {
