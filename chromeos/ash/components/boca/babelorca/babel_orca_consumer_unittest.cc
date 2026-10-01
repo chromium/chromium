@@ -50,11 +50,11 @@
 namespace ash::babelorca {
 namespace {
 
-const std::string kEnglishUsLocale = "en-US";
-const std::string kSpanishUsLocale = "es-US";
+constexpr char kEnglishUsLocale[] = "en-US";
+constexpr char kSpanishUsLocale[] = "es-US";
 const GaiaId::Literal kGaiaId("gaia-id");
-const std::string kSessionId = "session_id";
-const std::string kEmail = "test@school.edu";
+constexpr char kSessionId[] = "session_id";
+constexpr char kEmail[] = "test@school.edu";
 constexpr char kTestSTUrl[] = "https://test";
 constexpr char kReceivingStoppedReasonUma[] =
     "Ash.Boca.Babelorca.ReceivingStoppedReason";

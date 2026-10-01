@@ -29,7 +29,7 @@
 namespace ash::babelorca {
 namespace {
 
-const std::string kApplicationLocale = "en-US";
+constexpr char kApplicationLocale[] = "en-US";
 
 void VerifyStyle(const ui::CaptionStyle& style,
                  const std::string& text_size = kCaptionsTextSize) {

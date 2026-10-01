@@ -19,8 +19,8 @@
 namespace ash::babelorca {
 namespace {
 
-const std::string kLanguage1 = "fr";
-const std::string kLanguage2 = "en";
+constexpr char kLanguage1[] = "fr";
+constexpr char kLanguage2[] = "en";
 
 class FakeTranscriptSender : public TranscriptSender {
  public:

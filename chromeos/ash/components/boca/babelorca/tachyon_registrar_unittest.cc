@@ -18,8 +18,8 @@
 
 namespace ash::babelorca {
 
-const std::string kClientUuid = "client-uuid";
-const std::string kTachyonToken = "tachyon-token";
+constexpr char kClientUuid[] = "client-uuid";
+constexpr char kTachyonToken[] = "tachyon-token";
 
 TEST(TachyonRegistrarTest, SuccessfulRegistration) {
   base::test::TaskEnvironment task_env;

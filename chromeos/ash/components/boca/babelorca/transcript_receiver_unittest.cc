@@ -37,7 +37,7 @@ using ResultFuture =
     base::test::RepeatingTestFuture<media::SpeechRecognitionResult,
                                     std::string>;
 
-const std::string kLanguage = "fr";
+constexpr char kLanguage[] = "fr";
 constexpr base::TimeDelta kInitialBackoff = base::Milliseconds(250);
 
 class TranscriptReceiverTest : public testing::Test {

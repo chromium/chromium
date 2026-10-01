@@ -47,7 +47,7 @@
 namespace ash::babelorca {
 namespace {
 
-const std::string kLanguage = "en-US";
+constexpr char kLanguage[] = "en-US";
 constexpr char kSendingStoppedReasonUma[] =
     "Ash.Boca.Babelorca.SendingStoppedReason";
 

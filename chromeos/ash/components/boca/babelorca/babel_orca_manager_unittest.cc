@@ -35,11 +35,11 @@
 namespace ash::boca {
 namespace {
 
-const std::string kTachyonToken = "tachyon-token";
-const std::string kSecondTachyonToken = "second-tachyon-token";
-const std::string kSessionId = "session-id";
-const std::string kSenderEmail = "user@email.com";
-const std::string kGroupId = "tachyon-group-id";
+constexpr char kTachyonToken[] = "tachyon-token";
+constexpr char kSecondTachyonToken[] = "second-tachyon-token";
+constexpr char kSessionId[] = "session-id";
+constexpr char kSenderEmail[] = "user@email.com";
+constexpr char kGroupId[] = "tachyon-group-id";
 
 class MockBabelOrcaController : public babelorca::BabelOrcaController {
  public:

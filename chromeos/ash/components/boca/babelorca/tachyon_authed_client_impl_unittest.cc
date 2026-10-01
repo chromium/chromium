@@ -27,8 +27,8 @@ constexpr char kOAuthToken1[] = "oauth-token1";
 constexpr char kOAuthToken2[] = "oauth-token2";
 constexpr int kMaxRetries = 2;
 constexpr char kUrl[] = "https:://test.com";
-const std::string kProtoContentType = "application/x-protobuf";
-const std::string kJsonContentType = "application/json";
+constexpr char kProtoContentType[] = "application/x-protobuf";
+constexpr char kJsonContentType[] = "application/json";
 
 class TachyonAuthedClientImplTest : public testing::Test {
  protected:

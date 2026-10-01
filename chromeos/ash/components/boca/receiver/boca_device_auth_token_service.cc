@@ -11,6 +11,7 @@
 
 #include "base/notimplemented.h"
 #include "base/sequence_checker.h"
+#include "base/strings/string_util.h"
 #include "base/time/clock.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/auth_service_observer.h"
@@ -65,8 +66,8 @@ bool BocaDeviceAuthTokenServiceBase::HasRefreshToken() const {
 
 const std::string& BocaDeviceAuthTokenServiceBase::access_token() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  static const std::string kEmptyToken = "";
-  return HasAccessToken() ? access_token_data_->access_token : kEmptyToken;
+  return HasAccessToken() ? access_token_data_->access_token
+                          : base::EmptyString();
 }
 
 void BocaDeviceAuthTokenServiceBase::ClearAccessToken() {
