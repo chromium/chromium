@@ -3990,6 +3990,14 @@ void NavigationRequest::OnRequestRedirected(
   commit_params_->redirects.push_back(common_params_->url);
   common_params_->url = redirect_info.new_url;
   common_params_->method = redirect_info.new_method;
+
+  // Clear the host filter match on redirect so that it only applies to the
+  // final URL. The ad tagged (regardless of host filter match) state is sticky,
+  // so we set it to kAdTagged rather than kNone.
+  if (ad_status_ == AdStatus::kAdTaggedByHostFilter) {
+    ad_status_ = AdStatus::kAdTagged;
+  }
+
   common_params_->referrer->url = GURL(redirect_info.new_referrer);
   common_params_->referrer = Referrer::SanitizeForRequest(
       common_params_->url, *common_params_->referrer);

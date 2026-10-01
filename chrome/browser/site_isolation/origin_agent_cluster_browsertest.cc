@@ -940,6 +940,37 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(content::HasOriginKeyedProcess(grandchild));
 }
 
+// A frame whose navigation starts at an ad URL and redirects to a non-ad URL
+// must be origin-keyed. The host filter ad bit is calculated again for each
+// redirect, so an attacker cannot use a redirect through an ad URL to force a
+// victim document into a site-keyed process.
+IN_PROC_BROWSER_TEST_F(OriginKeyedProcessByDefaultBrowserTest,
+                       AdUrlRedirectsToNonAdUrlIsOriginKeyed) {
+  GURL main_frame_url(https_server()->GetURL("foo.com", "/iframe_blank.html"));
+  GURL victim_url(https_server()->GetURL("other.bar.com", "/title1.html"));
+  GURL ad_redirect_url(https_server()->GetURL(
+      "ad.bar.com", "/server-redirect?" + victim_url.spec()));
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  content::TestNavigationManager nav_manager(web_contents, ad_redirect_url);
+  EXPECT_TRUE(
+      content::BeginNavigateIframeToURL(web_contents, "test", ad_redirect_url));
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+
+  content::RenderFrameHost* child =
+      ChildFrameAt(web_contents->GetPrimaryMainFrame(), 0);
+  ASSERT_TRUE(child);
+  EXPECT_EQ(victim_url, child->GetLastCommittedURL());
+
+  // The final URL does not match the ad host filter, so the frame must get the
+  // default origin-keyed process.
+  EXPECT_TRUE(content::HasOriginKeyedProcess(child));
+}
+
 class OriginAgentClusterOacOnlyBrowserTest
     : public OriginAgentClusterAdBrowserTest {
  public:

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_CHILD_FRAME_NAVIGATION_FILTERING_THROTTLE_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_CHILD_FRAME_NAVIGATION_FILTERING_THROTTLE_H_
 
+#include <stddef.h>
+
 #include <optional>
 #include <string>
 
@@ -89,6 +91,7 @@ class ChildFrameNavigationFilteringThrottle
 
   void OnCalculatedLoadPolicy(LoadPolicy policy);
   void OnCalculatedLoadPolicyForUrl(
+      size_t redirect_chain_size,
       AsyncDocumentSubresourceFilter::LoadPolicyResult result);
   void OnCalculatedLoadPoliciesFromAliasUrls(
       std::vector<AsyncDocumentSubresourceFilter::LoadPolicyResult> results);

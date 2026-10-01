@@ -11,6 +11,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -21,6 +22,8 @@
 #include "components/subresource_filter/core/browser/subresource_filter_constants.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/navigation_throttle_registry.h"
 #include "content/public/test/test_navigation_throttle_inserter.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -80,6 +83,41 @@ class TestChildFrameNavigationFilteringThrottle
   }
 };
 
+class RedirectDeferringThrottle : public content::NavigationThrottle {
+ public:
+  explicit RedirectDeferringThrottle(
+      content::NavigationThrottleRegistry& registry)
+      : content::NavigationThrottle(registry) {}
+
+  RedirectDeferringThrottle(const RedirectDeferringThrottle&) = delete;
+  RedirectDeferringThrottle& operator=(const RedirectDeferringThrottle&) =
+      delete;
+
+  ~RedirectDeferringThrottle() override = default;
+
+  // content::NavigationThrottle:
+  ThrottleCheckResult WillRedirectRequest() override {
+    return defer_redirects_ ? DEFER : PROCEED;
+  }
+  const char* GetNameForLogging() override {
+    return "RedirectDeferringThrottle";
+  }
+
+  void set_defer_redirects(bool defer_redirects) {
+    defer_redirects_ = defer_redirects;
+  }
+
+  using content::NavigationThrottle::Resume;
+
+  base::WeakPtr<RedirectDeferringThrottle> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  bool defer_redirects_ = false;
+  base::WeakPtrFactory<RedirectDeferringThrottle> weak_ptr_factory_{this};
+};
+
 class ChildFrameNavigationFilteringThrottleTest
     : public ChildFrameNavigationFilteringThrottleTestHarness {
  public:
@@ -104,6 +142,15 @@ class ChildFrameNavigationFilteringThrottleTest
               // register a throttle if the parent is not activated with a valid
               // filter.
               if (parent_filter_) {
+                // Add this throttle first, so that it runs before the filter
+                // throttle.
+                if (add_redirect_deferring_throttle_) {
+                  auto redirect_deferring_throttle =
+                      std::make_unique<RedirectDeferringThrottle>(registry);
+                  redirect_deferring_throttle_ =
+                      redirect_deferring_throttle->GetWeakPtr();
+                  registry.AddThrottle(std::move(redirect_deferring_throttle));
+                }
                 auto throttle =
                     std::make_unique<TestChildFrameNavigationFilteringThrottle>(
                         registry, parent_filter_.get(),
@@ -149,6 +196,8 @@ class ChildFrameNavigationFilteringThrottleTest
 
   bool alias_check_enabled_ = false;
   bool destroy_parent_filter_after_throttle_creation_ = false;
+  bool add_redirect_deferring_throttle_ = false;
+  base::WeakPtr<RedirectDeferringThrottle> redirect_deferring_throttle_;
   std::optional<bool> last_matched_subdomain_disallow_rule_;
   base::OnceClosure quit_closure_;
   std::unique_ptr<content::TestNavigationThrottleInserter> throttle_inserter_;
@@ -274,6 +323,82 @@ TEST_F(ChildFrameNavigationFilteringThrottleTest,
       content::NavigationThrottle::PROCEED,
       SimulateRedirectAndGetResult(navigation_simulator(),
                                    GURL("https://example.test/allowed2.html")));
+  WaitForThrottle();
+  EXPECT_FALSE(last_matched_subdomain_disallow_rule_.value_or(true));
+}
+
+// A different throttle can defer WillRedirectRequest() before the filter
+// throttle checks the new URL. In dry-run mode, the filter throttle can receive
+// the result for the earlier URL while the navigation is deferred. Make sure
+// that the new URL does not get the subdomain match of the earlier URL.
+TEST_F(ChildFrameNavigationFilteringThrottleTest,
+       MatchedSubdomainDisallowRule_IgnoresLateResultForEarlierUrl) {
+  InitializeDocumentSubresourceFilterWithSubdomainRule(
+      GURL("https://example.test"), "anchored_disallowed.com",
+      mojom::ActivationLevel::kDryRun);
+  add_redirect_deferring_throttle_ = true;
+
+  CreateTestSubframeAndInitNavigation(
+      GURL("https://anchored_disallowed.com/foo.html"), main_rfh());
+  navigation_simulator()->SetAutoAdvance(false);
+  navigation_simulator()->Start();
+  ASSERT_FALSE(navigation_simulator()->IsDeferred());
+  // The ruleset check for the ad URL is not complete.
+  ASSERT_FALSE(last_matched_subdomain_disallow_rule_.has_value());
+
+  ASSERT_TRUE(redirect_deferring_throttle_);
+  redirect_deferring_throttle_->set_defer_redirects(true);
+  navigation_simulator()->Redirect(GURL("https://example.test/allowed.html"));
+  ASSERT_TRUE(navigation_simulator()->IsDeferred());
+
+  // The filter throttle receives the result for the ad URL while the
+  // navigation is deferred.
+  WaitForThrottle();
+  EXPECT_TRUE(navigation_simulator()->IsDeferred());
+  EXPECT_FALSE(last_matched_subdomain_disallow_rule_.value_or(true));
+
+  redirect_deferring_throttle_->Resume();
+  EXPECT_FALSE(navigation_simulator()->IsDeferred());
+  WaitForThrottle();
+  EXPECT_FALSE(last_matched_subdomain_disallow_rule_.value_or(true));
+}
+
+// The navigation goes from an ad URL to a second URL, and then to a third URL.
+// The filter throttle receives the result for the second URL after the
+// redirect to the third URL, and ignores it. Make sure that the third URL does
+// not get the subdomain match of the ad URL.
+TEST_F(ChildFrameNavigationFilteringThrottleTest,
+       MatchedSubdomainDisallowRule_ClearedWhenLateResultIgnored) {
+  InitializeDocumentSubresourceFilterWithSubdomainRule(
+      GURL("https://example.test"), "anchored_disallowed.com",
+      mojom::ActivationLevel::kDryRun);
+  add_redirect_deferring_throttle_ = true;
+
+  CreateTestSubframeAndInitNavigation(
+      GURL("https://anchored_disallowed.com/foo.html"), main_rfh());
+  navigation_simulator()->SetAutoAdvance(false);
+  navigation_simulator()->Start();
+  WaitForThrottle();
+  EXPECT_TRUE(last_matched_subdomain_disallow_rule_.value_or(false));
+
+  // The ruleset check for the second URL does not complete before the next
+  // redirect.
+  navigation_simulator()->Redirect(GURL("https://example.test/allowed.html"));
+  ASSERT_FALSE(navigation_simulator()->IsDeferred());
+
+  ASSERT_TRUE(redirect_deferring_throttle_);
+  redirect_deferring_throttle_->set_defer_redirects(true);
+  navigation_simulator()->Redirect(GURL("https://example.test/allowed2.html"));
+  ASSERT_TRUE(navigation_simulator()->IsDeferred());
+
+  // The filter throttle receives the result for the second URL while the
+  // navigation is deferred.
+  WaitForThrottle();
+  EXPECT_TRUE(navigation_simulator()->IsDeferred());
+  EXPECT_FALSE(last_matched_subdomain_disallow_rule_.value_or(true));
+
+  redirect_deferring_throttle_->Resume();
+  EXPECT_FALSE(navigation_simulator()->IsDeferred());
   WaitForThrottle();
   EXPECT_FALSE(last_matched_subdomain_disallow_rule_.value_or(true));
 }
