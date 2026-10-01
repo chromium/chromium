@@ -919,6 +919,7 @@ if (!is_android) {
       "//components/commerce/core:feature_list",
       "//components/commerce/core:shopping_service",
       "//components/commerce/core:shopping_service_test_support",
+      "//components/javascript_dialogs",
       "//components/policy:generated",
       "//components/policy:policy_code_generate",
       "//components/policy/core/browser",
