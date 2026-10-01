@@ -22,7 +22,7 @@ option features.utf8_validation = NONE;
 // Almost all the fields should be populated on every upload. (The only
 // exception is some fields in the stability section that are only uploaded
 // once per browsing session, usually shortly after startup.)
-// Next tag: 53
+// Next tag: 54
 message SystemProfileProto {
   // The time when the client was compiled/linked, in seconds since the epoch.
   int64 build_timestamp = 1;
@@ -1217,8 +1217,11 @@ message SystemProfileProto {
 
     reserved WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST;
 
-    // Hardware Decryption CDM only for Chrome on Windows.
-    MEDIA_FOUNDATION_WIDEVINE_CDM = 30;
+    // Removed in cl/932529662.
+    reserved 30;
+
+    reserved MEDIA_FOUNDATION_WIDEVINE_CDM;
+
     CROWD_DENY = 31;
     APP_PROVISIONING = 32;
     AUTOFILL_STATES = 33;
@@ -1691,4 +1694,19 @@ message SystemProfileProto {
 
   // Enterprise management status of the client.
   EnterpriseManagement enterprise_management = 51;
+
+  // State of the site token provider feature on the client.
+  // Next tag: 2
+  message SiteTokenProviderState {
+    // Whether the site token provider sync pref is enabled by the server for
+    // the account of any loaded profile in this browser session
+    // (user-data-dir). Guest, System, and Incognito/OTR profiles are not
+    // considered.
+    //
+    // Unset when the state is unknown, e.g. on platforms that do not report it.
+    bool sync_pref_enabled = 1;
+  }
+
+  // Site token provider state of the client.
+  SiteTokenProviderState site_token_provider_state = 53;
 }

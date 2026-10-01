@@ -150,8 +150,6 @@ SystemProfileProto_ComponentId ComponentMetricsProvider::CrxIdToComponentId(
        SystemProfileProto_ComponentId_PEPPER_FLASH},
       {"mjdmdobabdmfcbaakcaadileafkmifen",
        SystemProfileProto_ComponentId_RTANALYTICS_FULL},
-      {"neifaoindggfcjicffkgpmnlppeffabd",
-       SystemProfileProto_ComponentId_MEDIA_FOUNDATION_WIDEVINE_CDM},
       {"npdjjkjlcidkjlamlmmdelcjbcpdjocm",
        SystemProfileProto_ComponentId_RECOVERY},
       {"obedbbhbpmojnkanicioggnmelmoomoc",
