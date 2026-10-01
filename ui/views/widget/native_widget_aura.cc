@@ -367,10 +367,18 @@ void NativeWidgetAura::InitNativeWidget(Widget::InitParams params) {
     tooltip_manager_ = std::make_unique<views::TooltipManagerAura>(this);
   }
 
-  drop_helper_ = std::make_unique<DropHelper>(GetWidget()->GetRootView());
-  if (params.type != Widget::InitParams::TYPE_TOOLTIP &&
-      params.type != Widget::InitParams::TYPE_POPUP) {
-    aura::client::SetDragDropDelegate(window_, this);
+  if (base::FeatureList::IsEnabled(
+          views::features::kDisableDragDropForUnneededWidgets)) {
+    if (ShouldEnableDragDrop(params)) {
+      drop_helper_ = std::make_unique<DropHelper>(GetWidget()->GetRootView());
+      aura::client::SetDragDropDelegate(window_, this);
+    }
+  } else {
+    drop_helper_ = std::make_unique<DropHelper>(GetWidget()->GetRootView());
+    if (params.type != Widget::InitParams::TYPE_TOOLTIP &&
+        params.type != Widget::InitParams::TYPE_POPUP) {
+      aura::client::SetDragDropDelegate(window_, this);
+    }
   }
 
   if (params.type == Widget::InitParams::TYPE_WINDOW) {
@@ -454,8 +462,9 @@ void NativeWidgetAura::ReorderNativeViews() {
 }
 
 void NativeWidgetAura::ViewRemoved(View* view) {
-  DCHECK(drop_helper_.get() != nullptr);
-  drop_helper_->ResetTargetViewIfEquals(view);
+  if (drop_helper_) {
+    drop_helper_->ResetTargetViewIfEquals(view);
+  }
 }
 
 void NativeWidgetAura::SetNativeWindowProperty(const char* name, void* value) {
@@ -1426,14 +1435,16 @@ void NativeWidgetAura::OnWindowFocused(aura::Window* gained_focus,
 // NativeWidgetAura, aura::WindowDragDropDelegate implementation:
 
 void NativeWidgetAura::OnDragEntered(const ui::DropTargetEvent& event) {
-  DCHECK(drop_helper_.get() != nullptr);
+  // Can only be called if drag and drop is enabled for this widget.
+  CHECK(drop_helper_);
   last_drop_operation_ = drop_helper_->OnDragOver(
       event.data(), event.location(), event.source_operations());
 }
 
 aura::client::DragUpdateInfo NativeWidgetAura::OnDragUpdated(
     const ui::DropTargetEvent& event) {
-  DCHECK(drop_helper_.get() != nullptr);
+  // Can only be called if drag and drop is enabled for this widget.
+  CHECK(drop_helper_);
   last_drop_operation_ = drop_helper_->OnDragOver(
       event.data(), event.location(), event.source_operations());
   return aura::client::DragUpdateInfo(
@@ -1442,13 +1453,15 @@ aura::client::DragUpdateInfo NativeWidgetAura::OnDragUpdated(
 }
 
 void NativeWidgetAura::OnDragExited() {
-  DCHECK(drop_helper_.get() != nullptr);
+  // Can only be called if drag and drop is enabled for this widget.
+  CHECK(drop_helper_);
   drop_helper_->OnDragExit();
 }
 
 aura::client::DragDropDelegate::DropCallback NativeWidgetAura::GetDropCallback(
     const ui::DropTargetEvent& event) {
-  DCHECK(drop_helper_);
+  // Can only be called if drag and drop is enabled for this widget.
+  CHECK(drop_helper_);
   return drop_helper_->GetDropCallback(event.data(), event.location(),
                                        last_drop_operation_);
 }

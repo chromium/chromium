@@ -507,6 +507,12 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   bool accept_events() const { return accept_events_; }
   void set_accept_events(bool accept_events) { accept_events_ = accept_events; }
 
+  // Whether the bubble accepts drag and drop.
+  bool accept_drag_drop() const { return accept_drag_drop_; }
+  void set_accept_drag_drop(bool accept_drag_drop) {
+    accept_drag_drop_ = accept_drag_drop;
+  }
+
   // Whether focus can traverse from the anchor view into the bubble. Only
   // meaningful if there is an anchor view.
   // TODO(pbos): See if this can be inferred from if the bubble is activatable
@@ -762,6 +768,7 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate {
   mutable std::optional<gfx::Rect> anchor_rect_;
 
   bool accept_events_ = true;
+  bool accept_drag_drop_ = false;
   gfx::NativeView parent_window_ = gfx::NativeView();
 
   // By default, all BubbleDialogDelegates have parent windows.

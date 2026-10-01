@@ -1217,7 +1217,9 @@ void DesktopWindowTreeHostWin::HandleDestroying() {
     return;
   }
   called_handle_destroying_ = true;
-  drag_drop_client_->OnNativeWidgetDestroying(GetHWND());
+  if (drag_drop_client_) {
+    drag_drop_client_->OnNativeWidgetDestroying(GetHWND());
+  }
   if (native_widget_delegate_) {
     native_widget_delegate_->OnNativeWidgetDestroying();
   }

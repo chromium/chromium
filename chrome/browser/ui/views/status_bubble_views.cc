@@ -757,6 +757,7 @@ void StatusBubbleViews::InitPopup() {
 #endif
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
     params.accept_events = false;
+    params.accept_drag_drop = false;
     views::Widget* widget = base_view_->GetWidget();
     params.parent = widget->GetNativeView();
     params.context = widget->GetNativeWindow();

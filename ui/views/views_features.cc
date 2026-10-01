@@ -25,6 +25,12 @@ BASE_FEATURE(kAllowWindowCaptureExclusionInRemoteSessions,
 // stable.
 BASE_FEATURE(kApplyInitialUrlToWebContents, base::FEATURE_ENABLED_BY_DEFAULT);
 
+// When enabled, drag and drop is only enabled for widgets that accept drag and
+// drop and require drag and drop support (e.g. not tooltips, popups, or
+// widgets where accept_events is false).
+BASE_FEATURE(kDisableDragDropForUnneededWidgets,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables input protection by blocking interaction with views that are
 // currently or were recently obscured by always-on-top windows, and prevents
 // unintended events on security-sensitive UI that appears and activates

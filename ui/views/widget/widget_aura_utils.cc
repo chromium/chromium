@@ -29,4 +29,11 @@ aura::client::WindowType GetAuraWindowTypeForWidgetType(
   }
 }
 
+bool ShouldEnableDragDrop(const Widget::InitParams& params) {
+  return params.accept_drag_drop.value_or(
+      params.accept_events && params.type != Widget::InitParams::TYPE_TOOLTIP &&
+      params.type != Widget::InitParams::TYPE_POPUP &&
+      params.type != Widget::InitParams::TYPE_DRAG);
+}
+
 }  // namespace views

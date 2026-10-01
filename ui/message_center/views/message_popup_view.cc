@@ -172,6 +172,7 @@ std::unique_ptr<views::Widget> MessagePopupView::Show() {
 #else
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 #endif
+  params.accept_drag_drop = false;
   params.delegate = this;
   auto widget = std::make_unique<views::Widget>();
   popup_collection_->ConfigureWidgetInitParamsForContainer(widget.get(),

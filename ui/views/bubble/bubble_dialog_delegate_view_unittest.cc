@@ -1865,4 +1865,12 @@ TEST_F(BubbleDialogDelegateViewTest, AdjustIfOffscreenClampsToWorkArea) {
   unadjusted_widget->CloseNow();
 }
 
+TEST_F(BubbleDialogDelegateViewTest, AcceptDragDrop) {
+  auto bubble_delegate =
+      std::make_unique<TestBubbleDialogDelegateView>(nullptr);
+  EXPECT_FALSE(bubble_delegate->accept_drag_drop());
+  bubble_delegate->set_accept_drag_drop(true);
+  EXPECT_TRUE(bubble_delegate->accept_drag_drop());
+}
+
 }  // namespace views

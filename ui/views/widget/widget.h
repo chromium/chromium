@@ -371,6 +371,11 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
 
     bool accept_events = true;
 
+    // Whether drag and drop should be enabled for this widget. If nullopt, it
+    // is inferred based on `accept_events` and `type` (e.g. disabled if
+    // `!accept_events` or `type == TYPE_TOOLTIP` or `type == TYPE_DRAG`).
+    std::optional<bool> accept_drag_drop;
+
     Activatable activatable = Activatable::kDefault;
 
     // The class of window and its overall z-order level. This level is visible

@@ -207,6 +207,7 @@ void TooltipAura::CreateTooltipWidget(const gfx::Rect& bounds,
   DCHECK(params.context);
   params.z_order = ui::ZOrderLevel::kFloatingUIElement;
   params.accept_events = false;
+  params.accept_drag_drop = false;
   params.bounds = bounds;
   if (CanUseTranslucentTooltipWidget()) {
     params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;

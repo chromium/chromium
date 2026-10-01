@@ -16,6 +16,8 @@
 #include "build/build_config.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/cursor_client.h"
+#include "ui/aura/client/drag_drop_client.h"
+#include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/client/window_parenting_client.h"
 #include "ui/aura/env.h"
@@ -997,6 +999,98 @@ TEST_F(DesktopNativeWidgetAuraTest, Reparent) {
   WidgetDestroyedWaiter destroy_waiter(&widget);
   root.Close();
   destroy_waiter.Wait();
+}
+
+TEST_F(DesktopNativeWidgetAuraTest, DragDropClientGated) {
+  // When the feature is disabled (default), drag and drop is enabled for all
+  // widgets, preserving the old behavior.
+  {
+    Widget widget;
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
+    params.accept_drag_drop = false;
+    widget.Init(std::move(params));
+    EXPECT_NE(nullptr, aura::client::GetDragDropClient(
+                           widget.GetNativeWindow()->GetRootWindow()));
+    EXPECT_NE(nullptr,
+              aura::client::GetDragDropDelegate(widget.GetNativeWindow()));
+  }
+
+  // When the feature is enabled, drag and drop is not enabled on widgets that
+  // do not need it.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      views::features::kDisableDragDropForUnneededWidgets);
+
+  // By default, a desktop window widget has a drag drop client and delegate.
+  {
+    Widget widget;
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
+    widget.Init(std::move(params));
+    EXPECT_NE(nullptr, aura::client::GetDragDropClient(
+                           widget.GetNativeWindow()->GetRootWindow()));
+    EXPECT_NE(nullptr,
+              aura::client::GetDragDropDelegate(widget.GetNativeWindow()));
+  }
+
+  // Explicitly disabling drag and drop.
+  {
+    Widget widget;
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_WINDOW);
+    params.accept_drag_drop = false;
+    widget.Init(std::move(params));
+    EXPECT_EQ(nullptr, aura::client::GetDragDropClient(
+                           widget.GetNativeWindow()->GetRootWindow()));
+    EXPECT_EQ(nullptr,
+              aura::client::GetDragDropDelegate(widget.GetNativeWindow()));
+
+    // Removing a view should not crash even if drop_helper_ is null.
+    auto* view = widget.GetRootView()->AddChildView(std::make_unique<View>());
+    widget.GetRootView()->RemoveChildViewT(view);
+  }
+
+  // accept_events = false automatically disables drag and drop.
+  {
+    Widget widget;
+    Widget::InitParams params = CreateParams(
+        Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+    params.accept_events = false;
+    widget.Init(std::move(params));
+    EXPECT_EQ(nullptr, aura::client::GetDragDropClient(
+                           widget.GetNativeWindow()->GetRootWindow()));
+    EXPECT_EQ(nullptr,
+              aura::client::GetDragDropDelegate(widget.GetNativeWindow()));
+  }
+
+  // TYPE_TOOLTIP automatically disables drag and drop.
+  {
+    Widget widget;
+    Widget::InitParams params =
+        CreateParams(Widget::InitParams::CLIENT_OWNS_WIDGET,
+                     Widget::InitParams::TYPE_TOOLTIP);
+    widget.Init(std::move(params));
+    EXPECT_EQ(nullptr, aura::client::GetDragDropClient(
+                           widget.GetNativeWindow()->GetRootWindow()));
+    EXPECT_EQ(nullptr,
+              aura::client::GetDragDropDelegate(widget.GetNativeWindow()));
+  }
+
+  // TYPE_POPUP automatically disables drag and drop.
+  {
+    Widget widget;
+    Widget::InitParams params = CreateParams(
+        Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+    widget.Init(std::move(params));
+    EXPECT_EQ(nullptr, aura::client::GetDragDropClient(
+                           widget.GetNativeWindow()->GetRootWindow()));
+    EXPECT_EQ(nullptr,
+              aura::client::GetDragDropDelegate(widget.GetNativeWindow()));
+  }
 }
 
 }  // namespace views::test
