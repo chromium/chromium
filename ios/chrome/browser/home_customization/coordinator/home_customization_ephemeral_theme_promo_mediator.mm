@@ -6,8 +6,6 @@
 
 #import "base/files/file_path.h"
 #import "base/memory/raw_ptr.h"
-#import "base/strings/string_number_conversions.h"
-#import "base/strings/string_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
@@ -87,28 +85,11 @@
 #pragma mark - Public
 
 - (void)applyEphemeralTheme {
-  if (!_prefService || !_backgroundCustomizationService) {
+  if (!_backgroundCustomizationService) {
     return;
   }
 
-  const base::DictValue& savedThemeData =
-      _prefService->GetDict(prefs::kIosNtpEphemeralThemeData);
-  const std::string* seedHex =
-      savedThemeData.FindString(kEphemeralThemeSeedColorKey);
-  if (!seedHex) {
-    return;
-  }
-
-  std::string_view trimmed =
-      base::TrimString(*seedHex, "#", base::TRIM_LEADING);
-  uint32_t rgbValue = 0;
-  if (trimmed.length() != 6 || !base::HexStringToUInt(trimmed, &rgbValue)) {
-    return;
-  }
-
-  _backgroundCustomizationService->SetCurrentEphemeralTheme(
-      SkColorSetA(rgbValue, 0xFF), sync_pb::UserColorTheme::TONAL_SPOT);
-  _backgroundCustomizationService->StoreCurrentTheme();
+  _backgroundCustomizationService->MaybeApplyEphemeralTheme();
 }
 
 - (void)disconnect {

@@ -60,6 +60,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/ephemeral_theme_promo_commands.h"
 #import "ios/chrome/browser/shared/public/commands/level_up_commands.h"
+#import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/picture_in_picture_commands.h"
 #import "ios/chrome/browser/shared/public/commands/promos_manager_commands.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -629,12 +630,12 @@
 
   // Ephemeral theme promo handler.
   if (IsNTPEphemeralThemeEnabled()) {
-    id<EphemeralThemePromoCommands> ephemeralThemePromoHandler =
-        HandlerForProtocol(self.browser->GetCommandDispatcher(),
-                           EphemeralThemePromoCommands);
+    id<NewTabPageCommands> ntpHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), NewTabPageCommands);
     _displayHandlerPromos[promos_manager::Promo::EphemeralTheme] =
         [[HomeCustomizationEphemeralThemePromoDisplayHandler alloc]
-            initWithEphemeralThemePromoHandler:ephemeralThemePromoHandler];
+            initWithNewTabPageCommandsHandler:ntpHandler
+                       promosManagerUIHandler:self];
   }
 }
 

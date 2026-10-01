@@ -9,18 +9,23 @@
 #import "ios/chrome/browser/promos_manager/model/constants.h"
 #import "ios/chrome/browser/promos_manager/model/promo_config.h"
 #import "ios/chrome/browser/promos_manager/model/promo_display_context.h"
-#import "ios/chrome/browser/shared/public/commands/ephemeral_theme_promo_commands.h"
+#import "ios/chrome/browser/shared/public/commands/new_tab_page_commands.h"
 
 @implementation HomeCustomizationEphemeralThemePromoDisplayHandler {
   // Handler for ephemeral theme promo commands.
-  __weak id<EphemeralThemePromoCommands> _ephemeralThemePromoHandler;
+  __weak id<NewTabPageCommands> _ntpHandler;
+  // UI handler for promos.
+  __weak id<PromosManagerUIHandler> _promosManagerUIHandler;
 }
 
-- (instancetype)initWithEphemeralThemePromoHandler:
-    (id<EphemeralThemePromoCommands>)ephemeralThemePromoHandler {
+- (instancetype)
+    initWithNewTabPageCommandsHandler:(id<NewTabPageCommands>)ntpHandler
+               promosManagerUIHandler:
+                   (id<PromosManagerUIHandler>)promosManagerUIHandler {
   self = [super init];
   if (self) {
-    _ephemeralThemePromoHandler = ephemeralThemePromoHandler;
+    _ntpHandler = ntpHandler;
+    _promosManagerUIHandler = promosManagerUIHandler;
   }
   return self;
 }
@@ -28,8 +33,10 @@
 #pragma mark - StandardPromoDisplayHandler
 
 - (void)handleDisplay {
-  CHECK(_ephemeralThemePromoHandler);
-  [_ephemeralThemePromoHandler showEphemeralThemePromo];
+  CHECK(_ntpHandler);
+  [_ntpHandler
+      showHomeBackgroundCustomizationPromoWithUIHandler:_promosManagerUIHandler
+                              shouldAlertFETOfDismissal:YES];
 }
 
 #pragma mark - PromoProtocol

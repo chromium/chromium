@@ -73,6 +73,8 @@
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_coordinator.h"
 #import "ios/chrome/browser/home_customization/coordinator/home_customization_delegate.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service_factory.h"
 #import "ios/chrome/browser/home_customization/utils/home_customization_constants.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_entrypoint.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
@@ -2112,6 +2114,19 @@
   }
 }
 
+// Applies and stores the cached ephemeral theme if no custom background or
+// color theme is currently set (or if an ephemeral theme is already active).
+- (void)maybeApplyEphemeralTheme {
+  if (!self.profile || !IsNTPEphemeralThemeEnabled()) {
+    return;
+  }
+  HomeBackgroundCustomizationService* backgroundCustomizationService =
+      HomeBackgroundCustomizationServiceFactory::GetForProfile(self.profile);
+  if (backgroundCustomizationService) {
+    backgroundCustomizationService->MaybeApplyEphemeralTheme();
+  }
+}
+
 // Returns the current customization state represnting the visibility of NTP
 // components.
 - (IOSNTPImpressionCustomizationState)currentCustomizationState {
@@ -2389,6 +2404,10 @@
 
   [self.NTPMetricsRecorder recordHomeCustomizationMenuOpenedFromEntrypoint:
                                HomeCustomizationEntrypoint::kPromo];
+
+  // Apply and store the cached ephemeral theme if no custom background or
+  // color theme is currently set.
+  [self maybeApplyEphemeralTheme];
 
   [self openCustomizationMenuAtPage:CustomizationMenuPage::kMain animated:YES];
   // Make sure to alert the coordinator if user education is active, so it can

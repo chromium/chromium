@@ -200,13 +200,6 @@ CGFloat const kSheetCornerRadius = 30;
   [_activeSearchEngineLogoMediator removeAllObjects];
 
   if (self.openedForUserEducation) {
-    feature_engagement::Tracker* tracker =
-        feature_engagement::TrackerFactory::GetForProfile(self.profile);
-    if (tracker) {
-      tracker->Dismissed(
-          feature_engagement::kIPHiOSPromoBackgroundCustomizationFeature);
-    }
-
     [self.promosManagerUIHandler promoWasDismissed];
   }
 
