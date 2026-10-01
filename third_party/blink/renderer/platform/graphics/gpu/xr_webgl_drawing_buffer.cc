@@ -262,7 +262,6 @@ void XRWebGLDrawingBuffer::UseSharedBuffer(
   //
   // TODO(https://crbug.com/1111526): Investigate handling context loss and
   // recovery for cases where these assumptions may not be accurate.
-  DCHECK(buffer_sync_token.HasData());
   DCHECK(buffer_shared_image);
   DVLOG(3) << __func__
            << ": mailbox=" << buffer_shared_image->mailbox().ToDebugString()

@@ -297,8 +297,6 @@ WebGLUnownedTexture* XRWebGLSharedImageSwapChain::ProduceTexture() {
     return nullptr;
   }
 
-  CHECK(content_image_data.sync_token.HasData());
-
   // Create a texture backed by the shared image.
   CHECK(!shared_image_texture_);
   shared_image_texture_ =

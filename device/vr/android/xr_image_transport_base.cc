@@ -203,7 +203,6 @@ WebXrSharedBuffer* XrImageTransportBase::TransferFrame(
   // it's only eligible for reuse after all reads from it are complete, meaning
   // that it's transitioned through "processing" and "rendering" states back
   // to "animating".
-  DCHECK(shared_buffer->sync_token.HasData());
   DVLOG(2) << ": SyncToken=" << shared_buffer->sync_token.ToDebugString();
 
   return shared_buffer;
