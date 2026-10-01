@@ -49,3 +49,6 @@ NSString* const kAtMemorySearchResultCellAccessibilityIdentifierPrefix =
 
 NSString* const kAtMemorySearchResultInfoButtonAccessibilityIdentifierPrefix =
     @"AtMemorySearchResultInfoButton_";
+
+NSString* const kAtMemoryNoticeOkButtonAccessibilityIdentifier =
+    @"AtMemoryNoticeOkButtonAccessibilityIdentifier";

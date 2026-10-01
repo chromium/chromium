@@ -67,4 +67,7 @@ extern NSString* const kAtMemorySearchResultCellAccessibilityIdentifierPrefix;
 extern NSString* const
     kAtMemorySearchResultInfoButtonAccessibilityIdentifierPrefix;
 
+// Accessibility identifier for the AtMemory notice OK button.
+extern NSString* const kAtMemoryNoticeOkButtonAccessibilityIdentifier;
+
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_ATMEMORY_PUBLIC_AT_MEMORY_CONSTANTS_H_
