@@ -28,6 +28,7 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_non_2d_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource.h"
@@ -74,20 +75,15 @@ scoped_refptr<StaticBitmapImage> ImageBitmapRenderingContext::MakeAccelerated(
   constexpr gpu::SharedImageUsageSet kSharedImageUsageFlags =
       gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 #endif  // BUILDFLAG(IS_LINUX)
-  auto provider = CanvasNon2DResourceProvider::Create(
+  return AcceleratedStaticBitmapImage::CreateFromRaster(
       source->Size(), source->GetSharedImageFormat(), source->GetAlphaType(),
       source->GetColorSpace(), source->GetHdrMetadata(),
-      context_provider_wrapper, kSharedImageUsageFlags);
-  if (!provider) {
-    return nullptr;
-  }
-
-  const auto paint_image = source->PaintImageForCurrentFrame();
-  return provider->DoExternalOverdrawAndSnapshot(
-      [paint_image](cc::PaintCanvas& canvas) {
+      context_provider_wrapper, kSharedImageUsageFlags,
+      [&source](cc::PaintCanvas& canvas) {
         cc::PaintFlags paint;
         paint.setBlendMode(SkBlendMode::kSrc);
-        canvas.drawImage(paint_image, 0, 0, SkSamplingOptions(), &paint);
+        canvas.drawImage(source->PaintImageForCurrentFrame(), 0, 0,
+                         SkSamplingOptions(), &paint);
       },
       ImageOrientationEnum::kDefault);
 }
