@@ -9,7 +9,7 @@ source_set("coordinators") {
   ]
 
   deps = [
-    "//ios/chrome/browser/overlays/model/public/common/infobars",
+    "//base",
     "//ios/chrome/browser/overlays/model/public/infobar_banner",
     "//ios/chrome/browser/overlays/ui_bundled:coordinators",
     "//ios/chrome/browser/overlays/ui_bundled/infobar_banner:coordinators",

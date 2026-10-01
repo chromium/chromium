@@ -11,6 +11,7 @@ source_set("coordinators") {
   ]
 
   deps = [
+    ":mediator_factory",
     ":mediators",
     "//base",
     "//ios/chrome/app:tests_hook",
@@ -22,21 +23,7 @@ source_set("coordinators") {
     "//ios/chrome/browser/infobars/ui_bundled/presentation",
     "//ios/chrome/browser/overlays/model",
     "//ios/chrome/browser/overlays/model/public/common/infobars",
-    "//ios/chrome/browser/overlays/model/public/default",
     "//ios/chrome/browser/overlays/ui_bundled:coordinators",
-    "//ios/chrome/browser/overlays/ui_bundled:util",
-    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/autofill_address_profile",
-    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/collaboration_group",
-    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/collaboration_out_of_date",
-    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/confirm",
-    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/passwords",
-    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/permissions",
-    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/safe_browsing",
-    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/save_card",
-    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/save_cvc",
-    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/sync_error",
-    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/tailored_security",
-    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/translate:mediators",
     "//ios/chrome/browser/shared/coordinator/layout_guide",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/public/commands",
@@ -71,17 +58,56 @@ source_set("mediators") {
   ]
 }
 
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "infobar_banner_overlay_mediator_unittest.mm" ]
+source_set("mediator_factory") {
+  sources = [
+    "infobar_banner_overlay_mediator_factory.h",
+    "infobar_banner_overlay_mediator_factory.mm",
+  ]
 
   deps = [
     ":mediators",
+    "//base",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:public",
+    "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/default",
+    "//ios/chrome/browser/overlays/ui_bundled:util",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/autofill_address_profile",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/collaboration_group",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/collaboration_out_of_date",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/confirm",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/passwords",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/permissions",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/safe_browsing",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/save_card",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/save_cvc",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/sync_error",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/tailored_security",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/translate:mediators",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "infobar_banner_overlay_mediator_factory_unittest.mm",
+    "infobar_banner_overlay_mediator_unittest.mm",
+  ]
+
+  deps = [
+    ":mediator_factory",
+    ":mediators",
     "//components/infobars/core",
+    "//ios/chrome/browser/infobars/model",
+    "//ios/chrome/browser/infobars/model:public",
     "//ios/chrome/browser/infobars/model/test",
     "//ios/chrome/browser/overlays/model",
+    "//ios/chrome/browser/overlays/model/public/default",
     "//ios/chrome/browser/overlays/model/public/infobar_banner",
     "//ios/chrome/browser/overlays/model/test",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/confirm",
+    "//ios/chrome/browser/overlays/ui_bundled/infobar_banner/permissions",
+    "//ios/chrome/browser/permissions/model:infobar_delegate",
     "//ios/chrome/browser/shared/public/commands",
     "//testing/gmock",
     "//testing/gtest",

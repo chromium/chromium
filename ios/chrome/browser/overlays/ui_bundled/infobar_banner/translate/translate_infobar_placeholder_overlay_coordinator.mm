@@ -4,23 +4,13 @@
 
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_banner/translate/translate_infobar_placeholder_overlay_coordinator.h"
 
-#import "ios/chrome/browser/overlays/model/public/common/infobars/infobar_overlay_request_config.h"
 #import "ios/chrome/browser/overlays/model/public/infobar_banner/infobar_banner_placeholder_request_config.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator+subclassing.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator_delegate.h"
 
-@interface TranslateInfobarPlaceholderOverlayCoordinator ()
-// The list of supported mediator classes.
-@property(class, nonatomic, readonly) NSArray<Class>* supportedMediatorClasses;
-@end
-
 @implementation TranslateInfobarPlaceholderOverlayCoordinator
 
 #pragma mark - Accessors
-
-+ (NSArray<Class>*)supportedMediatorClasses {
-  return @[];
-}
 
 + (const OverlayRequestSupport*)requestSupport {
   return InfobarBannerPlaceholderRequestConfig::RequestSupport();
