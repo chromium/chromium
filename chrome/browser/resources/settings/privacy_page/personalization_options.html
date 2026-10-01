@@ -60,7 +60,7 @@ import {RestartType} from '../relaunch_mixin_lit.js';
 </if><!-- chromeos -->
 <if expr="not is_chromeos">
     ${!this.shouldUseMetricsConsentRestructure_ ? html`
-      <div class="cr-row hr">
+      <div class="cr-row hr toggle-button-wrapper">
         <div class="flex cr-padded-text">
           <div id="metricsReportingLabel">
             $i18n{enablePersonalizationLogging}

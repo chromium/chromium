@@ -9,7 +9,8 @@
  * #include=settings-shared-lit md-select-lit
  * #css_wrapper_metadata_end */
 
-:host(.list-frame) settings-toggle-button {
+:host(.list-frame) settings-toggle-button,
+:host(.list-frame) .toggle-button-wrapper {
   padding-inline-end: 0;
   padding-inline-start: 0;
 }
