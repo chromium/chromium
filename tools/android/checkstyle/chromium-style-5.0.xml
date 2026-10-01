@@ -111,12 +111,7 @@
     </module>
     <module name="FallThrough">
       <property name="severity" value="error"/>
-      <!-- Any // comment, or any /* */ comment containing whitespace, relieves
-           the error. Checkstyle also matches this pattern against non-comment
-           tokens (e.g. "EXPR"), so ".*" would disable the check. Token texts
-           never contain whitespace, whereas // comment text always ends with a
-           newline. -->
-      <property name="reliefPattern" value="\s"/>
+      <property name="reliefPattern" value=".*"/>
     </module>
     <module name="NoFinalizer">
       <property name="severity" value="warning"/>

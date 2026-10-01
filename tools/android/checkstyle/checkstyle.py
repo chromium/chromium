@@ -8,7 +8,6 @@
 import argparse
 import collections
 import os
-import platform
 import subprocess
 import sys
 import xml.dom.minidom
@@ -16,12 +15,9 @@ import xml.dom.minidom
 
 _SELF_DIR = os.path.dirname(__file__)
 CHROMIUM_SRC = os.path.normpath(os.path.join(_SELF_DIR, '..', '..', '..'))
-_CHECKSTYLE_CIPD_DIR = os.path.join(
-    CHROMIUM_SRC, 'third_party', 'checkstyle', 'cipd'
+_CHECKSTYLE_ROOT = os.path.join(
+    CHROMIUM_SRC, 'third_party', 'checkstyle', 'cipd', 'checkstyle-all.jar'
 )
-_CHECKSTYLE_ROOT = os.path.join(_CHECKSTYLE_CIPD_DIR, 'checkstyle-all.jar')
-# Native build of checkstyle. Only available for Linux x64.
-_CHECKSTYLE_BINARY = os.path.join(_CHECKSTYLE_CIPD_DIR, 'checkstyle')
 _JAVA_PATH = os.path.join(
     CHROMIUM_SRC, 'third_party', 'jdk', 'current', 'bin', 'java'
 )
@@ -50,27 +46,17 @@ class _CheckstyleError(Exception):
     pass
 
 
-def _use_native_binary():
-    # The exists() check falls back to the jar for checkouts that have not yet
-    # synced a CIPD package that contains the binary.
-    return (
-        sys.platform.startswith('linux')
-        and platform.machine() == 'x86_64'
-        and os.path.exists(_CHECKSTYLE_BINARY)
-    )
-
-
 def _checkstyle_command(style_file, java_files):
-    if _use_native_binary():
-        cmd = [_CHECKSTYLE_BINARY]
-    else:
-        cmd = [
-            _JAVA_PATH,
-            '-cp',
-            _CHECKSTYLE_ROOT,
-            'com.puppycrawl.tools.checkstyle.Main',
-        ]
-    return cmd + ['-c', style_file, '-f', 'xml'] + java_files
+    return [
+        _JAVA_PATH,
+        '-cp',
+        _CHECKSTYLE_ROOT,
+        'com.puppycrawl.tools.checkstyle.Main',
+        '-c',
+        style_file,
+        '-f',
+        'xml',
+    ] + java_files
 
 
 def _parse_violations(local_path, returncode, stdout, stderr):

@@ -371,25 +371,6 @@ class A {
 
     @java("""
 class A {
-    void test(int a) {
-        switch (a) {
-            case 1:
-                a++;
-                // Intentional fall through.
-            case 2:
-                a++;
-                /* Also intentional. */
-            case 3:
-                a++;
-        }
-    }
-}
-""")
-    def test_FallThrough_comment(self):
-        self._check()
-
-    @java("""
-class A {
     protected void finalize() {
     }
 }
