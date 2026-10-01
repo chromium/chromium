@@ -45,7 +45,6 @@ class ASH_EXPORT UsbPeripheralNotificationController
   void OnLimitedPerformancePeripheralReceived() override {}
   void OnGuestModeNotificationReceived(bool is_thunderbolt_only) override {}
   void OnPeripheralBlockedReceived() override {}
-  void OnBillboardDeviceConnected() override {}
 
  private:
   const raw_ptr<message_center::MessageCenter> message_center_;

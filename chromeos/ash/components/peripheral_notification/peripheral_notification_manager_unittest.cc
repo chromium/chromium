@@ -26,11 +26,6 @@ namespace ash {
 namespace {
 
 const int kUsbConfigWithInterfaces = 1;
-const int kBillboardDeviceClassCode = 17;
-const int kNonBillboardDeviceClassCode = 16;
-constexpr char thunderbolt_path_for_testing[] =
-    "/tmp/tbt/sys/bus/thunderbolt/devices/0-0";
-constexpr char root_prefix_for_testing[] = "/tmp/tbt";
 
 }  // namespace
 
@@ -49,10 +44,6 @@ class FakeObserver : public PeripheralNotificationManager::Observer {
 
   size_t num_peripheral_blocked_notification_calls() const {
     return num_peripheral_blocked_notification_calls_;
-  }
-
-  size_t num_billboard_notification_calls() const {
-    return num_billboard_notification_calls_;
   }
 
   size_t num_invalid_dp_cable_notification_calls() const {
@@ -97,10 +88,6 @@ class FakeObserver : public PeripheralNotificationManager::Observer {
     ++num_peripheral_blocked_notification_calls_;
   }
 
-  void OnBillboardDeviceConnected() override {
-    ++num_billboard_notification_calls_;
-  }
-
   void OnInvalidDpCableWarning() override {
     ++num_invalid_dp_cable_notification_calls_;
   }
@@ -129,7 +116,6 @@ class FakeObserver : public PeripheralNotificationManager::Observer {
   size_t num_limited_performance_notification_calls_ = 0u;
   size_t num_guest_notification_calls_ = 0u;
   size_t num_peripheral_blocked_notification_calls_ = 0u;
-  size_t num_billboard_notification_calls_ = 0u;
   size_t num_invalid_dp_cable_notification_calls_ = 0u;
   size_t num_invalid_usb4_valid_tbt_cable_notification_calls_ = 0u;
   size_t num_invalid_usb4_cable_notification_calls_ = 0u;
@@ -156,8 +142,6 @@ class PeripheralNotificationManagerTest : public testing::Test {
     PciguardClient::InitializeFake();
     fake_pciguard_client_ =
         static_cast<FakePciguardClient*>(PciguardClient::Get());
-
-    base::DeletePathRecursively(base::FilePath(thunderbolt_path_for_testing));
   }
 
   void InitializeManager(bool is_guest_session,
@@ -167,7 +151,6 @@ class PeripheralNotificationManagerTest : public testing::Test {
     manager_ = PeripheralNotificationManager::Get();
 
     manager_->AddObserver(&fake_observer_);
-    manager_->SetRootPrefixForTesting(root_prefix_for_testing);
   }
 
   void TearDown() override {
@@ -175,7 +158,6 @@ class PeripheralNotificationManagerTest : public testing::Test {
     PeripheralNotificationManager::Shutdown();
     TypecdClient::Shutdown();
     PciguardClient::Shutdown();
-    base::DeletePathRecursively(base::FilePath(thunderbolt_path_for_testing));
   }
 
   FakeTypecdClient* fake_typecd_client() { return fake_typecd_client_; }
@@ -192,10 +174,6 @@ class PeripheralNotificationManagerTest : public testing::Test {
 
   size_t GetNumPeripheralBlockedNotificationObserverCalls() {
     return fake_observer_.num_peripheral_blocked_notification_calls();
-  }
-
-  size_t GetNumBillboardNotificationObserverCalls() {
-    return fake_observer_.num_billboard_notification_calls();
   }
 
   size_t GetInvalidDpCableNotificationObserverCalls() {
@@ -270,7 +248,6 @@ TEST_F(PeripheralNotificationManagerTest, InitialTest) {
                     /*is_pcie_tunneling_allowed=*/false);
   EXPECT_EQ(0u, GetNumLimitedPerformanceObserverCalls());
   EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
-  EXPECT_EQ(0u, GetNumBillboardNotificationObserverCalls());
   EXPECT_FALSE(GetIsCurrentGuestDeviceTbtOnly());
 }
 
@@ -449,65 +426,7 @@ TEST_F(PeripheralNotificationManagerTest, BlockedDeviceReceived) {
       1);
 }
 
-TEST_F(PeripheralNotificationManagerTest, BillboardDevice) {
-  InitializeManager(/*is_guest_profile=*/false,
-                    /*is_pcie_tunneling_allowed=*/true);
 
-  EXPECT_EQ(0u, GetNumLimitedPerformanceObserverCalls());
-  EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
-  EXPECT_EQ(0u, GetNumPeripheralBlockedNotificationObserverCalls());
-  EXPECT_EQ(0u, GetNumBillboardNotificationObserverCalls());
-
-  // Simulate connecting a billboard device.
-  const auto fake_device = CreateTestDeviceOfClass(kBillboardDeviceClassCode);
-  const auto device = fake_device->GetDeviceInfo().Clone();
-  PeripheralNotificationManager::Get()->OnDeviceConnected(device.get());
-
-  task_environment()->RunUntilIdle();
-
-  EXPECT_EQ(0u, GetNumLimitedPerformanceObserverCalls());
-  EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
-  EXPECT_EQ(0u, GetNumPeripheralBlockedNotificationObserverCalls());
-  EXPECT_EQ(1u, GetNumBillboardNotificationObserverCalls());
-
-  histogram_tester_.ExpectBucketCount(
-      "Ash.Peripheral.ConnectivityResults",
-      PeripheralNotificationManager::PeripheralConnectivityResults::
-          kBillboardDevice,
-      1);
-
-  // Connect a non-billboard device. There should be no notification.
-  const auto fake_device_1 =
-      CreateTestDeviceOfClass(kNonBillboardDeviceClassCode);
-  const auto device_1 = fake_device_1->GetDeviceInfo().Clone();
-  PeripheralNotificationManager::Get()->OnDeviceConnected(device_1.get());
-
-  EXPECT_EQ(0u, GetNumLimitedPerformanceObserverCalls());
-  EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
-  EXPECT_EQ(0u, GetNumPeripheralBlockedNotificationObserverCalls());
-  EXPECT_EQ(1u, GetNumBillboardNotificationObserverCalls());
-
-  // Fake a board that supports Thunderbolt.
-  auto thunderbolt_directory = std::make_unique<base::ScopedTempDir>();
-  EXPECT_TRUE(thunderbolt_directory->CreateUniqueTempDirUnderPath(
-      base::FilePath(thunderbolt_path_for_testing)));
-
-  // Connect a billboard device. There should be no notification.
-  const auto fake_device_2 = CreateTestDeviceOfClass(kBillboardDeviceClassCode);
-  const auto device_2 = fake_device_2->GetDeviceInfo().Clone();
-  PeripheralNotificationManager::Get()->OnDeviceConnected(device_2.get());
-
-  EXPECT_EQ(0u, GetNumLimitedPerformanceObserverCalls());
-  EXPECT_EQ(0u, GetNumGuestModeNotificationObserverCalls());
-  EXPECT_EQ(0u, GetNumPeripheralBlockedNotificationObserverCalls());
-  EXPECT_EQ(1u, GetNumBillboardNotificationObserverCalls());
-
-  histogram_tester_.ExpectBucketCount(
-      "Ash.Peripheral.ConnectivityResults",
-      PeripheralNotificationManager::PeripheralConnectivityResults::
-          kBillboardDevice,
-      1);
-}
 
 TEST_F(PeripheralNotificationManagerTest, InvalidDpCableWarning) {
   InitializeManager(/*is_guest_profile=*/false,

@@ -44,7 +44,6 @@ class ASH_EXPORT PciePeripheralNotificationController
   void OnLimitedPerformancePeripheralReceived() override;
   void OnGuestModeNotificationReceived(bool is_thunderbolt_only) override;
   void OnPeripheralBlockedReceived() override;
-  void OnBillboardDeviceConnected() override;
 
   // Call to show a notification to indicate that the recently plugged in
   // Thunderbolt/USB4 peripheral performance is limited.
@@ -57,10 +56,6 @@ class ASH_EXPORT PciePeripheralNotificationController
   // Call to show a notification to indicate to the user that their
   // Thunderbolt/USB4 peripheral is not allowed due to security reasons.
   void NotifyPeripheralBlockedNotification();
-
-  // Call to show a notification that a billboard device that was connected
-  // is not supported by the board.
-  void NotifyBillboardDevice();
 
   // Stubs from usb peripheral notification controller
   void OnInvalidDpCableWarning() override {}
