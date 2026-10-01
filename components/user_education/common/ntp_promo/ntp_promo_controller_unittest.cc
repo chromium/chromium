@@ -416,6 +416,18 @@ TEST_F(NtpPromoControllerTest, SuppessedMultiplePromos) {
   EXPECT_TRUE(ShowsPromo(kPromo3Id));
 }
 
+TEST_F(NtpPromoControllerTest, SuppressedAllPromos) {
+  RegisterPromo(kPromoId, kEligible);
+  RegisterPromo(kPromo2Id, kEligible);
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      user_education::features::kEnableNtpBrowserPromos,
+      {{"suppress-list", base::StrCat({kPromoId, ",", kPromo2Id})}});
+  CreateController();
+  EXPECT_FALSE(controller().HasShowablePromo(nullptr));
+  EXPECT_FALSE(ShowsAnyPromo());
+}
+
 TEST_F(NtpPromoControllerTest, ClickedPromoPreventsOtherPromosInSameSession) {
   CreateController();
   RegisterPromo(kPromoId, kEligible);
