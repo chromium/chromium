@@ -241,32 +241,6 @@ constexpr char kShareIconResourceName[] =
     "//resources/cr_components/searchbox/icons/share_cr23.svg";
 #endif
 
-std::u16string GetAdditionalA11yMessage(
-    const AutocompleteMatch& match,
-    searchbox::mojom::SelectionLineState state) {
-  switch (state) {
-    case searchbox::mojom::SelectionLineState::kNormal: {
-      if (match.has_tab_match.value_or(false)) {
-        return l10n_util::GetStringUTF16(IDS_ACC_TAB_SWITCH_SUFFIX);
-      }
-      const OmniboxAction* action = match.GetActionAt(0u);
-      if (action) {
-        return action->GetLabelStrings().accessibility_suffix;
-      }
-      if (match.SupportsDeletion()) {
-        return l10n_util::GetStringUTF16(IDS_ACC_REMOVE_SUGGESTION_SUFFIX);
-      }
-      break;
-    }
-    case searchbox::mojom::SelectionLineState::kFocusedButtonRemoveSuggestion:
-      return l10n_util::GetStringUTF16(
-          IDS_ACC_REMOVE_SUGGESTION_FOCUSED_PREFIX);
-    default:
-      NOTREACHED();
-  }
-  return std::u16string();
-}
-
 bool MatchHasSideTypeAndRenderType(
     const AutocompleteMatch& match,
     omnibox::GroupConfig_SideType side_type,
@@ -876,10 +850,10 @@ SearchboxHandler::CreateAutocompleteMatches(
   // its description, ensuring only the first one gets flagged.
   bool flagged_contextual = false;
   std::vector<searchbox::mojom::AutocompleteMatchPtr> matches;
-  for (const auto& match : result) {
-    auto mojom_match =
-        CreateAutocompleteMatch(match, matches.size(), bookmark_model,
-                                suggestion_groups_map, turl_service);
+  for (size_t line = 0; line < result.size(); ++line) {
+    const AutocompleteMatch& match = result.match_at(line);
+    auto mojom_match = CreateAutocompleteMatch(
+        match, bookmark_model, suggestion_groups_map, turl_service);
     if (mojom_match) {
       if (!flagged_contextual && ShouldShowFirstContextualDescription() &&
           match.suggestion_group_id ==
@@ -887,10 +861,52 @@ SearchboxHandler::CreateAutocompleteMatches(
         mojom_match.value()->show_contextual_description = true;
         flagged_contextual = true;
       }
+      PopulateAccessibilityLabels(result, line, turl_service,
+                                  mojom_match.value().get());
       matches.push_back(std::move(mojom_match.value()));
     }
   }
   return matches;
+}
+
+void SearchboxHandler::PopulateAccessibilityLabels(
+    const AutocompleteResult& result,
+    size_t line,
+    const TemplateURLService* turl_service,
+    searchbox::mojom::AutocompleteMatch* mojom_match) const {
+  // Use the same logic as the omnibox edit model so that screen readers
+  // announce the same text regardless of which omnibox UI is in use. The
+  // narrated match text mirrors the omnibox edit model, which narrates the
+  // temporary text shown in the input when a match is selected.
+  const AutocompleteMatch& match = result.match_at(line);
+  const std::u16string header_text =
+      autocomplete_controller()->GetSuggestionGroupHeaderText(
+          match.suggestion_group_id);
+  auto label_for_state = [&](OmniboxPopupSelection::LineState state) {
+    const OmniboxPopupSelection selection(line, state);
+    std::u16string label = searchbox::GetAccessibilityLabelForSelection(
+        result, selection, header_text, match.fill_into_edit,
+        /*include_positional_info=*/true, turl_service);
+    // AIM button visibility isn't known here. It only affects whether the IPH
+    // row's dismiss button suffix is read after the first match, when the AIM
+    // button is focusable in between.
+    label += searchbox::GetAccessibilityLabelForFollowingIphSuggestion(
+        autocomplete_controller()->input(), result, selection,
+        GetTemplateURLService(), /*aim_button_visible=*/false);
+    return label;
+  };
+
+  mojom_match->a11y_label =
+      label_for_state(OmniboxPopupSelection::LineState::kNormal);
+  mojom_match->remove_button_a11y_label = label_for_state(
+      OmniboxPopupSelection::LineState::kFocusedButtonRemoveSuggestion);
+  if (mojom_match->keyword_model &&
+      OmniboxPopupSelection(line,
+                            OmniboxPopupSelection::LineState::kKeywordMode)
+          .IsControlPresentOnMatch(result)) {
+    mojom_match->keyword_model->chip_a11y = base::UTF16ToUTF8(
+        label_for_state(OmniboxPopupSelection::LineState::kKeywordMode));
+  }
 }
 
 // TODO(b/546186345): Consider extending this behavior to other searchboxes if
@@ -923,7 +939,6 @@ void SearchboxHandler::OverrideIconPaths(
 std::optional<searchbox::mojom::AutocompleteMatchPtr>
 SearchboxHandler::CreateAutocompleteMatch(
     const AutocompleteMatch& match,
-    size_t line,
     bookmarks::BookmarkModel* bookmark_model,
     const omnibox::GroupConfigMap& suggestion_groups_map,
     const TemplateURLService* turl_service) const {
@@ -1038,19 +1053,8 @@ SearchboxHandler::CreateAutocompleteMatch(
           base::UTF16ToUTF8(label_strings.accessibility_hint)));
     }
   }
-  std::u16string header_text =
-      autocomplete_controller()->GetSuggestionGroupHeaderText(
-          match.suggestion_group_id);
-  mojom_match->a11y_label = omnibox::AutocompleteMatchToAccessibilityLabel(
-      match, header_text, match.contents, line, 0,
-      GetAdditionalA11yMessage(match,
-                               searchbox::mojom::SelectionLineState::kNormal));
-
-  mojom_match->remove_button_a11y_label =
-      omnibox::AutocompleteMatchToAccessibilityLabel(
-          match, header_text, match.contents, line, 0,
-          GetAdditionalA11yMessage(match, searchbox::mojom::SelectionLineState::
-                                              kFocusedButtonRemoveSuggestion));
+  // `a11y_label` and `remove_button_a11y_label` are populated by
+  // `PopulateAccessibilityLabels()`, since they depend on the whole result.
 
   mojom_match->tail_suggest_common_prefix = match.tail_suggest_common_prefix;
 

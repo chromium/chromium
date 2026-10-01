@@ -57,6 +57,7 @@
 #include "components/search/ntp_features.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_starter_pack_data.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_ids_provider.h"
@@ -1329,6 +1330,7 @@ class WebuiOmniboxHandlerPublic : public WebuiOmniboxHandler {
   using SearchboxHandler::autocomplete_controller_observation_;
   using SearchboxHandler::client;
   using SearchboxHandler::CreateAutocompleteMatch;
+  using SearchboxHandler::CreateAutocompleteMatches;
   using SearchboxHandler::GetInput;
   using SearchboxHandler::GetMatchWithUrl;
   using SearchboxHandler::GetSnapshot;
@@ -1537,7 +1539,7 @@ TEST_F(WebuiOmniboxHandlerTest,
   bookmark_model->LoadEmptyForTest();
 
   auto mojom_match = handler_->CreateAutocompleteMatch(
-      match, 0, bookmark_model, omnibox::GroupConfigMap(),
+      match, bookmark_model, omnibox::GroupConfigMap(),
       omnibox_controller_->client()->GetTemplateURLService());
 
   ASSERT_TRUE(mojom_match.has_value());
@@ -1562,7 +1564,7 @@ TEST_F(
   bookmark_model->LoadEmptyForTest();
 
   auto mojom_match = handler_->CreateAutocompleteMatch(
-      match, 0, bookmark_model, omnibox::GroupConfigMap(),
+      match, bookmark_model, omnibox::GroupConfigMap(),
       omnibox_controller_->client()->GetTemplateURLService());
 
   ASSERT_TRUE(mojom_match.has_value());
@@ -1587,7 +1589,7 @@ TEST_F(
   bookmark_model->LoadEmptyForTest();
 
   auto mojom_match = handler_->CreateAutocompleteMatch(
-      match, 0, bookmark_model, omnibox::GroupConfigMap(),
+      match, bookmark_model, omnibox::GroupConfigMap(),
       omnibox_controller_->client()->GetTemplateURLService());
 
   ASSERT_TRUE(mojom_match.has_value());
@@ -1617,7 +1619,7 @@ TEST_F(WebuiOmniboxHandlerTest,
   bookmark_model->LoadEmptyForTest();
 
   auto mojom_match = handler_->CreateAutocompleteMatch(
-      match, 0, bookmark_model, omnibox::GroupConfigMap(),
+      match, bookmark_model, omnibox::GroupConfigMap(),
       omnibox_controller_->client()->GetTemplateURLService());
 
   ASSERT_TRUE(mojom_match.has_value());
@@ -1645,7 +1647,7 @@ TEST_F(WebuiOmniboxHandlerTest, CreateAutocompleteMatch_PopulatesSuggestStyle) {
   bookmark_model->LoadEmptyForTest();
 
   auto mojom_match = handler_->CreateAutocompleteMatch(
-      match, 0, bookmark_model, omnibox::GroupConfigMap(),
+      match, bookmark_model, omnibox::GroupConfigMap(),
       omnibox_controller_->client()->GetTemplateURLService());
 
   ASSERT_TRUE(mojom_match.has_value());
@@ -1665,7 +1667,7 @@ TEST_F(WebuiOmniboxHandlerTest,
     AutocompleteMatch match;
     match.destination_url = GURL("https://example.com");
     auto mojom_match = handler_->CreateAutocompleteMatch(
-        match, 0, bookmark_model, omnibox::GroupConfigMap(),
+        match, bookmark_model, omnibox::GroupConfigMap(),
         omnibox_controller_->client()->GetTemplateURLService());
     ASSERT_TRUE(mojom_match.has_value());
     EXPECT_FALSE(mojom_match.value()->is_two_row_suggestion);
@@ -1682,7 +1684,7 @@ TEST_F(WebuiOmniboxHandlerTest,
     match.suggest_template = suggest_template;
 
     auto mojom_match = handler_->CreateAutocompleteMatch(
-        match, 0, bookmark_model, omnibox::GroupConfigMap(),
+        match, bookmark_model, omnibox::GroupConfigMap(),
         omnibox_controller_->client()->GetTemplateURLService());
     ASSERT_TRUE(mojom_match.has_value());
     EXPECT_TRUE(mojom_match.value()->is_two_row_suggestion);
@@ -1700,7 +1702,7 @@ TEST_F(WebuiOmniboxHandlerTest,
     match.suggest_template = suggest_template;
 
     auto mojom_match = handler_->CreateAutocompleteMatch(
-        match, 0, bookmark_model, omnibox::GroupConfigMap(),
+        match, bookmark_model, omnibox::GroupConfigMap(),
         omnibox_controller_->client()->GetTemplateURLService());
     ASSERT_TRUE(mojom_match.has_value());
     EXPECT_FALSE(mojom_match.value()->is_two_row_suggestion);
@@ -1719,11 +1721,65 @@ TEST_F(WebuiOmniboxHandlerTest,
     match.suggest_template = suggest_template;
 
     auto mojom_match = handler_->CreateAutocompleteMatch(
-        match, 0, bookmark_model, omnibox::GroupConfigMap(),
+        match, bookmark_model, omnibox::GroupConfigMap(),
         omnibox_controller_->client()->GetTemplateURLService());
     ASSERT_TRUE(mojom_match.has_value());
     EXPECT_TRUE(mojom_match.value()->is_two_row_suggestion);
   }
+}
+
+// The WebUI a11y labels must match those announced by the classic omnibox
+// (see `OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection()`):
+// narrate `fill_into_edit`, include "n of m", and don't duplicate the
+// description.
+TEST_F(WebuiOmniboxHandlerTest, CreateAutocompleteMatches_A11yLabels) {
+  AutocompleteMatch match1(nullptr, 1000, false,
+                           omnibox::AutocompleteMatchType::kHistoryUrl);
+  match1.destination_url = GURL("https://example.com");
+  match1.fill_into_edit = u"example.com";
+  match1.contents = u"contents";
+  match1.description = u"Example";
+  AutocompleteMatch match2(nullptr, 900, true,
+                           omnibox::AutocompleteMatchType::kHistoryUrl);
+  match2.destination_url = GURL("https://foo.com");
+  match2.fill_into_edit = u"foo.com";
+  match2.contents = u"contents";
+  match2.description = u"Foo";
+  AutocompleteResult result;
+  result.AppendMatches({match1, match2});
+
+  bookmarks::BookmarkModel* bookmark_model =
+      BookmarkModelFactory::GetForBrowserContext(profile());
+  bookmark_model->LoadEmptyForTest();
+
+  auto mojom_matches = handler_->CreateAutocompleteMatches(
+      result, bookmark_model, omnibox::GroupConfigMap(),
+      omnibox_controller_->client()->GetTemplateURLService());
+  ASSERT_EQ(2u, mojom_matches.size());
+
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_ACC_AUTOCOMPLETE_N_OF_M,
+                l10n_util::GetStringFUTF16(IDS_ACC_AUTOCOMPLETE_HISTORY,
+                                           u"example.com", u"Example"),
+                u"1", u"2"),
+            mojom_matches[0]->a11y_label);
+
+  // `match2` is deletable, so its label has the remove suggestion suffix, and
+  // the remove button label omits the position.
+  std::u16string base_label = l10n_util::GetStringFUTF16(
+      IDS_ACC_AUTOCOMPLETE_HISTORY, u"foo.com", u"Foo");
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_ACC_AUTOCOMPLETE_N_OF_M,
+                l10n_util::FormatString(
+                    l10n_util::GetStringUTF16(IDS_ACC_REMOVE_SUGGESTION_SUFFIX),
+                    {base_label}, nullptr),
+                u"2", u"2"),
+            mojom_matches[1]->a11y_label);
+  EXPECT_EQ(
+      l10n_util::FormatString(
+          l10n_util::GetStringUTF16(IDS_ACC_REMOVE_SUGGESTION_FOCUSED_PREFIX),
+          {base_label}, nullptr),
+      mojom_matches[1]->remove_button_a11y_label);
 }
 
 TEST_F(WebuiOmniboxHandlerTest, OpenAutocompleteMatch_KeyboardModifiers) {

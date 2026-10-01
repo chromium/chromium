@@ -415,12 +415,10 @@ export class SearchboxMatchElement extends CrLitElement {
     if (!this.match) {
       return '';
     }
-    let label = this.match.a11yLabel;
-    const description = this.getMatchDescription_();
-    if (description) {
-      label = `${label}, ${description}`;
-    }
-    return label;
+    // `a11yLabel` is the complete label, computed in C++ with the same logic
+    // used by the omnibox edit model. It already includes the description
+    // for match types where it is relevant.
+    return this.match.a11yLabel;
   }
 
   /**
