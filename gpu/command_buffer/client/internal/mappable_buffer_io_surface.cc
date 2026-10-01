@@ -257,13 +257,4 @@ bool MappableBufferIOSurface::AsyncMappingIsNonBlocking() const {
   return false;
 }
 
-bool MappableBufferIOSurface::SupportsZeroCopyWebGPUImport() const {
-#if BUILDFLAG(IS_IOS)
-  return false;
-#else
-  return gfx::IOSurfacePixelFormatIsWebGPUCompatible(
-      IOSurfaceGetPixelFormat(handle_.io_surface().get()));
-#endif
-}
-
 }  // namespace gpu

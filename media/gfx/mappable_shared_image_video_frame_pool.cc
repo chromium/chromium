@@ -649,16 +649,6 @@ gfx::ColorSpace GetOutputColorSpace(
   }
 }
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class SupportZeroCopyImportType {
-  kEmptyBuffer = 0,
-  kSharedMemory = 1,
-  kNativePixmapSupported = 2,
-  kNativePixmapUnsupported = 3,
-  kMaxValue = kNativePixmapUnsupported
-};
-
 }  // unnamed namespace
 
 // Creates a VideoFrame backed by native textures starting from a software
@@ -1080,8 +1070,6 @@ scoped_refptr<VideoFrame> MappableSharedImageVideoFramePool::PoolImpl::
     return nullptr;
   }
 
-  bool is_webgpu_compatible = false;
-
   // This method is only expected to be called when there is a
   // MappableSI and copy to it after mapping didn't fail.
   CHECK(frame_resource->shared_image);
@@ -1095,37 +1083,11 @@ scoped_refptr<VideoFrame> MappableSharedImageVideoFramePool::PoolImpl::
                   : std::string("Media.GPU.OutputFormatHardwareGmb");
   base::UmaHistogramEnumeration(name, output_format_);
 
-#if BUILDFLAG(IS_MAC)
-  is_webgpu_compatible = frame_resource->shared_image->usage().Has(
+  bool is_webgpu_compatible = frame_resource->shared_image->usage().Has(
       gpu::SHARED_IMAGE_USAGE_WEBGPU_READ);
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
-  // Gate this on SharedImage usage as ScopedAccess now CHECKs for it.
-  // TOOD(crbug.com/425634684, crbug.com/413659843): Check for webgpu support
-  // from SharedImageCapabilities, once this metadata is compatible.
-  bool native_pixmap_supports_zero_copy =
-      gmb_type == gfx::GpuMemoryBufferType::NATIVE_PIXMAP &&
-      frame_resource->shared_image->SupportsZeroCopyWebGPUImport();
-
-  SupportZeroCopyImportType type = SupportZeroCopyImportType::kEmptyBuffer;
-  if (gmb_type == gfx::GpuMemoryBufferType::SHARED_MEMORY_BUFFER) {
-    type = SupportZeroCopyImportType::kSharedMemory;
-  } else if (gmb_type == gfx::GpuMemoryBufferType::NATIVE_PIXMAP) {
-    if (native_pixmap_supports_zero_copy) {
-      type = SupportZeroCopyImportType::kNativePixmapSupported;
-    } else {
-      type = SupportZeroCopyImportType::kNativePixmapUnsupported;
-    }
-  }
-  // TODO(crbug.com/413659843): Verify how popular this codepath is and if we
-  // even need a SharedImage capability for it.
-  base::UmaHistogramEnumeration(
-      "Media.GPU.MappableSIVideoFrameSupportZeroCopyImport", type);
-
-  is_webgpu_compatible = native_pixmap_supports_zero_copy &&
-                         frame_resource->shared_image->usage().Has(
-                             gpu::SHARED_IMAGE_USAGE_WEBGPU_READ);
+  is_webgpu_compatible = is_webgpu_compatible &&
+                         gmb_type == gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
 #endif
 
   // Bind the texture and create or rebind the image. This image may be read

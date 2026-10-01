@@ -234,7 +234,6 @@ NativePixmapFrameResource::NativePixmapFrameResource(
       visible_rect_(visible_rect),
       natural_size_(natural_size),
       timestamp_(timestamp) {
-  metadata().is_webgpu_compatible = pixmap_->SupportsZeroCopyWebGPUImport();
   CHECK(!tracking_token.is_empty());
   metadata().tracking_token = tracking_token;
 }

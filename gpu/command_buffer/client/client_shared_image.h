@@ -237,9 +237,6 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
   // The type of the underlying GpuMemoryBuffer backing this ClientSI.
   gfx::GpuMemoryBufferType GetGpuMemoryBufferType() const;
 
-  // Whether the underlying buffer supports zero-copy import into WebGPU.
-  bool SupportsZeroCopyWebGPUImport() const;
-
   // Returns a clone of the GpuMemoryBufferHandle associated with this ClientSI.
   // Valid to call only if this instance was created with a non-null
   // GpuMemoryBuffer.

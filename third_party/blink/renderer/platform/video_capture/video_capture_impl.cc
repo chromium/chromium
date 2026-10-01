@@ -456,8 +456,7 @@ bool VideoCaptureImpl::ProcessBuffer(
 
 #if BUILDFLAG(IS_CHROMEOS)
       video_frame_init_data.is_webgpu_compatible =
-          gmb_handle.type == gfx::NATIVE_PIXMAP &&
-          gmb_handle.native_pixmap_handle().supports_zero_copy_webgpu_import;
+          gmb_handle.type == gfx::NATIVE_PIXMAP;
 #elif BUILDFLAG(IS_MAC)
       video_frame_init_data.is_webgpu_compatible =
           gfx::IOSurfacePixelFormatIsWebGPUCompatible(

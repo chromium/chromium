@@ -232,8 +232,4 @@ bool MappableBufferSharedMemory::AsyncMappingIsNonBlocking() const {
   return false;
 }
 
-bool MappableBufferSharedMemory::SupportsZeroCopyWebGPUImport() const {
-  return false;
-}
-
 }  // namespace gpu
