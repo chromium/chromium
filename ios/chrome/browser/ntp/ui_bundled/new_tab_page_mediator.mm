@@ -7,7 +7,6 @@
 #import <Foundation/Foundation.h>
 
 #import <memory>
-#import <string_view>
 
 #import "base/apple/foundation_util.h"
 #import "base/cancelable_callback.h"
@@ -831,7 +830,6 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   [traitAccessor setObjectForNewTabPageTrait:[NewTabPageTrait defaultValue]];
 
   UIColor* tintColor = image ? UIColor.whiteColor : nil;
-  [self.logoMediator setOverrideLogoPath:nil darkLogoPath:nil];
   [self.logoMediator setLogoTintColor:tintColor];
 
   if (self.webState) {
@@ -1012,7 +1010,6 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
                     lightModeColorProvider:nil
                      darkModeColorProvider:nil];
   [self.consumer setBackgroundImage:nil framingCoordinates:nil];
-  [self.logoMediator setOverrideLogoPath:nil darkLogoPath:nil];
 
   std::optional<sync_pb::UserColorTheme> colorTheme =
       _backgroundCustomizationService->GetCurrentColorTheme();
@@ -1045,15 +1042,9 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
         }
       }
       [self.consumer
-          setAnimatedBackgroundPath:
-              [self ephemeralThemePathForKey:kEphemeralThemeAnimationPathKey]
+          setAnimatedBackgroundPath:[self ephemeralThemeAnimatedBackgroundPath]
              lightModeColorProvider:lightModeColorProvider
               darkModeColorProvider:darkModeColorProvider];
-      [self.logoMediator
-          setOverrideLogoPath:[self ephemeralThemePathForKey:
-                                        kEphemeralThemeGoogleLogoLightPathKey]
-                 darkLogoPath:[self ephemeralThemePathForKey:
-                                        kEphemeralThemeGoogleLogoDarkPathKey]];
     }
     if (initialLoad) {
       base::UmaHistogramEnumeration(
@@ -1074,15 +1065,16 @@ void CleanupImageFetcherCacheIfNeeded(PrefService* pref_service,
   }
 }
 
-// Returns the local file path for the given ephemeral theme preference `key`,
-// or nil if unavailable.
-- (NSString*)ephemeralThemePathForKey:(std::string_view)key {
+// Returns the local file path for the ephemeral theme animated background from
+// preferences, or nil if unavailable.
+- (NSString*)ephemeralThemeAnimatedBackgroundPath {
   if (!_prefService || !IsNTPEphemeralThemeEnabled()) {
     return nil;
   }
   const base::DictValue& themeData =
       _prefService->GetDict(prefs::kIosNtpEphemeralThemeData);
-  const std::string* path = themeData.FindString(key);
+  const std::string* path =
+      themeData.FindString(kEphemeralThemeAnimationPathKey);
   if (!path || path->empty()) {
     return nil;
   }

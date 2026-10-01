@@ -37,10 +37,6 @@ class PrefService;
 class PromosManager;
 class UserUploadedImageManager;
 
-namespace image_fetcher {
-class ImageDataFetcher;
-}  // namespace image_fetcher
-
 namespace network {
 class SharedURLLoaderFactory;
 class SimpleURLLoader;
@@ -150,10 +146,6 @@ inline constexpr std::string_view kEphemeralThemeAnimationPromoPathKey =
     "animation_promo_path";
 inline constexpr std::string_view kEphemeralThemeAnimationPromoColorMappingKey =
     "animation_promo_colormapping";
-inline constexpr std::string_view kEphemeralThemeGoogleLogoLightPathKey =
-    "google_logo_light_path";
-inline constexpr std::string_view kEphemeralThemeGoogleLogoDarkPathKey =
-    "google_logo_dark_path";
 inline constexpr std::string_view kEphemeralThemeSeedColorKey = "seed_color";
 inline constexpr std::string_view kEphemeralThemeVersionKey = "version";
 inline constexpr std::string_view kPreEphemeralThemeBackgroundStyleKey =
@@ -165,10 +157,6 @@ inline constexpr std::string_view kEphemeralThemeAnimationFileName =
     "ephemeral_animation.json";
 inline constexpr std::string_view kEphemeralThemePromoAnimationFileName =
     "ephemeral_promo.json";
-inline constexpr std::string_view kEphemeralThemeGoogleLogoLightFileName =
-    "ephemeral_google_logo_light.png";
-inline constexpr std::string_view kEphemeralThemeGoogleLogoDarkFileName =
-    "ephemeral_google_logo_dark.png";
 
 // Service for allowing customization of the Home surface background.
 class HomeBackgroundCustomizationService
@@ -350,7 +338,6 @@ class HomeBackgroundCustomizationService
     GURL url;
     std::string_view file_name;
     std::string_view pref_key;
-    bool is_image = false;
   };
 
   // Returns the `HomeCustomizationBackgroundStyle` corresponding to the
@@ -367,8 +354,8 @@ class HomeBackgroundCustomizationService
   void CleanupEphemeralThemeData();
 
   // Evaluates Finch parameters and fetches the ephemeral theme data (main
-  // animation JSON, promo animation JSON, light Google logo, and dark Google
-  // logo) sequentially if not already cached in prefs.
+  // animation JSON and promo animation JSON) sequentially if not already cached
+  // in prefs.
   void MaybeFetchEphemeralThemeData();
 
   // Downloads the next asset in `pending_assets`, or persists `theme_dict` to
@@ -415,10 +402,6 @@ class HomeBackgroundCustomizationService
 
   // Active URL loader for downloading the ephemeral theme animations.
   std::unique_ptr<network::SimpleURLLoader> ephemeral_promo_url_loader_;
-
-  // Image fetcher for downloading the ephemeral theme Google logo images.
-  std::unique_ptr<image_fetcher::ImageDataFetcher>
-      ephemeral_theme_image_fetcher_;
 
   // Profile state directory path on disk.
   base::FilePath state_path_;
