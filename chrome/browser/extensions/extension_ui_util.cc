@@ -44,6 +44,11 @@
 #include "extensions/browser/mime_handler/mime_handler_ui_util.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/components/kiosk/kiosk_utils.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
+#endif
+
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
@@ -168,6 +173,12 @@ bool ShouldShowReviewPrompt(const Extension& extension, Profile& profile) {
           prefs::kExtensionReviewPromptsAllowed)) {
     return false;
   }
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (chromeos::IsManagedGuestSession() || chromeos::IsKioskSession()) {
+    return false;
+  }
+#endif
 
   if (extension.location() != mojom::ManifestLocation::kInternal ||
       !extension.from_webstore()) {

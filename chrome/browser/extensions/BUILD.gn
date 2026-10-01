@@ -2265,6 +2265,7 @@ source_set("unit_tests") {
       "//chromeos/ash/services/device_sync/public/cpp:test_support",
       "//chromeos/ash/services/multidevice_setup/public/cpp:test_support",
       "//chromeos/ash/services/secure_channel/public/cpp/client:test_support",
+      "//chromeos/components/kiosk:test_support",
       "//chromeos/dbus/missive",
       "//components/account_id:test_support",
       "//extensions/browser/api/system_display:display_info_provider",

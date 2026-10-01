@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/cws_info_service_factory.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
@@ -34,6 +35,11 @@
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/profiles/profile_test_util.h"
+#include "chromeos/components/kiosk/kiosk_test_utils.h"
+#endif
 
 namespace extensions {
 
@@ -118,6 +124,17 @@ TEST_F(ExtensionUIUtilUnittest, ShouldShowReviewPrompt_ProfileTypes) {
   std::unique_ptr<TestingProfile> guest_profile = guest_builder.Build();
   EXPECT_FALSE(
       ui_util::ShouldShowReviewPrompt(*extension, *guest_profile));
+
+#if BUILDFLAG(IS_CHROMEOS)
+  {
+    profiles::testing::ScopedTestManagedGuestSession managed_guest_session;
+    EXPECT_FALSE(ui_util::ShouldShowReviewPrompt(*extension, *profile()));
+  }
+  EXPECT_TRUE(ui_util::ShouldShowReviewPrompt(*extension, *profile()));
+
+  chromeos::SetUpFakeChromeAppKioskSession();
+  EXPECT_FALSE(ui_util::ShouldShowReviewPrompt(*extension, *profile()));
+#endif
 }
 
 TEST_F(ExtensionUIUtilUnittest, ShouldShowReviewPrompt_EnterprisePrefDisabled) {
