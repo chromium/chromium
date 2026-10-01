@@ -907,6 +907,11 @@ historical analysis. -->
   <int value="9" label="SpdyProxy Reject (Deprecated)"/>
 </enum>
 
+<enum name="HttpAuthSchemeAllowedTarget">
+  <int value="0" label="AUTH_PROXY"/>
+  <int value="1" label="AUTH_SERVER"/>
+</enum>
+
 <enum name="HttpAuthTarget">
   <int value="0" label="Basic Proxy"/>
   <int value="1" label="Basic Secure Proxy"/>

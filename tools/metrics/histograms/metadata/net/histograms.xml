@@ -3525,6 +3525,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.HttpAuth.SchemeAllowedByAllSchemesPolicy"
+    enum="HttpAuthSchemeAllowedTarget" expires_after="2027-02-01">
+  <owner>ydago@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Recorded when HTTP authentication challenge scheme resolution succeeds
+    specifically because the target (proxy or server/origin) was allowed to use
+    all HTTP authentication schemes by enterprise policy (either
+    AllHttpAuthSchemesAllowedForOrigins or AllHttpAuthSchemesAllowedForProxies),
+    despite the scheme not being in the default or administrator-configured
+    AuthSchemes.
+  </summary>
+</histogram>
+
 <histogram name="Net.HttpAuthCount" enum="HttpAuthCount"
     expires_after="2025-12-28">
   <owner>mpdenton@chromium.org</owner>

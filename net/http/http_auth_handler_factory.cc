@@ -11,6 +11,7 @@
 #include <string_view>
 
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "net/base/net_errors.h"
@@ -225,13 +226,18 @@ int HttpAuthHandlerRegistryFactory::CreateAuthHandler(
         http_auth_preferences() &&
         http_auth_preferences()->IsAllowedToUseAllHttpAuthSchemes(
             scheme_host_port);
-    auto* factory = all_schemes_allowed_for_origin || IsSchemeAllowed(scheme)
+    bool is_scheme_allowed = IsSchemeAllowed(scheme);
+    auto* factory = all_schemes_allowed_for_origin || is_scheme_allowed
                         ? GetSchemeFactory(scheme)
                         : nullptr;
     if (!factory) {
       handler->reset();
       net_error = ERR_UNSUPPORTED_AUTH_SCHEME;
     } else {
+      if (all_schemes_allowed_for_origin && !is_scheme_allowed) {
+        base::UmaHistogramEnumeration(
+            "Net.HttpAuth.SchemeAllowedByAllSchemesPolicy", target);
+      }
       net_error = factory->CreateAuthHandler(
           challenge, target, ssl_info, network_anonymization_key,
           scheme_host_port, reason, digest_nonce_count, net_log, host_resolver,

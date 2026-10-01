@@ -42,6 +42,7 @@ class NET_EXPORT_PRIVATE HttpAuth {
     AUTH_PROXY = 0,
     AUTH_SERVER = 1,
     AUTH_NUM_TARGETS = 2,
+    kMaxValue = AUTH_SERVER,
   };
 
   // What the HTTP WWW-Authenticate/Proxy-Authenticate headers indicate about

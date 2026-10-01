@@ -8,6 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
@@ -273,6 +274,91 @@ TEST(HttpAuthHandlerFactoryTest, HttpAuthUrlFilter) {
           host_resolver.get(), &handler);
       EXPECT_THAT(rv, IsError(test_case.expected_net_error));
     }
+  }
+}
+
+TEST(HttpAuthHandlerFactoryTest, SchemeAllowedByAllSchemesPolicyHistogram) {
+  MockHostResolver host_resolver;
+  base::HistogramTester histogram_tester;
+
+  MockAllowHttpAuthPreferences http_auth_preferences;
+  http_auth_preferences.SetAllowedSchemes(
+      base::flat_set<std::string>{kBasicAuthScheme});
+
+  const url::SchemeHostPort kAllowedOrigin(GURL("https://www.example.com"));
+  const url::SchemeHostPort kNonAllowedHost(GURL("https://other.example.com"));
+
+  http_auth_preferences.set_http_auth_scheme_filter(base::BindRepeating(
+      [](const url::SchemeHostPort& allowed_origin,
+         const url::SchemeHostPort& scheme_host_port) {
+        return scheme_host_port == allowed_origin;
+      },
+      kAllowedOrigin));
+
+  std::unique_ptr<HttpAuthHandlerRegistryFactory> http_auth_handler_factory(
+      HttpAuthHandlerFactory::CreateDefault(&http_auth_preferences));
+
+  SSLInfo null_ssl_info;
+
+  struct TestCase {
+    HttpAuth::Target target;
+    url::SchemeHostPort host_port;
+    const char* challenge;
+    int expected_net_error;
+    std::optional<HttpAuth::Target> expected_target_histogram;
+  } const kTestCases[] = {
+      // {AUTH_SERVER, kAllowedOrigin, Basic} -> OK, no policy override
+      // histogram
+      {HttpAuth::AUTH_SERVER, kAllowedOrigin, "Basic realm=\"FooBar\"", OK,
+       std::nullopt},
+
+      // {AUTH_SERVER, kAllowedOrigin, Ntlm} -> OK, records AUTH_SERVER
+      {HttpAuth::AUTH_SERVER, kAllowedOrigin, "Ntlm", OK,
+       HttpAuth::AUTH_SERVER},
+
+      // {AUTH_PROXY, kAllowedOrigin, Basic} -> OK, no policy override histogram
+      {HttpAuth::AUTH_PROXY, kAllowedOrigin, "Basic realm=\"FooBar\"", OK,
+       std::nullopt},
+
+      // {AUTH_PROXY, kAllowedOrigin, Ntlm} -> OK, records AUTH_PROXY
+      {HttpAuth::AUTH_PROXY, kAllowedOrigin, "Ntlm", OK, HttpAuth::AUTH_PROXY},
+
+      // {AUTH_SERVER, kNonAllowedHost, Ntlm} -> ERR_UNSUPPORTED_AUTH_SCHEME, no
+      // histogram
+      {HttpAuth::AUTH_SERVER, kNonAllowedHost, "Ntlm",
+       ERR_UNSUPPORTED_AUTH_SCHEME, std::nullopt},
+
+      // {AUTH_PROXY, kNonAllowedHost, Ntlm} -> ERR_UNSUPPORTED_AUTH_SCHEME, no
+      // histogram
+      {HttpAuth::AUTH_PROXY, kNonAllowedHost, "Ntlm",
+       ERR_UNSUPPORTED_AUTH_SCHEME, std::nullopt},
+  };
+
+  int expected_server_count = 0;
+  int expected_proxy_count = 0;
+  for (const auto& test_case : kTestCases) {
+    std::unique_ptr<HttpAuthHandler> handler;
+    int rv = http_auth_handler_factory->CreateAuthHandlerFromString(
+        test_case.challenge, test_case.target, null_ssl_info,
+        NetworkAnonymizationKey(), test_case.host_port, NetLogWithSource(),
+        &host_resolver, &handler);
+    EXPECT_THAT(rv, IsError(test_case.expected_net_error));
+    if (test_case.expected_net_error == OK) {
+      EXPECT_TRUE(handler);
+    } else {
+      EXPECT_FALSE(handler);
+    }
+    if (test_case.expected_target_histogram == HttpAuth::AUTH_SERVER) {
+      expected_server_count++;
+    } else if (test_case.expected_target_histogram == HttpAuth::AUTH_PROXY) {
+      expected_proxy_count++;
+    }
+    histogram_tester.ExpectBucketCount(
+        "Net.HttpAuth.SchemeAllowedByAllSchemesPolicy", HttpAuth::AUTH_SERVER,
+        expected_server_count);
+    histogram_tester.ExpectBucketCount(
+        "Net.HttpAuth.SchemeAllowedByAllSchemesPolicy", HttpAuth::AUTH_PROXY,
+        expected_proxy_count);
   }
 }
 
