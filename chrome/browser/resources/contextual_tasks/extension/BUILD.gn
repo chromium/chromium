@@ -196,7 +196,7 @@ build_webui("build") {
   in_folder = "."
 
   static_files = [
-    "favicons.html",
+    "context_library.html",
     "lens_button.html",
     "lens_chip.html",
     "manifest.json",

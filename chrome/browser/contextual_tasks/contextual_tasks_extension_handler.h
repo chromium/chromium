@@ -51,9 +51,12 @@ class WebContents;
 
 namespace lens {
 class AddedContext;
+struct ContextualInputData;
 class ClientToSearchMessage;
+enum class LensOverlayDismissalSource;
 }  // namespace lens
 
+class BrowserWindowInterface;
 class LensSearchController;
 class ContextualTasksExtensionHandler
     : public content::DocumentUserData<ContextualTasksExtensionHandler>,
@@ -107,6 +110,10 @@ class ContextualTasksExtensionHandler
   }
   std::optional<base::UnguessableToken> GetLensOverlayTokenForTesting() {
     return GetLensOverlayToken();
+  }
+  void SetSelectedTabForTesting(int32_t tab_id,
+                                const base::UnguessableToken& token) {
+    selected_tabs_[tab_id] = token;
   }
 
   void BindComposeboxFactory(
@@ -243,6 +250,7 @@ class ContextualTasksExtensionHandler
   DOCUMENT_USER_DATA_KEY_DECL();
 
   BrowserWindowInterface* GetBrowserWindowInterface() const;
+  bool IsTokenSelected(const base::UnguessableToken& token) const;
 
   contextual_search::ContextualSearchSessionHandle*
   GetOrCreateContextualSessionHandle();
@@ -250,7 +258,36 @@ class ContextualTasksExtensionHandler
   std::optional<base::UnguessableToken> GetLensOverlayToken();
 #if !BUILDFLAG(IS_ANDROID)
   LensSearchController* GetLensSearchController() const;
+  void OnTabContextSnapshot(
+      const base::UnguessableToken& context_token,
+      std::unique_ptr<lens::ContextualInputData> page_content_data);
 #endif
+  void UploadSnapshotTabContextIfPresent();
+  void CloseLensOverlaySync(lens::LensOverlayDismissalSource dismissal_source);
+
+  void InitializeInputStateModel();
+  void OnInputStateChanged(const omnibox::InputState& state);
+  base::WeakPtr<contextual_search::InputStateModel>
+  GetOrCreateInputStateModel();
+  bool IsPrimarySearchMessageSender() const;
+  void OnLensThumbnailCreated(const std::string& thumbnail_uri);
+  void RecordTimeToHandshakeComplete();
+  void HandleOnSubmitQueryRequest();
+  void AppendTabContextsToOnSubmitQueryResponse(
+      lens::ClientToSearchMessage* response_message,
+      contextual_search::ContextualSearchSessionHandle* session_handle,
+      const std::optional<base::UnguessableToken>& overlay_token);
+  std::optional<lens::AddedContext> GetLensAddedContext();
+
+  enum class InjectedInputType {
+    kContextLibrary,
+    kLensChip,
+  };
+  void SendInjectChromeInput(InjectedInputType type, bool is_active);
+  void SendMountContextLibrary();
+  void UpdateContextLibraryInputState();
+  void OnTabContextUploaded(int32_t tab_id,
+                            const base::UnguessableToken& token);
 
   mojo::Receiver<contextual_tasks::mojom::ExtensionPageHandlerFactory>
       contextual_tasks_factory_receiver_{this};
@@ -265,16 +302,6 @@ class ContextualTasksExtensionHandler
       this};
 
   mojo::Remote<searchbox::mojom::Page> searchbox_page_;
-
-  void InitializeInputStateModel();
-  void OnInputStateChanged(const omnibox::InputState& state);
-  base::WeakPtr<contextual_search::InputStateModel>
-  GetOrCreateInputStateModel();
-  bool IsPrimarySearchMessageSender() const;
-  void OnLensThumbnailCreated(const std::string& thumbnail_uri);
-  void RecordTimeToHandshakeComplete();
-  void HandleOnSubmitQueryRequest();
-  std::optional<lens::AddedContext> GetLensAddedContext();
 
   base::WeakPtr<contextual_search::InputStateModel> input_state_model_;
   base::CallbackListSubscription input_state_subscription_;
@@ -293,6 +320,16 @@ class ContextualTasksExtensionHandler
 
   bool is_lens_crop_mounted_ = false;
   std::string last_lens_crop_data_uri_;
+
+  std::map<int32_t, base::UnguessableToken> selected_tabs_;
+
+#if !BUILDFLAG(IS_ANDROID)
+  std::optional<std::pair<base::UnguessableToken,
+                          std::unique_ptr<lens::ContextualInputData>>>
+      tab_context_snapshot_;
+#endif
+
+  bool context_library_is_active_ = false;
   base::WeakPtrFactory<ContextualTasksExtensionHandler> weak_ptr_factory_{this};
 };
 

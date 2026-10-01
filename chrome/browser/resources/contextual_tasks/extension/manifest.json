@@ -32,12 +32,23 @@
   },
   "web_accessible_resources": [
     {
+      // The Search page mounts each of these by hardcoded URL, so the
+      // filenames are a contract. Renaming one here without renaming it
+      // there leaves Search mounting an iframe for a document that does
+      // not exist, which fails silently.
+      // LINT.IfChange(SearchMountedResources)
       "resources": [
-        "favicons.html",
+        "context_library.html",
         "lens_button.html",
-        "tab_picker.html",
-        "lens_chip.html"
+        "lens_chip.html",
+        "tab_picker.html"
       ],
+      // LINT.ThenChange(
+      //   //depot/google3/java/com/google/search/next/aim/ui/chrome/cobrowse/context_library.sfc.tsx,
+      //   //depot/google3/java/com/google/search/next/aim/ui/chrome/cobrowse/lens_button.sfc.tsx,
+      //   //depot/google3/java/com/google/search/next/aim/ui/chrome/cobrowse/lens_chip.sfc.tsx,
+      //   //depot/google3/java/com/google/search/next/aim/ui/chrome/cobrowse/tab_picker_menu_item.sfc.tsx
+      // )
       // LINT.IfChange(WebAccessibleMatches)
       "matches": [
         "https://*.google.com/*",

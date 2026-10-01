@@ -241,13 +241,7 @@ bool IsFailedTerminalStatus(
 // static
 std::optional<lens::ImageEncodingOptions>
 ContextualSearchboxHandler::CreateImageEncodingOptions() {
-  const auto& image_upload_config =
-      ntp_composebox::FeatureConfig::Get().config.composebox().image_upload();
-  return lens::ImageEncodingOptions{
-      .max_size = image_upload_config.downscale_max_image_size(),
-      .max_height = image_upload_config.downscale_max_image_height(),
-      .max_width = image_upload_config.downscale_max_image_width(),
-      .compression_quality = image_upload_config.image_compression_quality()};
+  return contextual_tasks::CreateImageEncodingOptions();
 }
 
 ContextualOmniboxClient::ContextualOmniboxClient(
@@ -1678,82 +1672,9 @@ bool ContextualSearchboxHandler::IsContextualSearchTabSharingEligible() const {
 void ContextualSearchboxHandler::RecordTabAddedMetric(
     tabs::TabInterface* const tab,
     bool is_tab_suggestion_chip) {
-  auto* metrics_recorder = GetMetricsRecorder();
-  if (!metrics_recorder) {
-    return;
-  }
-
-  bool has_duplicate_title = false;
-  auto* browser_window_interface =
-      webui::GetBrowserWindowInterface(web_contents_);
-  if (!browser_window_interface) {
-    return;
-  }
-
-  auto* tab_list = TabListInterface::From(browser_window_interface);
-  if (!tab_list) {
-    return;
-  }
-  int tab_index = tab_list->GetIndexOfTab(tab->GetHandle());
-  if (tab_index == tab_list::kNoTabIndex) {
-    return;
-  }
-
-  const std::u16string& current_title = tab->GetContents()->GetTitle();
-
-  int title_count = 0;
-  std::vector<std::pair<size_t, base::TimeTicks>> last_active_times;
-  auto all_tabs = tab_list->GetAllTabs();
-  for (size_t i = 0; i < all_tabs.size(); i++) {
-    tabs::TabInterface* tab_interface = all_tabs[i];
-
-    const std::u16string& tab_title = tab_interface->GetContents()->GetTitle();
-    if (tab_title == current_title) {
-      title_count++;
-    }
-
-    last_active_times.emplace_back(
-        i, tab_interface->GetContents()->GetLastActiveTimeTicks());
-  }
-
-  if (title_count > 1) {
-    has_duplicate_title = true;
-  }
-
-  std::vector<std::pair<size_t, base::TimeTicks>>
-      reverse_chron_last_active_times(last_active_times.begin(),
-                                      last_active_times.end());
-  std::sort(reverse_chron_last_active_times.begin(),
-            reverse_chron_last_active_times.end(),
-            [](const std::pair<size_t, base::TimeTicks>& a,
-               const std::pair<size_t, base::TimeTicks>& b) {
-              return a.second > b.second;
-            });
-  std::optional<int> recency_ranking;
-  for (size_t i = 0; i < reverse_chron_last_active_times.size(); ++i) {
-    if (reverse_chron_last_active_times[i].first ==
-        static_cast<size_t>(tab_index)) {
-      recency_ranking = static_cast<int>(i);
-      break;
-    }
-  }
-
-  metrics_recorder->RecordTabAddedMetrics(has_duplicate_title, recency_ranking,
-                                          is_tab_suggestion_chip);
-
-  if (is_tab_suggestion_chip) {
-    metrics_recorder->RecordAttachmentButtonUsed(
-        contextual_search::ContextualSearchAttachmentButtonType::kSuggestedTab);
-  } else {
-    tabs::TabInterface* active_tab = tab_list->GetActiveTab();
-    if (active_tab == tab) {
-      metrics_recorder->RecordAttachmentButtonUsed(
-          contextual_search::ContextualSearchAttachmentButtonType::kCurrentTab);
-    } else {
-      metrics_recorder->RecordAttachmentButtonUsed(
-          contextual_search::ContextualSearchAttachmentButtonType::kRecentTab);
-    }
-  }
+  contextual_tasks::RecordTabAddedMetric(
+      tab, GetMetricsRecorder(), is_tab_suggestion_chip,
+      webui::GetBrowserWindowInterface(web_contents_));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
