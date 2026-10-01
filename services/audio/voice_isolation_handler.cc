@@ -53,7 +53,8 @@ std::unique_ptr<media::VoiceIsolationComponent> CreateVoiceIsolationComponent(
   if (!model_handle) {
     return nullptr;
   }
-  return media::VoiceIsolation::CreateComponent(&model_handle->Get());
+  return media::VoiceIsolation::CreateComponent(&model_handle->Get())
+      .value_or(nullptr);
 }
 
 }  // namespace

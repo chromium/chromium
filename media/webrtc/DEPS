@@ -7,3 +7,9 @@ include_rules = [
    "+third_party/webrtc_overrides",
    "+components/optimization_guide",
 ]
+
+specific_include_rules = {
+  ".*(unittest|test_utils)\\..*": [
+    "+third_party/flatbuffers",
+  ],
+}

@@ -56,7 +56,10 @@ source_set("test_support") {
     "voice_isolation_test_utils.h",
   ]
   deps = [ "//base" ]
-  public_deps = [ "//third_party/tflite" ]
+  public_deps = [
+    "//third_party/flatbuffers",
+    "//third_party/tflite",
+  ]
   data = [ "test_model_stateful_1_2_160_2.tflite" ]
 }
 
@@ -65,9 +68,11 @@ source_set("unit_tests") {
   deps = [
     ":mock_voice_isolation",
     ":test_support",
+    "//base/test:test_support",
     "//media/webrtc",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/flatbuffers",
     "//third_party/tflite",
   ]
   sources = [

@@ -8,14 +8,17 @@
 #include <memory>
 #include <numeric>
 
+#include "base/test/gmock_expected_support.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/webrtc/voice_isolation/passthrough_voice_isolation.h"
 #include "media/webrtc/voice_isolation/stft_voice_isolation.h"
 #include "media/webrtc/voice_isolation/voice_isolation_component.h"
 #include "media/webrtc/voice_isolation/voice_isolation_test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/tflite/src/tensorflow/lite/model_builder.h"
+#include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
+#include "third_party/tflite/src/tensorflow/lite/schema/schema_generated.h"
 
 namespace media {
 namespace {
@@ -133,9 +136,8 @@ TEST(VoiceIsolationTest, TwoStageCreationSucceedsAndProcessesAudio) {
   std::unique_ptr<tflite::FlatBufferModel> model =
       LoadVoiceIsolationTestModel();
 
-  std::unique_ptr<VoiceIsolationComponent> component =
-      VoiceIsolation::CreateComponent(model.get());
-  ASSERT_NE(component, nullptr);
+  ASSERT_OK_AND_ASSIGN(auto component,
+                       VoiceIsolation::CreateComponent(model.get()));
 
   std::unique_ptr<VoiceIsolation> voice_isolation =
       VoiceIsolation::Create(std::move(component), params);
@@ -293,6 +295,30 @@ TEST(VoiceIsolationTest, DISABLED_ClearBuffersMatchesFreshInstance) {
           << "Stale audio leaked at frame " << i << ", sample " << sample;
     }
   }
+}
+
+// Verifies that VoiceIsolation::CreateComponent propagates initialization
+// errors from the underlying TfLiteVoiceIsolation implementation when provided
+// an invalid model, and that VoiceIsolation::Create returns nullptr.
+TEST(VoiceIsolationTest, CreateComponentFailsOnInvalidModel) {
+  // Build an invalid model that passes FlatBuffer structural verification but
+  // contains no execution subgraphs or tensors.
+  FakeModel bogus = BuildBogusModel();
+  ASSERT_NE(bogus.model, nullptr);
+
+  // Calling CreateComponent must propagate the underlying interpreter failure.
+  auto result = VoiceIsolation::CreateComponent(bogus.model.get());
+  EXPECT_THAT(result,
+              base::test::ErrorIs(
+                  VoiceIsolationCreationResult::kInterpreterCreationFailed));
+
+  // The wrapper VoiceIsolation::Create must gracefully return nullptr on error.
+  constexpr int kSampleRate = 48000;
+  constexpr int kFrameSize = 320;
+  AudioParameters params(AudioParameters::AUDIO_PCM_LINEAR,
+                         ChannelLayoutConfig::Stereo(), kSampleRate,
+                         kFrameSize);
+  EXPECT_EQ(VoiceIsolation::Create(bogus.model.get(), params), nullptr);
 }
 
 }  // namespace media

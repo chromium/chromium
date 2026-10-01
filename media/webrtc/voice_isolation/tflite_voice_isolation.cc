@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
 #include "components/optimization_guide/core/tflite_op_resolver.h"
 #include "media/webrtc/voice_isolation/voice_isolation.h"
 #include "third_party/tflite/buildflags.h"
@@ -39,26 +40,31 @@ bool ValidateModelInterpreter(tflite::Interpreter* interpreter) {
   if (!interpreter) {
     return false;
   }
-  if (interpreter->inputs().size() != 1) {
+  if (interpreter->inputs().size() != 1 ||
+      !interpreter->typed_input_tensor<float>(0)) {
     return false;
   }
-  CHECK_EQ(tflite::NumElements(interpreter->tensor(interpreter->inputs()[0])),
-           kModelInputSize);
-  if (!interpreter->typed_input_tensor<float>(0)) {
-    return false;
-  };
-
-  if (interpreter->outputs().size() != 1) {
+  const TfLiteTensor* input_tensor =
+      interpreter->tensor(interpreter->inputs()[0]);
+  if (!input_tensor || tflite::NumElements(input_tensor) != kModelInputSize) {
     return false;
   }
-  CHECK_EQ(tflite::NumElements(interpreter->tensor(interpreter->outputs()[0])),
-           2 * kModelInputSize);
-  if (!interpreter->typed_output_tensor<float>(0)) {
-    return false;
-  };
 
-  CHECK_NE(interpreter->typed_input_tensor<float>(0),
-           interpreter->typed_output_tensor<float>(0));
+  if (interpreter->outputs().size() != 1 ||
+      !interpreter->typed_output_tensor<float>(0)) {
+    return false;
+  }
+  const TfLiteTensor* output_tensor =
+      interpreter->tensor(interpreter->outputs()[0]);
+  if (!output_tensor ||
+      tflite::NumElements(output_tensor) != 2 * kModelInputSize) {
+    return false;
+  }
+
+  if (interpreter->typed_input_tensor<float>(0) ==
+      interpreter->typed_output_tensor<float>(0)) {
+    return false;
+  }
   return true;
 }
 
@@ -96,36 +102,35 @@ base::span<float> WrapOutputTensor(tflite::Interpreter* interpreter,
 }  // namespace
 
 TfLiteVoiceIsolation::TfLiteVoiceIsolation(
-    std::unique_ptr<tflite::Interpreter> interpreter)
+    std::unique_ptr<tflite::Interpreter> interpreter,
+    std::vector<float> bias)
     : interpreter_(std::move(interpreter)),
       input_tensor_span_(WrapInputTensor(interpreter_.get(), /*index=*/0)),
       output_tensor_span_(WrapOutputTensor(interpreter_.get(), /*index=*/0)),
+      bias_(std::move(bias)),
       frame_size_(input_tensor_span_.size()) {
   CHECK_EQ(interpreter_->inputs().size(), 1u);
   CHECK_EQ(interpreter_->outputs().size(), 1u);
   const size_t output_elements = output_tensor_span_.size();
-  bias_.resize(output_elements);
+  CHECK_EQ(bias_.size(), output_elements);
   temp_output_.resize(output_elements);
   CHECK_EQ(frame_size_ * 2, output_elements);
   CHECK_NE(interpreter_->typed_input_tensor<float>(0),
            interpreter_->typed_output_tensor<float>(0));
   DVLOG(1) << "TfLiteVoiceIsolation frame_size=" << frame_size_;
-
-  // Invoke once with zeros to get the model bias output.
-  std::fill(input_tensor_span_.begin(), input_tensor_span_.end(), 0.0f);
-  CHECK_EQ(interpreter_->Invoke(), kTfLiteOk);
-  base::span(bias_).copy_from_nonoverlapping(output_tensor_span_);
 }
 
-std::unique_ptr<TfLiteVoiceIsolation> TfLiteVoiceIsolation::MaybeCreate(
-    const tflite::FlatBufferModel* model) {
+base::expected<std::unique_ptr<TfLiteVoiceIsolation>,
+               VoiceIsolationCreationResult>
+TfLiteVoiceIsolation::MaybeCreate(const tflite::FlatBufferModel* model) {
   CHECK(model);
   optimization_guide::TFLiteOpResolver op_resolver;
 
   std::unique_ptr<tflite::Interpreter> interpreter;
   auto builder = tflite::InterpreterBuilder(*model, op_resolver);
   if (builder(&interpreter) != kTfLiteOk) {
-    return nullptr;
+    return base::unexpected(
+        VoiceIsolationCreationResult::kInterpreterCreationFailed);
   }
 
 #if BUILDFLAG(BUILD_TFLITE_WITH_XNNPACK)
@@ -141,18 +146,34 @@ std::unique_ptr<TfLiteVoiceIsolation> TfLiteVoiceIsolation::MaybeCreate(
 
   if (interpreter->ModifyGraphWithDelegate(std::move(xnnpack_delegate)) !=
       kTfLiteOk) {
-    return nullptr;
+    return base::unexpected(
+        VoiceIsolationCreationResult::kDelegateCreationFailed);
   }
 #endif
 
   if (interpreter->AllocateTensors() != kTfLiteOk) {
-    return nullptr;
+    return base::unexpected(
+        VoiceIsolationCreationResult::kTensorAllocationFailed);
   }
 
-  if (ValidateModelInterpreter(interpreter.get())) {
-    return base::WrapUnique(new TfLiteVoiceIsolation(std::move(interpreter)));
+  if (!ValidateModelInterpreter(interpreter.get())) {
+    return base::unexpected(VoiceIsolationCreationResult::kIncompatibleModel);
   }
-  return nullptr;
+
+  // Warmup run with zeros to compute model bias output and verify execution.
+  base::span<float> input_span =
+      WrapInputTensor(interpreter.get(), /*index=*/0);
+  std::fill(input_span.begin(), input_span.end(), 0.0f);
+  if (interpreter->Invoke() != kTfLiteOk) {
+    return base::unexpected(VoiceIsolationCreationResult::kWarmupFailed);
+  }
+
+  base::span<const float> output_span =
+      WrapOutputTensor(interpreter.get(), /*index=*/0);
+  std::vector<float> bias(output_span.begin(), output_span.end());
+
+  return base::WrapUnique(
+      new TfLiteVoiceIsolation(std::move(interpreter), std::move(bias)));
 }
 
 TfLiteVoiceIsolation::~TfLiteVoiceIsolation() = default;

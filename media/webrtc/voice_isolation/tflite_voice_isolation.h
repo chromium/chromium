@@ -12,6 +12,7 @@
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_span.h"
+#include "base/types/expected.h"
 #include "media/webrtc/voice_isolation/voice_isolation_component.h"
 #include "third_party/tflite/src/tensorflow/lite/interpreter.h"
 #include "third_party/tflite/src/tensorflow/lite/model_builder.h"
@@ -35,12 +36,13 @@ class COMPONENT_EXPORT(MEDIA_WEBRTC) TfLiteVoiceIsolation
   void ClearBuffers() override;
 
   // `model` needs to outlive this TfLiteVoiceIsolation instance.
-  static std::unique_ptr<TfLiteVoiceIsolation> MaybeCreate(
-      const tflite::FlatBufferModel* model);
+  static base::expected<std::unique_ptr<TfLiteVoiceIsolation>,
+                        VoiceIsolationCreationResult>
+  MaybeCreate(const tflite::FlatBufferModel* model);
 
  private:
-  explicit TfLiteVoiceIsolation(
-      std::unique_ptr<tflite::Interpreter> interpreter);
+  TfLiteVoiceIsolation(std::unique_ptr<tflite::Interpreter> interpreter,
+                       std::vector<float> bias);
 
   std::unique_ptr<tflite::Interpreter> interpreter_;
   base::raw_span<float> input_tensor_span_;

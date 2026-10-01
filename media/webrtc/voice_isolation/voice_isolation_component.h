@@ -10,6 +10,22 @@
 
 namespace media {
 
+// Result of attempting to initialize VoiceIsolation / VoiceIsolationComponent.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Note: `kSuccess` is never returned as an error.
+enum class VoiceIsolationCreationResult {
+  kSuccess = 0,
+  kInterpreterCreationFailed = 1,
+  kDelegateCreationFailed = 2,
+  kTensorAllocationFailed = 3,
+  kIncompatibleModel = 4,
+  kWarmupFailed = 5,
+  kMaxValue = kWarmupFailed,
+};
+
 class COMPONENT_EXPORT(MEDIA_WEBRTC) VoiceIsolationComponent {
  public:
   VoiceIsolationComponent() = default;

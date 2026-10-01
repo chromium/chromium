@@ -7,18 +7,31 @@
 
 #include <memory>
 
-namespace tflite {
-namespace impl {
-class FlatBufferModel;
-}  // namespace impl
-using FlatBufferModel = impl::FlatBufferModel;
-}  // namespace tflite
+#include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
+#include "third_party/tflite/src/tensorflow/lite/model_builder.h"
 
 namespace media {
+
+// Holds a FlatBuffer DetachedBuffer and the FlatBufferModel built from it.
+// The DetachedBuffer owns the underlying memory and must outlive `model`.
+struct FakeModel {
+  flatbuffers::DetachedBuffer buffer;
+  std::unique_ptr<tflite::FlatBufferModel> model;
+};
 
 // Loads the stateful Voice Isolation test model shipped with the tests. Returns
 // nullptr if the model cannot be loaded.
 std::unique_ptr<tflite::FlatBufferModel> LoadVoiceIsolationTestModel();
+
+// Builds a minimal FlatBuffer model containing a description string but no
+// subgraphs or operators. This passes FlatBuffer schema verification but fails
+// interpreter initialization with kInterpreterCreationFailed.
+FakeModel BuildBogusModel();
+
+// Builds a FlatBuffer model with one subgraph where the same float tensor of
+// `tensor_size` elements is used as both the single input and single output,
+// and no operators.
+FakeModel BuildModelWithSameInputOutputTensor(int tensor_size);
 
 }  // namespace media
 

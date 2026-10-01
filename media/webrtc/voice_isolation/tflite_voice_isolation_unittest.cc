@@ -9,10 +9,12 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/test/gmock_expected_support.h"
 #include "media/webrtc/voice_isolation/voice_isolation_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/tflite/src/tensorflow/lite/model_builder.h"
+#include "third_party/flatbuffers/src/include/flatbuffers/flatbuffers.h"
+#include "third_party/tflite/src/tensorflow/lite/schema/schema_generated.h"
 
 namespace media {
 namespace {
@@ -110,8 +112,8 @@ TEST(TfLiteVoiceIsolation, CreateWorks) {
   auto model = LoadVoiceIsolationTestModel();
   ASSERT_NE(model, nullptr);
 
-  auto voice_isolation = TfLiteVoiceIsolation::MaybeCreate(model.get());
-  ASSERT_NE(voice_isolation, nullptr);
+  ASSERT_OK_AND_ASSIGN(auto voice_isolation,
+                       TfLiteVoiceIsolation::MaybeCreate(model.get()));
   EXPECT_EQ(voice_isolation->FrameSize(), 640u);
 }
 
@@ -119,8 +121,8 @@ TEST(TfLiteVoiceIsolation, ProcessAudioWorks) {
   auto model = LoadVoiceIsolationTestModel();
   ASSERT_NE(model, nullptr);
 
-  auto voice_isolation = TfLiteVoiceIsolation::MaybeCreate(model.get());
-  ASSERT_NE(voice_isolation, nullptr);
+  ASSERT_OK_AND_ASSIGN(auto voice_isolation,
+                       TfLiteVoiceIsolation::MaybeCreate(model.get()));
 
   std::vector<float> input(voice_isolation->FrameSize(), 1.0f);
   std::vector<float> output(voice_isolation->FrameSize(), 0.0f);
@@ -139,9 +141,8 @@ TEST(TfLiteVoiceIsolation, DISABLED_ProcessAudioMatchesClosedForm) {
       LoadVoiceIsolationTestModel();
   ASSERT_NE(model, nullptr);
 
-  std::unique_ptr<TfLiteVoiceIsolation> voice_isolation =
-      TfLiteVoiceIsolation::MaybeCreate(model.get());
-  ASSERT_NE(voice_isolation, nullptr);
+  ASSERT_OK_AND_ASSIGN(auto voice_isolation,
+                       TfLiteVoiceIsolation::MaybeCreate(model.get()));
 
   // A freshly created object must start from the initial model state.
   StatefulTestModelReference reference;
@@ -166,9 +167,8 @@ TEST(TfLiteVoiceIsolation, DISABLED_ClearBuffersRestoresInitialState) {
       LoadVoiceIsolationTestModel();
   ASSERT_NE(model, nullptr);
 
-  std::unique_ptr<TfLiteVoiceIsolation> voice_isolation =
-      TfLiteVoiceIsolation::MaybeCreate(model.get());
-  ASSERT_NE(voice_isolation, nullptr);
+  ASSERT_OK_AND_ASSIGN(auto voice_isolation,
+                       TfLiteVoiceIsolation::MaybeCreate(model.get()));
 
   const std::vector<float> input =
       MakeTestInput(voice_isolation->FrameSize(), /*frame_index=*/0);
@@ -187,5 +187,32 @@ TEST(TfLiteVoiceIsolation, DISABLED_ClearBuffersRestoresInitialState) {
   voice_isolation->ClearBuffers();
   voice_isolation->ProcessAudio(input, output3);
   EXPECT_EQ(output1, output3);
+}
+
+// Verifies that attempting to initialize TfLiteVoiceIsolation with a FlatBuffer
+// model that passes buffer verification but lacks valid execution subgraphs or
+// operators fails safely and returns kInterpreterCreationFailed without
+// crashing.
+TEST(TfLiteVoiceIsolation, FailsOnEmptyModel) {
+  FakeModel bogus = BuildBogusModel();
+  ASSERT_NE(bogus.model, nullptr);
+
+  auto result = TfLiteVoiceIsolation::MaybeCreate(bogus.model.get());
+  EXPECT_THAT(result,
+              base::test::ErrorIs(
+                  VoiceIsolationCreationResult::kInterpreterCreationFailed));
+}
+
+// Verifies that a FlatBuffer model with incompatible tensor configuration (such
+// as an unexpected frame size or identical input and output tensors) is safely
+// rejected with kIncompatibleModel.
+TEST(TfLiteVoiceIsolation, FailsOnIncompatibleModel) {
+  FakeModel fake_model =
+      BuildModelWithSameInputOutputTensor(/*tensor_size=*/320);
+  ASSERT_NE(fake_model.model, nullptr);
+
+  auto result = TfLiteVoiceIsolation::MaybeCreate(fake_model.model.get());
+  EXPECT_THAT(result, base::test::ErrorIs(
+                          VoiceIsolationCreationResult::kIncompatibleModel));
 }
 }  // namespace media

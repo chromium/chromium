@@ -9,6 +9,8 @@
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
+#include "base/types/expected.h"
+#include "base/types/expected_macros.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/converting_audio_fifo.h"
@@ -24,22 +26,17 @@ namespace {
 constexpr size_t kVoiceIsolationFrameSize = 320;
 constexpr size_t kVoiceIsolationFramesPerSecond = 50;
 
-std::unique_ptr<VoiceIsolationComponent> CreateVoiceIsolation(
-    const tflite::FlatBufferModel* model) {
+base::expected<std::unique_ptr<VoiceIsolationComponent>,
+               VoiceIsolationCreationResult>
+CreateVoiceIsolation(const tflite::FlatBufferModel* model) {
   // Internally the model expects two sets of complex coefficients of two DFT of
   // 160 samples.
   constexpr size_t kModelFrameSize = 2 * kVoiceIsolationFrameSize;
   CHECK(model);
 
-  std::unique_ptr<VoiceIsolationComponent> tflite =
-      TfLiteVoiceIsolation::MaybeCreate(model);
-  // TODO(barrerap): We are assuming the model is always correct. This is
-  // because VoiceIsolationHandler, the caller to `VoiceIsolation::Create`,
-  // expects that we always are able to create a valid. In the future we will
-  // handle both incorrect initializations and delayed initializations
-  // (`TfLiteVoiceIsolation::MaybeCreate` might be slow).
-  CHECK(tflite);
-  CHECK_EQ(tflite->FrameSize(), 640u);
+  ASSIGN_OR_RETURN(std::unique_ptr<VoiceIsolationComponent> tflite,
+                   TfLiteVoiceIsolation::MaybeCreate(model));
+  CHECK_EQ(tflite->FrameSize(), kModelFrameSize);
   CHECK_EQ(tflite->FramesPerSecond(), kVoiceIsolationFramesPerSecond);
 
   auto stft = std::make_unique<StftVoiceIsolation>(std::move(tflite));
@@ -137,8 +134,9 @@ void VoiceIsolationImpl::ClearBuffers() {
 }
 }  // namespace
 
-std::unique_ptr<VoiceIsolationComponent> VoiceIsolation::CreateComponent(
-    const tflite::FlatBufferModel* model) {
+base::expected<std::unique_ptr<VoiceIsolationComponent>,
+               VoiceIsolationCreationResult>
+VoiceIsolation::CreateComponent(const tflite::FlatBufferModel* model) {
   return CreateVoiceIsolation(model);
 }
 
@@ -153,7 +151,10 @@ std::unique_ptr<VoiceIsolation> VoiceIsolation::Create(
 std::unique_ptr<VoiceIsolation> VoiceIsolation::Create(
     const tflite::FlatBufferModel* model,
     const media::AudioParameters& audio_params) {
-  return Create(CreateComponent(model), audio_params);
+  auto component_or_error = CreateComponent(model);
+  return component_or_error.has_value()
+             ? Create(std::move(*component_or_error), audio_params)
+             : nullptr;
 }
 
 }  // namespace media

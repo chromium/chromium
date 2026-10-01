@@ -8,27 +8,31 @@
 #include <memory>
 
 #include "base/component_export.h"
+#include "base/types/expected.h"
+#include "media/webrtc/voice_isolation/voice_isolation_component.h"
 #include "third_party/tflite/src/tensorflow/lite/model_builder.h"
 
 namespace media {
 
 class AudioBus;
 class AudioParameters;
-class VoiceIsolationComponent;
 
 class COMPONENT_EXPORT(MEDIA_WEBRTC) VoiceIsolation {
  public:
   // Creates a VoiceIsolation object. For that it needs a pointer to the
   // `model` and correct audio params (PCM linear format). `model` needs to
-  // remain valid for the lifetime of the VoiceIsolation object.
+  // remain valid for the lifetime of the VoiceIsolation object. Returns
+  // nullptr on failure.
   static std::unique_ptr<VoiceIsolation> Create(
       const tflite::FlatBufferModel* model,
       const media::AudioParameters& audio_params);
 
   // Creates a VoiceIsolationComponent from `model`. `model` must remain valid
-  // for the lifetime of the component.
-  static std::unique_ptr<VoiceIsolationComponent> CreateComponent(
-      const tflite::FlatBufferModel* model);
+  // for the lifetime of the component. Returns a non-null pointer on success,
+  // or a VoiceIsolationCreationResult error code on failure.
+  static base::expected<std::unique_ptr<VoiceIsolationComponent>,
+                        VoiceIsolationCreationResult>
+  CreateComponent(const tflite::FlatBufferModel* model);
 
   // Creates a VoiceIsolation object wrapping an existing `component`.
   static std::unique_ptr<VoiceIsolation> Create(
