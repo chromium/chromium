@@ -865,16 +865,13 @@ AX_TEST_F(
           [{text: '33333 line 1. lstitm lst +1', startIndex: 8, endIndex: 8}]);
 
       // Extend backward from "33333 li|ne" to whitespace after the link.
-      // Blink reports no selection here, so there is no speech or braille.
-      await moveAndExpect([], []);
-
-      // Extend to "11111 l|ine". The entire selection is announced because
-      // the previous move did not expose its selection to ChromeVox.
       await moveAndExpect(
-          [
-            'ine', 'Heading 1', '22222 line', 'Link', '33333 li', 'List item',
-            'selected'
-          ],
+          ['33333 li', 'List item', 'selected'],
+          [{text: '22222 line lnk', startIndex: 10, endIndex: 10}]);
+
+      // Extend to "11111 l|ine", adding the heading's suffix and the link.
+      await moveAndExpect(
+          ['ine', 'Heading 1', '22222 line', 'Link', 'selected'],
           [{text: '11111 line h1', startIndex: 7, endIndex: 10}]);
     });
 
