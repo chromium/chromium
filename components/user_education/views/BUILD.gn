@@ -92,6 +92,10 @@ source_set("unit_tests") {
     "new_badge_label_unittest.cc",
   ]
 
+  if (is_mac) {
+    sources += [ "help_bubble_factory_mac_unittest.mm" ]
+  }
+
   deps = [
     ":test_support",
     ":views",
@@ -108,6 +112,7 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//third_party/abseil-cpp:absl",
     "//ui/accessibility",
+    "//ui/base/interaction",
     "//ui/base/interaction:test_support",
     "//ui/color",
     "//ui/gfx",

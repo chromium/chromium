@@ -4,7 +4,11 @@
 
 #include "components/user_education/views/help_bubble_factory_mac.h"
 
+#import <AppKit/AppKit.h>
+
+#include "base/feature_list.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
+#include "components/user_education/common/user_education_features.h"
 #include "components/user_education/views/help_bubble_delegate.h"
 #include "components/user_education/views/help_bubble_factory_views.h"
 #include "components/user_education/views/help_bubble_view.h"
@@ -53,8 +57,28 @@ std::unique_ptr<HelpBubble> HelpBubbleFactoryMac::CreateBubble(
     anchor.rect->Inset(kMacMenuInsets);
   }
 
-  return base::WrapUnique(new HelpBubbleViews(
-      HelpBubbleView::Create(delegate_, anchor, std::move(params)), element));
+  HelpBubbleViewInfo bubble_info =
+      HelpBubbleView::Create(delegate_, anchor, std::move(params));
+  NSWindow* const ns_window =
+      (bubble_info.widget && bubble_info.widget->GetNativeWindow())
+          ? bubble_info.widget->GetNativeWindow().GetNativeNSWindow()
+          : nil;
+  if (ns_window &&
+      base::FeatureList::IsEnabled(features::kRaiseMacHelpBubbleAboveMenus)) {
+    // Native macOS menus (NSMenu) render at NSPopUpMenuWindowLevel (101),
+    // while the help bubble is parented to the browser window at
+    // NSNormalWindowLevel (0).
+    //
+    // [ns_window setLevel:] is used directly because Widget::SetZOrderLevel()
+    // maps non-TYPE_MENU widgets to at most kCGFloatingWindowLevel (or
+    // kCGStatusWindowLevel), which is below popup menus, and
+    // NativeWidgetNSWindowBridge::SetWindowLevel adds
+    // NSWindowCollectionBehaviorManaged which conflicts with
+    // NSWindowCollectionBehaviorTransient on child windows. Consequently,
+    // Widget::GetZOrderLevel() will still report kNormal.
+    [ns_window setLevel:NSPopUpMenuWindowLevel + 1];
+  }
+  return base::WrapUnique(new HelpBubbleViews(std::move(bubble_info), element));
 }
 
 bool HelpBubbleFactoryMac::CanBuildBubbleForTrackedElement(

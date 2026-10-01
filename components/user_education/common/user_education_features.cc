@@ -241,6 +241,7 @@ std::ostream& operator<<(std::ostream& os, NtpBrowserPromoType promo_type) {
 }
 
 BASE_FEATURE(kLazilySetCustomActionCaption, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kRaiseMacHelpBubbleAboveMenus, base::FEATURE_ENABLED_BY_DEFAULT);
 
 namespace testing {
 

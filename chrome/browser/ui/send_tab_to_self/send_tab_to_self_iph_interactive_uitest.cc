@@ -46,6 +46,7 @@
 #include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/tutorial/tutorial_registry.h"
 #include "components/user_education/common/tutorial/tutorial_service.h"
+#include "components/user_education/common/user_education_features.h"
 #include "components/user_education/views/help_bubble_view.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
@@ -56,10 +57,15 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
+#include "ui/views/test/views_test_utils.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
 
 namespace send_tab_to_self {
 
@@ -328,7 +334,8 @@ class SendTabToSelfIphInteractiveUiTest : public InteractiveFeaturePromoTest {
             {feature_engagement::kIPHSendTabToSelfTutorialFeature})) {
     scoped_feature_list_.InitWithFeatures(
         {send_tab_to_self::kSendTabToSelfEnhancedDesktopUI,
-         send_tab_to_self::kSendTabToSelfPostSendToast},
+         send_tab_to_self::kSendTabToSelfPostSendToast,
+         user_education::features::kRaiseMacHelpBubbleAboveMenus},
         {});
   }
 
@@ -558,6 +565,74 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
           /*screenshot_name=*/"SendTabToSelfTutorialStep3ToastSuccess",
           /*baseline_cl=*/kScreenshotBaselineCL)));
+}
+
+IN_PROC_BROWSER_TEST_F(SendTabToSelfIphInteractiveUiTest,
+                       Step2HelpBubbleAnchoredToContextMenuItem) {
+  const GURL eligible_url =
+      embedded_https_test_server().GetURL("example.com", "/title1.html");
+  gfx::Rect menu_item_bounds;
+#if !BUILDFLAG(IS_MAC)
+  gfx::Rect submenu_item_bounds;
+#endif
+
+  RunTestSequence(
+      InstrumentTab(kTabId), AddInstrumentedTab(kSecondTabId, eligible_url),
+      WaitForPromo(feature_engagement::kIPHSendTabToSelfTutorialFeature),
+      PressDefaultPromoButton(),
+      // Step 1: Wait for the bubble on the active tab.
+      WaitForShow(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      NameDescendantViewByType<Tab>(kBrowserViewElementId, kSecondTabName, 1),
+      MoveMouseTo(kSecondTabName), ClickMouse(ui_controls::RIGHT),
+      // Step 2: Context menu open, bubble anchored to Send Tab to Self item.
+      WaitForShow(kTabSendTabToSelfMenuItem),
+      WithElement(kTabSendTabToSelfMenuItem,
+                  [&menu_item_bounds](ui::TrackedElement* el) {
+                    menu_item_bounds = el->GetScreenBounds();
+                  }),
+      WaitForShow(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      CheckView(user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
+                [&menu_item_bounds](user_education::HelpBubbleView* bubble) {
+                  const gfx::Rect bubble_bounds = bubble->GetBoundsInScreen();
+                  if (!bubble->GetWidget()->IsVisible() ||
+                      bubble_bounds.IsEmpty()) {
+                    return false;
+                  }
+#if BUILDFLAG(IS_MAC)
+                  if (base::mac::MacOSMajorVersion() < 14) {
+                    return true;
+                  }
+#endif
+                  // Verify the bubble is positioned above the "Send to your
+                  // devices" menu item and does not cover the menu item.
+                  return bubble_bounds.bottom() <= menu_item_bounds.y() &&
+                         !bubble_bounds.Intersects(menu_item_bounds);
+                }),
+#if !BUILDFLAG(IS_MAC)
+      // Open the device submenu and verify the Step 2 help bubble remains
+      // visible and does not overlap the submenu item.
+      SelectMenuItem(kTabSendTabToSelfMenuItem),
+      NameMenuItemWithTitle(kDeviceMenuItemName, kTargetDeviceName16),
+      InAnyContext(WithView(kDeviceMenuItemName,
+                            [&submenu_item_bounds](views::View* item) {
+                              submenu_item_bounds = item->GetBoundsInScreen();
+                            })),
+      CheckView(user_education::HelpBubbleView::kHelpBubbleElementIdForTesting,
+                [&submenu_item_bounds](user_education::HelpBubbleView* bubble) {
+                  return bubble->GetWidget()->IsVisible() &&
+                         !bubble->GetBoundsInScreen().Intersects(
+                             submenu_item_bounds);
+                }),
+      InAnyContext(SelectMenuItem(kDeviceMenuItemName)),
+#else
+      SelectSendTabToSelfDeviceItem(),
+#endif
+      // Step 3: Completion bubble anchored to the toast notification.
+      WaitForShow(toasts::ToastView::kToastViewId),
+      WaitForShow(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
 
 }  // namespace send_tab_to_self

@@ -145,6 +145,10 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRegistryInteractiveUitest,
                         bubble = GetRegistry()->CreateHelpBubble(
                             el, GetBubbleParams());
                       }),
+          Check([&bubble]() { return bubble != nullptr; },
+                "Check bubble is not null."),
+          Check([&bubble]() { return bubble->is_open(); },
+                "Check bubble registers as open."),
           WaitForShow(
               user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
 
@@ -162,5 +166,9 @@ IN_PROC_BROWSER_TEST_F(HelpBubbleFactoryRegistryInteractiveUitest,
 #if BUILDFLAG(IS_MAC)
               )  // WithoutDelay(
 #endif
-  );
+      ,
+      WaitForHide(
+          user_education::HelpBubbleView::kHelpBubbleElementIdForTesting),
+      Check([&bubble]() { return !bubble->is_open(); },
+            "Check bubble closes when context menu closes."));
 }

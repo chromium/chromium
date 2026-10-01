@@ -135,6 +135,11 @@ extern std::ostream& operator<<(std::ostream& os,
 
 BASE_DECLARE_FEATURE(kLazilySetCustomActionCaption);
 
+// Raises macOS help bubbles anchored to native menus above
+// `NSPopUpMenuWindowLevel` and anchors them to the primary window widget in
+// `HelpBubbleFactoryMac`.
+BASE_DECLARE_FEATURE(kRaiseMacHelpBubbleAboveMenus);
+
 namespace testing {
 
 // Specifies how timings should be modified for tests.
