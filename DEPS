@@ -2541,7 +2541,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/ktfmt',
-              'version': '1zClPHVrxh2Vup3dCdggogcm8VBDCq3Jr1TGNUqPEtYC',
+              'version': 'TRRjU5e-O9hFbxZiT9-4Jq_MX8yOnjUhJYrcRIsJufUC',
           },
       ],
       'condition': '(checkout_android or checkout_linux) and non_git_source',
