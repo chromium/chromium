@@ -1565,6 +1565,12 @@ chromium-metrics-reviews@google.com.
     Records the initiator type of a SRP navigation. Recorded for a standard SRP
     navigation when it commits. For a prerendered SRP navigation, it is recorded
     when the page is activated.
+
+    Note: The SRP judgement was changed to `google_util::IsGoogleSearchUrl()` in
+    2026-09, so that this histogram is comparable with
+    PreloadServingMetrics.*.SRP. It was
+    `page_load_metrics::IsGoogleSearchResultUrl()` before, which uses slightly
+    different criteria. The data is not comparable across the boundary.
   </summary>
 </histogram>
 

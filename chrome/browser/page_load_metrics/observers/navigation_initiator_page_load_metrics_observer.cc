@@ -6,8 +6,8 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
+#include "components/google/core/common/google_util.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
-#include "components/page_load_metrics/google/browser/google_url_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/page_transition_types.h"
 
@@ -15,8 +15,11 @@ namespace {
 
 void RecordInitiatorMetrics(content::NavigationHandle& navigation_handle) {
   const ui::PageTransition transition = navigation_handle.GetPageTransition();
-  bool is_srp =
-      page_load_metrics::IsGoogleSearchResultUrl(navigation_handle.GetURL());
+  // Note: This must be consistent with the SRP judgement of
+  // `PreloadServingMetricsPageLoadMetricsObserver` so that
+  // `Navigation.InitiatorType.SRP` and `PreloadServingMetrics.*.SRP` are
+  // comparable.
+  bool is_srp = google_util::IsGoogleSearchUrl(navigation_handle.GetURL());
   auto* navigation_handle_user_data =
       page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
           navigation_handle);
