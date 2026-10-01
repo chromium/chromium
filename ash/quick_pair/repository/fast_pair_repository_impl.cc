@@ -4,6 +4,8 @@
 
 #include "ash/quick_pair/repository/fast_pair_repository_impl.h"
 
+#include <string_view>
+
 #include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/proto/fastpair_data.pb.h"
@@ -41,7 +43,7 @@ constexpr base::TimeDelta kCacheInvalidationTime = base::Minutes(30);
 // string of bytes defined below, which is used as the prefix for the sha256
 // field of the device. This should be kept in sync with those values.
 // http://google3/java/com/google/location/nearby/common/fastpair/footprints/FootprintsDeviceManager.java;l=65-75;rcl=482615113
-const std::string kForgetPattern = "\xf0\xf0\xf0\xf0";
+constexpr std::string_view kForgetPattern = "\xf0\xf0\xf0\xf0";
 
 // For all intents and purposes, a device that has the "Forget pattern" is no
 // longer associated to the user's account, and should be treated as removed.

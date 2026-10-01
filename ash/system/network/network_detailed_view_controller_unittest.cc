@@ -36,7 +36,7 @@ using ::chromeos::network_config::mojom::NetworkStatePropertiesPtr;
 using ::chromeos::network_config::mojom::NetworkType;
 using ::chromeos::network_config::mojom::PortalState;
 
-const std::string kCellular = "cellular";
+constexpr char kCellular[] = "cellular";
 constexpr char kCellularDevicePath[] = "/device/cellular_device";
 
 constexpr char kWifi[] = "Wifi";

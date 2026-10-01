@@ -12,7 +12,7 @@ constexpr char kLocale[] = "en-US";
 
 }  // namespace
 
-TestFocusModeDelegate::TestFocusModeDelegate() = default;
+TestFocusModeDelegate::TestFocusModeDelegate() : locale_(kLocale) {}
 
 TestFocusModeDelegate::~TestFocusModeDelegate() = default;
 
@@ -24,8 +24,7 @@ TestFocusModeDelegate::CreateYouTubeMusicClient(const AccountId&,
 }
 
 const std::string& TestFocusModeDelegate::GetLocale() {
-  static const std::string locale(kLocale);
-  return locale;
+  return locale_;
 }
 
 bool TestFocusModeDelegate::IsMinorUser() {

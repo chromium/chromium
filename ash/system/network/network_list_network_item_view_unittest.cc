@@ -47,11 +47,13 @@ using ::chromeos::network_config::mojom::PortalState;
 using ::chromeos::network_config::mojom::SecurityType;
 using network_config::CrosNetworkConfigTestHelper;
 
-const std::string kWiFiName = "WiFi";
-const std::string kCellularName = "cellular";
-const std::string kTetherName = "tether";
-const std::string kEid = "sim_eid";
-const std::string kEthernetName = "ethernet";
+constexpr char kWiFiName[] = "WiFi";
+constexpr char16_t kWiFiName16[] = u"WiFi";
+constexpr char kCellularName[] = "cellular";
+constexpr char16_t kCellularName16[] = u"cellular";
+constexpr char kTetherName[] = "tether";
+constexpr char kEid[] = "sim_eid";
+constexpr char kEthernetName[] = "ethernet";
 
 const char kEthernetDeviceName[] = "ethernet_device";
 const char kEthernetDevicePath[] = "/device/ethernet_device";
@@ -177,7 +179,7 @@ class NetworkListNetworkItemViewTest : public AshTestBase {
 TEST_F(NetworkListNetworkItemViewTest, HasCorrectLabel) {
   ASSERT_TRUE(network_list_network_item_view()->text_label());
 
-  EXPECT_EQ(base::UTF8ToUTF16(kWiFiName),
+  EXPECT_EQ(kWiFiName16,
             network_list_network_item_view()->text_label()->GetText());
 
   const std::string kNewWifiName = "New wifi";
@@ -196,10 +198,9 @@ TEST_F(NetworkListNetworkItemViewTest, HasCorrectLabel) {
       ActivationStateType::kActivating;
   UpdateViewForNetwork(cellular_network);
 
-  EXPECT_EQ(
-      l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_NETWORK_LIST_ACTIVATING,
-                                 base::UTF8ToUTF16(kCellularName)),
-      network_list_network_item_view()->text_label()->GetText());
+  EXPECT_EQ(l10n_util::GetStringFUTF16(
+                IDS_ASH_STATUS_TRAY_NETWORK_LIST_ACTIVATING, kCellularName16),
+            network_list_network_item_view()->text_label()->GetText());
 }
 
 TEST_F(NetworkListNetworkItemViewTest, HasCorrectNonCellularSublabel) {
@@ -415,7 +416,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedA11yText) {
   UpdateViewForNetwork(wifi_network);
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_OPEN,
-                                 base::UTF8ToUTF16(kWiFiName)),
+                                 kWiFiName16),
       network_list_network_item_view()->GetViewAccessibility().GetCachedName());
 
   // Network can be connected to.
@@ -425,7 +426,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedA11yText) {
 
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_CONNECT,
-                                 base::UTF8ToUTF16(kWiFiName)),
+                                 kWiFiName16),
       network_list_network_item_view()->GetViewAccessibility().GetCachedName());
 
   // Activate cellular network A11Y label is shown when a pSIM network is
@@ -441,8 +442,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedA11yText) {
 
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(
-          IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_ACTIVATE,
-          base::UTF8ToUTF16(kCellularName)),
+          IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_ACTIVATE, kCellularName16),
       network_list_network_item_view()->GetViewAccessibility().GetCachedName());
 
   // Simulate user logout and check label for pSIM networks that are
@@ -453,7 +453,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedA11yText) {
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_NETWORK_A11Y_LABEL_ACTIVATE_AFTER_SETUP,
-          base::UTF8ToUTF16(kCellularName)),
+          kCellularName16),
       network_list_network_item_view()->GetViewAccessibility().GetCachedName());
 
   SimulateUserLogin(kRegularUserLoginInfo);
@@ -466,7 +466,7 @@ TEST_F(NetworkListNetworkItemViewTest, HasExpectedA11yText) {
   EXPECT_EQ(
       l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_NETWORK_A11Y_UNAVAILABLE_SIM_NETWORK,
-          base::UTF8ToUTF16(kCellularName)),
+          kCellularName16),
       network_list_network_item_view()->GetViewAccessibility().GetCachedName());
 }
 

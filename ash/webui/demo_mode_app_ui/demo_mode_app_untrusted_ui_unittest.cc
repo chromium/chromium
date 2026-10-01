@@ -19,7 +19,7 @@
 namespace ash {
 namespace {
 
-const std::string kFileContents = "Test File Contents";
+constexpr char kFileContents[] = "Test File Contents";
 
 class DemoModeAppUntrustedUITest : public testing::Test {
  protected:

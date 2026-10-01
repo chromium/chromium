@@ -5,6 +5,8 @@
 #ifndef ASH_SYSTEM_FOCUS_MODE_TEST_TEST_FOCUS_MODE_DELEGATE_H_
 #define ASH_SYSTEM_FOCUS_MODE_TEST_TEST_FOCUS_MODE_DELEGATE_H_
 
+#include <string>
+
 #include "ash/system/focus_mode/focus_mode_delegate.h"
 
 namespace ash {
@@ -22,6 +24,9 @@ class TestFocusModeDelegate : public FocusModeDelegate {
       const std::string& device_id) override;
   const std::string& GetLocale() override;
   bool IsMinorUser() override;
+
+ private:
+  const std::string locale_;
 };
 
 }  // namespace ash

@@ -78,14 +78,14 @@ using network_config::CrosNetworkConfigTestHelper;
 using ::testing::IsNull;
 using ::testing::NotNull;
 
-const std::string kCellularName = "cellular";
-const std::string kCellularName2 = "cellular_2";
+constexpr char kCellularName[] = "cellular";
+constexpr char kCellularName2[] = "cellular_2";
 const char kCellularTestIccid[] = "1234567890";
 
 const char kTetherName[] = "tether";
 
-const std::string kEthernetName = "ethernet";
-const std::string kEthernetName2 = "ethernet_2";
+constexpr char kEthernetName[] = "ethernet";
+constexpr char kEthernetName2[] = "ethernet_2";
 
 const char kVpnName[] = "vpn";
 
