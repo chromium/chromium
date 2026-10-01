@@ -344,6 +344,11 @@ public class VerticalTabsSideUiCoordinator implements SideUiContainer, SideUiObs
         if (effectiveState == RailCollapseState.COLLAPSED) {
             return mCollapsedViewWidth;
         }
+        // Expanding on hover is a transient overlay, so it always renders at the fixed container
+        // width, independent of the user-resized width and the window-ratio width.
+        if (effectiveState == RailCollapseState.EXPANDED_FOR_HOVERING) {
+            return mExpandedViewWidth;
+        }
         if (VerticalTabUtils.isManualResizeEnabled()) {
             @Px
             int savedManualWidth =

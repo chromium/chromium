@@ -185,6 +185,7 @@ found in the LICENSE file.
 
     <!-- Dimens for Vertical Tabs (Desktop / Default) -->
     <dimen name="vertical_tabs_rail_horizontal_margin">12dp</dimen>
+    <dimen name="vertical_tabs_hover_overlay_corner_radius">12dp</dimen>
     <dimen name="vertical_tabs_scrollbar_margin_end">-9dp</dimen>
     <dimen name="vertical_tabs_scrollbar_padding_end">9dp</dimen>
     <dimen name="vertical_tabs_scrollbar_width">3dp</dimen>

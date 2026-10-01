@@ -404,15 +404,29 @@ public class VerticalTabsSideUiCoordinatorUnitTest {
     }
 
     @Test
-    public void testHoverExpanded_RendersUserResizedWidth() {
+    public void testHoverExpanded_IgnoresUserResizedWidth() {
         enableManualResize();
         mCoordinator.onResizeCommitted(ViewUtils.dpToPx(mActivity, 300));
         mCollapseController.toggleCollapseState();
         assertEquals(RailCollapseState.COLLAPSED, mCoordinator.getRailCollapseStateForTesting());
 
-        // The hover overlay previews the width the rail would be pinned at.
+        // The hover overlay always renders at the fixed container width.
         mCollapseController.expandOrCollapseOnHover(RailCollapseState.EXPANDED_FOR_HOVERING);
-        assertShowableSize(mCollapsedRailWidth, ViewUtils.dpToPx(mActivity, 300), mWideWindowWidth);
+        assertShowableSize(mCollapsedRailWidth, mExpandedRailWidth, mWideWindowWidth);
+    }
+
+    @Test
+    public void testHoverExpanded_IgnoresDynamicWindowWidth() {
+        // A medium window auto-resizes the expanded rail below the fixed container width.
+        setWindowWidthPx(mMediumWindowWidth);
+        assertTrue(determineShowableSize(mMediumWindowWidth).mRenderedWidth < mExpandedRailWidth);
+
+        mCollapseController.toggleCollapseState();
+        assertEquals(RailCollapseState.COLLAPSED, mCoordinator.getRailCollapseStateForTesting());
+
+        // The hover overlay always renders at the fixed container width.
+        mCollapseController.expandOrCollapseOnHover(RailCollapseState.EXPANDED_FOR_HOVERING);
+        assertShowableSize(mCollapsedRailWidth, mExpandedRailWidth, mMediumWindowWidth);
     }
 
     @Test

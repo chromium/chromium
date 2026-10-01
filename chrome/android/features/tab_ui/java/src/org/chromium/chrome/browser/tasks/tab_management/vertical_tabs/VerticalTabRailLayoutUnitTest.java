@@ -18,6 +18,8 @@ import static org.robolectric.Shadows.shadowOf;
 import android.app.Activity;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
+import android.graphics.Outline;
+import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.view.DragEvent;
 import android.view.Gravity;
@@ -289,6 +291,36 @@ public class VerticalTabRailLayoutUnitTest {
         assertEquals(
                 0,
                 ((ViewGroup.MarginLayoutParams) searchButton.getLayoutParams()).getMarginStart());
+    }
+
+    @Test
+    public void testExpandedForHovering_ClipsToRoundedRightCorners() {
+        int radius =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tabs_hover_overlay_corner_radius);
+        mRailLayout.layout(0, 0, 200, 800);
+
+        // The outline is shifted left by the radius, so only the right corners are rounded.
+        Outline outline = new Outline();
+        mRailLayout.getOutlineProvider().getOutline(mRailLayout, outline);
+        Rect rect = new Rect();
+        assertTrue(outline.getRect(rect));
+        assertEquals(new Rect(-radius, 0, 200, 800), rect);
+        assertEquals(radius, outline.getRadius(), 0f);
+
+        // Only the hover overlay is clipped to the outline.
+        mRailLayout.setCollapseState(RailCollapseState.EXPANDED_FOR_HOVERING);
+        assertTrue(mRailLayout.getClipToOutline());
+
+        mRailLayout.setCollapseState(RailCollapseState.COLLAPSED);
+        assertFalse(mRailLayout.getClipToOutline());
+
+        mRailLayout.setCollapseState(RailCollapseState.EXPANDED_FOR_HOVERING);
+        assertTrue(mRailLayout.getClipToOutline());
+
+        mRailLayout.setCollapseState(RailCollapseState.EXPANDED);
+        assertFalse(mRailLayout.getClipToOutline());
     }
 
     @Test

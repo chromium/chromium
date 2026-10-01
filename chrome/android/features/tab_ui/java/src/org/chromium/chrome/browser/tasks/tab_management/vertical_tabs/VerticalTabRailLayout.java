@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.tasks.tab_management.vertical_tabs;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Outline;
 import android.util.AttributeSet;
 import android.view.DragEvent;
 import android.view.Gravity;
@@ -14,6 +15,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -74,6 +76,7 @@ public class VerticalTabRailLayout extends ConstraintLayout {
     private @Px int mHeaderButtonHeightPx;
     private @Px int mFooterButtonCollapsedWidthPx;
     private @Px int mFooterButtonCollapsedHeightPx;
+    private @Px int mHoverOverlayCornerRadiusPx;
     private @RailCollapseState int mCollapseState = RailCollapseState.EXPANDED;
     // Cache for the last applied collapse state to prevent redundant header layout updates.
     private @RailCollapseState int mLastAppliedCollapseState = RailCollapseState.UNKNOWN;
@@ -162,6 +165,24 @@ public class VerticalTabRailLayout extends ConstraintLayout {
                         isTablet
                                 ? R.dimen.vertical_tabs_footer_button_collapsed_height_tablet
                                 : R.dimen.vertical_tabs_header_button_size);
+        mHoverOverlayCornerRadiusPx =
+                res.getDimensionPixelSize(R.dimen.vertical_tabs_hover_overlay_corner_radius);
+        // While expanded for hovering, the rail overlays the web contents with rounded right
+        // corners. The outline is shifted left by the radius so its left corners fall outside the
+        // view bounds and only the right corners are rounded. It is only clipped to while hover
+        // expanded, see updateHeaderLayout().
+        setOutlineProvider(
+                new ViewOutlineProvider() {
+                    @Override
+                    public void getOutline(View view, Outline outline) {
+                        outline.setRoundRect(
+                                -mHoverOverlayCornerRadiusPx,
+                                0,
+                                view.getWidth(),
+                                view.getHeight(),
+                                mHoverOverlayCornerRadiusPx);
+                    }
+                });
         updateHeaderLayout();
     }
 
@@ -455,6 +476,8 @@ public class VerticalTabRailLayout extends ConstraintLayout {
         mCollapseButton.setLayoutParams(collapseParams);
         mSearchButton.setLayoutParams(searchParams);
         mSearchIcon.setLayoutParams(searchIconParams);
+        // Round the right corners of the hover overlay.
+        setClipToOutline(isExpandedForHovering);
         updatePinnedTabsSeparatorLayout();
         updateFooterLayout();
     }
