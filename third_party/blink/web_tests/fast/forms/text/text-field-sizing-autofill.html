@@ -17,5 +17,22 @@ test(() => {
   internals.setSuggestedValue(target, 's');
   assert_equals(target.offsetWidth, reference.offsetWidth);
 }, 'field-sizing:content is not applied to autofilled controls');
-</script>
 
+test(() => {
+  target.value = '';
+  const emptyWidth = target.offsetWidth;
+  assert_less_than(emptyWidth, reference.offsetWidth);
+
+  internals.setSuggestedValue(target, 'suggested quick brown fox jumps');
+  assert_equals(target.offsetWidth, reference.offsetWidth);
+
+  target.defaultChecked = true;
+  assert_equals(target.offsetWidth, emptyWidth);
+
+  internals.setSuggestedValue(target, 'suggested quick brown fox jumps');
+  assert_equals(target.offsetWidth, reference.offsetWidth);
+
+  target.checked = target.checked;
+  assert_equals(target.offsetWidth, emptyWidth);
+}, 'Setting input.checked or input.defaultChecked on a previewed text field clears the suggestion and does not leak preview width');
+</script>

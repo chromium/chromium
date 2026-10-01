@@ -360,6 +360,13 @@ void HTMLSelectElement::SetAutofillOption(HTMLOptionElement* option,
   interacted_state_ = interacted_state;
 }
 
+void HTMLSelectElement::SetAutofillState(WebAutofillState autofill_state) {
+  if (autofill_state != WebAutofillState::kPreviewed) {
+    SetSuggestedOption(nullptr);
+  }
+  HTMLFormControlElementWithState::SetAutofillState(autofill_state);
+}
+
 String HTMLSelectElement::SuggestedValue() const {
   return suggested_option_ ? suggested_option_->value() : "";
 }
@@ -393,9 +400,9 @@ void HTMLSelectElement::SetSuggestedOption(HTMLOptionElement* option) {
   if (suggested_option_ == option) {
     return;
   }
+  suggested_option_ = option;
   SetAutofillState(option ? WebAutofillState::kPreviewed
                           : WebAutofillState::kNotFilled);
-  suggested_option_ = option;
 
   select_type_->DidSetSuggestedOption(option);
 }

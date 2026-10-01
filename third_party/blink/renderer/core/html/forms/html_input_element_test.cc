@@ -712,7 +712,18 @@ TEST_F(HTMLInputElementTest, SuggestedValueFontFamilyIsGeneric) {
   EXPECT_TRUE(style->GetFontDescription().Family().FamilyIsGeneric());
 }
 
+TEST_F(HTMLInputElementTest, SetCheckedForBindingClearsSuggestedValue) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes("<input id=test>");
+  HTMLInputElement& input = TestElement();
+  input.SetSuggestedValue("preview");
+  input.SetAutofillState(WebAutofillState::kPreviewed);
+  EXPECT_EQ("preview", input.SuggestedValue());
+  EXPECT_EQ(WebAutofillState::kPreviewed, input.GetAutofillState());
 
+  input.setCheckedForBinding(false);
+  EXPECT_TRUE(input.SuggestedValue().empty());
+  EXPECT_EQ(WebAutofillState::kNotFilled, input.GetAutofillState());
+}
 
 // Removing a disabled <fieldset> notifies its descendants in tree order.
 // Removing the checked radio button re-validates the remaining (still

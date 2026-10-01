@@ -17,5 +17,16 @@ test(() => {
   internals.setSuggestedValue(target, 's');
   assert_equals(target.offsetWidth, reference.offsetWidth);
 }, 'field-sizing:content is not applied to autofilled controls');
-</script>
 
+test(() => {
+  target.value = '';
+  const emptyWidth = target.offsetWidth;
+  assert_less_than(emptyWidth, reference.offsetWidth);
+
+  internals.setSuggestedValue(target, 'suggested quick brown fox jumps');
+  assert_equals(target.offsetWidth, reference.offsetWidth);
+
+  target.value = target.value;
+  assert_equals(target.offsetWidth, emptyWidth);
+}, 'Self-assigning textarea.value on a previewed textarea clears the suggestion and resets autofill state');
+</script>

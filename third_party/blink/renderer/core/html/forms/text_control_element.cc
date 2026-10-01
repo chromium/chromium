@@ -1367,6 +1367,14 @@ void TextControlElement::SetAutofillValue(const String& value,
            value.empty() ? WebAutofillState::kNotFilled : autofill_state);
 }
 
+void TextControlElement::SetAutofillState(WebAutofillState autofill_state) {
+  if (autofill_state == WebAutofillState::kNotFilled &&
+      !SuggestedValue().empty()) {
+    SetSuggestedValue(String());
+  }
+  HTMLFormControlElementWithState::SetAutofillState(autofill_state);
+}
+
 void TextControlElement::SetSuggestedValue(const String& value) {
   // Avoid calling maxLength() if possible as it's non-trivial.
   const String new_suggested_value =

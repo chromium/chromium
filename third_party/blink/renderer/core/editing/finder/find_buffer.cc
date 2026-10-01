@@ -83,15 +83,12 @@ bool FindBuffer::ShouldIgnoreContents(const Node& node) {
         return true;
       }
     }
-    // TODO(crbug.com/562224383): Fix the state desync issue between
-    // autofill_state_ and suggested_option_ and replace this temporary fix
-    // with a CHECK that the autofill popover is closed.
+    // The autofill popover should not be showing, otherwise it would be
+    // possible for the page to figure out what the suggested option is.
     if (const auto* select = DynamicTo<HTMLSelectElement>(element)) {
       HTMLSelectElement::SelectAutofillPreviewElement* preview =
           select->GetAutofillPreviewElement();
-      if (preview && preview->popoverOpen()) {
-        return true;
-      }
+      CHECK(!preview || !preview->popoverOpen());
     }
   }
 

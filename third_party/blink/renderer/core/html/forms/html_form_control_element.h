@@ -130,7 +130,8 @@ class CORE_EXPORT HTMLFormControlElement : public HTMLElement,
   bool IsPreviewed() const {
     return autofill_state_ == WebAutofillState::kPreviewed;
   }
-  void SetAutofillState(WebAutofillState = WebAutofillState::kAutofilled);
+  virtual void SetAutofillState(
+      WebAutofillState = WebAutofillState::kAutofilled);
   // Returns true if this element can be autofilled by the embedder's Autofill
   // agent.
   bool IsAutofillable() const;

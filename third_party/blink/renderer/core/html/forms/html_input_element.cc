@@ -1318,8 +1318,8 @@ void HTMLInputElement::SetSuggestedValue(const String& value) {
   if (!input_type_->CanSetSuggestedValue()) {
     // Clear the suggested value because it may have been set when
     // `input_type_->CanSetSuggestedValue()` was true.
-    SetAutofillState(WebAutofillState::kNotFilled);
     TextControlElement::SetSuggestedValue(String());
+    SetAutofillState(WebAutofillState::kNotFilled);
     return;
   }
   needs_to_update_view_value_ = true;
@@ -1331,9 +1331,9 @@ void HTMLInputElement::SetSuggestedValue(const String& value) {
     sanitized_value = String();
   }
 
+  TextControlElement::SetSuggestedValue(sanitized_value);
   SetAutofillState(sanitized_value.empty() ? WebAutofillState::kNotFilled
                                            : WebAutofillState::kPreviewed);
-  TextControlElement::SetSuggestedValue(sanitized_value);
 
   // Update the suggested value revelation.
   if (auto* placeholder = PlaceholderElement()) {

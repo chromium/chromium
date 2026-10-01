@@ -195,6 +195,9 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   void SetAutofillValue(const String& value,
                         WebAutofillState = WebAutofillState::kAutofilled);
 
+  void SetAutofillState(
+      WebAutofillState = WebAutofillState::kAutofilled) override;
+
   // A null value indicates that the suggested value should be hidden.
   virtual void SetSuggestedValue(const String& value);
   const String& SuggestedValue() const;

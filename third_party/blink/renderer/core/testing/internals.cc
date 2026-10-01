@@ -1781,8 +1781,14 @@ void Internals::setSuggestedValue(Element* element,
     textarea->SetSuggestedValue(value);
 
   if (auto* select = DynamicTo<HTMLSelectElement>(*element)) {
-    // A Null string resets the suggested value.
-    select->SetSuggestedValue(value.empty() ? String() : value);
+    // Pass `value` directly so that an empty string can still match an
+    // `<option value="">` (and resets the suggestion if no option matches).
+    // Return early because HTMLSelectElement::SetSuggestedValue() already
+    // updates the autofill state based on whether a matching option was found,
+    // and calling SetAutofillState(kNotFilled) below for an empty `value`
+    // would clear a matched `<option value="">` suggestion.
+    select->SetSuggestedValue(value);
+    return;
   }
 
   To<HTMLFormControlElement>(element)->SetAutofillState(

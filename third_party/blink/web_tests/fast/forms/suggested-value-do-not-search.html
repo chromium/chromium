@@ -130,9 +130,8 @@ if (!window.internals) {
     assert_false(lookup('preview'));
     assert_false(lookup('view'));
 
-    // Self-assigning selectedIndex resets autofill state potentially without
-    // hiding the preview popover. Make sure that this does not affect
-    // findability.
+    // Self-assigning selectedIndex resets autofill state and clears the
+    // suggested option and preview popover.
     listbox.selectedIndex = listbox.selectedIndex;
     assert_false(lookup('preview'));
     assert_false(lookup('view'));

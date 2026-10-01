@@ -627,6 +627,7 @@ void HTMLTextAreaElement::SetValueCommon(const String& new_value,
 
   // Clear the suggested value. Use the base class version to not trigger a view
   // update.
+  SetAutofillState(autofill_state);
   TextControlElement::SetSuggestedValue(String());
 
   // Return early because we don't want to trigger other side effects when the
@@ -685,7 +686,6 @@ void HTMLTextAreaElement::SetValueCommon(const String& new_value,
                       std::min(end_of_string, selection_end));
   }
 
-  SetAutofillState(autofill_state);
   NotifyFormStateChanged();
   switch (event_behavior) {
     case TextFieldEventBehavior::kDispatchChangeEvent:
@@ -736,9 +736,9 @@ void HTMLTextAreaElement::SetSuggestedValue(const String& value) {
     // information to javascript.
     sanitized_value = String();
   }
+  TextControlElement::SetSuggestedValue(sanitized_value);
   SetAutofillState(!sanitized_value.empty() ? WebAutofillState::kPreviewed
                                             : WebAutofillState::kNotFilled);
-  TextControlElement::SetSuggestedValue(sanitized_value);
   SetNeedsStyleRecalc(
       kSubtreeStyleChange,
       StyleChangeReasonForTracing::Create(style_change_reason::kControlValue));

@@ -134,6 +134,8 @@ class CORE_EXPORT HTMLSelectElement final
 
   // It is possible to pass WebAutofillState::kNotFilled here in case we need
   // to simulate a reset of a <select> element.
+  void SetAutofillState(
+      WebAutofillState = WebAutofillState::kAutofilled) override;
   void SetAutofillValue(const String& value, WebAutofillState);
   void SetAutofillOption(HTMLOptionElement* option, WebAutofillState);
 

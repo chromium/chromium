@@ -842,10 +842,12 @@ TEST_P(FindBufferParamTest, DoNotSearchInSelectSuggestedOption) {
     <style>
       #s option { visibility: hidden; }
     </style>
-    <select id="s" size="2">
-      <option value="val1">secret</option>
-      <option value="val2">other</option>
-    </select>
+    <form id="f">
+      <select id="s" size="2">
+        <option value="val1">secret</option>
+        <option value="val2">other</option>
+      </select>
+    </form>
   )HTML");
 
   auto* select = To<HTMLSelectElement>(GetElementById("s"));
@@ -861,12 +863,11 @@ TEST_P(FindBufferParamTest, DoNotSearchInSelectSuggestedOption) {
     EXPECT_EQ(0U, results.CountForTesting());
   }
 
-  // Self-assigning selectedIndex resets autofill state potentially without
-  // hiding the preview popover. Make sure that this does not affect
-  // findability.
+  // Self-assigning selectedIndex resets autofill state and hides the preview
+  // popover so state and UI cannot desynchronize.
   select->setSelectedIndex(select->selectedIndex());
   ASSERT_FALSE(select->IsPreviewed());
-  ASSERT_TRUE(select->GetAutofillPreviewElement()->popoverOpen());
+  ASSERT_FALSE(select->GetAutofillPreviewElement()->popoverOpen());
   GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
 
   {
