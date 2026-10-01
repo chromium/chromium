@@ -22,9 +22,8 @@ using performance_scenarios::ScenarioScope;
 
 BestEffortTaskInhibitingPolicy::BestEffortTaskInhibitingPolicy() {
   // Validate values provided by feature params.
-  CHECK_GE(period_duration_, base::Seconds(30), base::NotFatalUntil::M145);
-  CHECK_GT(period_duration_, minimum_duration_without_fence_,
-           base::NotFatalUntil::M145);
+  CHECK_GE(period_duration_, base::Seconds(30));
+  CHECK_GT(period_duration_, minimum_duration_without_fence_);
 
   last_period_start_time_ = base::TimeTicks::Now();
   AddOrRemoveFence();

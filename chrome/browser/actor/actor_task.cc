@@ -684,8 +684,7 @@ void ActorTask::HandleDiscardContents(tabs::TabInterface* tab,
   CHECK(controlled_tabs_.contains(tab->GetHandle()));
   if (!IsUnderActorControl()) {
     // The observer should only be attached when we're under actor control.
-    NOTREACHED(base::NotFatalUntil::M145);
-    return;
+    NOTREACHED();
   }
   ActorControlledTabState* state = controlled_tabs_[tab->GetHandle()].get();
   DidContentsEnterActorControl(state, new_contents);

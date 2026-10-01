@@ -11,7 +11,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
@@ -314,7 +313,7 @@ DiceWebSigninInterceptionBubbleView::DiceWebSigninInterceptionBubbleView(
       bubble_parameters_(bubble_parameters),
       callback_(std::move(callback)) {
   DCHECK(browser_);
-  CHECK(callback_, base::NotFatalUntil::M138);
+  CHECK(callback_);
   set_close_on_deactivate(false);
 
   // Create the web view in the native bubble.

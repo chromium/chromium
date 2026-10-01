@@ -248,10 +248,8 @@ void GlicUserStatusFetcher::UpdateUserStatus() {
           // token (both are checked above).
           // kTimeout can only occur if a finite timeout is used, which is not
           // the case.
-          NOTREACHED(base::NotFatalUntil::M141)
-              << "Unexpected account managed status: "
-              << static_cast<int>(account_managed_status_);
-          return;
+          NOTREACHED() << "Unexpected account managed status: "
+                       << static_cast<int>(account_managed_status_);
       }
       break;
     case features::GlicEnterpriseCheckStrategy::kPolicy: {

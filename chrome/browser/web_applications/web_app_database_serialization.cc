@@ -21,7 +21,6 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/strings/string_util.h"
@@ -1947,8 +1946,7 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
           mutable_data->mutable_pending_update_info();
 
       CHECK_EQ(isolation_data.location().dev_mode(),
-               pending_update_info.location.dev_mode(),
-               base::NotFatalUntil::M138)
+               pending_update_info.location.dev_mode())
           << "IsolationData dev_mode mismatch between current location and "
              "pending update location during serialization.";
 

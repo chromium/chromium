@@ -136,7 +136,7 @@ void CastRemotingConnector::OnMirrorServiceStopped() {
 
 void CastRemotingConnector::RegisterBridge(RemotingBridge* bridge) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK(bridges_.find(bridge) == bridges_.end(), base::NotFatalUntil::M136);
+  CHECK(bridges_.find(bridge) == bridges_.end());
 
   bridges_.insert(bridge);
   bridge->SetClientAvailable(this, remoter_.is_bound());
@@ -145,7 +145,7 @@ void CastRemotingConnector::RegisterBridge(RemotingBridge* bridge) {
 void CastRemotingConnector::DeregisterBridge(RemotingBridge* bridge,
                                              RemotingStopReason reason) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK(bridges_.find(bridge) != bridges_.end(), base::NotFatalUntil::M136);
+  CHECK(bridges_.find(bridge) != bridges_.end());
 
   bridges_.erase(bridge);
   if (bridge == active_bridge_)
@@ -177,7 +177,7 @@ void CastRemotingConnector::StartWithPermissionAlreadyGranted(
 
 bool CastRemotingConnector::StartRemotingCommon(RemotingBridge* bridge) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK(bridges_.find(bridge) != bridges_.end(), base::NotFatalUntil::M136);
+  CHECK(bridges_.find(bridge) != bridges_.end());
 
   // Refuse to start if there is no remoting route available, or if remoting is
   // already active.

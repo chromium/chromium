@@ -9,7 +9,6 @@
 #include "base/byte_size.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "chrome/browser/performance_manager/public/user_tuning/user_tuning_utils.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
 #include "components/performance_manager/public/graph/page_node.h"
@@ -48,12 +47,12 @@ std::optional<base::ByteSize> PageDiscarder::DiscardPageNode(
 
   std::optional<DiscardPageOnUIThreadOutcome> outcome;
   absl::Cleanup record_discard_outcome = [&]() {
-    CHECK(outcome.has_value(), base::NotFatalUntil::M140);
+    CHECK(outcome.has_value());
     base::UmaHistogramEnumeration("Discarding.DiscardPageOnUIThreadOutcome",
                                   outcome.value());
   };
 
-  CHECK(contents, base::NotFatalUntil::M140);
+  CHECK(contents);
   if (!contents) {
     outcome = DiscardPageOnUIThreadOutcome::kNoContents;
     return std::nullopt;

@@ -45,8 +45,7 @@ IsolationData::IsolationData(
       opened_tabs_counter_notification_state_(
           std::move(opened_tabs_counter_notification_state)),
       update_channel_(std::move(update_channel)) {
-  CHECK(!update_manifest_url_.has_value() || update_manifest_url_->is_valid(),
-        base::NotFatalUntil::M138);
+  CHECK(!update_manifest_url_.has_value() || update_manifest_url_->is_valid());
 }
 
 IsolationData::~IsolationData() = default;
@@ -216,14 +215,14 @@ IsolationData::Builder&& IsolationData::Builder::SetIntegrityBlockData(
 
 IsolationData::Builder& IsolationData::Builder::SetUpdateManifestUrl(
     GURL update_manifest_url) & {
-  CHECK(update_manifest_url.is_valid(), base::NotFatalUntil::M138);
+  CHECK(update_manifest_url.is_valid());
   update_manifest_url_ = std::move(update_manifest_url);
   return *this;
 }
 
 IsolationData::Builder&& IsolationData::Builder::SetUpdateManifestUrl(
     GURL update_manifest_url) && {
-  CHECK(update_manifest_url.is_valid(), base::NotFatalUntil::M138);
+  CHECK(update_manifest_url.is_valid());
   update_manifest_url_ = std::move(update_manifest_url);
   return std::move(*this);
 }

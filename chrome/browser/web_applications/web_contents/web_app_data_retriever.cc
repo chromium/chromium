@@ -14,7 +14,6 @@
 #include "base/auto_reset.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/not_fatal_until.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -101,7 +100,7 @@ void WebAppDataRetriever::GetWebAppInstallInfo(
   Observe(web_contents);
 
   // Concurrent calls are not allowed.
-  CHECK(!HasPendingCall(), base::NotFatalUntil::M145);
+  CHECK(!HasPendingCall());
   get_web_app_info_callback_ = std::move(callback);
 
   if (ShouldStopRetrieval()) {
@@ -164,7 +163,7 @@ void WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest(
   Observe(web_contents);
 
   // Concurrent calls are not allowed.
-  CHECK(!HasPendingCall(), base::NotFatalUntil::M145);
+  CHECK(!HasPendingCall());
   check_installability_callback_ = std::move(callback);
   if (ShouldStopRetrieval()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -201,7 +200,7 @@ void WebAppDataRetriever::GetPrimaryPageFirstSpecifiedManifest(
     ManifestCallbackList::CallbackType callback) {
   Observe(&web_contents);
   // Concurrent calls are not allowed.
-  CHECK(!HasPendingCall(), base::NotFatalUntil::M145);
+  CHECK(!HasPendingCall());
   get_specified_manifest_callback_ = std::move(callback);
   content::PageManifestManager* manifest_manager =
       content::PageManifestManager::GetOrCreate(web_contents.GetPrimaryPage());
@@ -223,7 +222,7 @@ void WebAppDataRetriever::GetIcons(content::WebContents* web_contents,
   Observe(web_contents);
 
   // Concurrent calls are not allowed.
-  CHECK(!HasPendingCall(), base::NotFatalUntil::M145);
+  CHECK(!HasPendingCall());
   get_icons_callback_ = std::move(callback);
 
   if (ShouldStopRetrieval()) {

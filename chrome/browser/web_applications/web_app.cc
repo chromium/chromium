@@ -21,7 +21,6 @@
 #include "base/containers/to_value_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/not_fatal_until.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -678,8 +677,7 @@ void WebApp::SetLaunchQueryParams(
 }
 
 void WebApp::SetManifestUrl(const GURL& manifest_url) {
-  CHECK(manifest_url.is_valid() || manifest_url.is_empty(),
-        base::NotFatalUntil::M138);
+  CHECK(manifest_url.is_valid() || manifest_url.is_empty());
   manifest_url_ = manifest_url;
 }
 

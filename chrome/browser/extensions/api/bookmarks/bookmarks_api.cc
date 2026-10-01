@@ -113,8 +113,7 @@ void BookmarkEventRouter::BookmarkModelBeingDeleted() {
   // This codepath is unexpected because `this` is owned by a KeyedService that
   // depends on BookmarkModelFactory, which means BookmarkModel must outlive
   // `this`.
-  NOTREACHED(base::NotFatalUntil::M138);
-  model_ = nullptr;
+  NOTREACHED();
 }
 
 void BookmarkEventRouter::BookmarkNodeMoved(const BookmarkNode* old_parent,
