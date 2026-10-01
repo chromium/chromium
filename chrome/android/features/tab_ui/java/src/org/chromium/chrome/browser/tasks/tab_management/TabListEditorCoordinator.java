@@ -686,17 +686,15 @@ public class TabListEditorCoordinator {
 
         TabListRecyclerView containerView = mTabListCoordinator.getContainerView();
         RecyclerView.LayoutManager layoutManager = containerView.getLayoutManager();
-        if (layoutManager instanceof GridLayoutManager) {
-            ((GridLayoutManager) layoutManager)
-                    .setSpanSizeLookup(
-                            new GridLayoutManager.SpanSizeLookup() {
-                                @Override
-                                public int getSpanSize(int i) {
-                                    assumeNonNull(mTabListCoordinator);
-                                    return mTabListCoordinator.getSpanCountForItem(
-                                            (GridLayoutManager) layoutManager, i);
-                                }
-                            });
+        if (layoutManager instanceof GridLayoutManager gridLayoutManager) {
+            gridLayoutManager.setSpanSizeLookup(
+                    new GridLayoutManager.SpanSizeLookup() {
+                        @Override
+                        public int getSpanSize(int i) {
+                            assumeNonNull(mTabListCoordinator);
+                            return mTabListCoordinator.getSpanCountForItem(gridLayoutManager, i);
+                        }
+                    });
         }
 
         mTabListEditorLayout.initialize(

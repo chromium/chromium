@@ -105,8 +105,8 @@ class TabGridDialogViewBinder {
             }
         } else if (CONTENT_TOP_MARGIN == propertyKey) {
             ViewGroup.LayoutParams params = viewHolder.contentView.getLayoutParams();
-            if (params instanceof FrameLayout.LayoutParams) {
-                ((FrameLayout.LayoutParams) params).topMargin = model.get(CONTENT_TOP_MARGIN);
+            if (params instanceof FrameLayout.LayoutParams frameLayoutParams) {
+                frameLayoutParams.topMargin = model.get(CONTENT_TOP_MARGIN);
                 ViewUtils.requestLayout(viewHolder.contentView, "TabGridDialogViewBinder.bind");
             }
         } else if (APP_HEADER_HEIGHT == propertyKey) {

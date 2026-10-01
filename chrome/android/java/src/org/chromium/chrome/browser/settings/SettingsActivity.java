@@ -721,7 +721,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
 
         // The fragment is not yet migrated with auditing. Fallback to the legacy animation type.
-        Log.w(TAG, "Non-migrated Settings fragment is found: " + fragment.getClass().getName());
+        Log.w(TAG, "Non-migrated Settings fragment is found: %s", fragment.getClass().getName());
         return SettingsFragment.AnimationType.TWEEN;
     }
 

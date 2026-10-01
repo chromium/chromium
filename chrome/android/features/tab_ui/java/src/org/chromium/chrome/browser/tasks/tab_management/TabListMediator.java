@@ -1054,7 +1054,7 @@ public class TabListMediator implements TabListNotificationHandler {
         } else if (componentId == TabComponentId.VERTICAL_TABS) {
             from = TabClosedFrom.VERTICAL_TABS;
         } else {
-            Log.w(TAG, "Attempting to close tab from Unknown UI: " + componentId);
+            Log.w(TAG, "Attempting to close tab from Unknown UI: %s", componentId);
             return;
         }
         mTabClosedFrom.put(tabId, from);
@@ -1067,7 +1067,7 @@ public class TabListMediator implements TabListNotificationHandler {
         } else if (mComponentId == TabComponentId.VERTICAL_TABS) {
             from = TabClosedFrom.VERTICAL_TABS_GROUP;
         } else {
-            Log.w(TAG, "Attempting to close tab group from Unknown UI: " + mComponentId);
+            Log.w(TAG, "Attempting to close tab group from Unknown UI: %s", mComponentId);
             return;
         }
         mTabClosedFrom.put(tabId, from);

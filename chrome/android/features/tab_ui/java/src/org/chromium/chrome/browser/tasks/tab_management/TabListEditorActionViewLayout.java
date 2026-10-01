@@ -235,8 +235,7 @@ public class TabListEditorActionViewLayout extends LinearLayout {
 
     private void makeNumberRollViewFill(int maxWidth) {
         View firstView = getChildAt(0);
-        if (firstView instanceof NumberRollView) {
-            NumberRollView numberRollView = (NumberRollView) firstView;
+        if (firstView instanceof NumberRollView numberRollView) {
             LinearLayout.LayoutParams params =
                     (LinearLayout.LayoutParams) numberRollView.getLayoutParams();
             params.width = maxWidth;

@@ -466,13 +466,10 @@ public class TabUiUtils {
             return;
         }
 
-        View emptyStateContainer =
-                rootView.findViewById(R.id.empty_state_container);
-        View emptyStateIllustration =
-                rootView.findViewById(R.id.empty_state_icon);
+        View emptyStateContainer = rootView.findViewById(R.id.empty_state_container);
+        View emptyStateIllustration = rootView.findViewById(R.id.empty_state_icon);
 
-        if (emptyStateContainer instanceof ScrollView) {
-            ScrollView scrollView = (ScrollView) emptyStateContainer;
+        if (emptyStateContainer instanceof ScrollView scrollView) {
             FrameLayout.LayoutParams scrollParams =
                     (FrameLayout.LayoutParams) scrollView.getLayoutParams();
             scrollParams.width = FrameLayout.LayoutParams.WRAP_CONTENT;
@@ -482,12 +479,8 @@ public class TabUiUtils {
         }
 
         if (emptyStateIllustration != null
-                && emptyStateIllustration.getParent() instanceof View) {
-            View container = (View) emptyStateIllustration.getParent();
-            container.setBackgroundResource(
-                    R.drawable.xr_empty_state_backplate);
+                && emptyStateIllustration.getParent() instanceof View container) {
+            container.setBackgroundResource(R.drawable.xr_empty_state_backplate);
         }
     }
-
-
 }

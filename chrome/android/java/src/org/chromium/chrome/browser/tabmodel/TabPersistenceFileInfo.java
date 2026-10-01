@@ -52,8 +52,7 @@ public class TabPersistenceFileInfo {
         public boolean equals(Object other) {
             if (this == other) return true;
             if (other == null) return false;
-            if (other instanceof TabStateFileInfo) {
-                TabStateFileInfo otherTabStateId = (TabStateFileInfo) other;
+            if (other instanceof TabStateFileInfo otherTabStateId) {
                 return otherTabStateId.tabId == tabId && otherTabStateId.isEncrypted == isEncrypted;
             }
             return false;

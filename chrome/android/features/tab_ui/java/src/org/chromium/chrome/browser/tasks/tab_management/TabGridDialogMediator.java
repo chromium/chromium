@@ -1278,8 +1278,7 @@ public class TabGridDialogMediator
     public void onAction(@Nullable Object actionData) {
         assumeNonNull(actionData);
         TabModel model = assumeNonNull(mCurrentTabModelSupplier.get());
-        if (actionData instanceof Integer) {
-            int tabId = (Integer) actionData;
+        if (actionData instanceof Integer tabId) {
             model.cancelTabClosure(tabId);
         } else {
             // actionData is List<Tab> in else branch.
@@ -1297,9 +1296,7 @@ public class TabGridDialogMediator
     public void onDismissNoAction(@Nullable Object actionData) {
         assumeNonNull(actionData);
         TabModel model = assumeNonNull(mCurrentTabModelSupplier.get());
-        if (actionData instanceof Integer) {
-            int tabId = (Integer) actionData;
-
+        if (actionData instanceof Integer tabId) {
             model.commitTabClosure(tabId);
         } else {
             // actionData is List<Tab> in else branch.

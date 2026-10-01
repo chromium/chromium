@@ -411,7 +411,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
             var layoutParams = new LinearLayout.LayoutParams(LAYOUT_CENTER_VERTICAL);
             backButton.setLayoutParams(layoutParams);
             backButton.setOnClickListener(
-                    (View v) -> {
+                    _ -> {
                         if (handleBackAction()) {
                             return;
                         }
@@ -450,7 +450,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
 
             if (i < titles.size() - 1) {
                 final int finalIndex = i;
-                view.setOnClickListener((View v) -> navigateToTitle(title, finalIndex));
+                view.setOnClickListener(_ -> navigateToTitle(title, finalIndex));
             } else {
                 // The current page title is focusable but not interactive, so don't draw the
                 // default focus highlight on it, which looks like a text selection.
@@ -554,7 +554,7 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
                     .commitNow();
 
         } catch (Exception e) {
-            Log.e(TAG, "Failed to launch breadcrumb fragment: " + entry.fragment, e);
+            Log.e(TAG, "Failed to launch breadcrumb fragment: %s", entry.fragment, e);
         }
     }
 
