@@ -14,7 +14,7 @@ import android.webkit.WebViewDelegate;
  */
 class WebViewChromiumFactoryProviderForS extends WebViewChromiumFactoryProvider {
     public static WebViewChromiumFactoryProvider create(WebViewDelegate delegate) {
-        return new WebViewChromiumFactoryProviderForS(delegate);
+        return WebViewChromiumFactoryProvider.create(delegate);
     }
 
     protected WebViewChromiumFactoryProviderForS(WebViewDelegate delegate) {
