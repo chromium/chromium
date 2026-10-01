@@ -131,6 +131,9 @@ class AtMemoryMetricsRecorder {
   // Records that the suggestion was successfully filled.
   void MarkFilled();
 
+  // Returns if a suggestion was successfully filled this session.
+  bool IsFilled() const { return suggestion_filled_in_session_; }
+
   // LINT.IfChange(FetchPiiSource)
   // The source of PII data fetched during filling.
   enum class FetchPiiSource {

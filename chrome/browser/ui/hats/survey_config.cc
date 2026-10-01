@@ -819,6 +819,12 @@ std::vector<hats::SurveyConfig> GetAllSurveyConfigs() {
       /*presupplied_trigger_id=*/std::nullopt,
       /*product_specific_bits_data_fields=*/std::vector<std::string>{},
       /*product_specific_string_data_fields=*/std::vector<std::string>{});
+  survey_configs.emplace_back(
+      &::autofill::features::kAutofillPersonalizationAndTrustAtMemorySurvey,
+      kHatsSurveyTriggerAutofillPersonalizationAndTrustAtMemoryDismissed,
+      /*presupplied_trigger_id=*/std::nullopt,
+      /*product_specific_bits_data_fields=*/std::vector<std::string>{},
+      /*product_specific_string_data_fields=*/std::vector<std::string>{});
 
   survey_configs.emplace_back(
       &omnibox_feature_configs::HappinessTrackingSurveyForOmniboxOnFocusZps::

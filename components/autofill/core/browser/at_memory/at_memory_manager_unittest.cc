@@ -57,6 +57,7 @@
 #include "components/autofill/core/common/autofill_debug_features.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
+#include "components/autofill/core/common/test_utils/autofill_form_test_util.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/optimization_guide/core/optimization_guide_prefs.h"
 #include "components/personal_context/core/mock_personal_context_eligibility_service.h"
@@ -119,8 +120,8 @@ class MockAutofillClient : public TestAutofillClient {
               (SuggestionHidingReason, std::optional<FillingProduct>),
               (override));
   MOCK_METHOD(void,
-              TriggerPersonalizationAndTrustSurveys,
-              (FillingProduct, const HatsSurveyStringData&),
+              TriggerAtMemoryPersonalizationAndTrustSurvey,
+              (bool, const HatsSurveyStringData&),
               (override));
 
   // Overridden to simulate policy-based blocking using profile preferences.
@@ -3390,8 +3391,8 @@ TEST_F(AtMemoryManagerTestBase, FillSearchResult_TriggersSurvey) {
   const FormGlobalId form_id = test::MakeFormGlobalId();
   const FieldGlobalId field_id = test::MakeFieldGlobalId();
 
-  EXPECT_CALL(autofill_client(), TriggerPersonalizationAndTrustSurveys(
-                                     FillingProduct::kAtMemory, _));
+  EXPECT_CALL(autofill_client(), TriggerAtMemoryPersonalizationAndTrustSurvey(
+                                     /*is_dismissed=*/false, _));
 
   manager().OnPopupShown(
       autofill_manager(), form_id, field_id,
@@ -3402,6 +3403,177 @@ TEST_F(AtMemoryManagerTestBase, FillSearchResult_TriggersSurvey) {
       test::CreateAutofillSuggestion(SuggestionType::kAtMemorySearchResult, u"",
                                      Suggestion::AtMemoryPayload()),
       /*metadata=*/std::nullopt);
+}
+
+// Tests that the survey is shown when an AtMemory popup is dismissed without
+// accepting a suggestion and there was no additional AtMemory or form
+// submission activity in the next 15s.
+TEST_F(AtMemoryManagerTestBase, OnPopupHidden_TriggersSurveyAfterDelay) {
+  const FormGlobalId form_id = test::MakeFormGlobalId();
+  const FieldGlobalId field_id = test::MakeFieldGlobalId();
+
+  manager().OnPopupShown(
+      autofill_manager(), form_id, field_id,
+      AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut,
+      /*metadata=*/{}, update_callback_.Get(), ukm::kInvalidSourceId);
+
+  // Survey should not be shown immediately.
+  EXPECT_CALL(autofill_client(), TriggerAtMemoryPersonalizationAndTrustSurvey)
+      .Times(0);
+  manager().OnPopupHidden();
+  task_environment_.FastForwardBy(base::Seconds(14));
+  testing::Mock::VerifyAndClearExpectations(&autofill_client());
+
+  // After a 15s delay without a new AtMemory trigger, the survey should be
+  // shown.
+  EXPECT_CALL(autofill_client(), TriggerAtMemoryPersonalizationAndTrustSurvey(
+                                     /*is_dismissed=*/true, _));
+  task_environment_.FastForwardBy(base::Seconds(1));
+}
+
+// Tests that no survey is shown when a new AtMemory popup is shown within
+// 15s after dismissing another AtMemory popup.
+TEST_F(AtMemoryManagerTestBase, OnPopupHidden_SurveyNotShown_OnNewPopup) {
+  const FormGlobalId form_id = test::MakeFormGlobalId();
+  const FieldGlobalId field_id = test::MakeFieldGlobalId();
+
+  manager().OnPopupShown(
+      autofill_manager(), form_id, field_id,
+      AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut,
+      /*metadata=*/{}, update_callback_.Get(), ukm::kInvalidSourceId);
+
+  manager().OnPopupHidden();
+  task_environment_.FastForwardBy(base::Seconds(10));
+
+  // Show popup again, this should cancel the timer.
+  manager().OnPopupShown(
+      autofill_manager(), form_id, field_id,
+      AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut,
+      /*metadata=*/{}, update_callback_.Get(), ukm::kInvalidSourceId);
+
+  // Survey should not be triggered since popup was not dismissed.
+  EXPECT_CALL(autofill_client(), TriggerAtMemoryPersonalizationAndTrustSurvey)
+      .Times(0);
+  task_environment_.FastForwardBy(base::Seconds(5));
+}
+
+// Tests that no dismissal survey is shown when an AtMemory suggestion is
+// accepted.
+TEST_F(AtMemoryManagerTestBase, OnPopupHidden_SurveyNotShown_OnFilling) {
+  const FormGlobalId form_id = test::MakeFormGlobalId();
+  const FieldGlobalId field_id = test::MakeFieldGlobalId();
+
+  manager().OnPopupShown(
+      autofill_manager(), form_id, field_id,
+      AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut,
+      /*metadata=*/{}, update_callback_.Get(), ukm::kInvalidSourceId);
+  manager().FillSearchResult(
+      autofill_manager(), form_id, field_id,
+      test::CreateAutofillSuggestion(SuggestionType::kAtMemorySearchResult, u"",
+                                     Suggestion::AtMemoryPayload()),
+      /*metadata=*/std::nullopt);
+
+  // Survey should not be triggered since a suggestion was accepted.
+  EXPECT_CALL(autofill_client(), TriggerAtMemoryPersonalizationAndTrustSurvey)
+      .Times(0);
+  manager().OnPopupHidden();
+
+  task_environment_.FastForwardBy(base::Seconds(15));
+}
+
+// Tests that no survey is shown when the form is submitted within 15s after
+// dismissing an AtMemory popup.
+TEST_F(AtMemoryManagerTestBase, OnPopupHidden_SurveyNotShown_OnFormSubmitted) {
+  const FormGlobalId form_id = test::MakeFormGlobalId();
+  const FieldGlobalId field_id = {form_id.frame_token,
+                                  test::MakeFieldRendererId()};
+
+  EXPECT_CALL(autofill_client(), TriggerAtMemoryPersonalizationAndTrustSurvey)
+      .Times(0);
+
+  // Show and hide popup without selecting a suggestion, starting the timer to
+  // trigger a survey.
+  manager().OnPopupShown(
+      autofill_manager(), form_id, field_id,
+      AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut,
+      /*metadata=*/{}, update_callback_.Get(), ukm::kInvalidSourceId);
+  manager().OnPopupHidden();
+  task_environment_.FastForwardBy(base::Seconds(5));
+
+  // Simulate form submission on the observed manager which should cancel the
+  // survey timer.
+  const FormData form = test::GetFormData({
+      .fields = {{.renderer_id = field_id.renderer_id}},
+      .host_frame = form_id.frame_token,
+      .renderer_id = form_id.renderer_id,
+  });
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnBeforeFormSubmitted, form);
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnAfterFormSubmitted, form);
+
+  task_environment_.FastForwardBy(base::Seconds(10));
+}
+
+// Tests that no survey is shown when the user navigates away from the page
+// within 15s after dismissing an AtMemory popup.
+TEST_F(AtMemoryManagerTestBase,
+       OnPopupHidden_SurveyNotShown_OnAutofillManagerStateChanged) {
+  const FormGlobalId form_id = {autofill_manager().driver().GetFrameToken(),
+                                test::MakeFormRendererId()};
+  const FieldGlobalId field_id = test::MakeFieldGlobalId();
+
+  EXPECT_CALL(autofill_client(), TriggerAtMemoryPersonalizationAndTrustSurvey)
+      .Times(0);
+
+  // Show and hide popup without selecting a suggestion, starting the timer to
+  // trigger a survey.
+  manager().OnPopupShown(
+      autofill_manager(), form_id, field_id,
+      AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut,
+      /*metadata=*/{}, update_callback_.Get(), ukm::kInvalidSourceId);
+  manager().OnPopupHidden();
+  task_environment_.FastForwardBy(base::Seconds(5));
+
+  // Simulate lifecycle state change on the observed manager (e.g. navigation)
+  // which should cancel the survey timer.
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnAutofillManagerStateChanged,
+      AutofillManager::LifecycleState::kActive,
+      AutofillManager::LifecycleState::kPendingReset);
+
+  task_environment_.FastForwardBy(base::Seconds(10));
+}
+
+// Tests that no survey is shown when another Autofill product was used to fill
+// the field within 15s after dismissing an AtMemory popup.
+TEST_F(AtMemoryManagerTestBase,
+       OnPopupHidden_SurveyNotShown_OnFillOrPreviewForm) {
+  const FormGlobalId form_id = test::MakeFormGlobalId();
+  const FieldGlobalId field_id = test::MakeFieldGlobalId();
+
+  EXPECT_CALL(autofill_client(), TriggerAtMemoryPersonalizationAndTrustSurvey)
+      .Times(0);
+
+  // Show and hide popup without selecting a suggestion, starting the timer to
+  // trigger a survey.
+  manager().OnPopupShown(
+      autofill_manager(), form_id, field_id,
+      AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut,
+      /*metadata=*/{}, update_callback_.Get(), ukm::kInvalidSourceId);
+  manager().OnPopupHidden();
+  task_environment_.FastForwardBy(base::Seconds(5));
+
+  // Simulate autofilling the field in a multi-field fill, which should cancel
+  // the survey timer.
+  const AutofillProfile profile = test::GetFullProfile();
+  autofill_manager().NotifyObservers(
+      &AutofillManager::Observer::OnFillOrPreviewForm, form_id, field_id,
+      mojom::ActionPersistence::kFill, base::flat_set<FieldGlobalId>{field_id},
+      base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>{},
+      &profile);
+
+  task_environment_.FastForwardBy(base::Seconds(10));
 }
 
 }  // namespace

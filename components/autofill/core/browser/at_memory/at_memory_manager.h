@@ -27,6 +27,8 @@
 #include "components/autofill/core/browser/data_model/payments/iban.h"
 #include "components/autofill/core/browser/data_model/valuables/valuable_types.h"
 #include "components/autofill/core/browser/filling/autofill_ai/autofill_ai_access_manager.h"
+#include "components/autofill/core/browser/foundations/autofill_manager.h"
+#include "components/autofill/core/browser/foundations/scoped_autofill_managers_observation.h"
 #include "components/autofill/core/browser/integrators/at_memory/at_memory_query_service.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/ui/autofill_suggestion_delegate.h"
@@ -45,11 +47,12 @@ struct AtMemorySearchState;
 struct MemorySearchResults;
 class AutofillClient;
 class BrowserAutofillManager;
+class FormData;
 
 // Manager for the AtMemory feature. It handles queries to the
 // `AtMemoryQueryService` and manages session-based metrics. Owned by
 // `AutofillClient`, its lifetime is tied to it.
-class AtMemoryManager {
+class AtMemoryManager : public AutofillManager::Observer {
  public:
   using UpdateSuggestionsCallback =
       base::RepeatingCallback<void(std::vector<Suggestion>,
@@ -61,7 +64,7 @@ class AtMemoryManager {
   AtMemoryManager(const AtMemoryManager&) = delete;
   AtMemoryManager& operator=(const AtMemoryManager&) = delete;
 
-  ~AtMemoryManager();
+  ~AtMemoryManager() override;
 
   // Returns the state (suggestions and filter) for `field_id`.
   // If search statefulness is enabled and persisted state exists, returns
@@ -91,6 +94,29 @@ class AtMemoryManager {
 
   // Called when suggestions are hidden.
   void OnPopupHidden();
+
+  // AutofillManager::Observer:
+  void OnAutofillManagerStateChanged(
+      AutofillManager& manager,
+      AutofillManager::LifecycleState previous,
+      AutofillManager::LifecycleState new_state) override;
+  void OnFillOrPreviewForm(
+      AutofillManager& manager,
+      FormGlobalId form_id,
+      FieldGlobalId trigger_field_id,
+      mojom::ActionPersistence action_persistence,
+      const base::flat_set<FieldGlobalId>& filled_field_ids,
+      const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
+          skip_reasons,
+      const FillingPayload& filling_payload) override;
+  void OnFillOrPreviewField(AutofillManager& manager,
+                            FormGlobalId form_id,
+                            FieldGlobalId field_id,
+                            mojom::ActionPersistence action_persistence,
+                            const std::u16string& value,
+                            std::optional<FieldType> field_type_used) override;
+  void OnAfterFormSubmitted(AutofillManager& manager,
+                            const FormData& form) override;
 
   // Fills the selected search result. Returns `IsAsync(true)` if the operation
   // involves reauthentication or server communication.
@@ -301,6 +327,16 @@ class AtMemoryManager {
   const raw_ref<AutofillClient> client_;
 
   std::optional<PopupState> popup_state_;
+
+  // Timer to show a survey after a delay when dismissing an AtMemory popup
+  // without accepting a suggestion. The survey will only be triggered if there
+  // has been no other AtMemory invocation in the meantime to avoid surveys on
+  // accidental dismissal.
+  base::OneShotTimer hats_survey_dismissal_timer_;
+  // The field associated with the most recent AtMemory invocation. It is used
+  // to cancel the dismissal survey timer on filling, submission or navigation.
+  FieldGlobalId last_field_id_;
+  ScopedAutofillManagersObservation autofill_managers_observation_{this};
 
   // Origin of the target field for the active search session. Only set when
   // `kAutofillAtMemorySearchStatefulness` is disabled.

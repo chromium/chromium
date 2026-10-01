@@ -199,6 +199,9 @@ inline constexpr char
 inline constexpr char
     kHatsSurveyTriggerAutofillPersonalizationAndTrustAtMemoryFilled[] =
         "autofill-personalization-and-trust-at-memory-filled";
+inline constexpr char
+    kHatsSurveyTriggerAutofillPersonalizationAndTrustAtMemoryDismissed[] =
+        "autofill-personalization-and-trust-at-memory-dismissed";
 inline constexpr char kHatsSurveyTriggerPermissionsPrompt[] =
     "permissions-prompt";
 inline constexpr char kHatsSurveyTriggerOnFocusZpsSuggestionsHappiness[] =

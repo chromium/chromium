@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <algorithm>
 #include <array>
 #include <memory>
 #include <optional>
@@ -44,6 +45,7 @@
 #include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/foundations/autofill_client.h"
+#include "components/autofill/core/browser/foundations/autofill_driver.h"
 #include "components/autofill/core/browser/foundations/autofill_driver_factory.h"
 #include "components/autofill/core/browser/foundations/autofill_manager.h"
 #include "components/autofill/core/browser/foundations/browser_autofill_manager.h"
@@ -58,6 +60,7 @@
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/personal_context/core/personal_context_types.h"
@@ -396,7 +399,11 @@ AtMemoryManager::AtMemoryManager(AutofillClient* client,
                      // `state_manager_` is a direct member of `this` and does
                      // not invoke the callback during destruction.
                      base::BindRepeating(&AtMemoryManager::OnStateReset,
-                                         base::Unretained(this))) {}
+                                         base::Unretained(this))) {
+  autofill_managers_observation_.Observe(
+      client, ScopedAutofillManagersObservation::InitializationPolicy::
+                  kObservePreexistingManagers);
+}
 
 AtMemoryManager::~AtMemoryManager() = default;
 
@@ -433,6 +440,10 @@ void AtMemoryManager::OnPopupShown(
   if (!IsAtMemoryTriggerSource(trigger_source)) {
     return;
   }
+
+  hats_survey_dismissal_timer_.Stop();
+  last_field_id_ = field_id;
+
   if (!metadata.is_subpopup() && !popup_state_) {
     // TODO(crbug.com/541160371): Address the case when the search statefulness
     // is enabled and `state_manager_.field_id() != field_id `.
@@ -498,6 +509,17 @@ bool AtMemoryManager::OnSearchSubmitted(const std::u16string& filter) {
 void AtMemoryManager::OnPopupHidden() {
   if (AtMemoryMetricsRecorder* recorder = metrics_recorder()) {
     recorder->OnPopupHidden();
+
+    if (!recorder->IsFilled()) {
+      // AtMemory was dismissed without filling any suggestion. Delay the survey
+      // to avoid triggering on accidental dismissal.
+      hats_survey_dismissal_timer_.Start(
+          FROM_HERE, base::Seconds(15),
+          base::BindOnce(
+              &AutofillClient::TriggerAtMemoryPersonalizationAndTrustSurvey,
+              base::Unretained(client_), /*is_dismissed=*/true,
+              HatsSurveyStringData{}));
+    }
   }
   if (!base::FeatureList::IsEnabled(
           features::kAutofillAtMemorySearchStatefulness)) {
@@ -1284,9 +1306,58 @@ void AtMemoryManager::FillField(BrowserAutofillManager& bam,
                          mojom::FieldActionType::kReplaceSelectionForAtMemory,
                          form_id, field_id, value, FillingProduct::kAtMemory,
                          /*field_type_used=*/std::nullopt);
-  client_->TriggerPersonalizationAndTrustSurveys(
-      FillingProduct::kAtMemory,
-      /*field_filling_stats_data=*/{});
+  client_->TriggerAtMemoryPersonalizationAndTrustSurvey(
+      /*is_dismissed=*/false,
+      /*product_specific_data=*/{});
+}
+
+void AtMemoryManager::OnAutofillManagerStateChanged(
+    AutofillManager& manager,
+    AutofillManager::LifecycleState previous,
+    AutofillManager::LifecycleState new_state) {
+  const bool is_last_frame_or_main_frame =
+      manager.driver().GetFrameToken() == last_field_id_.frame_token ||
+      !manager.driver().GetParent();
+  if (is_last_frame_or_main_frame &&
+      new_state != AutofillManager::LifecycleState::kActive) {
+    hats_survey_dismissal_timer_.Stop();
+  }
+}
+
+void AtMemoryManager::OnFillOrPreviewForm(
+    AutofillManager& manager,
+    FormGlobalId form_id,
+    FieldGlobalId trigger_field_id,
+    mojom::ActionPersistence action_persistence,
+    const base::flat_set<FieldGlobalId>& filled_field_ids,
+    const base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>&
+        skip_reasons,
+    const FillingPayload& filling_payload) {
+  if (action_persistence == mojom::ActionPersistence::kFill &&
+      filled_field_ids.contains(last_field_id_)) {
+    hats_survey_dismissal_timer_.Stop();
+  }
+}
+
+void AtMemoryManager::OnFillOrPreviewField(
+    AutofillManager& manager,
+    FormGlobalId form_id,
+    FieldGlobalId field_id,
+    mojom::ActionPersistence action_persistence,
+    const std::u16string& value,
+    std::optional<FieldType> field_type_used) {
+  if (action_persistence == mojom::ActionPersistence::kFill &&
+      field_id == last_field_id_) {
+    hats_survey_dismissal_timer_.Stop();
+  }
+}
+
+void AtMemoryManager::OnAfterFormSubmitted(AutofillManager& manager,
+                                           const FormData& form) {
+  if (std::ranges::contains(form.fields(), last_field_id_,
+                            &FormFieldData::global_id)) {
+    hats_survey_dismissal_timer_.Stop();
+  }
 }
 
 }  // namespace autofill

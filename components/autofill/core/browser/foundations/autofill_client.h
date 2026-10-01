@@ -714,6 +714,13 @@ class AutofillClient {
       FillingProduct filling_product,
       const HatsSurveyStringData& field_filling_stats_data);
 
+  // Triggers a survey to ask the user about their experience regarding
+  // AtMemory. `is_dismissed` specifies whether the survey is for dismissing
+  // AtMemory without accepting any suggestion.
+  virtual void TriggerAtMemoryPersonalizationAndTrustSurvey(
+      bool is_dismissed,
+      const HatsSurveyStringData& product_specific_data);
+
   // Returns whether there is an active actor task for this client's tab (if
   // one exists).
   virtual bool IsTabInActorMode() const;

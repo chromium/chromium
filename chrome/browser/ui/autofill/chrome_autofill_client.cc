@@ -979,12 +979,11 @@ void ChromeAutofillClient::TriggerPersonalizationAndTrustSurveys(
         return kHatsSurveyTriggerAutofillPersonalizationAndTrustAddressFilled;
       case FillingProduct::kAutofillAi:
         return kHatsSurveyTriggerAutofillPersonalizationAndTrustAutofillAiFilled;
-      case FillingProduct::kAtMemory:
-        return kHatsSurveyTriggerAutofillPersonalizationAndTrustAtMemoryFilled;
       case FillingProduct::kCreditCard:
         return kHatsSurveyTriggerAutofillPersonalizationAndTrustCreditCardFilled;
       case FillingProduct::kOneTimePassword:
         return kHatsSurveyTriggerAutofillPersonalizationAndTrustOneTimePasswordFilled;
+      case FillingProduct::kAtMemory:
       case FillingProduct::kNone:
       case FillingProduct::kMerchantPromoCode:
       case FillingProduct::kPasskey:
@@ -1005,6 +1004,42 @@ void ChromeAutofillClient::TriggerPersonalizationAndTrustSurveys(
       /*timeout_ms=*/5000,
       /*product_specific_bits_data=*/{},
       /*product_specific_string_data=*/field_filling_stats_data);
+}
+
+void ChromeAutofillClient::TriggerAtMemoryPersonalizationAndTrustSurvey(
+    bool is_dismissed,
+    const HatsSurveyStringData& product_specific_data) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+  HatsService* hats_service =
+      HatsServiceFactory::GetForProfile(profile, /*create_if_necessary=*/true);
+  if (!hats_service) {
+    return;
+  }
+
+  const std::string hats_trigger =
+      is_dismissed
+          ? kHatsSurveyTriggerAutofillPersonalizationAndTrustAtMemoryDismissed
+          : kHatsSurveyTriggerAutofillPersonalizationAndTrustAtMemoryFilled;
+
+  if (is_dismissed) {
+    // The survey for dismissing AtMemory is only triggered after a delay
+    // during which the user didn't use the feature again. Launch immediately
+    // without binding to `web_contents()`, allowing the survey to display
+    // even if the user has switched tabs.
+    hats_service->LaunchSurvey(
+        hats_trigger,
+        /*success_callback=*/base::DoNothing(),
+        /*failure_callback=*/base::DoNothing(),
+        /*product_specific_bits_data=*/{},
+        /*product_specific_string_data=*/product_specific_data);
+  } else {
+    hats_service->LaunchDelayedSurveyForWebContents(
+        hats_trigger, web_contents(),
+        /*timeout_ms=*/5000,
+        /*product_specific_bits_data=*/{},
+        /*product_specific_string_data=*/product_specific_data);
+  }
 }
 
 bool ChromeAutofillClient::IsTabInActorMode() const {

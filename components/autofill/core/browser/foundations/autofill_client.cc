@@ -323,6 +323,12 @@ void AutofillClient::TriggerPersonalizationAndTrustSurveys(
   NOTIMPLEMENTED();
 }
 
+void AutofillClient::TriggerAtMemoryPersonalizationAndTrustSurvey(
+    bool is_dismissed,
+    const HatsSurveyStringData& product_specific_data) {
+  NOTIMPLEMENTED();
+}
+
 bool AutofillClient::IsTabInActorMode() const {
   return false;
 }
