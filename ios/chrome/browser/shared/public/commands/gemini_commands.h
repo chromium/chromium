@@ -16,6 +16,8 @@ enum class EntryPoint;
 enum class FloatyUpdateSource;
 }  // namespace gemini
 
+class GURL;
+
 @class GeminiStartupState;
 
 // Commands relating to the Gemini flow.
@@ -78,6 +80,9 @@ enum class FloatyUpdateSource;
 
 // Minimizes the Gemini UI if currently invoked.
 - (void)minimizeGeminiIfInvoked;
+
+// Presents `URL` in a modal web view over the Gemini surface.
+- (void)showGeminiWebModalForURL:(const GURL&)URL;
 
 @end
 

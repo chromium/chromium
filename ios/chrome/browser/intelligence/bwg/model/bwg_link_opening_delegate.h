@@ -16,6 +16,10 @@
 // Closes any presented views and opens the given URL in a new tab.
 - (void)closePresentedViewsAndOpenURLInNewTab:(NSString*)URL;
 
+// Presents the given URL from an immersive learning card in a modal web view
+// over the Gemini surface.
+- (void)openImmersiveLearningCardURLInWebModal:(NSURL*)URL;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_LINK_OPENING_DELEGATE_H_

@@ -68,6 +68,7 @@ source_set("model") {
     "//ios/chrome/common/ui/util",
     "//ios/public/provider/chrome/browser/bwg:gemini_api",
     "//ios/web/public",
+    "//net",
   ]
   public_deps = [ "//base" ]
   frameworks = [
@@ -469,5 +470,6 @@ source_set("unit_tests") {
     "//ios/web/public/test",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//url",
   ]
 }

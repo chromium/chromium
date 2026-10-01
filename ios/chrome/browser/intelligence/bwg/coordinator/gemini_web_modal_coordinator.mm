@@ -28,7 +28,6 @@
 
 @implementation GeminiWebModalCoordinator {
   GURL _URL;
-  ProceduralBlock _dismissalHandler;
   std::unique_ptr<web::WebState> _webState;
   std::unique_ptr<web::WebStateObserverBridge> _webStateObserverBridge;
   std::unique_ptr<web::WebStateDelegateBridge> _webStateDelegateBridge;
@@ -38,12 +37,10 @@
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
-                                       URL:(const GURL&)URL
-                          dismissalHandler:(ProceduralBlock)dismissalHandler {
+                                       URL:(const GURL&)URL {
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _URL = URL;
-    _dismissalHandler = dismissalHandler;
   }
   return self;
 }
@@ -144,18 +141,14 @@
 
 - (void)geminiModalContentViewControllerDidTapClose:
     (GeminiModalContentViewController*)viewController {
-  if (_dismissalHandler) {
-    _dismissalHandler();
-  }
+  [self.delegate geminiWebModalCoordinatorDidDismiss:self];
 }
 
 #pragma mark - UIAdaptivePresentationControllerDelegate
 
 - (void)presentationControllerDidDismiss:
     (UIPresentationController*)presentationController {
-  if (_dismissalHandler) {
-    _dismissalHandler();
-  }
+  [self.delegate geminiWebModalCoordinatorDidDismiss:self];
 }
 
 #pragma mark - Private
