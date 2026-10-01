@@ -7245,20 +7245,6 @@
     "EnableAccountPreviewPreferredAccount": [
         {
             "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableAccountPreviewPreferredAccount",
-                        "EnableAccountPreviewUseAppAccount"
-                    ]
-                }
-            ]
-        },
-        {
-            "platforms": [
                 "chromeos",
                 "ios",
                 "linux",
@@ -7270,6 +7256,22 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableAccountPreviewPreferredAccount"
+                    ]
+                }
+            ]
+        }
+    ],
+    "EnableAccountPreviewPreferredAccountAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableAccountPreviewPreferredAccount",
+                        "EnableAccountPreviewUseAppAccount"
                     ]
                 }
             ]
