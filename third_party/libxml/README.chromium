@@ -24,7 +24,7 @@ Modifications:
   truncation in xmlEscapeText that can lead to an undersized allocation and
   heap-buffer-overflow.
 - parser-check-eof-trailing-whitespace.patch: Allow trailing whitespace in
-  xmlParserCheckEOF instead of treating it as a fatal error.
+  xmlParserCheckEOF and use the caller's error code for other trailing content.
 - parser-grow-capacity-check.patch: Fixes a heap-buffer-overflow in case the new
   buffer length gets clamped to the maximum value without leaving enough
   headroom.

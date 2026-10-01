@@ -695,7 +695,7 @@ xmlParserCheckEOF(xmlParserCtxt *ctxt, xmlParserErrors code) {
             const xmlChar *cur = in->cur;
             while (cur < in->end) {
                 if ((*cur != 0x20) && (*cur != 0x9) && (*cur != 0xa) && (*cur != 0xd)) {
-                    xmlFatalErr(ctxt, XML_ERR_INTERNAL_ERROR, "expected EOF");
+                    xmlFatalErr(ctxt, code, NULL);
                     return;
                 }
                 cur++;

@@ -222,6 +222,30 @@ TEST(XMLDocumentParserTest, ReproICUFlushCrash) {
   xmlFreeParserCtxt(ctxt);
 }
 
+TEST(XMLDocumentParserTest, FlushTrailingNonWhitespaceIsDocumentEndError) {
+  test::TaskEnvironment task_environment;
+  ScopedNullExecutionContext execution_context;
+  execution_context.GetExecutionContext().SetUpSecurityContextForTesting();
+
+  xmlParserCtxtPtr ctxt = xmlNewParserCtxt();
+  xmlCtxtSetCharEncConvImpl(ctxt, flushCrashConvImpl, nullptr);
+
+  // XML document with trailing non-whitespace that decodes only on flush.
+  std::string xml = "<?xml version=\"1.0\" encoding=\"flush-crash\"?><root/>x";
+
+  xmlDocPtr xml_doc = xmlCtxtReadMemory(
+      ctxt, xml.data(), static_cast<int>(xml.size()), "http://example.com",
+      nullptr,
+      XML_PARSE_NOENT | XML_PARSE_DTDLOAD | XML_PARSE_DTDATTR |
+          XML_PARSE_NOCDATA | XML_PARSE_HUGE);
+
+  if (xml_doc) {
+    xmlFreeDoc(xml_doc);
+  }
+  EXPECT_EQ(ctxt->errNo, XML_ERR_DOCUMENT_END);
+  xmlFreeParserCtxt(ctxt);
+}
+
 TEST(XMLDocumentParserTest, ChunkedParsingWithPauseRust) {
   test::TaskEnvironment task_environment;
   ScopedNullExecutionContext execution_context;
