@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/test/mock_log.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -207,6 +210,57 @@ IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchApiTest, Success) {
     FAIL() << catcher.message();
   }
   EXPECT_EQ(1u, GetTotalTabCount());
+}
+
+class NativeMessagingLaunchLoggingApiTest
+    : public NativeMessagingLaunchApiTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    NativeMessagingLaunchApiTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(::switches::kVModule,
+                                    "*/extensions/api/messaging/*=1");
+  }
+};
+
+// Tests that a natively-initiated launch logs its command line with the
+// --reconnect-command payload redacted.
+IN_PROC_BROWSER_TEST_F(NativeMessagingLaunchLoggingApiTest,
+                       SuccessLogsRedactedCommandLine) {
+  ProcessManager::SetEventPageIdleTimeForTesting(1);
+  ProcessManager::SetEventPageSuspendingTimeForTesting(1);
+  ASSERT_NO_FATAL_FAILURE(test_host_.RegisterTestHost(/*user_level=*/false));
+
+  auto* extension =
+      LoadExtension(test_data_dir_.AppendASCII("native_messaging_launch"));
+  ASSERT_TRUE(extension);
+  ExtensionBackgroundPageWaiter(profile(), *extension)
+      .WaitForBackgroundClosed();
+
+  ResultCatcher catcher;
+
+  base::test::MockLog log;
+  EXPECT_CALL(log,
+              Log(testing::_, testing::_, testing::_, testing::_, testing::_))
+      .Times(testing::AnyNumber());
+  // VLOG(1) logs at severity -1.
+  EXPECT_CALL(
+      log, Log(-1, testing::_, testing::_, testing::_,
+               testing::AllOf(
+                   testing::HasSubstr(
+                       "Launching native messaging host with command line:"),
+                   testing::HasSubstr("--reconnect-command=<omitted>"),
+                   testing::HasSubstr(
+                       base::StrCat({"--", switches::kNativeMessagingConnectId,
+                                     "=", "test-connect-id"})))))
+      .WillOnce(testing::Return(true));
+  log.StartCapturingLogs();
+
+  StartupBrowserCreator::ProcessCommandLineAlreadyRunning(
+      CreateNativeMessagingConnectCommandLine("test-connect-id"), {},
+      {profile()->GetPath(), StartupProfileMode::kBrowserWindow});
+  log.StopCapturingLogs();
+
+  EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
 }
 
 // Test that a natively-initiated connection from a host not supporting
