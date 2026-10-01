@@ -5,7 +5,6 @@
 
 """Tests for process_profiles.py."""
 
-import collections
 import unittest
 
 import process_profiles

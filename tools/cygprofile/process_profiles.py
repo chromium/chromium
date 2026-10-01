@@ -8,7 +8,6 @@
 import argparse
 import collections
 import logging
-import operator
 import os
 import sys
 import json
@@ -18,7 +17,7 @@ _SRC_PATH = os.path.abspath(
 )
 path = os.path.join(_SRC_PATH, 'tools', 'cygprofile')
 sys.path.append(path)
-import symbol_extractor
+import symbol_extractor  # noqa: E402
 
 
 def _Median(items):

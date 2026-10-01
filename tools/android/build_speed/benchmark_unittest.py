@@ -7,8 +7,6 @@
 import contextlib
 import json
 import pathlib
-import subprocess
-import sys
 import tempfile
 import unittest
 import unittest.mock

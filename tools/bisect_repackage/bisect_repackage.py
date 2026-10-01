@@ -20,7 +20,6 @@ import tempfile
 import threading
 import urllib
 import bisect_repackage_utils
-import re
 
 # This script uses cloud_storage module which contains gsutils wrappers.
 # cloud_storage module is a part of catapult repo, so please make sure
@@ -38,7 +37,7 @@ _PY_UTILS_PATH = os.path.abspath(
 )
 if _PY_UTILS_PATH not in sys.path:
   sys.path.insert(1, _PY_UTILS_PATH)
-from py_utils import cloud_storage
+from py_utils import cloud_storage  # noqa: E402
 
 # Declares required files to run manual bisect script on chrome Linux
 # builds in perf. Binary files that should be stripped to reduce zip file
@@ -187,15 +186,15 @@ def get_cp_from_hash(git_hash):
   if response.getcode() == 200:
     try:
       data = json.loads(response.read())
-    except Exception, e:
-      logging.warning('JSON URL: %s, Error Message: %s' % json_url, e)
+    except Exception, e:  # noqa: F821
+      logging.warning('JSON URL: %s, Error Message: %s' % json_url, e)  # noqa: F821
       raise GitConversionError
   else:
-    logging.warning('JSON URL: %s, Error Message: %s' % json_url, e)
+    logging.warning('JSON URL: %s, Error Message: %s' % json_url, e)  # noqa: F821
     raise GitConversionError
   if 'number' in data:
     return data['number']
-  logging.warning('JSON URL: %s, Error Message: %s' % json_url, e)
+  logging.warning('JSON URL: %s, Error Message: %s' % json_url, e)  # noqa: F821
   raise GitConversionError
 
 
@@ -254,8 +253,8 @@ def download_build(cp_num, revision_map, zip_file_name, context):
     cloud_storage.Get(
       context.original_gs_bucket, remote_file_path, zip_file_name
     )
-  except Exception, e:
-    logging.warning('Failed to download: %s, error: %s', zip_file_name, e)
+  except Exception, e:  # noqa: F821
+    logging.warning('Failed to download: %s, error: %s', zip_file_name, e)  # noqa: F821
     return False
   return True
 
@@ -373,8 +372,8 @@ def verify_chrome_run(zip_dir):
     code = bisect_repackage_utils.RunCommand(command)
     if code != 0:
       raise ChromeExecutionError('An error occurred when executing Chrome')
-  except ChromeExecutionError, e:
-    print(str(e))
+  except ChromeExecutionError, e:  # noqa: F821
+    print(str(e))  # noqa: F821
 
 
 def get_whitelist_files(extracted_folder, archive):
@@ -498,8 +497,8 @@ def get_hash_from_cp(cp_num):
       data = json.loads(response.read())
       if 'git_sha' in data:
         return data['git_sha']
-    except Exception, e:
-      logging.warning('Failed to fetch git_hash: %s, error: %s' % json_url, e)
+    except Exception, e:  # noqa: F821
+      logging.warning('Failed to fetch git_hash: %s, error: %s' % json_url, e)  # noqa: F821
   else:
     logging.warning('Failed to fetch git_hash: %s, CP: %s' % json_url, cp_num)
   return None

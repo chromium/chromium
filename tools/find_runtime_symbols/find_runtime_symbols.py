@@ -23,10 +23,10 @@ _TOOLS_LINUX_PATH = os.path.join(_BASE_PATH, os.pardir, 'linux')
 sys.path.insert(0, _TOOLS_LINUX_PATH)
 
 
-from procfs import ProcMaps  # pylint: disable=F0401
+from procfs import ProcMaps  # noqa: E402
 
 try:
-  from collections import OrderedDict  # pylint: disable=E0611
+  from collections import OrderedDict
 except ImportError:
   _SIMPLEJSON_PATH = os.path.join(
     _BASE_PATH, os.pardir, os.pardir, 'third_party'
@@ -90,7 +90,6 @@ class RuntimeSymbolsInProcess:
     with open(os.path.join(prepared_data_dir, _FILES_FILENAME), mode='r') as f:
       files = json.load(f)
 
-    # pylint: disable=W0212
     for vma in symbols_in_process.maps.iter(ProcMaps.executable_and_constants):
       file_entry = files.get(vma.name)
       if not file_entry:
@@ -125,7 +124,7 @@ class RuntimeSymbolsInProcess:
 def _find_runtime_function_symbols(symbols_in_process, addresses):
   result = OrderedDict()
   for address in addresses:
-    if isinstance(address, basestring):
+    if isinstance(address, basestring):  # noqa: F821
       address = int(address, 16)
     found = symbols_in_process.find_procedure(address)
     if found:
@@ -138,7 +137,7 @@ def _find_runtime_function_symbols(symbols_in_process, addresses):
 def _find_runtime_sourcefile_symbols(symbols_in_process, addresses):
   result = OrderedDict()
   for address in addresses:
-    if isinstance(address, basestring):
+    if isinstance(address, basestring):  # noqa: F821
       address = int(address, 16)
     found = symbols_in_process.find_sourcefile(address)
     if found:
@@ -151,7 +150,7 @@ def _find_runtime_sourcefile_symbols(symbols_in_process, addresses):
 def _find_runtime_typeinfo_symbols(symbols_in_process, addresses):
   result = OrderedDict()
   for address in addresses:
-    if isinstance(address, basestring):
+    if isinstance(address, basestring):  # noqa: F821
       address = int(address, 16)
     if address == 0:
       result[address] = 'no typeinfo'

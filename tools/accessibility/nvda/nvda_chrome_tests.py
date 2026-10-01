@@ -74,7 +74,7 @@ class NvdaChromeTest(unittest.TestCase):
 
     def handler(signum, frame):
       print('Test interrupted, attempting to kill subprocesses.')
-      self.tearDown()
+      self.tearDown()  # noqa: F821
       sys.exit()
 
     signal.signal(signal.SIGINT, handler)

@@ -10,14 +10,12 @@ Should be run from the checkout root (i.e. as `tools/crates/run_gnrt.py ...`)
 import argparse
 import os
 import pathlib
-import platform
-import subprocess
 import sys
 
 GNRT_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'gnrt')
 GNRT_MANIFEST_PATH = os.path.join(GNRT_DIR, 'Cargo.toml')
 
-from run_cargo import RunCargo, DEFAULT_SYSROOT
+from run_cargo import RunCargo, DEFAULT_SYSROOT  # noqa: E402
 
 
 def RunGnrt(rust_sysroot, out_dir, gnrt_args):

@@ -15,13 +15,13 @@ _SRC_ROOT = os.path.abspath(
 )
 
 sys.path.append(os.path.join(_SRC_ROOT, 'third_party', 'catapult', 'devil'))
-from devil import base_error
-from devil.android import device_utils
-from devil.android.sdk import adb_wrapper
-from devil.utils import logging_common
+from devil import base_error  # noqa: E402
+from devil.android import device_utils  # noqa: E402
+from devil.android.sdk import adb_wrapper  # noqa: E402
+from devil.utils import logging_common  # noqa: E402
 
 sys.path.append(os.path.join(_SRC_ROOT, 'build', 'android'))
-import devil_chromium
+import devil_chromium  # noqa: E402
 
 
 @contextlib.contextmanager

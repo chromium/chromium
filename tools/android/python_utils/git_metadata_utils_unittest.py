@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 _TOOLS_ANDROID_PATH = pathlib.Path(__file__).resolve(strict=True).parents[1]
 if str(_TOOLS_ANDROID_PATH) not in sys.path:
     sys.path.append(str(_TOOLS_ANDROID_PATH))
-from python_utils import git_metadata_utils
+from python_utils import git_metadata_utils  # noqa: E402
 
 _TEST_FILE_FOLDER = pathlib.Path(__file__).parent.resolve(strict=True)
 

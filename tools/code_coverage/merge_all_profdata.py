@@ -62,6 +62,6 @@ for target in targets_to_cover:
   subprocess_cmd.append(target)
 try:
   subprocess.check_call(subprocess_cmd)
-except:
+except:  # noqa: E722
   logging.error("An error occured while merging the profdata.")
   exit(1)

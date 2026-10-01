@@ -30,7 +30,7 @@ _NODE_PATH = (
 ).resolve()
 sys.path.append(str(_NODE_PATH))
 
-import node
+import node  # noqa: E402
 
 _SOURCE_MAPPING_DATA_URL_PREFIX = (
   '//# sourceMappingURL=data:application/json;base64,'
@@ -198,7 +198,7 @@ class MergeSourceMapsTest(unittest.TestCase):
     os.write(input_fd, manifest_file_contents)
     os.close(input_fd)
 
-    original_file_name = 'original_file.ts'
+    original_file_name = 'original_file.ts'  # noqa: F841
     input_file_name = (_HERE_DIR / 'generated_file_pre_merge.js').resolve()
     output_file_name = (Path(self._out_folder) / "merged_maps.out").resolve()
     response_file_name = self._writeResponseFileContents(

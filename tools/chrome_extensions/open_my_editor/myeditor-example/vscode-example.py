@@ -29,7 +29,7 @@ args = parser.parse_args()
 sh.code(".")
 
 # Open one file with line number.
-if args.filepath != None:
+if args.filepath != None:  # noqa: E711
   sh.code("-g", args.filepath + ":" + str(args.line))
 # Open multiple files.
 else:

@@ -13,7 +13,7 @@ import logging
 
 _SRC_ROOT = pathlib.Path(__file__).resolve().parents[2]
 sys.path.append(str(_SRC_ROOT / 'build/android'))
-from pylib import constants
+from pylib import constants  # noqa: E402
 
 
 def main():
@@ -61,7 +61,9 @@ def main():
 
     with open(siso_output_path, 'r') as f:
       commands = [
-        l.strip() for l in f if l.strip().startswith('gn edit')
+        l.strip()
+        for l in f  # noqa: E741
+        if l.strip().startswith('gn edit')
       ]
 
     if not commands:

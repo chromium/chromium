@@ -44,7 +44,7 @@ class Golden:
     else:
       with open(golden_path) as file_obj:
         expected = list(file_obj)
-        actual = list(_Neutralize(l) + '\n' for l in actual_lines)
+        actual = list(_Neutralize(l) + '\n' for l in actual_lines)  # noqa: E741
         assert actual == expected, (
           'Did not match %s.\n' % golden_path
         ) + ''.join(

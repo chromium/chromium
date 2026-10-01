@@ -79,7 +79,7 @@ class InsertIncludeHeaderTest(unittest.TestCase):
 #include "new/header.h"
 #include "old/header.h"
     '''
-    new_header_line = '#include "new/header.h'
+    new_header_line = '#include "new/header.h'  # noqa: F841
     self._assertEqualContents(
       expected_new_contents, _InsertHeader(old_contents)
     )
@@ -116,7 +116,7 @@ struct sock_filter {
   uint16_t code;
 };
     '''
-    new_header_line = '#include "new/header.h'
+    new_header_line = '#include "new/header.h'  # noqa: F841
     self._assertEqualContents(
       expected_new_contents, _InsertHeader(old_contents)
     )
@@ -141,7 +141,7 @@ struct sock_filter {
   uint16_t code;
 };
     '''
-    new_header_line = '#include "new/header.h'
+    new_header_line = '#include "new/header.h'  # noqa: F841
     self._assertEqualContents(
       expected_new_contents, _InsertHeader(old_contents)
     )
@@ -162,7 +162,7 @@ struct sock_filter {
   uint16_t code;
 };
     '''
-    new_header_line = '#include "new/header.h'
+    new_header_line = '#include "new/header.h'  # noqa: F841
     self._assertEqualContents(
       expected_new_contents, _InsertHeader(old_contents)
     )
@@ -193,7 +193,7 @@ struct sock_filter {
   uint16_t code;
 };
     '''
-    new_header_line = '#include "new/header.h'
+    new_header_line = '#include "new/header.h'  # noqa: F841
     self._assertEqualContents(
       expected_new_contents, _InsertHeader(old_contents)
     )
@@ -220,7 +220,7 @@ struct sock_filter {
   uint16_t code;
 };
     '''
-    new_header_line = '#include "new/header.h'
+    new_header_line = '#include "new/header.h'  # noqa: F841
     self._assertEqualContents(
       expected_new_contents, _InsertHeader(old_contents)
     )

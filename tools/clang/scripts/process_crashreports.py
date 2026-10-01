@@ -104,7 +104,7 @@ def ArchiveAndUpload(dest, files):
     subprocess.check_call([sys.executable, GSUTIL, '-q', 'cp', tmp_name, dest])
     print('done')
     print('    %s' % dest)
-  except subprocess.CalledProcessError as e:
+  except subprocess.CalledProcessError:
     print('upload failed; if it was due to missing permissions, try running')
     print('download_from_google_storage --config')
     print('and then try again')

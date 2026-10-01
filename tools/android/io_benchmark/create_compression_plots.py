@@ -89,13 +89,13 @@ zstd,compression,2097152,322.759,6497.58,4.25403
 zstd,decompression,2097152,720.164,2912.05,0
 """
 
-import argparse
-import os
-import re
-import sys
+import argparse  # noqa: E402
+import os  # noqa: E402
+import re  # noqa: E402
+import sys  # noqa: E402
 
-import matplotlib.pyplot as plt
-import pandas as pd
+import matplotlib.pyplot as plt  # noqa: E402
+import pandas as pd  # noqa: E402
 
 
 def ParseData(filepath: str) -> pd.DataFrame:

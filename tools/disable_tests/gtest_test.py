@@ -7,7 +7,6 @@ import unittest
 from typing import Optional
 
 import conditions
-from conditions import Condition
 import gtest
 
 

@@ -15,7 +15,6 @@ Responsible for:
 
 import argparse
 import gzip
-import gzip
 import json
 import os
 import re

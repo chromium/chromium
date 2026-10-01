@@ -19,15 +19,14 @@ from typing import List, Optional
 
 _SRC_PATH = os.path.join(os.path.dirname(__file__), os.pardir, os.pardir)
 sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'catapult', 'devil'))
-from devil.android import apk_helper
-from devil.android import device_errors
-from devil.android import device_utils
-from devil.android import flag_changer
-from devil.android import forwarder
+from devil.android import apk_helper  # noqa: E402
+from devil.android import device_errors  # noqa: E402
+from devil.android import device_utils  # noqa: E402
+from devil.android import flag_changer  # noqa: E402
 
 sys.path.append(os.path.join(_SRC_PATH, 'build', 'android'))
-import devil_chromium
-from pylib import constants
+import devil_chromium  # noqa: E402
+from pylib import constants  # noqa: E402
 
 
 class NoProfileDataError(Exception):

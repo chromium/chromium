@@ -11,7 +11,6 @@ Populate <scratch>/patch_{}.{out,diff,pass,fail} files by running:
 with patch_limit = 9999
 """
 
-import pathlib
 import sys
 from spanify_utils import apply_collected_edits, scratch_dir
 

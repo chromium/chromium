@@ -12,7 +12,6 @@ Automates the verification of:
 """
 
 import argparse
-import os
 import pathlib
 import subprocess
 import sys

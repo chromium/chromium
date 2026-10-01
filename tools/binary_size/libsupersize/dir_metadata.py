@@ -60,7 +60,7 @@ class _ComponentLookupContext:
         if mixin_path.startswith('//'):
           mixin_path = os.path.join(self._source_directory, mixin_path[2:])
         else:
-          logging.warning('Found non-ablsolute mixin path in %s', path)
+          logging.warning('Found non-ablsolute mixin path in %s', path)  # noqa: F821
           continue
         result = self._ParseComponentFromMetadata(mixin_path)
         if result:

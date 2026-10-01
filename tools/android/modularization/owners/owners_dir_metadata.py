@@ -13,7 +13,7 @@ import owners_data
 _TOOLS_ANDROID_PATH = pathlib.Path(__file__).resolve().parents[2]
 if str(_TOOLS_ANDROID_PATH) not in sys.path:
   sys.path.append(str(_TOOLS_ANDROID_PATH))
-from python_utils import subprocess_utils
+from python_utils import subprocess_utils  # noqa: E402
 
 
 def read_raw_dir_metadata(chromium_root: str, dirmd_path: str) -> Dict:

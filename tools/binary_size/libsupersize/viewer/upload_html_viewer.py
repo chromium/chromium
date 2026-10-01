@@ -5,11 +5,9 @@
 """Update the firebase project hosting the Super Size UI."""
 
 import argparse
-import os
 import pathlib
 import shutil
 import subprocess
-import sys
 import tempfile
 import urllib.request
 import uuid

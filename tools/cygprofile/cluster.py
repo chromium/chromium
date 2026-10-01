@@ -8,7 +8,6 @@ See the Clustering class for a detailed description.
 """
 
 import collections
-import itertools
 import logging
 
 Neighbor = collections.namedtuple('Neighbor', ('src', 'dst', 'dist'))

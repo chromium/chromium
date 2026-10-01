@@ -17,8 +17,8 @@ _SRC_PATH = os.path.abspath(
   os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir)
 )
 sys.path.insert(0, os.path.join(_SRC_PATH, 'third_party', 'catapult', 'devil'))
-from devil.android import device_utils
-from devil.android import device_errors
+from devil.android import device_utils  # noqa: E402
+from devil.android import device_errors  # noqa: E402
 
 
 def _CreateArgumentParser():

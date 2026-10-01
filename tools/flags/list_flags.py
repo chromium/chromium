@@ -20,7 +20,7 @@ DEPOT_TOOLS_PATH = os.path.join(
 
 sys.path.append(DEPOT_TOOLS_PATH)
 
-import owners_client
+import owners_client  # noqa: E402
 
 
 def keep_never_expires(flags):

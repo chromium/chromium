@@ -10,11 +10,9 @@ See docs/file_format.md for a specification of the file formats.
 import contextlib
 import gzip
 import io
-import itertools
 import json
 import logging
 import os
-import sys
 
 import models
 import parallel

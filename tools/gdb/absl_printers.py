@@ -7,10 +7,10 @@ import gdb
 import gdb.printing
 import os
 
-sys.path.insert(
+sys.path.insert(  # noqa: F821
   1, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'util')
 )
-import reload_helper
+import reload_helper  # noqa: E402
 
 
 # Returns the type of each base class field of type t.

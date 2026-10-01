@@ -11,7 +11,6 @@ from typing import List, Set, Tuple
 import chrome_names
 import class_dependency
 import graph
-import package_dependency
 import print_dependencies_helper
 import serialization
 

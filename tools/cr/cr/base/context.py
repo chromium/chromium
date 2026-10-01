@@ -154,7 +154,7 @@ class Context(cr.config.Config):
     return False
 
   def AddSubParser(self, source):
-    parser = source.AddArguments(self._data.subparsers)
+    parser = source.AddArguments(self._data.subparsers)  # noqa: F841
 
   @classmethod
   def AddCommonArguments(cls, parser):

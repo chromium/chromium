@@ -7,7 +7,6 @@
 """Loops Custom Tabs tests and outputs the results into a CSV file."""
 
 import collections
-import contextlib
 import logging
 import optparse
 import os
@@ -23,16 +22,16 @@ _SRC_PATH = os.path.abspath(
 )
 
 sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'catapult', 'devil'))
-from devil.android import device_errors
-from devil.android import device_utils
-from devil.android import flag_changer
-from devil.android.perf import cache_control
-from devil.android.sdk import intent
+from devil.android import device_errors  # noqa: E402
+from devil.android import device_utils  # noqa: E402
+from devil.android import flag_changer  # noqa: E402
+from devil.android.perf import cache_control  # noqa: E402
+from devil.android.sdk import intent  # noqa: E402
 
 sys.path.append(os.path.join(_SRC_PATH, 'build', 'android'))
-import devil_chromium
+import devil_chromium  # noqa: E402
 
-import chrome_setup
+import chrome_setup  # noqa: E402
 
 
 # Local build of Chrome (not Chromium).

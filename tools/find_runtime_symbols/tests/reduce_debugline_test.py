@@ -13,7 +13,7 @@ import unittest
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, ROOT_DIR)
 
-import reduce_debugline
+import reduce_debugline  # noqa: E402
 
 
 class ReduceDebuglineTest(unittest.TestCase):

@@ -65,7 +65,7 @@ class CompressionScriptTest(unittest.TestCase):
   def _FindArrayRange(self, library_path):
     with open(library_path, 'rb') as f:
       data = f.read()
-    l = data.find(MAGIC_BEGIN)
+    l = data.find(MAGIC_BEGIN)  # noqa: E741
     r = data.find(MAGIC_END) + len(MAGIC_END)
     return l, r
 
@@ -132,7 +132,7 @@ class CompressionScriptTest(unittest.TestCase):
 
   def _RunScript(self, library_path):
     # Finding array borders.
-    l, r = self._FindArrayRange(library_path)
+    l, r = self._FindArrayRange(library_path)  # noqa: E741
     self.assertNotEqual(l, -1)
     self.assertLessEqual(l, r)
 

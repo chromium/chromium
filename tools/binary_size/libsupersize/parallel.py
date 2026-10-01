@@ -4,13 +4,11 @@
 """Helpers related to multiprocessing."""
 
 import builtins
-import itertools
 import logging
 import multiprocessing
 import multiprocessing.dummy
 import os
 import sys
-import threading
 import traceback
 
 from multiprocessing import process

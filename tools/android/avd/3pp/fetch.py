@@ -20,7 +20,6 @@ This script is normally called by 3pp framework from chromium_3pp recipe module.
 import argparse
 import hashlib
 import os
-import re
 import shutil
 import subprocess
 

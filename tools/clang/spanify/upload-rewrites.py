@@ -30,12 +30,13 @@ UNSAFE_BUFFERS_DOCS = None
 
 
 TARGETS = {
-    "chrome":  "chrome",
+    "chrome": "chrome",
     "partition_alloc": "base/allocator/partition_allocator:partition_alloc",
     "dawn": "",
     "skia": "all",
     "angle": "all",
 }
+
 
 def initialize_globals(base_dir=None):
     """Initializes global paths and variables."""

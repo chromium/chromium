@@ -135,7 +135,7 @@ def _main():
       os.path.abspath(options.build_dir), options.target
     )
 
-  if options.build_dir != None:
+  if options.build_dir != None:  # noqa: E711
     build_dir = os.path.abspath(options.build_dir)
   else:
     build_dir = os.getcwd()

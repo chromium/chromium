@@ -9,7 +9,6 @@ import code
 import collections
 import dataclasses
 import logging
-import readline  # Makes code.InteractiveConsole works better.
 
 # R8 disassembly performs best-effort deobfuscation of symbols while dumping
 # DEX bytecode for each class, each method. The high-level structure (in pseudo
@@ -125,7 +124,6 @@ class _WrapPeekableNoNewLine:
     )
 
 
-# pylint: disable=stop-iteration-return
 def _ExtractMethodInfo(it):
   """Extracts coarse method data from R8 DEX dump.
 

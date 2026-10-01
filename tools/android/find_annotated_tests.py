@@ -8,22 +8,19 @@
 import argparse
 import datetime
 import json
-import linecache
 import logging
 import os
-import pprint
 import re
 import sys
-import time
 
 _SRC_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 sys.path.append(os.path.join(_SRC_DIR, 'third_party', 'catapult', 'devil'))
-from devil.utils import cmd_helper
+from devil.utils import cmd_helper  # noqa: E402
 
 sys.path.append(os.path.join(_SRC_DIR, 'build', 'android'))
-from pylib import constants
-from pylib.instrumentation import instrumentation_test_instance
+from pylib import constants  # noqa: E402
+from pylib.instrumentation import instrumentation_test_instance  # noqa: E402
 
 
 _CRBUG_ID_PATTERN = re.compile(r'crbug(?:.com)?/(\d+)')

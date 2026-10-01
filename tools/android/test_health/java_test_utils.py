@@ -13,7 +13,7 @@ from typing import List, Optional
 _TOOLS_ANDROID_PATH = pathlib.Path(__file__).resolve(strict=True).parents[1]
 if str(_TOOLS_ANDROID_PATH) not in sys.path:
     sys.path.append(str(_TOOLS_ANDROID_PATH))
-from python_utils import git_metadata_utils
+from python_utils import git_metadata_utils  # noqa: E402
 
 _CHROMIUM_SRC_PATH = git_metadata_utils.get_chromium_src_path()
 
@@ -28,12 +28,11 @@ _JAVALANG_SRC_PATH = (
 ).resolve(strict=True)
 if str(_JAVALANG_SRC_PATH) not in sys.path:
     sys.path.insert(1, str(_JAVALANG_SRC_PATH))
-import javalang
-from javalang.tree import (
+import javalang  # noqa: E402
+from javalang.tree import (  # noqa: E402
     Annotation,
     ClassDeclaration,
     CompilationUnit,
-    Import,
     MethodDeclaration,
     PackageDeclaration,
 )
@@ -139,7 +138,7 @@ def _get_java_test_health(java_ast: CompilationUnit) -> JavaTestHealth:
     for i in java_ast.imports:
         if (
             'org.chromium.chrome.test.transit.' in i.path
-            and not i.path in SHALLOW_PUBLIC_TRANSIT_DEPS
+            and i.path not in SHALLOW_PUBLIC_TRANSIT_DEPS
         ):
             print(i.path)
             tags.add(_TAG_PUBLIC_TRANSIT)

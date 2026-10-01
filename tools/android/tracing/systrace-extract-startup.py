@@ -126,11 +126,11 @@ class Event(object):
 
   @property
   def timestamp_us(self):
-    return long(self._node['ts'])
+    return long(self._node['ts'])  # noqa: F821
 
   @property
   def duration_us(self):
-    return long(self._node['dur'])
+    return long(self._node['dur'])  # noqa: F821
 
   @property
   def args(self):
@@ -302,7 +302,7 @@ def ParseTrace(file_path):
 
     if category == 'malloc' and name == 'malloc_counter':
       counter_name, counter_value = next(event.args.iteritems())
-      process.malloc_counter_by_name[counter_name] = long(counter_value)
+      process.malloc_counter_by_name[counter_name] = long(counter_value)  # noqa: F821
 
   trace.Finalize()
   return trace

@@ -26,9 +26,7 @@ import json
 import logging
 import multiprocessing
 import os
-import re
 import shutil
-import sys
 import subprocess
 import tempfile
 

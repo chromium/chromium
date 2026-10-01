@@ -6,7 +6,6 @@
 """Prints the large commits given a .csv file from a telemetry size graph."""
 
 # Our version of pylint doesn't know about python3 yet.
-# pylint: disable=unexpected-keyword-arg
 import argparse
 import csv
 import json
@@ -17,14 +16,13 @@ import multiprocessing.dummy
 import subprocess
 import sys
 import tempfile
-import zipfile
 
 _DIR_SOURCE_ROOT = os.path.normpath(
   os.path.join(os.path.dirname(__file__), '../..')
 )
 
 sys.path.insert(1, os.path.join(_DIR_SOURCE_ROOT, 'build/android/pylib'))
-from utils import app_bundle_utils
+from utils import app_bundle_utils  # noqa: E402
 
 _GSUTIL = os.path.join(_DIR_SOURCE_ROOT, 'third_party/depot_tools/gsutil.py')
 _RESOURCE_SIZES = os.path.join(

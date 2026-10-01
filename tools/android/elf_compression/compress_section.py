@@ -60,7 +60,7 @@ OBJCOPY_PATH = (
 )
 
 
-def SegmentContains(main_l, main_r, l, r):
+def SegmentContains(main_l, main_r, l, r):  # noqa: E741
   """Returns true if [l, r) is contained inside [main_l, main_r).
 
   Args:
@@ -159,7 +159,7 @@ def _ParseArguments():
   return parser.parse_args()
 
 
-def _FileRangeToVirtualAddressRange(data, l, r):
+def _FileRangeToVirtualAddressRange(data, l, r):  # noqa: E741
   """Returns virtual address range corresponding to given file range.
 
   Since we have to resolve them by their virtual address, parsing of LOAD
@@ -182,7 +182,7 @@ def _FileRangeToVirtualAddressRange(data, l, r):
   raise RuntimeError('Specified range is outside of all LOAD segments.')
 
 
-def _CopyRangeIntoCompressedSection(data, l, r):
+def _CopyRangeIntoCompressedSection(data, l, r):  # noqa: E741
   """Adds a new section containing compressed version of provided range."""
   compressed_range = compression.CompressData(data[l:r])
 
@@ -321,7 +321,7 @@ def _CreateLoadForCompressedSection(data):
   return new_vaddr, new_vaddr + section_size
 
 
-def _SplitLoadSegmentAndNullifyRange(data, l, r):
+def _SplitLoadSegmentAndNullifyRange(data, l, r):  # noqa: E741
   """Find LOAD segment covering [l, r) and splits it into three segments.
 
   Split is done so one of the LOAD segments contains only [l, r) and nothing
@@ -394,7 +394,7 @@ def _SplitLoadSegmentAndNullifyRange(data, l, r):
   return central_segment_address, central_segment_address + (r - l)
 
 
-def _CutRangeAndCorrectFile(data, l, r):
+def _CutRangeAndCorrectFile(data, l, r):  # noqa: E741
   """Removes [l, r) from the data and fixes offsets to stabilize the ELF."""
   elf = elf_headers.ElfHeader(data)
   # Removing the range from the file:
@@ -475,11 +475,11 @@ def _PatchConstructorBytes(
     data[magic_idx : magic_idx + 8] = new_value_bytes
 
 
-def _ShrinkRangeToAlignVirtualAddress(data, l, r):
+def _ShrinkRangeToAlignVirtualAddress(data, l, r):  # noqa: E741
   virtual_l, virtual_r = _FileRangeToVirtualAddressRange(data, l, r)
   # LOAD segments borders are being rounded to the page size so we have to
   # shrink [l, r) so corresponding virtual addresses are aligned.
-  l += AlignUp(virtual_l) - virtual_l
+  l += AlignUp(virtual_l) - virtual_l  # noqa: E741
   r -= virtual_r - AlignDown(virtual_r)
   return l, r
 

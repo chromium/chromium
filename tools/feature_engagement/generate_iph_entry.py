@@ -207,7 +207,7 @@ def update_feature_configurations_cc(feature_name, description):
 
   config_block = [
     f"  if (kIPH{feature_name}.name == feature->name) {{\n",
-    f"    // TODO: Verify the validity of these restrictions.\n",
+    "    // TODO: Verify the validity of these restrictions.\n",
     "    FeatureConfig config;\n",
     "    config.valid = true;\n\n",
     "    // IPH is always available at start-up.\n",
@@ -218,7 +218,7 @@ def update_feature_configurations_cc(feature_name, description):
     f"    config.trigger = EventConfig(\"{trigger_event}\",\n",
     "                                 Comparator(EQUAL, 0), 360, 360);\n\n",
     "    // IPH will not show for 360 days after ABC event.\n",
-    f"    // TODO: Document what will count as \"used\", you may also\n",
+    "    // TODO: Document what will count as \"used\", you may also\n",
     "    // want to rename this event to be specific to what \"ABC\" is.\n",
     f"    config.used = EventConfig(\"{used_event}\",\n",
     "                              Comparator(EQUAL, 0), 360, 360);\n",
@@ -500,7 +500,7 @@ def update_event_constants_java(feature_name, description):
   used_event_var = used_event_val.upper()
 
   event_block = [
-    f"    /** TODO: Document what this event is. */\n",
+    "    /** TODO: Document what this event is. */\n",
     f"    public static final String {used_event_var} = "
     f"\"{used_event_val}\";\n",
   ]

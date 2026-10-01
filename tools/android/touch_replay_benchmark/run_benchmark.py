@@ -53,20 +53,20 @@ _SRC_PATH = os.path.abspath(
 )
 
 sys.path.append(os.path.join(_SRC_PATH, 'third_party'))
-import pyyaml
+import pyyaml  # noqa: E402
 
 sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'catapult', 'devil'))
-from devil.android import device_errors
-from devil.android import device_utils
-from devil.android import flag_changer
-from devil.android.sdk import intent
+from devil.android import device_errors  # noqa: E402
+from devil.android import device_utils  # noqa: E402
+from devil.android import flag_changer  # noqa: E402
+from devil.android.sdk import intent  # noqa: E402
 
 sys.path.append(os.path.join(_SRC_PATH, 'build', 'android'))
-import devil_chromium
-from pylib import constants
+import devil_chromium  # noqa: E402
+from pylib import constants  # noqa: E402
 
 sys.path.append(os.path.join(_SRC_PATH, 'tools', 'variations'))
-import fieldtrial_util
+import fieldtrial_util  # noqa: E402
 
 _FIELDTRIAL_TESTING_CONFIG = os.path.join(
   _SRC_PATH, 'testing', 'variations', 'fieldtrial_testing_config.json'

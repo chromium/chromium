@@ -11,7 +11,6 @@ import json
 import logging
 import os
 import re
-import shutil
 import subprocess
 import sys
 
@@ -197,7 +196,7 @@ class CoverageReportHtmlGenerator(object):
     def EntryCmp(left, right):
       """Compare function for table entries."""
       if left['is_dir'] != right['is_dir']:
-        return -1 if left['is_dir'] == True else 1
+        return -1 if left['is_dir'] == True else 1  # noqa: E712
 
       return -1 if left['name'] < right['name'] else 1
 

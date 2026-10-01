@@ -9,7 +9,6 @@ import contextlib
 import asyncio
 import signal
 from jinja2 import Template
-from contextlib import ExitStack
 import tempfile
 
 from . import command_line

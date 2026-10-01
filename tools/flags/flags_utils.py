@@ -11,7 +11,7 @@ PYJSON5_PATH = os.path.join(ROOT_PATH, 'third_party', 'pyjson5', 'src')
 
 sys.path.append(PYJSON5_PATH)
 
-import json5
+import json5  # noqa: E402
 
 
 def load_metadata(root_path: os.PathLike[str] = ROOT_PATH):

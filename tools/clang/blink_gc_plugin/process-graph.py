@@ -4,11 +4,16 @@
 # found in the LICENSE file.
 
 from __future__ import print_function
-import argparse, os, sys, json, subprocess, pickle
+import argparse
+import os
+import sys
+import json
+import subprocess
+import pickle
 
 try:
   from StringIO import StringIO  # Python 2
-except:
+except:  # noqa: E722
   from io import StringIO
 
 parser = argparse.ArgumentParser(
@@ -414,7 +419,7 @@ def read_ignored_cycles():
     return
   log("Reading ignored cycles from file: " + args.ignore_cycles)
   block = []
-  for l in open(args.ignore_cycles):
+  for l in open(args.ignore_cycles):  # noqa: E741
     line = l.strip()
     if not line or line.startswith('Found'):
       if len(block) > 0:

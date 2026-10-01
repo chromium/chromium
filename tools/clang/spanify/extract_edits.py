@@ -84,10 +84,7 @@ https://docs.google.com/document/d/1hUPe21CDdbT6_YFHl03KWlcZqhNIPBAfC-5N5DDY2OE/
 """
 
 import sys
-import urllib.parse
 
-import os
-from os.path import expanduser
 from spanify_utils import scratch_dir
 import pprint
 from collections import defaultdict
@@ -237,7 +234,7 @@ def ComputeSizeInfoAvailable(node: Node, sinks: set):
     # Dependencies with `size_info_available == None` are nodes that are part
     # of an isolated cycle. Isolated cycle are rewritten.
     node.size_info_available = not any(
-        neighbour.size_info_available == False
+        neighbour.size_info_available == False  # noqa: E712
         for neighbour in node.neighbors_directed
     )
 
@@ -280,7 +277,7 @@ def assert_valid_replacement(replacement: str):
                 )
         else:
             assert len(parts) == 5
-    except:
+    except:  # noqa: E722
         # Augment the error with the replacement text for better debugging.
         assert False, f"Invalid replacement: \"{replacement}\""
 

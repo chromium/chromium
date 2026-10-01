@@ -9,11 +9,8 @@ import code
 import functools
 import io
 import logging
-import os
 import re
-import readline  # Makes code.InteractiveConsole works better.
 import subprocess
-import sys
 import tempfile
 import zipfile
 

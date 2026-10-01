@@ -25,7 +25,7 @@ _NODE_PATH = (
   _HERE_DIR.parent.parent.parent.parent.parent / 'third_party' / 'node'
 ).resolve()
 sys.path.append(str(_NODE_PATH))
-import node
+import node  # noqa: E402
 
 
 class CreateSourceMapsTest(unittest.TestCase):

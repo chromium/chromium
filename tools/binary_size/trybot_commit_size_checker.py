@@ -498,8 +498,8 @@ def main():
   before_path = pathlib.Path(args.before_dir)
   after_path = pathlib.Path(args.after_dir)
 
-  before_path_resolver = lambda p: str(before_path / os.path.basename(p))
-  after_path_resolver = lambda p: str(after_path / os.path.basename(p))
+  before_path_resolver = lambda p: str(before_path / os.path.basename(p))  # noqa: E731
+  after_path_resolver = lambda p: str(after_path / os.path.basename(p))  # noqa: E731
 
   if args.local_test:
     config_path = args.size_config_json_name

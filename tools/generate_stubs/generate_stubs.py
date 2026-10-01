@@ -1116,7 +1116,7 @@ def EnsureDirExists(dir):
   since the existence check."""
   try:
     os.makedirs(dir)
-  except:
+  except:  # noqa: E722
     if not os.path.isdir(dir):
       raise
 

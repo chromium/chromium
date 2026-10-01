@@ -36,7 +36,6 @@ Examples:
 
 import argparse
 import json
-import os
 import pathlib
 import re
 import shutil
@@ -114,7 +113,7 @@ class GitHelper:
             try:
                 print(f"Cherry-picking local commit: {commit}")
                 self.run_cmd(["git", "cherry-pick", commit])
-            except Exception as e:
+            except Exception:
                 print(
                     f"Error cherry-picking commit {commit}. You may need to "
                     "rebase your branch.",

@@ -3,7 +3,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import argparse
 import os
 import unittest
 from unittest import mock
@@ -509,7 +508,7 @@ class FindTestTargetsTest(TestCase):
       "//chrome/test:unit_tests",
       "//chrome/test:browser_tests",
     ]
-    with mock.patch('utils.IsGeminiCli', return_value=True) as mock_pick:
+    with mock.patch('utils.IsGeminiCli', return_value=True) as mock_pick:  # noqa: F841
       orig_paths = ['foo.cc']
       with self.assertRaises(SystemExit):
         target_finder.FindTestTargets(

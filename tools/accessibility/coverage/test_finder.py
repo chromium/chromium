@@ -30,17 +30,17 @@ NOT_CHROME_ERROR = (
 )
 try:
   file = open('./DIR_METADATA', 'r')
-  if not 'project: "chromium"' in file.read():
+  if 'project: "chromium"' not in file.read():
     print(NOT_CHROME_ERROR)
     exit()
 except IOError:
   print(NOT_CHROME_ERROR)
   exit()
 
-from third_party.blink.tools.blinkpy.w3c.directory_owners_extractor import (
+from third_party.blink.tools.blinkpy.w3c.directory_owners_extractor import (  # noqa: E402
   DirectoryOwnersExtractor,
 )
-from third_party.blink.tools.blinkpy.common.host import Host
+from third_party.blink.tools.blinkpy.common.host import Host  # noqa: E402
 
 # CONSTANTS
 DIR_METADATA = 'DIR_METADATA'
@@ -185,17 +185,17 @@ class TestFinder(argparse.Namespace):
       for m in matches:
         new_suites.add(m[1])
         # Check for disabled and maybe tests
-        if m[2] != None and m[2].startswith('DISABLED'):
+        if m[2] != None and m[2].startswith('DISABLED'):  # noqa: E711
           disabled = self.disabled_tests.get(relPath)
           self.total_disabled += 1
-          if disabled == None:
+          if disabled == None:  # noqa: E711
             disabled = []
             self.disabled_tests[relPath] = disabled
           disabled.append(m[1] + "." + m[2])
-        elif m[2] != None and m[2].startswith('MAYBE'):
+        elif m[2] != None and m[2].startswith('MAYBE'):  # noqa: E711
           self.total_maybe += 1
           maybe = self.maybe_tests.get(relPath)
-          if maybe == None:
+          if maybe == None:  # noqa: E711
             maybe = []
             self.maybe_tests[relPath] = maybe
           maybe.append(m[1] + "." + m[2])
@@ -250,10 +250,10 @@ class TestFinder(argparse.Namespace):
     component = self.get_component_for_dir(cur_dir, DIR_METADATA)
     using_common_metadata = False
     # If the component is in common metadata, it should pass through to sub dir.
-    if component == None and common_component == None:
+    if component == None and common_component == None:  # noqa: E711
       component = self.get_component_for_dir(cur_dir, COMMON_METADATA)
       using_common_metadata = True
-    if component != None:
+    if component != None:  # noqa: E711
       allowed = self.comps.__len__() == 0
       for comp_glob in self.comps:
         result = fnmatch.filter([component], comp_glob)
@@ -263,7 +263,7 @@ class TestFinder(argparse.Namespace):
       if allowed:
         tests_for_comp = self.component_map.get(component)
         # If the component isn't in the map yet, add it
-        if tests_for_comp == None:
+        if tests_for_comp == None:  # noqa: E711
           tests_for_comp = list()
           self.component_map[component] = tests_for_comp
         self.get_test_suites_for_dir(cur_dir, tests_for_comp)

@@ -5,7 +5,6 @@
 
 import ast
 import itertools
-import os
 import unittest
 
 import bcanalyzer

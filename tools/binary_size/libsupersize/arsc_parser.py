@@ -18,7 +18,6 @@ import logging
 import functools
 import os
 import re
-import struct
 import sys
 import zipfile
 
@@ -587,7 +586,7 @@ class ArscResTablePackage(ArscChunk):
           self.key_pool = chunk
           self.key_pool.role = 'keys'
         else:
-          logging.warning('Unexpected string pool at %08X.' % t.address)
+          logging.warning('Unexpected string pool at %08X.' % t.address)  # noqa: F821
       cur_addr = chunk.end_addr
 
   def __str__(self):

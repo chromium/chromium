@@ -22,7 +22,7 @@ import sys
 import shutil
 import tempfile
 
-from multiprocessing import Process, Manager, cpu_count, Pool
+from multiprocessing import Manager, cpu_count, Pool
 from typing import Mapping, Sequence, Optional
 
 WHOLE_CORPUS_TIMEOUT_SECS = 1200
@@ -312,7 +312,7 @@ def _profdata_merge(inputs: Sequence[str], output: str) -> bool:
   try:
     subprocess.check_call(llvm_profdata_cmd)
     return True
-  except Exception as e:
+  except Exception:
     # TODO(crbug.com/328849489: investigate failures
     logging.warning("profdata merge failed, treating this target as failed")
   finally:
@@ -347,7 +347,7 @@ def _run_and_log(
     )
     return True
   except Exception as e:
-    if type(e) == subprocess.TimeoutExpired:
+    if type(e) == subprocess.TimeoutExpired:  # noqa: E721
       logging.warning(
         'Command %s (%s) timed out after %s seconds', cmd, annotation, e.timeout
       )
@@ -671,7 +671,7 @@ def _run_testcases(
       whether it succeeded or not.
   """
   profraw_dir = tempfile.TemporaryDirectory()
-  profraw_file = os.path.join(profraw_dir.name, f'testcase_strategy_%p.profraw')
+  profraw_file = os.path.join(profraw_dir.name, 'testcase_strategy_%p.profraw')
   env['LLVM_PROFILE_FILE'] = profraw_file
   failures = 0
   total_runs = 0
@@ -1039,7 +1039,7 @@ def main():
   num_targets = len(all_target_details)
   logging.info('Running %d fuzzers across %d CPUs', num_targets, num_cpus)
   with Pool(num_cpus) as p:
-    results = p.map(
+    results = p.map(  # noqa: F841
       _run_fuzzer_target,
       [
         (target_details, verified_fuzzer_targets, failed_targets, num_targets)
@@ -1070,7 +1070,7 @@ def main():
     logging.info(cmd)
     try:
       subprocess.check_call(cmd)
-    except:
+    except:  # noqa: E722
       logging.warning('Warning: failed to copy profdata for %s', fuzzer)
 
 

@@ -70,7 +70,7 @@ namespace flags {
   for feature in features:
     body += f'BASE_FEATURE(k{feature[1]},\n'
     body += f'             "{feature[1]}",\n'
-    body += f'             base::FEATURE_DISABLED_BY_DEFAULT);\n\n'
+    body += '             base::FEATURE_DISABLED_BY_DEFAULT);\n\n'
 
   body += """// Returns the unexpire feature for the given mstone, if any.
 const base::Feature* GetUnexpireFeatureForMilestone(int milestone) {

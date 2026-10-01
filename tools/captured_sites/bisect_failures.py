@@ -74,11 +74,11 @@ def _AddDirToPythonPath(*path_parts):
 
 
 _AddDirToPythonPath(_TOOLS_DIR, 'bisect')
-import bisect_gtests
+import bisect_gtests  # noqa: E402
 
 _AddDirToPythonPath(_TOOLS_DIR, 'perf')
-from core.services import buildbucket_service
-from core.services import resultdb_service
+from core.services import buildbucket_service  # noqa: E402
+from core.services import resultdb_service  # noqa: E402
 
 
 def _FindSiteRegressions(bad_buildbucket_id, good_buildbucket_id):

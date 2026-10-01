@@ -70,7 +70,7 @@ class _ResourceSourceMapper:
   @staticmethod
   def _ParseResInfoFile(res_info_path):
     with open(res_info_path, 'r') as info_file:
-      return dict(l.rstrip().split('\t') for l in info_file)
+      return dict(l.rstrip().split('\t') for l in info_file)  # noqa: E741
 
   def _LoadResInfo(self, size_info_prefix):
     apk_res_info_path = size_info_prefix + '.res.info'

@@ -19,11 +19,11 @@ import sys
 _SRC_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 sys.path.append(os.path.join(_SRC_PATH, 'third_party', 'catapult', 'devil'))
-from devil.android import device_errors
-from devil.android import device_utils
+from devil.android import device_errors  # noqa: E402
+from devil.android import device_utils  # noqa: E402
 
 sys.path.append(os.path.join(_SRC_PATH, 'build', 'android'))
-import devil_chromium
+import devil_chromium  # noqa: E402
 
 
 def _run_adb_shell_command(device, cmd):
@@ -168,7 +168,7 @@ def _parse_dmabuf_dump(content, pid_map=None):
   # Per-process breakdown
   process_blocks = re.split(r'-{5,}', content)
   for block in process_blocks:
-    lines = [l.strip() for l in block.strip().splitlines() if l.strip()]
+    lines = [l.strip() for l in block.strip().splitlines() if l.strip()]  # noqa: E741
     if not lines:
       continue
 

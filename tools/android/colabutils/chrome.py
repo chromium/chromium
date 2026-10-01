@@ -5,7 +5,6 @@
 import shlex
 import contextlib
 from enum import Enum
-import typing
 
 from . import command_line
 

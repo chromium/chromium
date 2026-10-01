@@ -18,20 +18,16 @@ that apply to files that are not covered by git.
 
 import argparse
 import collections
-import functools
-import multiprocessing
 import os
 import os.path
 import re
-import subprocess
 import sys
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 tool_dir = os.path.abspath(os.path.join(script_dir, '../pylib'))
 sys.path.insert(0, tool_dir)
 
-from clang import compile_db
-import run_tool
+import run_tool  # noqa: E402
 
 Edit = collections.namedtuple(
   'Edit', ('edit_type', 'offset', 'length', 'replacement')

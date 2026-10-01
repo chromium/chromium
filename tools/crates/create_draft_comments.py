@@ -22,7 +22,7 @@ from create_update_cl import Git
 
 DEPOT_TOOLS_PATH = os.path.dirname(shutil.which('gclient'))
 sys.path.insert(0, DEPOT_TOOLS_PATH)
-from gerrit_util import CreateHttpConn, ReadHttpJsonResponse
+from gerrit_util import CreateHttpConn, ReadHttpJsonResponse  # noqa: E402
 
 
 class DraftCreator:
@@ -37,7 +37,7 @@ class DraftCreator:
         """
 
         url_path = f'changes/{self.gerrit_issue}/revisions/current/drafts'
-        body: Dict[str, Any] = {
+        body: Dict[str, Any] = {  # noqa: F821
             'path': str(path),
             'line': int(line),
             'message': message,
@@ -47,7 +47,7 @@ class DraftCreator:
         conn = CreateHttpConn(
             self.gerrit_host, url_path, reqtype='PUT', body=body
         )
-        response = ReadHttpJsonResponse(conn, accept_statuses=[200, 201])
+        response = ReadHttpJsonResponse(conn, accept_statuses=[200, 201])  # noqa: F841
 
 
 def main():

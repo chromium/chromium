@@ -16,7 +16,7 @@ import sys
 _SRC_ROOT = pathlib.Path(__file__).parents[3]
 sys.path.insert(1, str(_SRC_ROOT / 'build/android/gyp'))
 
-import check_for_missing_direct_deps
+import check_for_missing_direct_deps  # noqa: E402
 
 _CHROME_JAVA_SOURCES = 'gen/chrome/android/chrome_java.sources'
 

@@ -7,10 +7,10 @@ import gdb
 import gdb.printing
 import os
 
-sys.path.insert(
+sys.path.insert(  # noqa: F821
   1, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'util')
 )
-import reload_helper
+import reload_helper  # noqa: E402
 
 
 class RefPrinter:
@@ -230,7 +230,7 @@ class NodeLinkPrinter:
       node_ptr = self.val['node_']['ptr_']
       node_name = str(node_ptr['assigned_name_'])
       yield 'node_', f'Ref to (ipcz::Node *) {node_ptr} with {node_name}'
-    except:
+    except:  # noqa: E722
       yield 'node_', 'unknown'
     important_members = [
       'remote_node_type_',

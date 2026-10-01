@@ -4,9 +4,8 @@
 
 import click
 import functools
-import os
 
-from dataclasses import dataclass, fields
+from dataclasses import dataclass
 
 import utils
 

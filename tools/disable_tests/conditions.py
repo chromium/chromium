@@ -11,7 +11,6 @@ representation within any particular test format.
 import collections
 import functools
 import itertools
-import types
 from typing import List, Optional, Union, Set, Tuple
 
 import errors

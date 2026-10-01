@@ -12,7 +12,7 @@ script_dir = os.path.dirname(os.path.realpath(__file__))
 tool_dir = os.path.abspath(os.path.join(script_dir, '../../pylib'))
 sys.path.insert(0, tool_dir)
 
-from clang import plugin_testing
+from clang import plugin_testing  # noqa: E402
 
 
 class BlinkGcPluginTest(plugin_testing.ClangPluginTest):

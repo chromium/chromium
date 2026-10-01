@@ -28,7 +28,7 @@ _SRC_PATH = os.path.abspath(
 )
 
 sys.path.append(os.path.join(_SRC_PATH, 'tools', 'cygprofile'))
-import symbol_extractor
+import symbol_extractor  # noqa: E402
 
 _PAGE_SIZE = 1 << 12
 _PAGE_MASK = ~(_PAGE_SIZE - 1)

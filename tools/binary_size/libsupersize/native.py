@@ -14,7 +14,6 @@ import os
 import posixpath
 import re
 import subprocess
-import sys
 import tempfile
 
 import ar
@@ -661,7 +660,7 @@ def _AddUnattributedSectionSymbols(raw_symbols, section_ranges, source_path):
     sym = None  # Needed for pylint.
     for sym in group:
       pass
-    end_address = sym.end_address  # pylint: disable=undefined-loop-variable
+    end_address = sym.end_address
     section_range = section_ranges.get(section_name)
     if not section_range:
       logging.warning(

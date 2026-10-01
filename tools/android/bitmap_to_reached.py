@@ -17,7 +17,7 @@ _SRC_PATH = os.path.abspath(
 )
 path = os.path.join(_SRC_PATH, 'tools', 'cygprofile')
 sys.path.append(path)
-import process_profiles
+import process_profiles  # noqa: E402
 
 SIZEOF_INT = 4
 BITS_IN_INT = SIZEOF_INT * 8
@@ -40,7 +40,7 @@ def _DumpToOffsets(filename):
     bitfield = f.read()
   assert len(bitfield) % SIZEOF_INT == 0
   count = len(bitfield) / SIZEOF_INT
-  for i in xrange(count):
+  for i in xrange(count):  # noqa: F821
     entry = struct.unpack_from('<I', bitfield, offset=i * SIZEOF_INT)[0]
     for bit in range(BITS_IN_INT):
       if entry & (1 << bit):
