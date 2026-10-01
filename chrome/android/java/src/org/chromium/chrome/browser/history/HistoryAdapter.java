@@ -91,7 +91,6 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private boolean mClearBrowsingDataButtonVisible;
     private boolean mHistorySyncPromoVisible;
     private boolean mFindsPromoVisible;
-    private boolean mFindsPromoShowEligible;
     private String mQueryText = EMPTY_QUERY;
     // Hostname currently chosen for host filtering (either via the Page Info UI or the host
     // filter chip). If null, ignored when querying history.
@@ -857,8 +856,8 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
 
     /**
      * Checks whether the finds promo is eligible to show, through an async call for notification
-     * channels. Update the eligibility cached tracker and if eligible, refresh the set of headers.
-     * Setting the headers will update the visibility tracker separately.
+     * channels, and if eligible, refreshes the set of headers. Setting the headers will update the
+     * visibility tracker separately.
      *
      * @param profile The current user profile.
      */
@@ -866,7 +865,6 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         FindsUtils.checkShowCriteriaOptInPromo(
                 profile,
                 (show) -> {
-                    mFindsPromoShowEligible = show;
                     if (show || FindsFeatures.sAlwaysShowOptInPromo.getValue()) {
                         // Only update the Finds Promo visibility here since there is no need to
                         // rerun this logic if there are any dynamic changes to other promos.

@@ -121,7 +121,6 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     private boolean mFirstDrawComplete;
 
     private @Nullable Runnable mOnInflationCompleteCallback;
-    private boolean mInitialLayoutInflationComplete;
 
     // See enableHardwareAcceleration()
     private boolean mSetWindowHWA;
@@ -973,12 +972,6 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         if (mOnInflationCompleteCallback == null) return;
         mOnInflationCompleteCallback.run();
         mOnInflationCompleteCallback = null;
-        mInitialLayoutInflationComplete = true;
-    }
-
-    /** Returns whether initial inflation is complete. */
-    public boolean isInitialLayoutInflationComplete() {
-        return mInitialLayoutInflationComplete;
     }
 
     /**

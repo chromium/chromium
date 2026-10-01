@@ -39,7 +39,6 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.DeviceInfo;
 import org.chromium.base.IntentUtils;
-import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.OneshotSupplier;
@@ -167,8 +166,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     private static final boolean sPreventTouches =
             Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU;
 
-    private static Integer sOverrideCoreCountForTesting;
-
     private final CipherFactory mCipherFactory = new CipherFactory();
 
     private BaseCustomTabRootUiCoordinator mBaseCustomTabRootUiCoordinator;
@@ -282,11 +279,6 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
     // TODO(ianwen, yusufo): Figure out a solution to extract external resources without having to
     // change the package name.
     protected boolean mShouldOverridePackage;
-
-    public static void setOverrideCoreCountForTesting(int coreCount) {
-        sOverrideCoreCountForTesting = coreCount;
-        ResettersForTesting.register(() -> sOverrideCoreCountForTesting = null);
-    }
 
     /** Builds {@link BrowserServicesIntentDataProvider} for this {@link CustomTabActivity}. */
     protected BrowserServicesIntentDataProvider buildIntentDataProvider(
