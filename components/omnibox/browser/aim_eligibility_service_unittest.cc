@@ -26,7 +26,9 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/variations/pref_names.h"
 #include "components/variations/scoped_variations_ids_provider.h"
+#include "net/base/net_errors.h"
 #include "net/base/url_util.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -121,6 +123,36 @@ class AimEligibilityServiceTest : public testing::Test {
   }
 
   void TearDown() override { aim_eligibility_service_ = nullptr; }
+
+  // Fails the single pending eligibility request with `net_error`.
+  // `NumPending()` runs until idle, so posted startup requests are sent first.
+  void FailPendingRequestWithNetError(int net_error) {
+    ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        test_url_loader_factory_.GetPendingRequest(0)->request.url,
+        network::URLLoaderCompletionStatus(net_error),
+        network::mojom::URLResponseHead::New(), "");
+  }
+
+  // Fails the single pending eligibility request with HTTP status `status`.
+  void FailPendingRequestWithHttpStatus(net::HttpStatusCode status) {
+    ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        test_url_loader_factory_.GetPendingRequest(0)->request.url.spec(), "",
+        status);
+  }
+
+  // Responds to the single pending eligibility request with a valid response.
+  void SucceedPendingRequest() {
+    ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+    omnibox::AimEligibilityResponse response;
+    response.set_is_eligible(true);
+    std::string response_string;
+    response.SerializeToString(&response_string);
+    test_url_loader_factory_.SimulateResponseForPendingRequest(
+        test_url_loader_factory_.GetPendingRequest(0)->request.url.spec(),
+        response_string, net::HTTP_OK);
+  }
 
  protected:
   base::test::TaskEnvironment task_environment_{
@@ -1059,4 +1091,184 @@ TEST_F(AimEligibilityServiceTest,
   task_environment_.FastForwardBy(
       omnibox::kAimEligibilityServiceDebounceDelay.Get());
   EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+}
+
+TEST_F(AimEligibilityServiceTest, StartupRequestTransientFailureRetries) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {omnibox::kAimEnabled, omnibox::kAimServerRequestOnStartupEnabled},
+      {omnibox::kAimStartupRequestDelayedUntilNetworkAvailableEnabled,
+       omnibox::kAimEligibilityServiceDebounce});
+
+  // Re-create service with features enabled to trigger startup request.
+  test_url_loader_factory_.pending_requests()->clear();
+  CreateService();
+
+  // Verify initial request is pending.
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+
+  // Simulate network failure.
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      test_url_loader_factory_.GetPendingRequest(0)->request.url,
+      network::URLLoaderCompletionStatus(net::ERR_CONNECTION_REFUSED),
+      network::mojom::URLResponseHead::New(), "");
+
+  // Retry should be scheduled. Timer is running.
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+  // Initial delay is 1s, with 20% jitter it is 800ms - 1200ms.
+  // Fast forward by 1200ms.
+  task_environment_.FastForwardBy(base::Milliseconds(1200));
+
+  // Verify retry request is pending.
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+
+  // Simulate second failure.
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      test_url_loader_factory_.GetPendingRequest(0)->request.url,
+      network::URLLoaderCompletionStatus(net::ERR_CONNECTION_REFUSED),
+      network::mojom::URLResponseHead::New(), "");
+
+  // Second retry should be scheduled with 2s delay (1600ms - 2400ms jitter).
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+  // Fast forward by 1200ms (should NOT trigger retry yet).
+  task_environment_.FastForwardBy(base::Milliseconds(1200));
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 0);
+
+  // Fast forward by another 1200ms (total 2400ms, should trigger retry).
+  task_environment_.FastForwardBy(base::Milliseconds(1200));
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 1);
+
+  // Simulate success.
+  omnibox::AimEligibilityResponse response;
+  response.set_is_eligible(true);
+  std::string response_string;
+  response.SerializeToString(&response_string);
+
+  test_url_loader_factory_.SimulateResponseForPendingRequest(
+      test_url_loader_factory_.GetPendingRequest(0)->request.url.spec(),
+      response_string, net::HTTP_OK);
+
+  // Verify no more retries are pending.
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 0);
+  task_environment_.FastForwardBy(base::Seconds(10));
+  ASSERT_EQ(test_url_loader_factory_.NumPending(), 0);
+}
+
+// HTTP client errors are permanent, so the startup request is not retried.
+TEST_F(AimEligibilityServiceTest, StartupRequestNotRetriedOnHttpClientError) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {omnibox::kAimEnabled, omnibox::kAimServerRequestOnStartupEnabled},
+      {omnibox::kAimStartupRequestDelayedUntilNetworkAvailableEnabled,
+       omnibox::kAimEligibilityServiceDebounce});
+  test_url_loader_factory_.pending_requests()->clear();
+  CreateService();
+
+  FailPendingRequestWithHttpStatus(net::HTTP_NOT_FOUND);
+  task_environment_.FastForwardBy(base::Minutes(10));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+}
+
+// HTTP 5xx and 429 responses are transient, so the startup request is retried.
+TEST_F(AimEligibilityServiceTest, StartupRequestRetriedOnServerErrors) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {omnibox::kAimEnabled, omnibox::kAimServerRequestOnStartupEnabled},
+      {omnibox::kAimStartupRequestDelayedUntilNetworkAvailableEnabled,
+       omnibox::kAimEligibilityServiceDebounce});
+  test_url_loader_factory_.pending_requests()->clear();
+  CreateService();
+
+  FailPendingRequestWithHttpStatus(net::HTTP_SERVICE_UNAVAILABLE);
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  task_environment_.FastForwardBy(base::Minutes(1));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+
+  FailPendingRequestWithHttpStatus(net::HTTP_TOO_MANY_REQUESTS);
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+  task_environment_.FastForwardBy(base::Minutes(1));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 1);
+
+  SucceedPendingRequest();
+  task_environment_.FastForwardBy(base::Minutes(10));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+}
+
+// The startup request stops being retried after the maximum number of retries.
+TEST_F(AimEligibilityServiceTest, StartupRequestRetriesAreCapped) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{omnibox::kAimEnabled, {}},
+       {omnibox::kAimServerRequestOnStartupEnabled, {}},
+       {omnibox::kAimEligibilityStartupRetryEnabled, {{"max_attempts", "2"}}}},
+      {omnibox::kAimStartupRequestDelayedUntilNetworkAvailableEnabled,
+       omnibox::kAimEligibilityServiceDebounce});
+  test_url_loader_factory_.pending_requests()->clear();
+  CreateService();
+
+  // The initial request and two retries fail.
+  for (int i = 0; i < 2; ++i) {
+    FailPendingRequestWithNetError(net::ERR_CONNECTION_REFUSED);
+    task_environment_.FastForwardBy(base::Minutes(1));
+  }
+  FailPendingRequestWithNetError(net::ERR_CONNECTION_REFUSED);
+
+  // No further retries are scheduled.
+  task_environment_.FastForwardBy(base::Minutes(10));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+}
+
+// The startup request is not retried when the kill switch is disabled.
+TEST_F(AimEligibilityServiceTest, StartupRequestNotRetriedWhenFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {omnibox::kAimEnabled, omnibox::kAimServerRequestOnStartupEnabled},
+      {omnibox::kAimStartupRequestDelayedUntilNetworkAvailableEnabled,
+       omnibox::kAimEligibilityServiceDebounce,
+       omnibox::kAimEligibilityStartupRetryEnabled});
+  test_url_loader_factory_.pending_requests()->clear();
+  CreateService();
+
+  FailPendingRequestWithNetError(net::ERR_CONNECTION_REFUSED);
+  task_environment_.FastForwardBy(base::Minutes(10));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+}
+
+// Requests from sources other than startup are not retried.
+TEST_F(AimEligibilityServiceTest, NonStartupRequestNotRetried) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {omnibox::kAimEnabled, omnibox::kAimServerRequestOnStartupEnabled},
+      {omnibox::kAimStartupRequestDelayedUntilNetworkAvailableEnabled,
+       omnibox::kAimEligibilityServiceDebounce});
+  test_url_loader_factory_.pending_requests()->clear();
+  CreateService();
+  SucceedPendingRequest();
+
+  aim_eligibility_service_->FetchEligibility(
+      AimEligibilityService::RequestSource::kUser);
+  FailPendingRequestWithNetError(net::ERR_CONNECTION_REFUSED);
+  task_environment_.FastForwardBy(base::Minutes(10));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
+}
+
+// A successful request from another source cancels a pending startup retry.
+TEST_F(AimEligibilityServiceTest, SuccessfulRequestCancelsStartupRetry) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {omnibox::kAimEnabled, omnibox::kAimServerRequestOnStartupEnabled},
+      {omnibox::kAimStartupRequestDelayedUntilNetworkAvailableEnabled,
+       omnibox::kAimEligibilityServiceDebounce});
+  test_url_loader_factory_.pending_requests()->clear();
+  CreateService();
+
+  FailPendingRequestWithNetError(net::ERR_CONNECTION_REFUSED);
+  aim_eligibility_service_->FetchEligibility(
+      AimEligibilityService::RequestSource::kUser);
+  SucceedPendingRequest();
+
+  task_environment_.FastForwardBy(base::Minutes(10));
+  EXPECT_EQ(test_url_loader_factory_.NumPending(), 0);
 }

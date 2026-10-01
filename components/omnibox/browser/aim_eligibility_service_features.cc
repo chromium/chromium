@@ -41,6 +41,11 @@ BASE_FEATURE(kAimServerRequestOnStartupEnabled,
 BASE_FEATURE(kAimStartupRequestDelayedUntilNetworkAvailableEnabled,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kAimEligibilityStartupRetryEnabled,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+const base::FeatureParam<int> kAimEligibilityStartupRetryMaxAttempts{
+    &kAimEligibilityStartupRetryEnabled, "max_attempts", 5};
+
 BASE_FEATURE(kAimServerRequestOnIdentityChangeEnabled,
              base::FEATURE_ENABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kRequestOnCookieJarChanges{

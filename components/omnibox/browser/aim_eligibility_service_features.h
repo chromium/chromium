@@ -51,6 +51,12 @@ BASE_DECLARE_FEATURE(kAimServerRequestOnStartupEnabled);
 // If enabled, delays the startup server request until the network is available.
 BASE_DECLARE_FEATURE(kAimStartupRequestDelayedUntilNetworkAvailableEnabled);
 
+// If enabled, retries the startup server request with exponential backoff when
+// it fails due to a transient error (network error, 5xx, or 429).
+BASE_DECLARE_FEATURE(kAimEligibilityStartupRetryEnabled);
+// The maximum number of retries of the startup server request.
+extern const base::FeatureParam<int> kAimEligibilityStartupRetryMaxAttempts;
+
 // If enabled, makes a server request on identity changes.
 BASE_DECLARE_FEATURE(kAimServerRequestOnIdentityChangeEnabled);
 // Parameters that control whether to make a server request on cookie jar or
