@@ -454,4 +454,56 @@ IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshBrowserTest,
   EXPECT_EQ(web_contents->GetLastCommittedURL(), start_url);
 }
 
+// Tests that when an unsandboxed frame in the captive portal sign-in window
+// triggers a popup that is blocked (leaving `params.browser` null on the stored
+// `NavigateParams`) and the user later replays it, `NavigateImpl()` resolves
+// `params->browser` from `params->source_contents` and navigates the captive
+// portal sign-in window's current tab in-place.
+IN_PROC_BROWSER_TEST_F(NetworkPortalSigninWindowAshBrowserTest,
+                       NavigateBlockedPopupFromUnsandboxedFrame) {
+  net::test_server::ControllableHttpResponse embedder_response(
+      embedded_test_server(), "/embedder.html");
+  net::test_server::ControllableHttpResponse target_response(
+      embedded_test_server(), "/target.html");
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  auto* const portal_signin_window = NetworkPortalSigninWindow::Get();
+  const GURL start_url = embedded_test_server()->GetURL("/embedder.html");
+
+  portal_signin_window->Show(start_url);
+
+  embedder_response.WaitForRequest();
+  embedder_response.Send(net::HTTP_OK, "text/html",
+                         "<html><body></body></html>");
+  embedder_response.Done();
+
+  content::WebContents* const web_contents =
+      portal_signin_window->GetWebContentsForTesting();
+  ASSERT_TRUE(web_contents);
+  content::WaitForLoadStop(web_contents);
+
+  auto* const popup_blocker =
+      blocked_content::PopupBlockerTabHelper::FromWebContents(web_contents);
+  ASSERT_TRUE(popup_blocker);
+  EXPECT_TRUE(content::ExecJs(web_contents,
+                              "window.open('/target.html', '_blank');",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_EQ(popup_blocker->GetBlockedPopupsCount(), 1u);
+
+  content::TestNavigationObserver nav_observer(web_contents);
+  popup_blocker->ShowAllBlockedPopups();
+
+  target_response.WaitForRequest();
+  target_response.Send(net::HTTP_OK, "text/html",
+                       "<html><body>Target</body></html>");
+  target_response.Done();
+
+  nav_observer.Wait();
+  EXPECT_EQ(web_contents->GetLastCommittedURL(),
+            embedded_test_server()->GetURL("/target.html"));
+  EXPECT_EQ(
+      portal_signin_window->GetBrowserForTesting()->GetTabStripModel()->count(),
+      1);
+}
+
 }  // namespace chromeos

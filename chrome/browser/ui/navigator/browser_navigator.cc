@@ -610,6 +610,14 @@ base::WeakPtr<content::NavigationHandle> NavigateImpl(
       !IncognitoModeForced(params->initiating_profile)) {
     // Navigation outside of the current tab or the initial popup window from a
     // captive portal signin window should be prevented.
+    if (!params->browser && params->source_contents) {
+      if (tabs::TabInterface* const tab =
+              tabs::TabInterface::MaybeGetFromContents(
+                  params->source_contents)) {
+        params->browser = tab->GetBrowserWindowInterface();
+        source_browser = params->browser;
+      }
+    }
     params->disposition = [&]() {
       // If a new WebContents was already created (e.g., `window.open()`),
       // CURRENT_TAB cannot merge an existing WebContents into
