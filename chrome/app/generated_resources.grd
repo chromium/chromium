@@ -8687,8 +8687,23 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_COMPOSE_ENTRYPOINT_A11Y_LABEL" desc="The accessibility label for the compose entrypoint in the searchbox on the New Tab Page." formatter_data="android_java">
         Ask AI Mode in Google Search
       </message>
+      <message name="IDS_NTP_COMPOSE_ENTRYPOINT_SHORTENED_A11Y_LABEL" desc="The accessibility label for the AI Mode button in a searchbox (Omnibox, Realbox) to enter AI Mode search.">
+        Ask in AI Mode
+      </message>
+      <message name="IDS_NTP_COMPOSE_EXIT_A11Y_LABEL" desc="The accessibility label for the AI Mode button in a searchbox (Omnibox, Realbox) to exit AI Mode search.">
+        Exit AI Mode
+      </message>
+      <message name="IDS_NTP_COMPOSE_SEND_A11Y_LABEL" desc="The accessibility label for the AI Mode button in a searchbox (Omnibox, Realbox) to submit the query.">
+        Ask in AI Mode
+      </message>
       <message name="IDS_NTP_COMPOSE_PLACEHOLDER_TEXT" desc="The placeholder for the input in the compose box.">
         Ask AI Mode
+      </message>
+      <message name="IDS_NTP_COMPOSE_PLACEHOLDER_TEXT_GREETING_NO_NAME" desc="The placeholder text for the searchbox input (Omnibox, Realbox) in AI Mode. Shown when the user is signed out.">
+        Hi, what's on your mind?
+      </message>
+      <message name="IDS_NTP_COMPOSE_PLACEHOLDER_TEXT_GREETING_NAMED" desc="The placeholder text for the searchbox input (Omnibox, Realbox) in AI Mode. Shown when the user is signed in.">
+        Hi <ph name="FIRST_NAME">$1<ex>Camille</ex></ph>, what's on your mind?
       </message>
       <message name="IDS_NTP_COMPOSE_CANCEL_BUTTON_A11Y_LABEL" desc="The accessibility label for the cancel button on the compose box when there is no input." formatter_data="android_java">
         Dismiss
