@@ -2,17 +2,18 @@
 # Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""Unit tests for test_env.py functionality.
+"""Unit tests for test_env.py and its generated script_test wrapper.
 
-Each unit test is launches python process that uses test_env.py
-to launch another python process. Then signal handling and
-propagation is tested. This similates how Swarming uses test_env.py.
+The signal tests launch Python through test_env.py to simulate Swarming.
+The wrapper test checks Windows argument and exit-code forwarding.
 """
 
+import json
 import os
 import signal
 import subprocess
 import sys
+import tempfile
 import time
 import unittest
 
@@ -26,6 +27,9 @@ if sys.platform == 'win32':
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 TEST_SCRIPT = os.path.join(HERE, 'test_env_user_script.py')
+GENERATOR_SCRIPT = os.path.normpath(
+  os.path.join(HERE, '..', 'build', 'util', 'generate_wrapper.py')
+)
 
 
 def launch_process_windows(args):
@@ -111,6 +115,98 @@ class SignalingWindowsTest(unittest.TestCase):
     except Exception:  # pylint: disable=broad-except
       # OpenProcess failing indicates the PID is no longer valid (process dead).
       pass
+
+
+class GeneratedWrapperTest(unittest.TestCase):
+  def setUp(self):
+    super().setUp()
+    temp_dir = tempfile.TemporaryDirectory(prefix='generated wrapper ')
+    self.addCleanup(temp_dir.cleanup)
+    self.temp_dir = temp_dir.name
+    probe = os.path.join(self.temp_dir, 'probe.py')
+    with open(probe, 'w', encoding='utf-8') as probe_file:
+      probe_file.write(
+        'import json\n'
+        'import sys\n'
+        'print("WRAPPER_ARGV=" + json.dumps(sys.argv[1:]))\n'
+        'sys.exit(int(sys.argv[1]))\n'
+      )
+    self.wrapper = self._generate_wrapper('run wrapper.bat', 'probe.py')
+
+  def _generate_wrapper(self, name, executable):
+    wrapper = os.path.join(self.temp_dir, name)
+    subprocess.run(
+      [
+        sys.executable,
+        GENERATOR_SCRIPT,
+        '--executable',
+        executable,
+        '--wrapper-script',
+        wrapper,
+        '--output-directory',
+        self.temp_dir,
+        '--script-language',
+        'batch',
+      ],
+      cwd=self.temp_dir,
+      check=True,
+      timeout=60,
+    )
+    return wrapper
+
+  def _check_arguments_and_exit_code(self, command):
+    forwarded = [
+      '--isolated-script-test-filter='
+      ':chromium-bidi!pytest:tests/:'
+      'test_resultsink_repeat.py#test_case[paired!marker!value]',
+      ':chromium-bidi!pytest:tests/script/:test_serialization.py#'
+      "test_serialization_function[new Error('Woops!')-expected_serialized18]",
+      'unpaired!bang',
+      'argument with spaces & ampersand',
+      '*.test.js',
+    ]
+    for exit_code in (0, 1, 5, 7):
+      with self.subTest(exit_code=exit_code):
+        expected_argv = [str(exit_code)] + forwarded
+        result = subprocess.run(
+          command + expected_argv,
+          cwd=self.temp_dir,
+          capture_output=True,
+          text=True,
+          check=False,
+          timeout=60,
+        )
+        self.assertEqual(
+          result.returncode, exit_code, result.stdout + result.stderr
+        )
+        marker = next(
+          (
+            line.removeprefix('WRAPPER_ARGV=')
+            for line in result.stdout.splitlines()
+            if line.startswith('WRAPPER_ARGV=')
+          ),
+          None,
+        )
+        self.assertIsNotNone(marker, result.stdout + result.stderr)
+        self.assertEqual(json.loads(marker), expected_argv)
+
+  def test_python_entry_point(self):
+    # Check the batch/Python header under Python even on non-Windows hosts.
+    # This does not exercise cmd.exe's argument or exit-status handling.
+    self._check_arguments_and_exit_code([sys.executable, '-x', self.wrapper])
+
+  @unittest.skipUnless(sys.platform == 'win32', 'test only runs on Windows')
+  def test_preserves_arguments_and_exit_code(self):
+    self._check_arguments_and_exit_code([self.wrapper])
+
+  @unittest.skipUnless(sys.platform == 'win32', 'test only runs on Windows')
+  def test_nested_wrappers_preserve_arguments_and_exit_code(self):
+    # Also check the outer wrapper's process status: a generated suite wrapper
+    # must not hide failures reported by its child.
+    outer_wrapper = self._generate_wrapper(
+      'run outer wrapper.bat', '@WrappedPath(run wrapper.bat)'
+    )
+    self._check_arguments_and_exit_code([outer_wrapper])
 
 
 class SignalingNonWindowsTest(unittest.TestCase):

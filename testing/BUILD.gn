@@ -46,6 +46,7 @@ script_test("test_env_py_unittests") {
     "--script-type=bare",
   ]
   data = [
+    "//build/util/generate_wrapper.py",
     "//testing/test_env_test_script.py",
     "//testing/test_env_unittest.py",
     "//testing/test_env_user_script.py",

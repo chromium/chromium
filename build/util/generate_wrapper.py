@@ -21,17 +21,21 @@ BASH_TEMPLATE = textwrap.dedent("""\
     """)
 
 
-# The batch template reruns the batch script with vpython, with the -x
-# flag instructing the interpreter to ignore the first line. The interpreter
-# knows about the (batch) script in this case, so it can get the file location
-# directly.
-BATCH_TEMPLATE = textwrap.dedent("""\
-    @SETLOCAL ENABLEDELAYEDEXPANSION \
-      & CMD /C vpython3.bat -x "%~f0" %* \
-      & EXIT /B !ERRORLEVEL!
+# Keep delayed expansion off while forwarding %*: test IDs can contain !.
+# EXIT must read %ERRORLEVEL% on a separate line, after the child has run.
+# Python's -x skips the first line and treats the remaining batch commands as
+# a docstring. cmd.exe skips the opening quote using GOTO and exits before
+# reaching the closing quote or Python code.
+BATCH_TEMPLATE = textwrap.dedent('''\
+    @SETLOCAL DISABLEDELAYEDEXPANSION & GOTO :run_python
+    """
+    :run_python
+    @CMD /V:OFF /C vpython3.bat -x "%~f0" %*
+    @EXIT /B %ERRORLEVEL%
+    """
     _SCRIPT_LOCATION = __file__
     {script}
-    """)
+    ''')
 
 
 SCRIPT_TEMPLATES = {
