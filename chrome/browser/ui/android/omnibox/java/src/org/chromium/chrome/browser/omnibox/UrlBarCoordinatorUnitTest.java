@@ -246,6 +246,19 @@ public class UrlBarCoordinatorUnitTest {
     }
 
     @Test
+    public void setKeyboardVisibility_hideWhenStateHiddenButDelegateReportsShowing_schedulesHide() {
+        // State is HIDDEN, but the OS soft keyboard is still showing (e.g. after a transient
+        // inset dip or focus transfer).
+        doReturn(true).when(mKeyboardVisibilityDelegate).isKeyboardShowing(mUrlBar);
+
+        mCoordinator.setKeyboardVisibility(
+                /* showKeyboard= */ false, /* shouldDelayHiding= */ false);
+        RobolectricUtil.runAllBackgroundAndUiIncludingDelayed();
+
+        verify(mKeyboardVisibilityDelegate).hideKeyboard(mUrlBar);
+    }
+
+    @Test
     public void testSelectAllText_delegates() {
         mUrlBar.setText("test");
         mCoordinator.selectAllText();

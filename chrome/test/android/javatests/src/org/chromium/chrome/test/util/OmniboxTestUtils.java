@@ -245,6 +245,7 @@ public class OmniboxTestUtils {
      */
     public void clearFocus() {
         ThreadUtils.runOnUiThreadBlocking(mLocationBarMediator::clearUrlBarFocus);
+        waitAnimationsComplete();
         // Needed to complete scrolling the UrlBar to TLD.
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
         checkFocus(false);

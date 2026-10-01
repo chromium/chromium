@@ -404,7 +404,10 @@ public class UrlBarCoordinator
 
     private void setKeyboardVisibilityDebounced(boolean showKeyboard) {
         boolean isCurrentlyShowing =
-                mKeyboardState == KeyboardState.SHOWN || mKeyboardState == KeyboardState.SHOWING;
+                mKeyboardState == KeyboardState.SHOWN
+                        || mKeyboardState == KeyboardState.SHOWING
+                        || (mKeyboardState == KeyboardState.HIDDEN
+                                && mKeyboardVisibilityDelegate.isKeyboardShowing(mUrlBar));
         if (showKeyboard == isCurrentlyShowing) {
             return;
         }
