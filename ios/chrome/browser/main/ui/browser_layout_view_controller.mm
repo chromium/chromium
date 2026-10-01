@@ -125,8 +125,7 @@ constexpr CGFloat kContainedLayoutTabStripTopMargin = 4.0;
   // `browserViewController`. If this happens during startup, it may be the BVC
   // adding launch screen as a child VC of this VC (BVC's parent).
   // TODO:(crbug.com/472278494): This fires frequently in stable.
-  CHECK_EQ(_browserViewController, browserViewController,
-           base::NotFatalUntil::M150);
+  CHECK_EQ(_browserViewController, browserViewController);
 
   [self updateCurrentBVCLayoutInsetsWithTopInset:[self topInset]];
 }

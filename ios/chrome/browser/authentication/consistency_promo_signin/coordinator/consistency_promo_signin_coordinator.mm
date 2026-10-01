@@ -371,7 +371,7 @@
                            SigninResult:(SigninCoordinatorResult)signinResult
                      completionIdentity:(id<SystemIdentity>)completionIdentity
                             hasAccounts:(BOOL)hasAccounts {
-  CHECK_EQ(self.addAccountCoordinator, coordinator, base::NotFatalUntil::M151);
+  CHECK_EQ(self.addAccountCoordinator, coordinator);
   if (hasAccounts) {
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::ADD_ACCOUNT_COMPLETED,

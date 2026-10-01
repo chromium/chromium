@@ -1902,7 +1902,7 @@ using ntp_tiles::AimButtonRefactorArm;
 // coordinator is stopped.
 - (void)showSigninCommandDidFinishWithCoordinator:
     (SigninCoordinator*)coordinator {
-  CHECK_EQ(_signinCoordinator, coordinator, base::NotFatalUntil::M151);
+  CHECK_EQ(_signinCoordinator, coordinator);
   [self stopSigninCoordinator];
 }
 

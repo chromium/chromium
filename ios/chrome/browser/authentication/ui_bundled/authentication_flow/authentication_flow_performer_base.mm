@@ -305,7 +305,7 @@ void CompletePostSignInActions(PostSignInActionSet post_signin_actions,
                  withCompletion:(ProceduralBlock)callback
                  viewController:(UIViewController*)viewController
                         browser:(Browser*)browser {
-  CHECK(browser, base::NotFatalUntil::M150);
+  CHECK(browser);
   // Sign-in related work should be done on regular browser.
   CHECK_EQ(browser->type(), Browser::Type::kRegular);
   [self checkNoDialog];

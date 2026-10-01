@@ -110,7 +110,7 @@ using bookmarks::BookmarkNode;
 #pragma mark - BookmarksFolderChooserDataSource
 
 - (id<BookmarksFolderChooserSubDataSource>)accountDataSource {
-  CHECK([self shouldShowAccountBookmarks], base::NotFatalUntil::M150);
+  CHECK([self shouldShowAccountBookmarks]);
   return _accountDataSource;
 }
 

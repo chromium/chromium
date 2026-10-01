@@ -431,8 +431,8 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 
 - (instancetype)initWithBrowser:(Browser*)browser
        hasDefaultBrowserBlueDot:(BOOL)hasDefaultBrowserBlueDot {
-  CHECK(browser, base::NotFatalUntil::M151);
-  CHECK_EQ(browser->type(), Browser::Type::kRegular, base::NotFatalUntil::M151);
+  CHECK(browser);
+  CHECK_EQ(browser->type(), Browser::Type::kRegular);
 
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
@@ -448,7 +448,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
         ChromeAccountManagerServiceFactory::GetForProfile(_profile);
     // It is expected that `identityManager` should never be nil except in
     // tests. In that case, the tests should be fixed.
-    CHECK(identityManager, base::NotFatalUntil::M151);
+    CHECK(identityManager);
     _identityObserverBridge.reset(
         new signin::IdentityManagerObserverBridge(identityManager, self));
     syncer::SyncService* syncService =
@@ -521,7 +521,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 }
 
 - (void)dealloc {
-  CHECK(_settingsAreDismissed, base::NotFatalUntil::M151)
+  CHECK(_settingsAreDismissed)
       << "-settingsWillBeDismissed must be called before -dealloc";
 }
 
@@ -1407,7 +1407,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
   infoButton.statusText = status;
   if (image) {
     infoButton.iconImage = image;
-    CHECK(imageBackground, base::NotFatalUntil::M151);
+    CHECK(imageBackground);
     infoButton.iconBackgroundColor = imageBackground;
     infoButton.iconTintColor = UIColor.whiteColor;
   }
@@ -2117,7 +2117,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForProfile(_profile);
-  CHECK(syncService, base::NotFatalUntil::M151);
+  CHECK(syncService);
   if (GetAccountErrorUIInfo(syncService) != nil) {
     identityAccountItem.detailImage = TableViewAccountDetailImage::kError;
   }
@@ -2752,8 +2752,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 }
 
 - (void)didFinishSigninWithCoordinator:(SigninCoordinator*)coordinator {
-  CHECK_EQ(_signinAndHistorySyncCoordinator, coordinator,
-           base::NotFatalUntil::M151);
+  CHECK_EQ(_signinAndHistorySyncCoordinator, coordinator);
   [self stopSigninCoordinator];
   if (_settingsAreDismissed) {
     return;
@@ -3093,7 +3092,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 
 - (void)geminiSettingsCoordinatorViewControllerWasRemoved:
     (GeminiSettingsCoordinator*)coordinator {
-  CHECK_EQ(_geminiSettingsCoordinator, coordinator, base::NotFatalUntil::M151);
+  CHECK_EQ(_geminiSettingsCoordinator, coordinator);
   [_geminiSettingsCoordinator stop];
   _geminiSettingsCoordinator = nil;
 }
@@ -3102,7 +3101,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 
 - (void)contentSettingsCoordinatorViewControllerWasRemoved:
     (ContentSettingsCoordinator*)coordinator {
-  CHECK_EQ(_contentSettingsCoordinator, coordinator, base::NotFatalUntil::M151);
+  CHECK_EQ(_contentSettingsCoordinator, coordinator);
   [_contentSettingsCoordinator stop];
   _contentSettingsCoordinator = nil;
 }
@@ -3111,8 +3110,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 
 - (void)googleServicesSettingsCoordinatorDidRemove:
     (GoogleServicesSettingsCoordinator*)coordinator {
-  CHECK_EQ(_googleServicesSettingsCoordinator, coordinator,
-           base::NotFatalUntil::M151);
+  CHECK_EQ(_googleServicesSettingsCoordinator, coordinator);
   [_googleServicesSettingsCoordinator stop];
   _googleServicesSettingsCoordinator.delegate = nil;
   _googleServicesSettingsCoordinator = nil;
@@ -3131,7 +3129,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 #pragma mark - SafetyCheckCoordinatorDelegate
 
 - (void)safetyCheckCoordinatorDidRemove:(SafetyCheckCoordinator*)coordinator {
-  CHECK_EQ(_safetyCheckCoordinator, coordinator, base::NotFatalUntil::M151);
+  CHECK_EQ(_safetyCheckCoordinator, coordinator);
   [_safetyCheckCoordinator stop];
   _safetyCheckCoordinator.delegate = nil;
   _safetyCheckCoordinator = nil;
@@ -3141,8 +3139,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 
 - (void)autofillAndPasswordsCoordinatorDidRemove:
     (AutofillAndPasswordsCoordinator*)coordinator {
-  CHECK_EQ(_autofillAndPasswordsCoordinator, coordinator,
-           base::NotFatalUntil::M151);
+  CHECK_EQ(_autofillAndPasswordsCoordinator, coordinator);
   [_autofillAndPasswordsCoordinator stop];
   _autofillAndPasswordsCoordinator.delegate = nil;
   _autofillAndPasswordsCoordinator = nil;
@@ -3162,7 +3159,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 #pragma mark - PasswordsCoordinatorDelegate
 
 - (void)passwordsCoordinatorDidRemove:(PasswordsCoordinator*)coordinator {
-  CHECK_EQ(_passwordsCoordinator, coordinator, base::NotFatalUntil::M151);
+  CHECK_EQ(_passwordsCoordinator, coordinator);
   [_passwordsCoordinator stop];
   _passwordsCoordinator.delegate = nil;
   _passwordsCoordinator = nil;
@@ -3193,7 +3190,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 
 - (void)notificationsCoordinatorDidRemove:
     (NotificationsCoordinator*)coordinator {
-  CHECK_EQ(_notificationsCoordinator, coordinator, base::NotFatalUntil::M151);
+  CHECK_EQ(_notificationsCoordinator, coordinator);
   [_notificationsCoordinator stop];
   _notificationsCoordinator = nil;
 }
@@ -3202,7 +3199,7 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 
 - (void)privacyCoordinatorViewControllerWasRemoved:
     (PrivacyCoordinator*)coordinator {
-  CHECK_EQ(_privacyCoordinator, coordinator, base::NotFatalUntil::M151);
+  CHECK_EQ(_privacyCoordinator, coordinator);
   [_privacyCoordinator stop];
   _privacyCoordinator = nil;
 }
@@ -3254,15 +3251,14 @@ enum class IOSDefaultBrowserSettingsPassivePromoAction {
 
 - (void)manageSyncSettingsCoordinatorWasRemoved:
     (ManageSyncSettingsCoordinator*)coordinator {
-  CHECK_EQ(_manageSyncSettingsCoordinator, coordinator,
-           base::NotFatalUntil::M151);
+  CHECK_EQ(_manageSyncSettingsCoordinator, coordinator);
   [self stopManageSyncSettingsCoordinator];
 }
 
 #pragma mark - TabsSettingsCoordinatorDelegate
 
 - (void)tabsSettingsCoordinatorDidRemove:(TabsSettingsCoordinator*)coordinator {
-  CHECK_EQ(coordinator, _tabsCoordinator, base::NotFatalUntil::M151);
+  CHECK_EQ(coordinator, _tabsCoordinator);
   [self stopTabsCoordinator];
 }
 

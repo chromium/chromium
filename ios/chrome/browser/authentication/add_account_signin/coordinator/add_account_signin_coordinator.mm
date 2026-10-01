@@ -395,8 +395,7 @@ using signin_metrics::PromoAction;
                                                          result
                                signinCompletionIdentity:
                                    (id<SystemIdentity>)resultIdentity {
-  CHECK_EQ(self.postSigninManagerCoordinator, coordinator,
-           base::NotFatalUntil::M151);
+  CHECK_EQ(self.postSigninManagerCoordinator, coordinator);
   [self stopPostSigninManagerCoordinatorAnimated:NO];
   if (result != SigninCoordinatorResultSuccess) {
     [self addAccountDoneWithSigninResult:result identity:resultIdentity];

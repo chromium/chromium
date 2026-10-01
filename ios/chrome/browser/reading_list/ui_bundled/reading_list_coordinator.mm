@@ -552,7 +552,7 @@
 
 - (void)signinDidCompleteWithCoordinator:(SigninCoordinator*)coordinator
                                   result:(SigninCoordinatorResult)result {
-  CHECK_EQ(_signinCoordinator, coordinator, base::NotFatalUntil::M151);
+  CHECK_EQ(_signinCoordinator, coordinator);
   [_signinPromoViewMediator signinDidCompleteWithResult:result];
   [self updateSignInPromoVisibility];
   [self stopSigninCoordinator];

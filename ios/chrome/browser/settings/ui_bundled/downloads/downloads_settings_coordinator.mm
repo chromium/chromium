@@ -209,7 +209,7 @@
                                         result:(SigninCoordinatorResult)result
                                 signinIdentity:
                                     (id<SystemIdentity>)signinIdentity {
-  CHECK_EQ(_signinCoordinator, coordinator, base::NotFatalUntil::M151);
+  CHECK_EQ(_signinCoordinator, coordinator);
   [self stopSigninCoordinator];
   if (result == SigninCoordinatorResultSuccess && signinIdentity) {
     GaiaId gaiaID = signinIdentity.gaiaId;

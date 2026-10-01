@@ -597,7 +597,7 @@ constexpr base::TimeDelta kShareSpinnerMinTime = base::Seconds(0.5);
   if (!webState) {
     return;
   }
-  CHECK(webState->IsRealized(), base::NotFatalUntil::M150);
+  CHECK(webState->IsRealized());
   password_manager::PasswordManagerClient* passwordManagerClient =
       PasswordTabHelper::FromWebState(webState)->GetPasswordManagerClient();
   passwordManagerClient->UpdateFormManagers();

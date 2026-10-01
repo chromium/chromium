@@ -921,7 +921,7 @@ void RecordUnsyncedDataHistogramIfNeeded(UnsyncedDataTypeHistogram histogram,
     return;
   }
   DCHECK(error);
-  CHECK(_browser, base::NotFatalUntil::M150);
+  CHECK(_browser);
   _cancelationReason = signin_ui::CancelationReason::kFailed;
   self.handlingError = YES;
   __weak AuthenticationFlow* weakSelf = self;

@@ -251,8 +251,7 @@
                                        (SigninCoordinatorResult)signinResult
                              completionIdentity:
                                  (id<SystemIdentity>)signinCompletionIdentity {
-  CHECK_EQ(self.addAccountSigninCoordinator, coordinator,
-           base::NotFatalUntil::M151);
+  CHECK_EQ(self.addAccountSigninCoordinator, coordinator);
   [self stopAddAccountCoordinator];
   if (signinResult == SigninCoordinatorResultSuccess &&
       self.accountManagerService->IsValidIdentity(

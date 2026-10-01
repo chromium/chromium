@@ -105,13 +105,13 @@
 }
 
 - (void)dealloc {
-  CHECK(!self.recentTabsNavigationController, base::NotFatalUntil::M150);
-  CHECK(!self.recentTabsTableViewController, base::NotFatalUntil::M150);
-  CHECK(!self.mediator, base::NotFatalUntil::M150);
-  CHECK(!self.sharingCoordinator, base::NotFatalUntil::M150);
-  CHECK(!_authenticationService, base::NotFatalUntil::M150);
-  CHECK(!_syncService, base::NotFatalUntil::M150);
-  CHECK(!_reauthCoordinator, base::NotFatalUntil::M150);
+  CHECK(!self.recentTabsNavigationController);
+  CHECK(!self.recentTabsTableViewController);
+  CHECK(!self.mediator);
+  CHECK(!self.sharingCoordinator);
+  CHECK(!_authenticationService);
+  CHECK(!_syncService);
+  CHECK(!_reauthCoordinator);
   CHECK(!_signinCoordinator, base::NotFatalUntil::M156);
   CHECK(!_signinPromoViewMediator, base::NotFatalUntil::M156);
 }
@@ -535,7 +535,7 @@
 
 - (void)signinDidCompleteWithCoordinator:(SigninCoordinator*)coordinator
                                   result:(SigninCoordinatorResult)result {
-  CHECK_EQ(_signinCoordinator, coordinator, base::NotFatalUntil::M151);
+  CHECK_EQ(_signinCoordinator, coordinator);
   [_signinPromoViewMediator signinDidCompleteWithResult:result];
   [self stopSigninCoordinator];
   [self showHistorySyncOptInAfterDedicatedSignIn:YES];

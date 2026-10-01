@@ -341,8 +341,7 @@
 - (void)addAccountDoneWithCoordinator:(SigninCoordinator*)coordinator
                                result:(SigninCoordinatorResult)result
                        resultIdentity:(id<SystemIdentity>)resultIdentity {
-  CHECK_EQ(_addAccountSigninCoordinator, coordinator,
-           base::NotFatalUntil::M151);
+  CHECK_EQ(_addAccountSigninCoordinator, coordinator);
   CHECK(_addAccountSigninCoordinator)
       << base::SysNSStringToUTF8([self description]);
   [self stopAddAccountSigninCoordinator];

@@ -66,7 +66,7 @@ SnackbarMessage* CreateIdentitySnackbarMessageWithCustomTitle(
     id<SystemIdentity> identity,
     Browser* browser,
     NSString* title) {
-  CHECK(identity, base::NotFatalUntil::M151);
+  CHECK(identity);
   // Retrieve necessary services and profile information.
   ProfileIOS* profile = browser->GetProfile()->GetOriginalProfile();
   AuthenticationService* auth_service =
@@ -125,7 +125,7 @@ SnackbarMessage* CreateIdentitySnackbarMessageWithCustomTitle(
 
 SnackbarMessage* CreateIdentitySnackbarMessage(id<SystemIdentity> identity,
                                                Browser* browser) {
-  CHECK(identity, base::NotFatalUntil::M151);
+  CHECK(identity);
   // Determine the main title of the snackbar.
   NSString* title =
       (identity.userGivenName)

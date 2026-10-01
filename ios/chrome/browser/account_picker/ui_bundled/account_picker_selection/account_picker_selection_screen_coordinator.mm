@@ -87,7 +87,7 @@
 }
 
 - (void)dealloc {
-  CHECK(!_mediator, base::NotFatalUntil::M151);
+  CHECK(!_mediator);
 }
 
 #pragma mark - Properties
@@ -166,7 +166,7 @@
 
 - (void)accountPickerSelectionScreenMediatorWantsToBeStopped:
     (AccountPickerSelectionScreenMediator*)mediator {
-  CHECK_EQ(mediator, _mediator, base::NotFatalUntil::M151);
+  CHECK_EQ(mediator, _mediator);
   [self.delegate accountPickerSelectionScreenCoordinatorWantsToBeStopped:self];
 }
 

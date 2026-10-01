@@ -2417,7 +2417,7 @@ const char kContextPanelDismissedHistogram[] =
 - (void)sendTabToSelfCoordinatorWantsToBeStopped:
     (SendTabToSelfCoordinator*)coordinator {
   // TODO(crbug.com/545567389): Use a command instead of a delegate here.
-  CHECK_EQ(_sendTabToSelfCoordinator, coordinator, base::NotFatalUntil::M150);
+  CHECK_EQ(_sendTabToSelfCoordinator, coordinator);
   [self stopSendTabToSelf];
 }
 

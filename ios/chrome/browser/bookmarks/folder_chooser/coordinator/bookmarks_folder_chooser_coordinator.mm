@@ -103,8 +103,8 @@
 }
 
 - (void)setSelectedFolder:(const bookmarks::BookmarkNode*)folder {
-  CHECK(folder, base::NotFatalUntil::M150);
-  CHECK(folder->is_folder(), base::NotFatalUntil::M150);
+  CHECK(folder);
+  CHECK(folder->is_folder());
   _selectedFolder = folder;
   _mediator.selectedFolderNode = _selectedFolder;
 }
@@ -227,7 +227,7 @@
   if (_folderEditorCoordinator || _mediator.UIDisabled) {
     return;
   }
-  CHECK(parentNode, base::NotFatalUntil::M150);
+  CHECK(parentNode);
   _folderEditorCoordinator = [[BookmarksFolderEditorCoordinator alloc]
       initWithBaseNavigationController:(_baseNavigationController
                                             ? _baseNavigationController
@@ -264,8 +264,8 @@
             (BookmarksFolderEditorCoordinator*)folderEditor
               didFinishEditingFolderNode:
                   (const bookmarks::BookmarkNode*)folder {
-  CHECK(folder, base::NotFatalUntil::M150);
-  CHECK(_folderEditorCoordinator, base::NotFatalUntil::M150);
+  CHECK(folder);
+  CHECK(_folderEditorCoordinator);
   [self stopBookmarksFolderEditorCoordinator];
   [_delegate bookmarksFolderChooserCoordinatorDidConfirm:self
                                       withSelectedFolder:folder];
@@ -273,7 +273,7 @@
 
 - (void)bookmarksFolderEditorCoordinatorShouldStop:
     (BookmarksFolderEditorCoordinator*)coordinator {
-  CHECK(_folderEditorCoordinator, base::NotFatalUntil::M150);
+  CHECK(_folderEditorCoordinator);
   [self stopBookmarksFolderEditorCoordinator];
   _mediator.UIDisabled = NO;
 }

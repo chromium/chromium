@@ -763,7 +763,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
 
 - (void)signinDidCompleteWithCoordinator:(SigninCoordinator*)coordinator
                                   result:(SigninCoordinatorResult)result {
-  CHECK_EQ(_signinCoordinator, coordinator, base::NotFatalUntil::M151);
+  CHECK_EQ(_signinCoordinator, coordinator);
   [self.mediator signinDidCompleteWithResult:result];
   [self stopSigninCoordinator];
 }

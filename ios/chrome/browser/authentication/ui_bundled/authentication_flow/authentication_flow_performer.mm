@@ -305,7 +305,7 @@ policy::ProfileSeparationPolicies GetFakePolicyResponseForTesting() {
       GetApplicationContext()
           ->GetAccountProfileMapper()
           ->FindProfileNameForGaiaID(identity.gaiaId);
-  CHECK(profileName.has_value(), base::NotFatalUntil::M150);
+  CHECK(profileName.has_value());
 
   __weak __typeof(self) weakSelf = self;
   auto profileSwitchReadyCompletion = base::BindOnce(

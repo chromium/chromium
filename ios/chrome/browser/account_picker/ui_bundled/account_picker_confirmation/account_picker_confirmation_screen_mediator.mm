@@ -72,8 +72,8 @@
 }
 
 - (void)dealloc {
-  CHECK(!_accountManagerService, base::NotFatalUntil::M151);
-  CHECK(!_identityManager, base::NotFatalUntil::M151);
+  CHECK(!_accountManagerService);
+  CHECK(!_identityManager);
 }
 
 #pragma mark - AccountPickerConfirmationScreenMediator

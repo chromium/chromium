@@ -308,7 +308,7 @@ constexpr CGFloat kLogoSize = 22;
 }
 
 - (void)actionCallbackWithCoordinator:(SigninCoordinator*)coordinator {
-  CHECK_EQ(_signinCoordinator, coordinator, base::NotFatalUntil::M151);
+  CHECK_EQ(_signinCoordinator, coordinator);
   [self stopSigninCoordinator];
   [self.delegate dismissNonModalSignInPromo:self];
 }

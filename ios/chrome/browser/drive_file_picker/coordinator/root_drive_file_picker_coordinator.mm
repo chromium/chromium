@@ -442,7 +442,7 @@ void ConfirmChangeProfileWithCompletion(
                                      result:(SigninCoordinatorResult)result
                          completionIdentity:
                              (id<SystemIdentity>)completionIdentity {
-  CHECK_EQ(_addAccountCoordinator, coordinator, base::NotFatalUntil::M151);
+  CHECK_EQ(_addAccountCoordinator, coordinator);
   if (result == SigninCoordinatorResultSuccess) {
     CHECK(completionIdentity);
     [self addAndSelectNewIdentity:completionIdentity];

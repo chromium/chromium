@@ -796,8 +796,7 @@ constexpr CGFloat kSnackbarFloatingBottomMargin = 10.0;
 
 - (void)signinCoordinatorCompletionWithCoordinator:
     (SigninCoordinator*)coordinator {
-  CHECK(!coordinator || _signinCoordinator == coordinator,
-        base::NotFatalUntil::M151);
+  CHECK(!coordinator || _signinCoordinator == coordinator);
   [self stopSigninCoordinator];
 }
 

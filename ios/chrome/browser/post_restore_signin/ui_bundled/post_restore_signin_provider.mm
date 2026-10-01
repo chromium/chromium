@@ -199,8 +199,7 @@
 
 - (void)signinDone {
   if (![self isSignedIn]) {
-    NOTREACHED(base::NotFatalUntil::M150);
-    return;
+    NOTREACHED();
   }
   _syncService->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kHistory, _historySyncEnabled);

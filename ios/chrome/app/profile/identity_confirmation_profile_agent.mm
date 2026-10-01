@@ -225,7 +225,7 @@ enum class IdentityConfirmationSnackbarDecision {
       AuthenticationServiceFactory::GetForProfile(profile);
   id<SystemIdentity> systemIdentity =
       authenticationService->GetPrimaryIdentity();
-  CHECK(systemIdentity, base::NotFatalUntil::M151);
+  CHECK(systemIdentity);
 
   SnackbarMessage* message =
       CreateIdentitySnackbarMessage(systemIdentity, browser);

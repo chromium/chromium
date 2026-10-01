@@ -2123,7 +2123,7 @@ inline LayoutStateScenePassKey PassKey() {
                               identity:(id<SystemIdentity>)identity
                             completion:(SigninCoordinatorCompletionCallback)
                                            completion {
-  CHECK_EQ(coordinator, _signinCoordinator, base::NotFatalUntil::M151);
+  CHECK_EQ(coordinator, _signinCoordinator);
 
   if (completion) {
     completion(coordinator, result, identity);

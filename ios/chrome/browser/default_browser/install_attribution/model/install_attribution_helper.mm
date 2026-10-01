@@ -30,7 +30,7 @@ const base::TimeDelta kLongAttributionWindow = base::Days(15);
 bool GetNextCalendarMonthStart(base::Time* result) {
   base::Time::Exploded exploded;
   base::Time::Now().UTCExplode(&exploded);
-  CHECK(exploded.HasValidValues(), base::NotFatalUntil::M150);
+  CHECK(exploded.HasValidValues());
 
   exploded.day_of_week = 0;
   exploded.day_of_month = 1;

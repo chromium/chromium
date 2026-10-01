@@ -91,10 +91,10 @@ SyncErrorInfoBarDelegate::SyncErrorInfoBarDelegate(
     : profile_(profile),
       sync_presenter_handler_(sync_presenter_handler),
       trigger_(trigger) {
-  CHECK(!profile->IsOffTheRecord(), base::NotFatalUntil::M151);
+  CHECK(!profile->IsOffTheRecord());
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile_);
-  CHECK(sync_service, base::NotFatalUntil::M151);
+  CHECK(sync_service);
   // Set all of the UI based on the sync state at the same time to ensure
   // they all correspond to the same sync error.
   error_state_ = sync_service->GetUserActionableError();
@@ -131,7 +131,7 @@ int SyncErrorInfoBarDelegate::GetButtons() const {
 
 std::u16string SyncErrorInfoBarDelegate::GetButtonLabel(
     InfoBarButton button) const {
-  CHECK(button == BUTTON_OK, base::NotFatalUntil::M151);
+  CHECK(button == BUTTON_OK);
   return button_text_;
 }
 
@@ -156,7 +156,7 @@ bool SyncErrorInfoBarDelegate::Accept() {
     }
 
     case syncer::SyncService::UserActionableError::kNone: {
-      CHECK(ShouldShowSyncSettings(error_state_), base::NotFatalUntil::M151);
+      CHECK(ShouldShowSyncSettings(error_state_));
       AuthenticationService* authService =
           AuthenticationServiceFactory::GetForProfile(profile_);
       if (!authService->HasPrimaryIdentity() || !authService->SigninEnabled()) {

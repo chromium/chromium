@@ -402,7 +402,7 @@ using signin_metrics::PromoAction;
 - (void)start {
   // `signinCompletion` needs to be set by the owner to know when the sign-in
   // is finished.
-  CHECK(self.signinCompletion, base::NotFatalUntil::M151);
+  CHECK(self.signinCompletion);
   [_activityReporter reportActive];
 }
 
@@ -422,7 +422,7 @@ using signin_metrics::PromoAction;
                                                   completionIdentity);
   // If `self.signinCompletion` is nil, this method has been probably called
   // twice.
-  CHECK(self.signinCompletion, base::NotFatalUntil::M151);
+  CHECK(self.signinCompletion);
   SigninCoordinatorCompletionCallback signinCompletion = self.signinCompletion;
   // The owner should call the stop method, during the callback.
   // `self.signinCompletion` needs to be set to nil before calling it.

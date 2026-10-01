@@ -357,8 +357,7 @@ using signin_metrics::PromoAction;
 
 - (void)addAccountToDeviceCompletedWithCoordinator:
     (SigninCoordinator*)coordinator {
-  CHECK_EQ(_addAccountSigninCoordinator, coordinator,
-           base::NotFatalUntil::M151);
+  CHECK_EQ(_addAccountSigninCoordinator, coordinator);
   [self stopAddAccountCoordinator];
   if (@available(iOS 26, *)) {
     [_viewController allowUserInteraction];

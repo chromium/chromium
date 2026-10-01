@@ -166,8 +166,7 @@ SnippetSearchEngineElement* CreateSnippetSearchEngineElementFromTemplateURL(
   }
   // The current default search engine must be part of the search engine list.
   CHECK(!currentDefaultSearchEngineToHighlight ||
-            currentDefaultSearchEngineToHighlightFound,
-        base::NotFatalUntil::M150)
+        currentDefaultSearchEngineToHighlightFound)
       << base::UTF16ToUTF8(currentDefaultSearchEngineToHighlight->keyword());
   self.consumer.searchEngines = [searchEngineList copy];
 }

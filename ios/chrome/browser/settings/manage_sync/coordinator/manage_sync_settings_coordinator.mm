@@ -808,8 +808,7 @@ enum class ActionAfterReauth {
 
 - (void)syncEncryptionTableViewControllerDidDismiss:
     (SyncEncryptionTableViewController*)viewController {
-  CHECK_EQ(_syncEncryptionTableViewController, viewController,
-           base::NotFatalUntil::M150);
+  CHECK_EQ(_syncEncryptionTableViewController, viewController);
   _syncEncryptionTableViewController.presentationDelegate = nil;
   [_syncEncryptionTableViewController settingsWillBeDismissed];
   _syncEncryptionTableViewController = nil;

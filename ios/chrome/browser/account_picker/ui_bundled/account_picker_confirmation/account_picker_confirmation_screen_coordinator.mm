@@ -47,7 +47,7 @@
 }
 
 - (void)dealloc {
-  CHECK(!_mediator, base::NotFatalUntil::M151);
+  CHECK(!_mediator);
 }
 
 #pragma mark - ChromeCoordinator

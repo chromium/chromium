@@ -609,8 +609,7 @@ typedef NS_ENUM(NSUInteger, AccountMenuReauthAction) {
 // Clean up the add account coordinator.
 - (void)signinCoordinatorCompletionWithCoordinator:
     (SigninCoordinator*)coordinator {
-  CHECK_EQ(_addAccountSigninCoordinator, coordinator,
-           base::NotFatalUntil::M151);
+  CHECK_EQ(_addAccountSigninCoordinator, coordinator);
   [self.mediator accountMenuIsUsable];
   [self stopAddAccountCoordinator];
 }

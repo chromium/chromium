@@ -407,7 +407,7 @@ void AuthenticationService::SignOut(
     // sign-out the window is switch to the personal profile, and then the
     // sign-out can be done.
     // Please signin::MultiProfileSignOutForProfile().
-    CHECK(IsPersonalProfile(), base::NotFatalUntil::M150);
+    CHECK(IsPersonalProfile());
   }
   if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     if (completion) {

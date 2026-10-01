@@ -57,7 +57,7 @@ const char kGetAvatarResultHistogram[] =
 }
 
 - (UIImage*)resizedAvatarForIdentity:(id<SystemIdentity>)identity {
-  CHECK(identity, base::NotFatalUntil::M150);
+  CHECK(identity);
 
   NSString* gaiaIDString = identity.gaiaId.ToNSString();
   UIImage* avatar = [_avatarForGaiaID objectForKey:gaiaIDString];

@@ -109,7 +109,7 @@
 @implementation DownloadManagerCoordinator
 
 - (void)dealloc {
-  CHECK(_stopped, base::NotFatalUntil::M150);
+  CHECK(_stopped);
 }
 
 - (void)start {
@@ -118,8 +118,8 @@
 
 // Similar to start but can be called after pause.
 - (void)restart {
-  CHECK(self.presenter, base::NotFatalUntil::M150);
-  CHECK(self.browser, base::NotFatalUntil::M150);
+  CHECK(self.presenter);
+  CHECK(self.browser);
   if (IsPageActionMenuEnabled()) {
     _geminiHandler = HandlerForProtocol(self.browser->GetCommandDispatcher(),
                                         GeminiCommands);
@@ -296,7 +296,7 @@
 - (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
                  didHideDownload:(web::DownloadTask*)download
                         animated:(BOOL)animated {
-  CHECK_EQ(_downloadTask.get(), download, base::NotFatalUntil::M150);
+  CHECK_EQ(_downloadTask.get(), download);
   self.animatesPresentation = animated;
   [self stop];
   self.animatesPresentation = YES;
@@ -305,7 +305,7 @@
 - (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
                  didShowDownload:(web::DownloadTask*)download
                         animated:(BOOL)animated {
-  CHECK_NE(_downloadTask.get(), download, base::NotFatalUntil::M150);
+  CHECK_NE(_downloadTask.get(), download);
   _downloadTask = download->GetWeakPtr();
   self.animatesPresentation = animated;
   [self start];
@@ -320,7 +320,7 @@
     // observer is called.
     return;
   }
-  CHECK_EQ(_downloadTask.get(), download, base::NotFatalUntil::M150);
+  CHECK_EQ(_downloadTask.get(), download);
   self.animatesPresentation = NO;
   [self pause];
   self.animatesPresentation = YES;
@@ -350,7 +350,7 @@
 
 - (void)downloadManagerTabHelper:(DownloadManagerTabHelper*)tabHelper
             wantsToStartDownload:(web::DownloadTask*)download {
-  CHECK_EQ(_downloadTask.get(), download, base::NotFatalUntil::M150);
+  CHECK_EQ(_downloadTask.get(), download);
   [self tryDownload];
 }
 
@@ -373,12 +373,12 @@
 }
 
 - (void)containedPresenterDidPresent:(id<ContainedPresenter>)presenter {
-  CHECK_EQ(presenter, self.presenter, base::NotFatalUntil::M150);
+  CHECK_EQ(presenter, self.presenter);
   [_viewController disableCurrentButtonTemporarily];
 }
 
 - (void)containedPresenterDidDismiss:(id<ContainedPresenter>)presenter {
-  CHECK_EQ(presenter, self.presenter, base::NotFatalUntil::M150);
+  CHECK_EQ(presenter, self.presenter);
   // The view controller may not be dealloced immediately.
   presenter.presentedViewController = nil;
   if (_restartPending) {

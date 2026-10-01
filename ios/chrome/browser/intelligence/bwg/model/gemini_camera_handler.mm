@@ -59,7 +59,7 @@ NSString* const kGeminiCameraHandlerErrorDomain = @"GeminiCameraHandler";
 - (void)openCameraFromViewController:(UIViewController*)presentingViewController
                       withCompletion:
                           (void (^)(NSArray<UIImage*>*, NSError*))completion {
-  CHECK(!_completion && !_presentingViewController, base::NotFatalUntil::M150);
+  CHECK(!_completion && !_presentingViewController);
   _completion = completion;
   _presentingViewController = presentingViewController;
 

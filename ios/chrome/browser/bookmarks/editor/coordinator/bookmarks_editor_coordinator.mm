@@ -119,7 +119,7 @@
   _stopped = YES;
   _viewController.coordinatorIsStopping = YES;
   [super stop];
-  CHECK(_navigationController, base::NotFatalUntil::M150);
+  CHECK(_navigationController);
   _mediator.UIDisabled = YES;
   [_mediator disconnect];
   [self dismissActionSheetCoordinator];
@@ -284,8 +284,8 @@
             (BookmarksFolderChooserCoordinator*)coordinator
                                  withSelectedFolder:
                                      (const bookmarks::BookmarkNode*)folder {
-  CHECK(_folderChooserCoordinator, base::NotFatalUntil::M150);
-  CHECK(folder, base::NotFatalUntil::M150);
+  CHECK(_folderChooserCoordinator);
+  CHECK(folder);
   [self stopFolderChooserCoordinator];
 
   [_mediator manuallyChangeFolder:folder];
@@ -293,7 +293,7 @@
 
 - (void)bookmarksFolderChooserCoordinatorDidCancel:
     (BookmarksFolderChooserCoordinator*)coordinator {
-  CHECK(_folderChooserCoordinator, base::NotFatalUntil::M150);
+  CHECK(_folderChooserCoordinator);
   [self stopFolderChooserCoordinator];
 }
 

@@ -391,7 +391,7 @@ enum class YourSavedInfoDataCategory {
 }
 
 - (void)passwordsCoordinatorDidRemove:(PasswordsCoordinator*)coordinator {
-  CHECK_EQ(_passwordsCoordinator, coordinator, base::NotFatalUntil::M151);
+  CHECK_EQ(_passwordsCoordinator, coordinator);
   _passwordsCoordinator.delegate = nil;
   [_passwordsCoordinator stop];
   _passwordsCoordinator = nil;
