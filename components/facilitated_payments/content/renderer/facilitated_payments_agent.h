@@ -57,9 +57,9 @@ class FacilitatedPaymentsAgent : public content::RenderFrameObserver,
   // Resets the debounce timer to schedule a rescan after page activity settles.
   void OnTriggeredRescan();
 
-  // Evaluates DOM heuristics and reports the cumulative probability score to
-  // the browser process.
-  void RescanAndReportScore();
+  // Collects page signals and reports them to the browser process, which
+  // decides whether to extract images.
+  void RescanAndReportSignals();
 
   // For testing:
   void SetDriverForTesting(
@@ -70,9 +70,9 @@ class FacilitatedPaymentsAgent : public content::RenderFrameObserver,
   }
 
  protected:
-  // Virtual for testing to mock DOM score calculation without bringing up
-  // Blink.
-  virtual double CalculateHeuristicScore();
+  // Returns the page signals. Virtual for testing so signals can be faked
+  // without bringing up Blink.
+  virtual mojom::HeuristicSignalsPtr CalculateHeuristicSignals();
 
  private:
   // Binds the Mojo receiver to handle requests from the browser process.

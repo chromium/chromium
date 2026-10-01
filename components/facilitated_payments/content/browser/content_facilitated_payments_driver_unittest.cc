@@ -31,6 +31,12 @@
 namespace payments::facilitated {
 namespace {
 
+// Matches a `mojom::HeuristicSignals` equal to `*expected`. Mojo structs are
+// move-only, so `testing::Eq()` cannot hold a copy of the expected value.
+MATCHER_P(SignalsEq, expected, "") {
+  return arg.Equals(*expected);
+}
+
 class MockContentFacilitatedPaymentsDriverFactory
     : public ContentFacilitatedPaymentsDriverFactory {
  public:
@@ -41,8 +47,8 @@ class MockContentFacilitatedPaymentsDriverFactory
   ~MockContentFacilitatedPaymentsDriverFactory() override = default;
 
   MOCK_METHOD(void,
-              OnHeuristicScoreReported,
-              (content::RenderFrameHost*, double),
+              OnHeuristicSignalsReported,
+              (content::RenderFrameHost*, const mojom::HeuristicSignals&),
               (override));
 };
 
@@ -245,29 +251,37 @@ TEST_F(ContentFacilitatedPaymentsDriverTest,
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-// Test that reporting heuristic score forwards to the factory.
+// Test that reported heuristic signals are forwarded to the factory.
 TEST_F(ContentFacilitatedPaymentsDriverTest,
-       ReportHeuristicScore_ForwardsToFactory) {
-  constexpr double kScore = 0.5;
-  EXPECT_CALL(*factory_, OnHeuristicScoreReported(main_rfh(), kScore)).Times(1);
+       ReportHeuristicSignals_ForwardsToFactory) {
+  mojom::HeuristicSignalsPtr signals = mojom::HeuristicSignals::New();
+  signals->has_square_candidate = true;
+  signals->text_keyword_match = true;
+  EXPECT_CALL(*factory_,
+              OnHeuristicSignalsReported(main_rfh(), SignalsEq(signals.get())))
+      .Times(1);
 
-  driver_->ReportHeuristicScore(kScore);
+  driver_->ReportHeuristicSignals(signals.Clone());
 }
 
-// Test binding the FacilitatedPaymentsDriver associated receiver and calling
-// ReportHeuristicScore through mojo.
+// Test binding the `FacilitatedPaymentsDriver` associated receiver and calling
+// `ReportHeuristicSignals` through mojo.
 TEST_F(ContentFacilitatedPaymentsDriverTest,
        SetFacilitatedPaymentsDriverReceiver) {
   mojo::AssociatedRemote<mojom::FacilitatedPaymentsDriver> remote;
   driver_->SetFacilitatedPaymentsDriverReceiver(
       remote.BindNewEndpointAndPassDedicatedReceiver());
 
-  constexpr double kScore = 0.8;
+  mojom::HeuristicSignalsPtr signals = mojom::HeuristicSignals::New();
+  signals->has_facilitated_payment_link = true;
+  signals->has_square_candidate = true;
+  signals->url_keyword_match = true;
   base::test::TestFuture<void> future;
-  EXPECT_CALL(*factory_, OnHeuristicScoreReported(main_rfh(), kScore))
+  EXPECT_CALL(*factory_,
+              OnHeuristicSignalsReported(main_rfh(), SignalsEq(signals.get())))
       .WillOnce(base::test::RunOnceClosure(future.GetCallback()));
 
-  remote->ReportHeuristicScore(kScore);
+  remote->ReportHeuristicSignals(signals.Clone());
   EXPECT_TRUE(future.Wait());
 }
 

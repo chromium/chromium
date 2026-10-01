@@ -61,9 +61,9 @@ class ContentFacilitatedPaymentsDriver
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // mojom::FacilitatedPaymentsDriver:
-  // Receives the autonomous heuristic score from `FacilitatedPaymentsAgent` in
-  // the renderer process.
-  void ReportHeuristicScore(double heuristic_score) override;
+  // Receives page signals from `FacilitatedPaymentsAgent` in the renderer
+  // process.
+  void ReportHeuristicSignals(mojom::HeuristicSignalsPtr signals) override;
 
   // Binds the associated receiver for `mojom::FacilitatedPaymentsDriver`.
   void SetFacilitatedPaymentsDriverReceiver(

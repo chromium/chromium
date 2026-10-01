@@ -71,19 +71,19 @@ void FacilitatedPaymentsAgent::OnTriggeredRescan() {
   // has settled.
   rescan_timer_.Start(
       FROM_HERE, kRescanDebounceDelay,
-      base::BindOnce(&FacilitatedPaymentsAgent::RescanAndReportScore,
+      base::BindOnce(&FacilitatedPaymentsAgent::RescanAndReportSignals,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void FacilitatedPaymentsAgent::RescanAndReportScore() {
+void FacilitatedPaymentsAgent::RescanAndReportSignals() {
   if (!is_qr_code_detection_enabled_) {
     return;
   }
 
-  double score = CalculateHeuristicScore();
+  mojom::HeuristicSignalsPtr signals = CalculateHeuristicSignals();
   const auto& driver = GetDriver();
   if (driver) {
-    driver->ReportHeuristicScore(score);
+    driver->ReportHeuristicSignals(std::move(signals));
   }
 }
 
@@ -92,10 +92,10 @@ void FacilitatedPaymentsAgent::SetDriverForTesting(
   driver_ = std::move(driver);
 }
 
-double FacilitatedPaymentsAgent::CalculateHeuristicScore() {
-  // Base implementation returns 0.0 until DOM heuristics parsing logic is
-  // added.
-  return 0.0;
+mojom::HeuristicSignalsPtr
+FacilitatedPaymentsAgent::CalculateHeuristicSignals() {
+  // All signals are false until the DOM checks are added.
+  return mojom::HeuristicSignals::New();
 }
 
 void FacilitatedPaymentsAgent::BindPendingReceiver(

@@ -13,11 +13,31 @@ interface FacilitatedPaymentsAgent {
   SetQrCodeDetectionEnabled(bool enabled);
 };
 
+// Page signals collected by `FacilitatedPaymentsAgent`. The renderer only
+// reports these facts; the browser decides whether they meet the rule to
+// trigger image extraction. Booleans are used so that no page text crosses the
+// IPC boundary.
+struct HeuristicSignals {
+  // The document <head> contains <link rel="facilitated-payment">. Such pages
+  // are already handled by the payment link flow.
+  bool has_facilitated_payment_link;
+
+  // The page has a visible, roughly square <img> or <canvas> large enough to
+  // hold a payment QR code.
+  bool has_square_candidate;
+
+  // The page URL contains a payment keyword.
+  bool url_keyword_match;
+
+  // The <title> or meta description contains a payment keyword.
+  bool text_keyword_match;
+};
+
 // Interface implemented by the browser process (e.g.
 // `ContentFacilitatedPaymentsDriver`) to receive reports from
 // `FacilitatedPaymentsAgent` in the renderer process.
 interface FacilitatedPaymentsDriver {
-  // Reports the heuristic score indicating the likelihood of a payment QR
-  // code being present on the current page.
-  ReportHeuristicScore(double heuristic_score);
+  // Reports the page signals used to decide whether the page contains a
+  // candidate for image extraction.
+  ReportHeuristicSignals(HeuristicSignals signals);
 };

@@ -31,20 +31,28 @@ constexpr base::TimeDelta kDebounceDelay =
 // tests never depend on the absolute value of the delay.
 constexpr base::TimeDelta kEpsilon = base::Milliseconds(1);
 
+// Returns signals with only the given fields set, so that each test can
+// check that the exact struct built by the agent reaches the driver.
+mojom::HeuristicSignalsPtr MakeSignals(bool has_square_candidate,
+                                       bool url_keyword_match,
+                                       bool text_keyword_match) {
+  return mojom::HeuristicSignals::New(
+      /*has_facilitated_payment_link=*/false, has_square_candidate,
+      url_keyword_match, text_keyword_match);
+}
+
 class FakeFacilitatedPaymentsDriver : public mojom::FacilitatedPaymentsDriver {
  public:
   FakeFacilitatedPaymentsDriver() = default;
   ~FakeFacilitatedPaymentsDriver() override = default;
 
-  void ReportHeuristicScore(double score) override {
-    reported_scores_.push_back(score);
+  void ReportHeuristicSignals(mojom::HeuristicSignalsPtr signals) override {
+    reported_signals_.push_back(std::move(signals));
   }
 
-  const std::vector<double>& reported_scores() const {
-    return reported_scores_;
+  const std::vector<mojom::HeuristicSignalsPtr>& reported_signals() const {
+    return reported_signals_;
   }
-
-  void ClearReportedScores() { reported_scores_.clear(); }
 
   void Bind(mojo::PendingAssociatedReceiver<mojom::FacilitatedPaymentsDriver>
                 receiver) {
@@ -53,7 +61,7 @@ class FakeFacilitatedPaymentsDriver : public mojom::FacilitatedPaymentsDriver {
   }
 
  private:
-  std::vector<double> reported_scores_;
+  std::vector<mojom::HeuristicSignalsPtr> reported_signals_;
   mojo::AssociatedReceiver<mojom::FacilitatedPaymentsDriver> receiver_{this};
 };
 
@@ -63,13 +71,18 @@ class TestFacilitatedPaymentsAgent : public FacilitatedPaymentsAgent {
       blink::AssociatedInterfaceRegistry* registry)
       : FacilitatedPaymentsAgent(nullptr, registry) {}
 
-  void SetScoreToReturn(double score) { score_to_return_ = score; }
+  void SetSignalsToReturn(mojom::HeuristicSignalsPtr signals) {
+    signals_to_return_ = std::move(signals);
+  }
 
  protected:
-  double CalculateHeuristicScore() override { return score_to_return_; }
+  mojom::HeuristicSignalsPtr CalculateHeuristicSignals() override {
+    return signals_to_return_.Clone();
+  }
 
  private:
-  double score_to_return_ = 0.5;
+  mojom::HeuristicSignalsPtr signals_to_return_ =
+      mojom::HeuristicSignals::New();
 };
 
 class FacilitatedPaymentsAgentTest : public testing::Test {
@@ -92,64 +105,65 @@ class FacilitatedPaymentsAgentTest : public testing::Test {
   std::unique_ptr<TestFacilitatedPaymentsAgent> agent_;
 };
 
-// Test that `DidMeaningfulLayout` schedules a rescan that reports the score
+// Test that `DidMeaningfulLayout` schedules a rescan that reports the signals
 // only after the debounce delay has elapsed.
 TEST_F(FacilitatedPaymentsAgentTest,
        TestDidMeaningfulLayoutTriggersDebouncedScan) {
-  agent_->SetScoreToReturn(0.8);
+  agent_->SetSignalsToReturn(MakeSignals(true, true, false));
   agent_->DidMeaningfulLayout(blink::WebMeaningfulLayout::kVisuallyNonEmpty);
 
   // Fast-forward to just before the debounce delay elapses.
   task_environment_.FastForwardBy(kDebounceDelay - kEpsilon);
-  EXPECT_TRUE(driver_.reported_scores().empty());
+  EXPECT_TRUE(driver_.reported_signals().empty());
 
   // Fast-forward past the debounce delay.
   task_environment_.FastForwardBy(2 * kEpsilon);
-  ASSERT_EQ(driver_.reported_scores().size(), 1u);
-  EXPECT_DOUBLE_EQ(driver_.reported_scores()[0], 0.8);
+  ASSERT_EQ(driver_.reported_signals().size(), 1u);
+  EXPECT_EQ(driver_.reported_signals()[0], MakeSignals(true, true, false));
 }
 
 // Test that `DidChangeScrollOffset` resets the debounce timer so that rapidly
 // firing scroll events do not trigger multiple scans.
 TEST_F(FacilitatedPaymentsAgentTest,
        TestDidChangeScrollOffsetResetsDebounceTimer) {
-  agent_->SetScoreToReturn(0.7);
+  agent_->SetSignalsToReturn(MakeSignals(true, false, true));
   agent_->DidMeaningfulLayout(blink::WebMeaningfulLayout::kVisuallyNonEmpty);
 
   // Scroll just before the timer would fire, which should reset it.
   task_environment_.FastForwardBy(kDebounceDelay - kEpsilon);
   agent_->DidChangeScrollOffset(blink::mojom::ScrollType::kUser);
 
-  // Advance to just before the debounce delay since the scroll event. No score
-  // should be reported even though more than one delay has elapsed in total.
+  // Advance to just before the debounce delay since the scroll event. No
+  // signals should be reported even though more than one delay has elapsed in
+  // total.
   task_environment_.FastForwardBy(kDebounceDelay - kEpsilon);
-  EXPECT_TRUE(driver_.reported_scores().empty());
+  EXPECT_TRUE(driver_.reported_signals().empty());
 
   // Advance past the debounce delay since the scroll event.
   task_environment_.FastForwardBy(2 * kEpsilon);
-  ASSERT_EQ(driver_.reported_scores().size(), 1u);
-  EXPECT_DOUBLE_EQ(driver_.reported_scores()[0], 0.7);
+  ASSERT_EQ(driver_.reported_signals().size(), 1u);
+  EXPECT_EQ(driver_.reported_signals()[0], MakeSignals(true, false, true));
 }
 
 // Test that `DidFinishLoad` triggers a debounced heuristic rescan.
 TEST_F(FacilitatedPaymentsAgentTest, TestDidFinishLoadTriggersDebouncedScan) {
-  agent_->SetScoreToReturn(0.9);
+  agent_->SetSignalsToReturn(MakeSignals(true, true, true));
   agent_->DidFinishLoad();
 
   task_environment_.FastForwardBy(kDebounceDelay + kEpsilon);
-  ASSERT_EQ(driver_.reported_scores().size(), 1u);
-  EXPECT_DOUBLE_EQ(driver_.reported_scores()[0], 0.9);
+  ASSERT_EQ(driver_.reported_signals().size(), 1u);
+  EXPECT_EQ(driver_.reported_signals()[0], MakeSignals(true, true, true));
 }
 
 // Test that `DidFinishSameDocumentNavigation` triggers a debounced rescan.
 TEST_F(FacilitatedPaymentsAgentTest,
        TestDidFinishSameDocumentNavigationTriggersDebouncedScan) {
-  agent_->SetScoreToReturn(0.6);
+  agent_->SetSignalsToReturn(MakeSignals(false, true, true));
   agent_->DidFinishSameDocumentNavigation();
 
   task_environment_.FastForwardBy(kDebounceDelay + kEpsilon);
-  ASSERT_EQ(driver_.reported_scores().size(), 1u);
-  EXPECT_DOUBLE_EQ(driver_.reported_scores()[0], 0.6);
+  ASSERT_EQ(driver_.reported_signals().size(), 1u);
+  EXPECT_EQ(driver_.reported_signals()[0], MakeSignals(false, true, true));
 }
 
 // Test that disabling detection cancels any running debounce timer and ignores
@@ -168,7 +182,7 @@ TEST_F(FacilitatedPaymentsAgentTest,
   EXPECT_FALSE(agent_->GetTimerForTesting().IsRunning());
 
   task_environment_.FastForwardBy(kDebounceDelay + kEpsilon);
-  EXPECT_TRUE(driver_.reported_scores().empty());
+  EXPECT_TRUE(driver_.reported_signals().empty());
 
   // Re-enabling detection allows subsequent events to trigger rescan.
   agent_->SetQrCodeDetectionEnabled(true);
@@ -176,7 +190,7 @@ TEST_F(FacilitatedPaymentsAgentTest,
   EXPECT_TRUE(agent_->GetTimerForTesting().IsRunning());
 
   task_environment_.FastForwardBy(kDebounceDelay + kEpsilon);
-  ASSERT_EQ(driver_.reported_scores().size(), 1u);
+  ASSERT_EQ(driver_.reported_signals().size(), 1u);
 }
 
 // Test that `OnDestruct` safely cleans up and cancels any pending rescan.
@@ -189,7 +203,7 @@ TEST_F(FacilitatedPaymentsAgentTest, TestOnDestructCancelsRescan) {
   raw_agent->OnDestruct();
 
   task_environment_.FastForwardBy(kDebounceDelay + kEpsilon);
-  EXPECT_TRUE(driver_.reported_scores().empty());
+  EXPECT_TRUE(driver_.reported_signals().empty());
 }
 
 }  // namespace

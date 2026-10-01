@@ -47,11 +47,11 @@ ContentFacilitatedPaymentsDriverFactory::GetOrCreateForFrame(
   return *iter->second;
 }
 
-void ContentFacilitatedPaymentsDriverFactory::OnHeuristicScoreReported(
+void ContentFacilitatedPaymentsDriverFactory::OnHeuristicSignalsReported(
     content::RenderFrameHost* render_frame_host,
-    double score) {
-  // TODO(crbug.com/556832672): Check OptimizationGuide merchant allowlist and
-  // evaluate heuristic score against thresholds to trigger image extraction.
+    const mojom::HeuristicSignals& signals) {
+  // TODO(crbug.com/556832672): Skip pages with a facilitated payment link, and
+  // extract images when `has_square_candidate` and a keyword signal match.
 }
 
 void ContentFacilitatedPaymentsDriverFactory::RenderFrameDeleted(

@@ -60,13 +60,13 @@ void ContentFacilitatedPaymentsDriver::SetPaymentLinkHandlerReceiver(
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-void ContentFacilitatedPaymentsDriver::ReportHeuristicScore(
-    double heuristic_score) {
+void ContentFacilitatedPaymentsDriver::ReportHeuristicSignals(
+    mojom::HeuristicSignalsPtr signals) {
   if (factory_) {
     content::RenderFrameHost* render_frame_host =
         content::RenderFrameHost::FromID(render_frame_host_id_);
     if (render_frame_host) {
-      factory_->OnHeuristicScoreReported(render_frame_host, heuristic_score);
+      factory_->OnHeuristicSignalsReported(render_frame_host, *signals);
     }
   }
 }

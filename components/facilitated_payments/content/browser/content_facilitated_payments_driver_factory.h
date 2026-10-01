@@ -12,6 +12,7 @@
 #include "base/memory/raw_ref.h"
 #include "build/build_config.h"
 #include "components/facilitated_payments/content/browser/content_facilitated_payments_driver.h"
+#include "components/facilitated_payments/core/mojom/facilitated_payments_agent.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 
 class GURL;
@@ -45,10 +46,11 @@ class ContentFacilitatedPaymentsDriverFactory
   ContentFacilitatedPaymentsDriver& GetOrCreateForFrame(
       content::RenderFrameHost* render_frame_host);
 
-  // Evaluates the cumulative score received from the Renderer.
-  virtual void OnHeuristicScoreReported(
+  // Decides from the renderer's page `signals` whether to extract images from
+  // `render_frame_host` for QR code decoding.
+  virtual void OnHeuristicSignalsReported(
       content::RenderFrameHost* render_frame_host,
-      double score);
+      const mojom::HeuristicSignals& signals);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(
