@@ -135,13 +135,10 @@ scoped_refptr<StaticBitmapImage> AcceleratedStaticBitmapImage::CreateFromRaster(
         std::move(animated_image_frame_index_map));
   }
 
-  draw_callback(
-      resource_provider->recorder_for_external_draws()->getRecordingCanvas());
-  if (resource_provider->recorder_for_external_draws()
-          ->HasReleasableDrawOps()) {
-    resource_provider->FlushRecording(
-        resource_provider->recorder_for_external_draws()
-            ->ReleaseMainRecording());
+  MemoryManagedPaintRecorder recorder(size, /*client=*/nullptr);
+  draw_callback(recorder.getRecordingCanvas());
+  if (recorder.HasReleasableDrawOps()) {
+    resource_provider->FlushRecording(recorder.ReleaseMainRecording());
   }
   return resource_provider->Snapshot(orientation);
 }

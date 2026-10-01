@@ -210,10 +210,6 @@ class PLATFORM_EXPORT CanvasNon2DResourceProvider
 
   void FlushRecording(cc::PaintRecord last_recording);
 
-  MemoryManagedPaintRecorder* recorder_for_external_draws() {
-    return recorder_for_external_draws_.get();
-  }
-
  private:
   CanvasNon2DResourceProvider(
       gfx::Size,
