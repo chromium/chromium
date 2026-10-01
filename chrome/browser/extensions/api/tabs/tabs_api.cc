@@ -459,6 +459,11 @@ int MoveTabToWindow(ExtensionFunction* function,
     return -1;
   }
 
+  if (!target_browser) {
+    *error = ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError;
+    return -1;
+  }
+
   auto validation_result = WindowsCreateFunction::ValidateTab(
       source_window, target_browser->GetProfile(), web_contents);
   if (!validation_result.has_value()) {

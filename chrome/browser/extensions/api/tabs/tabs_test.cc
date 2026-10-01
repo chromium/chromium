@@ -1987,6 +1987,40 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTestWithApps, NoTabsAppWindow) {
   CloseAppWindow(app_window);
 }
 
+// Verifies that tabs.move() into a Chrome App window, whose WindowController
+// has no BrowserWindowInterface, fails gracefully instead of crashing.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTestWithApps, CannotMoveTabToAppWindow) {
+  AppWindow* app_window = CreateTestAppWindow("{}");
+  int app_window_id = app_window->session_id().id();
+
+  // The app window is reachable by ID but has no BrowserWindowInterface.
+  WindowController* app_window_controller =
+      ExtensionTabUtil::GetControllerInProfileWithId(
+          profile(), app_window_id, /*also_match_incognito_profile=*/false,
+          /*error_message=*/nullptr);
+  ASSERT_TRUE(app_window_controller);
+  ASSERT_FALSE(app_window_controller->GetBrowserWindowInterface());
+
+  content::WebContents* web_contents =
+      GetTabListInterface()->GetTab(0)->GetContents();
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("MoveToAppWindowTest").Build();
+  auto function = base::MakeRefCounted<TabsMoveFunction>();
+  function->set_extension(extension.get());
+  std::string args = base::StringPrintf(
+      R"([%d, {"windowId": %d, "index": 0}])", tab_id, app_window_id);
+  std::string error =
+      utils::RunFunctionAndReturnError(function.get(), args, profile());
+  EXPECT_EQ(ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError, error);
+
+  // The tab should not have moved.
+  EXPECT_EQ(web_contents, GetTabListInterface()->GetTab(0)->GetContents());
+
+  CloseAppWindow(app_window);
+}
+
 // Crashes on Mac/Win only.  http://crbug.com/40514319
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_FilteredEvents DISABLED_FilteredEvents
@@ -5450,6 +5484,31 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
   EXPECT_EQ(ErrorUtils::FormatErrorMessage(keys::kCannotDuplicateTab,
                                            base::NumberToString(pip_tab_id)),
             error);
+}
+
+// Verifies that tabs.move() into a picture-in-picture window fails.
+IN_PROC_BROWSER_TEST_F(ExtensionTabsTest,
+                       CannotMoveTabToPictureInPictureWindow) {
+  BrowserWindowInterface* pip_browser = CreateBrowserWindowWithType(
+      BrowserWindowInterface::Type::TYPE_PICTURE_IN_PICTURE);
+  int pip_window_id = ExtensionTabUtil::GetWindowId(pip_browser);
+
+  content::WebContents* web_contents =
+      GetTabListInterface()->GetTab(0)->GetContents();
+  int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+
+  scoped_refptr<const Extension> extension =
+      ExtensionBuilder("MoveToPipWindowTest").Build();
+  auto function = base::MakeRefCounted<TabsMoveFunction>();
+  function->set_extension(extension.get());
+  std::string args = base::StringPrintf(R"([%d, {"windowId": %d, "index": 0}])",
+                                        tab_id, pip_window_id);
+  std::string error =
+      utils::RunFunctionAndReturnError(function.get(), args, profile());
+  EXPECT_EQ(ExtensionTabUtil::kCanOnlyMoveTabsWithinNormalWindowsError, error);
+
+  // The tab should not have moved.
+  EXPECT_EQ(web_contents, GetTabListInterface()->GetTab(0)->GetContents());
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, CannotDuplicateAppPopupWindows) {
