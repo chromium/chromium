@@ -15,7 +15,6 @@
 #include "components/optimization_guide/core/hints/push_notification_manager.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_logger.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/push_notification.pb.h"
 #include "components/sharing_message/proto/optimization_guide_push_notification.pb.h"

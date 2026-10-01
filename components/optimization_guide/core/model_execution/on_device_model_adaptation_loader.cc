@@ -22,7 +22,6 @@
 #include "components/optimization_guide/core/model_execution/usage_tracker.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
 #include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
@@ -116,18 +115,14 @@ DetectBaseModelIncompatibility(const optimization_guide::ModelInfo& model_info,
   if (!supported_model_spec) {
     return OnDeviceModelAdaptationAvailability::kAdaptationModelInvalid;
   }
-  // Check for incompatibility when base model override is not specified
-  if (!switches::GetOnDeviceModelExecutionOverride()) {
-    if (supported_model_spec->base_model_name() != registered_spec.model_name ||
-        supported_model_spec->base_model_version() !=
-            registered_spec.model_version) {
-      return OnDeviceModelAdaptationAvailability::kAdaptationModelIncompatible;
-    }
-    if (!ArePerformanceHintsCompatible(*supported_model_spec,
-                                       registered_spec)) {
-      return OnDeviceModelAdaptationAvailability::
-          kAdaptationModelHintsIncompatible;
-    }
+  if (supported_model_spec->base_model_name() != registered_spec.model_name ||
+      supported_model_spec->base_model_version() !=
+          registered_spec.model_version) {
+    return OnDeviceModelAdaptationAvailability::kAdaptationModelIncompatible;
+  }
+  if (!ArePerformanceHintsCompatible(*supported_model_spec, registered_spec)) {
+    return OnDeviceModelAdaptationAvailability::
+        kAdaptationModelHintsIncompatible;
   }
   return std::nullopt;
 }
@@ -244,8 +239,7 @@ void OnDeviceModelAdaptationLoader::MaybeRegisterModelDownload(
   bool is_background_download_enabled_for_feature =
       features::IsOnDeviceModelBackgroundDownloadEnabledForFeature(feature_);
 
-  if (!switches::GetOnDeviceModelExecutionOverride() &&
-      !was_feature_recently_used &&
+  if (!was_feature_recently_used &&
       !is_background_download_enabled_for_feature) {
     RecordAdaptationModelAvailability(
         feature_, OnDeviceModelAdaptationAvailability::kFeatureNotRecentlyUsed);

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/current_thread.h"
@@ -26,7 +25,6 @@
 #include "components/optimization_guide/core/model_execution/test/mock_on_device_capability.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/passage_embeddings_model_metadata.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/optimization_guide/public/mojom/model_broker.mojom-shared.h"
@@ -56,7 +54,6 @@
 using optimization_guide::MockSession;
 
 using testing::_;
-using testing::AtMost;
 using testing::NiceMock;
 
 namespace {
@@ -254,26 +251,6 @@ class AIManagerTest : public AITestUtils::AITestBase {
       fake_component_updater_ptr_;
 #endif
 };
-
-// Tests that involve invalid on-device model file paths should not crash when
-// the associated RFH is destroyed.
-TEST_F(AIManagerTest, NoUAFWithInvalidOnDeviceModelPath) {
-  auto* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->AppendSwitchASCII(
-      optimization_guide::switches::kOnDeviceModelExecutionOverride,
-      "invalid-on-device-model-file-path");
-
-  base::MockCallback<blink::mojom::AIManager::CanCreateLanguageModelCallback>
-      callback;
-  EXPECT_CALL(callback, Run(_)).Times(AtMost(1));
-  ai_manager_->CanCreateLanguageModel(/*options=*/{}, callback.Get());
-
-  // The callback may still be pending, delete the WebContents and destroy the
-  // associated RFH, which should not result in a UAF.
-  DeleteContents();
-
-  task_environment()->RunUntilIdle();
-}
 
 TEST_F(AIManagerTest, CanCreate) {
   // Model is not downloaded until first session is created, so `CanCreate`

@@ -183,13 +183,6 @@ class AIManager : public base::SupportsUserData::Data,
   bool IsBlocked(std::optional<network::mojom::PermissionsPolicyFeature>
                      feature = std::nullopt);
 
-  void OnModelPathValidationComplete(const base::FilePath& model_path,
-                                     bool is_valid_path);
-
-  // Validates the overridden on-device model path if one is configured via
-  // switch.
-  void StartModelPathValidationIfOverrideSet();
-
   void OnSemanticEmbedderModelReady(
       mojo::PendingRemote<blink::mojom::AIManagerCreateSemanticEmbedderClient>
           client);

@@ -9,7 +9,6 @@
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/omnibox/browser/omnibox_pref_names.h"
 #import "components/optimization_guide/core/hints/optimization_metadata.h"
-#import "components/optimization_guide/core/optimization_guide_switches.h"
 #import "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
 #import "components/optimization_guide/proto/hints.pb.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"

@@ -11,8 +11,6 @@
 #include "base/containers/fixed_flat_set.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -20,8 +18,6 @@
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
@@ -50,7 +46,6 @@
 #include "components/optimization_guide/core/model_execution/on_device_features.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
-#include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/feature_configs.pb.h"
 #include "components/optimization_guide/proto/features/prompt_api.pb.h"
@@ -1553,8 +1548,6 @@ void AIManager::CanCreateSession(
     optimization_guide::mojom::OnDeviceFeature capability,
     on_device_model::Capabilities capabilities,
     CanCreateLanguageModelCallback callback) {
-  StartModelPathValidationIfOverrideSet();
-
   if (!model_broker_client_) {
     std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
                                 kUnavailableServiceNotRunning);
@@ -1571,16 +1564,6 @@ void AIManager::CanCreateSession(
 void AIManager::CanCreateSession(const std::string& use_case_string,
                                  on_device_model::Capabilities capabilities,
                                  CanCreateLanguageModelCallback callback) {
-  auto model_path =
-      optimization_guide::switches::GetOnDeviceModelExecutionOverride();
-  if (model_path.has_value()) {
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()},
-        base::BindOnce(base::PathExists, model_path.value()),
-        base::BindOnce(&AIManager::OnModelPathValidationComplete,
-                       weak_factory_.GetWeakPtr(), model_path.value()));
-  }
-
   if (!model_broker_client_) {
     std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
                                 kUnavailableServiceNotRunning);
@@ -1617,8 +1600,6 @@ void AIManager::CanCreateSessionWithConfig(
     on_device_model::Capabilities capabilities,
     CanCreateLanguageModelCallback callback,
     UseCaseResolver resolver) {
-  StartModelPathValidationIfOverrideSet();
-
   if (!model_broker_client_) {
     std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
                                 kUnavailableServiceNotRunning);
@@ -1841,31 +1822,6 @@ bool AIManager::IsBlocked(
     return true;
   }
   return GetPrefBlockedResult().has_value();
-}
-
-void AIManager::OnModelPathValidationComplete(const base::FilePath& model_path,
-                                              bool is_valid_path) {
-  // TODO(crbug.com/346491542): Remove this when the error page is implemented.
-  if (!is_valid_path) {
-    VLOG(1) << base::StringPrintf(
-        "Unable to create a session because the model path ('%s') is invalid.",
-        model_path.AsUTF8Unsafe());
-  }
-}
-
-void AIManager::StartModelPathValidationIfOverrideSet() {
-  auto model_path =
-      optimization_guide::switches::GetOnDeviceModelExecutionOverride();
-  if (model_path.has_value()) {
-    // If the model path is provided, we do this additional check and post a
-    // warning message to dev tools if it does not exist.
-    // This needs to be done in a task runner with `MayBlock` trait.
-    base::ThreadPool::PostTaskAndReplyWithResult(
-        FROM_HERE, {base::MayBlock()},
-        base::BindOnce(base::PathExists, model_path.value()),
-        base::BindOnce(&AIManager::OnModelPathValidationComplete,
-                       weak_factory_.GetWeakPtr(), model_path.value()));
-  }
 }
 
 void AIManager::CanCreateSemanticEmbedder(

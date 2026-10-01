@@ -84,8 +84,6 @@ component("features") {
     "optimization_guide_features.h",
     "optimization_guide_prefs.cc",
     "optimization_guide_prefs.h",
-    "optimization_guide_switches.cc",
-    "optimization_guide_switches.h",
   ]
   public_deps = [
     "//base",
@@ -706,20 +704,10 @@ group("test_support") {
 if (is_ios) {
   source_set("eg_test_support+eg2") {
     testonly = true
-    sources = [
-      "optimization_guide_enums.h",
-      "optimization_guide_switches.cc",
-      "optimization_guide_switches.h",
-    ]
+    sources = [ "optimization_guide_enums.h" ]
     public_deps = [
       ":core_util",
       ":hints_test_support",
-    ]
-    deps = [
-      "//base",
-      "//components/optimization_guide/proto:optimization_guide_proto",
-      "//google_apis",
-      "//url",
     ]
   }
 }
