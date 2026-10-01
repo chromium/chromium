@@ -6,7 +6,6 @@
 #define COMPONENTS_PAGE_LOAD_METRICS_BROWSER_NAVIGATION_INITIATOR_H_
 
 #include <compare>
-#include <optional>
 #include <string_view>
 
 #include "base/check.h"
@@ -87,8 +86,9 @@ namespace navigation_initiator {
 // have a dedicated `NavigationInitiator`.
 inline constexpr NavigationInitiator kOther{0, "Other"};
 
-// The following are derived from `ui::PageTransition`, not attached by a
-// trigger. See the comment of `NavigationInitiator`.
+// The following are derived from `ui::PageTransition` in
+// `GetNavigationInitiator()`, not attached by a trigger. See the comment of
+// `NavigationInitiator`.
 inline constexpr NavigationInitiator kLinkClick{5, "LinkClick"};
 inline constexpr NavigationInitiator kForward{6, "Forward"};
 inline constexpr NavigationInitiator kBackward{7, "Backward"};
@@ -123,31 +123,15 @@ class NavigationInitiatorHolder
   NAVIGATION_HANDLE_USER_DATA_KEY_DECL();
 };
 
-// Returns the `NavigationInitiator` that the trigger of `navigation_handle`
-// attached, if any.
+// Returns the `NavigationInitiator` for `navigation_handle`, derived from
+// `ui::PageTransition` or an attached `NavigationInitiatorHolder`, falling back
+// to `kOther`.
 //
-// Timing of availability: The same as `NavigationHandleUserData`, i.e. the
-// attachment is not guaranteed to be done at
-// `PageLoadMetricsObserver::OnStart()`.
-// `PageLoadMetricsObserver::OnCommit()` (or `DidActivatePrerenderedPage()` for
-// prerender activation) is a reliable timing.
-//
-// TODO(https://crbug.com/517725655): This returns nullopt if the trigger is
-// not yet migrated to `NavigationInitiatorHolder`, and callers have to fall
-// back to the legacy path. Make this return `NavigationInitiator`, deriving
-// one from `ui::PageTransition` as the fallback, once all the triggers are
-// migrated.
-std::optional<NavigationInitiator> GetNavigationInitiator(
-    content::NavigationHandle& navigation_handle);
-
-// Returns the id of the initiator of `navigation_handle`, falling back
-// to the legacy `NavigationHandleUserData` and then to
-// `navigation_initiator::kOther`.
-//
-// TODO(https://crbug.com/517725655): Remove this and use
-// `GetNavigationInitiator()` once all the triggers are migrated to
-// `NavigationInitiatorHolder`.
-int64_t GetAttachedNavigationInitiatorId(
+// Timing of availability: The attachment is not guaranteed to be done at
+// `PageLoadMetricsObserver::OnStart()`. `PageLoadMetricsObserver::OnCommit()`
+// (or `DidActivatePrerenderedPage()` for prerender activation) is a reliable
+// timing.
+NavigationInitiator GetNavigationInitiator(
     content::NavigationHandle& navigation_handle);
 
 }  // namespace page_load_metrics

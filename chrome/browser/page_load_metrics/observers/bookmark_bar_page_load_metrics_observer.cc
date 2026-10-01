@@ -4,8 +4,7 @@
 
 #include "chrome/browser/page_load_metrics/observers/bookmark_bar_page_load_metrics_observer.h"
 
-
-#include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
+#include "chrome/browser/page_load_metrics/chrome_navigation_initiator.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
 
@@ -65,8 +64,8 @@ BookmarkBarMetricsObserver::OnCommit(
   // We set the navigation initiator for all BookmarkBar triggered prerender
   // and non-prerender navigation. We check it here to keep on monitoring only
   // BookmarkBar triggered cases.
-  if (GetAttachedChromeInitiatorLocation(*navigation_handle) !=
-      ChromeInitiatorLocation::kBookmarkBar) {
+  if (page_load_metrics::GetNavigationInitiator(*navigation_handle) !=
+      chrome_navigation_initiator::kBookmarkBar) {
     return STOP_OBSERVING;
   }
   return CONTINUE_OBSERVING;

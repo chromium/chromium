@@ -5,7 +5,6 @@
 #include "chrome/browser/page_load_metrics/observers/navigation_initiator_page_load_metrics_observer.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
 #include "components/google/core/common/google_util.h"
 #include "components/page_load_metrics/browser/navigation_initiator.h"
 #include "content/public/browser/navigation_handle.h"
@@ -20,62 +19,24 @@ void RecordInitiatorMetrics(content::NavigationHandle& navigation_handle) {
   // `Navigation.InitiatorType.SRP` and `PreloadServingMetrics.*.SRP` are
   // comparable.
   bool is_srp = google_util::IsGoogleSearchUrl(navigation_handle.GetURL());
-  const ChromeInitiatorLocation initiator_location = [&]() {
-    // Back/forward navigation and BFCache restore must be checked before reload
-    // because back/forward navigations to an entry that was previously reloaded
-    // have a transition type of `PAGE_TRANSITION_RELOAD |
-    // PAGE_TRANSITION_FORWARD_BACK`. `PageTransitionCoreTypeIs()` strips
-    // qualifiers like `PAGE_TRANSITION_FORWARD_BACK`, so checking for reload
-    // first would misclassify back/forward navigations as `kReload`.
-    if ((transition & ui::PAGE_TRANSITION_FORWARD_BACK) ||
-        navigation_handle.IsServedFromBackForwardCache()) {
-      int history_offset = navigation_handle.GetNavigationEntryOffset();
-      if (history_offset < 0) {
-        return ChromeInitiatorLocation::kBackward;
-      } else if (history_offset > 0) {
-        return ChromeInitiatorLocation::kForward;
-      }
-      // `history_offset` can be 0 when a reload navigation is served from
-      // BFCache (crbug.com/420769973). Fall through to the subsequent checks so
-      // that it is classified as `kReload`.
-      // TODO(crbug.com/420769973): Fix this behavior, and avoid the
-      // fall-through.
-    }
-    if (ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_RELOAD)) {
-      return ChromeInitiatorLocation::kReload;
-    }
-    // Note: The lookup of the initiator must be done here, not at the
-    // beginning of this lambda, to keep the precedence of
-    // `ui::PageTransition` above.
-    if (std::optional<ChromeInitiatorLocation> attached =
-            GetAttachedChromeInitiatorLocation(navigation_handle)) {
-      return *attached;
-    }
-    if (navigation_handle.IsRendererInitiated() &&
-        navigation_handle.HasUserGesture()) {
-      if (ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_LINK)) {
-        return ChromeInitiatorLocation::kLinkClick;
-      }
 
-      if (ui::PageTransitionCoreTypeIs(transition,
-                                       ui::PAGE_TRANSITION_FORM_SUBMIT)) {
-        return ChromeInitiatorLocation::kFormSubmission;
-      }
-    }
-    return ChromeInitiatorLocation::kOther;
-  }();
+  const page_load_metrics::NavigationInitiator initiator =
+      page_load_metrics::GetNavigationInitiator(navigation_handle);
 
+  // Note: `UmaHistogramExactLinear()`, not `UmaHistogramEnumeration()`, as
+  // `page_load_metrics::NavigationInitiator` is an open enum whose values are
+  // defined across the layers.
   base::UmaHistogramExactLinear(
-      "Navigation.InitiatorType.All", static_cast<int>(initiator_location),
+      "Navigation.InitiatorType.All", initiator.id(),
       page_load_metrics::NavigationInitiator::kIdExclusiveMax);
 
   if (is_srp) {
     base::UmaHistogramExactLinear(
-        "Navigation.InitiatorType.SRP", static_cast<int>(initiator_location),
+        "Navigation.InitiatorType.SRP", initiator.id(),
         page_load_metrics::NavigationInitiator::kIdExclusiveMax);
   }
 
-  if (initiator_location == ChromeInitiatorLocation::kOther) {
+  if (initiator == page_load_metrics::navigation_initiator::kOther) {
     base::UmaHistogramSparse("Navigation.UnknownInitiator.PageTransition.All",
                              transition);
     if (is_srp) {

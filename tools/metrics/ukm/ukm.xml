@@ -17914,10 +17914,16 @@ be describing additional metrics about the same event.
       of the main frame request.
     </summary>
   </metric>
-  <metric name="Navigation.InitiatorLocation">
+  <metric name="Navigation.InitiatorLocation" enum="NavigationInitiatorType">
     <summary>
-      page_load_metrics::NavigationHandleUserData::InitiatorLocation enum value.
-      This field is used for identifying the types of prerender trigger.
+      Who or what triggered this navigation, as the id of a
+      page_load_metrics::NavigationInitiator.
+
+      Before M147 (2026-09) this was Other unless a navigation trigger, e.g. the
+      bookmark bar or the omnibox, attached the initiator explicitly. Since M147
+      the initiator is otherwise derived from ui::PageTransition, i.e. Forward,
+      Backward, Reload, Link Click or Form Submission, and only then falls back
+      to Other.
     </summary>
   </metric>
   <metric name="Navigation.PageEndReason3" enum="PageEndReason">
@@ -21490,10 +21496,16 @@ be describing additional metrics about the same event.
       for main frame request.
     </summary>
   </metric>
-  <metric name="Navigation.InitiatorLocation">
+  <metric name="Navigation.InitiatorLocation" enum="NavigationInitiatorType">
     <summary>
-      page_load_metrics::NavigationHandleUserData::InitiatorLocation enum value.
-      This field is used for identifying the types of prerender trigger.
+      Who or what triggered the activation navigation that this prerendered page
+      load fulfilled, as the id of a page_load_metrics::NavigationInitiator.
+
+      Before M147 (2026-09) this was Other unless a navigation trigger, e.g. the
+      bookmark bar or the omnibox, attached the initiator explicitly. Since M147
+      the initiator is otherwise derived from ui::PageTransition, i.e. Forward,
+      Backward, Reload, Link Click or Form Submission, and only then falls back
+      to Other.
     </summary>
   </metric>
   <metric name="Navigation.PageTransition">

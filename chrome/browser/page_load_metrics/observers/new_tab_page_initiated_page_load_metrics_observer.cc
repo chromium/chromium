@@ -4,8 +4,7 @@
 
 #include "chrome/browser/page_load_metrics/observers/new_tab_page_initiated_page_load_metrics_observer.h"
 
-
-#include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
+#include "chrome/browser/page_load_metrics/chrome_navigation_initiator.h"
 #include "chrome/browser/search/search.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
@@ -69,8 +68,8 @@ NewTabPageInitiatedPageLoadMetricsObserver::OnCommit(
   // `chrome_navigation_initiator::kNewTabPage` for all NewTabPage triggered
   // prerender and non-prerender navigation. The value is checked here to keep
   // on monitoring only NewTabPage triggered cases.
-  if (GetAttachedChromeInitiatorLocation(*navigation_handle) ==
-      ChromeInitiatorLocation::kNewTabPage) {
+  if (page_load_metrics::GetNavigationInitiator(*navigation_handle) ==
+      chrome_navigation_initiator::kNewTabPage) {
     return CONTINUE_OBSERVING;
   }
 

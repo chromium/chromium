@@ -165,8 +165,7 @@ void PrerenderPageLoadMetricsObserver::DidActivatePrerenderedPage(
           navigation_to_activation_time_.value().InMilliseconds())
       .SetNavigation_PageTransition(navigation_handle->GetPageTransition())
       .SetNavigation_InitiatorLocation(
-          page_load_metrics::GetAttachedNavigationInitiatorId(
-              *navigation_handle));
+          page_load_metrics::GetNavigationInitiator(*navigation_handle).id());
   builder.Record(ukm::UkmRecorder::Get());
 
   base::UmaHistogramBoolean(AppendSuffix(internal::kHistogramHostReused),

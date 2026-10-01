@@ -355,7 +355,7 @@ UkmPageLoadMetricsObserver::ObservePolicy UkmPageLoadMetricsObserver::OnCommit(
   }
 
   navigation_initiator_id_ =
-      page_load_metrics::GetAttachedNavigationInitiatorId(*navigation_handle);
+      page_load_metrics::GetNavigationInitiator(*navigation_handle).id();
 
   // The PageTransition for the navigation may be updated on commit.
   page_transition_ = navigation_handle->GetPageTransition();

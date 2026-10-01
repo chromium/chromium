@@ -348,7 +348,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="Form Submission"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/page_load_metrics/chrome_initiator_location.h:ChromeInitiatorLocation) -->
+<!-- LINT.ThenChange(//components/page_load_metrics/browser/navigation_initiator.h:PageLoadMetricsNavigationInitiator|//chrome/browser/page_load_metrics/chrome_navigation_initiator.h:ChromeNavigationInitiator) -->
 
 <enum name="NavigationIsGuest">
   <int value="0" label="Not a guest navigation"/>

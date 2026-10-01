@@ -19,7 +19,6 @@
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_features.h"
-#include "ui/base/page_transition_types.h"
 
 namespace {
 
@@ -108,65 +107,11 @@ bool IsPrefetch(content::UsedInstantLoad used_instant_load) {
 
 std::string GetNavigationInitiatorString(
     content::NavigationHandle& navigation_handle) {
-  // Back/forward navigation and BFCache restore must be checked before reload
-  // because back/forward navigations to an entry that was previously reloaded
-  // have a transition type of `PAGE_TRANSITION_RELOAD |
-  // PAGE_TRANSITION_FORWARD_BACK`. `PageTransitionCoreTypeIs()` strips
-  // qualifiers like `PAGE_TRANSITION_FORWARD_BACK`, so checking for reload
-  // first would misclassify back/forward navigations as "Reload".
-  if ((navigation_handle.GetPageTransition() &
-       ui::PAGE_TRANSITION_FORWARD_BACK) ||
-      navigation_handle.IsServedFromBackForwardCache()) {
-    int history_offset = navigation_handle.GetNavigationEntryOffset();
-    if (history_offset > 0) {
-      return "Forward";
-    }
-
-    if (history_offset < 0) {
-      return "Backward";
-    }
-
-    // `history_offset` can be 0 when a reload navigation is served from BFCache
-    // (crbug.com/420769973). Fall through to the subsequent checks so that it
-    // is classified as `kReload`.
-    // TODO(crbug.com/420769973): Fix this behavior, and avoid the fall-through.
-  }
-
-  if (ui::PageTransitionCoreTypeIs(navigation_handle.GetPageTransition(),
-                                   ui::PAGE_TRANSITION_RELOAD)) {
-    return "Reload";
-  }
-
-  // Note: The lookup of the initiator must be done here, not at the beginning
-  // of this function, to keep the precedence of `ui::PageTransition` above.
-  if (std::optional<page_load_metrics::NavigationInitiator> initiator =
-          page_load_metrics::GetNavigationInitiator(navigation_handle)) {
-    return std::string(initiator->name());
-  }
-
-  // TODO(https://crbug.com/517725655): Remove this legacy path once all the
-  // triggers are migrated to `NavigationInitiatorHolder`.
-  auto* user_data =
-      page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
-          navigation_handle);
-  if (user_data) {
-    return user_data->navigation_type_string();
-  }
-
-  if (navigation_handle.IsRendererInitiated() &&
-      navigation_handle.HasUserGesture()) {
-    if (ui::PageTransitionCoreTypeIs(navigation_handle.GetPageTransition(),
-                                     ui::PAGE_TRANSITION_LINK)) {
-      return "LinkClick";
-    }
-
-    if (ui::PageTransitionCoreTypeIs(navigation_handle.GetPageTransition(),
-                                     ui::PAGE_TRANSITION_FORM_SUBMIT)) {
-      return "FormSubmission";
-    }
-  }
-
-  return "Other";
+  // TODO(https://crbug.com/517725655): Hold the `NavigationInitiator` itself
+  // in `NavigationData` and drop this function. `name()` points to a static
+  // string, so the `std::string` copy is unnecessary.
+  return std::string(
+      page_load_metrics::GetNavigationInitiator(navigation_handle).name());
 }
 
 bool GetServedByLegacySearchPrefetch(
