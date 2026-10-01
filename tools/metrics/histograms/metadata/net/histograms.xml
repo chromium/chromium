@@ -43,6 +43,21 @@ chromium-metrics-reviews@google.com.
   <variant name=".Unknown" summary=""/>
 </variants>
 
+<!-- LINT.IfChange(PrewarmOutcome) -->
+
+<variants name="DeviceBoundSessionPrewarmOutcome">
+  <variant name=".FatalError"
+      summary="with a fatal error that terminated the session"/>
+  <variant name=".NotYetNeeded"
+      summary="with no session needing a refresh yet"/>
+  <variant name=".OtherTransientError"
+      summary="with a server or signing error"/>
+  <variant name=".Success" summary="with a successful refresh"/>
+  <variant name=".Unreachable" summary="with the refresh endpoint unreachable"/>
+</variants>
+
+<!-- LINT.ThenChange(//chrome/browser/net/device_bound_session_prewarmer.cc:PrewarmOutcome) -->
+
 <variants name="DnsOverHttpsSecure">
   <variant name="Insecure" summary="DoH is not enabled"/>
   <variant name="Secure" summary="DoH is enabled"/>
@@ -1954,8 +1969,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<!-- LINT.IfChange(PrewarmDurationOutcome) -->
-
 <histogram name="Net.DeviceBoundSessions.Prewarm.Duration{Outcome}" units="ms"
     expires_after="2027-09-30">
   <owner>ahijazi@chromium.org</owner>
@@ -1972,20 +1985,8 @@ chromium-metrics-reviews@google.com.
     one, in this order: .OtherTransientError, .Unreachable, .FatalError,
     .Success, .NotYetNeeded.
   </summary>
-  <token key="Outcome">
-    <variant name=".FatalError"
-        summary="with a fatal error that terminated the session"/>
-    <variant name=".NotYetNeeded"
-        summary="with no session needing a refresh yet"/>
-    <variant name=".OtherTransientError"
-        summary="with a server or signing error"/>
-    <variant name=".Success" summary="with a successful refresh"/>
-    <variant name=".Unreachable"
-        summary="with the refresh endpoint unreachable"/>
-  </token>
+  <token key="Outcome" variants="DeviceBoundSessionPrewarmOutcome"/>
 </histogram>
-
-<!-- LINT.ThenChange(//chrome/browser/net/device_bound_session_prewarmer.cc:PrewarmDurationOutcome) -->
 
 <histogram name="Net.DeviceBoundSessions.Prewarm.NextRefreshDelay" units="ms"
     expires_after="2027-09-30">
@@ -2002,6 +2003,25 @@ chromium-metrics-reviews@google.com.
     returned a next refresh time, i.e. whenever that time is used to schedule
     the next pre-warm.
   </summary>
+</histogram>
+
+<histogram name="Net.DeviceBoundSessions.Prewarm.Trigger{Outcome}"
+    enum="DeviceBoundSessionPrewarmTrigger" expires_after="2027-09-30">
+  <owner>ahijazi@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records what caused a Device Bound Session
+    (https://github.com/w3c/webappsec-dbsc/blob/main/README.md) pre-warm to be
+    issued, e.g. the pre-warmer starting, the next refresh time being reached, a
+    retry after an error, connectivity returning, or a new session. Recorded for
+    a pre-warm that completed {Outcome}.
+
+    Logged once per completed pre-warm that found at least one bound session,
+    i.e. alongside Net.DeviceBoundSessions.Prewarm.Duration.
+  </summary>
+  <token key="Outcome" variants="DeviceBoundSessionPrewarmOutcome">
+    <variant name="" summary="with any result"/>
+  </token>
 </histogram>
 
 <histogram name="Net.DeviceBoundSessions.PrewarmResult.{PrewarmType}"

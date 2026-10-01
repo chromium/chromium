@@ -29,8 +29,11 @@ using ::net::device_bound_sessions::RefreshResult;
 using ::net::device_bound_sessions::SessionAccess;
 using ::net::device_bound_sessions::SessionKey;
 using ::testing::_;
+using PrewarmTrigger = DeviceBoundSessionPrewarmer::PrewarmTrigger;
 
 namespace {
+
+constexpr char kTriggerHistogram[] = "Net.DeviceBoundSessions.Prewarm.Trigger";
 
 auto RunPrewarmCallback(
     std::optional<base::Time> earliest_next_refresh_time = std::nullopt,
@@ -435,6 +438,7 @@ TEST_F(
 
 TEST_F(DeviceBoundSessionPrewarmerTest,
        ReschedulesUsingDefaultIntervalOnTransientErrors) {
+  base::HistogramTester histogram_tester;
   DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider(),
                                         network_connection_tracker());
 
@@ -451,6 +455,10 @@ TEST_F(DeviceBoundSessionPrewarmerTest,
   // Since a transient error was provided, even without a next refresh time,
   // we should call the prewarmer again after the default interval (60s).
   task_environment_.FastForwardBy(base::Seconds(60));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kTriggerHistogram),
+      base::BucketsAre(base::Bucket(PrewarmTrigger::kStart, 1),
+                       base::Bucket(PrewarmTrigger::kTransientErrorRetry, 1)));
 }
 
 TEST_F(DeviceBoundSessionPrewarmerTest,
@@ -576,6 +584,10 @@ TEST_F(DeviceBoundSessionPrewarmerTest, LogsUmaMetricsOnPrewarmComplete) {
   histogram_tester.ExpectUniqueSample(
       "Net.DeviceBoundSessions.PrewarmResult.Scheduled",
       RefreshResult::kRefreshed, 1);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kTriggerHistogram),
+      base::BucketsAre(base::Bucket(PrewarmTrigger::kStart, 1),
+                       base::Bucket(PrewarmTrigger::kScheduledRefresh, 1)));
 }
 
 TEST_F(DeviceBoundSessionPrewarmerTest,
@@ -710,7 +722,8 @@ TEST_F(DeviceBoundSessionPrewarmerTest, RegistersObserverForPrewarmUrl) {
 }
 
 TEST_F(DeviceBoundSessionPrewarmerTest, NewSessionCreationTriggersPrewarm) {
-  // Initial Prewarm on Start(), returning no next refresh time.
+  base::HistogramTester histogram_tester;
+  // Initial Prewarm on Start(), returning no sessions or next refresh time.
   base::RunLoop initial_prewarm_loop;
   EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
       .WillOnce(RunPrewarmCallbackAndQuit(initial_prewarm_loop));
@@ -733,6 +746,8 @@ TEST_F(DeviceBoundSessionPrewarmerTest, NewSessionCreationTriggersPrewarm) {
   SessionAccess access{SessionAccess::AccessType::kCreation, session_key};
   WaitForObserverRemote()->OnDeviceBoundSessionAccessed(access);
   second_prewarm_loop.Run();
+  histogram_tester.ExpectUniqueSample(kTriggerHistogram,
+                                      PrewarmTrigger::kSessionCreated, 1);
 }
 
 TEST_F(DeviceBoundSessionPrewarmerTest,
@@ -830,6 +845,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest,
 }
 
 TEST_F(DeviceBoundSessionPrewarmerTest, ReconnectingRetriesUnreachable) {
+  base::HistogramTester histogram_tester;
   DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider(),
                                         network_connection_tracker());
   int calls = 0;
@@ -844,6 +860,9 @@ TEST_F(DeviceBoundSessionPrewarmerTest, ReconnectingRetriesUnreachable) {
   // Still unreachable, so the next reconnect retries again.
   ReconnectNetwork();
   EXPECT_EQ(calls, 3);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kTriggerHistogram),
+              base::BucketsAre(base::Bucket(PrewarmTrigger::kStart, 1),
+                               base::Bucket(PrewarmTrigger::kReconnect, 2)));
 
   prewarmer.Stop();
 }
@@ -965,6 +984,7 @@ TEST_F(DeviceBoundSessionPrewarmerTest,
 // result is retried once immediately.
 TEST_F(DeviceBoundSessionPrewarmerTest,
        ReconnectDuringPrewarmRetriesUnreachableOnce) {
+  base::HistogramTester histogram_tester;
   DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider(),
                                         network_connection_tracker());
   int calls = 0;
@@ -995,6 +1015,11 @@ TEST_F(DeviceBoundSessionPrewarmerTest,
   EXPECT_EQ(calls, 3);
   task_environment_.FastForwardBy(base::Seconds(1));
   EXPECT_EQ(calls, 4);
+  EXPECT_THAT(histogram_tester.GetAllSamples(kTriggerHistogram),
+              base::BucketsAre(
+                  base::Bucket(PrewarmTrigger::kStart, 1),
+                  base::Bucket(PrewarmTrigger::kTransientErrorRetry, 2),
+                  base::Bucket(PrewarmTrigger::kReconnectDuringPrewarm, 1)));
 
   prewarmer.Stop();
 }
@@ -1052,8 +1077,8 @@ struct PrewarmMetricsTestCase {
   std::vector<RefreshResult> results;
   // Offset from the completion time; `std::nullopt` returns no refresh time.
   std::optional<base::TimeDelta> next_refresh_offset;
-  // `nullptr` if no `Duration` sample is expected.
-  const char* expected_duration_suffix;
+  // `nullptr` if no `Duration` or `Trigger` sample is expected.
+  const char* expected_outcome_suffix;
   // `std::nullopt` if no `NextRefreshDelay` sample is expected.
   std::optional<base::TimeDelta> expected_next_refresh_delay;
 };
@@ -1162,16 +1187,29 @@ TEST_P(DeviceBoundSessionPrewarmerMetricsTest, LogsMetrics) {
   base::HistogramTester::CountsMap duration_counts =
       histogram_tester.GetTotalCountsForPrefix(
           "Net.DeviceBoundSessions.Prewarm.Duration.");
-  if (test_case.expected_duration_suffix) {
+  auto trigger_samples =
+      histogram_tester.GetAllSamplesForPrefix(kTriggerHistogram);
+  if (test_case.expected_outcome_suffix) {
     const std::string duration_histogram =
         base::StrCat({"Net.DeviceBoundSessions.Prewarm.Duration",
-                      test_case.expected_duration_suffix});
+                      test_case.expected_outcome_suffix});
     EXPECT_THAT(duration_counts,
                 testing::ElementsAre(testing::Pair(duration_histogram, 1)));
     histogram_tester.ExpectUniqueTimeSample(duration_histogram,
                                             kPrewarmDuration, 1);
+    // `Trigger` is logged alongside `Duration`, both unsliced and by outcome.
+    const auto started_once =
+        base::BucketsAre(base::Bucket(PrewarmTrigger::kStart, 1));
+    EXPECT_THAT(
+        trigger_samples,
+        testing::UnorderedElementsAre(
+            testing::Pair(kTriggerHistogram, started_once),
+            testing::Pair(base::StrCat({kTriggerHistogram,
+                                        test_case.expected_outcome_suffix}),
+                          started_once)));
   } else {
     EXPECT_THAT(duration_counts, testing::IsEmpty());
+    EXPECT_THAT(trigger_samples, testing::IsEmpty());
   }
 
   if (test_case.expected_next_refresh_delay) {
@@ -1194,7 +1232,8 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.name;
     });
 
-// Each pre-warm is timed from its own start, even when two are in flight.
+// Each pre-warm keeps its own start time and trigger, even when two are in
+// flight.
 TEST_F(DeviceBoundSessionPrewarmerTest, TimesOverlappingPrewarmsIndependently) {
   base::HistogramTester histogram_tester;
   std::vector<
@@ -1229,6 +1268,56 @@ TEST_F(DeviceBoundSessionPrewarmerTest, TimesOverlappingPrewarmsIndependently) {
   histogram_tester.ExpectTimeBucketCount(kHistogram, base::Milliseconds(150),
                                          1);
   histogram_tester.ExpectTimeBucketCount(kHistogram, base::Milliseconds(50), 1);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kTriggerHistogram),
+      base::BucketsAre(base::Bucket(PrewarmTrigger::kStart, 1),
+                       base::Bucket(PrewarmTrigger::kSessionCreated, 1)));
+
+  prewarmer.Stop();
+}
+
+TEST_F(DeviceBoundSessionPrewarmerTest,
+       RecordsNetworkServiceDisconnectedTrigger) {
+  base::HistogramTester histogram_tester;
+  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider(),
+                                        network_connection_tracker());
+  int calls = 0;
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
+      .WillRepeatedly(CountAndRespond(calls, {RefreshResult::kRefreshed}));
+
+  prewarmer.Start(/*is_startup_prewarm=*/true);
+  WaitForObserverRemote().reset();
+  task_environment_.FastForwardBy(base::Seconds(60));
+  ASSERT_EQ(calls, 2);
+
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples(kTriggerHistogram),
+      base::BucketsAre(
+          base::Bucket(PrewarmTrigger::kStart, 1),
+          base::Bucket(PrewarmTrigger::kNetworkServiceDisconnected, 1)));
+
+  prewarmer.Stop();
+}
+
+TEST_F(DeviceBoundSessionPrewarmerTest,
+       RecordsNetworkServiceUnavailableRetryTrigger) {
+  base::HistogramTester histogram_tester;
+  DeviceBoundSessionPrewarmer prewarmer(target_url_, GetManagerProvider(),
+                                        network_connection_tracker());
+  int calls = 0;
+  EXPECT_CALL(mock_session_manager(), PrewarmSessionsForUrl(target_url_, _))
+      .WillRepeatedly(CountAndRespond(calls, {RefreshResult::kRefreshed}));
+
+  session_manager_available_ = false;
+  prewarmer.Start(/*is_startup_prewarm=*/true);
+  ASSERT_EQ(calls, 0);
+
+  session_manager_available_ = true;
+  task_environment_.FastForwardBy(base::Seconds(60));
+  ASSERT_EQ(calls, 1);
+
+  histogram_tester.ExpectUniqueSample(
+      kTriggerHistogram, PrewarmTrigger::kNetworkServiceUnavailableRetry, 1);
 
   prewarmer.Stop();
 }

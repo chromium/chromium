@@ -57,7 +57,7 @@ PrewarmOutcome GetPrewarmOutcome(
   NOTREACHED();
 }
 
-// LINT.IfChange(PrewarmDurationOutcome)
+// LINT.IfChange(PrewarmOutcome)
 std::string_view GetPrewarmOutcomeSuffix(PrewarmOutcome outcome) {
   switch (outcome) {
     case PrewarmOutcome::kNotYetNeeded:
@@ -73,13 +73,13 @@ std::string_view GetPrewarmOutcomeSuffix(PrewarmOutcome outcome) {
   }
   NOTREACHED();
 }
-// LINT.ThenChange(//tools/metrics/histograms/metadata/net/histograms.xml:PrewarmDurationOutcome)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/net/histograms.xml:PrewarmOutcome)
 
-// Returns the `Net.DeviceBoundSessions.Prewarm.Duration` variant suffix for
-// `results`. A single pre-warm can return a mix of outcomes; it is recorded
-// under the least successful one, so that a failure is never hidden by
-// successes in the same pre-warm.
-std::string_view GetDurationOutcomeSuffix(
+// Returns the `Net.DeviceBoundSessions.Prewarm.Duration` and `.Trigger` variant
+// suffix for `results`. A single pre-warm can return a mix of outcomes; it is
+// recorded under the least successful one, so that a failure is never hidden
+// by successes in the same pre-warm.
+std::string_view GetResultsOutcomeSuffix(
     const std::vector<net::device_bound_sessions::RefreshResult>& results) {
   PrewarmOutcome outcome = PrewarmOutcome::kNotYetNeeded;
   for (net::device_bound_sessions::RefreshResult result : results) {
@@ -123,7 +123,7 @@ void DeviceBoundSessionPrewarmer::Start(bool is_startup_prewarm) {
 
   // Start the pre-warmer immediately on the first call.
   // Subsequent calls will be scheduled based on the Mojo response.
-  DoPrewarm();
+  DoPrewarm(PrewarmTrigger::kStart);
 }
 
 void DeviceBoundSessionPrewarmer::Stop() {
@@ -152,11 +152,11 @@ void DeviceBoundSessionPrewarmer::OnObserverDisconnected() {
   // The network service disconnected (e.g. crash). Schedule DoPrewarm()
   // after `kMinPrewarmInterval` to re-establish the observer and refresh
   // session state.
-  timer_.Start(FROM_HERE, base::Time::Now() + kMinPrewarmInterval, this,
-               &DeviceBoundSessionPrewarmer::DoPrewarm);
+  SchedulePrewarm(kMinPrewarmInterval,
+                  PrewarmTrigger::kNetworkServiceDisconnected);
 }
 
-void DeviceBoundSessionPrewarmer::DoPrewarm() {
+void DeviceBoundSessionPrewarmer::DoPrewarm(PrewarmTrigger trigger) {
   timer_.Stop();
 
   if (network::mojom::DeviceBoundSessionManager* session_manager =
@@ -167,11 +167,21 @@ void DeviceBoundSessionPrewarmer::DoPrewarm() {
     session_manager->PrewarmSessionsForUrl(
         prewarm_url_,
         base::BindOnce(&DeviceBoundSessionPrewarmer::OnPrewarmComplete,
-                       weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer()));
+                       weak_ptr_factory_.GetWeakPtr(), trigger,
+                       base::ElapsedTimer()));
   } else {
-    timer_.Start(FROM_HERE, base::Time::Now() + kMinPrewarmInterval, this,
-                 &DeviceBoundSessionPrewarmer::DoPrewarm);
+    SchedulePrewarm(kMinPrewarmInterval,
+                    PrewarmTrigger::kNetworkServiceUnavailableRetry);
   }
+}
+
+void DeviceBoundSessionPrewarmer::SchedulePrewarm(base::TimeDelta delay,
+                                                  PrewarmTrigger trigger) {
+  // Unretained is safe because `timer_` is owned by `this` and cancels the
+  // task when destroyed.
+  timer_.Start(FROM_HERE, base::Time::Now() + delay,
+               base::BindOnce(&DeviceBoundSessionPrewarmer::DoPrewarm,
+                              base::Unretained(this), trigger));
 }
 
 bool DeviceBoundSessionPrewarmer::IsTransientError(
@@ -193,6 +203,7 @@ bool DeviceBoundSessionPrewarmer::IsTransientError(
 }
 
 void DeviceBoundSessionPrewarmer::OnPrewarmComplete(
+    PrewarmTrigger trigger,
     base::ElapsedTimer prewarm_timer,
     const std::vector<net::device_bound_sessions::RefreshResult>& results,
     std::optional<base::Time> earliest_next_refresh_time) {
@@ -208,10 +219,17 @@ void DeviceBoundSessionPrewarmer::OnPrewarmComplete(
   }
 
   if (!results.empty()) {
+    const std::string_view outcome_suffix = GetResultsOutcomeSuffix(results);
+    base::UmaHistogramEnumeration("Net.DeviceBoundSessions.Prewarm.Trigger",
+                                  trigger);
+    base::UmaHistogramEnumeration(
+        base::StrCat(
+            {"Net.DeviceBoundSessions.Prewarm.Trigger", outcome_suffix}),
+        trigger);
     // Use `MediumTimes` because some refreshes take more than 10 seconds.
     base::UmaHistogramMediumTimes(
-        base::StrCat({"Net.DeviceBoundSessions.Prewarm.Duration",
-                      GetDurationOutcomeSuffix(results)}),
+        base::StrCat(
+            {"Net.DeviceBoundSessions.Prewarm.Duration", outcome_suffix}),
         prewarm_timer.Elapsed());
   }
 
@@ -219,7 +237,7 @@ void DeviceBoundSessionPrewarmer::OnPrewarmComplete(
       results, net::device_bound_sessions::RefreshResult::kUnreachable);
   const bool reconnected = std::exchange(retry_on_unreachable_, false);
   if (unreachable && reconnected) {
-    DoPrewarm();
+    DoPrewarm(PrewarmTrigger::kReconnectDuringPrewarm);
     return;
   }
   retry_on_reconnect_ = unreachable;
@@ -233,8 +251,7 @@ void DeviceBoundSessionPrewarmer::OnPrewarmComplete(
     // be set far in the future even if another session failed.
     // TODO(crbug.com/544602741): Revisit whether earliest_next_refresh_time
     // should account for failed sessions.
-    timer_.Start(FROM_HERE, base::Time::Now() + kMinPrewarmInterval, this,
-                 &DeviceBoundSessionPrewarmer::DoPrewarm);
+    SchedulePrewarm(kMinPrewarmInterval, PrewarmTrigger::kTransientErrorRetry);
     return;
   }
 
@@ -258,8 +275,7 @@ void DeviceBoundSessionPrewarmer::OnPrewarmComplete(
   // interval, schedule the next prewarm after `kMinPrewarmInterval` to avoid
   // infinite loops or excessive requests.
   base::TimeDelta delay = std::max(next_refresh_delay, kMinPrewarmInterval);
-  timer_.Start(FROM_HERE, now + delay, this,
-               &DeviceBoundSessionPrewarmer::DoPrewarm);
+  SchedulePrewarm(delay, PrewarmTrigger::kScheduledRefresh);
 }
 
 void DeviceBoundSessionPrewarmer::OnConnectionChanged(
@@ -273,7 +289,7 @@ void DeviceBoundSessionPrewarmer::OnConnectionChanged(
     return;
   }
   if (retry_on_reconnect_) {
-    DoPrewarm();
+    DoPrewarm(PrewarmTrigger::kReconnect);
   } else {
     // Harmless when idle: cleared when the next pre-warm is sent.
     retry_on_unreachable_ = true;
@@ -291,7 +307,7 @@ void DeviceBoundSessionPrewarmer::OnDeviceBoundSessionAccessed(
   // SessionAccess to avoid triggering an immediate prewarm IPC solely to
   // discover `earliest_next_refresh_time`.
   // TODO(crbug.com/566983318): Avoid overlapping a pre-warm in flight.
-  DoPrewarm();
+  DoPrewarm(PrewarmTrigger::kSessionCreated);
 }
 
 void DeviceBoundSessionPrewarmer::Clone(

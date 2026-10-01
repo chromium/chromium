@@ -630,6 +630,21 @@ historical analysis. -->
 
 <!-- LINT.ThenChange(//services/network/public/mojom/device_bound_sessions.mojom:DeviceBoundSessionDeletionReason) -->
 
+<!-- LINT.IfChange(DeviceBoundSessionPrewarmTrigger) -->
+
+<enum name="DeviceBoundSessionPrewarmTrigger">
+  <int value="0" label="Pre-warmer started"/>
+  <int value="1" label="Scheduled refresh"/>
+  <int value="2" label="Retry after transient error"/>
+  <int value="3" label="Reconnected after unreachable pre-warm"/>
+  <int value="4" label="Reconnected during unreachable pre-warm"/>
+  <int value="5" label="Session created"/>
+  <int value="6" label="Network service disconnected"/>
+  <int value="7" label="Retry after network service unavailable"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/net/device_bound_session_prewarmer.h:PrewarmTrigger) -->
+
 <!-- LINT.IfChange(DeviceBoundSessionProactiveRefreshAttempt) -->
 
 <enum name="DeviceBoundSessionProactiveRefreshAttempt">
