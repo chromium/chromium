@@ -116,6 +116,8 @@ class PasswordSuggestionGenerator {
   std::optional<autofill::Suggestion> GetWebauthnInlineQrCodeSuggestion() const;
 
  private:
+  bool IsLastCommittedUrlCryptographic() const;
+
   // If there are any fillable suggestions already in the list, append a "Manage
   // passwords" entry (and a preceding separator) to `suggestions`. If Passkeys
   // may assist with the focused field, adds the entry point to the hybrid

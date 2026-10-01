@@ -199,6 +199,11 @@ BASE_DECLARE_FEATURE(kPasswordSaveInContextErrorResolution);
 // Prevents offering Automatic Password Change on federated login.
 BASE_DECLARE_FEATURE(kPreventAPCOnFederatedLogin);
 
+// Kill switch for preventing non-HTTP suggestions from being offered in
+// manual fallback flows on HTTP pages.
+// TODO(crbug.com/562975181): Clean up in M160.
+BASE_DECLARE_FEATURE(kPreventNonHttpSuggestionsInHttpManualFallbackFlows);
+
 // Prevents password manager from showing save/update UI on federated login.
 BASE_DECLARE_FEATURE(kPreventPasswordManagerOnFederatedLogin);
 

@@ -182,6 +182,9 @@ BASE_FEATURE(kPasswordSaveInContextErrorResolution,
 
 BASE_FEATURE(kPreventAPCOnFederatedLogin, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kPreventNonHttpSuggestionsInHttpManualFallbackFlows,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPreventPasswordManagerOnFederatedLogin,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/password_suggestion_generator.h"
 
+#include <algorithm>
 #include <functional>
 #include <set>
 #include <string>
@@ -273,11 +274,25 @@ Suggestion CreateViewPasswordDetailsChildSuggestion(
   return view_password_details;
 }
 
+Suggestion CreateSectionTitle(int string_id) {
+  Suggestion title(l10n_util::GetStringUTF16(string_id),
+                   SuggestionType::kTitle);
+  title.filtration_policy =
+      Suggestion::FiltrationPolicy::kPresentOnlyWithoutFilter;
+  return title;
+}
+
+// Only plain-HTTP web credentials may be offered on a non-cryptographic page.
+bool IsHttpRealm(const std::string& signon_realm) {
+  return GURL(signon_realm).SchemeIs(url::kHttpScheme);
+}
+
 void AppendManualFallbackSuggestions(
     const CredentialUIEntry& credential,
     IsTriggeredOnPasswordForm on_password_form,
     IsCrossDomain is_cross_origin,
     bool favicon_can_be_requested_from_google,
+    bool is_current_url_cryptographic,
     std::vector<Suggestion>* suggestions,
     Suggestion::FiltrationPolicy filtration_policy) {
   // A separate suggestion with the same (username, password) pair is displayed
@@ -286,6 +301,12 @@ void AppendManualFallbackSuggestions(
   // websites.
   for (const CredentialUIEntry::DomainInfo& domain_info :
        credential.GetAffiliatedDomains()) {
+    if (base::FeatureList::IsEnabled(
+            features::kPreventNonHttpSuggestionsInHttpManualFallbackFlows) &&
+        !is_current_url_cryptographic &&
+        !IsHttpRealm(domain_info.signon_realm)) {
+      continue;
+    }
     Suggestion suggestion(base::UTF8ToUTF16(domain_info.name), /*label=*/u"",
                           Suggestion::Icon::kGlobe,
                           SuggestionType::kPasswordEntry);
@@ -592,24 +613,17 @@ PasswordSuggestionGenerator::GetProactiveRecoverySuggestions(
   return suggestions;
 }
 
+bool PasswordSuggestionGenerator::IsLastCommittedUrlCryptographic() const {
+  return password_manager_driver_ &&
+         password_manager_driver_->GetLastCommittedURL()
+             .SchemeIsCryptographic();
+}
+
 std::vector<Suggestion>
 PasswordSuggestionGenerator::GetManualFallbackSuggestions(
     base::span<const PasswordForm> suggested_credentials,
     base::span<const CredentialUIEntry> credentials,
     IsTriggeredOnPasswordForm on_password_form) const {
-  std::vector<Suggestion> suggestions;
-  const bool generate_sections =
-      !suggested_credentials.empty() && !credentials.empty();
-  if (generate_sections) {
-    Suggestion title(
-        l10n_util::GetStringUTF16(
-            IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_SUGGESTED_PASSWORDS_SECTION_TITLE),
-        SuggestionType::kTitle);
-    title.filtration_policy =
-        Suggestion::FiltrationPolicy::kPresentOnlyWithoutFilter;
-    suggestions.push_back(std::move(title));
-  }
-
   auto* sync_service = password_client_->GetSyncService();
   const bool is_sync_passwords_enabled =
       sync_service &&
@@ -618,6 +632,8 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
   const bool is_passphrase_user =
       sync_service &&
       sync_service->GetUserSettings()->IsUsingExplicitPassphrase();
+
+  std::vector<Suggestion> suggested_suggestions;
   std::set<std::string> suggested_signon_realms;
   for (const auto& form : suggested_credentials) {
     const CredentialUIEntry ui_entry = CredentialUIEntry(form);
@@ -635,24 +651,14 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
     }
     AppendManualFallbackSuggestions(
         ui_entry, on_password_form, IsCrossDomain(is_cross_domain),
-        favicon_can_be_requested_from_google, &suggestions,
+        favicon_can_be_requested_from_google, IsLastCommittedUrlCryptographic(),
+        &suggested_suggestions,
         Suggestion::FiltrationPolicy::kPresentOnlyWithoutFilter);
   }
 
-  if (generate_sections) {
-    suggestions.emplace_back(
-        l10n_util::GetStringUTF16(
-            IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_ALL_PASSWORDS_SECTION_TITLE),
-        SuggestionType::kTitle);
-    suggestions.back().filtration_policy =
-        Suggestion::FiltrationPolicy::kPresentOnlyWithoutFilter;
-  }
-
-  // Only the "All passwords" section should be sorted alphabetically.
-  const size_t relevant_section_offset = suggestions.size();
-
+  std::vector<Suggestion> all_suggestions;
   for (const CredentialUIEntry& credential : credentials) {
-    // Check if any credential in the "Suggested" section has the same singon
+    // Check if any credential in the "Suggested" section has the same signon
     // realm as this `CredentialUIEntry`.
     const bool has_suggested_realm = std::ranges::any_of(
         credential.facets,
@@ -666,14 +672,32 @@ PasswordSuggestionGenerator::GetManualFallbackSuggestions(
         (is_sync_passwords_enabled || is_from_account) && !is_passphrase_user;
     AppendManualFallbackSuggestions(
         credential, on_password_form, IsCrossDomain(!has_suggested_realm),
-        favicon_can_be_requested_from_google, &suggestions,
-        Suggestion::FiltrationPolicy::kFilterable);
+        favicon_can_be_requested_from_google, IsLastCommittedUrlCryptographic(),
+        &all_suggestions, Suggestion::FiltrationPolicy::kFilterable);
   }
 
   std::ranges::sort(
-      suggestions.begin() + relevant_section_offset, suggestions.end(),
-      std::ranges::less(),
+      all_suggestions, std::ranges::less(),
       [](const Suggestion& suggestion) { return suggestion.main_text.value; });
+
+  if (suggested_suggestions.empty() && all_suggestions.empty()) {
+    return {};
+  }
+
+  if (!suggested_suggestions.empty() && !all_suggestions.empty()) {
+    suggested_suggestions.insert(
+        suggested_suggestions.begin(),
+        CreateSectionTitle(
+            IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_SUGGESTED_PASSWORDS_SECTION_TITLE));
+    all_suggestions.insert(
+        all_suggestions.begin(),
+        CreateSectionTitle(
+            IDS_PASSWORD_MANAGER_MANUAL_FALLBACK_ALL_PASSWORDS_SECTION_TITLE));
+  }
+
+  std::vector<Suggestion> suggestions;
+  base::Extend(suggestions, std::move(suggested_suggestions));
+  base::Extend(suggestions, std::move(all_suggestions));
 
   // Add "Manage all passwords" link to settings.
   AppendOptionalFooterSection(&suggestions);

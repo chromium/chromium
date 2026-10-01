@@ -289,6 +289,7 @@ class PasswordSuggestionGeneratorTest : public testing::Test {
     identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
     client_.SetIdentityManager(identity_test_env_->identity_manager());
 
+    driver_.set_last_committed_url(GURL(kExternalURL));
     ON_CALL(client_, GetSyncService).WillByDefault(Return(&sync_service()));
     ON_CALL(client_, GetWebAuthnCredentialsDelegateForDriver)
         .WillByDefault(Return(&credentials_delegate()));
@@ -410,6 +411,23 @@ class PasswordSuggestionGeneratorTest : public testing::Test {
         base::span(suggested_credentials), base::span(all_credentials),
         on_password_form);
   }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  auto ExpectedHttpManualFallbackSuggestions(
+      const std::u16string& username = u"username@example.com") {
+    return testing::ElementsAre(
+        EqualsManualFallbackSuggestion(
+            SuggestionType::kPasswordEntry, u"http://example.com", username,
+            Suggestion::Icon::kGlobe,
+            /*is_acceptable=*/true, gfx::Image(),
+            Suggestion::PasswordSuggestionDetails(username, u"password",
+                                                  "http://example.com/",
+                                                  u"http://example.com",
+                                                  /*is_cross_domain=*/true)),
+        EqualsSuggestion(SuggestionType::kSeparator),
+        EqualsManagePasswordsSuggestion());
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   void EnablePasswordSync() {
     ON_CALL(sync_service(), GetActiveDataTypes)
@@ -865,6 +883,67 @@ TEST_F(PasswordSuggestionGeneratorTest, ManualFallback_NoCredentials) {
       std::vector<PasswordForm>(), std::vector<CredentialUIEntry>(),
       IsTriggeredOnPasswordForm(true));
   EXPECT_THAT(suggestions, IsEmpty());
+}
+
+TEST_F(PasswordSuggestionGeneratorTest,
+       ManualFallback_HttpPage_FiltersOutHttpsCredentials) {
+  driver().set_last_committed_url(GURL("http://example.com/"));
+
+  EXPECT_THAT(GenerateBothSections({password_form()}, {credential_ui_entry()},
+                                   IsTriggeredOnPasswordForm(true)),
+              IsEmpty());
+}
+
+TEST_F(PasswordSuggestionGeneratorTest,
+       ManualFallback_HttpPage_AllowsHttpCredentials) {
+  driver().set_last_committed_url(GURL("http://example.com/"));
+
+  EXPECT_THAT(
+      GenerateAllPasswordsSection(
+          {CredentialUIEntry(CreateEntry("username@example.com", "password",
+                                         GURL("http://example.com/"),
+                                         affiliations::MatchType::kExact))},
+          IsTriggeredOnPasswordForm(true)),
+      ExpectedHttpManualFallbackSuggestions());
+}
+
+TEST_F(PasswordSuggestionGeneratorTest,
+       ManualFallback_HttpPage_FiltersOutAndroidCredentials) {
+  driver().set_last_committed_url(GURL("http://example.com/"));
+
+  EXPECT_THAT(GenerateBothSections({}, {android_credential_ui_entry()},
+                                   IsTriggeredOnPasswordForm(true)),
+              IsEmpty());
+}
+
+TEST_F(PasswordSuggestionGeneratorTest,
+       ManualFallback_HttpPage_MixedAffiliatedDomains) {
+  driver().set_last_committed_url(GURL("http://example.com/"));
+
+  EXPECT_THAT(
+      GenerateAllPasswordsSection(
+          {CredentialUIEntry({CreateEntry("user@example.com", "password",
+                                          GURL("https://example.com/"),
+                                          affiliations::MatchType::kExact),
+                              CreateEntry("user@example.com", "password",
+                                          GURL("http://example.com/"),
+                                          affiliations::MatchType::kExact)})},
+          IsTriggeredOnPasswordForm(true)),
+      ExpectedHttpManualFallbackSuggestions(u"user@example.com"));
+}
+
+TEST_F(PasswordSuggestionGeneratorTest,
+       ManualFallback_HttpPage_AsymmetricSections_NoSuggestedHeader) {
+  driver().set_last_committed_url(GURL("http://example.com/"));
+
+  EXPECT_THAT(
+      GenerateBothSections(
+          {password_form()},
+          {CredentialUIEntry(CreateEntry("username@example.com", "password",
+                                         GURL("http://example.com/"),
+                                         affiliations::MatchType::kExact))},
+          IsTriggeredOnPasswordForm(true)),
+      ExpectedHttpManualFallbackSuggestions());
 }
 
 TEST_F(PasswordSuggestionGeneratorTest,
