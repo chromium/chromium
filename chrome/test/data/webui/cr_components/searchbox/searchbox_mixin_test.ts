@@ -151,22 +151,13 @@ function createCalculatorMatch(modifiers: Partial<AutocompleteMatch>):
 
 function verifyMatch(match: AutocompleteMatch, matchEl: SearchboxMatchElement) {
   assertEquals('option', matchEl.getAttribute('role'));
-  const matchContents = match.contents;
-  const matchDescription =
-      match.description;
   const separatorText =
-      (match.swapContentsAndDescription ? match.contents : match.description) ?
-      loadTimeData.getString('searchboxSeparator') :
-      '';
+      match.description ? loadTimeData.getString('searchboxSeparator') : '';
   const contents = matchEl.$.contents.textContent;
   const separator = matchEl.$.separator.textContent;
   const description = matchEl.$.description.textContent;
   const text = contents + separator + description;
-  assertEquals(
-      match.swapContentsAndDescription ?
-          matchDescription + separatorText + matchContents :
-          matchContents + separatorText + matchDescription,
-      text);
+  assertEquals(match.contents + separatorText + match.description, text);
 }
 
 const FOCUS_EVENTS = ['blur', 'focus', 'focusin', 'focusout'] as const;

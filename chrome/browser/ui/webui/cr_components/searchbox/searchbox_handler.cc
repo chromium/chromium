@@ -967,14 +967,25 @@ SearchboxHandler::CreateAutocompleteMatch(
       searchbox::mojom::AutocompleteMatch::New();
   mojom_match->is_hidden = match.ShouldHideBasedOnStarterPack(turl_service);
   mojom_match->allowed_to_be_default_match = match.allowed_to_be_default_match;
-  mojom_match->contents = match.contents;
-  for (const auto& contents_class : match.contents_class) {
+  // Resolve `swap_contents_and_description` here so the UI can always render
+  // `contents` as the primary text and `description` as the secondary text.
+  const bool swap = match.swap_contents_and_description;
+  const std::u16string& primary_text =
+      swap ? match.description : match.contents;
+  const ACMatchClassifications& primary_class =
+      swap ? match.description_class : match.contents_class;
+  const std::u16string& secondary_text =
+      swap ? match.contents : match.description;
+  const ACMatchClassifications& secondary_class =
+      swap ? match.contents_class : match.description_class;
+  mojom_match->contents = primary_text;
+  for (const auto& contents_class : primary_class) {
     mojom_match->contents_class.push_back(
         searchbox::mojom::ACMatchClassification::New(contents_class.offset,
                                                      contents_class.style));
   }
-  mojom_match->description = match.description;
-  for (const auto& description_class : match.description_class) {
+  mojom_match->description = secondary_text;
+  for (const auto& description_class : secondary_class) {
     mojom_match->description_class.push_back(
         searchbox::mojom::ACMatchClassification::New(description_class.offset,
                                                      description_class.style));
@@ -1012,8 +1023,6 @@ SearchboxHandler::CreateAutocompleteMatch(
   mojom_match->fill_into_edit = match.fill_into_edit;
   mojom_match->inline_autocompletion = match.inline_autocompletion;
   mojom_match->is_search_type = AutocompleteMatch::IsSearchType(match.type);
-  mojom_match->swap_contents_and_description =
-      match.swap_contents_and_description;
   mojom_match->show_contextual_description = false;
   mojom_match->type = omnibox::AutocompleteMatchTypeToString(match.type);
   mojom_match->supports_deletion = match.SupportsDeletion();
