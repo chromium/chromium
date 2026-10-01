@@ -22,10 +22,7 @@ in this and other commands with your build directory.
 ***
 
 * Indexing is enabled by default (since clangd 9), note that this might consume
-  lots of CPU and RAM. There's also a
-  [remote-index service](https://github.com/clangd/chrome-remote-index/blob/main/docs/index.md)
-  to have an instant project-wide index without consuming local resources
-  (requires clangd 12+ built with remote index support).
+  lots of CPU and RAM.
 * Use clangd in your favourite editor
 
 ## Getting clangd
@@ -68,17 +65,6 @@ Once you have an appropriate clangd binary, you must configure your editor to
 use it, either by placing it first on your `PATH`, or through editor-specific
 configuration.
 
-*** note
-Note: The clangd provided by Chromium does not support optional features like
-remote indexing (see https://crbug.com/1358258), such that `clangd --version`
-will not mention `grpc`, and you will see “Unknown Index key External” warnings
-in the clangd log.
-
-If you want those features, you'll need to use a different build of clangd,
-such as the [clangd/clangd releases on
-GitHub](https://github.com/clangd/clangd/releases).
-***
-
 ## Setting Up
 
 1. Make sure generated ninja files are up-to-date.
@@ -114,11 +100,7 @@ inaccurate results for files which depend on generated headers.
 ninja -C out/Default chrome
 ```
 
-4. Optional: configure clangd to use remote-index service for an instant
-   project-wide index and reduced local CPU and RAM usage. See
-   [instructions](https://github.com/clangd/chrome-remote-index/blob/main/docs/index.md).
-
-5. Use clangd in your favourite editor, see detailed [instructions](
+4. Use clangd in your favourite editor, see detailed [instructions](
 https://clangd.llvm.org/installation.html#editor-plugins).
 
     * Optional: You may want to add `--header-insertion=never` to the clangd
@@ -144,12 +126,6 @@ compilation database). The index improves code navigation features
 Note: the first index time may take hours (for reference, it took 2~3 hours on
 a 48-core, 64GB machine). A full index of Chromium (including v8, blink) takes
 ~550 MB disk space and ~2.7 GB memory in clangd.
-
-Note: [Remote-index service](https://github.com/clangd/chrome-remote-index/blob/main/docs/index.md)
-replaces background-index with some downsides like being ~a day old (Clangd will
-still know about your changes in the current editing session) and not covering
-all configurations (not available for mac&windows specific code or non-main
-branches).
 
 ## Questions
 
