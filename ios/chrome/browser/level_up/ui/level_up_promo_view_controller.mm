@@ -27,8 +27,6 @@ constexpr CGFloat kBannerTitleGap = 24;
 constexpr CGFloat kSubtitleBottomMargin = 16;
 // Spacing between the text box boundary and the scroll container view.
 constexpr CGFloat kSubtitleHorizontalMargin = 16;
-// Checkmark icon point size in the checklist.
-constexpr CGFloat kCheckmarkSymbolPointSize = 24;
 // Vertical spacing between each item in the checklist.
 constexpr CGFloat kRowSpacing = 12;
 // Horizontal spacing between the checkmark icon and text in the checklist.
@@ -71,7 +69,6 @@ constexpr CGFloat kChecklistHorizontalMargin = 34;
 
   UIView* checklistView = [self createChecklistView];
   [self.specificContentView addSubview:checklistView];
-
   [NSLayoutConstraint activateConstraints:@[
     [checklistView.topAnchor
         constraintEqualToAnchor:self.specificContentView.topAnchor],
@@ -91,6 +88,8 @@ constexpr CGFloat kChecklistHorizontalMargin = 34;
 
   [super viewDidLoad];
   [NSLayoutConstraint activateConstraints:@[
+    [self.bannerImageView.widthAnchor
+        constraintEqualToAnchor:self.view.widthAnchor],
     [self.subtitleLabel.widthAnchor
         constraintLessThanOrEqualToAnchor:self.contentView.widthAnchor
                                  constant:-2 * kSubtitleHorizontalMargin],
@@ -182,7 +181,10 @@ constexpr CGFloat kChecklistHorizontalMargin = 34;
   UIStackView* verticalStack = [[UIStackView alloc] init];
   verticalStack.translatesAutoresizingMaskIntoConstraints = NO;
   verticalStack.axis = UILayoutConstraintAxisVertical;
-  verticalStack.spacing = kRowSpacing;
+  UIFontMetrics* fontMetrics =
+      [UIFontMetrics metricsForTextStyle:UIFontTextStyleHeadline];
+  verticalStack.spacing = [fontMetrics scaledValueForValue:kRowSpacing];
+
   verticalStack.alignment = UIStackViewAlignmentLeading;
 
   UIImage* checkmarkImage = [self checkmarkImage];
@@ -237,8 +239,9 @@ constexpr CGFloat kChecklistHorizontalMargin = 34;
 
 // Returns a blue checkmark symbol for the checklist items.
 - (UIImage*)checkmarkImage {
-  UIImage* checkmark =
-      SymbolWithPointSize(SymbolCheckmark, kCheckmarkSymbolPointSize);
+  UIImageSymbolConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithTextStyle:UIFontTextStyleHeadline];
+  UIImage* checkmark = SymbolWithConfiguration(SymbolCheckmark, configuration);
   return [checkmark imageWithTintColor:[UIColor colorNamed:kBlueColor]
                          renderingMode:UIImageRenderingModeAlwaysOriginal];
 }
