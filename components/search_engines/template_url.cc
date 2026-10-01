@@ -1327,8 +1327,17 @@ std::string TemplateURLRef::HandleReplacements(
         DCHECK(!replacement.is_post_param);
         if (search_terms_args.accepted_suggestion >= 0 ||
             search_terms_args.searchbox_stats.ByteSizeLong() > 0) {
-          HandleReplacement("oq", base::UTF16ToUTF8(encoded_original_query),
-                            replacement, &url);
+          std::string original_query =
+              base::UTF16ToUTF8(encoded_original_query);
+          if (base::FeatureList::IsEnabled(omnibox::kTruncateSearchSuggestOq)) {
+            const int max_length =
+                omnibox::kTruncateSearchSuggestOqLength.Get();
+            if (max_length >= 0 &&
+                original_query.length() > static_cast<size_t>(max_length)) {
+              original_query.resize(max_length);
+            }
+          }
+          HandleReplacement("oq", original_query, replacement, &url);
         }
         break;
 

@@ -2181,6 +2181,84 @@ TEST_F(TemplateURLTest, ExtraQueryParams) {
             url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
 }
 
+// Tests that kTruncateSearchSuggestOq truncates the length of the "oq"
+// parameter value.
+TEST_F(TemplateURLTest, TruncateSearchSuggestOq) {
+  TemplateURLData data;
+  data.SetURL(
+      "{google:baseURL}search?q={searchTerms}&"
+      "{google:originalQueryForSuggestion}");
+  TemplateURL url(data);
+
+  std::u16string long_query(2500, u'a');
+  TemplateURLRef::SearchTermsArgs search_terms(long_query);
+  search_terms.original_query = long_query;
+  search_terms.accepted_suggestion = 0;
+
+  // 1. By default, feature is disabled and the full original query is preserved
+  // in oq.
+  EXPECT_EQ(
+      "http://www.google.com/search?q=" + std::string(2500, 'a') +
+          "&oq=" + std::string(2500, 'a') + "&",
+      url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+
+  // 2. When feature is enabled with default param (2048), oq is truncated to
+  // 2048 chars.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeature(omnibox::kTruncateSearchSuggestOq);
+    EXPECT_EQ(
+        "http://www.google.com/search?q=" + std::string(2500, 'a') +
+            "&oq=" + std::string(2048, 'a') + "&",
+        url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+
+    // A query shorter than 2048 chars is not truncated.
+    std::u16string short_query = u"short";
+    search_terms.search_terms = short_query;
+    search_terms.original_query = short_query;
+    EXPECT_EQ(
+        "http://www.google.com/search?q=short&oq=short&",
+        url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+  }
+
+  // 3. When feature is enabled with custom param length.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kTruncateSearchSuggestOq,
+        {{"truncate_search_suggest_oq_length", "10"}});
+
+    std::u16string query_15 = u"abcdefghijklmno";
+    search_terms.search_terms = query_15;
+    search_terms.original_query = query_15;
+    EXPECT_EQ(
+        "http://www.google.com/search?q=abcdefghijklmno&oq=abcdefghij&",
+        url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+
+    std::u16string query_3 = u"abc";
+    search_terms.search_terms = query_3;
+    search_terms.original_query = query_3;
+    EXPECT_EQ(
+        "http://www.google.com/search?q=abc&oq=abc&",
+        url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+  }
+
+  // 4. When feature is enabled with custom param length of 0.
+  {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitAndEnableFeatureWithParameters(
+        omnibox::kTruncateSearchSuggestOq,
+        {{"truncate_search_suggest_oq_length", "0"}});
+
+    std::u16string query_3 = u"abc";
+    search_terms.search_terms = query_3;
+    search_terms.original_query = query_3;
+    EXPECT_EQ(
+        "http://www.google.com/search?q=abc&oq=&",
+        url.url_ref().ReplaceSearchTerms(search_terms, search_terms_data_));
+  }
+}
+
 // Tests replacing pageClassification.
 TEST_F(TemplateURLTest, ReplacePageClassification) {
   TemplateURLData data;

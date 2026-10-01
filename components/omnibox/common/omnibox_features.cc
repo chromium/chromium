@@ -433,6 +433,10 @@ BASE_FEATURE(kReportApplicationLanguageInSearchRequest, ENABLED);
 // When enabled, appends the invocation source parameter to search URLs.
 BASE_FEATURE(kOmniboxAppendInvocationSource, DISABLED);
 
+// When enabled, truncates the length of the value attached to the "oq" URL
+// parameter of search suggest URLs.
+BASE_FEATURE(kTruncateSearchSuggestOq, DISABLED);
+
 // Enable asynchronous Omnibox/Suggest view inflation.
 BASE_FEATURE(kOmniboxAsyncViewInflation, ENABLED);
 
