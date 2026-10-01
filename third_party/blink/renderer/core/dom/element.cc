@@ -4852,7 +4852,7 @@ void Element::AttachLayoutTree(AttachContext& context) {
   AttachContext children_context(context);
   LayoutObject* layout_object = nullptr;
   if (being_rendered) {
-    LayoutTreeBuilderForElement builder(*this, context, style);
+    LayoutTreeBuilderForElement builder(*this, context, *style);
     builder.CreateLayoutObject();
 
     layout_object = GetLayoutObject();

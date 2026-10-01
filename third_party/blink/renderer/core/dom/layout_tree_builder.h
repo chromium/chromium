@@ -56,7 +56,7 @@ class LayoutTreeBuilder {
  protected:
   LayoutTreeBuilder(NodeType& node,
                     Node::AttachContext& context,
-                    const ComputedStyle* style)
+                    const ComputedStyle& style)
       : node_(&node), context_(context), style_(style) {
     DCHECK(!node.GetLayoutObject());
     DCHECK(node.GetDocument().InStyleRecalc() ||
@@ -76,14 +76,14 @@ class LayoutTreeBuilder {
 
   NodeType* node_;
   Node::AttachContext& context_;
-  const ComputedStyle* style_;
+  const ComputedStyle& style_;
 };
 
 class LayoutTreeBuilderForElement : public LayoutTreeBuilder<Element> {
  public:
   LayoutTreeBuilderForElement(Element&,
                               Node::AttachContext&,
-                              const ComputedStyle*);
+                              const ComputedStyle&);
 
   void CreateLayoutObject();
 
@@ -96,7 +96,7 @@ class LayoutTreeBuilderForText : public LayoutTreeBuilder<Text> {
  public:
   LayoutTreeBuilderForText(Text& text,
                            Node::AttachContext& context,
-                           const ComputedStyle* style_from_parent)
+                           const ComputedStyle& style_from_parent)
       : LayoutTreeBuilder(text, context, style_from_parent) {}
 
   void CreateLayoutObject();

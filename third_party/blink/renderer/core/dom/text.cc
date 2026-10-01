@@ -385,7 +385,7 @@ void Text::AttachLayoutTree(AttachContext& context) {
               ? style_parent->GetLayoutObject()->StyleRef()
               : style_parent->ComputedStyleRef();
       if (TextLayoutObjectIsNeeded(context, style)) {
-        LayoutTreeBuilderForText(*this, context, &style).CreateLayoutObject();
+        LayoutTreeBuilderForText(*this, context, style).CreateLayoutObject();
         context.previous_in_flow = GetLayoutObject();
       }
     }
@@ -410,7 +410,7 @@ void Text::ReattachLayoutTreeIfNeeded(AttachContext& context) {
 
   if (layout_object_is_needed) {
     DCHECK(!GetLayoutObject());
-    LayoutTreeBuilderForText(*this, context, style_parent->GetComputedStyle())
+    LayoutTreeBuilderForText(*this, context, style_parent->ComputedStyleRef())
         .CreateLayoutObject();
   } else {
     DetachLayoutTree(/*performing_reattach=*/true);
