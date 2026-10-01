@@ -741,25 +741,20 @@ TEST_F(SigninMetricsServiceTest, ErrorNotificationEmptyAccount) {
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-class SigninMetricsServicePromoLimitsExperimentTest
-    : public SigninMetricsServiceTest {
+class SigninMetricsServicePromoShowCountTest : public SigninMetricsServiceTest {
  public:
-  SigninMetricsServicePromoLimitsExperimentTest() {
+  SigninMetricsServicePromoShowCountTest() {
     // Simulate registering it via signin_promo
     pref_service().registry()->RegisterIntegerPref(
-        prefs::kPasswordSignInPromoShownCountPerProfileForLimitsExperiment, 0);
+        prefs::kPasswordSignInPromoShownCountPerProfile, 0);
     pref_service().registry()->RegisterIntegerPref(
-        prefs::kAddressSignInPromoShownCountPerProfileForLimitsExperiment, 0);
+        prefs::kAddressSignInPromoShownCountPerProfile, 0);
     pref_service().registry()->RegisterIntegerPref(
-        prefs::kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment, 0);
+        prefs::kBookmarkSignInPromoShownCountPerProfile, 0);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      switches::kSigninPromoLimitsExperiment};
 };
 
-TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
+TEST_F(SigninMetricsServicePromoShowCountTest,
        AddressPromoShownCountAtSigninFromWebSignin) {
   base::HistogramTester histogram_tester;
   CreateSigninMetricsService();
@@ -767,9 +762,8 @@ TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
   // Set a random profile value, to ensure that this is not the value being
   // recorded.
   const size_t unexpected_value = 8;
-  pref_service().SetInteger(
-      prefs::kAddressSignInPromoShownCountPerProfileForLimitsExperiment,
-      unexpected_value);
+  pref_service().SetInteger(prefs::kAddressSignInPromoShownCountPerProfile,
+                            unexpected_value);
 
   SigninPrefs signin_prefs(pref_service());
   GaiaId gaia_id("gaia_id_for_test_gmail.com");
@@ -788,15 +782,14 @@ TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
       "Signin.ShowCountAtSignin.AddressSigninPromo", show_count, 1);
 }
 
-TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
+TEST_F(SigninMetricsServicePromoShowCountTest,
        AddressPromoShownCountAtSigninFromSignedOut) {
   base::HistogramTester histogram_tester;
   CreateSigninMetricsService();
 
   const size_t show_count = 3;
-  pref_service().SetInteger(
-      prefs::kAddressSignInPromoShownCountPerProfileForLimitsExperiment,
-      show_count);
+  pref_service().SetInteger(prefs::kAddressSignInPromoShownCountPerProfile,
+                            show_count);
 
   const std::string email("test@gmail.com");
   Signin(email, signin_metrics::AccessPoint::kAddressBubble);
@@ -805,7 +798,7 @@ TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
       "Signin.ShowCountAtSignin.AddressSigninPromo", show_count, 1);
 }
 
-TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
+TEST_F(SigninMetricsServicePromoShowCountTest,
        PasswordPromoShownCountAtSigninFromWebSignin) {
   base::HistogramTester histogram_tester;
   CreateSigninMetricsService();
@@ -813,9 +806,8 @@ TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
   // Set a random profile value, to ensure that this is not the value being
   // recorded.
   const size_t unexpected_value = 8;
-  pref_service().SetInteger(
-      prefs::kPasswordSignInPromoShownCountPerProfileForLimitsExperiment,
-      unexpected_value);
+  pref_service().SetInteger(prefs::kPasswordSignInPromoShownCountPerProfile,
+                            unexpected_value);
 
   SigninPrefs signin_prefs(pref_service());
   GaiaId gaia_id("gaia_id_for_test_gmail.com");
@@ -834,15 +826,14 @@ TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
       "Signin.ShowCountAtSignin.PasswordSigninPromo", show_count, 1);
 }
 
-TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
+TEST_F(SigninMetricsServicePromoShowCountTest,
        PasswordPromoShownCountAtSigninFromSignedOut) {
   base::HistogramTester histogram_tester;
   CreateSigninMetricsService();
 
   const size_t show_count = 3;
-  pref_service().SetInteger(
-      prefs::kPasswordSignInPromoShownCountPerProfileForLimitsExperiment,
-      show_count);
+  pref_service().SetInteger(prefs::kPasswordSignInPromoShownCountPerProfile,
+                            show_count);
 
   const std::string email("test@gmail.com");
 
@@ -852,7 +843,7 @@ TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
       "Signin.ShowCountAtSignin.PasswordSigninPromo", show_count, 1);
 }
 
-TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
+TEST_F(SigninMetricsServicePromoShowCountTest,
        BookmarkPromoShownCountAtSigninFromWebSignin) {
   base::HistogramTester histogram_tester;
   CreateSigninMetricsService();
@@ -860,9 +851,8 @@ TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
   // Set a random profile value, to ensure that this is not the value being
   // recorded.
   const size_t unexpected_value = 8;
-  pref_service().SetInteger(
-      prefs::kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment,
-      unexpected_value);
+  pref_service().SetInteger(prefs::kBookmarkSignInPromoShownCountPerProfile,
+                            unexpected_value);
 
   SigninPrefs signin_prefs(pref_service());
   GaiaId gaia_id("gaia_id_for_test_gmail.com");
@@ -881,15 +871,14 @@ TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
       "Signin.ShowCountAtSignin.BookmarkSigninPromo", show_count, 1);
 }
 
-TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
+TEST_F(SigninMetricsServicePromoShowCountTest,
        BookmarkPromoShownCountAtSigninFromSignedOut) {
   base::HistogramTester histogram_tester;
   CreateSigninMetricsService();
 
   const size_t show_count = 3;
-  pref_service().SetInteger(
-      prefs::kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment,
-      show_count);
+  pref_service().SetInteger(prefs::kBookmarkSignInPromoShownCountPerProfile,
+                            show_count);
 
   const std::string email("test@gmail.com");
   Signin(email, signin_metrics::AccessPoint::kBookmarkBubble);
@@ -898,7 +887,7 @@ TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
       "Signin.ShowCountAtSignin.BookmarkSigninPromo", show_count, 1);
 }
 
-TEST_F(SigninMetricsServicePromoLimitsExperimentTest,
+TEST_F(SigninMetricsServicePromoShowCountTest,
        UnoBubbleRepromptCountAtSigninFromWebSignin) {
   base::HistogramTester histogram_tester;
   CreateSigninMetricsService();

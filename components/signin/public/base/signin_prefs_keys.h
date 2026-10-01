@@ -54,48 +54,20 @@ inline constexpr std::string_view kChromeSigninInterceptionDismissCount =
 inline constexpr std::string_view kPasswordSignInPromoShownCount =
     "PasswordSignInPromoShownCount";
 
-// Pref to store the number of times the password bubble signin promo
-// has been shown per account used for SigninPromoLimitsExperiment.
-inline constexpr std::string_view
-    kPasswordSignInPromoShownCountForLimitsExperiment =
-        "PasswordSignInPromoShownCountForLimitsExperiment";
-
 // Pref to store the number of times the address bubble signin promo
 // has been shown per account.
 inline constexpr std::string_view kAddressSignInPromoShownCount =
     "AddressSignInPromoShownCount";
-
-// Pref to store the number of times the address bubble signin promo
-// has been shown per account used for SigninPromoLimitsExperiment.
-inline constexpr std::string_view
-    kAddressSignInPromoShownCountForLimitsExperiment =
-        "AddressSignInPromoShownCountForLimitsExperiment";
 
 // Pref to store the number of times the bookmark bubble signin promo
 // has been shown per account.
 inline constexpr std::string_view kBookmarkSignInPromoShownCount =
     "BookmarkSignInPromoShownCount";
 
-// Pref to store the number of times the bookmark bubble signin promo
-// has been shown per account used for SigninPromoLimitsExperiment.
-inline constexpr std::string_view
-    kBookmarkSignInPromoShownCountForLimitsExperiment =
-        "BookmarkSignInPromoShownCountForLimitsExperiment";
-
 // Pref to store the number of times any autofill bubble signin promo
 // has been dismissed per account.
 inline constexpr std::string_view kAutofillSignInPromoDismissCount =
     "AutofillSignInPromoDismissCount";
-
-// Pref to store the number of times the address bubble signin promo
-// has been dismissed per account.
-inline constexpr std::string_view kAddressSignInPromoDismissCount =
-    "AddressSignInPromoDismissCount";
-
-// Pref to store the number of times the bookmark bubble signin promo
-// has been dismissed per account used for SigninPromoLimitsExperiment.
-inline constexpr std::string_view kBookmarkSignInPromoDismissCount =
-    "BookmarkSignInPromoDismissCount";
 
 // Pref to store the number of times the bookmark manager signin promo has been
 // shown per account.
@@ -106,11 +78,6 @@ inline constexpr std::string_view kBookmarkManagerSignInPromoShownCount =
 // dismissed per account.
 inline constexpr std::string_view kBookmarkManagerSignInPromoDismissCount =
     "BookmarkManagerSignInPromoDismissCount";
-
-// Pref to store the number of times the password bubble signin promo
-// has been dismissed per account.
-inline constexpr std::string_view kPasswordSignInPromoDismissCount =
-    "PasswordSignInPromoDismissCount";
 
 // Pref to store the number of times the Search AI Mode bubble signin promo
 // has been shown per account.
@@ -220,6 +187,24 @@ inline constexpr std::string_view kDeprecatedSyncPromoIdentityPillShownCount =
 inline constexpr std::string_view kDeprecatedSyncPromoIdentityPillUsedCount =
     "SyncPromoIdentityPillUsedCount";
 
+// DEPRECATED(09/2026):
+// SigninPromoLimitsExperiment per-account shown and dismiss counts.
+inline constexpr std::string_view
+    kDeprecatedPasswordSignInPromoShownCountForLimitsExperiment =
+        "PasswordSignInPromoShownCountForLimitsExperiment";
+inline constexpr std::string_view
+    kDeprecatedAddressSignInPromoShownCountForLimitsExperiment =
+        "AddressSignInPromoShownCountForLimitsExperiment";
+inline constexpr std::string_view
+    kDeprecatedBookmarkSignInPromoShownCountForLimitsExperiment =
+        "BookmarkSignInPromoShownCountForLimitsExperiment";
+inline constexpr std::string_view kDeprecatedAddressSignInPromoDismissCount =
+    "AddressSignInPromoDismissCount";
+inline constexpr std::string_view kDeprecatedBookmarkSignInPromoDismissCount =
+    "BookmarkSignInPromoDismissCount";
+inline constexpr std::string_view kDeprecatedPasswordSignInPromoDismissCount =
+    "PasswordSignInPromoDismissCount";
+
 // All deprecated account-dict pref keys removed in
 // `SigninPrefs::MigrateObsoleteSigninPrefs()`.
 inline constexpr auto kDeprecatedSigninPrefs = std::to_array<std::string_view>({
@@ -228,6 +213,12 @@ inline constexpr auto kDeprecatedSigninPrefs = std::to_array<std::string_view>({
     kDeprecatedHistorySyncPromoIdentityPillUsedCount,
     kDeprecatedSyncPromoIdentityPillShownCount,
     kDeprecatedSyncPromoIdentityPillUsedCount,
+    kDeprecatedPasswordSignInPromoShownCountForLimitsExperiment,
+    kDeprecatedAddressSignInPromoShownCountForLimitsExperiment,
+    kDeprecatedBookmarkSignInPromoShownCountForLimitsExperiment,
+    kDeprecatedAddressSignInPromoDismissCount,
+    kDeprecatedBookmarkSignInPromoDismissCount,
+    kDeprecatedPasswordSignInPromoDismissCount,
 });
 //
 // End of DEPRECATED prefs.

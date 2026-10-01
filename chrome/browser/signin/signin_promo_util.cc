@@ -456,9 +456,7 @@ int GetAddressPromoShownCount(Profile& profile, const GaiaId& gaia_id) {
   }
 
   return profile.GetPrefs()->GetInteger(
-      base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
-          ? prefs::kAddressSignInPromoShownCountPerProfileForLimitsExperiment
-          : prefs::kAddressSignInPromoShownCountPerProfile);
+      prefs::kAddressSignInPromoShownCountPerProfile);
 }
 
 int GetPasswordPromoShownCount(Profile& profile, const GaiaId& gaia_id) {
@@ -468,9 +466,7 @@ int GetPasswordPromoShownCount(Profile& profile, const GaiaId& gaia_id) {
   }
 
   return profile.GetPrefs()->GetInteger(
-      base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
-          ? prefs::kPasswordSignInPromoShownCountPerProfileForLimitsExperiment
-          : prefs::kPasswordSignInPromoShownCountPerProfile);
+      prefs::kPasswordSignInPromoShownCountPerProfile);
 }
 
 int GetSearchAIModePromoShownCount(Profile& profile, const GaiaId& gaia_id) {
@@ -490,60 +486,39 @@ int GetBookmarkPromoShownCount(Profile& profile, const GaiaId& gaia_id) {
   }
 
   return profile.GetPrefs()->GetInteger(
-      base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
-          ? prefs::kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment
-          : prefs::kBookmarkSignInPromoShownCountPerProfile);
+      prefs::kBookmarkSignInPromoShownCountPerProfile);
 }
 
 int GetContextualPromoDismissCountPerSignedOutProfile(Profile& profile,
                                                       SignInPromoType type) {
-  if (ShouldUseAutofillSignInPromoLimits(type)) {
-    return profile.GetPrefs()->GetInteger(
-        prefs::kAutofillSignInPromoDismissCountPerProfile);
-  }
-
   switch (type) {
     case SignInPromoType::kAddress:
-      return profile.GetPrefs()->GetInteger(
-          prefs::kAddressSignInPromoDismissCountPerProfileForLimitsExperiment);
     case SignInPromoType::kPassword:
-      return profile.GetPrefs()->GetInteger(
-          prefs::kPasswordSignInPromoDismissCountPerProfileForLimitsExperiment);
     case SignInPromoType::kBookmark:
       return profile.GetPrefs()->GetInteger(
-          prefs::kBookmarkSignInPromoDismissCountPerProfileForLimitsExperiment);
+          prefs::kAutofillSignInPromoDismissCountPerProfile);
+    case SignInPromoType::kSearchAIMode:
+      return profile.GetPrefs()->GetInteger(
+          prefs::kSearchAIModeSignInPromoDismissCountPerProfile);
     case SignInPromoType::kExtension:
     case SignInPromoType::kSendTabToSelf:
     case SignInPromoType::kComposeboxDriveContextMenuOption:
       NOTREACHED();
-    case SignInPromoType::kSearchAIMode:
-      return profile.GetPrefs()->GetInteger(
-          prefs::kSearchAIModeSignInPromoDismissCountPerProfile);
   }
 }
 
 int GetContextualPromoDismissCountPerAccount(Profile& profile,
                                              SignInPromoType type,
                                              const GaiaId& gaia_id) {
-  if (ShouldUseAutofillSignInPromoLimits(type)) {
-    return SigninPrefs(*profile.GetPrefs())
-        .GetAutofillSigninPromoDismissCount(gaia_id);
-  }
-
   switch (type) {
     case SignInPromoType::kAddress:
-      return SigninPrefs(*profile.GetPrefs())
-          .GetAddressSigninPromoDismissCount(gaia_id);
     case SignInPromoType::kPassword:
+    case SignInPromoType::kBookmark:
       return SigninPrefs(*profile.GetPrefs())
-          .GetPasswordSigninPromoDismissCount(gaia_id);
+          .GetAutofillSigninPromoDismissCount(gaia_id);
     case SignInPromoType::kSearchAIMode:
       return SigninPrefs(*profile.GetPrefs())
           .GetSearchAIModeSigninPromoDismissCount(gaia_id);
-      NOTREACHED();
-    case SignInPromoType::kBookmark:
-      return SigninPrefs(*profile.GetPrefs())
-          .GetBookmarkSigninPromoDismissCount(gaia_id);
     case SignInPromoType::kExtension:
     case SignInPromoType::kSendTabToSelf:
     case SignInPromoType::kComposeboxDriveContextMenuOption:
@@ -594,13 +569,6 @@ bool ShouldShowPromoBasedOnImpressionOrDismissalCount(Profile& profile,
           ? GetContextualPromoDismissCountPerSignedOutProfile(profile, type)
           : GetContextualPromoDismissCountPerAccount(profile, type,
                                                      account.GetGaiaId());
-
-  if (base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment) &&
-      type != SignInPromoType::kSearchAIMode) {
-    return show_count < switches::kContextualSigninPromoShownThreshold.Get() &&
-           dismiss_count <
-               switches::kContextualSigninPromoDismissedThreshold.Get();
-  }
 
   // Don't show the promo again if:
   // - it has already been shown `kSigninPromoShownThreshold` times for its
@@ -899,18 +867,10 @@ void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
     const char* pref_name;
     switch (promo_type) {
       case SignInPromoType::kPassword:
-        pref_name =
-            base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
-                ? prefs::
-                      kPasswordSignInPromoShownCountPerProfileForLimitsExperiment
-                : prefs::kPasswordSignInPromoShownCountPerProfile;
+        pref_name = prefs::kPasswordSignInPromoShownCountPerProfile;
         break;
       case SignInPromoType::kAddress:
-        pref_name =
-            base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
-                ? prefs::
-                      kAddressSignInPromoShownCountPerProfileForLimitsExperiment
-                : prefs::kAddressSignInPromoShownCountPerProfile;
+        pref_name = prefs::kAddressSignInPromoShownCountPerProfile;
         break;
       case SignInPromoType::kSearchAIMode:
         pref_name = prefs::kSearchAIModeSignInPromoShownCountPerProfile;
@@ -922,11 +882,7 @@ void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
         if (!base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp)) {
           return;
         }
-        pref_name =
-            base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
-                ? prefs::
-                      kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment
-                : prefs::kBookmarkSignInPromoShownCountPerProfile;
+        pref_name = prefs::kBookmarkSignInPromoShownCountPerProfile;
         break;
       case SignInPromoType::kExtension:
       case SignInPromoType::kSendTabToSelf:
@@ -968,13 +924,6 @@ void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
     case SignInPromoType::kComposeboxDriveContextMenuOption:
       return;
   }
-}
-
-bool ShouldUseAutofillSignInPromoLimits(signin::SignInPromoType promo_type) {
-  return promo_type != signin::SignInPromoType::kSearchAIMode &&
-         promo_type !=
-             signin::SignInPromoType::kComposeboxDriveContextMenuOption &&
-         !base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment);
 }
 
 void RecordAvatarButtonPromoAcceptedAtPromoShownCount(

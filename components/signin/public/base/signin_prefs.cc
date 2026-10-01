@@ -215,56 +215,38 @@ int SigninPrefs::GetChromeSigninInterceptionDismissCount(
 
 void SigninPrefs::IncrementPasswordSigninPromoImpressionCount(
     const GaiaId& gaia_id) {
-  IncrementIntPrefForAccount(
-      gaia_id,
-      base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
-          ? signin::internal::kPasswordSignInPromoShownCountForLimitsExperiment
-          : signin::internal::kPasswordSignInPromoShownCount);
+  IncrementIntPrefForAccount(gaia_id,
+                             signin::internal::kPasswordSignInPromoShownCount);
 }
 
 int SigninPrefs::GetPasswordSigninPromoImpressionCount(
     const GaiaId& gaia_id) const {
-  return GetIntPrefForAccount(
-      gaia_id,
-      base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
-          ? signin::internal::kPasswordSignInPromoShownCountForLimitsExperiment
-          : signin::internal::kPasswordSignInPromoShownCount);
+  return GetIntPrefForAccount(gaia_id,
+                              signin::internal::kPasswordSignInPromoShownCount);
 }
 
 void SigninPrefs::IncrementAddressSigninPromoImpressionCount(
     const GaiaId& gaia_id) {
-  IncrementIntPrefForAccount(
-      gaia_id,
-      base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
-          ? signin::internal::kAddressSignInPromoShownCountForLimitsExperiment
-          : signin::internal::kAddressSignInPromoShownCount);
+  IncrementIntPrefForAccount(gaia_id,
+                             signin::internal::kAddressSignInPromoShownCount);
 }
 
 int SigninPrefs::GetAddressSigninPromoImpressionCount(
     const GaiaId& gaia_id) const {
-  return GetIntPrefForAccount(
-      gaia_id,
-      base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
-          ? signin::internal::kAddressSignInPromoShownCountForLimitsExperiment
-          : signin::internal::kAddressSignInPromoShownCount);
+  return GetIntPrefForAccount(gaia_id,
+                              signin::internal::kAddressSignInPromoShownCount);
 }
 
 void SigninPrefs::IncrementBookmarkSigninPromoImpressionCount(
     const GaiaId& gaia_id) {
-  IncrementIntPrefForAccount(
-      gaia_id,
-      base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
-          ? signin::internal::kBookmarkSignInPromoShownCountForLimitsExperiment
-          : signin::internal::kBookmarkSignInPromoShownCount);
+  IncrementIntPrefForAccount(gaia_id,
+                             signin::internal::kBookmarkSignInPromoShownCount);
 }
 
 int SigninPrefs::GetBookmarkSigninPromoImpressionCount(
     const GaiaId& gaia_id) const {
-  return GetIntPrefForAccount(
-      gaia_id,
-      base::FeatureList::IsEnabled(switches::kSigninPromoLimitsExperiment)
-          ? signin::internal::kBookmarkSignInPromoShownCountForLimitsExperiment
-          : signin::internal::kBookmarkSignInPromoShownCount);
+  return GetIntPrefForAccount(gaia_id,
+                              signin::internal::kBookmarkSignInPromoShownCount);
 }
 
 void SigninPrefs::IncrementBookmarkManagerSigninPromoImpressionCount(
@@ -313,42 +295,6 @@ int SigninPrefs::GetAutofillSigninPromoDismissCount(
     const GaiaId& gaia_id) const {
   return GetIntPrefForAccount(
       gaia_id, signin::internal::kAutofillSignInPromoDismissCount);
-}
-
-void SigninPrefs::IncrementAddressSigninPromoDismissCount(
-    const GaiaId& gaia_id) {
-  IncrementIntPrefForAccount(gaia_id,
-                             signin::internal::kAddressSignInPromoDismissCount);
-}
-
-int SigninPrefs::GetAddressSigninPromoDismissCount(
-    const GaiaId& gaia_id) const {
-  return GetIntPrefForAccount(
-      gaia_id, signin::internal::kAddressSignInPromoDismissCount);
-}
-
-void SigninPrefs::IncrementBookmarkSigninPromoDismissCount(
-    const GaiaId& gaia_id) {
-  IncrementIntPrefForAccount(
-      gaia_id, signin::internal::kBookmarkSignInPromoDismissCount);
-}
-
-int SigninPrefs::GetBookmarkSigninPromoDismissCount(
-    const GaiaId& gaia_id) const {
-  return GetIntPrefForAccount(
-      gaia_id, signin::internal::kBookmarkSignInPromoDismissCount);
-}
-
-void SigninPrefs::IncrementPasswordSigninPromoDismissCount(
-    const GaiaId& gaia_id) {
-  IncrementIntPrefForAccount(
-      gaia_id, signin::internal::kPasswordSignInPromoDismissCount);
-}
-
-int SigninPrefs::GetPasswordSigninPromoDismissCount(
-    const GaiaId& gaia_id) const {
-  return GetIntPrefForAccount(
-      gaia_id, signin::internal::kPasswordSignInPromoDismissCount);
 }
 
 void SigninPrefs::IncrementSearchAIModeSigninPromoDismissCount(

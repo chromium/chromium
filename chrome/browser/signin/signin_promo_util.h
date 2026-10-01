@@ -109,11 +109,6 @@ struct ProfileMenuAvatarButtonPromoInfo {
       default;
 };
 
-// Returns true if the sign-in promo for `promo_type` should use the legacy
-// global Autofill sign-in promo limits. This is true when the limits
-// experiment is disabled and the promo type is not Search AI Mode.
-bool ShouldUseAutofillSignInPromoLimits(signin::SignInPromoType promo_type);
-
 // Records the show count at which the AvatarButton was showing `promo_type`
 // for `gaia_id` that lead to the promo being accepted. `gaia_id` may be empty
 // which will record the value from the Profile prefs.

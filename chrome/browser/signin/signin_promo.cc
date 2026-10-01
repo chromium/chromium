@@ -229,19 +229,6 @@ void RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kHistoryPageHistorySyncPromoShownAfterDismissalPerProfile, false);
 
-  // Signin promo limits experiment prefs.
-  registry->RegisterIntegerPref(
-      prefs::kAddressSignInPromoShownCountPerProfileForLimitsExperiment, 0);
-  registry->RegisterIntegerPref(
-      prefs::kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment, 0);
-  registry->RegisterIntegerPref(
-      prefs::kPasswordSignInPromoShownCountPerProfileForLimitsExperiment, 0);
-  registry->RegisterIntegerPref(
-      prefs::kAddressSignInPromoDismissCountPerProfileForLimitsExperiment, 0);
-  registry->RegisterIntegerPref(
-      prefs::kPasswordSignInPromoDismissCountPerProfileForLimitsExperiment, 0);
-  registry->RegisterIntegerPref(
-      prefs::kBookmarkSignInPromoDismissCountPerProfileForLimitsExperiment, 0);
   registry->RegisterIntegerPref(
       prefs::kSearchAIModeSignInPromoShownCountPerProfile, 0);
   registry->RegisterIntegerPref(

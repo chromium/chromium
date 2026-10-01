@@ -84,11 +84,11 @@ extern const char kGaiaCookieLastListAccountsBinaryData[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kSigninAllowedOnNextStartup[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const char kAddressSignInPromoShownCountPerProfileForLimitsExperiment[];
+extern const char kAddressSignInPromoShownCountPerProfile[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const char kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment[];
+extern const char kBookmarkSignInPromoShownCountPerProfile[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
-extern const char kPasswordSignInPromoShownCountPerProfileForLimitsExperiment[];
+extern const char kPasswordSignInPromoShownCountPerProfile[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 extern const char kProfileSeparationSettings[];
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

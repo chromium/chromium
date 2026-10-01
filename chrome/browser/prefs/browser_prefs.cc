@@ -1089,6 +1089,20 @@ constexpr char kAudioApiStableDeviceIds[] =
     "extensions.audio.stable_device_ids";
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
+// Deprecated 09/2026.
+constexpr char kAddressSignInPromoShownCountPerProfileForLimitsExperiment[] =
+    "signin.AddressSignInPromoShownCountForLimitsExperiment";
+constexpr char kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment[] =
+    "signin.BookmarkSignInPromoShownCountForLimitsExperiment";
+constexpr char kPasswordSignInPromoShownCountPerProfileForLimitsExperiment[] =
+    "signin.PasswordSignInPromoShownCountForLimitsExperiment";
+constexpr char kAddressSignInPromoDismissCountPerProfileForLimitsExperiment[] =
+    "signin.AddressSignInPromoDismissCountForLimitsExperiment";
+constexpr char kBookmarkSignInPromoDismissCountPerProfileForLimitsExperiment[] =
+    "signin.BookmarkSignInPromoDismissCountForLimitsExperiment";
+constexpr char kPasswordSignInPromoDismissCountPerProfileForLimitsExperiment[] =
+    "signin.PasswordSignInPromoDismissCountForLimitsExperiment";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1524,6 +1538,20 @@ void RegisterProfilePrefsForMigration(
   // TODO(b/566104798): Clean up deleted pref code after 1 year.
   registry->RegisterListPref(kAudioApiStableDeviceIds);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+  // Deprecated 09/2026.
+  registry->RegisterIntegerPref(
+      kAddressSignInPromoShownCountPerProfileForLimitsExperiment, 0);
+  registry->RegisterIntegerPref(
+      kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment, 0);
+  registry->RegisterIntegerPref(
+      kPasswordSignInPromoShownCountPerProfileForLimitsExperiment, 0);
+  registry->RegisterIntegerPref(
+      kAddressSignInPromoDismissCountPerProfileForLimitsExperiment, 0);
+  registry->RegisterIntegerPref(
+      kBookmarkSignInPromoDismissCountPerProfileForLimitsExperiment, 0);
+  registry->RegisterIntegerPref(
+      kPasswordSignInPromoDismissCountPerProfileForLimitsExperiment, 0);
 }
 
 }  // namespace
@@ -2912,6 +2940,20 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // TODO(b/566104798): Clean up deleted pref code after 1 year.
   profile_prefs->ClearPref(kAudioApiStableDeviceIds);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
+
+  // Added 09/2026.
+  profile_prefs->ClearPref(
+      kAddressSignInPromoShownCountPerProfileForLimitsExperiment);
+  profile_prefs->ClearPref(
+      kBookmarkSignInPromoShownCountPerProfileForLimitsExperiment);
+  profile_prefs->ClearPref(
+      kPasswordSignInPromoShownCountPerProfileForLimitsExperiment);
+  profile_prefs->ClearPref(
+      kAddressSignInPromoDismissCountPerProfileForLimitsExperiment);
+  profile_prefs->ClearPref(
+      kBookmarkSignInPromoDismissCountPerProfileForLimitsExperiment);
+  profile_prefs->ClearPref(
+      kPasswordSignInPromoDismissCountPerProfileForLimitsExperiment);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

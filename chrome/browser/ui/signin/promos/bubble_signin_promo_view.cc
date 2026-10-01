@@ -241,43 +241,23 @@ void IncrementContextualPromoDismissCountPerSignedOutProfile(
     signin_metrics::AccessPoint access_point) {
   signin::SignInPromoType promo_type =
       signin::GetSignInPromoTypeFromAccessPoint(access_point);
-  if (signin::ShouldUseAutofillSignInPromoLimits(promo_type)) {
-    int dismiss_count = profile->GetPrefs()->GetInteger(
-        prefs::kAutofillSignInPromoDismissCountPerProfile);
-    profile->GetPrefs()->SetInteger(
-        prefs::kAutofillSignInPromoDismissCountPerProfile, dismiss_count + 1);
-    return;
-  }
-
   switch (promo_type) {
     case signin::SignInPromoType::kPassword:
-      return profile->GetPrefs()->SetInteger(
-          prefs::kPasswordSignInPromoDismissCountPerProfileForLimitsExperiment,
-          profile->GetPrefs()->GetInteger(
-              prefs::
-                  kPasswordSignInPromoDismissCountPerProfileForLimitsExperiment) +
-              1);
     case signin::SignInPromoType::kAddress:
-      return profile->GetPrefs()->SetInteger(
-          prefs::kAddressSignInPromoDismissCountPerProfileForLimitsExperiment,
-          profile->GetPrefs()->GetInteger(
-              prefs::
-                  kAddressSignInPromoDismissCountPerProfileForLimitsExperiment) +
-              1);
+    case signin::SignInPromoType::kBookmark: {
+      int dismiss_count = profile->GetPrefs()->GetInteger(
+          prefs::kAutofillSignInPromoDismissCountPerProfile);
+      profile->GetPrefs()->SetInteger(
+          prefs::kAutofillSignInPromoDismissCountPerProfile, dismiss_count + 1);
+      return;
+    }
     case signin::SignInPromoType::kSearchAIMode:
-      return profile->GetPrefs()->SetInteger(
+      profile->GetPrefs()->SetInteger(
           prefs::kSearchAIModeSignInPromoDismissCountPerProfile,
           profile->GetPrefs()->GetInteger(
               prefs::kSearchAIModeSignInPromoDismissCountPerProfile) +
               1);
-    case signin::SignInPromoType::kBookmark:
-      CHECK(base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp));
-      return profile->GetPrefs()->SetInteger(
-          prefs::kBookmarkSignInPromoDismissCountPerProfileForLimitsExperiment,
-          profile->GetPrefs()->GetInteger(
-              prefs::
-                  kBookmarkSignInPromoDismissCountPerProfileForLimitsExperiment) +
-              1);
+      return;
     case signin::SignInPromoType::kComposeboxDriveContextMenuOption:
       // Composebox Drive signin promo does not track dismiss counts as it is
       // explicitly triggered by the user from the context menu.
@@ -294,25 +274,12 @@ void IncrementContextualPromoDismissCountPerAccount(
     const AccountInfo& account) {
   signin::SignInPromoType promo_type =
       signin::GetSignInPromoTypeFromAccessPoint(access_point);
-  if (signin::ShouldUseAutofillSignInPromoLimits(promo_type)) {
-    SigninPrefs(*profile->GetPrefs())
-        .IncrementAutofillSigninPromoDismissCount(account.GetGaiaId());
-    return;
-  }
-
   switch (promo_type) {
     case signin::SignInPromoType::kPassword:
-      SigninPrefs(*profile->GetPrefs())
-          .IncrementPasswordSigninPromoDismissCount(account.GetGaiaId());
-      break;
     case signin::SignInPromoType::kAddress:
-      SigninPrefs(*profile->GetPrefs())
-          .IncrementAddressSigninPromoDismissCount(account.GetGaiaId());
-      break;
     case signin::SignInPromoType::kBookmark:
-      CHECK(base::FeatureList::IsEnabled(syncer::kUnoPhase2FollowUp));
       SigninPrefs(*profile->GetPrefs())
-          .IncrementBookmarkSigninPromoDismissCount(account.GetGaiaId());
+          .IncrementAutofillSigninPromoDismissCount(account.GetGaiaId());
       break;
     case signin::SignInPromoType::kSearchAIMode:
       SigninPrefs(*profile->GetPrefs())

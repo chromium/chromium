@@ -17046,23 +17046,6 @@
             ]
         }
     ],
-    "SigninPromoLimitsExperiment": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Control",
-                    "disable_features": [
-                        "SigninPromoLimitsExperiment"
-                    ]
-                }
-            ]
-        }
-    ],
     "SimdutfBase64Encode": [
         {
             "platforms": [
