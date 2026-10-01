@@ -62,7 +62,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
-#include "base/not_fatal_until.h"
 #include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
@@ -1372,8 +1371,7 @@ int32_t AwContents::GetEffectivePriority(JNIEnv* env) {
               ->GetProcess()
               ->GetEffectiveImportance()) {
     case content::ChildProcessImportance::NOT_PERCEPTIBLE:
-      NOTREACHED(base::NotFatalUntil::M140);
-      [[fallthrough]];
+      NOTREACHED();
     case content::ChildProcessImportance::NORMAL:
       return static_cast<int32_t>(RendererPriority::WAIVED);
     case content::ChildProcessImportance::MODERATE:
