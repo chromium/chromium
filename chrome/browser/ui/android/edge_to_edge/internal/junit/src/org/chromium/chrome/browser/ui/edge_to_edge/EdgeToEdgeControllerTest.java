@@ -398,6 +398,23 @@ public class EdgeToEdgeControllerTest {
         verify(mEdgeToEdgeManager, atLeastOnce()).setContentFitsWindowInsets(false);
     }
 
+    @Test
+    public void drawEdgeToEdge_stylusHandwritingKeyboardInsetsEqualsNavHeight_noBottomPadding() {
+        when(mTab.isNativePage()).thenReturn(false);
+        mTabProvider.set(mTab);
+        verifyInteractions(mTab);
+
+        mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
+        // IME bottom inset equals the navigation bar height (e.g. stylus handwriting with no soft
+        // keyboard).
+        mEdgeToEdgeControllerImpl.setKeyboardInsetsForTesting(NAVIGATION_BAR_INSETS);
+        mEdgeToEdgeControllerImpl.drawToEdge(true, /* changedWindowState= */ true);
+
+        // When drawing to edge, bottom padding should remain 0 when keyboard inset does not exceed
+        // system bottom inset.
+        verify(mOsWrapper).setPadding(any(), eq(0), eq(TOP_INSET), eq(0), eq(0));
+    }
+
     /** Test nothing is done when the Feature is not enabled. */
     @Test
     public void onObservingDifferentTab_default() {
@@ -907,6 +924,20 @@ public class EdgeToEdgeControllerTest {
         mockPadAdjuster.checkInsets(0);
 
         mEdgeToEdgeControllerImpl.handleWindowInsets(mViewMock, SYSTEM_BARS_WINDOW_INSETS);
+        mockPadAdjuster.checkInsets(BOTTOM_INSET);
+    }
+
+    @Test
+    public void padAdjusters_keyboardInsetsEqualsNavHeight_adjustersPadded() {
+        mEdgeToEdgeControllerImpl.setIsOptedIntoEdgeToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setIsDrawingToEdgeForTesting(true);
+        mEdgeToEdgeControllerImpl.setSystemInsetsForTesting(SYSTEM_INSETS);
+        // IME bottom inset equals the navigation bar height (e.g. stylus handwriting with no soft
+        // keyboard).
+        mEdgeToEdgeControllerImpl.setKeyboardInsetsForTesting(NAVIGATION_BAR_INSETS);
+
+        MockPadAdjuster mockPadAdjuster = new MockPadAdjuster();
+        mEdgeToEdgeControllerImpl.registerAdjuster(mockPadAdjuster);
         mockPadAdjuster.checkInsets(BOTTOM_INSET);
     }
 

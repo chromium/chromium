@@ -923,13 +923,23 @@ public class EdgeToEdgeControllerImpl
     }
 
     /**
+     * Returns whether the IME insets are taller than the navigation bar (e.g. a soft keyboard is
+     * showing). IME sessions without a soft keyboard (such as stylus handwriting) report an IME
+     * inset equal to the navigation bar.
+     */
+    private boolean isKeyboardInsetTallerThanNavBar() {
+        return mKeyboardInsets != null
+                && mKeyboardInsets.bottom > (mSystemInsets != null ? mSystemInsets.bottom : 0);
+    }
+
+    /**
      * The {@link EdgeToEdgePadAdjuster}s should only be padded with an extra bottom inset if the
      * activity is currently in edge-to-edge, and if the adjusters aren't already positioned above
      * the system insets due to the keyboard or the bottom controls being visible.
      */
     private boolean shouldPadAdjusters() {
-        // Never pad the adjusters if the keyboard is visible.
-        if (mKeyboardInsets != null && mKeyboardInsets.bottom > 0) return false;
+        // Never pad the adjusters if the keyboard is visible above the navigation bar.
+        if (isKeyboardInsetTallerThanNavBar()) return false;
 
         // Never pad the adjusters if the bottom controls are visible. Except in the tab switcher.
         @LayoutType
@@ -972,10 +982,9 @@ public class EdgeToEdgeControllerImpl
         // All the other edges need to be padded to prevent drawing under an edge that we
         // don't want drawn ToEdge (e.g. the Status Bar).
         int bottomPadding = mIsDrawingToEdge ? 0 : mSystemInsets.bottom;
-        if (mKeyboardInsets != null && mKeyboardInsets.bottom > bottomPadding) {
-            // If the keyboard is showing, change the bottom padding to account for the keyboard.
-            // Clear the bottom inset used for the adjusters, since there are no missing bottom
-            // system bars above the keyboard to compensate for.
+        // If the keyboard is taller than the navigation bar, pad content to account for it.
+        if (isKeyboardInsetTallerThanNavBar()) {
+            assert mKeyboardInsets != null;
             bottomPadding = mKeyboardInsets.bottom;
         }
 
