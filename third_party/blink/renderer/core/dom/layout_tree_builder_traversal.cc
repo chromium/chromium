@@ -653,10 +653,23 @@ bool IsLayoutObjectReparented(const LayoutObject* layout_object) {
   return false;
 }
 
+// A sibling that is pending a layout tree re-attach may have a LayoutObject
+// that is not where the flat tree says it should be. In particular,
+// moveBefore() does not detach the layout tree of the moved node, so until the
+// next layout tree rebuild its LayoutObject is still a child of its old
+// parent's LayoutObject. Such a sibling is not a valid insertion point, and it
+// will be inserted relative to its own siblings when it is re-attached.
+bool IsPendingReattach(const Node& node) {
+  return node.GetForceReattachLayoutTree() || node.NeedsReattachLayoutTree();
+}
+
 LayoutObject* NextSiblingLayoutObjectInternal(const Node& node) {
   for (Node* sibling = LayoutTreeBuilderTraversal::NextLayoutSibling(node);
        sibling;
        sibling = LayoutTreeBuilderTraversal::NextLayoutSibling(*sibling)) {
+    if (IsPendingReattach(*sibling)) {
+      continue;
+    }
     LayoutObject* layout_object = sibling->GetLayoutObject();
     if (layout_object && !IsLayoutObjectReparented(layout_object)) {
       return layout_object;
