@@ -38,6 +38,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/extension_host.h"
+#include "extensions/browser/extension_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/browser/test_extension_registry_observer.h"
@@ -333,6 +334,25 @@ IN_PROC_BROWSER_TEST_P(ExtensionContentSettingsApiTestWithClipboard, Standard) {
   CheckContentSettingsDefault();
 
   LoadExtension(test_data_dir_.AppendASCII(kExtensionPath));
+  CheckContentSettingsDefault();
+}
+
+// Tests that content settings controlled by an extension are removed when
+// the extension is blocklisted.
+IN_PROC_BROWSER_TEST_F(ExtensionContentSettingsApiTest,
+                       SettingsRemovedOnBlocklist) {
+  CheckContentSettingsDefault();
+
+  static constexpr char kExtensionPath[] = "content_settings/standard";
+  ASSERT_TRUE(RunExtensionTest(kExtensionPath, {.extension_url = "test.html"}))
+      << message_;
+  CheckContentSettingsSet();
+
+  // Blocklist the extension.
+  extension_registrar()->BlocklistExtensionForTest(last_loaded_extension_id());
+
+  // Content settings should be reset to default while the extension is
+  // blocklisted.
   CheckContentSettingsDefault();
 }
 

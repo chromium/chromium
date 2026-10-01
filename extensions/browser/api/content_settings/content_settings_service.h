@@ -11,6 +11,8 @@
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_observer.h"
+#include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_registry_observer.h"
 #include "extensions/buildflags/buildflags.h"
 #include "extensions/common/extension_id.h"
 
@@ -23,6 +25,7 @@ class ContentSettingsStore;
 // This service hosts a single ContentSettingsStore for the
 // chrome.contentSettings API.
 class ContentSettingsService : public BrowserContextKeyedAPI,
+                               public ExtensionRegistryObserver,
                                public ExtensionPrefsObserver,
                                public EarlyExtensionPrefsObserver {
  public:
@@ -43,6 +46,14 @@ class ContentSettingsService : public BrowserContextKeyedAPI,
   // BrowserContextKeyedAPI implementation.
   static BrowserContextKeyedAPIFactory<ContentSettingsService>*
       GetFactoryInstance();
+
+  // ExtensionRegistryObserver implementation.
+  void OnExtensionLoaded(content::BrowserContext* browser_context,
+                         const Extension* extension) override;
+  void OnExtensionUnloaded(content::BrowserContext* browser_context,
+                           const Extension* extension,
+                           UnloadedExtensionReason reason) override;
+  void OnShutdown(ExtensionRegistry* registry) override;
 
   // ExtensionPrefsObserver implementation.
   void OnExtensionRegistered(const ExtensionId& extension_id,
@@ -67,7 +78,9 @@ class ContentSettingsService : public BrowserContextKeyedAPI,
 
   scoped_refptr<ContentSettingsStore> content_settings_store_;
   base::ScopedObservation<ExtensionPrefs, ExtensionPrefsObserver>
-      scoped_observation_{this};
+      extension_prefs_observation_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 };
 
 }  // namespace extensions

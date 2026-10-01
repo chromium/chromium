@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/api/types.h"
+#include "extensions/common/extension.h"
 #include "extensions/common/extension_id.h"
 
 using extensions::api::types::ChromeSettingScope;
@@ -15,7 +16,9 @@ using extensions::api::types::ChromeSettingScope;
 namespace extensions {
 
 ContentSettingsService::ContentSettingsService(content::BrowserContext* context)
-    : content_settings_store_(base::MakeRefCounted<ContentSettingsStore>()) {}
+    : content_settings_store_(base::MakeRefCounted<ContentSettingsStore>()) {
+  extension_registry_observation_.Observe(ExtensionRegistry::Get(context));
+}
 
 ContentSettingsService::~ContentSettingsService() = default;
 
@@ -32,6 +35,24 @@ ContentSettingsService::GetFactoryInstance() {
       BrowserContextKeyedAPIFactory<ContentSettingsService>>::DestructorAtExit
       factory = LAZY_INSTANCE_INITIALIZER;
   return factory.Pointer();
+}
+
+// ExtensionRegistry::Observer implementation.
+void ContentSettingsService::OnExtensionLoaded(
+    content::BrowserContext* browser_context,
+    const Extension* extension) {
+  content_settings_store_->SetExtensionState(extension->id(), true);
+}
+
+void ContentSettingsService::OnExtensionUnloaded(
+    content::BrowserContext* browser_context,
+    const Extension* extension,
+    UnloadedExtensionReason reason) {
+  content_settings_store_->SetExtensionState(extension->id(), false);
+}
+
+void ContentSettingsService::OnShutdown(ExtensionRegistry* registry) {
+  extension_registry_observation_.Reset();
 }
 
 void ContentSettingsService::OnExtensionRegistered(
@@ -64,7 +85,9 @@ void ContentSettingsService::OnExtensionPrefsDeleted(
     const ExtensionId& extension_id) {
   content_settings_store_->UnregisterExtension(extension_id);
 }
-
+// TODO(crbug/507351304): This method could possibly be removed in favor of
+// OnExtensionLoaded / OnExtensionUnloaded for more targeted updates on
+// extension state change.
 void ContentSettingsService::OnExtensionStateChanged(
     const ExtensionId& extension_id,
     bool state) {
@@ -73,12 +96,12 @@ void ContentSettingsService::OnExtensionStateChanged(
 
 void ContentSettingsService::OnExtensionPrefsWillBeDestroyed(
     ExtensionPrefs* prefs) {
-  DCHECK(scoped_observation_.IsObservingSource(prefs));
-  scoped_observation_.Reset();
+  DCHECK(extension_prefs_observation_.IsObservingSource(prefs));
+  extension_prefs_observation_.Reset();
 }
 
 void ContentSettingsService::OnExtensionPrefsAvailable(ExtensionPrefs* prefs) {
-  scoped_observation_.Observe(prefs);
+  extension_prefs_observation_.Observe(prefs);
 }
 
 }  // namespace extensions
