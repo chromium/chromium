@@ -16,7 +16,8 @@
 #include "chromeos/ash/experiences/arc/compat_mode/arc_resize_lock_manager.h"
 #include "chromeos/ash/experiences/arc/compat_mode/compat_mode_button_controller.h"
 #include "chromeos/ash/experiences/arc/session/connection_holder.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 
 ChromeGameDashboardDelegate::ChromeGameDashboardDelegate() = default;
 
@@ -77,9 +78,10 @@ void ChromeGameDashboardDelegate::RecordGameWindowOpenedEvent(
         growth::kGrowthCampaignsEventGameWindowOpened);
   }
 
-  user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  CHECK(user_manager);
-  if (user_manager->GetActiveUser() != user_manager->GetPrimaryUser()) {
+  auto* session_manager = session_manager::SessionManager::Get();
+  CHECK(session_manager);
+  const auto* primary_session = session_manager->GetPrimarySession();
+  if (session_manager->GetActiveSession() != primary_session) {
     return;
   }
 
@@ -90,8 +92,7 @@ void ChromeGameDashboardDelegate::RecordGameWindowOpenedEvent(
     // returns an invalid account id.
     const AccountId& account_id =
         multi_user_window_manager->GetWindowOwner(window);
-    if (account_id.is_valid() &&
-        user_manager->GetPrimaryUser()->GetAccountId() != account_id) {
+    if (account_id.is_valid() && primary_session->account_id() != account_id) {
       return;
     }
   }

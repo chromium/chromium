@@ -198,6 +198,7 @@ class ChromeCaptureModeDelegate : public ash::CaptureModeDelegate {
   void OnAccessTokenAvailableForImageSearch(const gfx::Image& original_image,
                                             const bool is_standalone_session,
                                             const int request_id,
+                                            const AccountId& account_id,
                                             const std::string& access_token);
   void OnAccessTokenAvailableForCopyText(const std::string vsr_id,
                                          const int request_id,

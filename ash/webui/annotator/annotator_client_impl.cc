@@ -10,7 +10,8 @@
 #include "ash/webui/annotator/annotations_overlay_view_impl.h"
 #include "ash/webui/annotator/untrusted_annotator_page_handler_impl.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
-#include "components/user_manager/user_manager.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 
 AnnotatorClientImpl::AnnotatorClientImpl(
     ash::AnnotatorControllerBase* annotator_controller)
@@ -49,10 +50,13 @@ void AnnotatorClientImpl::Clear() {
 
 std::unique_ptr<ash::AnnotationsOverlayView>
 AnnotatorClientImpl::CreateAnnotationsOverlayView() const {
-  auto* active_user = user_manager::UserManager::Get()->GetActiveUser();
+  // TODO(crbug.com/278643115): Take the account_id from the callers.
+  const auto* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
 
   return std::make_unique<AnnotationsOverlayViewImpl>(
-      active_user ? ash::BrowserContextHelper::Get()->GetBrowserContextByUser(
-                        active_user)
-                  : nullptr);
+      active_session
+          ? ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+                active_session->account_id())
+          : nullptr);
 }

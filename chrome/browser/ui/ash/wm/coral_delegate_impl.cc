@@ -25,9 +25,9 @@
 #include "components/app_constants/constants.h"
 #include "components/app_restore/restore_data.h"
 #include "components/application_locale_storage/application_locale_storage.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "components/tabs/public/tab_interface.h"
-#include "components/user_manager/user.h"
-#include "components/user_manager/user_manager.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -123,12 +123,15 @@ std::unique_ptr<app_restore::RestoreData> CoralGroupToRestoreData(
 }
 
 content::BrowserContext* GetActiveUserBrowserContext() {
-  const auto* active_user = user_manager::UserManager::Get()->GetActiveUser();
-  if (!active_user) {
+  // TODO(crbug.com/278643115): Take the account_id from the callers.
+  const auto* active_session =
+      session_manager::SessionManager::Get()->GetActiveSession();
+  if (!active_session) {
     return nullptr;
   }
 
-  return ash::BrowserContextHelper::Get()->GetBrowserContextByUser(active_user);
+  return ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+      active_session->account_id());
 }
 
 // Gets profile from the active user.

@@ -50,6 +50,7 @@ static_library("capture_mode") {
     "//components/lens",
     "//components/lens:enterprise_policy",
     "//components/search",
+    "//components/session_manager/core",
     "//content/public/browser",
     "//services/screen_ai/public/mojom",
     "//services/video_capture/public/mojom",

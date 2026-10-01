@@ -30,6 +30,7 @@ static_library("annotator") {
     "//ash/webui/resources:projector_app_bundle_resources",
     "//ash/webui/resources:projector_common_resources",
     "//chromeos/ash/components/browser_context_helper",
+    "//components/session_manager/core",
     "//content/public/browser",
     "//mojo/public/cpp/bindings",
     "//ui/views/controls/webview",

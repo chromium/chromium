@@ -34,7 +34,7 @@ static_library("wm") {
     "//chromeos/ui/wm",
     "//components/app_constants",
     "//components/application_locale_storage",
-    "//components/user_manager",
+    "//components/session_manager/core",
     "//components/variations/service",
     "//content/public/browser",
   ]
