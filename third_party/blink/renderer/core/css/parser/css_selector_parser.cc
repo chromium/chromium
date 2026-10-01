@@ -1272,7 +1272,10 @@ bool IsSimpleSelectorValidAfterPseudoElement(
       }
       break;
     case CSSSelector::kPseudoSlotted:
-      return simple_selector.IsTreeAbidingPseudoElement();
+      if (simple_selector.IsTreeAbidingPseudoElement()) {
+        return true;
+      }
+      break;
     default:
       break;
   }

@@ -201,7 +201,9 @@ TEST(CSSSelectorParserTest, ValidSimpleAfterPseudoElementInCompound) {
                               "::slotted(div)::view-transition",
                               "::slotted(div)::scroll-marker-group",
                               "::slotted(div)::scroll-marker",
-                              "::slotted(div)::scroll-button(up)"};
+                              "::slotted(div)::scroll-button(up)",
+                              "::slotted(div):is()",
+                              "::slotted(div):not(:where(#id))"};
 
   HeapVector<CSSSelector> arena;
   for (StringView test_case : test_cases) {
@@ -237,6 +239,8 @@ TEST(CSSSelectorParserTest, InvalidSimpleAfterPseudoElementInCompound) {
       "video::-webkit-media-text-track-region-container.scrolling",
       "div ::before.a",
       "::slotted(div):hover",
+      "::slotted(div):not(:first-child)",
+      "::slotted(div):not(#id)",
       "::slotted(div)::slotted(span)",
       "::slotted(div)::before:hover",
       "::slotted(div)::before::slotted(span)",
