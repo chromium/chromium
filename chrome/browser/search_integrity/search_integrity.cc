@@ -6,16 +6,15 @@
 
 #include <map>
 #include <optional>
-#include <set>
 #include <string>
 #include <string_view>
 #include <vector>
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -33,6 +32,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "ui/base/resource/resource_bundle.h"
 
 namespace search_integrity {
@@ -95,14 +95,15 @@ bool IsDisallowedCustomSearchEngine(const TemplateURL* template_url) {
 }
 
 // Returns true if the URL host has excessive hex escapes (i.e. >= 3 '%').
-bool IsObfuscatedUrl(const std::string& url_str) {
+bool IsObfuscatedUrl(std::string_view url_str) {
   size_t scheme_pos = url_str.find("://");
-  size_t host_start = (scheme_pos != std::string::npos) ? scheme_pos + 3 : 0;
+  size_t host_start =
+      (scheme_pos != std::string_view::npos) ? scheme_pos + 3 : 0;
   size_t host_end = url_str.find('/', host_start);
-  if (host_end == std::string::npos) {
+  if (host_end == std::string_view::npos) {
     host_end = url_str.length();
   }
-  std::string raw_host = url_str.substr(host_start, host_end - host_start);
+  std::string_view raw_host = url_str.substr(host_start, host_end - host_start);
   int percent_count = 0;
   for (char c : raw_host) {
     if (c == '%') {
@@ -285,9 +286,9 @@ SearchIntegrityReport SearchIntegrity::CheckSearchEnginesReport() {
   auto template_urls = template_url_service_->GetTemplateURLs();
 
   // A map of referral parameter keys to their corresponding enum values.
-  static const base::NoDestructor<
-      std::map<std::string_view, SearchReferralParam>>
-      kReferralParameterMap({
+  static constexpr auto kReferralParameterMap =
+      base::MakeFixedFlatMap<std::string_view, SearchReferralParam>({
+          // keep-sorted start
           {"PC", SearchReferralParam::kPC},
           {"clid", SearchReferralParam::kClid},
           {"client", SearchReferralParam::kClient},
@@ -295,7 +296,8 @@ SearchIntegrityReport SearchIntegrity::CheckSearchEnginesReport() {
           {"gp", SearchReferralParam::kGp},
           {"sourceid", SearchReferralParam::kSourceid},
           {"t", SearchReferralParam::kT},
-          {"tt", SearchReferralParam::kTt},
+          {"tt", SearchReferralParam::kTt}
+          // keep-sorted end
       });
 
   // Iterate through all installed search engines to check if any of them are
@@ -311,8 +313,8 @@ SearchIntegrityReport SearchIntegrity::CheckSearchEnginesReport() {
 
       GURL url(template_url->url());
       for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
-        auto iter = kReferralParameterMap->find(it.GetKey());
-        if (iter != kReferralParameterMap->end()) {
+        auto iter = kReferralParameterMap.find(it.GetKey());
+        if (iter != kReferralParameterMap.end()) {
           report.referral_param_found = iter->second;
           break;
         }
@@ -323,7 +325,7 @@ SearchIntegrityReport SearchIntegrity::CheckSearchEnginesReport() {
   const TemplateURL* default_search_provider =
       template_url_service_->GetDefaultSearchProvider();
 
-  std::set<std::u16string> seen_keywords;
+  absl::flat_hash_set<std::u16string> seen_keywords;
   bool default_duplicated = false;
   bool non_default_duplicated = false;
 
@@ -423,8 +425,8 @@ SiteSearchIntegrityReport SearchIntegrity::CheckSiteSearchReport() {
       continue;
     }
 
-    std::string keyword_host(keyword_url.host());
-    std::string search_host(search_url.host());
+    std::string_view keyword_host = keyword_url.host();
+    std::string_view search_host = search_url.host();
 
     if (IsObfuscatedUrl(keyword) || IsObfuscatedUrl(template_url->url())) {
       report.has_obfuscated_search_url = true;
@@ -469,17 +471,17 @@ SiteSearchIntegrityReport SearchIntegrity::CheckSiteSearchReport() {
             .transform(&std::string_view::size);
 
     // Strip the eTLD
-    std::string keyword_base = keyword_domain;
+    std::string_view keyword_base = keyword_domain;
     if (keyword_registry_len > 0 &&
         keyword_domain.length() > keyword_registry_len) {
-      keyword_base = keyword_domain.substr(
-          0, keyword_domain.length() - *keyword_registry_len - 1);
+      keyword_base = keyword_base.substr(
+          0, keyword_base.length() - *keyword_registry_len - 1);
     }
-    std::string search_base = search_domain;
+    std::string_view search_base = search_domain;
     if (search_registry_len > 0 &&
         search_domain.length() > search_registry_len) {
-      search_base = search_domain.substr(
-          0, search_domain.length() - *search_registry_len - 1);
+      search_base = search_base.substr(
+          0, search_base.length() - *search_registry_len - 1);
     }
 
     if (keyword_base == search_base && !keyword_base.empty()) {
@@ -531,7 +533,7 @@ DuplicateKeywordDetailedReport SearchIntegrity::CheckDuplicateKeywordReport() {
     if (!keyword.empty() && keyword[0] == u'@') {
       report.has_starter_pack_duplicate = true;
     }
-    std::set<std::string> unique_urls;
+    absl::flat_hash_set<std::string> unique_urls;
     for (const TemplateURL* turl : cluster) {
       unique_urls.insert(turl->url());
       if (turl->starter_pack_id() !=
@@ -544,7 +546,7 @@ DuplicateKeywordDetailedReport SearchIntegrity::CheckDuplicateKeywordReport() {
     }
 
     // Extension collisions
-    std::set<std::string> extension_ids;
+    absl::flat_hash_set<std::string> extension_ids;
     bool has_non_extension = false;
     int unknown_ext_idx = 0;
 
