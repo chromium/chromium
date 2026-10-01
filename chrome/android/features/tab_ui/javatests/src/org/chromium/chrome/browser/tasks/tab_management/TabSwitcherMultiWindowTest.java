@@ -36,7 +36,6 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.MaxAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
@@ -49,7 +48,6 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.ui.base.DeviceFormFactor;
-import org.chromium.ui.base.UiAndroidFeatures;
 
 /** Tests for Multi-window related behavior in grid tab switcher. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -59,7 +57,6 @@ import org.chromium.ui.base.UiAndroidFeatures;
 })
 @Restriction(DeviceFormFactor.PHONE)
 @MaxAndroidSdkLevel(value = VERSION_CODES.R, reason = "https://crbug.com/40215137")
-@DisableFeatures(UiAndroidFeatures.USE_NEW_ETC1_ENCODER) // https://crbug.com/400962657
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherMultiWindowTest {
     @Rule

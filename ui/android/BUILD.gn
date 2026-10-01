@@ -2,7 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/buildflag_header.gni")
 import("//build/config/android/rules.gni")
 import("//build/rust/rust_executable.gni")
 import("//build/rust/rust_static_library.gni")
@@ -11,21 +10,6 @@ import("//third_party/jni_zero/jni_zero.gni")
 import("//tools/grit/grit_rule.gni")
 
 assert(is_android)
-
-declare_args() {
-  # Include the new texture compressor in build (still subject to feature
-  # flags).
-  # If toolchain roll breaks due to usage of nightly features, it is OK to flip
-  # this off. Please ping OWNERS of texture_compressor on the CL.
-  enable_new_texture_compressor = true
-}
-
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-  flags = [
-    "UI_ANDROID_ENABLE_NEW_TEXTURE_COMPRESSOR=$enable_new_texture_compressor",
-  ]
-}
 
 component("android") {
   output_name = "ui_android"
@@ -90,8 +74,8 @@ component("android") {
   defines = [ "UI_ANDROID_IMPLEMENTATION" ]
 
   deps = [
-    ":buildflags",
     ":java_enums_srcjar",
+    ":texture_compressor",
     "//base",
     "//cc/slim",
     "//components/viz/client",
@@ -120,10 +104,6 @@ component("android") {
     "//ui/touch_selection",
     "//url",
   ]
-
-  if (enable_new_texture_compressor) {
-    deps += [ ":texture_compressor" ]
-  }
 
   public_deps = [
     ":ui_android_feature_map_jni",
@@ -964,6 +944,7 @@ test("ui_android_unittests") {
     ":android",
     ":java_enums_srcjar",
     ":test_support",
+    ":texture_compressor_unittests",
     ":ui_java",
     ":ui_java_test_support",
     ":ui_javatest_jni_headers",
@@ -992,9 +973,6 @@ test("ui_android_unittests") {
     "//ui/gfx/geometry",
     "//ui/resources:ui_test_pak",
   ]
-  if (enable_new_texture_compressor) {
-    deps += [ ":texture_compressor_unittests" ]
-  }
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
@@ -1093,61 +1071,59 @@ generate_jni("motion_event_test_utils_jni_headers") {
   sources = [ "junit/src/org/chromium/ui/base/MotionEventTestUtils.java" ]
 }
 
-if (enable_new_texture_compressor) {
-  rust_static_library("texture_compressor") {
-    crate_root = "texture_compressor/lib.rs"
-    sources = [
-      "texture_compressor/cxx.rs",
-      "texture_compressor/decoder.rs",
-      "texture_compressor/dither.rs",
-      "texture_compressor/lib.rs",
-      "texture_compressor/quant.rs",
-      "texture_compressor/selectors.rs",
-    ]
-    allow_unsafe = true
-    cxx_bindings = [ "texture_compressor/cxx.rs" ]
-    deps = [ "//third_party/rust/bytemuck/v1:lib" ]
+rust_static_library("texture_compressor") {
+  crate_root = "texture_compressor/lib.rs"
+  sources = [
+    "texture_compressor/cxx.rs",
+    "texture_compressor/decoder.rs",
+    "texture_compressor/dither.rs",
+    "texture_compressor/lib.rs",
+    "texture_compressor/quant.rs",
+    "texture_compressor/selectors.rs",
+  ]
+  allow_unsafe = true
+  cxx_bindings = [ "texture_compressor/cxx.rs" ]
+  deps = [ "//third_party/rust/bytemuck/v1:lib" ]
 
-    # Required for #[feature(portable_simd)]
-    configs -= [ "//build/config/compiler:disallow_unstable_features" ]
-    rustflags = [ "-Zallow-features=portable_simd" ]
-  }
+  # Required for #[feature(portable_simd)]
+  configs -= [ "//build/config/compiler:disallow_unstable_features" ]
+  rustflags = [ "-Zallow-features=portable_simd" ]
+}
 
-  rust_static_library("texture_compressor_unittests") {
-    testonly = true
-    is_gtest_unittests = true
-    crate_root = "texture_compressor/tests.rs"
-    sources = [
-      "texture_compressor/decoder_tests.rs",
-      "texture_compressor/lib_tests.rs",
-      "texture_compressor/quant_tests.rs",
-      "texture_compressor/selectors_tests.rs",
-      "texture_compressor/tests.rs",
-    ]
+rust_static_library("texture_compressor_unittests") {
+  testonly = true
+  is_gtest_unittests = true
+  crate_root = "texture_compressor/tests.rs"
+  sources = [
+    "texture_compressor/decoder_tests.rs",
+    "texture_compressor/lib_tests.rs",
+    "texture_compressor/quant_tests.rs",
+    "texture_compressor/selectors_tests.rs",
+    "texture_compressor/tests.rs",
+  ]
 
-    deps = [
-      ":texture_compressor",
-      "//testing/rust_gtest_interop",
-    ]
+  deps = [
+    ":texture_compressor",
+    "//testing/rust_gtest_interop",
+  ]
 
-    # Required for #[feature(portable_simd)]
-    configs -= [ "//build/config/compiler:disallow_unstable_features" ]
-    rustflags = [ "-Zallow-features=portable_simd" ]
-  }
+  # Required for #[feature(portable_simd)]
+  configs -= [ "//build/config/compiler:disallow_unstable_features" ]
+  rustflags = [ "-Zallow-features=portable_simd" ]
+}
 
-  rust_executable("texture_compressor_benchmark") {
-    testonly = true
-    crate_root = "texture_compressor/main.rs"
-    sources = [ "texture_compressor/main.rs" ]
+rust_executable("texture_compressor_benchmark") {
+  testonly = true
+  crate_root = "texture_compressor/main.rs"
+  sources = [ "texture_compressor/main.rs" ]
 
-    deps = [
-      ":texture_compressor",
-      "//third_party/rust/bytemuck/v1:lib",
-      "//third_party/rust/png/v0_18:lib",
-    ]
+  deps = [
+    ":texture_compressor",
+    "//third_party/rust/bytemuck/v1:lib",
+    "//third_party/rust/png/v0_18:lib",
+  ]
 
-    # Required for #[feature(portable_simd)]
-    configs -= [ "//build/config/compiler:disallow_unstable_features" ]
-    rustflags = [ "-Zallow-features=portable_simd" ]
-  }
+  # Required for #[feature(portable_simd)]
+  configs -= [ "//build/config/compiler:disallow_unstable_features" ]
+  rustflags = [ "-Zallow-features=portable_simd" ]
 }

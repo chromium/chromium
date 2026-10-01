@@ -3501,11 +3501,6 @@ inline constexpr char kSystemShortcutBehaviorDescription[] =
     "This flag controls the default behavior of ChromeOS system shortcuts "
     "(Launcher key shortcuts).";
 
-inline constexpr char kNewEtc1EncoderName[] = "Enable new ETC1 encoder";
-inline constexpr char kNewEtc1EncoderDescription[] =
-    "Enables the new ETC1 encoder implementation for tab and back/forward "
-    "thumbnails.";
-
 inline constexpr char kNotificationSchedulerName[] = "Notification scheduler";
 inline constexpr char kNotificationSchedulerDescription[] =
     "Enable notification scheduler feature.";

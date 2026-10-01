@@ -24,19 +24,16 @@
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/safe_conversions.h"
 #include "skia/ext/skia_utils_base.h"
+// TODO(crbug.com/567908337): Remove //third_party/android_opengl/etc1 once the
+// Rust ETC1 decoder launches.
 #include "third_party/android_opengl/etc1/etc1.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkData.h"
 #include "third_party/skia/include/core/SkMallocPixelRef.h"
 #include "third_party/skia/include/core/SkPixelRef.h"
-#include "ui/android/buildflags.h"
-#include "ui/android/ui_android_features.h"
+#include "ui/android/texture_compressor/cxx.rs.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/size.h"
-
-#if BUILDFLAG(UI_ANDROID_ENABLE_NEW_TEXTURE_COMPRESSOR)
-#include "ui/android/texture_compressor/cxx.rs.h"
-#endif
 
 namespace ui {
 
@@ -91,7 +88,6 @@ gfx::Size GetETCEncodedSize(const gfx::Size& bitmap_size, bool supports_npot) {
   }
 }
 
-#if BUILDFLAG(UI_ANDROID_ENABLE_NEW_TEXTURE_COMPRESSOR)
 // Check that `data` is sufficiently aligned for `T` and cast it to a Rust slice
 // of `T`.
 template <typename T>
@@ -100,7 +96,6 @@ rust::Slice<T> CastToAlignedSlice(void* data, size_t bytes) {
   CHECK(base::IsAligned(data, alignof(T)));
   return {reinterpret_cast<T*>(data), bytes / sizeof(T)};
 }
-#endif
 
 }  // namespace
 
@@ -117,8 +112,6 @@ sk_sp<SkPixelRef> Etc1::CompressBitmap(const SkBitmap& raw_data,
   const gfx::Size raw_data_size(raw_data.width(), raw_data.height());
   const gfx::Size encoded_size =
       GetETCEncodedSize(raw_data_size, supports_etc_npot);
-  constexpr size_t kPixelSize = 4;  // For kARGB_8888_Config.
-  const size_t stride = raw_data.rowBytes();
 
   size_t encoded_bytes =
       etc1_get_encoded_data_size(encoded_size.width(), encoded_size.height());
@@ -134,33 +127,15 @@ sk_sp<SkPixelRef> Etc1::CompressBitmap(const SkBitmap& raw_data,
   sk_sp<SkPixelRef> etc1_pixel_ref(SkMallocPixelRef::MakeWithData(
       info, ETC1RowBytes(encoded_size.width()), std::move(etc1_pixel_data)));
 
-#if BUILDFLAG(UI_ANDROID_ENABLE_NEW_TEXTURE_COMPRESSOR)
   constexpr int kBlockSize = 4;
-  if (base::FeatureList::IsEnabled(kUseNewEtc1Encoder)) {
-    // We assume the input slice is aligned to 4 bytes, which seems to hold in
-    // practice.
-    compress_etc1(CastToAlignedSlice<const uint32_t>(
-                      raw_data.getPixels(), raw_data.computeByteSize()),
-                  CastToAlignedSlice<unsigned char>(etc1_pixel_ref->pixels(),
-                                                    encoded_bytes),
-                  raw_data.width(), raw_data.height(),
-                  raw_data.rowBytesAsPixels(),
-                  encoded_size.width() / kBlockSize);
-    etc1_pixel_ref->setImmutable();
-    return etc1_pixel_ref;
-  }
-#endif
-
-  if (etc1_encode_image(
-          reinterpret_cast<unsigned char*>(raw_data.getPixels()),
-          raw_data_size.width(), raw_data_size.height(), kPixelSize, stride,
-          reinterpret_cast<unsigned char*>(etc1_pixel_ref->pixels()),
-          encoded_size.width(), encoded_size.height())) {
-    etc1_pixel_ref->setImmutable();
-    return etc1_pixel_ref;
-  }
-
-  return nullptr;
+  compress_etc1(
+      CastToAlignedSlice<const uint32_t>(raw_data.getPixels(),
+                                         raw_data.computeByteSize()),
+      CastToAlignedSlice<uint8_t>(etc1_pixel_ref->pixels(), encoded_bytes),
+      raw_data.width(), raw_data.height(), raw_data.rowBytesAsPixels(),
+      encoded_size.width() / kBlockSize);
+  etc1_pixel_ref->setImmutable();
+  return etc1_pixel_ref;
 }
 
 bool Etc1::WriteToFile(base::File* file,

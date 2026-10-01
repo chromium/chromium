@@ -7167,15 +7167,6 @@
     "expiry_milestone": 200
   },
   {
-    "name": "new-etc1-encoder",
-    "owners": [
-      "cros-virt-devices-guests@google.com",
-      "uekawa@google.com",
-      "ishitatsuyuki@google.com"
-    ],
-    "expiry_milestone": 138
-  },
-  {
     "name": "new-geolocation-permission-delegate",
     "owners": ["alexandrasp@google.com", "bling-fundamentals@google.com"],
     "expiry_milestone": 160
