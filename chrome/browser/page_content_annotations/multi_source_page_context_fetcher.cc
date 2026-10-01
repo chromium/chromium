@@ -14,6 +14,11 @@
 #include "components/page_content_annotations/content/page_context_fetcher.h"
 #include "components/page_content_annotations/content/page_context_fetcher_manager.h"
 #include "content/public/browser/web_contents.h"
+#include "pdf/buildflags.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "components/page_content_annotations/content/pdf_content_fetcher.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace page_content_annotations {
 
@@ -32,9 +37,18 @@ void FetchPageContext(
             Profile::FromBrowserContext(context));
       });
 
+  FetchPdfContentCallback fetch_pdf_content_callback;
+  // TODO: Enable pdf fetching for Android.
+  // PDF support is compiled out on some platforms, including Fuchsia. PDF
+  // support is controlled by the buildflag, not just by platform.
+#if BUILDFLAG(ENABLE_PDF)
+  fetch_pdf_content_callback =
+      base::BindRepeating(&FetchPdfContentForWebContents);
+#endif  // BUILDFLAG(ENABLE_PDF)
+
   manager->Fetch(options, std::move(progress_listener),
                  std::move(get_screenshot_service_callback),
-                 std::move(callback));
+                 std::move(fetch_pdf_content_callback), std::move(callback));
 }
 
 }  // namespace page_content_annotations

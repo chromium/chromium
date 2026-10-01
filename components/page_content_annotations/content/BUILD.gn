@@ -63,10 +63,14 @@ source_set("content") {
   ]
 
   if (enable_pdf) {
+    sources += [
+      "pdf_content_fetcher.cc",
+      "pdf_content_fetcher.h",
+    ]
+    public_deps += [ "//pdf/mojom" ]
     deps += [
       "//components/pdf/browser",
       "//mojo/public/cpp/bindings",
-      "//pdf/mojom",
     ]
   }
 }

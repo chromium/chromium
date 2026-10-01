@@ -12,11 +12,14 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/protobuf_matchers.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/token.h"
 #include "base/types/expected.h"
@@ -40,7 +43,7 @@
 #if BUILDFLAG(ENABLE_PDF)
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
-#include "base/test/task_environment.h"
+#include "components/page_content_annotations/content/pdf_content_fetcher.h"
 #include "components/pdf/browser/pdf_document_helper.h"
 #include "components/pdf/browser/pdf_document_helper_client.h"
 #include "components/pdf/common/constants.h"
@@ -237,8 +240,9 @@ TEST_F(PageContextFetcherIframeInfoTest, AddIframeInfoSuccess) {
       {viz::TrackedElementFeature::kIframeTracking, {iframe_rect}}};
 
   // Collect the tracked iframe element.
-  PageContextFetcher fetcher(base::NullCallback(),
-                             /*progress_listener=*/nullptr);
+  PageContextFetcher fetcher(
+      base::NullCallback(), /*progress_listener=*/nullptr,
+      /*fetch_pdf_content_callback=*/base::NullCallback());
   fetcher.Observe(web_contents());
   fetcher.CollectTrackedElementRectsForIframes(tracked_element_rects);
 
@@ -309,8 +313,9 @@ TEST_F(PageContextFetcherIframeInfoTest, AddIframeInfoNoUrlOrigin) {
       {viz::TrackedElementFeature::kIframeTracking, {iframe_rect}}};
 
   // Collect the tracked iframe element.
-  PageContextFetcher fetcher(base::NullCallback(),
-                             /*progress_listener=*/nullptr);
+  PageContextFetcher fetcher(
+      base::NullCallback(), /*progress_listener=*/nullptr,
+      /*fetch_pdf_content_callback=*/base::NullCallback());
   fetcher.Observe(web_contents());
   fetcher.CollectTrackedElementRectsForIframes(tracked_element_rects);
 
@@ -386,8 +391,9 @@ TEST_F(PageContextFetcherIframeInfoTest, NoIframeInfoWhenFeatureDisabled) {
 
   // When the feature is disabled, CollectTrackedElementRectsForIframes should
   // do nothing.
-  PageContextFetcher fetcher(base::NullCallback(),
-                             /*progress_listener=*/nullptr);
+  PageContextFetcher fetcher(
+      base::NullCallback(), /*progress_listener=*/nullptr,
+      /*fetch_pdf_content_callback=*/base::NullCallback());
   fetcher.Observe(web_contents());
   fetcher.CollectTrackedElementRectsForIframes(tracked_element_rects);
 
@@ -440,7 +446,8 @@ class PageContextFetcherPdfTest : public content::RenderViewHostTestHarness {
     content::NavigationSimulator::NavigateAndCommitFromBrowser(
         web_contents(), GURL("https://example.com"));
     fetcher_ = std::make_unique<PageContextFetcher>(
-        base::NullCallback(), /*progress_listener=*/nullptr);
+        base::NullCallback(), /*progress_listener=*/nullptr,
+        /*fetch_pdf_content_callback=*/base::NullCallback());
     fetcher_->Observe(web_contents());
     fetcher_->pending_result_ = std::make_unique<FetchPageContextResult>();
     fetcher_->callback_ = future_.GetCallback();
@@ -468,9 +475,11 @@ class PageContextFetcherPdfBytesExtractionTest
   void ReceivedPdfBytes(uint32_t pdf_size_limit,
                         pdf::mojom::PdfListener::GetPdfBytesStatus status,
                         const std::vector<uint8_t>& pdf_bytes) {
-    GetFetcher().ReceivedPdfBytes(
+    ConvertPdfBytesToResultForTesting(
         url::Origin::Create(GURL("https://example.com")), IsTopLevelPDF(),
-        pdf_size_limit, status, pdf_bytes, /*page_count=*/1);
+        pdf_size_limit, status, pdf_bytes, /*page_count=*/1,
+        base::BindOnce(&PageContextFetcher::ReceivedPdfResult,
+                       base::Unretained(&GetFetcher())));
   }
 };
 
@@ -590,7 +599,10 @@ class PageContextFetcherPdfTextExtractionTest
   void ReceivedPdfText(url::Origin pdf_origin,
                        uint32_t text_byte_limit,
                        const std::u16string& text) {
-    GetFetcher().ReceivedPdfText(std::move(pdf_origin), text_byte_limit, text);
+    ConvertPdfTextToResultForTesting(
+        std::move(pdf_origin), text_byte_limit, text,
+        base::BindOnce(&PageContextFetcher::ReceivedPdfResult,
+                       base::Unretained(&GetFetcher())));
   }
 };
 
@@ -702,8 +714,9 @@ TEST_F(PageContextFetcherHangingPdfTest, TopLevelPdfBytesExtractionTimeout) {
   FakePdfListener fake_listener;
   AttachPdfDocumentHelper(main_rfh(), fake_listener);
 
-  PageContextFetcher fetcher(base::NullCallback(),
-                             /*progress_listener=*/nullptr);
+  PageContextFetcher fetcher(
+      base::NullCallback(), /*progress_listener=*/nullptr,
+      base::BindRepeating(&FetchPdfContentForWebContents));
   base::test::TestFuture<FetchPageContextResultCallbackArg> future;
   FetchPageContextOptions options;
   options.pdf_options.emplace(PdfOptions::Format::kBytes, /*size_limit=*/1024);
@@ -742,8 +755,9 @@ TEST_F(PageContextFetcherHangingPdfTest, TopLevelPdfTextExtractionTimeout) {
   FakePdfListener fake_listener;
   AttachPdfDocumentHelper(main_rfh(), fake_listener);
 
-  PageContextFetcher fetcher(base::NullCallback(),
-                             /*progress_listener=*/nullptr);
+  PageContextFetcher fetcher(
+      base::NullCallback(), /*progress_listener=*/nullptr,
+      base::BindRepeating(&FetchPdfContentForWebContents));
   base::test::TestFuture<FetchPageContextResultCallbackArg> future;
   FetchPageContextOptions options;
   options.pdf_options.emplace(PdfOptions::Format::kText, /*size_limit=*/1024);
@@ -792,8 +806,9 @@ TEST_F(PageContextFetcherHangingPdfTest, EmbeddedPdfBytesExtractionTimeout) {
   FakePdfListener fake_listener;
   AttachPdfDocumentHelper(pdf_frame, fake_listener);
 
-  PageContextFetcher fetcher(base::NullCallback(),
-                             /*progress_listener=*/nullptr);
+  PageContextFetcher fetcher(
+      base::NullCallback(), /*progress_listener=*/nullptr,
+      base::BindRepeating(&FetchPdfContentForWebContents));
   base::test::TestFuture<FetchPageContextResultCallbackArg> future;
   FetchPageContextOptions options;
   options.pdf_options.emplace(PdfOptions::Format::kBytes, /*size_limit=*/1024);
@@ -831,8 +846,9 @@ TEST_F(PageContextFetcherHangingPdfTest, TopLevelPdfBytesExtractionDisconnect) {
   FakePdfListener fake_listener;
   AttachPdfDocumentHelper(main_rfh(), fake_listener);
 
-  PageContextFetcher fetcher(base::NullCallback(),
-                             /*progress_listener=*/nullptr);
+  PageContextFetcher fetcher(
+      base::NullCallback(), /*progress_listener=*/nullptr,
+      base::BindRepeating(&FetchPdfContentForWebContents));
   base::test::TestFuture<FetchPageContextResultCallbackArg> future;
   FetchPageContextOptions options;
   options.pdf_options.emplace(PdfOptions::Format::kBytes, /*size_limit=*/1024);
@@ -860,8 +876,9 @@ TEST_F(PageContextFetcherHangingPdfTest, TopLevelPdfTextExtractionDisconnect) {
   FakePdfListener fake_listener;
   AttachPdfDocumentHelper(main_rfh(), fake_listener);
 
-  PageContextFetcher fetcher(base::NullCallback(),
-                             /*progress_listener=*/nullptr);
+  PageContextFetcher fetcher(
+      base::NullCallback(), /*progress_listener=*/nullptr,
+      base::BindRepeating(&FetchPdfContentForWebContents));
   base::test::TestFuture<FetchPageContextResultCallbackArg> future;
   FetchPageContextOptions options;
   options.pdf_options.emplace(PdfOptions::Format::kText, /*size_limit=*/1024);
@@ -900,8 +917,9 @@ TEST_F(PageContextFetcherHangingPdfTest,
   FakePdfListener fake_listener;
   AttachPdfDocumentHelper(pdf_frame, fake_listener);
 
-  PageContextFetcher fetcher(base::NullCallback(),
-                             /*progress_listener=*/nullptr);
+  PageContextFetcher fetcher(
+      base::NullCallback(), /*progress_listener=*/nullptr,
+      base::BindRepeating(&FetchPdfContentForWebContents));
   base::test::TestFuture<FetchPageContextResultCallbackArg> future;
   FetchPageContextOptions options;
   options.pdf_options.emplace(PdfOptions::Format::kBytes, /*size_limit=*/1024);
@@ -935,8 +953,9 @@ TEST_F(PageContextFetcherHangingPdfTest,
   FakePdfListener fake_listener;
   AttachPdfDocumentHelper(test_contents->GetPrimaryMainFrame(), fake_listener);
 
-  PageContextFetcher fetcher(base::NullCallback(),
-                             /*progress_listener=*/nullptr);
+  PageContextFetcher fetcher(
+      base::NullCallback(), /*progress_listener=*/nullptr,
+      base::BindRepeating(&FetchPdfContentForWebContents));
   base::test::TestFuture<FetchPageContextResultCallbackArg> future;
   FetchPageContextOptions options;
   options.pdf_options.emplace(PdfOptions::Format::kBytes, /*size_limit=*/1024);
@@ -964,5 +983,131 @@ TEST_F(PageContextFetcherHangingPdfTest,
 }
 
 #endif  // BUILDFLAG(ENABLE_PDF)
+
+// Tests `PageContextFetcher` with a fake `FetchPdfContentCallback`. Not guarded
+// by `ENABLE_PDF`, since the callback can be implemented without the PDF
+// viewer.
+class PageContextFetcherPdfCallbackTest
+    : public content::RenderViewHostTestHarness {
+ public:
+  PageContextFetcherPdfCallbackTest()
+      : content::RenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+  ~PageContextFetcherPdfCallbackTest() override = default;
+
+ protected:
+  void SetUp() override {
+    content::RenderViewHostTestHarness::SetUp();
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        web_contents(), GURL("https://example.com/doc.pdf"));
+    options_.pdf_options.emplace(PdfOptions::Format::kBytes,
+                                 /*size_limit=*/4096u);
+  }
+
+  FetchPageContextOptions options_;
+};
+
+TEST_F(PageContextFetcherPdfCallbackTest, FetchPdfContentCallbackSuccess) {
+  std::vector<uint8_t> expected_bytes = {'%', 'P', 'D', 'F',
+                                         '-', '1', '.', '7'};
+  url::Origin expected_origin =
+      url::Origin::Create(GURL("https://example.com"));
+
+  FetchPdfContentCallback pdf_callback = base::BindRepeating(
+      [](url::Origin origin, std::vector<uint8_t> bytes,
+         content::WebContents& web_contents, const PdfOptions& options,
+         FetchPdfContentResultCallback callback) {
+        EXPECT_EQ(options.format(), PdfOptions::Format::kBytes);
+        EXPECT_EQ(options.size_limit(), 4096u);
+        std::move(callback).Run(PdfResult(std::move(origin), std::move(bytes)));
+      },
+      expected_origin, expected_bytes);
+
+  PageContextFetcher fetcher(
+      /*get_screenshot_service_callback=*/base::NullCallback(),
+      /*progress_listener=*/nullptr, std::move(pdf_callback));
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+  fetcher.FetchStart(*web_contents(), options_, future.GetCallback());
+
+  FetchPageContextResultCallbackArg result_arg = future.Take();
+  ASSERT_TRUE(result_arg.has_value());
+  ASSERT_TRUE(result_arg.value()->pdf_result.has_value());
+  EXPECT_EQ(result_arg.value()->pdf_result->origin, expected_origin);
+  EXPECT_FALSE(result_arg.value()->pdf_result->size_exceeded);
+  const auto* bytes =
+      std::get_if<std::vector<uint8_t>>(&result_arg.value()->pdf_result->data);
+  ASSERT_TRUE(bytes);
+  EXPECT_EQ(*bytes, expected_bytes);
+}
+
+TEST_F(PageContextFetcherPdfCallbackTest, FetchPdfContentNullCallback) {
+  PageContextFetcher fetcher(
+      /*get_screenshot_service_callback=*/base::NullCallback(),
+      /*progress_listener=*/nullptr,
+      /*fetch_pdf_content_callback=*/base::NullCallback());
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+  fetcher.FetchStart(*web_contents(), options_, future.GetCallback());
+
+  FetchPageContextResultCallbackArg result_arg = future.Take();
+  ASSERT_TRUE(result_arg.has_value());
+  EXPECT_FALSE(result_arg.value()->pdf_result.has_value());
+}
+
+// A synchronous null result completes the fetch without waiting for the PDF
+// extraction timeout.
+TEST_F(PageContextFetcherPdfCallbackTest, FetchPdfContentCallbackSyncNull) {
+  PageContextFetcher fetcher(
+      /*get_screenshot_service_callback=*/base::NullCallback(),
+      /*progress_listener=*/nullptr,
+      base::BindRepeating([](content::WebContents& web_contents,
+                             const PdfOptions& options,
+                             FetchPdfContentResultCallback callback) {
+        std::move(callback).Run(std::nullopt);
+      }));
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+  fetcher.FetchStart(*web_contents(), options_, future.GetCallback());
+
+  ASSERT_TRUE(future.IsReady());
+  FetchPageContextResultCallbackArg result_arg = future.Take();
+  ASSERT_TRUE(result_arg.has_value());
+  EXPECT_FALSE(result_arg.value()->pdf_result.has_value());
+}
+
+// If the callback never replies, the fetch completes without a PDF result after
+// the timeout, and the result callback is cancelled so a late result is
+// ignored.
+TEST_F(PageContextFetcherPdfCallbackTest, FetchPdfContentCallbackTimeout) {
+  FetchPdfContentResultCallback pending_callback;
+  PageContextFetcher fetcher(
+      /*get_screenshot_service_callback=*/base::NullCallback(),
+      /*progress_listener=*/nullptr,
+      base::BindLambdaForTesting([&](content::WebContents& web_contents,
+                                     const PdfOptions& options,
+                                     FetchPdfContentResultCallback callback) {
+        pending_callback = std::move(callback);
+      }));
+
+  base::test::TestFuture<FetchPageContextResultCallbackArg> future;
+  fetcher.FetchStart(*web_contents(), options_, future.GetCallback());
+  ASSERT_TRUE(pending_callback);
+  EXPECT_FALSE(pending_callback.IsCancelled());
+  EXPECT_FALSE(future.IsReady());
+
+  // Advance clock to reach timeout.
+  task_environment()->FastForwardBy(kPdfExtractionTimeout.Get());
+
+  ASSERT_TRUE(future.IsReady());
+  FetchPageContextResultCallbackArg result_arg = future.Take();
+  ASSERT_TRUE(result_arg.has_value());
+  EXPECT_FALSE(result_arg.value()->pdf_result.has_value());
+
+  // Late result arriving after timeout should be ignored.
+  EXPECT_TRUE(pending_callback.IsCancelled());
+  std::move(pending_callback)
+      .Run(PdfResult(url::Origin::Create(GURL("https://example.com"))));
+}
 
 }  // namespace page_content_annotations

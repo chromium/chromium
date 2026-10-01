@@ -46,7 +46,8 @@ void TtcPageContextMonitor::StartNewFetch(FetchCompleteCallback callback) {
   // needed.
   fetcher_ = std::make_unique<page_content_annotations::PageContextFetcher>(
       /*get_screenshot_service_callback=*/base::NullCallback(),
-      /*progress_listener=*/nullptr);
+      /*progress_listener=*/nullptr,
+      /*fetch_pdf_content_callback=*/base::NullCallback());
 
   page_content_annotations::FetchPageContextOptions options;
   options.annotated_page_content_options =

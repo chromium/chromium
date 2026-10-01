@@ -110,6 +110,7 @@ source_set("fetcher") {
   deps = [
     ":screenshot_service",
     "//chrome/browser/profiles:profile",
+    "//pdf:buildflags",
   ]
 }
 

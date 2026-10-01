@@ -30,10 +30,12 @@ void PageContextFetcherManager::Fetch(
     const FetchPageContextOptions& options,
     std::unique_ptr<FetchPageProgressListener> progress_listener,
     GetScreenshotServiceCallback get_screenshot_service_callback,
+    FetchPdfContentCallback fetch_pdf_content_callback,
     FetchPageContextResultCallback callback) {
   CHECK(callback);
   auto fetcher = std::make_unique<PageContextFetcher>(
-      std::move(get_screenshot_service_callback), std::move(progress_listener));
+      std::move(get_screenshot_service_callback), std::move(progress_listener),
+      std::move(fetch_pdf_content_callback));
 
   PageContextFetcher* raw_fetcher = fetcher.get();
   active_fetchers_.emplace(raw_fetcher, std::move(fetcher));

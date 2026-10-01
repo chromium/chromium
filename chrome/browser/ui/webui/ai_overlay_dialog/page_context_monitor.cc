@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ai_overlay_dialog/page_context_monitor.h"
 
 #include "base/files/file_util.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -299,7 +300,8 @@ void PageContextMonitor::StartNewFetch() {
         return PageContentScreenshotServiceFactory::GetForProfile(
             Profile::FromBrowserContext(context));
       }),
-      /*progress_listener=*/nullptr);
+      /*progress_listener=*/nullptr,
+      /*fetch_pdf_content_callback=*/base::NullCallback());
 
   page_content_annotations::FetchPageContextOptions options;
   options.annotated_page_content_options =

@@ -30,10 +30,12 @@ class PageContextFetcherManager
 
   // Starts a page context fetch for the WebContents associated with `this`.
   // The fetcher will be owned by `this` and destroyed when the fetch completes
-  // or when the WebContents is destroyed.
+  // or when the WebContents is destroyed. See `PageContextFetcher` for
+  // `fetch_pdf_content_callback`.
   void Fetch(const FetchPageContextOptions& options,
              std::unique_ptr<FetchPageProgressListener> progress_listener,
              GetScreenshotServiceCallback get_screenshot_service_callback,
+             FetchPdfContentCallback fetch_pdf_content_callback,
              FetchPageContextResultCallback callback);
 
  private:

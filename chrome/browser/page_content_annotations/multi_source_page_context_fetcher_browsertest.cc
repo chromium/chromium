@@ -52,6 +52,7 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
+#include "components/page_content_annotations/content/pdf_content_fetcher.h"
 #include "components/pdf/browser/pdf_document_helper.h"
 #endif
 
@@ -1746,7 +1747,7 @@ IN_PROC_BROWSER_TEST_P(PdfMultiSourcePageContextFetcherBrowserTest,
   // Initially the extraction candidate should be top PDF as it is in viewport
   // while the bottom one is out of viewport.
   pdf::PDFDocumentHelper* top_candidate =
-      PageContextFetcher::GetPDFExtractionCandidate(*web_contents());
+      GetPDFExtractionCandidateForTesting(*web_contents());
   ASSERT_TRUE(top_candidate);
   const content::GlobalRenderFrameHostId top_candidate_id =
       top_candidate->render_frame_host().GetGlobalId();
@@ -1763,7 +1764,7 @@ IN_PROC_BROWSER_TEST_P(PdfMultiSourcePageContextFetcherBrowserTest,
   // in viewport and becomes the extraction candidate.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     pdf::PDFDocumentHelper* candidate =
-        PageContextFetcher::GetPDFExtractionCandidate(*web_contents());
+        GetPDFExtractionCandidateForTesting(*web_contents());
     return candidate &&
            candidate->render_frame_host().GetGlobalId() != top_candidate_id;
   }));
