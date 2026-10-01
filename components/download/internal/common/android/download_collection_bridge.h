@@ -63,14 +63,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadCollectionBridge {
   static bool RenameDownloadUri(const base::FilePath& download_uri,
                                 const base::FilePath& new_display_name);
 
-  using GetDisplayNamesCallback =
-      base::OnceCallback<void(InProgressDownloadManager::DisplayNames)>;
-  // Gets the display name for the given download URIs.
-  // Called on non UI thread.
-  static void GetDisplayNamesForDownloads(
-      const std::vector<base::FilePath>& download_uris,
-      GetDisplayNamesCallback cb);
-
   // Gets the display name for a download.
   static base::FilePath GetDisplayName(const base::FilePath& download_uri);
 
