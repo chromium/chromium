@@ -2699,13 +2699,16 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_TRUE(language_state->pending_target_language().has_value());
 }
 
+// Tests the legacy distiller path (kReadAnythingDistillerRefactor disabled).
+// TODO(crbug.com/558399596): Add equivalent tests with the refactor enabled.
 class ReadAnythingUntrustedPageHandlerDistillerTest
     : public ReadAnythingUntrustedPageHandlerTest {
  public:
   ReadAnythingUntrustedPageHandlerDistillerTest()
       : ReadAnythingUntrustedPageHandlerTest(
             {features::kReadAnythingWithReadability},
-            {features::kReadAnythingReadAloudPhraseHighlighting}) {}
+            {features::kReadAnythingReadAloudPhraseHighlighting,
+             features::kReadAnythingDistillerRefactor}) {}
 };
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerDistillerTest,
