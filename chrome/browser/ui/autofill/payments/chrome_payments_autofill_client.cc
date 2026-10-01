@@ -978,6 +978,12 @@ void ChromePaymentsAutofillClient::DismissOfferNotification() {
 #endif
 }
 
+bool ChromePaymentsAutofillClient::IsTabVisibleForOfferNotification() const {
+  // An occluded tab counts as not visible: the user cannot see a notification
+  // shown on it either.
+  return web_contents()->GetVisibility() == content::Visibility::VISIBLE;
+}
+
 bool ChromePaymentsAutofillClient::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillPaymentMethodDelegate> delegate,
     base::span<const Suggestion> suggestions) {
@@ -1432,6 +1438,20 @@ void ChromePaymentsAutofillClient::
       std::move(touch_to_fill_payment_method_controller);
 }
 #endif  // #if BUILDFLAG(IS_ANDROID)
+
+void ChromePaymentsAutofillClient::OnVisibilityChanged(
+    content::Visibility visibility) {
+  // Offer notifications are not set up for hidden tabs, so that they cannot
+  // consume the once-per-offer automatic show. Re-evaluate the offer
+  // notification once the tab becomes visible. There is no offer manager in
+  // Incognito windows.
+  if (visibility != content::Visibility::VISIBLE) {
+    return;
+  }
+  if (AutofillOfferManager* offer_manager = GetAutofillOfferManager()) {
+    offer_manager->UpdateOfferNotificationVisibility(client_.get());
+  }
+}
 
 void ChromePaymentsAutofillClient::OnPaymentsDataChanged() {
   // The offers are per profile, but the offer notification is per tab, so each

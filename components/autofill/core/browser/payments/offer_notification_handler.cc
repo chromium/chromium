@@ -60,6 +60,13 @@ void OfferNotificationHandler::UpdateOfferNotificationVisibility(
     return;
   }
 
+  // Hidden tabs are skipped so that they cannot consume the once-per-offer
+  // automatic show on behalf of the tab the user is actually looking at. This
+  // is re-evaluated when the tab becomes visible again.
+  if (!client.GetPaymentsAutofillClient()->IsTabVisibleForOfferNotification()) {
+    return;
+  }
+
   const GURL url = client.GetLastCommittedPrimaryMainFrameURL();
 
   if (ValidOfferExistsForUrl(url)) {

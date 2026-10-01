@@ -189,6 +189,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
       const AutofillOfferData& offer,
       const OfferNotificationOptions& options) override;
   void DismissOfferNotification() override;
+  bool IsTabVisibleForOfferNotification() const override;
   bool ShowTouchToFillCreditCard(
       base::WeakPtr<TouchToFillPaymentMethodDelegate> delegate,
       base::span<const Suggestion> suggestions) override;
@@ -397,6 +398,10 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
     autofill_offer_manager_ = std::move(autofill_offer_manager);
   }
 
+  void set_is_tab_visible_for_offer_notification(bool visible) {
+    is_tab_visible_for_offer_notification_ = visible;
+  }
+
   void set_merchant_promo_code_manager(
       std::unique_ptr<MockMerchantPromoCodeManager>
           mock_merchant_promo_code_manager) {
@@ -511,6 +516,7 @@ class TestPaymentsAutofillClient : public PaymentsAutofillClient {
   std::unique_ptr<MockMerchantPromoCodeManager>
       mock_merchant_promo_code_manager_;
   std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
+  bool is_tab_visible_for_offer_notification_ = true;
   std::unique_ptr<MockMandatoryReauthManager>
       mock_payments_mandatory_reauth_manager_;
 

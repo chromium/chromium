@@ -373,6 +373,10 @@ void TestPaymentsAutofillClient::UpdateOfferNotification(
 
 void TestPaymentsAutofillClient::DismissOfferNotification() {}
 
+bool TestPaymentsAutofillClient::IsTabVisibleForOfferNotification() const {
+  return is_tab_visible_for_offer_notification_;
+}
+
 bool TestPaymentsAutofillClient::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillPaymentMethodDelegate> delegate,
     base::span<const Suggestion> suggestions) {

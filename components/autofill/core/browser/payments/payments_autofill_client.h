@@ -663,6 +663,10 @@ class PaymentsAutofillClient : public RiskDataLoader {
   // Dismiss any visible offer notification on the current tab.
   virtual void DismissOfferNotification() = 0;
 
+  // Returns whether the tab this client belongs to is currently visible to the
+  // user, for deciding whether to set up an offer notification on it.
+  virtual bool IsTabVisibleForOfferNotification() const = 0;
+
   // Shows the Touch To Fill surface for filling credit card information, if
   // possible, and returns `true` on success. `delegate` will be notified of
   // events. `suggestions` are generated using the `cards_to_suggest` data and

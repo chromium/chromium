@@ -548,6 +548,12 @@ void IOSChromePaymentsAutofillClient::UpdateOfferNotification(
 
 void IOSChromePaymentsAutofillClient::DismissOfferNotification() {}
 
+bool IOSChromePaymentsAutofillClient::IsTabVisibleForOfferNotification() const {
+  // Offer notifications are not supported on iOS.
+  NOTIMPLEMENTED();
+  return false;
+}
+
 bool IOSChromePaymentsAutofillClient::ShowTouchToFillCreditCard(
     base::WeakPtr<TouchToFillPaymentMethodDelegate> delegate,
     base::span<const Suggestion> suggestions) {

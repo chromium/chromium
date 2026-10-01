@@ -9,14 +9,18 @@
 
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
+#include "components/autofill/core/browser/payments/offer_notification_options.h"
+#include "components/autofill/core/browser/payments/test_payments_autofill_client.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_util.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
 #include "components/autofill/core/common/autofill_clock.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/test/test_sync_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -25,7 +29,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
+using testing::_;
 using testing::ElementsAre;
+using testing::Field;
 using testing::Pair;
 using testing::Pointee;
 
@@ -38,13 +44,40 @@ const char kTestNumber[] = "4234567890123456";  // Visa
 const char kTestUrl[] = "http://www.example.com/";
 const char kOfferDetailsUrl[] = "http://pay.google.com";
 
+class MockPaymentsAutofillClient : public payments::TestPaymentsAutofillClient {
+ public:
+  explicit MockPaymentsAutofillClient(AutofillClient* client)
+      : TestPaymentsAutofillClient(client) {}
+  ~MockPaymentsAutofillClient() override = default;
+
+  MOCK_METHOD(void,
+              UpdateOfferNotification,
+              (const AutofillOfferData&, const OfferNotificationOptions&),
+              (override));
+  MOCK_METHOD(void, DismissOfferNotification, (), (override));
+};
+
+class MockAutofillClient : public TestAutofillClient {
+ public:
+  MockAutofillClient() {
+    set_payments_autofill_client(
+        std::make_unique<testing::NiceMock<MockPaymentsAutofillClient>>(this));
+  }
+};
+
 }  // namespace
 // The anonymous namespace needs to end here because of `friend`ships between
 // the tests and the production code.
 
 class AutofillOfferManagerTest : public testing::Test {
  public:
-  AutofillOfferManagerTest() = default;
+  AutofillOfferManagerTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {features::kAutofillEnableWalletDirectOffers,
+         features::kAutofillEnableWalletDirectOffersNotificationBubble},
+        /*disabled_features=*/{});
+  }
   ~AutofillOfferManagerTest() override = default;
 
   void SetUp() override {
@@ -90,6 +123,18 @@ class AutofillOfferManagerTest : public testing::Test {
     return offer_data;
   }
 
+  // Simulates a navigation to `url` in the primary main frame.
+  void NavigateTo(const GURL& url) {
+    autofill_client_.set_last_committed_primary_main_frame_url(url);
+    autofill_offer_manager_->UpdateOfferNotificationVisibility(
+        autofill_client_);
+  }
+
+  MockPaymentsAutofillClient& payments_autofill_client() {
+    return static_cast<MockPaymentsAutofillClient&>(
+        *autofill_client_.GetPaymentsAutofillClient());
+  }
+
   TestPersonalDataManager& personal_data_manager() {
     return autofill_client_.GetPersonalDataManager();
   }
@@ -100,10 +145,11 @@ class AutofillOfferManagerTest : public testing::Test {
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   syncer::TestSyncService sync_service_;
-  TestAutofillClient autofill_client_;
+  MockAutofillClient autofill_client_;
   std::unique_ptr<AutofillOfferManager> autofill_offer_manager_;
 };
 
@@ -157,6 +203,36 @@ TEST_F(AutofillOfferManagerTest,
   const AutofillOfferData* result =
       autofill_offer_manager_->GetOfferForUrl(GURL("http://www.example.com"));
   EXPECT_EQ(offer2, *result);
+}
+
+// Hidden tabs must not set up an offer notification the user cannot see.
+TEST_F(AutofillOfferManagerTest, HiddenTab_DoesNotUpdateNotification) {
+  payments_autofill_client().set_is_tab_visible_for_offer_notification(false);
+  payments_data_manager().AddAutofillOfferData(
+      test::GetPromoCodeOfferData(GURL(kTestUrl)));
+
+  EXPECT_CALL(payments_autofill_client(), UpdateOfferNotification).Times(0);
+  EXPECT_CALL(payments_autofill_client(), DismissOfferNotification).Times(0);
+
+  NavigateTo(GURL(kTestUrl));
+}
+
+// The automatic show is granted only once per offer. A hidden tab must not
+// consume it on behalf of the tab the user is actually looking at.
+TEST_F(AutofillOfferManagerTest, HiddenTab_DoesNotConsumeAutomaticShow) {
+  payments_autofill_client().set_is_tab_visible_for_offer_notification(false);
+  payments_data_manager().AddAutofillOfferData(
+      test::GetPromoCodeOfferData(GURL(kTestUrl)));
+  NavigateTo(GURL(kTestUrl));
+
+  EXPECT_CALL(
+      payments_autofill_client(),
+      UpdateOfferNotification(
+          _, Field(&OfferNotificationOptions::show_notification_automatically,
+                   true)));
+
+  payments_autofill_client().set_is_tab_visible_for_offer_notification(true);
+  NavigateTo(GURL(kTestUrl));
 }
 
 }  // namespace autofill
