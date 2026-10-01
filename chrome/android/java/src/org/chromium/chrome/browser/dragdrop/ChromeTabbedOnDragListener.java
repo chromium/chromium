@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.dragdrop;
 
-import static org.chromium.build.NullUtil.assertNonNull;
-
 import android.content.ClipDescription;
 import android.content.Context;
 import android.view.DragEvent;
@@ -137,7 +135,6 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
 
     private boolean handleTabDrop(DragEvent dragEvent) {
         DragDropGlobalState globalState = DragDropGlobalState.getState(dragEvent);
-        assertNonNull(globalState);
         Tab draggedTab = ChromeDragDropUtils.getTabFromGlobalState(globalState);
         if (!validDragEvent(
                 globalState, draggedTab, /* isTabGroup= */ false, /* isMultiTab= */ false)) {
@@ -180,7 +177,6 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
 
     private boolean handleMultiTabDrop(DragEvent dragEvent) {
         DragDropGlobalState globalState = DragDropGlobalState.getState(dragEvent);
-        assertNonNull(globalState);
         List<Tab> draggedTabs = ChromeDragDropUtils.getTabsFromGlobalState(globalState);
         if (!validDragEvent(
                 globalState, draggedTabs, /* isTabGroup= */ false, /* isMultiTab= */ true)) {
@@ -216,7 +212,6 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
 
     private boolean handleGroupDrop(DragEvent dragEvent) {
         DragDropGlobalState globalState = DragDropGlobalState.getState(dragEvent);
-        assertNonNull(globalState);
         TabGroupMetadata tabGroupMetadata =
                 ChromeDragDropUtils.getTabGroupMetadataFromGlobalState(globalState);
 
@@ -257,6 +252,8 @@ public class ChromeTabbedOnDragListener implements OnDragListener {
             @Nullable Object draggedData,
             boolean isTabGroup,
             boolean isMultiTab) {
+        // The global state may already have been cleared by the time a drop arrives, e.g. if the
+        // source window tore down its drag handler mid-drag. Reject the drop rather than crash.
         if (globalState == null || draggedData == null) {
             DragDropMetricUtils.recordDragDropResult(
                     DragDropResult.ERROR_CONTENT_NOT_FOUND,

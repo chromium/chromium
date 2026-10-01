@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.dragdrop;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import android.content.Intent;
 
@@ -26,6 +27,14 @@ public class ChromeDragDropUtilsUnitTest {
                 UrlIntentSource.TAB_IN_STRIP, DragDropType.TAB_STRIP_TO_NEW_INSTANCE);
         testGetDragDropTypeFromIntent(
                 UrlIntentSource.UNKNOWN, DragDropType.UNKNOWN_TO_NEW_INSTANCE);
+    }
+
+    @Test
+    public void testGetFromGlobalState_NullState_ReturnsNull() {
+        assertNull(ChromeDragDropUtils.getTabFromGlobalState(null));
+        assertNull(ChromeDragDropUtils.getTabsFromGlobalState(null));
+        assertNull(ChromeDragDropUtils.getPrimaryTabFromGlobalState(null));
+        assertNull(ChromeDragDropUtils.getTabGroupMetadataFromGlobalState(null));
     }
 
     private void testGetDragDropTypeFromIntent(
