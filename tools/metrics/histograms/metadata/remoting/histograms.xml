@@ -24,7 +24,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Remoting.Host.ChromeOs.AudioStream.AudioPlaybackMode"
     enum="AudioPlaybackMode" expires_after="2026-11-03">
-  <owner>gavinwill@google.com</owner>
+  <owner>aprilzhou@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
     Records the audio playback mode requested when starting an audio stream on
@@ -34,7 +34,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Remoting.Host.ChromeOs.AudioStream.OnError"
     enum="BooleanError" expires_after="2026-11-03">
-  <owner>gavinwill@google.com</owner>
+  <owner>aprilzhou@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
     Recorded once whenever the CRAS AudioManager reports a fatal audio stream
@@ -47,7 +47,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Remoting.Host.ChromeOs.AudioStream.OpenOutcome"
     enum="OpenOutcome" expires_after="2026-11-03">
-  <owner>gavinwill@google.com</owner>
+  <owner>aprilzhou@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
     Records the result of opening an audio stream on the host device for a CRD
@@ -57,7 +57,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Remoting.Host.ChromeOs.AudioStream.StartResult"
     enum="AudioHelperStartStreamResult" expires_after="2026-11-03">
-  <owner>gavinwill@google.com</owner>
+  <owner>aprilzhou@google.com</owner>
   <owner>cros-edu-eng@google.com</owner>
   <summary>
     Records the result of attempting to start an audio stream on the host device
