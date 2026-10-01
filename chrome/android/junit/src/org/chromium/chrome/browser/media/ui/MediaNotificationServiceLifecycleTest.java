@@ -374,6 +374,47 @@ public class MediaNotificationServiceLifecycleTest extends MediaNotificationTest
     }
 
     @Test
+    @EnableFeatures(ChromeFeatureList.ALLOW_MULTIPLE_MEDIA_NOTIFICATIONS)
+    public void testDetachedControllerIgnoredByFallbackPromotionAndIsServiceNeeded() {
+        NotificationProxyUtils.setNotificationEnabledForTest(true);
+        MediaNotificationManager.setMultipleMediaNotificationsEnabled(true);
+        setUpService();
+        getController().mService = mService;
+        getController().mMediaNotificationInfo =
+                mMediaNotificationInfoBuilder.setPaused(false).build();
+
+        MediaNotificationInfo activeTabInfo =
+                mMediaNotificationInfoBuilder.setInstanceId(99).setPaused(false).build();
+        ChromeMediaNotificationManager.show(activeTabInfo);
+        int activeNotificationId = MediaNotificationManager.getUniqueId(99, getNotificationId());
+        MediaNotificationController activeController =
+                MediaNotificationManager.getControllerByNotificationId(activeNotificationId);
+        activeController.mPendingIntentActionSwipe = mock(PendingIntentProvider.class);
+        advanceTimeByMillis(500);
+        activeController.onServiceStarted(mService);
+        assertTrue(activeController.isForeground());
+
+        // Detach getController() via stopListenerService() while mMediaNotificationInfo is still
+        // non-null/playing (simulating the window before delayed hide() runs).
+        getController().stopListenerService();
+        assertNull(getController().mService);
+        assertFalse(getController().isPaused());
+
+        // Pausing activeController should not promote the detached getController().
+        clearInvocations(mMockForegroundServiceUtils);
+        ChromeMediaNotificationManager.show(
+                mMediaNotificationInfoBuilder.setInstanceId(99).setPaused(true).build());
+        advanceTimeByMillis(500);
+        waitForAsync();
+        assertFalse(getController().isForeground());
+        assertFalse(activeController.isForeground());
+
+        // Stopping activeController should see isServiceNeeded() == false and stop the service.
+        activeController.stopListenerService();
+        verify(mService).stopSelf();
+    }
+
+    @Test
     public void updateNotificationSetsServiceBackgroundWhenPausedButDoesntSupportSwipeAway() {
         mMediaNotificationInfoBuilder.setPaused(true).setActions(0);
         setUpService();

@@ -134,7 +134,7 @@ public class MediaNotificationManager {
             int id = sControllers.keyAt(i);
             if (id == excludeId || getMediaTypeId(id) != mediaTypeId) continue;
             MediaNotificationController c = sControllers.valueAt(i);
-            if (c != null && !c.isPaused()) {
+            if (c != null && c.mService != null && !c.isPaused()) {
                 return id;
             }
         }
@@ -397,7 +397,7 @@ public class MediaNotificationManager {
             int id = sControllers.keyAt(i);
             if (id == excludeNotificationId || getMediaTypeId(id) != mediaTypeId) continue;
             MediaNotificationController c = sControllers.valueAt(i);
-            if (c != null && (!c.isPaused() || c.isForeground())) {
+            if (c != null && c.mService != null && (!c.isPaused() || c.isForeground())) {
                 return true;
             }
         }
