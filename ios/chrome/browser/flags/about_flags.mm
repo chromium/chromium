@@ -823,6 +823,8 @@ const FeatureEntry::FeatureParam kForceBWGFirstTimeRun[] = {
     {kBWGPromoConsentParams, "4"}};
 const FeatureEntry::FeatureParam kSkipNewUserDelay[] = {
     {kBWGPromoConsentParams, "5"}};
+const FeatureEntry::FeatureParam kForceGeminiLiveFRE[] = {
+    {kBWGPromoConsentParams, "6"}};
 
 const FeatureEntry::FeatureVariation kBWGPromoConsentVariations[] = {
     {"Single screen for BWG Promo Consent Flow",
@@ -831,7 +833,8 @@ const FeatureEntry::FeatureVariation kBWGPromoConsentVariations[] = {
      kDoubleScreenForBWGPromoConsent, nullptr},
     {"Skip FRE", kSkipBWGPromoConsent, nullptr},
     {"Force FRE", kForceBWGFirstTimeRun, nullptr},
-    {"Skip new user delay", kSkipNewUserDelay, nullptr}};
+    {"Skip new user delay", kSkipNewUserDelay, nullptr},
+    {"Force Live FRE", kForceGeminiLiveFRE, nullptr}};
 
 const FeatureEntry::FeatureParam kGeminiActorBackgroundingDisabled[] = {
     {kGeminiActorBackgroundingParam, "false"}};
