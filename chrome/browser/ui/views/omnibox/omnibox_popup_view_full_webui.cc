@@ -36,6 +36,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/focus/focus_manager.h"
@@ -269,6 +270,7 @@ void OmniboxPopupViewFullWebUI::SaveStateToTab(content::WebContents* tab) {
 
 void OmniboxPopupViewFullWebUI::OnTabChanged(content::WebContents* contents) {
   TRACE_EVENT("omnibox", "OmniboxPopupViewFullWebUI::OnTabChanged");
+  Observe(contents);
   last_sent_text_.reset();
   last_sent_focus_.reset();
   last_consumed_native_selection_.reset();
@@ -513,4 +515,26 @@ bool OmniboxPopupViewFullWebUI::IsReverting() const {
 
 void OmniboxPopupViewFullWebUI::SetIsReverting(bool reverting) {
   is_reverting_ = reverting;
+}
+
+void OmniboxPopupViewFullWebUI::DidFinishNavigation(
+    content::NavigationHandle* navigation_handle) {
+  // Clicking into the page with a draft in the omnibox leaves the popup open,
+  // unfocused, to show the draft (see OmniboxPopupFullPresenter::OnEvent()).
+  // A later cross-document navigation of the page, e.g. clicking a link, ends
+  // that edit session.
+  if (!navigation_handle->HasCommitted() ||
+      !navigation_handle->IsInPrimaryMainFrame() ||
+      navigation_handle->IsSameDocument()) {
+    return;
+  }
+  if (controller()->edit_model()->has_focus() ||
+      controller()->popup_state_manager()->popup_state() !=
+          OmniboxPopupState::kFull) {
+    return;
+  }
+  if (omnibox_view_) {
+    omnibox_view_->RevertAll();
+  }
+  controller()->popup_state_manager()->SetPopupState(OmniboxPopupState::kNone);
 }

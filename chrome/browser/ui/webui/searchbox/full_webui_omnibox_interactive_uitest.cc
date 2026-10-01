@@ -20,6 +20,7 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
@@ -55,6 +56,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/omnibox_proto/aim_eligibility_response.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
@@ -1829,6 +1831,221 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
           kPopupWebView, kWebUIInput,
           "el => `${el.value}|${el.selectionStart}|${el.selectionEnd}`",
           "chromium|0|4")));
+}
+
+// Verifies that when a user types a draft in the omnibox and then navigates the
+// active page (e.g. by clicking a link), the popup is dismissed, user input in
+// progress is cleared, and the omnibox displays the new page's URL.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
+                       PageNavigationWithDraftDismissesPopup) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url_a = embedded_test_server()->GetURL("/title1.html");
+  const GURL url_b = embedded_test_server()->GetURL("/title2.html");
+
+  RunTestSequence(
+      // Open Tab 1 at page A and focus Omnibox to open WebUI popup.
+      OpenInitialTabAndFocusOmnibox(kTab1, url_a),
+      // Type a draft into the WebUI input.
+      InputWebUIText("foo"),
+      // Verify popup is open and user input is in progress.
+      CheckResult(
+          [this]() {
+            return BrowserWindow::FromBrowser(browser())
+                ->GetLocationBar()
+                ->GetOmniboxController()
+                ->popup_state_manager()
+                ->popup_state();
+          },
+          OmniboxPopupState::kFull, "PopupIsFull"),
+      CheckResult(
+          [this]() {
+            return BrowserWindow::FromBrowser(browser())
+                ->GetLocationBar()
+                ->GetOmniboxController()
+                ->edit_model()
+                ->user_input_in_progress();
+          },
+          true, "UserInputInProgress"),
+      // Click into the page body to unfocus the Omnibox.
+      ClickWebPageBody(kTab1), WaitForOmniboxFocus(false),
+      CheckResult(
+          [this]() {
+            return BrowserWindow::FromBrowser(browser())
+                ->GetLocationBar()
+                ->GetOmniboxController()
+                ->edit_model()
+                ->has_focus();
+          },
+          false, "OmniboxNotFocused"),
+      // Trigger a renderer-initiated navigation to page B.
+      InAnyContext(ExecuteJs(
+          kTab1, base::StringPrintf("() => { window.location.href = '%s'; }",
+                                    url_b.spec().c_str()))),
+      WaitForWebContentsNavigation(kTab1, url_b),
+      // Verify browser-side state: popup is dismissed, draft is discarded,
+      // and Omnibox text reflects page B.
+      CheckResult(
+          [this]() {
+            return BrowserWindow::FromBrowser(browser())
+                ->GetLocationBar()
+                ->GetOmniboxController()
+                ->popup_state_manager()
+                ->popup_state();
+          },
+          OmniboxPopupState::kNone, "PopupStateDismissed"),
+      CheckResult(
+          [this]() {
+            return BrowserWindow::FromBrowser(browser())
+                ->GetLocationBar()
+                ->GetOmniboxController()
+                ->edit_model()
+                ->user_input_in_progress();
+          },
+          false, "UserInputNotInProgress"),
+      CheckResult(
+          [this]() {
+            return BrowserWindow::FromBrowser(browser())
+                       ->GetLocationBar()
+                       ->GetOmniboxController()
+                       ->edit_model()
+                       ->GetPermanentDisplayText()
+                       .find(u"title2.html") != std::u16string::npos;
+          },
+          true, "PermanentDisplayTextShowsPageB"),
+      CheckResult(
+          [this]() {
+            auto* location_bar =
+                BrowserWindow::FromBrowser(browser())->GetLocationBar();
+            return location_bar->GetOmniboxView()->GetText().find(
+                       u"title2.html") != std::u16string::npos;
+          },
+          true, "OmniboxShowsPageB"));
+}
+
+// Verifies that when a navigation occurs while the omnibox is focused (the user
+// is actively typing), the draft is NOT dismissed, popup remains kFull, and
+// user_input_in_progress remains true (b/527512550).
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
+                       PageNavigationWhileOmniboxFocusedKeepsDraft) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url_a = embedded_test_server()->GetURL("/title1.html");
+  const GURL url_b = embedded_test_server()->GetURL("/title2.html");
+
+  RunTestSequence(
+      // Open Tab 1 at page A and focus Omnibox to open WebUI popup.
+      OpenInitialTabAndFocusOmnibox(kTab1, url_a),
+      // Type a draft into the WebUI input without unfocusing.
+      InputWebUIText("foo"),
+      // Verify popup is open, draft is in progress, and omnibox is focused.
+      CheckResult(
+          [this]() {
+            return BrowserWindow::FromBrowser(browser())
+                ->GetLocationBar()
+                ->GetOmniboxController()
+                ->popup_state_manager()
+                ->popup_state();
+          },
+          OmniboxPopupState::kFull, "PopupIsFull"),
+      CheckResult(
+          [this]() {
+            return BrowserWindow::FromBrowser(browser())
+                ->GetLocationBar()
+                ->GetOmniboxController()
+                ->edit_model()
+                ->user_input_in_progress();
+          },
+          true, "UserInputInProgress"),
+      CheckResult(
+          [this]() {
+            return BrowserWindow::FromBrowser(browser())
+                ->GetLocationBar()
+                ->GetOmniboxController()
+                ->edit_model()
+                ->has_focus();
+          },
+          true, "OmniboxHasFocus"),
+      // Trigger a page navigation from script while omnibox keeps focus.
+      InAnyContext(ExecuteJs(
+          kTab1, base::StringPrintf("() => { window.location.href = '%s'; }",
+                                    url_b.spec().c_str()))),
+      WaitForWebContentsNavigation(kTab1, url_b),
+      // Verify popup state remains kFull, draft is still in progress, and focus
+      // is retained.
+      CheckResult(
+          [this]() {
+            return BrowserWindow::FromBrowser(browser())
+                ->GetLocationBar()
+                ->GetOmniboxController()
+                ->popup_state_manager()
+                ->popup_state();
+          },
+          OmniboxPopupState::kFull, "PopupStillFull"),
+      CheckResult(
+          [this]() {
+            return BrowserWindow::FromBrowser(browser())
+                ->GetLocationBar()
+                ->GetOmniboxController()
+                ->edit_model()
+                ->user_input_in_progress();
+          },
+          true, "UserInputStillInProgress"),
+      CheckResult(
+          [this]() {
+            return BrowserWindow::FromBrowser(browser())
+                ->GetLocationBar()
+                ->GetOmniboxController()
+                ->edit_model()
+                ->has_focus();
+          },
+          true, "OmniboxStillHasFocus"));
+}
+
+// Verifies that a same-document navigation (e.g. history.pushState) after
+// clicking into the page does NOT dismiss the popup or discard the draft.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxInteractiveTest,
+                       SameDocumentNavigationWithDraftDoesNotDismissPopup) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url_a = embedded_test_server()->GetURL("/title1.html");
+
+  RunTestSequence(
+      // Open Tab 1 at page A and focus Omnibox to open WebUI popup.
+      OpenInitialTabAndFocusOmnibox(kTab1, url_a),
+      // Type a draft into the WebUI input.
+      InputWebUIText("foo"),
+      // Verify popup is open and user input is in progress.
+      CheckResult(
+          [this]() {
+            return BrowserWindow::FromBrowser(browser())
+                ->GetLocationBar()
+                ->GetOmniboxController()
+                ->popup_state_manager()
+                ->popup_state();
+          },
+          OmniboxPopupState::kFull, "PopupIsFull"),
+      // Click into the page body to unfocus the Omnibox.
+      ClickWebPageBody(kTab1), WaitForOmniboxFocus(false),
+      // Trigger a same-document navigation (history.pushState).
+      InAnyContext(ExecuteJs(
+          kTab1, "() => { window.history.pushState({}, '', '#fragment'); }")),
+      // Verify popup state remains kFull and user input remains in progress.
+      CheckResult(
+          [this]() {
+            return BrowserWindow::FromBrowser(browser())
+                ->GetLocationBar()
+                ->GetOmniboxController()
+                ->popup_state_manager()
+                ->popup_state();
+          },
+          OmniboxPopupState::kFull, "PopupStillFull"),
+      CheckResult(
+          [this]() {
+            return BrowserWindow::FromBrowser(browser())
+                ->GetLocationBar()
+                ->GetOmniboxController()
+                ->edit_model()
+                ->user_input_in_progress();
+          },
+          true, "UserInputStillInProgress"));
 }
 
 class FullWebUIOmniboxAimInteractiveTestBase
