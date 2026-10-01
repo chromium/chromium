@@ -70,6 +70,7 @@
 #include "components/omnibox/browser/voice_suggest_provider.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/open_from_clipboard/clipboard_recent_content.h"
+#include "components/page_load_metrics/browser/navigation_initiator.h"
 #include "components/search_engines/android/template_url_android.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
@@ -588,11 +589,14 @@ void AutocompleteControllerAndroid::CreateNavigationObserver(
   // navigations are not fully covered.
   if (ui::PageTransitionCoreTypeIs(match.transition,
                                    ui::PAGE_TRANSITION_TYPED)) {
-    AttachOmniboxDirectUrlInputNavigationHandleUserData(*navigation_handle);
+    page_load_metrics::NavigationInitiatorHolder::CreateForNavigationHandle(
+        *navigation_handle,
+        chrome_navigation_initiator::kOmniboxDirectUrlInput);
   } else if (ui::PageTransitionCoreTypeIs(match.transition,
                                           ui::PAGE_TRANSITION_GENERATED)) {
-    AttachOmniboxDefaultSearchEngineNavigationHandleUserData(
-        *navigation_handle);
+    page_load_metrics::NavigationInitiatorHolder::CreateForNavigationHandle(
+        *navigation_handle,
+        chrome_navigation_initiator::kOmniboxDefaultSearchEngine);
   }
 
   ChromeOmniboxNavigationObserverAndroid::Create(navigation_handle, profile_,

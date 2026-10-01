@@ -42,6 +42,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/page_load_metrics/browser/navigation_handle_user_data.h"
+#include "components/page_load_metrics/browser/navigation_initiator.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
@@ -2776,8 +2777,9 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
                                 TimingField::kFirstContentfulPaint);
 
   base::RepeatingCallback<void(content::NavigationHandle&)>
-      navigation_handle_callback = base::BindRepeating(
-          &AttachOmniboxDefaultSearchEngineNavigationHandleUserData);
+      navigation_handle_callback =
+          page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
+              chrome_navigation_initiator::kOmniboxDefaultSearchEngine);
 
   GetActiveWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
@@ -2897,8 +2899,9 @@ IN_PROC_BROWSER_TEST_F(
                                 TimingField::kFirstContentfulPaint);
 
   base::RepeatingCallback<void(content::NavigationHandle&)>
-      navigation_handle_callback = base::BindRepeating(
-          &AttachOmniboxDefaultSearchEngineNavigationHandleUserData);
+      navigation_handle_callback =
+          page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
+              chrome_navigation_initiator::kOmniboxDefaultSearchEngine);
 
   GetActiveWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
@@ -3016,8 +3019,9 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadUnifiedBrowserTest,
                                 TimingField::kFirstContentfulPaint);
 
   base::RepeatingCallback<void(content::NavigationHandle&)>
-      navigation_handle_callback = base::BindRepeating(
-          &AttachOmniboxDefaultSearchEngineNavigationHandleUserData);
+      navigation_handle_callback =
+          page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
+              chrome_navigation_initiator::kOmniboxDefaultSearchEngine);
 
   GetActiveWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(

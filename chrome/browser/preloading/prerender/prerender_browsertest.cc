@@ -29,7 +29,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
-#include "components/page_load_metrics/browser/navigation_handle_user_data.h"
+#include "components/page_load_metrics/browser/navigation_initiator.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/common/content_features.h"
@@ -758,7 +758,8 @@ class PrerenderNewTabPageBrowserTest
         content::OpenURLParams::CreateBrowserInitiated(
             url, WindowOpenDisposition::CURRENT_TAB,
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK)),
-        base::BindRepeating(&AttachNewTabPageNavigationHandleUserData));
+        page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
+            chrome_navigation_initiator::kNewTabPage));
   }
 
   void ExpectPrerenderPageLoad(const GURL& prerender_url,
@@ -1043,7 +1044,8 @@ class PrerenderPrewarmDefaultSearchEngineTest
             GURL(url::kAboutBlankURL),
             WindowOpenDisposition::NEW_FOREGROUND_TAB,
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK)),
-        base::BindRepeating(&AttachNewTabPageNavigationHandleUserData));
+        page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
+            chrome_navigation_initiator::kNewTabPage));
     content::WebContents* new_web_contents = GetActiveWebContents();
     EXPECT_TRUE(new_web_contents);
     EXPECT_NE(new_web_contents, original_web_contents);

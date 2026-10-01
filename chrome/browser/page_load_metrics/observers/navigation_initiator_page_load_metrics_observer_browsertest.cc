@@ -50,12 +50,6 @@ std::unique_ptr<net::test_server::HttpResponse> SRPHandler(
   return response;
 }
 
-void AttachNavigationInitiator(page_load_metrics::NavigationInitiator initiator,
-                               content::NavigationHandle& navigation_handle) {
-  page_load_metrics::NavigationInitiatorHolder::CreateForNavigationHandle(
-      navigation_handle, initiator);
-}
-
 }  // namespace
 
 class NavigationInitiatorPageLoadMetricsBrowserTest
@@ -182,15 +176,12 @@ IN_PROC_BROWSER_TEST_F(NavigationInitiatorPageLoadMetricsBrowserTest,
                        NewTabPageTrigger) {
   base::HistogramTester histogram_tester;
 
-  base::RepeatingCallback<void(content::NavigationHandle&)>
-      navigation_handle_callback = base::BindRepeating(
-          &AttachNavigationInitiator, chrome_navigation_initiator::kNewTabPage);
-
   GURL url = embedded_test_server()->GetURL("/empty.html");
   GetActiveWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
           url, WindowOpenDisposition::CURRENT_TAB, ui::PAGE_TRANSITION_TYPED),
-      std::move(navigation_handle_callback));
+      page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
+          chrome_navigation_initiator::kNewTabPage));
 
   // Wait for the navigation to finish.
   content::WaitForLoadStop(GetActiveWebContents());

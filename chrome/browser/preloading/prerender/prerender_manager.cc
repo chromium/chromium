@@ -29,6 +29,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/page_load_metrics/browser/navigation_initiator.h"
 #include "components/page_load_metrics/google/browser/search_preload_process_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -250,7 +251,8 @@ PrerenderManager::StartPrerenderDirectUrlInput(
       &preloading_attempt,
       /*url_match_predicate=*/{},
       /*prerender_navigation_handle_callback=*/
-      base::BindRepeating(&AttachOmniboxDirectUrlInputNavigationHandleUserData),
+      page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
+          chrome_navigation_initiator::kOmniboxDirectUrlInput),
       /*allow_reuse=*/false);
 
   if (direct_url_input_prerender_handle_) {
@@ -422,8 +424,8 @@ void PrerenderManager::StartPrerenderSearchResult(
                   kPrerender),
           preloading_attempt.get(), std::move(url_match_predicate),
           /*prerender_navigation_handle_callback=*/
-          base::BindRepeating(
-              &AttachOmniboxDefaultSearchEngineNavigationHandleUserData),
+          page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
+              chrome_navigation_initiator::kOmniboxDefaultSearchEngine),
           features::kPrerender2ReuseSearchResultHost.Get());
 
   if (prerender_handle) {

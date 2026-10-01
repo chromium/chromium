@@ -189,6 +189,7 @@
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/page_load_metrics/browser/navigation_initiator.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -855,7 +856,8 @@ void OnBrowserCreated(const GURL& link_url,
   nav_params.referrer = content::Referrer();
   nav_params.window_action = NavigateParams::WindowAction::kShowWindow;
   if (auto navigation_handle = Navigate(&nav_params)) {
-    AttachContextMenuOpenLinkNavigationHandleUserData(*navigation_handle);
+    page_load_metrics::NavigationInitiatorHolder::CreateForNavigationHandle(
+        *navigation_handle, chrome_navigation_initiator::kContextMenuOpenLink);
   }
 }
 
@@ -3791,11 +3793,13 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
       if (browser) {
         browser->OpenURL(
             params,
-            base::BindOnce(&AttachContextMenuOpenLinkNavigationHandleUserData));
+            page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
+                chrome_navigation_initiator::kContextMenuOpenLink));
       } else {
         source_web_contents_->OpenURL(
             params,
-            base::BindOnce(&AttachContextMenuOpenLinkNavigationHandleUserData));
+            page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
+                chrome_navigation_initiator::kContextMenuOpenLink));
       }
       break;
     }
@@ -3807,7 +3811,8 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
           WindowOpenDisposition::NEW_WINDOW, ui::PAGE_TRANSITION_LINK,
           /*extra_headers=*/std::string(),
           /*started_from_context_menu=*/true,
-          base::BindOnce(&AttachContextMenuOpenLinkNavigationHandleUserData));
+          page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
+              chrome_navigation_initiator::kContextMenuOpenLink));
       break;
 
     case IDC_CONTENT_CONTEXT_OPENLINK_ISOLATED:
@@ -3821,7 +3826,8 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
           WindowOpenDisposition::OFF_THE_RECORD, ui::PAGE_TRANSITION_LINK,
           /*extra_headers=*/std::string(),
           /*started_from_context_menu=*/true,
-          base::BindOnce(&AttachContextMenuOpenLinkNavigationHandleUserData));
+          page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
+              chrome_navigation_initiator::kContextMenuOpenLink));
       break;
 
     case IDC_CONTENT_CONTEXT_OPENLINKBOOKMARKAPP:
@@ -4182,8 +4188,9 @@ void RenderViewContextMenu::ExecuteCommand(int id, int event_flags) {
                 }
                 web_contents->OpenURL(
                     params,
-                    base::BindOnce(
-                        &AttachContextMenuSearchNavigationHandleUserData));
+                    page_load_metrics::NavigationInitiatorHolder::
+                        AttacherCallback(
+                            chrome_navigation_initiator::kContextMenuSearch));
               },
               source_web_contents_->GetWeakPtr(), std::move(open_url_params)));
       break;
@@ -5952,7 +5959,10 @@ void RenderViewContextMenu::OpenLinkInSplitView(
         auto navigation_handle =
             tab->GetContents()->GetController().LoadURLWithParams(params);
         if (navigation_handle) {
-          AttachContextMenuOpenLinkNavigationHandleUserData(*navigation_handle);
+          page_load_metrics::NavigationInitiatorHolder::
+              CreateForNavigationHandle(
+                  *navigation_handle,
+                  chrome_navigation_initiator::kContextMenuOpenLink);
         }
         break;
       }
@@ -5964,8 +5974,8 @@ void RenderViewContextMenu::OpenLinkInSplitView(
         WindowOpenDisposition::NEW_BACKGROUND_TAB, ui::PAGE_TRANSITION_LINK,
         /*extra_headers=*/std::string(), /*started_from_context_menu=*/true);
     const WebContents* new_web_contents = source_web_contents_->OpenURL(
-        params,
-        base::BindOnce(&AttachContextMenuOpenLinkNavigationHandleUserData));
+        params, page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
+                    chrome_navigation_initiator::kContextMenuOpenLink));
     if (!new_web_contents) {
       return;
     }

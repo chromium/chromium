@@ -9,6 +9,7 @@
 #include <string_view>
 
 #include "base/check.h"
+#include "base/functional/callback_forward.h"
 #include "content/public/browser/navigation_handle_user_data.h"
 
 namespace content {
@@ -110,6 +111,11 @@ class NavigationInitiatorHolder
     : public content::NavigationHandleUserData<NavigationInitiatorHolder> {
  public:
   ~NavigationInitiatorHolder() override;
+
+  // Returns a callback that attaches `initiator` to the navigation it is run
+  // with, for the `navigation_handle_callback` of `PageNavigator::OpenURL()`.
+  static base::RepeatingCallback<void(content::NavigationHandle&)>
+  AttacherCallback(NavigationInitiator initiator);
 
   const NavigationInitiator& initiator() const { return initiator_; }
 

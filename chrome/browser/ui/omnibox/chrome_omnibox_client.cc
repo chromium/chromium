@@ -96,7 +96,7 @@
 #include "components/omnibox/browser/zero_suggest_provider.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
-#include "components/page_load_metrics/browser/navigation_handle_user_data.h"
+#include "components/page_load_metrics/browser/navigation_initiator.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/search_engines/template_url_service.h"
@@ -108,6 +108,7 @@
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -975,10 +976,13 @@ void ChromeOmniboxClient::OnAutocompleteAccept(
     auto navigation = chrome::OpenCurrentURL(browser_);
     if (navigation) {
       if (ui::PageTransitionCoreTypeIs(transition, ui::PAGE_TRANSITION_TYPED)) {
-        AttachOmniboxDirectUrlInputNavigationHandleUserData(*navigation);
+        page_load_metrics::NavigationInitiatorHolder::CreateForNavigationHandle(
+            *navigation, chrome_navigation_initiator::kOmniboxDirectUrlInput);
       } else if (ui::PageTransitionCoreTypeIs(transition,
                                               ui::PAGE_TRANSITION_GENERATED)) {
-        AttachOmniboxDefaultSearchEngineNavigationHandleUserData(*navigation);
+        page_load_metrics::NavigationInitiatorHolder::CreateForNavigationHandle(
+            *navigation,
+            chrome_navigation_initiator::kOmniboxDefaultSearchEngine);
       }
     }
     ChromeOmniboxNavigationObserver::Create(navigation.get(), profile_, text,

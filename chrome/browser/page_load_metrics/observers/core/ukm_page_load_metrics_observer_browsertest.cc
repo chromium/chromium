@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/page_load_metrics/browser/navigation_initiator.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -175,7 +176,8 @@ IN_PROC_BROWSER_TEST_F(UkmPageLoadMetricsObserverBrowserTest,
                        NavigationHandleUserDataTypeMetrics_BookmarkBar) {
   base::RepeatingCallback<void(content::NavigationHandle&)>
       prerender_navigation_handle_callback =
-          base::BindRepeating(&AttachBookmarkBarNavigationHandleUserData);
+          page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
+              chrome_navigation_initiator::kBookmarkBar);
 
   browser()->GetTabStripModel()->GetActiveWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(
@@ -198,7 +200,8 @@ IN_PROC_BROWSER_TEST_F(UkmPageLoadMetricsObserverBrowserTest,
                        NavigationHandleUserDataTypeMetrics_NewTabPage) {
   base::RepeatingCallback<void(content::NavigationHandle&)>
       prerender_navigation_handle_callback =
-          base::BindRepeating(&AttachNewTabPageNavigationHandleUserData);
+          page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
+              chrome_navigation_initiator::kNewTabPage);
 
   browser()->GetTabStripModel()->GetActiveWebContents()->OpenURL(
       content::OpenURLParams::CreateBrowserInitiated(

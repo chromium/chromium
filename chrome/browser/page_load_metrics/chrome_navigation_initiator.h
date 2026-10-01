@@ -47,29 +47,6 @@ inline constexpr page_load_metrics::NavigationInitiator kContextMenuOpenLink{
 }  // namespace chrome_navigation_initiator
 // LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:NavigationInitiatorType)
 
-// The following functions attach the corresponding `NavigationInitiator` to
-// `navigation_handle`. They exist so that the triggers can pass them around as
-// `base::RepeatingCallback<void(content::NavigationHandle&)>`, typically as
-// the `navigation_handle_callback` of `content::PageNavigator::OpenURL()`.
-
-void AttachNewTabPageNavigationHandleUserData(
-    content::NavigationHandle& navigation_handle);
-
-void AttachOmniboxDirectUrlInputNavigationHandleUserData(
-    content::NavigationHandle& navigation_handle);
-
-void AttachOmniboxDefaultSearchEngineNavigationHandleUserData(
-    content::NavigationHandle& navigation_handle);
-
-void AttachBookmarkBarNavigationHandleUserData(
-    content::NavigationHandle& navigation_handle);
-
-void AttachContextMenuSearchNavigationHandleUserData(
-    content::NavigationHandle& navigation_handle);
-
-void AttachContextMenuOpenLinkNavigationHandleUserData(
-    content::NavigationHandle& navigation_handle);
-
 // Records that `navigation_handle` was served by DSEv1 search prefetch, which
 // is out of the `content::PreloadServingMetrics` pipeline.
 //

@@ -4,6 +4,7 @@
 
 #include "components/page_load_metrics/browser/navigation_initiator.h"
 
+#include "base/functional/bind.h"
 #include "content/public/browser/navigation_handle.h"
 #include "ui/base/page_transition_types.h"
 
@@ -17,6 +18,17 @@ NavigationInitiatorHolder::NavigationInitiatorHolder(
     : initiator_(initiator) {}
 
 NavigationInitiatorHolder::~NavigationInitiatorHolder() = default;
+
+// static
+base::RepeatingCallback<void(content::NavigationHandle&)>
+NavigationInitiatorHolder::AttacherCallback(NavigationInitiator initiator) {
+  return base::BindRepeating(
+      [](NavigationInitiator initiator,
+         content::NavigationHandle& navigation_handle) {
+        CreateForNavigationHandle(navigation_handle, initiator);
+      },
+      initiator);
+}
 
 NavigationInitiator GetNavigationInitiator(
     content::NavigationHandle& navigation_handle) {

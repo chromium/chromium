@@ -26,7 +26,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/platform_browser_test.h"
-#include "components/page_load_metrics/browser/navigation_handle_user_data.h"
+#include "components/page_load_metrics/browser/navigation_initiator.h"
 #include "components/prefs/pref_service.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -117,7 +117,8 @@ class NewTabPagePreloadBrowserTest : public PlatformBrowserTest {
         content::OpenURLParams::CreateBrowserInitiated(
             url, WindowOpenDisposition::CURRENT_TAB,
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK)),
-        base::BindRepeating(&AttachNewTabPageNavigationHandleUserData));
+        page_load_metrics::NavigationInitiatorHolder::AttacherCallback(
+            chrome_navigation_initiator::kNewTabPage));
   }
 
  private:
