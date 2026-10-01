@@ -49,6 +49,8 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Incognito switch but Incognito not launched"/>
   <int value="2" label="No Incognito switch but Incognito launched"/>
   <int value="3" label="Incognito switch and Incognito launched"/>
+  <int value="4" label="Incognito switch and Isolated Mode launched"/>
+  <int value="5" label="No Incognito switch but Isolated Mode launched"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/startup/startup_browser_creator.cc:IncognitoForcedStart) -->

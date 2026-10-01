@@ -457,24 +457,31 @@ enum class IncognitoForcedStart {
   kNoSwitchButLaunched = 2,
   // The --incognito switch was present and Incognito was launched.
   kSwitchAndLaunched = 3,
-  kMaxValue = kSwitchAndLaunched,
+  // The --incognito switch was present and Enterprise Isolated Mode, which
+  // replaces Incognito, was launched.
+  kSwitchAndIsolatedModeLaunched = 4,
+  // No --incognito switch, but Enterprise Isolated Mode was launched because
+  // the IncognitoModeAvailability policy forces it.
+  kNoSwitchButIsolatedModeLaunched = 5,
+  kMaxValue = kNoSwitchButIsolatedModeLaunched,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/startup/enums.xml:IncognitoForcedStart)
 
-void RecordIncognitoForcedStart(bool should_launch_incognito,
-                                bool has_incognito_switch) {
-  if (has_incognito_switch) {
-    base::UmaHistogramEnumeration(
-        "Startup.IncognitoForcedStart",
-        should_launch_incognito ? IncognitoForcedStart::kSwitchAndLaunched
-                                : IncognitoForcedStart::kSwitchButNotLaunched);
-  } else {
-    base::UmaHistogramEnumeration(
-        "Startup.IncognitoForcedStart",
-        should_launch_incognito
-            ? IncognitoForcedStart::kNoSwitchButLaunched
-            : IncognitoForcedStart::kNoSwitchAndNotLaunched);
+IncognitoForcedStart GetIncognitoForcedStartSample(
+    bool should_launch_incognito,
+    bool has_incognito_switch,
+    bool incognito_is_isolated_mode) {
+  if (!should_launch_incognito) {
+    return has_incognito_switch ? IncognitoForcedStart::kSwitchButNotLaunched
+                                : IncognitoForcedStart::kNoSwitchAndNotLaunched;
   }
+  if (incognito_is_isolated_mode) {
+    return has_incognito_switch
+               ? IncognitoForcedStart::kSwitchAndIsolatedModeLaunched
+               : IncognitoForcedStart::kNoSwitchButIsolatedModeLaunched;
+  }
+  return has_incognito_switch ? IncognitoForcedStart::kSwitchAndLaunched
+                              : IncognitoForcedStart::kNoSwitchButLaunched;
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -631,8 +638,16 @@ ProfileSetupResult SetupProfileAndIncognito(
   result.can_use_profile =
       CanOpenProfileOnStartup(profile_info) && !result.should_launch_incognito;
 
-  RecordIncognitoForcedStart(result.should_launch_incognito,
-                             command_line.HasSwitch(switches::kIncognito));
+  const bool incognito_is_isolated_mode =
+      result.should_launch_incognito &&
+      IncognitoModePrefs::GetIncognitoModeType(profile_info.profile) ==
+          IncognitoModePrefs::IncognitoModeType::kEnterprise;
+  base::UmaHistogramEnumeration(
+      "Startup.IncognitoForcedStart",
+      GetIncognitoForcedStartSample(
+          result.should_launch_incognito,
+          command_line.HasSwitch(switches::kIncognito),
+          incognito_is_isolated_mode));
 
   // `profile` is never off-the-record. If Incognito or Guest enforcement switch
   // or policy are provided, use the appropriate private browsing profile
