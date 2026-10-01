@@ -548,4 +548,26 @@ TEST(SessionBindingUtilsTest, CreateWellKnownUrl) {
   EXPECT_TRUE(CreateWellKnownUrl(url::Origin()).is_empty());
 }
 
+TEST(SessionBindingUtilsTest, ToAndFromJoseAlgorithm) {
+  EXPECT_EQ(ToJoseAlgorithm(ECDSA_SHA256), "ES256");
+  EXPECT_EQ(ToJoseAlgorithm(RSA_PKCS1_SHA256), "RS256");
+
+  for (crypto::sign::SignatureKind kind : {ECDSA_SHA256, RSA_PKCS1_SHA256}) {
+    ASSERT_OK_AND_ASSIGN(std::string_view jose, ToJoseAlgorithm(kind));
+    EXPECT_EQ(FromJoseAlgorithm(jose), kind);
+  }
+
+  EXPECT_EQ(ToJoseAlgorithm(ECDSA_SHA1), std::nullopt);
+  EXPECT_EQ(ToJoseAlgorithm(RSA_PSS_SHA256), std::nullopt);
+  EXPECT_EQ(ToJoseAlgorithm(ECDSA_SHA384), std::nullopt);
+  EXPECT_EQ(ToJoseAlgorithm(ED25519), std::nullopt);
+  EXPECT_EQ(ToJoseAlgorithm(MLDSA_65), std::nullopt);
+
+  EXPECT_EQ(FromJoseAlgorithm("ES256"), ECDSA_SHA256);
+  EXPECT_EQ(FromJoseAlgorithm("RS256"), RSA_PKCS1_SHA256);
+  EXPECT_EQ(FromJoseAlgorithm("es256"), std::nullopt);
+  EXPECT_EQ(FromJoseAlgorithm("UNSUPPORTED"), std::nullopt);
+  EXPECT_EQ(FromJoseAlgorithm(""), std::nullopt);
+}
+
 }  // namespace net::device_bound_sessions

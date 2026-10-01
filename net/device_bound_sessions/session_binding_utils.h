@@ -36,6 +36,16 @@ NET_EXPORT extern const char kSecFetchSiteHeaderName[];
 NET_EXPORT extern const char kSecFetchModeHeaderName[];
 NET_EXPORT extern const char kSecFetchDestHeaderName[];
 
+// Converts a SignatureKind to its JOSE algorithm string representation (e.g.
+// "ES256", "RS256"). Returns nullopt for unsupported algorithms.
+NET_EXPORT std::optional<std::string_view> ToJoseAlgorithm(
+    crypto::sign::SignatureKind algorithm);
+
+// Converts a JOSE algorithm string representation (e.g. "ES256", "RS256") to a
+// SignatureKind. Returns nullopt for unknown or unsupported algorithms.
+NET_EXPORT std::optional<crypto::sign::SignatureKind> FromJoseAlgorithm(
+    std::string_view algorithm);
+
 // Formats a binding statement into a dictionary as defined in
 // https://github.com/WICG/dbsc-sso#identity-providers-session-initialization.
 base::DictValue NET_EXPORT
