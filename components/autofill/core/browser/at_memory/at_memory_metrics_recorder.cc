@@ -188,6 +188,39 @@ std::string_view GetQueryDatatypeCategory(const MemorySearchResults& result) {
   return category.value_or("Empty");
 }
 
+// Maps an AtMemory `trigger_source` to the corresponding metrics enum.
+AutofillMetrics::AtMemoryTriggerSource ToAtMemoryTriggerSource(
+    AutofillSuggestionTriggerSource trigger_source) {
+  switch (trigger_source) {
+    case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
+      return AutofillMetrics::AtMemoryTriggerSource::kContextMenu;
+    case AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
+      return AutofillMetrics::AtMemoryTriggerSource::kDoubleCtrl;
+    case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
+      return AutofillMetrics::AtMemoryTriggerSource::kKeyboardShortcut;
+    case AutofillSuggestionTriggerSource::kUnspecified:
+    case AutofillSuggestionTriggerSource::kFormControlElementClicked:
+    case AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick:
+    case AutofillSuggestionTriggerSource::kContentEditableClicked:
+    case AutofillSuggestionTriggerSource::kTextFieldValueChanged:
+    case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
+    case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
+    case AutofillSuggestionTriggerSource::kPasswordManager:
+    case AutofillSuggestionTriggerSource::kiOS:
+    case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
+    case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
+    case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
+    case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
+    case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
+    case AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable:
+    case AutofillSuggestionTriggerSource::kGlic:
+    case AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge:
+      break;
+  }
+  // This class should only be used for AtMemory searches.
+  NOTREACHED();
+}
+
 }  // namespace
 
 AtMemoryMetricsRecorder::AtMemoryMetricsRecorder(
@@ -296,45 +329,26 @@ void AtMemoryMetricsRecorder::OnPopupShown(
     }
     return;
   }
-  if (source_.has_value()) {
+  // `OnPopupShown()` is called again whenever the suggestions of a visible
+  // popup are updated (e.g. while typing or fetching), so only the first call
+  // after the popup became visible counts as a new display.
+  if (is_popup_displayed_) {
     return;
   }
+  is_popup_displayed_ = true;
 
-  switch (trigger_source) {
-    case AutofillSuggestionTriggerSource::kAtMemoryContextMenu:
-      source_ = AutofillMetrics::AtMemoryTriggerSource::kContextMenu;
-      break;
-    case AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl:
-      source_ = AutofillMetrics::AtMemoryTriggerSource::kDoubleCtrl;
-      break;
-    case AutofillSuggestionTriggerSource::kAtMemoryKeyboardShortcut:
-      source_ = AutofillMetrics::AtMemoryTriggerSource::kKeyboardShortcut;
-      break;
-    case AutofillSuggestionTriggerSource::kUnspecified:
-    case AutofillSuggestionTriggerSource::kFormControlElementClicked:
-    case AutofillSuggestionTriggerSource::kTextareaFocusedWithoutClick:
-    case AutofillSuggestionTriggerSource::kContentEditableClicked:
-    case AutofillSuggestionTriggerSource::kTextFieldValueChanged:
-    case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
-    case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
-    case AutofillSuggestionTriggerSource::kPasswordManager:
-    case AutofillSuggestionTriggerSource::kiOS:
-    case AutofillSuggestionTriggerSource::kManualFallbackPasswords:
-    case AutofillSuggestionTriggerSource::kComposeDialogLostFocus:
-    case AutofillSuggestionTriggerSource::kComposeDelayedProactiveNudge:
-    case AutofillSuggestionTriggerSource::kPasswordManagerProcessedFocusedField:
-    case AutofillSuggestionTriggerSource::kProactivePasswordRecovery:
-    case AutofillSuggestionTriggerSource::kGmailOneTimePasswordAvailable:
-    case AutofillSuggestionTriggerSource::kGlic:
-    case AutofillSuggestionTriggerSource::kAtMemoryInactivityNudge:
-      // This class should only be used for AtMemory searches.
-      NOTREACHED();
+  const AutofillMetrics::AtMemoryTriggerSource source =
+      ToAtMemoryTriggerSource(trigger_source);
+  // `source_` keeps the trigger of the first display of the session. It serves
+  // as a signal that the user has actually seen the suggestions.
+  if (!source_) {
+    source_ = source;
   }
+  base::UmaHistogramEnumeration("Autofill.AtMemory.SearchBarDisplayed", source);
+}
 
-  // `source_` is set only when the popup is successfully displayed. This
-  // serves as a signal that the user has actually seen the suggestions.
-  base::UmaHistogramEnumeration("Autofill.AtMemory.SearchBarDisplayed",
-                                *source_);
+void AtMemoryMetricsRecorder::OnPopupHidden() {
+  is_popup_displayed_ = false;
 }
 
 void AtMemoryMetricsRecorder::OnQuerySubmitted(std::u16string_view query) {

@@ -101,15 +101,19 @@ class AtMemoryMetricsRecorder {
   AtMemoryMetricsRecorder& operator=(const AtMemoryMetricsRecorder&) = delete;
   ~AtMemoryMetricsRecorder();
 
-  // Records that the popup UI was successfully displayed to the user.
-  // This emits the "PopupDisplayed" metric. This method is idempotent; only
-  // the first call per session will record metrics, and subsequent calls
-  // with potentially different trigger sources are ignored. This is consistent
-  // with the popup lifecycle, where a change in trigger mechanism would
-  // typically result in the popup being hidden and a new session starting.
+  // Records that the popup UI was displayed to the user and emits
+  // "Autofill.AtMemory.SearchBarDisplayed" once per display. Repeated calls
+  // while the popup stays visible (e.g. when its suggestions are updated) are
+  // ignored until `OnPopupHidden()` is called. With search statefulness a
+  // session can span several displays; the trigger source of the first one is
+  // kept for the session-level UKM.
   void OnPopupShown(
       AutofillSuggestionTriggerSource trigger_source,
       const AutofillSuggestionDelegate::SuggestionUiMetadata& metadata);
+
+  // Records that the popup UI was hidden, so the next `OnPopupShown()` counts
+  // as a new display.
+  void OnPopupHidden();
 
   // Records that a search query was submitted during this session.
   void OnQuerySubmitted(std::u16string_view query);
@@ -178,9 +182,14 @@ class AtMemoryMetricsRecorder {
   const FormSignature form_signature_;
   const FieldSignature field_signature_;
 
-  // The trigger source of the popup. It is `std::nullopt` until `OnPopupShown`
-  // is called, serving as a signal that the popup was shown.
+  // The trigger source of the first display of the popup in this session. It
+  // is `std::nullopt` until `OnPopupShown` is called, serving as a signal that
+  // the popup was shown.
   std::optional<AutofillMetrics::AtMemoryTriggerSource> source_;
+
+  // Whether the popup is currently displayed, i.e. `OnPopupShown` was called
+  // and `OnPopupHidden` was not called since.
+  bool is_popup_displayed_ = false;
 
   // Counts the number of queries submitted during this session.
   size_t query_count_ = 0;

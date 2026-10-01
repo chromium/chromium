@@ -3050,6 +3050,46 @@ TEST_F(AtMemoryManagerTestBase,
       AtMemoryUiSessionOutcome::kSuggestionFilled, 1);
 }
 
+// Tests that with search statefulness, re-showing the popup on the same field
+// logs "SearchBarDisplayed" again with the new trigger source, even though the
+// metrics session (and recorder) is continued.
+TEST_F(AtMemoryManagerTestBase,
+       SearchStatefulness_SearchBarDisplayedLoggedOnEveryDisplay) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAtMemorySearchStatefulness};
+  base::HistogramTester histogram_tester;
+
+  auto [form_id, field_id] = SeeFormAndShowPopup();
+  AtMemoryMetricsRecorder* recorder =
+      test_api(manager()).at_memory_metrics_recorder();
+  ASSERT_NE(recorder, nullptr);
+
+  // Updating the suggestions of the visible popup re-triggers `OnPopupShown()`,
+  // which must not count as a new display.
+  manager().OnPopupShown(autofill_manager(), form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{}, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AtMemory.SearchBarDisplayed",
+      AutofillMetrics::AtMemoryTriggerSource::kDoubleCtrl, 1);
+
+  // Hide and re-show the popup on the same field via a different trigger.
+  manager().OnPopupHidden();
+  manager().GetStateForField(field_id, form_origin());
+  manager().OnPopupShown(autofill_manager(), form_id, field_id,
+                         AutofillSuggestionTriggerSource::kAtMemoryContextMenu,
+                         /*metadata=*/{}, update_callback_.Get(),
+                         ukm::kInvalidSourceId);
+
+  EXPECT_EQ(test_api(manager()).at_memory_metrics_recorder(), recorder);
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("Autofill.AtMemory.SearchBarDisplayed"),
+      BucketsAre(
+          Bucket(AutofillMetrics::AtMemoryTriggerSource::kDoubleCtrl, 1),
+          Bucket(AutofillMetrics::AtMemoryTriggerSource::kContextMenu, 1)));
+}
+
 INSTANTIATE_TEST_SUITE_P(All, AtMemoryManagerTest, testing::Bool());
 
 // Tests that empty query displays previously filled suggestions below the

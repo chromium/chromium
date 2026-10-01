@@ -97,8 +97,8 @@ TEST_F(AtMemoryMetricsRecorderTest, OnPopupShown_DoubleCtrl) {
       AutofillMetrics::AtMemoryTriggerSource::kDoubleCtrl, 1);
 }
 
-// Tests that `OnPopupShown` is idempotent and only logs a metric for the
-// first call in a session.
+// Tests that `OnPopupShown` is idempotent while the popup is displayed and only
+// logs a metric for the first call.
 TEST_F(AtMemoryMetricsRecorderTest, OnPopupShown_Idempotent) {
   AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
                                   GURL(), std::u16string(), FieldGlobalId(),
@@ -112,6 +112,42 @@ TEST_F(AtMemoryMetricsRecorderTest, OnPopupShown_Idempotent) {
   histogram_tester_.ExpectUniqueSample(
       "Autofill.AtMemory.SearchBarDisplayed",
       AutofillMetrics::AtMemoryTriggerSource::kDoubleCtrl, 1);
+}
+
+// Tests that "SearchBarDisplayed" is logged once per display: repeated
+// `OnPopupShown` calls while the popup is visible are ignored, but a re-show
+// after `OnPopupHidden` (search statefulness keeps the session alive) is logged
+// with its own trigger source. The session UKM keeps the first trigger.
+TEST_F(AtMemoryMetricsRecorderTest, OnPopupShown_LogsAgainAfterPopupHidden) {
+  {
+    AtMemoryMetricsRecorder metrics(nullptr, &test_ukm_recorder_, kTestSourceId,
+                                    GURL(), std::u16string(), FieldGlobalId(),
+                                    FormSignature(0), FieldSignature(0));
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
+    // A suggestions update while the popup is visible is not a new display.
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryDoubleCtrl,
+                         /*metadata=*/{});
+    metrics.OnPopupHidden();
+    metrics.OnPopupShown(AutofillSuggestionTriggerSource::kAtMemoryContextMenu,
+                         /*metadata=*/{});
+
+    histogram_tester_.ExpectTotalCount("Autofill.AtMemory.SearchBarDisplayed",
+                                       2);
+    histogram_tester_.ExpectBucketCount(
+        "Autofill.AtMemory.SearchBarDisplayed",
+        AutofillMetrics::AtMemoryTriggerSource::kDoubleCtrl, 1);
+    histogram_tester_.ExpectBucketCount(
+        "Autofill.AtMemory.SearchBarDisplayed",
+        AutofillMetrics::AtMemoryTriggerSource::kContextMenu, 1);
+  }
+
+  auto entries = test_ukm_recorder_.GetEntriesByName(
+      ukm::builders::AtMemory_UiSession::kEntryName);
+  ASSERT_EQ(entries.size(), 1u);
+  test_ukm_recorder_.ExpectEntryMetric(
+      entries[0], ukm::builders::AtMemory_UiSession::kSearchBarDisplayedName,
+      std::to_underlying(AutofillMetrics::AtMemoryTriggerSource::kDoubleCtrl));
 }
 
 // Tests that the destructor correctly logs that a query was submitted.

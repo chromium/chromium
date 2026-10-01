@@ -496,6 +496,9 @@ bool AtMemoryManager::OnSearchSubmitted(const std::u16string& filter) {
 }
 
 void AtMemoryManager::OnPopupHidden() {
+  if (AtMemoryMetricsRecorder* recorder = metrics_recorder()) {
+    recorder->OnPopupHidden();
+  }
   if (!base::FeatureList::IsEnabled(
           features::kAutofillAtMemorySearchStatefulness)) {
     CancelPendingQueries();
