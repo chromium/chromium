@@ -32,6 +32,7 @@ import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.insets.InsetObserver.WindowInsetObserver;
+import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.util.CommonOnLayoutChangeListeners;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.RectProvider;
@@ -147,6 +148,9 @@ class FuseboxPopup {
 
         if (isBottomSheet) {
             mScrollView.setOnSwipeDownListener(this::dismiss);
+        } else {
+            // Row highlights span the full width, so keep them inside the rounded corners.
+            ListMenuUtils.clipContentViewOutline(mScrollView, R.attr.popupBgCornerRadius);
         }
 
         ViewStub stub = contentView.findViewById(R.id.fusebox_attachments_stub);

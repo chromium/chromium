@@ -12,7 +12,7 @@ found in the LICENSE file.
     android:scrollbars="none"
     android:overScrollMode="never"
     android:clipToPadding="false"
-    android:paddingHorizontal="@dimen/fusebox_carousel_padding_horizontal"
+    android:paddingHorizontal="@dimen/fusebox_carousel_container_padding_horizontal"
     android:paddingTop="@dimen/fusebox_carousel_padding_top"
     android:paddingBottom="@dimen/fusebox_carousel_padding_bottom"
     android:importantForAccessibility="no">

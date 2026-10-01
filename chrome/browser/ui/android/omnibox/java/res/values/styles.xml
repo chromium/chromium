@@ -13,6 +13,8 @@ found in the LICENSE file.
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:minHeight">?attr/listItemHeight</item>
+        <item name="android:paddingStart">@dimen/fusebox_popup_item_horizontal_padding</item>
+        <item name="android:paddingEnd">@dimen/fusebox_popup_item_horizontal_padding</item>
         <item name="android:paddingVertical">8dp</item>
         <item name="android:drawablePadding">8dp</item>
         <item name="android:singleLine">true</item>
@@ -31,6 +33,9 @@ found in the LICENSE file.
         <item name="android:layout_height">1dp</item>
         <item name="android:layout_marginTop">4dp</item>
         <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:layout_marginHorizontal">
+            @dimen/fusebox_popup_item_horizontal_padding
+        </item>
         <item name="android:background">?android:attr/listDivider</item>
     </style>
 
@@ -41,7 +46,7 @@ found in the LICENSE file.
         <item name="android:textAppearance">
             @style/TextAppearance.TextSmall.Secondary
         </item>
-        <item name="android:paddingHorizontal">8dp</item>
+        <item name="android:paddingHorizontal">@dimen/fusebox_popup_item_horizontal_padding</item>
         <item name="android:layout_marginTop">4dp</item>
         <item name="android:accessibilityHeading">true</item>
     </style>
