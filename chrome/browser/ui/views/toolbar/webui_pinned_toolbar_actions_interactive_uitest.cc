@@ -99,16 +99,17 @@ IN_PROC_BROWSER_TEST_P(WebUIPinnedToolbarActionsInteractiveUiTest,
               .ExtractBool());
       translate::test_utils::CloseCurrentBubble(browser());
       ASSERT_TRUE(base::test::RunUntil([&]() {
-        return EvalJsOnPinnedAction(mojom_action,
-                                    "return actionEl.lastUnhighlightedTime >= "
-                                    "window.beforeCloseTime;")
+        return EvalJsOnPinnedAction(
+                   mojom_action,
+                   "return actionEl.highlightTracker.lastUnhighlightedTime >= "
+                   "window.beforeCloseTime;")
             .ExtractBool();
       }));
       // Set lastUnhighlightedTime to 10s in the future in case of a slow bot.
       ASSERT_TRUE(EvalJsOnPinnedAction(
                       mojom_action,
-                      "actionEl.lastUnhighlightedTime = performance.now() + "
-                      "10000; return true;")
+                      "actionEl.highlightTracker.lastUnhighlightedTime = "
+                      "performance.now() + 10000; return true;")
                       .ExtractBool());
     }
 
@@ -120,8 +121,9 @@ IN_PROC_BROWSER_TEST_P(WebUIPinnedToolbarActionsInteractiveUiTest,
                     "return true;")
                     .ExtractBool());
     ASSERT_TRUE(base::test::RunUntil([&]() {
-      return EvalJsOnPinnedAction(mojom_action,
-                                  "return actionEl.skipNextClick_;")
+      return EvalJsOnPinnedAction(
+                 mojom_action,
+                 "return actionEl.highlightTracker.skipNextClick_;")
           .ExtractBool();
     }));
 

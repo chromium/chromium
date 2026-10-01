@@ -13,7 +13,7 @@ import {assertNotReachedCase} from '//resources/js/assert.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {IconTable} from '/shared/icon_table.js';
-import {getContextMenuPosition, getContextMenuSourceType, shouldSkipNextClick} from '/shared/toolbar_button.js';
+import {getContextMenuPosition, getContextMenuSourceType} from '/shared/toolbar_button.js';
 import type {OverflowMenuItem} from '/shared/toolbar_ui_api.mojom-webui.js';
 import {PinnedToolbarAction} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
 import type {PinnedToolbarActionState} from '/shared/toolbar_ui_api_data_model.mojom-webui.js';
@@ -77,7 +77,6 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase {
   accessor poppedOut: boolean = false;
 
   private iconTable_: IconTable = IconTable.getInstance();
-  private skipNextClick_: boolean = false;
 
   override willUpdate(changedProperties: PropertyValues<this>) {
     super.willUpdate(changedProperties);
@@ -114,23 +113,11 @@ export class PinnedToolbarActionElement extends PinnedToolbarActionElementBase {
     return style.length > 0 ? style : undefined;
   }
 
-  protected onPointerdown_(e: PointerEvent) {
-    this.skipNextClick_ =
-        // `trackedHighlighted` should accurately reflect if this element has an
-        // anchored bubble. Popped out actions can be highlighted via
-        // `state.highlighted` which does not indicate they are anchoring a
-        // bubble.
-        shouldSkipNextClick(
-            e, this.trackedHighlighted, this.lastUnhighlightedTime);
-  }
-
   protected onActionClick_(e: PointerEvent) {
-    if (this.skipNextClick_ && e.pointerType !== '') {
-      this.skipNextClick_ = false;
-      return;
+    if (!this.highlightTracker.shouldSkipClick(e)) {
+      this.browserProxy_.toolbarUIHandler.invokePinnedToolbarAction(
+          this.state.action);
     }
-    this.browserProxy_.toolbarUIHandler.invokePinnedToolbarAction(
-        this.state.action);
   }
 
   private getContextMenuType_(): ContextMenuType {

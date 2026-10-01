@@ -7,7 +7,7 @@ import '/shared/icon_from_table.js';
 
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import type {ExtensionActionInfo} from '/shared/extensions_bar_data_model.mojom-webui.js';
-import {getContextMenuSourceType, shouldSkipNextClick} from '/shared/toolbar_button.js';
+import {getContextMenuSourceType} from '/shared/toolbar_button.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {getHtml} from './extension.html.js';
@@ -38,7 +38,6 @@ export class ExtensionElement extends ExtensionElementBase {
   }
 
   private browserProxy_ = BrowserProxyImpl.getInstance();
-  private skipNextClick_: boolean = false;
 
   override getElementId(state: ExtensionActionInfo): string {
     return state.id === '' ? 'kExtensionsMenuButtonElementId' :
@@ -49,14 +48,8 @@ export class ExtensionElement extends ExtensionElementBase {
     return 'ext:' + this.state.id;
   }
 
-  protected onPointerdown_(e: PointerEvent) {
-    this.skipNextClick_ = shouldSkipNextClick(
-        e, this.trackedHighlighted, this.lastUnhighlightedTime);
-  }
-
   protected onClick_(e: PointerEvent) {
-    if (this.skipNextClick_ && e.pointerType !== '') {
-      this.skipNextClick_ = false;
+    if (this.highlightTracker.shouldSkipClick(e)) {
       return;
     }
     this.browserProxy_.toolbarUIHandler.executeExtensionAction(this.state.id);

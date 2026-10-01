@@ -39,7 +39,6 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
       'onLhsChipPointerExited',
       'onLocationBarFocusWithinChanged',
       'onMediaButtonClicked',
-      'onMediaButtonMousePressed',
       'onOmniboxAction',
       'onPageActionChipShowingChanged',
       'onPageActionClick',
@@ -223,12 +222,8 @@ export class TestToolbarUiHandler extends TestBrowserProxy implements
     this.methodCalled('onPerformanceInterventionButtonMousePressed');
   }
 
-  onMediaButtonClicked(isMouseInteraction: boolean) {
-    this.methodCalled('onMediaButtonClicked', isMouseInteraction);
-  }
-
-  onMediaButtonMousePressed() {
-    this.methodCalled('onMediaButtonMousePressed');
+  onMediaButtonClicked() {
+    this.methodCalled('onMediaButtonClicked');
   }
 
   onGlicButtonClicked() {

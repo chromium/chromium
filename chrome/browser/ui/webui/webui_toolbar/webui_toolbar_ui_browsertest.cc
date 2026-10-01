@@ -229,11 +229,7 @@ class MockToolbarUIDelegate
               OnPerformanceInterventionButtonMousePressed,
               (),
               (override));
-  MOCK_METHOD(void,
-              OnMediaButtonClicked,
-              (bool is_mouse_interaction),
-              (override));
-  MOCK_METHOD(void, OnMediaButtonMousePressed, (), (override));
+  MOCK_METHOD(void, OnMediaButtonClicked, (), (override));
   MOCK_METHOD(void, OnGlicButtonClicked, (), (override));
   MOCK_METHOD((base::expected<std::monostate, mojo_base::mojom::ErrorPtr>),
               OnOmniboxAction,
@@ -444,19 +440,9 @@ IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest, OnMediaButtonClicked) {
   mojo::Remote<toolbar_ui_api::mojom::ToolbarUIService> service_remote;
   ui()->BindInterface(service_remote.BindNewPipeAndPassReceiver());
 
-  EXPECT_CALL(toolbar_ui_delegate(), OnMediaButtonClicked(true)).Times(1);
+  EXPECT_CALL(toolbar_ui_delegate(), OnMediaButtonClicked()).Times(1);
 
-  service_remote->OnMediaButtonClicked(true);
-  service_remote.FlushForTesting();
-}
-
-IN_PROC_BROWSER_TEST_F(WebUIToolbarUIBrowserTest, OnMediaButtonMousePressed) {
-  mojo::Remote<toolbar_ui_api::mojom::ToolbarUIService> service_remote;
-  ui()->BindInterface(service_remote.BindNewPipeAndPassReceiver());
-
-  EXPECT_CALL(toolbar_ui_delegate(), OnMediaButtonMousePressed()).Times(1);
-
-  service_remote->OnMediaButtonMousePressed();
+  service_remote->OnMediaButtonClicked();
   service_remote.FlushForTesting();
 }
 #endif

@@ -27,7 +27,7 @@ import {TrackedElementManager} from '//resources/js/tracked_element/tracked_elem
 import {CrLitElement, nothing} from '//resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {IconTable} from '/shared/icon_table.js';
-import {setHasHelpBubble} from '/shared/toolbar_button.js';
+import {HighlightTracker, setHasHelpBubble} from '/shared/toolbar_button.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 
@@ -68,7 +68,7 @@ import type {GlicButtonState, OmniboxAction, LocationBarState, PageActionState, 
 import type {AdjustOmniboxTextForCopyResult, InitialState, OverflowMenuItem, ToolbarUIServiceInterface} from '/shared/toolbar_ui_api.mojom-webui.js';
 import {PermissionChipElement} from '/shared/permission_chip.js';
 import type {PermissionDashboardElement} from '/shared/permission_dashboard.js';
-import {getClickSourceType, getContextMenuSourceType, PressHandler, shouldSkipNextClick} from '/shared/toolbar_button.js';
+import {getClickSourceType, getContextMenuSourceType, PressHandler} from '/shared/toolbar_button.js';
 
 import {INVALID_FOCUS_REQUEST_HANDLE} from './browser_proxy.js';
 import {AppMenuButtonElement} from './app_menu_button.js';
@@ -126,6 +126,7 @@ export {
   getTypedBoolean,
   getTypedInteger,
   hasInitialStateKey,
+  HighlightTracker,
   IconTable,
   IconType,
   IconsetMap,
@@ -153,7 +154,6 @@ export {
   OverflowableToolbarActionContainerMixin,
   OverflowableToolbarActionMixin,
   SecurityChipRole,
-  shouldSkipNextClick,
   ToolbarActionContainerMixin,
   ToolbarActionMixin,
   ToolbarChipButtonElement,
@@ -718,9 +718,13 @@ export class ToolbarAppElement extends AppElementBase {
     for (const {selector, id} of TRACKED_ELEMENTS) {
       const el = this.shadowRoot.querySelector<HTMLElement>(selector);
       if (el) {
+        const tracker = (el as {highlightTracker?: unknown}).highlightTracker;
         this.registerHelpBubble(id, el, {
           onHighlightChanged: (highlighted: boolean) => {
             el.classList.toggle('anchor-highlight', highlighted);
+            if (tracker instanceof HighlightTracker) {
+              tracker.onHighlightChanged(highlighted);
+            }
           },
           onHelpBubbleShown: () => setHasHelpBubble(el, true),
           onHelpBubbleHidden: () => setHasHelpBubble(el, false),

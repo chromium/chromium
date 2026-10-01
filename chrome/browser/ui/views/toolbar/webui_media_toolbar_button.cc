@@ -40,23 +40,16 @@ void WebUIMediaToolbarButton::Init() {
   }
 }
 
-void WebUIMediaToolbarButton::OnClicked(bool is_mouse_interaction) {
+void WebUIMediaToolbarButton::OnClicked() {
   if (!service_) {
     return;
   }
 
-  const bool suppress =
-      reopen_suppressor_.ShouldSuppressBubbleShow(is_mouse_interaction);
-
   if (MediaDialogView::IsShowing()) {
     MediaDialogView::HideDialog();
-  } else if (!suppress) {
+  } else {
     ShowBubble();
   }
-}
-
-void WebUIMediaToolbarButton::OnMousePressed() {
-  reopen_suppressor_.OnMousePressed();
 }
 
 void WebUIMediaToolbarButton::HandleContextMenu(
@@ -189,7 +182,6 @@ void WebUIMediaToolbarButton::ShowBubble() {
   views::Widget* const widget = MediaDialogView::ShowDialogFromToolbar(
       views::BubbleAnchor(element), service_,
       delegate_->GetBrowser()->GetProfile());
-  reopen_suppressor_.Observe(widget);
   dialog_widget_observation_.Observe(widget);
 
   // Note that this is deliberately not done above, when the button is still

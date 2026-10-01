@@ -14,7 +14,7 @@ import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from '/shared
 import type {ExtensionActionInfo} from '/shared/extensions_bar_data_model.mojom-webui.js';
 import type {IconUpdate} from '/shared/icon_handle.mojom-webui.js';
 import {IconTable} from '/shared/icon_table.js';
-import {shouldSkipNextClick} from '/shared/toolbar_button.js';
+import {HighlightTracker} from '/shared/toolbar_button.js';
 
 import {ExtensionElement} from './extension.js';
 import {getCss} from './extensions_bar.css.js';
@@ -48,11 +48,9 @@ export class ExtensionsBarElement extends CrLitElement {
   private iconTable_: IconTable = IconTable.getInstance();
   private extensionsMenuButton: CrIconButtonElement;
   private trackedElementManager: TrackedElementManager;
-  // Set if the TrackedElementManager indicates the extensions menu button
-  // should be highlighted.
-  private trackedHighlighted: boolean = false;
-  private lastUnhighlightedTime: number = 0;
-  private skipNextClick_: boolean = false;
+  // Tracks whether a bubble is anchored to the extensions menu button.
+  private menuButtonHighlightTracker_: HighlightTracker =
+      new HighlightTracker();
 
   constructor() {
     super();
@@ -63,18 +61,14 @@ export class ExtensionsBarElement extends CrLitElement {
     this.extensionsMenuButton.title =
         loadTimeData.getString('tooltipExtensionsButton');
     this.extensionsMenuButton.addEventListener(
-        'pointerdown', this.extensionMenuButtonPointerdown.bind(this));
+        'pointerdown', this.menuButtonHighlightTracker_.onPointerdown);
     this.extensionsMenuButton.addEventListener(
         'click', this.extensionMenuButtonClicked.bind(this));
     this.trackedElementManager.startTracking(
         this.extensionsMenuButton, 'kExtensionsMenuButtonElementId', {
           secondaryId: 'ext:',
-          onHighlightChanged: (highlighted: boolean) => {
-            if (this.trackedHighlighted && !highlighted) {
-              this.lastUnhighlightedTime = performance.now();
-            }
-            this.trackedHighlighted = highlighted;
-          },
+          onHighlightChanged:
+              this.menuButtonHighlightTracker_.onHighlightChanged,
         });
 
     const factory = PageHandlerFactory.getRemote();
@@ -144,14 +138,8 @@ export class ExtensionsBarElement extends CrLitElement {
     this.handler.showContextMenu(source, id);
   }
 
-  private extensionMenuButtonPointerdown(e: PointerEvent) {
-    this.skipNextClick_ = shouldSkipNextClick(
-        e, this.trackedHighlighted, this.lastUnhighlightedTime);
-  }
-
   private extensionMenuButtonClicked(e: PointerEvent) {
-    if (this.skipNextClick_ && e.pointerType !== '') {
-      this.skipNextClick_ = false;
+    if (this.menuButtonHighlightTracker_.shouldSkipClick(e)) {
       return;
     }
     this.handler.toggleExtensionsMenuFromWebUI();

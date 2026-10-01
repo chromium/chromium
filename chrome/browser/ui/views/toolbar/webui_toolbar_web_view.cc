@@ -930,12 +930,8 @@ void WebUIToolbarWebView::OnPerformanceInterventionButtonMousePressed() {
   performance_intervention_control_.OnMousePressed();
 }
 
-void WebUIToolbarWebView::OnMediaButtonClicked(bool is_mouse_interaction) {
-  media_control_.OnClicked(is_mouse_interaction);
-}
-
-void WebUIToolbarWebView::OnMediaButtonMousePressed() {
-  media_control_.OnMousePressed();
+void WebUIToolbarWebView::OnMediaButtonClicked() {
+  media_control_.OnClicked();
 }
 
 void WebUIToolbarWebView::OnGlicButtonClicked() {
@@ -1246,10 +1242,7 @@ void WebUIToolbarWebView::OverflowButtonClicked(
     battery_saver_control_.ShowBubble();
     return;
   } else if (identifier == kToolbarMediaButtonElementId) {
-    // Not a mouse interaction with the button itself, so there's no risk of
-    // this being a click that just closed the dialog, which shouldn't then
-    // reopen it.
-    media_control_.OnClicked(/*is_mouse_interaction=*/false);
+    media_control_.OnClicked();
     return;
   } else if (identifier == kToolbarAvatarButtonElementId) {
     // TODO(crbug.com/556290451): Make buttons work with overflow menu clicks.

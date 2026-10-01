@@ -1129,18 +1129,19 @@ suite('Extensions', function() {
     assertEquals('action-1', executeCalls[0]);
 
     // 2. Click while highlighted (bubble open) is suppressed.
-    firstAction.trackedHighlighted = true;
+    firstAction.highlightTracker.onHighlightChanged(true);
     dispatchMouseClick();
     assertEquals(1, executeCalls.length);
 
     // 3. Click right after unhighlighting (< 100ms) is suppressed.
-    firstAction.trackedHighlighted = false;
-    firstAction.lastUnhighlightedTime = performance.now() + 10000;
+    firstAction.highlightTracker.onHighlightChanged(false);
+    firstAction.highlightTracker.lastUnhighlightedTime =
+        performance.now() + 10000;
     dispatchMouseClick();
     assertEquals(1, executeCalls.length);
 
     // 4. Keyboard activation (empty pointerType) is not suppressed even after
-    // a pointerdown that armed skipNextClick_.
+    // a pointerdown that armed click skipping.
     button.dispatchEvent(new PointerEvent(
         'pointerdown', {bubbles: true, button: 0, pointerType: 'mouse'}));
     button.dispatchEvent(
@@ -1148,7 +1149,8 @@ suite('Extensions', function() {
     assertEquals(2, executeCalls.length);
 
     // 5. Click after >= 100ms since bubble closed executes the action.
-    firstAction.lastUnhighlightedTime = performance.now() - 200;
+    firstAction.highlightTracker.lastUnhighlightedTime =
+        performance.now() - 200;
     dispatchMouseClick();
     assertEquals(3, executeCalls.length);
   });

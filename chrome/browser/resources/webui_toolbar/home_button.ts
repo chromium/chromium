@@ -67,12 +67,12 @@ export class HomeButtonElement extends HomeButtonElementBase {
         /*showMenuToken=*/ null);
   }
 
-  private onShortPress_(e: MouseEvent) {
+  private onShortPress_(e: PointerEvent) {
     const flags = getEventDispositionFlags(e);
     this.browserProxy_.browserControlsHandler.navigateHome(flags);
   }
 
-  protected onClick_(e: MouseEvent) {
+  protected onClick_(e: PointerEvent) {
     // Only keyboard `click` (Enter/Space) are handled here, which triggers a
     // left-click equivalent. Keyboard 'click' has detail === 0.
     if (e.detail === 0) {

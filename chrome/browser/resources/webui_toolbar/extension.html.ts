@@ -17,7 +17,7 @@ export function getHtml(this: ExtensionElement) {
       @dragstart="${this.onDragstart}"
       @dragend="${this.onDragend}"
       @keydown="${this.onKeydown}"
-      @pointerdown="${this.onPointerdown_}"
+      @pointerdown="${this.highlightTracker.onPointerdown}"
       @click="${this.onClick_}"
       @contextmenu="${this.onContextmenu_}">
       <icon-from-table .iconHandle="${this.state.icon}"></icon-from-table>

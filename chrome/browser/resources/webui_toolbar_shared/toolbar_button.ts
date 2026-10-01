@@ -68,6 +68,72 @@ export function setHasHelpBubble(el: Element, value: boolean) {
   (el as unknown as HelpBubbleAnchor).hasHelpBubble = value;
 }
 
+/**
+ * Tracks whether a bubble is anchored to an element, as indicated by the
+ * TrackedElementManager highlighting the element, in order to avoid reopening
+ * a bubble when the pointerdown that dismissed it (due to focus loss) turns
+ * into a click on the element.
+ *
+ * Usage:
+ * - Pass `onHighlightChanged` as the `onHighlightChanged` option when
+ *   registering the element with the TrackedElementManager (e.g. via
+ *   registerHelpBubble()).
+ * - Use onPointerdown() as (or call it from) the element's `pointerdown`
+ *   handler.
+ * - Call shouldSkipClick() from the element's click handler, and ignore the
+ *   click if it returns true.
+ */
+export class HighlightTracker {
+  // Set if the TrackedElementManager indicates the element should be
+  // highlighted. Public for testing.
+  highlighted: boolean = false;
+  // The value of performance.now() when `highlighted` last went from true to
+  // false. Public for testing.
+  lastUnhighlightedTime: number = 0;
+
+  private skipNextClick_: boolean = false;
+
+  onHighlightChanged = (highlighted: boolean) => {
+    if (this.highlighted && !highlighted) {
+      this.lastUnhighlightedTime = performance.now();
+    }
+    this.highlighted = highlighted;
+  };
+
+  /**
+   * Determines whether a click following pointerdown event `e` should be
+   * skipped, because the pointerdown dismissed a bubble anchored to the
+   * element. An arrow function so that it can be bound directly as an event
+   * listener.
+   */
+  onPointerdown = (e: PointerEvent) => {
+    // Ignore non-primary clicks or clicks not coming from a pointer (i.e.
+    // keyboard).
+    if (e.button !== BUTTON_LEFT || e.pointerType === '') {
+      this.skipNextClick_ = false;
+      return;
+    }
+    this.skipNextClick_ = this.highlighted ||
+        // Sometimes the IPC to remove highlighting (due to the pointerdown) can
+        // arrive before the pointerdown event itself, so allow for this race.
+        // 100ms matches views::kMinimumTimeBetweenButtonClicks.
+        (performance.now() - this.lastUnhighlightedTime < 100);
+  };
+
+  /**
+   * Returns true if click `e` should be ignored, because the pointerdown that
+   * started it dismissed a bubble anchored to the element. Keyboard clicks are
+   * never skipped.
+   */
+  shouldSkipClick(e: PointerEvent): boolean {
+    if (this.skipNextClick_ && e.pointerType !== '') {
+      this.skipNextClick_ = false;
+      return true;
+    }
+    return false;
+  }
+}
+
 // Tracks state used for deciding whether to display a context menu instead of
 // treating a pointer interaction as a click (a "short press"). Only populated
 // while holding a pointer down, cleared on release, or when the interaction is
@@ -148,7 +214,7 @@ export class PressHandler {
   private static readonly NO_ACTIVE_POINTER_ID = -1;
 
   private onLongPress_: (source: MenuSourceType) => void;
-  private onShortPress_: (e: MouseEvent) => void;
+  private onShortPress_: (e: PointerEvent) => void;
 
   private contextMenuState_: ContextMenuState|null = null;
 
@@ -158,7 +224,7 @@ export class PressHandler {
 
   constructor(
       onLongPress: (source: MenuSourceType) => void,
-      onShortPress: (e: MouseEvent) => void,
+      onShortPress: (e: PointerEvent) => void,
       enableContextMenu: boolean = true) {
     this.onLongPress_ = onLongPress;
     this.onShortPress_ = onShortPress;
@@ -383,28 +449,6 @@ export function getContextMenuSourceType(e: Event): MenuSourceType {
     return MenuSourceType.kKeyboard;
   }
   return MenuSourceType.kMouse;
-}
-
-/**
- * Call this method on pointerdown to determine whether a click following this
- * pointerdown event should be skipped to avoid reopening a bubble that was
- * dismissed due to focus loss (due to this pointerdown). `e` should be the
- * pointerdown event. `isBubbleOpen` should indicate if a bubble is currently
- * open. `lastBubbleClosedTime` should indicate when a bubble was last closed.
- */
-export function shouldSkipNextClick(
-    e: PointerEvent, isBubbleOpen: boolean,
-    lastBubbleClosedTime: number = 0): boolean {
-  // Ignore non-primary clicks or clicks not coming from a pointer (i.e.
-  // keyboard).
-  if (e.button !== BUTTON_LEFT || e.pointerType === '') {
-    return false;
-  }
-  return isBubbleOpen ||
-      // Sometimes the IPC to remove highlighting (due to the pointerdown) can
-      // arrive before the pointerdown event itself, so allow for this race.
-      // 100ms matches views::kMinimumTimeBetweenButtonClicks.
-      (performance.now() - lastBubbleClosedTime < 100);
 }
 
 export function getEventDispositionFlags(

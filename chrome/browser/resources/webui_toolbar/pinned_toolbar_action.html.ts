@@ -21,7 +21,7 @@ export function getHtml(this: PinnedToolbarActionElement) {
       @dragend="${this.onDragend}"
       @keydown="${this.onKeydown}"
       @click="${this.onActionClick_}"
-      @pointerdown="${this.onPointerdown_}"
+      @pointerdown="${this.highlightTracker.onPointerdown}"
       @contextmenu="${this.onContextmenu_}">
   </cr-icon-button>
 <div class="status-indicator" ?hidden="${!this.state.activated}"></div>

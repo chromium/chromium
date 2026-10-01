@@ -258,10 +258,7 @@ interface ToolbarUIService {
   OnPerformanceInterventionButtonMousePressed();
 
   // Called when the media button is clicked.
-  OnMediaButtonClicked(bool is_mouse_interaction);
-
-  // Called when the media button is pressed (e.g. pointerdown).
-  OnMediaButtonMousePressed();
+  OnMediaButtonClicked();
 
   // Called when the Glic button is clicked to toggle or open the Glic panel.
   OnGlicButtonClicked();

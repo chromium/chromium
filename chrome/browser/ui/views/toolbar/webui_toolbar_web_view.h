@@ -300,8 +300,7 @@ class WebUIToolbarWebView
   void OnPerformanceInterventionButtonClicked(
       bool is_mouse_interaction) override;
   void OnPerformanceInterventionButtonMousePressed() override;
-  void OnMediaButtonClicked(bool is_mouse_interaction) override;
-  void OnMediaButtonMousePressed() override;
+  void OnMediaButtonClicked() override;
   void OnGlicButtonClicked() override;
 
   // BrowserControlsService::BrowserControlsServiceDelegate:

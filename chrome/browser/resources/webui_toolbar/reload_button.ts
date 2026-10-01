@@ -169,7 +169,7 @@ export class ReloadButtonElement extends ReloadButtonElementBase {
     }
   }
 
-  private onShortPress_(e: MouseEvent) {
+  private onShortPress_(e: PointerEvent) {
     // Ignore clicks if the button is disabled (e.g. during hover protection).
     // This is also necessary to block programmatically dispatched events in
     // tests that bypass the HTML disabled state.
@@ -228,12 +228,12 @@ export class ReloadButtonElement extends ReloadButtonElementBase {
    * Reconstructs the relative timestamp offset and determines the input
    * modality.
    */
-  private getReloadMetadata_(e: MouseEvent): ReloadInteractionMetadata|null {
+  private getReloadMetadata_(e: PointerEvent): ReloadInteractionMetadata|null {
     const sourceCapabilities =
         (e as unknown as {
           sourceCapabilities?: {firesTouchEvents?: boolean},
         }).sourceCapabilities;
-    const isTouch = (e instanceof PointerEvent && e.pointerType === 'touch') ||
+    const isTouch = e.pointerType === 'touch' ||
         (!!sourceCapabilities && sourceCapabilities.firesTouchEvents);
     if (isTouch) {
       return null;
@@ -248,7 +248,7 @@ export class ReloadButtonElement extends ReloadButtonElementBase {
     };
   }
 
-  protected onClick_(e: MouseEvent) {
+  protected onClick_(e: PointerEvent) {
     // Only keyboard `click` (Enter/Space) are handled here, which triggers a
     // left-click equivalent. Keyboard 'click' has detail === 0.
     if (e.detail === 0) {

@@ -5,7 +5,7 @@
 import {isMac} from 'chrome://resources/js/platform.js';
 import {MenuSourceType} from 'chrome://resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {getClickSourceType, getContextMenuSourceType, PressHandler, shouldSkipNextClick} from 'chrome://webui-toolbar.top-chrome/app.js';
+import {getClickSourceType, getContextMenuSourceType, HighlightTracker, PressHandler} from 'chrome://webui-toolbar.top-chrome/app.js';
 
 suite('ToolbarButtonTest', function() {
   test('GetClickSourceType', function() {
@@ -91,34 +91,70 @@ suite('ToolbarButtonTest', function() {
         getContextMenuSourceType(new MouseEvent('contextmenu', {button: 2})));
   });
 
-  test('ShouldSkipNextClick', function() {
-    // Non-primary button (e.g. middle or right click) -> false
-    assertFalse(shouldSkipNextClick(
-        new PointerEvent('pointerdown', {button: 1, pointerType: 'mouse'}),
-        /*isBubbleOpen=*/ true));
-    assertFalse(shouldSkipNextClick(
-        new PointerEvent('pointerdown', {button: 2, pointerType: 'mouse'}),
-        /*isBubbleOpen=*/ true));
-
-    // Empty pointerType (e.g. keyboard) -> false
-    assertFalse(shouldSkipNextClick(
-        new PointerEvent('pointerdown', {button: 0, pointerType: ''}),
-        /*isBubbleOpen=*/ true));
-
+  suite('HighlightTracker', function() {
     const leftMouseDown =
         new PointerEvent('pointerdown', {button: 0, pointerType: 'mouse'});
+    const mouseClick = new PointerEvent('click', {pointerType: 'mouse'});
 
-    // Primary pointer click when bubble is open -> true
-    assertTrue(shouldSkipNextClick(leftMouseDown, /*isBubbleOpen=*/ true));
+    // Returns a tracker whose bubble is open.
+    function createHighlightedTracker(): HighlightTracker {
+      const tracker = new HighlightTracker();
+      tracker.onHighlightChanged(true);
+      return tracker;
+    }
 
-    // Primary pointer click when bubble is closed and not recently closed ->
-    // false
-    assertFalse(shouldSkipNextClick(
-        leftMouseDown, /*isBubbleOpen=*/ false, performance.now() - 200));
+    // Simulates a click whose pointerdown is `down`, and returns whether the
+    // click was skipped.
+    function clickSkipped(
+        tracker: HighlightTracker, down: PointerEvent,
+        click: PointerEvent = mouseClick): boolean {
+      tracker.onPointerdown(down);
+      return tracker.shouldSkipClick(click);
+    }
 
-    // Primary pointer click when bubble was closed less than 100ms ago -> true
-    assertTrue(shouldSkipNextClick(
-        leftMouseDown, /*isBubbleOpen=*/ false, performance.now()));
+    test('NonPrimaryButtonNotSkipped', function() {
+      assertFalse(clickSkipped(
+          createHighlightedTracker(),
+          new PointerEvent('pointerdown', {button: 1, pointerType: 'mouse'})));
+      assertFalse(clickSkipped(
+          createHighlightedTracker(),
+          new PointerEvent('pointerdown', {button: 2, pointerType: 'mouse'})));
+    });
+
+    test('KeyboardNotSkipped', function() {
+      // Empty pointerType on pointerdown (e.g. keyboard).
+      assertFalse(clickSkipped(
+          createHighlightedTracker(),
+          new PointerEvent('pointerdown', {button: 0, pointerType: ''})));
+      // Keyboard click, even after a pointerdown that dismissed the bubble.
+      assertFalse(clickSkipped(
+          createHighlightedTracker(), leftMouseDown,
+          new PointerEvent('click', {pointerType: ''})));
+    });
+
+    test('SkippedWhenBubbleOpen', function() {
+      const tracker = createHighlightedTracker();
+      assertTrue(clickSkipped(tracker, leftMouseDown));
+      // Only the one click following the pointerdown is skipped.
+      assertFalse(tracker.shouldSkipClick(mouseClick));
+    });
+
+    test('NotSkippedWhenBubbleClosed', function() {
+      assertFalse(clickSkipped(new HighlightTracker(), leftMouseDown));
+
+      // Bubble closed more than 100ms ago.
+      const tracker = new HighlightTracker();
+      tracker.lastUnhighlightedTime = performance.now() - 200;
+      assertFalse(clickSkipped(tracker, leftMouseDown));
+    });
+
+    test('SkippedWhenBubbleRecentlyClosed', function() {
+      // The highlight may be removed before the pointerdown that dismissed the
+      // bubble arrives.
+      const tracker = createHighlightedTracker();
+      tracker.onHighlightChanged(false);
+      assertTrue(clickSkipped(tracker, leftMouseDown));
+    });
   });
 
   const TARGET_SIZE = 100;

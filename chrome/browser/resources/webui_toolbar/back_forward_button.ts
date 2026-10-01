@@ -96,7 +96,7 @@ export class BackForwardButtonElement extends BackForwardButtonElementBase {
         /*showMenuToken=*/ null);
   }
 
-  private onShortPress_(e: MouseEvent) {
+  private onShortPress_(e: PointerEvent) {
     if (!this.state.enabled) {
       return;
     }
@@ -114,8 +114,7 @@ export class BackForwardButtonElement extends BackForwardButtonElementBase {
       // 'touch' or 'pen'.
       // - We also exclude middle/right clicks (button !== 0) and touch UI mode.
       const isPointerUp = e.type === 'pointerup';
-      const isMouse =
-          isPointerUp && (e as PointerEvent).pointerType === 'mouse';
+      const isMouse = isPointerUp && e.pointerType === 'mouse';
       const isLeftClick = e.button === 0;
       if (!this.touchUi && isMouse && isLeftClick) {
         if (this.animating_) {
@@ -238,7 +237,7 @@ export class BackForwardButtonElement extends BackForwardButtonElementBase {
     }
   }
 
-  protected onClick_(e: MouseEvent) {
+  protected onClick_(e: PointerEvent) {
     // Only handle keyboard 'click', which triggers a left-click equivalent.
     // Other events like mouse 'click' are handled in onShortPress_.
     if (e.detail === 0) {
