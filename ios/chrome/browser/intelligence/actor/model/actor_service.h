@@ -19,8 +19,10 @@
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/web/public/web_state_id.h"
 
+@class CRBProtocolObservers;
 @class PageContextWrapper;
 @protocol ActorTaskInterventionDelegate;
+@protocol ActorTaskLifecycleObserver;
 @protocol ActorTaskUpdatesObserver;
 class ProfileIOS;
 
@@ -115,6 +117,12 @@ class ActorService : public KeyedService {
   void RemoveTaskUpdatesObserver(ActorTaskId task_id,
                                  id<ActorTaskUpdatesObserver> observer);
 
+  // Registers `observer` for all task lifecycle events.
+  void AddTaskLifecycleObserver(id<ActorTaskLifecycleObserver> observer);
+
+  // Removes a registered task lifecycle observer.
+  void RemoveTaskLifecycleObserver(id<ActorTaskLifecycleObserver> observer);
+
   // Returns the execution state of the currently active task, or `std::nullopt`
   // if there are no active tasks.
   std::optional<ActorTaskState> GetActiveTaskState() const;
@@ -151,6 +159,11 @@ class ActorService : public KeyedService {
 
   // Observers for task updates.
   std::vector<__weak id<ActorTaskUpdatesObserver>> task_observers_;
+
+  // Observers notified of task start and stop. The container is held strongly,
+  // but the observers inside are held weakly.
+  __strong CRBProtocolObservers<ActorTaskLifecycleObserver>*
+      lifecycle_observers_;
 
   // Map of pending PageContext extractions ("observations"). Used to keep the
   // wrapper alive while the extraction is in progress.

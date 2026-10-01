@@ -44,6 +44,8 @@ class WebStateID;
              onWebState:(web::WebStateID)webStateID;
 
 // Called when a task stops.
+// TODO(crbug.com/565875367): Remove once observers migrate to
+// `ActorTaskLifecycleObserver`.
 - (void)actorTaskDidStopWithID:(actor::ActorTaskId)taskID
                     finalState:(actor::ActorTaskState)finalState;
 

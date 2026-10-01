@@ -10,6 +10,7 @@
 #import "base/barrier_callback.h"
 #import "base/check.h"
 #import "base/functional/bind.h"
+#import "base/ios/crb_protocol_observers.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "components/actor/core/task_source_info.h"
@@ -21,6 +22,7 @@
 #import "ios/chrome/app/profile/profile_state.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_task.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_intervention_delegate.h"
+#import "ios/chrome/browser/intelligence/actor/public/actor_task_lifecycle_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_task_updates_observer.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_types.h"
 #import "ios/chrome/browser/intelligence/actor/tools/model/actor_tool_factory.h"
@@ -74,6 +76,10 @@ ActorService::ActorService(ProfileIOS* profile)
       tool_factory_(std::make_unique<ActorToolFactory>(profile)),
       journal_(std::make_unique<AggregatedJournal>()) {
   CHECK(tool_factory_);
+  lifecycle_observers_ =
+      static_cast<CRBProtocolObservers<ActorTaskLifecycleObserver>*>(
+          [CRBProtocolObservers
+              observersWithProtocol:@protocol(ActorTaskLifecycleObserver)]);
 }
 
 ActorService::~ActorService() {
@@ -81,6 +87,7 @@ ActorService::~ActorService() {
 }
 
 void ActorService::Shutdown() {
+  // TODO(crbug.com/568342921): Gracefully cleanup tasks.
   task_observers_.clear();
   active_tasks_.clear();
 }
@@ -105,6 +112,8 @@ ActorTaskId ActorService::CreateTask(const std::string& title,
   }
 
   active_tasks_[task_id] = std::move(task);
+  [lifecycle_observers_ actorServiceDidStartTaskWithID:task_id
+                                            sourceInfo:source_info];
   return task_id;
 }
 
@@ -199,6 +208,10 @@ void ActorService::InterruptTask(ActorTaskId task_id,
   // task-initiated stops directly through `ActorService::StopTask`.
   it = active_tasks_.find(task_id);
   if (it != active_tasks_.end() && IsTerminalState(it->second->GetState())) {
+    [lifecycle_observers_
+        actorServiceDidStopTaskWithID:task_id
+                           sourceInfo:it->second->source_info()
+                           finalState:it->second->GetState()];
     active_tasks_.erase(it);
   }
 }
@@ -209,6 +222,10 @@ void ActorService::StopTask(ActorTaskId task_id,
   auto it = active_tasks_.find(task_id);
   if (it != active_tasks_.end()) {
     it->second->Stop(reason);
+    [lifecycle_observers_
+        actorServiceDidStopTaskWithID:task_id
+                           sourceInfo:it->second->source_info()
+                           finalState:it->second->GetState()];
   }
   active_tasks_.erase(task_id);
 }
@@ -222,8 +239,7 @@ void ActorService::StopAllTasks() {
   }
 }
 
-// TODO(crbug.com/556295233): Add new ActorService observation pattern for
-// coarse updates (task started/completed).
+// TODO(crbug.com/556295233): Remove once the granular observer is implemented.
 void ActorService::AddTaskUpdatesObserver(
     id<ActorTaskUpdatesObserver> observer) {
   if (!observer || std::ranges::contains(task_observers_, observer)) {
@@ -236,8 +252,7 @@ void ActorService::AddTaskUpdatesObserver(
   }
 }
 
-// TODO(crbug.com/556295233): Add new ActorService observation pattern for
-// coarse updates (task started/completed).
+// TODO(crbug.com/556295233): Remove once the granular observer is implemented.
 void ActorService::RemoveTaskUpdatesObserver(
     id<ActorTaskUpdatesObserver> observer) {
   std::erase(task_observers_, observer);
@@ -265,6 +280,22 @@ void ActorService::RemoveTaskUpdatesObserver(
     return;
   }
   it->second->RemoveObserver(observer);
+}
+
+void ActorService::AddTaskLifecycleObserver(
+    id<ActorTaskLifecycleObserver> observer) {
+  if (!observer) {
+    return;
+  }
+  [lifecycle_observers_ addObserver:observer];
+}
+
+void ActorService::RemoveTaskLifecycleObserver(
+    id<ActorTaskLifecycleObserver> observer) {
+  if (!observer) {
+    return;
+  }
+  [lifecycle_observers_ removeObserver:observer];
 }
 
 std::optional<ActorTaskState> ActorService::GetActiveTaskState() const {

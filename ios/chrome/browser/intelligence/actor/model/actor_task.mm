@@ -248,6 +248,8 @@ void ActorTask::Stop(ActorTaskStoppedReason stop_reason) {
   FinalizeBackgroundTask(success);
 
   // TODO(crbug.com/496164697): Implement and test.
+  // TODO(crbug.com/565875367): Remove once observers migrate to
+  // `ActorTaskLifecycleObserver`.
   [observers_ actorTaskDidStopWithID:task_id_ finalState:state_];
 }
 
