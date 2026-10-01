@@ -314,30 +314,12 @@ bool IsGeminiNavigationPromoEnabled() {
   return base::FeatureList::IsEnabled(kGeminiNavigationPromo);
 }
 
-BASE_FEATURE(kZeroStateSuggestions, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kZeroStateSuggestions, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsZeroStateSuggestionsEnabled() {
   if (!IsPageActionMenuEnabled()) {
     return false;
   }
-
-  variations::VariationsService* variations_service =
-      GetApplicationContext()->GetVariationsService();
-  bool is_launched_country =
-      variations_service &&
-      base::EqualsCaseInsensitiveASCII(
-          variations_service->GetStoredPermanentCountry(), "us");
-
-  ApplicationLocaleStorage* locale_storage =
-      GetApplicationContext()->GetApplicationLocaleStorage();
-  bool is_launched_locale =
-      locale_storage && base::EqualsCaseInsensitiveASCII(
-                            locale_storage->GetTag().tag_string(), "en-us");
-
-  if (is_launched_country && is_launched_locale) {
-    return true;
-  }
-
   return base::FeatureList::IsEnabled(kZeroStateSuggestions);
 }
 
