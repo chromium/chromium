@@ -96,7 +96,8 @@ class SelectionOverlayController
   // Shows the overlay with a region pre-selected around `selection_bounds`,
   // which is in screen coordinates.
   void ShowWithSelection(content::RenderFrameHost* selected_frame,
-                         const gfx::Rect& selection_bounds);
+                         const gfx::Rect& selection_bounds,
+                         selection::InteractionOptionsPtr interaction_options);
   void Close();
 
   // `selection::SelectionOverlayPageHandler`:
@@ -227,6 +228,8 @@ class SelectionOverlayController
 
   // Stateful members. They should be added to Reset().
   bool screenshot_available_ = false;
+  selection::InteractionOptionsPtr interaction_options_ =
+      selection::InteractionOptions::New();
   SkBitmap initial_rgb_screenshot_;
   SkBitmap redacted_screenshot_;
   mojom::TabContextResultPtr tab_context_;

@@ -432,7 +432,9 @@ void SelectionOverlayController::Show(mojom::TabContextOptionsPtr options) {
 
 void SelectionOverlayController::ShowWithSelection(
     content::RenderFrameHost* selected_frame,
-    const gfx::Rect& selection_bounds) {
+    const gfx::Rect& selection_bounds,
+    selection::InteractionOptionsPtr interaction_options) {
+  interaction_options_ = std::move(interaction_options);
   selected_regions_.clear();
   active_region_id_.reset();
   surrounding_text_timer_.Stop();
@@ -531,6 +533,7 @@ void SelectionOverlayController::InitializeOverlay() {
   InitializeOverlayImpl();
 
   CHECK(page_);
+  page_->SetInteractionOptions(interaction_options_.Clone());
   page_->ScreenshotReceived(initial_rgb_screenshot_);
 
   // Forward any pre-existing selections (e.g. from a text selection prompt) to
@@ -1024,6 +1027,7 @@ void SelectionOverlayController::Reset() {
   initial_rgb_screenshot_.reset();
   redacted_screenshot_.reset();
   screenshot_available_ = false;
+  interaction_options_ = selection::InteractionOptions::New();
   selected_regions_.clear();
   active_region_id_.reset();
   surrounding_text_timer_.Stop();

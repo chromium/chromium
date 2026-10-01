@@ -10,7 +10,11 @@ import {RegionSource, SelectionOverlayBaseHandler} from '/lens/selection_overlay
 import {calculateCenterRotatedBox} from '/lens/selection_utils.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import type {SelectedRegionMojoType, SuggestedActionsListenerRemote} from './selection_overlay.mojom-webui.js';
+import type {                                //
+             InteractionOptions,             //
+             SelectedRegionMojoType,         //
+             SuggestedActionsListenerRemote, //
+} from './selection_overlay.mojom-webui.js';
 
 function generateRandomHexId(): string {
   return Array
@@ -63,6 +67,12 @@ export class SelectionOverlayBaseHandlerImpl extends
             (screenshotData: BitmapMappedFromTrustedProcess) => {
               callback(screenshotData, false);
             });
+  }
+
+  addSetInteractionOptionsListener(
+      callback: (options: InteractionOptions) => void): number {
+    return BrowserProxyImpl.getInstance()
+        .callbackRouter.setInteractionOptions.addListener(callback);
   }
 
   addClearRegionSelectionListener(callback: () => void): number {

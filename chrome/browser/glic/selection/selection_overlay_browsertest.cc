@@ -395,7 +395,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   gfx::Rect selection_bounds(view_bounds.x() + 10, view_bounds.y() + 10, 100,
                              50);
   controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
-                                selection_bounds);
+                                selection_bounds,
+                                selection::InteractionOptions::New());
 
   EXPECT_EQ(controller->GetSelectedRegionCount(), 1u);
 
@@ -416,7 +417,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   gfx::Rect selection_bounds(view_bounds.x() + 10, view_bounds.y() + 10, 100,
                              50);
   controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
-                                selection_bounds);
+                                selection_bounds,
+                                selection::InteractionOptions::New());
 
   EXPECT_EQ(controller->GetSelectedRegionCount(), 1u);
 
@@ -561,7 +563,8 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayPromptBrowserTest,
   gfx::Rect selection_bounds(view_bounds.x() + 10, view_bounds.y() + 10, 100,
                              50);
   controller->ShowWithSelection(web_contents->GetPrimaryMainFrame(),
-                                selection_bounds);
+                                selection_bounds,
+                                selection::InteractionOptions::New());
   ASSERT_OK(RunUntilEqual(
       [&]() { return controller->state(); },
       SelectionOverlayController::State::kOverlay,

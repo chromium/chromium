@@ -184,6 +184,19 @@ class SelectionOverlayInteractiveTest : public test::InteractiveGlicTest {
     return embedded_test_server()->GetURL("/empty.html");
   }
 
+  void ShowWithSelection(selection::InteractionOptionsPtr options) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    auto* controller =
+        SelectionOverlayController::FromTabWebContents(web_contents);
+    ASSERT_TRUE(controller);
+    gfx::Rect view_bounds = web_contents->GetViewBounds();
+    controller->ShowWithSelection(
+        web_contents->GetPrimaryMainFrame(),
+        gfx::Rect(view_bounds.x() + 10, view_bounds.y() + 10, 100, 50),
+        std::move(options));
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
@@ -283,6 +296,24 @@ IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest, SmokeTest) {
       WaitForElementVisible(kOverlayWebContentsId, {"selection-overlay-app",
                                                     "glic-selection-overlay"}),
       WaitForShow(kLensPreselectionBubbleElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,
+                       ShowWithSelectionSendsInteractionOptions) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOverlayWebContentsId);
+  const DeepQuery kOverlay = {"selection-overlay-app",
+                              "glic-selection-overlay"};
+
+  RunTestSequence(
+      Do([this]() {
+        ShowWithSelection(selection::InteractionOptions::New(
+            /*hide_handles=*/false, /*disable_multi_select=*/true));
+      }),
+      WaitForShow(OverlayBaseController::kOverlayId),
+      InstrumentNonTabWebView(kOverlayWebContentsId,
+                              OverlayBaseController::kOverlayId),
+      WaitForJsResultAt(kOverlayWebContentsId, kOverlay,
+                        "el => !el.hideHandles && el.disableMultiSelect"));
 }
 
 IN_PROC_BROWSER_TEST_F(SelectionOverlayInteractiveTest,

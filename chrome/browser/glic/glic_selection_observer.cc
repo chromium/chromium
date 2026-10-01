@@ -1236,7 +1236,10 @@ void GlicSelectionObserver::ShowSelectionOverlay() {
     }
   }
   if (bounds.has_value() && !bounds->IsEmpty()) {
-    controller->ShowWithSelection(selected_frame, *bounds);
+    controller->ShowWithSelection(
+        selected_frame, *bounds,
+        selection::InteractionOptions::New(
+            /*hide_handles=*/true, /*disable_multi_select=*/true));
   } else {
     controller->Show(/*options=*/nullptr);
   }

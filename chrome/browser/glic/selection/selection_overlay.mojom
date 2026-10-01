@@ -26,6 +26,14 @@ struct SelectedRegion {
   RegionShape shape;
 };
 
+// Per-session options that change how the user can interact with the overlay.
+struct InteractionOptions {
+  // When true, hide the handles and fix the region.
+  bool hide_handles = false;
+  // When true, the user can't add more regions unless Ctrl or Cmd is held.
+  bool disable_multi_select = false;
+};
+
 enum DismissOverlayReason {
   // The user clicks on the close button.
   kCloseButton = 0,
@@ -113,4 +121,8 @@ interface SelectionOverlayPage {
 
   // Sets post selection regions to be rendered as selected on the page.
   SetPostRegionSelections(array<SelectedRegion> regions);
+
+  // Sets how the user can interact with the overlay.
+  // Called before each screenshot is sent.
+  SetInteractionOptions(InteractionOptions options);
 };

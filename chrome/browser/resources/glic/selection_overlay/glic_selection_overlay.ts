@@ -27,7 +27,7 @@ import {getCss} from './glic_selection_overlay.css.js';
 import {getHtml} from './glic_selection_overlay.html.js';
 import type {InlineFulfillmentHostElement} from './inline_fulfillment_host.js';
 import {DismissOverlayReason, SuggestedActionsListenerCallbackRouter} from './selection_overlay.mojom-webui.js';
-import type {SuggestedAction} from './selection_overlay.mojom-webui.js';
+import type {InteractionOptions, SuggestedAction} from './selection_overlay.mojom-webui.js';
 import type {SelectionOverlayBaseHandlerImpl} from './selection_overlay_base_handler_impl.js';
 
 const GLIC_BORDER_GLOW_COLORS: string[] = [
@@ -85,6 +85,8 @@ export class SelectionOverlayElementElement extends
       suggestedActions: {type: Array},
       enableSelectionOverlayPrompt: {type: Boolean},
       enableSelectionOverlayPromptBox: {type: Boolean},
+      hideHandles: {type: Boolean},
+      disableMultiSelect: {type: Boolean},
     };
   }
 
@@ -100,9 +102,21 @@ export class SelectionOverlayElementElement extends
       loadTimeData.getBoolean('enableSelectionOverlayPrompt');
   accessor enableSelectionOverlayPromptBox: boolean =
       loadTimeData.getBoolean('enableSelectionOverlayPromptBox');
+  accessor hideHandles: boolean = false;
+  accessor disableMultiSelect: boolean = false;
 
   constructor() {
     super();
+  }
+
+  override connectedCallback() {
+    super.connectedCallback();
+    const handlerImpl = this.baseHandler as SelectionOverlayBaseHandlerImpl;
+    this.listenerIds.push(handlerImpl.addSetInteractionOptionsListener(
+        (options: InteractionOptions) => {
+          this.hideHandles = options.hideHandles;
+          this.disableMultiSelect = options.disableMultiSelect;
+        }));
   }
 
   override get selectionElements() {
