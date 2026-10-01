@@ -38,12 +38,9 @@ std::optional<int> GetIdleTimeoutActionsTitleId(ActionSet actions) {
   return std::nullopt;
 }
 
-int GetIdleTimeoutActionsSubtitleId(ActionSet actions,
-                                    bool is_data_cleared_on_signout) {
+int GetIdleTimeoutActionsSubtitleId(ActionSet actions) {
   if (actions.clear) {
     return IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA;
-  } else if (actions.signout && is_data_cleared_on_signout) {
-    return IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA_ON_SIGNOUT;
   } else {
     return IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITHOUT_CLEAR_DATA;
   }

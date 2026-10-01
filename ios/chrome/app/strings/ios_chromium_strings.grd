@@ -550,11 +550,6 @@ Things to consider:
             =1 {This happens when Chromium isn't used for {THRESHOLD} minute. This could include history and autofill.}
             other {This happens when Chromium isn't used for {THRESHOLD} minutes. This could include history and autofill.}}
       </message>
-      <message name="IDS_IOS_IDLE_TIMEOUT_SUBTITLE_WITH_CLEAR_DATA_ON_SIGNOUT" desc="Subtitle of the idle timeout policy dialog explaining when the idle action usually happens. It also informs the user that data will be cleared when they are signed out.">
-          {THRESHOLD, plural,
-            =1 {This happens when Chromium isn't used for {THRESHOLD} minute. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}
-            other {This happens when Chromium isn't used for {THRESHOLD} minutes. Data saved only to this device while you were signed in will be deleted. This could include history and passwords.}}
-      </message>
       <message name="IDS_IOS_IMPORT_INVALID_PASSKEY_LIST_DESCRIPTION" desc="Descriptive text showing under the title on the view that lists all invalid passkeys. [iOS only]">
         The following passkeys were not imported to Password Manager, because they don't match with the requirements.
       </message>

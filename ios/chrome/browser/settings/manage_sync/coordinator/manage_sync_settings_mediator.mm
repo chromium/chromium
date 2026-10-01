@@ -202,8 +202,6 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 
   TableViewModel* model = self.consumer.tableViewModel;
 
-  BOOL would_clear_data_on_signout =
-      _authenticationService->ShouldClearDataForSignedInPeriodOnSignOut();
   [model addSectionWithIdentifier:SyncDataTypeSectionIdentifier];
   TableViewTextHeaderFooterItem* headerItem =
       [[TableViewTextHeaderFooterItem alloc]
@@ -217,12 +215,8 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
   TableViewTextHeaderFooterItem* footerItem =
       [[TableViewTextHeaderFooterItem alloc]
           initWithType:TypesListHeaderOrFooterType];
-  footerItem.subtitle =
-      would_clear_data_on_signout
-          ? l10n_util::GetNSString(
-                IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_TYPES_LIST_DESCRIPTION_FOR_MANAGED_ACCOUNT)
-          : l10n_util::GetNSString(
-                IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_TYPES_LIST_DESCRIPTION);
+  footerItem.subtitle = l10n_util::GetNSString(
+      IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_TYPES_LIST_DESCRIPTION);
   [model setFooter:footerItem
       forSectionWithIdentifier:SyncDataTypeSectionIdentifier];
   NSMutableArray* syncSwitchItems = [[NSMutableArray alloc] init];

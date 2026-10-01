@@ -15,7 +15,6 @@
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/single_thread_task_runner.h"
-#import "components/policy/core/common/management/platform_management_service.h"
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/ios/browser/features.h"
@@ -331,16 +330,6 @@ bool AuthenticationService::HasPrimaryIdentityManaged() const {
              ->FindExtendedAccountInfo(identity_manager_->GetPrimaryAccountInfo(
                  signin::ConsentLevel::kSignin))
              .IsManaged() == signin::Tribool::kTrue;
-}
-
-bool AuthenticationService::ShouldClearDataForSignedInPeriodOnSignOut() const {
-  // Data on the device should be cleared on signout when all conditions are
-  // met:
-  // 1. The user is signed in with a managed account.
-  // 2. The app management configuration key is present.
-  // Note: data will be cleared from the time of sign-in in this case.
-  return HasPrimaryIdentityManaged() &&
-         !policy::PlatformManagementService::GetInstance()->IsManaged();
 }
 
 id<SystemIdentity> AuthenticationService::GetPrimaryIdentity() const {

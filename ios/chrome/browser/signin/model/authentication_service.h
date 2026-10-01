@@ -111,10 +111,6 @@ class AuthenticationService : public KeyedService,
   // Virtual for testing.
   virtual bool HasPrimaryIdentityManaged() const;
 
-  // Returns true if data from the signed-in period should be cleared on
-  // sign-out.
-  virtual bool ShouldClearDataForSignedInPeriodOnSignOut() const;
-
   // Retrieves the identity of the currently authenticated user or `nil` if
   // the user is not authenticated.
   // Virtual for testing.

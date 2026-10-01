@@ -16,9 +16,8 @@
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_confirmation_view_controller.h"
 #import "ios/chrome/browser/policy/ui_bundled/idle/idle_timeout_policy_utils.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_coordinator.h"
-#import "ios/chrome/browser/signin/model/authentication_service.h"
-#import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 namespace {
@@ -47,15 +46,13 @@ constexpr base::TimeDelta kDialogTimeout = base::Seconds(30);
          dialogDuration:[self countDownStart]];
 
   enterprise_idle::IdleService* idleService = [self idleService];
-  AuthenticationService* authService = [self authService];
 
   enterprise_idle::ActionSet actions = idleService->GetLastActionSet();
   std::optional<int> titleId =
       enterprise_idle::GetIdleTimeoutActionsTitleId(actions);
   CHECK(titleId)
       << "The idle timeout confirmation dialog title id should not be empty";
-  int subtitleId = enterprise_idle::GetIdleTimeoutActionsSubtitleId(
-      actions, authService->ShouldClearDataForSignedInPeriodOnSignOut());
+  int subtitleId = enterprise_idle::GetIdleTimeoutActionsSubtitleId(actions);
 
   _presentedViewController = [[IdleTimeoutConfirmationViewController alloc]
       initWithIdleTimeoutTitleId:*titleId
@@ -126,10 +123,6 @@ constexpr base::TimeDelta kDialogTimeout = base::Seconds(30);
 
 - (enterprise_idle::IdleService*)idleService {
   return enterprise_idle::IdleServiceFactory::GetForProfile(self.profile);
-}
-
-- (AuthenticationService*)authService {
-  return AuthenticationServiceFactory::GetForProfile(self.profile);
 }
 
 - (void)setInitialVoiceOverFocus {

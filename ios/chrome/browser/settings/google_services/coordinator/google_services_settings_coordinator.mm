@@ -161,9 +161,8 @@ using signin_metrics::PromoAction;
   // `message` in the UIAlertController, the attributed message below
   // specifically denotes the font style to apply.
   if (warning) {
-    // Signing out may also cause tabs to be closed, see
-    // `MainControllerAuthenticationServiceDelegate::
-    //    ClearBrowsingDataForSignedinPeriod`.
+    // TODO(crbug.com/407498240): Revisit this string - it's partially outdated,
+    // and it does not only apply to managed accounts.
     NSString* clearDataMessage = l10n_util::GetNSString(
         IDS_IOS_SIGNOUT_AND_DISALLOW_SIGNIN_CLOSES_TABS_AND_CLEARS_DATA_MESSAGE_WITH_MANAGED_ACCOUNT);
     self.signOutCoordinator.attributedMessage = [[NSAttributedString alloc]
@@ -200,13 +199,9 @@ using signin_metrics::PromoAction;
                             completion:(signin_ui::SignoutCompletionCallback)
                                            completion {
   DCHECK(completion);
-  BOOL shouldClearDataOnSignOut =
-      self.authService->ShouldClearDataForSignedInPeriodOnSignOut();
-  if (shouldClearDataOnSignOut ||
-      signin::DifferentUserIsSignedInInAnotherScene(self.sceneState)) {
-    // Either `shouldClearDataOnSignOut` holds, or another scene is signed-in
-    // with another account. In both case, we must ask the user to confirm and
-    // warn them there is a possibility of loss of unsynced data.
+  if (signin::DifferentUserIsSignedInInAnotherScene(self.sceneState)) {
+    // Another scene is signed-in with another account. We must ask the user to
+    // confirm and warn them there is a possibility of loss of unsynced data.
     [self showSignOutFromTargetRect:targetRect
                             warning:YES
                          completion:completion];
@@ -232,7 +227,6 @@ using signin_metrics::PromoAction;
                                                         std::move(callback));
 }
 
-// Signs the user out of Chrome, only clears data for managed accounts.
 - (void)signOutWithCompletion:(signin_ui::SignoutCompletionCallback)completion {
   DCHECK(completion);
   [self.googleServicesSettingsViewController preventUserInteraction];
