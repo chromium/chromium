@@ -1902,12 +1902,13 @@ bool LayerTreeImpl::UpdateDrawProperties(
   occlusion_tracker.set_minimum_tracking_size(
       settings().minimum_occlusion_tracking_size);
 
-  for (EffectTreeLayerListIterator it(this);
-       it.state() != EffectTreeLayerListIterator::State::kEnd; ++it) {
-    occlusion_tracker.EnterLayer(it);
+  for (EffectTreeLayerListIterator it(*this);
+       it.state() != EffectTreeLayerListIterator::State::kEnd;
+       it.Advance(*this)) {
+    occlusion_tracker.EnterLayer(it, *this);
 
     if (it.state() == EffectTreeLayerListIterator::State::kLayer) {
-      LayerImpl* layer = it.current_layer();
+      LayerImpl* layer = it.CurrentLayer(*this);
       layer->draw_properties().occlusion_in_content_space =
           occlusion_tracker.GetCurrentOcclusionForLayer(layer->DrawTransform());
     }
@@ -1919,7 +1920,7 @@ bool LayerTreeImpl::UpdateDrawProperties(
       const RenderSurfaceImpl* occlusion_surface =
           occlusion_tracker.OcclusionSurfaceForContributingSurface();
       gfx::Transform draw_transform;
-      RenderSurfaceImpl* render_surface = it.current_render_surface();
+      RenderSurfaceImpl* render_surface = it.CurrentRenderSurface(*this);
       if (occlusion_surface) {
         // We are calculating transform between two render surfaces. So, we
         // need to apply the surface contents scale at target and remove the
@@ -1941,7 +1942,7 @@ bool LayerTreeImpl::UpdateDrawProperties(
       render_surface->set_occlusion_in_content_space(occlusion);
     }
 
-    occlusion_tracker.LeaveLayer(it);
+    occlusion_tracker.LeaveLayer(it, *this);
   }
 
   unoccluded_screen_space_region_ =

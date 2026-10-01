@@ -48,11 +48,15 @@ class CC_EXPORT OcclusionTracker {
 
   const RenderSurfaceImpl* OcclusionSurfaceForContributingSurface() const;
   // Called at the beginning of each step in EffectTreeLayerListIterator's
-  // front-to-back traversal.
-  void EnterLayer(const EffectTreeLayerListIterator& iterator);
+  // front-to-back traversal. |layer_tree_impl| must be the tree that
+  // |iterator| is traversing.
+  void EnterLayer(const EffectTreeLayerListIterator& iterator,
+                  const LayerTreeImpl& layer_tree_impl);
   // Called at the end of each step in EffectTreeLayerListIterator's
-  // front-to-back traversal.
-  void LeaveLayer(const EffectTreeLayerListIterator& iterator);
+  // front-to-back traversal. |layer_tree_impl| must be the tree that
+  // |iterator| is traversing.
+  void LeaveLayer(const EffectTreeLayerListIterator& iterator,
+                  const LayerTreeImpl& layer_tree_impl);
 
   // Gives the region of the screen that is not occluded by something opaque.
   Region ComputeVisibleRegionInScreen(const LayerTreeImpl* layer_tree) const;

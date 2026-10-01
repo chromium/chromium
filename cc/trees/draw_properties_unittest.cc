@@ -6158,10 +6158,11 @@ TEST_F(DrawPropertiesTest, MaximumAnimationScaleFactor) {
 
 static void GatherDrawnLayers(LayerTreeImpl* tree_impl,
                               std::set<LayerImpl*>* drawn_layers) {
-  for (EffectTreeLayerListIterator it(tree_impl);
-       it.state() != EffectTreeLayerListIterator::State::kEnd; ++it) {
+  for (EffectTreeLayerListIterator it(*tree_impl);
+       it.state() != EffectTreeLayerListIterator::State::kEnd;
+       it.Advance(*tree_impl)) {
     if (it.state() == EffectTreeLayerListIterator::State::kLayer) {
-      drawn_layers->insert(it.current_layer());
+      drawn_layers->insert(it.CurrentLayer(*tree_impl));
     }
 
     if (it.state() !=

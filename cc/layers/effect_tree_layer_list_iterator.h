@@ -7,7 +7,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 #include "cc/cc_export.h"
 #include "cc/trees/effect_node.h"
@@ -28,29 +27,46 @@ class LayerTreeImpl;
 // kContributingSurface, as it contributes to the next target surface.
 //
 // The iterator takes on the following states:
-// 1. kLayer: The iterator is visiting layer |current_layer()| that contributes
-//    to surface |target_render_surface()|.
+// 1. kLayer: The iterator is visiting layer |CurrentLayer()| that contributes
+//    to surface |TargetRenderSurface()|.
 // 2. kTargetSurface: The iterator is visiting render surface
-//    |target_render_surface()|.
+//    |TargetRenderSurface()|.
 // 3. kContributingSurface: The iterator is visiting render surface
-//    |current_render_surface()| that contributes to surface
-//    |target_render_surface()|.
+//    |CurrentRenderSurface()| that contributes to surface
+//    |TargetRenderSurface()|.
 // 4. kEnd: All layers and render surfaces have already been visited.
+//
+// The iterator holds no pointers. It only stores indices into the layer list
+// and the effect tree. Every method that needs the tree takes it as an
+// argument, and all of those calls must pass the same LayerTreeImpl that was
+// given to the constructor. Each index is bounds-checked against the tree when
+// it is used, so the iterator can't read outside of the layer list or the
+// effect tree.
+//
+// Typical usage:
+//   for (EffectTreeLayerListIterator it(tree);
+//        it.state() != EffectTreeLayerListIterator::State::kEnd;
+//        it.Advance(tree)) {
+//     ...
+//   }
 class CC_EXPORT EffectTreeLayerListIterator {
  public:
   enum class State { kLayer, kTargetSurface, kContributingSurface, kEnd };
 
-  explicit EffectTreeLayerListIterator(LayerTreeImpl* layer_tree_impl);
+  explicit EffectTreeLayerListIterator(const LayerTreeImpl& layer_tree_impl);
   EffectTreeLayerListIterator(const EffectTreeLayerListIterator& iterator);
+  EffectTreeLayerListIterator& operator=(
+      const EffectTreeLayerListIterator& iterator);
   ~EffectTreeLayerListIterator();
 
-  void operator++();
+  // Moves to the next step of the traversal.
+  void Advance(const LayerTreeImpl& layer_tree_impl);
 
   State state() const { return state_; }
 
-  LayerImpl* current_layer() const {
+  LayerImpl* CurrentLayer(const LayerTreeImpl& layer_tree_impl) const {
     DCHECK(state_ == State::kLayer);
-    return LayerAtCursor();
+    return LayerAtCursor(layer_tree_impl);
   }
 
   int current_effect_tree_index() const {
@@ -58,55 +74,66 @@ class CC_EXPORT EffectTreeLayerListIterator {
     return current_effect_tree_index_;
   }
 
-  RenderSurfaceImpl* current_render_surface() const {
+  RenderSurfaceImpl* CurrentRenderSurface(
+      LayerTreeImpl& layer_tree_impl) const {
     DCHECK(state_ == State::kContributingSurface);
-    return effect_tree().GetRenderSurface(current_effect_tree_index_);
+    return GetEffectTree(layer_tree_impl)
+        .GetRenderSurface(current_effect_tree_index_);
   }
 
-  int target_effect_tree_index() const {
+  int TargetEffectTreeIndex(const LayerTreeImpl& layer_tree_impl) const {
     switch (state_) {
       case State::kLayer:
       case State::kTargetSurface:
         return current_effect_tree_index_;
       case State::kContributingSurface:
-        return effect_tree().Node(current_effect_tree_index_).target_id;
+        return GetEffectTree(layer_tree_impl)
+            .Node(current_effect_tree_index_)
+            .target_id;
       case State::kEnd:
         NOTREACHED();
     }
     NOTREACHED();
   }
 
-  RenderSurfaceImpl* target_render_surface() const {
-    return effect_tree().GetRenderSurface(target_effect_tree_index());
+  RenderSurfaceImpl* TargetRenderSurface(LayerTreeImpl& layer_tree_impl) const {
+    return GetEffectTree(layer_tree_impl)
+        .GetRenderSurface(TargetEffectTreeIndex(layer_tree_impl));
+  }
+  const RenderSurfaceImpl* TargetRenderSurface(
+      const LayerTreeImpl& layer_tree_impl) const {
+    return GetEffectTree(layer_tree_impl)
+        .GetRenderSurface(TargetEffectTreeIndex(layer_tree_impl));
   }
 
  private:
-  // The effect tree is looked up through the owning LayerTreeImpl rather than
-  // cached as a separate pointer. This is only an address computation off of
-  // |layer_tree_impl_|, so it doesn't introduce an extra memory load.
-  EffectTree& effect_tree() const {
-    return layer_tree_impl_->property_trees()->effect_tree_mutable();
+  static const EffectTree& GetEffectTree(const LayerTreeImpl& layer_tree_impl) {
+    return layer_tree_impl.property_trees()->effect_tree();
+  }
+  static EffectTree& GetEffectTree(LayerTreeImpl& layer_tree_impl) {
+    return layer_tree_impl.property_trees()->effect_tree_mutable();
   }
 
   // Returns the layer at the cursor position (see |layers_remaining_|). The
   // index is bounds-checked against the layer list on every access, so a
   // stale cursor can't be used to read outside of the layer list.
-  LayerImpl* LayerAtCursor() const {
+  LayerImpl* LayerAtCursor(const LayerTreeImpl& layer_tree_impl) const {
     CHECK_GT(layers_remaining_, 0u);
-    return layer_tree_impl_->LayerAtIndex(layers_remaining_ - 1);
+    return layer_tree_impl.LayerAtIndex(layers_remaining_ - 1);
   }
 
   // Moves the cursor backwards (towards the front of the draw order) until it
   // points at a layer that contributes to a drawn render surface, or until
   // there are no more layers.
-  void SkipLayersNotContributingToDrawnSurface();
+  void SkipLayersNotContributingToDrawnSurface(
+      const LayerTreeImpl& layer_tree_impl);
 
   State state_;
 
-  // Reverse cursor into the layer list of |layer_tree_impl_|: the number of
-  // layers that have not been passed over yet. The layer at the cursor is at
-  // index |layers_remaining_ - 1|, and a value of 0 means that all layers have
-  // been visited.
+  // Reverse cursor into the layer list: the number of layers that have not
+  // been passed over yet. The layer at the cursor is at index
+  // |layers_remaining_ - 1|, and a value of 0 means that all layers have been
+  // visited.
   // When in state kLayer, the layer at the cursor is the layer that's currently
   // being visited. Otherwise, it's the layer that will be visited the next time
   // we're in state kLayer.
@@ -124,15 +151,6 @@ class CC_EXPORT EffectTreeLayerListIterator {
   // current_effect_tree_index_ and next_effect_tree_index_, that has a
   // render surface.
   int lowest_common_effect_tree_ancestor_index_;
-
-  // The owning tree. This is the only pointer held by the iterator; all other
-  // state (the layer cursor and effect tree node ids) is stored as indices
-  // that are bounds-checked against |layer_tree_impl_| on access, and the
-  // effect tree is derived from it rather than cached separately.
-  // RAW_PTR_EXCLUSION: Renderer performance: visible in sampling profiler
-  // stacks. The iterator is short-lived and stack allocated, and must not
-  // outlive |layer_tree_impl_|.
-  RAW_PTR_EXCLUSION LayerTreeImpl* layer_tree_impl_;
 };
 
 }  // namespace cc

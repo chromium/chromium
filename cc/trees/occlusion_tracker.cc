@@ -60,8 +60,10 @@ OcclusionTracker::OcclusionSurfaceForContributingSurface() const {
       stack_[stack_.size() - 2].target_effect_node_id);
 }
 
-void OcclusionTracker::EnterLayer(const EffectTreeLayerListIterator& iterator) {
-  RenderSurfaceImpl* render_target = iterator.target_render_surface();
+void OcclusionTracker::EnterLayer(const EffectTreeLayerListIterator& iterator,
+                                  const LayerTreeImpl& layer_tree_impl) {
+  const RenderSurfaceImpl* render_target =
+      iterator.TargetRenderSurface(layer_tree_impl);
 
   if (iterator.state() == EffectTreeLayerListIterator::State::kLayer) {
     EnterRenderTarget(render_target);
@@ -71,11 +73,13 @@ void OcclusionTracker::EnterLayer(const EffectTreeLayerListIterator& iterator) {
   }
 }
 
-void OcclusionTracker::LeaveLayer(const EffectTreeLayerListIterator& iterator) {
-  RenderSurfaceImpl* render_target = iterator.target_render_surface();
+void OcclusionTracker::LeaveLayer(const EffectTreeLayerListIterator& iterator,
+                                  const LayerTreeImpl& layer_tree_impl) {
+  const RenderSurfaceImpl* render_target =
+      iterator.TargetRenderSurface(layer_tree_impl);
 
   if (iterator.state() == EffectTreeLayerListIterator::State::kLayer) {
-    MarkOccludedBehindLayer(iterator.current_layer());
+    MarkOccludedBehindLayer(iterator.CurrentLayer(layer_tree_impl));
   } else if (iterator.state() ==
              EffectTreeLayerListIterator::State::kContributingSurface) {
     // TODO(danakj): This should be done when entering the contributing surface,

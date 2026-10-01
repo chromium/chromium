@@ -1388,15 +1388,18 @@ class LayerTreeHostCopyRequestTestMultipleDrawsHiddenCopyRequest
 
     bool saw_root = false;
     bool saw_child = false;
-    for (EffectTreeLayerListIterator it(host_impl->active_tree());
-         it.state() != EffectTreeLayerListIterator::State::kEnd; ++it) {
+    LayerTreeImpl& tree = *host_impl->active_tree();
+    for (EffectTreeLayerListIterator it(tree);
+         it.state() != EffectTreeLayerListIterator::State::kEnd;
+         it.Advance(tree)) {
       if (it.state() == EffectTreeLayerListIterator::State::kLayer) {
-        if (it.current_layer() == root)
+        if (it.CurrentLayer(tree) == root) {
           saw_root = true;
-        else if (it.current_layer() == child)
+        } else if (it.CurrentLayer(tree) == child) {
           saw_child = true;
-        else
+        } else {
           NOTREACHED();
+        }
       }
     }
 

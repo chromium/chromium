@@ -1311,9 +1311,11 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
   // Avoid additional layer tree walk if there are not tracked elements
   TrackedElementStatus tracked_element_status = TrackedElementStatus::kNone;
 
-  for (EffectTreeLayerListIterator it(active_tree());
-       it.state() != EffectTreeLayerListIterator::State::kEnd; ++it) {
-    RenderSurfaceImpl* target_render_surface = it.target_render_surface();
+  LayerTreeImpl& tree = *active_tree();
+  for (EffectTreeLayerListIterator it(tree);
+       it.state() != EffectTreeLayerListIterator::State::kEnd;
+       it.Advance(tree)) {
+    RenderSurfaceImpl* target_render_surface = it.TargetRenderSurface(tree);
 
     viz::CompositorRenderPass* target_render_pass =
         FindRenderPassById(frame, target_render_surface->render_pass_id());
@@ -1323,7 +1325,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
         target_render_surface->has_view_transition_capture_contributions()) {
       view_transition_capture_render_pass = FindRenderPassById(
           frame,
-          it.target_render_surface()->view_transition_capture_render_pass_id());
+          target_render_surface->view_transition_capture_render_pass_id());
     }
 
     AppendQuadsData append_quads_data;
@@ -1348,7 +1350,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
     } else if (it.state() ==
                EffectTreeLayerListIterator::State::kContributingSurface) {
       if (output_frame_data) {
-        RenderSurfaceImpl* render_surface = it.current_render_surface();
+        RenderSurfaceImpl* render_surface = it.CurrentRenderSurface(tree);
         if (render_surface->contributes_to_drawn_surface()) {
           // An unbounded surface is submitted in a separate
           // CompositorFrame, so we do not append its RenderPassDrawQuad
@@ -1366,7 +1368,7 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
         }
       }
     } else if (it.state() == EffectTreeLayerListIterator::State::kLayer) {
-      LayerImpl* layer = it.current_layer();
+      LayerImpl* layer = it.CurrentLayer(tree);
 
       if (layer->tracked_element_rects() &&
           !layer->tracked_element_rects()->empty()) {

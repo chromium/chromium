@@ -226,12 +226,15 @@ class OcclusionTrackerTest : public testing::Test {
     return layer;
   }
 
+  // The tree traversed by |layer_iterator_|.
+  LayerTreeImpl& ActiveTree() { return *host_->host_impl()->active_tree(); }
+
   void CalcDrawEtc() {
     LayerTreeImpl* tree = host_->host_impl()->active_tree();
     tree->SetDeviceViewportRect(gfx::Rect(tree->root_layer()->bounds()));
     UpdateDrawProperties(tree);
 
-    layer_iterator_ = std::make_unique<EffectTreeLayerListIterator>(tree);
+    layer_iterator_ = std::make_unique<EffectTreeLayerListIterator>(*tree);
   }
 
 #define ASSERT_EQ_WITH_IDS(a, b) \
@@ -240,16 +243,16 @@ class OcclusionTrackerTest : public testing::Test {
   void EnterLayer(LayerImpl* layer, OcclusionTracker* occlusion) {
     ASSERT_EQ(EffectTreeLayerListIterator::State::kLayer,
               layer_iterator_->state());
-    ASSERT_EQ_WITH_IDS(layer, layer_iterator_->current_layer());
-    occlusion->EnterLayer(*layer_iterator_);
+    ASSERT_EQ_WITH_IDS(layer, layer_iterator_->CurrentLayer(ActiveTree()));
+    occlusion->EnterLayer(*layer_iterator_, ActiveTree());
   }
 
   void LeaveLayer(LayerImpl* layer, OcclusionTracker* occlusion) {
     ASSERT_EQ(EffectTreeLayerListIterator::State::kLayer,
               layer_iterator_->state());
-    ASSERT_EQ_WITH_IDS(layer, layer_iterator_->current_layer());
-    occlusion->LeaveLayer(*layer_iterator_);
-    ++(*layer_iterator_);
+    ASSERT_EQ_WITH_IDS(layer, layer_iterator_->CurrentLayer(ActiveTree()));
+    occlusion->LeaveLayer(*layer_iterator_, ActiveTree());
+    layer_iterator_->Advance(ActiveTree());
   }
 
   void VisitLayer(LayerImpl* layer, OcclusionTracker* occlusion) {
@@ -261,22 +264,22 @@ class OcclusionTrackerTest : public testing::Test {
     ASSERT_EQ(EffectTreeLayerListIterator::State::kTargetSurface,
               layer_iterator_->state());
     ASSERT_EQ_WITH_IDS(GetRenderSurface(layer),
-                       layer_iterator_->target_render_surface());
-    occlusion->EnterLayer(*layer_iterator_);
-    occlusion->LeaveLayer(*layer_iterator_);
-    ++(*layer_iterator_);
+                       layer_iterator_->TargetRenderSurface(ActiveTree()));
+    occlusion->EnterLayer(*layer_iterator_, ActiveTree());
+    occlusion->LeaveLayer(*layer_iterator_, ActiveTree());
+    layer_iterator_->Advance(ActiveTree());
     ASSERT_EQ(EffectTreeLayerListIterator::State::kContributingSurface,
               layer_iterator_->state());
-    occlusion->EnterLayer(*layer_iterator_);
+    occlusion->EnterLayer(*layer_iterator_, ActiveTree());
   }
 
   void LeaveContributingSurface(LayerImpl* layer, OcclusionTracker* occlusion) {
     ASSERT_EQ(EffectTreeLayerListIterator::State::kContributingSurface,
               layer_iterator_->state());
     ASSERT_EQ_WITH_IDS(GetRenderSurface(layer),
-                       layer_iterator_->current_render_surface());
-    occlusion->LeaveLayer(*layer_iterator_);
-    ++(*layer_iterator_);
+                       layer_iterator_->CurrentRenderSurface(ActiveTree()));
+    occlusion->LeaveLayer(*layer_iterator_, ActiveTree());
+    layer_iterator_->Advance(ActiveTree());
   }
 
   void VisitContributingSurface(LayerImpl* layer, OcclusionTracker* occlusion) {
@@ -285,8 +288,7 @@ class OcclusionTrackerTest : public testing::Test {
   }
 
   void ResetLayerIterator() {
-    *layer_iterator_ =
-        EffectTreeLayerListIterator(host_->host_impl()->active_tree());
+    *layer_iterator_ = EffectTreeLayerListIterator(ActiveTree());
   }
 
   const gfx::Transform identity_matrix;
