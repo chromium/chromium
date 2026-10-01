@@ -27,9 +27,10 @@
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "chrome/browser/ui/autofill/mock_autofill_popup_controller.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_at_memory_ai_disclosure_view.h"
+#include "chrome/browser/ui/views/autofill/popup/mock_accessibility_selection_delegate.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_bnpl_footnote_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_centered_text_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_footer_with_link_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_interactive_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_loading_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_notice_view.h"
@@ -58,6 +59,7 @@
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -86,6 +88,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_border_arrow_utils.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/controls/tabbed_pane/tabbed_pane.h"
 #include "ui/views/controls/webview/webview.h"
@@ -1921,30 +1924,27 @@ TEST_F(PopupViewViewsTest, ExpandableSuggestionA11yMessageTest) {
       expected_a11y_name);
 }
 
-
-
-// Tests that `PopupAtMemoryAiDisclosureView` is created when the suggestion
+// Tests that `PopupFooterWithLinkView` is created when the suggestion
 // type is `SuggestionType::kAtMemoryAiDisclosure` and sets a non-empty
 // accessible name.
-TEST_F(PopupViewViewsTest, AtMemoryAiDisclosureViewCreated) {
+TEST_F(PopupViewViewsTest, PopupFooterWithLinkViewCreated) {
   controller().set_suggestions(
       {Suggestion(SuggestionType::kAtMemoryAiDisclosure)});
   CreateAndShowView();
 
-  PopupAtMemoryAiDisclosureView* disclosure_view =
-      static_cast<PopupAtMemoryAiDisclosureView*>(
-          std::get<PopupInteractiveRowView*>(test_api(view()).rows()[0]));
-  ASSERT_TRUE(disclosure_view);
+  PopupFooterWithLinkView* footer_view = static_cast<PopupFooterWithLinkView*>(
+      std::get<PopupInteractiveRowView*>(test_api(view()).rows()[0]));
+  ASSERT_TRUE(footer_view);
 
   ui::AXNodeData node_data;
-  disclosure_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
+  footer_view->GetViewAccessibility().GetAccessibleNodeData(&node_data);
   EXPECT_FALSE(node_data.GetString16Attribute(ax::mojom::StringAttribute::kName)
                    .empty());
 }
 
-// Tests that the AI disclosure footer can be navigated to and selected using
+// Tests that `PopupFooterWithLinkView` can be navigated to and selected using
 // Up/Down keyboard arrow keys.
-TEST_F(PopupViewViewsTest, AtMemoryAiDisclosureKeyboardNavigation) {
+TEST_F(PopupViewViewsTest, PopupFooterWithLinkViewKeyboardNavigation) {
   controller().set_suggestions(
       {Suggestion(SuggestionType::kAddressEntry),
        Suggestion(SuggestionType::kAtMemoryAiDisclosure)});
@@ -1962,12 +1962,24 @@ TEST_F(PopupViewViewsTest, AtMemoryAiDisclosureKeyboardNavigation) {
             std::make_optional<PopupViewViews::CellIndex>(
                 1, PopupInteractiveRowView::CellType::kContent));
 
-  PopupAtMemoryAiDisclosureView* disclosure_view =
-      static_cast<PopupAtMemoryAiDisclosureView*>(
-          std::get<PopupInteractiveRowView*>(test_api(view()).rows()[1]));
-  ASSERT_TRUE(disclosure_view);
-  EXPECT_EQ(disclosure_view->GetSelectedCell(),
+  PopupFooterWithLinkView* footer_view = static_cast<PopupFooterWithLinkView*>(
+      std::get<PopupInteractiveRowView*>(test_api(view()).rows()[1]));
+  ASSERT_TRUE(footer_view);
+  EXPECT_EQ(footer_view->GetSelectedCell(),
             PopupInteractiveRowView::CellType::kContent);
+}
+
+// Tests that `PopupFooterWithLinkView` renders a leading icon when provided.
+TEST_F(PopupViewViewsTest, PopupFooterWithLinkViewWithIcon) {
+  MockAccessibilitySelectionDelegate a11y_selection_delegate;
+  PopupFooterWithLinkView footer_view(
+      controller().GetWeakPtr(), a11y_selection_delegate,
+      IDS_AUTOFILL_AT_MEMORY_AI_DISCLOSURE,
+      IDS_AUTOFILL_AT_MEMORY_AI_DISCLOSURE_LINK, "test_subpage",
+      &vector_icons::kLightbulbIcon);
+
+  ASSERT_FALSE(footer_view.children().empty());
+  EXPECT_TRUE(views::IsViewClass<views::ImageView>(footer_view.children()[0]));
 }
 
 TEST_F(PopupViewViewsTest, UpdateSuggestionsNoCrash) {

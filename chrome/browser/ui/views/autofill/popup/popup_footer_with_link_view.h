@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_AT_MEMORY_AI_DISCLOSURE_VIEW_H_
-#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_AT_MEMORY_AI_DISCLOSURE_VIEW_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_FOOTER_WITH_LINK_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_FOOTER_WITH_LINK_VIEW_H_
 
+#include <memory>
+#include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -13,6 +16,10 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_interactive_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_row_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+
+namespace gfx {
+struct VectorIcon;
+}  // namespace gfx
 
 namespace views {
 class Link;
@@ -23,19 +30,23 @@ namespace autofill {
 
 class AutofillPopupController;
 
-// A footer view that displays an AI disclosure with a link.
-class PopupAtMemoryAiDisclosureView : public PopupInteractiveRowView {
-  METADATA_HEADER(PopupAtMemoryAiDisclosureView, PopupInteractiveRowView)
+// A footer view that displays text with an embedded link to a Chrome settings
+// subpage and an optional leading icon.
+class PopupFooterWithLinkView : public PopupInteractiveRowView {
+  METADATA_HEADER(PopupFooterWithLinkView, PopupInteractiveRowView)
 
  public:
-  PopupAtMemoryAiDisclosureView(
+  PopupFooterWithLinkView(
       base::WeakPtr<AutofillPopupController> controller,
-      PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate);
-  ~PopupAtMemoryAiDisclosureView() override;
+      PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
+      int text_id,
+      int link_text_id,
+      std::string_view settings_subpage,
+      const gfx::VectorIcon* icon);
+  ~PopupFooterWithLinkView() override;
 
-  PopupAtMemoryAiDisclosureView(const PopupAtMemoryAiDisclosureView&) = delete;
-  PopupAtMemoryAiDisclosureView& operator=(
-      const PopupAtMemoryAiDisclosureView&) = delete;
+  PopupFooterWithLinkView(const PopupFooterWithLinkView&) = delete;
+  PopupFooterWithLinkView& operator=(const PopupFooterWithLinkView&) = delete;
 
   // PopupInteractiveRowView:
   std::optional<CellType> GetSelectedCell() const override;
@@ -47,7 +58,7 @@ class PopupAtMemoryAiDisclosureView : public PopupInteractiveRowView {
   void Layout(views::View::PassKey pass_key) override;
 
  private:
-  void OnLearnMoreLinkClicked();
+  void OnLinkClicked();
   // Returns a vector since link text wrapped across lines is split
   // into multiple link views.
   std::vector<views::Link*> GetSettingsLinks() const;
@@ -57,10 +68,16 @@ class PopupAtMemoryAiDisclosureView : public PopupInteractiveRowView {
   base::WeakPtr<AutofillPopupController> controller_;
   const raw_ref<PopupRowView::AccessibilitySelectionDelegate>
       a11y_selection_delegate_;
+  const std::string settings_subpage_;
 
-  base::WeakPtrFactory<PopupAtMemoryAiDisclosureView> weak_ptr_factory_{this};
+  base::WeakPtrFactory<PopupFooterWithLinkView> weak_ptr_factory_{this};
 };
+
+// Creates a `PopupFooterWithLinkView` for the AtMemory AI disclosure.
+std::unique_ptr<PopupFooterWithLinkView> CreateAtMemoryAiDisclosureView(
+    base::WeakPtr<AutofillPopupController> controller,
+    PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate);
 
 }  // namespace autofill
 
-#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_AT_MEMORY_AI_DISCLOSURE_VIEW_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_AUTOFILL_POPUP_POPUP_FOOTER_WITH_LINK_VIEW_H_

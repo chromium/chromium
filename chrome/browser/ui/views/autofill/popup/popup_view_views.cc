@@ -44,10 +44,10 @@
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/passwords/ui_utils.h"
-#include "chrome/browser/ui/views/autofill/popup/popup_at_memory_ai_disclosure_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_bnpl_footnote_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_centered_text_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_footer_with_link_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_interactive_row_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_loading_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_notice_view.h"
@@ -1513,7 +1513,7 @@ void PopupViewViews::CreateSuggestionViews() {
           base::BindRepeating(&DefaultA11yAnnouncer)));
     } else if (suggestions[current_line_number].type ==
                SuggestionType::kAtMemoryAiDisclosure) {
-      footer_builder.AddRow(std::make_unique<PopupAtMemoryAiDisclosureView>(
+      footer_builder.AddRow(CreateAtMemoryAiDisclosureView(
           controller(), /*a11y_selection_delegate=*/*this));
     } else if (suggestions[current_line_number].type ==
                SuggestionType::kPersonalContextNotice) {

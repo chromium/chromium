@@ -60,10 +60,10 @@ source_set("popup_impl") {
     ":custom_cursor_suppressor",
     ":lazy_loading_image_view",
     ":password_favicon_loader",
-    ":popup_at_memory_ai_disclosure_view",
     ":popup_bnpl_footnote_view",
     ":popup_cell_utils",
     ":popup_centered_text_view",
+    ":popup_footer_with_link_view",
     ":popup_interactive_row_view",
     ":popup_loading_view",
     ":popup_notice_view",
@@ -141,10 +141,10 @@ source_set("popup_view_views_impl") {
     ":lazy_loading_image_view",
     ":password_favicon_loader",
     ":popup",
-    ":popup_at_memory_ai_disclosure_view",
     ":popup_bnpl_footnote_view",
     ":popup_cell_utils",
     ":popup_centered_text_view",
+    ":popup_footer_with_link_view",
     ":popup_interactive_row_view",
     ":popup_loading_view",
     ":popup_notice_view",
@@ -456,9 +456,9 @@ source_set("popup_row_with_button_view") {
   ]
 }
 
-source_set("popup_at_memory_ai_disclosure_view") {
-  public = [ "popup_at_memory_ai_disclosure_view.h" ]
-  sources = [ "popup_at_memory_ai_disclosure_view.cc" ]
+source_set("popup_footer_with_link_view") {
+  public = [ "popup_footer_with_link_view.h" ]
+  sources = [ "popup_footer_with_link_view.cc" ]
   public_deps = [
     ":popup",
     ":popup_interactive_row_view",

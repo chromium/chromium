@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/autofill/popup/popup_at_memory_ai_disclosure_view.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_footer_with_link_view.h"
 
 #include <memory>
 #include <string>
+#include <string_view>
+#include <utility>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -20,10 +22,12 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/focus_ring.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
@@ -33,32 +37,47 @@
 namespace autofill {
 
 namespace {
+constexpr int kChromeRefreshIconSize = 20;
 constexpr int kRightPadding = 8;
 }  // namespace
 
-PopupAtMemoryAiDisclosureView::PopupAtMemoryAiDisclosureView(
+PopupFooterWithLinkView::PopupFooterWithLinkView(
     base::WeakPtr<AutofillPopupController> controller,
-    PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate)
+    PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate,
+    int text_id,
+    int link_text_id,
+    std::string_view settings_subpage,
+    const gfx::VectorIcon* icon)
     : controller_(controller),
-      a11y_selection_delegate_(a11y_selection_delegate) {
+      a11y_selection_delegate_(a11y_selection_delegate),
+      settings_subpage_(settings_subpage) {
   if (!controller_ || !controller_->GetWebContents()) {
     return;
   }
 
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical,
+  auto* layout = SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal,
       gfx::Insets::TLBR(PopupBaseView::GetCornerRadius(),
                         PopupBaseView::ArrowHorizontalMargin(),
-                        PopupBaseView::GetCornerRadius(), kRightPadding)));
+                        PopupBaseView::GetCornerRadius(), kRightPadding),
+      PopupBaseView::ArrowHorizontalMargin()));
+  layout->set_cross_axis_alignment(
+      views::BoxLayout::CrossAxisAlignment::kCenter);
 
   SetBackground(views::CreateSolidBackground(ui::kColorDropdownBackground));
 
+  if (icon) {
+    AddChildView(
+        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+            *icon, ui::kColorIcon, kChromeRefreshIconSize)));
+  }
+
   styled_label_ = AddChildView(std::make_unique<views::StyledLabel>());
+  layout->SetFlexForView(styled_label_, 1);
   std::vector<size_t> offsets;
-  std::u16string link_text =
-      l10n_util::GetStringUTF16(IDS_AUTOFILL_AT_MEMORY_AI_DISCLOSURE_LINK);
-  std::u16string formatted_text = l10n_util::GetStringFUTF16(
-      IDS_AUTOFILL_AT_MEMORY_AI_DISCLOSURE, {link_text}, &offsets);
+  std::u16string link_text = l10n_util::GetStringUTF16(link_text_id);
+  std::u16string formatted_text =
+      l10n_util::GetStringFUTF16(text_id, {link_text}, &offsets);
   styled_label_->SetText(formatted_text);
   styled_label_->SetTextContext(views::style::CONTEXT_DIALOG_BODY_TEXT);
   styled_label_->SetDefaultTextStyle(views::style::STYLE_BODY_4);
@@ -67,9 +86,9 @@ PopupAtMemoryAiDisclosureView::PopupAtMemoryAiDisclosureView(
 
   if (offsets.size() == 1) {
     views::StyledLabel::RangeStyleInfo link_style =
-        views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
-            &PopupAtMemoryAiDisclosureView::OnLearnMoreLinkClicked,
-            weak_ptr_factory_.GetWeakPtr()));
+        views::StyledLabel::RangeStyleInfo::CreateForLink(
+            base::BindRepeating(&PopupFooterWithLinkView::OnLinkClicked,
+                                weak_ptr_factory_.GetWeakPtr()));
     link_style.text_style = views::style::STYLE_LINK_4;
     styled_label_->AddStyleRange(
         gfx::Range(offsets[0], offsets[0] + link_text.length()), link_style);
@@ -79,9 +98,9 @@ PopupAtMemoryAiDisclosureView::PopupAtMemoryAiDisclosureView(
   GetViewAccessibility().SetName(formatted_text);
 }
 
-PopupAtMemoryAiDisclosureView::~PopupAtMemoryAiDisclosureView() = default;
+PopupFooterWithLinkView::~PopupFooterWithLinkView() = default;
 
-void PopupAtMemoryAiDisclosureView::OnLearnMoreLinkClicked() {
+void PopupFooterWithLinkView::OnLinkClicked() {
   if (!controller_ || !controller_->GetWebContents()) {
     return;
   }
@@ -92,11 +111,10 @@ void PopupAtMemoryAiDisclosureView::OnLearnMoreLinkClicked() {
     return;
   }
 
-  chrome::ShowSettingsSubPageForProfile(profile,
-                                        chrome::kSuggestionsFromGeminiSubPage);
+  chrome::ShowSettingsSubPageForProfile(profile, settings_subpage_);
 }
 
-void PopupAtMemoryAiDisclosureView::Layout(views::View::PassKey pass_key) {
+void PopupFooterWithLinkView::Layout(views::View::PassKey pass_key) {
   LayoutSuperclass<PopupInteractiveRowView>(this);
 
   // Set focus behavior to `FocusBehavior::NEVER` after layout (since
@@ -108,7 +126,7 @@ void PopupAtMemoryAiDisclosureView::Layout(views::View::PassKey pass_key) {
       focus_ring->SetOutsetFocusRingDisabled(true);
       focus_ring->SetHaloInset(0);
       focus_ring->SetHasFocusPredicate(base::BindRepeating(
-          [](base::WeakPtr<PopupAtMemoryAiDisclosureView> view,
+          [](base::WeakPtr<PopupFooterWithLinkView> view,
              const views::View* host) {
             return view && view->GetSelectedCell().has_value();
           },
@@ -118,8 +136,7 @@ void PopupAtMemoryAiDisclosureView::Layout(views::View::PassKey pass_key) {
   }
 }
 
-std::vector<views::Link*> PopupAtMemoryAiDisclosureView::GetSettingsLinks()
-    const {
+std::vector<views::Link*> PopupFooterWithLinkView::GetSettingsLinks() const {
   std::vector<views::Link*> links;
   if (!styled_label_) {
     return links;
@@ -133,12 +150,11 @@ std::vector<views::Link*> PopupAtMemoryAiDisclosureView::GetSettingsLinks()
 }
 
 std::optional<PopupInteractiveRowView::CellType>
-PopupAtMemoryAiDisclosureView::GetSelectedCell() const {
+PopupFooterWithLinkView::GetSelectedCell() const {
   return selected_cell_;
 }
 
-void PopupAtMemoryAiDisclosureView::SetSelectedCell(
-    std::optional<CellType> cell) {
+void PopupFooterWithLinkView::SetSelectedCell(std::optional<CellType> cell) {
   if (selected_cell_ == cell) {
     return;
   }
@@ -158,21 +174,31 @@ void PopupAtMemoryAiDisclosureView::SetSelectedCell(
   }
 }
 
-bool PopupAtMemoryAiDisclosureView::HandleKeyPressEvent(
+bool PopupFooterWithLinkView::HandleKeyPressEvent(
     const input::NativeWebKeyboardEvent& event) {
   if (event.windows_key_code == ui::VKEY_RETURN ||
       event.windows_key_code == ui::VKEY_SPACE) {
-    OnLearnMoreLinkClicked();
+    OnLinkClicked();
     return true;
   }
   return false;
 }
 
-bool PopupAtMemoryAiDisclosureView::IsSelectable() const {
+bool PopupFooterWithLinkView::IsSelectable() const {
   return true;
 }
 
-BEGIN_METADATA(PopupAtMemoryAiDisclosureView)
+BEGIN_METADATA(PopupFooterWithLinkView)
 END_METADATA
+
+std::unique_ptr<PopupFooterWithLinkView> CreateAtMemoryAiDisclosureView(
+    base::WeakPtr<AutofillPopupController> controller,
+    PopupRowView::AccessibilitySelectionDelegate& a11y_selection_delegate) {
+  return std::make_unique<PopupFooterWithLinkView>(
+      std::move(controller), a11y_selection_delegate,
+      IDS_AUTOFILL_AT_MEMORY_AI_DISCLOSURE,
+      IDS_AUTOFILL_AT_MEMORY_AI_DISCLOSURE_LINK,
+      chrome::kSuggestionsFromGeminiSubPage, /*icon=*/nullptr);
+}
 
 }  // namespace autofill
