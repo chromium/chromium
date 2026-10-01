@@ -41,6 +41,8 @@ std::string PieceToString(const ml::InputPiece& piece) {
                 return "ToolCall: ";
               case ml::Token::kToolResponse:
                 return "ToolResponse: ";
+              case ml::Token::kThought:
+                return "Thought: ";
             }
           },
           [](const SkBitmap& bitmap) -> std::string {
@@ -269,13 +271,7 @@ bool SessionAppend(ChromeMLSession session,
     std::visit(
         absl::Overload{
             [&](ml::Token token) {
-              if (token == ml::Token::kSystem) {
-                in_system_prompt = true;
-              } else if (token == ml::Token::kUser ||
-                         token == ml::Token::kModel ||
-                         token == ml::Token::kEnd) {
-                in_system_prompt = false;
-              }
+              in_system_prompt = token == ml::Token::kSystem;
             },
             [&](const SkBitmap&) { CHECK(instance->enable_image_input); },
             [&](const ml::AudioBuffer&) {

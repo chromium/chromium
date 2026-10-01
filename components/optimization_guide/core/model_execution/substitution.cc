@@ -367,6 +367,8 @@ std::string PlaceholderForToken(ml::Token token) {
       return "<tool-call>";
     case ml::Token::kToolResponse:
       return "<tool-response>";
+    case ml::Token::kThought:
+      return "<thought>";
   }
 }
 

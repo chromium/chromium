@@ -32,6 +32,8 @@ enum class Token {
   kToolCall,
   // Prefix for tool response (results from tool execution).
   kToolResponse,
+  // Prefix for model thought / reasoning text.
+  kThought,
 };
 
 // If an InputPiece holds a `bool`, then the operation should fail. This means

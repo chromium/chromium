@@ -53,6 +53,8 @@ std::string Placeholder(ml::Token token) {
       return "TC";
     case ml::Token::kToolResponse:
       return "TR";
+    case ml::Token::kThought:
+      return "T";
   }
 }
 

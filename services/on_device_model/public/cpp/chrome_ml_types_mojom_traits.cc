@@ -24,6 +24,8 @@ EnumTraits<on_device_model::mojom::Token, ml::Token>::ToMojom(ml::Token input) {
       return on_device_model::mojom::Token::kToolCall;
     case ml::Token::kToolResponse:
       return on_device_model::mojom::Token::kToolResponse;
+    case ml::Token::kThought:
+      return on_device_model::mojom::Token::kThought;
   }
   NOTREACHED();
 }
@@ -44,6 +46,8 @@ ml::Token EnumTraits<on_device_model::mojom::Token, ml::Token>::FromMojom(
       return ml::Token::kToolCall;
     case on_device_model::mojom::Token::kToolResponse:
       return ml::Token::kToolResponse;
+    case on_device_model::mojom::Token::kThought:
+      return ml::Token::kThought;
   }
   NOTREACHED();
 }
