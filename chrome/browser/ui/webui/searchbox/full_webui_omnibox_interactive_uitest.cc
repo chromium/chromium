@@ -49,6 +49,7 @@
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/omnibox/browser/aim_eligibility_service.h"
 #include "components/omnibox/browser/aim_eligibility_service_features.h"
+#include "components/omnibox/browser/omnibox_pref_names.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
@@ -2138,6 +2139,38 @@ IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
       InAnyContext(WaitForElementToRender(kPopupWebView, kComposeButton)),
       InAnyContext(CheckJsResultAt(kPopupWebView, kPopupSearchbox,
                                    "el => el.aimButtonVisible_", true)));
+}
+
+// Disabling "Show AI mode" preference should immediately hide the AIM
+// entrypoint button in the Full WebUI omnibox popup without needing to
+// defocus/refocus.
+IN_PROC_BROWSER_TEST_F(FullWebUIOmniboxAimInteractiveTest,
+                       AimButtonVisibilityUpdatesImmediatelyOnPrefChange) {
+  RunTestSequence(
+      SetAimEligibleResponse(),
+      OpenInitialTabAndFocusOmnibox(kTab1, GURL(chrome::kChromeUINewTabURL)),
+      InAnyContext(WaitForOmniboxAimStateReady(kPopupWebView)),
+      InAnyContext(WaitForElementToRender(kPopupWebView, kComposeButton)),
+      InAnyContext(CheckJsResultAt(kPopupWebView, kPopupSearchbox,
+                                   "el => el.aimButtonVisible_", true)),
+      // Disable the preference (as happens when unchecking "Show AI mode" in
+      // the omnibox context menu).
+      Do([this]() {
+        browser()->GetProfile()->GetPrefs()->SetBoolean(
+            omnibox::kShowAiModeOmniboxButton, false);
+      }),
+      // Verify AIM button in WebUI popup is immediately hidden without
+      // refocusing.
+      InAnyContext(WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                                        "el => !el.aimButtonVisible_")),
+      // Re-enable the preference.
+      Do([this]() {
+        browser()->GetProfile()->GetPrefs()->SetBoolean(
+            omnibox::kShowAiModeOmniboxButton, true);
+      }),
+      // Verify AIM button is immediately shown again.
+      InAnyContext(WaitForJsConditionAt(kPopupWebView, kPopupSearchbox,
+                                        "el => el.aimButtonVisible_")));
 }
 #endif  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 
