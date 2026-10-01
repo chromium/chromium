@@ -270,6 +270,11 @@ BASE_DECLARE_FEATURE(kGlicActuationPriorityVoter);
 // shown (crbug.com/549552319).
 BASE_DECLARE_FEATURE(kPMWithheldFromViewVoter);
 
+// When enabled, registers SidePanelLoadingVoter, which ensures side panel
+// contents load at high priority even when not visible. Expected to be
+// superseded by kPMWithheldFromViewVoter (crbug.com/549552319).
+BASE_DECLARE_FEATURE(kPMSidePanelLoadingVoter);
+
 // When enabled, ignores kMediaQueryChange favicon updates (e.g.
 // prefers-color-scheme toggles) when determining whether a background tab
 // updated its favicon.

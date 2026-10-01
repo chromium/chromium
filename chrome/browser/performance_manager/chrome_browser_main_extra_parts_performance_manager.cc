@@ -300,11 +300,10 @@ void ChromeBrowserMainExtraPartsPerformanceManager::CreatePoliciesAndDecorators(
                             performance_manager::execution_context_priority::
                                 PriorityVotingSystem>()) {
     // Ensures the contents of a Side Panel loads at a high priority, even when
-    // it is not visible. Superseded by WithheldFromViewVoter when
-    // kPMWithheldFromViewVoter is enabled.
+    // it is not visible.
     // TODO(crbug.com/549552319): Remove once kPMWithheldFromViewVoter ships.
-    if (!base::FeatureList::IsEnabled(
-            performance_manager::features::kPMWithheldFromViewVoter)) {
+    if (base::FeatureList::IsEnabled(
+            performance_manager::features::kPMSidePanelLoadingVoter)) {
       voting_system
           ->AddPriorityVoter<performance_manager::execution_context_priority::
                                  SidePanelLoadingVoter>();

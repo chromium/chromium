@@ -20,7 +20,7 @@ void MarkAsSidePanel(content::WebContents* web_contents) {
   Graph* graph = PerformanceManager::GetGraph();
   auto* voter = graph->GetRegisteredObjectAs<
       execution_context_priority::SidePanelLoadingVoter>();
-  // Not registered when kPMWithheldFromViewVoter is enabled.
+  // Not registered when kPMSidePanelLoadingVoter is disabled.
   if (!voter) {
     return;
   }
