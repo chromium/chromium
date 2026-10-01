@@ -13,8 +13,8 @@ PRESUBMIT_VERSION = '2.0.0'
 
 def CheckRuff(input_api, output_api):
   return input_api.RunTests(
-      input_api.canned_checks.GetRuff(
-          input_api,
-          output_api,
-      )
+    input_api.canned_checks.GetRuff(
+      input_api,
+      output_api,
+    )
   )

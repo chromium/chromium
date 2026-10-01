@@ -10,6 +10,7 @@ for more details on the presubmit API built into depot_tools.
 
 import os.path
 
+
 def CommonChecks(input_api, output_api):
   if not input_api.HasAffectedFiles(
     path=[
@@ -21,12 +22,16 @@ def CommonChecks(input_api, output_api):
   ):
     return []
   generating_files = input_api.AffectedFiles(
-      file_filter=lambda x: os.path.basename(x.LocalPath()) in [
-          'generate_bindings.py'])
+    file_filter=lambda x: (
+      os.path.basename(x.LocalPath()) in ['generate_bindings.py']
+    )
+  )
   generated_files = input_api.AffectedFiles(
-      file_filter=lambda x: os.path.basename(x.LocalPath()) in [
-          'vulkan_function_pointers.cc', 'vulkan_function_pointers.h'])
-
+    file_filter=lambda x: (
+      os.path.basename(x.LocalPath())
+      in ['vulkan_function_pointers.cc', 'vulkan_function_pointers.h']
+    )
+  )
 
   messages = []
 
@@ -35,28 +40,40 @@ def CommonChecks(input_api, output_api):
     for generated_file in generated_files:
       long_text += generated_file.LocalPath() + '\n'
       long_text += '\n'
-      messages.append(output_api.PresubmitError(
+      messages.append(
+        output_api.PresubmitError(
           'Vulkan function pointer generated files changed but the generator '
-          'did not.', long_text=long_text))
+          'did not.',
+          long_text=long_text,
+        )
+      )
 
   temp_dir = input_api.CreateTemporaryDirectory()
   commands = []
   if generating_files:
     python_executable = input_api.python3_executable
-    commands.append(input_api.Command(name='generate_bindings',
-                                      cmd=[python_executable,
-                                           'generate_bindings.py',
-                                           '--check',
-                                           '--output-dir=' + temp_dir],
-                                      kwargs={},
-                                      message=output_api.PresubmitError))
+    commands.append(
+      input_api.Command(
+        name='generate_bindings',
+        cmd=[
+          python_executable,
+          'generate_bindings.py',
+          '--check',
+          '--output-dir=' + temp_dir,
+        ],
+        kwargs={},
+        message=output_api.PresubmitError,
+      )
+    )
   if commands:
     messages.extend(input_api.RunTests(commands))
 
   return messages
 
+
 def CheckChangeOnUpload(input_api, output_api):
   return CommonChecks(input_api, output_api)
+
 
 def CheckChangeOnCommit(input_api, output_api):
   return CommonChecks(input_api, output_api)

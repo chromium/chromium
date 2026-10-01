@@ -14,9 +14,12 @@ _LICENSE = """// Copyright 2018 The Chromium Authors
 
 """
 
-_DO_NOT_EDIT_WARNING = ("// This file is auto-generated from\n" +
-  "//    //gpu/config/build_workaround_header.py\n" +
-  "// DO NOT EDIT!\n\n")
+_DO_NOT_EDIT_WARNING = (
+  "// This file is auto-generated from\n"
+  + "//    //gpu/config/build_workaround_header.py\n"
+  + "// DO NOT EDIT!\n\n"
+)
+
 
 def merge_files_into_workarounds(files: typing.List[str]) -> typing.List[str]:
   workarounds = set()
@@ -39,7 +42,8 @@ def write_header(filename: str, workarounds: typing.List[str]) -> None:
     # length of max string passed to write + 1
     max_len = len(indent) + len(macro) + 1 + max_workaround_len + 1 + 1
     write = lambda line: f.write(  # noqa: E731
-        line + ' ' * (max_len - len(line)) + '\\\n')
+      line + ' ' * (max_len - len(line)) + '\\\n'
+    )
 
     write('#define GPU_DRIVER_BUG_WORKAROUNDS(GPU_OP)')
     for w in workarounds:
@@ -52,15 +56,14 @@ def write_header(filename: str, workarounds: typing.List[str]) -> None:
 
 def main():
   parser = argparse.ArgumentParser(
-      description='Generate GPU workaround definitions')
+    description='Generate GPU workaround definitions'
+  )
   parser.add_argument(
-      "--output-file",
-      default="gpu_driver_bug_workaround_autogen.h",
-      help="the name of the header file to write")
-  parser.add_argument(
-      'files',
-      nargs='+',
-      help='1 or more files to process')
+    "--output-file",
+    default="gpu_driver_bug_workaround_autogen.h",
+    help="the name of the header file to write",
+  )
+  parser.add_argument('files', nargs='+', help='1 or more files to process')
 
   args = parser.parse_args()
 

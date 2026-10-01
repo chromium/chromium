@@ -198,7 +198,7 @@ _FUNCTION_INFO = {
     'decoder_func': 'DoReadbackYUVImagePixelsINTERNAL',
     'internal': True,
     'type': 'PUT',
-    'count': 16, # GL_MAILBOX_SIZE_CHROMIUM
+    'count': 16,  # GL_MAILBOX_SIZE_CHROMIUM
     'unit_test': False,
     'result': ['uint32_t'],
     'trace_level': 2,
@@ -301,8 +301,8 @@ _FUNCTION_INFO = {
     'internal': True,
     'impl_func': True,
     'cmd_args': 'GLuint raster_shm_id, GLuint raster_shm_offset,'
-                'GLsizeiptr raster_shm_size, GLuint font_shm_id,'
-                'GLuint font_shm_offset, GLsizeiptr font_shm_size',
+    'GLsizeiptr raster_shm_size, GLuint font_shm_id,'
+    'GLuint font_shm_offset, GLsizeiptr font_shm_size',
     'extension': 'CHROMIUM_raster_transport',
     'unit_test': False,
   },
@@ -320,8 +320,8 @@ _FUNCTION_INFO = {
   'CreateTransferCacheEntryINTERNAL': {
     'decoder_func': 'DoCreateTransferCacheEntryINTERNAL',
     'cmd_args': 'GLuint entry_type, GLuint entry_id, GLuint handle_shm_id, '
-                'GLuint handle_shm_offset, GLuint data_shm_id, '
-                'GLuint data_shm_offset, GLuint data_size',
+    'GLuint handle_shm_offset, GLuint data_shm_id, '
+    'GLuint data_shm_offset, GLuint data_size',
     'internal': True,
     'impl_func': True,
     'client_test': False,
@@ -367,22 +367,31 @@ def main(argv):
   """This is the main function."""
   parser = OptionParser()
   parser.add_option(
-      "--output-dir",
-      help="Output directory for generated files. Defaults to chromium root "
-      "directory.")
+    "--output-dir",
+    help="Output directory for generated files. Defaults to chromium root "
+    "directory.",
+  )
   parser.add_option(
-      "-v", "--verbose", action="store_true", help="Verbose logging output.")
+    "-v", "--verbose", action="store_true", help="Verbose logging output."
+  )
   parser.add_option(
-      "-c", "--check", action="store_true",
-      help="Check if output files match generated files in chromium root "
-      "directory.  Use this in PRESUBMIT scripts with --output-dir.")
+    "-c",
+    "--check",
+    action="store_true",
+    help="Check if output files match generated files in chromium root "
+    "directory.  Use this in PRESUBMIT scripts with --output-dir.",
+  )
 
   (options, _) = parser.parse_args(args=argv)
 
   # This script lives under src/gpu/command_buffer.
   script_dir = os.path.dirname(os.path.abspath(__file__))
-  assert script_dir.endswith((os.path.normpath("src/gpu/command_buffer"),
-                              os.path.normpath("chromium/gpu/command_buffer")))
+  assert script_dir.endswith(
+    (
+      os.path.normpath("src/gpu/command_buffer"),
+      os.path.normpath("chromium/gpu/command_buffer"),
+    )
+  )
   # os.path.join doesn't do the right thing with relative paths.
   chromium_root_dir = os.path.abspath(script_dir + "/../..")
 
@@ -395,36 +404,46 @@ def main(argv):
 
   build_cmd_buffer_lib.InitializePrefix("Raster")
   gen = build_cmd_buffer_lib.GLGenerator(
-      options.verbose, "2018", _FUNCTION_INFO, _NAMED_TYPE_INFO,
-      chromium_root_dir)
+    options.verbose, "2018", _FUNCTION_INFO, _NAMED_TYPE_INFO, chromium_root_dir
+  )
   gen.ParseGLH("gpu/command_buffer/raster_cmd_buffer_functions.txt")
 
   gen.WriteCommandIds("gpu/command_buffer/common/raster_cmd_ids_autogen.h")
   gen.WriteFormat("gpu/command_buffer/common/raster_cmd_format_autogen.h")
   gen.WriteFormatTest(
-    "gpu/command_buffer/common/raster_cmd_format_test_autogen.h")
+    "gpu/command_buffer/common/raster_cmd_format_test_autogen.h"
+  )
   gen.WriteGLES2InterfaceHeader(
-    "gpu/command_buffer/client/raster_interface_autogen.h")
+    "gpu/command_buffer/client/raster_interface_autogen.h"
+  )
   gen.WriteGLES2ImplementationHeader(
-    "gpu/command_buffer/client/raster_implementation_autogen.h")
+    "gpu/command_buffer/client/raster_implementation_autogen.h"
+  )
   gen.WriteGLES2Implementation(
-    "gpu/command_buffer/client/raster_implementation_impl_autogen.h")
+    "gpu/command_buffer/client/raster_implementation_impl_autogen.h"
+  )
   gen.WriteGLES2ImplementationUnitTests(
-    "gpu/command_buffer/client/raster_implementation_unittest_autogen.h")
+    "gpu/command_buffer/client/raster_implementation_unittest_autogen.h"
+  )
   gen.WriteCmdHelperHeader(
-     "gpu/command_buffer/client/raster_cmd_helper_autogen.h")
+    "gpu/command_buffer/client/raster_cmd_helper_autogen.h"
+  )
   gen.WriteServiceImplementation(
-    "gpu/command_buffer/service/raster_decoder_autogen.h")
+    "gpu/command_buffer/service/raster_decoder_autogen.h"
+  )
   gen.WriteServiceUnitTests(
-    "gpu/command_buffer/service/raster_decoder_unittest_%d_autogen.h")
+    "gpu/command_buffer/service/raster_decoder_unittest_%d_autogen.h"
+  )
   gen.WriteServiceUtilsHeader(
-    "gpu/command_buffer/service/raster_cmd_validation_autogen.h")
+    "gpu/command_buffer/service/raster_cmd_validation_autogen.h"
+  )
   gen.WriteServiceUtilsImplementation(
-    "gpu/command_buffer/service/"
-    "raster_cmd_validation_implementation_autogen.h")
+    "gpu/command_buffer/service/raster_cmd_validation_implementation_autogen.h"
+  )
 
-  build_cmd_buffer_lib.Format(gen.generated_cpp_filenames, output_dir,
-                              chromium_root_dir)
+  build_cmd_buffer_lib.Format(
+    gen.generated_cpp_filenames, output_dir, chromium_root_dir
+  )
 
   if gen.errors > 0:
     print("build_raster_cmd_buffer.py: Failed with %d errors" % gen.errors)
@@ -433,8 +452,10 @@ def main(argv):
   check_failed_filenames = []
   if options.check:
     for filename in gen.generated_cpp_filenames:
-      if not filecmp.cmp(os.path.join(output_dir, filename),
-                         os.path.join(chromium_root_dir, filename)):
+      if not filecmp.cmp(
+        os.path.join(output_dir, filename),
+        os.path.join(chromium_root_dir, filename),
+      ):
         check_failed_filenames.append(filename)
 
   if len(check_failed_filenames) > 0:

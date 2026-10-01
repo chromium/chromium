@@ -26,46 +26,50 @@ _STRUCTS = [
 
 _SELF_LOCATION = os.path.dirname(os.path.abspath(__file__))
 
-_MOJO_TYPES = set([
-  "uint8",
-  "uint16",
-  "uint32",
-  "int8",
-  "int16",
-  "int32",
-  "float",
-  "string",
-])
+_MOJO_TYPES = set(
+  [
+    "uint8",
+    "uint16",
+    "uint32",
+    "int8",
+    "int16",
+    "int32",
+    "float",
+    "string",
+  ]
+)
 
-_VULKAN_BASIC_TYPE_MAP = set([
-  "uint8_t",
-  "uint16_t",
-  "uint32_t",
-  "uint64_t",
-  "int8_t",
-  "int16_t",
-  "int32_t",
-  "int64_t",
-  "size_t",
-  "VkBool32",
-  "float",
-  "char",
-])
+_VULKAN_BASIC_TYPE_MAP = set(
+  [
+    "uint8_t",
+    "uint16_t",
+    "uint32_t",
+    "uint64_t",
+    "int8_t",
+    "int16_t",
+    "int32_t",
+    "int64_t",
+    "size_t",
+    "VkBool32",
+    "float",
+    "char",
+  ]
+)
 
 # types to mojo type
 _type_map = {
-  "uint8_t" : "uint8",
-  "uint16_t" : "uint16",
-  "uint32_t" : "uint32",
-  "uint64_t" : "uint64",
-  "int8_t" : "int8",
-  "int16_t" : "int16",
-  "int32_t" : "int32",
-  "int64_t" : "int64",
-  "size_t" : "uint64",
-  "VkBool32" : "bool",
-  "float" : "float",
-  "char" : "char",
+  "uint8_t": "uint8",
+  "uint16_t": "uint16",
+  "uint32_t": "uint32",
+  "uint64_t": "uint64",
+  "int8_t": "int8",
+  "int16_t": "int16",
+  "int32_t": "int32",
+  "int64_t": "int64",
+  "size_t": "uint64",
+  "VkBool32": "bool",
+  "float": "float",
+  "char": "char",
 }
 
 _structs = {}
@@ -77,7 +81,8 @@ _generated_types = []
 
 def ValueNameToVALUE_NAME(name: str) -> str:
   return re.sub(
-    r'(?<=[a-z])[A-Z]|(?<!^)[A-Z](?=[a-z])', r"_\g<0>", name).upper()
+    r'(?<=[a-z])[A-Z]|(?<!^)[A-Z](?=[a-z])', r"_\g<0>", name
+  ).upper()
 
 
 def ParseEnums(reg: re.Pattern) -> None:
@@ -97,9 +102,9 @@ def ParseEnums(reg: re.Pattern) -> None:
     if name == "VkResult":
       value_name_prefix = "VK"
     elif name.endswith("FlagBits"):
-      value_name_prefix = ValueNameToVALUE_NAME(name[:-len("FlagBits")])
+      value_name_prefix = ValueNameToVALUE_NAME(name[: -len("FlagBits")])
     elif name.endswith("FlagBitsKHR"):
-      value_name_prefix = ValueNameToVALUE_NAME(name[:-len("FlagBitsKHR")])
+      value_name_prefix = ValueNameToVALUE_NAME(name[: -len("FlagBitsKHR")])
     else:
       value_name_prefix = ValueNameToVALUE_NAME(name)
 
@@ -107,7 +112,7 @@ def ParseEnums(reg: re.Pattern) -> None:
     for enum in type_elm.findall("enum"):
       enum_name = enum.get("name")
       enum_value = enum.get("value")
-      mojom_name = enum_name[len(value_name_prefix) + 1:]
+      mojom_name = enum_name[len(value_name_prefix) + 1 :]
       values.append((enum_name, enum_value, mojom_name))
 
     _enums[name] = values
@@ -203,8 +208,9 @@ def WriteMojomStruct(name: str, mojom_file: typing.IO) -> None:
       while field_type in _type_map and field_type != _type_map[field_type]:
         field_type = _type_map[field_type]
     else:
-      assert field_type in _structs or field_type in _enums or \
-        field_type in _handles, "Undefine type: '%s'" % field_type
+      assert (
+        field_type in _structs or field_type in _enums or field_type in _handles
+      ), "Undefine type: '%s'" % field_type
     if field_type == "char":
       assert array_len
       array_len = _defines[array_len]
@@ -216,7 +222,8 @@ def WriteMojomStruct(name: str, mojom_file: typing.IO) -> None:
         array_len = _defines[array_len]
         assert array_len.isdigit(), "%s is not a digit." % array_len
       mojom_file.write(
-        "  array<%s, %s> %s;\n" % (field_type, array_len, field_name))
+        "  array<%s, %s> %s;\n" % (field_type, array_len, field_name)
+      )
   mojom_file.write("};\n")
 
 
@@ -232,7 +239,7 @@ def WriteMojomTypes(types: typing.Iterable[str], mojom_file: typing.IO) -> None:
 
 def GenerateMojom(mojom_file: typing.IO) -> None:
   mojom_file.write(
-'''// Copyright 2019 The Chromium Authors
+    '''// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -243,7 +250,8 @@ def GenerateMojom(mojom_file: typing.IO) -> None:
 // DO NOT EDIT!
 
 module gpu.mojom;
-''')
+'''
+  )
   WriteMojomTypes(_STRUCTS, mojom_file)
 
 
@@ -263,14 +271,15 @@ def NormalizedCamelCase(identifier: str) -> None:
   return result
 
 
-def WriteStructTraits(name: str,
-                      traits_header_file: typing.IO,
-                      traits_source_file: typing.IO) -> None:
+def WriteStructTraits(
+  name: str, traits_header_file: typing.IO, traits_source_file: typing.IO
+) -> None:
   traits_header_file.write(
-"""
+    """
 template <>
 struct StructTraits<gpu::mojom::%sDataView, %s> {
-""" % (name, name)
+"""
+    % (name, name)
   )
 
   fields = _structs[name]
@@ -283,44 +292,56 @@ struct StructTraits<gpu::mojom::%sDataView, %s> {
     if field_type == "char":
       assert array_len
       traits_header_file.write(
-"""
+        """
   static std::string_view %s(const %s& input) {
     return input.%s;
   }
-""" % (field_name, name, field_name))
+"""
+        % (field_name, name, field_name)
+      )
     elif array_len:
       traits_header_file.write(
-"""
+        """
   static base::span<const %s> %s(const %s& input) {
     return input.%s;
   }
-""" % (field_type, field_name, name, field_name))
+"""
+        % (field_type, field_name, name, field_name)
+      )
     elif field_type in _structs:
       traits_header_file.write(
-"""
+        """
   static const %s& %s(const %s& input) {
     return input.%s;
   }
-""" % (field_type, field_name, name, field_name))
+"""
+        % (field_type, field_name, name, field_name)
+      )
     else:
       traits_header_file.write(
-"""
+        """
   static %s %s(const %s& input) {
     return input.%s;
   }
-""" % (field_type, field_name, name, field_name))
+"""
+        % (field_type, field_name, name, field_name)
+      )
 
   traits_header_file.write(
-"""
+    """
   static bool Read(gpu::mojom::%sDataView data, %s* out);
-""" % (name, name))
+"""
+    % (name, name)
+  )
 
   traits_source_file.write(
-"""
+    """
 // static
 bool StructTraits<gpu::mojom::%sDataView, %s>::Read(
     gpu::mojom::%sDataView data, %s* out) {
-""" % (name, name, name, name))
+"""
+    % (name, name, name, name)
+  )
 
   fields = _structs[name]
   for field_name, field_type, array_len in fields:
@@ -333,7 +354,7 @@ bool StructTraits<gpu::mojom::%sDataView, %s>::Read(
       assert array_len
       read_method = "Read%s" % (NormalizedCamelCase(field_name))
       traits_source_file.write(
-"""
+        """
   std::string_view {0};
   if (!data.{1}(&{0})) {{
     return false;
@@ -344,56 +365,65 @@ bool StructTraits<gpu::mojom::%sDataView, %s>::Read(
   }}
   // Mojo zero-initializes `out` so it is guaranteed to be NUL-terminated.
   {0}.copy(out->{0}, sizeof(out->{0}));
-  """.format(field_name, read_method))
+  """.format(field_name, read_method)
+      )
     elif array_len:
       read_method = "Read%s" % (NormalizedCamelCase(field_name))
       traits_source_file.write(
-"""
+        """
   base::span<%s> %s(out->%s);
   if (!data.%s(&%s))
     return false;
-""" % (field_type, field_name, field_name, read_method, field_name))
+"""
+        % (field_type, field_name, field_name, read_method, field_name)
+      )
     elif field_type in _structs or field_type in _enums:
       traits_source_file.write(
-"""
+        """
   if (!data.Read%s(&out->%s))
     return false;
-""" % (NormalizedCamelCase(field_name), field_name))
+"""
+        % (NormalizedCamelCase(field_name), field_name)
+      )
     else:
       traits_source_file.write(
-"""
+        """
   out->%s = data.%s();
-""" % (field_name, field_name))
-
+"""
+        % (field_name, field_name)
+      )
 
   traits_source_file.write(
-"""
+    """
   return true;
 }
-""")
-
+"""
+  )
 
   traits_header_file.write("};\n")
 
 
 def WriteEnumTraits(name: str, traits_header_file: typing.IO) -> None:
   traits_header_file.write(
-"""
+    """
 template <>
 struct EnumTraits<gpu::mojom::%s, %s> {
   static gpu::mojom::%s ToMojom(%s input) {
     switch (input) {
-""" % (name, name, name, name))
+"""
+    % (name, name, name, name)
+  )
 
   for value_name, _, mojom_value_name in _enums[name]:
     traits_header_file.write(
-"""
+      """
      case %s::%s:
        return gpu::mojom::%s::%s;"""
-       % (name, value_name, name, mojom_value_name))
+      % (name, value_name, name, mojom_value_name)
+    )
 
   traits_header_file.write(
-"""
+    """
       default:
         NOTREACHED();
     }
@@ -401,29 +431,35 @@ struct EnumTraits<gpu::mojom::%s, %s> {
 
   static %s FromMojom(gpu::mojom::%s input) {
     switch (input) {
-""" % (name, name))
+"""
+    % (name, name)
+  )
 
   for value_name, _, mojom_value_name in _enums[name]:
     traits_header_file.write(
-"""
+      """
      case gpu::mojom::%s::%s:
-       return %s::%s;""" % (name, mojom_value_name, name, value_name))
+       return %s::%s;"""
+      % (name, mojom_value_name, name, value_name)
+    )
 
   traits_header_file.write(
-"""
+    """
       case gpu::mojom::%s::INVALID_VALUE:
         NOTREACHED();
     }
     NOTREACHED();
   }
-};""" % name)
+};"""
+    % name
+  )
 
 
-
-def GenerateTraitsFile(traits_header_file: typing.IO,
-                       traits_source_file: typing.IO) -> None:
+def GenerateTraitsFile(
+  traits_header_file: typing.IO, traits_source_file: typing.IO
+) -> None:
   traits_header_file.write(
-"""// Copyright 2019 The Chromium Authors
+    """// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -444,10 +480,11 @@ def GenerateTraitsFile(traits_header_file: typing.IO,
 #include "gpu/ipc/common/vulkan_types.mojom-shared.h"
 
 namespace mojo {
-""")
+"""
+  )
 
   traits_source_file.write(
-"""// Copyright 2019 The Chromium Authors
+    """// Copyright 2019 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -460,7 +497,8 @@ namespace mojo {
 #include "gpu/ipc/common/vulkan_info_mojom_traits.h"
 
 namespace mojo {
-""")
+"""
+  )
 
   for t in _generated_types:
     if t in _structs:
@@ -469,19 +507,21 @@ namespace mojo {
       WriteEnumTraits(t, traits_header_file)
 
   traits_header_file.write(
-"""
+    """
 }  // namespace mojo
 
-#endif  // GPU_IPC_COMMON_VULKAN_TYPES_MOJOM_TRAITS_H_""")
+#endif  // GPU_IPC_COMMON_VULKAN_TYPES_MOJOM_TRAITS_H_"""
+  )
 
   traits_source_file.write(
-"""
-}  // namespace mojo""")
+    """
+}  // namespace mojo"""
+  )
 
 
 def GenerateTypemapFile(typemap_file: typing.IO) -> None:
   typemap_file.write(
-"""# Copyright 2019 The Chromium Authors
+    """# Copyright 2019 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -489,14 +529,17 @@ def GenerateTypemapFile(typemap_file: typing.IO) -> None:
 # gpu/ipc/common/generate_vulkan_types.py
 # DO NOT EDIT!
 
-generated_vulkan_type_mappings = [""")
+generated_vulkan_type_mappings = ["""
+  )
   for t in _generated_types:
     typemap_file.write(
-"""
+      """
   {
     mojom = "gpu.mojom.%s"
     cpp = "::%s"
-  },""" % (t, t))
+  },"""
+      % (t, t)
+    )
   typemap_file.write("\n]\n")
 
 
@@ -505,13 +548,17 @@ def main() -> int:
 
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      "--output-dir",
-      help="Output directory for generated files. Defaults to this script's "
-      "directory.")
+    "--output-dir",
+    help="Output directory for generated files. Defaults to this script's "
+    "directory.",
+  )
   parser.add_argument(
-      "-c", "--check", action="store_true",
-      help="Check if output files match generated files in chromium root "
-      "directory. Use this in PRESUBMIT scripts with --output-dir.")
+    "-c",
+    "--check",
+    action="store_true",
+    help="Check if output files match generated files in chromium root "
+    "directory. Use this in PRESUBMIT scripts with --output-dir.",
+  )
 
   args = parser.parse_args()
 
@@ -527,24 +574,23 @@ def main() -> int:
       formatter += ".bat"
     subprocess.call([formatter, "-i", "-style=chromium", filename])
 
-  vk_xml_file_path = os.path.join(
-    _SELF_LOCATION, "../../..", _VK_XML_FILE)
+  vk_xml_file_path = os.path.join(_SELF_LOCATION, "../../..", _VK_XML_FILE)
   ParseVkXMLFile(vk_xml_file_path)
 
-
   mojom_file_name = "vulkan_types.mojom"
-  mojom_file = open(
-      os.path.join(output_dir, mojom_file_name), 'w', newline='')
+  mojom_file = open(os.path.join(output_dir, mojom_file_name), 'w', newline='')
   GenerateMojom(mojom_file)
   mojom_file.close()
   ClangFormat(mojom_file.name)
 
   traits_header_file_name = "vulkan_types_mojom_traits.h"
-  traits_header_file = \
-      open(os.path.join(output_dir, traits_header_file_name), 'w', newline='')
+  traits_header_file = open(
+    os.path.join(output_dir, traits_header_file_name), 'w', newline=''
+  )
   traits_source_file_name = "vulkan_types_mojom_traits.cc"
-  traits_source_file = \
-      open(os.path.join(output_dir, traits_source_file_name), 'w', newline='')
+  traits_source_file = open(
+    os.path.join(output_dir, traits_source_file_name), 'w', newline=''
+  )
   GenerateTraitsFile(traits_header_file, traits_source_file)
   traits_header_file.close()
   ClangFormat(traits_header_file.name)
@@ -553,16 +599,23 @@ def main() -> int:
 
   typemap_file_name = "generated_vulkan_type_mappings.gni"
   typemap_file = open(
-      os.path.join(output_dir, typemap_file_name), 'w', newline='')
+    os.path.join(output_dir, typemap_file_name), 'w', newline=''
+  )
   GenerateTypemapFile(typemap_file)
   typemap_file.close()
 
   check_failed_filenames = []
   if args.check:
-    for filename in [mojom_file_name, traits_header_file_name,
-                     traits_source_file_name, typemap_file_name]:
-      if not filecmp.cmp(os.path.join(output_dir, filename),
-                         os.path.join(_SELF_LOCATION, filename)):
+    for filename in [
+      mojom_file_name,
+      traits_header_file_name,
+      traits_source_file_name,
+      typemap_file_name,
+    ]:
+      if not filecmp.cmp(
+        os.path.join(output_dir, filename),
+        os.path.join(_SELF_LOCATION, filename),
+      ):
         check_failed_filenames.append(filename)
 
   if len(check_failed_filenames) > 0:

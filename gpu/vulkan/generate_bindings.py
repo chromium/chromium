@@ -14,8 +14,15 @@ from os import path
 from string import Template
 from subprocess import call
 
-vulkan_reg_path = path.join(path.dirname(__file__), "..", "..", "third_party",
-                            "vulkan-headers", "src", "registry")
+vulkan_reg_path = path.join(
+  path.dirname(__file__),
+  "..",
+  "..",
+  "third_party",
+  "vulkan-headers",
+  "src",
+  "registry",
+)
 sys.path.append(vulkan_reg_path)
 from reg import Registry  # noqa: E402
 
@@ -63,7 +70,7 @@ VULKAN_INSTANCE_FUNCTIONS = [
     'functions': [
       'vkCreateDebugReportCallbackEXT',
       'vkDestroyDebugReportCallbackEXT',
-    ]
+    ],
   },
   {
     'extension': 'VK_KHR_SURFACE_EXTENSION_NAME',
@@ -72,13 +79,13 @@ VULKAN_INSTANCE_FUNCTIONS = [
       'vkGetPhysicalDeviceSurfaceCapabilitiesKHR',
       'vkGetPhysicalDeviceSurfaceFormatsKHR',
       'vkGetPhysicalDeviceSurfaceSupportKHR',
-    ]
+    ],
   },
   {
     'extension': 'VK_EXT_HEADLESS_SURFACE_EXTENSION_NAME',
     'functions': [
       'vkCreateHeadlessSurfaceEXT',
-    ]
+    ],
   },
   {
     'ifdef': 'defined(USE_VULKAN_XCB)',
@@ -86,7 +93,7 @@ VULKAN_INSTANCE_FUNCTIONS = [
     'functions': [
       'vkCreateXcbSurfaceKHR',
       'vkGetPhysicalDeviceXcbPresentationSupportKHR',
-    ]
+    ],
   },
   {
     'ifdef': 'BUILDFLAG(IS_WIN)',
@@ -94,21 +101,21 @@ VULKAN_INSTANCE_FUNCTIONS = [
     'functions': [
       'vkCreateWin32SurfaceKHR',
       'vkGetPhysicalDeviceWin32PresentationSupportKHR',
-    ]
+    ],
   },
   {
     'ifdef': 'BUILDFLAG(IS_ANDROID)',
     'extension': 'VK_KHR_ANDROID_SURFACE_EXTENSION_NAME',
     'functions': [
       'vkCreateAndroidSurfaceKHR',
-    ]
+    ],
   },
   {
     'ifdef': 'BUILDFLAG(IS_FUCHSIA)',
     'extension': 'VK_FUCHSIA_IMAGEPIPE_SURFACE_EXTENSION_NAME',
     'functions': [
       'vkCreateImagePipeSurfaceFUCHSIA',
-    ]
+    ],
   },
 ]
 
@@ -195,20 +202,18 @@ VULKAN_DEVICE_FUNCTIONS = [
   },
   {
     'ifdef': 'BUILDFLAG(IS_ANDROID)',
-    'extension':
-        'VK_ANDROID_EXTERNAL_MEMORY_ANDROID_HARDWARE_BUFFER_EXTENSION_NAME',
+    'extension': 'VK_ANDROID_EXTERNAL_MEMORY_ANDROID_HARDWARE_BUFFER_EXTENSION_NAME',
     'functions': [
       'vkGetAndroidHardwareBufferPropertiesANDROID',
-    ]
+    ],
   },
   {
-    'ifdef':
-    'BUILDFLAG(IS_POSIX)',
+    'ifdef': 'BUILDFLAG(IS_POSIX)',
     'extension': 'VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME',
     'functions': [
       'vkGetSemaphoreFdKHR',
       'vkImportSemaphoreFdKHR',
-    ]
+    ],
   },
   {
     'ifdef': 'BUILDFLAG(IS_WIN)',
@@ -216,16 +221,15 @@ VULKAN_DEVICE_FUNCTIONS = [
     'functions': [
       'vkGetSemaphoreWin32HandleKHR',
       'vkImportSemaphoreWin32HandleKHR',
-    ]
+    ],
   },
   {
-    'ifdef':
-    'BUILDFLAG(IS_POSIX)',
+    'ifdef': 'BUILDFLAG(IS_POSIX)',
     'extension': 'VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME',
     'functions': [
       'vkGetMemoryFdKHR',
       'vkGetMemoryFdPropertiesKHR',
-    ]
+    ],
   },
   {
     'ifdef': 'BUILDFLAG(IS_WIN)',
@@ -233,7 +237,7 @@ VULKAN_DEVICE_FUNCTIONS = [
     'functions': [
       'vkGetMemoryWin32HandleKHR',
       'vkGetMemoryWin32HandlePropertiesKHR',
-    ]
+    ],
   },
   {
     'ifdef': 'BUILDFLAG(IS_FUCHSIA)',
@@ -241,14 +245,14 @@ VULKAN_DEVICE_FUNCTIONS = [
     'functions': [
       'vkImportSemaphoreZirconHandleFUCHSIA',
       'vkGetSemaphoreZirconHandleFUCHSIA',
-    ]
+    ],
   },
   {
     'ifdef': 'BUILDFLAG(IS_FUCHSIA)',
     'extension': 'VK_FUCHSIA_EXTERNAL_MEMORY_EXTENSION_NAME',
     'functions': [
       'vkGetMemoryZirconHandleFUCHSIA',
-    ]
+    ],
   },
   {
     'ifdef': 'BUILDFLAG(IS_FUCHSIA)',
@@ -258,7 +262,7 @@ VULKAN_DEVICE_FUNCTIONS = [
       'vkSetBufferCollectionImageConstraintsFUCHSIA',
       'vkGetBufferCollectionPropertiesFUCHSIA',
       'vkDestroyBufferCollectionFUCHSIA',
-    ]
+    ],
   },
   {
     'extension': 'VK_KHR_SWAPCHAIN_EXTENSION_NAME',
@@ -268,15 +272,15 @@ VULKAN_DEVICE_FUNCTIONS = [
       'vkDestroySwapchainKHR',
       'vkGetSwapchainImagesKHR',
       'vkQueuePresentKHR',
-    ]
+    ],
   },
   {
     'ifdef': 'BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)',
     'extension': 'VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME',
     'functions': [
       'vkGetImageDrmFormatModifierPropertiesEXT',
-    ]
-  }
+    ],
+  },
 ]
 
 SELF_LOCATION = os.path.dirname(os.path.abspath(__file__))
@@ -294,8 +298,9 @@ LICENSE_AND_HEADER = """\
 
 """
 
+
 def WriteReset(out_file, functions):
- for group in functions:
+  for group in functions:
     if 'ifdef' in group:
       out_file.write('#if %s\n' % group['ifdef'])
 
@@ -306,15 +311,18 @@ def WriteReset(out_file, functions):
       out_file.write('#endif  // %s\n' % group['ifdef'])
     out_file.write('\n')
 
-def WriteFunctionsInternal(out_file, functions, gen_content,
-                           check_extension=False):
+
+def WriteFunctionsInternal(
+  out_file, functions, gen_content, check_extension=False
+):
   for group in functions:
     if 'ifdef' in group:
       out_file.write('#if %s\n' % group['ifdef'])
 
     extension = group['extension'] if 'extension' in group else ''
-    min_api_version = \
-        group['min_api_version'] if 'min_api_version' in group else ''
+    min_api_version = (
+      group['min_api_version'] if 'min_api_version' in group else ''
+    )
 
     if not check_extension:
       for func in group['functions']:
@@ -327,20 +335,20 @@ def WriteFunctionsInternal(out_file, functions, gen_content,
         out_file.write('  if (api_version >= %s) {\n' % min_api_version)
 
         for func in group['functions']:
-          out_file.write(
-              gen_content(func))
+          out_file.write(gen_content(func))
 
         out_file.write('}\n')
         if extension:
           out_file.write('else ')
 
       if extension:
-        out_file.write('if (gfx::HasExtension(enabled_extensions, %s)) {\n' %
-                   extension)
+        out_file.write(
+          'if (gfx::HasExtension(enabled_extensions, %s)) {\n' % extension
+        )
 
-        extension_suffix = \
-            group['extension_suffix'] if 'extension_suffix' in group \
-            else ''
+        extension_suffix = (
+          group['extension_suffix'] if 'extension_suffix' in group else ''
+        )
         for func in group['functions']:
           out_file.write(gen_content(func, extension_suffix))
 
@@ -349,14 +357,18 @@ def WriteFunctionsInternal(out_file, functions, gen_content,
       out_file.write('#endif  // %s\n' % group['ifdef'])
     out_file.write('\n')
 
+
 def WriteFunctions(out_file, functions, template, check_extension=False):
   def gen_content(func, suffix=''):
-    return template.substitute({'name': func,'extension_suffix': suffix})
+    return template.substitute({'name': func, 'extension_suffix': suffix})
+
   WriteFunctionsInternal(out_file, functions, gen_content, check_extension)
+
 
 def WriteFunctionDeclarations(out_file, functions):
   template = Template('  VulkanFunction<PFN_${name}> ${name};\n')
   WriteFunctions(out_file, functions, template)
+
 
 def WriteMacros(out_file, functions):
   def gen_content(func, suffix=''):
@@ -364,8 +376,9 @@ def WriteMacros(out_file, functions):
       # Some fuchsia functions are not in the vulkan registry, so use macro for
       # them.
       template = Template(
-          '#define $name gpu::GetVulkanFunctionPointers()->${name}\n')
-      return  template.substitute({'name': func, 'extension_suffix' : suffix})
+        '#define $name gpu::GetVulkanFunctionPointers()->${name}\n'
+      )
+      return template.substitute({'name': func, 'extension_suffix': suffix})
     none_str = lambda s: s if s else ''  # noqa: E731
     cmd = registry.cmddict[func].elem
     proto = cmd.find('proto')
@@ -379,26 +392,24 @@ def WriteMacros(out_file, functions):
 
     callstat = ''
     if func in ('vkQueueSubmit', 'vkQueueWaitIdle', 'vkQueuePresentKHR'):
-        callstat = 'gpu::VulkanQueueLock* lock = nullptr;\n'
-        callstat += '''auto it = gpu::GetVulkanFunctionPointers()->
+      callstat = 'gpu::VulkanQueueLock* lock = nullptr;\n'
+      callstat += '''auto it = gpu::GetVulkanFunctionPointers()->
         per_queue_lock_map.find(queue);\n'''
-        callstat += '''if (it != gpu::GetVulkanFunctionPointers()->
+      callstat += '''if (it != gpu::GetVulkanFunctionPointers()->
         per_queue_lock_map.end()) {\n'''
-        callstat += '\tlock = it->second.get();\n'
-        callstat += '}\n'
-        callstat += 'gpu::VulkanQueueAutoLockMaybe auto_lock(lock);\n'
+      callstat += '\tlock = it->second.get();\n'
+      callstat += '}\n'
+      callstat += 'gpu::VulkanQueueAutoLockMaybe auto_lock(lock);\n'
 
     callstat += 'return gpu::GetVulkanFunctionPointers()->%s(' % func
     paramdecl = '('
     if n > 0:
-      paramnames = (''.join(t for t in p.itertext())
-                    for p in params)
+      paramnames = (''.join(t for t in p.itertext()) for p in params)
       paramdecl += ', '.join(paramnames)
-      paramnames = (''.join(p[1].text)
-                    for p in params)
+      paramnames = (''.join(p[1].text) for p in params)
       callstat += ', '.join(paramnames)
     else:
-        paramdecl += 'void'
+      paramdecl += 'void'
     paramdecl += ')'
     callstat += ')'
     pdecl += paramdecl
@@ -406,11 +417,13 @@ def WriteMacros(out_file, functions):
 
   WriteFunctionsInternal(out_file, functions, gen_content)
 
+
 def GenerateHeaderFile(out_file):
   """Generates gpu/vulkan/vulkan_function_pointers.h"""
 
-  out_file.write(LICENSE_AND_HEADER +
-"""
+  out_file.write(
+    LICENSE_AND_HEADER
+    + """
 
 #ifndef GPU_VULKAN_VULKAN_FUNCTION_POINTERS_H_
 #define GPU_VULKAN_VULKAN_FUNCTION_POINTERS_H_
@@ -588,7 +601,9 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
   // Unassociated functions
   VulkanFunction<PFN_vkGetInstanceProcAddr> vkGetInstanceProcAddr;
 
-""" % VULKAN_REQUIRED_API_VERSION)
+"""
+    % VULKAN_REQUIRED_API_VERSION
+  )
 
   WriteFunctionDeclarations(out_file, VULKAN_UNASSOCIATED_FUNCTIONS)
 
@@ -623,7 +638,7 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
 // Unassociated functions
 """)
 
-  WriteMacros(out_file, [{'functions': [ 'vkGetInstanceProcAddr']}])
+  WriteMacros(out_file, [{'functions': ['vkGetInstanceProcAddr']}])
   WriteMacros(out_file, VULKAN_UNASSOCIATED_FUNCTIONS)
 
   out_file.write("""\
@@ -644,8 +659,10 @@ struct COMPONENT_EXPORT(VULKAN) VulkanFunctionPointers {
 
 #endif  // GPU_VULKAN_VULKAN_FUNCTION_POINTERS_H_""")
 
-def WriteFunctionPointerInitialization(out_file, proc_addr_function, parent,
-                                       functions):
+
+def WriteFunctionPointerInitialization(
+  out_file, proc_addr_function, parent, functions
+):
   template = Template("""  constexpr char k${name}${extension_suffix}[] =
     "${name}${extension_suffix}";
   ${name} = reinterpret_cast<PFN_${name}>(
@@ -659,29 +676,44 @@ def WriteFunctionPointerInitialization(out_file, proc_addr_function, parent,
 
   # Substitute all values in the template, except name, which is processed in
   # WriteFunctions().
-  template = Template(template.substitute({
-        'name': '${name}', 'extension_suffix': '${extension_suffix}',
-        'get_proc_addr': proc_addr_function, 'parent': parent}))
+  template = Template(
+    template.substitute(
+      {
+        'name': '${name}',
+        'extension_suffix': '${extension_suffix}',
+        'get_proc_addr': proc_addr_function,
+        'parent': parent,
+      }
+    )
+  )
 
   WriteFunctions(out_file, functions, template, check_extension=True)
 
+
 def WriteUnassociatedFunctionPointerInitialization(out_file, functions):
-  WriteFunctionPointerInitialization(out_file, 'vkGetInstanceProcAddr',
-                                     'nullptr', functions)
+  WriteFunctionPointerInitialization(
+    out_file, 'vkGetInstanceProcAddr', 'nullptr', functions
+  )
+
 
 def WriteInstanceFunctionPointerInitialization(out_file, functions):
-  WriteFunctionPointerInitialization(out_file, 'vkGetInstanceProcAddr',
-                                     'vk_instance', functions)
+  WriteFunctionPointerInitialization(
+    out_file, 'vkGetInstanceProcAddr', 'vk_instance', functions
+  )
+
 
 def WriteDeviceFunctionPointerInitialization(out_file, functions):
-  WriteFunctionPointerInitialization(out_file, 'vkGetDeviceProcAddr',
-                                     'vk_device', functions)
+  WriteFunctionPointerInitialization(
+    out_file, 'vkGetDeviceProcAddr', 'vk_device', functions
+  )
+
 
 def GenerateSourceFile(out_file):
   """Generates gpu/vulkan/vulkan_function_pointers.cc"""
 
-  out_file.write(LICENSE_AND_HEADER +
-"""
+  out_file.write(
+    LICENSE_AND_HEADER
+    + """
 
 #include "gpu/vulkan/vulkan_function_pointers.h"
 
@@ -735,10 +767,12 @@ bool VulkanFunctionPointers::BindUnassociatedFunctionPointersFromGetProcAddr(
 }
 
 bool VulkanFunctionPointers::BindUnassociatedFunctionPointersCommon() {
-""")
+"""
+  )
 
   WriteUnassociatedFunctionPointerInitialization(
-      out_file, VULKAN_UNASSOCIATED_FUNCTIONS)
+    out_file, VULKAN_UNASSOCIATED_FUNCTIONS
+  )
 
   out_file.write("""\
 
@@ -754,7 +788,8 @@ bool VulkanFunctionPointers::BindInstanceFunctionPointers(
 """)
 
   WriteInstanceFunctionPointerInitialization(
-      out_file, VULKAN_INSTANCE_FUNCTIONS)
+    out_file, VULKAN_INSTANCE_FUNCTIONS
+  )
 
   out_file.write("""\
 
@@ -785,12 +820,9 @@ void VulkanFunctionPointers::ResetForTesting() {
 
 """)
 
-  WriteReset(
-      out_file, VULKAN_UNASSOCIATED_FUNCTIONS)
-  WriteReset(
-      out_file, VULKAN_INSTANCE_FUNCTIONS)
-  WriteReset(
-      out_file, VULKAN_DEVICE_FUNCTIONS)
+  WriteReset(out_file, VULKAN_UNASSOCIATED_FUNCTIONS)
+  WriteReset(out_file, VULKAN_INSTANCE_FUNCTIONS)
+  WriteReset(out_file, VULKAN_DEVICE_FUNCTIONS)
 
   out_file.write("""\
 }
@@ -798,18 +830,23 @@ void VulkanFunctionPointers::ResetForTesting() {
 }  // namespace gpu
 """)
 
+
 def main(argv):
   """This is the main function."""
 
   parser = optparse.OptionParser()
   parser.add_option(
-      "--output-dir",
-      help="Output directory for generated files. Defaults to this script's "
-      "directory.")
+    "--output-dir",
+    help="Output directory for generated files. Defaults to this script's "
+    "directory.",
+  )
   parser.add_option(
-      "-c", "--check", action="store_true",
-      help="Check if output files match generated files in chromium root "
-      "directory. Use this in PRESUBMIT scripts with --output-dir.")
+    "-c",
+    "--check",
+    action="store_true",
+    help="Check if output files match generated files in chromium root "
+    "directory. Use this in PRESUBMIT scripts with --output-dir.",
+  )
 
   (options, _) = parser.parse_args(args=argv)
 
@@ -827,14 +864,16 @@ def main(argv):
 
   header_file_name = 'vulkan_function_pointers.h'
   header_file = open(
-      os.path.join(output_dir, header_file_name), 'w', newline='\n')
+    os.path.join(output_dir, header_file_name), 'w', newline='\n'
+  )
   GenerateHeaderFile(header_file)
   header_file.close()
   ClangFormat(header_file.name)
 
   source_file_name = 'vulkan_function_pointers.cc'
   source_file = open(
-      os.path.join(output_dir, source_file_name), 'w', newline='\n')
+    os.path.join(output_dir, source_file_name), 'w', newline='\n'
+  )
   GenerateSourceFile(source_file)
   source_file.close()
   ClangFormat(source_file.name)
@@ -842,8 +881,10 @@ def main(argv):
   check_failed_filenames = []
   if options.check:
     for filename in [header_file_name, source_file_name]:
-      if not filecmp.cmp(os.path.join(output_dir, filename),
-                         os.path.join(SELF_LOCATION, filename)):
+      if not filecmp.cmp(
+        os.path.join(output_dir, filename),
+        os.path.join(SELF_LOCATION, filename),
+      ):
         check_failed_filenames.append(filename)
 
   if len(check_failed_filenames) > 0:
@@ -854,6 +895,7 @@ def main(argv):
     return 1
 
   return 0
+
 
 if __name__ == '__main__':
   sys.exit(main(sys.argv[1:]))
