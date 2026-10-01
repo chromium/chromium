@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/check_op.h"
 #include "base/profiler/native_unwinder_win.h"
 #include "build/build_config.h"
 
@@ -157,7 +158,11 @@ std::vector<uintptr_t> SuspendableThreadDelegateWin::GetRegisters(
   // Return the set of non-volatile registers.
   return {
 #if defined(ARCH_CPU_X86_64)
-      thread_context->Rbx, thread_context->Rbp, thread_context->Rsp
+      thread_context->R12, thread_context->R13,
+      thread_context->R14, thread_context->R15,
+      thread_context->Rdi, thread_context->Rsi,
+      thread_context->Rbx, thread_context->Rbp,
+      thread_context->Rsp
 #elif defined(ARCH_CPU_ARM64)
       thread_context->X19, thread_context->X20, thread_context->X21,
       thread_context->X22, thread_context->X23, thread_context->X24,
@@ -172,10 +177,18 @@ void SuspendableThreadDelegateWin::SetRegisters(
     RegisterContext* thread_context,
     const std::vector<uintptr_t>& registers) {
 #if defined(ARCH_CPU_X86_64)
-  thread_context->Rbx = registers[0];
-  thread_context->Rbp = registers[1];
-  thread_context->Rsp = registers[2];
+  CHECK_EQ(registers.size(), 9u);
+  thread_context->R12 = registers[0];
+  thread_context->R13 = registers[1];
+  thread_context->R14 = registers[2];
+  thread_context->R15 = registers[3];
+  thread_context->Rdi = registers[4];
+  thread_context->Rsi = registers[5];
+  thread_context->Rbx = registers[6];
+  thread_context->Rbp = registers[7];
+  thread_context->Rsp = registers[8];
 #elif defined(ARCH_CPU_ARM64)
+  CHECK_EQ(registers.size(), 13u);
   thread_context->X19 = registers[0];
   thread_context->X20 = registers[1];
   thread_context->X21 = registers[2];
