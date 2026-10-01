@@ -6472,6 +6472,11 @@
     "expiry_milestone": 152
   },
   {
+    "name": "ios-device-trust-connector",
+    "owners": [ "vsvirski@google.com", "szymonkurek@google.com" ],
+    "expiry_milestone": 162
+  },
+  {
     "name": "ios-expanded-setup-list",
     "owners": [
       "pabouchard@google.com",

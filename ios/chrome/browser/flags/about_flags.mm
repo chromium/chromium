@@ -109,6 +109,7 @@
 #import "ios/chrome/browser/default_browser/model/utils.h"
 #import "ios/chrome/browser/default_browser/promo/public/features.h"
 #import "ios/chrome/browser/download/ui/features.h"
+#import "ios/chrome/browser/enterprise/connectors/device_trust/features.h"
 #import "ios/chrome/browser/enterprise/data_protection/public/features.h"
 #import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/flags/chrome_switches.h"
@@ -2863,6 +2864,11 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kContextMenuPreviewDownsampleImageName,
      flag_descriptions::kContextMenuPreviewDownsampleImageDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(kContextMenuPreviewDownsampleImage)},
+    {"ios-device-trust-connector",
+     flag_descriptions::kIOSDeviceTrustConnectorName,
+     flag_descriptions::kIOSDeviceTrustConnectorDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         enterprise_connectors::features::kEnableIOSDeviceTrustConnector)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

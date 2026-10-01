@@ -1060,6 +1060,12 @@ inline constexpr char kIOSDefaultBrowserContextualPromoName[] =
 inline constexpr char kIOSDefaultBrowserContextualPromoDescription[] =
     "Enables the contextual default browser promo half-sheet.";
 
+inline constexpr char kIOSDeviceTrustConnectorName[] =
+    "iOS Device Trust Connector";
+inline constexpr char kIOSDeviceTrustConnectorDescription[] =
+    "Enables the enterprise Device Trust Connector on iOS, which exposes the "
+    "chrome.enterprise.deviceTrust attestation API on allowlisted pages.";
+
 inline constexpr char kIOSEnableCloudProfileReportingName[] =
     "Enable profile reporting on iOS";
 inline constexpr char kIOSEnableCloudProfileReportingDescription[] =
