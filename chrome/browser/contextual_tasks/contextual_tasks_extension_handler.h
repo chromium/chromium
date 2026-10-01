@@ -8,6 +8,7 @@
 #include <map>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -280,6 +281,7 @@ class ContextualTasksExtensionHandler
       lens::ClientToSearchMessage* response_message,
       contextual_search::ContextualSearchSessionHandle* session_handle,
       const std::optional<base::UnguessableToken>& overlay_token);
+  void HandleOpenLinkInSidePanelMode(std::string_view url);
   std::optional<lens::AddedContext> GetLensAddedContext();
   void DoSubmitQueryCleanup();
   void CloseLensAsync(lens::LensOverlayDismissalSource dismissal_source);

@@ -251,6 +251,11 @@ void ContextualTasksExtensionHandler::OnWebviewMessage(
       HandleOnSubmitQueryRequest();
       return;
     }
+    if (search_to_client_message.has_open_link_in_side_panel_mode()) {
+      HandleOpenLinkInSidePanelMode(
+          search_to_client_message.open_link_in_side_panel_mode().url());
+      return;
+    }
   }
 
   // Fall back to legacy AimToClientMessage.
@@ -262,6 +267,9 @@ void ContextualTasksExtensionHandler::OnWebviewMessage(
   if (aim_to_client_message.has_handshake_response()) {
     contextual_tasks_page_->OnHandshakeComplete();
     RecordTimeToHandshakeComplete();
+  } else if (aim_to_client_message.has_open_link_in_side_panel_mode()) {
+    HandleOpenLinkInSidePanelMode(
+        aim_to_client_message.open_link_in_side_panel_mode().url());
   }
 }
 
@@ -382,6 +390,46 @@ void ContextualTasksExtensionHandler::AppendTabContextsToOnSubmitQueryResponse(
     *removed->mutable_request_id() = removed_id;
   }
   session_handle->set_smart_tab_sharing_toggled_since_last_turn(false);
+}
+
+void ContextualTasksExtensionHandler::HandleOpenLinkInSidePanelMode(
+    std::string_view url) {
+  GURL target_url(url);
+  // Only accept valid URLs that are HTTP or HTTPS.
+  if (!target_url.is_valid() || !target_url.SchemeIsHTTPOrHTTPS()) {
+    return;
+  }
+
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(&render_frame_host());
+  if (!web_contents) {
+    return;
+  }
+
+  auto* ui_service =
+      contextual_tasks::ContextualTasksUiServiceFactory::GetForBrowserContext(
+          render_frame_host().GetBrowserContext());
+  if (!ui_service) {
+    return;
+  }
+
+  tabs::TabInterface* tab =
+      tabs::TabInterface::MaybeGetFromContents(web_contents);
+  BrowserWindowInterface* browser = GetBrowserWindowInterface();
+
+  base::Uuid task_id = task_id_.value_or(base::Uuid());
+  if (!task_id.is_valid()) {
+    if (auto* helper =
+            ContextualSearchWebContentsHelper::FromWebContents(web_contents);
+        helper && helper->task_id().has_value()) {
+      task_id = *helper->task_id();
+    }
+  }
+
+  ui_service->OnThreadLinkClicked(
+      target_url, task_id, tab ? tab->GetWeakPtr() : nullptr,
+      browser ? browser->GetWeakPtr() : nullptr,
+      web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
 }
 
 std::optional<lens::AddedContext>
