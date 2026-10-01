@@ -1,5 +1,36 @@
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 === END INITIAL PAGE LOAD ===
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=SUBTREE] on [File] class_name=android.widget.TextView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.MenuItem [contentTypes=SUBTREE] on [File] class_name=android.view.MenuItem
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.MenuItem [contentTypes=SUBTREE] on [File] class_name=android.view.MenuItem
+TYPE_WINDOW_CONTENT_CHANGED [contentTypes=EXPANDED] on [File] class_name=android.view.MenuItem
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.MenuItem [contentTypes=SUBTREE] on [File] class_name=android.view.MenuItem
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 TYPE_WINDOW_STATE_CHANGED [contentTypes=SUBTREE] text=[] on class_name=android.view.View
 TYPE_WINDOW_STATE_CHANGED [contentTypes=SUBTREE] text=[] on class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.MenuItem [contentTypes=SUBTREE] on [File] class_name=android.view.MenuItem
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.MenuItem [contentTypes=SUBTREE] on [File] class_name=android.view.MenuItem
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.MenuItem [contentTypes=SUBTREE] on [File] class_name=android.view.MenuItem
+TYPE_WINDOW_CONTENT_CHANGED [contentTypes=EXPANDED] on [File] class_name=android.view.MenuItem
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.MenuItem [contentTypes=SUBTREE] on [File] class_name=android.view.MenuItem
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=SUBTREE] on [open new done] class_name=android.widget.TextView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=SUBTREE] on [File] class_name=android.widget.TextView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.MenuItem [contentTypes=SUBTREE] on [File] class_name=android.view.MenuItem
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.MenuItem [contentTypes=SUBTREE] on [File] class_name=android.view.MenuItem
+TYPE_WINDOW_CONTENT_CHANGED [contentTypes=EXPANDED] on [File] class_name=android.view.MenuItem
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.MenuItem [contentTypes=SUBTREE] on [File] class_name=android.view.MenuItem
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
 TYPE_WINDOW_STATE_CHANGED [contentTypes=SUBTREE] text=[] on class_name=android.view.View
 TYPE_WINDOW_STATE_CHANGED [contentTypes=SUBTREE] text=[] on class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.view.View [contentTypes=SUBTREE] on class_name=android.view.View
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.widget.TextView [contentTypes=SUBTREE] on [show menubar done] class_name=android.widget.TextView
+TYPE_WINDOW_CONTENT_CHANGED class_name=android.webkit.WebView [contentTypes=SUBTREE] on class_name=android.webkit.WebView
