@@ -854,8 +854,24 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksExtensionHandlerBrowserTest,
   auto model1 = handler_->GetOrCreateInputStateModelForTesting();
   ASSERT_TRUE(model1);
 
-  // Set a lens crop through the primary handler.
+  // Set a lens crop through the primary handler and wait for the asynchronous
+  // mount message (is_active=true) to reach the page. Otherwise it may still
+  // be in flight when the unmount expectation below is registered, and would
+  // be matched against it.
+  base::RunLoop mount_run_loop;
+  EXPECT_CALL(mock_page_, PostSearchMessage(_))
+      .WillOnce([&](mojo_base::ProtoWrapper wrapper) {
+        auto message = wrapper.As<lens::ClientToSearchMessage>();
+        ASSERT_TRUE(message.has_value());
+        EXPECT_TRUE(message->has_inject_chrome_input());
+        const auto& inject_input = message->inject_chrome_input();
+        EXPECT_EQ(inject_input.input_type(),
+                  lens::ClientToSearchMessage::InjectChromeInput::LENS_CHIP);
+        EXPECT_TRUE(inject_input.is_active());
+        mount_run_loop.Quit();
+      });
   handler_->OnLensThumbnailCreatedForTesting("data:image/png;base64,test_crop");
+  mount_run_loop.Run();
 
   // Create a child iframe representing the lens chip extension frame.
   ASSERT_TRUE(
