@@ -155,6 +155,11 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/fusebox/FuseboxMetrics.java:getHistogramExtensionForMimeType) -->
 
+<variants name="FuseboxTabSelectionCount">
+  <variant name=".MultipleTabs" summary="Multiple tabs were selected"/>
+  <variant name=".SingleTab" summary="A single tab was selected"/>
+</variants>
+
 <variants name="KeywordType">
   <variant name="" summary="aggregated across all keyword types"/>
   <variant name=".DefaultSearchEngineSetByPolicy"
@@ -3199,6 +3204,24 @@ Keep consistent with active providers. Doesn't need to include every provider in
     Recorded when the user finishes an interaction with {AttachmentType}.
   </summary>
   <token key="AttachmentType" variants="MobileFuseboxPickerAttachmentType"/>
+</histogram>
+
+<histogram
+    name="Omnibox.MobileFusebox.TabAttachment.EffectiveDuration{SelectionCount}"
+    units="ms" expires_after="2027-07-07">
+  <owner>madhavpruthi@google.com</owner>
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records the effective duration to prepare and attach a tab to Fusebox from
+    the Tab Picker ({SelectionCount}), excluding user interaction time spent
+    inside the picker. Calculated as on-demand tab load duration in the picker
+    (measured from the load request, including any time queued behind the
+    concurrent load limit; 0 if the tab was already loaded) plus the upload and
+    contextualization duration in Fusebox after picker exit. Recorded when a
+    TabPicker attachment upload completes successfully.
+  </summary>
+  <token key="SelectionCount" variants="FuseboxTabSelectionCount"/>
 </histogram>
 
 <histogram name="Omnibox.MobileFusebox.TabPickerTabsAttached" units="count"

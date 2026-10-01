@@ -5,11 +5,11 @@
 package org.chromium.chrome.browser.omnibox.fusebox;
 
 import android.annotation.SuppressLint;
-import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.TimeUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.UmaRecorderHolder;
 import org.chromium.build.annotations.NullMarked;
@@ -50,6 +50,10 @@ public class FuseboxMetrics {
     @VisibleForTesting
     /* package */ static final String ATTACHMENT_C2PA_DETECTED_HISTOGRAM =
             "Lens.Composebox.ImageUpload.Java.C2paDetected";
+
+    @VisibleForTesting
+    /* package */ static final String TAB_ATTACHMENT_EFFECTIVE_DURATION_HISTOGRAM =
+            "Omnibox.MobileFusebox.TabAttachment.EffectiveDuration";
 
     private static final String TOKEN_SEPARATOR = ".";
 
@@ -182,7 +186,7 @@ public class FuseboxMetrics {
 
     static void recordReanchorViewsDuration(long startTime) {
         RecordHistogram.recordTimesHistogram(
-                REANCHOR_VIEWS_DURATION_HISTOGRAM, SystemClock.elapsedRealtime() - startTime);
+                REANCHOR_VIEWS_DURATION_HISTOGRAM, TimeUtils.elapsedRealtimeMillis() - startTime);
     }
 
     static void notifyAttachmentSizeLimitCheck(@FuseboxAttachmentSizeLimitCheck int result) {
@@ -327,6 +331,24 @@ public class FuseboxMetrics {
         notifyAttachmentTime(startTime, type, SUCCEEDED_HISTOGRAM);
     }
 
+    /**
+     * Records the effective duration required to prepare and attach a tab from the Tab Picker.
+     *
+     * @param attachStartTimeMs The timestamp when attachment preparation began.
+     * @param loadDurationMs The duration the tab spent loading on demand prior to attachment, or 0
+     *     if the tab was already loaded.
+     * @param isPartOfMultiTabSelection Whether the tab was one of several newly attached by one tab
+     *     picker selection.
+     */
+    static void recordTabAttachmentEffectiveDuration(
+            long attachStartTimeMs, long loadDurationMs, boolean isPartOfMultiTabSelection) {
+        long attachDurationMs = TimeUtils.elapsedRealtimeMillis() - attachStartTimeMs;
+        String suffix = isPartOfMultiTabSelection ? ".MultipleTabs" : ".SingleTab";
+        RecordHistogram.recordMediumTimesHistogram(
+                TAB_ATTACHMENT_EFFECTIVE_DURATION_HISTOGRAM + suffix,
+                loadDurationMs + attachDurationMs);
+    }
+
     static void notifyFileAttachmentSize(long sizeInBytes, @MimeTypeUtils.Type int fileType) {
         int sizeInKiB = (int) ConversionUtils.bytesToKilobytes(sizeInBytes);
         recordAttachmentSizeHistogram(FILE_ATTACHMENT_SIZE_HISTOGRAM, sizeInKiB);
@@ -410,7 +432,7 @@ public class FuseboxMetrics {
 
     private static void notifyAttachmentTime(
             long startTime, @FuseboxAttachmentButtonType int type, String genericHistogram) {
-        long duration = SystemClock.elapsedRealtime() - startTime;
+        long duration = TimeUtils.elapsedRealtimeMillis() - startTime;
         RecordHistogram.recordMediumTimesHistogram(genericHistogram, duration);
         String typeHistogram = typeScopedHistogram(genericHistogram, type);
         RecordHistogram.recordMediumTimesHistogram(typeHistogram, duration);

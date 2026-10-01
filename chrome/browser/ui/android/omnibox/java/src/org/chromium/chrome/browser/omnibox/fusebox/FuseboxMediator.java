@@ -826,6 +826,7 @@ import java.util.function.Supplier;
         mPopupItemSelected = true;
         hidePopup();
         mMetrics.notifyAttachmentButtonUsed(FuseboxAttachmentButtonType.TAB_PICKER);
+        TabLoadingService.getInstance().checkpointLoadDurations(mModelList.getAttachedTabIds());
 
         Intent intent = ChromeItemPickerUtils.createChromeItemPickerIntent(mContext);
         if (intent == null) return;
@@ -862,7 +863,13 @@ import java.util.function.Supplier;
     /* package */ void onTabPickerResult(int resultCode, @Nullable Intent data) {
         if (!isInInputSession()) return;
 
-        if (resultCode == Activity.RESULT_CANCELED) {
+        @Nullable ArrayList<Integer> tabIds = null;
+        if (resultCode == Activity.RESULT_OK && data != null && data.getExtras() != null) {
+            tabIds = data.getIntegerArrayListExtra(ChromeItemPickerExtras.EXTRA_ATTACHMENT_TAB_IDS);
+        }
+
+        if (tabIds == null) {
+            TabLoadingService.getInstance().checkpointLoadDurations(mModelList.getAttachedTabIds());
             if (data != null && data.hasExtra(ChromeItemPickerExtras.EXTRA_ITEM_PICKER_ERROR)) {
                 onAttachmentUploadFailed();
             }
@@ -870,14 +877,11 @@ import java.util.function.Supplier;
             return;
         }
 
-        if (resultCode != Activity.RESULT_OK || data == null || data.getExtras() == null) return;
-        ArrayList<Integer> tabIds =
-                data.getIntegerArrayListExtra(ChromeItemPickerExtras.EXTRA_ATTACHMENT_TAB_IDS);
-        // tabIds will be null when the activity finishes with cancel using the back button.
-        if (tabIds == null) return;
-        updateCurrentlyAttachedTabs(new HashSet<>(tabIds));
+        Set<Integer> selectedTabIds = new HashSet<>(tabIds);
+        TabLoadingService.getInstance().checkpointLoadDurations(selectedTabIds);
+        updateCurrentlyAttachedTabs(selectedTabIds);
         mPopupItemSelected = true;
-        if (mModelList.size() != 0) {
+        if (!mModelList.isEmpty()) {
             maybeActivateAiMode(AiModeActivationSource.IMPLICIT);
         }
     }
@@ -891,34 +895,34 @@ import java.util.function.Supplier;
      * Reconciles the model list attachments with a new set of selected tab IDs by removing
      * deselected tabs and adding newly selected tabs in one pass.
      *
-     * @param newlySelectedTabIds The set of Tab IDs (as Integer) that are now selected by the user.
+     * @param selectedTabIds The set of Tab IDs (as Integer) that are now selected by the user.
      */
     @VisibleForTesting
-    /* package */ void updateCurrentlyAttachedTabs(Set<Integer> newlySelectedTabIds) {
+    /* package */ void updateCurrentlyAttachedTabs(Set<Integer> selectedTabIds) {
         if (!isInInputSession()) return;
         TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
         if (tabModelSelector == null) return;
 
         Set<Integer> currentAttachedIds = mModelList.getAttachedTabIds();
-        try (var ignored = mModelList.beginBatchEdit()) {
-            mModelList.removeTabsNotInSet(newlySelectedTabIds);
+        Set<Integer> newlyAddedTabIds = new HashSet<>(selectedTabIds);
+        newlyAddedTabIds.removeAll(currentAttachedIds);
+        boolean isPartOfMultiTabSelection = newlyAddedTabIds.size() > 1;
 
-            for (int id : newlySelectedTabIds) {
-                if (!currentAttachedIds.contains(id)) {
-                    Tab tab = tabModelSelector.getTabById(id);
-                    if (tab == null) continue;
-                    boolean addFailed =
-                            !mModelList.add(
-                                    FuseboxAttachment.forTab(
-                                            tab,
-                                            isCurrentTab(tab),
-                                            mContext.getResources(),
-                                            FuseboxAttachmentButtonType.TAB_PICKER,
-                                            /* isSuggestedTab= */ false));
-                    if (addFailed) {
-                        break;
-                    }
-                }
+        try (var ignored = mModelList.beginBatchEdit()) {
+            mModelList.removeTabsNotInSet(selectedTabIds);
+
+            for (int id : newlyAddedTabIds) {
+                Tab tab = tabModelSelector.getTabById(id);
+                if (tab == null) continue;
+                FuseboxAttachment attachment =
+                        FuseboxAttachment.forTab(
+                                tab,
+                                isCurrentTab(tab),
+                                mContext.getResources(),
+                                FuseboxAttachmentButtonType.TAB_PICKER,
+                                /* isSuggestedTab= */ false);
+                attachment.setIsPartOfMultiTabSelection(isPartOfMultiTabSelection);
+                mModelList.add(attachment);
             }
         }
     }

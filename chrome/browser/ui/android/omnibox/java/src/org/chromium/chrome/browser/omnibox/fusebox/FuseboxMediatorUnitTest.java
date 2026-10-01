@@ -103,6 +103,8 @@ import org.chromium.components.browser_ui.util.ChromeItemPickerUtils;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.contextual_search.ContextUploadErrorType;
+import org.chromium.components.contextual_search.ContextUploadStatus;
 import org.chromium.components.contextual_search.DisclaimerStatus;
 import org.chromium.components.contextual_search.InputState;
 import org.chromium.components.contextual_search.InputStateBuilder;
@@ -1836,6 +1838,50 @@ public class FuseboxMediatorUnitTest {
         assertThat(mAttachments.getAttachedTabIds()).containsExactlyElementsIn(newlySelectedIds);
     }
 
+    private void notifyUploadSuccessful(int tabId) {
+        mAttachments.onContextUploadStatusChanged(
+                "token-" + tabId,
+                ContextUploadStatus.UPLOAD_SUCCESSFUL,
+                ContextUploadErrorType.UNKNOWN);
+    }
+
+    private HistogramWatcher watchEffectiveDuration(String recordedSuffix, String skippedSuffix) {
+        return HistogramWatcher.newBuilder()
+                .expectAnyRecord(
+                        FuseboxMetrics.TAB_ATTACHMENT_EFFECTIVE_DURATION_HISTOGRAM + recordedSuffix)
+                .expectNoRecords(
+                        FuseboxMetrics.TAB_ATTACHMENT_EFFECTIVE_DURATION_HISTOGRAM + skippedSuffix)
+                .build();
+    }
+
+    @Test
+    public void updateCurrentlyAttachedTabs_multipleNewTabs_recordsMultipleTabsDuration() {
+        when(mTabLoadingService.getAndClearLoadDuration(106)).thenReturn(500L);
+        mockTab(106, /* webContentsReady= */ true);
+        mockTab(107, /* webContentsReady= */ true);
+        mMediator.updateCurrentlyAttachedTabs(Set.of(106, 107));
+        RobolectricUtil.runAllBackgroundAndUi();
+        var watcher = watchEffectiveDuration(".MultipleTabs", ".SingleTab");
+
+        notifyUploadSuccessful(106);
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void updateCurrentlyAttachedTabs_singleNewTabWithExistingAttachment_notBatch() {
+        when(mTabLoadingService.getAndClearLoadDuration(102)).thenReturn(500L);
+        addTabAttachment(mockTab(101, /* webContentsReady= */ true));
+        mockTab(102, /* webContentsReady= */ true);
+        mMediator.updateCurrentlyAttachedTabs(Set.of(101, 102));
+        RobolectricUtil.runAllBackgroundAndUi();
+        var watcher = watchEffectiveDuration(".SingleTab", ".MultipleTabs");
+
+        notifyUploadSuccessful(102);
+
+        watcher.assertExpected();
+    }
+
     @Test
     public void onTabPickerClicked_launchesTabPickerActivity() {
         mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_CLICKED).run();
@@ -1926,6 +1972,39 @@ public class FuseboxMediatorUnitTest {
 
         // Verify AutocompleteRequestType is AI Mode.
         assertEquals(AutocompleteRequestType.AI_MODE, mInput.getRequestType());
+        verify(mTabLoadingService).checkpointLoadDurations(Set.of(101, 102));
+    }
+
+    @Test
+    public void onTabPickerClicked_checkpointsAttachedTabDurations() {
+        addTabAttachment(mockTab(101));
+        mModel.get(FuseboxProperties.POPUP_ATTACH_TAB_PICKER_CLICKED).run();
+        verify(mTabLoadingService).checkpointLoadDurations(Set.of(101));
+    }
+
+    @Test
+    public void onTabPickerResult_canceled_checkpointsAttachedTabDurations() {
+        addTabAttachment(mockTab(101));
+        mMediator.onTabPickerResult(Activity.RESULT_CANCELED, null);
+        verify(mTabLoadingService).checkpointLoadDurations(Set.of(101));
+    }
+
+    @Test
+    public void onTabPickerResult_nullTabIds_checkpointsAttachedTabDurations() {
+        addTabAttachment(mockTab(101));
+        Intent resultIntent = new Intent();
+        mMediator.onTabPickerResult(Activity.RESULT_OK, resultIntent);
+        verify(mTabLoadingService).checkpointLoadDurations(Set.of(101));
+    }
+
+    @Test
+    public void onCameraPickerCanceled_doesNotTouchTabLoadingService() {
+        doReturn(true).when(mWindowAndroid).hasPermission(any());
+        mModel.get(FuseboxProperties.POPUP_ATTACH_CAMERA_CLICKED).run();
+        verify(mWindowAndroid)
+                .showCancelableIntent(any(Intent.class), mIntentCallbackCaptor.capture(), any());
+        mIntentCallbackCaptor.getValue().onIntentCompleted(Activity.RESULT_CANCELED, null);
+        verify(mTabLoadingService, never()).checkpointLoadDurations(any());
     }
 
     @Test

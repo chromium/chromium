@@ -11,11 +11,11 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.SystemClock;
 import android.text.TextUtils;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
+import org.chromium.base.TimeUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
@@ -45,6 +45,7 @@ public final class FuseboxAttachment extends ListItem {
 
     private boolean mIsUploadComplete;
     private boolean mIsFetchingTabDataFromCache;
+    private boolean mIsPartOfMultiTabSelection;
     private @Nullable String mToken;
 
     private FuseboxAttachment(
@@ -102,7 +103,8 @@ public final class FuseboxAttachment extends ListItem {
         }
         mIsUploadComplete = false;
         mToken = null;
-        startTime = optionalStartTime == null ? SystemClock.elapsedRealtime() : optionalStartTime;
+        startTime =
+                optionalStartTime == null ? TimeUtils.elapsedRealtimeMillis() : optionalStartTime;
         this.buttonType = buttonType;
         this.isSuggestedTab = isSuggestedTab;
         this.driveId = driveId;
@@ -328,6 +330,16 @@ public final class FuseboxAttachment extends ListItem {
 
     public void setUploadIsComplete() {
         mIsUploadComplete = true;
+    }
+
+    /** Sets whether this tab was one of several newly attached by one tab picker selection. */
+    void setIsPartOfMultiTabSelection(boolean isPartOfMultiTabSelection) {
+        mIsPartOfMultiTabSelection = isPartOfMultiTabSelection;
+    }
+
+    /** Returns whether this tab was one of several newly attached by one tab picker selection. */
+    boolean isPartOfMultiTabSelection() {
+        return mIsPartOfMultiTabSelection;
     }
 
     /** Returns the ID of the associated tab, or Tab.INVALID_TAB_ID if no tab is associated. */

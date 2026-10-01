@@ -38,6 +38,7 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerViewAdapter.FuseboxAttachmentType;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.utilities.TabLoadingService;
 import org.chromium.components.contextual_search.ContextUploadErrorType;
 import org.chromium.components.contextual_search.ContextUploadStatus;
 import org.chromium.components.omnibox.OmniboxFeatures;
@@ -58,6 +59,7 @@ public class FuseboxAttachmentModelListUnitTest {
     @Mock private Runnable mAttachmentUploadFailedListener;
     @Mock private WebContents mWebContents;
     @Mock private RenderWidgetHostView mRenderWidgetHostView;
+    @Mock private TabLoadingService mTabLoadingService;
 
     private Resources mResources;
     private FuseboxAttachmentModelList mFuseboxAttachmentModelList;
@@ -75,6 +77,7 @@ public class FuseboxAttachmentModelListUnitTest {
     @Before
     public void setUp() {
         OmniboxFeatures.sMultiattachmentFusebox.setForTesting(true);
+        TabLoadingService.setInstanceForTesting(mTabLoadingService);
         mFuseboxAttachmentModelList = new FuseboxAttachmentModelList();
         mFuseboxAttachmentModelList.setComposeboxQueryControllerBridge(
                 mComposeboxQueryControllerBridge);
@@ -733,5 +736,58 @@ public class FuseboxAttachmentModelListUnitTest {
 
         assertTrue(mFuseboxAttachmentModelList.isEmpty());
         verify(mComposeboxQueryControllerBridge).removeAttachment("token");
+    }
+
+    private FuseboxAttachment addTabPickerAttachment(int tabId, String token, long loadDurationMs) {
+        FuseboxAttachment attachment = createTabAttachment(tabId, token);
+        mFuseboxAttachmentModelList.add(attachment);
+        when(mTabLoadingService.getAndClearLoadDuration(tabId)).thenReturn(loadDurationMs);
+        return attachment;
+    }
+
+    private void notifyUploadSuccessful(String token) {
+        mFuseboxAttachmentModelList.onContextUploadStatusChanged(
+                token, ContextUploadStatus.UPLOAD_SUCCESSFUL, ContextUploadErrorType.UNKNOWN);
+    }
+
+    private HistogramWatcher newEffectiveDurationWatcher(
+            String recordedSuffix, String skippedSuffix) {
+        return HistogramWatcher.newBuilder()
+                .expectAnyRecord(
+                        FuseboxMetrics.TAB_ATTACHMENT_EFFECTIVE_DURATION_HISTOGRAM + recordedSuffix)
+                .expectNoRecords(
+                        FuseboxMetrics.TAB_ATTACHMENT_EFFECTIVE_DURATION_HISTOGRAM + skippedSuffix)
+                .build();
+    }
+
+    @Test
+    public void testOnContextUploadStatusChanged_tabPickerAttachment_recordsEffectiveDuration() {
+        addTabPickerAttachment(/* tabId= */ 1, "tab-token-1", /* loadDurationMs= */ 500L);
+        var watcher = newEffectiveDurationWatcher(".SingleTab", ".MultipleTabs");
+
+        notifyUploadSuccessful("tab-token-1");
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOnContextUploadStatusChanged_multiTabSelection_recordsMultipleTabsDuration() {
+        addTabPickerAttachment(/* tabId= */ 2, "tab-token-2", /* loadDurationMs= */ 1000L)
+                .setIsPartOfMultiTabSelection(true);
+        var watcher = newEffectiveDurationWatcher(".MultipleTabs", ".SingleTab");
+
+        notifyUploadSuccessful("tab-token-2");
+
+        watcher.assertExpected();
+    }
+
+    @Test
+    public void testOnContextUploadStatusChanged_warmTab_recordsEffectiveDuration() {
+        addTabPickerAttachment(/* tabId= */ 1, "tab-token-warm", /* loadDurationMs= */ 0L);
+        var watcher = newEffectiveDurationWatcher(".SingleTab", ".MultipleTabs");
+
+        notifyUploadSuccessful("tab-token-warm");
+
+        watcher.assertExpected();
     }
 }

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tab.utilities;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
+import org.robolectric.shadows.ShadowSystemClock;
 
 import org.chromium.base.SysUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -40,6 +42,9 @@ import org.chromium.chrome.browser.tab.utilities.TabLoadingService.LoadResult;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link TabLoadingService}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -768,6 +773,126 @@ public class TabLoadingServiceTest {
     private void releaseSlot(Tab tab) {
         verify(tab, atLeastOnce()).addObserver(mTabObserverCaptor.capture());
         mTabObserverCaptor.getValue().onDocumentLoadedInPrimaryMainFrame(tab);
+    }
+
+    @Test
+    public void testGetAndClearLoadDuration_Success() {
+        setupTabForLoad(mTab, TAB_ID);
+        mService.queueLoadIfNeeded(mTab);
+        verify(mTab).addObserver(mTabObserverCaptor.capture());
+
+        ShadowSystemClock.advanceBy(500, TimeUnit.MILLISECONDS);
+        mTabObserverCaptor.getValue().onPageLoadFinished(mTab, JUnitTestGURLs.EXAMPLE_URL);
+
+        assertEquals(500L, mService.getAndClearLoadDuration(TAB_ID));
+        assertEquals(0L, mService.getAndClearLoadDuration(TAB_ID));
+    }
+
+    @Test
+    public void testGetAndClearLoadDuration_Expired_ReturnsZero() {
+        setupTabForLoad(mTab, TAB_ID);
+        mService.queueLoadIfNeeded(mTab);
+        verify(mTab).addObserver(mTabObserverCaptor.capture());
+
+        ShadowSystemClock.advanceBy(500, TimeUnit.MILLISECONDS);
+        mTabObserverCaptor.getValue().onPageLoadFinished(mTab, JUnitTestGURLs.EXAMPLE_URL);
+
+        ShadowSystemClock.advanceBy(6, TimeUnit.MINUTES);
+        assertEquals(0L, mService.getAndClearLoadDuration(TAB_ID));
+    }
+
+    @Test
+    @EnableFeatures(OPTIMIZATION_LIMIT_LOADS)
+    public void testCheckpointLoadDurations_pendingTabPromotedAfterCheckpoint_keepsCheckpoint() {
+        configureConcurrentServiceWithMemoryGb(1);
+        setupTabForLoad(mTab, TAB_ID);
+        setupTabForLoad(mTab2, TAB_ID_2);
+        mService.queueLoadIfNeeded(mTab);
+        mService.queueLoadIfNeeded(mTab2);
+        verify(mTab).addObserver(mTabObserverCaptor.capture());
+        TabObserver observer = mTabObserverCaptor.getValue();
+        ShadowSystemClock.advanceBy(100, TimeUnit.MILLISECONDS);
+
+        mService.checkpointLoadDurations(Set.of(TAB_ID, TAB_ID_2));
+        observer.onPageLoadFinished(mTab, JUnitTestGURLs.EXAMPLE_URL);
+        ShadowSystemClock.advanceBy(50, TimeUnit.MILLISECONDS);
+        observer.onPageLoadFinished(mTab2, JUnitTestGURLs.EXAMPLE_URL);
+
+        assertEquals(100L, mService.getAndClearLoadDuration(TAB_ID_2));
+    }
+
+    @Test
+    public void testCheckpointLoadDurations_finalizesInFlightLoadsAndPrunesUnselected() {
+        finishLoad(mTab, TAB_ID);
+        finishLoad(mTab3, TAB_ID_3);
+
+        setupTabForLoad(mTab2, TAB_ID_2);
+        mService.queueLoadIfNeeded(mTab2);
+        verify(mTab2).addObserver(mTabObserverCaptor.capture());
+        TabObserver tab2Observer = mTabObserverCaptor.getValue();
+        ShadowSystemClock.advanceBy(300, TimeUnit.MILLISECONDS);
+
+        mService.checkpointLoadDurations(Set.of(TAB_ID, TAB_ID_2));
+
+        ShadowSystemClock.advanceBy(200, TimeUnit.MILLISECONDS);
+        tab2Observer.onPageLoadFinished(mTab2, JUnitTestGURLs.EXAMPLE_URL);
+
+        assertEquals(500L, mService.getAndClearLoadDuration(TAB_ID));
+        assertEquals(300L, mService.getAndClearLoadDuration(TAB_ID_2));
+        assertEquals(0L, mService.getAndClearLoadDuration(TAB_ID_3));
+    }
+
+    @Test
+    public void testCheckpointLoadDurations_inFlightLoadFails_clearsDuration() {
+        setupTabForLoad(mTab, TAB_ID);
+        mService.queueLoadIfNeeded(mTab);
+        verify(mTab).addObserver(mTabObserverCaptor.capture());
+        TabObserver tabObserver = mTabObserverCaptor.getValue();
+        ShadowSystemClock.advanceBy(300, TimeUnit.MILLISECONDS);
+
+        mService.checkpointLoadDurations(Set.of(TAB_ID));
+        tabObserver.onPageLoadFailed(mTab, -1);
+
+        assertEquals(0L, mService.getAndClearLoadDuration(TAB_ID));
+    }
+
+    @Test
+    public void testGetAndClearLoadDuration_Failure_ReturnsZero() {
+        setupTabForLoad(mTab, TAB_ID);
+        mService.queueLoadIfNeeded(mTab);
+        verify(mTab).addObserver(mTabObserverCaptor.capture());
+
+        mTabObserverCaptor.getValue().onPageLoadFailed(mTab, -1);
+
+        assertEquals(0L, mService.getAndClearLoadDuration(TAB_ID));
+    }
+
+    @Test
+    public void testGetAndClearLoadDuration_Cancelled_ReturnsZero() {
+        setupTabForLoad(mTab, TAB_ID);
+        mService.queueLoadIfNeeded(mTab);
+
+        mService.cancelLoadIfNeeded(mTab);
+
+        assertEquals(0L, mService.getAndClearLoadDuration(TAB_ID));
+    }
+
+    @Test
+    public void testLoadDurations_expiredEntriesPrunedWhenNewLoadCompletes() {
+        finishLoad(mTab, TAB_ID);
+        ShadowSystemClock.advanceBy(6, TimeUnit.MINUTES);
+
+        finishLoad(mTab2, TAB_ID_2);
+
+        assertEquals(1, mService.getTrackedLoadDurationCountForTesting());
+    }
+
+    private void finishLoad(Tab tab, int id) {
+        setupTabForLoad(tab, id);
+        mService.queueLoadIfNeeded(tab);
+        verify(tab).addObserver(mTabObserverCaptor.capture());
+        ShadowSystemClock.advanceBy(500, TimeUnit.MILLISECONDS);
+        mTabObserverCaptor.getValue().onPageLoadFinished(tab, JUnitTestGURLs.EXAMPLE_URL);
     }
 
     private void setupTabForLoad(Tab tab, int id) {
