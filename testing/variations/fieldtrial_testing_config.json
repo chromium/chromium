@@ -3438,6 +3438,26 @@
             ]
         }
     ],
+    "BuildTFLiteModelExecutionTaskOnLoadingThread": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BuildTFLiteModelExecutionTaskOnLoadingThread"
+                    ]
+                }
+            ]
+        }
+    ],
     "BusyLoopLessWhenCompositorGesture": [
         {
             "platforms": [
