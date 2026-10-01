@@ -525,7 +525,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)contentWillDisappearAnimated:(BOOL)animated {
   [self recordIdlePageStatus];
-  [self.topToolbar unfocusSearchBar];
+  [self exitSearchModeAndUnfocusSearchBar];
 
   [self.swipeToIncognitoIPH
       dismissWithReason:IPHDismissalReasonType::kTappedOutsideIPHAndAnchorView];
@@ -768,7 +768,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)setCurrentPage:(TabGridPage)currentPage {
   // Record the idle metric if the previous page was the tab groups page.
   if (_currentPage != currentPage) {
-    [self.topToolbar unfocusSearchBar];
+    [self exitSearchModeAndUnfocusSearchBar];
     [self tabGridDidPerformAction:TabGridActionType::kChangePage];
     if (_currentPage == TabGridPageTabGroups) {
       _idleTabGroupsPage = YES;
@@ -1306,6 +1306,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   [self.mutator quitSearchMode];
 }
 
+// Exits search mode if active and unfocuses the search bar.
+- (void)exitSearchModeAndUnfocusSearchBar {
+  if (_mode == TabGridMode::kSearch) {
+    [self quitSearchMode];
+  }
+  [self.topToolbar unfocusSearchBar];
+}
+
 // Called when a drag will begin.
 - (void)dragSessionWillBegin {
   self.dragSessionInProgress = YES;
@@ -1387,6 +1395,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
     // crbug.com/336515391.
     return;
   }
+
+  // Exit early if the Tab Grid Mode is incompatible with the search bar.
+  if (_mode != TabGridMode::kSearch) {
+    return;
+  }
+
   _searchText = searchText;
   searchBar.searchTextField.accessibilityIdentifier =
       [kTabGridSearchTextFieldIdentifierPrefix
