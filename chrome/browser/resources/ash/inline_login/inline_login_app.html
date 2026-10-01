@@ -67,29 +67,29 @@
   <cr-view-manager id="viewManager">
     <!-- Show welcome screen on Chrome OS to clarify that account will be
          available in ARC. -->
-    <div id="[[viewEnum_.WELCOME]]" slot="view">
-      <welcome-page-app on-opened-new-window="closeDialog_">
+    <div id="[[viewEnum.WELCOME]]" slot="view">
+      <welcome-page-app on-opened-new-window="closeDialog">
       </welcome-page-app>
     </div>
-    <div id="[[viewEnum_.SIGNIN_BLOCKED_BY_POLICY]]" slot="view">
-      <signin-blocked-by-policy-page email="[[email_]]"
-        hosted-domain="[[hostedDomain_]]" device-type="[[deviceType_]]">
+    <div id="[[viewEnum.SIGNIN_BLOCKED_BY_POLICY]]" slot="view">
+      <signin-blocked-by-policy-page email="[[email]]"
+        hosted-domain="[[hostedDomain]]" device-type="[[deviceType]]">
       </signin-blocked-by-policy-page>
     </div>
-    <div id="[[viewEnum_.SIGNIN_ERROR]]" slot="view">
+    <div id="[[viewEnum.SIGNIN_ERROR]]" slot="view">
       <signin-error-page>
       </signin-error-page>
     </div>
-    <div id="[[viewEnum_.ADD_ACCOUNT]]" slot="view">
+    <div id="[[viewEnum.ADD_ACCOUNT]]" slot="view">
       <paper-spinner-lite id="spinner"
-          active="[[isSpinnerActive_(loading_, verifyingAccount_)]]">
+          active="[[isSpinnerActive(loading, verifyingAccount)]]">
       </paper-spinner-lite>
-      <p hidden$="[[!verifyingAccount_]]">
+      <p hidden$="[[!verifyingAccount]]">
         $i18n{accountManagerDialogSigninSpinnerText}
       </p>
 
       <webview id="signinFrame" name="signin-frame" class="signin-frame"
-        hidden$="[[isSpinnerActive_(loading_, verifyingAccount_)]]"
+        hidden$="[[isSpinnerActive(loading, verifyingAccount)]]"
         allowscaling>
       </webview>
     </div>
@@ -97,27 +97,27 @@
 </div>
 
 <div class="buttons"
-    hidden$="[[isSpinnerActive_(loading_, verifyingAccount_)]]">
+    hidden$="[[isSpinnerActive(loading, verifyingAccount)]]">
   <cr-button class="back-button rounded-button"
       aria-label="$i18n{accessibleBackButtonLabel}"
-      on-click="handleGoBack_"
-      hidden$="[[!shouldShowBackButton_(currentView_, verifyingAccount_)]]">
-    <iron-icon icon="[[getBackButtonIcon_()]]"></iron-icon>
+      on-click="handleGoBack"
+      hidden$="[[!shouldShowBackButton(currentView, verifyingAccount)]]">
+    <iron-icon icon="[[getBackButtonIcon()]]"></iron-icon>
     $i18n{accessibleBackButtonLabel}
   </cr-button>
 
   <div class="action-buttons"
-      hidden$="[[!shouldShowGaiaButtons_(currentView_)]]">
-    <gaia-action-buttons authenticator="[[authenticator_]]"
+      hidden$="[[!shouldShowGaiaButtons(currentView)]]">
+    <gaia-action-buttons authenticator="[[authenticator]]"
         rounded-button="true"
-        on-set-focus-to-webview="setFocusToWebview_">
+        on-set-focus-to-webview="setFocusToWebview">
     </gaia-action-buttons>
   </div>
 
   <cr-button class="next-button action-button rounded-button"
       aria-label="[[i18n('ok')]]"
-      on-click="onOkButtonClick_"
-      hidden$="[[!shouldShowOkButton_(currentView_)]]">
+      on-click="onOkButtonClick"
+      hidden$="[[!shouldShowOkButton(currentView)]]">
     [[i18n('ok')]]
   </cr-button>
 </div>

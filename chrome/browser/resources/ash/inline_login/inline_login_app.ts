@@ -81,7 +81,7 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
   static get properties() {
     return {
       /** Mirroring the enum so that it can be used from HTML bindings. */
-      viewEnum_: {
+      viewEnum: {
         type: Object,
         value: View,
       },
@@ -89,7 +89,7 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
       /**
        * Indicates whether the page is loading.
        */
-      loading_: {
+      loading: {
         type: Boolean,
         value: true,
       },
@@ -97,7 +97,7 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
       /**
        * Indicates whether the account is being verified.
        */
-      verifyingAccount_: {
+      verifyingAccount: {
         type: Boolean,
         value: false,
       },
@@ -105,7 +105,7 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
       /**
        * The auth extension host instance.
        */
-      authenticator_: {
+      authenticator: {
         type: Object,
         value: null,
       },
@@ -113,7 +113,7 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
       /*
        * True if welcome page should not be shown.
        */
-      shouldSkipWelcomePage_: {
+      shouldSkipWelcomePage: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('shouldSkipWelcomePage');
@@ -124,7 +124,7 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
       /*
        * True if the dialog is open for reauthentication.
        */
-      isReauthentication_: {
+      isReauthentication: {
         type: Boolean,
         value: false,
       },
@@ -132,17 +132,22 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
       /**
        * User's email used in the sign-in flow.
        */
-      email_: {type: String, value: ''},
+      email: {type: String, value: ''},
 
       /**
        * Hosted domain of the user's email used in the sign-in flow.
        */
-      hostedDomain_: {type: String, value: ''},
+      hostedDomain: {type: String, value: ''},
+
+      /**
+       * Device type used in the sign-in flow.
+       */
+      deviceType: {type: String, value: ''},
 
       /**
        * Whether secondary account sign-ins are allowed.
        */
-      isSecondaryGoogleAccountSigninAllowed_: {
+      isSecondaryGoogleAccountSigninAllowed: {
         type: Boolean,
         value() {
           return loadTimeData.getBoolean('secondaryGoogleAccountSigninAllowed');
@@ -152,24 +157,26 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
       /**
        * Id of the screen that is currently displayed.
        */
-      currentView_: {
+      currentView: {
         type: String,
         value: '',
       },
     };
   }
 
-  private loading_: boolean;
-  private verifyingAccount_: boolean;
-  private authenticator_: Authenticator|null;
+  declare protected viewEnum: typeof View;
+  declare protected loading: boolean;
+  declare protected verifyingAccount: boolean;
+  declare protected authenticator: Authenticator|null;
 
-  private shouldSkipWelcomePage_: boolean;
-  private isReauthentication_: boolean;
-  private email_: string;
-  private hostedDomain_: string;
-  private isSecondaryGoogleAccountSigninAllowed_: boolean;
+  declare protected shouldSkipWelcomePage: boolean;
+  declare protected isReauthentication: boolean;
+  declare protected email: string;
+  declare protected hostedDomain: string;
+  declare protected deviceType: string;
+  declare protected isSecondaryGoogleAccountSigninAllowed: boolean;
 
-  private currentView_: View;
+  declare protected currentView: View;
 
   /** Whether the login UI is loaded for signing in primary account. */
   private isLoginPrimaryAccount_: boolean = false;
@@ -180,7 +187,7 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
   override ready() {
     super.ready();
 
-    if (!this.isSecondaryGoogleAccountSigninAllowed_) {
+    if (!this.isSecondaryGoogleAccountSigninAllowed) {
       // This can happen only if the user opened chrome://chrome-signin manually
       // in the browser. Normally (in the account addition dialog) this will be
       // handled earlier and a special error screen will be shown.
@@ -189,7 +196,7 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
       return;
     }
 
-    this.authenticator_ = new Authenticator(this.$.signinFrame);
+    this.authenticator = new Authenticator(this.$.signinFrame);
     this.addAuthenticatorListeners_();
     this.browserProxy_.initialize();
   }
@@ -200,30 +207,30 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
     this.addWebUiListener(
         'load-authenticator',
         (data: AuthParams) => this.loadAuthenticator_(data));
-    this.addWebUiListener('close-dialog', () => this.closeDialog_());
+    this.addWebUiListener('close-dialog', () => this.closeDialog());
     this.addWebUiListener(
         'show-signin-error-page',
         (data: SigninErrorPageData) => this.signinErrorShowView_(data));
   }
 
   private addAuthenticatorListeners_() {
-    assert(this.authenticator_);
-    this.authenticator_.addEventListener(
+    assert(this.authenticator);
+    this.authenticator.addEventListener(
         'dropLink', e => this.onDropLink_(e as CustomEvent<string>));
-    this.authenticator_.addEventListener(
+    this.authenticator.addEventListener(
         'newWindow',
         e => this.onNewWindow_(e as CustomEvent<NewWindowProperties>));
-    this.authenticator_.addEventListener('ready', () => this.onAuthReady_());
-    this.authenticator_.addEventListener(
+    this.authenticator.addEventListener('ready', () => this.onAuthReady_());
+    this.authenticator.addEventListener(
         'resize', e => this.onResize_(e as CustomEvent<string>));
-    this.authenticator_.addEventListener(
+    this.authenticator.addEventListener(
         'authCompleted',
         e => this.onAuthCompleted_(e as CustomEvent<AuthCompletedCredentials>));
-    this.authenticator_.addEventListener(
+    this.authenticator.addEventListener(
         'showIncognito', () => this.onShowIncognito_());
-    this.authenticator_.addEventListener(
+    this.authenticator.addEventListener(
         'getAccounts', () => this.onGetAccounts_());
-    this.authenticator_.addEventListener(
+    this.authenticator.addEventListener(
         'getDeviceId', () => this.onGetDeviceId_());
   }
 
@@ -237,11 +244,11 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
     e.detail.window.discard();
     // On Chrome OS this dialog is always-on-top, so we have to close it if
     // user opens a link in a new window.
-    this.closeDialog_();
+    this.closeDialog();
   }
 
   private onAuthReady_() {
-    this.loading_ = false;
+    this.loading = false;
     if (this.isLoginPrimaryAccount_) {
       this.browserProxy_.recordAction('Signin_SigninPage_Shown');
     }
@@ -253,7 +260,7 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
   }
 
   private onAuthCompleted_(e: CustomEvent<AuthCompletedCredentials>) {
-    this.verifyingAccount_ = true;
+    this.verifyingAccount = true;
     const credentials = e.detail;
     this.browserProxy_.completeLogin(credentials);
   }
@@ -264,15 +271,15 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
 
   private onGetAccounts_() {
     this.browserProxy_.getAccounts().then(result => {
-      assert(this.authenticator_);
-      this.authenticator_.getAccountsResponse(result);
+      assert(this.authenticator);
+      this.authenticator.getAccountsResponse(result);
     });
   }
 
   private onGetDeviceId_() {
     this.browserProxy_.getDeviceId().then(deviceId => {
-      assert(this.authenticator_);
-      this.authenticator_.getDeviceIdResponse(deviceId);
+      assert(this.authenticator);
+      this.authenticator.getDeviceIdResponse(deviceId);
     });
   }
 
@@ -281,13 +288,13 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
    * @param data Parameters for auth extension.
    */
   private loadAuthenticator_(data: AuthParams) {
-    assert(this.authenticator_);
-    this.authenticator_.load(data.authMode, data);
-    this.loading_ = true;
+    assert(this.authenticator);
+    this.authenticator.load(data.authMode, data);
+    this.loading = true;
     this.isLoginPrimaryAccount_ = data.isLoginPrimaryAccount;
     // Skip welcome page for reauthentication.
     if (data.email) {
-      this.isReauthentication_ = true;
+      this.isReauthentication = true;
     }
     this.switchToDefaultView_();
   }
@@ -297,7 +304,7 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
    * @param verifyingAccount Indicates whether the user account is being
    *     verified.
    */
-  private isSpinnerActive_(loading: boolean, verifyingAccount: boolean):
+  protected isSpinnerActive(loading: boolean, verifyingAccount: boolean):
       boolean {
     return loading || verifyingAccount;
   }
@@ -305,14 +312,14 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
   /**
    * Closes the login dialog.
    */
-  private closeDialog_() {
+  protected closeDialog() {
     this.browserProxy_.dialogClose();
   }
 
   /**
    * Navigates back in the web view if possible. Otherwise closes the dialog.
    */
-  private handleGoBack_() {
+  protected handleGoBack() {
     if (this.$.signinFrame.canGoBack()) {
       this.$.signinFrame.back();
       this.$.signinFrame.focus();
@@ -320,11 +327,11 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
       // Allow user go back to the welcome page, if it's enabled.
       this.switchView_(View.WELCOME);
     } else {
-      this.closeDialog_();
+      this.closeDialog();
     }
   }
 
-  private getBackButtonIcon_(): string {
+  protected getBackButtonIcon(): string {
     return isRTL() ? 'cr:chevron-right' : 'cr:chevron-left';
   }
 
@@ -333,19 +340,19 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
    * @param verifyingAccount Indicates whether the user account is being
    *     verified.
    */
-  private shouldShowBackButton_(currentView: View, verifyingAccount: boolean):
+  protected shouldShowBackButton(currentView: View, verifyingAccount: boolean):
       boolean {
     return currentView === View.ADD_ACCOUNT && !verifyingAccount;
   }
 
-  private shouldShowOkButton_(): boolean {
-    return this.currentView_ === View.WELCOME ||
-        this.currentView_ === View.SIGNIN_BLOCKED_BY_POLICY ||
-        this.currentView_ === View.SIGNIN_ERROR;
+  protected shouldShowOkButton(): boolean {
+    return this.currentView === View.WELCOME ||
+        this.currentView === View.SIGNIN_BLOCKED_BY_POLICY ||
+        this.currentView === View.SIGNIN_ERROR;
   }
 
-  private shouldShowGaiaButtons_(): boolean {
-    return this.currentView_ === View.ADD_ACCOUNT;
+  protected shouldShowGaiaButtons(): boolean {
+    return this.currentView === View.ADD_ACCOUNT;
   }
 
   /**
@@ -357,10 +364,10 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
   }
 
   private getDefaultView_(): View {
-    if (this.isReauthentication_) {
+    if (this.isReauthentication) {
       return View.ADD_ACCOUNT;
     }
-    return this.shouldSkipWelcomePage_ ? View.ADD_ACCOUNT : View.WELCOME;
+    return this.shouldSkipWelcomePage ? View.ADD_ACCOUNT : View.WELCOME;
   }
 
   /**
@@ -371,13 +378,13 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
   private switchView_(
       id: View, enterAnimation: string = 'fade-in',
       exitAnimation: string = 'fade-out') {
-    this.currentView_ = id;
+    this.currentView = id;
     this.$.viewManager.switchView(id, enterAnimation, exitAnimation);
     this.dispatchEvent(new CustomEvent('switch-view-notify-for-testing'));
   }
 
   private isWelcomePageEnabled_(): boolean {
-    return !this.shouldSkipWelcomePage_ && !this.isReauthentication_;
+    return !this.shouldSkipWelcomePage && !this.isReauthentication;
   }
 
   /**
@@ -386,22 +393,22 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
    * during the sign-in flow.
    */
   private signinErrorShowView_(data: SigninErrorPageData) {
-    this.verifyingAccount_ = false;
+    this.verifyingAccount = false;
     if (data.signinBlockedByPolicy) {
-      this.set('email_', data.email);
-      this.set('hostedDomain_', data.hostedDomain);
-      this.set('deviceType_', data.deviceType);
+      this.set('email', data.email);
+      this.set('hostedDomain', data.hostedDomain);
+      this.set('deviceType', data.deviceType);
       this.switchView_(
           View.SIGNIN_BLOCKED_BY_POLICY, 'no-animation', 'no-animation');
     } else {
       this.switchView_(View.SIGNIN_ERROR, 'no-animation', 'no-animation');
     }
 
-    this.setFocusToWebview_();
+    this.setFocusToWebview();
   }
 
-  private onOkButtonClick_() {
-    switch (this.currentView_) {
+  protected onOkButtonClick() {
+    switch (this.currentView) {
       case View.WELCOME:
         this.switchView_(View.ADD_ACCOUNT);
         const welcomePageApp =
@@ -409,23 +416,23 @@ export class InlineLoginAppElement extends InlineLoginAppElementBase {
         assert(welcomePageApp);
         const skipChecked = welcomePageApp.isSkipCheckboxChecked();
         this.browserProxy_.skipWelcomePage(skipChecked);
-        this.setFocusToWebview_();
+        this.setFocusToWebview();
         break;
       case View.SIGNIN_BLOCKED_BY_POLICY:
       case View.SIGNIN_ERROR:
-        this.closeDialog_();
+        this.closeDialog();
         break;
       default:
         break;
     }
   }
 
-  private setFocusToWebview_() {
+  protected setFocusToWebview() {
     this.$.signinFrame.focus();
   }
 
   setAuthenticatorForTest(authenticator: Authenticator) {
-    this.authenticator_ = authenticator;
+    this.authenticator = authenticator;
     this.addAuthenticatorListeners_();
   }
 }
