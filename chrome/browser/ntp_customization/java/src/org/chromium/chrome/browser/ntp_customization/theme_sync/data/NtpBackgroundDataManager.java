@@ -447,10 +447,8 @@ public class NtpBackgroundDataManager {
     }
 
     /** Resets the shared preferences used by this manager for testing purposes. */
-    public void resetSharedPreferenceForTesting() {
-        SharedPreferencesManager sharedPreferencesManager = ChromeSharedPreferences.getInstance();
-        for (int i = PlatformType.ANDROID; i < PlatformType.MAX_COUNT; i++) {
-            sharedPreferencesManager.removeKey(getSharedPreferenceKey(i));
-        }
+    public static void resetSharedPreferenceForTesting() {
+        ChromeSharedPreferences.getInstance()
+                .removeKeysWithPrefix(ChromePreferenceKeys.NTP_CUSTOMIZATION_SYNC_HISTORY_DATA);
     }
 }

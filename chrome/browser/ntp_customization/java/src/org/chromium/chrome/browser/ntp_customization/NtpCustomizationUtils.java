@@ -31,7 +31,6 @@ import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_C
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR_DARK;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH;
-import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_COLOR_ID;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_IS_SNACKBAR_SHOWN;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.NTP_CUSTOMIZATION_THEME_TIP_BOTTOM_SHEET_SHOWN_TIMESTAMP_MS;
 import static org.chromium.chrome.browser.url_constants.UrlOverrideUtils.isWebUiNtpOverrideEnabled;
@@ -98,6 +97,7 @@ import org.chromium.chrome.browser.ntp_customization.theme.theme_collections.Cus
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.CropImageUtils;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataImageBase;
+import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataManager;
 import org.chromium.chrome.browser.ntp_customization.theme_sync.data.NtpBackgroundDataUtils;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -1793,23 +1793,12 @@ public class NtpCustomizationUtils {
     }
 
     public static void resetSharedPreferenceForTesting() {
+        removeAllNtpBackgroundDataFromSharedPreference();
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
-        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_TYPE);
-        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_COLOR);
-        prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_PRIMARY_COLOR);
-        prefsManager.removeKey(NTP_BACKGROUND_IMAGE_PORTRAIT_INFO);
-        prefsManager.removeKey(NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO);
-        prefsManager.removeKey(NTP_CUSTOMIZATION_LAST_DAILY_REFRESH_TIMESTAMP);
-        prefsManager.removeKey(NTP_CUSTOMIZATION_CHROME_COLOR_DAILY_REFRESH_ENABLED);
         prefsManager.removeKey(NTP_CUSTOMIZATION_THEME_TIP_BOTTOM_SHEET_SHOWN_TIMESTAMP_MS);
-        prefsManager.removeKey(NTP_CUSTOMIZATION_BACKGROUND_IMAGE_FILE_PATH);
         prefsManager.removeKey(NTP_CUSTOMIZATION_THEME_IS_SNACKBAR_SHOWN);
         prefsManager.removeKey(NTP_CUSTOMIZATION_LAST_APPLY_THEME_TIMESTAMP_MS);
-        prefsManager.removeKey(NTP_CUSTOMIZATION_THEME_COLOR_ID);
-        prefsManager.removeKey(NTP_CUSTOMIZATION_PRIMARY_COLOR_FOR_DAILY_REFRESH);
-        prefsManager.removeKey(NTP_BACKGROUND_IMAGE_PORTRAIT_INFO_FOR_DAILY_REFRESH);
-        prefsManager.removeKey(NTP_BACKGROUND_IMAGE_LANDSCAPE_INFO_FOR_DAILY_REFRESH);
-        prefsManager.removeKey(NTP_CUSTOMIZATION_BACKGROUND_INFO_FOR_DAILY_REFRESH);
+        NtpBackgroundDataManager.resetSharedPreferenceForTesting();
     }
 
     public static void setImageFetcherForTesting(ImageFetcher imageFetcher) {

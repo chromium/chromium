@@ -151,7 +151,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
                 .onBackgroundDataChanged(eq(mContext), any());
 
         mNtpBackgroundDataManager = new NtpBackgroundDataManager(mContext);
-        mNtpBackgroundDataManager.resetSharedPreferenceForTesting();
+        NtpBackgroundDataManager.resetSharedPreferenceForTesting();
 
         mParentView =
                 (ViewGroup)
@@ -174,7 +174,7 @@ public class NtpThemeSyncHistoryCoordinatorUnitTest {
 
     @After
     public void tearDown() {
-        mNtpBackgroundDataManager.resetSharedPreferenceForTesting();
+        NtpBackgroundDataManager.resetSharedPreferenceForTesting();
         NtpCustomizationConfigManager.getInstance().resetForTesting();
         if (mCoordinator != null) {
             mCoordinator.destroy();
