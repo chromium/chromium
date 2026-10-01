@@ -18,6 +18,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
@@ -53,6 +54,7 @@ import java.util.concurrent.TimeoutException;
 @EnableFeatures({ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP, ChromeFeatureList.ANDROID_VERTICAL_TABS})
 @Restriction({DeviceFormFactor.DESKTOP})
 @Batch(Batch.PER_CLASS)
+@DisabledTest(message = "https://crbug.com/567632845")
 public class TabSearchOverlayTest {
     private static final int SERVER_PORT = 13245;
 
