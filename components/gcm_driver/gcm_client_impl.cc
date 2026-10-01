@@ -24,9 +24,9 @@
 #include "base/time/default_clock.h"
 #include "base/timer/timer.h"
 #include "components/crx_file/id_util.h"
+#include "components/fcm/base/fcm_backoff_policy.h"
 #include "components/fcm/crypto/fcm_decryption_result.h"
 #include "components/gcm_driver/gcm_account_mapper.h"
-#include "components/gcm_driver/gcm_backoff_policy.h"
 #include "google_apis/gcm/base/encryptor.h"
 #include "google_apis/gcm/base/mcs_message.h"
 #include "google_apis/gcm/base/mcs_util.h"
@@ -437,7 +437,7 @@ void GCMClientImpl::InitializeMCSClient() {
   if (fallback_endpoint.is_valid())
     endpoints.push_back(fallback_endpoint);
   connection_factory_ = internals_builder_->BuildConnectionFactory(
-      endpoints, GetGCMBackoffPolicy(), get_socket_factory_callback_,
+      endpoints, fcm::GetBackoffPolicy(), get_socket_factory_callback_,
       io_task_runner_, &recorder_, network_connection_tracker_);
   connection_factory_->SetConnectionListener(this);
   mcs_client_ = internals_builder_->BuildMCSClient(
@@ -622,7 +622,8 @@ void GCMClientImpl::StartCheckin() {
       device_checkin_info_.android_id, device_checkin_info_.secret,
       gservices_settings_.digest(), chrome_build_proto);
   checkin_request_ = std::make_unique<CheckinRequest>(
-      gservices_settings_.GetCheckinURL(), request_info, GetGCMBackoffPolicy(),
+      gservices_settings_.GetCheckinURL(), request_info,
+      fcm::GetBackoffPolicy(),
       base::BindOnce(&GCMClientImpl::OnCheckinCompleted,
                      weak_ptr_factory_.GetWeakPtr()),
       url_loader_factory_, io_task_runner_, &recorder_);
@@ -893,7 +894,7 @@ void GCMClientImpl::Register(
   std::unique_ptr<RegistrationRequest> registration_request(
       new RegistrationRequest(
           gservices_settings_.GetRegistrationURL(), request_info,
-          std::move(request_handler), GetGCMBackoffPolicy(),
+          std::move(request_handler), fcm::GetBackoffPolicy(),
           base::BindOnce(&GCMClientImpl::OnRegisterCompleted,
                          weak_ptr_factory_.GetWeakPtr(), registration_info),
           kMaxRegistrationRetries, url_loader_factory_, io_task_runner_,
@@ -1076,7 +1077,7 @@ void GCMClientImpl::Unregister(
   std::unique_ptr<UnregistrationRequest> unregistration_request(
       new UnregistrationRequest(
           gservices_settings_.GetRegistrationURL(), request_info,
-          std::move(request_handler), GetGCMBackoffPolicy(),
+          std::move(request_handler), fcm::GetBackoffPolicy(),
           base::BindOnce(&GCMClientImpl::OnUnregisterCompleted,
                          weak_ptr_factory_.GetWeakPtr(), registration_info),
           kMaxUnregistrationRetries, url_loader_factory_, io_task_runner_,

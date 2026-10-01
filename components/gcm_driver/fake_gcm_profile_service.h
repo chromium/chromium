@@ -64,7 +64,8 @@ class FakeGCMProfileService : public GCMProfileService {
   void set_collect(bool collect) { collect_ = collect; }
 
   // Crude offline simulation: requests fail and never run their callbacks (in
-  // reality, callbacks run within GetGCMBackoffPolicy().maximum_backoff_ms).
+  // reality, callbacks run within
+  // fcm::GetBackoffPolicy().maximum_backoff_ms).
   void set_offline(bool is_offline) { is_offline_ = is_offline; }
 
  private:
