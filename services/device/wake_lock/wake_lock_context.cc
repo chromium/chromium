@@ -43,8 +43,7 @@ void WakeLockContext::OnWakeLockDeactivated(mojom::WakeLockType type) {}
 void WakeLockContext::OnWakeLockChanged(mojom::WakeLockType old_type,
                                         mojom::WakeLockType new_type) {}
 
-void WakeLockContext::OnConnectionError(mojom::WakeLockType type,
-                                        WakeLock* wake_lock) {
+void WakeLockContext::OnConnectionError(WakeLock* wake_lock) {
   std::erase_if(wake_locks_,
                 [wake_lock](auto& entry) { return entry.get() == wake_lock; });
 }

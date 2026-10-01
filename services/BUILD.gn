@@ -201,6 +201,7 @@ if (is_android) {
       "device/nfc/android/junit/src/org/chromium/device/nfc/NFCTest.java",
       "device/nfc/android/junit/src/org/chromium/device/nfc/NfcBlocklistTest.java",
       "device/serial/android/javatests/src/org/chromium/device/serial/ChromeSerialManagerTest.java",
+      "device/wake_lock/power_save_blocker/android/junit/src/org/chromium/device/power_save_blocker/PowerSaveBlockerTest.java",
       "shape_detection/android/junit/src/org/chromium/shape_detection/BitmapUtilsTest.java",
     ]
     deps = [
@@ -227,6 +228,7 @@ if (is_android) {
       "//services/device/public/mojom:generic_sensor_java",
       "//services/device/public/mojom:mojom_java",
       "//services/device/serial:java",
+      "//services/device/wake_lock/power_save_blocker:java",
       "//services/shape_detection:shape_detection_java",
       "//skia/public/mojom:mojom_java",
       "//third_party/androidx:androidx_annotation_annotation_java",

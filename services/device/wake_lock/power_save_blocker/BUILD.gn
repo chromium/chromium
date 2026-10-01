@@ -89,6 +89,10 @@ if (is_android) {
       "//services/device:*",
     ]
     sources = java_sources_needing_jni
-    deps = [ "//third_party/jni_zero:jni_zero_java" ]
+    deps = [
+      "//base:base_java",
+      "//services/device/public/mojom:mojom_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
   }
 }

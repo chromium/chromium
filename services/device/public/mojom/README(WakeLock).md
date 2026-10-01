@@ -20,5 +20,5 @@ necessary/employed.
 
 If the client does not have any context available (e.g., is not within the
 context of a WebContents), it can get a WakeLock that doesn't associate to any
-context (by GetWakeLockWithoutContext() in WakeLockProvider). However, note that
-the resulting Wake Lock will not have any effect on Android.
+context (by GetWakeLockWithoutContext() in WakeLockProvider). On Android, a
+contextless WakeLock requires the embedder to hold the WAKE_LOCK permission.

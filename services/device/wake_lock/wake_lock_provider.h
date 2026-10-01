@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -55,8 +56,7 @@ class WakeLockProvider : public mojom::WakeLockProvider,
   void OnWakeLockDeactivated(mojom::WakeLockType type) override;
   void OnWakeLockChanged(mojom::WakeLockType old_type,
                          mojom::WakeLockType new_type) override;
-  void OnConnectionError(mojom::WakeLockType type,
-                         WakeLock* wake_lock) override;
+  void OnConnectionError(WakeLock* wake_lock) override;
 
  private:
   struct WakeLockDataPerType;
@@ -72,6 +72,12 @@ class WakeLockProvider : public mojom::WakeLockProvider,
   // Stores wake lock count and observers associated with each wake lock type.
   std::map<mojom::WakeLockType, std::unique_ptr<WakeLockDataPerType>>
       wake_lock_store_;
+
+  // Stores all wake locks created via |GetWakeLockWithoutContext()|. An entry
+  // is removed from this map when an |OnConnectionError| is received. Keyed by
+  // |WakeLock| rather than by type, because a wake lock's type can change via
+  // |ChangeType()| over its lifetime.
+  absl::flat_hash_set<std::unique_ptr<WakeLock>> wake_locks_;
 };  // namespace device
 
 }  // namespace device

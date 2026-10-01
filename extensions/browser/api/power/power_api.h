@@ -105,6 +105,10 @@ class PowerAPI : public BrowserContextKeyedAPI,
       ActivateWakeLockFunction activate_function,
       CancelWakeLockFunction cancel_function);
 
+  // Call before querying the wake lock state, as the requests are sent over an
+  // asynchronous Remote.
+  void FlushWakeLockForTesting();
+
   // Overridden from extensions::ExtensionRegistryObserver.
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
                            const Extension* extension,

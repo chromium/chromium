@@ -46,6 +46,9 @@ class PowerSaveBlocker {
   // valid only for the lifetime of this call; hence it should not be cached
   // internally.
   void InitDisplaySleepBlocker(ui::ViewAndroid* view_android);
+
+  // Does nothing unless the embedder holds the WAKE_LOCK permission.
+  void InitWithoutContext();
 #endif
 
  private:

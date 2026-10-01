@@ -96,9 +96,13 @@ void WakeLock::ChangeType(mojom::WakeLockType type,
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
 
 #if BUILDFLAG(IS_ANDROID)
-  LOG(ERROR) << "WakeLock::ChangeType() has no effect on Android.";
-  std::move(callback).Run(false);
-#else
+  if (context_id_ != WakeLockContext::WakeLockInvalidContextId) {
+    LOG(ERROR) << "WakeLock::ChangeType() has no effect on Android when "
+                  "associated with a context.";
+    std::move(callback).Run(false);
+    return;
+  }
+#endif
   if (receiver_set_.size() > 1) {
     LOG(ERROR) << "WakeLock::ChangeType() is not allowed when the current wake "
                   "lock is shared by more than one clients.";
@@ -115,7 +119,6 @@ void WakeLock::ChangeType(mojom::WakeLockType type,
   }
 
   std::move(callback).Run(true);
-#endif
 }
 
 void WakeLock::HasWakeLockForTests(HasWakeLockForTestsCallback callback) {
@@ -141,19 +144,8 @@ void WakeLock::CreateWakeLock() {
                                                   main_task_runner_);
   observer_->OnWakeLockActivated(type_);
 
-  if (type_ != mojom::WakeLockType::kPreventDisplaySleep)
-    return;
-
 #if BUILDFLAG(IS_ANDROID)
-  if (context_id_ == WakeLockContext::WakeLockInvalidContextId) {
-    LOG(ERROR) << "Client must pass a valid context_id when requests wake lock "
-                  "on Android.";
-    return;
-  }
-
-  gfx::NativeView native_view = native_view_getter_.Run(context_id_);
-  if (native_view)
-    wake_lock_.get()->InitDisplaySleepBlocker(native_view);
+  InitAndroidWakeLock();
 #endif
 }
 
@@ -171,7 +163,29 @@ void WakeLock::SwapWakeLock() {
   auto new_wake_lock = std::make_unique<PowerSaveBlocker>(
       type_, reason_, *description_, main_task_runner_);
   wake_lock_.swap(new_wake_lock);
+
+#if BUILDFLAG(IS_ANDROID)
+  InitAndroidWakeLock();
+#endif
 }
+
+#if BUILDFLAG(IS_ANDROID)
+void WakeLock::InitAndroidWakeLock() {
+  if (context_id_ == WakeLockContext::WakeLockInvalidContextId) {
+    wake_lock_->InitWithoutContext();
+    return;
+  }
+
+  if (type_ != mojom::WakeLockType::kPreventDisplaySleep) {
+    return;
+  }
+
+  gfx::NativeView native_view = native_view_getter_.Run(context_id_);
+  if (native_view) {
+    wake_lock_->InitDisplaySleepBlocker(native_view);
+  }
+}
+#endif
 
 void WakeLock::OnConnectionError() {
   // If this client has an outstanding wake lock request, decrease the
@@ -183,7 +197,7 @@ void WakeLock::OnConnectionError() {
 
   if (receiver_set_.empty()) {
     // May delete |this|.
-    observer_->OnConnectionError(type_, this);
+    observer_->OnConnectionError(this);
   }
 }
 

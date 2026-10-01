@@ -47,8 +47,7 @@ class WakeLock : public mojom::WakeLock {
                                    mojom::WakeLockType new_type) {}
 
     // Called when |WakeLock| has no bindings left.
-    virtual void OnConnectionError(mojom::WakeLockType type,
-                                   WakeLock* wake_lock) {}
+    virtual void OnConnectionError(WakeLock* wake_lock) {}
   };
 
   // |observer| must outlive this WakeLock instance.
@@ -81,6 +80,9 @@ class WakeLock : public mojom::WakeLock {
   virtual void CreateWakeLock();
   virtual void RemoveWakeLock();
   virtual void SwapWakeLock();
+#if BUILDFLAG(IS_ANDROID)
+  void InitAndroidWakeLock();
+#endif
 
   void OnConnectionError();
 

@@ -44,8 +44,7 @@ class WakeLockContext : public mojom::WakeLockContext,
   void OnWakeLockDeactivated(mojom::WakeLockType type) override;
   void OnWakeLockChanged(mojom::WakeLockType old_type,
                          mojom::WakeLockType new_type) override;
-  void OnConnectionError(mojom::WakeLockType type,
-                         WakeLock* wake_lock) override;
+  void OnConnectionError(WakeLock* wake_lock) override;
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> file_task_runner_;

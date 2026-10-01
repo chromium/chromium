@@ -17,8 +17,8 @@ interface WakeLockProvider {
 
   // Gets a WakeLock outside of any context. This method can be used
   // if the client does not have any context available (e.g., is not
-  // within the context of a WebContents). However, note that the resulting
-  // Wake Lock will not have any effect on Android.
+  // within the context of a WebContents). On Android, the resulting
+  // WakeLock requires the embedder to hold the WAKE_LOCK permission.
   GetWakeLockWithoutContext(WakeLockType type,
                             WakeLockReason reason,
                             string description,
