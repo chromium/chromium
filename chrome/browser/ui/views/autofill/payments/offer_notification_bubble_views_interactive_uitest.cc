@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/autofill/payments/payments_ui_constants.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -21,6 +22,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/autofill/core/browser/data_manager/payments/payments_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_model/payments/autofill_offer_data.h"
 #include "components/autofill/core/browser/payments/offer_notification_handler.h"
 #include "components/autofill/core/browser/test_utils/test_autofill_clock.h"
@@ -273,6 +275,23 @@ IN_PROC_BROWSER_TEST_P(
   }
 }
 
+// Offers are pushed to the client through sync, and so they routinely arrive
+// after the user has already navigated to the offer's merchant. The
+// notification must show when that happens, not just on navigation.
+IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
+                       OfferArrivesAfterNavigation) {
+  NavigateToAndWaitForForm(GetUrl("www.merchantsite1.test", "/first"));
+  ASSERT_FALSE(IsIconVisible());
+
+  ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
+  SetUpOfferDataWithDomains(test_offer_type_,
+                            {GetUrl("www.merchantsite1.test", "/")});
+  ASSERT_TRUE(WaitForObservedEvent());
+
+  EXPECT_TRUE(IsIconVisible());
+  EXPECT_TRUE(GetOfferNotificationBubbleViews());
+}
+
 // Verifies the behavior of the offer notification bubble on different tabs.
 // The steps are:
 // 1. Creates the offer with two applicable merchant sites
@@ -482,6 +501,19 @@ IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
         browser()->GetTabStripModel()->GetActiveWebContents()->GetVisibleURL(),
         GURL(GetDefaultTestDetailsUrlString()));
   }
+}
+
+// Payments data changes, e.g. to cards or to offers for other sites, must not
+// collapse a showing bubble to its icon.
+IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
+                       PaymentsDataChanged_KeepsBubbleShowing) {
+  ShowBubbleForOfferAndVerify();
+  test_clock_.Advance(kAutofillBubbleSurviveNavigationTime + base::Seconds(1));
+
+  test_api(personal_data()->payments_data_manager()).NotifyObservers();
+
+  EXPECT_TRUE(GetOfferNotificationBubbleViews());
+  EXPECT_TRUE(IsIconVisible());
 }
 
 IN_PROC_BROWSER_TEST_P(OfferNotificationBubbleViewsInteractiveUiTest,
