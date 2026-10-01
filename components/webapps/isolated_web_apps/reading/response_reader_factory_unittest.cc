@@ -38,7 +38,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -123,11 +123,6 @@ class IsolatedWebAppResponseReaderFactoryTest : public testing::Test {
     CHECK(temp_dir_.CreateUniqueTempDir());
     CHECK(CreateTemporaryFileInDir(temp_dir_.GetPath(), &web_bundle_path_));
     CHECK(base::WriteFile(web_bundle_path_, kResponseBody));
-
-    in_process_data_decoder_.SetWebBundleParserFactoryBinder(
-        base::BindRepeating(
-            &web_package::MockWebBundleParserFactory::AddReceiver,
-            base::Unretained(parser_factory_.get())));
   }
 
   void TearDown() override { factory_.reset(); }
@@ -148,11 +143,16 @@ class IsolatedWebAppResponseReaderFactoryTest : public testing::Test {
         response_->Clone());
   }
 
+  void BindParserFactory(
+      mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>
+          receiver) {
+    parser_factory_->AddReceiver(std::move(receiver));
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_{
       features::kIsolatedWebApps};
 
   content::BrowserTaskEnvironment env_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::ScopedTempDir temp_dir_;
   base::FilePath web_bundle_path_;
   base::test::RepeatingTestFuture<std::optional<GURL>> on_create_parser_future_;
@@ -170,6 +170,12 @@ class IsolatedWebAppResponseReaderFactoryTest : public testing::Test {
 
   std::unique_ptr<IsolatedWebAppResponseReaderFactory> factory_;
   std::unique_ptr<web_package::MockWebBundleParserFactory> parser_factory_;
+  base::AutoReset<SignedWebBundleReader::WebBundleParserFactoryBinder>
+      reset_parser_factory_binder_ =
+          SignedWebBundleReader::SetWebBundleParserFactoryBinderForTesting(
+              base::BindRepeating(
+                  &IsolatedWebAppResponseReaderFactoryTest::BindParserFactory,
+                  base::Unretained(this)));
   web_package::mojom::BundleIntegrityBlockPtr integrity_block_;
   web_package::mojom::BundleMetadataPtr metadata_;
   web_package::mojom::BundleResponsePtr response_;

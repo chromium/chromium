@@ -25,8 +25,8 @@ verification (Ed25519 and ECDSA P-256 SHA-256) for Signed Web Bundles (`.swbn`).
   `SignedWebBundleSignatureInfoUnknown` entries for forward compatibility.
 - **Rule of 2:** Raw CBOR integrity block parsing and low-level cryptographic
   verification are implemented in the memory-safe Rust crate in `rust/`
-  (`signed_web_bundles_rust`), with untrusted parsing executed inside
-  `data_decoder`.
+  (`signed_web_bundles_rust`), which is what allows untrusted Integrity Blocks
+  to be parsed in the browser process.
 
 ## Command Line Execution
 

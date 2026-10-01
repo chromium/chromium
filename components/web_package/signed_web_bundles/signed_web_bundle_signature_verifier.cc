@@ -150,9 +150,8 @@ void SignedWebBundleSignatureVerifier::OnHashOfUnsignedWebBundleCalculated(
   // Instead of reading the integrity block from the Signed Web Bundle and
   // popping the top signature stack entry from the signature stack to create an
   // empty integrity block, we create an empty integrity block here from
-  // scratch. This is because we cannot do any CBOR parsing of untrusted input
-  // (like the Signed Web Bundle) outside of the data decoder process due to the
-  // "Rule Of 2". Any CBOR parsing must occur in `WebBundleParser`.
+  // scratch. This keeps all CBOR parsing of untrusted input (like the Signed
+  // Web Bundle) in `WebBundleParser`.
   //
   // Similarly, magic bytes and version of the integrity block are read deep
   // within the low-level `IntegrityBlockParser`.

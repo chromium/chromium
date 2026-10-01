@@ -38,7 +38,10 @@
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_integrity_block.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_signature_verifier.h"
+#include "components/web_package/web_bundle_parser_factory.h"
 #include "components/webapps/isolated_web_apps/error/unusable_swbn_file_error.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "mojo/public/cpp/system/data_pipe_producer.h"
 #include "mojo/public/cpp/system/file_data_source.h"
 #include "net/base/url_util.h"
@@ -97,6 +100,41 @@ void OpenFileDataSource(
 
 web_package::SignedWebBundleSignatureVerifier*
     g_signature_verifier_for_testing = nullptr;
+
+SignedWebBundleReader::WebBundleParserFactoryBinder&
+WebBundleParserFactoryBinderOverride() {
+  static base::NoDestructor<SignedWebBundleReader::WebBundleParserFactoryBinder>
+      binder;
+  return *binder;
+}
+
+// Unless a test overrides it, hosts a `web_package::WebBundleParserFactory` in
+// this process on a new `MayBlock()` sequence, so the file is read there. The
+// factory, and the parser and file data source it creates, are self-owned
+// receivers on that sequence and hold the only references to it: once the
+// parser's remotes are reset, they delete themselves and the sequence goes
+// away.
+void BindWebBundleParserFactory(
+    mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>
+        receiver) {
+  if (const auto& binder_override = WebBundleParserFactoryBinderOverride()) {
+    binder_override.Run(std::move(receiver));
+    return;
+  }
+
+  base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_BLOCKING})
+      ->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              [](mojo::PendingReceiver<
+                  web_package::mojom::WebBundleParserFactory> receiver) {
+                mojo::MakeSelfOwnedReceiver(
+                    std::make_unique<web_package::WebBundleParserFactory>(),
+                    std::move(receiver));
+              },
+              std::move(receiver)));
+}
 
 class SignedWebBundleReaderImpl : public SignedWebBundleReader {
  public:
@@ -295,7 +333,8 @@ class SignedWebBundleReaderImpl : public SignedWebBundleReader {
 
     parser_ = std::make_unique<data_decoder::SafeWebBundleParser>(
         base_url_,
-        data_decoder::SafeWebBundleParser::GetFileStrategy(file.Duplicate()));
+        data_decoder::SafeWebBundleParser::GetFileStrategy(file.Duplicate()),
+        base::BindRepeating(&BindWebBundleParserFactory));
 
     file_ = std::move(file);
 
@@ -543,6 +582,16 @@ SignedWebBundleReader::SetSignatureVerifierForTesting(
 }
 
 // static
+base::AutoReset<SignedWebBundleReader::WebBundleParserFactoryBinder>
+SignedWebBundleReader::SetWebBundleParserFactoryBinderForTesting(
+    WebBundleParserFactoryBinder binder) {
+  CHECK_IS_TEST();
+  CHECK(!WebBundleParserFactoryBinderOverride());
+  return base::AutoReset<WebBundleParserFactoryBinder>(
+      &WebBundleParserFactoryBinderOverride(), std::move(binder));
+}
+
+// static
 SignedWebBundleReader::ReadResponseError
 SignedWebBundleReader::ReadResponseError::FromBundleParseError(
     web_package::mojom::BundleResponseParseErrorPtr error) {
@@ -590,7 +639,8 @@ void UnsecureReader::OnFileOpened(base::File file) {
 
   parser_ = std::make_unique<data_decoder::SafeWebBundleParser>(
       /*base_url=*/std::nullopt,
-      data_decoder::SafeWebBundleParser::GetFileStrategy(std::move(file)));
+      data_decoder::SafeWebBundleParser::GetFileStrategy(std::move(file)),
+      base::BindRepeating(&BindWebBundleParserFactory));
 
   DoReading();
 }

@@ -19,9 +19,9 @@ bug, review Security for Agents to double-check your findings.
   origin from the `RenderFrameHost`, not message fields. They call
   `mojo::ReportBadMessage()` for disallowed contexts, and Sub Apps also does so
   for malformed install paths.
-- Rule of Two: Blink parses manifests in a Renderer, a sandboxed utility process
-  parses Signed Web Bundles, and JSON (such as IWA update manifests) is parsed
-  with the memory-safe `base::JSONReader`.
+- Rule of Two: Blink parses manifests in a Renderer, memory-safe Rust parses
+  Signed Web Bundles, and JSON (such as IWA update manifests) is parsed with the
+  memory-safe `base::JSONReader`.
 
 ## Explicit Non-bugs
 

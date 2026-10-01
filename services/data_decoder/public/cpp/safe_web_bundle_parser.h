@@ -12,6 +12,7 @@
 #include "base/files/file.h"
 #include "base/functional/callback.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
@@ -30,7 +31,7 @@ class DataSourceCreatingStrategy {
   virtual base::expected<void, std::string> ExpectReady() const = 0;
 
   // Creates DataSource. The WebBundleParserFactory is used to bind the
-  // appropriate receiver on the side of the data decoder process.
+  // appropriate receiver on the side of the parser.
   // The return result will be used to create a parser.
   virtual mojo::PendingRemote<web_package::mojom::BundleDataSource>
   CreateDataSource(web_package::mojom::WebBundleParserFactory* binder) = 0;
@@ -40,9 +41,10 @@ class DataSourceCreatingStrategy {
   virtual void Close(base::OnceClosure callback) = 0;
 };
 
-// This class is used for safe parsing of the Web Bundles. Even though it
-// internally uses parsing in the data decoder process by means of
-// mojo and IPC, the aim of this class is to isolate users from any knowledge
+// This class is used for safe parsing of the Web Bundles. By default, it
+// internally uses parsing in the data decoder process by means of mojo and
+// IPC; a `WebBundleParserFactoryBinder` can host the parser elsewhere instead.
+// Either way, the aim of this class is to isolate users from any knowledge
 // about mojo and IPC.
 //
 // Every parsing method will try to reestablish the IPC connection (if
@@ -52,14 +54,27 @@ class DataSourceCreatingStrategy {
 // methods.
 class SafeWebBundleParser {
  public:
+  // Binds `receiver` to the factory that creates the parser and its data
+  // source.
+  using WebBundleParserFactoryBinder = base::RepeatingCallback<void(
+      mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>
+          receiver)>;
+
   // Returns the strategy that lets the provided signed web bundle file
   // be a data source for parsing.
   static std::unique_ptr<DataSourceCreatingStrategy> GetFileStrategy(
       base::File file);
 
+  // If `factory_binder` is null, the factory is bound in a data decoder
+  // process. Otherwise, `factory_binder` is run every time a connection has to
+  // be (re)established, and the parser runs wherever it binds the factory. The
+  // caller must make sure that is acceptable for untrusted input: hosting it in
+  // the browser process relies on `web_package::WebBundleParser` parsing the
+  // bundle bytes in `#![forbid(unsafe_code)]` Rust (rule of 2).
   SafeWebBundleParser(
       std::optional<GURL> base_url,
-      std::unique_ptr<DataSourceCreatingStrategy> data_source_creator);
+      std::unique_ptr<DataSourceCreatingStrategy> data_source_creator,
+      WebBundleParserFactoryBinder factory_binder = {});
 
   SafeWebBundleParser(const SafeWebBundleParser&) = delete;
   SafeWebBundleParser& operator=(const SafeWebBundleParser&) = delete;
@@ -142,6 +157,7 @@ class SafeWebBundleParser {
   size_t response_callback_next_id_ = 0;
 
   std::optional<GURL> base_url_;
+  WebBundleParserFactoryBinder factory_binder_;
 
   base::WeakPtrFactory<SafeWebBundleParser> weak_factory_{this};
 };

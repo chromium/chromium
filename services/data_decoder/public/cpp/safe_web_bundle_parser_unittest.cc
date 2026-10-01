@@ -287,6 +287,24 @@ TEST_F(SafeWebBundleParserTest, UseMockFactory) {
   EXPECT_TRUE(raw_factory->GetCreatedParser()->IsParseResponseCalled());
 }
 
+TEST_F(SafeWebBundleParserTest, UseFactoryBinder) {
+  // Not installed in the data decoder, so it can only be reached through the
+  // binder.
+  MockFactory factory;
+
+  base::File test_file =
+      OpenTestFile(base::FilePath(FILE_PATH_LITERAL("hello_b2.wbn")));
+  SafeWebBundleParser parser(
+      /*base_url=*/std::nullopt,
+      data_decoder::SafeWebBundleParser::GetFileStrategy(std::move(test_file)),
+      base::BindRepeating(&MockFactory::AddReceiver,
+                          base::Unretained(&factory)));
+
+  parser.ParseIntegrityBlock(base::DoNothing());
+  ASSERT_TRUE(factory.GetCreatedParser());
+  EXPECT_TRUE(factory.GetCreatedParser()->IsParseIntegrityBlockCalled());
+}
+
 TEST_F(SafeWebBundleParserTest, ConnectionError) {
   MockFactory* raw_factory = InitializeMockFactory();
 

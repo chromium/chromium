@@ -26,10 +26,12 @@ identity verification, IWA key distribution, and core domain types.
   `//components/webapps/isolated_web_apps/*`. External consumers must depend on
   `//components/webapps/isolated_web_apps` or
   `//components/webapps/isolated_web_apps/public`.
-- **Rule of 2 & Out-of-Process Parsing:** Never parse untrusted CBOR or Web
-  Bundle bytes directly on the browser UI/IO thread. Integrity blocks and
-  metadata are parsed via `data_decoder::SafeWebBundleParser` and the Rust
-  parsers in `//components/web_package`.
+- **Rule of 2 & Memory-Safe Parsing:** Never parse untrusted CBOR or Web Bundle
+  bytes in C++ or on the browser UI/IO thread. `SignedWebBundleReader` hosts
+  `web_package::WebBundleParser` in the browser process on a `MayBlock()`
+  thread-pool sequence and drives it through
+  `data_decoder::SafeWebBundleParser`; the untrusted bytes are decoded by the
+  memory-safe Rust parsers in `//components/web_package`.
 - **Strong Domain Types & `base::expected`:** Always represent IWA identifiers
   and versions with validated strong types (`IwaOrigin`,
   `web_package::SignedWebBundleId`, `IwaVersion`, `IwaSource`,

@@ -16,8 +16,8 @@ bug, review Security for Agents to double-check your findings.
 - Mojo IPC: Caller origins come from the browser-side `RenderFrameHost`, never
   message fields.
 - Rule of Two: Manifests are parsed and icons decoded in a Renderer; Signed Web
-  Bundles are parsed in a sandboxed utility process; origin association JSON is
-  parsed with the memory-safe `base::JSONReader`.
+  Bundles are parsed in the browser process by memory-safe Rust; origin
+  association JSON is parsed with the memory-safe `base::JSONReader`.
 
 ## Explicit Non-bugs
 

@@ -59,7 +59,6 @@ source_set("unit_tests") {
     "//components/webapps/isolated_web_apps/test_support",
     "//content/test:test_support",
     "//net",
-    "//services/data_decoder/public/cpp:test_support",
     "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",

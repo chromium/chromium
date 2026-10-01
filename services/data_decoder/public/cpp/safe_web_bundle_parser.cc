@@ -111,9 +111,11 @@ SafeWebBundleParser::Connection::~Connection() = default;
 
 SafeWebBundleParser::SafeWebBundleParser(
     std::optional<GURL> base_url,
-    std::unique_ptr<DataSourceCreatingStrategy> data_source_creator)
+    std::unique_ptr<DataSourceCreatingStrategy> data_source_creator,
+    WebBundleParserFactoryBinder factory_binder)
     : data_source_creator_(std::move(data_source_creator)),
-      base_url_(std::move(base_url)) {}
+      base_url_(std::move(base_url)),
+      factory_binder_(std::move(factory_binder)) {}
 
 SafeWebBundleParser::~SafeWebBundleParser() = default;
 
@@ -198,8 +200,13 @@ void SafeWebBundleParser::Close(base::OnceClosure callback) {
 web_package::mojom::WebBundleParserFactory* SafeWebBundleParser::GetFactory() {
   CHECK(is_connected());
   if (!connection_->factory_) {
-    connection_->data_decoder_.GetService()->BindWebBundleParserFactory(
-        connection_->factory_.BindNewPipeAndPassReceiver());
+    auto receiver = connection_->factory_.BindNewPipeAndPassReceiver();
+    if (factory_binder_) {
+      factory_binder_.Run(std::move(receiver));
+    } else {
+      connection_->data_decoder_.GetService()->BindWebBundleParserFactory(
+          std::move(receiver));
+    }
     connection_->factory_.reset_on_disconnect();
   }
   return connection_->factory_.get();

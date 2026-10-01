@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <variant>
@@ -42,7 +43,7 @@
 #include "components/webapps/isolated_web_apps/test_support/test_iwa_client.h"
 #include "components/webapps/isolated_web_apps/test_support/test_signed_web_bundle_builder.h"
 #include "content/public/test/browser_task_environment.h"
-#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -127,7 +128,6 @@ class SignedWebBundleReaderWithRealBundlesTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::ScopedTempDir temp_dir_;
   const GURL kUrl = GURL("https://example.com");
   constexpr static char kHtmlString[] = "test";
@@ -317,11 +317,6 @@ class SignedWebBundleReaderTest : public testing::Test {
     EXPECT_TRUE(CreateTemporaryFileInDir(temp_dir_.GetPath(), &temp_file_path));
     EXPECT_TRUE(base::WriteFile(temp_file_path, test_file_data));
 
-    in_process_data_decoder_.SetWebBundleParserFactoryBinder(
-        base::BindRepeating(
-            &web_package::MockWebBundleParserFactory::AddReceiver,
-            base::Unretained(parser_factory_.get())));
-
     base::test::TestFuture<SignedWebBundleReader::Result> future;
     SignedWebBundleReader::Create(temp_file_path, base_url, verify_signatures,
                                   future.GetCallback());
@@ -352,11 +347,21 @@ class SignedWebBundleReaderTest : public testing::Test {
     run_loop.RunUntilIdle();
   }
 
+  void BindParserFactory(
+      mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>
+          receiver) {
+    parser_factory_->AddReceiver(std::move(receiver));
+  }
+
   content::BrowserTaskEnvironment task_environment_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::ScopedTempDir temp_dir_;
 
   std::unique_ptr<web_package::MockWebBundleParserFactory> parser_factory_;
+  base::AutoReset<SignedWebBundleReader::WebBundleParserFactoryBinder>
+      reset_parser_factory_binder_ =
+          SignedWebBundleReader::SetWebBundleParserFactoryBinderForTesting(
+              base::BindRepeating(&SignedWebBundleReaderTest::BindParserFactory,
+                                  base::Unretained(this)));
   web_package::mojom::BundleIntegrityBlockPtr integrity_block_;
 
   const GURL kUrl = GURL("https://example.com");
@@ -896,7 +901,6 @@ class UnsecureSignedWebBundleReaderTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   base::ScopedTempDir temp_dir_;
   test::TestIwaClient iwa_client_;
 };

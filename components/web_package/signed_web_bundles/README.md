@@ -41,9 +41,11 @@ Parsing Signed Web Bundles is a three-step process:
 3. Parse the metadata using `WebBundleParser::ParseMetadata` while providing the
    length of the Integrity Block as the `offset` parameter.
 
-Per the [Rule of 2](/docs/security/rule-of-2.md), non-sandboxed browser-process
-code must use `data_decoder::SafeWebBundleParser` rather than instantiating
-`WebBundleParser` directly.
+`WebBundleParser` can be used directly from non-sandboxed code such as the
+browser process: the CBOR, Integrity Block and Web Bundle parsing it delegates
+to is implemented in `#![forbid(unsafe_code)]` Rust, so the
+[Rule of 2](/docs/security/rule-of-2.md) is satisfied without a sandboxed
+utility process.
 
 ## Web Bundle ID (`SignedWebBundleId`)
 

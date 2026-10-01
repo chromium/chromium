@@ -16,10 +16,10 @@ utility service, Blink, and Isolated Web Apps.
 ## Security & Architectural Invariants
 
 - **Rule of 2 & Memory-Safe Parsing:** Untrusted Web Bundle and Integrity Block
-  CBOR bytes are parsed using memory-safe Rust crates (`rust/` and
-  `signed_web_bundles/rust/`) inside the sandboxed `data_decoder` utility
-  process (`WebBundleParser` / `SafeWebBundleParser`). Browser-process code must
-  never invoke raw parsers directly on untrusted inputs.
+  CBOR bytes are decoded only by the memory-safe Rust crates (`rust/` and
+  `signed_web_bundles/rust/`), which is what allows `WebBundleParser` to run in
+  unsandboxed processes such as the browser process. Never decode untrusted
+  bundle bytes in C++; C++ code must only consume what the Rust crates return.
 - **Target Encapsulation:** Internal header/implementation split `source_set`s
   in `BUILD.gn` and the internal Rust crates (`rust/`,
   `signed_web_bundles/rust/`) are implementation details of this component.

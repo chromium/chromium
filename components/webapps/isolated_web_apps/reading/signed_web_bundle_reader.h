@@ -70,6 +70,16 @@ class COMPONENT_EXPORT(ISOLATED_WEB_APPS) SignedWebBundleReader {
   SetSignatureVerifierForTesting(
       web_package::SignedWebBundleSignatureVerifier*);
 
+  using WebBundleParserFactoryBinder =
+      data_decoder::SafeWebBundleParser::WebBundleParserFactoryBinder;
+
+  // Makes `SignedWebBundleReader` and `UnsecureReader` bind their
+  // `web_package::mojom::WebBundleParserFactory` with `binder` instead of
+  // hosting a `web_package::WebBundleParserFactory` in this process.
+  static base::AutoReset<WebBundleParserFactoryBinder>
+  SetWebBundleParserFactoryBinderForTesting(
+      WebBundleParserFactoryBinder binder);
+
   SignedWebBundleReader() = default;
   virtual ~SignedWebBundleReader() = default;
 
