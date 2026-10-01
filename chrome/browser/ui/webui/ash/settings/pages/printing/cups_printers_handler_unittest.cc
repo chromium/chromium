@@ -199,7 +199,7 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
 
 class CupsPrintersHandlerTest : public testing::Test {
  public:
-  constexpr static const std::string kPpdPrinterName = "printer_name";
+  static constexpr char kPpdPrinterName[] = "printer_name";
   CupsPrintersHandlerTest()
       : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD),
         profile_(std::make_unique<TestingProfile>()),
@@ -280,8 +280,7 @@ class CupsPrintersHandlerTest : public testing::Test {
   const std::string kDefaultPpdData = "PPD data used for testing";
   const std::string kPpdDataStrWithHeader = R"(*PPD-Adobe: "4.3")";
   const std::string kPpdErrorString =
-      base::StringPrintf("Unable to retrieve PPD for %s.",
-                         kPpdPrinterName.c_str());
+      base::StringPrintf("Unable to retrieve PPD for %s.", kPpdPrinterName);
 
   MockNewWindowDelegate& new_window_delegate() { return new_window_delegate_; }
 

@@ -7,13 +7,14 @@
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
+#include "base/no_destructor.h"
 #include "base/time/default_tick_clock.h"
 #include "chrome/browser/ui/webui/ash/add_supervision/add_supervision_handler_utils.h"
 
 // static
 AddSupervisionMetricsRecorder* AddSupervisionMetricsRecorder::GetInstance() {
-  static AddSupervisionMetricsRecorder instance_;
-  return &instance_;
+  static base::NoDestructor<AddSupervisionMetricsRecorder> instance;
+  return instance.get();
 }
 
 void AddSupervisionMetricsRecorder::RecordAddSupervisionEnrollment(

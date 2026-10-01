@@ -12,6 +12,7 @@
 #include "ash/quick_pair/repository/fast_pair/mock_fast_pair_image_decoder.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -44,36 +45,36 @@ const char kSavedDeviceAccountKeyKey[] = "accountKey";
 
 const char kDeviceName1[] = "I16max";
 const char kImageBytes1[] = "01010101001010101010101010101";
-const std::vector<uint8_t> kAccountKey1 = {0xA0, 0xBA, 0xF0, 0xBB, 0x95, 0x1F,
-                                           0xF7, 0xB6, 0xCF, 0x5E, 0x3F, 0x45,
-                                           0x61, 0xC3, 0x32, 0x1D};
+constexpr uint8_t kAccountKey1[] = {0xA0, 0xBA, 0xF0, 0xBB, 0x95, 0x1F,
+                                    0xF7, 0xB6, 0xCF, 0x5E, 0x3F, 0x45,
+                                    0x61, 0xC3, 0x32, 0x1D};
 const char kDeviceName2[] = "JBL Flip 6";
 const char kImageBytes2[] = "111110101001010101001010101111";
-const std::vector<uint8_t> kAccountKey2 = {0xA1, 0xBA, 0xF0, 0xBB, 0x95, 0x1F,
-                                           0xF7, 0xB6, 0xCD, 0x5E, 0x3F, 0x45,
-                                           0x61, 0xC3, 0x32, 0x1D};
+constexpr uint8_t kAccountKey2[] = {0xA1, 0xBA, 0xF0, 0xBB, 0x95, 0x1F,
+                                    0xF7, 0xB6, 0xCD, 0x5E, 0x3F, 0x45,
+                                    0x61, 0xC3, 0x32, 0x1D};
 const char kDeviceName3[] = "Pixel Buds";
 const char kImageBytes3[] = "00000010101100110101010010101001";
-const std::vector<uint8_t> kAccountKey3 = {0xA6, 0xB0, 0xF0, 0xBB, 0x95, 0x1F,
-                                           0xF7, 0xB6, 0xCD, 0x5E, 0x3F, 0x45,
-                                           0x68, 0xC3, 0x32, 0x1D};
+constexpr uint8_t kAccountKey3[] = {0xA6, 0xB0, 0xF0, 0xBB, 0x95, 0x1F,
+                                    0xF7, 0xB6, 0xCD, 0x5E, 0x3F, 0x45,
+                                    0x68, 0xC3, 0x32, 0x1D};
 const char kDeviceName4[] = "Wyze Buds";
 const char kImageBytes4[] = "11111000101010010101";
-const std::vector<uint8_t> kAccountKey4 = {0xB0, 0xB6, 0xF0, 0xBB, 0x95, 0x1F,
-                                           0xF7, 0xB6, 0xCF, 0x5E, 0x3F, 0x45,
-                                           0x61, 0xC3, 0x32, 0x1D};
+constexpr uint8_t kAccountKey4[] = {0xB0, 0xB6, 0xF0, 0xBB, 0x95, 0x1F,
+                                    0xF7, 0xB6, 0xCF, 0x5E, 0x3F, 0x45,
+                                    0x61, 0xC3, 0x32, 0x1D};
 
 const char kDeviceName5[] = "B&O Beoplay E6";
 const char kImageBytes5[] = "110000100010000100010100000001001000100001";
-const std::vector<uint8_t> kAccountKey5 = {0xC0, 0xC6, 0xD0, 0xBB, 0x95, 0x1F,
-                                           0xF7, 0xB6, 0xCF, 0x5E, 0x3F, 0x45,
-                                           0x61, 0xC3, 0x32, 0x1D};
+constexpr uint8_t kAccountKey5[] = {0xC0, 0xC6, 0xD0, 0xBB, 0x95, 0x1F,
+                                    0xF7, 0xB6, 0xCF, 0x5E, 0x3F, 0x45,
+                                    0x61, 0xC3, 0x32, 0x1D};
 
 const char kDeviceName6[] = "LG HBS-830";
 const char kImageBytes6[] = "11110100011111111010100101001010100101010011";
-const std::vector<uint8_t> kAccountKey6 = {0xB5, 0xB6, 0xF0, 0xBB, 0x95, 0x1F,
-                                           0xF7, 0xB8, 0xCF, 0x5E, 0x3F, 0x45,
-                                           0x61, 0xC3, 0x36, 0x1D};
+constexpr uint8_t kAccountKey6[] = {0xB5, 0xB6, 0xF0, 0xBB, 0x95, 0x1F,
+                                    0xF7, 0xB8, 0xCF, 0x5E, 0x3F, 0x45,
+                                    0x61, 0xC3, 0x36, 0x1D};
 
 const char kSavedDeviceRemoveResultMetricName[] =
     "Bluetooth.ChromeOS.FastPair.SavedDevices.Remove.Result";
@@ -85,7 +86,7 @@ const char kSavedDevicesCountMetricName[] =
 nearby::fastpair::FastPairDevice CreateFastPairDevice(
     const std::string device_name,
     const std::string image_bytes,
-    const std::vector<uint8_t>& account_key) {
+    base::span<const uint8_t> account_key) {
   nearby::fastpair::StoredDiscoveryItem item;
   item.set_title(device_name);
   item.set_icon_png(image_bytes);
@@ -99,14 +100,14 @@ nearby::fastpair::FastPairDevice CreateFastPairDevice(
   return device;
 }
 
-std::string EncodeKey(const std::vector<uint8_t>& decoded_key) {
+std::string EncodeKey(base::span<const uint8_t> decoded_key) {
   return base::HexEncode(decoded_key);
 }
 
 void AssertDeviceInList(const base::Value& device,
                         const std::string& expected_device_name,
                         const std::string& expected_base64_image_url,
-                        const std::vector<uint8_t> expected_account_key) {
+                        base::span<const uint8_t> expected_account_key) {
   const auto* device_dict = device.GetIfDict();
 
   const base::Value* device_name = device_dict->Find(kSavedDeviceNameKey);
@@ -177,13 +178,13 @@ class FastPairSavedDevicesHandlerTest : public testing::Test {
 
   void InitializeSavedDevicesList(const std::string& device_name1,
                                   const std::string& device_image_bytes1,
-                                  const std::vector<uint8_t>& account_key1,
+                                  base::span<const uint8_t> account_key1,
                                   const std::string& device_name2,
                                   const std::string& device_image_bytes2,
-                                  const std::vector<uint8_t>& account_key2,
+                                  base::span<const uint8_t> account_key2,
                                   const std::string& device_name3,
                                   const std::string& device_image_bytes3,
-                                  const std::vector<uint8_t>& account_key3,
+                                  base::span<const uint8_t> account_key3,
                                   nearby::fastpair::OptInStatus opt_in_status) {
     std::vector<nearby::fastpair::FastPairDevice> devices{
         CreateFastPairDevice(/*device_name=*/device_name1,
@@ -204,13 +205,13 @@ class FastPairSavedDevicesHandlerTest : public testing::Test {
       const content::TestWebUI::CallData& saved_devices_list_call_data,
       const std::string& device_name1,
       const std::string& expected_device_url1,
-      const std::vector<uint8_t>& account_key1,
+      base::span<const uint8_t> account_key1,
       const std::string& device_name2,
       const std::string& expected_device_url2,
-      const std::vector<uint8_t>& account_key2,
+      base::span<const uint8_t> account_key2,
       const std::string& device_name3,
       const std::string& expected_device_url3,
-      const std::vector<uint8_t>& account_key3) {
+      base::span<const uint8_t> account_key3) {
     // The call is structured such that the first argument is the name of the
     // first message being sent, and the second argument is the name of the
     // second message being sent.
@@ -263,7 +264,7 @@ class FastPairSavedDevicesHandlerTest : public testing::Test {
     test_web_ui()->HandleReceivedMessage(kLoadSavedDevicePage, args);
   }
 
-  void RemoveDevice(const std::vector<uint8_t>& account_key) {
+  void RemoveDevice(base::span<const uint8_t> account_key) {
     // `HandleReceivedMessages` has to use a base::ListValue due to the API.
     base::ListValue args;
     args.Append(EncodeKey(account_key));

@@ -30,114 +30,6 @@
 
 namespace ash::settings {
 namespace {
-const ::ash::mojom::Keyboard kKeyboard1 =
-    ::ash::mojom::Keyboard(/*name=*/"AT Translated Set 2",
-                           /*is_external=*/false,
-                           /*id=*/1,
-                           /*device_key=*/"fake-device-key1",
-                           /*meta_key=*/::ui::mojom::MetaKey::kLauncher,
-                           /*modifier_keys=*/{},
-                           /*top_row_action_keys=*/{},
-                           ::ash::mojom::KeyboardSettings::New(),
-                           ::ash::mojom::BatteryInfo::New(),
-                           ::ash::mojom::CompanionAppInfo::New());
-const ::ash::mojom::Keyboard kKeyboard2 =
-    ::ash::mojom::Keyboard(/*name=*/"Logitech K580",
-                           /*is_external=*/true,
-                           /*id=*/2,
-                           /*device_key=*/"fake-device-key2",
-                           /*meta_key=*/::ui::mojom::MetaKey::kExternalMeta,
-                           /*modifier_keys=*/{},
-                           /*top_row_action_keys=*/{},
-                           ::ash::mojom::KeyboardSettings::New(),
-                           ::ash::mojom::BatteryInfo::New(),
-                           ::ash::mojom::CompanionAppInfo::New());
-const ::ash::mojom::Keyboard kKeyboard3 =
-    ::ash::mojom::Keyboard(/*name=*/"HP 910 White Bluetooth Keyboard",
-                           /*is_external=*/true,
-                           /*id=*/3,
-                           /*device_key=*/"fake-device-key3",
-                           /*meta_key=*/::ui::mojom::MetaKey::kExternalMeta,
-                           /*modifier_keys=*/{},
-                           /*top_row_action_keys=*/{},
-                           ::ash::mojom::KeyboardSettings::New(),
-                           ::ash::mojom::BatteryInfo::New(),
-                           ::ash::mojom::CompanionAppInfo::New());
-const ::ash::mojom::Touchpad kTouchpad1 =
-    ::ash::mojom::Touchpad(/*name=*/"test touchpad",
-                           /*is_external=*/false,
-                           /*id=*/3,
-                           /*device_key=*/"fake-device-key3",
-                           /*is_haptic=*/true,
-                           ::ash::mojom::TouchpadSettings::New(),
-                           ::ash::mojom::BatteryInfo::New(),
-                           ::ash::mojom::CompanionAppInfo::New());
-const ::ash::mojom::Touchpad kTouchpad2 =
-    ::ash::mojom::Touchpad(/*name=*/"Logitech T650",
-                           /*is_external=*/true,
-                           /*id=*/4,
-                           /*device_key=*/"fake-device-key4",
-                           /*is_haptic=*/false,
-                           ::ash::mojom::TouchpadSettings::New(),
-                           ::ash::mojom::BatteryInfo::New(),
-                           ::ash::mojom::CompanionAppInfo::New());
-const ::ash::mojom::PointingStick kPointingStick1 =
-    ::ash::mojom::PointingStick(/*name=*/"test pointing stick",
-                                /*is_external=*/false,
-                                /*id=*/5,
-                                /*device_key=*/"fake-device-key5",
-                                ::ash::mojom::PointingStickSettings::New());
-const ::ash::mojom::PointingStick kPointingStick2 =
-    ::ash::mojom::PointingStick(/*name=*/"Lexmark-Unicomp FSR",
-                                /*is_external=*/true,
-                                /*id=*/6,
-                                /*device_key=*/"fake-device-key6",
-                                ::ash::mojom::PointingStickSettings::New());
-const ::ash::mojom::Mouse kMouse1 = ::ash::mojom::Mouse(
-    /*name=*/"Razer Basilisk V3",
-    /*is_external=*/false,
-    /*id=*/7,
-    /*device_key=*/"fake-device-key7",
-    /*customization_restriction=*/
-    ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
-    /*mouse_button_config=*/::ash::mojom::MouseButtonConfig::kNoConfig,
-    ::ash::mojom::MouseSettings::New(),
-    ::ash::mojom::BatteryInfo::New(),
-    ::ash::mojom::CompanionAppInfo::New());
-const ::ash::mojom::Mouse kMouse2 = ::ash::mojom::Mouse(
-    /*name=*/"MX Anywhere 2S",
-    /*is_external=*/true,
-    /*id=*/8,
-    /*device_key=*/"fake-device-key8",
-    /*customization_restriction=*/
-    ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
-    /*mouse_button_config=*/::ash::mojom::MouseButtonConfig::kNoConfig,
-    ::ash::mojom::MouseSettings::New(),
-    ::ash::mojom::BatteryInfo::New(),
-    ::ash::mojom::CompanionAppInfo::New());
-const ::ash::mojom::GraphicsTablet kGraphicsTablet1 =
-    ::ash::mojom::GraphicsTablet(
-        /*name=*/"Wacom Intuos S",
-        /*id=*/9,
-        /*device_key=*/"fake-device-key9",
-        /*customization_restriction=*/
-        ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
-        ::ash::mojom::GraphicsTabletButtonConfig::kNoConfig,
-        ::ash::mojom::GraphicsTabletSettings::New(),
-        ::ash::mojom::BatteryInfo::New(),
-        ::ash::mojom::CompanionAppInfo::New());
-const ::ash::mojom::GraphicsTablet kGraphicsTablet2 =
-    ::ash::mojom::GraphicsTablet(
-        /*name=*/"Huion H1060P",
-        /*id=*/10,
-        /*device_key=*/"fake-device-key10",
-        /*customization_restriction=*/
-        ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
-        ::ash::mojom::GraphicsTabletButtonConfig::kNoConfig,
-        ::ash::mojom::GraphicsTabletSettings::New(),
-        ::ash::mojom::BatteryInfo::New(),
-        ::ash::mojom::CompanionAppInfo::New());
-
 template <bool sorted = false, typename T>
 void ExpectListsEqual(const std::vector<T>& expected_list,
                       const std::vector<T>& actual_list) {
@@ -627,48 +519,156 @@ class InputDeviceSettingsProviderTest : public views::ViewsTestBase {
       scoped_resetter_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
+
+  const ::ash::mojom::Keyboard keyboard1_ =
+      ::ash::mojom::Keyboard(/*name=*/"AT Translated Set 2",
+                             /*is_external=*/false,
+                             /*id=*/1,
+                             /*device_key=*/"fake-device-key1",
+                             /*meta_key=*/::ui::mojom::MetaKey::kLauncher,
+                             /*modifier_keys=*/{},
+                             /*top_row_action_keys=*/{},
+                             ::ash::mojom::KeyboardSettings::New(),
+                             ::ash::mojom::BatteryInfo::New(),
+                             ::ash::mojom::CompanionAppInfo::New());
+  const ::ash::mojom::Keyboard keyboard2_ =
+      ::ash::mojom::Keyboard(/*name=*/"Logitech K580",
+                             /*is_external=*/true,
+                             /*id=*/2,
+                             /*device_key=*/"fake-device-key2",
+                             /*meta_key=*/::ui::mojom::MetaKey::kExternalMeta,
+                             /*modifier_keys=*/{},
+                             /*top_row_action_keys=*/{},
+                             ::ash::mojom::KeyboardSettings::New(),
+                             ::ash::mojom::BatteryInfo::New(),
+                             ::ash::mojom::CompanionAppInfo::New());
+  const ::ash::mojom::Keyboard keyboard3_ =
+      ::ash::mojom::Keyboard(/*name=*/"HP 910 White Bluetooth Keyboard",
+                             /*is_external=*/true,
+                             /*id=*/3,
+                             /*device_key=*/"fake-device-key3",
+                             /*meta_key=*/::ui::mojom::MetaKey::kExternalMeta,
+                             /*modifier_keys=*/{},
+                             /*top_row_action_keys=*/{},
+                             ::ash::mojom::KeyboardSettings::New(),
+                             ::ash::mojom::BatteryInfo::New(),
+                             ::ash::mojom::CompanionAppInfo::New());
+  const ::ash::mojom::Touchpad touchpad1_ =
+      ::ash::mojom::Touchpad(/*name=*/"test touchpad",
+                             /*is_external=*/false,
+                             /*id=*/3,
+                             /*device_key=*/"fake-device-key3",
+                             /*is_haptic=*/true,
+                             ::ash::mojom::TouchpadSettings::New(),
+                             ::ash::mojom::BatteryInfo::New(),
+                             ::ash::mojom::CompanionAppInfo::New());
+  const ::ash::mojom::Touchpad touchpad2_ =
+      ::ash::mojom::Touchpad(/*name=*/"Logitech T650",
+                             /*is_external=*/true,
+                             /*id=*/4,
+                             /*device_key=*/"fake-device-key4",
+                             /*is_haptic=*/false,
+                             ::ash::mojom::TouchpadSettings::New(),
+                             ::ash::mojom::BatteryInfo::New(),
+                             ::ash::mojom::CompanionAppInfo::New());
+  const ::ash::mojom::PointingStick pointing_stick1_ =
+      ::ash::mojom::PointingStick(/*name=*/"test pointing stick",
+                                  /*is_external=*/false,
+                                  /*id=*/5,
+                                  /*device_key=*/"fake-device-key5",
+                                  ::ash::mojom::PointingStickSettings::New());
+  const ::ash::mojom::PointingStick pointing_stick2_ =
+      ::ash::mojom::PointingStick(/*name=*/"Lexmark-Unicomp FSR",
+                                  /*is_external=*/true,
+                                  /*id=*/6,
+                                  /*device_key=*/"fake-device-key6",
+                                  ::ash::mojom::PointingStickSettings::New());
+  const ::ash::mojom::Mouse mouse1_ = ::ash::mojom::Mouse(
+      /*name=*/"Razer Basilisk V3",
+      /*is_external=*/false,
+      /*id=*/7,
+      /*device_key=*/"fake-device-key7",
+      /*customization_restriction=*/
+      ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
+      /*mouse_button_config=*/::ash::mojom::MouseButtonConfig::kNoConfig,
+      ::ash::mojom::MouseSettings::New(),
+      ::ash::mojom::BatteryInfo::New(),
+      ::ash::mojom::CompanionAppInfo::New());
+  const ::ash::mojom::Mouse mouse2_ = ::ash::mojom::Mouse(
+      /*name=*/"MX Anywhere 2S",
+      /*is_external=*/true,
+      /*id=*/8,
+      /*device_key=*/"fake-device-key8",
+      /*customization_restriction=*/
+      ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
+      /*mouse_button_config=*/::ash::mojom::MouseButtonConfig::kNoConfig,
+      ::ash::mojom::MouseSettings::New(),
+      ::ash::mojom::BatteryInfo::New(),
+      ::ash::mojom::CompanionAppInfo::New());
+  const ::ash::mojom::GraphicsTablet graphics_tablet1_ =
+      ::ash::mojom::GraphicsTablet(
+          /*name=*/"Wacom Intuos S",
+          /*id=*/9,
+          /*device_key=*/"fake-device-key9",
+          /*customization_restriction=*/
+          ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
+          ::ash::mojom::GraphicsTabletButtonConfig::kNoConfig,
+          ::ash::mojom::GraphicsTabletSettings::New(),
+          ::ash::mojom::BatteryInfo::New(),
+          ::ash::mojom::CompanionAppInfo::New());
+  const ::ash::mojom::GraphicsTablet graphics_tablet2_ =
+      ::ash::mojom::GraphicsTablet(
+          /*name=*/"Huion H1060P",
+          /*id=*/10,
+          /*device_key=*/"fake-device-key10",
+          /*customization_restriction=*/
+          ::ash::mojom::CustomizationRestriction::kAllowCustomizations,
+          ::ash::mojom::GraphicsTabletButtonConfig::kNoConfig,
+          ::ash::mojom::GraphicsTabletSettings::New(),
+          ::ash::mojom::BatteryInfo::New(),
+          ::ash::mojom::CompanionAppInfo::New());
 };
 
 TEST_F(InputDeviceSettingsProviderTest, TestSetKeyboardSettings) {
-  controller_->AddKeyboard(kKeyboard1.Clone());
-  controller_->AddKeyboard(kKeyboard2.Clone());
+  controller_->AddKeyboard(keyboard1_.Clone());
+  controller_->AddKeyboard(keyboard2_.Clone());
 
   FakeKeyboardSettingsObserver fake_observer;
   provider_->ObserveKeyboardSettings(
       fake_observer.receiver.BindNewPipeAndPassRemote());
 
-  EXPECT_CALL(*controller_, SetKeyboardSettings(kKeyboard1.id, testing::_))
+  EXPECT_CALL(*controller_, SetKeyboardSettings(keyboard1_.id, testing::_))
       .Times(1)
       .WillOnce(testing::Return(true));
-  provider_->SetKeyboardSettings(kKeyboard1.id, kKeyboard1.settings->Clone());
+  provider_->SetKeyboardSettings(keyboard1_.id, keyboard1_.settings->Clone());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, fake_observer.num_times_keyboard_list_updated());
 
-  EXPECT_CALL(*controller_, SetKeyboardSettings(kKeyboard2.id, testing::_))
+  EXPECT_CALL(*controller_, SetKeyboardSettings(keyboard2_.id, testing::_))
       .Times(1)
       .WillOnce(testing::Return(true));
-  provider_->SetKeyboardSettings(kKeyboard2.id, kKeyboard1.settings->Clone());
+  provider_->SetKeyboardSettings(keyboard2_.id, keyboard1_.settings->Clone());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, fake_observer.num_times_keyboard_list_updated());
 
-  EXPECT_CALL(*controller_, SetKeyboardSettings(kKeyboard2.id, testing::_))
+  EXPECT_CALL(*controller_, SetKeyboardSettings(keyboard2_.id, testing::_))
       .Times(1)
       .WillOnce(testing::Return(false));
-  provider_->SetKeyboardSettings(kKeyboard2.id, kKeyboard1.settings->Clone());
+  provider_->SetKeyboardSettings(keyboard2_.id, keyboard1_.settings->Clone());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, fake_observer.num_times_keyboard_list_updated());
 }
 
 TEST_F(InputDeviceSettingsProviderTest, TestRestoreDefaultKeyboardRemappings) {
-  controller_->AddKeyboard(kKeyboard1.Clone());
-  provider_->RestoreDefaultKeyboardRemappings(kKeyboard1.id);
+  controller_->AddKeyboard(keyboard1_.Clone());
+  provider_->RestoreDefaultKeyboardRemappings(keyboard1_.id);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(
       1, controller_->num_times_restore_default_keyboard_remappings_called());
 
-  controller_->AddKeyboard(kKeyboard2.Clone());
-  provider_->RestoreDefaultKeyboardRemappings(kKeyboard2.id);
+  controller_->AddKeyboard(keyboard2_.Clone());
+  provider_->RestoreDefaultKeyboardRemappings(keyboard2_.id);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(
@@ -676,141 +676,141 @@ TEST_F(InputDeviceSettingsProviderTest, TestRestoreDefaultKeyboardRemappings) {
 }
 
 TEST_F(InputDeviceSettingsProviderTest, TestSetPointingStickSettings) {
-  controller_->AddPointingStick(kPointingStick1.Clone());
-  controller_->AddPointingStick(kPointingStick2.Clone());
+  controller_->AddPointingStick(pointing_stick1_.Clone());
+  controller_->AddPointingStick(pointing_stick2_.Clone());
 
   FakePointingStickSettingsObserver fake_observer;
   provider_->ObservePointingStickSettings(
       fake_observer.receiver.BindNewPipeAndPassRemote());
 
   EXPECT_CALL(*controller_,
-              SetPointingStickSettings(kPointingStick1.id, testing::_))
+              SetPointingStickSettings(pointing_stick1_.id, testing::_))
       .Times(1)
       .WillOnce(testing::Return(true));
-  provider_->SetPointingStickSettings(kPointingStick1.id,
-                                      kPointingStick1.settings->Clone());
+  provider_->SetPointingStickSettings(pointing_stick1_.id,
+                                      pointing_stick1_.settings->Clone());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, fake_observer.num_times_called());
 
   EXPECT_CALL(*controller_,
-              SetPointingStickSettings(kPointingStick2.id, testing::_))
+              SetPointingStickSettings(pointing_stick2_.id, testing::_))
       .Times(1)
       .WillOnce(testing::Return(true));
-  provider_->SetPointingStickSettings(kPointingStick2.id,
-                                      kPointingStick1.settings->Clone());
+  provider_->SetPointingStickSettings(pointing_stick2_.id,
+                                      pointing_stick1_.settings->Clone());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, fake_observer.num_times_called());
 
   EXPECT_CALL(*controller_,
-              SetPointingStickSettings(kPointingStick2.id, testing::_))
+              SetPointingStickSettings(pointing_stick2_.id, testing::_))
       .Times(1)
       .WillOnce(testing::Return(false));
-  provider_->SetPointingStickSettings(kPointingStick2.id,
-                                      kPointingStick1.settings->Clone());
+  provider_->SetPointingStickSettings(pointing_stick2_.id,
+                                      pointing_stick1_.settings->Clone());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, fake_observer.num_times_called());
 }
 
 TEST_F(InputDeviceSettingsProviderTest, TestSetMouseSettings) {
-  controller_->AddMouse(kMouse1.Clone());
-  controller_->AddMouse(kMouse2.Clone());
+  controller_->AddMouse(mouse1_.Clone());
+  controller_->AddMouse(mouse2_.Clone());
 
   FakeMouseSettingsObserver fake_observer;
   provider_->ObserveMouseSettings(
       fake_observer.receiver.BindNewPipeAndPassRemote());
 
-  EXPECT_CALL(*controller_, SetMouseSettings(kMouse1.id, testing::_))
+  EXPECT_CALL(*controller_, SetMouseSettings(mouse1_.id, testing::_))
       .Times(1)
       .WillOnce(testing::Return(true));
-  provider_->SetMouseSettings(kMouse1.id, kMouse1.settings->Clone());
+  provider_->SetMouseSettings(mouse1_.id, mouse1_.settings->Clone());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, fake_observer.num_times_mouse_list_updated());
 
-  EXPECT_CALL(*controller_, SetMouseSettings(kMouse2.id, testing::_))
+  EXPECT_CALL(*controller_, SetMouseSettings(mouse2_.id, testing::_))
       .Times(1)
       .WillOnce(testing::Return(true));
-  provider_->SetMouseSettings(kMouse2.id, kMouse1.settings->Clone());
+  provider_->SetMouseSettings(mouse2_.id, mouse1_.settings->Clone());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, fake_observer.num_times_mouse_list_updated());
 
-  EXPECT_CALL(*controller_, SetMouseSettings(kMouse2.id, testing::_))
+  EXPECT_CALL(*controller_, SetMouseSettings(mouse2_.id, testing::_))
       .Times(1)
       .WillOnce(testing::Return(false));
-  provider_->SetMouseSettings(kMouse2.id, kMouse1.settings->Clone());
+  provider_->SetMouseSettings(mouse2_.id, mouse1_.settings->Clone());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, fake_observer.num_times_mouse_list_updated());
 }
 
 TEST_F(InputDeviceSettingsProviderTest, TestSetTouchpadSettings) {
-  controller_->AddTouchpad(kTouchpad1.Clone());
-  controller_->AddTouchpad(kTouchpad2.Clone());
+  controller_->AddTouchpad(touchpad1_.Clone());
+  controller_->AddTouchpad(touchpad2_.Clone());
 
   FakeTouchpadSettingsObserver fake_observer;
   provider_->ObserveTouchpadSettings(
       fake_observer.receiver.BindNewPipeAndPassRemote());
 
-  EXPECT_CALL(*controller_, SetTouchpadSettings(kTouchpad1.id, testing::_))
+  EXPECT_CALL(*controller_, SetTouchpadSettings(touchpad1_.id, testing::_))
       .Times(1)
       .WillOnce(testing::Return(true));
-  provider_->SetTouchpadSettings(kTouchpad1.id, kTouchpad1.settings->Clone());
+  provider_->SetTouchpadSettings(touchpad1_.id, touchpad1_.settings->Clone());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, fake_observer.num_times_called());
 
-  EXPECT_CALL(*controller_, SetTouchpadSettings(kTouchpad2.id, testing::_))
+  EXPECT_CALL(*controller_, SetTouchpadSettings(touchpad2_.id, testing::_))
       .Times(1)
       .WillOnce(testing::Return(true));
-  provider_->SetTouchpadSettings(kTouchpad2.id, kTouchpad1.settings->Clone());
+  provider_->SetTouchpadSettings(touchpad2_.id, touchpad1_.settings->Clone());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, fake_observer.num_times_called());
 
-  EXPECT_CALL(*controller_, SetTouchpadSettings(kTouchpad2.id, testing::_))
+  EXPECT_CALL(*controller_, SetTouchpadSettings(touchpad2_.id, testing::_))
       .Times(1)
       .WillOnce(testing::Return(false));
-  provider_->SetTouchpadSettings(kTouchpad2.id, kTouchpad1.settings->Clone());
+  provider_->SetTouchpadSettings(touchpad2_.id, touchpad1_.settings->Clone());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, fake_observer.num_times_called());
 }
 
 TEST_F(InputDeviceSettingsProviderTest, TestSetGraphicsTabletSettings) {
-  controller_->AddGraphicsTablet(kGraphicsTablet1.Clone());
-  controller_->AddGraphicsTablet(kGraphicsTablet2.Clone());
+  controller_->AddGraphicsTablet(graphics_tablet1_.Clone());
+  controller_->AddGraphicsTablet(graphics_tablet2_.Clone());
 
   FakeGraphicsTabletSettingsObserver fake_observer;
   provider_->ObserveGraphicsTabletSettings(
       fake_observer.receiver.BindNewPipeAndPassRemote());
 
   EXPECT_CALL(*controller_,
-              SetGraphicsTabletSettings(kGraphicsTablet1.id, testing::_))
+              SetGraphicsTabletSettings(graphics_tablet1_.id, testing::_))
       .Times(1)
       .WillOnce(testing::Return(true));
-  provider_->SetGraphicsTabletSettings(kGraphicsTablet1.id,
-                                       kGraphicsTablet1.settings->Clone());
+  provider_->SetGraphicsTabletSettings(graphics_tablet1_.id,
+                                       graphics_tablet1_.settings->Clone());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, fake_observer.num_times_graphics_tablet_list_updated());
 
   EXPECT_CALL(*controller_,
-              SetGraphicsTabletSettings(kGraphicsTablet2.id, testing::_))
+              SetGraphicsTabletSettings(graphics_tablet2_.id, testing::_))
       .Times(1)
       .WillOnce(testing::Return(true));
-  provider_->SetGraphicsTabletSettings(kGraphicsTablet2.id,
-                                       kGraphicsTablet2.settings->Clone());
+  provider_->SetGraphicsTabletSettings(graphics_tablet2_.id,
+                                       graphics_tablet2_.settings->Clone());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, fake_observer.num_times_graphics_tablet_list_updated());
 
   EXPECT_CALL(*controller_,
-              SetGraphicsTabletSettings(kGraphicsTablet2.id, testing::_))
+              SetGraphicsTabletSettings(graphics_tablet2_.id, testing::_))
       .Times(1)
       .WillOnce(testing::Return(false));
-  provider_->SetGraphicsTabletSettings(kGraphicsTablet2.id,
-                                       kGraphicsTablet2.settings->Clone());
+  provider_->SetGraphicsTabletSettings(graphics_tablet2_.id,
+                                       graphics_tablet2_.settings->Clone());
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, fake_observer.num_times_graphics_tablet_list_updated());
 }
 
 TEST_F(InputDeviceSettingsProviderTest, TestKeyboardSettingsObeserver) {
   std::vector<::ash::mojom::KeyboardPtr> expected_keyboards;
-  expected_keyboards.push_back(kKeyboard1.Clone());
-  controller_->AddKeyboard(kKeyboard1.Clone());
+  expected_keyboards.push_back(keyboard1_.Clone());
+  controller_->AddKeyboard(keyboard1_.Clone());
 
   FakeKeyboardSettingsObserver fake_observer;
   provider_->ObserveKeyboardSettings(
@@ -821,8 +821,8 @@ TEST_F(InputDeviceSettingsProviderTest, TestKeyboardSettingsObeserver) {
   EXPECT_EQ(1, fake_observer.num_times_keyboard_policies_updated());
   ExpectListsEqual(expected_keyboards, fake_observer.keyboards());
 
-  expected_keyboards.push_back(kKeyboard2.Clone());
-  controller_->AddKeyboard(kKeyboard2.Clone());
+  expected_keyboards.push_back(keyboard2_.Clone());
+  controller_->AddKeyboard(keyboard2_.Clone());
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, fake_observer.num_times_keyboard_list_updated());
@@ -830,7 +830,7 @@ TEST_F(InputDeviceSettingsProviderTest, TestKeyboardSettingsObeserver) {
   ExpectListsEqual(expected_keyboards, fake_observer.keyboards());
 
   expected_keyboards.pop_back();
-  controller_->RemoveKeyboard(kKeyboard2.id);
+  controller_->RemoveKeyboard(keyboard2_.id);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(3, fake_observer.num_times_keyboard_list_updated());
@@ -840,7 +840,7 @@ TEST_F(InputDeviceSettingsProviderTest, TestKeyboardSettingsObeserver) {
 
 TEST_F(InputDeviceSettingsProviderTest,
        TestKeyboardSettingsObeserverPolicyUpdates) {
-  controller_->AddKeyboard(kKeyboard1.Clone());
+  controller_->AddKeyboard(keyboard1_.Clone());
 
   FakeKeyboardSettingsObserver fake_observer;
   provider_->ObserveKeyboardSettings(
@@ -858,7 +858,7 @@ TEST_F(InputDeviceSettingsProviderTest,
 TEST_F(InputDeviceSettingsProviderTest, TestDuplicatesRemoved) {
   std::vector<::ash::mojom::KeyboardPtr> expected_keyboards;
 
-  auto keyboard1 = kKeyboard1.Clone();
+  auto keyboard1 = keyboard1_.Clone();
   keyboard1->device_key = "test-key1";
   expected_keyboards.push_back(keyboard1.Clone());
   controller_->AddKeyboard(keyboard1.Clone());
@@ -873,7 +873,7 @@ TEST_F(InputDeviceSettingsProviderTest, TestDuplicatesRemoved) {
   ExpectListsEqual</*sorted=*/true>(expected_keyboards,
                                     fake_observer.keyboards());
 
-  auto keyboard2 = kKeyboard2.Clone();
+  auto keyboard2 = keyboard2_.Clone();
   keyboard2->device_key = "test-key1";
   controller_->AddKeyboard(keyboard2.Clone());
 
@@ -883,7 +883,7 @@ TEST_F(InputDeviceSettingsProviderTest, TestDuplicatesRemoved) {
   ExpectListsEqual</*sorted=*/true>(expected_keyboards,
                                     fake_observer.keyboards());
 
-  controller_->RemoveKeyboard(kKeyboard2.id);
+  controller_->RemoveKeyboard(keyboard2_.id);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(3, fake_observer.num_times_keyboard_list_updated());
@@ -895,8 +895,8 @@ TEST_F(InputDeviceSettingsProviderTest, TestDuplicatesRemoved) {
 TEST_F(InputDeviceSettingsProviderTest, TestSortingExternalFirst) {
   std::vector<::ash::mojom::KeyboardPtr> expected_keyboards;
 
-  auto keyboard1 = kKeyboard1.Clone();
-  auto keyboard2 = kKeyboard2.Clone();
+  auto keyboard1 = keyboard1_.Clone();
+  auto keyboard2 = keyboard2_.Clone();
 
   // Guarantee that keyboard 1 which is internal, has a higher id than keyboard
   // 2 to properly test that external devices always come first in the list.
@@ -922,19 +922,19 @@ TEST_F(InputDeviceSettingsProviderTest, TestSortingExternalFirst) {
 TEST_F(InputDeviceSettingsProviderTest, TestSortingExternalFirstThenById) {
   std::vector<::ash::mojom::KeyboardPtr> expected_keyboards;
 
-  controller_->AddKeyboard(kKeyboard1.Clone());
-  ASSERT_FALSE(kKeyboard1.is_external);
+  controller_->AddKeyboard(keyboard1_.Clone());
+  ASSERT_FALSE(keyboard1_.is_external);
 
-  controller_->AddKeyboard(kKeyboard2.Clone());
-  ASSERT_TRUE(kKeyboard2.is_external);
+  controller_->AddKeyboard(keyboard2_.Clone());
+  ASSERT_TRUE(keyboard2_.is_external);
 
-  controller_->AddKeyboard(kKeyboard3.Clone());
-  ASSERT_TRUE(kKeyboard3.is_external);
-  ASSERT_LT(kKeyboard2.id, kKeyboard3.id);
+  controller_->AddKeyboard(keyboard3_.Clone());
+  ASSERT_TRUE(keyboard3_.is_external);
+  ASSERT_LT(keyboard2_.id, keyboard3_.id);
 
-  expected_keyboards.push_back(kKeyboard3.Clone());
-  expected_keyboards.push_back(kKeyboard2.Clone());
-  expected_keyboards.push_back(kKeyboard1.Clone());
+  expected_keyboards.push_back(keyboard3_.Clone());
+  expected_keyboards.push_back(keyboard2_.Clone());
+  expected_keyboards.push_back(keyboard1_.Clone());
 
   FakeKeyboardSettingsObserver fake_observer;
   provider_->ObserveKeyboardSettings(
@@ -947,8 +947,8 @@ TEST_F(InputDeviceSettingsProviderTest, TestSortingExternalFirstThenById) {
 
 TEST_F(InputDeviceSettingsProviderTest, TestMouseSettingsObeserver) {
   std::vector<::ash::mojom::MousePtr> expected_mice;
-  expected_mice.push_back(kMouse1.Clone());
-  controller_->AddMouse(kMouse1.Clone());
+  expected_mice.push_back(mouse1_.Clone());
+  controller_->AddMouse(mouse1_.Clone());
 
   FakeMouseSettingsObserver fake_observer;
   provider_->ObserveMouseSettings(
@@ -959,8 +959,8 @@ TEST_F(InputDeviceSettingsProviderTest, TestMouseSettingsObeserver) {
   EXPECT_EQ(1, fake_observer.num_times_mouse_policies_updated());
   ExpectListsEqual(expected_mice, fake_observer.mice());
 
-  expected_mice.push_back(kMouse2.Clone());
-  controller_->AddMouse(kMouse2.Clone());
+  expected_mice.push_back(mouse2_.Clone());
+  controller_->AddMouse(mouse2_.Clone());
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, fake_observer.num_times_mouse_list_updated());
@@ -968,7 +968,7 @@ TEST_F(InputDeviceSettingsProviderTest, TestMouseSettingsObeserver) {
   ExpectListsEqual(expected_mice, fake_observer.mice());
 
   expected_mice.pop_back();
-  controller_->RemoveMouse(kMouse2.id);
+  controller_->RemoveMouse(mouse2_.id);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(3, fake_observer.num_times_mouse_list_updated());
@@ -978,7 +978,7 @@ TEST_F(InputDeviceSettingsProviderTest, TestMouseSettingsObeserver) {
 
 TEST_F(InputDeviceSettingsProviderTest,
        TestMouseSettingsObeserverPolicyUpdates) {
-  controller_->AddMouse(kMouse1.Clone());
+  controller_->AddMouse(mouse1_.Clone());
 
   FakeMouseSettingsObserver fake_observer;
   provider_->ObserveMouseSettings(
@@ -995,8 +995,8 @@ TEST_F(InputDeviceSettingsProviderTest,
 
 TEST_F(InputDeviceSettingsProviderTest, TestTouchpadSettingsObeserver) {
   std::vector<::ash::mojom::TouchpadPtr> expected_touchpads;
-  expected_touchpads.push_back(kTouchpad1.Clone());
-  controller_->AddTouchpad(kTouchpad1.Clone());
+  expected_touchpads.push_back(touchpad1_.Clone());
+  controller_->AddTouchpad(touchpad1_.Clone());
 
   FakeTouchpadSettingsObserver fake_observer;
   provider_->ObserveTouchpadSettings(
@@ -1006,15 +1006,15 @@ TEST_F(InputDeviceSettingsProviderTest, TestTouchpadSettingsObeserver) {
   EXPECT_EQ(1, fake_observer.num_times_called());
   ExpectListsEqual(expected_touchpads, fake_observer.touchpads());
 
-  expected_touchpads.push_back(kTouchpad2.Clone());
-  controller_->AddTouchpad(kTouchpad2.Clone());
+  expected_touchpads.push_back(touchpad2_.Clone());
+  controller_->AddTouchpad(touchpad2_.Clone());
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, fake_observer.num_times_called());
   ExpectListsEqual(expected_touchpads, fake_observer.touchpads());
 
   expected_touchpads.pop_back();
-  controller_->RemoveTouchpad(kTouchpad2.id);
+  controller_->RemoveTouchpad(touchpad2_.id);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(3, fake_observer.num_times_called());
@@ -1023,8 +1023,8 @@ TEST_F(InputDeviceSettingsProviderTest, TestTouchpadSettingsObeserver) {
 
 TEST_F(InputDeviceSettingsProviderTest, TestPointingStickSettingsObeserver) {
   std::vector<::ash::mojom::PointingStickPtr> expected_pointing_sticks;
-  expected_pointing_sticks.push_back(kPointingStick1.Clone());
-  controller_->AddPointingStick(kPointingStick1.Clone());
+  expected_pointing_sticks.push_back(pointing_stick1_.Clone());
+  controller_->AddPointingStick(pointing_stick1_.Clone());
 
   FakePointingStickSettingsObserver fake_observer;
   provider_->ObservePointingStickSettings(
@@ -1034,15 +1034,15 @@ TEST_F(InputDeviceSettingsProviderTest, TestPointingStickSettingsObeserver) {
   EXPECT_EQ(1, fake_observer.num_times_called());
   ExpectListsEqual(expected_pointing_sticks, fake_observer.pointing_sticks());
 
-  expected_pointing_sticks.push_back(kPointingStick2.Clone());
-  controller_->AddPointingStick(kPointingStick2.Clone());
+  expected_pointing_sticks.push_back(pointing_stick2_.Clone());
+  controller_->AddPointingStick(pointing_stick2_.Clone());
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, fake_observer.num_times_called());
   ExpectListsEqual(expected_pointing_sticks, fake_observer.pointing_sticks());
 
   expected_pointing_sticks.pop_back();
-  controller_->RemovePointingStick(kPointingStick2.id);
+  controller_->RemovePointingStick(pointing_stick2_.id);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(3, fake_observer.num_times_called());
@@ -1051,8 +1051,8 @@ TEST_F(InputDeviceSettingsProviderTest, TestPointingStickSettingsObeserver) {
 
 TEST_F(InputDeviceSettingsProviderTest, TestGraphicsTabletSettingsObeserver) {
   std::vector<::ash::mojom::GraphicsTabletPtr> expected_graphics_tablets;
-  expected_graphics_tablets.push_back(kGraphicsTablet1.Clone());
-  controller_->AddGraphicsTablet(kGraphicsTablet1.Clone());
+  expected_graphics_tablets.push_back(graphics_tablet1_.Clone());
+  controller_->AddGraphicsTablet(graphics_tablet1_.Clone());
 
   FakeGraphicsTabletSettingsObserver fake_observer;
   provider_->ObserveGraphicsTabletSettings(
@@ -1062,15 +1062,15 @@ TEST_F(InputDeviceSettingsProviderTest, TestGraphicsTabletSettingsObeserver) {
   EXPECT_EQ(1, fake_observer.num_times_graphics_tablet_list_updated());
   ExpectListsEqual(expected_graphics_tablets, fake_observer.graphics_tablets());
 
-  expected_graphics_tablets.push_back(kGraphicsTablet2.Clone());
-  controller_->AddGraphicsTablet(kGraphicsTablet2.Clone());
+  expected_graphics_tablets.push_back(graphics_tablet2_.Clone());
+  controller_->AddGraphicsTablet(graphics_tablet2_.Clone());
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(2, fake_observer.num_times_graphics_tablet_list_updated());
   ExpectListsEqual(expected_graphics_tablets, fake_observer.graphics_tablets());
 
   expected_graphics_tablets.pop_back();
-  controller_->RemoveGraphicsTablet(kGraphicsTablet2.id);
+  controller_->RemoveGraphicsTablet(graphics_tablet2_.id);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(3, fake_observer.num_times_graphics_tablet_list_updated());
@@ -1078,7 +1078,7 @@ TEST_F(InputDeviceSettingsProviderTest, TestGraphicsTabletSettingsObeserver) {
 }
 
 TEST_F(InputDeviceSettingsProviderTest, ObservationMatchesWidget) {
-  provider_->StartObserving(kMouse1.id);
+  provider_->StartObserving(mouse1_.id);
   EXPECT_TRUE(controller_->observed_currently());
 
   widget_->Hide();
@@ -1092,7 +1092,7 @@ TEST_F(InputDeviceSettingsProviderTest, ObservationMatchesWidget) {
 }
 
 TEST_F(InputDeviceSettingsProviderTest, ObservationStateRemembered) {
-  provider_->StartObserving(kMouse1.id);
+  provider_->StartObserving(mouse1_.id);
   EXPECT_TRUE(controller_->observed_currently());
 
   widget_->Hide();
@@ -1104,12 +1104,12 @@ TEST_F(InputDeviceSettingsProviderTest, ObservationStateRemembered) {
   widget_->Show();
   EXPECT_FALSE(controller_->observed_currently());
 
-  provider_->StartObserving(kMouse1.id);
+  provider_->StartObserving(mouse1_.id);
   EXPECT_TRUE(controller_->observed_currently());
 }
 
 TEST_F(InputDeviceSettingsProviderTest, ObservationStateOnDestruction) {
-  provider_->StartObserving(kMouse1.id);
+  provider_->StartObserving(mouse1_.id);
   EXPECT_TRUE(controller_->observed_currently());
 
   widget_.reset();
@@ -1124,18 +1124,20 @@ TEST_F(InputDeviceSettingsProviderTest, ButtonPressObserverTest) {
   ::ash::mojom::ButtonPtr expected_button =
       ::ash::mojom::Button::NewCustomizableButton(
           ::ash::mojom::CustomizableButton::kMiddle);
-  provider_->OnCustomizableMouseButtonPressed(kMouse1, *expected_button);
+  provider_->OnCustomizableMouseButtonPressed(mouse1_, *expected_button);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(*expected_button, fake_observer.last_pressed_button());
 
   expected_button = ::ash::mojom::Button::NewCustomizableButton(
       ::ash::mojom::CustomizableButton::kForward);
-  provider_->OnCustomizablePenButtonPressed(kGraphicsTablet1, *expected_button);
+  provider_->OnCustomizablePenButtonPressed(graphics_tablet1_,
+                                            *expected_button);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(*expected_button, fake_observer.last_pressed_button());
 
   expected_button = ::ash::mojom::Button::NewVkey(ui::VKEY_0);
-  provider_->OnCustomizablePenButtonPressed(kGraphicsTablet1, *expected_button);
+  provider_->OnCustomizablePenButtonPressed(graphics_tablet1_,
+                                            *expected_button);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(*expected_button, fake_observer.last_pressed_button());
 }
@@ -1286,21 +1288,22 @@ TEST_F(InputDeviceSettingsProviderTest, ButtonPressObserverFollowsWindowFocus) {
       ::ash::mojom::Button::NewCustomizableButton(
           ::ash::mojom::CustomizableButton::kMiddle);
 
-  provider_->OnCustomizableMouseButtonPressed(kMouse1, *expected_button);
+  provider_->OnCustomizableMouseButtonPressed(mouse1_, *expected_button);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(fake_observer.has_last_pressed_button());
 
-  provider_->OnCustomizablePenButtonPressed(kGraphicsTablet1, *expected_button);
+  provider_->OnCustomizablePenButtonPressed(graphics_tablet1_,
+                                            *expected_button);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(fake_observer.has_last_pressed_button());
 
-  provider_->OnCustomizableTabletButtonPressed(kGraphicsTablet1,
+  provider_->OnCustomizableTabletButtonPressed(graphics_tablet1_,
                                                *expected_button);
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(fake_observer.has_last_pressed_button());
 
   widget_->Show();
-  provider_->OnCustomizableMouseButtonPressed(kMouse1, *expected_button);
+  provider_->OnCustomizableMouseButtonPressed(mouse1_, *expected_button);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(*expected_button, fake_observer.last_pressed_button());
 }

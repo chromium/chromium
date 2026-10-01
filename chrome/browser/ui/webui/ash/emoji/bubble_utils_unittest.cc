@@ -23,8 +23,8 @@ struct GetBubbleBoundsAroundCaretTestParams {
 };
 
 // The test cases here are based on test screen (width = 800, height = 600).
-std::vector<GetBubbleBoundsAroundCaretTestParams>
-    get_bubble_bounds_around_caret_test_params = {
+constexpr GetBubbleBoundsAroundCaretTestParams
+    kGetBubbleBoundsAroundCaretTestParams[] = {
         // When: caret appears on top left corner.
         // Then: bubble appears below caret.
         {
@@ -84,6 +84,6 @@ TEST_P(BubbleUtilsTest, GetBubbleBoundsAroundCaret) {
 
 INSTANTIATE_TEST_SUITE_P(BubbleUtilsTestAll,
                          BubbleUtilsTest,
-                         ValuesIn(get_bubble_bounds_around_caret_test_params));
+                         ValuesIn(kGetBubbleBoundsAroundCaretTestParams));
 
 }  // namespace

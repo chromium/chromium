@@ -42,7 +42,6 @@ using testing::InSequence;
 using testing::Pointee;
 using testing::Return;
 using testing::TestParamInfo;
-using testing::ValuesIn;
 using testing::WithParamInterface;
 
 namespace ash::settings {
@@ -297,19 +296,16 @@ IN_PROC_BROWSER_TEST_P(GoogleDriveHandlerTest,
       FormatBytesToString(0));
 }
 
-const TestParam kTestParams[] = {
-    {
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    GoogleDriveHandlerTest,
+    testing::Values(TestParam{
         .test_suffix = "BulkPinning",
         .enabled_features =
             {ash::features::kFeatureManagementDriveFsBulkPinning},
         .disabled_features = {},
-    },
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         GoogleDriveHandlerTest,
-                         ValuesIn(kTestParams),
-                         &ParamToTestSuffix);
+    }),
+    &ParamToTestSuffix);
 
 }  // namespace
 }  // namespace ash::settings

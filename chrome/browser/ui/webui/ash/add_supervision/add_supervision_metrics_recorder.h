@@ -9,8 +9,10 @@
 #include "base/time/time.h"
 
 namespace base {
+template <typename T>
+class NoDestructor;
 class TickClock;
-}
+}  // namespace base
 
 // Records UMA metrics for users going through the Add Supervision process.
 class AddSupervisionMetricsRecorder {
@@ -59,6 +61,8 @@ class AddSupervisionMetricsRecorder {
   };
 
  private:
+  friend class base::NoDestructor<AddSupervisionMetricsRecorder>;
+
   AddSupervisionMetricsRecorder();
 
   // Records UMA metric of how long the user spends in the Add Supervision
