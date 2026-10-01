@@ -102,6 +102,14 @@
   if (ShouldApplyOmniboxPopoutLayout(self)) {
     x -= kComposeboxOmniboxLayoutGuideHorizontalMargin;
     width += kComposeboxOmniboxLayoutGuideHorizontalMargin * 2;
+
+    CGFloat minWidth =
+        kOmniboxIPadMinWidthPercentage * containerView.frame.size.width;
+    if (width < minWidth) {
+      CGFloat marginCompensation = (minWidth - width) / 2;
+      x -= marginCompensation;
+      width = minWidth;
+    }
   }
 
   CGFloat preferredHeight =

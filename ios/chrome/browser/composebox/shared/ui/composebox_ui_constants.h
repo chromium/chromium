@@ -11,6 +11,8 @@
 extern const CGFloat kOmniboxMinHeight;
 extern const CGFloat kOmniboxCobrowseMinHeight;
 extern const CGFloat kOmniboxIPadMinHeight;
+/// The minimum width as percentage of the containing window.
+extern const CGFloat kOmniboxIPadMinWidthPercentage;
 /// The  margin  for the input plate container with its parent view.
 extern const CGFloat kInputPlateMargin;
 extern const CGFloat kInputPlateIpadMargin;
