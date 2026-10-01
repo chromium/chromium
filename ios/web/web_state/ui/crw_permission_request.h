@@ -45,6 +45,10 @@ class WebStateImpl;
 - (void)displayPromptForMediaCaptureType:(WKMediaCaptureType)mediaCaptureType
                                   origin:(const GURL&)origin;
 
+// Displays a prompt to users and asks geolocation permission coming from a
+// page with the given `origin`.
+- (void)displayPromptForGeolocationOrigin:(const GURL&)origin;
+
 @end
 
 #endif  // IOS_WEB_WEB_STATE_UI_CRW_PERMISSION_REQUEST_H_

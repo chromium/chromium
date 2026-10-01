@@ -74,6 +74,17 @@ NSArray<NSNumber*>* GetPermissionsFromWKMediaCaptureType(
       }));
 }
 
+- (void)displayPromptForGeolocationOrigin:(const GURL&)origin {
+  // This block strongly captures `self` intentionally to ensure that
+  // `_decisionHandler` is always invoked, even if the scope of `self` has
+  // deallocated.
+  __block GURL originCopy = origin;
+  _taskRunner->PostTask(
+      FROM_HERE, base::BindOnce(^{
+        [self displayPromptForGeolocationOriginOnTaskRunner:originCopy];
+      }));
+}
+
 #pragma mark - Private
 
 // Helper method that only executes on `_taskRunner`'s sequence.
@@ -106,6 +117,27 @@ NSArray<NSNumber*>* GetPermissionsFromWKMediaCaptureType(
   webState->RequestPermissionsWithDecisionHandler(
       GetPermissionsFromWKMediaCaptureType(mediaCaptureType), origin,
       ^(WKPermissionDecision decision) {
+        [self handleDecision:decision];
+      });
+}
+
+// Helper method that only executes on `_taskRunner`'s sequence.
+- (void)displayPromptForGeolocationOriginOnTaskRunner:(const GURL&)origin {
+  if (!_presenter) {
+    [self handleDecision:WKPermissionDecisionDeny];
+    return;
+  }
+  web::WebStateImpl* webState = _presenter.presentingWebState;
+  if (!webState || webState->IsBeingDestroyed()) {
+    [self handleDecision:WKPermissionDecisionDeny];
+    return;
+  }
+
+  // This block strongly captures `self` intentionally to ensure that
+  // `_decisionHandler` is always invoked, even if the scope of `self` has
+  // deallocated.
+  webState->RequestGeolocationPermissionWithDecisionHandler(
+      origin, ^(WKPermissionDecision decision) {
         [self handleDecision:decision];
       });
 }

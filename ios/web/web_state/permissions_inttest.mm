@@ -504,6 +504,36 @@ TEST_F(PermissionsInttest, TestsThatClosingTabBeforeDecisionDeniesPermission) {
   EXPECT_EQ(decision, static_cast<NSInteger>(WKPermissionDecisionDeny));
 }
 
+// Tests that geolocation permission request is auto-declined when the request
+// object is deallocated while the decision is in flight.
+TEST_F(
+    PermissionsInttest,
+    TestsThatGeolocationRequestIsAutoDeclinedWhenDeallocatedWithoutDecision) {
+  // Initialize the decision to a value that should map to none of the
+  // WKPermissionDecisions.
+  __block NSInteger decision = -1;
+  WKWebView* web_view = [web_controller() ensureWebViewCreated];
+  id<WKUIDelegate> ui_delegate = web_view.UIDelegate;
+  {
+    id<CRWPermissionPresenter> presenter =
+        (id<CRWPermissionPresenter>)ui_delegate;
+    // Fake a geolocation permission request. Use an inner scope to allow
+    // the request to be destroyed, simulating the closing of a tab.
+    CRWPermissionRequest* request = [[CRWPermissionRequest alloc]
+        initWithPresenter:presenter
+          decisionHandler:^(WKPermissionDecision wk_permission_decision) {
+            decision = static_cast<NSInteger>(wk_permission_decision);
+          }
+             onTaskRunner:base::SequencedTaskRunner::GetCurrentDefault()];
+    [request displayPromptForGeolocationOrigin:GURL(kSecureUrl)];
+  }
+
+  EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, true, ^bool {
+    return decision != -1;
+  }));
+  EXPECT_EQ(decision, static_cast<NSInteger>(WKPermissionDecisionDeny));
+}
+
 // Tests that media capture request is auto-declined when the tab is
 // prerendering.
 TEST_F(PermissionsInttest, TestsThatCancelllingPrerenderDeniesPermission) {

@@ -126,4 +126,78 @@ TEST_F(CRWPermissionRequestTest,
   EXPECT_EQ(decision, WKPermissionDecisionGrant);
 }
 
+// Tests that when requesting geolocation permission without an available
+// WebState, the decision handler is invoked with WKPermissionDecisionDeny.
+TEST_F(CRWPermissionRequestTest, GeolocationDenyWhenWebStateUnavailable) {
+  base::RunLoop run_loop;
+  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+
+  __block WKPermissionDecision decision = WKPermissionDecisionDeny;
+
+  FakeCRWPermissionPresenter* presenter =
+      [[FakeCRWPermissionPresenter alloc] init];
+
+  CRWPermissionRequest* request =
+      CreateRequest(presenter, ^(WKPermissionDecision wk_decision) {
+        decision = wk_decision;
+        quit_closure.Run();
+      });
+
+  delegate_.SetPermissionDecision(web::PermissionDecisionGrant);
+
+  [request displayPromptForGeolocationOrigin:GURL(kTestOrigin)];
+
+  run_loop.Run();
+  EXPECT_EQ(decision, WKPermissionDecisionDeny);
+}
+
+// Tests that when requesting geolocation permission on a destroyed WebState,
+// the decision handler is invoked with WKPermissionDecisionDeny.
+TEST_F(CRWPermissionRequestTest, GeolocationDenyWhenWebStateDestroyed) {
+  base::RunLoop run_loop;
+  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+  __block WKPermissionDecision decision = WKPermissionDecisionGrant;
+
+  FakeCRWPermissionPresenter* presenter =
+      [[FakeCRWPermissionPresenter alloc] init];
+  DestroyWebState();
+  presenter.presentingWebState = static_cast<web::WebStateImpl*>(web_state());
+
+  CRWPermissionRequest* request =
+      CreateRequest(presenter, ^(WKPermissionDecision wk_decision) {
+        decision = wk_decision;
+        quit_closure.Run();
+      });
+
+  [request displayPromptForGeolocationOrigin:GURL(kTestOrigin)];
+
+  run_loop.Run();
+  EXPECT_EQ(decision, WKPermissionDecisionDeny);
+}
+
+// Tests that when WebState grants geolocation permission, the decision handler
+// is invoked with WKPermissionDecisionGrant.
+TEST_F(CRWPermissionRequestTest,
+       GeolocationGrantedWhenWebStateGrantsPermission) {
+  base::RunLoop run_loop;
+  base::RepeatingClosure quit_closure = run_loop.QuitClosure();
+  __block WKPermissionDecision decision = WKPermissionDecisionDeny;
+
+  FakeCRWPermissionPresenter* presenter =
+      [[FakeCRWPermissionPresenter alloc] init];
+  presenter.presentingWebState = static_cast<web::WebStateImpl*>(web_state());
+
+  CRWPermissionRequest* request =
+      CreateRequest(presenter, ^(WKPermissionDecision wk_decision) {
+        decision = wk_decision;
+        quit_closure.Run();
+      });
+
+  delegate_.SetPermissionDecision(web::PermissionDecisionGrant);
+
+  [request displayPromptForGeolocationOrigin:GURL(kTestOrigin)];
+
+  run_loop.Run();
+  EXPECT_EQ(decision, WKPermissionDecisionGrant);
+}
 }  // namespace
