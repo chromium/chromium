@@ -8,6 +8,7 @@
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -184,11 +185,9 @@ class SignedExchangeCertFetcherTest : public testing::Test {
 
   static std::string CreateCertMessage(std::string_view cert_data) {
     cbor::Value::MapValue cbor_map;
-    cbor_map.emplace("sct", cbor::Value("SCT", cbor::Value::Type::BYTE_STRING));
-    cbor_map.emplace("cert",
-                     cbor::Value(cert_data, cbor::Value::Type::BYTE_STRING));
-    cbor_map.emplace("ocsp",
-                     cbor::Value("OCSP", cbor::Value::Type::BYTE_STRING));
+    cbor_map.emplace("sct", base::byte_span_from_cstring("SCT"));
+    cbor_map.emplace("cert", base::as_byte_span(cert_data));
+    cbor_map.emplace("ocsp", base::byte_span_from_cstring("OCSP"));
 
     cbor::Value::ArrayValue cbor_array;
     cbor_array.push_back(cbor::Value("\U0001F4DC\u26D3"));

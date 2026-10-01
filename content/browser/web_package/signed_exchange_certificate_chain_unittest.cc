@@ -7,6 +7,7 @@
 #include <optional>
 #include <string_view>
 
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -24,7 +25,7 @@ namespace content {
 namespace {
 
 cbor::Value CBORByteString(std::string_view str) {
-  return cbor::Value(str, cbor::Value::Type::BYTE_STRING);
+  return cbor::Value(base::as_byte_span(str));
 }
 
 scoped_refptr<net::X509Certificate> LoadCertificate(

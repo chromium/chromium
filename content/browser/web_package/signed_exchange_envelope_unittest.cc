@@ -33,8 +33,8 @@ const char kSignatureString[] =
     " cert-sha256=*W7uB969dFW3Mb5ZefPS9Tq5ZbH5iSmOILpjv2qEArmI=*;"
     " date=1511128380; expires=1511733180";
 
-cbor::Value CBORByteString(const char* str) {
-  return cbor::Value(str, cbor::Value::Type::BYTE_STRING);
+cbor::Value CBORByteString(std::string_view str) {
+  return cbor::Value(base::as_byte_span(str));
 }
 
 std::optional<SignedExchangeEnvelope> GenerateHeaderAndParse(
