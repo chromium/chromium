@@ -26,5 +26,6 @@ specific_include_rules = {
   ],
   "network_portal_signin_window_ash_browsertest\\.cc": [
     "+chrome/browser/ash/login/test/guest_session_mixin.h",
+    "+chrome/browser/ui/tabs/tab_strip_model.h",
   ],
 }

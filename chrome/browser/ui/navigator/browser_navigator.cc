@@ -610,29 +610,36 @@ base::WeakPtr<content::NavigationHandle> NavigateImpl(
       !IncognitoModeForced(params->initiating_profile)) {
     // Navigation outside of the current tab or the initial popup window from a
     // captive portal signin window should be prevented.
-    content::RenderFrameHost* initiator_rfh = nullptr;
-    if (params->initiator_frame_token.has_value()) {
-      initiator_rfh = content::RenderFrameHost::FromFrameToken(
-          content::GlobalRenderFrameHostToken(params->initiator_process_id,
-                                              *params->initiator_frame_token));
-    }
-    // If the navigation is initiated by a subframe that is sandboxed against
-    // top-level navigation (e.g., an iframe with allow-popups but without
-    // allow-top-navigation), rewriting the disposition to CURRENT_TAB would
-    // allow the sandboxed frame to navigate the top-level captive portal
-    // window, bypassing the sandbox restriction. In that case, fall back to
-    // NEW_POPUP so that the sandbox restriction is respected while still
-    // allowing popups. Also fall back to NEW_POPUP if the initiator frame was
-    // already destroyed (`!initiator_rfh`), since its sandbox flags can no
-    // longer be checked.
-    if (params->initiator_frame_token.has_value() &&
-        (!initiator_rfh ||
-         initiator_rfh->IsSandboxed(
-             network::mojom::WebSandboxFlags::kTopNavigation))) {
-      params->disposition = WindowOpenDisposition::NEW_POPUP;
-    } else {
-      params->disposition = WindowOpenDisposition::CURRENT_TAB;
-    }
+    params->disposition = [&]() {
+      // If a new WebContents was already created (e.g., `window.open()`),
+      // CURRENT_TAB cannot merge an existing WebContents into
+      // `source_contents`.
+      if (params->contents_to_insert) {
+        return WindowOpenDisposition::NEW_POPUP;
+      }
+      if (!params->initiator_frame_token.has_value()) {
+        return WindowOpenDisposition::CURRENT_TAB;
+      }
+      content::RenderFrameHost* const initiator_rfh =
+          content::RenderFrameHost::FromFrameToken(
+              content::GlobalRenderFrameHostToken(
+                  params->initiator_process_id,
+                  *params->initiator_frame_token));
+      // Fall back to NEW_POPUP if the initiator frame was already destroyed
+      // (`!initiator_rfh`), since its sandbox flags can no longer be checked.
+      if (!initiator_rfh) {
+        return WindowOpenDisposition::NEW_POPUP;
+      }
+      // If the navigation is initiated by a subframe that is sandboxed against
+      // top-level navigation (e.g., an iframe with allow-popups but without
+      // allow-top-navigation), rewriting the disposition to CURRENT_TAB would
+      // allow the sandboxed frame to navigate the top-level captive portal
+      // window, bypassing the sandbox restriction.
+      return initiator_rfh->IsSandboxed(
+                 network::mojom::WebSandboxFlags::kTopNavigation)
+                 ? WindowOpenDisposition::NEW_POPUP
+                 : WindowOpenDisposition::CURRENT_TAB;
+    }();
   }
 #endif
 
