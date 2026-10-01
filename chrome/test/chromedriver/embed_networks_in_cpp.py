@@ -18,8 +18,9 @@ import sys
 
 import cpp_source
 
-UNLIMITED_THROUGHPUT = ('WebInspector.OverridesSupport'
-                        '.NetworkThroughputUnlimitedValue')
+UNLIMITED_THROUGHPUT = (
+  'WebInspector.OverridesSupport.NetworkThroughputUnlimitedValue'
+)
 
 
 def quotizeKeys(s, keys):
@@ -43,6 +44,7 @@ def evaluateMultiplications(s):
   Args:
     s: a string containing bare multiplications that need to be evaluated.
   """
+
   def evaluateBinaryMultiplication(match):
     return str(float(match.group(1)) * float(match.group(2)))
 
@@ -52,8 +54,12 @@ def evaluateMultiplications(s):
 def main():
   parser = optparse.OptionParser()
   parser.add_option(
-      '', '--directory', type='string', default='.',
-      help='Path to directory where the cc/h files should be created')
+    '',
+    '--directory',
+    type='string',
+    default='.',
+    help='Path to directory where the cc/h files should be created',
+  )
   options, args = parser.parse_args()
 
   networks = '['
@@ -75,9 +81,9 @@ def main():
   networks += ']'
   networks = quotizeKeys(networks, ['id', 'title', 'throughput', 'latency'])
   networks = evaluateMultiplications(networks)
-  cpp_source.WriteSource('network_list',
-                         output_dir,
-                         options.directory, {'kNetworks': networks})
+  cpp_source.WriteSource(
+    'network_list', output_dir, options.directory, {'kNetworks': networks}
+  )
 
   clang_format = ['clang-format', '-i']
   subprocess.Popen(clang_format + ['%s/network_list.cc' % output_dir])

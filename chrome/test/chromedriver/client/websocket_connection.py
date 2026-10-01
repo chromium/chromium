@@ -12,26 +12,40 @@ _THIS_DIR = os.path.abspath(os.path.dirname(__file__))
 _PARENT_DIR = os.path.join(_THIS_DIR, os.pardir)
 sys.path.insert(1, _PARENT_DIR)
 import chrome_paths
+
 sys.path.remove(_PARENT_DIR)
-sys.path.insert(0,os.path.join(chrome_paths.GetSrc(), 'third_party',
-                               'catapult', 'telemetry', 'third_party',
-                               'websocket-client'))
+sys.path.insert(
+  0,
+  os.path.join(
+    chrome_paths.GetSrc(),
+    'third_party',
+    'catapult',
+    'telemetry',
+    'third_party',
+    'websocket-client',
+  ),
+)
 import websocket
 
-from websocket import WebSocketConnectionClosedException as InternalWebSocketConnectionClosedException
-from websocket import WebSocketTimeoutException as InternalWebSocketTimeoutException
+from websocket import (
+  WebSocketConnectionClosedException as InternalWebSocketConnectionClosedException,
+)
+from websocket import (
+  WebSocketTimeoutException as InternalWebSocketTimeoutException,
+)
 from exceptions import WebSocketConnectionClosedException
 from exceptions import WebSocketTimeoutException
 from exceptions import ChromeDriverException
 from exceptions import EXCEPTION_MAP
 
+
 class WebSocketCommands:
-  ATTACH_WEBSOCKET_TO_SESSION = \
-    '/session/:sessionId'
-  CREATE_UNBOUND_WEBSOCKET = \
-    '/session'
-  SEND_OVER_WEBSOCKET = \
+  ATTACH_WEBSOCKET_TO_SESSION = '/session/:sessionId'
+  CREATE_UNBOUND_WEBSOCKET = '/session'
+  SEND_OVER_WEBSOCKET = (
     '/session/:sessionId/chromium/send_command_from_websocket'
+  )
+
 
 class WebSocketConnection(object):
   def __init__(self, server_url, session_id=None):
@@ -40,11 +54,12 @@ class WebSocketConnection(object):
     self._command_id = 0
     if session_id is None:
       path = CommandExecutor.CreatePath(
-          WebSocketCommands.CREATE_UNBOUND_WEBSOCKET, {})
+        WebSocketCommands.CREATE_UNBOUND_WEBSOCKET, {}
+      )
     else:
       path = CommandExecutor.CreatePath(
-        WebSocketCommands.ATTACH_WEBSOCKET_TO_SESSION,
-        {'sessionId': session_id})
+        WebSocketCommands.ATTACH_WEBSOCKET_TO_SESSION, {'sessionId': session_id}
+      )
     self._websocket = websocket.create_connection(self._server_url + path)
     self._responses = {}
     self._events = []
@@ -91,9 +106,9 @@ class WebSocketConnection(object):
     return ret
 
   def WaitForResponse(self, command_id, channel=None, timeout=None):
-    response = self.WaitForResponseRaw(command_id,
-                                       channel=channel,
-                                       timeout=timeout)
+    response = self.WaitForResponseRaw(
+      command_id, channel=channel, timeout=timeout
+    )
     if response['type'] == 'error':
       raise self._ExceptionForResponse(response)
     if response['type'] == 'success':
@@ -107,29 +122,31 @@ class WebSocketConnection(object):
     return actual_id == expected_id and actual_channel == expected_channel
 
   def WaitForResponseRaw(self, command_id, channel=None, timeout=None):
-    if (channel not in self._responses
-        or command_id not in self._responses[channel]):
+    if (
+      channel not in self._responses
+      or command_id not in self._responses[channel]
+    ):
       self._WaitForMessage(
-          lambda message: self._IsExpectedResponse(
-              message,
-              command_id,
-              channel), timeout)
+        lambda message: self._IsExpectedResponse(message, command_id, channel),
+        timeout,
+      )
 
     msg = self._responses[channel][command_id]
     del self._responses[channel][command_id]
     return msg
 
   def _IsExpectedEvent(self, message, event_name, channel):
-    return (message.get('id') == None
-            and message.get('method') == event_name
-            and message.get('goog:channel') == channel)
+    return (
+      message.get('id') == None
+      and message.get('method') == event_name
+      and message.get('goog:channel') == channel
+    )
 
   def WaitForEvent(self, event_name, channel=None, timeout=None):
     return self._WaitForMessage(
-        lambda message: self._IsExpectedEvent(
-            message,
-            event_name,
-            channel), timeout)
+      lambda message: self._IsExpectedEvent(message, event_name, channel),
+      timeout,
+    )
 
   def _WaitForMessage(self, predicate, timeout=None):
     """
@@ -149,9 +166,9 @@ class WebSocketConnection(object):
           if resp_channel not in self._responses:
             self._responses[resp_channel] = {}
           self._responses[resp_channel][msg['id']] = msg
-        else: # event
+        else:  # event
           self._events.append(msg)
-        if (predicate(msg)):
+        if predicate(msg):
           return msg
         if start + timeout <= time.monotonic():
           raise WebSocketTimeoutException()
@@ -172,9 +189,9 @@ class WebSocketConnection(object):
     self.Close()
 
   def GetTimeout(self):
-    """ Get the websocket timeout(second)"""
+    """Get the websocket timeout(second)"""
     return self._websocket.gettimeout()
 
   def SetTimeout(self, timeout_seconds):
-    """ Set the websocket timeout(second)"""
+    """Set the websocket timeout(second)"""
     self._websocket.settimeout(timeout_seconds)

@@ -26,21 +26,27 @@ def CleanUpOldVersions(args):
 def Main():
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '--versions-dir',
-      required=True,
-      help='The path where versioned directories are stored')
+    '--versions-dir',
+    required=True,
+    help='The path where versioned directories are stored',
+  )
   parser.add_argument(
-      '--keep',
-      action='append',
-      default=[],
-      help=('The names of items to keep in the `--versions-dir`. '
-            'Can be specified multiple times.'))
+    '--keep',
+    action='append',
+    default=[],
+    help=(
+      'The names of items to keep in the `--versions-dir`. '
+      'Can be specified multiple times.'
+    ),
+  )
   parser.add_argument(
-      '--stamp', required=True, help='Path to write the stamp file.')
+    '--stamp', required=True, help='Path to write the stamp file.'
+  )
   args = parser.parse_args()
 
   CleanUpOldVersions(args)
   return 0
+
 
 if __name__ == '__main__':
   sys.exit(Main())

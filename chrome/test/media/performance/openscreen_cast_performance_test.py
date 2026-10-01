@@ -30,8 +30,10 @@ from repeating_log import RepeatingLog
 # pylint: enable=import-error, wrong-import-position
 
 CAST_BTN_XPATH = "//button[text()='Launch app']"
-CAST_URL = (f"http://{common.LOCAL_HOST_IP}:{common.SERVER_PORT}/"
-            "cast_starter.html?flavor=stable")
+CAST_URL = (
+    f"http://{common.LOCAL_HOST_IP}:{common.SERVER_PORT}/"
+    "cast_starter.html?flavor=stable"
+)
 # This is set by the fleet team as the IP for all receiver devices.
 RECEIVER_IP = "172.16.0.3:5555"
 RECEIVER_TRACE_DIR = "/data/misc/perfetto-traces"
@@ -93,15 +95,16 @@ def should_run_vp9_tests(args) -> bool:
     if args.sender_os == 'win':
         if args.sender in ['localhost', '127.0.0.1', None]:
             import platform
+
             cpu_name = platform.processor().upper()
         else:
             cpu_cmd = (
-                'powershell -Command "(Get-CimInstance Win32_Processor).Name"')
+                'powershell -Command "(Get-CimInstance Win32_Processor).Name"'
+            )
             try:
-                cpu_res = common.send_ssh_command(args.sender,
-                                                  args.username,
-                                                  cpu_cmd,
-                                                  blocking=True)
+                cpu_res = common.send_ssh_command(
+                    args.sender, args.username, cpu_cmd, blocking=True
+                )
                 cpu_name = cpu_res.stdout.upper()
             except Exception as e:
                 logging.warning("Failed to check remote CPU: %s", e)
@@ -121,21 +124,24 @@ def connect_to_remote_driver(chrome_options, binary_location):
 
     for _ in range(20):
         try:
-            driver = webdriver.Remote(command_executor=common.REMOTE_URL,
-                                      options=chrome_options)
+            driver = webdriver.Remote(
+                command_executor=common.REMOTE_URL, options=chrome_options
+            )
             logging.info("Successfully connected!")
             return driver
-        except Exception as e:  #pylint: disable=broad-exception-caught
+        except Exception as e:  # pylint: disable=broad-exception-caught
             logging.info("Tunnel not yet up. Sleeping ... Error: %s", e)
             time.sleep(2)
     raise RuntimeError("Could not connect to the remote chromedriver.")
 
 
-def setup_test_environment(args,
-                           chrome_version,
-                           chrome_options_list=None,
-                           codec_name=None,
-                           video_name=None):
+def setup_test_environment(
+    args,
+    chrome_version,
+    chrome_options_list=None,
+    codec_name=None,
+    video_name=None,
+):
     """
     Sets up the remote chromedriver and SSH tunnel for testing.
 
@@ -161,19 +167,24 @@ def setup_test_environment(args,
             chrome_options_list = list(chrome_options_list)
         video_key = f"{codec_name}_{video_name}" if video_name else codec_name
         trace_file_path = f'/tmp/{video_key}_sender.perfetto-trace'
-        chrome_options_list.extend([
-            '--trace-startup', f'--trace-startup-file={trace_file_path}',
-            '--trace-startup-categories=cast,media,webrtc,gpu,blink',
-            '--trace-startup-duration=45'
-        ])
+        chrome_options_list.extend(
+            [
+                '--trace-startup',
+                f'--trace-startup-file={trace_file_path}',
+                '--trace-startup-categories=cast,media,webrtc,gpu,blink',
+                '--trace-startup-duration=45',
+            ]
+        )
         driver, cb_platform, actual_version = common.setup_cros_environment(
-            args, chrome_version, chrome_options_list)
+            args, chrome_version, chrome_options_list
+        )
         enable_tab_mirroring(driver)
         return driver, cb_platform, actual_version, trace_file_path
 
     common.terminate_old_chromedriver(args)
     remote_app_path, actual_version = common.install_and_setup_chrome(
-        args, chrome_version)
+        args, chrome_version
+    )
     common.wait_for_chromedriver(args, actual_version, codec_name)
     tunnel_proc = common.start_ssh_tunnel(args)
 
@@ -182,12 +193,15 @@ def setup_test_environment(args,
     # Enable native Chrome tracing to file for the entire session.
     video_key = f"{codec_name}_{video_name}" if video_name else codec_name
     trace_file_path = (
-        f'{common.WIN_REMOTE_TMP_DIR}/{video_key}_sender.perfetto-trace' if
-        args.sender_os == 'win' else f'/tmp/{video_key}_sender.perfetto-trace')
+        f'{common.WIN_REMOTE_TMP_DIR}/{video_key}_sender.perfetto-trace'
+        if args.sender_os == 'win'
+        else f'/tmp/{video_key}_sender.perfetto-trace'
+    )
     chrome_options.add_argument('--trace-startup')
     chrome_options.add_argument(f'--trace-startup-file={trace_file_path}')
     chrome_options.add_argument(
-        '--trace-startup-categories=cast,media,webrtc,gpu,blink')
+        '--trace-startup-categories=cast,media,webrtc,gpu,blink'
+    )
     chrome_options.add_argument('--trace-startup-duration=45')
 
     for option in chrome_options_list:
@@ -197,18 +211,24 @@ def setup_test_environment(args,
     video_key = f"{codec_name}_{video_name}" if video_name else codec_name
     log_file_path = (
         f'{common.WIN_REMOTE_TMP_DIR}/chrome_debug_{video_key}.log'
-        if args.sender_os == 'win' else f'/tmp/chrome_debug_{video_key}.log')
+        if args.sender_os == 'win'
+        else f'/tmp/chrome_debug_{video_key}.log'
+    )
     chrome_options.add_argument(f'--log-file={log_file_path}')
 
     binary_path = None
     if args.sender_os == 'mac':
-        binary_path = (f'{remote_app_path}/Contents/MacOS/Google Chrome for '
-                       'Testing')
-        logging.info("Mac OS detected. Setting binary_location to: %s",
-                     binary_path)
+        binary_path = (
+            f'{remote_app_path}/Contents/MacOS/Google Chrome for Testing'
+        )
+        logging.info(
+            "Mac OS detected. Setting binary_location to: %s", binary_path
+        )
     elif args.sender_os == 'win':
-        logging.info("Windows OS detected. Setting binary_location to: %s",
-                     remote_app_path)
+        logging.info(
+            "Windows OS detected. Setting binary_location to: %s",
+            remote_app_path,
+        )
         binary_path = remote_app_path
 
     chrome_options.binary_location = binary_path
@@ -242,8 +262,10 @@ def enable_tab_mirroring(driver):
     # Wait for the debug message to indicate a receiver has been found.
     logging.info("Waiting for receiver to be found...")
     wait.until(
-        ec.text_to_be_present_in_element((By.ID, "debugmessage"),
-                                         "receiver found"))
+        ec.text_to_be_present_in_element(
+            (By.ID, "debugmessage"), "receiver found"
+        )
+    )
     logging.info("Receiver found in debug message.")
 
 
@@ -268,25 +290,29 @@ def start_tab_mirroring(driver, args):
     max_retries = 5
     for attempt in range(1, max_retries + 1):
         try:
-            driver.execute_cdp_cmd("Cast.startTabMirroring",
-                                   {"sinkName": args.receiver})
-            logging.info("'Cast.startTabMirroring' command sent to %s.",
-                         args.receiver)
+            driver.execute_cdp_cmd(
+                "Cast.startTabMirroring", {"sinkName": args.receiver}
+            )
+            logging.info(
+                "'Cast.startTabMirroring' command sent to %s.", args.receiver
+            )
             return True
         except Exception as e:  # pylint: disable=broad-exception-caught
             logging.warning(
                 "Attempt %d failed to start mirroring: %s. Retrying...",
                 attempt,
                 e,
-                exc_info=False)
+                exc_info=False,
+            )
             time.sleep(1)
 
     raise RuntimeError("Failed to start tab mirroring.")
 
 
 # pylint: disable=too-many-locals
-def run_performance_test(video_file: str, driver: webdriver, codec_name: str,
-                         args):
+def run_performance_test(
+    video_file: str, driver: webdriver, codec_name: str, args
+):
     """
     Runs a single video performance test by casting and recording the video.
 
@@ -306,9 +332,11 @@ def run_performance_test(video_file: str, driver: webdriver, codec_name: str,
     # force video output to mp4 and include the codec name
     output_file = os.path.join(
         common.RECORDINGS_DIR,
-        f"{codec_name}_{video_file.replace('.webm', '.mp4')}")
+        f"{codec_name}_{video_file.replace('.webm', '.mp4')}",
+    )
     receiver_trace_remote_path = (
-        f'{RECEIVER_TRACE_DIR}/{codec_name}_{video_file}.perfetto-trace')
+        f'{RECEIVER_TRACE_DIR}/{codec_name}_{video_file}.perfetto-trace'
+    )
     video_key = f"{codec_name}_{video_file}"
 
     host_recording_cmd = [
@@ -348,12 +376,14 @@ def run_performance_test(video_file: str, driver: webdriver, codec_name: str,
         # Set the duration of the recording.
         '-t',
         '40',
-        output_file
+        output_file,
     ]
 
     wait = WebDriverWait(driver, 30)
-    driver.get(f'http://{common.LOCAL_HOST_IP}:'
-               f'{common.SERVER_PORT}/video.html?file={video_file}')
+    driver.get(
+        f'http://{common.LOCAL_HOST_IP}:'
+        f'{common.SERVER_PORT}/video.html?file={video_file}'
+    )
     wait.until(ec.presence_of_element_located((By.ID, "video")))
 
     casting = False
@@ -364,18 +394,21 @@ def run_performance_test(video_file: str, driver: webdriver, codec_name: str,
         csv_remote_path = f"C:/Users/Public/glances_{video_key}.csv"
     else:
         csv_remote_path = f"/tmp/glances_{video_key}.csv"
-    csv_local_path = os.path.join(common.TRACES_DIR,
-                                  f"glances_{video_key}.csv")
+    csv_local_path = os.path.join(common.TRACES_DIR, f"glances_{video_key}.csv")
     try:
         glances_proc = common.start_glances_monitoring(args, csv_remote_path)
         # pylint: disable=consider-using-with
-        rec_proc_local = subprocess.Popen(host_recording_cmd,
-                                          stdout=subprocess.PIPE,
-                                          stderr=subprocess.PIPE,
-                                          text=True)
+        rec_proc_local = subprocess.Popen(
+            host_recording_cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
 
-        logging.info("ffmpeg recording process started. Waiting for 'Stream "
-                     "mapping:' confirmation...")
+        logging.info(
+            "ffmpeg recording process started. Waiting for 'Stream "
+            "mapping:' confirmation..."
+        )
 
         while True:
             line = rec_proc_local.stderr.readline()
@@ -391,20 +424,37 @@ def run_performance_test(video_file: str, driver: webdriver, codec_name: str,
         try:
             # pylint: disable=consider-using-with
             # Pre-clean the remote trace path to ensure fresh data.
-            subprocess.run([
-                ADB_PATH, '-s', RECEIVER_IP, 'shell', 'rm', '-f',
-                receiver_trace_remote_path
-            ],
-                           check=False,
-                           timeout=5)
-            receiver_trace_proc = subprocess.Popen([
-                ADB_PATH, '-s', RECEIVER_IP, 'shell', 'perfetto', '-c', '-',
-                '--txt', '-o', receiver_trace_remote_path
-            ],
-                                                   stdin=subprocess.PIPE,
-                                                   stdout=subprocess.PIPE,
-                                                   stderr=subprocess.PIPE,
-                                                   text=True)
+            subprocess.run(
+                [
+                    ADB_PATH,
+                    '-s',
+                    RECEIVER_IP,
+                    'shell',
+                    'rm',
+                    '-f',
+                    receiver_trace_remote_path,
+                ],
+                check=False,
+                timeout=5,
+            )
+            receiver_trace_proc = subprocess.Popen(
+                [
+                    ADB_PATH,
+                    '-s',
+                    RECEIVER_IP,
+                    'shell',
+                    'perfetto',
+                    '-c',
+                    '-',
+                    '--txt',
+                    '-o',
+                    receiver_trace_remote_path,
+                ],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+            )
             receiver_trace_proc.stdin.write(PERFETTO_CONFIG)
             receiver_trace_proc.stdin.close()
         except Exception as e:
@@ -417,7 +467,8 @@ def run_performance_test(video_file: str, driver: webdriver, codec_name: str,
             seconds, returns True if the condition met."""
             start = time.time()
             while not driver.execute_script(
-                    f'return arguments[0].{condition};', element):
+                f'return arguments[0].{condition};', element
+            ):
                 if time.time() - start >= 30:
                     return False
                 time.sleep(1)
@@ -425,11 +476,12 @@ def run_performance_test(video_file: str, driver: webdriver, codec_name: str,
 
         video = driver.find_element(By.ID, 'video')
 
-        with common.measures.time_consumption(video_file,
-                                              'video_perf',
-                                              'playback',
-                                              'loading'), \
-             RepeatingLog(f'Waiting for video {video_file} to be loaded.'):
+        with (
+            common.measures.time_consumption(
+                video_file, 'video_perf', 'playback', 'loading'
+            ),
+            RepeatingLog(f'Waiting for video {video_file} to be loaded.'),
+        ):
             if not _wait_js_condition(driver, video, 'readyState >= 2'):
                 # Capture video element state for better root-causing.
                 v_state = driver.execute_script(
@@ -439,12 +491,17 @@ def run_performance_test(video_file: str, driver: webdriver, codec_name: str,
                     "  networkState: arguments[0].networkState, "
                     "  readyState: arguments[0].readyState, "
                     "  src: arguments[0].src "
-                    "}", video)
+                    "}",
+                    video,
+                )
                 logging.warning(
                     '%s failed to load within timeout. Skipping. State: %s',
-                    video_file, v_state)
-                common.measures.average(video_key, 'video_perf', 'playback',
-                                        'failed_to_load').record(1)
+                    video_file,
+                    v_state,
+                )
+                common.measures.average(
+                    video_key, 'video_perf', 'playback', 'failed_to_load'
+                ).record(1)
                 # Gracefully stop the recording process since we're skipping.
                 rec_proc_local.terminate()
                 rec_proc_local.wait()
@@ -458,25 +515,29 @@ def run_performance_test(video_file: str, driver: webdriver, codec_name: str,
         video.click()
         logging.info("Started playing video.")
 
-        logging.info("Casting for 30 seconds (script will then stop casting "
-                     "and quit)...")
+        logging.info(
+            "Casting for 30 seconds (script will then stop casting and quit)..."
+        )
         time.sleep(30)
 
         rec_proc_local.communicate()
         logging.info("recording finished.")
 
         results = common.video_analyzer.from_original_video(
-            output_file, f"/usr/local/cipd/videostack_videos_30s/{video_file}")
+            output_file, f"/usr/local/cipd/videostack_videos_30s/{video_file}"
+        )
         if not results:
-            raise RuntimeError("Missing video analyzer results. See log for "
-                               "further details.")
+            raise RuntimeError(
+                "Missing video analyzer results. See log for further details."
+            )
 
         def record(key: str) -> None:
             # If the video_analyzer does not generate any result, treat it as an
             # error and use the default value to filter them out instead of
             # failing the tests.
             common.measures.average(video_key, 'video_perf', key).record(
-                results.get(key, common.FAIL_CODE))
+                results.get(key, common.FAIL_CODE)
+            )
 
         for metric in common.METRICS:
             record(metric)
@@ -487,11 +548,11 @@ def run_performance_test(video_file: str, driver: webdriver, codec_name: str,
         logging.warning('Video analysis result of %s: %s', video_file, results)
     finally:
         if driver and casting and args.receiver:
-            logging.info('Attempting to stop casting to "%s"...',
-                         args.receiver)
+            logging.info('Attempting to stop casting to "%s"...', args.receiver)
             try:
-                driver.execute_cdp_cmd("Cast.stopCasting",
-                                       {"sinkName": args.receiver})
+                driver.execute_cdp_cmd(
+                    "Cast.stopCasting", {"sinkName": args.receiver}
+                )
                 logging.info("'Cast.stopCasting' command sent.")
                 casting = False
                 # Wait for the sink to disconnect for stable logging.
@@ -502,8 +563,7 @@ def run_performance_test(video_file: str, driver: webdriver, codec_name: str,
         # Collect the Receiver Trace
         try:
             if receiver_trace_proc:
-                logging.info(
-                    "Waiting for Receiver Perfetto trace to finish...")
+                logging.info("Waiting for Receiver Perfetto trace to finish...")
                 try:
                     # Perfetto runs for 40 seconds. We've slept for 30s +
                     # some overhead, so it should finish within 25s.
@@ -514,45 +574,61 @@ def run_performance_test(video_file: str, driver: webdriver, codec_name: str,
                     if receiver_trace_proc.returncode != 0:
                         logging.error(
                             "Receiver Perfetto trace failed with code %d. "
-                            "Stderr: %s", receiver_trace_proc.returncode,
-                            stderr_data)
+                            "Stderr: %s",
+                            receiver_trace_proc.returncode,
+                            stderr_data,
+                        )
                 except subprocess.TimeoutExpired:
                     logging.warning(
                         "Receiver Perfetto trace did not finish within "
-                        "timeout. Terminating...")
+                        "timeout. Terminating..."
+                    )
                     receiver_trace_proc.terminate()
                     receiver_trace_proc.wait()
                     stdout_data = receiver_trace_proc.stdout.read()
                     stderr_data = receiver_trace_proc.stderr.read()
                     logging.error(
                         "Receiver Perfetto trace timed out. Stderr: %s",
-                        stderr_data)
+                        stderr_data,
+                    )
 
                 logging.info("Collecting Receiver Trace...")
                 receiver_trace_local_path = os.path.join(
-                    common.TRACES_DIR, f"{video_key}_receiver.perfetto-trace")
-                subprocess.run([
-                    ADB_PATH, '-s', RECEIVER_IP, 'pull',
-                    receiver_trace_remote_path, receiver_trace_local_path
-                ],
-                               check=False,
-                               timeout=30)
+                    common.TRACES_DIR, f"{video_key}_receiver.perfetto-trace"
+                )
+                subprocess.run(
+                    [
+                        ADB_PATH,
+                        '-s',
+                        RECEIVER_IP,
+                        'pull',
+                        receiver_trace_remote_path,
+                        receiver_trace_local_path,
+                    ],
+                    check=False,
+                    timeout=30,
+                )
         except Exception as e:
             logging.error("Failed to collect receiver trace: %s", e)
 
         # Collect Receiver Logcat
         try:
             logging.info("Collecting Receiver Logcat...")
-            logcat_path = os.path.join(common.TRACES_DIR,
-                                       f"{video_key}_receiver_logcat.txt")
+            logcat_path = os.path.join(
+                common.TRACES_DIR, f"{video_key}_receiver_logcat.txt"
+            )
             with open(logcat_path, 'w', encoding='utf-8') as f:
-                subprocess.run([ADB_PATH, '-s', RECEIVER_IP, 'logcat', '-d'],
-                               stdout=f,
-                               check=False,
-                               timeout=30)
-            subprocess.run([ADB_PATH, '-s', RECEIVER_IP, 'logcat', '-c'],
-                           check=False,
-                           timeout=30)
+                subprocess.run(
+                    [ADB_PATH, '-s', RECEIVER_IP, 'logcat', '-d'],
+                    stdout=f,
+                    check=False,
+                    timeout=30,
+                )
+            subprocess.run(
+                [ADB_PATH, '-s', RECEIVER_IP, 'logcat', '-c'],
+                check=False,
+                timeout=30,
+            )
         except Exception as e:
             logging.error("Failed to collect receiver logcat: %s", e)
 
@@ -561,32 +637,43 @@ def run_performance_test(video_file: str, driver: webdriver, codec_name: str,
             logging.info("Collecting Sender Chrome Log...")
             if args.sender_os == 'win':
                 # Use standard Windows path with forward slashes for scp.
-                log_file_path = (f'{common.WIN_REMOTE_TMP_DIR}/'
-                                 f'chrome_debug_{video_key}.log')
+                log_file_path = (
+                    f'{common.WIN_REMOTE_TMP_DIR}/chrome_debug_{video_key}.log'
+                )
             else:
                 log_file_path = f'/tmp/chrome_debug_{video_key}.log'
             sender_log_local_path = os.path.join(
-                common.TRACES_DIR, f"{video_key}_chrome_debug.log")
+                common.TRACES_DIR, f"{video_key}_chrome_debug.log"
+            )
             key_path = os.path.expanduser('~/.ssh/id_ed25519')
-            subprocess.run([
-                'scp', '-i', key_path, '-o', 'StrictHostKeyChecking=no',
-                f'{args.username}@{args.sender}:{log_file_path}',
-                sender_log_local_path
-            ],
-                           check=False,
-                           timeout=30)
+            subprocess.run(
+                [
+                    'scp',
+                    '-i',
+                    key_path,
+                    '-o',
+                    'StrictHostKeyChecking=no',
+                    f'{args.username}@{args.sender}:{log_file_path}',
+                    sender_log_local_path,
+                ],
+                check=False,
+                timeout=30,
+            )
         except Exception as e:
             logging.error("Failed to collect sender log: %s", e)
 
         if glances_proc:
             try:
-                common.stop_glances_monitoring(args, glances_proc,
-                                               csv_remote_path, csv_local_path)
-                common.parse_glances_csv_and_record(video_key, csv_local_path,
-                                                    args.sender_os)
+                common.stop_glances_monitoring(
+                    args, glances_proc, csv_remote_path, csv_local_path
+                )
+                common.parse_glances_csv_and_record(
+                    video_key, csv_local_path, args.sender_os
+                )
             except Exception as e:
-                logging.error("Failed to stop or parse glances monitoring: %s",
-                              e)
+                logging.error(
+                    "Failed to stop or parse glances monitoring: %s", e
+                )
     return rec_proc_local
 
 
@@ -606,7 +693,8 @@ def main():
     logging.getLogger().setLevel(logging.INFO)
 
     parser = argparse.ArgumentParser(
-        description="Performance test for media played via Chromecast.", )
+        description="Performance test for media played via Chromecast.",
+    )
     parser.add_argument('--username', help='Sender device username.')
     parser.add_argument('--sender', help='Sender device IP.')
     parser.add_argument('--receiver', help='Receiver device sink name.')
@@ -614,10 +702,13 @@ def main():
         '--chrome-version',
         default=None,
         help='Chrome for Testing version to use. Defaults to the latest '
-        'known good version.')
-    parser.add_argument('--sender-os',
-                        choices=['mac', 'win', 'linux', 'cros'],
-                        help='OS of the sender device.')
+        'known good version.',
+    )
+    parser.add_argument(
+        '--sender-os',
+        choices=['mac', 'win', 'linux', 'cros'],
+        help='OS of the sender device.',
+    )
     args, _ = parser.parse_known_args()
     cv = args.chrome_version
     run_vp9_tests = should_run_vp9_tests(args)
@@ -632,101 +723,140 @@ def main():
 
     # Connect to the ADB receiver.
     try:
-        subprocess.run([ADB_PATH, 'connect', RECEIVER_IP],
-                       check=False,
-                       timeout=15)
+        subprocess.run(
+            [ADB_PATH, 'connect', RECEIVER_IP], check=False, timeout=15
+        )
         # Attempt to get ADB root.
         logging.info("Attempting to get ADB root...")
-        res_root = subprocess.run([ADB_PATH, '-s', RECEIVER_IP, 'root'],
-                                  capture_output=True,
-                                  text=True,
-                                  check=False,
-                                  timeout=10)
+        res_root = subprocess.run(
+            [ADB_PATH, '-s', RECEIVER_IP, 'root'],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=10,
+        )
         if res_root.returncode != 0:
             logging.error("ADB root failed: %s", res_root.stderr.strip())
 
         # Reconnect after root.
-        res_conn = subprocess.run([ADB_PATH, 'connect', RECEIVER_IP],
-                                  capture_output=True,
-                                  text=True,
-                                  check=False,
-                                  timeout=15)
+        res_conn = subprocess.run(
+            [ADB_PATH, 'connect', RECEIVER_IP],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=15,
+        )
         if res_conn.returncode != 0:
             logging.error("ADB reconnect failed: %s", res_conn.stderr.strip())
 
         # Ensure the tracing daemons are enabled and started.
-        res_enable = subprocess.run([
-            ADB_PATH, '-s', RECEIVER_IP, 'shell', 'setprop',
-            'persist.traced.enable', '1'
-        ],
-                                    capture_output=True,
-                                    text=True,
-                                    check=False,
-                                    timeout=5)
+        res_enable = subprocess.run(
+            [
+                ADB_PATH,
+                '-s',
+                RECEIVER_IP,
+                'shell',
+                'setprop',
+                'persist.traced.enable',
+                '1',
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=5,
+        )
         if res_enable.returncode != 0:
-            logging.error("Failed to enable tracing daemons: %s",
-                          res_enable.stderr.strip())
+            logging.error(
+                "Failed to enable tracing daemons: %s",
+                res_enable.stderr.strip(),
+            )
 
         # Ensure the trace directory exists and is writable.
-        res_mkdir = subprocess.run([
-            ADB_PATH, '-s', RECEIVER_IP, 'shell', 'mkdir', '-p',
-            RECEIVER_TRACE_DIR
-        ],
-                                   capture_output=True,
-                                   text=True,
-                                   check=False,
-                                   timeout=5)
+        res_mkdir = subprocess.run(
+            [
+                ADB_PATH,
+                '-s',
+                RECEIVER_IP,
+                'shell',
+                'mkdir',
+                '-p',
+                RECEIVER_TRACE_DIR,
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=5,
+        )
         if res_mkdir.returncode != 0:
-            logging.error("Failed to create trace directory: %s",
-                          res_mkdir.stderr.strip())
+            logging.error(
+                "Failed to create trace directory: %s", res_mkdir.stderr.strip()
+            )
 
-        res_chmod = subprocess.run([
-            ADB_PATH, '-s', RECEIVER_IP, 'shell', 'chmod', '777',
-            RECEIVER_TRACE_DIR
-        ],
-                                   capture_output=True,
-                                   text=True,
-                                   check=False,
-                                   timeout=5)
+        res_chmod = subprocess.run(
+            [
+                ADB_PATH,
+                '-s',
+                RECEIVER_IP,
+                'shell',
+                'chmod',
+                '777',
+                RECEIVER_TRACE_DIR,
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=5,
+        )
         if res_chmod.returncode != 0:
-            logging.error("Failed to chmod trace directory: %s",
-                          res_chmod.stderr.strip())
+            logging.error(
+                "Failed to chmod trace directory: %s", res_chmod.stderr.strip()
+            )
 
         # Restore SELinux context on the newly created directory.
-        res_restorecon = subprocess.run([
-            ADB_PATH, '-s', RECEIVER_IP, 'shell', 'restorecon', '-R',
-            RECEIVER_TRACE_DIR
-        ],
-                                        capture_output=True,
-                                        text=True,
-                                        check=False,
-                                        timeout=5)
+        res_restorecon = subprocess.run(
+            [
+                ADB_PATH,
+                '-s',
+                RECEIVER_IP,
+                'shell',
+                'restorecon',
+                '-R',
+                RECEIVER_TRACE_DIR,
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+            timeout=5,
+        )
         if res_restorecon.returncode != 0:
-            logging.error("Failed to restorecon trace directory: %s",
-                          res_restorecon.stderr.strip())
+            logging.error(
+                "Failed to restorecon trace directory: %s",
+                res_restorecon.stderr.strip(),
+            )
     except Exception as e:
         logging.error(
             "Failed to setup ADB receiver: %s. "
-            "Receiver traces will not be collected.", e)
+            "Receiver traces will not be collected.",
+            e,
+        )
 
     CODECS = ['H264', 'VP8', 'VP9']
-    COMMON_VIDEOS = [{
-        'name': '1080p30fpsH264_foodmarket_yt_sync.mp4',
-        'fps': 30
-    }, {
-        'name': '1080p60fpsH264_boat_yt_sync.mp4',
-        'fps': 60
-    }]
+    COMMON_VIDEOS = [
+        {'name': '1080p30fpsH264_foodmarket_yt_sync.mp4', 'fps': 30},
+        {'name': '1080p60fpsH264_boat_yt_sync.mp4', 'fps': 60},
+    ]
 
     CONFIGURATIONS = {}
     for codec in CODECS:
         config = {
             'enable_features': ['CastStreaming60fps'],
             # HEVC and AV1 are currently not supported by *any* receivers.
-            'disable_features':
-            ['CastStreamingHardwareHevc', 'CastStreamingAv1'],
+            'disable_features': [
+                'CastStreamingHardwareHevc',
+                'CastStreamingAv1',
+            ],
             'switches': [],
-            'videos': COMMON_VIDEOS
+            'videos': COMMON_VIDEOS,
         }
 
         # Isolate the competing codecs
@@ -735,25 +865,33 @@ def main():
         # 2. Handle Feature Flags (VP8 and VP9 only, as H264 has none)
         if codec in ['VP8', 'VP9']:
             config['enable_features'].append(
-                f'CastStreaming{codec.capitalize()}')
+                f'CastStreaming{codec.capitalize()}'
+            )
 
-        config['disable_features'].extend([
-            f'CastStreaming{c.capitalize()}' for c in other_codecs
-            if c != 'H264'
-        ])
+        config['disable_features'].extend(
+            [
+                f'CastStreaming{c.capitalize()}'
+                for c in other_codecs
+                if c != 'H264'
+            ]
+        )
 
         # 3. Handle Hardware Switches
         if codec == 'H264':
             config['switches'].append(
-                f'--cast-streaming-force-enable-hardware-{codec.lower()}')
+                f'--cast-streaming-force-enable-hardware-{codec.lower()}'
+            )
         else:
             config['switches'].append(
-                f'--cast-streaming-force-disable-hardware-{codec.lower()}')
+                f'--cast-streaming-force-disable-hardware-{codec.lower()}'
+            )
 
-        config['switches'].extend([
-            f'--cast-streaming-force-disable-hardware-{c.lower()}'
-            for c in other_codecs
-        ])
+        config['switches'].extend(
+            [
+                f'--cast-streaming-force-disable-hardware-{c.lower()}'
+                for c in other_codecs
+            ]
+        )
 
         CONFIGURATIONS[codec] = config
 
@@ -761,41 +899,50 @@ def main():
     try:
         for codec_name, config in CONFIGURATIONS.items():
             if codec_name == 'VP9' and not run_vp9_tests:
-                logging.info("Skipping VP9 tests: Sender or receiver does not "
-                             "support VP9 encoding/decoding.")
+                logging.info(
+                    "Skipping VP9 tests: Sender or receiver does not "
+                    "support VP9 encoding/decoding."
+                )
                 continue
-            logging.info("Starting tests for codec configuration: %s",
-                         codec_name)
+            logging.info(
+                "Starting tests for codec configuration: %s", codec_name
+            )
 
             # Dynamically build chrome options for this configuration
             chrome_options_list = [
-                opt for opt in CHROME_OPTIONS
-                if (not opt.startswith('--enable-features=')
-                    and not opt.startswith('--disable-features='))
+                opt
+                for opt in CHROME_OPTIONS
+                if (
+                    not opt.startswith('--enable-features=')
+                    and not opt.startswith('--disable-features=')
+                )
             ]
-            enabled_features = (['EnableRtcpReporting'] +
-                                config.get('enable_features', []))
+            enabled_features = ['EnableRtcpReporting'] + config.get(
+                'enable_features', []
+            )
             chrome_options_list.append(
-                f"--enable-features={','.join(enabled_features)}")
+                f"--enable-features={','.join(enabled_features)}"
+            )
 
             disabled_features = config.get('disable_features', [])
             if disabled_features:
                 chrome_options_list.append(
-                    f"--disable-features={','.join(disabled_features)}")
+                    f"--disable-features={','.join(disabled_features)}"
+                )
 
             for switch in config.get('switches', []):
                 chrome_options_list.append(switch)
 
-            logging.info("Chrome options for %s: %s", codec_name,
-                         chrome_options_list)
+            logging.info(
+                "Chrome options for %s: %s", codec_name, chrome_options_list
+            )
 
             for video in config['videos']:
                 # TODO(b/512198717): Enable HEVC tests on ChromeOS.
                 # Currently these tests are rendering a blank white screen,
                 # so we skip them to bring up the other cros tests.
                 if args.sender_os == 'cros' and 'HEVC' in video['name']:
-                    logging.info("Skipping HEVC on ChromeOS: %s",
-                                 video['name'])
+                    logging.info("Skipping HEVC on ChromeOS: %s", video['name'])
                     continue
 
                 driver = None
@@ -803,32 +950,42 @@ def main():
                 actual_version = None
                 trace_file_path = None
                 try:
-                    (driver, tunnel_proc, actual_version,
-                     trace_file_path) = setup_test_environment(
-                         args, cv, chrome_options_list, codec_name,
-                         video['name'])
+                    (driver, tunnel_proc, actual_version, trace_file_path) = (
+                        setup_test_environment(
+                            args,
+                            cv,
+                            chrome_options_list,
+                            codec_name,
+                            video['name'],
+                        )
+                    )
 
                     logging.info("Starting test for video: %s", video['name'])
                     rec_proc = None
                     try:
                         rec_proc = run_performance_test(
-                            video['name'], driver, codec_name, args)
+                            video['name'], driver, codec_name, args
+                        )
                         if rec_proc is None:
-                            logging.warning("Video %s was skipped.",
-                                            video['name'])
+                            logging.warning(
+                                "Video %s was skipped.", video['name']
+                            )
                             continue
                     except Exception:  # pylint: disable=broad-exception-caught
-                        logging.exception("Error during video %s test",
-                                          video['name'])
-                        common.dump_remote_logs(args, actual_version,
-                                                codec_name)
+                        logging.exception(
+                            "Error during video %s test", video['name']
+                        )
+                        common.dump_remote_logs(
+                            args, actual_version, codec_name
+                        )
                         raise
                     finally:
                         common.teardown_recording_process(rec_proc)
                 finally:
                     if driver or tunnel_proc:
                         common.teardown_test_environment(
-                            driver, tunnel_proc, args)
+                            driver, tunnel_proc, args
+                        )
 
                     # Pull the sender trace from the remote machine.
                     # Since the browser exited, we wait a few seconds
@@ -837,27 +994,35 @@ def main():
                         try:
                             logging.info(
                                 "Sleeping 5s to let Chrome finish flushing "
-                                "the trace...")
+                                "the trace..."
+                            )
                             time.sleep(5)
 
                             logging.info("Collecting Sender Perfetto trace...")
                             video_key = f"{codec_name}_{video['name']}"
                             sender_trace_local_path = os.path.join(
                                 common.TRACES_DIR,
-                                f"{video_key}_sender.perfetto-trace")
+                                f"{video_key}_sender.perfetto-trace",
+                            )
                             key_path = os.path.expanduser('~/.ssh/id_ed25519')
-                            subprocess.run([
-                                'scp', '-i', key_path, '-o',
-                                'StrictHostKeyChecking=no',
-                                f'{args.username}@{args.sender}:'
-                                f'{trace_file_path}', sender_trace_local_path
-                            ],
-                                           check=False,
-                                           timeout=60)
+                            subprocess.run(
+                                [
+                                    'scp',
+                                    '-i',
+                                    key_path,
+                                    '-o',
+                                    'StrictHostKeyChecking=no',
+                                    f'{args.username}@{args.sender}:'
+                                    f'{trace_file_path}',
+                                    sender_trace_local_path,
+                                ],
+                                check=False,
+                                timeout=60,
+                            )
                         except Exception as e:
                             logging.error(
-                                "Failed to collect sender perfetto trace: %s",
-                                e)
+                                "Failed to collect sender perfetto trace: %s", e
+                            )
     finally:
         common.finalize_results(actual_version)
         common.cleanup_binaries(args, actual_version)

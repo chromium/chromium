@@ -58,11 +58,12 @@ def _get_test_file(result: pytest.TestReport) -> str:
   (fspath, lineno, _) = result.location
   # File path uses the separator '/' regardless of the platform.
   fspath = fspath.replace(os.sep, '/')
-  return f'//{fspath}#{lineno+1}'
+  return f'//{fspath}#{lineno + 1}'
 
 
 def _extract_tags_from_properties(
-    properties: List[Tuple[str, Tuple[str, str]]]) -> List[Tuple[str, str]]:
+  properties: List[Tuple[str, Tuple[str, str]]],
+) -> List[Tuple[str, str]]:
   """Extracts a list of (key, value) tuples used for test tags.
 
   Args:
@@ -72,13 +73,15 @@ def _extract_tags_from_properties(
     A list of tuple (key, value) where the section name matches 'tag'
   """
   return [
-    (key, value) for (sec, (key, value)) in properties
+    (key, value)
+    for (sec, (key, value)) in properties
     if sec == _PROPERTY_SECTION_TAG
   ]
 
 
 def _extract_artifacts_from_properties(
-    properties: List[Tuple[str, Tuple[str, str]]]) -> Mapping[str, Any]:
+  properties: List[Tuple[str, Tuple[str, str]]],
+) -> Mapping[str, Any]:
   """Extracts a dict for artifacts attributes.
 
   Args:
@@ -93,9 +96,7 @@ def _extract_artifacts_from_properties(
     'artifact'.
   """
   return {
-    artifact_name: {
-      'filePath': file_path
-    }
+    artifact_name: {'filePath': file_path}
     for (sec, (artifact_name, file_path)) in properties
     if sec == _PROPERTY_SECTION_ARTIFACT
   }
@@ -104,30 +105,37 @@ def _extract_artifacts_from_properties(
 @pytest.fixture
 def add_artifact(request: pytest.FixtureRequest) -> AddArtifact:
   """The fixture that adds an artifact to the current test case."""
+
   def add(artifact_name: str, file_path: str) -> None:
     assert os.path.exists(file_path)
     request.node.user_properties.append(
-      (_PROPERTY_SECTION_ARTIFACT, (artifact_name, file_path)))
+      (_PROPERTY_SECTION_ARTIFACT, (artifact_name, file_path))
+    )
+
   return add
 
 
 @pytest.fixture
 def add_tag(request: pytest.FixtureRequest) -> AddTag:
   """Fixture for adding a user defined tag to the current test case."""
+
   def add(tag_key: str, tag_value: str) -> None:
     request.node.user_properties.append(
       (_PROPERTY_SECTION_TAG, (tag_key, tag_value))
     )
+
   return add
 
 
-def _report_test_result(result: pytest.TestReport,
-                        item: pytest.Item,
-                        call: pytest.CallInfo):
+def _report_test_result(
+  result: pytest.TestReport, item: pytest.Item, call: pytest.CallInfo
+):
   test_file = _get_test_file(result)
-  logging.info(f'posting result: {result.nodeid}, {result.duration}, '
-                f'{_RESULT_TYPES[result.outcome]}, {test_file}, '
-                f'{item.user_properties}')
+  logging.info(
+    f'posting result: {result.nodeid}, {result.duration}, '
+    f'{_RESULT_TYPES[result.outcome]}, {test_file}, '
+    f'{item.user_properties}'
+  )
   if failure_full := result.longreprtext:
     failure_reason = str(call.excinfo.getrepr(style='short'))
     b64_failure = base64.b64encode(failure_full.encode()).decode()
@@ -151,7 +159,8 @@ def _report_test_result(result: pytest.TestReport,
       test_file=test_file,
       tags=tags,
       failure_reason=failure_reason,
-      artifacts=artifacts)
+      artifacts=artifacts,
+    )
 
 
 @pytest.hookimpl(tryfirst=True, hookwrapper=True)

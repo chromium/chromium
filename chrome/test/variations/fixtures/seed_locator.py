@@ -14,6 +14,7 @@ from typing import Callable, Mapping
 
 _DEFAULT_SEED_PATH = os.path.join(TEST_DATA_DIR, 'variations_seed.json')
 
+
 class SeedName(Enum):
   # The default seed that is similar to what end-user would receive.
   DEFAULT = 1
@@ -27,7 +28,7 @@ class SeedLocator:
   add_artifact: AddArtifact = attr.attrib()
   all_seed_files: Mapping[SeedName, str] = attr.attrib()
 
-  def get_seed(self, name : SeedName = SeedName.DEFAULT):
+  def get_seed(self, name: SeedName = SeedName.DEFAULT):
     seed_file = self.all_seed_files.get(name, None)
     assert os.path.isabs(seed_file), (
       f'{seed_file} for name {name.name} is not an absolute path.'
@@ -41,10 +42,12 @@ class SeedLocator:
 
 
 def pytest_addoption(parser):
-  parser.addoption('--seed-file',
-                   default=_DEFAULT_SEED_PATH,
-                   dest='seed_file',
-                   help='The seed file used to run with the test.')
+  parser.addoption(
+    '--seed-file',
+    default=_DEFAULT_SEED_PATH,
+    dest='seed_file',
+    help='The seed file used to run with the test.',
+  )
 
 
 @pytest.fixture
@@ -59,6 +62,6 @@ def seed_locator(pytestconfig, add_artifact: AddArtifact) -> SeedLocator:
     add_artifact=add_artifact,
     all_seed_files={
       SeedName.DEFAULT: os.path.abspath(pytestconfig.getoption('seed_file')),
-      SeedName.CRASH: os.path.join(TEST_DATA_DIR, 'crash_seed.json')
+      SeedName.CRASH: os.path.join(TEST_DATA_DIR, 'crash_seed.json'),
     },
   )

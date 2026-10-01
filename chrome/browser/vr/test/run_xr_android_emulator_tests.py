@@ -20,46 +20,49 @@ import sys
 
 
 def get_test_executable():
-    return 'android_browsertests'
+  return 'android_browsertests'
 
 
 def create_argument_parser():
-    parser = argparse.ArgumentParser(
-        description='This is a wrapper script around %s for running WebXR tests '
-        'on an Android emulator. To view help for the underlying runner, run '
-        '`%s --help`.' % (get_test_executable(), get_test_executable()))
+  parser = argparse.ArgumentParser(
+    description='This is a wrapper script around %s for running WebXR tests '
+    'on an Android emulator. To view help for the underlying runner, run '
+    '`%s --help`.' % (get_test_executable(), get_test_executable())
+  )
 
-    parser.add_argument(
-        '--gtest_filter',
-        default='*WebXr*',
-        help='Test filter to run. Defaults to "*WebXr*".')
-    parser.add_argument(
-        '--use-cmd-decoder',
-        default='validating',
-        dest='cmd_decoder',
-        help='Command decoder to use. Defaults to "validating" for emulator '
-        'compatibility.')
+  parser.add_argument(
+    '--gtest_filter',
+    default='*WebXr*',
+    help='Test filter to run. Defaults to "*WebXr*".',
+  )
+  parser.add_argument(
+    '--use-cmd-decoder',
+    default='validating',
+    dest='cmd_decoder',
+    help='Command decoder to use. Defaults to "validating" for emulator '
+    'compatibility.',
+  )
 
-    return parser
+  return parser
 
 
 def main():
-    parser = create_argument_parser()
-    args, rest_args = parser.parse_known_args()
+  parser = create_argument_parser()
+  args, rest_args = parser.parse_known_args()
 
-    test_executable = (
-        pathlib.Path(__file__).resolve().parent / get_test_executable()
-    )
+  test_executable = (
+    pathlib.Path(__file__).resolve().parent / get_test_executable()
+  )
 
-    cmd = [str(test_executable)]
-    if args.cmd_decoder:
-        cmd.append(f'--use-cmd-decoder={args.cmd_decoder}')
-    if args.gtest_filter:
-        cmd.append(f'--gtest_filter={args.gtest_filter}')
-    cmd.extend(rest_args)
+  cmd = [str(test_executable)]
+  if args.cmd_decoder:
+    cmd.append(f'--use-cmd-decoder={args.cmd_decoder}')
+  if args.gtest_filter:
+    cmd.append(f'--gtest_filter={args.gtest_filter}')
+  cmd.extend(rest_args)
 
-    sys.exit(subprocess.call(cmd))
+  sys.exit(subprocess.call(cmd))
 
 
 if __name__ == '__main__':
-    main()
+  main()

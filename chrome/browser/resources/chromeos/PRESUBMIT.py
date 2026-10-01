@@ -5,6 +5,7 @@
 
 import sys
 
+
 def _CheckSemanticCssColors(input_api, output_api):
   original_sys_path = sys.path
   join = input_api.os_path.join
@@ -21,15 +22,15 @@ def _CheckSemanticCssColors(input_api, output_api):
 
 
 def _CommonChecks(input_api, output_api):
-    """Checks common to both upload and commit."""
-    results = []
-    results.extend(_CheckSemanticCssColors(input_api, output_api))
-    return results
+  """Checks common to both upload and commit."""
+  results = []
+  results.extend(_CheckSemanticCssColors(input_api, output_api))
+  return results
 
 
 def CheckChangeOnUpload(input_api, output_api):
-    return _CommonChecks(input_api, output_api)
+  return _CommonChecks(input_api, output_api)
 
 
 def CheckChangeOnCommit(input_api, output_api):
-    return _CommonChecks(input_api, output_api)
+  return _CommonChecks(input_api, output_api)

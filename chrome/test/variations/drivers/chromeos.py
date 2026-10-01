@@ -33,7 +33,9 @@ from chromite.lib import remote_access
 from telemetry.core.exceptions import BrowserConnectionGoneException
 from telemetry.internal.browser import browser_options
 from telemetry.internal.platform import cros_device
-from telemetry.internal.platform.cros_platform_backend import CrosPlatformBackend
+from telemetry.internal.platform.cros_platform_backend import (
+  CrosPlatformBackend,
+)
 from telemetry.internal.backends.chrome import cros_browser_finder
 
 CACHE_DIR = os.path.join(SRC_DIR, "build", "cros_cache")
@@ -51,7 +53,7 @@ MAX_BROWSER_LAUNCH_ATTEMPTS = 3
 class _PossibleCrOSBrowser(cros_browser_finder.PossibleCrOSBrowser):
   """The CrOS browser wrapper to filter out start-up args."""
 
-  #override
+  # override
   def GetBrowserStartupArgs(self, browser_options):
     startup_args = super().GetBrowserStartupArgs(browser_options)
     removed_args = [
@@ -76,11 +78,13 @@ def _launch_browser(browser_args: List[str]) -> 'Browser':
     host_name='localhost',
     ssh_port=9222,
     ssh_identity=finder_options.ssh_identity,
-    is_local=False)
+    is_local=False,
+  )
   platform = CrosPlatformBackend.CreatePlatformForDevice(device, None)
 
   possibleBrowser = _PossibleCrOSBrowser(
-    'cros-chrome', finder_options, platform, is_guest=False)
+    'cros-chrome', finder_options, platform, is_guest=False
+  )
   possibleBrowser.SetUpEnvironment(b_options)
 
   try:
@@ -91,10 +95,11 @@ def _launch_browser(browser_args: List[str]) -> 'Browser':
 
 
 def _wait_for_port(
-    port: int, host: str='localhost', timeout:float=5) -> bool:
+  port: int, host: str = 'localhost', timeout: float = 5
+) -> bool:
   start_time = time.perf_counter()
   with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
-    while(time.perf_counter() - start_time <= timeout):
+    while time.perf_counter() - start_time <= timeout:
       if sock.connect_ex((host, port)) == 0:
         return True
       else:
@@ -108,7 +113,7 @@ class CrOSDriverFactory(DriverFactory):
   board: str = attr.attrib()
   server_port: int = attr.attrib()
 
-  #override
+  # override
   def __attrs_post_init__(self):
     super().__attrs_post_init__()
     # We use this to check whether we have started the VM before we attempt to
@@ -117,10 +122,12 @@ class CrOSDriverFactory(DriverFactory):
 
   def _launch_vm(self) -> vm.VM:
     parser = vm.VM.GetParser()
-    opts = parser.parse_args([
-      f'--board={self.board}',
-      f'--cache-dir={CACHE_DIR}',
-    ])
+    opts = parser.parse_args(
+      [
+        f'--board={self.board}',
+        f'--cache-dir={CACHE_DIR}',
+      ]
+    )
     _device = device.Device.Create(opts)
 
     # VM will usually be started on a test bot already.
@@ -132,7 +139,8 @@ class CrOSDriverFactory(DriverFactory):
     local_pfs = remote_access.PortForwardSpec(local_port=port)
     remote_pfs = remote_access.PortForwardSpec(local_port=server_port)
     tunnel = self.device.remote.agent.CreateTunnel(
-      to_local=[local_pfs], to_remote=[remote_pfs])
+      to_local=[local_pfs], to_remote=[remote_pfs]
+    )
     if not _wait_for_port(port):
       return None
     return tunnel
@@ -142,20 +150,20 @@ class CrOSDriverFactory(DriverFactory):
     remote_seed_path = f'/tmp/{os.path.basename(seed_file)}'
     remote_device = self.device.remote
     assert remote_device.IsDirWritable('/tmp/'), 'tmp dir not writable'
-    remote_device.CopyToDevice(src=seed_file,
-                               dest=remote_seed_path,
-                               mode='scp',
-                               verbose=True)
+    remote_device.CopyToDevice(
+      src=seed_file, dest=remote_seed_path, mode='scp', verbose=True
+    )
     assert remote_device.IfFileExists(remote_seed_path), (
       'file not pushed to device'
     )
 
     # The default owner is root, we need to chmod to any user.
     remote_device.run(
-      ['chmod', 'a+rw', remote_seed_path], remote_sudo=True, print_cmd=True)
+      ['chmod', 'a+rw', remote_seed_path], remote_sudo=True, print_cmd=True
+    )
     return remote_seed_path
 
-  #override
+  # override
   @property
   def supports_startup_timeout(self) -> bool:
     # ChromeOS is a remote driver that doesn't support browser startup timeout.
@@ -181,6 +189,7 @@ class CrOSDriverFactory(DriverFactory):
       stat = tunnel.poll()
       while stat == None:
         stat = tunnel.poll()
+
     threading.Thread(target=poll).start()
 
     try:
@@ -188,7 +197,7 @@ class CrOSDriverFactory(DriverFactory):
     finally:
       tunnel.terminate()
 
-  #override
+  # override
   def wait_for_screenshot(self):
     time.sleep(SCREENSHOT_WAIT_TIME_SECONDS)
 
@@ -200,13 +209,13 @@ class CrOSDriverFactory(DriverFactory):
     logging.info('Collecting VM logs from remote device to %s.', session_folder)
     try:
       if remote_device.IfFileExists('/var/log/chrome'):
-        remote_device.CopyFromDevice(src='/var/log/chrome',
-                                      dest=session_folder,
-                                      mode='scp')
+        remote_device.CopyFromDevice(
+          src='/var/log/chrome', dest=session_folder, mode='scp'
+        )
       if remote_device.IfFileExists('/var/log/messages'):
-        remote_device.CopyFromDevice(src='/var/log/messages',
-                                      dest=session_folder,
-                                      mode='scp')
+        remote_device.CopyFromDevice(
+          src='/var/log/messages', dest=session_folder, mode='scp'
+        )
     except Exception as e:
       logging.warning('Failed to collect remote crash logs: %s', e)
 
@@ -214,7 +223,8 @@ class CrOSDriverFactory(DriverFactory):
   def _driver_context(
     self,
     seed_file: Optional[str] = None,
-    options: Optional[webdriver.ChromeOptions] = None):
+    options: Optional[webdriver.ChromeOptions] = None,
+  ):
     """A context manager for a single attempt to create a driver."""
     browser_args = [
       # We need debugging connection via WebSocket with the browser. By
@@ -223,18 +233,20 @@ class CrOSDriverFactory(DriverFactory):
     ]
     if seed_file:
       remote_seed_path = self._copy_seed_file(seed_file)
-      browser_args.extend([
-        f'--variations-test-seed-path="{remote_seed_path}"',
-        f'--fake-variations-channel={self.channel}',
-        '--disable-variations-safe-mode',
-        '--disable-field-trial-config',
-      ])
+      browser_args.extend(
+        [
+          f'--variations-test-seed-path="{remote_seed_path}"',
+          f'--fake-variations-channel={self.channel}',
+          '--disable-variations-safe-mode',
+          '--disable-field-trial-config',
+        ]
+      )
 
     browser = _launch_browser(browser_args)
     debugging_port, _ = browser._browser_backend._FindDevToolsPortAndTarget()
 
     options = options or self.default_options
-    options.debugger_address=f'localhost:{debugging_port}'
+    options.debugger_address = f'localhost:{debugging_port}'
 
     driver = None
     try:
@@ -253,13 +265,13 @@ class CrOSDriverFactory(DriverFactory):
       if browser:
         browser.Close()
 
-  #override
+  # override
   @contextmanager
   def create_driver(
     self,
     seed_file: Optional[str] = None,
-    options: Optional[webdriver.ChromeOptions] = None
-    ):
+    options: Optional[webdriver.ChromeOptions] = None,
+  ):
     # This has a side-effect to boot up the VM if not yet already.
     assert self.device, "VM fails to boot."
 
@@ -270,12 +282,16 @@ class CrOSDriverFactory(DriverFactory):
           # If we are here, the test was successful, no need to retry.
           return
       except RuntimeError as e:
-        if ('Failed to get window handles.' not in str(e)
-            or attempt == MAX_BROWSER_LAUNCH_ATTEMPTS - 1):
+        if (
+          'Failed to get window handles.' not in str(e)
+          or attempt == MAX_BROWSER_LAUNCH_ATTEMPTS - 1
+        ):
           raise
         logging.warning(
-            'Failed to get window handle on attempt %d/%d, restarting VM...',
-            attempt + 1, MAX_BROWSER_LAUNCH_ATTEMPTS)
+          'Failed to get window handle on attempt %d/%d, restarting VM...',
+          attempt + 1,
+          MAX_BROWSER_LAUNCH_ATTEMPTS,
+        )
 
   def close(self):
     if self.vm_started and self.device.IsRunning():

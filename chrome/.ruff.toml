@@ -1,0 +1,18 @@
+line-length = 80
+indent-width = 2
+extend-exclude = [
+  "*_pb2.py",
+  "browser/ash/power/ml/smart_dim/print_example_preprocessor_config.py",
+  "browser/offline_pages/android/evaluation/run_offline_page_evaluation_test.py",
+  "browser/resources/chromeos/accessibility/tools/print_js_deps.py",
+  "test/chromeos/autotest/files/*",
+  "tools/build/appid.py",
+  "tools/build/make_zip.py",
+  "tools/history-viz.py",
+  "tools/inconsistent-eol.py",
+  "tools/webforms_aggregator.py",
+  "tools/webforms_extractor.py",
+]
+
+[format]
+quote-style = "preserve"

@@ -9,8 +9,9 @@ import unittest
 
 import PRESUBMIT
 
-sys.path.append(os.path.abspath(os.path.dirname(os.path.abspath(__file__))
-    + '/../../../..'))
+sys.path.append(
+  os.path.abspath(os.path.dirname(os.path.abspath(__file__)) + '/../../../..')
+)
 from PRESUBMIT_test_mocks import MockFile, MockInputApi, MockOutputApi
 
 
@@ -21,11 +22,12 @@ class CheckNotificationConstructors(unittest.TestCase):
     """Examples of when Notification.Builder use is correctly flagged."""
     mock_input = MockInputApi()
     mock_input.files = [
-        MockFile('path/One.java', ['new Notification.Builder()']),
-        MockFile('path/Two.java', ['new NotificationCompat.Builder()']),
+      MockFile('path/One.java', ['new Notification.Builder()']),
+      MockFile('path/Two.java', ['new NotificationCompat.Builder()']),
     ]
     errors = PRESUBMIT._CheckNotificationConstructors(
-        mock_input, MockOutputApi())
+      mock_input, MockOutputApi()
+    )
     self.assertEqual(1, len(errors))
     self.assertEqual(2, len(errors[0].items))
     self.assertIn('One.java', errors[0].items[0])
@@ -35,21 +37,28 @@ class CheckNotificationConstructors(unittest.TestCase):
     """Examples of when Notification.Builder should not be flagged."""
     mock_input = MockInputApi()
     mock_input.files = [
-        MockFile(
-            'chrome/android/java/src/org/chromium/chrome/browser/notifications/'
-            'ChromeNotificationWrapperBuilder.java',
-            ['new NotificationCompat.Builder()']),
-        MockFile('path/One.java', ['Notification.Builder']),
-        MockFile('path/Two.java', ['// do not: new Notification.Builder()']),
-        MockFile('path/Three.java',
-                 ['/** NotificationWrapperBuilder',
-                  ' * replaces: new Notification.Builder()']),
-        MockFile('path/PRESUBMIT.py', ['new Notification.Builder()']),
-        MockFile('path/Four.java', ['new NotificationCompat.Builder()'],
-                 action='D'),
+      MockFile(
+        'chrome/android/java/src/org/chromium/chrome/browser/notifications/'
+        'ChromeNotificationWrapperBuilder.java',
+        ['new NotificationCompat.Builder()'],
+      ),
+      MockFile('path/One.java', ['Notification.Builder']),
+      MockFile('path/Two.java', ['// do not: new Notification.Builder()']),
+      MockFile(
+        'path/Three.java',
+        [
+          '/** NotificationWrapperBuilder',
+          ' * replaces: new Notification.Builder()',
+        ],
+      ),
+      MockFile('path/PRESUBMIT.py', ['new Notification.Builder()']),
+      MockFile(
+        'path/Four.java', ['new NotificationCompat.Builder()'], action='D'
+      ),
     ]
     errors = PRESUBMIT._CheckNotificationConstructors(
-        mock_input, MockOutputApi())
+      mock_input, MockOutputApi()
+    )
     self.assertEqual(0, len(errors))
 
 
@@ -60,22 +69,26 @@ class CheckCompatibleAlertDialogBuilder(unittest.TestCase):
     """Use of CompatibleAlertDialogBuilder use is correctly flagged."""
     mock_input = MockInputApi()
     mock_input.files = [
-        MockFile('path/One.java',
-                 ['import '
-                  'org.chromium.ui.UiUtils.CompatibleAlertDialogBuilder;',
-                  'new CompatibleAlertDialogBuilder()',
-                  'A new line to make sure there is no duplicate error.']),
-        MockFile('path/Two.java',
-                 ['new UiUtils.CompatibleAlertDialogBuilder()']),
-        MockFile('path/Three.java',
-                 ['new UiUtils',
-                  '.CompatibleAlertDialogBuilder(context)']),
-        MockFile('path/Four.java',
-                 ['new UiUtils',
-                  '   .CompatibleAlertDialogBuilder()']),
+      MockFile(
+        'path/One.java',
+        [
+          'import org.chromium.ui.UiUtils.CompatibleAlertDialogBuilder;',
+          'new CompatibleAlertDialogBuilder()',
+          'A new line to make sure there is no duplicate error.',
+        ],
+      ),
+      MockFile('path/Two.java', ['new UiUtils.CompatibleAlertDialogBuilder()']),
+      MockFile(
+        'path/Three.java',
+        ['new UiUtils', '.CompatibleAlertDialogBuilder(context)'],
+      ),
+      MockFile(
+        'path/Four.java', ['new UiUtils', '   .CompatibleAlertDialogBuilder()']
+      ),
     ]
     errors = PRESUBMIT._CheckCompatibleAlertDialogBuilder(
-        mock_input, MockOutputApi())
+      mock_input, MockOutputApi()
+    )
     self.assertEqual(1, len(errors))
     self.assertEqual(4, len(errors[0].items))
     self.assertIn('One.java', errors[0].items[0])
@@ -87,24 +100,36 @@ class CheckCompatibleAlertDialogBuilder(unittest.TestCase):
     """Examples of when AlertDialog.Builder should not be flagged."""
     mock_input = MockInputApi()
     mock_input.files = [
-        MockFile('chrome/android/java/src/org/chromium/chrome/browser/payments/'
-                 'AndroidPaymentApp.java',
-                 ['new UiUtils.CompatibleAlertDialogBuilder()']),
-        MockFile('path/One.java', ['UiUtils.CompatibleAlertDialogBuilder']),
-        MockFile('path/Two.java',
-                 ['// do not: new UiUtils.CompatibleAlertDialogBuilder']),
-        MockFile('path/Three.java',
-                 ['/** ChromeAlertDialogBuilder',
-                  ' * replaces: new UiUtils.CompatibleAlertDialogBuilder()']),
-        MockFile('path/PRESUBMIT.py',
-                 ['new UiUtils.CompatibleAlertDialogBuilder()']),
-        MockFile('path/Four.java',
-                 ['new UiUtils.CompatibleAlertDialogBuilder()'],
-                 action='D'),
+      MockFile(
+        'chrome/android/java/src/org/chromium/chrome/browser/payments/'
+        'AndroidPaymentApp.java',
+        ['new UiUtils.CompatibleAlertDialogBuilder()'],
+      ),
+      MockFile('path/One.java', ['UiUtils.CompatibleAlertDialogBuilder']),
+      MockFile(
+        'path/Two.java', ['// do not: new UiUtils.CompatibleAlertDialogBuilder']
+      ),
+      MockFile(
+        'path/Three.java',
+        [
+          '/** ChromeAlertDialogBuilder',
+          ' * replaces: new UiUtils.CompatibleAlertDialogBuilder()',
+        ],
+      ),
+      MockFile(
+        'path/PRESUBMIT.py', ['new UiUtils.CompatibleAlertDialogBuilder()']
+      ),
+      MockFile(
+        'path/Four.java',
+        ['new UiUtils.CompatibleAlertDialogBuilder()'],
+        action='D',
+      ),
     ]
     errors = PRESUBMIT._CheckCompatibleAlertDialogBuilder(
-        mock_input, MockOutputApi())
+      mock_input, MockOutputApi()
+    )
     self.assertEqual(0, len(errors))
+
 
 class CheckBundleUtilsIdentifierName(unittest.TestCase):
   """Test the _CheckBundleUtilsIdentifierName presubmit check."""
@@ -115,18 +140,21 @@ class CheckBundleUtilsIdentifierName(unittest.TestCase):
     """
     mock_input = MockInputApi()
     mock_input.files = [
-        MockFile('path/One.java',
-                 [
-                  'BundleUtils.getIdentifierName(foo)',
-                  'A new line to make sure there is no duplicate error.']),
-        MockFile('path/Two.java',
-                 ['BundleUtils.getIdentifierName(    foo)']),
-        MockFile('path/Three.java',
-                 ['BundleUtils.getIdentifierName(',
-                  '     bar)']),
+      MockFile(
+        'path/One.java',
+        [
+          'BundleUtils.getIdentifierName(foo)',
+          'A new line to make sure there is no duplicate error.',
+        ],
+      ),
+      MockFile('path/Two.java', ['BundleUtils.getIdentifierName(    foo)']),
+      MockFile(
+        'path/Three.java', ['BundleUtils.getIdentifierName(', '     bar)']
+      ),
     ]
     errors = PRESUBMIT._CheckBundleUtilsIdentifierName(
-        mock_input, MockOutputApi())
+      mock_input, MockOutputApi()
+    )
     self.assertEqual(1, len(errors))
     self.assertEqual(3, len(errors[0].items))
     self.assertIn('One.java', errors[0].items[0])
@@ -139,21 +167,20 @@ class CheckBundleUtilsIdentifierName(unittest.TestCase):
     """
     mock_input = MockInputApi()
     mock_input.files = [
-        MockFile('path/One.java',
-                 [
-                  'BundleUtils.getIdentifierName("foo")',
-                  'A new line.']),
-        MockFile('path/Two.java',
-                 ['BundleUtils.getIdentifierName(    "foo")']),
-        MockFile('path/Three.java',
-                 ['BundleUtils.getIdentifierName(',
-                  '    "bar")']),
-        MockFile('path/Four.java',
-                 ['  super(BundleUtils.getIdentifierName(',
-                  '"bar"))']),
+      MockFile(
+        'path/One.java', ['BundleUtils.getIdentifierName("foo")', 'A new line.']
+      ),
+      MockFile('path/Two.java', ['BundleUtils.getIdentifierName(    "foo")']),
+      MockFile(
+        'path/Three.java', ['BundleUtils.getIdentifierName(', '    "bar")']
+      ),
+      MockFile(
+        'path/Four.java', ['  super(BundleUtils.getIdentifierName(', '"bar"))']
+      ),
     ]
     errors = PRESUBMIT._CheckBundleUtilsIdentifierName(
-        mock_input, MockOutputApi())
+      mock_input, MockOutputApi()
+    )
     self.assertEqual(0, len(errors))
 
 

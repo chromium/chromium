@@ -37,10 +37,12 @@ SOURCE_DIR = _GetDirAbove('chrome')
 sys.path.insert(1, os.path.join(SOURCE_DIR, 'third_party'))
 sys.path.append(os.path.join(SOURCE_DIR, 'build'))
 sys.path.append(
-    os.path.join(SOURCE_DIR, 'third_party/blink/renderer/bindings/scripts/'))
+  os.path.join(SOURCE_DIR, 'third_party/blink/renderer/bindings/scripts/')
+)
 
 import web_idl
 import action_helpers
+
 
 @dataclasses.dataclass
 class DomatoType:
@@ -57,11 +59,10 @@ class Rule:
 
 @dataclasses.dataclass
 class DomatoGrammarBuilder:
-
   def __init__(self):
     self.rules: List[Rule] = []
     self.lines: List[Rule] = []
-    self.helperlines : List[Rule] = []
+    self.helperlines: List[Rule] = []
 
   def add_rule(self, rule: Rule):
     self.rules.append(rule)
@@ -77,80 +78,88 @@ class DomatoGrammarBuilder:
 # anything that depends on those won't get included as well to avoid
 # unresolvable dependencies.
 WEBIDL_GRAMMAR_IGNORE_LIST = {
-  'Document': {
-    'methods': [
-      'open'
-    ]
-  },
-  'Window': {
-    'methods': [
-      'open'
-    ]
-  }
+  'Document': {'methods': ['open']},
+  'Window': {'methods': ['open']},
 }
 
 
 SIMPLE_TYPE_TO_DOMATOTYPE = {
-    'void': DomatoType(name='void', is_terminal=True),
-    'object': DomatoType(name='object', is_terminal=True),
-    'undefined': DomatoType(name='undefined', is_terminal=True),
-    'any': DomatoType(name='any', is_terminal=True),
-    'byte': DomatoType(name='byte', is_terminal=True),
-    'octet': DomatoType(name='octet', is_terminal=True),
-    'short': DomatoType(name='short', is_terminal=True),
-    'unsigned short': DomatoType(name='unsigned_short', is_terminal=True),
-    'long': DomatoType(name='int32', is_terminal=True),
-    'unsigned long': DomatoType(name='uint32', is_terminal=True),
-    'long long': DomatoType(name='int64', is_terminal=True),
-    'unsigned long long': DomatoType(name='uint64', is_terminal=True),
-    'integer': DomatoType(name='int16', is_terminal=True),
-    'float': DomatoType(name='float', is_terminal=True),
-    'double': DomatoType(name='double', is_terminal=True),
-    'unrestricted float': DomatoType(name='float', is_terminal=True),
-    'unrestricted double': DomatoType(name='double', is_terminal=True),
-    'bigint': DomatoType(name='bigint', is_terminal=True),
-    'boolean': DomatoType(name='boolean', is_terminal=True),
-    'DOMString': DomatoType(name='DOMString', is_terminal=True),
-    'ByteString': DomatoType(name='ByteString', is_terminal=True),
-    'USVString': DomatoType(name='USVString', is_terminal=True),
-    'ArrayBuffer': DomatoType(name='ArrayBuffer',
-                              should_record=True, is_terminal=True),
-    'ArrayBufferView': DomatoType(name='ArrayBufferView',
-                                  should_record=True, is_terminal=True),
-    'SharedArray': DomatoType(name='SharedArray',
-                              should_record=True, is_terminal=True),
-    'Int8Array': DomatoType(name='Int8Array',
-                            should_record=True, is_terminal=True),
-    'Int16Array': DomatoType(name='Int16Array',
-                             should_record=True, is_terminal=True),
-    'Int32Array': DomatoType(name='Int32Array',
-                             should_record=True, is_terminal=True),
-    'Uint8Array': DomatoType(name='Uint8Array',
-                             should_record=True, is_terminal=True),
-    'Uint16Array': DomatoType(name='Uint16Array',
-                              should_record=True, is_terminal=True),
-    'Uint32Array': DomatoType(name='Uint32Array',
-                              should_record=True, is_terminal=True),
-    'Uint8ClampedArray': DomatoType(name='Uint8ClampedArray',
-                                    should_record=True, is_terminal=True),
-    'BigInt64Array': DomatoType(name='BigInt64Array',
-                                should_record=True, is_terminal=True),
-    'BigUint64Array': DomatoType(name='BigUint64Array',
-                                 should_record=True, is_terminal=True),
-    'Float16Array': DomatoType(name='Float16Array',
-                               should_record=True, is_terminal=True),
-    'Float32Array': DomatoType(name='Float32Array',
-                               should_record=True, is_terminal=True),
-    'Float64Array': DomatoType(name='Float64Array',
-                               should_record=True, is_terminal=True),
-    'DataView': DomatoType(name='DataView',
-                           should_record=True, is_terminal=True),
+  'void': DomatoType(name='void', is_terminal=True),
+  'object': DomatoType(name='object', is_terminal=True),
+  'undefined': DomatoType(name='undefined', is_terminal=True),
+  'any': DomatoType(name='any', is_terminal=True),
+  'byte': DomatoType(name='byte', is_terminal=True),
+  'octet': DomatoType(name='octet', is_terminal=True),
+  'short': DomatoType(name='short', is_terminal=True),
+  'unsigned short': DomatoType(name='unsigned_short', is_terminal=True),
+  'long': DomatoType(name='int32', is_terminal=True),
+  'unsigned long': DomatoType(name='uint32', is_terminal=True),
+  'long long': DomatoType(name='int64', is_terminal=True),
+  'unsigned long long': DomatoType(name='uint64', is_terminal=True),
+  'integer': DomatoType(name='int16', is_terminal=True),
+  'float': DomatoType(name='float', is_terminal=True),
+  'double': DomatoType(name='double', is_terminal=True),
+  'unrestricted float': DomatoType(name='float', is_terminal=True),
+  'unrestricted double': DomatoType(name='double', is_terminal=True),
+  'bigint': DomatoType(name='bigint', is_terminal=True),
+  'boolean': DomatoType(name='boolean', is_terminal=True),
+  'DOMString': DomatoType(name='DOMString', is_terminal=True),
+  'ByteString': DomatoType(name='ByteString', is_terminal=True),
+  'USVString': DomatoType(name='USVString', is_terminal=True),
+  'ArrayBuffer': DomatoType(
+    name='ArrayBuffer', should_record=True, is_terminal=True
+  ),
+  'ArrayBufferView': DomatoType(
+    name='ArrayBufferView', should_record=True, is_terminal=True
+  ),
+  'SharedArray': DomatoType(
+    name='SharedArray', should_record=True, is_terminal=True
+  ),
+  'Int8Array': DomatoType(
+    name='Int8Array', should_record=True, is_terminal=True
+  ),
+  'Int16Array': DomatoType(
+    name='Int16Array', should_record=True, is_terminal=True
+  ),
+  'Int32Array': DomatoType(
+    name='Int32Array', should_record=True, is_terminal=True
+  ),
+  'Uint8Array': DomatoType(
+    name='Uint8Array', should_record=True, is_terminal=True
+  ),
+  'Uint16Array': DomatoType(
+    name='Uint16Array', should_record=True, is_terminal=True
+  ),
+  'Uint32Array': DomatoType(
+    name='Uint32Array', should_record=True, is_terminal=True
+  ),
+  'Uint8ClampedArray': DomatoType(
+    name='Uint8ClampedArray', should_record=True, is_terminal=True
+  ),
+  'BigInt64Array': DomatoType(
+    name='BigInt64Array', should_record=True, is_terminal=True
+  ),
+  'BigUint64Array': DomatoType(
+    name='BigUint64Array', should_record=True, is_terminal=True
+  ),
+  'Float16Array': DomatoType(
+    name='Float16Array', should_record=True, is_terminal=True
+  ),
+  'Float32Array': DomatoType(
+    name='Float32Array', should_record=True, is_terminal=True
+  ),
+  'Float64Array': DomatoType(
+    name='Float64Array', should_record=True, is_terminal=True
+  ),
+  'DataView': DomatoType(name='DataView', should_record=True, is_terminal=True),
 }
 
 DEFINED_TYPES = set()
 
-def get_idl_type(builder: DomatoGrammarBuilder,
-                 idl_type: web_idl.idl_type.IdlType) -> DomatoType:
+
+def get_idl_type(
+  builder: DomatoGrammarBuilder, idl_type: web_idl.idl_type.IdlType
+) -> DomatoType:
   if isinstance(idl_type, web_idl.idl_type.SimpleType):
     return SIMPLE_TYPE_TO_DOMATOTYPE[idl_type.keyword_typename]
   if isinstance(idl_type, web_idl.idl_type.ReferenceType):
@@ -215,9 +224,11 @@ def get_idl_type(builder: DomatoGrammarBuilder,
     rule = ['{ ', DomatoType(elements_name), ' };']
     record_rule = Rule(DomatoType(record_name, should_record=True), rule)
     elements_rules = [
-        Rule(DomatoType(elements_name), ['']),
-        Rule(DomatoType(elements_name), [key_type, ': ', value_type, ', ',
-                                         DomatoType(elements_name)]),
+      Rule(DomatoType(elements_name), ['']),
+      Rule(
+        DomatoType(elements_name),
+        [key_type, ': ', value_type, ', ', DomatoType(elements_name)],
+      ),
     ]
     builder.add_rule(elements_rules[0])
     builder.add_rule(elements_rules[1])
@@ -227,8 +238,8 @@ def get_idl_type(builder: DomatoGrammarBuilder,
 
 
 def build_argument_rule(
-    builder: DomatoGrammarBuilder,
-    argument: web_idl.argument.Argument) -> DomatoType:
+  builder: DomatoGrammarBuilder, argument: web_idl.argument.Argument
+) -> DomatoType:
   if argument.is_variadic:
     idl_type = get_idl_type(builder, argument.idl_type.element_type)
   else:
@@ -242,8 +253,8 @@ def build_argument_rule(
 
 
 def get_functionlike_types(
-    builder: DomatoGrammarBuilder,
-    function: web_idl.function_like.FunctionLike) -> Sequence[DomatoType]:
+  builder: DomatoGrammarBuilder, function: web_idl.function_like.FunctionLike
+) -> Sequence[DomatoType]:
   if function.return_type.is_promise:
     ret_type = get_idl_type(builder, function.return_type.result_type)
   else:
@@ -252,8 +263,11 @@ def get_functionlike_types(
   return [ret_type] + args
 
 
-def build_operation_rules(builder: DomatoGrammarBuilder, operation,
-                          interface_identifier: str | DomatoType):
+def build_operation_rules(
+  builder: DomatoGrammarBuilder,
+  operation,
+  interface_identifier: str | DomatoType,
+):
   should_await = operation.return_type.is_promise
   pre_rhs = [interface_identifier, f'.{operation.identifier}']
   if should_await:
@@ -267,7 +281,8 @@ def build_operation_rules(builder: DomatoGrammarBuilder, operation,
 
 
 def get_methods_to_ignore(
-    interface: web_idl.interface.Interface) -> Sequence[str]:
+  interface: web_idl.interface.Interface,
+) -> Sequence[str]:
   if not interface.identifier in WEBIDL_GRAMMAR_IGNORE_LIST:
     return []
   return WEBIDL_GRAMMAR_IGNORE_LIST[interface.identifier]['methods']
@@ -276,8 +291,9 @@ def get_methods_to_ignore(
 def build_interface_rules(builder: DomatoGrammarBuilder, interface):
   to_ignore = get_methods_to_ignore(interface)
   non_static_ops = [
-      op for op in interface.operations
-      if not op.is_static and not op.is_special_operation
+    op
+    for op in interface.operations
+    if not op.is_static and not op.is_special_operation
   ]
   iface_type = DomatoType(interface.identifier)
   for op in non_static_ops:
@@ -285,8 +301,9 @@ def build_interface_rules(builder: DomatoGrammarBuilder, interface):
       continue
     build_operation_rules(builder, op, iface_type)
   static_ops = [
-      op for op in interface.operations
-      if op.is_static and not op.is_special_operation
+    op
+    for op in interface.operations
+    if op.is_static and not op.is_special_operation
   ]
   for op in static_ops:
     if op.identifier in to_ignore:
@@ -306,7 +323,7 @@ def build_interface_rules(builder: DomatoGrammarBuilder, interface):
     # Handle writable attributes now.
     rhs = [interface.identifier if attr.is_static else iface_type]
     rhs += [f'.{attr.identifier}']
-    builder.add_line(Rule(DomatoType(''), rhs + [ ' = ', type, ';']))
+    builder.add_line(Rule(DomatoType(''), rhs + [' = ', type, ';']))
   for constructor in interface.constructors:
     build_constructor_rules(builder, interface.identifier, constructor)
 
@@ -324,9 +341,11 @@ def build_interface_rules(builder: DomatoGrammarBuilder, interface):
     builder.add_line(Rule(lhs, pre_rhs + ['['] + rhs + ['];']))
 
 
-def build_constructor_rules(builder: DomatoGrammarBuilder,
-                            interface_identifier: str,
-                            constructor: web_idl.constructor.Constructor):
+def build_constructor_rules(
+  builder: DomatoGrammarBuilder,
+  interface_identifier: str,
+  constructor: web_idl.constructor.Constructor,
+):
   # <new {interface_identifier}> = new {interface_identifier}(args...)
   lhs = DomatoType(interface_identifier, should_record=True)
   f_types = get_functionlike_types(builder, constructor)
@@ -338,8 +357,9 @@ def build_constructor_rules(builder: DomatoGrammarBuilder,
   builder.add_helper_line(Rule(lhs, rule))
 
 
-def build_dictionary_member(builder: DomatoGrammarBuilder,
-                            member: web_idl.dictionary.DictionaryMember):
+def build_dictionary_member(
+  builder: DomatoGrammarBuilder, member: web_idl.dictionary.DictionaryMember
+):
   idl_type = get_idl_type(builder, member.idl_type)
   if member.default_value:
     n = DomatoType(f'DictionaryMember{member.identifier}OrDefaultValue')
@@ -349,8 +369,9 @@ def build_dictionary_member(builder: DomatoGrammarBuilder,
   return idl_type
 
 
-def build_dictionary_rules(builder: DomatoGrammarBuilder,
-                           dictionary: web_idl.dictionary.Dictionary):
+def build_dictionary_rules(
+  builder: DomatoGrammarBuilder, dictionary: web_idl.dictionary.Dictionary
+):
   # Dictionaries are declared like this:
   #     <new DictionaryName> = { "member1.identifier": <Member1TypeName>, ... }
   members = dictionary.members
@@ -374,16 +395,18 @@ def build_dictionary_rules(builder: DomatoGrammarBuilder,
       builder.add_helper_line(Rule(type, rule))
 
 
-def build_enumeration_rules(builder: DomatoGrammarBuilder,
-                            enumeration: web_idl.enumeration.Enumeration):
+def build_enumeration_rules(
+  builder: DomatoGrammarBuilder, enumeration: web_idl.enumeration.Enumeration
+):
   lhs = DomatoType(enumeration.identifier)
   for value in enumeration.values:
     builder.add_rule(Rule(lhs, rhs=[f'"{value}"']))
   builder.add_rule(Rule(lhs, ["\"<string>\""]))
 
 
-def build_typedef_rules(builder: DomatoGrammarBuilder,
-                        typedef: web_idl.typedef.Typedef):
+def build_typedef_rules(
+  builder: DomatoGrammarBuilder, typedef: web_idl.typedef.Typedef
+):
   type = get_idl_type(builder, typedef.idl_type)
   builder.add_rule(Rule(lhs=DomatoType(typedef.identifier), rhs=[type]))
   if type.should_record:
@@ -391,27 +414,27 @@ def build_typedef_rules(builder: DomatoGrammarBuilder,
 
 
 def construct_functionlike(
-    builder: DomatoGrammarBuilder,
-    function: web_idl.function_like.FunctionLike) -> Sequence[str]:
+  builder: DomatoGrammarBuilder, function: web_idl.function_like.FunctionLike
+) -> Sequence[str]:
   res = []
   f_types = get_functionlike_types(builder, function)
   combination = list(filter(lambda x: x is not None, f_types[1:]))
-  arg_s = ", ".join(f'/*{c.name}*/ arg{id}'
-                    for id, c in enumerate(combination))
+  arg_s = ", ".join(f'/*{c.name}*/ arg{id}' for id, c in enumerate(combination))
   res.append(f'({arg_s}) => {{}}')
   return res
 
 
 def build_callback_function_rules(
-    builder: DomatoGrammarBuilder,
-    cb: web_idl.callback_function.CallbackFunction):
+  builder: DomatoGrammarBuilder, cb: web_idl.callback_function.CallbackFunction
+):
   for construct in construct_functionlike(builder, cb):
     builder.add_rule(Rule(DomatoType(cb.identifier), [construct]))
 
 
 def build_callback_interface_rules(
-    builder: DomatoGrammarBuilder,
-    interface: web_idl.callback_interface.CallbackInterface):
+  builder: DomatoGrammarBuilder,
+  interface: web_idl.callback_interface.CallbackInterface,
+):
   # <new {iface.identifier}> = {'memberfunc1': () => {}, 'member2': <Member2>}
   builder.add_rule(Rule(DomatoType(interface.identifier), ['{}']))
 
@@ -454,6 +477,7 @@ def remove_cyclic_dependencies(builder: DomatoGrammarBuilder):
       res |= all(_check(child) for child in elts)
     handled[name] = res
     return res
+
   for name in graph.keys():
     _check(name)
     for deps in graph[name]:
@@ -474,7 +498,7 @@ def remove_cyclic_dependencies(builder: DomatoGrammarBuilder):
   to_remove = {
     'InternalDictionary',
     'InternalDictionaryDerived',
-    'InternalDictionaryDerivedDerived'
+    'InternalDictionaryDerivedDerived',
   }
   for name, val in handled.items():
     if not val:
@@ -497,20 +521,20 @@ def remove_cyclic_dependencies(builder: DomatoGrammarBuilder):
 
 def main():
   parser = argparse.ArgumentParser(
-      description=
-      'Generates a grammar for Domato that describes WebIDLs.')
-  parser.add_argument('-p',
-                      '--path',
-                      required=True,
-                      help="Path to the web_idl_database.")
-  parser.add_argument('-i',
-                      '--include_path',
-                      required=False,
-                      help="Path to the grammar helper file.")
-  parser.add_argument('-o',
-                      '--outfile',
-                      required=True,
-                      help="Path to the output profile.")
+    description='Generates a grammar for Domato that describes WebIDLs.'
+  )
+  parser.add_argument(
+    '-p', '--path', required=True, help="Path to the web_idl_database."
+  )
+  parser.add_argument(
+    '-i',
+    '--include_path',
+    required=False,
+    help="Path to the grammar helper file.",
+  )
+  parser.add_argument(
+    '-o', '--outfile', required=True, help="Path to the output profile."
+  )
 
   args = parser.parse_args()
   database = web_idl.Database.read_from_file(args.path)
@@ -580,6 +604,7 @@ def main():
           rhs_line += f'<{elt.name}>'
       f.write(line + rhs_line + '\n')
     f.write('!end lines\n')
+
 
 if __name__ == "__main__":
   main()

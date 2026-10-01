@@ -34,6 +34,7 @@ repeating the logged commands and parameters:
      session, even if it was only called once), so we absorb all of
      these calls back into one.
 """
+
 import collections
 import json
 import optparse
@@ -49,14 +50,17 @@ _SERVER_DIR = os.path.join(_PARENT_DIR, "server")
 # pylint: disable=g-import-not-at-top
 sys.path.insert(1, _CLIENT_DIR)
 import command_executor
+
 sys.path.remove(_CLIENT_DIR)
 
 sys.path.insert(1, _SERVER_DIR)
 import server
+
 sys.path.remove(_SERVER_DIR)
 
 sys.path.insert(1, _PARENT_DIR)
 import util
+
 sys.path.remove(_PARENT_DIR)
 # pylint: enable=g-import-not-at-top
 
@@ -66,166 +70,214 @@ class Method(object):
   POST = "POST"
   DELETE = "DELETE"
 
+
 # TODO(crbug/chromedriver/2511) there should be a single source of truth for
 # this data throughout chromedriver code (see e.g. http_handler.cc)
 _COMMANDS = {
-    "AcceptAlert": (Method.POST, "/session/:sessionId/alert/accept"),
-    "AddCookie": (Method.POST, "/session/:sessionId/cookie"),
-    "ClearElement": (Method.POST, "/session/:sessionId/element/:id/clear"),
-    "ClearLocalStorage": (Method.DELETE, "/session/:sessionId/local_storage"),
-    "ClearSessionStorage":
-    (Method.DELETE, "/session/:sessionId/session_storage"),
-    "Click": (Method.POST, "/session/:sessionId/click"),
-    "ClickElement": (Method.POST, "/session/:sessionId/element/:id/click"),
-    "CloseWindow": (Method.DELETE, "/session/:sessionId/window"),
-    "DeleteAllCookies": (Method.DELETE, "/session/:sessionId/cookie"),
-    "DeleteCookie": (Method.DELETE, "/session/:sessionId/cookie/:name"),
-    "DeleteNetworkConditions":
-    (Method.DELETE, "/session/:sessionId/chromium/network_conditions"),
-    "DismissAlert": command_executor.Command.DISMISS_ALERT,
-    "DoubleClick": (Method.POST, "/session/:sessionId/doubleclick"),
-    "ElementScreenshot":
-    (Method.GET, "/session/:sessionId/element/:id/screenshot"),
-    "ExecuteAsyncScript": command_executor.Command.EXECUTE_ASYNC_SCRIPT,
-    "ExecuteCDP": (Method.POST, "/session/:sessionId/goog/cdp/execute"),
-    "ExecuteScript": (Method.POST, "/session/:sessionId/execute/sync"),
-    "FindChildElement":
-    (Method.POST, "/session/:sessionId/element/:id/element"),
-    "FindChildElements":
-    (Method.POST, "/session/:sessionId/element/:id/elements"),
-    "FindElement": (Method.POST, "/session/:sessionId/element"),
-    "FindElements": (Method.POST, "/session/:sessionId/elements"),
-    "Freeze": (Method.POST, "/session/:sessionId/goog/page/freeze"),
-    "FullscreenWindow": (Method.POST, "/session/:sessionId/window/fullscreen"),
-    "GetActiveElement": command_executor.Command.GET_ACTIVE_ELEMENT,
-    "GetAlertMessage": (Method.GET, "/session/:sessionId/alert_text"),
-    "GetCookies": (Method.GET, "/session/:sessionId/cookie"),
-    "GetElementAttribute":
-    (Method.GET, "/session/:sessionId/element/:id/attribute/:name"),
-    "GetElementProperty":
-    (Method.GET, "/session/:sessionId/element/:id/property/:name"),
-    "GetElementCSSProperty":
-    (Method.GET, "/session/:sessionId/element/:id/css/:propertyName"),
-    "GetElementLocation":
-    (Method.GET, "/session/:sessionId/element/:id/location"),
-    "GetElementLocationInView":
-    (Method.GET, "/session/:sessionId/element/:id/location_in_view"),
-    "GetElementRect": (Method.GET, "/session/:sessionId/element/:id/rect"),
-    "GetElementSize": (Method.GET, "/session/:sessionId/element/:id/size"),
-    "GetElementTagName": (Method.GET, "/session/:sessionId/element/:id/name"),
-    "GetElementText": (Method.GET, "/session/:sessionId/element/:id/text"),
-    "GetElementValue": (Method.GET, "/session/:sessionId/element/:id/value"),
-    "GetGeolocation": (Method.GET, "/session/:sessionId/location"),
-    "GetLocalStorageItem":
-    (Method.GET, "/session/:sessionId/local_storage/key/:key"),
-    "GetLocalStorageKeys":
-    (Method.GET, "/session/:sessionId/local_storage"),
-    "GetLocalStorageSize":
-    (Method.GET, "/session/:sessionId/local_storage/size"),
-    "GetLog": (Method.POST, "/session/:sessionId/se/log"),
-    "GetLogTypes": (Method.GET, "/session/:sessionId/se/log/types"),
-    "GetNamedCookie": (Method.GET, "/session/:sessionId/cookie/:name"),
-    "GetNetworkConditions":
-    (Method.GET, "/session/:sessionId/chromium/network_conditions"),
-    "GetNetworkConnection":
-    (Method.GET, "/session/:sessionId/network_connection"),
-    "GetSessionCapabilities": (Method.GET, "/session/:sessionId"),
-    "GetSessionStorageItem":
-    (Method.GET, "/session/:sessionId/session_storage/key/:key"),
-    "GetSessionStorageKeys":
-    (Method.GET, "/session/:sessionId/session_storage"),
-    "GetSessionStorageSize":
-    (Method.GET, "/session/:sessionId/session_storage/size"),
-    "GetSessions": (Method.GET, "/sessions"),
-    "GetSource": (Method.GET, "/session/:sessionId/source"),
-    "GetStatus": (Method.GET, "status"),
-    "GetTimeouts": (Method.GET, "/session/:sessionId/timeouts"),
-    "GetTitle": (Method.GET, "/session/:sessionId/title"),
-    "GetUrl": (Method.GET, "/session/:sessionId/url"),
-    "GetWindow": command_executor.Command.GET_CURRENT_WINDOW_HANDLE,
-    "GetWindowPosition":
-    (Method.GET, "/session/:sessionId/window/:windowHandle/position"),
-    "GetWindowRect":
-    (Method.GET, "/session/:sessionId/window/rect"),
-    "GetWindowSize":
-    (Method.GET, "/session/:sessionId/window/:windowHandle/size"),
-    "GetWindows": command_executor.Command.GET_WINDOW_HANDLES,
-    "GoBack": (Method.POST, "/session/:sessionId/back"),
-    "GoForward": (Method.POST, "/session/:sessionId/forward"),
-    "HeapSnapshot": (Method.GET, "/session/:sessionId/chromium/heap_snapshot"),
-    "InitSession": (Method.POST, "/session"),
-    "IsAlertOpen": (Method.GET, "/session/:sessionId/alert"),
-    "IsElementDisplayed":
-    (Method.GET, "/session/:sessionId/element/:id/displayed"),
-    "IsElementEnabled": (Method.GET, "/session/:sessionId/element/:id/enabled"),
-    "IsElementEqual":
-    (Method.GET, "/session/:sessionId/element/:id/equals/:other"),
-    "IsElementSelected":
-    (Method.GET, "/session/:sessionId/element/:id/selected"),
-    "IsLoading": (Method.GET, "/session/:sessionId/is_loading"),
-    "LaunchApp": (Method.POST, "/session/:sessionId/chromium/launch_app"),
-    "MaximizeWindow": (Method.POST, "/session/:sessionId/window/maximize"),
-    "MinimizeWindow": (Method.POST, "/session/:sessionId/window/minimize"),
-    "MouseDown": (Method.POST, "/session/:sessionId/buttondown"),
-    "MouseMove": (Method.POST, "/session/:sessionId/moveto"),
-    "MouseUp": (Method.POST, "/session/:sessionId/buttonup"),
-    "Navigate": (Method.POST, "/session/:sessionId/url"),
-    "PerformActions": (Method.POST, "/session/:sessionId/actions"),
-    "Quit": (Method.DELETE, "/session/:sessionId"),
-    "Refresh": (Method.POST, "/session/:sessionId/refresh"),
-    "ReleaseActions": (Method.DELETE, "/session/:sessionId/actions"),
-    "RemoveLocalStorageItem":
-    (Method.DELETE, "/session/:sessionId/local_storage/key/:key"),
-    "RemoveSessionStorageItem":
-    (Method.DELETE, "/session/:sessionId/session_storage/key/:key"),
-    "Resume": (Method.POST, "/session/:sessionId/goog/page/resume"),
-    "Screenshot": (Method.GET, "/session/:sessionId/screenshot"),
-    "SendCommand": (Method.POST, "/session/:sessionId/chromium/send_command"),
-    "SendCommandAndGetResult":
-    (Method.POST, "/session/:sessionId/chromium/send_command_and_get_result"),
-    "SendCommandFromWebSocket":
-    (Method.POST, "session/:sessionId/chromium/send_command_from_websocket"),
-    "SetAlertPrompt": command_executor.Command.SET_ALERT_VALUE,
-    "SetGeolocation": (Method.POST, "/session/:sessionId/location"),
-    "SetImplicitWait":
-    (Method.POST, "/session/:sessionId/timeouts/implicit_wait"),
-    "SetLocalStorageKeys": (Method.POST, "/session/:sessionId/local_storage"),
-    "SetNetworkConditions":
-    (Method.POST, "/session/:sessionId/chromium/network_conditions"),
-    "SetNetworkConnection":
-    (Method.POST, "/session/:sessionId/network_connection"),
-    "SetScriptTimeout":
-    (Method.POST, "/session/:sessionId/timeouts/async_script"),
-    "SetSessionStorageItem":
-    (Method.POST, "/session/:sessionId/session_storage"),
-    "SetTimeouts": (Method.POST, "/session/:sessionId/timeouts"),
-    "SetWindowPosition":
-    (Method.POST, "/session/:sessionId/window/:windowHandle/position"),
-    "SetWindowRect": (Method.POST, "/session/:sessionId/window/rect"),
-    "SetWindowSize":
-    (Method.POST, "/session/:sessionId/window/:windowHandle/size"),
-    "SubmitElement": (Method.POST, "/session/:sessionId/element/:id/submit"),
-    "SwitchToFrame": (Method.POST, "/session/:sessionId/frame"),
-    "SwitchToParentFrame": (Method.POST, "/session/:sessionId/frame/parent"),
-    "SwitchToWindow": (Method.POST, "/session/:sessionId/window"),
-    "Tap": (Method.POST, "/session/:sessionId/touch/click"),
-    "TouchDoubleTap": (Method.POST, "/session/:sessionId/touch/doubleclick"),
-    "TouchDown": (Method.POST, "/session/:sessionId/touch/down"),
-    "TouchFlick": (Method.POST, "/session/:sessionId/touch/flick"),
-    "TouchLongPress": (Method.POST, "/session/:sessionId/touch/longclick"),
-    "TouchMove": (Method.POST, "/session/:sessionId/touch/move"),
-    "TouchScroll": (Method.POST, "/session/:sessionId/touch/scroll"),
-    "TouchUp": (Method.POST, "/session/:sessionId/touch/up"),
-    "Type": (Method.POST, "/session/:sessionId/keys"),
-    "TypeElement": (Method.POST, "/session/:sessionId/element/:id/value"),
-    "UploadFile": (Method.POST, "/session/:sessionId/file"),
-    "Print": (Method.POST, "/session/:sessionId/print"),
+  "AcceptAlert": (Method.POST, "/session/:sessionId/alert/accept"),
+  "AddCookie": (Method.POST, "/session/:sessionId/cookie"),
+  "ClearElement": (Method.POST, "/session/:sessionId/element/:id/clear"),
+  "ClearLocalStorage": (Method.DELETE, "/session/:sessionId/local_storage"),
+  "ClearSessionStorage": (Method.DELETE, "/session/:sessionId/session_storage"),
+  "Click": (Method.POST, "/session/:sessionId/click"),
+  "ClickElement": (Method.POST, "/session/:sessionId/element/:id/click"),
+  "CloseWindow": (Method.DELETE, "/session/:sessionId/window"),
+  "DeleteAllCookies": (Method.DELETE, "/session/:sessionId/cookie"),
+  "DeleteCookie": (Method.DELETE, "/session/:sessionId/cookie/:name"),
+  "DeleteNetworkConditions": (
+    Method.DELETE,
+    "/session/:sessionId/chromium/network_conditions",
+  ),
+  "DismissAlert": command_executor.Command.DISMISS_ALERT,
+  "DoubleClick": (Method.POST, "/session/:sessionId/doubleclick"),
+  "ElementScreenshot": (
+    Method.GET,
+    "/session/:sessionId/element/:id/screenshot",
+  ),
+  "ExecuteAsyncScript": command_executor.Command.EXECUTE_ASYNC_SCRIPT,
+  "ExecuteCDP": (Method.POST, "/session/:sessionId/goog/cdp/execute"),
+  "ExecuteScript": (Method.POST, "/session/:sessionId/execute/sync"),
+  "FindChildElement": (Method.POST, "/session/:sessionId/element/:id/element"),
+  "FindChildElements": (
+    Method.POST,
+    "/session/:sessionId/element/:id/elements",
+  ),
+  "FindElement": (Method.POST, "/session/:sessionId/element"),
+  "FindElements": (Method.POST, "/session/:sessionId/elements"),
+  "Freeze": (Method.POST, "/session/:sessionId/goog/page/freeze"),
+  "FullscreenWindow": (Method.POST, "/session/:sessionId/window/fullscreen"),
+  "GetActiveElement": command_executor.Command.GET_ACTIVE_ELEMENT,
+  "GetAlertMessage": (Method.GET, "/session/:sessionId/alert_text"),
+  "GetCookies": (Method.GET, "/session/:sessionId/cookie"),
+  "GetElementAttribute": (
+    Method.GET,
+    "/session/:sessionId/element/:id/attribute/:name",
+  ),
+  "GetElementProperty": (
+    Method.GET,
+    "/session/:sessionId/element/:id/property/:name",
+  ),
+  "GetElementCSSProperty": (
+    Method.GET,
+    "/session/:sessionId/element/:id/css/:propertyName",
+  ),
+  "GetElementLocation": (
+    Method.GET,
+    "/session/:sessionId/element/:id/location",
+  ),
+  "GetElementLocationInView": (
+    Method.GET,
+    "/session/:sessionId/element/:id/location_in_view",
+  ),
+  "GetElementRect": (Method.GET, "/session/:sessionId/element/:id/rect"),
+  "GetElementSize": (Method.GET, "/session/:sessionId/element/:id/size"),
+  "GetElementTagName": (Method.GET, "/session/:sessionId/element/:id/name"),
+  "GetElementText": (Method.GET, "/session/:sessionId/element/:id/text"),
+  "GetElementValue": (Method.GET, "/session/:sessionId/element/:id/value"),
+  "GetGeolocation": (Method.GET, "/session/:sessionId/location"),
+  "GetLocalStorageItem": (
+    Method.GET,
+    "/session/:sessionId/local_storage/key/:key",
+  ),
+  "GetLocalStorageKeys": (Method.GET, "/session/:sessionId/local_storage"),
+  "GetLocalStorageSize": (Method.GET, "/session/:sessionId/local_storage/size"),
+  "GetLog": (Method.POST, "/session/:sessionId/se/log"),
+  "GetLogTypes": (Method.GET, "/session/:sessionId/se/log/types"),
+  "GetNamedCookie": (Method.GET, "/session/:sessionId/cookie/:name"),
+  "GetNetworkConditions": (
+    Method.GET,
+    "/session/:sessionId/chromium/network_conditions",
+  ),
+  "GetNetworkConnection": (
+    Method.GET,
+    "/session/:sessionId/network_connection",
+  ),
+  "GetSessionCapabilities": (Method.GET, "/session/:sessionId"),
+  "GetSessionStorageItem": (
+    Method.GET,
+    "/session/:sessionId/session_storage/key/:key",
+  ),
+  "GetSessionStorageKeys": (Method.GET, "/session/:sessionId/session_storage"),
+  "GetSessionStorageSize": (
+    Method.GET,
+    "/session/:sessionId/session_storage/size",
+  ),
+  "GetSessions": (Method.GET, "/sessions"),
+  "GetSource": (Method.GET, "/session/:sessionId/source"),
+  "GetStatus": (Method.GET, "status"),
+  "GetTimeouts": (Method.GET, "/session/:sessionId/timeouts"),
+  "GetTitle": (Method.GET, "/session/:sessionId/title"),
+  "GetUrl": (Method.GET, "/session/:sessionId/url"),
+  "GetWindow": command_executor.Command.GET_CURRENT_WINDOW_HANDLE,
+  "GetWindowPosition": (
+    Method.GET,
+    "/session/:sessionId/window/:windowHandle/position",
+  ),
+  "GetWindowRect": (Method.GET, "/session/:sessionId/window/rect"),
+  "GetWindowSize": (
+    Method.GET,
+    "/session/:sessionId/window/:windowHandle/size",
+  ),
+  "GetWindows": command_executor.Command.GET_WINDOW_HANDLES,
+  "GoBack": (Method.POST, "/session/:sessionId/back"),
+  "GoForward": (Method.POST, "/session/:sessionId/forward"),
+  "HeapSnapshot": (Method.GET, "/session/:sessionId/chromium/heap_snapshot"),
+  "InitSession": (Method.POST, "/session"),
+  "IsAlertOpen": (Method.GET, "/session/:sessionId/alert"),
+  "IsElementDisplayed": (
+    Method.GET,
+    "/session/:sessionId/element/:id/displayed",
+  ),
+  "IsElementEnabled": (Method.GET, "/session/:sessionId/element/:id/enabled"),
+  "IsElementEqual": (
+    Method.GET,
+    "/session/:sessionId/element/:id/equals/:other",
+  ),
+  "IsElementSelected": (Method.GET, "/session/:sessionId/element/:id/selected"),
+  "IsLoading": (Method.GET, "/session/:sessionId/is_loading"),
+  "LaunchApp": (Method.POST, "/session/:sessionId/chromium/launch_app"),
+  "MaximizeWindow": (Method.POST, "/session/:sessionId/window/maximize"),
+  "MinimizeWindow": (Method.POST, "/session/:sessionId/window/minimize"),
+  "MouseDown": (Method.POST, "/session/:sessionId/buttondown"),
+  "MouseMove": (Method.POST, "/session/:sessionId/moveto"),
+  "MouseUp": (Method.POST, "/session/:sessionId/buttonup"),
+  "Navigate": (Method.POST, "/session/:sessionId/url"),
+  "PerformActions": (Method.POST, "/session/:sessionId/actions"),
+  "Quit": (Method.DELETE, "/session/:sessionId"),
+  "Refresh": (Method.POST, "/session/:sessionId/refresh"),
+  "ReleaseActions": (Method.DELETE, "/session/:sessionId/actions"),
+  "RemoveLocalStorageItem": (
+    Method.DELETE,
+    "/session/:sessionId/local_storage/key/:key",
+  ),
+  "RemoveSessionStorageItem": (
+    Method.DELETE,
+    "/session/:sessionId/session_storage/key/:key",
+  ),
+  "Resume": (Method.POST, "/session/:sessionId/goog/page/resume"),
+  "Screenshot": (Method.GET, "/session/:sessionId/screenshot"),
+  "SendCommand": (Method.POST, "/session/:sessionId/chromium/send_command"),
+  "SendCommandAndGetResult": (
+    Method.POST,
+    "/session/:sessionId/chromium/send_command_and_get_result",
+  ),
+  "SendCommandFromWebSocket": (
+    Method.POST,
+    "session/:sessionId/chromium/send_command_from_websocket",
+  ),
+  "SetAlertPrompt": command_executor.Command.SET_ALERT_VALUE,
+  "SetGeolocation": (Method.POST, "/session/:sessionId/location"),
+  "SetImplicitWait": (
+    Method.POST,
+    "/session/:sessionId/timeouts/implicit_wait",
+  ),
+  "SetLocalStorageKeys": (Method.POST, "/session/:sessionId/local_storage"),
+  "SetNetworkConditions": (
+    Method.POST,
+    "/session/:sessionId/chromium/network_conditions",
+  ),
+  "SetNetworkConnection": (
+    Method.POST,
+    "/session/:sessionId/network_connection",
+  ),
+  "SetScriptTimeout": (
+    Method.POST,
+    "/session/:sessionId/timeouts/async_script",
+  ),
+  "SetSessionStorageItem": (Method.POST, "/session/:sessionId/session_storage"),
+  "SetTimeouts": (Method.POST, "/session/:sessionId/timeouts"),
+  "SetWindowPosition": (
+    Method.POST,
+    "/session/:sessionId/window/:windowHandle/position",
+  ),
+  "SetWindowRect": (Method.POST, "/session/:sessionId/window/rect"),
+  "SetWindowSize": (
+    Method.POST,
+    "/session/:sessionId/window/:windowHandle/size",
+  ),
+  "SubmitElement": (Method.POST, "/session/:sessionId/element/:id/submit"),
+  "SwitchToFrame": (Method.POST, "/session/:sessionId/frame"),
+  "SwitchToParentFrame": (Method.POST, "/session/:sessionId/frame/parent"),
+  "SwitchToWindow": (Method.POST, "/session/:sessionId/window"),
+  "Tap": (Method.POST, "/session/:sessionId/touch/click"),
+  "TouchDoubleTap": (Method.POST, "/session/:sessionId/touch/doubleclick"),
+  "TouchDown": (Method.POST, "/session/:sessionId/touch/down"),
+  "TouchFlick": (Method.POST, "/session/:sessionId/touch/flick"),
+  "TouchLongPress": (Method.POST, "/session/:sessionId/touch/longclick"),
+  "TouchMove": (Method.POST, "/session/:sessionId/touch/move"),
+  "TouchScroll": (Method.POST, "/session/:sessionId/touch/scroll"),
+  "TouchUp": (Method.POST, "/session/:sessionId/touch/up"),
+  "Type": (Method.POST, "/session/:sessionId/keys"),
+  "TypeElement": (Method.POST, "/session/:sessionId/element/:id/value"),
+  "UploadFile": (Method.POST, "/session/:sessionId/file"),
+  "Print": (Method.POST, "/session/:sessionId/print"),
 }
 
 MULTI_SESSION_COMMANDS = ["GetSessions"]
 
 # Matches the target id.
 _TARGET_ID_REGEX = re.compile(r"^[A-F0-9]{32}$")
+
 
 class ReplayException(Exception):
   """Thrown for irrecoverable problems in parsing the log file."""
@@ -251,7 +303,7 @@ def _CountChar(line, opening_char, closing_char):
       total += 1
     if not in_quote and c is closing_char:
       total -= 1
-    if c == '"' and (i == 0 or line[i-1] != "\\"):
+    if c == '"' and (i == 0 or line[i - 1] != "\\"):
       in_quote = not in_quote
 
   return total
@@ -285,7 +337,7 @@ def _GetAnyElementIds(payload):
   Returns:
     list of ID strings, in order, in this payload
   """
-  element_tag="element-6066-11e4-a52e-4f735466cecf"
+  element_tag = "element-6066-11e4-a52e-4f735466cecf"
   if isinstance(payload, dict):
     if element_tag in payload:
       return [payload[element_tag]]
@@ -301,7 +353,7 @@ def _GetAnyElementIds(payload):
 
 
 def _IsTargetId(handle):
-    return isinstance(handle, str) and re.match(_TARGET_ID_REGEX, handle)
+  return isinstance(handle, str) and re.match(_TARGET_ID_REGEX, handle)
 
 
 def _ReplaceWindowAndElementIds(payload, id_map):
@@ -338,8 +390,9 @@ def _ReplaceUrl(payload, base_url):
     base_url: url to replace any applicable urls in |payload| with.
   """
   if base_url and "url" in payload:
-    payload["url"] = re.sub(r"^https?://((?!/).)*/",
-                            base_url + "/", payload["url"])
+    payload["url"] = re.sub(
+      r"^https?://((?!/).)*/", base_url + "/", payload["url"]
+    )
 
 
 def _ReplaceBinary(payload, binary):
@@ -354,25 +407,22 @@ def _ReplaceBinary(payload, binary):
     there is a binary path in |payload|, we remove the binary path, which will
     trigger ChromeDriver's mechanism for locating the Chrome binary.
   """
-  if ("desiredCapabilities" in payload
-      and "goog:chromeOptions" in payload["desiredCapabilities"]):
+  if (
+    "desiredCapabilities" in payload
+    and "goog:chromeOptions" in payload["desiredCapabilities"]
+  ):
     if binary:
-      (payload["desiredCapabilities"]["goog:chromeOptions"]
-       ["binary"]) = binary
+      (payload["desiredCapabilities"]["goog:chromeOptions"]["binary"]) = binary
     elif "binary" in payload["desiredCapabilities"]["goog:chromeOptions"]:
       del payload["desiredCapabilities"]["goog:chromeOptions"]["binary"]
 
   elif binary:
     if "desiredCapabilities" not in payload:
       payload["desiredCapabilities"] = {
-          "goog:chromeOptions": {
-              "binary": binary
-          }
+        "goog:chromeOptions": {"binary": binary}
       }
     elif "goog:chromeOptions" not in payload["desiredCapabilities"]:
-      payload["desiredCapabilities"]["goog:chromeOptions"] = {
-          "binary": binary
-      }
+      payload["desiredCapabilities"]["goog:chromeOptions"] = {"binary": binary}
 
 
 def _ReplaceSessionId(payload, id_map):
@@ -515,10 +565,9 @@ class LogEntry(object):
     """Returns whether this instance is a command."""
     return self._type == self._COMMAND
 
-  def UpdatePayloadForReplaySession(self,
-                                    id_map=None,
-                                    binary="",
-                                    base_url=None):
+  def UpdatePayloadForReplaySession(
+    self, id_map=None, binary="", base_url=None
+  ):
     """Processes IDs in the payload to match the current session.
 
     This replaces old window, element, and session IDs in the payload to match
@@ -538,7 +587,8 @@ class LogEntry(object):
     """
     self.payload.AddSessionId(self.session_id)
     self.payload.SubstituteIds(
-        id_map, binary, base_url, self.name == "InitSession")
+      id_map, binary, base_url, self.name == "InitSession"
+    )
 
   def GetPayloadPrimitive(self):
     """Returns the payload associated with this LogEntry as a primitive."""
@@ -590,13 +640,15 @@ class _Parser(object):
 
   # Matches headers for client commands/responses only (not DevTools events)
   _CLIENT_PREAMBLE_REGEX = re.compile(
-      r"^\[[0-9]{10}\.[0-9]{3}\]\[INFO\]: \[[a-f0-9]*\]")
+    r"^\[[0-9]{10}\.[0-9]{3}\]\[INFO\]: \[[a-f0-9]*\]"
+  )
 
   # Matches headers for client commands/responses when readable-timestamp
-  #option is selected. Depending on OS, final component may be 3 or 6 digits
+  # option is selected. Depending on OS, final component may be 3 or 6 digits
   _CLIENT_PREAMBLE_REGEX_READABLE = re.compile(
-      r"^\[[0-9]{2}-[0-9]{2}-[0-9]{4} "
-      "[0-9]{2}:[0-9]{2}:[0-9]{2}.([0-9]{3}){1,2}\]\[INFO\]: \[[a-f0-9]*\]")
+    r"^\[[0-9]{2}-[0-9]{2}-[0-9]{4} "
+    "[0-9]{2}:[0-9]{2}:[0-9]{2}.([0-9]{3}){1,2}\]\[INFO\]: \[[a-f0-9]*\]"
+  )
 
   def __init__(self, log_file):
     """Initialize the _Parser instance.
@@ -634,8 +686,8 @@ class _Parser(object):
       if re.match(self._CLIENT_PREAMBLE_REGEX, next_line):
         return next_line
       if re.match(self._CLIENT_PREAMBLE_REGEX_READABLE, next_line):
-        #Readable timestamp contains a space between date and time,
-        #which breaks other parsing of the header. Replace with underscore
+        # Readable timestamp contains a space between date and time,
+        # which breaks other parsing of the header. Replace with underscore
         next_line = next_line.replace(" ", "_", 1)
         return next_line
 
@@ -659,8 +711,8 @@ class _Parser(object):
     header_segments = header_line.split()
     if len(header_segments) < min_header:
       return None
-    payload = " ".join(header_segments[min_header-1:])
-    opening_char = header_segments[min_header-1]
+    payload = " ".join(header_segments[min_header - 1 :])
+    opening_char = header_segments[min_header - 1]
     if opening_char == "{":
       closing_char = "}"
     elif opening_char == "[":
@@ -668,8 +720,9 @@ class _Parser(object):
     else:
       return payload  # payload is singular, like "1", "false", or an error
 
-    opening_char_count = (payload.count(opening_char)
-                          - payload.count(closing_char))
+    opening_char_count = payload.count(opening_char) - payload.count(
+      closing_char
+    )
 
     while opening_char_count > 0:
       next_line = self._log_file.readline()
@@ -677,10 +730,10 @@ class _Parser(object):
         # It'd be quite surprising that the log is truncated in the middle of
         # a JSON; far more likely that the parsing failed for some reason.
         raise ReplayException(
-            "Reached end of file without reaching end of JSON payload")
+          "Reached end of file without reaching end of JSON payload"
+        )
       payload += next_line
-      opening_char_count += _CountChar(next_line, opening_char,
-                                       closing_char)
+      opening_char_count += _CountChar(next_line, opening_char, closing_char)
 
     return payload
 
@@ -743,7 +796,8 @@ class CommandSequence(object):
       return self._HandleGetSessions(command)
 
     command.UpdatePayloadForReplaySession(
-        self._id_map, self._binary, self._base_url)
+      self._id_map, self._binary, self._base_url
+    )
 
     response = self._parser.GetNext()
     if not response:
@@ -775,12 +829,16 @@ class CommandSequence(object):
     # In W3C format, the http response is a single key dict,
     # where the value is None, a single value, or another dictionary
     # sessionId is contained in the nested dictionary
-    if (self._staged_logged_session_id
-        and "value" in response and response["value"]
-        and isinstance(response["value"], dict)
-        and "sessionId" in response["value"]):
-      self._id_map[self._staged_logged_session_id] = (
-        response["value"]["sessionId"])
+    if (
+      self._staged_logged_session_id
+      and "value" in response
+      and response["value"]
+      and isinstance(response["value"], dict)
+      and "sessionId" in response["value"]
+    ):
+      self._id_map[self._staged_logged_session_id] = response["value"][
+        "sessionId"
+      ]
       self._staged_logged_session_id = None
 
   def _IngestLoggedResponse(self, response):
@@ -819,8 +877,9 @@ class CommandSequence(object):
     """
 
     command_response_pairs = collections.defaultdict(dict)
-    command_response_pairs[first_command.session_id] = (
-        {"command": first_command})
+    command_response_pairs[first_command.session_id] = {
+      "command": first_command
+    }
 
     while True:
       next_entry = self._parser.GetNext()
@@ -830,15 +889,17 @@ class CommandSequence(object):
       if next_entry.IsResponse():
         command_response_pairs[next_entry.session_id]["response"] = next_entry
       elif next_entry.IsCommand():
-        if (next_entry.name != first_command.name
-            or next_entry.session_id in command_response_pairs):
+        if (
+          next_entry.name != first_command.name
+          or next_entry.session_id in command_response_pairs
+        ):
           self._parser.UndoGetNext(next_entry)
           break
         command_response_pairs[next_entry.session_id]["command"] = next_entry
 
     response = [
-        {"id": key, "capabilities": val["response"].GetPayloadPrimitive()}
-        for key, val in command_response_pairs.items()
+      {"id": key, "capabilities": val["response"].GetPayloadPrimitive()}
+      for key, val in command_response_pairs.items()
     ]
     self._last_response = _GetSessionsResponseEntry(response)
 
@@ -863,12 +924,12 @@ class Replayer(object):
         base url passed in options.
     """
 
-
     # TODO(cwinstanley) Add Android support and perhaps support for other
     # chromedriver command line options.
     self.executor = command_executor.CommandExecutor(server.GetUrl())
-    self.command_sequence = CommandSequence(logfile, base_url=base_url,
-                                            chrome_binary=chrome_binary)
+    self.command_sequence = CommandSequence(
+      logfile, base_url=base_url, chrome_binary=chrome_binary
+    )
 
   def Run(self):
     """Runs the replay."""
@@ -877,28 +938,35 @@ class Replayer(object):
       command = self.command_sequence.NextCommand(real_response)
       if not command:
         break
-      real_response = self.executor.Execute(_COMMANDS[command.name],
-                                            command.GetPayloadPrimitive())
+      real_response = self.executor.Execute(
+        _COMMANDS[command.name], command.GetPayloadPrimitive()
+      )
 
 
-def StartChromeDriverServer(chromedriver_binary,
-                            output_log_path,
-                            devtools_replay_path="",
-                            replayable=False,
-                            additional_args=None):
+def StartChromeDriverServer(
+  chromedriver_binary,
+  output_log_path,
+  devtools_replay_path="",
+  replayable=False,
+  additional_args=None,
+):
   chromedriver = util.GetAbsolutePathOfUserPath(chromedriver_binary)
-  if (not os.path.exists(chromedriver) and
-      util.GetPlatformName() == "win" and
-      not chromedriver.lower().endswith(".exe")):
+  if (
+    not os.path.exists(chromedriver)
+    and util.GetPlatformName() == "win"
+    and not chromedriver.lower().endswith(".exe")
+  ):
     chromedriver = chromedriver + ".exe"
   if output_log_path:
     output_log_path = util.GetAbsolutePathOfUserPath(output_log_path)
 
-  chromedriver_server = server.Server(chromedriver_binary,
-                                      log_path=output_log_path,
-                                      devtools_replay_path=devtools_replay_path,
-                                      replayable=replayable,
-                                      additional_args=additional_args)
+  chromedriver_server = server.Server(
+    chromedriver_binary,
+    log_path=output_log_path,
+    devtools_replay_path=devtools_replay_path,
+    replayable=replayable,
+    additional_args=additional_args,
+  )
 
   return chromedriver_server
 
@@ -912,28 +980,43 @@ def _GetCommandLineOptions():
   usage = "usage: %prog <chromedriver binary> <input log path> [options]"
   parser = optparse.OptionParser(usage=usage)
   parser.add_option(
-      "", "--output-log-path",
-      help="Output verbose server logs to this file")
+    "", "--output-log-path", help="Output verbose server logs to this file"
+  )
   parser.add_option(
-      "", "--chrome", help="Path to a build of the chrome binary. If not\n"
-      "specified, uses ChromeDriver's own algorithm to find Chrome.")
+    "",
+    "--chrome",
+    help="Path to a build of the chrome binary. If not\n"
+    "specified, uses ChromeDriver's own algorithm to find Chrome.",
+  )
   parser.add_option(
-      "", "--base-url", help="Base url to replace logged urls (in "
-      "navigate, getUrl, and similar commands/responses).")
+    "",
+    "--base-url",
+    help="Base url to replace logged urls (in "
+    "navigate, getUrl, and similar commands/responses).",
+  )
   parser.add_option(
-      "", "--devtools-replay", help="Replay DevTools actions in addition\n"
-      "to client-side actions")
+    "",
+    "--devtools-replay",
+    help="Replay DevTools actions in addition\nto client-side actions",
+  )
   parser.add_option(
-      "", "--replayable", help="Generate logs that do not have truncated\n"
-      "strings so that they can be replayed again.")
+    "",
+    "--replayable",
+    help="Generate logs that do not have truncated\n"
+    "strings so that they can be replayed again.",
+  )
   parser.add_option(
-      '', '--additional-args', action='append',
-      help='Additional arguments to add on ChromeDriver command line')
+    '',
+    '--additional-args',
+    action='append',
+    help='Additional arguments to add on ChromeDriver command line',
+  )
 
   options, args = parser.parse_args()
   if len(args) < 2:
-    _CommandLineError(parser,
-                      'ChromeDriver binary and/or input log path missing.')
+    _CommandLineError(
+      parser, 'ChromeDriver binary and/or input log path missing.'
+    )
   if len(args) > 2:
     _CommandLineError(parser, 'Too many command line arguments.')
   if not os.path.exists(args[0]):
@@ -942,7 +1025,8 @@ def _GetCommandLineOptions():
     _CommandLineError(parser, 'Path given by --chrome is invalid.')
   if options.replayable and not options.output_log_path:
     _CommandLineError(
-        parser, 'Replayable log option needs --output-log-path specified.')
+      parser, 'Replayable log option needs --output-log-path specified.'
+    )
 
   return options, args
 
@@ -950,11 +1034,17 @@ def _GetCommandLineOptions():
 def main():
   options, args = _GetCommandLineOptions()
   devtools_replay_path = args[1] if options.devtools_replay else None
-  server = StartChromeDriverServer(args[0], options.output_log_path,
-      devtools_replay_path, options.replayable, options.additional_args)
+  server = StartChromeDriverServer(
+    args[0],
+    options.output_log_path,
+    devtools_replay_path,
+    options.replayable,
+    options.additional_args,
+  )
   input_log_path = util.GetAbsolutePathOfUserPath(args[1])
-  chrome_binary = (util.GetAbsolutePathOfUserPath(options.chrome)
-                   if options.chrome else None)
+  chrome_binary = (
+    util.GetAbsolutePathOfUserPath(options.chrome) if options.chrome else None
+  )
 
   with open(input_log_path) as logfile:
     Replayer(logfile, server, chrome_binary, options.base_url).Run()

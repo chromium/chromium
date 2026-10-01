@@ -8,25 +8,26 @@ import argparse
 import hashlib
 import os
 
+
 def gen_sha256(input_file_path):
-    """
-    Returns the upper-case hex-encoded SHA256 hash of an input file.
-    """
-    with open(input_file_path, "rb") as f:
-        return hashlib.file_digest(f, "sha256").hexdigest().upper()
+  """
+  Returns the upper-case hex-encoded SHA256 hash of an input file.
+  """
+  with open(input_file_path, "rb") as f:
+    return hashlib.file_digest(f, "sha256").hexdigest().upper()
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--icu_file", help="Path to the ICU data file.")
-    parser.add_argument("--output", help="Path to the output header file.")
-    args = parser.parse_args()
+  parser = argparse.ArgumentParser()
+  parser.add_argument("--icu_file", help="Path to the ICU data file.")
+  parser.add_argument("--output", help="Path to the output header file.")
+  args = parser.parse_args()
 
-    size = os.path.getsize(args.icu_file)
-    checksum = gen_sha256(args.icu_file)
+  size = os.path.getsize(args.icu_file)
+  checksum = gen_sha256(args.icu_file)
 
-    with open(args.output, "w") as f:
-        f.write(rf"""// Copyright 2025 The Chromium Authors
+  with open(args.output, "w") as f:
+    f.write(rf"""// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,6 +46,3 @@ inline constexpr std::string_view kExpectedIcuFileChecksum =
 
 }}  // namespace enterprise_companion
 """)
-
-
-

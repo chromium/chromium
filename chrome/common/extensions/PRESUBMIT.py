@@ -8,7 +8,6 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
-
 import fnmatch
 import os
 import re
@@ -30,11 +29,11 @@ def _CheckHeadingIDs(input_api):
     if not os.path.exists(name):
       continue
     if fnmatch.fnmatch(name, '*%s*' % INTROS_PATH) or fnmatch.fnmatch(
-        name, '*%s*' % ARTICLES_PATH
+      name, '*%s*' % ARTICLES_PATH
     ):
       contents = input_api.ReadFile(name)
       if len(re.findall(headings_re, contents)) != len(
-          re.findall(ids_re, contents)
+        re.findall(ids_re, contents)
       ):
         bad_files.append(name)
   return bad_files
@@ -42,8 +41,8 @@ def _CheckHeadingIDs(input_api):
 
 def CheckChange(input_api, output_api):
   results = [
-      output_api.PresubmitError('File %s needs an id for each heading.' % name)
-      for name in _CheckHeadingIDs(input_api)
+    output_api.PresubmitError('File %s needs an id for each heading.' % name)
+    for name in _CheckHeadingIDs(input_api)
   ]
 
   return results

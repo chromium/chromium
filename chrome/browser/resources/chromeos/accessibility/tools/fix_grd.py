@@ -21,10 +21,12 @@ import re
 import sys
 import xml.etree.ElementTree as ET
 
+
 def Die(message):
   '''Prints an error message and exit the program.'''
   sys.stderr.write(message + '\n')
   sys.exit(1)
+
 
 def Process(xml_file):
   xml = ET.parse(xml_file)
@@ -39,6 +41,7 @@ def Process(xml_file):
   if modified:
     xml.write(xml_file, encoding='UTF-8')
 
+
 def MaybeRemoveTrailingPeriods(message):
   modified = False
   # Re-write messages containing a period at the end (excluding whitespace)
@@ -50,6 +53,7 @@ def MaybeRemoveTrailingPeriods(message):
     message.text = message.text.replace('.', '')
   return modified
 
+
 def MaybeRemoveUnusedMessage(root, message, removed_so_far):
   found = False
 
@@ -60,7 +64,9 @@ def MaybeRemoveUnusedMessage(root, message, removed_so_far):
   # ChromeVox and STS.
   message_id = re.sub(
     '^(chromevox_|select_to_speak_|switch_access_|enhanced_network_tts_)',
-    '', base_message_id)
+    '',
+    base_message_id,
+  )
 
   # This message is needed by the extension system.
   if message_id == 'locale':
@@ -86,7 +92,8 @@ def MaybeRemoveUnusedMessage(root, message, removed_so_far):
     return False
 
   for dir_name, subdir_list, file_list in os.walk(
-      path_helpers.AccessibilityPath()):
+    path_helpers.AccessibilityPath()
+  ):
     for fname in file_list:
       if not fname.endswith('.js') and not fname.endswith('.html'):
         continue
@@ -110,6 +117,7 @@ def MaybeRemoveUnusedMessage(root, message, removed_so_far):
     root.remove(message)
 
   return not found
+
 
 if __name__ == '__main__':
   options, args = optparse.OptionParser().parse_args()

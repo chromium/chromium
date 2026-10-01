@@ -26,19 +26,23 @@ _NO_ROUTE = 'No route to host'
 _SKIP_LOG = 'WARNING:root:Skipping remote cleanup: sender unreachable.'
 _PUBKEY_DENIED = 'chrome-bot@lin-137-e504--mac: Permission denied (publickey).'
 
-_WIN_CIM_CMD = ('powershell -Command '
-                '"(Get-CimInstance Win32_Processor).Architecture"')
-_WIN_ENV_CMD = ('powershell -Command "if ($env:PROCESSOR_ARCHITEW6432) '
-                '{ $env:PROCESSOR_ARCHITEW6432 } else '
-                '{ $env:PROCESSOR_ARCHITECTURE }"')
-_WIN_VER_CMD = ('powershell -Command '
-                '"[System.Environment]::OSVersion.Version.ToString()"')
+_WIN_CIM_CMD = (
+    'powershell -Command "(Get-CimInstance Win32_Processor).Architecture"'
+)
+_WIN_ENV_CMD = (
+    'powershell -Command "if ($env:PROCESSOR_ARCHITEW6432) '
+    '{ $env:PROCESSOR_ARCHITEW6432 } else '
+    '{ $env:PROCESSOR_ARCHITECTURE }"'
+)
+_WIN_VER_CMD = (
+    'powershell -Command "[System.Environment]::OSVersion.Version.ToString()"'
+)
 
 
 def _make_args(sender=_MAC_HOST, username=_USER, sender_os='mac'):
-    return types.SimpleNamespace(sender=sender,
-                                 username=username,
-                                 sender_os=sender_os)
+    return types.SimpleNamespace(
+        sender=sender, username=username, sender_os=sender_os
+    )
 
 
 def _addrinfo(ip=_IP):
@@ -46,10 +50,9 @@ def _addrinfo(ip=_IP):
 
 
 def _done(returncode=0, stdout='', stderr=''):
-    return subprocess.CompletedProcess(args=['ssh'],
-                                       returncode=returncode,
-                                       stdout=stdout,
-                                       stderr=stderr)
+    return subprocess.CompletedProcess(
+        args=['ssh'], returncode=returncode, stdout=stdout, stderr=stderr
+    )
 
 
 def _no_route():
@@ -82,11 +85,13 @@ class CommonTestCase(unittest.TestCase):
         common._sender_preflight_results.clear()
         self.addCleanup(common._sender_preflight_results.clear)
 
-        self.getaddrinfo = self._patch('common.socket.getaddrinfo',
-                                       return_value=_addrinfo())
+        self.getaddrinfo = self._patch(
+            'common.socket.getaddrinfo', return_value=_addrinfo()
+        )
         self.conn = mock.MagicMock()
-        self.create_connection = self._patch('common.socket.create_connection',
-                                             return_value=self.conn)
+        self.create_connection = self._patch(
+            'common.socket.create_connection', return_value=self.conn
+        )
         self.ssh = FakeSsh()
         self.run = self._patch('common.subprocess.run', side_effect=self.ssh)
         self.popen = self._patch('common.subprocess.Popen')
@@ -102,11 +107,11 @@ class CommonTestCase(unittest.TestCase):
 
 
 class VerifySenderConnectivityTest(CommonTestCase):
-
     # Spec case 1.
     def test_dns_failure_raises_not_found_without_ssh(self):
         self.getaddrinfo.side_effect = socket.gaierror(
-            socket.EAI_NONAME, 'Name or service not known')
+            socket.EAI_NONAME, 'Name or service not known'
+        )
 
         with self.assertLogs(level='WARNING'):
             with self.assertRaises(common.SenderNotFoundError) as ctx:
@@ -134,16 +139,21 @@ class VerifySenderConnectivityTest(CommonTestCase):
         self.run.assert_not_called()
 
         reason = f'[Errno {errno.EHOSTUNREACH}] {_NO_ROUTE}'
-        self.assertEqual(logs.output, [
-            f'WARNING:root:Sender check attempt {i}/3 failed for '
-            f'{_MAC_HOST}: {reason}' for i in (1, 2, 3)
-        ])
+        self.assertEqual(
+            logs.output,
+            [
+                f'WARNING:root:Sender check attempt {i}/3 failed for '
+                f'{_MAC_HOST}: {reason}'
+                for i in (1, 2, 3)
+            ],
+        )
         self.assertEqual(
             str(ctx.exception),
             f"Sender '{_MAC_HOST}' ({_IP}) is not reachable on port 22: "
             f"{reason}. Likely causes: device powered off/asleep/rebooting, "
             "network link or DHCP lease lost, or sshd not running. "
-            "This is an infra failure, not a test failure.")
+            "This is an infra failure, not a test failure.",
+        )
 
     def test_tcp_timeout_raises_unreachable(self):
         self.create_connection.side_effect = socket.timeout('timed out')
@@ -167,7 +177,8 @@ class VerifySenderConnectivityTest(CommonTestCase):
         # send_ssh_command itself also reports the 255 at ERROR.
         self.assertIn(
             f'ERROR:root:SSH to {_MAC_HOST} failed (rc=255): {_PUBKEY_DENIED}',
-            logs.output)
+            logs.output,
+        )
 
     def test_ssh_unexpected_stdout_raises_ssh_error(self):
         self.ssh.responses['echo ok'] = _done(stdout='Welcome!\n')
@@ -177,8 +188,7 @@ class VerifySenderConnectivityTest(CommonTestCase):
         self.assertIn('Welcome!', str(ctx.exception))
 
     def test_ssh_timeout_raises_ssh_error(self):
-        self.run.side_effect = subprocess.TimeoutExpired(cmd='ssh',
-                                                         timeout=120)
+        self.run.side_effect = subprocess.TimeoutExpired(cmd='ssh', timeout=120)
         with self.assertLogs(level='WARNING'):
             with self.assertRaises(common.SenderSshError) as ctx:
                 common.verify_sender_connectivity(_make_args())
@@ -192,7 +202,8 @@ class VerifySenderConnectivityTest(CommonTestCase):
 
         self.assertEqual(
             logs.output,
-            [f'INFO:root:Sender {_MAC_HOST} ({_IP}) reachable over SSH.'])
+            [f'INFO:root:Sender {_MAC_HOST} ({_IP}) reachable over SSH.'],
+        )
         self.getaddrinfo.assert_called_once_with(_MAC_HOST, 22)
         self.create_connection.assert_called_once()
         self.conn.close.assert_called_once()
@@ -246,17 +257,21 @@ class VerifySenderConnectivityTest(CommonTestCase):
         self.sleep.assert_not_called()
 
     def test_exception_hierarchy(self):
-        for cls in (common.SenderNotFoundError, common.SenderUnreachableError,
-                    common.SenderSshError):
+        for cls in (
+            common.SenderNotFoundError,
+            common.SenderUnreachableError,
+            common.SenderSshError,
+        ):
             self.assertTrue(issubclass(cls, common.RemoteDeviceError))
             self.assertIn('infra failure, not a test failure', cls.__doc__)
         self.assertTrue(issubclass(common.RemoteDeviceError, RuntimeError))
-        self.assertIn('infra failure, not a test failure',
-                      common.RemoteDeviceError.__doc__)
+        self.assertIn(
+            'infra failure, not a test failure',
+            common.RemoteDeviceError.__doc__,
+        )
 
 
 class SendSshCommandTest(CommonTestCase):
-
     def test_uses_batch_mode_and_connect_timeout(self):
         common.send_ssh_command(_MAC_HOST, _USER, 'true', blocking=True)
         argv = self.run.call_args[0][0]
@@ -274,14 +289,14 @@ class SendSshCommandTest(CommonTestCase):
     def test_logs_error_on_255_and_still_returns_result(self):
         self.ssh.default = _done(255, stderr=_NO_ROUTE)
         with self.assertLogs(level='ERROR') as logs:
-            result = common.send_ssh_command(_MAC_HOST,
-                                             _USER,
-                                             'true',
-                                             blocking=True)
+            result = common.send_ssh_command(
+                _MAC_HOST, _USER, 'true', blocking=True
+            )
         self.assertEqual(result.returncode, 255)
         self.assertEqual(
             logs.output,
-            [f'ERROR:root:SSH to {_MAC_HOST} failed (rc=255): {_NO_ROUTE}'])
+            [f'ERROR:root:SSH to {_MAC_HOST} failed (rc=255): {_NO_ROUTE}'],
+        )
 
     def test_does_not_log_error_for_remote_command_failures(self):
         self.ssh.default = _done(1)
@@ -290,7 +305,6 @@ class SendSshCommandTest(CommonTestCase):
 
 
 class GetRemoteInfoTest(CommonTestCase):
-
     def test_unreachable_mac_raises_before_uname(self):
         self._make_unreachable()
         with self.assertLogs(level='WARNING'):
@@ -301,7 +315,8 @@ class GetRemoteInfoTest(CommonTestCase):
     def test_mac_empty_uname_raises_with_raw_output(self):
         self.ssh.responses['/usr/bin/uname -m'] = _done(stderr='boom')
         self.ssh.responses['/usr/bin/sw_vers -productVersion'] = _done(
-            stdout='14.5\n')
+            stdout='14.5\n'
+        )
         with self.assertRaises(common.RemoteDeviceError) as ctx:
             common.get_remote_info(_make_args())
         msg = str(ctx.exception)
@@ -314,11 +329,12 @@ class GetRemoteInfoTest(CommonTestCase):
     def test_mac_healthy(self):
         self.ssh.responses['/usr/bin/uname -m'] = _done(stdout='arm64\n')
         self.ssh.responses['/usr/bin/sw_vers -productVersion'] = _done(
-            stdout='14.5\n')
-        self.assertEqual(common.get_remote_info(_make_args()), {
-            'arch': 'arm64',
-            'os_version': '14.5'
-        })
+            stdout='14.5\n'
+        )
+        self.assertEqual(
+            common.get_remote_info(_make_args()),
+            {'arch': 'arm64', 'os_version': '14.5'},
+        )
 
     # Spec case 6.
     def test_win_empty_probes_raise_instead_of_returning_x86(self):
@@ -343,22 +359,26 @@ class GetRemoteInfoTest(CommonTestCase):
         self.ssh.responses[_WIN_VER_CMD] = _done(stdout='10.0\n')
         with self.assertRaises(common.RemoteDeviceError):
             common.get_remote_info(
-                _make_args(sender=_WIN_HOST, sender_os='win'))
+                _make_args(sender=_WIN_HOST, sender_os='win')
+            )
 
     def test_win_fallback_maps_known_values(self):
         self.ssh.responses[_WIN_CIM_CMD] = _done(stdout='')
         self.ssh.responses[_WIN_VER_CMD] = _done(stdout='10.0\n')
-        for raw, expected in (('AMD64', 'x64'), ('ARM64', 'x64'), ('x86',
-                                                                   'x86')):
+        for raw, expected in (
+            ('AMD64', 'x64'),
+            ('ARM64', 'x64'),
+            ('x86', 'x86'),
+        ):
             with self.subTest(raw=raw):
                 self.ssh.responses[_WIN_ENV_CMD] = _done(stdout=f'{raw}\r\n')
                 info = common.get_remote_info(
-                    _make_args(sender=_WIN_HOST, sender_os='win'))
+                    _make_args(sender=_WIN_HOST, sender_os='win')
+                )
                 self.assertEqual(info['arch'], expected)
 
 
 class TerminateOldChromedriverTest(CommonTestCase):
-
     def _check_cmd(self):
         return common.SENDER_CHROMEDRIVER_CHECK_CMD['mac']
 
@@ -415,8 +435,9 @@ class SetupEntryPointsTest(CommonTestCase):
         with mock.patch('common.download_cft_urls') as download:
             with self.assertLogs(level='WARNING'):
                 with self.assertRaises(common.SenderUnreachableError):
-                    common.setup_cros_environment(_make_args(sender_os='cros'),
-                                                  None, [])
+                    common.setup_cros_environment(
+                        _make_args(sender_os='cros'), None, []
+                    )
             download.assert_not_called()
         self.run.assert_not_called()
 
@@ -429,7 +450,6 @@ class SetupEntryPointsTest(CommonTestCase):
 
 
 class CleanupTest(CommonTestCase):
-
     def _fail_preflight(self):
         self._make_unreachable()
         with self.assertLogs(level='WARNING'):
@@ -443,8 +463,9 @@ class CleanupTest(CommonTestCase):
             common.cleanup_binaries(_make_args())
         self.run.assert_not_called()
         self.assertIn(_SKIP_LOG, logs.output)
-        self.assertFalse(any('Cleaned up remote' in l for l in logs.output),
-                         logs.output)
+        self.assertFalse(
+            any('Cleaned up remote' in l for l in logs.output), logs.output
+        )
         self.assertFalse(any('confirmed gone' in l for l in logs.output))
 
     def test_cleanup_binaries_skips_when_terminate_finds_255(self):
@@ -452,33 +473,37 @@ class CleanupTest(CommonTestCase):
         self.ssh.responses[check_cmd] = _done(255, stderr=_NO_ROUTE)
         with self.assertLogs(level='INFO') as logs:
             common.cleanup_binaries(_make_args())
-        self.assertFalse(
-            self.ssh.ran('rm -rf /tmp/chrome* /tmp/chromedriver*'))
+        self.assertFalse(self.ssh.ran('rm -rf /tmp/chrome* /tmp/chromedriver*'))
         self.assertIn(_SKIP_LOG, logs.output)
 
     def test_cleanup_binaries_warns_on_nonzero_rc(self):
         self.ssh.responses['rm -rf /tmp/chrome* /tmp/chromedriver*'] = _done(
-            1, stderr='rm: permission denied')
+            1, stderr='rm: permission denied'
+        )
         with self.assertLogs(level='INFO') as logs:
             common.cleanup_binaries(_make_args())
         self.assertFalse(any('Cleaned up remote' in l for l in logs.output))
         self.assertTrue(
             any(
-                l.startswith('WARNING') and 'rc=1' in l
+                l.startswith('WARNING')
+                and 'rc=1' in l
                 and 'permission denied' in l
-                for l in logs.output), logs.output)
+                for l in logs.output
+            ),
+            logs.output,
+        )
 
     def test_cleanup_binaries_logs_success_on_rc_0(self):
         with self.assertLogs(level='INFO') as logs:
             common.cleanup_binaries(_make_args())
         self.assertIn(
             'INFO:root:Cleaned up remote Chrome/Chromedriver directories.',
-            logs.output)
+            logs.output,
+        )
 
     def test_cleanup_binaries_never_raises(self):
         common.verify_sender_connectivity(_make_args())
-        self.run.side_effect = subprocess.TimeoutExpired(cmd='ssh',
-                                                         timeout=120)
+        self.run.side_effect = subprocess.TimeoutExpired(cmd='ssh', timeout=120)
         with self.assertLogs(level='WARNING'):
             common.cleanup_binaries(_make_args())
 
@@ -493,13 +518,13 @@ class CleanupTest(CommonTestCase):
         self.ssh.responses['rm -f /tmp/*.zip'] = _done(255, stderr=_NO_ROUTE)
         with self.assertLogs(level='INFO') as logs:
             common.teardown_test_environment(None, None, _make_args())
-        self.assertFalse(any('Cleaned up tmp files' in l for l in logs.output),
-                         logs.output)
+        self.assertFalse(
+            any('Cleaned up tmp files' in l for l in logs.output), logs.output
+        )
         self.assertTrue(any('rc=255' in l for l in logs.output))
 
     def test_teardown_never_raises(self):
-        self.run.side_effect = subprocess.TimeoutExpired(cmd='ssh',
-                                                         timeout=120)
+        self.run.side_effect = subprocess.TimeoutExpired(cmd='ssh', timeout=120)
         with self.assertLogs(level='WARNING'):
             common.teardown_test_environment(None, None, _make_args())
 

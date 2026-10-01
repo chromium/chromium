@@ -62,8 +62,10 @@ def GetLZMAExec(src_path):
   if sys.platform == 'win32':
     executable += '.exe'
 
-  return os.path.join(src_path, 'third_party', 'lzma_sdk', 'bin',
-                      'host_platform', executable)
+  return os.path.join(
+    src_path, 'third_party', 'lzma_sdk', 'bin', 'host_platform', executable
+  )
+
 
 def GetCmdLine(command, sz_fn, gcp_7z_fn):
   """Builds the command line for the given archive.
@@ -78,32 +80,33 @@ def GetCmdLine(command, sz_fn, gcp_7z_fn):
     needs to be one of the supported 7zip commands.
   """
   return [
-      sz_fn,  # Path to 7z executable.
-      command,
-
-      # The follow options are equivalent to -mx9 with bcj2 turned on.
-      # Because //third_party/lzma_sdk is only partial copy of the ful sdk
-      # it does not support all forms of compression.  Make sure to use
-      # compression that is compatible.  These same options are used when
-      # building the chrome install compressed files.
-      '-m0=BCJ2',
-      '-m1=LZMA:d27:fb128',
-      '-m2=LZMA:d22:fb128:mf=bt2',
-      '-m3=LZMA:d22:fb128:mf=bt2',
-      '-mb0:1',
-      '-mb0s1:2',
-      '-mb0s2:3',
-
-      # Full path to archive.
-      gcp_7z_fn,
+    sz_fn,  # Path to 7z executable.
+    command,
+    # The follow options are equivalent to -mx9 with bcj2 turned on.
+    # Because //third_party/lzma_sdk is only partial copy of the ful sdk
+    # it does not support all forms of compression.  Make sure to use
+    # compression that is compatible.  These same options are used when
+    # building the chrome install compressed files.
+    '-m0=BCJ2',
+    '-m1=LZMA:d27:fb128',
+    '-m2=LZMA:d22:fb128:mf=bt2',
+    '-m3=LZMA:d22:fb128:mf=bt2',
+    '-mb0:1',
+    '-mb0s1:2',
+    '-mb0s2:3',
+    # Full path to archive.
+    gcp_7z_fn,
   ]
+
 
 def main():
   parser = argparse.ArgumentParser(
-      description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+  )
   parser.add_argument('src_path', help='Path to the source root')
-  parser.add_argument('cp_path',
-                      help='Path to the credential provider directory')
+  parser.add_argument(
+    'cp_path', help='Path to the credential provider directory'
+  )
   parser.add_argument('root_build_path', help='$root_build_dir GN variable')
   parser.add_argument('target_gen_path', help='$target_gen_dir GN variable')
 
@@ -166,17 +169,20 @@ def main():
       subprocess.check_call(d_cmd + ['*'], stdout=output_file)
       subprocess.check_call(u_cmd + ['gaia1_0.dll'], stdout=output_file)
       subprocess.check_call(u_cmd + ['gcp_setup.exe'], stdout=output_file)
-      subprocess.check_call(u_cmd + ['gcp_eventlog_provider.dll'],
-          stdout=output_file)
+      subprocess.check_call(
+        u_cmd + ['gcp_eventlog_provider.dll'], stdout=output_file
+      )
       subprocess.check_call(u_cmd + ['gcpw_extension.exe'], stdout=output_file)
       # Move the executable into a subfolder as there needs to be only one
       # executable in the parent folder.
-      subprocess.check_call(rn_cmd +
-          [
-            'gcpw_extension.exe',
-            os.path.join('extension', 'gcpw_extension.exe')
-          ],
-          stdout=output_file)
+      subprocess.check_call(
+        rn_cmd
+        + [
+          'gcpw_extension.exe',
+          os.path.join('extension', 'gcpw_extension.exe'),
+        ],
+        stdout=output_file,
+      )
   except subprocess.CalledProcessError as e:
     print(e.output)
     with open(gcpw_log_file, "r") as output_file:
@@ -186,9 +192,9 @@ def main():
   # Combine the SFX module with the archive to make a self extracting
   # executable.
   with open(gcp_installer_fn, 'wb') as output:
-    with open (sfx_fn, 'rb') as input:
+    with open(sfx_fn, 'rb') as input:
       shutil.copyfileobj(input, output)
-    with open (gcp_7z_fn, 'rb') as input:
+    with open(gcp_7z_fn, 'rb') as input:
       shutil.copyfileobj(input, output)
 
   return 0

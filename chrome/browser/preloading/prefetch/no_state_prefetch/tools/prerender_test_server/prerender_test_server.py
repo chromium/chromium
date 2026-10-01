@@ -30,7 +30,7 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
     supported_file_to_mime = {
       'index.html': 'text/html',
       'default.css': 'text/css',
-      'prerender.js': 'application/javascript'
+      'prerender.js': 'application/javascript',
     }
     if self.path in supported_file_to_mime:
       file_path = self.path
@@ -49,10 +49,16 @@ class Handler(BaseHTTPServer.BaseHTTPRequestHandler):
     self.send_header('Cache-Control', 'no-cache')
     self.end_headers()
 
+
 def main(argv):
   parser = argparse.ArgumentParser(prog='prerender_test')
-  parser.add_argument('-p', '--port', type=int, default=8080,
-                      help='port to run on (default = %(default)s)')
+  parser.add_argument(
+    '-p',
+    '--port',
+    type=int,
+    default=8080,
+    help='port to run on (default = %(default)s)',
+  )
   args = parser.parse_args(argv)
   server_name = 'localhost'
 
