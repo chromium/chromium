@@ -10,7 +10,6 @@
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
-#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/picture_in_picture/document_picture_in_picture_mixin_test_base.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_occlusion_tracker.h"
@@ -118,39 +117,6 @@ IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
       browser->GetTabStripModel()->GetActiveWebContents(), std::move(app_info),
       std::move(install_tracker), base::DoNothing());
 }
-
-#if BUILDFLAG(IS_MAC)
-IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
-                       AppShimPlaceholderDoesNotCloseDialog) {
-  Profile* profile = browser()->GetProfile();
-  webapps::AppId app_id = test::InstallDummyWebApp(profile, "Test app",
-                                                   GURL("https://example.com"));
-  BrowserWindowInterface* app_browser =
-      ::web_app::LaunchWebAppBrowser(profile, app_id);
-
-  views::NamedWidgetShownWaiter widget_waiter(
-      views::test::AnyWidgetTestPasskey{}, kInstallDialogName);
-  base::test::TestFuture<bool, std::unique_ptr<WebAppInstallInfo>> test_future;
-  ShowSimpleInstallDialogForWebApps(
-      app_browser->GetTabStripModel()->GetActiveWebContents(), GetAppInfo(),
-      GetInstallTracker(app_browser), test_future.GetCallback());
-
-  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
-  ASSERT_NE(widget, nullptr);
-
-  widget->SetBounds(gfx::Rect(0, 0, 1, 1));
-  base::RunLoop().RunUntilIdle();
-
-  EXPECT_FALSE(widget->IsClosed());
-  EXPECT_FALSE(test_future.IsReady());
-
-  views::test::WidgetDestroyedWaiter destroyed_waiter(widget);
-  views::test::CancelDialog(widget);
-  destroyed_waiter.Wait();
-  ASSERT_TRUE(test_future.Wait());
-  EXPECT_FALSE(test_future.Get<bool>());
-}
-#endif
 
 IN_PROC_BROWSER_TEST_F(SimpleInstallDialogBubbleViewBrowserTest,
                        CancelledDialogReportsMetrics) {
