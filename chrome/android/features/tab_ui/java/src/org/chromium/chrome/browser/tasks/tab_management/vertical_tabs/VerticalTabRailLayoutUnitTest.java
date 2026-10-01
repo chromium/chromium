@@ -292,6 +292,67 @@ public class VerticalTabRailLayoutUnitTest {
     }
 
     @Test
+    public void testExpandedForHovering_SearchButtonSpansRailWithLabel() {
+        View searchButton = mRailLayout.findViewById(R.id.tab_search_button);
+        View searchIcon = mRailLayout.findViewById(R.id.tab_search_icon);
+        View searchLabel = mRailLayout.findViewById(R.id.tab_search_label);
+        int buttonWidth = mRailLayout.getHeaderButtonWidthPxForTesting();
+
+        // Hovering: the button spans the rail and shows the label 8dp after the icon.
+        mRailLayout.setCollapseState(RailCollapseState.EXPANDED_FOR_HOVERING);
+        assertEquals(ViewGroup.LayoutParams.MATCH_PARENT, searchButton.getLayoutParams().width);
+        assertEquals(buttonWidth, searchIcon.getLayoutParams().width);
+        assertEquals(View.VISIBLE, searchLabel.getVisibility());
+        assertEquals(
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tabs_tab_search_label_margin_start),
+                ((ViewGroup.MarginLayoutParams) searchLabel.getLayoutParams()).getMarginStart());
+
+        // Collapsed: icon-only button.
+        mRailLayout.setCollapseState(RailCollapseState.COLLAPSED);
+        assertEquals(buttonWidth, searchButton.getLayoutParams().width);
+        assertEquals(buttonWidth, searchIcon.getLayoutParams().width);
+        assertEquals(View.GONE, searchLabel.getVisibility());
+
+        // Expanded: icon-only button.
+        mRailLayout.setCollapseState(RailCollapseState.EXPANDED);
+        assertEquals(buttonWidth, searchButton.getLayoutParams().width);
+        assertEquals(buttonWidth, searchIcon.getLayoutParams().width);
+        assertEquals(View.GONE, searchLabel.getVisibility());
+    }
+
+    @Test
+    public void testExpandedForHovering_SeparatorSpansTabWidth() {
+        ConstraintLayout.LayoutParams params =
+                (ConstraintLayout.LayoutParams)
+                        mRailLayout.getPinnedTabsSeparatorView().getLayoutParams();
+        int separatorWidth =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tabs_pinned_separator_width);
+        int expectedMarginStart =
+                VerticalTabRailLayout.getCollapsedRailCenteringMarginStart(
+                        mActivity, TabVerticalViewBinder.getCollapsedTabItemWidth(mActivity));
+
+        // Hovering: spans the tab row width.
+        mRailLayout.setCollapseState(RailCollapseState.EXPANDED_FOR_HOVERING);
+        assertEquals(ConstraintLayout.LayoutParams.MATCH_CONSTRAINT, params.width);
+        assertEquals(expectedMarginStart, params.getMarginStart());
+
+        // Collapsed: fixed width, centered.
+        mRailLayout.setCollapseState(RailCollapseState.COLLAPSED);
+        assertEquals(separatorWidth, params.width);
+        assertEquals(0, params.getMarginStart());
+
+        // Expanded: fixed width, centered.
+        mRailLayout.setCollapseState(RailCollapseState.EXPANDED_FOR_HOVERING);
+        mRailLayout.setCollapseState(RailCollapseState.EXPANDED);
+        assertEquals(separatorWidth, params.width);
+        assertEquals(0, params.getMarginStart());
+    }
+
+    @Test
     public void testSetDesktopWindowSpacerVisible() {
         View spacer = mRailLayout.findViewById(R.id.desktop_window_spacer);
         mRailLayout.setDesktopWindowSpacerVisible(true);
@@ -681,7 +742,7 @@ public class VerticalTabRailLayoutUnitTest {
                 tabletLayout.getIncognitoChipSizePxForTesting());
 
         ImageView tabletCollapseButton = tabletLayout.findViewById(R.id.collapse_button);
-        ImageView tabletSearchButton = tabletLayout.findViewById(R.id.tab_search_button);
+        ImageView tabletSearchButton = tabletLayout.findViewById(R.id.tab_search_icon);
         assertEquals(
                 R.drawable.vertical_tabs_menu_collapse_24dp,
                 shadowOf(tabletCollapseButton.getDrawable()).getCreatedFromResId());
@@ -714,7 +775,7 @@ public class VerticalTabRailLayoutUnitTest {
                         .getDimensionPixelSize(R.dimen.vertical_tabs_footer_button_height),
                 desktopLayout.getIncognitoChipSizePxForTesting());
         ImageView desktopCollapseButton = desktopLayout.findViewById(R.id.collapse_button);
-        ImageView desktopSearchButton = desktopLayout.findViewById(R.id.tab_search_button);
+        ImageView desktopSearchButton = desktopLayout.findViewById(R.id.tab_search_icon);
         assertEquals(
                 R.drawable.vertical_tabs_menu_collapse,
                 shadowOf(desktopCollapseButton.getDrawable()).getCreatedFromResId());

@@ -74,10 +74,7 @@ class TabVerticalViewBinder {
     static void bindTab(PropertyModel model, VerticalTabItemLayout view, PropertyKey propertyKey) {
         bindTabCommonProperties(model, view, propertyKey);
 
-        if (TabProperties.TITLE == propertyKey) {
-            updateTitle(R.id.tab_title, model, view);
-            updateParentPadding(model, view);
-        } else if (TabProperties.IS_SELECTED == propertyKey
+        if (TabProperties.IS_SELECTED == propertyKey
                 || TabProperties.IS_MULTI_SELECTED == propertyKey
                 || TabProperties.IS_INCOGNITO == propertyKey) {
             updateRegularColors(model, view);
@@ -88,10 +85,6 @@ class TabVerticalViewBinder {
             updateIcons(model, view);
         } else if (TabProperties.TAB_GROUP_ID == propertyKey) {
             updateChildRowPadding(model, view);
-        } else if (TabProperties.RAIL_COLLAPSE_STATE == propertyKey) {
-            updateTitle(R.id.tab_title, model, view);
-            updateParentPadding(model, view);
-            updateIcons(model, view);
         }
     }
 
@@ -109,14 +102,12 @@ class TabVerticalViewBinder {
             PropertyModel model, VerticalTabItemLayout view, @Nullable PropertyKey propertyKey) {
         bindTabCommonProperties(model, view, propertyKey);
 
-        if (TabProperties.TITLE == propertyKey || TabProperties.IS_PINNED == propertyKey) {
+        if (TabProperties.IS_PINNED == propertyKey) {
             updateContentDescription(model, view);
         } else if (TabProperties.IS_SELECTED == propertyKey
                 || TabProperties.IS_MULTI_SELECTED == propertyKey
                 || TabProperties.IS_INCOGNITO == propertyKey) {
             updatePinnedColors(model, view);
-        } else if (TabProperties.RAIL_COLLAPSE_STATE == propertyKey) {
-            updateIcons(model, view);
         }
     }
 
@@ -248,7 +239,10 @@ class TabVerticalViewBinder {
             PropertyModel model, VerticalTabItemLayout view, @Nullable PropertyKey propertyKey) {
         bindCommonProperties(model, view, propertyKey);
 
-        if (TabProperties.FAVICON_FETCHER == propertyKey) {
+        if (TabProperties.TITLE == propertyKey) {
+            updateTitle(R.id.tab_title, model, view);
+            updateParentPadding(model, view);
+        } else if (TabProperties.FAVICON_FETCHER == propertyKey) {
             updateFaviconImage(model, view);
         } else if (TabProperties.IS_LOADING == propertyKey) {
             updateIcons(model, view);
@@ -261,6 +255,9 @@ class TabVerticalViewBinder {
         } else if (TabProperties.RAIL_COLLAPSE_STATE == propertyKey) {
             updateTabItemSize(model, view, ViewGroup.LayoutParams.MATCH_PARENT, getRowHeight(view));
             updateChildRowPadding(model, view);
+            updateTitle(R.id.tab_title, model, view);
+            updateParentPadding(model, view);
+            updateIcons(model, view);
         }
     }
 
@@ -623,7 +620,7 @@ class TabVerticalViewBinder {
         }
     }
 
-    private static int getCollapsedTabItemWidth(Context context) {
+    static int getCollapsedTabItemWidth(Context context) {
         return context.getResources()
                 .getDimensionPixelSize(
                         isTablet(context)
@@ -758,6 +755,11 @@ class TabVerticalViewBinder {
      * icons, while compact rows keep symmetric padding so their centered icon stays centered.
      */
     private static void updateParentPadding(PropertyModel model, ViewGroup view) {
+        if (isPinned(model, view) && shouldShowIconOnly(model, view)) {
+            // Restore the icon-only padding set by VerticalTabItemLayout#configureAsPinnedTab().
+            view.setPadding(0, 0, 0, 0);
+            return;
+        }
         Context context = view.getContext();
         Resources resources = context.getResources();
         updateBackgroundInsets(view);

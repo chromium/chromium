@@ -51,16 +51,37 @@ found in the LICENSE file.
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:visibility="visible" />
-        <ImageButton
+        <!-- Tab search button. -->
+        <LinearLayout
             android:id="@+id/tab_search_button"
             android:layout_width="@dimen/vertical_tabs_header_button_size"
             android:layout_height="@dimen/vertical_tabs_header_button_size"
-            android:src="@drawable/ic_manage_search_20dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
             android:background="@drawable/vertical_tabs_button_background"
             android:contentDescription="@string/accessibility_search_loupe_tooltip_text"
-            android:scaleType="center"
-            android:focusable="true"
-            android:padding="@dimen/vertical_tabs_header_button_padding"/>
+            android:clickable="true"
+            android:focusable="true">
+            <ImageView
+                android:id="@+id/tab_search_icon"
+                android:layout_width="@dimen/vertical_tabs_header_button_size"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_manage_search_20dp"
+                android:scaleType="center"
+                android:importantForAccessibility="no" />
+            <TextView
+                android:id="@+id/tab_search_label"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/vertical_tabs_tab_search_label_margin_start"
+                android:text="@string/vertical_tabs_tab_search"
+                android:singleLine="true"
+                android:ellipsize="end"
+                android:textAppearance="@style/TextAppearance.TextMedium.Primary"
+                android:importantForAccessibility="no"
+                android:visibility="gone" />
+        </LinearLayout>
     </LinearLayout>
 
     <!-- Pinned Tabs Recycler View -->

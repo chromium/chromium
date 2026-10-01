@@ -722,6 +722,9 @@
       <message name="IDS_ACCESSIBILITY_EXPAND_VERTICAL_TABS" desc="Content description for the button to expand the vertical tabs rail.">
         Expand Tabs
       </message>
+      <message name="IDS_VERTICAL_TABS_TAB_SEARCH" desc="Label shown next to the tab search button in the vertical tabs rail while the rail is temporarily expanded because the mouse is hovering over it.">
+        Tab search
+      </message>
       <message name="IDS_TAB_GROUPS_CREATED_AGO_NOW" desc="A subtitle on a row for a tab group. Explains the group was created less than a minute ago.">
         Created just now
       </message>

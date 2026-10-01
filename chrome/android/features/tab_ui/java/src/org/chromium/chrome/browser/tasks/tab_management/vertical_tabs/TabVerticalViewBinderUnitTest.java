@@ -2815,17 +2815,37 @@ public class TabVerticalViewBinderUnitTest {
         }
 
         // While the rail is expanded for hovering, pinned rows are not compact: the favicon is
-        // start-aligned. They still never show a title or close button.
+        // start-aligned and the title is shown. They still never show a close button.
         mModel.set(TabProperties.FAVICON_FETCHER, mFaviconFetcher);
         mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.EXPANDED_FOR_HOVERING);
         TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.TITLE);
         TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.RAIL_COLLAPSE_STATE);
-        assertEquals(View.GONE, titleView.getVisibility());
+        assertEquals(View.VISIBLE, titleView.getVisibility());
+        assertEquals("Pinned Tab Title", titleView.getText().toString());
         assertEquals(View.GONE, actionButton.getVisibility());
+        assertEquals(0, pinnedView.getPaddingStart());
+        assertEquals(
+                pinnedView
+                        .getResources()
+                        .getDimensionPixelSize(R.dimen.vertical_tab_item_padding_horizontal),
+                pinnedView.getPaddingEnd());
         ConstraintLayout.LayoutParams faviconParams =
                 (ConstraintLayout.LayoutParams) faviconContainer.getLayoutParams();
         assertEquals(ConstraintLayout.LayoutParams.PARENT_ID, faviconParams.startToStart);
         assertEquals(ConstraintLayout.LayoutParams.UNSET, faviconParams.endToEnd);
+
+        // Leaving the hover state restores the icon-only pinned row.
+        mModel.set(TabProperties.RAIL_COLLAPSE_STATE, RailCollapseState.EXPANDED);
+        TabVerticalViewBinder.bindPinnedTab(mModel, pinnedView, TabProperties.RAIL_COLLAPSE_STATE);
+        assertEquals(View.GONE, titleView.getVisibility());
+        assertEquals(View.GONE, actionButton.getVisibility());
+        assertEquals(0, pinnedView.getPaddingStart());
+        assertEquals(0, pinnedView.getPaddingTop());
+        assertEquals(0, pinnedView.getPaddingEnd());
+        assertEquals(0, pinnedView.getPaddingBottom());
+        faviconParams = (ConstraintLayout.LayoutParams) faviconContainer.getLayoutParams();
+        assertEquals(ConstraintLayout.LayoutParams.PARENT_ID, faviconParams.startToStart);
+        assertEquals(ConstraintLayout.LayoutParams.PARENT_ID, faviconParams.endToEnd);
     }
 
     @Test

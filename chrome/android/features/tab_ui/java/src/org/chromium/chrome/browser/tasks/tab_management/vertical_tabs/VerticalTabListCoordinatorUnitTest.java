@@ -1264,7 +1264,7 @@ public class VerticalTabListCoordinatorUnitTest {
     @EnableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP)
     public void testTabSearchButtonClick_TabSearchForALEnabled() {
         createCoordinator();
-        ImageButton tabSearchButton = mCoordinator.getView().findViewById(R.id.tab_search_button);
+        View tabSearchButton = mCoordinator.getView().findViewById(R.id.tab_search_button);
         assertNotNull(tabSearchButton);
         UserActionTester userActionTester = new UserActionTester();
         tabSearchButton.performClick();
@@ -1278,7 +1278,7 @@ public class VerticalTabListCoordinatorUnitTest {
     @DisableFeatures(ChromeFeatureList.TAB_SEARCH_FOR_DESKTOP)
     public void testTabSearchButtonClick_TabSearchForALDisabled() {
         createCoordinator();
-        ImageButton tabSearchButton = mCoordinator.getView().findViewById(R.id.tab_search_button);
+        View tabSearchButton = mCoordinator.getView().findViewById(R.id.tab_search_button);
         assertNotNull(tabSearchButton);
         UserActionTester userActionTester = new UserActionTester();
         tabSearchButton.performClick();
