@@ -502,6 +502,18 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             BottomControlsLayer layer = mLayers.get(type);
             if (layer == null || !mLayerVisibilities.get(type)) continue;
 
+            boolean shouldScrollOff = shouldLayerScrollOff(layer, hasNeverScrollOffLayer);
+
+            int layerHeight = layer.getHeight();
+
+            // Accumulate the layer's height to ensure the height does not change during
+            // layout update. This is only used for assertion.
+            height += layerHeight;
+            if (!shouldScrollOff) {
+                totalMinHeight += layerHeight;
+                hasNeverScrollOffLayer = true;
+            }
+
             int layerYOffset;
 
             // The position of a layer is determined by the sum of its height and renderer's offset.
@@ -521,23 +533,13 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             if (!offsetsAppliedByBrowser && !isAnimating) {
                 layerYOffset = mLayerRestingOffsets.get(type);
             } else {
-                boolean shouldScrollOff = shouldLayerScrollOff(layer, hasNeverScrollOffLayer);
-
-                // Accumulate the layer's height to ensure the height does not change during
-                // layout update. This is only used for assertion.
-                height += layer.getHeight();
-                totalMinHeight += shouldScrollOff ? 0 : layer.getHeight();
-                if (!shouldScrollOff) {
-                    hasNeverScrollOffLayer = true;
-                }
-
                 if (shouldScrollOff) {
                     // [Scrollable layers]
                     // Increase the layerBottomOffset so it represents the bottomOffset from the
                     // bottom edge of the layer. The bottom edge of this layer can sit lower in the
                     // controls than the next layer's top edge if the next layer does not scroll
                     // off, so set the minValue from the minHeightBottomOffset.
-                    layerBottomOffset += layer.getHeight();
+                    layerBottomOffset += layerHeight;
                     layerYOffset = layerBottomOffset - mTotalHeight;
 
                     layerBottomOffset = Math.min(layerBottomOffset, minHeightBottomOffset);
@@ -549,22 +551,24 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
                     // with animation), reset it to the total height, so the next layer's
                     // bottomOffset will start counting from the bottom of the bottom controls, and
                     // layer's yOffset does not exceeds the layer's height.
-                    minHeightBottomOffset += layer.getHeight();
+                    minHeightBottomOffset += layerHeight;
                     layerYOffset = minHeightBottomOffset - mTotalHeight;
 
                     minHeightBottomOffset = Math.min(minHeightBottomOffset, mTotalHeight);
                 }
-
-                logIfHeightMismatch(
-                        "Heights before #repositionLayers",
-                        mTotalHeight,
-                        mTotalMinHeight,
-                        "First pass in #repositionLayers",
-                        height,
-                        totalMinHeight);
             }
 
             mYOffsetOfLayers.put(type, layerYOffset);
+        }
+
+        if (mTotalHeight != INVALID_HEIGHT) {
+            logIfHeightMismatch(
+                    "Heights before #repositionLayers",
+                    mTotalHeight,
+                    mTotalMinHeight,
+                    "First pass in #repositionLayers",
+                    height,
+                    totalMinHeight);
         }
 
         // STEP 2: If animated, compare and fix the yOffset with the previous mLayerOffsets if

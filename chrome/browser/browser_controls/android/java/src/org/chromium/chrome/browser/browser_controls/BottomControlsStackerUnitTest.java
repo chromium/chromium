@@ -32,8 +32,11 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLog;
+import org.robolectric.shadows.ShadowLog.LogItem;
 import org.robolectric.shadows.ShadowLooper;
 
+import org.chromium.base.Log;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -46,9 +49,11 @@ import org.chromium.ui.OffsetTagConstraints;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 
+import java.util.List;
+
 /** Unit tests for the BrowserStateBrowserControlsVisibilityDelegate. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(shadows = {ShadowLooper.class})
+@Config(shadows = {ShadowLooper.class, ShadowLog.class})
 public class BottomControlsStackerUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     private static final @LayerType int ZERO_HEIGHT_TOP_LAYER = LayerType.PROGRESS_BAR;
@@ -2243,5 +2248,95 @@ public class BottomControlsStackerUnitTest {
         // onBrowserControlsOffsetUpdate again.
         onBottomControlsOffsetChanged(0, 0, false);
         verify(layer, times(2)).onBrowserControlsOffsetUpdate(anyInt());
+    }
+
+    @Test
+    public void testRepositionLayers_doesNotLogMismatchWhenLayersConsistent() {
+        TestLayer bottomBar =
+                new TestLayer(
+                        LayerType.BOTTOM_APP_BAR,
+                        180,
+                        LayerScrollBehavior.NEVER_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        TestLayer chin =
+                new TestLayer(
+                        LayerType.BOTTOM_CHIN,
+                        72,
+                        LayerScrollBehavior.NEVER_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+
+        mBottomControlsStacker.addLayer(bottomBar);
+        mBottomControlsStacker.addLayer(chin);
+        mBottomControlsStacker.requestLayerUpdate(false);
+
+        ShadowLog.reset();
+        // Reposition with offsets applied by browser.
+        onBottomControlsOffsetChanged(0, 252, false, true);
+
+        List<LogItem> logs = ShadowLog.getLogsForTag("cr_BotControlsStacker");
+        assertTrue(
+                "No height mismatch warning should be logged when layers are consistent.",
+                logs.stream().noneMatch(item -> item.msg.contains("Height mismatch observed")));
+    }
+
+    @Test
+    public void testRepositionLayers_logsMismatchWhenLayerHeightChangesWithoutExplicitRequest() {
+        TestLayer bottomBar =
+                new TestLayer(
+                        LayerType.BOTTOM_APP_BAR,
+                        180,
+                        LayerScrollBehavior.NEVER_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        TestLayer chin =
+                new TestLayer(
+                        LayerType.BOTTOM_CHIN,
+                        72,
+                        LayerScrollBehavior.NEVER_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+
+        mBottomControlsStacker.addLayer(bottomBar);
+        mBottomControlsStacker.addLayer(chin);
+        mBottomControlsStacker.requestLayerUpdate(false);
+
+        // Chin height changes without requestLayerUpdate (e.g. 72 -> 0).
+        chin.setHeight(0);
+
+        ShadowLog.reset();
+        onBottomControlsOffsetChanged(0, 252, false, true);
+
+        List<LogItem> mismatchLogs =
+                ShadowLog.getLogsForTag("cr_BotControlsStacker").stream()
+                        .filter(item -> item.msg.contains("Height mismatch observed"))
+                        .toList();
+        assertEquals(
+                "Exactly one height mismatch warning should be logged with final totals.",
+                1,
+                mismatchLogs.size());
+        LogItem log = mismatchLogs.get(0);
+        assertEquals(Log.WARN, log.type);
+        assertTrue(log.msg.contains("expectedHeight= 252"));
+        assertTrue(log.msg.contains("expectedMinHeight= 252"));
+        assertTrue(log.msg.contains("actualHeight = 180"));
+        assertTrue(log.msg.contains("actualMinHeight= 180"));
+    }
+
+    @Test
+    public void testRepositionLayers_beforeFirstRequestLayerUpdate_doesNotLogMismatch() {
+        TestLayer bottomBar =
+                new TestLayer(
+                        LayerType.BOTTOM_APP_BAR,
+                        180,
+                        LayerScrollBehavior.NEVER_SCROLL_OFF,
+                        LayerVisibility.VISIBLE);
+        mBottomControlsStacker.addLayer(bottomBar);
+
+        ShadowLog.reset();
+        // Reposition before any requestLayerUpdate has initialized mTotalHeight.
+        onBottomControlsOffsetChanged(0, 0, false, true);
+
+        List<LogItem> logs = ShadowLog.getLogsForTag("cr_BotControlsStacker");
+        assertTrue(
+                "No height mismatch warning should be logged before first requestLayerUpdate.",
+                logs.stream().noneMatch(item -> item.msg.contains("Height mismatch observed")));
     }
 }
