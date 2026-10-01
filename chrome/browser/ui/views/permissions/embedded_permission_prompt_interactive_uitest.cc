@@ -49,6 +49,8 @@
 #include "content/public/test/test_devtools_protocol_client.h"
 #include "media/base/media_switches.h"
 #include "net/dns/mock_host_resolver.h"
+#include "services/device/public/cpp/test/scoped_geolocation_overrider.h"
+#include "services/device/public/mojom/geoposition.mojom.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -263,14 +265,31 @@ class EmbeddedPermissionPromptInteractiveTest
     }));
   }
 
+  static PermissionOption ToPermissionOption(ContentSetting setting) {
+    switch (setting) {
+      case CONTENT_SETTING_ALLOW:
+        return PermissionOption::kAllowed;
+      case CONTENT_SETTING_BLOCK:
+        return PermissionOption::kDenied;
+      default:
+        return PermissionOption::kAsk;
+    }
+  }
+
   bool DoContentSettingsHaveValue(
       const std::vector<ContentSettingsType>& content_settings_types,
       ContentSetting expected_value) {
     HostContentSettingsMap* hcsm =
         HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
     for (const auto& type : content_settings_types) {
-      if (expected_value !=
-          hcsm->GetContentSetting(GetOrigin(), GetOrigin(), type)) {
+      if (type == ContentSettingsType::GEOLOCATION_WITH_OPTIONS) {
+        auto setting = std::get<GeolocationSetting>(
+            hcsm->GetPermissionSetting(GetOrigin(), GetOrigin(), type));
+        if (setting.approximate != ToPermissionOption(expected_value)) {
+          return false;
+        }
+      } else if (expected_value !=
+                 hcsm->GetContentSetting(GetOrigin(), GetOrigin(), type)) {
         return false;
       }
     }
@@ -281,8 +300,14 @@ class EmbeddedPermissionPromptInteractiveTest
   void SetContentSetting(ContentSettingsType type, ContentSetting setting) {
     HostContentSettingsMap* hcsm =
         HostContentSettingsMapFactory::GetForProfile(browser()->GetProfile());
-    hcsm->SetContentSettingDefaultScope(GetOrigin(), GetOrigin(), type,
-                                        setting);
+    if (type == ContentSettingsType::GEOLOCATION_WITH_OPTIONS) {
+      PermissionOption option = ToPermissionOption(setting);
+      hcsm->SetPermissionSettingDefaultScope(
+          GetOrigin(), GetOrigin(), type, GeolocationSetting{option, option});
+    } else {
+      hcsm->SetContentSettingDefaultScope(GetOrigin(), GetOrigin(), type,
+                                          setting);
+    }
   }
 
   // Tests
@@ -2226,12 +2251,180 @@ IN_PROC_BROWSER_TEST_P(MediaCaptureElementInteractiveUiTest,
       u"You previously didn't allow microphone for this site", "audio");
 }
 
+class GeolocationElementInteractiveUiTest
+    : public EmbeddedPermissionPromptInteractiveTest {
+ public:
+  void SetUpOnMainThread() override {
+    EmbeddedPermissionPromptInteractiveTest::SetUpOnMainThread();
+    geolocation_overrider_ =
+        std::make_unique<device::ScopedGeolocationOverrider>(
+            device::mojom::GeopositionResult::NewPosition(
+                device::mojom::Geoposition::New(
+                    /*latitude=*/37.7749,
+                    /*longitude=*/-122.4194,
+                    /*altitude=*/0.0,
+                    /*accuracy=*/100.0,
+                    /*altitude_accuracy=*/5.0,
+                    /*heading=*/0.0,
+                    /*speed=*/0.0,
+                    /*timestamp=*/base::Time::Now(),
+                    /*is_precise=*/true)));
+  }
+
+  auto WaitForElementSelector(const std::string& css_selector) {
+    StateChange ready;
+    ready.type = StateChange::Type::kExists;
+    ready.where = DeepQuery{css_selector};
+    ready.event = kDoneVisibleEvent;
+    return WaitForStateChange(kWebContentsElementId, ready);
+  }
+
+  auto ResetGeolocationElementState() {
+    return ExecuteJs(kWebContentsElementId,
+                     "() => { resetGeolocationElementState(); }");
+  }
+
+ protected:
+  std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_overrider_;
+};
+
+IN_PROC_BROWSER_TEST_P(GeolocationElementInteractiveUiTest,
+                       GeolocationElementAskAllowAndPreviouslyDeniedCuj) {
+  const ContentSettingsType geo_type =
+      permissions::PermissionUtil::GetGeolocationType();
+  std::vector<std::u16string> expected_titles = {
+      u"a.test:" + base::UTF8ToUTF16(GetOrigin().GetPort()) + u" wants to",
+      u"You previously didn't allow location for this site"};
+  std::vector<std::u16string> expected_labels1 = {u"Know your location"};
+  constexpr char kLocationDeliveredSelector[] =
+      "#geolocation[data-last-event='location'][data-lat='37.7749']"
+      "[data-lng='-122.4194'][data-accuracy='100'][data-error-code='']";
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+
+      // 1. Click <geolocation> when ASK -> Secondary UI AskView appears ->
+      // Allow grants permission and delivers position coordinates via
+      // onlocation.
+      ClickOnPEPCElement("geolocation"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+      CheckLabel(EmbeddedPermissionPromptBaseView::kTitleViewId,
+                 expected_titles, /*expected_label_index=*/0),
+      CheckLabel(EmbeddedPermissionPromptBaseView::kLabelViewId1,
+                 expected_labels1, /*expected_label_index=*/0),
+      PushPEPCPromptButton(EmbeddedPermissionPromptAskView::kAllowId),
+      CheckContentSettingsValue({geo_type}, CONTENT_SETTING_ALLOW),
+      WaitForElementSelector(kLocationDeliveredSelector),
+
+      // 2. Click <geolocation> again while already ALLOW -> skips Secondary UI
+      // and directly delivers position via onlocation.
+      ResetGeolocationElementState(), ClickOnPEPCElement("geolocation"),
+      WaitForElementSelector(kLocationDeliveredSelector),
+      EnsureNotPresent(EmbeddedPermissionPromptBaseView::kMainViewId),
+
+      // 3. Set permission to BLOCK -> click <geolocation> -> Secondary UI
+      // PreviouslyDeniedView appears -> AllowThisTime grants permission and
+      // delivers position via onlocation.
+      ResetGeolocationElementState(), Do([this, geo_type]() {
+        SetContentSetting(geo_type, CONTENT_SETTING_BLOCK);
+      }),
+      ClickOnPEPCElement("geolocation"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+      CheckLabel(EmbeddedPermissionPromptBaseView::kTitleViewId,
+                 expected_titles, /*expected_label_index=*/1),
+      PushPEPCPromptButton(
+          EmbeddedPermissionPromptPreviouslyDeniedView::kAllowThisTimeId),
+      CheckContentSettingsValue({geo_type}, CONTENT_SETTING_ALLOW),
+      WaitForElementSelector(kLocationDeliveredSelector));
+}
+
+IN_PROC_BROWSER_TEST_P(
+    GeolocationElementInteractiveUiTest,
+    GeolocationElementAllowThisTimePreciseAccuracyAndWatchCuj) {
+  const ContentSettingsType geo_type =
+      permissions::PermissionUtil::GetGeolocationType();
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      ExecuteJs(kWebContentsElementId, R"(
+        () => {
+          const el = document.getElementById('geolocation');
+          el.setAttribute('accuracymode', 'precise');
+          el.setAttribute('watch', '');
+        }
+      )"),
+
+      // 1. Click <geolocation accuracymode="precise" watch> when ASK ->
+      // Secondary UI AskView appears -> AllowThisTime delivers initial
+      // position.
+      ClickOnPEPCElement("geolocation"),
+      InAnyContext(WaitForShow(EmbeddedPermissionPromptBaseView::kMainViewId)),
+      PushPEPCPromptButton(EmbeddedPermissionPromptAskView::kAllowThisTimeId),
+      CheckContentSettingsValue({geo_type}, CONTENT_SETTING_ALLOW),
+      WaitForElementSelector(
+          "#geolocation[data-last-event='location'][data-lat='37.7749']"
+          "[data-lng='-122.4194'][data-accuracy='100'][data-location-count='1'"
+          "]"),
+
+      // 2. Updating the provider location while watch is active automatically
+      // fires onlocation with the new coordinates without any click or prompt.
+      Do([this]() { geolocation_overrider_->UpdateLocation(48.8566, 2.3522); }),
+      WaitForElementSelector(
+          "#geolocation[data-last-event='location'][data-lat='48.8566']"
+          "[data-lng='2.3522'][data-location-count='2']"),
+      EnsureNotPresent(EmbeddedPermissionPromptBaseView::kMainViewId));
+}
+
+IN_PROC_BROWSER_TEST_P(GeolocationElementInteractiveUiTest,
+                       GeolocationElementAutolocateWhenGrantedAndErrorCuj) {
+  const ContentSettingsType geo_type =
+      permissions::PermissionUtil::GetGeolocationType();
+
+  RunTestSequence(
+      InstrumentTab(kWebContentsElementId),
+      NavigateWebContents(kWebContentsElementId, GetURL()),
+      Do([this, geo_type]() {
+        SetContentSetting(geo_type, CONTENT_SETTING_ALLOW);
+      }),
+
+      // 1. Setting autolocate when permission is already granted automatically
+      // delivers position without clicking <geolocation> or showing Secondary
+      // UI.
+      ExecuteJs(kWebContentsElementId, R"(
+        () => {
+          document.getElementById('geolocation').setAttribute('autolocate', '');
+        }
+      )"),
+      WaitForElementSelector(
+          "#geolocation[data-last-event='location'][data-lat='37.7749']"
+          "[data-lng='-122.4194'][data-error-code='']"),
+      EnsureNotPresent(EmbeddedPermissionPromptBaseView::kMainViewId),
+
+      // 2. When the geolocation provider reports an error, clicking
+      // <geolocation> populates element.error and fires onlocation.
+      ResetGeolocationElementState(), Do([this]() {
+        geolocation_overrider_->UpdateLocation(
+            device::mojom::GeopositionResult::NewError(
+                device::mojom::GeopositionError::New(
+                    device::mojom::GeopositionErrorCode::kPositionUnavailable,
+                    "Position unavailable", "")));
+      }),
+      ClickOnPEPCElement("geolocation"),
+      WaitForElementSelector(
+          "#geolocation[data-last-event='location'][data-error-code='2']"));
+}
+
 // Setting up to run all tests with two screen scale factors.
 INSTANTIATE_TEST_SUITE_P(,
                          EmbeddedPermissionPromptInteractiveTest,
                          testing::Values(1.0, 2.0));
 INSTANTIATE_TEST_SUITE_P(,
                          MediaCaptureElementInteractiveUiTest,
+                         testing::Values(1.0));
+INSTANTIATE_TEST_SUITE_P(,
+                         GeolocationElementInteractiveUiTest,
                          testing::Values(1.0));
 INSTANTIATE_TEST_SUITE_P(,
                          EmbeddedPermissionPromptPolicyInteractiveTest,

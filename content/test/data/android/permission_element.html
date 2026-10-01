@@ -38,6 +38,54 @@
       });
     }
 
+    let geolocationResolver = null;
+    const geoEl = document.getElementById('geolocation');
+    geoEl.addEventListener('location', () => {
+      const p = geoEl.position;
+      const e = geoEl.error;
+      const count = Number(geoEl.dataset.locationCount || 0) + 1;
+      geoEl.dataset.locationCount = String(count);
+      const summary = p
+          ? `location:lat=${p.coords.latitude},lng=${p.coords.longitude},hasAcc=${p.coords.accuracy > 0},err=${Boolean(e)}`
+          : `error:code=${e ? e.code : 0}`;
+      geoEl.dataset.locationSummary = summary;
+      if (geolocationResolver) {
+        const resolve = geolocationResolver;
+        geolocationResolver = null;
+        resolve(summary);
+      }
+    });
+
+    function waitForGeolocationResult() {
+      if (geoEl.dataset.locationSummary) {
+        domAutomationController.send(geoEl.dataset.locationSummary);
+      } else {
+        geolocationResolver = (summary) => {
+          domAutomationController.send(summary);
+        };
+      }
+    }
+
+    function resetGeolocationResult() {
+      delete geoEl.dataset.locationSummary;
+      geolocationResolver = null;
+      domAutomationController.send('reset');
+    }
+
+    function waitForGeolocationWatchCount(minCount) {
+      const check = () => {
+        const count = Number(geoEl.dataset.locationCount || 0);
+        if (count >= minCount && geoEl.position) {
+          const p = geoEl.position;
+          domAutomationController.send(
+              `watch:lat=${p.coords.latitude},lng=${p.coords.longitude},acc=${p.coords.accuracy},err=${Boolean(geoEl.error)}`);
+        } else {
+          window.setTimeout(check, 50);
+        }
+      };
+      check();
+    }
+
     const mediaResolvers = {};
 
     function recordMediaResult(el, summary) {

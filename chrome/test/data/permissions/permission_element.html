@@ -24,6 +24,27 @@
       el.setConstraints({video: {}, audio: {}});
     });
 
+    const geoEl = document.getElementById('geolocation');
+    geoEl.addEventListener('location', () => {
+      geoEl.dataset.lastEvent = 'location';
+      geoEl.dataset.locationCount =
+          String(Number(geoEl.dataset.locationCount || 0) + 1);
+      if (geoEl.position) {
+        geoEl.dataset.lat = String(geoEl.position.coords.latitude);
+        geoEl.dataset.lng = String(geoEl.position.coords.longitude);
+        geoEl.dataset.accuracy = String(geoEl.position.coords.accuracy);
+      }
+      geoEl.dataset.errorCode = geoEl.error ? String(geoEl.error.code) : '';
+    });
+
+    function resetGeolocationElementState() {
+      delete geoEl.dataset.lastEvent;
+      delete geoEl.dataset.lat;
+      delete geoEl.dataset.lng;
+      delete geoEl.dataset.accuracy;
+      delete geoEl.dataset.errorCode;
+    }
+
     document.getElementById('parent').addEventListener('promptaction', (event) => {
       console.log(event.target.id + '-promptaction');
     });
