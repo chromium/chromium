@@ -272,6 +272,9 @@ scoped_refptr<StaticBitmapImage> CanvasRenderingContext::GetElementImage(
           dest_size, GetN32FormatForCanvas(), kPremul_SkAlphaType,
           gfx::ColorSpace::CreateSRGB(), gfx::HDRMetadata(), wrapper,
           gpu::SHARED_IMAGE_USAGE_RASTER_WRITE | usage);
+      if (!resource_provider) {
+        return nullptr;
+      }
 
       // GetOrCreateImageProvider() to make sure one is created prior to the
       // call to SetAnimatedImageFrameIndexMaps().
