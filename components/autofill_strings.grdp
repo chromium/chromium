@@ -435,8 +435,11 @@
   <message name="IDS_AUTOFILL_GMAIL_OTP_FILLING_TOGGLE_TITLE" desc="Title for the toggle that enables autofilling verification codes from Gmail.">
     Autofill verification codes from Gmail
   </message>
+  <message name="IDS_AUTOFILL_GMAIL_OTP_OPT_IN_LEARN_MORE_A11Y_NAME" is_accessibility_with_no_ui="true" desc="Accessible label for the link to learn more about the Gmail OTP filling feature, providing context for screen reader users.">
+    Learn more about Autofill verification codes from Gmail
+  </message>
   <message name="IDS_AUTOFILL_GMAIL_OTP_FILLING_TOGGLE_DESCRIPTION" desc="Description for the toggle that enables autofilling verification codes from Gmail.">
-    Autofill verification codes sites use to improve your security. Chrome can get these codes from your Gmail. <ph name="BEGIN_LINK">&lt;a href="$1" tabindex="0" aria-description="$2" target="_blank"&gt;</ph>Learn more about this feature<ph name="LINK_END">&lt;/a&gt;</ph>
+    Autofill verification codes sites use to improve your security. Chrome can get these codes from your Gmail. <ph name="BEGIN_LINK">&lt;a href="$1" tabindex="0" aria-description="$2" aria-label="$3" target="_blank"&gt;</ph>Learn more about this feature<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_AUTOFILL_GMAIL_OTP_REQUIRED_TITLE" desc="Title of the dialog informing the user that smart features must be turned on in Gmail to use autofill for verification codes from Gmail.">
     To use this feature, first turn on smart features in Gmail

@@ -1092,6 +1092,28 @@ suite('ContactInfoPageUiTest', function() {
     assertEquals('https://support.google.com/test-otp', url);
   });
 
+  test('OtpFillingLearnMoreLinkAriaAttributes', async function() {
+    loadTimeData.overrideValues({autofillGmailOtpFillingEnabled: true});
+    const {page, toggle} = await createContactInfoPageForGmailOtpFilling();
+
+    const toggleLink = toggle.shadowRoot!.querySelector('a');
+    assertTrue(!!toggleLink);
+    assertEquals(
+        loadTimeData.getString('gmailOtpFillingLearnMoreA11yLabel'),
+        toggleLink.ariaLabel);
+    assertEquals(
+        loadTimeData.getString('opensInNewTab'), toggleLink.ariaDescription);
+
+    const loadingLink =
+        page.$.otpFillingLoadingSubLabelWithLink.querySelector('a');
+    assertTrue(!!loadingLink);
+    assertEquals(
+        loadTimeData.getString('gmailOtpFillingLearnMoreA11yLabel'),
+        loadingLink.ariaLabel);
+    assertEquals(
+        loadTimeData.getString('opensInNewTab'), loadingLink.ariaDescription);
+  });
+
   test('OtpFillingLoadingSpinnerMinimumDuration', async function() {
     loadTimeData.overrideValues({autofillGmailOtpFillingEnabled: true});
     const autofillManager = new TestAutofillManager();
@@ -2338,22 +2360,21 @@ suite('ContactInfoPageAddressTests', function() {
   });
 
   test(
-      'verifyAddressRowMenuTitleEscapesHtmlInAddressSummary',
-      async function() {
-    const address = createAddressEntry();
-    address.metadata!.summaryLabel = 'John <please>';
-    address.metadata!.summarySublabel = ' <door>';
-    const page = await createContactInfoPage([address], {});
-    const addressList = page.$.addressList;
-    const row = addressList.children[0];
-    assertTrue(!!row);
-    const menuButton = row.querySelector<HTMLElement>('.address-menu');
-    assertTrue(!!menuButton);
-    assertEquals(
-        loadTimeData.getStringF(
-            'moreActionsForAddress', 'John <please> <door>'),
-        menuButton.title);
-  });
+      'verifyAddressRowMenuTitleEscapesHtmlInAddressSummary', async function() {
+        const address = createAddressEntry();
+        address.metadata!.summaryLabel = 'John <please>';
+        address.metadata!.summarySublabel = ' <door>';
+        const page = await createContactInfoPage([address], {});
+        const addressList = page.$.addressList;
+        const row = addressList.children[0];
+        assertTrue(!!row);
+        const menuButton = row.querySelector<HTMLElement>('.address-menu');
+        assertTrue(!!menuButton);
+        assertEquals(
+            loadTimeData.getStringF(
+                'moreActionsForAddress', 'John <please> <door>'),
+            menuButton.title);
+      });
 
   test('verifyAccountHomeAddressEdit', async function() {
     const openWindowProxy = new TestOpenWindowProxy();
