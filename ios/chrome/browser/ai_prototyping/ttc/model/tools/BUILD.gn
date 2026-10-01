@@ -16,6 +16,7 @@ source_set("tools") {
   ]
   deps = [
     "//base",
+    "//components/actor/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/sessions:session_id",
     "//ios/chrome/browser/intelligence/actor/model",

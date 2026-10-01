@@ -16,6 +16,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/sequence_checker.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/actor/core/task_source_info.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/sessions/core/session_id.h"
@@ -218,8 +219,11 @@ void InjectDataIntoAction(optimization_guide::proto::Action& action,
     return taskID;
   }
 
-  taskID = actorService->CreateTask(base::SysNSStringToUTF8(title),
-                                    /*allow_incognito_web_states=*/false);
+  taskID = actorService->CreateTask(
+      base::SysNSStringToUTF8(title),
+      actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kTtc,
+                            /*id=*/std::nullopt),
+      /*allow_incognito_web_states=*/false);
   actorService->AddControlledWebState(taskID, activeWebState);
   _taskToWebStateIDMap[taskID] = activeWebState->GetUniqueIdentifier();
   return taskID;

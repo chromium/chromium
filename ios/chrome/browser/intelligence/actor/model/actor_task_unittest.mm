@@ -11,6 +11,7 @@
 #import "base/values.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "components/actor/core/safety_list_manager.h"
+#import "components/actor/core/task_source_info.h"
 #import "components/origin_gating/core/origin_gating_checker.h"
 #import "components/origin_gating/core/origin_gating_configuration.h"
 #import "components/origin_gating/core/origin_gating_registration.h"
@@ -207,6 +208,11 @@ namespace actor {
 
 namespace {
 
+// Returns the provenance attributed to tasks created by these tests.
+TaskSourceInfo TestSource() {
+  return TaskSourceInfo(TaskSourceInfo::Client::kTest, /*id=*/std::nullopt);
+}
+
 // Returns all raw log entries in the journal for testing.
 std::vector<mojom::JournalEntryPtr> GetLogsForTesting(
     AggregatedJournal* journal) {
@@ -265,7 +271,7 @@ class ActorTaskTest : public PlatformTest {
     tool_factory_ = std::make_unique<ActorToolFactory>(profile_.get());
 
     task_ = std::make_unique<ActorTask>(
-        ActorTaskId(1), "Test Task",
+        ActorTaskId(1), "Test Task", TestSource(),
         /*allow_incognito_web_states=*/false, journal_.get(),
         tool_factory_.get(), BrowserListFactory::GetForProfile(profile_.get()));
   }
@@ -954,7 +960,7 @@ TEST_F(ActorTaskTest, SetKeepRenderProcessAliveOnControlledWebStates) {
   // Verify that destroying an active task also resets keep-alive.
   auto web_state3 = std::make_unique<TestKeepAliveWebState>();
   auto scoped_task = std::make_unique<ActorTask>(
-      ActorTaskId(42), "Scoped Task",
+      ActorTaskId(42), "Scoped Task", TestSource(),
       /*allow_incognito_web_states=*/false, journal_.get(), tool_factory_.get(),
       BrowserListFactory::GetForProfile(profile_.get()));
   scoped_task->AddControlledWebState(web_state3.get());
@@ -1137,7 +1143,7 @@ TEST_F(ActorTaskBackgroundingTest, DestructorFinalizesBackgroundTask) {
       CreateBackgroundTaskContext();
 
   auto task = std::make_unique<ActorTask>(
-      ActorTaskId(1), "Test Task",
+      ActorTaskId(1), "Test Task", TestSource(),
       /*allow_incognito_web_states=*/false, journal_.get(), tool_factory_.get(),
       BrowserListFactory::GetForProfile(profile_.get()));
   task->SetBackgroundTaskContext(context);
@@ -1479,7 +1485,7 @@ TEST_F(ActorTaskTest,
                                   mock_rules_json);
 
   auto task = std::make_unique<ActorTask>(
-      ActorTaskId(1), "Test Task",
+      ActorTaskId(1), "Test Task", TestSource(),
       /*allow_incognito_web_states=*/false, journal_.get(), tool_factory_.get(),
       BrowserListFactory::GetForProfile(profile_.get()));
 

@@ -19,6 +19,7 @@
 #import "base/test/test_future.h"
 #import "base/test/values_test_util.h"
 #import "base/types/expected.h"
+#import "components/actor/core/task_source_info.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -130,6 +131,10 @@ ProceduralBlock NoopExpirationHandler() {
   };
 }
 
+// Returns the provenance attributed to tasks created by these tests.
+TaskSourceInfo TestSource() {
+  return TaskSourceInfo(TaskSourceInfo::Client::kTest, /*id=*/std::nullopt);
+}
 class ObservingFakeWebState : public web::FakeWebState {
  public:
   void AddObserver(web::WebStateObserver* observer) override {
@@ -157,6 +162,7 @@ class MockActorTask : public ActorTask {
                 bool* stop_called)
       : ActorTask(task_id,
                   title,
+                  TestSource(),
                   allow_incognito_web_states,
                   journal,
                   tool_factory,
@@ -202,9 +208,11 @@ class ActorServiceTest : public PlatformTest {
   }
 
  protected:
+  // Creates a non-incognito task attributed to `TestSource()`.
   ActorTaskId CreateTask(ActorService* service,
                          const std::string& title = "Test Task") {
-    return service->CreateTask(title, /*allow_incognito_web_states=*/false);
+    return service->CreateTask(title, TestSource(),
+                               /*allow_incognito_web_states=*/false);
   }
 
   PerformActionsResult PerformActions(
@@ -470,7 +478,10 @@ TEST_F(ActorServiceTest, CreateTask_Incognito_Crashes) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
-  EXPECT_DEATH_IF_SUPPORTED(service->CreateTask("Test Task", true), "");
+  EXPECT_DEATH_IF_SUPPORTED(
+      service->CreateTask("Test Task", TestSource(),
+                          /*allow_incognito_web_states=*/true),
+      "");
 }
 
 // Tests that GetWebStateForID returns nullptr when the task is not found.
@@ -772,6 +783,50 @@ TEST_F(ActorServiceTest, DuplicateTaskUpdatesObserverIgnored) {
   service->RemoveTaskUpdatesObserver(observer);
 }
 
+// Test that a task-scoped observer only receives updates for its task and
+// stops receiving them once removed.
+TEST_F(ActorServiceTest, TaskScopedUpdatesObserver) {
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  ActorTaskId observed_task_id = CreateTask(service, "Observed Task");
+  ActorTaskId other_task_id = CreateTask(service, "Other Task");
+
+  FakeActorServiceTaskUpdatesObserver* observer =
+      [[FakeActorServiceTaskUpdatesObserver alloc] init];
+  EXPECT_TRUE(service->AddTaskUpdatesObserver(observed_task_id, observer));
+  EXPECT_EQ(1, observer.registeredCount);
+  EXPECT_NSEQ(@"Observed Task", observer.taskTitle);
+
+  // Neither other tasks nor newly created tasks notify the observer.
+  service->StopTask(other_task_id, ActorTaskStoppedReason::kStoppedByUser);
+  CreateTask(service, "New Task");
+  EXPECT_EQ(1, observer.registeredCount);
+  EXPECT_EQ(0, observer.stoppedCount);
+
+  service->RemoveTaskUpdatesObserver(observed_task_id, observer);
+  service->StopTask(observed_task_id, ActorTaskStoppedReason::kStoppedByUser);
+  EXPECT_EQ(0, observer.stoppedCount);
+}
+
+// Test that adding a task-scoped observer fails for an unknown task or a nil
+// observer.
+TEST_F(ActorServiceTest, AddTaskScopedUpdatesObserverFailures) {
+  ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
+  ASSERT_NE(nullptr, service);
+
+  ActorTaskId task_id = CreateTask(service);
+  service->StopTask(task_id, ActorTaskStoppedReason::kStoppedByUser);
+
+  FakeActorServiceTaskUpdatesObserver* observer =
+      [[FakeActorServiceTaskUpdatesObserver alloc] init];
+  EXPECT_FALSE(service->AddTaskUpdatesObserver(task_id, observer));
+  EXPECT_EQ(0, observer.registeredCount);
+
+  ActorTaskId active_task_id = CreateTask(service);
+  EXPECT_FALSE(service->AddTaskUpdatesObserver(active_task_id, nil));
+}
+
 // Fixture for tests exercising the backgrounding code paths. Re-enables the
 // `kEnableBackgroundContinuedProcessing` killswitch that `ActorServiceTest`
 // disables. Note that `IsGeminiActorBackgroundingEnabled()` can still be false
@@ -960,8 +1015,7 @@ TEST_F(ActorServiceTest, SetTaskInterventionDelegateAndInterruptTask) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
-  ActorTaskId task_id =
-      service->CreateTask("Test Task", /*allow_incognito_web_states=*/false);
+  ActorTaskId task_id = CreateTask(service);
   ASSERT_TRUE(HasTask(service, task_id));
 
   FakeActorServiceInterventionDelegate* delegate =
@@ -998,8 +1052,7 @@ TEST_F(ActorServiceTest, InterruptTaskBeforeFirstAct) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
-  ActorTaskId task_id =
-      service->CreateTask("Test Task", /*allow_incognito_web_states=*/false);
+  ActorTaskId task_id = CreateTask(service);
   ASSERT_TRUE(HasTask(service, task_id));
 
   FakeActorServiceInterventionDelegate* delegate =
@@ -1054,8 +1107,7 @@ TEST_F(ActorServiceTest, InterruptTaskRemovesStoppedTaskOnFailure) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
-  ActorTaskId task_id =
-      service->CreateTask("Test Task", /*allow_incognito_web_states=*/false);
+  ActorTaskId task_id = CreateTask(service);
   ASSERT_TRUE(HasTask(service, task_id));
 
   // Interrupting for confirmation without setting an intervention delegate
@@ -1074,8 +1126,7 @@ TEST_F(ActorServiceTest, InterruptTaskHandlesReentrantStopTask) {
   ActorService* service = ActorServiceFactory::GetForProfile(profile_.get());
   ASSERT_NE(nullptr, service);
 
-  ActorTaskId task_id =
-      service->CreateTask("Test Task", /*allow_incognito_web_states=*/false);
+  ActorTaskId task_id = CreateTask(service);
   ASSERT_TRUE(HasTask(service, task_id));
 
   FakeActorServiceInterventionDelegate* delegate =

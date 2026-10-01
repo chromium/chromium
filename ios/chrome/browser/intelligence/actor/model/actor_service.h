@@ -34,6 +34,7 @@ class ActorTask;
 class ActorToolRequest;
 class ActorToolFactory;
 class AggregatedJournal;
+struct TaskSourceInfo;
 
 // Service responsible for handling Actor requests. The normal flow is to
 // `CreateTask` and reuse this ID for an entire Actor task (journey).
@@ -46,8 +47,9 @@ class ActorService : public KeyedService {
   // KeyedService:
   void Shutdown() override;
 
-  // Creates a new task.
+  // Creates a new task. `source_info` identifies the client creating the task.
   ActorTaskId CreateTask(const std::string& title,
+                         const TaskSourceInfo& source_info,
                          bool allow_incognito_web_states);
 
   // Submits actions to an active task with a task update string (a short
@@ -103,6 +105,15 @@ class ActorService : public KeyedService {
 
   // Removes a registered observer for task updates.
   void RemoveTaskUpdatesObserver(id<ActorTaskUpdatesObserver> observer);
+
+  // Registers `observer` for updates of the task identified by `task_id` only.
+  // Returns false if there is no active task with `task_id`.
+  bool AddTaskUpdatesObserver(ActorTaskId task_id,
+                              id<ActorTaskUpdatesObserver> observer);
+
+  // Removes `observer` from the task identified by `task_id`, if active.
+  void RemoveTaskUpdatesObserver(ActorTaskId task_id,
+                                 id<ActorTaskUpdatesObserver> observer);
 
   // Returns the execution state of the currently active task, or `std::nullopt`
   // if there are no active tasks.

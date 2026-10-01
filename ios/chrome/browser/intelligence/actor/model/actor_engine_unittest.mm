@@ -10,6 +10,7 @@
 #import "base/test/test_future.h"
 #import "components/actor/core/aggregated_journal.h"
 #import "components/actor/core/safety_list_manager.h"
+#import "components/actor/core/task_source_info.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/origin_gating/core/origin_gating_checker.h"
@@ -42,6 +43,11 @@
 
 namespace actor {
 namespace {
+
+// Returns the provenance attributed to tasks created by these tests.
+TaskSourceInfo TestSource() {
+  return TaskSourceInfo(TaskSourceInfo::Client::kTest, /*id=*/std::nullopt);
+}
 
 struct DelegateCall {
   ToolType tool_type;
@@ -78,7 +84,7 @@ class ActorEngineTest : public PlatformTest {
     journal_ = std::make_unique<AggregatedJournal>();
     tool_factory_ = std::make_unique<ActorToolFactory>(profile_.get());
     task_ = std::make_unique<ActorTask>(
-        ActorTaskId(1), "Test Task",
+        ActorTaskId(1), "Test Task", TestSource(),
         /*allow_incognito_web_states=*/false, journal_.get(),
         tool_factory_.get(), BrowserListFactory::GetForProfile(profile_.get()));
     engine_ = std::make_unique<ActorEngine>(&execution_updates_delegate_,

@@ -15,6 +15,7 @@
 #import "base/memory/weak_ptr.h"
 #import "base/scoped_multi_source_observation.h"
 #import "base/timer/timer.h"
+#import "components/actor/core/task_source_info.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_engine.h"
 #import "ios/chrome/browser/intelligence/actor/model/actor_web_state_policy_decider.h"
 #import "ios/chrome/browser/intelligence/actor/public/actor_control_state.h"
@@ -54,6 +55,7 @@ class ActorTask : public web::WebStateObserver,
  public:
   ActorTask(ActorTaskId task_id,
             const std::string& title,
+            const TaskSourceInfo& source_info,
             bool allow_incognito_web_states,
             AggregatedJournal* journal,
             ActorToolFactory* tool_factory,
@@ -72,6 +74,9 @@ class ActorTask : public web::WebStateObserver,
   void RemoveObserver(id<ActorTaskUpdatesObserver> observer);
 
   const std::string& title() const { return title_; }
+
+  // Returns information about the client that created this task.
+  const TaskSourceInfo& source_info() const { return source_info_; }
 
   // Returns the unique identifier of the task.
   ActorTaskId task_id() const { return task_id_; }
@@ -252,6 +257,9 @@ class ActorTask : public web::WebStateObserver,
 
   // The task's title.
   const std::string title_;
+
+  // Information about the client that created this task.
+  const TaskSourceInfo source_info_;
 
   const bool allow_incognito_web_states_;
 

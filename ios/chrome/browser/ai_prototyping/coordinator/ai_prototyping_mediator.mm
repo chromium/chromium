@@ -19,6 +19,7 @@
 #import "base/task/thread_pool.h"
 #import "base/values.h"
 #import "components/actor/core/aggregated_journal.h"
+#import "components/actor/core/task_source_info.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/optimization_guide_buildflags.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -602,7 +603,10 @@ std::string GetJournalLogsAsJson(actor::AggregatedJournal* journal) {
   __weak __typeof(self) weakSelf = self;
 
   actor::ActorTaskId task_id = actorService->CreateTask(
-      "AI Prototyping Test Task", /*allow_incognito_web_states=*/false);
+      "AI Prototyping Test Task",
+      actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kUnknown,
+                            /*id=*/std::nullopt),
+      /*allow_incognito_web_states=*/false);
   actorService->AddControlledWebState(task_id,
                                       _webStateList->GetActiveWebState());
 

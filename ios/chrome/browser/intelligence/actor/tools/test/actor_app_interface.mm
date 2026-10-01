@@ -8,6 +8,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
+#import "components/actor/core/task_source_info.h"
 #import "components/autofill/core/browser/foundations/autofill_manager.h"
 #import "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
@@ -95,8 +96,11 @@ autofill::AutofillDriverIOS* GetMainFrameAutofillDriver() {
     return;
   }
 
-  actor::ActorTaskId task_id =
-      service->CreateTask("EG Test Task", /*allow_incognito_web_states=*/false);
+  actor::ActorTaskId task_id = service->CreateTask(
+      "EG Test Task",
+      actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kTest,
+                            /*id=*/std::nullopt),
+      /*allow_incognito_web_states=*/false);
 
   std::vector<optimization_guide::proto::Action> actions = {action};
 
@@ -142,7 +146,10 @@ autofill::AutofillDriverIOS* GetMainFrameAutofillDriver() {
   }
 
   actor::ActorTaskId task_id = service->CreateTask(
-      "EG Test Tasks", /*allow_incognito_web_states=*/false);
+      "EG Test Tasks",
+      actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kTest,
+                            /*id=*/std::nullopt),
+      /*allow_incognito_web_states=*/false);
 
   std::vector<optimization_guide::proto::Action> actions;
   actions.reserve(actions_proto.actions_size());

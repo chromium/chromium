@@ -99,6 +99,7 @@ ActorControlState ControlStateForTaskState(ActorTaskState task_state) {
 
 ActorTask::ActorTask(ActorTaskId task_id,
                      const std::string& title,
+                     const TaskSourceInfo& source_info,
                      bool allow_incognito_web_states,
                      AggregatedJournal* journal,
                      ActorToolFactory* tool_factory,
@@ -106,6 +107,7 @@ ActorTask::ActorTask(ActorTaskId task_id,
     : task_id_(task_id),
       browser_list_(browser_list),
       title_(title),
+      source_info_(source_info),
       allow_incognito_web_states_(allow_incognito_web_states),
       journal_(journal),
       tool_factory_(tool_factory) {

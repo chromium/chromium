@@ -17,6 +17,7 @@
 #import "base/memory/raw_ptr.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/actor/core/task_source_info.h"
 #import "components/actor/public/mojom/actor_types.mojom.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "components/sessions/core/session_id.h"
@@ -340,8 +341,12 @@ ParseActionsFromRequest(GeminiActuationRequest* request,
     return taskID;
   }
 
-  taskID = _actorService->CreateTask(base::SysNSStringToUTF8(title),
-                                     /*allow_incognito_web_states=*/false);
+  // TODO(crbug.com/565875367): Set the conversation ID as the source ID.
+  taskID = _actorService->CreateTask(
+      base::SysNSStringToUTF8(title),
+      actor::TaskSourceInfo(actor::TaskSourceInfo::Client::kGlic,
+                            /*id=*/std::nullopt),
+      /*allow_incognito_web_states=*/false);
   _actorService->AddControlledWebState(taskID, activeWebState);
   _taskToWebStateIDMap[taskID] = activeWebState->GetUniqueIdentifier();
   return taskID;

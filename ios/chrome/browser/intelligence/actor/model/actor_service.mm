@@ -12,6 +12,7 @@
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/actor/core/aggregated_journal.h"
+#import "components/actor/core/task_source_info.h"
 #import "components/optimization_guide/proto/features/actions_data.pb.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/background_task/background_continued_processing_app_agent.h"
@@ -85,13 +86,14 @@ void ActorService::Shutdown() {
 }
 
 ActorTaskId ActorService::CreateTask(const std::string& title,
+                                     const TaskSourceInfo& source_info,
                                      bool allow_incognito_web_states) {
   CHECK(IsActorEnabled());
 
   const ActorTaskId task_id = next_task_id_.GenerateNextId();
   BrowserList* browser_list = BrowserListFactory::GetForProfile(profile_);
   auto task = std::make_unique<ActorTask>(
-      task_id, title, allow_incognito_web_states, journal_.get(),
+      task_id, title, source_info, allow_incognito_web_states, journal_.get(),
       tool_factory_.get(), browser_list);
 
   RegisterBackgroundTask(task.get());
@@ -242,6 +244,27 @@ void ActorService::RemoveTaskUpdatesObserver(
   for (const auto& [task_id, task] : active_tasks_) {
     task->RemoveObserver(observer);
   }
+}
+
+bool ActorService::AddTaskUpdatesObserver(
+    ActorTaskId task_id,
+    id<ActorTaskUpdatesObserver> observer) {
+  auto it = active_tasks_.find(task_id);
+  if (!observer || it == active_tasks_.end()) {
+    return false;
+  }
+  it->second->AddObserver(observer);
+  return true;
+}
+
+void ActorService::RemoveTaskUpdatesObserver(
+    ActorTaskId task_id,
+    id<ActorTaskUpdatesObserver> observer) {
+  auto it = active_tasks_.find(task_id);
+  if (!observer || it == active_tasks_.end()) {
+    return;
+  }
+  it->second->RemoveObserver(observer);
 }
 
 std::optional<ActorTaskState> ActorService::GetActiveTaskState() const {

@@ -11,6 +11,7 @@ source_set("coordinator") {
   ]
   deps = [
     "//base",
+    "//components/actor/core",
     "//components/actor/core:journal",
     "//components/actor/public/mojom:mojo_bindings",
     "//components/optimization_guide:optimization_guide_buildflags",

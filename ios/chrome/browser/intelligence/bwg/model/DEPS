@@ -1,5 +1,6 @@
 include_rules = [
   # keep-sorted start
+  "+components/actor/core/task_source_info.h",
   "+components/actor/public/mojom",
   "+components/feature_engagement/public",
   "+ios/chrome/browser/app_bar/ui",
