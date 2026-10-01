@@ -127,6 +127,13 @@ TEST_F(OptimizationGuideTabUrlProviderAndroidTest,
       tab_url_provider()->GetUrlsOfActiveTabs(base::Days(90));
   EXPECT_THAT(urls, ElementsAre(GURL("https://example.com/b"),
                                 GURL("https://example.com/a")));
+
+  // TabModelList is a process-wide singleton holding raw pointers, so the
+  // models must be unregistered before they go out of scope. Otherwise they
+  // dangle and cause use-after-free crashes in unrelated tests that run later
+  // in the same process.
+  TabModelList::RemoveTabModel(&otr_tab_model);
+  TabModelList::RemoveTabModel(&tab_model);
 }
 
 TEST_F(OptimizationGuideTabUrlProviderAndroidTest, SortsTabsCorrectly) {

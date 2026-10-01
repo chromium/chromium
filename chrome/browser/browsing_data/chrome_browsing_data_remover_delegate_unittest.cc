@@ -2312,6 +2312,12 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, DeleteTabs) {
                                 false);
 
   EXPECT_EQ(chrome_browsing_data_remover::DATA_TYPE_TABS, GetRemovalMask());
+
+  // TabModelList is a process-wide singleton holding raw pointers, so the
+  // model must be unregistered before it goes out of scope. Otherwise it
+  // dangles and causes use-after-free crashes in unrelated tests that run
+  // later in the same process.
+  TabModelList::RemoveTabModel(&tab_model);
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
@@ -2337,6 +2343,10 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
                                 false);
 
   EXPECT_EQ(chrome_browsing_data_remover::DATA_TYPE_TABS, GetRemovalMask());
+
+  // See the comment in DeleteTabs above.
+  TabModelList::SetArchivedTabModel(nullptr);
+  TabModelList::RemoveTabModel(&tab_model);
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

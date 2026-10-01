@@ -6,6 +6,7 @@
 
 #include <jni.h>
 
+#include <algorithm>
 #include <cstddef>
 #include <memory>
 #include <numeric>
@@ -50,7 +51,21 @@ TestTabModel::TestTabModel(Profile* profile,
                            TabModelType tab_model_type)
     : TabModel(profile, activity_type, std::nullopt, tab_model_type) {}
 
-TestTabModel::~TestTabModel() = default;
+TestTabModel::~TestTabModel() {
+  // TabModelList is a process-wide singleton that holds raw pointers, and
+  // TabModel's destructor does not unregister itself. gtest runs many tests in
+  // a single process, so a TestTabModel that is registered but never removed
+  // leaves a dangling pointer behind that causes a use-after-free in whichever
+  // unrelated test next walks TabModelList::models(). Defensively unregister
+  // here so that a missing RemoveTabModel() call can't corrupt other tests.
+  TabModel* self = this;
+  if (std::ranges::contains(TabModelList::models(), self)) {
+    TabModelList::RemoveTabModel(self);
+  }
+  if (TabModelList::GetArchivedTabModel() == self) {
+    TabModelList::SetArchivedTabModel(nullptr);
+  }
+}
 
 void TestTabModel::AddTabListInterfaceObserver(
     TabListInterfaceObserver* observer) {
