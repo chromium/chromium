@@ -480,7 +480,20 @@ LayoutUnit AlignContentOffset(
       break;
   }
 
-  switch (content_alignment.GetUsedPosition()) {
+  // Under `fill-reverse`, placement starts from the end of the container, so
+  // `flow-start` behavior is equal to `end`, and `flow-end` behavior is equal
+  // to `start`. We only check for `fill-reverse` because we are only working
+  // with stacking axis content alignment here.
+  ContentPosition used_position = content_alignment.GetUsedPosition();
+  if (is_fill_reverse) {
+    if (used_position == ContentPosition::kFlowStart) {
+      used_position = ContentPosition::kEnd;
+    } else if (used_position == ContentPosition::kFlowEnd) {
+      used_position = ContentPosition::kStart;
+    }
+  }
+
+  switch (used_position) {
     case ContentPosition::kLeft:
     case ContentPosition::kStart:
     case ContentPosition::kFlowStart:

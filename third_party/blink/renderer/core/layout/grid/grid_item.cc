@@ -85,6 +85,17 @@ AxisEdge AxisEdgeFromItemPosition(GridTrackSizingDirection track_direction,
       return AxisEdge::kStart;
   }
 
+  // For grid-lanes, 'flow-start'/'flow-end' follow the direction items are
+  // placed in along the axis being aligned. 'track-reverse' always reverses
+  // the grid axis, and 'fill-reverse' always reverses the stacking axis, so
+  // `track_direction` selects which of the two flags applies here. Plain
+  // 'start'/'end' stay writing-mode-relative and are unaffected.
+  const bool is_alignment_axis_reversed =
+      parent_grid_style.IsDisplayGridLanes() &&
+      (parent_grid_style.HasGridTrackAxis(track_direction)
+           ? parent_grid_style.IsReverseGridLanesTrackDirection()
+           : parent_grid_style.IsReverseGridLanesFillDirection());
+
   switch (const auto item_position = alignment.GetUsedPosition()) {
     case ItemPosition::kSelfStart:
     case ItemPosition::kSelfEnd: {
@@ -112,9 +123,11 @@ AxisEdge AxisEdgeFromItemPosition(GridTrackSizingDirection track_direction,
     case ItemPosition::kCenter:
       return AxisEdge::kCenter;
     case ItemPosition::kFlowStart:
+      return is_alignment_axis_reversed ? AxisEdge::kEnd : AxisEdge::kStart;
     case ItemPosition::kStart:
       return AxisEdge::kStart;
     case ItemPosition::kFlowEnd:
+      return is_alignment_axis_reversed ? AxisEdge::kStart : AxisEdge::kEnd;
     case ItemPosition::kEnd:
       return AxisEdge::kEnd;
     case ItemPosition::kStretch:
