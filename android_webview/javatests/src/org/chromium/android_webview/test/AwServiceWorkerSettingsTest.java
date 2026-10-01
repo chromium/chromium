@@ -22,6 +22,7 @@ import org.chromium.android_webview.AwServiceWorkerSettings;
 import org.chromium.base.Log;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.net.test.util.TestWebServer;
 
@@ -267,5 +268,43 @@ public class AwServiceWorkerSettingsTest extends AwParameterizedTest {
         // Logging the state helps with troubleshooting
         Log.i(TAG, "state = %s", state);
         return state;
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Preferences"})
+    public void testSetAllowContentAccessHistogram() {
+        initAwServiceWorkerSettings();
+
+        var watcherTrue =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.WebView.ServiceWorker.SetAllowContentAccess", true);
+        mAwServiceWorkerSettings.setAllowContentAccess(true);
+        watcherTrue.assertExpected();
+
+        var watcherFalse =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.WebView.ServiceWorker.SetAllowContentAccess", false);
+        mAwServiceWorkerSettings.setAllowContentAccess(false);
+        watcherFalse.assertExpected();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Preferences"})
+    public void testSetAllowFileAccessHistogram() {
+        initAwServiceWorkerSettings();
+
+        var watcherTrue =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.WebView.ServiceWorker.SetAllowFileAccess", true);
+        mAwServiceWorkerSettings.setAllowFileAccess(true);
+        watcherTrue.assertExpected();
+
+        var watcherFalse =
+                HistogramWatcher.newSingleRecordWatcher(
+                        "Android.WebView.ServiceWorker.SetAllowFileAccess", false);
+        mAwServiceWorkerSettings.setAllowFileAccess(false);
+        watcherFalse.assertExpected();
     }
 }

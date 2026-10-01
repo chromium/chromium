@@ -11,6 +11,7 @@ import android.webkit.WebSettings;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 
 /**
@@ -75,6 +76,8 @@ public class AwServiceWorkerSettings {
     /** See {@link android.webkit.ServiceWorkerWebSettings#setAllowContentAccess}. */
     public void setAllowContentAccess(boolean allow) {
         if (TRACE) Log.d(TAG, "setAllowContentAccess=%b", allow);
+        RecordHistogram.recordBooleanHistogram(
+                "Android.WebView.ServiceWorker.SetAllowContentAccess", allow);
         synchronized (mAwServiceWorkerSettingsLock) {
             if (mAllowContentUrlAccess != allow) {
                 mAllowContentUrlAccess = allow;
@@ -92,6 +95,8 @@ public class AwServiceWorkerSettings {
     /** See {@link android.webkit.ServiceWorkerWebSettings#setAllowFileAccess}. */
     public void setAllowFileAccess(boolean allow) {
         if (TRACE) Log.d(TAG, "setAllowFileAccess=%b", allow);
+        RecordHistogram.recordBooleanHistogram(
+                "Android.WebView.ServiceWorker.SetAllowFileAccess", allow);
         synchronized (mAwServiceWorkerSettingsLock) {
             if (mAllowFileUrlAccess != allow) {
                 mAllowFileUrlAccess = allow;

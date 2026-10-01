@@ -634,6 +634,7 @@ public class AwSettings {
     /** See {@link android.webkit.WebSettings#setAllowFileAccess}. */
     public void setAllowFileAccess(boolean allow) {
         if (TRACE) Log.i(TAG, "setAllowFileAccess=" + allow);
+        RecordHistogram.recordBooleanHistogram("Android.WebView.SetAllowFileAccess", allow);
         synchronized (mAwSettingsLock) {
             mAllowFileUrlAccess = allow;
             mEventHandler.updateAllowFileAccessLocked();
@@ -677,6 +678,7 @@ public class AwSettings {
     /** See {@link android.webkit.WebSettings#setAllowContentAccess}. */
     public void setAllowContentAccess(boolean allow) {
         if (TRACE) Log.i(TAG, "setAllowContentAccess=" + allow);
+        RecordHistogram.recordBooleanHistogram("Android.WebView.SetAllowContentAccess", allow);
         synchronized (mAwSettingsLock) {
             if (mAllowContentUrlAccess != allow) {
                 flushBackForwardCacheOnUiThreadLocked();
@@ -1237,6 +1239,8 @@ public class AwSettings {
     /** See {@link android.webkit.WebSettings#setAllowUniversalAccessFromFileURLs}. */
     public void setAllowUniversalAccessFromFileUrls(boolean flag) {
         if (TRACE) Log.i(TAG, "setAllowUniversalAccessFromFileURLs=" + flag);
+        RecordHistogram.recordBooleanHistogram(
+                "Android.WebView.SetAllowUniversalAccessFromFileURLs", flag);
         synchronized (mAwSettingsLock) {
             if (mAllowUniversalAccessFromFileUrls != flag) {
                 mAllowUniversalAccessFromFileUrls = flag;
@@ -1248,6 +1252,8 @@ public class AwSettings {
     /** See {@link android.webkit.WebSettings#setAllowFileAccessFromFileURLs}. */
     public void setAllowFileAccessFromFileUrls(boolean flag) {
         if (TRACE) Log.i(TAG, "setAllowFileAccessFromFileURLs=" + flag);
+        RecordHistogram.recordBooleanHistogram(
+                "Android.WebView.SetAllowFileAccessFromFileURLs", flag);
         synchronized (mAwSettingsLock) {
             if (mAllowFileAccessFromFileUrls != flag) {
                 mAllowFileAccessFromFileUrls = flag;
