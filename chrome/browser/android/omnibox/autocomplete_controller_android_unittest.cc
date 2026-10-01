@@ -11,6 +11,7 @@
 #include "base/android/jni_string.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
+#include "chrome/browser/page_load_metrics/chrome_navigation_initiator.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
@@ -155,13 +156,12 @@ TEST_F(AutocompleteControllerAndroidTest,
       reinterpret_cast<uintptr_t>(&navigation_handle),
       reinterpret_cast<uintptr_t>(&match));
 
-  auto* user_data =
-      page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
+  auto* holder =
+      page_load_metrics::NavigationInitiatorHolder::GetForNavigationHandle(
           navigation_handle);
-  ASSERT_TRUE(user_data);
-  EXPECT_EQ(
-      user_data->navigation_type(),
-      GetInitiatorLocation(ChromeInitiatorLocation::kOmniboxDirectUrlInput));
+  ASSERT_TRUE(holder);
+  EXPECT_EQ(holder->initiator(),
+            chrome_navigation_initiator::kOmniboxDirectUrlInput);
 }
 
 TEST_F(AutocompleteControllerAndroidTest,

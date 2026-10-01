@@ -7,7 +7,6 @@
 #include <string>
 #include <string_view>
 
-#include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
@@ -17,8 +16,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
-#include "chrome/browser/browser_features.h"
-#include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
+#include "chrome/browser/page_load_metrics/chrome_navigation_initiator.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
@@ -47,7 +45,6 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/omnibox/browser/base_search_provider.h"
-#include "components/page_load_metrics/browser/navigation_handle_user_data.h"
 #include "components/performance_manager/public/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/search_engines/template_url_data.h"
@@ -56,7 +53,6 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/navigation_handle_observer.h"
@@ -121,17 +117,12 @@ class TestOmniboxNavigationObserver : public content::WebContentsObserver {
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
     if (navigation_handle->HasCommitted()) {
-      auto* user_data =
-          page_load_metrics::NavigationHandleUserData::GetForNavigationHandle(
-              *navigation_handle);
-      if (user_data) {
-        navigation_type_ =
-            GetChromeInitiatorLocation(user_data->navigation_type());
-      }
+      navigation_initiator_ =
+          page_load_metrics::GetNavigationInitiator(*navigation_handle);
     }
   }
 
-  std::optional<ChromeInitiatorLocation> navigation_type_;
+  std::optional<page_load_metrics::NavigationInitiator> navigation_initiator_;
 };
 
 // This is a browser test for Omnibox triggered prerendering. This is
@@ -335,9 +326,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
   EXPECT_TRUE(IsPrerenderingNavigation());
   EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(), kPrerenderingUrl);
 
-  EXPECT_TRUE(omnibox_observer.navigation_type_.has_value());
-  EXPECT_EQ(omnibox_observer.navigation_type_.value(),
-            ChromeInitiatorLocation::kOmniboxDirectUrlInput);
+  EXPECT_EQ(omnibox_observer.navigation_initiator_,
+            chrome_navigation_initiator::kOmniboxDirectUrlInput);
 
   histogram_tester.ExpectUniqueSample(
       internal::kHistogramPrerenderPredictionStatusDirectUrlInput,

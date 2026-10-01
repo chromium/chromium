@@ -103,11 +103,8 @@ void AttachNewTabPageNavigationHandleUserData(
 
 void AttachOmniboxDirectUrlInputNavigationHandleUserData(
     content::NavigationHandle& navigation_handle) {
-  page_load_metrics::NavigationHandleUserData::CreateForNavigationHandle(
-      navigation_handle,
-      GetInitiatorLocation(ChromeInitiatorLocation::kOmniboxDirectUrlInput),
-      StringifyChromeInitiatorLocation(
-          ChromeInitiatorLocation::kOmniboxDirectUrlInput));
+  page_load_metrics::NavigationInitiatorHolder::CreateForNavigationHandle(
+      navigation_handle, chrome_navigation_initiator::kOmniboxDirectUrlInput);
 }
 
 void AttachOmniboxDefaultSearchEngineNavigationHandleUserData(
