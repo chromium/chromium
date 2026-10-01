@@ -1657,9 +1657,14 @@ void SearchboxHandler::OpenPopupSelection(
 
   if (!base::FeatureList::IsEnabled(
           omnibox::kWebUISearchboxWithoutModelController)) {
+    // OmniboxEditModel does not have a persistent `kCtrlEnter` state, so for
+    // Ctrl+Enter selections verify that the selected line matches.
     const bool selection_matched =
         popup_selection == edit_model()->GetPopupSelection() ||
-        popup_selection.IsNonMatchSelection();
+        popup_selection.IsNonMatchSelection() ||
+        (popup_selection.state ==
+             OmniboxPopupSelection::LineState::kCtrlEnter &&
+         popup_selection.line == edit_model()->GetPopupSelection().line);
     base::UmaHistogramBoolean("Omnibox.WebUI.SelectionMatched",
                               selection_matched);
     base::UmaHistogramBoolean(
