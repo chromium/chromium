@@ -216,21 +216,6 @@ GdkTexture* GetTextureFromRenderNode(GskRenderNode* node);
 
 double GetOpacityFromContext(GtkStyleContext* context);
 
-enum class ThemeProperty {
-  kThemeName,
-  kIconThemeName,
-  kKeyThemeName,
-};
-
-// Returns true if `theme` is a safe, valid theme name for `property`.
-// If `theme` is null, returns true only for kKeyThemeName.
-COMPONENT_EXPORT(GTK)
-bool IsValidThemeName(ThemeProperty property, const char* theme);
-
-// Returns the safe fallback value for the given theme-related property.
-COMPONENT_EXPORT(GTK)
-const char* GetThemeFallback(ThemeProperty property);
-
 // Hook the `GtkSettings` `set_property` method to sanitize settings.
 COMPONENT_EXPORT(GTK) void InstallGtkSettingsInterceptor();
 

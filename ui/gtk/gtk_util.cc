@@ -10,13 +10,11 @@
 
 #include <cmath>
 #include <memory>
-#include <optional>
 #include <string_view>
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/environment.h"
-#include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
@@ -866,35 +864,6 @@ double GetOpacityFromContext(GtkStyleContext* context) {
   return opacity;
 }
 
-bool IsValidThemeName(ThemeProperty property, const char* theme) {
-  const bool is_optional = property == ThemeProperty::kKeyThemeName;
-  if (!theme) {
-    return is_optional;
-  }
-  std::string_view theme_str(theme);
-  if (theme_str.empty()) {
-    return is_optional;
-  }
-  if (theme_str == ".") {
-    return false;
-  }
-  base::FilePath theme_path(theme_str);
-  return !theme_path.IsAbsolute() && !theme_path.ReferencesParent() &&
-         theme_path.BaseName() == theme_path;
-}
-
-const char* GetThemeFallback(ThemeProperty property) {
-  switch (property) {
-    case ThemeProperty::kIconThemeName:
-      return "hicolor";
-    case ThemeProperty::kThemeName:
-      return "Adwaita";
-    case ThemeProperty::kKeyThemeName:
-      return nullptr;
-  }
-  NOTREACHED();
-}
-
 namespace {
 
 void (*g_orig_set_property)(GObject* object,
@@ -916,25 +885,6 @@ void GtkSettingsSetProperty(GObject* object,
       g_orig_set_property(object, property_id, &sanitized_value, pspec);
       g_value_unset(&sanitized_value);
       return;
-    }
-    std::optional<ThemeProperty> property;
-    if (prop_name == "gtk-theme-name") {
-      property = ThemeProperty::kThemeName;
-    } else if (prop_name == "gtk-icon-theme-name") {
-      property = ThemeProperty::kIconThemeName;
-    } else if (prop_name == "gtk-key-theme-name") {
-      property = ThemeProperty::kKeyThemeName;
-    }
-    if (property) {
-      const gchar* name = g_value_get_string(value);
-      if (!IsValidThemeName(*property, name)) {
-        GValue sanitized_value = G_VALUE_INIT;
-        g_value_init(&sanitized_value, G_TYPE_STRING);
-        g_value_set_string(&sanitized_value, GetThemeFallback(*property));
-        g_orig_set_property(object, property_id, &sanitized_value, pspec);
-        g_value_unset(&sanitized_value);
-        return;
-      }
     }
   }
   g_orig_set_property(object, property_id, value, pspec);

@@ -19,27 +19,6 @@
 
 namespace gtk {
 
-TEST(GtkUtilTest, IsValidThemeName) {
-  EXPECT_TRUE(IsValidThemeName(ThemeProperty::kThemeName, "Adwaita"));
-  EXPECT_TRUE(IsValidThemeName(ThemeProperty::kIconThemeName, "hicolor"));
-  EXPECT_TRUE(IsValidThemeName(ThemeProperty::kKeyThemeName, ""));
-  EXPECT_TRUE(IsValidThemeName(ThemeProperty::kKeyThemeName, nullptr));
-  EXPECT_FALSE(IsValidThemeName(ThemeProperty::kThemeName, ""));
-  EXPECT_FALSE(IsValidThemeName(ThemeProperty::kThemeName, nullptr));
-  EXPECT_FALSE(IsValidThemeName(ThemeProperty::kIconThemeName, ""));
-  EXPECT_FALSE(IsValidThemeName(ThemeProperty::kIconThemeName, nullptr));
-  EXPECT_FALSE(IsValidThemeName(ThemeProperty::kThemeName, "../invalid"));
-  EXPECT_FALSE(
-      IsValidThemeName(ThemeProperty::kThemeName, "/absolute/invalid"));
-  EXPECT_FALSE(IsValidThemeName(ThemeProperty::kThemeName, "."));
-}
-
-TEST(GtkUtilTest, GetThemeFallback) {
-  EXPECT_STREQ(GetThemeFallback(ThemeProperty::kIconThemeName), "hicolor");
-  EXPECT_STREQ(GetThemeFallback(ThemeProperty::kThemeName), "Adwaita");
-  EXPECT_EQ(GetThemeFallback(ThemeProperty::kKeyThemeName), nullptr);
-}
-
 class GtkUtilXftDpiTest : public testing::Test {
  protected:
   void SetUp() override {
@@ -153,43 +132,6 @@ class GtkUtilInterceptorTest : public testing::Test {
     base::WeakPtrFactory<PropertyObserver> weak_factory{this};
   };
 };
-
-TEST_F(GtkUtilInterceptorTest, ThemeNamesSanitizedAtWriteTime) {
-  GtkSettings* settings = GetDefaultGtkSettings();
-  ASSERT_TRUE(settings);
-
-  PropertyObserver observer;
-  ScopedGSignal signal(settings, "notify::gtk-theme-name",
-                       base::BindRepeating(&PropertyObserver::OnNotify,
-                                           observer.weak_factory.GetWeakPtr(),
-                                           "gtk-theme-name"));
-
-  // Set to an invalid value (path traversal)
-  g_object_set(settings, "gtk-theme-name", "../../../invalid-theme", nullptr);
-
-  // The interceptor should have triggered and sanitized the theme name to
-  // "Adwaita" before the notify callback ran!
-  EXPECT_EQ(observer.value, "Adwaita");
-}
-
-TEST_F(GtkUtilInterceptorTest, IconThemeNamesSanitizedAtWriteTime) {
-  GtkSettings* settings = GetDefaultGtkSettings();
-  ASSERT_TRUE(settings);
-
-  PropertyObserver observer;
-  ScopedGSignal signal(settings, "notify::gtk-icon-theme-name",
-                       base::BindRepeating(&PropertyObserver::OnNotify,
-                                           observer.weak_factory.GetWeakPtr(),
-                                           "gtk-icon-theme-name"));
-
-  // Set to an invalid value (path traversal)
-  g_object_set(settings, "gtk-icon-theme-name", "../../../invalid-theme",
-               nullptr);
-
-  // The interceptor should have triggered and sanitized the theme name to
-  // "hicolor" before the notify callback ran!
-  EXPECT_EQ(observer.value, "hicolor");
-}
 
 TEST_F(GtkUtilInterceptorTest, GtkModulesSanitizedAtWriteTime) {
   if (GtkCheckVersion(4)) {
