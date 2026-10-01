@@ -21,7 +21,6 @@ sys.path.append(
     'devil',
   )
 )
-# pylint: disable=wrong-import-position,import-error
 from devil.utils import cmd_helper
 from devil.utils import logging_common
 

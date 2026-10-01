@@ -9,7 +9,7 @@
 import os
 import unittest
 
-import mock  # pylint: disable=import-error
+import mock
 
 from run_simpleperf import SimplePerfRunner
 from run_simpleperf import StackAddressInterpreter

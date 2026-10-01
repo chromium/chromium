@@ -10,7 +10,7 @@ import tempfile
 import sys
 import unittest
 
-import mock  # pylint: disable=import-error
+import mock
 import run_cts
 
 sys.path.append(
@@ -18,8 +18,7 @@ sys.path.append(
     os.path.dirname(__file__), os.pardir, os.pardir, 'build', 'android'
   )
 )
-# pylint: disable=wrong-import-position,import-error
-import devil_chromium  # pylint: disable=unused-import
+import devil_chromium  # noqa: F401
 from devil.android.ndk import abis
 from devil.android.sdk import version_codes
 

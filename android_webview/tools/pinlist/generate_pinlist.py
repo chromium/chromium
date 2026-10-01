@@ -16,7 +16,7 @@ import os
 
 _SRC_PATH = pathlib.Path(__file__).resolve().parents[3]
 sys.path.append(str(_SRC_PATH / 'third_party/catapult/devil'))
-from devil.android import device_utils  # pylint: disable=wrong-import-position
+from devil.android import device_utils  # noqa: E402
 
 _MAX_INITIAL_RESIDENCY_PERCENTAGE = 3.0
 

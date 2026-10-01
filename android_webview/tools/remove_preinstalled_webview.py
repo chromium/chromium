@@ -38,7 +38,6 @@ sys.path.append(
     os.path.dirname(__file__), os.pardir, os.pardir, 'build', 'android'
   )
 )
-# pylint: disable=wrong-import-position,import-error
 import devil_chromium
 from devil.android import device_errors
 from devil.android import device_utils

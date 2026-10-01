@@ -7,7 +7,7 @@ import json
 import os
 import sys
 import unittest
-from mock import patch  # pylint: disable=import-error
+from mock import patch
 
 sys.path.append(
   os.path.join(
@@ -20,7 +20,6 @@ sys.path.append(
     'py_utils',
   )
 )
-# pylint: disable=wrong-import-position,import-error
 from py_utils import tempfile_ext
 
 import update_cts
