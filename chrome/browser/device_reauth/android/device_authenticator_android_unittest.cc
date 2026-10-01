@@ -179,6 +179,19 @@ TEST_F(DeviceAuthenticatorAndroidTest,
             authenticator()->GetBiometricAvailabilityStatus());
 }
 
+TEST_F(DeviceAuthenticatorAndroidTest, FailedNoActivity) {
+  base::HistogramTester histogram_tester;
+  EXPECT_CALL(bridge(), Authenticate)
+      .WillOnce(RunOnceCallback<0>(DeviceAuthUIResult::kFailedNoActivity));
+  base::MockCallback<DeviceAuthenticator::AuthenticateCallback> result_callback;
+  EXPECT_CALL(result_callback, Run(/*auth_succeeded=*/false));
+  authenticator()->AuthenticateWithMessage(u"", result_callback.Get());
+
+  histogram_tester.ExpectUniqueSample(
+      "PasswordManager.BiometricAuthPwdFill.AuthResult",
+      DeviceAuthFinalResult::kFailedNoActivity, 1);
+}
+
 TEST_F(DeviceAuthenticatorAndroidTest, DestroySignalingInCancel) {
   // The test ensures that bridge_ptr->Cancel() gets called and nothing crashes
   // (if it's called after authenticator destruction, there can be a

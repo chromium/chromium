@@ -16,12 +16,11 @@ import org.chromium.ui.base.WindowAndroid;
 @NullMarked
 class DeviceAuthenticatorBridge implements DeviceAuthenticatorController.Delegate {
     private long mNativeDeviceAuthenticator;
-    private @Nullable DeviceAuthenticatorController mController;
+    private final DeviceAuthenticatorController mController;
 
     private DeviceAuthenticatorBridge(
             long nativeDeviceAuthenticator, @Nullable FragmentActivity activity) {
         mNativeDeviceAuthenticator = nativeDeviceAuthenticator;
-        if (activity == null) return;
         mController = new DeviceAuthenticatorController(activity, this);
     }
 
@@ -37,15 +36,13 @@ class DeviceAuthenticatorBridge implements DeviceAuthenticatorController.Delegat
 
     @CalledByNative
     private static DeviceAuthenticatorBridge createForActivity(
-            long nativeDeviceAuthenticator, FragmentActivity activity) {
+            long nativeDeviceAuthenticator, @Nullable FragmentActivity activity) {
         return new DeviceAuthenticatorBridge(nativeDeviceAuthenticator, activity);
     }
 
     @CalledByNative
     @BiometricsAvailability
     int canAuthenticateWithBiometric() {
-        if (mController == null) return BiometricsAvailability.OTHER_ERROR;
-
         return mController.canAuthenticateWithBiometric();
     }
 
@@ -56,17 +53,11 @@ class DeviceAuthenticatorBridge implements DeviceAuthenticatorController.Delegat
      */
     @CalledByNative
     boolean canAuthenticateWithBiometricOrScreenLock() {
-        if (mController == null) return false;
-
         return mController.canAuthenticateWithBiometricOrScreenLock();
     }
 
     @CalledByNative
     void authenticate() {
-        assert mController != null
-                : "The authentication controller must not be null, call"
-                        + " canAuthenticateWithBiometric before this.";
-
         mController.authenticate();
     }
 
@@ -86,7 +77,6 @@ class DeviceAuthenticatorBridge implements DeviceAuthenticatorController.Delegat
 
     @CalledByNative
     void cancel() {
-        if (mController == null) return;
         mController.cancel();
     }
 

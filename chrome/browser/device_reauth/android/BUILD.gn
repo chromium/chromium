@@ -42,3 +42,19 @@ generate_jni("jni_headers") {
 java_cpp_enum("device_reauth_java_enums_srcjar") {
   sources = [ "device_authenticator_bridge.h" ]
 }
+
+robolectric_library("junit") {
+  testonly = true
+
+  sources = [ "java/src/org/chromium/chrome/browser/device_reauth/DeviceAuthenticatorControllerTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_junit_test_support",
+    "//third_party/androidx:androidx_biometric_biometric_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}

@@ -20,6 +20,7 @@ enum class DeviceAuthUIResult {
   kCanceledByUser = 3,
   kFailed = 4,
   kLockout = 5,
+  kFailedNoActivity = 6,
 };
 
 // Different states for biometric availability for a given device. Either no

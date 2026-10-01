@@ -3034,6 +3034,7 @@ shown properly on the user-facing crash UI.
   <int value="6" label="Failed and cancelled by Chrome. Deprecated in M97."/>
   <int value="7" label="Auth still valid"/>
   <int value="8" label="Cancelled by Chrome"/>
+  <int value="9" label="Failed: no activity/window"/>
 </enum>
 
 <!-- LINT.IfChange(DeviceBoundSessionError) -->

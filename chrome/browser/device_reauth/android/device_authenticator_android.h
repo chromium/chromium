@@ -38,7 +38,11 @@ enum class DeviceAuthFinalResult {
   // Recorded when the authentication flow is cancelled by Chrome.
   kCanceledByChrome = 8,
 
-  kMaxValue = kCanceledByChrome,
+  // Recorded when authentication fails because no FragmentActivity is
+  // available.
+  kFailedNoActivity = 9,
+
+  kMaxValue = kFailedNoActivity,
 };
 
 // Android implementation of the DeviceAuthenticator interface.

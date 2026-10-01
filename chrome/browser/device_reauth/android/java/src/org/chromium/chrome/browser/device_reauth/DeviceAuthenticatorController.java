@@ -20,13 +20,16 @@ import androidx.biometric.BiometricPrompt.AuthenticationCallback;
 import androidx.biometric.BiometricPrompt.PromptInfo;
 import androidx.fragment.app.FragmentActivity;
 
+import org.chromium.base.ContextUtils;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 @NullMarked
 class DeviceAuthenticatorController {
-    FragmentActivity mActivity;
-    Delegate mDelegate;
+    private final @Nullable FragmentActivity mActivity;
+    private final Delegate mDelegate;
     private @Nullable BiometricPrompt mBiometricPrompt;
 
     interface Delegate {
@@ -40,7 +43,7 @@ class DeviceAuthenticatorController {
         void onAuthenticationCompleted(@DeviceAuthUIResult int result);
     }
 
-    public DeviceAuthenticatorController(FragmentActivity activity, Delegate delegate) {
+    public DeviceAuthenticatorController(@Nullable FragmentActivity activity, Delegate delegate) {
         mActivity = activity;
         mDelegate = delegate;
     }
@@ -51,7 +54,8 @@ class DeviceAuthenticatorController {
      * @return the enum value, which represents either the auth being available or the error type.
      */
     public @BiometricsAvailability int canAuthenticateWithBiometric() {
-        BiometricManager biometricManager = BiometricManager.from(mActivity);
+        BiometricManager biometricManager =
+                BiometricManager.from(ContextUtils.getApplicationContext());
         switch (biometricManager.canAuthenticate(
                 Authenticators.BIOMETRIC_STRONG | Authenticators.BIOMETRIC_WEAK)) {
             case BIOMETRIC_SUCCESS:
@@ -82,15 +86,31 @@ class DeviceAuthenticatorController {
     }
 
     private boolean hasScreenLockSetUp() {
-        return ((KeyguardManager) mActivity.getSystemService(Context.KEYGUARD_SERVICE))
-                .isDeviceSecure();
+        KeyguardManager keyguardManager =
+                (KeyguardManager)
+                        ContextUtils.getApplicationContext()
+                                .getSystemService(Context.KEYGUARD_SERVICE);
+        return keyguardManager != null && keyguardManager.isDeviceSecure();
     }
 
     /**
      * Launches biometric authentication on the device. {@link canAuthenticateWithBiometric} should
      * be called before this method.
+     *
+     * <p>Authentication requires an {@link FragmentActivity} to host the prompt. If this controller
+     * was created without one, the request fails with {@link
+     * DeviceAuthUIResult#FAILED_NO_ACTIVITY}. The delegate is always notified asynchronously, so
+     * that callers can safely destroy this object from within {@link
+     * Delegate#onAuthenticationCompleted}.
      */
     public void authenticate() {
+        if (mActivity == null) {
+            PostTask.postTask(
+                    TaskTraits.UI_DEFAULT,
+                    () -> onAuthenticationCompleted(DeviceAuthUIResult.FAILED_NO_ACTIVITY));
+            return;
+        }
+
         PromptInfo promptInfo =
                 new PromptInfo.Builder()
                         .setTitle(

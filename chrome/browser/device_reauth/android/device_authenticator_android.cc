@@ -41,6 +41,8 @@ DeviceAuthFinalResult MapUIResultToFinal(DeviceAuthUIResult result) {
     case DeviceAuthUIResult::kFailed:
     case DeviceAuthUIResult::kLockout:
       return DeviceAuthFinalResult::kFailed;
+    case DeviceAuthUIResult::kFailedNoActivity:
+      return DeviceAuthFinalResult::kFailedNoActivity;
   }
 }
 
