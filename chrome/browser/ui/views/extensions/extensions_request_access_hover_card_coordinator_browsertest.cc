@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_dialogs_browsertest.h"
 #include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
+#include "chrome/common/chrome_features.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_features.h"
@@ -15,6 +16,13 @@
 class ExtensionsRequestAccessHoverCardCoordinatorBrowserTest
     : public ExtensionsDialogBrowserTest {
  public:
+  ExtensionsRequestAccessHoverCardCoordinatorBrowserTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{extensions_features::
+                                  kExtensionsMenuAccessControl},
+        /*disabled_features=*/{features::kWebUIExtensionsContainer});
+  }
+
   ExtensionsRequestAccessButton* request_access_button() {
     return extensions_container()->GetRequestAccessButton();
   }
@@ -42,8 +50,7 @@ class ExtensionsRequestAccessHoverCardCoordinatorBrowserTest
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      extensions_features::kExtensionsMenuAccessControl};
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionsRequestAccessHoverCardCoordinatorBrowserTest,
