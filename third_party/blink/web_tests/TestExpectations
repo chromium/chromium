@@ -2514,7 +2514,6 @@ crbug.com/526677153 external/wpt/intersection-observer/transformed-iframe-004-cr
 
 # Floating point output likely flaky
 crbug.com/540322301 external/wpt/webaudio/the-audio-api/the-oscillatornode-interface/sub-sample-start.html [ Failure ]
-crbug.com/567285529 external/wpt/svg/text/scripted/lengthadjust-char-positions.html [ Failure ]
 crbug.com/567254391 virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/triangular.https.any.html?cpu [ Failure ]
 crbug.com/567254391 virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/triangular.https.any.html?gpu [ Failure ]
 crbug.com/567254391 virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/triangular.https.any.html?npu [ Failure ]
