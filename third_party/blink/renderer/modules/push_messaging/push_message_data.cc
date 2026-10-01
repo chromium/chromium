@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_usvstring.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
@@ -38,16 +38,11 @@ PushMessageData* PushMessageData::Create(
     return nullptr;
   switch (message_data->GetContentType()) {
     case V8UnionArrayBufferOrArrayBufferViewOrUSVString::ContentType::
-        kArrayBuffer: {
-      const DOMArrayBuffer* buffer = message_data->GetAsArrayBuffer();
-      return MakeGarbageCollected<PushMessageData>(buffer->ByteSpan());
-    }
+        kArrayBuffer:
     case V8UnionArrayBufferOrArrayBufferViewOrUSVString::ContentType::
-        kArrayBufferView: {
-      const DOMArrayBufferView* buffer_view =
-          message_data->GetAsArrayBufferView().Get();
-      return MakeGarbageCollected<PushMessageData>(buffer_view->ByteSpan());
-    }
+        kArrayBufferView:
+      return MakeGarbageCollected<PushMessageData>(
+          AsSpan<SharedBufferPolicy::kDisallow>(*message_data));
     case V8UnionArrayBufferOrArrayBufferViewOrUSVString::ContentType::
         kUSVString: {
       std::string encoded_string = Utf8Encoding().Encode(

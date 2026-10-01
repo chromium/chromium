@@ -56,7 +56,7 @@
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/webtransport/bidirectional_stream.h"
 #include "third_party/blink/renderer/modules/webtransport/datagram_duplex_stream.h"
@@ -1024,8 +1024,8 @@ class WebTransport::DatagramUnderlyingByteSource final
       return false;
     }
 
-    DOMArrayPiece view(request->view().Get());
-    if (view.ByteLength() < data.size()) {
+    base::span<uint8_t> view = request->view()->ByteSpan();
+    if (view.size() < data.size()) {
       controller_->error(
           GetScriptState(),
           ScriptValue(GetScriptState()->GetIsolate(),
@@ -1034,7 +1034,7 @@ class WebTransport::DatagramUnderlyingByteSource final
                           "supplied view is not large enough.")));
       return true;
     }
-    view.ByteSpan().copy_prefix_from(data);
+    view.copy_prefix_from(data);
     request->respond(GetScriptState(), data.size(), exception_state);
     return true;
   }
@@ -2051,9 +2051,8 @@ void WebTransport::Init(const String& url_for_diagnostics,
       if (!hash->hasAlgorithm() || !hash->hasValue())
         continue;
       StringBuilder value_builder;
-      DOMArrayPiece array_piece(hash->value());
-
-      auto data = array_piece.ByteSpan();
+      base::span<const uint8_t> data =
+          AsSpan<SharedBufferPolicy::kDisallow>(*hash->value());
       for (size_t i = 0; i < data.size(); ++i) {
         if (i > 0) {
           value_builder.Append(":");

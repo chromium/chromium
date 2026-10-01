@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_user_entity_js_on.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/json.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -283,12 +284,11 @@ Matcher<Member<T>> MemberField(Matcher<T*> matcher) {
   return Property("Get", &Member<T>::Get, matcher);
 }
 
-// Matches the Base64URL-encoding of the byte contents of a DOMArrayPiece.
+// Matches the Base64URL-encoding of the byte contents of a buffer source.
 MATCHER_P(Base64URL, matcher, "") {
-  const DOMArrayPiece buffer(arg);
   // WebAuthn Base64URL encoding is always unpadded.
-  String encoded =
-      Base64UrlEncode(buffer.ByteSpan(), Base64UrlEncodePolicy::kOmitPadding);
+  String encoded = Base64UrlEncode(AsSpan<SharedBufferPolicy::kDisallow>(*arg),
+                                   Base64UrlEncodePolicy::kOmitPadding);
   return ExplainMatchResult(matcher, encoded, result_listener);
 }
 

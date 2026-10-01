@@ -66,7 +66,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/page/frame_tree.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/authenticator_assertion_response.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/authenticator_attestation_response.h"
 #include "third_party/blink/renderer/modules/credentialmanagement/credential.h"
@@ -453,7 +453,7 @@ bool IsArrayBufferOrViewBelowSizeLimit(
     return true;
   }
   return base::CheckedNumeric<wtf_size_t>(
-             DOMArrayPiece(buffer_or_view).ByteLength())
+             AsSpan<SharedBufferPolicy::kDisallow>(*buffer_or_view).size())
       .IsValid();
 }
 
@@ -1000,9 +1000,11 @@ bool IsPaymentExtensionValid(const CredentialCreationOptions* options,
 
 const char* validatePRFInputs(
     const blink::AuthenticationExtensionsPRFValues& values) {
-  if (DOMArrayPiece(values.first()).ByteLength() > device::kMaxPRFInputSize ||
-      (values.hasSecond() && DOMArrayPiece(values.second()).ByteLength() >
-                                 device::kMaxPRFInputSize)) {
+  if (AsSpan<SharedBufferPolicy::kDisallow>(*values.first()).size() >
+          device::kMaxPRFInputSize ||
+      (values.hasSecond() &&
+       AsSpan<SharedBufferPolicy::kDisallow>(*values.second()).size() >
+           device::kMaxPRFInputSize)) {
     return "'prf' extension contains excessively large input";
   }
   return nullptr;
@@ -1032,8 +1034,7 @@ const char* validateGetPublicKeyCredentialPRFExtension(
   std::vector<base::span<const uint8_t>> cred_ids;
   cred_ids.reserve(allow_credentials.size());
   for (const auto cred : allow_credentials) {
-    DOMArrayPiece piece(cred->id());
-    cred_ids.emplace_back(piece.Bytes(), piece.ByteLength());
+    cred_ids.push_back(AsSpan<SharedBufferPolicy::kDisallow>(*cred->id()));
   }
   const auto compare = [](base::span<const uint8_t> a,
                           base::span<const uint8_t> b) {
@@ -2340,8 +2341,9 @@ void AuthenticationCredentialsContainer::ForwardRequestToAuthenticator(
           return;
         }
         if (extensions->largeBlob()->hasWrite()) {
-          const size_t write_size =
-              DOMArrayPiece(extensions->largeBlob()->write()).ByteLength();
+          const size_t write_size = AsSpan<SharedBufferPolicy::kDisallow>(
+                                        *extensions->largeBlob()->write())
+                                        .size();
           if (write_size > kMaxLargeBlobSize) {
             resolver->Reject(MakeGarbageCollected<DOMException>(
                 DOMExceptionCode::kNotSupportedError,

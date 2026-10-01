@@ -23,7 +23,7 @@
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_transferring_optimizer.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -362,8 +362,8 @@ ScriptPromise<IDLUndefined> OutgoingStream::SinkWrite(
         script_state, CreateAbortException(IsLocalAbort(false)));
   }
 
-  DOMArrayPiece array_piece(buffer_source);
-  return WriteOrCacheData(script_state, array_piece.ByteSpan());
+  return WriteOrCacheData(
+      script_state, AsSpan<SharedBufferPolicy::kDisallow>(*buffer_source));
 }
 
 // Attempt to write |data|. Cache anything that could not be written

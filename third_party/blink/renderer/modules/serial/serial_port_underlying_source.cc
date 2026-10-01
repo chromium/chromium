@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/streams/readable_byte_stream_controller.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_byob_request.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/serial/serial_port.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -180,9 +179,9 @@ void SerialPortUnderlyingSource::ReadDataOrArmWatcher() {
       pending_pull_ = nullptr;
 
       if (ReadableStreamBYOBRequest* request = controller_->byobRequest()) {
-        DOMArrayPiece view(request->view().Get());
-        buffer = buffer.first(std::min(view.ByteLength(), buffer.size()));
-        view.ByteSpan().copy_prefix_from(buffer);
+        base::span<uint8_t> view = request->view()->ByteSpan();
+        buffer = buffer.first(std::min(view.size(), buffer.size()));
+        view.copy_prefix_from(buffer);
         result = data_pipe_->EndReadData(buffer.size());
         request->respond(script_state_, buffer.size(), exception_state);
       } else {

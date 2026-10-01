@@ -18,7 +18,7 @@
 #include "third_party/blink/renderer/core/streams/transform_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/transform_stream_transformer.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/modules/compression/compression_format.h"
 #include "third_party/blink/renderer/modules/compression/zlib_partition_alloc.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -67,15 +67,15 @@ ScriptPromise<IDLUndefined> DeflateTransformer::Transform(
                                                chunk, exception_state);
   if (exception_state.HadException())
     return EmptyPromise();
-  DOMArrayPiece array_piece(buffer_source);
-  if (array_piece.ByteLength() > std::numeric_limits<wtf_size_t>::max()) {
+  base::span<const uint8_t> array_span =
+      AsSpan<SharedBufferPolicy::kDisallow>(*buffer_source);
+  if (array_span.size() > std::numeric_limits<wtf_size_t>::max()) {
     exception_state.ThrowRangeError(
         "Buffer size exceeds maximum heap object size.");
     return EmptyPromise();
   }
-  Deflate(array_piece.Bytes(),
-          static_cast<wtf_size_t>(array_piece.ByteLength()), IsFinished(false),
-          controller, exception_state);
+  Deflate(array_span.data(), static_cast<wtf_size_t>(array_span.size()),
+          IsFinished(false), controller, exception_state);
   return ToResolvedUndefinedPromise(script_state_.Get());
 }
 

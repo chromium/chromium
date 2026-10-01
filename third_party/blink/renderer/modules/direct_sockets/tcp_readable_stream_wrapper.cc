@@ -16,7 +16,6 @@
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_byob_request.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -109,10 +108,10 @@ void TCPReadableStreamWrapper::Pull() {
       ScriptState::Scope scope(script_state);
 
       if (ReadableStreamBYOBRequest* request = Controller()->byobRequest()) {
-        DOMArrayPiece view(request->view().Get());
+        base::span<uint8_t> view = request->view()->ByteSpan();
         data_buffer =
-            data_buffer.first(std::min(data_buffer.size(), view.ByteLength()));
-        view.ByteSpan().copy_prefix_from(data_buffer);
+            data_buffer.first(std::min(data_buffer.size(), view.size()));
+        view.copy_prefix_from(data_buffer);
         request->respond(script_state, data_buffer.size(), exception_state);
       } else {
         auto buffer = NotShared(DOMUint8Array::Create(data_buffer));

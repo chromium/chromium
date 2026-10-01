@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/core/streams/text_decoder_transformer.h"
 #include "third_party/blink/renderer/core/streams/transform_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/transform_stream_transformer.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/encoding/encoding.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"

@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/tcp_readable_stream_wrapper.h"
@@ -191,8 +192,8 @@ size_t TCPWritableStreamWrapper::WriteDataSynchronously(
 void TCPWritableStreamWrapper::FinalizeWrite() {
   if (buffer_source_) {
     // report to CDP
-    DOMArrayPiece array_piece(buffer_source_);
-    base::span<const uint8_t> data = array_piece.ByteSpan();
+    base::span<const uint8_t> data =
+        AsSpan<SharedBufferPolicy::kDisallow>(*buffer_source_);
     probe::DirectTCPSocketChunkSent(*GetScriptState(), inspector_id_, data);
   }
 

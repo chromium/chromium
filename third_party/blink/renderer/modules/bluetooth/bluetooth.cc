@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_string_unsignedlong.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_bluetooth_advertising_event_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_bluetooth_data_filter_init.h"
@@ -36,6 +37,7 @@
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_device.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_error.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_le_scan.h"
@@ -174,13 +176,14 @@ void CanonicalizeFilter(
     for (const auto& manufacturer_data : filter->manufacturerData()) {
       std::optional<base::span<const uint8_t>> data_prefix_buffer;
       if (manufacturer_data->hasDataPrefix()) {
-        data_prefix_buffer =
-            DOMArrayPiece(manufacturer_data->dataPrefix()).ByteSpan();
+        data_prefix_buffer = AsSpan<SharedBufferPolicy::kDisallow>(
+            *manufacturer_data->dataPrefix());
       }
 
       std::optional<base::span<const uint8_t>> mask_buffer;
       if (manufacturer_data->hasMask()) {
-        mask_buffer = DOMArrayPiece(manufacturer_data->mask()).ByteSpan();
+        mask_buffer =
+            AsSpan<SharedBufferPolicy::kDisallow>(*manufacturer_data->mask());
       }
 
       if (mask_buffer.has_value()) {

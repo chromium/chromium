@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/core/streams/transform_stream_default_controller.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec.h"
@@ -53,19 +53,20 @@ ScriptPromise<IDLUndefined> TextDecoderTransformer::Transform(
     return EmptyPromise();
   }
 
-  DOMArrayPiece array_piece(buffer_source);
+  base::span<const uint8_t> array_span =
+      AsSpan<SharedBufferPolicy::kDisallow>(*buffer_source);
   // Account for up to 3 bytes of partial sequence in TextCodecUtf8 so that
   // a 16-bit StringImpl allocation never exceeds
   // partition_alloc::MaxAllocationSize().
-  if (array_piece.ByteLength() > kStringMaxUCharLength - 3) {
+  if (array_span.size() > kStringMaxUCharLength - 3) {
     exception_state.ThrowRangeError(
         "Buffer size exceeds maximum heap object size.");
     return EmptyPromise();
   }
 
   bool saw_error = false;
-  String output_chunk = decoder_->Decode(
-      array_piece.ByteSpan(), FlushBehavior::kDoNotFlush, fatal_, saw_error);
+  String output_chunk = decoder_->Decode(array_span, FlushBehavior::kDoNotFlush,
+                                         fatal_, saw_error);
   if (fatal_ && saw_error) {
     exception_state.ThrowTypeError("The encoded data is not valid.");
     return EmptyPromise();

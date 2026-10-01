@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_udp_message.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_writable_stream_wrapper.h"
@@ -194,8 +194,7 @@ std::pair<UDPMessage*, bool> UnpackPromiseResult(const V8TestingScope& scope,
 }
 
 String UDPMessageDataToString(const UDPMessage* message) {
-  DOMArrayPiece array_piece{message->data()};
-  return String{array_piece.ByteSpan()};
+  return String{AsSpan<SharedBufferPolicy::kDisallow>(*message->data())};
 }
 
 TEST(UDPReadableStreamWrapperTest, Create) {

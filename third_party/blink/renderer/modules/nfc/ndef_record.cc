@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/keywords.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_data_view.h"
 #include "third_party/blink/renderer/modules/nfc/ndef_message.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -70,20 +70,14 @@ bool MaybeIsBufferSource(const ScriptValue& script_value) {
 bool GetBytesOfBufferSource(const V8BufferSource* buffer_source,
                             Vector<uint8_t>* target,
                             ExceptionState& exception_state) {
-  DOMArrayPiece array_piece;
-  if (buffer_source->IsArrayBuffer()) {
-    array_piece = DOMArrayPiece(buffer_source->GetAsArrayBuffer());
-  } else if (buffer_source->IsArrayBufferView()) {
-    array_piece = DOMArrayPiece(buffer_source->GetAsArrayBufferView().Get());
-  } else {
-    NOTREACHED();
-  }
-  if (!base::CheckedNumeric<wtf_size_t>(array_piece.ByteLength()).IsValid()) {
+  base::span<const uint8_t> bytes =
+      AsSpan<SharedBufferPolicy::kDisallow>(*buffer_source);
+  if (!base::CheckedNumeric<wtf_size_t>(bytes.size()).IsValid()) {
     exception_state.ThrowRangeError(
         "The provided buffer source exceeds the maximum supported length");
     return false;
   }
-  target->append_range(array_piece.ByteSpan());
+  target->append_range(bytes);
   return true;
 }
 

@@ -25,7 +25,7 @@
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/modules/direct_sockets/direct_sockets_features.h"
 #include "third_party/blink/renderer/modules/direct_sockets/stream_wrapper.h"
 #include "third_party/blink/renderer/modules/direct_sockets/udp_socket_mojo_remote.h"
@@ -134,8 +134,8 @@ ScriptPromise<IDLUndefined> UDPWritableStreamWrapper::Write(
     }
   }
 
-  DOMArrayPiece array_piece(message->data());
-  base::span<const uint8_t> data = array_piece.ByteSpan();
+  base::span<const uint8_t> data =
+      AsSpan<SharedBufferPolicy::kDisallow>(*message->data());
   if (data.empty()) {
     exception_state.ThrowTypeError(
         "UDPMessage: 'data' field must not be empty.");

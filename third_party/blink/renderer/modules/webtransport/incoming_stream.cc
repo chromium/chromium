@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/core/streams/underlying_byte_source_base.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/webtransport/web_transport_error.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -279,9 +278,9 @@ size_t IncomingStream::RespondBYOBRequestOrEnqueueBytes(
   ScriptState::Scope scope(script_state_);
 
   if (ReadableStreamBYOBRequest* request = controller_->byobRequest()) {
-    DOMArrayPiece view(request->view().Get());
-    size_t byob_response_length = std::min(view.ByteLength(), source.size());
-    view.ByteSpan().copy_prefix_from(source.first(byob_response_length));
+    base::span<uint8_t> view = request->view()->ByteSpan();
+    size_t byob_response_length = std::min(view.size(), source.size());
+    view.copy_prefix_from(source.first(byob_response_length));
     request->respond(script_state_, byob_response_length, exception_state);
     return byob_response_length;
   }

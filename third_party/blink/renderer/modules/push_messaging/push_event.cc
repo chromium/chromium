@@ -6,7 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_usvstring.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_push_event_init.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
 namespace blink {
@@ -24,11 +24,9 @@ PushEvent::PushEvent(const AtomicString& type,
   if (initializer->hasData()) {
     const auto* message_data = initializer->data();
     if (message_data->IsArrayBuffer() || message_data->IsArrayBufferView()) {
-      DOMArrayPiece array_piece =
-          message_data->IsArrayBuffer()
-              ? DOMArrayPiece(message_data->GetAsArrayBuffer())
-              : DOMArrayPiece(message_data->GetAsArrayBufferView().Get());
-      if (!base::CheckedNumeric<uint32_t>(array_piece.ByteLength()).IsValid()) {
+      base::span<const uint8_t> span =
+          AsSpan<SharedBufferPolicy::kDisallow>(*message_data);
+      if (!base::CheckedNumeric<uint32_t>(span.size()).IsValid()) {
         exception_state.ThrowRangeError(
             "The provided ArrayBuffer exceeds the maximum supported size "
             "(4294967295)");
