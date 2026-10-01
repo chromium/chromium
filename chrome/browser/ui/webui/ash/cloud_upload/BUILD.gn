@@ -31,8 +31,6 @@ static_library("cloud_upload") {
     "cloud_upload_util.h",
     "drive_upload_handler.cc",
     "drive_upload_handler.h",
-    "hats_office_trigger.cc",
-    "hats_office_trigger.h",
     "one_drive_upload_handler.cc",
     "one_drive_upload_handler.h",
   ]
@@ -45,7 +43,6 @@ static_library("cloud_upload") {
     "//chrome/browser/ash/extensions/file_manager",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/file_system_provider",
-    "//chrome/browser/ash/hats",
     "//chrome/browser/notifications",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui/webui/ash/system_web_dialog",
@@ -181,7 +178,6 @@ source_set("unit_tests") {
   sources = [
     "cloud_open_metrics_unittest.cc",
     "cloud_upload_notification_manager_unittest.cc",
-    "hats_office_trigger_unittest.cc",
   ]
 
   deps = [
@@ -192,7 +188,6 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/browser/apps/app_service",
     "//chrome/browser/ash/file_manager",
-    "//chrome/browser/ash/hats",
     "//chrome/browser/ash/login/users:test_support",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/safe_browsing",
