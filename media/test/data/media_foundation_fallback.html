@@ -48,9 +48,25 @@
     Utils.timeLog('Calling update() to trigger crash.');
     const jwkSet = Utils.createJWKData(crashKeyId, key);
     return Promise.all([
-      mediaKeySession.update(jwkSet),
+      // Ignore rejections on update() in case the Mojo connection error from
+      // the CDM crash arrives before the UpdateSession reply is processed.
+      mediaKeySession.update(jwkSet).catch(() => {}),
       waitForKeyStatusChangePromise,
+      mediaKeySession.closed,
     ]);
+  }
+
+  async function isKeySystemDisabled() {
+    try {
+      await navigator.requestMediaKeySystemAccess(testConfig.keySystem, config);
+      Utils.timeLog(
+          'Key system still supported; waiting for browser process to record ' +
+          'CDM crash...');
+      return false;
+    } catch (error) {
+      Utils.timeLog(`Successfully failed as expected with error: ${error}`);
+      return true;
+    }
   }
 
   async function runTest() {
@@ -66,15 +82,21 @@
       return;
     }
 
-    // The next attempt should fail because the key system should now be disabled.
-    Utils.timeLog('Attempting to create session again (expected to fail)...');
+    // The next attempt should fail because the key system should now be
+    // disabled. Poll with Utils.stepWait() because the renderer's MojoCdm
+    // connection error can fire slightly before
+    // BrowserChildProcessHostImpl::OnChildDisconnected() notifies
+    // MediaFoundationServiceMonitor::OnServiceProcessCrashed() on the browser
+    // UI thread.
+    Utils.timeLog(
+        'Attempting to request key system access again (expected to fail)...');
     try {
-      await triggerCdmCrash();
-      // If we get here, the test has failed because the key system was not disabled.
-      Utils.failTest('Key system should not have been supported after multiple crashes.');
-    } catch (error) {
-      Utils.timeLog(`Successfully failed as expected with error: ${error}`);
+      await Utils.stepWait(
+          isKeySystemDisabled,
+          'Key system should not have been supported after multiple crashes.');
       Utils.setResultInTitle('ENDED');
+    } catch (error) {
+      Utils.failTest(error);
     }
   }
 </script>

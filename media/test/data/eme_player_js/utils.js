@@ -280,6 +280,26 @@ Utils.waitForEvent = function(object, event, func) {
   });
 };
 
+// Polls |cond| (a function taking no arguments and returning a boolean or a
+// Promise<boolean>) every |intervalMs| until it evaluates to true, or rejects
+// with |description| after |timeoutMs|. Modeled after testharness.js's
+// Test.prototype.step_wait().
+Utils.stepWait = async function(
+    cond, description = 'Timed out waiting on condition', timeoutMs = 3000,
+    intervalMs = 100) {
+  let remaining = Math.ceil(timeoutMs / intervalMs);
+  while (true) {
+    if (await cond()) {
+      return;
+    }
+    if (remaining <= 0) {
+      throw description;
+    }
+    remaining--;
+    await new Promise(resolve => setTimeout(resolve, intervalMs));
+  }
+};
+
 // Create a loadable session and return the session ID of it as a promise.
 Utils.createSessionToLoad = function(mediaKeys, request) {
   // Create a persistent session and on the message event initialize it
