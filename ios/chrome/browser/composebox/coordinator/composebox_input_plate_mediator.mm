@@ -1784,7 +1784,7 @@ lens::ImageEncodingOptions GetDefaultImageEncodingOptions() {
       _cobrowseBrowserAgent->SetSessionActive(true);
     }
     [_browserCoordinatorHandler hideComposebox];
-    [_sceneHandler showAssistant];
+    [_sceneHandler showAssistantWithNewSession];
     return;
   }
 

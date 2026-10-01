@@ -779,6 +779,11 @@ inline LayoutStateScenePassKey PassKey() {
   [_historyCoordinator start];
 }
 
+- (void)showAssistantWithNewSession {
+  [self closeAssistant];
+  [self showAssistant];
+}
+
 - (void)showAssistant {
   [self showAssistantInMinimizedState:NO];
 }

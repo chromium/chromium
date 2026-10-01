@@ -280,7 +280,7 @@ void LogSelectedNumberChar(NSUInteger textLength) {
         [CobrowseContext cobrowseContextWithSearchQuery:text];
     _cobrowseBrowserAgent->SetCobrowseContext(context);
     _cobrowseBrowserAgent->SetSessionActive(true);
-    [self.sceneHandler showAssistant];
+    [self.sceneHandler showAssistantWithNewSession];
     return;
   }
 

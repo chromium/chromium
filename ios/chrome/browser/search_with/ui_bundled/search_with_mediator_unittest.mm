@@ -116,7 +116,7 @@ TEST_F(SearchWithMediatorTest, ExecutesSearchWithCobrowseWhenEligible) {
                        incognito:NO];
   mediator.sceneHandler = mock_scene_handler_;
 
-  OCMExpect([mock_scene_handler_ showAssistant]);
+  OCMExpect([mock_scene_handler_ showAssistantWithNewSession]);
   [[mock_scene_handler_ reject] openURLInNewTab:[OCMArg any]];
 
   [mediator executeSearchForText:@"hello world"
@@ -149,7 +149,7 @@ TEST_F(SearchWithMediatorTest, ExecutesSearchWithStandardNewTabWhenNonGoogle) {
                        incognito:NO];
   mediator.sceneHandler = mock_scene_handler_;
 
-  [[mock_scene_handler_ reject] showAssistant];
+  [[mock_scene_handler_ reject] showAssistantWithNewSession];
   OCMExpect([mock_scene_handler_ openURLInNewTab:[OCMArg any]]);
 
   [mediator executeSearchForText:@"hello world"
@@ -174,7 +174,7 @@ TEST_F(SearchWithMediatorTest, ExecutesSearchWithStandardNewTabWhenIncognito) {
                        incognito:YES];
   mediator.sceneHandler = mock_scene_handler_;
 
-  [[mock_scene_handler_ reject] showAssistant];
+  [[mock_scene_handler_ reject] showAssistantWithNewSession];
   OCMExpect([mock_scene_handler_ openURLInNewTab:[OCMArg any]]);
 
   [mediator executeSearchForText:@"hello world"
@@ -204,7 +204,7 @@ TEST_F(SearchWithMediatorTest,
                        incognito:NO];
   mediator.sceneHandler = mock_scene_handler_;
 
-  [[mock_scene_handler_ reject] showAssistant];
+  [[mock_scene_handler_ reject] showAssistantWithNewSession];
   OCMExpect([mock_scene_handler_ openURLInNewTab:[OCMArg any]]);
 
   [mediator executeSearchForText:@"hello world"
