@@ -117,7 +117,8 @@ void InferUsernameFieldData(
     const FormData& form_data,
     std::vector<UsernameFieldData>* possible_usernames_data) {
   for (const FormFieldData& field : form_data.fields()) {
-    if (field.name().empty() &&
+    if ((field.name().empty() && field.id_attribute().empty() &&
+         field.label().empty()) ||
         field.form_control_type() == FormControlType::kInputPassword) {
       continue;
     }

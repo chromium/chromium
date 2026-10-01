@@ -329,5 +329,23 @@ TEST_F(HtmlBasedUsernameDetectorTest, HTMLDetectorCache) {
             cache.begin()->second[0]);
 }
 
+TEST_F(HtmlBasedUsernameDetectorTest, ExcludesPasswordsAndEmptyAttributes) {
+  const std::string test_form = R"(
+    <form>
+        <!-- 1. Valid candidate(Priority 3). -->
+        <input type="text" name="loginid" id="valid_login" />
+        <!-- 2. Password field(Priority 2), ignored to prevent shadowing #1. -->
+        <input type="password" name="userPw" id="userPw" />
+        <!-- 3. Missing attributes, excluded early. -->
+        <input type="text" />
+        <!-- 4. Empty name but valid id, still processed. -->
+        <input type="text" name="" id="other_field" />
+        <input type="submit" value="submit" />
+    </form>
+  )";
+
+  PredictAndCheckUsernameId(test_form, "valid_login");
+}
+
 }  // namespace
 }  // namespace autofill
