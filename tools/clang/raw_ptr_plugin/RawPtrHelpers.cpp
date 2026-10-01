@@ -100,7 +100,8 @@ namespace {
 // Walks up the DeclContexts instead of using hasParent() / hasAncestor()
 // because it's much faster and uses much less memory.
 AST_MATCHER(clang::FieldDecl, isImplicitFieldDeclaration) {
-  const auto* record = llvm::dyn_cast<clang::CXXRecordDecl>(Node.getParent());
+  const auto* record =
+      llvm::dyn_cast_if_present<clang::CXXRecordDecl>(Node.getParent());
   if (!record) {
     return false;
   }
@@ -435,7 +436,7 @@ const clang::FieldDecl* GetExplicitDecl(const clang::FieldDecl* field_decl) {
   }
 
   const clang::CXXRecordDecl* record_decl =
-      clang::dyn_cast<clang::CXXRecordDecl>(field_decl->getParent());
+      llvm::dyn_cast_if_present<clang::CXXRecordDecl>(field_decl->getParent());
   if (!record_decl) {
     return field_decl;  // Non-C++ records are never template instantiations.
   }
