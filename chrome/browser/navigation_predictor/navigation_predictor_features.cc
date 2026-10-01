@@ -13,6 +13,20 @@ namespace features {
 // actively navigating.
 BASE_FEATURE(kDeviceBoundSessionsDsePrewarmer, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// See `DsePrewarmerLifetime` for the description of the modes.
+constexpr base::FeatureParam<DsePrewarmerLifetime>::Option
+    kDeviceBoundSessionsDsePrewarmerModeOptions[] = {
+        {DsePrewarmerLifetime::kFollowPreconnector, "follow-preconnector"},
+        {DsePrewarmerLifetime::kStickyRespectingPrefs,
+         "sticky-respecting-prefs"},
+        {DsePrewarmerLifetime::kSticky, "sticky"},
+};
+BASE_FEATURE_ENUM_PARAM(DsePrewarmerLifetime,
+                        kDeviceBoundSessionsDsePrewarmerMode,
+                        &kDeviceBoundSessionsDsePrewarmer,
+                        DsePrewarmerLifetime::kFollowPreconnector,
+                        &kDeviceBoundSessionsDsePrewarmerModeOptions);
+
 // A holdback that prevents the preconnect to measure benefit of the feature.
 BASE_FEATURE(kNavigationPredictorPreconnectHoldback,
 #if BUILDFLAG(IS_ANDROID)

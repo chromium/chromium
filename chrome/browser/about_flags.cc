@@ -3797,6 +3797,20 @@ const FeatureEntry::FeatureVariation
          kStandardBoundSessionCredentialsFederatedSessionsForDevelopers,
          nullptr}};
 
+const FeatureEntry::FeatureParam
+    kDeviceBoundSessionsDsePrewarmerStickyRespectingPrefsParams[] = {
+        {"DeviceBoundSessionsDsePrewarmerMode", "sticky-respecting-prefs"}};
+
+const FeatureEntry::FeatureParam
+    kDeviceBoundSessionsDsePrewarmerStickyParams[] = {
+        {"DeviceBoundSessionsDsePrewarmerMode", "sticky"}};
+
+const FeatureEntry::FeatureVariation
+    kDeviceBoundSessionsDsePrewarmerVariations[] = {
+        {"- Sticky, respecting prefs",
+         kDeviceBoundSessionsDsePrewarmerStickyRespectingPrefsParams, nullptr},
+        {"- Sticky", kDeviceBoundSessionsDsePrewarmerStickyParams, nullptr}};
+
 // Variations on pre-warming delays.
 const FeatureEntry::FeatureParam kGlicWarmingShorterDelays[] = {
     {"glic-warming-delay-ms", "5000"},
@@ -10364,7 +10378,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnableDeviceBoundSessionsDsePrewarmerName,
      flag_descriptions::kEnableDeviceBoundSessionsDsePrewarmerDescription,
      kOsMac | kOsWin | kOsLinux,
-     FEATURE_VALUE_TYPE(features::kDeviceBoundSessionsDsePrewarmer)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kDeviceBoundSessionsDsePrewarmer,
+                                    kDeviceBoundSessionsDsePrewarmerVariations,
+                                    "DeviceBoundSessionsDsePrewarmer")},
     {"enable-standard-device-bound-session-credentials-federated-sessions",
      flag_descriptions::
          kEnableStandardBoundSessionCredentialsFederatedSessionsName,

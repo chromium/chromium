@@ -8,6 +8,7 @@
 #include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "content/public/browser/browser_context.h"
 
 namespace {
@@ -50,7 +51,11 @@ SearchEnginePreconnectorKeyedServiceFactory::GetInstance() {
 SearchEnginePreconnectorKeyedServiceFactory::
     SearchEnginePreconnectorKeyedServiceFactory()
     : ProfileKeyedServiceFactory("SearchEnginePreconnector",
-                                 GetProfileSelections()) {}
+                                 GetProfileSelections()) {
+  // The preconnector may query the default search engine from
+  // StartPreconnecting(), which is called during service creation.
+  DependsOn(TemplateURLServiceFactory::GetInstance());
+}
 
 SearchEnginePreconnectorKeyedServiceFactory::
     ~SearchEnginePreconnectorKeyedServiceFactory() = default;
