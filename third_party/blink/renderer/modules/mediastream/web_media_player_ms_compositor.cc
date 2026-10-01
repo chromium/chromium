@@ -7,14 +7,18 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/moving_window.h"
 #include "base/not_fatal_until.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/common/task_annotator.h"
@@ -46,7 +50,24 @@
 
 namespace blink {
 
+BASE_FEATURE(kWebRtcUseRtpTimestampForPreferredRenderInterval,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 namespace {
+
+// 90 kHz is the standard RTP clock frequency for all current codecs in WebRTC.
+constexpr size_t kRtpFrequencyKilohertz = 90;
+
+// Frame rates above this are recorded in the overflow bucket of the
+// Media.WebMediaPlayerCompositor.RtpRenderInterval.* histograms.
+constexpr int kMaxFrameRateForHistogram = 250;
+
+// Records the frame rate corresponding to |interval| in the histogram |name|.
+void RecordFrameRate(std::string_view name, base::TimeDelta interval) {
+  base::UmaHistogramExactLinear(name,
+                                base::ClampRound(base::Seconds(1) / interval),
+                                kMaxFrameRateForHistogram + 1);
+}
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -211,6 +232,133 @@ bool IsScreencastCapture(MediaStreamDescriptor* media_stream_descriptor) {
 
 }  // anonymous namespace
 
+// Estimates the render interval from 90 kHz RTP timestamps as the median
+// interval over a sliding window, so that frame drops, network or decode
+// jitter, and double-pumped frames do not perturb the estimate.
+// Returns kDefaultInterval if there is no estimate yet or if no frame has
+// been added within kMaxIntervalBeforeReset, e.g. because the stream is
+// paused.
+class WebMediaPlayerMSCompositor::RtpRenderIntervalEstimator {
+ public:
+  // Odd window size ensures the median is a single observed sample without
+  // averaging.
+  static constexpr size_t kWindowSize = 9;
+  static constexpr base::TimeDelta kDefaultInterval = base::Seconds(1.0 / 60.0);
+  static constexpr base::TimeDelta kMinInterval = base::Milliseconds(1);
+  // The estimate is reset if the RTP or wall-clock gap between two frames is
+  // larger than this.
+  static constexpr base::TimeDelta kMaxIntervalBeforeReset =
+      base::Milliseconds(500);
+
+  void AddSample(uint32_t rtp_timestamp, base::TimeTicks now) {
+    if (!last_sample_time_.is_null() &&
+        (now - last_sample_time_) > kMaxIntervalBeforeReset) {
+      Reset();
+    }
+    if (last_rtp_timestamp_.has_value()) {
+      const int32_t rtp_diff =
+          static_cast<int32_t>(rtp_timestamp - *last_rtp_timestamp_);
+      if (rtp_diff > 0) {
+        const base::TimeDelta interval =
+            base::Microseconds(1000.0 * rtp_diff / kRtpFrequencyKilohertz);
+        if (interval > kMaxIntervalBeforeReset) {
+          Reset();
+        } else if (interval >= kMinInterval) {
+          intervals_.AddSample(interval);
+        }
+      }
+    }
+    last_rtp_timestamp_ = rtp_timestamp;
+    last_sample_time_ = now;
+  }
+
+  void Reset() {
+    last_rtp_timestamp_.reset();
+    last_sample_time_ = base::TimeTicks();
+    intervals_.Reset();
+  }
+
+  base::TimeDelta GetInterval(base::TimeTicks now) const {
+    if (intervals_.size() == 0 ||
+        now - last_sample_time_ > kMaxIntervalBeforeReset) {
+      return kDefaultInterval;
+    }
+    // Use the median interval so that frame drops and double-pumped frames do
+    // not affect the estimate. Until the window is full, an even number of
+    // intervals uses the lower middle one, i.e. the higher frame rate.
+    std::array<base::TimeDelta, kWindowSize> intervals;
+    size_t count = 0;
+    for (base::TimeDelta interval : intervals_) {
+      intervals[count++] = interval;
+    }
+    const size_t median_index = (count - 1) / 2;
+    std::nth_element(intervals.begin(), intervals.begin() + median_index,
+                     intervals.begin() + count);
+    return intervals[median_index];
+  }
+
+  // Called for each presented frame that uses the estimate. For metrics,
+  // tracks the range of the estimated interval and of |legacy_interval|, the
+  // interval that would have been reported without the estimate.
+  void OnFramePresented(base::TimeDelta legacy_interval, base::TimeTicks now) {
+    // Skip frames without an estimate, e.g. the first frame after a reset.
+    if (intervals_.size() == 0) {
+      return;
+    }
+    const base::TimeDelta interval = GetInterval(now);
+    if (!presented_intervals_) {
+      presented_intervals_ = PresentedIntervals{.min_rtp = interval,
+                                                .max_rtp = interval,
+                                                .min_legacy = legacy_interval,
+                                                .max_legacy = legacy_interval};
+      return;
+    }
+    PresentedIntervals& presented = *presented_intervals_;
+    presented.min_rtp = std::min(presented.min_rtp, interval);
+    presented.max_rtp = std::max(presented.max_rtp, interval);
+    presented.min_legacy = std::min(presented.min_legacy, legacy_interval);
+    presented.max_legacy = std::max(presented.max_legacy, legacy_interval);
+  }
+
+  // Emits the maximum and minimum frame rates of the intervals tracked since
+  // the last call, if any.
+  void MaybeEmitMetrics() {
+    if (!presented_intervals_) {
+      return;
+    }
+    // The maximum frame rate corresponds to the minimum interval and vice
+    // versa.
+    RecordFrameRate(
+        "Media.WebMediaPlayerCompositor.RtpRenderInterval.MaxFrameRate.Rtp",
+        presented_intervals_->min_rtp);
+    RecordFrameRate(
+        "Media.WebMediaPlayerCompositor.RtpRenderInterval.MinFrameRate.Rtp",
+        presented_intervals_->max_rtp);
+    RecordFrameRate(
+        "Media.WebMediaPlayerCompositor.RtpRenderInterval.MaxFrameRate.Legacy",
+        presented_intervals_->min_legacy);
+    RecordFrameRate(
+        "Media.WebMediaPlayerCompositor.RtpRenderInterval.MinFrameRate.Legacy",
+        presented_intervals_->max_legacy);
+    presented_intervals_.reset();
+  }
+
+ private:
+  struct PresentedIntervals {
+    base::TimeDelta min_rtp;
+    base::TimeDelta max_rtp;
+    base::TimeDelta min_legacy;
+    base::TimeDelta max_legacy;
+  };
+
+  std::optional<uint32_t> last_rtp_timestamp_;
+  base::TimeTicks last_sample_time_;
+  base::MovingWindow<base::TimeDelta, base::MovingWindowFeatures::Iteration>
+      intervals_{kWindowSize};
+  // Tracked by OnFramePresented() since the last call to MaybeEmitMetrics().
+  std::optional<PresentedIntervals> presented_intervals_;
+};
+
 WebMediaPlayerMSCompositor::WebMediaPlayerMSCompositor(
     scoped_refptr<base::SingleThreadTaskRunner>
         video_frame_compositor_task_runner,
@@ -252,6 +400,13 @@ WebMediaPlayerMSCompositor::WebMediaPlayerMSCompositor(
             &WebMediaPlayerMSCompositor::MapTimestampsToRenderTimeTicks,
             CrossThreadUnretained(this))),
         &media_log_);
+  }
+
+  if (base::FeatureList::IsEnabled(
+          kWebRtcUseRtpTimestampForPreferredRenderInterval)) {
+    base::AutoLock auto_lock(current_frame_lock_);
+    rtp_render_interval_estimator_ =
+        std::make_unique<RtpRenderIntervalEstimator>();
   }
 
   // Just for logging purpose.
@@ -392,6 +547,13 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
   TRACE_EVENT_INSTANT("media", "WebMediaPlayerMSCompositor::EnqueueFrame",
                       "Timestamp", frame->timestamp().InMicroseconds());
   ++total_frame_count_;
+
+  if (rtp_render_interval_estimator_ &&
+      frame->metadata().rtp_timestamp.has_value()) {
+    rtp_render_interval_estimator_->AddSample(
+        static_cast<uint32_t>(*frame->metadata().rtp_timestamp),
+        base::TimeTicks::Now());
+  }
 
   // With algorithm off, just let |current_frame_| hold the incoming |frame|.
   if (!rendering_frame_buffer_) {
@@ -572,6 +734,9 @@ base::TimeDelta
 WebMediaPlayerMSCompositor::GetPreferredRenderIntervalInternal() {
   DCHECK(video_frame_compositor_task_runner_->BelongsToCurrentThread());
   current_frame_lock_.AssertAcquired();
+  if (UseRtpRenderInterval()) {
+    return rtp_render_interval_estimator_->GetInterval(base::TimeTicks::Now());
+  }
   if (!rendering_frame_buffer_) {
     DCHECK_GE(last_render_length_, base::TimeDelta());
     return last_render_length_;
@@ -580,6 +745,17 @@ WebMediaPlayerMSCompositor::GetPreferredRenderIntervalInternal() {
   DCHECK_GE(rendering_frame_buffer_->average_frame_duration(),
             base::TimeDelta());
   return rendering_frame_buffer_->average_frame_duration();
+}
+
+bool WebMediaPlayerMSCompositor::UseRtpRenderInterval() const {
+  current_frame_lock_.AssertAcquired();
+  // Remote frames without reference time (e.g. playout-delay 0/0) are
+  // timestamped when they leave the decoder, so their timestamp deltas
+  // include network and decode jitter. Use the RTP timestamps instead.
+  return rtp_render_interval_estimator_ && !rendering_frame_buffer_ &&
+         current_frame_ &&
+         current_frame_->metadata().rtp_timestamp.has_value() &&
+         !current_frame_->metadata().reference_time.has_value();
 }
 
 void WebMediaPlayerMSCompositor::OnContextLost() {
@@ -758,10 +934,6 @@ void WebMediaPlayerMSCompositor::OnFramePresented(
   // One thing to note is that even for normal isochronous video, occlusion can
   // cause frame presentation callbacks to be omitted.
 
-  // 90 kHz is the standard RTP clock frequency for all current codecs in
-  // WebRTC.
-  constexpr size_t kRtpFrequencyKilohertz = 90;
-
   // With zero-hertz screenshare, the maximum nominal gap between frames is 1
   // second. We use 2 seconds to be safe.
   constexpr base::TimeDelta kMaxGapToForget = base::Seconds(2);
@@ -901,6 +1073,11 @@ void WebMediaPlayerMSCompositor::
           capture_reproduction_jitter_ms);
     }
   }
+
+  base::AutoLock auto_lock(current_frame_lock_);
+  if (rtp_render_interval_estimator_) {
+    rtp_render_interval_estimator_->MaybeEmitMetrics();
+  }
 }
 
 void WebMediaPlayerMSCompositor::SetCurrentFrame(
@@ -964,6 +1141,11 @@ void WebMediaPlayerMSCompositor::SetCurrentFrame(
           ? *expected_display_time
           : now;
   last_preferred_render_interval_ = GetPreferredRenderIntervalInternal();
+  if (UseRtpRenderInterval()) {
+    // |last_render_length_| is what would have been reported without the RTP
+    // timestamp based estimate.
+    rtp_render_interval_estimator_->OnFramePresented(last_render_length_, now);
+  }
   ++presented_frames_;
 
   TRACE_EVENT_INSTANT("media", "SetCurrentFrame Timestamps",

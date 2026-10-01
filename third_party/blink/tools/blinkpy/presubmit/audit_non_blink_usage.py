@@ -2211,6 +2211,8 @@ _CONFIG = [
             'media::.+',
             'base::Hash',
             'base::Lock',
+            'base::MovingWindow',
+            'base::MovingWindowFeatures',
             'base::StringPrintf',
             'base::TaskRunner',
             # TODO(crbug.com/704136): Switch to using frame-based task runners.

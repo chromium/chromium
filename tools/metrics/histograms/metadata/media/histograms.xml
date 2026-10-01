@@ -9286,6 +9286,37 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Media.WebMediaPlayerCompositor.RtpRenderInterval.{Statistic}FrameRate.{Source}"
+    units="Hz" expires_after="2027-03-25">
+  <owner>kron@chromium.org</owner>
+  <owner>webrtc-video@google.com</owner>
+  <summary>
+    The {Statistic} preferred frame rate of the frames presented during the last
+    10 seconds, for remote WebRTC video frames that have no reference time (e.g.
+    playout-delay 0/0) and are rendered without a rendering algorithm. {Source}
+    Frames without an RTP timestamp based estimate, e.g. the first frame of a
+    stream or after a pause, are excluded. Frame rates above 250 Hz are recorded
+    in the overflow bucket. The metric is reported every 10 seconds provided
+    relevant frames have been presented.
+  </summary>
+  <token key="Statistic">
+    <variant name="Max" summary="maximum"/>
+    <variant name="Min" summary="minimum"/>
+  </token>
+  <token key="Source">
+    <variant name="Legacy"
+        summary="Legacy: the frame rate that would have been reported without
+                 the RTP timestamp based estimate, i.e. the inverse of the
+                 timestamp delta to the previous frame. Recorded for
+                 comparison."/>
+    <variant name="Rtp"
+        summary="Rtp: the frame rate that is reported to the compositor, i.e.
+                 the inverse of the median of the last 9 RTP timestamp
+                 deltas."/>
+  </token>
+</histogram>
+
 <histogram name="Media.WebrtcVideoPerfHistory.GetPerfInfoCodecProfile"
     enum="VideoCodecProfile" expires_after="2027-03-09">
   <owner>kron@chromium.org</owner>

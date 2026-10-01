@@ -13,6 +13,7 @@ include_rules = [
 
     # web_media_player_ms{_compositor}.cc includes.
     "+base/containers/circular_deque.h",
+    "+base/moving_window.h",
     "+base/task/common/task_annotator.h",
     "+base/values.h",
     "+cc/layers/surface_layer.h",

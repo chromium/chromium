@@ -11,6 +11,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -48,6 +49,9 @@ class SurfaceId;
 namespace blink {
 class MediaStreamDescriptor;
 class WebMediaPlayerMS;
+
+MODULES_EXPORT BASE_DECLARE_FEATURE(
+    kWebRtcUseRtpTimestampForPreferredRenderInterval);
 
 // This class is designed to handle the work load on compositor thread for
 // WebMediaPlayerMS. It will be instantiated on the main thread, but destroyed
@@ -215,6 +219,9 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
     size_t sample_count_ = 0;
   };
 
+  // Estimates the render interval from RTP timestamps. Defined in the .cc file.
+  class RtpRenderIntervalEstimator;
+
   // Ran on the |video_frame_compositor_task_runner_| to initialize
   // |submitter_|
   void InitializeSubmitter();
@@ -265,6 +272,11 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
 
   void OnHasSeenScreencastContentType();
   void MaybeEmitHarmonicFramerateAndReproductionJitter();
+
+  // Returns true if the preferred render interval is estimated by
+  // |rtp_render_interval_estimator_|.
+  bool UseRtpRenderInterval() const
+      EXCLUSIVE_LOCKS_REQUIRED(current_frame_lock_);
 
   // Used for DCHECKs to ensure method calls executed in the correct thread,
   // which is renderer main thread in this class.
@@ -338,6 +350,11 @@ class MODULES_EXPORT WebMediaPlayerMSCompositor
   // FPS for these as they can contain variable-fps content and thus harmonic
   // FPS is uninterpretable.
   bool is_screencast_;
+  // Used by GetPreferredRenderInterval() for frames without reference time.
+  // Only created if kWebRtcUseRtpTimestampForPreferredRenderInterval is
+  // enabled.
+  std::unique_ptr<RtpRenderIntervalEstimator> rtp_render_interval_estimator_
+      GUARDED_BY(current_frame_lock_);
   // Used for emitting data points for harmonic FPS and reproduction jitter.
   base::RepeatingTimer metrics_timer_;
 
