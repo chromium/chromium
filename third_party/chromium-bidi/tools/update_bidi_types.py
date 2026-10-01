@@ -26,7 +26,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-REQUIRED_CDDLCONV_VERSION = "0.1.12"
+REQUIRED_CDDLCONV_VERSION = "0.2.0"
 
 SPECS = [
     {

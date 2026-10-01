@@ -38,7 +38,7 @@ export function parseObject<T extends ZodType>(
   if (parseResult.success) {
     return parseResult.data;
   }
-  const errorMessage = parseResult.error.errors
+  const errorMessage = parseResult.error.issues
     .map(
       (e) =>
         `${e.message} in ` +

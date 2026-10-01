@@ -35,7 +35,7 @@ async def test_add_intercept_invalid_empty_phases(websocket):
             str(
                 {
                     "error": "invalid argument",
-                    "message": 'Array must contain at least 1 element(s) in "phases".',
+                    "message": 'Too small: expected array to have >=1 items in "phases".',
                 }
             )
         ),

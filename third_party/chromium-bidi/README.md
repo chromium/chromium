@@ -519,7 +519,7 @@ TODO(crbug.com/549520316): Automate the sync process.
 
 - **cddlconv**: We use [cddlconv](https://github.com/google/cddlconv) to generate our WebDriverBiDi types.
   1. Install [Rust](https://rustup.rs/).
-  2. Run `cargo install cddlconv@0.1.10`
+  2. Run `cargo install cddlconv@0.2.0`
 - **parse5**: [parse5](https://github.com/inikulin/parse5) is required by the `webdriver-bidi` specification repository to extract CDDL definitions from specifications.
   1. Run `npm install -g parse5`
 

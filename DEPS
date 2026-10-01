@@ -913,10 +913,10 @@ deps = {
     'condition': 'non_git_source',
     'objects': [
       {
-        'object_name': 'chromium-bidi/028c7baf9de02f6ae103b1911ab13d1aeb48f0ddd8fa702f9c150cdaf8cb5f5b',
-        'sha256sum': '028c7baf9de02f6ae103b1911ab13d1aeb48f0ddd8fa702f9c150cdaf8cb5f5b',
-        'size_bytes': 20652261,
-        'generation': 1790318403990383,
+        'object_name': 'chromium-bidi/7da310bf46956828c164237a912a201d21f51220dfbe60df454188dbad75889c',
+        'sha256sum': '7da310bf46956828c164237a912a201d21f51220dfbe60df454188dbad75889c',
+        'size_bytes': 20868481,
+        'generation': 1790681952304657,
         'output_file': 'node_modules.tar.gz',
       },
     ],

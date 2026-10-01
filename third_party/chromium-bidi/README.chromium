@@ -34,9 +34,9 @@ License File: licenses/LICENSE.mitt
 
 Name: zod
 URL: https://zod.dev
-Version: 3.25.76
+Version: 4.6.5
 License: MIT
-Revision: 50606616c0d291caf3210a7521da51271b918333
+Revision: 59bbc03e10c636b9eb3c393dfeb552819774ec21
 Update Mechanism: Manual
 Security Critical: no
 Shipped: yes
