@@ -10,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -25,6 +26,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableMonotonicObservableSupplier;
@@ -34,6 +36,9 @@ import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for {@link ActorExternalTriggerSnackbarController}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -70,7 +75,7 @@ public class ActorExternalTriggerSnackbarControllerTest {
         mController.onPendingActorTaskTrigger();
 
         ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
-        verify(mSnackbarManager, never()).dismissSnackbars(mController);
+        verify(mSnackbarManager).dismissSnackbars(mController);
         verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());
         Snackbar snackbar = snackbarCaptor.getValue();
         assertEquals(
@@ -101,6 +106,77 @@ public class ActorExternalTriggerSnackbarControllerTest {
 
         verify(mSnackbarManager).dismissSnackbars(mController);
         assertFalse(mController.isPendingTaskStartForTesting());
+
+        ShadowLooper.idleMainLooper(2, TimeUnit.MINUTES);
+        assertFalse(mController.isErrorSnackbarShowingForTesting());
+    }
+
+    @Test
+    public void testPreparingTimeout_replacesPreparingSnackbarWithSomethingWentWrong() {
+        mController.onPendingActorTaskTrigger();
+        assertTrue(mController.isPendingTaskStartForTesting());
+        assertFalse(mController.isErrorSnackbarShowingForTesting());
+
+        ShadowLooper.idleMainLooper(2, TimeUnit.MINUTES);
+
+        assertFalse(mController.isPendingTaskStartForTesting());
+        assertTrue(mController.isErrorSnackbarShowingForTesting());
+        ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
+        verify(mSnackbarManager, times(2)).showSnackbar(snackbarCaptor.capture());
+        List<Snackbar> shownSnackbars = snackbarCaptor.getAllValues();
+        assertEquals(
+                mActivity.getString(R.string.actor_notification_title_preparing_to_start_task),
+                shownSnackbars.get(0).getTextForTesting());
+        assertEquals(
+                mActivity.getString(R.string.actor_task_list_bubble_row_failed_task_subtitle),
+                shownSnackbars.get(1).getTextForTesting());
+    }
+
+    @Test
+    public void testPreparingTimeout_dismissesErrorSnackbarWhenNewTaskStarts() {
+        mController.onPendingActorTaskTrigger();
+        ShadowLooper.idleMainLooper(2, TimeUnit.MINUTES);
+        assertTrue(mController.isErrorSnackbarShowingForTesting());
+        clearInvocations(mSnackbarManager);
+
+        mController.onTaskStateChanged(/* taskId= */ 42, ActorTaskState.CREATED);
+
+        verify(mSnackbarManager).dismissSnackbars(mController);
+        assertFalse(mController.isErrorSnackbarShowingForTesting());
+        assertFalse(mController.isPendingTaskStartForTesting());
+    }
+
+    @Test
+    public void testPendingTriggerWhileErrorSnackbarShowing_dismissesErrorAndShowsPreparing() {
+        mController.onPendingActorTaskTrigger();
+        ShadowLooper.idleMainLooper(2, TimeUnit.MINUTES);
+        assertTrue(mController.isErrorSnackbarShowingForTesting());
+        clearInvocations(mSnackbarManager);
+
+        mController.onPendingActorTaskTrigger();
+
+        verify(mSnackbarManager).dismissSnackbars(mController);
+        ArgumentCaptor<Snackbar> snackbarCaptor = ArgumentCaptor.forClass(Snackbar.class);
+        verify(mSnackbarManager).showSnackbar(snackbarCaptor.capture());
+        assertEquals(
+                mActivity.getString(R.string.actor_notification_title_preparing_to_start_task),
+                snackbarCaptor.getValue().getTextForTesting());
+        assertFalse(mController.isErrorSnackbarShowingForTesting());
+        assertTrue(mController.isPendingTaskStartForTesting());
+    }
+
+    @Test
+    public void testPreparingTimeout_doesNotShowErrorWhenCannotShowSnackbar() {
+        mController.onPendingActorTaskTrigger();
+        clearInvocations(mSnackbarManager);
+
+        when(mSnackbarManager.canShowSnackbar()).thenReturn(false);
+        ShadowLooper.idleMainLooper(2, TimeUnit.MINUTES);
+
+        verify(mSnackbarManager).dismissSnackbars(mController);
+        verify(mSnackbarManager, never()).showSnackbar(any());
+        assertFalse(mController.isPendingTaskStartForTesting());
+        assertFalse(mController.isErrorSnackbarShowingForTesting());
     }
 
     @Test
