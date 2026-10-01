@@ -244,6 +244,9 @@ if (is_win) {
         "tag.exe",
         "--manifest_dict_replacements",
         "{'\${INSTALLER_VERSION}':'2.0.0.0', '\${ARCH_REQUIREMENT}':'x86'}",
+        "--sign_flags=/v",
+        "--sign_flags=/fd",
+        "--sign_flags=SHA256",
       ]
     }
   }
