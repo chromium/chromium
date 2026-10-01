@@ -190,8 +190,7 @@ std::unique_ptr<Action::ActionVector> FullStreamUIPolicy::DoReadFilteredData(
   // Execute the query and get results.
   while (query.is_valid() && query.Step()) {
     auto action = base::MakeRefCounted<Action>(
-        query.ColumnString(0),
-        base::Time::FromInternalValue(query.ColumnInt64(1)),
+        query.ColumnString(0), query.ColumnTime(1),
         static_cast<Action::ActionType>(query.ColumnInt(2)),
         query.ColumnString(3), query.ColumnInt64(9));
 
