@@ -118,9 +118,6 @@ RemoteModelExecutionSessionImpl::RemoteModelExecutionSessionImpl(
       client_(std::move(client)) {
   CHECK(callback_);
   CHECK(client_);
-  // TODO(crbug.com/553134125): Refactor out `set_delegate` call as it is only
-  // needed for tests.
-  client_->set_delegate(this);
   if (options_.prewarm_connection) {
     StartConnection();
   }

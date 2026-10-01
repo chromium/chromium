@@ -76,13 +76,15 @@ proto::ExecuteResponse BuildErrorExecuteResponse(
 class FakeStreamingWebSocketClient
     : public streaming_client::StreamingWebSocketClient {
  public:
-  explicit FakeStreamingWebSocketClient(Delegate* delegate = nullptr)
+  FakeStreamingWebSocketClient()
       : StreamingWebSocketClient(
             GURL(),
             /*network_context_getter=*/base::NullCallback(),
             MISSING_TRAFFIC_ANNOTATION,
-            delegate) {}
+            /*delegate=*/nullptr) {}
   ~FakeStreamingWebSocketClient() override = default;
+
+  void set_delegate(Delegate* delegate) { delegate_ = delegate; }
 
   void Connect() override {
     connect_called = true;
@@ -106,42 +108,46 @@ class FakeStreamingWebSocketClient
   }
 
   void SimulateConnected() {
-    CHECK(delegate_for_testing());
-    delegate_for_testing()->OnConnected();
+    CHECK(delegate_);
+    delegate_->OnConnected();
   }
 
   void SimulateMessage(const proto::ExecuteResponse& response) {
-    CHECK(delegate_for_testing());
+    CHECK(delegate_);
     std::string serialized;
     ASSERT_TRUE(response.SerializeToString(&serialized));
-    delegate_for_testing()->OnMessage(
+    delegate_->OnMessage(
         std::vector<uint8_t>(serialized.begin(), serialized.end()));
   }
 
   void SimulateRawMessage(const std::vector<uint8_t>& message) {
-    CHECK(delegate_for_testing());
-    delegate_for_testing()->OnMessage(message);
+    CHECK(delegate_);
+    delegate_->OnMessage(message);
   }
 
   void SimulateConnectionError(const std::string& message,
                                int net_error,
                                int response_code) {
-    CHECK(delegate_for_testing());
-    delegate_for_testing()->OnConnectionError(message, net_error,
-                                              response_code);
+    CHECK(delegate_);
+    delegate_->OnConnectionError(message, net_error, response_code);
   }
 
   void SimulateDropChannel(bool was_clean,
                            uint16_t code = 1000,
                            const std::string& reason = "Closed") {
-    CHECK(delegate_for_testing());
-    delegate_for_testing()->OnDropChannel(was_clean, code, reason,
-                                          /*elapsed=*/std::nullopt);
+    CHECK(delegate_);
+    delegate_->OnDropChannel(was_clean, code, reason,
+                             /*elapsed=*/std::nullopt);
+  }
+
+  void SimulateError(const std::string& message) {
+    CHECK(delegate_);
+    delegate_->OnError(message);
   }
 
   std::vector<network::mojom::HttpHeaderPtr> GetAdditionalHeaders() {
-    CHECK(delegate_for_testing());
-    return delegate_for_testing()->GetAdditionalHeaders();
+    CHECK(delegate_);
+    return delegate_->GetAdditionalHeaders();
   }
 
   std::optional<std::string> GetHeader(std::string_view name) {
@@ -159,6 +165,9 @@ class FakeStreamingWebSocketClient
   base::RepeatingClosure on_connect;
   base::RepeatingClosure on_send;
   base::RepeatingClosure on_close;
+
+ private:
+  raw_ptr<Delegate> delegate_ = nullptr;
 };
 
 class TestObserver : public RemoteModelExecutionSession::Observer {
@@ -207,6 +216,7 @@ class RemoteModelExecutionSessionImplTest : public testing::Test {
         feature, options, response_future_.GetRepeatingCallback(),
         identity_test_env_.identity_manager(), std::move(fake_client),
         /*logger=*/nullptr);
+    fake_client_->set_delegate(session_.get());
     return session_.get();
   }
 
@@ -248,7 +258,6 @@ TEST_F(RemoteModelExecutionSessionImplTest, ConnectsImmediatelyWithPrewarm) {
   EXPECT_TRUE(fake_client_->connect_called);
   EXPECT_EQ(session->connection_state(),
             RemoteModelExecutionSession::ConnectionState::kConnecting);
-  EXPECT_EQ(fake_client_->delegate_for_testing(), session);
 
   fake_client_->SimulateConnected();
 
@@ -331,7 +340,7 @@ TEST_F(RemoteModelExecutionSessionImplTest,
 
   fake_client_->on_send = base::BindRepeating(
       [](FakeStreamingWebSocketClient* client) {
-        client->delegate_for_testing()->OnError("Write failed");
+        client->SimulateError("Write failed");
       },
       base::Unretained(fake_client_.get()));
 
@@ -735,7 +744,7 @@ TEST_F(RemoteModelExecutionSessionImplTest,
 
   fake_client_->on_send = base::BindRepeating(
       [](FakeStreamingWebSocketClient* client) {
-        client->delegate_for_testing()->OnError("Write failed");
+        client->SimulateError("Write failed");
       },
       base::Unretained(fake_client_.get()));
 

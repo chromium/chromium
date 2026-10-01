@@ -98,10 +98,6 @@ class StreamingWebSocketClient
 
   const GURL& service_url() const { return service_url_; }
 
-  // TODO(crbug.com/553134125): Refactor to be test-only.
-  void set_delegate(Delegate* delegate) { delegate_ = delegate; }
-  Delegate* delegate_for_testing() const { return delegate_; }
-
  private:
   enum class State {
     kInitialized,
@@ -145,7 +141,7 @@ class StreamingWebSocketClient
   const GURL service_url_;
   const network::NetworkContextGetter network_context_getter_;
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
-  raw_ptr<Delegate> delegate_;
+  const raw_ptr<Delegate> delegate_;
 
   std::vector<uint8_t> pending_read_data_;
   size_t pending_read_data_index_ = 0;
