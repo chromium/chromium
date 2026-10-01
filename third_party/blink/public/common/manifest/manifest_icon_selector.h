@@ -51,6 +51,13 @@ struct BLINK_COMMON_EXPORT ManifestIconSelectorParams {
   // If true, only icons that can be used for an installed app are considered.
   // Practically, this means that only png, svg, and webp images are considered.
   bool limited_image_types_for_installable_icon = false;
+
+  // If true, icons that have no `type` and whose type can't be inferred from
+  // the URL's file extension are still considered (e.g.
+  // https://cdn.example/abc=s40). Callers setting this must validate the
+  // fetched content themselves, e.g. by decoding it as an image. Has no effect
+  // if `limited_image_types_for_installable_icon` is true.
+  bool allow_icons_with_unknown_type = false;
 };
 
 // Selects the landscape or square icon with the supported image MIME types and

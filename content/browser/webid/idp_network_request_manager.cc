@@ -235,6 +235,10 @@ GURL FindBestMatchingIconUrl(const base::ListValue* icons_value,
   params.ideal_icon_size_in_px = brand_icon_ideal_size;
   params.minimum_icon_size_in_px = brand_icon_minimum_size;
   params.purpose = blink::mojom::ManifestImageResource_Purpose::MASKABLE;
+  // FedCM icons don't specify a `type`, and some icon URLs (e.g. RP icons
+  // served from image CDNs) have no file extension to infer one from. Don't
+  // reject those; the downloaded bytes are validated by DecodeImageIsolated().
+  params.allow_icons_with_unknown_type = true;
   auto result =
       blink::ManifestIconSelector::FindBestMatchingIcon(icons, params);
   return result ? result->icon_url : GURL();

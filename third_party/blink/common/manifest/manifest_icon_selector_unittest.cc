@@ -127,6 +127,50 @@ TEST_P(ManifestIconSelectorTest, MIMETypeFiltering) {
   EXPECT_EQ("http://foo.com/icon.png", result->icon_url.spec());
 }
 
+TEST_P(ManifestIconSelectorTest, UnknownTypeFiltering) {
+  // An icon with no `type` and no file extension has an unknown type.
+  const std::string kUrl = "http://foo.com/icon=s40";
+  std::vector<gfx::Size> sizes;
+  sizes.push_back(gfx::Size(width_to_height_ratio() * 1024, 1024));
+  std::vector<blink::Manifest::ImageResource> icons;
+  icons.push_back(CreateIcon(kUrl, "", sizes, Purpose::ANY));
+
+  ManifestIconSelectorParams params;
+  params.ideal_icon_size_in_px = kIdealIconSize;
+  params.minimum_icon_size_in_px = kMinimumIconSize;
+  params.purpose = Purpose::ANY;
+  params.max_width_to_height_ratio = width_to_height_ratio();
+
+  // Rejected by default.
+  EXPECT_FALSE(
+      ManifestIconSelector::FindBestMatchingIcon(icons, params).has_value());
+
+  // Accepted when the caller opts in.
+  params.allow_icons_with_unknown_type = true;
+  auto result = ManifestIconSelector::FindBestMatchingIcon(icons, params);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(kUrl, result->icon_url.spec());
+
+  // Still rejected for installable icons.
+  params.limited_image_types_for_installable_icon = true;
+  EXPECT_FALSE(
+      ManifestIconSelector::FindBestMatchingIcon(icons, params).has_value());
+  params.limited_image_types_for_installable_icon = false;
+
+  // An explicit unsupported type is still rejected.
+  icons.clear();
+  icons.push_back(CreateIcon(kUrl, "video/mp4", sizes, Purpose::ANY));
+  EXPECT_FALSE(
+      ManifestIconSelector::FindBestMatchingIcon(icons, params).has_value());
+
+  // An unsupported type inferred from the extension is still rejected.
+  icons.clear();
+  icons.push_back(
+      CreateIcon("http://foo.com/icon.mp4", "", sizes, Purpose::ANY));
+  EXPECT_FALSE(
+      ManifestIconSelector::FindBestMatchingIcon(icons, params).has_value());
+}
+
 TEST_P(ManifestIconSelectorTest, PurposeFiltering) {
   // Icons with purpose specified to non-matching purpose are ignored.
   std::vector<gfx::Size> sizes_48;

@@ -1304,6 +1304,29 @@ TEST_F(IdpNetworkRequestManagerTest, ParseConfigBrandingMinSize) {
   }
 }
 
+// Icon URLs without a file extension (e.g. from image CDNs) are accepted.
+TEST_F(IdpNetworkRequestManagerTest, ParseConfigBrandingIconWithoutExtension) {
+  const char test_json[] = R"({
+  "branding" : {
+    "icons": [
+      {
+        "url": "https://cdn.example.com/abc123=s32",
+        "size": 32
+      }
+    ]
+  }
+  })";
+
+  FetchStatus fetch_status;
+  IdentityProviderMetadata idp_metadata;
+  std::tie(fetch_status, idp_metadata) =
+      SendConfigRequestAndWaitForResponse(test_json);
+
+  EXPECT_EQ(ParseStatus::kSuccess, fetch_status.parse_status);
+  EXPECT_EQ("https://cdn.example.com/abc123=s32",
+            idp_metadata.brand_icon_url.spec());
+}
+
 // Tests various scenarios on resolving branding icon's url for given config
 // url.
 TEST_F(IdpNetworkRequestManagerTest, ParseConfigBrandingIconReltivePath) {
@@ -2205,6 +2228,21 @@ TEST_F(IdpNetworkRequestManagerTest, FetchClientMetadataInvalidUrls) {
   ASSERT_EQ(GURL(), data.privacy_policy_url);
   ASSERT_EQ(GURL(), data.terms_of_service_url);
   ASSERT_EQ(GURL(), data.brand_icon_url);
+}
+
+// Icon URLs without a file extension (e.g. from image CDNs) are accepted.
+TEST_F(IdpNetworkRequestManagerTest, FetchClientMetadataIconWithoutExtension) {
+  const std::string brand_icon_url = "https://cdn.rp.example/abc123=s40";
+
+  IdpClientMetadata data = SendClientMetadataRequestAndWaitForResponse(
+      /*client_id=*/"123", R"({"icons": [
+      {
+        "url":  ")" + brand_icon_url +
+                               R"(",
+        "size": 40
+      }
+    ]})");
+  EXPECT_EQ(GURL(brand_icon_url), data.brand_icon_url);
 }
 
 TEST_F(IdpNetworkRequestManagerTest, WellKnownWrongMimeType) {
