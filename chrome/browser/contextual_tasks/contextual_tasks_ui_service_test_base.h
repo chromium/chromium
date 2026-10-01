@@ -127,6 +127,10 @@ class MockUiServiceForUrlIntercept : public ContextualTasksUiService {
               (override));
   MOCK_METHOD(bool, IsUrlForPrimaryAccount, (const GURL& url), (override));
   MOCK_METHOD(bool, IsSignedInToBrowserWithValidCredentials, (), (override));
+  MOCK_METHOD(bool,
+              IsSignedInForWebContentsOnInit,
+              (content::WebContents * web_contents),
+              (override));
   MOCK_METHOD(void,
               LoadUrlInWebContents,
               (const GURL& url,

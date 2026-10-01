@@ -392,6 +392,19 @@ content::WebContents* ContextualTasksWebView::OpenURLFromTab(
     return nullptr;
   }
 
+  // Allow the side panel's own WebUI (`chrome://contextual-tasks`) to reload or
+  // navigate itself in-place without forwarding to the active browser tab.
+  if (params.disposition == WindowOpenDisposition::CURRENT_TAB &&
+      ContextualTasksUiService::IsContextualTasksUrl(params.url)) {
+    content::NavigationController::LoadURLParams load_url_params(params);
+    base::WeakPtr<content::NavigationHandle> navigation_handle =
+        source->GetController().LoadURLWithParams(load_url_params);
+    if (navigation_handle_callback && navigation_handle) {
+      std::move(navigation_handle_callback).Run(*navigation_handle);
+    }
+    return source;
+  }
+
   if (!browser_window_) {
     VLOG(1) << "Cannot find browser to open URL from tab.";
     return nullptr;

@@ -231,7 +231,10 @@ class ContextualTasksProxyingURLLoaderFactory
       base::SelfDeletingPassKey key)
       : network::SelfDeletingURLLoaderFactory(std::move(loader_receiver), key),
         ui_service_(ui_service ? ui_service->GetWeakPtr() : nullptr),
-        web_contents_(web_contents) {
+        web_contents_(web_contents),
+        is_initially_signed_in_(
+            ui_service &&
+            ui_service->IsSignedInForWebContentsOnInit(web_contents.get())) {
     target_factory_.Bind(std::move(target_factory));
     target_factory_.set_disconnect_handler(base::BindOnce(
         &ContextualTasksProxyingURLLoaderFactory::OnTargetFactoryDisconnected,
@@ -323,6 +326,26 @@ class ContextualTasksProxyingURLLoaderFactory
       return;
     }
 
+    // Only request an Authorization header if the user was signed in when the
+    // WebUI initialized and remains signed in with valid credentials. If the
+    // sign-in state changed mid-session, prompt the user to reload.
+    const bool is_currently_signed_in =
+        ui_service_->IsSignedInToBrowserWithValidCredentials();
+    if (!is_initially_signed_in_ || !is_currently_signed_in) {
+      if (is_initially_signed_in_ != is_currently_signed_in) {
+        ui_service_->ShowOauthErrorDialogForWebContents(web_contents_);
+      }
+      OMNIBOX_LOG("nav_trace")
+          << "ContextualTasks navigation trace: CreateLoaderAndStart "
+             "proceeding without auth token (initially_signed_in="
+          << is_initially_signed_in_
+          << ", currently_signed_in=" << is_currently_signed_in << ")";
+      target_factory_->CreateLoaderAndStart(
+          std::move(loader), request_id, options, modified_request,
+          std::move(client), traffic_annotation);
+      return;
+    }
+
     OMNIBOX_LOG("nav_trace") << "ContextualTasks navigation trace: CreateLoaderAndStart "
                "asking ContextualTasksUiService for AccessToken";
     ui_service_->GetAccessToken(
@@ -379,6 +402,7 @@ class ContextualTasksProxyingURLLoaderFactory
   mojo::Remote<network::mojom::URLLoaderFactory> target_factory_;
   base::WeakPtr<ContextualTasksUiService> ui_service_;
   base::WeakPtr<content::WebContents> web_contents_;
+  const bool is_initially_signed_in_;
   base::WeakPtrFactory<ContextualTasksProxyingURLLoaderFactory> weak_factory_{
       this};
 };
