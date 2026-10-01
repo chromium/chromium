@@ -1,5 +1,6 @@
 include_rules = [
   # keep-sorted start
+  "+ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h",
   "+ios/chrome/browser/feature_engagement/model",
   "+ios/chrome/browser/ntp/model/new_tab_page_util.h",
   "+ios/chrome/browser/passwords/model",
