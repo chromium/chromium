@@ -7,10 +7,11 @@ use std::panic::PanicHookInfo;
 
 /// Routes `panic!` and similar macros to `LOG(FATAL)`.
 pub(crate) fn init() {
-    // We don't call `std::panic::take_hook` to store and use the old/default hook.
-    // Among other things this means that `RUST_BACKTRACE=1` has no effect on
-    // Chromium binaries/tests.  This seems okay, because `LOG(FATAL)` should
-    // print the callstack (and task trace, crash keys, etc.).
+    // We don't call `std::panic::take_hook` to store and use the old/default
+    // hook. Among other things this means that `RUST_BACKTRACE=1` has no
+    // effect on Chromium binaries/tests.  This seems okay, because
+    // `LOG(FATAL)` should print the callstack (and task trace, crash keys,
+    // etc.).
     std::panic::set_hook(Box::new(panic_hook));
 }
 

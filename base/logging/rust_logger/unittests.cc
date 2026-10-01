@@ -9,6 +9,7 @@
 #include "base/logging/rust_logger/test_support.rs.h"
 #include "base/test/gtest_util.h"
 #include "base/test/mock_log.h"
+#include "base/test/scoped_logging_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
@@ -28,18 +29,45 @@ class RustLogIntegrationTest : public testing::Test {
 // TODO(crbug.com/374023535): Logging does not work in component builds.
 #if defined(COMPONENT_BUILD)
 #define MAYBE_CheckAllSeverity DISABLED_CheckAllSeverity
+#define MAYBE_CheckVerboseSeverity DISABLED_CheckVerboseSeverity
 #else
 #define MAYBE_CheckAllSeverity CheckAllSeverity
+#define MAYBE_CheckVerboseSeverity CheckVerboseSeverity
 #endif
 TEST_F(RustLogIntegrationTest, MAYBE_CheckAllSeverity) {
-#if DCHECK_IS_ON()
-  // Debug and Trace logs from Rust are discarded when DCHECK_IS_ON() is false;
-  // otherwise, they are logged as info.
+  // Debug and Trace logs from Rust are mapped to VLOG(1) and VLOG(2)
+  // respectively. At default log level (INFO), they are not emitted.
   EXPECT_CALL(log_, Log(logging::LOGGING_INFO, _, _, _,
-                        testing::HasSubstr("test trace log")))
+                        testing::HasSubstr("test info log")))
       .WillOnce(testing::Return(true));
 
-  EXPECT_CALL(log_, Log(logging::LOGGING_INFO, _, _, _,
+  EXPECT_CALL(log_, Log(logging::LOGGING_WARNING, _, _, _,
+                        testing::HasSubstr("test warning log")))
+      .WillOnce(testing::Return(true));
+
+  EXPECT_CALL(log_, Log(logging::LOGGING_ERROR, _, _, _,
+                        testing::HasSubstr("test error log")))
+      .WillOnce(testing::Return(true));
+
+  log_trace_from_rust();
+  log_debug_from_rust();
+  log_info_from_rust();
+  log_warning_from_rust();
+  log_error_from_rust();
+}
+
+TEST_F(RustLogIntegrationTest, MAYBE_CheckVerboseSeverity) {
+  logging::ScopedLoggingSettings scoped_logging_settings;
+  logging::SetMinLogLevel(-2);
+
+#if DCHECK_IS_ON()
+  // Debug and Trace logs from Rust are discarded when DCHECK_IS_ON() is false;
+  // otherwise, they are logged with verbose severities (-1 and -2).
+  EXPECT_CALL(log_,
+              Log(/*severity=*/-2, _, _, _, testing::HasSubstr("test trace log")))
+      .WillOnce(testing::Return(true));
+
+  EXPECT_CALL(log_, Log(logging::LOGGING_VERBOSE, _, _, _,
                         testing::HasSubstr("test debug log")))
       .WillOnce(testing::Return(true));
 #endif

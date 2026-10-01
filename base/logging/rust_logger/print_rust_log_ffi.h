@@ -27,7 +27,7 @@ struct RustFmtArguments;
 // TODO(danakj): Should this helper function be replaced with C-like apis next
 // to logging::LogMessage that Rust uses more directly?
 void print_rust_log(const RustFmtArguments& msg,
-                    const char* file,
+                    rust::Slice<const uint8_t> file,
                     int32_t line,
                     int32_t severity);
 

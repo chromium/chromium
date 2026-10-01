@@ -18,29 +18,39 @@ struct RustLogger;
 
 impl log::Log for RustLogger {
     fn enabled(&self, _metadata: &log::Metadata) -> bool {
-        // Always enabled, as it's controlled by command line flags managed by the C++
-        // implementation.
+        // Always enabled, as it's controlled by command line flags managed by
+        // the C++ implementation.
         true
     }
 
     fn log(&self, record: &log::Record) {
-        // TODO(thiruak1024@gmail.com): Rather than using heap allocation to pass |msg|
-        // and |file|, we should return a pointer and size object to leverage the
-        // string_view object in C++. https://crbug.com/371112531
-        let file = CString::new(record.file().unwrap())
+        // TODO(thiruak1024@gmail.com): Rather than using heap allocation to
+        // pass |msg| and |file|, we should return a pointer and size
+        // object to leverage the string_view object in C++. https://crbug.com/371112531
+        let file = CString::new(record.file().unwrap_or(""))
             .expect("CString::new failed to create the log file name!");
 
-        // Note that Debug and Trace level logs are dropped at
-        // compile time at the macro call-site when DCHECK_IS_ON()
-        // is false. This is done through a Cargo feature.
-        //
-        // TODO(danakj, lukasza): Consider mapping some of these levels to `VLOG(INFO)`
-        // instead of `LOG(INFO)`.
+        // Note that Debug and Trace level logs are dropped at compile time at
+        // the macro call-site when debug assertions are off (which corresponds
+        // to `DCHECK_IS_ON()` being false). This is done through the
+        // `release_max_level_info` Cargo feature on the `log` crate.
+        // Therefore, `log::debug!` and `log::trace!` effectively behave as
+        // `DVLOG(1)` and `DVLOG(2)`.
         let severity = match record.metadata().level() {
             log::Level::Error => print_rust_log::LogSeverity::Error,
             log::Level::Warn => print_rust_log::LogSeverity::Warning,
-            log::Level::Info | log::Level::Debug | log::Level::Trace => {
-                print_rust_log::LogSeverity::Info
+            log::Level::Info => print_rust_log::LogSeverity::Info,
+            log::Level::Debug => {
+                #[cfg(not(debug_assertions))]
+                panic!("`log::debug!` should be compiled out in release builds");
+                #[cfg(debug_assertions)]
+                print_rust_log::LogSeverity::Verbose(1)
+            }
+            log::Level::Trace => {
+                #[cfg(not(debug_assertions))]
+                panic!("`log::trace!` should be compiled out in release builds");
+                #[cfg(debug_assertions)]
+                print_rust_log::LogSeverity::Verbose(2)
             }
         };
 

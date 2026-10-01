@@ -22,7 +22,14 @@ mod ffi {
 /// * `log::error!` => `LOG(ERROR)`
 /// * `log::warn!` => `LOG(WARNING)`
 /// * `log::info!` => `LOG(INFO)`
+/// * `log::debug!` => `DVLOG(1)`
+/// * `log::trace!` => `DVLOG(2)`
 /// * `panic!` => `LOG(FATAL)`
+///
+/// Note that in release builds (when `DCHECK_IS_ON()` is false), `log::debug!`
+/// and `log::trace!` are compiled out at the call-site via the
+/// `release_max_level_info` Cargo feature on the `log` crate, behaving like
+/// `DVLOG(1)` and `DVLOG(2)`.
 fn init_rust_logging() {
     // Gracefully handle being called more than once - e.g. when
     // `//base/logging_unittest.cc` uses `logging::ScopedLoggingSettings` which

@@ -35,14 +35,14 @@ pub(crate) fn print_rust_log(
 
     // SAFETY: Safety requirements of the C++ function are met as follows:
     //
-    // * `filename.as_ptr()`: `CStr` promises to return a pointer to a
-    //   NUL-terminated string
+    // * `filename.to_bytes_with_nul()`: `CStr` promises to return a non-empty
+    //   slice representing a NUL-terminated string.
     unsafe {
         ffi::print_rust_log(
             &wrapped_args,
-            filename.as_ptr(),
+            filename.to_bytes_with_nul(),
             line.unwrap_or(0) as i32,
-            severity as i32,
+            severity.as_log_severity(),
         )
     }
 }
@@ -50,13 +50,32 @@ pub(crate) fn print_rust_log(
 /// Strongly-typed Rust equivalent of `base::LogSeverity`.
 ///
 /// (`bindgen`-generated `LogSeverity` is just a type alias for `u32`.)
+#[allow(dead_code)]  // Needed because `Verbose` values are ignored in release builds.
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-#[repr(i32)]
 pub enum LogSeverity {
-    Fatal = LOGGING_FATAL,
-    Error = LOGGING_ERROR,
-    Warning = LOGGING_WARNING,
-    Info = LOGGING_INFO,
+    Fatal,
+    Error,
+    Warning,
+    Info,
+    /// Verbose logging level (e.g. `1` for `VLOG(1)`, `2` for `VLOG(2)`).
+    /// In Chromium logging, verbosities are represented as negative integers
+    /// (`-(verbose_level)`).
+    Verbose(i32),
+}
+
+impl LogSeverity {
+    pub fn as_log_severity(self) -> i32 {
+        match self {
+            LogSeverity::Fatal => LOGGING_FATAL,
+            LogSeverity::Error => LOGGING_ERROR,
+            LogSeverity::Warning => LOGGING_WARNING,
+            LogSeverity::Info => LOGGING_INFO,
+            LogSeverity::Verbose(level) => {
+                debug_assert!(level > 0);
+                -level
+            }
+        }
+    }
 }
 
 /// Wrap a `std::fmt::Arguments` to pass to C++ code.
@@ -96,16 +115,14 @@ mod ffi {
         fn write_str(self: Pin<&mut LogMessageRustWrapper>, s: &str);
 
         /// Emit a log message to the C++-managed logger. `msg` is passed back
-        /// to `format_to_wrapped_message` to be stringified.
+        /// to `format_to_wrapped_message` to be stringified. Positive values
+        /// of `severity` map to logging level, negative values map to verbosity
+        /// at the specified level (e.g. -1 is VLOG(1)).
         ///
         /// # Safety
         ///
-        /// `file` must be a valid pointer to a NUL-terminated C string.
-        unsafe fn print_rust_log(
-            msg: &RustFmtArguments,
-            file: *const c_char,
-            line: i32,
-            severity: i32,
-        );
+        /// `file` must be a non-empty slice representing a NUL-terminated C
+        /// string.
+        unsafe fn print_rust_log(msg: &RustFmtArguments, file: &[u8], line: i32, severity: i32);
     }
 }

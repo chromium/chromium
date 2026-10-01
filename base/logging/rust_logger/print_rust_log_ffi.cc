@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "base/logging/log_severity.h"
 #include "base/logging/rust_logger/print_rust_log.rs.h"
@@ -24,10 +25,22 @@ void LogMessageRustWrapper::write_str(rust::Str str) {
 }
 
 void print_rust_log(const RustFmtArguments& msg,
-                    const char* file,
+                    rust::Slice<const uint8_t> file,
                     int32_t line,
                     int32_t severity) {
-  LogMessageRustWrapper wrapper(file, line, severity);
+  CHECK(!file.empty());
+  const char* file_cstr = reinterpret_cast<const char*>(file.data());
+  if (severity < 0) {
+    int verbose_level = -severity;
+    if (verbose_level > ENABLED_VLOG_LEVEL &&
+        verbose_level > ::logging::GetVlogLevelHelper(file_cstr, file.size())) {
+      return;
+    }
+  } else if (!::logging::ShouldCreateLogMessage(severity)) {
+    return;
+  }
+
+  LogMessageRustWrapper wrapper(file_cstr, line, severity);
   msg.format(wrapper);
 }
 
