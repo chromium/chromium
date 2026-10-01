@@ -398,7 +398,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling libFuzzer
   # and whatever else without interference from each other.
-  'libfuzzer_revision': '9951014982324338ea932dfdba259aeb1cca70f7',
+  'libfuzzer_revision': '0b3fee09950deb348b0490c19a0a3f9b0cd51526',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling fuzztest
   # and whatever else without interference from each other.
