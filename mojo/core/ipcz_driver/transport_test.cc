@@ -1084,6 +1084,94 @@ TEST_F(MojoIpczTransportTest, TransportFromUntrustedBroker) {
       });
 }
 
+DEFINE_TEST_CLIENT_TEST_WITH_PIPE(TransportFromLessPrivilegedBrokerClient,
+                                  MojoIpczTransportTest,
+                                  h) {
+  // This client simulates an elevated process which has accepted an invitation
+  // from a less-privileged broker (see Invitation::Accept). The broker must not
+  // be trusted to vouch for other transports sent to this process.
+  scoped_refptr<Transport> transport = ReceiveTransport(h);
+  transport->set_is_elevated(true);
+  transport->set_is_trusted_by_peer(true);
+#if BUILDFLAG(IS_WIN)
+  // Like an elevated process, use a handle to the broker's process to
+  // duplicate handles sent by the broker.
+  transport->set_remote_process(base::Process::OpenWithAccess(
+      base::GetParentProcessId(base::GetCurrentProcessHandle()),
+      PROCESS_DUP_HANDLE));
+  ASSERT_TRUE(transport->remote_process().IsValid());
+#endif
+
+  TransportListener listener(*transport);
+
+  // A transport claiming a trusted peer, then a transport to a broker.
+  for (int i = 0; i < 2; i++) {
+    TestMessage message = listener.WaitForNextMessage();
+    scoped_refptr<ObjectBase> object;
+    const IpczResult result = transport->DeserializeObject(
+        base::span(message.bytes), base::span(message.handles), object);
+    EXPECT_EQ(result, IPCZ_RESULT_INVALID_ARGUMENT);
+    EXPECT_FALSE(object);
+    TestMessage("got null").Transmit(*transport);
+  }
+
+  // An untrusted transport to a non-broker is accepted, and is elevated
+  // relative to its peer just like the transport which conveyed it.
+  {
+    scoped_refptr<Transport> received = DeserializeObjectFrom<Transport>(
+        *transport, listener.WaitForNextMessage());
+    EXPECT_FALSE(received->is_peer_trusted());
+    EXPECT_TRUE(received->is_elevated());
+    EXPECT_EQ(Transport::kNonBroker, received->destination_type());
+    TestMessage("got untrusted").Transmit(*transport);
+  }
+
+  EXPECT_EQ(MOJO_RESULT_OK, MojoClose(h));
+}
+
+TEST_F(MojoIpczTransportTest, TransportFromLessPrivilegedBroker) {
+  RunTestClientWithController(
+      "TransportFromLessPrivilegedBrokerClient", [&](ClientController& c) {
+        // Configure this end like a broker which has invited an elevated
+        // process (see Invitation::Send).
+        scoped_refptr<Transport> transport =
+            CreateAndSendTransport(c.pipe(), c.process());
+        transport->set_is_peer_trusted(true);
+        transport->set_is_peer_elevated(true);
+
+        TransportListener listener(*transport);
+
+        {
+          auto [our_new_transport, their_new_transport] = Transport::CreatePair(
+              Transport::kNonBroker, Transport::kNonBroker);
+          their_new_transport->set_is_peer_trusted(true);
+          SerializeObjectFor(*transport, std::move(their_new_transport))
+              .Transmit(*transport);
+          EXPECT_EQ("got null", listener.WaitForNextMessage().as_string());
+        }
+
+        {
+          auto [our_new_transport, their_new_transport] =
+              Transport::CreatePair(Transport::kBroker, Transport::kNonBroker);
+          EXPECT_EQ(Transport::kBroker,
+                    their_new_transport->destination_type());
+          SerializeObjectFor(*transport, std::move(their_new_transport))
+              .Transmit(*transport);
+          EXPECT_EQ("got null", listener.WaitForNextMessage().as_string());
+        }
+
+        {
+          auto [our_new_transport, their_new_transport] = Transport::CreatePair(
+              Transport::kNonBroker, Transport::kNonBroker);
+          SerializeObjectFor(*transport, std::move(their_new_transport))
+              .Transmit(*transport);
+          EXPECT_EQ("got untrusted", listener.WaitForNextMessage().as_string());
+        }
+
+        listener.WaitForDisconnect();
+      });
+}
+
 TEST_F(MojoIpczTransportTest, TransportFromUntrusted) {
 #if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/414392683) default to untrusted/untracked.

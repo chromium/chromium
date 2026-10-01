@@ -694,18 +694,21 @@ scoped_refptr<Transport> Transport::Deserialize(
 
   // A non-broker implicitly trusts its broker; otherwise the peer must be
   // explicitly trusted. When both endpoints are brokers, the peer being a
-  // broker does not by itself confer any trust on this end.
-  const bool is_source_trusted = from_transport.is_source_trusted();
+  // broker does not by itself confer any trust on this end. Additionally, an
+  // elevated endpoint does not trust a less-privileged peer (e.g. the broker
+  // which invited it) to vouch for other transports.
+  const bool is_source_at_least_as_privileged =
+      from_transport.is_source_trusted() && !from_transport.is_elevated();
 
   const bool is_new_peer_trusted = header.is_peer_trusted;
   const bool is_trusted_by_peer = header.is_trusted_by_peer;
 
-  if (is_new_peer_trusted && !is_source_trusted) {
+  if (is_new_peer_trusted && !is_source_at_least_as_privileged) {
     // Untrusted transports cannot send us trusted transports.
     return nullptr;
   }
 
-  if (header.destination_type == kBroker && !is_source_trusted) {
+  if (header.destination_type == kBroker && !is_source_at_least_as_privileged) {
     // Do not accept broker connections from untrusted transports.
     return nullptr;
   }
@@ -721,6 +724,10 @@ scoped_refptr<Transport> Transport::Deserialize(
              from_transport.remote_process_trust());
   transport->set_is_peer_trusted(is_new_peer_trusted);
   transport->set_is_trusted_by_peer(is_trusted_by_peer);
+
+  // A transport adopted by an elevated endpoint is likewise elevated relative
+  // to its peer, which was introduced by a less-privileged node.
+  transport->set_is_elevated(from_transport.is_elevated());
 
   // Inherit the IO task used by the receiving Transport. Deserialized
   // transports are always adopted by the receiving node, and we want any given
