@@ -43,7 +43,6 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
@@ -1598,9 +1597,9 @@ public class ChromeAndroidTaskIntegrationTest {
     @MinAndroidSdkLevel(Build.VERSION_CODES.CINNAMON_BUN)
     @RequiresApi(Build.VERSION_CODES.CINNAMON_BUN)
     @Restriction(DeviceFormFactor.DESKTOP_FREEFORM)
-    @DisabledTest(message = "https://crbug.com/565864749")
     public void restore_restoresTaskBounds() {
         assumeBrowserRole();
+
         // Arrange: Launch ChromeTabbedActivity and find its ChromeAndroidTask.
         WebPageStation webPageStation = mFreshCtaTransitTestRule.startOnBlankPage();
         var chromeTabbedActivity = webPageStation.getActivity();
@@ -1609,8 +1608,6 @@ public class ChromeAndroidTaskIntegrationTest {
 
         Rect currentBoundsInDp =
                 ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::getBoundsInDp);
-        Rect currentBoundsInPx =
-                chromeTabbedActivity.getWindowManager().getCurrentWindowMetrics().getBounds();
         Rect newBoundsInDp =
                 new Rect(
                         currentBoundsInDp.left + 50,
@@ -1623,41 +1620,28 @@ public class ChromeAndroidTaskIntegrationTest {
 
         // Wait for bounds to be applied so that WindowStateManager updates restored bounds.
         CriteriaHelper.pollUiThread(
-                () -> {
-                    assertBoundsCloseEnoughInDp(newBoundsInDp, chromeAndroidTask.getBoundsInDp());
-                });
+                () ->
+                        chromeAndroidTask.getState() == ChromeAndroidTaskImpl.State.IDLE
+                                && areBoundsCloseEnough(
+                                        newBoundsInDp, chromeAndroidTask.getBoundsInDp()));
 
         // Maximize it.
         ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::maximize);
 
         CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            chromeAndroidTask
-                                    .getPendingActionManagerForTesting()
-                                    .isMaximizedFuture(chromeAndroidTask.getState()),
-                            Matchers.nullValue());
-                    Criteria.checkThat(
-                            chromeTabbedActivity
-                                    .getWindowManager()
-                                    .getCurrentWindowMetrics()
-                                    .getBounds(),
-                            Matchers.not(currentBoundsInPx));
-                });
+                () ->
+                        chromeAndroidTask.getState() == ChromeAndroidTaskImpl.State.IDLE
+                                && chromeAndroidTask.isMaximized());
 
         // Act: Call restore.
         ThreadUtils.runOnUiThreadBlocking(chromeAndroidTask::restore);
 
         // Assert: Verify that the bounds are restored.
         CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            chromeAndroidTask
-                                    .getPendingActionManagerForTesting()
-                                    .getFutureBoundsInDp(),
-                            Matchers.nullValue());
-                    assertBoundsCloseEnoughInDp(newBoundsInDp, chromeAndroidTask.getBoundsInDp());
-                });
+                () ->
+                        chromeAndroidTask.getState() == ChromeAndroidTaskImpl.State.IDLE
+                                && areBoundsCloseEnough(
+                                        newBoundsInDp, chromeAndroidTask.getBoundsInDp()));
     }
 
     @Test
