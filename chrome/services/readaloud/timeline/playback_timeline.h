@@ -32,8 +32,10 @@ class PlaybackTimeline {
   PlaybackTimeline& operator=(const PlaybackTimeline&) = delete;
   ~PlaybackTimeline();
 
-  // Initializes the timeline by concatenating input segments into a unified
-  // document buffer and splitting into canonical atomic sentence chunks.
+  // Initializes the timeline by storing input segments in a unified backing
+  // buffer and splitting each segment into canonical atomic sentence chunks
+  // while preserving per-segment speaker tags and document-wide code unit
+  // offsets.
   void SetTextContent(
       const std::vector<read_aloud::mojom::TextSegmentPtr>& segments,
       std::optional<base::i18n::LanguageTag> locale_tag = std::nullopt);

@@ -5,13 +5,42 @@
 #include "chrome/services/readaloud/timeline/playback_timeline.h"
 
 #include <memory>
+#include <ostream>
+#include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
 #include "chrome/common/readaloud/read_aloud.mojom.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace readaloud {
+
+void PrintTo(const TextChunk& chunk, std::ostream* os) {
+  *os << "TextChunk{text=\"" << base::UTF16ToUTF8(chunk.text)
+      << "\", start_code_unit_offset=" << chunk.start_code_unit_offset
+      << ", speaker=" << chunk.speaker << "}";
+}
+
+namespace {
+
+using ::testing::ElementsAre;
+
+read_aloud::mojom::TextSegmentPtr MakeSegment(
+    uint32_t index,
+    std::u16string_view text,
+    read_aloud::mojom::Speaker speaker =
+        read_aloud::mojom::Speaker::kSpeaker1) {
+  auto segment = read_aloud::mojom::TextSegment::New();
+  segment->segment_index = index;
+  segment->text = std::u16string(text);
+  segment->speaker = speaker;
+  return segment;
+}
+
+}  // namespace
 
 class PlaybackTimelineTest : public testing::Test {
  protected:
@@ -26,53 +55,36 @@ TEST_F(PlaybackTimelineTest, DefaultConstructorIsEmpty) {
 
 TEST_F(PlaybackTimelineTest, SetTextContentPopulatesChunks) {
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
-  auto seg0 = read_aloud::mojom::TextSegment::New();
-  seg0->segment_index = 0;
-  seg0->text = u"First sentence. Second sentence.";
-  segments.push_back(std::move(seg0));
+  segments.push_back(MakeSegment(0, u"First sentence. Second sentence."));
 
   timeline_.SetTextContent(segments);
-  EXPECT_EQ(timeline_.GetChunkCount(), 2u);
-  EXPECT_EQ(timeline_.chunks()[0].text, u"First sentence.");
-  EXPECT_EQ(timeline_.chunks()[0].start_code_unit_offset, 0u);
-  EXPECT_EQ(timeline_.chunks()[1].text, u"Second sentence.");
-  EXPECT_EQ(timeline_.chunks()[1].start_code_unit_offset, 16u);
+  EXPECT_THAT(timeline_.chunks(),
+              ElementsAre(TextChunk{.text = u"First sentence.",
+                                    .start_code_unit_offset = 0u},
+                          TextChunk{.text = u"Second sentence.",
+                                    .start_code_unit_offset = 16u}));
 
   timeline_.Clear();
   EXPECT_EQ(timeline_.GetChunkCount(), 0u);
   EXPECT_TRUE(timeline_.chunks().empty());
 }
 
-TEST_F(PlaybackTimelineTest,
-       SetTextContentConcatenatesMultipleSegmentsIntoSingleDocument) {
+TEST_F(PlaybackTimelineTest, SetTextContentAcrossMultipleSegments) {
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
-  {
-    auto seg0 = read_aloud::mojom::TextSegment::New();
-    seg0->segment_index = 0;
-    seg0->text = u"First sentence. ";
-    segments.push_back(std::move(seg0));
-  }
-  {
-    auto seg1 = read_aloud::mojom::TextSegment::New();
-    seg1->segment_index = 1;
-    seg1->text = u"Second sentence.";
-    segments.push_back(std::move(seg1));
-  }
+  segments.push_back(MakeSegment(0, u"First sentence. "));
+  segments.push_back(MakeSegment(1, u"Second sentence."));
 
   timeline_.SetTextContent(segments);
-  EXPECT_EQ(timeline_.GetChunkCount(), 2u);
-  EXPECT_EQ(timeline_.chunks()[0].text, u"First sentence.");
-  EXPECT_EQ(timeline_.chunks()[0].start_code_unit_offset, 0u);
-  EXPECT_EQ(timeline_.chunks()[1].text, u"Second sentence.");
-  EXPECT_EQ(timeline_.chunks()[1].start_code_unit_offset, 16u);
+  EXPECT_THAT(timeline_.chunks(),
+              ElementsAre(TextChunk{.text = u"First sentence.",
+                                    .start_code_unit_offset = 0u},
+                          TextChunk{.text = u"Second sentence.",
+                                    .start_code_unit_offset = 16u}));
 }
 
 TEST_F(PlaybackTimelineTest, ClearResetsTimelineState) {
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
-  auto seg0 = read_aloud::mojom::TextSegment::New();
-  seg0->segment_index = 0;
-  seg0->text = u"Sample sentence.";
-  segments.push_back(std::move(seg0));
+  segments.push_back(MakeSegment(0, u"Sample sentence."));
 
   timeline_.SetTextContent(segments);
   EXPECT_EQ(timeline_.GetChunkCount(), 1u);
@@ -114,10 +126,7 @@ TEST_F(PlaybackTimelineTest, TimelinePositionStructDefaultsAndHelpers) {
 
 TEST_F(PlaybackTimelineTest, ResolveSegmentOffsetValid) {
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
-  auto seg0 = read_aloud::mojom::TextSegment::New();
-  seg0->segment_index = 0;
-  seg0->text = u"First sentence. Second sentence.";
-  segments.push_back(std::move(seg0));
+  segments.push_back(MakeSegment(0, u"First sentence. Second sentence."));
 
   timeline_.SetTextContent(segments);
 
@@ -154,10 +163,7 @@ TEST_F(PlaybackTimelineTest, ResolveSegmentOffsetOutOfBounds) {
                    .has_value());
 
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
-  auto seg0 = read_aloud::mojom::TextSegment::New();
-  seg0->segment_index = 0;
-  seg0->text = u"Short.";
-  segments.push_back(std::move(seg0));
+  segments.push_back(MakeSegment(0, u"Short."));
 
   timeline_.SetTextContent(segments);
 
@@ -173,10 +179,7 @@ TEST_F(PlaybackTimelineTest, ResolveSegmentOffsetOutOfBounds) {
 
 TEST_F(PlaybackTimelineTest, ResolveSegmentOffsetMidSentence) {
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
-  auto seg0 = read_aloud::mojom::TextSegment::New();
-  seg0->segment_index = 0;
-  seg0->text = u"First sentence. Second sentence.";
-  segments.push_back(std::move(seg0));
+  segments.push_back(MakeSegment(0, u"First sentence. Second sentence."));
 
   timeline_.SetTextContent(segments);
 
@@ -194,21 +197,10 @@ TEST_F(PlaybackTimelineTest, ResolveSegmentOffsetMidSentence) {
             31 * PlaybackTimeline::kEstimatedDurationPerChar);
 }
 
-TEST_F(PlaybackTimelineTest,
-       ResolveSegmentOffsetAcrossConcatenatedSegmentBoundaries) {
+TEST_F(PlaybackTimelineTest, ResolveSegmentOffsetAcrossSegments) {
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
-  {
-    auto seg0 = read_aloud::mojom::TextSegment::New();
-    seg0->segment_index = 0;
-    seg0->text = u"Sentence one. ";
-    segments.push_back(std::move(seg0));
-  }
-  {
-    auto seg1 = read_aloud::mojom::TextSegment::New();
-    seg1->segment_index = 1;
-    seg1->text = u"Sentence two.";
-    segments.push_back(std::move(seg1));
-  }
+  segments.push_back(MakeSegment(0, u"Sentence one. "));
+  segments.push_back(MakeSegment(1, u"Sentence two."));
 
   timeline_.SetTextContent(segments);
 
@@ -229,10 +221,7 @@ TEST_F(PlaybackTimelineTest,
 TEST_F(PlaybackTimelineTest,
        UpdateSentenceDurationAdjustsSubsequentChunkTimeOffsets) {
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
-  auto seg = read_aloud::mojom::TextSegment::New();
-  seg->segment_index = 0;
-  seg->text = u"Sentence one. Sentence two.";
-  segments.push_back(std::move(seg));
+  segments.push_back(MakeSegment(0, u"Sentence one. Sentence two."));
 
   timeline_.SetTextContent(segments);
 
@@ -260,10 +249,7 @@ TEST_F(PlaybackTimelineTest,
 
 TEST_F(PlaybackTimelineTest, UpdateSentenceDurationMultipleChunks) {
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
-  auto seg = read_aloud::mojom::TextSegment::New();
-  seg->segment_index = 0;
-  seg->text = u"One. Two. Three.";
-  segments.push_back(std::move(seg));
+  segments.push_back(MakeSegment(0, u"One. Two. Three."));
 
   timeline_.SetTextContent(segments);
 
@@ -284,10 +270,7 @@ TEST_F(PlaybackTimelineTest, UpdateSentenceDurationMultipleChunks) {
 
 TEST_F(PlaybackTimelineTest, UpdateSentenceDurationOverwritesPreviousDeviation) {
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
-  auto seg = read_aloud::mojom::TextSegment::New();
-  seg->segment_index = 0;
-  seg->text = u"Sentence one. Sentence two.";
-  segments.push_back(std::move(seg));
+  segments.push_back(MakeSegment(0, u"Sentence one. Sentence two."));
 
   timeline_.SetTextContent(segments);
 
@@ -305,12 +288,9 @@ TEST_F(PlaybackTimelineTest, UpdateSentenceDurationOverwritesPreviousDeviation) 
 
 TEST_F(PlaybackTimelineTest, ResolveTimeOffsetSnapsMidWordToWordStart) {
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
-  auto seg0 = read_aloud::mojom::TextSegment::New();
-  seg0->segment_index = 0;
   // Chunk 0: "First sentence." (15 chars)
   // Word 0: "First" [0, 5), Word 1: "sentence" [6, 14)
-  seg0->text = u"First sentence. Second sentence.";
-  segments.push_back(std::move(seg0));
+  segments.push_back(MakeSegment(0, u"First sentence. Second sentence."));
 
   timeline_.SetTextContent(segments);
 
@@ -346,10 +326,7 @@ TEST_F(PlaybackTimelineTest, ResolveTimeOffsetSnapsMidWordToWordStart) {
 
 TEST_F(PlaybackTimelineTest, ResolveTimeOffsetUsesSynthesizedWordTimings) {
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
-  auto seg0 = read_aloud::mojom::TextSegment::New();
-  seg0->segment_index = 0;
-  seg0->text = u"Hello world.";
-  segments.push_back(std::move(seg0));
+  segments.push_back(MakeSegment(0, u"Hello world."));
 
   timeline_.SetTextContent(segments);
 
@@ -390,10 +367,7 @@ TEST_F(PlaybackTimelineTest, ResolveTimeOffsetUsesSynthesizedWordTimings) {
 TEST_F(PlaybackTimelineTest,
        ResolveTimeOffsetUsesWordTimingsInLaterChunkWithCollapsedWhitespace) {
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
-  auto seg0 = read_aloud::mojom::TextSegment::New();
-  seg0->segment_index = 0;
-  seg0->text = u"First.   Second word.";
-  segments.push_back(std::move(seg0));
+  segments.push_back(MakeSegment(0, u"First.   Second word."));
 
   timeline_.SetTextContent(segments);
   ASSERT_EQ(timeline_.GetChunkCount(), 2u);
@@ -426,10 +400,7 @@ TEST_F(PlaybackTimelineTest,
 
 TEST_F(PlaybackTimelineTest, ResolveTimeOffsetNegativeOrMaxReturnsNullopt) {
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
-  auto seg0 = read_aloud::mojom::TextSegment::New();
-  seg0->segment_index = 0;
-  seg0->text = u"Sentence.";
-  segments.push_back(std::move(seg0));
+  segments.push_back(MakeSegment(0, u"Sentence."));
 
   timeline_.SetTextContent(segments);
 
@@ -439,18 +410,8 @@ TEST_F(PlaybackTimelineTest, ResolveTimeOffsetNegativeOrMaxReturnsNullopt) {
 
 TEST_F(PlaybackTimelineTest, ResolveTimeOffsetMidDocument) {
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
-  {
-    auto seg = read_aloud::mojom::TextSegment::New();
-    seg->segment_index = 0;
-    seg->text = u"Sentence one. ";
-    segments.push_back(std::move(seg));
-  }
-  {
-    auto seg = read_aloud::mojom::TextSegment::New();
-    seg->segment_index = 1;
-    seg->text = u"Sentence two is longer.";
-    segments.push_back(std::move(seg));
-  }
+  segments.push_back(MakeSegment(0, u"Sentence one. "));
+  segments.push_back(MakeSegment(1, u"Sentence two is longer."));
 
   timeline_.SetTextContent(segments);
 
@@ -471,10 +432,7 @@ TEST_F(PlaybackTimelineTest, ResolveTimeOffsetMidDocument) {
 
 TEST_F(PlaybackTimelineTest, ResolveTimeOffsetExactBoundarySnapping) {
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
-  auto seg = read_aloud::mojom::TextSegment::New();
-  seg->segment_index = 0;
-  seg->text = u"Chunk zero. Chunk one.";
-  segments.push_back(std::move(seg));
+  segments.push_back(MakeSegment(0, u"Chunk zero. Chunk one."));
 
   timeline_.SetTextContent(segments);
 
@@ -491,10 +449,7 @@ TEST_F(PlaybackTimelineTest, ResolveTimeOffsetExactBoundarySnapping) {
 
 TEST_F(PlaybackTimelineTest, ResolveTimeOffsetAtExactDocumentEndBoundary) {
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
-  auto seg = read_aloud::mojom::TextSegment::New();
-  seg->segment_index = 0;
-  seg->text = u"Only sentence.";
-  segments.push_back(std::move(seg));
+  segments.push_back(MakeSegment(0, u"Only sentence."));
 
   timeline_.SetTextContent(segments);
 
@@ -509,10 +464,7 @@ TEST_F(PlaybackTimelineTest, ResolveTimeOffsetAtExactDocumentEndBoundary) {
 
 TEST_F(PlaybackTimelineTest, ResolveTimeOffsetBeyondDocumentEndClampsToEnd) {
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
-  auto seg = read_aloud::mojom::TextSegment::New();
-  seg->segment_index = 0;
-  seg->text = u"Only sentence.";
-  segments.push_back(std::move(seg));
+  segments.push_back(MakeSegment(0, u"Only sentence."));
 
   timeline_.SetTextContent(segments);
 
@@ -526,10 +478,7 @@ TEST_F(PlaybackTimelineTest, ResolveTimeOffsetBeyondDocumentEndClampsToEnd) {
 
 TEST_F(PlaybackTimelineTest, ResolveTimeOffsetWithDeviations) {
   std::vector<read_aloud::mojom::TextSegmentPtr> segments;
-  auto seg = read_aloud::mojom::TextSegment::New();
-  seg->segment_index = 0;
-  seg->text = u"Sentence one. Sentence two.";
-  segments.push_back(std::move(seg));
+  segments.push_back(MakeSegment(0, u"Sentence one. Sentence two."));
 
   timeline_.SetTextContent(segments);
 
@@ -560,6 +509,100 @@ TEST_F(PlaybackTimelineTest, ResolveTimeOffsetWithDeviations) {
   ASSERT_TRUE(pos1.has_value());
   EXPECT_EQ(pos1->chunk.index, 1u);
   EXPECT_EQ(pos1->time.start_time, kTimeInShiftedChunk1);
+}
+
+TEST_F(PlaybackTimelineTest,
+       SetTextContentMultiSegmentMonotonicDocumentOffsets) {
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  segments.push_back(MakeSegment(0, u"First sentence. Second sentence! "));
+  segments.push_back(MakeSegment(1, u"Third sentence? Fourth sentence."));
+
+  timeline_.SetTextContent(segments, base::i18n::GetKnownLanguageTag("en-US"));
+
+  EXPECT_THAT(
+      timeline_.chunks(),
+      ElementsAre(
+          TextChunk{.text = u"First sentence.", .start_code_unit_offset = 0u},
+          TextChunk{.text = u"Second sentence!", .start_code_unit_offset = 16u},
+          TextChunk{.text = u"Third sentence?", .start_code_unit_offset = 33u},
+          TextChunk{.text = u"Fourth sentence.",
+                    .start_code_unit_offset = 49u}));
+}
+
+TEST_F(PlaybackTimelineTest, SetTextContentInterleavedNullSegment) {
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  segments.push_back(MakeSegment(0, u"First sentence."));  // Length 15
+  // Interleaved null segment should be safely skipped.
+  segments.push_back(nullptr);
+  segments.push_back(MakeSegment(1, u"Second sentence."));  // Length 16
+
+  timeline_.SetTextContent(segments, base::i18n::GetKnownLanguageTag("en-US"));
+
+  EXPECT_THAT(timeline_.chunks(),
+              ElementsAre(TextChunk{.text = u"First sentence.",
+                                    .start_code_unit_offset = 0u},
+                          TextChunk{.text = u"Second sentence.",
+                                    .start_code_unit_offset = 16u}));
+}
+
+TEST_F(PlaybackTimelineTest, SetTextContentInterleavedEmptySegment) {
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  segments.push_back(MakeSegment(0, u"First sentence."));  // Length 15
+  // Interleaved empty segment should be safely skipped without accumulating.
+  segments.push_back(MakeSegment(1, u""));
+  segments.push_back(MakeSegment(2, u"Second sentence."));  // Length 16
+
+  timeline_.SetTextContent(segments, base::i18n::GetKnownLanguageTag("en-US"));
+
+  EXPECT_THAT(timeline_.chunks(),
+              ElementsAre(TextChunk{.text = u"First sentence.",
+                                    .start_code_unit_offset = 0u},
+                          TextChunk{.text = u"Second sentence.",
+                                    .start_code_unit_offset = 16u}));
+}
+
+// Chunk offsets live in the highlighter's coordinate space: the trimmed chunks
+// joined by exactly one separator. Whitespace trimmed by the chunker, including
+// whole whitespace-only segments, must not contribute.
+TEST_F(PlaybackTimelineTest, SetTextContentAssignsJoinedTrimmedOffsets) {
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  segments.push_back(MakeSegment(0, u"  First sentence.   Second one!  "));
+  segments.push_back(MakeSegment(1, u"   \t\n   "));
+  segments.push_back(MakeSegment(2, u"\nThird."));
+
+  timeline_.SetTextContent(segments, base::i18n::GetKnownLanguageTag("en-US"));
+
+  EXPECT_THAT(
+      timeline_.chunks(),
+      ElementsAre(
+          TextChunk{.text = u"First sentence.", .start_code_unit_offset = 0u},
+          // len("First sentence.") + 1 separator.
+          TextChunk{.text = u"Second one!", .start_code_unit_offset = 16u},
+          // 16 + len("Second one!") + 1 separator.
+          TextChunk{.text = u"Third.", .start_code_unit_offset = 28u}));
+}
+
+TEST_F(PlaybackTimelineTest, SetTextContentPreservesSpeakerPerSegment) {
+  std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+  segments.push_back(MakeSegment(0,
+                                 u"Host first sentence. Host second sentence.",
+                                 read_aloud::mojom::Speaker::kSpeaker1));
+  segments.push_back(MakeSegment(1, u"Guest answering.",
+                                 read_aloud::mojom::Speaker::kSpeaker2));
+
+  timeline_.SetTextContent(segments, base::i18n::GetKnownLanguageTag("en-US"));
+
+  EXPECT_THAT(
+      timeline_.chunks(),
+      ElementsAre(TextChunk{.text = u"Host first sentence.",
+                            .start_code_unit_offset = 0u,
+                            .speaker = read_aloud::mojom::Speaker::kSpeaker1},
+                  TextChunk{.text = u"Host second sentence.",
+                            .start_code_unit_offset = 21u,
+                            .speaker = read_aloud::mojom::Speaker::kSpeaker1},
+                  TextChunk{.text = u"Guest answering.",
+                            .start_code_unit_offset = 43u,
+                            .speaker = read_aloud::mojom::Speaker::kSpeaker2}));
 }
 
 }  // namespace readaloud
