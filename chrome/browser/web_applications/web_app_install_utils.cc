@@ -60,7 +60,6 @@
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "net/base/mime_util.h"
 #include "net/http/http_util.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"

@@ -35,7 +35,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
-#include "third_party/blink/public/common/features.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/widget_test.h"
@@ -327,8 +326,6 @@ IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
 class WebAppBlockedMigrationInfoBarDelegateUiTest
     : public SupportsTestUi<WebAppBrowserTestBase, TestBrowserUi> {
  public:
-  WebAppBlockedMigrationInfoBarDelegateUiTest() = default;
-
   void ShowUi(const std::string& name) override {
     ASSERT_TRUE(embedded_test_server()->Start());
     const GURL app_url = embedded_test_server()->GetURL(

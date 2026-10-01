@@ -26,7 +26,6 @@
 #include "components/page_load_metrics/browser/metrics_web_contents_observer.h"
 #include "components/webapps/browser/features.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-shared.h"
 #include "url/origin.h"
 
