@@ -27,12 +27,16 @@
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/file_select_listener.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page_navigator.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/view_type_utils.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
@@ -367,13 +371,81 @@ content::WebContents* ContextualTasksWebView::OpenURLFromTab(
     const content::OpenURLParams& params,
     base::OnceCallback<void(content::NavigationHandle&)>
         navigation_handle_callback) {
-  BrowserWindowInterface* browser = webui::GetBrowserWindowInterface(source);
-  if (browser) {
-    return browser->OpenURL(params, std::move(navigation_handle_callback));
-  } else {
+  if (!source || source != web_contents()) {
+    return nullptr;
+  }
+
+  if (!browser_window_) {
     VLOG(1) << "Cannot find browser to open URL from tab.";
     return nullptr;
   }
+
+  tabs::TabInterface* active_tab = browser_window_->GetActiveTabInterface();
+  if (!active_tab) {
+    return nullptr;
+  }
+
+  // Resolve the frame that requested this navigation.
+  content::RenderFrameHost* source_rfh = nullptr;
+  if (params.initiator_frame_token.has_value()) {
+    source_rfh = content::RenderFrameHost::FromFrameToken(
+        content::GlobalRenderFrameHostToken(
+            params.initiator_process_id, params.initiator_frame_token.value()));
+  } else {
+    source_rfh = content::RenderFrameHost::FromID(
+        params.source_render_process_id, params.source_render_frame_id);
+  }
+  // Only an initiator that actually lives in this side panel (including an
+  // embedded <webview> guest) may be trusted; treat anything else as an unknown
+  // initiator so that its state (notably user activation) is not attributed to
+  // this side panel.
+  if (source_rfh && content::WebContents::FromRenderFrameHost(source_rfh)
+                            ->GetOutermostWebContents() != web_contents()) {
+    source_rfh = nullptr;
+  }
+
+  // Restrict forwarded navigations to valid HTTP/HTTPS URLs.
+  if (!params.url.is_valid() || !params.url.SchemeIsHTTPOrHTTPS()) {
+    return nullptr;
+  }
+
+  content::OpenURLParams modified_params = params;
+
+  // Sanitize `user_gesture` and `disposition` unless the request was created by
+  // the browser for a context menu command. Note that IPCs sent from the legacy
+  // `chrome://contextual-tasks` WebUI frame have `is_renderer_initiated`
+  // cleared by `Navigator::RequestOpenURL()`, so checking
+  // `!params.started_from_context_menu` ensures those IPCs are still validated.
+  if (params.is_renderer_initiated || !params.started_from_context_menu) {
+    if (modified_params.user_gesture &&
+        (!source_rfh || !source_rfh->HasTransientUserActivation())) {
+      modified_params.user_gesture = false;
+    }
+
+    switch (modified_params.disposition) {
+      case WindowOpenDisposition::NEW_FOREGROUND_TAB:
+      case WindowOpenDisposition::NEW_BACKGROUND_TAB:
+      case WindowOpenDisposition::NEW_POPUP:
+      case WindowOpenDisposition::NEW_WINDOW:
+        break;
+      default:
+        modified_params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+        break;
+    }
+  }
+
+  // Reset frame_tree_node_id to prevent mismatched frame tree lookups in the
+  // target navigation controller.
+  modified_params.frame_tree_node_id = content::FrameTreeNodeId();
+
+  // Pass the active tab's WebContents as the source so the navigation pipeline
+  // has the correct context to evaluate disposition and popup blocking rules.
+  content::WebContents* tab_contents = active_tab->GetContents();
+  if (tab_contents && tab_contents->GetDelegate()) {
+    return tab_contents->GetDelegate()->OpenURLFromTab(
+        tab_contents, modified_params, std::move(navigation_handle_callback));
+  }
+  return nullptr;
 }
 
 void ContextualTasksWebView::RunFileChooser(
