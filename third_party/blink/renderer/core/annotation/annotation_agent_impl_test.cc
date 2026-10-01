@@ -2273,7 +2273,6 @@ TEST_F(AnnotationAgentImplTest,
   // Smooth scrolling is guaranteed to finish within 1500ms.
   task_environment().FastForwardBy(base::Seconds(2));
   Compositor().BeginFrame(1.0);
-  Compositor().BeginFrame();
   EXPECT_TRUE(ExpectInViewport(*element_foo));
   // Since the text node is in the viewport, we must have queued the first
   // RequestAnimationFrame.

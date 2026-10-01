@@ -153,7 +153,8 @@ void PageAnimator::ServiceScriptedAnimations(
     if (animator && controller->HasFrameCallback()) {
       animator->SetCurrentFrameHadRaf();
     }
-    if (!controller->HasScheduledFrameTasks()) {
+    if (!RuntimeEnabledFeatures::EventTimingMatchingHTMLEnabled() &&
+        !controller->HasScheduledFrameTasks()) {
       continue;
     }
     active_controllers_ids.emplace_back(i);
@@ -296,29 +297,27 @@ void PageAnimator::ServiceScriptedAnimations(
     run_for_all_active_controllers_with_timing(
         [&](wtf_size_t i) { active_controllers[i]->DispatchEvents(); });
   } else {
-    run_for_all_controllers_with_timing([&](wtf_size_t i) {
-      auto& [controller, can_throttle] = controllers[i];
-      LocalDOMWindow* window = controller->GetWindow();
+    run_for_all_active_controllers_with_timing([&](wtf_size_t i) {
+      LocalDOMWindow* window = active_controllers[i]->GetWindow();
       Document* document = window ? window->document() : nullptr;
       if (document) {
-        UpdateAnimationsForDocument(document, can_throttle, monotonic_time_now);
+        UpdateAnimationsForDocument(document, /*can_throttle=*/false,
+                                    monotonic_time_now);
       }
-      if (!can_throttle) {
-        // While the HTML spec mentions only animation events for this step,
-        // we are sending animation events as well as any event types not
-        // covered by the HTML steps (e.g., <dialog> 'close' events or text
-        // control 'select' and 'change' events).
-        controller->DispatchEvents(BindRepeating([](Event* event) {
-          return event->type() != event_type_names::kScroll &&
-                 event->type() != event_type_names::kScrollsnapchange &&
-                 event->type() != event_type_names::kScrollsnapchanging &&
-                 event->type() != event_type_names::kScrollend &&
-                 event->type() != event_type_names::kResize &&
-                 event->type() != event_type_names::kPagereveal &&
-                 event->InterfaceName() !=
-                     event_interface_names::kMediaQueryListEvent;
-        }));
-      }
+      // While the HTML spec mentions only animation events for this step,
+      // we are sending animation events as well as any event types not
+      // covered by the HTML steps (e.g., <dialog> 'close' events or text
+      // control 'select' and 'change' events).
+      active_controllers[i]->DispatchEvents(BindRepeating([](Event* event) {
+        return event->type() != event_type_names::kScroll &&
+               event->type() != event_type_names::kScrollsnapchange &&
+               event->type() != event_type_names::kScrollsnapchanging &&
+               event->type() != event_type_names::kScrollend &&
+               event->type() != event_type_names::kResize &&
+               event->type() != event_type_names::kPagereveal &&
+               event->InterfaceName() !=
+                   event_interface_names::kMediaQueryListEvent;
+      }));
     });
   }
 
