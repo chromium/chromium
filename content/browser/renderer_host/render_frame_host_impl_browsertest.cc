@@ -37,6 +37,7 @@
 #include "components/input/timeout_monitor.h"
 #include "components/viz/common/features.h"
 #include "content/browser/back_forward_cache/back_forward_cache_impl.h"
+#include "content/browser/bad_message.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/renderer_host/initiator_navigation_state_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
@@ -11667,6 +11668,56 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
       "Received bad user message: WebSockets are not allowed in PDF "
       "documents.",
       kill_waiter.Wait());
+}
+
+// Regression test for crbug.com/557522042.
+// A browser-initiated same-document navigation finishes committing in the
+// renderer after the page starts closing. The commit should be ignored during
+// page close rather than treating the legitimate PAGE_TRANSITION_FORWARD_BACK
+// qualifier as disallowed and terminating the renderer process with
+// bad_message::RFH_COMMIT_NAVIGATION_DISALLOWED_QUALIFIER.
+IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
+                       DidCommitSameDocumentDisallowedQualifierAfterClosePage) {
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html#a"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  EXPECT_TRUE(ExecJs(web_contents(), "history.pushState({}, '', '#b');"));
+
+  EXPECT_TRUE(ExecJs(web_contents(), R"(
+    window.intercepted = false;
+    window.resolvePrecommit = null;
+    navigation.addEventListener('navigate', (e) => {
+      if (e.navigationType === 'traverse') {
+        window.intercepted = true;
+        e.intercept({
+          precommitHandler: () => new Promise(r => {
+            window.resolvePrecommit = r;
+          })
+        });
+      }
+    });
+    window.addEventListener('pagehide', () => {
+      if (window.resolvePrecommit) {
+        window.resolvePrecommit();
+      }
+    });
+  )"));
+
+  web_contents()->GetController().GoBack();
+
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return EvalJs(web_contents(), "window.intercepted === true").ExtractBool();
+  }));
+
+  base::HistogramTester histogram_tester;
+  WebContentsDestroyedWatcher destroyed_watcher(web_contents());
+
+  web_contents()->ClosePage();
+  destroyed_watcher.Wait();
+
+  histogram_tester.ExpectBucketCount(
+      "Stability.BadMessageTerminated.Content",
+      bad_message::RFH_COMMIT_NAVIGATION_DISALLOWED_QUALIFIER, 0);
 }
 
 }  // namespace content

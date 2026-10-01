@@ -498,7 +498,6 @@ IN_PROC_BROWSER_TEST_F(NavigationMhtmlBrowserTest,
   auto params = mojom::DidCommitProvisionalLoadParams::New();
   params->url = GURL("https://victim.example/#poc");
   params->origin = url::Origin::Create(GURL("https://victim.example"));
-  params->navigation_token = base::UnguessableToken::Create();
   // Fill in other required params to avoid other validation failures.
   params->did_create_new_entry = false;
   params->method = "GET";

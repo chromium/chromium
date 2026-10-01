@@ -1694,9 +1694,9 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
     params->transition = transition_;
   }
 
-  params->navigation_token = request_
-                                 ? request_->commit_params().navigation_token
-                                 : base::UnguessableToken::Create();
+  if (request_) {
+    params->navigation_token = request_->commit_params().navigation_token;
+  }
 
   params->method = request_ ? request_->common_params().method : "GET";
   params->post_id = -1;
