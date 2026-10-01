@@ -619,7 +619,7 @@ public class SearchEngineServiceUnitTest {
         searchEngineService.onAiModeButtonUiConfigChanged(config);
         assertSame(config, searchEngineService.getAiModeButtonUiConfigSupplier().get());
         assertEquals(
-                new StatusIconResource(R.drawable.ic_search_24dp, 0),
+                new StatusIconResource(R.drawable.ic_search_spark_24dp, 0),
                 searchEngineService.getAiModeButtonIconSupplier().get());
 
         searchEngineService.onAiModeButtonUiConfigChanged(null);
@@ -634,7 +634,7 @@ public class SearchEngineServiceUnitTest {
 
         searchEngineService.onAiModeButtonUiConfigChanged(config);
         assertEquals(
-                new StatusIconResource(R.drawable.ic_search_24dp, 0),
+                new StatusIconResource(R.drawable.ic_search_spark_24dp, 0),
                 searchEngineService.getAiModeButtonIconSupplier().get());
 
         var expectedParams =
@@ -665,7 +665,7 @@ public class SearchEngineServiceUnitTest {
         // Null bitmap from ImageFetcher must leave the fallback loupe icon intact.
         mImageFetcherCallbackCaptor.getValue().onResult(null);
         assertEquals(
-                new StatusIconResource(R.drawable.ic_search_24dp, 0),
+                new StatusIconResource(R.drawable.ic_search_spark_24dp, 0),
                 searchEngineService.getAiModeButtonIconSupplier().get());
 
         // Valid bitmap updates the supplier, and replacing the config resets back to the loupe.
@@ -677,7 +677,7 @@ public class SearchEngineServiceUnitTest {
         searchEngineService.onAiModeButtonUiConfigChanged(
                 createTestAiModeButtonUiConfig(GURL.emptyGURL()));
         assertEquals(
-                new StatusIconResource(R.drawable.ic_search_24dp, 0),
+                new StatusIconResource(R.drawable.ic_search_spark_24dp, 0),
                 searchEngineService.getAiModeButtonIconSupplier().get());
     }
 

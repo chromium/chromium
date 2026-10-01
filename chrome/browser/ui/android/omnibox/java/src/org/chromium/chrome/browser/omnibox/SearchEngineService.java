@@ -227,7 +227,7 @@ public class SearchEngineService implements Destroyable, TemplateUrlServiceObser
 
         mAiModeButtonUiConfigSupplier.set(config);
         mAiModeButtonIconSupplier.set(
-                new StatusIconResource(R.drawable.ic_search_24dp, Resources.ID_NULL));
+                new StatusIconResource(R.drawable.ic_search_spark_24dp, Resources.ID_NULL));
 
         if (config == null || GURL.isEmptyOrInvalid(config.faviconUrl)) return;
 
