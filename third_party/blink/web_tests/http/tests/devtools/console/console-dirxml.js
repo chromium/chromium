@@ -23,7 +23,6 @@ import {ConsoleTestRunner} from 'console_test_runner';
         console.dirxml([document, fragment, document.createElement("span")]);
     }
   `);
-  await TestRunner.showPanel('elements');
 
   TestRunner.evaluateInPage('logToConsole()', onLoggedToConsole);
 
