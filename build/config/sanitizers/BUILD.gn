@@ -704,6 +704,21 @@ config("default_sanitizer_flags_but_coverage") {
   }
 }
 
+# This config is equivalent to default_sanitizer_flags, but excludes
+# default_sanitizer_ldflags. It is meant for targets that never produce
+# linkable object files (e.g. precompiled Clang modules) and therefore must not
+# inject sanitizer runtimes into their dependents. On Windows,
+# default_sanitizer_ldflags uses `libs`, which GN propagates through
+# source_sets to every linking dependent, including host tools that opted out
+# of sanitizers (e.g. //third_party/nasm).
+config("default_sanitizer_flags_but_ldflags") {
+  configs = all_sanitizer_configs - [ ":default_sanitizer_ldflags" ]
+
+  if (use_sanitizer_configs_without_instrumentation) {
+    configs = []
+  }
+}
+
 # This config is used by parts of code that aren't targeted in fuzzers and
 # therefore don't need coverage instrumentation and possibly won't need
 # sanitizer instrumentation either. The config also tells the compiler to

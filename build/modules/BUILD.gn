@@ -296,6 +296,16 @@ if (use_unified_system_module) {
 
     configs -= [ "//build/config/coverage:default_coverage" ]
 
+    # This target only produces a precompiled module (.pcm) and no object
+    # files, so it must not propagate sanitizer link dependencies. Every C/C++
+    # target depends on it via //buildtools/third_party/libc++:all_modules, and
+    # on Windows ASan builds the `libs` from default_sanitizer_ldflags would
+    # otherwise link the ASan runtime into host tools that opted out of
+    # sanitizers (e.g. nasm), making them very slow.
+    configs -= [ "//build/config/sanitizers:default_sanitizer_flags" ]
+    configs +=
+        [ "//build/config/sanitizers:default_sanitizer_flags_but_ldflags" ]
+
     deps = [ ":system_modulemap" ]
     public_deps = extra_headers
 
