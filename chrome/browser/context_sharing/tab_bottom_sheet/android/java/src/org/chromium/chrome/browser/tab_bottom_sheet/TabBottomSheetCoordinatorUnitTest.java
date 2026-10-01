@@ -523,14 +523,19 @@ public class TabBottomSheetCoordinatorUnitTest {
         BottomSheetObserver observer = simulateShowSuccessAndGetObserver();
 
         // State FULL should add observer
+        when(mMockBottomSheetController.getSheetState()).thenReturn(SheetState.FULL);
         observer.onSheetStateChanged(SheetState.FULL, StateChangeReason.NONE);
         verify(mMockTouchEventProvider)
                 .addTouchEventObserver(mTouchEventObserverArgumentCaptor.capture());
         TouchEventObserver touchEventObserver = mTouchEventObserverArgumentCaptor.getValue();
 
-        // Passing event should not crash and should return false
-        MotionEvent event = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
-        assertFalse(touchEventObserver.onInterceptTouchEvent(event));
+        // Passing a single-tap sequence (ACTION_DOWN + ACTION_UP) should not consume the events
+        // (returns false) and should trigger GestureDetector#onSingleTapUp to collapse the sheet.
+        MotionEvent downEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_DOWN, 0, 0, 0);
+        MotionEvent upEvent = MotionEvent.obtain(0, 10, MotionEvent.ACTION_UP, 0, 0, 0);
+        assertFalse(touchEventObserver.onInterceptTouchEvent(downEvent));
+        assertFalse(touchEventObserver.onInterceptTouchEvent(upEvent));
+        verify(mMockBottomSheetController).collapseSheet(true);
     }
 
     @Test
@@ -620,6 +625,26 @@ public class TabBottomSheetCoordinatorUnitTest {
 
         // Large fling should collapse
         listener.onFling(event, event, 0, ViewUtils.dpToPx(mContext, LARGE_FLING_DP));
+        verify(mMockBottomSheetController).collapseSheet(true);
+    }
+
+    @Test
+    public void testGestureListener_SingleTap() {
+        simulateShowSuccessAndGetObserver();
+
+        GestureDetector.SimpleOnGestureListener listener =
+                mCoordinator.getGestureListenerForTesting();
+
+        MotionEvent upEvent = MotionEvent.obtain(0, 0, MotionEvent.ACTION_UP, 0, 0, 0);
+
+        // Single tap in HALF state should not collapse the sheet.
+        when(mMockBottomSheetController.getSheetState()).thenReturn(SheetState.HALF);
+        assertFalse(listener.onSingleTapUp(upEvent));
+        verify(mMockBottomSheetController, never()).collapseSheet(anyBoolean());
+
+        // Single tap in FULL state should collapse the sheet.
+        when(mMockBottomSheetController.getSheetState()).thenReturn(SheetState.FULL);
+        assertTrue(listener.onSingleTapUp(upEvent));
         verify(mMockBottomSheetController).collapseSheet(true);
     }
 

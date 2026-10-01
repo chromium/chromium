@@ -578,6 +578,15 @@ public class TabBottomSheetCoordinator {
             }
 
             @Override
+            public boolean onSingleTapUp(MotionEvent e) {
+                if (mBottomSheetController.getSheetState() == SheetState.FULL) {
+                    collapseSheet();
+                    return true;
+                }
+                return false;
+            }
+
+            @Override
             public boolean onDoubleTap(MotionEvent e) {
                 collapseSheet();
                 return true;
