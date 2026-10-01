@@ -7,9 +7,17 @@
 
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "chrome/services/readaloud/chunking/text_chunker.h"
 
 namespace readaloud {
+
+// Operational mode for lookahead speech synthesis prefetch requests:
+// - `kSpeed`: Requests single canonical chunks for minimal time-to-first-audio.
+// - `kQuality`: Requests grouped canonical chunks for natural prosody once
+//   sufficient audio is buffered.
+enum class PrefetchMode {
+  kSpeed = 0,
+  kQuality = 1,
+};
 
 // Manages dynamic hysteresis state transitions between speed and quality
 // prefetch modes based on buffered audio duration to prevent mode flapping.
@@ -17,19 +25,19 @@ namespace readaloud {
 // Threading & Sequence Safety:
 // PrefetchModeScheduler lives exclusively on the Utility Process Main Sequence
 // (Mojo IPC sequence). All state transitions and duration evaluations
-// (UpdateMode, Reset, GetChunkingMode) must be executed on this sequence,
+// (UpdateMode, Reset, GetPrefetchMode) must be executed on this sequence,
 // enforced via `SEQUENCE_CHECKER`. It does not execute on the real-time Audio
 // Thread or background decoder thread.
 //
 // Lifecycle:
 // - Created on demand within PrefetchManager on the Utility Main Sequence in
 //   default `kSpeed` mode.
-// - State is reset back to `kSpeed` upon document text changes (SetTextContent)
-//   or session aborts/resets (ResetSession).
+// - State is reset back to `kSpeed` upon document session resets
+//   (ResetSession).
 // - Sequence-affine: must be created and invoked on the same sequence.
 //
 // Hysteresis State Machine:
-// - Default Mode: Starts in `ChunkingMode::kSpeed` (target prefetch duration:
+// - Default Mode: Starts in `PrefetchMode::kSpeed` (target prefetch duration:
 //   15s).
 // - Upgrade Threshold: Transitions from `kSpeed` to `kQuality` when
 //   `current_buffered_duration >= 15s` (`kAudioBufferPrefetchWatermark`).
@@ -48,16 +56,16 @@ class PrefetchModeScheduler {
   // prefetch mode after applying hysteresis transition thresholds.
   //
   // @param current_buffered_duration Total duration of decoded audio available.
-  // @return Updated `ChunkingMode` (`kSpeed` or `kQuality`).
-  ChunkingMode UpdateMode(base::TimeDelta current_buffered_duration);
+  // @return Updated `PrefetchMode` (`kSpeed` or `kQuality`).
+  PrefetchMode UpdateMode(base::TimeDelta current_buffered_duration);
 
   // Resets the scheduler back to default startup state
-  // (`ChunkingMode::kSpeed`). Should be invoked when document sessions reset or
+  // (`PrefetchMode::kSpeed`). Should be invoked when document sessions reset or
   // timelines are cleared.
   void Reset();
 
-  // Returns the active chunking mode (`kSpeed` or `kQuality`).
-  ChunkingMode GetChunkingMode() const;
+  // Returns the active prefetch mode (`kSpeed` or `kQuality`).
+  PrefetchMode GetPrefetchMode() const;
 
   // Returns the target prefetch audio duration for the current mode:
   // - `kSpeed`: 15s (`kAudioBufferPrefetchWatermark`).
@@ -65,7 +73,7 @@ class PrefetchModeScheduler {
   base::TimeDelta GetTargetPrefetchDuration() const;
 
  private:
-  ChunkingMode current_mode_ = ChunkingMode::kSpeed;
+  PrefetchMode current_mode_ = PrefetchMode::kSpeed;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

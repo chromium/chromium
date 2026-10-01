@@ -5,12 +5,13 @@
 #include "chrome/services/readaloud/prefetch/prefetch_manager.h"
 
 #include <algorithm>
-#include <iterator>
 #include <utility>
 
+#include "base/check.h"
 #include "base/logging.h"
-#include "chrome/common/readaloud/read_aloud.mojom.h"
 #include "chrome/common/readaloud/read_aloud_constants.h"
+#include "chrome/services/readaloud/chunking/text_chunker.h"
+#include "chrome/services/readaloud/timeline/playback_timeline.h"
 
 namespace readaloud {
 
@@ -41,61 +42,15 @@ CachedCompressedSegment& CachedCompressedSegment::operator=(
 
 CachedCompressedSegment::~CachedCompressedSegment() = default;
 
-PrefetchManager::PrefetchManager() = default;
+PrefetchManager::PrefetchManager(const PlaybackTimeline* timeline)
+    : timeline_(timeline) {
+  DCHECK(timeline_);
+}
 
 PrefetchManager::~PrefetchManager() = default;
 
-void PrefetchManager::SetTextContent(
-    const std::vector<read_aloud::mojom::TextSegmentPtr>& segments,
-    std::optional<base::i18n::LanguageTag> locale_tag) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  ResetSession();
-
-  size_t document_offset = 0;
-  for (const read_aloud::mojom::TextSegmentPtr& segment : segments) {
-    if (!segment || segment->text.empty()) {
-      continue;
-    }
-    // TODO(b/543025514): In ChunkingMode::kSpeed, handle isolated
-    // all-punctuation sentences (e.g., ellipses "...") in TextChunker so they
-    // are not sent as standalone network synthesis requests. In
-    // ChunkingMode::kQuality, retain them within paragraph groupings for
-    // natural prosody and pauses.
-    std::vector<TextChunk> sentence_chunks =
-        ChunkText(segment->text, GetChunkingMode(), locale_tag);
-    // ChunkText() counts from 0 within the segment. Shift the chunks so the
-    // document's canonical offsets continue across segments, with one
-    // separator after the previous segment's last chunk, as between any two
-    // chunks. highlighter.js depends on this; see
-    // `TextChunk::start_code_unit_offset`.
-    for (TextChunk& chunk : sentence_chunks) {
-      chunk.start_code_unit_offset += document_offset;
-      chunk.speaker = segment->speaker;
-    }
-    if (!sentence_chunks.empty()) {
-      const TextChunk& last = sentence_chunks.back();
-      document_offset = last.start_code_unit_offset + last.text.size() + 1;
-    }
-    timeline_.insert(timeline_.end(),
-                     std::make_move_iterator(sentence_chunks.begin()),
-                     std::make_move_iterator(sentence_chunks.end()));
-  }
-
-  if (on_text_chunked_callback_) {
-    std::vector<std::u16string> string_chunks;
-    size_t num_chunks = std::min(timeline_.size(), readaloud::kMaxTextChunks);
-    string_chunks.reserve(num_chunks);
-    for (size_t i = 0; i < num_chunks; ++i) {
-      const TextChunk& chunk = timeline_[i];
-      string_chunks.emplace_back(chunk.text);
-    }
-    on_text_chunked_callback_.Run(string_chunks);
-  }
-}
-
 void PrefetchManager::ResetSession() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  timeline_.clear();
   session_cache_.clear();
   mode_scheduler_.Reset();
   CancelInflightRequests();
@@ -116,14 +71,9 @@ void PrefetchManager::SetRequestSynthesisCallback(
   MaybeIssueSynthesisRequest();
 }
 
-void PrefetchManager::SetOnTextChunkedCallback(OnTextChunkedCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  on_text_chunked_callback_ = std::move(callback);
-}
-
 void PrefetchManager::SchedulePrefetch(uint32_t chunk_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (chunk_index >= timeline_.size()) {
+  if (chunk_index >= GetTimelineChunkCount()) {
     return;
   }
   if (session_cache_.contains(chunk_index) ||
@@ -163,15 +113,15 @@ void PrefetchManager::OnSynthesisResponse(
   MaybeIssueSynthesisRequest();
 }
 
-ChunkingMode PrefetchManager::UpdatePrefetchMode(
+PrefetchMode PrefetchManager::UpdatePrefetchMode(
     base::TimeDelta current_buffered_duration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return mode_scheduler_.UpdateMode(current_buffered_duration);
 }
 
-ChunkingMode PrefetchManager::GetChunkingMode() const {
+PrefetchMode PrefetchManager::GetPrefetchMode() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return mode_scheduler_.GetChunkingMode();
+  return mode_scheduler_.GetPrefetchMode();
 }
 
 base::TimeDelta PrefetchManager::GetTargetPrefetchDuration() const {
@@ -205,7 +155,7 @@ void PrefetchManager::InsertCachedSegment(
     std::vector<WordTiming> timings,
     SynthesisResultStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!timeline_.empty() && chunk_index >= GetTimelineChunkCount()) {
+  if (GetTimelineChunkCount() > 0 && chunk_index >= GetTimelineChunkCount()) {
     return;
   }
   session_cache_.insert_or_assign(
@@ -221,12 +171,7 @@ void PrefetchManager::ClearCache() {
 
 size_t PrefetchManager::GetTimelineChunkCount() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return timeline_.size();
-}
-
-const std::vector<TextChunk>& PrefetchManager::GetTimelineChunks() const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return timeline_;
+  return timeline_->GetChunkCount();
 }
 
 uint64_t PrefetchManager::GetCurrentSequenceId() const {
@@ -244,21 +189,25 @@ void PrefetchManager::MaybeIssueSynthesisRequest() {
   if (!request_synthesis_callback_) {
     return;
   }
+  const std::vector<TextChunk>& chunks = timeline_->chunks();
   while (!pending_requests_.empty() &&
          inflight_requests_.size() < kMaxConcurrentRequests) {
     uint32_t next_index = pending_requests_.front();
     pending_requests_.pop_front();
 
-    if (session_cache_.contains(next_index) ||
+    if (next_index >= chunks.size() || session_cache_.contains(next_index) ||
         inflight_requests_.contains(next_index)) {
-      // Skip chunk indices that are already cached or currently in flight.
+      // Skip chunk indices that are out of bounds, already cached, or
+      // currently in flight.
       continue;
     }
     inflight_requests_.insert(next_index);
-    // Dispatch the synthesis request to the controller via the registered
-    // callback.
-    request_synthesis_callback_.Run(next_index, timeline_[next_index].text,
-                                    timeline_[next_index].speaker);
+    // TODO(b/527525636): Use `GetPrefetchMode()` (`PrefetchMode::kQuality` vs
+    // `PrefetchMode::kSpeed`) to group adjacent canonical chunks with the same
+    // speaker into a single multi-chunk synthesis request for improved prosody
+    // once the audio buffer reaches the quality watermark.
+    request_synthesis_callback_.Run(next_index, chunks[next_index].text,
+                                    chunks[next_index].speaker);
   }
 }
 
@@ -267,16 +216,16 @@ std::vector<uint32_t> PrefetchManager::GetRequiredPrefetchChunks(
     base::TimeDelta current_buffered_duration) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<uint32_t> required_chunks;
+  const size_t total_chunks = GetTimelineChunkCount();
 
-  if (current_chunk_index >= timeline_.size() ||
+  if (current_chunk_index >= total_chunks ||
       current_buffered_duration.is_negative() ||
       current_buffered_duration >= kAudioBufferPrefetchWatermark) {
     return required_chunks;
   }
 
   size_t start_idx = current_chunk_index;
-  size_t end_idx =
-      std::min(timeline_.size(), start_idx + kMaxPrefetchLookahead);
+  size_t end_idx = std::min(total_chunks, start_idx + kMaxPrefetchLookahead);
 
   for (size_t i = start_idx; i < end_idx; ++i) {
     uint32_t chunk_idx = static_cast<uint32_t>(i);

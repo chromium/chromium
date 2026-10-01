@@ -79,9 +79,6 @@ void ReadAloudPlaybackController::CreateController(
   prefetch_manager_.SetRequestSynthesisCallback(base::BindRepeating(
       &ReadAloudPlaybackController::OnPrefetchSynthesisRequest,
       session_weak_factory_.GetWeakPtr()));
-  prefetch_manager_.SetOnTextChunkedCallback(
-      base::BindRepeating(&ReadAloudPlaybackController::OnTextChunked,
-                          session_weak_factory_.GetWeakPtr()));
 }
 
 void ReadAloudPlaybackController::InitializeAudio(
@@ -209,12 +206,26 @@ void ReadAloudPlaybackController::SetTextContent(
         "in SetTextContent");
     return;
   }
-  segments_ = std::move(segments);
-  // Initialize document-bound prefetch cache and canonical sentence timeline.
-  prefetch_manager_.SetTextContent(segments_);
+
   // Setting new text content invalidates pending audio synthesis buffers from
-  // the previous document segment, so FlushBuffers() resets internal queues.
+  // the previous document segment, so FlushBuffers() and ResetSession() reset
+  // internal queues before `timeline_.Clear()` resets the canonical timeline.
   FlushBuffers();
+  prefetch_manager_.ResetSession();
+  timeline_.Clear();
+  timeline_.SetTextContent(segments);
+
+  if (client_.is_bound()) {
+    std::vector<std::u16string> chunk_strings;
+    size_t num_chunks =
+        std::min(timeline_.chunks().size(), readaloud::kMaxTextChunks);
+    chunk_strings.reserve(num_chunks);
+    for (size_t i = 0; i < num_chunks; ++i) {
+      chunk_strings.emplace_back(timeline_.chunks()[i].text);
+    }
+    client_->OnTextChunked(std::move(chunk_strings));
+  }
+
   if (!MaybePlayOnReady()) {
     // When new text content is loaded, playback defaults to paused until the
     // user explicitly triggers Play(). Notify client to synchronize UI state.
@@ -259,7 +270,7 @@ bool ReadAloudPlaybackController::IsReadyToPlay() const {
 
 bool ReadAloudPlaybackController::IsTextSet() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return !segments_.empty();
+  return timeline_.GetChunkCount() > 0;
 }
 
 bool ReadAloudPlaybackController::IsAudioInitialized() const {
@@ -366,18 +377,12 @@ void ReadAloudPlaybackController::Pause() {
 void ReadAloudPlaybackController::SeekToWord(uint32_t segment_index,
                                              uint32_t character_offset) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = std::lower_bound(
-      segments_.begin(), segments_.end(), segment_index,
-      [](const read_aloud::mojom::TextSegmentPtr& segment, uint32_t index) {
-        return segment->segment_index < index;
-      });
-  if (it == segments_.end() || (*it)->segment_index != segment_index) {
+  if (segment_index >= timeline_.GetChunkCount()) {
     controller_receiver_.ReportBadMessage(
         "ReadAloudPlaybackController: Invalid segment_index in SeekToWord");
     return;
   }
-  const std::u16string_view text = (*it)->text;
-  if (character_offset > text.size()) {
+  if (character_offset > timeline_.chunks()[segment_index].text.size()) {
     controller_receiver_.ReportBadMessage(
         "ReadAloudPlaybackController: Invalid character_offset in SeekToWord");
     return;
@@ -469,7 +474,7 @@ void ReadAloudPlaybackController::ResetSession() {
   decoder_sequencer_.Reset();
   decoder_sequencer_.SetAudioQueue(nullptr);
   audio_resources_.reset();
-  segments_.clear();
+  timeline_.Clear();
   playback_rate_ = 1.0f;
   playback_mode_ = read_aloud::mojom::PlaybackMode::kClassic;
   // A new session starts with no state reported yet, so the first transition
@@ -498,20 +503,15 @@ void ReadAloudPlaybackController::OnPrefetchSynthesisRequest(
                      chunk_index));
 }
 
-void ReadAloudPlaybackController::OnTextChunked(
-    const std::vector<std::u16string>& chunks) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (client_.is_bound()) {
-    client_->OnTextChunked(chunks);
-  }
-}
-
 void ReadAloudPlaybackController::OnSpeechSynthesisResponse(
     uint64_t sequence_id,
     uint32_t chunk_index,
     mojo_base::BigBuffer response_bytes,
     bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (sequence_id != prefetch_manager_.GetCurrentSequenceId()) {
+    return;
+  }
   // A single failed or undecodable chunk is recoverable: the sequencer skips
   // it and keeps playing the rest of the document, so no error state is
   // reported here. Only a document that never produces any audio at all is
@@ -523,17 +523,22 @@ void ReadAloudPlaybackController::OnSpeechSynthesisResponse(
     return;
   }
 
-  const std::vector<TextChunk>& timeline = prefetch_manager_.GetTimelineChunks();
-  if (chunk_index >= timeline.size()) {
+  const std::vector<TextChunk>& chunks = timeline_.chunks();
+  if (chunk_index >= chunks.size()) {
     prefetch_manager_.OnSynthesisResponse(sequence_id, chunk_index, nullptr,
                                           {});
     decoder_sequencer_.ReplenishBuffer();
     return;
   }
-  const TextChunk& chunk = timeline[chunk_index];
+  const TextChunk& chunk = chunks[chunk_index];
 
   ParsedSynthesisResult result =
       ParseAndValidateSynthesisResponse(std::move(response_bytes), chunk);
+
+  if (!result.timings.empty()) {
+    timeline_.UpdateSentenceDuration(
+        chunk_index, result.timings.back().end_time, result.timings);
+  }
 
   prefetch_manager_.OnSynthesisResponse(
       sequence_id, chunk_index, std::move(result.audio_buffer),

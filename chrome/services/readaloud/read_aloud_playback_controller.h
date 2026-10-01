@@ -20,6 +20,7 @@
 #include "chrome/services/readaloud/decoder/opus_decoder_helper.h"
 #include "chrome/services/readaloud/decoder/read_aloud_decoder_sequencer.h"
 #include "chrome/services/readaloud/prefetch/prefetch_manager.h"
+#include "chrome/services/readaloud/timeline/playback_timeline.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
 #include "mojo/public/cpp/base/big_buffer.h"
@@ -91,7 +92,7 @@ class ReadAloudPlaybackController
   void OnControllerDisconnected();
   void OnClientDisconnected();
 
-  // Resets active session state, clears segments, and resets playback rate.
+  // Resets active session state, clears timeline, and resets playback rate.
   void ResetSession();
 
   // Invoked by `prefetch_manager_` when an in-flight synthesis request is
@@ -99,9 +100,6 @@ class ReadAloudPlaybackController
   void OnPrefetchSynthesisRequest(uint32_t chunk_index,
                                   std::u16string_view text,
                                   read_aloud::mojom::Speaker speaker);
-
-  // Invoked by `prefetch_manager_` when text content is chunked.
-  void OnTextChunked(const std::vector<std::u16string>& chunks);
 
   // Callback for Mojo RequestSpeechSynthesis responses from the client.
   void OnSpeechSynthesisResponse(uint64_t sequence_id,
@@ -151,8 +149,10 @@ class ReadAloudPlaybackController
       controller_receiver_{this};
   mojo::Remote<read_aloud::mojom::ReadAloudPlaybackControllerClient> client_;
 
-  // Active text segments currently loaded for playback in this session.
-  std::vector<read_aloud::mojom::TextSegmentPtr> segments_;
+  // Canonical sentence timeline and duration/word-timing resolver.
+  // Declared before `prefetch_manager_` so `timeline_` outlives
+  // `prefetch_manager_`'s `raw_ptr<const PlaybackTimeline>`.
+  PlaybackTimeline timeline_;
   // Current playback mode (Classic full text vs AI Overview summary dialogue).
   read_aloud::mojom::PlaybackMode playback_mode_ =
       read_aloud::mojom::PlaybackMode::kClassic;
@@ -170,8 +170,8 @@ class ReadAloudPlaybackController
   // Timer tracking maximum wait duration for pending play_on_ready_ state.
   base::OneShotTimer play_on_ready_timer_;
 
-  // Manages document-bound speech synthesis caching and sentence timeline.
-  PrefetchManager prefetch_manager_;
+  // Manages document-bound speech synthesis caching and prefetch scheduling.
+  PrefetchManager prefetch_manager_{&timeline_};
 
   // Asynchronous Opus decoder helper for background demuxing and decoding.
   OpusDecoderHelper decoder_helper_;

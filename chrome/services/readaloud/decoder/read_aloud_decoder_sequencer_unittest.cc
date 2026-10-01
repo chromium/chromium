@@ -19,6 +19,7 @@
 #include "chrome/services/readaloud/decoded_audio_segment.h"
 #include "chrome/services/readaloud/decoder/opus_decoder_helper.h"
 #include "chrome/services/readaloud/prefetch/prefetch_manager.h"
+#include "chrome/services/readaloud/timeline/playback_timeline.h"
 #include "chrome/services/readaloud/word_timing.h"
 #include "media/base/decoder_buffer.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -62,6 +63,7 @@ class ReadAloudDecoderSequencerTest : public testing::Test {
  public:
   ReadAloudDecoderSequencerTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        prefetch_manager_(&timeline_),
         audio_queue_(std::make_unique<AudioSegmentQueue>()),
         sequencer_(&prefetch_manager_, &fake_decoder_, audio_queue_.get()) {
     // `sequencer_` is destroyed before `pump_reports_`, so the callback never
@@ -73,7 +75,10 @@ class ReadAloudDecoderSequencerTest : public testing::Test {
   }
 
   void SetUpTimeline(size_t chunk_count) {
+    prefetch_manager_.ResetSession();
+    timeline_.Clear();
     std::vector<read_aloud::mojom::TextSegmentPtr> segments;
+    segments.reserve(chunk_count);
     for (size_t i = 0; i < chunk_count; ++i) {
       read_aloud::mojom::TextSegmentPtr seg =
           read_aloud::mojom::TextSegment::New();
@@ -81,7 +86,7 @@ class ReadAloudDecoderSequencerTest : public testing::Test {
       seg->text = u"Sentence.";
       segments.push_back(std::move(seg));
     }
-    prefetch_manager_.SetTextContent(segments);
+    timeline_.SetTextContent(std::move(segments));
     ASSERT_EQ(prefetch_manager_.GetTimelineChunkCount(), chunk_count);
   }
 
@@ -99,6 +104,7 @@ class ReadAloudDecoderSequencerTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  PlaybackTimeline timeline_;
   PrefetchManager prefetch_manager_;
   FakeOpusDecoderHelper fake_decoder_;
   std::unique_ptr<AudioSegmentQueue> audio_queue_;
