@@ -30,6 +30,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncServiceFactory;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -182,6 +183,7 @@ public class QuickDeleteTabsFilterTest {
                 TabClosureParams.closeTabs(filteredTabs)
                         .allowUndo(false)
                         .saveToTabRestoreService(false)
+                        .tabClosingSource(TabClosingSource.QUICK_DELETE)
                         .build();
         verify(mTabRemoverMock).closeTabs(params, false);
     }
@@ -219,6 +221,7 @@ public class QuickDeleteTabsFilterTest {
                 TabClosureParams.closeTabs(filteredTabs)
                         .allowUndo(false)
                         .saveToTabRestoreService(false)
+                        .tabClosingSource(TabClosingSource.QUICK_DELETE)
                         .build();
         verify(mTabRemoverMock).closeTabs(params, false);
     }
@@ -252,6 +255,7 @@ public class QuickDeleteTabsFilterTest {
                 TabClosureParams.closeTabs(filteredTabs)
                         .allowUndo(false)
                         .saveToTabRestoreService(false)
+                        .tabClosingSource(TabClosingSource.QUICK_DELETE)
                         .build();
         verify(mTabRemoverMock).closeTabs(params, false);
     }

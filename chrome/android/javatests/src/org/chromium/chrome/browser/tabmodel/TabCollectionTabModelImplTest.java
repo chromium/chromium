@@ -3740,7 +3740,7 @@ public class TabCollectionTabModelImplTest {
                     @Override
                     public void onTabClosePending(
                             List<Tab> tabs, boolean isAllTabs, @TabClosingSource int source) {
-                        assertEquals(TabClosingSource.UNKNOWN, source);
+                        assertEquals(TabClosingSource.GRID_TAB_SWITCHER, source);
                         assertEquals(1, tabs.size());
                         assertEquals(tab0, tabs.get(0));
                         onTabPendingClosure.notifyCalled();
@@ -3774,7 +3774,10 @@ public class TabCollectionTabModelImplTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCollectionModel.addObserver(observer);
-                    mCollectionModel.closeTabs(TabClosureParams.closeTab(tab0).build());
+                    mCollectionModel.closeTabs(
+                            TabClosureParams.closeTab(tab0)
+                                    .tabClosingSource(TabClosingSource.GRID_TAB_SWITCHER)
+                                    .build());
                 });
 
         onTabPendingClosure.waitForOnly();
@@ -4101,7 +4104,10 @@ public class TabCollectionTabModelImplTest {
         TabUiTestHelper.enterTabSwitcher(cta);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    mCollectionModel.closeTabs(TabClosureParams.closeAllTabs().build());
+                    mCollectionModel.closeTabs(
+                            TabClosureParams.closeAllTabs()
+                                    .tabClosingSource(TabClosingSource.GRID_TAB_SWITCHER)
+                                    .build());
                 });
 
         willCloseAllTabsHelper.waitForOnly();

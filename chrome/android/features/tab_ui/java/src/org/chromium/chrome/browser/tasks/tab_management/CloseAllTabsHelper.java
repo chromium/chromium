@@ -13,6 +13,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.app.tabmodel.ArchivedTabModelOrchestrator;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabArchiver;
+import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -33,6 +34,21 @@ public class CloseAllTabsHelper {
      */
     public static void closeAllTabsHidingTabGroups(
             TabModelSelector tabModelSelector, boolean allowUndo) {
+        closeAllTabsHidingTabGroups(
+                tabModelSelector, allowUndo, TabClosingSource.GRID_TAB_SWITCHER);
+    }
+
+    /**
+     * Closes all tabs hiding tab groups with an explicit closing source.
+     *
+     * @param tabModelSelector {@link TabModelSelector} for the activity.
+     * @param allowUndo See {@link TabClosureParams#allowUndo}.
+     * @param closingSource The closing source of the tab closure.
+     */
+    public static void closeAllTabsHidingTabGroups(
+            TabModelSelector tabModelSelector,
+            boolean allowUndo,
+            @TabClosingSource int closingSource) {
         tabModelSelector
                 .getModel(/* incognito= */ true)
                 .getTabRemover()
@@ -40,6 +56,7 @@ public class CloseAllTabsHelper {
                         TabClosureParams.closeAllTabs()
                                 .allowUndo(allowUndo)
                                 .hideTabGroups(true)
+                                .tabClosingSource(closingSource)
                                 .build(),
                         /* allowDialog= */ false);
 
@@ -62,6 +79,7 @@ public class CloseAllTabsHelper {
                                 .allowUndo(allowUndo)
                                 .hideTabGroups(true)
                                 .withUndoRunnable(restoreArchivedTabsRunnable)
+                                .tabClosingSource(closingSource)
                                 .build(),
                         /* allowDialog= */ false);
     }
@@ -85,10 +103,14 @@ public class CloseAllTabsHelper {
                     .getModel(/* incognito= */ true)
                     .getTabRemover()
                     .closeTabs(
-                            TabClosureParams.closeAllTabs().allowUndo(allowUndo).build(),
+                            TabClosureParams.closeAllTabs()
+                                    .allowUndo(allowUndo)
+                                    .tabClosingSource(TabClosingSource.GRID_TAB_SWITCHER)
+                                    .build(),
                             /* allowDialog= */ false);
         } else {
-            closeAllTabsHidingTabGroups(tabModelSelector, allowUndo);
+            closeAllTabsHidingTabGroups(
+                    tabModelSelector, allowUndo, TabClosingSource.GRID_TAB_SWITCHER);
         }
     }
 

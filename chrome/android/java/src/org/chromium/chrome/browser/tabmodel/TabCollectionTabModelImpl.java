@@ -261,9 +261,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
         }
 
         @Override
-        public void finalizeClosure(Tab tab) {
-            finalizeTabClosure(
-                    tab, /* notifyTabClosureCommitted= */ true, TabClosingSource.UNKNOWN);
+        public void finalizeClosure(Tab tab, @TabClosingSource int closingSource) {
+            finalizeTabClosure(tab, /* notifyTabClosureCommitted= */ true, closingSource);
         }
 
         @Override
@@ -1866,7 +1865,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge {
 
         if (allowUndo) {
             assumeNonNull(mPendingTabClosureManager);
-            mPendingTabClosureManager.addTabClosureEvent(tabsToClose, params.undoRunnable);
+            mPendingTabClosureManager.addTabClosureEvent(
+                    tabsToClose, params.undoRunnable, params.tabClosingSource);
 
             boolean isAllTabs = params.tabCloseType == TabCloseType.ALL;
             observers.rewind();
