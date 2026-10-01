@@ -4,7 +4,6 @@
 
 import("//build/config/clang/clang.gni")
 import("//build/config/rust.gni")
-import("//build/config/sysroot.gni")
 import("//build/rust/rust_static_library.gni")
 
 if (is_win) {

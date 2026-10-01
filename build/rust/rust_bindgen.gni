@@ -2,32 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/clang/clang.gni")
-import("//build/config/rust.gni")
-import("//build/config/sysroot.gni")
 import("//build/rust/rust_bindgen_generator.gni")
 import("//build/rust/rust_static_library.gni")
-
-if (is_win) {
-  import("//build/toolchain/win/win_toolchain_data.gni")
-}
-
-_bindgen_path = "${rust_bindgen_root}/bin/bindgen"
-if (host_os == "win") {
-  _bindgen_path = "${_bindgen_path}.exe"
-}
-
-# On Windows, the libclang.dll is beside the bindgen.exe, otherwise it is in
-# ../lib.
-_libclang_path = rust_bindgen_root
-if (!use_chromium_rust_toolchain &&
-    (current_cpu == "ppc64" || current_cpu == "s390x")) {
-  _libclang_path = rust_sysroot_absolute + "/lib64"
-} else if (host_os == "win") {
-  _libclang_path += "/bin"
-} else {
-  _libclang_path += "/lib"
-}
 
 # Template to build Rust/C bindings with bindgen.
 #
@@ -102,11 +78,6 @@ template("rust_bindgen") {
     # sure that only a single bindgen is there. So rename the bindings to avoid
     # passing envflags. envflags are usually problematic for Cronet as Soong
     # does not support it (b/181221467).
-    #
-    # Because of the above, we can hard-code "bindings" name in:
-    # * `output_name` (below)
-    # * `_output_bindings_rs` (above)
-    # * `mod bindings;` (in `//build/rust/bindings.rs`)
     output_name = "bindings"
   }
 
