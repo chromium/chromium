@@ -652,6 +652,7 @@ source_set("quiche_tests") {
     "src/quiche/quic/core/http/quic_spdy_stream_test.cc",
     "src/quiche/quic/core/http/spdy_utils_test.cc",
     "src/quiche/quic/core/http/web_transport_http3_test.cc",
+    "src/quiche/quic/core/http/web_transport_stream_adapter_test.cc",
     "src/quiche/quic/core/legacy_quic_stream_id_manager_test.cc",
     "src/quiche/quic/core/packet_number_indexed_queue_test.cc",
     "src/quiche/quic/core/qpack/qpack_decoded_headers_accumulator_test.cc",
