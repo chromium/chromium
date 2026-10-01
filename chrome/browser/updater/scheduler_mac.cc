@@ -8,29 +8,18 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "chrome/browser/updater/updater.h"
 
 namespace updater {
 
 void DoPeriodicTasks(base::RepeatingClosure prompt,
                      base::OnceClosure callback) {
-  EnsureUpdater(
-      base::TaskPriority::BEST_EFFORT, prompt,
-      base::BindOnce(
-          [](base::OnceClosure callback) {
-            // Some users disable the background launchd task that runs the
-            // updater periodic tasks. To continue to deliver updates to those
-            // users, run the periodic tasks now.
-            base::ThreadPool::PostTask(
-                FROM_HERE,
-                {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-                 base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-                base::BindOnce(&WakeAllUpdaters, std::move(callback)));
-          },
-          base::BindPostTaskToCurrentDefault(std::move(callback))));
+  // Ensure the updater is present, then check its health and wake it, in case
+  // users disabled the background launchd task that runs its periodic tasks.
+  EnsureUpdater(base::TaskPriority::BEST_EFFORT, prompt,
+                base::BindOnce(&CheckUpdaterHealthAndWakeAllUpdaters,
+                               std::move(callback)));
 }
 
 }  // namespace updater

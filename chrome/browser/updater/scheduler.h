@@ -13,9 +13,9 @@ namespace updater {
 // intervention is needed, calls `prompt`.
 void DoPeriodicTasks(base::RepeatingClosure prompt, base::OnceClosure callback);
 
-// Wake up all existing updater instances. May block. Invokes `callback` once
-// the wake process exits.
-void WakeAllUpdaters(base::OnceClosure callback);
+// Records updater health metrics, then wakes all updaters. Must be called on a
+// sequenced task runner; `callback` is invoked on the same sequence.
+void CheckUpdaterHealthAndWakeAllUpdaters(base::OnceClosure callback);
 
 }  // namespace updater
 

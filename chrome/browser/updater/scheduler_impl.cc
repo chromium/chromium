@@ -12,15 +12,18 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/rand_util.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/browser/updater/browser_updater_client_util.h"
+#include "chrome/browser/updater/check_updater_health_task.h"
 #include "chrome/browser/updater/scheduler.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/updater_scope.h"
@@ -48,12 +51,10 @@ void CheckProcessDone(base::Process process, base::OnceClosure callback) {
       base::Minutes(1));
 }
 
-}  // namespace
-
-void WakeAllUpdaters(base::OnceClosure callback) {
-  const UpdaterScope scope = GetBrowserUpdaterScope();
+void WakeAllUpdaters(UpdaterScope scope, base::OnceClosure callback) {
   std::optional<base::FilePath> install_dir = GetInstallDirectory(scope);
   if (!install_dir) {
+    std::move(callback).Run();
     return;
   }
   std::vector<base::Version> versions;
@@ -65,11 +66,13 @@ void WakeAllUpdaters(base::OnceClosure callback) {
         }
       });
   if (versions.empty()) {
+    std::move(callback).Run();
     return;
   }
   std::optional<base::FilePath> executable = GetUpdaterExecutablePath(
       scope, versions.at(base::RandIntInclusive(0, versions.size() - 1)));
   if (!executable) {
+    std::move(callback).Run();
     return;
   }
   base::CommandLine command_line(*executable);
@@ -88,6 +91,27 @@ void WakeAllUpdaters(base::OnceClosure callback) {
 #endif
   CheckProcessDone(base::LaunchProcess(command_line, options),
                    std::move(callback));
+}
+
+void CheckUpdaterHealthAndWakeAllUpdatersForScope(base::OnceClosure callback,
+                                                  UpdaterScope scope) {
+  base::MakeRefCounted<CheckUpdaterHealthTask>(scope)->Run(base::BindPostTask(
+      base::ThreadPool::CreateTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}),
+      base::BindOnce(&WakeAllUpdaters, scope, std::move(callback))));
+}
+
+}  // namespace
+
+void CheckUpdaterHealthAndWakeAllUpdaters(base::OnceClosure callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&GetBrowserUpdaterScope),
+      base::BindOnce(&CheckUpdaterHealthAndWakeAllUpdatersForScope,
+                     base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
 }  // namespace updater
