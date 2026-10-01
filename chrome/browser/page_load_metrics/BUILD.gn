@@ -93,6 +93,7 @@ source_set("page_load_metrics") {
 source_set("impl") {
   sources = [
     "chrome_initiator_location.cc",
+    "chrome_navigation_initiator.cc",
     "observers/bookmark_bar_page_load_metrics_observer.cc",
     "observers/captcha_metrics_observer.cc",
     "observers/captcha_provider_manager.cc",

@@ -85,25 +85,4 @@ std::string StringifyChromeInitiatorLocation(
 std::optional<ChromeInitiatorLocation> GetAttachedChromeInitiatorLocation(
     content::NavigationHandle& navigation_handle);
 
-void AttachNewTabPageNavigationHandleUserData(
-    content::NavigationHandle& navigation_handle);
-
-void AttachOmniboxDirectUrlInputNavigationHandleUserData(
-    content::NavigationHandle& navigation_handle);
-
-void AttachOmniboxDefaultSearchEngineNavigationHandleUserData(
-    content::NavigationHandle& navigation_handle);
-
-void AttachBookmarkBarNavigationHandleUserData(
-    content::NavigationHandle& navigation_handle);
-
-void AttachContextMenuSearchNavigationHandleUserData(
-    content::NavigationHandle& navigation_handle);
-
-void AttachContextMenuOpenLinkNavigationHandleUserData(
-    content::NavigationHandle& navigation_handle);
-
-void MarkNavigationServedBySearchPrefetch(
-    content::NavigationHandle& navigation_handle);
-
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_CHROME_INITIATOR_LOCATION_H_

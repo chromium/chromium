@@ -17,7 +17,7 @@
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/headless/headless_mode_util.h"
-#include "chrome/browser/page_load_metrics/chrome_initiator_location.h"
+#include "chrome/browser/page_load_metrics/chrome_navigation_initiator.h"
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
