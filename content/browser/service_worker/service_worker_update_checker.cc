@@ -70,8 +70,9 @@ ServiceWorkerUpdateChecker::ServiceWorkerUpdateChecker(
       creator_policies_(std::move(creator_policies)) {
   CHECK(context_, base::NotFatalUntil::M159);
   CHECK(fetch_client_settings_object_, base::NotFatalUntil::M159);
-  CHECK(fetch_client_settings_object_->outgoing_referrer.is_valid(),
-        base::NotFatalUntil::M159);
+  // TODO(crbug.com/565874976): CHECK-exclusion: Convert to a CHECK once we
+  // are confident it won't be triggered.
+  DCHECK(fetch_client_settings_object_->outgoing_referrer.is_valid());
 }
 
 ServiceWorkerUpdateChecker::~ServiceWorkerUpdateChecker() = default;
