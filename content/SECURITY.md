@@ -101,9 +101,13 @@ generally lower priority. Examples include:
   are enforced via Site Isolation), typically allowing CSRF-like attacks but not
   direct access to the cookies.
 * **Cross-Origin Information Leaks (No Direct Read):** Side channels or limited
-  leaks (e.g., sniffing cross-origin layout or detecting whether a cross-origin
-  resource is cached) that do not allow direct reading of sensitive cross-site
-  data.
+  leaks that do not allow direct reading of sensitive cross-site data. Some
+  examples include:
+  * Sniffing cross-origin layout.
+  * Detecting whether a cross-origin resource is cached.
+  * Knowledge of an `UnguessableToken` the origin should not have access to,
+    such as a `RemoteFrameToken` meant for a different process, or a
+   `LocalFrameToken` sent to a process that doesn't host that frame.
 * **UI Spoofing via Unvalidated IPCs:** A compromised renderer supplying
   unvalidated strings via IPC to manipulate native browser UI. While spoofing
   the Omnibox or permission prompts is severe, spoofing on surfaces that aren't

@@ -209,6 +209,26 @@ the previous section), then such data should be verified before being used.
       implementations exist for `//content`, `//chrome` and other layers).
 
 
+### Don't leak UnguessableTokens
+
+Don't send an UnguessableToken to a process that's not supposed to know about
+it. That would defeat the purpose of being unguessable.  A compromised renderer
+with an actual token from a different process could potentially use it to spoof
+browser-side checks.
+
+[`blink::RemoteFrameToken`](/third_party/blink/public/common/tokens/tokens.h) is
+the token that a *specific* renderer process knows for a frame that is in a
+different process (identifying a `blink::RemoteFrame` in that renderer and a
+`content::RenderFrameProxyHost` in the browser). Each renderer that is aware of
+that frame has a different `RemoteFrameToken` for it. Be sure to send each
+token to the right renderer.
+
+Similarly, don't send a `RemoteFrameToken` to the renderer that hosts the
+frame. Use
+[`blink::LocalFrameToken`](/third_party/blink/public/common/tokens/tokens.h)
+for that.
+
+
 ### Do not define unused or unimplemented things
 
 Mojo interfaces often cross privilege boundaries. Having well-defined interfaces
