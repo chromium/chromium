@@ -832,6 +832,9 @@ std::string GetXYZParamsString(FPDF_DEST dest, PDFiumPage* page) {
     return xyz_params;
   }
 
+  // WARNING: Do not use `dest` below this point, as `page` access can
+  // invalidate it.
+
   // Generate a string of the parameters
   if (has_x_coord) {
     // Handle out-of-range PDF coordinates and convert PDF coordinates to screen
@@ -3378,21 +3381,23 @@ std::optional<PDFiumEngine::NamedDestination> PDFiumEngine::GetNamedDestination(
   }
 
   NamedDestination result;
-  result.page = page;
   unsigned long view_int =
       FPDFDest_GetView(dest, &result.num_params, result.params.data());
-
-  // FPDFDest_GetView() gets the PDF coordinates directly from the PDF document.
-  // The PDF coordinates need to be transformed into screen coordinates before
-  // getting sent to the viewport.
+  result.page = page;
+  result.view = ConvertViewIntToViewString(view_int);
   PDFiumPage* page_ptr = pages_[page].get();
-  ParamsTransformPageToScreen(view_int, page_ptr, result.params);
 
   if (view_int == PDFDEST_VIEW_XYZ) {
     result.xyz_params = GetXYZParamsString(dest, page_ptr);
   }
 
-  result.view = ConvertViewIntToViewString(view_int);
+  // WARNING: Do not use `dest` below this point, as GetXYZParamsString() may
+  // have invalidated it. Or ParamsTransformPageToScreen() may invalidate it.
+
+  // FPDFDest_GetView() gets the PDF coordinates directly from the PDF document.
+  // The PDF coordinates need to be transformed into screen coordinates before
+  // getting sent to the viewport.
+  ParamsTransformPageToScreen(view_int, page_ptr, result.params);
   return result;
 }
 
