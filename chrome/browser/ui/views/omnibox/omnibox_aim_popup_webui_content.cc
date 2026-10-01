@@ -16,6 +16,8 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_context_menu.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_base.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_presenter_delegate.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_webui_base_content.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/omnibox/rounded_omnibox_results_frame.h"
@@ -104,7 +106,18 @@ void OmniboxAimPopupWebUIContent::ApplyInputAndCleanup(
                                                   /*update_popup=*/false);
   }
 
-  if (is_full_webui) {
+  // Only hand focus back to the omnibox popup during an explicit WebUI close
+  // (`CloseUI()`, where `draft_applied_on_close_` is true) or when the browser
+  // window widget itself is active (e.g. clicking the page content). If another
+  // widget (such as a sign-in promo bubble) has taken activation, do not steal
+  // activation back from it.
+  views::Widget* location_bar_widget =
+      popup_presenter() ? popup_presenter()->delegate().GetLocationBarWidget()
+                        : nullptr;
+  const bool should_restore_focus =
+      draft_applied_on_close_ ||
+      (location_bar_widget && location_bar_widget->IsActive());
+  if (is_full_webui && should_restore_focus) {
     // Hand focus back to the omnibox. Don't select all so the caret continues
     // the user's editing session.
     if (auto* popup_view = location_bar()->GetOmniboxPopupView()) {
@@ -125,9 +138,10 @@ std::string_view OmniboxAimPopupWebUIContent::GetMetricPrefix() const {
 
 void OmniboxAimPopupWebUIContent::UpdateLocationBarFocusForScreenReader() {
   if (is_full_webui_omnibox()) {
-    // `ApplyInputAndCleanup()` unconditionally hands focus back to the omnibox
-    // after applying the draft text. Focusing early here would transition the
-    // popup state to `kFull` before the draft is set on the `OmniboxEditModel`.
+    // During `RequestClose()` -> `CloseUI()`, `ApplyInputAndCleanup()` hands
+    // focus back to the omnibox after applying the draft text. Focusing early
+    // here would transition the popup state to `kFull` before the draft is set
+    // on the `OmniboxEditModel`.
     return;
   }
   if (GetWidget() &&

@@ -13,12 +13,16 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
+#include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/omnibox/omnibox_controller.h"
+#include "chrome/browser/ui/omnibox/omnibox_popup_state_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
+#include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_web_contents_helper.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/browser/ui/webui/searchbox/webui_omnibox_handler.h"
+#include "chrome/browser/ui/webui/webui_embedding_context.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/contextual_search/contextual_search_service.h"
@@ -308,6 +312,57 @@ IN_PROC_BROWSER_TEST_F(
   base::test::TestFuture<searchbox::mojom::DriveUploadResponsePtr> future;
   handler_->OnDriveUploadClicked(future.GetCallback());
   EXPECT_TRUE(future.Wait());
+
+  views::View* promo_view =
+      views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
+          kComposeboxDriveSignInPromoViewId,
+          BrowserView::GetBrowserViewForBrowser(browser())
+              ->GetElementContext());
+  EXPECT_NE(promo_view, nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ContextualSearchboxHandlerDriveSigninPromoBrowserTest,
+    OnDriveUploadClicked_FromOmniboxPopup_ClosesPopupAndShowsPromo) {
+  // Enable context sharing in prefs.
+  browser()->GetProfile()->GetPrefs()->SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kEnabled));
+
+  // Create a popup WebContents with OmniboxPopupWebContentsHelper attached,
+  // simulating the AIM / Full WebUI Omnibox popup.
+  std::unique_ptr<content::WebContents> popup_web_contents =
+      content::WebContents::Create(
+          content::WebContents::CreateParams(browser()->GetProfile()));
+  webui::SetBrowserWindowInterface(popup_web_contents.get(), browser());
+  OmniboxPopupWebContentsHelper::CreateForWebContents(popup_web_contents.get());
+  OmniboxController* omnibox_controller = BrowserWindow::FromBrowser(browser())
+                                              ->GetLocationBar()
+                                              ->GetOmniboxController();
+  OmniboxPopupWebContentsHelper::FromWebContents(popup_web_contents.get())
+      ->set_omnibox_controller(omnibox_controller);
+
+  omnibox_controller->popup_state_manager()->SetPopupState(
+      OmniboxPopupState::kAim);
+  ASSERT_EQ(omnibox_controller->popup_state_manager()->popup_state(),
+            OmniboxPopupState::kAim);
+
+  testing::NiceMock<MockSearchboxPage> popup_page;
+  auto popup_handler = std::make_unique<TestSearchboxHandler>(
+      mojo::PendingReceiver<searchbox::mojom::PageHandler>(),
+      popup_page.BindAndGetRemote(), browser()->GetProfile(),
+      popup_web_contents.get(),
+      base::BindLambdaForTesting([&]() { return session_handle_.get(); }));
+
+  base::test::TestFuture<searchbox::mojom::DriveUploadResponsePtr> future;
+  popup_handler->OnDriveUploadClicked(future.GetCallback());
+  EXPECT_TRUE(future.Wait());
+
+  // The omnibox popup should be closed so it doesn't cover or steal activation
+  // from the Drive sign-in promo bubble.
+  EXPECT_EQ(omnibox_controller->popup_state_manager()->popup_state(),
+            OmniboxPopupState::kNone);
 
   views::View* promo_view =
       views::ElementTrackerViews::GetInstance()->GetFirstMatchingView(
