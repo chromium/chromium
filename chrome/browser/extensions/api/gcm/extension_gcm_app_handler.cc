@@ -114,22 +114,18 @@ void ExtensionGCMAppHandler::OnExtensionUnloaded(
   }
 
   if (reason == UnloadedExtensionReason::UPDATE &&
-      !GetGCMDriver()->app_handlers().empty()) {
+      GetGCMDriver()->app_handlers().size() == 1 &&
+      GetGCMDriver()->GetAppHandler(extension->id()) != nullptr) {
     // When the extension is being updated, it will be first unloaded and then
-    // loaded again by ExtensionService::AddExtension. If the app handler for
+    // loaded again by ExtensionRegistrar::AddExtension. If the app handler for
     // this extension is the only handler, removing it and adding it again will
     // cause the GCM service being stopped and restarted unnecessarily. To work
     // around this, we add a dummy app handler to guard against it. This dummy
     // app handler will be removed once the extension loading logic is done.
     //
-    // Note that this dummy app handler is added when there is at least one
-    // handler. This is because there might be a built-in app handler, like
-    // GCMAccountMapper, which is automatically added and removed by
-    // GCMDriverDesktop.
-    //
     // Also note that the GCM message routing will not be interrupted during
     // the update process since unloading and reloading extension are done in
-    // the single function ExtensionService::AddExtension.
+    // the single function ExtensionRegistrar::AddExtension.
     AddDummyAppHandler();
 
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
