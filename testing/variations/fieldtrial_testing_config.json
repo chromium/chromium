@@ -13785,6 +13785,27 @@
             ]
         }
     ],
+    "PMWithheldFromViewVoter": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PMWithheldFromViewVoter"
+                    ],
+                    "disable_features": [
+                        "PMSidePanelLoadingVoter"
+                    ]
+                }
+            ]
+        }
+    ],
     "PageActionAnchoredMessageEasyDismiss": [
         {
             "platforms": [
