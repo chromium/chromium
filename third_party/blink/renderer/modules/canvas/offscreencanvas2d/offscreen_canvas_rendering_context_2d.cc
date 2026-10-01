@@ -477,11 +477,7 @@ bool OffscreenCanvasRenderingContext2D::WritePixels(
   if (!IsResourceProviderValid()) {
     return false;
   }
-  if (shared_image_provider_) {
-    return shared_image_provider_->WritePixels(orig_info, pixels, row_bytes, x,
-                                               y);
-  }
-  return bitmap_provider_->WritePixels(orig_info, pixels, row_bytes, x, y);
+  return WritePixelsToProvider(orig_info, pixels, row_bytes, x, y);
 }
 
 bool OffscreenCanvasRenderingContext2D::ResolveFont(const String& new_font) {

@@ -198,6 +198,21 @@ scoped_refptr<StaticBitmapImage> BaseRenderingContext2D::Snapshot() const {
   return bitmap_provider_->Snapshot();
 }
 
+bool BaseRenderingContext2D::WritePixelsToProvider(const SkImageInfo& orig_info,
+                                                   const void* pixels,
+                                                   size_t row_bytes,
+                                                   int x,
+                                                   int y) {
+  if (shared_image_provider_) {
+    return shared_image_provider_->WritePixels(orig_info, pixels, row_bytes, x,
+                                               y);
+  }
+  if (bitmap_provider_) {
+    return bitmap_provider_->WritePixels(orig_info, pixels, row_bytes, x, y);
+  }
+  return false;
+}
+
 scoped_refptr<StaticBitmapImage>
 BaseRenderingContext2D::PaintRenderingResultsToSnapshot(
     SourceDrawingBuffer source_buffer) {

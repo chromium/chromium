@@ -382,13 +382,7 @@ bool CanvasRenderingContext2D::WritePixels(const SkImageInfo& orig_info,
     }
   }
 
-  bool result = false;
-  if (shared_image_provider_) {
-    result =
-        shared_image_provider_->WritePixels(orig_info, pixels, row_bytes, x, y);
-  } else {
-    result = bitmap_provider_->WritePixels(orig_info, pixels, row_bytes, x, y);
-  }
+  bool result = WritePixelsToProvider(orig_info, pixels, row_bytes, x, y);
   if (result) {
     // WritePixels content is not saved in the recording. Thus, WritePixels()
     // must invalidate the last recording and ensure that any subsequent
@@ -1336,13 +1330,8 @@ void CanvasRenderingContext2D::RestoreBackBuffer(const cc::PaintImage& image) {
   DCHECK(sk_image);
   SkPixmap map;
   sk_image->peekPixels(&map);
-  if (shared_image_provider_) {
-    shared_image_provider_->WritePixels(map.info(), map.addr(), map.rowBytes(),
-                                        /*x=*/0, /*y=*/0);
-  } else if (bitmap_provider_) {
-    bitmap_provider_->WritePixels(map.info(), map.addr(), map.rowBytes(),
-                                  /*x=*/0, /*y=*/0);
-  }
+  WritePixelsToProvider(map.info(), map.addr(), map.rowBytes(), /*x=*/0,
+                        /*y=*/0);
 }
 
 void CanvasRenderingContext2D::WakeUpFromHibernation() {

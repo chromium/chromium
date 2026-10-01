@@ -322,6 +322,11 @@ class MODULES_EXPORT BaseRenderingContext2D
                            int y) {
     NOTREACHED();
   }
+  bool WritePixelsToProvider(const SkImageInfo& orig_info,
+                             const void* pixels,
+                             size_t row_bytes,
+                             int x,
+                             int y);
 
   PredefinedColorSpace GetDefaultImageDataColorSpace() const final {
     return color_params_.ColorSpace();
