@@ -5,16 +5,12 @@
 #ifndef GIN_PER_CONTEXT_DATA_H_
 #define GIN_PER_CONTEXT_DATA_H_
 
-#include <map>
-
 #include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "gin/gin_export.h"
-#include "gin/public/wrapper_info.h"
 #include "v8/include/cppgc/garbage-collected.h"
 #include "v8/include/cppgc/visitor.h"
 #include "v8/include/v8-forward.h"
-#include "v8/include/v8-persistent-handle.h"
 
 namespace gin {
 
@@ -33,7 +29,7 @@ class GIN_EXPORT PerContextData
                  v8::Local<v8::Context> context);
   PerContextData(const PerContextData&) = delete;
   PerContextData& operator=(const PerContextData&) = delete;
-  ~PerContextData() override;
+  ~PerContextData() override = default;
 
   void Trace(cppgc::Visitor* visitor) const;
   void Detach();
@@ -41,16 +37,10 @@ class GIN_EXPORT PerContextData
   // Can return NULL after the ContextHolder has detached from context.
   static PerContextData* From(v8::Local<v8::Context> context);
 
-  void SetObjectTemplate(const WrapperInfo* info,
-                         v8::Local<v8::ObjectTemplate> object_template);
-  v8::Local<v8::ObjectTemplate> GetObjectTemplate(const WrapperInfo* info);
-
   ContextHolder* context_holder() { return context_holder_; }
 
  private:
   raw_ptr<ContextHolder, DanglingUntriaged> context_holder_;
-  std::map<const WrapperInfo*, v8::Global<v8::ObjectTemplate>>
-      object_templates_;
 };
 
 }  // namespace gin
