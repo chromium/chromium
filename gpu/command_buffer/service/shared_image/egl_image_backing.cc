@@ -163,20 +163,6 @@ class EGLImageBacking::GLTexturePassthroughEGLImageRepresentation
 };
 
 // static
-bool EGLImageBacking::SupportsPixelReadbackWithFormat(
-    viz::SharedImageFormat format) {
-  // NOTE: Using MultiPlaneFormats is okay here are this is only used with
-  // SharedMemory GMBs which correspond to specific multiplanar formats.
-  return (format.is_multi_plane() ||
-          format == viz::SinglePlaneFormat::kRGBA_8888 ||
-          format == viz::SinglePlaneFormat::kBGRA_8888 ||
-          format == viz::SinglePlaneFormat::kR_8 ||
-          format == viz::SinglePlaneFormat::kRG_88 ||
-          format == viz::SinglePlaneFormat::kRGBX_8888 ||
-          format == viz::SinglePlaneFormat::kBGRX_8888);
-}
-
-// static
 bool EGLImageBacking::SupportsPixelUploadWithFormat(
     viz::SharedImageFormat format) {
   // NOTE: Using MultiPlaneFormats is okay here are this is only used with
@@ -186,10 +172,7 @@ bool EGLImageBacking::SupportsPixelUploadWithFormat(
           format == viz::SinglePlaneFormat::kRGBA_4444 ||
           format == viz::SinglePlaneFormat::kBGRA_8888 ||
           format == viz::SinglePlaneFormat::kR_8 ||
-          format == viz::SinglePlaneFormat::kRG_88 ||
           format == viz::SinglePlaneFormat::kRGBA_F16 ||
-          format == viz::SinglePlaneFormat::kR_16 ||
-          format == viz::SinglePlaneFormat::kRG_1616 ||
           format == viz::SinglePlaneFormat::kRGBX_8888 ||
           format == viz::SinglePlaneFormat::kBGRX_8888 ||
           format == viz::SinglePlaneFormat::kRGBA_1010102 ||

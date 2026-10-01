@@ -35,10 +35,6 @@ class EGLImageBacking : public ClearTrackingSharedImageBacking {
   // format.
   static bool SupportsPixelUploadWithFormat(viz::SharedImageFormat format);
 
-  // Returns true if EGLImageBacking supports ReadbackToMemory for the given
-  // format.
-  static bool SupportsPixelReadbackWithFormat(viz::SharedImageFormat format);
-
   EGLImageBacking(
       const Mailbox& mailbox,
       const SharedImageInfo& si_info,

@@ -65,12 +65,6 @@ class GLTextureImageBackingFactoryTestBase : public SharedImageTestBase {
     supports_r_rg_ =
         feature_info->validators()->texture_format.IsValid(GL_RED_EXT) &&
         feature_info->validators()->texture_format.IsValid(GL_RG_EXT);
-    supports_rg16_ =
-        supports_r_rg_ &&
-        feature_info->validators()->texture_internal_format.IsValid(
-            GL_R16_EXT) &&
-        feature_info->validators()->texture_internal_format.IsValid(
-            GL_RG16_EXT);
     supports_rgba_f16_ =
         feature_info->validators()->pixel_type.IsValid(GL_HALF_FLOAT_OES) ||
         feature_info->gl_version_info().IsAtLeastGLES(3, 0);
@@ -99,13 +93,8 @@ class GLTextureImageBackingFactoryTestBase : public SharedImageTestBase {
       }
       return supports_r_rg_;
     }
-    if (format == viz::SinglePlaneFormat::kR_8 ||
-        format == viz::SinglePlaneFormat::kRG_88) {
+    if (format == viz::SinglePlaneFormat::kR_8) {
       return supports_r_rg_;
-    }
-    if (format == viz::SinglePlaneFormat::kR_16 ||
-        format == viz::SinglePlaneFormat::kRG_1616) {
-      return supports_rg16_;
     }
     if (format == viz::SinglePlaneFormat::kRGBA_F16) {
       return supports_rgba_f16_;
@@ -124,7 +113,6 @@ class GLTextureImageBackingFactoryTestBase : public SharedImageTestBase {
  protected:
   ::testing::NiceMock<MockProgressReporter> progress_reporter_;
   bool supports_r_rg_ = false;
-  bool supports_rg16_ = false;
   bool supports_rgba_f16_ = false;
   bool supports_ar30_ = false;
   bool supports_ab30_ = false;
@@ -482,12 +470,9 @@ TEST_P(GLTextureImageBackingFactoryWithFormatTest, Basic) {
   // We use |supports_ar30_| and |supports_ab30_| to detect RGB10A2/BGR10A2
   // support. It's possible Skia might support these formats even if the Chrome
   // feature flags are false. We just check here that the feature flags don't
-  // allow Chrome to do something that Skia doesn't support. Skia also doesn't
-  // support using R16/RG16 SkSurfaces with Ganesh so disallow those too.
+  // allow Chrome to do something that Skia doesn't support.
   if ((format != viz::SinglePlaneFormat::kBGRA_1010102 || supports_ar30_) &&
-      (format != viz::SinglePlaneFormat::kRGBA_1010102 || supports_ab30_) &&
-      format != viz::SinglePlaneFormat::kR_16 &&
-      format != viz::SinglePlaneFormat::kRG_1616) {
+      (format != viz::SinglePlaneFormat::kRGBA_1010102 || supports_ab30_)) {
     ASSERT_TRUE(scoped_write_access);
     auto* surface = scoped_write_access->surface(/*plane_index=*/0);
     ASSERT_TRUE(surface);
@@ -776,7 +761,6 @@ const auto kInitialDataFormats =
                       viz::SinglePlaneFormat::kBGRA_8888,
                       viz::SinglePlaneFormat::kRGBA_4444,
                       viz::SinglePlaneFormat::kR_8,
-                      viz::SinglePlaneFormat::kRG_88,
                       viz::SinglePlaneFormat::kBGRA_1010102,
                       viz::SinglePlaneFormat::kRGBA_1010102);
 
@@ -790,13 +774,10 @@ const auto kSharedImageFormats =
                       viz::SinglePlaneFormat::kBGRA_8888,
                       viz::SinglePlaneFormat::kRGBA_4444,
                       viz::SinglePlaneFormat::kR_8,
-                      viz::SinglePlaneFormat::kRG_88,
                       viz::SinglePlaneFormat::kBGRA_1010102,
                       viz::SinglePlaneFormat::kRGBA_1010102,
                       viz::SinglePlaneFormat::kRGBX_8888,
                       viz::SinglePlaneFormat::kBGRX_8888,
-                      viz::SinglePlaneFormat::kR_16,
-                      viz::SinglePlaneFormat::kRG_1616,
                       viz::SinglePlaneFormat::kRGBA_F16,
                       viz::MultiPlaneFormat::kNV12,
                       viz::MultiPlaneFormat::kYV12,
@@ -815,7 +796,6 @@ const auto kReadbackFormats =
     ::testing::Values(viz::SinglePlaneFormat::kRGBA_8888,
                       viz::SinglePlaneFormat::kBGRA_8888,
                       viz::SinglePlaneFormat::kR_8,
-                      viz::SinglePlaneFormat::kRG_88,
                       viz::SinglePlaneFormat::kRGBX_8888,
                       viz::SinglePlaneFormat::kBGRX_8888,
                       viz::MultiPlaneFormat::kNV12,
