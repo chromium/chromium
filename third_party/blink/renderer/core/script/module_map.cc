@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/script/module_map.h"
 
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_fetch_request.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_loader.h"
@@ -243,6 +244,23 @@ void ModuleMap::FetchSingleModuleScript(
         UseCounter::Count(ExecutionContext::From(modulator_->GetScriptState()),
                           WebFeature::kSRIModuleMapIntegrityMismatch);
       }
+    }
+
+    // TODO(crbug.com/515948871): Cancel the load in case the check below
+    // returns false. For now, just count when it happens to help us understand
+    // how to release the fix.
+    bool csp_allows_load =
+        ExecutionContext::From(modulator_->GetScriptState())
+            ->GetContentSecurityPolicy()
+            ->AllowScriptFromSource(
+                request.Url(), request.Options().Nonce(),
+                request.Options().GetIntegrityMetadata(),
+                request.Options().ParserState(), request.Url(),
+                ResourceRequestHead::RedirectStatus::kNoRedirect,
+                ReportingDisposition::kSuppressReporting);
+    if (!csp_allows_load) {
+      UseCounter::Count(ExecutionContext::From(modulator_->GetScriptState()),
+                        WebFeature::kCSPModuleMapMismatch);
     }
   }
   DCHECK(entry);
