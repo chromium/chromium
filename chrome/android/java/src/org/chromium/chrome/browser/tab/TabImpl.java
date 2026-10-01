@@ -1668,61 +1668,7 @@ class TabImpl implements Tab, TabInternal {
         // headless and archived tabs are not associated with a window they can avoid initializing
         // tabs with WebContents. We also skip this logic if LoadAllTabsAtStartup is not enabled
         // which controls `mIsContentViewDeferred`.
-        boolean eligibleToCreateWebContents = webContents == null && !isDormant();
-        boolean needsToCallInitWebContents = true;
-        if (mIsContentViewDeferred && !isDormant()) {
-            if (mWebContentsState != null) {
-                assert webContents == null;
-
-                unfreezeContents(/* noRenderer= */ true);
-                webContents = getWebContents();
-                // unfreezeContents() already called initWebContents().
-                needsToCallInitWebContents = false;
-                assert webContents != null;
-            } else if (hasPendingLoadUrlParams) {
-                assert webContents == null;
-
-                webContents =
-                        WebContentsFactory.createWebContents(
-                                mProfile, isHidden(), initializeRenderer);
-            } else if (eligibleToCreateWebContents) {
-                webContents =
-                        WebContentsFactory.createWebContents(
-                                mProfile, initiallyHidden, initializeRenderer);
-            }
-            assert webContents != null;
-        } else if (mWebContentsState == null
-                && !hasPendingLoadUrlParams
-                && eligibleToCreateWebContents) {
-            // If there is a frozen WebContentsState or a pending lazy load, skip creating a new
-            // WebContents. Restoring will be done when showing the tab in the foreground. It is
-            // also correct to not create a WebContents if one was provided to this method.
-
-            webContents =
-                    WebContentsFactory.createWebContents(
-                            mProfile, initiallyHidden, initializeRenderer);
-        }
-
-        // WebContents may still be null at this point if:
-        // 1. The tab is dormant, or
-        // 2. The tab is in the content view deferred state and will be restored from either a
-        //    WebContentsState or pending LoadUrlParams.
-        if (webContents != null) {
-            assert !isDormant() : "Dormant tabs must never have WebContents initialized.";
-            if (needsToCallInitWebContents) {
-                initWebContents(webContents);
-            }
-            // Avoid an empty title by updating the title here. This could happen if restoring from
-            // a WebContents that has no renderer and didn't force a reload. This happens on
-            // background tab creation from Recent Tabs (TabRestoreService).
-            if (TextUtils.isEmpty(mTitle)) {
-                updateTitle();
-            }
-
-            if (!eligibleToCreateWebContents && webContents.shouldShowLoadingUI()) {
-                didStartPageLoad(webContents.getVisibleUrl());
-            }
-        }
+        initializeWebContents(webContents, initiallyHidden, initializeRenderer);
 
         // Remaining initialization logic that should always run.
         if (mTimestampMillis == INVALID_TIMESTAMP) {
@@ -1740,6 +1686,62 @@ class TabImpl implements Tab, TabInternal {
         for (TabObserver observer : mObservers) observer.onInitialized(this, appId);
 
         TraceEvent.end("Tab.initialize");
+    }
+
+    private void initializeWebContents(
+            @Nullable WebContents webContents,
+            boolean initiallyHidden,
+            boolean initializeRenderer) {
+        if (isDormant()) {
+            assert webContents == null : "Dormant tabs must never have WebContents initialized.";
+            return;
+        }
+
+        boolean wasWebContentsProvided = webContents != null;
+        boolean needsToCallInitWebContents = true;
+
+        if (mWebContentsState != null) {
+            assert webContents == null;
+            // Restoring a tab from persisted TabState. If the ContentView is not deferred, remain
+            // frozen until the tab is shown or loaded.
+            if (!mIsContentViewDeferred) {
+                return;
+            }
+            unfreezeContents(/* noRenderer= */ true);
+            webContents = getWebContents();
+            // unfreezeContents() already called initWebContents().
+            needsToCallInitWebContents = false;
+        } else if (mPendingLoadParams != null) {
+            assert webContents == null;
+            // Tab created for a lazy background load. If the ContentView is not deferred, remain
+            // frozen until the tab is shown or loaded.
+            if (!mIsContentViewDeferred) {
+                return;
+            }
+            webContents =
+                    WebContentsFactory.createWebContents(mProfile, isHidden(), initializeRenderer);
+        } else if (webContents == null) {
+            // Eager live tab creation without a caller-supplied WebContents.
+            webContents =
+                    WebContentsFactory.createWebContents(
+                            mProfile, initiallyHidden, initializeRenderer);
+        }
+
+        assert webContents != null;
+        if (needsToCallInitWebContents) {
+            initWebContents(webContents);
+        }
+
+        // Avoid an empty title by updating the title here. This could happen if restoring from
+        // a WebContents that has no renderer and didn't force a reload. This happens on
+        // background tab creation from Recent Tabs (TabRestoreService).
+        if (TextUtils.isEmpty(mTitle)) {
+            updateTitle();
+        }
+
+        if (wasWebContentsProvided && webContents.shouldShowLoadingUI()) {
+            didStartPageLoad(webContents.getVisibleUrl());
+        }
     }
 
     @Nullable
@@ -2046,8 +2048,7 @@ class TabImpl implements Tab, TabInternal {
                 downloadUrl = PdfUtils.getPdfReDownloadUrl(url.getSpec());
             } else if (UrlConstants.CHROME_NATIVE_SCHEME.equals(url.getScheme())
                     && UrlConstants.PDF_HOST.equals(url.getHost())) {
-                downloadUrl =
-                        PdfUtils.getPdfReDownloadUrl(url.getSpec());
+                downloadUrl = PdfUtils.getPdfReDownloadUrl(url.getSpec());
                 // getPdfReDownloadUrl restricts to HTTP(S). Explicitly allow blob schemes
                 // since they are ephemeral and require re-load.
                 if (downloadUrl == null
@@ -2422,32 +2423,32 @@ class TabImpl implements Tab, TabInternal {
                 ChromeFeatureList.ANNOTATED_PAGE_CONTENTS_VIRTUAL_STRUCTURE)) {
             cv.setVirtualStructureProvider(new PageContentProtoViewStructureBuilder());
         }
-        mContentView = cv;
+        setContentView(webContents, cv);
+        cv.addOnAttachStateChangeListener(mAttachStateChangeListener);
+    }
+
+    private void setContentView(WebContents webContents, ContentView contentView) {
+        mContentView = contentView;
 
         TabViewAndroidDelegate delegate;
-        if (webContents.getViewAndroidDelegate() instanceof TabViewAndroidDelegate) {
-            delegate = (TabViewAndroidDelegate) webContents.getViewAndroidDelegate();
-            delegate.setContainerView(cv);
+        if (webContents.getViewAndroidDelegate() instanceof TabViewAndroidDelegate existing) {
+            delegate = existing;
+            delegate.setContainerView(contentView);
         } else {
-            delegate = new TabViewAndroidDelegate(this, cv);
+            delegate = new TabViewAndroidDelegate(this, contentView);
         }
 
         webContents.setDelegates(
                 PRODUCT_VERSION,
                 delegate,
-                cv,
+                contentView,
                 getWindowAndroid(),
                 WebContents.createDefaultInternalsHolder());
-
-        mContentView.addOnAttachStateChangeListener(mAttachStateChangeListener);
     }
 
     /**
      * Initializes the {@link WebContents}. Completes the browser content components initialization
      * around a native WebContents pointer.
-     *
-     * <p>{@link #getNativePage()} will still return the {@link NativePage} if there is one. All
-     * initialization that needs to reoccur after a web contents swap should be added here.
      *
      * <p>NOTE: If you attempt to pass a native WebContents that does not have the same incognito
      * state as this tab this call will fail.
@@ -2456,36 +2457,20 @@ class TabImpl implements Tab, TabInternal {
      */
     private void initWebContents(WebContents webContents) {
         assert !isDormant() : "Dormant tabs must never initialize WebContents.";
+        assert mWebContents == null : "WebContents is already initialized for this Tab.";
         try {
             TraceEvent.begin("ChromeTab.initWebContents");
-            WebContents oldWebContents = mWebContents;
             mWebContents = webContents;
 
             if (mIsContentViewDeferred) {
-                DeferredContentViewStub stub =
-                        new DeferredContentViewStub(getThemedApplicationContext(), webContents);
-                mContentView = stub;
-                webContents.setDelegates(
-                        PRODUCT_VERSION,
-                        new TabViewAndroidDelegate(this, stub),
-                        stub,
-                        getWindowAndroid(),
-                        WebContents.createDefaultInternalsHolder());
+                setContentView(
+                        webContents,
+                        new DeferredContentViewStub(getThemedApplicationContext(), webContents));
             } else {
                 setupContentView(webContents);
             }
 
-            hideNativePage(false, null);
-
-            if (oldWebContents != null) {
-                assumeNonNull(getWebContentsAccessibility(oldWebContents))
-                        .setObscuredByAnotherView(false);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM
-                        && mSensitiveContentClientObserver != null) {
-                    SensitiveContentClient.fromWebContents(oldWebContents)
-                            .removeObserver(mSensitiveContentClientObserver);
-                }
-            }
+            hideNativePage(/* notify= */ false, /* postHideTask= */ null);
 
             ContentUtils.setUserAgentOverride(
                     mWebContents,
@@ -2501,10 +2486,6 @@ class TabImpl implements Tab, TabInternal {
             boolean isBackgroundTab = isDetachedFromActivity();
 
             assert mNativeTabAndroid != 0;
-            assumeNonNull(mDelegateFactory);
-            ContextMenuPopulatorFactory contextMenuPopulatorFactory =
-                    mDelegateFactory.createContextMenuPopulatorFactory(this);
-            assumeNonNull(contextMenuPopulatorFactory);
             assumeNonNull(mWebContentsDelegate);
             TabImplJni.get()
                     .initWebContents(
@@ -2513,7 +2494,7 @@ class TabImpl implements Tab, TabInternal {
                             isBackgroundTab,
                             webContents,
                             mWebContentsDelegate,
-                            new TabContextMenuPopulatorFactory(contextMenuPopulatorFactory, this));
+                            createTabContextMenuPopulatorFactory());
 
             mWebContents.notifyRendererPreferenceUpdate();
             addTextSelectionActionMenuDelegate(webContents);
@@ -2569,6 +2550,14 @@ class TabImpl implements Tab, TabInternal {
         }
         TabWebContentsDelegateAndroid delegate = mDelegateFactory.createWebContentsDelegate(this);
         mWebContentsDelegate = new TabWebContentsDelegateAndroidImpl(this, delegate);
+    }
+
+    private TabContextMenuPopulatorFactory createTabContextMenuPopulatorFactory() {
+        assumeNonNull(mDelegateFactory);
+        ContextMenuPopulatorFactory contextMenuPopulatorFactory =
+                mDelegateFactory.createContextMenuPopulatorFactory(this);
+        assumeNonNull(contextMenuPopulatorFactory);
+        return new TabContextMenuPopulatorFactory(contextMenuPopulatorFactory, this);
     }
 
     /**
@@ -2645,15 +2634,12 @@ class TabImpl implements Tab, TabInternal {
 
         WebContents webContents = getWebContents();
         if (webContents != null) {
-            ContextMenuPopulatorFactory contextMenuPopulatorFactory =
-                    mDelegateFactory.createContextMenuPopulatorFactory(this);
-            assumeNonNull(contextMenuPopulatorFactory);
             assumeNonNull(mWebContentsDelegate);
             TabImplJni.get()
                     .updateDelegates(
                             mNativeTabAndroid,
                             mWebContentsDelegate,
-                            new TabContextMenuPopulatorFactory(contextMenuPopulatorFactory, this));
+                            createTabContextMenuPopulatorFactory());
             webContents.notifyRendererPreferenceUpdate();
         }
     }
