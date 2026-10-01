@@ -25,6 +25,8 @@ source_set("infobar_delegate") {
 
 source_set("tab_helper") {
   sources = [
+    "permissions_metrics.h",
+    "permissions_metrics.mm",
     "permissions_tab_helper.h",
     "permissions_tab_helper.mm",
   ]

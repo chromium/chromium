@@ -1629,6 +1629,17 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Camera and Microphone permissions"/>
 </enum>
 
+<!-- LINT.IfChange(IOSPermissionRequestResolution) -->
+
+<enum name="IOSPermissionRequestResolution">
+  <int value="0" label="Prompt shown"/>
+  <int value="1" label="Allowed by saved setting (no prompt)"/>
+  <int value="2" label="Denied by saved setting (no prompt)"/>
+  <int value="3" label="Blocked by parental controls (no prompt)"/>
+</enum>
+
+<!-- LINT.ThenChange(//ios/chrome/browser/permissions/model/permissions_metrics.h:IOSPermissionRequestResolution) -->
+
 <!-- LINT.IfChange(IOSPersistTabContextDeleteDirectoryResult) -->
 
 <enum name="IOSPersistTabContextDeleteDirectoryResult">

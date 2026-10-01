@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_response.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/http_auth_overlay.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/insecure_form_overlay.h"
+#import "ios/chrome/browser/permissions/model/permissions_metrics.h"
 #import "ios/chrome/browser/permissions/model/permissions_tab_helper.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -390,6 +391,8 @@ void WebStateDelegateBrowserAgent::HandlePermissionsDecisionRequest(
   // For supervised users, sites can be denied permission to access camera or
   // mic by default. In this case, we do not show the dialog.
   if (IsMicOrCameraAccessSubjectToParentalControls(profile, permissions)) {
+    RecordPermissionRequestResolution(
+        permissions, IOSPermissionRequestResolution::kBlockedBySupervisedUser);
     handler(web::PermissionDecisionDeny);
     return;
   }
@@ -402,6 +405,11 @@ void WebStateDelegateBrowserAgent::HandlePermissionsDecisionRequest(
     std::optional<web::PermissionDecision> decision =
         DetermineDomainLevelDecision(settings_map, url, permissions);
     if (decision) {
+      RecordPermissionRequestResolution(
+          permissions,
+          *decision == web::PermissionDecisionGrant
+              ? IOSPermissionRequestResolution::kAllowedBySavedSetting
+              : IOSPermissionRequestResolution::kDeniedBySavedSetting);
       PostPermissionDecision(handler, *decision);
       return;
     }
@@ -410,6 +418,8 @@ void WebStateDelegateBrowserAgent::HandlePermissionsDecisionRequest(
   PermissionsTabHelper* permissions_tab_helper =
       PermissionsTabHelper::FromWebState(source);
   if (permissions_tab_helper) {
+    RecordPermissionRequestResolution(
+        permissions, IOSPermissionRequestResolution::kPromptShown);
     permissions_tab_helper
         ->PresentPermissionsDecisionDialogWithCompletionHandler(permissions,
                                                                 handler);

@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_response.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/permissions_dialog_overlay.h"
 #import "ios/chrome/browser/permissions/model/permissions_infobar_delegate.h"
+#import "ios/chrome/browser/permissions/model/permissions_metrics.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 
@@ -89,7 +90,19 @@ void HandlePermissionDialogResponse(
   PermissionsDialogResponse* dialog_response =
       response ? response->GetInfo<PermissionsDialogResponse>() : nullptr;
   web::PermissionDecision decision = web::PermissionDecisionDeny;
+  PermissionPromptAction prompt_action = PermissionPromptAction::kIgnored;
   if (dialog_response) {
+    switch (dialog_response->decision()) {
+      case PermissionDialogDecision::kAlwaysAllow:
+        prompt_action = PermissionPromptAction::kGranted;
+        break;
+      case PermissionDialogDecision::kAllowThisTime:
+        prompt_action = PermissionPromptAction::kGrantedOnce;
+        break;
+      case PermissionDialogDecision::kDontAllow:
+        prompt_action = PermissionPromptAction::kDenied;
+        break;
+    }
     if (IsDomainLevelSitePermissionsEnabled() && weak_web_state) {
       CommitPermissionDecisionToHostContentSettingsMap(
           weak_web_state.get(), requesting_url, permissions,
@@ -98,6 +111,7 @@ void HandlePermissionDialogResponse(
     decision = dialog_response->capture_allow() ? web::PermissionDecisionGrant
                                                 : web::PermissionDecisionDeny;
   }
+  RecordPermissionPromptAction(permissions, prompt_action);
 
   // Post the decision handler asynchronously to prevent synchronous re-entrancy
   // and stack overflow if WebKit immediately initiates another permission
@@ -131,6 +145,7 @@ void PermissionsTabHelper::
         NSArray<NSNumber*>* permissions,
         web::WebStatePermissionDecisionHandler handler) {
   EnsureObservingContentSettings();
+  RecordPermissionPromptShown(permissions);
   GURL requesting_url = web_state_->GetLastCommittedURL();
   std::unique_ptr<OverlayRequest> request =
       OverlayRequest::CreateWithConfig<PermissionsDialogRequest>(requesting_url,

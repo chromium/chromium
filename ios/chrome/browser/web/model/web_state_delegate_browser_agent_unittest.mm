@@ -7,6 +7,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/run_loop.h"
 #import "base/test/bind.h"
+#import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/test_future.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
@@ -20,6 +21,7 @@
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/http_auth_overlay.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/java_script_alert_dialog_overlay.h"
+#import "ios/chrome/browser/permissions/model/permissions_metrics.h"
 #import "ios/chrome/browser/permissions/model/permissions_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -453,6 +455,7 @@ TEST_F(WebStateDelegateBrowserAgentTest,
        HandlePermissionsDecisionRequestExplicitAllow) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kDomainLevelSitePermissions);
+  base::HistogramTester histogram_tester;
 
   auto web_state = std::make_unique<web::FakeWebState>();
   web_state->SetBrowserState(profile_.get());
@@ -469,6 +472,9 @@ TEST_F(WebStateDelegateBrowserAgentTest,
       web_state.get(), @[ @(web::PermissionCamera) ],
       base::CallbackToBlock(decision_future.GetCallback()));
   EXPECT_EQ(web::PermissionDecisionGrant, decision_future.Get());
+  histogram_tester.ExpectUniqueSample(
+      kPermissionRequestResolutionCameraHistogram,
+      IOSPermissionRequestResolution::kAllowedBySavedSetting, 1);
 }
 
 // Tests that HandlePermissionsDecisionRequest immediately denies permission
@@ -478,6 +484,7 @@ TEST_F(WebStateDelegateBrowserAgentTest,
        HandlePermissionsDecisionRequestExplicitBlock) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kDomainLevelSitePermissions);
+  base::HistogramTester histogram_tester;
 
   auto web_state = std::make_unique<web::FakeWebState>();
   web_state->SetBrowserState(profile_.get());
@@ -494,6 +501,9 @@ TEST_F(WebStateDelegateBrowserAgentTest,
       web_state.get(), @[ @(web::PermissionMicrophone) ],
       base::CallbackToBlock(decision_future.GetCallback()));
   EXPECT_EQ(web::PermissionDecisionDeny, decision_future.Get());
+  histogram_tester.ExpectUniqueSample(
+      kPermissionRequestResolutionMicrophoneHistogram,
+      IOSPermissionRequestResolution::kDeniedBySavedSetting, 1);
 }
 
 // Tests that HandlePermissionsDecisionRequest immediately denies permission
@@ -503,6 +513,7 @@ TEST_F(WebStateDelegateBrowserAgentTest,
        HandlePermissionsDecisionRequestMixedBlockAndAllow) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kDomainLevelSitePermissions);
+  base::HistogramTester histogram_tester;
 
   auto web_state = std::make_unique<web::FakeWebState>();
   web_state->SetBrowserState(profile_.get());
@@ -525,6 +536,9 @@ TEST_F(WebStateDelegateBrowserAgentTest,
       @[ @(web::PermissionCamera), @(web::PermissionMicrophone) ],
       base::CallbackToBlock(decision_future.GetCallback()));
   EXPECT_EQ(web::PermissionDecisionDeny, decision_future.Get());
+  histogram_tester.ExpectUniqueSample(
+      kPermissionRequestResolutionCameraAndMicrophoneHistogram,
+      IOSPermissionRequestResolution::kDeniedBySavedSetting, 1);
 
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       web_state.get(), OverlayModality::kWebContentArea);
@@ -537,6 +551,7 @@ TEST_F(WebStateDelegateBrowserAgentTest,
        HandlePermissionsDecisionRequestMixedAllowAndUnconfigured) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(kDomainLevelSitePermissions);
+  base::HistogramTester histogram_tester;
 
   auto web_state = std::make_unique<web::FakeWebState>();
   web_state->SetBrowserState(profile_.get());
@@ -559,6 +574,9 @@ TEST_F(WebStateDelegateBrowserAgentTest,
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       web_state.get(), OverlayModality::kWebContentArea);
   EXPECT_EQ(1U, queue->size());
+  histogram_tester.ExpectUniqueSample(
+      kPermissionRequestResolutionCameraAndMicrophoneHistogram,
+      IOSPermissionRequestResolution::kPromptShown, 1);
 }
 
 // Tests that when kDomainLevelSitePermissions is disabled, configured content
@@ -567,6 +585,7 @@ TEST_F(WebStateDelegateBrowserAgentTest,
        HandlePermissionsDecisionRequestFeatureDisabledFallsBackToDialog) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(kDomainLevelSitePermissions);
+  base::HistogramTester histogram_tester;
 
   auto web_state = std::make_unique<web::FakeWebState>();
   web_state->SetBrowserState(profile_.get());
@@ -588,4 +607,7 @@ TEST_F(WebStateDelegateBrowserAgentTest,
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
       web_state.get(), OverlayModality::kWebContentArea);
   EXPECT_EQ(1U, queue->size());
+  histogram_tester.ExpectUniqueSample(
+      kPermissionRequestResolutionCameraHistogram,
+      IOSPermissionRequestResolution::kPromptShown, 1);
 }
