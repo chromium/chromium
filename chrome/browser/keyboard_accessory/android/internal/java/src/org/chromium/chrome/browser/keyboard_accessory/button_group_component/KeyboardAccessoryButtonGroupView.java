@@ -28,7 +28,6 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
     private final ArrayList<ImageButton> mButtons = new ArrayList<>();
     private @Nullable KeyboardAccessoryButtonGroupListener mListener;
     private @Nullable Runnable mAtMemoryCallback;
-    private @Nullable Runnable mAtMemoryIphCallback;
     private @Nullable ImageButton mAtMemoryButton;
     private boolean mAtMemoryEnabled;
 
@@ -48,10 +47,6 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
 
     public void setAtMemoryCallback(Runnable callback) {
         mAtMemoryCallback = callback;
-    }
-
-    public void setAtMemoryIphCallback(Runnable callback) {
-        mAtMemoryIphCallback = callback;
     }
 
     public void setAtMemoryEnabled(boolean enabled) {
@@ -103,7 +98,6 @@ public class KeyboardAccessoryButtonGroupView extends LinearLayout {
                         getContext().getString(R.string.at_memory_icon_description));
         mAtMemoryButton.setOnClickListener(
                 v -> {
-                    if (mAtMemoryIphCallback != null) mAtMemoryIphCallback.run();
                     if (mAtMemoryCallback != null) mAtMemoryCallback.run();
                 });
         mButtons.add(mAtMemoryButton);

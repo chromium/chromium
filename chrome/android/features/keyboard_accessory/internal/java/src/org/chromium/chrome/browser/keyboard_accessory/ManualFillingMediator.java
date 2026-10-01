@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.autofill.settings.SettingsNavigationHelper;
 import org.chromium.chrome.browser.autofill.settings.options.AutofillOptionsReferrer;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -57,6 +58,7 @@ import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.KeyboardExtensionState;
 import org.chromium.chrome.browser.keyboard_accessory.ManualFillingProperties.StateProperty;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryCoordinator;
+import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryIphUtils;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryStyle;
 import org.chromium.chrome.browser.keyboard_accessory.bar_component.KeyboardAccessoryStyle.NotchPosition;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
@@ -92,6 +94,7 @@ import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.Dialog
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.DialogHandle;
 import org.chromium.components.browser_ui.widget.StrictButtonPressController.ButtonClickResult;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsAccessibility;
@@ -539,6 +542,12 @@ class ManualFillingMediator
         if (webContents != null && !webContents.isDestroyed()) {
             ManualFillingMetricsRecorder.recordActionSelected(
                     AccessoryAction.SHOW_AT_MEMORY_BOTTOMSHEET);
+            Profile profile = Profile.fromWebContents(webContents);
+            if (profile != null) {
+                KeyboardAccessoryIphUtils.emitFillingEvent(
+                        TrackerFactory.getTrackerForProfile(profile),
+                        FeatureConstants.KEYBOARD_ACCESSORY_AT_MEMORY_FEATURE);
+            }
             ManualFillingComponentBridge.onOptionSelectedForWebContents(
                     webContents, AccessoryAction.SHOW_AT_MEMORY_BOTTOMSHEET);
         }

@@ -26,14 +26,14 @@ import org.chromium.ui.widget.ViewRectProvider;
  * keep any state or perform any logic.
  */
 @NullMarked
-class KeyboardAccessoryIphUtils {
+public class KeyboardAccessoryIphUtils {
     /**
      * Emits a filling event that matches the given feature. Noop if no tracker is available yet.
      *
      * @param tracker The {@link Tracker} associated with the current session.
      * @param feature The feature to emit a filling event for. Fails if no event to emit.
      */
-    static void emitFillingEvent(Tracker tracker, String feature) {
+    public static void emitFillingEvent(Tracker tracker, String feature) {
         if (!tracker.isInitialized()) return;
         switch (feature) {
             case FeatureConstants.KEYBOARD_ACCESSORY_AT_MEMORY_FEATURE:

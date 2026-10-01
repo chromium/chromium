@@ -154,6 +154,7 @@ robolectric_binary("keyboard_accessory_junit_tests") {
     "//chrome/android:chrome_test_util_java",
     "//chrome/browser/autofill/android:java",
     "//chrome/browser/back_press/android:java",
+    "//chrome/browser/feature_engagement:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/fullscreen/android:java",
     "//chrome/browser/keyboard_accessory/android/internal:java",

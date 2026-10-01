@@ -96,6 +96,7 @@ import org.chromium.chrome.browser.ChromeWindow;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
+import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
@@ -131,6 +132,8 @@ import org.chromium.components.browser_ui.widget.ActionConfirmationDialog.Dialog
 import org.chromium.components.browser_ui.widget.StrictButtonPressController.ButtonClickResult;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.embedder_support.view.ContentView;
+import org.chromium.components.feature_engagement.EventConstants;
+import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
@@ -229,7 +232,8 @@ public class ManualFillingControllerTest {
          * #getRecordedActions()} and {@link #getFirstRecordedAction()}.
          *
          * @param unusedTypeId Unused but necessary to enable use as method reference.
-         * @param item The {@link Action[]} provided by a {@link Provider<Action[]>}.
+         * @param item The array of {@link Action}s provided by a {@link Provider} of {@code
+         *     Action[]}.
          */
         void record(int unusedTypeId, Action[] item) {
             mRecordedActionNotifications++;
@@ -437,8 +441,19 @@ public class ManualFillingControllerTest {
     }
 
     @Test
-    public void testRegistersAtMemoryCallbackOnInitialize() {
-        verify(mMockKeyboardAccessory).setAtMemoryCallback(any());
+    public void testAtMemoryCallbackNotifiesTrackerAndNative() {
+        Tracker tracker = mock(Tracker.class);
+        when(tracker.isInitialized()).thenReturn(true);
+        TrackerFactory.setTrackerForTests(tracker);
+        ArgumentCaptor<Runnable> callbackCaptor = ArgumentCaptor.forClass(Runnable.class);
+        verify(mMockKeyboardAccessory).setAtMemoryCallback(callbackCaptor.capture());
+
+        callbackCaptor.getValue().run();
+
+        verify(tracker).notifyEvent(EventConstants.KEYBOARD_ACCESSORY_AT_MEMORY_USED);
+        verify(mManualFillingComponentBridgeJniMock)
+                .onOptionSelectedForWebContents(
+                        mLastMockWebContents, AccessoryAction.SHOW_AT_MEMORY_BOTTOMSHEET);
     }
 
     @Test

@@ -57,7 +57,6 @@ import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.components.autofill.SuggestionType;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.feature_engagement.FeatureConstants;
-import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -577,17 +576,6 @@ class KeyboardAccessoryViewBinder {
                     R.layout.keyboard_accessory_buttons,
                     keyboardAccessory::wasClickedWhenObscured);
             mKeyboardAccessory = keyboardAccessory;
-
-            KeyboardAccessoryButtonGroupView view = (KeyboardAccessoryButtonGroupView) itemView;
-            view.setAtMemoryIphCallback(
-                    () -> {
-                        Tracker tracker = mKeyboardAccessory.getFeatureEngagementTracker();
-                        if (tracker != null) {
-                            KeyboardAccessoryIphUtils.emitFillingEvent(
-                                    tracker,
-                                    FeatureConstants.KEYBOARD_ACCESSORY_AT_MEMORY_FEATURE);
-                        }
-                    });
         }
 
         @Override
