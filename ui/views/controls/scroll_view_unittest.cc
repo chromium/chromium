@@ -1486,6 +1486,7 @@ TEST_F(WidgetScrollViewTest, ChildWithLayerTest) {
   ScrollView* scroll_view = AddScrollViewWithContents(std::move(contents_ptr));
   ScrollViewTestApi test_api(scroll_view);
 
+  EXPECT_FALSE(test_api.contents_viewport()->GetBackground());
   if (test_api.contents_viewport()->layer()) {
     return;
   }
@@ -1494,6 +1495,7 @@ TEST_F(WidgetScrollViewTest, ChildWithLayerTest) {
   child->SetPaintToLayer(ui::LAYER_TEXTURED);
 
   ASSERT_TRUE(test_api.contents_viewport()->layer());
+  EXPECT_TRUE(test_api.contents_viewport()->GetBackground());
   // The default ScrollView color is opaque, so that fills bounds opaquely
   // should be true.
   EXPECT_TRUE(test_api.contents_viewport()->layer()->fills_bounds_opaquely());
@@ -1501,6 +1503,7 @@ TEST_F(WidgetScrollViewTest, ChildWithLayerTest) {
   // Setting a std::nullopt color should make fills opaquely false.
   scroll_view->SetBackgroundColor(std::nullopt);
   EXPECT_FALSE(test_api.contents_viewport()->layer()->fills_bounds_opaquely());
+  EXPECT_FALSE(test_api.contents_viewport()->GetBackground());
 
   child->DestroyLayer();
   EXPECT_FALSE(test_api.contents_viewport()->layer());
@@ -1539,18 +1542,22 @@ TEST_F(ScrollViewTest, ContentsViewportLayerUsed_ScrollWithLayersDisabled) {
   View* contents = scroll_view.SetContents(std::make_unique<View>());
 
   ASSERT_FALSE(test_api.contents_viewport()->layer());
+  EXPECT_FALSE(test_api.contents_viewport()->GetBackground());
 
   View* child = contents->AddChildView(std::make_unique<View>());
   child->SetPaintToLayer();
 
   // When contents does not have a layer, contents_viewport is TEXTURED layer.
   EXPECT_TRUE(test_api.contents_viewport()->layer()->AsTextured());
+  EXPECT_TRUE(test_api.contents_viewport()->GetBackground());
   contents->SetPaintToLayer();
   // When contents is a TEXTURED layer.
   EXPECT_TRUE(test_api.contents_viewport()->layer()->AsNotDrawn());
+  EXPECT_FALSE(test_api.contents_viewport()->GetBackground());
   contents->SetPaintToLayer(ui::LAYER_NOT_DRAWN);
   // When contents is a NOT_DRAWN layer.
   EXPECT_TRUE(test_api.contents_viewport()->layer()->AsTextured());
+  EXPECT_TRUE(test_api.contents_viewport()->GetBackground());
 }
 
 // Validates the layer of contents_viewport_, when contents_ does not have a
@@ -1655,17 +1662,20 @@ TEST_F(
   // layer.
   ASSERT_TRUE(test_api.contents_viewport()->layer());
   EXPECT_TRUE(test_api.contents_viewport()->layer()->AsNotDrawn());
+  EXPECT_FALSE(test_api.contents_viewport()->GetBackground());
 
   // changing the layer type that the scrollview enables on contents.
   scroll_view.SetContentsLayerType(ui::LAYER_NOT_DRAWN);
 
   View* contents = scroll_view.SetContents(std::make_unique<View>());
   EXPECT_TRUE(test_api.contents_viewport()->layer()->AsTextured());
+  EXPECT_TRUE(test_api.contents_viewport()->GetBackground());
 
   View* child = contents->AddChildView(std::make_unique<View>());
   child->SetPaintToLayer();
 
   EXPECT_TRUE(test_api.contents_viewport()->layer()->AsTextured());
+  EXPECT_TRUE(test_api.contents_viewport()->GetBackground());
 }
 
 TEST_F(ScrollViewTest,

@@ -136,7 +136,7 @@ TEST_P(MahiPanelViewPixelTest, MainPanel) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("panel_view"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 15 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 16 : 1,
       panel_view()));
 }
 
@@ -170,7 +170,7 @@ TEST_P(MahiPanelViewPixelTest, SummaryView) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("summary_view"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 8 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 9 : 1,
       panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 
@@ -190,7 +190,7 @@ TEST_P(MahiPanelViewPixelTest, PanelWithoutFeedbackButtons) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("scroll_view"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 3 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 4 : 1,
       panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView)));
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
@@ -227,7 +227,7 @@ TEST_P(MahiPanelViewPixelTest, QuestionAnswerViewBasic) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("question_answer_view_basic"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 9 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 10 : 1,
       panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 
@@ -261,7 +261,7 @@ TEST_P(MahiPanelViewPixelTest, QuestionAnswerViewLongText) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("question_answer_view_long_text"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 11 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 12 : 1,
       panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 
@@ -280,7 +280,7 @@ TEST_P(MahiPanelViewPixelTest, SummaryViewScrollToBottom) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("summary_view_bottom"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 7 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 8 : 1,
       panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 
@@ -315,7 +315,7 @@ TEST_P(MahiPanelViewPixelTest, QuestionAnswerViewScrollToBottom) {
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
       GenerateScreenshotName("question_answer_bottom"),
-      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 8 : 0,
+      /*revision_number=*/pixel_test_helper()->IsSystemBlurEnabled() ? 9 : 1,
       panel_view()->GetViewByID(mahi_constants::ViewId::kScrollView)));
 }
 

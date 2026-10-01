@@ -241,6 +241,7 @@ class ScrollView::Viewport : public View {
     bool layer_needs_update = layer()->type() != new_layer_type;
     if (layer_needs_update) {
       SetContentsViewportLayer(new_layer_type);
+      scroll_view_->UpdateBackground();
     }
   }
 
@@ -1233,6 +1234,7 @@ void ScrollView::UpdateViewportLayerForClipping() {
     EnableViewportLayer();
   } else {
     contents_viewport_->DestroyLayer();
+    UpdateBackground();
   }
 }
 
@@ -1521,10 +1523,6 @@ void ScrollView::UpdateBorder() {
 }
 
 void ScrollView::UpdateBackground() {
-  if (!GetWidget()) {
-    return;
-  }
-
   const std::optional<ui::ColorVariant> background_color = GetBackgroundColor();
 
   auto create_background = [background_color]() {
@@ -1534,9 +1532,14 @@ void ScrollView::UpdateBackground() {
 
   SetBackground(create_background());
   // In addition to setting the background of |this|, set the background on
-  // the viewport as well. This way if the viewport has a layer
+  // the viewport as well when it has a textured layer so that
   // SetFillsBoundsOpaquely() is honored.
-  contents_viewport_->SetBackground(create_background());
+  if (contents_viewport_->layer() &&
+      contents_viewport_->layer()->type() == ui::LAYER_TEXTURED) {
+    contents_viewport_->SetBackground(create_background());
+  } else {
+    contents_viewport_->SetBackground(nullptr);
+  }
   if (contents_ && ScrollsWithLayers()) {
     contents_->SetBackground(create_background());
     // Contents views may not be aware they need to fill their entire bounds -
