@@ -64,7 +64,6 @@ tast.network.ARCEAPWifiProvisioning.eap_wifi_tls
 
 # b/409064294
 tast.apps.SystemWebAppsInstallGuest
-tast.peripherals.LaunchAppFromGuestSession.diagnostics
 
 # b/422132031
 tast.inputs.VirtualKeyboardHandwriting.docked
