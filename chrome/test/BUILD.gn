@@ -178,6 +178,11 @@ static_library("test_support") {
     "//chrome/browser/safe_browsing:test_database_helper",
     "//chrome/browser/search_engines:test_support",
     "//chrome/browser/signin:identity_test_support",
+
+    # TODO(crbug.com/353332589): c/b/signin:identity_test_support needs
+    # TestingProfile::TestingFactory but can't dep on testing_profile_impl
+    # directly due to cycle: testing_profile_impl -> extensions:test_support ->
+    # identity_test_support. Remove once that cycle is fixed.
     "//chrome/test/base:testing_profile_impl",
   ]
 
