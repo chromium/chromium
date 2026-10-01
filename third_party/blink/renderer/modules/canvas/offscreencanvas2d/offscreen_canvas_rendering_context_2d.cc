@@ -274,7 +274,7 @@ bool OffscreenCanvasRenderingContext2D::InitializeResourceProvider() {
         host->Size(), format, alpha_type, color_space, hdr_metadata, host);
   }
 
-  if (shared_image_provider_ || bitmap_provider_) {
+  if (HasResourceProvider()) {
     ConfigureRecorder(host->Size(), shared_image_provider_ &&
                                         shared_image_provider_->IsGraphite());
   } else {
@@ -404,7 +404,7 @@ OffscreenCanvasRenderingContext2D::GetOrCreatePaintCanvas() {
 void OffscreenCanvasRenderingContext2D::WillDraw(
     const gfx::Rect& dirty_rect,
     CanvasPerformanceMonitor::DrawType draw_type) {
-  CHECK(shared_image_provider_ || bitmap_provider_);
+  CHECK(HasResourceProvider());
   gfx::Rect adjusted_dirty_rect = dirty_rect;
   if (GetState().ShouldAntialias()) {
     adjusted_dirty_rect.Outset(1);

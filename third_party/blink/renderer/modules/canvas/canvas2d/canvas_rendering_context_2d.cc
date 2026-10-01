@@ -472,7 +472,7 @@ MemoryManagedPaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
     return nullptr;
   }
 
-  if (shared_image_provider_ || bitmap_provider_) {
+  if (HasResourceProvider()) {
     if (layer_count_ == 0) [[likely]] {
       // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
       FlushIfRecordingLimitExceeded();
@@ -490,7 +490,7 @@ MemoryManagedPaintCanvas* CanvasRenderingContext2D::GetOrCreatePaintCanvas() {
 void CanvasRenderingContext2D::WillDraw(
     const gfx::Rect& dirty_rect,
     CanvasPerformanceMonitor::DrawType draw_type) {
-  CHECK(shared_image_provider_ || bitmap_provider_);
+  CHECK(HasResourceProvider());
   if (ShouldAntialias()) {
     gfx::Rect inflated_dirty_rect = dirty_rect;
     inflated_dirty_rect.Outset(1);
@@ -1077,7 +1077,7 @@ void CanvasRenderingContext2D::Dispose() {
 }
 
 void CanvasRenderingContext2D::CreateProvider() {
-  CHECK(!shared_image_provider_ && !bitmap_provider_);
+  CHECK(!HasResourceProvider());
 
   canvas()->GetOrCreateResourceDispatcher();
 
@@ -1140,7 +1140,7 @@ void CanvasRenderingContext2D::CreateProvider() {
         canvas()->Size(), format, alpha_type, color_space, hdr_metadata,
         canvas());
   }
-  if (shared_image_provider_ || bitmap_provider_) {
+  if (HasResourceProvider()) {
     ConfigureRecorder(
         canvas()->Size(),
         shared_image_provider_ && shared_image_provider_->IsGraphite());
@@ -1177,8 +1177,7 @@ bool CanvasRenderingContext2D::InitializeResourceProvider() {
   }
 
   if (isContextLost() && !IsContextBeingRestored()) {
-    DCHECK(!shared_image_provider_);
-    DCHECK(!bitmap_provider_);
+    DCHECK(!HasResourceProvider());
     return false;
   }
 
@@ -1245,7 +1244,7 @@ void CanvasRenderingContext2D::ResetResourceProvider() {
 }
 
 void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
-  if (!canvas() || (!shared_image_provider_ && !bitmap_provider_)) {
+  if (!canvas() || !HasResourceProvider()) {
     return;
   }
 
@@ -1267,7 +1266,7 @@ void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
 
   // Bail out if it's not possible to create a new provider.
   RecreateResourceProvider();
-  if (!shared_image_provider_ && !bitmap_provider_) {
+  if (!HasResourceProvider()) {
     return;
   }
 
@@ -1278,7 +1277,7 @@ void CanvasRenderingContext2D::DropAndRecreateExistingResourceProvider() {
 
 void CanvasRenderingContext2D::RecreateResourceProvider() {
   CHECK(GetHibernationHandler());
-  CHECK(!shared_image_provider_ && !bitmap_provider_);
+  CHECK(!HasResourceProvider());
 
   if (did_fail_to_create_resource_provider_) {
     ResetRecorder();
