@@ -68,7 +68,6 @@ class PLATFORM_EXPORT Canvas2DBitmapProvider final
 
   scoped_refptr<StaticBitmapImage> Snapshot(
       ImageOrientation = ImageOrientationEnum::kDefault);
-  void ReleaseImageProviderImages();
 
   void RasterRecord(cc::PaintRecord last_recording);
   bool WritePixels(const SkImageInfo& orig_info,

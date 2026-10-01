@@ -901,7 +901,6 @@ std::optional<cc::PaintRecord> BaseRenderingContext2D::FlushCanvasInternal(
   } else if (bitmap_provider_) {
     ScopedRasterTimer timer(nullptr, nullptr);
     bitmap_provider_->RasterRecord(recording);
-    bitmap_provider_->ReleaseImageProviderImages();
   }
   if (Host()) {
     Host()->DidFlush();

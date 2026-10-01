@@ -149,13 +149,6 @@ scoped_refptr<StaticBitmapImage> Canvas2DBitmapProvider::Snapshot(
                                                 orientation);
 }
 
-void Canvas2DBitmapProvider::ReleaseImageProviderImages() {
-  if (canvas_image_provider_) {
-    canvas_image_provider_->ReleaseLockedImages();
-    canvas_image_provider_->UnbindTextureBackedImages();
-  }
-}
-
 void Canvas2DBitmapProvider::ApplyAnimatedImageFrameIndexesForId(
     SkCanvas* canvas,
     uint32_t id) {
@@ -179,6 +172,10 @@ void Canvas2DBitmapProvider::RasterRecord(cc::PaintRecord last_recording) {
         base::Unretained(this));
   }
   skia_canvas_->drawPicture(std::move(last_recording), custom_callback);
+  if (canvas_image_provider_) {
+    canvas_image_provider_->ReleaseLockedImages();
+    canvas_image_provider_->UnbindTextureBackedImages();
+  }
 }
 
 bool Canvas2DBitmapProvider::WritePixels(const SkImageInfo& orig_info,
