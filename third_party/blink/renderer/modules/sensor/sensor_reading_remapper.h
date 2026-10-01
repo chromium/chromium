@@ -7,20 +7,21 @@
 
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 #include "services/device/public/mojom/sensor.mojom-blink-forward.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
-class SensorReadingRemapper {
+class MODULES_EXPORT SensorReadingRemapper {
   STATIC_ONLY(SensorReadingRemapper);
 
  public:
   // For spatial sensors, remaps coordinates to the
-  // screen coordinate system, i.e. performs clockwise
-  // rotation |orientation_angle| degrees around Z-axis:
-  // |  cos(a) sin(a)  0||x|
-  // | -sin(a) cos(a)  0||y|
-  // |      0      0   1||z|
+  // screen coordinate system, i.e. rotates |orientation_angle| degrees
+  // around the Z-axis:
+  // | cos(a) -sin(a)  0||x|
+  // | sin(a)  cos(a)  0||y|
+  // |      0       0  1||z|
   static void RemapToScreenCoords(device::mojom::blink::SensorType,
                                   uint16_t orientation_angle,
                                   device::SensorReading*);

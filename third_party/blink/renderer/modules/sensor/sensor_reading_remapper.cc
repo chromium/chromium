@@ -51,8 +51,8 @@ void RemapSensorReadingXYZ(uint16_t angle, SensorReadingXYZ& reading) {
   double x = reading.x;
   double y = reading.y;
 
-  reading.x = x * cos + y * sin;
-  reading.y = y * cos - x * sin;
+  reading.x = x * cos - y * sin;
+  reading.y = x * sin + y * cos;
 }
 
 constexpr double kInverseSqrt2 = 0.70710678118;

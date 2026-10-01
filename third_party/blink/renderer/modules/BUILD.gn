@@ -629,6 +629,7 @@ source_set("unit_tests") {
     "push_messaging/push_subscription_test.cc",
     "remoteplayback/remote_playback_test.cc",
     "screen_orientation/screen_orientation_controller_test.cc",
+    "sensor/sensor_reading_remapper_test.cc",
     "sensor/sensor_test_utils.cc",
     "sensor/sensor_test_utils.h",
     "service_worker/service_worker_container_test.cc",
