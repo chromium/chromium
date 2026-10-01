@@ -4,18 +4,22 @@
 
 #include "chrome/browser/ash/drive/file_system_util.h"
 
+#include <memory>
+
 #include "ash/constants/ash_features.h"
 #include "base/files/file_path.h"
-#include "base/test/test_file_util.h"
-#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/fake_gaia_mixin.h"
-#include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "components/account_id/account_id.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/user_manager/scoped_user_manager.h"
+#include "components/session_manager/test/user_session_test_environment.h"
+#include "components/user_manager/user.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,8 +34,39 @@ using base::test::ScopedFeatureList;
 // environment since Profile objects must be touched from UI and hence has
 // CHECK/DCHECKs for it.
 class ProfileRelatedFileSystemUtilTest : public testing::Test {
- private:
+ public:
+  void SetUp() override {
+    ash::LoginState::Initialize();
+    user_session_test_environment_ = std::make_unique<
+        ash::test::UserSessionTestEnvironment>(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        std::make_unique<ash::test::ChromeUserSessionTestEnvironmentDelegate>(
+            TestingBrowserProcess::GetGlobal()));
+  }
+
+  void TearDown() override {
+    user_session_test_environment_.reset();
+    ash::LoginState::Shutdown();
+  }
+
+ protected:
+  [[nodiscard]] Profile* LogInRegularUser(
+      const AccountId& account_id =
+          AccountId::FromUserEmailGaiaId("foobar@example.com",
+                                         GaiaId("1234567890"))) {
+    const user_manager::User* user =
+        user_session_test_environment_->AddRegularUser(account_id);
+    if (!user) {
+      return nullptr;
+    }
+    user_session_test_environment_->LogIn(account_id);
+    return Profile::FromBrowserContext(
+        ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user));
+  }
+
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<ash::test::UserSessionTestEnvironment>
+      user_session_test_environment_;
 };
 
 }  // namespace
@@ -55,27 +90,30 @@ TEST_F(ProfileRelatedFileSystemUtilTest, IsUnderDriveMountPoint) {
 }
 
 TEST_F(ProfileRelatedFileSystemUtilTest, GetCacheRootPath) {
-  TestingProfile profile(base::CreateUniqueTempDirectoryScopedToTest());
-  base::FilePath profile_path = profile.GetPath();
+  Profile* const profile = LogInRegularUser();
+  ASSERT_TRUE(profile);
+  base::FilePath profile_path = profile->GetPath();
   EXPECT_EQ(profile_path.AppendASCII("GCache/v1"),
-            util::GetCacheRootPath(&profile));
+            util::GetCacheRootPath(profile));
 }
 
 TEST_F(ProfileRelatedFileSystemUtilTest, SetDriveConnectionStatusForTesting) {
-  TestingProfile profile;
+  Profile* const profile = LogInRegularUser();
+  ASSERT_TRUE(profile);
   using enum ConnectionStatus;
-  EXPECT_EQ(GetDriveConnectionStatus(&profile), kNoService);
+  EXPECT_EQ(GetDriveConnectionStatus(profile), kNoService);
 
   for (const ConnectionStatus status :
        {kNoNetwork, kNotReady, kNoService, kMetered, kConnected}) {
     SetDriveConnectionStatusForTesting(status);
-    EXPECT_EQ(GetDriveConnectionStatus(&profile), status);
+    EXPECT_EQ(GetDriveConnectionStatus(profile), status);
   }
 }
 
 TEST_F(ProfileRelatedFileSystemUtilTest, IsDriveFsBulkPinningAvailable) {
-  TestingProfile profile;
-  PrefService* const prefs = profile.GetPrefs();
+  Profile* const profile = LogInRegularUser();
+  ASSERT_TRUE(profile);
+  PrefService* const prefs = profile->GetPrefs();
   DCHECK(prefs);
 
   EXPECT_TRUE(prefs->GetBoolean(prefs::kDriveFsBulkPinningVisible));
@@ -83,7 +121,7 @@ TEST_F(ProfileRelatedFileSystemUtilTest, IsDriveFsBulkPinningAvailable) {
   {
     ScopedFeatureList features;
     features.InitWithFeatures({kFeatureManagementDriveFsBulkPinning}, {});
-    EXPECT_TRUE(IsDriveFsBulkPinningAvailable(&profile));
+    EXPECT_TRUE(IsDriveFsBulkPinningAvailable(profile));
     EXPECT_TRUE(IsDriveFsBulkPinningAvailable(nullptr));
     EXPECT_TRUE(IsDriveFsBulkPinningAvailable());
   }
@@ -91,7 +129,7 @@ TEST_F(ProfileRelatedFileSystemUtilTest, IsDriveFsBulkPinningAvailable) {
   {
     ScopedFeatureList features;
     features.InitWithFeatures({}, {kFeatureManagementDriveFsBulkPinning});
-    EXPECT_FALSE(IsDriveFsBulkPinningAvailable(&profile));
+    EXPECT_FALSE(IsDriveFsBulkPinningAvailable(profile));
     EXPECT_FALSE(IsDriveFsBulkPinningAvailable(nullptr));
     EXPECT_FALSE(IsDriveFsBulkPinningAvailable());
   }
@@ -101,7 +139,7 @@ TEST_F(ProfileRelatedFileSystemUtilTest, IsDriveFsBulkPinningAvailable) {
   {
     ScopedFeatureList features;
     features.InitWithFeatures({kFeatureManagementDriveFsBulkPinning}, {});
-    EXPECT_FALSE(IsDriveFsBulkPinningAvailable(&profile));
+    EXPECT_FALSE(IsDriveFsBulkPinningAvailable(profile));
     EXPECT_TRUE(IsDriveFsBulkPinningAvailable(nullptr));
   }
 
@@ -110,77 +148,72 @@ TEST_F(ProfileRelatedFileSystemUtilTest, IsDriveFsBulkPinningAvailable) {
   {
     ScopedFeatureList features;
     features.InitWithFeatures({kFeatureManagementDriveFsBulkPinning}, {});
-    EXPECT_TRUE(IsDriveFsBulkPinningAvailable(&profile));
+    EXPECT_TRUE(IsDriveFsBulkPinningAvailable(profile));
     EXPECT_TRUE(IsDriveFsBulkPinningAvailable(nullptr));
-  }
-
-  // Test for Googler account.
-  {
-    ScopedFeatureList features;
-    features.InitWithFeatures({}, {kFeatureManagementDriveFsBulkPinning});
-
-    EXPECT_FALSE(IsDriveFsBulkPinningAvailable(nullptr));
-    EXPECT_FALSE(IsDriveFsBulkPinningAvailable(&profile));
-
-    const user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-        user_manager(std::make_unique<ash::FakeChromeUserManager>());
-    user_manager->AddUser(AccountId::FromUserEmailGaiaId(
-        "foobar@google.com", GaiaId(FakeGaiaMixin::kEnterpriseUser1GaiaId)));
-
-    EXPECT_TRUE(IsDriveFsBulkPinningAvailable(nullptr));
-    EXPECT_TRUE(IsDriveFsBulkPinningAvailable(&profile));
   }
 }
 
 TEST_F(ProfileRelatedFileSystemUtilTest,
+       IsDriveFsBulkPinningAvailableForGoogler) {
+  ScopedFeatureList features;
+  features.InitWithFeatures({}, {kFeatureManagementDriveFsBulkPinning});
+
+  EXPECT_FALSE(IsDriveFsBulkPinningAvailable(nullptr));
+
+  Profile* const profile = LogInRegularUser(AccountId::FromUserEmailGaiaId(
+      "foobar@google.com", GaiaId(FakeGaiaMixin::kEnterpriseUser1GaiaId)));
+  ASSERT_TRUE(profile);
+
+  EXPECT_TRUE(IsDriveFsBulkPinningAvailable(nullptr));
+  EXPECT_TRUE(IsDriveFsBulkPinningAvailable(profile));
+}
+
+TEST_F(ProfileRelatedFileSystemUtilTest,
        CheckDriveEnabledAndDriveAvailabilityForProfile) {
-  TestingProfile profile;
-  PrefService* const prefs = profile.GetPrefs();
+  Profile* const profile = LogInRegularUser();
+  ASSERT_TRUE(profile);
+  PrefService* const prefs = profile->GetPrefs();
   DCHECK(prefs);
 
   // Set disable Drive preference to true.
   prefs->SetBoolean(prefs::kDisableDrive, true);
 
   // Check kNotAvailableWhenDisableDrivePreferenceSet.
-  EXPECT_EQ(CheckDriveEnabledAndDriveAvailabilityForProfile(&profile),
+  EXPECT_EQ(CheckDriveEnabledAndDriveAvailabilityForProfile(profile),
             DriveAvailability::kNotAvailableWhenDisableDrivePreferenceSet);
 
   // Set disable Drive preference to false.
   prefs->SetBoolean(prefs::kDisableDrive, false);
 
-  // Check kNotAvailableForUninitialisedLoginState.
-  EXPECT_EQ(CheckDriveEnabledAndDriveAvailabilityForProfile(&profile),
-            DriveAvailability::kNotAvailableForUninitialisedLoginState);
-
-  // Initialise login state.
-  ash::LoginState::Initialize();
-
-  // Check kNotAvailableForAccountType.
-  EXPECT_EQ(CheckDriveEnabledAndDriveAvailabilityForProfile(&profile),
-            DriveAvailability::kNotAvailableForAccountType);
-
-  // Login gaia user.
-  const user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      user_manager(std::make_unique<ash::FakeChromeUserManager>());
-  const AccountId account_id(AccountId::FromUserEmailGaiaId(
-      "foobar@google.com", GaiaId(FakeGaiaMixin::kEnterpriseUser1GaiaId)));
-  user_manager->AddUser(account_id);
-  user_manager->LoginUser(account_id);
-  ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-      user_manager->GetPrimaryUser(), &profile);
-
   // Check kAvailable.
-  EXPECT_EQ(CheckDriveEnabledAndDriveAvailabilityForProfile(&profile),
+  EXPECT_EQ(CheckDriveEnabledAndDriveAvailabilityForProfile(profile),
             DriveAvailability::kAvailable);
 
   // Get incognito profile.
-  Profile* incongnito_profile = profile.GetOffTheRecordProfile(
+  Profile* incognito_profile = profile->GetOffTheRecordProfile(
       Profile::OTRProfileID::CreateUniqueForTesting(),
       /*create_if_needed=*/true);
+  ASSERT_TRUE(incognito_profile);
 
   // Check kNotAvailableInIncognito.
-  EXPECT_EQ(CheckDriveEnabledAndDriveAvailabilityForProfile(incongnito_profile),
+  EXPECT_EQ(CheckDriveEnabledAndDriveAvailabilityForProfile(incognito_profile),
             DriveAvailability::kNotAvailableInIncognito);
+}
+
+TEST_F(ProfileRelatedFileSystemUtilTest,
+       CheckDriveEnabledAndDriveAvailabilityForNonGaiaProfile) {
+  const user_manager::User* user =
+      user_session_test_environment_->AddPublicAccountUser(
+          "public@public-accounts.device-local.localhost");
+  ASSERT_TRUE(user);
+  user_session_test_environment_->LogIn(user->GetAccountId());
+  Profile* const profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByUser(user));
+  ASSERT_TRUE(profile);
+
+  // Check kNotAvailableForAccountType.
+  EXPECT_EQ(CheckDriveEnabledAndDriveAvailabilityForProfile(profile),
+            DriveAvailability::kNotAvailableForAccountType);
 }
 
 }  // namespace drive::util

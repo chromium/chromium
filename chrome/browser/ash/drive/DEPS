@@ -41,4 +41,8 @@ specific_include_rules = {
     "+chrome/browser/browser_process.h",
     "+chrome/browser/signin/identity_manager_factory.h",
   ],
+
+  "file_system_util_unittest\\.cc": [
+    "+chrome/browser/ash/login/test/chrome_user_session_test_environment_delegate.h",
+  ],
 }
