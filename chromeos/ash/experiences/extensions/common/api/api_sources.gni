@@ -16,6 +16,7 @@ chromeos_schema_sources_ = [
   "input_method_private.json",
   "login_screen_ui.webidl",
   "speech_recognition_private.idl",
+  "users_private.idl",
 ]
 
 chromeos_extensions_api_schema_sources =

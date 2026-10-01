@@ -1053,15 +1053,6 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app"]
   },
-  "usersPrivate": {
-    "channel": "trunk",
-    "platforms": ["chromeos"],
-    "extension_types": ["extension", "platform_app"],
-    "allowlist": [
-      // ChromeOS Autotest extension.
-      "0D209B5E4401BB8E7873B5AB5B1346A1CB067015"
-    ]
-  },
   "wallpaper": {
     "channel": "stable",
     "extension_types": ["platform_app", "extension"],

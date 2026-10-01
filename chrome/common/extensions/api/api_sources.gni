@@ -133,7 +133,6 @@ if (enable_extensions) {
       "smart_card_provider_private.idl",
       "system_log.idl",
       "terminal_private.json",
-      "users_private.idl",
       "vpn_provider.idl",
       "wallpaper.json",
       "wm_desks_private.idl",

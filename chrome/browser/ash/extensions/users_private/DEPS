@@ -20,5 +20,4 @@ include_rules = [
   "+chrome/browser/ash/profiles",
   "+chrome/browser/extensions/api/settings_private",
   "+chrome/browser/profiles",
-  "+chrome/common/extensions/api",
 ]

@@ -937,17 +937,6 @@
     "dependencies": ["permission:ttsEngine"],
     "contexts": ["privileged_extension"]
   },
-  "usersPrivate": [{
-    "dependencies": ["permission:usersPrivate"],
-    "contexts": ["privileged_extension"],
-    "platforms": ["chromeos"]
-  }, {
-    "channel": "stable",
-    "contexts": ["webui"],
-    "matches": [
-      "chrome://os-settings/*"
-    ]
-  }],
   "virtualKeyboardPrivate": {
     "dependencies": ["permission:virtualKeyboardPrivate"],
     "contexts": ["privileged_extension"]

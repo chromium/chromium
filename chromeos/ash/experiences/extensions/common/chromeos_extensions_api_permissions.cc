@@ -29,6 +29,8 @@ constexpr APIPermissionInfo::InitInfo kPermissionsToRegister[] = {
     {APIPermissionID::kLoginScreenUi, "loginScreenUi"},
     {APIPermissionID::kSpeechRecognitionPrivate, "speechRecognitionPrivate",
      APIPermissionInfo::kFlagDoesNotRequireManagedSessionFullLoginWarning},
+    {APIPermissionID::kUsersPrivate, "usersPrivate",
+     APIPermissionInfo::kFlagCannotBeOptional},
 
     // Platform-app permissions.
     {APIPermissionID::kFileSystemProvider, "fileSystemProvider",

@@ -82,5 +82,14 @@
     "allowlist": [
       "371AC6869D2138CE58123741E69F67469206909F" // AccessibilityCommon extension. https://crbug.com/40186322
     ]
+  },
+  "usersPrivate": {
+    "channel": "trunk",
+    "platforms": ["chromeos"],
+    "extension_types": ["extension", "platform_app"],
+    "allowlist": [
+      // ChromeOS Autotest extension.
+      "0D209B5E4401BB8E7873B5AB5B1346A1CB067015"
+    ]
   }
 }
