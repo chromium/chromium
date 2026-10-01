@@ -10,6 +10,7 @@
 #include "base/json/string_escape.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notreached.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -143,6 +144,28 @@ std::optional<mojom::ErrorPanelType> ErrorForProfileReadyState(
     case mojom::ProfileReadyState::kIneligible:
     case mojom::ProfileReadyState::kUnknownError:
       return mojom::ErrorPanelType::kUnavailable;
+  }
+}
+
+// Mirrors the webview client's mapping of ProfileReadyState to
+// ClientLoadErrorReason. Only called when ErrorForProfileReadyState() returns
+// an error.
+ClientLoadErrorReason ReasonForProfileReadyState(
+    mojom::ProfileReadyState ready_state) {
+  switch (ready_state) {
+    case mojom::ProfileReadyState::kReady:
+      NOTREACHED();
+    case mojom::ProfileReadyState::kSignInRequired:
+      return ClientLoadErrorReason::kSignIn;
+    case mojom::ProfileReadyState::kIneligibleAccount:
+      return ClientLoadErrorReason::kIneligibleAccount;
+    case mojom::ProfileReadyState::kLocationMismatch:
+      return ClientLoadErrorReason::kLocationMismatch;
+    case mojom::ProfileReadyState::kDisabledByAdmin:
+      return ClientLoadErrorReason::kDisabledByAdmin;
+    case mojom::ProfileReadyState::kIneligible:
+    case mojom::ProfileReadyState::kUnknownError:
+      return ClientLoadErrorReason::kUnavailable;
   }
 }
 
@@ -555,6 +578,10 @@ void GlicNoWebviewContentsManager::AttachToHost(Host* host) {
     SetHostForGuest(*guest_contents(), host);
   }
 
+  if (auto error = std::exchange(pending_client_load_error_, std::nullopt)) {
+    host_->ClientLoadErrorOccurred(*error);
+  }
+
   web_client_manager_.AttachToHost(host);
   overlay_manager_.ObservePanelState(host->instance().GetPanelState());
   // Move from warming pool state to attached-hidden state.
@@ -701,11 +728,13 @@ void GlicNoWebviewContentsManager::OnGuestNavigated(
   switch (page_type) {
     case mojom::GuestPageType::kDisabledByAdmin:
       guest_state_.Set(GuestState::kLoading);
-      SetErrorState(mojom::ErrorPanelType::kDisabledByAdminWithLink);
+      SetErrorState(mojom::ErrorPanelType::kDisabledByAdminWithLink,
+                    ClientLoadErrorReason::kDisabledByAdmin);
       break;
     case mojom::GuestPageType::kLoadError:
       guest_state_.Set(GuestState::kLoading);
-      SetErrorState(mojom::ErrorPanelType::kError);
+      SetErrorState(mojom::ErrorPanelType::kError,
+                    ClientLoadErrorReason::kGuestLoadFailed);
       break;
     case mojom::GuestPageType::kLogin:
       // When the guest encounters a web login or proxy authentication page,
@@ -722,7 +751,12 @@ void GlicNoWebviewContentsManager::OnGuestNavigated(
     case mojom::GuestPageType::kRegular:
       if (!is_api_allowed) {
         guest_state_.Set(GuestState::kLoading);
-        SetErrorState(mojom::ErrorPanelType::kError);
+        // TODO(markeh): report kGuestApiNotAllowed once it exists. The
+        // webview host currently rewrites this case into a plain load error
+        // too, so reporting kGuestLoadFailed keeps the two worlds comparable
+        // until both are split at once.
+        SetErrorState(mojom::ErrorPanelType::kError,
+                      ClientLoadErrorReason::kGuestLoadFailed);
       } else {
         ClearTransientErrorState();
         guest_state_.Set(GuestState::kLoading);
@@ -761,7 +795,8 @@ void GlicNoWebviewContentsManager::OnGuestProcessGone(
     base::TerminationStatus status) {
   StopGuestBootstrap();
   guest_state_.Set(GuestState::kLoading);
-  SetErrorState(mojom::ErrorPanelType::kError);
+  SetErrorState(mojom::ErrorPanelType::kError,
+                ClientLoadErrorReason::kGuestProcessGone);
 }
 
 void GlicNoWebviewContentsManager::OnWebClientCreated() {
@@ -784,7 +819,8 @@ void GlicNoWebviewContentsManager::OnWebClientStateChanged(
       break;
     case mojom::WebClientState::kError:
       guest_state_.Set(GuestState::kLoading);
-      SetErrorState(mojom::ErrorPanelType::kError);
+      SetErrorState(mojom::ErrorPanelType::kError,
+                    ClientLoadErrorReason::kClientError);
       break;
     case mojom::WebClientState::kUninitialized:
     case mojom::WebClientState::kWarmed:
@@ -838,7 +874,8 @@ void GlicNoWebviewContentsManager::TransitionTo(DisplayState next_state) {
 }
 
 void GlicNoWebviewContentsManager::SetErrorState(
-    mojom::ErrorPanelType error_type) {
+    mojom::ErrorPanelType error_type,
+    ClientLoadErrorReason reason) {
   // If we already have a deterministic / policy error state (like sign-in
   // required, ineligible account, disabled by admin, location mismatch), do not
   // overwrite it with a generic transient error (e.g. kError or kOffline).
@@ -849,6 +886,12 @@ void GlicNoWebviewContentsManager::SetErrorState(
   }
   StopGuestBootstrap();
   guest_state_.Set(GuestState::kLoading);
+  if (host_) {
+    host_->ClientLoadErrorOccurred(reason);
+  } else {
+    // Still warming; no Host to report to yet. AttachToHost() flushes this.
+    pending_client_load_error_ = reason;
+  }
   overlay_manager_.SetError(error_type);
   // An error occurred; transition to overlay if visible, or record for when
   // shown.
@@ -856,6 +899,7 @@ void GlicNoWebviewContentsManager::SetErrorState(
 }
 
 void GlicNoWebviewContentsManager::ClearErrorState() {
+  pending_client_load_error_.reset();
   overlay_manager_.ClearError();
   UpdateDisplayState();
 }
@@ -873,7 +917,7 @@ void GlicNoWebviewContentsManager::UpdateForProfileReadyState(bool is_initial) {
   std::optional<mojom::ErrorPanelType> error =
       ErrorForProfileReadyState(ready_state);
   if (error) {
-    SetErrorState(*error);
+    SetErrorState(*error, ReasonForProfileReadyState(ready_state));
   } else if (is_initial || overlay_manager_.error_type().has_value()) {
     // Transitioned back to ready while showing an error, or initially ready;
     // ensure error state is cleared and load the guest.
@@ -976,10 +1020,8 @@ void GlicNoWebviewContentsManager::UpdateLoadingTimer() {
 }
 
 void GlicNoWebviewContentsManager::OnLoadingTimeout() {
-  SetErrorState(mojom::ErrorPanelType::kError);
-  if (host_) {
-    host_->ClientLoadErrorOccurred(ClientLoadErrorReason::kClientLoadTimeout);
-  }
+  SetErrorState(mojom::ErrorPanelType::kError,
+                ClientLoadErrorReason::kClientLoadTimeout);
 }
 
 }  // namespace glic

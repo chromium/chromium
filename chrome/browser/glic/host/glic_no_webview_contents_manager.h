@@ -17,6 +17,7 @@
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/glic/common/observable_value.h"
+#include "chrome/browser/glic/glic_enums.h"
 #include "chrome/browser/glic/host/glic.mojom-forward.h"
 #include "chrome/browser/glic/host/glic_overlay_ui.h"
 #include "chrome/browser/glic/host/glic_web_client_manager.h"
@@ -203,7 +204,14 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
   // Transitions the manager into an error state, showing the corresponding
   // error panel on the overlay UI. If warming in the background or hidden,
   // the error is recorded without creating the overlay WebContents until shown.
-  void SetErrorState(mojom::ErrorPanelType error_type);
+  //
+  // `error_type` selects the panel to render; `reason` records why the client
+  // failed. They are separate arguments because several distinct causes share
+  // the generic ErrorPanelType::kError panel, and callers are the only ones
+  // that still know which cause applies. Requiring both means a new error path
+  // cannot be added without deciding how it is reported.
+  void SetErrorState(mojom::ErrorPanelType error_type,
+                     ClientLoadErrorReason reason);
 
   // Clears any active error state from the overlay UI and updates display
   // state.
@@ -326,6 +334,12 @@ class GlicNoWebviewContentsManager : public GlicWebContentsManager,
 
   // Lifecycle state of the guest WebContents.
   ObservableValue<GuestState> guest_state_{GuestState::kLoading};
+
+  // A client load error that happened before a Host was attached, i.e. while
+  // the contents were warming in the background. Reported once AttachToHost()
+  // runs so that failures during warming are not silently lost. Dropped by
+  // ClearErrorState() if the error is resolved before then.
+  std::optional<ClientLoadErrorReason> pending_client_load_error_;
 
   GlicWebClientManager web_client_manager_;
   OverlayContentsManager overlay_manager_;
