@@ -1839,6 +1839,12 @@ bool ContentBrowserClient::
   return true;
 }
 
+bool ContentBrowserClient::IsUrlAllowedForBackForwardCache(
+    content::BrowserContext* browser_context,
+    const GURL& url) {
+  return true;
+}
+
 bool ContentBrowserClient::IsBlobUrlPartitioningEnabled(
     content::BrowserContext* browser_context) {
   return true;

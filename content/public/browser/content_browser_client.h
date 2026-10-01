@@ -3063,6 +3063,13 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool ShouldAllowBackForwardCacheForCacheControlNoStorePage(
       content::BrowserContext* browser_context);
 
+  // Returns false if documents at `url` must not be stored in, or restored
+  // from, the back/forward cache (e.g. because `url` is blocked by enterprise
+  // policy).
+  virtual bool IsUrlAllowedForBackForwardCache(
+      content::BrowserContext* browser_context,
+      const GURL& url);
+
   // Determine whether Blob URL fetching should be restricted for a given
   // context.
   virtual bool IsBlobUrlPartitioningEnabled(

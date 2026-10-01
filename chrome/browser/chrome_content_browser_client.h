@@ -1106,6 +1106,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool ShouldAllowBackForwardCacheForCacheControlNoStorePage(
       content::BrowserContext* browser_context) override;
 
+  bool IsUrlAllowedForBackForwardCache(content::BrowserContext* browser_context,
+                                       const GURL& url) override;
+
   bool IsBlobUrlPartitioningEnabled(
       content::BrowserContext* browser_context) override;
 

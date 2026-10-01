@@ -393,6 +393,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/common/url_utils.h"
 #include "content/public/common/window_container_type.mojom-shared.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "extensions/browser/browser_frame_context_data.h"
@@ -9276,6 +9277,27 @@ bool ChromeContentBrowserClient::
   // If the pref is not found or not managed, BFCaching CCNS page should be
   // enabled by default.
   return true;
+}
+
+bool ChromeContentBrowserClient::IsUrlAllowedForBackForwardCache(
+    content::BrowserContext* browser_context,
+    const GURL& url) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  // Match PolicyBlocklistNavigationThrottle, which never checks URLs that don't
+  // go through the network stack (e.g. about:blank, about:srcdoc) or blob:
+  // URLs.
+  if (!content::IsURLHandledByNetworkStack(url) ||
+      url.SchemeIs(url::kBlobScheme)) {
+    return true;
+  }
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  PolicyBlocklistService* service =
+      ChromePolicyBlocklistServiceFactory::GetForProfile(profile);
+  if (!service) {
+    return true;
+  }
+  return service->GetURLBlocklistState(url) !=
+         policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST;
 }
 
 bool ChromeContentBrowserClient::IsBlobUrlPartitioningEnabled(
