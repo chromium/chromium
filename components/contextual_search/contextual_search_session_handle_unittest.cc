@@ -170,6 +170,72 @@ TEST_F(ContextualSearchSessionHandleTest,
 }
 
 TEST_F(ContextualSearchSessionHandleTest,
+       StartTabContextUploadFlow_ValidToken) {
+  base::UnguessableToken token = handle_->CreateContextToken();
+  EXPECT_TRUE(
+      std::ranges::contains(handle_->GetUploadedContextTokens(), token));
+
+  EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(token, _, _))
+      .WillOnce([&](const base::UnguessableToken& file_token,
+                    std::unique_ptr<lens::ContextualInputData> input_data,
+                    std::optional<lens::ImageEncodingOptions> image_options) {
+        EXPECT_EQ(input_data->primary_content_type,
+                  lens::MimeType::kAnnotatedPageContent);
+        EXPECT_EQ(input_data->upload_type,
+                  lens::LensOverlayContextualInputUploadType::
+                      CONTEXTUAL_INPUT_UPLOAD_TYPE_EXPLICIT);
+      });
+
+  auto contextual_input_data = std::make_unique<lens::ContextualInputData>();
+  contextual_input_data->primary_content_type =
+      lens::MimeType::kAnnotatedPageContent;
+  handle_->StartTabContextUploadFlow(token, std::move(contextual_input_data),
+                                     std::nullopt);
+  EXPECT_TRUE(
+      std::ranges::contains(handle_->GetUploadedContextTokens(), token));
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       StartTabContextUploadFlow_NullContextualInputData_SafelyHandled) {
+  base::UnguessableToken token1 = handle_->CreateContextToken();
+  base::UnguessableToken token2 = handle_->CreateContextToken();
+  EXPECT_TRUE(
+      std::ranges::contains(handle_->GetUploadedContextTokens(), token1));
+  EXPECT_TRUE(
+      std::ranges::contains(handle_->GetUploadedContextTokens(), token2));
+
+  EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(_, _, _)).Times(0);
+
+  handle_->StartTabContextUploadFlow(token1, nullptr, std::nullopt);
+
+  EXPECT_FALSE(
+      std::ranges::contains(handle_->GetUploadedContextTokens(), token1));
+  EXPECT_TRUE(
+      std::ranges::contains(handle_->GetUploadedContextTokens(), token2));
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
+       StartTabContextUploadFlow_UnknownToken) {
+  base::UnguessableToken existing_token = handle_->CreateContextToken();
+  base::UnguessableToken unknown_token = base::UnguessableToken::Create();
+
+  EXPECT_CALL(*mock_controller_ptr_, StartFileUploadFlow(_, _, _)).Times(0);
+
+  // Calling with nullptr on an unknown token should safely no-op without
+  // affecting existing tokens.
+  handle_->StartTabContextUploadFlow(unknown_token, nullptr, std::nullopt);
+  EXPECT_TRUE(std::ranges::contains(handle_->GetUploadedContextTokens(),
+                                    existing_token));
+
+  // Calling with non-null data on an unknown token should also safely no-op.
+  auto contextual_input_data = std::make_unique<lens::ContextualInputData>();
+  handle_->StartTabContextUploadFlow(
+      unknown_token, std::move(contextual_input_data), std::nullopt);
+  EXPECT_TRUE(std::ranges::contains(handle_->GetUploadedContextTokens(),
+                                    existing_token));
+}
+
+TEST_F(ContextualSearchSessionHandleTest,
        StartModalityChipUploadFlow_DoesNotSetUploadType) {
   base::UnguessableToken token = handle_->CreateContextToken();
   auto modality_chip_props = std::make_unique<lens::ModalityChipProps>();
