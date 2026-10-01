@@ -411,6 +411,7 @@ void LocalFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(mobile_friendliness_checker_);
   visitor->Trace(tap_friendliness_checker_);
   visitor->Trace(lifecycle_observers_);
+  visitor->Trace(queued_one_shot_observers_);
   visitor->Trace(canvas_elements_needing_onpaint_);
   visitor->Trace(fullscreen_video_elements_);
   visitor->Trace(pending_transform_updates_);
@@ -569,8 +570,8 @@ void LocalFrameView::Dispose() {
 
   // Make a copy before notifying in case observers unregister themselves.
   auto lifecycle_observers = lifecycle_observers_;
-  for (LifecycleNotificationObserver* observer : lifecycle_observers) {
-    observer->WillDisposeView();
+  for (const auto& observer : lifecycle_observers) {
+    observer.key->WillDisposeView();
   }
   lifecycle_observers_.clear();
 
@@ -1090,15 +1091,45 @@ void LocalFrameView::RunPostLifecycleSteps() {
       frame_view.UpdateCompositingScaleFactor();
     });
 
-    ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
-      auto lifecycle_observers = frame_view.lifecycle_observers_;
-      for (auto& observer : lifecycle_observers) {
-        observer->DidFinishPostLifecycleSteps(frame_view);
-      }
-    });
+    NotifyPostLifecycleObservers();
   }
 
   RunCanvasOnpaintSteps();
+}
+
+void LocalFrameView::NotifyPostLifecycleObservers() {
+  // FrameView already includes ancestor throttling in this view's state.
+  const bool is_throttled = ShouldThrottleRendering();
+  auto should_notify = [is_throttled](
+                           PostLifecycleNotificationBehavior behavior) {
+    return !is_throttled ||
+           behavior == PostLifecycleNotificationBehavior::kFireWhenThrottled;
+  };
+
+  // Capture both lists before callbacks run so new requests for this frame
+  // wait until the next update. A one-shot callback can also requeue itself.
+  auto lifecycle_observers = lifecycle_observers_;
+  auto one_shot_observers = queued_one_shot_observers_;
+  // Consume requests that will run, but leave suppressed requests registered
+  // so callbacks can still cancel them.
+  for (const auto& observer : one_shot_observers) {
+    if (should_notify(observer.value)) {
+      queued_one_shot_observers_.erase(observer.key);
+    }
+  }
+  for (const auto& observer : lifecycle_observers) {
+    if (should_notify(observer.value)) {
+      observer.key->DidFinishPostLifecycleSteps(*this);
+    }
+  }
+  for (const auto& observer : one_shot_observers) {
+    if (should_notify(observer.value)) {
+      observer.key->DidFinishPostLifecycleSteps(*this);
+    }
+  }
+  ForAllChildLocalFrameViews([](LocalFrameView& child_view) {
+    child_view.NotifyPostLifecycleObservers();
+  });
 }
 
 void LocalFrameView::RunCanvasOnpaintSteps() {
@@ -2432,8 +2463,9 @@ bool LocalFrameView::UpdateLifecyclePhases(
 
       ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
         auto lifecycle_observers = frame_view.lifecycle_observers_;
-        for (auto& observer : lifecycle_observers)
-          observer->WillStartLifecycleUpdate(frame_view);
+        for (auto& observer : lifecycle_observers) {
+          observer.key->WillStartLifecycleUpdate(frame_view);
+        }
       });
     }
 
@@ -2462,8 +2494,9 @@ bool LocalFrameView::UpdateLifecyclePhases(
 
     ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
       auto lifecycle_observers = frame_view.lifecycle_observers_;
-      for (auto& observer : lifecycle_observers)
-        observer->DidFinishLifecycleUpdate(frame_view);
+      for (auto& observer : lifecycle_observers) {
+        observer.key->DidFinishLifecycleUpdate(frame_view);
+      }
     });
     if (frame_->GetWidgetForLocalRoot()) {
       frame_->GetWidgetForLocalRoot()->UpdateCursorAnchorInfo(
@@ -2929,7 +2962,7 @@ bool LocalFrameView::RunStyleAndLayoutLifecyclePhases(
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
     auto lifecycle_observers = frame_view.lifecycle_observers_;
     for (auto& observer : lifecycle_observers) {
-      observer->DidFinishLayout();
+      observer.key->DidFinishLayout();
     }
   });
 
@@ -5334,13 +5367,25 @@ bool LocalFrameView::LifecycleUpdatePending() const {
 }
 
 void LocalFrameView::RegisterForLifecycleNotifications(
-    LifecycleNotificationObserver* observer) {
-  lifecycle_observers_.insert(observer);
+    LifecycleNotificationObserver* observer,
+    PostLifecycleNotificationBehavior behavior) {
+  lifecycle_observers_.Set(observer, behavior);
 }
 
 void LocalFrameView::UnregisterFromLifecycleNotifications(
     LifecycleNotificationObserver* observer) {
   lifecycle_observers_.erase(observer);
+}
+
+void LocalFrameView::RequestOneShotPostLifecycleNotification(
+    LifecycleNotificationObserver* observer,
+    PostLifecycleNotificationBehavior behavior) {
+  queued_one_shot_observers_.Set(observer, behavior);
+}
+
+void LocalFrameView::CancelOneShotPostLifecycleNotification(
+    LifecycleNotificationObserver* observer) {
+  queued_one_shot_observers_.erase(observer);
 }
 
 void LocalFrameView::EnqueueStartOfLifecycleTask(base::OnceClosure closure) {

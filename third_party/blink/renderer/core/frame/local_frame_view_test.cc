@@ -1200,7 +1200,8 @@ class TestLifecycleObserver
     : public GarbageCollected<TestLifecycleObserver>,
       public LocalFrameView::LifecycleNotificationObserver {
  public:
-  TestLifecycleObserver() = default;
+  explicit TestLifecycleObserver(Document* document_to_check = nullptr)
+      : document_to_check_(document_to_check) {}
 
   void WillStartLifecycleUpdate(const LocalFrameView&) override {
     ++will_start_lifecycle_count_;
@@ -1208,16 +1209,107 @@ class TestLifecycleObserver
   void DidFinishLifecycleUpdate(const LocalFrameView&) override {
     ++did_finish_lifecycle_count_;
   }
+  void DidFinishPostLifecycleSteps(const LocalFrameView& frame_view) override {
+    ++did_finish_post_lifecycle_count_;
+    notification_views_.push_back(&frame_view);
+    notification_view_was_local_root_ = frame_view.GetFrame().IsLocalRoot();
+    if (document_to_check_) {
+      document_state_at_post_lifecycle_ =
+          document_to_check_->Lifecycle().GetState();
+    }
+  }
 
   int will_start_lifecycle_count() const { return will_start_lifecycle_count_; }
   int did_finish_lifecycle_count() const { return did_finish_lifecycle_count_; }
+  int did_finish_post_lifecycle_count() const {
+    return did_finish_post_lifecycle_count_;
+  }
+  bool notification_view_was_local_root() const {
+    return notification_view_was_local_root_;
+  }
+  DocumentLifecycle::LifecycleState document_state_at_post_lifecycle() const {
+    return document_state_at_post_lifecycle_;
+  }
+
+  const HeapVector<Member<const LocalFrameView>>& notification_views() const {
+    return notification_views_;
+  }
 
   // GC functions.
-  void Trace(Visitor*) const override {}
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(notification_views_);
+    visitor->Trace(document_to_check_);
+  }
 
  private:
+  HeapVector<Member<const LocalFrameView>> notification_views_;
+  Member<Document> document_to_check_;
   int will_start_lifecycle_count_ = 0;
   int did_finish_lifecycle_count_ = 0;
+  int did_finish_post_lifecycle_count_ = 0;
+  bool notification_view_was_local_root_ = false;
+  DocumentLifecycle::LifecycleState document_state_at_post_lifecycle_ =
+      DocumentLifecycle::kUninitialized;
+};
+
+class RequeueingPostLifecycleObserver
+    : public GarbageCollected<RequeueingPostLifecycleObserver>,
+      public LocalFrameView::LifecycleNotificationObserver {
+ public:
+  explicit RequeueingPostLifecycleObserver(
+      LocalFrameView& target_view,
+      LocalFrameView::LifecycleNotificationObserver* target_observer = nullptr,
+      bool one_shot = true)
+      : target_view_(target_view),
+        target_observer_(target_observer),
+        one_shot_(one_shot) {}
+
+  void DidFinishPostLifecycleSteps(const LocalFrameView&) override {
+    ++notification_count_;
+    if (notification_count_ == 1) {
+      // Register only once so tests can check which update delivers the
+      // request.
+      auto* observer = target_observer_ ? target_observer_.Get() : this;
+      if (one_shot_) {
+        target_view_->RequestOneShotPostLifecycleNotification(observer);
+      } else {
+        target_view_->RegisterForLifecycleNotifications(observer);
+      }
+    }
+  }
+
+  int notification_count() const { return notification_count_; }
+
+  void Trace(Visitor* visitor) const override {
+    visitor->Trace(target_view_);
+    visitor->Trace(target_observer_);
+  }
+
+ private:
+  Member<LocalFrameView> target_view_;
+  Member<LocalFrameView::LifecycleNotificationObserver> target_observer_;
+  const bool one_shot_;
+  int notification_count_ = 0;
+};
+
+class CancellingPostLifecycleObserver
+    : public GarbageCollected<CancellingPostLifecycleObserver>,
+      public LocalFrameView::LifecycleNotificationObserver {
+ public:
+  explicit CancellingPostLifecycleObserver(
+      LocalFrameView::LifecycleNotificationObserver* observer)
+      : observer_(observer) {}
+
+  void DidFinishPostLifecycleSteps(const LocalFrameView& frame_view) override {
+    auto* view = frame_view.GetFrame().View();
+    view->UnregisterFromLifecycleNotifications(observer_);
+    view->CancelOneShotPostLifecycleNotification(observer_);
+  }
+
+  void Trace(Visitor* visitor) const override { visitor->Trace(observer_); }
+
+ private:
+  Member<LocalFrameView::LifecycleNotificationObserver> observer_;
 };
 
 TEST_F(LocalFrameViewTest, LifecycleNotificationsOnlyOnFullLifecycle) {
@@ -1250,6 +1342,353 @@ TEST_F(LocalFrameViewTest, LifecycleNotificationsOnlyOnFullLifecycle) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(observer->will_start_lifecycle_count(), 2);
   EXPECT_EQ(observer->did_finish_lifecycle_count(), 2);
+}
+
+TEST_F(LocalFrameViewTest, OneShotPostLifecycleNotificationRunsOnce) {
+  SetBodyInnerHTML("<div></div>");
+  auto* local_root = GetDocument().View();
+  auto* observer = MakeGarbageCollected<TestLifecycleObserver>();
+
+  local_root->RequestOneShotPostLifecycleNotification(observer);
+  EXPECT_EQ(observer->did_finish_post_lifecycle_count(), 0);
+
+  local_root->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(observer->did_finish_post_lifecycle_count(), 1);
+  EXPECT_TRUE(observer->notification_view_was_local_root());
+
+  // A one-shot registration is consumed by the first drain.
+  local_root->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(observer->did_finish_post_lifecycle_count(), 1);
+}
+
+TEST_F(LocalFrameViewTest,
+       ForcedPrePaintDoesNotRunOneShotPostLifecycleNotification) {
+  SetBodyInnerHTML("<div></div>");
+  auto* local_root = GetDocument().View();
+  auto* observer = MakeGarbageCollected<TestLifecycleObserver>();
+
+  local_root->RequestOneShotPostLifecycleNotification(observer);
+  local_root->UpdateAllLifecyclePhasesExceptPaint(DocumentUpdateReason::kTest);
+
+  EXPECT_EQ(observer->did_finish_post_lifecycle_count(), 0);
+  local_root->CancelOneShotPostLifecycleNotification(observer);
+}
+
+TEST_F(LocalFrameViewTest, OneShotPostLifecycleNotificationOnThrottledChild) {
+  SetBodyInnerHTML("<iframe></iframe>");
+  SetChildFrameHTML("<div>child</div>");
+  auto* local_root = GetDocument().View();
+  auto* child_view = ChildDocument().View();
+  local_root->UpdateAllLifecyclePhasesForTest();
+
+  auto* observer =
+      MakeGarbageCollected<TestLifecycleObserver>(&ChildDocument());
+  child_view->RequestOneShotPostLifecycleNotification(
+      observer,
+      LocalFrameView::PostLifecycleNotificationBehavior::kFireWhenThrottled);
+
+  // Prepare the child for intersection observations even though it is
+  // throttled.
+  child_view->SetLifecycleUpdatesThrottledForTesting();
+  child_view->SetIntersectionObservationState(LocalFrameView::kRequired);
+  local_root->UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(observer->did_finish_post_lifecycle_count(), 1);
+  EXPECT_EQ(observer->notification_views()[0], child_view);
+  EXPECT_GE(observer->document_state_at_post_lifecycle(),
+            DocumentLifecycle::kPrePaintClean);
+  EXPECT_TRUE(child_view->ShouldThrottleRenderingForTest());
+
+  child_view->SetLifecycleUpdatesThrottledForTesting(false);
+}
+
+TEST_F(LocalFrameViewRemoteParentSimTest,
+       ThrottledLocalRootRunsOneShotPostLifecycleNotification) {
+  SimRequest main_resource("https://example.com/", "text/html");
+  LoadURL("https://example.com/");
+  main_resource.Complete("<div>content</div>");
+  auto* local_root = LocalFrameRoot().GetFrame()->GetDocument()->View();
+  local_root->UpdateAllLifecyclePhasesForTest();
+
+  auto* observer = MakeGarbageCollected<TestLifecycleObserver>();
+  local_root->RequestOneShotPostLifecycleNotification(
+      observer,
+      LocalFrameView::PostLifecycleNotificationBehavior::kFireWhenThrottled);
+  local_root->SetLifecycleUpdatesThrottledForTesting();
+  local_root->SetIntersectionObservationState(LocalFrameView::kRequired);
+
+  // The explicit policy allows delivery even though the frame is throttled
+  // when post-lifecycle notifications run.
+  local_root->ScheduleAnimation();
+  Compositor().BeginFrame();
+
+  EXPECT_EQ(observer->did_finish_post_lifecycle_count(), 1);
+  EXPECT_TRUE(observer->notification_view_was_local_root());
+  EXPECT_TRUE(local_root->ShouldThrottleRenderingForTest());
+
+  local_root->SetLifecycleUpdatesThrottledForTesting(false);
+}
+
+TEST_F(LocalFrameViewTest, OneShotPostLifecycleNotificationDeduplicates) {
+  SetBodyInnerHTML("<div></div>");
+  auto* local_root = GetDocument().View();
+  auto* observer = MakeGarbageCollected<TestLifecycleObserver>();
+
+  local_root->RequestOneShotPostLifecycleNotification(observer);
+  local_root->RequestOneShotPostLifecycleNotification(observer);
+  local_root->UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(observer->did_finish_post_lifecycle_count(), 1);
+}
+
+TEST_F(LocalFrameViewTest, OneShotPostLifecycleNotificationCanBeCancelled) {
+  SetBodyInnerHTML("<div></div>");
+  auto* local_root = GetDocument().View();
+  auto* observer = MakeGarbageCollected<TestLifecycleObserver>();
+
+  local_root->RequestOneShotPostLifecycleNotification(observer);
+  local_root->CancelOneShotPostLifecycleNotification(observer);
+  local_root->UpdateAllLifecyclePhasesForTest();
+
+  EXPECT_EQ(observer->did_finish_post_lifecycle_count(), 0);
+}
+
+TEST_F(LocalFrameViewTest,
+       OneShotPostLifecycleNotificationRequeuesForNextUpdate) {
+  SetBodyInnerHTML("<div></div>");
+  auto* local_root = GetDocument().View();
+  auto* observer =
+      MakeGarbageCollected<RequeueingPostLifecycleObserver>(*local_root);
+
+  local_root->RequestOneShotPostLifecycleNotification(observer);
+  local_root->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(observer->notification_count(), 1);
+
+  local_root->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(observer->notification_count(), 2);
+
+  local_root->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(observer->notification_count(), 2);
+}
+
+TEST_F(LocalFrameViewTest,
+       PersistentAndOneShotPostLifecycleNotificationsAreIndependent) {
+  SetBodyInnerHTML("<iframe></iframe>");
+  SetChildFrameHTML("<div>child</div>");
+  auto* local_root = GetDocument().View();
+  auto* child_view = ChildDocument().View();
+  auto* observer = MakeGarbageCollected<TestLifecycleObserver>();
+
+  local_root->RegisterForLifecycleNotifications(observer);
+  child_view->RegisterForLifecycleNotifications(observer);
+  local_root->RequestOneShotPostLifecycleNotification(observer);
+  local_root->UpdateAllLifecyclePhasesForTest();
+
+  // Each persistent registration and the one-shot registration notify once.
+  EXPECT_EQ(observer->did_finish_post_lifecycle_count(), 3);
+
+  local_root->UnregisterFromLifecycleNotifications(observer);
+  child_view->UnregisterFromLifecycleNotifications(observer);
+  local_root->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(observer->did_finish_post_lifecycle_count(), 3);
+}
+
+TEST_F(LocalFrameViewTest, PostLifecycleNotificationsRunTogetherPerFrame) {
+  SetBodyInnerHTML("<iframe></iframe>");
+  SetChildFrameHTML("<div>child</div>");
+  auto* root_view = GetDocument().View();
+  auto* child_view = ChildDocument().View();
+  auto* observer = MakeGarbageCollected<TestLifecycleObserver>();
+
+  root_view->RegisterForLifecycleNotifications(observer);
+  child_view->RegisterForLifecycleNotifications(observer);
+  root_view->RequestOneShotPostLifecycleNotification(observer);
+  root_view->UpdateAllLifecyclePhasesForTest();
+
+  // Finish both notifications for the parent before visiting the child.
+  ASSERT_EQ(observer->notification_views().size(), 3u);
+  EXPECT_EQ(observer->notification_views()[0], root_view);
+  EXPECT_EQ(observer->notification_views()[1], root_view);
+  EXPECT_EQ(observer->notification_views()[2], child_view);
+}
+
+TEST_F(LocalFrameViewTest, PostLifecycleNotificationThrottlePolicies) {
+  SetBodyInnerHTML("<iframe></iframe>");
+  SetChildFrameHTML("<div>child</div>");
+  auto* root_view = GetDocument().View();
+  auto* child_view = ChildDocument().View();
+  root_view->UpdateAllLifecyclePhasesForTest();
+
+  using Behavior = LocalFrameView::PostLifecycleNotificationBehavior;
+  auto* persistent_suppress = MakeGarbageCollected<TestLifecycleObserver>();
+  auto* persistent_fire = MakeGarbageCollected<TestLifecycleObserver>();
+  auto* one_shot_suppress = MakeGarbageCollected<TestLifecycleObserver>();
+  auto* one_shot_fire = MakeGarbageCollected<TestLifecycleObserver>();
+  child_view->RegisterForLifecycleNotifications(persistent_suppress);
+  child_view->RegisterForLifecycleNotifications(persistent_fire,
+                                                Behavior::kFireWhenThrottled);
+  child_view->RequestOneShotPostLifecycleNotification(
+      one_shot_suppress, Behavior::kSuppressWhenThrottled);
+  child_view->RequestOneShotPostLifecycleNotification(
+      one_shot_fire, Behavior::kFireWhenThrottled);
+
+  child_view->SetLifecycleUpdatesThrottledForTesting();
+  root_view->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(persistent_suppress->did_finish_post_lifecycle_count(), 0);
+  EXPECT_EQ(persistent_fire->did_finish_post_lifecycle_count(), 1);
+  EXPECT_EQ(one_shot_suppress->did_finish_post_lifecycle_count(), 0);
+  EXPECT_EQ(one_shot_fire->did_finish_post_lifecycle_count(), 1);
+  // Opting in to post-lifecycle delivery does not opt in to earlier phases.
+  EXPECT_EQ(persistent_fire->will_start_lifecycle_count(), 0);
+  EXPECT_EQ(persistent_fire->did_finish_lifecycle_count(), 0);
+
+  child_view->SetLifecycleUpdatesThrottledForTesting(false);
+  root_view->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(persistent_suppress->did_finish_post_lifecycle_count(), 1);
+  EXPECT_EQ(persistent_fire->did_finish_post_lifecycle_count(), 2);
+  // Suppression keeps the request pending until delivery is allowed.
+  EXPECT_EQ(one_shot_suppress->did_finish_post_lifecycle_count(), 1);
+  EXPECT_EQ(one_shot_fire->did_finish_post_lifecycle_count(), 1);
+
+  root_view->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(persistent_suppress->did_finish_post_lifecycle_count(), 2);
+  EXPECT_EQ(persistent_fire->did_finish_post_lifecycle_count(), 3);
+  EXPECT_EQ(one_shot_suppress->did_finish_post_lifecycle_count(), 1);
+  EXPECT_EQ(one_shot_fire->did_finish_post_lifecycle_count(), 1);
+}
+
+TEST_F(LocalFrameViewTest, PostLifecycleNotificationUsesPropagatedThrottling) {
+  SetBodyInnerHTML("<iframe></iframe>");
+  SetChildFrameHTML("<div>child</div>");
+  auto* root_view = GetDocument().View();
+  auto* child_view = ChildDocument().View();
+  root_view->UpdateAllLifecyclePhasesForTest();
+
+  auto* suppressed_observer = MakeGarbageCollected<TestLifecycleObserver>();
+  auto* firing_observer = MakeGarbageCollected<TestLifecycleObserver>();
+  child_view->RequestOneShotPostLifecycleNotification(suppressed_observer);
+  child_view->RequestOneShotPostLifecycleNotification(
+      firing_observer,
+      LocalFrameView::PostLifecycleNotificationBehavior::kFireWhenThrottled);
+
+  // Propagation marks the child as throttled even though it is visible itself.
+  root_view->SetLifecycleUpdatesThrottledForTesting();
+  root_view->UpdateRenderThrottlingStatus(false, false, false, true);
+  EXPECT_TRUE(child_view->IsSubtreeThrottled());
+  EXPECT_TRUE(child_view->ShouldThrottleRenderingForTest());
+  root_view->RunPostLifecycleSteps();
+  EXPECT_EQ(suppressed_observer->did_finish_post_lifecycle_count(), 0);
+  EXPECT_EQ(firing_observer->did_finish_post_lifecycle_count(), 1);
+
+  root_view->SetLifecycleUpdatesThrottledForTesting(false);
+  root_view->UpdateRenderThrottlingStatus(false, false, false, true);
+  EXPECT_FALSE(child_view->IsSubtreeThrottled());
+  root_view->RunPostLifecycleSteps();
+  EXPECT_EQ(suppressed_observer->did_finish_post_lifecycle_count(), 1);
+  EXPECT_EQ(firing_observer->did_finish_post_lifecycle_count(), 1);
+}
+
+TEST_F(LocalFrameViewTest, CallbackCanCancelThrottledPostLifecycleRequests) {
+  SetBodyInnerHTML("<iframe></iframe>");
+  SetChildFrameHTML("<div>child</div>");
+  auto* root_view = GetDocument().View();
+  auto* child_view = ChildDocument().View();
+  root_view->UpdateAllLifecyclePhasesForTest();
+
+  auto* observer = MakeGarbageCollected<TestLifecycleObserver>();
+  child_view->RegisterForLifecycleNotifications(observer);
+  child_view->RequestOneShotPostLifecycleNotification(observer);
+  auto* cancelling_observer =
+      MakeGarbageCollected<CancellingPostLifecycleObserver>(observer);
+  child_view->RegisterForLifecycleNotifications(
+      cancelling_observer,
+      LocalFrameView::PostLifecycleNotificationBehavior::kFireWhenThrottled);
+
+  // Neither request can be delivered yet. A callback that runs while throttled
+  // should be able to cancel both, so neither fires when the frame is visible.
+  child_view->SetLifecycleUpdatesThrottledForTesting();
+  root_view->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(observer->did_finish_post_lifecycle_count(), 0);
+  child_view->UnregisterFromLifecycleNotifications(cancelling_observer);
+
+  child_view->SetLifecycleUpdatesThrottledForTesting(false);
+  root_view->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(observer->did_finish_post_lifecycle_count(), 0);
+}
+
+TEST_F(LocalFrameViewTest, RootCallbackQueuesChildForCurrentPostLifecycle) {
+  SetBodyInnerHTML("<iframe></iframe>");
+  SetChildFrameHTML("<div>child</div>");
+  auto* root_view = GetDocument().View();
+  auto* child_view = ChildDocument().View();
+
+  for (bool one_shot : {false, true}) {
+    SCOPED_TRACE(one_shot);
+    auto* child_observer = MakeGarbageCollected<TestLifecycleObserver>();
+    auto* root_observer = MakeGarbageCollected<RequeueingPostLifecycleObserver>(
+        *child_view, child_observer, one_shot);
+    root_view->RegisterForLifecycleNotifications(root_observer);
+
+    // Both kinds of observer run in this update because we have not visited
+    // the child yet when the parent registers them.
+    root_view->UpdateAllLifecyclePhasesForTest();
+    ASSERT_EQ(child_observer->did_finish_post_lifecycle_count(), 1);
+    EXPECT_EQ(child_observer->notification_views()[0], child_view);
+
+    root_view->UpdateAllLifecyclePhasesForTest();
+    EXPECT_EQ(child_observer->did_finish_post_lifecycle_count(),
+              one_shot ? 1 : 2);
+    root_view->UnregisterFromLifecycleNotifications(root_observer);
+    child_view->UnregisterFromLifecycleNotifications(child_observer);
+  }
+}
+
+TEST_F(LocalFrameViewTest, CallbackQueuesSameFrameForNextPostLifecycle) {
+  SetBodyInnerHTML("<div></div>");
+  auto* view = GetDocument().View();
+
+  for (bool one_shot : {false, true}) {
+    SCOPED_TRACE(one_shot);
+    auto* observer = MakeGarbageCollected<TestLifecycleObserver>();
+    auto* registering_observer =
+        MakeGarbageCollected<RequeueingPostLifecycleObserver>(*view, observer,
+                                                              one_shot);
+    view->RegisterForLifecycleNotifications(registering_observer);
+
+    // Both kinds wait because this frame is already delivering its callbacks.
+    view->UpdateAllLifecyclePhasesForTest();
+    EXPECT_EQ(observer->did_finish_post_lifecycle_count(), 0);
+    view->UpdateAllLifecyclePhasesForTest();
+    EXPECT_EQ(observer->did_finish_post_lifecycle_count(), 1);
+    view->UpdateAllLifecyclePhasesForTest();
+    EXPECT_EQ(observer->did_finish_post_lifecycle_count(), one_shot ? 1 : 2);
+    view->UnregisterFromLifecycleNotifications(registering_observer);
+    view->UnregisterFromLifecycleNotifications(observer);
+  }
+}
+
+TEST_F(LocalFrameViewTest, ChildCallbackQueuesRootForNextPostLifecycle) {
+  SetBodyInnerHTML("<iframe></iframe>");
+  SetChildFrameHTML("<div>child</div>");
+  auto* root_view = GetDocument().View();
+  auto* child_view = ChildDocument().View();
+  auto* root_observer = MakeGarbageCollected<TestLifecycleObserver>();
+  auto* child_observer = MakeGarbageCollected<RequeueingPostLifecycleObserver>(
+      *root_view, root_observer);
+  child_view->RequestOneShotPostLifecycleNotification(child_observer);
+
+  // The child queues work for its parent after the parent was already visited.
+  // That request must run on the next post-lifecycle pass.
+  root_view->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(child_observer->notification_count(), 1);
+  EXPECT_EQ(root_observer->did_finish_post_lifecycle_count(), 0);
+
+  root_view->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(root_observer->did_finish_post_lifecycle_count(), 1);
+  EXPECT_EQ(root_observer->notification_views()[0], root_view);
+
+  root_view->UpdateAllLifecyclePhasesForTest();
+  EXPECT_EQ(root_observer->did_finish_post_lifecycle_count(), 1);
 }
 
 TEST_F(LocalFrameViewTest, StartOfLifecycleTaskRunsOnFullLifecycle) {
