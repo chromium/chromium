@@ -575,22 +575,22 @@ class BASE_EXPORT BooleanHistogram : public LinearHistogram {
 // CustomHistogram is a histogram for a set of custom integers.
 class BASE_EXPORT CustomHistogram : public Histogram {
  public:
-  // |custom_ranges| contains a vector of limits on ranges. Each limit should be
+  // |custom_ranges| contains a span of limits on ranges. Each limit should be
   // > 0 and < kSampleType_MAX. (Currently 0 is still accepted for backward
   // compatibility). The limits can be unordered or contain duplication, but
   // client should not depend on this.
   static HistogramBase* FactoryGet(std::string_view name,
-                                   const std::vector<Sample32>& custom_ranges,
+                                   base::span<const Sample32> custom_ranges,
                                    int32_t flags);
 
   // Overload of the above function that take a const std::string& or const
   // char* |name| param, to avoid code bloat from the std::string constructor
   // being inlined into call sites.
   static HistogramBase* FactoryGet(const std::string& name,
-                                   const std::vector<Sample32>& custom_ranges,
+                                   base::span<const Sample32> custom_ranges,
                                    int32_t flags);
   static HistogramBase* FactoryGet(const char* name,
-                                   const std::vector<Sample32>& custom_ranges,
+                                   base::span<const Sample32> custom_ranges,
                                    int32_t flags);
 
   CustomHistogram(const CustomHistogram&) = delete;
@@ -644,10 +644,10 @@ class BASE_EXPORT CustomHistogram : public Histogram {
 
   static HistogramBase* FactoryGetInternal(
       std::string_view name,
-      const std::vector<Sample32>& custom_ranges,
+      base::span<const Sample32> custom_ranges,
       int32_t flags);
 
-  static bool ValidateCustomRanges(const std::vector<Sample32>& custom_ranges);
+  static bool ValidateCustomRanges(base::span<const Sample32> custom_ranges);
 };
 
 namespace internal {
