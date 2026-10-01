@@ -83,7 +83,7 @@ inline constexpr bool kEnableVectorModificationChecks = false;
 // In release builds, vectors with inline capacity opt out of modification
 // checks because they are typically short-lived stack buffers in hot loops and
 // rarely reallocate out-of-line.
-template <typename Allocator, bool kHasInlineCapacity = false>
+template <typename Allocator, bool kHasInlineCapacity>
 inline constexpr bool kEnableModificationChecks =
     (DCHECK_IS_ON() || !kHasInlineCapacity) &&
     ((Allocator::kIsGarbageCollected && kEnableHeapVectorModificationChecks) ||
@@ -877,7 +877,7 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator, true> {
       return;
     }
 
-    if constexpr (kEnableModificationChecks<Allocator>) {
+    if constexpr (kEnableModificationChecks<Allocator, true>) {
       std::swap(this->modification_state_.count,
                 other.modification_state_.count);
     }

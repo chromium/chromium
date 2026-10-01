@@ -923,6 +923,10 @@ TEST(VectorTest, InlineCapacityMutationDuringIteration) {
   EXPECT_CHECK_DEATH_WITH([[maybe_unused]] int val = *it,
                           "Vector modified while being iterated.");
 #endif
+
+  Vector<int, 4> moved_inline(std::move(inline_vector));
+  inline_vector = std::move(moved_inline);
+  EXPECT_GE(inline_vector.size(), 3u);
 }
 #endif
 
