@@ -23,6 +23,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/environment.h"
+#include "base/feature_list.h"
 #include "base/features.h"
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
@@ -31,6 +32,7 @@
 #include "base/files/scoped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
@@ -2331,6 +2333,51 @@ TEST_F(FileUtilTest,
   EXPECT_FALSE(PathExists(deletion_dir));
   EXPECT_TRUE(PathExists(target_dir));
   EXPECT_FALSE(PathExists(target_file));
+}
+
+TEST_F(FileUtilTest, DeletePathRecursively_WithoutFeatureList) {
+  std::unique_ptr<FeatureList> original_feature_list =
+      FeatureList::ClearInstanceForTesting();
+  FeatureList::FailOnFeatureAccessWithoutFeatureList();
+
+  base::ScopedClosureRunner restore_feature_list(base::BindOnce(
+      [](std::unique_ptr<FeatureList> feature_list) {
+        FeatureList::ClearInstanceForTesting();
+        if (feature_list) {
+          FeatureList::RestoreInstanceForTesting(std::move(feature_list));
+        }
+      },
+      std::move(original_feature_list)));
+
+  // Create a target directory with a file.
+  FilePath target_dir = temp_dir_.GetPath().Append(FPL("target_dir"));
+  ASSERT_TRUE(CreateDirectory(target_dir));
+  FilePath target_file = target_dir.Append(FPL("target_file.txt"));
+  CreateTextFile(target_file, bogus_content);
+  ASSERT_TRUE(PathExists(target_file));
+
+  // Also create a junction inside the directory to verify reparse point
+  // traversal behavior without FeatureList.
+  FilePath junction_target = temp_dir_.GetPath().Append(FPL("junction_target"));
+  ASSERT_TRUE(CreateDirectory(junction_target));
+  FilePath junction_file = junction_target.Append(FPL("junction_file.txt"));
+  CreateTextFile(junction_file, bogus_content);
+  ASSERT_TRUE(PathExists(junction_file));
+
+  FilePath junction_path = target_dir.Append(FPL("junction"));
+  ASSERT_TRUE(CreateDirectory(junction_path));
+  std::optional<test::FilePathReparsePoint> reparse_point =
+      test::FilePathReparsePoint::Create(junction_path, junction_target);
+  ASSERT_TRUE(reparse_point.has_value());
+  ASSERT_TRUE(PathExists(junction_path.Append(FPL("junction_file.txt"))));
+
+  // Should succeed without crashing even when FeatureList is uninitialized.
+  EXPECT_TRUE(DeletePathRecursively(target_dir));
+  EXPECT_FALSE(PathExists(target_dir));
+  // Reparse point traversal prevention must remain enabled by default,
+  // ensuring the junction target contents were not deleted.
+  EXPECT_TRUE(PathExists(junction_target));
+  EXPECT_TRUE(PathExists(junction_file));
 }
 
 TEST_F(FileUtilTest, IsLink) {
