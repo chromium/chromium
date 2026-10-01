@@ -6,6 +6,7 @@ import os
 import sys
 import tempfile
 
+import pytest
 from resultsink_reporter import (
     TestFilter,
     TestFilterGroup,
@@ -76,6 +77,162 @@ def test_parse_filter_tokens_structured():
     ]
 
 
+@pytest.mark.parametrize(
+    "case",
+    [
+        "test_download[Custom user context]",
+        "test_download[Default user context-http]",
+        r"test_download[https\://example.test/a\:\:b\#fragment]",
+        r"test_download[space and \! punctuation \\]",
+        "TestClass:test_download[Custom user context]",
+        "__CANONICAL_0__",
+    ],
+)
+def test_canonical_filters_preserve_complete_case_names(case):
+    first = f":chromium-bidi!pytest:tests/browser/:test_download.py#{case}"
+    second = ":chromium-bidi!pytest:tests/browser/:test_download.py#test_other"
+    assert parse_filter_tokens(first) == [first]
+    assert parse_filter_tokens(f"{first}::{second}") == [first, second]
+    assert parse_filter_tokens(f"{second}::{first}") == [second, first]
+    assert parse_filter_tokens(f"-{first}::{second}") == [f"-{first}", second]
+
+
+def test_canonical_filters_do_not_interpret_legacy_names_as_placeholders():
+    canonical = ":chromium-bidi!pytest:tests/:test_case.py#test_case[with spaces]"
+    assert parse_filter_tokens(f"__CANONICAL_0__::{canonical}") == [
+        "__CANONICAL_0__",
+        canonical,
+    ]
+
+
+def test_canonical_filters_preserve_escaped_colon_at_separator():
+    canonical = r":chromium-bidi!pytest:tests/:test_case.py#test_case[ends\:]"
+    assert parse_filter_tokens(f"{canonical}::tests/other.py") == [
+        canonical,
+        "tests/other.py",
+    ]
+
+
+@pytest.mark.parametrize("separator", [":", "::"])
+def test_canonical_filters_preserve_nested_node_names_and_legacy_boundaries(separator):
+    canonical = (
+        "ninja://third_party/chromium-bidi:webdriver_bidi_unittests/"
+        ":chromium-bidi!mocha:src/utils/:assert.test.ts"
+        r"#assert:nested suite:handles https\://example.test and \# fragments"
+    )
+    assert parse_filter_tokens(f"{canonical}{separator}-src/cdp/CdpClient.test.ts") == [
+        canonical,
+        "-src/cdp/CdpClient.test.ts",
+    ]
+
+
+@pytest.mark.parametrize("separator", [":", "::"])
+@pytest.mark.parametrize(
+    "wildcard, other_func", [("*", "z"), ("?", "z"), ("*z", "z"), ("?z", "az")]
+)
+def test_canonical_filters_preserve_wildcard_rule_boundaries(
+    separator, wildcard, other_func
+):
+    canonical = ":chromium-bidi!pytest:tests/:test_case.py#test_case"
+    other = f":chromium-bidi!pytest:tests/:test_case.py#{other_func}"
+
+    for rules in ((canonical, wildcard), (wildcard, canonical)):
+        tokens = parse_filter_tokens(separator.join(rules))
+        assert tokens == list(rules)
+        group = TestFilterGroup([TestFilter(token) for token in tokens])
+        assert group.is_test_included(
+            canonical,
+            "tests/test_case.py::test_case",
+            "tests/test_case.py",
+            "test_case",
+        )
+        assert group.is_test_included(
+            other,
+            f"tests/test_case.py::{other_func}",
+            "tests/test_case.py",
+            other_func,
+        )
+
+    for rules in ((f"-{canonical}", wildcard), (wildcard, f"-{canonical}")):
+        tokens = parse_filter_tokens(separator.join(rules))
+        assert tokens == list(rules)
+        group = TestFilterGroup([TestFilter(token) for token in tokens])
+        assert not group.is_test_included(
+            canonical,
+            "tests/test_case.py::test_case",
+            "tests/test_case.py",
+            "test_case",
+        )
+        assert group.is_test_included(
+            other,
+            f"tests/test_case.py::{other_func}",
+            "tests/test_case.py",
+            other_func,
+        )
+
+
+@pytest.mark.parametrize("parse", [parse_filter_file, TestFilterGroup.from_filter_file])
+def test_filter_files_preserve_parameters_and_only_remove_metadata(tmp_path, parse):
+    canonical = (
+        ":chromium-bidi!pytest:tests/browser/:test_download.py"
+        r"#test_download[Custom user context with \# and [nested] brackets]"
+    )
+    legacy = "tests/browser/test_download.py::test_download[1-20]"
+    path = tmp_path / "filters.txt"
+    path.write_text(
+        "# Comment\n"
+        f"[ Debug ] Bug(12345) {canonical} [ Failure ] [ Skip ] # comment\n"
+        f"{legacy}\n"
+        "[ Release ] crbug.com/67890 tests/other.py [ Failure ]\n",
+        encoding="utf-8",
+    )
+    parsed = parse(str(path))
+    if isinstance(parsed, TestFilterGroup):
+        parsed = [
+            ("-" if item.is_exclusion else "") + item.filter_text
+            for item in parsed.filters
+        ]
+    assert set(parsed) == {f"-{canonical}", legacy, "-tests/other.py"}
+
+
+def test_legacy_filters_preserve_parameter_colons_and_spaces():
+    first = "tests/a.py::test_case[https://example.test/a::b with spaces]"
+    second = "tests/b.py::test_other"
+    assert parse_filter_tokens(f"{first}::{second}") == [first, second]
+
+
+@pytest.mark.parametrize(
+    "first, following",
+    [
+        ("tests/a.py::test_a", "-test_b"),
+        ("tests/a.py::test_a", "*"),
+        ("tests/a.py::test_a", "test_b*"),
+        ("src/a.test.ts::test one", "-test two"),
+    ],
+)
+def test_legacy_filters_keep_following_rules_separate(first, following):
+    expected_first = first.replace(".ts::", ".ts#")
+    assert parse_filter_tokens(f"{first}::{following}") == [
+        expected_first,
+        following,
+    ]
+
+
+def test_legacy_filters_do_not_extract_canonical_text_from_parameters():
+    first = "tests/a.py::test_case[example::chromium-bidi!pytest:tests/:b.py#case]"
+    canonical = ":chromium-bidi!pytest:tests/:test_other.py#test_other"
+    assert parse_filter_tokens(f"{first}::{canonical}") == [first, canonical]
+
+
+@pytest.mark.parametrize("parameter", ["[", "x[y", "]", "ends\\", "nested[x:y]"])
+def test_legacy_parameter_brackets_are_not_nesting_syntax(parameter):
+    first = f"tests/a.py::test_case[{parameter}]"
+    legacy = "tests/b.py::test_other"
+    canonical = ":chromium-bidi!pytest:tests/:test_other.py#test_other"
+    assert parse_filter_tokens(f"{first}::{legacy}") == [first, legacy]
+    assert parse_filter_tokens(f"{first}::{canonical}") == [first, canonical]
+
+
 def test_parse_filter_tokens_gtest():
     filter_str = "tests/a/test_a.py::test_func_a:tests/b/test_b.py::test_func_b:-tests/c/test_c.py"
     tokens = parse_filter_tokens(filter_str)
@@ -138,6 +295,34 @@ def test_test_filter_group_ninja_and_wildcard():
         "tests/browser/test_create_user_context.py::test_browser_create_user_context_legacy_proxy",
         "tests/browser/test_create_user_context.py",
         "test_browser_create_user_context_legacy_proxy",
+    )
+
+
+@pytest.mark.parametrize(
+    "filter_text",
+    [
+        ":chromium-bidi!pytest:tests/:test_case.py#test_case[literal*]",
+        ":chromium-bidi!pytest:tests/:test_case.py#test_case[literal?]",
+        "ninja://third_party/chromium-bidi:webdriver_bidi_e2e_tests/"
+        ":chromium-bidi!pytest:tests/:test_case.py#test_case[literal*]",
+        "tests/test_case.py::test_case[literal*]",
+        "test_case[literal?]",
+    ],
+    ids=["canonical-star", "canonical-question", "ninja", "nodeid", "function"],
+)
+def test_exact_filter_matches_literal_wildcards(filter_text):
+    assert TestFilter(filter_text).matches_string(filter_text)
+
+
+def test_literal_matching_preserves_wildcards_and_exclusions():
+    canonical = ":chromium-bidi!pytest:tests/:test_case.py#test_case[literal*]"
+    nodeid = "tests/test_case.py::test_case[literal*]"
+    assert TestFilter("test_*").matches_string("test_case[literal*]")
+    assert TestFilter("test_cas?").matches_string("test_case")
+    assert not TestFilter("test_cas?").matches_string("test_other")
+    group = TestFilterGroup([TestFilter("*"), TestFilter(f"-{canonical}")])
+    assert not group.is_test_included(
+        canonical, nodeid, "tests/test_case.py", "test_case[literal*]"
     )
 
 

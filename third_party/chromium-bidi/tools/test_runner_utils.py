@@ -23,14 +23,29 @@ import sys
 
 # ResultDB canonical test IDs format:
 #   [+-]?[ninja://<target_path>:<target_name>/]:chromium-bidi!<scheme>:<coarse_name>:<fine_name>[#<case_name>]
+#
+# Examples:
+#   :chromium-bidi!pytest:tests/bluetooth/:test_characteristic_emulation.py#test_foo
+#   ninja://third_party/chromium-bidi:webdriver_bidi_e2e_tests/:chromium-bidi!pytest:tests/bidi/:test_bidi.py
+#   ninja://third_party/chromium-bidi:webdriver_bidi_unittests/:chromium-bidi!mocha:src/utils/:assert.test.ts#assert:should not throw
+# The isolated-test API uses :: between rules. For backwards compatibility,
+# mixed GTest-style single-colon filters also recognize a following path or
+# exclusion. That legacy syntax is ambiguous with path-like nested titles;
+# escape literal colons in a component and use :: between canonical rules.
 CANONICAL_TEST_ID_RE = re.compile(
     r"""
     [+-]?                                           # Optional filter inclusion (+) or exclusion (-) prefix
     (?:ninja://\S+?:[^\s/]+/)?                      # Optional Ninja build target prefix (e.g. ninja://dir:target/)
     :chromium-bidi!\w+                              # ResultDB module prefix and scheme (e.g. :chromium-bidi!pytest)
-    :[^#:\s]*                                       # Coarse directory path (e.g. :tests/bluetooth/)
-    (?::[^#:\s]*)?                                  # Fine file name (e.g. :test_characteristic_emulation.py)
-    (?:\#[^:\s\n\r]*(?::(?!\S+[:/]|-)[\w\s-]+)*)?   # Optional case name, allowing colons in sub-titles (#suite:test)
+    :(?:\\.|[^#:\\\r\n])*                          # Coarse directory path
+    (?::(?:\\.|[^#:\\\r\n])*)?                     # Fine file name
+    (?:\#(?:
+        \\.                                        # Escaped ResultDB punctuation
+        |[^:\\\r\n]                                # Spaces are part of case names
+        |:(?!:|[*?]|[+-]|ninja://|[^\s:]*[/\\]|[^\s:]*\.(?:py|js|ts)(?=[:\#]|$))
+                                                    # Nested case component, not a following filter;
+                                                    # wildcard-leading rules keep their existing boundary
+    )*)?
     """,
     re.VERBOSE,
 )
@@ -151,89 +166,114 @@ def parse_filter_tokens(filter_str: str) -> list[str]:
     if not filter_str:
         return []
 
-    canonical_tokens = []
+    # Extract complete canonical spans at rule boundaries, not inside legacy
+    # parameters. Do not invent placeholders that could be real test names.
+    patterns = []
+    end = 0
+    index = 0
+    in_parameter = False
+    at_boundary = True
+    while index < len(filter_str):
+        if not in_parameter and at_boundary:
+            match = CANONICAL_TEST_ID_RE.match(filter_str, index)
+            if match:
+                patterns.extend(_parse_legacy_filter_tokens(filter_str[end:index]))
+                patterns.append(match.group().strip())
+                index = end = match.end()
+                at_boundary = False
+                continue
+        char = filter_str[index]
+        if char == "[":
+            in_parameter = True
+        elif char == "]":
+            in_parameter = False
+        if char == ":" and not in_parameter:
+            at_boundary = True
+        elif not char.isspace():
+            at_boundary = False
+        index += 1
+    patterns.extend(_parse_legacy_filter_tokens(filter_str[end:]))
+    return patterns
 
-    def mask_canonical(match):
-        idx = len(canonical_tokens)
-        canonical_tokens.append(match.group(0).strip())
-        return f" __CANONICAL_{idx}__ "
 
-    masked_str = CANONICAL_TEST_ID_RE.sub(mask_canonical, filter_str)
-    raw_tokens = re.split(r":{3,}|(?<!:):(?!:)", masked_str)
+def _parse_legacy_filter_tokens(filter_str: str) -> list[str]:
+    # Preserve spaces, URLs and double colons inside a pytest parameter.
+    # Raw parameter IDs are arbitrary strings: extra '[' characters do not
+    # create nesting, and a backslash does not escape the closing ']'.
+    parts = []
+    start = 0
+    in_parameter = False
+    index = 0
+    separator = ""
+    while index < len(filter_str):
+        char = filter_str[index]
+        if char == "[":
+            in_parameter = True
+        elif char == "]":
+            in_parameter = False
+        elif char == ":" and not in_parameter:
+            parts.append((separator, filter_str[start:index].strip()))
+            start = index
+            while index < len(filter_str) and filter_str[index] == ":":
+                index += 1
+            separator = filter_str[start:index]
+            start = index
+            continue
+        index += 1
+    parts.append((separator, filter_str[start:].strip()))
 
     patterns = []
-    for raw in raw_tokens:
-        raw = raw.strip()
-        if not raw:
+    node_kind = None
+    for separator, token in parts:
+        if not token:
             continue
-
-        if "__CANONICAL_" in raw:
-            for piece in raw.split():
-                if piece.startswith("__CANONICAL_") and piece.endswith("__"):
-                    idx = int(piece[len("__CANONICAL_") : -2])
-                    patterns.append(canonical_tokens[idx])
-                elif piece and piece.strip(":") != "":
-                    patterns.append(piece)
-        elif "::" in raw:
-            sub_tokens = [s.strip() for s in raw.split("::") if s.strip()]
-            i = 0
-            while i < len(sub_tokens):
-                st = sub_tokens[i]
-                is_py = (
-                    st.endswith(".py")
-                    or ".py:" in st
-                    or (st.startswith("-") and st[1:].endswith(".py"))
-                )
-                is_js_ts = (
-                    st.endswith(".js")
-                    or st.endswith(".ts")
-                    or (
-                        st.startswith("-")
-                        and (st[1:].endswith(".js") or st[1:].endswith(".ts"))
-                    )
-                )
-                if (
-                    (is_py or is_js_ts)
-                    and i + 1 < len(sub_tokens)
-                    and not (
-                        sub_tokens[i + 1].endswith(".py")
-                        or sub_tokens[i + 1].endswith(".js")
-                        or sub_tokens[i + 1].endswith(".ts")
-                    )
-                    and not sub_tokens[i + 1].startswith(":")
-                    and not sub_tokens[i + 1].startswith("tests/")
-                    and not sub_tokens[i + 1].startswith("src/")
-                ):
-                    delimiter = "::" if is_py else "#"
-                    patterns.append(f"{st}{delimiter}{sub_tokens[i + 1]}")
-                    i += 2
-                else:
-                    patterns.append(st)
-                    i += 1
+        is_file = token.endswith((".py", ".js", ".ts")) or token.startswith(
+            ("tests/", "src/", "-tests/", "-src/")
+        )
+        if separator == "::" and node_kind and not is_file:
+            delimiter = "::" if node_kind == "pytest" else "#"
+            patterns[-1] += delimiter + token
+            # Preserve the legacy file::case grammar. A following :: rule
+            # (including a bare exclusion or glob) must remain independent.
+            # Canonical IDs unambiguously represent nested class/suite names.
+            node_kind = None
         else:
-            patterns.append(raw)
+            patterns.append(token)
+            node_kind = (
+                "pytest"
+                if token.endswith(".py")
+                else "node"
+                if token.endswith((".js", ".ts"))
+                else None
+            )
     return patterns
 
 
 def parse_filter_file(filepath: str) -> list[str]:
     """Reads a filter file in Chromium Test List Format."""
     filters = []
-    tag_regex = re.compile(
-        r"\[[^\]]*\]|Bug\([^)]*\)|crbug\.com/\S*|skbug\.com/\S*|webkit\.org/\S*",
-        re.VERBOSE,
+    metadata = re.compile(
+        r"^(?:\[([^\]]*)\]|Bug\([^)]*\)|(?:crbug\.com|skbug\.com|webkit\.org)/\S+)(?:\s+|$)"
     )
     with open(filepath, encoding="utf-8") as f:
         for line in f:
             raw_line = re.split(r"(?:\s|^)#", line)[0].strip()
             if not raw_line:
                 continue
-            is_skip = "[ Skip ]" in raw_line or "[ Failure ]" in raw_line
-            cleaned_line = tag_regex.sub("", raw_line).strip()
-            if cleaned_line:
-                for token in parse_filter_tokens(cleaned_line):
-                    if is_skip and not token.startswith("-"):
-                        token = "-" + token
-                    filters.append(token)
+            tags = []
+            while match := metadata.match(raw_line):
+                tags.extend((match.group(1) or "").split())
+                raw_line = raw_line[match.end() :].strip()
+            # Expectation tags follow the test name, separated by whitespace.
+            # Brackets attached to a parameterized node ID are not metadata.
+            while match := re.search(r"\s+\[([^\[\]]*)\]$", raw_line):
+                tags.extend(match.group(1).split())
+                raw_line = raw_line[: match.start()].rstrip()
+            is_skip = "Skip" in tags or "Failure" in tags
+            for token in parse_filter_tokens(raw_line):
+                if is_skip and not token.startswith("-"):
+                    token = "-" + token
+                filters.append(token)
     return filters
 
 

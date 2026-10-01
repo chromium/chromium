@@ -21,10 +21,91 @@ import re
 import sys
 import urllib.request
 
+import pytest
+
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "tools"))
 )
-from test_runner_utils import parse_filter_tokens
+from test_runner_utils import parse_filter_file, parse_filter_tokens
+
+_REPEAT_PARAMETER = "__pytest_repeat_step_number"
+_REPEAT_IDENTITIES = pytest.StashKey[dict[str, str]]()
+_NODE_ID_PROPERTY = "chromium-bidi:nodeid"
+
+
+@pytest.hookimpl(hookwrapper=True, tryfirst=True)
+def pytest_generate_tests(metafunc):
+    outcome = yield
+    if outcome.excinfo is not None:
+        return
+
+    # pytest-repeat adds an ID component through parametrize(). Inspect the
+    # complete Cartesian product here: later pytest versions/fixture processing
+    # may change callspec indices, and later generators can append parameters.
+    # _calls and _idlist are pinned pytest internals, covered by real-plugin
+    # tests. Do not infer a repeat dimension from a numeric-looking user ID.
+    calls = metafunc._calls
+    if not any(_REPEAT_PARAMETER in call.params for call in calls):
+        return
+
+    def incompatible():
+        outcome.force_exception(
+            pytest.UsageError(
+                "Cannot determine pytest-repeat identity for "
+                f"{metafunc.definition.nodeid}; incompatible parametrization metadata"
+            )
+        )
+
+    steps = [call.params.get(_REPEAT_PARAMETER) for call in calls]
+    if any(type(step) is not int for step in steps):
+        incompatible()
+        return
+    repeat_steps = set(steps)
+    count = len(repeat_steps)
+    dimensions = len(calls[0]._idlist)
+    if (
+        count < 2
+        or repeat_steps != set(range(count))
+        or any(len(call._idlist) != dimensions for call in calls)
+    ):
+        incompatible()
+        return
+    parameter_groups = {}
+    for call, step in zip(calls, steps):
+        parameters = tuple(
+            (name, index)
+            for name, index in call.indices.items()
+            if name != _REPEAT_PARAMETER
+        )
+        parameter_groups.setdefault(parameters, set()).add(step)
+    if any(group != repeat_steps for group in parameter_groups.values()):
+        incompatible()
+        return
+    positions = [
+        position
+        for position in range(dimensions)
+        if all(
+            call._idlist[position] == f"{step + 1}-{count}"
+            for call, step in zip(calls, steps)
+        )
+    ]
+    # Across the full Cartesian product, a user parameter cannot track every
+    # repeat step. A missing or non-unique dimension must not silently alias
+    # separate tests or produce a successful zero-test flakiness run.
+    if len(positions) != 1:
+        incompatible()
+        return
+    position = positions[0]
+    identities = metafunc.config.stash.setdefault(_REPEAT_IDENTITIES, {})
+    for call in calls:
+        raw_nodeid = f"{metafunc.definition.nodeid}[{call.id}]"
+        parameter_ids = call._idlist[:position] + call._idlist[position + 1 :]
+        nodeid = metafunc.definition.nodeid
+        if parameter_ids:
+            nodeid += f"[{'-'.join(parameter_ids)}]"
+        if identities.setdefault(raw_nodeid, nodeid) != nodeid:
+            incompatible()
+            return
 
 
 def format_test_id(nodeid: str):
@@ -32,9 +113,7 @@ def format_test_id(nodeid: str):
 
     Canonical flat format: :chromium-bidi!pytest:${coarseName}:${fineName}#${caseName}
     """
-    # Strip pytest-repeat suffix [1-N] if present
-    clean_nodeid = re.sub(r"\[\d+-\d+\]$", "", nodeid)
-    parts = clean_nodeid.split("::")
+    parts = nodeid.split("::")
     file_path = parts[0]
     case_components = parts[1:] if len(parts) > 1 else [os.path.basename(file_path)]
 
@@ -75,9 +154,12 @@ class TestFilter:
     def matches_string(self, s: str) -> bool:
         if not s:
             return False
+        # Canonical/parameterized IDs can contain literal glob punctuation.
+        if s == self.filter_text:
+            return True
         if "*" in self.filter_text or "?" in self.filter_text:
             return fnmatch.fnmatchcase(s, self.filter_text)
-        return s == self.filter_text
+        return False
 
     def is_match(
         self, structured_id: str, nodeid: str, file_path: str, func_name: str
@@ -110,32 +192,23 @@ class TestFilterGroup:
 
     @classmethod
     def from_filter_file(cls, filepath: str):
-        filters = []
-        tag_regex = re.compile(
-            r"\[[^\]]*\]|Bug\([^)]*\)|crbug\.com/\S*|skbug\.com/\S*|webkit\.org/\S*",
-            re.VERBOSE,
-        )
-        with open(filepath, encoding="utf-8") as f:
-            for line in f:
-                raw_line = re.split(r"(?:\s|^)#", line)[0].strip()
-                if not raw_line:
-                    continue
-                is_skip = "[ Skip ]" in raw_line or "[ Failure ]" in raw_line
-                cleaned_line = tag_regex.sub("", raw_line).strip()
-                if cleaned_line:
-                    for token in parse_filter_tokens(cleaned_line):
-                        if is_skip and not token.startswith("-"):
-                            token = "-" + token
-                        filters.append(TestFilter(token))
-        return cls(filters)
+        return cls([TestFilter(token) for token in parse_filter_file(filepath)])
 
     def is_test_included(
-        self, structured_id: str, nodeid: str, file_path: str, func_name: str
+        self,
+        structured_id: str,
+        nodeid: str,
+        file_path: str,
+        func_name: str,
+        *aliases: tuple[str, str, str, str],
     ) -> bool:
         if not self.filters:
             return True
+        identifiers = ((structured_id, nodeid, file_path, func_name), *aliases)
         for f in self.filters:
-            if f.is_match(structured_id, nodeid, file_path, func_name):
+            # Decide once per ordered rule, across all aliases. Otherwise a
+            # wildcard matching the raw repeat can override a base-ID exclusion.
+            if any(f.is_match(*identifier) for identifier in identifiers):
                 return not f.is_exclusion
         return False
 
@@ -210,7 +283,8 @@ class ResultSinkReporter:
         else:
             return
 
-        test_id, test_id_structured = format_test_id(report.nodeid)
+        nodeid = dict(report.user_properties).get(_NODE_ID_PROPERTY, report.nodeid)
+        test_id, test_id_structured = format_test_id(nodeid)
         test_result = {
             "testId": test_id,
             "testIdStructured": test_id_structured,
@@ -259,6 +333,24 @@ def pytest_addoption(parser):
 
 
 def pytest_collection_modifyitems(session, config, items):
+    identities = config.stash.get(_REPEAT_IDENTITIES, {})
+    for item in items:
+        callspec = getattr(item, "callspec", None)
+        if (
+            callspec is not None
+            and _REPEAT_PARAMETER in callspec.params
+            and item.nodeid not in identities
+        ):
+            raise pytest.UsageError(
+                f"Cannot determine pytest-repeat identity for {item.nodeid}; "
+                "collected ID differs from parametrization metadata"
+            )
+        # Public pytest properties travel into setup/call reports, including
+        # serialized reports. Keep raw node IDs unchanged for pytest consumers.
+        item.user_properties.append(
+            (_NODE_ID_PROPERTY, identities.get(item.nodeid, item.nodeid))
+        )
+
     test_filters = list(config.getoption("test_filters") or [])
     test_filter_files = list(config.getoption("test_filter_files") or [])
 
@@ -296,14 +388,23 @@ def pytest_collection_modifyitems(session, config, items):
 
     kept_items = []
     for item in items:
-        structured_id, _ = format_test_id(item.nodeid)
-        clean_nodeid = re.sub(r"\[\d+-\d+\]$", "", item.nodeid)
+        clean_nodeid = identities.get(item.nodeid, item.nodeid)
+        structured_id, _ = format_test_id(clean_nodeid)
+        raw_structured_id, _ = format_test_id(item.nodeid)
         file_path = clean_nodeid.split("::")[0]
-        func_name = re.sub(r"\[\d+-\d+\]$", "", item.name)
+        func_name = item.name
+        if clean_nodeid != item.nodeid:
+            # A parameter ID itself may contain "::"; it is not a node boundary.
+            func_name = clean_nodeid.removeprefix(f"{item.parent.nodeid}::")
 
         included = all(
-            group.is_test_included(structured_id, clean_nodeid, file_path, func_name)
-            or group.is_test_included(structured_id, item.nodeid, file_path, item.name)
+            group.is_test_included(
+                structured_id,
+                clean_nodeid,
+                file_path,
+                func_name,
+                (raw_structured_id, item.nodeid, file_path, item.name),
+            )
             for group in filter_groups
         )
         if included:
