@@ -7,9 +7,11 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <cmath>
 #include <list>
 #include <map>
 #include <memory>
+#include <numbers>
 #include <ranges>
 #include <set>
 #include <string>
@@ -1336,11 +1338,15 @@ Status ProcessInputActionSequence(Session* session,
   const std::string& id = *maybe_id;
 
   if (type == "pointer") {
+    const base::Value* parameters_value = action_sequence.Find("parameters");
+    if (parameters_value && !parameters_value->is_dict()) {
+      return Status(kInvalidArgument, "'parameters' must be a dictionary");
+    }
     const base::DictValue* parameters = action_sequence.FindDict("parameters");
-    if (parameters) {
+    pointer_type = "mouse";
+    if (parameters && parameters->Find("pointerType")) {
       const std::string* maybe_pointer_type =
           parameters->FindString("pointerType");
-      // error check arguments
       if (!maybe_pointer_type ||
           (*maybe_pointer_type != "mouse" && *maybe_pointer_type != "pen" &&
            *maybe_pointer_type != "touch")) {
@@ -1349,8 +1355,6 @@ Status ProcessInputActionSequence(Session* session,
             "'pointerType' must be a string and one of mouse, pen or touch");
       }
       pointer_type = *maybe_pointer_type;
-    } else {
-      pointer_type = "mouse";
     }
   }
 
@@ -1646,6 +1650,36 @@ Status ProcessInputActionSequence(Session* session,
         return Status(kInvalidArgument,
                       "'twist' must be an integer in the range of [0,359]");
       action_dict.Set("twist", maybe_int_value.value());
+
+      if (type == "pointer" &&
+          (*subtype == "pointerDown" || *subtype == "pointerUp" ||
+           *subtype == "pointerMove")) {
+        if (const base::Value* angle = action_item.Find("altitudeAngle")) {
+          maybe_double_value = angle->GetIfDouble();
+          if (!maybe_double_value.has_value() ||
+              !std::isfinite(maybe_double_value.value()) ||
+              maybe_double_value.value() < 0 ||
+              maybe_double_value.value() > std::numbers::pi_v<double> / 2) {
+            return Status(
+                kInvalidArgument,
+                "'altitudeAngle' must be a number in the range of [0, pi/2]");
+          }
+          action_dict.Set("altitudeAngle", maybe_double_value.value());
+        }
+
+        if (const base::Value* angle = action_item.Find("azimuthAngle")) {
+          maybe_double_value = angle->GetIfDouble();
+          if (!maybe_double_value.has_value() ||
+              !std::isfinite(maybe_double_value.value()) ||
+              maybe_double_value.value() < 0 ||
+              maybe_double_value.value() > 2 * std::numbers::pi_v<double>) {
+            return Status(
+                kInvalidArgument,
+                "'azimuthAngle' must be a number in the range of [0, 2*pi]");
+          }
+          action_dict.Set("azimuthAngle", maybe_double_value.value());
+        }
+      }
     }
     action_list->push_back(std::move(action_dict));
   }

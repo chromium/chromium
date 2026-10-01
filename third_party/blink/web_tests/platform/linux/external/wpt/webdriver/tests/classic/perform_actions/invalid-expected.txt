@@ -1,14 +1,4 @@
 This is a wdspec test.
-[FAIL] test_input_source_action_sequence_pointer_parameters_invalid_type[None]
-  AssertionError
-[FAIL] test_input_source_action_sequence_pointer_parameters_invalid_type[foo]
-  AssertionError
-[FAIL] test_input_source_action_sequence_pointer_parameters_invalid_type[True]
-  AssertionError
-[FAIL] test_input_source_action_sequence_pointer_parameters_invalid_type[42]
-  AssertionError
-[FAIL] test_input_source_action_sequence_pointer_parameters_invalid_type[value4]
-  AssertionError
 [FAIL] test_pointer_action_common_properties_dimensions_invalid_type[0.1-width-pointerDown]
   AssertionError
 [FAIL] test_pointer_action_common_properties_dimensions_invalid_type[0.1-width-pointerMove]
@@ -33,65 +23,4 @@ This is a wdspec test.
   AssertionError
 [FAIL] test_pointer_action_common_properties_dimensions_invalid_value[9007199254740992-height-pointerUp]
   AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[None-altitudeAngle-pointerDown]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[None-altitudeAngle-pointerMove]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[None-altitudeAngle-pointerUp]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[None-azimuthAngle-pointerDown]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[None-azimuthAngle-pointerMove]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[None-azimuthAngle-pointerUp]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[foo-altitudeAngle-pointerDown]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[foo-altitudeAngle-pointerMove]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[foo-altitudeAngle-pointerUp]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[foo-azimuthAngle-pointerDown]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[foo-azimuthAngle-pointerMove]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[foo-azimuthAngle-pointerUp]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[True-altitudeAngle-pointerDown]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[True-altitudeAngle-pointerMove]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[True-altitudeAngle-pointerUp]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[True-azimuthAngle-pointerDown]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[True-azimuthAngle-pointerMove]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[True-azimuthAngle-pointerUp]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[value3-altitudeAngle-pointerDown]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[value3-altitudeAngle-pointerMove]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[value3-altitudeAngle-pointerUp]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[value3-azimuthAngle-pointerDown]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[value3-azimuthAngle-pointerMove]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[value3-azimuthAngle-pointerUp]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[value4-altitudeAngle-pointerDown]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[value4-altitudeAngle-pointerMove]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[value4-altitudeAngle-pointerUp]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[value4-azimuthAngle-pointerDown]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[value4-azimuthAngle-pointerMove]
-  AssertionError
-[FAIL] test_pointer_action_common_properties_angle_invalid_type[value4-azimuthAngle-pointerUp]
-  AssertionError
 Harness: the test ran to completion.
-
