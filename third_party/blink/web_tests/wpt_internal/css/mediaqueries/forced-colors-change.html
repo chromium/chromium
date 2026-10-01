@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Changes to forced colors update media queries</title>
+<link rel="author" title="Hoch Hochkeppel" href="mailto:mhochk@microsoft.com">
+<link rel="help" href="https://drafts.csswg.org/mediaqueries-5/#forced-colors">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+  #target {
+    --forced-colors-state: none;
+  }
+
+  @media (forced-colors: active) {
+    #target {
+      --forced-colors-state: active;
+    }
+  }
+</style>
+
+<div id="target">Target</div>
+
+<script>
+promise_test(async t => {
+  const active = matchMedia("(forced-colors: active)");
+  const none = matchMedia("(forced-colors: none)");
+
+  t.add_cleanup(() => internals.settings.setInForcedColors(false));
+
+  assert_false(active.matches);
+  assert_true(none.matches);
+  assert_equals(
+      getComputedStyle(target).getPropertyValue("--forced-colors-state"),
+      "none");
+
+  const active_changed = new Promise(resolve => {
+    active.addEventListener("change", t.step_func(event => {
+      assert_true(event.matches);
+      resolve();
+    }), {once: true});
+  });
+  const none_changed = new Promise(resolve => {
+    none.addEventListener("change", t.step_func(event => {
+      assert_false(event.matches);
+      resolve();
+    }), {once: true});
+  });
+
+  internals.settings.setInForcedColors(true);
+  await Promise.all([active_changed, none_changed]);
+
+  assert_true(active.matches);
+  assert_false(none.matches);
+  assert_equals(
+      getComputedStyle(target).getPropertyValue("--forced-colors-state"),
+      "active");
+}, "Changing forced colors updates media queries and matching styles");
+</script>

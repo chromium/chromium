@@ -101,7 +101,7 @@ class RenderViewHostDelegate {
 
   // Returns the light, dark and forced color maps for the ColorProvider
   // associated with this RenderViewHost.
-  virtual blink::ColorProviderColorMaps GetColorProviderColorMaps() const = 0;
+  virtual blink::ColorProviderColorMaps GetColorProviderColorMaps() = 0;
 
   // Returns true if the render view is rendering a guest.
   virtual bool IsGuest();

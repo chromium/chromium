@@ -532,6 +532,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool WebPreferencesNeedUpdateForColorRelatedStateChanges(
       content::WebContents& web_contents,
       const content::SiteInstance& main_frame_site) const override;
+  ui::ColorProviderKey::ForcedColors GetForcedColorsForWebContents(
+      content::WebContents& web_contents) const override;
   void BrowserURLHandlerCreated(content::BrowserURLHandler* handler) override;
   base::FilePath GetDefaultDownloadDirectory() override;
   std::string GetDefaultDownloadName() override;

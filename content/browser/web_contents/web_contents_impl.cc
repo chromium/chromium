@@ -8973,17 +8973,14 @@ std::optional<SkColor> WebContentsImpl::GetBaseBackgroundColor() {
   return page_base_background_color_;
 }
 
-blink::ColorProviderColorMaps WebContentsImpl::GetColorProviderColorMaps()
-    const {
+blink::ColorProviderColorMaps WebContentsImpl::GetColorProviderColorMaps() {
   const auto* color_mode_source = GetColorProviderSource();
 
-  // Unlike preferred color scheme, ForcedColors should always use the
-  // default color provider source, which reflects the NativeTheme web instance.
-  // This is because the Page colors feature only modifies the Forced colors
-  // mode for web without affecting the UI.
+  // Forced colors use the default web source so that browser UI theme
+  // customizations do not affect the renderer's forced-colors palette.
   const auto* forced_colors_source = DefaultColorProviderSource::GetInstance();
   ui::ColorProviderKey::ForcedColors forced_colors =
-      forced_colors_source->GetForcedColors();
+      GetContentClient()->browser()->GetForcedColorsForWebContents(*this);
   if (forced_colors == ui::ColorProviderKey::ForcedColors::kNone) {
     forced_colors = ui::ColorProviderKey::ForcedColors::kSystem;
   }

@@ -1152,6 +1152,7 @@
     {
       name: "inForcedColors",
       initial: false,
+      invalidate: ["ForcedColors"],
       type: "bool",
     },
 

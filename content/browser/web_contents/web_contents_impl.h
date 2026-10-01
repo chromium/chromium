@@ -1077,7 +1077,7 @@ class CONTENT_EXPORT WebContentsImpl
                             WindowOpenDisposition disposition) override;
   void SetOwnerLocationForDebug(
       std::optional<base::Location> owner_location) override;
-  blink::ColorProviderColorMaps GetColorProviderColorMaps() const override;
+  blink::ColorProviderColorMaps GetColorProviderColorMaps() override;
 
   BackForwardTransitionAnimationManager*
   GetBackForwardTransitionAnimationManager() override;

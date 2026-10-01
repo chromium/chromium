@@ -540,7 +540,7 @@ class CONTENT_EXPORT RenderFrameHostDelegate {
 
   // Returns the light, dark and forced color maps for the ColorProvider
   // associated with this RenderFrameHost's WebContents.
-  virtual blink::ColorProviderColorMaps GetColorProviderColorMaps() const = 0;
+  virtual blink::ColorProviderColorMaps GetColorProviderColorMaps() = 0;
 
   // Returns the visibility of the delegate.
   virtual Visibility GetVisibility();

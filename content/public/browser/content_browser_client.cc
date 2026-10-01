@@ -584,6 +584,12 @@ bool ContentBrowserClient::WebPreferencesNeedUpdateForColorRelatedStateChanges(
   return false;
 }
 
+ui::ColorProviderKey::ForcedColors
+ContentBrowserClient::GetForcedColorsForWebContents(
+    WebContents& web_contents) const {
+  return ui::ColorProviderKey::ForcedColors::kNone;
+}
+
 bool ContentBrowserClient::IsDataSaverEnabled(BrowserContext* context) {
   DCHECK(context);
   return false;

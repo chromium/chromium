@@ -7,10 +7,12 @@
 #include <utility>
 
 #include "base/containers/fixed_flat_map.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/color/color_provider_key.h"
 #include "ui/native_theme/native_theme.h"
 
@@ -24,19 +26,15 @@ static constexpr char kIsDefaultPageColorsOnHighContrast[] =
 
 PageColorsController::PageColorsController(PrefService* profile_prefs)
     : profile_prefs_(profile_prefs) {
-  theme_observation_.Observe(ui::NativeTheme::GetInstanceForNativeUi());
-
   pref_change_registrar_.Init(profile_prefs_);
   pref_change_registrar_.Add(
       prefs::kRequestedPageColors,
-      base::BindRepeating(&PageColorsController::RecomputePageColors,
+      base::BindRepeating(&PageColorsController::PageColorsSettingsChanged,
                           weak_factory_.GetWeakPtr()));
   pref_change_registrar_.Add(
       prefs::kApplyPageColorsOnlyOnIncreasedContrast,
-      base::BindRepeating(&PageColorsController::RecomputePageColors,
+      base::BindRepeating(&PageColorsController::PageColorsSettingsChanged,
                           weak_factory_.GetWeakPtr()));
-
-  RecomputePageColors();
 }
 
 PageColorsController::~PageColorsController() = default;
@@ -81,18 +79,37 @@ void PageColorsController::MigrateObsoleteProfilePrefs(
   profile_prefs->ClearPref(kIsDefaultPageColorsOnHighContrast);
 }
 
-void PageColorsController::OnNativeThemeUpdated(
-    ui::NativeTheme* observed_theme) {
-  RecomputePageColors();
-}
-
 void PageColorsController::SetRequestedPageColors(PageColors page_colors) {
-  // Setting the pref will automatically trigger `RecomputePageColors()`.
+  // Setting the pref will automatically trigger
+  // `PageColorsSettingsChanged()`.
   profile_prefs_->SetInteger(prefs::kRequestedPageColors,
                              std::to_underlying(page_colors));
 }
 
-void PageColorsController::RecomputePageColors() {
+void PageColorsController::PageColorsSettingsChanged() {
+  // Page colors are profile-specific, but we use the web NativeTheme as a
+  // process-wide invalidation signal rather than establishing an independent
+  // path for this rare event.
+  //
+  // OS theme changes already notify the web NativeTheme directly, so only
+  // profile pref changes need this signal.
+  ui::NativeTheme::GetInstanceForWeb()->NotifyOnNativeThemeUpdated();
+}
+
+// static
+PageColorsController::EffectivePageColors
+PageColorsController::GetEffectivePageColors(
+    content::WebContents* web_contents) {
+#if BUILDFLAG(IS_ANDROID)
+  const ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForWeb();
+  return {.forced_colors = native_theme->forced_colors(),
+          .preferred_color_scheme = native_theme->preferred_color_scheme(),
+          .preferred_contrast = native_theme->preferred_contrast()};
+#else
+  const PrefService* profile_prefs =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext())
+          ->GetPrefs();
+
   // Get the current color/contrast values from the native UI theme.
   const auto* const native_theme = ui::NativeTheme::GetInstanceForNativeUi();
   ui::ColorProviderKey::ForcedColors forced_colors =
@@ -103,20 +120,18 @@ void PageColorsController::RecomputePageColors() {
       native_theme->preferred_contrast();
 
   // Get the requested page colors.
-  const int pref_value =
-      profile_prefs_->GetInteger(prefs::kRequestedPageColors);
+  const int pref_value = profile_prefs->GetInteger(prefs::kRequestedPageColors);
   PageColors page_colors =
       (pref_value < 0 || pref_value > std::to_underlying(PageColors::kMaxValue))
           ? PageColors::kNoPreference
           : static_cast<PageColors>(pref_value);
   if (preferred_contrast != ui::NativeTheme::PreferredContrast::kMore &&
-      profile_prefs_->GetBoolean(
+      profile_prefs->GetBoolean(
           prefs::kApplyPageColorsOnlyOnIncreasedContrast)) {
     page_colors = PageColors::kNoPreference;
   }
 
-  // If there are explicit page colors, change the desired color/contrast values
-  // accordingly.
+  // Explicit Page Colors settings override the native theme.
   if (page_colors != PageColors::kNoPreference) {
     static constexpr auto kColorMap =
         base::MakeFixedFlatMap<PageColors, ui::ColorProviderKey::ForcedColors>(
@@ -142,25 +157,8 @@ void PageColorsController::RecomputePageColors() {
     }
   }
 
-  // Update the web theme with the newly-calculated values and see if anything
-  // changed.
-  auto* const web_theme = ui::NativeTheme::GetInstanceForWeb();
-  bool updated = false;
-  if (web_theme->forced_colors() != forced_colors) {
-    web_theme->set_forced_colors(forced_colors);
-    updated = true;
-  }
-  if (web_theme->preferred_color_scheme() != preferred_color_scheme) {
-    web_theme->set_preferred_color_scheme(preferred_color_scheme);
-    updated = true;
-  }
-  if (web_theme->preferred_contrast() != preferred_contrast) {
-    web_theme->set_preferred_contrast(preferred_contrast);
-    updated = true;
-  }
-
-  // If something changed, notify web theme observers.
-  if (updated) {
-    web_theme->NotifyOnNativeThemeUpdated();
-  }
+  return {.forced_colors = forced_colors,
+          .preferred_color_scheme = preferred_color_scheme,
+          .preferred_contrast = preferred_contrast};
+#endif
 }

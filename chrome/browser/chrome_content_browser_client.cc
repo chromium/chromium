@@ -57,6 +57,7 @@
 #include "build/build_config.h"
 #include "build/config/chromebox_for_meetings/buildflags.h"  // PLATFORM_CFM
 #include "chrome/browser/accessibility/caption_settings_dialog.h"
+#include "chrome/browser/accessibility/page_colors_controller.h"
 #include "chrome/browser/actor/actor_commit_deferring_condition.h"
 #include "chrome/browser/after_startup_task_utils.h"
 #include "chrome/browser/ai/ai_manager.h"
@@ -4031,7 +4032,8 @@ bool ShouldDisableForcedColorsForWebContent(content::WebContents* contents,
   return false;
 }
 
-blink::mojom::PreferredContrast GetPreferredContrast() {
+blink::mojom::PreferredContrast GetPreferredContrast(
+    content::WebContents* web_contents) {
   using NC = ui::NativeTheme::PreferredContrast;
   using BC = blink::mojom::PreferredContrast;
   static constexpr auto kContrastMap =
@@ -4039,14 +4041,17 @@ blink::mojom::PreferredContrast GetPreferredContrast() {
                                       {NC::kMore, BC::kMore},
                                       {NC::kLess, BC::kLess},
                                       {NC::kCustom, BC::kCustom}});
-  return kContrastMap.at(
-      ui::NativeTheme::GetInstanceForWeb()->preferred_contrast());
+  const NC preferred_contrast =
+      PageColorsController::GetEffectivePageColors(web_contents)
+          .preferred_contrast;
+  return kContrastMap.at(preferred_contrast);
 }
 
 std::tuple<bool, bool> GetForcedColorsForWebContent(WebContents* web_contents) {
+  const auto forced_colors =
+      PageColorsController::GetEffectivePageColors(web_contents).forced_colors;
   const bool in_forced_colors =
-      ui::NativeTheme::GetInstanceForWeb()->forced_colors() !=
-      ui::ColorProviderKey::ForcedColors::kNone;
+      forced_colors != ui::ColorProviderKey::ForcedColors::kNone;
   const bool is_forced_colors_disabled =
       ShouldDisableForcedColorsForWebContent(web_contents, in_forced_colors);
   return {in_forced_colors && !is_forced_colors_disabled,
@@ -4085,19 +4090,29 @@ GetPreferredColorScheme(const WebPreferences& web_prefs,
 #else  // !BUILDFLAG(IS_ANDROID)
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  if (profile->IsEnterpriseIsolatedModeProfile() && !security_principal.IsWebUI()) {
+  if (profile->IsEnterpriseIsolatedModeProfile() &&
+      !security_principal.IsWebUI()) {
     preferred_color_scheme = blink::mojom::PreferredColorScheme::kLight;
-  } else if (profile->IsIncognitoProfile() && !security_principal.IsWebUI()) {
-    // Incognito contents follow the device color mode.
-    preferred_color_scheme = ToBlinkPreferredColorScheme(
-        ui::NativeTheme::GetInstanceForWeb()->preferred_color_scheme());
   } else {
-    // WebUI and regular pages follow the browser theme color mode, provided by
-    // the color provider.
-    preferred_color_scheme =
-        web_contents->GetColorMode() == ui::ColorProviderKey::ColorMode::kLight
-            ? blink::mojom::PreferredColorScheme::kLight
-            : blink::mojom::PreferredColorScheme::kDark;
+    if (profile->IsIncognitoProfile() && !security_principal.IsWebUI()) {
+      // Incognito contents follow the device color mode by default.
+      preferred_color_scheme = ToBlinkPreferredColorScheme(
+          ui::NativeTheme::GetInstanceForWeb()->preferred_color_scheme());
+    } else {
+      // WebUI and regular pages follow the browser theme color mode, provided
+      // by the color provider.
+      preferred_color_scheme = web_contents->GetColorMode() ==
+                                       ui::ColorProviderKey::ColorMode::kLight
+                                   ? blink::mojom::PreferredColorScheme::kLight
+                                   : blink::mojom::PreferredColorScheme::kDark;
+    }
+    const auto effective_page_colors =
+        PageColorsController::GetEffectivePageColors(web_contents);
+    if (effective_page_colors.forced_colors !=
+        ui::ColorProviderKey::ForcedColors::kNone) {
+      preferred_color_scheme = ToBlinkPreferredColorScheme(
+          effective_page_colors.preferred_color_scheme);
+    }
   }
   // Update the preferred root scrollbar color based on the lightness level of
   // the toolbar's color.
@@ -4941,7 +4956,7 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
       IsFileOrDirectoryPickerWithoutGestureAllowed(web_contents);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-  web_prefs->preferred_contrast = GetPreferredContrast();
+  web_prefs->preferred_contrast = GetPreferredContrast(web_contents);
 
   std::tie(web_prefs->in_forced_colors, web_prefs->is_forced_colors_disabled) =
       GetForcedColorsForWebContent(web_contents);
@@ -5123,7 +5138,7 @@ bool ChromeContentBrowserClient::
         WebContents& web_contents,
         const SiteInstance& main_frame_site) const {
   const WebPreferences& prefs = web_contents.GetOrCreateWebPreferences();
-  return GetPreferredContrast() != prefs.preferred_contrast ||
+  return GetPreferredContrast(&web_contents) != prefs.preferred_contrast ||
          GetForcedColorsForWebContent(&web_contents) !=
              std::tie(prefs.in_forced_colors,
                       prefs.is_forced_colors_disabled) ||
@@ -5133,6 +5148,13 @@ bool ChromeContentBrowserClient::
                       prefs.preferred_root_scrollbar_color_scheme) ||
          GetRootScrollbarThemeColor(&web_contents) !=
              prefs.root_scrollbar_theme_color;
+}
+
+ui::ColorProviderKey::ForcedColors
+ChromeContentBrowserClient::GetForcedColorsForWebContents(
+    WebContents& web_contents) const {
+  return PageColorsController::GetEffectivePageColors(&web_contents)
+      .forced_colors;
 }
 
 void ChromeContentBrowserClient::BrowserURLHandlerCreated(

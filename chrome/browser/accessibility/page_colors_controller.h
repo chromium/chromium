@@ -7,14 +7,16 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/native_theme/native_theme.h"
-#include "ui/native_theme/native_theme_observer.h"
 
 class PrefRegistrySimple;
 class PrefService;
+
+namespace content {
+class WebContents;
+}
 
 // Values in this enum are stored in prefs, so if you change them you may need
 // to add migration code.
@@ -39,9 +41,14 @@ enum class PageColors {
 
 // Manages the page colors feature, which allows overriding the web theme's
 // forced colors.
-class PageColorsController : public KeyedService,
-                             public ui::NativeThemeObserver {
+class PageColorsController : public KeyedService {
  public:
+  struct EffectivePageColors {
+    ui::ColorProviderKey::ForcedColors forced_colors;
+    ui::NativeTheme::PreferredColorScheme preferred_color_scheme;
+    ui::NativeTheme::PreferredContrast preferred_contrast;
+  };
+
   explicit PageColorsController(PrefService* profile_prefs);
   PageColorsController(const PageColorsController&) = delete;
   PageColorsController& operator=(const PageColorsController&) = delete;
@@ -49,21 +56,16 @@ class PageColorsController : public KeyedService,
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
   static void MigrateObsoleteProfilePrefs(PrefService* profile_prefs);
+  static EffectivePageColors GetEffectivePageColors(
+      content::WebContents* web_contents);
 
-  // ui::NativeThemeObserver:
-  void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
-
-  // Requests that the web theme base its forced colors on `page_colors`,
-  // subject to relevant prefs and native theme state.
+  // Sets the profile's requested Page Colors value. The effective value is
+  // resolved when each owning WebContents computes its web preferences.
   void SetRequestedPageColors(PageColors page_colors);
 
  private:
-  // Updates the web theme's forced colors and other state based on relevant
-  // prefs. If anything changed, notifies the web theme's observers.
-  void RecomputePageColors();
+  void PageColorsSettingsChanged();
 
-  base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
-      theme_observation_{this};
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<PrefService> profile_prefs_;
   base::WeakPtrFactory<PageColorsController> weak_factory_{this};

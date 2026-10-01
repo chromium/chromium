@@ -45,7 +45,7 @@ class MockRenderFrameHostDelegate : public RenderFrameHostDelegate {
   const blink::web_pref::WebPreferences& GetOrCreateWebPreferences() override {
     return mock_web_preferences_;
   }
-  blink::ColorProviderColorMaps GetColorProviderColorMaps() const override {
+  blink::ColorProviderColorMaps GetColorProviderColorMaps() override {
     return mock_color_provider_colors_;
   }
   MOCK_METHOD2(RequestMediaAccessPermission,
@@ -733,7 +733,7 @@ class MediaStreamUIProxyPermissionsPolicyTest
       return mock_web_preferences_;
     }
 
-    blink::ColorProviderColorMaps GetColorProviderColorMaps() const override {
+    blink::ColorProviderColorMaps GetColorProviderColorMaps() override {
       return mock_color_provider_colors_;
     }
 

@@ -96,6 +96,7 @@
 #include "ui/base/clipboard/clipboard_metadata.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/color/color_provider_key.h"
 
 #if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)) || BUILDFLAG(IS_FUCHSIA)
 #include "base/posix/global_descriptors.h"
@@ -1351,6 +1352,10 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool WebPreferencesNeedUpdateForColorRelatedStateChanges(
       WebContents& web_contents,
       const SiteInstance& main_frame_site) const;
+
+  // Returns the forced-colors palette for `web_contents`.
+  virtual ui::ColorProviderKey::ForcedColors GetForcedColorsForWebContents(
+      WebContents& web_contents) const;
 
   // Notifies that BrowserURLHandler has been created, so that the embedder can
   // optionally add their own handlers.

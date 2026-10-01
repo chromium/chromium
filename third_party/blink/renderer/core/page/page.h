@@ -560,6 +560,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
   void AcceptLanguagesChanged();
 
   void InvalidateColorScheme();
+  void InvalidatePlatformColors();
 
   // Connect the Page to the `opener_`'s related pages, if those exist.
   void LinkRelatedPagesIfNeeded();
