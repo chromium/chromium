@@ -9,6 +9,7 @@ import type {MediaButtonElement} from './media_button.js';
 export function getHtml(this: MediaButtonElement) {
   return html`<!--_html_template_start_-->
 <cr-icon-button id="button" iron-icon="webui-toolbar:queue_music"
+    aria-haspopup="dialog"
     @pointerdown="${this.onPointerdown_}"
     @pointerup="${this.pressHandler_.onPointerup}"
     @pointercancel="${this.pressHandler_.onPointercancel}"

@@ -79,6 +79,7 @@ import {ContentSettingsIconsElement} from './content_settings_icons.js';
 import type {ExtensionsElement} from './extensions.js';
 import {createDefaultLocationBarState, LocationBarElement} from './location_bar.js';
 import {LocationIconElement} from './location_icon.js';
+import {MediaButtonElement} from './media_button.js';
 import {PageActionIconElement} from './page_action_icon.js';
 import {PageActionIconsElement} from './page_action_icons.js';
 import type {PinnedToolbarActionElement} from './pinned_toolbar_action.js';
@@ -137,6 +138,7 @@ export {
   LhsChipIdentifier,
   LocationBarElement,
   LocationIconElement,
+  MediaButtonElement,
   OmniboxTextColor,
   PageActionAnimationStyle,
   PageActionIconElement,

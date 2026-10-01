@@ -51,4 +51,9 @@ suite('BatterySaverButton', function() {
     const crIconButton = button.$.button;
     assertEquals('0', crIconButton.getAttribute('tabindex'));
   });
+
+  test('AriaHasPopupIsDialog', () => {
+    const crIconButton = button.$.button;
+    assertEquals('dialog', crIconButton.getAttribute('aria-haspopup'));
+  });
 });

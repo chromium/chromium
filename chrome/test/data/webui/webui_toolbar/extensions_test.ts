@@ -1154,4 +1154,15 @@ suite('Extensions', function() {
     dispatchMouseClick();
     assertEquals(3, executeCalls.length);
   });
+
+  test('Extension buttons have aria-haspopup menu', () => {
+    const actionElements =
+        container.shadowRoot.querySelectorAll('webui-toolbar-extension');
+    assertEquals(3, actionElements.length);
+
+    for (const element of actionElements) {
+      const button = element.shadowRoot.querySelector('cr-button')!;
+      assertEquals('menu', button.getAttribute('aria-haspopup'));
+    }
+  });
 });

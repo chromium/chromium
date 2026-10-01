@@ -13,6 +13,7 @@ export function getHtml(this: ExtensionElement) {
       ?is-menu-open="${this.trackedHighlighted}"
       title="${this.state.tooltip}"
       aria-label="${this.state.accessibleName || this.state.tooltip}"
+      aria-haspopup="menu"
       draggable="${this.isDraggable()}"
       @dragstart="${this.onDragstart}"
       @dragend="${this.onDragend}"

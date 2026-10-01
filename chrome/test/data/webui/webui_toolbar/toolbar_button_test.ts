@@ -5,7 +5,9 @@
 import {isMac} from 'chrome://resources/js/platform.js';
 import {MenuSourceType} from 'chrome://resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {getClickSourceType, getContextMenuSourceType, HighlightTracker, PressHandler} from 'chrome://webui-toolbar.top-chrome/app.js';
+import type {MediaButtonElement} from 'chrome://webui-toolbar.top-chrome/app.js';
 
 suite('ToolbarButtonTest', function() {
   test('GetClickSourceType', function() {
@@ -344,5 +346,23 @@ suite('ToolbarButtonTest', function() {
     // Short press should be triggered.
     assertEquals(1, shortPressCount);
     assertEquals(0, longPressCount);
+  });
+});
+
+suite('MediaButton', function() {
+  let mediaButton: MediaButtonElement;
+
+  setup(async () => {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    mediaButton = document.createElement('media-button');
+    document.body.appendChild(mediaButton);
+    await microtasksFinished();
+  });
+
+  test('AriaHasPopupIsDialog', () => {
+    assertTrue(!!mediaButton.shadowRoot);
+    const crIconButton =
+        mediaButton.shadowRoot.querySelector('cr-icon-button')!;
+    assertEquals('dialog', crIconButton.getAttribute('aria-haspopup'));
   });
 });
