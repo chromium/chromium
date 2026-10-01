@@ -1287,17 +1287,8 @@ class ContextualTasksOmniboxContextManagementInteractiveUiTest
 
 // Adding the current tab from the omnibox opens the side panel with
 // consistent sign posting.
-// TODO(crbug.com/565713410): Re-enable this test.
-#if (BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)) && defined(MEMORY_SANITIZER)
-#define MAYBE_OmniboxAddCurrentTab_OpensSidePanelWithSignposting \
-  DISABLED_OmniboxAddCurrentTab_OpensSidePanelWithSignposting
-#else
-#define MAYBE_OmniboxAddCurrentTab_OpensSidePanelWithSignposting \
-  OmniboxAddCurrentTab_OpensSidePanelWithSignposting
-#endif
-IN_PROC_BROWSER_TEST_F(
-    ContextualTasksOmniboxContextManagementInteractiveUiTest,
-    MAYBE_OmniboxAddCurrentTab_OpensSidePanelWithSignposting) {
+IN_PROC_BROWSER_TEST_F(ContextualTasksOmniboxContextManagementInteractiveUiTest,
+                       OmniboxAddCurrentTab_OpensSidePanelWithSignposting) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrimaryTab);
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kBackgroundTab1);
 
