@@ -80,6 +80,11 @@ class LockReauthElement extends LockReauthElementBase {
         value: '',
       },
 
+      isButtonsEnabled: {
+        type: Boolean,
+        value: false,
+      },
+
       /**
        * Whether the ‘verify user again’ screen is shown.
        */
@@ -150,7 +155,7 @@ class LockReauthElement extends LockReauthElementBase {
 
   declare email: string;
   declare authDomain: string;
-  isButtonsEnabled: boolean;
+  declare isButtonsEnabled: boolean;
   declare isErrorDisplayed: boolean;
   declare isSigninFrameDisplayed: boolean;
   declare isSaml: boolean;

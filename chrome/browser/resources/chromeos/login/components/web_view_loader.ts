@@ -132,11 +132,6 @@ export class WebViewLoader {
       injectCss: boolean) {
     assert(webview.tagName === 'WEBVIEW');
 
-    // Do not create multiple loaders.
-    if (WebViewLoader.instances[webview.id]) {
-      return WebViewLoader.instances[webview.id];
-    }
-
     this.webview = webview;
     this.timeout = timeout;
     this.isPerformingRequests = false;
@@ -146,6 +141,11 @@ export class WebViewLoader {
     this.loadFailureCallback = loadFailureCallback;
     this.url = '';
     this.loadResultRecorded = false;
+
+    // Do not create multiple loaders.
+    if (WebViewLoader.instances[webview.id]) {
+      return WebViewLoader.instances[webview.id];
+    }
 
     if (clearAnchors) {
       // Add the CLEAR_ANCHORS_CONTENT_SCRIPT that will clear <a><\a>
