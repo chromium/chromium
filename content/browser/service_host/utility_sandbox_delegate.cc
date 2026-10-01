@@ -68,6 +68,8 @@ UtilitySandboxedProcessLauncherDelegate::
 #endif
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
       sandbox_type_ == sandbox::mojom::Sandbox::kProxyResolver ||
+#endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
       sandbox_type_ == sandbox::mojom::Sandbox::kWebNNModelCompilation ||
 #endif
       sandbox_type_ == sandbox::mojom::Sandbox::kUtility ||

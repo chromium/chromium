@@ -60,8 +60,11 @@ constexpr char kMirroringSandbox[] = "mirroring";
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 constexpr char kProxyResolverSandbox[] = "proxy_resolver";
-constexpr char kWebNNModelCompilationSandbox[] = "webnn_model_compilation";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
+constexpr char kWebNNModelCompilationSandbox[] = "webnn_model_compilation";
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 
 #if BUILDFLAG(IS_FUCHSIA)
 constexpr char kVideoCaptureSandbox[] = "video_capture";
@@ -168,8 +171,10 @@ void SetCommandLineFlagsForSandboxType(base::CommandLine* command_line,
 #endif  // BUILDFLAG(IS_MAC)
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     case Sandbox::kProxyResolver:
-    case Sandbox::kWebNNModelCompilation:
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
+    case Sandbox::kWebNNModelCompilation:
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
     BUILDFLAG(IS_WIN)
     case Sandbox::kPrintBackend:
@@ -302,9 +307,11 @@ std::string StringFromUtilitySandboxType(Sandbox sandbox_type) {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
     case Sandbox::kProxyResolver:
       return kProxyResolverSandbox;
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
     case Sandbox::kWebNNModelCompilation:
       return kWebNNModelCompilationSandbox;
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     case Sandbox::kShapeDetection:
       return kShapeDetectionSandbox;
@@ -398,6 +405,8 @@ sandbox::mojom::Sandbox UtilitySandboxTypeFromString(
   if (sandbox_string == kProxyResolverSandbox) {
     return Sandbox::kProxyResolver;
   }
+#endif
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
   if (sandbox_string == kWebNNModelCompilationSandbox) {
     return Sandbox::kWebNNModelCompilation;
   }
