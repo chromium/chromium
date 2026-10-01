@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -60,7 +61,8 @@ ExtensionsMenuSitePermissionsPageViewInteractiveUITest::
     ExtensionsMenuSitePermissionsPageViewInteractiveUITest() {
   scoped_feature_list_.InitWithFeatures(
       {extensions_features::kExtensionsMenuAccessControl},
-      {features::kExtensionsPinnedByDefault});
+      {features::kExtensionsPinnedByDefault,
+       features::kWebUIExtensionsContainer});
 }
 
 void ExtensionsMenuSitePermissionsPageViewInteractiveUITest::
